@@ -12,6 +12,7 @@ type Props = {
   activeTodos: number;
   completedTodos: Todo[];
   todoFilter: TodoStatus;
+  isTodos: boolean;
   isAdding: boolean;
   isProcessed: number[];
   onTodoFilter: (filterStatus: TodoStatus) => void;
@@ -27,6 +28,7 @@ export const Content: React.FC<Props> = ({
   activeTodos,
   completedTodos,
   todoFilter,
+  isTodos,
   isAdding,
   isProcessed,
   onTodoFilter,
@@ -50,7 +52,7 @@ export const Content: React.FC<Props> = ({
       onDeleteTodo={onDeleteTodo}
     />
 
-    {todos.length > 0 && (
+    {isTodos && (
       <Footer
         activeTodos={activeTodos}
         completedTodos={completedTodos}
