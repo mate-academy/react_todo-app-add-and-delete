@@ -155,6 +155,7 @@ export const App: React.FC = () => {
         activeTodos={activeTodos.length}
         completedTodos={completedTodos}
         todoFilter={todoFilter}
+        isTodos={todos.length > 0}
         isAdding={isAdding}
         isProcessed={isProcessed}
         onTodoFilter={handleTodoFilter}
