@@ -7,18 +7,21 @@ import React, {
 } from 'react';
 import { addNewTodo, deleteTodo, getTodos } from './api/todos';
 import { AuthContext } from './components/Auth/AuthContext';
-import { Errors } from './components/Errors/Errors';
+import { Notification } from './components/Notification/Notification';
 import { Footer } from './components/Footer/Footer';
 import { Header } from './components/Header/Header';
 import { TodoList } from './components/TodoList/TodoList';
 import { FilterOption } from './types/FilterOption';
 import { Todo } from './types/Todo';
+import { NotificationType } from './types/NotificationType';
 
 export const App: React.FC = () => {
   const user = useContext(AuthContext);
   const newTodoField = useRef<HTMLInputElement>(null);
   const [todos, setTodos] = useState<Todo[]>([]);
-  const [error, setError] = useState<string>('');
+  const [notification, setNotification]
+    = useState<NotificationType>(NotificationType.null);
+  const [errorText, setErrorText] = useState<string>('');
   const [filterOption, setFilterOption]
     = useState<FilterOption>(FilterOption.all);
   const [todoAction, setTodoAction] = useState<number[]>([]);
@@ -34,7 +37,8 @@ export const App: React.FC = () => {
           setTodos(loadedTodos);
         }
       } catch {
-        setError('load');
+        setNotification(NotificationType.error);
+        setErrorText('load');
       }
     };
 
@@ -47,8 +51,9 @@ export const App: React.FC = () => {
     }
   }, []);
 
-  const closeError = () => {
-    setError('');
+  const closeNotification = () => {
+    setNotification(NotificationType.null);
+    setErrorText('');
   };
 
   const loadInfo = async () => {
@@ -67,7 +72,9 @@ export const App: React.FC = () => {
     }
 
     if (!todoTitle) {
-      return setError('empty');
+      setErrorText('empty');
+
+      return setNotification(NotificationType.error);
     }
 
     setNewTodoName(todoTitle);
@@ -81,7 +88,7 @@ export const App: React.FC = () => {
       id = numbers[numbers.length - 1].id + 1;
     }
 
-    closeError();
+    closeNotification();
     try {
       const newTodo: Todo = {
         id,
@@ -99,13 +106,14 @@ export const App: React.FC = () => {
     } catch {
       setTodoAction([]);
       setIsAdding(false);
+      setErrorText('add');
 
-      return setError('add');
+      return setNotification(NotificationType.error);
     }
   };
 
   const removeTodo = async (todoId: number) => {
-    closeError();
+    closeNotification();
     try {
       const deleteTodos = await deleteTodo(todoId);
 
@@ -114,8 +122,9 @@ export const App: React.FC = () => {
       return deleteTodos;
     } catch {
       setTodoAction([]);
+      setErrorText('delete');
 
-      return setError('delete');
+      return setNotification(NotificationType.error);
     }
   };
 
@@ -139,7 +148,7 @@ export const App: React.FC = () => {
   };
 
   const filterTodos = () => {
-    closeError();
+    closeNotification();
     switch (filterOption) {
       case FilterOption.active:
         return todos.filter(todo => !todo.completed);
@@ -157,8 +166,8 @@ export const App: React.FC = () => {
 
   const filteredTodos = useMemo(filterTodos, [todos, filterOption]);
 
-  if (error) {
-    setTimeout(closeError, 3000);
+  if (notification !== NotificationType.null) {
+    setTimeout(closeNotification, 3000);
   }
 
   return (
@@ -191,9 +200,10 @@ export const App: React.FC = () => {
         />
       </div>
 
-      <Errors
-        error={error}
-        closeError={closeError}
+      <Notification
+        notification={notification}
+        errorText={errorText}
+        closeNotification={closeNotification}
       />
     </div>
   );
