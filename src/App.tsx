@@ -38,12 +38,13 @@ export const App: React.FC = () => {
 
   const handleTodoFilter = useCallback((filterStatus: TodoStatus) => {
     setTodoFilter(filterStatus);
-  }, [todoFilter]);
+  }, []);
 
   const handleError = useCallback((errorType: Error | null) => {
     setError(errorType);
-  }, [error]);
+  }, []);
 
+  
   const handleAddTodo = useCallback(
     async (newTitle: string) => {
       setIsAdding(true);
@@ -79,12 +80,31 @@ export const App: React.FC = () => {
         setIsAdding(false);
         setTempTodo(null);
       }
-    }, [isAdding],
+    }, [],
   );
+
+  type IsProcessedMethod = 'ADD' | 'DELETE';
+
+  const handleIsProcessed = (method: IsProcessedMethod, todoId: number) => {
+    switch (method) {
+      case 'ADD':
+        setIsProcessed(current => [...current, todoId]);
+        break;
+
+      case 'DELETE':
+        setIsProcessed(
+          current => current.filter(id => id !== todoId),
+        );
+        break;
+
+      default:
+        break;
+    }
+  };
 
   const handleUpdateTodo = useCallback(
     async (todoId: number, data: {}) => {
-      setIsProcessed(updatingList => [...updatingList, todoId]);
+      handleIsProcessed('ADD', todoId);
       setError(null);
 
       try {
@@ -100,16 +120,14 @@ export const App: React.FC = () => {
       } catch {
         setError(Error.UPDATE_TODO);
       } finally {
-        setIsProcessed(
-          updatingList => updatingList.filter(id => id !== todoId),
-        );
+        handleIsProcessed('DELETE', todoId);
       }
-    }, [isProcessed],
+    }, [],
   );
 
   const handleDeleteTodo = useCallback(
     async (todoId: number) => {
-      setIsProcessed(removingList => [...removingList, todoId]);
+      handleIsProcessed('ADD', todoId);
       setError(null);
 
       try {
@@ -119,11 +137,9 @@ export const App: React.FC = () => {
       } catch {
         setError(Error.DELETE_TODO);
       } finally {
-        setIsProcessed(
-          removingList => removingList.filter(id => id !== todoId),
-        );
+        handleIsProcessed('DELETE', todoId);
       }
-    }, [isProcessed],
+    }, [],
   );
 
   useEffect(() => {
