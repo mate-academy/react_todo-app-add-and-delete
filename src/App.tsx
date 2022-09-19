@@ -43,7 +43,6 @@ export const App: React.FC = () => {
   const handleError = useCallback((errorType: Error | null) => {
     setError(errorType);
   }, []);
-
   
   const handleAddTodo = useCallback(
     async (newTitle: string) => {
