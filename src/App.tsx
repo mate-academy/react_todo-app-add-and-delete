@@ -13,6 +13,7 @@ import { Footer } from './components/Footer';
 import { TodoList } from './components/TodoList';
 import { FilterStatus } from './types/FilterStatus';
 import { Todo } from './types/Todo';
+import { Error } from './types/Errors';
 
 export const App: React.FC = () => {
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
@@ -21,12 +22,12 @@ export const App: React.FC = () => {
   const [todos, setTodos] = useState<Todo[]>([]);
   const [selectedTodos, setSelectedTodos] = useState<number[]>([]);
   const [title, setTitle] = useState('');
-  const [errors, setErrors] = useState(false);
+  const [error, setError] = useState<Error | null>(null);
   const [filterStatus, setFilterStatus] = useState('all');
-  const [errorTitle, setErrorTitle] = useState(false);
-  const [errorUpdating, setErrorUpdating] = useState(false);
-  const [errorAdding, setErrorAdd] = useState(false);
-  const [errorDeleting, setErrorDeleting] = useState(false);
+  // const [errorTitle, setErrorTitle] = useState(false);
+  // const [errorUpdating, setErrorUpdating] = useState(false);
+  // const [errorAdding, setErrorAdd] = useState(false);
+  // const [errorDeleting, setErrorDeleting] = useState(false);
   const [isAdding, setIsAdding] = useState(false);
 
   const filteredTodos = todos.filter(todo => {
@@ -51,13 +52,13 @@ export const App: React.FC = () => {
     userId = user.id;
   }
 
-  if (errors) {
+  if (error) {
     setTimeout(() => {
-      setErrors(false);
-      setErrorTitle(false);
-      setErrorAdd(false);
-      setErrorDeleting(false);
-      setErrorUpdating(false);
+      setError(null);
+      // setErrorTitle(false);
+      // setErrorAdd(false);
+      // setErrorDeleting(false);
+      // setErrorUpdating(false);
       setIsAdding(false);
     }, 3000);
   }
@@ -72,15 +73,15 @@ export const App: React.FC = () => {
   useEffect(() => {
     getTodos(userId)
       .then(setTodos)
-      .catch(() => setErrors(true));
+      .catch(() => setError(Error.LOADING));
   }, []);
 
   const handleSubmit = async (event: FormEvent) => {
     event.preventDefault();
 
     if (!title.trim()) {
-      setErrors(true);
-      setErrorTitle(true);
+      setError(Error.TITLE);
+      // setErrorTitle(true);
 
       return;
     }
@@ -92,8 +93,8 @@ export const App: React.FC = () => {
         setTodos([...todos, todo]);
       })
       .catch(() => {
-        setErrors(true);
-        setErrorAdd(true);
+        setError(Error.ADDING);
+        // setErrorAdd(true);
       });
 
     setIsAdding(false);
@@ -107,8 +108,8 @@ export const App: React.FC = () => {
         setTodos([...todos.filter(todo => todo.id !== todoId)]);
       })
       .catch(() => {
-        setErrors(true);
-        setErrorDeleting(true);
+        setError(Error.DELETING);
+        // setErrorDeleting(true);
         setSelectedTodos([]);
       });
   };
@@ -123,8 +124,8 @@ export const App: React.FC = () => {
         setTodos([...todos.filter(todo => !todo.completed)]);
       })
       .catch(() => {
-        setErrors(true);
-        setErrorDeleting(true);
+        setError(Error.DELETING);
+        // setErrorDeleting(true);
         setSelectedTodos([]);
       });
   };
@@ -180,14 +181,14 @@ export const App: React.FC = () => {
         )}
       </div>
 
-      {(errorTitle || errorAdding || errorDeleting || errorUpdating) && (
+      {(error) && (
         <ErrorNotification
-          errors={errors}
-          errorTitle={errorTitle}
-          errorAdding={errorAdding}
-          errorDeleting={errorDeleting}
-          errorUpdating={errorUpdating}
-          onErrorChange={setErrors}
+          errors={error}
+          // errorTitle={errorTitle}
+          // errorAdding={errorAdding}
+          // errorDeleting={errorDeleting}
+          // errorUpdating={errorUpdating}
+          onErrorChange={setError}
         />
       )}
     </div>

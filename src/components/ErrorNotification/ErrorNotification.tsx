@@ -1,21 +1,22 @@
 /* eslint-disable jsx-a11y/control-has-associated-label */
 import cN from 'classnames';
+import { Error } from '../../types/Errors';
 
 type Props = {
-  errors: boolean,
-  errorTitle: boolean,
-  errorAdding: boolean,
-  errorDeleting: boolean,
-  errorUpdating: boolean,
-  onErrorChange: (b: boolean) => void,
+  errors: Error,
+  // errorTitle: boolean,
+  // errorAdding: boolean,
+  // errorDeleting: boolean,
+  // errorUpdating: boolean,
+  onErrorChange: (isError: Error | null) => void,
 };
 
 export const ErrorNotification: React.FC<Props> = ({
   errors,
-  errorTitle,
-  errorAdding,
-  errorDeleting,
-  errorUpdating,
+  // errorTitle,
+  // errorAdding,
+  // errorDeleting,
+  // errorUpdating,
   onErrorChange,
 }) => {
   return (
@@ -31,13 +32,14 @@ export const ErrorNotification: React.FC<Props> = ({
         type="button"
         className="delete"
         onClick={() => {
-          onErrorChange(false);
+          onErrorChange(null);
         }}
       />
-      {errorTitle && 'Title can`t be empty'}
+      {errors}
+      {/* {errorTitle && 'Title can`t be empty'}
       {errorAdding && 'Unable to add a todo'}
       {errorDeleting && 'Unable to delete a todo'}
-      {errorUpdating && 'Unable to update a todo'}
+      {errorUpdating && 'Unable to update a todo'} */}
     </div>
   );
 };
