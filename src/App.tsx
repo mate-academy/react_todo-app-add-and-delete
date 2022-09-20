@@ -7,10 +7,12 @@ import React, {
 } from 'react';
 import { addNewTodo, deleteTodo, getTodos } from './api/todos';
 import { AuthContext } from './components/Auth/AuthContext';
-import { Notification } from './components/Notification/Notification';
-import { Footer } from './components/Footer/Footer';
-import { Header } from './components/Header/Header';
-import { TodoList } from './components/TodoList/TodoList';
+import {
+  Footer,
+  Header,
+  Notification,
+  TodoList,
+} from './components';
 import { FilterOption } from './types/FilterOption';
 import { Todo } from './types/Todo';
 import { NotificationType } from './types/NotificationType';
