@@ -24,10 +24,6 @@ export const App: React.FC = () => {
   const [title, setTitle] = useState('');
   const [error, setError] = useState<Error | null>(null);
   const [filterStatus, setFilterStatus] = useState('all');
-  // const [errorTitle, setErrorTitle] = useState(false);
-  // const [errorUpdating, setErrorUpdating] = useState(false);
-  // const [errorAdding, setErrorAdd] = useState(false);
-  // const [errorDeleting, setErrorDeleting] = useState(false);
   const [isAdding, setIsAdding] = useState(false);
 
   const filteredTodos = todos.filter(todo => {
@@ -55,10 +51,6 @@ export const App: React.FC = () => {
   if (error) {
     setTimeout(() => {
       setError(null);
-      // setErrorTitle(false);
-      // setErrorAdd(false);
-      // setErrorDeleting(false);
-      // setErrorUpdating(false);
       setIsAdding(false);
     }, 3000);
   }
@@ -81,7 +73,6 @@ export const App: React.FC = () => {
 
     if (!title.trim()) {
       setError(Error.TITLE);
-      // setErrorTitle(true);
 
       return;
     }
@@ -94,7 +85,6 @@ export const App: React.FC = () => {
       })
       .catch(() => {
         setError(Error.ADDING);
-        // setErrorAdd(true);
       });
 
     setIsAdding(false);
@@ -109,7 +99,6 @@ export const App: React.FC = () => {
       })
       .catch(() => {
         setError(Error.DELETING);
-        // setErrorDeleting(true);
         setSelectedTodos([]);
       });
   };
@@ -125,7 +114,6 @@ export const App: React.FC = () => {
       })
       .catch(() => {
         setError(Error.DELETING);
-        // setErrorDeleting(true);
         setSelectedTodos([]);
       });
   };
@@ -184,10 +172,6 @@ export const App: React.FC = () => {
       {(error) && (
         <ErrorNotification
           errors={error}
-          // errorTitle={errorTitle}
-          // errorAdding={errorAdding}
-          // errorDeleting={errorDeleting}
-          // errorUpdating={errorUpdating}
           onErrorChange={setError}
         />
       )}
