@@ -23,8 +23,6 @@ export const App: React.FC = () => {
   const [filterType, setFilterType] = useState<FilterTypes>(FilterTypes.All);
   const [isAdding, setIsAdding] = useState<boolean>(false);
   const [todosInProcess, setTodosInProcess] = useState<number[]>([]);
-  // eslint-disable-next-line
-  console.log(todos);
 
   if (error) {
     setTimeout(() => {

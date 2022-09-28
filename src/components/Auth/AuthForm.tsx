@@ -38,9 +38,6 @@ export const AuthForm: React.FC<Props> = ({ onLogin }) => {
   const loadUser = async () => {
     const user = await getUserByEmail(email);
 
-    // eslint-disable-next-line no-console
-    console.log(user);
-
     if (user) {
       saveUser(user);
     } else {
