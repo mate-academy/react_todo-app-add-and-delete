@@ -1,27 +1,34 @@
 /* eslint-disable jsx-a11y/control-has-associated-label */
 import React, {
-  useContext, useEffect, useRef, useState,
+  useContext,
+  useEffect,
+  useRef,
+  useState,
+  FormEvent,
 } from 'react';
 import classnames from 'classnames';
-import { getTodos } from './api/todos';
+import { createTodo, getTodos } from './api/todos';
 import { AuthContext } from './components/Auth/AuthContext';
 import { ErrorNotification } from './components/ErrorNotification';
 import { Footer } from './components/Footer';
 import { TodosList } from './components/TodosList';
 import { FilterType } from './types/FilterStatus';
 import { Todo } from './types/Todo';
+import { Error } from './types/Error';
 
 export const App: React.FC = () => {
-  const [error, setError] = useState(false);
-  const [errorText] = useState('');
-  const [filterType, setFilterType] = useState('all');
-  const [todos, setTodos] = useState<Todo[]>([]);
   const user = useContext(AuthContext);
   const newTodoField = useRef<HTMLInputElement>(null);
+  const [error, setError] = useState<Error | null>(null);
+  const [filterType, setFilterType] = useState('all');
+  const [todos, setTodos] = useState<Todo[]>([]);
+  const [title, setTitle] = useState('');
+  const [isAdding, setIsAdding] = useState(false);
 
   if (error) {
     setTimeout(() => {
-      setError(false);
+      setError(null);
+      setIsAdding(false);
     }, 3000);
   }
 
@@ -30,10 +37,6 @@ export const App: React.FC = () => {
   if (user?.id) {
     userId = user?.id;
   }
-
-  getTodos(userId)
-    .then(setTodos)
-    .catch(() => setError(false));
 
   const filteredTodos = todos.filter(todo => {
     switch (filterType) {
@@ -53,10 +56,37 @@ export const App: React.FC = () => {
 
   useEffect(() => {
     // focus the element with `ref={newTodoField}`
+    getTodos(userId)
+      .then(setTodos)
+      .catch(() => setError(Error.LOADING));
+
     if (newTodoField.current) {
       newTodoField.current.focus();
     }
   }, []);
+
+  const handleSubmit = async (event: FormEvent) => {
+    event.preventDefault();
+
+    if (!title.trim()) {
+      setError(Error.TITLE);
+
+      return;
+    }
+
+    setIsAdding(true);
+
+    try {
+      const newTodo = await createTodo(userId, title);
+
+      setTodos([...todos, newTodo]);
+    } catch {
+      setError(Error.ADDING);
+    }
+
+    setTitle('');
+    setIsAdding(false);
+  };
 
   return (
     <div className="todoapp">
@@ -75,20 +105,27 @@ export const App: React.FC = () => {
             />
           )}
 
-          <form>
+          <form onSubmit={handleSubmit}>
             <input
               data-cy="NewTodoField"
               type="text"
               ref={newTodoField}
               className="todoapp__new-todo"
               placeholder="What needs to be done?"
+              value={title}
+              onChange={event => setTitle(event.target.value)}
+              disabled={isAdding}
             />
           </form>
         </header>
 
         {todos.length > 0 && (
           <>
-            <TodosList todos={filteredTodos} />
+            <TodosList
+              todos={filteredTodos}
+              title={title}
+              isAdding={isAdding}
+            />
 
             <Footer
               filterType={filterType}
@@ -99,11 +136,12 @@ export const App: React.FC = () => {
         )}
       </div>
 
-      <ErrorNotification
-        error={error}
-        handleErrorChange={setError}
-        errorText={errorText}
-      />
+      {error && (
+        <ErrorNotification
+          errorText={error}
+          handleErrorChange={setError}
+        />
+      )}
     </div>
   );
 };

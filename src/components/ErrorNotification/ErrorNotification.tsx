@@ -1,33 +1,34 @@
 import classnames from 'classnames';
+import { Error } from '../../types/Error';
 
 type Props = {
-  error: boolean;
-  handleErrorChange: (bool: boolean) => void;
-  errorText: string;
+  errorText: Error;
+  handleErrorChange: (error: Error | null) => void
 };
 
 export const ErrorNotification: React.FC<Props> = ({
-  error,
-  handleErrorChange,
   errorText,
+  handleErrorChange,
 }) => {
   return (
     <div
       data-cy="ErrorNotification"
       className={classnames(
         'notification is-danger is-light has-text-weight-normal',
-        { hidden: !error },
+        { hidden: !errorText },
       )}
     >
-      <button
-        aria-label="HideErrorButton"
-        data-cy="HideErrorButton"
-        type="button"
-        className="delete"
-        onClick={() => handleErrorChange(false)}
-      />
+      <>
+        <button
+          aria-label="HideErrorButton"
+          data-cy="HideErrorButton"
+          type="button"
+          className="delete"
+          onClick={() => handleErrorChange(null)}
+        />
 
-      {errorText}
+        {errorText}
+      </>
     </div>
   );
 };
