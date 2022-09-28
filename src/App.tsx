@@ -1,16 +1,18 @@
-/* eslint-disable jsx-a11y/control-has-associated-label */
 import React, {
+  FormEvent,
   useCallback,
   useContext,
   useEffect,
   useRef,
   useState,
 } from 'react';
-import { getTodos } from './api/todos';
+import { addTodos, getTodos } from './api/todos';
 import { AuthContext } from './components/Auth/AuthContext';
+import { ErrorNotification } from './components/Page/ErrorNotification';
 import { Footer } from './components/Page/Footer';
 import { TodoList } from './components/Page/TodoList';
 import { TodoContext } from './components/TodoContext';
+import { TodosError } from './types/ErrorEnum';
 import { FilterType } from './types/FilterTypeEnum';
 
 export const App: React.FC = () => {
@@ -18,15 +20,21 @@ export const App: React.FC = () => {
   const newTodoField = useRef<HTMLInputElement>(null);
   const [todos, setTodos] = useContext(TodoContext);
   const [filterType, setFilterType] = useState<FilterType>(FilterType.All);
+  const [title, setTitle] = useState<string>('');
+  const [todosError, setTodosError] = useState<TodosError>(TodosError.None);
+
+  if (todosError.length > 0) {
+    setTimeout(() => {
+      setTodosError(TodosError.None);
+    }, 2000);
+  }
 
   const loadTodos = (userId: number) => {
     getTodos(userId)
       .then(todosFromServer => {
         setTodos(todosFromServer);
-        // eslint-disable-next-line no-console
-        console.log(todosFromServer);
       })
-      .catch(() => { });
+      .catch(() => setTodosError(TodosError.Loading));
   };
 
   useEffect(() => {
@@ -65,30 +73,62 @@ export const App: React.FC = () => {
     [filterType],
   );
 
+  const handleSubmit = async (event: FormEvent) => {
+    event.preventDefault();
+
+    if (!title.trim()) {
+      setTodosError(TodosError.Title);
+
+      return;
+    }
+
+    try {
+      if (!user) {
+        return;
+      }
+
+      const newTodo = await addTodos(user.id, title);
+
+      setTodos([...todos, newTodo]);
+    } catch {
+      setTodosError(TodosError.Adding);
+    }
+
+    setTitle('');
+  };
+
   return (
     <div className="todoapp">
       <h1 className="todoapp__title">todos</h1>
 
       <div className="todoapp__content">
         <header className="todoapp__header">
-          <button
-            data-cy="ToggleAllButton"
-            type="button"
-            className="todoapp__toggle-all active"
-          />
+          {todos && (
+            <button
+              data-cy="ToggleAllButton"
+              type="button"
+              className="todoapp__toggle-all active"
+            >
+              {null}
+            </button>
+          )}
 
-          <form>
+          <form onSubmit={handleSubmit}>
             <input
               data-cy="NewTodoField"
               type="text"
               ref={newTodoField}
               className="todoapp__new-todo"
               placeholder="What needs to be done?"
+              value={title}
+              onChange={({ target: { value } }) => setTitle(value)}
             />
           </form>
         </header>
 
-        <TodoList visibleTodos={visibleTodos} />
+        {todos && (
+          <TodoList visibleTodos={visibleTodos} />
+        )}
 
         <Footer
           handleChooseFilter={handleChooseFilter}
@@ -96,24 +136,9 @@ export const App: React.FC = () => {
           filterType={filterType}
         />
       </div>
-
-      {/* I'm will created this component in next task */}
-      {/* <div
-        data-cy="ErrorNotification"
-        className="notification is-danger is-light has-text-weight-normal"
-      >
-        <button
-          data-cy="HideErrorButton"
-          type="button"
-          className="delete"
-        />
-
-        Unable to add a todo
-        <br />
-        Unable to delete a todo
-        <br />
-        Unable to update a todo
-      </div> */}
+      {todosError.length > 0 && (
+        <ErrorNotification errorContent={todosError} setError={setTodosError} />
+      )}
     </div>
   );
 };

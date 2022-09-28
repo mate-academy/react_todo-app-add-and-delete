@@ -6,7 +6,7 @@ export const getTodos = (userId: number) => {
 };
 
 export const addTodos = (userId: number, title: string) => {
-  return client.post<Todo[]>(`/todos?userId=${userId}`, {
+  return client.post<Todo>('/todos', {
     userId,
     completed: false,
     title,
