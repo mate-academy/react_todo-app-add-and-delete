@@ -150,9 +150,7 @@ export const App: React.FC = () => {
           filterType={filterType}
         />
       </div>
-      {todosError.length > 0 && (
-        <ErrorNotification errorContent={todosError} setError={setTodosError} />
-      )}
+      <ErrorNotification errorContent={todosError} setError={setTodosError} />
     </div>
   );
 };
