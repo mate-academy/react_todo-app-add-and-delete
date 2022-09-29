@@ -6,7 +6,7 @@ import React, {
   useRef,
   useState,
 } from 'react';
-import { addTodos, getTodos } from './api/todos';
+import { addTodos, deleteTodo, getTodos } from './api/todos';
 import { AuthContext } from './components/Auth/AuthContext';
 import { ErrorNotification } from './components/Page/ErrorNotification';
 import { Footer } from './components/Page/Footer';
@@ -29,13 +29,13 @@ export const App: React.FC = () => {
     }, 2000);
   }
 
-  const loadTodos = (userId: number) => {
+  const loadTodos = useCallback((userId: number) => {
     getTodos(userId)
       .then(todosFromServer => {
         setTodos(todosFromServer);
       })
       .catch(() => setTodosError(TodosError.Loading));
-  };
+  }, [user, todos]);
 
   useEffect(() => {
     if (!user) {
@@ -73,7 +73,7 @@ export const App: React.FC = () => {
     [filterType],
   );
 
-  const handleSubmit = async (event: FormEvent) => {
+  const handleSubmit = useCallback(async (event: FormEvent) => {
     event.preventDefault();
 
     if (!title.trim()) {
@@ -95,7 +95,17 @@ export const App: React.FC = () => {
     }
 
     setTitle('');
-  };
+  }, [title, user, title, todosError]);
+
+  const handleDelete = useCallback(async (todoId: number) => {
+    try {
+      await deleteTodo(todoId);
+
+      setTodos([...visibleTodos.filter(({ id }) => id !== todoId)]);
+    } catch {
+      setTodosError(TodosError.Deleting);
+    }
+  }, [todos, todosError]);
 
   return (
     <div className="todoapp">
@@ -127,7 +137,10 @@ export const App: React.FC = () => {
         </header>
 
         {todos && (
-          <TodoList visibleTodos={visibleTodos} />
+          <TodoList
+            visibleTodos={visibleTodos}
+            removeTodo={handleDelete}
+          />
         )}
 
         <Footer

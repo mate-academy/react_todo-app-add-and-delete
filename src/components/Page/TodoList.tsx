@@ -3,9 +3,13 @@ import { Todo } from '../../types/Todo';
 
 type Props = {
   visibleTodos: Todo[];
+  removeTodo: (todoId: number) => Promise<void>;
 };
 
-export const TodoList: React.FC<Props> = ({ visibleTodos }) => {
+export const TodoList: React.FC<Props> = ({
+  visibleTodos,
+  removeTodo,
+}) => {
   return (
     <section className="todoapp__main" data-cy="TodoList">
       {visibleTodos.map(({ id, title }) => (
@@ -33,6 +37,7 @@ export const TodoList: React.FC<Props> = ({ visibleTodos }) => {
             type="button"
             className="todo__remove"
             data-cy="TodoDeleteButton"
+            onClick={() => removeTodo(id)}
           >
             ×
           </button>
