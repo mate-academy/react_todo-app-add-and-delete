@@ -96,17 +96,21 @@ export const App: React.FC = () => {
     }
 
     setTitle('');
-  }, [title, user, title, todosError]);
+  }, [title, user]);
 
   const handleDelete = useCallback(async (todoId: number) => {
     try {
       await deleteTodo(todoId);
 
-      setTodos([...visibleTodos.filter(({ id }) => id !== todoId)]);
+      setTodos([...todos.filter(({ id }) => id !== todoId)]);
     } catch {
       setTodosError(TodosError.Deleting);
     }
   }, [todos, todosError]);
+
+  const handleChangeInput = ({
+    target: { value },
+  }: React.ChangeEvent<HTMLInputElement>) => setTitle(value);
 
   return (
     <div className="todoapp">
@@ -132,7 +136,7 @@ export const App: React.FC = () => {
               className="todoapp__new-todo"
               placeholder="What needs to be done?"
               value={title}
-              onChange={({ target: { value } }) => setTitle(value)}
+              onChange={handleChangeInput}
             />
           </form>
         </header>
