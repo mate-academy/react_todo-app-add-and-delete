@@ -1,14 +1,16 @@
 /* eslint-disable jsx-a11y/control-has-associated-label */
 import React, {
-  useEffect, useRef, useState,
+  useContext,
+  useEffect, useState,
 } from 'react';
 import classNames from 'classnames';
-// import { AuthContext } from './components/Auth/AuthContext';
 import { TodoList } from './components/TodoList';
 import { getTodos } from './api/todos';
 import { Todo } from './types/Todo';
 import { ErrorNotification } from './components/ErrorNotification';
 import { SortType } from './types/filterBy';
+import { NewTodoField } from './components/NewTodoField';
+import { AuthContext } from './components/Auth/AuthContext';
 
 function filterTodos(
   todos: Todo[],
@@ -29,16 +31,30 @@ function filterTodos(
 
 export const App: React.FC = () => {
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
-  // const user = useContext(AuthContext);
-  const newTodoField = useRef<HTMLInputElement>(null);
+  const user = useContext(AuthContext);
+
   const [todos, setTodos] = useState<Todo[]>([]);
   const [sortType, setSortType] = useState<SortType>(SortType.All);
   const [completeItem, setCompleteItem] = useState<number>(0);
   const [selectedLink, setSelectedLink] = useState<string>('All');
   const [errorMessage, setErrorMessage] = useState<string>('');
 
+  const addNewTodo = (todo: Todo) => {
+    // if (!title) {
+    //   setErrorMessage('Title can\'t be empty');
+    // }
+
+    setTodos(prevTodos => [todo, ...prevTodos]);
+  };
+
+  let userId = 0;
+
+  if (user?.id) {
+    userId = user.id;
+  }
+
   useEffect(() => {
-    getTodos(5)
+    getTodos(userId)
       .then(todosFromServer => setTodos(todosFromServer))
       .catch(() => setErrorMessage('Unable to update todos'));
   }, []);
@@ -51,13 +67,6 @@ export const App: React.FC = () => {
 
       return 0;
     });
-  }, [todos]);
-
-  useEffect(() => {
-    // focus the element with `ref={newTodoField}`
-    if (newTodoField.current) {
-      newTodoField.current.focus();
-    }
   }, []);
 
   const visibleTodos = filterTodos(todos, sortType);
@@ -74,15 +83,7 @@ export const App: React.FC = () => {
             className="todoapp__toggle-all active"
           />
 
-          <form>
-            <input
-              data-cy="NewTodoField"
-              type="text"
-              ref={newTodoField}
-              className="todoapp__new-todo"
-              placeholder="What needs to be done?"
-            />
-          </form>
+          <NewTodoField onAdd={addNewTodo} />
         </header>
 
         {todos && (
