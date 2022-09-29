@@ -114,7 +114,7 @@ export const App: React.FC = () => {
 
       <div className="todoapp__content">
         <header className="todoapp__header">
-          {todos && (
+          {todos.length > 0 && (
             <button
               data-cy="ToggleAllButton"
               type="button"
@@ -146,7 +146,7 @@ export const App: React.FC = () => {
 
         <Footer
           handleChooseFilter={handleChooseFilter}
-          todos={visibleTodos}
+          todos={todos}
           filterType={filterType}
         />
       </div>
