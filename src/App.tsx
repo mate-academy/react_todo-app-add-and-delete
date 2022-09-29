@@ -24,6 +24,7 @@ export const App: React.FC = () => {
   const [todos, setTodos] = useState<Todo[]>([]);
   const [title, setTitle] = useState('');
   const [isAdding, setIsAdding] = useState(false);
+  const [selectedTodos, setSelectedTodos] = useState<number[]>([]);
 
   if (error) {
     setTimeout(() => {
@@ -89,12 +90,27 @@ export const App: React.FC = () => {
   };
 
   const deleteTodo = (todoId: number) => {
+    setSelectedTodos([todoId]);
+
     removeTodo(todoId)
       .then(() => {
         setTodos([...todos.filter(todo => todo.id !== todoId)]);
       })
       .catch(() => {
         setError(Error.DELETING);
+      });
+  };
+
+  const completedTodos = todos.filter(todo => todo.completed);
+
+  const deleteCompletedTodos = () => {
+    setSelectedTodos([...completedTodos].map(todo => todo.id));
+
+    Promise.all(completedTodos.map(todo => removeTodo(todo.id)))
+      .then(() => setTodos([...todos.filter(todo => !todo.completed)]))
+      .catch(() => {
+        setError(Error.DELETING);
+        setSelectedTodos([]);
       });
   };
 
@@ -136,12 +152,14 @@ export const App: React.FC = () => {
               title={title}
               isAdding={isAdding}
               onDelete={deleteTodo}
+              selectedTodos={selectedTodos}
             />
 
             <Footer
               filterType={filterType}
               handleFilterType={setFilterType}
               todos={todos}
+              deleteCompleted={deleteCompletedTodos}
             />
           </>
         )}

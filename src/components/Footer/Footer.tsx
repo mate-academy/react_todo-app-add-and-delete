@@ -6,12 +6,14 @@ type Props = {
   filterType: string;
   handleFilterType: (type: string) => void;
   todos: Todo[];
+  deleteCompleted: () => void;
 };
 
 export const Footer: React.FC<Props> = ({
   filterType,
   handleFilterType,
   todos,
+  deleteCompleted,
 }) => {
   const todosLeft = todos.filter(todo => !todo.completed).length;
   const todosCompleted = todos.filter(todo => todo.completed).length;
@@ -63,6 +65,7 @@ export const Footer: React.FC<Props> = ({
         data-cy="ClearCompletedButton"
         type="button"
         className="todoapp__clear-completed"
+        onClick={deleteCompleted}
       >
         {todosCompleted > 0 && 'Clear completed'}
       </button>

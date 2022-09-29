@@ -4,11 +4,13 @@ import { Todo } from '../../types/Todo';
 type Props = {
   todo: Todo;
   onDelete: (todoId: number) => void;
+  selectedTodos: number[];
 };
 
 export const TodoItem: React.FC<Props> = ({
   todo,
   onDelete,
+  selectedTodos,
 }) => {
   return (
     <div
@@ -39,7 +41,10 @@ export const TodoItem: React.FC<Props> = ({
 
       <div
         data-cy="TodoLoader"
-        className={classnames('modal overlay')}
+        className={classnames(
+          'modal overlay',
+          { 'is-active': selectedTodos.includes(todo.id) },
+        )}
       >
         <div className="modal-background has-background-white-ter" />
         <div className="loader" />

@@ -8,6 +8,7 @@ type Props = {
   title: string;
   isAdding: boolean;
   onDelete: (todoId: number) => void;
+  selectedTodos: number[];
 };
 
 export const TodosList: React.FC<Props> = ({
@@ -15,6 +16,7 @@ export const TodosList: React.FC<Props> = ({
   title,
   isAdding,
   onDelete,
+  selectedTodos,
 }) => {
   const temp = {
     id: 0,
@@ -28,6 +30,7 @@ export const TodosList: React.FC<Props> = ({
           key={todo.id}
           todo={todo}
           onDelete={onDelete}
+          selectedTodos={selectedTodos}
         />
       ))}
 
