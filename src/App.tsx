@@ -26,7 +26,7 @@ export const App: React.FC = () => {
   if (todosError.length > 0) {
     setTimeout(() => {
       setTodosError(TodosError.None);
-    }, 2000);
+    }, 4000);
   }
 
   const loadTodos = useCallback((userId: number) => {
@@ -78,6 +78,7 @@ export const App: React.FC = () => {
 
     if (!title.trim()) {
       setTodosError(TodosError.Title);
+      setTitle('');
 
       return;
     }
