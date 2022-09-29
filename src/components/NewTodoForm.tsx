@@ -1,5 +1,6 @@
 import { post } from '../api/todos';
 import { Todo } from '../types/Todo';
+/* eslint-disable @typescript-eslint/no-explicit-any */
 
 interface Props {
   newTodoField: any;

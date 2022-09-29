@@ -1,4 +1,5 @@
 import classNames from 'classnames';
+/* eslint-disable @typescript-eslint/no-explicit-any */
 
 /* eslint-disable jsx-a11y/control-has-associated-label */
 interface Props {

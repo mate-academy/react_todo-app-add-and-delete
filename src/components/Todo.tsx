@@ -2,6 +2,7 @@ import classNames from 'classnames';
 import { useState } from 'react';
 import { remove } from '../api/todos';
 import { Todo } from '../types/Todo';
+/* eslint-disable @typescript-eslint/no-explicit-any */
 
 interface Props {
   completed: boolean,

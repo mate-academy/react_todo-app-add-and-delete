@@ -3,6 +3,7 @@ import { remove } from '../api/todos';
 import { FilterTypes } from '../types/Filter';
 import { Todo } from '../types/Todo';
 import { Filter } from './Filter';
+/* eslint-disable @typescript-eslint/no-explicit-any */
 
 interface Props {
   todos: Todo[],
