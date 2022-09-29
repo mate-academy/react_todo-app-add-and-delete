@@ -63,7 +63,7 @@ export const Footer: React.FC<Props> = ({
         type="button"
         className="todoapp__clear-completed"
       >
-        {todos.length > 0 ? 'Clear completed' : null}
+        {todos.length > 0 ? 'Clear completed' : ''}
       </button>
     </footer>
   );
