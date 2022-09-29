@@ -12,3 +12,7 @@ export const createTodo = (userId: number, title: string) => {
     title,
   });
 };
+
+export const removeTodo = (todoID: number) => {
+  return client.delete(`/todos/${todoID}`);
+};

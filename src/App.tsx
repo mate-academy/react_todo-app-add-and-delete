@@ -7,7 +7,7 @@ import React, {
   FormEvent,
 } from 'react';
 import classnames from 'classnames';
-import { createTodo, getTodos } from './api/todos';
+import { createTodo, getTodos, removeTodo } from './api/todos';
 import { AuthContext } from './components/Auth/AuthContext';
 import { ErrorNotification } from './components/ErrorNotification';
 import { Footer } from './components/Footer';
@@ -88,6 +88,16 @@ export const App: React.FC = () => {
     setIsAdding(false);
   };
 
+  const deleteTodo = (todoId: number) => {
+    removeTodo(todoId)
+      .then(() => {
+        setTodos([...todos.filter(todo => todo.id !== todoId)]);
+      })
+      .catch(() => {
+        setError(Error.DELETING);
+      });
+  };
+
   return (
     <div className="todoapp">
       <h1 className="todoapp__title">todos</h1>
@@ -119,12 +129,13 @@ export const App: React.FC = () => {
           </form>
         </header>
 
-        {todos.length > 0 && (
+        {(isAdding || todos.length > 0) && (
           <>
             <TodosList
               todos={filteredTodos}
               title={title}
               isAdding={isAdding}
+              onDelete={deleteTodo}
             />
 
             <Footer

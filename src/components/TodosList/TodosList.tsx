@@ -7,12 +7,14 @@ type Props = {
   todos: Todo[];
   title: string;
   isAdding: boolean;
+  onDelete: (todoId: number) => void;
 };
 
 export const TodosList: React.FC<Props> = ({
   todos,
   title,
   isAdding,
+  onDelete,
 }) => {
   const temp = {
     id: 0,
@@ -22,7 +24,11 @@ export const TodosList: React.FC<Props> = ({
   return (
     <section className="todoapp__main" data-cy="TodoList">
       {todos.map(todo => (
-        <TodoItem key={todo.id} todo={todo} />
+        <TodoItem
+          key={todo.id}
+          todo={todo}
+          onDelete={onDelete}
+        />
       ))}
 
       {isAdding && (
