@@ -146,20 +146,20 @@ export const App: React.FC = () => {
           </form>
         </header>
 
-        {todos && (
-          <TodoList
-            visibleTodos={visibleTodos}
-            removeTodo={handleDelete}
-            input={title}
-            isAdding={isAdding}
+        <TodoList
+          visibleTodos={visibleTodos}
+          removeTodo={handleDelete}
+          input={title}
+          isAdding={isAdding}
+        />
+
+        {todos.length > 0 && (
+          <Footer
+            handleChooseFilter={handleChooseFilter}
+            todos={todos}
+            filterType={filterType}
           />
         )}
-
-        <Footer
-          handleChooseFilter={handleChooseFilter}
-          todos={todos}
-          filterType={filterType}
-        />
       </div>
       <ErrorNotification errorContent={todosError} setError={setTodosError} />
     </div>

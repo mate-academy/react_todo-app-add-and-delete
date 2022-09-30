@@ -24,12 +24,15 @@ export const TodoList: React.FC<Props> = ({
   return (
     <section className="todoapp__main" data-cy="TodoList">
       {visibleTodos.map(todo => {
-        const { id, title } = todo;
+        const { id, title, completed } = todo;
 
         return (
           <div
             data-cy="Todo"
-            className="todo"
+            className={classNames(
+              'todo',
+              { completed },
+            )}
             key={id}
           >
             <label className="todo__status-label">
