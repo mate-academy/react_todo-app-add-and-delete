@@ -1,5 +1,10 @@
 import React, {
-  useContext, useEffect, useMemo, useRef, useState,
+  FormEvent,
+  useContext,
+  useEffect,
+  useMemo,
+  useRef,
+  useState,
 } from 'react';
 
 import {
@@ -11,7 +16,7 @@ import { Header } from './components/Header/Header';
 import { TodoList } from './components/TodoList/TodoList';
 
 import { Todo } from './types/Todo';
-import { getTodos } from './api/todos';
+import { deleteTodo, getTodos, postTodo } from './api/todos';
 
 export const App: React.FC = () => {
   const user = useContext(AuthContext);
@@ -19,6 +24,9 @@ export const App: React.FC = () => {
   const [isErrorNotification, setIsErrorNotification] = useState(false);
   const [errorMessage, setErrorMessage] = useState('');
   const [filterValue, setFilterValue] = useState('all');
+  const [title, setTitle] = useState('');
+  const [isTodoAdded, setIsTodoAdded] = useState(false);
+  const [selectedTodoId, setSetselectedTodoId] = useState<number | null>(null);
 
   const newTodoField = useRef<HTMLInputElement>(null);
 
@@ -33,7 +41,50 @@ export const App: React.FC = () => {
         setIsErrorNotification(true);
         setErrorMessage('Unable to load todos');
       });
-  }, [user]);
+  }, []);
+
+  const hundleAddTodo = async (event: FormEvent) => {
+    event.preventDefault();
+    if (!title.trim() || !user) {
+      setIsErrorNotification(true);
+      setErrorMessage("Title can't be empty");
+
+      return;
+    }
+
+    setIsTodoAdded(true);
+
+    try {
+      const newTodo = await postTodo(user.id, title);
+
+      setTodos([...todos, newTodo]);
+    } catch {
+      setIsErrorNotification(true);
+      setErrorMessage('Unable to add todo');
+    } finally {
+      setTitle('');
+      setIsTodoAdded(false);
+
+      if (newTodoField.current) {
+        newTodoField.current.focus();
+      }
+    }
+  };
+
+  const hundleDeleteTodo = (todoId: number) => {
+    setSetselectedTodoId(todoId);
+    deleteTodo(todoId)
+      .then(() => {
+        setTodos(prevTodos => prevTodos.filter(({ id }) => id !== todoId));
+      })
+      .catch(() => {
+        setIsErrorNotification(true);
+        setErrorMessage('Unable to delete todo');
+      })
+      .finally(() => {
+        setSetselectedTodoId(null);
+      });
+  };
 
   const filteredTodos = todos.filter(({ completed }) => {
     switch (filterValue) {
@@ -62,11 +113,24 @@ export const App: React.FC = () => {
         <Header
           newTodoField={newTodoField}
           isLeftActiveTodos={isLeftActiveTodos}
+          onAddTodo={hundleAddTodo}
+          title={title}
+          setTitle={setTitle}
+          isDisabled={isTodoAdded}
         />
-        <TodoList todos={filteredTodos} />
+        {!!todos.length && (
+          <TodoList
+            todos={filteredTodos}
+            isAdding={isTodoAdded}
+            selectedTodoId={selectedTodoId}
+            newTitle={title}
+            onDelete={hundleDeleteTodo}
+          />
+        )}
         {!!todos.length && (
           <Footer
             activeTodosTotal={activeTodosTotal}
+            isLeftActiveTodos={isLeftActiveTodos}
             filterValue={filterValue}
             setFilterValue={setFilterValue}
           />

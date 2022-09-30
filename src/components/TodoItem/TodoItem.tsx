@@ -5,10 +5,20 @@ import { Loader } from '../Loader/Loader';
 
 type Props = {
   todo: Todo;
+  isActive?: boolean,
+  selectedTodoId?: number | null,
+  newTitle?: string,
+  onDelete: (id: number) => void;
 };
 
-export const TodoItem: React.FC<Props> = ({ todo }) => {
-  const { title, completed } = todo;
+export const TodoItem: React.FC<Props> = ({
+  todo,
+  isActive,
+  selectedTodoId,
+  newTitle,
+  onDelete,
+}) => {
+  const { id, title, completed } = todo;
 
   return (
     <div
@@ -24,16 +34,23 @@ export const TodoItem: React.FC<Props> = ({ todo }) => {
         />
       </label>
 
-      <span data-cy="TodoTitle" className="todo__title">{title}</span>
+      <span data-cy="TodoTitle" className="todo__title">
+        {newTitle || title}
+      </span>
       <button
         type="button"
         className="todo__remove"
         data-cy="TodoDeleteButton"
+        onClick={() => onDelete(id)}
       >
         &times;
       </button>
 
-      <Loader />
+      <Loader
+        isActive={isActive}
+        selectedTodoId={selectedTodoId}
+        id={id}
+      />
     </div>
   );
 };

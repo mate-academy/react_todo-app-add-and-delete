@@ -3,12 +3,14 @@ import classNames from 'classnames';
 
 type Props = {
   activeTodosTotal: number,
+  isLeftActiveTodos: boolean,
   filterValue: string,
   setFilterValue: (value: string) => void,
 };
 
 export const Footer: React.FC<Props> = ({
   activeTodosTotal,
+  isLeftActiveTodos,
   filterValue,
   setFilterValue,
 }) => {
@@ -59,8 +61,9 @@ export const Footer: React.FC<Props> = ({
         data-cy="ClearCompletedButton"
         type="button"
         className="todoapp__clear-completed"
+        disabled={!isLeftActiveTodos}
       >
-        Clear completed
+        {!isLeftActiveTodos && 'Clear completed'}
       </button>
     </footer>
   );
