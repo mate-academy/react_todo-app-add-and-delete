@@ -11,6 +11,7 @@ import { ErrorNotification } from './components/ErrorNotification';
 import { SortType } from './types/filterBy';
 import { NewTodoField } from './components/NewTodoField';
 import { AuthContext } from './components/Auth/AuthContext';
+import { ActiveTodos } from './components/ActiveTodos';
 
 function filterTodos(
   todos: Todo[],
@@ -35,22 +36,9 @@ export const App: React.FC = () => {
 
   const [todos, setTodos] = useState<Todo[]>([]);
   const [sortType, setSortType] = useState<SortType>(SortType.All);
-  const [completeItem, setCompleteItem] = useState<number>(0);
   const [selectedLink, setSelectedLink] = useState<string>('All');
   const [errorMessage, setErrorMessage] = useState<string>('');
-
-  const addNewTodo = (todo: Todo) => {
-    setTodos(prevTodos => [todo, ...prevTodos]);
-  };
-
-  const deleteTodo = (todo: Todo) => {
-    deleteTodos(todo.id)
-      .catch(() => setErrorMessage('Unable to delete a todo'));
-
-    setTodos(
-      todos.filter(userTodo => todo.id !== userTodo.id),
-    );
-  };
+  const [activeItems, setActiveItems] = useState<number>(0);
 
   let userId = 0;
 
@@ -60,19 +48,27 @@ export const App: React.FC = () => {
 
   useEffect(() => {
     getTodos(userId)
-      .then(todosFromServer => setTodos(todosFromServer))
+      .then(todosFromServer => {
+        setTodos(todosFromServer);
+        setActiveItems(todosFromServer.length);
+      })
       .catch(() => setErrorMessage('Unable to update todos'));
   }, []);
 
-  useEffect(() => {
-    todos.map(todo => {
-      if (!todo.completed) {
-        setCompleteItem(prev => prev + 1);
-      }
+  const addNewTodo = (todo: Todo) => {
+    setTodos(prevTodos => [todo, ...prevTodos]);
+    setActiveItems(prevItems => prevItems + 1);
+  };
 
-      return 0;
-    });
-  }, []);
+  const deleteTodo = (todo: Todo) => {
+    deleteTodos(todo.id)
+      .catch(() => setErrorMessage('Unable to delete a todo'));
+
+    setTodos(
+      todos.filter(userTodo => todo.id !== userTodo.id),
+    );
+    setActiveItems(prevItems => prevItems - 1);
+  };
 
   const visibleTodos = filterTodos(todos, sortType);
 
@@ -102,9 +98,7 @@ export const App: React.FC = () => {
             />
 
             <footer className="todoapp__footer" data-cy="Footer">
-              <span className="todo-count" data-cy="todosCounter">
-                {`${completeItem} items left`}
-              </span>
+              <ActiveTodos activeItems={activeItems} />
 
               <nav className="filter" data-cy="Filter">
                 <a

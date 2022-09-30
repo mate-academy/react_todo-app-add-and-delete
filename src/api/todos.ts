@@ -14,5 +14,5 @@ export const postTodos = (todo: {
 };
 
 export const deleteTodos = (todoId: number) => {
-  return client.delete(`/tdos/${todoId}`);
+  return client.delete(`/todos/${todoId}`);
 };
