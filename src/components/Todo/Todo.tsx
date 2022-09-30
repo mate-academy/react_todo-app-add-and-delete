@@ -1,5 +1,5 @@
 import classNames from 'classnames';
-import React from 'react';
+import React, { useState } from 'react';
 import { Todo } from '../../types/Todo';
 
 type Props = {
@@ -8,12 +8,14 @@ type Props = {
 };
 
 export const UserTodo: React.FC<Props> = ({ todo, deleteTodo }) => {
+  const [touched, setTouched] = useState<boolean>(false);
+
   return (
     <div
       data-cy="Todo"
       className={classNames(
         'todo',
-        { completed: todo.completed },
+        { completed: touched },
       )}
     >
       <label className="todo__status-label">
@@ -22,6 +24,9 @@ export const UserTodo: React.FC<Props> = ({ todo, deleteTodo }) => {
           type="checkbox"
           className="todo__status"
           defaultChecked
+          onClick={() => {
+            setTouched(prevTouched => !prevTouched);
+          }}
         />
       </label>
 
