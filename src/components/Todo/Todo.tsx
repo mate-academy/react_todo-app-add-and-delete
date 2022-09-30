@@ -4,9 +4,10 @@ import { Todo } from '../../types/Todo';
 
 type Props = {
   todo: Todo;
+  deleteTodo: (todo: Todo) => void;
 };
 
-export const UserTodo: React.FC<Props> = ({ todo }) => {
+export const UserTodo: React.FC<Props> = ({ todo, deleteTodo }) => {
   return (
     <div
       data-cy="Todo"
@@ -29,6 +30,12 @@ export const UserTodo: React.FC<Props> = ({ todo }) => {
         type="button"
         className="todo__remove"
         data-cy="TodoDeleteButton"
+        onClick={() => deleteTodo({
+          title: todo.title,
+          userId: todo.userId,
+          id: todo.id,
+          completed: todo.completed,
+        })}
       >
         ×
       </button>

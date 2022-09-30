@@ -5,7 +5,7 @@ import React, {
 } from 'react';
 import classNames from 'classnames';
 import { TodoList } from './components/TodoList';
-import { getTodos } from './api/todos';
+import { getTodos, deleteTodos } from './api/todos';
 import { Todo } from './types/Todo';
 import { ErrorNotification } from './components/ErrorNotification';
 import { SortType } from './types/filterBy';
@@ -45,6 +45,14 @@ export const App: React.FC = () => {
     // }
 
     setTodos(prevTodos => [todo, ...prevTodos]);
+  };
+
+  const deleteTodo = (todo: Todo) => {
+    deleteTodos(todo.id);
+
+    setTodos(
+      todos.filter(userTodo => todo.id !== userTodo.id),
+    );
   };
 
   let userId = 0;
@@ -88,7 +96,10 @@ export const App: React.FC = () => {
 
         {todos && (
           <>
-            <TodoList todos={visibleTodos} />
+            <TodoList
+              todos={visibleTodos}
+              deleteTodo={deleteTodo}
+            />
 
             <footer className="todoapp__footer" data-cy="Footer">
               <span className="todo-count" data-cy="todosCounter">
