@@ -31,7 +31,7 @@ export const NewTodoField: React.FC<Props> = ({ onAdd, setErrorMessage }) => {
         userId: user?.id || 0,
         title,
         completed,
-      });
+      }).catch(() => setErrorMessage('Unable to add a todo'));
 
       onAdd({
         id,

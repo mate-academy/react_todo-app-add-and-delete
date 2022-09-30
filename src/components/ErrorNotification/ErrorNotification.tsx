@@ -1,7 +1,7 @@
 /* eslint-disable jsx-a11y/control-has-associated-label */
 
 import classNames from 'classnames';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 
 type Props = {
   errorMessage: string;
@@ -17,10 +17,12 @@ export const ErrorNotification: React.FC<Props> = ({
     setIsClose(true);
   }, 3000);
 
-  if (isClose) {
-    setErrorMessage('');
-    setIsClose(false);
-  }
+  useEffect(() => {
+    if (isClose) {
+      setErrorMessage('');
+      setIsClose(false);
+    }
+  });
 
   return (
     <div

@@ -30,17 +30,25 @@ export const UserTodo: React.FC<Props> = ({ todo, deleteTodo }) => {
         type="button"
         className="todo__remove"
         data-cy="TodoDeleteButton"
-        onClick={() => deleteTodo({
-          title: todo.title,
-          userId: todo.userId,
-          id: todo.id,
-          completed: todo.completed,
-        })}
+        onClick={() => {
+          return deleteTodo({
+            title: todo.title,
+            userId: todo.userId,
+            id: todo.id,
+            completed: todo.completed,
+          });
+        }}
       >
         ×
       </button>
 
-      <div data-cy="TodoLoader" className="modal overlay">
+      <div
+        data-cy="TodoLoader"
+        className={classNames(
+          'modal',
+          'overlay',
+        )}
+      >
         <div className="modal-background has-background-white-ter" />
         <div className="loader" />
       </div>
