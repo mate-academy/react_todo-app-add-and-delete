@@ -7,6 +7,7 @@ type Props = {
   filterTypes: (arg: FilterType) => void;
   filterType: FilterType | string,
   todos: Todo[],
+  deleteCompleted: () => void,
 
 };
 
@@ -14,8 +15,10 @@ export const Footer: React.FC<Props> = ({
   filterTypes,
   filterType,
   todos,
+  deleteCompleted,
 }) => {
   const notCompleted = todos.filter(({ completed }) => !completed);
+  const todosCompleted = todos.filter(todo => todo.completed).length;
 
   return (
     <footer className="todoapp__footer" data-cy="Footer">
@@ -66,8 +69,9 @@ export const Footer: React.FC<Props> = ({
         data-cy="ClearCompletedButton"
         type="button"
         className="todoapp__clear-completed"
+        onClick={deleteCompleted}
       >
-        Clear completed
+        {todosCompleted > 0 && ('Clear completed')}
       </button>
     </footer>
   );

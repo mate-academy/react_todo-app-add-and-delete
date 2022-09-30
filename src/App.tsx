@@ -25,6 +25,7 @@ export const App: React.FC = () => {
   const [errorMessage, setErrorMessage] = useState<string>('');
   const [title, setTitle] = useState('');
   const [selectedId, setSelectedId] = useState<number[]>([]);
+  const [isAdding, setIsAdding] = useState(false);
   const user = useContext(AuthContext);
 
   useEffect(() => {
@@ -72,6 +73,8 @@ export const App: React.FC = () => {
       return;
     }
 
+    setIsAdding(true);
+
     try {
       const postTodo = await createTodo(title, user.id);
 
@@ -81,6 +84,7 @@ export const App: React.FC = () => {
     }
 
     setTitle('');
+    setIsAdding(false);
   }, [title, user]);
 
   const removeTodo = useCallback(async (TodoId: number) => {
@@ -94,6 +98,19 @@ export const App: React.FC = () => {
     }
   }, [todos, errorMessage]);
 
+  const completedTodos = todos.filter(({ completed }) => completed);
+
+  const deleteCompletedTodos = useCallback(() => {
+    setSelectedId([...completedTodos].map(({ id }) => id));
+
+    Promise.all(completedTodos.map(({ id }) => removeTodo(id)))
+      .then(() => setTodos([...todos.filter(({ completed }) => !completed)]))
+      .catch(() => {
+        setErrorMessage(ErrorMessage.NotDelete);
+        setSelectedId([]);
+      });
+  }, [todos, selectedId, errorMessage]);
+
   return (
     <div className="todoapp">
       <h1 className="todoapp__title">todos</h1>
@@ -106,17 +123,20 @@ export const App: React.FC = () => {
           handleSubmit={newTodo}
         />
         {
-          todos.length > 0 && (
+          (isAdding || todos.length > 0) && (
             <>
               <TodoList
                 todos={getFilteredTodo}
                 removeTodo={removeTodo}
                 selectedId={selectedId}
+                isAdding={isAdding}
+
               />
               <Footer
                 filterTypes={setFilterType}
                 filterType={filterType}
                 todos={todos}
+                deleteCompleted={deleteCompletedTodos}
               />
             </>
           )

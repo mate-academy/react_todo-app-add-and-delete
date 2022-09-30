@@ -1,11 +1,13 @@
-import classNames from 'classnames';
-import React from 'react';
+import { TransitionGroup, CSSTransition } from 'react-transition-group';
 import { Todo } from '../../../types/Todo';
+import { TodoItem } from './TodoItem';
 
 interface Props {
   todos: Todo[],
   removeTodo: (TodoId: number) => Promise<void>,
   selectedId: number[],
+  isAdding: boolean,
+
 }
 
 export const TodoList: React.FC<Props> = ({
@@ -15,53 +17,24 @@ export const TodoList: React.FC<Props> = ({
 }) => {
   return (
     <section className="todoapp__main" data-cy="TodoList">
-      {
-        todos.map(({ title, completed, id }) => {
-          return (
-            <div
-              data-cy="Todo"
-              className={classNames(
-                'todo',
-                {
-                  completed,
-                },
-              )}
-              key={id}
+      <TransitionGroup>
+        {
+          todos.map((todo) => (
+            <CSSTransition
+              key={todo.id}
+              timeout={500}
+              classNames="item"
             >
-              <label className="todo__status-label">
-                <input
-                  data-cy="TodoStatus"
-                  type="checkbox"
-                  className="todo__status"
-                  defaultChecked
-                />
-              </label>
-
-              <span data-cy="TodoTitle" className="todo__title">{title}</span>
-              <button
-                type="button"
-                className="todo__remove"
-                data-cy="TodoDeleteButton"
-                onClick={() => {
-                  removeTodo(id);
-                }}
-              >
-                ×
-              </button>
-              <div
-                data-cy="TodoLoader"
-                className={classNames(
-                  'modal overlay',
-                  { 'is-active': selectedId.includes(id) },
-                )}
-              >
-                <div className="modal-background has-background-white-ter" />
-                <div className="loader is-loading " />
-              </div>
-            </div>
-          );
-        })
-      }
+              <TodoItem
+                key={todo.id}
+                todo={todo}
+                removeTodo={removeTodo}
+                selectedId={selectedId}
+              />
+            </CSSTransition>
+          ))
+        }
+      </TransitionGroup>
     </section>
   );
 };
