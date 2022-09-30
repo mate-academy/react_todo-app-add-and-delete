@@ -4,9 +4,15 @@ import { Todo } from '../../../types/Todo';
 
 interface Props {
   todos: Todo[];
+  isAdding: boolean;
+  removeTodo: (id: number) => void;
 }
 
-export const TodoList: React.FC<Props> = ({ todos }) => {
+export const TodoList: React.FC<Props> = ({
+  todos,
+  isAdding,
+  removeTodo,
+}) => {
   return (
     <section className="todoapp__main" data-cy="TodoList">
 
@@ -34,11 +40,19 @@ export const TodoList: React.FC<Props> = ({ todos }) => {
             type="button"
             className="todo__remove"
             data-cy="TodoDeleteButton"
+            onClick={() => removeTodo(id)}
           >
             ×
           </button>
 
-          <div data-cy="TodoLoader" className="modal overlay">
+          <div
+            data-cy="TodoLoader"
+            className={classNames(
+              'modal',
+              'overlay',
+              { 'is-acive': isAdding },
+            )}
+          >
             <div className="modal-background has-background-white-ter" />
             <div className="loader" />
           </div>

@@ -5,7 +5,7 @@ import React, {
   useEffect,
   useState,
 } from 'react';
-import { getTodos, postTodo } from './api/todos';
+import { deleteTodo, getTodos, postTodo } from './api/todos';
 import { AuthContext } from './components/Auth/AuthContext';
 import { TodoFooter } from './components/todos/TodoFooter';
 import { TodoHeader } from './components/todos/TodoHeader';
@@ -18,6 +18,8 @@ export const App: React.FC = () => {
   const [addError, setAddError] = useState(false);
   const [deleteError, setDeleteError] = useState(false);
   const [updateError, setUpdateError] = useState(false);
+
+  const [isAdding, setIsAdding] = useState(false);
 
   const [todos, setTodos] = useState<Todo[]>([]);
   const [visibleTodos, setVisibleTodos] = useState<Todo[]>([]);
@@ -66,6 +68,8 @@ export const App: React.FC = () => {
   console.log(visibleTodos);
 
   const addTodo = async (value: string) => {
+    setIsAdding(true);
+
     if (user && value) {
       await postTodo(user.id, value);
       console.log('posted');
@@ -73,6 +77,13 @@ export const App: React.FC = () => {
     } else {
       setAddError(true);
     }
+
+    setIsAdding(false);
+  };
+
+  const removeTodo = async (id: number) => {
+    await deleteTodo(id);
+    loadData();
   };
 
   return (
@@ -80,9 +91,16 @@ export const App: React.FC = () => {
       <h1 className="todoapp__title">todos</h1>
 
       <div className="todoapp__content">
-        <TodoHeader addTodo={addTodo} />
+        <TodoHeader
+          addTodo={addTodo}
+          isAdding={isAdding}
+        />
 
-        <TodoList todos={visibleTodos} />
+        <TodoList
+          todos={visibleTodos}
+          isAdding={isAdding}
+          removeTodo={removeTodo}
+        />
 
         <TodoFooter
           todos={todos}

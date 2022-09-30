@@ -8,9 +8,10 @@ import React, {
 
 interface Props {
   addTodo: (value: string) => void;
+  isAdding: boolean;
 }
 
-export const TodoHeader: React.FC<Props> = ({ addTodo }) => {
+export const TodoHeader: React.FC<Props> = ({ addTodo, isAdding }) => {
   const newTodoField = useRef<HTMLInputElement>(null);
 
   const handleSubmit = (event: FormEvent) => {
@@ -45,6 +46,7 @@ export const TodoHeader: React.FC<Props> = ({ addTodo }) => {
           ref={newTodoField}
           className="todoapp__new-todo"
           placeholder="What needs to be done?"
+          disabled={isAdding}
         />
       </form>
     </header>
