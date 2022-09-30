@@ -15,7 +15,7 @@ import { Todo } from './types/Todo';
 export const App: React.FC = () => {
   const user = useContext(AuthContext);
 
-  const [addError, setAddError] = useState(true);
+  const [addError, setAddError] = useState(false);
   const [deleteError, setDeleteError] = useState(false);
   const [updateError, setUpdateError] = useState(false);
 
@@ -61,14 +61,7 @@ export const App: React.FC = () => {
 
   useEffect(() => {
     setVisibleTodos(filterByStatus(status));
-  }, [status]);
-
-  // const addTodo = async () => {
-  //   if (user) {
-  //     await postTodo(user?.id, 'copleted');
-  //     console.log('posted');
-  //   }
-  // };
+  }, [visibleTodos]);
 
   console.log(visibleTodos);
 

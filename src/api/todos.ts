@@ -9,7 +9,7 @@ export const postTodo = (userId: number, title: string) => {
   const newTodo = {
     userId,
     title,
-    completed: true,
+    completed: false,
   };
 
   return client.post<Todo>('/todos', newTodo);

@@ -1,11 +1,34 @@
+/* eslint-disable no-console */
 /* eslint-disable jsx-a11y/control-has-associated-label */
-import React, { useEffect, useRef } from 'react';
+import React, {
+  FormEvent,
+  useContext,
+  useEffect,
+  useRef,
+} from 'react';
+import { postTodo } from '../../../api/todos';
+import { AuthContext } from '../../Auth/AuthContext';
 
 export const TodoHeader: React.FC = () => {
+  const user = useContext(AuthContext);
   const newTodoField = useRef<HTMLInputElement>(null);
 
+  const addTodo = async () => {
+    if (user && newTodoField.current) {
+      await postTodo(user.id, newTodoField.current.value);
+      console.log('posted');
+      newTodoField.current.value = '';
+    }
+  };
+
+  const handleSubmit = (event: FormEvent) => {
+    event.preventDefault();
+    console.log(newTodoField.current?.value);
+
+    addTodo();
+  };
+
   useEffect(() => {
-    // focus the element with `ref={newTodoField}`
     if (newTodoField.current) {
       newTodoField.current.focus();
     }
@@ -19,7 +42,9 @@ export const TodoHeader: React.FC = () => {
         className="todoapp__toggle-all active"
       />
 
-      <form>
+      <form
+        onSubmit={handleSubmit}
+      >
         <input
           data-cy="NewTodoField"
           type="text"
