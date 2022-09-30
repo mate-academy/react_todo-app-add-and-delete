@@ -22,11 +22,12 @@ export const App: React.FC = () => {
   const [filterType, setFilterType] = useState<FilterType>(FilterType.All);
   const [title, setTitle] = useState<string>('');
   const [todosError, setTodosError] = useState<TodosError>(TodosError.None);
+  const [isAdding, setIsAdding] = useState<boolean>(false);
 
   if (todosError.length > 0) {
     setTimeout(() => {
       setTodosError(TodosError.None);
-    }, 4000);
+    }, 3000);
   }
 
   const loadTodos = useCallback((userId: number) => {
@@ -76,6 +77,8 @@ export const App: React.FC = () => {
   const handleSubmit = useCallback(async (event: FormEvent) => {
     event.preventDefault();
 
+    setIsAdding(true);
+
     if (!title.trim()) {
       setTodosError(TodosError.Title);
       setTitle('');
@@ -96,6 +99,7 @@ export const App: React.FC = () => {
     }
 
     setTitle('');
+    setIsAdding(false);
   }, [title, user]);
 
   const handleDelete = useCallback(async (todoId: number) => {
@@ -106,7 +110,7 @@ export const App: React.FC = () => {
     } catch {
       setTodosError(TodosError.Deleting);
     }
-  }, [todos, todosError]);
+  }, [todos, todosError, isAdding]);
 
   const handleChangeInput = ({
     target: { value },
@@ -137,6 +141,7 @@ export const App: React.FC = () => {
               placeholder="What needs to be done?"
               value={title}
               onChange={handleChangeInput}
+              disabled={isAdding}
             />
           </form>
         </header>
@@ -145,6 +150,8 @@ export const App: React.FC = () => {
           <TodoList
             visibleTodos={visibleTodos}
             removeTodo={handleDelete}
+            input={title}
+            isAdding={isAdding}
           />
         )}
 
