@@ -83,8 +83,8 @@ export const App: React.FC = () => {
       setErrorMessage(ErrorMessage.NotAdd);
     }
 
-    setTitle('');
     setIsAdding(false);
+    setTitle('');
   }, [title, user]);
 
   const removeTodo = useCallback(async (TodoId: number) => {
@@ -130,6 +130,7 @@ export const App: React.FC = () => {
                 removeTodo={removeTodo}
                 selectedId={selectedId}
                 isAdding={isAdding}
+                title={title}
 
               />
               <Footer
