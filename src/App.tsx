@@ -1,8 +1,13 @@
 /* eslint-disable jsx-a11y/control-has-associated-label */
-// import React, { useContext, useEffect, useRef, useState } from 'react';
-import React, { useEffect, useRef, useState } from 'react';
+import React, {
+  useContext,
+  useEffect,
+  useRef,
+  useState,
+} from 'react';
+
 import { getTodos } from './api/todos';
-// import { AuthContext } from './components/Auth/AuthContext';
+import { AuthContext } from './components/Auth/AuthContext';
 import { ErrorMessage } from './components/ErrorMessage';
 import { Footer } from './components/Footer';
 import { NewTodoForm } from './components/NewTodoForm';
@@ -38,14 +43,16 @@ export const tabs: FilterTypes[] = [
 
 export const App: React.FC = () => {
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
-  // const user = useContext(AuthContext);
+  const user = useContext(AuthContext);
   const newTodoField = useRef<HTMLInputElement>(null);
   const [todos, setTodos] = useState<Todo[]>([]);
   const [error, setError] = useState('');
   const [hideError, setHideError] = useState(false);
   const [selectedTabId, setTabID] = useState(tabs[0].id);
   const [newTodoTitle, setTodoTitle] = useState('');
-  const [isLoading, setLoading] = useState(true);
+  const [tempTitle, setTitle] = useState('');
+  const [isLoading, setLoading] = useState(false);
+  const [selectedTodoId, setSelectedTodoId] = useState<number>(0);
   const onTabSelected = (tab: FilterTypes) => {
     setTabID(tab.id);
   };
@@ -62,11 +69,13 @@ export const App: React.FC = () => {
   useEffect(() => {
     const fetchData = async () => {
       try {
-        const todosFromServer = await getTodos(4446);
+        if (user) {
+          const todosFromServer = await getTodos(user?.id);
 
-        setLoading(false);
+          setLoading(false);
 
-        setTodos(todosFromServer);
+          setTodos(todosFromServer);
+        }
       } catch (errorFromServer) {
         setError(`${errorFromServer}`);
       }
@@ -92,12 +101,13 @@ export const App: React.FC = () => {
           <NewTodoForm
             newTodoField={newTodoField}
             newTodoTitle={newTodoTitle}
-            setLoading={setLoading}
             setTodoTitle={setTodoTitle}
             setError={setError}
-            error={error}
             setTodos={setTodos}
             todos={todos}
+            setLoading={setLoading}
+            setTitle={setTitle}
+            user={user}
           />
         </header>
         {todos.length > 0
@@ -108,6 +118,9 @@ export const App: React.FC = () => {
                 setTodos={setTodos}
                 setError={setError}
                 isLoading={isLoading}
+                selectedTodoId={selectedTodoId}
+                setSelectedTodoId={setSelectedTodoId}
+                tempTitle={tempTitle}
               />
 
               <Footer

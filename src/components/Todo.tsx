@@ -1,5 +1,4 @@
 import classNames from 'classnames';
-import { useState } from 'react';
 import { remove } from '../api/todos';
 import { Todo } from '../types/Todo';
 /* eslint-disable @typescript-eslint/no-explicit-any */
@@ -8,10 +7,11 @@ interface Props {
   completed: boolean,
   title: string;
   id: number;
-  setError: any
-  setTodos: any
+  setError: (value: string) => void,
+  setTodos: (value: Todo[]) => void,
   todos: Todo[],
-  isLoading: boolean,
+  setSelectedTodoId: (value: number) => void,
+  selectedTodoId: number,
 }
 
 export const TodoInfo: React.FC<Props> = ({
@@ -21,9 +21,9 @@ export const TodoInfo: React.FC<Props> = ({
   setTodos,
   setError,
   todos,
+  setSelectedTodoId,
+  selectedTodoId,
 }) => {
-  const [selectedTodoId, setSelectedTodoId] = useState<number>(0);
-
   const handlerClick = (removeId: number) => {
     setSelectedTodoId(removeId);
     const fetchData = async () => {

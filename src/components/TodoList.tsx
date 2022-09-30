@@ -4,9 +4,12 @@ import { TodoInfo } from './Todo';
 
 interface Props {
   todos: Todo[];
-  setTodos: any,
-  setError: any,
+  setError: (value: string) => void,
+  setTodos: (value: Todo[]) => void,
   isLoading: boolean,
+  setSelectedTodoId: (value: number) => void,
+  selectedTodoId: number,
+  tempTitle:string
 }
 
 export const TodoList: React.FC<Props> = ({
@@ -14,7 +17,15 @@ export const TodoList: React.FC<Props> = ({
   setError,
   setTodos,
   isLoading,
+  setSelectedTodoId,
+  selectedTodoId,
+  tempTitle,
 }) => {
+  const temp = {
+    id: 0,
+    title: tempTitle,
+  };
+
   return (
     <section className="todoapp__main" data-cy="TodoList">
       {todos.map(({ id, completed, title }) => (
@@ -26,9 +37,37 @@ export const TodoList: React.FC<Props> = ({
           setError={setError}
           setTodos={setTodos}
           todos={todos}
-          isLoading={isLoading}
+          selectedTodoId={selectedTodoId}
+          setSelectedTodoId={setSelectedTodoId}
         />
       ))}
+      {isLoading
+        && (
+          <div
+            data-cy="Todo"
+            className="todo"
+          >
+            <label className="todo__status-label">
+              <input
+                data-cy="TodoStatus"
+                type="checkbox"
+                className="todo__status"
+                defaultChecked
+              />
+            </label>
+
+            <span data-cy="TodoTitle" className="todo__title">
+              {temp.title}
+            </span>
+            <div
+              data-cy="TodoLoader"
+              className="modal overlay is-active"
+            >
+              <div className="modal-background has-background-white-ter" />
+              <div className="loader" />
+            </div>
+          </div>
+        )}
     </section>
   );
 };

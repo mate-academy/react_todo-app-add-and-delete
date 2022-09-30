@@ -1,5 +1,6 @@
 import { post } from '../api/todos';
 import { Todo } from '../types/Todo';
+import { User } from '../types/User';
 /* eslint-disable @typescript-eslint/no-explicit-any */
 
 interface Props {
@@ -7,23 +8,26 @@ interface Props {
   newTodoTitle: string;
   setTodoTitle: (value: string) => void;
   setError: (value: string) => void
-  error: string,
   todos: Todo[],
   setTodos: any,
   setLoading: (value: boolean) => void,
+  setTitle: (value: string) => void,
+  user: User | null,
 }
 export const NewTodoForm: React.FC<Props> = ({
   newTodoField,
   newTodoTitle,
   setTodoTitle,
   setError,
-  error,
   setTodos,
   todos,
   setLoading,
+  setTitle,
+  user,
 }) => {
   const handlerInput = (event: React.ChangeEvent<HTMLInputElement>) => {
     setTodoTitle(event.target.value);
+    setTitle(event.target.value);
   };
 
   const onSubmit = (event: React.FormEvent<HTMLFormElement>) => {
@@ -34,23 +38,21 @@ export const NewTodoForm: React.FC<Props> = ({
       return;
     }
 
-    if (!error) {
-      const fetchData = async () => {
-        try {
-          const newTodosFromUser = await post(newTodoTitle, 4446);
-
-          setLoading(true);
+    const fetchData = async () => {
+      setLoading(true);
+      try {
+        if (user) {
+          const newTodosFromUser: Todo = await post(newTodoTitle, user?.id);
 
           setTodos([...todos, newTodosFromUser]);
           setLoading(false);
-        } catch (errorFromServer) {
-          setError('Unable to add a todo');
         }
-      };
+      } catch (errorFromServer) {
+        setError('Unable to add a todo');
+      }
+    };
 
-      fetchData();
-    }
-
+    fetchData();
     setTodoTitle('');
   };
 

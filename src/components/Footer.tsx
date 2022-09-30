@@ -3,15 +3,14 @@ import { remove } from '../api/todos';
 import { FilterTypes } from '../types/Filter';
 import { Todo } from '../types/Todo';
 import { Filter } from './Filter';
-/* eslint-disable @typescript-eslint/no-explicit-any */
 
 interface Props {
   todos: Todo[],
   tabs: FilterTypes[],
   selectedTabId: string,
   onTabSelected: (value: FilterTypes) => void,
-  setTodos: any,
-  setError: any
+  setError: (value: string) => void,
+  setTodos: (value: Todo[]) => void,
 }
 
 export const Footer: React.FC<Props> = ({
