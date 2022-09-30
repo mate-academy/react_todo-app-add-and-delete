@@ -5,7 +5,7 @@ import React, {
   useEffect,
   useState,
 } from 'react';
-import { getTodos } from './api/todos';
+import { getTodos, postTodo } from './api/todos';
 import { AuthContext } from './components/Auth/AuthContext';
 import { TodoFooter } from './components/todos/TodoFooter';
 import { TodoHeader } from './components/todos/TodoHeader';
@@ -33,9 +33,9 @@ export const App: React.FC = () => {
     return addError || deleteError || updateError;
   };
 
-  const addData = async () => {
+  const loadData = async () => {
     if (user) {
-      const temp = await getTodos(user?.id);
+      const temp = await getTodos(user.id);
 
       setTodos(temp);
       setVisibleTodos(temp);
@@ -56,21 +56,31 @@ export const App: React.FC = () => {
   };
 
   useEffect(() => {
-    addData();
+    loadData();
   }, []);
 
   useEffect(() => {
     setVisibleTodos(filterByStatus(status));
-  }, [visibleTodos]);
+  }, [status]);
 
   console.log(visibleTodos);
+
+  const addTodo = async (value: string) => {
+    if (user && value) {
+      await postTodo(user.id, value);
+      console.log('posted');
+      loadData();
+    } else {
+      setAddError(true);
+    }
+  };
 
   return (
     <div className="todoapp">
       <h1 className="todoapp__title">todos</h1>
 
       <div className="todoapp__content">
-        <TodoHeader />
+        <TodoHeader addTodo={addTodo} />
 
         <TodoList todos={visibleTodos} />
 

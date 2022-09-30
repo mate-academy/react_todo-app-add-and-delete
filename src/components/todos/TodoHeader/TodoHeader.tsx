@@ -2,30 +2,24 @@
 /* eslint-disable jsx-a11y/control-has-associated-label */
 import React, {
   FormEvent,
-  useContext,
   useEffect,
   useRef,
 } from 'react';
-import { postTodo } from '../../../api/todos';
-import { AuthContext } from '../../Auth/AuthContext';
 
-export const TodoHeader: React.FC = () => {
-  const user = useContext(AuthContext);
+interface Props {
+  addTodo: (value: string) => void;
+}
+
+export const TodoHeader: React.FC<Props> = ({ addTodo }) => {
   const newTodoField = useRef<HTMLInputElement>(null);
-
-  const addTodo = async () => {
-    if (user && newTodoField.current) {
-      await postTodo(user.id, newTodoField.current.value);
-      console.log('posted');
-      newTodoField.current.value = '';
-    }
-  };
 
   const handleSubmit = (event: FormEvent) => {
     event.preventDefault();
-    console.log(newTodoField.current?.value);
 
-    addTodo();
+    if (newTodoField.current) {
+      addTodo(newTodoField.current.value);
+      newTodoField.current.value = '';
+    }
   };
 
   useEffect(() => {
