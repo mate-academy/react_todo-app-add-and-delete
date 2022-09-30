@@ -7,9 +7,10 @@ import { AuthContext } from '../Auth/AuthContext';
 
 type Props = {
   onAdd: (todo: Todo) => void;
+  setErrorMessage: (error: string) => void;
 };
 
-export const NewTodoField: React.FC<Props> = ({ onAdd }) => {
+export const NewTodoField: React.FC<Props> = ({ onAdd, setErrorMessage }) => {
   const newTodoField = useRef<HTMLInputElement>(null);
   const user = useContext(AuthContext);
 
@@ -25,20 +26,24 @@ export const NewTodoField: React.FC<Props> = ({ onAdd }) => {
   const handleSubmit = (event: FormEvent) => {
     event.preventDefault();
 
-    postTodos({
-      userId: user?.id || 0,
-      title,
-      completed,
-    });
+    if (title) {
+      postTodos({
+        userId: user?.id || 0,
+        title,
+        completed,
+      });
 
-    onAdd({
-      id,
-      userId: user?.id || 0,
-      title,
-      completed,
-    });
+      onAdd({
+        id,
+        userId: user?.id || 0,
+        title,
+        completed,
+      });
 
-    setId(prevId => prevId + 1);
+      setId(prevId => prevId + 1);
+    } else {
+      setErrorMessage('Title can\'t be empty');
+    }
 
     reset();
   };

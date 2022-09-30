@@ -5,14 +5,22 @@ import { useState } from 'react';
 
 type Props = {
   errorMessage: string;
+  setErrorMessage: (error: string) => void;
 };
 
-export const ErrorNotification: React.FC<Props> = ({ errorMessage }) => {
+export const ErrorNotification: React.FC<Props> = ({
+  errorMessage, setErrorMessage,
+}) => {
   const [isClose, setIsClose] = useState(false);
 
   setTimeout(() => {
     setIsClose(true);
   }, 3000);
+
+  if (isClose) {
+    setErrorMessage('');
+    setIsClose(false);
+  }
 
   return (
     <div

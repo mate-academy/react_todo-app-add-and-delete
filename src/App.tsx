@@ -40,10 +40,6 @@ export const App: React.FC = () => {
   const [errorMessage, setErrorMessage] = useState<string>('');
 
   const addNewTodo = (todo: Todo) => {
-    // if (!title) {
-    //   setErrorMessage('Title can\'t be empty');
-    // }
-
     setTodos(prevTodos => [todo, ...prevTodos]);
   };
 
@@ -91,7 +87,10 @@ export const App: React.FC = () => {
             className="todoapp__toggle-all active"
           />
 
-          <NewTodoField onAdd={addNewTodo} />
+          <NewTodoField
+            onAdd={addNewTodo}
+            setErrorMessage={setErrorMessage}
+          />
         </header>
 
         {todos && (
@@ -165,7 +164,10 @@ export const App: React.FC = () => {
       </div>
 
       {errorMessage && (
-        <ErrorNotification errorMessage={errorMessage} />
+        <ErrorNotification
+          errorMessage={errorMessage}
+          setErrorMessage={setErrorMessage}
+        />
       )}
     </div>
   );
