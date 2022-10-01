@@ -7,7 +7,6 @@ type Props = {
   todo: Todo;
   isActive?: boolean,
   selectedTodosId?: number[],
-  newTitle?: string,
   onDelete: (id: number[]) => void;
 };
 
@@ -15,7 +14,6 @@ export const TodoItem: React.FC<Props> = ({
   todo,
   isActive,
   selectedTodosId,
-  newTitle,
   onDelete,
 }) => {
   const { id, title, completed } = todo;
@@ -35,7 +33,7 @@ export const TodoItem: React.FC<Props> = ({
       </label>
 
       <span data-cy="TodoTitle" className="todo__title">
-        {newTitle || title}
+        {title}
       </span>
       <button
         type="button"
