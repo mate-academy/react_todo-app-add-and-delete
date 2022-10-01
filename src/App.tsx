@@ -60,7 +60,7 @@ export const App: React.FC = () => {
       .catch(() => setError(Error.LOADING));
   }, []);
 
-  const handleSubmit = async (event: FormEvent) => {
+  const handleSubmit = (event: FormEvent) => {
     event.preventDefault();
 
     if (!title.trim()) {
@@ -71,7 +71,7 @@ export const App: React.FC = () => {
 
     setIsAdding(true);
 
-    await createTodo(userId, title)
+    createTodo(userId, title)
       .then(todo => {
         setTodos([...todos, todo]);
       })
