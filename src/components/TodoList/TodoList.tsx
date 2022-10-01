@@ -5,15 +5,15 @@ import { TodoItem } from '../TodoItem/TodoItem';
 type Props = {
   todos: Todo[];
   isAdding: boolean;
-  selectedTodoId: number | null;
+  selectedTodosId: number[];
   newTitle: string,
-  onDelete: (id: number) => void;
+  onDelete: (id: number[]) => void;
 };
 
 export const TodoList: React.FC<Props> = ({
   todos,
   isAdding,
-  selectedTodoId,
+  selectedTodosId,
   newTitle,
   onDelete,
 }) => {
@@ -23,7 +23,7 @@ export const TodoList: React.FC<Props> = ({
         <TodoItem
           key={todo.id}
           todo={todo}
-          selectedTodoId={selectedTodoId}
+          selectedTodosId={selectedTodosId}
           onDelete={onDelete}
         />
       ))}

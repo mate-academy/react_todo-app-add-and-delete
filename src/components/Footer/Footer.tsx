@@ -6,6 +6,8 @@ type Props = {
   isLeftActiveTodos: boolean,
   filterValue: string,
   setFilterValue: (value: string) => void,
+  completedTodosId: number[],
+  onDelete: (id: number[]) => void;
 };
 
 export const Footer: React.FC<Props> = ({
@@ -13,6 +15,8 @@ export const Footer: React.FC<Props> = ({
   isLeftActiveTodos,
   filterValue,
   setFilterValue,
+  completedTodosId,
+  onDelete,
 }) => {
   return (
     <footer className="todoapp__footer" data-cy="Footer">
@@ -61,7 +65,7 @@ export const Footer: React.FC<Props> = ({
         data-cy="ClearCompletedButton"
         type="button"
         className="todoapp__clear-completed"
-        disabled={!isLeftActiveTodos}
+        onClick={() => onDelete(completedTodosId)}
       >
         {!isLeftActiveTodos && 'Clear completed'}
       </button>

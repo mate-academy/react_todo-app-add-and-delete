@@ -1,3 +1,4 @@
+/* eslint-disable no-console */
 import React, {
   FormEvent,
   useContext,
@@ -21,12 +22,11 @@ import { deleteTodo, getTodos, postTodo } from './api/todos';
 export const App: React.FC = () => {
   const user = useContext(AuthContext);
   const [todos, setTodos] = useState<Todo[]>([]);
-  const [isErrorNotification, setIsErrorNotification] = useState(false);
   const [errorMessage, setErrorMessage] = useState('');
   const [filterValue, setFilterValue] = useState('all');
   const [title, setTitle] = useState('');
   const [isTodoAdded, setIsTodoAdded] = useState(false);
-  const [selectedTodoId, setSetselectedTodoId] = useState<number | null>(null);
+  const [selectedTodosId, setSelectedTodosId] = useState<number[]>([]);
 
   const newTodoField = useRef<HTMLInputElement>(null);
 
@@ -38,7 +38,6 @@ export const App: React.FC = () => {
     getTodos(user?.id || 0)
       .then(setTodos)
       .catch(() => {
-        setIsErrorNotification(true);
         setErrorMessage('Unable to load todos');
       });
   }, []);
@@ -46,7 +45,6 @@ export const App: React.FC = () => {
   const hundleAddTodo = async (event: FormEvent) => {
     event.preventDefault();
     if (!title.trim() || !user) {
-      setIsErrorNotification(true);
       setErrorMessage("Title can't be empty");
 
       return;
@@ -59,7 +57,6 @@ export const App: React.FC = () => {
 
       setTodos([...todos, newTodo]);
     } catch {
-      setIsErrorNotification(true);
       setErrorMessage('Unable to add todo');
     } finally {
       setTitle('');
@@ -71,19 +68,17 @@ export const App: React.FC = () => {
     }
   };
 
-  const hundleDeleteTodo = (todoId: number) => {
-    setSetselectedTodoId(todoId);
-    deleteTodo(todoId)
-      .then(() => {
-        setTodos(prevTodos => prevTodos.filter(({ id }) => id !== todoId));
-      })
-      .catch(() => {
-        setIsErrorNotification(true);
-        setErrorMessage('Unable to delete todo');
-      })
-      .finally(() => {
-        setSetselectedTodoId(null);
-      });
+  const hundleDeleteTodo = (todosId: number[]) => {
+    setSelectedTodosId(todosId);
+    todosId.map(todoId => (
+      deleteTodo(todoId)
+        .then(() => {
+          setTodos(prevTodos => prevTodos.filter(({ id }) => id !== todoId));
+        })
+        .catch(() => {
+          setErrorMessage('Unable to delete todo');
+        })
+    ));
   };
 
   const filteredTodos = todos.filter(({ completed }) => {
@@ -101,6 +96,16 @@ export const App: React.FC = () => {
 
   const activeTodosTotal = useMemo(() => {
     return todos.filter(({ completed }) => !completed).length;
+  }, [todos]);
+
+  const completedTodosId = useMemo(() => {
+    return todos.reduce((todosId: number[], currTodo: Todo) => {
+      if (currTodo.completed) {
+        todosId.push(currTodo.id);
+      }
+
+      return todosId;
+    }, []);
   }, [todos]);
 
   const isLeftActiveTodos = activeTodosTotal === todos.length;
@@ -122,7 +127,7 @@ export const App: React.FC = () => {
           <TodoList
             todos={filteredTodos}
             isAdding={isTodoAdded}
-            selectedTodoId={selectedTodoId}
+            selectedTodosId={selectedTodosId}
             newTitle={title}
             onDelete={hundleDeleteTodo}
           />
@@ -133,15 +138,16 @@ export const App: React.FC = () => {
             isLeftActiveTodos={isLeftActiveTodos}
             filterValue={filterValue}
             setFilterValue={setFilterValue}
+            completedTodosId={completedTodosId}
+            onDelete={hundleDeleteTodo}
           />
         )}
       </div>
 
-      {isErrorNotification && (
+      {errorMessage && (
         <ErrorNotification
           errorMessage={errorMessage}
-          isErrorNotification={isErrorNotification}
-          setIsErrorNotification={setIsErrorNotification}
+          setErrorMessage={setErrorMessage}
         />
       )}
     </div>

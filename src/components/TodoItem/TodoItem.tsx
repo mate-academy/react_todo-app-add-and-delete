@@ -6,15 +6,15 @@ import { Loader } from '../Loader/Loader';
 type Props = {
   todo: Todo;
   isActive?: boolean,
-  selectedTodoId?: number | null,
+  selectedTodosId?: number[],
   newTitle?: string,
-  onDelete: (id: number) => void;
+  onDelete: (id: number[]) => void;
 };
 
 export const TodoItem: React.FC<Props> = ({
   todo,
   isActive,
-  selectedTodoId,
+  selectedTodosId,
   newTitle,
   onDelete,
 }) => {
@@ -41,14 +41,14 @@ export const TodoItem: React.FC<Props> = ({
         type="button"
         className="todo__remove"
         data-cy="TodoDeleteButton"
-        onClick={() => onDelete(id)}
+        onClick={() => onDelete([id])}
       >
         &times;
       </button>
 
       <Loader
         isActive={isActive}
-        selectedTodoId={selectedTodoId}
+        selectedTodosId={selectedTodosId}
         id={id}
       />
     </div>
