@@ -52,7 +52,6 @@ const TodoItem:React.FC<Props> = ({
         ×
       </button>
 
-      {/* <div data-cy="TodoLoader" className="modal overlay"> */}
       <div
         data-cy="TodoLoader"
         className={classNames(
