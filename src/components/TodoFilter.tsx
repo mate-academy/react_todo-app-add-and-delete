@@ -5,7 +5,9 @@ type Props = {
   todos: Todo[];
   setFilterType: (filterType: FilterBy) => void;
   filterType: FilterBy;
-  onDelete: (id: number) => void;
+  onDelete: (id: number | number[]) => void;
+  completed: number[];
+  setCompleted: (a: number[]) => void;
 };
 
 export enum FilterBy {
@@ -15,13 +17,15 @@ export enum FilterBy {
 }
 
 export const TodoFilter: React.FC<Props> = ({
-  todos, filterType, setFilterType, onDelete,
+  todos, filterType, setFilterType, onDelete, completed, setCompleted,
 }) => {
   const { length } = todos.filter((todo) => todo.completed === false);
 
   const completedTodos = todos.some((todo) => todo.completed === true);
 
-  const completed = todos.filter((todo) => todo.completed === true);
+  // const completed = todos
+  //   .filter((todo) => todo.completed === true)
+  //   .map((todo) => todo.id);
 
   const handleAllSort = () => setFilterType(FilterBy.All);
   const handleActiveSort = () => setFilterType(FilterBy.Active);
@@ -74,13 +78,10 @@ export const TodoFilter: React.FC<Props> = ({
             data-cy="ClearCompletedButton"
             type="button"
             className="todoapp__clear-completed"
-            onClick={() => completed.every((todo) => {
-              if (todo.completed === true) {
-                return onDelete(todo.id);
-              }
-
-              return 0;
-            })}
+            onClick={() => {
+              completed.forEach((todo) => onDelete(todo));
+              setCompleted([]);
+            }}
           >
             Clear completed
           </button>

@@ -8,6 +8,9 @@ import { TodoField } from './components/TodoField';
 import { TodoList } from './components/TodoList';
 import { Todo } from './types/Todo';
 import { LoadingError } from './components/LoadingError';
+import { AddingBlancError } from './components/AddingBlancError';
+import { AddingTodoError } from './components/AddingTodoError';
+import { DeletingTodoError } from './components/DeletingTodoError';
 
 export const App: React.FC = () => {
   const user = useContext(AuthContext);
@@ -16,10 +19,13 @@ export const App: React.FC = () => {
   const [todos, setTodos] = useState<Todo[]>([]);
   const [filter, setFilter] = useState(FilterBy.All);
   const [loadingError, setLoadingError] = useState(false);
-  const [addingError, setAddingError] = useState(false);
+  const [addingBlancError, setAddingBlancError] = useState(false);
   const [errorClose, setErrorClosing] = useState(false);
   const [todoName, setNewTodoName] = useState('');
   const [isAdding, setIsAddingFromServer] = useState(false);
+  const [addTodoError, setAddTodoError] = useState(false);
+  const [deleteTodoError, setDeleteTodoError] = useState(false);
+  const [completed, setCompleted] = useState<number[]>([]);
 
   async function createPost(title: string) {
     if (user) {
@@ -33,33 +39,58 @@ export const App: React.FC = () => {
     return 0;
   }
 
-  async function deletePost(id: number) {
-    return deleteTodo(id);
+  async function deletePost(id: number | number[]) {
+    const deleted = await deleteTodo(id);
+
+    return deleted;
   }
 
   useEffect(() => {
-    if (newTodoField.current) {
-      newTodoField.current.focus();
-    }
+    newTodoField.current?.focus();
 
     const loadTodos = async () => {
       try {
         const loadedTodos = await getTodos(user?.id || 0);
 
         setTodos(loadedTodos);
+        setCompleted(loadedTodos.filter((todo) => todo.completed === true)
+          .map((todo) => todo.id));
       } catch (error) {
         setLoadingError(true);
       }
     };
 
     loadTodos();
-  }, []);
+  }, [completed]);
 
-  const handleDelete = async (id: number) => {
-    setTimeout(() => {
+  const handleAdd = async (newTodoName: string) => {
+    setIsAddingFromServer(true);
+
+    try {
+      const newTodo = await createPost(newTodoName);
+
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      setTodos((prevTodos: any) => {
+        return [
+          ...prevTodos,
+          newTodo,
+        ];
+      });
+
+      setNewTodoName('');
+    } catch (error) {
+      setAddTodoError(true);
+    }
+
+    setIsAddingFromServer(false);
+  };
+
+  const handleDelete = async (id: number | number[]) => {
+    try {
       deletePost(id);
-      setTodos(todos.filter((todo) => todo.id !== id));
-    }, 500);
+    } catch (error) {
+      setDeleteTodoError(true);
+    }
   };
 
   return (
@@ -69,28 +100,15 @@ export const App: React.FC = () => {
       <div className="todoapp__content">
         <header className="todoapp__header">
           <TodoField
-            ref={newTodoField}
+            newTodoField={newTodoField}
             todos={todos}
             todoName={todoName}
             setNewTodoName={setNewTodoName}
-            onAdd={async (newTodoName: string) => {
-              setIsAddingFromServer(true);
-              const newTodo = await createPost(newTodoName);
-
-              setTimeout(() => {
-                // eslint-disable-next-line @typescript-eslint/no-explicit-any
-                setTodos((prevTodos: any) => {
-                  return [
-                    ...prevTodos,
-                    newTodo,
-                  ];
-                });
-              }, 500);
-
-              setTimeout(() => setIsAddingFromServer(false), 500);
-            }}
+            onAdd={handleAdd}
             isAdding={isAdding}
-            addingError={setAddingError}
+            setAddingBlancError={setAddingBlancError}
+            loadingError={loadingError}
+            setErrorClosing={setErrorClosing}
           />
         </header>
 
@@ -108,6 +126,8 @@ export const App: React.FC = () => {
               data-cy="Footer"
             >
               <TodoFilter
+                completed={completed}
+                setCompleted={setCompleted}
                 todos={todos}
                 filterType={filter}
                 setFilterType={setFilter}
@@ -122,19 +142,33 @@ export const App: React.FC = () => {
 
       {loadingError && (
         <LoadingError
-          addingError={setAddingError}
+          setLoadingError={setLoadingError}
           error={errorClose}
           closeError={setErrorClosing}
-          errorType={addingError}
         />
       )}
 
-      {addingError && (
-        <LoadingError
+      {addingBlancError && (
+        <AddingBlancError
           error={errorClose}
           closeError={setErrorClosing}
-          addingError={setAddingError}
-          errorType={addingError}
+          setAddingBlancError={setAddingBlancError}
+        />
+      )}
+
+      {addTodoError && (
+        <AddingTodoError
+          error={errorClose}
+          closeError={setErrorClosing}
+          setAddTodoError={setAddTodoError}
+        />
+      )}
+
+      {deleteTodoError && (
+        <DeletingTodoError
+          error={errorClose}
+          closeError={setErrorClosing}
+          setDeleteTodoError={setDeleteTodoError}
         />
       )}
     </div>

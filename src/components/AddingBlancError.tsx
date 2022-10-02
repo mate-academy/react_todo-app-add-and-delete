@@ -3,19 +3,16 @@ import classNames from 'classnames';
 type Props = {
   closeError: (error: boolean) => void;
   error: boolean;
-  setLoadingError: (err: boolean) => void;
+  setAddingBlancError: (err: boolean) => void;
 };
 
-export const LoadingError: React.FC<Props> = ({
-  closeError, error,
+export const AddingBlancError: React.FC<Props> = ({
+  closeError, error, setAddingBlancError,
 }) => {
   const handleWindowClose = () => {
     closeError(true);
+    setAddingBlancError(false);
   };
-
-  setTimeout(() => {
-    closeError(true);
-  }, 3000);
 
   return (
     <div
@@ -32,7 +29,7 @@ export const LoadingError: React.FC<Props> = ({
         className="delete"
         onClick={handleWindowClose}
       />
-      Unable to load a list of todos. Check if your link is correct
+      Title can not be empty
     </div>
   );
 };

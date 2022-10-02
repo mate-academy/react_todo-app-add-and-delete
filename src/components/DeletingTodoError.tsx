@@ -3,17 +3,19 @@ import classNames from 'classnames';
 type Props = {
   closeError: (error: boolean) => void;
   error: boolean;
-  setLoadingError: (err: boolean) => void;
+  setDeleteTodoError: (err: boolean) => void;
 };
 
-export const LoadingError: React.FC<Props> = ({
-  closeError, error,
+export const DeletingTodoError: React.FC<Props> = ({
+  closeError, error, setDeleteTodoError,
 }) => {
   const handleWindowClose = () => {
+    setDeleteTodoError(false);
     closeError(true);
   };
 
   setTimeout(() => {
+    setDeleteTodoError(false);
     closeError(true);
   }, 3000);
 
@@ -32,7 +34,7 @@ export const LoadingError: React.FC<Props> = ({
         className="delete"
         onClick={handleWindowClose}
       />
-      Unable to load a list of todos. Check if your link is correct
+      Unable to delete a todo
     </div>
   );
 };

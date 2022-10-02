@@ -1,19 +1,21 @@
 import classNames from 'classnames';
-import { RefObject } from 'react';
 import { Todo } from '../types/Todo';
 
 type Props = {
-  ref: RefObject<HTMLInputElement>;
+  newTodoField: React.RefObject<HTMLInputElement>;
   todos: Todo[];
   onAdd: (newTodoData: string) => void;
   todoName: string;
   setNewTodoName: (name: string) => void;
-  addingError: (error: boolean) => void;
+  setAddingBlancError: (error: boolean) => void;
   isAdding: boolean;
+  loadingError: boolean;
+  setErrorClosing: (er: boolean) => void;
 };
 
 export const TodoField: React.FC<Props> = ({
-  ref, todos, todoName, onAdd, setNewTodoName, addingError, isAdding,
+  todos, todoName, onAdd, setNewTodoName, setAddingBlancError, isAdding,
+  loadingError, setErrorClosing, newTodoField,
 }) => {
   const completedTodos = todos.every((todo) => todo.completed === true);
 
@@ -30,28 +32,32 @@ export const TodoField: React.FC<Props> = ({
           aria-label="Toggle"
         />
       )}
-      <form onSubmit={(event) => {
-        event.preventDefault();
+      <form
+        onSubmit={(event) => {
+          event.preventDefault();
 
-        if (!todoName.trim()) {
-          addingError(true);
-        } else {
-          onAdd(todoName);
-          addingError(false);
-        }
+          if (!todoName.trim()) {
+            setAddingBlancError(true);
+            setErrorClosing(false);
+          }
 
-        setNewTodoName('');
-      }}
+          if (todoName.trim()) {
+            onAdd(todoName);
+            setAddingBlancError(false);
+          }
+        }}
       >
         <input
           data-cy="NewTodoField"
           type="text"
-          disabled={isAdding}
-          ref={ref}
+          disabled={isAdding || loadingError}
           className="todoapp__new-todo"
           placeholder="What me do?"
+          ref={(el) => newTodoField && el?.focus()}
           value={todoName}
-          onChange={(event) => setNewTodoName(event.target.value)}
+          onChange={(event) => {
+            setNewTodoName(event.target.value);
+          }}
         />
       </form>
     </>
