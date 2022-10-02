@@ -48,7 +48,7 @@ Remove all the completed todos after `Clear completed` button click:
 
 <details>
   <summary>Click here to see the hint</summary>
-  
+
   Use [React Transition Group](https://reactcommunity.org/react-transition-group/transition-group)
 
   ```tsx
@@ -89,7 +89,7 @@ Remove all the completed todos after `Clear completed` button click:
     </TransitionGroup>
   </section>
   ```
-    
+
   Here are the styles used in this example
   ```css
   .item-enter {
