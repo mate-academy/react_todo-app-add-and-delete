@@ -1,4 +1,4 @@
-import { Todo } from "../types/Todo";
+import { Todo } from '../types/Todo';
 
 const BASE_URL = 'https://mate.academy/students-api';
 
