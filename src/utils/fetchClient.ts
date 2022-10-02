@@ -1,5 +1,3 @@
-import { Todo } from '../types/Todo';
-
 const BASE_URL = 'https://mate.academy/students-api';
 
 // returns a promise resolved after a given delay
@@ -41,7 +39,7 @@ function request<T>(
 
 export const client = {
   get: <T>(url: string) => request<T>(url),
-  post: <T>(url: string, data: Omit<Todo, 'id'>) => (
+  post: <T>(url: string, data: unknown) => (
     request<T>(url, 'POST', data)
   ),
   patch: <T>(url: string, data: unknown) => request<T>(url, 'PATCH', data),
