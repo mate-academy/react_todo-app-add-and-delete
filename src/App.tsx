@@ -131,14 +131,10 @@ export const App: React.FC = () => {
     };
 
     loadTodos();
-
-    console.log('Load todos from server');
   }, []);
 
   useEffect(() => {
     setVisibleTodos(filterTodos(todos, filterStatus));
-
-    console.log('Update visible todos');
   }, [todos, filterStatus, error]);
 
   useEffect(() => {
@@ -146,8 +142,6 @@ export const App: React.FC = () => {
     if (newTodoField.current) {
       newTodoField.current.focus();
     }
-
-    console.log('Focus input');
   }, [todos]);
 
   return (
