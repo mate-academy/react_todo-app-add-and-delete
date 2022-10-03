@@ -30,10 +30,14 @@ export const App: React.FC = () => {
 
   const newTodoField = useRef<HTMLInputElement>(null);
 
-  useEffect(() => {
+  const focusOnInput = () => {
     if (newTodoField.current) {
       newTodoField.current.focus();
     }
+  };
+
+  useEffect(() => {
+    focusOnInput();
 
     getTodos(user?.id || 0)
       .then(setTodos)
@@ -56,9 +60,7 @@ export const App: React.FC = () => {
       setErrorMessage('Unable to add todo');
     } finally {
       setIsTodoAdded(false);
-      if (newTodoField.current) {
-        newTodoField.current.focus();
-      }
+      focusOnInput();
     }
   };
 
