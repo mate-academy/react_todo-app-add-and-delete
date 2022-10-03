@@ -63,7 +63,7 @@ export const AuthForm: React.FC<Props> = ({ onLogin }) => {
         await loadUser();
       }
     } catch (error) {
-      setErrorMessage('Something went wrtong');
+      setErrorMessage('Something went wrong');
     } finally {
       setLoading(false);
     }
