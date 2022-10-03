@@ -7,6 +7,8 @@ and implement the ability to and nd remove todos.
 
 > Here is [the working example](https://mate-academy.github.io/react_todo-app-with-api/)
 
+### [API Documentation](https://mate-academy.github.io/fe-students-api/)
+
 ## Adding a todo
 
 Add a todo with the entered title on `NewTodoField` form submit:
