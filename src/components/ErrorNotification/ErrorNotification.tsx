@@ -4,13 +4,18 @@ import classNames from 'classnames';
 
 type Props = {
   errorMessage: string;
+  errorMessageHandler: (message: string) => void;
 };
 
-export const ErrorNotification: FC<Props> = ({ errorMessage }) => {
+export const ErrorNotification: FC<Props> = ({
+  errorMessage,
+  errorMessageHandler,
+}) => {
   const [isClosed, setIsClosed] = useState(false);
 
   useMemo(() => setTimeout(() => {
     setIsClosed(true);
+    errorMessageHandler('');
   }, 3000), [isClosed]);
 
   return (

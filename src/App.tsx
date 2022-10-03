@@ -6,7 +6,6 @@ import {
   useEffect,
   useReducer,
   useMemo,
-  useRef,
 } from 'react';
 // import classNames from 'classnames';
 import { AuthContext } from './components/Auth/AuthContext';
@@ -14,9 +13,10 @@ import { ErrorNotification } from './components/ErrorNotification';
 import { TodoList } from './components/TodoList';
 import { Footer } from './components/Footer';
 
-import { getTodos } from './api/todos';
+import { getTodos, removeTodos } from './api/todos';
 import { Todo } from './types/Todo';
 import { SortType } from './types/Filter';
+import { NewTodoField } from './components/NewTodoField';
 
 function filtTodos(
   todos: Todo[],
@@ -51,27 +51,38 @@ const reducer = (count: number, action: string) => {
 export const App: FC = () => {
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
   const user = useContext(AuthContext);
-  const newTodoField = useRef<HTMLInputElement>(null);
   const [errorMessage, setErrorMessage] = useState<string>('');
   const [sortType, setSortType] = useState<SortType>(SortType.All);
   const [todos, setTodos] = useState<Todo[]>([]);
   const [completeItem, dispatch] = useReducer(reducer, 0);
 
   const increase = () => dispatch('increase');
+  const decrease = () => dispatch('decrease');
 
-  const getUserFromServer = (userId: number) => {
-    getTodos(userId)
-      .then(userTodosFromServer => setTodos(userTodosFromServer))
-      .catch(() => setErrorMessage('Unable to update todos'));
-  };
+  // const getUserFromServer = (userId: number) => {
+
+  let userId = 0;
+
+  if (user?.id) {
+    userId = user.id;
+  }
 
   useEffect(() => {
-    if (!user) {
-      return;
-    }
+    getTodos(userId)
+      .then(userTodosFromServer => {
+        setTodos(userTodosFromServer);
+        reducer(userTodosFromServer.length, ''); // check is this work
+      })
+      .catch(() => setErrorMessage('Unable to update todos'));
+  }, []);
 
-    getUserFromServer(user.id);
-  }, [user]);
+  // useEffect(() => {
+  //   if (!user) {
+  //     return;
+  //   }
+
+  //   getUserFromServer(user.id);
+  // }, [user]);
 
   useEffect(() => {
     todos.map(todo => {
@@ -83,16 +94,24 @@ export const App: FC = () => {
     });
   }, [todos]);
 
-  useEffect(() => {
-    // focus the element with `ref={newTodoField}`
-    if (newTodoField.current) {
-      newTodoField.current.focus();
-    }
-  }, []);
-
   const visibleTodos = useMemo(() => (
     filtTodos(todos, sortType)
   ), [todos, sortType]);
+
+  const addNewTodo = (todo: Todo) => {
+    setTodos(prevTodos => [todo, ...prevTodos]);
+    increase();
+  };
+
+  const deleteTodo = (todoId: number) => {
+    removeTodos(todoId)
+      .catch(() => setErrorMessage('Unable to delete a todo'));
+
+    setTodos(
+      todos.filter(userTodo => todoId !== userTodo.id),
+    );
+    decrease();
+  };
 
   return (
     <div className="todoapp">
@@ -106,18 +125,17 @@ export const App: FC = () => {
             className="todoapp__toggle-all active"
           />
 
-          <form>
-            <input
-              data-cy="NewTodoField"
-              type="text"
-              ref={newTodoField}
-              className="todoapp__new-todo"
-              placeholder="What needs to be done?"
-            />
-          </form>
+          <NewTodoField
+            onAdd={addNewTodo}
+            setErrorMessage={setErrorMessage}
+          />
         </header>
 
-        <TodoList todos={visibleTodos} />
+        <TodoList
+          todos={visibleTodos}
+          removeTodo={deleteTodo}
+        />
+
         <Footer
           sortType={sortType}
           completeItem={completeItem}
@@ -126,7 +144,10 @@ export const App: FC = () => {
       </div>
 
       {errorMessage && (
-        <ErrorNotification errorMessage={errorMessage} />
+        <ErrorNotification
+          errorMessage={errorMessage}
+          errorMessageHandler={setErrorMessage}
+        />
       )}
     </div>
   );
