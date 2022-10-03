@@ -1,13 +1,21 @@
 import classNames from 'classnames';
 import React, { useState } from 'react';
 import { Todo } from '../../types/Todo';
+import { Loader } from '../Loader';
 
 type Props = {
   todo: Todo;
   deleteTodo: (todo: Todo) => void;
+  isCompleted: boolean;
+  visibleLoader: boolean;
 };
 
-export const UserTodo: React.FC<Props> = ({ todo, deleteTodo }) => {
+export const UserTodo: React.FC<Props> = ({
+  todo,
+  deleteTodo,
+  isCompleted,
+  visibleLoader,
+}) => {
   const [touched, setTouched] = useState<boolean>(false);
 
   return (
@@ -15,7 +23,7 @@ export const UserTodo: React.FC<Props> = ({ todo, deleteTodo }) => {
       data-cy="Todo"
       className={classNames(
         'todo',
-        { completed: touched },
+        { completed: isCompleted || touched },
       )}
     >
       <label className="todo__status-label">
@@ -47,16 +55,9 @@ export const UserTodo: React.FC<Props> = ({ todo, deleteTodo }) => {
         ×
       </button>
 
-      <div
-        data-cy="TodoLoader"
-        className={classNames(
-          'modal',
-          'overlay',
-        )}
-      >
-        <div className="modal-background has-background-white-ter" />
-        <div className="loader" />
-      </div>
+      {visibleLoader && (
+        <Loader />
+      )}
     </div>
   );
 };

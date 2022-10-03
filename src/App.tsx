@@ -39,6 +39,8 @@ export const App: React.FC = () => {
   const [selectedLink, setSelectedLink] = useState<string>('All');
   const [errorMessage, setErrorMessage] = useState<string>('');
   const [activeItems, setActiveItems] = useState<number>(0);
+  const [isCompleted, setIsCompleted] = useState<boolean>(false);
+  const [visibleLoader, setVisibleLoader] = useState(false);
 
   let userId = 0;
 
@@ -70,6 +72,18 @@ export const App: React.FC = () => {
     setActiveItems(prevItems => prevItems - 1);
   };
 
+  const handleCompletedTodos = () => {
+    setTodos(todos.map(todo => {
+      const copyTodo = todo;
+
+      copyTodo.completed = !copyTodo.completed;
+
+      return copyTodo;
+    }));
+
+    setIsCompleted(prevCompleted => !prevCompleted);
+  };
+
   const visibleTodos = filterTodos(todos, sortType);
 
   return (
@@ -82,11 +96,13 @@ export const App: React.FC = () => {
             data-cy="ToggleAllButton"
             type="button"
             className="todoapp__toggle-all active"
+            onClick={handleCompletedTodos}
           />
 
           <NewTodoField
             onAdd={addNewTodo}
             setErrorMessage={setErrorMessage}
+            setVisibleLoader={setVisibleLoader}
           />
         </header>
 
@@ -95,6 +111,8 @@ export const App: React.FC = () => {
             <TodoList
               todos={visibleTodos}
               deleteTodo={deleteTodo}
+              isCompleted={isCompleted}
+              visibleLoader={visibleLoader}
             />
 
             <footer className="todoapp__footer" data-cy="Footer">

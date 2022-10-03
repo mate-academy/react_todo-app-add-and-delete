@@ -8,9 +8,14 @@ import { AuthContext } from '../Auth/AuthContext';
 type Props = {
   onAdd: (todo: Todo) => void;
   setErrorMessage: (error: string) => void;
+  setVisibleLoader: (loader: boolean) => void;
 };
 
-export const NewTodoField: React.FC<Props> = ({ onAdd, setErrorMessage }) => {
+export const NewTodoField: React.FC<Props> = ({
+  onAdd,
+  setErrorMessage,
+  setVisibleLoader,
+}) => {
   const newTodoField = useRef<HTMLInputElement>(null);
   const user = useContext(AuthContext);
 
@@ -27,11 +32,14 @@ export const NewTodoField: React.FC<Props> = ({ onAdd, setErrorMessage }) => {
     event.preventDefault();
 
     if (title) {
+      setVisibleLoader(true);
+
       postTodos({
         userId: user?.id || 0,
         title,
         completed,
-      }).catch(() => setErrorMessage('Unable to add a todo'));
+      }).catch(() => setErrorMessage('Unable to add a todo'))
+        .finally(() => setVisibleLoader(false));
 
       onAdd({
         id,
@@ -40,6 +48,7 @@ export const NewTodoField: React.FC<Props> = ({ onAdd, setErrorMessage }) => {
         completed,
       });
 
+      // eslint-disable-next-line no-param-reassign
       setId(prevId => prevId + 1);
     } else {
       setErrorMessage('Title can\'t be empty');
