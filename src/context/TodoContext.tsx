@@ -13,6 +13,7 @@ export enum TypeChange {
   title,
   checkbox,
   delete,
+  deleteAll,
 }
 
 interface Context {
@@ -33,6 +34,8 @@ interface Context {
   setLoadError: (value: boolean) => void,
   errorMessage: string,
   setErrorMessage: (value: string) => void,
+  allCompletedLoader: boolean,
+  setAllCompletedLoader: (value: boolean) => void,
 }
 
 export const TodoContext = createContext<Context>({
@@ -53,6 +56,8 @@ export const TodoContext = createContext<Context>({
   setLoadError: () => undefined,
   errorMessage: '',
   setErrorMessage: () => undefined,
+  allCompletedLoader: false,
+  setAllCompletedLoader: () => undefined,
 });
 
 export function TodoProvider({ children }: { children?: ReactNode }) {
@@ -63,6 +68,7 @@ export function TodoProvider({ children }: { children?: ReactNode }) {
   const [filterState, setFilterState] = useState(Filter.all);
   const [loadError, setLoadError] = useState(false);
   const [errorMessage, setErrorMessage] = useState('');
+  const [allCompletedLoader, setAllCompletedLoader] = useState(false);
 
   const handleFilter = (filterStatus: number, data: Todo[]) => {
     let copyOfTodos = [...data];
@@ -90,7 +96,7 @@ export function TodoProvider({ children }: { children?: ReactNode }) {
 
     const foundIndex = todos.findIndex(stateTodo => stateTodo.id === todo.id);
 
-    if (type !== TypeChange.delete) {
+    if (type !== TypeChange.delete && type !== TypeChange.deleteAll) {
       switch (type) {
         case TypeChange.checkbox:
           found.completed = !found.completed;
@@ -119,6 +125,9 @@ export function TodoProvider({ children }: { children?: ReactNode }) {
         break;
       case TypeChange.delete:
         newTodos = todos.filter(item => item.id !== todo.id);
+        break;
+      case TypeChange.deleteAll:
+        newTodos = todos.filter(item => !item.completed);
         break;
       default:
         throw new Error('Error type two');
@@ -151,6 +160,8 @@ export function TodoProvider({ children }: { children?: ReactNode }) {
       loadError,
       setErrorMessage,
       setLoadError,
+      allCompletedLoader,
+      setAllCompletedLoader,
     }}
     >
       {children}

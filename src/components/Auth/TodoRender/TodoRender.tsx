@@ -16,6 +16,7 @@ type Props = {
   handleChangeTitle: (event: ChangeEvent<HTMLInputElement>) => void,
   setLoadError: (value: boolean) => void,
   setErrorMessage: (value: string) => void,
+  allCompletedLoader: boolean,
 };
 
 export const TodoRender: React.FC<Props> = ({
@@ -28,6 +29,7 @@ export const TodoRender: React.FC<Props> = ({
   handleChangeTitle,
   setLoadError,
   setErrorMessage,
+  allCompletedLoader,
 }) => {
   const { title, completed, id } = todo;
   const newTodoField = useRef<HTMLInputElement>(null);
@@ -110,7 +112,10 @@ export const TodoRender: React.FC<Props> = ({
         data-cy="TodoLoader"
         className={classNames(
           'modal overlay',
-          { 'is-active': todo.id === 0 || todo.id === todoIdLoader },
+          {
+            'is-active': todo.id === 0 || todo.id === todoIdLoader
+            || (allCompletedLoader && todo.completed),
+          },
         )}
       >
         <div className="modal-background has-background-white-ter" />

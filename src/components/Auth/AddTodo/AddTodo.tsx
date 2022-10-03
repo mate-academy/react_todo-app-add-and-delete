@@ -1,7 +1,7 @@
 import {
   ChangeEvent, Dispatch, FormEvent, SetStateAction, useEffect, useRef, useState,
 } from 'react';
-import { addTodo, lastTodoId } from '../../../api/todos';
+import { addTodo, getTodos } from '../../../api/todos';
 import { Filter } from '../../../context/TodoContext';
 import { Todo } from '../../../types/Todo';
 
@@ -26,46 +26,45 @@ export const AddTodo: React.FC<Props> = ({
 }) => {
   const newTodoField = useRef<HTMLInputElement>(null);
   const [todoField, setTodoField] = useState('');
-  const [lastId, setLastId] = useState<number>(0);
+  const [tempTodoCount, setTempTodoCount] = useState<number>(0);
   const [activeTodoField, setActiveTodoField] = useState(true);
 
   useEffect(() => {
-    // focus the element with `ref={newTodoField}`
     if (newTodoField.current) {
       newTodoField.current.focus();
     }
   }, []);
 
   useEffect(() => {
-    const found = todos.find(stateTodo => stateTodo.id === 0);
+    const loadTodos = async () => {
+      try {
+        if (userId) {
+          const todoData = await getTodos(userId);
 
-    const foundIndex = todos.findIndex(stateTodo => stateTodo.id === 0);
-
-    if (found !== undefined) {
-      found.id = lastId + 1;
-
-      const newTodos = todos.map((item, index) => {
-        if (index === foundIndex) {
-          return found;
+          setTodos(todoData);
+          handleFilter(filterState, todoData);
         }
+      } catch (_) {
+        setLoadError(true);
+        setErrorMessage('Unable to load todos from server');
+      }
+    };
 
-        return item;
-      });
+    loadTodos();
+  }, [tempTodoCount]);
 
-      setTodos(newTodos);
-      handleFilter(filterState, newTodos);
+  useEffect(() => {
+    if (newTodoField.current && activeTodoField) {
+      newTodoField.current.focus();
     }
-  }, [lastId]);
+  }, [activeTodoField]);
 
   const addTodoToTheServer = async () => {
     try {
       if (userId) {
-        const last = await lastTodoId();
-
-        // console.log(last);
+        const last = tempTodoCount + 1;
 
         const newTodo = {
-          id: last + 1,
           userId,
           title: todoField,
           completed: false,
@@ -73,7 +72,7 @@ export const AddTodo: React.FC<Props> = ({
         };
 
         await addTodo(userId, newTodo);
-        setLastId(last);
+        setTempTodoCount(last);
       }
     } catch (_) {
       setLoadError(true);

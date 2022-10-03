@@ -24,6 +24,8 @@ export const App: React.FC = () => {
     setLoadError,
     errorMessage,
     setErrorMessage,
+    setAllCompletedLoader,
+    handleStatusChange,
   } = useContext(TodoContext);
 
   useEffect(() => {
@@ -70,6 +72,11 @@ export const App: React.FC = () => {
             todos={todos}
             filterState={filterState}
             handleFilter={handleFilter}
+            setTodos={setTodos}
+            setAllCompletedLoader={setAllCompletedLoader}
+            handleStatusChange={handleStatusChange}
+            setErrorMessage={setErrorMessage}
+            setLoadError={setLoadError}
           />
         )}
       </div>

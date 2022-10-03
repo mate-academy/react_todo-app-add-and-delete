@@ -13,6 +13,7 @@ export const TodoList = () => {
     handleChangeTitle,
     setLoadError,
     setErrorMessage,
+    allCompletedLoader,
   } = useContext(TodoContext);
 
   return (
@@ -29,6 +30,7 @@ export const TodoList = () => {
           handleChangeTitle={handleChangeTitle}
           setLoadError={setLoadError}
           setErrorMessage={setErrorMessage}
+          allCompletedLoader={allCompletedLoader}
         />
       )) }
     </section>
