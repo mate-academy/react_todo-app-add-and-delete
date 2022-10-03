@@ -4,6 +4,7 @@ import React, {
   useCallback,
   useContext,
   useEffect,
+  useMemo,
   useRef,
   useState,
 } from 'react';
@@ -22,14 +23,13 @@ export const App: React.FC = () => {
   const newTodoField = useRef<HTMLInputElement>(null);
   const [todos, setTodos] = useState<Todo[]>([]);
   const [filterType, setFilterType] = useState<FilterType>(FilterType.All);
-  const [errorMessage, setErrorMessage] = useState<string>('');
+  const [errorMessage, setErrorMessage] = useState<string | null>(null);
   const [title, setTitle] = useState('');
   const [selectedId, setSelectedId] = useState<number[]>([]);
   const [isAdding, setIsAdding] = useState(false);
   const user = useContext(AuthContext);
 
   useEffect(() => {
-    // focus the element with `ref={newTodoField}`
     if (newTodoField.current) {
       newTodoField.current.focus();
     }
@@ -53,7 +53,7 @@ export const App: React.FC = () => {
     getTodosFromServer(user.id);
   }, []);
 
-  const getFilteredTodo = todos.filter(todo => {
+  const getFilteredTodo = useMemo(() => todos.filter(todo => {
     switch (filterType) {
       case FilterType.Active:
         return !todo.completed;
@@ -63,7 +63,7 @@ export const App: React.FC = () => {
       default:
         return todo;
     }
-  });
+  }), [todos, filterType]);
 
   const newTodo = useCallback(async (event: FormEvent) => {
     event.preventDefault();

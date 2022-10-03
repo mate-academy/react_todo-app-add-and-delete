@@ -5,7 +5,7 @@ import { Todo } from '../../../types/Todo';
 
 type Props = {
   filterTypes: (arg: FilterType) => void;
-  filterType: FilterType | string,
+  filterType: FilterType,
   todos: Todo[],
   deleteCompleted: () => void,
 
@@ -32,7 +32,7 @@ export const Footer: React.FC<Props> = ({
           href="#/"
           className={classNames(
             'filter__link',
-            { selected: filterType === 'All' },
+            { selected: filterType },
           )}
           onClick={() => {
             filterTypes(FilterType.All);
@@ -46,7 +46,7 @@ export const Footer: React.FC<Props> = ({
           href="#/active"
           className={classNames(
             'filter__link',
-            { selected: filterType === 'Active' },
+            { selected: filterType },
           )}
           onClick={() => filterTypes(FilterType.Active)}
         >
@@ -57,7 +57,7 @@ export const Footer: React.FC<Props> = ({
           href="#/completed"
           className={classNames(
             'filter__link',
-            { selected: filterType === 'Completed' },
+            { selected: filterType },
           )}
           onClick={() => filterTypes(FilterType.Completed)}
         >
