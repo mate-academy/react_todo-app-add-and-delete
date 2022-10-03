@@ -22,7 +22,7 @@ export const ErrorNotification: React.FC<Props> = ({
         'is-light',
         'has-text-weight-normal',
         {
-          hidden: !isError,
+          hidden: isError,
         },
       )}
       data-cy="ErrorNotification"

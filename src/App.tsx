@@ -22,7 +22,7 @@ export const App: React.FC = () => {
   const [fileterType, setFilterType] = React.useState('all');
   const [title, setTitle] = React.useState('');
   const [selectedId, setSelectedId] = React.useState<number[]>([]);
-  const [isAdded, setIsAdded] = React.useState(false);
+  const [isAdding, setisAdding] = React.useState(false);
   const user = React.useContext(AuthContext);
 
   useEffect(() => {
@@ -66,12 +66,12 @@ export const App: React.FC = () => {
   const newTodo = useCallback(async (event: FormEvent) => {
     event.preventDefault();
     if (!title || !user) {
-      setErrorMessage(errorMessage.ErrorTitle);
+      setErrorMessage(ErrorMessage.ErrorTitle);
 
       return;
     }
 
-    setIsAdded(true);
+    setisAdding(true);
 
     try {
       const postTodo = await addTodo(title, user.id);
@@ -81,7 +81,7 @@ export const App: React.FC = () => {
       setErrorMessage(ErrorMessage.NotAdd);
     }
 
-    setIsAdded(false);
+    setisAdding(false);
     setTitle('');
   }, [title, user]);
 
@@ -126,7 +126,7 @@ export const App: React.FC = () => {
               todos={filteredTodos}
               removeTodo={removeTodo}
               selectedId={selectedId}
-              isAdded={isAdded}
+              isAdding={isAdding}
               title={title}
             />
             <Footer
@@ -138,10 +138,12 @@ export const App: React.FC = () => {
           </>
         )}
       </div>
-      <ErrorNotification
-        setErrorMessage={setErrorMessage}
-        errorMessage={errorMessage}
-      />
+      {errorMessage && (
+        <ErrorNotification
+          errorMessage={errorMessage}
+          setErrorMessage={setErrorMessage}
+        />
+      )}
     </div>
   );
 };

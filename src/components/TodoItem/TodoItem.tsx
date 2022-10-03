@@ -7,14 +7,14 @@ type Props = {
   todo: Todo;
   removeTodo: (TodoId: number) => void;
   selectedId: number[];
-  isAdded: boolean;
+  isAdding: boolean;
 };
 
 export const TodoItem: React.FC<Props> = ({
   todo,
   removeTodo,
   selectedId,
-  isAdded,
+  isAdding,
 }) => {
   const [clicked, setClicked] = useState<boolean>(false);
 
@@ -54,7 +54,7 @@ export const TodoItem: React.FC<Props> = ({
         <TodoLoader />
       )}
 
-      { (isAdded && todo.id === 0) && (
+      { (isAdding && todo.id === 0) && (
         <TodoLoader />
       )}
 

@@ -8,7 +8,7 @@ type Props = {
   todos: Todo[];
   removeTodo: (TodoId: number) => void;
   selectedId: number[];
-  isAdded: boolean;
+  isAdding: boolean;
   title: string;
 };
 
@@ -16,7 +16,7 @@ export const TodoList: React.FC<Props> = ({
   todos,
   removeTodo,
   selectedId,
-  isAdded,
+  isAdding,
   title,
 }) => {
   return (
@@ -33,12 +33,12 @@ export const TodoList: React.FC<Props> = ({
               todo={todo}
               removeTodo={removeTodo}
               selectedId={selectedId}
-              isAdded={isAdded}
+              isAdding={isAdding}
             />
           </CSSTransition>
         ))}
 
-        {isAdded && (
+        {isAdding && (
           <CSSTransition
             key={0}
             timeout={300}
@@ -54,7 +54,7 @@ export const TodoList: React.FC<Props> = ({
               }}
               removeTodo={removeTodo}
               selectedId={selectedId}
-              isAdded={isAdded}
+              isAdding={isAdding}
             />
           </CSSTransition>
         )}
