@@ -20,7 +20,8 @@ export const App: React.FC = () => {
   const [filterType, setfilterType] = useState('all');
   const [error, setError] = useState<string | null>('');
   const [title, setTitle] = useState('');
-  // const [todoId, setTodoId] = useState(0);
+  const [selectedTodo, setSelectedTodo] = useState<number[]>([]);
+  const [isAdding, setIsAdding] = useState(false);
 
   if (error) {
     setTimeout(() => {
@@ -69,17 +70,35 @@ export const App: React.FC = () => {
       setError('Title can\'t be empty');
       setTitle('');
       return;
-    }
+    };
 
-    await createTodo(title, userId)
-      .then(newTitle => {setTodos([...todos, newTitle])})
-      .catch((error) => {
-        console.log(error);
+    if (!user) {
+      return;
+    };
+
+    const newTodoAdd = {
+      id: 0,
+      userId: user.id,
+      title: title,
+      completed: false,
+    };
+
+    setIsAdding(true);
+
+    setTodos([...todos, newTodoAdd]);
+
+    try {
+      const newTodo = await createTodo(title, userId)
+      setTodos([...todos, newTodo])
+     } catch {
         setError('Unable to add a todo');
-      });
+        setTodos(filteredTodos.filter(todo => todo.id !== 0))
+      };
 
-    setTitle('')
+    setTitle('');
+    setIsAdding(false);
   }
+
 
   const handleChange = (
     event: React.ChangeEvent<HTMLInputElement>
@@ -87,31 +106,18 @@ export const App: React.FC = () => {
     setTitle(event.target.value)
   }
 
-  const handleClickDelete = (todoId: number) => {
-    deleteTodo(todoId)
-    .then(()=> {setTodos(currTodos => currTodos
-      .filter(todo => todo.id !== todoId))})
-      .catch((error) => {
-        console.log(error);
-        setError('Unable to delete a todo');
-      });
+
+  const handleClickDelete = async (todoId: number) => {
+    setSelectedTodo(prevIds => [...prevIds, todoId])
+    try {
+  await deleteTodo(todoId);
+  setTodos(currTodos => currTodos
+    .filter(todo => todo.id !== todoId));}
+    catch { setError('Unable to delete a todo');
+  } finally {
+    setSelectedTodo(prevIds => prevIds.filter(id => id !== todoId));
   }
-
-  // const handleClickDelete = (todoId: number) => {
-  //   setSelectedTodo(todoId);
-  //   const fetchData = async () => {
-  //     try {
-  //       await deleteTodo(todoId);
-  //     setTodos([...todos
-  //     .filter(todo => todo.id !== todoId)]);}
-  //      catch (error) {
-  //       setError('Unable to delete a todo');
-  //      }
-  //     }
-  //     console.log(fetchData())
-  // }
-
-
+  }
 
   return (
     <div className="todoapp">
@@ -135,6 +141,7 @@ export const App: React.FC = () => {
               placeholder="What needs to be done?"
               value={title}
               onChange={handleChange}
+              disabled={isAdding}
             />
           </form>
         </header>
@@ -142,7 +149,7 @@ export const App: React.FC = () => {
         <TodoList
           todos={filteredTodos}
           handleClickDelete={handleClickDelete}
-          filteredTodos={todos}
+          selectedTodo={selectedTodo}
         />
 
         <Footer

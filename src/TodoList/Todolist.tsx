@@ -4,10 +4,10 @@ import { Todo } from '../types/Todo';
 type Props = {
   todos: Todo[];
   handleClickDelete: (id: number)=> void;
-  filteredTodos: Todo[]
+  selectedTodo: number[];
 };
 
-export const TodoList: React.FC<Props> = ({ todos,  handleClickDelete, filteredTodos}) => {
+export const TodoList: React.FC<Props> = ({ todos,  handleClickDelete, selectedTodo}) => {
   return (
     <section className="todoapp__main" data-cy="TodoList">
       {todos.map(todo =>
@@ -15,7 +15,8 @@ export const TodoList: React.FC<Props> = ({ todos,  handleClickDelete, filteredT
         key={todo.id}
         todoItem={todo}
         handleClickDelete={handleClickDelete}
-        filteredTodos={filteredTodos} />)}
+        selectedTodo={selectedTodo}
+        />)}
     </section>
   );
 };
