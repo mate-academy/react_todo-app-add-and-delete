@@ -1,23 +1,39 @@
-import React, { Dispatch, FormEvent, SetStateAction } from 'react';
+import React, {
+  FormEvent,
+  useState,
+} from 'react';
 import classNames from 'classnames';
 
 type Props = {
   isLeftActiveTodos: boolean;
   newTodoField: React.RefObject<HTMLInputElement>,
-  onAddTodo: (event: FormEvent) => void,
-  title: string,
-  setTitle: Dispatch<SetStateAction<string>>,
+  onAddTodo: (inputTitle: string) => void,
   isDisabled: boolean,
+  setErrorMessage: (error: string) => void,
 };
 
 export const Header: React.FC<Props> = ({
   isLeftActiveTodos,
   newTodoField,
   onAddTodo,
-  title,
-  setTitle,
   isDisabled,
+  setErrorMessage,
 }) => {
+  const [inputTitle, setInputTitle] = useState('');
+
+  const onAdd = (event: FormEvent) => {
+    event.preventDefault();
+    if (!inputTitle.trim()) {
+      setErrorMessage("Title can't be empty");
+      setInputTitle('');
+
+      return;
+    }
+
+    onAddTodo(inputTitle);
+    setInputTitle('');
+  };
+
   return (
     <header className="todoapp__header">
       <button
@@ -30,7 +46,7 @@ export const Header: React.FC<Props> = ({
         )}
       />
 
-      <form onSubmit={onAddTodo}>
+      <form onSubmit={onAdd}>
         <input
           data-cy="NewTodoField"
           type="text"
@@ -38,8 +54,8 @@ export const Header: React.FC<Props> = ({
           className="todoapp__new-todo"
           placeholder="What needs to be done?"
           disabled={isDisabled}
-          value={title}
-          onChange={(event) => setTitle(event.target.value)}
+          value={inputTitle}
+          onChange={(event) => setInputTitle(event.target.value)}
         />
       </form>
     </header>

@@ -1,6 +1,6 @@
 /* eslint-disable no-console */
 import React, {
-  FormEvent,
+  // FormEvent,
   useContext,
   useEffect,
   useMemo,
@@ -42,26 +42,20 @@ export const App: React.FC = () => {
       });
   }, []);
 
-  const hundleAddTodo = async (event: FormEvent) => {
-    event.preventDefault();
-    if (!title.trim() || !user) {
-      setErrorMessage("Title can't be empty");
-
-      return;
-    }
-
+  const hundleAddTodo = async (inputTitle: string) => {
+    setTitle(inputTitle);
     setIsTodoAdded(true);
 
     try {
-      const newTodo = await postTodo(user.id, title);
+      if (user) {
+        const newTodo = await postTodo(user.id, inputTitle);
 
-      setTodos([...todos, newTodo]);
+        setTodos([...todos, newTodo]);
+      }
     } catch {
       setErrorMessage('Unable to add todo');
     } finally {
-      setTitle('');
       setIsTodoAdded(false);
-
       if (newTodoField.current) {
         newTodoField.current.focus();
       }
@@ -119,9 +113,8 @@ export const App: React.FC = () => {
           newTodoField={newTodoField}
           isLeftActiveTodos={isLeftActiveTodos}
           onAddTodo={hundleAddTodo}
-          title={title}
-          setTitle={setTitle}
           isDisabled={isTodoAdded}
+          setErrorMessage={setErrorMessage}
         />
         {!!todos.length && (
           <TodoList
