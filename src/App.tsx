@@ -66,7 +66,12 @@ export const App: React.FC = () => {
 
         {todos.length > 0 && (
           <>
-            <TodoList todos={filterTodos} />
+            <TodoList
+              todos={filterTodos}
+              setTodos={setTodos}
+              setError={setError}
+              setErrorMessage={setErrorMessage}
+            />
 
             <Footer
               todos={filterTodos}

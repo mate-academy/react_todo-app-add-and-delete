@@ -1,11 +1,34 @@
 import classNames from 'classnames';
+import { Dispatch, SetStateAction } from 'react';
+import { deleteTodo } from '../../api/todos';
 import { Todo } from '../../types/Todo';
 
 type Props = {
   todo: Todo;
+  todos: Todo[];
+  setTodos: Dispatch<SetStateAction<Todo[]>>;
+  setError: Dispatch<SetStateAction<boolean>>;
+  setErrorMessage: Dispatch<SetStateAction<string>>;
 };
 
-export const TodoItem: React.FC<Props> = ({ todo }) => {
+export const TodoItem: React.FC<Props> = ({
+  todo,
+  todos,
+  setTodos,
+  setError,
+  setErrorMessage,
+}) => {
+  const handleDelete = () => {
+    deleteTodo(todo.id)
+      .then(() => {
+        setTodos(todos.filter(tod => tod.id !== todo.id));
+      })
+      .catch(() => {
+        setError(true);
+        setErrorMessage('Unable to delete a todo');
+      });
+  };
+
   return (
     <div
       data-cy="Todo"
@@ -30,6 +53,7 @@ export const TodoItem: React.FC<Props> = ({ todo }) => {
         type="button"
         className="todo__remove"
         data-cy="TodoDeleteButton"
+        onClick={handleDelete}
       >
         ×
       </button>
