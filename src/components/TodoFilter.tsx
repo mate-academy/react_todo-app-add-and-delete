@@ -17,15 +17,9 @@ export enum FilterBy {
 }
 
 export const TodoFilter: React.FC<Props> = ({
-  todos, filterType, setFilterType, onDelete, completed, setCompleted,
+  todos, filterType, setFilterType, onDelete, completed,
 }) => {
   const { length } = todos.filter((todo) => todo.completed === false);
-
-  const completedTodos = todos.some((todo) => todo.completed === true);
-
-  // const completed = todos
-  //   .filter((todo) => todo.completed === true)
-  //   .map((todo) => todo.id);
 
   const handleAllSort = () => setFilterType(FilterBy.All);
   const handleActiveSort = () => setFilterType(FilterBy.Active);
@@ -72,7 +66,7 @@ export const TodoFilter: React.FC<Props> = ({
           Completed
         </a>
       </nav>
-      {completedTodos
+      {completed
         ? (
           <button
             data-cy="ClearCompletedButton"
@@ -80,7 +74,6 @@ export const TodoFilter: React.FC<Props> = ({
             className="todoapp__clear-completed"
             onClick={() => {
               completed.forEach((todo) => onDelete(todo));
-              setCompleted([]);
             }}
           >
             Clear completed

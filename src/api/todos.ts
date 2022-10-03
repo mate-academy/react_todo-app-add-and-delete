@@ -12,5 +12,3 @@ export const postTodo = (userId: number, data: NewTodo) => {
 export const deleteTodo = (todoId: number | number[]) => {
   return client.delete(`/todos/${todoId}`);
 };
-
-// Add more methods here

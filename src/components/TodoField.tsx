@@ -2,7 +2,7 @@ import classNames from 'classnames';
 import { Todo } from '../types/Todo';
 
 type Props = {
-  newTodoField: React.RefObject<HTMLInputElement>;
+  newToField: React.RefObject<HTMLInputElement>;
   todos: Todo[];
   onAdd: (newTodoData: string) => void;
   todoName: string;
@@ -15,9 +15,33 @@ type Props = {
 
 export const TodoField: React.FC<Props> = ({
   todos, todoName, onAdd, setNewTodoName, setAddingBlancError, isAdding,
-  loadingError, setErrorClosing, newTodoField,
+  loadingError, setErrorClosing, newToField,
 }) => {
   const completedTodos = todos.every((todo) => todo.completed === true);
+
+  const handleFormSubmit = (event: {
+    preventDefault: () => void;
+  }) => {
+    event.preventDefault();
+
+    if (!todoName.trim()) {
+      setAddingBlancError(true);
+      setErrorClosing(false);
+    }
+
+    if (todoName.trim()) {
+      onAdd(todoName);
+      setAddingBlancError(false);
+    }
+
+    setTimeout(() => newToField.current?.focus(), 500);
+  };
+
+  const handleInput = (event: {
+    target: { value: string; };
+  }) => {
+    setNewTodoName(event.target.value);
+  };
 
   return (
     <>
@@ -33,19 +57,7 @@ export const TodoField: React.FC<Props> = ({
         />
       )}
       <form
-        onSubmit={(event) => {
-          event.preventDefault();
-
-          if (!todoName.trim()) {
-            setAddingBlancError(true);
-            setErrorClosing(false);
-          }
-
-          if (todoName.trim()) {
-            onAdd(todoName);
-            setAddingBlancError(false);
-          }
-        }}
+        onSubmit={handleFormSubmit}
       >
         <input
           data-cy="NewTodoField"
@@ -53,11 +65,9 @@ export const TodoField: React.FC<Props> = ({
           disabled={isAdding || loadingError}
           className="todoapp__new-todo"
           placeholder="What me do?"
-          ref={(el) => newTodoField && el?.focus()}
+          ref={newToField}
           value={todoName}
-          onChange={(event) => {
-            setNewTodoName(event.target.value);
-          }}
+          onChange={handleInput}
         />
       </form>
     </>

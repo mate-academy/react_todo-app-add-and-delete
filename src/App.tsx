@@ -46,8 +46,6 @@ export const App: React.FC = () => {
   }
 
   useEffect(() => {
-    newTodoField.current?.focus();
-
     const loadTodos = async () => {
       try {
         const loadedTodos = await getTodos(user?.id || 0);
@@ -100,7 +98,7 @@ export const App: React.FC = () => {
       <div className="todoapp__content">
         <header className="todoapp__header">
           <TodoField
-            newTodoField={newTodoField}
+            newToField={newTodoField}
             todos={todos}
             todoName={todoName}
             setNewTodoName={setNewTodoName}
