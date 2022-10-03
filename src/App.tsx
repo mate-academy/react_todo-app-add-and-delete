@@ -47,7 +47,7 @@ export const App: React.FC = () => {
     userId = user.id;
   }
 
-  userId = 10;
+  userId = 0;
 
   useEffect(() => {
     // focus the element with `ref={newTodoField}`
