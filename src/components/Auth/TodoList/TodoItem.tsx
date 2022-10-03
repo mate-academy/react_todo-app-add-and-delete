@@ -5,12 +5,14 @@ type Props = {
   todo: Todo;
   removeTodo: (TodoId: number) => Promise<void>;
   selectedId: number[];
+  isAdding: boolean;
 };
 
 export const TodoItem: React.FC<Props> = ({
   todo,
   removeTodo,
   selectedId,
+  isAdding,
 }) => {
   return (
     <div
@@ -43,16 +45,26 @@ export const TodoItem: React.FC<Props> = ({
       >
         ×
       </button>
-      <div
-        data-cy="TodoLoader"
-        className={classNames(
-          'modal overlay',
-          { 'is-active': selectedId.includes(todo.id) },
-        )}
-      >
-        <div className="modal-background has-background-white-ter" />
-        <div className="loader is-loading " />
-      </div>
+      { selectedId.includes(todo.id) && (
+        <div
+          data-cy="TodoLoader"
+          className="modal overlay is-active"
+        >
+          <div className="modal-background has-background-white-ter" />
+          <div className="loader is-loading " />
+        </div>
+      )}
+
+      { (isAdding && todo.id === 0) && (
+        <div
+          data-cy="TodoLoader"
+          className="modal overlay is-active"
+        >
+          <div className="modal-background has-background-white-ter" />
+          <div className="loader is-loading " />
+        </div>
+      )}
+
     </div>
   );
 };

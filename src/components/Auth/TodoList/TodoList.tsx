@@ -1,6 +1,7 @@
-import classnames from 'classnames';
+import { TransitionGroup, CSSTransition } from 'react-transition-group';
 import { Todo } from '../../../types/Todo';
 import { TodoItem } from './TodoItem';
+import '../../../styles/transitiongroup.scss';
 
 interface Props {
   todos: Todo[],
@@ -19,41 +20,44 @@ export const TodoList: React.FC<Props> = ({
 }) => {
   return (
     <section className="todoapp__main" data-cy="TodoList">
-      {todos.map(todo => (
-        <TodoItem
-          key={todo.id}
-          todo={todo}
-          removeTodo={removeTodo}
-          selectedId={selectedId}
-        />
-      ))}
-      {isAdding && (
-        <div
-          data-cy="Todo"
-          className="todo"
-        >
-          <label className="todo__status-label">
-            <input
-              data-cy="TodoStatus"
-              type="checkbox"
-              className="todo__status"
-            />
-          </label>
-          <span data-cy="TodoTitle" className="todo__title">
-            {title}
-          </span>
-          <div
-            data-cy="TodoLoader"
-            className={classnames(
-              'modal overlay',
-              { 'is-active': isAdding },
-            )}
+      <TransitionGroup>
+        {todos.map(todo => (
+          <CSSTransition
+            key={todo.id}
+            timeout={300}
+            classNames="item"
           >
-            <div className="modal-background has-background-white-ter" />
-            <div className="loader" />
-          </div>
-        </div>
-      )}
+            <TodoItem
+              key={todo.id}
+              todo={todo}
+              removeTodo={removeTodo}
+              selectedId={selectedId}
+              isAdding={isAdding}
+            />
+          </CSSTransition>
+        ))}
+
+        {isAdding && (
+          <CSSTransition
+            key={0}
+            timeout={300}
+            classNames="temp-item"
+          >
+            <TodoItem
+              key={Math.random()}
+              todo={{
+                id: 0,
+                title,
+                completed: false,
+                userId: Math.random(),
+              }}
+              removeTodo={removeTodo}
+              selectedId={selectedId}
+              isAdding={isAdding}
+            />
+          </CSSTransition>
+        )}
+      </TransitionGroup>
     </section>
   );
 };
