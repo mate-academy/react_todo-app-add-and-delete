@@ -22,7 +22,7 @@ export const ErrorNotification: React.FC<Props> = ({ setError, error }) => {
         aria-label="no errors"
       />
       {error}
-      
+
     </div>
   );
 };

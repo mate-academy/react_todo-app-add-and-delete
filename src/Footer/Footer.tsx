@@ -15,16 +15,16 @@ export const Footer: React.FC<Props> = ({
   setfilterType,
   filteredTodos,
   todos,
-  handleClickDelete
+  handleClickDelete,
 }) => {
-
   const clearCompleted = () => todos
     .forEach(todo => {
       if (todo.completed) {
-        handleClickDelete(todo.id)
-    }});
+        handleClickDelete(todo.id);
+      }
+    });
 
-    const isActive = filteredTodos.filter(todo => !todo.completed);
+  const isActive = filteredTodos.filter(todo => !todo.completed);
 
   return (
     <footer className="todoapp__footer" data-cy="Footer">
@@ -72,8 +72,8 @@ export const Footer: React.FC<Props> = ({
         className="todoapp__clear-completed"
         onClick={clearCompleted}
       >
-        {(todos.some(todo => todo.completed)) &&
-         'Clear completed'}
+        {(todos.some(todo => todo.completed))
+         && 'Clear completed'}
       </button>
     </footer>
   );

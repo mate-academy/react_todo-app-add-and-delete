@@ -1,7 +1,6 @@
 import classNames from 'classnames';
 import { Todo } from '../types/Todo';
 
-
 type Props = {
   todoItem: Todo;
   handleClickDelete: (id: number)=> void;
@@ -11,9 +10,8 @@ type Props = {
 export const TodoItem: React.FC<Props> = ({
   todoItem,
   handleClickDelete,
-  selectedTodo
+  selectedTodo,
 }) => {
-
   return (
     <div
       data-cy="Todo"
@@ -38,7 +36,7 @@ export const TodoItem: React.FC<Props> = ({
         type="button"
         className="todo__remove"
         data-cy="TodoDeleteButton"
-        onClick={()=>handleClickDelete(todoItem.id)}
+        onClick={() => handleClickDelete(todoItem.id)}
       >
         ×
       </button>
@@ -48,14 +46,15 @@ export const TodoItem: React.FC<Props> = ({
         className={classNames(
           'modal',
           'overlay',
-          { 'is-active'
-          : selectedTodo.includes(todoItem.id) || todoItem.id === 0 },
+          {
+            'is-active': selectedTodo.includes(todoItem.id)
+              || todoItem.id === 0,
+          },
         )}
       >
         <div className="modal-background has-background-white-ter" />
         <div className="loader" />
-    </div>
-
+      </div>
 
     </div>
   );
