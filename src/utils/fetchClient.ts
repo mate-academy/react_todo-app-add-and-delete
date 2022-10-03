@@ -12,7 +12,9 @@ type RequestMethod = 'GET' | 'POST' | 'PATCH' | 'DELETE';
 
 function request<T>(
   url: string,
+  // тут по умолчанию гет но если мы передадим параметр то будет другой метод
   method: RequestMethod = 'GET',
+  /* eslint-disable  @typescript-eslint/no-explicit-any */
   data: any = null, // we can send any data to the server
 ): Promise<T> {
   const options: RequestInit = { method };
