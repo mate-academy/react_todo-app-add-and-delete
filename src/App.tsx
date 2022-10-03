@@ -28,7 +28,8 @@ export const App: React.FC = () => {
     }, 3000);
   }
 
-  const filteredTodos = todos.filter(todo => {
+  const filteredTodos = todos
+  .filter(todo => {
     switch (filterType) {
       case FilterType.Active:
         return !todo.completed;
@@ -96,6 +97,21 @@ export const App: React.FC = () => {
       });
   }
 
+  // const handleClickDelete = (todoId: number) => {
+  //   setSelectedTodo(todoId);
+  //   const fetchData = async () => {
+  //     try {
+  //       await deleteTodo(todoId);
+  //     setTodos([...todos
+  //     .filter(todo => todo.id !== todoId)]);}
+  //      catch (error) {
+  //       setError('Unable to delete a todo');
+  //      }
+  //     }
+  //     console.log(fetchData())
+  // }
+
+
 
   return (
     <div className="todoapp">
@@ -126,6 +142,7 @@ export const App: React.FC = () => {
         <TodoList
           todos={filteredTodos}
           handleClickDelete={handleClickDelete}
+          filteredTodos={todos}
         />
 
         <Footer

@@ -24,10 +24,12 @@ export const Footer: React.FC<Props> = ({
         handleClickDelete(todo.id)
     }});
 
+    const isActive = filteredTodos.filter(todo => !todo.completed);
+
   return (
     <footer className="todoapp__footer" data-cy="Footer">
       <span className="todo-count" data-cy="todosCounter">
-        {`${filteredTodos.length} items left`}
+        {`${isActive.length} items left`}
       </span>
 
       <nav className="filter" data-cy="Filter">

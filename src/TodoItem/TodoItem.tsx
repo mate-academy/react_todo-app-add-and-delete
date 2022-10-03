@@ -1,12 +1,24 @@
 import classNames from 'classnames';
+import { useState } from 'react';
 import { Todo } from '../types/Todo';
+import { deleteTodo } from '../api/todos';
+
 
 type Props = {
   todoItem: Todo;
-  handleClickDelete: (id: number)=> void
+  handleClickDelete: (id: number)=> void;
+  filteredTodos: Todo[];
 };
 
-export const TodoItem: React.FC<Props> = ({ todoItem, handleClickDelete }) => {
+export const TodoItem: React.FC<Props> = ({ todoItem, handleClickDelete, filteredTodos }) => {
+  const [deletedId, setDeletedId] = useState<number | null>(null);
+  const handleDelete = (todoId: number) => {
+    setDeletedId(todoId);
+    deleteTodo(todoId);
+  };
+
+  //const selectTodo = filteredTodos.find(todo => todo.id === todoItem.id);
+
   return (
     <div
       data-cy="Todo"
@@ -36,10 +48,13 @@ export const TodoItem: React.FC<Props> = ({ todoItem, handleClickDelete }) => {
         ×
       </button>
 
-      <div data-cy="TodoLoader" className="modal overlay">
-        <div className="modal-background has-background-white-ter" />
-        <div className="loader" />
-      </div>
+      {deletedId !== todoItem.id &&
+      <div data-cy="TodoLoader" className="modal overlay is-active">
+      <div className="modal-background has-background-white-ter" />
+      <div className="loader" />
+    </div>
+      }
+
     </div>
   );
 };
