@@ -6,28 +6,28 @@ import { User } from '../types/User';
 interface Props {
   newTodoField: any;
   newTodoTitle: string;
-  setTodoTitle: (value: string) => void;
+  setNewTodoTitle: (value: string) => void;
   setError: (value: string) => void
   todos: Todo[],
   setTodos: any,
-  setLoading: (value: boolean) => void,
-  setTitle: (value: string) => void,
+  setIsLoading: (value: boolean) => void,
+  setTempTitle: (value: string) => void,
   user: User | null,
 }
 export const NewTodoForm: React.FC<Props> = ({
   newTodoField,
   newTodoTitle,
-  setTodoTitle,
+  setNewTodoTitle,
   setError,
   setTodos,
   todos,
-  setLoading,
-  setTitle,
+  setIsLoading,
+  setTempTitle,
   user,
 }) => {
   const handlerInput = (event: React.ChangeEvent<HTMLInputElement>) => {
-    setTodoTitle(event.target.value);
-    setTitle(event.target.value);
+    setNewTodoTitle(event.target.value);
+    setTempTitle(event.target.value);
   };
 
   const onSubmit = (event: React.FormEvent<HTMLFormElement>) => {
@@ -39,21 +39,22 @@ export const NewTodoForm: React.FC<Props> = ({
     }
 
     const fetchData = async () => {
-      setLoading(true);
+      setIsLoading(true);
       try {
         if (user) {
           const newTodosFromUser: Todo = await post(newTodoTitle, user?.id);
 
           setTodos([...todos, newTodosFromUser]);
-          setLoading(false);
         }
       } catch (errorFromServer) {
         setError('Unable to add a todo');
+      } finally {
+        setIsLoading(false);
       }
     };
 
     fetchData();
-    setTodoTitle('');
+    setNewTodoTitle('');
   };
 
   return (

@@ -48,13 +48,13 @@ export const App: React.FC = () => {
   const [todos, setTodos] = useState<Todo[]>([]);
   const [error, setError] = useState('');
   const [hideError, setHideError] = useState(false);
-  const [selectedTabId, setTabID] = useState(tabs[0].id);
-  const [newTodoTitle, setTodoTitle] = useState('');
-  const [tempTitle, setTitle] = useState('');
-  const [isLoading, setLoading] = useState(false);
+  const [selectedTabId, setSelectedTabId] = useState(tabs[0].id);
+  const [newTodoTitle, setNewTodoTitle] = useState('');
+  const [tempTitle, setTempTitle] = useState('');
+  const [isLoading, setIsLoading] = useState(false);
   const [selectedTodoId, setSelectedTodoId] = useState<number>(0);
   const onTabSelected = (tab: FilterTypes) => {
-    setTabID(tab.id);
+    setSelectedTabId(tab.id);
   };
 
   const selectedTab = tabs.find(tab => tab.id === selectedTabId) || tabs[0];
@@ -72,7 +72,7 @@ export const App: React.FC = () => {
         if (user) {
           const todosFromServer = await getTodos(user?.id);
 
-          setLoading(false);
+          setIsLoading(false);
 
           setTodos(todosFromServer);
         }
@@ -101,12 +101,12 @@ export const App: React.FC = () => {
           <NewTodoForm
             newTodoField={newTodoField}
             newTodoTitle={newTodoTitle}
-            setTodoTitle={setTodoTitle}
+            setNewTodoTitle={setNewTodoTitle}
             setError={setError}
             setTodos={setTodos}
             todos={todos}
-            setLoading={setLoading}
-            setTitle={setTitle}
+            setIsLoading={setIsLoading}
+            setTempTitle={setTempTitle}
             user={user}
           />
         </header>
