@@ -18,13 +18,13 @@ export const App: React.FC = () => {
 
   const [todos, setTodos] = useState<Todo[]>([]);
   const [filterType, setfilterType] = useState('all');
-  const [error, setError] = useState(false);
+  const [error, setError] = useState<string | null>('');
   const [title, setTitle] = useState('');
   // const [todoId, setTodoId] = useState(0);
 
   if (error) {
     setTimeout(() => {
-      setError(false);
+      setError(null);
     }, 3000);
   }
 
@@ -57,22 +57,25 @@ export const App: React.FC = () => {
 
     getTodos(userId)
       .then(setTodos)
-      .catch(() => (setError(true)));
+      .catch(() => (setError('Unable to load todo from server')));
   }, []);
 
 
-  const handleSubmit = (event: FormEvent) => {
+  const handleSubmit = async (event: FormEvent) => {
     event.preventDefault();
 
-    // if (title.trim().length === 0) {
+    if (title.trim().length === 0) {
+      setError('Title can\'t be empty');
+      setTitle('');
+      return;
+    }
 
-    // }
-
-     createTodo(title)
+    await createTodo(title, userId)
       .then(newTitle => {setTodos([...todos, newTitle])})
-      // .catch(() => {
-      //   setError(true);
-      // });
+      .catch((error) => {
+        console.log(error);
+        setError('Unable to add a todo');
+      });
 
     setTitle('')
   }
@@ -83,10 +86,14 @@ export const App: React.FC = () => {
     setTitle(event.target.value)
   }
 
-  const handleClick = (todoId: number) => {
+  const handleClickDelete = (todoId: number) => {
     deleteTodo(todoId)
     .then(()=> {setTodos(currTodos => currTodos
       .filter(todo => todo.id !== todoId))})
+      .catch((error) => {
+        console.log(error);
+        setError('Unable to delete a todo');
+      });
   }
 
 
@@ -118,20 +125,23 @@ export const App: React.FC = () => {
 
         <TodoList
           todos={filteredTodos}
-          handleClick={handleClick}
+          handleClickDelete={handleClickDelete}
         />
 
         <Footer
           filterType={filterType}
           setfilterType={setfilterType}
           filteredTodos={filteredTodos}
+          todos={todos}
+          handleClickDelete={handleClickDelete}
         />
       </div>
 
-      <ErrorNotification
+      {error &&
+        <ErrorNotification
         error={error}
         setError={setError}
-      />
+      />}
     </div>
   );
 };

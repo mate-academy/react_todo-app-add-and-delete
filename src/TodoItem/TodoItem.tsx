@@ -3,10 +3,10 @@ import { Todo } from '../types/Todo';
 
 type Props = {
   todoItem: Todo;
-  handleClick: (id: number)=> void
+  handleClickDelete: (id: number)=> void
 };
 
-export const TodoItem: React.FC<Props> = ({ todoItem, handleClick }) => {
+export const TodoItem: React.FC<Props> = ({ todoItem, handleClickDelete }) => {
   return (
     <div
       data-cy="Todo"
@@ -31,7 +31,7 @@ export const TodoItem: React.FC<Props> = ({ todoItem, handleClick }) => {
         type="button"
         className="todo__remove"
         data-cy="TodoDeleteButton"
-        onClick={()=>handleClick(todoItem.id)}
+        onClick={()=>handleClickDelete(todoItem.id)}
       >
         ×
       </button>

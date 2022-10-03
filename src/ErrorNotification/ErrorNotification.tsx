@@ -2,8 +2,8 @@
 import classNames from 'classnames';
 
 type Props = {
-  setError: (error: boolean) => void;
-  error: boolean;
+  setError: (error: string | null) => void;
+  error: string | null;
 };
 
 export const ErrorNotification: React.FC<Props> = ({ setError, error }) => {
@@ -18,15 +18,11 @@ export const ErrorNotification: React.FC<Props> = ({ setError, error }) => {
         data-cy="HideErrorButton"
         type="button"
         className="delete"
-        onClick={() => setError(false)}
+        onClick={() => setError(null)}
         aria-label="no errors"
       />
-
-      Unable to add a todo
-      <br />
-      Unable to delete a todo
-      <br />
-      Unable to update a todo
+      {error}
+      
     </div>
   );
 };
