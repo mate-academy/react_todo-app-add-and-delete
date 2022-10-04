@@ -11,7 +11,7 @@ export const ErrorNotification: React.FC<Props> = ({
   hasLoadError,
   setHasLoadError,
 }) => {
-  const clouseError = () => {
+  const closeError = () => {
     setHasLoadError('');
   };
 
@@ -39,16 +39,9 @@ export const ErrorNotification: React.FC<Props> = ({
         data-cy="HideErrorButton"
         type="button"
         className="delete"
-        onClick={clouseError}
+        onClick={closeError}
       />
       {hasLoadError}
-
-      <br />
-      {/* Unable to add a todo
-      <br />
-      Unable to delete a todo
-      <br />
-      Unable to update a todo */}
     </div>
   );
 };
