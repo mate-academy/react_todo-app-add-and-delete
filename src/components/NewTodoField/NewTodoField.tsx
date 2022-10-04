@@ -9,12 +9,14 @@ type Props = {
   onAdd: (todo: Todo) => void;
   setErrorMessage: (error: string) => void;
   setVisibleLoader: (loader: boolean) => void;
+  visibleLoader: boolean;
 };
 
 export const NewTodoField: React.FC<Props> = ({
   onAdd,
   setErrorMessage,
   setVisibleLoader,
+  visibleLoader,
 }) => {
   const newTodoField = useRef<HTMLInputElement>(null);
   const user = useContext(AuthContext);
@@ -38,8 +40,9 @@ export const NewTodoField: React.FC<Props> = ({
         userId: user?.id || 0,
         title,
         completed,
-      }).catch(() => setErrorMessage('Unable to add a todo'))
-        .finally(() => setVisibleLoader(false));
+      }).then(() => {
+        setVisibleLoader(false);
+      }).catch(() => setErrorMessage('Unable to add a todo'));
 
       onAdd({
         id,
@@ -74,6 +77,7 @@ export const NewTodoField: React.FC<Props> = ({
         placeholder="What needs to be done?"
         value={title}
         onChange={(event) => setTitle(event.target.value)}
+        disabled={visibleLoader}
       />
     </form>
   );

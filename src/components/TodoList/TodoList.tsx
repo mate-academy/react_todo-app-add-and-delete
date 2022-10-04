@@ -7,6 +7,7 @@ type Props = {
   deleteTodo: (todo: Todo) => void;
   isCompleted: boolean;
   visibleLoader: boolean;
+  setVisibleLoader: (loader: boolean) => void;
 };
 
 export const TodoList: React.FC<Props> = ({
@@ -14,6 +15,7 @@ export const TodoList: React.FC<Props> = ({
   deleteTodo,
   isCompleted,
   visibleLoader,
+  setVisibleLoader,
 }) => {
   return (
     <section className="todoapp__main" data-cy="TodoList">
@@ -25,6 +27,7 @@ export const TodoList: React.FC<Props> = ({
               deleteTodo={deleteTodo}
               isCompleted={isCompleted}
               visibleLoader={visibleLoader}
+              setVisibleLoader={setVisibleLoader}
             />
           </li>
         ))}

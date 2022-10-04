@@ -64,7 +64,12 @@ export const App: React.FC = () => {
 
   const deleteTodo = (todo: Todo) => {
     deleteTodos(todo.id)
-      .catch(() => setErrorMessage('Unable to delete a todo'));
+      .then(() => {
+        setVisibleLoader(false);
+      })
+      .catch(() => {
+        setErrorMessage('Unable to delete a todo');
+      });
 
     setTodos(
       todos.filter(userTodo => todo.id !== userTodo.id),
@@ -103,6 +108,7 @@ export const App: React.FC = () => {
             onAdd={addNewTodo}
             setErrorMessage={setErrorMessage}
             setVisibleLoader={setVisibleLoader}
+            visibleLoader={visibleLoader}
           />
         </header>
 
@@ -113,6 +119,7 @@ export const App: React.FC = () => {
               deleteTodo={deleteTodo}
               isCompleted={isCompleted}
               visibleLoader={visibleLoader}
+              setVisibleLoader={setVisibleLoader}
             />
 
             <footer className="todoapp__footer" data-cy="Footer">

@@ -8,6 +8,7 @@ type Props = {
   deleteTodo: (todo: Todo) => void;
   isCompleted: boolean;
   visibleLoader: boolean;
+  setVisibleLoader: (loader: boolean) => void;
 };
 
 export const UserTodo: React.FC<Props> = ({
@@ -15,6 +16,7 @@ export const UserTodo: React.FC<Props> = ({
   deleteTodo,
   isCompleted,
   visibleLoader,
+  setVisibleLoader,
 }) => {
   const [touched, setTouched] = useState<boolean>(false);
 
@@ -44,6 +46,8 @@ export const UserTodo: React.FC<Props> = ({
         className="todo__remove"
         data-cy="TodoDeleteButton"
         onClick={() => {
+          setVisibleLoader(true);
+
           return deleteTodo({
             title: todo.title,
             userId: todo.userId,

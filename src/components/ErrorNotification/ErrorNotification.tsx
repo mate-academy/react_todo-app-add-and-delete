@@ -9,7 +9,8 @@ type Props = {
 };
 
 export const ErrorNotification: React.FC<Props> = ({
-  errorMessage, setErrorMessage,
+  errorMessage,
+  setErrorMessage,
 }) => {
   const [isClose, setIsClose] = useState(false);
 
