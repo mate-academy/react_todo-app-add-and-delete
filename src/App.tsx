@@ -2,6 +2,7 @@ import React, {
   FormEvent,
   useCallback,
   useEffect,
+  useMemo,
   useRef,
 } from 'react';
 import { AuthContext } from './components/Auth/AuthContext';
@@ -18,7 +19,7 @@ export const App: React.FC = () => {
   const newTodoField = useRef<HTMLInputElement>(null);
   const [todos, setTodos] = React.useState<Todo[]>([]);
   const [errorMessage, setErrorMessage] = React.useState('');
-  const [fileterType, setFilterType] = React.useState('all');
+  const [fileterType, setFilterType] = React.useState(FilterType.All);
   const [title, setTitle] = React.useState('');
   const [selectedId, setSelectedId] = React.useState<number[]>([]);
   const [isAdding, setisAdding] = React.useState(false);
@@ -48,18 +49,18 @@ export const App: React.FC = () => {
     getTodosFromServer(user.id);
   }, []);
 
-  const filteredTodos = todos.filter(todo => {
-    switch (fileterType) {
-      case FilterType.All:
-        return todo;
-      case FilterType.Active:
-        return !todo.completed;
-      case FilterType.Completed:
-        return todo.completed;
-      default:
-        return null;
-    }
-  });
+  const filteredTodos = useMemo(() => {
+    return todos.filter(todo => {
+      switch (fileterType) {
+        case FilterType.Active:
+          return !todo.completed;
+        case FilterType.Completed:
+          return todo.completed;
+        default:
+          return true;
+      }
+    });
+  }, [todos, fileterType]);
 
   const newTodo = useCallback(async (event: FormEvent) => {
     event.preventDefault();

@@ -17,6 +17,7 @@ export const TodoItem: React.FC<Props> = ({
   isAdding,
 }) => {
   const [clicked, setClicked] = useState<boolean>(false);
+  const { title, id } = todo;
 
   return (
     <div
@@ -24,7 +25,7 @@ export const TodoItem: React.FC<Props> = ({
         completed: clicked,
       })}
       data-cy="Todo"
-      key={todo.id}
+      key={id}
     >
       <label className="todo__status-label">
         <input
@@ -40,21 +41,21 @@ export const TodoItem: React.FC<Props> = ({
         className="todo__title"
         data-cy="TodoTitle"
       >
-        {todo.title}
+        {title}
       </span>
       <button
         type="button"
         className="todo__remove"
         data-cy="TodoDeleteButton"
-        onClick={() => removeTodo(todo.id)}
+        onClick={() => removeTodo(id)}
       >
         x
       </button>
-      { selectedId.includes(todo.id) && (
+      { selectedId.includes(id) && (
         <TodoLoader />
       )}
 
-      { (isAdding && todo.id === 0) && (
+      { (isAdding && id === 0) && (
         <TodoLoader />
       )}
 

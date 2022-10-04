@@ -1,5 +1,5 @@
 import classNames from 'classnames';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 
 type Props = {
   errorMessage: string;
@@ -12,7 +12,13 @@ export const ErrorNotification: React.FC<Props> = ({
 }) => {
   const [isError, setIsError] = useState(false);
 
-  setTimeout(() => setErrorMessage(''), 3000);
+  useEffect(() => {
+    const timer = setTimeout(() => setErrorMessage(''), 3000);
+
+    return () => {
+      clearTimeout(timer);
+    };
+  }, [errorMessage, isError]);
 
   return (
     <div
