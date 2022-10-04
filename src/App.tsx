@@ -18,6 +18,7 @@ import { TodoList } from './components/TodoList/TodoList';
 
 import { Todo } from './types/Todo';
 import { deleteTodo, getTodos, postTodo } from './api/todos';
+import { FilterValues } from './types/FilterValues';
 
 export const App: React.FC = () => {
   const user = useContext(AuthContext);
@@ -39,11 +40,19 @@ export const App: React.FC = () => {
   useEffect(() => {
     focusOnInput();
 
-    getTodos(user?.id || 0)
-      .then(setTodos)
-      .catch(() => {
+    const getTodosAsync = async (userId: number) => {
+      try {
+        const receivedTodos = await getTodos(userId);
+
+        setTodos(receivedTodos);
+      } catch {
         setErrorMessage('Unable to load todos');
-      });
+      }
+    };
+
+    if (user) {
+      getTodosAsync(user.id);
+    }
   }, []);
 
   const hundleAddTodo = async (inputTitle: string) => {
@@ -77,18 +86,20 @@ export const App: React.FC = () => {
     ));
   };
 
-  const filteredTodos = todos.filter(({ completed }) => {
-    switch (filterValue) {
-      case 'active':
-        return !completed;
+  const filteredTodos = useMemo(() => {
+    return todos.filter(({ completed }) => {
+      switch (filterValue) {
+        case FilterValues.ACTIVE:
+          return !completed;
 
-      case 'completed':
-        return completed;
+        case FilterValues.COMPLETED:
+          return completed;
 
-      default:
-        return true;
-    }
-  });
+        default:
+          return true;
+      }
+    });
+  }, [todos, filterValue]);
 
   const activeTodosTotal = useMemo(() => {
     return todos.filter(({ completed }) => !completed).length;
