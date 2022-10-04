@@ -1,5 +1,5 @@
 import classNames from 'classnames';
-import React from 'react';
+import React, { useMemo } from 'react';
 import { FilterType } from '../../../types/FilterBy';
 import { Todo } from '../../../types/Todo';
 
@@ -17,13 +17,18 @@ export const Footer: React.FC<Props> = ({
   todos,
   deleteCompleted,
 }) => {
-  const notCompleted = todos.filter(({ completed }) => !completed);
-  const todosCompleted = todos.filter(todo => todo.completed).length;
+  const notCompletedTodos = useMemo(() => (
+    todos.filter(({ completed }) => !completed)),
+  [todos]);
+
+  const todosCompletedLength = useMemo(() => (
+    todos.filter(todo => todo.completed).length),
+  [todos]);
 
   return (
     <footer className="todoapp__footer" data-cy="Footer">
       <span className="todo-count" data-cy="todosCounter">
-        {`${notCompleted.length} items left`}
+        {`${notCompletedTodos.length} items left`}
       </span>
 
       <nav className="filter" data-cy="Filter">
@@ -64,15 +69,16 @@ export const Footer: React.FC<Props> = ({
           Completed
         </a>
       </nav>
-
-      <button
-        data-cy="ClearCompletedButton"
-        type="button"
-        className="todoapp__clear-completed"
-        onClick={deleteCompleted}
-      >
-        {todosCompleted > 0 && ('Clear completed')}
-      </button>
+      {todosCompletedLength > 0 && (
+        <button
+          data-cy="ClearCompletedButton"
+          type="button"
+          className="todoapp__clear-completed"
+          onClick={deleteCompleted}
+        >
+          Clear completed
+        </button>
+      )}
     </footer>
   );
 };

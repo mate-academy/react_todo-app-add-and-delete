@@ -1,4 +1,3 @@
-/* eslint-disable jsx-a11y/control-has-associated-label */
 import React, {
   FormEvent,
   useCallback,
@@ -25,7 +24,7 @@ export const App: React.FC = () => {
   const [filterType, setFilterType] = useState<FilterType>(FilterType.All);
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
   const [title, setTitle] = useState('');
-  const [selectedId, setSelectedId] = useState<number[]>([]);
+  const [selectedIds, setSelectedIds] = useState<number[]>([]);
   const [isAdding, setIsAdding] = useState(false);
   const user = useContext(AuthContext);
 
@@ -61,13 +60,13 @@ export const App: React.FC = () => {
       case FilterType.Completed:
         return todo.completed;
       default:
-        return todo;
+        return true;
     }
   }), [todos, filterType]);
 
   const newTodo = useCallback(async (event: FormEvent) => {
     event.preventDefault();
-    if (!title || !user) {
+    if (!title.trim() || !user) {
       setErrorMessage(ErrorMessage.ErrorTitle);
 
       return;
@@ -88,7 +87,7 @@ export const App: React.FC = () => {
   }, [title, user]);
 
   const removeTodo = useCallback(async (TodoId: number) => {
-    setSelectedId([TodoId]);
+    setSelectedIds([TodoId]);
     try {
       await deleteTodo(TodoId);
 
@@ -98,18 +97,20 @@ export const App: React.FC = () => {
     }
   }, [todos, errorMessage]);
 
-  const completedTodos = todos.filter(({ completed }) => completed);
+  const completedTodos = useMemo(() => todos
+    .filter(({ completed }) => completed),
+  [todos]);
 
   const deleteCompletedTodos = useCallback(() => {
-    setSelectedId([...completedTodos].map(({ id }) => id));
+    setSelectedIds([...completedTodos].map(({ id }) => id));
 
     Promise.all(completedTodos.map(({ id }) => removeTodo(id)))
       .then(() => setTodos([...todos.filter(({ completed }) => !completed)]))
       .catch(() => {
         setErrorMessage(ErrorMessage.NotDelete);
-        setSelectedId([]);
+        setSelectedIds([]);
       });
-  }, [todos, selectedId, errorMessage]);
+  }, [todos, selectedIds, errorMessage]);
 
   return (
     <div className="todoapp">
@@ -128,7 +129,7 @@ export const App: React.FC = () => {
               <TodoList
                 todos={getFilteredTodo}
                 removeTodo={removeTodo}
-                selectedId={selectedId}
+                selectedIds={selectedIds}
                 isAdding={isAdding}
                 title={title}
 
