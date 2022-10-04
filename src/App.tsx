@@ -30,7 +30,7 @@ export const App: React.FC = () => {
   }, [todos]);
 
   useEffect(() => {
-    getTodos(14)
+    getTodos(user?.id || 0)
       .then(todosFromServer => setTodos(todosFromServer))
       .catch(() => setErrorMessage('Unable to load data'));
   }, [user]);
@@ -91,14 +91,14 @@ export const App: React.FC = () => {
     setIsAdding(false);
   };
 
-  const handleDeleteTodo = (todoId: number) => {
-    deleteTodo(todoId)
-      .then(() => {
-        setTodos([...visibleTodo].filter((todo) => todo.id !== todoId));
-      })
-      .catch(() => {
-        setErrorMessage('Unable to delete a todo');
-      });
+  const handleDeleteTodo = async (todoId: number) => {
+    try {
+      await deleteTodo(todoId);
+
+      setTodos([...visibleTodo].filter((todo) => todo.id !== todoId));
+    } catch {
+      setErrorMessage('Unable to delete a todo');
+    }
   };
 
   const deleteCompletedTodo = () => {
