@@ -38,16 +38,16 @@ export const App: React.FC = () => {
     setTodos([todo, ...todos]);
   };
 
-  const deleteTodoToState = (todoId: number) => {
+  const deleteTodoFromState = (todoId: number) => {
     setTodos(todos.filter(todo => todo.id !== todoId));
   };
 
   const deleteAllCompletedTodos = () => {
-    const InProcess = todos.filter(
+    const inProcess = todos.filter(
       todo => todo.completed,
     ).map(todo => todo.id);
 
-    setTodosInProcess(InProcess);
+    setTodosInProcess(inProcess);
 
     Promise.all(todos.map(async (todo) => {
       if (todo.completed) {
@@ -55,7 +55,7 @@ export const App: React.FC = () => {
       }
     }))
       .then(() => {
-        setTodos(todos.filter(todo => !InProcess.includes(todo.id)));
+        setTodos(todos.filter(todo => !inProcess.includes(todo.id)));
       })
       .catch(() => setError(ErrorTypes.Delete))
       .finally(() => setTodosInProcess([]));
@@ -116,7 +116,7 @@ export const App: React.FC = () => {
             <TodoList
               todos={visibleTodos}
               isAdding={isAdding}
-              deleteTodoToState={deleteTodoToState}
+              deleteTodoToState={deleteTodoFromState}
               changeError={changeError}
               todosInProcess={todosInProcess}
             />

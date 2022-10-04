@@ -1,6 +1,6 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 /* eslint-disable jsx-a11y/control-has-associated-label */
-import React, { useEffect, useRef, useState } from 'react';
+import React, { useState } from 'react';
 import { addTodo } from '../../api/todos';
 import { ErrorTypes } from '../../types/ErrorTypes';
 import { User } from '../../types/User';
@@ -22,19 +22,11 @@ const TodoHeader: React.FC<Props> = (
     add,
   },
 ) => {
-  const newTodoField = useRef<HTMLInputElement>(null);
   const [inputValue, setInputValue] = useState<string>('');
 
   const changeInputValue = (value: string) => {
     setInputValue(value);
   };
-
-  useEffect(() => {
-    // focus the element with `ref={newTodoField}`
-    if (newTodoField.current) {
-      newTodoField.current.focus();
-    }
-  }, []);
 
   return (
     <header className="todoapp__header">
@@ -48,18 +40,17 @@ const TodoHeader: React.FC<Props> = (
         event.preventDefault();
         changeIsAdding(true);
 
-        if (!newTodoField.current?.value) {
+        if (!inputValue) {
           changeError(ErrorTypes.Empty);
           changeIsAdding(false);
 
-          // eslint-disable-next-line no-useless-return
           return;
         }
 
         const newTodo = {
           userId: user.id,
-          title: newTodoField.current.value,
-          completed: true,
+          title: inputValue,
+          completed: false,
         };
 
         await addTodo(newTodo)
@@ -74,7 +65,6 @@ const TodoHeader: React.FC<Props> = (
           disabled={isAdding}
           data-cy="NewTodoField"
           type="text"
-          ref={newTodoField}
           value={inputValue}
           onChange={event => {
             changeInputValue(event.target.value);
