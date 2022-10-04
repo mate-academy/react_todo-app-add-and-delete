@@ -65,8 +65,9 @@ export const App: React.FC = () => {
   const handleAddNewTodo = async (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
 
-    if (!newTodoTitle) {
+    if (!newTodoTitle.replace(/\s/g, '')) {
       showErrorMessage('Title can\'t be empty');
+      setNewTodoTitle('');
 
       return;
     }
