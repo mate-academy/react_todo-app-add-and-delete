@@ -46,10 +46,6 @@ export const ErrorNotification: React.FC<Props> = ({
           // onClick={() => removeError(true)}
           onClick={() => removeError(false)}
         />
-
-        {/* не трогаю переключатель иконки и класса просто при вводе и загрузки или удалении буду разные сообщения показывать */}
-        {/* так мне не придется делать два отдельных сооющения об ошибке */}
-        {/* Wrong url */}
         {errorMessage}
       </div>
 
