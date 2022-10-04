@@ -11,12 +11,13 @@ import { ErrorMessage } from './components/todos/ErrorMessage';
 import { TodoFooter } from './components/todos/TodoFooter';
 import { TodoHeader } from './components/todos/TodoHeader';
 import { TodoList } from './components/todos/TodoList';
+import { Error } from './types/Error';
 import { Todo } from './types/Todo';
 
 export const App: React.FC = () => {
   const user = useContext(AuthContext);
 
-  const [errorType, setErrorType] = useState('none');
+  const [error, setError] = useState(Error.None);
 
   const [isAdding, setIsAdding] = useState(false);
 
@@ -24,7 +25,7 @@ export const App: React.FC = () => {
   const [visibleTodos, setVisibleTodos] = useState<Todo[]>([]);
   const [tempTodo, setTempTodo] = useState<Todo | null>(null);
   const [status, setStatus] = useState('All');
-  const [isRemoved, setIsRemoved] = useState<number[]>([]);
+  const [removedTodos, setRemovedTodos] = useState<number[]>([]);
 
   const loadData = async () => {
     if (user) {
@@ -70,7 +71,7 @@ export const App: React.FC = () => {
       await postTodo(user.id, value);
       loadData();
     } else {
-      setErrorType('add');
+      setError(Error.Add);
     }
 
     setIsAdding(false);
@@ -80,7 +81,7 @@ export const App: React.FC = () => {
     try {
       await deleteTodo(id);
     } catch {
-      setErrorType('add');
+      setError(Error.Delete);
     }
 
     loadData();
@@ -89,9 +90,9 @@ export const App: React.FC = () => {
   const removeCompleted = async (completedTodos: Todo[]) => {
     const completedTodoIds = completedTodos.map(todo => todo.id);
 
-    setIsRemoved(completedTodoIds);
+    setRemovedTodos(completedTodoIds);
 
-    console.log(isRemoved);
+    console.log(removedTodos);
 
     await Promise.all(
       completedTodos.map(async (todo) => {
@@ -114,8 +115,8 @@ export const App: React.FC = () => {
           todos={visibleTodos}
           tempTodo={tempTodo}
           removeTodo={removeTodo}
-          isRemoved={isRemoved}
-          setIsRemoved={setIsRemoved}
+          removedTodos={removedTodos}
+          setRemovedTodos={setRemovedTodos}
         />
 
         {todos.length > 0 && (
@@ -129,10 +130,10 @@ export const App: React.FC = () => {
 
       </div>
 
-      {errorType !== 'none' && (
+      {error !== Error.None && (
         <ErrorMessage
-          errorType={errorType}
-          setErrorType={setErrorType}
+          error={error}
+          setError={setError}
         />
       )}
     </div>

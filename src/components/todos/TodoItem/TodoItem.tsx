@@ -7,8 +7,8 @@ interface Props {
   completed: boolean,
   removeTodo: (id: number) => void;
   isAdding: boolean;
-  isRemoved: number[];
-  setIsRemoved: (removedId: number[]) => void;
+  removedTodos: number[];
+  setRemovedTodos: (removedId: number[]) => void;
 }
 
 export const TodoItem: React.FC<Props> = ({
@@ -17,12 +17,12 @@ export const TodoItem: React.FC<Props> = ({
   completed,
   removeTodo,
   isAdding,
-  isRemoved,
-  setIsRemoved,
+  removedTodos,
+  setRemovedTodos,
 }) => {
-  const remove = async (todoId: number) => {
-    setIsRemoved([todoId]);
-    await removeTodo(todoId);
+  const remove = (todoId: number) => {
+    setRemovedTodos([todoId]);
+    removeTodo(todoId);
   };
 
   return (
@@ -54,7 +54,7 @@ export const TodoItem: React.FC<Props> = ({
         className={classNames(
           'modal',
           'overlay',
-          { 'is-active': isRemoved.includes(id) || isAdding },
+          { 'is-active': removedTodos.includes(id) || isAdding },
         )}
       >
         <div className="modal-background has-background-white-ter" />

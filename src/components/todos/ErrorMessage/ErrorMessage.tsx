@@ -1,12 +1,19 @@
 /* eslint-disable jsx-a11y/control-has-associated-label */
 import React from 'react';
+import { Error } from '../../../types/Error';
 
 interface Props {
-  errorType: string;
-  setErrorType: (error: string) => void;
+  error: string;
+  setError: (error: Error) => void;
 }
 
-export const ErrorMessage: React.FC<Props> = ({ errorType, setErrorType }) => {
+export const ErrorMessage: React.FC<Props> = ({ error, setError }) => {
+  if (error) {
+    setTimeout(() => {
+      setError(Error.None);
+    }, 3000);
+  }
+
   return (
     <div
       data-cy="ErrorNotification"
@@ -16,13 +23,10 @@ export const ErrorMessage: React.FC<Props> = ({ errorType, setErrorType }) => {
         data-cy="HideErrorButton"
         type="button"
         className="delete"
-        onClick={() => setErrorType('none')}
+        onClick={() => setError(Error.None)}
       />
-      {errorType === 'add' && 'Unable to add a todo'}
-      <br />
-      {errorType === 'delete' && 'Unable to delete a todo'}
-      <br />
-      {errorType === 'update' && 'Unable to update a todo'}
+
+      {error}
     </div>
   );
 };
