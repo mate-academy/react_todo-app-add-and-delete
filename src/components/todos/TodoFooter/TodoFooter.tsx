@@ -11,6 +11,10 @@ interface Props {
 export const TodoFooter: React.FC<Props> = ({ todos, selected, setStatus }) => {
   const statuses = ['All', 'Active', 'Completed'];
 
+  if (todos.length === 0) {
+    return <></>;
+  }
+
   return (
     <footer className="todoapp__footer" data-cy="Footer">
       <span className="todo-count" data-cy="todosCounter">

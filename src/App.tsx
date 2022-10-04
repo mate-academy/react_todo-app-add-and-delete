@@ -23,6 +23,7 @@ export const App: React.FC = () => {
 
   const [todos, setTodos] = useState<Todo[]>([]);
   const [visibleTodos, setVisibleTodos] = useState<Todo[]>([]);
+  const [tempTodo, setTempTodo] = useState<Todo | null>(null);
   const [status, setStatus] = useState('All');
 
   const hasError = (isVisible?: boolean) => {
@@ -41,6 +42,7 @@ export const App: React.FC = () => {
 
       setTodos(temp);
       setVisibleTodos(temp);
+      setTempTodo(null);
     }
   };
 
@@ -71,6 +73,12 @@ export const App: React.FC = () => {
     setIsAdding(true);
 
     if (user && value) {
+      setTempTodo({
+        id: 0,
+        userId: user.id,
+        title: value,
+        completed: false,
+      });
       await postTodo(user.id, value);
       console.log('posted');
       loadData();
@@ -98,7 +106,7 @@ export const App: React.FC = () => {
 
         <TodoList
           todos={visibleTodos}
-          isAdding={isAdding}
+          tempTodo={tempTodo}
           removeTodo={removeTodo}
         />
 

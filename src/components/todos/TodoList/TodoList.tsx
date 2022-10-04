@@ -4,13 +4,13 @@ import { Todo } from '../../../types/Todo';
 
 interface Props {
   todos: Todo[];
-  isAdding: boolean;
+  tempTodo: Todo | null;
   removeTodo: (id: number) => void;
 }
 
 export const TodoList: React.FC<Props> = ({
   todos,
-  isAdding,
+  tempTodo,
   removeTodo,
 }) => {
   return (
@@ -47,17 +47,47 @@ export const TodoList: React.FC<Props> = ({
 
           <div
             data-cy="TodoLoader"
-            className={classNames(
-              'modal',
-              'overlay',
-              { 'is-acive': isAdding },
-            )}
+            className="modal overlay"
           >
             <div className="modal-background has-background-white-ter" />
             <div className="loader" />
           </div>
         </div>
       ))}
+      {tempTodo && (
+        <div
+          data-cy="Todo"
+          className="todo"
+        >
+          <label className="todo__status-label">
+            <input
+              data-cy="TodoStatus"
+              type="checkbox"
+              className="todo__status"
+            />
+          </label>
+
+          <span data-cy="TodoTitle" className="todo__title">
+            {tempTodo?.title}
+          </span>
+          <button
+            type="button"
+            className="todo__remove"
+            data-cy="TodoDeleteButton"
+          >
+            ×
+          </button>
+
+          <div
+            data-cy="TodoLoader"
+            className="modal overlay is-active"
+          >
+            <div className="modal-background has-background-white-ter" />
+            <div className="loader" />
+          </div>
+        </div>
+      )}
+
       <>
         {/* ↓↓↓ I will need this code in the following tasks ↓↓↓ */}
 
