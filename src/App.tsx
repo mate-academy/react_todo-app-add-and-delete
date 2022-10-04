@@ -24,6 +24,7 @@ export const App: React.FC = () => {
   const [visibleTodos, setVisibleTodos] = useState<Todo[]>([]);
   const [tempTodo, setTempTodo] = useState<Todo | null>(null);
   const [status, setStatus] = useState('All');
+  const [isRemoved, setIsRemoved] = useState<number[]>([]);
 
   const loadData = async () => {
     if (user) {
@@ -56,8 +57,6 @@ export const App: React.FC = () => {
     setVisibleTodos(filterByStatus(status));
   }, [status, todos]);
 
-  console.log(visibleTodos);
-
   const addTodo = async (value: string) => {
     setIsAdding(true);
 
@@ -78,14 +77,27 @@ export const App: React.FC = () => {
   };
 
   const removeTodo = async (id: number) => {
-    await deleteTodo(id);
+    try {
+      await deleteTodo(id);
+    } catch {
+      setErrorType('add');
+    }
+
     loadData();
   };
 
   const removeCompleted = async (completedTodos: Todo[]) => {
-    await completedTodos.forEach(todo => {
-      removeTodo(todo.id);
-    });
+    const completedTodoIds = completedTodos.map(todo => todo.id);
+
+    setIsRemoved(completedTodoIds);
+
+    console.log(isRemoved);
+
+    await Promise.all(
+      completedTodos.map(async (todo) => {
+        await removeTodo(todo.id);
+      }),
+    );
   };
 
   return (
@@ -102,6 +114,8 @@ export const App: React.FC = () => {
           todos={visibleTodos}
           tempTodo={tempTodo}
           removeTodo={removeTodo}
+          isRemoved={isRemoved}
+          setIsRemoved={setIsRemoved}
         />
 
         {todos.length > 0 && (

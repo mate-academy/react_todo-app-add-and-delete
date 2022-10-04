@@ -17,6 +17,12 @@ export const TodoFooter: React.FC<Props> = ({
 }) => {
   const statuses = ['All', 'Active', 'Completed'];
 
+  const filterCopleted = () => (
+    removeCompleted(todos.filter(todo => (
+      todo.completed
+    )))
+  );
+
   return (
     <footer className="todoapp__footer" data-cy="Footer">
       <span className="todo-count" data-cy="todosCounter">
@@ -29,7 +35,7 @@ export const TodoFooter: React.FC<Props> = ({
           <a
             key={status}
             data-cy="FilterLinkAll"
-            href="#/"
+            href={`/#${status.toLowerCase()}/`}
             className={classNames('filter__link', {
               selected: selected === status,
             })}
@@ -45,9 +51,7 @@ export const TodoFooter: React.FC<Props> = ({
         data-cy="ClearCompletedButton"
         type="button"
         className="todoapp__clear-completed"
-        onClick={() => removeCompleted(todos.filter(todo => (
-          todo.completed
-        )))}
+        onClick={() => filterCopleted()}
       >
         Clear completed
       </button>

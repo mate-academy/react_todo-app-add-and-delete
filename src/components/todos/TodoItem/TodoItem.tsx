@@ -1,12 +1,14 @@
 import classNames from 'classnames';
-import React, { useState } from 'react';
+import React from 'react';
 
 interface Props {
   id: number,
   title: string,
   completed: boolean,
   removeTodo: (id: number) => void;
-  isLoading: boolean;
+  isAdding: boolean;
+  isRemoved: number[];
+  setIsRemoved: (removedId: number[]) => void;
 }
 
 export const TodoItem: React.FC<Props> = ({
@@ -14,18 +16,17 @@ export const TodoItem: React.FC<Props> = ({
   title,
   completed,
   removeTodo,
-  isLoading,
+  isAdding,
+  isRemoved,
+  setIsRemoved,
 }) => {
-  const [removedId, setRemovedId] = useState(0);
-
   const remove = async (todoId: number) => {
-    setRemovedId(id);
+    setIsRemoved([todoId]);
     await removeTodo(todoId);
   };
 
   return (
     <div
-      key={id}
       data-cy="Todo"
       className={classNames('todo', { completed })}
     >
@@ -53,7 +54,7 @@ export const TodoItem: React.FC<Props> = ({
         className={classNames(
           'modal',
           'overlay',
-          { 'is-active': removedId === id || isLoading },
+          { 'is-active': isRemoved.includes(id) || isAdding },
         )}
       >
         <div className="modal-background has-background-white-ter" />
