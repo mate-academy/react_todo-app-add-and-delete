@@ -1,4 +1,3 @@
-/* eslint-disable jsx-a11y/control-has-associated-label */
 import React, {
   useContext,
   useEffect,
@@ -14,26 +13,7 @@ import { NewTodoForm } from './components/NewTodoForm';
 import { TodoList } from './components/TodoList';
 import { FilterTypes } from './types/Filter';
 import { Todo } from './types/Todo';
-
-export function getFilteredTodo(
-  todos: Todo[],
-  selectedTab: FilterTypes,
-) {
-  const filterByType = todos.filter((todo) => {
-    switch (selectedTab.id) {
-      case 'active':
-        return !todo.completed;
-
-      case 'completed':
-        return todo.completed;
-
-      default:
-        return todo;
-    }
-  });
-
-  return filterByType;
-}
+import { getFilteredTodo } from './utils/functions';
 
 export const tabs: FilterTypes[] = [
   { id: '', title: 'All' },
@@ -42,7 +22,6 @@ export const tabs: FilterTypes[] = [
 ];
 
 export const App: React.FC = () => {
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   const user = useContext(AuthContext);
   const newTodoField = useRef<HTMLInputElement>(null);
   const [todos, setTodos] = useState<Todo[]>([]);
@@ -60,7 +39,6 @@ export const App: React.FC = () => {
   const selectedTab = tabs.find(tab => tab.id === selectedTabId) || tabs[0];
 
   useEffect(() => {
-    // focus the element with `ref={newTodoField}`
     if (newTodoField.current) {
       newTodoField.current.focus();
     }
@@ -95,6 +73,7 @@ export const App: React.FC = () => {
           <button
             data-cy="ToggleAllButton"
             type="button"
+            aria-label="ToggleAllButton"
             className="todoapp__toggle-all active"
           />
 

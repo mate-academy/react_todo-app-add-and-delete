@@ -1,7 +1,5 @@
 import classNames from 'classnames';
-/* eslint-disable @typescript-eslint/no-explicit-any */
 
-/* eslint-disable jsx-a11y/control-has-associated-label */
 interface Props {
   error: string,
   setHideError: (value: boolean) => void,
@@ -39,6 +37,7 @@ export const ErrorMessage: React.FC<Props> = ({
           <button
             data-cy="HideErrorButton"
             type="button"
+            aria-label="delete"
             className="delete"
             onClick={() => setHideError(true)}
           />

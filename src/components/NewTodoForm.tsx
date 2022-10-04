@@ -1,15 +1,15 @@
+import { RefObject } from 'react';
 import { post } from '../api/todos';
 import { Todo } from '../types/Todo';
 import { User } from '../types/User';
-/* eslint-disable @typescript-eslint/no-explicit-any */
 
 interface Props {
-  newTodoField: any;
+  newTodoField: RefObject<HTMLInputElement>;
   newTodoTitle: string;
   setNewTodoTitle: (value: string) => void;
   setError: (value: string) => void
   todos: Todo[],
-  setTodos: any,
+  setTodos: (value: Todo[]) => void,
   setIsLoading: (value: boolean) => void,
   setTempTitle: (value: string) => void,
   user: User | null,
