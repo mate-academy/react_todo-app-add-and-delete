@@ -20,7 +20,7 @@ export const ErrorMessage: React.FC<Props> = ({
     return () => {
       window.clearInterval(timer);
     };
-  }, []);
+  }, [error]);
 
   return (
     <>
