@@ -3,6 +3,7 @@ import classNames from 'classnames';
 import React, {
   useContext,
   useEffect,
+  useMemo,
   useRef,
   useState,
 } from 'react';
@@ -38,6 +39,11 @@ export const App: React.FC = () => {
   const [isAdding, setIsAdding] = useState(false);
   const [isDeleting, setIsDeleting] = useState<number[]>([]);
   const [error, setError] = useState('');
+
+  const activeTodosCount = useMemo(
+    () => filterTodos(todos, 'active').length,
+    [todos],
+  );
 
   const showErrorMessage = (errorMessage: string) => {
     setError(errorMessage);
@@ -187,7 +193,7 @@ export const App: React.FC = () => {
         {todos.length > 0 && (
           <footer className="todoapp__footer" data-cy="Footer">
             <span className="todo-count" data-cy="todosCounter">
-              4 items left
+              {`${activeTodosCount} items left`}
             </span>
 
             <Filter filterStatus={filterStatus} onFilter={setFilterStatus} />
