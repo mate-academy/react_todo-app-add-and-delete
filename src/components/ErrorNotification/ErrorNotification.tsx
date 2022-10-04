@@ -1,32 +1,53 @@
-import { useState } from 'react';
+import { useEffect } from 'react';
 import classNames from 'classnames';
 
 type Props = {
-  errorNotification: string
+  errorNotification: string;
+  setErrorNotification: (value: string) => void;
+  isErrorShown: boolean;
+  setIsErrorShown: (value: boolean) => void
 };
 
-export const ErrorNotification: React.FC<Props> = ({ errorNotification }) => {
-  const [isErrorShown, setIsErrorShown] = useState(true);
+export const ErrorNotification: React.FC<Props> = ({
+  errorNotification,
+  setErrorNotification,
+  isErrorShown,
+  setIsErrorShown,
+}) => {
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      setErrorNotification('');
+    }, 3000);
+
+    return () => {
+      clearTimeout(timer);
+    };
+  }, [errorNotification]);
 
   return (
-    <div
-      data-cy="ErrorNotification"
-      className={classNames(
-        'notification is-danger is-light has-text-weight-normal',
-        {
-          hidden: !isErrorShown,
-        },
+    <>
+      {errorNotification && (
+        <div
+          data-cy="ErrorNotification"
+          className={
+            classNames(
+              'notification is-danger is-light has-text-weight-normal',
+              {
+                hidden: isErrorShown,
+              },
+            )
+          }
+        >
+          <button
+            data-cy="HideErrorButton"
+            type="button"
+            className="delete"
+            aria-label="delete"
+            onClick={() => setIsErrorShown(true)}
+          />
+          {errorNotification}
+        </div>
       )}
-    >
-      <button
-        aria-label="HideErrorButton"
-        data-cy="HideErrorButton"
-        type="button"
-        className="delete"
-        onClick={() => setIsErrorShown(false)}
-      />
-
-      {errorNotification}
-    </div>
+    </>
   );
 };

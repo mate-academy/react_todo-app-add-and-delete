@@ -1,16 +1,14 @@
-import classNames from 'classnames';
 import { Todo } from '../../types/Todo';
-import { deleteTodo } from '../../api/todos';
+import { TodoItem } from '../TodoItem';
 
 type Props = {
   todos: Todo[];
   todoId: number;
   setTodoId: (id: number) => void;
   setTodos: (todo: Todo[]) => void;
-  setHasLoadingError: (value: boolean) => void;
   setErrorNotification: (value: string) => void;
-  setIsLoading: (value: boolean) => void;
-  isLoading: boolean;
+  isShownTempTodo: boolean;
+  previewTitle: string;
 };
 
 export const TodoList: React.FC<Props> = ({
@@ -18,69 +16,53 @@ export const TodoList: React.FC<Props> = ({
   todoId,
   setTodos,
   setTodoId,
-  setHasLoadingError,
   setErrorNotification,
-  setIsLoading,
-  isLoading,
+  isShownTempTodo,
+  previewTitle,
 }) => {
-  const handleClick = (id:number) => {
-    setIsLoading(true);
-    setTodoId(id);
-
-    const deleteTodos = async () => {
-      setIsLoading(true);
-      try {
-        await deleteTodo(id);
-        setTodos(todos.filter(todo => todo.id !== id));
-      } catch (error) {
-        setHasLoadingError(true);
-        setErrorNotification('Unable to delete a todo');
-      }
-    };
-
-    deleteTodos();
-  };
-
   return (
     <section className="todoapp__main" data-cy="TodoList">
       { todos.map(({ title, completed, id }) => (
-        <div
-          data-cy="Todo"
+        <TodoItem
+          title={title}
+          completed={completed}
+          id={id}
           key={id}
-          className={classNames('todo', { completed })}
-        >
-          <label className="todo__status-label">
-            <input
-              data-cy="TodoStatus"
-              type="checkbox"
-              className="todo__status"
-            />
-          </label>
+          setErrorNotification={setErrorNotification}
+          setTodos={setTodos}
+          todos={todos}
+          todoId={todoId}
+          setTodoId={setTodoId}
+        />
+      ))}
 
-          <span data-cy="TodoTitle" className="todo__title">{title}</span>
-          <button
-            type="button"
-            className="todo__remove"
-            data-cy="TodoDeleteButton"
-            onClick={() => handleClick(id)}
+      {isShownTempTodo
+        && (
+          <div
+            data-cy="Todo"
+            className="todo"
           >
-            ×
-          </button>
-          {isLoading && (
+            <label className="todo__status-label">
+              <input
+                data-cy="TodoStatus"
+                type="checkbox"
+                className="todo__status"
+                defaultChecked
+              />
+            </label>
+
+            <span data-cy="TodoTitle" className="todo__title">
+              {previewTitle}
+            </span>
             <div
               data-cy="TodoLoader"
-              className={classNames('modal overlay',
-                {
-                  'is-active': todoId === id,
-                })}
+              className="modal overlay is-active"
             >
               <div className="modal-background has-background-white-ter" />
               <div className="loader" />
             </div>
-          )}
-
-        </div>
-      ))}
+          </div>
+        )}
     </section>
   );
 };

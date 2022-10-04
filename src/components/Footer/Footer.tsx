@@ -8,11 +8,9 @@ type Props = {
   selectedStatusId: string;
   onStatusSelected: (value:Status) => void;
   todos: Todo[];
-  setHasLoadingError: (value: boolean) => void;
   setErrorNotification: (value: string) => void;
   setTodoId: (id: number) => void;
   setTodos: (todo: Todo[]) => void;
-
 };
 
 export const Footer: React.FC<Props> = ({
@@ -20,7 +18,6 @@ export const Footer: React.FC<Props> = ({
   selectedStatusId,
   onStatusSelected,
   todos,
-  setHasLoadingError,
   setErrorNotification,
   setTodos,
 }) => {
@@ -32,7 +29,6 @@ export const Footer: React.FC<Props> = ({
       Promise.all(completedTodos.map(({ id }) => deleteTodo(id)));
       setTodos(activeTodos);
     } catch (error) {
-      setHasLoadingError(true);
       setErrorNotification('Unable to delete a todo');
     }
   };

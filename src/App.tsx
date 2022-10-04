@@ -1,9 +1,9 @@
-/* eslint-disable jsx-a11y/control-has-associated-label */
 import {
   useContext,
   useEffect,
   useRef,
   useState,
+  useMemo,
 } from 'react';
 import { AuthContext } from './components/Auth/AuthContext';
 import { TodoList } from './components/TodoList';
@@ -24,9 +24,11 @@ export const App: React.FC = () => {
   const [todos, setTodos] = useState<Todo[]>([]);
   const [todoId, setTodoId] = useState(0);
   const [selectedStatusId, setSelectedStatusId] = useState(statuses[0].id);
-  const [hasLoadingErrod, setHasLoadingError] = useState(false);
+  const [isErrorShown, setIsErrorShown] = useState(false);
   const [errorNotification, setErrorNotification] = useState('');
-  const [isLoading, setIsLoading] = useState(false);
+  const [isShownTempTodo, setIsShownTempTodo] = useState(false);
+  const [previewTitle, setPreviewTitle] = useState('');
+
   const user = useContext(AuthContext);
   const newTodoField = useRef<HTMLInputElement>(null);
 
@@ -37,37 +39,32 @@ export const App: React.FC = () => {
     setSelectedStatusId(status.id);
   };
 
-  const loadTodos = async () => {
-    try {
-      if (user) {
-        const todosFromServer = await getTodos(user?.id);
-
-        setTodos(todosFromServer);
-      }
-    } catch (error) {
-      setHasLoadingError(true);
-      setErrorNotification('Unable to update a todo');
-    }
-  };
-
   useEffect(() => {
     if (newTodoField.current) {
       newTodoField.current.focus();
     }
-
-    loadTodos();
-
-    const timer = setTimeout(() => {
-      setHasLoadingError(false);
-    }, 3000);
-
-    return () => clearTimeout(timer);
-
-    // focus the element with `ref={newTodoField}`
   }, []);
 
-  const filteredTodos = todos
-    .filter(({ completed }) => {
+  useEffect(() => {
+    const loadTodos = async () => {
+      try {
+        if (user) {
+          const todosFromServer = await getTodos(user?.id);
+
+          setIsShownTempTodo(false);
+
+          setTodos(todosFromServer);
+        }
+      } catch (error) {
+        setErrorNotification('Unable to update a todo');
+      }
+    };
+
+    loadTodos();
+  }, []);
+
+  const filteredTodos:Todo[] = useMemo(() => {
+    return todos.filter(({ completed }) => {
       switch (selectedStatus.title) {
         case SortType.ACTIVE:
           return !completed;
@@ -79,6 +76,7 @@ export const App: React.FC = () => {
           return true;
       }
     });
+  }, [todos, selectedStatus]);
 
   return (
     <div className="todoapp">
@@ -87,6 +85,7 @@ export const App: React.FC = () => {
       <div className="todoapp__content">
         <header className="todoapp__header">
           <button
+            aria-label="toggle"
             data-cy="ToggleAllButton"
             type="button"
             className="todoapp__toggle-all active"
@@ -97,42 +96,44 @@ export const App: React.FC = () => {
             todos={todos}
             user={user}
             setTodos={setTodos}
-            setHasLoadingError={setHasLoadingError}
             setErrorNotification={setErrorNotification}
-            setIsLoading={setIsLoading}
+            setIsShownTempTodo={setIsShownTempTodo}
+            setPreviewTitle={setPreviewTitle}
           />
         </header>
+        {todos.length > 0
+          && (
+            <>
+              <TodoList
+                todos={filteredTodos}
+                setTodoId={setTodoId}
+                setTodos={setTodos}
+                setErrorNotification={setErrorNotification}
+                todoId={todoId}
+                isShownTempTodo={isShownTempTodo}
+                previewTitle={previewTitle}
 
-        <TodoList
-          todos={filteredTodos}
-          setTodoId={setTodoId}
-          setTodos={setTodos}
-          setHasLoadingError={setHasLoadingError}
-          setErrorNotification={setErrorNotification}
-          todoId={todoId}
-          isLoading={isLoading}
-          setIsLoading={setIsLoading}
-        />
+              />
 
-        <Footer
-          statuses={statuses}
-          selectedStatusId={selectedStatusId}
-          onStatusSelected={onStatusSelected}
-          todos={todos}
-          setTodoId={setTodoId}
-          setTodos={setTodos}
-          setHasLoadingError={setHasLoadingError}
-          setErrorNotification={setErrorNotification}
-        />
+              <Footer
+                statuses={statuses}
+                selectedStatusId={selectedStatusId}
+                onStatusSelected={onStatusSelected}
+                todos={todos}
+                setTodoId={setTodoId}
+                setTodos={setTodos}
+                setErrorNotification={setErrorNotification}
+              />
+            </>
+          )}
       </div>
 
-      {
-        hasLoadingErrod && (
-          <ErrorNotification
-            errorNotification={errorNotification}
-          />
-        )
-      }
+      <ErrorNotification
+        errorNotification={errorNotification}
+        setErrorNotification={setErrorNotification}
+        isErrorShown={isErrorShown}
+        setIsErrorShown={setIsErrorShown}
+      />
     </div>
   );
 };
