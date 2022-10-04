@@ -1,5 +1,5 @@
 import {
-  Dispatch, SetStateAction, useEffect, useRef,
+  Dispatch, FormEvent, SetStateAction, useEffect, useRef,
 } from 'react';
 import { createTodo } from '../../api/todos';
 import { Todo } from '../../types/Todo';
@@ -34,7 +34,8 @@ export const Header: React.FC<Props> = ({
     }
   }, []);
 
-  const handleSumbit = () => {
+  const handleSumbit = (event: FormEvent) => {
+    event.preventDefault();
     const normalizedTitle = title.trim();
 
     if (title.length < 1) {
