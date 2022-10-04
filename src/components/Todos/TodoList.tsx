@@ -1,6 +1,11 @@
+import {
+  CSSTransition,
+  TransitionGroup,
+} from 'react-transition-group';
 import { Dispatch, SetStateAction } from 'react';
 import { Todo } from '../../types/Todo';
 import { TodoItem } from './TodoItem';
+import '../../styles/todolist.scss';
 
 type Props = {
   todos: Todo[];
@@ -17,16 +22,24 @@ export const TodoList: React.FC<Props> = ({
 }) => {
   return (
     <section className="todoapp__main" data-cy="TodoList">
-      {todos.map(todo => (
-        <TodoItem
-          todo={todo}
-          key={todo.id}
-          todos={todos}
-          setTodos={setTodos}
-          setError={setError}
-          setErrorMessage={setErrorMessage}
-        />
-      ))}
+      <TransitionGroup>
+        {todos.map(todo => (
+          <CSSTransition
+            key={todo.id}
+            timeout={300}
+            classNames="item"
+          >
+            <TodoItem
+              todo={todo}
+              key={todo.id}
+              todos={todos}
+              setTodos={setTodos}
+              setError={setError}
+              setErrorMessage={setErrorMessage}
+            />
+          </CSSTransition>
+        ))}
+      </TransitionGroup>
     </section>
   );
 };

@@ -2,6 +2,7 @@ import { Dispatch, SetStateAction } from 'react';
 import classNames from 'classnames';
 import { Todo } from '../../types/Todo';
 import { FilterType } from '../../types/FilterType';
+import { deleteTodo } from '../../api/todos';
 
 type Props = {
   todos: Todo[];
@@ -14,6 +15,10 @@ export const Footer: React.FC<Props> = ({
   filterType,
   setFilterType,
 }) => {
+  const handleRemoveCompleted = () => {
+    todos.forEach(todo => (todo.completed ? deleteTodo(todo.id) : todo));
+  };
+
   return (
     <footer className="todoapp__footer" data-cy="Footer">
       <span className="todo-count" data-cy="todosCounter">
@@ -67,6 +72,7 @@ export const Footer: React.FC<Props> = ({
         data-cy="ClearCompletedButton"
         type="button"
         className="todoapp__clear-completed"
+        onClick={handleRemoveCompleted}
       >
         Clear completed
       </button>

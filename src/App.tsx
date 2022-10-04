@@ -81,7 +81,6 @@ export const App: React.FC = () => {
           </>
         )}
       </div>
-
       <ErrorNotification
         error={error}
         setError={setError}
