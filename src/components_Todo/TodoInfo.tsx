@@ -9,6 +9,7 @@ interface Props {
   statusPatch: string;
   setStatusPatch: (event: string) => void;
   handleClickDelete: (event: number) => void;
+  isAdding: boolean;
 }
 
 export const TodoInfo: React.FC<Props> = ({
@@ -16,6 +17,7 @@ export const TodoInfo: React.FC<Props> = ({
   statusPatch,
   setStatusPatch,
   handleClickDelete,
+  isAdding,
 }) => {
   const handlePatch = (event: { target: { value: string; }; }) => {
     setStatusPatch(event.target.value);
@@ -68,7 +70,15 @@ export const TodoInfo: React.FC<Props> = ({
           />
         </form>
       )}
-      <div data-cy="TodoLoader" className="modal overlay">
+      <div
+        data-cy="TodoLoader"
+        className={classNames(
+          'modal overlay',
+          {
+            'is-active': isAdding,
+          },
+        )}
+      >
         <div className="modal-background has-background-white-ter" />
         <div className="loader" />
       </div>

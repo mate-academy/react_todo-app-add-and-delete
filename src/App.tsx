@@ -19,7 +19,7 @@ export const App: React.FC = () => {
 
   const [todos, setTodos] = useState<Todo[]>([]);
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
-  const [todoId, setTodoId] = useState(0);
+  const [, setTodoId] = useState(0);
 
   const [statusPatch, setStatusPatch] = useState('');
   const [statusFilter, setStatusFilter] = useState('all');
@@ -41,7 +41,7 @@ export const App: React.FC = () => {
     }
 
     setIsAdding(false);
-  }, [todos]);
+  }, []);
 
   const handleSubmitAdd = async (event: FormEvent) => {
     event.preventDefault();
@@ -51,7 +51,8 @@ export const App: React.FC = () => {
       await createTodo(user.id, newTitleTodo)
         .then(todo => {
           setTodos([...todos, todo]);
-        }).catch(() => setHasLoadError('Unable to add a todo'));
+        }).catch(() => setHasLoadError('Unable to add a todo'))
+        .finally(() => setIsAdding(false));
     } else {
       setHasLoadError('Title can\'t be empty');
     }
@@ -59,12 +60,18 @@ export const App: React.FC = () => {
     setNewTitleTodo('');
   };
 
-  const handleClickDelete = async (curentTodo: number) => {
-    setTodoId(curentTodo);
+  const handleClickDelete = async (curentTodoId: number) => {
+    setTodoId(curentTodoId);
     setIsAdding(true);
-    await deleteTodos(curentTodo)
+
+    await deleteTodos(curentTodoId)
       .then()
-      .catch(() => setHasLoadError('Unable to delete a todo'));
+      .catch(() => setHasLoadError('Unable to delete a todo'))
+      .finally(() => setIsAdding(false));
+
+    const curentDelete = todos.filter(todo => todo.id !== curentTodoId);
+
+    setTodos(curentDelete);
   };
 
   const handleClearCompleted = () => {
@@ -114,6 +121,7 @@ export const App: React.FC = () => {
           handleClickDelete={handleClickDelete}
           statusPatch={statusPatch}
           setStatusPatch={setStatusPatch}
+          isAdding={isAdding}
         />
         <TodoFilter
           todos={todos}

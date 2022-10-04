@@ -6,6 +6,7 @@ interface Props {
   statusPatch: string;
   setStatusPatch: (event: string) => void;
   handleClickDelete: (event: number) => void;
+  isAdding: boolean;
 }
 
 export const TodoList: React.FC<Props> = ({
@@ -13,7 +14,7 @@ export const TodoList: React.FC<Props> = ({
   statusPatch,
   setStatusPatch,
   handleClickDelete,
-
+  isAdding,
 }) => {
   return (
     <section className="todoapp__main" data-cy="TodoList">
@@ -24,6 +25,7 @@ export const TodoList: React.FC<Props> = ({
           statusPatch={statusPatch}
           setStatusPatch={setStatusPatch}
           handleClickDelete={handleClickDelete}
+          isAdding={isAdding}
         />
       )))}
     </section>
