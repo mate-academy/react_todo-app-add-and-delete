@@ -87,6 +87,7 @@ export const App: React.FC = () => {
             setIsLoading={setIsLoading}
             setTempTitle={setTempTitle}
             user={user}
+            isLoading={isLoading}
           />
         </header>
         {todos.length > 0

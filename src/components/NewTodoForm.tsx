@@ -13,6 +13,7 @@ interface Props {
   setIsLoading: (value: boolean) => void,
   setTempTitle: (value: string) => void,
   user: User | null,
+  isLoading: boolean,
 }
 export const NewTodoForm: React.FC<Props> = ({
   newTodoField,
@@ -24,6 +25,7 @@ export const NewTodoForm: React.FC<Props> = ({
   setIsLoading,
   setTempTitle,
   user,
+  isLoading,
 }) => {
   const handlerInput = (event: React.ChangeEvent<HTMLInputElement>) => {
     setNewTodoTitle(event.target.value);
@@ -69,6 +71,7 @@ export const NewTodoForm: React.FC<Props> = ({
         className="todoapp__new-todo"
         placeholder="What needs to be done?"
         onChange={handlerInput}
+        disabled={isLoading}
       />
     </form>
   );
