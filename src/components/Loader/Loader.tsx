@@ -2,7 +2,7 @@ import React from 'react';
 import classNames from 'classnames';
 
 type Props = {
-  isActive?: boolean | false,
+  isActive?: boolean,
   selectedTodosId?: number[],
   id: number,
 };

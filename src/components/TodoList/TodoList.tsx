@@ -8,7 +8,7 @@ import '../../styles/transitiongroup.scss';
 type Props = {
   todos: Todo[];
   isAdding: boolean;
-  selectedTodosId: number[];
+  selectedTodosIds: number[];
   newTitle: string,
   onDelete: (id: number[]) => void;
 };
@@ -16,7 +16,7 @@ type Props = {
 export const TodoList: React.FC<Props> = ({
   todos,
   isAdding,
-  selectedTodosId,
+  selectedTodosIds,
   newTitle,
   onDelete,
 }) => {
@@ -31,7 +31,7 @@ export const TodoList: React.FC<Props> = ({
           >
             <TodoItem
               todo={todo}
-              selectedTodosId={selectedTodosId}
+              selectedTodosIds={selectedTodosIds}
               onDelete={onDelete}
             />
           </CSSTransition>

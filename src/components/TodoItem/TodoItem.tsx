@@ -6,14 +6,14 @@ import { Loader } from '../Loader/Loader';
 type Props = {
   todo: Todo;
   isActive?: boolean,
-  selectedTodosId?: number[],
+  selectedTodosIds?: number[],
   onDelete: (id: number[]) => void;
 };
 
 export const TodoItem: React.FC<Props> = ({
   todo,
   isActive,
-  selectedTodosId,
+  selectedTodosIds,
   onDelete,
 }) => {
   const { id, title, completed } = todo;
@@ -46,7 +46,7 @@ export const TodoItem: React.FC<Props> = ({
 
       <Loader
         isActive={isActive}
-        selectedTodosId={selectedTodosId}
+        selectedTodosId={selectedTodosIds}
         id={id}
       />
     </div>

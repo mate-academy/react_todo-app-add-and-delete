@@ -1,6 +1,4 @@
-/* eslint-disable no-console */
 import React, {
-  // FormEvent,
   useContext,
   useEffect,
   useMemo,
@@ -27,7 +25,7 @@ export const App: React.FC = () => {
   const [filterValue, setFilterValue] = useState('all');
   const [title, setTitle] = useState('');
   const [isTodoAdded, setIsTodoAdded] = useState(false);
-  const [selectedTodosId, setSelectedTodosId] = useState<number[]>([]);
+  const [selectedTodosIds, setSelectedTodosIds] = useState<number[]>([]);
 
   const newTodoField = useRef<HTMLInputElement>(null);
 
@@ -73,17 +71,20 @@ export const App: React.FC = () => {
     }
   };
 
-  const hundleDeleteTodo = (todosId: number[]) => {
-    setSelectedTodosId(todosId);
-    todosId.map(todoId => (
+  const hundleDeleteTodo = (todosIds: number[]) => {
+    setSelectedTodosIds(todosIds);
+    Promise.all(todosIds.map(todoId => (
       deleteTodo(todoId)
         .then(() => {
           setTodos(prevTodos => prevTodos.filter(({ id }) => id !== todoId));
         })
-        .catch(() => {
-          setErrorMessage('Unable to delete todo');
-        })
-    ));
+    )))
+      .catch(() => {
+        setErrorMessage('Unable to delete todo');
+      })
+      .finally(() => {
+        setSelectedTodosIds([]);
+      });
   };
 
   const filteredTodos = useMemo(() => {
@@ -105,7 +106,7 @@ export const App: React.FC = () => {
     return todos.filter(({ completed }) => !completed).length;
   }, [todos]);
 
-  const completedTodosId = useMemo(() => {
+  const completedTodosIds = useMemo(() => {
     return todos.reduce((todosId: number[], currTodo: Todo) => {
       if (currTodo.completed) {
         todosId.push(currTodo.id);
@@ -133,7 +134,7 @@ export const App: React.FC = () => {
           <TodoList
             todos={filteredTodos}
             isAdding={isTodoAdded}
-            selectedTodosId={selectedTodosId}
+            selectedTodosIds={selectedTodosIds}
             newTitle={title}
             onDelete={hundleDeleteTodo}
           />
@@ -144,7 +145,7 @@ export const App: React.FC = () => {
             isLeftActiveTodos={isLeftActiveTodos}
             filterValue={filterValue}
             setFilterValue={setFilterValue}
-            completedTodosId={completedTodosId}
+            completedTodosIds={completedTodosIds}
             onDelete={hundleDeleteTodo}
           />
         )}
