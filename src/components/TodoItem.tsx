@@ -4,7 +4,7 @@ import { Todo } from '../types/Todo';
 
 type Props = {
   todo: Todo;
-  activeTodoId: number
+  activeTodoId: number[];
   handleRemoveTodo: (removeTodoID:number) => void;
 };
 
@@ -48,7 +48,7 @@ export const TodoItem: React.FC<Props> = ({
         className={classNames(
           'modal',
           'overlay',
-          { 'is-active': todo.id === activeTodoId },
+          { 'is-active': activeTodoId.includes(todo.id) },
         )}
       >
         <div className="

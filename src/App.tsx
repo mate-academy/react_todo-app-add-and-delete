@@ -1,6 +1,6 @@
 /* eslint-disable jsx-a11y/control-has-associated-label */
 import React, {
-  useContext, useEffect, useRef, useState, useMemo,
+  useContext, useEffect, useRef, useState,
 } from 'react';
 import classNames from 'classnames';
 import { AuthContext } from './components/Auth/AuthContext';
@@ -22,7 +22,7 @@ export const App: React.FC = () => {
   const [isError, setError] = useState(false);
   const [messageError, setMessageError] = useState('');
   const [newTodoTitle, setTitle] = useState('');
-  const [activeTodoId, setActiveTodoId] = useState(0);
+  const [activeTodoId, setActiveTodoId] = useState([0]);
 
   useEffect(() => {
     if (newTodoField.current) {
@@ -41,7 +41,7 @@ export const App: React.FC = () => {
     }
   }, []);
 
-  useMemo(() => {
+  useEffect(() => {
     setVisibelTodos(() => (
       todos.filter(todo => {
         switch (sortFilter) {
@@ -57,7 +57,7 @@ export const App: React.FC = () => {
       })));
   }, [todos, sortFilter]);
 
-  useMemo(() => {
+  useEffect(() => {
     setCompletedTodos(() => todos.filter(todo => todo.completed));
   }, [todos]);
 
@@ -74,7 +74,7 @@ export const App: React.FC = () => {
       return;
     }
 
-    setVisibelTodos(state => [...state, {
+    setVisibelTodos(visibleTodos => [...visibleTodos, {
       id: 0,
       userId: user.id,
       title: newTodoTitle,
@@ -88,32 +88,42 @@ export const App: React.FC = () => {
         completed: false,
       });
 
-      setTodos(state => [...state, isAdding]);
+      setTodos(PrevTodos => [...PrevTodos, isAdding]);
     } catch (errorFromServer) {
       setError(true);
       setMessageError('Unable to add a todo');
+    } finally {
+      setVisibelTodos(visibleTodos => visibleTodos
+        .filter(todo => todo.id !== 0));
     }
 
     setTitle('');
   };
 
+
   const handleRemoveTodo = async (removeTodoID: number) => {
-    setActiveTodoId(removeTodoID);
+    setActiveTodoId(idActive => [...idActive, removeTodoID]);
 
     try {
       await deleteTodo(removeTodoID);
 
-      setTodos(state => state.filter(todo => todo.id !== removeTodoID));
+      setTodos(PrevTodos => PrevTodos.filter(todo => todo.id !== removeTodoID));
     } catch (errorFromServer) {
       setError(true);
       setMessageError('Unable to delete a todo');
     } finally {
-      setActiveTodoId(0);
+      setActiveTodoId(idActive => idActive.filter(id => id !== removeTodoID));
     }
   };
 
   const handlerRemoveComleted = () => {
     completedTodos.forEach((todoComleted) => handleRemoveTodo(todoComleted.id));
+  };
+
+  const handleChangeSortFilter = (sort: string) => {
+    if (sortFilter !== sort) {
+      setSortFilter(sort);
+    }
   };
 
   return (
@@ -165,7 +175,7 @@ export const App: React.FC = () => {
 
                 <Filter
                   sortFilter={sortFilter}
-                  setSortFilter={setSortFilter}
+                  handleChangeSortFilter={handleChangeSortFilter}
                 />
                 {completedTodos.length > 0
                   && (
