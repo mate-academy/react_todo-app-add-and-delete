@@ -1,28 +1,16 @@
-// import React, { useState } from 'react';
-
 import classNames from 'classnames';
 
 type Props = {
-  // error: boolean
   removeError: (boolean: boolean) => void
-  closeError: boolean
-  // title: string
-  // titleError: boolean
-  // setTitleError:(boolean: boolean)=> void
+  error: boolean
   errorMessage: string | null
 };
 
-// можно оставить тип ошибок для урл а для тайтла свою сделать
-// и тут через тернарник выводить
 export const ErrorNotification: React.FC<Props> = ({
-  closeError,
+  error,
   removeError,
   errorMessage,
 }) => {
-  // console.log(title);
-  // console.log(closeError);
-  // console.log(errorMessage);
-
   return (
     <>
       <div
@@ -31,9 +19,7 @@ export const ErrorNotification: React.FC<Props> = ({
           'is-danger',
           'is-light',
           'has-text-weight-normal', {
-            // hidden: !error,
-            hidden: !closeError,
-            // hidden: errorUrl,
+            hidden: !error,
           })}
 
       >
@@ -42,13 +28,10 @@ export const ErrorNotification: React.FC<Props> = ({
           data-cy="HideErrorButton"
           type="button"
           className="delete"
-          // onClick={() => closeError(false)}
-          // onClick={() => removeError(true)}
           onClick={() => removeError(false)}
         />
         {errorMessage}
       </div>
-
     </>
   );
 };

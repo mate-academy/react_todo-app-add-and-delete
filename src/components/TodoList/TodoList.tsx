@@ -1,4 +1,3 @@
-// import React, { useState, useEffect } from 'react';
 import classNames from 'classnames';
 
 import { Todo } from '../../types/Todo';
@@ -59,22 +58,6 @@ export const TodoList: React.FC<Props> = ({
               ×
             </button>
 
-            {/* { selectedTodoId === todo.id || completedTodos.includes(todo.id) ? (
-              <div
-                data-cy="TodoLoader"
-                className="
-                 overlay
-                 is-flex
-                 is-justify-content-center
-                 is-align-items-center
-                "
-              >
-                <div className="modal-background has-background-white-ter" />
-                <div className="loader" />
-              </div>
-              // вместо нал 2й вариант верстки мне не помог
-              // сделать через оператор &&
-            ) : null} */}
             { (selectedTodoId === todo.id
               || completedTodos.includes(todo.id))
               && (
