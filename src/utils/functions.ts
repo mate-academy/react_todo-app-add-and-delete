@@ -14,7 +14,7 @@ export function getFilteredTodo(
         return todo.completed;
 
       default:
-        return todo;
+        return true;
     }
   });
 
