@@ -1,30 +1,25 @@
-import classnames from 'classnames';
+import { Error } from '../../types/Error';
 
 type Props = {
-  error: boolean;
-  handleError: (value: boolean) => void;
-  errorMessage: string;
+  handleError: (value: Error | null) => void;
+  errorMessage: Error | null;
 };
 
 export const ErrorMessage: React.FC<Props> = ({
-  error,
   handleError,
   errorMessage,
 }) => {
   return (
     <div
       data-cy="ErrorNotification"
-      className={classnames(
-        'notification is-danger is-light has-text-weight-normal',
-        { hidden: !error },
-      )}
+      className="notification is-danger is-light has-text-weight-normal"
     >
       <button
         data-cy="HideErrorButton"
         type="button"
         className="delete"
         aria-label="Hide Error"
-        onClick={() => handleError(false)}
+        onClick={() => handleError(null)}
       />
       {errorMessage}
     </div>

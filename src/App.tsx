@@ -9,6 +9,7 @@ import { Filter } from './types/Filter';
 import { ErrorMessage } from './components/ErrorMessage/ErrorMessage';
 import { getTodos, createTodo, deleteTodo } from './api/todos';
 import { Todo } from './types/Todo';
+import { Error } from './types/Error';
 
 export const App: React.FC = () => {
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
@@ -16,13 +17,14 @@ export const App: React.FC = () => {
   const newTodoField = useRef<HTMLInputElement>(null);
   const [todos, setTodos] = useState<Todo[]>([]);
   const [filter, setFilter] = useState('all');
-  const [error, setError] = useState(false);
-  const [errorMessage] = useState('');
+  const [errorMessage, setError] = useState<Error | null>(null);
   const [title, setTitle] = useState('');
+  const [isAdding, setIsAdding] = useState(false);
 
-  if (error) {
+  if (errorMessage) {
     setTimeout(() => {
-      setError(false);
+      setError(null);
+      setIsAdding(false);
     }, 3000);
   }
 
@@ -34,27 +36,30 @@ export const App: React.FC = () => {
 
   getTodos(userId)
     .then(setTodos)
-    .catch(() => setError(false));
+    .catch(() => setError(Error.Loading));
 
   const handleSubmit = async (event: FormEvent) => {
     event.preventDefault();
 
     if (!title.trim()) {
-      setError(error);
+      setError(Error.Title);
       setTitle('');
 
       return;
     }
+
+    setIsAdding(true);
 
     await createTodo(userId, title)
       .then((newTodo) => {
         setTodos([...todos, newTodo]);
       })
       .catch(() => {
-        setError(error);
+        setError(Error.Add);
       });
 
     setTitle('');
+    setIsAdding(true);
   };
 
   const removeTodo = async (todoId: number) => {
@@ -63,7 +68,7 @@ export const App: React.FC = () => {
         setTodos((prevTodos) => prevTodos.filter((todo) => todo.id !== todoId));
       })
       .catch(() => {
-        setError(error);
+        setError(Error.Delete);
       });
   };
 
@@ -113,22 +118,25 @@ export const App: React.FC = () => {
             />
           </form>
         </header>
-        <TodoList
-          todos={visibleTodos}
-          removeTodo={removeTodo}
-        />
-        <Footer
-          filter={filter}
-          changeFilter={setFilter}
-          todos={todos}
-          removeTodo={removeTodo}
-        />
+        {(isAdding || todos.length > 0) && (
+          <TodoList
+            todos={visibleTodos}
+            removeTodo={removeTodo}
+            title={title}
+          />
+        )}
+        {todos.length > 0 && (
+          <Footer
+            filter={filter}
+            changeFilter={setFilter}
+            todos={todos}
+            removeTodo={removeTodo}
+          />
+        )}
       </div>
-      <ErrorMessage
-        error={error}
-        handleError={setError}
-        errorMessage={errorMessage}
-      />
+      {errorMessage && (
+        <ErrorMessage errorMessage={errorMessage} handleError={setError} />
+      )}
     </div>
   );
 };
