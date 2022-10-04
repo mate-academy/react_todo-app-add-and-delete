@@ -12,6 +12,8 @@ type Props = {
   setTodos: Dispatch<SetStateAction<Todo[]>>;
   setError: Dispatch<SetStateAction<boolean>>;
   setErrorMessage: Dispatch<SetStateAction<string>>;
+  loader: boolean;
+  title: string;
 };
 
 export const TodoList: React.FC<Props> = ({
@@ -19,6 +21,8 @@ export const TodoList: React.FC<Props> = ({
   setTodos,
   setError,
   setErrorMessage,
+  loader,
+  title,
 }) => {
   return (
     <section className="todoapp__main" data-cy="TodoList">
@@ -39,6 +43,31 @@ export const TodoList: React.FC<Props> = ({
             />
           </CSSTransition>
         ))}
+
+        {loader === false && (
+          <CSSTransition
+            key={0}
+            timeout={300}
+            classNames="temp-item"
+          >
+            <div data-cy="Todo" className="todo">
+              <label className="todo__status-label">
+                <input
+                  data-cy="TodoStatus"
+                  type="checkbox"
+                  className="todo__status"
+                />
+              </label>
+
+              <span data-cy="TodoTitle" className="todo__title">{title}</span>
+
+              <div data-cy="TodoLoader" className="modal overlay is-active">
+                <div className="modal-background has-background-white-ter" />
+                <div className="loader" />
+              </div>
+            </div>
+          </CSSTransition>
+        )}
       </TransitionGroup>
     </section>
   );

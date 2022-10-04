@@ -1,5 +1,5 @@
 import {
-  Dispatch, SetStateAction, useEffect, useRef, useState,
+  Dispatch, SetStateAction, useEffect, useRef,
 } from 'react';
 import { createTodo } from '../../api/todos';
 import { Todo } from '../../types/Todo';
@@ -10,6 +10,9 @@ type Props = {
   setTodos: Dispatch<SetStateAction<Todo[]>>;
   setError: Dispatch<SetStateAction<boolean>>;
   setErrorMessage: Dispatch<SetStateAction<string>>;
+  setLoader: Dispatch<SetStateAction<boolean>>;
+  title: string;
+  setTitle: Dispatch<SetStateAction<string>>;
 };
 
 export const Header: React.FC<Props> = ({
@@ -18,9 +21,11 @@ export const Header: React.FC<Props> = ({
   setTodos,
   setError,
   setErrorMessage,
+  setLoader,
+  title,
+  setTitle,
 }) => {
   const newTodoField = useRef<HTMLInputElement>(null);
-  const [title, setTitle] = useState('');
 
   useEffect(() => {
     // focus the element with `ref={newTodoField}`
@@ -42,13 +47,15 @@ export const Header: React.FC<Props> = ({
     createTodo(userId, normalizedTitle)
       .then(addedTodo => {
         setTodos([...todos, addedTodo]);
+        setLoader(true);
+        setTitle('');
       })
       .catch(() => {
         setError(true);
         setErrorMessage('Unable to add a todo');
       });
 
-    setTitle('');
+    setLoader(false);
   };
 
   const handleChange = (event: React.ChangeEvent<HTMLInputElement>) => {

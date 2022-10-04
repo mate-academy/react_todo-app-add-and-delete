@@ -16,6 +16,8 @@ export const App: React.FC = () => {
   const [filterType, setFilterType] = useState<FilterType>(FilterType.All);
   const [error, setError] = useState(false);
   const [errorMessage, setErrorMessage] = useState('');
+  const [loader, setLoader] = useState(true);
+  const [title, setTitle] = useState('');
 
   const filterTodos = todos.filter(todo => {
     switch (filterType) {
@@ -62,6 +64,9 @@ export const App: React.FC = () => {
           setTodos={setTodos}
           setError={setError}
           setErrorMessage={setErrorMessage}
+          setLoader={setLoader}
+          title={title}
+          setTitle={setTitle}
         />
 
         {todos.length > 0 && (
@@ -71,6 +76,8 @@ export const App: React.FC = () => {
               setTodos={setTodos}
               setError={setError}
               setErrorMessage={setErrorMessage}
+              loader={loader}
+              title={title}
             />
 
             <Footer
