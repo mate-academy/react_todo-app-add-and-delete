@@ -1,15 +1,18 @@
 import classNames from 'classnames';
 import { useState } from 'react';
 import { FilterBy } from '../../types/FilterType';
+import { Todo } from '../../types/Todo';
 
 type Props = {
   setSortBy: (value: FilterBy) => void;
   clearAllCompleted: () => void;
+  completedTodo: Todo[];
 };
 
 export const TodoFilter: React.FC<Props> = ({
   setSortBy,
   clearAllCompleted,
+  completedTodo,
 }) => {
   const [selectedTab, setSelectedTab] = useState('all');
 
@@ -59,6 +62,7 @@ export const TodoFilter: React.FC<Props> = ({
         type="button"
         className="todoapp__clear-completed"
         onClick={clearAllCompleted}
+        disabled={completedTodo.length === 0}
       >
         Clear completed
       </button>

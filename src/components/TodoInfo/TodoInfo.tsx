@@ -7,6 +7,7 @@ type Props = {
   completed: boolean;
   onDelete: (todo: number) => void
   todo: Todo
+  isAdding?: boolean
 };
 
 export const TodoInfo: React.FC<Props> = ({
@@ -14,6 +15,7 @@ export const TodoInfo: React.FC<Props> = ({
   completed,
   onDelete,
   todo,
+  isAdding,
 }) => {
   const [isCompleted, setIsCompleted] = useState(completed);
 
@@ -47,7 +49,11 @@ export const TodoInfo: React.FC<Props> = ({
         ×
       </button>
 
-      <div data-cy="TodoLoader" className="modal overlay">
+      <div
+        data-cy="TodoLoader"
+        className={classNames('modal overlay',
+          { 'modal overlay is-active': isAdding })}
+      >
         <div className="modal-background has-background-white-ter" />
         <div className="loader" />
       </div>

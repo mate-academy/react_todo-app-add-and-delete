@@ -30,7 +30,7 @@ export const App: React.FC = () => {
   }, [todos]);
 
   useEffect(() => {
-    getTodos(user?.id || 4)
+    getTodos(14)
       .then(todosFromServer => setTodos(todosFromServer))
       .catch(() => setErrorMessage('Unable to load data'));
   }, [user]);
@@ -76,30 +76,19 @@ export const App: React.FC = () => {
       return;
     }
 
-    if (user) {
-      const tempNewTodo = {
-        id: 0,
-        userId: user.id,
-        completed: false,
-        title: newTodoTitle,
-      };
+    setIsAdding(true);
+    try {
+      const newTodo = await addTodo(newTodoTitle, user?.id || 0);
 
-      setIsAdding(true);
-      setTodos(prevTodos => [...prevTodos, tempNewTodo]);
-
-      try {
-        const newTodo = await addTodo(newTodoTitle, user.id);
-
-        setTodos(prevTodos => [...prevTodos, newTodo]);
-        setNewTodoTitle('');
-      } catch {
-        setErrorMessage('Unable to add a todo');
-      } finally {
-        setTodos(prevTodos => prevTodos.filter((todo) => todo.id !== 0));
-      }
-
-      setIsAdding(false);
+      setTodos(prevTodos => [...prevTodos, newTodo]);
+      setNewTodoTitle('');
+    } catch {
+      setErrorMessage('Unable to add a todo');
+    } finally {
+      setTodos(prevTodos => prevTodos.filter((todo) => todo.id !== 0));
     }
+
+    setIsAdding(false);
   };
 
   const handleDeleteTodo = (todoId: number) => {
@@ -151,6 +140,8 @@ export const App: React.FC = () => {
         <TodoList
           todos={visibleTodo}
           onDelete={handleDeleteTodo}
+          isAdding={isAdding}
+          newTodoTitle={newTodoTitle}
         />
 
         <footer className="todoapp__footer" data-cy="Footer">
@@ -158,6 +149,7 @@ export const App: React.FC = () => {
           <TodoFilter
             setSortBy={setSortBy}
             clearAllCompleted={deleteCompletedTodo}
+            completedTodo={completedTodo}
           />
         </footer>
 
