@@ -18,6 +18,7 @@ export const App: React.FC = () => {
   const [newTitleTodo, setNewTitleTodo] = useState('');
 
   const [todos, setTodos] = useState<Todo[]>([]);
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   const [todoId, setTodoId] = useState(0);
 
   const [statusPatch, setStatusPatch] = useState('');
