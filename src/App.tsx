@@ -56,7 +56,9 @@ export const App: React.FC = () => {
   }, [errorType]);
 
   const addNewTodo = () => {
-    if (!query.length) {
+    const title = query.trim();
+
+    if (!title.length) {
       setErrorType(ErrorType.emptyTitle);
 
       return;
@@ -65,7 +67,7 @@ export const App: React.FC = () => {
     if (user) {
       const newTodo = {
         userId: user.id,
-        title: query,
+        title,
         completed: false,
       };
 
