@@ -11,7 +11,7 @@ export const createTodo = (title: string, userId: number) => {
       id: 0,
       title,
       userId,
-      completed: true,
+      completed: false,
     });
 };
 
