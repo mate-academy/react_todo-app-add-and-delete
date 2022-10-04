@@ -7,7 +7,12 @@ import React, {
   FormEvent,
 } from 'react';
 import classnames from 'classnames';
-import { createTodo, getTodos, removeTodo } from './api/todos';
+import {
+  createTodo,
+  getTodos,
+  removeTodo,
+  updateTodo,
+} from './api/todos';
 import { AuthContext } from './components/Auth/AuthContext';
 import { ErrorNotification } from './components/ErrorNotification';
 import { Footer } from './components/Footer';
@@ -18,13 +23,15 @@ import { Error } from './types/Error';
 
 export const App: React.FC = () => {
   const user = useContext(AuthContext);
-  const newTodoField = useRef<HTMLInputElement>(null);
+  const inputField = useRef<HTMLInputElement>(null);
   const [error, setError] = useState<Error | null>(null);
-  const [filterType, setFilterType] = useState('all');
+  const [filterType, setFilterType] = useState<FilterType>(FilterType.All);
   const [todos, setTodos] = useState<Todo[]>([]);
   const [title, setTitle] = useState('');
   const [isAdding, setIsAdding] = useState(false);
   const [selectedTodos, setSelectedTodos] = useState<number[]>([]);
+  const [toggle, setToggle] = useState(true);
+  const [selectedTodo, setSelectedTodo] = useState(0);
 
   if (error) {
     setTimeout(() => {
@@ -56,15 +63,16 @@ export const App: React.FC = () => {
   });
 
   useEffect(() => {
-    // focus the element with `ref={newTodoField}`
+    inputField.current?.focus();
+
     getTodos(userId)
       .then(setTodos)
       .catch(() => setError(Error.LOADING));
-
-    if (newTodoField.current) {
-      newTodoField.current.focus();
-    }
   }, []);
+
+  useEffect(() => {
+    inputField.current?.focus();
+  }, [todos]);
 
   const handleSubmit = async (event: FormEvent) => {
     event.preventDefault();
@@ -76,6 +84,7 @@ export const App: React.FC = () => {
     }
 
     setIsAdding(true);
+    setSelectedTodos([userId]);
 
     try {
       const newTodo = await createTodo(userId, title);
@@ -87,31 +96,73 @@ export const App: React.FC = () => {
 
     setTitle('');
     setIsAdding(false);
+    setSelectedTodos([]);
   };
 
-  const deleteTodo = (todoId: number) => {
+  const deleteTodo = async (todoId: number) => {
     setSelectedTodos([todoId]);
 
-    removeTodo(todoId)
-      .then(() => {
-        setTodos([...todos.filter(todo => todo.id !== todoId)]);
-      })
-      .catch(() => {
-        setError(Error.DELETING);
-      });
+    try {
+      await removeTodo(todoId);
+
+      setTodos(todos.filter(todo => todo.id !== todoId));
+    } catch {
+      setError(Error.DELETING);
+    }
   };
 
   const completedTodos = todos.filter(todo => todo.completed);
 
-  const deleteCompletedTodos = () => {
+  const deleteCompletedTodos = async () => {
     setSelectedTodos([...completedTodos].map(todo => todo.id));
 
-    Promise.all(completedTodos.map(todo => removeTodo(todo.id)))
-      .then(() => setTodos([...todos.filter(todo => !todo.completed)]))
-      .catch(() => {
-        setError(Error.DELETING);
-        setSelectedTodos([]);
-      });
+    try {
+      await Promise.all(completedTodos.map(todo => removeTodo(todo.id)));
+
+      setTodos([...todos.filter(todo => !todo.completed)]);
+    } catch {
+      setError(Error.DELETING);
+      setSelectedTodos([]);
+    }
+  };
+
+  const handleTodoUpdate = async (todoId: number, data: Partial<Todo>) => {
+    setSelectedTodos([todoId]);
+
+    try {
+      const newTodo = await updateTodo(todoId, data);
+
+      setTodos(todos.map(todo => (
+        todo.id === todoId
+          ? newTodo
+          : todo
+      )));
+    } catch {
+      setError(Error.UPDATING);
+    }
+
+    setSelectedTodos([]);
+  };
+
+  const handleToggle = async () => {
+    setSelectedTodos(toggle
+      ? [...todos].filter(todo => !todo.completed).map(todo => todo.id)
+      : [...completedTodos].map(todo => todo.id));
+
+    try {
+      const newTodos = await Promise.all(todos.map(todo => (
+        todo.completed !== toggle
+          ? updateTodo(todo.id, { completed: toggle })
+          : todo
+      )));
+
+      setTodos(newTodos);
+    } catch {
+      setError(Error.UPDATING);
+    }
+
+    setToggle(!toggle);
+    setSelectedTodos([]);
   };
 
   return (
@@ -126,8 +177,9 @@ export const App: React.FC = () => {
               type="button"
               className={classnames(
                 'todoapp__toggle-all',
-                { active: !todos.find(todo => !todo.completed) },
+                { active: todos.every(todo => todo.completed) },
               )}
+              onClick={handleToggle}
             />
           )}
 
@@ -135,7 +187,7 @@ export const App: React.FC = () => {
             <input
               data-cy="NewTodoField"
               type="text"
-              ref={newTodoField}
+              ref={inputField}
               className="todoapp__new-todo"
               placeholder="What needs to be done?"
               value={title}
@@ -153,6 +205,10 @@ export const App: React.FC = () => {
               isAdding={isAdding}
               onDelete={deleteTodo}
               selectedTodos={selectedTodos}
+              setSelectedTodos={setSelectedTodos}
+              onUpdate={handleTodoUpdate}
+              selectedTodo={selectedTodo}
+              setSelectedTodo={setSelectedTodo}
             />
 
             <Footer

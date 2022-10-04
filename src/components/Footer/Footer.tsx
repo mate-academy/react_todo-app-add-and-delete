@@ -1,13 +1,7 @@
 import classnames from 'classnames';
 import { FilterType } from '../../types/FilterStatus';
-import { Todo } from '../../types/Todo';
 
-type Props = {
-  filterType: string;
-  handleFilterType: (type: string) => void;
-  todos: Todo[];
-  deleteCompleted: () => void;
-};
+import { Props } from './Footer.props';
 
 export const Footer: React.FC<Props> = ({
   filterType,
@@ -16,7 +10,7 @@ export const Footer: React.FC<Props> = ({
   deleteCompleted,
 }) => {
   const todosLeft = todos.filter(todo => !todo.completed).length;
-  const todosCompleted = todos.filter(todo => todo.completed).length;
+  const todosCompleted = todos.length - todosLeft;
 
   return (
     <footer className="todoapp__footer" data-cy="Footer">

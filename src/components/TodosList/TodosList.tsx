@@ -1,18 +1,10 @@
-import classnames from 'classnames';
 import {
   CSSTransition,
   TransitionGroup,
 } from 'react-transition-group';
-import { Todo } from '../../types/Todo';
 import { TodoItem } from '../TodoItem';
 
-type Props = {
-  todos: Todo[];
-  title: string;
-  isAdding: boolean;
-  onDelete: (todoId: number) => void;
-  selectedTodos: number[];
-};
+import { Props } from './TodoList.props';
 
 export const TodosList: React.FC<Props> = ({
   todos,
@@ -20,6 +12,10 @@ export const TodosList: React.FC<Props> = ({
   isAdding,
   onDelete,
   selectedTodos,
+  setSelectedTodos,
+  onUpdate,
+  selectedTodo,
+  setSelectedTodo,
 }) => {
   const temp = {
     id: 0,
@@ -32,7 +28,7 @@ export const TodosList: React.FC<Props> = ({
         {todos.map(todo => (
           <CSSTransition
             key={todo.id}
-            timeout={500}
+            timeout={300}
             classNames="item"
           >
             <TodoItem
@@ -40,6 +36,11 @@ export const TodosList: React.FC<Props> = ({
               todo={todo}
               onDelete={onDelete}
               selectedTodos={selectedTodos}
+              setSelectedTodos={setSelectedTodos}
+              onUpdate={onUpdate}
+              selectedTodo={selectedTodo}
+              setSelectedTodo={setSelectedTodo}
+              todos={todos}
             />
           </CSSTransition>
         ))}
@@ -47,7 +48,7 @@ export const TodosList: React.FC<Props> = ({
         {isAdding && (
           <CSSTransition
             key={0}
-            timeout={500}
+            timeout={300}
             classNames="item"
           >
             <div
@@ -67,10 +68,7 @@ export const TodosList: React.FC<Props> = ({
               </span>
               <div
                 data-cy="TodoLoader"
-                className={classnames(
-                  'modal overlay',
-                  { 'is-active': isAdding },
-                )}
+                className="modal overlay is-active"
               >
                 <div className="modal-background has-background-white-ter" />
                 <div className="loader" />
