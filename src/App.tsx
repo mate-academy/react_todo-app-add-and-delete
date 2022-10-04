@@ -1,4 +1,3 @@
-/* eslint-disable jsx-a11y/control-has-associated-label */
 import React, {
   FormEvent,
   useCallback,
@@ -26,7 +25,6 @@ export const App: React.FC = () => {
   const user = React.useContext(AuthContext);
 
   useEffect(() => {
-    // focus the element with `ref={newTodoField}`
     if (newTodoField.current) {
       newTodoField.current.focus();
     }
