@@ -1,10 +1,11 @@
-/* eslint-disable jsx-a11y/control-has-associated-label */
 import React, {
   useContext,
   useEffect,
   useRef,
   useState,
   FormEvent,
+  useMemo,
+  useCallback,
 } from 'react';
 import classnames from 'classnames';
 import {
@@ -33,48 +34,45 @@ export const App: React.FC = () => {
   const [toggle, setToggle] = useState(true);
   const [selectedTodo, setSelectedTodo] = useState(0);
 
-  if (error) {
-    setTimeout(() => {
-      setError(null);
-      setIsAdding(false);
-    }, 3000);
-  }
+  const filteredTodos = useMemo(() => {
+    return todos.filter(todo => {
+      switch (filterType) {
+        case FilterType.All:
+          return todo;
 
-  let userId = 0;
+        case FilterType.Active:
+          return !todo.completed;
 
-  if (user?.id) {
-    userId = user?.id;
-  }
+        case FilterType.Completed:
+          return todo.completed;
 
-  const filteredTodos = todos.filter(todo => {
-    switch (filterType) {
-      case FilterType.All:
-        return todo;
-
-      case FilterType.Active:
-        return !todo.completed;
-
-      case FilterType.Completed:
-        return todo.completed;
-
-      default:
-        return null;
-    }
-  });
+        default:
+          return true;
+      }
+    });
+  }, [todos, filterType]);
 
   useEffect(() => {
     inputField.current?.focus();
 
-    getTodos(userId)
-      .then(setTodos)
-      .catch(() => setError(Error.LOADING));
+    const fetchData = async () => {
+      const todosFromServer = await getTodos(user?.id || 0);
+
+      setTodos(todosFromServer);
+    };
+
+    try {
+      fetchData();
+    } catch {
+      setError(Error.LOADING);
+    }
   }, []);
 
   useEffect(() => {
     inputField.current?.focus();
   }, [todos]);
 
-  const handleSubmit = async (event: FormEvent) => {
+  const handleSubmit = useCallback(async (event: FormEvent) => {
     event.preventDefault();
 
     if (!title.trim()) {
@@ -83,11 +81,12 @@ export const App: React.FC = () => {
       return;
     }
 
+    setError(null);
     setIsAdding(true);
-    setSelectedTodos([userId]);
+    setSelectedTodos([user?.id || 0]);
 
     try {
-      const newTodo = await createTodo(userId, title);
+      const newTodo = await createTodo(user?.id || 0, title);
 
       setTodos([...todos, newTodo]);
     } catch {
@@ -97,7 +96,7 @@ export const App: React.FC = () => {
     setTitle('');
     setIsAdding(false);
     setSelectedTodos([]);
-  };
+  }, [title]);
 
   const deleteTodo = async (todoId: number) => {
     setSelectedTodos([todoId]);
@@ -111,9 +110,11 @@ export const App: React.FC = () => {
     }
   };
 
-  const completedTodos = todos.filter(todo => todo.completed);
+  const completedTodos = useMemo(() => {
+    return todos.filter(todo => todo.completed);
+  }, [todos]);
 
-  const deleteCompletedTodos = async () => {
+  const deleteCompletedTodos = useCallback(async () => {
     setSelectedTodos([...completedTodos].map(todo => todo.id));
 
     try {
@@ -124,7 +125,7 @@ export const App: React.FC = () => {
       setError(Error.DELETING);
       setSelectedTodos([]);
     }
-  };
+  }, [completedTodos]);
 
   const handleTodoUpdate = async (todoId: number, data: Partial<Todo>) => {
     setSelectedTodos([todoId]);
@@ -175,6 +176,7 @@ export const App: React.FC = () => {
             <button
               data-cy="ToggleAllButton"
               type="button"
+              aria-label="toggleAll"
               className={classnames(
                 'todoapp__toggle-all',
                 { active: todos.every(todo => todo.completed) },
@@ -225,6 +227,7 @@ export const App: React.FC = () => {
         <ErrorNotification
           errorText={error}
           handleErrorChange={setError}
+          setIsAdding={setIsAdding}
         />
       )}
     </div>

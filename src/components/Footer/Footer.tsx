@@ -1,4 +1,5 @@
 import classnames from 'classnames';
+import { useMemo } from 'react';
 import { FilterType } from '../../types/FilterStatus';
 
 import { Props } from './Footer.props';
@@ -9,7 +10,9 @@ export const Footer: React.FC<Props> = ({
   todos,
   deleteCompleted,
 }) => {
-  const todosLeft = todos.filter(todo => !todo.completed).length;
+  const todosLeft = useMemo(() => {
+    return todos.filter(todo => !todo.completed).length;
+  }, [todos]);
   const todosCompleted = todos.length - todosLeft;
 
   return (
