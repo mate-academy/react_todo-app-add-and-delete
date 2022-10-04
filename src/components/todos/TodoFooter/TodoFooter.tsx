@@ -6,14 +6,16 @@ interface Props {
   todos: Todo[];
   selected: string;
   setStatus: (status: string) => void;
+  removeCompleted: (completedTodos: Todo[]) => void;
 }
 
-export const TodoFooter: React.FC<Props> = ({ todos, selected, setStatus }) => {
+export const TodoFooter: React.FC<Props> = ({
+  todos,
+  selected,
+  setStatus,
+  removeCompleted,
+}) => {
   const statuses = ['All', 'Active', 'Completed'];
-
-  if (todos.length === 0) {
-    return <></>;
-  }
 
   return (
     <footer className="todoapp__footer" data-cy="Footer">
@@ -43,6 +45,9 @@ export const TodoFooter: React.FC<Props> = ({ todos, selected, setStatus }) => {
         data-cy="ClearCompletedButton"
         type="button"
         className="todoapp__clear-completed"
+        onClick={() => removeCompleted(todos.filter(todo => (
+          todo.completed
+        )))}
       >
         Clear completed
       </button>

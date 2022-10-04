@@ -7,6 +7,7 @@ import React, {
 } from 'react';
 import { deleteTodo, getTodos, postTodo } from './api/todos';
 import { AuthContext } from './components/Auth/AuthContext';
+import { ErrorMessage } from './components/todos/ErrorMessage';
 import { TodoFooter } from './components/todos/TodoFooter';
 import { TodoHeader } from './components/todos/TodoHeader';
 import { TodoList } from './components/todos/TodoList';
@@ -15,9 +16,7 @@ import { Todo } from './types/Todo';
 export const App: React.FC = () => {
   const user = useContext(AuthContext);
 
-  const [addError, setAddError] = useState(false);
-  const [deleteError, setDeleteError] = useState(false);
-  const [updateError, setUpdateError] = useState(false);
+  const [errorType, setErrorType] = useState('none');
 
   const [isAdding, setIsAdding] = useState(false);
 
@@ -25,16 +24,6 @@ export const App: React.FC = () => {
   const [visibleTodos, setVisibleTodos] = useState<Todo[]>([]);
   const [tempTodo, setTempTodo] = useState<Todo | null>(null);
   const [status, setStatus] = useState('All');
-
-  const hasError = (isVisible?: boolean) => {
-    if (isVisible === false) {
-      setAddError(false);
-      setDeleteError(false);
-      setUpdateError(false);
-    }
-
-    return addError || deleteError || updateError;
-  };
 
   const loadData = async () => {
     if (user) {
@@ -65,7 +54,7 @@ export const App: React.FC = () => {
 
   useEffect(() => {
     setVisibleTodos(filterByStatus(status));
-  }, [status]);
+  }, [status, todos]);
 
   console.log(visibleTodos);
 
@@ -80,10 +69,9 @@ export const App: React.FC = () => {
         completed: false,
       });
       await postTodo(user.id, value);
-      console.log('posted');
       loadData();
     } else {
-      setAddError(true);
+      setErrorType('add');
     }
 
     setIsAdding(false);
@@ -92,6 +80,12 @@ export const App: React.FC = () => {
   const removeTodo = async (id: number) => {
     await deleteTodo(id);
     loadData();
+  };
+
+  const removeCompleted = async (completedTodos: Todo[]) => {
+    await completedTodos.forEach(todo => {
+      removeTodo(todo.id);
+    });
   };
 
   return (
@@ -110,32 +104,22 @@ export const App: React.FC = () => {
           removeTodo={removeTodo}
         />
 
-        <TodoFooter
-          todos={todos}
-          selected={status}
-          setStatus={setStatus}
-        />
+        {todos.length > 0 && (
+          <TodoFooter
+            todos={todos}
+            selected={status}
+            setStatus={setStatus}
+            removeCompleted={removeCompleted}
+          />
+        )}
+
       </div>
 
-      {/* ↓↓↓ I use this code in the following tasks ↓↓↓ */}
-
-      {hasError() && (
-        <div
-          data-cy="ErrorNotification"
-          className="notification is-danger is-light has-text-weight-normal"
-        >
-          <button
-            data-cy="HideErrorButton"
-            type="button"
-            className="delete"
-            onClick={() => hasError(false)}
-          />
-          {addError && 'Unable to add a todo'}
-          <br />
-          {deleteError && 'Unable to delete a todo'}
-          <br />
-          {updateError && 'Unable to update a todo'}
-        </div>
+      {errorType !== 'none' && (
+        <ErrorMessage
+          errorType={errorType}
+          setErrorType={setErrorType}
+        />
       )}
     </div>
   );
