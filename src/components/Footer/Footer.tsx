@@ -3,20 +3,31 @@ import { Todo } from '../../types/Todo';
 import { SortTypes } from '../../types/SortTypes';
 
   type Props = {
-    todos: Todo[]
-    handleSortType: (type: string) => void,
+    filteredTodos: Todo[]
+    handleSortType: (type: string) => void
     sortType: string
+    clearTable: () => void
   };
 
 export const Footer: React.FC<Props> = ({
-  todos,
   handleSortType,
   sortType,
+  filteredTodos,
+  clearTable,
 }) => {
+  const completedTodosLen = filteredTodos
+    .filter(todo => todo.completed === true).length === 0;
+
+  const unCompletedTodosLen = filteredTodos
+    .filter(todo => todo.completed === false).length;
+
   return (
     <footer className="todoapp__footer" data-cy="Footer">
       <span className="todo-count" data-cy="todosCounter">
-        {`${todos.filter(todo => todo.completed === false).length} items left`}
+        {/* тут надо поминять только на те что неокончены  */}
+        {/* {`${filteredTodos.filter(todo => todo.completed === false).length} items left`} */}
+        {/* {`${filteredTodos.length} items left`} */}
+        {`${unCompletedTodosLen} items left`}
       </span>
       <nav className="filter" data-cy="Filter">
         <a
@@ -55,7 +66,10 @@ export const Footer: React.FC<Props> = ({
       <button
         data-cy="ClearCompletedButton"
         type="button"
-        className="todoapp__clear-completed"
+        className={classNames('todoapp__clear-completed', {
+          'is-invisible': completedTodosLen,
+        })}
+        onClick={clearTable}
       >
         Clear completed
       </button>

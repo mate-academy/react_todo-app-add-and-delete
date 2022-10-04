@@ -9,15 +9,15 @@ type Props = {
   filteredTodos: Todo[]
   // deleteTodo: (todoId: number) => void
   deleteTodo2: (todoId: number) => void
-  selectedTodoId: number
-  loader: number | null
+  selectedTodoId: number | null
+  // loader: number | null
 };
 
 export const TodoList: React.FC<Props> = ({
   filteredTodos,
   // deleteTodo,
   selectedTodoId,
-  loader,
+  // loader,
   deleteTodo2,
 }) => {
   return (
@@ -65,21 +65,21 @@ export const TodoList: React.FC<Props> = ({
               ×
             </button>
 
-            {/* класс  modal отвечает за скрытие крутилки */}
-            {/* <div data-cy="TodoLoader" className="modal overlay"> */}
-
-            {/* на лоудер доп стили повешать через флекс чтобы отцентрировать лоудер */}
-            {/* лоудер тут может и не понадобится */}
-            {/* можно сюда поставить одгну переменную и менять ее постоянно то в добвлении то в удалении */}
-
-            {selectedTodoId === todo.id || loader === todo.id ? (
+            {/* {selectedTodoId === todo.id || loader === todo.id ? ( */}
+            { selectedTodoId === todo.id ? (
               <div
                 data-cy="TodoLoader"
-                className={classNames('overlay', {
-                  // modal: !showLoader,
-                  // modal: showLoader,
-                  // completed,
-                })}
+                // className={classNames('overlay is-flex is-justify-content-center is-align-items-center', {
+                //   // modal: !showLoader,
+                //   // modal: showLoader,
+                //   // completed,
+                // })}
+                className="
+                 overlay
+                 is-flex
+                 is-justify-content-center
+                 is-align-items-center
+                "
               >
                 <div className="modal-background has-background-white-ter" />
                 <div className="loader" />
