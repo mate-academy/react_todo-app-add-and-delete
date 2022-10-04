@@ -1,20 +1,18 @@
-import React, { useState } from 'react';
+import React from 'react';
 import classnames from 'classnames';
 import { Todo } from '../../types/Todo';
 
 type Props = {
   todo: Todo,
+  selectedTodos: number[],
   onDelete: CallableFunction,
 };
 
-export const TodoItem: React.FC<Props> = ({ todo, onDelete }) => {
-  const [isLoading, setIsLoading] = useState<boolean>(false);
-
-  const handleTodoRemove = () => {
-    setIsLoading(true);
-    onDelete(todo.id || 0);
-  };
-
+export const TodoItem: React.FC<Props> = ({
+  todo,
+  selectedTodos,
+  onDelete,
+}) => {
   return (
     <div
       data-cy="Todo"
@@ -37,9 +35,7 @@ export const TodoItem: React.FC<Props> = ({ todo, onDelete }) => {
         type="button"
         className="todo__remove"
         data-cy="TodoDeleteButton"
-        onClick={() => {
-          handleTodoRemove();
-        }}
+        onClick={() => onDelete(todo.id)}
       >
         ×
       </button>
@@ -50,7 +46,7 @@ export const TodoItem: React.FC<Props> = ({ todo, onDelete }) => {
           classnames(
             'modal',
             'overlay',
-            { 'is-active': isLoading },
+            { 'is-active': selectedTodos.includes(todo.id) || todo.id === 0 },
           )
         }
       >

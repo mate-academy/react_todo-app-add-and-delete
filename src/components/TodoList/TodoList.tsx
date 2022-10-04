@@ -5,14 +5,24 @@ import { Todo } from '../../types/Todo';
 
 type Props = {
   todos: Todo[],
+  selectedTodos: number[],
   removeTodo: CallableFunction,
 };
 
-export const TodoList: React.FC<Props> = ({ todos, removeTodo }) => {
+export const TodoList: React.FC<Props> = ({
+  todos,
+  selectedTodos,
+  removeTodo,
+}) => {
   return (
     <section className="todoapp__main" data-cy="TodoList">
       {todos.map(todo => (
-        <TodoItem key={todo.id} todo={todo} onDelete={removeTodo} />
+        <TodoItem
+          key={todo.id}
+          todo={todo}
+          selectedTodos={selectedTodos}
+          onDelete={removeTodo}
+        />
       ))}
 
       <div

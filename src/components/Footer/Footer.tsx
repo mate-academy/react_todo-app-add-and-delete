@@ -5,19 +5,23 @@ import { FilterType } from '../../types/FilterType';
 
 type Props = {
   todos: Todo[],
+  filteredTodos: Todo[],
   filterType: string,
   onFilterChange: CallableFunction,
+  handleDeleteTodos: CallableFunction,
 };
 
 export const Footer: React.FC<Props> = ({
   todos,
   filterType,
+  filteredTodos,
   onFilterChange,
+  handleDeleteTodos,
 }) => {
   return (
     <footer className="todoapp__footer" data-cy="Footer">
       <span className="todo-count" data-cy="todosCounter">
-        {`${todos.filter(todo => !todo.completed).length} items left`}
+        {`${filteredTodos.filter(todo => !todo.completed).length} items left`}
       </span>
 
       <nav className="filter" data-cy="Filter">
@@ -67,8 +71,13 @@ export const Footer: React.FC<Props> = ({
         data-cy="ClearCompletedButton"
         type="button"
         className="todoapp__clear-completed"
+        onClick={() => {
+          filteredTodos
+            .filter(todo => todo.completed)
+            .forEach(todo => handleDeleteTodos(todo.id));
+        }}
       >
-        Clear completed
+        {todos.some(todo => todo.completed) && 'Clear completed'}
       </button>
     </footer>
   );
