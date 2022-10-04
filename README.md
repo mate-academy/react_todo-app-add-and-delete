@@ -6,6 +6,7 @@ Take your code implemented for [Loading todos](https://github.com/mate-academy/r
 and implement the ability to and nd remove todos.
 
 > Here is [the working example](https://mate-academy.github.io/react_todo-app-with-api/)
+# ❗️❗️❗️</br>In this working example implemented all 3 parts of the task.</br>In this task you have to implement only the second part described below (using your code from the first part).</br>❗️❗️❗️
 
 ### [API Documentation](https://mate-academy.github.io/fe-students-api/)
 
