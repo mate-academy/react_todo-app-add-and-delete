@@ -11,7 +11,7 @@ export const AuthForm: React.FC<Props> = ({ onLogin }) => {
   const [email, setEmail] = useState('');
   const [name, setName] = useState('');
   const [needToRegister, setNeedToRegister] = useState(false);
-  const [loading, setLoading] = useState(false);
+  const [loading, setIsLoading] = useState(false);
   const [errorMessage, setErrorMessage] = useState('');
 
   const saveUser = (user: User) => {
@@ -54,7 +54,7 @@ export const AuthForm: React.FC<Props> = ({ onLogin }) => {
     event.preventDefault();
 
     setErrorMessage('');
-    setLoading(true);
+    setIsLoading(true);
 
     try {
       if (needToRegister) {
@@ -65,7 +65,7 @@ export const AuthForm: React.FC<Props> = ({ onLogin }) => {
     } catch (error) {
       setErrorMessage('Something went wrtong');
     } finally {
-      setLoading(false);
+      setIsLoading(false);
     }
   };
 
