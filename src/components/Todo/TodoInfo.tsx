@@ -7,6 +7,7 @@ interface Props {
   todoId: number;
   deleteTodo: (value: number) => void;
   isAdding: boolean;
+  selectedId: number | null;
 }
 
 export const TodoInfo: React.FC<Props> = ({
@@ -15,6 +16,7 @@ export const TodoInfo: React.FC<Props> = ({
   todoId,
   deleteTodo,
   isAdding,
+  selectedId,
 }) => {
   return (
     <div
@@ -47,7 +49,7 @@ export const TodoInfo: React.FC<Props> = ({
         ×
       </button>
 
-      {isAdding && (
+      {(isAdding || selectedId === todoId) && (
         <Loader />
       )}
     </div>

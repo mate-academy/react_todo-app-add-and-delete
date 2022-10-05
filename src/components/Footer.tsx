@@ -7,12 +7,14 @@ type Props = {
   todos: Todo[];
   filterBy: string;
   setFilterBy: (value: FilterType) => void;
+  deleteCompletedTodos: () => void;
 };
 
 export const Footer: React.FC<Props> = ({
   todos,
   filterBy,
   setFilterBy,
+  deleteCompletedTodos,
 }) => {
   const activeTodos = useMemo(() => (
     todos.filter(todo => !todo.completed)
@@ -66,6 +68,7 @@ export const Footer: React.FC<Props> = ({
         data-cy="ClearCompletedButton"
         type="button"
         className="todoapp__clear-completed"
+        onClick={deleteCompletedTodos}
       >
         {completedTodos.length > 0 && 'Clear completed'}
       </button>

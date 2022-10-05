@@ -1,7 +1,6 @@
-import { FormEvent, RefObject } from 'react';
+import { FormEvent, useEffect, useRef } from 'react';
 
 type Props = {
-  newTodoField: RefObject<HTMLInputElement>;
   title: string;
   setTitle: (value: string) => void;
   handleSubmit: (event: FormEvent) => Promise<void>;
@@ -9,12 +8,19 @@ type Props = {
 };
 
 export const Header: React.FC<Props> = ({
-  newTodoField,
   title,
   setTitle,
   handleSubmit,
   isAdding,
 }) => {
+  const newTodoField = useRef<HTMLInputElement>(null);
+
+  useEffect(() => {
+    if (newTodoField.current) {
+      newTodoField.current.focus();
+    }
+  }, []);
+
   return (
     <header className="todoapp__header">
       <button

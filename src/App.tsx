@@ -3,7 +3,6 @@ import React, {
   useContext,
   useEffect,
   useMemo,
-  useRef,
   useState,
 } from 'react';
 import { AuthContext } from './components/Auth/AuthContext';
@@ -17,24 +16,17 @@ import { Header } from './components/Header';
 import { ErrorType } from './types/ErrorTypes';
 
 export const App: React.FC = () => {
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   const [todos, setTodos] = useState<Todo[]>([]);
   const [errorStatus, setErrorStatus] = useState<boolean>(false);
   const [filterBy, setFilterBy] = useState<FilterType>(FilterType.ALL);
   const [errorText, setErrorText] = useState<string>('');
   const [isAdding, setIsAdding] = useState<boolean>(false);
   const [title, setTitle] = useState<string>('');
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   const [selectedId, setSelectedId] = useState<number | null>(null);
 
   const user = useContext(AuthContext);
-  const newTodoField = useRef<HTMLInputElement>(null);
 
   useEffect(() => {
-    if (newTodoField.current) {
-      newTodoField.current.focus();
-    }
-
     if (user) {
       const getTodosFromServer = async (userId: number) => {
         try {
@@ -81,29 +73,41 @@ export const App: React.FC = () => {
       const newTodo = await createTodo(user?.id || 0, title);
 
       setTodos([...todos, newTodo]);
+      setIsAdding(false);
     } catch {
       setErrorText(ErrorType.ADD);
     }
 
-    setIsAdding(false);
     setTitle('');
     setSelectedId(user?.id || 0);
   };
 
-  const deleteTodo = (todoId: number) => {
+  const deleteTodo = async (todoId: number) => {
     setSelectedId(todoId);
 
-    const newData = async () => {
-      try {
-        await removeTodo(todoId);
+    try {
+      await removeTodo(todoId);
 
-        setTodos(todos.filter(todo => todo.id !== todoId));
-      } catch {
-        setErrorText(ErrorType.DELETE);
-      }
-    };
+      setTodos(todos.filter(todo => todo.id !== todoId));
+    } catch {
+      setErrorText(ErrorType.DELETE);
+    }
+  };
 
-    newData();
+  const completedTodos = useMemo(() => (
+    todos.filter(todo => todo.completed)
+  ), [todos]);
+
+  const deleteCompletedTodos = async () => {
+    try {
+      Promise.all(completedTodos
+        .map(({ id }) => removeTodo(id)));
+
+      setTodos((prevTodos) => prevTodos
+        .filter(({ completed }) => !completed));
+    } catch {
+      setErrorText(ErrorType.DELETE);
+    }
   };
 
   return (
@@ -112,7 +116,6 @@ export const App: React.FC = () => {
 
       <div className="todoapp__content">
         <Header
-          newTodoField={newTodoField}
           title={title}
           setTitle={setTitle}
           handleSubmit={handleSubmit}
@@ -125,11 +128,13 @@ export const App: React.FC = () => {
               todos={filteredTodos}
               deleteTodo={deleteTodo}
               isAdding={isAdding}
+              selectedId={selectedId}
             />
             <Footer
               todos={filteredTodos}
               filterBy={filterBy}
               setFilterBy={setFilterBy}
+              deleteCompletedTodos={deleteCompletedTodos}
             />
           </>
         )}
