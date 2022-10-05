@@ -1,18 +1,28 @@
-import React, { FormEvent, RefObject } from 'react';
+import React, {
+  FormEvent,
+  useEffect,
+  useRef,
+} from 'react';
 
 type Props = {
-  newTodosField: RefObject<HTMLInputElement>,
   setTitle: React.Dispatch<React.SetStateAction<string>>,
   handleSubmit: (event: FormEvent) => Promise<void>,
   title: string,
 };
 
 export const Header: React.FC<Props> = ({
-  newTodosField,
   setTitle,
   handleSubmit,
   title,
 }) => {
+  const newTodoField = useRef<HTMLInputElement>(null);
+
+  useEffect(() => {
+    if (newTodoField.current) {
+      newTodoField.current.focus();
+    }
+  }, []);
+
   const getValue = ({
     target: { value },
   }: React.ChangeEvent<HTMLInputElement>) => {
@@ -34,7 +44,7 @@ export const Header: React.FC<Props> = ({
         <input
           data-cy="NewTodoField"
           type="text"
-          ref={newTodosField}
+          ref={newTodoField}
           value={title}
           className="todoapp__new-todo"
           placeholder="What needs to be done?"
