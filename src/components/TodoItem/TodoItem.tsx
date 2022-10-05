@@ -6,14 +6,16 @@ import { Todo } from '../../types/Todo';
 type Props = {
   todo: Todo,
   removeTodo:(todoId: number) => void;
-  changeStatus:(todoId: number) => void;
+  changeProperty:(todoId: number, property: Partial<Todo>) => void;
 };
 
 export const TodoItem: React.FC<Props> = ({
   todo,
   removeTodo,
-  changeStatus,
+  changeProperty,
 }) => {
+  const { id, title, completed } = todo;
+
   return (
     <div
       data-cy="Todo"
@@ -25,7 +27,7 @@ export const TodoItem: React.FC<Props> = ({
           data-cy="TodoStatus"
           type="checkbox"
           className="todo__status"
-          onClick={() => changeStatus(todo.id)}
+          onChange={() => changeProperty(id, { completed: !completed })}
         />
       </label>
 
@@ -33,7 +35,7 @@ export const TodoItem: React.FC<Props> = ({
         data-cy="TodoTitle"
         className="todo__title"
       >
-        {todo.title}
+        {title}
       </span>
       <button
         type="button"

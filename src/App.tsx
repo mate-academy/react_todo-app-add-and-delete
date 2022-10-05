@@ -92,17 +92,15 @@ export const App: React.FC = () => {
     }
   };
 
-  const changeStatus = async (todoId: number) => {
-    const getTodo = todos.find(todo => todoId === todo.id);
-
+  const changeProperty = async (todoId: number, property: Partial<Todo>) => {
     try {
-      if (getTodo?.completed === false) {
-        await updateTodo(todoId, true);
-      }
+      const changedTodo: Todo = await updateTodo(todoId, property);
 
-      if (getTodo?.completed === true) {
-        await updateTodo(todoId, false);
-      }
+      setTodos(todos.map(todo => (
+        todo.id === todoId
+          ? changedTodo
+          : todo
+      )));
     } catch {
       setError(TextError.Update);
     }
@@ -125,7 +123,7 @@ export const App: React.FC = () => {
           <TodoList
             todos={filteredTodos}
             removeTodo={removeTodo}
-            changeStatus={changeStatus}
+            changeProperty={changeProperty}
           />
         )}
         <Footer
@@ -133,6 +131,8 @@ export const App: React.FC = () => {
           setTypeOfFilter={setTypeOfFilter}
           todos={todos}
           completedTodoList={completedTodoList}
+          setError={setError}
+          setTodos={setTodos}
         />
       </div>
 

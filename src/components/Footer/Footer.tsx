@@ -3,11 +3,16 @@ import classNames from 'classnames';
 import { Todo } from '../../types/Todo';
 import { FilterType } from '../../types/FilterType';
 import { deleteTodo } from '../../api/todos';
+import {
+  TextError,
+} from '../ErrorNotification/ErrorNotification';
 
 type Props = {
   typeOfFilter: string;
   setTypeOfFilter: (filter: string) => void;
   todos: Todo[];
+  setTodos: (todos: Todo[]) => void;
+  setError: (value: TextError) => void;
   completedTodoList: Todo[];
 };
 
@@ -15,14 +20,23 @@ export const Footer: React.FC<Props> = ({
   typeOfFilter,
   setTypeOfFilter,
   todos,
+  setTodos,
+  setError,
   completedTodoList,
 }) => {
   const activeTodos = todos.filter(todo => !todo.completed);
-  const deleteFinishedTodos = () => todos.forEach(todo => {
-    if (todo.completed) {
-      deleteTodo(todo.id);
+
+  const deleteFinishedTodos = async (finished: Todo[]) => {
+    try {
+      finished.forEach(async (todo) => {
+        await deleteTodo(todo.id);
+
+        setTodos([...activeTodos]);
+      });
+    } catch {
+      setError(TextError.Delete);
     }
-  });
+  };
 
   return (
     <footer className="todoapp__footer" data-cy="Footer">
@@ -71,9 +85,9 @@ export const Footer: React.FC<Props> = ({
         data-cy="ClearCompletedButton"
         type="button"
         className="todoapp__clear-completed"
-        onClick={deleteFinishedTodos}
+        onClick={() => deleteFinishedTodos(completedTodoList)}
       >
-        {completedTodoList.length === 0 && 'Clear completed'}
+        {completedTodoList.length > 0 && 'Clear completed'}
       </button>
     </footer>
   );

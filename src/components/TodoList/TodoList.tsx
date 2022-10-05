@@ -10,13 +10,13 @@ import '../../styles/transitiongroup.scss';
 type Props = {
   todos: Todo[];
   removeTodo:(todoId: number) => void;
-  changeStatus:(todoId: number) => void;
+  changeProperty:(todoId: number, property: Partial<Todo>) => void;
 };
 
 export const TodoList: React.FC<Props> = ({
   todos,
   removeTodo,
-  changeStatus,
+  changeProperty,
 }) => {
   return (
     <section className="todoapp__main" data-cy="TodoList">
@@ -30,7 +30,7 @@ export const TodoList: React.FC<Props> = ({
             <TodoItem
               todo={todo}
               removeTodo={removeTodo}
-              changeStatus={changeStatus}
+              changeProperty={changeProperty}
 
             />
           </CSSTransition>
