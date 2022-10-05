@@ -1,39 +1,38 @@
 import classNames from 'classnames';
 import {
-  ChangeEvent, useEffect, useRef, useState,
+  KeyboardEvent, useContext, useEffect, useRef,
 } from 'react';
-import { deleteTodo } from '../../../api/todos';
-import { TypeChange } from '../../../context/TodoContext';
+import { deleteTodo, updateTodo } from '../../../api/todos';
+import { TypeChange } from '../../../types/TypeChange';
 import { Todo } from '../../../types/Todo';
+import { TodoContext } from '../../../context/TodoContext';
 
 type Props = {
   todo: Todo,
-  handleStatusChange: (todo: Todo, type: TypeChange) => void,
-  selectedTodoId: number | null,
-  setSelectedTodoId: (valut: number) => void,
-  setInputValue: (value: string) => void,
-  inputValue: string,
-  handleChangeTitle: (event: ChangeEvent<HTMLInputElement>) => void,
-  setLoadError: (value: boolean) => void,
-  setErrorMessage: (value: string) => void,
-  allCompletedLoader: boolean,
 };
 
 export const TodoRender: React.FC<Props> = ({
   todo,
-  handleStatusChange,
-  selectedTodoId,
-  setSelectedTodoId,
-  setInputValue,
-  inputValue,
-  handleChangeTitle,
-  setLoadError,
-  setErrorMessage,
-  allCompletedLoader,
 }) => {
-  const { title, completed, id } = todo;
+  const {
+    handleStatusChange,
+    selectedTodoId,
+    setSelectedTodoId,
+    setInputValue,
+    inputValue,
+    handleChangeTitle,
+    setLoadError,
+    setErrorMessage,
+    allCompletedLoader,
+    todoIdLoader,
+    setTodoIdLoader,
+    toggleLoader,
+  } = useContext(TodoContext);
+
+  const {
+    title, completed, id,
+  } = todo;
   const newTodoField = useRef<HTMLInputElement>(null);
-  const [todoIdLoader, setTodoIdLoader] = useState<null | number>(null);
 
   const removeFromServer = async (data: Todo) => {
     try {
@@ -45,11 +44,81 @@ export const TodoRender: React.FC<Props> = ({
       setErrorMessage('Unable to delete todo from the server');
     } finally {
       setTodoIdLoader(null);
+      setSelectedTodoId(-1);
     }
   };
 
   const handleRemoveTodo = (data: Todo) => {
     removeFromServer(data);
+  };
+
+  const changeCompleteOnServer = async () => {
+    try {
+      setTodoIdLoader(id);
+      const todoWithChangedComplete = { ...todo };
+
+      todoWithChangedComplete.completed = !completed;
+
+      await updateTodo(id, todoWithChangedComplete);
+      handleStatusChange(todo, TypeChange.checkbox);
+    } catch (_) {
+      setLoadError(true);
+      setErrorMessage('Unable to change complete status');
+    } finally {
+      setTodoIdLoader(null);
+    }
+  };
+
+  const handleCompleteChange = () => {
+    changeCompleteOnServer();
+  };
+
+  const handleRenameTitle = async () => {
+    if (title === inputValue) {
+      setSelectedTodoId(-1);
+
+      return;
+    }
+
+    if (!inputValue.trim()) {
+      removeFromServer(todo);
+
+      return;
+    }
+
+    try {
+      setTodoIdLoader(todo.id);
+      const newTitle = { ...todo };
+
+      newTitle.title = inputValue;
+      await updateTodo(id, newTitle);
+      handleStatusChange(todo, TypeChange.title);
+    } catch (_) {
+      setLoadError(true);
+      setErrorMessage('Unable to rename title. Server didn\'t response');
+    } finally {
+      setTodoIdLoader(null);
+      setSelectedTodoId(-1);
+    }
+
+    if (newTodoField.current) {
+      newTodoField.current.blur();
+    }
+  };
+
+  const handleSubmitOnKey = (event: KeyboardEvent<HTMLInputElement>) => {
+    if (event.key === 'Enter' && newTodoField.current) {
+      newTodoField.current.blur();
+    }
+
+    if (event.key === 'Escape') {
+      setSelectedTodoId(-1);
+    }
+  };
+
+  const handleDoubleClick = () => {
+    setSelectedTodoId(todo.id);
+    setInputValue(title);
   };
 
   useEffect(() => {
@@ -73,7 +142,7 @@ export const TodoRender: React.FC<Props> = ({
           type="checkbox"
           className="todo__status"
           defaultChecked
-          onClick={() => handleStatusChange(todo, TypeChange.checkbox)}
+          onClick={handleCompleteChange}
         />
       </label>
 
@@ -81,32 +150,31 @@ export const TodoRender: React.FC<Props> = ({
         <span
           data-cy="TodoTitle"
           className="todo__title"
-          onDoubleClick={() => {
-            setSelectedTodoId(todo.id);
-            setInputValue(title);
-          }}
+          onDoubleClick={() => handleDoubleClick()}
         >
           {title}
         </span>
       ))}
-      {selectedTodoId === id
-  && (
-    <input
-      value={inputValue}
-      className="input is-large is-primary"
-      onBlur={() => handleStatusChange(todo, TypeChange.title)}
-      onChange={handleChangeTitle}
-      ref={newTodoField}
-    />
-  )}
-      <button
-        type="button"
-        className="todo__remove"
-        data-cy="TodoDeleteButton"
-        onClick={() => handleRemoveTodo(todo)}
-      >
-        ×
-      </button>
+      {selectedTodoId === id && (
+        <input
+          value={inputValue}
+          className="input is-large is-primary"
+          onBlur={() => handleRenameTitle()}
+          onChange={handleChangeTitle}
+          onKeyUp={handleSubmitOnKey}
+          ref={newTodoField}
+        />
+      )}
+      {selectedTodoId !== id && (
+        <button
+          type="button"
+          className="todo__remove"
+          data-cy="TodoDeleteButton"
+          onClick={() => handleRemoveTodo(todo)}
+        >
+          ×
+        </button>
+      )}
 
       <div
         data-cy="TodoLoader"
@@ -114,7 +182,7 @@ export const TodoRender: React.FC<Props> = ({
           'modal overlay',
           {
             'is-active': todo.id === 0 || todo.id === todoIdLoader
-            || (allCompletedLoader && todo.completed),
+            || (allCompletedLoader && todo.completed) || toggleLoader,
           },
         )}
       >

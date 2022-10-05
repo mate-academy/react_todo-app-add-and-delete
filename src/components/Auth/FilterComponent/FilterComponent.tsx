@@ -1,30 +1,22 @@
 import classNames from 'classnames';
-import React from 'react';
+import React, { useContext, useMemo } from 'react';
 import { deleteTodo } from '../../../api/todos';
-import { Filter, TypeChange } from '../../../context/TodoContext';
-import { Todo } from '../../../types/Todo';
+import { TypeChange } from '../../../types/TypeChange';
+import { Filter } from '../../../types/Filter';
+import { TodoContext } from '../../../context/TodoContext';
 
-type Props = {
-  todos: Todo[],
-  filterState: Filter,
-  handleFilter: (filterStatus: Filter, data: Todo[]) => void,
-  setAllCompletedLoader: (value: boolean) => void,
-  setTodos: (value: Todo[]) => void,
-  handleStatusChange: (todo: Todo, type: TypeChange) => void,
-  setErrorMessage: (value: string) => void,
-  setLoadError: (value: boolean) => void,
-};
+export const FilterComponent: React.FC = () => {
+  const {
+    todos,
+    filterState,
+    handleFilter,
+    setAllCompletedLoader,
+    setTodos,
+    handleStatusChange,
+    setErrorMessage,
+    setLoadError,
+  } = useContext(TodoContext);
 
-export const FilterComponent: React.FC<Props> = ({
-  todos,
-  filterState,
-  handleFilter,
-  setAllCompletedLoader,
-  setTodos,
-  handleStatusChange,
-  setErrorMessage,
-  setLoadError,
-}) => {
   const deleteAllClearFromServer = async () => {
     try {
       setAllCompletedLoader(true);
@@ -49,10 +41,14 @@ export const FilterComponent: React.FC<Props> = ({
     setTodos(todos);
   };
 
+  const activeCounter = useMemo(() => {
+    return todos.filter(todo => !todo.completed).length;
+  }, [todos]);
+
   return (
     <footer className="todoapp__footer" data-cy="Footer">
       <span className="todo-count" data-cy="todosCounter">
-        {`${todos.filter(todo => !todo.completed).length} items left`}
+        {`${activeCounter} items left`}
       </span>
 
       <nav className="filter" data-cy="Filter">

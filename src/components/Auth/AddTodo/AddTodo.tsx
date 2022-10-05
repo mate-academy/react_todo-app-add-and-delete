@@ -1,29 +1,26 @@
 import {
-  ChangeEvent, Dispatch, FormEvent, SetStateAction, useEffect, useRef, useState,
+  ChangeEvent, FormEvent, useContext, useEffect, useRef, useState,
 } from 'react';
-import { addTodo, getTodos } from '../../../api/todos';
-import { Filter } from '../../../context/TodoContext';
-import { Todo } from '../../../types/Todo';
+import { addTodo, getTodos, updateTodo } from '../../../api/todos';
+import { TodoContext } from '../../../context/TodoContext';
 
 type Props = {
   userId?: number | undefined,
-  setTodos: Dispatch<SetStateAction<Todo[]>>,
-  filterState: Filter,
-  handleFilter: (filterStatus: Filter, data: Todo[]) => void,
-  todos: Todo[],
-  setLoadError: (value: boolean) => void,
-  setErrorMessage: (value: string) => void,
 };
 
 export const AddTodo: React.FC<Props> = ({
   userId,
-  setTodos,
-  filterState,
-  handleFilter,
-  todos,
-  setLoadError,
-  setErrorMessage,
 }) => {
+  const {
+    setTodos,
+    handleFilter,
+    filterState,
+    todos,
+    setLoadError,
+    setErrorMessage,
+    setToggleLoader,
+  } = useContext(TodoContext);
+
   const newTodoField = useRef<HTMLInputElement>(null);
   const [todoField, setTodoField] = useState('');
   const [tempTodoCount, setTempTodoCount] = useState<number>(0);
@@ -116,6 +113,45 @@ export const AddTodo: React.FC<Props> = ({
     setTodoField(event.target.value);
   };
 
+  const toggleAllOnTheServer = async () => {
+    setToggleLoader(true);
+    await Promise.all(
+      todos.map(async (item) => {
+        const completeTodo = { ...item };
+
+        if (todos.some(item2 => !item2.completed)) {
+          completeTodo.completed = true;
+        } else {
+          completeTodo.completed = false;
+        }
+
+        await updateTodo(item.id, completeTodo);
+      }),
+    );
+
+    const newTodo = todos.map(item => {
+      const toggleTodo = { ...item };
+
+      if (todos.some(item2 => !item2.completed)) {
+        toggleTodo.completed = true;
+
+        return toggleTodo;
+      }
+
+      toggleTodo.completed = false;
+
+      return toggleTodo;
+    });
+
+    setTodos(newTodo);
+    handleFilter(filterState, newTodo);
+    setToggleLoader(false);
+  };
+
+  const handleToggleAll = () => {
+    toggleAllOnTheServer();
+  };
+
   return (
     <header className="todoapp__header">
       <button
@@ -123,6 +159,7 @@ export const AddTodo: React.FC<Props> = ({
         type="button"
         className="todoapp__toggle-all active"
         aria-label="Add user"
+        onClick={handleToggleAll}
       />
 
       <form onSubmit={handleNewTodo}>

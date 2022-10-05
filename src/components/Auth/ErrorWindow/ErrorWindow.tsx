@@ -1,16 +1,22 @@
 import classNames from 'classnames';
+import { useContext, useEffect } from 'react';
+import { TodoContext } from '../../../context/TodoContext';
 
-type Props = {
-  loadError: boolean,
-  setLoadError: (value: boolean) => void,
-  errorMessage: string,
-};
+export const ErrorWindow: React.FC = () => {
+  const {
+    loadError,
+    setLoadError,
+    errorMessage,
+  } = useContext(TodoContext);
 
-export const ErrorWindow: React.FC<Props> = ({
-  loadError,
-  setLoadError,
-  errorMessage,
-}) => {
+  useEffect(() => {
+    const timer = setTimeout(() => setLoadError(false), 3000);
+
+    if (!timer) {
+      clearInterval(timer);
+    }
+  }, [loadError]);
+
   return (
     <div
       data-cy="ErrorNotification"

@@ -5,15 +5,6 @@ import { TodoRender } from '../TodoRender/TodoRender';
 export const TodoList = () => {
   const {
     filtredTodos,
-    setInputValue,
-    inputValue,
-    handleStatusChange,
-    selectedTodoId,
-    setSelectedTodoId,
-    handleChangeTitle,
-    setLoadError,
-    setErrorMessage,
-    allCompletedLoader,
   } = useContext(TodoContext);
 
   return (
@@ -22,15 +13,6 @@ export const TodoList = () => {
         <TodoRender
           key={todo.id}
           todo={todo}
-          handleStatusChange={handleStatusChange}
-          selectedTodoId={selectedTodoId}
-          setSelectedTodoId={setSelectedTodoId}
-          setInputValue={setInputValue}
-          inputValue={inputValue}
-          handleChangeTitle={handleChangeTitle}
-          setLoadError={setLoadError}
-          setErrorMessage={setErrorMessage}
-          allCompletedLoader={allCompletedLoader}
         />
       )) }
     </section>
