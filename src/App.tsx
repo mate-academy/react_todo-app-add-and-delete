@@ -1,10 +1,12 @@
 /* eslint-disable jsx-a11y/control-has-associated-label */
 import {
   FC,
+  FormEvent,
   useContext,
   useState,
   useEffect,
   useMemo,
+  useRef,
   useCallback,
 } from 'react';
 // import classNames from 'classnames';
@@ -13,10 +15,16 @@ import { ErrorNotification } from './components/ErrorNotification';
 import { TodoList } from './components/TodoList';
 import { Footer } from './components/Footer';
 
-import { getTodos, removeTodos, patchTodo } from './api/todos';
+import {
+  getTodos,
+  removeTodos,
+  patchTodo,
+  postTodos,
+} from './api/todos';
 import { Todo } from './types/Todo';
 import { SortType } from './types/Filter';
-import { NewTodoField } from './components/NewTodoField';
+// import { NewTodoField } from './components/NewTodoField';
+import { Header } from './components/Header';
 
 function filtTodos(
   todos: Todo[],
@@ -38,12 +46,14 @@ function filtTodos(
 export const App: FC = () => {
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
   const user = useContext(AuthContext);
+  const newTodoField = useRef<HTMLInputElement>(null);
   const [errorMessage, setErrorMessage] = useState<string>('');
   const [sortType, setSortType] = useState<SortType>(SortType.All);
   const [todos, setTodos] = useState<Todo[]>([]);
   const [activeItem, setActiveItem] = useState<number>(0);
   const [isAdding, setIsAdding] = useState<boolean>(false);
   const [isCompleted, setIsCompleted] = useState(false);
+  const [title, setTitle] = useState<string>('');
 
   let userId = 0;
 
@@ -63,15 +73,57 @@ export const App: FC = () => {
     filtTodos(todos, sortType)
   ), [todos, sortType]);
 
-  // useEffect(() => {
-  //   if (newTodoField.current) {
-  //     newTodoField.current.focus();
-  //   }
-  // }, [todos]);
+  useEffect(() => {
+    if (newTodoField.current) {
+      newTodoField.current.focus();
+    }
+  }, [todos]);
 
   const addNewTodo = (todo: Todo) => {
     setTodos(prevTodos => [todo, ...prevTodos]);
   };
+
+  useEffect(() => {
+    if (newTodoField.current) {
+      newTodoField.current.focus();
+    }
+  }, [todos]);
+
+  const reset = () => {
+    setTitle('');
+    setIsAdding(false);
+  };
+
+  const handleSubmit = useCallback(async (event: FormEvent) => {
+    event.preventDefault();
+
+    setIsAdding(true);
+
+    if (!title.trim()) {
+      setErrorMessage('Title can\'t be empty');
+      setTitle('');
+
+      return;
+    }
+
+    try {
+      if (!user) {
+        return;
+      }
+
+      const newTodo = await postTodos(user.id, title);
+
+      addNewTodo(newTodo);
+    } catch {
+      setErrorMessage('Unable to add a todo');
+    }
+
+    reset();
+  }, [title, user]);
+
+  const handleChangeTitleInput = ({
+    target: { value },
+  }: React.ChangeEvent<HTMLInputElement>) => setTitle(value);
 
   const handleDeleteTodo = useCallback(async (todoId: number) => {
     try {
@@ -151,23 +203,15 @@ export const App: FC = () => {
       <h1 className="todoapp__title">todos</h1>
 
       <div className="todoapp__content">
-        <header className="todoapp__header">
-          {todos.length > 0 && (
-            <button
-              data-cy="ToggleAllButton"
-              type="button"
-              className="todoapp__toggle-all active"
-              onClick={handleToggleClick}
-            />
-          )}
-
-          <NewTodoField
-            onAdd={addNewTodo}
-            setErrorMessage={setErrorMessage}
-            setIsAdding={setIsAdding}
-            isAdding={isAdding}
-          />
-        </header>
+        <Header
+          todos={todos}
+          handleToggleClick={handleToggleClick}
+          handleSubmit={handleSubmit}
+          newTodoField={newTodoField}
+          isAdding={isAdding}
+          title={title}
+          setTitle={handleChangeTitleInput}
+        />
 
         <TodoList
           todos={visibleTodos}
@@ -175,6 +219,7 @@ export const App: FC = () => {
           // setIsAdding={setIsAdding}
           isAdding={isAdding}
           handleStatusChange={upgradeTodos}
+          mainInput={title}
         // upgradeTodos={upgradeTodos}
         />
 
