@@ -3,7 +3,6 @@ import React, {
   useCallback,
   useEffect,
   useMemo,
-  useRef,
 } from 'react';
 import { AuthContext } from './components/Auth/AuthContext';
 import { Header } from './components/Header/Header';
@@ -16,7 +15,6 @@ import { getTodos, addTodo, deleteTodo } from './api/todos';
 import { ErrorMessage } from './types/Error';
 
 export const App: React.FC = () => {
-  const newTodoField = useRef<HTMLInputElement>(null);
   const [todos, setTodos] = React.useState<Todo[]>([]);
   const [errorMessage, setErrorMessage] = React.useState('');
   const [fileterType, setFilterType] = React.useState(FilterType.All);
@@ -24,12 +22,6 @@ export const App: React.FC = () => {
   const [selectedId, setSelectedId] = React.useState<number[]>([]);
   const [isAdding, setisAdding] = React.useState(false);
   const user = React.useContext(AuthContext);
-
-  useEffect(() => {
-    if (newTodoField.current) {
-      newTodoField.current.focus();
-    }
-  }, []);
 
   useEffect(() => {
     const getTodosFromServer = async (userId: number) => {
@@ -114,7 +106,6 @@ export const App: React.FC = () => {
 
       <div className="todoapp__content">
         <Header
-          newTodoField={newTodoField}
           setTitle={setTitle}
           title={title}
           handleAddTodo={newTodo}

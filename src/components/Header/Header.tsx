@@ -1,18 +1,24 @@
-import React, { FormEvent } from 'react';
+import React, { FormEvent, useEffect, useRef } from 'react';
 
 type Props = {
-  newTodoField: React.RefObject<HTMLInputElement>;
   setTitle: React.Dispatch<React.SetStateAction<string>>;
   title: string;
   handleAddTodo: (event: FormEvent) => void;
 };
 
 export const Header: React.FC<Props> = ({
-  newTodoField,
   setTitle,
   title,
   handleAddTodo,
 }) => {
+  const newTodoField = useRef<HTMLInputElement>(null);
+
+  useEffect(() => {
+    if (newTodoField.current) {
+      newTodoField.current.focus();
+    }
+  }, []);
+
   const getValue = ({
     target: { value },
   }: React.ChangeEvent<HTMLInputElement>) => {
