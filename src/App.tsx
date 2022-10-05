@@ -1,6 +1,7 @@
 import React, {
   useContext,
   useEffect,
+  useMemo,
   useRef,
   useState,
 } from 'react';
@@ -31,7 +32,7 @@ export const App: React.FC = () => {
   const [newTodoTitle, setNewTodoTitle] = useState('');
   const [tempTitle, setTempTitle] = useState('');
   const [isLoading, setIsLoading] = useState(false);
-  const [selectedTodoId, setSelectedTodoId] = useState<number>(0);
+  const [selectedTodoId, setSelectedTodoId] = useState<number | null>(null);
   const onTabSelected = (tab: FilterTypes) => {
     setSelectedTabId(tab.id);
   };
@@ -62,7 +63,9 @@ export const App: React.FC = () => {
     fetchData();
   }, []);
 
-  const resultTodo = getFilteredTodo(todos, selectedTab);
+  const resultTodo = useMemo(() => {
+    return getFilteredTodo(todos, selectedTab);
+  }, [todos, selectedTab]);
 
   return (
     <div className="todoapp">

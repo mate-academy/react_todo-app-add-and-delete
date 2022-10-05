@@ -51,16 +51,14 @@ export const Footer: React.FC<Props> = ({
         selectedTabId={selectedTabId}
         onTabSelected={onTabSelected}
       />
-      {completedTodos.length > 0 && (
-        <button
-          data-cy="ClearCompletedButton"
-          type="button"
-          className="todoapp__clear-completed"
-          onClick={() => handlerClick(completedTodos)}
-        >
-          Clear completed
-        </button>
-      )}
+      <button
+        data-cy="ClearCompletedButton"
+        type="button"
+        className="todoapp__clear-completed"
+        onClick={() => handlerClick(completedTodos)}
+      >
+        {completedTodos.length > 0 && 'Clear completed'}
+      </button>
     </footer>
   );
 };

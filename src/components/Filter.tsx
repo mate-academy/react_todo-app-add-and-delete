@@ -1,5 +1,5 @@
 import classNames from 'classnames';
-import React from 'react';
+import React, { useMemo } from 'react';
 import { FilterTypes } from '../types/Filter';
 
 interface Props {
@@ -14,13 +14,17 @@ export const Filter: React.FC<Props> = (
     onTabSelected,
   },
 ) => {
-  const selectedTab = tabs.find(tab => tab.id === selectedTabId) || tabs[0];
+  const selectedTab = useMemo(() => {
+    return tabs.find(tab => tab.id === selectedTabId) || tabs[0];
+  }, [selectedTabId]);
 
-  const handelClick = (tab: FilterTypes) => {
-    if (selectedTabId !== tab.id) {
-      onTabSelected(tab);
-    }
-  };
+  const handelClick = useMemo(() => {
+    return (tab: FilterTypes) => {
+      if (selectedTabId !== tab.id) {
+        onTabSelected(tab);
+      }
+    };
+  }, [selectedTabId]);
 
   return (
     <nav className="filter" data-cy="Filter">

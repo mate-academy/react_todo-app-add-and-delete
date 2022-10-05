@@ -1,17 +1,15 @@
 import classNames from 'classnames';
 import { remove } from '../api/todos';
 import { Todo } from '../types/Todo';
-/* eslint-disable @typescript-eslint/no-explicit-any */
 
 interface Props {
   completed: boolean,
   title: string;
   id: number;
   setError: (value: string) => void,
-  setTodos: (value: Todo[]) => void,
-  todos: Todo[],
+  setTodos: React.Dispatch<React.SetStateAction<Todo[]>>,
   setSelectedTodoId: (value: number) => void,
-  selectedTodoId: number,
+  selectedTodoId: number | null,
 }
 
 export const TodoInfo: React.FC<Props> = ({
@@ -20,7 +18,6 @@ export const TodoInfo: React.FC<Props> = ({
   id,
   setTodos,
   setError,
-  todos,
   setSelectedTodoId,
   selectedTodoId,
 }) => {
@@ -30,7 +27,8 @@ export const TodoInfo: React.FC<Props> = ({
       try {
         await remove(removeId);
 
-        setTodos([...todos.filter(todoo => todoo.id !== removeId)]);
+        setTodos((state: Todo[]) => [...state]
+          .filter(todo => todo.id !== removeId));
       } catch (errorFromServer) {
         setError('Unable to delete a todo');
       }

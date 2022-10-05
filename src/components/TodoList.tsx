@@ -1,15 +1,14 @@
-/* eslint-disable @typescript-eslint/no-explicit-any */
 import { Todo } from '../types/Todo';
 import { TodoInfo } from './Todo';
 
 interface Props {
   todos: Todo[];
   setError: (value: string) => void,
-  setTodos: (value: Todo[]) => void,
+  setTodos: React.Dispatch<React.SetStateAction<Todo[]>>,
   isLoading: boolean,
   setSelectedTodoId: (value: number) => void,
-  selectedTodoId: number,
-  tempTitle:string
+  selectedTodoId: number | null,
+  tempTitle: string
 }
 
 export const TodoList: React.FC<Props> = ({
@@ -36,7 +35,6 @@ export const TodoList: React.FC<Props> = ({
           id={id}
           setError={setError}
           setTodos={setTodos}
-          todos={todos}
           selectedTodoId={selectedTodoId}
           setSelectedTodoId={setSelectedTodoId}
         />
