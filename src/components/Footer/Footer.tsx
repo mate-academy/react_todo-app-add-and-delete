@@ -4,19 +4,23 @@ import { SortType } from '../../types/Filter';
 
 type Props = {
   sortType: SortType;
-  completeItem: number;
+  activeItem: number;
+  isCompleted: boolean;
   onSortChange: (sortType: SortType) => void;
+  clearCompleted: () => void;
 };
 
 export const Footer: FC<Props> = ({
   sortType,
-  completeItem,
+  activeItem,
+  isCompleted,
   onSortChange,
+  clearCompleted,
 }) => {
   return (
     <footer className="todoapp__footer" data-cy="Footer">
       <span className="todo-count" data-cy="todosCounter">
-        {`${completeItem} items left`}
+        {`${activeItem} items left`}
       </span>
 
       <nav className="filter" data-cy="Filter">
@@ -24,7 +28,7 @@ export const Footer: FC<Props> = ({
           data-cy="FilterLinkAll"
           href="#/"
           className={classNames(
-            'filter-item',
+            'filter__link',
             { selected: sortType === SortType.All },
           )}
           onClick={() => onSortChange(SortType.All)}
@@ -60,10 +64,9 @@ export const Footer: FC<Props> = ({
         data-cy="ClearCompletedButton"
         type="button"
         className="todoapp__clear-completed"
-        onClick={() => { }}
-      // will implement later
+        onClick={clearCompleted}
       >
-        Clear completed
+        {isCompleted && 'Clear completed'}
       </button>
     </footer>
   );

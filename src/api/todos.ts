@@ -19,3 +19,8 @@ export const postTodos = (
 export const removeTodos = (todoId: number) => {
   return client.delete(`/todos/${todoId}`);
 };
+
+export const patchTodo = (
+  todoId: number,
+  data: Partial<Todo>,
+): Promise<Todo> => client.patch(`/todos/${todoId}`, data);

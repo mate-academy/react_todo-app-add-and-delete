@@ -4,6 +4,7 @@ import {
   useEffect,
   useRef,
   useState,
+  useCallback,
   FC,
 } from 'react';
 import { postTodos } from '../../api/todos';
@@ -13,18 +14,22 @@ import { AuthContext } from '../Auth/AuthContext';
 type Props = {
   onAdd: (todo: Todo) => void;
   setErrorMessage: (error: string) => void;
+  setIsAdding: (loader: boolean) => void;
+  isAdding: boolean;
 };
 
-export const NewTodoField: FC<Props> = ({ onAdd, setErrorMessage }) => {
+export const NewTodoField: FC<Props> = ({
+  onAdd,
+  setErrorMessage,
+  setIsAdding,
+  isAdding,
+}) => {
   const user = useContext(AuthContext);
   const newTodoField = useRef<HTMLInputElement>(null);
 
   const [title, setTitle] = useState<string>('');
-  const [completed, setCompleted] = useState<boolean>(false);
-  const [id, setId] = useState<number>(0);
 
   useEffect(() => {
-    // focus the element with `ref={newTodoField}`
     if (newTodoField.current) {
       newTodoField.current.focus();
     }
@@ -32,32 +37,35 @@ export const NewTodoField: FC<Props> = ({ onAdd, setErrorMessage }) => {
 
   const reset = () => {
     setTitle('');
-    setCompleted(false);
+    setIsAdding(false);
   };
 
-  const handleSubmit = async (event: FormEvent) => {
+  const handleSubmit = useCallback(async (event: FormEvent) => {
     event.preventDefault();
 
-    if (title) {
-      await postTodos(
-        user?.id || 0,
-        title,
-      ).catch(() => setErrorMessage('Unable to add a todo'));
+    setIsAdding(true);
 
-      await onAdd({
-        id,
-        userId: user?.id || 0,
-        title,
-        completed,
-      });
-
-      setId(prevId => prevId + 1);
-    } else {
+    if (!title.trim()) {
       setErrorMessage('Title can\'t be empty');
+      setTitle('');
+
+      return;
+    }
+
+    try {
+      if (!user) {
+        return;
+      }
+
+      const newTodo = await postTodos(user.id, title);
+
+      onAdd(newTodo);
+    } catch {
+      setErrorMessage('Unable to add a todo');
     }
 
     reset();
-  };
+  }, [title, user]);
 
   return (
     <form onSubmit={handleSubmit}>
@@ -69,6 +77,7 @@ export const NewTodoField: FC<Props> = ({ onAdd, setErrorMessage }) => {
         placeholder="What needs to be done?"
         value={title}
         onChange={(event) => setTitle(event.target.value)}
+        disabled={isAdding}
       />
     </form>
   );

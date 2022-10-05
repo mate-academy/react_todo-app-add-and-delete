@@ -4,16 +4,24 @@ import { Todo } from '../../types/Todo';
 
 interface Props {
   todos: Todo[];
-  removeTodo:(todoId: number) => void;
+  removeTodo: (todoId: number) => void;
+  // setIsAdding(loader: boolean): void;
+  isAdding: boolean;
+  handleStatusChange: (todoId: number, data: Partial<Todo>) => void;
+  // upgradeTodos: (todoId: number, data: Partial<Todo>) => void;
 }
 
 export const TodoList: FC<Props> = ({
   todos,
   removeTodo,
+  // setIsAdding,
+  isAdding,
+  handleStatusChange,
+  // upgradeTodos,
 }) => {
   const [deletedId, setDeletedId] = useState<number | null>(null);
 
-  const handleDelete = (todoId: number) => {
+  const deleteTodo = (todoId: number) => {
     setDeletedId(todoId);
     removeTodo(todoId);
   };
@@ -22,14 +30,14 @@ export const TodoList: FC<Props> = ({
     <section className="todoapp__main" data-cy="TodoList">
 
       {todos.map((todo) => {
-        const { id, title } = todo;
+        const { id, title, completed } = todo;
 
         return (
           <div
             data-cy="Todo"
             className={classNames(
               'todo',
-              { completed: todo.completed },
+              { completed },
             )}
             key={id}
           >
@@ -38,7 +46,9 @@ export const TodoList: FC<Props> = ({
                 data-cy="TodoStatus"
                 type="checkbox"
                 className="todo__status"
-                defaultChecked
+                onClick={() => {
+                  handleStatusChange(id, { completed: !completed });
+                }}
               />
             </label>
 
@@ -49,22 +59,24 @@ export const TodoList: FC<Props> = ({
               type="button"
               className="todo__remove"
               data-cy="TodoDeleteButton"
-              onClick={() => handleDelete(id)}
+              onClick={() => deleteTodo(id)}
             >
               ×
             </button>
 
-            <div
-              data-cy="TodoLoader"
-              className={classNames(
-                'modal',
-                'overlay',
-                { 'is-active': id === deletedId },
-              )}
-            >
-              <div className="modal-background has-background-white-ter" />
-              <div className="loader" />
-            </div>
+            {isAdding && (
+              <div
+                data-cy="TodoLoader"
+                className={classNames(
+                  'modal',
+                  'overlay',
+                  { 'is-active': id === deletedId },
+                )}
+              >
+                <div className="modal-background has-background-white-ter" />
+                <div className="loader" />
+              </div>
+            )}
           </div>
         );
       })}

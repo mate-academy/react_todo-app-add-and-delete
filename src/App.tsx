@@ -4,8 +4,8 @@ import {
   useContext,
   useState,
   useEffect,
-  useReducer,
   useMemo,
+  useCallback,
 } from 'react';
 // import classNames from 'classnames';
 import { AuthContext } from './components/Auth/AuthContext';
@@ -13,7 +13,7 @@ import { ErrorNotification } from './components/ErrorNotification';
 import { TodoList } from './components/TodoList';
 import { Footer } from './components/Footer';
 
-import { getTodos, removeTodos } from './api/todos';
+import { getTodos, removeTodos, patchTodo } from './api/todos';
 import { Todo } from './types/Todo';
 import { SortType } from './types/Filter';
 import { NewTodoField } from './components/NewTodoField';
@@ -35,31 +35,15 @@ function filtTodos(
   }
 }
 
-const reducer = (count: number, action: string) => {
-  switch (action) {
-    case 'increase':
-      return count + 1;
-    case 'decrease':
-      return count - 1;
-    case 'clear':
-      return 0;
-    default:
-      return count;
-  }
-};
-
 export const App: FC = () => {
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
   const user = useContext(AuthContext);
   const [errorMessage, setErrorMessage] = useState<string>('');
   const [sortType, setSortType] = useState<SortType>(SortType.All);
   const [todos, setTodos] = useState<Todo[]>([]);
-  const [completeItem, dispatch] = useReducer(reducer, 0);
-
-  const increase = () => dispatch('increase');
-  const decrease = () => dispatch('decrease');
-
-  // const getUserFromServer = (userId: number) => {
+  const [activeItem, setActiveItem] = useState<number>(0);
+  const [isAdding, setIsAdding] = useState<boolean>(false);
+  const [isCompleted, setIsCompleted] = useState(false);
 
   let userId = 0;
 
@@ -71,46 +55,95 @@ export const App: FC = () => {
     getTodos(userId)
       .then(userTodosFromServer => {
         setTodos(userTodosFromServer);
-        reducer(userTodosFromServer.length, ''); // check is this work
       })
       .catch(() => setErrorMessage('Unable to update todos'));
   }, []);
-
-  // useEffect(() => {
-  //   if (!user) {
-  //     return;
-  //   }
-
-  //   getUserFromServer(user.id);
-  // }, [user]);
-
-  useEffect(() => {
-    todos.map(todo => {
-      if (!todo.completed) {
-        increase();
-      }
-
-      return 0;
-    });
-  }, [todos]);
 
   const visibleTodos = useMemo(() => (
     filtTodos(todos, sortType)
   ), [todos, sortType]);
 
+  // useEffect(() => {
+  //   if (newTodoField.current) {
+  //     newTodoField.current.focus();
+  //   }
+  // }, [todos]);
+
   const addNewTodo = (todo: Todo) => {
     setTodos(prevTodos => [todo, ...prevTodos]);
-    increase();
   };
 
-  const deleteTodo = (todoId: number) => {
-    removeTodos(todoId)
-      .catch(() => setErrorMessage('Unable to delete a todo'));
+  const handleDeleteTodo = useCallback(async (todoId: number) => {
+    try {
+      await removeTodos(todoId);
 
-    setTodos(
-      todos.filter(userTodo => todoId !== userTodo.id),
-    );
-    decrease();
+      setTodos(
+        todos.filter(userTodo => todoId !== userTodo.id),
+      );
+    } catch {
+      setErrorMessage('Unable to delete a todo');
+    }
+  }, [todos, errorMessage, isAdding]);
+
+  const upgradeTodos = useCallback(
+    async (todoId: number, data: Partial<Todo>) => {
+      try {
+        const patchedTodo: Todo = await patchTodo(todoId, data);
+
+        setTodos(todos.map(todo => (
+          todo.id === todoId
+            ? patchedTodo
+            : todo
+        )));
+      } catch {
+        setErrorMessage('Unable to update a todo');
+      }
+    }, [todos],
+  );
+
+  // check how many empty tasks and if something done
+  useMemo(() => {
+    setActiveItem(todos.filter(todo => todo.completed === false).length);
+    setIsCompleted(todos.some(todo => todo.completed === true));
+  }, [todos]);
+
+  const handleToggleClick = () => {
+    const uncompletedTodos = todos.filter(({ completed }) => !completed);
+
+    if (uncompletedTodos.length) {
+      uncompletedTodos.map(({ id }) => patchTodo(id, { completed: true })
+        .catch(() => setErrorMessage('Unable to update todos')));
+
+      setTodos(todos.map(todo => {
+        const copy = todo;
+
+        copy.completed = true;
+
+        return copy;
+      }));
+    } else {
+      todos.map(({ id }) => patchTodo(id, { completed: false })
+        .catch(() => setErrorMessage('Unable to update todos')));
+
+      setTodos(todos.map(todo => {
+        const copy = todo;
+
+        copy.completed = false;
+
+        return copy;
+      }));
+    }
+  };
+
+  const clearCompleted = () => {
+    todos.forEach(({ id, completed }) => {
+      if (completed) {
+        removeTodos(id)
+          .catch(() => setErrorMessage('Unable to delete a todo'));
+      }
+    });
+
+    setTodos(todos.filter(({ completed }) => !completed));
   };
 
   return (
@@ -119,27 +152,38 @@ export const App: FC = () => {
 
       <div className="todoapp__content">
         <header className="todoapp__header">
-          <button
-            data-cy="ToggleAllButton"
-            type="button"
-            className="todoapp__toggle-all active"
-          />
+          {todos.length > 0 && (
+            <button
+              data-cy="ToggleAllButton"
+              type="button"
+              className="todoapp__toggle-all active"
+              onClick={handleToggleClick}
+            />
+          )}
 
           <NewTodoField
             onAdd={addNewTodo}
             setErrorMessage={setErrorMessage}
+            setIsAdding={setIsAdding}
+            isAdding={isAdding}
           />
         </header>
 
         <TodoList
           todos={visibleTodos}
-          removeTodo={deleteTodo}
+          removeTodo={handleDeleteTodo}
+          // setIsAdding={setIsAdding}
+          isAdding={isAdding}
+          handleStatusChange={upgradeTodos}
+        // upgradeTodos={upgradeTodos}
         />
 
         <Footer
           sortType={sortType}
-          completeItem={completeItem}
+          activeItem={activeItem}
+          isCompleted={isCompleted}
           onSortChange={setSortType}
+          clearCompleted={clearCompleted}
         />
       </div>
 
