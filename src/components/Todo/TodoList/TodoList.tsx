@@ -5,7 +5,7 @@ import { Todo } from '../../../types/Todo';
 type Props = {
   todos: Todo[],
   removeTodo: (todoId: number) => void
-  changeTodo: (todoId: number, object: unknown) => void
+  changeTodo: (todoId: number, data: Partial<Todo>) => void
 };
 
 export const TodoList: React.FC<Props>

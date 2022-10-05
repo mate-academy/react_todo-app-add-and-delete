@@ -44,8 +44,14 @@ export const App: React.FC = () => {
     }
   });
 
+  let userId = 0;
+
+  if (user?.id) {
+    userId = user.id;
+  }
+
   useEffect(() => {
-    getTodos(user?.id)
+    getTodos(userId)
       .then(() => setTodos)
       .catch(() => setError(Error.Loading));
     if (newTodoField.current) {
@@ -68,7 +74,7 @@ export const App: React.FC = () => {
       return;
     }
 
-    await createTodo(user?.id, query)
+    await createTodo(userId, query)
       .then(todo => {
         setTodos([...todos, todo]);
       })
@@ -90,9 +96,10 @@ export const App: React.FC = () => {
     }, [],
   );
 
-  const changeTodo = useCallback(async (todoId: number, object: unknown) => {
+  const changeTodo = useCallback(async (todoId: number,
+    data: Partial<Todo>) => {
     try {
-      const updatedTodo: Todo = await updateTodo(todoId, object);
+      const updatedTodo: Todo = await updateTodo(todoId, data);
 
       setTodos(prev => prev.map(todo => {
         if (todo.id === updatedTodo.id) {
