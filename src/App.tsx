@@ -18,6 +18,7 @@ export const App: React.FC = () => {
   const [errorMessage, setErrorMessage] = useState('');
   const [newTodoTitle, setNewTodoTitle] = useState('');
   const [isAdding, setIsAdding] = useState(false);
+  const [isDeleting, setIsDeleting] = useState(false);
 
   useEffect(() => {
     if (newTodoField.current) {
@@ -84,14 +85,13 @@ export const App: React.FC = () => {
       setNewTodoTitle('');
     } catch {
       setErrorMessage('Unable to add a todo');
-    } finally {
-      setTodos(prevTodos => prevTodos.filter((todo) => todo.id !== 0));
     }
 
     setIsAdding(false);
   };
 
   const handleDeleteTodo = async (todoId: number) => {
+    setIsDeleting(true);
     try {
       await deleteTodo(todoId);
 
@@ -99,6 +99,8 @@ export const App: React.FC = () => {
     } catch {
       setErrorMessage('Unable to delete a todo');
     }
+
+    setIsDeleting(false);
   };
 
   const deleteCompletedTodo = () => {
@@ -142,6 +144,7 @@ export const App: React.FC = () => {
           onDelete={handleDeleteTodo}
           isAdding={isAdding}
           newTodoTitle={newTodoTitle}
+          isDeleting={isDeleting}
         />
 
         <footer className="todoapp__footer" data-cy="Footer">

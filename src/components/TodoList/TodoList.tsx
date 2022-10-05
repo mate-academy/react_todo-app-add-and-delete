@@ -10,11 +10,16 @@ type Props = {
   todos: Todo[],
   onDelete: (todo: number) => void
   isAdding: boolean
+  isDeleting: boolean
   newTodoTitle: string
 };
 
 export const TodoList: React.FC<Props> = ({
-  todos, onDelete, isAdding, newTodoTitle,
+  todos,
+  onDelete,
+  isAdding,
+  newTodoTitle,
+  isDeleting,
 }) => {
   return (
     <section className="todoapp__main" data-cy="TodoList">
@@ -30,6 +35,7 @@ export const TodoList: React.FC<Props> = ({
               completed={todo.completed}
               onDelete={onDelete}
               todo={todo}
+              isDeleting={isDeleting}
             />
           </CSSTransition>
         ))}
