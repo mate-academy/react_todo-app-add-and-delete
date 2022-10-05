@@ -1,22 +1,24 @@
-import React, { RefObject, useState } from 'react';
+import React, {
+  RefObject,
+  useState,
+  Dispatch,
+  SetStateAction,
+} from 'react';
 import { createTodo } from '../../api/todos';
 import { Todo } from '../../types/Todo';
 import { User } from '../../types/User';
 
 type Props = {
   newTodoField: RefObject<HTMLInputElement>;
-  todos: Todo[];
   user: User | null
-  setTodos: any;
+  setTodos: Dispatch<SetStateAction<Todo[]>>;
   setErrorNotification: (value: string) => void;
   setIsShownTempTodo: (value: boolean) => void;
   setPreviewTitle: (value: string) => void;
-
 };
 
 export const NewTodo: React.FC<Props> = ({
   newTodoField,
-  todos,
   user,
   setTodos,
   setErrorNotification,
@@ -26,8 +28,25 @@ export const NewTodo: React.FC<Props> = ({
   const [title, setTitle] = useState('');
 
   const handledTitle = (event:React.ChangeEvent<HTMLInputElement>) => {
-    setTitle(event.target.value.replace(/^(\s)*/g, ''));
-    setPreviewTitle(event.target.value.replace(/^(\s)*/g, ''));
+    const newTitle = event.target.value.replace(/^(\s)*/g, '');
+
+    setTitle(newTitle);
+    setPreviewTitle(newTitle);
+  };
+
+  const createTodos = async () => {
+    setIsShownTempTodo(true);
+    try {
+      if (user) {
+        const newTodo = await createTodo(title, user?.id);
+
+        setTodos(prevTodos => [...prevTodos, newTodo]);
+      }
+    } catch (error) {
+      setErrorNotification('Unable to add a todo');
+    } finally {
+      setIsShownTempTodo(false);
+    }
   };
 
   const handleSubmit = (event: React.FormEvent<HTMLFormElement>) => {
@@ -38,21 +57,6 @@ export const NewTodo: React.FC<Props> = ({
 
       return;
     }
-
-    const createTodos = async () => {
-      setIsShownTempTodo(true);
-      try {
-        if (user) {
-          const newTodo = await createTodo(title, user?.id);
-
-          setTodos([...todos, newTodo]);
-        }
-      } catch (error) {
-        setErrorNotification('Unable to add a todo');
-      } finally {
-        setIsShownTempTodo(false);
-      }
-    };
 
     createTodos();
     setTitle('');
