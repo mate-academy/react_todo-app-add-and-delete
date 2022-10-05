@@ -19,4 +19,32 @@
       border-color: rgba(175, 47, 47, 0.2);
     }
   }
+
+  &__clear-completed {
+    margin: 0;
+    padding: 0;
+    border: 0;
+
+    font-family: inherit;
+    font-weight: inherit;
+    color: inherit;
+    text-decoration: none;
+
+    cursor: pointer;
+    background: none;
+
+    -webkit-appearance: none;
+    appearance: none;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+    transition: opacity 0.3s;
+
+    &:hover {
+      text-decoration: underline;
+    }
+
+    &:active {
+      text-decoration: none;
+    }
+  }
 }
