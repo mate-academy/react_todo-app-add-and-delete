@@ -1,17 +1,17 @@
 import { FC } from 'react';
 import classNames from 'classnames';
-import { SortType } from '../../types/Filter';
+import { FiltType } from '../../types/Filter';
 
 type Props = {
-  sortType: SortType;
+  filtType: FiltType;
   activeItem: number;
   isCompleted: boolean;
-  onSortChange: (sortType: SortType) => void;
+  onSortChange: (filtType: FiltType) => void;
   clearCompleted: () => void;
 };
 
 export const Footer: FC<Props> = ({
-  sortType,
+  filtType,
   activeItem,
   isCompleted,
   onSortChange,
@@ -29,9 +29,9 @@ export const Footer: FC<Props> = ({
           href="#/"
           className={classNames(
             'filter__link',
-            { selected: sortType === SortType.All },
+            { selected: filtType === FiltType.All },
           )}
-          onClick={() => onSortChange(SortType.All)}
+          onClick={() => onSortChange(FiltType.All)}
         >
           All
         </a>
@@ -41,9 +41,9 @@ export const Footer: FC<Props> = ({
           href="#/active"
           className={classNames(
             'filter__link',
-            { selected: sortType === SortType.Active },
+            { selected: filtType === FiltType.Active },
           )}
-          onClick={() => onSortChange(SortType.Active)}
+          onClick={() => onSortChange(FiltType.Active)}
         >
           Active
         </a>
@@ -52,9 +52,9 @@ export const Footer: FC<Props> = ({
           href="#/completed"
           className={classNames(
             'filter__link',
-            { selected: sortType === SortType.Completed },
+            { selected: filtType === FiltType.Completed },
           )}
-          onClick={() => onSortChange(SortType.Completed)}
+          onClick={() => onSortChange(FiltType.Completed)}
         >
           Completed
         </a>

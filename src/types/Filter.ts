@@ -1,4 +1,4 @@
-export enum SortType {
+export enum FiltType {
   All,
   Active,
   Completed,

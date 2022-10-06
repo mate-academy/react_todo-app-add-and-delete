@@ -3,23 +3,19 @@ import classNames from 'classnames';
 import { Todo } from '../../types/Todo';
 
 interface Props {
-  todos: Todo[];
+  visibleTodos: Todo[];
   removeTodo: (todoId: number) => void;
-  // setIsAdding(loader: boolean): void;
   isAdding: boolean;
   handleStatusChange: (todoId: number, data: Partial<Todo>) => void;
   mainInput: string;
-  // upgradeTodos: (todoId: number, data: Partial<Todo>) => void;
 }
 
 export const TodoList: FC<Props> = ({
-  todos,
+  visibleTodos,
   removeTodo,
-  // setIsAdding,
   isAdding,
   handleStatusChange,
   mainInput,
-  // upgradeTodos,
 }) => {
   const [deletedId, setDeletedId] = useState<number | null>(null);
 
@@ -31,7 +27,7 @@ export const TodoList: FC<Props> = ({
   return (
     <section className="todoapp__main" data-cy="TodoList">
 
-      {todos.map((todo) => {
+      {visibleTodos.map((todo) => {
         const { id, title, completed } = todo;
 
         return (

@@ -22,21 +22,20 @@ import {
   postTodos,
 } from './api/todos';
 import { Todo } from './types/Todo';
-import { SortType } from './types/Filter';
-// import { NewTodoField } from './components/NewTodoField';
+import { FiltType } from './types/Filter';
 import { Header } from './components/Header';
 
 function filtTodos(
   todos: Todo[],
-  sortType: SortType,
+  filtType: FiltType,
 ) {
   const visibleTodos = [...todos];
 
-  switch (sortType) {
-    case SortType.Active:
+  switch (filtType) {
+    case FiltType.Active:
       return visibleTodos.filter(todo => !todo.completed);
 
-    case SortType.Completed:
+    case FiltType.Completed:
       return visibleTodos.filter(todo => todo.completed);
     default:
       return visibleTodos;
@@ -48,30 +47,32 @@ export const App: FC = () => {
   const user = useContext(AuthContext);
   const newTodoField = useRef<HTMLInputElement>(null);
   const [errorMessage, setErrorMessage] = useState<string>('');
-  const [sortType, setSortType] = useState<SortType>(SortType.All);
+  const [filtType, setFiltType] = useState<FiltType>(FiltType.All);
   const [todos, setTodos] = useState<Todo[]>([]);
   const [activeItem, setActiveItem] = useState<number>(0);
   const [isAdding, setIsAdding] = useState<boolean>(false);
   const [isCompleted, setIsCompleted] = useState(false);
   const [title, setTitle] = useState<string>('');
 
-  let userId = 0;
-
-  if (user?.id) {
-    userId = user.id;
-  }
-
-  useEffect(() => {
+  const loadTodos = useCallback((userId: number) => {
     getTodos(userId)
-      .then(userTodosFromServer => {
-        setTodos(userTodosFromServer);
+      .then(todosFromServer => {
+        setTodos(todosFromServer);
       })
       .catch(() => setErrorMessage('Unable to update todos'));
-  }, []);
+  }, [user, todos]);
+
+  useEffect(() => {
+    if (!user) {
+      return;
+    }
+
+    loadTodos(user.id);
+  }, [user]);
 
   const visibleTodos = useMemo(() => (
-    filtTodos(todos, sortType)
-  ), [todos, sortType]);
+    filtTodos(todos, filtType)
+  ), [todos, filtType]);
 
   useEffect(() => {
     if (newTodoField.current) {
@@ -153,7 +154,6 @@ export const App: FC = () => {
     }, [todos],
   );
 
-  // check how many empty tasks and if something done
   useMemo(() => {
     setActiveItem(todos.filter(todo => todo.completed === false).length);
     setIsCompleted(todos.some(todo => todo.completed === true));
@@ -214,22 +214,22 @@ export const App: FC = () => {
         />
 
         <TodoList
-          todos={visibleTodos}
+          visibleTodos={visibleTodos}
           removeTodo={handleDeleteTodo}
-          // setIsAdding={setIsAdding}
           isAdding={isAdding}
           handleStatusChange={upgradeTodos}
           mainInput={title}
-        // upgradeTodos={upgradeTodos}
         />
 
-        <Footer
-          sortType={sortType}
-          activeItem={activeItem}
-          isCompleted={isCompleted}
-          onSortChange={setSortType}
-          clearCompleted={clearCompleted}
-        />
+        {!!todos.length && (
+          <Footer
+            filtType={filtType}
+            activeItem={activeItem}
+            isCompleted={isCompleted}
+            onSortChange={setFiltType}
+            clearCompleted={clearCompleted}
+          />
+        )}
       </div>
 
       {errorMessage && (
