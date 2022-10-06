@@ -35,7 +35,7 @@ export const TodoFooter: React.FC<Props> = ({
           <a
             key={status}
             data-cy="FilterLinkAll"
-            href={`/#${status.toLowerCase()}/`}
+            href={`#/${status.toLowerCase()}/`}
             className={classNames('filter__link', {
               selected: selected === status,
             })}

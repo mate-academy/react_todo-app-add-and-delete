@@ -92,8 +92,6 @@ export const App: React.FC = () => {
 
     setRemovedTodos(completedTodoIds);
 
-    console.log(removedTodos);
-
     await Promise.all(
       completedTodos.map(async (todo) => {
         await removeTodo(todo.id);
