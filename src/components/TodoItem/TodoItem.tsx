@@ -18,8 +18,8 @@ export const TodoItem: React.FC<Props> = ({
 }) => {
   const { title, id, completed } = todo;
 
-  const isLoader = useMemo(() => isAdding
-  && selectedId.includes(id), [isAdding, selectedId, id]);
+  const isLoader = useMemo(() => selectedId.includes(id)
+  || (isAdding && id === 0), [isAdding, selectedId, id]);
 
   return (
     <div
