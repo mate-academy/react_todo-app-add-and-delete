@@ -7,10 +7,7 @@ import { FilterBy, TodoFilter } from './components/TodoFilter';
 import { TodoField } from './components/TodoField';
 import { TodoList } from './components/TodoList';
 import { Todo } from './types/Todo';
-import { LoadingError } from './components/LoadingError';
-import { AddingBlancError } from './components/AddingBlancError';
-import { AddingTodoError } from './components/AddingTodoError';
-import { DeletingTodoError } from './components/DeletingTodoError';
+import { ErrorMessage, ErrorTypes } from './components/ErrorMessage';
 
 export const App: React.FC = () => {
   const user = useContext(AuthContext);
@@ -18,13 +15,10 @@ export const App: React.FC = () => {
 
   const [todos, setTodos] = useState<Todo[]>([]);
   const [filter, setFilter] = useState(FilterBy.All);
-  const [loadingError, setLoadingError] = useState(false);
-  const [addingBlancError, setAddingBlancError] = useState(false);
+  const [errorType, setErrorType] = useState<ErrorTypes>(ErrorTypes.None);
   const [errorClose, setErrorClosing] = useState(false);
   const [todoName, setNewTodoName] = useState('');
   const [isAdding, setIsAddingFromServer] = useState(false);
-  const [addTodoError, setAddTodoError] = useState(false);
-  const [deleteTodoError, setDeleteTodoError] = useState(false);
   const [completed, setCompleted] = useState<number[]>([]);
 
   async function createPost(title: string) {
@@ -40,9 +34,15 @@ export const App: React.FC = () => {
   }
 
   async function deletePost(id: number | number[]) {
-    const deleted = await deleteTodo(id);
+    try {
+      const deleted = await deleteTodo(id);
 
-    return deleted;
+      return deleted;
+    } catch (error) {
+      setErrorType(ErrorTypes.DeletingOneError);
+    }
+
+    return 0;
   }
 
   useEffect(() => {
@@ -54,7 +54,7 @@ export const App: React.FC = () => {
         setCompleted(loadedTodos.filter((todo) => todo.completed === true)
           .map((todo) => todo.id));
       } catch (error) {
-        setLoadingError(true);
+        setErrorType(ErrorTypes.LoadingAllError);
       }
     };
 
@@ -77,18 +77,15 @@ export const App: React.FC = () => {
 
       setNewTodoName('');
     } catch (error) {
-      setAddTodoError(true);
+      setErrorType(ErrorTypes.AddingTodoError);
+      setErrorClosing(false);
     }
 
     setIsAddingFromServer(false);
   };
 
   const handleDelete = async (id: number | number[]) => {
-    try {
-      deletePost(id);
-    } catch (error) {
-      setDeleteTodoError(true);
-    }
+    deletePost(id);
   };
 
   return (
@@ -104,8 +101,7 @@ export const App: React.FC = () => {
             setNewTodoName={setNewTodoName}
             onAdd={handleAdd}
             isAdding={isAdding}
-            setAddingBlancError={setAddingBlancError}
-            loadingError={loadingError}
+            setErrorType={setErrorType}
             setErrorClosing={setErrorClosing}
           />
         </header>
@@ -118,6 +114,8 @@ export const App: React.FC = () => {
               isAdding={isAdding}
               todoName={todoName}
               onDelete={handleDelete}
+              setErrorClosing={setErrorClosing}
+
             />
             <footer
               className="todoapp__footer"
@@ -138,35 +136,12 @@ export const App: React.FC = () => {
 
       </div>
 
-      {loadingError && (
-        <LoadingError
-          setLoadingError={setLoadingError}
+      {errorType !== ErrorTypes.None && (
+        <ErrorMessage
+          setErrorType={setErrorType}
           error={errorClose}
           closeError={setErrorClosing}
-        />
-      )}
-
-      {addingBlancError && (
-        <AddingBlancError
-          error={errorClose}
-          closeError={setErrorClosing}
-          setAddingBlancError={setAddingBlancError}
-        />
-      )}
-
-      {addTodoError && (
-        <AddingTodoError
-          error={errorClose}
-          closeError={setErrorClosing}
-          setAddTodoError={setAddTodoError}
-        />
-      )}
-
-      {deleteTodoError && (
-        <DeletingTodoError
-          error={errorClose}
-          closeError={setErrorClosing}
-          setDeleteTodoError={setDeleteTodoError}
+          errorType={errorType}
         />
       )}
     </div>

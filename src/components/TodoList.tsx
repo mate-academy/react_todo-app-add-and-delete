@@ -9,10 +9,16 @@ type Props = {
   isAdding: boolean;
   todoName: string;
   onDelete: (id: number) => void;
+  setErrorClosing: (err: boolean) => void;
 };
 
 export const TodoList: React.FC<Props> = ({
-  todos, filterType, isAdding, todoName, onDelete,
+  todos,
+  filterType,
+  isAdding,
+  todoName,
+  onDelete,
+  setErrorClosing,
 }) => {
   const [deletingId, setDeletingId] = useState<number | null>(null);
 
@@ -29,6 +35,14 @@ export const TodoList: React.FC<Props> = ({
         return true;
     }
   });
+
+  const handleTodoDelete = (todoId: number) => {
+    onDelete(todoId);
+    setDeletingId(todoId);
+    setErrorClosing(false);
+
+    setTimeout(() => setDeletingId(null), 200);
+  };
 
   return (
     <section className="todoapp__main" data-cy="TodoList">
@@ -61,10 +75,7 @@ export const TodoList: React.FC<Props> = ({
               type="button"
               className="todo__remove"
               data-cy="TodoDeleteButton"
-              onClick={() => {
-                onDelete(id);
-                setDeletingId(id);
-              }}
+              onClick={() => handleTodoDelete(id)}
             >
               ×
             </button>

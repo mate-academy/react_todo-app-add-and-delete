@@ -25,6 +25,10 @@ export const TodoFilter: React.FC<Props> = ({
   const handleActiveSort = () => setFilterType(FilterBy.Active);
   const handleCompletedSort = () => setFilterType(FilterBy.Completed);
 
+  const handleBulkDelete = (completedTodos: number[]) => {
+    completedTodos.forEach((todo) => onDelete(todo));
+  };
+
   return (
     <>
       <span className="todo-count" data-cy="todosCounter">
@@ -72,9 +76,7 @@ export const TodoFilter: React.FC<Props> = ({
             data-cy="ClearCompletedButton"
             type="button"
             className="todoapp__clear-completed"
-            onClick={() => {
-              completed.forEach((todo) => onDelete(todo));
-            }}
+            onClick={() => handleBulkDelete(completed)}
           >
             Clear completed
           </button>

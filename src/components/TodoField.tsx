@@ -1,5 +1,6 @@
 import classNames from 'classnames';
 import { Todo } from '../types/Todo';
+import { ErrorTypes } from './ErrorMessage';
 
 type Props = {
   newToField: React.RefObject<HTMLInputElement>;
@@ -7,15 +8,14 @@ type Props = {
   onAdd: (newTodoData: string) => void;
   todoName: string;
   setNewTodoName: (name: string) => void;
-  setAddingBlancError: (error: boolean) => void;
+  setErrorType: (err: ErrorTypes) => void;
   isAdding: boolean;
-  loadingError: boolean;
   setErrorClosing: (er: boolean) => void;
 };
 
 export const TodoField: React.FC<Props> = ({
-  todos, todoName, onAdd, setNewTodoName, setAddingBlancError, isAdding,
-  loadingError, setErrorClosing, newToField,
+  todos, todoName, onAdd, setNewTodoName, setErrorType, isAdding,
+  setErrorClosing, newToField,
 }) => {
   const completedTodos = todos.every((todo) => todo.completed === true);
 
@@ -23,15 +23,16 @@ export const TodoField: React.FC<Props> = ({
     preventDefault: () => void;
   }) => {
     event.preventDefault();
+    setErrorClosing(false);
 
     if (!todoName.trim()) {
-      setAddingBlancError(true);
+      setErrorType(ErrorTypes.AddingBlancError);
       setErrorClosing(false);
     }
 
     if (todoName.trim()) {
       onAdd(todoName);
-      setAddingBlancError(false);
+      setErrorType(ErrorTypes.None);
     }
 
     setTimeout(() => newToField.current?.focus(), 500);
@@ -62,7 +63,7 @@ export const TodoField: React.FC<Props> = ({
         <input
           data-cy="NewTodoField"
           type="text"
-          disabled={isAdding || loadingError}
+          disabled={isAdding}
           className="todoapp__new-todo"
           placeholder="What me do?"
           ref={newToField}
