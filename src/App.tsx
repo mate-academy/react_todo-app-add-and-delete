@@ -32,55 +32,58 @@ export const App: React.FC = () => {
     }
 
     if (user) {
+      setIsAdding(true);
       getTodos(user.id)
-        .then(response => {
-          setTodos(response);
+        .then(todo => {
+          setTodos(todo);
         }).catch(() => (
           setHasLoadError('Unable to load a todo')
-        ));
+        )).finally(() => setIsAdding(false));
     }
-
-    setIsAdding(false);
   }, []);
 
-  const handleSubmitAdd = async (event: FormEvent) => {
+  const handleAddTodo = async (event: FormEvent) => {
     event.preventDefault();
     setHasLoadError('');
     setIsAdding(true);
-    if (user && newTitleTodo !== '') {
+    if (user && newTitleTodo.trim() !== '') {
       await createTodo(user.id, newTitleTodo)
         .then(todo => {
           setTodos([...todos, todo]);
-        }).catch(() => setHasLoadError('Unable to add a todo'))
+        })
+        .catch(() => setHasLoadError('Unable to add a todo'))
         .finally(() => setIsAdding(false));
     } else {
       setHasLoadError('Title can\'t be empty');
+      setIsAdding(false);
     }
 
     setNewTitleTodo('');
   };
 
-  const handleClickDelete = async (curentTodoId: number) => {
+  const handleDeleteTodo = async (event: FormEvent, curentTodoId: number) => {
+    event.preventDefault();
     setTodoId(curentTodoId);
     setIsAdding(true);
 
     await deleteTodos(curentTodoId)
-      .then()
+      .then(() => {
+        setTodos([...todos.filter(({ id }) => id !== curentTodoId)]);
+      })
       .catch(() => setHasLoadError('Unable to delete a todo'))
       .finally(() => setIsAdding(false));
-
-    const curentDelete = todos.filter(todo => todo.id !== curentTodoId);
-
-    setTodos(curentDelete);
   };
 
   const handleClearCompleted = () => {
-    const clearCompleted = () => (todos.forEach(todo => {
-      const filterTodo = todos.filter(({ completed }) => completed !== true);
-
-      if (todo.completed) {
-        deleteTodos(todo.id);
-        setTodos(filterTodo);
+    setIsAdding(true);
+    const clearCompleted = () => ([...todos].forEach(todo => {
+      if (todo.completed === true) {
+        deleteTodos(todo.id)
+          .then(() => {
+            setTodos([...todos.filter(({ completed }) => completed !== true)]);
+          })
+          .catch(() => setHasLoadError('Unable to delete a todo'))
+          .finally(() => setIsAdding(false));
       }
     })
     );
@@ -113,12 +116,12 @@ export const App: React.FC = () => {
           newTodoField={newTodoField}
           newTitleTodo={newTitleTodo}
           handleTitleTodo={setNewTitleTodo}
-          handleSubmitAdd={handleSubmitAdd}
+          handleAddTodo={handleAddTodo}
           isAdding={isAdding}
         />
         <TodoList
           todos={filterTodos}
-          handleClickDelete={handleClickDelete}
+          handleDeleteTodo={handleDeleteTodo}
           statusPatch={statusPatch}
           setStatusPatch={setStatusPatch}
           isAdding={isAdding}

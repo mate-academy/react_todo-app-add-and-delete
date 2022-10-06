@@ -1,14 +1,14 @@
 /* eslint-disable jsx-a11y/control-has-associated-label */
 
 import classNames from 'classnames';
-import { useState } from 'react';
+import { FormEvent, useState } from 'react';
 import { Todo } from '../types/Todo';
 
 interface Props {
   todo: Todo;
   statusPatch: string;
   setStatusPatch: (event: string) => void;
-  handleClickDelete: (event: number) => void;
+  handleDeleteTodo: (event: FormEvent, element: number) => void;
   isAdding: boolean;
 }
 
@@ -16,9 +16,11 @@ export const TodoInfo: React.FC<Props> = ({
   todo,
   statusPatch,
   setStatusPatch,
-  handleClickDelete,
+  handleDeleteTodo,
   isAdding,
 }) => {
+  const { id, completed, title } = todo;
+
   const handlePatch = (event: { target: { value: string; }; }) => {
     setStatusPatch(event.target.value);
   };
@@ -30,7 +32,7 @@ export const TodoInfo: React.FC<Props> = ({
       data-cy="Todo"
       className={classNames(
         'todo',
-        { 'todo completed': completedTodo },
+        { 'todo completed': completed },
       )}
     >
       <label className="todo__status-label">
@@ -47,13 +49,13 @@ export const TodoInfo: React.FC<Props> = ({
       {!statusPatch ? (
         <>
           <span data-cy="TodoTitle" className="todo__title">
-            {todo.title}
+            {title}
           </span>
           <button
             type="button"
             className="todo__remove"
             data-cy="TodoDeleteButton"
-            onClick={() => handleClickDelete(todo.id)}
+            onClick={(event) => handleDeleteTodo(event, id)}
           >
             ×
           </button>
@@ -65,7 +67,7 @@ export const TodoInfo: React.FC<Props> = ({
             type="text"
             className="todo__title-field"
             placeholder="Empty todo will be deleted"
-            value={todo.title}
+            value={title}
             onClick={() => handlePatch}
           />
         </form>

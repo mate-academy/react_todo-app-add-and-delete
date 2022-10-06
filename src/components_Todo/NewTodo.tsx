@@ -5,7 +5,7 @@ interface Prors {
   newTodoField: React.RefObject<HTMLInputElement>;
   newTitleTodo: string;
   handleTitleTodo: (value: string) => void;
-  handleSubmitAdd: (event: FormEvent) => void;
+  handleAddTodo: (event: FormEvent) => void;
   isAdding: boolean;
 }
 
@@ -13,10 +13,9 @@ export const NewTodo: React.FC<Prors> = ({
   newTodoField,
   newTitleTodo,
   handleTitleTodo,
-  handleSubmitAdd,
+  handleAddTodo,
   isAdding,
 }) => {
-  // const user = useContext(AuthContext);
   const handleNewTitle = (event: { target: { value: string; }; }) => {
     handleTitleTodo(event.target.value);
   };
@@ -29,7 +28,7 @@ export const NewTodo: React.FC<Prors> = ({
         className="todoapp__toggle-all active"
       />
 
-      <form onSubmit={handleSubmitAdd}>
+      <form onSubmit={handleAddTodo}>
         <input
           data-cy="NewTodoField"
           type="text"
