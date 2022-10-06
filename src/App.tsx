@@ -1,5 +1,4 @@
 /* eslint-disable jsx-a11y/control-has-associated-label */
-import classNames from 'classnames';
 import React, {
   useContext,
   useEffect,
@@ -11,6 +10,7 @@ import { deleteTodo, getTodos, postTodo } from './api/todos';
 import { AuthContext } from './components/Auth/AuthContext';
 import { Filter } from './components/Filter';
 import { TodoList } from './components/TodoList';
+import { ErrorMessage } from './components/ErrorMessage';
 
 import { FilterStatus } from './types/FilterStatus';
 import { Todo } from './types/Todo';
@@ -210,25 +210,8 @@ export const App: React.FC = () => {
         )}
       </div>
 
-      <div
-        data-cy="ErrorNotification"
-        className={classNames(
-          'notification',
-          'is-danger',
-          'is-light',
-          'has-text-weight-normal',
-          { hidden: !error },
-        )}
-      >
-        <button
-          data-cy="HideErrorButton"
-          type="button"
-          className="delete"
-          onClick={handleCloseError}
-        />
+      <ErrorMessage error={error} onCloseError={handleCloseError} />
 
-        {error}
-      </div>
     </div>
   );
 };
