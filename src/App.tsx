@@ -28,7 +28,6 @@ export const App: React.FC = () => {
   const [selectedId, setSelectedId] = useState<number[]>([]);
 
   useEffect(() => {
-    // focus the element with `ref={newTodoField}`
     if (newTodoField.current) {
       newTodoField.current.focus();
     }

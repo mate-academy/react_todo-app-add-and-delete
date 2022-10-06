@@ -47,14 +47,6 @@ export const TodoList: React.FC<Props> = ({
             ×
           </button>
 
-          {/* {selectedId.includes(id)
-            && (
-              <div data-cy="TodoLoader" className="modal overlay">
-                <div className="modal-background has-background-white-ter" />
-                <div className="loader" />
-              </div>
-            )} */}
-
           {(isAdding && selectedId.includes(id)) && (
             <div
               data-cy="TodoLoader"
