@@ -1,4 +1,4 @@
-const BASE_URL = 'https://mate.academy/students-api';
+export const BASE_URL = 'https://mate.academy/students-api';
 
 // a promise resolved after a given delay
 function wait(delay: number) {
