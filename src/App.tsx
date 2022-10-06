@@ -94,7 +94,7 @@ export const App: React.FC = () => {
   };
 
   const handleRemove = async (id: number) => {
-    setSelectedTodos([id]);
+    setSelectedTodos([...selectedTodos, id]);
     try {
       await deleteTodo(id);
 
@@ -122,7 +122,7 @@ export const App: React.FC = () => {
   }, [completedTodos]);
 
   const handleTodoUpdate = async (todoId: number, data: Partial<Todo>) => {
-    setSelectedTodos([todoId]);
+    setSelectedTodos([...selectedTodos, todoId]);
 
     try {
       const newTodo = await updateTodo(todoId, data);
