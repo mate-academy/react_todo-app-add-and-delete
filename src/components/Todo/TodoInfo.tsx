@@ -1,22 +1,19 @@
 import classNames from 'classnames';
+import { Todo } from '../../types/Todo';
 import { Loader } from '../Loader';
 
 interface Props {
-  title: string;
-  completed: boolean;
-  todoId: number;
+  todo: Todo;
   deleteTodo: (value: number) => void;
   isAdding: boolean;
-  selectedId: number | null;
+  selectedIds: number[];
 }
 
 export const TodoInfo: React.FC<Props> = ({
-  title,
-  completed,
-  todoId,
+  todo,
   deleteTodo,
   isAdding,
-  selectedId,
+  selectedIds,
 }) => {
   return (
     <div
@@ -24,7 +21,7 @@ export const TodoInfo: React.FC<Props> = ({
       className={classNames(
         'todo',
         {
-          completed,
+          completed: todo.completed,
         },
       )}
     >
@@ -37,19 +34,19 @@ export const TodoInfo: React.FC<Props> = ({
         />
       </label>
 
-      <span data-cy="TodoTitle" className="todo__title">{title}</span>
+      <span data-cy="TodoTitle" className="todo__title">{todo.title}</span>
       <button
         type="button"
         className="todo__remove"
         data-cy="TodoDeleteButton"
         onClick={() => {
-          deleteTodo(todoId);
+          deleteTodo(todo.id);
         }}
       >
         ×
       </button>
 
-      {(isAdding || selectedId === todoId) && (
+      {(selectedIds.includes(todo.id) || (isAdding && todo.id === 0)) && (
         <Loader />
       )}
     </div>

@@ -1,5 +1,6 @@
 import React, {
   FormEvent,
+  useCallback,
   useContext,
   useEffect,
   useMemo,
@@ -22,7 +23,7 @@ export const App: React.FC = () => {
   const [errorText, setErrorText] = useState<string>('');
   const [isAdding, setIsAdding] = useState<boolean>(false);
   const [title, setTitle] = useState<string>('');
-  const [selectedId, setSelectedId] = useState<number | null>(null);
+  const [selectedIds, setSelectedIds] = useState<number[]>([]);
 
   const user = useContext(AuthContext);
 
@@ -57,7 +58,7 @@ export const App: React.FC = () => {
     });
   }, [todos, filterBy]);
 
-  const handleSubmit = async (event: FormEvent) => {
+  const handleSubmit = useCallback(async (event: FormEvent) => {
     event.preventDefault();
 
     if (!title.trim()) {
@@ -70,20 +71,21 @@ export const App: React.FC = () => {
     setIsAdding(true);
 
     try {
-      const newTodo = await createTodo(user?.id || 0, title);
+      if (user) {
+        const newTodo = await createTodo(user.id, title);
 
-      setTodos([...todos, newTodo]);
-      setIsAdding(false);
+        setTodos((prevTodos) => [...prevTodos, newTodo]);
+        setIsAdding(false);
+      }
     } catch {
       setErrorText(ErrorType.ADD);
     }
 
     setTitle('');
-    setSelectedId(user?.id || 0);
-  };
+  }, [title, user]);
 
-  const deleteTodo = async (todoId: number) => {
-    setSelectedId(todoId);
+  const deleteTodo = useCallback(async (todoId: number) => {
+    setSelectedIds([todoId]);
 
     try {
       await removeTodo(todoId);
@@ -92,13 +94,13 @@ export const App: React.FC = () => {
     } catch {
       setErrorText(ErrorType.DELETE);
     }
-  };
+  }, [todos, errorText]);
 
   const completedTodos = useMemo(() => (
     todos.filter(todo => todo.completed)
   ), [todos]);
 
-  const deleteCompletedTodos = async () => {
+  const deleteCompletedTodos = useCallback(async () => {
     try {
       Promise.all(completedTodos
         .map(({ id }) => removeTodo(id)));
@@ -108,7 +110,7 @@ export const App: React.FC = () => {
     } catch {
       setErrorText(ErrorType.DELETE);
     }
-  };
+  }, [todos, errorText, selectedIds]);
 
   return (
     <div className="todoapp">
@@ -128,7 +130,8 @@ export const App: React.FC = () => {
               todos={filteredTodos}
               deleteTodo={deleteTodo}
               isAdding={isAdding}
-              selectedId={selectedId}
+              selectedId={selectedIds}
+              title={title}
             />
             <Footer
               todos={filteredTodos}

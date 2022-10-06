@@ -5,7 +5,8 @@ interface Props {
   todos: Todo[];
   deleteTodo: (value: number) => void;
   isAdding: boolean;
-  selectedId: number | null;
+  selectedId: number[];
+  title: string;
 }
 
 export const TodoList: React.FC<Props> = ({
@@ -13,20 +14,34 @@ export const TodoList: React.FC<Props> = ({
   deleteTodo,
   isAdding,
   selectedId,
+  title,
 }) => {
   return (
     <section className="todoapp__main" data-cy="TodoList">
-      {todos.map(({ id, title, completed }) => (
+      {todos.map((todo) => (
         <TodoInfo
-          key={id}
-          title={title}
-          completed={completed}
-          todoId={id}
+          key={todo.id}
+          todo={todo}
           deleteTodo={deleteTodo}
           isAdding={isAdding}
-          selectedId={selectedId}
+          selectedIds={selectedId}
         />
       ))}
+
+      {isAdding && (
+        <TodoInfo
+          key={Math.random()}
+          todo={{
+            id: 0,
+            userId: Math.random(),
+            title,
+            completed: false,
+          }}
+          deleteTodo={deleteTodo}
+          selectedIds={selectedId}
+          isAdding={isAdding}
+        />
+      )}
     </section>
   );
 };
