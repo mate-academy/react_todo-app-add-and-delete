@@ -4,24 +4,18 @@ import { Loader } from './Loader';
 import { Todo } from '../types/Todo';
 
 type Props = {
-  // todos: Todo[],
-  isLoading: boolean
+  isAdding: boolean,
   todo: Todo,
-  // isAdding: boolean,
   deleteTodo:(param: number) => void,
+  loadingTodoIds: number[],
 };
 
-export const NewTodo: React.FC<Props> = ({
-  // todos,
-  isLoading,
+export const Todos: React.FC<Props> = ({
+  isAdding,
   todo,
-  // isAdding,
   deleteTodo,
+  loadingTodoIds,
 }) => {
-  // const deleteComplitedTodo = (todoId: number, completed: boolean) => {
-  //   if ()
-  // };
-
   return (
     <div
       key={todo.id}
@@ -54,7 +48,7 @@ export const NewTodo: React.FC<Props> = ({
         ×
       </button>
 
-      {!isLoading && (
+      {((isAdding && todo.id === 0) || loadingTodoIds.includes(todo.id)) && (
         <Loader />
       )}
 

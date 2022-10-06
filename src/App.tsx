@@ -31,15 +31,13 @@ export function getFilterTodos(
 
 export const App: React.FC = () => {
   const user = useContext<User | null>(AuthContext);
-  // const userId = user?.id ? user.id : 0;
   const newTodoField = useRef<HTMLInputElement>(null);
   const [errorMessage, setErrorMessage] = useState('');
   const [filterBy, setFilterBy] = useState<FilterTypes>(FilterTypes.All);
   const [todos, setTodos] = useState<Todo[]>([]);
-  const [isLoading, setIsLoading] = useState(false);
   const [title, setTitle] = useState('');
   const [isAdding, setAdding] = useState(false);
-  // const [selectedTodoId, setSelectedTodoId] = useState(null);
+  const [loadingTodoIds, setLoadingTodoIds] = useState<number[]>([]);
 
   useEffect(() => {
     const todoFromServer = async (userId: number) => {
@@ -49,8 +47,6 @@ export const App: React.FC = () => {
         setTodos(todosFromServer);
       } catch (error) {
         setErrorMessage(`${error}`);
-      } finally {
-        setIsLoading(true);
       }
     };
 
@@ -79,13 +75,13 @@ export const App: React.FC = () => {
     } catch {
       setErrorMessage('Unable to add a todo');
     } finally {
-      setIsLoading(true);
       setAdding(false);
       setTitle('');
     }
   }, [title, user]);
 
   const deleteTodo = (todoId: number) => {
+    setLoadingTodoIds([todoId]);
     const removedTodo = async () => {
       try {
         await deleteTodos(todoId);
@@ -94,7 +90,7 @@ export const App: React.FC = () => {
       } catch {
         setErrorMessage('Unable to delete a todo');
       } finally {
-        setIsLoading(true);
+        setLoadingTodoIds([]);
       }
     };
 
@@ -134,15 +130,14 @@ export const App: React.FC = () => {
           <>
             <TodoList
               todos={filteredTodos}
-              isLoading={isLoading}
               title={title}
               isAdding={isAdding}
               deleteTodo={deleteTodo}
+              loadingTodoIds={loadingTodoIds}
             />
 
             <Footer
               getFilterTodo={setFilterBy}
-              // filteredTodos={filteredTodos}
               selectedTab={filterBy}
               deleteCompletedTodos={deleteCompletedTodos}
               todos={todos}

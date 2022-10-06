@@ -1,36 +1,37 @@
 import React from 'react';
 import { Todo } from '../types/Todo';
-import { NewTodo } from './Todo';
+import { Todos } from './Todo';
 
 type Props = {
   todos: Todo[],
-  isLoading: boolean,
   title:string
   isAdding:boolean,
   deleteTodo:(param: number) => void,
+  loadingTodoIds: number[],
 };
 
 export const TodoList: React.FC<Props> = ({
   todos,
-  isLoading,
   title,
   isAdding,
   deleteTodo,
+  loadingTodoIds,
 }) => {
   return (
     <section className="todoapp__main" data-cy="TodoList">
 
       {todos.map((todo) => (
-        <NewTodo
+        <Todos
           key={todo.id}
           todo={todo}
-          isLoading={isLoading}
           deleteTodo={deleteTodo}
+          loadingTodoIds={loadingTodoIds}
+          isAdding={isAdding}
         />
       ))}
 
       {isAdding && (
-        <NewTodo
+        <Todos
           key={Math.random()}
           todo={{
             id: 0,
@@ -38,8 +39,9 @@ export const TodoList: React.FC<Props> = ({
             completed: false,
             userId: Math.random(),
           }}
-          isLoading={isLoading}
           deleteTodo={deleteTodo}
+          loadingTodoIds={loadingTodoIds}
+          isAdding={isAdding}
         />
       )}
 

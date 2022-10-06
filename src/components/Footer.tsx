@@ -5,7 +5,6 @@ import { Todo } from '../types/Todo';
 
 type Props = {
   getFilterTodo: (param: FilterTypes) => void;
-  // filteredTodos: Todo[];
   selectedTab: FilterTypes,
   deleteCompletedTodos: () => void,
   todos: Todo[],
@@ -13,7 +12,6 @@ type Props = {
 
 export const Footer: React.FC<Props> = ({
   getFilterTodo,
-  // filteredTodos,
   selectedTab,
   deleteCompletedTodos,
   todos,
