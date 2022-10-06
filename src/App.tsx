@@ -4,6 +4,7 @@ import {
   useRef,
   useState,
   useMemo,
+  useCallback,
 } from 'react';
 import { AuthContext } from './components/Auth/AuthContext';
 import { TodoList } from './components/TodoList';
@@ -32,12 +33,15 @@ export const App: React.FC = () => {
   const user = useContext(AuthContext);
   const newTodoField = useRef<HTMLInputElement>(null);
 
-  const selectedStatus = statuses
-    .find(status => selectedStatusId === status.id) || statuses[0];
+  const selectedStatus = useMemo(() => {
+    return statuses.find(
+      status => selectedStatusId === status.id,
+    ) || statuses[0];
+  }, [selectedStatusId]);
 
-  const onStatusSelected = (status:Status) => {
+  const onStatusSelected = useCallback((status:Status) => {
     setSelectedStatusId(status.id);
-  };
+  }, []);
 
   useEffect(() => {
     if (newTodoField.current) {
@@ -93,7 +97,6 @@ export const App: React.FC = () => {
 
           <NewTodo
             newTodoField={newTodoField}
-            todos={todos}
             user={user}
             setTodos={setTodos}
             setErrorNotification={setErrorNotification}

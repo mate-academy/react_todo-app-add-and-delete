@@ -3,6 +3,7 @@ import React, {
   useState,
   Dispatch,
   SetStateAction,
+  useCallback
 } from 'react';
 import { createTodo } from '../../api/todos';
 import { Todo } from '../../types/Todo';
@@ -27,12 +28,14 @@ export const NewTodo: React.FC<Props> = ({
 }) => {
   const [title, setTitle] = useState('');
 
-  const handledTitle = (event:React.ChangeEvent<HTMLInputElement>) => {
-    const newTitle = event.target.value.replace(/^(\s)*/g, '');
+  const handledTitle = useCallback(
+    (event:React.ChangeEvent<HTMLInputElement>) => {
+      const newTitle = event.target.value.replace(/^(\s)*/g, '');
 
-    setTitle(newTitle);
-    setPreviewTitle(newTitle);
-  };
+      setTitle(newTitle);
+      setPreviewTitle(newTitle);
+    }, [],
+  );
 
   const createTodos = async () => {
     setIsShownTempTodo(true);
@@ -49,18 +52,20 @@ export const NewTodo: React.FC<Props> = ({
     }
   };
 
-  const handleSubmit = (event: React.FormEvent<HTMLFormElement>) => {
-    event.preventDefault();
+  const handleSubmit = useCallback(
+    (event: React.FormEvent<HTMLFormElement>) => {
+      event.preventDefault();
 
-    if (!title) {
-      setErrorNotification('Title can\'t be empty');
+      if (!title) {
+        setErrorNotification('Title can\'t be empty');
 
-      return;
-    }
+        return;
+      }
 
-    createTodos();
-    setTitle('');
-  };
+      createTodos();
+      setTitle('');
+    }, [createTodos],
+  );
 
   return (
     <form

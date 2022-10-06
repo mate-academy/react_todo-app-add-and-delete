@@ -6,7 +6,7 @@ type Props = {
   todos: Todo[];
   todoId: number;
   setTodoId: (id: number) => void;
-  setTodos: (todo: Todo[]) => void;
+  setTodos: React.Dispatch<React.SetStateAction<Todo[]>>;
   setErrorNotification: (value: string) => void;
   completed: boolean;
   id: number;
@@ -14,7 +14,6 @@ type Props = {
 };
 
 export const RemoveTodo: React.FC<Props> = ({
-  todos,
   todoId,
   setTodos,
   setTodoId,
@@ -29,7 +28,9 @@ export const RemoveTodo: React.FC<Props> = ({
     const deleteTodos = async () => {
       try {
         await deleteTodo(deletingId);
-        setTodos(todos.filter(todo => todo.id !== deletingId));
+        setTodos((prevTodos) => {
+          return prevTodos.filter(todo => todo.id !== deletingId);
+        });
       } catch (error) {
         setErrorNotification('Unable to delete a todo');
       }

@@ -6,7 +6,7 @@ type Props = {
   todos: Todo[];
   todoId: number;
   setTodoId: (id: number) => void;
-  setTodos: (todo: Todo[]) => void;
+  setTodos: React.Dispatch<React.SetStateAction<Todo[]>>;
   setErrorNotification: (value: string) => void;
   isShownTempTodo: boolean;
   previewTitle: string;

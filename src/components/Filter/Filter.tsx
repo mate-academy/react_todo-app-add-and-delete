@@ -1,4 +1,5 @@
 import classNames from 'classnames';
+import { useCallback, useMemo } from 'react';
 import { Status } from '../../types/Status';
 
 type Props = {
@@ -12,12 +13,15 @@ export const Filter: React.FC<Props> = ({
   selectedStatusId,
   onStatusSelected,
 }) => {
-  const selectedStatus = statuses
-    .find(status => selectedStatusId === status.id) || statuses[0];
+  const selectedStatus = useMemo(() => {
+    return statuses.find(
+      status => selectedStatusId === status.id,
+    ) || statuses[0];
+  }, [selectedStatusId]);
 
-  const handleClick = (status: Status) => (
-    status.id !== selectedStatusId && onStatusSelected(status)
-  );
+  const handleClick = useCallback((status: Status) => {
+    return status.id !== selectedStatusId && onStatusSelected(status);
+  }, [selectedStatusId, onStatusSelected]);
 
   return (
     <nav className="filter" data-cy="Filter">

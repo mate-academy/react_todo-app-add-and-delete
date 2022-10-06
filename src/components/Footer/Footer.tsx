@@ -1,3 +1,4 @@
+import { useMemo } from 'react';
 import { Filter } from '../Filter';
 import { Status } from '../../types/Status';
 import { Todo } from '../../types/Todo';
@@ -21,12 +22,22 @@ export const Footer: React.FC<Props> = ({
   setErrorNotification,
   setTodos,
 }) => {
-  const activeTodos = todos.filter(({ completed }) => !completed);
-  const completedTodos = todos.filter(({ completed }) => completed);
+  const activeTodos = useMemo(() => {
+    return todos.filter(
+      ({ completed }) => !completed,
+    );
+  }, [todos]);
 
-  const deleteCompletedTodos = () => {
+  const completedTodos = useMemo(() => {
+    return todos.filter(
+      ({ completed }) => completed,
+    );
+  }, [todos]);
+
+  const deleteCompletedTodos = async () => {
     try {
-      Promise.all(completedTodos.map(({ id }) => deleteTodo(id)));
+      await Promise.all(completedTodos.map(({ id }) => deleteTodo(id)));
+
       setTodos(activeTodos);
     } catch (error) {
       setErrorNotification('Unable to delete a todo');
