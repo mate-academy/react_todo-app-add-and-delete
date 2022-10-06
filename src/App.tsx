@@ -41,7 +41,8 @@ export const App: React.FC = () => {
       newTodoField.current.focus();
     }
 
-    getTodos(userId).then(setTodos);
+    getTodos(userId)
+      .then(setTodos);
   }, []);
 
   const filteredTodos = todos.filter(todo => {
@@ -73,7 +74,7 @@ export const App: React.FC = () => {
       return null;
     }
 
-    setIsAdding(true);
+    setIsAdding(false);
 
     const newTodoLocal = {
       id: 0,
@@ -88,15 +89,14 @@ export const App: React.FC = () => {
       const newTodoFromServer = await addTodo(todoTitle, userId);
 
       setTodos([...todos, newTodoFromServer]);
+      setSelectedTodos(prevIds => [...prevIds, 0]);
     } catch {
       setError('Unable to add a todo');
-      setTodos(
-        filteredTodos.filter(todo => todo.id !== 0),
-      );
+      setTodos(prevTodos => prevTodos.filter(todo => todo.id !== 0));
+    } finally {
+      setTodoTitle('');
+      setIsAdding(false);
     }
-
-    setTodoTitle('');
-    setIsAdding(false);
 
     return null;
   };
@@ -109,9 +109,9 @@ export const App: React.FC = () => {
         todo => todo.id !== todoId,
       ));
     } catch {
-      setError('Unable to dele a todo');
+      setError('Unable to delete a todo');
     } finally {
-      setSelectedTodos(prevTodoIds => prevTodoIds.filter(id => id! === todoId));
+      setSelectedTodos(prevTodoIds => prevTodoIds.filter(id => id !== todoId));
     }
   };
 
@@ -143,19 +143,25 @@ export const App: React.FC = () => {
           </form>
         </header>
 
-        <TodoList
-          todos={filteredTodos}
-          selectedTodos={selectedTodos}
-          removeTodo={removeTodo}
-        />
+        {todos.length > 0 && (
+          <>
+            <TodoList
+              title={todoTitle}
+              isAdding={isAdding}
+              todos={filteredTodos}
+              selectedTodos={selectedTodos}
+              removeTodo={removeTodo}
+            />
 
-        <Footer
-          todos={todos}
-          filteredTodos={filteredTodos}
-          filterType={filterType}
-          onFilterChange={setFilterType}
-          handleDeleteTodos={removeTodo}
-        />
+            <Footer
+              todos={todos}
+              filteredTodos={filteredTodos}
+              filterType={filterType}
+              onFilterChange={setFilterType}
+              handleDeleteTodos={removeTodo}
+            />
+          </>
+        )}
 
       </div>
       <ErrorNotification

@@ -1,40 +1,62 @@
-import React from 'react';
-import classnames from 'classnames';
+import React, { useContext } from 'react';
+import { TransitionGroup, CSSTransition } from 'react-transition-group';
 import { TodoItem } from '../TodoItem/TodoItem';
 import { Todo } from '../../types/Todo';
+import { AuthContext } from '../Auth/AuthContext';
 
 type Props = {
+  title: string,
+  isAdding: boolean,
   todos: Todo[],
   selectedTodos: number[],
   removeTodo: CallableFunction,
 };
 
 export const TodoList: React.FC<Props> = ({
+  title,
+  isAdding,
   todos,
   selectedTodos,
   removeTodo,
 }) => {
+  const user = useContext(AuthContext);
+
   return (
     <section className="todoapp__main" data-cy="TodoList">
-      {todos.map(todo => (
-        <TodoItem
-          key={todo.id}
-          todo={todo}
-          selectedTodos={selectedTodos}
-          onDelete={removeTodo}
-        />
-      ))}
+      <TransitionGroup>
+        {todos.map(todo => (
+          <CSSTransition
+            key={todo.id}
+            timeout={300}
+            classNames="item"
+          >
+            <TodoItem
+              isProcessed={selectedTodos.includes(todo.id)}
+              todo={todo}
+              onDelete={removeTodo}
+            />
+          </CSSTransition>
+        ))}
 
-      <div
-        data-cy="TodoLoader"
-        className={classnames(
-          'modal', 'overlay',
-          { 'is-active': todos.length === 0 },
+        {isAdding && (
+          <CSSTransition
+            key={0}
+            timeout={300}
+            className="temp-item"
+          >
+            <TodoItem
+              todo={{
+                id: Math.random(),
+                title,
+                completed: false,
+                userId: user?.id || 0,
+              }}
+              onDelete={removeTodo}
+              isProcessed
+            />
+          </CSSTransition>
         )}
-      >
-        <div className="modal-background has-background-white-ter" />
-        <div className="loader" />
-      </div>
+      </TransitionGroup>
     </section>
   );
 };

@@ -4,13 +4,13 @@ import { Todo } from '../../types/Todo';
 
 type Props = {
   todo: Todo,
-  selectedTodos: number[],
+  isProcessed: boolean,
   onDelete: CallableFunction,
 };
 
 export const TodoItem: React.FC<Props> = ({
   todo,
-  selectedTodos,
+  isProcessed,
   onDelete,
 }) => {
   return (
@@ -40,19 +40,15 @@ export const TodoItem: React.FC<Props> = ({
         ×
       </button>
 
-      <div
-        data-cy="TodoLoader"
-        className={
-          classnames(
-            'modal',
-            'overlay',
-            { 'is-active': selectedTodos.includes(todo.id) || todo.id === 0 },
-          )
-        }
-      >
-        <div className="modal-background has-background-white-ter" />
-        <div className="loader" />
-      </div>
+      {isProcessed && (
+        <div
+          data-cy="TodoLoader"
+          className="modal overlay is-active"
+        >
+          <div className="modal-background has-background-white-ter" />
+          <div className="loader" />
+        </div>
+      )}
     </div>
   );
 };
