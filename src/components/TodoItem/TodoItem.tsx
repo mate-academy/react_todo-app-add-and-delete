@@ -1,5 +1,4 @@
 import classNames from 'classnames';
-import { useState } from 'react';
 import { Todo } from '../../types/Todo';
 import { TodoLoader } from '../TodoLoader/TodoLoader';
 
@@ -16,13 +15,14 @@ export const TodoItem: React.FC<Props> = ({
   selectedId,
   isAdding,
 }) => {
-  const [clicked, setClicked] = useState<boolean>(false);
-  const { title, id } = todo;
+  const { title, id, completed } = todo;
+
+  const isLoader = isAdding && selectedId.includes(id);
 
   return (
     <div
       className={classNames('todo', {
-        completed: clicked,
+        completed,
       })}
       data-cy="Todo"
       key={id}
@@ -31,9 +31,8 @@ export const TodoItem: React.FC<Props> = ({
         <input
           type="checkbox"
           className="todo__status"
-          defaultChecked
+          defaultChecked={completed}
           data-cy="TodoStatus"
-          onClick={() => setClicked(!clicked)}
         />
       </label>
 
@@ -51,11 +50,7 @@ export const TodoItem: React.FC<Props> = ({
       >
         x
       </button>
-      { selectedId.includes(id) && (
-        <TodoLoader />
-      )}
-
-      { (isAdding && id === 0) && (
+      { (isLoader) && (
         <TodoLoader />
       )}
 

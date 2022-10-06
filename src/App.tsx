@@ -20,7 +20,7 @@ export const App: React.FC = () => {
   const [fileterType, setFilterType] = React.useState(FilterType.All);
   const [title, setTitle] = React.useState('');
   const [selectedId, setSelectedId] = React.useState<number[]>([]);
-  const [isAdding, setisAdding] = React.useState(false);
+  const [isAdding, setIsAdding] = React.useState(false);
   const user = React.useContext(AuthContext);
 
   useEffect(() => {
@@ -56,23 +56,23 @@ export const App: React.FC = () => {
 
   const newTodo = useCallback(async (event: FormEvent) => {
     event.preventDefault();
-    if (!title || !user) {
+    if (!title.trim() || !user) {
       setErrorMessage(ErrorMessage.ErrorTitle);
 
       return;
     }
 
-    setisAdding(true);
+    setIsAdding(true);
 
     try {
       const postTodo = await addTodo(title, user.id);
 
-      setTodos([...todos, postTodo]);
+      setTodos((prevTodos) => [...prevTodos, postTodo]);
     } catch {
       setErrorMessage(ErrorMessage.NotAdd);
     }
 
-    setisAdding(false);
+    setIsAdding(false);
     setTitle('');
   }, [title, user]);
 
@@ -81,7 +81,7 @@ export const App: React.FC = () => {
     try {
       await deleteTodo(TodoId);
 
-      setTodos([...todos.filter(({ id }) => id !== TodoId)]);
+      setTodos((prevTodos) => prevTodos.filter(({ id }) => id !== TodoId));
     } catch {
       setErrorMessage(ErrorMessage.NotDelete);
     }
@@ -93,7 +93,8 @@ export const App: React.FC = () => {
     setSelectedId([...completedTodos].map(({ id }) => id));
 
     Promise.all(completedTodos.map(({ id }) => removeTodo(id)))
-      .then(() => setTodos([...todos.filter(({ completed }) => !completed)]))
+      .then(() => setTodos((prevTodos) => prevTodos
+        .filter(({ completed }) => !completed)))
       .catch(() => {
         setErrorMessage(ErrorMessage.NotDelete);
         setSelectedId([]);
