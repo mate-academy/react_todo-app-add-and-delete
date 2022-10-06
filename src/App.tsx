@@ -12,7 +12,7 @@ import { AuthContext } from './components/Auth/AuthContext';
 import { Filter } from './components/Filter';
 import { TodoList } from './components/TodoList';
 
-import { FilterStatus } from './types/Filter';
+import { FilterStatus } from './types/FilterStatus';
 import { Todo } from './types/Todo';
 
 const getTodoById = (todos: Todo[], todoId: number) => {

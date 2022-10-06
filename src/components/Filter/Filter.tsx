@@ -1,5 +1,5 @@
 import classNames from 'classnames';
-import { FilterStatus } from '../../types/Filter';
+import { FilterStatus } from '../../types/FilterStatus';
 
 type Props = {
   filterStatus: FilterStatus
@@ -24,7 +24,6 @@ export const Filter: React.FC<Props> = ({ filterStatus, onFilter }) => {
   const handleFilterCompleted = () => {
     handleFilter('completed');
   };
-
 
   return (
     <nav className="filter" data-cy="Filter">
