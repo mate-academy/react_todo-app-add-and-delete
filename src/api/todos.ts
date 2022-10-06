@@ -17,6 +17,8 @@ export const deleteTodo = (todoId: number) => {
   return client.delete(`/todos/${todoId}`);
 };
 
-export const updateTodo = (todoId: number, completed: boolean) => {
-  return client.patch(`/todos/${todoId}`, { completed });
+export const updateTodo = (
+  todoId: number, property: Partial<Todo>,
+): Promise<Todo> => {
+  return client.patch(`/todos/${todoId}`, property);
 };

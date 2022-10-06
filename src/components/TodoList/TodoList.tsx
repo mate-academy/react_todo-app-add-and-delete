@@ -5,7 +5,7 @@ import { Todo } from '../../types/Todo';
 type Props = {
   todos: Todo[];
   removeTodo:(todoId: number) => void;
-  updateState:(todoId: number) => void;
+  updateState:(todoId: number, property: Partial<Todo>) => void;
 };
 
 export const TodoList: React.FC<Props> = ({
@@ -29,7 +29,7 @@ export const TodoList: React.FC<Props> = ({
                 data-cy="TodoStatus"
                 type="checkbox"
                 className="todo__status"
-                onClick={() => updateState(id)}
+                onChange={() => updateState(id, { completed: !completed })}
               />
             </label>
 

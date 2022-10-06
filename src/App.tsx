@@ -82,17 +82,15 @@ export const App: React.FC = () => {
     }
   };
 
-  const updateState = async (todoId: number) => {
-    const getTodo = todos.find(todo => todoId === todo.id);
-
+  const updateState = async (todoId: number, property: Partial<Todo>) => {
     try {
-      if (getTodo?.completed === false) {
-        await updateTodo(todoId, true);
-      }
+      const changedTodo: Todo = await updateTodo(todoId, property);
 
-      if (getTodo?.completed === true) {
-        await updateTodo(todoId, false);
-      }
+      setTodos(todos.map(todo => (
+        todo.id === todoId
+          ? changedTodo
+          : todo
+      )));
     } catch {
       setError('Unable to update a todo');
     }
@@ -121,6 +119,9 @@ export const App: React.FC = () => {
         )}
 
         <TodoFooter
+          setError={setError}
+          setTodos={setTodos}
+          todos={todos}
           filterTodos={filterTodos}
           filterTodo={filterTodo}
           setFilterTodo={setFilterTodo}
