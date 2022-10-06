@@ -21,8 +21,7 @@ export const Footer: React.FC<Props> = ({
   ), [todos]);
 
   const completedTodos = useMemo(() => (
-    todos.filter(todo => todo.completed).length),
-  [todos]);
+    todos.filter(todo => todo.completed).length), [todos]);
 
   return (
     <footer className="todoapp__footer" data-cy="Footer">
