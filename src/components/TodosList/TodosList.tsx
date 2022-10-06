@@ -38,7 +38,7 @@ export const TodosList: React.FC<Props> = ({
         {todos.map(todo => (
           <CSSTransition
             key={todo.id}
-            timeout={350}
+            timeout={300}
             classNames="item"
           >
             <TodoItem
@@ -56,7 +56,7 @@ export const TodosList: React.FC<Props> = ({
           && (
             <CSSTransition
               key={0}
-              timeout={350}
+              timeout={300}
               classNames="temp-item"
             >
               <div

@@ -62,7 +62,7 @@ export const App: React.FC = () => {
     } catch {
       setErrorMessage('Unable to connect to the server');
     }
-  }, []);
+  }, [todos]);
 
   useEffect(() => {
     if (newTodoField.current) {
