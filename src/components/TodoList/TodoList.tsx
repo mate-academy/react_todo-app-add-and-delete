@@ -8,11 +8,15 @@ import TodoItem from '../TodoItem';
 type Props = {
   todos: Todo[];
   removeTodo: (todoId: number) => void;
+  isLoading: boolean;
+  selectedId: number | null;
 };
 
 export const TodoList: React.FC<Props> = ({
   todos,
   removeTodo,
+  isLoading,
+  selectedId,
 }) => {
   return (
     <section className="todoapp__main" data-cy="TodoList">
@@ -26,6 +30,8 @@ export const TodoList: React.FC<Props> = ({
             <TodoItem
               todo={todo}
               removeTodo={removeTodo}
+              isLoading={isLoading}
+              selectedId={selectedId}
             />
           </CSSTransition>
         ))}

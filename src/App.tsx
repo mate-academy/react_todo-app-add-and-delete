@@ -5,6 +5,7 @@ import React, {
   useEffect,
   useRef,
   FormEvent,
+  useCallback,
 } from 'react';
 import { getTodos, createTodo, deleteTodo } from './api/todos';
 import { Todo } from './types/Todo';
@@ -24,13 +25,7 @@ export const App: React.FC = () => {
   const [todos, setTodos] = useState<Todo[]>([]);
   const [title, setTitle] = useState('');
   const [isLoading, setIsLoading] = useState(false);
-
-  if (error) {
-    setTimeout(() => {
-      setError(null);
-      setIsLoading(false);
-    }, 3000);
-  }
+  const [selectedId, setSelectedId] = useState<number | null>(null);
 
   let userId = 0;
 
@@ -61,7 +56,7 @@ export const App: React.FC = () => {
     }
   });
 
-  const handleAddTodo = async (event: FormEvent) => {
+  const handleAddTodo = useCallback(async (event: FormEvent) => {
     event.preventDefault();
 
     if (!title.trim()) {
@@ -76,6 +71,8 @@ export const App: React.FC = () => {
     try {
       const todoToAdd = await createTodo(userId, title);
 
+      setSelectedId(todoToAdd.id);
+
       setTodos(prev => [...prev, todoToAdd]);
     } catch {
       setError(Error.Add);
@@ -83,15 +80,20 @@ export const App: React.FC = () => {
       setTitle('');
       setIsLoading(false);
     }
-  };
+  }, [title]);
 
   const handleRemoveTodo = async (todoId: number) => {
+    setIsLoading(true);
+    setSelectedId(todoId);
+
     try {
       await deleteTodo(todoId);
 
       setTodos(prev => prev.filter(todo => todo.id !== todoId));
     } catch {
       setError(Error.Delete);
+    } finally {
+      setIsLoading(false);
     }
   };
 
@@ -113,6 +115,8 @@ export const App: React.FC = () => {
           <TodoList
             todos={visibleTodos}
             removeTodo={handleRemoveTodo}
+            isLoading={isLoading}
+            selectedId={selectedId}
           />
         )}
 
@@ -127,6 +131,7 @@ export const App: React.FC = () => {
       <ErrorNotification
         error={error}
         setError={setError}
+        setIsLoading={setIsLoading}
       />
     </div>
   );

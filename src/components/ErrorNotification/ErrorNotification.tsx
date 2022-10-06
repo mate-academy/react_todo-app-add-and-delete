@@ -5,12 +5,21 @@ import { Error } from '../../types/Error';
 type Props = {
   error: Error | null;
   setError: (value: null) => void;
+  setIsLoading: (value: boolean) => void;
 };
 
 export const ErrorNotification: React.FC<Props> = ({
   error,
   setError,
+  setIsLoading,
 }) => {
+  if (error) {
+    setTimeout(() => {
+      setError(null);
+      setIsLoading(false);
+    }, 3000);
+  }
+
   return (
     <div
       data-cy="ErrorNotification"
