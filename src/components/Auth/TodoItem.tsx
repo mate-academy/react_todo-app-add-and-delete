@@ -3,8 +3,8 @@ import React from 'react';
 import { Todo } from '../../types/Todo';
 
 type Props = {
-  todo: Todo,
-  removeTodo: (param: number) => void,
+  todo: Todo | null,
+  removeTodo: (param: number | null) => void,
   isAdding: boolean,
 };
 
@@ -15,12 +15,12 @@ export const TodoItem: React.FC<Props> = ({
 }) => {
   return (
     <div
-      key={todo.id}
+      key={todo?.id}
       data-cy="Todo"
       className={classNames(
         'todo',
         {
-          completed: todo.completed,
+          completed: todo?.completed,
         },
       )}
     >
@@ -33,17 +33,17 @@ export const TodoItem: React.FC<Props> = ({
         />
       </label>
 
-      <span data-cy="TodoTitle" className="todo__title">{todo.title}</span>
+      <span data-cy="TodoTitle" className="todo__title">{todo?.title}</span>
       <button
         type="button"
         className="todo__remove"
         data-cy="TodoDeleteButton"
-        onClick={() => removeTodo(todo.id)}
+        onClick={() => removeTodo(todo?.id || -1)}
       >
         ×
       </button>
 
-      {(isAdding && todo.id === 0) && (
+      {(isAdding && todo?.id === 0) && (
         <div
           data-cy="TodoLoader"
           className="modal overlay is-active"

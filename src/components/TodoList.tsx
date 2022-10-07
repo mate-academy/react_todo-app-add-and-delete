@@ -5,7 +5,7 @@ import { TodoItem } from './Auth/TodoItem';
 
 type Props = {
   todos: Todo[],
-  removeTodo: (param: number) => Promise<void>,
+  removeTodo: (param: number | null) => Promise<void>,
   isAdding: boolean,
   title: string,
 };

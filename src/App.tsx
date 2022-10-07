@@ -6,8 +6,8 @@ import React, {
   useState,
 } from 'react';
 import { TodoList } from './components/TodoList';
-import { Header } from './components/Header';
-import { Footer } from './components/Footer';
+import { Header } from './components/NewTodo';
+import { Footer } from './components/Filter';
 import { ErrorMessage } from './components/ErrorMessage';
 import { Todo } from './types/Todo';
 import { getTodos, createTodos, deleteTodo } from './api/todos';
@@ -31,7 +31,7 @@ export const App: React.FC = () => {
   }, []);
 
   useEffect(() => {
-    async function todosFromServer(userId: number | undefined) {
+    async function todosFromServer(userId: number | null) {
       try {
         const visibleTodos = getTodos(userId);
 
@@ -78,7 +78,7 @@ export const App: React.FC = () => {
     setAdding(true);
 
     try {
-      const newTodo = await createTodos(user?.id, title);
+      const newTodo = await createTodos(user?.id || -1, title);
 
       setTodos([...todos, newTodo]);
     } catch {
@@ -89,7 +89,7 @@ export const App: React.FC = () => {
     setAdding(false);
   };
 
-  const removeTodo = async (todoId: number) => {
+  const removeTodo = async (todoId: number | null) => {
     await deleteTodo(todoId)
       .then(() => {
         setTodos(prevTodos => prevTodos.filter(todo => todo.id !== todoId));
