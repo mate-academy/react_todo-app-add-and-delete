@@ -3,13 +3,13 @@ import { Todo } from '../types/Todo';
 
 type Props = {
   todos: Todo[];
-  handleClickDelete: (id: number)=> void;
+  handleDelete: (id: number)=> void;
   selectedTodo: number[];
 };
 
 export const TodoList: React.FC<Props> = ({
   todos,
-  handleClickDelete,
+  handleDelete,
   selectedTodo,
 }) => {
   return (
@@ -18,7 +18,7 @@ export const TodoList: React.FC<Props> = ({
         <TodoItem
           key={todo.id}
           todoItem={todo}
-          handleClickDelete={handleClickDelete}
+          handleDelete={handleDelete}
           selectedTodo={selectedTodo}
         />
       ))}

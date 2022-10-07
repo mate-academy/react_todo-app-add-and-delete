@@ -1,18 +1,31 @@
-/* eslint-disable max-len */
 import classNames from 'classnames';
+import { Errors } from '../types/Errors';
 
 type Props = {
-  setError: (error: string | null) => void;
-  error: string | null;
+  setError: (error: Errors | null) => void;
+  error: Errors | null;
 };
 
-export const ErrorNotification: React.FC<Props> = ({ setError, error }) => {
+export const ErrorNotification: React.FC<Props> = ({
+  setError,
+  error,
+}) => {
+  if (error) {
+    setTimeout(() => {
+      setError(null);
+    }, 3000);
+  }
+
   return (
     <div
       data-cy="ErrorNotification"
-      className={classNames('notification is-danger is-light has-text-weight-normal', {
-        'notification is-danger is-light has-text-weight-normal hidden': !error,
-      })}
+      className={
+        classNames(
+          'notification is-danger is-light has-text-weight-normal', {
+            hidden: !error,
+          },
+        )
+      }
     >
       <button
         data-cy="HideErrorButton"
@@ -21,8 +34,8 @@ export const ErrorNotification: React.FC<Props> = ({ setError, error }) => {
         onClick={() => setError(null)}
         aria-label="no errors"
       />
-      {error}
 
+      {error}
     </div>
   );
 };

@@ -5,26 +5,26 @@ import { Todo } from '../types/Todo';
 type Props = {
   filterType: string;
   setfilterType: (type: string) => void;
-  filteredTodos: Todo[];
+  visibleTodos: Todo[];
   todos: Todo[];
-  handleClickDelete: (id: number)=> void;
+  handleDelete: (id: number)=> void;
 };
 
 export const Footer: React.FC<Props> = ({
   filterType,
   setfilterType,
-  filteredTodos,
+  visibleTodos,
   todos,
-  handleClickDelete,
+  handleDelete,
 }) => {
   const clearCompleted = () => todos
     .forEach(todo => {
       if (todo.completed) {
-        handleClickDelete(todo.id);
+        handleDelete(todo.id);
       }
     });
 
-  const isActive = filteredTodos.filter(todo => !todo.completed);
+  const isActive = visibleTodos.filter(todo => !todo.completed);
 
   return (
     <footer className="todoapp__footer" data-cy="Footer">

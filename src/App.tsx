@@ -10,26 +10,19 @@ import { ErrorNotification } from './ErrorNotification/ErrorNotification';
 import { getTodos, createTodo, deleteTodo } from './api/todos';
 import { Todo } from './types/Todo';
 import { FilterType } from './types/FilterType';
+import { Errors } from './types/Errors';
 
 export const App: React.FC = () => {
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   const user = useContext(AuthContext);
   const newTodoField = useRef<HTMLInputElement>(null);
 
   const [todos, setTodos] = useState<Todo[]>([]);
   const [filterType, setfilterType] = useState('all');
-  const [error, setError] = useState<string | null>('');
+  const [error, setError] = useState<Errors | null>(null);
   const [title, setTitle] = useState('');
   const [selectedTodo, setSelectedTodo] = useState<number[]>([]);
-  const [isAdding, setIsAdding] = useState(false);
 
-  if (error) {
-    setTimeout(() => {
-      setError(null);
-    }, 3000);
-  }
-
-  const filteredTodos = todos
+  const visibleTodos = todos
     .filter(todo => {
       switch (filterType) {
         case FilterType.Active:
@@ -50,21 +43,20 @@ export const App: React.FC = () => {
   }
 
   useEffect(() => {
-    // focus the element with `ref={newTodoField}`
     if (newTodoField.current) {
       newTodoField.current.focus();
     }
 
-    getTodos(userId)
+    getTodos(user?.id || 0)
       .then(setTodos)
-      .catch(() => (setError('Unable to load todo from server')));
+      .catch(() => (setError(Errors.Load)));
   }, []);
 
   const handleSubmit = async (event: FormEvent) => {
     event.preventDefault();
 
-    if (title.trim().length === 0) {
-      setError('Title can\'t be empty');
+    if (!title.trim().length) {
+      setError(Errors.Input);
       setTitle('');
 
       return;
@@ -81,8 +73,6 @@ export const App: React.FC = () => {
       completed: false,
     };
 
-    setIsAdding(true);
-
     setTodos([...todos, newTodoAdd]);
 
     try {
@@ -90,12 +80,11 @@ export const App: React.FC = () => {
 
       setTodos([...todos, newTodo]);
     } catch {
-      setError('Unable to add a todo');
-      setTodos(filteredTodos.filter(todo => todo.id !== 0));
+      setError(Errors.Add);
+      setTodos(visibleTodos.filter(todo => todo.id !== 0));
     }
 
     setTitle('');
-    setIsAdding(false);
   };
 
   const handleChange = (
@@ -104,14 +93,14 @@ export const App: React.FC = () => {
     setTitle(event.target.value);
   };
 
-  const handleClickDelete = async (todoId: number) => {
+  const handleDelete = async (todoId: number) => {
     setSelectedTodo(prevIds => [...prevIds, todoId]);
     try {
       await deleteTodo(todoId);
       setTodos(currTodos => currTodos
         .filter(todo => todo.id !== todoId));
     } catch {
-      setError('Unable to delete a todo');
+      setError(Errors.Delete);
     } finally {
       setSelectedTodo(prevIds => prevIds.filter(id => id !== todoId));
     }
@@ -140,23 +129,22 @@ export const App: React.FC = () => {
               placeholder="What needs to be done?"
               value={title}
               onChange={handleChange}
-              disabled={isAdding}
             />
           </form>
         </header>
 
         <TodoList
-          todos={filteredTodos}
-          handleClickDelete={handleClickDelete}
+          todos={visibleTodos}
+          handleDelete={handleDelete}
           selectedTodo={selectedTodo}
         />
 
         <Footer
           filterType={filterType}
           setfilterType={setfilterType}
-          filteredTodos={filteredTodos}
+          visibleTodos={visibleTodos}
           todos={todos}
-          handleClickDelete={handleClickDelete}
+          handleDelete={handleDelete}
         />
       </div>
 

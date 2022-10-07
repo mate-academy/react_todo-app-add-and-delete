@@ -3,15 +3,18 @@ import { Todo } from '../types/Todo';
 
 type Props = {
   todoItem: Todo;
-  handleClickDelete: (id: number)=> void;
+  handleDelete: (id: number)=> void;
   selectedTodo: number[];
 };
 
 export const TodoItem: React.FC<Props> = ({
   todoItem,
-  handleClickDelete,
+  handleDelete,
   selectedTodo,
 }) => {
+  const isActive = selectedTodo.includes(todoItem.id)
+   || todoItem.id === 0;
+
   return (
     <div
       data-cy="Todo"
@@ -36,7 +39,7 @@ export const TodoItem: React.FC<Props> = ({
         type="button"
         className="todo__remove"
         data-cy="TodoDeleteButton"
-        onClick={() => handleClickDelete(todoItem.id)}
+        onClick={() => handleDelete(todoItem.id)}
       >
         ×
       </button>
@@ -47,8 +50,7 @@ export const TodoItem: React.FC<Props> = ({
           'modal',
           'overlay',
           {
-            'is-active': selectedTodo.includes(todoItem.id)
-              || todoItem.id === 0,
+            'is-active': isActive,
           },
         )}
       >
