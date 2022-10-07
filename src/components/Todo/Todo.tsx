@@ -5,18 +5,18 @@ import { Loader } from '../Loader';
 
 type Props = {
   todo: Todo;
-  deleteTodo: (todo: Todo) => void;
+  todoDelete: (todo: Todo) => void;
   isCompleted: boolean;
   visibleLoader: boolean;
-  setVisibleLoader: (loader: boolean) => void;
+  newTodoId: number;
 };
 
 export const UserTodo: React.FC<Props> = ({
   todo,
-  deleteTodo,
+  todoDelete,
   isCompleted,
   visibleLoader,
-  setVisibleLoader,
+  newTodoId,
 }) => {
   const [touched, setTouched] = useState<boolean>(false);
 
@@ -46,22 +46,19 @@ export const UserTodo: React.FC<Props> = ({
         className="todo__remove"
         data-cy="TodoDeleteButton"
         onClick={() => {
-          setVisibleLoader(true);
-
-          return deleteTodo({
-            title: todo.title,
-            userId: todo.userId,
-            id: todo.id,
-            completed: todo.completed,
-          });
+          todoDelete(todo);
         }}
       >
         ×
       </button>
 
-      {visibleLoader && (
-        <Loader />
-      )}
+      {
+        visibleLoader && newTodoId === todo.id
+          ? (
+            <Loader />
+          )
+          : ''
+      }
     </div>
   );
 };

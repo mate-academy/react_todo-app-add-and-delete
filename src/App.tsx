@@ -45,6 +45,7 @@ export const App: React.FC = () => {
   const [activeItems, setActiveItems] = useState<number>(0);
   const [isCompleted, setIsCompleted] = useState<boolean>(false);
   const [visibleLoader, setVisibleLoader] = useState(false);
+  const [newTodoId, setNewTodoId] = useState(0);
 
   useEffect(() => {
     getTodos(user?.id || 0)
@@ -61,17 +62,23 @@ export const App: React.FC = () => {
   };
 
   const todoDelete = (todo: Todo) => {
+    setVisibleLoader(true);
+    setNewTodoId(todo.id); // id[] = [3445345, 3453, 345345]
+
     deleteTodo(todo.id)
       .then(() => {
-        setVisibleLoader(false);
       })
       .catch(() => {
         setErrorMessage('Unable to delete a todo');
+      })
+      .finally(() => {
+        setNewTodoId(0);
+        setVisibleLoader(false);
+        setTodos(
+          todos.filter(userTodo => todo.id !== userTodo.id),
+        );
       });
 
-    setTodos(
-      todos.filter(userTodo => todo.id !== userTodo.id),
-    );
     setActiveItems(prevItems => prevItems - 1);
   };
 
@@ -118,6 +125,7 @@ export const App: React.FC = () => {
             setVisibleLoader={setVisibleLoader}
             visibleLoader={visibleLoader}
             setTodos={setTodos}
+            todos={todos}
           />
         </header>
 
@@ -125,10 +133,10 @@ export const App: React.FC = () => {
           <>
             <TodoList
               todos={visibleTodos}
-              deleteTodo={todoDelete}
+              todoDelete={todoDelete}
               isCompleted={isCompleted}
               visibleLoader={visibleLoader}
-              setVisibleLoader={setVisibleLoader}
+              newTodoId={newTodoId}
             />
 
             <footer className="todoapp__footer" data-cy="Footer">
