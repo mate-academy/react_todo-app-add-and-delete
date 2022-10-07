@@ -14,7 +14,7 @@ import { FilterType } from './types/Filter';
 import TodoPanel from './components/TodoPanel';
 import TodoList from './components/TodoList';
 import ErrorNotification from './components/ErrorNotification';
-import Footer from './components/Footer';
+import Filter from './components/Filter';
 import { AuthContext } from './components/Auth/AuthContext';
 
 export const App: React.FC = () => {
@@ -120,7 +120,7 @@ export const App: React.FC = () => {
           />
         )}
 
-        <Footer
+        <Filter
           todos={todos}
           filterType={filterType}
           setFilterType={setFilterType}
