@@ -3,20 +3,17 @@ import classNames from 'classnames';
 import { Error } from '../../types/Error';
 
 type Props = {
-  error: Error | null;
+  errorDetected: Error | null;
   setError: (value: null) => void;
-  setIsLoading: (value: boolean) => void;
 };
 
 export const ErrorNotification: React.FC<Props> = ({
-  error,
+  errorDetected,
   setError,
-  setIsLoading,
 }) => {
-  if (error) {
+  if (errorDetected) {
     setTimeout(() => {
       setError(null);
-      setIsLoading(false);
     }, 3000);
   }
 
@@ -25,7 +22,7 @@ export const ErrorNotification: React.FC<Props> = ({
       data-cy="ErrorNotification"
       className={classNames(
         'notification is-danger is-light has-text-weight-normal',
-        { hidden: !error },
+        { hidden: !errorDetected },
       )}
     >
       <button
@@ -35,7 +32,7 @@ export const ErrorNotification: React.FC<Props> = ({
         onClick={() => setError(null)}
       />
 
-      {error}
+      {errorDetected}
     </div>
   );
 };

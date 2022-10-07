@@ -11,7 +11,7 @@ import { getTodos, createTodo, deleteTodo } from './api/todos';
 import { Todo } from './types/Todo';
 import { Error } from './types/Error';
 import { FilterType } from './types/Filter';
-import Header from './components/Header';
+import TodoPanel from './components/TodoPanel';
 import TodoList from './components/TodoList';
 import ErrorNotification from './components/ErrorNotification';
 import Footer from './components/Footer';
@@ -73,7 +73,7 @@ export const App: React.FC = () => {
 
       setSelectedId(todoToAdd.id);
 
-      setTodos(prev => [...prev, todoToAdd]);
+      setTodos(prevState => [...prevState, todoToAdd]);
     } catch {
       setError(Error.Add);
     } finally {
@@ -102,7 +102,7 @@ export const App: React.FC = () => {
       <h1 className="todoapp__title">todos</h1>
 
       <div className="todoapp__content">
-        <Header
+        <TodoPanel
           todos={visibleTodos}
           newTodoField={newTodoField}
           addTodo={handleAddTodo}
@@ -129,9 +129,8 @@ export const App: React.FC = () => {
       </div>
 
       <ErrorNotification
-        error={error}
+        errorDetected={error}
         setError={setError}
-        setIsLoading={setIsLoading}
       />
     </div>
   );

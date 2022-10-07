@@ -14,6 +14,8 @@ export const TodoItem: React.FC<Props> = ({
   isLoading,
   selectedId,
 }) => {
+  const selected = todo.id === selectedId;
+
   return (
     <div
       data-cy="Todo"
@@ -40,7 +42,7 @@ export const TodoItem: React.FC<Props> = ({
       </button>
 
       {
-        selectedId === todo.id && (
+        selected && (
           <div
             data-cy="TodoLoader"
             className={classNames(
