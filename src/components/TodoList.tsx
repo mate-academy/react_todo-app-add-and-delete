@@ -1,6 +1,7 @@
 import classNames from 'classnames';
 import { useState } from 'react';
 import { Todo } from '../types/Todo';
+import { BlancTodo } from './BlancTodo';
 import { FilterBy } from './TodoFilter';
 
 type Props = {
@@ -41,7 +42,7 @@ export const TodoList: React.FC<Props> = ({
     setDeletingId(todoId);
     setErrorClosing(false);
 
-    setTimeout(() => setDeletingId(null), 200);
+    setTimeout(() => setDeletingId(null), 1000);
   };
 
   return (
@@ -95,35 +96,7 @@ export const TodoList: React.FC<Props> = ({
       })}
 
       {isAdding && (
-        <div
-          key={0}
-          data-cy="Todo"
-          className="todo"
-        >
-          <label className="todo__status-label">
-            <input
-              data-cy="TodoStatus"
-              type="checkbox"
-              className="todo__status"
-            />
-          </label>
-
-          <span data-cy="TodoTitle" className="todo__title">
-            {todoName}
-          </span>
-          <button
-            type="button"
-            className="todo__remove"
-            data-cy="TodoDeleteButton"
-          >
-            ×
-          </button>
-
-          <div data-cy="TodoLoader" className="modal overlay is-active">
-            <div className="modal-background has-background-white-ter" />
-            <div className="loader" />
-          </div>
-        </div>
+        <BlancTodo todoName={todoName} />
       )}
     </section>
   );

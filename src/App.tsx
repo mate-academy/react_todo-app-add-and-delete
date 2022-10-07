@@ -18,7 +18,7 @@ export const App: React.FC = () => {
   const [errorType, setErrorType] = useState<ErrorTypes>(ErrorTypes.None);
   const [errorClose, setErrorClosing] = useState(false);
   const [todoName, setNewTodoName] = useState('');
-  const [isAdding, setIsAddingFromServer] = useState(false);
+  const [isAdding, setIsLoading] = useState(false);
   const [completedTodos, setCompleted] = useState<number[]>([]);
 
   async function createPost(title: string) {
@@ -62,7 +62,7 @@ export const App: React.FC = () => {
   }, [completedTodos]);
 
   const handleAdd = async (newTodoName: string) => {
-    setIsAddingFromServer(true);
+    setIsLoading(true);
 
     try {
       const newTodo = await createPost(newTodoName);
@@ -81,11 +81,19 @@ export const App: React.FC = () => {
       setErrorClosing(false);
     }
 
-    setIsAddingFromServer(false);
+    setIsLoading(false);
   };
 
   const handleDelete = async (id: number) => {
-    deletePost(id);
+    try {
+      const deleted = await deletePost(id);
+
+      return deleted;
+    } catch (error) {
+      setErrorType(ErrorTypes.DeletingOneError);
+    }
+
+    return 0;
   };
 
   return (
