@@ -101,6 +101,8 @@ export const App: React.FC = () => {
   ), [todos]);
 
   const deleteCompletedTodos = useCallback(async () => {
+    setSelectedIds(completedTodos.map(({ id }) => id));
+
     try {
       Promise.all(completedTodos
         .map(({ id }) => removeTodo(id)));
@@ -109,8 +111,9 @@ export const App: React.FC = () => {
         .filter(({ completed }) => !completed));
     } catch {
       setErrorText(ErrorType.DELETE);
+      setSelectedIds([]);
     }
-  }, [todos, errorText, selectedIds]);
+  }, [completedTodos]);
 
   return (
     <div className="todoapp">
