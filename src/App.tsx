@@ -10,8 +10,8 @@ import { createTodo, deleteTodo, getTodos } from './api/todos';
 import { AuthContext } from './components/Auth/AuthContext';
 import { ErrorNotification }
   from './components/ErrorNotification/ErrorNotification';
-import { Footer } from './components/Footer/Footer';
-import { Header } from './components/Header/Header';
+import { FilterTodos } from './components/FilterTodos/FilterTodos';
+import { NewTodo } from './components/NewTodo/NewTodo';
 import { TodoList } from './components/TodoList/TodoList';
 import { Errors } from './types/Errors';
 import { GroupBy } from './types/GroupBy';
@@ -62,7 +62,9 @@ export const App: React.FC = () => {
     todos.filter(({ completed }) => completed)
   ), [todos]);
 
-  const completedTodosLength = completedTodos.length;
+  const leftTodos = useMemo(() => (
+    todos.filter(({ completed }) => !completed)
+  ), [todos]);
 
   const addTodo = async (todoTitle: string) => {
     setIsAdding(true);
@@ -103,10 +105,11 @@ export const App: React.FC = () => {
       <h1 className="todoapp__title">todos</h1>
 
       <div className="todoapp__content">
-        <Header
+        <NewTodo
           newTodoField={newTodoField}
           todos={todos}
           isAdding={isAdding}
+          leftTodosLength={leftTodos.length}
           setError={setError}
           onAdd={addTodo}
         />
@@ -119,10 +122,11 @@ export const App: React.FC = () => {
               isAdding={isAdding}
               isDeleting={isDeleting}
             />
-            <Footer
+            <FilterTodos
               filterTodos={filterTodos}
               todos={todos}
-              completedTodosLength={completedTodosLength}
+              completedTodosLength={completedTodos.length}
+              leftTodosLength={leftTodos.length}
               removeCompletedTodos={removeCompletedTodos}
             />
           </>

@@ -6,14 +6,16 @@ import { Todo } from '../../types/Todo';
 type Props = {
   filterTodos: (groupBy: string) => void;
   completedTodosLength: number;
+  leftTodosLength: number;
   todos: Todo[];
   removeCompletedTodos: () => void;
 };
 
-export const Footer: React.FC<Props> = ({
+export const FilterTodos: React.FC<Props> = ({
   filterTodos,
   todos,
   completedTodosLength,
+  leftTodosLength,
   removeCompletedTodos,
 }) => {
   const [groupBy, setGroupBy] = useState('All');
@@ -29,7 +31,7 @@ export const Footer: React.FC<Props> = ({
   return (
     <footer className="todoapp__footer" data-cy="Footer">
       <span className="todo-count" data-cy="todosCounter">
-        {`${completedTodosLength} items left`}
+        {`${leftTodosLength} items left`}
       </span>
 
       <nav className="filter" data-cy="Filter">
@@ -75,6 +77,9 @@ export const Footer: React.FC<Props> = ({
           type="button"
           className="todoapp__clear-completed"
           onClick={removeCompletedTodos}
+          style={{
+            visibility: completedTodosLength ? 'visible' : 'hidden',
+          }}
         >
           Clear completed
         </button>

@@ -6,17 +6,19 @@ import { Todo } from '../../types/Todo';
 type Props = {
   newTodoField: React.RefObject<HTMLInputElement>;
   todos: Todo[];
+  leftTodosLength: number;
   setError: (error: Errors) => void;
   onAdd: (todoTitle: string) => void;
   isAdding: boolean;
 };
 
-export const Header: React.FC<Props> = ({
+export const NewTodo: React.FC<Props> = ({
   newTodoField,
   todos,
   setError,
   onAdd,
   isAdding,
+  leftTodosLength,
 }) => {
   const [todoTitle, setTodoTitle] = useState('');
 
@@ -39,15 +41,17 @@ export const Header: React.FC<Props> = ({
 
   return (
     <header className="todoapp__header">
-      <button
-        aria-label="toggle-all-button"
-        data-cy="ToggleAllButton"
-        type="button"
-        className={classNames(
-          'todoapp__toggle-all',
-          { active: todos.length !== 0 },
-        )}
-      />
+      {!!todos.length && (
+        <button
+          aria-label="toggle-all-button"
+          data-cy="ToggleAllButton"
+          type="button"
+          className={classNames(
+            'todoapp__toggle-all',
+            { active: leftTodosLength === 0 },
+          )}
+        />
+      )}
 
       <form onSubmit={handleSubmit}>
         <input
