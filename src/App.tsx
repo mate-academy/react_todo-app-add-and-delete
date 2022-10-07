@@ -3,12 +3,14 @@ import React, {
   useCallback,
   useContext,
   useEffect,
+  useMemo,
   useRef,
   useState,
 } from 'react';
 
 import { AuthContext } from './components/Auth/AuthContext';
 import { Todo } from './types/Todo';
+import { Filter } from './types/Filter';
 import { TodoList } from './components/TodoList/TodoList';
 import { Header } from './components/Header/Header';
 import { Footer } from './components/Footer/Footer';
@@ -22,7 +24,7 @@ export const App: React.FC = () => {
 
   const [errorMessage, setErrorMessage] = useState('');
   const [todos, setTodos] = useState<Todo[]>([]);
-  const [sortBy, setSortBy] = useState('all');
+  const [sortBy, setSortBy] = useState(Filter.ALL);
   const [title, setTitle] = useState('');
   const [isAdding, setIsAdding] = useState(false);
   const [selectedId, setSelectedId] = useState<number[]>([]);
@@ -71,7 +73,7 @@ export const App: React.FC = () => {
     return setTitle('');
   };
 
-  const handleremoveTodo = async (todoId: number) => {
+  const handleRemoveTodo = async (todoId: number) => {
     setSelectedId([todoId]);
     setIsAdding(true);
     await deleteTodo(todoId)
@@ -85,12 +87,12 @@ export const App: React.FC = () => {
     setIsAdding(true);
   };
 
-  const sortOption = todos?.filter(todoItem => {
+  const sortOption = todos.filter(todoItem => {
     switch (sortBy) {
-      case 'completed':
+      case Filter.COMPLETED:
         return todoItem.completed;
 
-      case 'active':
+      case Filter.ACTIVE:
         return !todoItem.completed;
 
       default:
@@ -98,12 +100,15 @@ export const App: React.FC = () => {
     }
   });
 
-  const completedTodos = todos?.filter(todoItem => todoItem.completed);
+  const completedTodos = useMemo(
+    () => todos.filter(({ completed }) => completed),
+    [todos],
+  );
 
   const handleDeleteCompletedTodos = useCallback(() => {
     setSelectedId([...completedTodos].map(({ id }) => id));
 
-    Promise.any(completedTodos.map(({ id }) => handleremoveTodo(id)))
+    Promise.any(completedTodos.map(({ id }) => handleRemoveTodo(id)))
       .then(() => setTodos([...todos.filter(({ completed }) => !completed)]))
       .catch(() => {
         setErrorMessage('Unable to delete a todo');
@@ -129,7 +134,7 @@ export const App: React.FC = () => {
 
             <TodoList
               todos={sortOption}
-              handleRemove={handleremoveTodo}
+              handleRemove={handleRemoveTodo}
               isAdding={isAdding}
               selectedId={selectedId}
             />

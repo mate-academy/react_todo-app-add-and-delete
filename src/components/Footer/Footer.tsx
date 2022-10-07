@@ -1,9 +1,10 @@
 import classNames from 'classnames';
 import { Todo } from '../../types/Todo';
+import { Filter } from '../../types/Filter';
 
 type Props = {
   sortBy: string;
-  setSortBy: (object: string) => void;
+  setSortBy: (object: Filter) => void;
   todos: Todo[] | null;
   deleteTodo: () => void;
   doneTodo: Todo[];
@@ -16,7 +17,7 @@ export const Footer: React.FC<Props> = ({
   deleteTodo,
   doneTodo,
 }) => {
-  const handleChangeSortBy = (filteredBy: string) => {
+  const handleChangeSortBy = (filteredBy: Filter) => {
     setSortBy(filteredBy);
   };
 
@@ -37,7 +38,7 @@ export const Footer: React.FC<Props> = ({
           href="#/"
           className={classNames('filter__link',
             { selected: filterByParam('all') })}
-          onClick={() => handleChangeSortBy('all')}
+          onClick={() => handleChangeSortBy(Filter.ALL)}
         >
           All
         </a>
@@ -47,7 +48,7 @@ export const Footer: React.FC<Props> = ({
           href="#/active"
           className={classNames('filter__link',
             { selected: filterByParam('active') })}
-          onClick={() => handleChangeSortBy('active')}
+          onClick={() => handleChangeSortBy(Filter.ACTIVE)}
         >
           Active
         </a>
@@ -56,7 +57,7 @@ export const Footer: React.FC<Props> = ({
           href="#/completed"
           className={classNames('filter__link',
             { selected: filterByParam('completed') })}
-          onClick={() => handleChangeSortBy('completed')}
+          onClick={() => handleChangeSortBy(Filter.COMPLETED)}
         >
           Completed
         </a>
