@@ -12,16 +12,16 @@ export const ErrorNotification: React.FC<Props> = ({
   errorMessage,
   setErrorMessage,
 }) => {
-  const [isClose, setIsClose] = useState(false);
+  const [isError, setIsError] = useState(false);
 
   setTimeout(() => {
-    setIsClose(true);
+    setIsError(true);
   }, 3000);
 
   useEffect(() => {
-    if (isClose) {
+    if (isError) {
       setErrorMessage('');
-      setIsClose(false);
+      setIsError(false);
     }
   });
 
@@ -33,14 +33,14 @@ export const ErrorNotification: React.FC<Props> = ({
         'is-danger',
         'is-light',
         'has-text-weight-normal',
-        { hidden: isClose },
+        { hidden: isError },
       )}
     >
       <button
         data-cy="HideErrorButton"
         type="button"
         className="delete"
-        onClick={() => setIsClose(true)}
+        onClick={() => setIsError(true)}
       />
 
       {errorMessage}

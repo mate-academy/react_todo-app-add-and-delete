@@ -1,11 +1,15 @@
 /* eslint-disable jsx-a11y/control-has-associated-label */
 import React, {
   useContext,
-  useEffect, useState,
+  useEffect,
+  useState,
 } from 'react';
 import classNames from 'classnames';
 import { TodoList } from './components/TodoList';
-import { getTodos, deleteTodos } from './api/todos';
+import {
+  getTodos,
+  deleteTodo,
+} from './api/todos';
 import { Todo } from './types/Todo';
 import { ErrorNotification } from './components/ErrorNotification';
 import { SortType } from './types/filterBy';
@@ -42,14 +46,8 @@ export const App: React.FC = () => {
   const [isCompleted, setIsCompleted] = useState<boolean>(false);
   const [visibleLoader, setVisibleLoader] = useState(false);
 
-  let userId = 0;
-
-  if (user?.id) {
-    userId = user.id;
-  }
-
   useEffect(() => {
-    getTodos(userId)
+    getTodos(user?.id || 0)
       .then(todosFromServer => {
         setTodos(todosFromServer);
         setActiveItems(todosFromServer.length);
@@ -62,8 +60,8 @@ export const App: React.FC = () => {
     setActiveItems(prevItems => prevItems + 1);
   };
 
-  const deleteTodo = (todo: Todo) => {
-    deleteTodos(todo.id)
+  const todoDelete = (todo: Todo) => {
+    deleteTodo(todo.id)
       .then(() => {
         setVisibleLoader(false);
       })
@@ -89,6 +87,16 @@ export const App: React.FC = () => {
     setIsCompleted(prevCompleted => !prevCompleted);
   };
 
+  const deleteCompletedTodos = () => {
+    todos.forEach(todoFromServer => {
+      if (todoFromServer.completed) {
+        setTodos(
+          todos.filter(todo => todo.id !== todoFromServer.id),
+        );
+      }
+    });
+  };
+
   const visibleTodos = filterTodos(todos, sortType);
 
   return (
@@ -109,6 +117,7 @@ export const App: React.FC = () => {
             setErrorMessage={setErrorMessage}
             setVisibleLoader={setVisibleLoader}
             visibleLoader={visibleLoader}
+            setTodos={setTodos}
           />
         </header>
 
@@ -116,7 +125,7 @@ export const App: React.FC = () => {
           <>
             <TodoList
               todos={visibleTodos}
-              deleteTodo={deleteTodo}
+              deleteTodo={todoDelete}
               isCompleted={isCompleted}
               visibleLoader={visibleLoader}
               setVisibleLoader={setVisibleLoader}
@@ -175,6 +184,7 @@ export const App: React.FC = () => {
                 data-cy="ClearCompletedButton"
                 type="button"
                 className="todoapp__clear-completed"
+                onClick={deleteCompletedTodos}
               >
                 Clear completed
               </button>
