@@ -5,7 +5,7 @@ type Props = {
   todos: Todo[];
   setFilterType: (filterType: FilterBy) => void;
   filterType: FilterBy;
-  onDelete: (id: number | number[]) => void;
+  onDelete: (id: number) => void;
   completed: number[];
   setCompleted: (a: number[]) => void;
 };

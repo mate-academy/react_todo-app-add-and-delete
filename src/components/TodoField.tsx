@@ -14,8 +14,14 @@ type Props = {
 };
 
 export const TodoField: React.FC<Props> = ({
-  todos, todoName, onAdd, setNewTodoName, setErrorType, isAdding,
-  setErrorClosing, newToField,
+  todos,
+  todoName,
+  onAdd,
+  setNewTodoName,
+  setErrorType,
+  isAdding,
+  setErrorClosing,
+  newToField,
 }) => {
   const completedTodos = todos.every((todo) => todo.completed === true);
 

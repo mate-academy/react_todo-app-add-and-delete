@@ -19,7 +19,7 @@ export const App: React.FC = () => {
   const [errorClose, setErrorClosing] = useState(false);
   const [todoName, setNewTodoName] = useState('');
   const [isAdding, setIsAddingFromServer] = useState(false);
-  const [completed, setCompleted] = useState<number[]>([]);
+  const [completedTodos, setCompleted] = useState<number[]>([]);
 
   async function createPost(title: string) {
     if (user) {
@@ -33,7 +33,7 @@ export const App: React.FC = () => {
     return 0;
   }
 
-  async function deletePost(id: number | number[]) {
+  async function deletePost(id: number) {
     try {
       const deleted = await deleteTodo(id);
 
@@ -51,15 +51,15 @@ export const App: React.FC = () => {
         const loadedTodos = await getTodos(user?.id || 0);
 
         setTodos(loadedTodos);
-        setCompleted(loadedTodos.filter((todo) => todo.completed === true)
-          .map((todo) => todo.id));
+        setCompleted(loadedTodos.filter(({ completed }) => completed)
+          .map(({ id }) => id));
       } catch (error) {
         setErrorType(ErrorTypes.LoadingAllError);
       }
     };
 
     loadTodos();
-  }, [completed]);
+  }, [completedTodos]);
 
   const handleAdd = async (newTodoName: string) => {
     setIsAddingFromServer(true);
@@ -84,7 +84,7 @@ export const App: React.FC = () => {
     setIsAddingFromServer(false);
   };
 
-  const handleDelete = async (id: number | number[]) => {
+  const handleDelete = async (id: number) => {
     deletePost(id);
   };
 
@@ -122,7 +122,7 @@ export const App: React.FC = () => {
               data-cy="Footer"
             >
               <TodoFilter
-                completed={completed}
+                completed={completedTodos}
                 setCompleted={setCompleted}
                 todos={todos}
                 filterType={filter}
