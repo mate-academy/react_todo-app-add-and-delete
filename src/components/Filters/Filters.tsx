@@ -1,11 +1,18 @@
 import classNames from 'classnames';
-import { FC } from 'react';
+import { FC, useMemo } from 'react';
 import { FilterStatus } from '../../types/FilterStatus';
 import { Props } from './Filters.props';
 
-export const Filters: FC<Props> = ({ todos, setFilterBy, filterBy }) => {
-  const uncompletedTodos = todos.filter((todo) => !todo.completed);
-  // const completedTodosLength = todos.length - uncompletedTodos.length;
+export const Filters: FC<Props> = ({
+  todos,
+  setFilterBy,
+  filterBy,
+  deleteCompletedTodos,
+}) => {
+  const uncompletedTodos = useMemo(() => {
+    return todos.filter((todo) => !todo.completed);
+  }, [todos]);
+  const completedTodos = todos.filter((todo) => todo.completed);
 
   return (
     <footer className="todoapp__footer" data-cy="Footer">
@@ -50,6 +57,8 @@ export const Filters: FC<Props> = ({ todos, setFilterBy, filterBy }) => {
       </nav>
       <button
         data-cy="ClearCompletedButton"
+        disabled={!completedTodos}
+        onClick={deleteCompletedTodos}
         type="button"
         className="todoapp__clear-completed"
       >

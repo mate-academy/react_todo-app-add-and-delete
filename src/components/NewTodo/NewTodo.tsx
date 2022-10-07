@@ -1,20 +1,18 @@
 import classNames from 'classnames';
-import { FC, useEffect, useRef } from 'react';
+import {
+  FC,
+} from 'react';
 
 import { Props } from './NewTodo.props';
 
-export const NewTodo: FC<Props> = ({ query, todos, setQuery }) => {
-  const newTodoField = useRef<HTMLInputElement>(null);
-
-  useEffect(() => {
-    if (newTodoField.current) {
-      newTodoField.current.focus();
-    }
-  }, []);
-
-  const uncompletedTodos = todos.filter((todo) => !todo.completed);
-  const completedTodosLength = todos.length - uncompletedTodos.length;
-
+export const NewTodo: FC<Props> = ({
+  query,
+  todos,
+  setQuery,
+  newTodoField,
+  onAddTodo,
+  isTodoLoaded,
+}) => {
   return (
     <header className="todoapp__header">
       {todos && (
@@ -22,14 +20,16 @@ export const NewTodo: FC<Props> = ({ query, todos, setQuery }) => {
           data-cy="ToggleAllButton"
           type="button"
           aria-label="Toggle"
-          className={classNames('todoapp__toggle-all', {
-            active: completedTodosLength === todos.length,
-          })}
+          className={classNames(
+            'todoapp__toggle-all',
+            { active: todos.filter(todo => todo.completed) },
+          )}
         />
       )}
 
-      <form>
+      <form onSubmit={onAddTodo}>
         <input
+          disabled={isTodoLoaded}
           data-cy="NewTodoField"
           type="text"
           value={query}

@@ -1,11 +1,12 @@
 import classNames from 'classnames';
 import { FC } from 'react';
+import { Error } from '../../types/Error';
 import { Props } from './ErrorNotification.props';
 
 export const ErrorNotification:FC<Props> = ({ error, setError }) => {
   if (error) {
     setTimeout(() => {
-      setError('');
+      setError(Error.No);
     }, 3000);
   }
 
@@ -24,7 +25,7 @@ export const ErrorNotification:FC<Props> = ({ error, setError }) => {
         type="button"
         aria-label="Hide Error Button"
         className="delete"
-        onClick={() => setError('')}
+        onClick={() => setError(Error.No)}
       />
       {error}
     </div>

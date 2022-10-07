@@ -3,7 +3,18 @@ import { FC } from 'react';
 
 import { Props } from './TodoItem.props';
 
-export const TodoItem: FC<Props> = ({ todo }) => {
+export const TodoItem: FC<Props> = ({
+  todo,
+  onRemoveTodo,
+  selectedTodos,
+  setSelectedTodos,
+  onUpdate,
+}) => {
+  const handleRemove = () => {
+    onRemoveTodo(todo.id);
+    setSelectedTodos([todo.id]);
+  };
+
   return (
     <div
       data-cy="Todo"
@@ -15,6 +26,7 @@ export const TodoItem: FC<Props> = ({ todo }) => {
             <input
               data-cy="TodoStatus"
               type="checkbox"
+              onClick={() => onUpdate(todo.id, { completed: !todo.completed })}
               className="todo__status"
               defaultChecked
             />
@@ -27,12 +39,18 @@ export const TodoItem: FC<Props> = ({ todo }) => {
             type="button"
             className="todo__remove"
             data-cy="TodoDeleteButton"
+            onClick={handleRemove}
           >
             ×
           </button>
         </>
       ) : (
-        <div data-cy="TodoLoader" className="modal overlay">
+        <div
+          data-cy="TodoLoader"
+          className={classNames('modal overlay', {
+            'is-active': selectedTodos.includes(todo.id),
+          })}
+        >
           <div className="modal-background has-background-white-ter" />
           <div className="loader" />
         </div>

@@ -1,4 +1,6 @@
+import { Error } from '../../types/Error';
+
 export type Props = {
-  error: string;
-  setError: (value: string) => void;
+  error: Error;
+  setError: (error: Error) => void;
 };
