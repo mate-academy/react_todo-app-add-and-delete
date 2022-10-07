@@ -9,8 +9,8 @@ import React, {
 import { getTodos, createTodo, deleteTodo } from './api/todos';
 import { AuthContext } from './components/Auth/AuthContext';
 import { ErroNotification } from './components/Auth/ErrorNot';
-import { TodoFooter } from './components/Auth/Filters';
-import { TodoHeader } from './components/Auth/Todo';
+import { Filter } from './components/Auth/Filters';
+import { Todos } from './components/Auth/Todo';
 import { TodoList } from './components/Auth/TodoList';
 import { Todo } from './types/Todo';
 import { Filters } from './types/Filters';
@@ -119,7 +119,7 @@ export const App: React.FC = () => {
     <div className="todoapp">
       <h1 className="todoapp__title">todos</h1>
 
-      <TodoHeader
+      <Todos
         newTodoField={newTodoField}
         handleSubmit={handleSubmit}
         setTitle={setTitle}
@@ -135,7 +135,7 @@ export const App: React.FC = () => {
             selectedId={selectedId}
           />
 
-          <TodoFooter
+          <Filter
             setFilterBy={setFiterBy}
             todos={filterTodoBy}
             filterBy={filterBy}

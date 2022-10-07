@@ -7,7 +7,7 @@ type Props = {
   title: string;
 };
 
-export const TodoHeader: React.FC<Props> = ({
+export const Todos: React.FC<Props> = ({
   newTodoField,
   handleSubmit,
   setTitle,
