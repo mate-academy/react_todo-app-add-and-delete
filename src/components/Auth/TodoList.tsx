@@ -1,5 +1,6 @@
 import classNames from 'classnames';
 import { Todo } from '../../types/Todo';
+import { Loader } from '../Loader';
 
 type Props = {
   todos: Todo[] | null;
@@ -48,13 +49,7 @@ export const TodoList: React.FC<Props> = ({
             </button>
 
             {(isAdding && selectedId.includes(id)) && (
-              <div
-                data-cy="TodoLoader"
-                className="modal overlay is-active"
-              >
-                <div className="modal-background has-background-white-ter" />
-                <div className="loader is-loading " />
-              </div>
+              <Loader />
             )}
           </div>
         );

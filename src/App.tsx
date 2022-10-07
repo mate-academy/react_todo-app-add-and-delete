@@ -9,10 +9,11 @@ import React, {
 import { getTodos, createTodo, deleteTodo } from './api/todos';
 import { AuthContext } from './components/Auth/AuthContext';
 import { ErroNotification } from './components/Auth/ErrorNot';
-import { TodoFooter } from './components/Auth/Footer';
-import { TodoHeader } from './components/Auth/TodoHeader';
+import { TodoFooter } from './components/Auth/Filters';
+import { TodoHeader } from './components/Auth/Todo';
 import { TodoList } from './components/Auth/TodoList';
 import { Todo } from './types/Todo';
+import { Filters } from './types/Filters';
 
 export const App: React.FC = () => {
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
@@ -102,16 +103,16 @@ export const App: React.FC = () => {
       });
   }, [todos, selectedId, errorMessage]);
 
-  const filteredTodos = todos.filter(todoItem => {
-    if (filterBy === 'active') {
-      return !todoItem.completed;
-    }
+  const filterTodoBy = todos.filter(todo => {
+    switch (filterBy) {
+      case Filters.Active:
+        return !todo.completed;
 
-    if (filterBy === 'completed') {
-      return todoItem.completed;
+      case Filters.Completed:
+        return todo.completed;
+      default:
+        return todo;
     }
-
-    return todoItem;
   });
 
   return (
@@ -128,7 +129,7 @@ export const App: React.FC = () => {
       {todos.length > 0 && (
         <div className="todoapp__content">
           <TodoList
-            todos={filteredTodos}
+            todos={filterTodoBy}
             handleremoveTodo={handleremoveTodo}
             isAdding={isAdding}
             selectedId={selectedId}
@@ -136,7 +137,7 @@ export const App: React.FC = () => {
 
           <TodoFooter
             setFilterBy={setFiterBy}
-            todos={filteredTodos}
+            todos={filterTodoBy}
             filterBy={filterBy}
             deleteTodo={handleDeleteCompletedTodos}
             completedTodos={completedTodos}
