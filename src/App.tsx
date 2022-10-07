@@ -104,10 +104,9 @@ export const App: React.FC = () => {
     setSelectedIds(completedTodos.map(({ id }) => id));
 
     try {
-      Promise.all(completedTodos
-        .map(({ id }) => removeTodo(id)));
+      await Promise.all(completedTodos.map(({ id }) => removeTodo(id)));
 
-      setTodos((prevTodos) => prevTodos
+      setTodos(prevTodos => prevTodos
         .filter(({ completed }) => !completed));
     } catch {
       setErrorText(ErrorType.DELETE);
