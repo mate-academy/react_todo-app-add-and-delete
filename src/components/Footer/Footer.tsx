@@ -3,15 +3,18 @@ import { NavLink } from 'react-router-dom';
 import classNames from 'classnames';
 
 type Props = {
-  countItem: number;
+  itemsLeft: number;
+  itemsCompleted: number;
   removeCompletedTodo: () => void,
 };
 
-export const Footer: React.FC<Props> = ({ countItem, removeCompletedTodo }) => {
+export const Footer: React.FC<Props> = (
+  { itemsLeft, itemsCompleted, removeCompletedTodo },
+) => {
   return (
     <footer className="todoapp__footer" data-cy="Footer">
       <span className="todo-count" data-cy="todosCounter">
-        {countItem}
+        {itemsLeft}
         {' '}
         items left
       </span>
@@ -48,7 +51,7 @@ export const Footer: React.FC<Props> = ({ countItem, removeCompletedTodo }) => {
         className={
           classNames(
             'todoapp__clear-completed',
-            { 'completed-clear--hidden': countItem === 0 },
+            { 'completed-clear--hidden': itemsCompleted === 0 },
           )
         }
       >

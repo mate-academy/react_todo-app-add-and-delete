@@ -155,7 +155,8 @@ export const App: React.FC = () => {
                   />
                 </section>
                 <Footer
-                  countItem={todos.filter(el => el.completed).length}
+                  itemsLeft={todos.filter(el => !el.completed).length}
+                  itemsCompleted={todos.filter(el => el.completed).length}
                   removeCompletedTodo={removeCompletedTodo}
                 />
               </>
