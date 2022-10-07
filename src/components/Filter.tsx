@@ -1,9 +1,10 @@
 import React from 'react';
 import classNames from 'classnames';
+import { SortFilter } from '../types/SortFilter';
 
 type Props = {
-  sortFilter: string
-  handleChangeSortFilter: (sortFilter:string) => void;
+  sortFilter: SortFilter
+  handleChangeSortFilter: (sort:SortFilter) => void;
 };
 
 export const Filter: React.FC<Props> = ({
@@ -17,9 +18,9 @@ export const Filter: React.FC<Props> = ({
         href="#/"
         className={classNames(
           'filter__link',
-          { selected: sortFilter === 'all' },
+          { selected: sortFilter === SortFilter.all },
         )}
-        onClick={() => handleChangeSortFilter('all')}
+        onClick={() => handleChangeSortFilter(SortFilter.all)}
       >
         All
       </a>
@@ -29,9 +30,9 @@ export const Filter: React.FC<Props> = ({
         href="#/active"
         className={classNames(
           'filter__link',
-          { selected: sortFilter === 'active' },
+          { selected: sortFilter === SortFilter.active },
         )}
-        onClick={() => handleChangeSortFilter('active')}
+        onClick={() => handleChangeSortFilter(SortFilter.active)}
       >
         Active
       </a>
@@ -41,9 +42,9 @@ export const Filter: React.FC<Props> = ({
         href="#/completed"
         className={classNames(
           'filter__link',
-          { selected: sortFilter === 'completed' },
+          { selected: sortFilter === SortFilter.completed },
         )}
-        onClick={() => handleChangeSortFilter('completed')}
+        onClick={() => handleChangeSortFilter(SortFilter.completed)}
       >
         Completed
       </a>

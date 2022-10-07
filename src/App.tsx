@@ -1,6 +1,6 @@
 /* eslint-disable jsx-a11y/control-has-associated-label */
 import React, {
-  useContext, useEffect, useRef, useState,
+  useContext, useEffect, useMemo, useRef, useState,
 } from 'react';
 import classNames from 'classnames';
 import { AuthContext } from './components/Auth/AuthContext';
@@ -9,12 +9,13 @@ import { Filter } from './components/Filter';
 import { getTodos, createTodo, deleteTodo } from './api/todos';
 import { Todo } from './types/Todo';
 import { TodoItem } from './components/TodoItem';
+import { SortFilter } from './types/SortFilter';
 
 export const App: React.FC = () => {
   const user = useContext(AuthContext);
   const newTodoField = useRef<HTMLInputElement>(null);
   const [todos, setTodos] = useState<Todo[]>([]);
-  const [sortFilter, setSortFilter] = useState('all');
+  const [sortFilter, setSortFilter] = useState(SortFilter.all);
   const [visibelTodos, setVisibelTodos] = useState<Todo[]>([...todos]);
   const [completedTodos, setCompletedTodos]
   = useState<Todo[]>([...todos].filter(todo => todo.completed));
@@ -41,14 +42,14 @@ export const App: React.FC = () => {
     }
   }, []);
 
-  useEffect(() => {
+  useMemo(() => {
     setVisibelTodos(() => (
       todos.filter(todo => {
         switch (sortFilter) {
-          case 'active':
+          case SortFilter.active:
             return !todo.completed;
 
-          case 'completed':
+          case SortFilter.completed:
             return todo.completed;
 
           default:
@@ -100,12 +101,11 @@ export const App: React.FC = () => {
     setTitle('');
   };
 
-
   const handleRemoveTodo = async (removeTodoID: number) => {
     setActiveTodoId(idActive => [...idActive, removeTodoID]);
 
     try {
-      await deleteTodo(removeTodoID);
+      await deleteTodo({ id: removeTodoID });
 
       setTodos(PrevTodos => PrevTodos.filter(todo => todo.id !== removeTodoID));
     } catch (errorFromServer) {
@@ -120,7 +120,7 @@ export const App: React.FC = () => {
     completedTodos.forEach((todoComleted) => handleRemoveTodo(todoComleted.id));
   };
 
-  const handleChangeSortFilter = (sort: string) => {
+  const handleChangeSortFilter = (sort: SortFilter) => {
     if (sortFilter !== sort) {
       setSortFilter(sort);
     }

@@ -13,6 +13,9 @@ export const createTodo
     return client.post<Todo>('/todos', { userId, title, completed });
   };
 
-export const deleteTodo = (todoId: number) => {
-  return client.delete(`/todos/${todoId}`);
+// eslint-disable-next-line @typescript-eslint/naming-convention
+type deleteTypeTodo = Pick<Todo, 'id' >;
+
+export const deleteTodo = ({ id }: deleteTypeTodo) => {
+  return client.delete(`/todos/${id}`);
 };
