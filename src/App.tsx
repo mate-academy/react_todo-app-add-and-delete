@@ -39,6 +39,7 @@ export const App: React.FC = () => {
   const [isAdding, setIsAdding] = useState(false);
   const [isDeleting, setIsDeleting] = useState<number[]>([]);
   const [error, setError] = useState('');
+  const [showErrorTrigger, setShowErrorTrigger] = useState(0);
 
   const activeTodosCount = useMemo(
     () => filterTodos(todos, 'active').length,
@@ -47,7 +48,7 @@ export const App: React.FC = () => {
 
   const showErrorMessage = (errorMessage: string) => {
     setError(errorMessage);
-    setTimeout(() => setError(''), 3000);
+    setShowErrorTrigger(tick => tick + 1);
   };
 
   const handleNewTodoTitle = (event: React.ChangeEvent<HTMLInputElement>) => (
@@ -151,6 +152,14 @@ export const App: React.FC = () => {
     }
   }, [todos]);
 
+  useEffect(() => {
+    const errorTimeout = setTimeout(() => setError(''), 3000);
+
+    return () => {
+      clearTimeout(errorTimeout);
+    };
+  }, [showErrorTrigger]);
+
   return (
     <div className="todoapp">
       <h1 className="todoapp__title">todos</h1>
@@ -211,7 +220,6 @@ export const App: React.FC = () => {
       </div>
 
       <ErrorMessage error={error} onCloseError={handleCloseError} />
-
     </div>
   );
 };
