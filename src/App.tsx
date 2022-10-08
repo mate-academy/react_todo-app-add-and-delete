@@ -15,10 +15,6 @@ import { ErrorMessage } from './components/ErrorMessage';
 import { Filters } from './types/FilterStatus';
 import { Todo } from './types/Todo';
 
-const getTodoById = (todos: Todo[], todoId: number) => {
-  return todos.find(({ id }) => id === todoId) || null;
-};
-
 const filterTodos = (todos: Todo[], filterStatus: Filters) => {
   switch (filterStatus) {
     case Filters.ALL: return todos;
@@ -34,12 +30,16 @@ export const App: React.FC = () => {
   const newTodoField = useRef<HTMLInputElement>(null);
   const [todos, setTodos] = useState<Todo[]>([]);
   const [filterStatus, setFilterStatus] = useState<Filters>(Filters.ALL);
-  const [visibleTodos, setVisibleTodos] = useState<Todo[]>(todos);
   const [newTodoTitle, setNewTodoTitle] = useState<string>('');
   const [isAdding, setIsAdding] = useState(false);
   const [isDeleting, setIsDeleting] = useState<number[]>([]);
   const [error, setError] = useState('');
   const [showErrorTrigger, setShowErrorTrigger] = useState(0);
+
+  const visibleTodos = useMemo(
+    () => filterTodos(todos, filterStatus),
+    [todos, filterStatus, error],
+  );
 
   const activeTodosCount = useMemo(
     () => filterTodos(todos, Filters.ALL).length,
@@ -54,16 +54,6 @@ export const App: React.FC = () => {
   const handleNewTodoTitle = (event: React.ChangeEvent<HTMLInputElement>) => (
     setNewTodoTitle(event.target.value)
   );
-
-  const handleStatusChange = (todoId: number) => {
-    const copyTodos = [...visibleTodos];
-    const changedTodo = getTodoById(copyTodos, todoId);
-
-    if (changedTodo) {
-      changedTodo.completed = !changedTodo.completed;
-      setVisibleTodos(copyTodos);
-    }
-  };
 
   const handleCloseError = () => {
     setError('');
@@ -142,10 +132,6 @@ export const App: React.FC = () => {
   }, []);
 
   useEffect(() => {
-    setVisibleTodos(filterTodos(todos, filterStatus));
-  }, [todos, filterStatus, error]);
-
-  useEffect(() => {
     // focus the element with `ref={newTodoField}`
     if (newTodoField.current) {
       newTodoField.current.focus();
@@ -194,7 +180,6 @@ export const App: React.FC = () => {
           <TodoList
             todos={visibleTodos}
             isDeleting={isDeleting}
-            onStatusChange={handleStatusChange}
             onDeleteTodo={handleDeleteTodo}
           />
         </section>

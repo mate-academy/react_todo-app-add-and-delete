@@ -9,7 +9,6 @@ import { Todo } from '../../types/Todo';
 type Props = {
   todos: Todo[];
   isDeleting: number[];
-  onStatusChange: (todoId: number) => void;
   onDeleteTodo: (todoId: number) => void;
 };
 
@@ -17,7 +16,6 @@ export const TodoList: React.FC<Props> = (props) => {
   const {
     todos,
     isDeleting,
-    onStatusChange,
     onDeleteTodo,
   } = props;
   const selectedTodoField = useRef<HTMLInputElement>(null);
@@ -65,7 +63,7 @@ export const TodoList: React.FC<Props> = (props) => {
                   type="checkbox"
                   className="todo__status"
                   checked={completed}
-                  onChange={() => onStatusChange(id)}
+                  onChange={() => {}}
                 />
               </label>
 
