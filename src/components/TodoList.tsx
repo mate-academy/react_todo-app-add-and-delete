@@ -53,8 +53,10 @@ export const TodoList: React.FC<Props> = ({
             key={id}
             data-cy="Todo"
             className={classNames(
-              { todo: !completed },
-              { 'todo completed': completed === true },
+              {
+                todo: !completed,
+                'todo completed': completed === true,
+              },
             )}
           >
             <label className="todo__status-label">

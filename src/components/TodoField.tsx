@@ -57,7 +57,7 @@ export const TodoField: React.FC<Props> = ({
           data-cy="ToggleAllButton"
           type="button"
           className={classNames(
-            ('todoapp__toggle-all'),
+            'todoapp__toggle-all',
             { active: completedTodos },
           )}
           aria-label="Toggle"
