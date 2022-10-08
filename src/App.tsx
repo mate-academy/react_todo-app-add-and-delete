@@ -19,7 +19,7 @@ export const App: React.FC = () => {
   const [newTitleTodo, setNewTitleTodo] = useState('');
 
   const [todos, setTodos] = useState<Todo[]>([]);
-  const [, setTodoId] = useState(0);
+  const [todoId, setTodoId] = useState([0]);
 
   const [statusPatch, setStatusPatch] = useState('');
   const [statusFilter, setStatusFilter] = useState('all');
@@ -55,15 +55,15 @@ export const App: React.FC = () => {
         .finally(() => setIsAdding(false));
     } else {
       setHasLoadError('Title can\'t be empty');
-      setIsAdding(false);
     }
 
+    setIsAdding(false);
     setNewTitleTodo('');
   };
 
   const handleDeleteTodo = async (event: FormEvent, curentTodoId: number) => {
     event.preventDefault();
-    setTodoId(curentTodoId);
+    setTodoId([curentTodoId]);
     setIsAdding(true);
 
     await deleteTodos(curentTodoId)
@@ -81,6 +81,7 @@ export const App: React.FC = () => {
         deleteTodos(todo.id)
           .then(() => {
             setTodos([...todos.filter(({ completed }) => completed !== true)]);
+            setTodoId([...todos.map(({ id }) => id)]);
           })
           .catch(() => setHasLoadError('Unable to delete a todo'))
           .finally(() => setIsAdding(false));
@@ -117,7 +118,6 @@ export const App: React.FC = () => {
           newTitleTodo={newTitleTodo}
           handleTitleTodo={setNewTitleTodo}
           handleAddTodo={handleAddTodo}
-          isAdding={isAdding}
         />
         <TodoList
           todos={filterTodos}
@@ -125,6 +125,7 @@ export const App: React.FC = () => {
           statusPatch={statusPatch}
           setStatusPatch={setStatusPatch}
           isAdding={isAdding}
+          todoId={todoId}
         />
         {todos.length !== 0 && (
           <TodoFilter

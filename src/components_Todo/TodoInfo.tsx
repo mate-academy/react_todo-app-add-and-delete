@@ -6,6 +6,7 @@ import { Todo } from '../types/Todo';
 
 interface Props {
   todo: Todo;
+  todoId:number[];
   statusPatch: string;
   setStatusPatch: (event: string) => void;
   handleDeleteTodo: (event: FormEvent, element: number) => void;
@@ -14,6 +15,7 @@ interface Props {
 
 export const TodoInfo: React.FC<Props> = ({
   todo,
+  todoId,
   statusPatch,
   setStatusPatch,
   handleDeleteTodo,
@@ -24,6 +26,8 @@ export const TodoInfo: React.FC<Props> = ({
   const handlePatch = (event: { target: { value: string; }; }) => {
     setStatusPatch(event.target.value);
   };
+
+  const statusLoader = todoId.includes(todo.id) && isAdding;
 
   const [completedTodo, setCompletedTodo] = useState(false);
 
@@ -72,18 +76,21 @@ export const TodoInfo: React.FC<Props> = ({
           />
         </form>
       )}
-      <div
-        data-cy="TodoLoader"
-        className={classNames(
-          'modal overlay',
-          {
-            'is-active': isAdding,
-          },
-        )}
-      >
-        <div className="modal-background has-background-white-ter" />
-        <div className="loader" />
-      </div>
+      {statusLoader
+      && (
+        <div
+          data-cy="TodoLoader"
+          className={classNames(
+            'modal overlay',
+            {
+              'is-active': isAdding,
+            },
+          )}
+        >
+          <div className="modal-background has-background-white-ter" />
+          <div className="loader" />
+        </div>
+      )}
     </div>
   );
 };

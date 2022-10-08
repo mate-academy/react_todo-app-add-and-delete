@@ -4,6 +4,7 @@ import { TodoInfo } from './TodoInfo';
 
 interface Props {
   todos: Todo[] | null;
+  todoId:number[];
   statusPatch: string;
   setStatusPatch: (event: string) => void;
   handleDeleteTodo: (event: FormEvent, element: number) => void;
@@ -12,6 +13,7 @@ interface Props {
 
 export const TodoList: React.FC<Props> = ({
   todos,
+  todoId,
   statusPatch,
   setStatusPatch,
   handleDeleteTodo,
@@ -27,6 +29,7 @@ export const TodoList: React.FC<Props> = ({
           setStatusPatch={setStatusPatch}
           handleDeleteTodo={handleDeleteTodo}
           isAdding={isAdding}
+          todoId={todoId}
         />
       )))}
     </section>
