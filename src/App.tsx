@@ -1,15 +1,16 @@
 /* eslint-disable jsx-a11y/control-has-associated-label */
 import React, {
   FormEvent,
-  // useContext,
   useEffect,
   useRef,
   useState,
   useContext,
   useCallback,
 } from 'react';
-// eslint-disable-next-line
-import { ErrorNotification, TextError } from './components/ErrorNotification/ErrorNotification';
+import { TextError } from './types/TextError';
+import {
+  ErrorNotification,
+} from './components/ErrorNotification/ErrorNotification';
 import { Footer } from './components/Footer/Footer';
 import { Header } from './components/Header/Header';
 import { TodoList } from './components/TodoList/TodoList';
@@ -28,6 +29,8 @@ export const App: React.FC = () => {
   const [typeOfFilter, setTypeOfFilter] = useState('all');
   const [error, setError] = useState<TextError | null>(null);
   const [title, setTitle] = useState('');
+  const [isToggling, setIsToggling] = useState(false);
+  const [selectedTodoId, setSelectedTodoId] = useState(0);
   const user = useContext(AuthContext);
   const newTodoField = useRef<HTMLInputElement>(null);
 
@@ -71,8 +74,12 @@ export const App: React.FC = () => {
       return;
     }
 
+    setIsToggling(true);
+
     try {
       const newTodo = await addTodo(user.id, title);
+
+      setSelectedTodoId(newTodo.id);
 
       setTodos(prevTodos => [...prevTodos, newTodo]);
     } catch {
@@ -80,9 +87,12 @@ export const App: React.FC = () => {
     }
 
     setTitle('');
+    setSelectedTodoId(0);
+    setIsToggling(false);
   }, [title, user]);
 
   const removeTodo = async (todoId: number) => {
+    setSelectedTodoId(todoId);
     try {
       await deleteTodo(todoId);
       setTodos(prevTodos => prevTodos
@@ -90,6 +100,8 @@ export const App: React.FC = () => {
     } catch {
       setError(TextError.Delete);
     }
+
+    setSelectedTodoId(0);
   };
 
   const changeProperty = async (todoId: number, property: Partial<Todo>) => {
@@ -124,6 +136,8 @@ export const App: React.FC = () => {
             todos={filteredTodos}
             removeTodo={removeTodo}
             changeProperty={changeProperty}
+            selectedTodoId={selectedTodoId}
+            isToggling={isToggling}
           />
         )}
         <Footer
@@ -136,7 +150,7 @@ export const App: React.FC = () => {
         />
       </div>
 
-      {error && (
+      {!!error && (
         <ErrorNotification
           error={error}
           setError={setError}

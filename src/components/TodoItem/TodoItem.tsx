@@ -7,12 +7,16 @@ type Props = {
   todo: Todo,
   removeTodo:(todoId: number) => void;
   changeProperty:(todoId: number, property: Partial<Todo>) => void;
+  selectedTodoId: number;
+  isToggling: boolean;
 };
 
 export const TodoItem: React.FC<Props> = ({
   todo,
   removeTodo,
   changeProperty,
+  selectedTodoId,
+  isToggling,
 }) => {
   const { id, title, completed } = todo;
 
@@ -46,7 +50,10 @@ export const TodoItem: React.FC<Props> = ({
         ×
       </button>
 
-      <Loader />
+      {(((selectedTodoId === todo.id)
+      || (isToggling && todo.id === 0)) && (
+        <Loader />
+      ))}
     </div>
   );
 };

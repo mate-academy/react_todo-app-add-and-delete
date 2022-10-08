@@ -3,9 +3,7 @@ import classNames from 'classnames';
 import { Todo } from '../../types/Todo';
 import { FilterType } from '../../types/FilterType';
 import { deleteTodo } from '../../api/todos';
-import {
-  TextError,
-} from '../ErrorNotification/ErrorNotification';
+import { TextError } from '../../types/TextError';
 
 type Props = {
   typeOfFilter: string;

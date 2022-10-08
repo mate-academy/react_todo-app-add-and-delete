@@ -11,12 +11,17 @@ type Props = {
   todos: Todo[];
   removeTodo:(todoId: number) => void;
   changeProperty:(todoId: number, property: Partial<Todo>) => void;
+  selectedTodoId: number;
+  isToggling: boolean;
 };
 
 export const TodoList: React.FC<Props> = ({
   todos,
   removeTodo,
   changeProperty,
+  selectedTodoId,
+  isToggling,
+
 }) => {
   return (
     <section className="todoapp__main" data-cy="TodoList">
@@ -31,7 +36,9 @@ export const TodoList: React.FC<Props> = ({
               todo={todo}
               removeTodo={removeTodo}
               changeProperty={changeProperty}
-
+              selectedTodoId={selectedTodoId}
+              isToggling={isToggling}
+              key={Math.random()}
             />
           </CSSTransition>
         ))}
