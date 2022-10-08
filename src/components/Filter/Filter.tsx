@@ -1,28 +1,28 @@
 import classNames from 'classnames';
-import { FilterStatus } from '../../types/FilterStatus';
+import { Filters } from '../../types/FilterStatus';
 
 type Props = {
-  filterStatus: FilterStatus
-  onFilter: (filterStatus: FilterStatus) => void;
+  filterStatus: Filters
+  onFilter: (filterStatus: Filters) => void;
 };
 
 export const Filter: React.FC<Props> = ({ filterStatus, onFilter }) => {
-  const handleFilter = (newFilterStatus: FilterStatus) => {
+  const handleFilter = (newFilterStatus: Filters) => {
     if (filterStatus !== newFilterStatus) {
       onFilter(newFilterStatus);
     }
   };
 
   const handleFilterAll = () => {
-    handleFilter('all');
+    handleFilter(Filters.ALL);
   };
 
   const handleFilterActive = () => {
-    handleFilter('active');
+    handleFilter(Filters.ACTIVE);
   };
 
   const handleFilterCompleted = () => {
-    handleFilter('completed');
+    handleFilter(Filters.COMPLETED);
   };
 
   return (
@@ -32,7 +32,7 @@ export const Filter: React.FC<Props> = ({ filterStatus, onFilter }) => {
         href="#/"
         className={classNames(
           'filter__link',
-          { selected: filterStatus === 'all' },
+          { selected: filterStatus === Filters.ALL },
         )}
         onClick={handleFilterAll}
       >
@@ -44,7 +44,7 @@ export const Filter: React.FC<Props> = ({ filterStatus, onFilter }) => {
         href="#/active"
         className={classNames(
           'filter__link',
-          { selected: filterStatus === 'active' },
+          { selected: filterStatus === Filters.ACTIVE },
         )}
         onClick={handleFilterActive}
       >
@@ -55,7 +55,7 @@ export const Filter: React.FC<Props> = ({ filterStatus, onFilter }) => {
         href="#/completed"
         className={classNames(
           'filter__link',
-          { selected: filterStatus === 'completed' },
+          { selected: filterStatus === Filters.COMPLETED },
         )}
         onClick={handleFilterCompleted}
       >
