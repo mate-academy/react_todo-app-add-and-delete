@@ -60,7 +60,7 @@ export const App: React.FC = () => {
   const newTodo = useCallback(async (event: FormEvent) => {
     event.preventDefault();
 
-    if (!user || !title) {
+    if (!title.trim() || !user) {
       setErrorMessage(ErrorMessage.ErrorTitle);
 
       return;
@@ -71,7 +71,7 @@ export const App: React.FC = () => {
     try {
       const addedTodo = await addTodo(title, user.id);
 
-      setTodos([...todos, addedTodo]);
+      setTodos(prevTodos => [...prevTodos, addedTodo]);
     } catch {
       setErrorMessage(ErrorMessage.NotAdd);
     }
@@ -85,18 +85,20 @@ export const App: React.FC = () => {
 
     try {
       await deleteTodo(TodoId);
-      setTodos([...todos.filter(({ id }) => id !== TodoId)]);
+      setTodos(prevTodos => prevTodos.filter(({ id }) => id !== TodoId));
     } catch {
       setErrorMessage(ErrorMessage.NotDelete);
     }
   }, [todos, errorMessage]);
 
-  const completedTodo = todos.filter(({ completed }) => !completed);
+  const completedTodo = todos.filter(({ completed }) => completed);
 
   const deleteTodoCompleted = useCallback(() => {
     setIsSelectId([...completedTodo].map(({ id }) => id));
+
     Promise.all(completedTodo.map(({ id }) => removeTodo(id)))
-      .then(() => setTodos([...todos.filter(({ completed }) => !completed)]))
+      .then(() => setTodos((prevTodos) => prevTodos
+        .filter(({ completed }) => !completed)))
       .catch(() => {
         setErrorMessage(ErrorMessage.NotDelete);
         setIsSelectId([]);

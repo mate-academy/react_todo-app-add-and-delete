@@ -1,4 +1,5 @@
 import classNames from 'classnames';
+import { useMemo } from 'react';
 import { Todo } from '../../types/Todo';
 import { TodoLoader } from '../TodoLoader/TodoLoader';
 
@@ -17,6 +18,9 @@ export const TodoItem: React.FC<Props> = ({
 }) => {
   const { title, id, completed } = todo;
 
+  const isLoader = useMemo(() => isSelectId.includes(id)
+  || (isLoading && id === 0), [isLoading, isSelectId, id]);
+
   return (
     <div
       data-cy="Todo"
@@ -30,6 +34,7 @@ export const TodoItem: React.FC<Props> = ({
           data-cy="TodoStatus"
           type="checkbox"
           className="todo__status"
+          defaultChecked={completed}
         />
       </label>
 
@@ -47,11 +52,7 @@ export const TodoItem: React.FC<Props> = ({
       >
         ×
       </button>
-      {isSelectId.includes(id) && (
-        <TodoLoader />
-      )}
-
-      {(isLoading && id === 0) && (
+      { (isLoader) && (
         <TodoLoader />
       )}
     </div>
