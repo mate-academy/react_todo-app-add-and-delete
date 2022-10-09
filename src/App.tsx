@@ -1,37 +1,33 @@
-/* eslint-disable jsx-a11y/control-has-associated-label */
 import {
   FormEvent,
   useContext,
   useEffect,
   useRef,
   useState,
+  useMemo,
 } from 'react';
 import { AuthContext } from './components/Auth/AuthContext';
 import { Todo } from './types/Todo';
-import { TodoList } from './components/TodoList/TodoList';
+import { TodoList } from './components/TodoList';
 import { getTodos, addTodo, deleteTodo } from './api/todos';
 import { FilterStatus } from './types/FilterStatus';
-import { Footer } from './components/TodoFilter/TodoFilter';
-// eslint-disable-next-line max-len
-import { ErrorNotification } from './components/ErrorNotification/ErrorNotification';
+import { Header } from './components/NewTodo';
+import { Footer } from './components/TodoFilter';
+import { ErrorNotification } from './components/ErrorNotification';
 
 export const App: React.FC = () => {
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   const user = useContext(AuthContext);
   const newTodoField = useRef<HTMLInputElement>(null);
 
   const [todos, setTodos] = useState<Todo[]>([]);
-  const [filterStatus, setFilterStatus] = useState('all');
+  const [
+    filterStatus,
+    setFilterStatus,
+  ] = useState<FilterStatus>(FilterStatus.All);
   const [error, setError] = useState<string | null>('');
   const [title, setTitle] = useState('');
   const [selectedTodo, setSelectedTodo] = useState<number[]>([]);
   const [isAdd, setIsAdd] = useState(false);
-
-  if (error) {
-    setTimeout(() => {
-      setError(null);
-    }, 1000);
-  }
 
   useEffect(() => {
     if (newTodoField.current) {
@@ -53,18 +49,18 @@ export const App: React.FC = () => {
     }
   }, [user]);
 
-  const filteredTodos = todos.filter(todo => {
-    switch (filterStatus) {
-      case FilterStatus.Active:
-        return !todo.completed;
-      case FilterStatus.Completed:
-        return todo.completed;
-      case FilterStatus.All:
-        return todo;
-      default:
-        return 0;
-    }
-  });
+  const filteredTodos = useMemo(() => {
+    return todos.filter(todo => {
+      switch (filterStatus) {
+        case FilterStatus.Active:
+          return !todo.completed;
+        case FilterStatus.Completed:
+          return todo.completed;
+        default:
+          return todo;
+      }
+    });
+  }, [todos, filterStatus]);
 
   const handleSubmit = async (event: FormEvent) => {
     event.preventDefault();
@@ -126,38 +122,29 @@ export const App: React.FC = () => {
       <h1 className="todoapp__title">todos</h1>
 
       <div className="todoapp__content">
-        <header className="todoapp__header">
-          <button
-            data-cy="ToggleAllButton"
-            type="button"
-            className="todoapp__toggle-all active"
-          />
+        <Header
+          handleSubmit={handleSubmit}
+          newTodoField={newTodoField}
+          title={title}
+          handleChange={handleChange}
+          isAdd={isAdd}
+        />
 
-          <form onSubmit={handleSubmit}>
-            <input
-              data-cy="NewTodoField"
-              type="text"
-              ref={newTodoField}
-              className="todoapp__new-todo"
-              placeholder="What needs to be done?"
-              value={title}
-              onChange={handleChange}
-              disabled={isAdd}
+        {todos.length > 0 && (
+          <>
+            <TodoList
+              todos={filteredTodos}
+              selectedTodo={selectedTodo}
+              handleDelete={handleDelete}
             />
-          </form>
-        </header>
 
-        <TodoList
-          todos={filteredTodos}
-          selectedTodo={selectedTodo}
-          handleDelete={handleDelete}
-        />
-
-        <Footer
-          filterStatus={filterStatus}
-          setFilterStatus={setFilterStatus}
-          filteredTodos={filteredTodos}
-        />
+            <Footer
+              filterStatus={filterStatus}
+              setFilterStatus={setFilterStatus}
+              filteredTodos={filteredTodos}
+            />
+          </>
+        )}
       </div>
 
       <ErrorNotification error={error} setError={setError} />

@@ -5,7 +5,7 @@ import { TodoLoader } from '../TodoLoader/TodoLoader';
 interface Props {
   todoItem: Todo,
   selectedTodo: number[];
-  handleDelete: (id: number)=> void;
+  handleDelete: (id: number) => void;
 }
 
 export const TodoItem: React.FC<Props> = ({
