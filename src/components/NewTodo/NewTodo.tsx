@@ -1,23 +1,22 @@
-import classNames from 'classnames';
-import { FormEvent, RefObject } from 'react';
+import React, { FormEvent, RefObject } from 'react';
 import { Todo } from '../../types/Todo';
 
 type Props = {
+  todos: Todo[],
+  newTodoField: RefObject<HTMLInputElement>,
   title: string,
   setTitle: (value: string) => void,
-  newTodoField: RefObject<HTMLInputElement>,
-  todos: Todo[],
-  onAddTodo: (event: FormEvent) => void,
-  isTodoLoaded: boolean,
+  isAdding: boolean,
+  handleSubmit: (event: FormEvent) => void,
 };
 
-export const Header: React.FC<Props> = ({
+export const NewTodo: React.FC<Props> = React.memo(({
+  todos,
+  newTodoField,
   title,
   setTitle,
-  newTodoField,
-  todos,
-  onAddTodo,
-  isTodoLoaded,
+  isAdding,
+  handleSubmit,
 }) => {
   return (
     <header className="todoapp__header">
@@ -26,26 +25,23 @@ export const Header: React.FC<Props> = ({
           <button
             data-cy="ToggleAllButton"
             type="button"
-            className={classNames(
-              'todoapp__toggle-all',
-              { active: todos.filter(todo => todo.completed) },
-            )}
-            aria-label="toggleButton"
+            className="todoapp__toggle-all active"
+            aria-label="ToggleAllButton"
           />
         )}
 
-      <form onSubmit={onAddTodo}>
+      <form onSubmit={handleSubmit}>
         <input
           data-cy="NewTodoField"
           type="text"
           ref={newTodoField}
           className="todoapp__new-todo"
           placeholder="What needs to be done?"
+          disabled={isAdding}
           value={title}
           onChange={(event) => setTitle(event.target.value)}
-          disabled={isTodoLoaded}
         />
       </form>
     </header>
   );
-};
+});

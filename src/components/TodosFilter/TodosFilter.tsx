@@ -1,25 +1,30 @@
+import React, { useMemo } from 'react';
 import classNames from 'classnames';
-import { useMemo } from 'react';
 import { FilterStatus } from '../../types/FilterStatus';
 import { Todo } from '../../types/Todo';
 
 type Props = {
+  todos: Todo[],
   setFilterType: (value: FilterStatus) => void,
   filterType: FilterStatus,
-  todos: Todo[],
-  deleteCompletedTodos: () => void,
+  onRemove: () => void;
 };
 
-export const Footer: React.FC<Props> = ({
+export const TodosFilter: React.FC<Props> = ({
+  todos,
   setFilterType,
   filterType,
-  todos,
-  deleteCompletedTodos,
+  onRemove,
 }) => {
   const todosLeft = useMemo(() => {
-    return todos.filter(todo => !todo.completed).length;
-  }, [todos]);
-  const todosCompleted = (todos.length - todosLeft) > 0;
+    return todos.filter(todo => !todo.completed);
+  }, []).length;
+
+  const todosCompleted = todos.length - todosLeft;
+
+  if (todos.length < 1) {
+    return null;
+  }
 
   return (
     <footer className="todoapp__footer" data-cy="Footer">
@@ -31,11 +36,13 @@ export const Footer: React.FC<Props> = ({
         <a
           data-cy="FilterLinkAll"
           href="#/"
-          className={classNames('filter__link',
+          onClick={() => setFilterType(FilterStatus.All)}
+          className={classNames(
+            'filter__link',
             {
               selected: filterType === FilterStatus.All,
-            })}
-          onClick={() => setFilterType(FilterStatus.All)}
+            },
+          )}
         >
           All
         </a>
@@ -43,22 +50,26 @@ export const Footer: React.FC<Props> = ({
         <a
           data-cy="FilterLinkActive"
           href="#/active"
-          className={classNames('filter__link',
+          onClick={() => setFilterType(FilterStatus.Active)}
+          className={classNames(
+            'filter__link',
             {
               selected: filterType === FilterStatus.Active,
-            })}
-          onClick={() => setFilterType(FilterStatus.Active)}
+            },
+          )}
         >
           Active
         </a>
         <a
           data-cy="FilterLinkCompleted"
           href="#/completed"
-          className={classNames('filter__link',
+          onClick={() => setFilterType(FilterStatus.Completed)}
+          className={classNames(
+            'filter__link',
             {
               selected: filterType === FilterStatus.Completed,
-            })}
-          onClick={() => setFilterType(FilterStatus.Completed)}
+            },
+          )}
         >
           Completed
         </a>
@@ -66,14 +77,12 @@ export const Footer: React.FC<Props> = ({
 
       <button
         data-cy="ClearCompletedButton"
+        onClick={onRemove}
         type="button"
         className="todoapp__clear-completed"
-        onClick={deleteCompletedTodos}
-        disabled={!todosCompleted}
       >
-        Clear completed
+        {(todosCompleted > 0) && 'Clear completed'}
       </button>
-
     </footer>
   );
 };

@@ -13,10 +13,10 @@ export const createTodo = (userId: number, title: string) => {
   });
 };
 
-export const deleteTodo = (userId: number) => {
-  return client.delete(`/todos/${userId}`);
+export const deleteTodo = (todoId: number) => {
+  return client.delete(`/todos/${todoId}`);
 };
 
-export const updateTodo = (todoID: number, data: Partial<Todo>) => {
-  return client.patch<Todo>(`/todos/${todoID}`, data);
+export const updateTodo = (todoId: number, data: any) => {
+  return client.patch<Todo>(`/todos/${todoId}`, data);
 };

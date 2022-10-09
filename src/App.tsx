@@ -1,31 +1,28 @@
-import {
-  useState,
-  useContext,
-  useEffect,
-  useRef,
-  FormEvent,
-  useMemo,
-  useCallback,
+import React, {
+  FormEvent, useCallback, useContext, useEffect, useMemo, useRef, useState,
 } from 'react';
+import { NewTodo } from './components/NewTodo/NewTodo';
 import { AuthContext } from './components/Auth/AuthContext';
-import { Header } from './components/Header/Header';
-import { Footer } from './components/Footer/Footer';
-import { FilterStatus } from './types/FilterStatus';
-import { ErrorNotification } from './components/ErrorNotification';
+import { TodosFilter } from './components/TodosFilter/TodosFilter';
 import { TodosList } from './components/TodosList/TodosList';
+import { FilterStatus } from './types/FilterStatus';
+import { Todo } from './types/Todo';
+import { ErrorMessage } from './types/ErrorMessage';
+import { ErrorNotification } from './components/ErrorNotification';
 import {
   createTodo, deleteTodo, getTodos, updateTodo,
 } from './api/todos';
-import { Todo } from './types/Todo';
 
 export const App: React.FC = () => {
-  const newTodoField = useRef<HTMLInputElement>(null);
   const user = useContext(AuthContext);
-  const [title, setTitle] = useState('');
+  const newTodoField = useRef<HTMLInputElement>(null);
+
   const [todos, setTodos] = useState<Todo[]>([]);
-  const [filterType, setFilterType] = useState<FilterStatus>(FilterStatus.All);
-  const [errorMessage, setErrorMessage] = useState('');
-  const [isTodoLoaded, setIsTodoLoaded] = useState(false);
+  const [filterType, setFilterType] = useState(FilterStatus.All);
+  const [errorMessage, setErrorMessage] = useState<ErrorMessage | null>(null);
+  const [isError, setIsError] = useState<boolean>(false);
+  const [title, setTitle] = useState<string>('');
+  const [isAdding, setIsAdding] = useState<boolean>(false);
   const [selectedTodos, setSelectedTodos] = useState<number[]>([]);
 
   const filteredTodos = useMemo(() => {
@@ -41,10 +38,35 @@ export const App: React.FC = () => {
           return todo.completed;
 
         default:
-          return true;
+          return null;
       }
     });
-  }, [todos, filterType]);
+  }, [filterType, todos]);
+
+  const handleSubmit = async (event: FormEvent) => {
+    event.preventDefault();
+
+    if (!title.trim()) {
+      setIsError(true);
+      setErrorMessage(ErrorMessage.TITLE);
+
+      return;
+    }
+
+    setIsAdding(true);
+
+    try {
+      const newTodo = await createTodo(user?.id || 0, title);
+
+      setTodos([...todos, newTodo]);
+    } catch {
+      setIsError(true);
+      setErrorMessage(ErrorMessage.ADDING);
+    } finally {
+      setTitle('');
+      setIsAdding(false);
+    }
+  };
 
   useEffect(() => {
     if (newTodoField.current) {
@@ -60,47 +82,43 @@ export const App: React.FC = () => {
     try {
       fetchData();
     } catch {
-      setErrorMessage('Unable to connect to the server');
+      setErrorMessage(ErrorMessage.LOADING);
     }
   }, [todos]);
+
+  const loadTodos = async () => {
+    try {
+      setTodos(await getTodos(user?.id || 0));
+    } catch {
+      setIsError(true);
+      setErrorMessage(ErrorMessage.LOADING);
+    }
+  };
 
   useEffect(() => {
     if (newTodoField.current) {
       newTodoField.current.focus();
     }
-  }, [todos]);
 
-  const handleSubmit = async (event: FormEvent) => {
-    event.preventDefault();
+    setTimeout(() => {
+      setIsError(false);
+    }, 3000);
 
-    if (!title.trim()) {
-      setErrorMessage("Title can't be empty");
+    loadTodos();
+  }, [isError, selectedTodos]);
 
-      return;
-    }
-
-    setIsTodoLoaded(true);
+  const handleRemove = async (todoId: number) => {
+    setSelectedTodos([...selectedTodos, todoId]);
 
     try {
-      const newTodo = await createTodo(user?.id || 0, title);
+      await deleteTodo(todoId);
 
-      setTodos([...todos, newTodo]);
+      setTodos(todos.filter(({ id }) => id !== todoId));
     } catch {
-      setErrorMessage('Unable to add a todo');
+      setIsError(true);
+      setErrorMessage(ErrorMessage.DELETING);
     } finally {
-      setTitle('');
-      setIsTodoLoaded(false);
-    }
-  };
-
-  const handleRemove = async (id: number) => {
-    setSelectedTodos([...selectedTodos, id]);
-    try {
-      await deleteTodo(id);
-
-      setTodos(todos.filter(todo => todo.id !== id));
-    } catch {
-      setErrorMessage('Unable to delete a todo');
+      setSelectedTodos([]);
     }
   };
 
@@ -108,15 +126,14 @@ export const App: React.FC = () => {
     return todos.filter(todo => todo.completed);
   }, [todos]);
 
-  const deleteCompletedTodos = useCallback(async () => {
+  const deleteComplitedTodos = useCallback(() => {
     setSelectedTodos(completedTodos.map(todo => todo.id));
 
     try {
-      await Promise.all(completedTodos.map(todo => deleteTodo(todo.id)));
-
-      setTodos(todos.filter(todo => !todo.completed));
+      Promise.all(completedTodos.map(todo => deleteTodo(todo.id)));
     } catch {
-      setErrorMessage('Unable to delete a todo');
+      setIsError(true);
+      setErrorMessage(ErrorMessage.DELETING);
       setSelectedTodos([]);
     }
   }, [completedTodos]);
@@ -133,7 +150,8 @@ export const App: React.FC = () => {
           : todo
       )));
     } catch {
-      setErrorMessage('Unable to update a todo');
+      setIsError(true);
+      setErrorMessage(ErrorMessage.UPDATING);
     }
 
     setSelectedTodos([]);
@@ -144,45 +162,38 @@ export const App: React.FC = () => {
       <h1 className="todoapp__title">todos</h1>
 
       <div className="todoapp__content">
-        <Header
+        <NewTodo
+          todos={todos}
+          newTodoField={newTodoField}
           title={title}
           setTitle={setTitle}
-          newTodoField={newTodoField}
-          todos={todos}
-          onAddTodo={handleSubmit}
-          isTodoLoaded={isTodoLoaded}
+          handleSubmit={handleSubmit}
+          isAdding={isAdding}
         />
 
-        {(isTodoLoaded || todos.length > 0)
-          && (
-            <>
-              <TodosList
-                todos={filteredTodos}
-                onRemoveTodo={handleRemove}
-                isTodoLoaded={isTodoLoaded}
-                title={title}
-                selectedTodos={selectedTodos}
-                setSelectedTodos={setSelectedTodos}
-                onUpdate={handleTodoUpdate}
-              />
+        <TodosList
+          todos={filteredTodos}
+          isAdding={isAdding}
+          title={title}
+          removeTodo={handleRemove}
+          setSelectedTodos={setSelectedTodos}
+          selectedTodos={selectedTodos}
+          onUpdate={handleTodoUpdate}
+        />
 
-              <Footer
-                setFilterType={setFilterType}
-                filterType={filterType}
-                todos={todos}
-                deleteCompletedTodos={deleteCompletedTodos}
-              />
-            </>
-          )}
+        <TodosFilter
+          todos={todos}
+          setFilterType={setFilterType}
+          filterType={filterType}
+          onRemove={deleteComplitedTodos}
+        />
       </div>
 
-      {errorMessage
-        && (
-          <ErrorNotification
-            setError={setErrorMessage}
-            error={errorMessage}
-          />
-        )}
+      <ErrorNotification
+        errorMessage={errorMessage}
+        isError={isError}
+        setIsError={setIsError}
+      />
     </div>
   );
 };

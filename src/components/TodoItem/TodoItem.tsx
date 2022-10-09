@@ -1,23 +1,24 @@
+import React from 'react';
 import classNames from 'classnames';
 import { Todo } from '../../types/Todo';
 
 type Props = {
   todo: Todo,
-  onRemoveTodo: (id: number) => void,
-  selectedTodos: number[],
-  setSelectedTodos: (num: number[]) => void,
+  removeTodo: (value: number) => void,
+  setSelectedTodos: (value: number[]) => void,
   onUpdate: (todoId: number, data: Partial<Todo>) => void,
+  selectedTodos: number[],
 };
 
 export const TodoItem: React.FC<Props> = ({
   todo,
-  onRemoveTodo,
-  selectedTodos,
+  removeTodo,
   setSelectedTodos,
   onUpdate,
+  selectedTodos,
 }) => {
   const handleRemove = () => {
-    onRemoveTodo(todo.id);
+    removeTodo(todo.id);
     setSelectedTodos([todo.id]);
   };
 
@@ -59,7 +60,9 @@ export const TodoItem: React.FC<Props> = ({
         data-cy="TodoLoader"
         className={classNames(
           'modal overlay',
-          { 'is-active': selectedTodos.includes(todo.id) },
+          {
+            'is-active': selectedTodos?.includes(todo.id),
+          },
         )}
       >
         <div className="modal-background has-background-white-ter" />
