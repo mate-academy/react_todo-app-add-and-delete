@@ -14,7 +14,7 @@ import { TodoFooter } from './components/TodoFooter';
 import {
   getTodos,
   postTodos,
-  deleteTodo,
+  createTodo,
 } from './api/todos';
 import { Todo } from './types/Todo';
 
@@ -24,7 +24,7 @@ export const App: React.FC = () => {
   const newTodoField = useRef<HTMLInputElement>(null);
 
   const [todos, setTodos] = useState<Todo[]>([]);
-  const [error, setError] = useState(false);
+  const [hasError, setHasError] = useState(false);
   const [errorName, setErrorName] = useState('');
   const [filter, setFilter] = useState('all');
   const [title, setTitle] = useState('');
@@ -34,7 +34,7 @@ export const App: React.FC = () => {
     try {
       setTodos(await getTodos(user?.id || 0));
     } catch {
-      setError(true);
+      setHasError(true);
       setErrorName("Error, Todos can't be download");
     }
   };
@@ -48,9 +48,9 @@ export const App: React.FC = () => {
     getOurTodos();
   }, []);
 
-  if (error === true) {
+  if (hasError) {
     setTimeout(() => {
-      setError(false);
+      setHasError(false);
     }, 3000);
   }
 
@@ -73,7 +73,7 @@ export const App: React.FC = () => {
     try {
       setTodos([...todos, await postTodos(user?.id || 0, todo)]);
     } catch {
-      setError(true);
+      setHasError(true);
       setErrorName('Unable to add a todo');
     } finally {
       setIsAdding(false);
@@ -83,15 +83,15 @@ export const App: React.FC = () => {
 
   const removeTodo = async (todoId: number) => {
     try {
-      await deleteTodo(todoId);
+      await createTodo(todoId);
       setTodos(prevTodos => prevTodos.filter(todo => todo.id !== todoId));
     } catch {
-      setError(true);
+      setHasError(true);
       setErrorName('Unable to delete a todo');
     }
   };
 
-  const todoCompleted = todos.filter(todo => todo.completed === true);
+  const todoCompleted = todos.filter(todo => todo.completed);
 
   const ClearCompletedTodo = () => {
     todoCompleted.filter(todo => removeTodo(todo.id));
@@ -107,7 +107,7 @@ export const App: React.FC = () => {
           newTodoField={newTodoField}
           title={title}
           onSetQuery={setTitle}
-          onSetError={setError}
+          setHasError={setHasError}
           setErrorName={setErrorName}
           onPostNewTodo={postNewTodo}
           isAdding={isAdding}
@@ -133,9 +133,9 @@ export const App: React.FC = () => {
       </div>
 
       <ErrorNotification
-        error={error}
+        hasError={hasError}
         errorName={errorName}
-        onSetError={setError}
+        setHasError={setHasError}
       />
     </div>
   );

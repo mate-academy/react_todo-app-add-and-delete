@@ -13,7 +13,7 @@ export const postTodos = (userId: number, title: string) => {
   });
 };
 
-export const deleteTodo = (userId: number) => {
+export const createTodo = (userId: number) => {
   return client.delete(`/todos/${userId}`);
 };
 

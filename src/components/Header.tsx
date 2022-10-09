@@ -5,10 +5,10 @@ type Props = {
   todos: Todo[],
   newTodoField: RefObject<HTMLInputElement>,
   title: string,
-  setErrorName: (value: string) => void,
-  onSetQuery: (value: string) => void,
-  onSetError: (value: boolean) => void,
-  onPostNewTodo: (value: string) => void
+  setErrorName: React.Dispatch<React.SetStateAction<string>>,
+  onSetQuery: React.Dispatch<React.SetStateAction<string>>,
+  setHasError: React.Dispatch<React.SetStateAction<boolean>>,
+  onPostNewTodo: (value: string) => void,
   isAdding: boolean,
 };
 
@@ -17,7 +17,7 @@ export const Header: React.FC<Props> = ({
   newTodoField,
   title,
   onSetQuery,
-  onSetError,
+  setHasError,
   setErrorName,
   onPostNewTodo,
   isAdding,
@@ -29,12 +29,12 @@ export const Header: React.FC<Props> = ({
   const handleSubmit = (e: { preventDefault: () => void; }) => {
     e.preventDefault();
 
-    if (title.length === 0) {
-      onSetError(true);
+    if (!title.length) {
+      setHasError(true);
       setErrorName("Title can't be empty");
     }
 
-    if (title.length > 0) {
+    if (title.length) {
       onPostNewTodo(title);
     }
   };
