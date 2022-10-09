@@ -32,7 +32,7 @@ export const Header : React.FC<Props> = ({
       />
 
       <form
-        onSubmit={(event) => onHandleAddTodo(event)}
+        onSubmit={onHandleAddTodo}
       >
         <input
           data-cy="NewTodoField"

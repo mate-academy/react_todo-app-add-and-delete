@@ -1,14 +1,14 @@
-/* eslint-disable jsx-a11y/control-has-associated-label */
 import React, {
   useContext,
   useEffect,
+  useMemo,
   useRef,
   useState,
 } from 'react';
 import { createTodo, deleteTodo, getTodos } from './api/todos';
 import { AuthContext } from './components/Auth/AuthContext';
-// eslint-disable-next-line max-len
-import { ErrorNotification } from './components/ErrorNotification/ErrorNotification';
+import { ErrorNotification }
+  from './components/ErrorNotification/ErrorNotification';
 import { Footer } from './components/Footer/Footer';
 import { TodoList } from './components/TodoList/TodoList';
 import { Header } from './components/Header/Header';
@@ -18,7 +18,6 @@ import { FilterType } from './components/Filter/FilterPropTypes';
 
 export const App: React.FC = () => {
   const [todos, setTodos] = useState<Todo[]>([]);
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   const user = useContext(AuthContext);
   const newTodoField = useRef<HTMLInputElement>(null);
   const [errorMessage, setErrorMessage] = useState('');
@@ -49,11 +48,12 @@ export const App: React.FC = () => {
 
   // Deleting ↓
 
-  const deleteInLocalTodos = (id: number) => {
-    const filteredTodos = todos.filter(todo => todo.id !== id);
+  const filterTodos = (prevTodos : Todo[], id: number) => prevTodos
+    .filter(todo => todo.id !== id);
 
-    setVisibleTodos(filteredTodos);
-    setTodos(filteredTodos);
+  const deleteInLocalTodos = (id: number) => {
+    setVisibleTodos((prevTodos) => filterTodos(prevTodos, id));
+    setTodos((prevTodos) => filterTodos(prevTodos, id));
   };
 
   const onDeleteTodo = async (id: number) => {
@@ -69,18 +69,15 @@ export const App: React.FC = () => {
   };
 
   const clearCompleted = () => {
-    const filteredTodos = todos.filter((todo) => {
+    todos.filter((todo) => {
       const { completed, id } = todo;
 
       if (completed) {
-        deleteTodo(id);
+        onDeleteTodo(id);
       }
 
       return !completed;
     });
-
-    setTodos(filteredTodos);
-    setVisibleTodos(filteredTodos);
   };
 
   // Adding ↓
@@ -107,7 +104,7 @@ export const App: React.FC = () => {
 
   // Hooks ↓
 
-  useEffect(() => {
+  useMemo(() => {
     const countofLeftItems = visibleTodos
       .filter(({ completed }) => !completed).length;
 
