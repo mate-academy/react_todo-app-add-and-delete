@@ -5,9 +5,11 @@ import { TodoItem } from './Auth/TodoItem';
 
 type Props = {
   todos: Todo[],
-  removeTodo: (param: number | null) => Promise<void>,
+  removeTodo: (param: number) => Promise<void>,
   isAdding: boolean,
   title: string,
+  handleChange: (updateId: Todo) => Promise<void>,
+  selectedId: number[],
 };
 
 export const TodoList: React.FC<Props> = ({
@@ -15,6 +17,8 @@ export const TodoList: React.FC<Props> = ({
   removeTodo,
   isAdding,
   title,
+  handleChange,
+  selectedId,
 }) => {
   return (
     <section className="todoapp__main" data-cy="TodoList">
@@ -30,6 +34,8 @@ export const TodoList: React.FC<Props> = ({
               todo={todo}
               removeTodo={removeTodo}
               isAdding={isAdding}
+              handleChange={handleChange}
+              selectedId={selectedId}
             />
           </CSSTransition>
         ))}
@@ -49,6 +55,8 @@ export const TodoList: React.FC<Props> = ({
               }}
               removeTodo={removeTodo}
               isAdding={isAdding}
+              handleChange={handleChange}
+              selectedId={selectedId}
             />
           </CSSTransition>
         )}

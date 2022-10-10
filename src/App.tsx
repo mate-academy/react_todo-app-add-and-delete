@@ -1,4 +1,5 @@
 import React, {
+  useCallback,
   useContext,
   useEffect,
   useMemo,
@@ -6,11 +7,16 @@ import React, {
   useState,
 } from 'react';
 import { TodoList } from './components/TodoList';
-import { Header } from './components/NewTodo';
-import { Footer } from './components/Filter';
+import { NewTodo } from './components/NewTodo';
+import { Filter } from './components/Filter';
 import { ErrorMessage } from './components/ErrorMessage';
 import { Todo } from './types/Todo';
-import { getTodos, createTodos, deleteTodo } from './api/todos';
+import {
+  getTodos,
+  createTodos,
+  deleteTodo,
+  updateTodo,
+} from './api/todos';
 import { AuthContext } from './components/Auth/AuthContext';
 import { FilterBy } from './types/filterBy';
 
@@ -22,6 +28,8 @@ export const App: React.FC = () => {
   const [filterBy, setFilterBy] = useState('all');
   const [title, setTitle] = useState('');
   const [isAdding, setAdding] = useState(false);
+  const [selectedId, setSelectedId] = useState<number[]>([]);
+  const [todoStatus, setStatus] = useState(false);
 
   useEffect(() => {
     // focus the element with `ref={newTodoField}`
@@ -31,7 +39,7 @@ export const App: React.FC = () => {
   }, []);
 
   useEffect(() => {
-    async function todosFromServer(userId: number | null) {
+    async function todosFromServer(userId: number | undefined) {
       try {
         const visibleTodos = getTodos(userId);
 
@@ -78,7 +86,7 @@ export const App: React.FC = () => {
     setAdding(true);
 
     try {
-      const newTodo = await createTodos(user?.id || -1, title);
+      const newTodo = await createTodos(user?.id, title);
 
       setTodos([...todos, newTodo]);
     } catch {
@@ -89,24 +97,54 @@ export const App: React.FC = () => {
     setAdding(false);
   };
 
-  const removeTodo = async (todoId: number | null) => {
-    await deleteTodo(todoId)
-      .then(() => {
-        setTodos(prevTodos => prevTodos.filter(todo => todo.id !== todoId));
-      })
+  const removeTodo = useCallback(async (TodoId: number) => {
+    setSelectedId([TodoId]);
+    try {
+      await deleteTodo(TodoId);
+
+      setTodos([...todos.filter(({ id }) => id !== TodoId)]);
+    } catch {
+      setErrorMessage('Error');
+    }
+  }, [todos, errorMessage]);
+
+  const completedTodos = todos.filter(({ completed }) => completed);
+
+  const deleteCompletedTodos = useCallback(() => {
+    setSelectedId([...completedTodos].map(({ id }) => id));
+
+    Promise.all(completedTodos.map(({ id }) => removeTodo(id)))
+      .then(() => setTodos([...todos.filter(({ completed }) => !completed)]))
       .catch(() => {
-        setErrorMessage('Unable to delete a todo');
+        setErrorMessage('Error');
+        setSelectedId([]);
       });
+  }, [todos, selectedId, errorMessage]);
 
-    setAdding(true);
+  const handleChange = useCallback(async (updateId: Todo) => {
+    setStatus((current: boolean) => current);
 
-    setTimeout(() => setAdding(false), 300);
-  };
+    try {
+      await updateTodo(updateId.id, todoStatus);
+
+      setTodos(state => [...state].map(todo => {
+        if (todo.id === updateId.id) {
+          // eslint-disable-next-line no-param-reassign
+          todo.completed = !todo.completed;
+        }
+
+        return todo;
+      }));
+    } catch {
+      setErrorMessage('Not update');
+    }
+  }, [todoStatus, todos]);
 
   return (
     <div className="todoapp">
       <h1 className="todoapp__title">todos</h1>
-      <Header
+      <NewTodo
+        todos={todos}
         newTodoField={newTodoField}
         title={title}
         setTitle={setTitle}
@@ -118,12 +156,15 @@ export const App: React.FC = () => {
             isAdding={isAdding}
             todos={filteredTodos}
             title={title}
+            selectedId={selectedId}
             removeTodo={removeTodo}
+            handleChange={handleChange}
           />
-          <Footer
+          <Filter
+            deleteCompletedTodos={deleteCompletedTodos}
             filterBy={filterBy}
             setFilterBy={setFilterBy}
-            filteredTodos={filteredTodos}
+            todos={todos}
           />
         </div>
       )}
