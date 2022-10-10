@@ -9,9 +9,16 @@ import { TodoItem } from '../TodoItem/TodoItem';
 type Props = {
   todos: Todo[];
   removeTodo: (id: number) => void;
+  loader: boolean;
+  newTodoId: number;
 };
 
-export const TodoList: React.FC<Props> = ({ todos, removeTodo }) => {
+export const TodoList: React.FC<Props> = ({
+  todos,
+  removeTodo,
+  loader,
+  newTodoId,
+}) => {
   return (
     <section className="todoapp__main" data-cy="TodoList">
       <TransitionGroup>
@@ -24,6 +31,8 @@ export const TodoList: React.FC<Props> = ({ todos, removeTodo }) => {
             <TodoItem
               todo={todo}
               removeTodo={removeTodo}
+              loader={loader}
+              newTodoId={newTodoId}
             />
           </CSSTransition>
         ))}

@@ -1,5 +1,4 @@
-/* eslint-disable jsx-a11y/control-has-associated-label */
-import React from 'react';
+import React, { useEffect } from 'react';
 import { Errors } from '../../types/Errors';
 
 type Props = {
@@ -8,6 +7,16 @@ type Props = {
 };
 
 export const ErrorNotification: React.FC<Props> = ({ error, setError }) => {
+  useEffect(() => {
+    const timeOut = setTimeout(() => {
+      setError(null);
+    }, 3000);
+
+    const clear = (() => clearTimeout(timeOut));
+
+    return clear;
+  }, [error]);
+
   return (
     <div
       data-cy="ErrorNotification"
@@ -16,6 +25,7 @@ export const ErrorNotification: React.FC<Props> = ({ error, setError }) => {
       <button
         data-cy="HideErrorButton"
         type="button"
+        aria-label="label"
         className="delete"
         onClick={() => setError(null)}
       />

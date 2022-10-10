@@ -1,31 +1,30 @@
-/* eslint-disable max-len */
-/* eslint-disable jsx-a11y/control-has-associated-label */
 import React, {
   FormEvent,
   useContext,
   useEffect,
-  useRef,
+  useMemo,
   useState,
 } from 'react';
-import classNames from 'classnames';
 
 import { AuthContext } from './components/Auth/AuthContext';
 import { TodoList } from './components/TodoList/TodoList';
-import { ErrorNotification } from './components/ErrorNotification/ErrorNotification';
+import { ErrorNotification }
+  from './components/ErrorNotification/ErrorNotification';
 import { Footer } from './components/Footer/Footer';
 import { FilterBy } from './types/FilterBy';
 import { Errors } from './types/Errors';
 import { Todo } from './types/Todo';
 import { createTodo, deleteTodo, getTodos } from './api/todos';
+import { Header } from './components/Header/Header';
 
 export const App: React.FC = () => {
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   const user = useContext(AuthContext);
-  const newTodoField = useRef<HTMLInputElement>(null);
   const [todos, setTodos] = useState<Todo[]>([]);
   const [title, setTitle] = useState('');
   const [error, setError] = useState<Errors | null>(null);
   const [filterBy, setFilterBy] = useState<FilterBy>(FilterBy.All);
+  const [loader, setLoader] = useState(false);
+  const [newTodoId, setNewTodoId] = useState(0);
 
   const filterTodos = todos.filter(todo => {
     switch (filterBy) {
@@ -36,28 +35,13 @@ export const App: React.FC = () => {
       case FilterBy.Completed:
         return todo.completed;
       default:
-        return 0;
+        return true;
     }
   });
 
-  let userId = 0;
-
-  if (user?.id) {
-    userId = user.id;
-  }
-
-  if (error) {
-    setTimeout(() => {
-      setError(null);
-    }, 3000);
-  }
+  const userId = user?.id || 0;
 
   useEffect(() => {
-    // focus the element with `ref={newTodoField}`
-    if (newTodoField.current) {
-      newTodoField.current.focus();
-    }
-
     getTodos(userId)
       .then(setTodos)
       .catch(() => setError(Errors.Loading));
@@ -73,9 +57,18 @@ export const App: React.FC = () => {
       return;
     }
 
+    setLoader(true);
+    setTodos([...todos, {
+      title,
+      userId,
+      completed: false,
+      id: 0,
+    }]);
+
     await createTodo(userId, title)
       .then(newTodo => {
         setTodos([...todos, newTodo]);
+        setLoader(false);
       })
       .catch(() => {
         setError(Errors.Add);
@@ -85,53 +78,45 @@ export const App: React.FC = () => {
   };
 
   const removeTodo = async (todoId: number) => {
+    setLoader(true);
+    setNewTodoId(todoId);
     await deleteTodo(todoId)
       .then(() => {
         setTodos(prevTodos => prevTodos.filter(todo => todo.id !== todoId));
       })
       .catch(() => {
         setError(Errors.Delete);
-      });
+      })
+      .finally(() => setLoader(false));
   };
 
-  const todosCompleted = todos.filter(todo => todo.completed);
-  const todosActive = todos.filter(todo => !todo.completed);
+  const todosCompleted = useMemo(
+    () => filterTodos.filter(({ completed }) => completed),
+    [todos],
+  );
+  const todosActive = useMemo(
+    () => filterTodos.filter(({ completed }) => !completed),
+    [todos],
+  );
 
   return (
     <div className="todoapp">
       <h1 className="todoapp__title">todos</h1>
 
       <div className="todoapp__content">
-        <header className="todoapp__header">
-          {!!todos.length && (
-            <button
-              data-cy="ToggleAllButton"
-              type="button"
-              className={classNames(
-                'todoapp__toggle-all',
-                {
-                  active: filterTodos.length === todosCompleted.length,
-                },
-              )}
-            />
-          )}
-
-          <form onSubmit={handleSubmit}>
-            <input
-              data-cy="NewTodoField"
-              type="text"
-              ref={newTodoField}
-              className="todoapp__new-todo"
-              placeholder="What needs to be done?"
-              value={title}
-              onChange={(event) => setTitle(event.target.value)}
-            />
-          </form>
-        </header>
+        <Header
+          todos={filterTodos}
+          todosCompleted={todosCompleted}
+          handleSubmit={handleSubmit}
+          title={title}
+          setTitle={setTitle}
+        />
 
         <TodoList
           todos={filterTodos}
           removeTodo={removeTodo}
+          loader={loader}
+          newTodoId={newTodoId}
         />
 
         {!!todos.length && (

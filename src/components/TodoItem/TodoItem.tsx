@@ -5,9 +5,16 @@ import { Todo } from '../../types/Todo';
 type Props = {
   todo: Todo;
   removeTodo: (id: number) => void;
+  loader: boolean;
+  newTodoId: number;
 };
 
-export const TodoItem: React.FC<Props> = ({ todo, removeTodo }) => {
+export const TodoItem: React.FC<Props> = ({
+  todo,
+  removeTodo,
+  loader,
+  newTodoId,
+}) => {
   return (
     <div
       data-cy="Todo"
@@ -37,10 +44,17 @@ export const TodoItem: React.FC<Props> = ({ todo, removeTodo }) => {
         ×
       </button>
 
-      <div data-cy="TodoLoader" className="modal overlay">
-        <div className="modal-background has-background-white-ter" />
-        <div className="loader" />
-      </div>
+      {
+        loader && newTodoId === todo.id && (
+          <div
+            data-cy="TodoLoader"
+            className="modal overlay is-active"
+          >
+            <div className="modal-background has-background-white-ter" />
+            <div className="loader" />
+          </div>
+        )
+      }
     </div>
   );
 };
