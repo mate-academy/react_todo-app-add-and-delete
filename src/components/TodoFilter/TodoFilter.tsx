@@ -5,18 +5,22 @@ import { FilterStatus } from '../../types/FilterStatus';
 interface Props {
   filterStatus: string,
   setFilterStatus: (type: FilterStatus) => void,
-  filteredTodos: Todo[],
+  activeTodos: Todo[],
+  completedTodos: Todo[],
+  removeCompletedTodos: () => void,
 }
 
 export const Footer: React.FC<Props> = ({
   filterStatus,
   setFilterStatus,
-  filteredTodos,
+  activeTodos,
+  completedTodos,
+  removeCompletedTodos,
 }) => {
   return (
     <footer className="todoapp__footer" data-cy="Footer">
       <span className="todo-count" data-cy="todosCounter">
-        {`${filteredTodos.length} items left`}
+        {`${activeTodos.length} items left`}
       </span>
 
       <nav className="filter" data-cy="Filter">
@@ -60,6 +64,8 @@ export const Footer: React.FC<Props> = ({
         data-cy="ClearCompletedButton"
         type="button"
         className="todoapp__clear-completed"
+        disabled={!completedTodos.length}
+        onClick={removeCompletedTodos}
       >
         Clear completed
       </button>

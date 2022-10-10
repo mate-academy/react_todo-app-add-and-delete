@@ -5,12 +5,14 @@ interface Props {
   todos: Todo[],
   selectedTodo: number[];
   handleDelete: (id: number)=> void;
+  isDelete: boolean;
 }
 
 export const TodoList: React.FC<Props> = ({
   todos,
   selectedTodo,
   handleDelete,
+  isDelete,
 }) => (
   <section
     className="todoapp__main"
@@ -22,6 +24,7 @@ export const TodoList: React.FC<Props> = ({
         todoItem={todo}
         selectedTodo={selectedTodo}
         handleDelete={handleDelete}
+        isDelete={isDelete}
       />
     ))}
   </section>

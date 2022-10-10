@@ -14,6 +14,7 @@ import { FilterStatus } from './types/FilterStatus';
 import { Header } from './components/NewTodo';
 import { Footer } from './components/TodoFilter';
 import { ErrorNotification } from './components/ErrorNotification';
+import { ErrorMessage } from './types/ErrorMessage';
 
 export const App: React.FC = () => {
   const user = useContext(AuthContext);
@@ -28,6 +29,7 @@ export const App: React.FC = () => {
   const [title, setTitle] = useState('');
   const [selectedTodo, setSelectedTodo] = useState<number[]>([]);
   const [isAdd, setIsAdd] = useState(false);
+  const [isDelete, setIsDelete] = useState(false);
 
   useEffect(() => {
     if (newTodoField.current) {
@@ -40,7 +42,7 @@ export const App: React.FC = () => {
 
         setTodos(receivedTodos);
       } catch {
-        setError('Unable to load a todo');
+        setError(ErrorMessage.UnableLoad);
       }
     };
 
@@ -48,6 +50,14 @@ export const App: React.FC = () => {
       loadTodos(user.id);
     }
   }, [user]);
+
+  const activeTodos = useMemo(() => {
+    return todos.filter(todo => !todo.completed);
+  }, [todos]);
+
+  const completedTodos = useMemo(() => {
+    return todos.filter(todo => todo.completed);
+  }, [todos]);
 
   const filteredTodos = useMemo(() => {
     return todos.filter(todo => {
@@ -66,7 +76,7 @@ export const App: React.FC = () => {
     event.preventDefault();
 
     if (title.trim() === '') {
-      setError('Title can\'t be empty');
+      setError(ErrorMessage.TitleIsEmpty);
       setTitle('');
 
       return;
@@ -92,7 +102,7 @@ export const App: React.FC = () => {
 
       setTodos([...todos, newTodo]);
     } catch {
-      setError('Unable to add a todo');
+      setError(ErrorMessage.UnableAdd);
       setTodos(filteredTodos.filter(todo => todo.id > 0));
     }
 
@@ -111,9 +121,18 @@ export const App: React.FC = () => {
       setTodos(currentTodos => currentTodos
         .filter(todo => todo.id !== todoId));
     } catch {
-      setError('Unable to delete a todo');
+      setError(ErrorMessage.UnableDelete);
     } finally {
-      setSelectedTodo(prevId => prevId.filter(id => id !== todoId));
+      setIsDelete(false);
+    }
+  };
+
+  const removeCompletedTodos = async () => {
+    setIsDelete(true);
+    try {
+      completedTodos.forEach(({ id }) => handleDelete(id));
+    } catch {
+      setError(ErrorMessage.UnableDelete);
     }
   };
 
@@ -136,12 +155,15 @@ export const App: React.FC = () => {
               todos={filteredTodos}
               selectedTodo={selectedTodo}
               handleDelete={handleDelete}
+              isDelete={isDelete}
             />
 
             <Footer
               filterStatus={filterStatus}
               setFilterStatus={setFilterStatus}
-              filteredTodos={filteredTodos}
+              activeTodos={activeTodos}
+              completedTodos={completedTodos}
+              removeCompletedTodos={removeCompletedTodos}
             />
           </>
         )}
