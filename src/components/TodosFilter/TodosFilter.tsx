@@ -17,8 +17,8 @@ export const TodosFilter: React.FC<Props> = ({
   onRemove,
 }) => {
   const todosLeft = useMemo(() => {
-    return todos.filter(todo => !todo.completed);
-  }, []).length;
+    return todos.filter(todo => !todo.completed).length;
+  }, [todos]);
 
   const todosCompleted = todos.length - todosLeft;
 
