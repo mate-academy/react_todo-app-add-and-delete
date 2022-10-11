@@ -16,7 +16,7 @@ export const postTodos = (
   });
 };
 
-export const removeTodos = (todoId: number) => {
+export const removeTodos = (todoId: number):Promise<unknown> => {
   return client.delete(`/todos/${todoId}`);
 };
 

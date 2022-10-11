@@ -9,7 +9,6 @@ import {
   useRef,
   useCallback,
 } from 'react';
-// import classNames from 'classnames';
 import { AuthContext } from './components/Auth/AuthContext';
 import { ErrorNotification } from './components/ErrorNotification';
 import { TodoList } from './components/TodoList';
