@@ -1,5 +1,5 @@
 import React, {
-  FormEvent, useContext, useEffect, useMemo, useRef, useState,
+  FormEvent, useCallback, useContext, useEffect, useMemo, useRef, useState,
 } from 'react';
 import { NewTodo } from './components/NewTodo/NewTodo';
 import { AuthContext } from './components/Auth/AuthContext';
@@ -7,7 +7,7 @@ import { TodosFilter } from './components/TodosFilter/TodosFilter';
 import { TodosList } from './components/TodosList/TodosList';
 import { FilterStatus } from './types/FilterStatus';
 import { Todo } from './types/Todo';
-import { ErrorMessage } from './types/ErrorMessage';
+import { ErrorMessage } from './types/Enums';
 import { ErrorNotification } from './components/ErrorNotification';
 import {
   createTodo, deleteTodo, getTodos, updateTodo,
@@ -20,9 +20,9 @@ export const App: React.FC = () => {
   const [todos, setTodos] = useState<Todo[]>([]);
   const [filterType, setFilterType] = useState(FilterStatus.All);
   const [errorMessage, setErrorMessage] = useState<ErrorMessage | null>(null);
-  const [isError, setIsError] = useState<boolean>(false);
-  const [title, setTitle] = useState<string>('');
-  const [isAdding, setIsAdding] = useState<boolean>(false);
+  const [isError, setIsError] = useState(false);
+  const [title, setTitle] = useState('');
+  const [isAdding, setIsAdding] = useState(false);
   const [selectedTodos, setSelectedTodos] = useState<number[]>([]);
 
   const filteredTodos = useMemo(() => {
@@ -43,7 +43,7 @@ export const App: React.FC = () => {
     });
   }, [filterType, todos]);
 
-  const handleSubmit = async (event: FormEvent) => {
+  const handleSubmit = useCallback(async (event: FormEvent) => {
     event.preventDefault();
 
     if (!title.trim()) {
@@ -58,7 +58,7 @@ export const App: React.FC = () => {
     try {
       const newTodo = await createTodo(user?.id || 0, title);
 
-      setTodos([...todos, newTodo]);
+      setTodos(state => [...state, newTodo]);
     } catch {
       setIsError(true);
       setErrorMessage(ErrorMessage.ADDING);
@@ -66,7 +66,7 @@ export const App: React.FC = () => {
       setTitle('');
       setIsAdding(false);
     }
-  };
+  }, [todos]);
 
   useEffect(() => {
     if (newTodoField.current) {
@@ -86,29 +86,25 @@ export const App: React.FC = () => {
     }
   }, [todos]);
 
-  const loadTodos = async () => {
+  const loadTodos = useCallback(async () => {
     try {
       setTodos(await getTodos(user?.id || 0));
     } catch {
       setIsError(true);
       setErrorMessage(ErrorMessage.LOADING);
     }
-  };
+  }, [todos]);
 
   useEffect(() => {
     if (newTodoField.current) {
       newTodoField.current.focus();
     }
 
-    setTimeout(() => {
-      setIsError(false);
-    }, 3000);
-
     loadTodos();
-  }, [isError, selectedTodos]);
+  }, []);
 
-  const handleRemove = async (todoId: number) => {
-    setSelectedTodos([...selectedTodos, todoId]);
+  const handleRemove = useCallback(async (todoId: number) => {
+    setSelectedTodos(state => [...state, todoId]);
 
     try {
       await deleteTodo(todoId);
@@ -120,13 +116,13 @@ export const App: React.FC = () => {
     } finally {
       setSelectedTodos([]);
     }
-  };
+  }, [todos]);
 
   const completedTodos = useMemo(() => {
     return todos.filter(todo => todo.completed);
   }, [todos]);
 
-  const deleteComplitedTodos = async () => {
+  const deleteComplitedTodos = useCallback(async () => {
     setSelectedTodos(completedTodos.map(todo => todo.id));
 
     try {
@@ -137,10 +133,13 @@ export const App: React.FC = () => {
       setErrorMessage(ErrorMessage.DELETING);
       setSelectedTodos([]);
     }
-  };
+  }, [completedTodos]);
 
-  const handleTodoUpdate = async (todoId: number, data: Partial<Todo>) => {
-    setSelectedTodos([...selectedTodos, todoId]);
+  const handleTodoUpdate = useCallback(async (
+    todoId: number,
+    data: Partial<Todo>,
+  ) => {
+    setSelectedTodos(state => [...state, todoId]);
 
     try {
       const newTodo = await updateTodo(todoId, data);
@@ -156,7 +155,7 @@ export const App: React.FC = () => {
     }
 
     setSelectedTodos([]);
-  };
+  }, [todos]);
 
   return (
     <div className="todoapp">

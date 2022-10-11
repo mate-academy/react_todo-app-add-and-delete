@@ -83,8 +83,9 @@ export const TodosFilter: React.FC<Props> = ({
         onClick={onRemove}
         type="button"
         className="todoapp__clear-completed"
+        disabled={!todosCompleted}
       >
-        {(todosCompleted > 0) && 'Clear completed'}
+        Clear completed
       </button>
     </footer>
   );

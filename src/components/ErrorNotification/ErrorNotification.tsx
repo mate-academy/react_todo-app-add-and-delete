@@ -1,5 +1,6 @@
 import classNames from 'classnames';
-import { ErrorMessage } from '../../types/ErrorMessage';
+import { useEffect } from 'react';
+import { ErrorMessage } from '../../types/Enums';
 
 type Props = {
   errorMessage: ErrorMessage | null,
@@ -12,6 +13,12 @@ export const ErrorNotification: React.FC<Props> = ({
   isError,
   setIsError,
 }) => {
+  useEffect(() => {
+    setTimeout(() => {
+      setIsError(false);
+    }, 3000);
+  }, [isError]);
+
   return (
     <div
       data-cy="ErrorNotification"

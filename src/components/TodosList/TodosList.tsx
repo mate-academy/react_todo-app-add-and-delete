@@ -38,7 +38,6 @@ export const TodosList: React.FC<Props> = ({
           >
             <TodoItem
               todo={todo}
-              key={todo.id}
               removeTodo={removeTodo}
               setSelectedTodos={setSelectedTodos}
               onUpdate={onUpdate}

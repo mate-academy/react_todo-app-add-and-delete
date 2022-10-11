@@ -29,9 +29,14 @@ export const AuthForm: React.FC<Props> = ({ onLogin }) => {
     try {
       const user = JSON.parse(userData) as User;
 
+      setErrorMessage('');
+      setLoading(true);
+
       onLogin(user);
     } catch (error) {
-      // Need to login
+      setErrorMessage('Something went wrtong');
+    } finally {
+      setLoading(false);
     }
   }, []);
 
