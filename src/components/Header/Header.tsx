@@ -10,6 +10,8 @@ export const Header : React.FC<Props> = ({
   const [title, setTilte] = useState('');
 
   const onHandleAddTodo = (event: FormEvent) => {
+    event.preventDefault();
+
     if (!title.trim()) {
       setErrorMessage('title not able to be empty');
       setTilte('');
@@ -17,7 +19,6 @@ export const Header : React.FC<Props> = ({
       return;
     }
 
-    event.preventDefault();
     setTilte('');
     addTodo(title);
   };

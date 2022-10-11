@@ -83,8 +83,8 @@ export const App: React.FC = () => {
   // Adding ↓
 
   const addToLocalTodos = (newTodo: Todo) => {
-    setVisibleTodos([...todos, newTodo]);
-    setTodos([...todos, newTodo]);
+    setVisibleTodos((prevTodos) => [...prevTodos, newTodo]);
+    setTodos((prevTodos) => [...prevTodos, newTodo]);
   };
 
   const addTodo = async (title: string) => {
