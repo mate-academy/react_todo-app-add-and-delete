@@ -13,7 +13,7 @@ import {
 import { AuthContext } from './components/Auth/AuthContext';
 import { ErrorNotification } from './components/ErrorNotification';
 import { Footer } from './components/Footer/Footer';
-import { Header } from './components/Header/Header';
+import { NewTodo } from './components/NewTodo/NewTodo';
 import { TodoList } from './components/Todo';
 import { Todo } from './types/Todo';
 import { TodosFilter } from './types/TodosFilter_Enum';
@@ -195,7 +195,7 @@ export const App: React.FC = () => {
 
       <div className="todoapp__content">
 
-        <Header
+        <NewTodo
           todos={todos}
           newTodoField={newTodoField}
           handleToggleAllTodos={handleToggleAllTodos}
