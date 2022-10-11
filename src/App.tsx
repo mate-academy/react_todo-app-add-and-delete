@@ -54,7 +54,6 @@ export const App: React.FC = () => {
   }, [user]);
 
   useEffect(() => {
-    // focus the element with `ref={newTodoField}`
     if (newTodoField.current) {
       newTodoField.current.focus();
     }
