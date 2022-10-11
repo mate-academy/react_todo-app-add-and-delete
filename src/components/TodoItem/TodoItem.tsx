@@ -5,7 +5,7 @@ import { Todo } from '../../types/Todo';
 type Props = {
   todo: Todo;
   deleteTodo: (id: number) => void;
-  isDeleting: boolean;
+  isDeleting?: boolean;
 };
 
 export const TodoItem: React.FC<Props> = ({
@@ -49,8 +49,8 @@ export const TodoItem: React.FC<Props> = ({
       <div
         data-cy="TodoLoader"
         className={`modal overlay ${
-          isDeleting
-          && ((selectedTodoid === todo.id) || todo.completed)
+          (todo.id === 0 || selectedTodoid
+          || (isDeleting && todo.completed))
           && 'is-active'}`}
       >
         <div className="modal-background has-background-white-ter" />

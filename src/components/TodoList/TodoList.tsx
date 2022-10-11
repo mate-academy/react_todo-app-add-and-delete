@@ -1,5 +1,10 @@
+import {
+  CSSTransition,
+  TransitionGroup,
+} from 'react-transition-group';
 import { Todo } from '../../types/Todo';
 import { TodoItem } from '../TodoItem';
+import './styles.css';
 
 type Props = {
   todos: Todo[];
@@ -13,50 +18,38 @@ export const TodoList: React.FC<Props> = ({
 }) => {
   return (
     <section className="todoapp__main" data-cy="TodoList">
-      {todos.map(todo => (
-        <TodoItem
-          todo={todo}
-          key={todo.id}
-          deleteTodo={deleteTodo}
-          isDeleting={isDeleting}
-        />
-      ))}
-
-      {'id' in tempTodo && (
-        <div
-          data-cy="Todo"
-          className="todo"
-        >
-          <label className="todo__status-label">
-            <input
-              data-cy="TodoStatus"
-              type="checkbox"
-              className="todo__status"
-              defaultChecked
-            />
-          </label>
-          <span
-            data-cy="TodoTitle"
-            className="todo__title"
+      <TransitionGroup>
+        {todos.map(todo => (
+          <CSSTransition
+            key={todo.id}
+            timeout={300}
+            classNames="item"
           >
-            {tempTodo.title}
-          </span>
-          <button
-            type="button"
-            className="todo__remove"
-            data-cy="TodoDeleteButton"
-          >
-            ×
-          </button>
-
-          <div data-cy="TodoLoader" className="modal overlay is-active">
-            <div
-              className="modal-background has-background-white-ter"
+            <TodoItem
+              todo={todo}
+              key={todo.id}
+              deleteTodo={deleteTodo}
+              isDeleting={isDeleting}
             />
-            <div className="loader" />
-          </div>
-        </div>
-      )}
+          </CSSTransition>
+        ))}
+
+        {'id' in tempTodo && (
+          <CSSTransition
+            key={0}
+            timeout={300}
+            classNames="temp-item"
+          >
+            <TodoItem
+              todo={tempTodo}
+              key={tempTodo.id}
+              deleteTodo={deleteTodo}
+              isDeleting
+            />
+          </CSSTransition>
+
+        )}
+      </TransitionGroup>
     </section>
   );
 };

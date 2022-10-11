@@ -59,7 +59,7 @@ export const Header: React.FC<Props> = ({
           value={inputValue}
           onKeyDown={(e) => {
             if (e.key === 'Enter') {
-              addValue(e.target.value);
+              addValue((e.target as HTMLInputElement).value);
             }
           }}
           onChange={(e) => {
