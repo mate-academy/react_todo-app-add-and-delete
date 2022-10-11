@@ -16,11 +16,11 @@ export const ErrorNotification: React.FC<Props> = ({
   useEffect(() => {
     const hideMessage = setTimeout(() => {
       setIsError(false);
-
-      if (isError) {
-        clearInterval(hideMessage);
-      }
     }, 3000);
+
+    return () => {
+      clearInterval(hideMessage);
+    };
   }, [isError]);
 
   return (
