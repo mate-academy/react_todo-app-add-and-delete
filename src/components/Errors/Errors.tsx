@@ -1,9 +1,8 @@
-/* eslint-disable jsx-a11y/control-has-associated-label */
-import { Error } from '../../types/Error';
+import { Error, ErrorMessages } from '../../types/Error';
 
 type Props = {
   error: Error;
-  handleError: (isError: boolean, value: string) => void;
+  handleError: (isError: boolean, value: ErrorMessages) => void;
 };
 
 export const Errors: React.FC<Props> = ({ error, handleError }) => {
@@ -18,17 +17,13 @@ export const Errors: React.FC<Props> = ({ error, handleError }) => {
         type="button"
         className="delete"
         onClick={() => {
-          handleError(false, '');
+          handleError(false, ErrorMessages.ErrorRemove);
         }}
-      />
+      >
+        &apos;
+      </button>
       {error.message}
       <br />
-
-      {/* Unable to add a todo
-      <br />
-      Unable to delete a todo
-      <br />
-      Unable to update a todo */}
     </div>
   );
 };

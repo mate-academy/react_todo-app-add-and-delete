@@ -1,17 +1,23 @@
-/* eslint-disable no-console */
 import { Todo } from '../../types/Todo';
+import { FilterValues } from '../../types/FilterValues';
 
 type Props = {
   todos: Todo[],
   filterTodos: (value: string) => void;
   countActive: number;
-  filterValue: string;
+  filterValue: FilterValues;
   clearCompleted: () => void;
 };
 
 export const Footer: React.FC<Props> = ({
   filterTodos, countActive, filterValue, clearCompleted, todos,
 }) => {
+  const { All, Active, Completed } = FilterValues;
+
+  const handleClick = (e: React.MouseEvent<HTMLAnchorElement>) => {
+    filterTodos((e.target as HTMLAnchorElement).text);
+  };
+
   return (
     <footer className="todoapp__footer" data-cy="Footer">
       <span className="todo-count" data-cy="todosCounter">
@@ -22,9 +28,9 @@ export const Footer: React.FC<Props> = ({
         <a
           data-cy="FilterLinkAll"
           href="#/"
-          className={`filter__link ${filterValue === 'All' && 'selected'}`}
+          className={`filter__link ${filterValue === All && 'selected'}`}
           onClick={(e) => {
-            filterTodos((e.target as HTMLAnchorElement).text);
+            handleClick(e);
           }}
         >
           All
@@ -33,9 +39,9 @@ export const Footer: React.FC<Props> = ({
         <a
           data-cy="FilterLinkActive"
           href="#/active"
-          className={`filter__link ${filterValue === 'Active' && 'selected'}`}
+          className={`filter__link ${filterValue === Active && 'selected'}`}
           onClick={(e) => {
-            filterTodos((e.target as HTMLAnchorElement).text);
+            handleClick(e);
           }}
         >
           Active
@@ -43,9 +49,9 @@ export const Footer: React.FC<Props> = ({
         <a
           data-cy="FilterLinkCompleted"
           href="#/completed"
-          className={`filter__link ${filterValue === 'Completed' && 'selected'}`}
+          className={`filter__link ${filterValue === Completed && 'selected'}`}
           onClick={(e) => {
-            filterTodos((e.target as HTMLAnchorElement).text);
+            handleClick(e);
           }}
         >
           Completed

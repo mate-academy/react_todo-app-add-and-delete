@@ -3,12 +3,13 @@
 import { useContext, useState } from 'react';
 import { Todo } from '../../types/Todo';
 import { AuthContext } from '../Auth/AuthContext';
+import { ErrorMessages } from '../../types/Error';
 
 type Props = {
   todos: Todo[];
   newTodoField: React.RefObject<HTMLInputElement>;
   addTodo: (value: string) => void;
-  handleError: (isError: boolean, value: string) => void;
+  handleError: (isError: boolean, value: ErrorMessages) => void;
 };
 
 export const Header: React.FC<Props> = ({
@@ -20,7 +21,7 @@ export const Header: React.FC<Props> = ({
 
   const addValue = async (value: string) => {
     if (!value) {
-      handleError(true, "Title can't be empty");
+      handleError(true, ErrorMessages.EroroTitle);
 
       return;
     }
