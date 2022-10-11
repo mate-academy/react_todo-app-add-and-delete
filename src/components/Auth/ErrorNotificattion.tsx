@@ -14,10 +14,13 @@ export const ErroNotification: React.FC<Props> = ({
   const [hiddenError, setHiddenError] = useState(false);
 
   useEffect(() => {
-    if (errorMessage) {
-      setTimeout(() => setErrorMessage(''), 3000);
-    }
-  }, []);
+    const showMessage = setTimeout(() => {
+      setErrorMessage('');
+      if (hiddenError) {
+        clearInterval(showMessage);
+      }
+    }, 3000);
+  }, [errorMessage]);
 
   const handleError = () => {
     setHiddenError(prev => !prev);
