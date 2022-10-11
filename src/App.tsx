@@ -6,23 +6,30 @@ import React, {
   useRef,
   useState,
 } from 'react';
-import { addTodos, deleteTodo, getTodos } from './api/todos';
+import {
+  addTodos,
+  deleteTodo,
+  getTodos,
+  patchTodo,
+} from './api/todos';
 import { AuthContext } from './components/Auth/AuthContext';
 import { ErrorNotification } from './components/Page/ErrorNotification';
-import { Footer } from './components/Page/Footer';
+import { FilterTodos } from './components/Page/FilterTodo';
+import { Header } from './components/Page/Header';
 import { TodoList } from './components/Page/TodoList';
 import { TodoContext } from './components/TodoContext';
 import { TodosError } from './types/ErrorEnum';
 import { FilterType } from './types/FilterTypeEnum';
+import { Todo } from './types/Todo';
 
 export const App: React.FC = () => {
   const user = useContext(AuthContext);
   const newTodoField = useRef<HTMLInputElement>(null);
   const [todos, setTodos] = useContext(TodoContext);
   const [filterType, setFilterType] = useState<FilterType>(FilterType.All);
-  const [title, setTitle] = useState<string>('');
+  const [title, setTitle] = useState('');
   const [todosError, setTodosError] = useState<TodosError>(TodosError.None);
-  const [isAdding, setIsAdding] = useState<boolean>(false);
+  const [isAdding, setIsAdding] = useState(false);
 
   if (todosError.length > 0) {
     setTimeout(() => {
@@ -51,7 +58,7 @@ export const App: React.FC = () => {
     if (newTodoField.current) {
       newTodoField.current.focus();
     }
-  }, []);
+  }, [todos]);
 
   const visibleTodos = filterType === FilterType.All
     ? todos
@@ -116,48 +123,95 @@ export const App: React.FC = () => {
     target: { value },
   }: React.ChangeEvent<HTMLInputElement>) => setTitle(value);
 
+  const toggleAllActive = todos.every(({ completed }) => completed);
+
+  const upgradeTodos = useCallback(
+    async (todoId: number, data: Partial<Todo>) => {
+      try {
+        const patchedTodo: Todo = await patchTodo(todoId, data);
+
+        setTodos(todos.map(todo => (
+          todo.id === todoId
+            ? patchedTodo
+            : todo
+        )));
+      } catch {
+        setTodosError(TodosError.Updating);
+      }
+    }, [todos],
+  );
+
+  const uncompletedTodos = todos.filter(({ completed }) => !completed);
+
+  const handleClickToggle = () => {
+    if (uncompletedTodos.length) {
+      uncompletedTodos.map(({ id }) => patchTodo(id,
+        { completed: true }).catch(() => setTodosError(TodosError.Updating)));
+      setTodos(todos.map(todo => {
+        const copy = todo;
+
+        copy.completed = true;
+
+        return copy;
+      }));
+    } else {
+      todos.map(({ id }) => patchTodo(id,
+        { completed: false }).catch(() => setTodosError(TodosError.Updating)));
+      setTodos(todos.map(todo => {
+        const copy = todo;
+
+        copy.completed = false;
+
+        return copy;
+      }));
+    }
+  };
+
+  const handleClearCompleted = () => {
+    todos.forEach(({ id, completed }) => {
+      if (completed) {
+        deleteTodo(id)
+          .catch(() => setTodosError(TodosError.Deleting));
+      }
+    });
+
+    setTodos(todos.filter(({ completed }) => !completed));
+  };
+
   return (
     <div className="todoapp">
       <h1 className="todoapp__title">todos</h1>
 
       <div className="todoapp__content">
-        <header className="todoapp__header">
-          {todos.length > 0 && (
-            <button
-              data-cy="ToggleAllButton"
-              type="button"
-              className="todoapp__toggle-all active"
-            >
-              {null}
-            </button>
-          )}
-
-          <form onSubmit={handleSubmit}>
-            <input
-              data-cy="NewTodoField"
-              type="text"
-              ref={newTodoField}
-              className="todoapp__new-todo"
-              placeholder="What needs to be done?"
-              value={title}
-              onChange={handleChangeInput}
-              disabled={isAdding}
-            />
-          </form>
-        </header>
+        <Header
+          todos={todos}
+          toggleAllActive={toggleAllActive}
+          handleClickToggle={handleClickToggle}
+          handleSubmit={handleSubmit}
+          newTodoField={newTodoField}
+          title={title}
+          handleChangeInput={handleChangeInput}
+          isAdding={isAdding}
+        />
 
         <TodoList
           visibleTodos={visibleTodos}
           removeTodo={handleDelete}
-          input={title}
           isAdding={isAdding}
+          handleStatus={upgradeTodos}
+          setIsAdding={setIsAdding}
+          newTodoField={newTodoField}
+          setTodosError={setTodosError}
+          upgradeTodos={upgradeTodos}
+          input={title}
         />
 
         {todos.length > 0 && (
-          <Footer
+          <FilterTodos
             handleChooseFilter={handleChooseFilter}
             todos={todos}
             filterType={filterType}
+            handleClearCompleted={handleClearCompleted}
           />
         )}
       </div>
