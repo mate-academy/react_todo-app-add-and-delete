@@ -1,30 +1,30 @@
-/* eslint-disable jsx-a11y/control-has-associated-label */
 import React, {
   useCallback,
   useContext,
   useEffect,
+  useMemo,
   useRef,
   useState,
 } from 'react';
 import { getTodos, createTodo, deleteTodo } from './api/todos';
 import { AuthContext } from './components/Auth/AuthContext';
-import { ErroNotification } from './components/Auth/ErrorNot';
+import { ErroNotification } from './components/Auth/ErrorNotificattion';
 import { Filter } from './components/Auth/Filters';
 import { Todos } from './components/Auth/Todo';
 import { TodoList } from './components/Auth/TodoList';
 import { Todo } from './types/Todo';
 import { Filters } from './types/Filters';
+import { Errors } from './types/error';
 
 export const App: React.FC = () => {
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   const [todos, setTodos] = useState<Todo[] | []>([]);
   const [errorMessage, setErrorMessage] = useState('');
-  const [filterBy, setFiterBy] = useState('all');
+  const [filterBy, setFiterBy] = useState(Filters.All);
   const [title, setTitle] = useState('');
   const [isAdding, setIsAdding] = useState(false);
   const [selectedId, setSelectedId] = useState<number[]>([]);
 
-  const user = useContext(AuthContext); // eslint-disable-line @typescript-eslint/no-unused-vars
+  const user = useContext(AuthContext);
   const newTodoField = useRef<HTMLInputElement>(null);
 
   useEffect(() => {
@@ -34,7 +34,6 @@ export const App: React.FC = () => {
   }, []);
 
   useEffect(() => {
-    // focus the element with `ref={newTodoField}`
     if (newTodoField.current) {
       newTodoField.current.focus();
     }
@@ -56,54 +55,59 @@ export const App: React.FC = () => {
     todosFromServer();
   }, []);
 
-  const handleSubmit = async (event: React.FormEvent) => {
+  const handleSubmit = useCallback(async (event: React.FormEvent) => {
     event.preventDefault();
 
     if (!title) {
-      return setErrorMessage('Title can`t be empty');
+      return setErrorMessage(Errors.title);
     }
 
     if (user) {
       await createTodo(user.id, title)
-        .then(newTodo => {
-          setTodos([...todos, newTodo]);
+        .then(async newTodo => {
+          setTodos((prevTodos) => [...prevTodos, newTodo]);
         })
         .catch(() => {
-          setErrorMessage('Unable to add a todo');
+          setErrorMessage(Errors.create);
         });
     }
 
     setIsAdding(false);
 
     return setTitle('');
-  };
+  }, [todos, title, isAdding]);
 
-  const handleremoveTodo = async (todoId: number) => {
-    setSelectedId([todoId]);
-    setIsAdding(true);
-    await deleteTodo(todoId)
-      .then(() => {
-        setTodos(prevTodos => prevTodos.filter(todo => todo.id !== todoId));
-      })
-      .catch(() => {
-        setErrorMessage('Unable to delete a todo');
-      });
-  };
+  const handleremoveTodo = useCallback(
+    async (todoId: number) => {
+      setSelectedId([todoId]);
+      setIsAdding(true);
+      await deleteTodo(todoId)
+        .then(() => {
+          setTodos(prevTodos => prevTodos.filter(todo => todo.id !== todoId));
+        })
+        .catch(() => {
+          setErrorMessage(Errors.delete);
+        });
+    }, [selectedId, isAdding, todos],
+  );
 
-  const completedTodos = todos.filter(({ completed }) => completed);
+  const completedTodos = useMemo(
+    () => todos.filter(todo => todo.completed),
+    [todos],
+  );
 
   const handleDeleteCompletedTodos = useCallback(() => {
-    setSelectedId([...completedTodos].map(({ id }) => id));
+    setSelectedId(completedTodos.map(({ id }) => id));
 
     Promise.any(completedTodos.map(({ id }) => handleremoveTodo(id)))
       .then(() => setTodos([...todos.filter(({ completed }) => !completed)]))
       .catch(() => {
-        setErrorMessage('Unable to delete a todo');
+        setErrorMessage(Errors.delete);
         setSelectedId([]);
       });
   }, [todos, selectedId, errorMessage]);
 
-  const filterTodoBy = todos.filter(todo => {
+  const filterTodoBy = useMemo(() => todos.filter(todo => {
     switch (filterBy) {
       case Filters.Active:
         return !todo.completed;
@@ -113,7 +117,9 @@ export const App: React.FC = () => {
       default:
         return todo;
     }
-  });
+  }), [todos]);
+
+  const isCompletedTodos = todos.some(({ completed }) => completed);
 
   return (
     <div className="todoapp">
@@ -140,7 +146,7 @@ export const App: React.FC = () => {
             todos={filterTodoBy}
             filterBy={filterBy}
             deleteTodo={handleDeleteCompletedTodos}
-            completedTodos={completedTodos}
+            isCompletedTodos={isCompletedTodos}
           />
         </div>
       )}

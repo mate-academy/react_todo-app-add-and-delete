@@ -1,5 +1,5 @@
 import classNames from 'classnames';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 
 type Props = {
   errorMessage: string,
@@ -13,9 +13,11 @@ export const ErroNotification: React.FC<Props> = ({
 }) => {
   const [hiddenError, setHiddenError] = useState(false);
 
-  if (errorMessage) {
-    setTimeout(() => setErrorMessage(''), 3000);
-  }
+  useEffect(() => {
+    if (errorMessage) {
+      setTimeout(() => setErrorMessage(''), 3000);
+    }
+  }, []);
 
   const handleError = () => {
     setHiddenError(prev => !prev);

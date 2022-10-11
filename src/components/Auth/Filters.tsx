@@ -1,12 +1,14 @@
 import classNames from 'classnames';
+import { Filters } from '../../types/Filters';
 import { Todo } from '../../types/Todo';
 
 type Props = {
-  setFilterBy: (object: string) => void;
-  filterBy: string;
+  setFilterBy: (arg: Filters) => void;
+  filterBy: Filters;
   todos: Todo[] | null;
   deleteTodo: () => void
-  completedTodos: Todo[];
+  isCompletedTodos: boolean;
+
 };
 
 export const Filter: React.FC<Props> = ({
@@ -14,9 +16,9 @@ export const Filter: React.FC<Props> = ({
   todos,
   setFilterBy,
   deleteTodo,
-  completedTodos,
+  isCompletedTodos,
 }) => {
-  const handleChangeFilterBy = (filteredBy: string) => {
+  const handleChangeFilterBy = (filteredBy: Filters) => {
     setFilterBy(filteredBy);
   };
 
@@ -37,7 +39,7 @@ export const Filter: React.FC<Props> = ({
           href="#/"
           className={classNames('filter__link',
             { selected: filterByParam('all') })}
-          onClick={() => handleChangeFilterBy('all')}
+          onClick={() => handleChangeFilterBy(Filters.All)}
         >
           All
         </a>
@@ -47,7 +49,7 @@ export const Filter: React.FC<Props> = ({
           href="#/active"
           className={classNames('filter__link',
             { selected: filterByParam('active') })}
-          onClick={() => handleChangeFilterBy('active')}
+          onClick={() => handleChangeFilterBy(Filters.Active)}
         >
           Active
         </a>
@@ -56,20 +58,23 @@ export const Filter: React.FC<Props> = ({
           href="#/completed"
           className={classNames('filter__link',
             { selected: filterByParam('completed') })}
-          onClick={() => handleChangeFilterBy('completed')}
+          onClick={() => handleChangeFilterBy(Filters.Completed)}
         >
           Completed
         </a>
       </nav>
 
-      <button
-        data-cy="ClearCompletedButton"
-        type="button"
-        className="todoapp__clear-completed"
-        onClick={deleteTodo}
-      >
-        {completedTodos.length > 0 && ('Clear completed')}
-      </button>
+      {isCompletedTodos && (
+        <button
+          data-cy="ClearCompletedButton"
+          type="button"
+          className="todoapp__clear-completed"
+          onClick={deleteTodo}
+        >
+          Clear completed
+        </button>
+
+      )}
     </footer>
   );
 };
