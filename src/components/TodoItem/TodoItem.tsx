@@ -22,6 +22,9 @@ export const TodoItem: React.FC<Props> = ({
     completed,
     id,
   } = todo;
+  const isActive = (isAdding && userId === -1)
+    || (selectedTodoId)
+    || (isDeleting && completed);
 
   const onDeleteTodo = () => {
     setSelectedTodoId(id);
@@ -60,12 +63,7 @@ export const TodoItem: React.FC<Props> = ({
         data-cy="TodoLoader"
         className={classNames(
           'modal overlay',
-          {
-            'is-active':
-              (isAdding && userId === -1)
-              || (selectedTodoId)
-              || (isDeleting && completed),
-          },
+          { 'is-active': isActive },
         )}
       >
         <div className="modal-background has-background-white-ter" />

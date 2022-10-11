@@ -66,7 +66,7 @@ export const App: React.FC = () => {
     todos.filter(({ completed }) => !completed)
   ), [todos]);
 
-  const addTodo = async (todoTitle: string) => {
+  const addTodo = useCallback(async (todoTitle: string) => {
     setIsAdding(true);
 
     try {
@@ -76,9 +76,9 @@ export const App: React.FC = () => {
     } finally {
       setIsAdding(false);
     }
-  };
+  }, [user]);
 
-  const removeTodo = async (todoId: number) => {
+  const removeTodo = useCallback(async (todoId: number) => {
     try {
       await deleteTodo(todoId);
 
@@ -89,16 +89,16 @@ export const App: React.FC = () => {
     } finally {
       setIsDeleting(false);
     }
-  };
+  }, [todos]);
 
-  const removeCompletedTodos = async () => {
+  const removeCompletedTodos = useCallback(async () => {
     setIsDeleting(true);
     try {
       completedTodos.forEach(({ id }) => removeTodo(id));
     } catch {
       setError(Errors.DELETE);
     }
-  };
+  }, [todos]);
 
   return (
     <div className="todoapp">
