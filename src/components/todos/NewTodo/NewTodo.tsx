@@ -9,7 +9,7 @@ interface Props {
   isAdding: boolean;
 }
 
-export const Header: React.FC<Props> = ({ addTodo, isAdding }) => {
+export const NewTodo: React.FC<Props> = ({ addTodo, isAdding }) => {
   const newTodoField = useRef<HTMLInputElement>(null);
 
   const handleSubmit = (event: FormEvent) => {

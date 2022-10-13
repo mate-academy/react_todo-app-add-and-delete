@@ -7,8 +7,8 @@ import React, {
 import { deleteTodo, getTodos, postTodo } from './api/todos';
 import { AuthContext } from './components/Auth/AuthContext';
 import { ErrorMessage } from './components/todos/ErrorMessage';
-import { Footer } from './components/todos/Footer';
-import { Header } from './components/todos/Header';
+import { Filter } from './components/todos/Filter';
+import { NewTodo } from './components/todos/NewTodo';
 import { TodoList } from './components/todos/TodoList';
 import { Error } from './types/Error';
 import { Status } from './types/Status';
@@ -110,7 +110,7 @@ export const App: React.FC = () => {
       <h1 className="todoapp__title">todos</h1>
 
       <div className="todoapp__content">
-        <Header
+        <NewTodo
           addTodo={addTodo}
           isAdding={isAdding}
         />
@@ -124,7 +124,7 @@ export const App: React.FC = () => {
         />
 
         {todos.length > 0 && (
-          <Footer
+          <Filter
             todos={todos}
             selected={status}
             setStatus={setStatus}

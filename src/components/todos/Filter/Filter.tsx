@@ -10,7 +10,7 @@ interface Props {
   removeCompleted: (completedTodos: Todo[]) => void;
 }
 
-export const Footer: React.FC<Props> = ({
+export const Filter: React.FC<Props> = ({
   todos,
   selected,
   setStatus,
