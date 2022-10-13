@@ -34,7 +34,6 @@ export const TodoItem: React.FC<Props> = ({
           type="checkbox"
           className="todo__status"
           data-cy="TodoStatus"
-          onClick={() => removeTodo(id)}
           defaultChecked={completed}
         />
       </label>
