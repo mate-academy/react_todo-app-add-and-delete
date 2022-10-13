@@ -1,6 +1,5 @@
-/* eslint-disable no-console */
-/* eslint-disable jsx-a11y/control-has-associated-label */
 import React, {
+  useCallback,
   useContext,
   useEffect,
   useState,
@@ -8,10 +7,11 @@ import React, {
 import { deleteTodo, getTodos, postTodo } from './api/todos';
 import { AuthContext } from './components/Auth/AuthContext';
 import { ErrorMessage } from './components/todos/ErrorMessage';
-import { TodoFooter } from './components/todos/TodoFooter';
-import { TodoHeader } from './components/todos/TodoHeader';
+import { Footer } from './components/todos/Footer';
+import { Header } from './components/todos/Header';
 import { TodoList } from './components/todos/TodoList';
 import { Error } from './types/Error';
+import { Status } from './types/Status';
 import { Todo } from './types/Todo';
 
 export const App: React.FC = () => {
@@ -24,7 +24,7 @@ export const App: React.FC = () => {
   const [todos, setTodos] = useState<Todo[]>([]);
   const [visibleTodos, setVisibleTodos] = useState<Todo[]>([]);
   const [tempTodo, setTempTodo] = useState<Todo | null>(null);
-  const [status, setStatus] = useState('All');
+  const [status, setStatus] = useState<Status>(Status.All);
   const [removedTodos, setRemovedTodos] = useState<number[]>([]);
 
   const loadData = async () => {
@@ -37,7 +37,7 @@ export const App: React.FC = () => {
     }
   };
 
-  const filterByStatus = (activedStatus: string): Todo[] => {
+  const filterTodosByStatus = (activedStatus: string): Todo[] => {
     switch (activedStatus) {
       case 'Active':
         return todos.filter(todo => !todo.completed);
@@ -55,10 +55,16 @@ export const App: React.FC = () => {
   }, []);
 
   useEffect(() => {
-    setVisibleTodos(filterByStatus(status));
+    setVisibleTodos(filterTodosByStatus(status));
   }, [status, todos]);
 
-  const addTodo = async (value: string) => {
+  const addTodo = useCallback(async (value: string) => {
+    if (!value.trim()) {
+      setError(Error.Empty);
+
+      return;
+    }
+
     setIsAdding(true);
 
     if (user && value) {
@@ -75,9 +81,9 @@ export const App: React.FC = () => {
     }
 
     setIsAdding(false);
-  };
+  }, []);
 
-  const removeTodo = async (id: number) => {
+  const removeTodo = useCallback(async (id: number) => {
     try {
       await deleteTodo(id);
     } catch {
@@ -85,7 +91,7 @@ export const App: React.FC = () => {
     }
 
     loadData();
-  };
+  }, []);
 
   const removeCompleted = async (completedTodos: Todo[]) => {
     const completedTodoIds = completedTodos.map(todo => todo.id);
@@ -104,7 +110,7 @@ export const App: React.FC = () => {
       <h1 className="todoapp__title">todos</h1>
 
       <div className="todoapp__content">
-        <TodoHeader
+        <Header
           addTodo={addTodo}
           isAdding={isAdding}
         />
@@ -118,7 +124,7 @@ export const App: React.FC = () => {
         />
 
         {todos.length > 0 && (
-          <TodoFooter
+          <Footer
             todos={todos}
             selected={status}
             setStatus={setStatus}

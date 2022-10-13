@@ -1,5 +1,3 @@
-/* eslint-disable no-console */
-/* eslint-disable jsx-a11y/control-has-associated-label */
 import React, {
   FormEvent,
   useEffect,
@@ -11,7 +9,7 @@ interface Props {
   isAdding: boolean;
 }
 
-export const TodoHeader: React.FC<Props> = ({ addTodo, isAdding }) => {
+export const Header: React.FC<Props> = ({ addTodo, isAdding }) => {
   const newTodoField = useRef<HTMLInputElement>(null);
 
   const handleSubmit = (event: FormEvent) => {
@@ -32,6 +30,7 @@ export const TodoHeader: React.FC<Props> = ({ addTodo, isAdding }) => {
   return (
     <header className="todoapp__header">
       <button
+        aria-label="toggleAll"
         data-cy="ToggleAllButton"
         type="button"
         className="todoapp__toggle-all active"

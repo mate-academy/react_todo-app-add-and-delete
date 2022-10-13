@@ -1,5 +1,4 @@
-/* eslint-disable jsx-a11y/control-has-associated-label */
-import React from 'react';
+import React, { useEffect } from 'react';
 import { Error } from '../../../types/Error';
 
 interface Props {
@@ -8,11 +7,13 @@ interface Props {
 }
 
 export const ErrorMessage: React.FC<Props> = ({ error, setError }) => {
-  if (error) {
-    setTimeout(() => {
-      setError(Error.None);
-    }, 3000);
-  }
+  useEffect(() => {
+    const timerId = setTimeout(() => setError(Error.None), 3000);
+
+    return () => {
+      clearTimeout(timerId);
+    };
+  }, [error]);
 
   return (
     <div
@@ -20,6 +21,7 @@ export const ErrorMessage: React.FC<Props> = ({ error, setError }) => {
       className="notification is-danger is-light has-text-weight-normal"
     >
       <button
+        aria-label="close"
         data-cy="HideErrorButton"
         type="button"
         className="delete"

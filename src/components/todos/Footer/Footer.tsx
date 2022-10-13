@@ -1,26 +1,31 @@
 import classNames from 'classnames';
-import React from 'react';
+import React, { useMemo } from 'react';
+import { Status } from '../../../types/Status';
 import { Todo } from '../../../types/Todo';
 
 interface Props {
   todos: Todo[];
   selected: string;
-  setStatus: (status: string) => void;
+  setStatus: (status: Status) => void;
   removeCompleted: (completedTodos: Todo[]) => void;
 }
 
-export const TodoFooter: React.FC<Props> = ({
+export const Footer: React.FC<Props> = ({
   todos,
   selected,
   setStatus,
   removeCompleted,
 }) => {
-  const statuses = ['All', 'Active', 'Completed'];
+  const statuses = [Status.All, Status.Active, Status.Completed];
 
-  const filterCopleted = () => (
-    removeCompleted(todos.filter(todo => (
-      todo.completed
-    )))
+  const getCompletedTodos = () => todos.filter(todo => (
+    todo.completed
+  ));
+
+  const completedTodos = useMemo(getCompletedTodos, [todos, selected]);
+
+  const filterCompleted = () => (
+    removeCompleted(completedTodos)
   );
 
   return (
@@ -35,7 +40,7 @@ export const TodoFooter: React.FC<Props> = ({
           <a
             key={status}
             data-cy="FilterLinkAll"
-            href={`#/${status.toLowerCase()}/`}
+            href={`#${status.toLowerCase()}/`}
             className={classNames('filter__link', {
               selected: selected === status,
             })}
@@ -44,17 +49,20 @@ export const TodoFooter: React.FC<Props> = ({
             {status}
           </a>
         ))}
-
       </nav>
 
       <button
         data-cy="ClearCompletedButton"
         type="button"
         className="todoapp__clear-completed"
-        onClick={() => filterCopleted()}
+        onClick={() => filterCompleted()}
+        disabled={completedTodos.length === 0}
       >
-        Clear completed
+        {completedTodos.length === 0
+          ? ''
+          : 'Clear completed'}
       </button>
+
     </footer>
   );
 };
