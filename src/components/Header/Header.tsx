@@ -1,3 +1,4 @@
+/* eslint-disable padding-line-between-statements */
 /* eslint-disable no-console */
 /* eslint-disable jsx-a11y/control-has-associated-label */
 import { useContext, useState } from 'react';
@@ -25,7 +26,7 @@ export const Header: React.FC<Props> = ({
 
       return;
     }
-
+    console.log('yes');
     if (!user) {
       return;
     }
@@ -36,6 +37,13 @@ export const Header: React.FC<Props> = ({
 
     setIsAdding(false);
     setInputValue('');
+  };
+
+  const handleKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
+    if (e.key === 'Enter') {
+      e.preventDefault();
+      addValue((e.target as HTMLInputElement).value);
+    }
   };
 
   return (
@@ -57,11 +65,7 @@ export const Header: React.FC<Props> = ({
           placeholder="What needs to be done?"
           disabled={isAdding}
           value={inputValue}
-          onKeyDown={(e) => {
-            if (e.key === 'Enter') {
-              addValue((e.target as HTMLInputElement).value);
-            }
-          }}
+          onKeyDown={handleKeyDown}
           onChange={(e) => {
             setInputValue(e.target.value);
           }}
