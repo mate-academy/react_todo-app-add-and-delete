@@ -1,6 +1,3 @@
-/* eslint-disable padding-line-between-statements */
-/* eslint-disable no-console */
-/* eslint-disable jsx-a11y/control-has-associated-label */
 import { useContext, useState } from 'react';
 import { Todo } from '../../types/Todo';
 import { AuthContext } from '../Auth/AuthContext';
@@ -26,7 +23,7 @@ export const Header: React.FC<Props> = ({
 
       return;
     }
-    console.log('yes');
+
     if (!user) {
       return;
     }
@@ -48,12 +45,14 @@ export const Header: React.FC<Props> = ({
 
   return (
     <header className="todoapp__header">
-      {todos.length > 0 && (
+      {!!todos.length && (
         <button
           data-cy="ToggleAllButton"
           type="button"
           className="todoapp__toggle-all active"
-        />
+        >
+          &nbsp;
+        </button>
       )}
 
       <form>

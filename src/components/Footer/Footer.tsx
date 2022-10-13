@@ -1,3 +1,4 @@
+import classNames from 'classnames';
 import { Todo } from '../../types/Todo';
 import { FilterValues } from '../../types/FilterValues';
 
@@ -28,10 +29,11 @@ export const Footer: React.FC<Props> = ({
         <a
           data-cy="FilterLinkAll"
           href="#/"
-          className={`filter__link ${filterValue === All && 'selected'}`}
-          onClick={(e) => {
-            handleClick(e);
-          }}
+          className={classNames(
+            'filter__link',
+            { selected: filterValue === All },
+          )}
+          onClick={handleClick}
         >
           All
         </a>
@@ -39,20 +41,22 @@ export const Footer: React.FC<Props> = ({
         <a
           data-cy="FilterLinkActive"
           href="#/active"
-          className={`filter__link ${filterValue === Active && 'selected'}`}
-          onClick={(e) => {
-            handleClick(e);
-          }}
+          className={classNames(
+            'filter__link',
+            { selected: filterValue === Active },
+          )}
+          onClick={handleClick}
         >
           Active
         </a>
         <a
           data-cy="FilterLinkCompleted"
           href="#/completed"
-          className={`filter__link ${filterValue === Completed && 'selected'}`}
-          onClick={(e) => {
-            handleClick(e);
-          }}
+          className={classNames(
+            'filter__link',
+            { selected: filterValue === Completed },
+          )}
+          onClick={handleClick}
         >
           Completed
         </a>

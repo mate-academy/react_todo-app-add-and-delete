@@ -1,3 +1,4 @@
+import classNames from 'classnames';
 import { Error, ErrorMessages } from '../../types/Error';
 
 type Props = {
@@ -9,8 +10,13 @@ export const Errors: React.FC<Props> = ({ error, handleError }) => {
   return (
     <div
       data-cy="ErrorNotification"
-      className={`notification is-danger is-light
-      has-text-weight-normal ${!error.isError && 'hidden'}`}
+      className={classNames(
+        'notification',
+        'is-danger',
+        'is-light',
+        'has-text-weight-normal',
+        { hidden: !error.isError },
+      )}
     >
       <button
         data-cy="HideErrorButton"

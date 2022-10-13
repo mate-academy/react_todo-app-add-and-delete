@@ -171,7 +171,7 @@ export const App: React.FC = () => {
           isDeleting={isDeleting}
         />
 
-        {todos.length > 0 && (
+        {!!todos.length && (
           <Footer
             todos={todos}
             filterTodos={filterTodos}
