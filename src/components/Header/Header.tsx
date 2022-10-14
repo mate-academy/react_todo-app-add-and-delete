@@ -4,7 +4,7 @@ type Props = {
   newTodoField: RefObject<HTMLInputElement>;
   handleSubmit: FormEventHandler<HTMLFormElement>;
   title: string;
-  setTitle: (value: string) => void;
+  setTitle: React.Dispatch<React.SetStateAction<string>>;
 };
 
 export const Header: React.FC<Props> = ({

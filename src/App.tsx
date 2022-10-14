@@ -16,15 +16,15 @@ export const App: React.FC = () => {
   const user = useContext(AuthContext);
   const newTodoField = useRef<HTMLInputElement>(null);
   const [todos, setTodos] = useState<Todo[]>([]);
-  const [error, setError] = useState(false);
+  const [hasError, setHasError] = useState(false);
   const [filter, setFilter] = useState('all');
   const [subtitleError, setSubtitleError] = useState('');
   const [title, setTitle] = useState('');
-  const [isAdding, setAdding] = useState(false);
+  const [isAdding, setIsAdding] = useState(false);
 
-  if (error === false) {
+  if (!hasError) {
     setTimeout(() => {
-      setError(true);
+      setHasError(true);
     }, 3000);
   }
 
@@ -38,13 +38,13 @@ export const App: React.FC = () => {
       getTodos(user.id)
         .then(response => {
           setTodos(response);
-          setAdding(true);
+          setIsAdding(true);
         })
-        .catch(() => setError(true));
+        .catch(() => setHasError(true));
     }
   }, []);
 
-  const filterSet = todos.filter(todo => {
+  const visibleTodos = todos.filter(todo => {
     switch (filter) {
       case 'completed':
         return todo.completed;
@@ -59,9 +59,9 @@ export const App: React.FC = () => {
     event.preventDefault();
 
     if (title.trim().length === 0) {
-      setError(true);
+      setHasError(true);
       setSubtitleError('Title can\'t be empty');
-      setAdding(true);
+      setIsAdding(true);
     }
 
     if (user) {
@@ -75,7 +75,7 @@ export const App: React.FC = () => {
       });
     }
 
-    setAdding(false);
+    setIsAdding(false);
     setTitle('');
   };
 
@@ -85,7 +85,7 @@ export const App: React.FC = () => {
         await deleteTodo(todoId);
         setTodos(prev => prev.filter(todo => todo.id !== todoId));
       } catch {
-        setError(true);
+        setHasError(true);
         setSubtitleError('Unable to delete a todo');
       }
     }, [],
@@ -110,12 +110,12 @@ export const App: React.FC = () => {
         {(todos.length > 0) && (
           <>
             <TodoList
-              todos={filterSet}
+              todos={visibleTodos}
               handleRemove={handleRemove}
               isAdding={isAdding}
             />
             <Footer
-              todos={filterSet}
+              todos={visibleTodos}
               filterLink={filter}
               setFilter={setFilter}
               todosClear={completedTodos}
@@ -124,10 +124,10 @@ export const App: React.FC = () => {
           </>
         )}
       </div>
-      {error && (
+      {hasError && (
         <Notification
-          error={error}
-          SetError={setError}
+          error={hasError}
+          SetError={setHasError}
           subtitleError={subtitleError}
         />
       )}
