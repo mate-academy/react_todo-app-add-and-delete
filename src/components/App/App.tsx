@@ -51,7 +51,7 @@ export const App: React.FC = () => {
 
   useEffect(() => {
     if (user) {
-      getTodos(user?.id)
+      getTodos(user.id)
         .then(setTodos);
     }
   }, []);

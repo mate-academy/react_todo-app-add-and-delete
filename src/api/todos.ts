@@ -10,11 +10,15 @@ export const postTodo = async (
   userId: number,
   completed: boolean,
 ) => {
-  return client.post('/todos', { title, userId, completed });
+  const post = await client.post('/todos', { title, userId, completed });
+
+  return post;
 };
 
 export const deleteTodo = async (
   idTodo: number,
 ) => {
-  return client.delete(`/todos/${idTodo}`);
+  const remove = await client.delete(`/todos/${idTodo}`);
+
+  return remove;
 };
