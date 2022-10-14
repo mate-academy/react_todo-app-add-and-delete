@@ -1,5 +1,5 @@
 import React from 'react';
-import cN from 'classnames';
+import classNames from 'classnames';
 import { Todo } from '../../types/Todo';
 
 type Props = {
@@ -13,7 +13,7 @@ export const TodoItem: React.FC<Props> = React.memo(
     return (
       <div
         data-cy="Todo"
-        className={cN(
+        className={classNames(
           'todo',
           { completed: todo.completed },
         )}
@@ -33,6 +33,7 @@ export const TodoItem: React.FC<Props> = React.memo(
         >
           {todo.title}
         </span>
+
         <button
           type="button"
           className="todo__remove"
@@ -44,7 +45,7 @@ export const TodoItem: React.FC<Props> = React.memo(
 
         <div
           data-cy="TodoLoader"
-          className={cN(
+          className={classNames(
             'modal overlay',
             { 'is-active': todo.id === selectedTodo },
           )}

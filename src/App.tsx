@@ -13,6 +13,8 @@ import {
   getCompletedTodoNumber,
 } from './utils/FilteredTodo';
 
+import { debounce } from './utils/debounce';
+
 import { AuthContext } from './components/Auth/AuthContext';
 import { Header } from './components/Header';
 import { TodoList } from './components/TodoList';
@@ -23,6 +25,7 @@ export const App: React.FC = () => {
   const user = useContext(AuthContext);
   const [todos, setTodos] = useState<Todo[]>([]);
   const [todoTitle, setTodoTitle] = useState('');
+  const [debounceTodoTitle, setDebounceTodoTitle] = useState('');
   const [filteredType, setFilteredType] = useState(FilterType.All);
   const [errorAlert, setErrorAlert] = useState<ErrorType | null>(null);
   const [isAdding, setIsAdding] = useState(false);
@@ -41,36 +44,46 @@ export const App: React.FC = () => {
     getCompletedTodoNumber(todos)
   ), [todos, filteredType]);
 
-  const loadTodosFromServer = async () => {
-    try {
-      if (user?.id) {
-        const todosFromServer = await getTodos(user.id);
+  const applyTodoTitle = useCallback(
+    debounce(setDebounceTodoTitle, 200),
+    [],
+  );
 
-        setTodos(todosFromServer);
+  const loadTodosFromServer = useCallback(
+    async () => {
+      try {
+        if (user?.id) {
+          const todosFromServer = await getTodos(user.id);
+
+          setTodos(todosFromServer);
+        }
+      } catch {
+        setErrorAlert(ErrorType.loadedError);
       }
-    } catch {
-      setErrorAlert(ErrorType.loadedError);
-    }
-  };
+    }, [],
+  );
 
   useEffect(() => {
     loadTodosFromServer();
   }, [isAdding, isRemoving]);
 
-  const loadTodoOnServer = async () => {
-    try {
-      setIsAdding(true);
+  const loadTodoOnServer = useCallback(
+    async () => {
+      try {
+        setIsAdding(true);
 
-      if (user?.id) {
-        await createTodo(user.id, todoTitle);
-        setTodoTitle('');
+        if (user?.id) {
+          await createTodo(user.id, todoTitle);
+          setTodoTitle('');
+          setDebounceTodoTitle('');
+        }
+      } catch (error) {
+        setErrorAlert(ErrorType.addedError);
+      } finally {
+        setIsAdding(false);
       }
-    } catch (error) {
-      setErrorAlert(ErrorType.addedError);
-    } finally {
-      setIsAdding(false);
-    }
-  };
+    }, [debounceTodoTitle],
+  );
 
   const deleteTodoFromServer = useCallback(
     async (idTodo: number) => {
@@ -112,6 +125,7 @@ export const App: React.FC = () => {
         <Header
           todoTitle={todoTitle}
           isAdding={isAdding}
+          applyTodoTitle={applyTodoTitle}
           setTodoTitle={setTodoTitle}
           handleLoadTodoOnServer={handleLoadTodoOnServer}
         />
@@ -135,11 +149,13 @@ export const App: React.FC = () => {
         )}
       </div>
 
-      <ErrorNotification
-        errorAlert={errorAlert}
-        setIsAdding={setIsAdding}
-        setErrorAlert={setErrorAlert}
-      />
+      {errorAlert !== null && (
+        <ErrorNotification
+          errorAlert={errorAlert}
+          setIsAdding={setIsAdding}
+          setErrorAlert={setErrorAlert}
+        />
+      )}
     </div>
   );
 };

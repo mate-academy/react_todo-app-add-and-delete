@@ -56,6 +56,7 @@ export const TodoList: React.FC<Props> = React.memo(({
           >
             {tempTodo.title}
           </span>
+
           <button
             type="button"
             className="todo__remove"

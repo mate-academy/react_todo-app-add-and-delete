@@ -1,5 +1,5 @@
 import React from 'react';
-import cN from 'classnames';
+import classNames from 'classnames';
 import { FilterType } from '../../types/FilterType';
 
 type Props = {
@@ -28,7 +28,7 @@ export const Footer: React.FC<Props> = React.memo(
           <a
             data-cy="FilterLinkAll"
             href="#/"
-            className={cN(
+            className={classNames(
               'filter__link',
               { selected: filteredType === FilterType.All },
             )}
@@ -40,7 +40,7 @@ export const Footer: React.FC<Props> = React.memo(
           <a
             data-cy="FilterLinkActive"
             href="#/active"
-            className={cN(
+            className={classNames(
               'filter__link',
               { selected: filteredType === FilterType.Active },
             )}
@@ -51,7 +51,7 @@ export const Footer: React.FC<Props> = React.memo(
           <a
             data-cy="FilterLinkCompleted"
             href="#/completed"
-            className={cN(
+            className={classNames(
               'filter__link',
               { selected: filteredType === FilterType.Completed },
             )}

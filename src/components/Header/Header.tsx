@@ -3,6 +3,7 @@ import React, { useRef, useEffect } from 'react';
 type Props = {
   todoTitle: string,
   isAdding: boolean,
+  applyTodoTitle: (query: string) => void,
   setTodoTitle: (value: string) => void,
   handleLoadTodoOnServer: (value: React.FormEvent) => void,
 };
@@ -11,6 +12,7 @@ export const Header: React.FC<Props> = React.memo(
   ({
     todoTitle,
     isAdding,
+    applyTodoTitle,
     setTodoTitle,
     handleLoadTodoOnServer,
   }) => {
@@ -40,7 +42,10 @@ export const Header: React.FC<Props> = React.memo(
             className="todoapp__new-todo"
             placeholder="What needs to be done?"
             value={todoTitle}
-            onChange={(event) => setTodoTitle(event.target.value.trim())}
+            onChange={({ target }) => {
+              setTodoTitle(target.value);
+              applyTodoTitle(target.value);
+            }}
             disabled={isAdding}
           />
         </form>

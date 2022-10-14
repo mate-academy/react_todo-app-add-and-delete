@@ -1,5 +1,4 @@
 import React from 'react';
-import cN from 'classnames';
 import { ErrorType } from '../../types/ErrorType';
 
 type Props = {
@@ -7,6 +6,7 @@ type Props = {
   setErrorAlert: (value: ErrorType | null) => void,
   setIsAdding: (value: boolean) => void,
 };
+
 export const ErrorNotification: React.FC<Props> = React.memo(
   ({
     errorAlert,
@@ -23,19 +23,15 @@ export const ErrorNotification: React.FC<Props> = React.memo(
     return (
       <div
         data-cy="ErrorNotification"
-        className={cN(
-          'notification is-danger is-light has-text-weight-normal',
-          { hidden: !errorAlert },
-        )}
+        className="notification is-danger is-light has-text-weight-normal"
       >
         <button
           data-cy="HideErrorButton"
+          aria-label="Close Error Notification"
           type="button"
           className="delete"
           onClick={() => setErrorAlert(null)}
-        >
-          <></>
-        </button>
+        />
         {errorAlert}
       </div>
     );
