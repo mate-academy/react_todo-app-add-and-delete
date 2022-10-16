@@ -1,6 +1,9 @@
 /* eslint-disable jsx-a11y/control-has-associated-label */
 import React, {
-  ChangeEvent, useContext, useMemo, useState,
+  useContext,
+  useMemo,
+  useRef,
+  useState,
 } from 'react';
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import classNames from 'classnames';
@@ -20,7 +23,6 @@ export const App: React.FC = () => {
   const [hidden, setHidden] = useState(true);
   const [filterCriteria, setFilterCriteria] = useState(FilterType.All);
   const [error, setError] = useState(ErrorMessage.Null);
-  const [newTodo, setNewTodo] = useState<string>('');
 
   const { data: todos, isLoading } = useQuery(
     ['todos', user?.id],
@@ -86,24 +88,22 @@ export const App: React.FC = () => {
     }
   };
 
-  const handleInput = (event: ChangeEvent<HTMLInputElement>) => {
-    setNewTodo(event.target.value);
-  };
+  const inputRef = useRef<HTMLInputElement>(null);
 
   const handleSubmit = (event: React.KeyboardEvent<HTMLInputElement>) => {
     if (event.key === 'Enter') {
       event.preventDefault();
-      if (newTodo.trim().length === 0) {
+      if (inputRef.current?.value.trim().length === 0) {
         setError(ErrorMessage.Add);
         setHidden(false);
-        setNewTodo('');
+        inputRef.current!.value = '';
       } else {
         todoMutation.mutate({
-          title: newTodo,
+          title: inputRef.current!.value,
           userId: user!.id,
           completed: false,
         });
-        setNewTodo('');
+        inputRef.current!.value = '';
       }
     }
   };
@@ -134,9 +134,8 @@ export const App: React.FC = () => {
               type="text"
               className="todoapp__new-todo"
               placeholder="What needs to be done?"
-              value={newTodo}
               onKeyDown={handleSubmit}
-              onChange={handleInput}
+              ref={inputRef}
               disabled={todoMutation.isLoading}
             />
           </form>
