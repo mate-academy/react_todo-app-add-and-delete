@@ -78,6 +78,7 @@ export const TodoList: FC<Props> = ({
           </div>
         );
       })}
+
       {isAdding && (
         <div data-cy="Todo" className="todo">
           <label className="todo__status-label">

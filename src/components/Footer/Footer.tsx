@@ -10,7 +10,7 @@ type Props = {
   clearCompleted: () => void;
 };
 
-export const Footer: FC<Props> = ({
+export const Filter: FC<Props> = ({
   filtType,
   activeItem,
   isCompleted,

@@ -1,4 +1,3 @@
-/* eslint-disable jsx-a11y/control-has-associated-label */
 import {
   FC,
   FormEvent,
@@ -12,7 +11,7 @@ import {
 import { AuthContext } from './components/Auth/AuthContext';
 import { ErrorNotification } from './components/ErrorNotification';
 import { TodoList } from './components/TodoList';
-import { Footer } from './components/Footer';
+import { Filter } from './components/Footer';
 
 import {
   getTodos,
@@ -23,42 +22,27 @@ import {
 import { Todo } from './types/Todo';
 import { FiltType } from './types/Filter';
 import { Header } from './components/Header';
-
-function filtTodos(
-  todos: Todo[],
-  filtType: FiltType,
-) {
-  const visibleTodos = [...todos];
-
-  switch (filtType) {
-    case FiltType.Active:
-      return visibleTodos.filter(todo => !todo.completed);
-
-    case FiltType.Completed:
-      return visibleTodos.filter(todo => todo.completed);
-    default:
-      return visibleTodos;
-  }
-}
+import { filtTodos } from './components/filtTodos';
 
 export const App: FC = () => {
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   const user = useContext(AuthContext);
   const newTodoField = useRef<HTMLInputElement>(null);
-  const [errorMessage, setErrorMessage] = useState<string>('');
+  const [errorMessage, setErrorMessage] = useState('');
   const [filtType, setFiltType] = useState<FiltType>(FiltType.All);
   const [todos, setTodos] = useState<Todo[]>([]);
-  const [activeItem, setActiveItem] = useState<number>(0);
-  const [isAdding, setIsAdding] = useState<boolean>(false);
+  const [activeItem, setActiveItem] = useState(0);
+  const [isAdding, setIsAdding] = useState(false);
   const [isCompleted, setIsCompleted] = useState(false);
-  const [title, setTitle] = useState<string>('');
+  const [title, setTitle] = useState('');
 
-  const loadTodos = useCallback((userId: number) => {
-    getTodos(userId)
-      .then(todosFromServer => {
-        setTodos(todosFromServer);
-      })
-      .catch(() => setErrorMessage('Unable to update todos'));
+  const getUserTodosFromServer = useCallback(async (userId: number) => {
+    try {
+      const userTodosFromServer = await getTodos(userId);
+
+      setTodos(userTodosFromServer);
+    } catch {
+      setErrorMessage('Unable to update todos');
+    }
   }, [user, todos]);
 
   useEffect(() => {
@@ -66,7 +50,7 @@ export const App: FC = () => {
       return;
     }
 
-    loadTodos(user.id);
+    getUserTodosFromServer(user.id);
   }, [user]);
 
   const visibleTodos = useMemo(() => (
@@ -88,11 +72,6 @@ export const App: FC = () => {
       newTodoField.current.focus();
     }
   }, [todos]);
-
-  const reset = () => {
-    setTitle('');
-    setIsAdding(false);
-  };
 
   const handleSubmit = useCallback(async (event: FormEvent) => {
     event.preventDefault();
@@ -116,9 +95,10 @@ export const App: FC = () => {
       addNewTodo(newTodo);
     } catch {
       setErrorMessage('Unable to add a todo');
+    } finally {
+      setTitle('');
+      setIsAdding(false);
     }
-
-    reset();
   }, [title, user]);
 
   const handleChangeTitleInput = ({
@@ -162,8 +142,13 @@ export const App: FC = () => {
     const uncompletedTodos = todos.filter(({ completed }) => !completed);
 
     if (uncompletedTodos.length) {
-      uncompletedTodos.map(({ id }) => patchTodo(id, { completed: true })
-        .catch(() => setErrorMessage('Unable to update todos')));
+      uncompletedTodos.map(async ({ id }) => {
+        try {
+          patchTodo(id, { completed: true });
+        } catch {
+          setErrorMessage('Unable to update todos');
+        }
+      });
 
       setTodos(todos.map(todo => {
         const copy = todo;
@@ -173,8 +158,13 @@ export const App: FC = () => {
         return copy;
       }));
     } else {
-      todos.map(({ id }) => patchTodo(id, { completed: false })
-        .catch(() => setErrorMessage('Unable to update todos')));
+      todos.map(async ({ id }) => {
+        try {
+          patchTodo(id, { completed: false });
+        } catch {
+          setErrorMessage('Unable to update todos');
+        }
+      });
 
       setTodos(todos.map(todo => {
         const copy = todo;
@@ -187,10 +177,13 @@ export const App: FC = () => {
   };
 
   const clearCompleted = () => {
-    todos.forEach(({ id, completed }) => {
+    todos.forEach(async ({ id, completed }) => {
       if (completed) {
-        removeTodos(id)
-          .catch(() => setErrorMessage('Unable to delete a todo'));
+        try {
+          await removeTodos(id);
+        } catch {
+          setErrorMessage('Unable to delete a todo');
+        }
       }
     });
 
@@ -221,7 +214,7 @@ export const App: FC = () => {
         />
 
         {!!todos.length && (
-          <Footer
+          <Filter
             filtType={filtType}
             activeItem={activeItem}
             isCompleted={isCompleted}

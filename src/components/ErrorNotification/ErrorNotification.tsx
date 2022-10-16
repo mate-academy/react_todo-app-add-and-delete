@@ -1,4 +1,3 @@
-/* eslint-disable jsx-a11y/control-has-associated-label */
 import { FC, useState, useEffect } from 'react';
 import classNames from 'classnames';
 
@@ -38,6 +37,7 @@ export const ErrorNotification: FC<Props> = ({
       <button
         data-cy="HideErrorButton"
         type="button"
+        aria-label="delete"
         className="delete"
         onClick={() => setIsClosed(true)}
       />
