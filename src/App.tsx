@@ -12,21 +12,21 @@ import {
 } from './api/todos';
 import { AuthContext } from './components/Auth/AuthContext';
 import { ErrorNotification } from './components/ErrorNotification';
-import { Footer } from './components/Footer/Footer';
+import { Filter } from './components/Filter';
 import { NewTodo } from './components/NewTodo/NewTodo';
 import { TodoList } from './components/Todo';
+import { Errors } from './types/Errors';
 import { Todo } from './types/Todo';
 import { TodosFilter } from './types/TodosFilter_Enum';
 
 export const App: React.FC = () => {
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   const user = useContext(AuthContext);
   const newTodoField = useRef<HTMLInputElement>(null);
 
   const [todos, setTodos] = useState<Todo[]>([]);
   const [filterTodos, setFilterTodos] = useState<TodosFilter>(TodosFilter.All);
 
-  const [alertText, setAlertText] = useState('');
+  const [alertText, setAlertText] = useState<Errors | null>(null);
   const [isAlertVisible, setAlertVisible] = useState(false);
   const [alertTimerId, setAlertTimerId] = useState<NodeJS.Timeout | null>(null);
 
@@ -55,7 +55,7 @@ export const App: React.FC = () => {
     setAlertVisible(false);
   };
 
-  const showAlert = (error: string) => {
+  const showAlert = (error: Errors) => {
     clearAlert();
     setAlertText(error);
     setAlertVisible(true);
@@ -66,9 +66,9 @@ export const App: React.FC = () => {
 
   const handleClearAlert = () => clearAlert();
 
-  const handleDeleteError = () => showAlert('Unable to add Todo');
-  const handleUpdateError = () => showAlert('Unable to update Todo');
-  const handleEmptyFieldError = () => showAlert('Title can\'t be empty');
+  const handleDeleteError = () => showAlert(Errors.deleteError);
+  const handleUpdateError = () => showAlert(Errors.updateError);
+  const handleEmptyFieldError = () => showAlert(Errors.emptyTitleError);
 
   const addNewTodoToVisibleTodos = (todo?: Todo, title = 'temp') => {
     const newTodo = todo || {
@@ -99,9 +99,15 @@ export const App: React.FC = () => {
         .then(todosFromServer => {
           setTodos(todosFromServer);
         })
-        .catch(() => showAlert('Unable to get Todos'));
+        .catch(() => showAlert(Errors.getError));
     }
   }, []);
+
+  useEffect(() => {
+    if (newTodoField.current) {
+      newTodoField.current.focus();
+    }
+  }, [isAdding]);
 
   useEffect(() => {
     setVisibleTodos(getFilteredTodos());
@@ -137,7 +143,7 @@ export const App: React.FC = () => {
           addNewTodoToVisibleTodos(todoFromServer);
           deleteIsLoadingTodos(0);
         })
-        .catch(() => showAlert('Unable to add Todo'))
+        .catch(() => showAlert(Errors.addError))
         .finally(() => {
           if (newTodoField.current) {
             newTodoField.current.value = '';
@@ -152,8 +158,7 @@ export const App: React.FC = () => {
   const handleChangeStatus = (todoId: number, status: boolean) => {
     clearAlert();
     changeTodoStatus(todoId, !status)
-      // .then(() => forceUpdate())
-      .catch(() => showAlert('Unable to update Todo'));
+      .catch(() => showAlert(Errors.updateError));
   };
 
   const handleDeleteTodo = (todoId: number) => {
@@ -171,7 +176,6 @@ export const App: React.FC = () => {
     todos.forEach(({ id }) => {
       clearAlert();
       changeTodoStatus(id, toggleValue)
-        // .then(() => forceUpdate())
         .catch(() => handleUpdateError());
     });
   };
@@ -214,7 +218,7 @@ export const App: React.FC = () => {
                 isLoadingTodosId={isLoadingTodosId}
               />
 
-              <Footer
+              <Filter
                 todos={todos}
                 filterTodos={filterTodos}
                 handleFilterTodos={handleFilterTodos}

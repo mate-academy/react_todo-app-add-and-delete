@@ -9,12 +9,14 @@ type Props = {
   handleDeleteCompleted: () => void,
 };
 
-export const Footer: React.FC<Props> = ({
+export const Filter: React.FC<Props> = ({
   todos,
   filterTodos,
   handleFilterTodos,
   handleDeleteCompleted,
 }) => {
+  const isAllTodosCompleted = () => todos.every((todo) => !todo.completed);
+
   return (
     <footer className="todoapp__footer" data-cy="Footer">
       <span className="todo-count" data-cy="todosCounter">
@@ -69,7 +71,7 @@ export const Footer: React.FC<Props> = ({
         type="button"
         className="todoapp__clear-completed"
         onClick={() => handleDeleteCompleted()}
-        disabled={todos.every((todo) => !todo.completed)}
+        disabled={isAllTodosCompleted()}
       >
         Clear completed
       </button>

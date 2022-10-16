@@ -1,7 +1,8 @@
-/* eslint-disable jsx-a11y/control-has-associated-label */
+import { Errors } from '../../types/Errors';
+
 type Props = {
   isAlertVisible: boolean,
-  alertText: string,
+  alertText: Errors | null,
   handleClearAlert: () => void,
 };
 
@@ -17,6 +18,7 @@ export const ErrorNotification: React.FC<Props> = ({
       hidden={!isAlertVisible}
     >
       <button
+        aria-label="HideErrorButton"
         data-cy="HideErrorButton"
         type="button"
         className="delete"

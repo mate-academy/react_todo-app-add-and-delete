@@ -24,9 +24,7 @@ export const TodoInfo: React.FC<Props> = ({
       data-cy="Todo"
       className={classNames(
         'todo',
-        {
-          completed,
-        },
+        { 'todo completed': completed },
       )}
       key={todo.id}
     >
@@ -43,7 +41,6 @@ export const TodoInfo: React.FC<Props> = ({
       <span
         data-cy="TodoTitle"
         className="todo__title"
-        // onDoubleClick={() => console.info(`double click${todo.title}`)}
       >
         {title}
       </span>

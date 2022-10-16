@@ -7,8 +7,6 @@ export const getTodos = (userId: number) => {
   return client.get<Todo[]>(url);
 };
 
-// Add more methods here
-
 export const createTodo = (todo: Todo) => {
   const url = '/todos';
 
