@@ -20,6 +20,11 @@ body {
   pointer-events: none;
 }
 
+.hide {
+  opacity: 0;
+  pointer-events: none;
+}
+
 @import "./todoapp";
 @import "./todo";
 @import "./filter";
