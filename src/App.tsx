@@ -20,10 +20,9 @@ export const App: React.FC = () => {
   const user = useContext(AuthContext);
   const newTodoField = useRef<HTMLInputElement>(null);
   const [todos, setTodos] = useState<Todo[]>([]);
-  const [visibleTodos, setVisibleTodos] = useState<Todo[]>(todos);
   const [filterValue, setFilterValue] = useState(FilterValues.All);
   const [countActive, setCountActive] = useState(0);
-  const [tempTodo, setTempTodo] = useState({});
+  const [tempTodo, setTempTodo] = useState<Todo | null>(null);
   const [isDeleting, setIsDeleting] = useState(false);
   const [error, setError] = useState({
     isError: false,
@@ -46,7 +45,6 @@ export const App: React.FC = () => {
         = await client.get<Todo[]>(`/todos?userId=${user?.id}`);
 
       setTodos(getTodos);
-      setVisibleTodos(getTodos);
       setCountActive(
         (getTodos.filter(todo => !todo.completed)).length,
       );
@@ -73,26 +71,29 @@ export const App: React.FC = () => {
 
   const filterTodos = (value: string) => {
     const { All, Active, Completed } = FilterValues;
+    const filteredTodos = [...todos];
 
     switch (value) {
-      case All:
-        setFilterValue(All);
-        setVisibleTodos(todos);
-        break;
       case Active:
         setFilterValue(Active);
-        setVisibleTodos(todos.filter(todo => !todo.completed));
-        break;
+
+        return filteredTodos.filter(todo => !todo.completed);
+
       case Completed:
         setFilterValue(Completed);
-        setVisibleTodos(todos.filter(todo => todo.completed));
-        break;
+
+        return filteredTodos.filter(todo => todo.completed);
       default:
-        break;
+        setFilterValue(All);
+
+        return filteredTodos;
     }
   };
 
-  useMemo(() => filterTodos(filterValue), [todos]);
+  const visibleTodos = useMemo(
+    () => filterTodos(filterValue),
+    [todos, filterValue],
+  );
 
   const addTodo = async (value: string) => {
     if (!user) {
@@ -124,7 +125,7 @@ export const App: React.FC = () => {
       handleError(true, ErrorMessages.ErrorAddTodo);
     }
 
-    setTempTodo({});
+    setTempTodo(null);
   };
 
   const deleteTodo = async (id: number) => {

@@ -8,7 +8,7 @@ import './styles.css';
 
 type Props = {
   todos: Todo[];
-  tempTodo: Todo | {};
+  tempTodo: Todo | null;
   deleteTodo: (id: number) => void;
   isDeleting: boolean;
 };
@@ -34,7 +34,7 @@ export const TodoList: React.FC<Props> = ({
           </CSSTransition>
         ))}
 
-        {'id' in tempTodo && (
+        {tempTodo && (
           <CSSTransition
             key={0}
             timeout={300}
