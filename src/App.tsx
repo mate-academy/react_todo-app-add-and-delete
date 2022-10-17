@@ -14,7 +14,7 @@ import {
 } from './api/todos';
 import { AuthContext } from './components/Auth/AuthContext';
 import { ErrorNotification } from './components/Page/ErrorNotification';
-import { FilterTodos } from './components/Page/FilterTodo';
+import { Filter } from './components/Page/Filter';
 import { Header } from './components/Page/Header';
 import { TodoList } from './components/Page/TodoList';
 import { TodoContext } from './components/TodoContext';
@@ -148,11 +148,11 @@ export const App: React.FC = () => {
       uncompletedTodos.map(({ id }) => patchTodo(id,
         { completed: true }).catch(() => setTodosError(TodosError.Updating)));
       setTodos(todos.map(todo => {
-        const copy = todo;
+        const todoCopy = todo;
 
-        copy.completed = true;
+        todoCopy.completed = true;
 
-        return copy;
+        return todoCopy;
       }));
     } else {
       todos.map(({ id }) => patchTodo(id,
@@ -207,7 +207,7 @@ export const App: React.FC = () => {
         />
 
         {todos.length > 0 && (
-          <FilterTodos
+          <Filter
             handleChooseFilter={handleChooseFilter}
             todos={todos}
             filterType={filterType}

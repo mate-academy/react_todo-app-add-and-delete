@@ -10,7 +10,7 @@ type Props = {
   handleClearCompleted: () => void;
 };
 
-export const FilterTodos: React.FC<Props> = ({
+export const Filter: React.FC<Props> = ({
   handleChooseFilter,
   todos,
   filterType,
