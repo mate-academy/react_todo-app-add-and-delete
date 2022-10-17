@@ -35,25 +35,25 @@ export const TodoList: React.FC<Props> = ({
 }) => {
   const [deletedId, setDeletedId] = useState<number | null>(null);
   const [todos, setTodos] = useContext(TodoContext);
-  const handleDelete = (todoId: number) => {
+  const handleDelete = useCallback((todoId: number) => {
     setDeletedId(todoId);
     removeTodo(todoId);
-  };
+  }, [todos]);
 
   const [isDoubleClick, setIsDoubleClick] = useState<boolean>(false);
 
   const [name, setName] = useState<string>('');
   const [doubleClickId, setDoubleClickId] = useState<number | null>(null);
 
-  const handleDoubleClick = (todoId: number, title: string) => {
+  const handleDoubleClick = useCallback((todoId: number, title: string) => {
     setIsDoubleClick(!isDoubleClick);
     setDoubleClickId(todoId);
     setName(title);
-  };
+  }, [name, todos]);
 
-  const handleChangeName = ({
+  const handleChangeName = useCallback(({
     target: { value },
-  }: React.ChangeEvent<HTMLInputElement>) => setName(value);
+  }: React.ChangeEvent<HTMLInputElement>) => setName(value), [name]);
 
   const escFunction = useCallback((event: KeyboardEvent) => {
     if (event.key === 'Escape') {
@@ -69,16 +69,17 @@ export const TodoList: React.FC<Props> = ({
     };
   }, [todos, name]);
 
-  const handleRenameSubmit = async (
+  const handleRenameSubmit = useCallback(async (
     event: FormEvent,
     todoId: number,
   ) => {
     event.preventDefault();
 
+    setIsAdding(true);
+
     if (!name.trim().length) {
       try {
         await removeTodo(todoId);
-        setIsAdding(true);
 
         setTodos([...todos.filter((
           { id },
@@ -92,7 +93,7 @@ export const TodoList: React.FC<Props> = ({
 
     setIsDoubleClick(false);
     setIsAdding(false);
-  };
+  }, [name]);
 
   return (
     <section className="todoapp__main" data-cy="TodoList">
