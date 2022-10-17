@@ -5,7 +5,7 @@ import { deleteTodo } from '../../api/todos';
 
 type Props = {
   setError: (error: string) => void,
-  setDeleted: (prevState: any) => void,
+  setDeleted: (value: ((prevState: Todo[]) => Todo[])) => void,
   todo: Todo,
   isDeletingAll: boolean,
 };
@@ -22,7 +22,7 @@ export const TodoInfo: React.FC<Props> = ({
     setIsDeleting(true);
     try {
       await deleteTodo(todo.id);
-      setDeleted((prev: Todo[]) => (
+      setDeleted(prev => (
         prev.filter(item => item.id !== todo.id)
       ));
     } catch (e) {

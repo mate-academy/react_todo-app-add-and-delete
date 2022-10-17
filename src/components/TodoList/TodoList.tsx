@@ -4,7 +4,7 @@ import { TodoInfo } from '../TodoInfo/TodoInfo';
 
 type Props = {
   setError: (error: string) => void,
-  setDeleted: (prev: any) => void,
+  setDeleted: (value: ((prevState: Todo[]) => Todo[])) => void,
   todos: Todo[],
   isDeletingAll: boolean,
 };
