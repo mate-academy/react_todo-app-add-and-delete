@@ -86,6 +86,7 @@ export const App: React.FC = () => {
     setIsAdding(true);
 
     if (!title.trim()) {
+      setIsAdding(false);
       setTodosError(TodosError.Title);
       setTitle('');
 
