@@ -82,6 +82,23 @@
     border-top: 1px solid #e6e6e6;
   }
 
+  &__rename-todo {
+    width: 100%;
+    padding: 12px 15px;
+
+    font-size: 24px;
+    line-height: 1.4em;
+    font-family: inherit;
+    font-weight: inherit;
+    color: inherit;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+
+    border: none;
+    background: rgba(0, 0, 0, 0.01);
+    box-shadow: inset 0 -2px 1px rgba(0,0,0,0.03);
+  }
+
   &__footer {
     display: flex;
     justify-content: space-between;
