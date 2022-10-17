@@ -5,10 +5,16 @@ import { TodoInfo } from '../TodoInfo/TodoInfo';
 type Props = {
   setError: (error: string) => void,
   setDeleted: (prev: any) => void,
-  todos: Todo[]
+  todos: Todo[],
+  isDeletingAll: boolean,
 };
 
-export const TodoList: React.FC<Props> = ({ setError, setDeleted, todos }) => {
+export const TodoList: React.FC<Props> = ({
+  setError,
+  setDeleted,
+  todos,
+  isDeletingAll,
+}) => {
   return (
     <section className="todoapp__main" data-cy="TodoList">
       {todos.map(todo => {
@@ -18,6 +24,7 @@ export const TodoList: React.FC<Props> = ({ setError, setDeleted, todos }) => {
             todo={todo}
             setError={setError}
             setDeleted={setDeleted}
+            isDeletingAll={isDeletingAll}
           />
         );
       })}

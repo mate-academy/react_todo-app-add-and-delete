@@ -22,13 +22,13 @@ export const TodoOnAdd: React.FC<Props> = ({ title }) => {
         {title}
       </span>
 
-      {/*<button*/}
-      {/*  type="button"*/}
-      {/*  className="todo__remove"*/}
-      {/*  data-cy="TodoDeleteButton"*/}
-      {/*>*/}
-      {/*  ×*/}
-      {/*</button>*/}
+      {/* <button */}
+      {/*  type="button" */}
+      {/*  className="todo__remove" */}
+      {/*  data-cy="TodoDeleteButton" */}
+      {/* > */}
+      {/*  × */}
+      {/* </button> */}
 
       <div data-cy="TodoLoader" className="modal overlay is-active">
         <div className="modal-background has-background-white-ter" />

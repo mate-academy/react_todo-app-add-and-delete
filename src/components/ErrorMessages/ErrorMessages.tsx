@@ -25,6 +25,10 @@ export const ErrorMessages: React.FC<Props> = ({ error, onClose }) => {
       errorMessage = 'Unable to delete a todo';
       break;
 
+    case 'deleteAll':
+      errorMessage = 'Unable to delete all completed todo';
+      break;
+
     default:
       break;
   }

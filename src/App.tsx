@@ -6,11 +6,13 @@ import classNames from 'classnames';
 
 import { AuthContext } from './components/Auth/AuthContext';
 import { Todo } from './types/Todo';
-import { addTodo, getTodos } from './api/todos';
+import { addTodo, deleteTodo, getTodos } from './api/todos';
 
 import { ErrorMessages } from './components/ErrorMessages/ErrorMessages';
 import { TodoList } from './components/TodoList/TodoList';
 import { TodoOnAdd } from './components/TodoOnAdd/TodoOnAdd';
+
+const ERROR_DURATION = 3000;
 
 export const App: React.FC = () => {
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
@@ -18,11 +20,12 @@ export const App: React.FC = () => {
   const newTodoField = useRef<HTMLInputElement>(null);
 
   const [todos, setTodos] = useState<Todo[]>([]);
+  const [visibleTodos, setVisibleTodos] = useState<Todo[]>([]);
   const [filterBy, setFilterBy] = useState('all');
   const [isError, setIsError] = useState('');
   const [newTodo, setNewTodo] = useState('');
   const [isAdding, setIsAdding] = useState(false);
-  const [deletingTodo, setDeletingTodo] = useState<number[]>([]);
+  const [isDeletingAll, setIsDeletingAll] = useState(false);
 
   useEffect(() => {
     // focus the element with `ref={newTodoField}`
@@ -34,13 +37,14 @@ export const App: React.FC = () => {
       getTodos(user.id)
         .then((response) => {
           setTodos(response);
+          setVisibleTodos(response);
         })
         .catch(() => {
           setIsError('load');
 
           setTimeout(() => {
             setIsError('');
-          }, 3000);
+          }, ERROR_DURATION);
         });
     }
   }, []);
@@ -50,6 +54,10 @@ export const App: React.FC = () => {
 
     if (!newTodo.length) {
       setIsError('length');
+      setIsAdding(false);
+      setTimeout(() => {
+        setIsError('');
+      }, ERROR_DURATION);
 
       return;
     }
@@ -58,9 +66,12 @@ export const App: React.FC = () => {
       try {
         const newTodoFromAPI = await addTodo(newTodo, user.id);
 
-        setTodos([...todos, newTodoFromAPI]);
+        setVisibleTodos(prevState => [...prevState, newTodoFromAPI]);
       } catch {
         setIsError('add');
+        setTimeout(() => {
+          setIsError('');
+        }, ERROR_DURATION);
       }
     }
 
@@ -68,19 +79,41 @@ export const App: React.FC = () => {
     setIsAdding(false);
   };
 
-  const FilterTodos = () => {
-    const preFilteredTodos = [...todos]
-      .filter(item => !deletingTodo.includes(item.id));
+  const onDeleteAllCompleted = async () => {
+    setIsDeletingAll(true);
 
+    try {
+      await Promise.all(visibleTodos.map(todoItem => {
+        if (todoItem.completed) {
+          return deleteTodo(todoItem.id);
+        }
+
+        return null;
+      }));
+
+      setVisibleTodos(prevState => (
+        prevState.filter(todoItem => !todoItem.completed)
+      ));
+    } catch (e) {
+      setIsError('deleteAll');
+      setTimeout(() => {
+        setIsError('');
+      }, ERROR_DURATION);
+    }
+
+    setIsDeletingAll(false);
+  };
+
+  const filterTodos = () => {
     if (filterBy === 'completed') {
-      return preFilteredTodos.filter(todoFilter => todoFilter.completed);
+      return visibleTodos.filter(todoFilter => todoFilter.completed);
     }
 
     if (filterBy === 'active') {
-      return preFilteredTodos.filter(todoFilter => !todoFilter.completed);
+      return visibleTodos.filter(todoFilter => !todoFilter.completed);
     }
 
-    return preFilteredTodos;
+    return visibleTodos;
   };
 
   return (
@@ -119,15 +152,18 @@ export const App: React.FC = () => {
           <>
             <TodoList
               setError={setIsError}
-              setDeleted={setDeletingTodo}
-              todos={FilterTodos()}
+              setDeleted={setVisibleTodos}
+              todos={filterTodos()}
+              isDeletingAll={isDeletingAll}
             />
 
             {isAdding && <TodoOnAdd title={newTodo} />}
 
             <footer className="todoapp__footer" data-cy="Footer">
               <span className="todo-count" data-cy="todosCounter">
-                {todos.filter(task => !task.completed).length}
+                {visibleTodos
+                  .filter(task => (
+                    !task.completed)).length}
                 {' items left'}
               </span>
 
@@ -169,6 +205,16 @@ export const App: React.FC = () => {
                 data-cy="ClearCompletedButton"
                 type="button"
                 className="todoapp__clear-completed"
+                disabled={!visibleTodos.some(
+                  todoItem => (
+                    todoItem.completed
+                  ),
+                )}
+                onClick={(event) => {
+                  event.preventDefault();
+
+                  onDeleteAllCompleted();
+                }}
               >
                 Clear completed
               </button>

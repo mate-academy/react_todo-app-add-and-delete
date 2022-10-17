@@ -10,7 +10,7 @@ export const addTodo = (title: string, userId: number) => {
   const data = {
     userId,
     title,
-    completed: false,
+    completed: true,
   };
 
   return client.post<Todo>('/todos', data);

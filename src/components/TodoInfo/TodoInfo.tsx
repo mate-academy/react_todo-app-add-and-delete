@@ -7,16 +7,24 @@ type Props = {
   setError: (error: string) => void,
   setDeleted: (prevState: any) => void,
   todo: Todo,
+  isDeletingAll: boolean,
 };
 
-export const TodoInfo: React.FC<Props> = ({ setError, setDeleted, todo }) => {
+export const TodoInfo: React.FC<Props> = ({
+  setError,
+  setDeleted,
+  todo,
+  isDeletingAll,
+}) => {
   const [isDeleting, setIsDeleting] = useState(false);
 
   const onDeleteTodo = async () => {
     setIsDeleting(true);
     try {
       await deleteTodo(todo.id);
-      setDeleted((prev: number[]) => [...prev, todo.id]);
+      setDeleted((prev: Todo[]) => (
+        prev.filter(item => item.id !== todo.id)
+      ));
     } catch (e) {
       setError('delete');
     }
@@ -57,7 +65,7 @@ export const TodoInfo: React.FC<Props> = ({ setError, setDeleted, todo }) => {
       <div
         data-cy="TodoLoader"
         className={classNames('modal overlay', {
-          'is-active': isDeleting,
+          'is-active': isDeleting || (isDeletingAll && todo.completed),
         })}
       >
         <div className="modal-background has-background-white-ter" />
