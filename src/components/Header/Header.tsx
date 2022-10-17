@@ -1,4 +1,3 @@
-// import classNames from 'classnames';
 import { FormEvent, FC } from 'react';
 import { Todo } from '../../types/Todo';
 
@@ -25,10 +24,10 @@ export const Header: FC<Props> = ({
 }) => (
   <header className="todoapp__header">
     {todos.length > 0 && (
-      // eslint-disable-next-line jsx-a11y/control-has-associated-label
       <button
         data-cy="ToggleAllButton"
         type="button"
+        aria-label="toggle-all"
         className="todoapp__toggle-all active"
         onClick={handleToggleClick}
       />
