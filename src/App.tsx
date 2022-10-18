@@ -2,8 +2,11 @@
 import React, {
   FormEvent,
   useCallback,
+  useContext,
   useEffect,
+  useMemo,
   useRef,
+  useState,
 } from 'react';
 import { AuthContext } from './components/Auth/AuthContext';
 import { TodoList } from './components/Auth/TodoList';
@@ -16,13 +19,13 @@ import { ErrorMessage } from './types/Error';
 
 export const App: React.FC = () => {
   const newTodoField = useRef<HTMLInputElement>(null);
-  const [todos, setTodos] = React.useState<Todo[]>([]);
-  const [errorMessage, setErrorMessage] = React.useState('');
-  const [filterType, setFilterType] = React.useState('all');
-  const [title, setTitle] = React.useState('');
-  const [selectedId, setSelectedId] = React.useState<number[]>([]);
-  const [isAdding, setIsAdding] = React.useState(false);
-  const user = React.useContext(AuthContext);
+  const [todos, setTodos] = useState<Todo[]>([]);
+  const [errorMessage, setErrorMessage] = useState('');
+  const [filterType, setFilterType] = useState<FilterType>(FilterType.All);
+  const [title, setTitle] = useState('');
+  const [selectedId, setSelectedId] = useState<number[]>([]);
+  const [isAdding, setIsAdding] = useState(false);
+  const user = useContext(AuthContext);
 
   useEffect(() => {
     if (newTodoField.current) {
@@ -48,7 +51,7 @@ export const App: React.FC = () => {
     getTodosFromServer(user.id);
   }, []);
 
-  const filteredTodos = todos.filter(todo => {
+  const filteredTodos = useMemo(() => todos.filter(todo => {
     switch (filterType) {
       case FilterType.All:
         return todo;
@@ -59,7 +62,7 @@ export const App: React.FC = () => {
       default:
         return null;
     }
-  });
+  }), [todos]);
 
   const newTodo = useCallback(async (event: FormEvent) => {
     event.preventDefault();

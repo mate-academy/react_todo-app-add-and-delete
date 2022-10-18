@@ -1,5 +1,6 @@
 import classNames from 'classnames';
 import { useMemo } from 'react';
+// import { useMemo } from 'react';
 import { Todo } from '../../../types/Todo';
 import { TodoLoader } from '../TodoLoader/TodoLoader';
 
@@ -19,7 +20,7 @@ export const TodoItem: React.FC<Props> = ({
   const { title, id, completed } = todo;
 
   const isLoader = useMemo(() => selectedId.includes(id)
-  || (isAdded && id === 0), [isAdded, selectedId, id]);
+  || (isAdded), []);
 
   return (
     <div
@@ -52,7 +53,7 @@ export const TodoItem: React.FC<Props> = ({
       >
         x
       </button>
-      { (isLoader) && (
+      {isLoader && (
         <TodoLoader />
       )}
 
