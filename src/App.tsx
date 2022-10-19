@@ -1,5 +1,6 @@
 /* eslint-disable no-console */
 import React, {
+  useCallback,
   useContext,
   useEffect,
   useMemo,
@@ -16,12 +17,29 @@ import { FilterValues } from './types/FilterValues';
 import { Errors } from './components/Errors';
 import { ErrorMessages } from './types/Error';
 
+export function filterTodos(todos: Todo[], value: FilterValues) {
+  const { Active, Completed } = FilterValues;
+  const filteredTodos = [...todos];
+
+  switch (value) {
+    case Active:
+
+      return filteredTodos.filter(todo => !todo.completed);
+
+    case Completed:
+
+      return filteredTodos.filter(todo => todo.completed);
+    default:
+
+      return filteredTodos;
+  }
+}
+
 export const App: React.FC = () => {
   const user = useContext(AuthContext);
   const newTodoField = useRef<HTMLInputElement>(null);
   const [todos, setTodos] = useState<Todo[]>([]);
   const [filterValue, setFilterValue] = useState(FilterValues.All);
-  const [countActive, setCountActive] = useState(0);
   const [tempTodo, setTempTodo] = useState<Todo | null>(null);
   const [isDeleting, setIsDeleting] = useState(false);
   const [error, setError] = useState({
@@ -29,29 +47,28 @@ export const App: React.FC = () => {
     message: ErrorMessages.None,
   });
 
-  const handleError = (isError: boolean, message: ErrorMessages) => {
-    setError({ isError, message });
+  const handleError = useCallback(
+    (isError: boolean, message: ErrorMessages) => {
+      setError({ isError, message });
 
-    if (message) {
-      setTimeout(() => {
-        setError({ isError: false, message: ErrorMessages.None });
-      }, 3000);
-    }
-  };
+      if (message) {
+        setTimeout(() => {
+          setError({ isError: false, message: ErrorMessages.None });
+        }, 3000);
+      }
+    }, [],
+  );
 
-  async function loadTodos() {
+  const loadTodos = useCallback(async () => {
     try {
       const getTodos
         = await client.get<Todo[]>(`/todos?userId=${user?.id}`);
 
       setTodos(getTodos);
-      setCountActive(
-        (getTodos.filter(todo => !todo.completed)).length,
-      );
     } catch (e) {
       handleError(true, ErrorMessages.ErrorLoadTodos);
     }
-  }
+  }, []);
 
   useEffect(() => {
     if (newTodoField.current) {
@@ -61,37 +78,12 @@ export const App: React.FC = () => {
     loadTodos();
   }, []);
 
-  const countActiveTodos = () => {
-    const count = todos.filter(todo => !todo.completed).length;
-
-    setCountActive(count);
-  };
-
-  useMemo(() => countActiveTodos(), [todos]);
-
-  const filterTodos = (value: string) => {
-    const { All, Active, Completed } = FilterValues;
-    const filteredTodos = [...todos];
-
-    switch (value) {
-      case Active:
-        setFilterValue(Active);
-
-        return filteredTodos.filter(todo => !todo.completed);
-
-      case Completed:
-        setFilterValue(Completed);
-
-        return filteredTodos.filter(todo => todo.completed);
-      default:
-        setFilterValue(All);
-
-        return filteredTodos;
-    }
-  };
+  const countActive = useMemo(() => {
+    return (todos.filter(todo => !todo.completed)).length;
+  }, [todos]);
 
   const visibleTodos = useMemo(
-    () => filterTodos(filterValue),
+    () => filterTodos(todos, filterValue),
     [todos, filterValue],
   );
 
@@ -120,7 +112,6 @@ export const App: React.FC = () => {
           todoData,
         ]
       ));
-      setCountActive(countActive + 1);
     } catch (e) {
       handleError(true, ErrorMessages.ErrorAddTodo);
     }
@@ -175,7 +166,7 @@ export const App: React.FC = () => {
         {!!todos.length && (
           <Footer
             todos={todos}
-            filterTodos={filterTodos}
+            filterTodos={setFilterValue}
             countActive={countActive}
             filterValue={filterValue}
             clearCompleted={clearCompleted}
