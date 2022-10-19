@@ -88,8 +88,6 @@ export const App: React.FC = () => {
   const deleteTodoFromServer = useCallback(
     async (idTodo: number) => {
       try {
-        setIsRemoving(true);
-
         if (user?.id) {
           await deleteTodo(idTodo);
 
@@ -100,8 +98,6 @@ export const App: React.FC = () => {
       } finally {
         loadTodosFromServer();
       }
-
-      setIsRemoving(false);
     }, [],
   );
 
