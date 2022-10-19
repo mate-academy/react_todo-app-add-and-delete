@@ -29,7 +29,6 @@ export const App: React.FC = () => {
   const [filteredType, setFilteredType] = useState(FilterType.All);
   const [errorAlert, setErrorAlert] = useState<ErrorType | null>(null);
   const [isAdding, setIsAdding] = useState(false);
-  const [isRemoving, setIsRemoving] = useState(false);
   const [selectedTodo, setSelectedTodo] = useState(0);
 
   const visibleTodo = useMemo(() => (
@@ -45,7 +44,7 @@ export const App: React.FC = () => {
   ), [todos, filteredType]);
 
   const applyTodoTitle = useCallback(
-    debounce(setDebounceTodoTitle, 200),
+    debounce(setDebounceTodoTitle, 100),
     [],
   );
 
@@ -59,28 +58,29 @@ export const App: React.FC = () => {
         }
       } catch {
         setErrorAlert(ErrorType.loadedError);
+      } finally {
+        setTodoTitle('');
       }
+
+      setIsAdding(false);
     }, [],
   );
 
   useEffect(() => {
     loadTodosFromServer();
-  }, [isAdding, isRemoving]);
+  }, []);
 
   const loadTodoOnServer = useCallback(
     async () => {
       try {
-        setIsAdding(true);
-
         if (user?.id) {
           await createTodo(user.id, todoTitle);
-          setTodoTitle('');
           setDebounceTodoTitle('');
         }
       } catch (error) {
         setErrorAlert(ErrorType.addedError);
       } finally {
-        setIsAdding(false);
+        loadTodosFromServer();
       }
     }, [debounceTodoTitle],
   );
@@ -97,6 +97,8 @@ export const App: React.FC = () => {
         }
       } catch (error) {
         setErrorAlert(ErrorType.deletedError);
+      } finally {
+        loadTodosFromServer();
       }
 
       setIsRemoving(false);
@@ -111,10 +113,15 @@ export const App: React.FC = () => {
 
   const handleLoadTodoOnServer = (eventSubmit: React.FormEvent) => {
     eventSubmit.preventDefault();
+    setIsAdding(true);
 
-    return (!todoTitle)
-      ? setErrorAlert(ErrorType.titleError)
-      : loadTodoOnServer();
+    if (!todoTitle) {
+      setErrorAlert(ErrorType.titleError);
+
+      return;
+    }
+
+    loadTodoOnServer();
   };
 
   return (
@@ -130,13 +137,15 @@ export const App: React.FC = () => {
           handleLoadTodoOnServer={handleLoadTodoOnServer}
         />
 
-        <TodoList
-          visibleTodo={visibleTodo}
-          isAdding={isAdding}
-          todoTitle={todoTitle}
-          selectedTodo={selectedTodo}
-          deleteTodoFromServer={deleteTodoFromServer}
-        />
+        {(isAdding || todos.length > 0) && (
+          <TodoList
+            visibleTodo={visibleTodo}
+            isAdding={isAdding}
+            todoTitle={todoTitle}
+            selectedTodo={selectedTodo}
+            deleteTodoFromServer={deleteTodoFromServer}
+          />
+        )}
 
         {todos.length > 0 && (
           <Footer
