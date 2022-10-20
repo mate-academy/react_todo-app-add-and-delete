@@ -31,6 +31,12 @@ export const TodoItem: React.FC<Props> = (
 
   const { title } = todo;
 
+  const remover = async () => {
+    setIsLoad(true);
+    await removeTodo(todo.id);
+    setIsLoad(false);
+  };
+
   return (
     <div
       data-cy="Todo"
@@ -72,11 +78,7 @@ export const TodoItem: React.FC<Props> = (
               type="button"
               className="todo__remove"
               data-cy="TodoDeleteButton"
-              onClick={async () => {
-                setIsLoad(true);
-                await removeTodo(todo.id);
-                setIsLoad(false);
-              }}
+              onClick={remover}
             >
               ×
             </button>

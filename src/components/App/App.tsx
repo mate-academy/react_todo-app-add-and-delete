@@ -1,6 +1,8 @@
 import React, {
+  useCallback,
   useContext,
   useEffect,
+  useMemo,
   useState,
 } from 'react';
 
@@ -13,7 +15,7 @@ import {
 
 export const App: React.FC = () => {
   const [todos, setTodos] = useState<Todo[] | []>([]);
-  const [isNotificationOpen, setIsNotificationOpen] = useState<boolean>(true);
+  const [isNotificationOpen, setIsNotificationOpen] = useState(true);
   const [textNotification, setTextNotification] = useState<string>('');
   const [
     typeNotification,
@@ -56,7 +58,7 @@ export const App: React.FC = () => {
     }
   }, []);
 
-  const handleSubmit = async (event: React.FormEvent) => {
+  const handleSubmit = useCallback(async (event: React.FormEvent) => {
     event.preventDefault();
 
     if (!newText) {
@@ -77,16 +79,16 @@ export const App: React.FC = () => {
       setIsAdding(false);
       setNewText('');
     }
-  };
+  }, [newText]);
 
-  const removeTodo = async (todoId: number) => {
+  const removeTodo = useCallback(async (todoId: number) => {
     try {
       await deleteTodo(todoId);
       setTodos(visibleTodos.filter(todo => todo.id !== todoId));
     } catch (error) {
       toggleError(false, 'Unable to delete a todo', 'error');
     }
-  };
+  }, [todos]);
 
   const timerRemoveTodos = () => {
     setTimeout(() => {
@@ -117,18 +119,20 @@ export const App: React.FC = () => {
     }
   }, [newTodo]);
 
-  switch (pathname) {
-    case '/':
-      visibleTodos = [...todos];
-      break;
-    case '/active':
-      visibleTodos = todos.filter(todo => !todo.completed);
-      break;
-    case '/completed':
-      visibleTodos = todos.filter(todo => todo.completed);
-      break;
-    default:
-  }
+  useMemo(() => {
+    switch (pathname) {
+      case '/':
+        visibleTodos = [...todos];
+        break;
+      case '/active':
+        visibleTodos = todos.filter(todo => !todo.completed);
+        break;
+      case '/completed':
+        visibleTodos = todos.filter(todo => todo.completed);
+        break;
+      default:
+    }
+  }, [pathname]);
 
   return (
     <div className="todoapp">
