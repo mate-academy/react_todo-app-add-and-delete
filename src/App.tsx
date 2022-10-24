@@ -7,7 +7,6 @@ import {
   getTodos,
   addTodo,
   deleteTodo,
-  switchTodoStatus,
   clearTodos,
 } from './api/todos';
 import { AuthContext } from './components/Auth/AuthContext';
@@ -15,7 +14,6 @@ import { Todo } from './types/Todo';
 import { useError, useFilter, useLoader } from './utils/customHooks';
 
 export const App: React.FC = () => {
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   const user = useContext(AuthContext);
   const newTodoField = useRef<HTMLInputElement>(null);
   const [todos, setTodos] = useState<Todo[]>([]);
@@ -24,7 +22,6 @@ export const App: React.FC = () => {
   const [isLoading, addToLoading, removeFromLoading] = useLoader();
 
   useEffect(() => {
-    // focus the element with `ref={newTodoField}`
     if (newTodoField.current) {
       newTodoField.current.focus();
     }
@@ -35,6 +32,88 @@ export const App: React.FC = () => {
         () => setError('Fetch fail'),
       );
   }, []);
+
+  function keyDownHandler(e: React.KeyboardEvent<HTMLInputElement>) {
+    if (e.key === 'Enter') {
+      e.preventDefault();
+
+      if (e.target.value.length === 0) {
+        setError('Title can\'t be empty');
+      } else {
+        newTodoField.current!.readOnly = true;
+        newTodoField.current!.blur();
+        setTodos([
+          ...todos,
+          {
+            id: 0,
+            title: e.target.value,
+            completed: false,
+            userId: user!.id,
+          },
+        ]);
+        addToLoading(0);
+        addTodo(e.target.value, user!.id, false)
+          .then(
+            () => getTodos(user!.id)
+              .then(res => {
+                setTodos(res);
+                newTodoField.current!.value = '';
+                newTodoField.current!.focus();
+                newTodoField.current!.readOnly = false;
+                removeFromLoading(0);
+              }),
+            () => {
+              setError('Failed to add');
+              removeFromLoading(0);
+            },
+          );
+      }
+    }
+  }
+
+  const switchTodoStatusHandler = (todo: Todo) => () => {
+    addToLoading(todo.id);
+    deleteTodo(todo.id).then(
+      () => getTodos(user!.id)
+        .then(res => {
+          removeFromLoading(todo.id);
+          setTodos(res);
+        }),
+      () => {
+        removeFromLoading(todo.id);
+        setError('Unable to remove');
+      },
+    );
+  };
+
+  const removeTodoHandler = (todo: Todo) => () => {
+    addToLoading(todo.id);
+    deleteTodo(todo.id).then(
+      () => getTodos(user!.id)
+        .then(res => {
+          removeFromLoading(todo.id);
+          setTodos(res);
+        }),
+      () => {
+        removeFromLoading(todo.id);
+        setError('Unable to remove');
+      },
+    );
+  };
+
+  const clearTodoHandler = () => {
+    clearTodos(todos
+      .filter(todo => todo.completed)
+      .map(todo => todo.id)).then(
+      () => getTodos(user!.id)
+        .then(res => {
+          setTodos(res);
+        }),
+      () => {
+        setError('Unable to clear');
+      },
+    );
+  };
 
   return (
     <div className="todoapp">
@@ -56,43 +135,7 @@ export const App: React.FC = () => {
               ref={newTodoField}
               className="todoapp__new-todo"
               placeholder="What needs to be done?"
-              onKeyDown={(e) => {
-                if (e.key === 'Enter') {
-                  e.preventDefault();
-
-                  if (e.target.value.length === 0) {
-                    setError('Title can\'t be empty');
-                  } else {
-                    newTodoField.current!.readOnly = true;
-                    newTodoField.current!.blur();
-                    setTodos([
-                      ...todos,
-                      {
-                        id: 0,
-                        title: e.target.value,
-                        completed: false,
-                        userId: user!.id,
-                      },
-                    ]);
-                    addToLoading(0);
-                    addTodo(e.target.value, user!.id, false)
-                      .then(
-                        () => getTodos(user!.id)
-                          .then(res => {
-                            setTodos(res);
-                            newTodoField.current!.value = '';
-                            newTodoField.current!.focus();
-                            newTodoField.current!.readOnly = false;
-                            removeFromLoading(0);
-                          }),
-                        () => {
-                          setError('Failed to add');
-                          removeFromLoading(0);
-                        },
-                      );
-                  }
-                }
-              }}
+              onKeyDown={keyDownHandler}
             />
           </form>
         </header>
@@ -112,20 +155,7 @@ export const App: React.FC = () => {
                     type="checkbox"
                     className="todo__status"
                     defaultChecked
-                    onClick={() => {
-                      addToLoading(todo.id);
-                      switchTodoStatus(todo).then(
-                        () => getTodos(user!.id)
-                          .then(res => {
-                            removeFromLoading(todo.id);
-                            setTodos(res);
-                          }),
-                        () => {
-                          removeFromLoading(todo.id);
-                          setError('Unable to update');
-                        },
-                      );
-                    }}
+                    onClick={switchTodoStatusHandler(todo)}
                   />
                 </label>
 
@@ -136,20 +166,7 @@ export const App: React.FC = () => {
                   type="button"
                   className="todo__remove"
                   data-cy="TodoDeleteButton"
-                  onClick={() => {
-                    addToLoading(todo.id);
-                    deleteTodo(todo.id).then(
-                      () => getTodos(user!.id)
-                        .then(res => {
-                          removeFromLoading(todo.id);
-                          setTodos(res);
-                        }),
-                      () => {
-                        removeFromLoading(todo.id);
-                        setError('Unable to remove');
-                      },
-                    );
-                  }}
+                  onClick={removeTodoHandler(todo)}
                 >
                   ×
                 </button>
@@ -204,19 +221,7 @@ export const App: React.FC = () => {
               type="button"
               className="todoapp__clear-completed"
               disabled={!todos.find(todo => todo.completed)}
-              onClick={() => {
-                clearTodos(todos
-                  .filter(todo => todo.completed)
-                  .map(todo => todo.id)).then(
-                  () => getTodos(user!.id)
-                    .then(res => {
-                      setTodos(res);
-                    }),
-                  () => {
-                    setError('Unable to clear');
-                  },
-                );
-              }}
+              onClick={clearTodoHandler}
             >
               Clear completed
             </button>
