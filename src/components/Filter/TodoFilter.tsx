@@ -1,21 +1,20 @@
 import classNames from 'classnames';
-import { useState } from 'react';
 import { FilterBy } from '../../types/FilterType';
 import { Todo } from '../../types/Todo';
 
 type Props = {
+  sortBy: FilterBy;
   setSortBy: (value: FilterBy) => void;
   clearAllCompleted: () => void;
   completedTodo: Todo[];
 };
 
 export const TodoFilter: React.FC<Props> = ({
+  sortBy,
   setSortBy,
   clearAllCompleted,
   completedTodo,
 }) => {
-  const [selectedTab, setSelectedTab] = useState('all');
-
   return (
     <>
       <nav className="filter" data-cy="Filter">
@@ -23,10 +22,9 @@ export const TodoFilter: React.FC<Props> = ({
           data-cy="FilterLinkAll"
           href="#/"
           className={classNames('filter__link',
-            { 'filter__link selected': selectedTab === 'all' })}
+            { 'filter__link selected': sortBy === FilterBy.All })}
           onClick={() => {
             setSortBy(FilterBy.All);
-            setSelectedTab('all');
           }}
         >
           All
@@ -36,10 +34,9 @@ export const TodoFilter: React.FC<Props> = ({
           data-cy="FilterLinkActive"
           href="#/active"
           className={classNames('filter__link',
-            { 'filter__link selected': selectedTab === 'Active' })}
+            { 'filter__link selected': sortBy === FilterBy.Active })}
           onClick={() => {
             setSortBy(FilterBy.Active);
-            setSelectedTab('Active');
           }}
         >
           Active
@@ -48,10 +45,9 @@ export const TodoFilter: React.FC<Props> = ({
           data-cy="FilterLinkCompleted"
           href="#/completed"
           className={classNames('filter__link',
-            { 'filter__link selected': selectedTab === 'Completed' })}
+            { 'filter__link selected': sortBy === FilterBy.Completed })}
           onClick={() => {
             setSortBy(FilterBy.Completed);
-            setSelectedTab('Completed');
           }}
         >
           Completed

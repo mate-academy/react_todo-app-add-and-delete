@@ -1,13 +1,13 @@
 import React, {
   useContext, useEffect, useRef, useState,
 } from 'react';
-import { AuthContext } from './components/Auth/AuthContext';
-import { ErrorNotification } from './components/Error/ErrorNotification';
-import { TodoList } from './components/TodoList/TodoList';
+import { AuthContext } from './components/Auth';
+import { ErrorNotification } from './components/Error';
+import { TodoList } from './components/TodoList';
 import { getTodos, addTodo, deleteTodo } from './api/todos';
 import { Todo } from './types/Todo';
-import { TodoCount } from './components/TodoCount/TodoCount';
-import { TodoFilter } from './components/Filter/TodoFilter';
+import { TodoCount } from './components/TodoCount';
+import { TodoFilter } from './components/Filter';
 import { FilterBy } from './types/FilterType';
 
 export const App: React.FC = () => {
@@ -96,11 +96,10 @@ export const App: React.FC = () => {
       await deleteTodo(todoId);
 
       setTodos([...visibleTodo].filter((todo) => todo.id !== todoId));
+      setIsDeleting(false);
     } catch {
       setErrorMessage('Unable to delete a todo');
     }
-
-    setIsDeleting(false);
   };
 
   const deleteCompletedTodo = () => {
@@ -150,6 +149,7 @@ export const App: React.FC = () => {
         <footer className="todoapp__footer" data-cy="Footer">
           <TodoCount activeTodo={activeTodo} />
           <TodoFilter
+            sortBy={sortBy}
             setSortBy={setSortBy}
             clearAllCompleted={deleteCompletedTodo}
             completedTodo={completedTodo}
