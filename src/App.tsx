@@ -7,13 +7,13 @@ import React, {
   useState,
 } from 'react';
 import { AuthContext } from './components/Auth/AuthContext';
-import { Footer } from './components/Footer';
+import { FilterComponent } from './components/FilterComponent';
 import { TodoList } from './components/Todo/TodoList';
 import { ErrorNotification } from './components/ErrorNotification';
 import { Todo } from './types/Todo';
 import { FilterType } from './types/FilterType';
 import { createTodo, getTodos, removeTodo } from './api/todos';
-import { Header } from './components/Header';
+import { AddForm } from './components/AddForm';
 import { ErrorType } from './types/ErrorTypes';
 
 export const App: React.FC = () => {
@@ -119,7 +119,7 @@ export const App: React.FC = () => {
       <h1 className="todoapp__title">todos</h1>
 
       <div className="todoapp__content">
-        <Header
+        <AddForm
           title={title}
           setTitle={setTitle}
           handleSubmit={handleSubmit}
@@ -135,7 +135,7 @@ export const App: React.FC = () => {
               selectedId={selectedIds}
               title={title}
             />
-            <Footer
+            <FilterComponent
               todos={filteredTodos}
               filterBy={filterBy}
               setFilterBy={setFilterBy}

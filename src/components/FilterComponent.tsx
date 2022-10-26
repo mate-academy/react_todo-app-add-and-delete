@@ -10,7 +10,7 @@ type Props = {
   deleteCompletedTodos: () => void;
 };
 
-export const Footer: React.FC<Props> = ({
+export const FilterComponent: React.FC<Props> = ({
   todos,
   filterBy,
   setFilterBy,
@@ -69,8 +69,12 @@ export const Footer: React.FC<Props> = ({
         type="button"
         className="todoapp__clear-completed"
         onClick={deleteCompletedTodos}
+        style={completedTodos.length > 0
+          ? { opacity: '100%' }
+          : { opacity: '0%', cursor: 'default' }}
+        disabled={!completedTodos}
       >
-        {completedTodos.length > 0 && 'Clear completed'}
+        Clear completed
       </button>
     </footer>
   );
