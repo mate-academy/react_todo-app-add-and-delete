@@ -62,7 +62,7 @@ export const App: React.FC = () => {
           setErrorMessage('Cannot load todos');
         });
     }
-  }, [user]);
+  }, [user, todos]);
 
   useEffect(() => {
     setTimeout(() => setErrorMessage(''), 3000);
