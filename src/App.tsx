@@ -1,5 +1,5 @@
 /* eslint-disable jsx-a11y/control-has-associated-label */
-import React, {
+import {
   useContext, useEffect, useMemo, useRef, useState,
 } from 'react';
 import { AuthContext } from './components/Auth/AuthContext';
@@ -19,9 +19,7 @@ const defaultTodo = {
   completed: false,
 };
 
-type AppType = () => JSX.Element | undefined;
-
-export const App: AppType = () => {
+export const App = (): JSX.Element | null => {
   const user = useContext(AuthContext);
   const newTodoField = useRef<HTMLInputElement>(null);
   const [todos, setTodos] = useState<Todo[]>([]);
@@ -76,7 +74,7 @@ export const App: AppType = () => {
   }, [errorMessage]);
 
   if (!user) {
-    return;
+    return null;
   }
 
   const createTodo = (title: string) => {
