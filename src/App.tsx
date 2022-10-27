@@ -19,7 +19,9 @@ const defaultTodo = {
   completed: false,
 };
 
-export const App: React.FC = () => {
+type AppType = () => JSX.Element | undefined;
+
+export const App: AppType = () => {
   const user = useContext(AuthContext);
   const newTodoField = useRef<HTMLInputElement>(null);
   const [todos, setTodos] = useState<Todo[]>([]);
@@ -28,6 +30,9 @@ export const App: React.FC = () => {
   const [isAdding, setIsAdding] = useState(false);
   const [temporaryTodo, setTemporaryTodo] = useState(defaultTodo);
   const [completedIsRemoving, setCompletedIsRemoving] = useState(false);
+  const numberOfTodos = useMemo(() => {
+    return todos.filter((todo) => !todo.completed).length;
+  }, [todos]);
   const numberOfCompleted = useMemo<number>(() => {
     return [...todos].filter((todo) => todo.completed).length;
   }, [todos]);
@@ -54,7 +59,9 @@ export const App: React.FC = () => {
     if (newTodoField.current) {
       newTodoField.current.focus();
     }
+  }, [user]);
 
+  useEffect(() => {
     if (user) {
       getTodos(user.id)
         .then(result => setTodos(result))
@@ -62,16 +69,14 @@ export const App: React.FC = () => {
           setErrorMessage('Cannot load todos');
         });
     }
-  }, [user, todos]);
+  }, [todos]);
 
   useEffect(() => {
     setTimeout(() => setErrorMessage(''), 3000);
   }, [errorMessage]);
 
   if (!user) {
-    return (
-      <></>
-    );
+    return;
   }
 
   const createTodo = (title: string) => {
@@ -102,6 +107,9 @@ export const App: React.FC = () => {
     setCompletedIsRemoving(true);
   };
 
+  const changeFilterType = (filterType: FilterType) => setFilter(filterType);
+
+  // eslint-disable-next-line consistent-return
   return (
     <div className="todoapp">
       <h1 className="todoapp__title">todos</h1>
@@ -135,8 +143,8 @@ export const App: React.FC = () => {
               />
             )}
             <Footer
-              filterBy={(filterType: FilterType) => setFilter(filterType)}
-              todosQuantity={todos.filter((todo) => !todo.completed).length}
+              filterBy={changeFilterType}
+              todosQuantity={numberOfTodos}
               selectedFilter={filter}
               removeCompleted={removeCompleted}
               numberOfCompleted={numberOfCompleted}
