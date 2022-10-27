@@ -34,3 +34,9 @@ export const switchTodoStatus = (
     completed: !todo.completed,
   });
 };
+
+export const editTodoTitle = (todoId: number, title: string) => {
+  return client.patch<Todo[]>(`/todos/${todoId}`, {
+    title,
+  });
+};

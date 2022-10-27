@@ -1,13 +1,15 @@
 /* eslint-disable jsx-a11y/control-has-associated-label */
 /* eslint-disable @typescript-eslint/no-non-null-assertion */
 import React, {
-  useContext, useEffect, useRef, useState,
+  useContext, useEffect, useRef, useState, useCallback,
 } from 'react';
 import {
   getTodos,
   addTodo,
   deleteTodo,
   clearTodos,
+  editTodoTitle,
+  switchTodoStatus,
 } from './api/todos';
 import { AuthContext } from './components/Auth/AuthContext';
 import { Todo } from './types/Todo';
@@ -20,6 +22,8 @@ export const App: React.FC = () => {
   const [error, setError, clearError] = useError();
   const [filter, filterAll, filterActive, filterCompleted] = useFilter();
   const [isLoading, addToLoading, removeFromLoading] = useLoader();
+  const [edit, setEdit] = useState<number>(-1);
+  const [editedTitle, setEditedTitle] = useState<string>('');
 
   useEffect(() => {
     if (newTodoField.current) {
@@ -71,7 +75,22 @@ export const App: React.FC = () => {
     }
   }
 
-  const switchTodoStatusHandler = (todo: Todo) => () => {
+  const switchTodoStatusHandler = useCallback((todo: Todo) => () => {
+    addToLoading(todo.id);
+    switchTodoStatus(todo).then(
+      () => getTodos(user!.id)
+        .then(res => {
+          removeFromLoading(todo.id);
+          setTodos(res);
+        }),
+      () => {
+        removeFromLoading(todo.id);
+        setError('Unable to switch');
+      },
+    );
+  }, []);
+
+  const removeTodoHandler = useCallback((todo: Todo) => () => {
     addToLoading(todo.id);
     deleteTodo(todo.id).then(
       () => getTodos(user!.id)
@@ -84,11 +103,24 @@ export const App: React.FC = () => {
         setError('Unable to remove');
       },
     );
-  };
+  }, []);
 
-  const removeTodoHandler = (todo: Todo) => () => {
+  const changeTodo = useCallback((todo: Todo) => {
     addToLoading(todo.id);
-    deleteTodo(todo.id).then(
+    setEdit(-1);
+    if (todo.title === editedTitle) {
+      removeFromLoading(todo.id);
+
+      return;
+    }
+
+    if (editedTitle === '') {
+      removeTodoHandler(todo)();
+
+      return;
+    }
+
+    editTodoTitle(todo.id, editedTitle).then(
       () => getTodos(user!.id)
         .then(res => {
           removeFromLoading(todo.id);
@@ -96,12 +128,32 @@ export const App: React.FC = () => {
         }),
       () => {
         removeFromLoading(todo.id);
-        setError('Unable to remove');
+        setError('Unable to edit');
       },
     );
-  };
+  }, [editedTitle]);
 
-  const clearTodoHandler = () => {
+  const editTodoKeyDown = useCallback((todo:Todo) => (
+    e: React.KeyboardEvent<HTMLInputElement>,
+  ) => {
+    if (e.key === 'Enter') {
+      e.preventDefault();
+      changeTodo(todo);
+    }
+
+    if (e.key === 'Escape') {
+      setEdit(-1);
+    }
+  }, [changeTodo]);
+
+  const editTodoKeyBlur = useCallback((todo:Todo) => (
+    e: React.FocusEvent<HTMLInputElement, Element>,
+  ) => {
+    e.preventDefault();
+    changeTodo(todo);
+  }, [changeTodo]);
+
+  const clearTodoHandler = useCallback(() => {
     clearTodos(todos
       .filter(todo => todo.completed)
       .map(todo => todo.id)).then(
@@ -113,7 +165,7 @@ export const App: React.FC = () => {
         setError('Unable to clear');
       },
     );
-  };
+  }, [todos, changeTodo]);
 
   return (
     <div className="todoapp">
@@ -158,19 +210,45 @@ export const App: React.FC = () => {
                     onClick={switchTodoStatusHandler(todo)}
                   />
                 </label>
-
-                <span data-cy="TodoTitle" className="todo__title">
-                  {todo.title}
-                </span>
-                <button
-                  type="button"
-                  className="todo__remove"
-                  data-cy="TodoDeleteButton"
-                  onClick={removeTodoHandler(todo)}
-                >
-                  ×
-                </button>
-
+                {edit === todo.id ? (
+                  <form>
+                    <input
+                      ref={input => input && input.focus()}
+                      data-cy="TodoTitleField"
+                      type="text"
+                      className="todo__title-field"
+                      placeholder="Empty todo will be deleted"
+                      value={editedTitle}
+                      onChange={(e) => setEditedTitle(e.target.value)}
+                      onBlur={editTodoKeyBlur(todo)}
+                      onKeyDown={editTodoKeyDown(todo)}
+                    />
+                  </form>
+                )
+                  : (
+                    <>
+                      <span
+                        data-cy="TodoTitle"
+                        className="todo__title"
+                        onDoubleClick={
+                          () => {
+                            setEdit(todo.id);
+                            setEditedTitle(todo.title);
+                          }
+                        }
+                      >
+                        {todo.title}
+                      </span>
+                      <button
+                        type="button"
+                        className="todo__remove"
+                        data-cy="TodoDeleteButton"
+                        onClick={removeTodoHandler(todo)}
+                      >
+                        ×
+                      </button>
+                    </>
+                  )}
                 <div
                   data-cy="TodoLoader"
                   className={`modal overlay ${isLoading.includes(todo.id) && 'is-active'}`}
