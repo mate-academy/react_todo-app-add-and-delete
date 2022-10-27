@@ -12,12 +12,10 @@ type Props = {
   isAdding: boolean,
   userId: number,
   title: string,
-  setIsError: (value: string | null) => void,
   isRemoving: boolean,
-  setIsRemoving: (value: boolean) => void,
   selectedTodoId: number | null,
-  setSelectedTodoId: (value : number | null) => void,
-  completedTodosIds: number [],
+  completedTodosIds: number[],
+  handleTodoDeleteButton: (id: number) => void,
 };
 
 export const TodoList: React.FC<Props> = ({
@@ -25,20 +23,11 @@ export const TodoList: React.FC<Props> = ({
   isAdding,
   userId,
   title,
-  setIsError,
   isRemoving,
-  setIsRemoving,
   selectedTodoId,
-  setSelectedTodoId,
   completedTodosIds,
+  handleTodoDeleteButton,
 }) => {
-  const tempTodo = {
-    id: 0,
-    userId,
-    completed: false,
-    title,
-  };
-
   return (
     <section className="todoapp__main" data-cy="TodoList">
       <TransitionGroup>
@@ -51,12 +40,10 @@ export const TodoList: React.FC<Props> = ({
             <TodoItem
               todo={todo}
               isAdding={isAdding}
-              setIsError={setIsError}
               isRemoving={isRemoving}
-              setIsRemoving={setIsRemoving}
               selectedTodoId={selectedTodoId}
-              setSelectedTodoId={setSelectedTodoId}
               completedTodosIds={completedTodosIds}
+              handleTodoDeleteButton={handleTodoDeleteButton}
             />
           </CSSTransition>
         ))}
@@ -67,14 +54,17 @@ export const TodoList: React.FC<Props> = ({
             classNames="temp-item"
           >
             <TodoItem
-              todo={tempTodo}
+              todo={{
+                id: 0,
+                userId,
+                completed: false,
+                title,
+              }}
               isAdding={isAdding}
-              setIsError={setIsError}
               isRemoving={isRemoving}
-              setIsRemoving={setIsRemoving}
               selectedTodoId={selectedTodoId}
-              setSelectedTodoId={setSelectedTodoId}
               completedTodosIds={completedTodosIds}
+              handleTodoDeleteButton={handleTodoDeleteButton}
             />
           </CSSTransition>
         )}

@@ -1,28 +1,23 @@
 /* eslint-disable @typescript-eslint/no-unused-vars */
 import classNames from 'classnames';
-import { deleteTodo } from '../../api/todos';
 import { Todo } from '../../types/Todo';
 
 type Props = {
   todo: Todo,
   isAdding: boolean,
-  setIsError: (value: string | null) => void,
   isRemoving: boolean,
-  setIsRemoving: (value: boolean) => void,
   selectedTodoId: number | null,
-  setSelectedTodoId: (value : number | null) => void,
-  completedTodosIds: number [],
+  completedTodosIds: number[],
+  handleTodoDeleteButton: (id: number) => void,
 };
 
 export const TodoItem: React.FC<Props> = ({
   todo,
   isAdding,
-  setIsError,
   isRemoving,
-  setIsRemoving,
   selectedTodoId,
-  setSelectedTodoId,
   completedTodosIds,
+  handleTodoDeleteButton,
 }) => {
   const { title, completed, id } = todo;
 
@@ -45,16 +40,7 @@ export const TodoItem: React.FC<Props> = ({
         type="button"
         className="todo__remove"
         data-cy="TodoDeleteButton"
-        onClick={() => {
-          setIsRemoving(true);
-          setSelectedTodoId(id);
-          deleteTodo(id)
-            .then(() => setIsRemoving(false))
-            .catch(error => {
-              setIsError(`${error}: Unable to delete a todo`);
-              setIsRemoving(false);
-            });
-        }}
+        onClick={() => handleTodoDeleteButton(id)}
       >
         ×
       </button>

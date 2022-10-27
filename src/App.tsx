@@ -4,7 +4,7 @@ import React, {
   useEffect,
   useState,
 } from 'react';
-import { getTodos } from './api/todos';
+import { getTodos, createTodo, deleteTodo } from './api/todos';
 import { AuthContext } from './components/Auth/AuthContext';
 import { TodoErrorNotification } from './components/TodoErrorNotification';
 import { TodoFooter } from './components/TodoFooter';
@@ -45,6 +45,34 @@ export const App: React.FC = () => {
     return filteredTodos;
   };
 
+  const handleSubmitForm = (event: React.FormEvent<HTMLFormElement>) => {
+    event.preventDefault();
+    if (!newTodoTitle) {
+      setIsError('Title can\'t be empty');
+    } else {
+      setIsAdding(true);
+      setTitle(newTodoTitle);
+      createTodo(newTodoTitle, user.id, false)
+        .then(() => (setIsAdding(false)))
+        .catch(error => {
+          setIsError(`${error}: Unable to add a todo`);
+          setIsAdding(false);
+        });
+      setNewTodoTitle('');
+    }
+  };
+
+  const handleTodoDeleteButton = (id: number) => {
+    setIsRemoving(true);
+    setSelectedTodoId(id);
+    deleteTodo(id)
+      .then(() => setIsRemoving(false))
+      .catch(error => {
+        setIsError(`${error}: Unable to delete a todo`);
+        setIsRemoving(false);
+      });
+  };
+
   useEffect(() => {
     if (user) {
       getTodos(user.id)
@@ -59,13 +87,10 @@ export const App: React.FC = () => {
 
       <div className="todoapp__content">
         <TodoHeader
-          userId={user ? user.id : 0}
-          setIsError={setIsError}
           isAdding={isAdding}
-          setIsAdding={setIsAdding}
           newTodoTitle={newTodoTitle}
           setNewTodoTitle={setNewTodoTitle}
-          setTitle={setTitle}
+          handleSubmitForm={handleSubmitForm}
         />
 
         {todos.length > 0 && (
@@ -74,12 +99,10 @@ export const App: React.FC = () => {
             isAdding={isAdding}
             userId={user?.id || 0}
             title={title}
-            setIsError={setIsError}
             isRemoving={isRemoving}
-            setIsRemoving={setIsRemoving}
             selectedTodoId={selectedTodoId}
-            setSelectedTodoId={setSelectedTodoId}
             completedTodosIds={completedTodosIds}
+            handleTodoDeleteButton={handleTodoDeleteButton}
           />
         )}
 
