@@ -11,14 +11,16 @@ export const NewTodoField: React.FC<Props> = ({
 }) => {
   const [newTodoTitle, setNewTodoTitle] = useState('');
 
+  const submitHandler = (event: React.FormEvent<HTMLFormElement>) => {
+    event.preventDefault();
+
+    createTodo(newTodoTitle);
+    setNewTodoTitle('');
+  };
+
   return (
     <form
-      onSubmit={(event) => {
-        event.preventDefault();
-
-        createTodo(newTodoTitle);
-        setNewTodoTitle('');
-      }}
+      onSubmit={(event) => submitHandler(event)}
     >
       <input
         data-cy="NewTodoField"

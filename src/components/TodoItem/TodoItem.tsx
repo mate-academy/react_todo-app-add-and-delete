@@ -11,11 +11,7 @@ interface Props {
 export const TodoItem: React.FC<Props> = ({
   todo, deleteHandler, completedIsRemoving,
 }) => {
-  const {
-    completed,
-    title,
-    id,
-  } = todo;
+  const { completed, title, id } = todo;
 
   const [isDeleting, setIsDeleting] = useState(false);
 

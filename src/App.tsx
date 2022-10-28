@@ -11,6 +11,7 @@ import { ErrorNotification } from './components/ErrorNotification';
 import { FilterType } from './types/FilterType';
 import { NewTodoField } from './components/NewTodoField';
 import { TodoItem } from './components/TodoItem';
+import { ErrorMessage } from './types/ErrorMessage';
 
 const defaultTodo = {
   id: 0,
@@ -23,7 +24,8 @@ export const App = (): JSX.Element | null => {
   const user = useContext(AuthContext);
   const newTodoField = useRef<HTMLInputElement>(null);
   const [todos, setTodos] = useState<Todo[]>([]);
-  const [errorMessage, setErrorMessage] = useState('');
+  const [errorMessage, setErrorMessage]
+    = useState<ErrorMessage>(ErrorMessage.None);
   const [filter, setFilter] = useState(FilterType.All);
   const [isAdding, setIsAdding] = useState(false);
   const [temporaryTodo, setTemporaryTodo] = useState(defaultTodo);
@@ -43,8 +45,10 @@ export const App = (): JSX.Element | null => {
         switch (filter) {
           case FilterType.Active:
             return !todo.completed;
+
           case FilterType.Completed:
             return todo.completed;
+
           case FilterType.All:
           default:
             return true;
@@ -56,7 +60,7 @@ export const App = (): JSX.Element | null => {
   }, [todos, filter]);
 
   useEffect(() => {
-    setErrorMessage('');
+    setErrorMessage(ErrorMessage.None);
     if (newTodoField.current) {
       newTodoField.current.focus();
     }
@@ -67,13 +71,13 @@ export const App = (): JSX.Element | null => {
       getTodos(user.id)
         .then(result => setTodos(result))
         .catch(() => {
-          setErrorMessage('Cannot load todos');
+          setErrorMessage(ErrorMessage.CannotLoadTodos);
         });
     }
   }, [todos]);
 
   useEffect(() => {
-    setTimeout(() => setErrorMessage(''), 3000);
+    setTimeout(() => setErrorMessage(ErrorMessage.None), 3000);
   }, [errorMessage]);
 
   if (!user) {
@@ -82,7 +86,7 @@ export const App = (): JSX.Element | null => {
 
   const createTodo = (title: string) => {
     if (title.length === 0) {
-      setErrorMessage('Title can\'t be empty');
+      setErrorMessage(ErrorMessage.EmptyTitle);
 
       return;
     }
@@ -95,13 +99,13 @@ export const App = (): JSX.Element | null => {
     setIsAdding(true);
 
     addTodo(user.id, title)
-      .catch(() => setErrorMessage('Unable to add a todo'))
+      .catch(() => setErrorMessage(ErrorMessage.UnableToAdd))
       .finally(() => setIsAdding(false));
   };
 
   const removeTodoFromList = (todoId: number) => {
     return deleteTodo(todoId)
-      .catch(() => setErrorMessage('Unable to delete a todo'));
+      .catch(() => setErrorMessage(ErrorMessage.UnableToDelete));
   };
 
   const removeCompleted = () => {
@@ -110,7 +114,7 @@ export const App = (): JSX.Element | null => {
 
   const changeFilterType = (filterType: FilterType) => setFilter(filterType);
 
-  const hideError = () => setErrorMessage('');
+  const hideError = () => setErrorMessage(ErrorMessage.None);
 
   return (
     <div className="todoapp">
