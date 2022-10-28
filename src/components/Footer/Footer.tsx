@@ -1,7 +1,6 @@
 import classNames from 'classnames';
 import React from 'react';
 import { FilterType } from '../../types/FilterType';
-// import { Todo } from '../../types/Todo';
 
 interface Props {
   filterBy: (filter: FilterType) => void;

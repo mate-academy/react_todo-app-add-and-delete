@@ -28,12 +28,15 @@ export const App = (): JSX.Element | null => {
   const [isAdding, setIsAdding] = useState(false);
   const [temporaryTodo, setTemporaryTodo] = useState(defaultTodo);
   const [completedIsRemoving, setCompletedIsRemoving] = useState(false);
+
   const numberOfTodos = useMemo(() => {
     return todos.filter((todo) => !todo.completed).length;
   }, [todos]);
+
   const numberOfCompleted = useMemo<number>(() => {
     return [...todos].filter((todo) => todo.completed).length;
   }, [todos]);
+
   const visibleTodos = useMemo<Todo[]>(() => {
     if (todos) {
       return [...todos].filter(todo => {
@@ -107,7 +110,8 @@ export const App = (): JSX.Element | null => {
 
   const changeFilterType = (filterType: FilterType) => setFilter(filterType);
 
-  // eslint-disable-next-line consistent-return
+  const hideError = () => setErrorMessage('');
+
   return (
     <div className="todoapp">
       <h1 className="todoapp__title">todos</h1>
@@ -154,7 +158,7 @@ export const App = (): JSX.Element | null => {
       {errorMessage && (
         <ErrorNotification
           errorMessage={errorMessage}
-          hideError={() => setErrorMessage('')}
+          hideError={hideError}
         />
       )}
     </div>
