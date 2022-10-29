@@ -2,7 +2,6 @@ import React, {
   useCallback,
   useContext,
   useEffect,
-  useMemo,
   useState,
 } from 'react';
 
@@ -15,6 +14,7 @@ import {
 
 export const App: React.FC = () => {
   const [todos, setTodos] = useState<Todo[] | []>([]);
+  const [visibleTodos, setVisibleTodos] = useState<Todo[] | []>([]);
   const [isNotificationOpen, setIsNotificationOpen] = useState(true);
   const [textNotification, setTextNotification] = useState<string>('');
   const [
@@ -31,7 +31,6 @@ export const App: React.FC = () => {
 
   const { pathname } = location;
 
-  // для запуска Notification
   const toggleError = (
     state: boolean,
     text: string,
@@ -45,7 +44,9 @@ export const App: React.FC = () => {
     }, 3000);
   };
 
-  let visibleTodos = [...todos];
+  useEffect(() => {
+    setVisibleTodos(todos);
+  }, [todos]);
 
   const setNotification = (state: boolean) => {
     setIsNotificationOpen(state);
@@ -88,7 +89,7 @@ export const App: React.FC = () => {
     } catch (error) {
       toggleError(false, 'Unable to delete a todo', 'error');
     }
-  }, [todos]);
+  }, [visibleTodos]);
 
   const timerRemoveTodos = () => {
     setTimeout(() => {
@@ -119,20 +120,21 @@ export const App: React.FC = () => {
     }
   }, [newTodo]);
 
-  useMemo(() => {
+  useEffect(() => {
     switch (pathname) {
       case '/':
-        visibleTodos = [...todos];
+        setVisibleTodos(todos);
         break;
       case '/active':
-        visibleTodos = todos.filter(todo => !todo.completed);
+        setVisibleTodos(todos.filter(todo => !todo.completed));
         break;
       case '/completed':
-        visibleTodos = todos.filter(todo => todo.completed);
+        setVisibleTodos(todos.filter(todo => todo.completed));
         break;
       default:
+        break;
     }
-  }, [pathname]);
+  }, [pathname, todos]);
 
   return (
     <div className="todoapp">
@@ -147,7 +149,7 @@ export const App: React.FC = () => {
         />
         {
           todos.length > 0
-            ? (
+            && (
               <>
                 <section className="todoapp__main" data-cy="TodoList">
                   <TodoList
@@ -165,7 +167,6 @@ export const App: React.FC = () => {
                 />
               </>
             )
-            : null
         }
       </div>
       <Notification

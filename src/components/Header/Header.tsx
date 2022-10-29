@@ -1,4 +1,3 @@
-/* eslint-disable jsx-a11y/control-has-associated-label */
 import React from 'react';
 
 type Props = {
@@ -26,6 +25,7 @@ export const Header: React.FC<Props> = (
         data-cy="ToggleAllButton"
         type="button"
         className="todoapp__toggle-all active"
+        aria-label="button-all-toggle"
       />
 
       <form onSubmit={handleSubmit}>
