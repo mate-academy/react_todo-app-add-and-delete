@@ -17,7 +17,7 @@ import {
 
 import { AuthContext } from './components/Auth/AuthContext';
 import { TodosList } from './components/TodoList';
-import { Footer } from './components/Footer';
+import { Footer } from './components/Filters';
 import { ErrorNotification, ErrorText } from './components/ErrorNotification';
 import { FilterStatus } from './types/Filter';
 import { Todo } from './types/Todo';
@@ -49,12 +49,6 @@ export const App: React.FC = () => {
     }
   });
 
-  if (error) {
-    setTimeout(() => {
-      setError(null);
-    }, 3000);
-  }
-
   const focusOnInput = () => {
     if (newTodoField.current) {
       newTodoField.current.focus();
@@ -74,7 +68,7 @@ export const App: React.FC = () => {
   const hundleAddTodo = useCallback(async (event: FormEvent) => {
     event.preventDefault();
     if (!title || !user) {
-      setError(ErrorText.Title);
+      setError(ErrorText.noUser);
 
       return;
     }

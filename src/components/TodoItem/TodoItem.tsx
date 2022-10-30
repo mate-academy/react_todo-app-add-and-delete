@@ -57,7 +57,7 @@ export const TodoItem: React.FC<Props> = ({
         &times;
       </button>
 
-      { loaderCondition && (
+      {loaderCondition && (
         <Loader
           isAdding={isAdding}
         />

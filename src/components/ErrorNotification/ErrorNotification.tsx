@@ -22,6 +22,12 @@ export const ErrorNotification: React.FC<Props> = ({
 }) => {
   const [errorText] = useState(ErrorText.Delete);
 
+  if (error) {
+    setTimeout(() => {
+      setError(null);
+    }, 3000);
+  }
+
   const closeError = () => {
     setError(null);
   };
