@@ -1,18 +1,41 @@
-import React from 'react';
+import React, { useState } from 'react';
 import classNames from 'classnames';
 import { Todo } from '../../types/Todo';
+import { deleteTodo } from '../../api/todos';
 
 type Props = {
+  todos: Todo[],
   todo: Todo,
   isAdded: boolean,
-  removeTodos(todo: Todo): void,
+  setTodos(todos: Todo[]): void,
+  setError(error: string | null): void,
+  isDeletingAll: boolean,
 };
 
 export const TodoItem: React.FC<Props> = ({
+  todos,
   todo,
   isAdded,
-  removeTodos,
+  setTodos,
+  setError,
+  isDeletingAll,
 }) => {
+  const [isDeleting, setIsDeleting] = useState(false);
+
+  const removeTodo = async (todoForRemove: Todo) => {
+    setIsDeleting(true);
+
+    try {
+      await deleteTodo(todoForRemove.id);
+
+      setTodos(todos.filter(item => item.id !== todoForRemove.id));
+    } catch {
+      setError('Unable to delete a todo');
+    } finally {
+      setIsDeleting(false);
+    }
+  };
+
   return (
     <div
       data-cy="Todo"
@@ -27,7 +50,7 @@ export const TodoItem: React.FC<Props> = ({
           data-cy="TodoStatus"
           type="checkbox"
           className="todo__status"
-          checked={todo.completed}
+          defaultChecked={todo.completed}
         />
       </label>
 
@@ -36,7 +59,7 @@ export const TodoItem: React.FC<Props> = ({
         type="button"
         className="todo__remove"
         data-cy="TodoDeleteButton"
-        onClick={() => removeTodos(todo)}
+        onClick={() => removeTodo(todo)}
       >
         ×
       </button>
@@ -46,7 +69,10 @@ export const TodoItem: React.FC<Props> = ({
         className={classNames(
           'modal',
           'overlay',
-          { 'is-active': isAdded },
+          {
+            'is-active': isAdded || isDeleting
+              || (isDeletingAll && todo.completed),
+          },
         )}
       >
         <div className="modal-background has-background-white-ter" />

@@ -5,7 +5,7 @@ import classNames from 'classnames';
 import { AuthContext } from './components/Auth/AuthContext';
 import { Todo } from './types/Todo';
 import { TodoList } from './components/TodoList';
-import { getTodos, postTodos, deleteTodos } from './api/todos';
+import { getTodos, postTodo, deleteTodo } from './api/todos';
 import { TodoFooter } from './components/TodoFooter';
 import { Status } from './types/Status';
 import { TodoError } from './components/TodoError';
@@ -18,7 +18,7 @@ export const App: React.FC = () => {
   const [filter, setFilter] = useState(Status.All);
   const [isAdding, setIsAdding] = useState(false);
   const [addedTodo, setAddedTodo] = useState<Todo | null>(null);
-  const [isChanging, setIsChanging] = useState(false);
+  const [isDeletingAll, setIsDeletingAll] = useState(false);
 
   const loadTodos = async () => {
     try {
@@ -32,11 +32,11 @@ export const App: React.FC = () => {
     }
   };
 
-  const addTodos = async (todo: Todo) => {
+  const addTodo = async (todo: Todo) => {
     setIsAdding(true);
 
     try {
-      const newTodo = await postTodos(todo);
+      const newTodo = await postTodo(todo);
 
       setTodos(prevTodos => [...prevTodos, newTodo]);
     } catch {
@@ -44,20 +44,6 @@ export const App: React.FC = () => {
     } finally {
       setIsAdding(false);
       setAddedTodo(null);
-    }
-  };
-
-  const removeTodos = async (todo: Todo) => {
-    setIsChanging(true);
-
-    try {
-      const removedTodo = await deleteTodos(todo.id);
-
-      setTodos(todos.filter(item => item.id !== removedTodo.id));
-    } catch {
-      setError('Unable to delete a todo');
-    } finally {
-      setIsChanging(false);
     }
   };
 
@@ -91,13 +77,24 @@ export const App: React.FC = () => {
     };
 
     setAddedTodo(newTodo);
-    addTodos(newTodo);
+    addTodo(newTodo);
     newTodoField.current.value = '';
   };
 
-  const handleClearCompleted = () => {
-    todos.filter(todo => todo.completed)
-      .forEach(todo => removeTodos(todo));
+  const handleClearCompleted = async () => {
+    const completedTodos = todos.filter(todo => todo.completed);
+
+    setIsDeletingAll(true);
+
+    try {
+      await Promise.all(completedTodos.map(todo => deleteTodo(todo.id)));
+
+      setTodos(todos.filter(todo => !todo.completed));
+    } catch (e) {
+      setError('Unable to delete completed todos');
+    } finally {
+      setIsDeletingAll(false);
+    }
   };
 
   const filteredTodos = useMemo(() => {
@@ -150,8 +147,9 @@ export const App: React.FC = () => {
               <TodoList
                 todos={filteredTodos}
                 addedTodo={addedTodo}
-                removeTodos={removeTodos}
-                isChanging={isChanging}
+                setTodos={setTodos}
+                setError={setError}
+                isDeletingAll={isDeletingAll}
               />
               <TodoFooter
                 todos={todos}
