@@ -1,4 +1,5 @@
 import { RefObject, useEffect, useState } from 'react';
+import { ErrorTypes } from '../types/Error';
 
 type Props = {
   newTodoField: RefObject<HTMLInputElement>,
@@ -23,7 +24,7 @@ export const Header: React.FC<Props> = ({
     event.preventDefault();
 
     if (!inputTitle.trim().length) {
-      setErrorMessage('Title can\'t be empty');
+      setErrorMessage(ErrorTypes.TitleIsEmpty);
 
       return;
     }

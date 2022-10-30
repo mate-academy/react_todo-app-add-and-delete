@@ -14,10 +14,11 @@ import { Header } from './components/Header';
 import { TodoList } from './components/TodoList';
 import { FilterTypes } from './types/Filter';
 import { Todo } from './types/Todo';
+import { ErrorTypes } from './types/Error';
 
 export const App: React.FC = () => {
   const [todos, setTodos] = useState<Todo[] | []>([]);
-  const [errorMessage, setErrorMessage] = useState('');
+  const [errorMessage, setErrorMessage] = useState<string | null>('');
   const [filterBy, setFilterBy] = useState<FilterTypes>(FilterTypes.All);
   const [isAdding, setIsAdding] = useState(false);
   const [isDeleting, setIsDeleting] = useState(false);
@@ -36,8 +37,8 @@ export const App: React.FC = () => {
         const visibleTodos = getTodos(userId);
 
         setTodos(await visibleTodos);
-      } catch (error) {
-        setErrorMessage(`${error}`);
+      } catch {
+        setErrorMessage(ErrorTypes.UnableLoad);
       }
     }
 
@@ -81,7 +82,7 @@ export const App: React.FC = () => {
     try {
       setTodos([...todos, await createTodo(user?.id || 0, todoTitle)]);
     } catch {
-      setErrorMessage('Unable to add a todo');
+      setErrorMessage(ErrorTypes.UnableAdd);
     } finally {
       setIsAdding(false);
       setTempTodo(prev => ({ ...prev, title: '' }));
@@ -94,7 +95,7 @@ export const App: React.FC = () => {
 
       setTodos(prevTodos => prevTodos.filter(({ id }) => id !== todoId));
     } catch {
-      setErrorMessage('Unable to delete a todo');
+      setErrorMessage(ErrorTypes.UnableDelete);
     } finally {
       setIsDeleting(false);
     }
@@ -105,7 +106,7 @@ export const App: React.FC = () => {
     try {
       completedTodos.forEach(({ id }) => removeTodo(id));
     } catch {
-      setErrorMessage('Unable to delete a todo');
+      setErrorMessage(ErrorTypes.UnableDelete);
     }
   };
 
