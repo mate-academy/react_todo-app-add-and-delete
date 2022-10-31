@@ -20,7 +20,7 @@ export const NewTodoField: React.FC<Props> = ({
 
   return (
     <form
-      onSubmit={(event) => submitHandler(event)}
+      onSubmit={submitHandler}
     >
       <input
         data-cy="NewTodoField"
