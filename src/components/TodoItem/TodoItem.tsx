@@ -50,7 +50,18 @@ export const TodoItem: React.FC<Props> = ({
           data-cy="TodoStatus"
           type="checkbox"
           className="todo__status"
-          defaultChecked={todo.completed}
+          checked={todo.completed}
+          onChange={() => {
+            const newTodos = todos.map(newTodo => {
+              if (newTodo.id === todo.id) {
+                return { ...newTodo, completed: !newTodo.completed };
+              }
+
+              return newTodo;
+            });
+
+            setTodos(newTodos);
+          }}
         />
       </label>
 
