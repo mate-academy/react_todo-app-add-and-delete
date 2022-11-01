@@ -21,7 +21,6 @@ export const ErrorNotification: React.FC<Props> = ({
         className="delete"
         onClick={hideError}
       />
-
       {errorMessage}
     </div>
   );

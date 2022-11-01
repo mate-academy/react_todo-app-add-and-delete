@@ -18,6 +18,10 @@ export const NewTodoField: React.FC<Props> = ({
     setNewTodoTitle('');
   };
 
+  const changeTitle = (event: React.ChangeEvent<HTMLInputElement>) => {
+    setNewTodoTitle(event.target.value);
+  };
+
   return (
     <form
       onSubmit={submitHandler}
@@ -28,9 +32,9 @@ export const NewTodoField: React.FC<Props> = ({
         ref={newTodoField}
         className="todoapp__new-todo"
         placeholder="What needs to be done?"
-        value={newTodoTitle}
+        value={`${newTodoTitle}`}
         disabled={isAdding}
-        onChange={(event) => setNewTodoTitle(event.target.value)}
+        onChange={changeTitle}
       />
     </form>
   );
