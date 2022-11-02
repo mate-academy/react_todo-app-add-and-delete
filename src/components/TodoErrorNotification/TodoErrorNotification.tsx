@@ -3,37 +3,37 @@ import classNames from 'classnames';
 import { useEffect } from 'react';
 
 type Props = {
-  isError: string | null,
-  setIsError: (value: string | null) => void;
+  error: string | null,
+  setError: (value: string | null) => void;
 };
 
 export const TodoErrorNotification: React.FC<Props> = ({
-  isError,
-  setIsError,
+  error,
+  setError,
 }) => {
   useEffect(() => {
-    const timer = window.setTimeout(() => setIsError(null), 3000);
+    const timer = window.setTimeout(() => setError(null), 3000);
 
     return () => {
-      window.clearInterval(timer);
+      window.clearTimeout(timer);
     };
-  }, [isError]);
+  }, [error]);
 
   return (
     <div
       data-cy="ErrorNotification"
       className={classNames(
         'notification is-danger is-light has-text-weight-normal',
-        { hidden: !isError },
+        { hidden: !error },
       )}
     >
       <button
         data-cy="HideErrorButton"
         type="button"
         className="delete"
-        onClick={() => setIsError(null)}
+        onClick={() => setError(null)}
       />
-      {isError}
+      {error}
     </div>
   );
 };

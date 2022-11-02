@@ -9,14 +9,14 @@ type Props = {
   isAdding: boolean,
   newTodoTitle: string,
   setNewTodoTitle: (value: string) => void,
-  handleSubmitForm: (event: React.FormEvent<HTMLFormElement>) => void,
+  handlerSubmitForm: (event: React.FormEvent<HTMLFormElement>) => void,
 };
 
 export const TodoHeader:React.FC<Props> = ({
   isAdding,
   newTodoTitle,
   setNewTodoTitle,
-  handleSubmitForm,
+  handlerSubmitForm,
 }) => {
   const newTodoField = useRef<HTMLInputElement>(null);
 
@@ -34,7 +34,7 @@ export const TodoHeader:React.FC<Props> = ({
         className="todoapp__toggle-all active"
       />
 
-      <form onSubmit={handleSubmitForm}>
+      <form onSubmit={handlerSubmitForm}>
         <input
           data-cy="NewTodoField"
           type="text"

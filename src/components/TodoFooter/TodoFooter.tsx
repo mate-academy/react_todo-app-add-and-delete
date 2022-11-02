@@ -1,22 +1,23 @@
 /* eslint-disable @typescript-eslint/no-unused-expressions */
-import { deleteTodo } from '../../api/todos';
+import classNames from 'classnames';
 import { SortType } from '../../types/SortType';
 import { Todo } from '../../types/Todo';
+import './TodoFooter.scss';
 
 type Props = {
+  sortType: SortType,
   setSortType: (value: SortType) => void,
   todos: Todo[],
-  setIsRemoving: (value: boolean) => void,
   completedTodosIds: number [],
-  setIsError: (value: string | null) => void,
+  handlerClearCompletedButton: () => void,
 };
 
 export const TodoFooter: React.FC<Props> = ({
   setSortType,
   todos,
-  setIsRemoving,
   completedTodosIds,
-  setIsError,
+  sortType,
+  handlerClearCompletedButton,
 }) => {
   const todosLength = todos.filter(todo => !todo.completed).length;
 
@@ -30,7 +31,10 @@ export const TodoFooter: React.FC<Props> = ({
         <a
           data-cy="FilterLinkAll"
           href="#/"
-          className="filter__link selected"
+          className={classNames(
+            'filter__link',
+            { selected: sortType === SortType.ALL },
+          )}
           onClick={() => {
             setSortType(SortType.ALL);
           }}
@@ -41,7 +45,10 @@ export const TodoFooter: React.FC<Props> = ({
         <a
           data-cy="FilterLinkActive"
           href="#/active"
-          className="filter__link"
+          className={classNames(
+            'filter__link',
+            { selected: sortType === SortType.ACTIVE },
+          )}
           onClick={() => {
             setSortType(SortType.ACTIVE);
           }}
@@ -51,7 +58,10 @@ export const TodoFooter: React.FC<Props> = ({
         <a
           data-cy="FilterLinkCompleted"
           href="#/completed"
-          className="filter__link"
+          className={classNames(
+            'filter__link',
+            { selected: sortType === SortType.COMPLETED },
+          )}
           onClick={() => {
             setSortType(SortType.COMPLETED);
           }}
@@ -60,28 +70,18 @@ export const TodoFooter: React.FC<Props> = ({
         </a>
       </nav>
 
-      {completedTodosIds.length > 0 && (
-        <button
-          data-cy="ClearCompletedButton"
-          type="button"
-          className="todoapp__clear-completed"
-          onClick={() => {
-            setIsRemoving(true);
-            completedTodosIds.map(todo => {
-              return (
-                deleteTodo(todo)
-                  .then(() => setIsRemoving(false))
-                  .catch(error => {
-                    setIsError(`${error}: Unable to delete a todos`);
-                    setIsRemoving(false);
-                  })
-              );
-            });
-          }}
-        >
-          Clear completed
-        </button>
-      )}
+      <button
+        data-cy="ClearCompletedButton"
+        type="button"
+        className={classNames(
+          'todoapp__clear-completed',
+          { disabled: completedTodosIds.length === 0 },
+        )}
+        onClick={handlerClearCompletedButton}
+      >
+        Clear completed
+      </button>
+
     </footer>
   );
 };

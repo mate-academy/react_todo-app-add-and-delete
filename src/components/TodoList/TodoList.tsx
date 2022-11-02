@@ -12,10 +12,11 @@ type Props = {
   isAdding: boolean,
   userId: number,
   title: string,
-  isRemoving: boolean,
+  isLoader: boolean,
+  isLoaderCompletedTodo: boolean,
   selectedTodoId: number | null,
   completedTodosIds: number[],
-  handleTodoDeleteButton: (id: number) => void,
+  handlerTodoDeleteButton: (id: number) => void,
 };
 
 export const TodoList: React.FC<Props> = ({
@@ -23,10 +24,11 @@ export const TodoList: React.FC<Props> = ({
   isAdding,
   userId,
   title,
-  isRemoving,
+  isLoaderCompletedTodo,
   selectedTodoId,
   completedTodosIds,
-  handleTodoDeleteButton,
+  isLoader,
+  handlerTodoDeleteButton,
 }) => {
   return (
     <section className="todoapp__main" data-cy="TodoList">
@@ -40,10 +42,11 @@ export const TodoList: React.FC<Props> = ({
             <TodoItem
               todo={todo}
               isAdding={isAdding}
-              isRemoving={isRemoving}
+              isLoader={isLoader}
               selectedTodoId={selectedTodoId}
               completedTodosIds={completedTodosIds}
-              handleTodoDeleteButton={handleTodoDeleteButton}
+              handlerTodoDeleteButton={handlerTodoDeleteButton}
+              isLoaderCompletedTodo={isLoaderCompletedTodo}
             />
           </CSSTransition>
         ))}
@@ -61,10 +64,11 @@ export const TodoList: React.FC<Props> = ({
                 title,
               }}
               isAdding={isAdding}
-              isRemoving={isRemoving}
+              isLoader={isLoader}
               selectedTodoId={selectedTodoId}
               completedTodosIds={completedTodosIds}
-              handleTodoDeleteButton={handleTodoDeleteButton}
+              handlerTodoDeleteButton={handlerTodoDeleteButton}
+              isLoaderCompletedTodo={isLoaderCompletedTodo}
             />
           </CSSTransition>
         )}
