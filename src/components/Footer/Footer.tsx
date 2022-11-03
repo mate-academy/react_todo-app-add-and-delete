@@ -12,15 +12,18 @@ type Props = {
   todos: Todo[],
   setVisibleTodos: (visTodos: Todo[]) => void,
   todosCount: number,
+  onRemove: () => void,
+  complitedTodos: number[],
 };
 
 export const Footer: React.FC<Props> = ({
   todos,
   setVisibleTodos,
   todosCount,
+  onRemove,
+  complitedTodos,
 }) => {
   const [sortBy, setSortBy] = useState<Sorting>(Sorting.All);
-  // const [sortedTodos] = useState(() => todos);
 
   const handleSorting = () => {
     let visibleTodos = todos;
@@ -89,7 +92,12 @@ export const Footer: React.FC<Props> = ({
       <button
         data-cy="ClearCompletedButton"
         type="button"
-        className="todoapp__clear-completed"
+        className={classNames(
+          'todoapp__clear-completed',
+          { 'todoapp__clear-completed_disabled': complitedTodos.length === 0 },
+        )}
+        onClick={onRemove}
+        disabled={complitedTodos.length === 0}
       >
         Clear completed
       </button>

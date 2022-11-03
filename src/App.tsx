@@ -2,6 +2,7 @@ import React, {
   useCallback,
   useContext,
   useEffect,
+  useMemo,
   useRef,
   useState,
 } from 'react';
@@ -29,7 +30,12 @@ export const App: React.FC = () => {
   const [visibleTodos, setVisibleTodos] = useState<Todo[]>([]);
   const [title, setTitle] = useState('');
   const [isAdding, setIsAdding] = useState(false);
-  const [deletedTodoId, setDeletedTodoId] = useState(0);
+  const [deletedTodoIds, setDeletedTodoId] = useState<number[]>([]);
+
+  const completedTodosId = useMemo((
+    () => todos.filter(todo => todo.completed)
+      .map(todo => todo.id)
+  ), [todos]);
 
   const handleError = useCallback((notification: ErrorMessage) => {
     setIsError({
@@ -79,19 +85,26 @@ export const App: React.FC = () => {
     }
   };
 
-  const removeTodo = async (todoId: number) => {
-    setDeletedTodoId(todoId);
+  const removingTodos
+    = async (todoId: number | number[] = completedTodosId) => {
+      const todosForRemoving = !Array.isArray(todoId)
+        ? [todoId]
+        : [...todoId];
 
-    try {
-      await deleteTodo(todoId);
+      setDeletedTodoId(todosForRemoving);
 
-      setTodos((prevTodos) => prevTodos.filter(todo => todo.id !== todoId));
-    } catch {
-      handleError(ErrorMessage.Remove);
-    } finally {
-      setDeletedTodoId(0);
-    }
-  };
+      try {
+        await Promise.all(todosForRemoving.map(id => deleteTodo(id)));
+
+        setTodos((prevTodos) => prevTodos.filter(
+          todo => !todosForRemoving.includes(todo.id),
+        ));
+      } catch {
+        handleError(ErrorMessage.Remove);
+      } finally {
+        setDeletedTodoId([]);
+      }
+    };
 
   const handleSubmit = useCallback((event: React.SyntheticEvent) => {
     event.preventDefault();
@@ -147,8 +160,8 @@ export const App: React.FC = () => {
           <>
             <TodoList
               todos={visibleTodos}
-              onRemove={(todoId: number) => removeTodo(todoId)}
-              deletedTodoId={deletedTodoId}
+              onRemove={(todoId: number) => removingTodos(todoId)}
+              deletedTodoId={deletedTodoIds}
             />
 
             {isAdding && <TempTodo title={title} />}
@@ -157,6 +170,8 @@ export const App: React.FC = () => {
               todos={todos}
               setVisibleTodos={(visTodos: Todo[]) => setVisibleTodos(visTodos)}
               todosCount={visibleTodos.length}
+              onRemove={() => removingTodos()}
+              complitedTodos={completedTodosId}
             />
           </>
         )}

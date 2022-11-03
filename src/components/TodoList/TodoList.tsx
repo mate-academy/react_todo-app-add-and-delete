@@ -5,7 +5,7 @@ import { Todo } from '../../types/Todo';
 type Props = {
   todos: Todo[];
   onRemove: (todoId: number) => void;
-  deletedTodoId: number;
+  deletedTodoId: number[];
 };
 
 export const TodoList: React.FC<Props> = ({
@@ -52,7 +52,7 @@ export const TodoList: React.FC<Props> = ({
           className={classNames(
             'modal',
             'overlay',
-            { 'is-active': deletedTodoId === todo.id },
+            { 'is-active': deletedTodoId.includes(todo.id) },
           )}
         >
           <div
