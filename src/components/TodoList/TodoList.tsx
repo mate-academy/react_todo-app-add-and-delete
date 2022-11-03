@@ -1,11 +1,18 @@
+import classNames from 'classnames';
 import React from 'react';
 import { Todo } from '../../types/Todo';
 
 type Props = {
   todos: Todo[];
+  onRemove: (todoId: number) => void;
+  deletedTodoId: number;
 };
 
-export const TodoList: React.FC<Props> = ({ todos }) => (
+export const TodoList: React.FC<Props> = ({
+  todos,
+  onRemove,
+  deletedTodoId,
+}) => (
   <section
     className="todoapp__main"
     data-cy="TodoList"
@@ -35,11 +42,19 @@ export const TodoList: React.FC<Props> = ({ todos }) => (
           type="button"
           className="todo__remove"
           data-cy="TodoDeleteButton"
+          onClick={() => onRemove(todo.id)}
         >
           ×
         </button>
 
-        <div data-cy="TodoLoader" className="modal overlay">
+        <div
+          data-cy="TodoLoader"
+          className={classNames(
+            'modal',
+            'overlay',
+            { 'is-active': deletedTodoId === todo.id },
+          )}
+        >
           <div
             className="modal-background has-background-white-ter"
           />

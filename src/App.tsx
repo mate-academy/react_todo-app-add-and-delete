@@ -5,7 +5,7 @@ import React, {
   useRef,
   useState,
 } from 'react';
-import { addTodo, getTodos } from './api/todos';
+import { addTodo, deleteTodo, getTodos } from './api/todos';
 import { AuthContext } from './components/Auth/AuthContext';
 import { Todo } from './types/Todo';
 
@@ -27,8 +27,9 @@ export const App: React.FC = () => {
     notification: ErrorMessage.None,
   });
   const [visibleTodos, setVisibleTodos] = useState<Todo[]>([]);
-  const [isAdding, setIsAdding] = useState(false);
   const [title, setTitle] = useState('');
+  const [isAdding, setIsAdding] = useState(false);
+  const [deletedTodoId, setDeletedTodoId] = useState(0);
 
   const handleError = useCallback((notification: ErrorMessage) => {
     setIsError({
@@ -63,7 +64,7 @@ export const App: React.FC = () => {
         newTodo = await addTodo(user.id, title);
       }
 
-      setTodos((prevTodos: Todo[]): Todo[] => [
+      setTodos((prevTodos) => [
         ...prevTodos,
         newTodo,
       ]);
@@ -78,18 +79,32 @@ export const App: React.FC = () => {
     }
   };
 
-  const handleSubmit = (event: React.SyntheticEvent) => {
+  const removeTodo = async (todoId: number) => {
+    setDeletedTodoId(todoId);
+
+    try {
+      await deleteTodo(todoId);
+
+      setTodos((prevTodos) => prevTodos.filter(todo => todo.id !== todoId));
+    } catch {
+      handleError(ErrorMessage.Remove);
+    } finally {
+      setDeletedTodoId(0);
+    }
+  };
+
+  const handleSubmit = useCallback((event: React.SyntheticEvent) => {
     event.preventDefault();
 
     if (!title.trim()) {
       handleError(ErrorMessage.Empty);
-      // throw new Error(ErrorMessage.Empty);
+      throw new Error(ErrorMessage.Empty);
     }
 
     setIsAdding(true);
 
     additingTodo();
-  };
+  }, [title]);
 
   useEffect(() => {
     if (newTodoField.current) {
@@ -130,7 +145,11 @@ export const App: React.FC = () => {
 
         {todos.length > 0 && (
           <>
-            <TodoList todos={visibleTodos} />
+            <TodoList
+              todos={visibleTodos}
+              onRemove={(todoId: number) => removeTodo(todoId)}
+              deletedTodoId={deletedTodoId}
+            />
 
             {isAdding && <TempTodo title={title} />}
 
