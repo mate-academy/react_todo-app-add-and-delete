@@ -5,13 +5,13 @@ import { Todo } from '../../types/Todo';
 type Props = {
   todos: Todo[];
   onRemove: (todoId: number) => void;
-  deletedTodoId: number[];
+  deletedTodosIds: number[];
 };
 
 export const TodoList: React.FC<Props> = ({
   todos,
   onRemove,
-  deletedTodoId,
+  deletedTodosIds: deletedTodoId,
 }) => (
   <section
     className="todoapp__main"

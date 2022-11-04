@@ -17,6 +17,7 @@ import { ErrorNotify } from './components/ErrorNotification/ErrorNotification';
 
 import { ErrorMessage } from './types/ErrorMessage';
 import { ErrorData } from './types/ErrorData';
+import { Sorting } from './types/Sorting';
 
 export const App: React.FC = () => {
   const user = useContext(AuthContext);
@@ -27,10 +28,23 @@ export const App: React.FC = () => {
     status: false,
     notification: ErrorMessage.None,
   });
-  const [visibleTodos, setVisibleTodos] = useState<Todo[]>([]);
+  const [sortBy, setSortBy] = useState<Sorting>(Sorting.All);
   const [title, setTitle] = useState('');
   const [isAdding, setIsAdding] = useState(false);
-  const [deletedTodoIds, setDeletedTodoId] = useState<number[]>([]);
+  const [deletedTodosIds, setDeletedTodosId] = useState<number[]>([]);
+
+  const visibleTodos = useMemo(() => {
+    switch (sortBy) {
+      case Sorting.Active:
+        return todos.filter(todo => !todo.completed);
+
+      case Sorting.Completed:
+        return todos.filter(todo => todo.completed);
+
+      default:
+        return todos;
+    }
+  }, [sortBy, todos]);
 
   const completedTodosId = useMemo((
     () => todos.filter(todo => todo.completed)
@@ -55,7 +69,6 @@ export const App: React.FC = () => {
         const todosFromServer = await getTodos(user.id);
 
         setTodos(() => todosFromServer);
-        setVisibleTodos(() => todosFromServer);
       } catch {
         handleError(ErrorMessage.Load);
       }
@@ -85,26 +98,27 @@ export const App: React.FC = () => {
     }
   };
 
-  const removingTodos
-    = async (todoId: number | number[] = completedTodosId) => {
-      const todosForRemoving = !Array.isArray(todoId)
-        ? [todoId]
-        : [...todoId];
+  const removingTodos = async (
+    todoId: number | number[] = completedTodosId,
+  ) => {
+    const todosForRemoving = !Array.isArray(todoId)
+      ? [todoId]
+      : [...todoId];
 
-      setDeletedTodoId(todosForRemoving);
+    setDeletedTodosId(todosForRemoving);
 
-      try {
-        await Promise.all(todosForRemoving.map(id => deleteTodo(id)));
+    try {
+      await Promise.all(todosForRemoving.map(id => deleteTodo(id)));
 
-        setTodos((prevTodos) => prevTodos.filter(
-          todo => !todosForRemoving.includes(todo.id),
-        ));
-      } catch {
-        handleError(ErrorMessage.Remove);
-      } finally {
-        setDeletedTodoId([]);
-      }
-    };
+      setTodos((prevTodos) => prevTodos.filter(
+        todo => !todosForRemoving.includes(todo.id),
+      ));
+    } catch {
+      handleError(ErrorMessage.Remove);
+    } finally {
+      setDeletedTodosId([]);
+    }
+  };
 
   const handleSubmit = useCallback((event: React.SyntheticEvent) => {
     event.preventDefault();
@@ -161,14 +175,14 @@ export const App: React.FC = () => {
             <TodoList
               todos={visibleTodos}
               onRemove={(todoId: number) => removingTodos(todoId)}
-              deletedTodoId={deletedTodoIds}
+              deletedTodosIds={deletedTodosIds}
             />
 
             {isAdding && <TempTodo title={title} />}
 
             <Footer
-              todos={todos}
-              setVisibleTodos={(visTodos: Todo[]) => setVisibleTodos(visTodos)}
+              sortBy={sortBy}
+              setSortBy={(sort: Sorting) => setSortBy(sort)}
               todosCount={visibleTodos.length}
               onRemove={() => removingTodos()}
               complitedTodos={completedTodosId}
