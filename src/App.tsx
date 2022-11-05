@@ -133,6 +133,11 @@ export const App: React.FC = () => {
     additingTodo();
   }, [title]);
 
+  const handleRemoveError = useCallback(() => setIsError({
+    status: false,
+    notification: ErrorMessage.None,
+  }), []);
+
   useEffect(() => {
     if (newTodoField.current) {
       newTodoField.current.focus();
@@ -174,7 +179,7 @@ export const App: React.FC = () => {
           <>
             <TodoList
               todos={visibleTodos}
-              onRemove={(todoId: number) => removingTodos(todoId)}
+              onRemove={removingTodos}
               deletedTodosIds={deletedTodosIds}
             />
 
@@ -184,7 +189,7 @@ export const App: React.FC = () => {
               sortBy={sortBy}
               setSortBy={(sort: Sorting) => setSortBy(sort)}
               todosCount={visibleTodos.length}
-              onRemove={() => removingTodos()}
+              onRemove={removingTodos}
               complitedTodos={completedTodosId}
             />
           </>
@@ -193,10 +198,7 @@ export const App: React.FC = () => {
 
       <ErrorNotify
         isError={isError}
-        onResetError={() => setIsError({
-          status: false,
-          notification: ErrorMessage.None,
-        })}
+        onResetError={handleRemoveError}
       />
     </div>
   );

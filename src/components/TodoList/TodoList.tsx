@@ -62,6 +62,5 @@ export const TodoList: React.FC<Props> = ({
         </div>
       </div>
     ))}
-
   </section>
 );
