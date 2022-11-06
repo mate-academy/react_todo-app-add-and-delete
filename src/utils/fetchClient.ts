@@ -1,6 +1,6 @@
 const BASE_URL = 'https://mate.academy/students-api';
 
-// a promise resolved after a given delay
+// returns a promise resolved after a given delay
 function wait(delay: number) {
   return new Promise(resolve => {
     setTimeout(resolve, delay);
@@ -36,6 +36,12 @@ function request<T>(
       return response.json();
     });
 }
+
+export const loading = (callback: (data:any) => void) => {
+  setTimeout((data:any) => {
+    callback(data);
+  }, 1000);
+};
 
 export const client = {
   get: <T>(url: string) => request<T>(url),
