@@ -8,7 +8,7 @@ import { getTodos } from './api/todos';
 import { Todo } from './types/Todo';
 import { client } from './utils/fetchClient';
 import { TodoList } from './components/TodoList';
-import { Footer } from './components/Footer';
+import { TodoFooter } from './components/TodoFooter';
 import { TodosFilter, TodoError } from './types/TodoFilter';
 import { ErrorInfo } from './components/ErrorInfo';
 
@@ -183,7 +183,7 @@ export const App: React.FC = () => {
           formInput={formInput}
         />
 
-        <Footer
+        <TodoFooter
           todos={todos}
           filterType={filter}
           todosFiltration={todosFiltration}

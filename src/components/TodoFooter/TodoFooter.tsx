@@ -10,7 +10,7 @@ type Todos = {
   todosUpdate: () => void
 };
 
-export const Footer: React.FC<Todos> = ({
+export const TodoFooter: React.FC<Todos> = ({
   todos,
   filterType,
   todosFiltration,
