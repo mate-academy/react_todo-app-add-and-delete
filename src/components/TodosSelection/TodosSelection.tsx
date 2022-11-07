@@ -58,16 +58,16 @@ export const TodosSelection: React.FC<Props> = React.memo(({
           Completed
         </a>
       </nav>
-      {todosLength !== uncompletedTodosLength && (
-        <button
-          data-cy="ClearCompletedButton"
-          type="button"
-          className="todoapp__clear-completed"
-          onClick={removeAllCompletedTodos}
-        >
-          Clear completed
-        </button>
-      )}
+      <button
+        data-cy="ClearCompletedButton"
+        type="button"
+        className={classNames('todoapp__clear-completed', {
+          hidden: todosLength === uncompletedTodosLength,
+        })}
+        onClick={removeAllCompletedTodos}
+      >
+        Clear completed
+      </button>
     </footer>
   );
 });
