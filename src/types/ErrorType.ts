@@ -1,4 +1,4 @@
-export interface Error {
+export interface ErrorType {
   status: boolean,
   message?: string,
 }

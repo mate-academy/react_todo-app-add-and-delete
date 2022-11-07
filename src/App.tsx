@@ -4,7 +4,7 @@ import React, {
 } from 'react';
 import { Todo } from './types/Todo';
 import { User } from './types/User';
-import { Error } from './types/Error';
+import { ErrorType } from './types/ErrorType';
 import { AuthContext } from './components/Auth/AuthContext';
 import { getTodos, addTodo, deleteTodo } from './api/todos';
 
@@ -16,12 +16,12 @@ export const App: React.FC = () => {
   const user = useContext(AuthContext);
   const [userTodos, setUserTodos] = useState<Todo[]>([]);
   const [hasTodos, setHasTodos] = useState(false);
-  const [hasError, setHasError] = useState<Error>({ status: false });
+  const [hasError, setHasError] = useState<ErrorType>({ status: false });
   const [isAdding, setIsAdding] = useState(false);
   const [tempTodo, setTempTodo] = useState<Todo | null>(null);
   const [deletingIds, setDeletingIds] = useState<number[]>([0]);
 
-  const handleSetError = (error: Error) => {
+  const handleSetError = (error: ErrorType) => {
     setHasError(error);
     setTimeout(() => {
       setHasError({ status: false });

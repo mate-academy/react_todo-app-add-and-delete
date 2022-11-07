@@ -1,10 +1,10 @@
 import React, { useEffect, useRef, useState } from 'react';
-import { Error } from '../../types/Error';
+import { ErrorType } from '../../types/ErrorType';
 
 type Props = {
   hasTodos: boolean;
   onAdd: (title: string) => void;
-  onError: (error: Error) => void;
+  onError: (error: ErrorType) => void;
 };
 
 export const NewTodo: React.FC<Props> = ({ hasTodos, onAdd, onError }) => {
