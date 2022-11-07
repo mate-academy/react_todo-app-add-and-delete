@@ -34,13 +34,15 @@ export const App: React.FC = () => {
 
   const loadTodos = useCallback(async () => {
     if (user) {
-      try {
-        const TodosFromApi = await getTodos(user?.id);
+      let todosFromApi;
 
-        setTodos(TodosFromApi);
+      try {
+        todosFromApi = await getTodos(user?.id);
       } catch {
         throw new Error('Todos not found');
       }
+
+      setTodos(todosFromApi);
     }
   }, [user]);
 
@@ -85,6 +87,7 @@ export const App: React.FC = () => {
       }
     }
 
+    await loadTodos();
     setNewTodoTitle('');
     setIsAdding(false);
   }, [newTodoTitle, user]);
