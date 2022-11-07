@@ -3,11 +3,14 @@ import { Todo } from '../../types/Todo';
 
 interface Props {
   todo: Todo;
-  currentTodo: Todo | null;
+  currentTodos: Todo[];
   deleteTodo: (todo: Todo) => void;
+  updateTodo: (todo: Todo) => void;
 }
 
-export const TodoItem:React.FC<Props> = ({ todo, currentTodo, deleteTodo }) => {
+export const TodoItem:React.FC<Props> = ({
+  todo, currentTodos, deleteTodo, updateTodo,
+}) => {
   return (
     <div
       data-cy="Todo"
@@ -19,7 +22,8 @@ export const TodoItem:React.FC<Props> = ({ todo, currentTodo, deleteTodo }) => {
           data-cy="TodoStatus"
           type="checkbox"
           className="todo__status"
-          defaultChecked
+          checked={todo.completed}
+          onChange={() => updateTodo({ ...todo, completed: !todo.completed })}
         />
       </label>
 
@@ -38,7 +42,7 @@ export const TodoItem:React.FC<Props> = ({ todo, currentTodo, deleteTodo }) => {
       <div
         data-cy="TodoLoader"
         className={classNames('modal overlay', {
-          'is-active': todo === currentTodo,
+          'is-active': currentTodos.some((item) => item === todo),
         })}
       >
         <div className="modal-background has-background-white-ter" />

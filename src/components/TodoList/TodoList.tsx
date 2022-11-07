@@ -4,14 +4,16 @@ import { TodoItem } from '../TodoItem';
 
 interface Props {
   todos: Todo[];
-  currentTodo: Todo | null;
+  currentTodos: Todo[];
   deleteTodo: (todo: Todo) => void;
+  updateTodo: (todo: Todo) => void;
 }
 
 export const TodoList: React.FC<Props> = React.memo(({
   todos,
-  currentTodo,
+  currentTodos,
   deleteTodo,
+  updateTodo,
 }) => {
   return (
     <section className="todoapp__main" data-cy="TodoList">
@@ -19,8 +21,9 @@ export const TodoList: React.FC<Props> = React.memo(({
 
         <TodoItem
           todo={todo}
-          currentTodo={currentTodo}
+          currentTodos={currentTodos}
           deleteTodo={deleteTodo}
+          updateTodo={updateTodo}
         />
       ))}
     </section>

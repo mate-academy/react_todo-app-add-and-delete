@@ -1,8 +1,14 @@
 import React, {
   useCallback,
-  useContext, useEffect, useMemo, useRef, useState,
+  useContext,
+  useEffect,
+  useMemo,
+  useRef,
+  useState,
 } from 'react';
-import { getTodos, postTodo, removeTodo } from './api/todos';
+import {
+  getTodos, patchTodo, postTodo, removeTodo,
+} from './api/todos';
 import { AuthContext } from './components/Auth/AuthContext';
 import { TodoAddForm } from './components/TodoAddForm';
 import { TodoErrorNotification } from './components/TodoErrorNotification';
@@ -19,12 +25,13 @@ export const App: React.FC = () => {
 
   const [todos, setTodos] = useState<Todo[]>([]);
   const [newTodoTitle, setNewTodoTitle] = useState('');
-  const [errorNotification, setErrorNotification]
-    = useState<Errors | null>(null);
-  const [selectedFilter, setSelectedFilter]
-    = useState<FilterValues>(FilterValues.All);
+  const [errorNotification, setErrorNotification] = useState<Errors
+  | null>(null);
+  const [selectedFilter, setSelectedFilter] = useState<FilterValues>(
+    FilterValues.All,
+  );
   const [isAdding, setIsAdding] = useState(true);
-  const [currentTodo, setCurrentTodo] = useState<Todo | null>(null);
+  const [currentTodos, setCurrentTodos] = useState<Todo[]>([]);
 
   const getVisibleTodos = () => {
     return [...todos].filter((todo) => {
@@ -39,10 +46,7 @@ export const App: React.FC = () => {
     });
   };
 
-  const visibleTodos = useMemo(
-    getVisibleTodos,
-    [selectedFilter, todos],
-  );
+  const visibleTodos = useMemo(getVisibleTodos, [selectedFilter, todos]);
 
   useEffect(() => {
     if (newTodoField.current) {
@@ -65,36 +69,57 @@ export const App: React.FC = () => {
       if (user) {
         const newTodo = await postTodo(user.id, newTodoTitle);
 
-        setCurrentTodo(newTodo);
+        setCurrentTodos((prevArray) => [...prevArray, newTodo]);
         setTodos((prevTodos) => [...prevTodos, newTodo]);
-        loading(() => setCurrentTodo(null));
       }
     } catch {
       setErrorNotification(Errors.onAddError);
+    } finally {
+      loading(() => setCurrentTodos([]));
     }
 
     setNewTodoTitle('');
   }, [newTodoTitle]);
 
-  const deleteTodo = useCallback(async (todo: Todo) => {
+  const deleteTodo = useCallback(
+    async (todo: Todo) => {
+      try {
+        if (user) {
+          setCurrentTodos((prevTodos) => [...prevTodos, todo]);
+          await removeTodo(todo);
+          setTodos((prevTodos) => {
+            return prevTodos.filter((item) => item !== todo);
+          });
+        }
+      } catch {
+        setErrorNotification(Errors.onDeleteError);
+      } finally {
+        loading(() => setCurrentTodos([]));
+      }
+    },
+    [todos],
+  );
+
+  const updateTodo = useCallback(async (todo: Todo) => {
     try {
       if (user) {
-        setCurrentTodo(todo);
-        await removeTodo(todo);
-        setTodos((prevTodos) => {
-          return prevTodos.filter(item => item !== todo);
-        });
-        loading(() => setCurrentTodo(null));
+        const updated = await patchTodo(todo.id, todo.title, todo.completed);
+
+        setCurrentTodos((prevTodos) => [...prevTodos, updated]);
+        setTodos((prevTodos) => prevTodos
+          .map((item) => (item.id === todo.id ? updated : item)));
       }
     } catch {
-      setErrorNotification(Errors.onDeleteError);
+      setErrorNotification(Errors.onUpdateError);
+    } finally {
+      loading(() => setCurrentTodos([]));
     }
-  }, [todos]);
+  }, []);
 
   const clearCompleted = useCallback(async () => {
-    const completedTodos = todos.filter(todo => todo.completed);
+    const completedTodos = todos.filter((todo) => todo.completed);
 
-    await Promise.all(completedTodos.map(todo => removeTodo(todo)));
+    await Promise.all(completedTodos.map((todo) => removeTodo(todo)));
 
     setTodos((prevTodos) => {
       return prevTodos.filter((item) => !item.completed);
@@ -119,14 +144,15 @@ export const App: React.FC = () => {
           <>
             <TodoList
               todos={visibleTodos}
-              currentTodo={currentTodo}
+              currentTodos={currentTodos}
               deleteTodo={deleteTodo}
+              updateTodo={updateTodo}
             />
 
             <TodoFilter
-              completed={todos.filter(todo => todo.completed).length}
+              completed={todos.filter((todo) => todo.completed).length}
               selectedFilter={selectedFilter}
-              onSelection={(filter:FilterValues) => setSelectedFilter(filter)}
+              onSelection={(filter: FilterValues) => setSelectedFilter(filter)}
               clearCompleted={clearCompleted}
             />
           </>

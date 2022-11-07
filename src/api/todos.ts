@@ -16,3 +16,10 @@ export const postTodo = (userId: number, title: string) => {
 export const removeTodo = (todo: Todo) => {
   return client.delete(`/todos/${todo.id}`);
 };
+
+export const patchTodo = (todoId:number, title: string, completed: boolean) => {
+  return client.patch<Todo>(`/todos/${todoId}`, {
+    title,
+    completed,
+  });
+};
