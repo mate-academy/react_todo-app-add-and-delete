@@ -5,6 +5,7 @@ import React, {
   useEffect,
   useRef,
   useState,
+  useMemo,
 } from 'react';
 import { addTodo, deleteTodo, getTodos } from './api/todos';
 import { AuthContext } from './components/Auth/AuthContext';
@@ -66,17 +67,14 @@ export const App: React.FC = () => {
 
     if (!newTodoTitle.trim()) {
       setError(ErrorType.EMPTYTITLE);
-      setNewTodoTitle('');
-
-      return;
     }
 
-    if (user) {
+    if (user && newTodoTitle.trim()) {
       setIsAdding(true);
 
       const newTodo = {
         userId: user.id,
-        title: newTodoTitle,
+        title: newTodoTitle.trim(),
         completed: false,
       };
 
@@ -133,9 +131,11 @@ export const App: React.FC = () => {
     setError(ErrorType.NONE);
   }, []);
 
-  const hasTodos = todos.length > 0 || isAdding;
-  const hasCompleted = todos.some(({ completed }) => completed);
-  const visibleTodos: Todo[] = getVisibletodos(todos, filterBy);
+  const hasTodos = useMemo(() => todos.length > 0, [todos]);
+  const hasCompleted = useMemo(() => (
+    todos.some(({ completed }) => completed)), [todos]);
+  const visibleTodos = useMemo(() => (
+    getVisibletodos(todos, filterBy)), [todos, filterBy]);
 
   return (
     <div className="todoapp">
