@@ -48,7 +48,7 @@ export const App: React.FC = () => {
 
   useEffect(() => {
     loadTodos();
-  }, [isAdding, isDeleting]);
+  }, [isDeleting]);
 
   useEffect(() => {
     setTimeout(() => setError(ErrorType.NONE), 3000);
