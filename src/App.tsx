@@ -44,7 +44,9 @@ export const App: React.FC = () => {
     }
   }, []);
 
-  const uploadTodo = async () => {
+  const handleAddNewTodo = async (event: React.FormEvent<HTMLFormElement>) => {
+    event.preventDefault();
+
     if (user) {
       setIsAdding(true);
 
@@ -56,9 +58,9 @@ export const App: React.FC = () => {
           return;
         }
 
-        const newTodo = await createTodo(todoTitle, user.id);
+        await createTodo(todoTitle, user.id);
+        await loadTodos();
 
-        setTodos(currentTodos => [...currentTodos, newTodo]);
         setIsAdding(false);
         setTodoTitle('');
       } catch {
@@ -73,8 +75,7 @@ export const App: React.FC = () => {
 
     try {
       await deleteTodo(todoId);
-
-      setTodos(currentTodos => currentTodos.filter(todo => todo.id !== todoId));
+      await loadTodos();
     } catch {
       setError(ErrorType.DELETE);
     }
@@ -96,7 +97,7 @@ export const App: React.FC = () => {
         return todo;
       }));
 
-      setTodos(currentTodos => currentTodos.filter(todo => !todo.completed));
+      await loadTodos();
     } catch {
       setError(ErrorType.DELETE);
     }
@@ -113,12 +114,6 @@ export const App: React.FC = () => {
   const handleChangeTodoTitle = useCallback((title: string) => {
     setTodoTitle(title);
   }, []);
-
-  const handleAddNewTodo = (event: React.FormEvent<HTMLFormElement>) => {
-    event.preventDefault();
-
-    uploadTodo();
-  };
 
   useEffect(() => {
     if (newTodoField.current) {
