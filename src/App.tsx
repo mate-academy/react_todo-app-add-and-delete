@@ -71,7 +71,7 @@ export const App: React.FC = () => {
         const todoToAdd: TodoToPost = {
           title: newTodoTitle,
           userId: user.id,
-          completed: true,
+          completed: false,
         };
 
         const newTodo = await addTodo(todoToAdd);
