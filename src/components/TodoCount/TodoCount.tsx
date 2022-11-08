@@ -4,10 +4,8 @@ interface Props {
   todosLeft: number;
 }
 
-export const TodoCount: React.FC<Props> = ({ todosLeft }) => {
-  return (
-    <span className="todo-count" data-cy="todosCounter">
-      {`${todosLeft} items left`}
-    </span>
-  );
-};
+export const TodoCount: React.FC<Props> = ({ todosLeft }) => (
+  <span className="todo-count" data-cy="todosCounter">
+    {`${todosLeft} items left`}
+  </span>
+);

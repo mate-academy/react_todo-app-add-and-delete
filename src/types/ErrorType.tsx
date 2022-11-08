@@ -1,6 +1,7 @@
 export enum ErrorType {
   NONE,
   TITLE,
-  API,
+  LOAD,
+  UPLOAD,
   DELETE,
 }

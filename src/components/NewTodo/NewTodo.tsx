@@ -14,19 +14,17 @@ export const NewTodo: React.FC<Props> = ({
   onChangeTodoTitle: onGetTodoTitle,
   submitNewTodo,
   isAdding,
-}) => {
-  return (
-    <form onSubmit={submitNewTodo}>
-      <input
-        data-cy="NewTodoField"
-        type="text"
-        ref={newTodoField}
-        className="todoapp__new-todo"
-        placeholder="What needs to be done?"
-        value={todoTitle}
-        onChange={event => onGetTodoTitle(event.target.value)}
-        disabled={isAdding}
-      />
-    </form>
-  );
-};
+}) => (
+  <form onSubmit={submitNewTodo}>
+    <input
+      data-cy="NewTodoField"
+      type="text"
+      ref={newTodoField}
+      className="todoapp__new-todo"
+      placeholder="What needs to be done?"
+      value={todoTitle}
+      onChange={event => onGetTodoTitle(event.target.value)}
+      disabled={isAdding}
+    />
+  </form>
+);

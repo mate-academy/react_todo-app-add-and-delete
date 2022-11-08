@@ -38,7 +38,7 @@ export const App: React.FC = () => {
 
         setTodos(todosFromServer);
       } catch {
-        setError(ErrorType.API);
+        setError(ErrorType.LOAD);
       }
     }
   }, []);
@@ -63,7 +63,7 @@ export const App: React.FC = () => {
         setIsAdding(false);
         setTodoTitle('');
       } catch {
-        setError(ErrorType.API);
+        setError(ErrorType.UPLOAD);
         setIsAdding(false);
       }
     }

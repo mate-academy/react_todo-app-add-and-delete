@@ -37,9 +37,10 @@ export const ErrorNotifications: React.FC<Props> = ({
         onClick={onCloseError}
       />
 
-      {error === ErrorType.TITLE && 'Title can\'t be empty'}
-      {error === ErrorType.API && 'Unable to add a todo'}
+      {error === ErrorType.LOAD && 'Unable to load todos'}
+      {error === ErrorType.UPLOAD && 'Unable to add a todo'}
       {error === ErrorType.DELETE && 'Unable to delete a todo'}
+      {error === ErrorType.TITLE && 'Title can\'t be empty'}
     </div>
   );
 };
