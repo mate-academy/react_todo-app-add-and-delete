@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useCallback, useState } from 'react';
 
 type Props = {
   newTodoField: React.RefObject<HTMLInputElement>;
@@ -11,19 +11,23 @@ export const NewTodo: React.FC<Props> = React.memo(({
 }) => {
   const [titleField, setTitleField] = useState('');
 
-  const handleInput = (event: React.ChangeEvent<HTMLInputElement>) => {
-    setTitleField(event.target.value);
-  };
+  const handleInput = useCallback(
+    (event: React.ChangeEvent<HTMLInputElement>) => {
+      setTitleField(event.target.value);
+    }, [],
+  );
 
-  const onSubmitHandler = (event: React.FormEvent<HTMLFormElement>) => {
-    event.preventDefault();
+  const onSubmitHandler = useCallback(
+    (event: React.FormEvent<HTMLFormElement>) => {
+      event.preventDefault();
 
-    if (titleField.trim()) {
-      addNewTodo(titleField);
+      if (titleField.trim()) {
+        addNewTodo(titleField);
 
-      setTitleField('');
-    }
-  };
+        setTitleField('');
+      }
+    }, [],
+  );
 
   return (
     <header className="todoapp__header">

@@ -57,7 +57,7 @@ export const App: React.FC = () => {
     loadTodos();
   }, []);
 
-  const loadTodo = async (todoTitle: string) => {
+  const loadTodo = useCallback(async (todoTitle: string) => {
     try {
       if (user) {
         setIsTodoAdding(true);
@@ -88,9 +88,9 @@ export const App: React.FC = () => {
         setIsError(false);
       }, 3000);
     }
-  };
+  }, []);
 
-  const removeTodo = async (todoId: number) => {
+  const removeTodo = useCallback(async (todoId: number) => {
     try {
       await deleteTodo(todoId);
 
@@ -105,18 +105,18 @@ export const App: React.FC = () => {
         setIsError(false);
       }, 3000);
     }
-  };
+  }, []);
 
-  const removeCompletedTodos = async () => {
+  const removeCompletedTodos = useCallback(async () => {
     try {
       setIsDeletingCompleted(true);
 
       await Promise.all(todos.map(todo => {
         if (todo.completed) {
           return deleteTodo(todo.id);
-        } else {
-          return null;
         }
+
+        return null;
       }));
 
       await loadTodos();
@@ -132,7 +132,7 @@ export const App: React.FC = () => {
         setIsError(false);
       }, 3000);
     }
-  };
+  }, [todos]);
 
   const filterTodos = useCallback((todosFromServer: Todo[]) => {
     return todosFromServer.filter(todo => {
