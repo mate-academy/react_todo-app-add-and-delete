@@ -22,6 +22,7 @@ export const App: React.FC = () => {
   const [filterBy, setFilterBy] = useState<TodoStatus>(TodoStatus.ALL);
   const [visibleTodos, setVisibleTodos] = useState<Todo[]>([]);
   const [isError, setIsError] = useState(false);
+  const [errorText, setErrorText] = useState('');
   const [isTodoAdding, setIstTodoAdding] = useState(false);
   const [tempTodo, setTempTodo] = useState<Todo>(emptyTodo);
 
@@ -37,6 +38,7 @@ export const App: React.FC = () => {
       }
     } catch (error) {
       setIsError(true);
+      setErrorText('Unable to load todos');
 
       throw new Error(`unexpected error with loading todos: ${error}`);
     } finally {
@@ -78,6 +80,7 @@ export const App: React.FC = () => {
       }
     } catch (error) {
       setIsError(true);
+      setErrorText('Unable to add a todo');
 
       throw new Error(`unexpected error with adding todo: ${error}`);
     } finally {
@@ -95,6 +98,7 @@ export const App: React.FC = () => {
       await loadTodos();
     } catch (error) {
       setIsError(true);
+      setErrorText('Unable to delete a todo');
 
       throw new Error(`unexpected error with deleting todo: ${error}`);
     } finally {
@@ -156,7 +160,11 @@ export const App: React.FC = () => {
       </div>
 
       {isError && (
-        <ErrorMessage isError={isError} onClose={() => setIsError(false)} />
+        <ErrorMessage
+        isError={isError}
+        errorText={errorText}
+        onClose={() => setIsError(false)}
+        />
       )}
     </div>
   );

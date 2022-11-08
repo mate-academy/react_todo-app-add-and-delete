@@ -26,7 +26,7 @@ export const TodosList: React.FC<Props> = React.memo(({
             <TodoItem
               todo={todo}
               removeTodo={removeTodo}
-              isTodoAdding={isTodoAdding}
+              isTodoAdding={false}
             />
           </CSSTransition>
         ))}

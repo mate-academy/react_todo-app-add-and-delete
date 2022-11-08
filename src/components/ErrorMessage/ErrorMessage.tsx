@@ -4,10 +4,11 @@ import cn from 'classnames';
 type Props = {
   isError: boolean;
   onClose: () => void;
+  errorText: string;
 };
 
 export const ErrorMessage: React.FC<Props> = React.memo(({
-  isError, onClose,
+  isError, onClose, errorText,
 }) => {
   return (
     <div
@@ -25,11 +26,8 @@ export const ErrorMessage: React.FC<Props> = React.memo(({
         onClick={onClose}
       />
 
-      Unable to add a todo
+      {errorText}
       <br />
-      Unable to delete a todo
-      <br />
-      Unable to update a todo
     </div>
   );
 });
