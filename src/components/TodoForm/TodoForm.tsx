@@ -49,14 +49,14 @@ export const TodoForm: React.FC<Props> = React.memo(({
         aria-label="Toggle all todos"
       />
 
-      <form onSubmit={(e) => handleSubmit(e)}>
+      <form onSubmit={handleSubmit}>
         <input
           data-cy="NewTodoField"
           type="text"
           ref={newTodoField}
           className="todoapp__new-todo"
           value={todoText}
-          onChange={(e) => handleInput(e)}
+          onChange={handleInput}
           disabled={isAdding}
           placeholder="What needs to be done?"
         />

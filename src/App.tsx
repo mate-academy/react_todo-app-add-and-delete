@@ -83,7 +83,6 @@ export const App: React.FC = () => {
         }));
 
         const addedTodo = await addTodo({
-          id: 0,
           title: todoTitle,
           userId: user.id,
           completed: false,
