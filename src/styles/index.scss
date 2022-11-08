@@ -20,6 +20,29 @@ body {
   pointer-events: none;
 }
 
+.remove-btn {
+  margin-right: 0.5rem;
+}
+
+.todoTransition-enter {
+  opacity: 0.5;
+  transform: translateX(-350px);
+}
+
+.todoTransition-enter-active {
+  transform: translateX(1px);
+  transition: all 500ms ease-in;
+}
+
+.todoTransition-exit {
+  opacity: 1;
+}
+
+.todoTransition-exit-active {
+  transform: translateX(-150px);
+  transition: all 500ms ease-in;
+}
+
 @import "./todoapp";
 @import "./todo";
 @import "./filter";
