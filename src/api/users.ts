@@ -12,3 +12,7 @@ type UserData = Pick<User, 'name' | 'email'>;
 export const createUser = async ({ email, name }: UserData) => {
   return client.post<User>('/users', { email, name });
 };
+
+export const deleteUser = async (userId: number) => {
+  return client.delete(`/users/${userId}`);
+};
