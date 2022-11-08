@@ -8,10 +8,11 @@ type Props = {
   filterBy: TodoStatus;
   setFilterBy: (filterBy: TodoStatus) => void;
   todos: Todo[];
+  removeCompletedTodos: () => Promise<void>;
 };
 
 export const FilterForTodos: React.FC<Props> = React.memo(({
-  filterBy, setFilterBy, todos,
+  filterBy, setFilterBy, todos, removeCompletedTodos,
 }) => {
   const numberOfActive = useMemo(() => {
     return todos.filter(todo => !todo.completed).length;
@@ -63,6 +64,7 @@ export const FilterForTodos: React.FC<Props> = React.memo(({
         type="button"
         className="todoapp__clear-completed"
         style={{ visibility: hasCompletedTodos ? 'visible' : 'hidden' }}
+        onClick={removeCompletedTodos}
       >
         Clear completed
       </button>

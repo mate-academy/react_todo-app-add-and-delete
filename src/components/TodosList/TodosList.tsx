@@ -9,10 +9,11 @@ type Props = {
   removeTodo: (todoId: number) => void;
   isTodoAdding: boolean;
   tempTodo: Todo;
+  isDeletingCompleted: boolean;
 };
 
 export const TodosList: React.FC<Props> = React.memo(({
-  todos, removeTodo, isTodoAdding, tempTodo,
+  todos, removeTodo, isTodoAdding, tempTodo, isDeletingCompleted,
 }) => {
   return (
     <section className="todoapp__main" data-cy="TodoList">
@@ -26,7 +27,7 @@ export const TodosList: React.FC<Props> = React.memo(({
             <TodoItem
               todo={todo}
               removeTodo={removeTodo}
-              isTodoAdding={false}
+              isDeletingCompleted={isDeletingCompleted}
             />
           </CSSTransition>
         ))}
@@ -36,7 +37,7 @@ export const TodosList: React.FC<Props> = React.memo(({
         <TodoItem
           todo={tempTodo}
           removeTodo={removeTodo}
-          isTodoAdding={isTodoAdding}
+          isDeletingCompleted={isDeletingCompleted}
         />
       )}
     </section>

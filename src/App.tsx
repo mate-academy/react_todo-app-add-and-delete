@@ -12,7 +12,7 @@ import { TodoStatus } from './types/TodoStatus';
 
 const emptyTodo: Todo = {
   id: 0,
-  title: '',
+  title: 'adding ...',
   userId: 0,
   completed: false,
 };
@@ -23,8 +23,9 @@ export const App: React.FC = () => {
   const [visibleTodos, setVisibleTodos] = useState<Todo[]>([]);
   const [isError, setIsError] = useState(false);
   const [errorText, setErrorText] = useState('');
-  const [isTodoAdding, setIstTodoAdding] = useState(false);
+  const [isTodoAdding, setIsTodoAdding] = useState(false);
   const [tempTodo, setTempTodo] = useState<Todo>(emptyTodo);
+  const [isDeletingCompleted, setIsDeletingCompleted] = useState(false);
 
   const user = useContext(AuthContext);
   const newTodoField = useRef<HTMLInputElement>(null);
@@ -59,19 +60,17 @@ export const App: React.FC = () => {
   const loadTodo = async (todoTitle: string) => {
     try {
       if (user) {
-        setIstTodoAdding(true);
+        setIsTodoAdding(true);
 
-        setTempTodo({
-          id: 0,
-          title: todoTitle,
+        setTempTodo(current => ({
+          ...current,
           userId: user.id,
-          completed: false,
-        });
+        }));
 
         const newTodo = {
           title: todoTitle,
           userId: user.id,
-          completed: false,
+          completed: true,
         };
 
         await addTodo(newTodo);
@@ -84,7 +83,7 @@ export const App: React.FC = () => {
 
       throw new Error(`unexpected error with adding todo: ${error}`);
     } finally {
-      setIstTodoAdding(false);
+      setIsTodoAdding(false);
       setTimeout(() => {
         setIsError(false);
       }, 3000);
@@ -102,6 +101,33 @@ export const App: React.FC = () => {
 
       throw new Error(`unexpected error with deleting todo: ${error}`);
     } finally {
+      setTimeout(() => {
+        setIsError(false);
+      }, 3000);
+    }
+  };
+
+  const removeCompletedTodos = async () => {
+    try {
+      setIsDeletingCompleted(true);
+
+      await Promise.all(todos.map(todo => {
+        if (todo.completed) {
+          return deleteTodo(todo.id);
+        } else {
+          return null;
+        }
+      }));
+
+      await loadTodos();
+    } catch (error) {
+      setIsError(true);
+      setErrorText('Unable to delete all completed todos');
+
+      throw new Error(`unexpected error with deleting todos: ${error}`);
+    } finally {
+      setIsDeletingCompleted(false);
+
       setTimeout(() => {
         setIsError(false);
       }, 3000);
@@ -147,12 +173,14 @@ export const App: React.FC = () => {
               todos={visibleTodos}
               isTodoAdding={isTodoAdding}
               tempTodo={tempTodo}
+              isDeletingCompleted={isDeletingCompleted}
             />
 
             <FilterForTodos
               filterBy={filterBy}
               setFilterBy={setFilterBy}
               todos={todos}
+              removeCompletedTodos={removeCompletedTodos}
             />
           </>
         )}
@@ -161,9 +189,9 @@ export const App: React.FC = () => {
 
       {isError && (
         <ErrorMessage
-        isError={isError}
-        errorText={errorText}
-        onClose={() => setIsError(false)}
+          isError={isError}
+          errorText={errorText}
+          onClose={() => setIsError(false)}
         />
       )}
     </div>

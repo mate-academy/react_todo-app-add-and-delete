@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState } from 'react';
 import cn from 'classnames';
 
 import { Todo } from '../../types/Todo';
@@ -6,13 +6,31 @@ import { Todo } from '../../types/Todo';
 type Props = {
   todo: Todo;
   removeTodo: (todoId: number) => void;
-  isTodoAdding: boolean;
+  isDeletingCompleted: boolean;
 };
 
 export const TodoItem: React.FC<Props> = React.memo(({
-  todo, removeTodo, isTodoAdding,
+  todo, removeTodo, isDeletingCompleted,
 }) => {
+  const [deleteButtonClicked, setDeleteButtonClicked] = useState(false);
   const { title, completed, id } = todo;
+
+  const handleDelete = () => {
+    setDeleteButtonClicked(true);
+    removeTodo(id);
+  };
+
+  const loaderIsActive = () => {
+    if (id === 0 || deleteButtonClicked) {
+      return true;
+    }
+
+    if (isDeletingCompleted && completed) {
+      return true;
+    }
+
+    return false;
+  };
 
   return (
     <div
@@ -34,14 +52,15 @@ export const TodoItem: React.FC<Props> = React.memo(({
         type="button"
         className="todo__remove"
         data-cy="TodoDeleteButton"
-        onClick={() => removeTodo(id)}
+        onClick={handleDelete}
       >
         ×
       </button>
 
       <div
         data-cy="TodoLoader"
-        className={cn('modal overlay', { 'is-active': isTodoAdding })}
+        className={cn('modal overlay',
+          { 'is-active': loaderIsActive() })}
       >
         <div className="modal-background has-background-white-ter" />
         <div className="loader" />
