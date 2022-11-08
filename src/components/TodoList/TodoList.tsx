@@ -10,7 +10,7 @@ type Props = {
   tempTodo: Todo | null;
   isAdding: boolean;
   onDelete: (id: number) => void;
-  deletingId: number[];
+  deletingIds: number[];
 };
 
 export const TodoList: React.FC<Props> = ({
@@ -18,7 +18,7 @@ export const TodoList: React.FC<Props> = ({
   tempTodo,
   isAdding,
   onDelete,
-  deletingId,
+  deletingIds,
 }) => {
   const [filteredTodos, setFilteredTodos] = useState<Todo[]>([]);
   const [status, setStatus] = useState<TodoStatus>(TodoStatus.ALL);
@@ -67,7 +67,7 @@ export const TodoList: React.FC<Props> = ({
             todo={todo}
             key={todo.id}
             onDelete={onDelete}
-            deletingId={deletingId}
+            deletingIds={deletingIds}
           />
         ))}
 
@@ -75,7 +75,7 @@ export const TodoList: React.FC<Props> = ({
           <TodoInfo
             todo={tempTodo}
             onDelete={onDelete}
-            deletingId={deletingId}
+            deletingIds={deletingIds}
           />
         )}
       </section>

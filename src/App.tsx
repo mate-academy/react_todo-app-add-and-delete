@@ -69,16 +69,12 @@ export const App: React.FC = () => {
       setTempTodo({ ...preparedData, id: 0 });
       setIsAdding(true);
 
-      const newTodo = await addTodo(preparedData);
+      await addTodo(preparedData);
+      await handleLoadTodos();
 
-      if ('error' in newTodo) {
-        throw new Error();
-      }
-
-      setUserTodos(currTodos => [...currTodos, newTodo]);
+      setIsAdding(false);
     } catch {
       handleSetError({ status: true, message: 'Unable to add a todo' });
-    } finally {
       setIsAdding(false);
     }
   };
@@ -117,7 +113,7 @@ export const App: React.FC = () => {
             tempTodo={tempTodo}
             isAdding={isAdding}
             onDelete={handleDeleteTodo}
-            deletingId={deletingIds}
+            deletingIds={deletingIds}
           />
         )}
 
