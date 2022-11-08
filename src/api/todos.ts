@@ -17,12 +17,12 @@ export const createTodos = async (todo: Todo) => {
 
 export const removeTodo = async (todo: Todo) => {
   return client.delete(`/todos/${todo.id}`);
-}
+};
 
 export const updateTodo = async (todo: Todo, completed: boolean) => {
   return client.patch(`/todos/${todo.id}`, { completed });
-}
+};
 
 export const editTodo = async (todo: Todo, title: string) => {
   return client.patch(`/todos/${todo.id}`, { title });
-}
+};
