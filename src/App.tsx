@@ -115,12 +115,12 @@ export const App: React.FC = () => {
           ...currentTodos,
           newTodo,
         ]));
-
-        setIsLoading(false);
-        setTodoTitle('');
       }
     } catch (error) {
       showError(ErrorType.Add);
+    } finally {
+      setIsLoading(false);
+      setTodoTitle('');
     }
   };
 
@@ -138,6 +138,8 @@ export const App: React.FC = () => {
       ));
     } catch (error) {
       showError(ErrorType.Delete);
+    } finally {
+      setDeletedTodoId(currentIds => currentIds.slice(todoId, 1));
     }
   };
 

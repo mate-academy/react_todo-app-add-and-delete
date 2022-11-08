@@ -3,6 +3,7 @@ import cn from 'classnames';
 import { FilterStatus } from '../../types/FilterStatus';
 
 type Props = {
+  hasActiveTodo: boolean;
   filterTodos: (filterBy: FilterStatus) => void;
   filterStatus: FilterStatus,
   countOfLeftTodos: number,
@@ -10,6 +11,7 @@ type Props = {
 };
 
 export const TodoFooter:React.FC<Props> = React.memo(({
+  hasActiveTodo,
   filterTodos,
   filterStatus,
   countOfLeftTodos,
@@ -60,6 +62,7 @@ export const TodoFooter:React.FC<Props> = React.memo(({
         type="button"
         className="todoapp__clear-completed"
         onClick={deleteAllCompletedTodos}
+        disabled={!hasActiveTodo}
       >
         Clear completed
       </button>

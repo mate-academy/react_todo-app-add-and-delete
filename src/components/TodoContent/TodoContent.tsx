@@ -39,6 +39,7 @@ export const TodoContent: React.FC<Props> = React.memo(({
 }) => {
   const countOfTodos = todos.length;
   const countOfLeftTodos = todos.filter(todo => !todo.completed).length;
+  const hasActiveTodo = todos.some(todo => todo.completed);
 
   return (
     <div className="todoapp__content">
@@ -65,6 +66,7 @@ export const TodoContent: React.FC<Props> = React.memo(({
             />
 
             <TodoFooter
+              hasActiveTodo={hasActiveTodo}
               filterTodos={filterTodos}
               filterStatus={filterStatus}
               countOfLeftTodos={countOfLeftTodos}
