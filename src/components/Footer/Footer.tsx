@@ -7,12 +7,16 @@ type Props = {
   filterType: FilterType
   setFilterType: (status: FilterType) => void
   todos: Todo[]
+  completedTodos: number
+  onRemove: () => Promise<void>
 };
 
 export const Footer: React.FC<Props> = React.memo(({
   filterType,
   setFilterType,
   todos,
+  completedTodos,
+  onRemove,
 }) => {
   const uncompletedCount = useMemo(() => (
     todos.filter(({ completed }) => !completed).length
@@ -47,7 +51,10 @@ export const Footer: React.FC<Props> = React.memo(({
       <button
         data-cy="ClearCompletedButton"
         type="button"
-        className="todoapp__clear-completed"
+        className={classNames('todoapp__clear-completed', {
+          hidden: completedTodos <= 0,
+        })}
+        onClick={onRemove}
       >
         Clear completed
       </button>

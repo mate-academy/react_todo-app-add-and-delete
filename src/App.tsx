@@ -7,11 +7,11 @@ import {
   useRef,
   useState,
 } from 'react';
-import { getTodos } from './api/todos';
+import { getTodos, addTodo, deleteTodo } from './api/todos';
 import { AuthContext } from './components/Auth/AuthContext';
 import { ErrorNotification } from './components/ErrorNotification';
 import { Footer } from './components/Footer';
-import { Header } from './components/Header/Header';
+import { Header } from './components/Header';
 import { TodoList } from './components/TodoList';
 import { FilterType } from './types/FilterType';
 import { Todo } from './types/Todo';
@@ -24,6 +24,14 @@ export const App: React.FC = () => {
   const [filterType, setFilterType] = useState<FilterType>(FilterType.All);
   const [hasError, setHasError] = useState(false);
   const [errorMessage, setErrorMessage] = useState('');
+  const [isAdding, setIsAdding] = useState(false);
+  const [todoIdsToRemove, setTodoIdsToRemove] = useState<number[]>([]);
+  const [tempTodo, setTempTodo] = useState<Todo>({
+    id: 0,
+    userId: 0,
+    title: '',
+    completed: false,
+  });
 
   const getTodosFromServer = useCallback(async () => {
     try {
@@ -36,7 +44,59 @@ export const App: React.FC = () => {
       setHasError(true);
       setErrorMessage('Can`t download ToDos from server');
     }
-  }, []);
+  }, [user]);
+
+  const addNewTodoToServer = useCallback(async (title: string) => {
+    try {
+      if (user) {
+        setIsAdding(true);
+
+        const currTodo = {
+          title,
+          userId: user.id,
+          completed: false,
+        };
+
+        setTempTodo(prev => ({ ...prev, currTodo }));
+
+        await addTodo(currTodo);
+        await getTodosFromServer();
+        setIsAdding(false);
+      }
+    } catch (error) {
+      setHasError(true);
+      setErrorMessage('Unable to add a todo');
+    }
+  }, [user]);
+
+  const removeTodoFromServer = useCallback(async (todoId: number) => {
+    try {
+      if (user) {
+        setTodoIdsToRemove(currIds => [...currIds, todoId]);
+
+        await deleteTodo(todoId);
+        await getTodosFromServer();
+      }
+    } catch (error) {
+      setHasError(true);
+      setErrorMessage('Unable to remove ToDo');
+    }
+  }, [user]);
+
+  const completedTodos = useMemo(() => (
+    todos.filter((todo) => todo.completed)
+  ), [todos]);
+
+  const removeAllCompletedTodos = async () => {
+    try {
+      await Promise.all(completedTodos.map(({ id }) => (
+        removeTodoFromServer(id)
+      )));
+    } catch (error) {
+      setErrorMessage('Unable to remove all completed todo');
+      setHasError(true);
+    }
+  };
 
   const filtredTodos = useMemo(() => (
     todos.filter(({ completed }) => {
@@ -72,18 +132,30 @@ export const App: React.FC = () => {
       <h1 className="todoapp__title">todos</h1>
 
       <div className="todoapp__content">
-        <Header newTodoField={newTodoField} />
+        <Header
+          newTodoField={newTodoField}
+          setHasError={setHasError}
+          setErrorMessage={setErrorMessage}
+          addNewTodo={addNewTodoToServer}
+          isAdding={isAdding}
+        />
 
         {todos.length > 0 && (
           <>
             <TodoList
               todos={filtredTodos}
+              removeTodo={removeTodoFromServer}
+              isAdding={isAdding}
+              tempTodo={tempTodo}
+              todoIdsToRemove={todoIdsToRemove}
             />
 
             <Footer
               filterType={filterType}
               setFilterType={setFilterType}
               todos={filtredTodos}
+              completedTodos={completedTodos.length}
+              onRemove={removeAllCompletedTodos}
             />
           </>
         )}
