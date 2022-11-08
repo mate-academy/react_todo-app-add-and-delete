@@ -33,23 +33,25 @@ export const App: React.FC = () => {
 
   const getTodosFromApi = useCallback(async () => {
     if (user) {
+      let todosApi;
+
       try {
-        const todosApi = await getTodos(user?.id);
-
-        setTodos(todosApi);
+        todosApi = await getTodos(user?.id);
       } catch {
-        setError(ErrorsType.NONE);
-
-        setTimeout(() => {
-          setError(ErrorsType.NONE);
-        }, 3000);
+        throw new Error('Todos not found');
       }
+
+      setTodos(todosApi);
     }
   }, []);
 
   useEffect(() => {
     getTodosFromApi();
-  }, [isAdding, isDeleting]);
+  }, [isDeleting]);
+
+  useEffect(() => {
+    setTimeout(() => setError(ErrorsType.NONE), 3000);
+  }, [error]);
 
   useEffect(() => {
     const filteredTodos = todos.filter(todo => {
@@ -86,11 +88,11 @@ export const App: React.FC = () => {
       setError(ErrorsType.ISEMPTY);
     }
 
-    if (newTitle && trimTitle) {
+    if (user && trimTitle) {
       setIsAdding(true);
 
       const newTodo = {
-        userId: user?.id,
+        userId: user.id,
         title: trimTitle,
         completed: false,
       };
@@ -102,8 +104,9 @@ export const App: React.FC = () => {
       }
     }
 
-    setIsAdding(false);
+    await getTodosFromApi();
     setNewTitle('');
+    setIsAdding(false);
   }, [newTitle, user]);
 
   const handleNewTitle = useCallback((
@@ -157,6 +160,8 @@ export const App: React.FC = () => {
           <>
             <TodoList
               todos={visibleTodos}
+              newTitle={newTitle}
+              isAdding={isAdding}
               handleDeleteTodo={handleDeleteTodo}
               deletingTodosIds={deletingTodosIds}
             />
