@@ -26,7 +26,7 @@ export const NewTodo: React.FC<Props> = React.memo(({
 
         setTitleField('');
       }
-    }, [],
+    }, [titleField],
   );
 
   return (

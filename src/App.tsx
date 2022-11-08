@@ -70,7 +70,7 @@ export const App: React.FC = () => {
         const newTodo = {
           title: todoTitle,
           userId: user.id,
-          completed: true,
+          completed: false,
         };
 
         await addTodo(newTodo);
