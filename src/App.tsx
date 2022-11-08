@@ -23,27 +23,26 @@ export const App: React.FC = () => {
   const user = useContext(AuthContext);
   const newTodoField = useRef<HTMLInputElement>(null);
   const [todos, setTodos] = useState<Todo[]>([]);
-  const [filtredTodos, setFiltredTodos] = useState<Todo[]>([]);
-  const [
-    statusToFilter,
-    setStatusToFilter,
-  ] = useState<TodosFilter>(TodosFilter.All);
   const [isAdding, setIsAdding] = useState(false);
   const [hasError, setHasError] = useState(false);
   const [errorMessage, setErrorMessage] = useState('');
+  const [todoIdsToRemove, setTodoIdsToRemove] = useState<number[]>([]);
   const [tempTodo, setTempTodo] = useState<Todo>({
     id: 0,
     userId: 0,
     title: '',
     completed: false,
   });
-  const [todoIdsToRemove, setTodoIdsToRemove] = useState<number[]>([]);
+  const [
+    statusToFilter,
+    setStatusToFilter,
+  ] = useState<TodosFilter>(TodosFilter.All);
 
   const closeNotification = useCallback(() => setHasError(false), []);
 
-  const filterTodosBy = useCallback((status: TodosFilter) => {
-    const filtredByStatusTodos = todos.filter(({ completed }) => {
-      switch (status) {
+  const filtredTodos = useMemo(() => (
+    todos.filter(({ completed }) => {
+      switch (statusToFilter) {
         case TodosFilter.Active:
           return !completed;
 
@@ -53,15 +52,12 @@ export const App: React.FC = () => {
         default:
           return true;
       }
-    });
+    })
+  ), [todos, statusToFilter]);
 
-    setStatusToFilter(status);
-    setFiltredTodos(filtredByStatusTodos);
-  }, [todos]);
-
-  const completedTodos = useMemo(() => {
-    return todos.filter((todo) => todo.completed);
-  }, [todos]);
+  const completedTodos = useMemo(() => (
+    todos.filter((todo) => todo.completed)
+  ), [todos]);
 
   const getTodosFromServer = async () => {
     try {
@@ -69,7 +65,6 @@ export const App: React.FC = () => {
         const todosFromServer = await getTodos(user.id);
 
         setTodos(todosFromServer);
-        setFiltredTodos(todosFromServer);
       }
     } catch (error) {
       setErrorMessage('Unable to show todos');
@@ -94,8 +89,8 @@ export const App: React.FC = () => {
           completed: false,
         });
 
-        setTodos(currTodos => [...currTodos, addedTodo]);
         setIsAdding(false);
+        setTodos(currTodos => [...currTodos, addedTodo]);
       } catch (error) {
         setErrorMessage('Unable to add todo');
         setHasError(true);
@@ -138,10 +133,6 @@ export const App: React.FC = () => {
   }, [hasError]);
 
   useEffect(() => {
-    filterTodosBy(statusToFilter);
-  }, [todos]);
-
-  useEffect(() => {
     if (newTodoField.current) {
       newTodoField.current.focus();
     }
@@ -178,7 +169,7 @@ export const App: React.FC = () => {
               completedTodosLength={completedTodos.length}
               todosLength={todos.length}
               statusToFilter={statusToFilter}
-              filterTodosBy={filterTodosBy}
+              setStatusToFilter={setStatusToFilter}
               removeAllCompletedTodos={removeAllCompletedTodos}
             />
           </>

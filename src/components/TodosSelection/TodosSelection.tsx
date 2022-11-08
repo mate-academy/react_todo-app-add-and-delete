@@ -6,7 +6,7 @@ interface Props {
   completedTodosLength: number;
   todosLength: number;
   statusToFilter: TodosFilter;
-  filterTodosBy: (status: TodosFilter) => void;
+  setStatusToFilter: React.Dispatch<React.SetStateAction<TodosFilter>>;
   removeAllCompletedTodos: () => Promise<void>;
 }
 
@@ -14,7 +14,7 @@ export const TodosSelection: React.FC<Props> = React.memo(({
   completedTodosLength,
   statusToFilter,
   todosLength,
-  filterTodosBy,
+  setStatusToFilter,
   removeAllCompletedTodos,
 }) => {
   const uncompletedTodosLength = todosLength - completedTodosLength;
@@ -32,7 +32,7 @@ export const TodosSelection: React.FC<Props> = React.memo(({
           className={classNames('filter__link', {
             selected: statusToFilter === TodosFilter.All,
           })}
-          onClick={() => filterTodosBy(TodosFilter.All)}
+          onClick={() => setStatusToFilter(TodosFilter.All)}
         >
           All
         </a>
@@ -43,7 +43,7 @@ export const TodosSelection: React.FC<Props> = React.memo(({
           className={classNames('filter__link', {
             selected: statusToFilter === TodosFilter.Active,
           })}
-          onClick={() => filterTodosBy(TodosFilter.Active)}
+          onClick={() => setStatusToFilter(TodosFilter.Active)}
         >
           Active
         </a>
@@ -53,7 +53,7 @@ export const TodosSelection: React.FC<Props> = React.memo(({
           className={classNames('filter__link', {
             selected: statusToFilter === TodosFilter.Completed,
           })}
-          onClick={() => filterTodosBy(TodosFilter.Completed)}
+          onClick={() => setStatusToFilter(TodosFilter.Completed)}
         >
           Completed
         </a>
