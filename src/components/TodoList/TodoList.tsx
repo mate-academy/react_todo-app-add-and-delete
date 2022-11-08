@@ -9,7 +9,6 @@ interface Props {
   isAdding: boolean;
   todoTitle: string;
   onDeleteTodo: (todoId: number) => void;
-  deletedTodoId: number;
   deletedTodoIds: number[];
 }
 
@@ -18,7 +17,6 @@ export const TodoList: React.FC<Props> = ({
   isAdding,
   todoTitle,
   onDeleteTodo,
-  deletedTodoId,
   deletedTodoIds,
 }) => {
   return (
@@ -28,7 +26,6 @@ export const TodoList: React.FC<Props> = ({
           key={todo.id}
           todo={todo}
           onDeleteTodo={onDeleteTodo}
-          deletedTodoId={deletedTodoId}
           deletedTodoIds={deletedTodoIds}
         />
       ))}

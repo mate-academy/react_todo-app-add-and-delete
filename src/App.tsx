@@ -26,7 +26,6 @@ export const App: React.FC = () => {
   const [error, setError] = useState<ErrorType>(ErrorType.NONE);
   const [todoTitle, setTodoTitle] = useState('');
   const [isAdding, setIsAdding] = useState(false);
-  const [deletedTodoId, setDeletedTodoId] = useState(0);
   const [deletedTodoIds, setDeletedTodoIds] = useState<number[]>([]);
 
   const user = useContext(AuthContext);
@@ -71,7 +70,7 @@ export const App: React.FC = () => {
   };
 
   const handleDeleteTodo = async (todoId: number) => {
-    setDeletedTodoId(todoId);
+    setDeletedTodoIds([todoId]);
 
     try {
       await deleteTodo(todoId);
@@ -81,7 +80,7 @@ export const App: React.FC = () => {
     }
   };
 
-  const handleDeleteAllTodos = async () => {
+  const handleDeleteCompletedTodos = async () => {
     try {
       const completedTodoIds = todos
         .filter(todo => todo.completed)
@@ -171,14 +170,13 @@ export const App: React.FC = () => {
               isAdding={isAdding}
               todoTitle={todoTitle}
               onDeleteTodo={handleDeleteTodo}
-              deletedTodoId={deletedTodoId}
               deletedTodoIds={deletedTodoIds}
             />
             <Filters
               todos={todos}
               filterBy={filterBy}
               onFilter={handleFilterSelect}
-              onDeleteAllTodos={handleDeleteAllTodos}
+              onDeleteAllTodos={handleDeleteCompletedTodos}
             />
           </>
         )}

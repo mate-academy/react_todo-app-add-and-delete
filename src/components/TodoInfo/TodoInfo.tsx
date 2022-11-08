@@ -6,14 +6,12 @@ import { Todo } from '../../types/Todo';
 interface Props {
   todo: Todo;
   onDeleteTodo: (todoId: number) => void;
-  deletedTodoId: number;
   deletedTodoIds: number[];
 }
 
 export const TodoInfo: React.FC<Props> = ({
   todo,
   onDeleteTodo,
-  deletedTodoId,
   deletedTodoIds,
 }) => {
   const {
@@ -53,7 +51,7 @@ export const TodoInfo: React.FC<Props> = ({
       <div
         data-cy="TodoLoader"
         className={cn('modal', 'overlay', {
-          'is-active': id === deletedTodoId || deletedTodoIds.includes(id),
+          'is-active': deletedTodoIds.includes(id),
         })}
       >
         <div className="modal-background has-background-white-ter" />
