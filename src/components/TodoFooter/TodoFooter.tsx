@@ -1,30 +1,27 @@
 /* eslint-disable @typescript-eslint/no-unused-expressions */
 import classNames from 'classnames';
 import { SortType } from '../../types/SortType';
-import { Todo } from '../../types/Todo';
 import './TodoFooter.scss';
 
 type Props = {
   sortType: SortType,
   setSortType: (value: SortType) => void,
-  todos: Todo[],
   completedTodosIds: number [],
   handlerClearCompletedButton: () => void,
+  unCompletedTodosIds: number[],
 };
 
 export const TodoFooter: React.FC<Props> = ({
   setSortType,
-  todos,
   completedTodosIds,
   sortType,
   handlerClearCompletedButton,
+  unCompletedTodosIds,
 }) => {
-  const todosLength = todos.filter(todo => !todo.completed).length;
-
   return (
     <footer className="todoapp__footer" data-cy="Footer">
       <span className="todo-count" data-cy="todosCounter">
-        {`${todosLength} items left`}
+        {`${unCompletedTodosIds.length} items left`}
       </span>
 
       <nav className="filter" data-cy="Filter">

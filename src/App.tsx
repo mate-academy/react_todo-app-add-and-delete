@@ -29,6 +29,9 @@ export const App: React.FC = () => {
   const completedTodosIds = [...todos].filter(todo => todo.completed)
     .map(todo => todo.id);
 
+  const unCompletedTodosIds = [...todos].filter(todo => !todo.completed)
+    .map(todo => todo.id);
+
   const getFilteredTodos = () => {
     let filteredTodos = [...todos];
 
@@ -128,10 +131,10 @@ export const App: React.FC = () => {
         {todos.length > 0 && (
           <TodoFooter
             setSortType={setSortType}
-            todos={getFilteredTodos()}
             completedTodosIds={completedTodosIds}
             sortType={sortType}
             handlerClearCompletedButton={handlerClearCompletedButton}
+            unCompletedTodosIds={unCompletedTodosIds}
           />
         )}
       </div>
