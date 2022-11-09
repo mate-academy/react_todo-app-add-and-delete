@@ -8,7 +8,7 @@ type Props = {
   todos: Todo[];
   isAdding: boolean;
   tempTodoTitle: string;
-  onDelete: (id: number) => void;
+  handleTodoDeleting: (id: number) => void;
   deletingId: number;
 };
 
@@ -16,7 +16,7 @@ export const TodoList: React.FC<Props> = ({
   todos,
   isAdding,
   tempTodoTitle,
-  onDelete,
+  handleTodoDeleting,
   deletingId,
 }) => (
   <section className="todoapp__main" data-cy="TodoList">
@@ -24,7 +24,7 @@ export const TodoList: React.FC<Props> = ({
       <TodoInfo
         key={todo.id}
         todo={todo}
-        onDelete={onDelete}
+        handleTodoDeleting={handleTodoDeleting}
         deletingId={deletingId}
       />
     ))}

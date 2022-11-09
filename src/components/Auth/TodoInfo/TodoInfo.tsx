@@ -5,13 +5,13 @@ import { Todo } from '../../../types/Todo';
 
 type Props = {
   todo: Todo;
-  onDelete: (id: number) => void;
+  handleTodoDeleting: (id: number) => void;
   deletingId: number;
 };
 
 export const TodoInfo: React.FC<Props> = ({
   todo,
-  onDelete,
+  handleTodoDeleting,
   deletingId,
 }) => {
   const { completed, title, id } = todo;
@@ -46,7 +46,7 @@ export const TodoInfo: React.FC<Props> = ({
         data-cy="TodoDeleteButton"
         value={id}
         onClick={(event) => {
-          onDelete(+event.currentTarget.value);
+          handleTodoDeleting(+event.currentTarget.value);
         }}
       >
         ×

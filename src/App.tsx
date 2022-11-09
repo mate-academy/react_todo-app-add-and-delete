@@ -1,5 +1,3 @@
-/* eslint-disable no-lone-blocks */
-/* eslint-disable jsx-a11y/control-has-associated-label */
 import React, {
   useCallback,
   useContext,
@@ -18,12 +16,10 @@ import { FilterType } from './utils/enums/FilterType';
 import { ErrorType } from './utils/enums/ErrorType';
 
 export const App: React.FC = () => {
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   const user = useContext(AuthContext);
   const newTodoField = useRef<HTMLInputElement>(null);
   const [todos, setTodos] = useState<Todo[]>([]);
   const [visibleTodos, setVisibleTodos] = useState<Todo[]>([]);
-  // const [isError, setIsError] = useState(false);
   const [filterType, setFilterType] = useState(FilterType.All);
   const [newTodoTitle, setNewTodoTitle] = useState<string>('');
   const [isAdding, setIsAdding] = useState(false);
@@ -89,6 +85,8 @@ export const App: React.FC = () => {
   };
 
   const handleTodoDeleting = async (todoId: number) => {
+    setDeletingId(todoId);
+
     try {
       await deleteTodo(todoId);
       await loadTodos();
@@ -97,11 +95,6 @@ export const App: React.FC = () => {
     } finally {
       setDeletingId(0);
     }
-  };
-
-  const onDelete = (id: number) => {
-    handleTodoDeleting(id);
-    setDeletingId(id);
   };
 
   const onInput = (input: string) => {
@@ -115,7 +108,6 @@ export const App: React.FC = () => {
   useEffect(() => {
     loadTodos();
 
-    // focus the element with `ref={newTodoField}`
     if (newTodoField.current) {
       newTodoField.current.focus();
     }
@@ -134,13 +126,13 @@ export const App: React.FC = () => {
           isAdding={isAdding}
         />
 
-        {todos.length > 0 && (
+        {(todos.length > 0 || isAdding) && (
           <>
             <TodoList
               todos={visibleTodos}
               isAdding={isAdding}
               tempTodoTitle={newTodoTitle}
-              onDelete={onDelete}
+              handleTodoDeleting={handleTodoDeleting}
               deletingId={deletingId}
             />
             <Footer
