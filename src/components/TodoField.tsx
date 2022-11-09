@@ -8,11 +8,11 @@ type Props = {
   isAdding: boolean,
   addNewTodo: () => void,
   setTodo: (value: string) => void,
-  todo: string,
+  todoToAdd: string,
 };
 
 export const TodoField: React.FC<Props> = ({
-  todos, newTodo, isAdding, addNewTodo, setTodo, todo,
+  todos, newTodo, isAdding, addNewTodo, setTodo, todoToAdd,
 }) => {
   const completedTodos = todos
     .every((todo) => todo.completed === true);
@@ -42,7 +42,7 @@ export const TodoField: React.FC<Props> = ({
           ref={newTodo}
           className="todoapp__new-todo"
           placeholder="What needs to be done?"
-          value={todo}
+          value={todoToAdd}
           onChange={(event) => setTodo(event.target.value)}
         />
       </form>

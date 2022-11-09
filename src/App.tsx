@@ -17,9 +17,7 @@ export const App: React.FC = () => {
   const [error, setError] = useState('');
   const [filterType, setFilterType] = useState<FilterTypes>(FilterTypes.all);
   const [isAdding, setIsAdding] = useState(false);
-  const [deletedTodo, setDeletedTodo] = useState(0);
-  const [deletedTodos, setDeletedTodos] = useState<number[]>([]);
-  const [todo, setTodo] = useState('');
+  const [todoToAdd, setTodoToAdd] = useState('');
 
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
   const user = useContext(AuthContext);
@@ -60,7 +58,7 @@ export const App: React.FC = () => {
   const addNewTodo = async () => {
     setIsAdding(true);
 
-    if (!todo.length) {
+    if (!todoToAdd.length) {
       setError('length');
 
       return;
@@ -68,21 +66,19 @@ export const App: React.FC = () => {
 
     if (user) {
       try {
-        const newAPITodo = await newTodo(todo, user.id);
+        const newAPITodo = await newTodo(todoToAdd, user.id);
 
-        setTodos(todos => [...todos, newAPITodo]);
+        setTodos(currTodos => [...currTodos, newAPITodo]);
       } catch {
         setError('add');
       }
     }
 
-    setTodo('');
+    setTodoToAdd('');
     setIsAdding(false);
   };
 
   const handleDeleteTodo = async (todoId: number) => {
-    setDeletedTodo(todoId);
-
     try {
       await deleteTodo(todoId);
       setTodos(prev => (
@@ -95,12 +91,6 @@ export const App: React.FC = () => {
 
   const handleDeleteAllTodos = async () => {
     try {
-      const completedTodos = todos
-        .filter(todo => todo.completed)
-        .map(todo => todo.id);
-
-      setDeletedTodos(completedTodos);
-
       await Promise.all(todos.map(async (todo) => {
         if (todo.completed) {
           await deleteTodo(todo.id);
@@ -125,8 +115,8 @@ export const App: React.FC = () => {
           newTodo={newTodoField}
           isAdding={isAdding}
           addNewTodo={() => addNewTodo()}
-          setTodo={setTodo}
-          todo={todo}
+          setTodo={setTodoToAdd}
+          todoToAdd={todoToAdd}
         />
 
         {todos.length > 0 && (

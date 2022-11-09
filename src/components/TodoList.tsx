@@ -28,7 +28,12 @@ export const TodoList: React.FC<Props> = ({ todos, handleDeleteTodo }) => {
               />
             </label>
 
-            <span data-cy="TodoTitle" className="todo__title">{todo.title}</span>
+            <span
+              data-cy="TodoTitle"
+              className="todo__title"
+            >
+              {todo.title}
+            </span>
             <button
               type="button"
               className="todo__remove"
