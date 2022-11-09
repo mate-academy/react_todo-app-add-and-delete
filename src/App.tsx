@@ -12,6 +12,7 @@ import { AuthContext } from './components/Auth/AuthContext';
 import { ErrorNotification } from './components/ErrorNotification';
 import { Footer } from './components/Footer';
 import { Header } from './components/Header';
+import { Loader } from './components/Loader';
 import { TodoList } from './components/TodoList';
 import { FilterType } from './types/FilterType';
 import { Todo } from './types/Todo';
@@ -140,25 +141,27 @@ export const App: React.FC = () => {
           isAdding={isAdding}
         />
 
-        {todos.length > 0 && (
-          <>
-            <TodoList
-              todos={filtredTodos}
-              removeTodo={removeTodoFromServer}
-              isAdding={isAdding}
-              tempTodo={tempTodo}
-              todoIdsToRemove={todoIdsToRemove}
-            />
+        {todos.length > 0 ? (
+          (
+            <>
+              <TodoList
+                todos={filtredTodos}
+                removeTodo={removeTodoFromServer}
+                isAdding={isAdding}
+                tempTodo={tempTodo}
+                todoIdsToRemove={todoIdsToRemove}
+              />
 
-            <Footer
-              filterType={filterType}
-              setFilterType={setFilterType}
-              todos={filtredTodos}
-              completedTodos={completedTodos.length}
-              onRemove={removeAllCompletedTodos}
-            />
-          </>
-        )}
+              <Footer
+                filterType={filterType}
+                setFilterType={setFilterType}
+                todos={filtredTodos}
+                completedTodos={completedTodos.length}
+                onRemove={removeAllCompletedTodos}
+              />
+            </>
+          )
+        ) : <Loader />}
       </div>
 
       <ErrorNotification
