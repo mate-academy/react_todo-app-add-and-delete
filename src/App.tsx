@@ -67,14 +67,13 @@ export const App: React.FC = () => {
       };
 
       try {
-        const newTodoToAdd = await addTodo(newTodo);
-
-        setTodos(currentTodos => [...currentTodos, newTodoToAdd]);
+        await addTodo(newTodo);
       } catch {
         setErrors(ErrorType.ADD);
       }
 
       setIsAdded(false);
+      getTodosWithUsers();
     }
   };
 
