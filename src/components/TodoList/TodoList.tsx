@@ -50,12 +50,11 @@ export const TodoList: React.FC<Props> = ({
             classNames="temp-item"
           >
             <TodoItem
-              key={Math.random()}
               todo={{
                 id: 0,
                 title,
                 completed: false,
-                userId: Math.random(),
+                userId: 0,
               }}
               removeTodo={removeTodo}
               selectedId={selectedId}
