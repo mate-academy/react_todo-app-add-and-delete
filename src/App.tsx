@@ -6,6 +6,7 @@ import React, {
   useEffect,
   useRef,
   useState,
+  useMemo,
 } from 'react';
 import { AuthContext } from './components/Auth/AuthContext';
 
@@ -28,22 +29,22 @@ export const App: React.FC = () => {
   const newTodoField = useRef<HTMLInputElement>(null);
 
   const [todos, setTodos] = useState<Todo[]>([]);
-  const [sortType, setSortType] = useState<SortType>(SortType.All);
+  const [sortType, setSortType] = useState<SortType>(SortType.ALL);
   const [error, setError] = useState('');
   const [title, setTitle] = useState('');
   const [selectedId, setSelectedId] = useState<number[]>([]);
   const [isAdding, setIsAdding] = useState(false);
 
-  const filteredTodo = [...todos].filter(todo => {
+  const filteredTodo = useMemo(() => todos.filter(todo => {
     switch (sortType) {
-      case SortType.Active:
+      case SortType.ACTIVE:
         return !todo.completed;
-      case SortType.Completed:
+      case SortType.COMPLETED:
         return todo.completed;
       default:
         return todo;
     }
-  });
+  }), [todos]);
 
   useEffect(() => {
     if (newTodoField.current) {
@@ -52,6 +53,10 @@ export const App: React.FC = () => {
   }, []);
 
   useEffect(() => {
+    if (!user) {
+      return;
+    }
+
     const getTodosFromServer = async (userId: number) => {
       try {
         const receivedTodos = await getTodos(userId);
@@ -61,10 +66,6 @@ export const App: React.FC = () => {
         setError(`${errorMessage}`);
       }
     };
-
-    if (!user) {
-      return;
-    }
 
     getTodosFromServer(user.id);
   }, []);
@@ -85,9 +86,9 @@ export const App: React.FC = () => {
     setIsAdding(true);
 
     try {
-      const postTodo = await createTodo(title, user.id);
+      const newTodo = await createTodo(title, user.id);
 
-      setTodos((prevTodos) => [...prevTodos, postTodo]);
+      setTodos((prevTodos) => [...prevTodos, newTodo]);
     } catch {
       setError(ErrorType.NotAdd);
     }
@@ -110,17 +111,20 @@ export const App: React.FC = () => {
 
   const completedTodos = todos.filter(({ completed }) => completed);
 
-  const clearCompletedTodos = useCallback(() => {
-    setSelectedId([...completedTodos].map(({ id }) => id));
+  const clearCompletedTodos = useCallback(
+    async () => {
+      try {
+        setSelectedId([...completedTodos].map(({ id }) => id));
 
-    Promise.all(completedTodos.map(({ id }) => removeTodo(id)))
-      .then(() => setTodos((prevTodos) => prevTodos
-        .filter(({ completed }) => !completed)))
-      .catch(() => {
+        await Promise.all(completedTodos.map(({ id }) => removeTodo(id)));
+        await (() => setTodos((prevTodos) => prevTodos
+          .filter(({ completed }) => !completed)));
+      } catch {
         setError(ErrorType.NotDelete);
         setSelectedId([]);
-      });
-  }, [todos, selectedId, error]);
+      }
+    }, [todos, selectedId, error],
+  );
 
   return (
     <div className="todoapp">
@@ -145,7 +149,7 @@ export const App: React.FC = () => {
           </form>
         </header>
 
-        {!!todos.length && (
+        {Boolean(todos.length) && (
           <>
             <TodoList
               filteredTodo={filteredTodo}

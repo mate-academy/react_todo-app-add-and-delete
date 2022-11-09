@@ -1,5 +1,5 @@
 import classNames from 'classnames';
-import React, { useMemo } from 'react';
+import React from 'react';
 
 import { Todo } from '../../types/Todo';
 
@@ -20,9 +20,7 @@ export const TodoItem: React.FC<Props> = ({
 }) => {
   const { title, completed, id } = todo;
 
-  const isLoader = useMemo(() => (
-    selectedId.includes(id) || (isAdding)
-  ), []);
+  const isLoader = selectedId.includes(id) || (isAdding);
 
   return (
     <div

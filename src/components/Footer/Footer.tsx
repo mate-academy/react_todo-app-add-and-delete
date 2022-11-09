@@ -25,6 +25,8 @@ export const Footer: React.FC<Props> = ({
     todos.filter(todo => todo.completed).length
   ), [todos]);
 
+  const sortTypeArray = Object.values(SortType);
+
   return (
     <footer className="todoapp__footer" data-cy="Footer">
       <span className="todo-count" data-cy="todosCounter">
@@ -32,40 +34,20 @@ export const Footer: React.FC<Props> = ({
       </span>
 
       <nav className="filter" data-cy="Filter">
-        <a
-          data-cy="FilterLinkAll"
-          href="#/"
-          className={classNames(
-            'filter__link',
-            { selected: sortType === SortType.All },
-          )}
-          onClick={() => setSortType(SortType.All)}
-        >
-          All
-        </a>
-
-        <a
-          data-cy="FilterLinkActive"
-          href="#/active"
-          className={classNames(
-            'filter__link',
-            { selected: sortType === SortType.Active },
-          )}
-          onClick={() => setSortType(SortType.Active)}
-        >
-          Active
-        </a>
-        <a
-          data-cy="FilterLinkCompleted"
-          href="#/completed"
-          className={classNames(
-            'filter__link',
-            { selected: sortType === SortType.Completed },
-          )}
-          onClick={() => setSortType(SortType.Completed)}
-        >
-          Completed
-        </a>
+        {sortTypeArray.map(type => (
+          <a
+            key={type}
+            data-cy={`FilterLink${type}`}
+            href={`#/${type}`}
+            className={classNames(
+              'filter__link',
+              { selected: sortType === type },
+            )}
+            onClick={() => setSortType(type)}
+          >
+            {type}
+          </a>
+        ))}
       </nav>
 
       <button
