@@ -26,15 +26,20 @@ export const App: FC = () => {
     title: '',
     completed: false,
   });
+  const [deleteCompleted, setDeleteCompleted] = useState(false);
 
   const activeTodos = useMemo(() => (
     todos.filter(({ completed }) => completed === false)
   ), [todos]);
 
+  const completedTodos = useMemo(() => (
+    todos.filter(({ completed }) => completed === true)
+  ), [todos]);
+
   const handleTodosFilter = (filter: TodosFilter) => {
     switch (filter) {
       case TodosFilter.Completed:
-        setVisibleTodos(todos.filter(({ completed }) => completed === true));
+        setVisibleTodos(completedTodos);
         break;
       case TodosFilter.Active:
         setVisibleTodos(activeTodos);
@@ -79,13 +84,32 @@ export const App: FC = () => {
     }
   };
 
-  const deleteTodosFromServer = async (todoId: number) => {
+  const deleteTodoFromServer = async (todoId: number) => {
     try {
       await deleteTodo(todoId);
       getAllTodos();
     } catch (error) {
       setIsError(true);
       setErrorNotification('Unable to delete a todo');
+    }
+  };
+
+  const deleteAllCompleted = async () => {
+    try {
+      setDeleteCompleted(true);
+      await Promise.all(todos.map(({ completed, id }) => {
+        if (completed) {
+          return deleteTodoFromServer(id);
+        }
+
+        return null;
+      }));
+      await getAllTodos();
+    } catch (error) {
+      setErrorNotification('Unable to remove all completed todo');
+      setIsError(true);
+    } finally {
+      setDeleteCompleted(false);
     }
   };
 
@@ -125,23 +149,25 @@ export const App: FC = () => {
           addTodoToServer={addTodoToServer}
           errorChange={handleErrorChange}
           ErrorNotification={handleErrorNotification}
+          isTodos={todos.length}
         />
 
-        {todos.length && (
+        {todos.length > 0 && (
           <>
             <TodoList
               todos={visibleTodos}
-              deleteTodo={deleteTodosFromServer}
+              deleteTodo={deleteTodoFromServer}
               isAdding={isAdding}
               tempTodo={tempTodo}
-
+              deleteCompleted={deleteCompleted}
             />
 
             <Footer
               numberOfActive={activeTodos.length}
+              numberOfCompeleted={completedTodos.length}
               handleFilter={handleFilterChange}
               filterBy={filterBy}
-
+              deleteAllCompleted={deleteAllCompleted}
             />
           </>
         )}

@@ -9,6 +9,7 @@ type Props = {
   addTodoToServer: (todoTitle: string) => Promise<void>;
   errorChange: () => void;
   ErrorNotification: (str: string) => void;
+  isTodos: number;
 };
 
 export const Header: FC<Props> = ({
@@ -17,6 +18,7 @@ export const Header: FC<Props> = ({
   addTodoToServer,
   errorChange,
   ErrorNotification,
+  isTodos,
 }) => {
   const [title, setTitle] = useState('');
 
@@ -40,11 +42,13 @@ export const Header: FC<Props> = ({
 
   return (
     <header className="todoapp__header">
-      <button
-        data-cy="ToggleAllButton"
-        type="button"
-        className="todoapp__toggle-all active"
-      />
+      {isTodos > 0 && (
+        <button
+          data-cy="ToggleAllButton"
+          type="button"
+          className="todoapp__toggle-all active"
+        />
+      )}
 
       <form onSubmit={handleSubmit}>
         <input

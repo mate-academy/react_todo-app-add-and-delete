@@ -1,4 +1,4 @@
-import { FC } from 'react';
+import { FC, useState } from 'react';
 import cn from 'classnames';
 import { Todo } from '../../../types/Todo';
 
@@ -6,14 +6,25 @@ type Props = {
   todo: Todo;
   deleteTodo?: (todoId: number) => Promise<void>;
   isAdding?: boolean;
+  deleteCompleted?: boolean;
 };
 
-export const TodoInfo: FC<Props> = ({ todo, deleteTodo, isAdding }) => {
+export const TodoInfo: FC<Props> = ({
+  todo,
+  deleteTodo,
+  isAdding,
+  deleteCompleted,
+}) => {
   const { id, title, completed } = todo;
+  const [isDeleting, setIsDeleting] = useState(false);
+  const isLoading = isAdding
+    || isDeleting
+    || (deleteCompleted && completed);
 
   const handleDelete = () => {
     if (deleteTodo) {
       deleteTodo(id);
+      setIsDeleting(true);
     }
   };
 
@@ -51,7 +62,7 @@ export const TodoInfo: FC<Props> = ({ todo, deleteTodo, isAdding }) => {
       <div
         data-cy="TodoLoader"
         className={cn('modal overlay', {
-          'is-active': isAdding,
+          'is-active': isLoading,
         })}
       >
         <div className="modal-background has-background-white-ter" />

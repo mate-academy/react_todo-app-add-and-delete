@@ -7,6 +7,7 @@ type Props = {
   deleteTodo: (todoId: number) => Promise<void>;
   isAdding: boolean;
   tempTodo: Todo;
+  deleteCompleted: boolean;
 };
 
 export const TodoList: FC<Props> = ({
@@ -14,6 +15,7 @@ export const TodoList: FC<Props> = ({
   deleteTodo,
   isAdding,
   tempTodo,
+  deleteCompleted,
 }) => (
   <section className="todoapp__main" data-cy="TodoList">
     {todos.map(todo => (
@@ -21,6 +23,7 @@ export const TodoList: FC<Props> = ({
         key={todo.id}
         todo={todo}
         deleteTodo={deleteTodo}
+        deleteCompleted={deleteCompleted}
       />
     ))}
     {isAdding && (

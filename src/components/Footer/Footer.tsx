@@ -5,14 +5,18 @@ import { TodosFilter } from '../../types/TodosFilter';
 
 type Props = {
   numberOfActive: number;
+  numberOfCompeleted: number;
   handleFilter: (filter: TodosFilter) => void;
   filterBy: TodosFilter;
+  deleteAllCompleted: () => Promise<void>;
 };
 
 export const Footer: FC<Props> = ({
   numberOfActive,
   handleFilter,
   filterBy,
+  deleteAllCompleted,
+  numberOfCompeleted,
 }) => (
   <footer className="todoapp__footer" data-cy="Footer">
     <span className="todo-count" data-cy="todosCounter">
@@ -65,7 +69,10 @@ export const Footer: FC<Props> = ({
     <button
       data-cy="ClearCompletedButton"
       type="button"
-      className="todoapp__clear-completed"
+      className={cn('todoapp__clear-completed', {
+        hidden: numberOfCompeleted === 0,
+      })}
+      onClick={deleteAllCompleted}
     >
       Clear completed
     </button>
