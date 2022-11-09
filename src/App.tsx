@@ -9,6 +9,8 @@ import {
 import { AuthContext } from './components/Auth/AuthContext';
 import { Todo } from './types/Todo';
 import { TodoComponent } from './components/Todo';
+import { Footer } from './components/Footer';
+import { ErrorMessage } from './components/ErrorMessage';
 
 export const App: React.FC = () => {
   const [todos, setTodos] = useState<Todo[]>([]);
@@ -89,20 +91,20 @@ export const App: React.FC = () => {
     }
 
     if (user) {
-      getTodos(user.id);
+      getTodosFromApi(user.id);
     }
   };
 
   const selectAll = () => {
-    todos.map(async todo => {
+    todos.map(async (todo) => {
       if (!todo.completed && isAllSelected) {
-        selectCompleted(todo);
+        await selectCompleted(todo);
       } else if (todo.completed && !isAllSelected) {
-        selectCompleted(todo);
+        await selectCompleted(todo);
       }
     });
 
-    setIsAllSelected(!isAllSelected);
+    setIsAllSelected(prev => !prev);
   };
 
   const clearCompleted = () => {
@@ -152,8 +154,6 @@ export const App: React.FC = () => {
     setTimeout(clearErrors, 3000);
   }, [isHidden]);
 
-  const hasCompleted = todos.some(todo => todo.completed);
-  const countOfActive = todos.filter(todo => !todo.completed).length;
   const isAllCompleted = todos.every(todo => todo.completed);
 
   return (
@@ -185,6 +185,7 @@ export const App: React.FC = () => {
         <section className="todoapp__main" data-cy="TodoList">
           {filteredTodos.map(todo => (
             <TodoComponent
+              key={todo.id}
               todo={todo}
               getTodo={getTodosFromApi}
               setUpdateError={setUpdateError}
@@ -193,6 +194,7 @@ export const App: React.FC = () => {
               setIsHidden={setIsHidden}
               isEditting={isEditing}
               setIsEditting={setIsEditing}
+              selectCompleted={selectCompleted}
             />
           ))}
 
@@ -204,81 +206,29 @@ export const App: React.FC = () => {
               setRemoveError={setRemoveError}
               editTitle={editTitle}
               setIsHidden={setIsHidden}
+              selectCompleted={selectCompleted}
             />
           )}
         </section>
 
-        {todos.length && (
-          <footer className="todoapp__footer" data-cy="Footer">
-            <span className="todo-count" data-cy="todosCounter">
-              {`${countOfActive} items left`}
-            </span>
-
-            <nav className="filter" data-cy="Filter">
-              <a
-                data-cy="FilterLinkAll"
-                href="#/"
-                className={cn('filter__link', {
-                  selected: filterType === 'All',
-                })}
-                onClick={() => setFilterType('All')}
-              >
-                All
-              </a>
-
-              <a
-                data-cy="FilterLinkActive"
-                href="#/active"
-                className={cn('filter__link', {
-                  selected: filterType === 'Active',
-                })}
-                onClick={() => setFilterType('Active')}
-              >
-                Active
-              </a>
-              <a
-                data-cy="FilterLinkCompleted"
-                href="#/completed"
-                className={cn('filter__link', {
-                  selected: filterType === 'Completed',
-                })}
-                onClick={() => setFilterType('Completed')}
-              >
-                Completed
-              </a>
-            </nav>
-
-            <button
-              data-cy="ClearCompletedButton"
-              type="button"
-              className={cn('todoapp__clear-completed', {
-                hidden: !hasCompleted,
-              })}
-              onClick={clearCompleted}
-            >
-              Clear completed
-            </button>
-          </footer>
+        {todos.length > 0 && (
+          <Footer
+            todos={todos}
+            filterType={filterType}
+            setFilterType={setFilterType}
+            clearCompleted={clearCompleted}
+          />
         )}
       </div>
 
-      <div
-        data-cy="ErrorNotification"
-        className={cn('notification is-danger is-light has-text-weight-normal',
-          { hidden: isHidden })}
-      >
-        <button
-          data-cy="HideErrorButton"
-          type="button"
-          className="delete"
-          onClick={clearErrors}
-        />
-
-        {updateError && 'Unable to update a todo'}
-        {addError && 'Unable to add a todo'}
-        {removeError && 'Unable to delete a todo'}
-        {inputError && 'Title can\'t be empty'}
-      </div>
+      <ErrorMessage
+        isHidden={isHidden}
+        clearErrors={clearErrors}
+        updateError={updateError}
+        addError={addError}
+        removeError={removeError}
+        inputError={inputError}
+      />
     </div>
   );
 };

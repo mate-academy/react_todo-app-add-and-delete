@@ -1,7 +1,7 @@
 import React, { useContext, useEffect, useState } from 'react';
 import cn from 'classnames';
 import { Todo } from '../../types/Todo';
-import { updateTodo, removeTodo, editTodo } from '../../api/todos';
+import { removeTodo, editTodo } from '../../api/todos';
 import { AuthContext } from '../Auth/AuthContext';
 
 type Props = {
@@ -13,6 +13,7 @@ type Props = {
   setIsHidden: React.Dispatch<React.SetStateAction<boolean>>;
   isEditting?: Todo | null;
   setIsEditting?: React.Dispatch<React.SetStateAction<Todo | null>>;
+  selectCompleted: (todo: Todo) => void;
 };
 
 export const TodoComponent: React.FC<Props> = ({
@@ -24,6 +25,7 @@ export const TodoComponent: React.FC<Props> = ({
   setIsHidden,
   isEditting,
   setIsEditting,
+  selectCompleted,
 }) => {
   const user = useContext(AuthContext);
   const [inputTitle, setInputTitle] = useState('');
@@ -32,19 +34,6 @@ export const TodoComponent: React.FC<Props> = ({
     tooggleDoubleClick,
     setToggleDoubleClick,
   ] = useState<Todo | null>(null);
-
-  const selectCompleted = async (toDo: Todo) => {
-    try {
-      await updateTodo(toDo, !todo.completed);
-    } catch {
-      setUpdateError(true);
-      setIsHidden(false);
-    }
-
-    if (user) {
-      getTodo(user.id);
-    }
-  };
 
   const removeTodos = async (toDo: Todo) => {
     removeTodo(toDo);
