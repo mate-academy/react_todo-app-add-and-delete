@@ -113,8 +113,7 @@ export const App: React.FC = () => {
       setIsDeleting(true);
       await deleteTodo(todoId);
       await getTodosFromServer();
-      setselectedTodoId(currentTodo => (
-        currentTodo.filter(currentTodoId => currentTodoId !== todoId)));
+      setselectedTodoId([0]);
       setIsDeleting(false);
     } catch (error) {
       setErrorMessage('Unable to delete a todo');
