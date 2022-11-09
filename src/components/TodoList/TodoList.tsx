@@ -5,9 +5,16 @@ import { TodoInfo } from './TodoInfo';
 type Props = {
   todos: Todo[];
   deleteTodo: (todoId: number) => Promise<void>;
+  isAdding: boolean;
+  tempTodo: Todo;
 };
 
-export const TodoList: FC<Props> = ({ todos, deleteTodo }) => (
+export const TodoList: FC<Props> = ({
+  todos,
+  deleteTodo,
+  isAdding,
+  tempTodo,
+}) => (
   <section className="todoapp__main" data-cy="TodoList">
     {todos.map(todo => (
       <TodoInfo
@@ -16,5 +23,8 @@ export const TodoList: FC<Props> = ({ todos, deleteTodo }) => (
         deleteTodo={deleteTodo}
       />
     ))}
+    {isAdding && (
+      <TodoInfo todo={tempTodo} isAdding={isAdding} />
+    )}
   </section>
 );

@@ -4,11 +4,18 @@ import { Todo } from '../../../types/Todo';
 
 type Props = {
   todo: Todo;
-  deleteTodo: (todoId: number) => Promise<void>;
+  deleteTodo?: (todoId: number) => Promise<void>;
+  isAdding?: boolean;
 };
 
-export const TodoInfo: FC<Props> = ({ todo, deleteTodo }) => {
+export const TodoInfo: FC<Props> = ({ todo, deleteTodo, isAdding }) => {
   const { id, title, completed } = todo;
+
+  const handleDelete = () => {
+    if (deleteTodo) {
+      deleteTodo(id);
+    }
+  };
 
   return (
     <div
@@ -36,12 +43,17 @@ export const TodoInfo: FC<Props> = ({ todo, deleteTodo }) => {
         type="button"
         className="todo__remove"
         data-cy="TodoDeleteButton"
-        onClick={() => deleteTodo(id)}
+        onClick={handleDelete}
       >
         ×
       </button>
 
-      <div data-cy="TodoLoader" className="modal overlay">
+      <div
+        data-cy="TodoLoader"
+        className={cn('modal overlay', {
+          'is-active': isAdding,
+        })}
+      >
         <div className="modal-background has-background-white-ter" />
         <div className="loader" />
       </div>

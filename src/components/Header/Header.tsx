@@ -1,22 +1,22 @@
 /* eslint-disable jsx-a11y/control-has-associated-label */
 import {
-  FC, RefObject, useState, ChangeEvent, FormEvent, Dispatch,
+  FC, RefObject, useState, ChangeEvent, FormEvent,
 } from 'react';
 
 type Props = {
   newTodoField: RefObject<HTMLInputElement>;
   isAdding: boolean;
   addTodoToServer: (todoTitle: string) => Promise<void>;
-  setIsError: Dispatch<React.SetStateAction<boolean>>;
-  setError: Dispatch<React.SetStateAction<string>>;
+  errorChange: () => void;
+  ErrorNotification: (str: string) => void;
 };
 
 export const Header: FC<Props> = ({
   newTodoField,
   isAdding,
   addTodoToServer,
-  setIsError,
-  setError,
+  errorChange,
+  ErrorNotification,
 }) => {
   const [title, setTitle] = useState('');
 
@@ -28,8 +28,8 @@ export const Header: FC<Props> = ({
     event.preventDefault();
 
     if (!title) {
-      setIsError(true);
-      setError('Title can\'t be empty');
+      errorChange();
+      ErrorNotification('Title can\'t be empty');
 
       return;
     }

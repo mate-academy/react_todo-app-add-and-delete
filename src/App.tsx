@@ -1,14 +1,14 @@
-/* eslint-disable jsx-a11y/control-has-associated-label */
 import {
   FC, useContext, useEffect, useRef, useState, useMemo,
 } from 'react';
-import cn from 'classnames';
 import { addTodo, deleteTodo, getTodos } from './api/todos';
 import { AuthContext } from './components/Auth/AuthContext';
 import { TodoList } from './components/TodoList';
 import { Todo } from './types/Todo';
 import { TodosFilter } from './types/TodosFilter';
 import { Header } from './components/Header';
+import { Footer } from './components/Footer';
+import { ErrorMessage } from './components/ErrorMessage';
 
 export const App: FC = () => {
   const user = useContext(AuthContext);
@@ -20,6 +20,12 @@ export const App: FC = () => {
   const [filterBy, setFilterBy] = useState<TodosFilter>(TodosFilter.None);
   const [visibleTodos, setVisibleTodos] = useState<Todo[]>(todos);
   const [isAdding, setIsAdding] = useState(false);
+  const [tempTodo, setTempTodo] = useState<Todo>({
+    id: 0,
+    userId: 0,
+    title: '',
+    completed: false,
+  });
 
   const activeTodos = useMemo(() => (
     todos.filter(({ completed }) => completed === false)
@@ -55,13 +61,20 @@ export const App: FC = () => {
   const addTodoToServer = async (todoTitle: string) => {
     if (user) {
       try {
+        setTempTodo(currTodo => ({
+          ...currTodo,
+          userId: user.id,
+          title: todoTitle,
+        }));
         setIsAdding(true);
 
         await addTodo(user.id, todoTitle);
-        getAllTodos();
+        await getAllTodos();
       } catch (error) {
         setIsError(true);
         setErrorNotification('Unable to add a todo');
+      } finally {
+        setIsAdding(false);
       }
     }
   };
@@ -88,6 +101,14 @@ export const App: FC = () => {
     setTimeout(() => setIsError(false), 3000);
   }, [isError]);
 
+  const handleErrorChange = () => {
+    setIsError(currError => !currError);
+  };
+
+  const handleErrorNotification = (str: string) => {
+    setErrorNotification(str);
+  };
+
   const handleFilterChange = (filter: TodosFilter) => {
     handleTodosFilter(filter);
     setFilterBy(filter);
@@ -102,8 +123,8 @@ export const App: FC = () => {
           newTodoField={newTodoField}
           isAdding={isAdding}
           addTodoToServer={addTodoToServer}
-          setIsError={setIsError}
-          setError={setErrorNotification}
+          errorChange={handleErrorChange}
+          ErrorNotification={handleErrorNotification}
         />
 
         {todos.length && (
@@ -111,87 +132,26 @@ export const App: FC = () => {
             <TodoList
               todos={visibleTodos}
               deleteTodo={deleteTodosFromServer}
+              isAdding={isAdding}
+              tempTodo={tempTodo}
+
             />
 
-            <footer className="todoapp__footer" data-cy="Footer">
-              <span className="todo-count" data-cy="todosCounter">
-                {`${activeTodos.length} items left`}
-              </span>
+            <Footer
+              numberOfActive={activeTodos.length}
+              handleFilter={handleFilterChange}
+              filterBy={filterBy}
 
-              <nav className="filter" data-cy="Filter">
-                <a
-                  data-cy="FilterLinkAll"
-                  href="#/"
-                  className={cn(
-                    'filter__link',
-                    {
-                      selected: filterBy === TodosFilter.None,
-                    },
-                  )}
-                  onClick={() => handleFilterChange(TodosFilter.None)}
-                >
-                  All
-                </a>
-
-                <a
-                  data-cy="FilterLinkActive"
-                  href="#/active"
-                  className={cn(
-                    'filter__link',
-                    {
-                      selected: filterBy === TodosFilter.Active,
-                    },
-                  )}
-                  onClick={() => handleFilterChange(TodosFilter.Active)}
-                >
-                  Active
-                </a>
-                <a
-                  data-cy="FilterLinkCompleted"
-                  href="#/completed"
-                  className={cn(
-                    'filter__link',
-                    {
-                      selected: filterBy === TodosFilter.Completed,
-                    },
-                  )}
-                  onClick={() => handleFilterChange(TodosFilter.Completed)}
-                >
-                  Completed
-                </a>
-              </nav>
-
-              <button
-                data-cy="ClearCompletedButton"
-                type="button"
-                className="todoapp__clear-completed"
-              >
-                Clear completed
-              </button>
-            </footer>
+            />
           </>
-
         )}
       </div>
 
       {isError && (
-        <div
-          data-cy="ErrorNotification"
-          className="notification is-danger is-light has-text-weight-normal"
-        >
-          <button
-            data-cy="HideErrorButton"
-            type="button"
-            className="delete"
-            onClick={() => setIsError(false)}
-          />
-          {errorNotification}
-          Unable to add a todo
-          <br />
-          Unable to delete a todo
-          <br />
-          Unable to update a todo
-        </div>
+        <ErrorMessage
+          errorNotification={errorNotification}
+          errorChange={handleErrorChange}
+        />
       )}
     </div>
   );
