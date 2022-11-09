@@ -1,5 +1,9 @@
 import React, {
-  useContext, useEffect, useRef, useState, useCallback,
+  useContext,
+  useEffect,
+  useRef,
+  useState,
+  useCallback,
 } from 'react';
 import { addTodo, deleteTodo, getTodos } from './api/todos';
 import { AuthContext } from './components/Auth/AuthContext';
@@ -42,10 +46,6 @@ export const App: React.FC = () => {
       setErrorText('Unable to load todos');
 
       throw new Error(`unexpected error with loading todos: ${error}`);
-    } finally {
-      setTimeout(() => {
-        setIsError(false);
-      }, 3000);
     }
   }, []);
 
@@ -56,6 +56,14 @@ export const App: React.FC = () => {
 
     loadTodos();
   }, []);
+
+  useEffect(() => {
+    if (isError) {
+      setTimeout(() => {
+        setIsError(false);
+      }, 3000);
+    }
+  }, [isError]);
 
   const loadTodo = useCallback(async (todoTitle: string) => {
     try {
@@ -84,9 +92,6 @@ export const App: React.FC = () => {
       throw new Error(`unexpected error with adding todo: ${error}`);
     } finally {
       setIsTodoAdding(false);
-      setTimeout(() => {
-        setIsError(false);
-      }, 3000);
     }
   }, []);
 
@@ -100,10 +105,6 @@ export const App: React.FC = () => {
       setErrorText('Unable to delete a todo');
 
       throw new Error(`unexpected error with deleting todo: ${error}`);
-    } finally {
-      setTimeout(() => {
-        setIsError(false);
-      }, 3000);
     }
   }, []);
 
@@ -127,10 +128,6 @@ export const App: React.FC = () => {
       throw new Error(`unexpected error with deleting todos: ${error}`);
     } finally {
       setIsDeletingCompleted(false);
-
-      setTimeout(() => {
-        setIsError(false);
-      }, 3000);
     }
   }, [todos]);
 

@@ -7,7 +7,9 @@ type Props = {
 };
 
 export const NewTodo: React.FC<Props> = React.memo(({
-  newTodoField, addNewTodo, isTodoAdding,
+  newTodoField,
+  addNewTodo,
+  isTodoAdding,
 }) => {
   const [titleField, setTitleField] = useState('');
 

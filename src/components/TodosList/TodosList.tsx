@@ -13,7 +13,11 @@ type Props = {
 };
 
 export const TodosList: React.FC<Props> = React.memo(({
-  todos, removeTodo, isTodoAdding, tempTodo, isDeletingCompleted,
+  todos,
+  removeTodo,
+  isTodoAdding,
+  tempTodo,
+  isDeletingCompleted,
 }) => {
   return (
     <section className="todoapp__main" data-cy="TodoList">

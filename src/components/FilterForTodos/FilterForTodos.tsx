@@ -12,7 +12,10 @@ type Props = {
 };
 
 export const FilterForTodos: React.FC<Props> = React.memo(({
-  filterBy, setFilterBy, todos, removeCompletedTodos,
+  filterBy,
+  setFilterBy,
+  todos,
+  removeCompletedTodos,
 }) => {
   const numberOfActive = useMemo(() => {
     return todos.filter(todo => !todo.completed).length;
@@ -29,34 +32,18 @@ export const FilterForTodos: React.FC<Props> = React.memo(({
       </span>
 
       <nav className="filter" data-cy="Filter">
-        <a
-          data-cy="FilterLinkAll"
-          href="#/"
-          className={cn('filter__link',
-            { selected: filterBy === TodoStatus.ALL })}
-          onClick={() => setFilterBy(TodoStatus.ALL)}
-        >
-          All
-        </a>
-
-        <a
-          data-cy="FilterLinkActive"
-          href="#/active"
-          className={cn('filter__link',
-            { selected: filterBy === TodoStatus.ACTIVE })}
-          onClick={() => setFilterBy(TodoStatus.ACTIVE)}
-        >
-          Active
-        </a>
-        <a
-          data-cy="FilterLinkCompleted"
-          href="#/completed"
-          className={cn('filter__link',
-            { selected: filterBy === TodoStatus.COMPLETED })}
-          onClick={() => setFilterBy(TodoStatus.COMPLETED)}
-        >
-          Completed
-        </a>
+        {Object.values(TodoStatus).map(status => (
+          <a
+            key={status}
+            data-cy="FilterLinkAll"
+            href="#/"
+            className={cn('filter__link',
+              { selected: filterBy === status })}
+            onClick={() => setFilterBy(status)}
+          >
+            {status}
+          </a>
+        ))}
       </nav>
 
       <button
