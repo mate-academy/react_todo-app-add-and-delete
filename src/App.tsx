@@ -96,12 +96,14 @@ export const App: React.FC = () => {
 
         setIsAdding(true);
         setTempTodo(tempData as Todo);
+        setActiveTodoIds([0]);
 
         await addTodoAPI(tempData);
         await loadTodos();
 
         setTempTodo(null);
         setIsAdding(false);
+        setActiveTodoIds([]);
       }
     } catch (err) {
       showError('Unable to add a todo');
