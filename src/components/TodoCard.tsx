@@ -1,20 +1,23 @@
-import React, { useEffect, useState } from 'react';
+import React from 'react';
 import classNames from 'classnames';
 import { Todo } from '../types/Todo';
 import { deleteTodo } from '../api/todos';
+import { ErrorsType } from '../types/ErrorsType';
 
 type Props = {
   todo: Todo,
-  setTodosList: React.Dispatch<React.SetStateAction<Todo[]>>,
-  setDeleteError: React.Dispatch<React.SetStateAction<boolean>>,
-  deleteAll: boolean,
+  getTodosList: () => Promise<void>,
+  setErrors: React.Dispatch<React.SetStateAction<ErrorsType[]>>,
+  isLoadingTodos: number[],
+  setIsLoadingTodos: React.Dispatch<React.SetStateAction<number[]>>,
 };
 
 export const TodoCard: React.FC<Props> = ({
   todo,
-  setTodosList,
-  setDeleteError,
-  deleteAll,
+  getTodosList,
+  setErrors,
+  isLoadingTodos,
+  setIsLoadingTodos,
 }) => {
   const {
     title,
@@ -22,29 +25,29 @@ export const TodoCard: React.FC<Props> = ({
     completed,
   } = todo;
 
-  const [isDeleted, setIsDeleted] = useState(false);
-
-  useEffect(() => {
-    if (deleteAll) {
-      setIsDeleted(true);
-    }
-  }, []);
-
   const handlerDeleteTodo = async (todoId: number) => {
-    setIsDeleted(true);
+    setIsLoadingTodos(currentLoadTodos => [
+      ...currentLoadTodos,
+      todoId,
+    ]);
+
     try {
       await deleteTodo(todoId);
 
-      setTodosList(currentList => currentList
-        .filter(deletedTodo => deletedTodo.id !== id));
+      await getTodosList();
     } catch {
-      setDeleteError(true);
+      setErrors(currErrors => [
+        ...currErrors,
+        ErrorsType.Delete,
+      ]);
       setTimeout(() => {
-        setDeleteError(false);
+        setErrors(currErrors => currErrors
+          .filter(error => error !== ErrorsType.Delete));
       }, 3000);
     }
 
-    setIsDeleted(false);
+    setIsLoadingTodos(currentLoadTodos => currentLoadTodos
+      .filter(stillLoadId => stillLoadId !== todoId));
   };
 
   return (
@@ -81,7 +84,7 @@ export const TodoCard: React.FC<Props> = ({
         className={classNames(
           'modal overlay',
           {
-            'is-active': (deleteAll && todo.completed) || isDeleted,
+            'is-active': isLoadingTodos.includes(todo.id),
           },
         )}
       >

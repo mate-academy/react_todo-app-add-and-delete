@@ -4,12 +4,10 @@ import { Todo } from '../types/Todo';
 
 type Props = {
   todo: Todo,
-  isLoading: boolean,
 };
 
 export const TodoAddCard: React.FC<Props> = ({
   todo,
-  isLoading,
 }) => {
   const {
     title,
@@ -41,7 +39,7 @@ export const TodoAddCard: React.FC<Props> = ({
         className={classNames(
           'modal overlay',
           {
-            'is-active': isLoading,
+            'is-active': true,
           },
         )}
       >

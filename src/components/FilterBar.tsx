@@ -11,7 +11,7 @@ type Props = {
   deleteAllCompleted: () => Promise<void>,
 };
 
-export const Footer: React.FC<Props> = ({
+export const FilterBar: React.FC<Props> = ({
   leftTodos,
   filterBy,
   setFilterBy,
@@ -35,7 +35,7 @@ export const Footer: React.FC<Props> = ({
         className="todoapp__clear-completed"
         style={{ opacity: completedTodos === 0 ? 0 : 100 }}
         disabled={completedTodos === 0}
-        onClick={() => deleteAllCompleted()}
+        onClick={deleteAllCompleted}
       >
         Clear completed
       </button>

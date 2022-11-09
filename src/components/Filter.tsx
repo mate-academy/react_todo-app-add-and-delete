@@ -7,52 +7,38 @@ type Props = {
   setFilterBy: React.Dispatch<React.SetStateAction<FilterBy>>,
 };
 
+const FilterByValues: FilterBy[] = [
+  FilterBy.All,
+  FilterBy.Active,
+  FilterBy.Completed,
+];
+
 export const Filter: React.FC<Props> = ({
   filterBy,
   setFilterBy,
 }) => {
   return (
     <nav className="filter" data-cy="Filter">
-      <a
-        data-cy="FilterLinkAll"
-        href="#/"
-        className={classNames(
-          'filter__link',
-          {
-            selected: filterBy === FilterBy.All,
-          },
-        )}
-        onClick={() => setFilterBy(FilterBy.All)}
-      >
-        All
-      </a>
+      {FilterByValues.map(filter => {
+        const title = filter[0].toUpperCase() + filter.slice(1);
 
-      <a
-        data-cy="FilterLinkActive"
-        href="#/active"
-        className={classNames(
-          'filter__link',
-          {
-            selected: filterBy === FilterBy.Active,
-          },
-        )}
-        onClick={() => setFilterBy(FilterBy.Active)}
-      >
-        Active
-      </a>
-      <a
-        data-cy="FilterLinkCompleted"
-        href="#/completed"
-        className={classNames(
-          'filter__link',
-          {
-            selected: filterBy === FilterBy.Completed,
-          },
-        )}
-        onClick={() => setFilterBy(FilterBy.Completed)}
-      >
-        Completed
-      </a>
+        return (
+          <a
+            data-cy="FilterLinkAll"
+            href="#/"
+            className={classNames(
+              'filter__link',
+              {
+                selected: filterBy === filter,
+              },
+            )}
+            onClick={() => setFilterBy(filter)}
+            key={filter}
+          >
+            {title}
+          </a>
+        );
+      })}
     </nav>
   );
 };
