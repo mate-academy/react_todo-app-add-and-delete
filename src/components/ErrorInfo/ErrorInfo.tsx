@@ -12,7 +12,7 @@ export const ErrorInfo: React.FC<Error> = ({
 }) => {
   return (
     <>
-      {errorType === TodoError.add && (
+      {errorType !== TodoError.noerror && (
         <div
           data-cy="ErrorNotification"
           className="notification is-danger is-light has-text-weight-normal"
@@ -23,56 +23,7 @@ export const ErrorInfo: React.FC<Error> = ({
             className="delete"
             onClick={errorButtonHandler}
           />
-
-          Unable to add a todo
-        </div>
-      )}
-
-      {errorType === TodoError.delete && (
-        <div
-          data-cy="ErrorNotification"
-          className="notification is-danger is-light has-text-weight-normal"
-        >
-          <button
-            data-cy="HideErrorButton"
-            type="button"
-            className="delete"
-            onClick={errorButtonHandler}
-          />
-
-          Unable to delete a todo
-        </div>
-      )}
-
-      {errorType === TodoError.update && (
-        <div
-          data-cy="ErrorNotification"
-          className="notification is-danger is-light has-text-weight-normal"
-        >
-          <button
-            data-cy="HideErrorButton"
-            type="button"
-            className="delete"
-            onClick={errorButtonHandler}
-          />
-
-          Unable to update a todo
-        </div>
-      )}
-
-      {errorType === TodoError.empty && (
-        <div
-          data-cy="ErrorNotification"
-          className="notification is-danger is-light has-text-weight-normal"
-        >
-          <button
-            data-cy="HideErrorButton"
-            type="button"
-            className="delete"
-            onClick={errorButtonHandler}
-          />
-
-          Title can not be empty
+          {errorType}
         </div>
       )}
     </>

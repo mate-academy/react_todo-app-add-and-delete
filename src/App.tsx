@@ -23,6 +23,10 @@ export const App: React.FC = () => {
   const user = useContext(AuthContext);
   const newTodoField = useRef<HTMLInputElement>(null);
 
+  const handleFormInput = (event: React.ChangeEvent<HTMLInputElement>) => (
+    setFormInput(event.target.value)
+  );
+
   const getTodosFromServer = () => {
     getTodos(user?.id)
       .then(setTodos);
@@ -34,10 +38,12 @@ export const App: React.FC = () => {
         setVisibleTodos(todos.filter(todo => todo.completed === false));
         setFilter(TodosFilter.active);
         break;
+
       case TodosFilter.completed:
         setVisibleTodos(todos.filter(todo => todo.completed === true));
         setFilter(TodosFilter.completed);
         break;
+
       default:
         setVisibleTodos(todos);
         setFilter(TodosFilter.all);
@@ -56,18 +62,22 @@ export const App: React.FC = () => {
         setError(TodoError.delete);
         errorTimeout();
         break;
+
       case TodoError.update:
         setError(TodoError.update);
         errorTimeout();
         break;
+
       case TodoError.add:
         setError(TodoError.add);
         errorTimeout();
         break;
+
       case TodoError.empty:
         setError(TodoError.empty);
         errorTimeout();
         break;
+
       default:
         setError(TodoError.noerror);
     }
@@ -98,11 +108,9 @@ export const App: React.FC = () => {
       errorHandler(TodoError.empty);
     }
 
-    setTimeout(() => {
-      getTodosFromServer();
-      setFormInput('');
-      setIsAdding(false);
-    }, 300);
+    getTodosFromServer();
+    setFormInput('');
+    setIsAdding(false);
   };
 
   const allCompletedButton = async () => {
@@ -168,9 +176,7 @@ export const App: React.FC = () => {
               placeholder="What needs to be done?"
               value={formInput}
               disabled={isAdding}
-              onChange={(event) => {
-                setFormInput(event.target.value);
-              }}
+              onChange={handleFormInput}
             />
           </form>
         </header>

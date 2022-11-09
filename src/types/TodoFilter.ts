@@ -5,9 +5,9 @@ export enum TodosFilter {
 }
 
 export enum TodoError {
-  add,
-  delete,
-  update,
-  empty,
-  noerror,
+  add = 'Unable to add a todo',
+  delete = 'Unable to delete a todo',
+  update = 'Unable to update a todo',
+  empty = 'Title can not be empty',
+  noerror = '',
 }

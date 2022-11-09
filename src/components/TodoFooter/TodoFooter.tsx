@@ -16,8 +16,12 @@ export const TodoFooter: React.FC<Todos> = ({
   todosFiltration,
   todosUpdate,
 }) => {
-  const completedTodo
-    = todos.some(todo => todo.completed === true);
+  const completedTodo = todos.some(todo => todo.completed === true);
+  const filtrationButtonAll = () => todosFiltration(TodosFilter.all);
+  const filtrationButtonActive = () => todosFiltration(TodosFilter.active);
+  const filtrationButtonCompleted = () => (
+    todosFiltration(TodosFilter.completed)
+  );
 
   const clearCompletedButton = async () => {
     todos.filter(todo => todo.completed === true)
@@ -45,7 +49,7 @@ export const TodoFooter: React.FC<Todos> = ({
               className={classNames('filter__link', {
                 selected: filterType === TodosFilter.all,
               })}
-              onClick={() => todosFiltration(TodosFilter.all)}
+              onClick={filtrationButtonAll}
             >
               All
             </a>
@@ -56,7 +60,7 @@ export const TodoFooter: React.FC<Todos> = ({
               className={classNames('filter__link', {
                 selected: filterType === TodosFilter.active,
               })}
-              onClick={() => todosFiltration(TodosFilter.active)}
+              onClick={filtrationButtonActive}
             >
               Active
             </a>
@@ -66,7 +70,7 @@ export const TodoFooter: React.FC<Todos> = ({
               className={classNames('filter__link', {
                 selected: filterType === TodosFilter.completed,
               })}
-              onClick={() => todosFiltration(TodosFilter.completed)}
+              onClick={filtrationButtonCompleted}
             >
               Completed
             </a>

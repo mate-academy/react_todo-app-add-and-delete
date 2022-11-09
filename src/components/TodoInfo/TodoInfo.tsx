@@ -15,10 +15,10 @@ export const TodoInfo: React.FC<OneTodo> = ({
   todosUpdate,
   errorHandler,
 }) => {
-  const [loader, setLoader] = useState(false);
+  const [todoLoader, setTodoLoader] = useState(false);
 
   const checkboxHandler = async () => {
-    setLoader(true);
+    setTodoLoader(true);
     errorHandler(TodoError.noerror);
     const date = {
       completed: !todo.completed,
@@ -30,12 +30,12 @@ export const TodoInfo: React.FC<OneTodo> = ({
     } catch {
       errorHandler(TodoError.update);
     } finally {
-      setLoader(false);
+      setTodoLoader(false);
     }
   };
 
   const buttonHandler = async () => {
-    setLoader(true);
+    setTodoLoader(true);
     errorHandler(TodoError.noerror);
     try {
       await client.delete(`/todos/${todo.id}`);
@@ -43,7 +43,7 @@ export const TodoInfo: React.FC<OneTodo> = ({
     } catch {
       errorHandler(TodoError.delete);
     } finally {
-      setLoader(false);
+      setTodoLoader(false);
     }
   };
 
@@ -78,7 +78,7 @@ export const TodoInfo: React.FC<OneTodo> = ({
       <div
         data-cy="TodoLoader"
         className={classNames('modal', 'overlay', {
-          'is-active': loader,
+          'is-active': todoLoader,
         })}
       >
         <div className="modal-background has-background-white-ter" />
