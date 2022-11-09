@@ -122,11 +122,11 @@ export const App: React.FC = () => {
   const deleteCompletedTodos = async () => {
     try {
       if (user) {
-        const completedTodosIds = await getCompletedTodosAPI(user.id);
+        const completedTodos = await getCompletedTodosAPI(user.id);
 
-        setActiveTodoIds(completedTodosIds.map(todo => todo.id));
+        setActiveTodoIds(completedTodos.map(todo => todo.id));
 
-        await Promise.all(completedTodosIds.map(async ({ id }) => {
+        await Promise.all(completedTodos.map(async ({ id }) => {
           await deleteTodoAPI(id);
         }));
 
