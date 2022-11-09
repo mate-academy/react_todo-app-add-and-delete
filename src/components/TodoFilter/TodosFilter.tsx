@@ -1,7 +1,7 @@
 import React, { useMemo } from 'react';
-import cn from 'classnames';
 import { TodoStatus } from '../../types/TodoStatus';
 import { Todo } from '../../types/Todo';
+import { FilterControls } from './FilterConstrols';
 
 type Props = {
   todos: Todo[];
@@ -30,42 +30,7 @@ export const TodosFilter: React.FC<Props> = ({
         {`${todosLeft} items left`}
       </span>
 
-      <nav className="filter" data-cy="Filter">
-        <a
-          data-cy="FilterLinkAll"
-          href="#/"
-          className={cn(
-            'filter__link',
-            { selected: todoStatus === TodoStatus.All },
-          )}
-          onClick={() => handleStatusSelect(TodoStatus.All)}
-        >
-          All
-        </a>
-
-        <a
-          data-cy="FilterLinkActive"
-          href="#/active"
-          className={cn(
-            'filter__link',
-            { selected: todoStatus === TodoStatus.Active },
-          )}
-          onClick={() => handleStatusSelect(TodoStatus.Active)}
-        >
-          Active
-        </a>
-        <a
-          data-cy="FilterLinkCompleted"
-          href="#/completed"
-          className={cn(
-            'filter__link',
-            { selected: todoStatus === TodoStatus.Completed },
-          )}
-          onClick={() => handleStatusSelect(TodoStatus.Completed)}
-        >
-          Completed
-        </a>
-      </nav>
+      <FilterControls todoStatus={todoStatus} onSelect={handleStatusSelect} />
 
       {completedTodos.length
         ? (
