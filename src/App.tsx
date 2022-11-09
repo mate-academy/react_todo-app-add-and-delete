@@ -56,13 +56,13 @@ export const App: React.FC = () => {
     }
   });
 
-  const addNewTodo = async (title: string) => {
+  const addNewTodo = async (newTitle: string) => {
     if (user) {
       setIsAdded(true);
 
       const newTodo = {
         userId: user.id,
-        title,
+        title: newTitle,
         completed: false,
       };
 
