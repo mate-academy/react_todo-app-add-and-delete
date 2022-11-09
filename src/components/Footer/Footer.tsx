@@ -1,5 +1,5 @@
 import classNames from 'classnames';
-import React, { useMemo } from 'react';
+import React, { useCallback, useMemo } from 'react';
 import { FilterType } from '../../types/FilterType';
 
 type Props = {
@@ -19,8 +19,18 @@ export const Footer: React.FC<Props> = React.memo(({
 }) => {
   const uncompletedCount = todosLength - completedTodos;
 
+  const filterHrefByType = useMemo(() => ({
+    [FilterType.All]: '#/',
+    [FilterType.Active]: '#/active',
+    [FilterType.Completed]: '#/completed',
+  }), []);
+
   const filterTypeList = useMemo(() => (
     Object.values(FilterType)
+  ), []);
+
+  const handleFilterType = useCallback(() => (
+    (status: FilterType) => setFilterType(status)
   ), []);
 
   return (
@@ -33,12 +43,12 @@ export const Footer: React.FC<Props> = React.memo(({
         {filterTypeList.map(status => (
           <a
             data-cy="FilterLinkAll"
-            href="#/"
+            href={filterHrefByType[status]}
             key={status}
             className={classNames('filter__link', {
               selected: filterType === status,
             })}
-            onClick={() => setFilterType(status)}
+            onClick={handleFilterType}
           >
             {status}
           </a>

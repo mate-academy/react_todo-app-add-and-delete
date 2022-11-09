@@ -6,7 +6,7 @@ export const getTodos = (userId: number) => {
 };
 
 export const addTodo = (newTodo: Partial<Todo>) => {
-  return client.post<Todo[]>('/todos/', newTodo);
+  return client.post<Todo>('/todos/', newTodo);
 };
 
 export const deleteTodo = (todoId: number) => {

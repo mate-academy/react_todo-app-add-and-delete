@@ -51,17 +51,19 @@ export const App: React.FC = () => {
     try {
       if (user) {
         setIsAdding(true);
+        setTempTodo(prev => ({
+          ...prev,
+          title,
+          userId: user.id,
+        }));
 
-        const currTodo = {
+        const addedTodo = await addTodo({
           title,
           userId: user.id,
           completed: false,
-        };
+        });
 
-        setTempTodo(prev => ({ ...prev, currTodo }));
-
-        await addTodo(currTodo);
-        await getTodosFromServer();
+        setTodos(prev => ([...prev, addedTodo]));
         setIsAdding(false);
       }
     } catch (error) {
@@ -76,7 +78,14 @@ export const App: React.FC = () => {
         setTodoIdsToRemove(currIds => [...currIds, todoId]);
 
         await deleteTodo(todoId);
-        await getTodosFromServer();
+
+        setTodos(currTodos => (
+          currTodos.filter(({ id }) => id !== todoId)
+        ));
+
+        setTodoIdsToRemove(currTodos => (
+          currTodos.filter((id) => id !== todoId)
+        ));
       }
     } catch (error) {
       setHasError(true);
@@ -90,7 +99,7 @@ export const App: React.FC = () => {
 
   const removeAllCompletedTodos = useCallback(async () => {
     try {
-      await Promise.all(completedTodos.map(({ id }) => (
+      await Promise.all(completedTodos.map(async ({ id }) => (
         removeTodoFromServer(id)
       )));
     } catch (error) {
@@ -113,6 +122,8 @@ export const App: React.FC = () => {
       }
     })
   ), [todos, filterType]);
+
+  const closeNotification = useCallback(() => setHasError(false), []);
 
   useEffect(() => {
     if (newTodoField.current) {
@@ -166,7 +177,7 @@ export const App: React.FC = () => {
 
       <ErrorNotification
         hasError={hasError}
-        onClose={() => setHasError(false)}
+        onClose={closeNotification}
       >
         {errorMessage}
       </ErrorNotification>
