@@ -8,7 +8,12 @@ import React, {
 import { AuthContext } from './components/Auth/AuthContext';
 import { Todo } from './types/Todo';
 import { Error } from './types/Error';
-import { addTodoAPI, deleteTodoAPI, getTodosAPI } from './api/todos';
+import {
+  addTodoAPI,
+  deleteTodoAPI,
+  getCompletedTodosAPI,
+  getTodosAPI,
+} from './api/todos';
 import { TodoList } from './components/TodoList';
 import { NewTodo } from './components/NewTodo';
 import { TodosFilter } from './components/TodoFilter';
@@ -28,7 +33,7 @@ export const App: React.FC = () => {
     status: false,
   });
   const [todoStatus, setTodoStatus] = useState<TodoStatus>(TodoStatus.All);
-  const [activeTodoId, setActiveTodoId] = useState(0);
+  const [activeTodoIds, setActiveTodoIds] = useState<number []>([]);
 
   const showError = useCallback((message: string) => {
     setHasError({ status: true, message });
@@ -105,12 +110,30 @@ export const App: React.FC = () => {
 
   const deleteTodo = async (id: number) => {
     try {
-      setActiveTodoId(id);
+      setActiveTodoIds([id]);
       await deleteTodoAPI(id);
       await loadTodos();
-      setActiveTodoId(0);
+      setActiveTodoIds([]);
     } catch (err) {
       showError('Unable to delete a todo');
+    }
+  };
+
+  const deleteCompletedTodos = async () => {
+    try {
+      if (user) {
+        const completedTodosIds = await getCompletedTodosAPI(user.id);
+
+        setActiveTodoIds(completedTodosIds.map(todo => todo.id));
+
+        await Promise.all(completedTodosIds.map(async ({ id }) => {
+          await deleteTodoAPI(id);
+        }));
+
+        await loadTodos();
+      }
+    } catch (err) {
+      showError('Unable to delete completed todos');
     }
   };
 
@@ -136,13 +159,14 @@ export const App: React.FC = () => {
               tempTodo={tempTodo}
               isAdding={isAdding}
               onDelete={deleteTodo}
-              activeTodoId={activeTodoId}
+              activeTodoIds={activeTodoIds}
             />
 
             <TodosFilter
               todos={todos}
               todoStatus={todoStatus}
               handleStatusSelect={handleStatusSelect}
+              onDelete={deleteCompletedTodos}
             />
           </>
         )}
