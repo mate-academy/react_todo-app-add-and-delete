@@ -131,6 +131,7 @@ export const App: React.FC = () => {
         }));
 
         await loadTodos();
+        setActiveTodoIds([]);
       }
     } catch (err) {
       showError('Unable to delete completed todos');
