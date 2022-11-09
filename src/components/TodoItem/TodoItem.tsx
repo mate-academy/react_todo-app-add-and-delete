@@ -22,18 +22,6 @@ export const TodoItem: React.FC<Props> = React.memo(({
     removeTodo(id);
   };
 
-  // const loaderIsActive = () => {
-  //   if (id === 0 || deleteButtonClicked) {
-  //     return true;
-  //   }
-
-  //   if (isDeletingCompleted && completed) {
-  //     return true;
-  //   }
-
-  //   return false;
-  // };
-
   const loaderIsActive = (id === 0 || deleteButtonClicked)
     || (isDeletingCompleted && completed);
 
