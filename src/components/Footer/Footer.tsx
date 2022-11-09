@@ -1,26 +1,23 @@
 import classNames from 'classnames';
 import React, { useMemo } from 'react';
 import { FilterType } from '../../types/FilterType';
-import { Todo } from '../../types/Todo';
 
 type Props = {
   filterType: FilterType
   setFilterType: (status: FilterType) => void
-  todos: Todo[]
   completedTodos: number
+  todosLength: number
   onRemove: () => Promise<void>
 };
 
 export const Footer: React.FC<Props> = React.memo(({
   filterType,
   setFilterType,
-  todos,
   completedTodos,
   onRemove,
+  todosLength,
 }) => {
-  const uncompletedCount = useMemo(() => (
-    todos.filter(({ completed }) => !completed).length
-  ), [todos]);
+  const uncompletedCount = todosLength - completedTodos;
 
   const filterTypeList = useMemo(() => (
     Object.values(FilterType)

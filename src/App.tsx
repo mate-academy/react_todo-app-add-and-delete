@@ -45,7 +45,7 @@ export const App: React.FC = () => {
       setHasError(true);
       setErrorMessage('Can`t download ToDos from server');
     }
-  }, [user]);
+  }, []);
 
   const addNewTodoToServer = useCallback(async (title: string) => {
     try {
@@ -68,7 +68,7 @@ export const App: React.FC = () => {
       setHasError(true);
       setErrorMessage('Unable to add a todo');
     }
-  }, [user]);
+  }, []);
 
   const removeTodoFromServer = useCallback(async (todoId: number) => {
     try {
@@ -82,13 +82,13 @@ export const App: React.FC = () => {
       setHasError(true);
       setErrorMessage('Unable to remove ToDo');
     }
-  }, [user]);
+  }, []);
 
   const completedTodos = useMemo(() => (
-    todos.filter((todo) => todo.completed)
+    todos.filter(({ completed }) => completed)
   ), [todos]);
 
-  const removeAllCompletedTodos = async () => {
+  const removeAllCompletedTodos = useCallback(async () => {
     try {
       await Promise.all(completedTodos.map(({ id }) => (
         removeTodoFromServer(id)
@@ -97,7 +97,7 @@ export const App: React.FC = () => {
       setErrorMessage('Unable to remove all completed todo');
       setHasError(true);
     }
-  };
+  }, [completedTodos]);
 
   const filtredTodos = useMemo(() => (
     todos.filter(({ completed }) => {
@@ -155,7 +155,7 @@ export const App: React.FC = () => {
               <Footer
                 filterType={filterType}
                 setFilterType={setFilterType}
-                todos={filtredTodos}
+                todosLength={todos.length}
                 completedTodos={completedTodos.length}
                 onRemove={removeAllCompletedTodos}
               />
