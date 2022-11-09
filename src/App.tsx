@@ -3,13 +3,12 @@ import React, {
   useCallback,
   useContext,
   useEffect,
-  useRef,
   useState,
 } from 'react';
 import { AuthContext } from './components/Auth/AuthContext';
 import { Todo } from './types/Todo';
 import { Error } from './types/Error';
-import { addTodo, getTodos } from './api/todos';
+import { addTodoAPI, deleteTodoAPI, getTodosAPI } from './api/todos';
 import { TodoList } from './components/TodoList';
 import { NewTodo } from './components/NewTodo';
 import { TodosFilter } from './components/TodoFilter';
@@ -19,7 +18,7 @@ import { TodoStatus } from './types/TodoStatus';
 export const App: React.FC = () => {
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
   const user = useContext(AuthContext);
-  const newTodoField = useRef<HTMLInputElement>(null);
+
   const [todos, setTodos] = useState<Todo[]>([]);
   const [visibleTodos, setVisibleTodos] = useState<Todo[]>(todos);
   const [isAdding, setIsAdding] = useState(false);
@@ -29,6 +28,7 @@ export const App: React.FC = () => {
     status: false,
   });
   const [todoStatus, setTodoStatus] = useState<TodoStatus>(TodoStatus.All);
+  const [activeTodoId, setActiveTodoId] = useState(0);
 
   const showError = useCallback((message: string) => {
     setHasError({ status: true, message });
@@ -41,7 +41,7 @@ export const App: React.FC = () => {
   const loadTodos = useCallback(async () => {
     try {
       if (user) {
-        const todosFromServer = await getTodos(user.id);
+        const todosFromServer = await getTodosAPI(user.id);
 
         setTodos(todosFromServer);
       }
@@ -51,10 +51,6 @@ export const App: React.FC = () => {
   }, []);
 
   useEffect(() => {
-    if (newTodoField.current) {
-      newTodoField.current.focus();
-    }
-
     loadTodos();
   }, []);
 
@@ -85,23 +81,36 @@ export const App: React.FC = () => {
 
   const addNewTodo = async (title: string) => {
     try {
-      const tempData = {
-        id: 0,
-        userId: user?.id,
-        title,
-        completed: false,
-      };
+      if (user) {
+        const tempData: Todo = {
+          id: 0,
+          userId: user.id,
+          title,
+          completed: false,
+        };
 
-      setIsAdding(true);
-      setTempTodo(tempData as Todo);
+        setIsAdding(true);
+        setTempTodo(tempData as Todo);
 
-      await addTodo(tempData);
-      await loadTodos();
+        await addTodoAPI(tempData);
+        await loadTodos();
 
-      setTempTodo(null);
-      setIsAdding(false);
+        setTempTodo(null);
+        setIsAdding(false);
+      }
     } catch (err) {
       showError('Unable to add a todo');
+    }
+  };
+
+  const deleteTodo = async (id: number) => {
+    try {
+      setActiveTodoId(id);
+      await deleteTodoAPI(id);
+      await loadTodos();
+      setActiveTodoId(0);
+    } catch (err) {
+      showError('Unable to delete a todo');
     }
   };
 
@@ -115,7 +124,6 @@ export const App: React.FC = () => {
 
       <div className="todoapp__content">
         <NewTodo
-          newTodoField={newTodoField}
           addNewTodo={addNewTodo}
           isAdding={isAdding}
           showError={showError}
@@ -127,6 +135,8 @@ export const App: React.FC = () => {
               todos={visibleTodos}
               tempTodo={tempTodo}
               isAdding={isAdding}
+              onDelete={deleteTodo}
+              activeTodoId={activeTodoId}
             />
 
             <TodosFilter

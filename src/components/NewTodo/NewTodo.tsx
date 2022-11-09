@@ -1,26 +1,37 @@
 /* eslint-disable jsx-a11y/control-has-associated-label */
-import React, { useCallback, useState } from 'react';
+import React, {
+  useCallback,
+  useState,
+  useRef,
+  useEffect,
+} from 'react';
 
 type Props = {
-  newTodoField: React.RefObject<HTMLInputElement>;
   addNewTodo: (title: string) => void;
   isAdding: boolean;
   showError: (message: string) => void;
 };
 
 export const NewTodo: React.FC<Props> = ({
-  newTodoField,
   addNewTodo,
   isAdding,
   showError,
 }) => {
+  const newTodoField = useRef<HTMLInputElement>(null);
+
   const [newTodoTitle, setNewTodoTitle] = useState('');
+
+  useEffect(() => {
+    if (newTodoField.current) {
+      newTodoField.current.focus();
+    }
+  });
 
   const resetForm = useCallback(() => {
     setNewTodoTitle('');
   }, []);
 
-  const handleFormSubmit = useCallback(async (event: React.FormEvent) => {
+  const handleFormSubmit = async (event: React.FormEvent) => {
     event.preventDefault();
 
     try {
@@ -34,7 +45,7 @@ export const NewTodo: React.FC<Props> = ({
     } catch (err) {
       showError('Unable to add todo');
     }
-  }, [newTodoTitle]);
+  };
 
   return (
     <header className="todoapp__header">
