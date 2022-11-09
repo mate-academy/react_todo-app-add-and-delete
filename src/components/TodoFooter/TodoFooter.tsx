@@ -17,6 +17,7 @@ export const TodoFooter: React.FC<Todos> = ({
   todosUpdate,
 }) => {
   const completedTodo = todos.some(todo => todo.completed === true);
+  const activeTodosLeft = todos.filter(todo => todo.completed === false).length;
   const filtrationButtonAll = () => todosFiltration(TodosFilter.all);
   const filtrationButtonActive = () => todosFiltration(TodosFilter.active);
   const filtrationButtonCompleted = () => (
@@ -39,7 +40,7 @@ export const TodoFooter: React.FC<Todos> = ({
       {todos.length > 0 && (
         <footer className="todoapp__footer" data-cy="Footer">
           <span className="todo-count" data-cy="todosCounter">
-            {`${todos.length} items left`}
+            {`${activeTodosLeft} items left`}
           </span>
 
           <nav className="filter" data-cy="Filter">

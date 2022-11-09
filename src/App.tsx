@@ -114,10 +114,10 @@ export const App: React.FC = () => {
   };
 
   const allCompletedButton = async () => {
-    const iscompleted = todos.every(todo => todo.completed === true);
+    const isCompleted = todos.every(todo => todo.completed === true);
 
     try {
-      if (iscompleted) {
+      if (isCompleted) {
         todos.forEach(todo => client.patch(`/todos/${todo.id}`, { completed: false }));
       } else {
         todos.filter(todo => todo.completed === false)
