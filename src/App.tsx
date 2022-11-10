@@ -16,6 +16,8 @@ import { TodosFilter } from './components/TodoFilter/TodoFilter';
 import { Todo } from './types/Todo';
 import { FilteringMethod } from './types/FilteringMethod';
 
+import './App.scss';
+
 export const App: React.FC = () => {
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
 
@@ -23,17 +25,18 @@ export const App: React.FC = () => {
   const newTodoField = useRef<HTMLInputElement>(null);
   const [todos, setTodos] = useState<Todo[]>([]);
   const [visibleTodos, setVisibleTodos] = useState<Todo[]>(todos);
+  const [selectedIDs, setSelectedIDs] = useState<number[]>([]);
   const [hasError, setHasError] = useState(false);
   const [errorMessage, setErrorMessage] = useState('');
   const [todoStatus, setTodoStatus]
     = useState<FilteringMethod>(FilteringMethod.All);
   const [isAdding, setIsAdding] = useState(false);
-  // const [todoTemplate, setTodoTemplate] = useState({
-  //   id: 0,
-  //   userId: 0,
-  //   title: '',
-  //   completed: false,
-  // });
+  const [todoTemplate, setTodoTemplate] = useState({
+    id: 0,
+    userId: 0,
+    title: '',
+    completed: false,
+  });
 
   const getTodosFromsServer = useCallback(async () => {
     try {
@@ -51,16 +54,16 @@ export const App: React.FC = () => {
     }
   }, []);
 
-  const addNewTodo = async (todoTitle: string) => {
+  const addNewTodo = useCallback(async (todoTitle: string) => {
     try {
       setIsAdding(true);
 
       if (user) {
-        // setTodoTemplate(curr => ({
-        //   ...curr,
-        //   userId: user.id,
-        //   title,
-        // }));
+        setTodoTemplate(curr => ({
+          ...curr,
+          userId: user.id,
+          title: todoTitle,
+        }));
 
         const addedTodo = await addTodo({
           title: todoTitle,
@@ -76,18 +79,34 @@ export const App: React.FC = () => {
       setHasError(true);
       setErrorMessage('Unable to add a todo');
     }
-  };
+  }, []);
 
   const handleDeleteTodo = useCallback(async (id: number) => {
     try {
       await deleteTodo(id);
-
       await getTodosFromsServer();
     } catch (error) {
       setHasError(true);
       setErrorMessage('Unable to delete a todo');
     }
   }, []);
+
+  const removeCompleted = async () => {
+    try {
+      setSelectedIDs(todos
+        .filter(todo => todo.completed)
+        .map(todo => todo.id));
+
+      await Promise.all(todos.map(post => {
+        return post.completed ? handleDeleteTodo(post.id) : null;
+      }));
+
+      setSelectedIDs([]);
+    } catch (error) {
+      setHasError(true);
+      setErrorMessage('Unable to delete todo');
+    }
+  };
 
   useEffect(() => {
     // focus the element with `ref={newTodoField}`
@@ -142,12 +161,16 @@ export const App: React.FC = () => {
             <TodoList
               visibleTodos={visibleTodos}
               handleDeleteTodo={handleDeleteTodo}
+              todoTemplate={todoTemplate}
+              isAdding={isAdding}
+              selectedIDs={selectedIDs}
             />
 
             <TodosFilter
               todos={todos}
               filteringMethod={todoStatus}
               handleStatusSelect={handleStatusSelect}
+              removeCompleted={removeCompleted}
             />
           </>
         )}

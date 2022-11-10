@@ -1,0 +1,72 @@
+.item-enter {
+  max-height: 0;
+}
+
+.item-enter-active {
+  overflow: hidden;
+  max-height: 58px;
+  transition: max-height 0.3s ease-in-out;
+}
+
+.item-exit {
+  max-height: 58px;
+}
+
+.item-exit-active {
+  overflow: hidden;
+  max-height: 0;
+  transition: max-height 0.3s ease-in-out;
+}
+
+.temp-item-enter {
+  max-height: 0;
+}
+
+.temp-item-enter-active {
+  overflow: hidden;
+  max-height: 58px;
+  transition: max-height 0.3s ease-in-out;
+}
+
+.temp-item-exit {
+  max-height: 58px;
+}
+
+.temp-item-exit-active {
+  transform: translateY(-58px);
+  max-height: 0;
+  opacity: 0;
+  transition: 0.3s ease-in-out;
+  transition-property: opacity, max-height, transform;
+}
+
+.has-error .temp-item-exit-active {
+  transform: translateY(0);
+  overflow: hidden;
+}
+
+.Loader {
+  display: flex;
+  width: 100%;
+  justify-content: center;
+  align-items: center;
+
+  &__content {
+    border-radius: 50%;
+    width: 2em;
+    height: 2em;
+    margin: 1em auto;
+    border: 0.3em solid #ddd;
+    border-left-color: #000;
+    animation: load8 1.2s infinite linear;
+  }
+}
+
+@keyframes load8 {
+  0% {
+    transform: rotate(0deg);
+  }
+  100% {
+    transform: rotate(360deg);
+  }
+}
