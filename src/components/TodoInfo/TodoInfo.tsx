@@ -50,9 +50,9 @@ export const TodoInfo: React.FC<Props> = ({ todo }) => {
         ));
       }
     } catch {
-      setShowLoader('none');
       showErrorMessage('delete');
     } finally {
+      setShowLoader('none');
       setCompletedTodosId([]);
     }
   };
