@@ -9,6 +9,9 @@ import { FilterStatus } from '../../types/FilterStatus';
 type Props = {
   newTodoField: React.RefObject<HTMLInputElement>;
   todos: Todo[],
+  countOfTodos: number,
+  countOfLeftTodos: number,
+  hasActiveTodo: boolean,
   visibleTodos: Todo[],
   filterTodos: (filterBy: FilterStatus) => void;
   filterStatus: FilterStatus,
@@ -25,6 +28,9 @@ type Props = {
 export const TodoContent: React.FC<Props> = React.memo(({
   newTodoField,
   todos,
+  countOfTodos,
+  countOfLeftTodos,
+  hasActiveTodo,
   visibleTodos,
   filterTodos,
   filterStatus,
@@ -36,45 +42,37 @@ export const TodoContent: React.FC<Props> = React.memo(({
   deletedTodoId,
   onCompleteTodo,
   deleteAllCompletedTodos,
-}) => {
-  const countOfTodos = todos.length;
-  const countOfLeftTodos = todos.filter(todo => !todo.completed).length;
-  const hasActiveTodo = todos.some(todo => todo.completed);
+}) => (
+  <div className="todoapp__content">
+    <TodoHeader
+      countOfTodos={countOfTodos}
+      newTodoField={newTodoField}
+      onChangeTitle={onChangeTitle}
+      todoTitle={todoTitle}
+      createNewTodo={createNewTodo}
+      isAdding={isLoading}
+    />
 
-  return (
-    <div className="todoapp__content">
-      <TodoHeader
-        countOfTodos={countOfTodos}
-        newTodoField={newTodoField}
-        onChangeTitle={onChangeTitle}
-        todoTitle={todoTitle}
-        createNewTodo={createNewTodo}
-        isAdding={isLoading}
-      />
+    {todos.length > 0
+      && (
+        <>
+          <TodoBody
+            visibleTodos={visibleTodos}
+            isLoading={isLoading}
+            todoTitle={todoTitle}
+            deleteTodo={deleteTodo}
+            deletedTodoId={deletedTodoId}
+            onCompleteTodo={onCompleteTodo}
+          />
 
-      {
-        todos.length > 0
-        && (
-          <>
-            <TodoBody
-              visibleTodos={visibleTodos}
-              isLoading={isLoading}
-              todoTitle={todoTitle}
-              deleteTodo={deleteTodo}
-              deletedTodoId={deletedTodoId}
-              onCompleteTodo={onCompleteTodo}
-            />
-
-            <TodoFooter
-              hasActiveTodo={hasActiveTodo}
-              filterTodos={filterTodos}
-              filterStatus={filterStatus}
-              countOfLeftTodos={countOfLeftTodos}
-              deleteAllCompletedTodos={deleteAllCompletedTodos}
-            />
-          </>
-        )
-      }
-    </div>
-  );
-});
+          <TodoFooter
+            hasActiveTodo={hasActiveTodo}
+            filterTodos={filterTodos}
+            filterStatus={filterStatus}
+            countOfLeftTodos={countOfLeftTodos}
+            deleteAllCompletedTodos={deleteAllCompletedTodos}
+          />
+        </>
+      )}
+  </div>
+));

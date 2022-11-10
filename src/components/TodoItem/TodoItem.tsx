@@ -13,7 +13,6 @@ type Props = {
 export const TodoItem: React.FC<Props> = React.memo(({
   todo,
   deleteTodo,
-  // isLoading,
   deletedTodoId,
   onCompleteTodo,
 }) => {
@@ -48,16 +47,6 @@ export const TodoItem: React.FC<Props> = React.memo(({
       >
         ×
       </button>
-
-      {/* <form>
-        <input
-          data-cy="TodoTitleField"
-          type="text"
-          className="todo__title-field"
-          placeholder="Empty todo will be deleted"
-          defaultValue="JS"
-        />
-      </form> */}
 
       <div
         data-cy="TodoLoader"

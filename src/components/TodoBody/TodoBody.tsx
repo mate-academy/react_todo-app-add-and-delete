@@ -19,30 +19,28 @@ export const TodoBody: React.FC<Props> = React.memo(({
   deleteTodo,
   deletedTodoId,
   onCompleteTodo,
-}) => {
-  return (
-    <section className="todoapp__main" data-cy="TodoList">
+}) => (
+  <section className="todoapp__main" data-cy="TodoList">
 
-      {
-        visibleTodos.map(todo => (
-          <TodoItem
-            key={todo.id}
-            todo={todo}
-            deleteTodo={deleteTodo}
-            isLoading={isLoading}
-            deletedTodoId={deletedTodoId}
-            onCompleteTodo={onCompleteTodo}
-          />
-        ))
-      }
+    {
+      visibleTodos.map(todo => (
+        <TodoItem
+          key={todo.id}
+          todo={todo}
+          deleteTodo={deleteTodo}
+          isLoading={isLoading}
+          deletedTodoId={deletedTodoId}
+          onCompleteTodo={onCompleteTodo}
+        />
+      ))
+    }
 
-      {
-        isLoading && (
-          <AddingTodoItem
-            title={todoTitle}
-          />
-        )
-      }
-    </section>
-  );
-});
+    {
+      isLoading && (
+        <AddingTodoItem
+          title={todoTitle}
+        />
+      )
+    }
+  </section>
+));

@@ -9,23 +9,21 @@ type Props = {
 export const ErrorMessages: React.FC<Props> = ({
   manageErrors,
   errorMessage,
-}) => {
-  return (
-    <div
-      data-cy="ErrorNotification"
-      className={cn('notification is-danger is-light has-text-weight-normal', {
-        hidden: errorMessage === ErrorType.None,
-      })}
-    >
-      <button
-        data-cy="HideErrorButton"
-        type="button"
-        className="delete"
-        aria-label="delete"
-        onClick={() => manageErrors(ErrorType.None)}
-      />
+}) => (
+  <div
+    data-cy="ErrorNotification"
+    className={cn('notification is-danger is-light has-text-weight-normal', {
+      hidden: errorMessage === ErrorType.None,
+    })}
+  >
+    <button
+      data-cy="HideErrorButton"
+      type="button"
+      className="delete"
+      aria-label="delete"
+      onClick={() => manageErrors(ErrorType.None)}
+    />
 
-      {errorMessage}
-    </div>
-  );
-};
+    {errorMessage}
+  </div>
+);

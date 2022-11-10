@@ -116,6 +116,7 @@
     transition: 0.3s ease;
 
     cursor: pointer;
+    pointer-events: all;
     background: none;
 
     -webkit-appearance: none;
@@ -134,6 +135,7 @@
     &:disabled {
       opacity: 0;
       cursor: default;
+      pointer-events: none;
     }
   }
 }

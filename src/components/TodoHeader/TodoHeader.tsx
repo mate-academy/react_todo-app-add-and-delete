@@ -37,9 +37,7 @@ export const TodoHeader: React.FC<Props> = React.memo(({
         )
       }
 
-      <form
-        onSubmit={handleSubmit}
-      >
+      <form onSubmit={handleSubmit}>
         <input
           data-cy="NewTodoField"
           type="text"

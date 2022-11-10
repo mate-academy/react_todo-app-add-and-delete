@@ -73,6 +73,16 @@ export const App: React.FC = () => {
     setTimeout(() => manageErrors(ErrorType.None), 3000);
   }, []);
 
+  const countOfTodos = useMemo(() => todos.length, [todos]);
+
+  const countOfLeftTodos = useMemo(() => (
+    todos.filter(todo => !todo.completed).length
+  ), [todos]);
+
+  const hasActiveTodo = useMemo(() => (
+    todos.some(todo => todo.completed)
+  ), [todos]);
+
   const onCompleteTodo = useCallback((todoId: number) => {
     setTodos(currentTodos => (
       currentTodos.map(todo => {
@@ -194,6 +204,9 @@ export const App: React.FC = () => {
 
       <TodoContent
         todos={todos}
+        countOfTodos={countOfTodos}
+        countOfLeftTodos={countOfLeftTodos}
+        hasActiveTodo={hasActiveTodo}
         visibleTodos={filteredTodos}
         newTodoField={newTodoField}
         filterTodos={filterTodos}
