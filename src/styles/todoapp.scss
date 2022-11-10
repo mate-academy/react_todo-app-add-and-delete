@@ -113,8 +113,10 @@
     font-weight: inherit;
     color: inherit;
     text-decoration: none;
+    transition: 0.3s ease;
 
     cursor: pointer;
+    pointer-events: all;
     background: none;
 
     -webkit-appearance: none;
@@ -128,6 +130,12 @@
 
     &:active {
       text-decoration: none;
+    }
+
+    &:disabled {
+      opacity: 0;
+      cursor: default;
+      pointer-events: none;
     }
   }
 }
