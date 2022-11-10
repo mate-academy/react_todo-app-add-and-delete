@@ -15,9 +15,6 @@ export const TodoData: React.FC<Props> = ({
 }) => {
   const { id, title, completed } = todo;
 
-  // eslint-disable-next-line
-  console.log(deletingTodosId);
-
   return (
     <div
       data-cy="Todo"

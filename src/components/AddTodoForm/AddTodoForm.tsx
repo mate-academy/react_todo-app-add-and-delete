@@ -1,3 +1,5 @@
+import { useEffect } from 'react';
+
 type Props = {
   handleAddTodo: () => void;
   handleInput: (event: React.ChangeEvent<HTMLInputElement>) => void;
@@ -13,6 +15,13 @@ export const AddTodoForm: React.FC<Props> = ({
   titleNewTodo,
   isAdding,
 }) => {
+  useEffect(() => {
+    // focus the element with `ref={newTodoField}`
+    if (newTodoField.current) {
+      newTodoField.current.focus();
+    }
+  }, [isAdding]);
+
   return (
     <form onSubmit={handleAddTodo}>
       <input

@@ -25,7 +25,7 @@ export const App: React.FC = () => {
   const [titleNewTodo, setTitleNewTodo] = useState('');
   const [error, setError] = useState('');
   const [isAdding, setIsAdding] = useState(false);
-  // const [deletingTodosId, setDeletingTodosId] = useState<number[]>([]);
+  const [deletingTodosId, setDeletingTodosId] = useState<number[]>([0]);
 
   const tempTodo: Todo = {
     id: 0,
@@ -126,12 +126,9 @@ export const App: React.FC = () => {
     // console.log(111)
   };
 
-  let deletingTodosId: number[] = [];
-
   const deleteOneTodo = async (todoId: number) => {
     try {
-      deletingTodosId.push(todoId);
-      // console.log(deletingTodosId)
+      setDeletingTodosId(prevDeleteTodos => [...prevDeleteTodos, todoId]);
       await deleteTodo(todoId);
     } catch {
       setIsError(true);
@@ -145,6 +142,7 @@ export const App: React.FC = () => {
 
   const handleDeleteTodo = async (todoId: number) => {
     await deleteOneTodo(todoId);
+    setDeletingTodosId([0]);
     await getTodosFromAPI();
   };
 
@@ -157,11 +155,9 @@ export const App: React.FC = () => {
   const deleteCompletedTodos = async () => {
     if (completedTodosId.length > 0) {
       try {
-        completedTodosId.forEach(async id => {
+        await Promise.all(completedTodosId.map(async id => {
           await deleteOneTodo(id);
-          deletingTodosId.push(id);
-        });
-        await getTodosFromAPI();
+        }));
       } catch {
         setIsError(true);
         setError('Unable to delete all completed todo');
@@ -171,6 +167,12 @@ export const App: React.FC = () => {
         }, 3000);
       }
     }
+  };
+
+  const handleDeleteCompletedTodos = async () => {
+    await deleteCompletedTodos();
+    setDeletingTodosId([0]);
+    await getTodosFromAPI();
   };
 
   return (
@@ -207,7 +209,7 @@ export const App: React.FC = () => {
             fieldForSorting={fieldForSorting}
             selectFieldForSorting={selectFieldForSorting}
             counterActiveTodos={counterActiveTodos}
-            deleteCompletedTodos={deleteCompletedTodos}
+            deleteCompletedTodos={handleDeleteCompletedTodos}
             length={completedTodosId.length}
           />
         )}
