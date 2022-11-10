@@ -1,5 +1,4 @@
-export interface Todo {
-  id: number;
+export interface HandleAddedTodo {
   userId: number | undefined,
   title: string;
   completed: boolean;

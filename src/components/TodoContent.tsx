@@ -6,10 +6,11 @@ import { Footer } from './Footer';
 import { getTodos } from '../api/todos';
 import { AuthContext } from './Auth/AuthContext';
 import { Todo } from '../types/Todo';
+import { ErorTypes } from '../types/ErrorTypes';
 
 type Props = {
   newTodoField: React.LegacyRef<HTMLInputElement> | undefined,
-  setIsErrorMessage: (value: boolean) => void,
+  setIsErrorMessage: (value: ErorTypes) => void,
 };
 
 export const TodoContent: React.FC<Props> = ({
@@ -17,6 +18,8 @@ export const TodoContent: React.FC<Props> = ({
 }) => {
   const [todos, setTodos] = useState<Todo[]>([]);
   const [visibleTodos, setVisibleTodos] = useState<Todo[]>([]);
+  const [todoTitle, setTodoTitle] = useState('');
+  const [isAdding, setIsAdding] = useState(false);
 
   const user = useContext(AuthContext);
 
@@ -25,12 +28,18 @@ export const TodoContent: React.FC<Props> = ({
       getTodos(user.id)
         .then(todo => {
           setTodos(todo);
-          setIsErrorMessage(false);
           setVisibleTodos(todo);
         })
-        .catch(() => setIsErrorMessage(true));
+        .catch(() => setIsErrorMessage(ErorTypes.load));
     }
   }, []);
+
+  const handleAddTodo = async (event:React.ChangeEvent<HTMLInputElement>) => {
+    event.preventDefault();
+
+    if (user) {
+    }
+  };
 
   return (
     <div className="todoapp__content">

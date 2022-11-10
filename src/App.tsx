@@ -4,9 +4,11 @@ import React, {
 
 import { ErrorNotification } from './components/ErrorNotification';
 import { TodoContent } from './components/TodoContent';
+import { ErorTypes } from './types/ErrorTypes';
 
 export const App: React.FC = () => {
-  const [isErrorMessage, setIsErrorMessage] = useState(false);
+  const [isErrorMessage, setIsErrorMessage]
+    = useState<ErorTypes>(ErorTypes.none);
   const newTodoField = useRef<HTMLInputElement>(null);
 
   useEffect(() => {
