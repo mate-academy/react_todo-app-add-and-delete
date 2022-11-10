@@ -10,6 +10,7 @@ type Props = {
   tempTodoTitle: string;
   handleTodoDeleting: (id: number) => void;
   deletingId: number;
+  isCompletedDeleting: boolean;
 };
 
 export const TodoList: React.FC<Props> = ({
@@ -18,6 +19,7 @@ export const TodoList: React.FC<Props> = ({
   tempTodoTitle,
   handleTodoDeleting,
   deletingId,
+  isCompletedDeleting,
 }) => (
   <section className="todoapp__main" data-cy="TodoList">
     {todos.map(todo => (
@@ -26,6 +28,7 @@ export const TodoList: React.FC<Props> = ({
         todo={todo}
         handleTodoDeleting={handleTodoDeleting}
         deletingId={deletingId}
+        isCompletedDeleting={isCompletedDeleting}
       />
     ))}
 

@@ -21,10 +21,12 @@ export const App: React.FC = () => {
   const [todos, setTodos] = useState<Todo[]>([]);
   const [visibleTodos, setVisibleTodos] = useState<Todo[]>([]);
   const [filterType, setFilterType] = useState(FilterType.All);
-  const [newTodoTitle, setNewTodoTitle] = useState<string>('');
+  const [newTodoTitle, setNewTodoTitle] = useState('');
   const [isAdding, setIsAdding] = useState(false);
   const [errorType, setErrorType] = useState<ErrorType>(ErrorType.None);
   const [deletingId, setDeletingId] = useState(0);
+  const [isCompletedDeleting, setIsCompletedDeleting] = useState(false);
+  const [completedTodos, setCompletedTodos] = useState<Todo[]>([]);
 
   const loadTodos = useCallback(async () => {
     try {
@@ -46,8 +48,11 @@ export const App: React.FC = () => {
         }
       });
 
+      const doneTodos = loadedTodos.filter(todo => todo.completed);
+
       setTodos(loadedTodos);
       setVisibleTodos(filteredTodos);
+      setCompletedTodos(doneTodos);
     } catch {
       setErrorType(ErrorType.Load);
 
@@ -97,6 +102,16 @@ export const App: React.FC = () => {
     }
   };
 
+  const handleCompletedDeleting = () => {
+    setIsCompletedDeleting(true);
+
+    completedTodos.forEach(todo => {
+      handleTodoDeleting(todo.id);
+    });
+
+    loadTodos();
+  };
+
   const onInput = (input: string) => {
     setNewTodoTitle(input);
   };
@@ -105,12 +120,18 @@ export const App: React.FC = () => {
     setErrorType(ErrorType.None);
   };
 
-  useEffect(() => {
-    loadTodos();
+  const onFilter = (type: FilterType) => {
+    setFilterType(type);
+  };
 
+  useEffect(() => {
     if (newTodoField.current) {
       newTodoField.current.focus();
     }
+  }, [newTodoTitle]);
+
+  useEffect(() => {
+    loadTodos();
   }, [filterType]);
 
   return (
@@ -132,13 +153,16 @@ export const App: React.FC = () => {
               todos={visibleTodos}
               isAdding={isAdding}
               tempTodoTitle={newTodoTitle}
-              handleTodoDeleting={handleTodoDeleting}
               deletingId={deletingId}
+              handleTodoDeleting={handleTodoDeleting}
+              isCompletedDeleting={isCompletedDeleting}
             />
             <Footer
               filterType={filterType}
               todos={todos}
-              onFilter={setFilterType}
+              completedTodos={completedTodos}
+              onFilter={onFilter}
+              handleCompletedDeleting={handleCompletedDeleting}
             />
           </>
         )}

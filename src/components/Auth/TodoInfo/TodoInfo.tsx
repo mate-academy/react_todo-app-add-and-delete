@@ -7,14 +7,17 @@ type Props = {
   todo: Todo;
   handleTodoDeleting: (id: number) => void;
   deletingId: number;
+  isCompletedDeleting: boolean;
 };
 
 export const TodoInfo: React.FC<Props> = ({
   todo,
   handleTodoDeleting,
   deletingId,
+  isCompletedDeleting,
 }) => {
   const { completed, title, id } = todo;
+  const isLoader = deletingId === id || (isCompletedDeleting && todo.completed);
 
   return (
     <div
@@ -57,7 +60,9 @@ export const TodoInfo: React.FC<Props> = ({
         className={classNames(
           'modal',
           'overlay',
-          { 'is-active': deletingId === id },
+          {
+            'is-active': isLoader,
+          },
         )}
       >
         <div
