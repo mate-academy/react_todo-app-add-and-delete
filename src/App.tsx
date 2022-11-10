@@ -87,13 +87,13 @@ export const App: React.FC = () => {
             userId: user.id,
           }));
 
-          const createdTodo = await createTodo({
+          await createTodo({
             title,
             userId: user.id,
             completed: false,
           });
 
-          setTodos(currentTodos => [...currentTodos, createdTodo]);
+          await getTodosFromServer();
         } catch (error) {
           setHasError(true);
           setErrorNotice(ErrorNoticeType.AddError);
@@ -111,9 +111,7 @@ export const App: React.FC = () => {
 
         await deleteTodo(todoId);
 
-        setTodos(currTodos => (
-          currTodos.filter(({ id }) => id !== todoId)
-        ));
+        await getTodosFromServer();
 
         setTodosIdsForDelete(currentsIds => (
           currentsIds.filter(id => id !== todoId)

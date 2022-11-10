@@ -32,7 +32,7 @@ export const TodoFilter: React.FC<Props> = ({
           <a
             key={type}
             data-cy={`FilterLink${type}`}
-            href={`#/${type}`}
+            href={`#/${type.toLowerCase()}`}
             className={classNames('filter__link', {
               selected: filterType === type,
             })}
