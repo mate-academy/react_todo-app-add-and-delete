@@ -1,15 +1,15 @@
-import React, { FC, useEffect, useState } from 'react';
+import React, { FC, useState } from 'react';
 
 type Props = {
   todoField: any;
   setTodo: (title: string) => void;
-  uploadTodo: () => Promise<void>;
+  isAdding: boolean;
 };
 
 export const TodoForm: FC<Props> = ({
   todoField,
   setTodo,
-  uploadTodo,
+  isAdding,
 }) => {
   const [newTodoTitle, setNewTodoTitle] = useState('');
 
@@ -17,17 +17,14 @@ export const TodoForm: FC<Props> = ({
 
   const handleFormSubmit = (event: React.FormEvent) => {
     event.preventDefault();
-    uploadTodo();
+    setTodo(newTodoTitle);
     changeNewTodoTitle('');
   };
-
-  useEffect(() => {
-    setTodo(newTodoTitle);
-  }, [newTodoTitle]);
 
   return (
     <form onSubmit={handleFormSubmit}>
       <input
+        disabled={isAdding}
         data-cy="NewTodoField"
         type="text"
         ref={todoField}

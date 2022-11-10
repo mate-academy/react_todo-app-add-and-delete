@@ -4,18 +4,16 @@ import { Todo } from '../../types/Todo';
 
 type Props = {
   todos: Todo[];
-  isAdding: boolean;
-  deleteTodo: (id: number) => Promise<void>;
-  selectId: number[];
-  setSelectId: (id: number) => void;
+  deleteTodo: (id: number, load: boolean) => Promise<void>;
+  loadingTodos: number[];
+  addLoadingTodos: (id: number) => void;
 };
 
 export const TodoList: FC<Props> = ({
   todos,
-  isAdding,
   deleteTodo,
-  selectId,
-  setSelectId,
+  loadingTodos,
+  addLoadingTodos,
 }) => {
   return (
     <section className="todoapp__main" data-cy="TodoList">
@@ -49,8 +47,8 @@ export const TodoList: FC<Props> = ({
               className="todo__remove"
               data-cy="TodoDeleteButton"
               onClick={() => {
-                deleteTodo(id);
-                setSelectId(id);
+                addLoadingTodos(id);
+                deleteTodo(id, true);
               }}
             >
               ×
@@ -60,7 +58,7 @@ export const TodoList: FC<Props> = ({
               <div className="modal-background has-background-white-ter" />
               <div className="loader" />
             </div>
-            {(isAdding && (selectId.includes(id))) && (
+            {loadingTodos.includes(id) && (
               <div data-cy="TodoLoader" className="modal overlay is-active">
                 <div className="modal-background has-background-white-ter" />
                 <div className="loader" />

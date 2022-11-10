@@ -1,5 +1,4 @@
 import React, {
-  useCallback,
   useContext, useEffect, useRef, useState,
 } from 'react';
 import { AuthContext } from './components/Auth/AuthContext';
@@ -19,20 +18,10 @@ export const App: React.FC = () => {
   const user = useContext(AuthContext);
   const newTodoField = useRef<HTMLInputElement>(null);
 
-  // Is todos loading
-  const [isAdding, setIsAdding] = useState(false);
-
-  const changeIsAdding = (value: boolean) => {
-    setIsAdding(value);
-  };
-
   // Error
   const [currentError, setCurrentError] = useState('');
 
-  const resetCurrentError = useCallback(
-    () => setCurrentError(''),
-    [currentError],
-  );
+  const resetCurrentError = () => setCurrentError('');
 
   // Filter
   const [filterType, setFilterType] = useState<FilterType>(FilterType.ALL);
@@ -44,9 +33,12 @@ export const App: React.FC = () => {
   const [todos, setTodos] = useState<Todo[]>([]);
 
   const activeTodosCount = todos.filter(todo => !todo.completed).length;
-  const completedTodos = todos
-    .filter(todo => todo.completed)
+  const completedTodosId = todos.filter(todo => todo.completed)
     .map(todo => todo.id);
+
+  const addNewTodo = (todo: Todo) => {
+    setTodos(cuttentTodo => [...cuttentTodo, todo]);
+  };
 
   const loadTodos = async () => {
     if (user) {
@@ -61,7 +53,7 @@ export const App: React.FC = () => {
     }
   };
 
-  const filteredTodos = (): Todo[] => {
+  const visibleTodos = (): Todo[] => {
     switch (filterType) {
       case FilterType.ACTIVE:
         return todos.filter(todo => !todo.completed);
@@ -72,6 +64,20 @@ export const App: React.FC = () => {
     }
   };
 
+  // Loading todos
+  const [loadingTodos, setLoadingTodos] = useState<number[]>([]);
+
+  const addLoadingTodos = (id: number) => {
+    setLoadingTodos((value) => {
+      return [...value, id];
+    });
+  };
+
+  // Adding
+  const [isAdding, seIsAdding] = useState(false);
+
+  const changeIsAdding = (value: boolean) => seIsAdding(value);
+
   // New todos
   const [newTodo, setNewTodo] = useState<TodoForServer>();
   const validTodo = newTodo?.title.trim().length;
@@ -79,12 +85,17 @@ export const App: React.FC = () => {
   const setTodo = (title: string) => {
     if (user) {
       const todo = {
-        userId: user.id,
+        userId: user?.id,
         title,
-        completed: true,
+        completed: false,
       };
 
-      setNewTodo(todo);
+      if (todo.title.trim().length) {
+        addLoadingTodos(0);
+        setNewTodo(todo);
+      } else {
+        setCurrentError('title');
+      }
     }
   };
 
@@ -97,6 +108,7 @@ export const App: React.FC = () => {
       try {
         await addTodo(user.id, newTodo);
         await loadTodos();
+        changeIsAdding(false);
       } catch (error: any) {
         // eslint-disable-next-line no-console
         console.log('error', error.message);
@@ -106,33 +118,21 @@ export const App: React.FC = () => {
   };
 
   // Delete todos
-  const [selectedTodoId, setSelectedTodoId] = useState<number[]>([0]);
-
-  const changeSelectedTodoId = (id: number) => {
-    setSelectedTodoId((value) => {
-      return [...value, id];
-    });
-  };
-
   const deleteTodoFromServer = async (id: number) => {
-    if (user) {
-      changeIsAdding(true);
-      try {
-        await deleteTodo(id);
-        await loadTodos();
-        changeIsAdding(false);
-      } catch (error: any) {
-        // eslint-disable-next-line no-console
-        console.log('error', error.message);
-        setCurrentError('delete');
-      }
+    try {
+      await deleteTodo(id);
+      await loadTodos();
+    } catch (error: any) {
+      // eslint-disable-next-line no-console
+      console.log('error', error.message);
+      setCurrentError('delete');
     }
   };
 
   const deleteCompletedTodos = () => {
-    completedTodos.forEach(todoId => changeSelectedTodoId(todoId));
+    completedTodosId.forEach(todoId => addLoadingTodos(todoId));
     // eslint-disable-next-line no-restricted-syntax
-    completedTodos.forEach(todoId => deleteTodoFromServer(todoId));
+    completedTodosId.forEach(todoId => deleteTodoFromServer(todoId));
   };
 
   // Effects
@@ -142,15 +142,28 @@ export const App: React.FC = () => {
       newTodoField.current.focus();
     }
 
-    setTimeout(() => {
-      resetCurrentError();
-    }, 3000);
-
     loadTodos();
+  }, []);
+
+  useEffect(() => {
+    if (currentError) {
+      setTimeout(() => {
+        resetCurrentError();
+      }, 3000);
+    }
   }, [currentError]);
 
-  // eslint-disable-next-line no-console
-  console.log(isAdding);
+  useEffect(() => {
+    if (newTodo) {
+      addNewTodo({
+        id: 0,
+        ...newTodo,
+      });
+
+      changeIsAdding(true);
+      uploadTodo();
+    }
+  }, [newTodo]);
 
   return (
     <div className="todoapp">
@@ -168,18 +181,17 @@ export const App: React.FC = () => {
           <TodoForm
             todoField={newTodoField}
             setTodo={setTodo}
-            uploadTodo={uploadTodo}
+            isAdding={isAdding}
           />
         </header>
 
         {todos.length > 0 && (
           <>
             <TodoList
-              todos={filteredTodos()}
-              isAdding={isAdding}
+              todos={visibleTodos()}
               deleteTodo={deleteTodoFromServer}
-              selectId={selectedTodoId}
-              setSelectId={changeSelectedTodoId}
+              loadingTodos={loadingTodos}
+              addLoadingTodos={addLoadingTodos}
             />
 
             <FilterPanel
