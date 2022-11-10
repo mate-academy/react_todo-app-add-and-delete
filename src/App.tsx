@@ -83,8 +83,11 @@ export const App: React.FC = () => {
 
   const handleDeleteTodo = useCallback(async (id: number) => {
     try {
+      setSelectedIDs(current => [...current, id]);
       await deleteTodo(id);
       await getTodosFromsServer();
+
+      setSelectedIDs([]);
     } catch (error) {
       setHasError(true);
       setErrorMessage('Unable to delete a todo');
