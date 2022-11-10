@@ -1,15 +1,17 @@
 /* eslint-disable jsx-a11y/control-has-associated-label */
 import React, {
+  useCallback,
   useContext, useEffect, useRef, useState,
 } from 'react';
 import { AuthContext } from './components/Auth/AuthContext';
 import { Todo } from './types/Todo';
-import { getTodos } from './api/todos';
+import { getTodos, addNewTodo, deleteTodo } from './api/todos';
 import { Error } from './types/Error';
 import { Filter } from './types/Filter';
 import { ErrorNotification } from './components/Auth/ErrorNotification';
 import { TodoList } from './components/Auth/TodoList';
 import { Footer } from './components/Auth/Footer';
+import { Header } from './components/Auth/Header';
 
 export const App: React.FC = () => {
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
@@ -19,8 +21,17 @@ export const App: React.FC = () => {
   const [todosAreLoaded, setTodosAreLoaded] = useState(false);
   const [error, setError] = useState<Error>(Error.NONE);
   const [filter, setFilter] = useState<Filter>(Filter.ALL);
-  const [todoTitle, setTodoTitle] = useState('');
-  const [isAdding] = useState(false);
+  const [newTodoTitle, setNewTodoTitle] = useState('');
+  const [tempTodo, setTempTodo] = useState<Todo>({
+    id: 0,
+    userId: 0,
+    title: '',
+    completed: false,
+  });
+  const [isAdding, setIsAdding] = useState(false);
+  const [todosIdsForDelete, setTodosIdsForDelete] = useState<number[]>([]);
+
+  const userId = user ? user.id : 1;
 
   const resetError = () => {
     setTimeout(() => {
@@ -28,25 +39,68 @@ export const App: React.FC = () => {
     }, 3000);
   };
 
-  const setTodos = async () => {
+  const loadTodosFromServer = useCallback(async () => {
     try {
-      const userId = user ? user.id : 1;
       const todosFromApi = await getTodos(userId);
 
       setVisibleTodos(todosFromApi);
       setTodosAreLoaded(true);
     } catch (err) {
-      setError(Error.ADD);
+      setError(Error.UPDATE);
+      resetError();
+    }
+  }, []);
 
+  const handleTitleChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+    setNewTodoTitle(event.target.value);
+  };
+
+  const addNewTodoToServer = async (event: React.FormEvent) => {
+    try {
+      event.preventDefault();
+      if (!newTodoTitle.trim()) {
+        setError(Error.EMPTY);
+        resetError();
+
+        return;
+      }
+
+      const newTodo = {
+        title: newTodoTitle,
+        userId,
+        completed: false,
+      };
+
+      setTempTodo({ id: 0, ...newTodo });
+
+      await addNewTodo(newTodo);
+      setIsAdding(true);
+      await loadTodosFromServer();
+      setNewTodoTitle('');
+      setIsAdding(false);
+    } catch (err) {
+      setError(Error.ADD);
       resetError();
     }
   };
 
-  // eslint-disable-next-line no-console
-  console.log(isAdding);
+  const deleteTodoFromServer = async (todoId: number) => {
+    try {
+      await deleteTodo(todoId);
+      setTodosIdsForDelete((currentIds) => [...currentIds, todoId]);
+      await loadTodosFromServer();
+    } catch (err) {
+      setError(Error.DELETE);
+      resetError();
+    }
+  };
 
-  const handleChange = (event: React.ChangeEvent<HTMLInputElement>) => {
-    setTodoTitle(event.target.value);
+  const deleteCompletedTodos = async () => {
+    const completedTodos = visibleTodos.filter(todo => todo.completed);
+
+    await completedTodos.forEach(todo => {
+      deleteTodoFromServer(todo.id);
+    });
   };
 
   useEffect(() => {
@@ -55,7 +109,7 @@ export const App: React.FC = () => {
       newTodoField.current.focus();
     }
 
-    setTodos();
+    loadTodosFromServer();
   }, []);
 
   const filteredTodos = visibleTodos.filter(todo => {
@@ -74,31 +128,29 @@ export const App: React.FC = () => {
       <h1 className="todoapp__title">Todos</h1>
 
       <div className="todoapp__content">
-        <header className="todoapp__header">
-          {todosAreLoaded && (
-            <button
-              data-cy="ToggleAllButton"
-              type="button"
-              className="todoapp__toggle-all active"
-            />
-          )}
-
-          <form>
-            <input
-              data-cy="NewTodoField"
-              type="text"
-              value={todoTitle}
-              ref={newTodoField}
-              className="todoapp__new-todo"
-              placeholder="What needs to be done?"
-              onChange={handleChange}
-            />
-          </form>
-        </header>
+        <Header
+          todosAreLoaded={todosAreLoaded}
+          addNewTodo={addNewTodoToServer}
+          newTodoField={newTodoField}
+          newTodoTitle={newTodoTitle}
+          handleTitleChange={handleTitleChange}
+          isAdding={isAdding}
+        />
         {todosAreLoaded && (
           <>
-            <TodoList todos={filteredTodos} />
-            <Footer filter={filter} setFilter={setFilter} />
+            <TodoList
+              todos={filteredTodos}
+              tempTodo={tempTodo}
+              isAdding={isAdding}
+              deleteTodo={deleteTodoFromServer}
+              todosIdsForDelete={todosIdsForDelete}
+            />
+            <Footer
+              filter={filter}
+              setFilter={setFilter}
+              todos={visibleTodos}
+              deleteCompletedTodos={deleteCompletedTodos}
+            />
           </>
         )}
       </div>

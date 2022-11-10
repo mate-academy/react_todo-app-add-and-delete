@@ -1,4 +1,5 @@
 import cn from 'classnames';
+import React from 'react';
 import { Error } from '../../types/Error';
 
 type Props = {
@@ -6,7 +7,10 @@ type Props = {
   setError: (arg: Error) => void;
 };
 
-export const ErrorNotification: React.FC<Props> = ({ error, setError }) => {
+export const ErrorNotification: React.FC<Props> = React.memo(({
+  error,
+  setError,
+}) => {
   const handleErrorButtonClick = () => {
     setError(Error.NONE);
   };
@@ -33,4 +37,4 @@ export const ErrorNotification: React.FC<Props> = ({ error, setError }) => {
       {error === Error.EMPTY && "Title can't be empty"}
     </div>
   );
-};
+});
