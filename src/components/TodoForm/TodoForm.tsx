@@ -2,13 +2,13 @@ import React, { FC, useState } from 'react';
 
 type Props = {
   todoField: any;
-  setTodo: (title: string) => void;
+  setNewTodo: (title: string) => void;
   isAdding: boolean;
 };
 
 export const TodoForm: FC<Props> = ({
   todoField,
-  setTodo,
+  setNewTodo,
   isAdding,
 }) => {
   const [newTodoTitle, setNewTodoTitle] = useState('');
@@ -17,7 +17,7 @@ export const TodoForm: FC<Props> = ({
 
   const handleFormSubmit = (event: React.FormEvent) => {
     event.preventDefault();
-    setTodo(newTodoTitle);
+    setNewTodo(newTodoTitle);
     changeNewTodoTitle('');
   };
 

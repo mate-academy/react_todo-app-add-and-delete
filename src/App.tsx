@@ -25,6 +25,7 @@ export const App: React.FC = () => {
 
   // Filter
   const [filterType, setFilterType] = useState<FilterType>(FilterType.ALL);
+
   const selectFilterType = (type: FilterType) => {
     setFilterType(type);
   };
@@ -36,8 +37,8 @@ export const App: React.FC = () => {
   const completedTodosId = todos.filter(todo => todo.completed)
     .map(todo => todo.id);
 
-  const addNewTodo = (todo: Todo) => {
-    setTodos(cuttentTodo => [...cuttentTodo, todo]);
+  const addTodos = (todo: Todo) => {
+    setTodos(currentTodo => [...currentTodo, todo]);
   };
 
   const loadTodos = async () => {
@@ -67,7 +68,7 @@ export const App: React.FC = () => {
   // Loading todos
   const [loadingTodos, setLoadingTodos] = useState<number[]>([]);
 
-  const addLoadingTodos = (id: number) => {
+  const addLoadingTodo = (id: number) => {
     setLoadingTodos((value) => {
       return [...value, id];
     });
@@ -80,18 +81,19 @@ export const App: React.FC = () => {
 
   // New todos
   const [newTodo, setNewTodo] = useState<TodoForServer>();
+
   const validTodo = newTodo?.title.trim().length;
 
-  const setTodo = (title: string) => {
+  const addNewTodo = (title: string) => {
     if (user) {
       const todo = {
         userId: user?.id,
         title,
-        completed: false,
+        completed: true,
       };
 
       if (todo.title.trim().length) {
-        addLoadingTodos(0);
+        addLoadingTodo(0);
         setNewTodo(todo);
       } else {
         setCurrentError('title');
@@ -118,10 +120,13 @@ export const App: React.FC = () => {
   };
 
   // Delete todos
-  const deleteTodoFromServer = async (id: number) => {
+  const deleteTodoFromServer = async (id: number, reload: boolean) => {
     try {
       await deleteTodo(id);
-      await loadTodos();
+
+      if (reload) {
+        await loadTodos();
+      }
     } catch (error: any) {
       // eslint-disable-next-line no-console
       console.log('error', error.message);
@@ -129,10 +134,12 @@ export const App: React.FC = () => {
     }
   };
 
-  const deleteCompletedTodos = () => {
-    completedTodosId.forEach(todoId => addLoadingTodos(todoId));
-    // eslint-disable-next-line no-restricted-syntax
-    completedTodosId.forEach(todoId => deleteTodoFromServer(todoId));
+  const deleteCompletedTodos = async () => {
+    completedTodosId.forEach(todoId => addLoadingTodo(todoId));
+    await Promise.all(
+      completedTodosId.map(todoId => deleteTodoFromServer(todoId, false)),
+    );
+    await loadTodos();
   };
 
   // Effects
@@ -155,7 +162,7 @@ export const App: React.FC = () => {
 
   useEffect(() => {
     if (newTodo) {
-      addNewTodo({
+      addTodos({
         id: 0,
         ...newTodo,
       });
@@ -180,28 +187,27 @@ export const App: React.FC = () => {
 
           <TodoForm
             todoField={newTodoField}
-            setTodo={setTodo}
+            setNewTodo={addNewTodo}
             isAdding={isAdding}
           />
         </header>
 
-        {todos.length > 0 && (
-          <>
-            <TodoList
-              todos={visibleTodos()}
-              deleteTodo={deleteTodoFromServer}
-              loadingTodos={loadingTodos}
-              addLoadingTodos={addLoadingTodos}
-            />
+        <TodoList
+          todos={visibleTodos()}
+          deleteTodo={deleteTodoFromServer}
+          loadingTodos={loadingTodos}
+          addLoadingTodo={addLoadingTodo}
+        />
 
-            <FilterPanel
-              todosCount={activeTodosCount}
-              filterType={filterType}
-              setFilterType={selectFilterType}
-              deleteCompletedTodos={deleteCompletedTodos}
-            />
-          </>
+        {todos.length > 0 && (
+          <FilterPanel
+            todosCount={activeTodosCount}
+            filterType={filterType}
+            setFilterType={selectFilterType}
+            deleteCompletedTodos={deleteCompletedTodos}
+          />
         )}
+
       </div>
 
       {currentError && (

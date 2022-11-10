@@ -4,16 +4,16 @@ import { Todo } from '../../types/Todo';
 
 type Props = {
   todos: Todo[];
-  deleteTodo: (id: number, load: boolean) => Promise<void>;
+  deleteTodo: (id: number, reload: boolean) => Promise<void>;
   loadingTodos: number[];
-  addLoadingTodos: (id: number) => void;
+  addLoadingTodo: (id: number) => void;
 };
 
 export const TodoList: FC<Props> = ({
   todos,
   deleteTodo,
   loadingTodos,
-  addLoadingTodos,
+  addLoadingTodo,
 }) => {
   return (
     <section className="todoapp__main" data-cy="TodoList">
@@ -46,9 +46,9 @@ export const TodoList: FC<Props> = ({
               type="button"
               className="todo__remove"
               data-cy="TodoDeleteButton"
-              onClick={() => {
-                addLoadingTodos(id);
-                deleteTodo(id, true);
+              onClick={async () => {
+                addLoadingTodo(id);
+                await deleteTodo(id, true);
               }}
             >
               ×
