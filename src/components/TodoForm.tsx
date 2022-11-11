@@ -3,6 +3,7 @@ import { ErrorType } from '../types/ErrorType';
 
 type Props = {
   newTitile: string;
+  isAdding:boolean;
   setNewTitle: (value: string) => void;
   setErrors: (value: ErrorType) => void;
   addNewTodo: (value: string) => void;
@@ -14,6 +15,7 @@ export const TodoForm: React.FC<Props>
     setNewTitle,
     addNewTodo,
     setErrors,
+    isAdding,
   }) => {
     const newTodoField = useRef<HTMLInputElement>(null);
 
@@ -48,6 +50,7 @@ export const TodoForm: React.FC<Props>
             placeholder="What needs to be done?"
             value={newTitile}
             onChange={(event) => setNewTitle(event.target.value)}
+            disabled={isAdding}
           />
         </form>
       </header>
