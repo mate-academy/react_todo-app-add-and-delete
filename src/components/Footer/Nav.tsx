@@ -1,10 +1,10 @@
 import React, { useContext } from 'react';
 import classNames from 'classnames';
-import { Status } from '../../enums/Status';
-import { StatusContext } from '../StatusContext';
+import { Filter } from '../../enums/Filter';
+import { FilterContext } from '../FilterContext';
 
 export const Nav: React.FC = () => {
-  const { selectStatus, setSelectStatus } = useContext(StatusContext);
+  const { selectedFilterStatus, setFilterStatus } = useContext(FilterContext);
 
   return (
     <nav className="filter" data-cy="Filter">
@@ -13,9 +13,9 @@ export const Nav: React.FC = () => {
         href="#/"
         className={classNames(
           'filter__link',
-          { selected: selectStatus === Status.All },
+          { selected: selectedFilterStatus === Filter.All },
         )}
-        onClick={() => setSelectStatus(Status.All)}
+        onClick={() => setFilterStatus(Filter.All)}
       >
         All
       </a>
@@ -25,9 +25,9 @@ export const Nav: React.FC = () => {
         href="#/active"
         className={classNames(
           'filter__link',
-          { selected: selectStatus === Status.Active },
+          { selected: selectedFilterStatus === Filter.Active },
         )}
-        onClick={() => setSelectStatus(Status.Active)}
+        onClick={() => {setFilterStatus(Filter.Active)}}
       >
         Active
       </a>
@@ -36,9 +36,9 @@ export const Nav: React.FC = () => {
         href="#/completed"
         className={classNames(
           'filter__link',
-          { selected: selectStatus === Status.Completed },
+          { selected: selectedFilterStatus === Filter.Completed },
         )}
-        onClick={() => setSelectStatus(Status.Completed)}
+        onClick={() => setFilterStatus(Filter.Completed)}
       >
         Completed
       </a>

@@ -3,24 +3,36 @@ import React, {
   useContext, useEffect, useRef, useState,
 } from 'react';
 import { AuthProvider, AuthContext } from './components/Auth/AuthContext';
-import { getTodos } from './api/todos';
+import { getTodos, addTodo, deleteTodo } from './api/todos';
 import { Todo } from './types/Todo';
+import { ErrorEnums } from './enums/ErrorEnums';
 import { Error } from './components/Error';
 import { Footer } from './components/Footer/Footer';
 import { TodoList } from './components/TodoList';
-import { StatusProvider } from './components/StatusContext';
+import { FilterProvider } from './components/FilterContext';
+import { TempTodo } from './components/TempTodo'
 
 export const App: React.FC = () => {
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
   const user = useContext(AuthContext);
   const newTodoField = useRef<HTMLInputElement>(null);
   const [todos, setTodos] = useState< Todo[]>([]);
+  const [isAdding, setIsAdding] = useState(false);
+  const [newTodoTitle, setNewTodoTitle] = useState('');
+  const [error, setError] = useState<ErrorEnums>(ErrorEnums.None);
+
 
   const loadTodos = async () => {
     if (user?.id) {
-      const gettodos = await getTodos(user.id);
+      let todosFromServer;
 
-      setTodos(gettodos);
+      try {
+        todosFromServer = await getTodos(user.id);
+      } catch {
+        throw Error('Todos not found');
+      }
+
+      setTodos(todosFromServer);
     }
   };
 
@@ -32,6 +44,70 @@ export const App: React.FC = () => {
 
     loadTodos();
   }, []);
+
+  const addNewTodo = async (
+    title: string,
+
+  ) => {
+
+    if (user && title.trim()) {
+      setIsAdding(true);
+
+      const getNewTodo = {
+        userId: user.id,
+        title: title.trim(),
+        completed: false,
+      };
+
+      try {
+        await addTodo(getNewTodo);
+        
+      } catch {
+        setError(ErrorEnums.Add);
+      }
+    }
+
+    await loadTodos();
+    setNewTodoTitle('');
+    setIsAdding(false);
+  }
+
+  const handleDeleteTodo =  async (id: number) => {
+    try {
+      await deleteTodo(id)
+    } catch {
+      setError(ErrorEnums.Delete)
+    }
+    await loadTodos();
+  }
+
+  const deleteCompletedTodos = () => {
+    const completedTodos = todos.filter (({completed}) => completed)
+    .map(({id}) => id);
+  
+    todos.forEach(todo => { if (completedTodos.includes(todo.id)) {
+      handleDeleteTodo(todo.id)
+    } })
+  }
+
+  const resetForm = () => {
+    setNewTodoTitle('');
+
+  };
+
+  const handleError = (errorType: ErrorEnums) => {
+    setError(errorType);
+    console.log(errorType)
+  };
+
+  const handleFormSubmit = (event: React.FormEvent) => {
+    event.preventDefault();
+
+    if (newTodoTitle) {
+      addNewTodo(newTodoTitle);
+      resetForm();
+    }
+  };
 
   return (
     <AuthProvider>
@@ -48,27 +124,43 @@ export const App: React.FC = () => {
               />
             )}
 
-            <form>
+            <form onSubmit={handleFormSubmit}>
               <input
                 data-cy="NewTodoField"
                 type="text"
                 ref={newTodoField}
                 className="todoapp__new-todo"
                 placeholder="What needs to be done?"
+                value={newTodoTitle}
+                onChange={(event) => setNewTodoTitle(event.target.value)}
               />
             </form>
           </header>
 
-          <StatusProvider>
-            <TodoList todos={todos} />
-          </StatusProvider>
-
-          {todos.length > 0 && (
-            <Footer todos={todos} />
+          {isAdding && (
+            <TempTodo title={newTodoTitle} />
           )}
+
+          <FilterProvider>
+            <TodoList
+              todos={todos}
+              deleteTodo={handleDeleteTodo}
+              onError={handleError}
+            />
+
+            {todos.length > 0 && (
+              <Footer
+                todos={todos}
+                deleteCompletedTodos={deleteCompletedTodos}
+              />
+            )}
+          </FilterProvider>
         </div>
 
-        <Error />
+        <Error 
+          error={error}
+          setError={setError}
+        />
       </div>
     </AuthProvider>
   );

@@ -1,12 +1,17 @@
-import React, { useState } from 'react';
+import React from 'react';
 import classNames from 'classnames';
+import { ErrorEnums } from '../enums/ErrorEnums';
 
-export const Error: React.FC = () => {
-  const [error, setError] = useState(false);
+type Props = {
+  error: ErrorEnums;
+  setError: (string: ErrorEnums) => void;
+};
+
+export const Error: React.FC<Props> = ({ error, setError }) => {
 
   if (error) {
     setTimeout(() => {
-      setError(false);
+      setError(ErrorEnums.None);
     }, 2000);
   }
 
@@ -15,7 +20,7 @@ export const Error: React.FC = () => {
       data-cy="ErrorNotification"
       className={classNames(
         'notification is-danger is-light has-text-weight-normal',
-        { hidden: !error },
+        { hidden: error === ErrorEnums.None },
       )}
     >
       <button
@@ -23,16 +28,22 @@ export const Error: React.FC = () => {
         data-cy="HideErrorButton"
         type="button"
         className="delete"
-        onClick={() => setError(false)}
+        onClick={() => setError(ErrorEnums.None)}
       >
-        .
+        <label htmlFor="button">detete</label>
       </button>
 
-      Unable to add a todo
-      <br />
-      Unable to delete a todo
-      <br />
-      Unable to update a todo
+      {error === ErrorEnums.Add && (
+      'Unable to add a todo'
+      )}
+
+      {error === ErrorEnums.Delete && (
+        'Unable to delete a todo'
+      )}
+
+      {error === ErrorEnums.Update && (
+        'Unable to update a todo'
+      )}
     </div>
   );
 };

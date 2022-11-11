@@ -1,22 +1,29 @@
 import React, { useContext } from 'react';
 import classNames from 'classnames';
-import { Status } from '../enums/Status';
+import { Filter } from '../enums/Filter';
 import { Todo } from '../types/Todo';
-import { StatusContext } from './StatusContext';
+import { FilterContext } from './FilterContext';
+import { ErrorEnums } from '../enums/ErrorEnums';
 
-type Porps = {
+interface Porps {
   todos: Todo[];
+  deleteTodo: (id: number) => void;
+  onError: (errorType: ErrorEnums ) => void;
 };
 
-export const TodoList: React.FC<Porps> = ({ todos }) => {
-  const { selectStatus } = useContext(StatusContext);
+export const TodoList: React.FC<Porps> = ({
+  todos,
+  deleteTodo,
+  onError,
+}) => {
+  const { selectedFilterStatus } = useContext(FilterContext);
 
   const filterStatus = [...todos].filter(todo => {
-    switch (selectStatus) {
-      case Status.Active:
+    switch (selectedFilterStatus) {
+      case Filter.Active:
         return !todo.completed;
 
-      case Status.Completed:
+      case Filter.Completed:
         return todo.completed;
 
       default:
@@ -26,14 +33,14 @@ export const TodoList: React.FC<Porps> = ({ todos }) => {
 
   return (
     <section className="todoapp__main" data-cy="TodoList">
-      {filterStatus.map(todo => (
+      {filterStatus.map(({ id, title, completed }) => (
         <div
           data-cy="Todo"
           className={classNames(
             'todo',
-            { completed: todo.completed },
+            { completed: completed },
           )}
-          key={todo.id}
+          key={id}
         >
           <label className="todo__status-label">
             <input
@@ -41,6 +48,7 @@ export const TodoList: React.FC<Porps> = ({ todos }) => {
               type="checkbox"
               className="todo__status"
               defaultChecked
+              onChange={() => onError(ErrorEnums.Update)}
             />
           </label>
 
@@ -48,12 +56,13 @@ export const TodoList: React.FC<Porps> = ({ todos }) => {
             data-cy="TodoTitle"
             className="todo__title"
           >
-            {todo.title}
+            {title}
           </span>
           <button
             type="button"
             className="todo__remove"
             data-cy="TodoDeleteButton"
+            onClick={() => deleteTodo(id) }
           >
             ×
           </button>
