@@ -23,6 +23,14 @@ export const TodoInfo: React.FC<Props> = ({ todo }) => {
     }
   }, []);
 
+  const addTodoIdForDeletion = (): number[] => {
+    if (completedTodosId) {
+      return [...completedTodosId, todo.id];
+    }
+
+    return [todo.id];
+  };
+
   const onDeleteTodo = async () => {
     setShowLoader('block');
     const deletedTodo = await deleteTodo(todo.id);
@@ -38,12 +46,6 @@ export const TodoInfo: React.FC<Props> = ({ todo }) => {
         return;
       }
 
-      if (todosFromServer && !completedTodosId?.length) {
-        setTodosFromServer(todosFromServer.filter(
-          todoFromServer => todoFromServer.id !== todo.id,
-        ));
-      }
-
       if (todosFromServer && completedTodosId?.length) {
         setTodosFromServer(todosFromServer.filter(
           todoFromServer => !completedTodosId?.includes(todoFromServer.id),
@@ -53,7 +55,7 @@ export const TodoInfo: React.FC<Props> = ({ todo }) => {
       showErrorMessage('delete');
     } finally {
       setShowLoader('none');
-      setCompletedTodosId([]);
+      setCompletedTodosId(completedTodosId?.filter(id => id !== todo.id));
     }
   };
 
@@ -82,7 +84,9 @@ export const TodoInfo: React.FC<Props> = ({ todo }) => {
         type="button"
         className="todo__remove"
         data-cy="TodoDeleteButton"
-        onClick={onDeleteTodo}
+        onClick={() => {
+          setCompletedTodosId(addTodoIdForDeletion());
+        }}
       >
         ×
       </button>
