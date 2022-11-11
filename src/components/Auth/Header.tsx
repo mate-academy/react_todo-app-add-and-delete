@@ -1,4 +1,7 @@
 /* eslint-disable jsx-a11y/control-has-associated-label */
+import cn from 'classnames';
+import { Todo } from '../../types/Todo';
+
 type Props = {
   todosAreLoaded: boolean;
   addNewTodo: (event: React.FormEvent) => void;
@@ -6,6 +9,7 @@ type Props = {
   newTodoTitle: string;
   handleTitleChange: (event: React.ChangeEvent<HTMLInputElement>) => void;
   isAdding: boolean;
+  todos: Todo[];
 };
 
 export const Header: React.FC<Props> = ({
@@ -15,13 +19,16 @@ export const Header: React.FC<Props> = ({
   newTodoTitle,
   handleTitleChange,
   isAdding,
+  todos,
 }) => (
   <header className="todoapp__header">
     {todosAreLoaded && (
       <button
         data-cy="ToggleAllButton"
         type="button"
-        className="todoapp__toggle-all active"
+        className={cn('todoapp__toggle-all', {
+          active: todos.every(todo => todo.completed),
+        })}
       />
     )}
 

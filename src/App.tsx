@@ -135,6 +135,7 @@ export const App: React.FC = () => {
           newTodoTitle={newTodoTitle}
           handleTitleChange={handleTitleChange}
           isAdding={isAdding}
+          todos={visibleTodos}
         />
         {todosAreLoaded && (
           <>
