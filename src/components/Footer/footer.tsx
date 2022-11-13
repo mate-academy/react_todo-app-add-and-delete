@@ -38,9 +38,16 @@ export const Footer: React.FC<Props> = React.memo(
           idOfTodoForDeletion => deleteTodo(idOfTodoForDeletion),
         ))
           .then(results => results.forEach((result, i) => {
-            if (typeof result.value !== 'number' && 'Error' in result.value) {
+            if (
+              result.status === 'fulfilled'
+              && typeof result.value !== 'number'
+              && 'Error' in result.value
+            ) {
               showErrorMessage(ErrorTodo.Delete);
-            } else if (result.value === 1 || result.value === 0) {
+            } else if (
+              result.status === 'fulfilled'
+              && (result.value === 1 || result.value === 0)
+            ) {
               todosNonDeleted = todosNonDeleted?.filter(
                 todo => todo.id !== idOfTodosForDeletion[i],
               );
