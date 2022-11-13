@@ -16,24 +16,6 @@ export const Errors: React.FC<Props> = ({ hasError, onCloseError, error }) => {
     }, 3000);
   }, [hasError]);
 
-  const showError = () => {
-    switch (error) {
-      case Error.OnAdding:
-        return 'Unable to add a todo';
-      case Error.OnDeleting:
-        return 'Unable to delete a todo';
-      case Error.OnLoading:
-        return 'Loading failed';
-      case Error.OnTitle:
-        return 'Title can\'t be empty';
-      case Error.None:
-      default:
-        return '';
-    }
-  };
-
-  const errorShown = showError();
-
   return (
     <div
       data-cy="ErrorNotification"
@@ -48,7 +30,10 @@ export const Errors: React.FC<Props> = ({ hasError, onCloseError, error }) => {
         className="delete"
         onClick={onCloseError}
       />
-      {errorShown}
+      {error === Error.OnAdding && 'Unable to add a todo'}
+      {error === Error.OnTitle && 'Unable to add a todo'}
+      {error === Error.OnDeleting && 'Unable to delete a todo'}
+      {error === Error.OnLoading && 'Loading failed'}
     </div>
   );
 };

@@ -73,7 +73,8 @@ export const App: React.FC = () => {
       setIsAdding(true);
 
       try {
-        if (title.trim().length === 0) {
+        if (!title.trim().length) {
+          setHasError(true);
           setError(Error.OnTitle);
           setIsAdding(false);
 
