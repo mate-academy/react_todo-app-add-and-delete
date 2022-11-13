@@ -112,13 +112,15 @@ export const App: React.FC = () => {
   };
 
   useEffect(() => {
+    getTodosFromsServer();
+  }, []);
+
+  useEffect(() => {
     // focus the element with `ref={newTodoField}`
     if (newTodoField.current) {
       newTodoField.current.focus();
     }
-
-    getTodosFromsServer();
-  }, []);
+  }, [todos]);
 
   useEffect(() => {
     let todosCopy = [...todos];
