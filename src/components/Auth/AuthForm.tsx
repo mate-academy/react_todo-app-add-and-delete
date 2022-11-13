@@ -31,7 +31,7 @@ export const AuthForm: React.FC<Props> = ({ onLogin }) => {
 
       onLogin(user);
     } catch (error) {
-      // Need to login
+      setErrorMessage('Need to register');
     }
   }, []);
 
@@ -63,7 +63,7 @@ export const AuthForm: React.FC<Props> = ({ onLogin }) => {
         await loadUser();
       }
     } catch (error) {
-      setErrorMessage('Something went wrtong');
+      setErrorMessage('Something went wrong');
     } finally {
       setLoading(false);
     }
