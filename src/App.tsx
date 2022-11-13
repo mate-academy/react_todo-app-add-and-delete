@@ -105,12 +105,14 @@ export const App: React.FC = () => {
 
   useEffect(() => {
     // focus the element with `ref={newTodoField}`
+    loadTodosFromServer();
+  }, []);
+
+  useEffect(() => {
     if (newTodoField.current) {
       newTodoField.current.focus();
     }
-
-    loadTodosFromServer();
-  }, []);
+  }, [visibleTodos]);
 
   const filteredTodos = visibleTodos.filter(todo => {
     switch (filter) {
