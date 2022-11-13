@@ -23,6 +23,28 @@ export const ErrorMessage: React.FC<Props> = ({
     styleError.opacity = 1;
   }
 
+  const getTextOfErrorMessage = () => {
+    switch (typeError) {
+      case ErrorTodo.Add:
+        return 'Unable to add todos';
+
+      case ErrorTodo.Delete:
+        return 'Unable to delete a todo';
+
+      case ErrorTodo.Download:
+        return 'Unable to download todos';
+
+      case ErrorTodo.Update:
+        return 'Unable to update a todo';
+
+      case ErrorTodo.EmptyTitle:
+        return 'Title can\'t be empty';
+
+      default:
+        return undefined;
+    }
+  };
+
   return (
     <div
       style={styleError}
@@ -37,11 +59,7 @@ export const ErrorMessage: React.FC<Props> = ({
         className="delete"
         onClick={onCloseErrorMessage}
       />
-      {typeError === 'download' && 'Unable to download todos'}
-      {typeError === 'add' && 'Unable to add a todo'}
-      {typeError === 'delete' && 'Unable to delete a todo'}
-      {typeError === 'update' && 'Unable to update a todo'}
-      {typeError === 'emptyTitle' && 'Title can\'t be empty'}
+      {typeError && getTextOfErrorMessage()}
     </div>
   );
 };

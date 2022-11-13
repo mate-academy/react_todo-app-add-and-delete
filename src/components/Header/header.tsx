@@ -3,6 +3,7 @@ import {
   RefObject, useContext, useEffect, useState,
 } from 'react';
 import { addTodo } from '../../api/todos';
+import { ErrorTodo } from '../../types/ErrorTodo';
 import { Todo } from '../../types/Todo';
 import { AppContext } from '../AppContext';
 
@@ -39,7 +40,7 @@ export const Header: React.FC<Props> = ({
     event.preventDefault();
 
     if (!newTitle.trim()) {
-      showErrorMessage('emptyTitle');
+      showErrorMessage(ErrorTodo.EmptyTitle);
 
       return;
     }
@@ -66,7 +67,7 @@ export const Header: React.FC<Props> = ({
           setTodosFromServer([addedTodo]);
         }
       } catch {
-        showErrorMessage('add');
+        showErrorMessage(ErrorTodo.Add);
       } finally {
         setIsForbiddenFocus(false);
         setNewTodo(null);

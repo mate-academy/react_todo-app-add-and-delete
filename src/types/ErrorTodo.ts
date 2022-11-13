@@ -1,1 +1,7 @@
-export type ErrorTodo = 'download' | 'add' | 'update' | 'delete' | 'emptyTitle';
+export enum ErrorTodo {
+  Download,
+  Add,
+  Update,
+  Delete,
+  EmptyTitle,
+}

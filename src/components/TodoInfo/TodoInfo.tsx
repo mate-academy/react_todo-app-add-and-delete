@@ -1,5 +1,6 @@
 import React, { useContext, useEffect, useState } from 'react';
 import { deleteTodo } from '../../api/todos';
+import { ErrorTodo } from '../../types/ErrorTodo';
 import { Todo } from '../../types/Todo';
 import { AppContext } from '../AppContext';
 
@@ -7,32 +8,27 @@ type Props = {
   todo: Todo,
 };
 
+enum Loader {
+  Show = 'block',
+  Hide = 'none',
+}
+
 export const TodoInfo: React.FC<Props> = ({ todo }) => {
   const {
     showErrorMessage,
     todosFromServer,
     setTodosFromServer,
-    completedTodosId,
-    setCompletedTodosId,
   } = useContext(AppContext);
-  const [showLoader, setShowLoader] = useState('none');
+  const [showLoader, setShowLoader] = useState(Loader.Hide);
 
   useEffect(() => {
     if (todo.id === 0) {
-      setShowLoader('block');
+      setShowLoader(Loader.Show);
     }
   }, []);
 
-  const addTodoIdForDeletion = (): number[] => {
-    if (completedTodosId) {
-      return [...completedTodosId, todo.id];
-    }
-
-    return [todo.id];
-  };
-
   const onDeleteTodo = async () => {
-    setShowLoader('block');
+    setShowLoader(Loader.Show);
     const deletedTodo = await deleteTodo(todo.id);
 
     try {
@@ -40,30 +36,23 @@ export const TodoInfo: React.FC<Props> = ({ todo }) => {
         throw new Error();
       }
 
-      if (todosFromServer?.length === 1 && !completedTodosId?.length) {
+      if (todosFromServer?.length === 1) {
         setTodosFromServer(undefined);
 
         return;
       }
 
-      if (todosFromServer && completedTodosId?.length) {
+      if (todosFromServer) {
         setTodosFromServer(todosFromServer.filter(
-          todoFromServer => !completedTodosId?.includes(todoFromServer.id),
+          todoFromServer => todoFromServer.id !== todo.id,
         ));
       }
     } catch {
-      showErrorMessage('delete');
+      showErrorMessage(ErrorTodo.Delete);
     } finally {
-      setShowLoader('none');
-      setCompletedTodosId(completedTodosId?.filter(id => id !== todo.id));
+      setShowLoader(Loader.Hide);
     }
   };
-
-  useEffect(() => {
-    if (completedTodosId?.includes(todo.id)) {
-      onDeleteTodo();
-    }
-  }, [completedTodosId]);
 
   return (
     <>
@@ -84,9 +73,7 @@ export const TodoInfo: React.FC<Props> = ({ todo }) => {
         type="button"
         className="todo__remove"
         data-cy="TodoDeleteButton"
-        onClick={() => {
-          setCompletedTodosId(addTodoIdForDeletion());
-        }}
+        onClick={onDeleteTodo}
       >
         ×
       </button>

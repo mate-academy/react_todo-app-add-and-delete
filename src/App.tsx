@@ -13,6 +13,7 @@ import { ErrorMessage } from './components/errorMessage';
 import { Footer } from './components/Footer';
 import { Header } from './components/Header';
 import { AppContext } from './components/AppContext';
+import { ErrorTodo } from './types/ErrorTodo';
 
 export const App: React.FC = () => {
   const user = useContext(AuthContext);
@@ -51,7 +52,7 @@ export const App: React.FC = () => {
           setTodosFromServer(loadedTodos);
         }
       } catch {
-        showErrorMessage('download');
+        showErrorMessage(ErrorTodo.Download);
       }
     }
   }

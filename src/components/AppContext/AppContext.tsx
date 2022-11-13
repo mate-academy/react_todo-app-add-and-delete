@@ -12,9 +12,8 @@ type AppContextType = {
   timerId: React.MutableRefObject<number>,
   todosFromServer?: Todo[],
   setTodosFromServer: React.Dispatch<React.SetStateAction<Todo[] | undefined>>,
-  completedTodosId?: number[],
-  setCompletedTodosId:
-  React.Dispatch<React.SetStateAction<number[] | undefined>>,
+  idOfTodosForLoader: number[];
+  setIdOfTodosForLoader: React.Dispatch<React.SetStateAction<number[]>>,
 };
 
 export const AppContext = React.createContext<AppContextType>({
@@ -26,8 +25,8 @@ export const AppContext = React.createContext<AppContextType>({
   timerId: 0 as unknown as React.MutableRefObject<number>,
   todosFromServer: undefined,
   setTodosFromServer: () => {},
-  completedTodosId: undefined,
-  setCompletedTodosId: () => {},
+  idOfTodosForLoader: [],
+  setIdOfTodosForLoader: () => {},
 });
 
 export const AppProvider: React.FC<React.DetailedHTMLProps<
@@ -36,7 +35,7 @@ React.HTMLAttributes<HTMLDivElement>, HTMLDivElement
   const [sortBy, setSortBy] = useState(SortParam.All);
   const [errorTodo, setErrorTodo] = useState<ErrorTodo | null>(null);
   const [todosFromServer, setTodosFromServer] = useState<Todo[]>();
-  const [completedTodosId, setCompletedTodosId] = useState<number[]>();
+  const [idOfTodosForLoader, setIdOfTodosForLoader] = useState<number[]>([]);
   const timerId = useRef<number>(0);
 
   const showErrorMessage = (typeError: ErrorTodo | null) => {
@@ -60,8 +59,8 @@ React.HTMLAttributes<HTMLDivElement>, HTMLDivElement
     timerId,
     todosFromServer,
     setTodosFromServer,
-    completedTodosId,
-    setCompletedTodosId,
+    idOfTodosForLoader,
+    setIdOfTodosForLoader,
   };
 
   return (
