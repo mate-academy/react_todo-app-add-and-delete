@@ -4,14 +4,18 @@ import { FilterBy } from '../../types/FilterBy';
 
 type Props = {
   activeTodosQuantity: number,
+  completedTodosQuantity: number,
   filterBy: FilterBy,
   setFilterBy: (filterBy: FilterBy) => void,
+  deleteCompletedTodos: () => void,
 };
 
 export const Footer: React.FC<Props> = ({
   activeTodosQuantity,
+  completedTodosQuantity,
   filterBy,
   setFilterBy,
+  deleteCompletedTodos,
 }) => (
   <footer className="todoapp__footer" data-cy="Footer">
     <span className="todo-count" data-cy="todosCounter">
@@ -64,7 +68,11 @@ export const Footer: React.FC<Props> = ({
     <button
       data-cy="ClearCompletedButton"
       type="button"
-      className="todoapp__clear-completed"
+      className={classNames(
+        { 'todoapp__clear-completed': completedTodosQuantity > 0 },
+        { 'todoapp__clear-completed--hidden': !completedTodosQuantity },
+      )}
+      onClick={() => deleteCompletedTodos()}
     >
       Clear completed
     </button>

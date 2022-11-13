@@ -5,9 +5,14 @@ import classNames from 'classnames';
 type Props = {
   isError: boolean,
   setIsError: (isError: boolean) => void,
+  errorMessage: string,
 };
 
-export const ErrorNotification: React.FC<Props> = ({ isError, setIsError }) => (
+export const ErrorNotification: React.FC<Props> = ({
+  isError,
+  setIsError,
+  errorMessage,
+}) => (
   <div
     data-cy="ErrorNotification"
     className={classNames(
@@ -26,11 +31,6 @@ export const ErrorNotification: React.FC<Props> = ({ isError, setIsError }) => (
         setIsError(false);
       }}
     />
-
-    Unable to add a todo
-    <br />
-    Unable to delete a todo
-    <br />
-    Unable to update a todo
+    {errorMessage}
   </div>
 );
