@@ -5,18 +5,19 @@ import { Todo } from '../types/Todo';
 type Props = {
   todos: Todo[],
   handleDeleteTodo: (todoId: number) => void,
+  deletedIds: number[],
 };
 
-export const TodoList: React.FC<Props> = ({ todos, handleDeleteTodo }) => {
+export const TodoList: React.FC<Props> = ({ todos, handleDeleteTodo, deletedIds }) => {
   return (
     <section className="todoapp__main" data-cy="TodoList">
-      {todos.map((todo) => {
+      {todos.map(({id, completed, title}) => {
         return (
           <div
             data-cy="Todo"
-            key={todo.id}
+            key={id}
             className={classNames('todo', {
-              completed: todo.completed,
+              completed: completed,
             })}
           >
             <label className="todo__status-label">
@@ -24,7 +25,7 @@ export const TodoList: React.FC<Props> = ({ todos, handleDeleteTodo }) => {
                 data-cy="TodoStatus"
                 type="checkbox"
                 className="todo__status"
-                defaultChecked={todo.completed}
+                defaultChecked={completed}
               />
             </label>
 
@@ -32,18 +33,24 @@ export const TodoList: React.FC<Props> = ({ todos, handleDeleteTodo }) => {
               data-cy="TodoTitle"
               className="todo__title"
             >
-              {todo.title}
+              {title}
             </span>
             <button
               type="button"
               className="todo__remove"
               data-cy="TodoDeleteButton"
-              onClick={() => handleDeleteTodo(todo.id)}
+              onClick={() => handleDeleteTodo(id)}
             >
               ×
             </button>
 
-            <div data-cy="TodoLoader" className="modal overlay">
+            <div
+              data-cy="TodoLoader"
+              className={classNames('modal overlay', {
+                'is-active': deletedIds.includes(id),
+              })}
+
+            >
               <div className="modal-background has-background-white-ter" />
               <div className="loader" />
             </div>

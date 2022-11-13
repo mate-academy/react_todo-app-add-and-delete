@@ -1,6 +1,6 @@
 /* eslint-disable jsx-a11y/control-has-associated-label */
 import React, {
-  useContext, useEffect, useRef, useState,
+  useContext, useEffect, useRef, useState, useCallback
 } from 'react';
 import { AuthContext } from './components/Auth/AuthContext';
 import { ErrorMessage } from './components/ErrorMessage';
@@ -17,6 +17,7 @@ export const App: React.FC = () => {
   const [error, setError] = useState('');
   const [filterType, setFilterType] = useState<FilterTypes>(FilterTypes.all);
   const [isAdding, setIsAdding] = useState(false);
+  const [deletedIds, setdeletedIds] = useState<number[]>([]);
   const [todoToAdd, setTodoToAdd] = useState('');
 
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
@@ -60,7 +61,9 @@ export const App: React.FC = () => {
 
     if (!todoToAdd.length) {
       setError('length');
-
+      setTimeout(() => setError(''), 3000)
+      setTodoToAdd('')
+      setIsAdding(false)
       return;
     }
 
@@ -78,16 +81,21 @@ export const App: React.FC = () => {
     setIsAdding(false);
   };
 
-  const handleDeleteTodo = async (todoId: number) => {
-    try {
-      await deleteTodo(todoId);
-      setTodos(prev => (
-        prev.filter(item => item.id !== todoId)
-      ));
-    } catch {
-      setError('delete');
+  const handleDeleteTodo = useCallback(async (todoId: number) => {
+    setdeletedIds([todoId]);
+
+    if(user) {
+      try {
+        await deleteTodo(todoId);
+        setTodos(prev => (
+          prev.filter(item => item.id !== todoId)
+        ));
+      } catch {
+        setError('delete');
+      }
     }
-  };
+  }, [user]);
+
 
   const handleDeleteAllTodos = async () => {
     try {
@@ -104,6 +112,10 @@ export const App: React.FC = () => {
       setError('deleteAll');
     }
   };
+
+  const handleFilterType = useCallback((filterType: FilterTypes) => {
+    setFilterType(filterType);
+  }, []);
 
   return (
     <div className="todoapp">
@@ -124,11 +136,12 @@ export const App: React.FC = () => {
             <TodoList
               todos={filteredTodos}
               handleDeleteTodo={handleDeleteTodo}
+              deletedIds={deletedIds}
             />
             <Footer
-              todos={filteredTodos}
+              todos={todos}
               filterType={filterType}
-              setFilterType={setFilterType}
+              setFilterType={handleFilterType}
               deleteTodos={handleDeleteAllTodos}
             />
           </>
