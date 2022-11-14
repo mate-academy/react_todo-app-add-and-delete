@@ -44,7 +44,7 @@ export const App: React.FC = () => {
   }, []);
 
   const handleAddTodoToServer = useCallback(async (title: string) => {
-    if (!title) {
+    if (!title.trim()) {
       setIsError(true);
       setErrorMessage('Title can\'t be empty');
     } else {
