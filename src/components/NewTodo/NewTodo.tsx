@@ -5,6 +5,7 @@ type Props = {
   setErrorMessage: React.Dispatch<SetStateAction<string>>;
   setErrorStatus: React.Dispatch<SetStateAction<boolean>>;
   addTodoOnServer: (todoTitle: string) => void;
+  isAdding: boolean;
 };
 
 export const NewTodo: React.FC<Props> = ({
@@ -12,6 +13,7 @@ export const NewTodo: React.FC<Props> = ({
   setErrorMessage,
   setErrorStatus,
   addTodoOnServer,
+  isAdding,
 }) => {
   const [query, setQuery] = useState('');
 
@@ -23,6 +25,7 @@ export const NewTodo: React.FC<Props> = ({
       setErrorStatus(true);
     } else {
       addTodoOnServer(query);
+      setQuery('');
     }
   };
 
@@ -34,6 +37,8 @@ export const NewTodo: React.FC<Props> = ({
         ref={newTodoField}
         className="todoapp__new-todo"
         placeholder="What needs to be done?"
+        disabled={isAdding}
+        value={query}
         onChange={event => setQuery(event.target.value)}
       />
     </form>

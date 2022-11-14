@@ -4,9 +4,15 @@ import { Todo } from '../../types/Todo';
 
 type Props = {
   todo: Todo;
+  isAdding: boolean;
+  removeTodoFromServer: (todoId: number) => void;
 };
 
-export const TodoItem: React.FC<Props> = ({ todo }) => {
+export const TodoItem: React.FC<Props> = ({
+  todo,
+  isAdding,
+  removeTodoFromServer,
+}) => {
   return (
     <div
       data-cy="Todo"
@@ -26,11 +32,19 @@ export const TodoItem: React.FC<Props> = ({ todo }) => {
         type="button"
         className="todo__remove"
         data-cy="TodoDeleteButton"
+        onClick={() => {
+          removeTodoFromServer(todo.id);
+        }}
       >
         ×
       </button>
 
-      <div data-cy="TodoLoader" className="modal overlay">
+      <div
+        data-cy="TodoLoader"
+        className={classNames('modal overlay', {
+          'is-active': isAdding,
+        })}
+      >
         <div className="modal-background has-background-white-ter" />
         <div className="loader" />
       </div>

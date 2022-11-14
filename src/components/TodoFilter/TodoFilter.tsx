@@ -7,6 +7,7 @@ type Props = {
   filters: Types;
   activeTodosLength: number;
   filter: string;
+  haveCompleted: boolean;
 };
 
 export const TodoFilter: React.FC<Props> = ({
@@ -14,6 +15,7 @@ export const TodoFilter: React.FC<Props> = ({
   filters,
   activeTodosLength,
   filter,
+  haveCompleted,
 }) => {
   return (
     <footer className="todoapp__footer" data-cy="Footer">
@@ -55,7 +57,9 @@ export const TodoFilter: React.FC<Props> = ({
       <button
         data-cy="ClearCompletedButton"
         type="button"
-        className="todoapp__clear-completed"
+        className={classNames('todoapp__clear-completed', {
+          hidden: !haveCompleted,
+        })}
       >
         Clear completed
       </button>

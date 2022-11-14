@@ -6,7 +6,7 @@ import React, {
   useState,
 } from 'react';
 import { AuthContext } from './components/Auth/AuthContext';
-import { addTodo, getTodos } from './api/todos';
+import { addTodo, getTodos, removeTodo } from './api/todos';
 import { Todo } from './types/Todo';
 import { Types } from './types/Types';
 import { TodoList } from './components/TodoList/TodoList';
@@ -25,7 +25,14 @@ export const App: React.FC = () => {
   const [filter, setFilter] = useState(FILTERS.all);
   const [errorMessage, setErrorMessage] = useState('');
   const [errorStatus, setErrorStatus] = useState(false);
-  /* const [isAdding, setIsAdding] = useState(false); */
+  const [isAdding, setIsAdding] = useState(false);
+  const [isRemoving, setIsRemoving] = useState(0);
+  const [tempTodo, setTempTodo] = useState<Todo>({
+    id: 0,
+    title: '',
+    userId: 0,
+    completed: false,
+  });
 
   const user = useContext(AuthContext);
   const newTodoField = useRef<HTMLInputElement>(null);
@@ -42,13 +49,46 @@ export const App: React.FC = () => {
 
   const addTodoOnServer = async (todoTitle: string) => {
     if (user) {
-      const newTodo = await addTodo({
-        title: todoTitle,
-        userId: user?.id,
-        completed: false,
-      });
+      try {
+        setIsAdding(true);
+        setTempTodo({
+          id: 0,
+          title: todoTitle,
+          userId: user.id,
+          completed: false,
+        });
 
-      setTodos(currTodos => [...currTodos, newTodo]);
+        const newTodo = await addTodo({
+          title: todoTitle,
+          userId: user.id,
+          completed: false,
+        });
+
+        setTodos(currTodos => [...currTodos, newTodo]);
+        setIsAdding(false);
+      } catch {
+        setErrorMessage('Unable to add a todo');
+        setErrorStatus(true);
+        setIsAdding(false);
+        setTempTodo({
+          id: 0,
+          title: '',
+          userId: 0,
+          completed: false,
+        });
+      }
+    }
+  };
+
+  const removeTodoFromServer = async (todoId: number) => {
+    try {
+      setIsRemoving(todoId);
+      await removeTodo(todoId);
+
+      setTodos(currTodos => currTodos.filter(todo => todo.id !== todoId));
+    } catch {
+      setErrorMessage('Unable to delete a todo');
+      setErrorStatus(true);
     }
   };
 
@@ -93,17 +133,25 @@ export const App: React.FC = () => {
             setErrorMessage={setErrorMessage}
             setErrorStatus={setErrorStatus}
             addTodoOnServer={addTodoOnServer}
+            isAdding={isAdding}
           />
         </header>
 
         {todos.length > 0 && (
           <>
-            <TodoList todos={filteredTodos} />
+            <TodoList
+              todos={filteredTodos}
+              isAdding={isAdding}
+              isRemoving={isRemoving}
+              tempTodo={tempTodo}
+              removeTodoFromServer={removeTodoFromServer}
+            />
             <TodoFilter
               setFilter={setFilter}
               filters={FILTERS}
               filter={filter}
               activeTodosLength={activeTodosLength}
+              haveCompleted={filteredTodos.some(todo => todo.completed)}
             />
           </>
         )}
