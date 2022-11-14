@@ -1,6 +1,5 @@
-import classNames from 'classnames';
 import { Todo } from '../../types/Todo';
-import { Loader } from '../Loader/Loader';
+import { TodoItem } from '../TodoItem/TodoItem';
 
 type Props = {
   filteredTodos: Todo[];
@@ -15,48 +14,30 @@ export const TodoList: React.FC<Props> = ({
   deleteTodoAtServer,
   deletedTodoIDs,
 }) => {
+  const tempTodo = {
+    id: 0,
+    userId: 0,
+    title: '',
+    completed: false,
+  };
+
   return (
     <section className="todoapp__main" data-cy="TodoList">
-      {filteredTodos.map((todo) => {
-        const {
-          id,
-          title,
-          completed,
-        } = todo;
-
-        return (
-          <div
-            key={id}
-            data-cy="Todo"
-            className={classNames(
-              'todo',
-              { completed },
-            )}
-          >
-            <label className="todo__status-label">
-              <input
-                data-cy="TodoStatus"
-                type="checkbox"
-                className="todo__status"
-                defaultChecked
-              />
-            </label>
-
-            <span data-cy="TodoTitle" className="todo__title">
-              {title}
-            </span>
-            <button
-              type="button"
-              className="todo__remove"
-              data-cy="TodoDeleteButton"
-              onClick={() => deleteTodoAtServer(id)}
-            >
-              ×
-            </button>
-            <Loader isAdding={deletedTodoIDs.includes(id) || isAdding} />
-          </div>
-        );
-      })}
+      {filteredTodos.map((todo) => (
+        <TodoItem
+          key={todo.id}
+          todo={todo}
+          isAdding={deletedTodoIDs.includes(todo.id)}
+          deleteTodoAtServer={deleteTodoAtServer}
+        />
+      ))}
+      {isAdding && (
+        <TodoItem
+          key={tempTodo.id}
+          todo={tempTodo}
+          isAdding={isAdding}
+        />
+      )}
     </section>
   );
 };

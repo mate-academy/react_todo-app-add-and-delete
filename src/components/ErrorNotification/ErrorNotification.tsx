@@ -1,9 +1,8 @@
-/* eslint-disable jsx-a11y/control-has-associated-label */
 import classNames from 'classnames';
 import { Error } from '../../types/Error';
 
 type Props = {
-  errorMessage: { hasError: boolean; hasMessage: string };
+  errorMessage: { hasMessage: string };
   setErrorMessage: (arg0: Error) => void;
 };
 
@@ -17,7 +16,7 @@ export const ErrorNotification: React.FC<Props> = ({
       className={classNames(
         'notification is-danger is-light has-text-weight-normal',
         {
-          hidden: !errorMessage.hasError,
+          hidden: !errorMessage.hasMessage,
         },
       )}
     >
@@ -26,9 +25,9 @@ export const ErrorNotification: React.FC<Props> = ({
         type="button"
         className="delete"
         onClick={() => setErrorMessage({
-          hasError: false,
           hasMessage: '',
         })}
+        aria-label="Hide error notification"
       />
       {errorMessage.hasMessage}
     </div>

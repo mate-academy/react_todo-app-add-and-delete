@@ -1,5 +1,10 @@
-// eslint-disable-next-line
-import React, { useState, useMemo, useContext, useEffect, useRef } from 'react';
+import React, {
+  useState,
+  useMemo,
+  useContext,
+  useEffect,
+  useRef,
+} from 'react';
 import { AuthContext } from './components/Auth/AuthContext';
 import { Todo } from './types/Todo';
 import { addNewTodo, deleteTodo, getTodos } from './api/todos';
@@ -8,8 +13,8 @@ import { Error } from './types/Error';
 import { Header } from './components/Header/Header';
 import { Footer } from './components/Footer/Footer';
 import { TodoList } from './components/TodoList/TodoList';
-// eslint-disable-next-line
-import { ErrorNotification } from './components/ErrorNotification/ErrorNotification';
+import
+{ ErrorNotification } from './components/ErrorNotification/ErrorNotification';
 
 export const App: React.FC = () => {
   const [todos, setTodos] = useState<Todo[]>([]);
@@ -17,11 +22,9 @@ export const App: React.FC = () => {
   const [isAdding, setIsAdding] = useState(false);
   const [deletedTodoIDs, setDeletedTodoIDs] = useState<number[]>([]);
   const [errorMessage, setErrorMessage] = useState<Error>({
-    hasError: false,
     hasMessage: '',
   });
 
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   const user = useContext(AuthContext);
   const newTodoField = useRef<HTMLInputElement>(null);
 
@@ -30,11 +33,9 @@ export const App: React.FC = () => {
       const todosFromServer = await getTodos(userId);
 
       setTodos(todosFromServer);
-      // eslint-disable-next-line
-    } catch (error: any) {
+    } catch (error) {
       setErrorMessage({
-        hasError: true,
-        hasMessage: error.message,
+        hasMessage: 'Can\'t fetch data from server',
       });
     }
   };
@@ -43,14 +44,15 @@ export const App: React.FC = () => {
     try {
       if (user) {
         setIsAdding(true);
+
         await addNewTodo(title, user.id);
 
         await getTodosFromServer(user.id);
+
         setIsAdding(false);
       }
-    } catch (error: any) {
+    } catch (error) {
       setErrorMessage({
-        hasError: true,
         hasMessage: 'Unable to add a todo',
       });
       setIsAdding(false);
@@ -64,9 +66,8 @@ export const App: React.FC = () => {
       if (user) {
         await getTodosFromServer(user.id);
       }
-    } catch (error: any) {
+    } catch (error) {
       setErrorMessage({
-        hasError: true,
         hasMessage: 'Unable to delete a todo',
       });
     }
@@ -87,8 +88,8 @@ export const App: React.FC = () => {
     [todos, filterBy],
   );
 
-  const activeTodos = useMemo(
-    () => todos.filter((todo) => !todo.completed),
+  const activeTodosCount = useMemo(
+    () => todos.filter((todo) => !todo.completed).length,
     [todos],
   );
 
@@ -101,21 +102,20 @@ export const App: React.FC = () => {
     try {
       setDeletedTodoIDs(() => completedTodos.map(todo => todo.id));
       await Promise.all(completedTodos.map(async (todo) => (
-        await deleteTodo(todo.id)
+        deleteTodo(todo.id)
       )));
+
       if (user) {
         await getTodosFromServer(user.id);
       }
-    } catch (error: any) {
+    } catch (error) {
       setErrorMessage({
-        hasError: true,
         hasMessage: 'Unable to delete completed todos',
       });
     }
   };
 
   useEffect(() => {
-    // focus the element with `ref={newTodoField}`
     if (newTodoField.current) {
       newTodoField.current.focus();
     }
@@ -132,7 +132,6 @@ export const App: React.FC = () => {
   useEffect(() => {
     setTimeout(() => {
       setErrorMessage({
-        hasError: false,
         hasMessage: '',
       });
     }, 3000);
@@ -144,6 +143,7 @@ export const App: React.FC = () => {
 
       <div className="todoapp__content">
         <Header
+          todos={todos}
           newTodoField={newTodoField}
           addTodoToServer={addTodoToServer}
           isAdding={isAdding}
@@ -157,13 +157,15 @@ export const App: React.FC = () => {
           deletedTodoIDs={deletedTodoIDs}
         />
 
-        <Footer
-          activeTodos={activeTodos}
-          filterBy={filterBy}
-          setFilterBy={setFilterBy}
-          deleteCompletedTodos={deleteCompletedTodos}
-          completedTodos={completedTodos}
-        />
+        {!!todos.length && (
+          <Footer
+            activeTodosCount={activeTodosCount}
+            filterBy={filterBy}
+            setFilterBy={setFilterBy}
+            deleteCompletedTodos={deleteCompletedTodos}
+            completedTodos={completedTodos}
+          />
+        )}
       </div>
 
       {errorMessage.hasMessage && (

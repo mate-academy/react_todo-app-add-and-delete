@@ -1,51 +1,55 @@
-import React, { useState } from "react";
+import React, { useState } from 'react';
 import { Error } from '../../types/Error';
+import { Todo } from '../../types/Todo';
 
-/* eslint-disable jsx-a11y/control-has-associated-label */
 type Props = {
+  todos: Todo[];
   newTodoField: React.RefObject<HTMLInputElement>;
   addTodoToServer: (arg0: string) => Promise<void>;
-  isAdding: boolean;  
+  isAdding: boolean;
   setErrorMessage: (arg0: Error) => void;
 };
 
 export const Header: React.FC<Props> = ({
-  newTodoField, 
-  addTodoToServer, 
-  isAdding,   
-  setErrorMessage, 
+  todos,
+  newTodoField,
+  addTodoToServer,
+  isAdding,
+  setErrorMessage,
 }) => {
-const [title, setTitle] = useState('');
+  const [title, setTitle] = useState('');
 
-const handleTitle = (event: React.ChangeEvent<HTMLInputElement>) => {
-  const { value } = event.target;
+  const handleTitle = (event: React.ChangeEvent<HTMLInputElement>) => {
+    const { value } = event.target;
 
-  setTitle(value);
-};
+    setTitle(value);
+  };
 
-const handleSubmit = (event: React.FormEvent) => {
-  event.preventDefault();
+  const handleSubmit = (event: React.FormEvent) => {
+    event.preventDefault();
 
-  if (!title.trim()) {
-    setErrorMessage({
-      hasError: true,
-      hasMessage: 'Title can\'t be empty',
-    });
+    if (!title.trim()) {
+      setErrorMessage({
+        hasMessage: 'Title can\'t be empty',
+      });
 
-    return;
-  }
-  
-  addTodoToServer(title);
-  setTitle('');
-}
+      return;
+    }
+
+    addTodoToServer(title);
+    setTitle('');
+  };
 
   return (
     <header className="todoapp__header">
-      <button
-        data-cy="ToggleAllButton"
-        type="button"
-        className="todoapp__toggle-all active"
-      />
+      {!!todos.length && (
+        <button
+          data-cy="ToggleAllButton"
+          type="button"
+          className="todoapp__toggle-all active"
+          aria-label="Toggle all todos"
+        />
+      )}
       <form onSubmit={handleSubmit}>
         <input
           data-cy="NewTodoField"

@@ -1,4 +1,3 @@
-export interface Error {
-  hasError: boolean;
+export interface Error {  
   hasMessage: string;
 }

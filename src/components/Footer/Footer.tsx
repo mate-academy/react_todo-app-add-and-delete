@@ -3,7 +3,7 @@ import { FilterType } from '../../types/FilterType';
 import { Todo } from '../../types/Todo';
 
 type Props = {
-  activeTodos: Todo[];
+  activeTodosCount: number;
   filterBy: FilterType;
   setFilterBy: (arg0: FilterType) => void;
   deleteCompletedTodos: () => Promise<void>;
@@ -11,7 +11,7 @@ type Props = {
 };
 
 export const Footer: React.FC<Props> = ({
-  activeTodos,
+  activeTodosCount,
   filterBy,
   setFilterBy,
   deleteCompletedTodos,
@@ -20,7 +20,7 @@ export const Footer: React.FC<Props> = ({
   return (
     <footer className="todoapp__footer" data-cy="Footer">
       <span className="todo-count" data-cy="todosCounter">
-        {`${activeTodos.length} items left`}
+        {`${activeTodosCount} items left`}
       </span>
 
       <nav className="filter" data-cy="Filter">
