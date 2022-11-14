@@ -5,4 +5,12 @@ export const getTodos = (userId: number) => {
   return client.get<Todo[]>(`/todos?userId=${userId}`);
 };
 
-// Add more methods here
+export type TodoData = Pick<Todo, 'userId' | 'title' | 'completed'>;
+
+export const createTodo = async ({ userId, title, completed }: TodoData) => {
+  return client.post<Todo>('/todos', { userId, title, completed });
+};
+
+export const deleteTodo = async (todoId: number) => {
+  return client.delete(`/todos/${todoId}`);
+};
