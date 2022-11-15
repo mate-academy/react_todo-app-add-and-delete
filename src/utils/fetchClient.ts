@@ -13,6 +13,7 @@ type RequestMethod = 'GET' | 'POST' | 'PATCH' | 'DELETE';
 function request<T>(
   url: string,
   method: RequestMethod = 'GET',
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   data: any = null, // we can send any data to the server
 ): Promise<T> {
   const options: RequestInit = { method };
@@ -39,7 +40,9 @@ function request<T>(
 
 export const client = {
   get: <T>(url: string) => request<T>(url),
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   post: <T>(url: string, data: any) => request<T>(url, 'POST', data),
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   patch: <T>(url: string, data: any) => request<T>(url, 'PATCH', data),
   delete: (url: string) => request(url, 'DELETE'),
 };
