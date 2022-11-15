@@ -1,6 +1,6 @@
 /* eslint-disable jsx-a11y/control-has-associated-label */
 import React, {
-  useContext, useEffect, useRef, useState, useCallback
+  useContext, useEffect, useRef, useState, useCallback,
 } from 'react';
 import { AuthContext } from './components/Auth/AuthContext';
 import { ErrorMessage } from './components/ErrorMessage';
@@ -9,7 +9,7 @@ import { FilterTypes } from './types/FilterTypes';
 import { Footer } from './components/Footer';
 import { TodoField } from './components/TodoField';
 
-import { getTodos, newTodo, deleteTodo } from './api/todos';
+import { getTodos, addTodo, deleteTodo } from './api/todos';
 import { Todo } from './types/Todo';
 
 export const App: React.FC = () => {
@@ -17,7 +17,7 @@ export const App: React.FC = () => {
   const [error, setError] = useState('');
   const [filterType, setFilterType] = useState<FilterTypes>(FilterTypes.all);
   const [isAdding, setIsAdding] = useState(false);
-  const [deletedIds, setdeletedIds] = useState<number[]>([]);
+  const [deletedIds, setDeletedIds] = useState<number[]>([]);
   const [todoToAdd, setTodoToAdd] = useState('');
 
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
@@ -49,27 +49,33 @@ export const App: React.FC = () => {
         setTodos(loadedTodos);
       } catch {
         setError('load');
-        setTimeout(() => setError(''), 3000);
       }
     };
 
     loadTodos();
   }, []);
 
+  useEffect(() => {
+    if (error) {
+      setTimeout(() => setError(''), 3000);
+    }
+  }, [error]);
+
   const addNewTodo = async () => {
     setIsAdding(true);
 
     if (!todoToAdd.length) {
       setError('length');
-      setTimeout(() => setError(''), 3000)
-      setTodoToAdd('')
-      setIsAdding(false)
+      setTimeout(() => setError(''), 3000);
+      setTodoToAdd('');
+      setIsAdding(false);
+
       return;
     }
 
     if (user) {
       try {
-        const newAPITodo = await newTodo(todoToAdd, user.id);
+        const newAPITodo = await addTodo(todoToAdd, user.id);
 
         setTodos(currTodos => [...currTodos, newAPITodo]);
       } catch {
@@ -82,9 +88,9 @@ export const App: React.FC = () => {
   };
 
   const handleDeleteTodo = useCallback(async (todoId: number) => {
-    setdeletedIds([todoId]);
+    setDeletedIds([todoId]);
 
-    if(user) {
+    if (user) {
       try {
         await deleteTodo(todoId);
         setTodos(prev => (
@@ -95,7 +101,6 @@ export const App: React.FC = () => {
       }
     }
   }, [user]);
-
 
   const handleDeleteAllTodos = async () => {
     try {
@@ -113,8 +118,8 @@ export const App: React.FC = () => {
     }
   };
 
-  const handleFilterType = useCallback((filterType: FilterTypes) => {
-    setFilterType(filterType);
+  const handleFilterType = useCallback((type: FilterTypes) => {
+    setFilterType(type);
   }, []);
 
   return (
@@ -140,7 +145,6 @@ export const App: React.FC = () => {
             />
             <Footer
               todos={todos}
-              filterType={filterType}
               setFilterType={handleFilterType}
               deleteTodos={handleDeleteAllTodos}
             />

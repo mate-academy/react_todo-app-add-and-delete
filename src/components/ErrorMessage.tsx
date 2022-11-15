@@ -1,8 +1,9 @@
 import React from 'react';
 import classNames from 'classnames';
+import { ErrorTypes } from '../types/ErrorType';
 
 type Props = {
-  error: string,
+  error: ErrorTypes,
   closeError: () => void,
 };
 
@@ -10,23 +11,23 @@ export const ErrorMessage: React.FC<Props> = ({ error, closeError }) => {
   let errorMessage = '';
 
   switch (error) {
-    case 'load':
+    case ErrorTypes.LOAD:
       errorMessage = 'Unable to load todos';
       break;
 
-    case 'add':
+    case ErrorTypes.ADD:
       errorMessage = 'Unable to add a todo';
       break;
 
-    case 'length':
+    case ErrorTypes.LENGTH:
       errorMessage = 'Title can\'t be empty';
       break;
 
-    case 'delete':
+    case ErrorTypes.DELETE:
       errorMessage = 'Unable to delete a todo';
       break;
 
-    case 'deleteAll':
+    case ErrorTypes.DELETEALL:
       errorMessage = 'Unable to delete todos';
       break;
 

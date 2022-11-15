@@ -8,16 +8,20 @@ type Props = {
   deletedIds: number[],
 };
 
-export const TodoList: React.FC<Props> = ({ todos, handleDeleteTodo, deletedIds }) => {
+export const TodoList: React.FC<Props> = ({
+  todos,
+  handleDeleteTodo,
+  deletedIds,
+}) => {
   return (
     <section className="todoapp__main" data-cy="TodoList">
-      {todos.map(({id, completed, title}) => {
+      {todos.map(({ id, completed, title }) => {
         return (
           <div
             data-cy="Todo"
             key={id}
             className={classNames('todo', {
-              completed: completed,
+              completed,
             })}
           >
             <label className="todo__status-label">

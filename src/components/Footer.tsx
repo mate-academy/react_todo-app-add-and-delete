@@ -5,7 +5,6 @@ import { Todo } from '../types/Todo';
 
 type Props = {
   todos: Todo[],
-  filterType: string,
   setFilterType: (filterType: FilterTypes) => void,
   deleteTodos: () => void,
 };
@@ -15,11 +14,9 @@ export const Footer: React.FC<Props> = ({
   setFilterType,
   deleteTodos,
 }) => {
-
   const todoNumber = useMemo(() => {
     return todos.filter(todo => !todo.completed).length;
   }, [todos]);
-
   const completedTodo = todos.some(todo => todo.completed);
 
   return (
