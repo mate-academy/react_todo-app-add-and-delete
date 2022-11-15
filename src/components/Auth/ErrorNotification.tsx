@@ -30,11 +30,7 @@ export const ErrorNotification: React.FC<Props> = React.memo(({
         className="delete"
         onClick={handleErrorButtonClick}
       />
-
-      {error === Error.ADD && 'Unable to add a todo'}
-      {error === Error.DELETE && 'Unable to delete a todo'}
-      {error === Error.UPDATE && 'Unable to update a todo'}
-      {error === Error.EMPTY && "Title can't be empty"}
+      {error !== Error.NONE && error}
     </div>
   );
 });
