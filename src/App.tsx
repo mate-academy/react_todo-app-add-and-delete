@@ -11,10 +11,11 @@ import { TodoField } from './components/TodoField';
 
 import { getTodos, addTodo, deleteTodo } from './api/todos';
 import { Todo } from './types/Todo';
+import { ErrorTypes } from './types/ErrorType';
 
 export const App: React.FC = () => {
   const [todos, setTodos] = useState<Todo[]>([]);
-  const [error, setError] = useState('');
+  const [error, setError] = useState<ErrorTypes | null>(null);
   const [filterType, setFilterType] = useState<FilterTypes>(FilterTypes.all);
   const [isAdding, setIsAdding] = useState(false);
   const [deletedIds, setDeletedIds] = useState<number[]>([]);
@@ -48,7 +49,7 @@ export const App: React.FC = () => {
 
         setTodos(loadedTodos);
       } catch {
-        setError('load');
+        setError(ErrorTypes.LOAD);
       }
     };
 
@@ -57,7 +58,7 @@ export const App: React.FC = () => {
 
   useEffect(() => {
     if (error) {
-      setTimeout(() => setError(''), 3000);
+      setTimeout(() => setError(null), 3000);
     }
   }, [error]);
 
@@ -65,8 +66,8 @@ export const App: React.FC = () => {
     setIsAdding(true);
 
     if (!todoToAdd.length) {
-      setError('length');
-      setTimeout(() => setError(''), 3000);
+      setError(ErrorTypes.LOAD);
+      setTimeout(() => setError(null), 3000);
       setTodoToAdd('');
       setIsAdding(false);
 
@@ -79,7 +80,7 @@ export const App: React.FC = () => {
 
         setTodos(currTodos => [...currTodos, newAPITodo]);
       } catch {
-        setError('add');
+        setError(ErrorTypes.ADD);
       }
     }
 
@@ -97,7 +98,7 @@ export const App: React.FC = () => {
           prev.filter(item => item.id !== todoId)
         ));
       } catch {
-        setError('delete');
+        setError(ErrorTypes.DELETE);
       }
     }
   }, [user]);
@@ -114,7 +115,7 @@ export const App: React.FC = () => {
 
       setTodos(currentTodos => currentTodos.filter(todo => !todo.completed));
     } catch {
-      setError('deleteAll');
+      setError(ErrorTypes.DELETEALL);
     }
   };
 
@@ -155,7 +156,7 @@ export const App: React.FC = () => {
       {error && (
         <ErrorMessage
           error={error}
-          closeError={() => setError('')}
+          closeError={() => setError(null)}
         />
       )}
     </div>
