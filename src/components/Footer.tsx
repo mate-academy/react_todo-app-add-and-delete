@@ -7,10 +7,14 @@ type Props = {
   todos: Todo[],
   visibleTodos: Todo[],
   setVisibleTodos: (param: Todo[]) => void,
+  onRemoveCompleted: () => Promise<void>,
 };
 
 export const Footer: React.FC<Props> = ({
-  todos, visibleTodos, setVisibleTodos,
+  todos,
+  visibleTodos,
+  setVisibleTodos,
+  onRemoveCompleted,
 }) => {
   const [filterType, setFilterType] = useState<Filters>(Filters.all);
 
@@ -76,13 +80,23 @@ export const Footer: React.FC<Props> = ({
         </a>
       </nav>
 
-      <button
-        data-cy="ClearCompletedButton"
-        type="button"
-        className="todoapp__clear-completed"
-      >
-        Clear completed
-      </button>
+      {visibleTodos.length ? (
+        <button
+          data-cy="ClearCompletedButton"
+          type="button"
+          className="todoapp__clear-completed"
+          onClick={onRemoveCompleted}
+        >
+          Clear completed
+        </button>
+      ) : (
+        // eslint-disable-next-line jsx-a11y/control-has-associated-label
+        <button
+          data-cy="ClearCompletedButton"
+          type="button"
+          className="todoapp__clear-completed"
+        />
+      )}
     </footer>
   );
 };
