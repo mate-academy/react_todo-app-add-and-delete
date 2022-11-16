@@ -16,7 +16,7 @@ export const App: React.FC = () => {
   const newTodoField = useRef<HTMLInputElement>(null);
   const [todos, setTodos] = useState<Todo[]>([]);
   const [filterType, setFilterType] = useState<FilterType>(FilterType.ALL);
-  const [isSelected, setIsSelected] = useState('');
+  const [isSelected, setIsSelected] = useState('all');
   const [hasError, setHasError] = useState(false);
   const [errorText, setErrorText] = useState('');
   const [fieldValue, setFieldValue] = useState('');
@@ -82,10 +82,10 @@ export const App: React.FC = () => {
     setIsSelected(event.currentTarget.text);
 
     switch (event.currentTarget.text) {
-      case 'Active':
+      case FilterType.ACTIVE:
         return setFilterType(FilterType.ACTIVE);
 
-      case 'Completed':
+      case FilterType.COMPLETED:
         return setFilterType(FilterType.COMPLETED);
 
       default:
@@ -108,7 +108,7 @@ export const App: React.FC = () => {
     setIsAdding(true);
 
     try {
-      if (fieldValue.length === 0) {
+      if (!fieldValue.trim()) {
         setHasError(true);
         setErrorText('Title cannot be empty');
 
@@ -151,8 +151,9 @@ export const App: React.FC = () => {
 
     try {
       const completedTodos = todos.filter(todo => todo.completed);
+      const idsCompletedTodos = completedTodos.map(todo => todo.id);
 
-      setIdsDeletedTodos(completedTodos.map(todo => todo.id));
+      setIdsDeletedTodos(idsCompletedTodos);
 
       await Promise.all(completedTodos.map(async (todo) => {
         await removeTodo(todo.id);
@@ -190,7 +191,7 @@ export const App: React.FC = () => {
           deleteTodoId={activeTodoId}
         />
 
-        {todos.length > 0 && (
+        {!!todos.length && (
           <Footer
             todos={todos}
             isSelected={isSelected}

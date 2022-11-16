@@ -1,6 +1,7 @@
 import React from 'react';
 import classNames from 'classnames';
 import { Todo } from '../../types/Todo';
+import { FilterType } from '../../types/FilterType';
 
 type Props = {
   todos: Todo[];
@@ -28,7 +29,7 @@ export const Footer: React.FC<Props> = ({
           data-cy="FilterLinkAll"
           href="#/"
           className={classNames('filter__link',
-            { selected: isSelected === 'All' })}
+            { selected: isSelected === FilterType.ALL })}
           onClick={handleFilterButton}
         >
           All
@@ -38,7 +39,7 @@ export const Footer: React.FC<Props> = ({
           data-cy="FilterLinkActive"
           href="#/active"
           className={classNames('filter__link',
-            { selected: isSelected === 'Active' })}
+            { selected: isSelected === FilterType.ACTIVE })}
           onClick={handleFilterButton}
         >
           Active
@@ -47,7 +48,7 @@ export const Footer: React.FC<Props> = ({
           data-cy="FilterLinkCompleted"
           href="#/completed"
           className={classNames('filter__link',
-            { selected: isSelected === 'Completed' })}
+            { selected: isSelected === FilterType.COMPLETED })}
           onClick={handleFilterButton}
         >
           Completed
