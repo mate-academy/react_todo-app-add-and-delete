@@ -2,7 +2,6 @@ import React, {
   useContext,
   useEffect,
   useRef,
-  useCallback,
   useState,
 } from 'react';
 import { AuthContext } from './components/Auth/AuthContext';
@@ -24,7 +23,7 @@ export const App: React.FC = () => {
   const [title, setTitle] = useState('');
   const [isAdding, setIsAdding] = useState(false);
 
-  const getTodosFromsServer = useCallback(async () => {
+  const getTodosFromsServer = async () => {
     if (!user) {
       return;
     }
@@ -40,13 +39,9 @@ export const App: React.FC = () => {
         setErrorMessage('');
       }, 3000);
     }
-  }, []);
+  };
 
   useEffect(() => {
-    if (newTodoField.current) {
-      newTodoField.current.focus();
-    }
-
     getTodosFromsServer();
   }, [todos]);
 
@@ -64,30 +59,32 @@ export const App: React.FC = () => {
   });
 
   const addNewTodo = async (newTitle: string) => {
-    if (user) {
-      try {
-        setIsAdding(true);
+    if (!user) {
+      return;
+    }
 
-        const todoToAdd = {
-          title: newTitle,
-          userId: user.id,
-          completed: false,
-        };
+    try {
+      setIsAdding(true);
 
-        const newTodo = await addTodo(todoToAdd);
+      const todoToAdd = {
+        title: newTitle,
+        userId: user.id,
+        completed: false,
+      };
 
-        setIsAdding(false);
+      const newTodo = await addTodo(todoToAdd);
 
-        setTodos(currentTodos => [...currentTodos, newTodo]);
-      } catch (error) {
-        setErrorMessage('Unable to add a todo');
-        setTitle('');
-        setIsAdding(false);
+      setIsAdding(false);
 
-        setTimeout(() => {
-          setErrorMessage('');
-        }, 3000);
-      }
+      setTodos(currentTodos => [...currentTodos, newTodo]);
+    } catch (error) {
+      setErrorMessage('Unable to add a todo');
+      setTitle('');
+      setIsAdding(false);
+
+      setTimeout(() => {
+        setErrorMessage('');
+      }, 3000);
     }
   };
 
