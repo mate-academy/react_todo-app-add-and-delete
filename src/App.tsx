@@ -34,7 +34,6 @@ export const App: React.FC = () => {
       setTodos(todosFromServer);
     } catch (Error) {
       setErrorMessage('Loading error!');
-
       setTimeout(() => {
         setErrorMessage('');
       }, 3000);
@@ -75,13 +74,11 @@ export const App: React.FC = () => {
       const newTodo = await addTodo(todoToAdd);
 
       setIsAdding(false);
-
       setTodos(currentTodos => [...currentTodos, newTodo]);
     } catch (error) {
       setErrorMessage('Unable to add a todo');
       setTitle('');
       setIsAdding(false);
-
       setTimeout(() => {
         setErrorMessage('');
       }, 3000);
