@@ -10,31 +10,29 @@ export const Notification: React.FC<Props> = React.memo(({
   notification,
   onSetNotification,
 }) => {
-  const wait = setTimeout(() => onSetNotification(''), 3000);
+  const notificationDelay = setTimeout(() => onSetNotification(''), 3000);
 
   const clickHandler = () => {
     onSetNotification('');
-    clearTimeout(wait);
+    clearTimeout(notificationDelay);
   };
 
   return (
-    <>
-      <div
-        data-cy="ErrorNotification"
-        className={classNames(
-          'notification is-danger is-light has-text-weight-normal',
-          { hidden: !notification },
-        )}
-      >
-        <button
-          data-cy="HideErrorButton"
-          type="button"
-          className="delete"
-          aria-label="hide-notification"
-          onClick={clickHandler}
-        />
-        {notification}
-      </div>
-    </>
+    <div
+      data-cy="ErrorNotification"
+      className={classNames(
+        'notification is-danger is-light has-text-weight-normal',
+        { hidden: !notification },
+      )}
+    >
+      <button
+        data-cy="HideErrorButton"
+        type="button"
+        className="delete"
+        aria-label="hide-notification"
+        onClick={clickHandler}
+      />
+      {notification}
+    </div>
   );
 });

@@ -107,7 +107,7 @@ export const App: React.FC = () => {
     setNotification('');
     setIsAdding(true);
 
-    if (!title) {
+    if (!title || !/\S/.test(title)) {
       setNotification('Title can\'t be empty');
       setIsAdding(false);
 
