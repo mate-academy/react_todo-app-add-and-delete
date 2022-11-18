@@ -18,7 +18,6 @@ export const Footer:React.FC<Props> = ({
   completedTodos,
   removeCompletedTodos,
 }) => {
-  const hideClearButton = completedTodos.length;
 
   return (
     <footer className="todoapp__footer" data-cy="Footer">
@@ -74,7 +73,7 @@ export const Footer:React.FC<Props> = ({
         type="button"
         className={classNames(
           'todoapp__clear-completed',
-          { hidden: hideClearButton },
+          { hidden: !completedTodos.length },
         )}
         onClick={removeCompletedTodos}
       >

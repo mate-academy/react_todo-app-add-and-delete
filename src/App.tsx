@@ -34,6 +34,7 @@ export const App: React.FC = () => {
       setTodos(todosFromServer);
     } catch (Error) {
       setErrorMessage('Loading error!');
+
       setTimeout(() => {
         setErrorMessage('');
       }, 3000);
@@ -79,6 +80,7 @@ export const App: React.FC = () => {
       setErrorMessage('Unable to add a todo');
       setTitle('');
       setIsAdding(false);
+
       setTimeout(() => {
         setErrorMessage('');
       }, 3000);
