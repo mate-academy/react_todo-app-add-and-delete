@@ -82,6 +82,7 @@ export const Footer: React.FC<Props> = ({
 
       {visibleTodos.length ? (
         <button
+          aria-label="ClearCompletedButton"
           data-cy="ClearCompletedButton"
           type="button"
           className="todoapp__clear-completed"
@@ -90,8 +91,8 @@ export const Footer: React.FC<Props> = ({
           Clear completed
         </button>
       ) : (
-        // eslint-disable-next-line jsx-a11y/control-has-associated-label
         <button
+          aria-label="ClearCompletedButton"
           data-cy="ClearCompletedButton"
           type="button"
           className="todoapp__clear-completed"

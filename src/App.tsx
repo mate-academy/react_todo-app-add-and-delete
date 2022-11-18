@@ -28,13 +28,15 @@ export const App: React.FC = () => {
   const user = useContext(AuthContext);
 
   const loadTodos = useCallback(async () => {
-    if (user?.id) {
-      getTodos(user.id)
-        .then(todo => {
-          setTodos(todo);
-          setVisibleTodos(todo);
-        })
-        .catch(() => setIsErrorMessage(ErorTypes.load));
+    try {
+      if (user) {
+        const todosFromServer = await getTodos(user.id);
+
+        setTodos(todosFromServer);
+        setVisibleTodos(todosFromServer);
+      }
+    } catch {
+      setIsErrorMessage(ErorTypes.load);
     }
   }, []);
 
@@ -47,12 +49,16 @@ export const App: React.FC = () => {
           title,
           completed: false,
         };
+        const addedTodo = await addTodo(tempData);
+
+        if (!addedTodo) {
+          setTempTodo(null);
+        }
 
         setIsAdding(true);
         setTempTodo(tempData as Todo);
         setActiveTodoIds([0]);
 
-        await addTodo(tempData);
         await loadTodos();
 
         setTempTodo(null);
