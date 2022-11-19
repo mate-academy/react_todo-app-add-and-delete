@@ -1,10 +1,10 @@
 import React, { useEffect, useState } from 'react';
 import classNames from 'classnames';
-import { ErorTypes } from '../types/ErrorTypes';
+import { ErrorTypes } from '../types/ErrorTypes';
 
 type Props = {
-  isErrorMessage: ErorTypes,
-  setIsErrorMessage: (value: ErorTypes) => void,
+  isErrorMessage: ErrorTypes,
+  setIsErrorMessage: (value: ErrorTypes) => void,
 };
 
 export const ErrorNotification: React.FC<Props> = ({
@@ -12,9 +12,17 @@ export const ErrorNotification: React.FC<Props> = ({
 }) => {
   const [onCloseError, setOnCloseError] = useState(false);
 
+  const ErrorText = {
+    [ErrorTypes.load]: 'Unable to load a todo',
+    [ErrorTypes.upload]: 'Unable to add a todo',
+    [ErrorTypes.delete]: 'Unable to delete a todo',
+    [ErrorTypes.title]: 'Title can\'t be empty',
+    [ErrorTypes.none]: '',
+  };
+
   useEffect(() => {
     setTimeout(() => {
-      setIsErrorMessage(ErorTypes.none);
+      setIsErrorMessage(ErrorTypes.none);
     }, 3000);
   }, [isErrorMessage]);
 
@@ -26,7 +34,7 @@ export const ErrorNotification: React.FC<Props> = ({
         'is-danger',
         'is-light',
         'has-text-weight-normal',
-        { hidden: onCloseError || isErrorMessage === ErorTypes.none },
+        { hidden: onCloseError || isErrorMessage === ErrorTypes.none },
       )}
     >
       <button
@@ -36,11 +44,7 @@ export const ErrorNotification: React.FC<Props> = ({
         className="delete"
         onClick={() => setOnCloseError(true)}
       />
-      {isErrorMessage === ErorTypes.load && ('Unable to load a todo')}
-      {isErrorMessage === ErorTypes.upload && ('Unable to add a todo')}
-      {isErrorMessage === ErorTypes.delete && ('Unable to delete a todo')}
-      {isErrorMessage === ErorTypes.title && ('Title can\'t be empty')}
-
+      {ErrorText[isErrorMessage] || ''}
       <br />
     </div>
   );

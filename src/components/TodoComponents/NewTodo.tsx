@@ -1,12 +1,12 @@
 import React, {
   useEffect, useRef, useState,
 } from 'react';
-import { ErorTypes } from '../../types/ErrorTypes';
+import { ErrorTypes } from '../../types/ErrorTypes';
 
 type Props = {
   addNewTodo: (title: string) => void,
   isAdding: boolean,
-  setIsErrorMessage: (value: ErorTypes) => void,
+  setIsErrorMessage: (value: ErrorTypes) => void,
 };
 
 export const NewTodo: React.FC<Props> = ({
@@ -27,15 +27,11 @@ export const NewTodo: React.FC<Props> = ({
   const handleFormSubmit = async (event: React.FormEvent) => {
     event.preventDefault();
 
-    try {
-      if (!newTodoTitle.trim()) {
-        setIsErrorMessage(ErorTypes.title);
-      } else {
-        addNewTodo(newTodoTitle);
-        setNewTodoTitle('');
-      }
-    } catch {
-      setIsErrorMessage(ErorTypes.upload);
+    if (!newTodoTitle.trim()) {
+      setIsErrorMessage(ErrorTypes.title);
+    } else {
+      addNewTodo(newTodoTitle);
+      setNewTodoTitle('');
     }
   };
 

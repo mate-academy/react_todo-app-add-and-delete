@@ -13,12 +13,12 @@ import { ErrorNotification } from './components/ErrorNotification';
 import { Footer } from './components/Footer';
 import { NewTodo } from './components/TodoComponents/NewTodo';
 import { TodoList } from './components/TodoComponents/TodoList';
-import { ErorTypes } from './types/ErrorTypes';
+import { ErrorTypes } from './types/ErrorTypes';
 import { Todo } from './types/Todo';
 
 export const App: React.FC = () => {
   const [isErrorMessage, setIsErrorMessage]
-    = useState<ErorTypes>(ErorTypes.none);
+    = useState<ErrorTypes>(ErrorTypes.none);
   const [todos, setTodos] = useState<Todo[]>([]);
   const [visibleTodos, setVisibleTodos] = useState<Todo[]>([]);
   const [isAdding, setIsAdding] = useState(false);
@@ -36,7 +36,7 @@ export const App: React.FC = () => {
         setVisibleTodos(todosFromServer);
       }
     } catch {
-      setIsErrorMessage(ErorTypes.load);
+      setIsErrorMessage(ErrorTypes.load);
     }
   }, []);
 
@@ -66,7 +66,7 @@ export const App: React.FC = () => {
         setActiveTodoIds([]);
       }
     } catch {
-      setIsErrorMessage(ErorTypes.upload);
+      setIsErrorMessage(ErrorTypes.upload);
     }
   };
 
@@ -77,7 +77,7 @@ export const App: React.FC = () => {
       await loadTodos();
       setActiveTodoIds([]);
     } catch {
-      setIsErrorMessage(ErorTypes.delete);
+      setIsErrorMessage(ErrorTypes.delete);
     }
   };
 
@@ -96,7 +96,7 @@ export const App: React.FC = () => {
         setActiveTodoIds([]);
       }
     } catch {
-      setIsErrorMessage(ErorTypes.delete);
+      setIsErrorMessage(ErrorTypes.delete);
     }
   };
 

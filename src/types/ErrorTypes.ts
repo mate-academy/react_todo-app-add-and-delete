@@ -1,4 +1,4 @@
-export enum ErorTypes {
+export enum ErrorTypes {
   none,
   title,
   load,
