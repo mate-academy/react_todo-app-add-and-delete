@@ -27,6 +27,9 @@ export const TodoContent: FC<Props> = (
   const [visibleTodos, setVisibleTodos] = useState<Todo[]>([]);
   const [isNewTodoLoaded, setIsNewTodoLoaded] = useState(true);
   const [clickedIndex, setClickedIndex] = useState(-1);
+  const [
+    isCompletedTodosDeleting, setIsCompletedTodosDeleting,
+  ] = useState(false);
 
   const user = useContext(AuthContext);
   const newTodoField = useRef<HTMLInputElement>(null);
@@ -42,11 +45,24 @@ export const TodoContent: FC<Props> = (
 
     getTodos(user.id)
       .then((fetchedTodos) => {
-        setTodos(fetchedTodos);
         setVisibleTodos(fetchedTodos);
       })
       .catch(() => setHasLoadingError(true));
   }, []);
+
+  useEffect(() => {
+    async function updateTodos() {
+      if (!user) {
+        return;
+      }
+
+      const fetchedTodos = await getTodos(user.id);
+
+      setTodos(fetchedTodos);
+    }
+
+    updateTodos();
+  }, [visibleTodos]);
 
   function onSubmitHandler(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
@@ -65,7 +81,7 @@ export const TodoContent: FC<Props> = (
     const newTodoObj = {
       title: newTodoField.current?.value || '',
       userId: user?.id || 0,
-      completed: false,
+      completed: true,
       id: 0,
     };
 
@@ -86,8 +102,6 @@ export const TodoContent: FC<Props> = (
       newTodoField.current.value = '';
     }
   }
-
-  console.log('v-todos', visibleTodos);
 
   return (
     <div className="todoapp__content">
@@ -119,12 +133,14 @@ export const TodoContent: FC<Props> = (
           setVisibleTodos={setVisibleTodos}
           clickedIndex={clickedIndex}
           setClickedIndex={setClickedIndex}
+          isCompletedTodosDeleting={isCompletedTodosDeleting}
         />
       )}
       <Footer
         setVisibleTodos={setVisibleTodos}
         todos={todos}
         visibleTodos={visibleTodos}
+        setIsCompletedTodosDeleting={setIsCompletedTodosDeleting}
       />
     </div>
   );

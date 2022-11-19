@@ -1,12 +1,15 @@
 import classNames from 'classnames';
 
-import { useEffect, useState } from 'react';
+import { useContext, useEffect, useState } from 'react';
 import { Todo } from '../types/Todo';
+import { deleteTodos } from '../api/todos';
+import { AuthContext } from './Auth/AuthContext';
 
 type Props = {
   todos: Todo[];
   setVisibleTodos: (arg: Todo[]) => void;
   visibleTodos: Todo[];
+  setIsCompletedTodosDeleting :React.Dispatch<React.SetStateAction<boolean>>,
 };
 
 enum FilterType {
@@ -19,16 +22,11 @@ export const Footer = ({
   todos,
   setVisibleTodos,
   visibleTodos,
+  setIsCompletedTodosDeleting,
 }: Props) => {
   const [filterType, setFilterType] = useState(FilterType.All);
-
-  // const tempTodos = useRef('');
-
-  // console.log(tempTodos);
-
-  // useEffect(() => {
-  //   tempTodos.current = visibleTodos;
-  // }, [visibleTodos]);
+  const completedTodos = visibleTodos.filter(todo => todo.completed);
+  const user = useContext(AuthContext);
 
   useEffect(() => {
     switch (filterType) {
@@ -48,6 +46,25 @@ export const Footer = ({
         throw new Error('Wrong Type');
     }
   }, [filterType]);
+
+  const clearCompletedHandler = () => {
+    setIsCompletedTodosDeleting(true);
+    if (!user) {
+      return;
+    }
+
+    const promiseArray = completedTodos.map(completedTodo => {
+      return deleteTodos(user.id, completedTodo.id);
+    });
+
+    Promise.all(promiseArray).then(() => {
+      setVisibleTodos(todos.filter(x => !x.completed));
+      setIsCompletedTodosDeleting(false);
+    })
+      .catch(() => {
+        throw new Error('Unable to remove completed todos'); // future error handler
+      });
+  };
 
   return (
     <footer className="todoapp__footer" data-cy="Footer">
@@ -89,10 +106,15 @@ export const Footer = ({
           Completed
         </button>
       </nav>
+
       <button
         data-cy="ClearCompletedButton"
         type="button"
-        className="todoapp__clear-completed"
+        className={classNames(
+          'todoapp__clear-completed',
+          { hidden: completedTodos.length === 0 },
+        )}
+        onClick={clearCompletedHandler}
       >
         Clear completed
       </button>

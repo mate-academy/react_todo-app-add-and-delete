@@ -3,6 +3,7 @@ import { FC, useContext, useState } from 'react';
 import { Todo } from '../types/Todo';
 import { deleteTodos } from '../api/todos';
 import { AuthContext } from './Auth/AuthContext';
+import { Loader } from './Loader';
 
 type Props = {
   visibleTodos: Todo[],
@@ -10,6 +11,7 @@ type Props = {
   setVisibleTodos: React.Dispatch<React.SetStateAction<Todo[]>>,
   clickedIndex: number,
   setClickedIndex: React.Dispatch<React.SetStateAction<number>>,
+  isCompletedTodosDeleting: boolean,
 };
 
 export const TodoList: FC<Props> = ({
@@ -18,6 +20,7 @@ export const TodoList: FC<Props> = ({
   setVisibleTodos,
   clickedIndex,
   setClickedIndex,
+  isCompletedTodosDeleting,
 }) => {
   const user = useContext(AuthContext);
   const [isTodoDeleted, setIsTodoDeleted] = useState(true);
@@ -71,21 +74,13 @@ export const TodoList: FC<Props> = ({
             </button>
 
             {index === clickedIndex && (
-              <div
-                data-cy="TodoLoader"
-                className={classNames(
-                  'modal',
-                  'overlay',
-                  {
-                    'is-active': !isNewTodoLoaded || !isTodoDeleted,
-                  },
-
-                )}
-              >
-                <div className="modal-background has-background-white-ter" />
-                <div className="loader" />
-              </div>
+              <Loader isActiveCondition={!isNewTodoLoaded || !isTodoDeleted} />
             )}
+
+            <Loader isActiveCondition={
+              todo.completed && isCompletedTodosDeleting
+            }
+            />
           </div>
         );
       })}
