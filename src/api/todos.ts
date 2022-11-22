@@ -6,13 +6,13 @@ export const getTodos = (userId: number) => {
 };
 
 // Add more methods here
-type Data = {
+type NewTodoData = {
   title?: string,
   userId?: number,
   completed: boolean,
 };
 
-type ObjData = {
+type FullTodoData = {
   id: number,
   userId: number,
   completed: boolean,
@@ -21,7 +21,8 @@ type ObjData = {
   updatedAt: string,
 };
 
-export const postTodos = (userId: number, data: Data): Promise<ObjData> => {
+export const postTodo
+= (userId: number, data: NewTodoData): Promise<FullTodoData> => {
   return client.post(`/todos?userId=${userId}`, data);
 };
 

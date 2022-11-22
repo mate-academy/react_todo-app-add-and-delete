@@ -5,7 +5,7 @@ import {
   useContext, useEffect, useRef, useState,
 } from 'react';
 import { TodoList } from './TodoList';
-import { getTodos, postTodos } from '../api/todos';
+import { getTodos, postTodo } from '../api/todos';
 import { AuthContext } from './Auth/AuthContext';
 import { Footer } from './Footer';
 import { Todo } from '../types/Todo';
@@ -81,7 +81,7 @@ export const TodoContent: FC<Props> = (
     const newTodoObj = {
       title: newTodoField.current?.value || '',
       userId: user?.id || 0,
-      completed: true,
+      completed: false,
       id: 0,
     };
 
@@ -89,7 +89,7 @@ export const TodoContent: FC<Props> = (
     setTodos(visibleTodos);
 
     if (user && newTodoField.current) {
-      postTodos(user.id, newTodoObj)
+      postTodo(user.id, newTodoObj)
         .then(data => {
           setVisibleTodos((prev: Todo[]) => {
             setIsNewTodoLoaded(true);

@@ -1,4 +1,3 @@
-/* eslint-disable no-console */
 import { useState } from 'react';
 import { TodoContent } from './components/TodoContent';
 import { ErrorNotification } from './components/ErrorNotification';

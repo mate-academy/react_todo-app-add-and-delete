@@ -15,44 +15,44 @@ export const ErrorNotification = ({
   setIsAddingErrorShown,
 }: Props) => {
   const [isClosePressed, setIsCLosePressed] = useState(false);
+  const isErrorHidden = (!hasLoadingError || isClosePressed)
+  && !isAddingErrorShown;
 
   useEffect(() => {
-    setTimeout(() => {
+    const setErrors = () => {
       setHasLoadingError(false);
       setIsAddingErrorShown(false);
-    }, 3000);
+    };
+
+    const timer = setTimeout(setErrors, 3000);
+
+    return () => clearTimeout(timer);
   }, [isAddingErrorShown]);
 
   return (
-    <>
-      <div
-        data-cy="ErrorNotification"
-        className={classNames(
-          'notification',
-          'is-danger',
-          'is-light',
-          'has-text-weight-normal',
-          {
-            hidden: (
-              !hasLoadingError || isClosePressed
-            ) && !isAddingErrorShown,
-          },
-        )}
-      >
-        <button
-          aria-label="delete"
-          type="button"
-          data-cy="HideErrorButton"
-          className="delete"
-          onClick={() => {
-            setIsCLosePressed(true);
-            setIsAddingErrorShown(false);
-          }}
-        />
-        {hasLoadingError && ('Unable to add your todos')}
-        {isAddingErrorShown && !hasLoadingError && ('Title can`t be empty')}
-        <br />
-      </div>
-    </>
+    <div
+      data-cy="ErrorNotification"
+      className={classNames(
+        'notification',
+        'is-danger',
+        'is-light',
+        'has-text-weight-normal',
+        { hidden: isErrorHidden },
+      )}
+    >
+      <button
+        aria-label="delete"
+        type="button"
+        data-cy="HideErrorButton"
+        className="delete"
+        onClick={() => {
+          setIsCLosePressed(true);
+          setIsAddingErrorShown(false);
+        }}
+      />
+      {hasLoadingError && ('Unable to add your todos')}
+      {isAddingErrorShown && !hasLoadingError && ('Title can`t be empty')}
+      <br />
+    </div>
   );
 };

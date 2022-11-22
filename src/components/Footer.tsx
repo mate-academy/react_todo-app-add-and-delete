@@ -1,14 +1,14 @@
 import classNames from 'classnames';
 
-import { useContext, useEffect, useState } from 'react';
+import React, { useContext, useEffect, useState } from 'react';
 import { Todo } from '../types/Todo';
 import { deleteTodos } from '../api/todos';
 import { AuthContext } from './Auth/AuthContext';
 
 type Props = {
-  todos: Todo[];
-  setVisibleTodos: (arg: Todo[]) => void;
-  visibleTodos: Todo[];
+  todos: Todo[],
+  setVisibleTodos: React.Dispatch<React.SetStateAction<Todo[]>>,
+  visibleTodos: Todo[],
   setIsCompletedTodosDeleting :React.Dispatch<React.SetStateAction<boolean>>,
 };
 
