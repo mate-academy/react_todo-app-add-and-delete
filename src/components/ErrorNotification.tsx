@@ -3,8 +3,8 @@ import { useEffect, useState } from 'react';
 
 type Props = {
   hasLoadingError: boolean,
-  setHasLoadingError: (arg: boolean) => void,
   isAddingErrorShown: boolean,
+  setHasLoadingError: React.Dispatch<React.SetStateAction<boolean>>,
   setIsAddingErrorShown: React.Dispatch<React.SetStateAction<boolean>>,
 };
 
@@ -14,7 +14,7 @@ export const ErrorNotification = ({
   isAddingErrorShown,
   setIsAddingErrorShown,
 }: Props) => {
-  const [isClosePressed, setIsCLosePressed] = useState(false);
+  const [isClosePressed, setIsClosePressed] = useState(false);
   const isErrorHidden = (!hasLoadingError || isClosePressed)
   && !isAddingErrorShown;
 
@@ -46,7 +46,7 @@ export const ErrorNotification = ({
         data-cy="HideErrorButton"
         className="delete"
         onClick={() => {
-          setIsCLosePressed(true);
+          setIsClosePressed(true);
           setIsAddingErrorShown(false);
         }}
       />

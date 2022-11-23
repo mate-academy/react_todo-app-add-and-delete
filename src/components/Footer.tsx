@@ -7,9 +7,9 @@ import { AuthContext } from './Auth/AuthContext';
 
 type Props = {
   todos: Todo[],
-  setVisibleTodos: React.Dispatch<React.SetStateAction<Todo[]>>,
   visibleTodos: Todo[],
-  setIsCompletedTodosDeleting :React.Dispatch<React.SetStateAction<boolean>>,
+  setVisibleTodos: React.Dispatch<React.SetStateAction<Todo[]>>,
+  setIsCompletedTodosDeleting: React.Dispatch<React.SetStateAction<boolean>>,
 };
 
 enum FilterType {
