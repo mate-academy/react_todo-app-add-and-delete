@@ -66,7 +66,7 @@ export const App: React.FC = () => {
     }
 
     fetchTodos();
-  }, [todos]);
+  }, []);
 
   useEffect(() => {
     let todosToFilter = [...todos];
@@ -99,13 +99,10 @@ export const App: React.FC = () => {
           completed: false,
         };
 
-        setIsTodoOnLoad(true);
+        setQuery('');
         setNewTodo(todoToAdd);
 
         await postTodo(todoToAdd);
-        setIsTodoOnLoad(false);
-        setNewTodo(null);
-
         await fetchTodos();
       }
     } catch (error) {
@@ -125,8 +122,10 @@ export const App: React.FC = () => {
       if (!query.trim()) {
         errorNotification(Errors.TITLE);
       } else {
+        setIsTodoOnLoad(true);
         await addTodo(query);
-        setQuery('');
+        setIsTodoOnLoad(false);
+        setNewTodo(null);
       }
     } catch (error) {
       errorNotification(Errors.ADD);
