@@ -1,8 +1,7 @@
 import classNames from 'classnames';
-
 import React, { useContext, useEffect, useState } from 'react';
 import { Todo } from '../types/Todo';
-import { deleteTodos } from '../api/todos';
+import { deleteTodo } from '../api/todos';
 import { AuthContext } from './Auth/AuthContext';
 
 type Props = {
@@ -54,7 +53,7 @@ export const Footer = ({
     }
 
     const promiseArray = completedTodos.map(completedTodo => {
-      return deleteTodos(user.id, completedTodo.id);
+      return deleteTodo(user.id, completedTodo.id);
     });
 
     Promise.all(promiseArray).then(() => {

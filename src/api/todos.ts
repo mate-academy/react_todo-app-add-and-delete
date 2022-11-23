@@ -26,6 +26,6 @@ export const postTodo
   return client.post(`/todos?userId=${userId}`, data);
 };
 
-export const deleteTodos = (userId: number, todoId: number) => {
+export const deleteTodo = (userId: number, todoId: number) => {
   return client.delete(`/todos/${todoId}?userId=${userId}`);
 };

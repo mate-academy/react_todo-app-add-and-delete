@@ -1,7 +1,7 @@
 import classNames from 'classnames';
 import { FC, useContext, useState } from 'react';
 import { Todo } from '../types/Todo';
-import { deleteTodos } from '../api/todos';
+import { deleteTodo } from '../api/todos';
 import { AuthContext } from './Auth/AuthContext';
 import { Loader } from './Loader';
 
@@ -9,8 +9,8 @@ type Props = {
   visibleTodos: Todo[],
   isNewTodoLoaded: boolean,
   setVisibleTodos: React.Dispatch<React.SetStateAction<Todo[]>>,
-  clickedIndex: number,
   setClickedIndex: React.Dispatch<React.SetStateAction<number>>,
+  clickedIndex: number,
   isCompletedTodosDeleting: boolean,
 };
 
@@ -29,7 +29,7 @@ export const TodoList: FC<Props> = ({
     setIsTodoDeleted(false);
 
     if (user) {
-      deleteTodos(user.id, todoId)
+      deleteTodo(user.id, todoId)
         .then((() => {
           setIsTodoDeleted(true);
           setVisibleTodos(prevTodos => prevTodos.filter(x => x.id !== todoId));
