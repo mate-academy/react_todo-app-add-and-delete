@@ -3,7 +3,7 @@ import classNames from 'classnames';
 
 type Props = {
   hasError: boolean,
-  setHasError: (value: boolean) => void,
+  setHasError: React.Dispatch<React.SetStateAction<boolean>>,
   errorMessage: string,
   handleErrorClose: () => void,
 };

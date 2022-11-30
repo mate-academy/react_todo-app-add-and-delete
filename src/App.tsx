@@ -19,7 +19,6 @@ export const App: React.FC = () => {
   const user = useContext(AuthContext);
   const newTodoField = useRef<HTMLInputElement>(null);
   const [todos, setTodos] = useState<Todo[]>([]);
-  const [visibleTodos, setVisibleTodos] = useState<Todo[]>(todos);
   const [hasError, setHasError] = useState(false);
   const [errorMessage, setErrorMessage] = useState('');
   const [todoStatus, setTodoStatus]
@@ -33,7 +32,7 @@ export const App: React.FC = () => {
     completed: false,
   });
 
-  const getTodosFromServer = useCallback(async () => {
+  const getTodosFromServer = async () => {
     try {
       if (user) {
         const todosFromServer = await getTodos(user.id);
@@ -49,9 +48,9 @@ export const App: React.FC = () => {
         setErrorMessage('');
       }, 3000);
     }
-  }, []);
+  };
 
-  const addNewTodo = useCallback(async (todoTitle: string) => {
+  const addNewTodo = async (todoTitle: string) => {
     try {
       setIsAdding(true);
 
@@ -75,9 +74,9 @@ export const App: React.FC = () => {
       setHasError(true);
       setErrorMessage('Unable to add a todo');
     }
-  }, []);
+  };
 
-  const deleteTodo = useCallback(async (id: number) => {
+  const deleteTodo = async (id: number) => {
     try {
       setSelectedId(current => [...current, id]);
       await handleDeleteTodo(id);
@@ -87,7 +86,7 @@ export const App: React.FC = () => {
       setHasError(true);
       setErrorMessage('Unable to delete a todo');
     }
-  }, []);
+  };
 
   const removeAllCompleted = async () => {
     try {
@@ -114,18 +113,16 @@ export const App: React.FC = () => {
     getTodosFromServer();
   }, []);
 
-  useEffect(() => {
-    setVisibleTodos(todos.filter(todo => {
-      switch (todoStatus) {
-        case Filter.Completed:
-          return todo.completed;
-        case Filter.Active:
-          return !todo.completed;
-        default:
-          return true;
-      }
-    }));
-  }, [todos, todoStatus]);
+  const visibleTodos = todos.filter(todo => {
+    switch (todoStatus) {
+      case Filter.Completed:
+        return todo.completed;
+      case Filter.Active:
+        return !todo.completed;
+      default:
+        return true;
+    }
+  });
 
   const handleErrorClose = useCallback(() => setHasError(false), []);
   const handleStatusSelect = useCallback((status: Filter) => {

@@ -5,9 +5,9 @@ import { Todo } from '../../types/Todo';
 type Props = {
   newTodoField: React.RefObject<HTMLInputElement>;
   isAdding: boolean;
-  addNewTodo: (title: string) => void;
-  setErrorMessage: (message: string) => void;
-  setHasError: (val: boolean) => void;
+  addNewTodo: (title: string) => Promise<void>;
+  setErrorMessage: React.Dispatch<React.SetStateAction<string>>;
+  setHasError: React.Dispatch<React.SetStateAction<boolean>>;
   todos: Todo[];
 };
 
