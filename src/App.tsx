@@ -97,23 +97,22 @@ export const App: React.FC = () => {
           onErrorMessage={setErrorMessage}
         />
 
-        {todos.length > 0 && (
-          <>
-            <TodoList
-              todos={visibleTodos}
-              isAdding={isAdding}
-              processingTodos={processingTodos}
-              addingTitle={addingTitle}
-              handleDeleteTodo={deleteTodo}
-            />
-            <Footer
-              activeTodos={activeTodos}
-              completedTodos={completedTodos}
-              selectedStatus={selectedStatus}
-              onSelectedStatus={setSelectedStatus}
-              clearCompleted={clearCompleted}
-            />
-          </>
+        <TodoList
+          todos={visibleTodos}
+          isAdding={isAdding}
+          processingTodos={processingTodos}
+          addingTitle={addingTitle}
+          handleDeleteTodo={deleteTodo}
+        />
+
+        {(todos.length > 0 || isAdding) && (
+          <Footer
+            activeTodos={activeTodos}
+            completedTodos={completedTodos}
+            selectedStatus={selectedStatus}
+            onSelectedStatus={setSelectedStatus}
+            clearCompleted={clearCompleted}
+          />
         )}
       </div>
 
