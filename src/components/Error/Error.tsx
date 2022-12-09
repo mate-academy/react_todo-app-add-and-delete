@@ -1,22 +1,22 @@
-/* eslint-disable jsx-a11y/control-has-associated-label */
 import React from 'react';
 
 type Props = {
   error: string,
-  setErrorType: (error: string) => void,
+  setErrorMessage: (error: string) => void,
 };
 
-export const Error: React.FC<Props> = ({ error, setErrorType }) => {
+export const Error: React.FC<Props> = ({ error, setErrorMessage }) => {
   return (
     <div
       data-cy="ErrorNotification"
       className="notification is-danger is-light has-text-weight-normal"
     >
       <button
+        aria-label="text"
         data-cy="HideErrorButton"
         type="button"
         className="delete"
-        onClick={() => setErrorType('')}
+        onClick={() => setErrorMessage('')}
       />
       {error}
     </div>

@@ -13,12 +13,16 @@ type Props = {
   todos: Todo[],
   removeTodo: (todoId: number) => void,
   changeTodo: (todoId: number, object: any) => void,
+  isLoader: boolean;
+  isDeleating: number[],
 };
 
 export const TodoList: React.FC<Props> = ({
   todos,
   changeTodo,
   removeTodo,
+  isLoader,
+  isDeleating,
 }) => {
   return (
     <section className="todoapp__main" data-cy="TodoList">
@@ -63,7 +67,10 @@ export const TodoList: React.FC<Props> = ({
 
               <div
                 data-cy="TodoLoader"
-                className="modal overlay"
+                className={classNames('modal', 'overlay', {
+                  'is-active': isDeleating.includes(todo.id)
+                  || isLoader || todo.id === 0,
+                })}
               >
                 <div className="modal-background has-background-white-ter" />
                 <div className="loader" />
