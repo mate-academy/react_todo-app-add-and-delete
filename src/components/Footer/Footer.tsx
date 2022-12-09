@@ -1,6 +1,6 @@
 import classNames from 'classnames';
 import React from 'react';
-import { Todo } from '../../types/Todo';
+import { Todo, SelectedType } from '../../types/Todo';
 
 type Props = {
   todos: Todo[],
@@ -29,10 +29,12 @@ export const Footer: React.FC<Props> = ({
     setFilter(event.currentTarget.innerHTML.toLocaleLowerCase());
   };
 
+  const restTodos = todos.length - completedTodos.length;
+
   return (
     <footer className="todoapp__footer" data-cy="Footer">
       <span className="todo-count" data-cy="todosCounter">
-        {`${todos.length - completedTodos.length} items left`}
+        {`${restTodos} items left`}
       </span>
 
       <nav className="filter" data-cy="Filter">
@@ -40,7 +42,7 @@ export const Footer: React.FC<Props> = ({
           data-cy="FilterLinkAll"
           href="#/"
           className={classNames('filter__link',
-            { 'filter__link selected': filter === 'all' })}
+            { 'filter__link selected': filter === SelectedType.ALL })}
           onClick={optionSelected}
         >
           All
@@ -50,7 +52,7 @@ export const Footer: React.FC<Props> = ({
           data-cy="FilterLinkActive"
           href="#/active"
           className={classNames('filter__link', {
-            'filter__link selected': filter === 'active',
+            'filter__link selected': filter === SelectedType.ACTIVE,
           })}
           onClick={optionSelected}
         >
@@ -60,7 +62,7 @@ export const Footer: React.FC<Props> = ({
           data-cy="FilterLinkCompleted"
           href="#/completed"
           className={classNames('filter__link', {
-            'filter__link selected': filter === 'completed',
+            'filter__link selected': filter === SelectedType.COMPLETED,
           })}
           onClick={optionSelected}
         >

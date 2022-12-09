@@ -1,4 +1,3 @@
-/* eslint-disable @typescript-eslint/no-explicit-any */
 import classNames from 'classnames';
 import React from 'react';
 import {
@@ -6,18 +5,22 @@ import {
   TransitionGroup,
 } from 'react-transition-group';
 
-import { Todo } from '../../types/Todo';
+import { Todo, TodoTitle } from '../../types/Todo';
 
 type Props = {
   todos: Todo[],
-  changeTodo: (todoId: number, object: any) => void
+  changeTodo: (todoId: number, object: TodoTitle) => void
   removeTodo: (todoId: number) => void
+  isDeleting: number[],
+  isLoader: boolean,
 };
 
 export const TodoList: React.FC<Props> = ({
   todos,
   changeTodo,
   removeTodo,
+  isDeleting,
+  isLoader,
 }) => {
   return (
     <section className="todoapp__main" data-cy="TodoList">
@@ -60,7 +63,18 @@ export const TodoList: React.FC<Props> = ({
                 ×
               </button>
 
-              <div data-cy="TodoLoader" className="modal overlay">
+              <div
+                data-cy="TodoLoader"
+                className={classNames(
+                  'modal',
+                  'overlay',
+                  {
+                    'is-active': isDeleting.includes(todo.id) || todo.id === 0
+                    || isLoader,
+                  },
+                )}
+
+              >
                 <div className="modal-background has-background-white-ter" />
                 <div className="loader" />
               </div>

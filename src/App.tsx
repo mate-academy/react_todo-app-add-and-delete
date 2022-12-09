@@ -1,4 +1,3 @@
-/* eslint-disable jsx-a11y/control-has-associated-label */
 import React, {
   useCallback,
   useContext,
@@ -17,22 +16,19 @@ import {
 import { AuthContext } from './components/Auth/AuthContext';
 import { Footer } from './components/Footer/Footer';
 import { TodoList } from './components/TodoList/TodoList';
-import { Todo, TodoTitle } from './types/Todo';
+import { Todo, TodoTitle, SelectedType } from './types/Todo';
 import { ErrorType } from './components/ErrorType/ErrorType';
-
-enum SelectedType {
-  ALL = 'all',
-  ACTIVE = 'active',
-  COMPLETED = 'completed',
-}
 
 export const App: React.FC = () => {
   const [todos, setTodos] = useState<Todo[]>([]);
   const [query, setQuery] = useState('');
   const [filter, setFilter] = useState<string>(SelectedType.ALL);
   const [showAll, setShowAll] = useState(true);
+  const [isDeleting, setIsDeleting] = useState<number[]>([]);
+  const [isLoader, setIsLoader] = useState(false);
   const [isError, setIsError] = useState('');
   const user = useContext(AuthContext);
+  const [isAdding, setIsAdding] = useState(false);
   const newTodoField = useRef<HTMLInputElement>(null);
 
   const handleError = (text: string) => {
@@ -43,11 +39,14 @@ export const App: React.FC = () => {
   };
 
   const handleNewTodos = async () => {
-    if (query.trim().length === 0) {
-      handleError('Type something');
+    if (!query.trim().length) {
+      handleError('Title can\'t be empty');
 
       return;
     }
+
+    setIsAdding(true);
+    setIsLoader(true);
 
     try {
       const newTodo = await createTodo(user?.id, query);
@@ -56,16 +55,21 @@ export const App: React.FC = () => {
         return [...prevState, newTodo];
       });
     } catch (error) {
-      handleError('Can not add a todo');
+      handleError('Unable to add a todo');
+    } finally {
+      setIsAdding(false);
+      setIsLoader(false);
     }
   };
 
   const removeTodo = useCallback(async (todoId: number) => {
+    setIsDeleting(prevIds => [...prevIds, todoId]);
+
     try {
       await deleteTodo(todoId);
-      setTodos(prevState => prevState.filter((a) => a.id !== todoId));
+      setTodos(prevState => prevState.filter((todo) => todo.id !== todoId));
     } catch (error) {
-      handleError('Can not delete a todo');
+      handleError('Unable to delete a todo');
     }
   }, []);
 
@@ -78,7 +82,7 @@ export const App: React.FC = () => {
         : a))
       ));
     } catch (error) {
-      handleError('Can not update a todo');
+      handleError('Unable to update a todo');
     }
   }, []);
 
@@ -93,7 +97,7 @@ export const App: React.FC = () => {
   useEffect(() => {
     getTodos(user?.id)
       .then(res => setTodos(res))
-      .catch(() => isError);
+      .catch(() => setIsError);
 
     if (newTodoField.current) {
       newTodoField.current.focus();
@@ -131,6 +135,7 @@ export const App: React.FC = () => {
         <header className="todoapp__header">
           {todos.length > 0 && (
             <button
+              aria-label="text"
               data-cy="ToggleAllButton"
               type="button"
               className={classNames(
@@ -153,6 +158,7 @@ export const App: React.FC = () => {
               className="todoapp__new-todo"
               placeholder="What needs to be done?"
               onChange={handleChange}
+              disabled={isAdding}
             />
           </form>
         </header>
@@ -161,6 +167,8 @@ export const App: React.FC = () => {
           todos={filteredTodos}
           changeTodo={changeTodo}
           removeTodo={removeTodo}
+          isDeleting={isDeleting}
+          isLoader={isLoader}
         />
 
         {todos.length > 0 && (
