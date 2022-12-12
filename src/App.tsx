@@ -1,5 +1,6 @@
 /* eslint-disable jsx-a11y/control-has-associated-label */
 import React, {
+  useCallback,
   useContext,
   useEffect,
   useState,
@@ -48,7 +49,7 @@ export const App: React.FC = () => {
     setTodos(prev => [...prev, todo]);
   };
 
-  const onDelete = async (todoId: number) => {
+  const onDelete = useCallback(async (todoId: number) => {
     setIsProcessing(prev => [...prev, todoId]);
 
     try {
@@ -59,7 +60,7 @@ export const App: React.FC = () => {
     } finally {
       setIsProcessing([]);
     }
-  };
+  }, []);
 
   const onDeleteCompleted = async () => {
     setIsProcessing(prev => [...prev, ...completedTodosId]);
@@ -80,7 +81,7 @@ export const App: React.FC = () => {
     }
   };
 
-  const onRename = async (todoId: number, title: string) => {
+  const onRename = useCallback(async (todoId: number, title: string) => {
     setIsProcessing(prev => [...prev, todoId]);
 
     try {
@@ -96,9 +97,9 @@ export const App: React.FC = () => {
     } finally {
       setIsProcessing([]);
     }
-  };
+  }, []);
 
-  const onComplete = async (todo: Todo) => {
+  const onComplete = useCallback(async (todo: Todo) => {
     setIsProcessing(prev => [...prev, todo.id]);
 
     try {
@@ -117,7 +118,7 @@ export const App: React.FC = () => {
     } finally {
       setIsProcessing([]);
     }
-  };
+  }, []);
 
   const onCompleteAll = async () => {
     const processingTodosId = todos.map(todoItem => todoItem.id);
