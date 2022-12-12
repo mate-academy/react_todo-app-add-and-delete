@@ -29,12 +29,13 @@ export const App: React.FC = () => {
   const user = useContext(AuthContext);
   const newTodoField = useRef<HTMLInputElement>(null);
   const [todos, setTodos] = useState<Todo[]>([]);
-  const [query, setQuery] = useState('');
+  const [newTodoTitle, setNewTodoTitle] = useState('');
   const [filterTodos, setFilterTodos] = useState<string>(FilteredStatus.ALL);
   const [errorMessage, setErrorMessage] = useState('');
   const [changeTodos, setChangeTodos] = useState(true);
-  const [isLoader, setIsLoader] = useState(false);
+  const [isLoader, setIsLoader] = useState<number>(0);
   const [isDeleating, setIsDeleating] = useState<number[]>([]);
+  const [isChangeAllTodos, setIsChangeAllTodos] = useState<number[]>([]);
 
   const showError = (text: string) => {
     setErrorMessage(text);
@@ -43,17 +44,17 @@ export const App: React.FC = () => {
     }, 2000);
   };
 
-  const fetchTodo = async () => {
-    if (query.trim().length === 0) {
+  const addTodo = async () => {
+    if (newTodoTitle.trim().length === 0) {
       showError('Title can\'t be empty');
 
       return;
     }
 
-    setIsLoader(true);
-
     try {
-      const newTodo = await createTodo(user?.id, query);
+      const newTodo = await createTodo(user?.id, newTodoTitle);
+
+      setIsLoader(newTodo.id);
 
       setTodos((prevState) => {
         return [...prevState, newTodo];
@@ -61,7 +62,9 @@ export const App: React.FC = () => {
     } catch (error) {
       showError('Unable to add a todo');
     } finally {
-      setIsLoader(false);
+      setTimeout(() => {
+        setIsLoader(0);
+      }, 1000);
     }
   };
 
@@ -80,21 +83,32 @@ export const App: React.FC = () => {
     try {
       const updatedTodo: Todo = await updateTodo(todoId, object);
 
+      setIsLoader(updatedTodo.id);
+
       setTodos(prev => (prev.map((item) => (item.id === todoId
         ? updatedTodo
         : item))
       ));
     } catch (error) {
       showError('Unable to update a todo');
+    } finally {
+      setTimeout(() => {
+        setIsLoader(0);
+      }, 1000);
     }
   }, []);
 
   const changeAllTodos = () => {
     todos.forEach(todo => {
       changeTodo(todo.id, { completed: changeTodos });
+
+      setIsChangeAllTodos((prevState) => [...prevState, todo.id]);
     });
 
     setChangeTodos(!changeTodos);
+    setTimeout(() => {
+      setIsChangeAllTodos([]);
+    }, 1000);
   };
 
   useEffect(() => {
@@ -120,14 +134,14 @@ export const App: React.FC = () => {
     }
   }, [todos, filterTodos]);
 
-  const handleQuery = (event: React.ChangeEvent<HTMLInputElement>) => {
-    setQuery(event.target.value);
+  const handleTodoTitle = (event: React.ChangeEvent<HTMLInputElement>) => {
+    setNewTodoTitle(event.target.value);
   };
 
   const handleSubmit = (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
-    fetchTodo();
-    setQuery('');
+    addTodo();
+    setNewTodoTitle('');
   };
 
   return (
@@ -158,13 +172,14 @@ export const App: React.FC = () => {
               ref={newTodoField}
               className="todoapp__new-todo"
               placeholder="What needs to be done?"
-              value={query}
-              onChange={handleQuery}
+              value={newTodoTitle}
+              onChange={handleTodoTitle}
             />
           </form>
         </header>
 
         <TodoList
+          isChangeAllTodos={isChangeAllTodos}
           isDeleating={isDeleating}
           isLoader={isLoader}
           todos={getFilteredTodos}
