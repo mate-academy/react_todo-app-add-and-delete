@@ -1,4 +1,8 @@
 import React, { useCallback, useMemo } from 'react';
+import {
+  CSSTransition,
+  TransitionGroup,
+} from 'react-transition-group';
 import classNames from 'classnames';
 
 import { Loader } from '../Loader/Loader';
@@ -48,84 +52,98 @@ export const TodoList: React.FC<Props> = (props) => {
 
   return (
     <section className="todoapp__main" data-cy="TodoList">
-      {visibleTodos.map((todo) => {
-        const {
-          id,
-          title,
-          completed,
-        } = todo;
+      <TransitionGroup>
+        {visibleTodos.map((todo) => {
+          const {
+            id,
+            title,
+            completed,
+          } = todo;
 
-        return (
-          <div
-            data-cy="Todo"
-            key={id}
-            className={classNames(
-              'todo',
-              { completed },
-            )}
-          >
-            <label className="todo__status-label">
-              <input
-                data-cy="TodoStatus"
-                type="checkbox"
-                className="todo__status"
-                defaultChecked
-              />
-            </label>
-
-            <span data-cy="TodoTitle" className="todo__title">
-              {title}
-            </span>
-
-            <button
-              type="button"
-              className="todo__remove"
-              data-cy="TodoDeleteButton"
-              onClick={() => onDelete(id)}
+          return (
+            <CSSTransition
+              key={todo.id}
+              timeout={300}
+              classNames="item"
             >
-              ×
-            </button>
+              <div
+                data-cy="Todo"
+                key={id}
+                className={classNames(
+                  'todo',
+                  { completed },
+                )}
+              >
+                <label className="todo__status-label">
+                  <input
+                    data-cy="TodoStatus"
+                    type="checkbox"
+                    className="todo__status"
+                    defaultChecked
+                  />
+                </label>
 
-            <Loader
-              id={id}
-              ids={ids}
-            />
-          </div>
-        );
-      })}
+                <span data-cy="TodoTitle" className="todo__title">
+                  {title}
+                </span>
 
-      {isAdding && (
-        <div
-          data-cy="Todo"
-          key="0"
-          className="todo"
-        >
-          <label className="todo__status-label">
-            <input
-              data-cy="TodoStatus"
-              type="checkbox"
-              className="todo__status"
-              defaultChecked
-            />
-          </label>
+                <button
+                  type="button"
+                  className="todo__remove"
+                  data-cy="TodoDeleteButton"
+                  onClick={() => onDelete(id)}
+                >
+                  ×
+                </button>
 
-          <span data-cy="TodoTitle" className="todo__title">
-            {newTodoTitle}
-          </span>
+                <Loader
+                  id={id}
+                  ids={ids}
+                />
+              </div>
+            </CSSTransition>
+          );
+        })}
 
-          <button
-            type="button"
-            className="todo__remove"
-            data-cy="TodoDeleteButton"
+        {isAdding && (
+          <CSSTransition
+            key={0}
+            timeout={300}
+            classNames="temp-item"
           >
-            ×
-          </button>
+            <div
+              data-cy="Todo"
+              key="0"
+              className="todo"
+            >
+              <label className="todo__status-label">
+                <input
+                  data-cy="TodoStatus"
+                  type="checkbox"
+                  className="todo__status"
+                  defaultChecked
+                />
+              </label>
 
-          <Loader
-            isAdding={isAdding}
-          />
-        </div>
-      )}
+              <span data-cy="TodoTitle" className="todo__title">
+                {newTodoTitle}
+              </span>
+
+              <button
+                type="button"
+                className="todo__remove"
+                data-cy="TodoDeleteButton"
+              >
+                ×
+              </button>
+
+              <Loader
+                isAdding={isAdding}
+              />
+            </div>
+          </CSSTransition>
+        )}
+      </TransitionGroup>
     </section>
   );
 };
