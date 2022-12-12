@@ -12,7 +12,8 @@ type Props = {
   changeTodo: (todoId: number, object: TodoTitle) => void
   removeTodo: (todoId: number) => void
   isDeleting: number[],
-  isLoader: boolean,
+  loaderVisibility: number,
+  isChangeAllTodos: number[]
 };
 
 export const TodoList: React.FC<Props> = ({
@@ -20,7 +21,8 @@ export const TodoList: React.FC<Props> = ({
   changeTodo,
   removeTodo,
   isDeleting,
-  isLoader,
+  loaderVisibility,
+  isChangeAllTodos,
 }) => {
   return (
     <section className="todoapp__main" data-cy="TodoList">
@@ -66,11 +68,12 @@ export const TodoList: React.FC<Props> = ({
               <div
                 data-cy="TodoLoader"
                 className={classNames(
-                  'modal',
-                  'overlay',
+                  'modal overlay',
                   {
-                    'is-active': isDeleting.includes(todo.id) || todo.id === 0
-                    || isLoader,
+                    'is-active': isDeleting.includes(todo.id)
+                      || isChangeAllTodos.includes(todo.id)
+                      || loaderVisibility === todo.id
+                      || todo.id === 0,
                   },
                 )}
 

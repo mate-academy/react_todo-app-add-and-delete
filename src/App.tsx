@@ -25,11 +25,12 @@ export const App: React.FC = () => {
   const [filter, setFilter] = useState<string>(SelectedType.ALL);
   const [showAll, setShowAll] = useState(true);
   const [isDeleting, setIsDeleting] = useState<number[]>([]);
-  const [isLoader, setIsLoader] = useState(false);
+  const [isChangeAllTodos, setIsChangeAllTodos] = useState<number[]>([]);
   const [isError, setIsError] = useState('');
   const user = useContext(AuthContext);
   const [isAdding, setIsAdding] = useState(false);
   const newTodoField = useRef<HTMLInputElement>(null);
+  const [loaderVisibility, setIsLoaderVisibility] = useState<number>(0);
 
   const handleError = (text: string) => {
     setIsError(text);
@@ -46,10 +47,11 @@ export const App: React.FC = () => {
     }
 
     setIsAdding(true);
-    setIsLoader(true);
 
     try {
       const newTodo = await createTodo(user?.id, query);
+
+      setIsLoaderVisibility(newTodo.id);
 
       setTodos((prevState) => {
         return [...prevState, newTodo];
@@ -58,7 +60,9 @@ export const App: React.FC = () => {
       handleError('Unable to add a todo');
     } finally {
       setIsAdding(false);
-      setIsLoader(false);
+      setTimeout(() => {
+        setIsLoaderVisibility(0);
+      }, 1000);
     }
   };
 
@@ -77,19 +81,31 @@ export const App: React.FC = () => {
     try {
       const updatedTodo: Todo = await updateTodo(todoId, object);
 
+      setIsLoaderVisibility(updatedTodo.id);
+
       setTodos(prevState => (prevState.map((a) => (a.id === todoId
         ? updatedTodo
         : a))
       ));
     } catch (error) {
       handleError('Unable to update a todo');
+    } finally {
+      setTimeout(() => {
+        setIsLoaderVisibility(0);
+      }, 1000);
     }
   }, []);
 
   const showAllTodos = () => {
     todos.forEach(todo => {
       changeTodo(todo.id, { completed: showAll });
+
+      setIsChangeAllTodos((prev) => [...prev, todo.id]);
     });
+
+    setTimeout(() => {
+      setIsChangeAllTodos([]);
+    }, 1000);
 
     setShowAll(!showAll);
   };
@@ -168,7 +184,8 @@ export const App: React.FC = () => {
           changeTodo={changeTodo}
           removeTodo={removeTodo}
           isDeleting={isDeleting}
-          isLoader={isLoader}
+          loaderVisibility={loaderVisibility}
+          isChangeAllTodos={isChangeAllTodos}
         />
 
         {todos.length > 0 && (
