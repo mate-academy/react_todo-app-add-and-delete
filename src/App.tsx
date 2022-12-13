@@ -49,14 +49,12 @@ export const App: React.FC = () => {
   const handleAddTodo = (e: React.FormEvent) => {
     e.preventDefault();
 
-    setRequestCount((curr) => curr + 1);
-
     if (!user) {
       return;
     }
 
     if (!newTodoTitle) {
-      setErrorType(ErrorType.EmptyTitle);
+      setRequestCount((curr) => curr + 1); setErrorType(ErrorType.EmptyTitle);
 
       return;
     }
@@ -77,7 +75,8 @@ export const App: React.FC = () => {
 
     postTodo(newToDo)
       .then(() => setNewTodoTitle(''))
-      .catch(() => setErrorType(ErrorType.Add));
+      .catch(() => setErrorType(ErrorType.Add))
+      .finally(() => setRequestCount((curr) => curr + 1));
   };
 
   const handleRemoveTodo = (todoId: number) => {
