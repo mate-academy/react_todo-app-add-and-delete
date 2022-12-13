@@ -33,6 +33,9 @@ export const App: React.FC = () => {
     setTimeout(() => errorType(false), 3000);
   };
 
+  // eslint-disable-next-line no-console
+  console.log('App');
+
   useEffect(() => {
     // focus the element with `ref={newTodoField}`
     if (newTodoField.current) {
@@ -44,6 +47,7 @@ export const App: React.FC = () => {
         .then(userTodos => {
           setVisibleTodos(userTodos);
           setAllTodos(userTodos);
+          // setActiveTodos(userTodos.filter(el => !el.completed));
         })
         .catch(() => setErrorStatus(setGetErrorStatus));
 
@@ -87,6 +91,7 @@ export const App: React.FC = () => {
           allTodos={allTodos}
           activeTodos={activeTodos}
           setVisibleTodos={setVisibleTodos}
+          visibleTodos={visibleTodos}
         />
       </div>
 

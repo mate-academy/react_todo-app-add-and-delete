@@ -1,13 +1,16 @@
 import classNames from 'classnames';
 import { useState, useContext } from 'react';
 import { Todo } from '../../types/Todo';
-import { getCompletedTodos, getTodos, getActiveTodos } from '../../api/todos';
+import {
+  getCompletedTodos, getTodos, getActiveTodos, deleteTodo,
+} from '../../api/todos';
 import { AuthContext } from '../Auth/AuthContext';
 
 interface Props {
   allTodos: Todo[] | null,
   activeTodos: Todo[] | null,
   setVisibleTodos: (userTodos: Todo[]) => void,
+  visibleTodos: Todo[],
 }
 
 const filters = {
@@ -23,6 +26,7 @@ export const Filter: React.FC<Props> = (props) => {
     allTodos,
     activeTodos,
     setVisibleTodos,
+    visibleTodos,
   } = props;
 
   const user = useContext(AuthContext);
@@ -41,6 +45,15 @@ export const Filter: React.FC<Props> = (props) => {
 
     event.preventDefault();
   };
+
+  // eslint-disable-next-line no-console
+  console.log('filter');
+
+  // eslint-disable-next-line no-console
+  console.log(activeTodos);
+
+  // eslint-disable-next-line no-console
+  console.log(allTodos);
 
   return (
     <>
@@ -94,12 +107,26 @@ export const Filter: React.FC<Props> = (props) => {
           </nav>
 
           <button
+            disabled={activeTodos?.length === visibleTodos.length}
             data-cy="ClearCompletedButton"
             type="button"
             className="todoapp__clear-completed"
+            onClick={() => {
+              if (user) {
+                allTodos.forEach(todo => {
+                  if (todo.completed) {
+                    deleteTodo(todo.id);
+                  }
+                });
+                if (activeTodos) {
+                  setVisibleTodos(activeTodos);
+                }
+              }
+            }}
           >
             Clear completed
           </button>
+
         </footer>
       )}
     </>
