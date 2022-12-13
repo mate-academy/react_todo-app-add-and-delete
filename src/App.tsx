@@ -83,9 +83,9 @@ export const App: React.FC = () => {
 
       setIsLoaderVisibility(updatedTodo.id);
 
-      setTodos(prevState => (prevState.map((a) => (a.id === todoId
+      setTodos(prevState => (prevState.map((prev) => (prev.id === todoId
         ? updatedTodo
-        : a))
+        : prev))
       ));
     } catch (error) {
       handleError('Unable to update a todo');
@@ -113,7 +113,7 @@ export const App: React.FC = () => {
   useEffect(() => {
     getTodos(user?.id)
       .then(res => setTodos(res))
-      .catch(() => setIsError);
+      .catch((error) => setIsError(error?.message));
 
     if (newTodoField.current) {
       newTodoField.current.focus();
