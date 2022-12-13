@@ -1,12 +1,12 @@
 import classNames from 'classnames';
 import React from 'react';
-import { Filter } from '../../types/Filter';
+import { FilterStatus } from '../../types/FilterStatus';
 
 type Props = {
   hasCompleted: boolean;
   activeCount: number;
-  onFilterChange: (value: Filter) => void;
-  filter: Filter;
+  onFilterChange: (value: FilterStatus) => void;
+  filter: FilterStatus;
   onClearCompleted: () => void
 };
 
@@ -24,7 +24,7 @@ export const Footer: React.FC<Props> = ({
       </span>
 
       <nav className="filter" data-cy="Filter">
-        {Object.entries(Filter).map(([key, value]) => (
+        {Object.entries(FilterStatus).map(([key, value]) => (
           <a
             data-cy={`FilterLink${key}`}
             href={`#/${value}`}

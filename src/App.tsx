@@ -11,7 +11,7 @@ import { Footer } from './components/Footer';
 import { Header } from './components/Header';
 import { ToDoList } from './components/ToDoList';
 import { ErrorType } from './types/Error';
-import { Filter } from './types/Filter';
+import { FilterStatus } from './types/FilterStatus';
 import { Todo } from './types/Todo';
 
 export const App: React.FC = () => {
@@ -19,7 +19,7 @@ export const App: React.FC = () => {
   const [visibleToDos, setVisibleToDos] = useState<Todo[]>([]);
   const [hasCompleted, setHasCompleted] = useState(false);
   const [activeCount, setActiveCount] = useState(0);
-  const [filter, setFilter] = useState(Filter.All);
+  const [filterStatus, setFilterStatus] = useState(FilterStatus.All);
   const [errorType, setErrorType] = useState<ErrorType | null>(null);
   const [requestCount, setRequestCount] = useState(0);
   const [newTodoTitle, setNewTodoTitle] = useState('');
@@ -31,11 +31,11 @@ export const App: React.FC = () => {
 
   const getSelectedTodos = (todos: Todo[]) => {
     const filteredTodos = todos.filter(({ completed }) => {
-      switch (filter) {
-        case Filter.Active:
+      switch (filterStatus) {
+        case FilterStatus.Active:
           return !completed;
 
-        case Filter.Completed:
+        case FilterStatus.Completed:
           return completed;
 
         default:
@@ -49,26 +49,35 @@ export const App: React.FC = () => {
   const handleAddTodo = (e: React.FormEvent) => {
     e.preventDefault();
 
-    if (user && newTodoTitle) {
-      setErrorType(null);
-      setIsAdding(true);
+    setRequestCount((curr) => curr + 1);
 
-      const newToDo: Todo = {
-        userId: user.id,
-        title: newTodoTitle,
-        completed: false,
-      };
-
-      setTempTodo({
-        ...newToDo,
-        id: 0,
-      });
-
-      postTodo(newToDo)
-        .then(() => setNewTodoTitle(''))
-        .catch(() => setErrorType(ErrorType.Add))
-        .finally(() => setRequestCount((curr) => curr + 1));
+    if (!user) {
+      return;
     }
+
+    if (!newTodoTitle) {
+      setErrorType(ErrorType.EmptyTitle);
+
+      return;
+    }
+
+    setErrorType(null);
+    setIsAdding(true);
+
+    const newToDo: Todo = {
+      userId: user.id,
+      title: newTodoTitle,
+      completed: false,
+    };
+
+    setTempTodo({
+      ...newToDo,
+      id: 0,
+    });
+
+    postTodo(newToDo)
+      .then(() => setNewTodoTitle(''))
+      .catch(() => setErrorType(ErrorType.Add));
   };
 
   const handleRemoveTodo = (todoId: number) => {
@@ -114,7 +123,7 @@ export const App: React.FC = () => {
         })
         .catch(() => setErrorType(ErrorType.Unexpected));
     }
-  }, [filter, requestCount]);
+  }, [filterStatus, requestCount]);
 
   useEffect(() => {
     setTimeout(() => {
@@ -145,8 +154,8 @@ export const App: React.FC = () => {
           <Footer
             hasCompleted={hasCompleted}
             activeCount={activeCount}
-            onFilterChange={setFilter}
-            filter={filter}
+            onFilterChange={setFilterStatus}
+            filter={filterStatus}
             onClearCompleted={handleClearCompleted}
           />
         )}
