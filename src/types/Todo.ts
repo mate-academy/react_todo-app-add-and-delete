@@ -4,3 +4,13 @@ export interface Todo {
   title: string;
   completed: boolean;
 }
+
+export interface TodoTitle {
+  completed: boolean;
+}
+
+export enum SelectedType {
+  ALL = 'all',
+  ACTIVE = 'active',
+  COMPLETED = 'completed',
+}
