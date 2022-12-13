@@ -113,13 +113,13 @@ export const App: React.FC = () => {
     return filterBySelect(todos, filtredBy);
   }, [todos, filtredBy]);
 
-  const AmountOfActiveTodos = useMemo(() => {
+  const amountOfActiveTodos = useMemo(() => {
     return filterBySelect(todos, FilterOptions.ACTIVE).length;
   }, [todos]);
 
   const isClearNeeded = useMemo(() => {
-    return AmountOfActiveTodos !== visibleTodos.length;
-  }, [AmountOfActiveTodos, visibleTodos]);
+    return amountOfActiveTodos !== visibleTodos.length;
+  }, [amountOfActiveTodos, visibleTodos]);
 
   const compTodos = todos
     .filter(todo => todo.completed);
@@ -141,7 +141,7 @@ export const App: React.FC = () => {
               type="button"
               className={classNames(
                 'todoapp__toggle-all',
-                { active: AmountOfActiveTodos === 0 },
+                { active: amountOfActiveTodos === 0 },
               )}
             />
 
@@ -162,7 +162,7 @@ export const App: React.FC = () => {
 
               <footer className="todoapp__footer" data-cy="Footer">
                 <span className="todo-count" data-cy="todosCounter">
-                  {`${AmountOfActiveTodos} items left`}
+                  {`${amountOfActiveTodos} items left`}
                 </span>
 
                 <TodoFilter

@@ -14,6 +14,7 @@ export const ActualTodo: React.FC<Props> = ({
   deletedTodoIds,
 }) => {
   const { completed, title, id } = todo;
+  const isLoaderActive = id === 0 || deletedTodoIds.includes(id);
 
   return (
     <div
@@ -51,7 +52,7 @@ export const ActualTodo: React.FC<Props> = ({
         data-cy="TodoLoader"
         className={classNames(
           'modal overlay',
-          { 'is-active': id === 0 || deletedTodoIds.includes(id) },
+          { 'is-active': isLoaderActive },
         )}
       >
         <div className="
