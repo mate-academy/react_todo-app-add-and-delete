@@ -33,9 +33,9 @@ export const App: React.FC = () => {
   const [filterTodos, setFilterTodos] = useState<string>(FilteredStatus.ALL);
   const [errorMessage, setErrorMessage] = useState('');
   const [changeTodos, setChangeTodos] = useState(true);
-  const [isLoader, setIsLoader] = useState<number>(0);
-  const [isDeleating, setIsDeleating] = useState<number[]>([]);
-  const [isChangeAllTodos, setIsChangeAllTodos] = useState<number[]>([]);
+  const [loader, setLoader] = useState<number>(0);
+  const [loaderDeleating, setLoaderDeleating] = useState<number[]>([]);
+  const [loaderAllTodos, setLoaderAllTodos] = useState<number[]>([]);
 
   const showError = (text: string) => {
     setErrorMessage(text);
@@ -54,7 +54,7 @@ export const App: React.FC = () => {
     try {
       const newTodo = await createTodo(user?.id, newTodoTitle);
 
-      setIsLoader(newTodo.id);
+      setLoader(newTodo.id);
 
       setTodos((prevState) => {
         return [...prevState, newTodo];
@@ -63,13 +63,13 @@ export const App: React.FC = () => {
       showError('Unable to add a todo');
     } finally {
       setTimeout(() => {
-        setIsLoader(0);
+        setLoader(0);
       }, 1000);
     }
   };
 
   const removeTodo = useCallback(async (todoId: number) => {
-    setIsDeleating((prevState) => [...prevState, todoId]);
+    setLoaderDeleating((prevState) => [...prevState, todoId]);
 
     try {
       await deleteTodo(todoId);
@@ -83,7 +83,7 @@ export const App: React.FC = () => {
     try {
       const updatedTodo: Todo = await updateTodo(todoId, object);
 
-      setIsLoader(updatedTodo.id);
+      setLoader(updatedTodo.id);
 
       setTodos(prev => (prev.map((item) => (item.id === todoId
         ? updatedTodo
@@ -93,7 +93,7 @@ export const App: React.FC = () => {
       showError('Unable to update a todo');
     } finally {
       setTimeout(() => {
-        setIsLoader(0);
+        setLoader(0);
       }, 1000);
     }
   }, []);
@@ -102,12 +102,12 @@ export const App: React.FC = () => {
     todos.forEach(todo => {
       changeTodo(todo.id, { completed: changeTodos });
 
-      setIsChangeAllTodos((prevState) => [...prevState, todo.id]);
+      setLoaderAllTodos((prevState) => [...prevState, todo.id]);
     });
 
     setChangeTodos(!changeTodos);
     setTimeout(() => {
-      setIsChangeAllTodos([]);
+      setLoaderAllTodos([]);
     }, 1000);
   };
 
@@ -183,9 +183,9 @@ export const App: React.FC = () => {
         </header>
 
         <TodoList
-          isChangeAllTodos={isChangeAllTodos}
-          isDeleating={isDeleating}
-          isLoader={isLoader}
+          loaderAllTodos={loaderAllTodos}
+          loaderDeleating={loaderDeleating}
+          loader={loader}
           todos={getFilteredTodos}
           removeTodo={removeTodo}
           changeTodo={changeTodo}

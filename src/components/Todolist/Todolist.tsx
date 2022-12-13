@@ -12,26 +12,26 @@ type Props = {
   todos: Todo[],
   removeTodo: (todoId: number) => void,
   changeTodo: (todoId: number, object: TodoTitle) => void,
-  isLoader: number,
-  isDeleating: number[],
-  isChangeAllTodos: number[],
+  loader: number,
+  loaderDeleating: number[],
+  loaderAllTodos: number[],
 };
 
 export const TodoList: React.FC<Props> = ({
   todos,
   changeTodo,
   removeTodo,
-  isLoader,
-  isDeleating,
-  isChangeAllTodos,
+  loader,
+  loaderDeleating,
+  loaderAllTodos,
 }) => {
   return (
     <section className="todoapp__main" data-cy="TodoList">
       <TransitionGroup>
         {todos.map(todo => {
-          const loaderVisibility: boolean = isDeleating.includes(todo.id)
-            || isChangeAllTodos.includes(todo.id)
-            || isLoader === todo.id
+          const loaderVisibility: boolean = loaderDeleating.includes(todo.id)
+            || loaderAllTodos.includes(todo.id)
+            || loader === todo.id
             || todo.id === 0;
 
           return (
