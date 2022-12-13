@@ -7,6 +7,7 @@ import { AuthContext } from '../Auth/AuthContext';
 type Props = {
   newTodoField: RefObject<HTMLInputElement>;
   query: string;
+  isDisabledInput: boolean;
   onQueryChange: (value: string) => void;
   onErrorChange: (value: boolean) => void;
   onAddNewTodo: (value: Todo) => void;
@@ -15,6 +16,7 @@ type Props = {
 export const Header: React.FC<Props> = ({
   newTodoField,
   query,
+  isDisabledInput,
   onQueryChange,
   onErrorChange,
   onAddNewTodo,
@@ -61,6 +63,7 @@ export const Header: React.FC<Props> = ({
           data-cy="NewTodoField"
           type="text"
           ref={newTodoField}
+          disabled={isDisabledInput}
           className="todoapp__new-todo"
           placeholder="What needs to be done?"
           value={query}

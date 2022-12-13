@@ -17,8 +17,9 @@ import { Header } from './components/Header/Header';
 
 export const App: React.FC = () => {
   const [todos, setTodos] = useState<Todo[]>([]);
-  const [showFooter, setShowFooter] = useState(true);
+  const [showFooter, setShowFooter] = useState(false);
   const [query, setQuery] = useState('');
+  const [isDisabledInput, setIsDisableInput] = useState(false);
   const [error, setError] = useState(false);
 
   const user = useContext(AuthContext);
@@ -36,12 +37,17 @@ export const App: React.FC = () => {
       if (todosFromServer) {
         setTodos(todosFromServer);
       }
+
+      if (todosFromServer && todosFromServer.length > 0) {
+        setShowFooter(true);
+      }
     };
 
     getTodosFromServer();
   }, []);
 
   const addNewTodo = async (todoData: Todo) => {
+    setIsDisableInput(true);
     const newTodo = await addTodo(todoData);
 
     setTodos(previousTodos => ([
@@ -49,6 +55,7 @@ export const App: React.FC = () => {
       newTodo,
     ]));
 
+    setIsDisableInput(false);
     setShowFooter(true);
   };
 
@@ -72,6 +79,7 @@ export const App: React.FC = () => {
         <Header
           newTodoField={newTodoField}
           query={query}
+          isDisabledInput={isDisabledInput}
           onQueryChange={setQuery}
           onErrorChange={setError}
           onAddNewTodo={addNewTodo}
