@@ -1,9 +1,10 @@
 /* eslint-disable jsx-a11y/control-has-associated-label */
 import classNames from 'classnames';
 import React, { useEffect, useRef } from 'react';
+import { ErrorTypes } from '../../types/ErrorTypes';
 
 interface Props {
-  error: string,
+  error: ErrorTypes,
   isHidden: boolean,
   onHiddenChange: (isError: boolean) => void,
 }
@@ -14,10 +15,6 @@ export const ErrorNotification: React.FC<Props> = ({
   onHiddenChange,
 }) => {
   const timerRef = useRef<NodeJS.Timer>();
-
-  const handleCrossButtonClick = () => {
-    onHiddenChange(true);
-  };
 
   useEffect(() => {
     if (!isHidden) {
@@ -41,11 +38,11 @@ export const ErrorNotification: React.FC<Props> = ({
         data-cy="HideErrorButton"
         type="button"
         className="delete"
-        onClick={handleCrossButtonClick}
+        onClick={() => {
+          onHiddenChange(true);
+        }}
       />
-      {error === 'get'
-        ? `Unable to ${error} todos`
-        : `Unable to ${error} a todo`}
+      {error}
     </div>
   );
 };

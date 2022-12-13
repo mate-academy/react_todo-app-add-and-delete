@@ -7,10 +7,10 @@ export const getTodos = (userId: number) => {
 
 export type TodoData = Pick<Todo, 'title' | 'completed' | 'userId'>;
 
-export const createTodo = async ({ title, completed, userId }: TodoData) => {
+export const createTodo = ({ title, completed, userId }: TodoData) => {
   return client.post<Todo>('/todos', { title, completed, userId });
 };
 
-export const deleteTodo = async (todoId: number) => {
+export const deleteTodo = (todoId: number) => {
   return client.delete(`/todos/${todoId}`);
 };

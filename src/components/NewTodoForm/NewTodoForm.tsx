@@ -5,18 +5,25 @@ import React, {
   useState,
 } from 'react';
 import { TodoData } from '../../api/todos';
+import { ErrorTypes } from '../../types/ErrorTypes';
 import { AuthContext } from '../Auth/AuthContext';
 
 interface Props {
   onAdd: (todo: TodoData) => void,
-  isAdding: boolean
+  isAdding: boolean,
+  onError: (error: ErrorTypes) => void,
+  onHiddenChange: (isHidden: boolean) => void,
 }
 
-export const NewTodoForm: React.FC<Props> = ({ onAdd, isAdding }) => {
+export const NewTodoForm: React.FC<Props> = ({
+  onAdd,
+  isAdding,
+  onError,
+  onHiddenChange,
+}) => {
   const user = useContext(AuthContext);
   const newTodoField = useRef<HTMLInputElement>(null);
   const [newTodoTitle, setNewTodoTitle] = useState('');
-  const [isWarningShown, setIsWarningShown] = useState(false);
 
   useEffect(() => {
     if (newTodoField.current) {
@@ -42,7 +49,8 @@ export const NewTodoForm: React.FC<Props> = ({ onAdd, isAdding }) => {
       onAdd(newTodo);
       setNewTodoTitle('');
     } else {
-      setIsWarningShown(true);
+      onError(ErrorTypes.EmptyTitle);
+      onHiddenChange(false);
     }
   };
 
@@ -58,22 +66,10 @@ export const NewTodoForm: React.FC<Props> = ({ onAdd, isAdding }) => {
           value={newTodoTitle}
           onChange={(event) => {
             setNewTodoTitle(event.target.value);
-            setIsWarningShown(false);
           }}
           disabled={isAdding}
-          // onBlur={() => {
-          //   if (newTodoField.current && !isAdding) {
-          //     newTodoField.current.focus();
-          //   }
-          // }}
         />
       </form>
-      {isWarningShown && (
-        <p>
-          Title can&apos;t be empty
-        </p>
-      )}
     </>
-
   );
 };

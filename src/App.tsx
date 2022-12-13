@@ -20,6 +20,7 @@ import { ErrorNotification } from './components/ErrorNotification/ErrorNotiicati
 import { NewTodoForm } from './components/NewTodoForm/NewTodoForm';
 import { TodoFilter } from './components/TodoFilter/TodoFilter';
 import { TodoList } from './components/TodoList/TodoList';
+import { ErrorTypes } from './types/ErrorTypes';
 import { FilterOptions } from './types/FilterOptions';
 import { Todo } from './types/Todo';
 
@@ -27,9 +28,9 @@ export const App: React.FC = () => {
   const user = useContext(AuthContext);
 
   const [todos, setTodos] = useState<Todo[]>([]);
-  const [error, setError] = useState('');
+  const [error, setError] = useState<ErrorTypes>(ErrorTypes.GET);
   const [isErrorHidden, setIsErrorHidden] = useState(true);
-  const [selectedOption, setSelectedOption] = useState(FilterOptions.ALL);
+  const [filtredBy, setFiltredBy] = useState(FilterOptions.ALL);
   const [isAdding, setIsAdding] = useState(false);
   const [deletedTodoIds, setDeletedTodoIds] = useState<number[]>([]);
 
@@ -39,8 +40,8 @@ export const App: React.FC = () => {
         const todosFromServer = await getTodos(user.id);
 
         setTodos(todosFromServer);
-      } catch (err) {
-        setError('get');
+      } catch {
+        setError(ErrorTypes.GET);
         setIsErrorHidden(false);
       }
     }
@@ -55,8 +56,8 @@ export const App: React.FC = () => {
       setTodos(prevTodos => [...prevTodos, tempTodo]);
 
       await createTodo(todo);
-    } catch (err) {
-      setError('add');
+    } catch {
+      setError(ErrorTypes.ADD);
       setIsErrorHidden(false);
     } finally {
       setIsAdding(false);
@@ -70,12 +71,13 @@ export const App: React.FC = () => {
       setDeletedTodoIds((currentIDs) => [...currentIDs, todoId]);
 
       await deleteTodo(todoId);
-
-      getUserTodos();
+      setTodos(currentTodos => {
+        return currentTodos.filter(todo => todoId !== todo.id);
+      });
 
       return 1;
-    } catch (err) {
-      setError('delete');
+    } catch {
+      setError(ErrorTypes.DELETE);
       setIsErrorHidden(false);
 
       return 0;
@@ -108,23 +110,23 @@ export const App: React.FC = () => {
   }, []);
 
   const visibleTodos = useMemo(() => {
-    return filterBySelect(todos, selectedOption);
-  }, [todos, selectedOption]);
+    return filterBySelect(todos, filtredBy);
+  }, [todos, filtredBy]);
 
   const AmountOfActiveTodos = useMemo(() => {
     return filterBySelect(todos, FilterOptions.ACTIVE).length;
   }, [todos]);
 
-  // const isClearNeeded = useMemo(() => {
-  //   return AmountOfActiveTodos !== visibleTodos.length;
-  // }, [AmountOfActiveTodos, visibleTodos]);
+  const isClearNeeded = useMemo(() => {
+    return AmountOfActiveTodos !== visibleTodos.length;
+  }, [AmountOfActiveTodos, visibleTodos]);
 
   const compTodos = todos
     .filter(todo => todo.completed);
 
   const clearCompletedTodos = async () => {
     await Promise.all(compTodos
-      .map(async (todo) => deleteCurrentTodo(todo.id)));
+      .map((todo) => deleteCurrentTodo(todo.id)));
   };
 
   return (
@@ -146,6 +148,8 @@ export const App: React.FC = () => {
             <NewTodoForm
               onAdd={addNewTodo}
               isAdding={isAdding}
+              onError={setError}
+              onHiddenChange={setIsErrorHidden}
             />
           </header>
           {todos.length > 0 && (
@@ -162,14 +166,16 @@ export const App: React.FC = () => {
                 </span>
 
                 <TodoFilter
-                  selectedOption={selectedOption}
-                  onOptionChange={setSelectedOption}
+                  filtredBy={filtredBy}
+                  onOptionChange={setFiltredBy}
                 />
-
                 <button
                   data-cy="ClearCompletedButton"
                   type="button"
-                  className="todoapp__clear-completed"
+                  className={classNames(
+                    'todoapp__clear-completed',
+                    { hidden: !isClearNeeded },
+                  )}
                   onClick={clearCompletedTodos}
                 >
                   Clear completed

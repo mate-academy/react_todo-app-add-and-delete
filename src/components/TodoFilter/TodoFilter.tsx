@@ -2,12 +2,12 @@ import classNames from 'classnames';
 import { FilterOptions } from '../../types/FilterOptions';
 
 interface Props {
-  selectedOption: FilterOptions,
+  filtredBy: FilterOptions,
   onOptionChange: (option: FilterOptions) => void,
 }
 
 export const TodoFilter: React.FC<Props> = ({
-  selectedOption,
+  filtredBy,
   onOptionChange,
 }) => {
   return (
@@ -17,7 +17,7 @@ export const TodoFilter: React.FC<Props> = ({
         href="#/"
         className={classNames(
           'filter__link',
-          { selected: selectedOption === FilterOptions.ALL },
+          { selected: filtredBy === FilterOptions.ALL },
         )}
         onClick={() => {
           onOptionChange(FilterOptions.ALL);
@@ -31,7 +31,7 @@ export const TodoFilter: React.FC<Props> = ({
         href="#/active"
         className={classNames(
           'filter__link',
-          { selected: selectedOption === FilterOptions.ACTIVE },
+          { selected: filtredBy === FilterOptions.ACTIVE },
         )}
         onClick={() => {
           onOptionChange(FilterOptions.ACTIVE);
@@ -44,7 +44,7 @@ export const TodoFilter: React.FC<Props> = ({
         href="#/completed"
         className={classNames(
           'filter__link',
-          { selected: selectedOption === FilterOptions.COMPLETED },
+          { selected: filtredBy === FilterOptions.COMPLETED },
         )}
         onClick={() => {
           onOptionChange(FilterOptions.COMPLETED);
