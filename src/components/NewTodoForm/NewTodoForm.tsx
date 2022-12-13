@@ -39,6 +39,7 @@ export const NewTodoForm: React.FC<Props> = ({
 
   const handleSubmit = (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
+    onHiddenChange(true);
     if (newTodoTitle.trim()) {
       const newTodo = {
         title: newTodoTitle.trim(),
