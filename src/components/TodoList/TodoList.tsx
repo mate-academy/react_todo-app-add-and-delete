@@ -11,18 +11,18 @@ type Props = {
   todos: Todo[],
   changeTodo: (todoId: number, object: TodoTitle) => void
   removeTodo: (todoId: number) => void
-  isDeleting: number[],
+  deletingLoader: number[],
   loaderVisibility: number,
-  isChangeAllTodos: number[]
+  changeAllTodos: number[]
 };
 
 export const TodoList: React.FC<Props> = ({
   todos,
   changeTodo,
   removeTodo,
-  isDeleting,
+  deletingLoader: isDeleting,
   loaderVisibility,
-  isChangeAllTodos,
+  changeAllTodos: isChangeAllTodos,
 }) => {
   return (
     <section className="todoapp__main" data-cy="TodoList">

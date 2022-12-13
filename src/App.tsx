@@ -24,18 +24,18 @@ export const App: React.FC = () => {
   const [query, setQuery] = useState('');
   const [filter, setFilter] = useState<string>(SelectedType.ALL);
   const [showAll, setShowAll] = useState(true);
-  const [isDeleting, setIsDeleting] = useState<number[]>([]);
-  const [isChangeAllTodos, setIsChangeAllTodos] = useState<number[]>([]);
-  const [isError, setIsError] = useState('');
+  const [deletingloader, setDeletingLoader] = useState<number[]>([]);
+  const [changeAllTodos, setChangeAllTodos] = useState<number[]>([]);
+  const [errorType, setErrorType] = useState('');
   const user = useContext(AuthContext);
   const [isAdding, setIsAdding] = useState(false);
   const newTodoField = useRef<HTMLInputElement>(null);
   const [loaderVisibility, setIsLoaderVisibility] = useState<number>(0);
 
   const handleError = (text: string) => {
-    setIsError(text);
+    setErrorType(text);
     setTimeout(() => {
-      setIsError('');
+      setErrorType('');
     }, 5000);
   };
 
@@ -67,7 +67,7 @@ export const App: React.FC = () => {
   };
 
   const removeTodo = useCallback(async (todoId: number) => {
-    setIsDeleting(prevIds => [...prevIds, todoId]);
+    setDeletingLoader(prevIds => [...prevIds, todoId]);
 
     try {
       await deleteTodo(todoId);
@@ -100,11 +100,11 @@ export const App: React.FC = () => {
     todos.forEach(todo => {
       changeTodo(todo.id, { completed: showAll });
 
-      setIsChangeAllTodos((prev) => [...prev, todo.id]);
+      setChangeAllTodos((prev) => [...prev, todo.id]);
     });
 
     setTimeout(() => {
-      setIsChangeAllTodos([]);
+      setChangeAllTodos([]);
     }, 1000);
 
     setShowAll(!showAll);
@@ -113,7 +113,7 @@ export const App: React.FC = () => {
   useEffect(() => {
     getTodos(user?.id)
       .then(res => setTodos(res))
-      .catch((error) => setIsError(error?.message));
+      .catch((error) => setErrorType(error?.message));
 
     if (newTodoField.current) {
       newTodoField.current.focus();
@@ -183,9 +183,9 @@ export const App: React.FC = () => {
           todos={filteredTodos}
           changeTodo={changeTodo}
           removeTodo={removeTodo}
-          isDeleting={isDeleting}
+          deletingLoader={deletingloader}
           loaderVisibility={loaderVisibility}
-          isChangeAllTodos={isChangeAllTodos}
+          changeAllTodos={changeAllTodos}
         />
 
         {todos.length > 0 && (
@@ -197,10 +197,10 @@ export const App: React.FC = () => {
           />
         )}
 
-        {isError && (
+        {errorType && (
           <ErrorType
-            error={isError}
-            setError={setIsError}
+            error={errorType}
+            setError={setErrorType}
           />
         )}
       </div>
