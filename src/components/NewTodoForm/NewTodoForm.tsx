@@ -61,6 +61,11 @@ export const NewTodoForm: React.FC<Props> = ({ onAdd, isAdding }) => {
             setIsWarningShown(false);
           }}
           disabled={isAdding}
+          // onBlur={() => {
+          //   if (newTodoField.current && !isAdding) {
+          //     newTodoField.current.focus();
+          //   }
+          // }}
         />
       </form>
       {isWarningShown && (

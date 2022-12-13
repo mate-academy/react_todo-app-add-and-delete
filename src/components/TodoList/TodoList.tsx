@@ -3,13 +3,13 @@ import { ActualTodo } from '../ActualTodo/ActualTodo';
 
 interface Props {
   todos: Todo[],
-  deletedTodoId: number,
+  deletedTodoIds: number[],
   onDelete: (todoId: number) => void,
 }
 
 export const TodoList: React.FC<Props> = ({
   todos,
-  deletedTodoId,
+  deletedTodoIds,
   onDelete,
 }) => {
   return (
@@ -18,7 +18,7 @@ export const TodoList: React.FC<Props> = ({
         <ActualTodo
           key={todo.id}
           todo={todo}
-          deletedTodoId={deletedTodoId}
+          deletedTodoIds={deletedTodoIds}
           onDelete={onDelete}
         />
       ))}

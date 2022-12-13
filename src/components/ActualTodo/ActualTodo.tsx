@@ -5,13 +5,13 @@ import { Todo } from '../../types/Todo';
 interface Props {
   todo: Todo,
   onDelete: (todoId: number) => void,
-  deletedTodoId: number,
+  deletedTodoIds: number[],
 }
 
 export const ActualTodo: React.FC<Props> = ({
   todo,
   onDelete,
-  deletedTodoId,
+  deletedTodoIds,
 }) => {
   const { completed, title, id } = todo;
 
@@ -41,7 +41,6 @@ export const ActualTodo: React.FC<Props> = ({
         className="todo__remove"
         data-cy="TodoDeleteButton"
         onClick={() => {
-          // setDeletedTodoId(id);
           onDelete(id);
         }}
       >
@@ -52,7 +51,7 @@ export const ActualTodo: React.FC<Props> = ({
         data-cy="TodoLoader"
         className={classNames(
           'modal overlay',
-          { 'is-active': id === 0 || id === deletedTodoId },
+          { 'is-active': id === 0 || deletedTodoIds.includes(id) },
         )}
       >
         <div className="

@@ -31,55 +31,7 @@ export const App: React.FC = () => {
   const [isErrorHidden, setIsErrorHidden] = useState(true);
   const [selectedOption, setSelectedOption] = useState(FilterOptions.ALL);
   const [isAdding, setIsAdding] = useState(false);
-  const [deletedTodoId, setDeletedTodoId] = useState(0);
-
-  const addNewTodo = async (todo: TodoData) => {
-    try {
-      setIsErrorHidden(true);
-      setIsAdding(true);
-      const tempTodo = { ...todo, id: 0 };
-
-      setTodos(prevTodos => [...prevTodos, tempTodo]);
-
-      const todoToAdd = await createTodo(todo);
-
-      setIsAdding(false);
-      setTodos(prevTodos => {
-        const newList = [...prevTodos];
-
-        newList[prevTodos.length - 1] = todoToAdd;
-
-        return newList;
-      });
-    } catch (err) {
-      setIsAdding(false);
-      setError('add');
-      setIsErrorHidden(false);
-      setTodos(prevTodos => {
-        const newList = [...prevTodos];
-
-        newList.length = prevTodos.length - 1;
-
-        return newList;
-      });
-    }
-  };
-
-  const deleteCurrentTodo = async (todoId: number) => {
-    try {
-      setIsErrorHidden(true);
-      setDeletedTodoId(todoId);
-
-      await deleteTodo(todoId);
-      setTodos(currentTodos => {
-        return currentTodos.filter(todo => todoId !== todo.id);
-      });
-    } catch (err) {
-      setError('delete');
-      setIsErrorHidden(false);
-      setDeletedTodoId(0);
-    }
-  };
+  const [deletedTodoIds, setDeletedTodoIds] = useState<number[]>([]);
 
   const getUserTodos = async () => {
     if (user) {
@@ -91,6 +43,44 @@ export const App: React.FC = () => {
         setError('get');
         setIsErrorHidden(false);
       }
+    }
+  };
+
+  const addNewTodo = async (todo: TodoData) => {
+    try {
+      setIsErrorHidden(true);
+      setIsAdding(true);
+      const tempTodo = { ...todo, id: 0 };
+
+      setTodos(prevTodos => [...prevTodos, tempTodo]);
+
+      await createTodo(todo);
+    } catch (err) {
+      setError('add');
+      setIsErrorHidden(false);
+    } finally {
+      setIsAdding(false);
+      getUserTodos();
+    }
+  };
+
+  const deleteCurrentTodo = async (todoId: number) => {
+    try {
+      setIsErrorHidden(true);
+      setDeletedTodoIds((currentIDs) => [...currentIDs, todoId]);
+
+      await deleteTodo(todoId);
+
+      getUserTodos();
+
+      return 1;
+    } catch (err) {
+      setError('delete');
+      setIsErrorHidden(false);
+
+      return 0;
+    } finally {
+      setDeletedTodoIds([]);
     }
   };
 
@@ -129,6 +119,14 @@ export const App: React.FC = () => {
   //   return AmountOfActiveTodos !== visibleTodos.length;
   // }, [AmountOfActiveTodos, visibleTodos]);
 
+  const compTodos = todos
+    .filter(todo => todo.completed);
+
+  const clearCompletedTodos = async () => {
+    await Promise.all(compTodos
+      .map(async (todo) => deleteCurrentTodo(todo.id)));
+  };
+
   return (
     <AuthProvider>
       <div className="todoapp">
@@ -154,7 +152,7 @@ export const App: React.FC = () => {
             <>
               <TodoList
                 todos={visibleTodos}
-                deletedTodoId={deletedTodoId}
+                deletedTodoIds={deletedTodoIds}
                 onDelete={deleteCurrentTodo}
               />
 
@@ -172,6 +170,7 @@ export const App: React.FC = () => {
                   data-cy="ClearCompletedButton"
                   type="button"
                   className="todoapp__clear-completed"
+                  onClick={clearCompletedTodos}
                 >
                   Clear completed
                 </button>
