@@ -5,11 +5,13 @@ import { Todo } from '../../types/Todo';
 import { AuthContext } from '../Auth/AuthContext';
 
 type Props = {
+  todos: Todo[];
   onTodosChange: (value: Todo[]) => void;
 };
 
 export const Footer: React.FC<Props> = ({
   onTodosChange,
+  todos,
 }) => {
   const [clickedValue, setClickedValue] = useState(0);
   const [activeTodos, setActiveTodos] = useState<Todo[]>([]);
@@ -58,11 +60,16 @@ export const Footer: React.FC<Props> = ({
 
   const handleClearCompleted = async () => {
     const todosFromServer = user && await getTodos(user.id);
+    const onlyActiveTodos = todos.filter(todo => !todo.completed);
+
+    onTodosChange(onlyActiveTodos);
 
     return todosFromServer && todosFromServer.map(
       todo => todo.completed === true && removeTodo(todo.id),
     );
   };
+
+  const hasCompletedTodos = todos.filter(todo => todo.completed).length > 0;
 
   return (
     <footer className="todoapp__footer" data-cy="Footer">
@@ -122,7 +129,9 @@ export const Footer: React.FC<Props> = ({
         className="todoapp__clear-completed"
         onClick={() => handleClearCompleted()}
       >
-        Clear completed
+        {hasCompletedTodos
+          ? ('Clear completed')
+          : ''}
       </button>
     </footer>
   );

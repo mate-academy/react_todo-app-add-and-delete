@@ -82,6 +82,7 @@ export const App: React.FC = () => {
         />
         {showFooter && (
           <Footer
+            todos={todos}
             onTodosChange={setTodos}
           />
         )}
