@@ -21,6 +21,8 @@ export const App: React.FC = () => {
   const [query, setQuery] = useState('');
   const [isDisabledInput, setIsDisableInput] = useState(false);
   const [error, setError] = useState(false);
+  const [loader, setLoader] = useState(false);
+  const [focusedTodoId, setFocusetTodoId] = useState<number>(Infinity);
 
   const user = useContext(AuthContext);
   const newTodoField = useRef<HTMLInputElement>(null);
@@ -47,6 +49,7 @@ export const App: React.FC = () => {
   }, []);
 
   const addNewTodo = async (todoData: Todo) => {
+    setLoader(true);
     setIsDisableInput(true);
     const newTodo = await addTodo(todoData);
 
@@ -55,11 +58,16 @@ export const App: React.FC = () => {
       newTodo,
     ]));
 
+    setFocusetTodoId(newTodo.id);
+
     setIsDisableInput(false);
+    setLoader(false);
     setShowFooter(true);
   };
 
   const deleteTodo = async (todoId: number) => {
+    setLoader(true);
+    setFocusetTodoId(todoId);
     await removeTodo(todoId);
 
     const updatedTodos = todos.filter(todo => todo.id !== todoId);
@@ -68,6 +76,7 @@ export const App: React.FC = () => {
       setShowFooter(false);
     }
 
+    setLoader(false);
     setTodos(updatedTodos);
   };
 
@@ -86,6 +95,8 @@ export const App: React.FC = () => {
         />
         <TodoList
           todos={todos}
+          focusedTodoId={focusedTodoId}
+          loader={loader}
           onDeleteTodo={deleteTodo}
         />
         {showFooter && (
