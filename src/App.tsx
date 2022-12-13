@@ -112,13 +112,17 @@ export const App: React.FC = () => {
   };
 
   useEffect(() => {
-    getTodos(user?.id)
-      .then(res => setTodos(res))
-      .catch(() => errorMessage);
+    const loadTodos = async () => {
+      try {
+        const todosFromServer = await getTodos(user?.id);
 
-    if (newTodoField.current) {
-      newTodoField.current.focus();
-    }
+        setTodos(todosFromServer);
+      } catch {
+        setErrorMessage('Unable to load a todo');
+      }
+    };
+
+    loadTodos();
   }, []);
 
   const getFilteredTodos = useMemo(() => {
