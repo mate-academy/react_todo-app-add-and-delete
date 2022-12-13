@@ -13,7 +13,8 @@ interface Props {
   activeTodos: Todo[] | null,
   allTodos: Todo[] | null,
   setEmptyTitleError: Dispatch<SetStateAction<boolean>>,
-  setError: (setEmptyTitleError: Dispatch<SetStateAction<boolean>>) => void;
+  // eslint-disable-next-line max-len
+  setErrorStatus: (setEmptyTitleError: Dispatch<SetStateAction<boolean>>) => void;
   setVisibleTodos: Dispatch<SetStateAction<Todo[] | null>>,
   setIsAdding: Dispatch<SetStateAction<boolean>>,
   isAdding: boolean,
@@ -28,7 +29,7 @@ export const NewTodo: React.FC<Props> = (props) => {
     activeTodos,
     allTodos,
     setEmptyTitleError,
-    setError,
+    setErrorStatus,
     setVisibleTodos,
     setIsAdding,
     isAdding,
@@ -64,7 +65,7 @@ export const NewTodo: React.FC<Props> = (props) => {
           e.preventDefault();
           setIsAdding(true);
           if (currentInput === '') {
-            setError(setEmptyTitleError);
+            setErrorStatus(setEmptyTitleError);
           }
 
           if (user && currentInput.length > 0) {
@@ -76,7 +77,7 @@ export const NewTodo: React.FC<Props> = (props) => {
                 setCurrentInput('');
               })
               .catch(() => {
-                setError(setPostErrorStatus);
+                setErrorStatus(setPostErrorStatus);
                 setIsAdding(false);
               });
           }

@@ -31,9 +31,9 @@ Add a todo with the entered title on `NewTodoField` form submit:
 
 Remove a todo on `TodoDeleteButton` click:
 
-- covered the todo with the loader while wating for API response;
-- remove the todo from the list on success;
-- in case of API error show `Unable to delete a todo` notification at the bottom (the todo must stay in the list);
+✓ covered the todo with the loader while wating for API response;
+✓ remove the todo from the list on success;
+✓ in case of API error show `Unable to delete a todo` notification at the bottom (the todo must stay in the list);
 
 Remove all the completed todos after `Clear completed` button click:
 

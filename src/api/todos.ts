@@ -16,3 +16,7 @@ export const getCompletedTodos = (userId: number) => {
 export const addTodo = (userId: number, dataInfo: any) => {
   return client.post<Todo[]>('/todos', dataInfo);
 };
+
+export const deleteTodo = (todoId: number) => {
+  return client.delete(`/todos1/${todoId}`);
+};

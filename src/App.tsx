@@ -22,6 +22,8 @@ export const App: React.FC = () => {
   const [emptyTitleError, setEmptyTitleError] = useState(false);
   const [isAdding, setIsAdding] = useState(false);
   const [currentInput, setCurrentInput] = useState('');
+  const [isDeleting, setIsDeleting] = useState(0);
+  const [deleteErrorStatus, setDeleteErrorStatus] = useState(false);
 
   const user = useContext(AuthContext);
   const newTodoField = useRef<HTMLInputElement>(null);
@@ -60,7 +62,7 @@ export const App: React.FC = () => {
           activeTodos={activeTodos}
           allTodos={allTodos}
           setEmptyTitleError={setEmptyTitleError}
-          setError={setErrorStatus}
+          setErrorStatus={setErrorStatus}
           setVisibleTodos={setVisibleTodos}
           setIsAdding={setIsAdding}
           isAdding={isAdding}
@@ -73,6 +75,12 @@ export const App: React.FC = () => {
           visibleTodos={visibleTodos}
           isAdding={isAdding}
           currentInput={currentInput}
+          isDeleting={isDeleting}
+          setIsDeleting={setIsDeleting}
+          setVisibleTodos={setVisibleTodos}
+          // deleteErrorStatus={deleteErrorStatus}
+          setDeleteErrorStatus={setDeleteErrorStatus}
+          setErrorStatus={setErrorStatus}
         />
 
         <Filter
@@ -90,6 +98,8 @@ export const App: React.FC = () => {
         emptyTitleError={emptyTitleError}
         // setError={setErrorStatus}
         setEmptyTitleError={setEmptyTitleError}
+        deleteErrorStatus={deleteErrorStatus}
+        setDeleteErrorStatus={setDeleteErrorStatus}
       />
     </div>
   );

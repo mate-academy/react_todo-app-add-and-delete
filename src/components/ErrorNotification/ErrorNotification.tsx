@@ -9,6 +9,9 @@ interface Props {
   setEmptyTitleError: Dispatch<SetStateAction<boolean>>;
   postErrorStatus: boolean;
   setPostErrorStatus: Dispatch<SetStateAction<boolean>>;
+  deleteErrorStatus: boolean;
+  // eslint-disable-next-line max-len
+  setDeleteErrorStatus: Dispatch<SetStateAction<boolean>>;
 }
 
 export const ErrorNotification: React.FC<Props> = (props) => {
@@ -19,11 +22,14 @@ export const ErrorNotification: React.FC<Props> = (props) => {
     setEmptyTitleError,
     postErrorStatus,
     setPostErrorStatus,
+    deleteErrorStatus,
+    setDeleteErrorStatus,
   } = props;
 
   return (
     <div
-      hidden={!getErrorStatus && !emptyTitleError && !postErrorStatus}
+      // eslint-disable-next-line max-len
+      hidden={!getErrorStatus && !emptyTitleError && !postErrorStatus && !deleteErrorStatus}
       data-cy="ErrorNotification"
       className="notification is-danger is-light has-text-weight-normal"
     >
@@ -35,6 +41,7 @@ export const ErrorNotification: React.FC<Props> = (props) => {
           setGetErrorStatus(false);
           setEmptyTitleError(false);
           setPostErrorStatus(false);
+          setDeleteErrorStatus(false);
         }}
       />
       <span hidden={!getErrorStatus}>
@@ -43,7 +50,7 @@ export const ErrorNotification: React.FC<Props> = (props) => {
       <span hidden={!postErrorStatus}>
         Unable to add a todo
       </span>
-      <span hidden>
+      <span hidden={!deleteErrorStatus}>
         Unable to delete a todo
       </span>
       <span hidden>
