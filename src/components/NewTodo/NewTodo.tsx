@@ -31,6 +31,12 @@ export const NewTodo: React.FC<Props> = (props) => {
     }
   }, []);
 
+  useEffect(() => {
+    if (newTodoField.current && !isAdding) {
+      newTodoField.current.focus();
+    }
+  }, [isAdding]);
+
   const handleSubmit = (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
 

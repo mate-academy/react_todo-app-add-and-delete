@@ -65,6 +65,8 @@ export const TodoList: React.FC<Props> = (props) => {
               key={todo.id}
               timeout={300}
               classNames="item"
+              unmountOnExit
+              appear
             >
               <div
                 data-cy="Todo"
@@ -110,6 +112,8 @@ export const TodoList: React.FC<Props> = (props) => {
             key={0}
             timeout={300}
             classNames="temp-item"
+            unmountOnExit
+            appear
           >
             <div
               data-cy="Todo"

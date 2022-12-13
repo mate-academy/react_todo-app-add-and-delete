@@ -2,14 +2,14 @@ import { client } from '../utils/fetchClient';
 
 import { Todo } from '../types/Todo';
 
-export const getTodos = (userId: number) => {
-  const todos = client.get<Todo[]>(`/todos?userId=${userId}`);
+export const getTodos = async (userId: number) => {
+  const todos = await client.get<Todo[]>(`/todos?userId=${userId}`);
 
-  return todos || [];
+  return todos;
 };
 
 export const addTodo = async (todo: Omit<Todo, 'id'>) => {
-  const newTodo = client.post<Todo>('/todos', todo);
+  const newTodo = await client.post<Todo>('/todos', todo);
 
   return newTodo;
 };

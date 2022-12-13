@@ -56,6 +56,7 @@ export const App: React.FC = () => {
 
   const addNewTodo = useCallback(async (todoData: Omit<Todo, 'id'>) => {
     try {
+      setHasError(false);
       setIsAdding(true);
 
       const todo = await addTodo(todoData);
@@ -73,23 +74,25 @@ export const App: React.FC = () => {
 
   const deleteTodo = useCallback(async (todoId: number) => {
     try {
-      setSelectedTodoIds([...selectedTodoIds, todoId]);
+      setHasError(false);
+      setSelectedTodoIds(prevIds => [...prevIds, todoId]);
 
       await removeTodo(todoId);
+
+      await loadUserTodos();
 
       setSelectedTodoIds([0]);
     } catch (error) {
       setHasError(true);
       setCurrentError('Unable to delete a todo');
     }
-
-    await loadUserTodos();
   }, []);
 
   const clearCompleted = useCallback(async () => {
     try {
-      setSelectedTodoIds(currentIds => (
-        [...currentIds, ...completedTodos.map(todo => todo.id)]
+      setHasError(false);
+      setSelectedTodoIds(prevIds => (
+        [...prevIds, ...completedTodos.map(todo => todo.id)]
       ));
 
       await Promise.all(completedTodos.map(async (todo) => {
@@ -97,6 +100,8 @@ export const App: React.FC = () => {
       }));
 
       await loadUserTodos();
+
+      setSelectedTodoIds([]);
     } catch (error) {
       setHasError(true);
       setCurrentError('Unable to clear the completed tasks');
