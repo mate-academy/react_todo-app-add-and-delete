@@ -11,6 +11,7 @@ import React, {
 import {
   addTodo,
   getTodos,
+  removeTodo,
 } from './api/todos';
 
 import { AuthContext } from './components/Auth/AuthContext';
@@ -28,11 +29,18 @@ export const App: React.FC = () => {
   const [title, setTitle] = useState('');
   const [status, setStatus] = useState(Status.All);
   const [error, setError] = useState(ErrorMessage.None);
+  const [isAdding, setIsAdding] = useState(false);
+  const [loadingTodosIds, setLoadingTodosIds] = useState<number[]>([]);
+
   const activeTodos = useMemo(() => (
     todos.filter(todo => !todo.completed)
   ), [todos]);
 
-  const loadUserTodos = useCallback(() => {
+  const completedTodos = useMemo(() => (
+    todos.filter(todo => todo.completed)
+  ), [todos]);
+
+  const loadUserTodos = useCallback(async () => {
     if (!user) {
       return;
     }
@@ -40,8 +48,9 @@ export const App: React.FC = () => {
     setError(ErrorMessage.None);
 
     try {
-      getTodos(user.id)
-        .then(setTodos);
+      const todosFromServer = await getTodos(user.id);
+
+      setTodos(todosFromServer);
     } catch {
       setError(ErrorMessage.NoTodos);
     }
@@ -55,20 +64,64 @@ export const App: React.FC = () => {
     async (event: React.FormEvent<HTMLFormElement>) => {
       event.preventDefault();
 
-      if (title.trim() !== '' && user) {
-        await addTodo({
-          userId: user.id,
-          title: title.trim(),
-          completed: false,
-        });
+      if (title.trim() && user) {
+        setIsAdding(true);
 
-        await loadUserTodos();
+        try {
+          await addTodo({
+            userId: user.id,
+            title: title.trim(),
+            completed: false,
+          });
 
-        setTitle('');
+          await loadUserTodos();
+          setTitle('');
+        } catch {
+          setError(ErrorMessage.Add);
+        } finally {
+          setIsAdding(false);
+        }
       } else {
-        setError(ErrorMessage.Add);
+        setError(ErrorMessage.Title);
       }
     }, [title, user],
+  );
+
+  const handleDelete = useCallback(
+    async (todoId: number) => {
+      setLoadingTodosIds(prevIds => [...prevIds, todoId]);
+
+      try {
+        await removeTodo(todoId);
+
+        await loadUserTodos();
+      } catch {
+        setError(ErrorMessage.Delete);
+      } finally {
+        setLoadingTodosIds([]);
+      }
+    }, [],
+  );
+
+  const handleRemoveCompleted = useCallback(
+    async () => {
+      setLoadingTodosIds(prevTodoIds => ([
+        ...prevTodoIds,
+        ...completedTodos.map(todo => todo.id),
+      ]));
+
+      try {
+        await Promise.all(completedTodos.map(todo => (
+          removeTodo(todo.id)
+        )));
+
+        await loadUserTodos();
+      } catch {
+        setError(ErrorMessage.Delete);
+      } finally {
+        setLoadingTodosIds([]);
+      }
+    }, [completedTodos],
   );
 
   const showedTodos = useMemo(() => (
@@ -100,7 +153,7 @@ export const App: React.FC = () => {
               className={classNames(
                 'todoapp__toggle-all',
                 {
-                  active: activeTodos.length === 0,
+                  active: !activeTodos.length,
                 },
               )}
             />
@@ -110,6 +163,7 @@ export const App: React.FC = () => {
             onSubmit={handleSubmit}
             title={title}
             onTitleChange={setTitle}
+            isAdding={isAdding}
           />
         </header>
 
@@ -117,6 +171,10 @@ export const App: React.FC = () => {
           <>
             <TodoList
               todos={showedTodos}
+              curTitle={title}
+              isAdding={isAdding}
+              onDelete={handleDelete}
+              loadingTodosIds={loadingTodosIds}
             />
 
             <footer className="todoapp__footer" data-cy="Footer">
@@ -133,12 +191,13 @@ export const App: React.FC = () => {
                 data-cy="ClearCompletedButton"
                 type="button"
                 className="todoapp__clear-completed"
-                style={activeTodos.length === todos.length
-                  ? {
+                onClick={handleRemoveCompleted}
+                style={completedTodos.length
+                  ? {}
+                  : {
                     opacity: 0,
                     pointerEvents: 'none',
-                  }
-                  : {}}
+                  }}
               >
                 Clear completed
               </button>

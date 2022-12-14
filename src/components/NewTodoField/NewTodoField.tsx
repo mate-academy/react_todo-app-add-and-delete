@@ -4,10 +4,16 @@ type Props = {
   onSubmit: (event: React.FormEvent<HTMLFormElement>) => void;
   title: string;
   onTitleChange: (title: string) => void;
+  isAdding: boolean;
 };
 
 export const NewTodoField: React.FC<Props> = (props) => {
-  const { onSubmit, title, onTitleChange } = props;
+  const {
+    onSubmit,
+    title,
+    onTitleChange,
+    isAdding,
+  } = props;
   const newTodoField = useRef<HTMLInputElement>(null);
 
   useEffect(() => {
@@ -26,6 +32,7 @@ export const NewTodoField: React.FC<Props> = (props) => {
         placeholder="What needs to be done?"
         value={title}
         onChange={event => onTitleChange(event.target.value)}
+        disabled={isAdding}
       />
     </form>
   );
