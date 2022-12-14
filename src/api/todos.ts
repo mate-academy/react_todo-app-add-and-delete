@@ -6,3 +6,13 @@ export const getTodos = (userId: number) => {
 };
 
 // Add more methods here
+
+export const AddTodo = async (todo: Omit<Todo, 'id'>) => {
+  const newTodo = await client.post<Todo>('/todos', todo);
+
+  return newTodo;
+};
+
+export const DeleteTodo = async (todoId: number) => {
+  await client.delete(`/todos/${todoId}`);
+};
