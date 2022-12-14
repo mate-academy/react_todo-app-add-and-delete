@@ -59,51 +59,51 @@ export const App: React.FC = () => {
   }, []);
 
   const addNewTodo = async (todoData: Todo) => {
-    setLoader(true);
-    setIsDisableInput(true);
-
     try {
+      setIsDisableInput(true);
+
       const newTodo = await addTodo(todoData);
 
       setTodos(previousTodos => ([
         ...previousTodos,
         newTodo,
       ]));
+
+      setShowFooter(true);
+      setIsDisableInput(false);
     } catch {
       setError(ErrorType.Add);
+      setIsDisableInput(false);
 
       setTimeout(() => {
         setError(ErrorType.None);
       }, 3000);
     }
-
-    setIsDisableInput(false);
-    setLoader(false);
-    setShowFooter(true);
   };
 
   const deleteTodo = async (todoId: number) => {
-    setLoader(true);
-    setFocusetTodoId(todoId);
-
     try {
+      setLoader(true);
+      setFocusetTodoId(todoId);
+
       await removeTodo(todoId);
+
+      const updatedTodos = todos.filter(todo => todo.id !== todoId);
+
+      if (updatedTodos.length === 0) {
+        setShowFooter(false);
+      }
+
+      setLoader(false);
+      setTodos(updatedTodos);
     } catch {
       setError(ErrorType.Delete);
+      setLoader(false);
 
       setTimeout(() => {
         setError(ErrorType.None);
       }, 3000);
     }
-
-    const updatedTodos = todos.filter(todo => todo.id !== todoId);
-
-    if (updatedTodos.length === 0) {
-      setShowFooter(false);
-    }
-
-    setLoader(false);
-    setTodos(updatedTodos);
   };
 
   return (
