@@ -9,24 +9,45 @@ type Props = {
   onTodosChange: (value: Todo[]) => void;
 };
 
+enum SortBy {
+  All = 'All',
+  Active = 'Active',
+  Completed = 'Completed',
+}
+
 export const Footer: React.FC<Props> = ({
   onTodosChange,
   todos,
 }) => {
-  const [clickedValue, setClickedValue] = useState(0);
   const [activeTodos, setActiveTodos] = useState<Todo[]>([]);
+  const [filterBy, setFilterBy] = useState<SortBy>();
+  const [hasCompletedTodos, setHasCompletedTodos] = useState<boolean>();
 
   const user = useContext(AuthContext);
+
+  // to check if there are some completed todos
+  useEffect(() => {
+    const completedTodos = async () => {
+      const todosFromServer = user && await getTodos(user.id);
+
+      return todosFromServer
+        && todosFromServer.filter(todo => todo.completed).length > 0
+        ? setHasCompletedTodos(true)
+        : setHasCompletedTodos(false);
+    };
+
+    completedTodos();
+  }, []);
 
   // to find active todos (bottom left corner)
   useEffect(() => {
     const findActiveTodos = async () => {
       const todosFromServer = user && await getTodos(user.id);
 
-      const filteredTodos = todosFromServer
-        && todosFromServer.filter(todo => todo.completed === false);
+      if (todosFromServer) {
+        const filteredTodos = todosFromServer
+          && todosFromServer.filter(todo => todo.completed === false);
 
-      if (filteredTodos) {
         setActiveTodos(filteredTodos);
       }
     };
@@ -34,42 +55,41 @@ export const Footer: React.FC<Props> = ({
     findActiveTodos();
   }, [activeTodos]);
 
-  const handleFilter = async (todosStatus: boolean) => {
+  const handleFilter = async (sortBy: SortBy) => {
     const todosFromServer = user && await getTodos(user.id);
-
-    const filterTodoByStatus = (actualTodos: Todo[], status: boolean) => {
-      return actualTodos.filter(todo => todo.completed === status);
-    };
 
     if (todosFromServer) {
-      onTodosChange(filterTodoByStatus(todosFromServer, todosStatus));
+      switch (sortBy) {
+        case SortBy.All:
+          return onTodosChange(todosFromServer);
+
+        case SortBy.Active:
+          return onTodosChange(todosFromServer.filter(todo => !todo.completed));
+
+        case SortBy.Completed:
+          return onTodosChange(todosFromServer.filter(todo => todo.completed));
+
+        default:
+          return onTodosChange(todosFromServer);
+      }
     }
+
+    return todosFromServer;
   };
-
-  const handleShowAll = async () => {
-    const todosFromServer = user && await getTodos(user.id);
-
-    return todosFromServer && onTodosChange(todosFromServer);
-  };
-
-  const questionTags = [
-    { status: 'All', value: 0 },
-    { status: 'Active', value: 1 },
-    { status: 'Completed', value: 2 },
-  ];
 
   const handleClearCompleted = async () => {
     const todosFromServer = user && await getTodos(user.id);
     const onlyActiveTodos = todos.filter(todo => !todo.completed);
 
     onTodosChange(onlyActiveTodos);
+    setHasCompletedTodos(false);
 
     return todosFromServer && todosFromServer.map(
       todo => todo.completed === true && removeTodo(todo.id),
     );
   };
 
-  const hasCompletedTodos = todos.filter(todo => todo.completed).length > 0;
+  const { All, Active, Completed } = SortBy;
 
   return (
     <footer className="todoapp__footer" data-cy="Footer">
@@ -83,14 +103,16 @@ export const Footer: React.FC<Props> = ({
           href="#/"
           className={cn(
             'filter__link',
-            { selected: clickedValue === 0 },
+            {
+              selected: filterBy === All,
+            },
           )}
           onClick={() => {
-            handleShowAll();
-            setClickedValue(0);
+            handleFilter(All);
+            setFilterBy(All);
           }}
         >
-          {questionTags[0].status}
+          All
         </a>
 
         <a
@@ -98,28 +120,32 @@ export const Footer: React.FC<Props> = ({
           href="#/active"
           className={cn(
             'filter__link',
-            { selected: clickedValue === 1 },
+            {
+              selected: filterBy === Active,
+            },
           )}
           onClick={() => {
-            handleFilter(false);
-            setClickedValue(1);
+            handleFilter(Active);
+            setFilterBy(Active);
           }}
         >
-          {questionTags[1].status}
+          Active
         </a>
         <a
           data-cy="FilterLinkCompleted"
           href="#/completed"
           className={cn(
             'filter__link',
-            { selected: clickedValue === 2 },
+            {
+              selected: filterBy === Completed,
+            },
           )}
           onClick={() => {
-            handleFilter(true);
-            setClickedValue(2);
+            handleFilter(Completed);
+            setFilterBy(Completed);
           }}
         >
-          {questionTags[2].status}
+          Completed
         </a>
       </nav>
 
@@ -129,9 +155,9 @@ export const Footer: React.FC<Props> = ({
         className="todoapp__clear-completed"
         onClick={() => handleClearCompleted()}
       >
-        {hasCompletedTodos
-          ? ('Clear completed')
-          : ''}
+        {hasCompletedTodos && 'Clear complited'}
+
+        {!hasCompletedTodos && ''}
       </button>
     </footer>
   );

@@ -36,10 +36,11 @@ export const App: React.FC = () => {
     const getTodosFromServer = async () => {
       const todosFromServer = user && await getTodos(user.id);
 
-      if (todosFromServer) {
-        setTodos(todosFromServer);
+      if (user) {
+        setTodos(await getTodos(user.id));
       }
 
+      // condition to show footer
       if (todosFromServer && todosFromServer.length > 0) {
         setShowFooter(true);
       }
@@ -57,8 +58,6 @@ export const App: React.FC = () => {
       ...previousTodos,
       newTodo,
     ]));
-
-    setFocusetTodoId(newTodo.id);
 
     setIsDisableInput(false);
     setLoader(false);
@@ -83,7 +82,6 @@ export const App: React.FC = () => {
   return (
     <div className="todoapp">
       <h1 className="todoapp__title">todos</h1>
-
       <div className="todoapp__content">
         <Header
           newTodoField={newTodoField}
@@ -93,19 +91,20 @@ export const App: React.FC = () => {
           onErrorChange={setError}
           onAddNewTodo={addNewTodo}
         />
+
         <TodoList
           todos={todos}
           focusedTodoId={focusedTodoId}
           loader={loader}
           onDeleteTodo={deleteTodo}
         />
+
         {showFooter && (
           <Footer
             todos={todos}
             onTodosChange={setTodos}
           />
         )}
-
       </div>
 
       {error && (

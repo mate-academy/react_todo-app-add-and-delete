@@ -29,12 +29,12 @@ export const Header: React.FC<Props> = ({
     if (!query.length) {
       onErrorChange(true);
 
+      setTimeout(() => {
+        onErrorChange(false);
+      }, 3000);
+
       return;
     }
-
-    setTimeout(() => {
-      onErrorChange(false);
-    }, 3000);
 
     if (user) {
       onAddNewTodo({
