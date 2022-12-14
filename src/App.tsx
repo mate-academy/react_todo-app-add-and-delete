@@ -14,7 +14,6 @@ import { Error } from './components/Error';
 import { Navigation } from './components/Navigation';
 import { Filter } from './types/Filter';
 import { NewTodo } from './components/NewTodo';
-import { TodoComponent } from './components/TodoComponent';
 import { TodoList } from './components/TodoList';
 
 export const App: React.FC = () => {
@@ -157,29 +156,16 @@ export const App: React.FC = () => {
           />
         </header>
 
-        <section className="todoapp__main" data-cy="TodoList">
-          {todos.length !== 0 && (
-            <TodoList
-              todos={filteredTodos}
-              onRemoveTodo={removeTodo}
-              deletingTodo={deletingTodo}
-              deletingTodos={deletingTodos}
-            />
-          )}
-          {isAdding && (
-            <TodoComponent
-              todo={{
-                id: 0,
-                userId: user?.id || 0,
-                title: todoTitle,
-                completed: false,
-              }}
-              onRemoveTodo={removeTodo}
-              deletingTodo={deletingTodo}
-              deletingTodos={deletingTodos}
-            />
-          )}
-        </section>
+        {todos.length !== 0 && (
+          <TodoList
+            todos={filteredTodos}
+            onRemoveTodo={removeTodo}
+            deletingTodo={deletingTodo}
+            deletingTodos={deletingTodos}
+            isAdding={isAdding}
+            todoTitle={todoTitle}
+          />
+        )}
 
         {todos.length !== 0 && (
           <footer className="todoapp__footer" data-cy="Footer">
