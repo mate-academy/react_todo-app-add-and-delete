@@ -25,7 +25,7 @@ export const App: React.FC = () => {
   const [title, setTitle] = useState('');
   const [errorText, setErrorText] = useState('');
   const [isAdding, setIsAdding] = useState(false);
-  const [TodoIdsToDelete, setTodoIdsToDelete] = useState<number[]>([0]);
+  const [todoIdsToDelete, setTodoIdsToDelete] = useState<number[]>([0]);
 
   useEffect(() => {
     // focus the element with `ref={newTodoField}`
@@ -140,12 +140,12 @@ export const App: React.FC = () => {
         <TodoList
           title={title}
           isAdding={isAdding}
-          TodoIdsToDelete={TodoIdsToDelete}
+          todoIdsToDelete={todoIdsToDelete}
           todos={getVisibleGoods(todos)}
           deleteCurrentTodo={deleteCurrentTodo}
         />
 
-        {todos.length && (
+        {todos.length > 0 && (
           <FooterTodo
             onFilterStatusChange={setFilterStatus}
             filterStatus={filterStatus}

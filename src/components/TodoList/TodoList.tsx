@@ -4,7 +4,7 @@ import { TodoInfo } from '../TodoInfo';
 
 interface Props {
   todos: Todo[],
-  TodoIdsToDelete: number[],
+  todoIdsToDelete: number[],
   deleteCurrentTodo: (todoId: number) => void,
   isAdding: boolean,
   title: string,
@@ -13,7 +13,7 @@ interface Props {
 export const TodoList: React.FC<Props> = React.memo(({
   todos,
   deleteCurrentTodo,
-  TodoIdsToDelete,
+  todoIdsToDelete,
   isAdding,
   title,
 }) => {
@@ -28,14 +28,15 @@ export const TodoList: React.FC<Props> = React.memo(({
     <section className="todoapp__main" data-cy="TodoList">
       {todos.map(todo => (
         <TodoInfo
-          TodoIdsToDelete={TodoIdsToDelete}
+          key={todo.id}
+          todoIdsToDelete={todoIdsToDelete}
           todo={todo}
           deleteCurrentTodo={deleteCurrentTodo}
         />
       ))}
       {isAdding && (
         <TodoInfo
-          TodoIdsToDelete={TodoIdsToDelete}
+          todoIdsToDelete={todoIdsToDelete}
           todo={tempTodo}
           deleteCurrentTodo={deleteCurrentTodo}
         />

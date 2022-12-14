@@ -5,13 +5,13 @@ import { Todo } from '../../types/Todo';
 interface Props {
   todo: Todo,
   deleteCurrentTodo: (todoId: number) => void;
-  TodoIdsToDelete: number[],
+  todoIdsToDelete: number[],
 }
 
 export const TodoInfo: React.FC<Props> = React.memo(({
   todo,
   deleteCurrentTodo,
-  TodoIdsToDelete,
+  todoIdsToDelete,
 }) => {
   const {
     title,
@@ -50,7 +50,7 @@ export const TodoInfo: React.FC<Props> = React.memo(({
         data-cy="TodoLoader"
         className={classNames(
           'modal overlay',
-          { 'is-active': TodoIdsToDelete.includes(id) },
+          { 'is-active': todoIdsToDelete.includes(id) },
         )}
       >
         <div className="modal-background has-background-white-ter" />
