@@ -72,7 +72,7 @@ export const NewTodo: React.FC<Props> = (props) => {
           }
 
           if (user && currentInput.length > 0) {
-            addTodo(user.id, newTodo)
+            addTodo(newTodo)
               .then(() => getTodos(user.id))
               .then(userTodos => {
                 setVisibleTodos(userTodos);

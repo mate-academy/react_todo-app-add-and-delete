@@ -13,8 +13,8 @@ export const getCompletedTodos = (userId: number) => {
   return client.get<Todo[]>(`/todos?userId=${userId}&completed=true`);
 };
 
-export const addTodo = (userId: number, dataInfo: any) => {
-  return client.post<Todo[]>('/todos', dataInfo);
+export const addTodo = (dataInfo: any) => {
+  return client.post<Todo[]>('/todos/', dataInfo);
 };
 
 export const deleteTodo = (todoId: number) => {
