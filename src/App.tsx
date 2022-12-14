@@ -99,15 +99,13 @@ export const App: React.FC = () => {
   const filterTodos = (filterBy: Filter) => (
     todos.filter(todo => {
       switch (filterBy) {
-        case Filter.ALL:
-          return todo;
-
         case Filter.ACTIVE:
           return !todo.completed;
 
         case Filter.COMPLETED:
           return todo.completed;
 
+        case Filter.ALL:
         default:
           return todo;
       }
