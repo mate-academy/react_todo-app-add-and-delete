@@ -63,6 +63,7 @@ export const App: React.FC = () => {
   const handleSubmit = useCallback(
     async (event: React.FormEvent<HTMLFormElement>) => {
       event.preventDefault();
+      setError(ErrorMessage.None);
 
       if (title.trim() && user) {
         setIsAdding(true);
@@ -89,6 +90,7 @@ export const App: React.FC = () => {
 
   const handleDelete = useCallback(
     async (todoId: number) => {
+      setError(ErrorMessage.None);
       setLoadingTodosIds(prevIds => [...prevIds, todoId]);
 
       try {
@@ -105,6 +107,7 @@ export const App: React.FC = () => {
 
   const handleRemoveCompleted = useCallback(
     async () => {
+      setError(ErrorMessage.None);
       setLoadingTodosIds(prevTodoIds => ([
         ...prevTodoIds,
         ...completedTodos.map(todo => todo.id),
@@ -190,14 +193,13 @@ export const App: React.FC = () => {
               <button
                 data-cy="ClearCompletedButton"
                 type="button"
-                className="todoapp__clear-completed"
+                className={classNames(
+                  'todoapp__clear-completed',
+                  {
+                    'todoapp__clear-completed--hidden': !completedTodos.length,
+                  },
+                )}
                 onClick={handleRemoveCompleted}
-                style={completedTodos.length
-                  ? {}
-                  : {
-                    opacity: 0,
-                    pointerEvents: 'none',
-                  }}
               >
                 Clear completed
               </button>

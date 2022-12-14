@@ -1,4 +1,9 @@
 import { useContext } from 'react';
+import {
+  CSSTransition,
+  TransitionGroup,
+} from 'react-transition-group';
+
 import { Todo } from '../../types/Todo';
 import { AuthContext } from '../Auth/AuthContext';
 import { TodoItem } from '../TodoItem';
@@ -24,27 +29,40 @@ export const TodoList: React.FC<Props> = (props) => {
 
   return (
     <section className="todoapp__main" data-cy="TodoList">
-      {todos.map(todo => (
-        <TodoItem
-          key={todo.id}
-          todo={todo}
-          onDelete={onDelete}
-          isLoading={loadingTodosIds.includes(todo.id)}
-        />
-      ))}
+      <TransitionGroup>
+        {todos.map(todo => (
+          <CSSTransition
+            key={todo.id}
+            timeout={300}
+            classNames="item"
+          >
+            <TodoItem
+              todo={todo}
+              onDelete={onDelete}
+              isLoading={loadingTodosIds.includes(todo.id)}
+            />
+          </CSSTransition>
+        ))}
 
-      {isAdding && user && (
-        <TodoItem
-          todo={{
-            id: 0,
-            title: curTitle,
-            completed: false,
-            userId: user?.id,
-          }}
-          onDelete={onDelete}
-          isLoading
-        />
-      )}
+        {isAdding && user && (
+          <CSSTransition
+            key={0}
+            timeout={300}
+            classNames="temp-item"
+          >
+            <TodoItem
+              todo={{
+                id: 0,
+                title: curTitle,
+                completed: false,
+                userId: user?.id,
+              }}
+              onDelete={onDelete}
+              isLoading
+            />
+          </CSSTransition>
+        )}
+      </TransitionGroup>
     </section>
   );
 };
