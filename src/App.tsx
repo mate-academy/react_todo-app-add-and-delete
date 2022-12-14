@@ -83,8 +83,6 @@ export const App: React.FC = () => {
     } catch (error) {
       setErrorText('Unable to add Todo');
       setIsError(true);
-    } finally {
-      setIsAdding(false);
     }
   }, []);
 
