@@ -24,7 +24,7 @@ export const AddNewTodoForm: React.FC<Props> = React.memo(({
   const newTodoField = useRef<HTMLInputElement>(null);
 
   const handleSubmit = useCallback(
-    async (event: React.FormEvent<HTMLFormElement>) => {
+    (event: React.FormEvent<HTMLFormElement>) => {
       event.preventDefault();
 
       const userId = user?.id;
@@ -38,14 +38,14 @@ export const AddNewTodoForm: React.FC<Props> = React.memo(({
         return;
       }
 
-      await onTodoAdd({
+      onTodoAdd({
         title,
         userId,
         completed: false,
       });
 
       onSetTitle('');
-    }, [],
+    }, [title],
   );
 
   return (
