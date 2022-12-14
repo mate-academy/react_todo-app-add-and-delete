@@ -1,7 +1,10 @@
 /* eslint-disable jsx-a11y/control-has-associated-label */
 import classNames from 'classnames';
 import {
-  useMemo, useContext, SetStateAction, Dispatch,
+  useMemo,
+  useContext,
+  SetStateAction,
+  Dispatch,
 } from 'react';
 import { addTodo, getTodos } from '../../api/todos';
 import { AuthContext } from '../Auth/AuthContext';

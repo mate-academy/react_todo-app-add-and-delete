@@ -34,7 +34,6 @@ export const TodoInfo: React.FC<Props> = (props) => {
           { todo: true },
           { completed: todo.completed },
         )}
-        // key={todo.id}
       >
         {todo.id === isDeleting && (
           <div data-cy="TodoLoader" className="modal overlay is-active">

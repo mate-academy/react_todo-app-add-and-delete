@@ -1,6 +1,9 @@
 /* eslint-disable jsx-a11y/control-has-associated-label */
 import React, {
-  useContext, useEffect, useRef, useState,
+  useContext,
+  useEffect,
+  useRef,
+  useState,
 } from 'react';
 
 import { AuthContext } from './components/Auth/AuthContext';
@@ -33,9 +36,6 @@ export const App: React.FC = () => {
     setTimeout(() => errorType(false), 3000);
   };
 
-  // eslint-disable-next-line no-console
-  console.log('App');
-
   useEffect(() => {
     // focus the element with `ref={newTodoField}`
     if (newTodoField.current) {
@@ -47,7 +47,6 @@ export const App: React.FC = () => {
         .then(userTodos => {
           setVisibleTodos(userTodos);
           setAllTodos(userTodos);
-          // setActiveTodos(userTodos.filter(el => !el.completed));
         })
         .catch(() => setErrorStatus(setGetErrorStatus));
 
@@ -82,7 +81,6 @@ export const App: React.FC = () => {
           isDeleting={isDeleting}
           setIsDeleting={setIsDeleting}
           setVisibleTodos={setVisibleTodos}
-          // deleteErrorStatus={deleteErrorStatus}
           setDeleteErrorStatus={setDeleteErrorStatus}
           setErrorStatus={setErrorStatus}
         />
@@ -101,7 +99,6 @@ export const App: React.FC = () => {
         getErrorStatus={getErrorStatus}
         setGetErrorStatus={setGetErrorStatus}
         emptyTitleError={emptyTitleError}
-        // setError={setErrorStatus}
         setEmptyTitleError={setEmptyTitleError}
         deleteErrorStatus={deleteErrorStatus}
         setDeleteErrorStatus={setDeleteErrorStatus}
