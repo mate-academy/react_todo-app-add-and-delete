@@ -1,13 +1,15 @@
 /* eslint-disable jsx-a11y/control-has-associated-label */
 
+import { ErrorType } from '../../types/ErrorType';
+
 type Props = {
-  query: string;
-  onErrorChange: (value: boolean) => void;
+  error: ErrorType;
+  onErrorChange: (value: ErrorType) => void;
 };
 
 export const ErrorNotification: React.FC<Props> = ({
-  query,
   onErrorChange,
+  error,
 }) => {
   return (
     <div
@@ -19,14 +21,11 @@ export const ErrorNotification: React.FC<Props> = ({
         type="button"
         className="delete"
         onClick={() => {
-          onErrorChange(false);
-          // clearTimeout(timeoutId);
+          onErrorChange(ErrorType.None);
         }}
       />
 
-      {!query && (
-        'Title can\'t be empty'
-      )}
+      {error}
       <br />
     </div>
   );

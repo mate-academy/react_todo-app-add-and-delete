@@ -1,6 +1,7 @@
 /* eslint-disable jsx-a11y/control-has-associated-label */
 
 import React, { RefObject, useContext } from 'react';
+import { ErrorType } from '../../types/ErrorType';
 import { Todo } from '../../types/Todo';
 import { AuthContext } from '../Auth/AuthContext';
 
@@ -9,7 +10,7 @@ type Props = {
   query: string;
   isDisabledInput: boolean;
   onQueryChange: (value: string) => void;
-  onErrorChange: (value: boolean) => void;
+  onErrorChange: (value: ErrorType) => void;
   onAddNewTodo: (value: Todo) => void;
 };
 
@@ -26,11 +27,11 @@ export const Header: React.FC<Props> = ({
   const handleFormSubmit = (event: React.FormEvent) => {
     event.preventDefault();
 
-    if (query.length === 0) {
-      onErrorChange(true);
+    if (!query.length) {
+      onErrorChange(ErrorType.Title);
 
       setTimeout(() => {
-        onErrorChange(false);
+        onErrorChange(ErrorType.None);
       }, 3000);
 
       return;

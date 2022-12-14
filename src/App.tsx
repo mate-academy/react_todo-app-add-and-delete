@@ -14,13 +14,14 @@ import {
 import { Footer } from './components/Footer/Footer';
 import { Todo } from './types/Todo';
 import { Header } from './components/Header/Header';
+import { ErrorType } from './types/ErrorType';
 
 export const App: React.FC = () => {
   const [todos, setTodos] = useState<Todo[]>([]);
   const [showFooter, setShowFooter] = useState(false);
   const [query, setQuery] = useState('');
   const [isDisabledInput, setIsDisableInput] = useState(false);
-  const [error, setError] = useState(false);
+  const [error, setError] = useState<ErrorType>(ErrorType.None);
   const [loader, setLoader] = useState(false);
   const [focusedTodoId, setFocusetTodoId] = useState<number>(Infinity);
 
@@ -36,13 +37,21 @@ export const App: React.FC = () => {
     const getTodosFromServer = async () => {
       const todosFromServer = user && await getTodos(user.id);
 
-      if (user) {
-        setTodos(await getTodos(user.id));
-      }
+      try {
+        if (user) {
+          setTodos(await getTodos(user.id));
+        }
 
-      // condition to show footer
-      if (todosFromServer && todosFromServer.length > 0) {
-        setShowFooter(true);
+        // condition to show footer
+        if (todosFromServer && todosFromServer.length > 0) {
+          setShowFooter(true);
+        }
+      } catch {
+        setError(ErrorType.NoTodos);
+
+        setTimeout(() => {
+          setError(ErrorType.None);
+        }, 3000);
       }
     };
 
@@ -52,12 +61,21 @@ export const App: React.FC = () => {
   const addNewTodo = async (todoData: Todo) => {
     setLoader(true);
     setIsDisableInput(true);
-    const newTodo = await addTodo(todoData);
 
-    setTodos(previousTodos => ([
-      ...previousTodos,
-      newTodo,
-    ]));
+    try {
+      const newTodo = await addTodo(todoData);
+
+      setTodos(previousTodos => ([
+        ...previousTodos,
+        newTodo,
+      ]));
+    } catch {
+      setError(ErrorType.Add);
+
+      setTimeout(() => {
+        setError(ErrorType.None);
+      }, 3000);
+    }
 
     setIsDisableInput(false);
     setLoader(false);
@@ -67,7 +85,16 @@ export const App: React.FC = () => {
   const deleteTodo = async (todoId: number) => {
     setLoader(true);
     setFocusetTodoId(todoId);
-    await removeTodo(todoId);
+
+    try {
+      await removeTodo(todoId);
+    } catch {
+      setError(ErrorType.Delete);
+
+      setTimeout(() => {
+        setError(ErrorType.None);
+      }, 3000);
+    }
 
     const updatedTodos = todos.filter(todo => todo.id !== todoId);
 
@@ -109,8 +136,8 @@ export const App: React.FC = () => {
 
       {error && (
         <ErrorNotification
-          query={query}
           onErrorChange={setError}
+          error={error}
         />
       )}
     </div>
