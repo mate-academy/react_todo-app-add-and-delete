@@ -8,7 +8,7 @@ type Props = {
   filterBy: Filter,
   selectFilterField: (filter: Filter) => void,
   completedTodosId: number[],
-  onSetTodosToRemove: (idToRemove: number) => void,
+  addTodoToRemove: (idToRemove: number) => void,
   loadTodos: () => void,
 };
 
@@ -18,15 +18,16 @@ export const Footer: React.FC<Props> = (
     filterBy,
     selectFilterField,
     completedTodosId,
-    onSetTodosToRemove,
+    addTodoToRemove,
     loadTodos,
   },
 ) => {
-  const onClearCompleted = () => {
-    completedTodosId.map(async id => {
-      onSetTodosToRemove(id);
-      await removeTodo(id);
-    });
+  const onClearCompleted = async () => {
+    await Promise.all(completedTodosId.map(id => {
+      addTodoToRemove(id);
+
+      return removeTodo(id);
+    }));
 
     loadTodos();
   };

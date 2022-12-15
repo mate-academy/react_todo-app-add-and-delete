@@ -1,3 +1,6 @@
+/* eslint-disable jsx-a11y/control-has-associated-label */
+import classNames from 'classnames';
+import { useState } from 'react';
 import { createTodo } from '../api/todos';
 import { Todo } from '../types/Todo';
 import { User } from '../types/User';
@@ -25,8 +28,12 @@ export const NewTodoField: React.FC<Props> = (
     isAdding,
   },
 ) => {
+  const [addTodoError, setAddTodoError] = useState(false);
+
   const addNewTodo = async (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
+    onSetTitleError(false);
+    setAddTodoError(false);
 
     if (!user) {
       return;
@@ -39,15 +46,20 @@ export const NewTodoField: React.FC<Props> = (
       return;
     }
 
-    onSetTitleError(false);
-    onSetIsAdding(true);
+    try {
+      onSetIsAdding(true);
+      const newTodo = await createTodo(title, user.id, false);
 
-    const newTodo = await createTodo(title, user.id, false);
-
-    onSetTodo(newTodo);
-
-    onSetIsAdding(false);
-    changeTitle('');
+      onSetTodo(newTodo);
+      onSetIsAdding(false);
+      changeTitle('');
+    } catch {
+      setAddTodoError(true);
+      onSetIsAdding(false);
+      setTimeout(() => {
+        setAddTodoError(false);
+      }, 3000);
+    }
   };
 
   return (
@@ -67,6 +79,24 @@ export const NewTodoField: React.FC<Props> = (
         }}
         disabled={isAdding}
       />
+
+      {addTodoError && (
+        <div
+          className={classNames(
+            'notification', 'is-danger', 'is-light', {
+              hidden: !addTodoError,
+            },
+          )}
+        >
+          <span>Unable to add a todo</span>
+          <button
+            data-cy="HideErrorButton"
+            type="button"
+            className="delete"
+            onClick={() => setAddTodoError(false)}
+          />
+        </div>
+      )}
     </form>
   );
 };

@@ -26,6 +26,10 @@ body {
   pointer-events: none;
 }
 
+.none-visible.notification {
+  margin-bottom: 0;
+}
+
 @import "./todoapp";
 @import "./todo";
 @import "./filter";

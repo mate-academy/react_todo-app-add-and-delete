@@ -1,3 +1,6 @@
+/* eslint-disable jsx-a11y/control-has-associated-label */
+import classNames from 'classnames';
+import { useState } from 'react';
 import { Todo } from '../types/Todo';
 import { User } from '../types/User';
 import { TodoInfo } from './TodoInfo';
@@ -9,7 +12,8 @@ type Props = {
   title: string,
   user: User | null,
   todosToRemove: number[],
-  onSetTodosToRemove: (idToRemove: number) => void,
+  addTodoToRemove: (idToAdd: number) => void,
+  deleteTodoToRemove: (idToRemove: number) => void,
 };
 
 export const TodoList: React.FC<Props> = (
@@ -20,9 +24,12 @@ export const TodoList: React.FC<Props> = (
     title,
     user,
     todosToRemove,
-    onSetTodosToRemove,
+    addTodoToRemove,
+    deleteTodoToRemove,
   },
 ) => {
+  const [deleteTodoError, setDeleteTodoError] = useState(false);
+
   const previewTodo: Todo = {
     id: 0,
     userId: user?.id || 0,
@@ -32,13 +39,33 @@ export const TodoList: React.FC<Props> = (
 
   return (
     <section className="todoapp__main" data-cy="TodoList">
+      {deleteTodoError && (
+        <div
+          className={classNames(
+            'notification', 'is-danger', 'is-light', 'none-visible', {
+              hidden: !deleteTodoError,
+            },
+          )}
+        >
+          <span>Unable to add a todo</span>
+          <button
+            data-cy="HideErrorButton"
+            type="button"
+            className="delete"
+            onClick={() => setDeleteTodoError(false)}
+          />
+        </div>
+      )}
+
       {visibleTodos.map(todo => (
         <TodoInfo
           key={todo.id}
           todo={todo}
           loadTodos={loadTodos}
           todosToRemove={todosToRemove}
-          onSetTodosToRemove={onSetTodosToRemove}
+          addTodoToRemove={addTodoToRemove}
+          deleteTodoToRemove={deleteTodoToRemove}
+          onSetDeleteTodoError={(isError) => setDeleteTodoError(isError)}
         />
       ))}
       {isAdding && (

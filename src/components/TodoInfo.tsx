@@ -6,7 +6,9 @@ type Props = {
   todo: Todo,
   loadTodos: () => void,
   todosToRemove: number[],
-  onSetTodosToRemove: (idToRemove: number) => void,
+  addTodoToRemove: (idToAdd: number) => void,
+  onSetDeleteTodoError: (isError: boolean) => void,
+  deleteTodoToRemove: (idToRemove: number) => void,
 };
 
 export const TodoInfo: React.FC<Props> = (
@@ -14,7 +16,9 @@ export const TodoInfo: React.FC<Props> = (
     todo,
     loadTodos,
     todosToRemove,
-    onSetTodosToRemove,
+    addTodoToRemove,
+    onSetDeleteTodoError,
+    deleteTodoToRemove,
   },
 ) => {
   const {
@@ -24,11 +28,20 @@ export const TodoInfo: React.FC<Props> = (
   } = todo;
 
   const onDeleteTodo = async () => {
-    onSetTodosToRemove(id);
+    try {
+      addTodoToRemove(id);
 
-    await removeTodo(id);
+      await removeTodo(id);
 
-    loadTodos();
+      loadTodos();
+    } catch {
+      onSetDeleteTodoError(true);
+
+      deleteTodoToRemove(id);
+      setTimeout(() => {
+        onSetDeleteTodoError(false);
+      }, 3000);
+    }
   };
 
   return (

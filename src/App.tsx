@@ -5,7 +5,6 @@ import React, {
   useRef,
   useState,
 } from 'react';
-import classNames from 'classnames';
 import { AuthContext } from './components/Auth/AuthContext';
 import { getTodos } from './api/todos';
 import { Todo } from './types/Todo';
@@ -14,6 +13,7 @@ import { Filter } from './types/Filter';
 import { Header } from './components/Header';
 import { TodoList } from './components/TodoList';
 import { Footer } from './components/Footer';
+import { TitleError } from './components/TitleError';
 
 export const App: React.FC = () => {
   const [hasLoadingError, setHasLoadingError] = useState(false);
@@ -103,8 +103,11 @@ export const App: React.FC = () => {
               title={title}
               user={user}
               todosToRemove={todosToRemove}
-              onSetTodosToRemove={(idToRemove) => setTodosToRemove(
-                prevIds => [...prevIds, idToRemove],
+              addTodoToRemove={(idToAdd) => setTodosToRemove(
+                prevIds => [...prevIds, idToAdd],
+              )}
+              deleteTodoToRemove={(idToRemove) => setTodosToRemove(
+                prevIds => prevIds.filter(id => id !== idToRemove),
               )}
             />
 
@@ -113,7 +116,7 @@ export const App: React.FC = () => {
               filterBy={filterBy}
               selectFilterField={(filter) => setFilterBy(filter)}
               completedTodosId={completedTodosId}
-              onSetTodosToRemove={(idToRemove) => setTodosToRemove(
+              addTodoToRemove={(idToRemove) => setTodosToRemove(
                 prevIds => [...prevIds, idToRemove],
               )}
               loadTodos={getTodosFromServer}
@@ -121,25 +124,10 @@ export const App: React.FC = () => {
           </div>
         )}
 
-      <>
-        <br />
-        <div
-          className={classNames(
-            'notification', 'is-danger', 'is-light',
-            'has-text-weight-normal', {
-              hidden: !titleError,
-            },
-          )}
-        >
-          <span>Title can&apos;t be empty</span>
-          <button
-            data-cy="HideErrorButton"
-            type="button"
-            className="delete"
-            onClick={() => setTitleError(false)}
-          />
-        </div>
-      </>
+      <TitleError
+        titleError={titleError}
+        onSetTitleError={(isError) => setTitleError(isError)}
+      />
     </div>
   );
 };
