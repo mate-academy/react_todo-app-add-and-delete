@@ -14,6 +14,7 @@ import { NewTodoField } from './components/Auth/NewTodoField/NewTodoField';
 import { TodoList } from './components/Auth/TodoList';
 import { ErrorNotification } from './components/Auth/ErrorNotification';
 import { Status } from './types/Status';
+import { Filter } from './components/Auth/Filter';
 
 export const App: React.FC = () => {
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
@@ -151,48 +152,7 @@ export const App: React.FC = () => {
                 {`${getCountToDone()} items left`}
               </span>
 
-              <nav className="filter" data-cy="Filter">
-                <a
-                  data-cy="FilterLinkAll"
-                  href="#/"
-                  className={classNames(
-                    'filter__link',
-                    {
-                      selected: status === Status.All,
-                    },
-                  )}
-                  onClick={() => setStatus(Status.All)}
-                >
-                  All
-                </a>
-
-                <a
-                  data-cy="FilterLinkActive"
-                  href="#/active"
-                  className={classNames(
-                    'filter__link',
-                    {
-                      selected: status === Status.Active,
-                    },
-                  )}
-                  onClick={() => setStatus(Status.Active)}
-                >
-                  Active
-                </a>
-                <a
-                  data-cy="FilterLinkCompleted"
-                  href="#/completed"
-                  className={classNames(
-                    'filter__link',
-                    {
-                      selected: status === Status.Completed,
-                    },
-                  )}
-                  onClick={() => setStatus(Status.Completed)}
-                >
-                  Completed
-                </a>
-              </nav>
+              <Filter status={status} onStatusChange={setStatus}/>
 
               <button
                 data-cy="ClearCompletedButton"
