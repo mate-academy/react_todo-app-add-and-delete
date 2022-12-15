@@ -143,6 +143,8 @@ export const App: React.FC = () => {
             <TodoList
               todos={filteredTodos}
               setNotification={setNotification}
+              isAdding={isAdding}
+              title={title}
             />
             <Footer
               filter={filter}
