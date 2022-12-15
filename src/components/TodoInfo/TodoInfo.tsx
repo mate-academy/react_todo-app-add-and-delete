@@ -15,7 +15,6 @@ export const TodoInfo: React.FC<Props> = ({
   loader,
   focusedTodoId,
 }) => {
-
   const handleDeleteButton = () => {
     onDeleteTodo(todo.id);
   };

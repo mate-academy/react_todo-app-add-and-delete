@@ -124,7 +124,7 @@ export const App: React.FC = () => {
         />
         <TodoList
           todos={todos}
-          ocusedTodoId={focusedTodoId}
+          focusedTodoId={focusedTodoId}
           loader={loader}
           onDeleteTodo={deleteTodo}
         />
@@ -139,7 +139,7 @@ export const App: React.FC = () => {
 
       {error && (
         <ErrorNotification
-          query={query}
+          error={error}
           onErrorChange={setError}
         />
       )}

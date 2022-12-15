@@ -7,7 +7,7 @@ type Props = {
   newTodoField: RefObject<HTMLInputElement>;
   query: string;
   onQueryChange: (value: string) => void;
-  onErrorChange: (value: boolean) => void;
+  onErrorChange: (value: Error) => void;
   onAddNewTodo: (value: Todo) => void;
   isDisabledInput: boolean;
 };
@@ -52,6 +52,7 @@ export const TodoForm: React.FC<Props> = ({
       <button
         data-cy="ToggleAllButton"
         type="button"
+        aria-label="ToggleAllButton"
         className="todoapp__toggle-all active"
       />
 

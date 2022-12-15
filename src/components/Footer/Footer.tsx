@@ -144,6 +144,7 @@ export const Footer: React.FC<Props> = ({
         data-cy="ClearCompletedButton"
         type="button"
         className="todoapp__clear-completed"
+        onClick={() => handleClearCompleted()}
       >
         {hasCompletedTodos && 'Clear complited'}
 
@@ -151,4 +152,4 @@ export const Footer: React.FC<Props> = ({
       </button>
     </footer>
   );
-}
+};
