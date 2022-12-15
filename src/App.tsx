@@ -1,7 +1,10 @@
 /* eslint-disable jsx-a11y/control-has-associated-label */
 import React, {
   useCallback,
-  useContext, useEffect, useRef, useState,
+  useContext,
+  useEffect,
+  useRef,
+  useState,
 } from 'react';
 import { getTodos } from './api/todos';
 import { AuthContext } from './components/Auth/AuthContext';

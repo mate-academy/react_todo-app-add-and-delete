@@ -1,6 +1,5 @@
 /* eslint-disable jsx-a11y/control-has-associated-label */
 import React, { useEffect } from 'react';
-import { Errors } from '../../types/Errors';
 
 type Props = {
   isError: boolean
@@ -35,19 +34,7 @@ export const ErrorNotification: React.FC<Props> = ({
         onClick={() => onSetIsError(true)}
       />
 
-      {typeError === `${Errors.ErrGET}`
-        && <>{Errors.ErrGET}</>}
-      {typeError === `${Errors.ErrBlankTitle}`
-        && <>{Errors.ErrBlankTitle}</>}
-      <br />
-      {typeError === `${Errors.ErrADD}`
-        && <>{Errors.ErrADD}</>}
-      <br />
-      {typeError === `${Errors.ErrDEL}`
-        && <>{Errors.ErrDEL}</>}
-      <br />
-      {typeError === `${Errors.ErrUPD}`
-        && <>{Errors.ErrUPD}</>}
+      {!isError && <>{typeError}</>}
     </div>
   );
 };

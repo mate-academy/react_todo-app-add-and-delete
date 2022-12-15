@@ -109,7 +109,7 @@ export const Footer: React.FC<Props> = ({
         className={classNames(
           'todoapp__clear-completed',
           {
-            'todoapp__hidden': !compTodos.length,
+            todoapp__hidden: !compTodos.length,
           },
         )}
         onClick={() => clearCompletedTodos()}
