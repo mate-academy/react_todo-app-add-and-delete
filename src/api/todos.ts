@@ -8,7 +8,7 @@ export const getTodos = (userId: number) => {
 export const createTodo = async (
   title: string, userId: number, completed: boolean,
 ) => {
-  const newTodo = await client.post<Todo>('/todo.s', {
+  const newTodo = await client.post<Todo>('/todos', {
     title,
     userId,
     completed,
@@ -18,7 +18,7 @@ export const createTodo = async (
 };
 
 export const removeTodo = (todoId: number) => {
-  return client.delete(`/tod5os/${todoId}`);
+  return client.delete(`/todos/${todoId}`);
 };
 
 // Add more methods here
