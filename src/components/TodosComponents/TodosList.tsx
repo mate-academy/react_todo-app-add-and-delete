@@ -11,6 +11,7 @@ type Props = {
   todoCurrentId: number,
   DeletingTodo: (id: number) => void,
   onTodoCurrentId: (currId: number) => void,
+  idsForLoader: number[];
 };
 
 export const TodosList: React.FC<Props> = ({
@@ -21,6 +22,7 @@ export const TodosList: React.FC<Props> = ({
   todoCurrentId,
   DeletingTodo,
   onTodoCurrentId,
+  idsForLoader,
 }) => {
   return (
     <>
@@ -31,6 +33,7 @@ export const TodosList: React.FC<Props> = ({
           DeletingTodo={DeletingTodo}
           onTodoCurrentId={onTodoCurrentId}
           todoCurrentId={todoCurrentId}
+          idsForLoader={idsForLoader}
         />
       ))}
 
@@ -45,6 +48,7 @@ export const TodosList: React.FC<Props> = ({
             }
           }
           isAdding={isAdding}
+          idsForLoader={idsForLoader}
         />
       )}
     </>

@@ -7,17 +7,34 @@ type Props = {
   todos: Todo[],
   todoFilter: FilterValues,
   onFilterByCompleted: (todoStatus: FilterValues) => void,
+  deleteAllCompleted: () => void,
 };
 
 export const TodosFooter: React.FC<Props> = ({
   todos,
   todoFilter,
   onFilterByCompleted,
+  deleteAllCompleted,
 }) => {
+  const completedTodos = todos.filter(todo => todo.completed);
+  const activeTodos = todos.filter(todo => !todo.completed);
+  const activeStatus = todos.every(todo => todo.completed);
+  const completedStatus = todos.every(todo => !todo.completed);
+
+  let finalItemsCount = `${todos.length - completedTodos.length} items left`;
+
+  if (activeStatus) {
+    finalItemsCount = `${completedTodos.length} items left`;
+  }
+
+  if (completedStatus) {
+    finalItemsCount = `${activeTodos.length} items left`;
+  }
+
   return (
     <footer className="todoapp__footer" data-cy="Footer">
       <span className="todo-count" data-cy="todosCounter">
-        {`${todos.length} items left`}
+        {finalItemsCount}
       </span>
 
       <nav className="filter" data-cy="Filter">
@@ -69,9 +86,10 @@ export const TodosFooter: React.FC<Props> = ({
         className={classNames(
           'todoapp__clear-completed',
           {
-            'todoapp__clear-completed--hidden': false,
+            'todoapp__clear-completed--hidden': completedTodos.length <= 0,
           },
         )}
+        onClick={deleteAllCompleted}
       >
         Clear completed
       </button>

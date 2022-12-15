@@ -9,6 +9,7 @@ type Props = {
   todoCurrentId?: number,
   DeletingTodo?: (id: number) => void,
   onTodoCurrentId?: (currId: number) => void,
+  idsForLoader: number[],
 };
 
 export const TodoInfo: React.FC<Props> = ({
@@ -17,6 +18,7 @@ export const TodoInfo: React.FC<Props> = ({
   DeletingTodo,
   todoCurrentId,
   onTodoCurrentId,
+  idsForLoader,
 }) => {
   const { title, id } = todos;
 
@@ -60,7 +62,7 @@ export const TodoInfo: React.FC<Props> = ({
         className={classNames(
           'modal overlay',
           {
-            'is-active': isAdding || isDeliting,
+            'is-active': isAdding || isDeliting || idsForLoader.includes(id),
           },
         )}
       >
