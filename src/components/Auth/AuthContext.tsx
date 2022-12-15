@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useContext, useState } from 'react';
 import { User } from '../../types/User';
 import { AuthForm } from './AuthForm';
 
@@ -21,3 +21,5 @@ export const AuthProvider: React.FC<Props> = ({ children }) => {
     </AuthContext.Provider>
   );
 };
+
+export const useAuthContext = () => useContext(AuthContext);
