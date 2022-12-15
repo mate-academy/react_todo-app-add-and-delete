@@ -6,11 +6,11 @@ import { Todo } from '../../types/Todo';
 interface Props {
   todos: Todo[],
   onDelete: (todoId: number) => Promise<void>,
+  activeTodoId: number[],
 }
 
 export const Todolist: React.FC<Props> = React.memo((
-  { todos },
-  onDelete,
+  { todos, onDelete, activeTodoId },
 ) => {
   return (
     <section className="todoapp__main" data-cy="TodoList">
@@ -40,14 +40,17 @@ export const Todolist: React.FC<Props> = React.memo((
               type="button"
               className="todo__remove"
               data-cy="TodoDeleteButton"
-              onClick={() => onDelete(id)}
+              onClick={() => (
+                onDelete(id)
+              )}
             >
               ×
             </button>
 
             <div
               data-cy="TodoLoader"
-              className="modal overlay"
+              className={classNames('modal', 'overlay',
+                { 'is-active': activeTodoId.includes(id) })}
             >
               <div className="modal-background has-background-white-ter" />
               <div className="loader" />

@@ -23,6 +23,7 @@ export const App: React.FC = () => {
   const [hasError, setHasError] = useState(false);
   const [errorMessage, setErrorMessage] = useState('');
   const [isAdding, setIsAdding] = useState(false);
+  const [activeTodoId, setActiveTodoId] = useState<number[]>([]);
 
   const user = useContext(AuthContext);
   const newTodoField = useRef<HTMLInputElement>(null);
@@ -68,9 +69,12 @@ export const App: React.FC = () => {
   }, [todos]);
 
   const removeTodo = async (todoId: number) => {
+    setActiveTodoId([todoId]);
+
     try {
       await deleteTodo(todoId);
       getTodosFromServer();
+      setActiveTodoId([]);
     } catch (error) {
       setHasError(true);
       setErrorMessage('Unable to delete todo');
@@ -80,6 +84,9 @@ export const App: React.FC = () => {
   const removeCompletedTodos = async () => {
     try {
       const completedTodos = todos.filter(todo => todo.completed === true);
+      const completedTodosId = completedTodos.map(todo => todo.id);
+
+      setActiveTodoId(completedTodosId);
 
       await Promise.all(completedTodos.map(async ({ id }) => {
         await deleteTodo(id);
@@ -89,6 +96,8 @@ export const App: React.FC = () => {
     } catch (error) {
       setHasError(true);
       setErrorMessage('Unable to delete completed todos');
+    } finally {
+      setActiveTodoId([]);
     }
   };
 
@@ -126,6 +135,7 @@ export const App: React.FC = () => {
         <Todolist
           todos={visibleTodos}
           onDelete={removeTodo}
+          activeTodoId={activeTodoId}
         />
 
         {todos.length > 0 && (
