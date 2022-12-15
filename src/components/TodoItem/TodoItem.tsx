@@ -64,6 +64,14 @@ export const TodoItem: React.FC<Props> = ({
     deleteTodo(todo.id).finally(() => setIsLoading(false));
   };
 
+  const handelChangeTitleField = (event: {
+    target: { value: React.SetStateAction<string>; };
+  }) => {
+    setInputText(event.target.value);
+  };
+
+  const handelChangeTitle = () => setIsChangeTitle(true);
+
   return (
     <li
       data-cy="Todo"
@@ -91,7 +99,7 @@ export const TodoItem: React.FC<Props> = ({
               className="todo__title-field"
               placeholder="Empty todo will be deleted"
               defaultValue={`${inputText}`}
-              onChange={(event) => setInputText(event.target.value)}
+              onChange={handelChangeTitleField}
               onKeyDown={handleKeyDown}
               onBlur={toDefaultTitle}
               ref={titleRef}
@@ -103,7 +111,7 @@ export const TodoItem: React.FC<Props> = ({
             <span
               data-cy="TodoTitle"
               className="todo__title"
-              onDoubleClick={() => setIsChangeTitle(true)}
+              onDoubleClick={handelChangeTitle}
             >
               {inputText}
             </span>

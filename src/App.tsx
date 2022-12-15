@@ -1,5 +1,9 @@
 import React, {
-  useContext, useEffect, useMemo, useRef, useState,
+  useContext,
+  useEffect,
+  useMemo,
+  useRef,
+  useState,
 } from 'react';
 import classNames from 'classnames';
 import { AuthContext } from './components/Auth/AuthContext';
@@ -30,8 +34,10 @@ export const App: React.FC = () => {
     switch (todoFilter) {
       case TodoStatus.Active:
         return todos.filter(item => !item.completed);
+
       case TodoStatus.Completed:
         return todos.filter(item => item.completed);
+
       default:
         return todos;
     }
@@ -48,7 +54,7 @@ export const App: React.FC = () => {
 
   const createNewTodo = (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
-    if (query.trim() === '') {
+    if (!query.trim()) {
       setError("Title can't be empty");
 
       return;
