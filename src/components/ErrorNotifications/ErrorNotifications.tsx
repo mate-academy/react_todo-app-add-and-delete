@@ -1,6 +1,6 @@
 /* eslint-disable jsx-a11y/control-has-associated-label */
 import classNames from 'classnames';
-import React, { useEffect, useRef } from 'react';
+import React, { useEffect, useMemo, useRef } from 'react';
 import { Error } from '../../types/Error';
 
 interface Props {
@@ -14,9 +14,7 @@ export const ErrorNotifications: React.FC<Props> = (
     onErrorMessageChange,
   },
 ) => {
-  const isHidden = () => {
-    return error === Error.None;
-  };
+  const isHidden = useMemo(() => error === Error.None, [error]);
 
   const timerRef = useRef<NodeJS.Timer>();
 
@@ -46,7 +44,11 @@ export const ErrorNotifications: React.FC<Props> = (
         className="delete"
         onClick={() => onErrorMessageChange(Error.None)}
       />
-      {!isHidden && (error === Error.NoTodos) ? (error) : `Unable to ${error} a todo`}
+      {!isHidden && (
+        error === Error.Title
+          ? error
+          : `Unable to ${error} a todo`
+      )}
     </div>
   );
 };

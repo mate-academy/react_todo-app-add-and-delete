@@ -3,11 +3,16 @@ import { Todo } from '../../types/Todo';
 import { TodoItem } from '../TodoItem/TodoItem';
 
 interface Props {
-  todos: Todo[];
-  onTodoDelete: (todoId: number) => Promise<void>;
+  todos: Todo[],
+  loadingTodoIds: number[],
+  onTodoDelete: (todoId: number) => Promise<void>,
 }
 
-export const TodoList: React.FC<Props> = ({ todos, onTodoDelete }) => {
+export const TodoList: React.FC<Props> = ({
+  todos,
+  loadingTodoIds,
+  onTodoDelete,
+}) => {
   return (
     <section className="todoapp__main" data-cy="TodoList">
       {todos.map(todo => (
@@ -15,6 +20,7 @@ export const TodoList: React.FC<Props> = ({ todos, onTodoDelete }) => {
           key={todo.id}
           todo={todo}
           onDelete={async () => onTodoDelete(todo.id)}
+          isLoading={loadingTodoIds.includes(todo.id)}
         />
       ))}
     </section>

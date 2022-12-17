@@ -6,7 +6,12 @@ interface Props {
   status: Status,
   onStatusChange: (status: Status) => void,
 }
-export const TodoFilter: React.FC<Props> = ({ status, onStatusChange }) => {
+
+export const TodoFilter: React.FC<Props> = ({
+  status,
+  onStatusChange,
+
+}) => {
   return (
     <>
       <nav className="filter" data-cy="Filter">
@@ -45,14 +50,6 @@ export const TodoFilter: React.FC<Props> = ({ status, onStatusChange }) => {
           Completed
         </a>
       </nav>
-
-      <button
-        data-cy="ClearCompletedButton"
-        type="button"
-        className="todoapp__clear-completed"
-      >
-        Clear completed
-      </button>
     </>
   );
 };

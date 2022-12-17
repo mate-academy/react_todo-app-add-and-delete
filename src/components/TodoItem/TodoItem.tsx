@@ -3,11 +3,12 @@ import React from 'react';
 import { Todo } from '../../types/Todo';
 
 interface Props {
-  todo: Todo;
+  todo: Todo,
+  isLoading: boolean,
   onDelete: () => Promise<void>,
 }
 
-export const TodoItem: React.FC<Props> = ({ todo, onDelete }) => {
+export const TodoItem: React.FC<Props> = ({ todo, isLoading, onDelete }) => {
   const handleDelete = async () => {
     await onDelete();
   };
@@ -37,7 +38,13 @@ export const TodoItem: React.FC<Props> = ({ todo, onDelete }) => {
         ×
       </button>
 
-      <div data-cy="TodoLoader" className="modal overlay">
+      <div
+        data-cy="TodoLoader"
+        className={classNames(
+          'modal overlay',
+          { 'is-active': isLoading },
+        )}
+      >
         <div className="modal-background has-background-white-ter" />
         <div className="loader" />
       </div>
