@@ -5,9 +5,14 @@ import { TodoInfo } from '../TodoInfo/TodoInfo';
 type Props = {
   todos: Todo[],
   onTodoRemove: (todoId: number) => Promise<void>,
+  loadingTodoId: number[],
 };
 
-export const TodoList: React.FC<Props> = ({ todos, onTodoRemove }) => {
+export const TodoList: React.FC<Props> = ({
+  todos,
+  onTodoRemove,
+  loadingTodoId,
+}) => {
   return (
     <section className="todoapp__main" data-cy="TodoList">
       {todos.map(todo => (
@@ -15,6 +20,7 @@ export const TodoList: React.FC<Props> = ({ todos, onTodoRemove }) => {
           todo={todo}
           key={todo.id}
           onRemove={async () => onTodoRemove(todo.id)}
+          isLoading={loadingTodoId.includes(todo.id)}
         />
       ))}
     </section>

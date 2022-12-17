@@ -43,12 +43,12 @@ export const FilterTodos: React.FC<Props> = ({
         href="#/completed"
         className={
           classNames('filter__link', {
-            selected: status === Status.COMPLITED,
+            selected: status === Status.COMPLETED,
           })
         }
-        onClick={() => onStatusChange(Status.COMPLITED)}
+        onClick={() => onStatusChange(Status.COMPLETED)}
       >
-        {Status.COMPLITED}
+        {Status.COMPLETED}
       </a>
     </nav>
   );

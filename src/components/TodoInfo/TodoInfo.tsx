@@ -5,11 +5,13 @@ import { Todo } from '../../types/Todo';
 type Props = {
   todo: Todo,
   onRemove: () => Promise<void>,
+  isLoading: boolean,
 };
 
 export const TodoInfo: React.FC<Props> = ({
   todo,
   onRemove,
+  isLoading,
 }) => {
   const handleRemove = async () => {
     await onRemove();
@@ -44,7 +46,16 @@ export const TodoInfo: React.FC<Props> = ({
         ×
       </button>
 
-      <div data-cy="TodoLoader" className="modal overlay">
+      <div
+        data-cy="TodoLoader"
+        className={classNames(
+          'modal overlay',
+          {
+            'is-active': isLoading,
+          },
+        )}
+
+      >
         <div className="modal-background has-background-white-ter" />
         <div className="loader" />
       </div>

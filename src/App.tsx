@@ -22,11 +22,17 @@ export const App: React.FC = () => {
   const [status, setStatus] = useState<Status>(Status.ALL);
   const [title, setTitle] = useState('');
   const [error, setError] = useState<ErrorMessage>(ErrorMessage.None);
+  const [loadingTodoId, setLoadingTodoId] = useState<number[]>([]);
+
   const activeTodos = useMemo(() => (
     todos.filter(todo => !todo.completed)
   ), [todos]);
 
-  const loadUserTodos = useCallback(() => {
+  const completedTodos = useMemo(() => (
+    todos.filter(todo => todo.completed)
+  ), [todos]);
+
+  const loadUserTodos = useCallback(async () => {
     if (!user) {
       return;
     }
@@ -34,8 +40,9 @@ export const App: React.FC = () => {
     setError(ErrorMessage.None);
 
     try {
-      getTodos(user.id)
-        .then(setTodos);
+      const todosFromServer = await getTodos(user.id);
+
+      setTodos(todosFromServer);
     } catch {
       setError(ErrorMessage.NoTodos);
     }
@@ -66,8 +73,24 @@ export const App: React.FC = () => {
   );
 
   const deleteCurrentTodo = async (todoId: number) => {
+    setLoadingTodoId(prevIds => [...prevIds, todoId]);
     await removeTodo(todoId);
     await loadUserTodos();
+    setLoadingTodoId([]);
+  };
+
+  const removeComplited = async () => {
+    setError(ErrorMessage.None);
+
+    try {
+      await Promise.all(completedTodos.map(todo => (
+        removeTodo(todo.id)
+      )));
+
+      await loadUserTodos();
+    } catch {
+      setError(ErrorMessage.Delete);
+    }
   };
 
   const visibleTodos = useMemo(() => (
@@ -76,7 +99,7 @@ export const App: React.FC = () => {
         case Status.ACTIVE:
           return !todo.completed;
 
-        case Status.COMPLITED:
+        case Status.COMPLETED:
           return todo.completed;
 
         case Status.ALL:
@@ -99,7 +122,7 @@ export const App: React.FC = () => {
               className={classNames(
                 'todoapp__toggle-all',
                 {
-                  active: activeTodos.length === 0,
+                  active: !activeTodos.length,
                 },
               )}
             />
@@ -117,10 +140,11 @@ export const App: React.FC = () => {
             <TodoList
               todos={visibleTodos}
               onTodoRemove={deleteCurrentTodo}
+              loadingTodoId={loadingTodoId}
             />
             <footer className="todoapp__footer" data-cy="Footer">
               <span className="todo-count" data-cy="todosCounter">
-                4 items left
+                {`${activeTodos.length} items left`}
               </span>
 
               <FilterTodos
@@ -131,13 +155,13 @@ export const App: React.FC = () => {
               <button
                 data-cy="ClearCompletedButton"
                 type="button"
-                className="todoapp__clear-completed"
-                style={activeTodos.length === todos.length
-                  ? {
-                    opacity: 0,
-                    pointerEvents: 'none',
-                  }
-                  : {}}
+                className={classNames(
+                  'todoapp__clear-completed',
+                  {
+                    'todoapp__clear-completed--hidden': !completedTodos.length,
+                  },
+                )}
+                onClick={removeComplited}
               >
                 Clear completed
               </button>
