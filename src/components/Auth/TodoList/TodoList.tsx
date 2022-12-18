@@ -1,14 +1,25 @@
 import { Todo } from '../../../types/Todo';
 import { TodoItem } from '../TodoItem';
+import { AuthContext } from '../AuthContext';
+import { useContext } from 'react';
 
 type Props = {
   todos: Todo[],
-  isLoading: boolean,
   onDelete: (todoId: number) => void,
+  isProcessed: number[],
+  isAdding: boolean,
+  title: string,
 };
 
 export const TodoList: React.FC<Props> = (props) => {
-  const { todos, isLoading, onDelete } = props;
+  const { 
+    todos,
+    onDelete,
+    isProcessed,
+    isAdding,
+    title,
+  } = props;
+  const user = useContext(AuthContext);
 
   return (
     <section className="todoapp__main" data-cy="TodoList">
@@ -16,10 +27,23 @@ export const TodoList: React.FC<Props> = (props) => {
         <TodoItem
           key={todo.id}
           todo={todo}
-          isLoading={isLoading}
           onDelete={onDelete}
+          isLoading={isProcessed.includes(todo.id)}
         />
       ))}
+
+      {isAdding && user && (
+        <TodoItem
+          todo={{
+            id: 0,
+            title,
+            completed: false,
+            userId: user?.id,
+          }}
+          onDelete={onDelete}
+          isLoading
+        />
+      )}
     </section>
   );
 };

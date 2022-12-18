@@ -24,7 +24,15 @@ export const App: React.FC = () => {
   const [error, setError] = useState('');
   const [status, setStatus] = useState(Status.All);
   const [isAdding, setIsAdding] = useState(false);
-  const [isLoading, setIsLoading] = useState(false);
+  const [processings, setProcessings] = useState<number[]>([]);
+
+  const addProcessing = (id: number) => {
+    setProcessings(current => [...current, id]);
+  };
+
+  const removeProcessing = (idToRemove: number) => {
+    setProcessings(current => current.filter(id => id !== idToRemove));
+  };
 
   const loadUserTodos = useCallback(() => {
     if (!user) {
@@ -56,7 +64,6 @@ export const App: React.FC = () => {
       }
 
       setIsAdding(true);
-      setIsLoading(false);
 
       if (title.trim() !== '' && user) {
         await addTodo({
@@ -76,11 +83,15 @@ export const App: React.FC = () => {
   );
 
   const removeTodo = (todoId: number) => {
+    addProcessing(todoId);
+    setError('');
+
     return deleteTodo(todoId)
       .then(() => {
         setTodos((curTodos) => curTodos.filter(todo => todo.id !== todoId));
       })
-      .catch(() => setError('Unable to delete a todo'));
+      .catch(() => setError('Unable to delete a todo'))
+      .finally(() => removeProcessing(todoId));
   };
 
   const filterTodosByStatus = useMemo(() => (
@@ -143,8 +154,10 @@ export const App: React.FC = () => {
           <>
             <TodoList
               todos={filterTodosByStatus}
-              isLoading={isLoading}
               onDelete={removeTodo}
+              isProcessed={processings}
+              isAdding={isAdding}
+              title={title}
             />
 
             <footer className="todoapp__footer" data-cy="Footer">
@@ -152,7 +165,7 @@ export const App: React.FC = () => {
                 {`${getCountToDone()} items left`}
               </span>
 
-              <Filter status={status} onStatusChange={setStatus}/>
+              <Filter status={status} onStatusChange={setStatus} />
 
               <button
                 data-cy="ClearCompletedButton"

@@ -1,5 +1,5 @@
 import classNames from 'classnames';
-import { Status } from '../../../types/Status'
+import { Status } from '../../../types/Status';
 
 type Props = {
   status: Status,
@@ -52,5 +52,5 @@ export const Filter: React.FC<Props> = (props) => {
         Completed
       </a>
     </nav>
-  )
-}
+  );
+};

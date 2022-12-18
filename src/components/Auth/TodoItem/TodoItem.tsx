@@ -3,12 +3,16 @@ import { Todo } from '../../../types/Todo';
 
 type Props = {
   todo: Todo,
-  isLoading: boolean,
   onDelete: (todoId: number) => void,
+  isLoading: boolean,
 };
 
 export const TodoItem: React.FC<Props> = (props) => {
-  const { todo, isLoading, onDelete } = props;
+  const { 
+    todo,
+    onDelete,
+    isLoading,
+   } = props;
 
   return (
     <div
