@@ -1,5 +1,5 @@
 import classNames from 'classnames';
-import React, { useEffect, useState } from 'react';
+import React, { memo, useEffect, useState } from 'react';
 import { createUser, getUserByEmail } from '../../api/users';
 import { User } from '../../types/User';
 
@@ -7,7 +7,7 @@ export type Props = {
   onLogin: (user: User) => void,
 };
 
-export const AuthForm: React.FC<Props> = ({ onLogin }) => {
+export const AuthForm: React.FC<Props> = memo(({ onLogin }) => {
   const [email, setEmail] = useState('');
   const [name, setName] = useState('');
   const [needToRegister, setNeedToRegister] = useState(false);
@@ -156,4 +156,4 @@ export const AuthForm: React.FC<Props> = ({ onLogin }) => {
       </div>
     </form>
   );
-};
+});
