@@ -16,13 +16,13 @@ Add a todo with the entered title on `NewTodoField` form submit:
 
 + if the title is empty show the `Title can't be empty` notification at the bottom;
 + disable the input until receiving the response from the API (use `isAdding` variable);
-- manually add a temp todo with `id: 0` **after** the list while waiting for the response (don't add it to the array);
-- show the loader on the added todo (see the styles of the 5th todo `Redux`);
-- use your user id for the new todo;
-- send the POST response to the API;
-- in case of success and add the todo create by API to the array;
-- in case of API error show `Unable to add a todo` notification at the bottom;
-- the temp todo should be removed in any case;
++ manually add a temp todo with `id: 0` **after** the list while waiting for the response (don't add it to the array);
++ show the loader on the added todo (see the styles of the 5th todo `Redux`);
++ use your user id for the new todo;
++ send the POST response to the API;
++ in case of success and add the todo create by API to the array;
++ in case of API error show `Unable to add a todo` notification at the bottom;
++ the temp todo should be removed in any case;
 
 > Don't try to implement smooth Todo adding or removing (at least until you implemented everything else).
 > If you really fill confident to try, there is a hint at the end of the description.
@@ -31,9 +31,9 @@ Add a todo with the entered title on `NewTodoField` form submit:
 
 Remove a todo on `TodoDeleteButton` click:
 
-- covered the todo with the loader while wating for API response;
-- remove the todo from the list on success;
-- in case of API error show `Unable to delete a todo` notification at the bottom (the todo must stay in the list);
++ covered the todo with the loader while wating for API response;
++ remove the todo from the list on success;
++ in case of API error show `Unable to delete a todo` notification at the bottom (the todo must stay in the list);
 
 Remove all the completed todos after `Clear completed` button click:
 

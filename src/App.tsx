@@ -10,14 +10,15 @@ import React, {
 
 import classNames from 'classnames';
 
-import { addTodo, getTodos } from './api/todos';
+import { addTodo, deleteTodo, getTodos } from './api/todos';
 import { AuthContext } from './components/Auth/AuthContext';
 import { Todo } from './types/Todo';
 import { TodoList } from './components/TodoList';
 import { AddTodoFieldForm } from './components/AddTodoFieldForm';
-import { TodoFilter } from './components/TodoFilter';
 import { TodoFilters } from './types/TodoFilters';
 import { ErrorNotification } from './components/ErrorNotification';
+import { Error } from './types/Errors';
+import { Footer } from './components/Footer';
 
 export const App: React.FC = () => {
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
@@ -26,7 +27,8 @@ export const App: React.FC = () => {
   const [filter, setFilter] = useState<TodoFilters>(TodoFilters.all);
   const [errorType, setErrorType] = useState('');
   const [isAdding, setIsAdding] = useState(false);
-  const [tempTodo, setTempTodo] = useState<Todo | null>(null);
+  const [deletingTodoId, setDeletingTodoId] = useState(0);
+  const [completedTodosId, setCompletedTodosId] = useState<number[]>([0]);
 
   const user = useContext(AuthContext);
   const newTodoField = useRef<HTMLInputElement>(null);
@@ -35,6 +37,7 @@ export const App: React.FC = () => {
     const {
       completed,
       active,
+      all,
     } = TodoFilters;
 
     return todos.filter(todo => {
@@ -43,13 +46,14 @@ export const App: React.FC = () => {
           return todo.completed;
         case active:
           return !todo.completed;
+        case all:
         default:
           return todo;
       }
     });
   }, [filter, todos]);
 
-  const activeTodos = todos.filter(todo => !todo.completed).length;
+  const activeTodos = todos.filter(todo => !todo.completed);
 
   const loadUsersTodos = useCallback(async () => {
     if (!user) {
@@ -57,22 +61,19 @@ export const App: React.FC = () => {
     }
 
     try {
-      const todosFromServer = await getTodos(user.id);
-
-      setTodos(todosFromServer);
+      setTodos(await getTodos(user.id));
     } catch {
-      setErrorType("Can't load user todos");
+      setErrorType(Error.LoadTodos);
     }
   }, [user]);
 
   useEffect(() => {
-    // focus the element with `ref={newTodoField}`
     if (newTodoField.current) {
       newTodoField.current.focus();
     }
 
     loadUsersTodos();
-  }, [user]);
+  }, [todos]);
 
   const handleSubmitForm = useCallback(
     async (event: FormEvent<HTMLFormElement>) => {
@@ -80,32 +81,47 @@ export const App: React.FC = () => {
       setIsAdding(true);
 
       if (title.trim() && user) {
-        setTempTodo({
-          id: 0,
-          userId: user.id,
-          title: title.trim(),
-          completed: false,
-        });
-
         await addTodo({
           userId: user.id,
           title: title.trim(),
           completed: false,
         });
-
-        await loadUsersTodos();
-
-        setTempTodo(null);
         setTitle('');
       } else if (!title.trim()) {
-        setErrorType("Title can't be empty");
+        setErrorType(Error.EmptyTitle);
       } else {
-        setErrorType("Title can't add");
+        setErrorType(Error.AddTodo);
       }
 
       setIsAdding(false);
     }, [title, user],
   );
+
+  const handleDelete = useCallback(async (todoId: number) => {
+    setDeletingTodoId(todoId);
+
+    try {
+      await deleteTodo(todoId);
+    } catch {
+      setErrorType(Error.DeleteTodo);
+    }
+
+    setDeletingTodoId(0);
+  }, []);
+
+  const handleClearComplited = async () => {
+    const completedId = todos.filter(todo => todo.completed)
+      .map(todo => todo.id);
+
+    try {
+      setCompletedTodosId(completedId);
+      await completedId.forEach(async id => {
+        await deleteTodo(id);
+      });
+    } catch {
+      setErrorType(Error.DeleteTodo);
+    }
+  };
 
   return (
     <div className="todoapp">
@@ -142,66 +158,21 @@ export const App: React.FC = () => {
             >
               <TodoList
                 todos={visibleTodos()}
+                isAdding={isAdding}
+                title={title}
+                onDelete={handleDelete}
+                deletingTodoId={deletingTodoId}
+                completedTodosId={completedTodosId}
               />
-
-              {tempTodo && (
-                <div
-                  data-cy="Todo"
-                  className={classNames(
-                    'todo',
-                    {
-                      completed: tempTodo.completed,
-                    },
-                  )}
-                >
-                  <label className="todo__status-label">
-                    <input
-                      data-cy="TodoStatus"
-                      type="checkbox"
-                      className="todo__status"
-                      defaultChecked
-                    />
-                  </label>
-
-                  <span data-cy="TodoTitle" className="todo__title">
-                    {tempTodo.title}
-                  </span>
-                  <button
-                    type="button"
-                    className="todo__remove"
-                    data-cy="TodoDeleteButton"
-                  >
-                    ×
-                  </button>
-
-                  <div data-cy="TodoLoader" className="modal overlay">
-                    <div
-                      className="modal-background has-background-white-ter"
-                    />
-                    <div className="loader" />
-                  </div>
-                </div>
-              )}
             </section>
 
-            <footer className="todoapp__footer" data-cy="Footer">
-              <span className="todo-count" data-cy="todosCounter">
-                {`${activeTodos} items left`}
-              </span>
-
-              <TodoFilter
-                onFilterBy={setFilter}
-                currentFilter={filter}
-              />
-
-              <button
-                data-cy="ClearCompletedButton"
-                type="button"
-                className="todoapp__clear-completed"
-              >
-                Clear completed
-              </button>
-            </footer>
+            <Footer
+              activeTodos={activeTodos.length}
+              onSetFilter={setFilter}
+              filter={filter}
+              todos={todos}
+              handleClearComplited={handleClearComplited}
+            />
           </>
         )}
       </div>
