@@ -122,17 +122,17 @@ export const App: React.FC = () => {
 
           {todos.length
             ? (
-            <button
-              data-cy="ToggleAllButton"
-              type="button"
-              className={classNames(
-                'todoapp__toggle-all',
-                {
-                  active: !activeTodos.length,
-                },
-              )}
-            />
-          ) : (<></>)}
+              <button
+                data-cy="ToggleAllButton"
+                type="button"
+                className={classNames(
+                  'todoapp__toggle-all',
+                  {
+                    active: !activeTodos.length,
+                  },
+                )}
+              />
+            ) : (<></>)}
 
           <NewTodoField
             title={title}
