@@ -42,7 +42,7 @@ export const ErrorNotification: React.FC<Props> = ({
         onClick={() => onErrorMessageChange(ErrorMessage.None)}
       />
       {!isHidden && (
-        error === ErrorMessage.NoTodos
+        error === ErrorMessage.Title
           ? error
           : `Unable to ${error} a todo`
       )}

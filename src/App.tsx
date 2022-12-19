@@ -57,17 +57,21 @@ export const App: React.FC = () => {
       event.preventDefault();
 
       if (title.trim() !== '' && user) {
-        await addTodo({
-          userId: user.id,
-          title: title.trim(),
-          completed: false,
-        });
+        try {
+          await addTodo({
+            userId: user.id,
+            title: title.trim(),
+            completed: false,
+          });
 
-        await loadUserTodos();
+          await loadUserTodos();
 
-        setTitle('');
+          setTitle('');
+        } catch {
+          setError(ErrorMessage.Add);
+        }
       } else {
-        setError(ErrorMessage.Add);
+        setError(ErrorMessage.Title);
       }
     }, [title, user],
   );
