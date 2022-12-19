@@ -119,7 +119,9 @@ export const App: React.FC = () => {
 
       <div className="todoapp__content">
         <header className="todoapp__header">
-          {todos.length && (
+
+          {todos.length
+            ? (
             <button
               data-cy="ToggleAllButton"
               type="button"
@@ -130,7 +132,7 @@ export const App: React.FC = () => {
                 },
               )}
             />
-          )}
+          ) : (<></>)}
 
           <NewTodoField
             title={title}
@@ -139,39 +141,41 @@ export const App: React.FC = () => {
           />
         </header>
 
-        {todos.length && (
-          <>
-            <TodoList
-              todos={visibleTodos}
-              onTodoRemove={deleteCurrentTodo}
-              loadingTodoId={loadingTodoId}
-            />
-            <footer className="todoapp__footer" data-cy="Footer">
-              <span className="todo-count" data-cy="todosCounter">
-                {`${activeTodos.length} items left`}
-              </span>
-
-              <FilterTodos
-                status={status}
-                onStatusChange={setStatus}
+        {todos.length
+          ? (
+            <>
+              <TodoList
+                todos={visibleTodos}
+                onTodoRemove={deleteCurrentTodo}
+                loadingTodoId={loadingTodoId}
               />
+              <footer className="todoapp__footer" data-cy="Footer">
+                <span className="todo-count" data-cy="todosCounter">
+                  {`${activeTodos.length} items left`}
+                </span>
 
-              <button
-                data-cy="ClearCompletedButton"
-                type="button"
-                className={classNames(
-                  'todoapp__clear-completed',
-                  {
-                    'todoapp__clear-completed--hidden': !completedTodos.length,
-                  },
-                )}
-                onClick={removeComplited}
-              >
-                Clear completed
-              </button>
-            </footer>
-          </>
-        )}
+                <FilterTodos
+                  status={status}
+                  onStatusChange={setStatus}
+                />
+
+                <button
+                  data-cy="ClearCompletedButton"
+                  type="button"
+                  className={classNames(
+                    'todoapp__clear-completed',
+                    {
+                      'todoapp__clear-completed--hidden':
+                       !completedTodos.length,
+                    },
+                  )}
+                  onClick={removeComplited}
+                >
+                  Clear completed
+                </button>
+              </footer>
+            </>
+          ) : (<></>)}
       </div>
 
       <ErrorNotification
