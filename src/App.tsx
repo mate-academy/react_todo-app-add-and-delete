@@ -1,4 +1,5 @@
 import React, {
+  useCallback,
   useContext,
   useEffect,
   useMemo,
@@ -52,25 +53,26 @@ export const App: React.FC = () => {
     }
   }, [user]);
 
-  const createNewTodo = (event: React.FormEvent<HTMLFormElement>) => {
-    event.preventDefault();
-    if (!query.trim()) {
-      setError("Title can't be empty");
+  const createNewTodo
+    = useCallback((event: React.FormEvent<HTMLFormElement>) => {
+      event.preventDefault();
+      if (!query.trim()) {
+        setError("Title can't be empty");
 
-      return;
-    }
+        return;
+      }
 
-    if (user) {
-      setIsAdding(true);
-      createTodos(user.id, query)
-        .then(todo => {
-          setTodos([...todos, todo]);
-          setQuery('');
-        })
-        .catch(() => setError('Unable to add a todo'))
-        .finally(() => setIsAdding(false));
-    }
-  };
+      if (user) {
+        setIsAdding(true);
+        createTodos(user.id, query)
+          .then(todo => {
+            setTodos([...todos, todo]);
+            setQuery('');
+          })
+          .catch(() => setError('Unable to add a todo'))
+          .finally(() => setIsAdding(false));
+      }
+    }, []);
 
   const removeTodo = (todoId: number) => {
     return deleteTodos(todoId)

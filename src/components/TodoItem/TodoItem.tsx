@@ -1,4 +1,8 @@
-import React, { useEffect, useRef, useState } from 'react';
+import React, {
+  useEffect,
+  useRef,
+  useState,
+} from 'react';
 import classNames from 'classnames';
 import { Todo } from '../../types/Todo';
 import { Loader } from '../Loader/Loader';
@@ -32,7 +36,7 @@ export const TodoItem: React.FC<Props> = ({
     }
   }, [titleRef.current, isChangeTitle]);
 
-  const handleKeyDown = (event: { key: string; }) => {
+  const handleKeyDown = (event: React.KeyboardEvent<HTMLInputElement>) => {
     if (event.key === 'Enter') {
       setIsChangeTitle(false);
 
@@ -64,9 +68,9 @@ export const TodoItem: React.FC<Props> = ({
     deleteTodo(todo.id).finally(() => setIsLoading(false));
   };
 
-  const handelChangeTitleField = (event: {
-    target: { value: React.SetStateAction<string>; };
-  }) => {
+  const handelChangeTitleField = (
+    event: React.ChangeEvent<HTMLInputElement>,
+  ) => {
     setInputText(event.target.value);
   };
 
