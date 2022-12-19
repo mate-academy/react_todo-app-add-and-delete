@@ -66,13 +66,13 @@ export const App: React.FC = () => {
         setIsAdding(true);
         createTodos(user.id, query)
           .then(todo => {
-            setTodos([...todos, todo]);
+            setTodos(prev => [...prev, todo]);
             setQuery('');
           })
           .catch(() => setError('Unable to add a todo'))
           .finally(() => setIsAdding(false));
       }
-    }, []);
+    }, [query]);
 
   const removeTodo = (todoId: number) => {
     return deleteTodos(todoId)
