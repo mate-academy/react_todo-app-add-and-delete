@@ -15,7 +15,7 @@
       border-color: rgba(175, 47, 47, 0.1);
     }
 
-    &.selected {
+    &:active {
       border-color: rgba(175, 47, 47, 0.2);
     }
   }
