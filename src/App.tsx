@@ -55,6 +55,10 @@ export const App: React.FC = () => {
     }
   };
 
+  useEffect(() => {
+    todosFilter();
+  }, [status]);
+
   const completedTodos = todos.filter(todo => todo.completed);
 
   const visibleTodos = todosFilter();
@@ -64,7 +68,7 @@ export const App: React.FC = () => {
 
     setError(Error.None);
 
-    if (title && user) {
+    if (title.trim().length > 0 && user) {
       setIsAdding(true);
       try {
         await addTodo({
@@ -72,7 +76,9 @@ export const App: React.FC = () => {
           title: title.trim(),
           completed: false,
         });
+
         await loadTodos();
+
         setTitle('');
       } catch {
         setError(Error.Add);
@@ -85,13 +91,13 @@ export const App: React.FC = () => {
   };
 
   const deleteCurrentTodo = async (todoId: number) => {
-    setLoadingTodoIds(prevIds => [...prevIds, todoId]);
+    try {
+      await deleteTodo(todoId);
 
-    await deleteTodo(todoId);
-
-    await loadTodos();
-
-    await setLoadingTodoIds([]);
+      await loadTodos();
+    } catch {
+      setError(Error.Delete);
+    }
   };
 
   const deleteComplitedTodos = async () => {
@@ -121,14 +127,14 @@ export const App: React.FC = () => {
 
         <div className="todoapp__content">
           <header className="todoapp__header">
-            {todos.length
-              ? (
+            {todos.length > 0
+              && (
                 <button
                   data-cy="ToggleAllButton"
                   type="button"
                   className="todoapp__toggle-all active"
                 />
-              ) : (<></>)}
+              )}
             <TodoForm
               title={title}
               isAdding={isAdding}
@@ -137,7 +143,7 @@ export const App: React.FC = () => {
             />
           </header>
 
-          {todos.length ? (
+          {todos.length > 0 && (
             <>
               <TodoList
                 loadingTodoIds={loadingTodoIds}
@@ -170,7 +176,7 @@ export const App: React.FC = () => {
 
               </footer>
             </>
-          ) : (<></>)}
+          )}
 
         </div>
 
