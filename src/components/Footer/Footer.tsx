@@ -65,7 +65,7 @@ export const Footer: React.FC<Props> = ({
         type="button"
         className="todoapp__clear-completed"
         disabled={completedTodos === 0}
-        onClick={() => handleClearCompletedClick()}
+        onClick={handleClearCompletedClick}
       >
         Clear completed
       </button>

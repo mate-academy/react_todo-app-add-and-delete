@@ -1,5 +1,6 @@
 /* eslint-disable jsx-a11y/control-has-associated-label */
 import React, {
+  useCallback,
   useContext, useEffect, useMemo, useState,
 } from 'react';
 import { AuthContext } from './components/Auth/AuthContext';
@@ -58,26 +59,29 @@ export const App: React.FC = () => {
     timerId = window.setTimeout(() => setError(''), 3000);
   };
 
-  const filteredByCompleted = (
-    isCompleted: boolean,
-    arrTodos = todos,
-  ): Todo[] => (
-    arrTodos.filter(todo => todo.completed === isCompleted)
+  const filteredByCompleted = useCallback(
+    (
+      isCompleted: boolean,
+      arrTodos = todos,
+    ): Todo[] => (
+      arrTodos.filter(todo => todo.completed === isCompleted)
+    ), [todos],
   );
 
   const getIsLoading = (arrTodos: Todo[], loading: boolean) => {
-    const isLoadingObj: Loading = {};
-
-    arrTodos.forEach(({ id }) => {
-      isLoadingObj[id] = loading;
-    });
+    const isLoadingObj: Loading = arrTodos.reduce((obj, { id }) => ({
+      ...obj,
+      [id]: loading,
+    }), {});
 
     setIsLoading(isLoadingObj);
   };
 
   const itemsLeft = filteredByCompleted(false).length;
 
-  const completedTodos = filteredByCompleted(true);
+  const completedTodos = useMemo(() => (
+    filteredByCompleted(true)),
+  [todos]);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -113,23 +117,15 @@ export const App: React.FC = () => {
     setIsLoading({ [id]: true });
 
     try {
-      await updateMarkTodo(id, completed);
+      await updateMarkTodo(id, { completed: !completed });
 
-      setTodos(currTodos => {
-        return currTodos.map(prev => {
-          const todo = { ...prev };
-
-          if (todo.id === id) {
-            todo.completed = !todo.completed;
-          }
-
-          return todo;
-        });
-      });
+      setTodos(currTodos => currTodos.map(item => (item.id === id
+        ? ({ ...item, completed: !item.completed })
+        : item)));
     } catch (err: unknown) {
       showError('update');
     } finally {
-      setIsLoading({ [id]: false });
+      setIsLoading({} as Loading);
     }
   };
 
@@ -139,9 +135,7 @@ export const App: React.FC = () => {
     try {
       await deleteTodo(id);
 
-      setTodos(currTodos => {
-        return currTodos.filter(todo => todo.id !== id);
-      });
+      setTodos(currTodos => currTodos.filter(todo => todo.id !== id));
     } catch (err: unknown) {
       showError('delete');
     } finally {
@@ -157,9 +151,7 @@ export const App: React.FC = () => {
     try {
       await Promise.all(arrPromises);
 
-      setTodos(currTodos => {
-        return filteredByCompleted(false, currTodos);
-      });
+      setTodos(currTodos => filteredByCompleted(false, currTodos));
     } catch (err:unknown) {
       showError('delete');
     } finally {
@@ -170,22 +162,15 @@ export const App: React.FC = () => {
   const handleToggleAll = async () => {
     const activeTodos = filteredByCompleted(toggleAll);
     const arrPromises = activeTodos.map(({ id, completed }) => (
-      updateMarkTodo(id, completed)));
+      updateMarkTodo(id, { completed: !completed })));
 
     getIsLoading(activeTodos, true);
 
     try {
       await Promise.all(arrPromises);
 
-      setTodos(currTodos => {
-        return currTodos.map(prev => {
-          const todo = { ...prev };
-
-          todo.completed = !toggleAll;
-
-          return todo;
-        });
-      });
+      setTodos(currTodos => currTodos.map(item => (
+        { ...item, completed: !toggleAll })));
 
       setToggleAll(prev => !prev);
     } catch (err: unknown) {
@@ -195,22 +180,26 @@ export const App: React.FC = () => {
     }
   };
 
-  const handleFilterClick = (value: Filter) => {
-    setFilter(value);
-  };
+  const handleFilterClick = useCallback(
+    (value: Filter) => {
+      setFilter(value);
+    }, [],
+  );
 
-  const getFilterTodos = () => {
-    switch (filter) {
-      case 'active':
-        return filteredByCompleted(false);
+  const getFilterTodos = useCallback(
+    () => {
+      switch (filter) {
+        case 'active':
+          return filteredByCompleted(false);
 
-      case 'completed':
-        return filteredByCompleted(true);
+        case 'completed':
+          return filteredByCompleted(true);
 
-      default:
-        return todos;
-    }
-  };
+        default:
+          return todos;
+      }
+    }, [filter, todos],
+  );
 
   const visibleTodos = useMemo(
     getFilterTodos,

@@ -38,7 +38,7 @@ export const Header: React.FC<Props> = React.memo(
             'todoapp__toggle-all',
             { active: toggleAll },
           )}
-          onClick={() => handleToggleAll()}
+          onClick={handleToggleAll}
         />
 
         <form onSubmit={handleSubmit}>

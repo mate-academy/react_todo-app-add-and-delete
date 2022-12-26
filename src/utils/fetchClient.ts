@@ -1,3 +1,5 @@
+import { ErrorType } from '../types/ErrorType';
+
 const BASE_URL = 'https://mate.academy/students-api';
 
 // a promise resolved after a given delay
@@ -42,4 +44,23 @@ export const client = {
   post: <T>(url: string, data: any) => request<T>(url, 'POST', data),
   patch: <T>(url: string, data: any) => request<T>(url, 'PATCH', data),
   delete: (url: string) => request(url, 'DELETE'),
+};
+
+export const errorMessage = (error: ErrorType) => {
+  switch (error) {
+    case 'add':
+      return 'Unable to add a todo';
+
+    case 'delete':
+      return 'Unable to delete a todo';
+
+    case 'update':
+      return 'Unable to update a todo';
+
+    case 'empty':
+      return 'Title can\'t be empty';
+
+    default:
+      return null;
+  }
 };

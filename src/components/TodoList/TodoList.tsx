@@ -21,94 +21,92 @@ export const TodoList: React.FC<Props> = React.memo(
     isLoading,
     handleMarkChange,
     handleDeleteTodoClick,
-  }) => {
-    return (
-      <>
-        {todos.map(todo => (
+  }) => (
+    <>
+      {todos.map(todo => (
+        <div
+          key={todo.id}
+          data-cy="Todo"
+          className={classNames(
+            'todo',
+            { completed: todo.completed },
+          )}
+        >
+          <label className="todo__status-label">
+            <input
+              data-cy="TodoStatus"
+              type="checkbox"
+              className="todo__status"
+              checked={todo.completed}
+              onChange={
+                () => handleMarkChange(todo.id, todo.completed)
+              }
+            />
+          </label>
+
+          <span data-cy="TodoTitle" className="todo__title">
+            {todo.title}
+          </span>
+          <button
+            type="button"
+            className="todo__remove"
+            data-cy="TodoDeleteButton"
+            onClick={() => handleDeleteTodoClick(todo.id)}
+          >
+            ×
+          </button>
+
           <div
-            key={todo.id}
-            data-cy="Todo"
+            data-cy="TodoLoader"
             className={classNames(
-              'todo',
-              { completed: todo.completed },
+              'modal overlay',
+              { 'is-active': isLoading[todo.id] },
             )}
+
           >
-            <label className="todo__status-label">
-              <input
-                data-cy="TodoStatus"
-                type="checkbox"
-                className="todo__status"
-                checked={todo.completed}
-                onChange={
-                  () => handleMarkChange(todo.id, todo.completed)
-                }
-              />
-            </label>
-
-            <span data-cy="TodoTitle" className="todo__title">
-              {todo.title}
-            </span>
-            <button
-              type="button"
-              className="todo__remove"
-              data-cy="TodoDeleteButton"
-              onClick={() => handleDeleteTodoClick(todo.id)}
-            >
-              ×
-            </button>
-
-            <div
-              data-cy="TodoLoader"
-              className={classNames(
-                'modal overlay',
-                { 'is-active': isLoading[todo.id] },
-              )}
-
-            >
-              <div className="modal-background has-background-white-ter" />
-              <div className="loader" />
-            </div>
+            <div className="modal-background has-background-white-ter" />
+            <div className="loader" />
           </div>
-        ))}
-        {tempTodo && (
+        </div>
+      ))}
+      {tempTodo && (
+        <div
+          key={0}
+          data-cy="Todo"
+          className="todo"
+        >
+          <label className="todo__status-label">
+            <input
+              data-cy="TodoStatus"
+              type="checkbox"
+              className="todo__status"
+            />
+          </label>
+
+          <span data-cy="TodoTitle" className="todo__title">
+            {todoTitle}
+          </span>
+          <button
+            type="button"
+            className="todo__remove"
+            data-cy="TodoDeleteButton"
+          >
+            ×
+          </button>
+
           <div
-            key={0}
-            data-cy="Todo"
-            className="todo"
+            data-cy="TodoLoader"
+            className={classNames(
+              'modal overlay',
+              { 'is-active': true },
+            )}
+
           >
-            <label className="todo__status-label">
-              <input
-                data-cy="TodoStatus"
-                type="checkbox"
-                className="todo__status"
-              />
-            </label>
-
-            <span data-cy="TodoTitle" className="todo__title">
-              {todoTitle}
-            </span>
-            <button
-              type="button"
-              className="todo__remove"
-              data-cy="TodoDeleteButton"
-            >
-              ×
-            </button>
-
-            <div
-              data-cy="TodoLoader"
-              className={classNames(
-                'modal overlay',
-                { 'is-active': true },
-              )}
-
-            >
-              <div className="modal-background has-background-white-ter" />
-              <div className="loader" />
-            </div>
+            <div className="modal-background has-background-white-ter" />
+            <div className="loader" />
           </div>
-        )}
-      </>
-    );
-  },
+        </div>
+      )}
+    </>
+  ),
 );
