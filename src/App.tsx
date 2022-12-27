@@ -1,6 +1,6 @@
 /* eslint-disable jsx-a11y/control-has-associated-label */
 import React, {
-  useContext, useEffect, useState,
+  useContext, useEffect, useMemo, useState,
 } from 'react';
 import { getTodos } from './api/todos';
 import { AuthContext } from './components/Auth/AuthContext';
@@ -11,7 +11,6 @@ import {
 import { Footer } from './components/Footer/Footer';
 import { TodoInfo } from './components/TodoInfo/TodoInfo';
 import { Todo } from './types/Todo';
-import { TempToddo } from './components/TodoInfo/TempTodo/TempTodo';
 
 export const App: React.FC = () => {
   const user = useContext(AuthContext);
@@ -32,18 +31,23 @@ export const App: React.FC = () => {
   };
 
   useEffect(() => {
-    if (!user) {
-      return;
+    if (user) {
+      getTodos(user.id)
+        .then(response => {
+          setTodos(response);
+        })
+        .catch(reject => {
+          handleError(`${reject}`);
+        });
     }
-
-    getTodos(user.id)
-      .then(response => {
-        setTodos(response);
-      })
-      .catch(reject => {
-        handleError(`${reject}`);
-      });
   }, []);
+
+  const tempTodo: Todo = useMemo(() => ({
+    id: 0,
+    userId: user ? user.id : 0,
+    title: isAdding,
+    completed: false,
+  }), [isAdding]);
 
   const visibleTodos = todos.filter(todo => {
     switch (filterBy) {
@@ -90,7 +94,9 @@ export const App: React.FC = () => {
             ))}
             {isAdding.length > 0 && (
               <li>
-                <TempToddo title={isAdding} />
+                <TodoInfo
+                  todo={tempTodo}
+                />
               </li>
             )}
           </ul>

@@ -1,24 +1,34 @@
 import classNames from 'classnames';
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { Todo } from '../../types/Todo';
 import { deleteTodo } from '../../api/todos';
 
 type Props = {
   todo: Todo,
-  handleError: (textError: string) => () => void,
-  setTodos: React.Dispatch<React.SetStateAction<Todo[]>>,
+  handleError?: (textError: string) => () => void,
+  setTodos?: React.Dispatch<React.SetStateAction<Todo[]>>,
   isClickClearComleted?: boolean,
 };
 
 export const TodoInfo: React.FC<Props> = React.memo(({
   todo,
-  handleError,
-  setTodos,
-  isClickClearComleted,
+  handleError = () => {},
+  setTodos = () => {},
+  isClickClearComleted = false,
 }) => {
   const [hasLoader, setHasLoader] = useState(false);
   const { title, completed, id } = todo;
   const isLoaderClearComleted = isClickClearComleted && completed;
+
+  useEffect(() => {
+    if (todo.id === 0) {
+      setHasLoader(true);
+    }
+
+    return () => {
+      setHasLoader(false);
+    };
+  }, []);
 
   const handleRemoveClick = () => {
     setHasLoader(true);
