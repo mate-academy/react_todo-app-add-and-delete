@@ -1,6 +1,6 @@
 /* eslint-disable jsx-a11y/control-has-associated-label */
 import React, {
-  useContext, useEffect, useRef, useState,
+  useContext, useEffect, useState,
 } from 'react';
 import { getTodos } from './api/todos';
 import { AuthContext } from './components/Auth/AuthContext';
@@ -10,23 +10,28 @@ import {
 } from './components/ErrorNotification/ErrorNotification';
 import { Footer } from './components/Footer/Footer';
 import { TodoInfo } from './components/TodoInfo/TodoInfo';
-// import { TodoList } from './components/TodoList/TodoList';
 import { Todo } from './types/Todo';
+import { TempToddo } from './components/TodoInfo/TempTodo/TempTodo';
 
 export const App: React.FC = () => {
   const user = useContext(AuthContext);
-  const newTodoField = useRef<HTMLInputElement>(null);
   const [todos, setTodos] = useState<Todo[]>([]);
   const [error, setError] = useState('');
   const [filterBy, setFilterBy] = useState('All');
   const hasTodos = todos.length > 0;
-  const [mustRenderList, setMustRenderList] = useState<unknown>(null);
+  const [isClickClearComleted, setIsClickClearComleted] = useState(false);
+  const [isAdding, setIsAdding] = useState('');
+
+  const handleError = (textError: string) => {
+    setError(textError);
+    const timeout = setTimeout(() => setError(''), 3000);
+
+    return () => {
+      clearTimeout(timeout);
+    };
+  };
 
   useEffect(() => {
-    if (newTodoField.current) {
-      newTodoField.current.focus();
-    }
-
     if (!user) {
       return;
     }
@@ -36,15 +41,9 @@ export const App: React.FC = () => {
         setTodos(response);
       })
       .catch(reject => {
-        setError(`${reject}`);
-        const timeout = setTimeout(() => setError(''), 3000);
-
-        return () => {
-          clearTimeout(timeout);
-          setError('');
-        };
+        handleError(`${reject}`);
       });
-  }, [mustRenderList]);
+  }, []);
 
   const visibleTodos = todos.filter(todo => {
     switch (filterBy) {
@@ -71,26 +70,39 @@ export const App: React.FC = () => {
             />
           )}
           <NewTodoField
-            newTodoField={newTodoField}
+            handleError={handleError}
+            setTodos={setTodos}
+            setIsAdding={setIsAdding}
+            isDisabled={isAdding.length > 0}
           />
         </header>
         <section className="todoapp__main" data-cy="TodoList">
-          {visibleTodos.map(todo => (
-            <TodoInfo
-              key={todo.id}
-              todo={todo}
-              setMustRenderList={setMustRenderList}
-              setError={setError}
-            />
-          ))}
+          <ul>
+            {visibleTodos.map(todo => (
+              <li key={todo.id}>
+                <TodoInfo
+                  todo={todo}
+                  setTodos={setTodos}
+                  handleError={handleError}
+                  isClickClearComleted={isClickClearComleted}
+                />
+              </li>
+            ))}
+            {isAdding.length > 0 && (
+              <li>
+                <TempToddo title={isAdding} />
+              </li>
+            )}
+          </ul>
         </section>
       </div>
       <Footer
         todos={todos}
-        setFilterBy={setFilterBy}
-        setMustRenderList={setMustRenderList}
+        filterBy={filterBy}
+        setTodos={setTodos}
         setError={setError}
-
+        setFilterBy={setFilterBy}
+        setIsClickClearComleted={setIsClickClearComleted}
       />
       <ErrorNotification
         error={error}

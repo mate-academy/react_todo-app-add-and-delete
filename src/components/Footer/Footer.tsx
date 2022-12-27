@@ -5,19 +5,22 @@ import { deleteTodo } from '../../api/todos';
 
 type Props = {
   todos: Todo[],
+  filterBy: string,
   setError: React.Dispatch<React.SetStateAction<string>>,
-  setMustRenderList: React.Dispatch<unknown>
+  setTodos: React.Dispatch<React.SetStateAction<Todo[]>>,
   setFilterBy: React.Dispatch<React.SetStateAction<string>>,
+  setIsClickClearComleted: React.Dispatch<React.SetStateAction<boolean>>,
 };
 
 export const Footer: React.FC<Props> = ({
-  todos, setMustRenderList, setFilterBy, setError,
+  todos, filterBy, setTodos, setFilterBy, setError, setIsClickClearComleted,
 }) => {
   if (todos.length === 0) {
     return null;
   }
 
-  const completedTodos = todos.filter(todo => todo.completed);
+  const completedTodosId = todos.filter(todo => todo.completed)
+    .map(todo => todo.id);
 
   const handleClickFilter = (
     e: React.MouseEvent<HTMLAnchorElement, MouseEvent>,
@@ -26,19 +29,22 @@ export const Footer: React.FC<Props> = ({
       return;
     }
 
-    setFilterBy(e.currentTarget.textContent.trim());
+    setFilterBy(e.currentTarget.textContent);
   };
 
   const handleClickClearCompleted = () => {
-    const iterablePromises = completedTodos
-      .map(todo => deleteTodo(todo.id));
+    setIsClickClearComleted(true);
+    const iterablePromises = completedTodosId
+      .map(id => deleteTodo(id));
 
     Promise.all(iterablePromises)
-      .then(response => setMustRenderList(response))
+      .then(() => setTodos((currentTodos) => currentTodos
+        .filter(todo => !completedTodosId.includes(todo.id))))
       .catch(() => {
         setTimeout(() => setError(''));
         setError('Unable to delete all completed todos');
-      });
+      })
+      .finally(() => setIsClickClearComleted(false));
   };
 
   return (
@@ -53,7 +59,10 @@ export const Footer: React.FC<Props> = ({
         <a
           data-cy="FilterLinkAll"
           href="#/"
-          className="filter__link"
+          className={classNames(
+            'filter__link',
+            { 'filter__link--selected': filterBy === 'All' },
+          )}
           onClick={handleClickFilter}
         >
           All
@@ -62,7 +71,10 @@ export const Footer: React.FC<Props> = ({
         <a
           data-cy="FilterLinkActive"
           href="#/active"
-          className="filter__link"
+          className={classNames(
+            'filter__link',
+            { 'filter__link--selected': filterBy === 'Active' },
+          )}
           onClick={handleClickFilter}
         >
           Active
@@ -70,7 +82,10 @@ export const Footer: React.FC<Props> = ({
         <a
           data-cy="FilterLinkCompleted"
           href="#/completed"
-          className="filter__link"
+          className={classNames(
+            'filter__link',
+            { 'filter__link--selected': filterBy === 'Completed' },
+          )}
           onClick={handleClickFilter}
         >
           Completed
@@ -80,11 +95,9 @@ export const Footer: React.FC<Props> = ({
       <button
         data-cy="ClearCompletedButton"
         type="button"
-        className={classNames(
-          'todoapp__clear-completed',
-        )}
+        className="todoapp__clear-completed"
         onClick={handleClickClearCompleted}
-        disabled={completedTodos.length === 0}
+        disabled={completedTodosId.length === 0}
       >
         Clear completed
       </button>

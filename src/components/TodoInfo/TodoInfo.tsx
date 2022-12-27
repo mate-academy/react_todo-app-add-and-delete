@@ -5,26 +5,30 @@ import { deleteTodo } from '../../api/todos';
 
 type Props = {
   todo: Todo,
-  setError: React.Dispatch<React.SetStateAction<string>>
-  setMustRenderList: React.Dispatch<unknown>,
+  handleError: (textError: string) => () => void,
+  setTodos: React.Dispatch<React.SetStateAction<Todo[]>>,
+  isClickClearComleted?: boolean,
 };
 
-export const TodoInfo: React.FC<Props> = ({
+export const TodoInfo: React.FC<Props> = React.memo(({
   todo,
-  setMustRenderList,
-  setError,
+  handleError,
+  setTodos,
+  isClickClearComleted,
 }) => {
-  const { title, completed, id } = todo;
   const [hasLoader, setHasLoader] = useState(false);
+  const { title, completed, id } = todo;
+  const isLoaderClearComleted = isClickClearComleted && completed;
 
   const handleRemoveClick = () => {
     setHasLoader(true);
 
     deleteTodo(id)
-      .then(response => setMustRenderList(response))
+      .then(() => setTodos((currentTodos) => {
+        return currentTodos.filter(todoItem => todo.id !== todoItem.id);
+      }))
       .catch(() => {
-        setTimeout(() => setError(''), 3000);
-        setError('Unable to delete a todo');
+        handleError('Unable to delete a todo');
       })
       .finally(() => {
         setHasLoader(false);
@@ -61,7 +65,7 @@ export const TodoInfo: React.FC<Props> = ({
         data-cy="TodoLoader"
         className={classNames(
           'modal overlay',
-          { 'is-active': hasLoader },
+          { 'is-active': hasLoader || isLoaderClearComleted },
         )}
       >
         <div className="modal-background has-background-white-ter" />
@@ -69,4 +73,4 @@ export const TodoInfo: React.FC<Props> = ({
       </div>
     </div>
   );
-};
+});
