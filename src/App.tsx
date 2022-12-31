@@ -34,6 +34,13 @@ export const App: React.FC = () => {
 
   const completedTodo = todoList.filter(todo => todo.completed);
 
+  const removeAllState = () => {
+    setIsAdding(false);
+    setInputValue('');
+    setTargetTodoId(0);
+    setCompletedDelete(false);
+  };
+
   async function loadingTodos() {
     if (!user) {
       return;
@@ -41,23 +48,22 @@ export const App: React.FC = () => {
 
     const todos = await getTodos(user.id);
 
+    removeAllState();
     setTodosFromServer(todos);
     setTodolist(todos);
-    setIsAdding(false);
-    setInputValue('');
-    setTargetTodoId(0);
-    setCompletedDelete(false);
   }
 
   async function addNewTodo() {
     if (!user) {
       setShowError(Errors.Add);
+      removeAllState();
 
       return;
     }
 
-    if (!inputValue) {
+    if (!inputValue.trim()) {
       setShowError(Errors.Empty);
+      removeAllState();
 
       return;
     }
@@ -67,7 +73,7 @@ export const App: React.FC = () => {
     const newTodo: Todo = {
       id: 0,
       userId: user.id,
-      title: inputValue,
+      title: inputValue.trim(),
       completed: false,
     };
 
@@ -76,6 +82,7 @@ export const App: React.FC = () => {
       loadingTodos();
     } catch (error) {
       setShowError(Errors.Add);
+      removeAllState();
     }
   }
 
@@ -89,6 +96,7 @@ export const App: React.FC = () => {
       loadingTodos();
     } catch {
       setShowError(Errors.Delete);
+      removeAllState();
     }
   }
 
@@ -103,6 +111,7 @@ export const App: React.FC = () => {
       loadingTodos();
     } catch {
       setShowError(Errors.Delete);
+      removeAllState();
     }
   }
 

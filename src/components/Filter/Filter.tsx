@@ -18,7 +18,7 @@ export const Filter: React.FC<Props> = ({
         href="#/"
         className={
           classNames('filter__link', {
-            selected: filterBy === 'all',
+            selected: filterBy === Filters.All,
           })
         }
         onClick={() => setFilterBy(Filters.All)}
@@ -31,7 +31,7 @@ export const Filter: React.FC<Props> = ({
         href="#/active"
         className={
           classNames('filter__link', {
-            selected: filterBy === 'active',
+            selected: filterBy === Filters.Active,
           })
         }
         onClick={() => setFilterBy(Filters.Active)}
@@ -43,7 +43,7 @@ export const Filter: React.FC<Props> = ({
         href="#/completed"
         className={
           classNames('filter__link', {
-            selected: filterBy === 'completed',
+            selected: filterBy === Filters.Completed,
           })
         }
         onClick={() => setFilterBy(Filters.Completed)}
