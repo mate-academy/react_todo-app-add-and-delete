@@ -11,15 +11,16 @@ import {
 import { Footer } from './components/Footer/Footer';
 import { TodoInfo } from './components/TodoInfo/TodoInfo';
 import { Todo } from './types/Todo';
+import { FilterBy } from './types/FilterBy';
 
 export const App: React.FC = () => {
   const user = useContext(AuthContext);
   const [todos, setTodos] = useState<Todo[]>([]);
   const [error, setError] = useState('');
-  const [filterBy, setFilterBy] = useState('All');
+  const [filterBy, setFilterBy] = useState<FilterBy>(FilterBy.All);
   const hasTodos = todos.length > 0;
   const [isClickClearComleted, setIsClickClearComleted] = useState(false);
-  const [isAdding, setIsAdding] = useState('');
+  const [newTitle, setNewTitle] = useState('');
 
   const handleError = (textError: string) => {
     setError(textError);
@@ -45,15 +46,15 @@ export const App: React.FC = () => {
   const tempTodo: Todo = useMemo(() => ({
     id: 0,
     userId: user ? user.id : 0,
-    title: isAdding,
+    title: newTitle,
     completed: false,
-  }), [isAdding]);
+  }), [newTitle]);
 
   const visibleTodos = todos.filter(todo => {
     switch (filterBy) {
-      case 'Active':
+      case FilterBy.Active:
         return !todo.completed;
-      case 'Completed':
+      case FilterBy.Completed:
         return todo.completed;
       default:
         return true;
@@ -76,8 +77,8 @@ export const App: React.FC = () => {
           <NewTodoField
             handleError={handleError}
             setTodos={setTodos}
-            setIsAdding={setIsAdding}
-            isDisabled={isAdding.length > 0}
+            setNewTitle={setNewTitle}
+            isDisabled={newTitle.length > 0}
           />
         </header>
         <section className="todoapp__main" data-cy="TodoList">
@@ -92,7 +93,7 @@ export const App: React.FC = () => {
                 />
               </li>
             ))}
-            {isAdding.length > 0 && (
+            {newTitle.length > 0 && (
               <li>
                 <TodoInfo
                   todo={tempTodo}

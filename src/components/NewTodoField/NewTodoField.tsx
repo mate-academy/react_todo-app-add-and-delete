@@ -8,13 +8,13 @@ import { AuthContext } from '../Auth/AuthContext';
 type Props = {
   handleError: (textError: string) => () => void,
   setTodos: React.Dispatch<React.SetStateAction<Todo[]>>,
-  setIsAdding: React.Dispatch<React.SetStateAction<string>>,
+  setNewTitle: React.Dispatch<React.SetStateAction<string>>,
   isDisabled: boolean
 };
 
 export const NewTodoField: React.FC<Props> = ({
   setTodos,
-  setIsAdding,
+  setNewTitle,
   isDisabled,
   handleError,
 }) => {
@@ -42,7 +42,7 @@ export const NewTodoField: React.FC<Props> = ({
       return;
     }
 
-    setIsAdding(value);
+    setNewTitle(value);
 
     createTodo(value, user.id)
       .then((response) => {
@@ -56,7 +56,7 @@ export const NewTodoField: React.FC<Props> = ({
       })
       .finally(() => {
         setValue('');
-        setIsAdding('');
+        setNewTitle('');
       });
   };
 

@@ -2,13 +2,14 @@ import React from 'react';
 import classNames from 'classnames';
 import { Todo } from '../../types/Todo';
 import { deleteTodo } from '../../api/todos';
+import { FilterBy } from '../../types/FilterBy';
 
 type Props = {
   todos: Todo[],
-  filterBy: string,
+  filterBy: FilterBy,
   setError: React.Dispatch<React.SetStateAction<string>>,
   setTodos: React.Dispatch<React.SetStateAction<Todo[]>>,
-  setFilterBy: React.Dispatch<React.SetStateAction<string>>,
+  setFilterBy: React.Dispatch<React.SetStateAction<FilterBy>>,
   setIsClickClearComleted: React.Dispatch<React.SetStateAction<boolean>>,
 };
 
@@ -29,7 +30,9 @@ export const Footer: React.FC<Props> = ({
       return;
     }
 
-    setFilterBy(e.currentTarget.textContent);
+    const property = e.currentTarget.textContent as keyof typeof FilterBy;
+
+    setFilterBy(FilterBy[property]);
   };
 
   const handleClickClearCompleted = () => {
