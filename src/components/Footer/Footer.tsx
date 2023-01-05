@@ -1,11 +1,22 @@
 import React from 'react';
+import cn from 'classnames';
+
+import { FilterType } from '../../types/FilterType';
 
 type Props = {
   activeTodos: number;
+  hasCompletedTodos: boolean;
+  filterType: FilterType;
+  onChangeType: React.Dispatch<React.SetStateAction<FilterType>>;
 };
 
 export const Footer: React.FC<Props> = (props) => {
-  const { activeTodos } = props;
+  const {
+    activeTodos,
+    hasCompletedTodos,
+    filterType,
+    onChangeType,
+  } = props;
 
   return (
     <footer className="todoapp__footer" data-cy="Footer">
@@ -17,7 +28,11 @@ export const Footer: React.FC<Props> = (props) => {
         <a
           data-cy="FilterLinkAll"
           href="#/"
-          className="filter__link selected"
+          className={cn(
+            'filter__link',
+            { selected: filterType === FilterType.All },
+          )}
+          onClick={() => onChangeType(FilterType.All)}
         >
           All
         </a>
@@ -25,7 +40,11 @@ export const Footer: React.FC<Props> = (props) => {
         <a
           data-cy="FilterLinkActive"
           href="#/active"
-          className="filter__link"
+          className={cn(
+            'filter__link',
+            { selected: filterType === FilterType.Active },
+          )}
+          onClick={() => onChangeType(FilterType.Active)}
         >
           Active
         </a>
@@ -33,7 +52,11 @@ export const Footer: React.FC<Props> = (props) => {
         <a
           data-cy="FilterLinkCompleted"
           href="#/completed"
-          className="filter__link"
+          className={cn(
+            'filter__link',
+            { selected: filterType === FilterType.Completed },
+          )}
+          onClick={() => onChangeType(FilterType.Completed)}
         >
           Completed
         </a>
@@ -44,7 +67,9 @@ export const Footer: React.FC<Props> = (props) => {
         type="button"
         className="todoapp__clear-completed"
       >
-        Clear completed
+        {hasCompletedTodos
+          ? 'Clear completed'
+          : null}
       </button>
     </footer>
   );

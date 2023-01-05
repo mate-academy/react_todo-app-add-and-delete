@@ -7,9 +7,15 @@ import { Todo } from '../../types/Todo';
 
 type Props = {
   todo: Todo;
+  temporary?: boolean;
 };
 
-export const TodoItem: React.FC<Props> = ({ todo }) => {
+export const TodoItem: React.FC<Props> = (props) => {
+  const {
+    todo,
+    temporary = false,
+  } = props;
+
   return (
     <div
       data-cy="Todo"
@@ -39,7 +45,7 @@ export const TodoItem: React.FC<Props> = ({ todo }) => {
         ×
       </button>
 
-      <TodoLoader />
+      {temporary && <TodoLoader />}
     </div>
   );
 };

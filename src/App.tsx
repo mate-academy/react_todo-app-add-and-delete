@@ -3,6 +3,7 @@ import React, {
   useEffect,
   useRef,
   useState,
+  useCallback,
 } from 'react';
 import { AuthContext } from './components/Auth/AuthContext';
 
@@ -12,13 +13,18 @@ import { Footer } from './components/Footer/Footer';
 import { ErrorNotification } from
   './components/ErrorNotification/ErrorNotification';
 
-import { getTodos } from './api/todos';
+import { getTodos, addTodo } from './api/todos';
+import { FilterType } from './types/FilterType';
 
 import { Todo } from './types/Todo';
 
 export const App: React.FC = () => {
   const [todos, setTodos] = useState<Todo[]>([]);
-  const [error] = useState(false);
+  const [errorMessage, setErrorMessage] = useState('');
+  const [filterType, setFilterType] = useState(FilterType.All);
+  const [title, setTitle] = useState('');
+  const [isAdding, setIsAdding] = useState(false);
+  const [tempTodo, setTempTodo] = useState<Todo | null>(null);
 
   const user = useContext(AuthContext);
   const newTodoField = useRef<HTMLInputElement>(null);
@@ -30,37 +36,134 @@ export const App: React.FC = () => {
     }
   }, []);
 
-  const loadTodos = async () => {
+  const loadTodos = useCallback(async () => {
     if (!user) {
       return;
     }
 
-    const loadedTodos = await getTodos(user.id);
+    try {
+      setErrorMessage('');
+      const loadedTodos = await getTodos(user.id);
 
-    setTodos(loadedTodos);
+      setTodos(loadedTodos);
+    } catch (error) {
+      setErrorMessage('Can\'t load todos');
+    }
+  }, []);
+
+  useEffect(() => {
+    loadTodos();
+  }, []);
+
+  const handleSubmitForm = (event: React.FormEvent<HTMLFormElement>) => {
+    event.preventDefault();
+
+    if (!title.trim()) {
+      setErrorMessage('Title can\'t be empty');
+      setTitle('');
+
+      return;
+    }
+
+    const addNewTodo = async () => {
+      setIsAdding(true);
+
+      if (user) {
+        try {
+          setTempTodo({
+            id: 0,
+            userId: user?.id,
+            title,
+            completed: false,
+          });
+
+          const loadedTodo = await addTodo({
+            userId: user?.id,
+            title,
+            completed: false,
+          });
+
+          setTempTodo(null);
+
+          setTodos(currentTodos => [
+            ...currentTodos,
+            {
+              id: loadedTodo.id,
+              userId: user.id,
+              title,
+              completed: false,
+            },
+          ]);
+        } catch (error) {
+          setErrorMessage('Unable to add a todo');
+          setTempTodo(null);
+        } finally {
+          setTitle('');
+          setIsAdding(false);
+          setTempTodo(null);
+        }
+      }
+    };
+
+    addNewTodo();
   };
 
-  loadTodos();
+  const filterTodos = () => {
+    return todos.filter(todo => {
+      switch (filterType) {
+        case FilterType.All:
+          return todo;
 
+        case FilterType.Active:
+          return todo.completed === false;
+
+        case FilterType.Completed:
+          return todo.completed === true;
+
+        default:
+          throw new Error('Invalid type');
+      }
+    });
+  };
+
+  const filteredTodos = filterTodos();
   const activeTodos = todos.filter(todo => todo.completed === false).length;
+  const hasCompletedTodos = todos.some(todo => todo.completed === true);
 
   return (
     <div className="todoapp">
       <h1 className="todoapp__title">todos</h1>
 
-      <Header newTodoField={newTodoField} />
+      <Header
+        newTodoField={newTodoField}
+        title={title}
+        isAdding={isAdding}
+        onChange={setTitle}
+        onSubmitForm={handleSubmitForm}
+      />
 
       {todos.length > 0 && (
         <>
-          <TodoList todos={todos} />
+          <TodoList
+            todos={filteredTodos}
+            tempTodo={tempTodo}
+          />
 
           <Footer
             activeTodos={activeTodos}
+            hasCompletedTodos={hasCompletedTodos}
+            filterType={filterType}
+            onChangeType={setFilterType}
           />
         </>
       )}
 
-      {error && (<ErrorNotification />)}
+      {errorMessage && (
+        <ErrorNotification
+          error={errorMessage}
+          onClick={setErrorMessage}
+        />
+      )}
     </div>
   );
 };
