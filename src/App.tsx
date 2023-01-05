@@ -13,7 +13,7 @@ import { Footer } from './components/Footer/Footer';
 import { ErrorNotification } from
   './components/ErrorNotification/ErrorNotification';
 
-import { getTodos, addTodo } from './api/todos';
+import { getTodos, addTodo, deleteTodo } from './api/todos';
 import { FilterType } from './types/FilterType';
 
 import { Todo } from './types/Todo';
@@ -25,6 +25,7 @@ export const App: React.FC = () => {
   const [title, setTitle] = useState('');
   const [isAdding, setIsAdding] = useState(false);
   const [tempTodo, setTempTodo] = useState<Todo | null>(null);
+  const [isTodoDeleting, setIsTodoDeleting] = useState(false);
 
   const user = useContext(AuthContext);
   const newTodoField = useRef<HTMLInputElement>(null);
@@ -126,6 +127,21 @@ export const App: React.FC = () => {
     });
   };
 
+  const removeTodo = async (todoId: number) => {
+    try {
+      setIsTodoDeleting(true);
+      setErrorMessage('');
+      await deleteTodo(todoId);
+
+      setTodos(todos.filter(todo => todo.id !== todoId));
+    } catch (error) {
+      setIsTodoDeleting(false);
+      setErrorMessage('Unable to delete a todo');
+    } finally {
+      setIsTodoDeleting(false);
+    }
+  };
+
   const filteredTodos = filterTodos();
   const activeTodos = todos.filter(todo => todo.completed === false).length;
   const hasCompletedTodos = todos.some(todo => todo.completed === true);
@@ -147,6 +163,8 @@ export const App: React.FC = () => {
           <TodoList
             todos={filteredTodos}
             tempTodo={tempTodo}
+            isTodoDeleting={isTodoDeleting}
+            onDelete={removeTodo}
           />
 
           <Footer
