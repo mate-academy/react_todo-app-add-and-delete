@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React from 'react';
 import cn from 'classnames';
 
 import { TodoLoader } from '../TodoLoader/TodoLoader';
@@ -9,6 +9,7 @@ type Props = {
   todo: Todo;
   temporary?: boolean;
   isTodoDeleting?: boolean;
+  selectedTodoId?: number[];
   onDelete?: (todoId: number) => Promise<void>;
 };
 
@@ -17,10 +18,9 @@ export const TodoItem: React.FC<Props> = (props) => {
     todo,
     temporary = false,
     isTodoDeleting,
+    selectedTodoId,
     onDelete = () => {},
   } = props;
-
-  const [selectedTodoId, setselectedUserId] = useState<number | null>(null);
 
   return (
     <div
@@ -47,15 +47,12 @@ export const TodoItem: React.FC<Props> = (props) => {
         type="button"
         className="todo__remove"
         data-cy="TodoDeleteButton"
-        onClick={() => {
-          onDelete(todo.id);
-          setselectedUserId(todo.id);
-        }}
+        onClick={() => onDelete(todo.id)}
       >
         ×
       </button>
 
-      {(temporary || (isTodoDeleting && selectedTodoId === todo.id)) && (
+      {(temporary || (isTodoDeleting && selectedTodoId?.includes(todo.id))) && (
         <TodoLoader />
       )}
     </div>

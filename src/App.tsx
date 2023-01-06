@@ -26,6 +26,7 @@ export const App: React.FC = () => {
   const [isAdding, setIsAdding] = useState(false);
   const [tempTodo, setTempTodo] = useState<Todo | null>(null);
   const [isTodoDeleting, setIsTodoDeleting] = useState(false);
+  const [selectedTodoId, setSelectedTodoId] = useState<number []>([]);
 
   const user = useContext(AuthContext);
   const newTodoField = useRef<HTMLInputElement>(null);
@@ -130,16 +131,31 @@ export const App: React.FC = () => {
   const removeTodo = async (todoId: number) => {
     try {
       setIsTodoDeleting(true);
+      setSelectedTodoId(state => [
+        ...state,
+        todoId,
+      ]);
+
       setErrorMessage('');
+
       await deleteTodo(todoId);
 
       setTodos(todos.filter(todo => todo.id !== todoId));
+
+      setSelectedTodoId(ids => ids.filter(id => id !== todoId));
     } catch (error) {
-      setIsTodoDeleting(false);
       setErrorMessage('Unable to delete a todo');
     } finally {
       setIsTodoDeleting(false);
     }
+  };
+
+  const removeCompletedTodos = () => {
+    Promise.all(todos.map(todo => {
+      if (todo.completed) {
+        return removeTodo(todo.id);
+      }
+    }));
   };
 
   const filteredTodos = filterTodos();
@@ -164,6 +180,7 @@ export const App: React.FC = () => {
             todos={filteredTodos}
             tempTodo={tempTodo}
             isTodoDeleting={isTodoDeleting}
+            selectedTodoId={selectedTodoId}
             onDelete={removeTodo}
           />
 
@@ -172,6 +189,7 @@ export const App: React.FC = () => {
             hasCompletedTodos={hasCompletedTodos}
             filterType={filterType}
             onChangeType={setFilterType}
+            onDelete={removeCompletedTodos}
           />
         </>
       )}

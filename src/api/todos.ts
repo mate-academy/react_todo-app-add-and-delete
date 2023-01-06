@@ -10,5 +10,5 @@ export const addTodo = async (newTodo: Omit<Todo, 'id'>) => {
 };
 
 export const deleteTodo = async (userId: number) => {
-  return client.delete(`/toddos/${userId}`);
+  return client.delete(`/todos/${userId}`);
 };

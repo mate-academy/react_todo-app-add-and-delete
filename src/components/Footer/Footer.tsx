@@ -8,6 +8,7 @@ type Props = {
   hasCompletedTodos: boolean;
   filterType: FilterType;
   onChangeType: React.Dispatch<React.SetStateAction<FilterType>>;
+  onDelete: () => void;
 };
 
 export const Footer: React.FC<Props> = (props) => {
@@ -16,6 +17,7 @@ export const Footer: React.FC<Props> = (props) => {
     hasCompletedTodos,
     filterType,
     onChangeType,
+    onDelete,
   } = props;
 
   return (
@@ -66,6 +68,7 @@ export const Footer: React.FC<Props> = (props) => {
         data-cy="ClearCompletedButton"
         type="button"
         className="todoapp__clear-completed"
+        onClick={onDelete}
       >
         {hasCompletedTodos
           ? 'Clear completed'
