@@ -10,11 +10,15 @@ export const pushTodo = (
   title: string,
   userId: number | undefined,
 ) => {
-  return client.post<Todo[]>(`/todos?userId=${userId}`, {
+  return client.post<Todo>(`/todos?userId=${userId}`, {
     id,
     createdAt: new Date(),
     userId,
     completed: false,
     title,
   });
+};
+
+export const deleteTodo = (id: number) => {
+  return client.delete(`/todos/${id}`);
 };

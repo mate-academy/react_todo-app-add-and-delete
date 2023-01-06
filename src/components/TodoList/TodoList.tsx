@@ -1,12 +1,14 @@
 import cn from 'classnames';
+import { deleteTodo } from '../../api/todos';
 
 import { Todo } from '../../types/Todo';
 
 type Props = {
   todos: Todo[];
+  onDelete: (id: number) => void;
 };
 
-export const TodoList: React.FC<Props> = ({ todos }) => {
+export const TodoList: React.FC<Props> = ({ todos, onDelete }) => {
   return (
     <>
       {todos && (
@@ -35,6 +37,10 @@ export const TodoList: React.FC<Props> = ({ todos }) => {
               type="button"
               className="todo__remove"
               data-cy="TodoDeleteButton"
+              onClick={() => {
+                deleteTodo(todo.id);
+                onDelete(todo.id);
+              }}
             >
               ×
             </button>

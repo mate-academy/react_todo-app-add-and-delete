@@ -44,7 +44,21 @@ export const App: React.FC = () => {
       return max.id + 1;
     }
 
-    return 0;
+    return 1;
+  };
+
+  const pushTodos = async () => {
+    const pushedTodo = await pushTodo(findNewTodoId(), newTitle, user?.id);
+
+    setTodoList(prevTodos => {
+      return [...prevTodos, pushedTodo];
+    });
+  };
+
+  const deleteTodos = (id: number) => {
+    setTodoList(prevTodos => {
+      return (prevTodos.filter(item => item.id !== id));
+    });
   };
 
   return (
@@ -62,12 +76,11 @@ export const App: React.FC = () => {
           <form
             onSubmit={(event) => {
               event.preventDefault();
-              if (newTitle === '') {
+              if (newTitle.trim() === '') {
                 setEmptyError(true);
               } else {
-                pushTodo(findNewTodoId(), newTitle, user?.id);
                 setNewTitle('');
-                findTodos();
+                pushTodos();
               }
 
               setTimeout(cancelEmptyError, 3000);
@@ -77,6 +90,7 @@ export const App: React.FC = () => {
               data-cy="NewTodoField"
               type="text"
               ref={newTodoField}
+              value={newTitle}
               className="todoapp__new-todo"
               placeholder="What needs to be done?"
               onChange={(event) => {
@@ -88,7 +102,7 @@ export const App: React.FC = () => {
 
         {user && (
           <section className="todoapp__main" data-cy="TodoList">
-            <TodoList todos={todoList} />
+            <TodoList todos={todoList} onDelete={deleteTodos} />
           </section>
         )}
 
