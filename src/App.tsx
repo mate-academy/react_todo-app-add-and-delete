@@ -131,8 +131,8 @@ export const App: React.FC = () => {
   const removeTodo = async (todoId: number) => {
     try {
       setIsTodoDeleting(true);
-      setSelectedTodoId(state => [
-        ...state,
+      setSelectedTodoId(todosIds => [
+        ...todosIds,
         todoId,
       ]);
 
@@ -140,9 +140,9 @@ export const App: React.FC = () => {
 
       await deleteTodo(todoId);
 
-      setTodos(todos.filter(todo => todo.id !== todoId));
+      setTodos(currentTodos => currentTodos.filter(todo => todo.id !== todoId));
 
-      setSelectedTodoId(ids => ids.filter(id => id !== todoId));
+      setSelectedTodoId(todosIds => todosIds.filter(id => id !== todoId));
     } catch (error) {
       setErrorMessage('Unable to delete a todo');
     } finally {
@@ -151,11 +151,11 @@ export const App: React.FC = () => {
   };
 
   const removeCompletedTodos = () => {
-    Promise.all(todos.map(todo => {
+    todos.forEach(todo => {
       if (todo.completed) {
-        return removeTodo(todo.id);
+        removeTodo(todo.id);
       }
-    }));
+    });
   };
 
   const filteredTodos = filterTodos();
