@@ -5,17 +5,18 @@ import React, {
   useRef,
   useState,
 } from 'react';
-import { addTodo, deleteTodo, getTodos } from './api/todos';
 import { AuthContext } from './components/Auth/AuthContext';
 import { Filter } from './components/Filter';
-import { TodoList } from './components/TodoList';
-import { Todo } from './types/Todo';
-import { FilterStatus } from './types/FilterLink';
 import { ErrorNotification } from './components/ErrorNotification';
+import { TodoList } from './components/TodoList';
 import { TodoInfo } from './components/TodoInfo';
 
+import { addTodo, deleteTodo, getTodos } from './api/todos';
+
+import { Todo } from './types/Todo';
+import { FilterStatus } from './types/FilterLink';
+
 export const App: React.FC = () => {
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   const user = useContext(AuthContext);
   const newTodoField = useRef<HTMLInputElement>(null);
 
@@ -31,11 +32,10 @@ export const App: React.FC = () => {
   useEffect(() => {
     if (user) {
       getTodos(user.id)
-        .then(loadedTodos => {
-          setTodosFromServer(loadedTodos);
-        })
+        .then(setTodosFromServer)
         .catch(() => {
           setIsError(true);
+          setErrorMessage('Can\'t load todos');
         });
     }
   }, []);
