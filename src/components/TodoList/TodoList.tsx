@@ -5,7 +5,7 @@ import { TodoItem } from '../TodoItem/TodoItem';
 export type Props = {
   todos: Todo[],
   onDeleteTodo(id: number): void,
-  tempTodo: Todo | null | undefined,
+  tempTodo: Todo | null,
   loadingTodoIds: number[],
 };
 

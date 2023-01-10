@@ -24,7 +24,7 @@ export const App: React.FC = () => {
   const [query, setQuery] = useState('');
   const [isLoading, setIsLoading] = useState(false);
   const [todos, setTodos] = useState<Todo[]>([]);
-  const [tempTodo, setTempTodo] = useState<Todo | null | undefined>();
+  const [tempTodo, setTempTodo] = useState<Todo | null>(null);
 
   const [loadingTodoIds, setLoadingTodoIds] = useState<number[]>([]);
 
@@ -32,7 +32,6 @@ export const App: React.FC = () => {
   const [errorType, setErrorType] = useState<TypeError>(TypeError.NONE);
   const [filterType, setFilterType] = useState<FilterType>(FilterType.All);
 
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   const user = useContext(AuthContext);
   const newTodoField = useRef<HTMLInputElement>(null);
 
