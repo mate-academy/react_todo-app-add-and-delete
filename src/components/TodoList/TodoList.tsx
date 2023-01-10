@@ -1,4 +1,5 @@
 import cn from 'classnames';
+import { useState } from 'react';
 import { deleteTodo } from '../../api/todos';
 
 import { Todo } from '../../types/Todo';
@@ -9,6 +10,9 @@ type Props = {
 };
 
 export const TodoList: React.FC<Props> = ({ todos, onDelete }) => {
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
+  const [isDeleting, setIsDeleting] = useState(false);
+
   return (
     <>
       {todos && (
@@ -23,7 +27,6 @@ export const TodoList: React.FC<Props> = ({ todos, onDelete }) => {
                 data-cy="TodoStatus"
                 type="checkbox"
                 className="todo__status"
-                defaultChecked
               />
             </label>
 
@@ -38,14 +41,19 @@ export const TodoList: React.FC<Props> = ({ todos, onDelete }) => {
               className="todo__remove"
               data-cy="TodoDeleteButton"
               onClick={() => {
+                setIsDeleting(true);
                 deleteTodo(todo.id);
                 onDelete(todo.id);
+                setIsDeleting(false);
               }}
             >
               ×
             </button>
 
-            <div data-cy="TodoLoader" className="modal overlay">
+            <div
+              data-cy="TodoLoader"
+              className={cn('modal overlay', { isDeleting: 'is-active' })}
+            >
               <div className="modal-background has-background-white-ter" />
               <div className="loader" />
             </div>

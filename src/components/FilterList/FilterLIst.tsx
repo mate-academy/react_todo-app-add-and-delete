@@ -5,14 +5,20 @@ import { Filter } from '../../types/Filter';
 
 type Props = {
   itemCount: number,
+  onFilter: (filterBy: Filter) => void,
+  isCompletedTodo: boolean,
 };
 
-export const FilterList: React.FC<Props> = ({ itemCount }) => {
+export const FilterList: React.FC<Props> = ({
+  itemCount,
+  onFilter,
+  isCompletedTodo,
+}) => {
   const [filterBy, setFilterBy] = useState<Filter>(Filter.all);
 
-  const handleFilter = (newValue: string) => {
-    setFilterBy(newValue as Filter);
-    // it'll be filter function here
+  const setFilter = (filterState: Filter) => {
+    setFilterBy(filterState);
+    onFilter(filterState);
   };
 
   return (
@@ -27,7 +33,7 @@ export const FilterList: React.FC<Props> = ({ itemCount }) => {
           href="#/"
           className={cn('filter__link', { selected: filterBy === Filter.all })}
           onClick={() => {
-            handleFilter(Filter.all);
+            setFilter(Filter.all);
           }}
         >
           {Filter.all}
@@ -39,7 +45,7 @@ export const FilterList: React.FC<Props> = ({ itemCount }) => {
           className={cn('filter__link',
             { selected: filterBy === Filter.active })}
           onClick={() => {
-            handleFilter(Filter.active);
+            setFilter(Filter.active);
           }}
         >
           {Filter.active}
@@ -50,20 +56,25 @@ export const FilterList: React.FC<Props> = ({ itemCount }) => {
           className={cn('filter__link',
             { selected: filterBy === Filter.completed })}
           onClick={() => {
-            handleFilter(Filter.completed);
+            setFilter(Filter.completed);
           }}
         >
           {Filter.completed}
         </a>
       </nav>
 
-      <button
-        data-cy="ClearCompletedButton"
-        type="button"
-        className="todoapp__clear-completed"
-      >
-        Clear completed
-      </button>
+      {isCompletedTodo && (
+        <button
+          data-cy="ClearCompletedButton"
+          type="button"
+          className="todoapp__clear-completed"
+          onClick={() => {
+            setFilter(Filter.clearComplete);
+          }}
+        >
+          {Filter.clearComplete}
+        </button>
+      )}
     </>
   );
 };

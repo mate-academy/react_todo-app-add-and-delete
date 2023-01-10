@@ -2,14 +2,20 @@ import React, { useEffect, useState } from 'react';
 
 type Props = {
   emptyFieldError: boolean,
+  failedAddError: boolean,
+  failedDeleteError: boolean,
 };
 
-export const ErrorNotification: React.FC<Props> = ({ emptyFieldError }) => {
+export const ErrorNotification: React.FC<Props> = ({
+  emptyFieldError,
+  failedAddError,
+  failedDeleteError,
+}) => {
   const [closed, setClosed] = useState(false);
 
   useEffect(() => {
     setClosed(false);
-  }, [emptyFieldError]);
+  }, [emptyFieldError, failedAddError, failedDeleteError]);
 
   return (
     <>
@@ -29,6 +35,44 @@ export const ErrorNotification: React.FC<Props> = ({ emptyFieldError }) => {
             Close Error
           </button>
           Title can not be empty
+        </div>
+      )}
+
+      {failedAddError && !closed && (
+        <div
+          data-cy="ErrorNotification"
+          className="notification is-danger is-light has-text-weight-normal"
+        >
+          <button
+            data-cy="HideErrorButton"
+            type="button"
+            className="delete"
+            onClick={() => {
+              setClosed(true);
+            }}
+          >
+            Close Error
+          </button>
+          Unable to add a todo
+        </div>
+      )}
+
+      {failedDeleteError && !closed && (
+        <div
+          data-cy="ErrorNotification"
+          className="notification is-danger is-light has-text-weight-normal"
+        >
+          <button
+            data-cy="HideErrorButton"
+            type="button"
+            className="delete"
+            onClick={() => {
+              setClosed(true);
+            }}
+          >
+            Close Error
+          </button>
+          Unable to delete a todo
         </div>
       )}
     </>
