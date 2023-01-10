@@ -10,14 +10,14 @@ type Props = {
   setErrorMessage: (message: string) => void;
   addTodo: (todo: Todo) => void;
   showTempTodo: (tempTodo: Todo | null) => void;
-  onError: () => void;
+  handleError: () => void;
 };
 
 export const Header: React.FC<Props> = ({
   setErrorMessage,
   addTodo,
   showTempTodo,
-  onError,
+  handleError,
 }) => {
   const user = useContext(AuthContext);
   const newTodoField = useRef<HTMLInputElement>(null);
@@ -59,7 +59,7 @@ export const Header: React.FC<Props> = ({
         setInputValue('');
       } catch (error) {
         setErrorMessage('Unable to add a todo');
-        onError();
+        handleError();
         showTempTodo(null);
         setIsAdding(false);
       }

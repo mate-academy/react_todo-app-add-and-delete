@@ -1,4 +1,3 @@
-// import classNames from 'classnames';
 import React, { useState } from 'react';
 import '../styles/transition.css';
 import { CSSTransition, TransitionGroup } from 'react-transition-group';

@@ -22,7 +22,7 @@ export const App: React.FC = () => {
   const [isRemoving, setIsRemoving] = useState(false);
   const [currentTodoId, setCurrentTodoId] = useState<number[]>([]);
 
-  const onError = () => {
+  const handleError = () => {
     setIsErrorShow(true);
 
     setTimeout(() => {
@@ -31,7 +31,7 @@ export const App: React.FC = () => {
   };
 
   const updateErrorMessage = (message: string) => {
-    onError();
+    handleError();
     setErrorMessage(message);
   };
 
@@ -44,7 +44,7 @@ export const App: React.FC = () => {
 
         setTodos(todosFromServer);
       } catch (error) {
-        onError();
+        handleError();
         setTodos([]);
       }
     }
@@ -83,7 +83,7 @@ export const App: React.FC = () => {
       setIsRemoving(false);
     } catch (error) {
       setErrorMessage('Unable to delete a todo');
-      onError();
+      handleError();
       setIsRemoving(false);
     }
   };
@@ -101,7 +101,7 @@ export const App: React.FC = () => {
           setErrorMessage={updateErrorMessage}
           addTodo={addTodo}
           showTempTodo={showTempTodo}
-          onError={onError}
+          handleError={handleError}
         />
 
         {todos.length > 0 && (

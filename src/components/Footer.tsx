@@ -9,9 +9,9 @@ type Props = {
 };
 
 enum Filter {
-  ALL = 'all',
-  ACTIVE = 'active',
-  COMPLETED = 'completed',
+  All = 'all',
+  Active = 'active',
+  Completed = 'completed',
 }
 
 export const Footer: React.FC<Props> = ({
@@ -21,7 +21,7 @@ export const Footer: React.FC<Props> = ({
 }) => {
   const [todosLeftCount, setTodosLeftCount] = useState(todos.length);
   const [finishedTodos, setFinishedTodos] = useState<Todo[]>([]);
-  const [currentFilter, setCurrentFilter] = useState<Filter>(Filter.ALL);
+  const [currentFilter, setCurrentFilter] = useState<Filter>(Filter.All);
 
   const showTodosLeftCount = () => {
     const completedTodos = todos.filter(todo => !todo.completed);
@@ -42,21 +42,21 @@ export const Footer: React.FC<Props> = ({
   };
 
   const allTodos = () => {
-    setCurrentFilter(Filter.ALL);
+    setCurrentFilter(Filter.All);
     showFilteredTodos(todos);
   };
 
   const activeTodos = () => {
     const filteredArray = todos.filter(todo => !todo.completed);
 
-    setCurrentFilter(Filter.ACTIVE);
+    setCurrentFilter(Filter.Active);
     showFilteredTodos(filteredArray);
   };
 
   const completedTodos = () => {
     const filteredArray = todos.filter(todo => todo.completed);
 
-    setCurrentFilter(Filter.COMPLETED);
+    setCurrentFilter(Filter.Completed);
     showFilteredTodos(filteredArray);
   };
 
@@ -77,7 +77,7 @@ export const Footer: React.FC<Props> = ({
           data-cy="FilterLinkAll"
           href="#/"
           className={classNames(
-            'filter__link', { selected: currentFilter === Filter.ALL },
+            'filter__link', { selected: currentFilter === Filter.All },
           )}
           onClick={allTodos}
         >
@@ -88,7 +88,7 @@ export const Footer: React.FC<Props> = ({
           data-cy="FilterLinkActive"
           href="#/active"
           className={classNames(
-            'filter__link', { selected: currentFilter === Filter.ACTIVE },
+            'filter__link', { selected: currentFilter === Filter.Active },
           )}
           onClick={activeTodos}
         >
@@ -98,7 +98,7 @@ export const Footer: React.FC<Props> = ({
           data-cy="FilterLinkCompleted"
           href="#/completed"
           className={classNames(
-            'filter__link', { selected: currentFilter === Filter.COMPLETED },
+            'filter__link', { selected: currentFilter === Filter.Completed },
           )}
           onClick={completedTodos}
         >
