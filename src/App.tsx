@@ -93,9 +93,10 @@ export const App: React.FC = () => {
           setTempTodo(newTodo);
 
           const todoFromServer = await addTodos(toServer);
+          const itemTodo: Todo = todoFromServer as Todo;
 
           setIsAdding(false);
-          setTodos((prevTodos) => [...prevTodos, todoFromServer]);
+          setTodos((prevTodos) => [...prevTodos, itemTodo]);
 
           setQuery('');
         } catch {
