@@ -8,23 +8,24 @@ type Props = {
   todo: Todo;
   isAdding?: boolean;
   isDeleting?: boolean;
-  onSetTodoForDelete?: (todo: Todo) => void;
+  onSetTodoIdForDelete?: (todoId: number) => void;
 };
 
 export const TodoInfo: React.FC<Props> = ({
   todo,
   isAdding,
   isDeleting,
-  onSetTodoForDelete,
+  onSetTodoIdForDelete,
 }) => {
   const {
+    id,
     title,
     completed,
   } = todo;
 
   const handleClickTodoDeleteButton = () => {
-    if (onSetTodoForDelete) {
-      onSetTodoForDelete(todo);
+    if (onSetTodoIdForDelete) {
+      onSetTodoIdForDelete(id);
     }
   };
 
@@ -57,16 +58,6 @@ export const TodoInfo: React.FC<Props> = ({
       >
         ×
       </button>
-
-      {/* <form>
-        <input
-          data-cy="TodoTitleField"
-          type="text"
-          className="todo__title-field"
-          placeholder="Empty todo will be deleted"
-          defaultValue="JS"
-        />
-      </form> */}
 
       <TodoLoader isAdding={isAdding} isDeleting={isDeleting} />
     </div>

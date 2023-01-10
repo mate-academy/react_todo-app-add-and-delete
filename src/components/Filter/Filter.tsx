@@ -10,13 +10,13 @@ type Props = {
 
 export const Filter: React.FC<Props> = ({ onSetFilterStatus }) => {
   const [
-    selectedFilterLink,
-    setSelectedFilterLink,
-  ] = useState(filterLinks[0]);
+    selectedFilterLinkId,
+    setSelectedFilterLinkId,
+  ] = useState(filterLinks[0].id);
 
-  const setFilterParameters = (filterLink: FilterLink) => {
-    setSelectedFilterLink(filterLink);
-    onSetFilterStatus(filterLink.title);
+  const setFilterParameters = ({ id, title }: FilterLink) => {
+    setSelectedFilterLinkId(id);
+    onSetFilterStatus(title);
   };
 
   return (
@@ -27,7 +27,7 @@ export const Filter: React.FC<Props> = ({ onSetFilterStatus }) => {
           href={`#/${link.url}`}
           className={cn(
             'filter__link',
-            { selected: link.id === selectedFilterLink.id },
+            { selected: link.id === selectedFilterLinkId },
           )}
           onClick={() => setFilterParameters(link)}
           key={link.id}

@@ -4,25 +4,23 @@ import { TodoInfo } from '../TodoInfo';
 
 type Props = {
   todos: Todo[];
-  todosForDelete: Todo[];
-  onSetTodoForDelete: (todo: Todo) => void;
+  idsTodosForDelete: number[];
+  onSetTodoIdForDelete: (todoId: number) => void;
 };
 
 export const TodoList: React.FC<Props> = ({
   todos,
-  todosForDelete,
-  onSetTodoForDelete,
+  idsTodosForDelete,
+  onSetTodoIdForDelete,
 }) => {
-  const idTodosForDelete = todosForDelete.map(todo => todo.id);
-
   return (
     <section className="todoapp__main" data-cy="TodoList">
       {todos.map(todo => (
         <TodoInfo
           todo={todo}
-          isDeleting={idTodosForDelete.includes(todo.id)}
+          isDeleting={idsTodosForDelete.includes(todo.id)}
           key={todo.id}
-          onSetTodoForDelete={onSetTodoForDelete}
+          onSetTodoIdForDelete={onSetTodoIdForDelete}
         />
       ))}
     </section>

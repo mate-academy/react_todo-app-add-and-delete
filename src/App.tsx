@@ -26,7 +26,7 @@ export const App: React.FC = () => {
   const [newTodoTitle, setNewTodoTitle] = useState('');
   const [tempTodo, setTempTodo] = useState<Todo | null>(null);
   const [isAdding, setIsAdding] = useState(false);
-  const [todosForDelete, setTodosForDelete] = useState<Todo[]>([]);
+  const [idsTodosForDelete, setIdsTodosForDelete] = useState<number[]>([]);
   const [filterStatus, setFilterStatus] = useState<FilterStatus>('All');
 
   useEffect(() => {
@@ -41,11 +41,10 @@ export const App: React.FC = () => {
   }, []);
 
   useEffect(() => {
-    // focus the element with `ref={newTodoField}`
     if (newTodoField.current) {
       newTodoField.current.focus();
     }
-  }, []);
+  }, [isAdding]);
 
   const handleChangeNewTodoTitle = (
     event: React.ChangeEvent<HTMLInputElement>,
@@ -107,31 +106,7 @@ export const App: React.FC = () => {
     setFilterStatus(status);
   };
 
-  const setTodoForDelete = (chosenTodo: Todo) => {
-    setTodosForDelete(todos => [...todos, chosenTodo]);
-
-    deleteTodo(chosenTodo.id)
-      .then(() => (
-        setTodosFromServer(currentTodos => currentTodos.filter(
-          todo => todo.id !== chosenTodo.id,
-        ))
-      ))
-      .catch(() => {
-        setTodosForDelete([]);
-        setIsError(true);
-        setErrorMessage('Unable to delete a todo');
-      });
-  };
-
-  const handleClickClearCompletedTodos = () => {
-    todosFromServer.forEach(todo => {
-      if (todo.completed) {
-        setTodoForDelete(todo);
-      }
-    });
-  };
-
-  const todos = todosFromServer.filter(todo => {
+  const visibleTodos = todosFromServer.filter(todo => {
     switch (filterStatus) {
       case 'Active':
         return !todo.completed;
@@ -143,6 +118,32 @@ export const App: React.FC = () => {
         return true;
     }
   });
+
+  const setTodoIdForDelete = (selectedTodoId: number) => {
+    setIdsTodosForDelete(currentIdsTodosForDelete => (
+      [...currentIdsTodosForDelete, selectedTodoId]
+    ));
+
+    deleteTodo(selectedTodoId)
+      .then(() => (
+        setTodosFromServer(currentTodos => currentTodos.filter(
+          todo => todo.id !== selectedTodoId,
+        ))
+      ))
+      .catch(() => {
+        setIsError(true);
+        setErrorMessage('Unable to delete a todo');
+      })
+      .finally(() => setIdsTodosForDelete([]));
+  };
+
+  const handleClickClearCompletedTodos = () => {
+    todosFromServer.forEach(todo => {
+      if (todo.completed) {
+        setTodoIdForDelete(todo.id);
+      }
+    });
+  };
 
   const amountOfTodosToComplete = todosFromServer.filter(
     todo => !todo.completed,
@@ -179,9 +180,9 @@ export const App: React.FC = () => {
         </header>
 
         <TodoList
-          todos={todos}
-          todosForDelete={todosForDelete}
-          onSetTodoForDelete={setTodoForDelete}
+          todos={visibleTodos}
+          idsTodosForDelete={idsTodosForDelete}
+          onSetTodoIdForDelete={setTodoIdForDelete}
         />
         {tempTodo && <TodoInfo todo={tempTodo} isAdding={isAdding} />}
 
