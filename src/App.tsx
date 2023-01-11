@@ -242,7 +242,7 @@ export const App: React.FC = () => {
       <div className="todoapp__content">
         <Header
           todos={todos}
-          heandleSubmit={handleSubmit}
+          heandlSubmit={handleSubmit}
           title={newTodo?.title || ''}
           onAdd={handleNewTodo}
           newTodoField={newTodoField}

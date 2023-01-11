@@ -4,7 +4,7 @@ import { Todo } from '../../types/Todo';
 
 type Props = {
   todos: Todo[],
-  heandleSubmit: (event: React.FormEvent<HTMLFormElement>) => void,
+  heandlSubmit: (event: React.FormEvent<HTMLFormElement>) => void,
   title: string,
   onAdd: (event: React.ChangeEvent<HTMLInputElement>) => void,
   newTodoField: React.RefObject<HTMLInputElement>,
@@ -12,7 +12,7 @@ type Props = {
 };
 
 export const Header: React.FC<Props> = ({
-  todos, heandleSubmit, title, onAdd, newTodoField, isAdding,
+  todos, heandlSubmit, title, onAdd, newTodoField, isAdding,
 }) => {
   const isActive = todos.every(todo => todo.completed);
 
@@ -28,7 +28,7 @@ export const Header: React.FC<Props> = ({
         )}
       />
 
-      <form onSubmit={heandleSubmit}>
+      <form onSubmit={heandlSubmit}>
         <input
           data-cy="NewTodoField"
           type="text"
