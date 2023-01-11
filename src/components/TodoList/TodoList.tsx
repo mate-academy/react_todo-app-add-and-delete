@@ -10,7 +10,6 @@ type Props = {
 };
 
 export const TodoList: React.FC<Props> = ({ todos, onDelete }) => {
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   const [isDeleting, setIsDeleting] = useState(false);
 
   return (
@@ -19,7 +18,8 @@ export const TodoList: React.FC<Props> = ({ todos, onDelete }) => {
         todos.map(todo => (
           <div
             data-cy="Todo"
-            className={cn('todo', { active: todo.completed })}
+            className={!isDeleting ? (
+              cn('todo', { active: todo.completed })) : ('')}
             key={todo.id}
           >
             <label className="todo__status-label">

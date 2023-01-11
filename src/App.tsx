@@ -25,12 +25,17 @@ export const App: React.FC = () => {
   const [emptyFieldError, setEmptyError] = useState(false);
   const [failedAddError, setAddError] = useState(false);
   const [failedDeleteError, setDeleteError] = useState(false);
+  const [failedLoadError, setLoadError] = useState(false);
 
-  const findTodos = async () => {
-    const loadedTodos = await getTodos(user?.id) || null;
+  const fetchTodos = async () => {
+    try {
+      const loadedTodos = await getTodos(user?.id);
 
-    setTodoList(loadedTodos);
-    setVisibleList(loadedTodos);
+      setTodoList(loadedTodos);
+      setVisibleList(loadedTodos);
+    } catch {
+      setLoadError(true);
+    }
   };
 
   useEffect(() => {
@@ -38,7 +43,7 @@ export const App: React.FC = () => {
       newTodoField.current.focus();
     }
 
-    findTodos();
+    fetchTodos();
   }, []);
 
   const cancelErrors = () => {
@@ -81,32 +86,18 @@ export const App: React.FC = () => {
   };
 
   const countActiveItems = (): number => {
-    let sum = 0;
-
-    todoList.forEach(item => {
-      if (!item.completed) {
-        sum += 1;
-      }
-
-      return sum;
-    });
-
-    return sum;
+    return todoList.filter(item => !item.completed).length;
   };
 
   const filterTodos = async (filterBy: Filter) => {
-    setVisibleList(todoList);
+    let todosForfilter = todoList;
 
     switch (filterBy) {
       case Filter.active:
-        setVisibleList(prevTodos => {
-          return (prevTodos.filter(item => !item.completed));
-        });
+        todosForfilter = todoList.filter(item => !item.completed);
         break;
       case Filter.completed:
-        setVisibleList(prevTodos => {
-          return (prevTodos.filter(item => item.completed));
-        });
+        todosForfilter = todoList.filter(item => item.completed);
         break;
       case Filter.clearComplete:
         setVisibleList(prevTodos => {
@@ -119,6 +110,8 @@ export const App: React.FC = () => {
       default:
         break;
     }
+
+    setVisibleList(todosForfilter);
   };
 
   const isCompletedTodo = () => {
@@ -127,6 +120,24 @@ export const App: React.FC = () => {
     }
 
     return false;
+  };
+
+  const onSubmitForm = (event: React.FormEvent<HTMLFormElement>) => {
+    event.preventDefault();
+    if (newTitle.trim() === '') {
+      setEmptyError(true);
+    } else {
+      try {
+        setIsAdding(true);
+        pushTodos();
+      } catch {
+        setAddError(true);
+      } finally {
+        setIsAdding(false);
+        setNewTitle('');
+        setTimeout(cancelErrors, 3000);
+      }
+    }
   };
 
   return (
@@ -143,21 +154,7 @@ export const App: React.FC = () => {
 
           <form
             onSubmit={(event) => {
-              event.preventDefault();
-              if (newTitle.trim() === '') {
-                setEmptyError(true);
-              } else {
-                try {
-                  setIsAdding(true);
-                  pushTodos();
-                } catch {
-                  setAddError(true);
-                } finally {
-                  setIsAdding(false);
-                  setNewTitle('');
-                  setTimeout(cancelErrors, 3000);
-                }
-              }
+              onSubmitForm(event);
             }}
           >
             <input
@@ -170,8 +167,7 @@ export const App: React.FC = () => {
               onChange={(event) => {
                 setNewTitle(event.target.value);
               }}
-              // eslint-disable-next-line no-unneeded-ternary
-              disabled={isAdding ? (true) : (false)}
+              disabled={isAdding}
             />
           </form>
         </header>
@@ -225,6 +221,7 @@ export const App: React.FC = () => {
         emptyFieldError={emptyFieldError}
         failedAddError={failedAddError}
         failedDeleteError={failedDeleteError}
+        failedLoadError={failedLoadError}
       />
     </div>
   );
