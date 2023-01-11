@@ -9,7 +9,7 @@ type Props = {
   todo: Todo;
   temporary?: boolean;
   isTodoDeleting?: boolean;
-  selectedTodoId?: number[];
+  selectedTodosId?: number[];
   onDelete?: (todoId: number) => Promise<void>;
 };
 
@@ -18,7 +18,7 @@ export const TodoItem: React.FC<Props> = (props) => {
     todo,
     temporary = false,
     isTodoDeleting,
-    selectedTodoId,
+    selectedTodosId,
     onDelete = () => {},
   } = props;
 
@@ -52,9 +52,11 @@ export const TodoItem: React.FC<Props> = (props) => {
         ×
       </button>
 
-      {(temporary || (isTodoDeleting && selectedTodoId?.includes(todo.id))) && (
-        <TodoLoader />
-      )}
+      {(temporary
+        || (isTodoDeleting && selectedTodosId?.includes(todo.id)))
+        && (
+          <TodoLoader />
+        )}
     </div>
   );
 };
