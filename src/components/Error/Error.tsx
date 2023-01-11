@@ -13,8 +13,8 @@ export const Error: React.FC<Props> = ({
   hasError,
   setHasError,
 }) => {
-  const errorNotification = (ifError: ErrorType) => {
-    switch (ifError) {
+  const errorNotification = (isError: ErrorType) => {
+    switch (isError) {
       case ErrorType.add:
         return 'Unable to add a todo';
 

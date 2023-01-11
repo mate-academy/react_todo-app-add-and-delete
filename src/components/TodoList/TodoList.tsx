@@ -14,28 +14,27 @@ export const TodoList: React.FC<Props> = ({
   tempTodo,
   isIncludeId,
   onDeleteItem,
-}) => {
-  return (
-    <ul className="todoapp__main" data-cy="TodoList">
-      {todos.map(todo => (
-        <li>
-          <TodoItem
-            key={todo.id}
-            todo={todo}
-            isAdding={isIncludeId.includes(todo.id)}
-            onDeleteItem={onDeleteItem}
-          />
-        </li>
-      ))}
-
-      {tempTodo && (
+}) => (
+  <ul className="todoapp__main" data-cy="TodoList">
+    {todos.map(todo => (
+      <li key={todo.id}>
         <TodoItem
-          key={tempTodo.id}
+          todo={todo}
+          isAdding={isIncludeId.includes(todo.id)}
+          onDeleteItem={onDeleteItem}
+        />
+      </li>
+    ))}
+
+    {tempTodo && (
+      <li key={0}>
+        <TodoItem
           todo={tempTodo}
           isAdding
           onDeleteItem={onDeleteItem}
         />
-      )}
-    </ul>
-  );
-};
+      </li>
+    )}
+  </ul>
+);
+

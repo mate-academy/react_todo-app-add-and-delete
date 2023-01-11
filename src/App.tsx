@@ -3,6 +3,7 @@ import React, {
   useCallback,
   useContext,
   useEffect,
+  useMemo,
   useRef,
   useState,
 } from 'react';
@@ -25,16 +26,16 @@ export const App: React.FC = () => {
   const [todos, setTodos] = useState<Todo[]>([]);
   const [query, setQuery] = useState('');
   const [filterType, setFilterType] = useState(FilterType.all);
-  const [activeTodoLength, setActiveTodosLength] = useState(0);
   const [isAdding, setIsAdding] = useState(false);
   const [hasError, setHasError] = useState(false);
   const [errorType, setErrorType] = useState(ErrorType.none);
   const [tempTodo, setTempTodo] = useState<Todo | null>(null);
   const [isIncludeId, setIsIncludId] = useState<number[]>([]);
-  const [activeTodos, setActiveTodos] = useState<Todo[]>([]);
-  const [complitedTodos, setComplitedTodos] = useState<Todo[]>([]);
 
-  async function loadTodos(userData: User) {
+  const complitedTodos: Todo[] = todos.filter(todo => todo.completed);
+  const activeTodos: Todo[] = todos.filter(todo => !todo.completed);
+
+  const loadTodos = async (userData: User) => {
     try {
       const result = await getTodos(userData.id);
 
@@ -42,7 +43,7 @@ export const App: React.FC = () => {
     } catch {
       setHasError(true);
     }
-  }
+  };
 
   useEffect(() => {
     if (user) {
@@ -58,32 +59,23 @@ export const App: React.FC = () => {
   }, []);
 
   useEffect(() => {
-    setActiveTodosLength(todos.filter(todo => todo.completed !== true).length);
-    setActiveTodos(todos.filter(todo => !todo.completed));
-    setComplitedTodos(todos.filter(todo => todo.completed));
-  }, [todos]);
-
-  useEffect(() => {
     setTimeout(() => {
       setHasError(false);
     }, 3000);
   }, [hasError]);
 
-  const onInputChange = (str: string) => {
-    setQuery(str);
-  };
-
   const onFormSubmit = useCallback(
     async (event: React.FormEvent<HTMLFormElement>) => {
       event.preventDefault();
+      const queryTrim = query.trim();
 
-      if (query.trim()) {
+      if (queryTrim) {
         setIsAdding(true);
 
         const newTodo: Todo = {
           id: 0,
           userId: user?.id || +new Date(),
-          title: query.trim(),
+          title: queryTrim,
           completed: false,
         };
 
@@ -92,11 +84,9 @@ export const App: React.FC = () => {
 
           setTempTodo(newTodo);
 
-          const todoFromServer = await addTodos(toServer);
-          const itemTodo: Todo = todoFromServer as Todo;
+          const todoFromServer = (await addTodos(toServer)) as Todo;
 
-          setIsAdding(false);
-          setTodos((prevTodos) => [...prevTodos, itemTodo]);
+          setTodos((prevTodos) => [...prevTodos, todoFromServer]);
 
           setQuery('');
         } catch {
@@ -104,6 +94,7 @@ export const App: React.FC = () => {
           setHasError(true);
         } finally {
           setTempTodo(null);
+          setIsAdding(false);
         }
       } else {
         setErrorType(ErrorType.empty);
@@ -115,7 +106,10 @@ export const App: React.FC = () => {
   const clearCompleted = async () => {
     try {
       setIsIncludId(prevIncludId => [
-        ...prevIncludId, ...complitedTodos.map(todo => todo.id)]);
+        ...prevIncludId,
+        ...complitedTodos.map(todo => todo.id),
+      ]);
+
       await Promise.all(complitedTodos.map(todo => (
         deleteTodos(todo.id)
       )));
@@ -124,6 +118,8 @@ export const App: React.FC = () => {
     } catch {
       setHasError(true);
       setErrorType(ErrorType.delete);
+    } finally {
+      setIsIncludId([]);
     }
   };
 
@@ -141,18 +137,18 @@ export const App: React.FC = () => {
     }
   };
 
-  const visibleTodos = () => {
+  const visibleTodos = useMemo(() => {
     return todos.filter(todo => {
       switch (filterType) {
         case FilterType.completed:
-          return todo.completed === true;
+          return todo.completed;
         case FilterType.active:
-          return todo.completed === false;
+          return !todo.completed;
         default:
-          return todo;
+          return true;
       }
     });
-  };
+  }, [todos, filterType]);
 
   return (
     <div className="todoapp">
@@ -169,7 +165,7 @@ export const App: React.FC = () => {
             query={query}
             newTodoField={newTodoField}
             onFormSubmit={onFormSubmit}
-            onInputChange={onInputChange}
+            onInputChange={event => setQuery(event.target.value)}
             isAdding={isAdding}
           />
         </header>
@@ -178,7 +174,7 @@ export const App: React.FC = () => {
           <>
             <section className="todoapp__main" data-cy="TodoList">
               <TodoList
-                todos={visibleTodos()}
+                todos={visibleTodos}
                 tempTodo={tempTodo}
                 isIncludeId={isIncludeId}
                 onDeleteItem={onRemoveTodo}
@@ -186,11 +182,11 @@ export const App: React.FC = () => {
             </section>
 
             <Footer
-              todoItemLeft={activeTodoLength}
+              todoItemLeft={activeTodos.length}
               filterType={filterType}
               setFilterType={setFilterType}
               clearCompleted={clearCompleted}
-              complitedTodos={complitedTodos}
+              complitedTodos={complitedTodos.length === 0}
             />
           </>
         )}
