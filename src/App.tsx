@@ -64,9 +64,11 @@ export const App: React.FC = () => {
         setTodosToShow([...gotTodos]);
       })
       .catch(() => setErrorMessage('Unable to get todos'));
-  }, []);
+  }, [user]);
 
-  useEffect(() => filterTodos(currentFilter), [todosFromTheServer]);
+  useEffect(() => {
+    filterTodos(currentFilter);
+  }, [todosFromTheServer]);
 
   const onFormSubmit = (value: string) => {
     setIsAdding(true);
