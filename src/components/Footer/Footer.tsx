@@ -19,7 +19,6 @@ export const Footer: FunctionComponent<FooterProps> = ({
   setFilterBy,
   setSelectedTodosId,
   setErrorMessage,
-
 }) => {
   const activeTodos = useMemo(() => {
     return todos.filter(todo => !todo.completed);
@@ -90,9 +89,11 @@ export const Footer: FunctionComponent<FooterProps> = ({
         type="button"
         className="todoapp__clear-completed"
         onClick={removeCompletedTodos}
-        style={(!completedTodos.length)
-          ? { visibility: 'hidden' }
-          : { visibility: 'visible' }}
+        style={{
+          visibility: !completedTodos.length
+            ? 'hidden'
+            : 'visible',
+        }}
       >
         Clear completed
       </button>

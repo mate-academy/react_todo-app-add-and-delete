@@ -39,6 +39,11 @@ export const Header: FunctionComponent<HeaderProps> = ({
     }
   }, []);
 
+  const onChangeHandler = useCallback(
+    (e: React.ChangeEvent<HTMLInputElement>): void => setTitle(e.target.value),
+    [],
+  );
+
   const onSubmitHandler = useCallback(
     async (event: React.FormEvent<HTMLFormElement>) => {
       event.preventDefault();
@@ -71,6 +76,7 @@ export const Header: FunctionComponent<HeaderProps> = ({
   return (
     <header className="todoapp__header">
       {!!todos.length && (
+        // eslint-disable-next-line jsx-a11y/control-has-associated-label
         <button
           data-cy="ToggleAllButton"
           type="button"
@@ -88,9 +94,7 @@ export const Header: FunctionComponent<HeaderProps> = ({
           className="todoapp__new-todo"
           placeholder="What needs to be done?"
           value={title}
-          onChange={
-            (e) => setTitle(e.target.value)
-          }
+          onChange={onChangeHandler}
           disabled={isAdding}
         />
       </form>

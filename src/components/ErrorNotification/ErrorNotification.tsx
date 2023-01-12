@@ -27,9 +27,10 @@ export const ErrorNotification: FunctionComponent<ErrorProps> = ({
       data-cy="ErrorNotification"
       className={classnames(
         'notification is-danger is-light has-text-weight-normal',
-        { 'is-hidden': errorMessage.length === 0 },
+        { 'is-hidden': !errorMessage.length },
       )}
     >
+      {/* eslint-disable-next-line jsx-a11y/control-has-associated-label */}
       <button
         data-cy="HideErrorButton"
         type="button"

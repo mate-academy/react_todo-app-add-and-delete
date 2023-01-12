@@ -13,7 +13,11 @@ export const TodoItem: FunctionComponent<TodoItemProps> = ({
   removeTodoHandler,
   onLoading,
 }) => {
-  const { title, completed, id } = todo;
+  const {
+    title,
+    completed,
+    id,
+  } = todo;
 
   return (
     <div
