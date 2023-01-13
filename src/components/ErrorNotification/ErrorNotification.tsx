@@ -1,4 +1,3 @@
-/* eslint-disable jsx-a11y/control-has-associated-label */
 import classnames from 'classnames';
 import React, {
   FunctionComponent,
@@ -32,6 +31,7 @@ export const ErrorNotification: FunctionComponent<ErrorProps> = ({
       )}
     >
       <button
+        aria-label="button"
         data-cy="HideErrorButton"
         type="button"
         className="delete"

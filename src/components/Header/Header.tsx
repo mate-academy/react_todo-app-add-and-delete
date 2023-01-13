@@ -1,4 +1,3 @@
-/* eslint-disable jsx-a11y/control-has-associated-label */
 import React, {
   FunctionComponent,
   useCallback,
@@ -78,6 +77,7 @@ export const Header: FunctionComponent<HeaderProps> = ({
     <header className="todoapp__header">
       {!!todos.length && (
         <button
+          aria-label="button"
           data-cy="ToggleAllButton"
           type="button"
           className={classnames('todoapp__toggle-all', {
