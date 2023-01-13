@@ -1,3 +1,4 @@
+/* eslint-disable jsx-a11y/control-has-associated-label */
 import classnames from 'classnames';
 import React, {
   FunctionComponent,
@@ -30,7 +31,6 @@ export const ErrorNotification: FunctionComponent<ErrorProps> = ({
         { 'is-hidden': !errorMessage.length },
       )}
     >
-      {/* eslint-disable-next-line jsx-a11y/control-has-associated-label */}
       <button
         data-cy="HideErrorButton"
         type="button"

@@ -39,7 +39,7 @@ export const TodoApp: FunctionComponent = () => {
   }, [user]);
 
   useEffect(() => {
-    loadingTodosFromServer().then();
+    loadingTodosFromServer();
   }, []);
 
   return (

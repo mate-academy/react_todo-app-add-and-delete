@@ -87,13 +87,14 @@ export const Footer: FunctionComponent<FooterProps> = ({
       <button
         data-cy="ClearCompletedButton"
         type="button"
-        className="todoapp__clear-completed"
+        className={classnames(
+          'todoapp__clear-completed',
+          {
+            'todoapp__clear-completed--hidden':
+              !completedTodos.length,
+          },
+        )}
         onClick={removeCompletedTodos}
-        style={{
-          visibility: !completedTodos.length
-            ? 'hidden'
-            : 'visible',
-        }}
       >
         Clear completed
       </button>

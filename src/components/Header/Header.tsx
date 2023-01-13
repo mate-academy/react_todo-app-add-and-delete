@@ -1,3 +1,4 @@
+/* eslint-disable jsx-a11y/control-has-associated-label */
 import React, {
   FunctionComponent,
   useCallback,
@@ -76,7 +77,6 @@ export const Header: FunctionComponent<HeaderProps> = ({
   return (
     <header className="todoapp__header">
       {!!todos.length && (
-        // eslint-disable-next-line jsx-a11y/control-has-associated-label
         <button
           data-cy="ToggleAllButton"
           type="button"
@@ -86,6 +86,7 @@ export const Header: FunctionComponent<HeaderProps> = ({
           })}
         />
       )}
+
       <form onSubmit={onSubmitHandler}>
         <input
           data-cy="NewTodoField"
