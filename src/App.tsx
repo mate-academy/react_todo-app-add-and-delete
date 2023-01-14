@@ -22,6 +22,7 @@ export const App: React.FC = () => {
   const [newTodoTitle, setNewTodoTitle] = useState('');
   const [isAdding, setIsAdding] = useState(false);
   const [activeLoading, setActiveLoading] = useState<number[]>([]);
+  const [loader, setLoader] = useState<number>(0);
 
   const user = useContext(AuthContext);
   const newTodoField = useRef<HTMLInputElement>(null);
@@ -87,16 +88,20 @@ export const App: React.FC = () => {
             completed: false,
           };
 
-          await addTodos(newTodo);
+          const data = await addTodos(newTodo);
+
+          setLoader(data.id);
           setIsAdding(true);
-          loadApiTodos();
           setNewTodoTitle('');
+          loadApiTodos();
         } catch {
           setIsError('Unable to add a todo');
-          setIsAdding(false);
           setNewTodoTitle('');
         } finally {
           setIsAdding(false);
+          setTimeout(() => {
+            setLoader(0);
+          }, 1000);
         }
       }
     }
@@ -154,6 +159,8 @@ export const App: React.FC = () => {
               todos={filteredTodos}
               onDelete={handleDeleteTodo}
               activeLoading={activeLoading}
+              isAdding={isAdding}
+              loader={loader}
             />
             <Footer
               todos={todos}
