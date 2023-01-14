@@ -21,6 +21,7 @@ export const App: React.FC = () => {
   const [filterType, setFilterType] = useState(Condition.All);
   const [newTodoTitle, setNewTodoTitle] = useState('');
   const [isAdding, setIsAdding] = useState(false);
+  const [activeLoading, setActiveLoading] = useState<number[]>([]);
 
   const user = useContext(AuthContext);
   const newTodoField = useRef<HTMLInputElement>(null);
@@ -64,6 +65,10 @@ export const App: React.FC = () => {
     setIsError('');
   };
 
+  const addToLoadingArr = (id: number) => {
+    setActiveLoading(arr => [...arr, id]);
+  };
+
   const handleSubmit = async (event: React.FormEvent) => {
     event.preventDefault();
 
@@ -98,12 +103,17 @@ export const App: React.FC = () => {
   };
 
   const handleDeleteTodo = async (todoId: number) => {
+    addToLoadingArr(todoId);
     try {
       await deleteTodos(todoId);
       loadApiTodos();
     } catch {
       setIsError('Unable to delete a todo');
     }
+
+    setTimeout(() => {
+      setActiveLoading([]);
+    }, 1000);
   };
 
   const todosNotCompleted = todos.filter(todo => !todo.completed);
@@ -143,6 +153,7 @@ export const App: React.FC = () => {
             <TodoList
               todos={filteredTodos}
               onDelete={handleDeleteTodo}
+              activeLoading={activeLoading}
             />
             <Footer
               todos={todos}
