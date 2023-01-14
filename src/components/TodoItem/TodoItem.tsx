@@ -13,10 +13,12 @@ export const TodoItem: React.FC<Props> = ({
   isAdding,
   onDeleteItem,
 }) => {
+  const { completed, id } = todo;
+
   return (
     <div
       data-cy="Todo"
-      className={classNames('todo', { completed: todo.completed })}
+      className={classNames('todo', { completed })}
     >
       <label className="todo__status-label">
         <input
@@ -34,7 +36,7 @@ export const TodoItem: React.FC<Props> = ({
         type="button"
         className="todo__remove"
         data-cy="TodoDeleteButton"
-        onClick={() => onDeleteItem(todo.id)}
+        onClick={() => onDeleteItem(id)}
       >
         ×
       </button>
