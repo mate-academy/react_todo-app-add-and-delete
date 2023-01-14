@@ -76,6 +76,10 @@
       font-weight: 300;
       color: #e6e6e6;
     }
+
+    &:focus-visible {
+      outline: 0;
+    }
   }
 
   &__main {
@@ -128,6 +132,11 @@
 
     &:active {
       text-decoration: none;
+    }
+
+    &:disabled {
+      opacity: 0;
+      cursor: default;
     }
   }
 }
