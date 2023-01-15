@@ -9,12 +9,19 @@ import { TodoContext } from './components/Todo/TodoContext';
 import TodoFooter from './components/Todo/TodoFooter/TodoFooter';
 import TodoForm from './components/Todo/TodoForm';
 import TodoList from './components/Todo/TodoList/TodoList';
+import { ErrorContextType } from './types/ErrorContextType';
+import { TodoContextType } from './types/TodoContextType';
 
 export const App: React.FC = () => {
   const user = useContext(AuthContext);
   const newTodoField = useRef<HTMLInputElement>(null);
-  const { todos, setTodos, visibleTodos } = useContext(TodoContext);
-  const { setIsError, setErrorText } = useContext(ErrorContext);
+  const {
+    todos,
+    setTodos,
+    visibleTodos,
+  } = useContext(TodoContext) as TodoContextType;
+  const { setIsError, setErrorText }
+  = useContext(ErrorContext) as ErrorContextType;
   const [isAdding, setIsAdding] = useState(false);
 
   useEffect(() => {
@@ -59,14 +66,8 @@ export const App: React.FC = () => {
             isAdding={isAdding}
           />
         </header>
-        {todos
-          && (
-            <TodoList />
-          )}
-        {!!todos.length
-          && (
-            <TodoFooter />
-          )}
+        {todos && <TodoList />}
+        {!!todos.length && <TodoFooter />}
       </div>
       <Error />
     </div>

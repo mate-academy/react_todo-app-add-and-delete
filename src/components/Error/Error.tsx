@@ -1,8 +1,10 @@
 import { useContext, useEffect } from 'react';
+import { ErrorContextType } from '../../types/ErrorContextType';
 import { ErrorContext } from './ErrorContext';
 
 const Error:React.FC<{}> = () => {
-  const { isError, setIsError, errorText } = useContext(ErrorContext);
+  const { isError, setIsError, errorText }
+  = useContext(ErrorContext) as ErrorContextType;
 
   useEffect(() => {
     const timeId = setTimeout(() => {

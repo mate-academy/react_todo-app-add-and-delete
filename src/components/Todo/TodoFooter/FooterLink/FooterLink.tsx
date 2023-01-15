@@ -9,7 +9,10 @@ type Props = {
 };
 
 const FooterLink: React.FC<Props> = ({
-  dataCy, href, className, onClick, text,
+  dataCy,
+  href, className,
+  onClick,
+  text,
 }) => {
   return (
     <a

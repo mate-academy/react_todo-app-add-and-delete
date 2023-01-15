@@ -1,27 +1,23 @@
 import React, { useState } from 'react';
-// import { User } from '../../types/User';
+import { ErrorContextType } from '../../types/ErrorContextType';
 
-export const ErrorContext = React.createContext<any>(null);
+export const ErrorContext = React.createContext<ErrorContextType | null>(null);
 
 type Props = {
   children: React.ReactNode;
 };
 
 export const ErrorProvider: React.FC<Props> = ({ children }) => {
-  // const [user, setUser] = useState<User | null>(null);
   const [isError, setIsError] = useState(false);
   const [errorText, setErrorText] = useState('');
 
-  // if (!user) {
-  //   return <AuthForm onLogin={setUser} />;
-  // }
-
   return (
-    <ErrorContext.Provider value={
-      {
-        isError, setIsError, errorText, setErrorText,
-      }
-    }
+    <ErrorContext.Provider value={{
+      isError,
+      setIsError,
+      errorText,
+      setErrorText,
+    }}
     >
       {children}
     </ErrorContext.Provider>

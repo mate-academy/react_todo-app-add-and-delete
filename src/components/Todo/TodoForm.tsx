@@ -2,6 +2,9 @@ import {
   RefObject, SetStateAction, useContext, useState,
 } from 'react';
 import { addTodo } from '../../api/todos';
+import { ErrorContextType } from '../../types/ErrorContextType';
+import { LoaderContextType } from '../../types/LoaderContextType';
+import { TodoContextType } from '../../types/TodoContextType';
 import { User } from '../../types/User';
 import { AuthContext } from '../Auth/AuthContext';
 import { ErrorContext } from '../Error/ErrorContext';
@@ -20,9 +23,11 @@ const TodoForm: React.FC<Props> = ({
   isAdding,
 }) => {
   const user = useContext<User | null>(AuthContext);
-  const { visibleTodos, setVisibleTodos } = useContext(TodoContext);
-  const [, setIsLoaderActive] = useContext(LoaderContext);
-  const { setIsError, setErrorText } = useContext(ErrorContext);
+  const { visibleTodos, setVisibleTodos }
+  = useContext(TodoContext) as TodoContextType;
+  const { setIsLoaderActive } = useContext(LoaderContext) as LoaderContextType;
+  const { setIsError, setErrorText }
+  = useContext(ErrorContext) as ErrorContextType;
   const [inputValue, setInputValue] = useState('');
 
   const setInput = (event: { target: { value: SetStateAction<string>; }; }) => {
@@ -56,10 +61,11 @@ const TodoForm: React.FC<Props> = ({
           completed: false,
         });
 
-        const result = await addTodo(user.id, {
+        const result = await addTodo({
           title: inputValue,
           userId: user.id,
           completed: false,
+          id: 0,
         });
 
         visibleTodos.pop();

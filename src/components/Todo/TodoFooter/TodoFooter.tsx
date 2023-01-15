@@ -1,6 +1,8 @@
 import { useContext, useEffect, useState } from 'react';
 import { deleteTodo } from '../../../api/todos';
+import { ErrorContextType } from '../../../types/ErrorContextType';
 import { Todo } from '../../../types/Todo';
+import { TodoContextType } from '../../../types/TodoContextType';
 import { ErrorContext } from '../../Error/ErrorContext';
 import { TodoContext } from '../TodoContext';
 import FooterLink from './FooterLink/FooterLink';
@@ -12,8 +14,10 @@ enum FilterTypes {
 }
 
 const TodoFooter = () => {
-  const { todos, visibleTodos, setVisibleTodos } = useContext(TodoContext);
-  const { setIsError, setErrorText } = useContext(ErrorContext);
+  const { todos, visibleTodos, setVisibleTodos }
+  = useContext(TodoContext) as TodoContextType;
+  const { setIsError, setErrorText }
+  = useContext(ErrorContext) as ErrorContextType;
   const [selectedClass, setSelectedClass] = useState('all');
 
   const filterTodos = () => {
@@ -35,16 +39,13 @@ const TodoFooter = () => {
   };
 
   const showFilteredTodos = (value: string) => {
-    if (value === 'active') {
-      setVisibleTodos(todos.filter((todo: Todo) => {
-        return !todo.completed;
-      }));
-    } else {
-      setVisibleTodos(todos.filter((todo: Todo) => {
-        return todo.completed;
-      }));
-    }
-
+    setVisibleTodos(todos.filter((todo: Todo) => {
+      return (
+        value === 'active'
+          ? !todo.completed
+          : todo.completed
+      );
+    }));
     setSelectedClass(value);
   };
 

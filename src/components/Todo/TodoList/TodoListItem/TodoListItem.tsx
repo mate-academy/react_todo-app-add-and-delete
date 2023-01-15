@@ -1,6 +1,9 @@
 import React, { useContext, useEffect } from 'react';
 import { deleteTodo } from '../../../../api/todos';
+import { ErrorContextType } from '../../../../types/ErrorContextType';
+import { LoaderContextType } from '../../../../types/LoaderContextType';
 import { Todo } from '../../../../types/Todo';
+import { TodoContextType } from '../../../../types/TodoContextType';
 import { ErrorContext } from '../../../Error/ErrorContext';
 import { LoaderContext } from '../../LoaderContext';
 import { TodoContext } from '../../TodoContext';
@@ -10,18 +13,24 @@ type Props = {
 };
 
 const TodoListItem: React.FC<Props> = ({ todo }) => {
-  const { setErrorText, setIsError } = useContext(ErrorContext);
-  const ref = React.createRef<HTMLInputElement | any>();
-  const [isLoaderActive] = useContext(LoaderContext);
-  const { todos, setVisibleTodos } = useContext(TodoContext);
+  const { setErrorText, setIsError }
+  = useContext(ErrorContext) as ErrorContextType;
+  const ref = React.createRef<HTMLDivElement>();
+  const { isLoaderActive } = useContext(LoaderContext) as LoaderContextType;
+  const { todos, setVisibleTodos }
+  = useContext(TodoContext) as TodoContextType;
 
   useEffect(() => {
-    if (isLoaderActive) {
+    if (isLoaderActive && ref && ref.current) {
       ref.current.classList.toggle('is-active');
     }
   }, []);
 
   const deleteTodoFromList = async () => {
+    if (!ref || !ref.current) {
+      return;
+    }
+
     ref.current.classList.toggle('is-active');
 
     try {

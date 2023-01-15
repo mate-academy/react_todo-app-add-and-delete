@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
+import { TodoContextType } from '../../types/TodoContextType';
 
-export const TodoContext = React.createContext<any>(null);
+export const TodoContext = React.createContext<TodoContextType | null>(null);
 
 type Props = {
   children: React.ReactNode;
@@ -12,7 +13,10 @@ export const TodoProvider: React.FC<Props> = ({ children }) => {
 
   return (
     <TodoContext.Provider value={{
-      todos, setTodos, visibleTodos, setVisibleTodos,
+      todos,
+      setTodos,
+      visibleTodos,
+      setVisibleTodos,
     }}
     >
       {children}
