@@ -1,4 +1,3 @@
-/* eslint-disable jsx-a11y/control-has-associated-label */
 import React, {
   useContext,
   useEffect,
@@ -15,7 +14,6 @@ import { Footer } from './components/Footer';
 import { ErrorNotification } from './components/ErrorNotification';
 
 export const App: React.FC = () => {
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   const [todos, setTodos] = useState<Todo[]>([]);
   const [isError, setIsError] = useState('');
   const [filterType, setFilterType] = useState(Condition.All);
@@ -38,19 +36,19 @@ export const App: React.FC = () => {
     }
   });
 
-  const loadApiTodos = () => {
+  const loadApiTodos = async () => {
     if (user) {
-      getTodos(user.id)
-        .then(res => (
-          (res)
-            ? setTodos(res)
-            : setIsError('Unable to add a todo')
-        ));
+      try {
+        const data = await getTodos(user.id);
+
+        setTodos(data);
+      } catch {
+        setIsError('Unable to add a todo');
+      }
     }
   };
 
   useEffect(() => {
-    // focus the element with `ref={newTodoField}`
     if (newTodoField.current) {
       newTodoField.current.focus();
     }
@@ -73,39 +71,46 @@ export const App: React.FC = () => {
   const handleSubmit = async (event: React.FormEvent) => {
     event.preventDefault();
 
-    if (user) {
-      if (!newTodoTitle.trim()) {
-        setIsError('Title can\'t be empty');
+    if (!user) {
+      return;
+    }
 
-        return;
-      }
+    if (!newTodoTitle.trim()) {
+      setIsError('Title can\'t be empty');
 
-      if (newTodoTitle !== '') {
-        try {
-          const newTodo = {
-            userId: user.id,
-            title: newTodoTitle,
-            completed: false,
-          };
+      return;
+    }
 
-          const data = await addTodos(newTodo);
+    if (newTodoTitle.length) {
+      try {
+        const newTodo = {
+          userId: user.id,
+          title: newTodoTitle,
+          completed: false,
+        };
 
-          setLoader(data.id);
-          setIsAdding(true);
-          setNewTodoTitle('');
-          loadApiTodos();
-        } catch {
-          setIsError('Unable to add a todo');
-          setNewTodoTitle('');
-        } finally {
-          setIsAdding(false);
-          setTimeout(() => {
-            setLoader(0);
-          }, 1000);
-        }
+        const data = await addTodos(newTodo);
+
+        setLoader(data.id);
+        setIsAdding(true);
+        setNewTodoTitle('');
+        loadApiTodos();
+      } catch {
+        setIsError('Unable to add a todo');
+        setNewTodoTitle('');
+      } finally {
+        setIsAdding(false);
       }
     }
   };
+
+  useEffect(() => {
+    const t = setTimeout(() => {
+      setLoader(0);
+    }, 1000);
+
+    return () => clearTimeout(t);
+  });
 
   const handleDeleteTodo = async (todoId: number) => {
     addToLoadingArr(todoId);
@@ -115,11 +120,15 @@ export const App: React.FC = () => {
     } catch {
       setIsError('Unable to delete a todo');
     }
+  };
 
-    setTimeout(() => {
+  useEffect(() => {
+    const timer = setTimeout(() => {
       setActiveLoading([]);
     }, 1000);
-  };
+
+    return () => clearTimeout(timer);
+  });
 
   const todosNotCompleted = todos.filter(todo => !todo.completed);
 
@@ -134,6 +143,7 @@ export const App: React.FC = () => {
             <button
               data-cy="ToggleAllButton"
               type="button"
+              aria-label="toggle-button"
               className={classNames('todoapp__toggle-all', {
                 active: todosNotCompleted.length === 0,
               })}
@@ -166,6 +176,7 @@ export const App: React.FC = () => {
               todos={todos}
               setFilterType={changeFilterType}
               onDelete={handleDeleteTodo}
+              filterType={filterType}
             />
           </>
         )}

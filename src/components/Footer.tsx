@@ -6,9 +6,15 @@ type Props = {
   todos: Todo[];
   setFilterType: (filterType: Condition) => void;
   onDelete: (todoId: number) => void,
+  filterType: Condition,
 };
 
-export const Footer: React.FC<Props> = ({ todos, setFilterType, onDelete }) => {
+export const Footer: React.FC<Props> = ({
+  todos,
+  setFilterType,
+  onDelete,
+  filterType,
+}) => {
   const todosNotCompleted = todos.filter(todo => !todo.completed);
   const todosCompleted = todos.filter(todo => todo.completed);
 
@@ -27,7 +33,7 @@ export const Footer: React.FC<Props> = ({ todos, setFilterType, onDelete }) => {
           data-cy="FilterLinkAll"
           href="#/"
           className={classNames('filter__link', {
-            selected: Condition.All,
+            selected: Condition.All === filterType,
           })}
           onClick={() => setFilterType(Condition.All)}
         >
@@ -38,7 +44,7 @@ export const Footer: React.FC<Props> = ({ todos, setFilterType, onDelete }) => {
           data-cy="FilterLinkActive"
           href="#/active"
           className={classNames('filter__link', {
-            selected: Condition.Active,
+            selected: Condition.Active === filterType,
           })}
           onClick={() => setFilterType(Condition.Active)}
         >
@@ -48,7 +54,7 @@ export const Footer: React.FC<Props> = ({ todos, setFilterType, onDelete }) => {
           data-cy="FilterLinkCompleted"
           href="#/completed"
           className={classNames('filter__link', {
-            selected: Condition.Completed,
+            selected: Condition.Completed === filterType,
           })}
           onClick={() => setFilterType(Condition.Completed)}
         >
