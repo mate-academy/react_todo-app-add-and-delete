@@ -8,10 +8,12 @@ type Props = {
 
 export const ErrorNotification: React.FC<Props> = ({ isError, setIsError }) => {
   useEffect(() => {
-    setTimeout(() => {
+    const timerId = setTimeout(() => {
       setIsError();
     }, 3000);
-  });
+
+    return () => clearTimeout(timerId);
+  }, []);
 
   return (
     <div
