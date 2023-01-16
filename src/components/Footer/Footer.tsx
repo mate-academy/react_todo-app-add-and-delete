@@ -7,6 +7,7 @@ type Props = {
   completedTodos: Todo[],
   setFilterStatus: React.Dispatch<React.SetStateAction<FilterStatus>>,
   filterStatus: string,
+  onClear: () => void,
 };
 
 export const Footer: React.FC<Props> = ({
@@ -14,6 +15,7 @@ export const Footer: React.FC<Props> = ({
   completedTodos,
   setFilterStatus,
   filterStatus,
+  onClear,
 }) => {
   return (
     <footer className="todoapp__footer" data-cy="Footer">
@@ -28,6 +30,7 @@ export const Footer: React.FC<Props> = ({
         type="button"
         className="todoapp__clear-completed"
         style={{ visibility: `${!completedTodos.length ? 'hidden' : 'visible'}` }}
+        onClick={onClear}
       >
         Clear completed
       </button>

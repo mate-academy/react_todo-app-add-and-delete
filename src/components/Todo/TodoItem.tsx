@@ -3,11 +3,18 @@ import { Todo } from '../../types/Todo';
 import { TodoLoader } from '../TodoLoader';
 
 type Props = {
-  todo: Todo
-  isAdding?: boolean
+  todo: Todo,
+  isAdding?: boolean,
+  isDeleting?: boolean,
+  onDelete: (todoId: number) => void,
 };
 
-export const TodoItem: React.FC<Props> = ({ todo, isAdding }) => {
+export const TodoItem: React.FC<Props> = ({
+  todo,
+  isAdding,
+  isDeleting,
+  onDelete,
+}) => {
   const { title, completed } = todo;
 
   return (
@@ -34,11 +41,15 @@ export const TodoItem: React.FC<Props> = ({ todo, isAdding }) => {
         type="button"
         className="todo__remove"
         data-cy="TodoDeleteButton"
+        onClick={() => onDelete(todo.id)}
       >
         ×
       </button>
 
-      <TodoLoader isActive={isAdding} />
+      <TodoLoader
+        isActive={isAdding}
+        isDeleting={isDeleting}
+      />
     </div>
   );
 };

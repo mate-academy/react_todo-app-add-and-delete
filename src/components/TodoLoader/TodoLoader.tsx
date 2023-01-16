@@ -1,17 +1,20 @@
 import cn from 'classnames';
 
 type Props = {
-  isActive?: boolean
+  isActive?: boolean,
+  isDeleting?: boolean,
 };
 
-export const TodoLoader: React.FC<Props> = ({ isActive }) => {
+export const TodoLoader: React.FC<Props> = ({
+  isActive,
+  isDeleting,
+}) => {
   return (
     <div
       data-cy="TodoLoader"
-      // className="modal overlay"
       className={cn(
         'modal overlay',
-        { 'is-active': isActive },
+        { 'is-active': isActive || isDeleting },
       )}
     >
       <div className="modal-background has-background-white-ter" />

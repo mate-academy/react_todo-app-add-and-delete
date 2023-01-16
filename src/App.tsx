@@ -6,7 +6,7 @@ import React,
   useRef,
   useState,
 } from 'react';
-import { addTodo, getTodos } from './api/todos';
+import { addTodo, deleteTodo, getTodos } from './api/todos';
 import { AuthContext } from './components/Auth/AuthContext';
 import { ErrorMessages } from './components/ErrorMessages';
 import { Footer } from './components/Footer';
@@ -26,6 +26,7 @@ export const App: React.FC = () => {
   const [title, setTitle] = useState('');
   const [tempTodo, setTempTodo] = useState<Todo | null>(null);
   const [isAdding, setIsAdding] = useState(false);
+  const [deletingDataIds, setDeletingDataIds] = useState<number[]>([]);
 
   useEffect(() => {
     // focus the element with `ref={newTodoField}`
@@ -96,6 +97,29 @@ export const App: React.FC = () => {
     }
   };
 
+  const handleDeleteButton = (todoId: number) => {
+    setDeletingDataIds(prev => [...prev, todoId]);
+
+    deleteTodo(todoId)
+      .then(() => {
+        setTodos(deletedTodo => {
+          return deletedTodo.filter(todo => todo.id !== todoId);
+        });
+      })
+      .catch(() => setError('Unable to delete a todo'))
+      .finally(() => {
+        setDeletingDataIds([]);
+      });
+  };
+
+  const handleClearButton = () => {
+    todos.forEach(todo => {
+      if (todo.completed) {
+        handleDeleteButton(todo.id);
+      }
+    });
+  };
+
   return (
     <div className="todoapp">
       <h1 className="todoapp__title">todos</h1>
@@ -109,9 +133,19 @@ export const App: React.FC = () => {
           isAdding={isAdding}
         />
 
-        <TodoList todos={filteredTodos} />
+        <TodoList
+          todos={filteredTodos}
+          onDelete={handleDeleteButton}
+          deletingDataIds={deletingDataIds}
+        />
 
-        {tempTodo && <TodoItem todo={tempTodo} isAdding={isAdding} />}
+        {tempTodo && (
+          <TodoItem
+            todo={tempTodo}
+            isAdding={isAdding}
+            onDelete={handleDeleteButton}
+          />
+        )}
 
         {todos.length > 0
           && (
@@ -120,6 +154,7 @@ export const App: React.FC = () => {
               completedTodos={completedTodos}
               setFilterStatus={setFilterStatus}
               filterStatus={filterStatus}
+              onClear={handleClearButton}
             />
           )}
       </div>
