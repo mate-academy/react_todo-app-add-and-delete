@@ -159,17 +159,13 @@ export const App: React.FC = () => {
           handlesSubmit={handlesSubmit}
           isAdding={isAdding}
         />
-
-        {(todos.length > 0 || isAdding)
-          && (
-            <TodosList
-              todos={todos}
-              newTodo={newTodo as Todo}
-              isAdding={isAdding}
-              handleDelete={handleDelete}
-              deletedId={deletedId}
-            />
-          )}
+        <TodosList
+          todos={todos}
+          newTodo={newTodo as Todo}
+          isAdding={isAdding}
+          handleDelete={handleDelete}
+          deletedId={deletedId}
+        />
 
         {(todos.length > 0 || selectParametr !== SortType.all) && (
           <TodoAppFooter
