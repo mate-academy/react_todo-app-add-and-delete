@@ -43,8 +43,6 @@ export const App: React.FC = () => {
   const completedTodos
     = useMemo(() => (todos.filter(todo => todo.completed)), [copyTodos]);
 
-  const completTodoLength = completedTodos.length;
-
   const isSomeError = Object.entries(isError).some(el => el[1] === true);
   const { id } = user;
 
@@ -78,9 +76,10 @@ export const App: React.FC = () => {
   const deleteTodo = async (todoId: number[]) => {
     setDeletedId(todoId);
     let index: number[] = [];
+    const deleteRequests = todoId.map(el => removeTodo(el));
 
     try {
-      await Promise.all(todoId.map(el => removeTodo(el)));
+      await Promise.all(deleteRequests);
       index = todoId.length === 1
         ? [todos.findIndex(todo => todo.id === todoId[0])]
         : completedTodos.map(el => todos.findIndex(item => el.id === item.id));
@@ -161,7 +160,7 @@ export const App: React.FC = () => {
         />
         <TodosList
           todos={todos}
-          newTodo={newTodo as Todo}
+          newTodo={newTodo}
           isAdding={isAdding}
           handleDelete={handleDelete}
           deletedId={deletedId}
@@ -172,20 +171,19 @@ export const App: React.FC = () => {
             selectParametr={selectParametr}
             setSelectParametr={setSelectParametr}
             activeTodosLength={activeTodosLength}
-            completTodoLength={completTodoLength}
+            completTodoLength={completedTodos.length}
             handleDeleteCompleted={handleDeleteCompleted}
           />
         )}
       </div>
 
-      {isSomeError
-        && (
-          <ErrorNotification
-            isError={isError}
-            setIsError={setIsError}
-            isErrorDefault={isErrorDefault}
-          />
-        )}
+      {isSomeError && (
+        <ErrorNotification
+          isError={isError}
+          setIsError={setIsError}
+          isErrorDefault={isErrorDefault}
+        />
+      )}
     </div>
   );
 };

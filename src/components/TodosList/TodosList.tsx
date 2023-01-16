@@ -6,7 +6,7 @@ import '../../styles/todosList.scss';
 
 interface Props {
   todos: Todo[],
-  newTodo?: Todo,
+  newTodo?: Todo | null,
   isAdding?: boolean,
   handleDelete: (event: React.MouseEvent<HTMLButtonElement>) => void,
   deletedId: number[] | null,
@@ -36,19 +36,18 @@ export const TodosList: React.FC<Props> = ({
             />
           </CSSTransition>
         ))}
-        {newTodo
-          && (
-            <CSSTransition
-              key={0}
-              timeout={300}
-              classNames="temp-item"
-            >
-              <TodoItem
-                todo={newTodo}
-                isAdding={isAdding}
-              />
-            </CSSTransition>
-          )}
+        {newTodo && (
+          <CSSTransition
+            key={0}
+            timeout={300}
+            classNames="temp-item"
+          >
+            <TodoItem
+              todo={newTodo}
+              isAdding={isAdding}
+            />
+          </CSSTransition>
+        )}
       </TransitionGroup>
     </section>
   );

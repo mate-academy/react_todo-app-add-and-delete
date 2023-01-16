@@ -21,7 +21,11 @@ export const ErrorNotification: React.FC<Props> = ({
   };
 
   useEffect(() => {
-    setTimeout(() => setIsError(isErrorDefault), 2000);
+    const timeoutID = setTimeout(() => setIsError(isErrorDefault), 2000);
+
+    return () => {
+      clearTimeout(timeoutID);
+    };
   }, []);
 
   return (
