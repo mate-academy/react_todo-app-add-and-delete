@@ -5,7 +5,7 @@ type Props = {
   title: string;
   setTitle: (arg: string) => void;
   setIsHidden: (arg: boolean) => void;
-  handleEnterPress: (event: React.KeyboardEvent) => void;
+  handleAdd: (event: React.KeyboardEvent) => void;
   isAdding: boolean;
 };
 
@@ -14,7 +14,7 @@ export const Header: React.FC<Props> = (
     title,
     setTitle,
     setIsHidden,
-    handleEnterPress,
+    handleAdd,
     isAdding,
   },
 ) => {
@@ -41,7 +41,7 @@ export const Header: React.FC<Props> = (
             setTitle(e.target.value);
             setIsHidden(true);
           }}
-          onKeyUp={e => handleEnterPress(e)}
+          onKeyUp={e => handleAdd(e)}
         />
       </form>
     </header>
