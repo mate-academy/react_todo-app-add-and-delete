@@ -1,7 +1,7 @@
 # Todo App
 
 ## Overview
-This is a student project that is a **Todo application** that allows users to **create**, **read**, **update**, and **delete** todos. The project is built with **React**, and is written in **TypeScript**.
+This is a study project that is a **Todo application** that allows users to **create**, **read**, **update**, and **delete** todos. The project is built with **React**, and is written in **TypeScript**.
 
 ## Technical Stack
 - **React**: A JavaScript library for building user interfaces.
