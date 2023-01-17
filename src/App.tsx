@@ -1,7 +1,9 @@
 /* eslint-disable jsx-a11y/control-has-associated-label */
 import React, {
+  useCallback,
   useContext,
   useEffect,
+  useMemo,
   useRef,
   useState,
 } from 'react';
@@ -52,7 +54,7 @@ export const App: React.FC = () => {
     }
   }, []);
 
-  const onSubmit = (title: string) => {
+  const onSubmit = useCallback((title: string) => {
     if (title.length === 0) {
       showError('Title can\'t be empty');
 
@@ -76,7 +78,7 @@ export const App: React.FC = () => {
 
     addTodos(userId, newTodo)
       .then((newTodoFromServer) => {
-        setTodos([...todos, newTodoFromServer]);
+        setTodos(currentTodos => [...currentTodos, newTodoFromServer]);
       })
       .catch(() => {
         showError('Unable to add a todo');
@@ -85,9 +87,9 @@ export const App: React.FC = () => {
         setTemporaryTodo(null);
         setIsAdding(false);
       });
-  };
+  }, []);
 
-  const onDelete = (id: number) => {
+  const onDelete = useCallback((id: number) => {
     setIsDeleting((currentArrIsDelete) => [...currentArrIsDelete, id]);
 
     deleteTodos(id)
@@ -102,7 +104,7 @@ export const App: React.FC = () => {
         });
       })
       .catch(() => showError('Unable to delete a todo'));
-  };
+  }, []);
 
   const handleClearCompleted = () => {
     todos.forEach(({ id, completed }) => {
@@ -114,16 +116,18 @@ export const App: React.FC = () => {
 
   const isClearCompletedHidden = todos.some(({ completed }) => completed);
 
-  const visibleTodos = todos.filter(({ completed }) => {
-    switch (filterStatus) {
-      case 'Active':
-        return !completed;
-      case 'Completed':
-        return completed;
-      default:
-        return true;
-    }
-  });
+  const visibleTodos = useMemo(() => (
+    todos.filter(({ completed }) => {
+      switch (filterStatus) {
+        case 'Active':
+          return !completed;
+        case 'Completed':
+          return completed;
+        default:
+          return true;
+      }
+    })
+  ), [todos, filterStatus]);
 
   return (
     <div className="todoapp">

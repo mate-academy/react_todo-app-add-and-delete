@@ -1,4 +1,4 @@
-import { FC } from 'react';
+import { FC, memo } from 'react';
 import { Todo } from '../types/Todo';
 import { TodoComponent } from './Todo';
 
@@ -9,33 +9,35 @@ interface Props {
   onDelete: (id: number) => void,
 }
 
-export const TodoList: FC<Props> = ({
-  visibleTodos,
-  tempTodo,
-  isDeleting,
-  onDelete,
-}) => (
-  <section className="todoapp__main" data-cy="TodoList">
-    {
-      visibleTodos
-        .map((todo) => (
+export const TodoList: FC<Props> = memo(
+  ({
+    visibleTodos,
+    tempTodo,
+    isDeleting,
+    onDelete,
+  }) => (
+    <section className="todoapp__main" data-cy="TodoList">
+      {
+        visibleTodos
+          .map((todo) => (
+            <TodoComponent
+              key={todo.id}
+              todo={todo}
+              isDeleting={isDeleting}
+              onDelete={onDelete}
+            />
+          ))
+      }
+
+      {
+        tempTodo && (
           <TodoComponent
-            key={todo.id}
-            todo={todo}
+            todo={tempTodo}
             isDeleting={isDeleting}
             onDelete={onDelete}
           />
-        ))
-    }
-
-    {
-      tempTodo && (
-        <TodoComponent
-          todo={tempTodo}
-          isDeleting={isDeleting}
-          onDelete={onDelete}
-        />
-      )
-    }
-  </section>
+        )
+      }
+    </section>
+  ),
 );
