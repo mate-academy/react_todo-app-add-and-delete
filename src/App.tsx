@@ -1,7 +1,9 @@
 /* eslint-disable jsx-a11y/control-has-associated-label */
 import React, {
+  useCallback,
   useContext,
   useEffect,
+  useMemo,
   useRef,
   useState,
 } from 'react';
@@ -98,28 +100,30 @@ export const App: React.FC = () => {
     }
   };
 
-  const handleClickCloseErrorMessage = () => {
+  const handleClickCloseErrorMessage = useCallback(() => {
     setIsError(false);
-  };
+  }, []);
 
-  const setNewFilterStatus = (status: FilterStatus) => {
+  const setNewFilterStatus = useCallback((status: FilterStatus) => {
     setFilterStatus(status);
-  };
+  }, []);
 
-  const visibleTodos = todosFromServer.filter(todo => {
-    switch (filterStatus) {
-      case 'Active':
-        return !todo.completed;
+  const visibleTodos = useMemo(() => (
+    todosFromServer.filter(todo => {
+      switch (filterStatus) {
+        case 'Active':
+          return !todo.completed;
 
-      case 'Completed':
-        return todo.completed;
+        case 'Completed':
+          return todo.completed;
 
-      default:
-        return true;
-    }
-  });
+        default:
+          return true;
+      }
+    })
+  ), [todosFromServer, filterStatus]);
 
-  const setTodoIdForDelete = (selectedTodoId: number) => {
+  const setTodoIdForDelete = useCallback((selectedTodoId: number) => {
     setIdsTodosForDelete(currentIdsTodosForDelete => (
       [...currentIdsTodosForDelete, selectedTodoId]
     ));
@@ -135,7 +139,7 @@ export const App: React.FC = () => {
         setErrorMessage('Unable to delete a todo');
       })
       .finally(() => setIdsTodosForDelete([]));
-  };
+  }, []);
 
   const handleClickClearCompletedTodos = () => {
     todosFromServer.forEach(todo => {

@@ -8,33 +8,35 @@ type Props = {
   onSetFilterStatus: (status: FilterStatus) => void;
 };
 
-export const Filter: React.FC<Props> = ({ onSetFilterStatus }) => {
-  const [
-    selectedFilterLinkId,
-    setSelectedFilterLinkId,
-  ] = useState(filterLinks[0].id);
+export const Filter: React.FC<Props> = React.memo(
+  ({ onSetFilterStatus }) => {
+    const [
+      selectedFilterLinkId,
+      setSelectedFilterLinkId,
+    ] = useState(filterLinks[0].id);
 
-  const setFilterParameters = ({ id, title }: FilterLink) => {
-    setSelectedFilterLinkId(id);
-    onSetFilterStatus(title);
-  };
+    const setFilterParameters = ({ id, title }: FilterLink) => {
+      setSelectedFilterLinkId(id);
+      onSetFilterStatus(title);
+    };
 
-  return (
-    <nav className="filter" data-cy="Filter">
-      {filterLinks.map(link => (
-        <a
-          data-cy={`FilterLink${link.title}`}
-          href={`#/${link.url}`}
-          className={cn(
-            'filter__link',
-            { selected: link.id === selectedFilterLinkId },
-          )}
-          onClick={() => setFilterParameters(link)}
-          key={link.id}
-        >
-          {link.title}
-        </a>
-      ))}
-    </nav>
-  );
-};
+    return (
+      <nav className="filter" data-cy="Filter">
+        {filterLinks.map(link => (
+          <a
+            data-cy={`FilterLink${link.title}`}
+            href={`#/${link.url}`}
+            className={cn(
+              'filter__link',
+              { selected: link.id === selectedFilterLinkId },
+            )}
+            onClick={() => setFilterParameters(link)}
+            key={link.id}
+          >
+            {link.title}
+          </a>
+        ))}
+      </nav>
+    );
+  },
+);
