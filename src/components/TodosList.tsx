@@ -5,8 +5,8 @@ type Props = {
   todos: Todo[];
   title: string;
   isAdding: boolean;
-  isDeleting: boolean;
   handleDelete: (id: number) => void;
+  deletedTodoId: number[];
 };
 
 export const TodosList: React.FC<Props> = (
@@ -14,8 +14,8 @@ export const TodosList: React.FC<Props> = (
     todos,
     title,
     isAdding,
-    isDeleting,
     handleDelete,
+    deletedTodoId,
   },
 ) => {
   return (
@@ -46,9 +46,7 @@ export const TodosList: React.FC<Props> = (
             type="button"
             className="todo__remove"
             data-cy="TodoDeleteButton"
-            onClick={() => {
-              handleDelete(todo.id);
-            }}
+            onClick={() => handleDelete(todo.id)}
           >
             ×
           </button>
@@ -58,7 +56,7 @@ export const TodosList: React.FC<Props> = (
             className={classNames(
               'modal overlay',
               {
-                'is-active': (isDeleting && todo.completed),
+                'is-active': deletedTodoId.some(id => id === todo.id),
               },
             )}
           >

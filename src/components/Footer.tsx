@@ -6,6 +6,7 @@ type Props = {
   filter: Filter;
   setFilter: (filter: Filter) => void;
   clearCompleted: () => void;
+  completedTodosCount: number;
 };
 
 export const Footer: React.FC<Props> = (
@@ -14,6 +15,7 @@ export const Footer: React.FC<Props> = (
     filter,
     activeCount,
     clearCompleted,
+    completedTodosCount,
   },
 ) => {
   return (
@@ -70,6 +72,8 @@ export const Footer: React.FC<Props> = (
         type="button"
         className="todoapp__clear-completed"
         onClick={clearCompleted}
+        style={!completedTodosCount ? { opacity: 0 } : { opacity: 1 }}
+        disabled={!completedTodosCount}
       >
         Clear completed
       </button>

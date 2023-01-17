@@ -18,10 +18,11 @@ export const App: React.FC = () => {
   const [Error, setError] = useState<string>('');
   const [isHidden, setIsHidden] = useState(true);
   const [isAdding, setIsAdding] = useState(false);
-  const [isDeleting, setIsADeleting] = useState(false);
+  const [deletedTodoId, setDeletedTodoId] = useState<number[]>([]);
 
   const user = useContext(AuthContext);
   const newTodoField = useRef<HTMLInputElement>(null);
+  const completedTodos = todos.filter(todo => todo.completed);
 
   useEffect(() => {
     // focus the element with `ref={newTodoField}`
@@ -78,7 +79,7 @@ export const App: React.FC = () => {
   };
 
   const handleDelete = (id: number) => {
-    setIsADeleting(true);
+    setDeletedTodoId(prev => [...prev, id]);
 
     deleteTodo(id)
       .then(() => {
@@ -89,14 +90,12 @@ export const App: React.FC = () => {
         setIsHidden(false);
       })
       .finally(() => {
-        setIsADeleting(false);
+        setDeletedTodoId([]);
         setTimeout(() => setIsHidden(true), 3000);
       });
   };
 
   const clearCompleted = () => {
-    const completedTodos = todos.filter(todo => todo.completed);
-
     completedTodos.forEach(todo => handleDelete(todo.id));
   };
 
@@ -135,8 +134,8 @@ export const App: React.FC = () => {
               todos={visibleTodos}
               title={title}
               isAdding={isAdding}
-              isDeleting={isDeleting}
               handleDelete={handleDelete}
+              deletedTodoId={deletedTodoId}
             />
 
             <Footer
@@ -144,6 +143,7 @@ export const App: React.FC = () => {
               setFilter={setFilter}
               activeCount={activeCount}
               clearCompleted={clearCompleted}
+              completedTodosCount={completedTodos.length}
             />
           </>
         )}
