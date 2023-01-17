@@ -34,7 +34,7 @@ export const App: FC = () => {
       }
     };
 
-    if (user) {
+    if (user && isLoading) {
       loadTodosFromServer(user.id);
     }
   }, [isLoading]);

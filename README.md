@@ -1,145 +1,45 @@
-# React Todo App Add and Delete
+# Todo App
 
-It is the second part of the React Todo App with API.
+## Overview
+This is a student project that is a **Todo application** that allows users to **create**, **read**, **update**, and **delete** todos. The project is built with **React**, and is written in **TypeScript**.
 
-Take your code implemented for [Loading todos](https://github.com/mate-academy/react_todo-app-loading-todos)
-and implement the ability to and nd remove todos.
+## Technical Stack
+- **React**: A JavaScript library for building user interfaces.
+- **TypeScript**: A typed superset of JavaScript that adds static typing and other features.
+- **Bulma**: CSS framework
+- **gh-pages**: Deployment tool
+- **fontawesome-free**: Icon library
+- **eslint**: Linter for JavaScript
+- **stylelint**: Linter for CSS
+- **Context API**: A way for components to share data without having to pass props down manually through multiple levels.
+- **Local Storage**: A way to store data in the browser for the current website.
+- **REST API**: A way for the application to communicate with the server using HTTP requests.
 
-> Here is [the working example](https://mate-academy.github.io/react_todo-app-with-api/)
-# ❗️❗️❗️</br>In this working example implemented all 3 parts of the task.</br>In this task you have to implement only the second part described below (using your code from the first part).</br>❗️❗️❗️
+## Features
+- **User login and authentication**: The project uses a mock API to handle user authentication and session management. The user is able to register or login and the application will use the information to make authorized requests to the server.
+- **Todo CRUD operations**: The user can create, read, update and delete todos.
+- **Filtering todos by completion status**: The user can filter the todos that are displayed by their completion status.
+- **Error handling and notifications**: The application handles errors that occur during the communication with the server and displays appropriate error messages to the user.
 
-### [API Documentation](https://mate-academy.github.io/fe-students-api/)
+## API
+The project uses a **mock API** for data management, The API functions are located in the ./api/todos file. The API uses **REST principles** to handle the CRUD operations on the todos.
 
-## Adding a todo
+## Components
+The project is divided into different **components** that are located in the ./components folder:
 
-Add a todo with the entered title on `NewTodoField` form submit:
+- **AuthContext**: Provides the authenticated user information to the other components using the context API.
+- **AuthProvider**: Wraps the other components and handle the user authentication and session management.
+- **AuthForm**: A form that allows the user to login or register.
+- **TodoList**: Displays the todos that match the current filter.
+- **Header**: Handles the creation of new todos and the toggle of all todos completion status.
+- **Filter**: Allows the user to filter the todos by completion status.
+- **ErrorNotification**: Displays error messages when something goes wrong.
 
-- if the title is empty show the `Title can't be empty` notification at the bottom;
-- disable the input until receiving the response from the API (use `isAdding` variable);
-- manually add a temp todo with `id: 0` **after** the list while waiting for the response (don't add it to the array);
-- show the loader on the added todo (see the styles of the 5th todo `Redux`);
-- use your user id for the new todo;
-- send the POST response to the API;
-- in case of success and add the todo create by API to the array;
-- in case of API error show `Unable to add a todo` notification at the bottom;
-- the temp todo should be removed in any case;
+## Running the project
+1. Clone the repository.
+2. Run **yarn** to install the dependencies.
+3. Run **yarn start** to start the development server.
+4. Open **http://localhost:3000** to view the application in the browser.
 
-> Don't try to implement smooth Todo adding or removing (at least until you implemented everything else).
-> If you really fill confident to try, there is a hint at the end of the description.
-
-## Deleting todos
-
-Remove a todo on `TodoDeleteButton` click:
-
-- covered the todo with the loader while wating for API response;
-- remove the todo from the list on success;
-- in case of API error show `Unable to delete a todo` notification at the bottom (the todo must stay in the list);
-
-Remove all the completed todos after `Clear completed` button click:
-
-- the button should be visible if there is at least 1 completed todo;
-- the deletion should work as a several individual deletions running at the same time;
-
-## Instructions
-
-- Implement a solution following the [React task guideline](https://github.com/mate-academy/react_task-guideline#react-tasks-guideline).
-- Use the [React TypeScript cheat sheet](https://mate-academy.github.io/fe-program/js/extra/react-typescript).
-- Open one more terminal and run tests with `npm test` to ensure your solution is correct.
-- Replace `<your_account>` with your Github username in the [DEMO LINK](https://<your_account>.github.io/react_todo-app-add-and-delete/) and add it to the PR description.
-
-## IF you want to implement smooth animations
-
-<details>
-  <summary>Click here to see the hint</summary>
-
-  Use [React Transition Group](https://reactcommunity.org/react-transition-group/transition-group)
-
-  ```tsx
-  <section className="todoapp__main" data-cy="TodoList">
-    <TransitionGroup>
-      {visibleTodos.map(todo => (
-        <CSSTransition
-          key={todo.id}
-          timeout={300}
-          classNames="item"
-        >
-          <TodoItem
-            todo={todo}
-            isProcessed={processings.includes(todo.id)}
-            onDelete={() => deleteTodo(todo.id)}
-            onUpdate={updateTodo}
-          />
-        </CSSTransition>
-      ))}
-
-      {creating && (
-        <CSSTransition
-          key={0}
-          timeout={300}
-          classNames="temp-item"
-        >
-          <TodoItem
-            todo={{
-              id: Math.random(),
-              title,
-              completed: false,
-              userId: user.id,
-            }}
-            isProcessed
-          />
-        </CSSTransition>
-      )}
-    </TransitionGroup>
-  </section>
-  ```
-
-  Here are the styles used in this example
-  ```css
-  .item-enter {
-    max-height: 0;
-  }
-
-  .item-enter-active {
-    overflow: hidden;
-    max-height: 58px;
-    transition: max-height 0.3s ease-in-out;
-  }
-
-  .item-exit {
-    max-height: 58px;
-  }
-
-  .item-exit-active {
-    overflow: hidden;
-    max-height: 0;
-    transition: max-height 0.3s ease-in-out;
-  }
-
-  .temp-item-enter {
-    max-height: 0;
-  }
-
-  .temp-item-enter-active {
-    overflow: hidden;
-    max-height: 58px;
-    transition: max-height 0.3s ease-in-out;
-  }
-
-  .temp-item-exit {
-    max-height: 58px;
-  }
-
-  .temp-item-exit-active {
-    transform: translateY(-58px);
-    max-height: 0;
-    opacity: 0;
-    transition: 0.3s ease-in-out;
-    transition-property: opacity, max-height, transform;
-  }
-
-  .has-error .temp-item-exit-active {
-    transform: translateY(0);
-    overflow: hidden;
-  }
-  ```
-</details>
+## Contribution
+This project is open for contributions, feel free to submit a pull request with any bug fixes or new features. As a junior react developer, you could help improve the overall functionality and user experience of the Todo App. It's also a great way to gain experience working on a real-world project and collaborating with other developers. We welcome any suggestions and improvements that can be made to this project.
