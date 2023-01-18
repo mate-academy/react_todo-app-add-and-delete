@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { memo } from 'react';
 
 import { TodoItem } from '../TodoItem/TodoItem';
 
@@ -9,16 +9,16 @@ type Props = {
   tempTodo: Todo | null;
   isTodoDeleting: boolean;
   selectedTodosId: number[];
-  onDelete: (todoId: number) => Promise<void>;
+  onTodoDelete: (todoId: number) => Promise<void>;
 };
 
-export const TodoList: React.FC<Props> = (props) => {
+export const TodoList: React.FC<Props> = memo((props) => {
   const {
     todos,
     tempTodo,
     isTodoDeleting,
     selectedTodosId,
-    onDelete,
+    onTodoDelete,
   } = props;
 
   return (
@@ -29,7 +29,7 @@ export const TodoList: React.FC<Props> = (props) => {
           key={todo.id}
           isTodoDeleting={isTodoDeleting}
           selectedTodosId={selectedTodosId}
-          onDelete={onDelete}
+          onTodoDelete={onTodoDelete}
         />
       ))}
 
@@ -41,4 +41,4 @@ export const TodoList: React.FC<Props> = (props) => {
       )}
     </section>
   );
-};
+});

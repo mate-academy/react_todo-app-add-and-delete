@@ -1,19 +1,19 @@
-import React from 'react';
+import React, { memo } from 'react';
 
 type Props = {
   newTodoField: React.RefObject<HTMLInputElement>;
   title: string;
-  isAdding: boolean;
-  onChange: React.Dispatch<React.SetStateAction<string>>;
+  isTodoAdding: boolean;
+  onInputChange: React.Dispatch<React.SetStateAction<string>>;
   onSubmitForm: (event: React.FormEvent<HTMLFormElement>) => void;
 };
 
-export const Header: React.FC<Props> = (props) => {
+export const Header: React.FC<Props> = memo((props) => {
   const {
     newTodoField,
     title,
-    isAdding,
-    onChange,
+    isTodoAdding,
+    onInputChange,
     onSubmitForm,
   } = props;
 
@@ -34,10 +34,10 @@ export const Header: React.FC<Props> = (props) => {
           className="todoapp__new-todo"
           placeholder="What needs to be done?"
           value={title}
-          onChange={(event) => onChange(event.currentTarget.value)}
-          disabled={isAdding}
+          onChange={(event) => onInputChange(event.currentTarget.value)}
+          disabled={isTodoAdding}
         />
       </form>
     </header>
   );
-};
+});

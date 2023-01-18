@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { memo } from 'react';
 import cn from 'classnames';
 
 import { TodoLoader } from '../TodoLoader/TodoLoader';
@@ -10,16 +10,16 @@ type Props = {
   temporary?: boolean;
   isTodoDeleting?: boolean;
   selectedTodosId?: number[];
-  onDelete?: (todoId: number) => Promise<void>;
+  onTodoDelete?: (todoId: number) => Promise<void>;
 };
 
-export const TodoItem: React.FC<Props> = (props) => {
+export const TodoItem: React.FC<Props> = memo((props) => {
   const {
     todo,
     temporary = false,
     isTodoDeleting,
     selectedTodosId,
-    onDelete = () => {},
+    onTodoDelete = () => {},
   } = props;
 
   return (
@@ -47,7 +47,7 @@ export const TodoItem: React.FC<Props> = (props) => {
         type="button"
         className="todo__remove"
         data-cy="TodoDeleteButton"
-        onClick={() => onDelete(todo.id)}
+        onClick={() => onTodoDelete(todo.id)}
       >
         ×
       </button>
@@ -59,4 +59,4 @@ export const TodoItem: React.FC<Props> = (props) => {
         )}
     </div>
   );
-};
+});

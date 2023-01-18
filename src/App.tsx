@@ -4,6 +4,7 @@ import React, {
   useRef,
   useState,
   useCallback,
+  useMemo,
 } from 'react';
 import { AuthContext } from './components/Auth/AuthContext';
 
@@ -23,7 +24,7 @@ export const App: React.FC = () => {
   const [errorMessage, setErrorMessage] = useState('');
   const [filterType, setFilterType] = useState(FilterType.All);
   const [title, setTitle] = useState('');
-  const [isAdding, setIsAdding] = useState(false);
+  const [isTodoAdding, setIsAdding] = useState(false);
   const [tempTodo, setTempTodo] = useState<Todo | null>(null);
   const [isTodoDeleting, setIsTodoDeleting] = useState(false);
   const [selectedTodosId, setSelectedTodosId] = useState<number[]>([]);
@@ -57,7 +58,9 @@ export const App: React.FC = () => {
     loadTodos();
   }, []);
 
-  const handleSubmitForm = (event: React.FormEvent<HTMLFormElement>) => {
+  const handleSubmitForm = useCallback((
+    event: React.FormEvent<HTMLFormElement>,
+  ) => {
     event.preventDefault();
 
     if (!title.trim()) {
@@ -98,7 +101,6 @@ export const App: React.FC = () => {
           ]);
         } catch (error) {
           setErrorMessage('Unable to add a todo');
-          setTempTodo(null);
         } finally {
           setTitle('');
           setIsAdding(false);
@@ -108,27 +110,9 @@ export const App: React.FC = () => {
     };
 
     addNewTodo();
-  };
+  }, [title]);
 
-  const filterTodos = () => {
-    return todos.filter(todo => {
-      switch (filterType) {
-        case FilterType.All:
-          return todo;
-
-        case FilterType.Active:
-          return todo.completed === false;
-
-        case FilterType.Completed:
-          return todo.completed === true;
-
-        default:
-          throw new Error('Invalid type');
-      }
-    });
-  };
-
-  const removeTodo = async (todoId: number) => {
+  const removeTodo = useCallback(async (todoId: number) => {
     try {
       setIsTodoDeleting(true);
       setSelectedTodosId(todosIds => [
@@ -148,19 +132,41 @@ export const App: React.FC = () => {
     } finally {
       setIsTodoDeleting(false);
     }
-  };
+  }, []);
 
-  const removeCompletedTodos = () => {
+  const removeCompletedTodos = useCallback(() => {
     todos.forEach(todo => {
       if (todo.completed) {
         removeTodo(todo.id);
       }
     });
-  };
+  }, [todos]);
 
-  const filteredTodos = filterTodos();
-  const activeTodos = todos.filter(todo => todo.completed === false).length;
-  const hasCompletedTodos = todos.some(todo => todo.completed === true);
+  const filteredTodos = useMemo(() => {
+    return todos.filter(todo => {
+      switch (filterType) {
+        case FilterType.All:
+          return todo;
+
+        case FilterType.Active:
+          return todo.completed === false;
+
+        case FilterType.Completed:
+          return todo.completed === true;
+
+        default:
+          throw new Error('Invalid type');
+      }
+    });
+  }, [todos, filterType]);
+
+  const activeTodosAmount = useMemo(() => (
+    todos.filter(todo => !todo.completed).length
+  ), [todos]);
+
+  const hasCompletedTodos = useMemo(() => (
+    todos.some(todo => todo.completed)
+  ), [todos]);
 
   return (
     <div className="todoapp">
@@ -169,8 +175,8 @@ export const App: React.FC = () => {
       <Header
         newTodoField={newTodoField}
         title={title}
-        isAdding={isAdding}
-        onChange={setTitle}
+        isTodoAdding={isTodoAdding}
+        onInputChange={setTitle}
         onSubmitForm={handleSubmitForm}
       />
 
@@ -181,25 +187,23 @@ export const App: React.FC = () => {
             tempTodo={tempTodo}
             isTodoDeleting={isTodoDeleting}
             selectedTodosId={selectedTodosId}
-            onDelete={removeTodo}
+            onTodoDelete={removeTodo}
           />
 
           <Footer
-            activeTodos={activeTodos}
+            activeTodosAmount={activeTodosAmount}
             hasCompletedTodos={hasCompletedTodos}
             filterType={filterType}
             onChangeType={setFilterType}
-            onDelete={removeCompletedTodos}
+            onDeleteCompletedTodos={removeCompletedTodos}
           />
         </>
       )}
 
-      {errorMessage && (
-        <ErrorNotification
-          error={errorMessage}
-          onClick={setErrorMessage}
-        />
-      )}
+      <ErrorNotification
+        error={errorMessage}
+        onNotificationClose={setErrorMessage}
+      />
     </div>
   );
 };

@@ -1,29 +1,29 @@
-import React from 'react';
+import React, { memo } from 'react';
 import cn from 'classnames';
 
 import { FilterType } from '../../types/FilterType';
 
 type Props = {
-  activeTodos: number;
+  activeTodosAmount: number;
   hasCompletedTodos: boolean;
   filterType: FilterType;
   onChangeType: React.Dispatch<React.SetStateAction<FilterType>>;
-  onDelete: () => void;
+  onDeleteCompletedTodos: () => void;
 };
 
-export const Footer: React.FC<Props> = (props) => {
+export const Footer: React.FC<Props> = memo((props) => {
   const {
-    activeTodos,
+    activeTodosAmount,
     hasCompletedTodos,
     filterType,
     onChangeType,
-    onDelete,
+    onDeleteCompletedTodos,
   } = props;
 
   return (
     <footer className="todoapp__footer" data-cy="Footer">
       <span className="todo-count" data-cy="todosCounter">
-        {`${activeTodos} items left`}
+        {`${activeTodosAmount} items left`}
       </span>
 
       <nav className="filter" data-cy="Filter">
@@ -64,16 +64,27 @@ export const Footer: React.FC<Props> = (props) => {
         </a>
       </nav>
 
-      <button
+      {hasCompletedTodos && (
+        <button
+          data-cy="ClearCompletedButton"
+          type="button"
+          className="todoapp__clear-completed"
+          onClick={onDeleteCompletedTodos}
+        >
+          Clear completed
+        </button>
+      )}
+
+      {/* <button
         data-cy="ClearCompletedButton"
         type="button"
         className="todoapp__clear-completed"
-        onClick={onDelete}
+        onClick={onDeleteCompletedTodos}
       >
         {hasCompletedTodos
           ? 'Clear completed'
           : null}
-      </button>
+      </button> */}
     </footer>
   );
-};
+});

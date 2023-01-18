@@ -1,17 +1,17 @@
-import React, { useEffect } from 'react';
+import React, { memo, useEffect } from 'react';
 import cn from 'classnames';
 
 type Props = {
   error: string;
-  onClick: React.Dispatch<React.SetStateAction<string>>;
+  onNotificationClose: React.Dispatch<React.SetStateAction<string>>;
 };
 
-export const ErrorNotification: React.FC<Props> = (props) => {
-  const { error, onClick } = props;
+export const ErrorNotification: React.FC<Props> = memo((props) => {
+  const { error, onNotificationClose } = props;
 
   useEffect(() => {
     setTimeout(() => {
-      onClick('');
+      onNotificationClose('');
     }, 3000);
   }, []);
 
@@ -28,9 +28,9 @@ export const ErrorNotification: React.FC<Props> = (props) => {
         data-cy="HideErrorButton"
         type="button"
         className="delete"
-        onClick={() => onClick('')}
+        onClick={() => onNotificationClose('')}
       />
       {error}
     </div>
   );
-};
+});
