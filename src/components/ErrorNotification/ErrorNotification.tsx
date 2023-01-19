@@ -1,4 +1,4 @@
-import React, { memo, useEffect } from 'react';
+import React, { memo } from 'react';
 import cn from 'classnames';
 
 type Props = {
@@ -9,11 +9,11 @@ type Props = {
 export const ErrorNotification: React.FC<Props> = memo((props) => {
   const { error, onNotificationClose } = props;
 
-  useEffect(() => {
+  if (error) {
     setTimeout(() => {
       onNotificationClose('');
     }, 3000);
-  }, [error]);
+  }
 
   return (
     <div
