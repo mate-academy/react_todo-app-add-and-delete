@@ -39,7 +39,7 @@ export const App: React.FC = () => {
     }
   }, []);
 
-  const loadTodos = useCallback(async () => {
+  const loadTodos = async () => {
     if (!user) {
       return;
     }
@@ -52,7 +52,7 @@ export const App: React.FC = () => {
     } catch (error) {
       setErrorMessage('Can\'t load todos');
     }
-  }, []);
+  };
 
   useEffect(() => {
     loadTodos();
@@ -65,7 +65,6 @@ export const App: React.FC = () => {
 
     if (!title.trim()) {
       setErrorMessage('Title can\'t be empty');
-      setTitle('');
 
       return;
     }
@@ -82,27 +81,26 @@ export const App: React.FC = () => {
             completed: false,
           });
 
-          const loadedTodo = await addTodo({
+          const addedTodo = await addTodo({
             userId: user?.id,
             title: title.trim(),
             completed: false,
           });
 
-          setTempTodo(null);
+          setTitle('');
 
           setTodos(currentTodos => [
             ...currentTodos,
             {
-              id: loadedTodo.id,
-              userId: user.id,
-              title: title.trim(),
-              completed: false,
+              id: addedTodo.id,
+              userId: addedTodo.userId,
+              title: addedTodo.title,
+              completed: addedTodo.completed,
             },
           ]);
         } catch (error) {
           setErrorMessage('Unable to add a todo');
         } finally {
-          setTitle('');
           setIsAdding(false);
           setTempTodo(null);
         }
@@ -149,10 +147,10 @@ export const App: React.FC = () => {
           return todo;
 
         case FilterType.Active:
-          return todo.completed === false;
+          return !todo.completed;
 
         case FilterType.Completed:
-          return todo.completed === true;
+          return todo.completed;
 
         default:
           throw new Error('Invalid type');

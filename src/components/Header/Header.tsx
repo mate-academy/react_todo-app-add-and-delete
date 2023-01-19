@@ -26,7 +26,7 @@ export const Header: React.FC<Props> = memo((props) => {
         className="todoapp__toggle-all active"
       />
 
-      <form onSubmit={event => onSubmitForm(event)}>
+      <form onSubmit={onSubmitForm}>
         <input
           data-cy="NewTodoField"
           type="text"

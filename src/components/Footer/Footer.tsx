@@ -74,17 +74,6 @@ export const Footer: React.FC<Props> = memo((props) => {
           Clear completed
         </button>
       )}
-
-      {/* <button
-        data-cy="ClearCompletedButton"
-        type="button"
-        className="todoapp__clear-completed"
-        onClick={onDeleteCompletedTodos}
-      >
-        {hasCompletedTodos
-          ? 'Clear completed'
-          : null}
-      </button> */}
     </footer>
   );
 });

@@ -13,7 +13,7 @@ export const ErrorNotification: React.FC<Props> = memo((props) => {
     setTimeout(() => {
       onNotificationClose('');
     }, 3000);
-  }, []);
+  }, [error]);
 
   return (
     <div

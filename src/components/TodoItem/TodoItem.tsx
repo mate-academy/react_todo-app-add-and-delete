@@ -22,6 +22,9 @@ export const TodoItem: React.FC<Props> = memo((props) => {
     onTodoDelete = () => {},
   } = props;
 
+  const isLoaderVisible = temporary
+    || (isTodoDeleting && selectedTodosId?.includes(todo.id));
+
   return (
     <div
       data-cy="Todo"
@@ -52,11 +55,9 @@ export const TodoItem: React.FC<Props> = memo((props) => {
         ×
       </button>
 
-      {(temporary
-        || (isTodoDeleting && selectedTodosId?.includes(todo.id)))
-        && (
-          <TodoLoader />
-        )}
+      {isLoaderVisible && (
+        <TodoLoader />
+      )}
     </div>
   );
 });
