@@ -18,7 +18,7 @@ const FooterLink: React.FC<Props> = ({
     <a
       data-cy={dataCy}
       href={href}
-      className={`${className}`}
+      className={className}
       onClick={onClick}
     >
       {text}

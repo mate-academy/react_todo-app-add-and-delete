@@ -1,5 +1,5 @@
-import {
-  RefObject, SetStateAction, useContext, useState,
+import React, {
+  RefObject, useContext, useState,
 } from 'react';
 import { addTodo } from '../../api/todos';
 import { ErrorContextType } from '../../types/ErrorContextType';
@@ -30,8 +30,10 @@ const TodoForm: React.FC<Props> = ({
   = useContext(ErrorContext) as ErrorContextType;
   const [inputValue, setInputValue] = useState('');
 
-  const setInput = (event: { target: { value: SetStateAction<string>; }; }) => {
-    setInputValue(event.target.value);
+  const setInput = (event: React.ChangeEvent<HTMLInputElement>) => {
+    const { target: { value } } = event;
+
+    setInputValue(value);
   };
 
   const checkKey = async (event: {

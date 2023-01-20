@@ -19,6 +19,7 @@ const TodoListItem: React.FC<Props> = ({ todo }) => {
   const { isLoaderActive } = useContext(LoaderContext) as LoaderContextType;
   const { todos, setVisibleTodos }
   = useContext(TodoContext) as TodoContextType;
+  const { id, completed } = todo;
 
   useEffect(() => {
     if (isLoaderActive && ref && ref.current) {
@@ -32,23 +33,23 @@ const TodoListItem: React.FC<Props> = ({ todo }) => {
     }
 
     ref.current.classList.toggle('is-active');
-
     try {
-      await deleteTodo(todo.id);
+      await deleteTodo(id);
 
       setVisibleTodos(
-        todos.filter((one: Todo) => todo.id !== one.id),
+        todos.filter((one: Todo) => id !== one.id),
       );
     } catch (error) {
       setIsError(true);
       setErrorText('Unable to delete a todo');
+      ref.current.classList.toggle('is-active');
     }
   };
 
   return (
     <div
       data-cy="Todo"
-      className={`todo ${todo.completed && 'completed'} `}
+      className={`todo ${completed && 'completed'} `}
     >
       <label className="todo__status-label">
         <input

@@ -1,24 +1,19 @@
 import { useContext, useEffect, useState } from 'react';
 import { deleteTodo } from '../../../api/todos';
 import { ErrorContextType } from '../../../types/ErrorContextType';
+import { FilterTypes } from '../../../types/FilterTypes';
 import { Todo } from '../../../types/Todo';
 import { TodoContextType } from '../../../types/TodoContextType';
 import { ErrorContext } from '../../Error/ErrorContext';
 import { TodoContext } from '../TodoContext';
 import FooterLink from './FooterLink/FooterLink';
 
-enum FilterTypes {
-  All = 'all',
-  Completed = 'completed',
-  Active = 'active',
-}
-
 const TodoFooter = () => {
   const { todos, visibleTodos, setVisibleTodos }
   = useContext(TodoContext) as TodoContextType;
   const { setIsError, setErrorText }
   = useContext(ErrorContext) as ErrorContextType;
-  const [selectedClass, setSelectedClass] = useState('all');
+  const [selectedClass, setSelectedClass] = useState(FilterTypes.All);
 
   const filterTodos = () => {
     setVisibleTodos(todos.filter((todo: Todo) => {
@@ -27,7 +22,7 @@ const TodoFooter = () => {
   };
 
   const completedTodos = visibleTodos.filter((todo: Todo) => todo.completed);
-  const activeTodos = visibleTodos.filter((todo: Todo) => !todo.completed);
+  const activeTodos = todos.filter((todo: Todo) => !todo.completed);
 
   useEffect(() => {
     filterTodos();
@@ -38,10 +33,10 @@ const TodoFooter = () => {
     setSelectedClass(FilterTypes.All);
   };
 
-  const showFilteredTodos = (value: string) => {
+  const showFilteredTodos = (value: FilterTypes) => {
     setVisibleTodos(todos.filter((todo: Todo) => {
       return (
-        value === 'active'
+        value === FilterTypes.Active
           ? !todo.completed
           : todo.completed
       );
@@ -73,21 +68,21 @@ const TodoFooter = () => {
         <FooterLink
           href="#/"
           dataCy="FilterLinkAll"
-          className={`filter__link ${selectedClass === 'all' && 'selected'}`}
+          className={`filter__link ${selectedClass === FilterTypes.All && 'selected'}`}
           text="All"
           onClick={showAllTodos}
         />
         <FooterLink
           href="#/active"
           dataCy="FilterLinkActive"
-          className={`filter__link ${selectedClass === 'active' && 'selected'}`}
+          className={`filter__link ${selectedClass === FilterTypes.Active && 'selected'}`}
           text="Active"
           onClick={() => showFilteredTodos(FilterTypes.Active)}
         />
         <FooterLink
           dataCy="FilterLinkCompleted"
           href="#/completed"
-          className={`filter__link ${selectedClass === 'completed' && 'selected'}`}
+          className={`filter__link ${selectedClass === FilterTypes.Completed && 'selected'}`}
           text="Completed"
           onClick={() => showFilteredTodos(FilterTypes.Completed)}
         />
