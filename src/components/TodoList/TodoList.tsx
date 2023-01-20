@@ -4,14 +4,21 @@ import { TodoItem } from '../TodoItem';
 
 type Props = {
   todos: Todo[]
+  onDeleteTodo: (id: number) => unknown
+  deletingTodosIds: number[]
 };
 
-export const TodoList: FC<Props> = memo(({ todos }) => {
-  return (
-    <section className="todoapp__main" data-cy="TodoList">
-      {todos.map(todo => (
-        <TodoItem key={todo.id} todo={todo} />
-      ))}
-    </section>
-  );
-});
+export const TodoList: FC<Props> = memo(({
+  todos, onDeleteTodo, deletingTodosIds,
+}) => (
+  <>
+    {todos.map(todo => (
+      <TodoItem
+        key={todo.id}
+        todo={todo}
+        onDeleteTodo={onDeleteTodo}
+        isDeleting={deletingTodosIds.includes(todo.id)}
+      />
+    ))}
+  </>
+));
