@@ -139,24 +139,22 @@ export const App: React.FC = () => {
           isAdding={isAdding}
         />
 
-        {todos.length > 0 && (
-          <>
-            <TodoList
-              todos={renderedTodos}
-              newTodo={newTodo}
-              isAdding={isAdding}
-              onItemRemove={deleteTodo}
-              loadingTodos={loadingTodos}
-            />
+        <TodoList
+          todos={renderedTodos}
+          newTodo={newTodo}
+          isAdding={isAdding}
+          onItemRemove={deleteTodo}
+          loadingTodos={loadingTodos}
+        />
 
-            <TodosFooter
-              activeNumber={activeTodos.length}
-              completedNumber={completedTodos.length}
-              selectedFilter={filterState}
-              onFilterSelect={setFilterState}
-              onClearCompletedClick={deleteCompletedTodos}
-            />
-          </>
+        {(todos.length > 0 || isAdding) && (
+          <TodosFooter
+            activeNumber={activeTodos.length}
+            completedNumber={completedTodos.length}
+            selectedFilter={filterState}
+            onFilterSelect={setFilterState}
+            onClearCompletedClick={deleteCompletedTodos}
+          />
         )}
       </div>
       <ErrorBlock
