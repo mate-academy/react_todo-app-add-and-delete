@@ -6,10 +6,19 @@ import './styles/index.scss';
 
 import { App } from './App';
 import { AuthProvider } from './components/Auth/AuthContext';
+import { LoaderProvider } from './components/Todo/LoaderContext';
+import { ErrorProvider } from './components/Error/ErrorContext';
+import { TodoProvider } from './components/Todo/TodoContext';
 
 const Root = () => (
   <AuthProvider>
-    <App />
+    <TodoProvider>
+      <LoaderProvider>
+        <ErrorProvider>
+          <App />
+        </ErrorProvider>
+      </LoaderProvider>
+    </TodoProvider>
   </AuthProvider>
 );
 
