@@ -5,10 +5,11 @@ import { Todo } from '../../types/Todo';
 type Props = {
   todo: Todo,
   isActive: boolean,
+  handleDeleteClick: (todo: Todo) => void;
 };
 
 export const TodoItem: React.FC<Props> = (props) => {
-  const { todo, isActive } = props;
+  const { todo, isActive, handleDeleteClick } = props;
 
   return (
     <div
@@ -32,6 +33,7 @@ export const TodoItem: React.FC<Props> = (props) => {
         type="button"
         className="todo__remove"
         data-cy="TodoDeleteButton"
+        onClick={() => handleDeleteClick(todo)}
       >
         ×
       </button>
