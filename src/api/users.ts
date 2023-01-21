@@ -7,7 +7,7 @@ export const getUserByEmail = async (email: string) => {
   return users[0] || null;
 };
 
-type UserData = Pick<User, 'name' | 'email'>;
+export type UserData = Pick<User, 'name' | 'email'>;
 
 export const createUser = async ({ email, name }: UserData) => {
   return client.post<User>('/users', { email, name });
