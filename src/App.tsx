@@ -20,7 +20,7 @@ import { TodoItem } from './components/TodoItem/TodoItem';
 
 export const App: React.FC = () => {
   const [todos, setTodos] = useState<Todo[]>([]);
-  const [removeTodo, setRemoveTodo] = useState<Todo[]>([]);
+  // const [removeTodo, setRemoveTodo] = useState<Todo[]>([]);
   const [tempTodo, setTempTodo] = useState<Todo | null>(null);
   const [errorMessage, setErrorMessage] = useState('');
   const [filter, setFilter] = useState('All');
@@ -108,17 +108,23 @@ export const App: React.FC = () => {
     }
   };
 
-  const handleDeleteClick = (deletedTodo: Todo) => {
-    setRemoveTodo(todo => [...todo, deletedTodo]);
-
-    deleteTodo(deletedTodo.id)
+  const handleDeleteClick = (id: number) => {
+    deleteTodo(id)
       .then(() => (
         setTodos(currentTodos => currentTodos
-          .filter(todo => todo.id !== deletedTodo.id))
+          .filter(todo => todo.id !== id))
       ))
       .catch(() => {
         setErrorMessage('Unable to delete a todo');
       });
+  };
+
+  const handleClearCompleted = () => {
+    todos.forEach(todo => {
+      if (todo.completed) {
+        handleDeleteClick(todo.id);
+      }
+    });
   };
 
   return (
@@ -137,7 +143,7 @@ export const App: React.FC = () => {
 
         <TodoList
           todos={filterTodos}
-          removeTodo={removeTodo}
+          // removeTodo={removeTodo}
           handleDeleteClick={handleDeleteClick}
           isActive={isAdding}
         />
@@ -156,6 +162,7 @@ export const App: React.FC = () => {
             completeTodos={completeTodos}
             filter={filter}
             setFilter={setFilter}
+            handleClearCompleted={handleClearCompleted}
           />
         )}
       </div>

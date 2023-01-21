@@ -4,8 +4,8 @@ import { TodoItem } from '../TodoItem/TodoItem';
 
 type Props = {
   todos: Todo[]
-  removeTodo: Todo[],
-  handleDeleteClick: (todo: Todo) => void,
+  // removeTodo: Todo[],
+  handleDeleteClick: (todoId: number) => void,
   isActive: boolean,
 };
 

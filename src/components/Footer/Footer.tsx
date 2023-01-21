@@ -1,4 +1,4 @@
-import React from 'react';
+import React, {memo } from 'react';
 import cn from 'classnames';
 import { Todo } from '../../types/Todo';
 
@@ -7,14 +7,16 @@ type Props = {
   incompleteTodos: Todo[],
   filter: string,
   setFilter: React.Dispatch<React.SetStateAction<string>>,
+  handleClearCompleted: () => void,
 };
 
-export const Footer: React.FC<Props> = (props) => {
+export const Footer: React.FC<Props> = memo((props) => {
   const {
     completeTodos,
     incompleteTodos,
     filter,
     setFilter,
+    handleClearCompleted,
   } = props;
 
   return (
@@ -62,10 +64,11 @@ export const Footer: React.FC<Props> = (props) => {
           data-cy="ClearCompletedButton"
           type="button"
           className="todoapp__clear-completed"
+          onClick={handleClearCompleted}
         >
           Clear completed
         </button>
       )}
     </footer>
   );
-};
+});
