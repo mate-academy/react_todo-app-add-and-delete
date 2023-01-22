@@ -15,16 +15,14 @@ export const TodoItem: FC<Props> = ({ todo }) => {
 
   const deleteSingleTodo = async (id: number) => {
     try {
-      setIsDeleting(true);
-
       await deleteTodo(id);
-
-      updateTodosAfterDelete(id);
     } catch {
       setError(true, ErrorMsg.DeleteError);
     } finally {
       setIsDeleting(false);
     }
+
+    updateTodosAfterDelete(id);
   };
 
   return (

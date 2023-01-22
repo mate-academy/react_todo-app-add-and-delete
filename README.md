@@ -6,6 +6,7 @@ Take your code implemented for [Loading todos](https://github.com/mate-academy/r
 and implement the ability to and nd remove todos.
 
 > Here is [the working example](https://mate-academy.github.io/react_todo-app-with-api/)
+
 # ❗️❗️❗️</br>In this working example implemented all 3 parts of the task.</br>In this task you have to implement only the second part described below (using your code from the first part).</br>❗️❗️❗️
 
 ### [API Documentation](https://mate-academy.github.io/fe-students-api/)
@@ -51,95 +52,100 @@ Remove all the completed todos after `Clear completed` button click:
 
 <details>
   <summary>Click here to see the hint</summary>
-  
-  Use [React Transition Group](https://reactcommunity.org/react-transition-group/transition-group)
 
-  ```tsx
-  <section className="todoapp__main" data-cy="TodoList">
-    <TransitionGroup>
-      {visibleTodos.map(todo => (
-        <CSSTransition
-          key={todo.id}
-          timeout={300}
-          classNames="item"
-        >
-          <TodoItem
-            todo={todo}
-            isProcessed={processings.includes(todo.id)}
-            onDelete={() => deleteTodo(todo.id)}
-            onUpdate={updateTodo}
-          />
-        </CSSTransition>
-      ))}
+Use [React Transition Group](https://reactcommunity.org/react-transition-group/transition-group)
 
-      {creating && (
-        <CSSTransition
-          key={0}
-          timeout={300}
-          classNames="temp-item"
-        >
-          <TodoItem
-            todo={{
-              id: Math.random(),
-              title,
-              completed: false,
-              userId: user.id,
-            }}
-            isProcessed
-          />
-        </CSSTransition>
-      )}
-    </TransitionGroup>
-  </section>
-  ```
-    
-  Here are the styles used in this example
-  ```css
-  .item-enter {
-    max-height: 0;
-  }
+```tsx
+<section
+  className="todoapp__main"
+  data-cy="TodoList"
+>
+  <TransitionGroup>
+    {visibleTodos.map(todo => (
+      <CSSTransition
+        key={todo.id}
+        timeout={300}
+        classNames="item"
+      >
+        <TodoItem
+          todo={todo}
+          isProcessed={processings.includes(todo.id)}
+          onDelete={() => deleteTodo(todo.id)}
+          onUpdate={updateTodo}
+        />
+      </CSSTransition>
+    ))}
 
-  .item-enter-active {
-    overflow: hidden;
-    max-height: 58px;
-    transition: max-height 0.3s ease-in-out;
-  }
+    {creating && (
+      <CSSTransition
+        key={0}
+        timeout={300}
+        classNames="temp-item"
+      >
+        <TodoItem
+          todo={{
+            id: Math.random(),
+            title,
+            completed: false,
+            userId: user.id,
+          }}
+          isProcessed
+        />
+      </CSSTransition>
+    )}
+  </TransitionGroup>
+</section>
+```
 
-  .item-exit {
-    max-height: 58px;
-  }
+Here are the styles used in this example
 
-  .item-exit-active {
-    overflow: hidden;
-    max-height: 0;
-    transition: max-height 0.3s ease-in-out;
-  }
+```css
+.item-enter {
+  max-height: 0;
+}
 
-  .temp-item-enter {
-    max-height: 0;
-  }
+.item-enter-active {
+  overflow: hidden;
+  max-height: 58px;
+  transition: max-height 0.3s ease-in-out;
+}
 
-  .temp-item-enter-active {
-    overflow: hidden;
-    max-height: 58px;
-    transition: max-height 0.3s ease-in-out;
-  }
+.item-exit {
+  max-height: 58px;
+}
 
-  .temp-item-exit {
-    max-height: 58px;
-  }
+.item-exit-active {
+  overflow: hidden;
+  max-height: 0;
+  transition: max-height 0.3s ease-in-out;
+}
 
-  .temp-item-exit-active {
-    transform: translateY(-58px);
-    max-height: 0;
-    opacity: 0;
-    transition: 0.3s ease-in-out;
-    transition-property: opacity, max-height, transform;
-  }
+.temp-item-enter {
+  max-height: 0;
+}
 
-  .has-error .temp-item-exit-active {
-    transform: translateY(0);
-    overflow: hidden;
-  }
-  ```
+.temp-item-enter-active {
+  overflow: hidden;
+  max-height: 58px;
+  transition: max-height 0.3s ease-in-out;
+}
+
+.temp-item-exit {
+  max-height: 58px;
+}
+
+.temp-item-exit-active {
+  transform: translateY(-58px);
+  max-height: 0;
+  opacity: 0;
+  transition: 0.3s ease-in-out;
+  transition-property: opacity, max-height, transform;
+}
+
+.has-error .temp-item-exit-active {
+  transform: translateY(0);
+  overflow: hidden;
+}
+```
+
 </details>
