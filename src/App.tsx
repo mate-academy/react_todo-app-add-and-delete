@@ -78,6 +78,10 @@ export const App: React.FC = () => {
     });
   }, [todos, filterType]);
 
+  const handleClickMessage = () => {
+    setErrorMessage('');
+  };
+
   const handleFilterType = useCallback((value: Filter) => {
     setFilterType(value);
   }, []);
@@ -127,7 +131,12 @@ export const App: React.FC = () => {
         )}
       </div>
 
-      {errorMessage && <ErrorMessage message={errorMessage} />}
+      {errorMessage && (
+        <ErrorMessage
+          message={errorMessage}
+          onCloseError={handleClickMessage}
+        />
+      )}
     </div>
   );
 };

@@ -2,10 +2,11 @@ import { FC, memo } from 'react';
 
 interface Props {
   message: string
+  onCloseError: () => void;
 }
 
 export const ErrorMessage: FC<Props> = memo(
-  ({ message }) => {
+  ({ message, onCloseError }) => {
     return (
       <div
         data-cy="ErrorNotification"
@@ -16,15 +17,10 @@ export const ErrorMessage: FC<Props> = memo(
           type="button"
           className="delete"
           aria-label="delete-notifies"
+          onClick={onCloseError}
         />
 
         {message}
-
-        {/* Unable to add a todo
-        <br />
-        Unable to delete a todo
-        <br />
-        Unable to update a todo */}
       </div>
     );
   },
