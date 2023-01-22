@@ -17,6 +17,7 @@ interface InitialState {
   newTodo: string;
   error: Error;
   filter: FilterStatus;
+  tempTodo: Todo | null;
 }
 
 const initialState: InitialState = {
@@ -24,6 +25,7 @@ const initialState: InitialState = {
   newTodo: '',
   error: [false, ErrorMsg.NoError],
   filter: FilterStatus.All,
+  tempTodo: null,
 };
 
 const useTodos = (initial: InitialState) => {
@@ -33,6 +35,7 @@ const useTodos = (initial: InitialState) => {
   const [filterStatus, setFilterStatus] = useState<FilterStatus>(
     initial.filter,
   );
+  const [tempTodo, setTempTodo] = useState<Todo | null>(initial.tempTodo);
 
   const setError: SetError = (err = false, msg = ErrorMsg.NoError) => {
     errorSet([err, msg]);
@@ -75,6 +78,21 @@ const useTodos = (initial: InitialState) => {
     }
   });
 
+  const addTempTodo = (todoTitle: string, userId: number) => {
+    const todo = {
+      id: 0,
+      userId,
+      title: todoTitle,
+      completed: false,
+    };
+
+    if (todoTitle === '' || userId === 0) {
+      setTempTodo(null);
+    }
+
+    setTempTodo(todo);
+  };
+
   return {
     todos: filteredTodos,
     renewTodos,
@@ -85,6 +103,8 @@ const useTodos = (initial: InitialState) => {
     getNewTodo,
     changeFilterStatus,
     filterStatus,
+    tempTodo,
+    addTempTodo,
   };
 };
 

@@ -1,4 +1,5 @@
 import { FC } from 'react';
+import cn from 'classnames';
 import { Todo } from '../../types/Todo';
 
 type Props = {
@@ -36,7 +37,9 @@ export const TodoItem: FC<Props> = ({ todo }) => {
 
       <div
         data-cy="TodoLoader"
-        className="modal overlay"
+        className={cn('modal overlay', {
+          'is-active': todo && todo.id === 0,
+        })}
       >
         <div className="modal-background has-background-white-ter" />
         <div className="loader" />

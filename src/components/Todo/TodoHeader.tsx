@@ -20,6 +20,7 @@ export const TodoHeader = () => {
     getNewTodo,
     renewTodos,
     setError,
+    addTempTodo,
   } = useTodoContext();
 
   const user = useContext(AuthContext);
@@ -28,10 +29,12 @@ export const TodoHeader = () => {
     e.preventDefault();
     if (newTodo && user) {
       const todoToSend = {
-        userId: user?.id,
+        userId: user.id,
         title: newTodo,
         completed: false,
       };
+
+      addTempTodo(newTodo, user.id);
 
       try {
         const todo = await postTodos(todoToSend);
@@ -41,6 +44,7 @@ export const TodoHeader = () => {
         setError(true, ErrorMsg.AddError);
       } finally {
         getNewTodo('');
+        addTempTodo('', 0);
       }
     } else {
       setError(true, ErrorMsg.TitleError);
