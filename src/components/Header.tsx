@@ -1,12 +1,21 @@
 /* eslint-disable jsx-a11y/control-has-associated-label */
-import React, { useRef } from 'react';
+import classNames from 'classnames';
+import React, {
+  Dispatch,
+  SetStateAction,
+  useEffect,
+  useRef,
+} from 'react';
 
 type Props = {
   title: string;
-  setTitle: (arg: string) => void;
-  setIsHidden: (arg: boolean) => void;
-  handleAdd: (event: React.KeyboardEvent) => void;
+  setTitle: Dispatch<SetStateAction<string>>;
+  setIsHidden: Dispatch<SetStateAction<boolean>>;
+  handleAdd: () => void;
+  completeAll: () => void;
   isAdding: boolean;
+  completedTodosCount: number,
+  todosCount: number,
 };
 
 export const Header: React.FC<Props> = (
@@ -15,18 +24,35 @@ export const Header: React.FC<Props> = (
     setTitle,
     setIsHidden,
     handleAdd,
+    completeAll,
     isAdding,
+    completedTodosCount,
+    todosCount,
   },
 ) => {
   const newTodoField = useRef<HTMLInputElement>(null);
 
+  useEffect(() => {
+    if (newTodoField.current) {
+      newTodoField.current.focus();
+    }
+  }, []);
+
   return (
     <header className="todoapp__header">
-      <button
-        data-cy="ToggleAllButton"
-        type="button"
-        className="todoapp__toggle-all active"
-      />
+      {todosCount !== 0 && (
+        <button
+          data-cy="ToggleAllButton"
+          type="button"
+          className={classNames(
+            'todoapp__toggle-all',
+            {
+              active: completedTodosCount > 0,
+            },
+          )}
+          onClick={completeAll}
+        />
+      )}
 
       <form onSubmit={e => e.preventDefault()}>
         <input
@@ -41,7 +67,11 @@ export const Header: React.FC<Props> = (
             setTitle(e.target.value);
             setIsHidden(true);
           }}
-          onKeyUp={e => handleAdd(e)}
+          onKeyDown={e => {
+            if (e.key === 'Enter') {
+              handleAdd();
+            }
+          }}
         />
       </form>
     </header>
