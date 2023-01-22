@@ -1,2 +1,4 @@
 /build
 /node_modules
+src/utils/fetchClient.ts
+.eslintrc.js
