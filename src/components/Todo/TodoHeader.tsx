@@ -4,6 +4,7 @@ import {
   useRef,
   useContext,
   FormEvent,
+  useState,
 } from 'react';
 import { useTodoContext } from '../../store/todoContext';
 import { AuthContext } from '../Auth/AuthContext';
@@ -13,6 +14,7 @@ import { ErrorMsg } from '../../types/Error';
 /* eslint-disable jsx-a11y/control-has-associated-label */
 export const TodoHeader = () => {
   const newTodoField = useRef<HTMLInputElement>(null);
+  const [isAdding, setIsAdding] = useState(false);
 
   const {
     // prettier-ignore
@@ -37,6 +39,8 @@ export const TodoHeader = () => {
       addTempTodo(newTodo, user.id);
 
       try {
+        setIsAdding(true);
+
         const todo = await postTodos(todoToSend);
         // eslint-disable-next-line
         renewTodos(todo);
@@ -45,6 +49,7 @@ export const TodoHeader = () => {
       } finally {
         getNewTodo('');
         addTempTodo();
+        setIsAdding(false);
       }
     } else {
       setError(true, ErrorMsg.TitleError);
@@ -75,6 +80,7 @@ export const TodoHeader = () => {
           placeholder="What needs to be done?"
           value={newTodo}
           onChange={e => getNewTodo(e.target.value)}
+          disabled={isAdding}
         />
       </form>
     </header>
