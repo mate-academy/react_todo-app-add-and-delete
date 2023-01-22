@@ -10,7 +10,9 @@ export const TodoItem: FC<Props> = ({ todo }) => {
   return (
     <div
       data-cy="Todo"
-      className="todo completed"
+      className={cn('todo', {
+        completed: todo.completed,
+      })}
     >
       <label className="todo__status-label">
         <input
