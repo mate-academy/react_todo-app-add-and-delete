@@ -9,7 +9,7 @@ import {
 import { Todo } from '../types/Todo';
 import { Error, SetError, ErrorMsg } from '../types/Error';
 import { FilterStatus } from '../types/Filter';
-import { deleteTodo, getTodos } from '../api/todos';
+import { getTodos } from '../api/todos';
 import { AuthContext } from '../components/Auth/AuthContext';
 
 interface InitialState {
@@ -65,14 +65,8 @@ const useTodos = (initial: InitialState) => {
     setTodos(prev => [...prev, todo]);
   };
 
-  const deleteSingleTodo = async (id: number) => {
-    try {
-      await deleteTodo(id);
-
-      setTodos((prev) => prev.filter((todo) => todo.id !== id));
-    } catch {
-      setError(true, ErrorMsg.DeleteError);
-    }
+  const updateTodosAfterDelete = (id: number) => {
+    setTodos(prev => prev.filter(todo => todo.id !== id));
   };
 
   const filteredTodos = todos.filter(todo => {
@@ -117,7 +111,7 @@ const useTodos = (initial: InitialState) => {
     filterStatus,
     tempTodo,
     addTempTodo,
-    deleteSingleTodo,
+    updateTodosAfterDelete,
   };
 };
 
