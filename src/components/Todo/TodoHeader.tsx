@@ -42,6 +42,8 @@ export const TodoHeader = () => {
       } finally {
         getNewTodo('');
       }
+    } else {
+      setError(true, ErrorMsg.TitleError);
     }
   };
 
