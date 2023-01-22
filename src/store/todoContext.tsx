@@ -78,17 +78,19 @@ const useTodos = (initial: InitialState) => {
     }
   });
 
-  const addTempTodo = (todoTitle: string, userId: number) => {
+  const addTempTodo = (todoTitle = '', userId = 0) => {
+    if (todoTitle === '' || userId === 0) {
+      setTempTodo(null);
+
+      return;
+    }
+
     const todo = {
       id: 0,
       userId,
       title: todoTitle,
       completed: false,
     };
-
-    if (todoTitle === '' || userId === 0) {
-      setTempTodo(null);
-    }
 
     setTempTodo(todo);
   };

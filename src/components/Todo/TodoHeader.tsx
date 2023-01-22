@@ -44,7 +44,7 @@ export const TodoHeader = () => {
         setError(true, ErrorMsg.AddError);
       } finally {
         getNewTodo('');
-        addTempTodo('', 0);
+        addTempTodo();
       }
     } else {
       setError(true, ErrorMsg.TitleError);
