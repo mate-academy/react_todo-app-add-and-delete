@@ -4,15 +4,15 @@ import { Filter } from '../../types/Filter';
 
 interface Props {
   length: number;
-  onFilter: (str: Filter) => void;
-  filter: Filter;
+  onCompletedFilterChange: (str: Filter) => void;
+  complitedFilter: Filter;
   deleteCompleted: () => void;
 }
 
 export const Footer: FC<Props> = memo(({
   length,
-  onFilter,
-  filter,
+  onCompletedFilterChange,
+  complitedFilter,
   deleteCompleted,
 }) => {
   return (
@@ -25,8 +25,9 @@ export const Footer: FC<Props> = memo(({
         <a
           data-cy="FilterLinkAll"
           href="#/"
-          className={cn('filter__link', { selected: filter === Filter.all })}
-          onClick={() => onFilter(Filter.all)}
+          className={cn('filter__link',
+            { selected: complitedFilter === Filter.all })}
+          onClick={() => onCompletedFilterChange(Filter.all)}
         >
           All
         </a>
@@ -34,8 +35,9 @@ export const Footer: FC<Props> = memo(({
         <a
           data-cy="FilterLinkActive"
           href="#/active"
-          className={cn('filter__link', { selected: filter === Filter.active })}
-          onClick={() => onFilter(Filter.active)}
+          className={cn('filter__link',
+            { selected: complitedFilter === Filter.active })}
+          onClick={() => onCompletedFilterChange(Filter.active)}
         >
           Active
         </a>
@@ -43,8 +45,8 @@ export const Footer: FC<Props> = memo(({
           data-cy="FilterLinkCompleted"
           href="#/completed"
           className={cn('filter__link',
-            { selected: filter === Filter.completed })}
-          onClick={() => onFilter(Filter.completed)}
+            { selected: complitedFilter === Filter.completed })}
+          onClick={() => onCompletedFilterChange(Filter.completed)}
         >
           Completed
         </a>

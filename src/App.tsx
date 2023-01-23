@@ -21,34 +21,26 @@ export const App: React.FC = () => {
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
   const [todos, setTodos] = useState<Todo[]>([]);
   const [tempTodo, setTempTodo] = useState<Todo | null>(null);
-  const [filter, setFilter] = useState<Filter>(Filter.all);
-  const [serverError, setServerError] = useState(false);
-  const [inputError, setInputError] = useState(false);
-  const [createTodoError, setCreateTodoError] = useState(false);
-  const [deleteTodoError, setDeleteTodoError] = useState(false);
+  const [completedFilter, setCompletedFilter] = useState<Filter>(Filter.all);
+  const [errorMessage, setErrorMessage] = useState('');
   const [isAdding, setIsAdding] = useState(false);
   const [deletingTodosId, setDeletingTodosId] = useState([0]);
 
   const user = useContext(AuthContext);
   const newTodoField = useRef<HTMLInputElement>(null);
 
-  const handleFilter = useCallback((str: Filter) => setFilter(str), []);
-  const handleError = (callback: (err: boolean) => void) => {
-    callback(true);
+  const handleChangeCompletedFilter = useCallback((str: Filter) => {
+    setCompletedFilter(str);
+  }, []);
+  const showErrorMessage = (message: string) => {
+    setErrorMessage(message);
 
-    setTimeout(() => callback(false), 3000);
-  };
-
-  const clearErrors = () => {
-    setServerError(false);
-    setInputError(false);
-    setCreateTodoError(false);
-    setDeleteTodoError(false);
+    setTimeout(() => setErrorMessage(''), 3000);
   };
 
   const submitNewTodo = useCallback(async (title: string) => {
     if (!(title.trim())) {
-      handleError(setInputError);
+      showErrorMessage('Title can\'t be empty');
 
       return;
     }
@@ -69,7 +61,7 @@ export const App: React.FC = () => {
 
         setTodos(prev => [...prev, newTodo]);
       } catch (e) {
-        handleError(setCreateTodoError);
+        showErrorMessage('Unable to add a todo');
       }
     }
 
@@ -83,7 +75,7 @@ export const App: React.FC = () => {
       await deleteTodo(id);
       setTodos(prev => prev.filter(todo => todo.id !== id));
     } catch (e) {
-      handleError(setDeleteTodoError);
+      showErrorMessage('Unable to delete a todo');
     }
 
     setDeletingTodosId([0]);
@@ -103,10 +95,8 @@ export const App: React.FC = () => {
   }, [todos]);
 
   const visibleTodos = useMemo(() => (
-    filter === Filter.all
-      ? todos
-      : getVisibleTodos(todos, filter)
-  ), [filter, todos]);
+    getVisibleTodos(todos, completedFilter)
+  ), [completedFilter, todos]);
 
   async function getTodosFromServer() {
     if (user) {
@@ -115,7 +105,7 @@ export const App: React.FC = () => {
 
         setTodos(todosFromServer);
       } catch (e) {
-        handleError(setServerError);
+        showErrorMessage('Unable to get a todo');
       }
     }
   }
@@ -148,7 +138,7 @@ export const App: React.FC = () => {
           />
         </header>
 
-        {!todos.length || (
+        {todos.length !== 0 && (
           <>
             <TodoList
               todos={visibleTodos}
@@ -159,8 +149,8 @@ export const App: React.FC = () => {
 
             <Footer
               length={todos.length}
-              onFilter={handleFilter}
-              filter={filter}
+              onCompletedFilterChange={handleChangeCompletedFilter}
+              complitedFilter={completedFilter}
               deleteCompleted={deleteCompleted}
             />
           </>
@@ -171,29 +161,17 @@ export const App: React.FC = () => {
         data-cy="ErrorNotification"
         className={cn('notification is-danger is-light has-text-weight-normal',
           {
-            hidden: !serverError && !inputError
-              && !createTodoError && !deleteTodoError,
+            hidden: !errorMessage,
           })}
       >
         <button
           data-cy="HideErrorButton"
           type="button"
           className="delete"
-          onClick={() => clearErrors()}
+          onClick={() => setErrorMessage('')}
         />
 
-        {serverError && (
-          <>
-            Unable to add a todo
-            <br />
-            Unable to delete a todo
-            <br />
-            Unable to update a todo
-          </>
-        )}
-        {inputError && (<>Title can&apos;t be empty</>)}
-        {createTodoError && (<>Unable to add a todo</>)}
-        {deleteTodoError && (<>Unable to delete a todo</>)}
+        {errorMessage}
 
       </div>
     </div>

@@ -59,6 +59,7 @@ export const TodoList: FC<Props> = memo(({
           </div>
         </div>
       ))}
+
       {tempTodo && (
         <div data-cy="Todo" className="todo">
           <label className="todo__status-label">
