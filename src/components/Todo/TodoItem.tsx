@@ -2,28 +2,14 @@ import { FC, useState } from 'react';
 import cn from 'classnames';
 import { Todo } from '../../types/Todo';
 import { useTodoContext } from '../../store/todoContext';
-import { deleteTodo } from '../../api/todos';
-import { ErrorMsg } from '../../types/Error';
 
 type Props = {
   todo: Todo;
 };
 
 export const TodoItem: FC<Props> = ({ todo }) => {
-  const { setError, updateTodosAfterDelete } = useTodoContext();
+  const { deleteSingleTodo, deleting } = useTodoContext();
   const [isDeleting, setIsDeleting] = useState(false);
-
-  const deleteSingleTodo = async (id: number) => {
-    try {
-      await deleteTodo(id);
-    } catch {
-      setError(true, ErrorMsg.DeleteError);
-    } finally {
-      setIsDeleting(false);
-    }
-
-    updateTodosAfterDelete(id);
-  };
 
   return (
     <div
@@ -51,7 +37,7 @@ export const TodoItem: FC<Props> = ({ todo }) => {
         type="button"
         className="todo__remove"
         data-cy="TodoDeleteButton"
-        onClick={() => deleteSingleTodo(todo.id)}
+        onClick={() => deleteSingleTodo(todo.id, setIsDeleting)}
       >
         ×
       </button>
@@ -59,7 +45,10 @@ export const TodoItem: FC<Props> = ({ todo }) => {
       <div
         data-cy="TodoLoader"
         className={cn('modal overlay', {
-          'is-active': todo && (todo.id === 0 || isDeleting),
+          // prettier-ignore
+          'is-active': todo && (todo.id === 0
+            || isDeleting
+            || (deleting && todo.completed)),
         })}
       >
         <div className="modal-background has-background-white-ter" />

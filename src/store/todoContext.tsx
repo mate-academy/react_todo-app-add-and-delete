@@ -5,11 +5,13 @@ import {
   createContext,
   useContext,
   ReactNode,
+  Dispatch,
+  SetStateAction,
 } from 'react';
 import { Todo } from '../types/Todo';
 import { Error, SetError, ErrorMsg } from '../types/Error';
 import { FilterStatus } from '../types/Filter';
-import { getTodos } from '../api/todos';
+import { deleteTodo, getTodos } from '../api/todos';
 import { AuthContext } from '../components/Auth/AuthContext';
 
 interface InitialState {
@@ -36,6 +38,7 @@ const useTodos = (initial: InitialState) => {
     initial.filter,
   );
   const [tempTodo, setTempTodo] = useState<Todo | null>(initial.tempTodo);
+  const [deleting, setDeleting] = useState(false);
 
   const setError: SetError = (err = false, msg = ErrorMsg.NoError) => {
     errorSet([err, msg]);
@@ -65,8 +68,26 @@ const useTodos = (initial: InitialState) => {
     setTodos(prev => [...prev, todo]);
   };
 
-  const updateTodosAfterDelete = (id: number) => {
+  const deleteSingleTodo = async (
+    id: number,
+    isDeleting: Dispatch<SetStateAction<boolean>>,
+  ) => {
+    isDeleting(true);
+    try {
+      await deleteTodo(id);
+    } catch {
+      setError(true, ErrorMsg.DeleteError);
+    } finally {
+      isDeleting(false);
+    }
+
     setTodos(prev => prev.filter(todo => todo.id !== id));
+  };
+
+  const completedTodos = todos.filter(todo => todo.completed);
+
+  const clearCompletedTodos = () => {
+    completedTodos.map(todo => deleteSingleTodo(todo.id, setDeleting));
   };
 
   const filteredTodos = todos.filter(todo => {
@@ -111,7 +132,10 @@ const useTodos = (initial: InitialState) => {
     filterStatus,
     tempTodo,
     addTempTodo,
-    updateTodosAfterDelete,
+    clearCompletedTodos,
+    deleteSingleTodo,
+    completedTodos,
+    deleting,
   };
 };
 

@@ -4,7 +4,14 @@ import { toCapitalCase } from '../../utils/toCapitalCase';
 import { useTodoContext } from '../../store/todoContext';
 
 export const TodoFooter = () => {
-  const { changeFilterStatus, filterStatus, todoLength } = useTodoContext();
+  const {
+    // prettier-ignore
+    changeFilterStatus,
+    filterStatus,
+    todoLength,
+    clearCompletedTodos,
+    completedTodos,
+  } = useTodoContext();
 
   return (
     <footer
@@ -43,6 +50,8 @@ export const TodoFooter = () => {
         data-cy="ClearCompletedButton"
         type="button"
         className="todoapp__clear-completed"
+        onClick={clearCompletedTodos}
+        disabled={completedTodos.length <= 0}
       >
         Clear completed
       </button>

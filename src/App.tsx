@@ -1,7 +1,5 @@
 import { useEffect } from 'react';
-
 import { TodoContent } from './components/Todo/TodoContent';
-
 import { useTodoContext } from './store/todoContext';
 import { Error } from './components/Error/Error';
 
