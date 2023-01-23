@@ -18,12 +18,13 @@ import { Todo } from './types/Todo';
 import { createTodo, deleteTodo, getTodos } from './api/todos';
 import { TodoItem } from './components/TodoItem/TodoItem';
 import { Filter } from './types/Filter';
+import { getFilterTodos } from './components/helperFunction';
 
 export const App: React.FC = () => {
   const [todos, setTodos] = useState<Todo[]>([]);
   const [tempTodo, setTempTodo] = useState<Todo | null>(null);
   const [errorMessage, setErrorMessage] = useState('');
-  const [filter, setFilter] = useState<Filter>(Filter.all);
+  const [completedFilter, setCompletedFilter] = useState<Filter>(Filter.all);
   const [title, setTitle] = useState('');
   const [isAdding, setIsAdding] = useState(false);
 
@@ -54,25 +55,14 @@ export const App: React.FC = () => {
     [todos],
   );
 
-  const completeTodos = useMemo(
-    () => todos.filter(todo => todo.completed),
+  const completeTodosLength = useMemo(
+    () => todos.filter(todo => todo.completed).length,
     [todos],
   );
 
   const filterTodos = useMemo(() => {
-    return todos.filter(todo => {
-      switch (filter) {
-        case Filter.completed:
-          return todo.completed;
-
-        case Filter.active:
-          return !todo.completed;
-
-        default:
-          return todo;
-      }
-    });
-  }, [todos, filter]);
+    return getFilterTodos(todos, completedFilter);
+  }, [todos, completedFilter]);
 
   const handleFormSubmit = (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
@@ -162,9 +152,9 @@ export const App: React.FC = () => {
         {todos.length > 0 && (
           <Footer
             incompleteTodos={incompleteTodos}
-            completeTodos={completeTodos}
-            filter={filter}
-            setFilter={setFilter}
+            completeTodosLength={completeTodosLength}
+            completedFilter={completedFilter}
+            setCompletedFilter={setCompletedFilter}
             handleClearCompleted={handleClearCompleted}
           />
         )}

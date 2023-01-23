@@ -40,7 +40,6 @@ export const TodoItem: React.FC<Props> = memo((props) => {
 
       <div
         data-cy="TodoLoader"
-        // className="modal overlay"
         className={cn('modal overlay', {
           'is-active': isActive,
         })}
