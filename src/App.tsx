@@ -78,6 +78,8 @@ export const App: React.FC = () => {
 
     if (!title) {
       setErrorMessage('Title can\'t be empty');
+
+      return;
     }
 
     if (user) {

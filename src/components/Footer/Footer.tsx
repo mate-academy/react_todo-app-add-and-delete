@@ -1,4 +1,4 @@
-import React, {memo } from 'react';
+import React, { memo } from 'react';
 import cn from 'classnames';
 import { Todo } from '../../types/Todo';
 
