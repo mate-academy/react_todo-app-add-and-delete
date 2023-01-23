@@ -1,6 +1,7 @@
-import { FC, memo, useState } from 'react';
+import { FC, memo, useContext } from 'react';
 import cn from 'classnames';
 import { Todo } from '../../types/Todo';
+import { isUserLoaded } from '../../IsUserContext';
 
 interface Props {
   todo: Todo;
@@ -9,7 +10,7 @@ interface Props {
 
 export const TodoItem: FC<Props> = memo(
   ({ todo, onDeleteItem }) => {
-    const [selectedTodo] = useState(0);
+    const isTodoAdded = useContext(isUserLoaded);
 
     return (
       <div
@@ -42,7 +43,7 @@ export const TodoItem: FC<Props> = memo(
           data-cy="TodoLoader"
           // className="modal overlay"
           className={cn('modal overlay', {
-            'is-active': selectedTodo === todo.id,
+            'is-active': isTodoAdded,
           })}
         >
           <div className="modal-background has-background-white-ter" />

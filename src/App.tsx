@@ -21,6 +21,7 @@ import { ErrorMessage } from './components/ErrorMessage/ErrorMessage';
 import { Footer } from './components/Footer/Footer';
 import { Filter } from './types/Filter';
 import { TodosLength } from './TodosLength';
+import { isUserLoaded } from './IsUserContext';
 
 export const App: React.FC = () => {
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
@@ -30,6 +31,7 @@ export const App: React.FC = () => {
   const [title, setTitle] = useState('');
   const [filterType, setFilterType] = useState(Filter.ALL);
   const [errorMessage, setErrorMessage] = useState('');
+  const [isLoadedUser, setLoadedUser] = useState(false);
 
   const clearTitle = () => {
     setTitle('');
@@ -45,11 +47,13 @@ export const App: React.FC = () => {
         .catch(() => {
           setErrorMessage('Unable to delete a todo');
         });
-    }, [title],
+    }, [],
   );
 
   const handleAddTodo = useCallback(
     async () => {
+      setLoadedUser(true);
+
       if (title) {
         const todo = await addTodos(title, user?.id, false);
 
@@ -61,7 +65,9 @@ export const App: React.FC = () => {
       if (!title) {
         setErrorMessage('Title can\'t be empty');
       }
-    }, [title],
+
+      setLoadedUser(false);
+    }, [user?.id, title],
   );
 
   const visibleTodos = useMemo(() => {
@@ -99,11 +105,9 @@ export const App: React.FC = () => {
         })
         .catch(() => {
           setErrorMessage('Todos not found');
-        })
-        .finally(() => {
         });
     }
-  }, []);
+  }, [user]);
 
   return (
     <div className="todoapp">
@@ -118,10 +122,12 @@ export const App: React.FC = () => {
         />
 
         {visibleTodos && (
-          <TodoList
-            todos={visibleTodos}
-            onDeleteItem={handleDeleteItem}
-          />
+          <isUserLoaded.Provider value={isLoadedUser}>
+            <TodoList
+              todos={visibleTodos}
+              onDeleteItem={handleDeleteItem}
+            />
+          </isUserLoaded.Provider>
         )}
 
         {!!todos.length && (
