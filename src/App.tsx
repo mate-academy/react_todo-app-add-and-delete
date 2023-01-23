@@ -132,7 +132,10 @@ export const App: React.FC = () => {
 
         {!!todos.length && (
           <TodosLength.Provider value={todos.length}>
-            <Footer onSelectFilter={handleFilterType} />
+            <Footer
+              onSelectFilter={handleFilterType}
+              filterType={filterType}
+            />
           </TodosLength.Provider>
         )}
       </div>
