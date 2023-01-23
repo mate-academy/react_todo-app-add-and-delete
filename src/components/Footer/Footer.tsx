@@ -1,12 +1,13 @@
 import React, { memo } from 'react';
 import cn from 'classnames';
 import { Todo } from '../../types/Todo';
+import { Filter } from '../../types/Filter';
 
 type Props = {
   completeTodos: Todo[],
   incompleteTodos: Todo[],
-  filter: string,
-  setFilter: React.Dispatch<React.SetStateAction<string>>,
+  filter: Filter,
+  setFilter: React.Dispatch<React.SetStateAction<Filter>>,
   handleClearCompleted: () => void,
 };
 
@@ -30,9 +31,9 @@ export const Footer: React.FC<Props> = memo((props) => {
           data-cy="FilterLinkAll"
           href="#/"
           className={cn('filter__link', {
-            selected: filter === 'All',
+            selected: filter === Filter.all,
           })}
-          onClick={() => setFilter('All')}
+          onClick={() => setFilter(Filter.all)}
         >
           All
         </a>
@@ -41,9 +42,9 @@ export const Footer: React.FC<Props> = memo((props) => {
           data-cy="FilterLinkActive"
           href="#/active"
           className={cn('filter__link', {
-            selected: filter === 'Active',
+            selected: filter === Filter.active,
           })}
-          onClick={() => setFilter('Active')}
+          onClick={() => setFilter(Filter.active)}
         >
           Active
         </a>
@@ -51,9 +52,9 @@ export const Footer: React.FC<Props> = memo((props) => {
           data-cy="FilterLinkCompleted"
           href="#/completed"
           className={cn('filter__link', {
-            selected: filter === 'Completed',
+            selected: filter === Filter.completed,
           })}
-          onClick={() => setFilter('Completed')}
+          onClick={() => setFilter(Filter.completed)}
         >
           Completed
         </a>

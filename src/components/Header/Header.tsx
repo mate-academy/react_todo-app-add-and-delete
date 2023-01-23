@@ -1,4 +1,4 @@
-import React, { FormEvent } from 'react';
+import React, { FormEvent, memo } from 'react';
 
 type Props = {
   newTodoField: React.RefObject<HTMLInputElement>,
@@ -8,7 +8,7 @@ type Props = {
   isAdding: boolean;
 };
 
-export const Header: React.FC<Props> = (props) => {
+export const Header: React.FC<Props> = memo((props) => {
   const {
     newTodoField,
     title,
@@ -40,4 +40,4 @@ export const Header: React.FC<Props> = (props) => {
       </form>
     </header>
   );
-};
+});

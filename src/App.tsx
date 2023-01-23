@@ -17,34 +17,35 @@ import {
 import { Todo } from './types/Todo';
 import { createTodo, deleteTodo, getTodos } from './api/todos';
 import { TodoItem } from './components/TodoItem/TodoItem';
+import { Filter } from './types/Filter';
 
 export const App: React.FC = () => {
   const [todos, setTodos] = useState<Todo[]>([]);
-  // const [removeTodo, setRemoveTodo] = useState<Todo[]>([]);
   const [tempTodo, setTempTodo] = useState<Todo | null>(null);
   const [errorMessage, setErrorMessage] = useState('');
-  const [filter, setFilter] = useState('All');
+  const [filter, setFilter] = useState<Filter>(Filter.all);
   const [title, setTitle] = useState('');
   const [isAdding, setIsAdding] = useState(false);
 
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   const user = useContext(AuthContext);
   const newTodoField = useRef<HTMLInputElement>(null);
 
+  const handleError = () => {
+    setTimeout(() => setErrorMessage(''), 3000);
+  };
+
   useEffect(() => {
+    if (newTodoField.current) {
+      newTodoField.current.focus();
+    }
+
     if (user) {
       getTodos(user.id)
         .then(setTodos)
-        .catch(() => (
-          setErrorMessage('Unable to load a todos')
-        ));
-    }
-  }, []);
-
-  useEffect(() => {
-    // focus the element with `ref={newTodoField}`
-    if (newTodoField.current) {
-      newTodoField.current.focus();
+        .catch(() => {
+          setErrorMessage('Unable to load a todos');
+          handleError();
+        });
     }
   }, []);
 
@@ -61,10 +62,10 @@ export const App: React.FC = () => {
   const filterTodos = useMemo(() => {
     return todos.filter(todo => {
       switch (filter) {
-        case 'Completed':
+        case Filter.completed:
           return todo.completed;
 
-        case 'Active':
+        case Filter.active:
           return !todo.completed;
 
         default:

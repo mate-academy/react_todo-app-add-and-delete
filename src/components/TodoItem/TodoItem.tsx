@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { memo } from 'react';
 import cn from 'classnames';
 import { Todo } from '../../types/Todo';
 
@@ -8,7 +8,7 @@ type Props = {
   handleDeleteClick: (todoId: number) => void;
 };
 
-export const TodoItem: React.FC<Props> = (props) => {
+export const TodoItem: React.FC<Props> = memo((props) => {
   const { todo, isActive, handleDeleteClick } = props;
 
   return (
@@ -50,4 +50,4 @@ export const TodoItem: React.FC<Props> = (props) => {
       </div>
     </div>
   );
-};
+});
