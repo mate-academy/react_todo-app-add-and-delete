@@ -12,7 +12,7 @@ import { TodoList } from './components/TodoList';
 import { FilterTypes } from './types/FilterTypes';
 import { ErrorNotification } from './components/ErrorNotification';
 import { TodoItem } from './components/TodoItem';
-import { getFilteredTodos } from './api/helpers/getFiltereTodos';
+import { getFilteredTodos } from './helpers/getFiltereTodos';
 
 export const App: React.FC = memo(() => {
   // eslint-disable-next-line @typescript-eslint/no-unused-vars

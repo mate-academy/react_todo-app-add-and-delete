@@ -1,5 +1,5 @@
-import { FilterTypes } from '../../types/FilterTypes';
-import { Todo } from '../../types/Todo';
+import { FilterTypes } from '../types/FilterTypes';
+import { Todo } from '../types/Todo';
 
 export const getFilteredTodos = (todos: Todo[], filterType: FilterTypes) => {
   return todos.filter(todo => {
