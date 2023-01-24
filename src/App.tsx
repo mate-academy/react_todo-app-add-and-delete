@@ -39,7 +39,7 @@ export const App: React.FC = () => {
     }
   };
 
-  const downloadDataAPI = () => {
+  const fetch = () => {
     if (user) {
       getTodos(user.id)
         .then(todosFromServer => {
@@ -51,9 +51,9 @@ export const App: React.FC = () => {
     }
   };
 
-  const deleteDataAPI = (id: number) => {
+  const deleteTodo = (id: number) => {
     deleteTodos(id)
-      .then(() => downloadDataAPI())
+      .then(() => fetch())
       .catch(() => {
         setError(Errors.Delete);
         setTodoIdsOnRemove([]);
@@ -61,14 +61,14 @@ export const App: React.FC = () => {
   };
 
   const handleTodoDeleteButton = (todoId: number) => {
-    deleteDataAPI(todoId);
+    deleteTodo(todoId);
     setTodoIdsOnRemove([...todoIdsOnRemove, todoId]);
   };
 
   const handleClearButton = () => {
     todos
       .filter(todo => todo.completed)
-      .map(todo => deleteDataAPI(todo.id));
+      .map(todo => deleteTodo(todo.id));
 
     todos.forEach(todo => {
       if (todo.completed) {
@@ -99,9 +99,9 @@ export const App: React.FC = () => {
       setTodoOnLoad(newTodo);
 
       postTodos(newTodo)
-        .then(() => setIsAdding(false))
+        .then(() => fetch())
         .catch(() => setError(Errors.Post))
-        .finally(() => downloadDataAPI());
+        .finally(() => setIsAdding(false));
     }
 
     setInput('');
@@ -115,7 +115,7 @@ export const App: React.FC = () => {
   const handleTodosFilter = (filterType: string) => setFilter(filterType);
 
   useEffect(() => {
-    downloadDataAPI();
+    fetch();
     focusInput();
   }, []);
 
