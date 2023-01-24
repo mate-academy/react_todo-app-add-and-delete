@@ -1,4 +1,4 @@
-import { Todo } from './ITodo';
+import { ITodo } from './ITodo';
 
 export enum Error {
   None,
@@ -10,14 +10,14 @@ export enum Error {
 
 export type ContextProps = {
   userId: number
-  todos: Todo[]
+  todos: ITodo[]
   error: Error
-  tempTodo: Todo | null
+  tempTodo: ITodo | null
   isLoadingMany: boolean
   isDeleting: boolean
-  setTodos: React.Dispatch<React.SetStateAction<Todo[]>>
+  setTodos: React.Dispatch<React.SetStateAction<ITodo[]>>
   setError: React.Dispatch<React.SetStateAction<Error>>
-  setTempTodo: React.Dispatch<React.SetStateAction<Todo | null>>
+  setTempTodo: React.Dispatch<React.SetStateAction<ITodo | null>>
   setIsLoadingMany: React.Dispatch<React.SetStateAction<boolean>>
   setIsDeleting: React.Dispatch<React.SetStateAction<boolean>>
 };
