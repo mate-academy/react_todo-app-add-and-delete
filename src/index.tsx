@@ -1,16 +1,19 @@
 import { createRoot } from 'react-dom/client';
+import { HashRouter } from 'react-router-dom';
 
 import 'bulma/css/bulma.css';
 import '@fortawesome/fontawesome-free/css/all.css';
 import './styles/index.scss';
 
 import { App } from './App';
-import { AuthProvider } from './components/Auth/AuthContext';
+import { AppProvider } from './components/AppProvider/AppProvider';
 
 const Root = () => (
-  <AuthProvider>
-    <App />
-  </AuthProvider>
+  <HashRouter>
+    <AppProvider>
+      <App />
+    </AppProvider>
+  </HashRouter>
 );
 
 createRoot(document.getElementById('root') as HTMLDivElement)
