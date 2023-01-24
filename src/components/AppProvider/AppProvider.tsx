@@ -1,10 +1,8 @@
 import React, { useState } from 'react';
-
-import { AuthForm } from '../Auth/AuthForm';
-
-import { Error, ContextProps } from '../../types';
-import { Todo } from '../../types/Todo';
+import { ContextProps, Error } from '../../types';
+import { ITodo } from '../../types/ITodo';
 import { User } from '../../types/User';
+import { AuthForm } from '../Auth/AuthForm';
 
 export const AppContext = React.createContext<ContextProps>({
   userId: 0,
@@ -25,11 +23,11 @@ type Props = {
 };
 
 export const AppProvider: React.FC<Props> = ({ children }) => {
-  const [todos, setTodos] = useState<Todo[]>([]);
+  const [todos, setTodos] = useState<ITodo[]>([]);
   const [isLoadingMany, setIsLoadingMany] = useState(false);
   const [isDeleting, setIsDeleting] = useState(false);
   const [error, setError] = useState(Error.None);
-  const [tempTodo, setTempTodo] = useState<Todo | null>(null);
+  const [tempTodo, setTempTodo] = useState<ITodo | null>(null);
   const [user, setUser] = useState<User | null>(null);
 
   if (!user) {

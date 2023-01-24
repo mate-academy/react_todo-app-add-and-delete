@@ -1,4 +1,4 @@
-import { Todo } from './Todo';
+import { Todo } from './ITodo';
 
 export enum Error {
   None,

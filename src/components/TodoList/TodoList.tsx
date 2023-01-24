@@ -1,10 +1,10 @@
 import { useContext } from 'react';
-import { Todo } from '../../types/Todo';
+import { ITodo } from '../../types/ITodo';
 import { AppContext } from '../AppProvider/AppProvider';
-import { TodoInfo } from '../TodoInfo';
+import { Todo } from '../Todo';
 
 type Props = {
-  todos: Todo[]
+  todos: ITodo[]
 };
 
 export const TodoList: React.FC<Props> = ({ todos }) => {
@@ -13,10 +13,10 @@ export const TodoList: React.FC<Props> = ({ todos }) => {
   return (
     <>
       {todos.map(todo => (
-        <TodoInfo key={todo.id} todo={todo} />
+        <Todo key={todo.id} todo={todo} />
       ))}
 
-      {tempTodo && <TodoInfo key={0} todo={tempTodo} />}
+      {tempTodo && <Todo key={0} todo={tempTodo} />}
     </>
   );
 };

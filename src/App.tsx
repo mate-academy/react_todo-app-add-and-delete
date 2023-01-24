@@ -8,7 +8,7 @@ import { Error } from './types';
 
 import { AppContext } from './components/AppProvider/AppProvider';
 import { Filter } from './components/Filter';
-import { NewTodoForm } from './components/NewTodoForm';
+import { NewTodo } from './components/NewTodo';
 import { TodoList } from './components/TodoList';
 
 export const App: React.FC = () => {
@@ -97,7 +97,7 @@ export const App: React.FC = () => {
             />
           )}
 
-          <NewTodoForm />
+          <NewTodo />
         </header>
 
         <section

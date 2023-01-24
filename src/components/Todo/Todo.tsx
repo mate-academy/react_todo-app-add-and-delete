@@ -8,14 +8,14 @@ import {
 
 import { deleteTodo } from '../../api/todos';
 import { Error } from '../../types';
-import { Todo } from '../../types/Todo';
+import { ITodo } from '../../types/ITodo';
 import { AppContext } from '../AppProvider/AppProvider';
 
 type Props = {
-  todo: Todo
+  todo: ITodo
 };
 
-export const TodoInfo: React.FC<Props> = ({ todo }) => {
+export const Todo: React.FC<Props> = ({ todo }) => {
   const [title, setTitle] = useState(todo.title);
   const [isEditing, setIsEditing] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
@@ -62,7 +62,7 @@ export const TodoInfo: React.FC<Props> = ({ todo }) => {
     }
   }, []);
 
-  const updateTodo = (newProps: Partial<Todo>) => {
+  const updateTodo = (newProps: Partial<ITodo>) => {
     setTodos(current => current.map(mappedTodo => (
       mappedTodo.id === todo.id
         ? { ...mappedTodo, ...newProps }

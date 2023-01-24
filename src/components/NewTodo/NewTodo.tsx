@@ -3,7 +3,7 @@ import { postTodo } from '../../api/todos';
 import { Error } from '../../types';
 import { AppContext } from '../AppProvider/AppProvider';
 
-export const NewTodoForm = () => {
+export const NewTodo = () => {
   const [title, setTitle] = useState('');
 
   const {
