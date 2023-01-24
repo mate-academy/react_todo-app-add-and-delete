@@ -1,7 +1,7 @@
 /* eslint-disable jsx-a11y/control-has-associated-label */
 import classNames from 'classnames';
 import React, {
-  useContext, useEffect, useRef, useState,
+  useContext, useEffect, useState,
 } from 'react';
 
 import { getTodos, postTodos, deleteTodos } from './api/todos';
@@ -22,7 +22,6 @@ enum Errors {
 export const App: React.FC = () => {
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
   const user = useContext(AuthContext);
-  const newTodoField = useRef<HTMLInputElement>(null);
 
   const [todos, setTodos] = useState<Todo[]>([]);
   const [filter, setFilter] = useState('all');
@@ -31,22 +30,12 @@ export const App: React.FC = () => {
   const [isAdding, setIsAdding] = useState(false);
   const [todoOnload, setTodoOnLoad] = useState<Todo | null>(null);
   const [todoIdsOnRemove, setTodoIdsOnRemove] = useState<number[]>([]);
-  const [isCompleted] = useState(false);
-
-  const focusInput = () => {
-    if (newTodoField.current) {
-      newTodoField.current.focus();
-    }
-  };
+  const [isCompleted] = useState(true);
 
   const fetch = () => {
     if (user) {
       getTodos(user.id)
-        .then(todosFromServer => {
-          setTodos(todosFromServer);
-          setTodoOnLoad(null);
-          focusInput();
-        })
+        .then(todosFromServer => setTodos(todosFromServer))
         .catch(() => setError(Errors.Server));
     }
   };
@@ -56,7 +45,12 @@ export const App: React.FC = () => {
       .then(() => fetch())
       .catch(() => {
         setError(Errors.Delete);
-        setTodoIdsOnRemove([]);
+      })
+      .finally(() => {
+        const remainingIds = [...todoIdsOnRemove]
+          .filter(todoId => todoId !== id);
+
+        setTodoIdsOnRemove([...remainingIds]);
       });
   };
 
@@ -66,20 +60,20 @@ export const App: React.FC = () => {
   };
 
   const handleClearButton = () => {
-    todos
+    const completedTodosIds = [...todos]
       .filter(todo => todo.completed)
-      .map(todo => deleteTodo(todo.id));
+      .map(todo => todo.id);
 
-    todos.forEach(todo => {
-      if (todo.completed) {
-        setTodoIdsOnRemove([...todoIdsOnRemove, todo.id]);
-      }
-    });
+    setTodoIdsOnRemove([...todoIdsOnRemove, ...completedTodosIds]);
+
+    completedTodosIds.forEach(id => deleteTodo(id));
   };
 
   const handleErrorCloser = () => setError('');
 
-  const handleFormSubmit = () => {
+  const handleFormSubmit = async (event: React.FormEvent) => {
+    event.preventDefault();
+
     if (!input) {
       setError(Errors.Add);
       setTimeout(() => setError(''), 3000);
@@ -88,7 +82,7 @@ export const App: React.FC = () => {
     }
 
     if (user) {
-      const newTodo: Todo = {
+      const newTodoTemplate = {
         id: 0,
         userId: user.id,
         title: input,
@@ -96,15 +90,21 @@ export const App: React.FC = () => {
       };
 
       setIsAdding(true);
-      setTodoOnLoad(newTodo);
 
-      postTodos(newTodo)
-        .then(() => fetch())
-        .catch(() => setError(Errors.Post))
-        .finally(() => setIsAdding(false));
+      try {
+        setTodoOnLoad(newTodoTemplate);
+
+        const newTodo = await postTodos(newTodoTemplate);
+
+        setTodos([...todos, newTodo]);
+      } catch {
+        setError(Errors.Post);
+      } finally {
+        setInput('');
+        setIsAdding(false);
+        setTodoOnLoad(null);
+      }
     }
-
-    setInput('');
   };
 
   const handleInputChange = (event: React.ChangeEvent<HTMLInputElement>) => {
@@ -114,10 +114,7 @@ export const App: React.FC = () => {
 
   const handleTodosFilter = (filterType: string) => setFilter(filterType);
 
-  useEffect(() => {
-    fetch();
-    focusInput();
-  }, []);
+  useEffect(() => fetch(), []);
 
   return (
     <div className="todoapp">
@@ -132,9 +129,9 @@ export const App: React.FC = () => {
           />
 
           <NewTodo
-            newTodoField={newTodoField}
             input={input}
             isAdding={isAdding}
+            todoOnload={todoOnload}
             onInputChange={handleInputChange}
             onSubmit={handleFormSubmit}
           />
