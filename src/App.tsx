@@ -109,6 +109,12 @@ export const App: React.FC = () => {
     }
   }, [user]);
 
+  const handleItemsLeft = useCallback(
+    () => {
+      return todos.filter(todo => !todo.completed).length;
+    }, [todos],
+  );
+
   return (
     <div className="todoapp">
       <h1 className="todoapp__title">todos</h1>
@@ -131,7 +137,7 @@ export const App: React.FC = () => {
         )}
 
         {!!todos.length && (
-          <TodosLength.Provider value={todos.length}>
+          <TodosLength.Provider value={handleItemsLeft()}>
             <Footer
               onSelectFilter={handleFilterType}
               filterType={filterType}
