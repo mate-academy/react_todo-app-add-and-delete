@@ -12,6 +12,7 @@ import { TodoList } from './components/TodoList';
 import { FilterTypes } from './types/FilterTypes';
 import { ErrorNotification } from './components/ErrorNotification';
 import { TodoItem } from './components/TodoItem';
+import { getFilteredTodos } from './api/helpers/getFiltereTodos';
 
 export const App: React.FC = memo(() => {
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
@@ -131,19 +132,7 @@ export const App: React.FC = memo(() => {
   }, []);
 
   const visibleTodoos = useMemo(() => {
-    return todos.filter(todo => {
-      switch (selectedFilterType) {
-        case FilterTypes.ACTIVE:
-          return !todo.completed;
-
-        case FilterTypes.COMPLETED:
-          return todo.completed;
-
-        case FilterTypes.ALL:
-        default:
-          return true;
-      }
-    });
+    return getFilteredTodos(todos, selectedFilterType);
   }, [todos, selectedFilterType]);
 
   const filterOptions = useMemo(() => Object.values(FilterTypes), []);
