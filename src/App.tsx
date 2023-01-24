@@ -12,6 +12,8 @@ import { AuthContext } from './components/Auth/AuthContext';
 import { Filter } from './components/Filter';
 import { NewTodo } from './components/NewTodo';
 import { TodoList } from './components/TodoList';
+import { filterTodos } from './helpers/filterTodos';
+import { FilterEnum } from './types/filterEnum';
 import { Todo } from './types/Todo';
 
 export const App: React.FC = () => {
@@ -21,10 +23,10 @@ export const App: React.FC = () => {
 
   const [todos, setTodos] = useState<Todo[]>([]);
   const [noError, setNoError] = useState(true);
-  const [filterStatus, setFilterStatus] = useState('All');
+  const [statusFilter, setStatusFilter] = useState(FilterEnum.All);
   const [errorText, setErrorText] = useState('');
   const [isAdding, setIsAdding] = useState(false);
-  const [isDeleting, setIsDeleting] = useState([0]);
+  const [isDeletingNow, setIsDeletingNow] = useState([0]);
   const [
     temporaryTodo,
     setTemporaryTodo,
@@ -90,7 +92,7 @@ export const App: React.FC = () => {
   }, []);
 
   const onDelete = useCallback((id: number) => {
-    setIsDeleting((currentArrIsDelete) => [...currentArrIsDelete, id]);
+    setIsDeletingNow((currentArrIsDelete) => [...currentArrIsDelete, id]);
 
     deleteTodos(id)
       .then(() => {
@@ -98,7 +100,7 @@ export const App: React.FC = () => {
           return currentTodos.filter(todo => todo.id !== id);
         });
 
-        setIsDeleting((currentArrIsDelete) => {
+        setIsDeletingNow((currentArrIsDelete) => {
           return currentArrIsDelete
             .filter(idOfDeletingItem => idOfDeletingItem !== id);
         });
@@ -116,18 +118,10 @@ export const App: React.FC = () => {
 
   const isClearCompletedHidden = todos.some(({ completed }) => completed);
 
-  const visibleTodos = useMemo(() => (
-    todos.filter(({ completed }) => {
-      switch (filterStatus) {
-        case 'Active':
-          return !completed;
-        case 'Completed':
-          return completed;
-        default:
-          return true;
-      }
-    })
-  ), [todos, filterStatus]);
+  const visibleTodos = useMemo(
+    () => (filterTodos(todos, statusFilter)),
+    [todos, statusFilter],
+  );
 
   return (
     <div className="todoapp">
@@ -144,7 +138,7 @@ export const App: React.FC = () => {
         <TodoList
           visibleTodos={visibleTodos}
           tempTodo={temporaryTodo}
-          isDeleting={isDeleting}
+          isDeleting={isDeletingNow}
           onDelete={onDelete}
         />
 
@@ -153,7 +147,7 @@ export const App: React.FC = () => {
             {`${visibleTodos.length} items left`}
           </span>
 
-          <Filter filterStatus={filterStatus} onFilter={setFilterStatus} />
+          <Filter filterStatus={statusFilter} onFilter={setStatusFilter} />
 
           <button
             data-cy="ClearCompletedButton"

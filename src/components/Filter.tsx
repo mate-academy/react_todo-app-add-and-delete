@@ -1,15 +1,10 @@
 import { FC, memo } from 'react';
 import cn from 'classnames';
-
-const filterStatuses = {
-  All: 'All',
-  Active: 'Active',
-  Completed: 'Completed',
-};
+import { FilterEnum } from '../types/filterEnum';
 
 interface Props {
-  filterStatus: string,
-  onFilter: React.Dispatch<React.SetStateAction<string>>,
+  filterStatus: FilterEnum,
+  onFilter: React.Dispatch<React.SetStateAction<FilterEnum>>,
 }
 
 export const Filter: FC<Props> = memo(
@@ -20,9 +15,9 @@ export const Filter: FC<Props> = memo(
         href="#/"
         className={cn(
           'filter__link',
-          { selected: filterStatus === filterStatuses.All },
+          { selected: filterStatus === FilterEnum.All },
         )}
-        onClick={() => onFilter(filterStatuses.All)}
+        onClick={() => onFilter(FilterEnum.All)}
       >
         All
       </a>
@@ -32,9 +27,9 @@ export const Filter: FC<Props> = memo(
         href="#/active"
         className={cn(
           'filter__link',
-          { selected: filterStatus === filterStatuses.Active },
+          { selected: filterStatus === FilterEnum.Active },
         )}
-        onClick={() => onFilter(filterStatuses.Active)}
+        onClick={() => onFilter(FilterEnum.Active)}
       >
         Active
       </a>
@@ -43,9 +38,9 @@ export const Filter: FC<Props> = memo(
         href="#/completed"
         className={cn(
           'filter__link',
-          { selected: filterStatus === filterStatuses.Completed },
+          { selected: filterStatus === FilterEnum.Completed },
         )}
-        onClick={() => onFilter(filterStatuses.Completed)}
+        onClick={() => onFilter(FilterEnum.Completed)}
       >
         Completed
       </a>
