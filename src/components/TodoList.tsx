@@ -8,7 +8,7 @@ type Props = {
   newTodo: Todo | null,
   isLoading: boolean,
   deleteTodo: (todoId: number) => void,
-  deletedTodoId: number[],
+  deletedTodoIds: number[],
 };
 
 export const TodoList: React.FC<Props> = ({
@@ -17,7 +17,7 @@ export const TodoList: React.FC<Props> = ({
   newTodo,
   isLoading,
   deleteTodo,
-  deletedTodoId,
+  deletedTodoIds,
 }) => {
   return (
     <section className="todoapp__main" data-cy="TodoList">
@@ -27,7 +27,7 @@ export const TodoList: React.FC<Props> = ({
           todo={todo}
           deleteTodo={deleteTodo}
           isActive={isLoading}
-          deletedTodoId={deletedTodoId}
+          deletedTodoIds={deletedTodoIds}
         />
       ))}
 
@@ -36,7 +36,7 @@ export const TodoList: React.FC<Props> = ({
           todo={newTodo}
           deleteTodo={deleteTodo}
           isActive={isAdding}
-          deletedTodoId={deletedTodoId}
+          deletedTodoIds={deletedTodoIds}
         />
       )}
     </section>

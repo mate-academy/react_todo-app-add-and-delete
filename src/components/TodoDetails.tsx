@@ -6,17 +6,21 @@ type Props = {
   todo: Todo,
   deleteTodo: (todoId: number) => void,
   isActive: boolean,
-  deletedTodoId: number[],
+  deletedTodoIds: number[],
 };
 
 export const TodoDetails: React.FC<Props> = ({
   todo,
   deleteTodo,
   isActive,
-  deletedTodoId,
+  deletedTodoIds,
 }) => {
   const isDeleted = (todoId: number) => {
-    return deletedTodoId.includes(todoId);
+    if (deletedTodoIds.length === 0) {
+      return true;
+    }
+
+    return deletedTodoIds.includes(todoId);
   };
 
   return (

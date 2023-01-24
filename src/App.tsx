@@ -22,14 +22,12 @@ export const App: React.FC = () => {
   const [isAdding, setIsAdding] = useState(false);
   const [newTodo, setNewTodo] = useState<Todo | null>(null);
   const [isLoading, setIsLoading] = useState(false);
-  const [deletedTodoId, setDeletedTodoId] = useState([0]);
+  const [deletedTodoIds, setDeletedTodoIds] = useState<number[]>([]);
 
   useEffect(() => {
     if (user) {
       getTodos(user.id)
-        .then(result => {
-          setTodos(result);
-        })
+        .then(setTodos)
         .catch(() => {
           setIsError(true);
         });
@@ -51,7 +49,7 @@ export const App: React.FC = () => {
 
   const deleteTodo = (todoId: number) => {
     setIsLoading(true);
-    setDeletedTodoId(currentId => [...currentId, todoId]);
+    setDeletedTodoIds(currentId => [...currentId, todoId]);
 
     removeTodo(todoId)
       .then(() => {
@@ -64,7 +62,10 @@ export const App: React.FC = () => {
         setErrorText('Unable to delete a todo');
         setTimeout(() => setErrorText(''), 3000);
       })
-      .finally(() => setIsLoading(false));
+      .finally(() => {
+        setIsLoading(false);
+        setDeletedTodoIds([]);
+      });
   };
 
   const getFilteredTodos = () => {
@@ -117,7 +118,7 @@ export const App: React.FC = () => {
               newTodo={newTodo}
               deleteTodo={deleteTodo}
               isLoading={isLoading}
-              deletedTodoId={deletedTodoId}
+              deletedTodoIds={deletedTodoIds}
             />
             <Footer
               onSelect={handleFilter}
