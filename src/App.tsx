@@ -3,23 +3,31 @@ import cn from 'classnames';
 import React, { useContext, useEffect, useMemo } from 'react';
 import { Route, Routes } from 'react-router-dom';
 
-import { deleteTodo } from './api/todos';
+import { deleteTodo, getTodos } from './api/todos';
+import { Error } from './types';
 
 import { AppContext } from './components/AppProvider/AppProvider';
 import { Filter } from './components/Filter';
 import { NewTodoForm } from './components/NewTodoForm';
 import { TodoList } from './components/TodoList';
-import { Error } from './types';
 
 export const App: React.FC = () => {
   const {
+    userId,
     todos,
     error,
-    setError,
     setTodos,
+    setError,
     setIsLoadingMany,
     setIsDeleting,
   } = useContext(AppContext);
+
+  useEffect(() => {
+    // eslint-disable-next-line func-names
+    (async function () {
+      setTodos(await getTodos(userId || 0));
+    }());
+  }, []);
 
   const activeTodos = useMemo(() => (
     todos.filter(({ completed }) => !completed)
@@ -29,12 +37,18 @@ export const App: React.FC = () => {
     todos.filter(({ completed }) => completed)
   ), [todos]);
 
-  const isActive = !activeTodos.length && todos.length > 0;
+  const isActive = completedTodos.length === todos.length;
 
   useEffect(() => {
-    window.setTimeout(
-      setError, 3000, Error.None,
-    );
+    let timerId = 0;
+
+    if (error) {
+      timerId = window.setTimeout(
+        setError, 3000, Error.None,
+      );
+    } else {
+      window.clearTimeout(timerId);
+    }
   }, [error]);
 
   const clearCompleted = () => {

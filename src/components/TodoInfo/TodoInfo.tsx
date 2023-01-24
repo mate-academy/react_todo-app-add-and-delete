@@ -30,10 +30,13 @@ export const TodoInfo: React.FC<Props> = ({ todo }) => {
 
   const titleField = useRef<HTMLInputElement>(null);
 
+  const areAllChecked = todos.every(({ completed }) => completed);
+  const shouldLoad = !todo.completed || areAllChecked;
+
   const isActive = isLoading
-  || !todo.id
-  || isLoadingMany
-  || (isDeleting && todo.completed);
+    || todo.id === 0 // temp todo
+    || (isLoadingMany && shouldLoad)
+    || (isDeleting && todo.completed);
 
   useEffect(() => {
     titleField.current?.focus();
@@ -67,7 +70,7 @@ export const TodoInfo: React.FC<Props> = ({ todo }) => {
     )));
   };
 
-  // update todo.completed
+  // PATCH todo.completed
   const onCheck = () => {
     const newProps = { completed: !todo.completed };
 
@@ -76,7 +79,7 @@ export const TodoInfo: React.FC<Props> = ({ todo }) => {
     setTimeout(setIsLoading, 800, false);
   };
 
-  // update todo.title
+  // PATCH todo.title
   const onSubmit = (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
     updateTodo({ title });

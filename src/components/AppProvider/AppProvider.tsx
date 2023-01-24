@@ -1,12 +1,13 @@
-import React, { useContext, useEffect, useState } from 'react';
+import React, { useState } from 'react';
 
-import { getTodos } from '../../api/todos';
-import { AuthContext } from '../Auth/AuthContext';
+import { AuthForm } from '../Auth/AuthForm';
 
 import { Error, ContextProps } from '../../types';
 import { Todo } from '../../types/Todo';
+import { User } from '../../types/User';
 
 export const AppContext = React.createContext<ContextProps>({
+  userId: 0,
   todos: [],
   error: Error.None,
   tempTodo: null,
@@ -29,19 +30,14 @@ export const AppProvider: React.FC<Props> = ({ children }) => {
   const [isDeleting, setIsDeleting] = useState(false);
   const [error, setError] = useState(Error.None);
   const [tempTodo, setTempTodo] = useState<Todo | null>(null);
+  const [user, setUser] = useState<User | null>(null);
 
-  const user = useContext(AuthContext);
-
-  useEffect(() => {
-    // eslint-disable-next-line func-names
-    (async function () {
-      if (user) {
-        setTodos(await getTodos(user.id));
-      }
-    }());
-  }, []);
+  if (!user) {
+    return <AuthForm onLogin={setUser} />;
+  }
 
   const contextValue = {
+    userId: user.id,
     todos,
     error,
     tempTodo,

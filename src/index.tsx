@@ -6,16 +6,13 @@ import '@fortawesome/fontawesome-free/css/all.css';
 import './styles/index.scss';
 
 import { App } from './App';
-import { AuthProvider } from './components/Auth/AuthContext';
 import { AppProvider } from './components/AppProvider/AppProvider';
 
 const Root = () => (
   <HashRouter>
-    <AuthProvider>
-      <AppProvider>
-        <App />
-      </AppProvider>
-    </AuthProvider>
+    <AppProvider>
+      <App />
+    </AppProvider>
   </HashRouter>
 );
 

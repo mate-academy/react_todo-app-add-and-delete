@@ -9,6 +9,7 @@ export enum Error {
 }
 
 export type ContextProps = {
+  userId: number
   todos: Todo[]
   error: Error
   tempTodo: Todo | null

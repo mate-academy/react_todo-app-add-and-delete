@@ -2,19 +2,17 @@ import React, { useContext, useState } from 'react';
 import { postTodo } from '../../api/todos';
 import { Error } from '../../types';
 import { AppContext } from '../AppProvider/AppProvider';
-import { AuthContext } from '../Auth/AuthContext';
 
 export const NewTodoForm = () => {
   const [title, setTitle] = useState('');
 
   const {
-    setError,
+    userId,
     todos,
+    setError,
     setTodos,
     setTempTodo,
   } = useContext(AppContext);
-
-  const user = useContext(AuthContext);
 
   const todoId = todos.length
     ? Math.max(...todos.map(({ id }) => id + 1))
@@ -22,7 +20,7 @@ export const NewTodoForm = () => {
 
   const todo = {
     title,
-    userId: user?.id || 0,
+    userId,
     completed: false,
     id: todoId,
   };
