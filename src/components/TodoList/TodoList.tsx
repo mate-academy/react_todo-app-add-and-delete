@@ -17,6 +17,7 @@ export const TodoList: React.FC<Props> = memo((props) => {
     <section className="todoapp__main" data-cy="TodoList">
       {todos.map(todo => (
         <TodoItem
+          key={todo.id}
           todo={todo}
           isDeleting={todoIDsForDeleting.includes(todo.id)}
           onRemoving={onRemoving}
