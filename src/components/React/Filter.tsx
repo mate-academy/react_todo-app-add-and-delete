@@ -5,10 +5,10 @@ type Props = {
   filter: string,
   isCompleted: boolean,
   onCompletedClear: () => void,
-  onFilterChange: (filterType: string) => void,
+  onFilterChange: (Filter: Filters) => void,
 };
 
-enum Filters {
+export enum Filters {
   All = 'all',
   Active = 'active',
   Completed = 'completed',
@@ -20,7 +20,7 @@ export const Filter: React.FC<Props> = ({
   onCompletedClear,
   onFilterChange,
 }) => {
-  const compareFilter = (filterName: string) => {
+  const compareFilter = (filterName: Filters) => {
     return classNames(
       'filter__link',
       {
@@ -40,7 +40,7 @@ export const Filter: React.FC<Props> = ({
           <a
             data-cy="FilterLinkAll"
             href="#/"
-            className={compareFilter('all')}
+            className={compareFilter(Filters.All)}
             onClick={() => onFilterChange(Filters.All)}
           >
             All
@@ -49,7 +49,7 @@ export const Filter: React.FC<Props> = ({
           <a
             data-cy="FilterLinkActive"
             href="#/active"
-            className={compareFilter('active')}
+            className={compareFilter(Filters.Active)}
             onClick={() => onFilterChange(Filters.Active)}
           >
             Active
@@ -57,7 +57,7 @@ export const Filter: React.FC<Props> = ({
           <a
             data-cy="FilterLinkCompleted"
             href="#/completed"
-            className={compareFilter('completed')}
+            className={compareFilter(Filters.Completed)}
             onClick={() => onFilterChange(Filters.Completed)}
           >
             Completed
@@ -68,7 +68,7 @@ export const Filter: React.FC<Props> = ({
           data-cy="ClearCompletedButton"
           type="button"
           className="todoapp__clear-completed"
-          onClick={() => onCompletedClear()}
+          onClick={onCompletedClear}
           style={!isCompleted
             ? { visibility: 'hidden' }
             : {}}

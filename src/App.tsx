@@ -6,7 +6,7 @@ import React, {
 
 import { getTodos, postTodos, deleteTodos } from './api/todos';
 import { AuthContext } from './components/Auth/AuthContext';
-import { Filter } from './components/React/Filter';
+import { Filter, Filters } from './components/React/Filter';
 import { NewTodo } from './components/React/NewTodo';
 import { TodoList } from './components/React/TodoList';
 import { Todo } from './types/Todo';
@@ -20,17 +20,16 @@ enum Errors {
 }
 
 export const App: React.FC = () => {
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   const user = useContext(AuthContext);
 
   const [todos, setTodos] = useState<Todo[]>([]);
-  const [filter, setFilter] = useState('all');
+  const [filter, setFilter] = useState<Filters>(Filters.All);
   const [error, setError] = useState('');
   const [input, setInput] = useState('');
   const [isAdding, setIsAdding] = useState(false);
   const [todoOnload, setTodoOnLoad] = useState<Todo | null>(null);
   const [todoIdsOnRemove, setTodoIdsOnRemove] = useState<number[]>([]);
-  const [isCompleted] = useState(true);
+  const [isCompleted] = useState(false);
 
   const fetch = () => {
     if (user) {
@@ -112,7 +111,7 @@ export const App: React.FC = () => {
     setError('');
   };
 
-  const handleTodosFilter = (filterType: string) => setFilter(filterType);
+  const handleTodosFilter = (filterType: Filters) => setFilter(filterType);
 
   useEffect(() => fetch(), []);
 
