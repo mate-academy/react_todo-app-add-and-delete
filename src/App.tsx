@@ -4,7 +4,7 @@ import React, {
 } from 'react';
 // import cn from 'classnames';
 
-import { getTodos } from './api/todos';
+import { addTodo, getTodos } from './api/todos';
 import { AuthContext } from './components/components/Auth/AuthContext';
 import { ErrorMessage } from './components/components/ErrorMessage';
 import { TodoList } from './components/components/TodoList';
@@ -20,6 +20,8 @@ export const App: React.FC = memo(() => {
   const [todos, setTodos] = useState<Todo[]>([]);
   const [errorMessage, setErrorMessage] = useState('');
   const [selectedFilterType, setSelectedFilterType] = useState(FilterTypes.ALL);
+  const [newTodoToAdd, setNewTodoToAdd] = useState('');
+  const [tempTodo, setTempTodo] = useState<Todo | null>(null);
 
   const handleFilterOptionClick = (newOption: FilterTypes) => {
     if (selectedFilterType !== newOption) {
@@ -39,7 +41,9 @@ export const App: React.FC = memo(() => {
     if (newTodoField.current) {
       newTodoField.current.focus();
     }
+  }, [tempTodo]);
 
+  useEffect(() => {
     if (user) {
       getTodos(user.id)
         .then(setTodos)
@@ -75,6 +79,41 @@ export const App: React.FC = memo(() => {
     return todos.filter(({ completed }) => !completed).length;
   }, [todos]);
 
+  const handleFormSubmit = (event: React.FormEvent<HTMLFormElement>) => {
+    event.preventDefault();
+
+    if (!newTodoToAdd) {
+      setErrorMessage("Title can't be empty");
+
+      return;
+    }
+
+    if (user) {
+      const newTodo = {
+        userId: user.id,
+        title: newTodoToAdd,
+        completed: false,
+      };
+
+      setTempTodo({
+        ...newTodo,
+        id: 0,
+      });
+
+      addTodo(newTodo)
+        .then(uploadedTodo => setTodos(prev => ([
+          ...prev,
+          uploadedTodo,
+        ])))
+        .catch(() => showErrorMessage('Unable to add a todo`'))
+        .finally(() => {
+          setNewTodoToAdd('');
+          setTempTodo(null);
+          setErrorMessage('');
+        });
+    }
+  };
+
   return (
     <div className="todoapp">
       <h1 className="todoapp__title">todos</h1>
@@ -87,20 +126,24 @@ export const App: React.FC = memo(() => {
             className="todoapp__toggle-all active"
           />
 
-          <form>
+          <form onSubmit={handleFormSubmit}>
             <input
               data-cy="NewTodoField"
               type="text"
               ref={newTodoField}
               className="todoapp__new-todo"
               placeholder="What needs to be done?"
+              value={newTodoToAdd}
+              onChange={(event) => setNewTodoToAdd(event.target.value)}
             />
           </form>
         </header>
 
-        {todos.length > 0 && (
+        {(todos.length > 0 || tempTodo) && (
           <>
-            <TodoList todos={visibleTodos} />
+            <TodoList
+              todos={visibleTodos}
+            />
 
             <Footer
               filterClick={handleFilterOptionClick}
