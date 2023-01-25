@@ -2,7 +2,7 @@
 import React, {
   useContext, useEffect, useMemo, useRef, useState,
 } from 'react';
-import { getTodos } from './api/todos';
+import { deleteTodoById, getTodos } from './api/todos';
 import { AuthContext } from './components/Auth/AuthContext';
 import { ErrorNotification }
   from './components/ErrorNotification/ErrorNotification';
@@ -17,6 +17,7 @@ export const App: React.FC = () => {
   const [isError, setIsError] = useState<boolean>(false);
   const [errorMessage, setErrorMessage] = useState<string>('');
   const [filterStatus, setFilterStatus] = useState<string>(FilterType.ALL);
+
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
   const user = useContext(AuthContext);
   const newTodoField = useRef<HTMLInputElement>(null);
@@ -41,6 +42,21 @@ export const App: React.FC = () => {
 
   const closeErrorMassage = () => {
     setIsError(false);
+  };
+
+  const deleteTodo = async (todoId: number) => {
+    try {
+      const response = await deleteTodoById(todoId);
+
+      setTodos(currentTodos => currentTodos.filter(todo => todo.id !== todoId));
+
+      return response;
+    } catch (error) {
+      setIsError(true);
+      setErrorMessage('Unable to delete a todo');
+
+      return false;
+    }
   };
 
   if (isError) {
@@ -70,9 +86,14 @@ export const App: React.FC = () => {
       <h1 className="todoapp__title">todos</h1>
 
       <div className="todoapp__content">
-        <Header newTodoField={newTodoField} />
+        <Header
+          newTodoField={newTodoField}
+          setIsError={setIsError}
+          newTodoTitle={newTodoTitle}
+          onErrorMessage={setErrorMessage}
+        />
 
-        <TodoList todos={visibleTodos} />
+        <TodoList todos={visibleTodos} onDeleteTodo={deleteTodo} />
 
         {Boolean(todos.length) && (
           <Footer
