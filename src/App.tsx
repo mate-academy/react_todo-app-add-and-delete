@@ -98,15 +98,7 @@ export const App: React.FC = () => {
 
             setTitle('');
 
-            setTodos(currentTodos => [
-              ...currentTodos,
-              {
-                id: newTodo.id,
-                userId: newTodo.userId,
-                title: newTodo.title,
-                completed: newTodo.completed,
-              },
-            ]);
+            setTodos(currentTodos => [...currentTodos, newTodo]);
           } catch (error) {
             setErrorMessage('Unable to add a todo');
           } finally {
@@ -137,13 +129,13 @@ export const App: React.FC = () => {
     }
   }, []);
 
-  const clearAllCompletedTodos = () => {
+  const clearAllCompletedTodos = useCallback(() => {
     todos.forEach(todo => {
       if (todo.completed) {
         removeTodo(todo.id);
       }
     });
-  };
+  }, [todos]);
 
   return (
     <div className="todoapp">
