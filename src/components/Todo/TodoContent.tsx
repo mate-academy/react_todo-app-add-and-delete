@@ -5,7 +5,6 @@ export const TodoContent = () => {
   return (
     <div className="todoapp__content">
       <TodoHeader />
-
       <TodoList />
     </div>
   );
