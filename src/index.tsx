@@ -6,12 +6,14 @@ import './styles/index.scss';
 
 import { App } from './App';
 import { AuthProvider } from './components/Auth/AuthContext';
+import { TodoProvider } from './store/todoContext';
 
 const Root = () => (
   <AuthProvider>
-    <App />
+    <TodoProvider>
+      <App />
+    </TodoProvider>
   </AuthProvider>
 );
 
-createRoot(document.getElementById('root') as HTMLDivElement)
-  .render(<Root />);
+createRoot(document.getElementById('root') as HTMLDivElement).render(<Root />);

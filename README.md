@@ -6,6 +6,7 @@ Take your code implemented for [Loading todos](https://github.com/mate-academy/r
 and implement the ability to and nd remove todos.
 
 > Here is [the working example](https://mate-academy.github.io/react_todo-app-with-api/)
+
 # ❗️❗️❗️</br>In this working example implemented all 3 parts of the task.</br>In this task you have to implement only the second part described below (using your code from the first part).</br>❗️❗️❗️
 
 ### [API Documentation](https://mate-academy.github.io/fe-students-api/)
@@ -45,101 +46,106 @@ Remove all the completed todos after `Clear completed` button click:
 - Implement a solution following the [React task guideline](https://github.com/mate-academy/react_task-guideline#react-tasks-guideline).
 - Use the [React TypeScript cheat sheet](https://mate-academy.github.io/fe-program/js/extra/react-typescript).
 - Open one more terminal and run tests with `npm test` to ensure your solution is correct.
-- Replace `<your_account>` with your Github username in the [DEMO LINK](https://<your_account>.github.io/react_todo-app-add-and-delete/) and add it to the PR description.
+- Replace `<your_account>` with your Github username in the [DEMO LINK](https://ysrckr.github.io/react_todo-app-add-and-delete/) and add it to the PR description.
 
 ## IF you want to implement smooth animations
 
 <details>
   <summary>Click here to see the hint</summary>
-  
-  Use [React Transition Group](https://reactcommunity.org/react-transition-group/transition-group)
 
-  ```tsx
-  <section className="todoapp__main" data-cy="TodoList">
-    <TransitionGroup>
-      {visibleTodos.map(todo => (
-        <CSSTransition
-          key={todo.id}
-          timeout={300}
-          classNames="item"
-        >
-          <TodoItem
-            todo={todo}
-            isProcessed={processings.includes(todo.id)}
-            onDelete={() => deleteTodo(todo.id)}
-            onUpdate={updateTodo}
-          />
-        </CSSTransition>
-      ))}
+Use [React Transition Group](https://reactcommunity.org/react-transition-group/transition-group)
 
-      {creating && (
-        <CSSTransition
-          key={0}
-          timeout={300}
-          classNames="temp-item"
-        >
-          <TodoItem
-            todo={{
-              id: Math.random(),
-              title,
-              completed: false,
-              userId: user.id,
-            }}
-            isProcessed
-          />
-        </CSSTransition>
-      )}
-    </TransitionGroup>
-  </section>
-  ```
-    
-  Here are the styles used in this example
-  ```css
-  .item-enter {
-    max-height: 0;
-  }
+```tsx
+<section
+  className="todoapp__main"
+  data-cy="TodoList"
+>
+  <TransitionGroup>
+    {visibleTodos.map(todo => (
+      <CSSTransition
+        key={todo.id}
+        timeout={300}
+        classNames="item"
+      >
+        <TodoItem
+          todo={todo}
+          isProcessed={processings.includes(todo.id)}
+          onDelete={() => deleteTodo(todo.id)}
+          onUpdate={updateTodo}
+        />
+      </CSSTransition>
+    ))}
 
-  .item-enter-active {
-    overflow: hidden;
-    max-height: 58px;
-    transition: max-height 0.3s ease-in-out;
-  }
+    {creating && (
+      <CSSTransition
+        key={0}
+        timeout={300}
+        classNames="temp-item"
+      >
+        <TodoItem
+          todo={{
+            id: Math.random(),
+            title,
+            completed: false,
+            userId: user.id,
+          }}
+          isProcessed
+        />
+      </CSSTransition>
+    )}
+  </TransitionGroup>
+</section>
+```
 
-  .item-exit {
-    max-height: 58px;
-  }
+Here are the styles used in this example
 
-  .item-exit-active {
-    overflow: hidden;
-    max-height: 0;
-    transition: max-height 0.3s ease-in-out;
-  }
+```css
+.item-enter {
+  max-height: 0;
+}
 
-  .temp-item-enter {
-    max-height: 0;
-  }
+.item-enter-active {
+  overflow: hidden;
+  max-height: 58px;
+  transition: max-height 0.3s ease-in-out;
+}
 
-  .temp-item-enter-active {
-    overflow: hidden;
-    max-height: 58px;
-    transition: max-height 0.3s ease-in-out;
-  }
+.item-exit {
+  max-height: 58px;
+}
 
-  .temp-item-exit {
-    max-height: 58px;
-  }
+.item-exit-active {
+  overflow: hidden;
+  max-height: 0;
+  transition: max-height 0.3s ease-in-out;
+}
 
-  .temp-item-exit-active {
-    transform: translateY(-58px);
-    max-height: 0;
-    opacity: 0;
-    transition: 0.3s ease-in-out;
-    transition-property: opacity, max-height, transform;
-  }
+.temp-item-enter {
+  max-height: 0;
+}
 
-  .has-error .temp-item-exit-active {
-    transform: translateY(0);
-    overflow: hidden;
-  }
-  ```
+.temp-item-enter-active {
+  overflow: hidden;
+  max-height: 58px;
+  transition: max-height 0.3s ease-in-out;
+}
+
+.temp-item-exit {
+  max-height: 58px;
+}
+
+.temp-item-exit-active {
+  transform: translateY(-58px);
+  max-height: 0;
+  opacity: 0;
+  transition: 0.3s ease-in-out;
+  transition-property: opacity, max-height, transform;
+}
+
+.has-error .temp-item-exit-active {
+  transform: translateY(0);
+  overflow: hidden;
+}
+```
+
 </details>
