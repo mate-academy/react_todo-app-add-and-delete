@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { User } from '../../types/User';
+import { User } from '../../../types/User';
 import { AuthForm } from './AuthForm';
 
 export const AuthContext = React.createContext<User | null>(null);
