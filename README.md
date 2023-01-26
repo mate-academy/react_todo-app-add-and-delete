@@ -5,7 +5,7 @@ It is the second part of the React Todo App with API.
 Take your code implemented for [Loading todos](https://github.com/mate-academy/react_todo-app-loading-todos)
 and implement the ability to and nd remove todos.
 
-> Here is [the working example](https://mate-academy.github.io/react_todo-app-with-api/)
+> Here is [the working example](https://mate-academy.github.io/react_todo-app-withf-api/)
 # ❗️❗️❗️</br>In this working example implemented all 3 parts of the task.</br>In this task you have to implement only the second part described below (using your code from the first part).</br>❗️❗️❗️
 
 ### [API Documentation](https://mate-academy.github.io/fe-students-api/)

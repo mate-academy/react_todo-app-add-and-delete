@@ -1,9 +1,9 @@
 import React, { useState } from 'react';
 import cn from 'classnames';
-import { Todo } from '../../types/Todo';
+import { TempTodo, Todo } from '../../types/Todo';
 
 type Props = {
-  todo: Todo;
+  todo: Todo | TempTodo;
 };
 export const TodoInfo:React.FC<Props> = ({ todo }) => {
   const [isEditing] = useState(false);
@@ -49,7 +49,9 @@ export const TodoInfo:React.FC<Props> = ({ todo }) => {
 
       <div
         data-cy="TodoLoader"
-        className="modal overlay"
+        className={cn('modal overlay', {
+          'is-active': todo.id === 0,
+        })}
       >
         <div className="modal-background has-background-white-ter" />
         <div className="loader" />

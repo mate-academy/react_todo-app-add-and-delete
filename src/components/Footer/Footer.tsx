@@ -2,16 +2,13 @@ import cn from 'classnames';
 import React, { useContext } from 'react';
 import { AppContext } from '../../AppContext';
 import { FilterStatus } from '../../types/FilterStatus';
-import { Todo } from '../../types/Todo';
 
-type Props = {
-  todos: Todo[];
-};
-
-export const Footer:React.FC<Props> = ({
-  todos,
-}) => {
-  const { filterStatus, setFilterStatus } = useContext(AppContext);
+export const Footer:React.FC = () => {
+  const {
+    filterStatus,
+    setFilterStatus,
+    todos,
+  } = useContext(AppContext);
 
   const activeTodos = todos.filter(todo => !todo.completed);
   const activeTodosCount = activeTodos.length;
