@@ -6,12 +6,14 @@ type Props = {
   todos: Todo[],
   onTodoDelete: (selectedTodoId: number) => void,
   tempTodo: Todo | null,
+  loadingTodosIds: number[],
 };
 
 export const TodoList: React.FC<Props> = ({
   todos,
   onTodoDelete,
   tempTodo,
+  loadingTodosIds,
 }) => {
   return (
     <section className="todoapp__main" data-cy="TodoList">
@@ -20,6 +22,7 @@ export const TodoList: React.FC<Props> = ({
           todo={todo}
           key={todo.id}
           onTodoDelete={onTodoDelete}
+          loadingTodosIds={loadingTodosIds}
         />
       ))}
 

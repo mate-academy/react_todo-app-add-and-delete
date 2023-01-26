@@ -6,11 +6,13 @@ import { Loader } from '../Loader/Loader';
 type Props = {
   todo: Todo,
   onTodoDelete?: (selectedTodoId: number) => void,
+  loadingTodosIds?: number[],
 };
 
 export const TodoItem: React.FC<Props> = ({
   todo,
   onTodoDelete,
+  loadingTodosIds,
 }) => {
   const [isTodoDeleted, setIsTodoDeleted] = useState(false);
 
@@ -22,7 +24,9 @@ export const TodoItem: React.FC<Props> = ({
     }
   };
 
-  const isLoaderNeeded = todo.id === 0 || isTodoDeleted;
+  const isLoaderNeeded = todo.id === 0
+    || isTodoDeleted
+    || loadingTodosIds?.includes(todo.id);
 
   return (
     <div

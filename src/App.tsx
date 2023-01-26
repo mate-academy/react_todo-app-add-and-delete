@@ -25,6 +25,7 @@ export const App: React.FC = () => {
   const [newTodoTitle, setNewTodoTitle] = useState('');
   const [tempTodo, setTempTodo] = useState<Todo | null>(null);
   const [isAdding, setIsAdding] = useState(false);
+  const [loadingTodosIds, setLoadingTodosIds] = useState<number[]>([]);
 
   const user = useContext(AuthContext);
   const newTodoField = useRef<HTMLInputElement>(null);
@@ -109,6 +110,10 @@ export const App: React.FC = () => {
 
   const removeTodo = useCallback(
     ((selectedTodoId: number) => {
+      setLoadingTodosIds((currentTodosIds) => (
+        [...currentTodosIds, selectedTodoId]
+      ));
+
       deleteTodo(selectedTodoId)
         .then(() => (
           setTodos((currentTodos) => currentTodos.filter(
@@ -117,6 +122,9 @@ export const App: React.FC = () => {
         ))
         .catch(() => {
           setError('Unable to delete a todo');
+        })
+        .finally(() => {
+          setLoadingTodosIds([]);
         });
     }), [],
   );
@@ -128,7 +136,7 @@ export const App: React.FC = () => {
           removeTodo(todo.id);
         }
       });
-    }, [],
+    }, [todos],
   );
 
   const onCloseError = () => (
@@ -156,6 +164,7 @@ export const App: React.FC = () => {
               todos={filteredTodos}
               onTodoDelete={removeTodo}
               tempTodo={tempTodo}
+              loadingTodosIds={loadingTodosIds}
             />
 
             <AppFooter
