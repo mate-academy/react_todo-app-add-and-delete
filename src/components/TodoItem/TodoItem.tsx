@@ -1,19 +1,31 @@
 import classNames from 'classnames';
-import React from 'react';
+import React, { useState } from 'react';
 import { Todo } from '../../types/Todo';
 import { Loader } from '../Loader/Loader';
 
 type Props = {
   todo: Todo,
-  onTodoDelete: (selectedTodoId: number) => void,
-  isLoaderNeeded: boolean,
+  onTodoDelete?: (selectedTodoId: number) => void,
 };
 
 export const TodoItem: React.FC<Props> = ({
   todo,
   onTodoDelete,
-  isLoaderNeeded,
 }) => {
+  const [isTodoDeleted, setIsTodoDeleted] = useState(false);
+
+  const handleDeletedTodo = async () => {
+    setIsTodoDeleted(true);
+
+    if (onTodoDelete) {
+      await onTodoDelete(todo.id);
+    }
+
+    setIsTodoDeleted(false);
+  };
+
+  const isLoaderNeeded = todo.id === 0 || isTodoDeleted;
+
   return (
     <div
       data-cy="Todo"
@@ -36,14 +48,16 @@ export const TodoItem: React.FC<Props> = ({
         type="button"
         className="todo__remove"
         data-cy="TodoDeleteButton"
-        onClick={() => onTodoDelete(todo.id)}
+        onClick={handleDeletedTodo}
       >
         ×
       </button>
 
-      {isLoaderNeeded && (
-        <Loader />
-      )}
+      {isLoaderNeeded && <Loader />}
+      {
+      // eslint-disable-next-line no-console
+        isLoaderNeeded && console.log(isLoaderNeeded)
+      }
     </div>
   );
 };

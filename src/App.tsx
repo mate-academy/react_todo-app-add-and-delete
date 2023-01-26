@@ -1,5 +1,6 @@
 /* eslint-disable jsx-a11y/control-has-associated-label */
 import React, {
+  useCallback,
   useContext,
   useEffect,
   useMemo,
@@ -24,7 +25,6 @@ export const App: React.FC = () => {
   const [newTodoTitle, setNewTodoTitle] = useState('');
   const [tempTodo, setTempTodo] = useState<Todo | null>(null);
   const [isAdding, setIsAdding] = useState(false);
-  const [isLoaderNeeded, setIsLoaderNeeded] = useState(false);
 
   const user = useContext(AuthContext);
   const newTodoField = useRef<HTMLInputElement>(null);
@@ -44,7 +44,7 @@ export const App: React.FC = () => {
         setError('Can\'t load todo');
       }
     }
-  });
+  }, []);
 
   const filteredTodos = useMemo(() => (
     getFilteredTodos(todos, statusFilter)
@@ -67,11 +67,9 @@ export const App: React.FC = () => {
   const addingNewTodo = (event: React.FormEvent) => {
     event.preventDefault();
 
-    setIsAdding(true);
-    setIsLoaderNeeded(true);
-
     if (!newTodoTitle.trim()) {
       setError('Title can\'t be empty');
+      setNewTodoTitle('');
 
       return;
     }
@@ -84,6 +82,8 @@ export const App: React.FC = () => {
         completed: false,
       });
 
+      setIsAdding(true);
+
       addTodo(newTodoTitle, user.id)
         .then((addingTodo) => {
           setTodos((currentTodos) => ([
@@ -91,7 +91,7 @@ export const App: React.FC = () => {
             {
               id: addingTodo.id,
               userId: addingTodo.userId,
-              title: newTodoTitle,
+              title: addingTodo.title,
               completed: addingTodo.completed,
             },
           ]));
@@ -103,27 +103,23 @@ export const App: React.FC = () => {
         .finally(() => {
           setTempTodo(null);
           setIsAdding(false);
-          setIsLoaderNeeded(false);
         });
     }
   };
 
-  const removeTodo = ((selectedTodoId: number) => {
-    setIsLoaderNeeded(true);
-
-    deleteTodo(selectedTodoId)
-      .then(() => {
-        setTodos((currentTodos) => currentTodos.filter(
-          todo => todo.id !== selectedTodoId,
-        ));
-      })
-      .catch(() => {
-        setError('Unable to delete a todo');
-      })
-      .finally(() => {
-        setIsLoaderNeeded(false);
-      });
-  });
+  const removeTodo = useCallback(
+    ((selectedTodoId: number) => {
+      deleteTodo(selectedTodoId)
+        .then(() => (
+          setTodos((currentTodos) => currentTodos.filter(
+            todo => todo.id !== selectedTodoId,
+          ))
+        ))
+        .catch(() => {
+          setError('Unable to delete a todo');
+        });
+    }), [],
+  );
 
   const clearCompletedTodos = () => {
     todos.forEach(todo => {
@@ -147,12 +143,12 @@ export const App: React.FC = () => {
           isAdding={isAdding}
         />
 
-        {(todos.length !== 0 || tempTodo) && (
+        {todos.length !== 0 && (
           <>
             <TodoList
               todos={filteredTodos}
               onTodoDelete={removeTodo}
-              isLoaderNeeded={isLoaderNeeded}
+              tempTodo={tempTodo}
             />
 
             <AppFooter
