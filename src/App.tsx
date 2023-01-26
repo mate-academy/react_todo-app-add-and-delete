@@ -1,4 +1,5 @@
 import React, {
+  useCallback,
   useContext, useEffect, useMemo, useRef, useState,
 } from 'react';
 import { addTodo, deleteTodo, getTodos } from './api/todos';
@@ -36,7 +37,7 @@ export const App: React.FC = () => {
     setFilterType(FilterTypes.COMPLETED);
   };
 
-  const onSubmit = (event: React.FormEvent<HTMLFormElement>) => {
+  const onSubmit = useCallback((event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
 
     if (!todoTitle) {
@@ -70,9 +71,9 @@ export const App: React.FC = () => {
           setTodoTitle('');
         });
     }
-  };
+  }, [todoTitle, user]);
 
-  const onDeleteTodo = (id: number) => {
+  const onDeleteTodo = useCallback((id: number) => {
     setIsLoading(true);
     deleteTodo(id)
       .then(() => (
@@ -82,7 +83,7 @@ export const App: React.FC = () => {
         setErrorMessage('Impossible to delete todo');
       });
     setIsLoading(false);
-  };
+  }, []);
 
   const onClickClearCompleted = () => {
     todos.forEach(todo => {
