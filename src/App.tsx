@@ -23,6 +23,8 @@ export const App: React.FC = () => {
   const [isError, setIsError] = useState(false);
   const [errorText, setErrorText] = useState('');
   const [filterCondition, setFilterCondition] = useState(FilterCondition.ALL);
+  const [isAdding, setIsAdding] = useState(false);
+  const [tempNewTask, setTempNewTask] = useState<Todo | null>(null);
 
   if (isError) {
     setTimeout(() => setIsError(false), 3000);
@@ -49,11 +51,22 @@ export const App: React.FC = () => {
     const fullTodoData = { ...todoData, userId: user?.id };
 
     try {
+      const temporaryTodo = {
+        ...todoData,
+        id: 0,
+      };
+
+      setTempNewTask(temporaryTodo);
+
+      setIsAdding(true);
       const newTodo = await createTodo(fullTodoData);
 
+      setTempNewTask(null);
       setTodosList(currentTodos => [...currentTodos, newTodo]);
+      setIsAdding(false);
     } catch (e) {
       window.alert(String(e));
+      setIsAdding(false);
     }
   };
 
@@ -86,8 +99,12 @@ export const App: React.FC = () => {
           newTodoField={newTodoField}
           setIsError={setIsError}
           setErrorText={setErrorText}
+          isAdding={isAdding}
         />
-        <TodoList todosList={todosList} />
+        <TodoList
+          todosList={todosList}
+          tempNewTask={tempNewTask}
+        />
 
         {(todosList.length > 0 || filterCondition !== FilterCondition.ALL) && (
           <Footer

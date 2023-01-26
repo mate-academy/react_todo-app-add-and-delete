@@ -7,7 +7,8 @@ type Props = {
   onSubmit: (todoData: Omit<Todo, 'id' | 'userId'>) => void,
   newTodoField: React.RefObject<HTMLInputElement>,
   setIsError: (value: boolean) => void,
-  setErrorText: (value:string)=> void,
+  setErrorText: (value: string) => void,
+  isAdding: boolean,
 };
 
 export const Header: React.FC<Props> = memo(({
@@ -16,6 +17,7 @@ export const Header: React.FC<Props> = memo(({
   onSubmit,
   setIsError,
   setErrorText,
+  isAdding,
 }) => {
   const [title, setTitle] = useState('');
 
@@ -27,12 +29,16 @@ export const Header: React.FC<Props> = memo(({
     if (!IsValidTitle) {
       setIsError(true);
       setErrorText('Title can`t be empty');
+
+      return;
     }
 
     onSubmit({
       title,
       completed: false,
     });
+
+    setTitle(() => '');
   };
 
   return (
@@ -54,6 +60,7 @@ export const Header: React.FC<Props> = memo(({
           ref={newTodoField}
           className="todoapp__new-todo"
           placeholder="What needs to be done?"
+          disabled={isAdding}
           value={title}
           onChange={(event) => {
             setIsError(false); setTitle(event.target.value);

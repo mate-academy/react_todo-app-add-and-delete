@@ -4,10 +4,13 @@ import { Todo } from '../../types/Todo';
 
 type Props = {
   todosList: Todo[],
+  isAdding?: boolean,
+  tempNewTask: Todo | null,
 };
 
 export const TodoList: React.FC<Props> = memo(({
   todosList,
+  tempNewTask,
 }) => {
   return (
     <section className="todoapp__main" data-cy="TodoList">
@@ -46,6 +49,46 @@ export const TodoList: React.FC<Props> = memo(({
           </div>
         </div>
       ))}
+
+      {tempNewTask && (
+        <div
+          data-cy="Todo"
+          className={cn(
+            'todo',
+            { completed: tempNewTask.completed },
+          )}
+        >
+          <label className="todo__status-label">
+            <input
+              data-cy="TodoStatus"
+              type="checkbox"
+              className="todo__status"
+              defaultChecked
+            />
+          </label>
+
+          <span data-cy="TodoTitle" className="todo__title">
+            {tempNewTask.title}
+          </span>
+          <button
+            type="button"
+            className="todo__remove"
+            data-cy="TodoDeleteButton"
+          >
+            ×
+          </button>
+
+          <div
+            data-cy="TodoLoader"
+            className={cn(
+              'modal', 'overlay', 'is-active',
+            )}
+          >
+            <div className="modal-background has-background-white-ter" />
+            <div className="loader" />
+          </div>
+        </div>
+      )}
     </section>
   );
 });
