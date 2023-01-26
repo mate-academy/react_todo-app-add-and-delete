@@ -60,8 +60,9 @@ export const Footer: React.FC<Props> = memo(({
       <button
         data-cy="ClearCompletedButton"
         type="button"
-        className="todoapp__clear-completed"
-        disabled={completedTodos === 0}
+        className={cn('todoapp__clear-completed', {
+          'is-invisible': !completedTodos,
+        })}
         onClick={onDeleteComplited}
       >
         Clear completed

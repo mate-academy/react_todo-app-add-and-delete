@@ -34,7 +34,6 @@ export const App: React.FC = () => {
   const [tempTodo, setTempTodo] = useState<Todo | null>(null);
 
   useEffect(() => {
-    // focus the element with `ref={newTodoField}`
     if (newTodoField.current) {
       newTodoField.current.focus();
     }
@@ -46,7 +45,7 @@ export const App: React.FC = () => {
     }
   }, []);
 
-  const handelAddTodo = useCallback((event: React.FormEvent) => {
+  const addNewTodo = useCallback((event: React.FormEvent) => {
     event.preventDefault();
 
     if (!newTitle) {
@@ -112,7 +111,7 @@ export const App: React.FC = () => {
         deleteTodo(todo.id);
       }
     });
-  }, []);
+  }, [todos]);
 
   const filteredTodos = useMemo(() => {
     return getFilteredTodos(todos, completedFilter);
@@ -135,7 +134,7 @@ export const App: React.FC = () => {
           newTodoField={newTodoField}
           newTitle={newTitle}
           setNewTitle={setNewTitle}
-          onAddNewTodo={handelAddTodo}
+          onAddNewTodo={addNewTodo}
           isAdding={isAdding}
         />
 
