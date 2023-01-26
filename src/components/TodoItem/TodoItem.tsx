@@ -14,14 +14,12 @@ export const TodoItem: React.FC<Props> = ({
 }) => {
   const [isTodoDeleted, setIsTodoDeleted] = useState(false);
 
-  const handleDeletedTodo = async () => {
+  const handleDeletedTodo = () => {
     setIsTodoDeleted(true);
 
     if (onTodoDelete) {
-      await onTodoDelete(todo.id);
+      onTodoDelete(todo.id);
     }
-
-    setIsTodoDeleted(false);
   };
 
   const isLoaderNeeded = todo.id === 0 || isTodoDeleted;
@@ -54,10 +52,6 @@ export const TodoItem: React.FC<Props> = ({
       </button>
 
       {isLoaderNeeded && <Loader />}
-      {
-      // eslint-disable-next-line no-console
-        isLoaderNeeded && console.log(isLoaderNeeded)
-      }
     </div>
   );
 };
