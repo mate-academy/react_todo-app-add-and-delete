@@ -1,7 +1,6 @@
 import classNames from 'classnames';
 import { Todo } from '../../types/Todo';
 
-/* eslint-disable jsx-a11y/control-has-associated-label */
 type Props = {
   filter: string,
   isCompleted: boolean,
