@@ -127,7 +127,7 @@ export const App: React.FC = () => {
       setTodoForDeletingIds(todosIds => todosIds.filter(id => id !== todoId));
     } catch (error) {
       // eslint-disable-next-line max-len
-      setErrorMessage('omething went wrong while deleting a todo. Please, try again later');
+      setErrorMessage('Something went wrong while deleting a todo. Please, try again later');
     } finally {
       setIsDeleting(false);
     }
