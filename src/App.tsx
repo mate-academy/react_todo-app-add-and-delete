@@ -13,7 +13,7 @@ import { addTodo, deleteTodo, getTodos } from './api/todos';
 import { Todo } from './types/Todo';
 import { FilterType } from './types/FilterType';
 import { Header } from './components/Header/Header';
-import { TodoList } from './components/TodoList/TododList';
+import { TodoList } from './components/TodoList/TodoList';
 import { Footer } from './components/Footer/Footer';
 import { ErrorMessage } from './components/ErrorMessage/ErrorMessage';
 
@@ -25,7 +25,7 @@ export const App: React.FC = () => {
   const [tempTodo, setTempTodo] = useState<Todo | null>(null);
   const [isAdding, setIsAdding] = useState(false);
   const [isDeleting, setIsDeleting] = useState(false);
-  const [clickedTodosIds, setClickedTodoIds] = useState<number[]>([]);
+  const [todoForDeleltingIds, setTodoForDeletingIds] = useState<number[]>([]);
 
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
   const user = useContext(AuthContext);
@@ -113,7 +113,7 @@ export const App: React.FC = () => {
   const removeTodo = useCallback(async (todoId: number) => {
     try {
       setIsDeleting(true);
-      setClickedTodoIds(todosIds => [
+      setTodoForDeletingIds(todosIds => [
         ...todosIds,
         todoId,
       ]);
@@ -124,10 +124,12 @@ export const App: React.FC = () => {
 
       setTodos(currentTodos => currentTodos.filter(todo => todo.id !== todoId));
 
-      setClickedTodoIds(todosIds => todosIds.filter(id => id !== todoId));
+      setTodoForDeletingIds(todosIds => todosIds.filter(id => id !== todoId));
     } catch (error) {
       // eslint-disable-next-line max-len
       setErrorMessage('omething went wrong while deleting a todo. Please, try again later');
+    } finally {
+      setIsDeleting(false);
     }
   }, []);
 
@@ -182,7 +184,7 @@ export const App: React.FC = () => {
               tempTodo={tempTodo}
               isDeleting={isDeleting}
               onTodoDelete={removeTodo}
-              clickedTodosIds={clickedTodosIds}
+              todoForDeleltingIds={todoForDeleltingIds}
             />
 
             <Footer
