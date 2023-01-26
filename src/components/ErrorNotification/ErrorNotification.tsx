@@ -3,9 +3,10 @@ import React from 'react';
 
 type Props = {
   error: string,
+  onCloseError: () => void,
 };
 
-export const ErrorNotification: React.FC<Props> = ({ error }) => {
+export const ErrorNotification: React.FC<Props> = ({ error, onCloseError }) => {
   return (
     <div
       data-cy="ErrorNotification"
@@ -16,6 +17,7 @@ export const ErrorNotification: React.FC<Props> = ({ error }) => {
         data-cy="HideErrorButton"
         type="button"
         className="delete"
+        onClick={onCloseError}
       />
 
       {error}

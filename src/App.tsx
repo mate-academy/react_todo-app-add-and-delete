@@ -121,13 +121,19 @@ export const App: React.FC = () => {
     }), [],
   );
 
-  const clearCompletedTodos = () => {
-    todos.forEach(todo => {
-      if (todo.completed) {
-        removeTodo(todo.id);
-      }
-    });
-  };
+  const clearCompletedTodos = useCallback(
+    () => {
+      todos.forEach(todo => {
+        if (todo.completed) {
+          removeTodo(todo.id);
+        }
+      });
+    }, [],
+  );
+
+  const onCloseError = () => (
+    setError('')
+  );
 
   return (
     <div className="todoapp">
@@ -135,6 +141,7 @@ export const App: React.FC = () => {
 
       <div className="todoapp__content">
         <AppHeader
+          todos={todos}
           newTodoField={newTodoField}
           isAllCompleted={isAllCompleted}
           newTodoTitle={newTodoTitle}
@@ -143,7 +150,7 @@ export const App: React.FC = () => {
           isAdding={isAdding}
         />
 
-        {todos.length !== 0 && (
+        {(todos.length !== 0 || tempTodo) && (
           <>
             <TodoList
               todos={filteredTodos}
@@ -164,6 +171,7 @@ export const App: React.FC = () => {
 
       <ErrorNotification
         error={error}
+        onCloseError={onCloseError}
       />
     </div>
   );
