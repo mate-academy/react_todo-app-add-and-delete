@@ -8,7 +8,7 @@ type Props = {
   temporary?: boolean,
   isDeleting?: boolean,
   todoForDeleltingIds?: number[],
-  onTodoDelete?: (todoId: number) => Promise<void>,
+  deleteTodo?: (todoId: number) => Promise<void>,
 };
 
 export const TodoItem: React.FC<Props> = memo((props) => {
@@ -17,7 +17,7 @@ export const TodoItem: React.FC<Props> = memo((props) => {
     temporary = false,
     isDeleting,
     todoForDeleltingIds,
-    onTodoDelete = () => {},
+    deleteTodo = () => {},
   } = props;
 
   const isLoading = temporary
@@ -47,7 +47,7 @@ export const TodoItem: React.FC<Props> = memo((props) => {
         type="button"
         className="todo__remove"
         data-cy="TodoDeleteButton"
-        onClick={() => onTodoDelete(todo.id)}
+        onClick={() => deleteTodo(todo.id)}
       >
         ×
       </button>

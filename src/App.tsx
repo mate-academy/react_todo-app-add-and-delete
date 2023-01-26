@@ -173,8 +173,8 @@ export const App: React.FC = () => {
           newTodoField={newTodoField}
           title={title}
           isAdding={isAdding}
-          onInputChange={setTitle}
-          onSubmitForm={handleSubmitForm}
+          changeInput={setTitle}
+          submitForm={handleSubmitForm}
         />
 
         {(todos.length > 0 || tempTodo) && (
@@ -183,7 +183,7 @@ export const App: React.FC = () => {
               todos={filteredTodos}
               tempTodo={tempTodo}
               isDeleting={isDeleting}
-              onTodoDelete={removeTodo}
+              deleteTodo={removeTodo}
               todoForDeleltingIds={todoForDeleltingIds}
             />
 
@@ -191,8 +191,8 @@ export const App: React.FC = () => {
               activeTodosAmount={activeTodosAmount}
               hasCompletedTodos={hasCompletedTodos}
               filterType={filterType}
-              onChangeFilterType={setFilterType}
-              onDeleteCompletedTodos={removeCompletedTodos}
+              changeFilterType={setFilterType}
+              deleteCompletedTodos={removeCompletedTodos}
             />
           </>
         )}

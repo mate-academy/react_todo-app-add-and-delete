@@ -4,8 +4,8 @@ type Props = {
   newTodoField: React.RefObject<HTMLInputElement>;
   title: string,
   isAdding: boolean,
-  onInputChange: React.Dispatch<React.SetStateAction<string>>,
-  onSubmitForm: (event: React.FormEvent<HTMLFormElement>) => void;
+  changeInput: React.Dispatch<React.SetStateAction<string>>,
+  submitForm: (event: React.FormEvent<HTMLFormElement>) => void;
 };
 
 export const Header: React.FC<Props> = memo((props) => {
@@ -13,8 +13,8 @@ export const Header: React.FC<Props> = memo((props) => {
     newTodoField,
     title,
     isAdding,
-    onInputChange,
-    onSubmitForm,
+    changeInput,
+    submitForm,
   } = props;
 
   return (
@@ -26,7 +26,7 @@ export const Header: React.FC<Props> = memo((props) => {
         className="todoapp__toggle-all active"
       />
 
-      <form onSubmit={onSubmitForm}>
+      <form onSubmit={submitForm}>
         <input
           data-cy="NewTodoField"
           type="text"
@@ -34,7 +34,7 @@ export const Header: React.FC<Props> = memo((props) => {
           className="todoapp__new-todo"
           placeholder="What needs to be done?"
           value={title}
-          onChange={(event) => onInputChange(event.target.value)}
+          onChange={(event) => changeInput(event.target.value)}
           disabled={isAdding}
         />
       </form>

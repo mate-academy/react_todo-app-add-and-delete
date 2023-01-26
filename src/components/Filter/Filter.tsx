@@ -4,11 +4,11 @@ import { FilterType } from '../../types/FilterType';
 
 type Props = {
   filterType: FilterType;
-  onChangeFilterType: React.Dispatch<React.SetStateAction<FilterType>>;
+  setFilterType: React.Dispatch<React.SetStateAction<FilterType>>;
 };
 
 export const Filter: React.FC<Props> = memo((props) => {
-  const { filterType, onChangeFilterType } = props;
+  const { filterType, setFilterType: onChangeFilterType } = props;
 
   return (
     <nav className="filter" data-cy="Filter">
