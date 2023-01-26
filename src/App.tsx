@@ -17,6 +17,8 @@ export const App: React.FC = () => {
   const [isError, setIsError] = useState<boolean>(false);
   const [errorMessage, setErrorMessage] = useState<string>('');
   const [filterStatus, setFilterStatus] = useState<string>(FilterType.ALL);
+  const [tempTodo, setTempTodo] = useState<Todo | null>(null);
+  const [isNewTodoLoading, setIsNewTodoLoading] = useState(false);
 
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
   const user = useContext(AuthContext);
@@ -48,7 +50,9 @@ export const App: React.FC = () => {
     try {
       const response = await deleteTodoById(todoId);
 
-      setTodos(currentTodos => currentTodos.filter(todo => todo.id !== todoId));
+      setTodos(
+        (currentTodos) => currentTodos.filter((todo) => todo.id !== todoId)
+      );
 
       return response;
     } catch (error) {
@@ -61,6 +65,15 @@ export const App: React.FC = () => {
 
   const addTodo = async (newTitle: string) => {
     if (user) {
+      setIsNewTodoLoading(true);
+
+      setTempTodo({
+        id: 0,
+        userId: user.id,
+        title: newTitle,
+        completed: false,
+      });
+
       const newTodo = {
         userId: user?.id,
         title: newTitle,
@@ -77,6 +90,9 @@ export const App: React.FC = () => {
         setErrorMessage('Unable to add a todo');
 
         return false;
+      } finally {
+        setTempTodo(null);
+        setIsNewTodoLoading(false);
       }
     }
 
@@ -115,9 +131,15 @@ export const App: React.FC = () => {
           setIsError={setIsError}
           onErrorMessage={setErrorMessage}
           onAddTodo={addTodo}
+          isNewTodoLoading={isNewTodoLoading}
         />
 
-        <TodoList todos={visibleTodos} onDeleteTodo={deleteTodo} />
+        <TodoList
+          todos={visibleTodos}
+          onDeleteTodo={deleteTodo}
+          tempTodo={tempTodo}
+          isNewTodoLoading={isNewTodoLoading}
+        />
 
         {Boolean(todos.length) && (
           <Footer

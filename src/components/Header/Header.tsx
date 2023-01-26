@@ -6,11 +6,12 @@ type Props = {
   setIsError: (error: boolean) => void;
   onErrorMessage: (error: string) => void;
   onAddTodo: (newTitle: string) => void;
+  isNewTodoLoading: boolean;
 };
 
 export const Header: React.FC<Props> = memo(
   ({
-    newTodoField, setIsError, onErrorMessage, onAddTodo,
+    newTodoField, setIsError, onErrorMessage, onAddTodo, isNewTodoLoading,
   }) => {
     const [title, setTitle] = useState('');
 
@@ -22,6 +23,7 @@ export const Header: React.FC<Props> = memo(
         onErrorMessage('Title can\'t be empty');
       }
 
+      setTitle('');
       onAddTodo(title);
     };
 
@@ -43,6 +45,7 @@ export const Header: React.FC<Props> = memo(
             onChange={(event) => setTitle(event.currentTarget.value)}
             className="todoapp__new-todo"
             placeholder="What needs to be done?"
+            disabled={isNewTodoLoading}
           />
         </form>
       </header>
