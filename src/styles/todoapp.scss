@@ -104,6 +104,10 @@
       0 17px 2px -6px rgba(0, 0, 0, 0.2);
   }
 
+  &__button-visible {
+    opacity: 0;
+  }
+
   &__clear-completed {
     margin: 0;
     padding: 0;
