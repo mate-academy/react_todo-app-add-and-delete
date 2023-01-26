@@ -1,5 +1,6 @@
 /* eslint-disable jsx-a11y/control-has-associated-label */
 import React, {
+  useCallback,
   useContext, useEffect, useMemo, useRef, useState,
 } from 'react';
 import { createTodo, deleteTodoById, getTodos } from './api/todos';
@@ -42,21 +43,21 @@ export const App: React.FC = () => {
     }
   }, []);
 
-  const closeErrorMassage = () => {
+  const closeErrorMassage = useCallback(() => {
     setIsError(false);
-  };
+  }, []);
 
   const deleteTodo = async (todoId: number) => {
     try {
-      const response = await deleteTodoById(todoId);
+      const deleteResponse = await deleteTodoById(todoId);
 
       setTodos(
-        (currentTodos) => currentTodos.filter((todo) => todo.id !== todoId)
+        (currentTodos) => currentTodos.filter((todo) => todo.id !== todoId),
       );
 
-      return response;
+      return deleteResponse;
     } catch (error) {
-      setIsError(true);
+      setIsError(false);
       setErrorMessage('Unable to delete a todo');
 
       return false;
@@ -103,23 +104,29 @@ export const App: React.FC = () => {
     setTimeout(() => setIsError(false), 3000);
   }
 
-  const visibleTodos = todos.filter((todo) => {
+  const visibleTodos = useMemo(() => todos.filter((todo) => {
     switch (filterStatus) {
       case FilterType.ACTIVE:
         return !todo.completed;
-
       case FilterType.COMPLETED:
         return todo.completed;
-
       default:
         return true;
     }
-  });
+  }), [filterStatus, todos]);
 
   const amountOfItems = useMemo(
     () => todos.filter((todo) => !todo.completed).length,
     [todos],
   );
+
+  const deleteCompletedTodos = useCallback(() => {
+    todos.forEach(todo => {
+      if (todo.completed) {
+        deleteTodo(todo.id);
+      }
+    });
+  }, [todos]);
 
   return (
     <div className="todoapp">
@@ -146,6 +153,7 @@ export const App: React.FC = () => {
             filterStatus={filterStatus}
             onFilterStatus={setFilterStatus}
             amountOfItems={amountOfItems}
+            onDeleteCompletedTodos={deleteCompletedTodos}
           />
         )}
       </div>
