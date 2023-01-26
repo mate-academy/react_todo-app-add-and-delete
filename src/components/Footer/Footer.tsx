@@ -4,14 +4,16 @@ import { Filter } from '../../types/Filter';
 
 type Props = {
   activeTodos: number,
-  status: string
-  setStatus:(status: Filter) => void
+  status: string,
+  setStatus:(status: Filter) => void,
+  clearTodos: () => void;
 };
 
 export const Footer: React.FC<Props> = memo(({
   activeTodos,
   status,
   setStatus,
+  clearTodos,
 }) => {
   return (
     <footer className="todoapp__footer" data-cy="Footer">
@@ -58,7 +60,10 @@ export const Footer: React.FC<Props> = memo(({
       <button
         data-cy="ClearCompletedButton"
         type="button"
-        className="todoapp__clear-completed"
+        className={cn('todoapp__clear-completed', {
+          'is-invisible': activeTodos,
+        })}
+        onClick={clearTodos}
       >
         Clear completed
       </button>
