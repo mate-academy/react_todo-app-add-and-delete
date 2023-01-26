@@ -1,4 +1,4 @@
-import React, { memo } from 'react';
+import React, { memo, useState } from 'react';
 // import { createTodo } from '../../api/todos';
 
 type Props = {
@@ -12,15 +12,17 @@ export const Header: React.FC<Props> = memo(
   ({
     newTodoField, setIsError, onErrorMessage, onAddTodo,
   }) => {
+    const [title, setTitle] = useState('');
+
     const handlerSubmitTodo = (event: React.FormEvent) => {
       event.preventDefault();
 
-      if (newTodoField.current?.value === '') {
+      if (title === '') {
         setIsError(true);
         onErrorMessage('Title can\'t be empty');
       }
 
-      onAddTodo(newTodoField.current?.value || '');
+      onAddTodo(title);
     };
 
     return (
@@ -37,6 +39,8 @@ export const Header: React.FC<Props> = memo(
             data-cy="NewTodoField"
             type="text"
             ref={newTodoField}
+            value={title}
+            onChange={(event) => setTitle(event.currentTarget.value)}
             className="todoapp__new-todo"
             placeholder="What needs to be done?"
           />
