@@ -7,12 +7,12 @@ type Props = {
   todo: Todo;
   isAdding?: boolean;
   isDeleting?: boolean;
-  onRemoving: (todoId: number) => void;
+  removeTodo: (todoId: number) => void;
 };
 
 export const TodoItem: React.FC<Props> = memo((props) => {
   const {
-    todo, isAdding, isDeleting, onRemoving,
+    todo, isAdding, isDeleting, removeTodo,
   } = props;
 
   return (
@@ -38,7 +38,7 @@ export const TodoItem: React.FC<Props> = memo((props) => {
         type="button"
         className="todo__remove"
         data-cy="TodoDeleteButton"
-        onClick={() => onRemoving(todo.id)}
+        onClick={() => removeTodo(todo.id)}
       >
         ×
       </button>

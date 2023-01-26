@@ -155,7 +155,7 @@ export const App: React.FC = () => {
             <TodoList
               todos={visibleTodos}
               todoIDsForDeleting={todoIDsForDeleting}
-              onRemoving={removeTodo}
+              removeTodo={removeTodo}
             />
 
             {tempTodo
@@ -163,7 +163,7 @@ export const App: React.FC = () => {
                 <TodoItem
                   todo={tempTodo}
                   isAdding={isAdding}
-                  onRemoving={removeTodo}
+                  removeTodo={removeTodo}
                 />
               )}
 
@@ -171,8 +171,8 @@ export const App: React.FC = () => {
               filterStatus={filterStatus}
               isAnyTodoCompleted={isAnyTodoCompleted}
               activeTodosQuantity={activeTodosQuantity}
-              onClear={clearAllCompletedTodos}
-              onFilterStatusChange={setFilterStatus}
+              clearAllCompletedTodos={clearAllCompletedTodos}
+              setFilterStatus={setFilterStatus}
             />
           </>
         )}

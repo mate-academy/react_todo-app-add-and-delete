@@ -5,12 +5,12 @@ import { TodoItem } from '../TodoItem/TodoItem';
 type Props = {
   todos: Todo[];
   todoIDsForDeleting: number[];
-  onRemoving: (todoId: number) => void;
+  removeTodo: (todoId: number) => void;
 };
 
 export const TodoList: React.FC<Props> = memo((props) => {
   const {
-    todos, todoIDsForDeleting, onRemoving,
+    todos, todoIDsForDeleting, removeTodo,
   } = props;
 
   return (
@@ -20,7 +20,7 @@ export const TodoList: React.FC<Props> = memo((props) => {
           key={todo.id}
           todo={todo}
           isDeleting={todoIDsForDeleting.includes(todo.id)}
-          onRemoving={onRemoving}
+          removeTodo={removeTodo}
         />
       ))}
     </section>

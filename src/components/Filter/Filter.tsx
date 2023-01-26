@@ -4,11 +4,11 @@ import { FilterStatus } from '../../types/FilterStatus';
 
 type Props = {
   filterStatus: string;
-  onFilterStatusChange: React.Dispatch<React.SetStateAction<FilterStatus>>;
+  setFilterStatus: React.Dispatch<React.SetStateAction<FilterStatus>>;
 };
 
 export const Filter: React.FC<Props> = memo((props) => {
-  const { filterStatus, onFilterStatusChange } = props;
+  const { filterStatus, setFilterStatus } = props;
 
   return (
     <nav className="filter" data-cy="Filter">
@@ -19,7 +19,7 @@ export const Filter: React.FC<Props> = memo((props) => {
           'filter__link',
           { selected: filterStatus === FilterStatus.All },
         )}
-        onClick={() => onFilterStatusChange(FilterStatus.All)}
+        onClick={() => setFilterStatus(FilterStatus.All)}
       >
         All
       </a>
@@ -31,10 +31,11 @@ export const Filter: React.FC<Props> = memo((props) => {
           'filter__link',
           { selected: filterStatus === FilterStatus.Active },
         )}
-        onClick={() => onFilterStatusChange(FilterStatus.Active)}
+        onClick={() => setFilterStatus(FilterStatus.Active)}
       >
         Active
       </a>
+
       <a
         data-cy="FilterLinkCompleted"
         href="#/completed"
@@ -42,7 +43,7 @@ export const Filter: React.FC<Props> = memo((props) => {
           'filter__link',
           { selected: filterStatus === FilterStatus.Completed },
         )}
-        onClick={() => onFilterStatusChange(FilterStatus.Completed)}
+        onClick={() => setFilterStatus(FilterStatus.Completed)}
       >
         Completed
       </a>

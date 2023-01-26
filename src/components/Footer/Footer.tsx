@@ -6,8 +6,8 @@ type Props = {
   filterStatus: string;
   activeTodosQuantity: number;
   isAnyTodoCompleted: boolean;
-  onClear: () => void;
-  onFilterStatusChange: React.Dispatch<React.SetStateAction<FilterStatus>>;
+  clearAllCompletedTodos: () => void;
+  setFilterStatus: React.Dispatch<React.SetStateAction<FilterStatus>>;
 };
 
 export const Footer: React.FC<Props> = memo((props) => {
@@ -15,8 +15,8 @@ export const Footer: React.FC<Props> = memo((props) => {
     filterStatus,
     activeTodosQuantity,
     isAnyTodoCompleted,
-    onClear,
-    onFilterStatusChange,
+    setFilterStatus,
+    clearAllCompletedTodos,
   } = props;
 
   return (
@@ -27,7 +27,7 @@ export const Footer: React.FC<Props> = memo((props) => {
 
       <Filter
         filterStatus={filterStatus}
-        onFilterStatusChange={onFilterStatusChange}
+        setFilterStatus={setFilterStatus}
       />
 
       <button
@@ -35,7 +35,7 @@ export const Footer: React.FC<Props> = memo((props) => {
         type="button"
         className="todoapp__clear-completed"
         style={{ visibility: `${isAnyTodoCompleted ? 'visible' : 'hidden'}` }}
-        onClick={onClear}
+        onClick={clearAllCompletedTodos}
       >
         Clear completed
       </button>
