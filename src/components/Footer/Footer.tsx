@@ -1,19 +1,18 @@
 import cn from 'classnames';
-import React from 'react';
+import React, { useContext } from 'react';
+import { AppContext } from '../../AppContext';
 import { FilterStatus } from '../../types/FilterStatus';
 import { Todo } from '../../types/Todo';
 
 type Props = {
-  onStatusClick: (status: FilterStatus) => void;
   todos: Todo[];
-  filterStatus: FilterStatus;
 };
 
 export const Footer:React.FC<Props> = ({
-  onStatusClick,
   todos,
-  filterStatus,
 }) => {
+  const { filterStatus, setFilterStatus } = useContext(AppContext);
+
   const activeTodos = todos.filter(todo => !todo.completed);
   const activeTodosCount = activeTodos.length;
 
@@ -29,7 +28,7 @@ export const Footer:React.FC<Props> = ({
           href="#/"
           className={cn('filter__link',
             { selected: filterStatus === FilterStatus.All })}
-          onClick={() => onStatusClick(FilterStatus.All)}
+          onClick={() => setFilterStatus(FilterStatus.All)}
         >
           All
         </a>
@@ -39,7 +38,7 @@ export const Footer:React.FC<Props> = ({
           href="#/active"
           className={cn('filter__link',
             { selected: filterStatus === FilterStatus.Active })}
-          onClick={() => onStatusClick(FilterStatus.Active)}
+          onClick={() => setFilterStatus(FilterStatus.Active)}
         >
           Active
         </a>
@@ -48,7 +47,7 @@ export const Footer:React.FC<Props> = ({
           href="#/completed"
           className={cn('filter__link',
             { selected: filterStatus === FilterStatus.Completed })}
-          onClick={() => onStatusClick(FilterStatus.Completed)}
+          onClick={() => setFilterStatus(FilterStatus.Completed)}
         >
           Completed
         </a>

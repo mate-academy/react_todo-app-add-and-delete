@@ -1,14 +1,27 @@
 /* eslint-disable jsx-a11y/control-has-associated-label */
-import React, { useEffect, useRef } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 
-export const Header:React.FC = () => {
+type Props = {
+  onAdd: (title: string) => void;
+};
+
+export const Header:React.FC<Props> = ({ onAdd }) => {
   const newTodoField = useRef<HTMLInputElement>(null);
+  const [title, setTitle] = useState('');
 
   useEffect(() => {
     if (newTodoField.current) {
       newTodoField.current.focus();
     }
   }, []);
+
+  const handleSubmit = (event:React.FormEvent<HTMLFormElement>) => {
+    event.preventDefault();
+    if (newTodoField.current) {
+      onAdd(title);
+      setTitle('');
+    }
+  };
 
   return (
     <header className="todoapp__header">
@@ -18,13 +31,17 @@ export const Header:React.FC = () => {
         className="todoapp__toggle-all active"
       />
 
-      <form>
+      <form
+        onSubmit={handleSubmit}
+      >
         <input
           data-cy="NewTodoField"
           type="text"
           ref={newTodoField}
           className="todoapp__new-todo"
           placeholder="What needs to be done?"
+          value={title}
+          onChange={(event) => setTitle(event.target.value)}
         />
       </form>
     </header>

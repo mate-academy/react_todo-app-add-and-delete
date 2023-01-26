@@ -1,37 +1,33 @@
 /* eslint-disable jsx-a11y/control-has-associated-label */
 import cn from 'classnames';
-import React, { useEffect } from 'react';
+import React, { useContext, useEffect } from 'react';
+import { AppContext } from '../../AppContext';
+import { ErrorType } from '../../types/ErrorType';
 
-type Props = {
-  errorMessage: string;
-  setErrorMessage: React.Dispatch<React.SetStateAction<string>>
-};
+export const ErrorMessage:React.FC = () => {
+  const { error, setError } = useContext(AppContext);
 
-export const ErrorMessage:React.FC<Props> = ({
-  errorMessage,
-  setErrorMessage,
-}) => {
   useEffect(() => {
     setTimeout(() => {
-      setErrorMessage('');
+      setError(ErrorType.None);
     }, 3000);
-  }, []);
+  }, [error]);
 
   return (
     <div
       data-cy="ErrorNotification"
       className={cn(
         'notification is-danger is-light has-text-weight-normal',
-        { hidden: !errorMessage },
+        { hidden: !error },
       )}
     >
       <button
         data-cy="HideErrorButton"
         type="button"
         className="delete"
-        onClick={() => setErrorMessage('')}
+        onClick={() => setError(ErrorType.None)}
       />
-      {errorMessage}
+      {error}
     </div>
   );
 };
