@@ -41,6 +41,7 @@ export const TodoItem: React.FC<Props> = memo(({
       >
         ×
       </button>
+
       {deleteTodoIdFromArray.includes(todo.id) && (
         <div data-cy="TodoLoader" className="modal overlay is-active">
           <div className="modal-background has-background-white-ter" />

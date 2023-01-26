@@ -1,5 +1,6 @@
 import React, { memo } from 'react';
 import './TodoList.scss';
+import classNames from 'classnames';
 import { Todo } from '../../types/Todo';
 import { TodoItem } from '../TodoItem/TodoItem';
 
@@ -28,12 +29,30 @@ export const TodoList: React.FC<Props> = memo(({
       ))}
       {temporaryTodo
         && (
-          <TodoItem
-            todo={temporaryTodo}
-            key={temporaryTodo.id}
-            deleteTodoFromData={deleteTodoFromData}
-            deleteTodoIdFromArray={deleteTodoIdFromArray}
-          />
+          <div
+            data-cy="Todo"
+            className={classNames('todo',
+              { completed: temporaryTodo.completed === true })}
+          >
+            <label className="todo__status-label">
+              <input
+                data-cy="TodoStatus"
+                type="checkbox"
+                className="todo__status"
+              />
+            </label>
+
+            <span
+              data-cy="TodoTitle"
+              className="todo__title"
+            >
+              {temporaryTodo.title}
+              <div data-cy="TodoLoader" className="modal overlay is-active">
+                <div className="modal-background has-background-white-ter" />
+                <div className="loader" />
+              </div>
+            </span>
+          </div>
         )}
     </section>
   );
