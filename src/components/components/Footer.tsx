@@ -7,6 +7,7 @@ type Props = {
   itemsCounter: number,
   filterOptions: FilterTypes[],
   filterType: FilterTypes
+  handleClearCompletedClick: () => void
 };
 
 export const Footer: FC<Props> = memo(({
@@ -14,11 +15,12 @@ export const Footer: FC<Props> = memo(({
   itemsCounter,
   filterOptions,
   filterType,
+  handleClearCompletedClick,
 }) => {
   return (
     <footer className="todoapp__footer" data-cy="Footer">
       <span className="todo-count" data-cy="todosCounter">
-        {`${itemsCounter} items left`}
+        {`${itemsCounter} item${itemsCounter > 1 ? 's' : ''} left`}
       </span>
 
       <nav className="filter" data-cy="Filter">
@@ -42,6 +44,7 @@ export const Footer: FC<Props> = memo(({
         data-cy="ClearCompletedButton"
         type="button"
         className="todoapp__clear-completed"
+        onClick={handleClearCompletedClick}
       >
         Clear completed
       </button>

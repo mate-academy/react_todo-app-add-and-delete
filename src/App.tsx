@@ -1,16 +1,17 @@
 /* eslint-disable jsx-a11y/control-has-associated-label */
 import React, {
-  memo, useContext, useEffect, useMemo, useRef, useState,
+  memo, useCallback, useContext, useEffect, useMemo, useRef, useState,
 } from 'react';
 // import cn from 'classnames';
 
-import { addTodo, getTodos } from './api/todos';
+import { addTodo, deleteTodo, getTodos } from './api/todos';
 import { AuthContext } from './components/components/Auth/AuthContext';
 import { ErrorMessage } from './components/components/ErrorMessage';
 import { TodoList } from './components/components/TodoList';
 import { FilterTypes } from './types/FilterTypes';
 import { Todo } from './types/Todo';
 import { Footer } from './components/components/Footer';
+import { getFilteredTodos } from './helpers/helpers';
 
 export const App: React.FC = memo(() => {
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
@@ -22,6 +23,7 @@ export const App: React.FC = memo(() => {
   const [selectedFilterType, setSelectedFilterType] = useState(FilterTypes.ALL);
   const [newTodoToAdd, setNewTodoToAdd] = useState('');
   const [tempTodo, setTempTodo] = useState<Todo | null>(null);
+  const [deletingTodosIds, setDeletingTodosIds] = useState<number[]>([]);
 
   const handleFilterOptionClick = (newOption: FilterTypes) => {
     if (selectedFilterType !== newOption) {
@@ -52,22 +54,6 @@ export const App: React.FC = memo(() => {
         });
     }
   }, []);
-
-  const getFilteredTodos = (filterTodos: Todo[], filterType: FilterTypes) => {
-    return filterTodos.filter(todo => {
-      switch (filterType) {
-        case FilterTypes.ACTIVE:
-          return !todo.completed;
-
-        case FilterTypes.COMPLETED:
-          return todo.completed;
-
-        case FilterTypes.ALL:
-        default:
-          return true;
-      }
-    });
-  };
 
   const visibleTodos = useMemo(() => {
     return getFilteredTodos(todos, selectedFilterType);
@@ -114,6 +100,45 @@ export const App: React.FC = memo(() => {
     }
   };
 
+  const handleDeleteTodo = useCallback((id: number) => {
+    setDeletingTodosIds(prev => [...prev, id]);
+
+    deleteTodo(id)
+      .then(() => {
+        setTodos(prev => prev.filter(todo => (
+          todo.id !== id
+        )));
+      })
+      .catch(() => {
+        showErrorMessage('Unable to delete a todo');
+      })
+      .finally(() => {
+        setDeletingTodosIds(prev => {
+          return prev.filter(deletingId => deletingId !== id);
+        });
+      });
+  }, []);
+
+  const handleClearCompletedClick = () => {
+    const completedTodosIds = todos.reduce((ids: number[], todo) => {
+      return todo.completed
+        ? [...ids, todo.id]
+        : ids;
+    }, []);
+
+    setDeletingTodosIds(prev => [...prev, ...completedTodosIds]);
+
+    const deletePromises: Promise<unknown>[] = completedTodosIds.map(id => {
+      return deleteTodo(id);
+    });
+
+    Promise.all(deletePromises).then(() => {
+      setTodos(prev => prev.filter(({ id }) => {
+        return !completedTodosIds.includes(id);
+      }));
+    });
+  };
+
   return (
     <div className="todoapp">
       <h1 className="todoapp__title">todos</h1>
@@ -143,6 +168,8 @@ export const App: React.FC = memo(() => {
           <>
             <TodoList
               todos={visibleTodos}
+              onDeleteTodo={handleDeleteTodo}
+              deletingTodosIds={deletingTodosIds}
             />
 
             <Footer
@@ -150,6 +177,7 @@ export const App: React.FC = memo(() => {
               itemsCounter={activeItemsCounter}
               filterOptions={filterOptions}
               filterType={selectedFilterType}
+              handleClearCompletedClick={handleClearCompletedClick}
             />
           </>
         )}
