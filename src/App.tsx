@@ -148,6 +148,7 @@ export const App: React.FC = () => {
             <Filter
               filter={filter}
               isCompleted={isCompleted}
+              todos={todos}
               onFilterChange={handleTodosFilter}
               onCompletedClear={handleClearButton}
             />

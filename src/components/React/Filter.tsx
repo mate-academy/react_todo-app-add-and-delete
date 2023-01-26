@@ -1,9 +1,11 @@
 import classNames from 'classnames';
+import { Todo } from '../../types/Todo';
 
 /* eslint-disable jsx-a11y/control-has-associated-label */
 type Props = {
   filter: string,
   isCompleted: boolean,
+  todos: Todo[],
   onCompletedClear: () => void,
   onFilterChange: (Filter: Filters) => void,
 };
@@ -17,6 +19,7 @@ export enum Filters {
 export const Filter: React.FC<Props> = ({
   filter,
   isCompleted,
+  todos,
   onCompletedClear,
   onFilterChange,
 }) => {
@@ -29,11 +32,13 @@ export const Filter: React.FC<Props> = ({
     );
   };
 
+  const activeTodos = todos.filter(todo => !todo.completed).length;
+
   return (
     <>
       <footer className="todoapp__footer" data-cy="Footer">
         <span className="todo-count" data-cy="todosCounter">
-          {` ${1} items left`}
+          {` ${activeTodos} items left`}
         </span>
 
         <nav className="filter" data-cy="Filter">
