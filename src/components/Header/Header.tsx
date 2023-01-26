@@ -16,8 +16,8 @@ export const Header:React.FC = () => {
     todos,
     setTodos,
     setError,
-    isAdding,
-    setIsAdding,
+    isLoading,
+    setIsLoading,
     setTempTodo,
   } = useContext(AppContext);
 
@@ -26,7 +26,7 @@ export const Header:React.FC = () => {
   let maxId = useMemo(() => Math.max(...todos.map(({ id }) => id)), [todos]);
 
   const addTodo = async (title: string) => {
-    setIsAdding(true);
+    setIsLoading(true);
     maxId += 1;
     setTempTodo({ id: 0, title, completed: false });
 
@@ -48,14 +48,14 @@ export const Header:React.FC = () => {
       setTempTodo(null);
     }
 
-    setIsAdding(false);
+    setIsLoading(false);
   };
 
   useEffect(() => {
     if (newTodoField.current) {
       newTodoField.current.focus();
     }
-  }, [isAdding]);
+  }, [isLoading]);
 
   const handleSubmit = (event:React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
@@ -88,7 +88,7 @@ export const Header:React.FC = () => {
           ref={newTodoField}
           className="todoapp__new-todo"
           placeholder="What needs to be done?"
-          disabled={isAdding}
+          disabled={isLoading}
           value={newTitle}
           onChange={(event) => setNewTitle(event.target.value)}
         />

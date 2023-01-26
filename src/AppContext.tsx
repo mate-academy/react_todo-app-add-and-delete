@@ -10,8 +10,8 @@ interface IAppContext {
   setFilterStatus: Dispatch<SetStateAction<FilterStatus>>;
   todos: Todo[];
   setTodos:Dispatch<SetStateAction<Todo[]>>;
-  isAdding: boolean;
-  setIsAdding:Dispatch<SetStateAction<boolean>>;
+  isLoading: boolean;
+  setIsLoading:Dispatch<SetStateAction<boolean>>;
   tempTodo: null | TempTodo;
   setTempTodo: Dispatch<SetStateAction<TempTodo | null>>
 }
@@ -23,8 +23,8 @@ export const AppContext = React.createContext<IAppContext>({
   setFilterStatus: () => {},
   todos: [],
   setTodos: () => {},
-  isAdding: false,
-  setIsAdding: () => {},
+  isLoading: false,
+  setIsLoading: () => {},
   tempTodo: null,
   setTempTodo: () => {},
 });
@@ -37,7 +37,7 @@ export const AppProvider: React.FC<Props> = ({ children }) => {
   const [error, setError] = useState(ErrorType.None);
   const [filterStatus, setFilterStatus] = useState(FilterStatus.All);
   const [todos, setTodos] = useState<Todo[]>([]);
-  const [isAdding, setIsAdding] = useState(false);
+  const [isLoading, setIsLoading] = useState(false);
   const [tempTodo, setTempTodo] = useState<TempTodo | null>(null);
 
   return (
@@ -48,8 +48,8 @@ export const AppProvider: React.FC<Props> = ({ children }) => {
       setFilterStatus,
       todos,
       setTodos,
-      isAdding,
-      setIsAdding,
+      isLoading,
+      setIsLoading,
       tempTodo,
       setTempTodo,
     }}

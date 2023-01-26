@@ -5,7 +5,7 @@ It is the second part of the React Todo App with API.
 Take your code implemented for [Loading todos](https://github.com/mate-academy/react_todo-app-loading-todos)
 and implement the ability to and nd remove todos.
 
-> Here is [the working example](https://mate-academy.github.io/react_todo-app-withf-api/)
+> Here is [the working example](https://mate-academy.github.io/react_todo-app-with-api/)
 # ❗️❗️❗️</br>In this working example implemented all 3 parts of the task.</br>In this task you have to implement only the second part described below (using your code from the first part).</br>❗️❗️❗️
 
 ### [API Documentation](https://mate-academy.github.io/fe-students-api/)
@@ -15,7 +15,7 @@ and implement the ability to and nd remove todos.
 Add a todo with the entered title on `NewTodoField` form submit:
 
 - if the title is empty show the `Title can't be empty` notification at the bottom;
-- disable the input until receiving the response from the API (use `isAdding` variable);
+- disable the input until receiving the response from the API (use `isLoading` variable);
 - manually add a temp todo with `id: 0` **after** the list while waiting for the response (don't add it to the array);
 - show the loader on the added todo (see the styles of the 5th todo `Redux`);
 - use your user id for the new todo;

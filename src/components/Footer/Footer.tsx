@@ -1,6 +1,8 @@
 import cn from 'classnames';
 import React, { useContext } from 'react';
+import { deleteTodo } from '../../api/todos';
 import { AppContext } from '../../AppContext';
+import { ErrorType } from '../../types/ErrorType';
 import { FilterStatus } from '../../types/FilterStatus';
 
 export const Footer:React.FC = () => {
@@ -8,10 +10,25 @@ export const Footer:React.FC = () => {
     filterStatus,
     setFilterStatus,
     todos,
+    setError,
+    setTodos,
+    setIsLoading,
   } = useContext(AppContext);
 
   const activeTodos = todos.filter(todo => !todo.completed);
   const activeTodosCount = activeTodos.length;
+  const completedTodos = todos.filter(todo => todo.completed);
+
+  const deleteCompletedTodos = async () => {
+    try {
+      setIsLoading(true);
+      await Promise.all(completedTodos.map(todo => deleteTodo(todo.id)));
+      setTodos(activeTodos);
+      setIsLoading(false);
+    } catch (err) {
+      setError(ErrorType.RemovalError);
+    }
+  };
 
   return (
     <footer className="todoapp__footer" data-cy="Footer">
@@ -48,12 +65,19 @@ export const Footer:React.FC = () => {
         >
           Completed
         </a>
+
       </nav>
 
       <button
         data-cy="ClearCompletedButton"
         type="button"
         className="todoapp__clear-completed"
+        onClick={deleteCompletedTodos}
+        style={{
+          visibility: completedTodos.length
+            ? 'visible'
+            : 'hidden',
+        }}
       >
         Clear completed
       </button>
