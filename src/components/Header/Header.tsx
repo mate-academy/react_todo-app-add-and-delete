@@ -1,9 +1,7 @@
-import React, { memo, useEffect } from 'react';
+import React, { memo, useEffect, useState } from 'react';
 
 interface Props {
   newTodoField: React.RefObject<HTMLInputElement>;
-  newTodoTitle: string;
-  setNewTodoTitle: React.Dispatch<React.SetStateAction<string>>;
   setErrorMessage: React.Dispatch<React.SetStateAction<string>>;
   setHasError: React.Dispatch<React.SetStateAction<boolean>>;
   isAdding: boolean;
@@ -12,13 +10,13 @@ interface Props {
 
 export const Header: React.FC<Props> = memo(({
   newTodoField,
-  newTodoTitle,
-  setNewTodoTitle,
   setErrorMessage,
   setHasError,
   isAdding,
   onAddNewTodo,
 }) => {
+  const [newTodoTitle, setNewTodoTitle] = useState('');
+
   useEffect(() => {
     setHasError(false);
   }, []);
@@ -26,12 +24,12 @@ export const Header: React.FC<Props> = memo(({
   const handleSubmitNewTodo = (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
 
-    if (newTodoTitle.length < 1) {
+    if (newTodoTitle.length < 1 || !newTodoTitle.trim()) {
       setHasError(true);
       setErrorMessage('Title can\'t be empty');
     }
 
-    if (newTodoTitle.length > 0) {
+    if (newTodoTitle.trim()) {
       onAddNewTodo(newTodoTitle);
       setNewTodoTitle('');
     }

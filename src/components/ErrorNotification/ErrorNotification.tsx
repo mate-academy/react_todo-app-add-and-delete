@@ -3,7 +3,7 @@ import cn from 'classnames';
 
 interface Props {
   hasError: boolean;
-  setHasError: () => void;
+  setHasError: React.Dispatch<React.SetStateAction<boolean>>;
   errorMessage: string;
 }
 
@@ -27,7 +27,7 @@ export const ErrorNotification: React.FC<Props> = memo(({
         data-cy="HideErrorButton"
         type="button"
         className="delete"
-        onClick={setHasError}
+        onClick={() => setHasError(false)}
       />
 
       {errorMessage}

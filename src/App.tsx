@@ -20,7 +20,6 @@ export const App: React.FC = () => {
   const [hasError, setHasError] = useState(false);
   const [errorMessage, setErrorMessage] = useState('');
   const [completedFilter, setCompletedFilter] = useState(FilterType.All);
-  const [newTodoTitle, setNewTodoTitle] = useState('');
   const [isAdding, setIsAdding] = useState(true);
 
   const user = useContext(AuthContext);
@@ -53,18 +52,11 @@ export const App: React.FC = () => {
     setTimeout(() => setHasError(false), 3000);
   }
 
-  const closeMessage = () => {
+  const closeMessage = useCallback(() => {
     setHasError(false);
-  };
+  }, [hasError]);
 
   const addNewTodo = useCallback(async (newTitle: string) => {
-    if (!newTitle.trim()) {
-      setHasError(true);
-      setErrorMessage('Title can\'t be empty');
-
-      return;
-    }
-
     setIsAdding(true);
 
     if (user) {
@@ -119,8 +111,6 @@ export const App: React.FC = () => {
       <div className="todoapp__content">
         <Header
           newTodoField={newTodoField}
-          newTodoTitle={newTodoTitle}
-          setNewTodoTitle={setNewTodoTitle}
           setErrorMessage={setErrorMessage}
           setHasError={setHasError}
           isAdding={isAdding}
