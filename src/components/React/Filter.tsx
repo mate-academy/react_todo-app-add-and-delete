@@ -38,7 +38,7 @@ export const Filter: React.FC<Props> = ({
     <>
       <footer className="todoapp__footer" data-cy="Footer">
         <span className="todo-count" data-cy="todosCounter">
-          {` ${activeTodos} items left`}
+          {`${activeTodos} items left`}
         </span>
 
         <nav className="filter" data-cy="Filter">
