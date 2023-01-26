@@ -1,14 +1,17 @@
 import React, { memo } from 'react';
+// import { createTodo } from '../../api/todos';
 
 type Props = {
   newTodoField: React.RefObject<HTMLInputElement>;
   setIsError: (error: boolean) => void;
-  newTodoTitle: string;
   onErrorMessage: (error: string) => void;
+  onAddTodo: (newTitle: string) => void;
 };
 
 export const Header: React.FC<Props> = memo(
-  ({ newTodoField, setIsError, onErrorMessage }) => {
+  ({
+    newTodoField, setIsError, onErrorMessage, onAddTodo,
+  }) => {
     const handlerSubmitTodo = (event: React.FormEvent) => {
       event.preventDefault();
 
@@ -16,6 +19,8 @@ export const Header: React.FC<Props> = memo(
         setIsError(true);
         onErrorMessage('Title can\'t be empty');
       }
+
+      onAddTodo(newTodoField.current?.value || '');
     };
 
     return (

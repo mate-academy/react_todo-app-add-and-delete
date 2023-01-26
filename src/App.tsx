@@ -2,7 +2,7 @@
 import React, {
   useContext, useEffect, useMemo, useRef, useState,
 } from 'react';
-import { deleteTodoById, getTodos } from './api/todos';
+import { createTodo, deleteTodoById, getTodos } from './api/todos';
 import { AuthContext } from './components/Auth/AuthContext';
 import { ErrorNotification }
   from './components/ErrorNotification/ErrorNotification';
@@ -59,6 +59,30 @@ export const App: React.FC = () => {
     }
   };
 
+  const addTodo = async (newTitle: string) => {
+    if (user) {
+      const newTodo = {
+        userId: user?.id,
+        title: newTitle,
+        completed: false,
+      };
+
+      try {
+        const response = await createTodo(newTodo);
+
+        setTodos((prevTodos) => [...prevTodos, response]);
+
+        return response;
+      } catch (error) {
+        setErrorMessage('Unable to add a todo');
+
+        return false;
+      }
+    }
+
+    return false;
+  };
+
   if (isError) {
     setTimeout(() => setIsError(false), 3000);
   }
@@ -89,8 +113,8 @@ export const App: React.FC = () => {
         <Header
           newTodoField={newTodoField}
           setIsError={setIsError}
-          newTodoTitle={newTodoTitle}
           onErrorMessage={setErrorMessage}
+          onAddTodo={addTodo}
         />
 
         <TodoList todos={visibleTodos} onDeleteTodo={deleteTodo} />
