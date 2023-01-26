@@ -17,7 +17,6 @@ export const Error:React.FC<Props> = ({ error, onClick }) => {
         className="delete"
         onClick={onClick}
       />
-
       {error}
     </div>
   );

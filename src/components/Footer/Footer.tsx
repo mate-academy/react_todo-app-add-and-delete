@@ -16,9 +16,7 @@ export const Footer:React.FC<Props> = ({
   const activeTodos = todos.filter((todo) => !todo.completed);
 
   const handleClearCompleted = () => {
-    completedTodos.map((todo) =>
-      onClearCompleted(todo.id)
-    );
+    completedTodos.map((todo) => onClearCompleted(todo.id));
   };
 
   return (

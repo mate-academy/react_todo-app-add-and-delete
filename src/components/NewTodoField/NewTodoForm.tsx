@@ -13,11 +13,13 @@ export const NewTodoForm:React.FC<Props> = ({
 }) => {
   const [title, setTitle] = useState('');
 
+  const handleSubmit = () => {
+    onAdd(title);
+    setTitle('');
+  }
+
   return (
-    <form onSubmit={() => {
-      onAdd(title);
-      setTitle('');
-    }}
+    <form onSubmit={handleSubmit}
     >
       <input
         disabled={isAdding}

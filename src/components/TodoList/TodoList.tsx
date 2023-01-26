@@ -14,7 +14,7 @@ export const TodoList: React.FC<Props> = ({
   todos, isAdding, tempTodo, onDelete, deletingTodoId, isClearCompleted,
 }) => {
   return (
-    <section className="todoapp__main" data-cy="TodoList">
+    <ul className="todoapp__main" data-cy="TodoList">
       {todos.map((todo) => (
         <TodoCard
           key={todo.id}
@@ -44,6 +44,6 @@ export const TodoList: React.FC<Props> = ({
           </div>
         </div>
       )}
-    </section>
+    </ul>
   );
 };

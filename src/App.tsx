@@ -14,7 +14,6 @@ import { Filters } from './types/Filters';
 import { Errors } from './types/Errors';
 
 export const App: React.FC = () => {
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   const user = useContext(AuthContext);
   const newTodoField = useRef<HTMLInputElement>(null);
   const [todos, setTodos] = useState<Todo[]>([]);
@@ -33,16 +32,13 @@ export const App: React.FC = () => {
   }
 
   useEffect(() => {
-    // focus the element with `ref={newTodoField}`
     if (newTodoField.current) {
       newTodoField.current.focus();
     }
 
     if (user) {
       getTodos(user.id)
-        .then((todosFromServer) => {
-          setTodos(todosFromServer);
-        })
+        .then(setTodos)
         .catch(() => {
           handleError(Errors.loading);
         });
