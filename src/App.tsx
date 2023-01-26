@@ -25,11 +25,11 @@ export const App: React.FC = memo(() => {
   const [deleteTodoIdFromArray, setDeleteTodoIdFromArray]
     = useState<number[]>([]);
 
-  const showErrorMessage = (error: string) => {
+  const showErrorMessage = useCallback((error: string) => {
     setErrorMessage(error);
 
     setTimeout(() => setErrorMessage(''), 3000);
-  };
+  }, []);
 
   useEffect(() => {
     if (user) {
@@ -97,19 +97,19 @@ export const App: React.FC = memo(() => {
     }
   }, [todos]);
 
-  const visibleTodo = todoFilteredCompleted(todoToComplete);
+  const filteredTodos = todoFilteredCompleted(todoToComplete);
 
-  const todoFilteredStatusCompleted = visibleTodo.filter(todo => (
+  const todoFilteredStatusCompleted = todos.filter(todo => (
     todo.completed === true
   ));
 
-  const deleteTodosStatusCompleted = () => {
+  const deleteTodosStatusCompleted = useCallback(() => {
     todos.forEach(todo => {
       if (todo.completed === true) {
         deleteTodoFromData(todo.id);
       }
     });
-  };
+  }, [todoFilteredStatusCompleted]);
 
   return (
     <div className="todoapp">
@@ -127,10 +127,10 @@ export const App: React.FC = memo(() => {
 
         />
 
-        {(visibleTodo.length !== 0 || temporaryTodo) && (
+        {(todos.length !== 0 || temporaryTodo) && (
           <>
             <TodoList
-              todos={visibleTodo}
+              todos={filteredTodos}
               deleteTodoFromData={deleteTodoFromData}
               temporaryTodo={temporaryTodo}
               deleteTodo={deleteTodoIdFromArray}
