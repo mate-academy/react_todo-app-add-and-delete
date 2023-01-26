@@ -3,12 +3,12 @@ import classNames from 'classnames';
 import React, { memo } from 'react';
 
 export type Props = {
-  message: string
+  errorMessage: string
   setErrorMessage:(v:string) => void
 };
 
 export const ErrorNotification: React.FC<Props> = memo(({
-  message,
+  errorMessage,
   setErrorMessage,
 }) => {
   return (
@@ -16,7 +16,7 @@ export const ErrorNotification: React.FC<Props> = memo(({
       data-cy="ErrorNotification"
       className={classNames(
         'notification is-danger is-light has-text-weight-normal',
-        { hidden: !message },
+        { hidden: !errorMessage },
       )}
     >
       <button
@@ -26,7 +26,7 @@ export const ErrorNotification: React.FC<Props> = memo(({
         onClick={() => setErrorMessage('')}
       />
 
-      {message}
+      {errorMessage}
     </div>
   );
 });

@@ -8,6 +8,7 @@ export type Props = {
   setTodoToComplete: (value: FilterTodoComplete) => void
   listTodoCompletedToDelete: Todo[]
   deleteTodosStatusCompleted: () => void
+  countNotCompletedTodo: Todo[]
 };
 
 export const TodoFooter: React.FC<Props> = memo(({
@@ -15,11 +16,12 @@ export const TodoFooter: React.FC<Props> = memo(({
   setTodoToComplete,
   listTodoCompletedToDelete,
   deleteTodosStatusCompleted,
+  countNotCompletedTodo,
 }) => {
   return (
     <footer className="todoapp__footer" data-cy="Footer">
       <span className="todo-count" data-cy="todosCounter">
-        4 items left
+        {`${countNotCompletedTodo.length} items left`}
       </span>
 
       <nav className="filter" data-cy="Filter">

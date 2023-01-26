@@ -87,21 +87,23 @@ export const App: React.FC = memo(() => {
   const todoFilteredCompleted = useCallback((value: FilterTodoComplete) => {
     switch (value) {
       case FilterTodoComplete.Active:
-        return todos.filter(todo => todo.completed === false);
+        return todos.filter(todo => !todo.completed);
 
       case FilterTodoComplete.Completed:
-        return todos.filter(todo => todo.completed === true);
+        return todos.filter(todo => todo.completed);
 
       default:
         return todos;
     }
   }, [todos]);
 
-  const filteredTodos = todoFilteredCompleted(todoToComplete);
+  const filteredTodosByStatus = todoFilteredCompleted(todoToComplete);
 
   const todoFilteredStatusCompleted = todos.filter(todo => (
     todo.completed === true
   ));
+
+  const countNotCompletedTodo = todos.filter(todo => !todo.completed);
 
   const deleteTodosStatusCompleted = useCallback(() => {
     todos.forEach(todo => {
@@ -130,10 +132,10 @@ export const App: React.FC = memo(() => {
         {(todos.length !== 0 || temporaryTodo) && (
           <>
             <TodoList
-              todos={filteredTodos}
+              todos={filteredTodosByStatus}
               deleteTodoFromData={deleteTodoFromData}
               temporaryTodo={temporaryTodo}
-              deleteTodo={deleteTodoIdFromArray}
+              deleteTodoIdFromArray={deleteTodoIdFromArray}
             />
 
             <TodoFooter
@@ -141,13 +143,14 @@ export const App: React.FC = memo(() => {
               setTodoToComplete={setTodoToComplete}
               listTodoCompletedToDelete={todoFilteredStatusCompleted}
               deleteTodosStatusCompleted={deleteTodosStatusCompleted}
+              countNotCompletedTodo={countNotCompletedTodo}
             />
           </>
         )}
 
         {errorMessage && (
           <ErrorNotification
-            message={errorMessage}
+            errorMessage={errorMessage}
             setErrorMessage={setErrorMessage}
           />
         )}

@@ -32,7 +32,7 @@ export const TodoHeader: React.FC<Props> = memo(({
     }
   }, []);
 
-  const handleTitle = (event: React.ChangeEvent<HTMLInputElement>) => {
+  const createTodoTitle = (event: React.ChangeEvent<HTMLInputElement>) => {
     setTitle(event.target.value);
   };
 
@@ -69,7 +69,7 @@ export const TodoHeader: React.FC<Props> = memo(({
           placeholder="What needs to be done?"
           value={title}
           disabled={isActive}
-          onChange={handleTitle}
+          onChange={createTodoTitle}
         />
       </form>
     </header>
