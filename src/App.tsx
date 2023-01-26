@@ -17,18 +17,31 @@ export const App: React.FC = () => {
   const [todos, setTodos] = useState<Todo[]>([]);
   const [sortType, setSortType] = useState<FilterType>(FilterType.ALL);
   const [errorText, setErrorText] = useState('');
+  const [tempNewTodo, setTempNewTodo] = useState<Todo | null>(null);
 
   const showErrorBanner = (errorMsg: string) => {
     setErrorText(errorMsg);
     setTimeout(() => setErrorText(''), 3000);
   };
 
-  useEffect(() => {
+  const loadTodos = () => {
     if (user) {
       getTodos(user.id)
-        .then(setTodos).catch(() => showErrorBanner('Cant load user todos'));
+        .then(setTodos)
+        .catch(() => showErrorBanner('Cant load user todos'));
     }
+  };
 
+  const removeTodo = (todoId: number) => setTodos(
+    todos.filter(todo => todo.id !== todoId),
+  );
+
+  const removeTodos = (todoIds: number[]) => setTodos(
+    todos.filter(todo => !todoIds.includes(todo.id)),
+  );
+
+  useEffect(() => {
+    loadTodos();
     // focus the element with `ref={newTodoField}`
     if (newTodoField.current) {
       newTodoField.current.focus();
@@ -52,17 +65,30 @@ export const App: React.FC = () => {
       <h1 className="todoapp__title">todos</h1>
 
       <div className="todoapp__content">
-        <Header newTodoField={newTodoField} todos={todos} />
+        <Header
+          newTodoField={newTodoField}
+          todos={todos}
+          showErrorBanner={showErrorBanner}
+          user={user}
+          setTempNewTodo={setTempNewTodo}
+          setTodos={setTodos}
+        />
 
         { filteredTodos.length || sortType !== 'all'
           ? (
             <>
-              <TodoList todos={filteredTodos} />
+              <TodoList
+                todos={filteredTodos}
+                tempNewTodo={tempNewTodo}
+                showErrorBanner={showErrorBanner}
+                removeTodo={removeTodo}
+              />
 
               <Footer
                 todos={filteredTodos}
                 sortType={sortType}
                 setSortType={setSortType}
+                removeTodos={removeTodos}
               />
             </>
           )

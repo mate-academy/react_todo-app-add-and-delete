@@ -1,46 +1,38 @@
-import classNames from 'classnames';
 import React from 'react';
 import { Todo } from '../types/Todo';
+import { TodoRow } from './TodoRow';
 
 export type Props = {
   todos: Todo[],
+  tempNewTodo: Todo | null,
+  removeTodo: (todoId: number) => void,
+  showErrorBanner: (errorMsg: string) => void,
 };
 
-export const TodoList: React.FC<Props> = ({ todos }) => {
+export const TodoList: React.FC<Props> = ({
+  todos, tempNewTodo, removeTodo, showErrorBanner,
+}) => {
   return (
     <section className="todoapp__main" data-cy="TodoList">
       {todos.map(todo => (
-        <div
-          data-cy="Todo"
-          className={
-            classNames('todo', { completed: todo.completed })
-          }
+        <TodoRow
+          todo={todo}
           key={todo.id}
-        >
-          <label className="todo__status-label">
-            <input
-              data-cy="TodoStatus"
-              type="checkbox"
-              className="todo__status"
-              defaultChecked={todo.completed}
-            />
-          </label>
-
-          <span data-cy="TodoTitle" className="todo__title">{todo.title}</span>
-          <button
-            type="button"
-            className="todo__remove"
-            data-cy="TodoDeleteButton"
-          >
-            ×
-          </button>
-
-          <div data-cy="TodoLoader" className="modal overlay">
-            <div className="modal-background has-background-white-ter" />
-            <div className="loader" />
-          </div>
-        </div>
+          removeTodo={removeTodo}
+          showErrorBanner={showErrorBanner}
+        />
       ))}
+
+      {tempNewTodo && (
+
+        <TodoRow
+          todo={tempNewTodo}
+          // eslint-disable-next-line react/jsx-boolean-value
+          showLoader={true}
+          removeTodo={removeTodo}
+          showErrorBanner={showErrorBanner}
+        />
+      )}
     </section>
   );
 };
