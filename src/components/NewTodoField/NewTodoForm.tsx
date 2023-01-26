@@ -13,14 +13,16 @@ export const NewTodoForm:React.FC<Props> = ({
 }) => {
   const [title, setTitle] = useState('');
 
-  const handleSubmit = () => {
+  const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
+    e.preventDefault()
     onAdd(title);
     setTitle('');
-  }
+  };
 
   return (
-    <form onSubmit={handleSubmit}
-    >
+    <form onSubmit={(e) => {
+      handleSubmit(e);
+    }}>
       <input
         disabled={isAdding}
         data-cy="NewTodoField"
