@@ -64,18 +64,17 @@ export const TodoFooter: React.FC<Props> = memo(({
           Completed
         </a>
       </nav>
+      <button
+        data-cy="ClearCompletedButton"
+        type="button"
+        className={listTodoCompletedToDelete.length > 0
+          ? 'todoapp__clear-completed'
+          : 'todoapp__hidden'}
+        onClick={deleteTodosStatusCompleted}
+      >
+        Clear completed
+      </button>
 
-      {listTodoCompletedToDelete.length > 0
-        && (
-          <button
-            data-cy="ClearCompletedButton"
-            type="button"
-            className="todoapp__clear-completed"
-            onClick={deleteTodosStatusCompleted}
-          >
-            Clear completed
-          </button>
-        )}
     </footer>
   );
 });
