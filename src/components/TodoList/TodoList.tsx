@@ -4,11 +4,16 @@ import { TodoItem } from '../TodoItem/TodoItem';
 
 interface Props {
   todos: Todo[],
-  onTodoDelete: (todoId: number) => void;
+  onDeleteTodo: (todoId: number) => Promise<any>;
+  tempTodo: Todo | null;
+  deletingTodoIds: number[];
 }
 
 export const TodoList: React.FC<Props> = memo(({
-  todos, onTodoDelete,
+  todos,
+  onDeleteTodo,
+  tempTodo,
+  deletingTodoIds,
 }) => {
   return (
     <section className="todoapp__main" data-cy="TodoList">
@@ -16,9 +21,18 @@ export const TodoList: React.FC<Props> = memo(({
         <TodoItem
           todo={todo}
           key={todo.id}
-          onTodoDelete={onTodoDelete}
+          onDeleteTodo={onDeleteTodo}
+          isDeleting={deletingTodoIds.includes(todo.id)}
         />
       )))}
+
+      {tempTodo && (
+        <TodoItem
+          todo={tempTodo}
+          onDeleteTodo={onDeleteTodo}
+          isDeleting={deletingTodoIds.includes(tempTodo.id)}
+        />
+      )}
     </section>
   );
 });
