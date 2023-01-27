@@ -15,15 +15,18 @@ import { TodoList } from './components/TodoList/TodoList';
 import { ErrorNotification } from
   './components/ErrorNotification/ErrorNotification';
 
-import { deleteTodoById, getTodos } from './api/todos';
+import { createTodo, deleteTodoById, getTodos } from './api/todos';
 
 import { Todo } from './types/Todo';
 import { CompletedFilter } from './types/CompletedFilter';
+// import { TodoItem } from './components/TodoItem/TodoItem';
 
 export const App: React.FC = () => {
   const [todos, setTodos] = useState<Todo[]>([]);
   const [errorMessages, setErrorMessages] = useState<string[]>([]);
   const [completedFilter, setCompletedFilter] = useState(CompletedFilter.All);
+  // const [tempTodo, setTempTodo] = useState<Todo | null>(null);
+  const [isAdding, setIsAdding] = useState(false);
 
   const user = useContext(AuthContext);
   const newTodoField = useRef<HTMLInputElement>(null);
@@ -58,7 +61,29 @@ export const App: React.FC = () => {
     }
   }, []);
 
-  const deleteTodo = async (todoId: number) => {
+  const addTodo = useCallback(async (newTitle: string) => {
+    setIsAdding(true);
+
+    if (user) {
+      try {
+        const newTodo = await createTodo({
+          title: newTitle.trim(),
+          userId: user?.id,
+          completed: false,
+        });
+
+        setTodos(current => [
+          ...current, newTodo,
+        ]);
+      } catch (error) {
+        showError('Unable to add a todo');
+      } finally {
+        setIsAdding(false);
+      }
+    }
+  }, []);
+
+  const deleteTodo = useCallback(async (todoId: number) => {
     try {
       const responseResult = await deleteTodoById(todoId);
 
@@ -72,7 +97,7 @@ export const App: React.FC = () => {
 
       return false;
     }
-  };
+  }, []);
 
   const activeTodos = useMemo(() => (
     todos.filter(todo => !todo.completed)
@@ -99,11 +124,17 @@ export const App: React.FC = () => {
       <h1 className="todoapp__title">todos</h1>
 
       <div className="todoapp__content">
-        <Header newTodoField={newTodoField} />
+        <Header
+          newTodoField={newTodoField}
+          onAddTodo={addTodo}
+          isAdding={isAdding}
+          showError={showError}
+        />
 
         {todos.length !== 0 && (
           <>
             <TodoList todos={visibleTodos} onTodoDelete={deleteTodo} />
+
             <Footer
               activeTodos={activeTodos}
               completedFilter={completedFilter}

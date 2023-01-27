@@ -1,23 +1,25 @@
 import React, { memo, useState } from 'react';
 import cn from 'classnames';
 import { Todo } from '../../types/Todo';
+import { Loader } from '../Loader/Loader';
 
 interface Props {
   todo: Todo,
   onTodoDelete: (todoId: number) => void;
 }
 
-export const TodoItem: React.FC<Props> = memo(({ todo, onTodoDelete }) => {
-  const [isLoading, setIsLoading] = useState(false);
-  const [selectedTodoId, setSelectedTodoId] = useState(0);
+export const TodoItem: React.FC<Props> = memo(({
+  todo,
+  onTodoDelete,
+}) => {
+  const [isDeleting, setIsDeleting] = useState(false);
 
-  const deleteTodo = async (todoId: number) => {
-    setSelectedTodoId(todoId);
-    setIsLoading(true);
+  const handleDeleteTodo = async () => {
+    setIsDeleting(true);
 
-    await onTodoDelete(todoId);
+    await onTodoDelete(todo.id);
 
-    setIsLoading(false);
+    setIsDeleting(false);
   };
 
   return (
@@ -44,19 +46,13 @@ export const TodoItem: React.FC<Props> = memo(({ todo, onTodoDelete }) => {
         type="button"
         className="todo__remove"
         data-cy="TodoDeleteButton"
-        onClick={() => deleteTodo(todo.id)}
+        onClick={handleDeleteTodo}
       >
         ×
       </button>
 
-      <div
-        data-cy="TodoLoader"
-        className={cn('modal overlay',
-          { 'is-active': isLoading && todo.id === selectedTodoId })}
-      >
-        <div className="modal-background has-background-white-ter" />
-        <div className="loader" />
-      </div>
+      <Loader isLoading={isDeleting} />
+
     </div>
   );
 });
