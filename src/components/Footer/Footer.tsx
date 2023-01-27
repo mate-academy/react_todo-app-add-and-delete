@@ -15,7 +15,7 @@ export const Footer: React.FC<Props> = memo(({
   onFilterStatus,
   amountOfItems,
   onDeleteCompletedTodos,
-  completedTodosLength
+  completedTodosLength,
 }) => {
   return (
     <footer className="todoapp__footer" data-cy="Footer">

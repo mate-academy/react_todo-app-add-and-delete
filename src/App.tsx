@@ -1,8 +1,13 @@
 /* eslint-disable jsx-a11y/control-has-associated-label */
 import React, {
   useCallback,
-  useContext, useEffect, useMemo, useRef, useState,
+  useContext,
+  useEffect,
+  useMemo,
+  useRef,
+  useState,
 } from 'react';
+import { getTodoFilteredByCompleted } from './api/helper';
 import { createTodo, deleteTodoById, getTodos } from './api/todos';
 import { AuthContext } from './components/Auth/AuthContext';
 import { ErrorNotification }
@@ -51,9 +56,8 @@ export const App: React.FC = () => {
     try {
       const deleteResponse = await deleteTodoById(todoId);
 
-      setTodos(
-        (currentTodos) => currentTodos.filter((todo) => todo.id !== todoId),
-      );
+      // eslint-disable-next-line max-len
+      setTodos((currentTodos) => currentTodos.filter((todo) => todo.id !== todoId));
 
       return deleteResponse;
     } catch (error) {
@@ -104,28 +108,23 @@ export const App: React.FC = () => {
     setTimeout(() => setIsError(false), 3000);
   }
 
-  const visibleTodos = useMemo(() => todos.filter((todo) => {
-    switch (filterStatus) {
-      case FilterType.ACTIVE:
-        return !todo.completed;
-      case FilterType.COMPLETED:
-        return todo.completed;
-      default:
-        return true;
-    }
-  }), [filterStatus, todos]);
+  const visibleTodos = useMemo(
+    () => getTodoFilteredByCompleted(todos, filterStatus),
+    [todos, filterStatus],
+  );
 
   const amountOfItems = useMemo(
     () => todos.filter((todo) => !todo.completed).length,
     [todos],
   );
 
-  const completedTodosLength = useMemo(() => (
-    todos.filter(todo => todo.completed).length
-  ), [todos]);
+  const completedTodosLength = useMemo(
+    () => todos.filter((todo) => todo.completed).length,
+    [todos],
+  );
 
   const deleteCompletedTodos = useCallback(() => {
-    todos.forEach(todo => {
+    todos.forEach((todo) => {
       if (todo.completed) {
         deleteTodo(todo.id);
       }
