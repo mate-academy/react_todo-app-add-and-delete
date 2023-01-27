@@ -4,7 +4,7 @@ import { FilterType } from '../../types/FilterType';
 
 type Props = {
   filterType: FilterType;
-  setFilterType: React.Dispatch<React.SetStateAction<FilterType>>;
+  setFilterType: (filterType: FilterType) => void;
 };
 
 export const Filter: React.FC<Props> = memo((props) => {
