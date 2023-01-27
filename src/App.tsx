@@ -18,25 +18,25 @@ export const App: React.FC = () => {
   const [value, setValue] = useState('');
 
   const [currentFilter, setCurrentFilter] = useState(Filters.All);
-  const [isError, setisError] = useState(false);
-  const [isDelete, setisDelete] = useState(false);
-  const [isHidden, setisHidden] = useState(false);
-  const [isEmpty, setisEmpty] = useState(false);
-  const [isAdding, setisAdding] = useState(false);
+  const [isError, setIsError] = useState(false);
+  const [isDelete, setIsDelete] = useState(false);
+  const [isHidden, setIsHidden] = useState(false);
+  const [isEmpty, setIsEmpty] = useState(false);
+  const [isAdding, setIsAdding] = useState(false);
   const completedTodo = todos.filter((todo) => todo.completed);
   const clearCompleted = () => {
     completedTodo.filter((todo) => deleteTodo(todo.id)
       .then()
-      .catch(() => setisDelete(true)));
+      .catch(() => setIsDelete(true)));
   };
 
-  const removTodo = (todoId: unknown) => setTodos(todos
+  const updateTodos = (todoId: unknown) => setTodos(todos
     .filter((todo) => todo.id !== todoId));
 
   const removeTodo = (todoId: number | undefined) => {
     deleteTodo(todoId)
-      .then((todoID) => removTodo(todoID))
-      .catch(() => setisDelete(true));
+      .then((todoID) => updateTodos(todoID))
+      .catch(() => setIsDelete(true));
   };
 
   const addNewTodo = (todo: Todo) => setTodos([...todos, todo]);
@@ -45,27 +45,27 @@ export const App: React.FC = () => {
       if (value !== '') {
         createTodo(value, user?.id)
           .then((todo) => addNewTodo(todo))
-          .catch(() => setisError(true));
+          .catch(() => setIsError(true));
         setValue('');
       } else {
-        setisEmpty(true);
+        setIsEmpty(true);
       }
     }
   };
 
   useEffect(() => {
-    setisHidden(true);
+    setIsHidden(true);
     getTodos(user?.id)
       .then(setTodos)
-      .catch(() => setisError(true));
+      .catch(() => setIsError(true));
 
     setTimeout(() => {
-      setisHidden(true);
-      setisDelete(false);
-      setisEmpty(false);
+      setIsHidden(true);
+      setIsDelete(false);
+      setIsEmpty(false);
     }, 3000);
 
-    setisAdding(true);
+    setIsAdding(true);
     if (newTodoField.current) {
       newTodoField.current.focus();
     }
@@ -132,7 +132,7 @@ export const App: React.FC = () => {
                 type="button"
                 hidden
                 onClick={() => {
-                  setisHidden(true);
+                  setIsHidden(true);
                 }}
                 className="delete"
               />
@@ -155,7 +155,7 @@ export const App: React.FC = () => {
                 type="button"
                 hidden
                 onClick={() => {
-                  setisHidden(true);
+                  setIsHidden(true);
                 }}
                 className="delete"
               />
@@ -173,7 +173,7 @@ export const App: React.FC = () => {
                 type="button"
                 className="delete"
                 onClick={() => {
-                  setisHidden(true);
+                  setIsHidden(true);
                 }}
               />
               {'Title can\'t be empty'}
