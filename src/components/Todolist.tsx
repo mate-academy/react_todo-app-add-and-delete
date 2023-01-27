@@ -3,14 +3,14 @@ import { TodoInfo } from './TodoInfo';
 
 type Props = {
   todos: Todo[],
-  todosByDeleting: number[],
+  deletingTodosIds: number[],
   temporaryTodo: Todo | null,
   handleDeleteTodo: (id: number) => void,
 };
 
 export const Todolist: React.FC<Props> = ({
   todos,
-  todosByDeleting,
+  deletingTodosIds,
   temporaryTodo,
   handleDeleteTodo,
 }) => {
@@ -21,7 +21,7 @@ export const Todolist: React.FC<Props> = ({
           key={todo.id}
           todo={todo}
           handleDeleteTodo={handleDeleteTodo}
-          todosByDeleting={todosByDeleting}
+          deletingTodosIds={deletingTodosIds}
         />
       ))}
 
@@ -29,7 +29,7 @@ export const Todolist: React.FC<Props> = ({
         <TodoInfo
           todo={temporaryTodo}
           handleDeleteTodo={handleDeleteTodo}
-          todosByDeleting={todosByDeleting}
+          deletingTodosIds={deletingTodosIds}
         />
       )}
     </section>

@@ -1,21 +1,30 @@
 import cn from 'classnames';
+import { useMemo } from 'react';
 import { CompletedFilter } from '../types/CompletedFilter';
+import { Todo } from '../types/Todo';
 
 type Props = {
-  uncompletedTodosAmount: number;
-  hasCompletedTodos: boolean;
+  todos: Todo[];
   completedFilter: CompletedFilter;
   removeCompletedTodos: () => void;
   setCompletedFilter: (filter: CompletedFilter) => void;
 };
 
 export const Footer: React.FC<Props> = ({
-  uncompletedTodosAmount,
-  hasCompletedTodos,
+  todos,
   completedFilter,
   removeCompletedTodos,
   setCompletedFilter,
 }) => {
+  const uncompletedTodosAmount = useMemo(() => {
+    const uncompletedTodos = todos.filter(todo => !todo.completed);
+
+    return uncompletedTodos.length;
+  }, [todos]);
+
+  const hasCompletedTodos = todos
+    .filter(todoItem => todoItem.completed).length > 0;
+
   return (
     <footer className="todoapp__footer" data-cy="Footer">
       <span className="todo-count" data-cy="todosCounter">
@@ -53,16 +62,15 @@ export const Footer: React.FC<Props> = ({
         </a>
       </nav>
 
-      {hasCompletedTodos && (
-        <button
-          data-cy="ClearCompletedButton"
-          type="button"
-          className="todoapp__clear-completed"
-          onClick={() => removeCompletedTodos()}
-        >
-          Clear completed
-        </button>
-      )}
+      <button
+        hidden={!hasCompletedTodos}
+        data-cy="ClearCompletedButton"
+        type="button"
+        className="todoapp__clear-completed"
+        onClick={() => removeCompletedTodos()}
+      >
+        Clear completed
+      </button>
     </footer>
   );
 };
