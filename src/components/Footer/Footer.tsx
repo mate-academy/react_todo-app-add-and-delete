@@ -1,27 +1,27 @@
 import classNames from 'classnames';
 import React, { memo } from 'react';
-import { FilterTodoComplete, Todo } from '../../types/Todo';
+import { TodoCompleteStatus, Todo } from '../../types/Todo';
 // eslint-disable-next-line import/no-cycle
 
 export type Props = {
-  todoCompleted: FilterTodoComplete
-  setTodoToComplete: (value: FilterTodoComplete) => void
-  listTodoCompletedToDelete: Todo[]
-  deleteTodosStatusCompleted: () => void
-  countNotCompletedTodo: Todo[]
+  todoFilterComplete: TodoCompleteStatus
+  setTodoToComplete: (value: TodoCompleteStatus) => void
+  completedTodos: () => void
+  uncompletedTodos: Todo[]
+  todoCompletedFiltered: Todo[]
 };
 
-export const TodoFooter: React.FC<Props> = memo(({
-  todoCompleted,
+export const Footer: React.FC<Props> = memo(({
+  todoFilterComplete,
   setTodoToComplete,
-  listTodoCompletedToDelete,
-  deleteTodosStatusCompleted,
-  countNotCompletedTodo,
+  completedTodos,
+  uncompletedTodos,
+  todoCompletedFiltered,
 }) => {
   return (
     <footer className="todoapp__footer" data-cy="Footer">
       <span className="todo-count" data-cy="todosCounter">
-        {`${countNotCompletedTodo.length} items left`}
+        {`${uncompletedTodos.length} items left`}
       </span>
 
       <nav className="filter" data-cy="Filter">
@@ -30,11 +30,9 @@ export const TodoFooter: React.FC<Props> = memo(({
           href="#/"
           className={classNames(
             'filter__link',
-            { selected: todoCompleted === FilterTodoComplete.All },
+            { selected: todoFilterComplete === TodoCompleteStatus.All },
           )}
-          onClick={() => setTodoToComplete(
-            (FilterTodoComplete.All),
-          )}
+          onClick={() => setTodoToComplete(TodoCompleteStatus.All)}
         >
           All
         </a>
@@ -44,11 +42,9 @@ export const TodoFooter: React.FC<Props> = memo(({
           href="#/active"
           className={classNames(
             'filter__link',
-            { selected: todoCompleted === FilterTodoComplete.Active },
+            { selected: todoFilterComplete === TodoCompleteStatus.Active },
           )}
-          onClick={() => setTodoToComplete(
-            (FilterTodoComplete.Active),
-          )}
+          onClick={() => setTodoToComplete(TodoCompleteStatus.Active)}
         >
           Active
         </a>
@@ -57,11 +53,9 @@ export const TodoFooter: React.FC<Props> = memo(({
           href="#/completed"
           className={classNames(
             'filter__link',
-            { selected: todoCompleted === FilterTodoComplete.Completed },
+            { selected: todoFilterComplete === TodoCompleteStatus.Completed },
           )}
-          onClick={() => setTodoToComplete(
-            (FilterTodoComplete.Completed),
-          )}
+          onClick={() => setTodoToComplete(TodoCompleteStatus.Completed)}
         >
           Completed
         </a>
@@ -69,14 +63,13 @@ export const TodoFooter: React.FC<Props> = memo(({
       <button
         data-cy="ClearCompletedButton"
         type="button"
-        className={listTodoCompletedToDelete.length > 0
+        className={todoCompletedFiltered.length > 0
           ? 'todoapp__clear-completed'
           : 'todoapp__hidden'}
-        onClick={deleteTodosStatusCompleted}
+        onClick={completedTodos}
       >
         Clear completed
       </button>
-
     </footer>
   );
 });

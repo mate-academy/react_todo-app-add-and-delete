@@ -1,30 +1,28 @@
 /* eslint-disable jsx-a11y/control-has-associated-label */
-import React, { memo, useEffect, useRef } from 'react';
+import React, {
+  memo, useEffect, useRef, useState,
+} from 'react';
 import { Todo } from '../../types/Todo';
 
 export type Props = {
   onSubmit: (todo: Omit<Todo, 'id'>) => void
-  title: string
-  setTitle: (v: string) => void
   showErrorMessage: (v: string) => void
   userId: number
   temporaryTodo: Todo | null
-  deleteTodoFromArray: number[]
 };
 
-export const TodoHeader: React.FC<Props> = memo(({
+export const Header: React.FC<Props> = memo(({
   onSubmit,
-  title,
-  setTitle,
   showErrorMessage,
   userId,
   temporaryTodo,
-  deleteTodoFromArray,
+
 }) => {
+  const [title, setTitle] = useState('');
+
   const newTodoField = useRef<HTMLInputElement>(null);
 
-  const isActive = temporaryTodo?.id === 0
-  || deleteTodoFromArray.length !== 0;
+  const shouldDisableInput = temporaryTodo !== null;
 
   useEffect(() => {
     if (newTodoField.current) {
@@ -32,22 +30,20 @@ export const TodoHeader: React.FC<Props> = memo(({
     }
   }, []);
 
-  const createTodoTitle = (event: React.ChangeEvent<HTMLInputElement>) => {
-    setTitle(event.target.value);
-  };
-
   const handleSubmit = (event: React.FormEvent) => {
     event.preventDefault();
 
     if (title === '') {
       showErrorMessage('Title can\'t be empty');
-    } else {
-      onSubmit({
-        title,
-        userId,
-        completed: false,
-      });
+
+      return;
     }
+
+    onSubmit({
+      title,
+      userId,
+      completed: false,
+    });
 
     setTitle('');
   };
@@ -68,8 +64,8 @@ export const TodoHeader: React.FC<Props> = memo(({
           className="todoapp__new-todo"
           placeholder="What needs to be done?"
           value={title}
-          disabled={isActive}
-          onChange={createTodoTitle}
+          disabled={shouldDisableInput}
+          onChange={(event) => setTitle(event.target.value)}
         />
       </form>
     </header>
