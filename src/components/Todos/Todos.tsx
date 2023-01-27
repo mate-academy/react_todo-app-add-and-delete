@@ -48,7 +48,8 @@ export const Todos = memo(
             <button
               data-cy="ToggleAllButton"
               type="button"
-              className={`todoapp__toggle-all ${allChecked ? 'active' : ''}`}
+              className={`todoapp__toggle-all ${
+                allChecked && todosCount ? 'active' : ''}`}
               aria-label="Toggle list"
               onClick={checkAll}
             />

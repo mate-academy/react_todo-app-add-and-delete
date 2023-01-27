@@ -25,13 +25,10 @@ export const TodosFooter: FC<{ todosCount: number }> = memo(({
         <a
           data-cy="FilterLinkAll"
           href="#/"
-          className={
-            `filter__link ${
-              filterType === 'all' ? 'selected' : ''
-            } ${
-              !total ? 'is-disabled' : ''
-            }`
-          }
+          className={`filter__link ${
+            filterType === 'all' ? 'selected'
+              : ''} ${
+            !total ? 'is-disabled' : ''}`}
           onClick={() => setFilterType('all')}
         >
           All
@@ -40,13 +37,10 @@ export const TodosFooter: FC<{ todosCount: number }> = memo(({
         <a
           data-cy="FilterLinkActive"
           href="#/active"
-          className={
-            `filter__link ${
-              filterType === 'active' ? 'selected' : ''
-            } ${
-              !active ? 'is-disabled' : ''
-            }`
-          }
+          className={`filter__link ${
+            filterType === 'active' ? 'selected'
+              : ''} ${
+            !active ? 'is-disabled' : ''}`}
           onClick={() => setFilterType('active')}
         >
           Active
