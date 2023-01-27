@@ -1,5 +1,7 @@
 /* eslint-disable jsx-a11y/control-has-associated-label */
-import React, { useContext, useEffect, useState } from 'react';
+import React, {
+  useCallback, useContext, useEffect, useState,
+} from 'react';
 import { deleteTodo, getTodos } from './api/todos';
 import { AuthContext } from './components/Auth/AuthContext';
 import { ErrorMessage } from './components/ErrorMessage';
@@ -16,9 +18,10 @@ export const App: React.FC = () => {
   const [error, setError] = useState(ErrorType.None);
   const [filterStatus, setFilterStatus] = useState(FilterStatus.All);
   const [todos, setTodos] = useState<Todo[]>([]);
-  const [isLoading, setIsLoading] = useState(false);
+  const [isLoading, setLoading] = useState(false);
   const [tempTodo, setTempTodo] = useState<TempTodo | null>(null);
   const [newTitle, setNewTitle] = useState('');
+  const [deletingTodoId, setDeletingTodoId] = useState<number | null>(null);
 
   const getTodosFromServer = async () => {
     if (!user) {
@@ -39,7 +42,7 @@ export const App: React.FC = () => {
   }, []);
 
   const addTodo = async (title: string) => {
-    setIsLoading(true);
+    setLoading(true);
     setTempTodo({ id: 0, title, completed: false });
 
     try {
@@ -57,10 +60,23 @@ export const App: React.FC = () => {
       setError(ErrorType.InsertionError);
     } finally {
       setTempTodo(null);
+      setLoading(false);
     }
-
-    setIsLoading(false);
   };
+
+  const handleDelete = useCallback(async (id: number) => {
+    try {
+      setDeletingTodoId(id);
+
+      await deleteTodo(id);
+      setTodos(current => current.filter(
+        item => item.id !== id,
+      ));
+      setDeletingTodoId(null);
+    } catch {
+      setError(ErrorType.RemovalError);
+    }
+  }, [deleteTodo]);
 
   const activeTodos = todos.filter(todo => !todo.completed);
   const activeTodosCount = activeTodos.length;
@@ -69,10 +85,10 @@ export const App: React.FC = () => {
 
   const deleteCompletedTodos = async () => {
     try {
-      setIsLoading(true);
+      setLoading(true);
       await Promise.all(completedTodos.map(todo => deleteTodo(todo.id)));
       setTodos(activeTodos);
-      setIsLoading(false);
+      setLoading(false);
     } catch (err) {
       setError(ErrorType.RemovalError);
     }
@@ -94,6 +110,9 @@ export const App: React.FC = () => {
           todos={todos}
           filterStatus={filterStatus}
           tempTodo={tempTodo}
+          handleDelete={handleDelete}
+          deletingTodoId={deletingTodoId}
+          isLoading={isLoading}
         />
         <Footer
           activeTodosCount={activeTodosCount}
