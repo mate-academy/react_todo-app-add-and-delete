@@ -1,35 +1,22 @@
 import cn from 'classnames';
-import React, { useContext } from 'react';
-import { deleteTodo } from '../../api/todos';
-import { AppContext } from '../../AppContext';
-import { ErrorType } from '../../types/ErrorType';
+import React, { Dispatch, SetStateAction } from 'react';
 import { FilterStatus } from '../../types/FilterStatus';
 
-export const Footer:React.FC = () => {
-  const {
-    filterStatus,
-    setFilterStatus,
-    todos,
-    setError,
-    setTodos,
-    setIsLoading,
-  } = useContext(AppContext);
+type Props = {
+  activeTodosCount: number;
+  setFilterStatus: Dispatch<SetStateAction<FilterStatus>>;
+  filterStatus: FilterStatus,
+  deleteCompletedTodos: () => void;
+  completedTodosCount: number;
+};
 
-  const activeTodos = todos.filter(todo => !todo.completed);
-  const activeTodosCount = activeTodos.length;
-  const completedTodos = todos.filter(todo => todo.completed);
-
-  const deleteCompletedTodos = async () => {
-    try {
-      setIsLoading(true);
-      await Promise.all(completedTodos.map(todo => deleteTodo(todo.id)));
-      setTodos(activeTodos);
-      setIsLoading(false);
-    } catch (err) {
-      setError(ErrorType.RemovalError);
-    }
-  };
-
+export const Footer:React.FC<Props> = ({
+  activeTodosCount,
+  setFilterStatus,
+  filterStatus,
+  deleteCompletedTodos,
+  completedTodosCount,
+}) => {
   return (
     <footer className="todoapp__footer" data-cy="Footer">
       <span className="todo-count" data-cy="todosCounter">
@@ -72,9 +59,9 @@ export const Footer:React.FC = () => {
         data-cy="ClearCompletedButton"
         type="button"
         className="todoapp__clear-completed"
-        onClick={deleteCompletedTodos}
+        onClick={() => deleteCompletedTodos()}
         style={{
-          visibility: completedTodos.length
+          visibility: completedTodosCount
             ? 'visible'
             : 'hidden',
         }}

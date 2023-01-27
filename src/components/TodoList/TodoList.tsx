@@ -1,15 +1,19 @@
-import React, { useContext } from 'react';
-import { AppContext } from '../../AppContext';
+import React from 'react';
 import { FilterStatus } from '../../types/FilterStatus';
+import { TempTodo, Todo } from '../../types/Todo';
 import { TodoInfo } from '../TodoInfo';
 
-export const TodoList:React.FC = () => {
-  const {
-    filterStatus,
-    todos,
-    tempTodo,
-  } = useContext(AppContext);
+type Props = {
+  todos: Todo[];
+  filterStatus: FilterStatus;
+  tempTodo:TempTodo | null
+};
 
+export const TodoList:React.FC<Props> = ({
+  todos,
+  filterStatus,
+  tempTodo,
+}) => {
   const visibleTodos = todos.filter(todo => {
     switch (filterStatus) {
       case FilterStatus.Active:

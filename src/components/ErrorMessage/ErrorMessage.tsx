@@ -1,12 +1,17 @@
 /* eslint-disable jsx-a11y/control-has-associated-label */
 import cn from 'classnames';
-import React, { useContext, useEffect } from 'react';
-import { AppContext } from '../../AppContext';
+import React, { Dispatch, SetStateAction, useEffect } from 'react';
 import { ErrorType } from '../../types/ErrorType';
 
-export const ErrorMessage:React.FC = () => {
-  const { error, setError } = useContext(AppContext);
+type Props = {
+  error: ErrorType;
+  setError: Dispatch<SetStateAction<ErrorType>>
+};
 
+export const ErrorMessage:React.FC<Props> = ({
+  error,
+  setError,
+}) => {
   useEffect(() => {
     setTimeout(() => {
       setError(ErrorType.None);
