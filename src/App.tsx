@@ -30,7 +30,7 @@ export const App: React.FC = () => {
       .catch(() => setisDelete(true)));
   };
 
-  const removTodo = (todoId: any) => setTodos(todos
+  const removTodo = (todoId: unknown) => setTodos(todos
     .filter((todo) => todo.id !== todoId));
 
   const removeTodo = (todoId: number | undefined) => {
@@ -40,14 +40,16 @@ export const App: React.FC = () => {
   };
 
   const addNewTodo = (todo: Todo) => setTodos([...todos, todo]);
-  const handleKeyDown = (event: any) => {
-    if (event.key === 'Enter' && value !== '') {
-      createTodo(value, user?.id)
-        .then((todo) => addNewTodo(todo))
-        .catch(() => setisError(true));
-      setValue('');
-    } else if (event.key === 'Enter' && value === '') {
-      setisEmpty(true);
+  const handleKeyDown = (event: KeyboardEvent) => {
+    if (event.key === 'Enter') {
+      if (value !== '') {
+        createTodo(value, user?.id)
+          .then((todo) => addNewTodo(todo))
+          .catch(() => setisError(true));
+        setValue('');
+      } else {
+        setisEmpty(true);
+      }
     }
   };
 
