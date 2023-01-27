@@ -8,7 +8,7 @@ type Props = {
 };
 
 export const Filter: React.FC<Props> = memo((props) => {
-  const { filterType, setFilterType: onChangeFilter } = props;
+  const { filterType, setFilterType } = props;
 
   return (
     <nav className="filter" data-cy="Filter">
@@ -19,7 +19,7 @@ export const Filter: React.FC<Props> = memo((props) => {
           'filter__link',
           { selected: filterType === 'All' },
         )}
-        onClick={() => onChangeFilter('All')}
+        onClick={() => setFilterType('All')}
       >
         All
       </a>
@@ -31,7 +31,7 @@ export const Filter: React.FC<Props> = memo((props) => {
           'filter__link',
           { selected: filterType === 'Active' },
         )}
-        onClick={() => onChangeFilter('Active')}
+        onClick={() => setFilterType('Active')}
       >
         Active
       </a>
@@ -42,7 +42,7 @@ export const Filter: React.FC<Props> = memo((props) => {
           'filter__link',
           { selected: filterType === 'Completed' },
         )}
-        onClick={() => onChangeFilter('Completed')}
+        onClick={() => setFilterType('Completed')}
       >
         Completed
       </a>

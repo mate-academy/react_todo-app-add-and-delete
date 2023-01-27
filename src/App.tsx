@@ -178,7 +178,7 @@ export const App: React.FC = () => {
               isTodoCompleted={isTodoCompleted}
               activeTodosAmount={activeTodosAmount}
               cleanCompletedTodos={cleanCompletedTodos}
-              onChangeFilterType={setFilterType}
+              changeFilterType={setFilterType}
             />
           </>
         )}

@@ -7,7 +7,7 @@ type Props = {
   activeTodosAmount: number;
   isTodoCompleted: boolean;
   cleanCompletedTodos: () => void;
-  onChangeFilterType: React.Dispatch<React.SetStateAction<FilterType>>;
+  changeFilterType: React.Dispatch<React.SetStateAction<FilterType>>;
 };
 
 export const Footer: React.FC<Props> = memo((props) => {
@@ -15,7 +15,7 @@ export const Footer: React.FC<Props> = memo((props) => {
     filterType,
     activeTodosAmount,
     isTodoCompleted,
-    onChangeFilterType,
+    changeFilterType,
   } = props;
 
   return (
@@ -26,7 +26,7 @@ export const Footer: React.FC<Props> = memo((props) => {
 
       <Filter
         filterType={filterType}
-        setFilterType={onChangeFilterType}
+        setFilterType={changeFilterType}
       />
 
       {isTodoCompleted && (
