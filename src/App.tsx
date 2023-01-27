@@ -120,6 +120,10 @@ export const App: React.FC = () => {
     [todos],
   );
 
+  const completedTodosLength = useMemo(() => (
+    todos.filter(todo => todo.completed).length
+  ), [todos]);
+
   const deleteCompletedTodos = useCallback(() => {
     todos.forEach(todo => {
       if (todo.completed) {
@@ -154,6 +158,7 @@ export const App: React.FC = () => {
             onFilterStatus={setFilterStatus}
             amountOfItems={amountOfItems}
             onDeleteCompletedTodos={deleteCompletedTodos}
+            completedTodosLength={completedTodosLength}
           />
         )}
       </div>

@@ -1,3 +1,4 @@
+import classNames from 'classnames';
 import React, { memo } from 'react';
 import { Filter } from '../Filter/Filter';
 
@@ -6,6 +7,7 @@ type Props = {
   onFilterStatus: React.Dispatch<React.SetStateAction<string>>;
   amountOfItems: number;
   onDeleteCompletedTodos: () => void;
+  completedTodosLength: number;
 };
 
 export const Footer: React.FC<Props> = memo(({
@@ -13,6 +15,7 @@ export const Footer: React.FC<Props> = memo(({
   onFilterStatus,
   amountOfItems,
   onDeleteCompletedTodos,
+  completedTodosLength
 }) => {
   return (
     <footer className="todoapp__footer" data-cy="Footer">
@@ -25,7 +28,9 @@ export const Footer: React.FC<Props> = memo(({
       <button
         data-cy="ClearCompletedButton"
         type="button"
-        className="todoapp__clear-completed"
+        className={classNames('todoapp__clear-completed', {
+          'is-invisible': !completedTodosLength,
+        })}
         onClick={onDeleteCompletedTodos}
       >
         Clear completed
