@@ -3,10 +3,9 @@ import React, {
   useContext,
   useEffect,
   useMemo,
-  useRef,
   useState,
 } from 'react';
-import { addTodo, getTodos } from './api/todos';
+import { todoApi } from './api/todos';
 import { AuthContext } from './components/Auth/AuthContext';
 // eslint-disable-next-line max-len
 import { ErrorNotification } from './components/ErrorNotification/ErrorNotification';
@@ -14,25 +13,21 @@ import { Footer } from './components/Footer/Footer';
 import { Header } from './components/Header/Header';
 import { TodoList } from './components/TodoList/TodoList';
 import { filterTodosByCompleted } from './helpers/helpers';
-import { FilterStatus } from './types/Filterstatus';
+import { TodoErrors } from './types/Errors';
 import { Todo } from './types/Todo';
+import { useError } from './controllers/useError';
+import { FilterStatus } from './types/Filterstatus';
 
 export const App: React.FC = () => {
   const user = useContext(AuthContext);
   const [todos, setTodos] = useState<Todo[]>([]);
-  const [errorMessage, setErrorMessage] = useState('');
   const [filterStatus, setFilterStatus] = useState(FilterStatus.All);
-  const [newTitle, setNewTitle] = useState('');
-
-  const newTodoField = useRef<HTMLInputElement>(null);
-
+  const [isAdding, setIsAdding] = useState(false);
   const completedTodos = todos.filter(todo => todo.completed === true);
+  const [tempTodo, setTempTodo] = useState<Todo | null>(null);
+  const [deletingTodoIds, setDeletingTodoIds] = useState<number[]>([]);
 
-  const showError = useCallback((message: string) => {
-    setErrorMessage(message);
-
-    setTimeout(() => setErrorMessage(''), 3000);
-  }, []);
+  const [showError, closeError, errorMessages] = useError();
 
   const uncompletedTodosAmount = useMemo(() => {
     const uncompleted = todos.filter(todo => !todo.completed);
@@ -41,41 +36,47 @@ export const App: React.FC = () => {
   }, [todos]);
 
   useEffect(() => {
-    if (newTodoField.current) {
-      newTodoField.current.focus();
-    }
-
     if (user) {
-      getTodos(user.id)
+      todoApi.getTodos(user.id)
         .then(setTodos)
-        .catch(() => showError('Unable to load todos'));
+        .catch(() => showError(TodoErrors.UnableToLoad));
     }
   }, [user]);
 
-  const createTodo = () => {
-    if (newTitle === '') {
-      showError("Title can't be empty");
-    }
+  const onAddTodo = useCallback(async (fieldsForCreate: Omit<Todo, 'id'>) => {
+    try {
+      setIsAdding(true);
+      setTempTodo({ ...fieldsForCreate, id: 0 });
+      const newTodo = await todoApi.addTodo(fieldsForCreate);
 
-    if (user) {
-      const newTodo = {
-        userId: user.id,
-        title: newTitle,
-        completed: false,
-      };
-
-      addTodo(newTodo)
-        .then(createdTodo => setTodos(prev => ([
-          ...prev,
-          createdTodo,
-        ])))
-        .catch(() => showError('Unable to add a todo`'));
+      setTodos(prev => [...prev, newTodo]);
+    } catch {
+      showError(TodoErrors.UnableToAddTodo);
+    } finally {
+      setIsAdding(false);
+      setTempTodo(null);
     }
-  };
+  }, [showError]);
+
+  const onDeleteTodo = useCallback(async (todoId: number) => {
+    try {
+      setDeletingTodoIds(prev => [...prev, todoId]);
+
+      await todoApi.deleteTodo(todoId);
+
+      setTodos(prev => prev.filter(todo => todo.id !== todoId));
+    } catch {
+      showError(TodoErrors.UnableToDeleteTodo);
+    } finally {
+      setDeletingTodoIds(prev => prev.filter(id => id !== todoId));
+    }
+  }, [showError]);
 
   const visibleTodos = useMemo(() => (
     filterTodosByCompleted(todos, filterStatus)
   ), [filterStatus, todos]);
+
+  const shoultRenderContent = todos.length !== 0 || !!tempTodo;
 
   return (
     <div className="todoapp">
@@ -83,28 +84,34 @@ export const App: React.FC = () => {
 
       <div className="todoapp__content">
         <Header
-          newTodoField={newTodoField}
-          onAddTodo={createTodo}
-          onSetNewTitle={setNewTitle}
-          newTitle={newTitle}
+          showError={showError}
+          isAdding={isAdding}
+          onAddTodo={onAddTodo}
         />
 
-        {todos.length !== 0 && (
+        {shoultRenderContent && (
           <>
-            <TodoList todos={visibleTodos} />
+            <TodoList
+              todos={visibleTodos}
+              tempTodo={tempTodo}
+              onDeleteTodo={onDeleteTodo}
+              deletingTodoIds={deletingTodoIds}
+            />
             <Footer
               completedTodos={completedTodos}
               uncompletedTodosAmount={uncompletedTodosAmount}
-              onStatusChange={setFilterStatus}
+              setFilterStatus={setFilterStatus}
               filterStatus={filterStatus}
             />
           </>
         )}
       </div>
-      <ErrorNotification
-        errorMessage={errorMessage}
-        onCloseErrorButton={() => showError('')}
-      />
+      {errorMessages.length > 0 && (
+        <ErrorNotification
+          errorMessages={errorMessages}
+          closeError={closeError}
+        />
+      )}
     </div>
   );
 };

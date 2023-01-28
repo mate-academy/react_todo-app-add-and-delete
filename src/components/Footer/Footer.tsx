@@ -5,14 +5,14 @@ import { Todo } from '../../types/Todo';
 type Props = {
   completedTodos: Todo[] | [],
   uncompletedTodosAmount: number,
-  onStatusChange: (str: FilterStatus) => void,
+  setFilterStatus: (str: FilterStatus) => void,
   filterStatus: FilterStatus,
 };
 
 export const Footer: React.FC<Props> = ({
   completedTodos,
   uncompletedTodosAmount,
-  onStatusChange,
+  setFilterStatus,
   filterStatus,
 }) => {
   return (
@@ -27,7 +27,7 @@ export const Footer: React.FC<Props> = ({
           href="#/"
           className={cn('filter__link',
             { selected: filterStatus === FilterStatus.All })}
-          onClick={() => onStatusChange(FilterStatus.All)}
+          onClick={() => setFilterStatus(FilterStatus.All)}
         >
           All
         </a>
@@ -37,7 +37,7 @@ export const Footer: React.FC<Props> = ({
           href="#/active"
           className={cn('filter__link',
             { selected: filterStatus === FilterStatus.Active })}
-          onClick={() => onStatusChange(FilterStatus.Active)}
+          onClick={() => setFilterStatus(FilterStatus.Active)}
         >
           Active
         </a>
@@ -47,7 +47,7 @@ export const Footer: React.FC<Props> = ({
           href="#/completed"
           className={cn('filter__link',
             { selected: filterStatus === FilterStatus.Completed })}
-          onClick={() => onStatusChange(FilterStatus.Completed)}
+          onClick={() => setFilterStatus(FilterStatus.Completed)}
         >
           Completed
         </a>

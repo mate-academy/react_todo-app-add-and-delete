@@ -1,38 +1,33 @@
 /* eslint-disable jsx-a11y/control-has-associated-label */
-import cn from 'classnames';
+import React from 'react';
 
 type Props = {
-  onCloseErrorButton: () => void,
-  errorMessage: string;
+  closeError: (message: string) => void,
+  errorMessages: string[];
 };
 
-export const ErrorNotification: React.FC<Props> = ({
-  onCloseErrorButton,
-  errorMessage,
+export const ErrorNotification: React.FC<Props> = React.memo(({
+  closeError,
+  errorMessages,
 }) => {
   return (
-    <div
-      data-cy="ErrorNotification"
-      className={cn(
-        'notification',
-        'is-danger',
-        'is-light',
-        'has-text-weight-normal',
-        { hidden: !errorMessage },
-      )}
-    >
-      <button
-        data-cy="HideErrorButton"
-        type="button"
-        className="delete"
-        onClick={onCloseErrorButton}
-      />
-      {errorMessage}
-      {/* Unable to add a todo
-      <br />
-      Unable to delete a todo
-      <br />
-      Unable to update a todo */}
-    </div>
+    <>
+      {errorMessages.map(message => (
+        <div
+          data-cy="ErrorNotification"
+          className="notification is-danger is-light has-text-weight-normal"
+        >
+          <button
+            data-cy="HideErrorButton"
+            type="button"
+            className="delete"
+            onClick={() => closeError(message)}
+          />
+
+          {message}
+          <br />
+        </div>
+      ))}
+    </>
   );
-};
+});
