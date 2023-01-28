@@ -1,7 +1,7 @@
 import classNames from 'classnames';
 import React, { useEffect, useState } from 'react';
-import { createUser, getUserByEmail } from '../../api/users';
-import { User } from '../../types/User';
+import { createUser, getUserByEmail } from '../../../api/users';
+import { User } from '../../../types/User';
 
 export type Props = {
   onLogin: (user: User) => void,
@@ -33,7 +33,7 @@ export const AuthForm: React.FC<Props> = ({ onLogin }) => {
     } catch (error) {
       // Need to login
     }
-  }, []);
+  }, [onLogin]);
 
   const loadUser = async () => {
     const user = await getUserByEmail(email);
