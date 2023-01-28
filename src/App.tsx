@@ -4,8 +4,12 @@ import React, { useEffect, useRef, useState } from 'react';
 import { getTodos, createTodo } from './api/todos';
 import { filterTotos } from './api/filter';
 import { useAuthContext } from './components/Auth/useAuthContext';
-// eslint-disable-next-line object-curly-newline
-import { ErrorNotification, Header, TodoList, Footer } from './components';
+import {
+  ErrorNotification,
+  Header,
+  TodoList,
+  Footer,
+} from './components';
 import { Todo, Filter, Error } from './types';
 
 export const App: React.FC = () => {
