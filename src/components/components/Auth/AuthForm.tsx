@@ -33,7 +33,7 @@ export const AuthForm: React.FC<Props> = ({ onLogin }) => {
     } catch (error) {
       // Need to login
     }
-  }, []);
+  }, [onLogin]);
 
   const loadUser = async () => {
     const user = await getUserByEmail(email);
