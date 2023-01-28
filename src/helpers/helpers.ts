@@ -17,3 +17,9 @@ export const filterTodosByCompleted = (
       return todos;
   }
 };
+
+export const getCompletedTodoIds = (todos: Todo[]) => {
+ const completedTodos = todos.filter(todo => todo.completed);
+
+ return completedTodos.map(todo => todo.id);
+}

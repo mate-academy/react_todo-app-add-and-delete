@@ -12,7 +12,7 @@ import { ErrorNotification } from './components/ErrorNotification/ErrorNotificat
 import { Footer } from './components/Footer/Footer';
 import { Header } from './components/Header/Header';
 import { TodoList } from './components/TodoList/TodoList';
-import { filterTodosByCompleted } from './helpers/helpers';
+import { filterTodosByCompleted, getCompletedTodoIds } from './helpers/helpers';
 import { TodoErrors } from './types/Errors';
 import { Todo } from './types/Todo';
 import { useError } from './controllers/useError';
@@ -72,6 +72,12 @@ export const App: React.FC = () => {
     }
   }, [showError]);
 
+  const onDeleteCompleted = useCallback( async () => {
+    const completedTodoIds = getCompletedTodoIds(todos);
+
+    completedTodoIds.forEach(id => onDeleteTodo(id));
+  }, [onDeleteTodo, todos]);
+
   const visibleTodos = useMemo(() => (
     filterTodosByCompleted(todos, filterStatus)
   ), [filterStatus, todos]);
@@ -102,6 +108,7 @@ export const App: React.FC = () => {
               uncompletedTodosAmount={uncompletedTodosAmount}
               setFilterStatus={setFilterStatus}
               filterStatus={filterStatus}
+              onDeleteCompleted={onDeleteCompleted}
             />
           </>
         )}
