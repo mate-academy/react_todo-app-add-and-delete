@@ -6,10 +6,11 @@ type Props = {
   todos: Todo[]
   onDeleteTodo: (id: number) => void
   deletingTodosIds: number[]
+  tempTodo: Todo | null
 };
 
 export const TodoList: FC<Props> = memo(({
-  todos, onDeleteTodo, deletingTodosIds,
+  todos, onDeleteTodo, deletingTodosIds, tempTodo,
 }) => {
   return (
     <section className="todoapp__main" data-cy="TodoList">
@@ -21,6 +22,8 @@ export const TodoList: FC<Props> = memo(({
           isDelete={deletingTodosIds.includes(todo.id)}
         />
       ))}
+
+      {tempTodo && <TodoItem todo={tempTodo} />}
     </section>
   );
 });

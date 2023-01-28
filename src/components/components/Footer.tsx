@@ -1,21 +1,24 @@
 import { FC, memo } from 'react';
 import cn from 'classnames';
 import { FilterTypes } from '../../types/FilterTypes';
+import { Todo } from '../../types/Todo';
 
 type Props = {
-  filterClick: (newOption: FilterTypes) => void,
+  setFilterType: (newOption: FilterTypes) => void,
   itemsCounter: number,
   filterOptions: FilterTypes[],
   filterType: FilterTypes
   handleClearCompletedClick: () => void
+  visibleTodos: Todo[]
 };
 
 export const Footer: FC<Props> = memo(({
-  filterClick,
+  setFilterType,
   itemsCounter,
   filterOptions,
   filterType,
   handleClearCompletedClick,
+  visibleTodos,
 }) => {
   return (
     <footer className="todoapp__footer" data-cy="Footer">
@@ -33,7 +36,7 @@ export const Footer: FC<Props> = memo(({
               'filter__link',
               { selected: filterType === option },
             )}
-            onClick={() => filterClick(option)}
+            onClick={() => setFilterType(option)}
           >
             {option}
           </a>
@@ -44,6 +47,7 @@ export const Footer: FC<Props> = memo(({
         data-cy="ClearCompletedButton"
         type="button"
         className="todoapp__clear-completed"
+        disabled={itemsCounter === visibleTodos.length}
         onClick={handleClearCompletedClick}
       >
         Clear completed
