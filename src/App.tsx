@@ -52,9 +52,7 @@ export const App: React.FC = () => {
 
     createTodo(todo)
       .then((res) => setTodos((prevTodos) => [...prevTodos, res]))
-      .catch((error) => {
-        console.log(error);
-
+      .catch(() => {
         setError(Error.add);
         setIsHiddenErrorNote(false);
         setTimeout(() => {
