@@ -6,7 +6,8 @@ type Props = {
   activeTodos: number;
   filterType: FilterType;
   selectFilterType: (filterType: FilterType) => void;
-  removeCompletedTodos: () => void
+  removeCompletedTodos: () => void;
+  completedTodos: number
 };
 
 export const Footer: React.FC<Props> = memo(({
@@ -14,6 +15,7 @@ export const Footer: React.FC<Props> = memo(({
   filterType,
   selectFilterType,
   removeCompletedTodos,
+  completedTodos,
 }) => {
   return (
     <footer className="todoapp__footer" data-cy="Footer">
@@ -23,14 +25,16 @@ export const Footer: React.FC<Props> = memo(({
 
       <Filter filterType={filterType} selectFilterType={selectFilterType} />
 
-      <button
-        data-cy="ClearCompletedButton"
-        type="button"
-        className="todoapp__clear-completed"
-        onClick={removeCompletedTodos}
-      >
-        Clear completed
-      </button>
+      {completedTodos > 0 && (
+        <button
+          data-cy="ClearCompletedButton"
+          type="button"
+          className="todoapp__clear-completed"
+          onClick={removeCompletedTodos}
+        >
+          Clear completed
+        </button>
+      )}
     </footer>
   );
 });

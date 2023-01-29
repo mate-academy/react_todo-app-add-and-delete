@@ -103,6 +103,10 @@ export const App: React.FC = () => {
     todos.filter(todo => !todo.completed).length
   ), [todos]);
 
+  const completedTodos = useMemo(() => (
+    todos.filter(todo => todo.completed).length
+  ), [todos]);
+
   const visibleTodos = useMemo(() => {
     switch (filterType) {
       case FilterType.ACTIVE:
@@ -140,6 +144,7 @@ export const App: React.FC = () => {
               filterType={filterType}
               selectFilterType={setFilterType}
               removeCompletedTodos={removeCompletedTodos}
+              completedTodos={completedTodos}
             />
           </>
         )}
