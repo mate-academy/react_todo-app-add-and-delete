@@ -12,7 +12,7 @@ import { ErrorsAlerts } from './components/ErrorsAlerts';
 import { TodoAppHeader } from './components/TodoAppHeader/TodoAppHeader';
 import { TodosFooter } from './components/TodosFooter';
 import { TodosList } from './components/TodosList';
-import { getTodos, createTodo } from './api/todos';
+import { getTodos, createTodo, deleteTodo } from './api/todos';
 import { Todo } from './types/Todo';
 import { Filter } from './types/Filter';
 import { filterTodos } from './utils/filterTodos';
@@ -29,7 +29,6 @@ export const App: React.FC = () => {
   const userId = user ? user.id : 0;
 
   useEffect(() => {
-    // focus the element with `ref={newTodoField}`
     if (newTodoField.current) {
       newTodoField.current.focus();
     }
@@ -87,6 +86,16 @@ export const App: React.FC = () => {
       });
   }, []);
 
+  const removeTodo = (todoId: number) => {
+    deleteTodo(todoId)
+      .then(() => {
+        setTodos(currentTodos => {
+          return currentTodos.filter(todo => todo.id !== todoId);
+        });
+      })
+      .catch(() => setErrorMessage('Unable to delete a todo'));
+  };
+
   return (
     <div className="todoapp">
       <h1 className="todoapp__title">todos</h1>
@@ -103,6 +112,7 @@ export const App: React.FC = () => {
             <TodosList
               todos={filteredTodos}
               tempTodo={temporaryTodo}
+              removeTodo={removeTodo}
             />
             <TodosFooter
               activeTodosNum={activeTodosNumber}
