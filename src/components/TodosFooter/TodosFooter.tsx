@@ -1,21 +1,26 @@
 import React from 'react';
+import cn from 'classnames';
 import { Filter } from '../../types/Filter';
 
 type Props = {
   complitedFilter: Filter;
   changecomplitedFilter: (prop: Filter) => void;
-  activeTodosNum: number;
+  activeTodosNumber: number;
+  clearCompleted: () => void;
+  someCompleted: boolean;
 };
 
 export const TodosFooter: React.FC<Props> = ({
   complitedFilter,
   changecomplitedFilter,
-  activeTodosNum,
+  activeTodosNumber,
+  clearCompleted,
+  someCompleted,
 }) => {
   return (
     <footer className="todoapp__footer" data-cy="Footer">
       <span className="todo-count" data-cy="todosCounter">
-        {`${activeTodosNum} items left`}
+        {`${activeTodosNumber} items left`}
       </span>
 
       <nav className="filter" data-cy="Filter">
@@ -55,7 +60,13 @@ export const TodosFooter: React.FC<Props> = ({
       <button
         data-cy="ClearCompletedButton"
         type="button"
-        className="todoapp__clear-completed"
+        className={cn(
+          'todoapp__clear-completed',
+          {
+            'todoapp__clear-completed--hidden': !someCompleted,
+          },
+        )}
+        onClick={clearCompleted}
       >
         Clear completed
       </button>

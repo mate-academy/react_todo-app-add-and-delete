@@ -50,6 +50,10 @@ export const App: React.FC = () => {
     todos.filter(todo => !todo.completed).length
   ), [todos]);
 
+  const someComplited = useMemo(() => {
+    return todos.some(todo => todo.completed);
+  }, [todos]);
+
   const addNewTodo = useCallback((todoTitle: string) => {
     if (!todoTitle) {
       setErrorMessage('Title can\'t be empty');
@@ -96,6 +100,14 @@ export const App: React.FC = () => {
       .catch(() => setErrorMessage('Unable to delete a todo'));
   };
 
+  const clearCompleted = () => {
+    todos.forEach(({ id, completed }) => {
+      if (completed) {
+        removeTodo(id);
+      }
+    });
+  };
+
   return (
     <div className="todoapp">
       <h1 className="todoapp__title">todos</h1>
@@ -115,9 +127,11 @@ export const App: React.FC = () => {
               removeTodo={removeTodo}
             />
             <TodosFooter
-              activeTodosNum={activeTodosNumber}
+              activeTodosNumber={activeTodosNumber}
               complitedFilter={complitedFilter}
               changecomplitedFilter={setComplitedFilter}
+              clearCompleted={clearCompleted}
+              someCompleted={someComplited}
             />
           </>
         )}
