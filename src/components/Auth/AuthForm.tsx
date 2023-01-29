@@ -1,5 +1,5 @@
-import classNames from 'classnames';
 import React, { useEffect, useState } from 'react';
+import classNames from 'classnames';
 import { createUser, getUserByEmail } from '../../api/users';
 import { User } from '../../types/User';
 
