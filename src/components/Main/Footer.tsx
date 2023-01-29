@@ -7,12 +7,14 @@ type Props = {
   todosList: Todo[],
   filterCondition: FilterCondition,
   setFilterCondition: (value: FilterCondition) => void,
+  deleteCompletedTodos: () => void,
 };
 
 export const Footer: React.FC<Props> = memo(({
   todosList,
   filterCondition,
   setFilterCondition,
+  deleteCompletedTodos,
 }) => {
   return (
     <footer className="todoapp__footer" data-cy="Footer">
@@ -61,6 +63,7 @@ export const Footer: React.FC<Props> = memo(({
         data-cy="ClearCompletedButton"
         type="button"
         className="todoapp__clear-completed"
+        onClick={deleteCompletedTodos}
       >
         Clear completed
       </button>

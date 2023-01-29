@@ -6,10 +6,10 @@ import React, {
   useState,
 } from 'react';
 import cn from 'classnames';
-import { getTodos, createTodo } from './api/todos';
+import { getTodos, createTodo, removeTodo } from './api/todos';
 import { AuthContext } from './components/Auth/AuthContext';
 import { Todo } from './types/Todo';
-import { FilterCondition } from './types/FilterCondition';
+import { FilterCondition, ErorrMessage } from './types/FilterCondition';
 import { Header } from './components/Main/Header';
 import { TodoList } from './components/Main/TodoList';
 import { Footer } from './components/Main/Footer';
@@ -25,6 +25,7 @@ export const App: React.FC = () => {
   const [filterCondition, setFilterCondition] = useState(FilterCondition.ALL);
   const [isAdding, setIsAdding] = useState(false);
   const [tempNewTask, setTempNewTask] = useState<Todo | null>(null);
+  const [deletingTodoIds, setDeletingTodoIds] = useState<number[]>([]);
 
   if (isError) {
     setTimeout(() => setIsError(false), 3000);
@@ -47,7 +48,7 @@ export const App: React.FC = () => {
     });
   };
 
-  const addTodo = async (todoData: Omit<Todo, 'id' | 'userId'>) => {
+  const addTodo = async (todoData: Omit<Todo, 'id'>) => {
     const fullTodoData = { ...todoData, userId: user?.id };
 
     try {
@@ -61,14 +62,45 @@ export const App: React.FC = () => {
       setIsAdding(true);
       const newTodo = await createTodo(fullTodoData);
 
-      setTempNewTask(null);
       setTodosList(currentTodos => [...currentTodos, newTodo]);
-      setIsAdding(false);
-    } catch (e) {
-      window.alert(String(e));
+    } catch {
+      setErrorText(ErorrMessage.ON_ADD);
+    } finally {
+      setTempNewTask(null);
       setIsAdding(false);
     }
   };
+
+  const deleteTodo = async (idToDelete: number) => {
+    try {
+      setDeletingTodoIds(curr => [...curr, idToDelete]);
+
+      await removeTodo(idToDelete);
+
+      setTodosList((currentTodos: Todo[]) => currentTodos
+        .filter(task => task.id !== idToDelete));
+    } catch {
+      setIsError(true);
+      setErrorText(ErorrMessage.ON_DELETE);
+    } finally {
+      setDeletingTodoIds(currId => currId.filter(id => id !== idToDelete));
+    }
+  };
+
+  const getCompletedTodos = (allTodos: Todo[]) => {
+    const completedTodos = allTodos.filter(todo => todo.completed === true);
+
+    return completedTodos.map(todo => todo.id);
+  };
+
+  const deleteCompletedTodos = () => {
+    const todoIdToDelete = getCompletedTodos(todosList);
+
+    todoIdToDelete.forEach(itemId => deleteTodo(itemId));
+  };
+
+  const isTodoExist = todosList.length > 0
+    || filterCondition !== FilterCondition.ALL;
 
   useEffect(() => {
     // focus the element with `ref={newTodoField}`
@@ -104,13 +136,16 @@ export const App: React.FC = () => {
         <TodoList
           todosList={todosList}
           tempNewTask={tempNewTask}
+          onDelete={deleteTodo}
+          deletingTodoIds={deletingTodoIds}
         />
 
-        {(todosList.length > 0 || filterCondition !== FilterCondition.ALL) && (
+        {isTodoExist && (
           <Footer
             todosList={todosList}
             filterCondition={filterCondition}
             setFilterCondition={setFilterCondition}
+            deleteCompletedTodos={deleteCompletedTodos}
           />
         )}
       </div>
@@ -129,11 +164,6 @@ export const App: React.FC = () => {
           onClick={() => setIsError(false)}
         />
         {errorText}
-        {/* Unable to add a todo
-          <br />
-          Unable to delete a todo
-          <br />
-          Unable to update a todo */}
       </div>
     </div>
   );

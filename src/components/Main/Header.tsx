@@ -1,10 +1,11 @@
 /* eslint-disable jsx-a11y/control-has-associated-label */
-import React, { memo, useState } from 'react';
+import React, { memo, useContext, useState } from 'react';
 import { Todo } from '../../types/Todo';
+import { AuthContext } from '../Auth/AuthContext';
 
 type Props = {
   todosList: Todo[],
-  onSubmit: (todoData: Omit<Todo, 'id' | 'userId'>) => void,
+  onSubmit: (todoData: Omit<Todo, 'id'>) => void,
   newTodoField: React.RefObject<HTMLInputElement>,
   setIsError: (value: boolean) => void,
   setErrorText: (value: string) => void,
@@ -20,6 +21,7 @@ export const Header: React.FC<Props> = memo(({
   isAdding,
 }) => {
   const [title, setTitle] = useState('');
+  const user = useContext(AuthContext);
 
   const handleFormSubmit = (event: React.FormEvent) => {
     event.preventDefault();
@@ -33,7 +35,12 @@ export const Header: React.FC<Props> = memo(({
       return;
     }
 
+    if (!user) {
+      return;
+    }
+
     onSubmit({
+      userId: user.id,
       title,
       completed: false,
     });

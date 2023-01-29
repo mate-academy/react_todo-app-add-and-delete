@@ -6,11 +6,15 @@ type Props = {
   todosList: Todo[],
   isAdding?: boolean,
   tempNewTask: Todo | null,
+  onDelete: (value: number) => void,
+  deletingTodoIds: number[]
 };
 
 export const TodoList: React.FC<Props> = memo(({
   todosList,
   tempNewTask,
+  onDelete,
+  deletingTodoIds,
 }) => {
   return (
     <section className="todoapp__main" data-cy="TodoList">
@@ -29,21 +33,30 @@ export const TodoList: React.FC<Props> = memo(({
               type="checkbox"
               className="todo__status"
               defaultChecked
+              // onClick={}
             />
           </label>
 
           <span data-cy="TodoTitle" className="todo__title">
             {todo.title}
           </span>
+
           <button
             type="button"
             className="todo__remove"
             data-cy="TodoDeleteButton"
+            onClick={() => onDelete(todo.id)}
           >
             ×
           </button>
 
-          <div data-cy="TodoLoader" className="modal overlay">
+          <div
+            data-cy="TodoLoader"
+            className={cn(
+              'modal', 'overlay',
+              { 'is-active': deletingTodoIds.includes(todo.id) },
+            )}
+          >
             <div className="modal-background has-background-white-ter" />
             <div className="loader" />
           </div>
