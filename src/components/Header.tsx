@@ -1,22 +1,31 @@
-import React, { FormEvent, RefObject } from 'react';
+import { FormEvent, forwardRef } from 'react';
+import classNames from 'classnames';
 
 type Props = {
-  newTodoField: RefObject<HTMLInputElement>;
   title: string;
   setTitle: (title: string) => void;
-  handleAddToto: (title: string) => void;
+  onAddToto: (title: string) => void;
+  isAdding: boolean;
+  completedAllTodo: () => void;
+  allCompleted: boolean;
 };
 
+type Ref = HTMLInputElement;
+
 /* eslint-disable jsx-a11y/control-has-associated-label */
-export const Header: React.FC<Props> = ({
-  newTodoField,
-  title,
-  setTitle,
-  handleAddToto,
-}) => {
+export const Header = forwardRef<Ref, Props>((props, ref) => {
+  const {
+    title,
+    setTitle,
+    onAddToto,
+    isAdding,
+    completedAllTodo,
+    allCompleted,
+  } = props;
+
   const handleSubmit = (event: FormEvent<HTMLFormElement>) => {
     event.preventDefault();
-    handleAddToto(title);
+    onAddToto(title);
   };
 
   return (
@@ -24,19 +33,21 @@ export const Header: React.FC<Props> = ({
       <button
         data-cy="ToggleAllButton"
         type="button"
-        className="todoapp__toggle-all active"
+        className={classNames('todoapp__toggle-all', { active: allCompleted })}
+        onClick={completedAllTodo}
       />
       <form onSubmit={handleSubmit}>
         <input
           data-cy="NewTodoField"
           type="text"
-          ref={newTodoField}
+          ref={ref}
           className="todoapp__new-todo"
           placeholder="What needs to be done?"
           value={title}
+          disabled={isAdding}
           onChange={(e) => setTitle(e.target.value)}
         />
       </form>
     </header>
   );
-};
+});

@@ -1,17 +1,21 @@
 import React, { Dispatch, SetStateAction } from 'react';
 import classNames from 'classnames';
-import { Filter } from '../types';
+import { FilterTypes } from '../types';
 
 type Props = {
   typeFilter: string;
-  setTypeFilter: Dispatch<SetStateAction<Filter>>;
-  itemsLeftCount: number;
+  setTypeFilter: Dispatch<SetStateAction<FilterTypes>>;
+  completedTodosCount: number;
+  activeTodosCount: number;
+  deleteCompletedTodos: () => void;
 };
 
 export const Footer: React.FC<Props> = ({
   typeFilter,
   setTypeFilter,
-  itemsLeftCount,
+  completedTodosCount,
+  activeTodosCount,
+  deleteCompletedTodos,
 }) => {
   return (
     <footer
@@ -22,7 +26,7 @@ export const Footer: React.FC<Props> = ({
         className="todo-count"
         data-cy="todosCounter"
       >
-        {`${itemsLeftCount} items left`}
+        {`${activeTodosCount} items left`}
       </span>
 
       <nav
@@ -33,9 +37,9 @@ export const Footer: React.FC<Props> = ({
           data-cy="FilterLinkAll"
           href="#/"
           className={classNames('filter__link', {
-            selected: typeFilter === Filter.all,
+            selected: typeFilter === FilterTypes.All,
           })}
-          onClick={() => setTypeFilter(Filter.all)}
+          onClick={() => setTypeFilter(FilterTypes.All)}
         >
           All
         </a>
@@ -44,9 +48,9 @@ export const Footer: React.FC<Props> = ({
           data-cy="FilterLinkActive"
           href="#/active"
           className={classNames('filter__link', {
-            selected: typeFilter === Filter.active,
+            selected: typeFilter === FilterTypes.Active,
           })}
-          onClick={() => setTypeFilter(Filter.active)}
+          onClick={() => setTypeFilter(FilterTypes.Active)}
         >
           Active
         </a>
@@ -54,18 +58,21 @@ export const Footer: React.FC<Props> = ({
           data-cy="FilterLinkCompleted"
           href="#/completed"
           className={classNames('filter__link', {
-            selected: typeFilter === Filter.completed,
+            selected: typeFilter === FilterTypes.Completed,
           })}
-          onClick={() => setTypeFilter(Filter.completed)}
+          onClick={() => setTypeFilter(FilterTypes.Completed)}
         >
           Completed
         </a>
       </nav>
-
       <button
         data-cy="ClearCompletedButton"
         type="button"
         className="todoapp__clear-completed"
+        style={
+          !completedTodosCount ? { visibility: 'hidden' } : { display: 'block' }
+        }
+        onClick={deleteCompletedTodos}
       >
         Clear completed
       </button>

@@ -4,14 +4,20 @@ import { Todo } from '../types';
 
 type Props = {
   todo: Todo;
+  deleteTodo: (id: number) => void;
+  toggleTodo: (id: number) => void;
 };
 
-export const TodoItem: React.FC<Props> = ({ todo }) => {
+export const TodoItem: React.FC<Props> = ({
+  todo: { id, title, completed },
+  deleteTodo,
+  toggleTodo,
+}) => {
   return (
     <div
-      key={todo.id}
+      key={id}
       data-cy="Todo"
-      className={classNames('todo', { completed: todo.completed })}
+      className={classNames('todo', { completed })}
     >
       <label className="todo__status-label">
         <input
@@ -19,18 +25,20 @@ export const TodoItem: React.FC<Props> = ({ todo }) => {
           type="checkbox"
           className="todo__status"
           defaultChecked
+          onClick={() => toggleTodo(id)}
         />
       </label>
       <span
         data-cy="TodoTitle"
         className="todo__title"
       >
-        {todo.title}
+        {title}
       </span>
       <button
         type="button"
         className="todo__remove"
         data-cy="TodoDeleteButton"
+        onClick={() => deleteTodo(id)}
       >
         ×
       </button>
