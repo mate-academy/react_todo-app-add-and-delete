@@ -38,7 +38,7 @@ export const Header: React.FC<Props> = memo((
 
     try {
       await onAddTodo({
-        newTodoTitle,
+        title: newTodoTitle,
         userId: user.id,
         completed: false,
       });
