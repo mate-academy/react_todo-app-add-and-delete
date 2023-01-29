@@ -1,5 +1,5 @@
 {
-  "name": "react_todo-app-add-and-delete",
+  "name": "react_todo-app-loading-todos",
   "homepage": ".",
   "version": "0.1.0",
   "keywords": [],
@@ -7,6 +7,7 @@
   "license": "GPL-3.0",
   "dependencies": {
     "@fortawesome/fontawesome-free": "^6.1.2",
+    "axios": "^0.24.0",
     "bulma": "^0.9.4",
     "classnames": "^2.3.1",
     "react": "^18.2.0",
