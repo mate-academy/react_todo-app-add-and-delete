@@ -48,7 +48,7 @@ export const App: React.FC = () => {
           showErrorMessage('Can\'t load todos!');
         });
     }
-  }, [showErrorMessage]);
+  }, []);
 
   const onAddTodo = useCallback(async (fieldsForCreate: Omit<Todo, 'id'>) => {
     setIsAddingTodo(true);
