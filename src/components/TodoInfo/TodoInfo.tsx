@@ -28,7 +28,7 @@ export const TodoInfo: React.FC<Props> = memo(({ todo, removeTodo }) => {
           data-cy="TodoStatus"
           type="checkbox"
           className="todo__status"
-          defaultChecked
+          checked={todo.completed}
         />
       </label>
 
