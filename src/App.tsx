@@ -142,7 +142,7 @@ export const App: FC = () => {
           isAdding={isAdding}
           onFormSubmit={onFormSubmit}
         />
-        {todos.length !== 0 && (
+        {(todos.length !== 0 || tempTodo) && (
           <>
             <TodoList
               todos={visibleTodos}
@@ -167,7 +167,6 @@ export const App: FC = () => {
           setErrorMessage={setErrorMessage}
         />
       )}
-
     </div>
   );
 };
