@@ -72,7 +72,9 @@ export const AuthForm: React.FC<Props> = ({ onLogin }) => {
   return (
     <form onSubmit={handleSubmit} className="box mt-5">
       <h1 className="title is-3">
-        {needToRegister ? 'You need to register' : 'Log in to open todos'}
+        {needToRegister
+          ? 'You need to register'
+          : 'Log in to open todos'}
       </h1>
 
       <div className="field">
@@ -151,7 +153,9 @@ export const AuthForm: React.FC<Props> = ({ onLogin }) => {
             'is-loading': loading,
           })}
         >
-          {needToRegister ? 'Register' : 'Login'}
+          {needToRegister
+            ? 'Register'
+            : 'Login'}
         </button>
       </div>
     </form>
