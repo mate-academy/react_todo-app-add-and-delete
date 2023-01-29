@@ -1,5 +1,5 @@
 import React, {
-  useContext, useEffect, useState, useMemo, useCallback,
+  useContext, useEffect, useState, useMemo,
 } from 'react';
 import { AuthContext } from './components/Auth/AuthContext';
 import { TodoList } from './components/TodoList';
@@ -7,30 +7,20 @@ import { Filter } from './components/Filter';
 import { NewTodoField } from './components/NewTodoField';
 import { Todo } from './types/Todo';
 import { Filters } from './types/Filters';
-import { getTodos, createTodo, deleteTodoById } from './api/todos';
+import { getTodos } from './api/todos';
 import { ErrorNotification } from './components/ErrorNotification';
+import { useAddingTodo } from './controllers/useAddingTodo';
+import { useDeletingTodos } from './controllers/useDeletingTodos';
+import { useError } from './controllers/useError';
 
 export const App: React.FC = () => {
   const user = useContext(AuthContext);
 
   const [todos, setTodos] = useState<Todo[]>([]);
-  const [errorMessage, setErrorMessage] = useState('');
   const [selectedStatus, setSelectedStatus] = useState(Filters.All);
-
-  const [isAddingTodo, setIsAddingTodo] = useState(false);
-  const [temporaryNewTodo, setTemporaryNewTodo] = useState<Todo | null>(null);
-
   const [loadingTodosIds, setLoadingTodosIds] = useState<number[]>([]);
 
-  const showError = useCallback((message: string) => {
-    setErrorMessage(message);
-
-    setTimeout(() => setErrorMessage(''), 3000);
-  }, []);
-
-  const hideError = useCallback(() => {
-    setErrorMessage('');
-  }, []);
+  const [errorMessage, showError, hideError] = useError();
 
   useEffect(() => {
     if (user) {
@@ -44,7 +34,7 @@ export const App: React.FC = () => {
     todos.filter(todo => !todo.completed).length
   ), [todos]);
 
-  const filteredTodos = useMemo(() => {
+  const visibleTodos = useMemo(() => {
     return todos.filter((todo) => {
       switch (selectedStatus) {
         case Filters.Active:
@@ -60,44 +50,18 @@ export const App: React.FC = () => {
     });
   }, [todos, selectedStatus]);
 
-  const addTodo = useCallback((todoInfo: Omit<Todo, 'id'>) => {
-    setIsAddingTodo(true);
-
-    const temporaryTodo = {
-      ...todoInfo,
-      id: 0,
-    };
-
-    setTemporaryNewTodo(temporaryTodo);
-
-    createTodo(todoInfo)
-      .then((newTodo) => setTodos((prevTodos) => ([...prevTodos, newTodo])))
-      .catch(() => showError('Unable to add a todo'))
-      .finally(() => {
-        setTemporaryNewTodo(null);
-        setIsAddingTodo(false);
-      });
-  }, []);
-
-  const deleteTodo = useCallback((todoId: number) => {
-    setLoadingTodosIds((prevIds) => ([...prevIds, todoId]));
-
-    deleteTodoById(todoId)
-      .then(() => setTodos((prevTodos) => (prevTodos.filter(
-        todo => todo.id !== todoId,
-      ))))
-      .catch(() => showError('Unable to delete a todo'))
-      .finally(() => {
-        setLoadingTodosIds((prevIds) => (prevIds.filter(
-          todoIdToDelete => todoIdToDelete !== todoId,
-        )));
-      });
-  }, []);
-
   const completedTodos = todos.filter(todo => todo.completed);
 
-  const removeCompleted = () => (
-    completedTodos.forEach(todo => deleteTodo(todo.id))
+  const [isAddingTodo, temporaryNewTodo, addTodo] = useAddingTodo(
+    {
+      setTodos, showError,
+    },
+  );
+
+  const [deleteTodo, removeCompleted] = useDeletingTodos(
+    {
+      setLoadingTodosIds, setTodos, showError, completedTodos,
+    },
   );
 
   const shouldRenederTodos = temporaryNewTodo || todos.length > 0;
@@ -116,7 +80,7 @@ export const App: React.FC = () => {
         {shouldRenederTodos && (
           <>
             <TodoList
-              todos={filteredTodos}
+              todos={visibleTodos}
               temporaryNewTodo={temporaryNewTodo}
               showError={showError}
               onDeleteTodo={deleteTodo}
