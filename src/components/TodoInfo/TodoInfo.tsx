@@ -21,17 +21,14 @@ export const TodoInfo: React.FC<Props> = memo(({ todo, removeTodo }) => {
   return (
     <div
       data-cy="Todo"
-      className={cn('todo',
-        {
-          completed: todo.completed,
-        })}
+      className={cn('todo', { completed: todo.completed })}
     >
       <label className="todo__status-label">
         <input
           data-cy="TodoStatus"
           type="checkbox"
           className="todo__status"
-          checked={todo.completed}
+          defaultChecked
         />
       </label>
 

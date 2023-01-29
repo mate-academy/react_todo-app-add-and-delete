@@ -10,5 +10,5 @@ export const addTodo = (newField: Omit<Todo, 'id'>) => {
 };
 
 export const deleteTodo = (todoId: number) => (
-  client.delete(`todos/${todoId}`)
+  client.delete(`/todos/${todoId}`)
 );
