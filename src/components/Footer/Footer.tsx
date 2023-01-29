@@ -4,26 +4,26 @@ import { Filter } from '../Filter/Filter';
 
 type Props = {
   filterStatus: string;
-  onFilterStatus: React.Dispatch<React.SetStateAction<string>>;
-  amountOfItems: number;
+  changeStatusFilter: React.Dispatch<React.SetStateAction<string>>;
+  notCompletedTodosLength: number;
   onDeleteCompletedTodos: () => void;
   completedTodosLength: number;
 };
 
 export const Footer: React.FC<Props> = memo(({
   filterStatus,
-  onFilterStatus,
-  amountOfItems,
+  changeStatusFilter,
+  notCompletedTodosLength,
   onDeleteCompletedTodos,
   completedTodosLength,
 }) => {
   return (
     <footer className="todoapp__footer" data-cy="Footer">
       <span className="todo-count" data-cy="todosCounter">
-        {`${amountOfItems} items left`}
+        {`${notCompletedTodosLength} items left`}
       </span>
 
-      <Filter filterStatus={filterStatus} onFilterStatus={onFilterStatus} />
+      <Filter filterStatus={filterStatus} onFilterStatus={changeStatusFilter} />
 
       <button
         data-cy="ClearCompletedButton"

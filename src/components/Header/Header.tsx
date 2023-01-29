@@ -18,9 +18,11 @@ export const Header: React.FC<Props> = memo(
     const handlerSubmitTodo = (event: React.FormEvent) => {
       event.preventDefault();
 
-      if (title === '') {
+      if (!title) {
         setIsError(true);
         onErrorMessage('Title can\'t be empty');
+
+        return;
       }
 
       setTitle('');

@@ -1,7 +1,7 @@
 import { FilterType } from '../types/FilterType';
 import { Todo } from '../types/Todo';
 
-export const getTodoFilteredByCompleted = (
+export const getFilterTodos = (
   todos: Todo[],
   filterStatus: string,
 ) => {
