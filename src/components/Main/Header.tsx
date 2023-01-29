@@ -1,5 +1,6 @@
 /* eslint-disable jsx-a11y/control-has-associated-label */
 import React, { memo, useContext, useState } from 'react';
+import { ErorrMessage } from '../../types/enums';
 import { Todo } from '../../types/Todo';
 import { AuthContext } from '../Auth/AuthContext';
 
@@ -30,7 +31,7 @@ export const Header: React.FC<Props> = memo(({
 
     if (!IsValidTitle) {
       setIsError(true);
-      setErrorText('Title can`t be empty');
+      setErrorText(ErorrMessage.UNVALID_TITLE);
 
       return;
     }

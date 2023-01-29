@@ -1,7 +1,7 @@
 import React, { memo } from 'react';
 import cn from 'classnames';
 import { Todo } from '../../types/Todo';
-import { FilterCondition } from '../../types/FilterCondition';
+import { FilterCondition } from '../../types/enums';
 
 type Props = {
   todosList: Todo[],

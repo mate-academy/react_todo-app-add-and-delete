@@ -1,5 +1,6 @@
 /* eslint-disable jsx-a11y/control-has-associated-label */
 import React, {
+  useCallback,
   useContext,
   useEffect,
   useRef,
@@ -9,7 +10,7 @@ import cn from 'classnames';
 import { getTodos, createTodo, removeTodo } from './api/todos';
 import { AuthContext } from './components/Auth/AuthContext';
 import { Todo } from './types/Todo';
-import { FilterCondition, ErorrMessage } from './types/FilterCondition';
+import { FilterCondition, ErorrMessage } from './types/enums';
 import { Header } from './components/Main/Header';
 import { TodoList } from './components/Main/TodoList';
 import { Footer } from './components/Main/Footer';
@@ -31,24 +32,22 @@ export const App: React.FC = () => {
     setTimeout(() => setIsError(false), 3000);
   }
 
-  const getSelected = (allTodos: Todo[]): Todo[] => {
-    return allTodos.filter(item => {
+  const getSelected = useCallback(
+    (allTodos: Todo[]): Todo[] => {
       switch (filterCondition) {
-        case FilterCondition.ALL:
-          return true;
-
         case FilterCondition.COMPLETED:
-          return item.completed === true;
+          return allTodos.filter(item => item.completed === true);
 
         case FilterCondition.ACTIVE:
-          return item.completed === false;
+          return allTodos.filter(item => item.completed === false);
 
-        default: return true;
+        case FilterCondition.ALL:
+        default: return allTodos;
       }
-    });
-  };
+    }, [filterCondition],
+  );
 
-  const addTodo = async (todoData: Omit<Todo, 'id'>) => {
+  const addTodo = useCallback(async (todoData: Omit<Todo, 'id'>) => {
     const fullTodoData = { ...todoData, userId: user?.id };
 
     try {
@@ -69,9 +68,9 @@ export const App: React.FC = () => {
       setTempNewTask(null);
       setIsAdding(false);
     }
-  };
+  }, [user?.id]);
 
-  const deleteTodo = async (idToDelete: number) => {
+  const deleteTodo = useCallback(async (idToDelete: number) => {
     try {
       setDeletingTodoIds(curr => [...curr, idToDelete]);
 
@@ -85,7 +84,7 @@ export const App: React.FC = () => {
     } finally {
       setDeletingTodoIds(currId => currId.filter(id => id !== idToDelete));
     }
-  };
+  }, []);
 
   const getCompletedTodos = (allTodos: Todo[]) => {
     const completedTodos = allTodos.filter(todo => todo.completed === true);
@@ -93,11 +92,11 @@ export const App: React.FC = () => {
     return completedTodos.map(todo => todo.id);
   };
 
-  const deleteCompletedTodos = () => {
+  const deleteCompletedTodos = useCallback(() => {
     const todoIdToDelete = getCompletedTodos(todosList);
 
     todoIdToDelete.forEach(itemId => deleteTodo(itemId));
-  };
+  }, [deleteTodo, todosList]);
 
   const isTodoExist = todosList.length > 0
     || filterCondition !== FilterCondition.ALL;
@@ -115,10 +114,10 @@ export const App: React.FC = () => {
         .catch(() => {
           setTodosList([]);
           setIsError(true);
-          setErrorText('Unable to upload a todo-list');
+          setErrorText(ErorrMessage.ON_UPLOAD);
         });
     }
-  }, [filterCondition]);
+  }, []);
 
   return (
     <div className="todoapp">
