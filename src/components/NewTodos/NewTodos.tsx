@@ -1,4 +1,6 @@
-import React, { FormEvent, memo, useContext, useState } from 'react';
+import React, {
+  FormEvent, memo, useContext, useState,
+} from 'react';
 import { Todo } from '../../types/Todo';
 import { AuthContext } from '../Auth/AuthContext';
 
@@ -6,27 +8,25 @@ type Props = {
   newTodoField: React.RefObject<HTMLInputElement>;
   showErrorMessage: (message: string) => void;
   isAddingTodo: boolean;
-  onAddTodo: (fieldsForCreate: Omit<Todo, `id`>) => void;
+  onAddTodo: (fieldsForCreate: Omit<Todo, 'id'>) => void;
   userId?: number;
 };
 
 export const NewTodos: React.FC<Props> = memo((props) => {
-
   const {
     newTodoField,
     showErrorMessage,
     isAddingTodo,
     onAddTodo,
   } = props;
-  const user = useContext(AuthContext)
+  const user = useContext(AuthContext);
   const [title, setTitle] = useState('');
-
-
 
   const handleForSubmit = (event: FormEvent<HTMLFormElement>) => {
     event.preventDefault();
     if (!title) {
       showErrorMessage('Title can\'t be empty');
+
       return;
     }
 
