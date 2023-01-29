@@ -4,15 +4,17 @@ import { FilterType } from '../../types/FilterType';
 
 interface FooterProps {
   uncompletedTodosLength: number,
+  completedTodosLength: number,
   filter: FilterType,
-  onChangeFilter: (value: FilterType) => void,
+  setFilter: (value: FilterType) => void,
   clearCompletedButton: () => void,
 }
 
 export const Footer: FC<FooterProps> = memo(({
   uncompletedTodosLength,
+  completedTodosLength,
   filter,
-  onChangeFilter,
+  setFilter,
   clearCompletedButton,
 }) => {
   return (
@@ -23,49 +25,53 @@ export const Footer: FC<FooterProps> = memo(({
 
       <nav className="filter" data-cy="Filter">
         <a
+          onClick={() => setFilter(FilterType.ALL)}
           data-cy="FilterLinkAll"
           href="#/"
           className={cn(
             'filter__link',
             { selected: filter === FilterType.ALL },
           )}
-          onClick={() => onChangeFilter(FilterType.ALL)}
         >
           All
         </a>
 
         <a
+          onClick={() => setFilter(FilterType.ACTIVE)}
           data-cy="FilterLinkActive"
           href="#/active"
           className={cn(
             'filter__link',
             { selected: filter === FilterType.ACTIVE },
           )}
-          onClick={() => onChangeFilter(FilterType.ACTIVE)}
         >
           Active
         </a>
         <a
+          onClick={() => setFilter(FilterType.COMPLETED)}
           data-cy="FilterLinkCompleted"
           href="#/completed"
           className={cn(
             'filter__link',
             { selected: filter === FilterType.COMPLETED },
           )}
-          onClick={() => onChangeFilter(FilterType.COMPLETED)}
         >
           Completed
         </a>
       </nav>
 
       <button
+        style={{
+          visibility: !completedTodosLength ? 'hidden' : 'visible',
+        }}
         data-cy="ClearCompletedButton"
         type="button"
-        className="todoapp__clear-completed"
+        className="hidden todoapp__clear-completed"
         onClick={clearCompletedButton}
       >
         Clear completed
       </button>
+
     </footer>
   );
 });

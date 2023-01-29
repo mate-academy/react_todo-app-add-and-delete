@@ -20,12 +20,12 @@ import { FilterType } from './types/FilterType';
 export const App: FC = () => {
   const [todos, setTodos] = useState<Todo[]>([]);
   const [errorMessage, setErrorMessage] = useState<string>('');
-  const [complitedFilter, setFilter] = useState<FilterType>(FilterType.ALL);
+  const [completedFilter, setCompletedFilter,
+  ] = useState<FilterType>(FilterType.ALL);
   const [title, setTitle] = useState<string>('');
   const [isAdding, setIsAdding] = useState<boolean>(false);
   const [tempTodo, setTempTodo] = useState<Todo | null>(null);
   const [deletingTodoIds, setDeletingTodoIds] = useState<number[]>([]);
-
 
   const user = useContext(AuthContext);
   const newTodoField = useRef<HTMLInputElement>(null);
@@ -45,10 +45,6 @@ export const App: FC = () => {
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
-
-  const onChangeFilter = useCallback(
-    () => (value: FilterType) => setFilter(value), [],
-  );
 
   const onDeleteTodo = (todoId: number) => {
     setDeletingTodoIds(prev => [...prev, todoId]);
@@ -99,23 +95,31 @@ export const App: FC = () => {
     }
   };
 
-  const visibleTodos = useMemo(() => (todos.filter(todo => {
-    switch (complitedFilter) {
-      case FilterType.ACTIVE:
-        return !todo.completed;
+  const visibleTodos = useMemo(() => {
+    return todos.filter(todo => {
+      switch (completedFilter) {
+        case FilterType.ACTIVE:
+          return !todo.completed;
 
-      case FilterType.COMPLETED:
-        return todo.completed;
+        case FilterType.COMPLETED:
+          return todo.completed;
 
-      default:
-        return true;
-    }
-  })), [complitedFilter, todos]);
+        default:
+          return todos;
+      }
+    });
+  }, [completedFilter, todos]);
 
   const uncompletedTodosLength = useMemo(() => {
     const unfinishedTodos = todos.filter(todo => !todo.completed);
 
     return unfinishedTodos.length;
+  }, [todos]);
+
+  const completedTodosLength = useMemo(() => {
+    const finishedTodos = todos.filter(todo => todo.completed);
+
+    return finishedTodos.length;
   }, [todos]);
 
   const clearCompletedButton = useCallback(() => {
@@ -124,7 +128,7 @@ export const App: FC = () => {
         onDeleteTodo(todo.id);
       }
     });
-  }, []);
+  }, [todos]);
 
   return (
     <div className="todoapp">
@@ -148,9 +152,10 @@ export const App: FC = () => {
             />
             <Footer
               uncompletedTodosLength={uncompletedTodosLength}
-              filter={complitedFilter}
-              onChangeFilter={onChangeFilter}
+              filter={completedFilter}
+              setFilter={setCompletedFilter}
               clearCompletedButton={clearCompletedButton}
+              completedTodosLength={completedTodosLength}
             />
           </>
         )}
