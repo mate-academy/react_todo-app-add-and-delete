@@ -60,7 +60,7 @@ export const Header: React.FC<Props> = ({
     if (newTodoField.current) {
       newTodoField.current.focus();
     }
-  }, [newTodoField.current]);
+  }, [onAddTempTodo]);
 
   return (
     <header className="todoapp__header">
