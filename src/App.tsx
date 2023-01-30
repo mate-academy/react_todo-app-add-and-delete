@@ -67,10 +67,12 @@ export const App: React.FC = () => {
     }
   }, []);
 
-  const deleteAllCompleted = useCallback(async () => {
-    todos
-      .filter(todo => todo.completed)
-      .forEach(todo => deleteTodo(todo.id));
+  const clearCompletedTodos = useCallback(async () => {
+    todos.forEach(todo => {
+      if (todo.completed) {
+        deleteTodo(todo.id);
+      }
+    });
   }, [todos]);
 
   const visibleTodos = useMemo(() => {
@@ -108,7 +110,7 @@ export const App: React.FC = () => {
             <Footer
               completedFilter={completedFilter}
               setCompletedFilter={setCompletedFilter}
-              deleteAllCompleted={deleteAllCompleted}
+              clearCompletedTodos={clearCompletedTodos}
               activeTodosAmount={activeTodosAmount}
               completedTodosAmount={completedTodosAmount}
             />

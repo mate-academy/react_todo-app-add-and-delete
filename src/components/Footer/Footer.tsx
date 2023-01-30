@@ -6,7 +6,7 @@ import { FilterTypes } from '../../types/FilterTypes';
 type Props = {
   completedFilter: string;
   setCompletedFilter: (status: FilterTypes) => void;
-  deleteAllCompleted: () => Promise<void>;
+  clearCompletedTodos: () => Promise<void>;
   activeTodosAmount: number;
   completedTodosAmount: number;
 };
@@ -15,7 +15,7 @@ export const Footer: React.FC<Props> = React.memo(
   ({
     completedFilter,
     setCompletedFilter,
-    deleteAllCompleted,
+    clearCompletedTodos,
     activeTodosAmount,
     completedTodosAmount,
   }) => {
@@ -66,7 +66,7 @@ export const Footer: React.FC<Props> = React.memo(
           data-cy="ClearCompletedButton"
           type="button"
           className="todoapp__clear-completed"
-          onClick={() => deleteAllCompleted()}
+          onClick={() => clearCompletedTodos()}
           style={{
             visibility: !completedTodosAmount ? 'hidden' : 'visible',
           }}

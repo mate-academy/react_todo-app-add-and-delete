@@ -38,7 +38,7 @@ export const Header: React.FC<Props> = React.memo(
       }
 
       if (!user) {
-        showError('User not found');
+        showError(ErrorTypes.UserNotFound);
 
         return;
       }
