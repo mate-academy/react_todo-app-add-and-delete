@@ -26,6 +26,7 @@ export const App: React.FC = () => {
   const [errorMessage, setErrorMessage] = useState<Errors>(Errors.None);
   const [filterType, setFilterType] = useState<FilterType>(FilterType.All);
   const [isAdding, setIsAdding] = useState(false);
+  const [deletingTodoIds, setDeletingTodoIds] = useState<number[]>([]);
 
   useEffect(() => {
     if (user) {
@@ -70,11 +71,15 @@ export const App: React.FC = () => {
 
   const onDeleteTodo = useCallback(async (todoId: number) => {
     try {
+      setDeletingTodoIds(prev => [...prev, todoId]);
+
       await deleteTodo(todoId);
 
       setTodos(prev => prev.filter(todo => todo.id !== todoId));
     } catch {
       setErrorMessage(Errors.DeleteError);
+    } finally {
+      setDeletingTodoIds(prev => prev.filter(id => id !== todoId));
     }
   }, []);
 
@@ -95,12 +100,13 @@ export const App: React.FC = () => {
           onAddTodo={onAddTodo}
         />
 
-        {todos.length > 0 && (
+        {(todos.length > 0 || tempTodo) && (
           <>
             <TodoList
               todos={visibleTodos}
               tempTodo={tempTodo}
               onDeleteTodo={onDeleteTodo}
+              deletingTodoIds={deletingTodoIds}
             />
 
             <Footer

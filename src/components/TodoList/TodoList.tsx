@@ -6,6 +6,7 @@ interface Props {
   todos: Todo[],
   tempTodo: Todo | null,
   onDeleteTodo: (todoId: number) => Promise<any>,
+  deletingTodoIds: number[],
 }
 
 export const TodoList: React.FC<Props> = memo((props) => {
@@ -13,6 +14,7 @@ export const TodoList: React.FC<Props> = memo((props) => {
     todos,
     tempTodo,
     onDeleteTodo,
+    deletingTodoIds,
   } = props;
 
   return (
@@ -22,6 +24,7 @@ export const TodoList: React.FC<Props> = memo((props) => {
           todo={todo}
           key={todo.id}
           onDeleteTodo={onDeleteTodo}
+          shouldLoadOnDelete={deletingTodoIds.includes(todo.id)}
         />
       ))}
 

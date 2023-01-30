@@ -5,12 +5,14 @@ import { Todo } from '../../types/Todo';
 interface Props {
   todo: Todo,
   onDeleteTodo: (todoId: number) => Promise<any>,
+  shouldLoadOnDelete?: boolean,
 }
 
 export const TodoItem: React.FC<Props> = memo((props) => {
   const {
     todo,
     onDeleteTodo,
+    shouldLoadOnDelete,
   } = props;
 
   return (
@@ -44,7 +46,7 @@ export const TodoItem: React.FC<Props> = memo((props) => {
         data-cy="TodoLoader"
         className={classNames(
           'modal overlay',
-          { 'is-active': todo.id === 0 },
+          { 'is-active': todo.id === 0 || shouldLoadOnDelete },
         )}
       >
         <div className="modal-background has-background-white-ter" />
