@@ -1,12 +1,16 @@
 /* eslint-disable jsx-a11y/control-has-associated-label */
 // eslint-disable-next-line object-curly-newline
-import React, { useEffect, useRef, useState } from 'react';
+import React, { useEffect, useMemo, useRef, useState } from 'react';
 // eslint-disable-next-line object-curly-newline
 import { getTodos, createTodo, deleteTodo, updateTodo } from './api/todos';
-import { filterTotos } from './api/filter';
-import { useAuthContext } from './components/Auth/useAuthContext';
-// eslint-disable-next-line object-curly-newline
-import { ErrorNotification, Header, TodoList, Footer } from './components';
+import { filterTotos } from './helpers/filter';
+import {
+  ErrorNotification,
+  Header,
+  TodoList,
+  Footer,
+  useAuthContext,
+} from './components';
 import { Todo, FilterTypes, ErrorTypes } from './types';
 
 export const App: React.FC = () => {
@@ -15,18 +19,25 @@ export const App: React.FC = () => {
   const [title, setTitle] = useState('');
   const [typeFilter, setTypeFilter] = useState(FilterTypes.All);
   const [error, setError] = useState('');
-  const [isHiddenErrorNote, setIsHiddenErrorNote] = useState(true);
-  const [isAdding, setIsAdding] = useState(false);
+  const [isErrorNoteShown, setErrorNoteShown] = useState(false);
+  const [isLoading, setIsLoading] = useState(false);
   const newTodoField = useRef<HTMLInputElement>(null);
-  const visibleTodos = filterTotos(todos, typeFilter);
-  const activeTodosCount = filterTotos(todos, FilterTypes.Active).length;
-  const completedTodosCount = filterTotos(todos, FilterTypes.Completed).length;
+
+  const visibleTodos = useMemo(() => filterTotos(todos, typeFilter), [todos]);
+  const activeTodosCount = useMemo(
+    () => filterTotos(todos, FilterTypes.Active).length,
+    [todos],
+  );
+  const completedTodosCount = useMemo(
+    () => filterTotos(todos, FilterTypes.Completed).length,
+    [todos],
+  );
   const allCompleted = todos.length === completedTodosCount;
 
-  function hiddenErrorNote() {
-    setIsHiddenErrorNote(false);
+  function showErrorNote() {
+    setErrorNoteShown(true);
     setTimeout(() => {
-      setIsHiddenErrorNote(true);
+      setErrorNoteShown(false);
     }, 3000);
   }
 
@@ -35,16 +46,15 @@ export const App: React.FC = () => {
       newTodoField.current.focus();
     }
 
-    setIsAdding(true);
-
     if (user) {
+      setIsLoading(true);
       getTodos(user.id)
         .then((res) => setTodos(res))
         .catch(() => {
           setError(ErrorTypes.Loading);
-          hiddenErrorNote();
+          showErrorNote();
         })
-        .finally(() => setIsAdding(false));
+        .finally(() => setIsLoading(false));
     }
   }, []);
 
@@ -56,7 +66,7 @@ export const App: React.FC = () => {
     if (!titleTodo.trim()) {
       setTitle('');
       setError(ErrorTypes.Empty);
-      hiddenErrorNote();
+      showErrorNote();
 
       return;
     }
@@ -67,17 +77,17 @@ export const App: React.FC = () => {
       completed: false,
     };
 
-    setIsAdding(true);
+    setIsLoading(true);
 
     createTodo(todo)
       .then((res) => setTodos((prevTodos) => [...prevTodos, res]))
       .catch(() => {
         setError(ErrorTypes.Add);
-        hiddenErrorNote();
+        showErrorNote();
       })
       .finally(() => {
         setTitle('');
-        setIsAdding(false);
+        setIsLoading(false);
       });
   };
 
@@ -89,13 +99,15 @@ export const App: React.FC = () => {
       .catch(() => {
         setError(ErrorTypes.Remove);
         setTimeout(() => {
-          setIsHiddenErrorNote(true);
+          setErrorNoteShown(true);
         }, 3000);
       });
   };
 
   const deleteCompletedTodosHandler = () => {
-    todos.map((todo) => (todo.completed ? deleteTodoHandler(todo.id) : todo));
+    todos.forEach(
+      (todo) => (todo.completed ? deleteTodoHandler(todo.id) : todo),
+    );
   };
 
   const updateTodoHandler = (id: number, state: boolean) => {
@@ -118,7 +130,7 @@ export const App: React.FC = () => {
   };
 
   const completedAllTodoHandler = () => {
-    todos.map((todo) => (allCompleted
+    todos.forEach((todo) => (allCompleted
       ? updateTodoHandler(todo.id, false)
       : updateTodoHandler(todo.id, true)));
   };
@@ -133,7 +145,7 @@ export const App: React.FC = () => {
           title={title}
           setTitle={setTitle}
           onAddToto={addTodoHandler}
-          isAdding={isAdding}
+          isLoading={isLoading}
           completedAllTodo={completedAllTodoHandler}
           allCompleted={allCompleted}
         />
@@ -153,8 +165,8 @@ export const App: React.FC = () => {
         )}
       </div>
       <ErrorNotification
-        isHidden={isHiddenErrorNote}
-        setIsHidden={setIsHiddenErrorNote}
+        isErrorNoteShown={isErrorNoteShown}
+        setErrorNoteShown={setErrorNoteShown}
         error={error}
       />
     </div>

@@ -1,28 +1,28 @@
 import React, { Dispatch, SetStateAction } from 'react';
 
 type Props = {
-  isHidden: boolean;
-  setIsHidden: Dispatch<SetStateAction<boolean>>;
+  isErrorNoteShown: boolean;
+  setErrorNoteShown: Dispatch<SetStateAction<boolean>>;
   error: string;
 };
 
 /* eslint-disable jsx-a11y/control-has-associated-label */
 export const ErrorNotification: React.FC<Props> = ({
-  isHidden,
-  setIsHidden,
+  isErrorNoteShown,
+  setErrorNoteShown,
   error,
 }) => {
   return (
     <div
       data-cy="ErrorNotification"
       className="notification is-danger is-light has-text-weight-normal"
-      hidden={isHidden}
+      hidden={!isErrorNoteShown}
     >
       <button
         data-cy="HideErrorButton"
         type="button"
         className="delete"
-        onClick={() => setIsHidden(true)}
+        onClick={() => setErrorNoteShown(false)}
       />
       {error}
     </div>

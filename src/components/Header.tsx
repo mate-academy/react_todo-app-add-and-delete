@@ -5,7 +5,7 @@ type Props = {
   title: string;
   setTitle: (title: string) => void;
   onAddToto: (title: string) => void;
-  isAdding: boolean;
+  isLoading: boolean;
   completedAllTodo: () => void;
   allCompleted: boolean;
 };
@@ -18,7 +18,7 @@ export const Header = forwardRef<Ref, Props>((props, ref) => {
     title,
     setTitle,
     onAddToto,
-    isAdding,
+    isLoading,
     completedAllTodo,
     allCompleted,
   } = props;
@@ -44,7 +44,7 @@ export const Header = forwardRef<Ref, Props>((props, ref) => {
           className="todoapp__new-todo"
           placeholder="What needs to be done?"
           value={title}
-          disabled={isAdding}
+          disabled={isLoading}
           onChange={(e) => setTitle(e.target.value)}
         />
       </form>
