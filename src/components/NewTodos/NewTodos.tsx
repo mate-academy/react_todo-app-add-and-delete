@@ -1,5 +1,8 @@
 import React, {
-  FormEvent, memo, useContext, useState,
+  FormEvent,
+  memo,
+  useContext,
+  useState,
 } from 'react';
 import { Todo } from '../../types/Todo';
 import { AuthContext } from '../Auth/AuthContext';
@@ -22,7 +25,7 @@ export const NewTodos: React.FC<Props> = memo((props) => {
   const user = useContext(AuthContext);
   const [title, setTitle] = useState('');
 
-  const handleForSubmit = (event: FormEvent<HTMLFormElement>) => {
+  const handleForSubmit = async (event: FormEvent<HTMLFormElement>) => {
     event.preventDefault();
     if (!title) {
       showErrorMessage('Title can\'t be empty');
@@ -36,11 +39,16 @@ export const NewTodos: React.FC<Props> = memo((props) => {
       return;
     }
 
-    onAddTodo({
-      title,
-      userId: user.id,
-      completed: false,
-    });
+    try {
+      await onAddTodo({
+        title,
+        userId: user.id,
+        completed: false,
+      });
+
+      setTitle('');
+      // eslint-disable-next-line
+    } catch { /*empty */ }
   };
 
   return (

@@ -20,6 +20,7 @@ import { getFilterTodos } from './components/helpers/helpers';
 
 export const App: React.FC = () => {
   const [todos, setTodos] = useState<Todo[]>([]);
+  const [tempTodo, setTempTodo] = useState<Todo | null>(null);
   const [errorMessage, setErrorMessage] = useState('');
   const [
     filterType,
@@ -48,18 +49,25 @@ export const App: React.FC = () => {
           showErrorMessage('Can\'t load todos!');
         });
     }
-  }, []);
+  }, [isAddingTodo]);
 
   const onAddTodo = useCallback(async (fieldsForCreate: Omit<Todo, 'id'>) => {
-    setIsAddingTodo(true);
-
     try {
+      setIsAddingTodo(true);
+      setTempTodo({
+        ...fieldsForCreate,
+        id: 0,
+      });
+
       const newTodo = await todoApi.addTodo(fieldsForCreate);
 
       setTodos(prev => [...prev, newTodo]);
     } catch {
       showErrorMessage('Unable to add a todo');
+
+      throw Error('Unable to add a todo');
     } finally {
+      setTempTodo(null);
       setIsAddingTodo(false);
     }
   }, [showErrorMessage]);
@@ -94,7 +102,7 @@ export const App: React.FC = () => {
 
         {todos.length > 0 && (
           <>
-            <TodoList todos={filterTodos} />
+            <TodoList todos={filterTodos} tempTodo={tempTodo} />
 
             <Footer
               incompleteTodos={incompleteTodos}
