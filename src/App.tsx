@@ -90,12 +90,7 @@ export const App: React.FC = () => {
 
           setTodos(currentTodos => [
             ...currentTodos,
-            {
-              id: addedTodo.id,
-              userId: addedTodo.userId,
-              title: addedTodo.title,
-              completed: addedTodo.completed,
-            },
+            addedTodo,
           ]);
         } catch (error) {
           setErrorMessage('Unable to add a todo');
@@ -143,7 +138,8 @@ export const App: React.FC = () => {
     switch (filterStatus) {
       case FilterStatus.Active:
         return todos.filter(todo => (
-          !todo.completed));
+          !todo.completed
+        ));
 
       case FilterStatus.Completed:
         return todos.filter(todo => (
@@ -171,8 +167,8 @@ export const App: React.FC = () => {
           newTodoField={newTodoField}
           title={title}
           isTodoAdding={isTodoAdding}
-          onInputChange={setTitle}
-          onSubmitForm={handleSubmitForm}
+          handleChangeInput={setTitle}
+          handleSubmitForm={handleSubmitForm}
         />
 
         {todos.length > 0 && (
@@ -182,15 +178,15 @@ export const App: React.FC = () => {
               tempTodo={tempTodo}
               isTodoDeleting={isTodoDeleting}
               selectedTodosId={selectedTodosId}
-              onTodoDelete={removeTodo}
+              removeTodo={removeTodo}
             />
 
             <Footer
               activeTodosAmount={activeTodosAmount}
               isCompletedTodos={isCompletedTodos}
               filterStatus={filterStatus}
-              changeFilterStatus={setFilterStatus}
-              onDeleteCompletedTodos={removeCompletedTodos}
+              setFilterStatus={setFilterStatus}
+              removeCompletedTodos={removeCompletedTodos}
             />
           </>
         )}
@@ -198,7 +194,7 @@ export const App: React.FC = () => {
 
       <ErrorNotification
         error={errorMessage}
-        onSetErrorMessage={setErrorMessage}
+        setErrorMessage={setErrorMessage}
       />
     </div>
   );

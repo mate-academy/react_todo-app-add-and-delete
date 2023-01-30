@@ -10,7 +10,7 @@ type Props = {
   temporary?: boolean;
   isTodoDeleting?: boolean;
   selectedTodosId?: number[];
-  onTodoDelete?: (todoId: number) => Promise<void>;
+  handleTodoDelete?: (todoId: number) => Promise<void>;
 };
 
 export const TodoItem: React.FC<Props> = memo((props) => {
@@ -19,7 +19,7 @@ export const TodoItem: React.FC<Props> = memo((props) => {
     temporary = false,
     isTodoDeleting,
     selectedTodosId,
-    onTodoDelete = () => {},
+    handleTodoDelete: onTodoDelete = () => {},
   } = props;
 
   const isLoaderVisible = temporary

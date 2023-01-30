@@ -3,11 +3,11 @@ import cn from 'classnames';
 
 type Props = {
   error: string;
-  onSetErrorMessage: React.Dispatch<React.SetStateAction<string>>;
+  setErrorMessage: React.Dispatch<React.SetStateAction<string>>;
 };
 
 export const ErrorNotification: React.FC<Props> = memo((props) => {
-  const { error, onSetErrorMessage } = props;
+  const { error, setErrorMessage: onSetErrorMessage } = props;
 
   useEffect(() => {
     setTimeout(() => {

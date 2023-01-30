@@ -7,8 +7,8 @@ type Props = {
   activeTodosAmount: number;
   isCompletedTodos: boolean;
   filterStatus: FilterStatus;
-  changeFilterStatus: React.Dispatch<React.SetStateAction<FilterStatus>>;
-  onDeleteCompletedTodos: () => void;
+  setFilterStatus: React.Dispatch<React.SetStateAction<FilterStatus>>;
+  removeCompletedTodos: () => void;
 };
 
 export const Footer: React.FC<Props> = memo((props) => {
@@ -16,8 +16,8 @@ export const Footer: React.FC<Props> = memo((props) => {
     activeTodosAmount,
     isCompletedTodos,
     filterStatus,
-    changeFilterStatus,
-    onDeleteCompletedTodos,
+    setFilterStatus: changeFilterStatus,
+    removeCompletedTodos: onDeleteCompletedTodos,
   } = props;
 
   return (
@@ -30,10 +30,9 @@ export const Footer: React.FC<Props> = memo((props) => {
         <a
           data-cy="FilterLinkAll"
           href="#/"
-          className={cn(
-            'filter__link',
-            { selected: filterStatus === FilterStatus.All },
-          )}
+          className={cn('filter__link', {
+            selected: filterStatus === FilterStatus.All,
+          })}
           onClick={() => changeFilterStatus(FilterStatus.All)}
         >
           All
@@ -42,10 +41,9 @@ export const Footer: React.FC<Props> = memo((props) => {
         <a
           data-cy="FilterLinkActive"
           href="#/active"
-          className={cn(
-            'filter__link',
-            { selected: filterStatus === FilterStatus.Active },
-          )}
+          className={cn('filter__link', {
+            selected: filterStatus === FilterStatus.Active,
+          })}
           onClick={() => changeFilterStatus(FilterStatus.Active)}
         >
           Active
@@ -54,10 +52,9 @@ export const Footer: React.FC<Props> = memo((props) => {
         <a
           data-cy="FilterLinkCompleted"
           href="#/completed"
-          className={cn(
-            'filter__link',
-            { selected: filterStatus === FilterStatus.Completed },
-          )}
+          className={cn('filter__link', {
+            selected: filterStatus === FilterStatus.Completed,
+          })}
           onClick={() => changeFilterStatus(FilterStatus.Completed)}
         >
           Completed

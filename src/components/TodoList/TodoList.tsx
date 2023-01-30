@@ -9,7 +9,7 @@ type Props = {
   tempTodo: Todo | null;
   isTodoDeleting: boolean;
   selectedTodosId: number[];
-  onTodoDelete: (todoId: number) => Promise<void>;
+  removeTodo: (todoId: number) => Promise<void>;
 };
 
 export const TodoList: React.FC<Props> = memo((props) => {
@@ -18,27 +18,22 @@ export const TodoList: React.FC<Props> = memo((props) => {
     tempTodo,
     isTodoDeleting,
     selectedTodosId,
-    onTodoDelete,
+    removeTodo: onTodoDelete,
   } = props;
 
   return (
     <section className="todoapp__main" data-cy="TodoList">
-      {todos.map(todo => (
+      {todos.map((todo) => (
         <TodoItem
           todo={todo}
           key={todo.id}
           isTodoDeleting={isTodoDeleting}
           selectedTodosId={selectedTodosId}
-          onTodoDelete={onTodoDelete}
+          handleTodoDelete={onTodoDelete}
         />
       ))}
 
-      {tempTodo && (
-        <TodoItem
-          todo={tempTodo}
-          temporary
-        />
-      )}
+      {tempTodo && <TodoItem todo={tempTodo} temporary />}
     </section>
   );
 });
