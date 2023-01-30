@@ -5,16 +5,16 @@ import { FilterType } from '../../types/FilterType';
 type Props = {
   activeTodosQuantity: number,
   filterType: FilterType,
-  handleFilterChange: (str: FilterType) => void,
-  onDeleteComplited: () => void,
+  setFilterTodo: (str: FilterType) => void,
+  clearCompletedTodos: () => void,
   completedTodosQuantity: number
 };
 
 export const Footer: React.FC<Props> = memo(({
   activeTodosQuantity,
   filterType,
-  handleFilterChange,
-  onDeleteComplited,
+  setFilterTodo,
+  clearCompletedTodos,
   completedTodosQuantity,
 }) => {
   return (
@@ -28,9 +28,9 @@ export const Footer: React.FC<Props> = memo(({
           data-cy="FilterLinkAll"
           href="#/"
           className={cn('filter__link', {
-            selected: filterType === FilterType.all,
+            selected: filterType === FilterType.ALL,
           })}
-          onClick={() => handleFilterChange(FilterType.all)}
+          onClick={() => setFilterTodo(FilterType.ALL)}
         >
           All
         </a>
@@ -39,9 +39,9 @@ export const Footer: React.FC<Props> = memo(({
           data-cy="FilterLinkActive"
           href="#/active"
           className={cn('filter__link', {
-            selected: filterType === FilterType.active,
+            selected: filterType === FilterType.ACTIVE,
           })}
-          onClick={() => handleFilterChange(FilterType.active)}
+          onClick={() => setFilterTodo(FilterType.ACTIVE)}
         >
           Active
         </a>
@@ -50,9 +50,9 @@ export const Footer: React.FC<Props> = memo(({
           data-cy="FilterLinkCompleted"
           href="#/completed"
           className={cn('filter__link', {
-            selected: filterType === FilterType.completed,
+            selected: filterType === FilterType.COMPLETED,
           })}
-          onClick={() => handleFilterChange(FilterType.completed)}
+          onClick={() => setFilterTodo(FilterType.COMPLETED)}
         >
           Completed
         </a>
@@ -63,7 +63,7 @@ export const Footer: React.FC<Props> = memo(({
         className={cn('todoapp__clear-completed', {
           'is-invisible': !completedTodosQuantity,
         })}
-        onClick={onDeleteComplited}
+        onClick={clearCompletedTodos}
       >
         Clear completed
       </button>

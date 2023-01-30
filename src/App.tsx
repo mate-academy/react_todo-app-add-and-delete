@@ -13,6 +13,7 @@ import { Footer } from './components/Footer/Footer';
 import { Todo } from './types/Todo';
 import { getTodos, addTodo, deleteTodoById } from './api/todos';
 import { FilterType } from './types/FilterType';
+import { ErrorType } from './types/ErrorType';
 import { ErrorNotification } from
   './components/ErrorNotification/ErrorNotification';
 import { TodoItem } from './components/TodoItem/TodoItem';
@@ -21,7 +22,7 @@ export const App: React.FC = () => {
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
   const user = useContext(AuthContext);
   const [todos, setTodos] = useState<Todo[]>([]);
-  const [filterTodo, setFilterTodo] = useState(FilterType.all);
+  const [filterTodo, setFilterTodo] = useState(FilterType.ALL);
   const [error, setError] = useState('');
 
   const [newTitle, setNewTitle] = useState('');
@@ -33,7 +34,7 @@ export const App: React.FC = () => {
     if (user) {
       getTodos(user.id)
         .then(setTodos)
-        .catch(() => setError('Unable to load a todos'));
+        .catch(() => setError(ErrorType.LOAD));
     }
   }, [user]);
 
@@ -41,7 +42,7 @@ export const App: React.FC = () => {
     event.preventDefault();
 
     if (!newTitle) {
-      setError('Title can\'t be empty');
+      setError(ErrorType.EMPTY);
 
       return;
     }
@@ -73,7 +74,7 @@ export const App: React.FC = () => {
 
         setNewTitle('');
       } catch (e) {
-        setError('Unable to add a todo');
+        setError(ErrorType.ADD);
       } finally {
         setIsAdding(false);
       }
@@ -91,7 +92,7 @@ export const App: React.FC = () => {
         todo => todo.id !== todoId,
       ));
     } catch (e) {
-      setError('Unable to delete a todo');
+      setError(ErrorType.DELETE);
     } finally {
       setDeletingTodosIds(prev => {
         return prev.filter(deletingId => deletingId !== todoId);
@@ -109,12 +110,13 @@ export const App: React.FC = () => {
 
   const filteredTodos = useMemo(() => {
     switch (filterTodo) {
-      case FilterType.active:
+      case FilterType.ACTIVE:
         return todos.filter(todo => !todo.completed);
 
-      case FilterType.completed:
+      case FilterType.COMPLETED:
         return todos.filter(todo => todo.completed);
 
+      case FilterType.ALL:
       default:
         return todos;
     }
@@ -155,10 +157,9 @@ export const App: React.FC = () => {
               activeTodosQuantity={activeTodosQuantity}
               completedTodosQuantity={completedTodosQuantity}
               filterType={filterTodo}
-              handleFilterChange={setFilterTodo}
-              onDeleteComplited={clearCompletedTodos}
+              setFilterTodo={setFilterTodo}
+              clearCompletedTodos={clearCompletedTodos}
             />
-
           </>
         )}
       </div>
@@ -166,7 +167,7 @@ export const App: React.FC = () => {
       {error && (
         <ErrorNotification
           error={error}
-          onChangeErrorMessage={setError}
+          setErrorMessage={setError}
         />
       )}
     </div>
