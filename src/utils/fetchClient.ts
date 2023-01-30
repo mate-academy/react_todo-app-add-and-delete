@@ -39,7 +39,9 @@ function request<T>(
 
 export const client = {
   get: <T>(url: string) => request<T>(url),
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   post: <T>(url: string, data: any) => request<T>(url, 'POST', data),
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   patch: <T>(url: string, data: any) => request<T>(url, 'PATCH', data),
   delete: <T>(url: string) => request<T>(url, 'DELETE'),
 };
