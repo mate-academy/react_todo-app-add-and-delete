@@ -2,7 +2,6 @@
 import React, {
   useContext,
   useEffect,
-  useRef,
   useState,
   useMemo,
   useCallback,
@@ -20,7 +19,6 @@ import { filterTodos } from './utils/filterTodos';
 export const App: React.FC = () => {
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
   const user = useContext(AuthContext);
-  const newTodoField = useRef<HTMLInputElement>(null);
   const [todos, setTodos] = useState<Todo[]>([]);
   const [errorMessage, setErrorMessage] = useState('');
   const [complitedFilter, setComplitedFilter] = useState(Filter.All);
@@ -29,10 +27,6 @@ export const App: React.FC = () => {
   const userId = user ? user.id : 0;
 
   useEffect(() => {
-    if (newTodoField.current) {
-      newTodoField.current.focus();
-    }
-
     if (user) {
       getTodos(user.id)
         .then(setTodos)
@@ -106,7 +100,6 @@ export const App: React.FC = () => {
 
       <div className="todoapp__content">
         <TodoAppHeader
-          newTodoField={newTodoField}
           addNewTodo={addNewTodo}
           isAdding={isAdding}
         />

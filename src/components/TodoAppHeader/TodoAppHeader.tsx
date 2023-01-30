@@ -1,17 +1,26 @@
-import React, { useState } from 'react';
+import React, {
+  useState,
+  useEffect,
+  useRef,
+} from 'react';
 
 type Props = {
-  newTodoField: React.RefObject<HTMLInputElement>;
   addNewTodo: (title: string) => void;
   isAdding: boolean;
 };
 
 export const TodoAppHeader: React.FC<Props> = ({
-  newTodoField,
   addNewTodo,
   isAdding,
 }) => {
   const [todoTitle, setTodoTitle] = useState('');
+  const newTodoField = useRef<HTMLInputElement>(null);
+
+  useEffect(() => {
+    if (newTodoField.current) {
+      newTodoField.current.focus();
+    }
+  }, []);
 
   const handleNewTodoFieldSubmit = async (event: React.FormEvent) => {
     event.preventDefault();
