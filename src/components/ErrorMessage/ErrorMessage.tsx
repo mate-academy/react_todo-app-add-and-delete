@@ -11,27 +11,25 @@ export const ErrorMessage: React.FC<Props> = React.memo(
   ({
     errorMessage,
     closeError,
-  }) => {
-    return (
-      <div
-        data-cy="ErrorNotification"
-        className={cn(
-          'notification',
-          'is-danger',
-          'is-light',
-          'has-text-weight-normal',
-          { hidden: !errorMessage },
-        )}
-      >
-        <button
-          data-cy="HideErrorButton"
-          type="button"
-          className="delete"
-          onClick={closeError}
-        />
+  }) => (
+    <div
+      data-cy="ErrorNotification"
+      className={cn(
+        'notification',
+        'is-danger',
+        'is-light',
+        'has-text-weight-normal',
+        { hidden: !errorMessage },
+      )}
+    >
+      <button
+        data-cy="HideErrorButton"
+        type="button"
+        className="delete"
+        onClick={closeError}
+      />
 
-        {errorMessage}
-      </div>
-    );
-  },
+      {errorMessage}
+    </div>
+  ),
 );
