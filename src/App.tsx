@@ -20,6 +20,8 @@ import { createTodo, deleteTodoById, getTodos } from './api/todos';
 import { Todo } from './types/Todo';
 import { FilterType } from './types/FilterType';
 
+import { filterTodos } from './components/helpers/completedFilter';
+
 export const App: React.FC = () => {
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
   const user = useContext(AuthContext);
@@ -28,7 +30,6 @@ export const App: React.FC = () => {
   const [todos, setTodos] = useState<Todo[]>([]);
   const [errorMessage, setErrorMessage] = useState('');
   const [complitedFilter, setComplitedFilter] = useState(FilterType.ALL);
-  const [title, setTitle] = useState('');
   const [tempTodo, setTempTodo] = useState<Todo | null>(null);
   const [isNewTodoLoading, setIsNewTodoLoading] = useState(false);
 
@@ -56,34 +57,25 @@ export const App: React.FC = () => {
   ), [todos]);
 
   const visibleTodos = useMemo(() => {
-    switch (complitedFilter) {
-      case FilterType.ACTIVE:
-        return todos.filter(todo => !todo.completed);
-
-      case FilterType.COMPLETED:
-        return todos.filter(todo => todo.completed);
-
-      default:
-        return todos;
-    }
+    return filterTodos(todos, complitedFilter);
   }, [complitedFilter, todos]);
 
   const deleteTodo = useCallback(async (todoId: number) => {
     try {
-      const respondResult = await deleteTodoById(todoId);
+      const deleteResponse = await deleteTodoById(todoId);
 
       setTodos(prevTodos => (
         prevTodos.filter(todo => todo.id !== todoId)
       ));
 
-      return respondResult;
+      return deleteResponse;
     } catch (deleteError) {
       return setErrorMessage('Unable to delete a todo');
     }
   }, []);
 
   const addTodo = useCallback(
-    async (event: React.FormEvent<HTMLFormElement>) => {
+    async (event: React.FormEvent<HTMLFormElement>, title: string) => {
       event.preventDefault();
 
       try {
@@ -116,7 +108,7 @@ export const App: React.FC = () => {
       } catch (addTodoError) {
         setErrorMessage('Unable to add a todo');
       }
-    }, [todos, user, title],
+    }, [todos, user],
   );
 
   const clearCompletedTodos = useCallback(() => {
@@ -135,8 +127,6 @@ export const App: React.FC = () => {
         <Header
           newTodoField={newTodoField}
           addTodo={addTodo}
-          title={title}
-          setTitle={setTitle}
           isNewTodoLoading={isNewTodoLoading}
         />
         {todos.length > 0 && (
