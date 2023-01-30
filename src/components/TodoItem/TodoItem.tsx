@@ -7,21 +7,16 @@ type Props = {
   todo: Todo;
   isAdding?:boolean;
   isDeleting?:boolean;
-  todoIdForDeleting?: number[];
-  deleteTodo: (todoId: number) => void;
+  removeTodo: (todoId: number) => void;
 };
 
 export const TodoItem: React.FC<Props> = memo((props) => {
   const {
     todo,
-    isAdding = false,
+    isAdding,
     isDeleting,
-    todoIdForDeleting,
-    deleteTodo,
+    removeTodo,
   } = props;
-
-  const isLoading = isAdding
-  || (isDeleting && todoIdForDeleting?.includes(todo.id));
 
   return (
     <div
@@ -46,12 +41,12 @@ export const TodoItem: React.FC<Props> = memo((props) => {
         type="button"
         className="todo__remove"
         data-cy="TodoDeleteButton"
-        onClick={() => deleteTodo(todo.id)}
+        onClick={() => removeTodo(todo.id)}
       >
         ×
       </button>
 
-      {isLoading && <Loader />}
+      <Loader isLoading={isAdding || isDeleting} />
     </div>
   );
 });

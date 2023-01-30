@@ -15,6 +15,7 @@ import { Header } from './components/Header/Header';
 import { TodoList } from './components/TodoList/TodoList';
 import { ErrorMessage } from './components/ErrorMessage/Error';
 import { FilterType } from './types/Filter';
+import { Errors } from './types/Errors';
 import { Todo } from './types/Todo';
 import { TodoItem } from './components/TodoItem/TodoItem';
 
@@ -32,7 +33,6 @@ export const App: React.FC = () => {
   const [todoIdForDeleting, setTodoIdForDeleting] = useState<number[]>([]);
 
   useEffect(() => {
-    // focus the element with `ref={newTodoField}`
     if (newTodoField.current) {
       newTodoField.current.focus();
     }
@@ -42,7 +42,7 @@ export const App: React.FC = () => {
     if (user) {
       getTodos(user.id)
         .then(setTodos)
-        .catch(() => setErrorMessage('Something went wrong'));
+        .catch(() => setErrorMessage(Errors.ErrorUser));
     }
   }, []);
 
@@ -58,63 +58,56 @@ export const App: React.FC = () => {
     switch (filterType) {
       case 'Completed':
         return todo.completed;
+
       case 'Active':
         return !todo.completed;
+
       default:
         return true;
     }
   });
 
-  const addTodoOn = async () => {
-    setIsAdding(true);
-
-    if (user) {
-      try {
-        setTempTodo({
-          id: 0,
-          userId: user?.id,
-          title: title.trim(),
-          completed: false,
-        });
-
-        const newTodo = await addTodo({
-          userId: user?.id,
-          title: title.trim(),
-          completed: false,
-        });
-
-        setTitle('');
-
-        setTodos(current => [
-          ...current,
-          {
-            id: newTodo.id,
-            userId: newTodo.userId,
-            title: newTodo.title,
-            completed: newTodo.completed,
-          },
-        ]);
-      } catch (error) {
-        // eslint-disable-next-line max-len
-        setErrorMessage('Something went wrong.Unable to add a todo');
-      } finally {
-        setIsAdding(false);
-        setTempTodo(null);
-      }
-    }
-  };
-
-  const handleSubmit = useCallback(
+  const handleSubmitForm = useCallback(
     (event: React.FormEvent<HTMLFormElement>) => {
       event.preventDefault();
 
       if (!title.trim()) {
-        setErrorMessage('Title can\'t be empty');
+        setErrorMessage(Errors.ErorTitle);
 
         return;
       }
 
-      addTodoOn();
+      const addNewTodo = async () => {
+        setIsAdding(true);
+
+        if (user) {
+          try {
+            setTempTodo({
+              id: 0,
+              userId: user.id,
+              title,
+              completed: false,
+            });
+
+            const newTodo = await addTodo({
+              userId: user.id,
+              title,
+              completed: false,
+            });
+
+            setTitle('');
+
+            setTodos(currentTodos => [...currentTodos, newTodo]);
+          } catch (error) {
+            setErrorMessage(Errors.UnableToAdd);
+          } finally {
+            setIsAdding(false);
+            setTempTodo(null);
+          }
+        }
+      };
+
+      addNewTodo();
     }, [title],
   );
 
@@ -128,7 +121,7 @@ export const App: React.FC = () => {
 
       setTodos(currentTodos => currentTodos.filter(todo => todo.id !== todoId));
     } catch (error) {
-      setErrorMessage('Something went wrong.Unable to delete a todo');
+      setErrorMessage(Errors.UnableToDelete);
     } finally {
       setTodoIdForDeleting(currentTodoIds => (
         currentTodoIds.filter(id => id !== todoId)));
@@ -138,7 +131,7 @@ export const App: React.FC = () => {
   const cleanCompletedTodos = useCallback(() => {
     todos.forEach(todo => {
       if (todo.completed) {
-        deleteTodo(todo.id);
+        removeTodo(todo.id);
       }
     });
   }, [todos]);
@@ -153,7 +146,7 @@ export const App: React.FC = () => {
           title={title}
           isAdding={isAdding}
           onChange={setTitle}
-          submitForm={handleSubmit}
+          submitForm={handleSubmitForm}
         />
 
         {todos.length > 0 && (
@@ -161,7 +154,7 @@ export const App: React.FC = () => {
             <TodoList
               todos={filteredTodos}
               todoIdForDeleting={todoIdForDeleting}
-              deleteTodo={deleteTodo}
+              removeTodo={removeTodo}
             />
 
             {tempTodo
@@ -169,7 +162,7 @@ export const App: React.FC = () => {
                 <TodoItem
                   todo={tempTodo}
                   isAdding={isAdding}
-                  deleteTodo={removeTodo}
+                  removeTodo={removeTodo}
                 />
               )}
 
