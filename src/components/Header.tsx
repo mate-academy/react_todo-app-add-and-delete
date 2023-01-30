@@ -36,7 +36,9 @@ export const Header: React.FC<Props> = ({
           />
         ) : null}
 
-      <form onSubmit={() => {
+      <form onSubmit={(event) => {
+        event.preventDefault();
+
         if (title.trim() === '') {
           showErrorBanner('Title can\'t be empty');
         }

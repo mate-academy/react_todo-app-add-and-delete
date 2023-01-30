@@ -67,7 +67,7 @@ export const App: React.FC = () => {
       <div className="todoapp__content">
         <Header
           newTodoField={newTodoField}
-          todos={todos}
+          todos={filteredTodos}
           showErrorBanner={showErrorBanner}
           user={user}
           setTempNewTodo={setTempNewTodo}
