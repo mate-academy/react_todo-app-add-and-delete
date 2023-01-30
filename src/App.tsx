@@ -1,13 +1,13 @@
 /* eslint-disable jsx-a11y/control-has-associated-label */
 import React, {
-  useCallback,
-  useContext, useEffect, useMemo, useState,
+  useCallback, useContext, useEffect, useMemo, useState,
 } from 'react';
 
 import { todosApi } from './api/todos';
 import { filterTodosByCompleted } from './helpers/helpers';
 import { Todo } from './types/Todo';
-import { FilterType } from './types/FilterType';
+import { FilterTypes } from './types/FilterTypes';
+import { ErrorTypes } from './types/ErrorTypes';
 
 import { AuthContext } from './components/Auth/AuthContext';
 import { Header } from './components/Header/Header';
@@ -21,7 +21,7 @@ export const App: React.FC = () => {
 
   const [todos, setTodos] = useState<Todo[]>([]);
   const [tempTodo, setTempTodo] = useState<Todo | null>(null);
-  const [completedFilter, setCompletedFilter] = useState(FilterType.ALL);
+  const [completedFilter, setCompletedFilter] = useState(FilterTypes.ALL);
   const [isAddingTodo, setIsAddingTodo] = useState(false);
   const [deletingTodoIds, setDeletingTodoIds] = useState<number[]>([]);
 
@@ -31,7 +31,7 @@ export const App: React.FC = () => {
     if (user) {
       todosApi.getTodos(user.id)
         .then(setTodos)
-        .catch(() => showError('Can\'t load todos'));
+        .catch(() => showError(ErrorTypes.OnLoad));
     }
   }, [user]);
 
@@ -44,7 +44,7 @@ export const App: React.FC = () => {
 
       setTodos((prevTodos => [...prevTodos, newTodo]));
     } catch {
-      showError('Unable to add todo');
+      showError(ErrorTypes.OnAdd);
 
       throw Error('Unable to add todo');
     } finally {
@@ -61,7 +61,7 @@ export const App: React.FC = () => {
 
       setTodos((prevTodos) => prevTodos.filter(todo => todo.id !== todoId));
     } catch {
-      showError('Unable to delete todo');
+      showError(ErrorTypes.OnDelete);
     } finally {
       setDeletingTodoIds((prevIds => prevIds.filter(id => id !== todoId)));
     }

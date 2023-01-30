@@ -1,11 +1,11 @@
 /* eslint-disable jsx-a11y/control-has-associated-label */
 import React from 'react';
 import cn from 'classnames';
-import { FilterType } from '../../types/FilterType';
+import { FilterTypes } from '../../types/FilterTypes';
 
 type Props = {
   completedFilter: string;
-  setCompletedFilter: (status: FilterType) => void;
+  setCompletedFilter: (status: FilterTypes) => void;
   deleteAllCompleted: () => Promise<void>;
   activeTodosAmount: number;
   completedTodosAmount: number;
@@ -31,9 +31,9 @@ export const Footer: React.FC<Props> = React.memo(
             href="#/"
             className={cn(
               'filter__link',
-              { selected: completedFilter === FilterType.ALL },
+              { selected: completedFilter === FilterTypes.ALL },
             )}
-            onClick={() => setCompletedFilter(FilterType.ALL)}
+            onClick={() => setCompletedFilter(FilterTypes.ALL)}
           >
             All
           </a>
@@ -43,9 +43,9 @@ export const Footer: React.FC<Props> = React.memo(
             href="#/active"
             className={cn(
               'filter__link',
-              { selected: completedFilter === FilterType.ACTIVE },
+              { selected: completedFilter === FilterTypes.ACTIVE },
             )}
-            onClick={() => setCompletedFilter(FilterType.ACTIVE)}
+            onClick={() => setCompletedFilter(FilterTypes.ACTIVE)}
           >
             Active
           </a>
@@ -54,9 +54,9 @@ export const Footer: React.FC<Props> = React.memo(
             href="#/completed"
             className={cn(
               'filter__link',
-              { selected: completedFilter === FilterType.COMPLETED },
+              { selected: completedFilter === FilterTypes.COMPLETED },
             )}
-            onClick={() => setCompletedFilter(FilterType.COMPLETED)}
+            onClick={() => setCompletedFilter(FilterTypes.COMPLETED)}
           >
             Completed
           </a>

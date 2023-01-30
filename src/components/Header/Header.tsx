@@ -4,6 +4,7 @@ import React, {
 } from 'react';
 import { AuthContext } from '../Auth/AuthContext';
 import { Todo } from '../../types/Todo';
+import { ErrorTypes } from '../../types/ErrorTypes';
 
 type Props = {
   addTodo: (fieldsToCreate: Omit<Todo, 'id'>) => Promise<void>;
@@ -31,7 +32,7 @@ export const Header: React.FC<Props> = React.memo(
 
     const handleFormSubmit = async () => {
       if (!title.trim()) {
-        showError('Title can\'t be empty');
+        showError(ErrorTypes.EmptyTitle);
 
         return;
       }
