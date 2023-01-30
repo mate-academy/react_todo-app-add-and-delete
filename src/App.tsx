@@ -13,7 +13,7 @@ import { Header } from './components/Header/Header';
 import { Filters, Footer } from './components/Footer/Footer';
 import { Errors } from './components/Error/Error';
 import { TodoList } from './components/TodoList/TodoList';
-import { filteredTodos } from './helpers/helpers';
+import { filteredTodos, getCompletedTodoIds } from './helpers/helpers';
 import { todoApi } from './api/todos';
 
 // email to check jklajsdf@adsf.com
@@ -30,6 +30,7 @@ export const App: React.FC = () => {
   const [errorMessage, setError] = useState('');
   const [filterStatus, setFilterStatus] = useState(Filters.ALL);
   const [isAddingTodo, setIsEddingTodo] = useState(false);
+  const [delitingTodoIds, setDelitingTodoIds] = useState<number[]>([]);
 
   useEffect(() => {
     // focus the element with `ref={newTodoField}`
@@ -73,6 +74,26 @@ export const App: React.FC = () => {
     }
   }, []);
 
+  const onDeleteTodo = useCallback(async (todoId: number) => {
+    try {
+      setDelitingTodoIds(prev => [...prev, todoId]);
+
+      await todoApi.deleteTodo(todoId);
+
+      setTodos(prev => prev.filter(todo => todo.id !== todoId));
+    } catch {
+      setError('Unable to delete a todo');
+    } finally {
+      setDelitingTodoIds(prev => prev.filter(id => id !== todoId));
+    }
+  }, []);
+
+  const onDeleteCompleted = useCallback(async () => {
+    const completedTodoIds = getCompletedTodoIds(todos);
+
+    completedTodoIds.forEach(id => onDeleteTodo(id), [onDeleteTodo, todos]);
+  }, []);
+
   return (
     <div className="todoapp">
       <h1 className="todoapp__title">todos</h1>
@@ -89,11 +110,14 @@ export const App: React.FC = () => {
             <TodoList
               todos={visibleTodos}
               tempTodo={tempTodo}
+              onDeleteTodo={onDeleteTodo}
+              delitingTodoIds={delitingTodoIds}
             />
             <Footer
               activeTodos={activeTodosCount}
               filter={filterStatus}
               onChange={setFilterStatus}
+              onDeleteCompleted={onDeleteCompleted}
             />
           </>
         )}

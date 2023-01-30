@@ -14,3 +14,10 @@ export const filteredTodos = (
     : !todo.completed
   ));
 };
+
+export const getCompletedTodoIds = (todos: Todo[]) => {
+  const completedTodos = todos.filter(todo => todo.completed);
+  const completedTodoIds = completedTodos.map(todo => todo.id);
+
+  return completedTodoIds;
+};

@@ -4,14 +4,20 @@ import { Todo } from '../../types/Todo';
 
 type TodoItemProps = {
   todo: Todo;
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  onDeleteTodo: (todoId: number) => Promise<any>,
+  isDeliting: boolean,
 };
 
-export const TodoItem: React.FC<TodoItemProps> = ({ todo }) => {
-  const isLoading = todo.id === 0;
+export const TodoItem: React.FC<TodoItemProps> = ({
+  todo,
+  onDeleteTodo,
+  isDeliting,
+}) => {
+  const isLoading = todo.id === 0 && isDeliting;
 
   return (
     <div
-      key={todo.id}
       data-cy="Todo"
       className={cn(
         'todo', {
@@ -38,6 +44,7 @@ export const TodoItem: React.FC<TodoItemProps> = ({ todo }) => {
         type="button"
         className="todo__remove"
         data-cy="TodoDeleteButton"
+        onClick={() => onDeleteTodo(todo.id)}
       >
         ×
       </button>
