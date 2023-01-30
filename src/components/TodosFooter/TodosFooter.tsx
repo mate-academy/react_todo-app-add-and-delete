@@ -1,22 +1,29 @@
-import React from 'react';
+import React, { useMemo } from 'react';
 import cn from 'classnames';
 import { Filter } from '../../types/Filter';
+import { Todo } from '../../types/Todo';
 
 type Props = {
   complitedFilter: Filter;
-  changecomplitedFilter: (prop: Filter) => void;
-  activeTodosNumber: number;
+  changeComplitedFilter: (prop: Filter) => void;
   clearCompleted: () => void;
-  someCompleted: boolean;
+  todos: Todo[];
 };
 
 export const TodosFooter: React.FC<Props> = ({
   complitedFilter,
-  changecomplitedFilter,
-  activeTodosNumber,
+  changeComplitedFilter,
   clearCompleted,
-  someCompleted,
+  todos,
 }) => {
+  const activeTodosNumber = useMemo(() => (
+    todos.filter(todo => !todo.completed).length
+  ), [todos]);
+
+  const someTodosAreComplited = useMemo(() => {
+    return todos.some(todo => todo.completed);
+  }, [todos]);
+
   return (
     <footer className="todoapp__footer" data-cy="Footer">
       <span className="todo-count" data-cy="todosCounter">
@@ -30,7 +37,7 @@ export const TodosFooter: React.FC<Props> = ({
           className={
             `filter__link ${complitedFilter === Filter.All && 'selected'}`
           }
-          onClick={() => changecomplitedFilter(Filter.All)}
+          onClick={() => changeComplitedFilter(Filter.All)}
         >
           All
         </a>
@@ -41,7 +48,7 @@ export const TodosFooter: React.FC<Props> = ({
           className={
             `filter__link ${complitedFilter === Filter.Active && 'selected'}`
           }
-          onClick={() => changecomplitedFilter(Filter.Active)}
+          onClick={() => changeComplitedFilter(Filter.Active)}
         >
           Active
         </a>
@@ -51,7 +58,7 @@ export const TodosFooter: React.FC<Props> = ({
           className={
             `filter__link ${complitedFilter === Filter.Completed && 'selected'}`
           }
-          onClick={() => changecomplitedFilter(Filter.Completed)}
+          onClick={() => changeComplitedFilter(Filter.Completed)}
         >
           Completed
         </a>
@@ -63,7 +70,7 @@ export const TodosFooter: React.FC<Props> = ({
         className={cn(
           'todoapp__clear-completed',
           {
-            'todoapp__clear-completed--hidden': !someCompleted,
+            'todoapp__clear-completed--hidden': !someTodosAreComplited,
           },
         )}
         onClick={clearCompleted}

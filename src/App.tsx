@@ -46,14 +46,6 @@ export const App: React.FC = () => {
     filterTodos(todos, complitedFilter)
   ), [todos, complitedFilter]);
 
-  const activeTodosNumber = useMemo(() => (
-    todos.filter(todo => !todo.completed).length
-  ), [todos]);
-
-  const someComplited = useMemo(() => {
-    return todos.some(todo => todo.completed);
-  }, [todos]);
-
   const addNewTodo = useCallback((todoTitle: string) => {
     if (!todoTitle) {
       setErrorMessage('Title can\'t be empty');
@@ -127,11 +119,10 @@ export const App: React.FC = () => {
               removeTodo={removeTodo}
             />
             <TodosFooter
-              activeTodosNumber={activeTodosNumber}
               complitedFilter={complitedFilter}
-              changecomplitedFilter={setComplitedFilter}
+              changeComplitedFilter={setComplitedFilter}
               clearCompleted={clearCompleted}
-              someCompleted={someComplited}
+              todos={todos}
             />
           </>
         )}
