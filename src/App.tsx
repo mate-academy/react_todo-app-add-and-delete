@@ -4,7 +4,6 @@ import React, {
   useContext,
   useEffect,
   useMemo,
-  useRef,
   useState,
 } from 'react';
 import { AuthContext } from './components/Auth/AuthContext';
@@ -21,7 +20,6 @@ import { TodoItem } from './components/TodoItem/TodoItem';
 export const App: React.FC = () => {
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
   const user = useContext(AuthContext);
-  const newTodoField = useRef<HTMLInputElement>(null);
   const [todos, setTodos] = useState<Todo[]>([]);
   const [filterTodo, setFilterTodo] = useState(FilterType.all);
   const [error, setError] = useState('');
@@ -32,17 +30,12 @@ export const App: React.FC = () => {
   const [tempTodo, setTempTodo] = useState<Todo | null>(null);
 
   useEffect(() => {
-    // focus the element with `ref={newTodoField}`
-    if (newTodoField.current) {
-      newTodoField.current.focus();
-    }
-
     if (user) {
       getTodos(user.id)
         .then(setTodos)
         .catch(() => setError('Unable to load a todos'));
     }
-  }, []);
+  }, [user]);
 
   const addNewTodo = useCallback((event: React.FormEvent) => {
     event.preventDefault();
@@ -54,33 +47,35 @@ export const App: React.FC = () => {
     }
 
     const newTodoAdding = async () => {
+      if (!user) {
+        return;
+      }
+
       setIsAdding(true);
 
-      if (user) {
-        setTempTodo({
-          id: 0,
-          userId: user?.id,
+      setTempTodo({
+        id: 0,
+        userId: user?.id,
+        title: newTitle,
+        completed: false,
+      });
+
+      try {
+        const newTodo = await addTodo({
+          userId: user.id,
           title: newTitle,
           completed: false,
         });
 
-        try {
-          const newTodo = await addTodo({
-            userId: user.id,
-            title: newTitle,
-            completed: false,
-          });
+        setTempTodo(null);
 
-          setTempTodo(null);
+        setTodos(currentTodos => [...currentTodos, newTodo]);
 
-          setTodos(currentTodos => [...currentTodos, newTodo]);
-
-          setNewTitle('');
-        } catch (e) {
-          setError('Unable to add a todo');
-        } finally {
-          setIsAdding(false);
-        }
+        setNewTitle('');
+      } catch (e) {
+        setError('Unable to add a todo');
+      } finally {
+        setIsAdding(false);
       }
     };
 
@@ -140,7 +135,6 @@ export const App: React.FC = () => {
       <div className="todoapp__content">
 
         <Header
-          newTodoField={newTodoField}
           newTitle={newTitle}
           setNewTitle={setNewTitle}
           onAddNewTodo={addNewTodo}
