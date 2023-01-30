@@ -24,6 +24,7 @@ export const App: React.FC = () => {
   const [showError, closeErrorMessage, errorMessage] = useError();
   const [isAddingTodo, setIsAddingTodo] = useState(false);
   const [deletingTodosIds, setDeletingTodosIds] = useState<number[]>([]);
+  const [tempTodo, setTempTodo] = useState<Todo | null>(null);
 
   const deleteTodoById = (todoId: number) => {
     deleteTodos(todoId);
@@ -66,19 +67,26 @@ export const App: React.FC = () => {
     }
   }, []);
 
-  const onAddTodo = useCallback(async (data: Omit<Todo, 'id'>) => {
-    setIsAddingTodo(true);
-
+  const onAddTodo = useCallback(async (fieldsForCreate: Omit<Todo, 'id'>) => {
     try {
-      const newTodo = await postTodos(data);
+      setIsAddingTodo(true);
+      setTempTodo({
+        ...fieldsForCreate,
+        id: 0,
+      });
+
+      const newTodo = await postTodos(fieldsForCreate);
 
       setTodos(prev => [...prev, newTodo]);
     } catch {
-      showError('Unable to load todo');
+      showError('Unable to add a todo');
+
+      throw Error('Error while adding todo');
     } finally {
+      setTempTodo(null);
       setIsAddingTodo(false);
     }
-  }, []);
+  }, [showError]);
 
   const visibleTodos = useMemo(() => {
     const filteredTodos = filteredTodosByComplited(todos, complitedFiler);
@@ -93,7 +101,8 @@ export const App: React.FC = () => {
       <div className="todoapp__content">
         <Header
           showError={showError}
-          addingTodo={onAddTodo}
+          isAddingTodo={isAddingTodo}
+          onAddTodo={onAddTodo}
         />
 
         {todos.length !== 0 && (
@@ -101,8 +110,8 @@ export const App: React.FC = () => {
             <TodoList
               todos={visibleTodos}
               onDeleteTodo={onDeleteTodo}
+              tempTodo={tempTodo}
               deletingTodoIds={deletingTodosIds}
-              isAddingTodo={isAddingTodo}
             />
 
             <Footer
@@ -118,7 +127,6 @@ export const App: React.FC = () => {
       {errorMessage && (
         <ErrorMessage message={errorMessage} closeButton={closeErrorMessage} />
       )}
-
     </div>
   );
 };
