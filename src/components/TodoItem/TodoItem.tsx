@@ -4,11 +4,17 @@ import { Todo } from '../../types/Todo';
 
 type Props = {
   todo: Todo;
+  onRemoveTodo: (todoId: number) => void;
+  isDeleting: boolean;
 };
 
 export const TodoItem: FC<Props> = React.memo((props) => {
-  const { todo } = props;
-  const isLoading = todo.id === 0;
+  const {
+    todo,
+    onRemoveTodo,
+    isDeleting,
+  } = props;
+  const isLoading = todo.id === 0 || isDeleting;
 
   return (
     <div
@@ -32,6 +38,7 @@ export const TodoItem: FC<Props> = React.memo((props) => {
         type="button"
         className="todo__remove"
         data-cy="TodoDeleteButton"
+        onClick={() => onRemoveTodo(todo.id)}
       >
         ×
       </button>

@@ -27,6 +27,7 @@ export const App: React.FC = () => {
     setFilterType,
   ] = useState<FilterType>(FilterType.All);
   const [isAddingTodo, setIsAddingTodo] = useState(false);
+  const [removingTodosIds, setRemovingTodosIds] = useState<number[]>([]);
 
   const user = useContext(AuthContext);
   const newTodoField = useRef<HTMLInputElement>(null);
@@ -72,6 +73,20 @@ export const App: React.FC = () => {
     }
   }, [showErrorMessage]);
 
+  const onDeleteTodo = useCallback(async (todoId: number) => {
+    try {
+      setRemovingTodosIds(prev => [...prev, todoId]);
+
+      await todoApi.removeTodos(todoId);
+
+      setTodos(prev => prev.filter(todo => todo.id !== todoId));
+    } catch {
+      showErrorMessage('Unable to delete a todo');
+    } finally {
+      setRemovingTodosIds(prev => prev.filter(id => id !== todoId));
+    }
+  }, [showErrorMessage]);
+
   const incompleteTodos = useMemo(
     () => todos.filter(todo => !todo.completed),
     [todos],
@@ -102,7 +117,12 @@ export const App: React.FC = () => {
 
         {todos.length > 0 && (
           <>
-            <TodoList todos={filterTodos} tempTodo={tempTodo} />
+            <TodoList
+              todos={filterTodos}
+              tempTodo={tempTodo}
+              onRemoveTodo={onDeleteTodo}
+              removingTodosIds={removingTodosIds}
+            />
 
             <Footer
               incompleteTodos={incompleteTodos}

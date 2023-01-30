@@ -9,7 +9,13 @@ const addTodo = (fieldsToCreate: Omit<Todo, 'id'>) => {
   return client.post<Todo>('/todos', fieldsToCreate);
 };
 
+const removeTodos = (id: number) => {
+  return client.delete<number>(`/todos/${id}`)
+    .then(Boolean);
+};
+
 export const todoApi = {
   getTodos,
   addTodo,
+  removeTodos,
 };
