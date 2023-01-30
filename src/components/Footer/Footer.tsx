@@ -5,7 +5,7 @@ import { Filter } from '../Filter/Filter';
 type Props = {
   activeTodos: number;
   filterType: FilterType;
-  selectFilterType: (filterType: FilterType) => void;
+  setFilterType: (filterType: FilterType) => void;
   removeCompletedTodos: () => void;
   completedTodos: number
 };
@@ -13,7 +13,7 @@ type Props = {
 export const Footer: React.FC<Props> = memo(({
   activeTodos,
   filterType,
-  selectFilterType,
+  setFilterType,
   removeCompletedTodos,
   completedTodos,
 }) => {
@@ -23,7 +23,7 @@ export const Footer: React.FC<Props> = memo(({
         {`${activeTodos} items left`}
       </span>
 
-      <Filter filterType={filterType} selectFilterType={selectFilterType} />
+      <Filter filterType={filterType} selectFilterType={setFilterType} />
 
       <button
         data-cy="ClearCompletedButton"

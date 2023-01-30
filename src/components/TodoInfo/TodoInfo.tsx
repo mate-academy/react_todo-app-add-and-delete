@@ -5,9 +5,14 @@ import { Todo } from '../../types/Todo';
 interface Props {
   todo: Todo;
   removeTodo: (todoId: number) => Promise<void>;
+  isAddingTodo: boolean;
 }
 
-export const TodoInfo: React.FC<Props> = memo(({ todo, removeTodo }) => {
+export const TodoInfo: React.FC<Props> = memo(({
+  todo,
+  removeTodo,
+  isAddingTodo,
+}) => {
   const [isLoading, setIsLoading] = useState(false);
 
   const handleDeleteTodo = async () => {
@@ -49,7 +54,7 @@ export const TodoInfo: React.FC<Props> = memo(({ todo, removeTodo }) => {
         className={cn(
           'modal',
           'overlay',
-          { 'is-active': isLoading },
+          { 'is-active': isLoading || isAddingTodo },
         )}
       >
         <div className="modal-background has-background-white-ter" />

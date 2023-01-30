@@ -17,6 +17,7 @@ import { ErrorNotification } from
 import { Header } from './components/Header/Header';
 import { Footer } from './components/Footer/Footer';
 import { FilterType } from './types/FilterType';
+import { ErrorType } from './types/ErrorType';
 
 export const App: React.FC = () => {
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
@@ -37,7 +38,7 @@ export const App: React.FC = () => {
     if (user) {
       getTodos(user.id)
         .then(setTodos)
-        .catch(() => setErrorMessage('Unable to load a todos'));
+        .catch(() => setErrorMessage(ErrorType.ADD));
     }
   }, []);
 
@@ -47,7 +48,7 @@ export const App: React.FC = () => {
 
       try {
         if (!title.trim()) {
-          setErrorMessage('Title is required');
+          setErrorMessage(ErrorType.EMPTY);
 
           return;
         }
@@ -73,7 +74,7 @@ export const App: React.FC = () => {
           setIsAddingTodo(false);
         }
       } catch (addTodoError) {
-        setErrorMessage('Unable to add a todo');
+        setErrorMessage(ErrorType.ADD);
       }
     }, [todos, user, title],
   );
@@ -87,7 +88,7 @@ export const App: React.FC = () => {
       ));
       setErrorMessage('');
     } catch (error) {
-      setErrorMessage('Unable to delete a todo');
+      setErrorMessage(ErrorType.REMOVE);
     }
   }, []);
 
@@ -115,6 +116,7 @@ export const App: React.FC = () => {
       case FilterType.COMPLETED:
         return todos.filter(todo => todo.completed);
 
+      case FilterType.ALL:
       default:
         return todos;
     }
@@ -138,11 +140,12 @@ export const App: React.FC = () => {
               todos={visibleTodos}
               removeTodo={removeTodo}
               tempTodo={tempTodo}
+              isAddingTodo={isAddingTodo}
             />
             <Footer
               activeTodos={activeTodos}
               filterType={filterType}
-              selectFilterType={setFilterType}
+              setFilterType={setFilterType}
               removeCompletedTodos={removeCompletedTodos}
               completedTodos={completedTodos}
             />
