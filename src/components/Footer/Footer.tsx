@@ -8,6 +8,7 @@ type Props = {
   incompleteTodos: Todo[],
   filterType: FilterType,
   setFilterType: React.Dispatch<React.SetStateAction<FilterType>>,
+  onDeleteCompleted: () => void;
 };
 
 export const Footer: React.FC<Props> = memo((props) => {
@@ -16,6 +17,7 @@ export const Footer: React.FC<Props> = memo((props) => {
     incompleteTodos,
     filterType,
     setFilterType,
+    onDeleteCompleted,
   } = props;
 
   return (
@@ -63,6 +65,7 @@ export const Footer: React.FC<Props> = memo((props) => {
           data-cy="ClearCompletedButton"
           type="button"
           className="todoapp__clear-completed"
+          onClick={onDeleteCompleted}
         >
           Clear completed
         </button>

@@ -15,3 +15,10 @@ export const getFilterTodos = (todos: Todo[], completedFilter: FilterType) => {
     }
   });
 };
+
+export const getCompletedTodosIds = (todos: Todo[]) => {
+  const completedTodos = todos.filter(todo => todo.completed);
+  const completedTodoIds = completedTodos.map(todo => todo.id);
+
+  return completedTodoIds;
+};

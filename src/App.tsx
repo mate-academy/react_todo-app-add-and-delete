@@ -16,7 +16,10 @@ import { Footer } from './components/Footer/Footer';
 import { todoApi } from './api/todos';
 import { Todo } from './types/Todo';
 import { FilterType } from './types/FilerType';
-import { getFilterTodos } from './components/helpers/helpers';
+import {
+  getFilterTodos,
+  getCompletedTodosIds,
+} from './components/helpers/helpers';
 
 export const App: React.FC = () => {
   const [todos, setTodos] = useState<Todo[]>([]);
@@ -87,6 +90,12 @@ export const App: React.FC = () => {
     }
   }, [showErrorMessage]);
 
+  const onDeleteCompleted = useCallback(async () => {
+    const completedTodosIds = getCompletedTodosIds(todos);
+
+    completedTodosIds.forEach(id => onDeleteTodo(id));
+  }, [onDeleteTodo, todos]);
+
   const incompleteTodos = useMemo(
     () => todos.filter(todo => !todo.completed),
     [todos],
@@ -129,6 +138,7 @@ export const App: React.FC = () => {
               amountOfCompletedTodos={amountOfCompletedTodos}
               filterType={filterType}
               setFilterType={setFilterType}
+              onDeleteCompleted={onDeleteCompleted}
             />
           </>
         )}
