@@ -61,10 +61,10 @@ export const AppFooter: React.FC<Props> = ({
         onClick={() => {
           onChangeStatusFilter('All');
           clearCompletedTodos();
-          // eslint-disable-next-line no-console
-          // console.log('click');
         }}
-        hidden={completedTodosLength === 0}
+        style={{
+          visibility: !completedTodosLength ? 'hidden' : 'visible',
+        }}
       >
         Clear completed
       </button>
