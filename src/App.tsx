@@ -24,6 +24,9 @@ export const App: React.FC = () => {
   const newTodoField = useRef<HTMLInputElement>(null);
 
   const [todos, setTodos] = useState<Todo[]>([]);
+  const [tempTodo, setTempTodo] = useState<Todo | null>({
+    id: 0, completed: false, userId: 0, title: 'temptodo',
+  });
   const [errorMessage, setError] = useState('');
   const [filterStatus, setFilterStatus] = useState(Filters.ALL);
   const [isAddingTodo, setIsEddingTodo] = useState(false);
@@ -50,9 +53,13 @@ export const App: React.FC = () => {
   ), [todos, filterStatus]);
 
   const onAddTodo = useCallback(async (fieldsForCreate: Omit<Todo, 'id'>) => {
-    setIsEddingTodo(true);
-
     try {
+      setIsEddingTodo(true);
+      setTempTodo({
+        ...fieldsForCreate,
+        id: 0,
+      });
+
       const newTodo = await todoApi.addTodo(fieldsForCreate);
 
       setTodos(prev => [...prev, newTodo]);
@@ -61,6 +68,7 @@ export const App: React.FC = () => {
 
       throw Error('Error on adding todo');
     } finally {
+      setTempTodo(null);
       setIsEddingTodo(false);
     }
   }, []);
@@ -80,6 +88,7 @@ export const App: React.FC = () => {
           <>
             <TodoList
               todos={visibleTodos}
+              tempTodo={tempTodo}
             />
             <Footer
               activeTodos={activeTodosCount}
