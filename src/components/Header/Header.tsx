@@ -6,6 +6,7 @@ type HeaderProps = {
   newTodoField: React.RefObject<HTMLInputElement>;
   showError: (message: string) => void
   isAddingTodo: boolean
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   onAddTodo: (fieldsForCreate: Omit<Todo, 'id'>) => Promise<any>
 };
 
