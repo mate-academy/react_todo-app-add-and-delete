@@ -77,14 +77,13 @@ export const App: FC = () => {
       });
       setIsAdding(true);
 
-      createTodo(title, user.id)
+      createTodo({
+        title,
+        userId: user.id,
+        completed: false,
+      })
         .then(newTodo => {
-          setTodos(prev => [...prev, {
-            id: newTodo.id,
-            userId: newTodo.userId,
-            title: newTodo.title,
-            completed: newTodo.completed,
-          }]);
+          setTodos(prev => [...prev, newTodo]);
         })
         .catch(() => setErrorMessage('Unable to add a todo'))
         .finally(() => {
@@ -98,6 +97,9 @@ export const App: FC = () => {
   const visibleTodos = useMemo(() => {
     return todos.filter(todo => {
       switch (completedFilter) {
+        case FilterType.ALL:
+          return todo;
+
         case FilterType.ACTIVE:
           return !todo.completed;
 

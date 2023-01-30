@@ -1,5 +1,5 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
-import { FC } from 'react';
+import { FC, memo } from 'react';
 import cn from 'classnames';
 import { Todo } from '../../types/Todo';
 
@@ -9,7 +9,7 @@ type Props = {
   onDeleteTodo: (todoId: number) => void,
 };
 
-export const TodoItem: FC<Props> = ({
+export const TodoItem: FC<Props> = memo(({
   todo,
   isDeleting,
   onDeleteTodo,
@@ -50,4 +50,4 @@ export const TodoItem: FC<Props> = ({
       </div>
     </div>
   );
-};
+});

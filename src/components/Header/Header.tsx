@@ -1,4 +1,4 @@
-import React, { FC, RefObject } from 'react';
+import React, { FC, memo, RefObject } from 'react';
 
 export interface Props {
   newTodoField: RefObject<HTMLInputElement>,
@@ -8,7 +8,7 @@ export interface Props {
   onFormSubmit: (event: React.FormEvent<HTMLFormElement>) => void,
 }
 
-export const Header: FC<Props> = ({
+export const Header: FC<Props> = memo(({
   newTodoField,
   title,
   onSetTitle: setTitle,
@@ -38,4 +38,4 @@ export const Header: FC<Props> = ({
       </form>
     </header>
   );
-};
+});

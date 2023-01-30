@@ -1,4 +1,4 @@
-import { FC } from 'react';
+import { FC, memo } from 'react';
 import { Todo } from '../../types/Todo';
 import { TodoItem } from '../TodoItem/TodoItem';
 
@@ -9,7 +9,7 @@ export interface TodoListProps {
   deletingTodoIds: number[],
 }
 
-export const TodoList: FC<TodoListProps> = ({
+export const TodoList: FC<TodoListProps> = memo(({
   todos,
   onDeleteTodo,
   tempTodo,
@@ -35,4 +35,4 @@ export const TodoList: FC<TodoListProps> = ({
       )}
     </section>
   );
-};
+});
