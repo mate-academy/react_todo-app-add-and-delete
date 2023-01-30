@@ -1,7 +1,6 @@
 import React, {
   useContext,
   useEffect,
-  useRef,
   useState,
   useMemo,
   useCallback,
@@ -14,7 +13,9 @@ import { TodoList } from './components/TodoList/TodoList';
 import { Footer } from './components/Footer/Footer';
 import { ErrorNotification }
   from './components/ErrorNotification/ErrorNotification';
-import { getFilteredTodos } from './components/helper/filterTodo';
+import {
+  getCompletedTodoIds, getFilteredTodos,
+} from './components/helper/helpers';
 import { useError } from './controllers/useError';
 import { todoApi } from './api/todos';
 
@@ -27,17 +28,10 @@ export const App: React.FC = () => {
   const [isAddingTodo, setIsAddingTodo] = useState(false);
   const [tempTodo, setTempTodo]
     = useState<Todo | null>(null);
+  const [deletingTodoIds, setDeletingTodoIds] = useState<number[]>([]);
 
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
   const user = useContext(AuthContext);
-  const newTodoField = useRef<HTMLInputElement>(null);
-
-  useEffect(() => {
-    // focus the element with `ref={newTodoField}`
-    if (newTodoField.current) {
-      newTodoField.current.focus();
-    }
-  }, [isAddingTodo]);
 
   useEffect(() => {
     if (user) {
@@ -67,6 +61,26 @@ export const App: React.FC = () => {
     }
   }, [showError]);
 
+  const onDeleteTodo = useCallback(async (todoId: number) => {
+    try {
+      setDeletingTodoIds(prev => [...prev, todoId]);
+
+      await todoApi.deleteTodo(todoId);
+
+      setTodos(prev => prev.filter(todo => todo.id !== todoId))
+    } catch {
+      showError('Todo is not deleted');
+    } finally {
+      setDeletingTodoIds(prev => prev.filter(id => id !== todoId));
+    }
+  }, [showError]);
+
+  const onDeleteCompleted = useCallback(async () => {
+    const completedTodoIds = getCompletedTodoIds(todos);
+
+    completedTodoIds.forEach(id => onDeleteTodo(id));
+  }, [onDeleteTodo, todos]);
+
   const hasCompletedTodo = useMemo(() => (
     todos.some(todo => todo.completed)
   ), [todos]);
@@ -89,7 +103,6 @@ export const App: React.FC = () => {
       <div className="todoapp__content">
 
         <Header
-          newTodoField={newTodoField}
           showError={showError}
           isAddingTodo={isAddingTodo}
           onAddTodo={onAddTodo}
@@ -100,6 +113,8 @@ export const App: React.FC = () => {
             <TodoList
               todos={visibleTodos}
               tempTodo={tempTodo}
+              onDeleteTodo={onDeleteTodo}
+              deletingTodoIds={deletingTodoIds}
             />
 
             <Footer
@@ -107,6 +122,7 @@ export const App: React.FC = () => {
               hasCompletedTodos={hasCompletedTodo}
               filterType={filterType}
               setFilterType={setFilterType}
+              onDeleteCompleted={onDeleteCompleted}
             />
           </>
         )}
