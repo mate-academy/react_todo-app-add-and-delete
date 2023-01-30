@@ -1,6 +1,7 @@
+import { useMemo } from 'react';
 import { Todo, TodoCompleteStatus } from '../types/Todo';
 
-export const todoFilteredCompleted = (
+export const filteredTodos = (
   (todoCompleteStatus: TodoCompleteStatus, todos: Todo[]) => {
     switch (todoCompleteStatus) {
       case TodoCompleteStatus.Active:
@@ -15,7 +16,7 @@ export const todoFilteredCompleted = (
   });
 
 export const getTodoCompletedId = (todos: Todo[]) => {
-  const filteredTodos = todos.filter(todo => todo.completed);
+  const filteredTodoCompleted = todos.filter(todo => todo.completed);
 
-  return filteredTodos.map(todo => todo.id);
+  return filteredTodoCompleted.map(todo => todo.id);
 };

@@ -17,7 +17,7 @@ import { Footer } from './components/Footer/Footer';
 import { Header } from './components/Header/Header';
 import { TodoList } from './components/TodoList/TodoList';
 import { Todo, TodoCompleteStatus } from './types/Todo';
-import { todoFilteredCompleted, getTodoCompletedId } from './helpers/helpers';
+import { filteredTodos, getTodoCompletedId } from './helpers/helpers';
 
 export const App: React.FC = memo(() => {
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
@@ -45,13 +45,11 @@ export const App: React.FC = memo(() => {
     }
   }, []);
 
-  const userId = user ? user.id : 0;
-
   const addTodo = async (todoData: Omit<Todo, 'id'>) => {
     try {
       const tempTodo = {
-        ...todoData,
         id: 0,
+        ...todoData,
       };
 
       setTemporaryTodo(tempTodo);
@@ -59,9 +57,9 @@ export const App: React.FC = memo(() => {
       const newTodo = await creatTodo(todoData);
 
       setTodos(currentTodoArray => [...currentTodoArray, newTodo]);
-      setTemporaryTodo(null);
     } catch {
       showErrorMessage('Unable to add a todo');
+    } finally {
       setTemporaryTodo(null);
     }
   };
@@ -90,12 +88,16 @@ export const App: React.FC = memo(() => {
   };
 
   const filteredTodosByStatus = useMemo(() => (
-    todoFilteredCompleted(todoFilterComplete, todos)),
+    filteredTodos(todoFilterComplete, todos)),
   [todoFilterComplete, todos]);
 
-  const uncompletedTodos = todos.filter(todo => !todo.completed);
+  const uncompletedTodos = useMemo(
+    () => todos.filter(todo => !todo.completed), [todos],
+  );
 
-  const todoCompletedFiltered = todos.filter(todo => todo.completed);
+  const todoCompletedFiltered = useMemo(
+    () => todos.filter(todo => todo.completed), [todos],
+  );
   const visibleListContent = todos.length !== 0 || temporaryTodo;
 
   const completedTodos = useCallback(() => {
@@ -111,9 +113,8 @@ export const App: React.FC = memo(() => {
       <div className="todoapp__content">
         <Header
           onSubmit={addTodo}
-          showErrorMessage={showErrorMessage}
-          userId={userId}
           temporaryTodo={temporaryTodo}
+          showErrorMessage={showErrorMessage}
         />
 
         {visibleListContent && (

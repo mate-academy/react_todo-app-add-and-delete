@@ -1,23 +1,24 @@
 /* eslint-disable jsx-a11y/control-has-associated-label */
 import React, {
-  memo, useEffect, useRef, useState,
+  memo, useContext, useEffect, useRef, useState,
 } from 'react';
 import { Todo } from '../../types/Todo';
+import { AuthContext } from '../Auth/AuthContext';
 
 export type Props = {
   onSubmit: (todo: Omit<Todo, 'id'>) => void
   showErrorMessage: (v: string) => void
-  userId: number
   temporaryTodo: Todo | null
 };
 
 export const Header: React.FC<Props> = memo(({
   onSubmit,
   showErrorMessage,
-  userId,
   temporaryTodo,
 
 }) => {
+  const user = useContext(AuthContext);
+
   const [title, setTitle] = useState('');
 
   const newTodoField = useRef<HTMLInputElement>(null);
@@ -33,6 +34,10 @@ export const Header: React.FC<Props> = memo(({
   const handleSubmit = (event: React.FormEvent) => {
     event.preventDefault();
 
+    if (user === null) {
+      return;
+    }
+
     if (title === '') {
       showErrorMessage('Title can\'t be empty');
 
@@ -41,7 +46,7 @@ export const Header: React.FC<Props> = memo(({
 
     onSubmit({
       title,
-      userId,
+      userId: user.id,
       completed: false,
     });
 
