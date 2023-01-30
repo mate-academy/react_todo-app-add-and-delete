@@ -20,8 +20,10 @@ export const Footer: React.FC<Props> = React.memo((
     onRemove,
   },
 ) => {
+  const completedTodos = todos.filter(todo => todo.completed);
+
   const clearCompletedTodos = () => {
-    todos.filter(todo => todo.completed).forEach(({ id }) => onRemove(id));
+    completedTodos.forEach(({ id }) => onRemove(id));
   };
 
   return (
@@ -72,11 +74,16 @@ export const Footer: React.FC<Props> = React.memo((
           Completed
         </a>
       </nav>
-
       <button
         data-cy="ClearCompletedButton"
         type="button"
-        className="todoapp__clear-completed"
+        className={
+          cn(
+            'todoapp__clear-completed',
+            { 'todoapp--invisible': completedTodos.length === 0 },
+          )
+        }
+        disabled={completedTodos.length === 0}
         onClick={() => clearCompletedTodos()}
       >
         Clear completed
