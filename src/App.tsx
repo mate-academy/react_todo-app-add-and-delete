@@ -10,7 +10,7 @@ import { Footer } from './components/Footer/Footer';
 import { Header } from './components/Header/Header';
 import { TodoInfo } from './components/TodoInfo/TodoInfo';
 import { TodoList } from './components/TodoList/TodoList';
-import { FilterTypes } from './types/Enums';
+import { ErrorTypes, FilterTypes } from './types/Enums';
 import { Todo } from './types/Todo';
 
 export const App: React.FC = () => {
@@ -40,8 +40,9 @@ export const App: React.FC = () => {
   const onSubmit = useCallback((event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
 
-    if (!todoTitle) {
-      setErrorMessage('Title can not be empty');
+    if (!todoTitle.trim()) {
+      setErrorMessage(ErrorTypes.EmptyTitle);
+      setTodoTitle('');
 
       return;
     }
@@ -55,6 +56,7 @@ export const App: React.FC = () => {
       });
 
       setIsLoading(true);
+
       addTodo(todoTitle, user.id)
         .then(response => {
           setTodos(prev => [...prev, {
@@ -64,7 +66,7 @@ export const App: React.FC = () => {
             userId: response.userId,
           }]);
         })
-        .catch(() => setErrorMessage('Unable to add a todo'))
+        .catch(() => setErrorMessage(ErrorTypes.UnableToAdd))
         .finally(() => {
           setIsLoading(false);
           setTempTodo(null);
@@ -80,12 +82,12 @@ export const App: React.FC = () => {
         setTodos(currentTodos => currentTodos.filter(todo => todo.id !== id))
       ))
       .catch(() => {
-        setErrorMessage('Impossible to delete todo');
+        setErrorMessage(ErrorTypes.UnableToDelete);
       });
     setIsLoading(false);
   }, []);
 
-  const onClickClearCompleted = () => {
+  const clearCompleated = () => {
     todos.forEach(todo => {
       if (todo.completed) {
         onDeleteTodo(todo.id);
@@ -100,6 +102,9 @@ export const App: React.FC = () => {
 
       case FilterTypes.COMPLETED:
         return todos.filter(todo => todo.completed);
+
+      case FilterTypes.All:
+        return todos;
 
       default:
         return todos;
@@ -119,7 +124,7 @@ export const App: React.FC = () => {
     if (user) {
       getTodos(user.id)
         .then(setTodos)
-        .catch(() => (setErrorMessage('Unable to load a todos')));
+        .catch(() => (setErrorMessage(ErrorTypes.UnableToLoad)));
     }
 
     if (newTodoField.current) {
@@ -144,7 +149,7 @@ export const App: React.FC = () => {
             <TodoList
               todos={visibleTodos}
               onDeleteTodo={onDeleteTodo}
-              isLoading={isLoading}
+              isLoading={false}
             />
 
             {tempTodo && (
@@ -162,7 +167,7 @@ export const App: React.FC = () => {
               handleButtonClickActive={handleButtonClickActive}
               handleButtonClickCompleted={handleButtonClickCompleted}
               todosCompleted={todosCompleted}
-              onClickClearCompleted={onClickClearCompleted}
+              clearCompleated={clearCompleated}
             />
           </>
         )}

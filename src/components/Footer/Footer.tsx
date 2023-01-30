@@ -9,7 +9,7 @@ type Props = {
   handleButtonClickAll: () => void,
   handleButtonClickActive: () => void,
   handleButtonClickCompleted: () => void,
-  onClickClearCompleted: () => void,
+  clearCompleated: () => void,
 
 };
 
@@ -20,7 +20,7 @@ export const Footer: React.FC<Props> = memo(({
   handleButtonClickAll,
   handleButtonClickActive,
   handleButtonClickCompleted,
-  onClickClearCompleted,
+  clearCompleated,
 }) => {
   return (
     <footer className="todoapp__footer" data-cy="Footer">
@@ -47,7 +47,7 @@ export const Footer: React.FC<Props> = memo(({
           data-cy="ClearCompletedButton"
           type="button"
           className="todoapp__clear-completed"
-          onClick={onClickClearCompleted}
+          onClick={clearCompleated}
         >
           Clear completed
         </button>
