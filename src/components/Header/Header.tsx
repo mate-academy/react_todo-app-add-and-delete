@@ -12,7 +12,7 @@ import { AuthContext } from '../Auth/AuthContext';
 type Props = {
   showError: (message: string) => void,
   isAddingTodo: boolean;
-  onAddTodo: (fieldsForCreate: Omit<Todo, 'id'>) => Promise<any>;
+  onAddTodo: (fieldsForCreate: Omit<Todo, 'id'>) => Promise<void>;
 };
 
 export const Header: React.FC<Props> = memo((props) => {

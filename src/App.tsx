@@ -67,7 +67,7 @@ export const App: React.FC = () => {
 
       await todoApi.deleteTodo(todoId);
 
-      setTodos(prev => prev.filter(todo => todo.id !== todoId))
+      setTodos(prev => prev.filter(todo => todo.id !== todoId));
     } catch {
       showError('Todo is not deleted');
     } finally {
