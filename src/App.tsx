@@ -76,7 +76,7 @@ export const App: React.FC = () => {
       });
   }, []);
 
-  const removeTodo = (todoId: number) => {
+  const removeTodo = useCallback((todoId: number) => {
     deleteTodo(todoId)
       .then(() => {
         setTodos(currentTodos => {
@@ -84,15 +84,15 @@ export const App: React.FC = () => {
         });
       })
       .catch(() => setErrorMessage('Unable to delete a todo'));
-  };
+  }, [todos]);
 
-  const clearCompleted = () => {
+  const clearCompleted = useCallback(() => {
     todos.forEach(({ id, completed }) => {
       if (completed) {
         removeTodo(id);
       }
     });
-  };
+  }, [todos]);
 
   return (
     <div className="todoapp">
