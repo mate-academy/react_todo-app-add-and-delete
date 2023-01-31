@@ -7,7 +7,7 @@ import React, {
   useState,
 } from 'react';
 import { useError } from './controllers/useError';
-import { addTodo, getTodos } from './api/todos';
+import { addTodo, deleteTodo, getTodos } from './api/todos';
 import { AuthContext } from './components/Auth/AuthContext';
 import { ErrorNotification }
   from './components/ErrorNotification/ErrorNotification';
@@ -66,7 +66,7 @@ export const App: React.FC = () => {
     }
   }, [showError]);
 
-  const deleteTodo = useCallback(async (todoId: number) => {
+  const onDeleteTodo = useCallback(async (todoId: number) => {
     try {
       setDeletingTodoIds(prev => [...prev, todoId]);
 
@@ -83,8 +83,8 @@ export const App: React.FC = () => {
   const deleteCompleted = useCallback(async () => {
     const completedTodoIds = getCompletedTodoIds(todos);
 
-    completedTodoIds.forEach(id => deleteTodo(id));
-  }, [deleteTodo, todos]);
+    completedTodoIds.forEach(id => onDeleteTodo(id));
+  }, [deleteTodo, todos, showError]);
 
   const visibleFiltredTodos = useMemo(() => {
     switch (completedFilter) {
@@ -124,7 +124,7 @@ export const App: React.FC = () => {
               <TodoList
                 todos={visibleFiltredTodos}
                 tempTodo={tempTodo}
-                deleteTodo={deleteTodo}
+                deleteTodo={onDeleteTodo}
                 delitingTodoIds={delitingTodoIds}
               />
               <Footer

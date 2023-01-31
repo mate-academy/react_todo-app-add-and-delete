@@ -4,8 +4,8 @@ import { Todo } from '../../types/Todo';
 
 interface TodoItemProps {
   todo: Todo;
-  deleteTodo: (todoId: number) => Promise<unknown>
-  isDeleting: boolean
+  deleteTodo: (todoId: number) => Promise<unknown>;
+  isDeleting: boolean;
 }
 
 export const TodoItem: FC<TodoItemProps> = memo(
