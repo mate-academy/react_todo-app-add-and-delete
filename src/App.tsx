@@ -1,4 +1,5 @@
 import React, {
+  useCallback,
   useContext,
   useEffect,
   useMemo,
@@ -20,6 +21,16 @@ export const App: React.FC = () => {
   const [selectedFilter, selectFilter] = useState(FilterType.All);
   const [errorMessage, setErrorMessage] = useState('');
 
+  const showError = useCallback((message: string) => {
+    setErrorMessage(message);
+
+    setTimeout(() => setErrorMessage(''), 3000);
+  }, []);
+
+  const closeErroreMessage = useCallback(() => {
+    setErrorMessage('');
+  }, []);
+
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
   const user = useContext(AuthContext);
   const newTodoField = useRef<HTMLInputElement>(null);
@@ -33,7 +44,7 @@ export const App: React.FC = () => {
     if (user) {
       getTodos(user.id)
         .then(setTodos)
-        .catch(() => setErrorMessage('Unable to load a todo'));
+        .catch(() => showError('Unable to load a todos'));
     }
   }, [user]);
 
@@ -62,7 +73,10 @@ export const App: React.FC = () => {
       <h1 className="todoapp__title">todos</h1>
 
       <div className="todoapp__content">
-        <Header newTodoField={newTodoField} />
+        <Header
+          newTodoField={newTodoField}
+          showError={showError}
+        />
 
         {todos.length > 0
           && (
@@ -77,10 +91,15 @@ export const App: React.FC = () => {
           )}
       </div>
 
-      <ErrorNotification
-        errorMessage={errorMessage}
-        setErrorMessage={setErrorMessage}
-      />
+      {
+        errorMessage && (
+          <ErrorNotification
+            errorMessage={errorMessage}
+            setErrorMessage={setErrorMessage}
+            close={closeErroreMessage}
+          />
+        )
+      }
     </div>
   );
 };

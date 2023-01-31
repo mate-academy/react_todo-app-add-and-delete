@@ -5,10 +5,11 @@ import { memo, useEffect } from 'react';
 interface ErrorNotificationProps {
   errorMessage: string,
   setErrorMessage: React.Dispatch<React.SetStateAction<string>>;
+  close: () => void;
 }
 
 export const ErrorNotification: React.FC<ErrorNotificationProps> = memo(
-  ({ setErrorMessage, errorMessage }) => {
+  ({ setErrorMessage, errorMessage, close }) => {
     useEffect(() => {
       setTimeout(() => setErrorMessage(''), 3000);
     }, [setErrorMessage]);
@@ -23,7 +24,7 @@ export const ErrorNotification: React.FC<ErrorNotificationProps> = memo(
           data-cy="HideErrorButton"
           type="button"
           className="delete"
-          onClick={() => setErrorMessage('')}
+          onClick={close}
         />
 
         {errorMessage}
