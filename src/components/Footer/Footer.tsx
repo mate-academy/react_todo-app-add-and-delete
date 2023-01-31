@@ -6,16 +6,18 @@ interface FooterProps {
   activeTodosCount: number,
   completedFilter: string,
   setCompletedFilter: (str: FilterType) => void,
+  deleteCompleted: () => void;
 }
 
 export const Footer: React.FC<FooterProps> = memo(({
-  activeTodosCount: countActiveTodos,
-  completedFilter: selectedFilterForTodos,
-  setCompletedFilter: onChosedFilter,
+  activeTodosCount,
+  completedFilter,
+  setCompletedFilter,
+  deleteCompleted,
 }) => (
   <footer className="todoapp__footer" data-cy="Footer">
     <span className="todo-count" data-cy="todosCounter">
-      {`${countActiveTodos} items left`}
+      {`${activeTodosCount} items left`}
     </span>
 
     <nav className="filter" data-cy="Filter">
@@ -23,9 +25,9 @@ export const Footer: React.FC<FooterProps> = memo(({
         data-cy="FilterLinkAll"
         href="#/"
         className={cn('filter__link', {
-          selected: selectedFilterForTodos === FilterType.All,
+          selected: completedFilter === FilterType.All,
         })}
-        onClick={() => onChosedFilter(FilterType.All)}
+        onClick={() => setCompletedFilter(FilterType.All)}
       >
         All
       </a>
@@ -34,9 +36,9 @@ export const Footer: React.FC<FooterProps> = memo(({
         data-cy="FilterLinkActive"
         href="#/active"
         className={cn('filter__link', {
-          selected: selectedFilterForTodos === FilterType.Active,
+          selected: completedFilter === FilterType.Active,
         })}
-        onClick={() => onChosedFilter(FilterType.Active)}
+        onClick={() => setCompletedFilter(FilterType.Active)}
       >
         Active
       </a>
@@ -44,9 +46,9 @@ export const Footer: React.FC<FooterProps> = memo(({
         data-cy="FilterLinkCompleted"
         href="#/completed"
         className={cn('filter__link', {
-          selected: selectedFilterForTodos === FilterType.Completed,
+          selected: completedFilter === FilterType.Completed,
         })}
-        onClick={() => onChosedFilter(FilterType.Completed)}
+        onClick={() => setCompletedFilter(FilterType.Completed)}
       >
         Completed
       </a>
@@ -56,6 +58,7 @@ export const Footer: React.FC<FooterProps> = memo(({
       data-cy="ClearCompletedButton"
       type="button"
       className="todoapp__clear-completed"
+      onClick={deleteCompleted}
     >
       Clear completed
     </button>

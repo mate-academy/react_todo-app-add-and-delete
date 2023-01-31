@@ -12,7 +12,7 @@ interface HeaderProps {
   newTodoField: React.RefObject<HTMLInputElement>;
   showError: (message: string) => void,
   isAddingTodo: boolean,
-  onAddTodo: (fieldsToCreate: Omit<Todo, 'id'>) => Promise<unknown>,
+  addTodo: (fieldsToCreate: Omit<Todo, 'id'>) => Promise<unknown>,
 }
 
 export const Header: React.FC<HeaderProps> = memo(
@@ -20,7 +20,7 @@ export const Header: React.FC<HeaderProps> = memo(
     newTodoField,
     showError,
     isAddingTodo,
-    onAddTodo,
+    addTodo,
   }) => {
     const [title, setTitle] = useState('');
     const user = useContext(AuthContext);
@@ -41,7 +41,7 @@ export const Header: React.FC<HeaderProps> = memo(
       }
 
       try {
-        onAddTodo({
+        await addTodo({
           title,
           userId: user.id,
           completed: false,
@@ -49,9 +49,7 @@ export const Header: React.FC<HeaderProps> = memo(
 
         setTitle('');
       } catch {
-        if (newTodoField.current) {
-          newTodoField.current.focus();
-        }
+        showError('');
       }
     };
 
