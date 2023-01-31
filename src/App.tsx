@@ -46,7 +46,7 @@ export const App: FC = () => {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
-  const onDeleteTodo = (todoId: number) => {
+  const onDeleteTodo = useCallback((todoId: number) => {
     setDeletingTodoIds(prev => [...prev, todoId]);
     deleteTodo(todoId)
       .then(() => (
@@ -57,59 +57,59 @@ export const App: FC = () => {
       })
       .finally(() => (
         setDeletingTodoIds(prev => prev.filter(id => id !== todoId))));
-  };
+  }, []);
 
-  const onFormSubmit = (event: React.FormEvent<HTMLFormElement>) => {
-    event.preventDefault();
+  const onFormSubmit = useCallback(
+    (event: React.FormEvent<HTMLFormElement>) => {
+      event.preventDefault();
 
-    if (!title.trim()) {
-      setErrorMessage('Title can\'t be empty');
+      if (!title.trim()) {
+        setErrorMessage('Title can\'t be empty');
 
-      return;
-    }
+        return;
+      }
 
-    if (user) {
-      setTempTodo({
-        id: 0,
-        title,
-        completed: false,
-        userId: user.id,
-      });
-      setIsAdding(true);
-
-      createTodo({
-        title,
-        userId: user.id,
-        completed: false,
-      })
-        .then(newTodo => {
-          setTodos(prev => [...prev, newTodo]);
-        })
-        .catch(() => setErrorMessage('Unable to add a todo'))
-        .finally(() => {
-          setIsAdding(false);
-          setTitle('');
-          setTempTodo(null);
+      if (user) {
+        setTempTodo({
+          id: 0,
+          title,
+          completed: false,
+          userId: user.id,
         });
-    }
-  };
+        setIsAdding(true);
+
+        createTodo({
+          title,
+          userId: user.id,
+          completed: false,
+        })
+          .then(newTodo => {
+            setTodos(prev => [...prev, newTodo]);
+          })
+          .catch(() => setErrorMessage('Unable to add a todo'))
+          .finally(() => {
+            setIsAdding(false);
+            setTitle('');
+            setTempTodo(null);
+          });
+      }
+    }, [title, user],
+  );
 
   const visibleTodos = useMemo(() => {
-    return todos.filter(todo => {
-      switch (completedFilter) {
-        case FilterType.ALL:
-          return todo;
+    switch (completedFilter) {
+      case FilterType.ALL:
+        return todos;
 
-        case FilterType.ACTIVE:
-          return !todo.completed;
+      case FilterType.ACTIVE:
+        return todos.filter(todo => !todo.completed);
 
-        case FilterType.COMPLETED:
-          return todo.completed;
+      case FilterType.COMPLETED:
+        return todos.filter(todo => todo.completed);
 
-        default:
-          return todos;
-      }
-    });
+      default:
+        return todos;
+    }
   }, [completedFilter, todos]);
 
   const uncompletedTodosLength = useMemo(() => {
@@ -130,7 +130,7 @@ export const App: FC = () => {
         onDeleteTodo(todo.id);
       }
     });
-  }, [todos]);
+  }, [onDeleteTodo, todos]);
 
   return (
     <div className="todoapp">
