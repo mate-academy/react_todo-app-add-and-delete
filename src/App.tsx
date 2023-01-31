@@ -15,6 +15,7 @@ import { TodoList } from './components/TodoList/TodoList';
 import { Todo } from './types/Todo';
 import { FilterStatus } from './types/Filter';
 import { TodoItem } from './components/Todo';
+import { filterTodos } from './helpers/helpers';
 
 export const App: React.FC = () => {
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
@@ -29,11 +30,6 @@ export const App: React.FC = () => {
   const [deletingDataIds, setDeletingDataIds] = useState<number[]>([]);
 
   useEffect(() => {
-    // focus the element with `ref={newTodoField}`
-    if (newTodoField.current) {
-      newTodoField.current.focus();
-    }
-
     if (user) {
       getTodos(user.id)
         .then(setTodos)
@@ -45,18 +41,7 @@ export const App: React.FC = () => {
 
   const remainingTodos = todos.filter(todo => !todo.completed);
   const completedTodos = todos.filter(todo => todo.completed);
-  const filteredTodos = todos.filter(todo => {
-    switch (filterStatus) {
-      case 'Completed':
-        return todo.completed;
-
-      case 'Active':
-        return !todo.completed;
-
-      default:
-        return true;
-    }
-  });
+  const filteredTodos = filterTodos(todos, filterStatus);
 
   const handleSubmitButton = (
     e: React.FormEvent<HTMLFormElement>,

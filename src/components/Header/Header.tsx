@@ -1,4 +1,4 @@
-import { FormEvent } from 'react';
+import { FormEvent, useEffect } from 'react';
 
 type Props = {
   newTodoField: React.RefObject<HTMLInputElement>
@@ -15,6 +15,13 @@ export const Header: React.FC<Props> = ({
   onSubmit,
   isAdding,
 }) => {
+  useEffect(() => {
+    // focus the element with `ref={newTodoField}`
+    if (newTodoField.current) {
+      newTodoField.current.focus();
+    }
+  }, []);
+
   return (
     <header className="todoapp__header">
       {/* eslint-disable-next-line jsx-a11y/control-has-associated-label */}
