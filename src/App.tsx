@@ -47,6 +47,8 @@ export const App: React.FC = () => {
       return;
     }
 
+    setIsLoading(true);
+
     if (user) {
       setTempTodo({
         id: 0,
@@ -54,8 +56,6 @@ export const App: React.FC = () => {
         completed: false,
         userId: user.id,
       });
-
-      setIsLoading(true);
 
       addTodo(todoTitle, user.id)
         .then(response => {
@@ -76,7 +76,6 @@ export const App: React.FC = () => {
   }, [todoTitle, user]);
 
   const onDeleteTodo = useCallback((id: number) => {
-    setIsLoading(true);
     deleteTodo(id)
       .then(() => (
         setTodos(currentTodos => currentTodos.filter(todo => todo.id !== id))
@@ -84,7 +83,7 @@ export const App: React.FC = () => {
       .catch(() => {
         setErrorMessage(ErrorTypes.UnableToDelete);
       });
-    setIsLoading(false);
+    // setIsLoading(false);
   }, []);
 
   const clearCompleated = () => {
@@ -130,7 +129,7 @@ export const App: React.FC = () => {
     if (newTodoField.current) {
       newTodoField.current.focus();
     }
-  }, []);
+  }, [user]);
 
   return (
     <div className="todoapp">
@@ -149,7 +148,7 @@ export const App: React.FC = () => {
             <TodoList
               todos={visibleTodos}
               onDeleteTodo={onDeleteTodo}
-              isLoading={false}
+              isLoading={isLoading}
             />
 
             {tempTodo && (
