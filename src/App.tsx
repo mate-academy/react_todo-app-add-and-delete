@@ -23,7 +23,7 @@ export const App: React.FC = () => {
   const [isLoading, setIsLoading] = useState(false);
   const newTodoField = useRef<HTMLInputElement>(null);
 
-  const visibleTodos = useMemo(() => filterTotos(todos, typeFilter), [todos]);
+  const visibleTodos = filterTotos(todos, typeFilter);
   const activeTodosCount = useMemo(
     () => filterTotos(todos, FilterTypes.Active).length,
     [todos],
@@ -105,16 +105,20 @@ export const App: React.FC = () => {
   };
 
   const deleteCompletedTodosHandler = () => {
-    todos.forEach(
-      (todo) => (todo.completed ? deleteTodoHandler(todo.id) : todo),
+    todos.forEach((todo) =>
+      todo.completed ? deleteTodoHandler(todo.id) : todo,
     );
   };
 
   const updateTodoHandler = (id: number, state: boolean) => {
     updateTodo(id, state).then((res) => {
-      setTodos((prevTodos) => prevTodos.map((todo) => (todo.id === res.id
-        ? { ...todo, completed: res.completed }
-        : { ...todo })));
+      setTodos((prevTodos) =>
+        prevTodos.map((todo) =>
+          todo.id === res.id
+            ? { ...todo, completed: res.completed }
+            : { ...todo },
+        ),
+      );
     });
   };
 
@@ -130,9 +134,11 @@ export const App: React.FC = () => {
   };
 
   const completedAllTodoHandler = () => {
-    todos.forEach((todo) => (allCompleted
-      ? updateTodoHandler(todo.id, false)
-      : updateTodoHandler(todo.id, true)));
+    todos.forEach((todo) =>
+      allCompleted
+        ? updateTodoHandler(todo.id, false)
+        : updateTodoHandler(todo.id, true),
+    );
   };
 
   return (
