@@ -12,17 +12,18 @@ and implement the ability to and nd remove todos.
 
 ## Adding a todo
 
-Add a todo with the entered title on `NewTodoField` form submit:
+Add a todo with the entered title on the form submit:
 
 - if the title is empty show the `Title can't be empty` notification at the bottom;
 - disable the input until receiving the response from the API (use `isAdding` variable);
-- manually add a temp todo with `id: 0` **after** the list while waiting for the response (don't add it to the array);
-- show the loader on the added todo (see the styles of the 5th todo `Redux`);
+- create a todo with `id: 0` and save it to the `tempTodo` variable in the state (NOT to the todos array);
+- show another `TodoItem` **after** the list if `tempTodo` is not `null`;
+- temp Todo should have the loader (check the styles of the 5th todo in the original markup);
 - use your user id for the new todo;
-- send the POST response to the API;
-- in case of success and add the todo create by API to the array;
-- in case of API error show `Unable to add a todo` notification at the bottom;
-- the temp todo should be removed in any case;
+- send a POST request to the API with the `tempTodo` data (without `id`);
+- in case of success add the todo created by the API to the array (take it from the POST response);
+- in case of an API error show `Unable to add a todo` notification at the bottom;
+- set `tempTodo` to `null` to hide the extra `TodoItem`;
 
 > Don't try to implement smooth Todo adding or removing (at least until you implemented everything else).
 > If you really fill confident to try, there is a hint at the end of the description.
@@ -35,9 +36,9 @@ Remove a todo on `TodoDeleteButton` click:
 - remove the todo from the list on success;
 - in case of API error show `Unable to delete a todo` notification at the bottom (the todo must stay in the list);
 
-Remove all the completed todos after `Clear completed` button click:
+Remove all the completed todos after the `Clear completed` button click:
 
-- the button should be visible if there is at least 1 completed todo;
+- the button should be visible only if there is at least 1 completed todo;
 - the deletion should work as a several individual deletions running at the same time;
 
 ## Instructions
