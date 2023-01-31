@@ -6,13 +6,13 @@ import { TodoLoader } from '../TodoLoader/TodoLoader';
 type Props = {
   todo: Todo;
   onDelete: (todoId: number) => Promise<void>;
-  isDeletingId?: number;
+  isDeletingIds?: number[];
 };
 
 export const TodoInfo:FC<Props> = ({
   todo,
   onDelete,
-  isDeletingId = 0,
+  isDeletingIds = [],
 }) => {
   const {
     title,
@@ -21,7 +21,7 @@ export const TodoInfo:FC<Props> = ({
   } = todo;
 
   return (
-    <div
+    <li
       data-cy="Todo"
       className={classNames('todo',
         { completed })}
@@ -50,9 +50,9 @@ export const TodoInfo:FC<Props> = ({
 
       <TodoLoader
         isAdding={todo.id === 0}
-        isDeleting={isDeletingId === todo.id}
+        isDeleting={isDeletingIds.includes(todo.id)}
       />
 
-    </div>
+    </li>
   );
 };

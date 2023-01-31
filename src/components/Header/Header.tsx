@@ -17,6 +17,10 @@ export const Header: React.FC<Props> = ({
     setTitle('');
   };
 
+  const handleChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+    setTitle(event.target.value);
+  };
+
   return (
     <header className="todoapp__header">
       {/* eslint-disable-next-line jsx-a11y/control-has-associated-label */}
@@ -36,7 +40,7 @@ export const Header: React.FC<Props> = ({
           className="todoapp__new-todo"
           placeholder="What needs to be done?"
           value={title}
-          onChange={e => setTitle(e.target.value)}
+          onChange={handleChange}
         />
       </form>
     </header>

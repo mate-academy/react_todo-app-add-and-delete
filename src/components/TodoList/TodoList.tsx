@@ -6,25 +6,24 @@ type Props = {
   todos: Todo[];
   onTodoDelete: (todoId: number) => Promise<void>;
   tempTodo: Todo | null;
-  isDeletingId: number;
+  isDeletingIds: number[];
 };
 
 export const TodoList: React.FC<Props> = ({
   todos,
   onTodoDelete,
   tempTodo,
-
-  isDeletingId = 0,
+  isDeletingIds = [],
 }) => {
   return (
-    <section className="todoapp__main" data-cy="TodoList">
+    <ul className="todoapp__main" data-cy="TodoList">
       {todos.map(todo => {
         return (
           <TodoInfo
             todo={todo}
             key={todo.id}
             onDelete={onTodoDelete}
-            isDeletingId={isDeletingId}
+            isDeletingIds={isDeletingIds}
           />
         );
       })}
@@ -35,6 +34,6 @@ export const TodoList: React.FC<Props> = ({
           onDelete={onTodoDelete}
         />
       )}
-    </section>
+    </ul>
   );
 };

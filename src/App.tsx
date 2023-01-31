@@ -29,7 +29,7 @@ export const App: FC = () => {
   const [tempTodo, setTempTodo] = useState<Todo | null>(null);
   const [errorMessage, setErrorMessage] = useState('');
   const [filter, setFilter] = useState<FilterType>(FilterType.All);
-  const [isDeletingId, setIsDeletingId] = useState(0);
+  const [isDeletingIds, setIsDeletingIds] = useState<number[]>([]);
   const handleErrorClose = () => setErrorMessage('');
 
   useEffect(() => {
@@ -78,7 +78,7 @@ export const App: FC = () => {
   };
 
   const removeTodo = async (todoId: number) => {
-    setIsDeletingId(todoId);
+    setIsDeletingIds(current => [...current, todoId]);
 
     if (user) {
       try {
@@ -92,12 +92,10 @@ export const App: FC = () => {
       }
     }
 
-    setIsDeletingId(0);
+    setIsDeletingIds([]);
   };
 
-  let visibleTodos = [...todos];
-
-  visibleTodos = useMemo(() => visibleTodos.filter(todo => {
+  const visibleTodos: Todo[] = useMemo(() => todos.filter(todo => {
     switch (filter) {
       case FilterType.Active:
         return !todo.completed;
@@ -124,7 +122,7 @@ export const App: FC = () => {
               todos={visibleTodos}
               onTodoDelete={removeTodo}
               tempTodo={tempTodo}
-              isDeletingId={isDeletingId}
+              isDeletingIds={isDeletingIds}
             />
             <Footer
               todos={visibleTodos}
