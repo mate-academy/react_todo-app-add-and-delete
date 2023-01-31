@@ -1,4 +1,5 @@
 import React, {
+  useCallback,
   useContext,
   useEffect,
   useMemo,
@@ -6,7 +7,7 @@ import React, {
   useState,
 } from 'react';
 import { useError } from './controllers/useError';
-import { getTodos } from './api/todos';
+import { addTodo, getTodos } from './api/todos';
 import { AuthContext } from './components/Auth/AuthContext';
 import { ErrorNotification }
   from './components/ErrorNotification/ErrorNotification';
@@ -19,6 +20,7 @@ import { Todo } from './types/Todo';
 export const App: React.FC = () => {
   const [todos, setTodos] = useState<Todo[]>([]);
   const [completedFilter, setCompletedFilter] = useState(FilterType.All);
+  const [isAddingTodo, setIsAddingTodo] = useState(false);
 
   const [showError, closeErroreMessage, errorMessages] = useError();
 
@@ -38,6 +40,22 @@ export const App: React.FC = () => {
         .catch(() => showError('Unable to load a todos'));
     }
   }, [user]);
+
+  const onAddTodo = useCallback(async (fieldsToCreate: Omit<Todo, 'id'>) => {
+    setIsAddingTodo(true);
+
+    try {
+      const newTodo = await addTodo(fieldsToCreate);
+
+      setTodos(prev => [...prev, newTodo]);
+    } catch {
+      showError('Unable to add a todo');
+
+      throw Error('Error while adding todo');
+    } finally {
+      setIsAddingTodo(false);
+    }
+  }, [showError]);
 
   const visibleFiltredTodos = useMemo(() => {
     switch (completedFilter) {
@@ -67,6 +85,8 @@ export const App: React.FC = () => {
         <Header
           newTodoField={newTodoField}
           showError={showError}
+          isAddingTodo={isAddingTodo}
+          onAddTodo={onAddTodo}
         />
 
         {todos.length > 0

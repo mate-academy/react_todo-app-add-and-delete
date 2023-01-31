@@ -1,20 +1,57 @@
 /* eslint-disable jsx-a11y/control-has-associated-label */
-import { FormEvent, memo, useState } from 'react';
+import {
+  FormEvent,
+  memo,
+  useContext,
+  useState,
+} from 'react';
+import { Todo } from '../../types/Todo';
+import { AuthContext } from '../Auth/AuthContext';
 
 interface HeaderProps {
   newTodoField: React.RefObject<HTMLInputElement>;
   showError: (message: string) => void,
+  isAddingTodo: boolean,
+  onAddTodo: (fieldsToCreate: Omit<Todo, 'id'>) => Promise<unknown>,
 }
 
 export const Header: React.FC<HeaderProps> = memo(
-  ({ newTodoField, showError }) => {
+  ({
+    newTodoField,
+    showError,
+    isAddingTodo,
+    onAddTodo,
+  }) => {
     const [title, setTitle] = useState('');
+    const user = useContext(AuthContext);
 
-    const handleFormSubmit = (event: FormEvent<HTMLFormElement>) => {
+    const handleFormSubmit = async (event: FormEvent<HTMLFormElement>) => {
       event.preventDefault();
 
       if (!title.trim()) {
         showError('Title is required');
+
+        return;
+      }
+
+      if (!user) {
+        showError('User not found');
+
+        return;
+      }
+
+      try {
+        onAddTodo({
+          title,
+          userId: user.id,
+          completed: false,
+        });
+
+        setTitle('');
+      } catch {
+        if (newTodoField.current) {
+          newTodoField.current.focus();
+        }
       }
     };
 
@@ -30,6 +67,7 @@ export const Header: React.FC<HeaderProps> = memo(
           onSubmit={handleFormSubmit}
         >
           <input
+            disabled={isAddingTodo}
             data-cy="NewTodoField"
             type="text"
             ref={newTodoField}
