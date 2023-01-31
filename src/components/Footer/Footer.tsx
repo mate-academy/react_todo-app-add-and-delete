@@ -4,14 +4,14 @@ import { FilterType } from '../../types/FilterType';
 
 interface FooterProps {
   activeTodosCount: number,
-  selectedFilter: string,
-  selectFilter: (str: FilterType) => void,
+  completedFilter: string,
+  setCompletedFilter: (str: FilterType) => void,
 }
 
 export const Footer: React.FC<FooterProps> = memo(({
   activeTodosCount: countActiveTodos,
-  selectedFilter: selectedFilterForTodos,
-  selectFilter: onChosedFilter,
+  completedFilter: selectedFilterForTodos,
+  setCompletedFilter: onChosedFilter,
 }) => (
   <footer className="todoapp__footer" data-cy="Footer">
     <span className="todo-count" data-cy="todosCounter">

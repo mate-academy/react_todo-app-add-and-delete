@@ -1,11 +1,11 @@
 import React, {
-  useCallback,
   useContext,
   useEffect,
   useMemo,
   useRef,
   useState,
 } from 'react';
+import { useError } from './controllers/useError';
 import { getTodos } from './api/todos';
 import { AuthContext } from './components/Auth/AuthContext';
 import { ErrorNotification }
@@ -18,18 +18,9 @@ import { Todo } from './types/Todo';
 
 export const App: React.FC = () => {
   const [todos, setTodos] = useState<Todo[]>([]);
-  const [selectedFilter, selectFilter] = useState(FilterType.All);
-  const [errorMessage, setErrorMessage] = useState('');
+  const [completedFilter, setCompletedFilter] = useState(FilterType.All);
 
-  const showError = useCallback((message: string) => {
-    setErrorMessage(message);
-
-    setTimeout(() => setErrorMessage(''), 3000);
-  }, []);
-
-  const closeErroreMessage = useCallback(() => {
-    setErrorMessage('');
-  }, []);
+  const [showError, closeErroreMessage, errorMessages] = useError();
 
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
   const user = useContext(AuthContext);
@@ -49,7 +40,7 @@ export const App: React.FC = () => {
   }, [user]);
 
   const visibleFiltredTodos = useMemo(() => {
-    switch (selectedFilter) {
+    switch (completedFilter) {
       case FilterType.Active:
         return todos.filter(todo => (
           !todo.completed
@@ -63,7 +54,7 @@ export const App: React.FC = () => {
       default:
         return todos;
     }
-  }, [selectedFilter, todos]);
+  }, [completedFilter, todos]);
 
   const ActiveTodosCount = useMemo(() => (
     todos.filter(todo => !todo.completed)).length, [todos]);
@@ -84,18 +75,17 @@ export const App: React.FC = () => {
               <TodoList todos={visibleFiltredTodos} />
               <Footer
                 activeTodosCount={ActiveTodosCount}
-                selectedFilter={selectedFilter}
-                selectFilter={selectFilter}
+                completedFilter={completedFilter}
+                setCompletedFilter={setCompletedFilter}
               />
             </>
           )}
       </div>
 
       {
-        errorMessage && (
+        errorMessages.length > 0 && (
           <ErrorNotification
-            errorMessage={errorMessage}
-            setErrorMessage={setErrorMessage}
+            messages={errorMessages}
             close={closeErroreMessage}
           />
         )

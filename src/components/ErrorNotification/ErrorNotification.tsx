@@ -1,34 +1,30 @@
 /* eslint-disable jsx-a11y/control-has-associated-label */
-import cn from 'classnames';
-import { memo, useEffect } from 'react';
+import { memo } from 'react';
 
 interface ErrorNotificationProps {
-  errorMessage: string,
-  setErrorMessage: React.Dispatch<React.SetStateAction<string>>;
-  close: () => void;
+  messages: string[];
+  close: (m: string) => void;
 }
 
 export const ErrorNotification: React.FC<ErrorNotificationProps> = memo(
-  ({ setErrorMessage, errorMessage, close }) => {
-    useEffect(() => {
-      setTimeout(() => setErrorMessage(''), 3000);
-    }, [setErrorMessage]);
+  ({ messages, close }) => (
+    <>
+      {messages.map(message => (
+        <div
+          data-cy="ErrorNotification"
+          className="notification is-danger is-light has-text-weight-normal"
+        >
+          <button
+            data-cy="HideErrorButton"
+            type="button"
+            className="delete"
+            onClick={() => close(message)}
+          />
 
-    return (
-      <div
-        data-cy="ErrorNotification"
-        className={cn('notification is-danger is-light has-text-weight-normal',
-          { hidden: !errorMessage })}
-      >
-        <button
-          data-cy="HideErrorButton"
-          type="button"
-          className="delete"
-          onClick={close}
-        />
-
-        {errorMessage}
-      </div>
-    );
-  },
+          {message}
+          <br />
+        </div>
+      ))}
+    </>
+  ),
 );
