@@ -7,7 +7,7 @@ import React, {
   useState,
 } from 'react';
 import { useError } from './controllers/useError';
-import { getTodos } from './api/todos';
+import { addTodo, getTodos } from './api/todos';
 import { AuthContext } from './components/Auth/AuthContext';
 import { ErrorNotification }
   from './components/ErrorNotification/ErrorNotification';
@@ -44,7 +44,7 @@ export const App: React.FC = () => {
     }
   }, [user, isAddingTodo]);
 
-  const addTodo = useCallback(async (fieldsToCreate: Omit<Todo, 'id'>) => {
+  const onAddTodo = useCallback(async (fieldsToCreate: Omit<Todo, 'id'>) => {
     setIsAddingTodo(true);
 
     try {
@@ -115,7 +115,7 @@ export const App: React.FC = () => {
           newTodoField={newTodoField}
           showError={showError}
           isAddingTodo={isAddingTodo}
-          addTodo={addTodo}
+          addTodo={onAddTodo}
         />
 
         {(todos.length > 0 || !!tempTodo)
