@@ -5,7 +5,7 @@ import '@fortawesome/fontawesome-free/css/all.css';
 import './styles/index.scss';
 
 import { App } from './App';
-import { AuthProvider } from './hooks/AuthContext';
+import { AuthProvider } from './context/AuthContext';
 
 const Root = () => (
   <AuthProvider>
