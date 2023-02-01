@@ -3,36 +3,36 @@
 It is the second part of the React Todo App with API.
 
 Take your code implemented for [Loading todos](https://github.com/mate-academy/react_todo-app-loading-todos)
-and implement the ability to and nd remove todos.
+and implement the ability to add and remove todos.
 
 > Here is [the working example](https://mate-academy.github.io/react_todo-app-with-api/)
-# ❗️❗️❗️</br>In this working example implemented all 3 parts of the task.</br>In this task you have to implement only the second part described below (using your code from the first part).</br>❗️❗️❗️
+# ❗️❗️❗️</br>Please implement only adding and deleting todos in addition to what was already implemented.<br><br>All the other features from the working version will be implemented in the next task.</br>❗️❗️❗️
 
-### [API Documentation](https://mate-academy.github.io/fe-students-api/)
+> Check the [API Documentation](https://mate-academy.github.io/fe-students-api/)
 
 ## Adding a todo
 
 Add a todo with the entered title on the form submit:
 
 - if the title is empty show the `Title can't be empty` notification at the bottom;
-- disable the input until receiving the response from the API (use `isAdding` variable);
-- create a todo with `id: 0` and save it to the `tempTodo` variable in the state (NOT to the todos array);
-- show another `TodoItem` **after** the list if `tempTodo` is not `null`;
-- temp Todo should have the loader (check the styles of the 5th todo in the original markup);
-- use your user id for the new todo;
-- send a POST request to the API with the `tempTodo` data (without `id`);
+- use your `userId` for the new todo;
+- send a POST request to the API (check the [API Documentation](https://mate-academy.github.io/fe-students-api/))
+- disable the input until receiving a response from the API;
+- immediately after sending a request create a todo with `id: 0` and save it to the `tempTodo` variable in the state (NOT to the `todos` array);
+- show an independent `TodoItem` **after** the list if `tempTodo` is not `null`;
+- temp TodoItem should have the loader (check the original markup);
 - in case of success add the todo created by the API to the array (take it from the POST response);
 - in case of an API error show `Unable to add a todo` notification at the bottom;
 - set `tempTodo` to `null` to hide the extra `TodoItem`;
 
-> Don't try to implement smooth Todo adding or removing (at least until you implemented everything else).
+> Don't try to implement animations for adding or removing Todos (at least until you finish everything else).
 > If you really fill confident to try, there is a hint at the end of the description.
 
 ## Deleting todos
 
 Remove a todo on `TodoDeleteButton` click:
 
-- covered the todo with the loader while wating for API response;
+- covered the todo with the loader while wating for the API response;
 - remove the todo from the list on success;
 - in case of API error show `Unable to delete a todo` notification at the bottom (the todo must stay in the list);
 
@@ -45,7 +45,6 @@ Remove all the completed todos after the `Clear completed` button click:
 
 - Implement a solution following the [React task guideline](https://github.com/mate-academy/react_task-guideline#react-tasks-guideline).
 - Use the [React TypeScript cheat sheet](https://mate-academy.github.io/fe-program/js/extra/react-typescript).
-- Open one more terminal and run tests with `npm test` to ensure your solution is correct.
 - Replace `<your_account>` with your Github username in the [DEMO LINK](https://<your_account>.github.io/react_todo-app-add-and-delete/) and add it to the PR description.
 
 ## IF you want to implement smooth animations
