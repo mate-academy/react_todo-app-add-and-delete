@@ -1,10 +1,9 @@
 /* eslint-disable jsx-a11y/control-has-associated-label */
 import classNames from 'classnames';
-import React from 'react';
-import { Todo } from '../../types/Todo';
+import React, { memo } from 'react';
 
 type Props = {
-  todos: Todo[],
+  lengthOfTodos: number,
   newTodoField: React.RefObject<HTMLInputElement>,
   isAllCompleted: boolean,
   newTodoTitle: string,
@@ -13,8 +12,8 @@ type Props = {
   isAdding: boolean,
 };
 
-export const AppHeader: React.FC<Props> = ({
-  todos,
+export const AppHeader: React.FC<Props> = memo(({
+  lengthOfTodos,
   newTodoField,
   isAllCompleted,
   newTodoTitle,
@@ -24,7 +23,7 @@ export const AppHeader: React.FC<Props> = ({
 }) => {
   return (
     <header className="todoapp__header">
-      {todos.length !== 0 && (
+      {lengthOfTodos !== 0 && (
         <button
           data-cy="ToggleAllButton"
           type="button"
@@ -47,4 +46,4 @@ export const AppHeader: React.FC<Props> = ({
       </form>
     </header>
   );
-};
+});

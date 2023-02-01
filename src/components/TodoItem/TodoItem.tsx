@@ -1,5 +1,5 @@
 import classNames from 'classnames';
-import React, { useState } from 'react';
+import React, { memo, useState } from 'react';
 import { Todo } from '../../types/Todo';
 import { Loader } from '../Loader/Loader';
 
@@ -9,7 +9,7 @@ type Props = {
   loadingTodosIds?: number[],
 };
 
-export const TodoItem: React.FC<Props> = ({
+export const TodoItem: React.FC<Props> = memo(({
   todo,
   onTodoDelete,
   loadingTodosIds,
@@ -58,4 +58,4 @@ export const TodoItem: React.FC<Props> = ({
       {isLoaderNeeded && <Loader />}
     </div>
   );
-};
+});

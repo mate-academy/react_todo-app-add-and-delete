@@ -51,7 +51,7 @@ export const App: React.FC = () => {
     getFilteredTodos(todos, statusFilter)
   ), [todos, statusFilter]);
 
-  const amountOfActive = useMemo(() => (
+  const amountOfActiveTodos = useMemo(() => (
     todos.filter(
       todo => !todo.completed,
     ).length
@@ -65,7 +65,7 @@ export const App: React.FC = () => {
 
   const isAllCompleted = completedTodosLength === todos.length;
 
-  const addingNewTodo = (event: React.FormEvent) => {
+  const addingNewTodo = useCallback((event: React.FormEvent) => {
     event.preventDefault();
 
     if (!newTodoTitle.trim()) {
@@ -85,7 +85,11 @@ export const App: React.FC = () => {
 
       setIsAdding(true);
 
-      addTodo(newTodoTitle, user.id)
+      addTodo({
+        userId: user.id,
+        title: newTodoTitle,
+        completed: false,
+      })
         .then((addingTodo) => {
           setTodos((currentTodos) => ([
             ...currentTodos,
@@ -106,7 +110,7 @@ export const App: React.FC = () => {
           setIsAdding(false);
         });
     }
-  };
+  }, [newTodoTitle]);
 
   const removeTodo = useCallback(
     ((selectedTodoId: number) => {
@@ -139,9 +143,9 @@ export const App: React.FC = () => {
     }, [todos],
   );
 
-  const onCloseError = () => (
+  const onCloseError = useCallback(() => (
     setError('')
-  );
+  ), []);
 
   return (
     <div className="todoapp">
@@ -149,7 +153,7 @@ export const App: React.FC = () => {
 
       <div className="todoapp__content">
         <AppHeader
-          todos={todos}
+          lengthOfTodos={todos.length}
           newTodoField={newTodoField}
           isAllCompleted={isAllCompleted}
           newTodoTitle={newTodoTitle}
@@ -168,7 +172,7 @@ export const App: React.FC = () => {
             />
 
             <AppFooter
-              amountOfActive={amountOfActive}
+              amountOfActiveTodos={amountOfActiveTodos}
               completedTodosLength={completedTodosLength}
               statusFilter={statusFilter}
               onChangeStatusFilter={setStatusFilter}

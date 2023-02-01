@@ -1,6 +1,6 @@
-import React from 'react';
+import React, { memo } from 'react';
 
-export const Loader: React.FC = React.memo(
+export const Loader: React.FC = memo(
   () => (
     <div
       data-cy="TodoLoader"

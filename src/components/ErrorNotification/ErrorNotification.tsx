@@ -1,12 +1,15 @@
 /* eslint-disable jsx-a11y/control-has-associated-label */
-import React from 'react';
+import React, { memo } from 'react';
 
 type Props = {
   error: string,
   onCloseError: () => void,
 };
 
-export const ErrorNotification: React.FC<Props> = ({ error, onCloseError }) => {
+export const ErrorNotification: React.FC<Props> = memo(({
+  error,
+  onCloseError,
+}) => {
   return (
     <div
       data-cy="ErrorNotification"
@@ -23,4 +26,4 @@ export const ErrorNotification: React.FC<Props> = ({ error, onCloseError }) => {
       {error}
     </div>
   );
-};
+});

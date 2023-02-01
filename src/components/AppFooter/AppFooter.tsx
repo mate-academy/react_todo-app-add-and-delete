@@ -1,17 +1,17 @@
 import classNames from 'classnames';
-import React, { SetStateAction } from 'react';
+import React, { memo, SetStateAction } from 'react';
 import { Filter } from '../../types/Filter';
 
 type Props = {
-  amountOfActive: number,
+  amountOfActiveTodos: number,
   completedTodosLength: number,
   statusFilter: Filter,
   onChangeStatusFilter: React.Dispatch<SetStateAction<Filter>>,
   clearCompletedTodos: () => void,
 };
 
-export const AppFooter: React.FC<Props> = ({
-  amountOfActive,
+export const AppFooter: React.FC<Props> = memo(({
+  amountOfActiveTodos,
   completedTodosLength,
   statusFilter: status,
   onChangeStatusFilter,
@@ -20,7 +20,7 @@ export const AppFooter: React.FC<Props> = ({
   return (
     <footer className="todoapp__footer" data-cy="Footer">
       <span className="todo-count" data-cy="todosCounter">
-        {`${amountOfActive} items left`}
+        {`${amountOfActiveTodos} items left`}
       </span>
 
       <nav className="filter" data-cy="Filter">
@@ -70,4 +70,4 @@ export const AppFooter: React.FC<Props> = ({
       </button>
     </footer>
   );
-};
+});
