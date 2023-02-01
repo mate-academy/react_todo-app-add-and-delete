@@ -116,11 +116,19 @@
 
     cursor: pointer;
     background: none;
+    visibility: visible;
+    opacity: 1;
+    transition: visibility 0.3s ease-in-out, opacity 0.3s ease-in-out;
 
     -webkit-appearance: none;
     appearance: none;
     -webkit-font-smoothing: antialiased;
     -moz-osx-font-smoothing: grayscale;
+
+    &--hidden {
+      visibility: hidden;
+      opacity: 0;
+    }
 
     &:hover {
       text-decoration: underline;
