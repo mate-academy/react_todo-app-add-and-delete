@@ -16,6 +16,7 @@ export const TodoFooter: React.FC<Props> = memo(({
   filterOption,
   setFilterOption,
   handleClearCompleted,
+  completeTodosCount,
 }) => {
   return (
     <footer className="todoapp__footer" data-cy="Footer">
@@ -56,7 +57,7 @@ export const TodoFooter: React.FC<Props> = memo(({
           Completed
         </a>
       </nav>
-      {activeTodos.length !== 0
+      {completeTodosCount !== 0
         && (
           <button
             data-cy="ClearCompletedButton"

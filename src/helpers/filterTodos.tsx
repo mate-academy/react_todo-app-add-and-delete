@@ -17,7 +17,7 @@ export const filterTodos = (filteredTodos: Todo[], filteredBy: Filter) => {
 
       case Filter.all:
       default:
-        return 0;
+        return todo;
     }
   });
 };
