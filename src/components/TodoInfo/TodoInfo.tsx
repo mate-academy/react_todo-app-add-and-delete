@@ -4,19 +4,24 @@ import { Todo } from '../../types/Todo';
 
 type Props = {
   todoList: Todo,
+  onDelete: (id: number) => void,
+  deletedTodosId: number[],
   isTodoLoading: boolean,
-  hendleRemoveTodo: (id: number) => void,
-  isTodoRemove: boolean,
+  activeTodoId: number[]
 };
 
 export const TodoInfo: React.FC<Props> = React.memo(({
   todoList,
+  onDelete,
+  deletedTodosId,
   isTodoLoading,
-  hendleRemoveTodo,
-  isTodoRemove,
+  activeTodoId,
 }) => {
   const { title, completed, id } = todoList;
-  // console.log(tempTodo)
+  const isSpinerActive = deletedTodosId.includes(id)
+  || activeTodoId.includes(id);
+
+  console.log(isTodoLoading);
 
   return (
     <>
@@ -41,7 +46,7 @@ export const TodoInfo: React.FC<Props> = React.memo(({
           type="button"
           className="todo__remove"
           data-cy="TodoDeleteButton"
-          onClick={() => hendleRemoveTodo(id)}
+          onClick={() => onDelete(id)}
         >
           ×
         </button>
@@ -51,7 +56,7 @@ export const TodoInfo: React.FC<Props> = React.memo(({
           className={classNames(
             'modal',
             'overlay',
-            { 'is-active': isTodoLoading || isTodoRemove },
+            { 'is-active': isSpinerActive },
           )}
         >
           <div className="modal-background has-background-white-ter" />

@@ -5,10 +5,15 @@ import { Todo } from '../../types/Todo';
 
 type Props = {
   todos: Todo[],
-  setFiltredTodos: (filtredTodos: Todo[]) => void
+  setFiltredTodos: (filtredTodos: Todo[]) => void,
+  clearCompleted: ()=> void,
 };
 
-export const TodoFilters: React.FC<Props> = ({ todos, setFiltredTodos }) => {
+export const TodoFilters: React.FC<Props> = ({
+  todos,
+  setFiltredTodos,
+  clearCompleted,
+}) => {
   const [typeOfFilter, setTypeOfFilter] = useState(FilterType.All);
 
   const filterHendler = (filter: FilterType) => {
@@ -80,6 +85,7 @@ export const TodoFilters: React.FC<Props> = ({ todos, setFiltredTodos }) => {
         data-cy="ClearCompletedButton"
         type="button"
         className="todoapp__clear-completed"
+        onClick={clearCompleted}
       >
         Clear completed
       </button>

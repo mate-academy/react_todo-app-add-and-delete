@@ -1,5 +1,9 @@
 /* eslint-disable jsx-a11y/control-has-associated-label */
-import React, { useContext, useEffect, useState } from 'react';
+import React, {
+  useContext,
+  useEffect,
+  useState,
+} from 'react';
 import { createTodo, deleteTodo, getTodos } from './api/todos';
 import { AuthContext } from './components/Auth/AuthContext';
 import { NewTodoField } from './components/NewTodoField/NewTodoField';
@@ -15,17 +19,12 @@ export const App: React.FC = () => {
   const [todos, setTodos] = useState<Todo[]>([]);
   const [tempTodo, setTempTodo] = useState<Todo | null>(null);
   const [filtredTodos, setFiltredTodos] = useState<Todo[]>([]);
-  const [title, setTitle] = useState('');
   const [isEmptyTitle, setIsEmptyTitle] = useState(false);
   const [isTodoLoading, setIsTodoLoading] = useState(false);
-  const [isTodoRemove, setIsTodoRemove] = useState(false);
+  const [deletedTodosId, setDeletedTodosId] = useState<number[]>([]);
+  const [activeTodoId, setActiveTodoId] = useState<number[]>([]);
 
   const user = useContext(AuthContext);
-
-  console.log(todos);
-  console.log(isTodoRemove);
-
-  // console.log(isUploadError);
 
   const loadTodosFromServer = async () => {
     try {
@@ -39,66 +38,65 @@ export const App: React.FC = () => {
     }
   };
 
-  const uploadTodosOnServer = async () => {
+  const uploadTodosOnServer = async (todo: Todo) => {
     if (user) {
       try {
-        const currentTodo = {
-          id: 0,
-          userId: user?.id,
-          title,
-          completed: false,
-        };
-
-        setTempTodo(currentTodo);
-
-        const newTodo = await createTodo(currentTodo);
-
-        setTodos(prev => [...prev, newTodo]);
-
         setIsTodoLoading(true);
-      } catch (error) {
-        setIsUploadError(true);
-        setTodos(todos);
-      } finally {
+        setActiveTodoId([0]);
+        setTempTodo(todo);
+
+        const newTodo = await createTodo({
+          title: todo.title,
+          userId: todo.userId,
+          completed: false,
+        });
+
+        setTodos(prevTodos => [...prevTodos, newTodo]);
         setIsTodoLoading(false);
         setTempTodo(null);
+        setActiveTodoId([]);
+      } catch {
+        setIsUploadError(true);
+        setTodos(todos);
+        setTempTodo(null);
+        setIsTodoLoading(false);
       }
     }
   };
 
-  const handleSubmit = (event: React.FormEvent<HTMLFormElement>) => {
-    event.preventDefault();
-
-    setIsTodoLoading(true);
-
-    if (title !== '') {
-      setTitle('');
-      uploadTodosOnServer();
-    } else {
-      setIsEmptyTitle(true);
-    }
-  };
-
-  const removeTodoFromServer = async (id: number) => {
-    setIsTodoRemove(true);
+  const hendleRemoveTodo = async (id: number) => {
     try {
-      deleteTodo(id);
-    } catch (error) {
+      setDeletedTodosId(prevIds => [...prevIds, id]);
+      await deleteTodo(id);
+      const visibleTodos = filtredTodos.filter(todo => {
+        return todo.id !== id;
+      });
+
+      setTodos(visibleTodos);
+    } catch {
       setIsRemoveError(true);
-    } finally {
-      setIsRemoveError(false);
     }
 
-    setIsTodoRemove(false);
+    setDeletedTodosId([]);
   };
 
-  const hendleRemoveTodo = (id: number) => {
-    removeTodoFromServer(id);
+  const clearCompleted = async () => {
+    const doneTasks = todos.filter(todo => todo.completed === true);
+    const doneIds = doneTasks.map((todo) => {
+      return todo.id;
+    });
+
+    setDeletedTodosId(doneIds);
+
+    await Promise.all(doneTasks.map((todo) => deleteTodo(todo.id)));
+
     const visibleTodos = filtredTodos.filter(todo => {
-      return todo.id !== id;
+      return todo.completed === false;
     });
 
     setTodos(visibleTodos);
+
+    setDeletedTodosId([]);
   };
 
   useEffect(() => {
@@ -120,21 +118,23 @@ export const App: React.FC = () => {
       <div className="todoapp__content">
 
         <NewTodoField
-          handleSubmitForm={handleSubmit}
-          onChange={(value: string) => setTitle(value)}
-          value={title}
+          onAdd={uploadTodosOnServer}
           isUploadError={isUploadError}
+          setIsEmptyTitle={setIsEmptyTitle}
+          isTodoLoading={isTodoLoading}
         />
         <TodoList
           filtredTodos={filtredTodos}
           isTodoLoading={isTodoLoading}
-          hendleRemoveTodo={hendleRemoveTodo}
-          isTodoRemove={isTodoRemove}
+          deletedTodosId={deletedTodosId}
           tempTodo={tempTodo}
+          activeTodoId={activeTodoId}
+          onDelete={hendleRemoveTodo}
         />
         <TodoFilters
           todos={todos}
           setFiltredTodos={setFiltredTodos}
+          clearCompleted={clearCompleted}
         />
       </div>
 

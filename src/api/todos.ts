@@ -6,9 +6,7 @@ export const getTodos = (userId: number) => {
 };
 
 // Add more methods here
-export const createTodo = (
-  todo: Todo,
-) => {
+export const createTodo = (todo: Partial<Todo>) => {
   return client.post<Todo>('/todos', todo);
 };
 

@@ -5,17 +5,20 @@ import { TodoInfo } from '../TodoInfo/TodoInfo';
 type Props = {
   filtredTodos: Todo[],
   isTodoLoading: boolean,
-  hendleRemoveTodo: (id: number) => void,
-  isTodoRemove: boolean,
-  tempTodo: Todo | null
+  deletedTodosId: number[],
+  tempTodo: Todo | null,
+  activeTodoId: number[],
+  onDelete: (id: number) => void
 };
 
 export const TodoList: React.FC<Props> = React.memo(
   ({
     filtredTodos,
     isTodoLoading,
-    hendleRemoveTodo,
-    isTodoRemove,
+    onDelete,
+    deletedTodosId,
+    tempTodo,
+    activeTodoId,
   }) => {
     return (
       <section className="todoapp__main" data-cy="TodoList">
@@ -23,11 +26,23 @@ export const TodoList: React.FC<Props> = React.memo(
           <TodoInfo
             todoList={todoItem}
             key={todoItem.id}
+            onDelete={onDelete}
+            deletedTodosId={deletedTodosId}
             isTodoLoading={isTodoLoading}
-            hendleRemoveTodo={hendleRemoveTodo}
-            isTodoRemove={isTodoRemove}
+            activeTodoId={activeTodoId}
           />
         ))}
+
+        {isTodoLoading && tempTodo && (
+          <TodoInfo
+            todoList={tempTodo}
+            key={tempTodo.id}
+            onDelete={onDelete}
+            deletedTodosId={deletedTodosId}
+            isTodoLoading={isTodoLoading}
+            activeTodoId={activeTodoId}
+          />
+        )}
       </section>
     );
   },
