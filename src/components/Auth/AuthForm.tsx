@@ -2,6 +2,7 @@ import classNames from 'classnames';
 import React, { useEffect, useState } from 'react';
 import { createUser, getUserByEmail } from '../../api/users';
 import { User } from '../../types/User';
+import { RegisterField } from './RegisterField';
 
 export type Props = {
   onLogin: (user: User) => void,
@@ -55,7 +56,6 @@ export const AuthForm: React.FC<Props> = ({ onLogin }) => {
 
     setErrorMessage('');
     setLoading(true);
-
     try {
       if (needToRegister) {
         await registerUser();
@@ -103,45 +103,19 @@ export const AuthForm: React.FC<Props> = ({ onLogin }) => {
           </span>
         </div>
 
-        {!needToRegister && errorMessage && (
+        {needToRegister && errorMessage && (
           <p className="help is-danger">{errorMessage}</p>
         )}
       </div>
 
       {needToRegister && (
-        <div className="field">
-          <label className="label" htmlFor="user-name">
-            Your Name
-          </label>
-
-          <div
-            className={classNames('control has-icons-left', {
-              'is-loading': loading,
-            })}
-          >
-            <input
-              type="text"
-              id="user-name"
-              className={classNames('input', {
-                'is-danger': needToRegister && errorMessage,
-              })}
-              placeholder="Enter your name"
-              required
-              minLength={4}
-              disabled={loading}
-              value={name}
-              onChange={e => setName(e.target.value)}
-            />
-
-            <span className="icon is-small is-left">
-              <i className="fas fa-user" />
-            </span>
-          </div>
-
-          {needToRegister && errorMessage && (
-            <p className="help is-danger">{errorMessage}</p>
-          )}
-        </div>
+        <RegisterField
+          loading={loading}
+          errorMessage={errorMessage}
+          needToRegister={needToRegister}
+          name={name}
+          setName={setName}
+        />
       )}
 
       <div className="field">
