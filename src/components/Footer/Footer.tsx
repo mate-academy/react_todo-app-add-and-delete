@@ -1,4 +1,3 @@
-/* eslint-disable curly */
 import classNames from 'classnames';
 import { useState } from 'react';
 import { deleteTodo } from '../../api/todos';
@@ -12,6 +11,7 @@ type Props = {
   todos: Todo[] | null,
   setErrorsArgument: (argument: Error | null) => void,
   setTodos: (currentTodos: Todo[]) => void,
+  setIsLoadAllDelete: (arg: boolean) => void,
 };
 
 export const Footer: React.FC<Props> = ({
@@ -20,13 +20,16 @@ export const Footer: React.FC<Props> = ({
   todos,
   setTodos,
   setErrorsArgument,
+  setIsLoadAllDelete,
 }) => {
   const [isActive, setIsActive] = useState(true);
 
   const getItemsIsLeft = () => {
     let countActiveTodos = 0;
 
-    if (!todos) return countActiveTodos;
+    if (!todos) {
+      return countActiveTodos;
+    }
 
     for (let i = 0; i < todos?.length; i += 1) {
       if (!todos[i].completed) {
@@ -51,15 +54,18 @@ export const Footer: React.FC<Props> = ({
 
   const removeAllCompletedTodos = () => {
     if (todos) {
-      setIsActive(false);
+      setIsLoadAllDelete(true);
       for (let i = 0; i < todos.length; i += 1) {
         if (todos[i].completed) {
+          setIsActive(false);
           deleteTodo(todos[i].id)
-            .catch(() => setErrorsArgument(Error.Delete));
+            .catch(() => setErrorsArgument(Error.Delete))
+            .finally(() => {
+              setIsLoadAllDelete(false);
+              setTodos(todos.filter(item => !item.completed));
+            });
         }
       }
-
-      setTodos(todos.filter(item => !item.completed));
 
       setIsActive(true);
     }

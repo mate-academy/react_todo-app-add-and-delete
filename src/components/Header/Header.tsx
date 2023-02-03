@@ -8,12 +8,14 @@ type Props = {
   setErrorsArgument: (argument: Error | null) => void,
   setTodosList: (arg: Todo[] | []) => void,
   todos: Todo[] | null,
+  setTempTodo: (arg: Todo | null) => void,
 };
 
 export const Header: React.FC<Props> = ({
   setErrorsArgument,
   setTodosList,
   todos,
+  setTempTodo,
 }) => {
   const [query, setQuery] = useState('');
   const [isAdding, setIsAdding] = useState(false);
@@ -22,6 +24,12 @@ export const Header: React.FC<Props> = ({
   const postTodosData = async () => {
     if (user && query) {
       setIsAdding(true);
+      setTempTodo({
+        id: 0,
+        userId: 0,
+        title: query,
+        completed: false,
+      });
       const data = {
         title: query,
         userId: user.id,
@@ -42,6 +50,7 @@ export const Header: React.FC<Props> = ({
         .finally(() => {
           setIsAdding(false);
           setQuery('');
+          setTempTodo(null);
         });
     }
 

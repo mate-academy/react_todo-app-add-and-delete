@@ -1,12 +1,9 @@
-/* eslint-disable curly */
-
 import React, { useContext, useEffect, useState } from 'react';
 import { AuthContext } from './components/Auth/AuthContext';
 import { Header } from './components/Header';
 import { TodoList } from './components/TodoList';
 import { Footer } from './components/Footer';
 import { ErrorNotification } from './components/ErrorNotification';
-import { TodosProvider } from './components/TodosContext';
 
 import { getTodos } from './api/todos';
 
@@ -15,16 +12,11 @@ import { Error } from './types/Error';
 import { Filter } from './types/Filter';
 
 export const App: React.FC = () => {
-  const [todos, setTodos] = useState<Todo[] | null>(null);
+  const [todos, setTodos] = useState<Todo[]>([]);
   const [isError, setIsError] = useState<Error | null>(null);
   const [filter, setFilter] = useState<Filter>(Filter.All);
-  const [isTemp] = useState<Todo[] | null>([{
-    id: 0,
-    userId: 0,
-    title: '',
-    completed: false,
-  }]);
-
+  const [tempTodo, setTempTodo] = useState<Todo | null>(null);
+  const [isLoadAllDelete, setIsLoadAllDelete] = useState(false);
   const user = useContext(AuthContext);
 
   const setTodosList = () => {
@@ -32,17 +24,24 @@ export const App: React.FC = () => {
       return;
     }
 
-    setTodos(isTemp);
+    setTodos([{
+      id: 0,
+      userId: 0,
+      title: '',
+      completed: false,
+    }]);
     getTodos(user.id)
       .then(data => setTodos(data))
       .catch(() => {
         setIsError(Error.Update);
-        setTodos(null);
+        setTodos([]);
       });
   };
 
-  const filteredTodos = () => {
-    if (!todos) return null;
+  const getFilteredTodos = () => {
+    if (!todos) {
+      return null;
+    }
 
     return todos?.filter((todo) => {
       switch (filter) {
@@ -55,53 +54,47 @@ export const App: React.FC = () => {
     });
   };
 
-  const setFilterStatus = (arg: Filter) => {
-    setFilter(arg);
-  };
-
-  const setErrorsArgument = (argument: Error | null) => {
-    setIsError(null);
-    setIsError(argument);
-  };
+  const filteredTodos = getFilteredTodos();
 
   useEffect(() => {
     setTodosList();
   }, []);
 
   return (
-    <TodosProvider
-      setErrorsArgument={setErrorsArgument}
-      setTodos={setTodos}
-      todos={todos}
-      setTodosList={setTodosList}
-    >
-      <div className="todoapp">
-        <h1 className="todoapp__title">todos</h1>
-        <div className="todoapp__content">
-          <Header
-            setErrorsArgument={setErrorsArgument}
-            setTodosList={setTodos}
-            todos={todos}
-          />
-          {todos && (
-            <TodoList todos={filteredTodos()} />
-          )}
-          <Footer
-            filter={filter}
-            setFilter={setFilterStatus}
-            todos={todos}
-            setErrorsArgument={setErrorsArgument}
+    <div className="todoapp">
+      <h1 className="todoapp__title">todos</h1>
+      <div className="todoapp__content">
+        <Header
+          setErrorsArgument={setIsError}
+          setTodosList={setTodos}
+          todos={todos}
+          setTempTodo={setTempTodo}
+        />
+        {filteredTodos && (
+          <TodoList
+            isLoadAllDelete={isLoadAllDelete}
+            todos={getFilteredTodos()}
+            setErrorsArgument={setIsError}
+            tempTodo={tempTodo}
             setTodos={setTodos}
           />
-        </div>
-
-        {isError && (
-          <ErrorNotification
-            error={isError}
-            setIsError={setIsError}
-          />
         )}
+        <Footer
+          filter={filter}
+          setFilter={setFilter}
+          todos={todos}
+          setErrorsArgument={setIsError}
+          setTodos={setTodos}
+          setIsLoadAllDelete={setIsLoadAllDelete}
+        />
       </div>
-    </TodosProvider>
+
+      {isError && (
+        <ErrorNotification
+          error={isError}
+          setIsError={setIsError}
+        />
+      )}
+    </div>
   );
 };

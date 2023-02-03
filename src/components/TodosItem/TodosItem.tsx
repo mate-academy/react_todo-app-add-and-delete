@@ -3,60 +3,68 @@ import { useContext, useState } from 'react';
 import { Todo } from '../../types/Todo';
 import { Error } from '../../types/Error';
 import { deleteTodo, patchTodo } from '../../api/todos';
-import { TodosContext } from '../TodosContext';
 import { AuthContext } from '../Auth/AuthContext';
 
 type Props = {
   todo: Todo,
+  isLoadAllDelete: boolean,
+  setErrorsArgument: (argument: Error | null) => void,
+  todos: Todo[] | null,
+  setTodos: (arg: Todo[]) => void,
 };
 
-export const TodosItem: React.FC<Props> = ({ todo }) => {
+export const TodosItem: React.FC<Props> = ({
+  todo,
+  todos,
+  isLoadAllDelete,
+  setErrorsArgument,
+  setTodos,
+}) => {
   const [query, setQuery] = useState('');
   const [isLoad, setisLoad] = useState(false);
 
-  const providerValue = useContext(TodosContext);
   const user = useContext(AuthContext);
 
   const deleteTodosItem = async (todoId: number) => {
     if (user) {
       setisLoad(true);
-      providerValue?.setErrorsArgument(null);
+      setErrorsArgument(null);
       await deleteTodo(todoId)
         .then(() => {
-          if (providerValue?.todos) {
-            providerValue?.setTodos(
-              providerValue.todos.filter((item) => item.id !== todoId),
+          if (todos) {
+            setTodos(
+              todos.filter((item) => item.id !== todoId),
             );
           }
         })
-        .catch(() => providerValue?.setErrorsArgument(Error.Delete));
+        .catch(() => setErrorsArgument(Error.Delete));
       setisLoad(false);
     }
   };
 
   const setCompletedTodo = (completed = false) => {
-    if (user && providerValue?.todos) {
+    if (user && todos) {
       setisLoad(true);
       const data = {
         completed,
       };
 
       const getChangedTodos = () => {
-        let todosList = null;
+        if (todos) {
+          const todosList = [...todos];
 
-        if (providerValue.todos) {
-          todosList = [...providerValue.todos];
+          todosList[todos.indexOf(todo)].completed = completed;
 
-          todosList[providerValue.todos?.indexOf(todo)].completed = completed;
+          return todosList;
         }
 
-        return todosList;
+        return [];
       };
 
       patchTodo(todo.id, data)
-        .catch(() => providerValue?.setErrorsArgument(Error.Update))
+        .catch(() => setErrorsArgument(Error.Update))
         .finally(() => {
-          providerValue?.setTodos(getChangedTodos());
+          setTodos(getChangedTodos());
           setisLoad(false);
         });
     }
@@ -96,7 +104,12 @@ export const TodosItem: React.FC<Props> = ({ todo }) => {
       <div
         data-cy="TodoLoader"
         className={
-          classNames('modal overlay', { 'is-active': isLoad })
+          classNames('modal overlay',
+            {
+              'is-active': isLoad
+              || todo.id === 0
+              || (isLoadAllDelete && todo.completed),
+            })
         }
       >
         <div className="modal-background has-background-white-ter" />
