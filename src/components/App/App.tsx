@@ -1,3 +1,4 @@
+/* eslint-disable no-console */
 /* eslint-disable jsx-a11y/control-has-associated-label */
 import React, {
   useContext,
@@ -10,7 +11,7 @@ import { Todo } from '../../types/Todo';
 import * as Api from '../../api/todos';
 import { TodoList } from '../TodoList';
 import { FilterBy } from '../../types/filterBy';
-import { Footer } from '../Footer/Footer';
+import { Footer } from '../Footer';
 
 export const App: React.FC = () => {
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
@@ -20,6 +21,8 @@ export const App: React.FC = () => {
   const [showFooter, setShowFooter] = useState(false);
   const [error, setError] = useState('');
   const [filterBy, setFilterBy] = useState<FilterBy>(FilterBy.All);
+  const [todoTitle, setTodoTitle] = useState('');
+  const [loadingInput, setLoadingInput] = useState(false);
 
   useEffect(() => {
     // focus the element with `ref={newTodoField}`
@@ -43,6 +46,38 @@ export const App: React.FC = () => {
     }
   }, []);
 
+  useEffect(() => {
+    const keyDownHandler = (event: KeyboardEvent) => {
+      if (event.key === 'Enter') {
+        event.preventDefault();
+
+        if (user) {
+          if (todoTitle.length) {
+            console.log('inside if title');
+            // we disable the input while trying to post the todo.
+            setTodoTitle('');
+            setLoadingInput(true);
+
+            Api.addTodo({
+              userId: user.id,
+              title: todoTitle,
+              completed: false,
+            })
+              .then(data => console.log(data))
+              .catch(err => console.log(err))
+              .finally(() => setLoadingInput(false));
+          }
+        }
+      }
+    };
+
+    document.addEventListener('keydown', keyDownHandler);
+
+    return () => {
+      document.removeEventListener('keydown', keyDownHandler);
+    };
+  }, []);
+
   return (
     <div className="todoapp">
       <h1 className="todoapp__title">todos</h1>
@@ -62,6 +97,9 @@ export const App: React.FC = () => {
               ref={newTodoField}
               className="todoapp__new-todo"
               placeholder="What needs to be done?"
+              disabled={loadingInput}
+              value={todoTitle}
+              onChange={(e) => setTodoTitle(e.target.value)}
             />
           </form>
         </header>
@@ -74,7 +112,10 @@ export const App: React.FC = () => {
         )}
 
         {showFooter && (
-          <Footer setFilterBy={setFilterBy} />
+          <Footer
+            filterBy={filterBy}
+            setFilterBy={setFilterBy}
+          />
         )}
       </div>
 

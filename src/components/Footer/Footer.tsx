@@ -1,10 +1,12 @@
+import cn from 'classnames';
 import { FilterBy } from '../../types/filterBy';
 
 type Props = {
+  filterBy: FilterBy;
   setFilterBy: (status: FilterBy) => void;
 };
 
-export const Footer: React.FC<Props> = ({ setFilterBy }) => {
+export const Footer: React.FC<Props> = ({ setFilterBy, filterBy }) => {
   return (
     <footer className="todoapp__footer" data-cy="Footer">
       <span className="todo-count" data-cy="todosCounter">
@@ -15,7 +17,12 @@ export const Footer: React.FC<Props> = ({ setFilterBy }) => {
         <a
           data-cy="FilterLinkAll"
           href="#/"
-          className="filter__link selected"
+          className={cn(
+            'filter__link',
+            {
+              selected: filterBy === FilterBy.All,
+            },
+          )}
           onClick={() => setFilterBy(FilterBy.All)}
         >
           All
@@ -24,7 +31,12 @@ export const Footer: React.FC<Props> = ({ setFilterBy }) => {
         <a
           data-cy="FilterLinkActive"
           href="#/active"
-          className="filter__link"
+          className={cn(
+            'filter__link',
+            {
+              selected: filterBy === FilterBy.Active,
+            },
+          )}
           onClick={() => setFilterBy(FilterBy.Active)}
         >
           Active
@@ -32,7 +44,12 @@ export const Footer: React.FC<Props> = ({ setFilterBy }) => {
         <a
           data-cy="FilterLinkCompleted"
           href="#/completed"
-          className="filter__link"
+          className={cn(
+            'filter__link',
+            {
+              selected: filterBy === FilterBy.Completed,
+            },
+          )}
           onClick={() => setFilterBy(FilterBy.Completed)}
         >
           Completed
