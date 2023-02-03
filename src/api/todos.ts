@@ -9,4 +9,6 @@ export const addTodo = (data: object) => {
   return client.post<Todo>('/todos', data);
 };
 
-// Add more methods here
+export const removeTodo = (userId: number) => {
+  return client.delete(`/todos/${userId}`);
+};

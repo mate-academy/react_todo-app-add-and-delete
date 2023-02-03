@@ -1,6 +1,7 @@
 /* eslint-disable no-console */
 /* eslint-disable jsx-a11y/control-has-associated-label */
 import React, {
+  useCallback,
   useContext,
   useEffect,
   useRef,
@@ -23,6 +24,73 @@ export const App: React.FC = () => {
   const [filterBy, setFilterBy] = useState<FilterBy>(FilterBy.All);
   const [todoTitle, setTodoTitle] = useState('');
   const [loadingInput, setLoadingInput] = useState(false);
+  const [tempTodo, setTempTodo] = useState<Todo | null>(null);
+
+  const getTodosFromServer = useCallback(
+    () => {
+      if (user) {
+        Api.getTodos(user.id)
+          .then((data) => {
+            setTodoList(data);
+
+            if (data.length) {
+              setShowFooter(true);
+            }
+          })
+          .catch(() => {
+            setError('Error 404 unable to get todos');
+            setTimeout(() => setError(''), 3000);
+          });
+
+        // setTempTodo(null);
+        // console.log('1')
+      }
+    },
+    [],
+  );
+
+  const addTodoToServer = () => {
+    if (user && todoTitle.length) {
+      // we disable the input while trying to post the todo.
+      setLoadingInput(true);
+
+      const newTodo = {
+        userId: user.id,
+        title: todoTitle,
+        completed: false,
+      };
+
+      setTodoTitle('');
+
+      Api.addTodo(newTodo)
+        .then(response => {
+          setTempTodo({
+            id: 0,
+            userId: user.id,
+            title: todoTitle,
+            completed: false,
+          });
+
+          console.log(response);
+          getTodosFromServer();
+        })
+        .catch(() => {
+          setError('Unable to add a todo');
+          setTimeout(() => setError(''), 3000);
+        })
+        .finally(() => {
+          setLoadingInput(false);
+        });
+    }
+  };
+
+  const removeTodoFromServer = useCallback(
+    (todoId: number) => {
+      Api.removeTodo(todoId);
+      getTodosFromServer();
+    },
+    [],
+  );
 
   useEffect(() => {
     // focus the element with `ref={newTodoField}`
@@ -30,53 +98,25 @@ export const App: React.FC = () => {
       newTodoField.current.focus();
     }
 
-    if (user) {
-      Api.getTodos(user.id)
-        .then((data) => {
-          setTodoList(data);
-
-          if (data.length) {
-            setShowFooter(true);
-          }
-        })
-        .catch(() => {
-          setError('Error 404');
-          setTimeout(() => setError(''), 3000);
-        });
-    }
+    getTodosFromServer();
   }, []);
 
-  useEffect(() => {
-    const keyDownHandler = (event: KeyboardEvent) => {
-      if (event.key === 'Enter') {
-        event.preventDefault();
+  // useEffect(() => {
+  //   if (user) {
+  //     Api.getTodos(user.id)
+  //       .then((data) => {
+  //         setTodoList(data);
 
-        if (user) {
-          if (todoTitle.length) {
-            console.log('inside if title');
-            // we disable the input while trying to post the todo.
-            setTodoTitle('');
-            setLoadingInput(true);
-
-            Api.addTodo({
-              userId: user.id,
-              title: todoTitle,
-              completed: false,
-            })
-              .then(data => console.log(data))
-              .catch(err => console.log(err))
-              .finally(() => setLoadingInput(false));
-          }
-        }
-      }
-    };
-
-    document.addEventListener('keydown', keyDownHandler);
-
-    return () => {
-      document.removeEventListener('keydown', keyDownHandler);
-    };
-  }, []);
+  //         if (data.length) {
+  //           setShowFooter(true);
+  //         }
+  //       })
+  //       .catch(() => {
+  //         setError('Error 404 unable to get todos');
+  //         setTimeout(() => setError(''), 3000);
+  //       });
+  //   }
+  // }, [tempTodo]);
 
   return (
     <div className="todoapp">
@@ -99,13 +139,24 @@ export const App: React.FC = () => {
               placeholder="What needs to be done?"
               disabled={loadingInput}
               value={todoTitle}
-              onChange={(e) => setTodoTitle(e.target.value)}
+              onChange={(e) => {
+                setTodoTitle(e.target.value);
+              }}
+              onKeyDown={(event) => {
+                if (event.key === 'Enter') {
+                  event.preventDefault();
+
+                  addTodoToServer();
+                }
+              }}
             />
           </form>
         </header>
 
         {todoList && (
           <TodoList
+            onRemove={removeTodoFromServer}
+            tempTodo={tempTodo}
             todoList={todoList}
             filterBy={filterBy}
           />
