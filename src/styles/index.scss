@@ -20,6 +20,8 @@ body {
   pointer-events: none;
 }
 
+@import "./vars";
 @import "./todoapp";
 @import "./todo";
 @import "./filter";
+@import "./Loader";
