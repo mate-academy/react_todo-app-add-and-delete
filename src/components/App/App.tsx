@@ -36,14 +36,13 @@ export const App: React.FC = () => {
             if (data.length) {
               setShowFooter(true);
             }
+
+            setTempTodo(null);
           })
           .catch(() => {
             setError('Error 404 unable to get todos');
             setTimeout(() => setError(''), 3000);
           });
-
-        // setTempTodo(null);
-        // console.log('1')
       }
     },
     [],
@@ -86,8 +85,14 @@ export const App: React.FC = () => {
 
   const removeTodoFromServer = useCallback(
     (todoId: number) => {
-      Api.removeTodo(todoId);
-      getTodosFromServer();
+      Api.removeTodo(todoId)
+        .then(() => {
+          getTodosFromServer();
+        })
+        .catch(() => {
+          setError('Unable to delete a todo');
+          setTimeout(() => setError(''), 3000);
+        });
     },
     [],
   );
