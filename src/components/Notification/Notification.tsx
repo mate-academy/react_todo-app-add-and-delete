@@ -1,4 +1,4 @@
-import React, { useEffect } from 'react';
+import React, { useEffect, useRef } from 'react';
 import classNames from 'classnames';
 
 type Props = {
@@ -12,9 +12,14 @@ export const Notification: React.FC<Props> = ({
   message,
   onClear,
 }) => {
+  const timer = useRef<NodeJS.Timer>();
+
   useEffect(() => {
-    setInterval(onClear, 3000);
-  }, [message]);
+    if (visible) {
+      clearInterval(timer.current);
+      timer.current = setInterval(onClear, 3000);
+    }
+  });
 
   return (
     <div className={classNames(

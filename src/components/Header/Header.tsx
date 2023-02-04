@@ -22,10 +22,6 @@ export const Header: React.FC<Props> = React.memo(
     const handleSubmit = (event: FormEvent) => {
       event.preventDefault();
 
-      if (!todoTitle) {
-        return;
-      }
-
       onAdd(todoTitle);
     };
 

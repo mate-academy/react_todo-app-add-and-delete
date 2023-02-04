@@ -1,6 +1,7 @@
 import React, {
   useCallback, useEffect, useMemo, useState,
 } from 'react';
+import classNames from 'classnames';
 import {
   Footer, Header, Notification, TodoList,
 } from './components';
@@ -49,6 +50,14 @@ export const App: React.FC = () => {
   }, []);
 
   const handleAdd = useCallback((title: string) => {
+    clearNotification();
+
+    if (!title) {
+      pushNotification(ErrorMessage.TITLE);
+
+      return;
+    }
+
     const todoToAdd = {
       id: 0,
       title,
@@ -57,7 +66,6 @@ export const App: React.FC = () => {
     };
 
     setTempTodo(todoToAdd);
-    clearNotification();
 
     addTodo(USER_ID, todoToAdd)
       .then((todo) => {
@@ -119,7 +127,12 @@ export const App: React.FC = () => {
   }, [todos]);
 
   return (
-    <div className="todoapp">
+    <div
+      className={classNames(
+        'todoapp',
+        { 'has-error': hasError },
+      )}
+    >
       <h1 className="todoapp__title">todos</h1>
 
       <div className="todoapp__content">
