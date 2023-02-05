@@ -20,6 +20,7 @@ export const App: React.FC = () => {
   const [todoTitle, setTodoTitle] = useState('');
   const [isLoading, setIsLoading] = useState(false);
   const [tempTodo, setTempTodo] = useState<Todo | null>(null);
+  const [deletingTodosIds, setDeletingTodosIds] = useState<number[]>([]);
 
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
   const user = useContext(AuthContext);
@@ -75,15 +76,18 @@ export const App: React.FC = () => {
     }
   }, [todoTitle, user]);
 
-  const onDeleteTodo = useCallback((id: number) => {
-    deleteTodo(id)
-      .then(() => (
-        setTodos(currentTodos => currentTodos.filter(todo => todo.id !== id))
-      ))
-      .catch(() => {
-        setErrorMessage(ErrorTypes.UnableToDelete);
-      });
-    // setIsLoading(false);
+  const onDeleteTodo = useCallback(async (todoId: number) => {
+    try {
+      setDeletingTodosIds(prev => [...prev, todoId]);
+
+      await deleteTodo(todoId);
+
+      setTodos(currentTodos => currentTodos.filter(todo => todo.id !== todoId));
+    } catch (error) {
+      setErrorMessage('todo is not delete');
+    } finally {
+      setDeletingTodosIds(prev => prev.filter(id => id !== todoId));
+    }
   }, []);
 
   const clearCompleated = () => {
@@ -149,6 +153,7 @@ export const App: React.FC = () => {
               todos={visibleTodos}
               onDeleteTodo={onDeleteTodo}
               isLoading={isLoading}
+              deletingTodosIds={deletingTodosIds}
             />
 
             {tempTodo && (
@@ -156,6 +161,7 @@ export const App: React.FC = () => {
                 todo={tempTodo}
                 isLoading={isLoading}
                 onDeleteTodo={onDeleteTodo}
+                isDeleting={deletingTodosIds.includes(tempTodo.id)}
               />
             )}
 

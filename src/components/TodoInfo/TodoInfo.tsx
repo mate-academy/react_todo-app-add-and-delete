@@ -1,4 +1,4 @@
-import { memo, useState } from 'react';
+import { memo } from 'react';
 import classNames from 'classnames';
 import { Todo } from '../../types/Todo';
 import { Loader } from '../Loader/Loader';
@@ -7,24 +7,16 @@ type Props = {
   todo: Todo,
   onDeleteTodo: (todoId: number) => void,
   isLoading: boolean,
+  isDeleting: boolean,
 };
 
 export const TodoInfo: React.FC <Props> = memo(({
   todo,
   onDeleteTodo,
   isLoading,
+  isDeleting,
 
 }) => {
-  const [isDeleting, setIsDeleting] = useState(false);
-
-  const handleDeleteTodo = async () => {
-    setIsDeleting(true);
-
-    onDeleteTodo(todo.id);
-
-    setIsDeleting(false);
-  };
-
   return (
     <div
       data-cy="Todo"
@@ -45,7 +37,7 @@ export const TodoInfo: React.FC <Props> = memo(({
         type="button"
         className="todo__remove"
         data-cy="TodoDeleteButton"
-        onClick={handleDeleteTodo}
+        onClick={() => onDeleteTodo(todo.id)}
       >
         ×
       </button>
