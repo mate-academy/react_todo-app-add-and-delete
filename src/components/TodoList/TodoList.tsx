@@ -6,12 +6,12 @@ type Props = {
   todos: Todo[],
   tempTodo: Todo | null,
   deleteTodo: (id: number) => void,
-  isDeleting: boolean,
-  deletedId: number,
 };
 
 export const TodoList: React.FC<Props> = React.memo(
-  ({ todos, tempTodo, deleteTodo, isDeleting, deletedId }) => {
+  ({
+    todos, tempTodo, deleteTodo,
+  }) => {
     return (
       <section className="todoapp__main" data-cy="TodoList">
         <ul>
@@ -20,8 +20,6 @@ export const TodoList: React.FC<Props> = React.memo(
               <TodoItem
                 todo={todo}
                 deleteTodo={deleteTodo}
-                isDeleting={isDeleting}
-                deletedId={deletedId}
               />
             </li>
           ))}
@@ -30,8 +28,6 @@ export const TodoList: React.FC<Props> = React.memo(
             <TodoItem
               todo={tempTodo}
               deleteTodo={deleteTodo}
-              isDeleting={isDeleting}
-              deletedId={deletedId}
             />
           )}
         </ul>

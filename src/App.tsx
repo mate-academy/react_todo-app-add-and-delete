@@ -10,6 +10,7 @@ import { Footer } from './components/Footer';
 import { Loader } from './components/Loader';
 import { NewTodo } from './components/NewTodo';
 import { TodoList } from './components/TodoList';
+import { DeleteContext } from './context/DeleteContext';
 import { ErrorMessage } from './enums/ErrorMessage';
 import { Filter } from './enums/Filter';
 import { normalizeTodos } from './helpers/helpers';
@@ -153,13 +154,19 @@ export const App: React.FC = () => {
 
         {!!userTodos.length && (
           <>
-            <TodoList
-              todos={visibleTodos}
-              tempTodo={tempTodo}
-              deleteTodo={deleteTodo}
-              isDeleting={isDeleting}
-              deletedId={deletedId}
-            />
+            <DeleteContext.Provider value={
+              {
+                isDeleting,
+                deletedId,
+              }
+            }
+            >
+              <TodoList
+                todos={visibleTodos}
+                tempTodo={tempTodo}
+                deleteTodo={deleteTodo}
+              />
+            </DeleteContext.Provider>
             <Footer
               unfinishedTodosLeft={unfinishedTodosLeft}
               activeFilter={filterStatus}

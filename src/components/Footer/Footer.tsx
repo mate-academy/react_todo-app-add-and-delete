@@ -16,7 +16,7 @@ export const Footer: React.FC<Props> = ({
   isAllFinished,
   clearCompleted,
 }) => {
-  const handleClick = (event: React.MouseEvent) => {
+  const handleFilterChange = (event: React.MouseEvent) => {
     const option = event.currentTarget.textContent;
 
     setFilter(option as Filter);
@@ -36,7 +36,7 @@ export const Footer: React.FC<Props> = ({
             'filter__link',
             { selected: activeFilter === Filter.ALL },
           )}
-          onClick={handleClick}
+          onClick={handleFilterChange}
         >
           {Filter.ALL}
         </a>
@@ -48,7 +48,7 @@ export const Footer: React.FC<Props> = ({
             'filter__link',
             { selected: activeFilter === Filter.ACTIVE },
           )}
-          onClick={handleClick}
+          onClick={handleFilterChange}
         >
           {Filter.ACTIVE}
         </a>
@@ -59,7 +59,7 @@ export const Footer: React.FC<Props> = ({
             'filter__link',
             { selected: activeFilter === Filter.COMPLETED },
           )}
-          onClick={handleClick}
+          onClick={handleFilterChange}
         >
           {Filter.COMPLETED}
         </a>

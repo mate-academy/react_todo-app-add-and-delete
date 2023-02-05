@@ -7,7 +7,10 @@ type Props = {
   clearError: () => void,
 };
 
-export const ErrorNotification: React.FC<Props> = ({ errorMessage, clearError }) => {
+export const ErrorNotification: React.FC<Props> = ({
+  errorMessage,
+  clearError,
+}) => {
   const [isShown, setIsShown] = useState(true);
 
   useEffect(() => {
@@ -15,9 +18,10 @@ export const ErrorNotification: React.FC<Props> = ({ errorMessage, clearError })
       setIsShown(false);
       clearError();
     }, 3000);
+
     return () => {
       clearInterval(timerID);
-    }
+    };
   }, [errorMessage]);
 
   return (

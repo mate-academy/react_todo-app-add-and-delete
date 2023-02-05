@@ -1,4 +1,4 @@
-import { Todo } from "../types/Todo";
+import { Todo } from '../types/Todo';
 
 export const normalizeTodos = (todos: Todo[]) => {
   return todos.map(({
@@ -15,4 +15,3 @@ export const normalizeTodos = (todos: Todo[]) => {
     };
   });
 };
-

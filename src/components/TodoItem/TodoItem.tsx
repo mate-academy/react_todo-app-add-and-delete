@@ -1,15 +1,19 @@
 import classNames from 'classnames';
+import { useContext } from 'react';
+import { DeleteContext } from '../../context/DeleteContext';
 import { Todo } from '../../types/Todo';
 
 type Props = {
   todo: Todo,
   deleteTodo: (id: number) => void;
-  isDeleting: boolean,
-  deletedId: number,
 };
 
-export const TodoItem: React.FC<Props> = ({ todo: { id, title, completed }, deleteTodo, isDeleting, deletedId }) => {
+export const TodoItem: React.FC<Props> = ({
+  todo: { id, title, completed }, deleteTodo,
+}) => {
+  const { isDeleting, deletedId } = useContext(DeleteContext);
   const isProcessing = id === 0 || (isDeleting && deletedId === id);
+
   return (
     <div
       data-cy="Todo"

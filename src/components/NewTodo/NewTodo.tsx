@@ -1,5 +1,7 @@
 import classNames from 'classnames';
-import { useContext, useEffect, useRef, useState } from 'react';
+import {
+  useContext, useEffect, useRef, useState,
+} from 'react';
 import { ErrorMessage } from '../../enums/ErrorMessage';
 import { AuthContext } from '../Auth/AuthContext';
 
@@ -24,6 +26,7 @@ export const NewTodo: React.FC<Props> = ({
     event.preventDefault();
     if (!todoTitle) {
       setError(ErrorMessage.EMPTY);
+
       return;
     }
 
@@ -35,7 +38,7 @@ export const NewTodo: React.FC<Props> = ({
     if (newTodoField.current) {
       newTodoField.current.focus();
     }
-  }, [user]);
+  }, [user, isAdding]);
 
   return (
     <header className="todoapp__header">
