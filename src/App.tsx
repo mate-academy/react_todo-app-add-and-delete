@@ -24,7 +24,7 @@ export const App: React.FC = () => {
   // const [hasChangesInTodos, setHasChangesInTodos] = useState(0);
   const [filteredTodos, setFilteredTodos] = useState<Todo[]>(todos);
   const [selectedFilter, setSelectedFilter] = useState<
-    'all' | 'active' | 'completed'
+  'all' | 'active' | 'completed'
   >('all');
 
   // HEADER
