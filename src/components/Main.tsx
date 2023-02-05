@@ -6,12 +6,16 @@ type Props = {
   filteredTodos: Todo[],
   isEditing: boolean,
   onRemove: (todoId: number) => void,
+  tempTodo: Todo | null,
+  idsOfLoadingTodos: number[],
 };
 
 export const Main: React.FC<Props> = ({
   filteredTodos,
   isEditing,
   onRemove,
+  tempTodo,
+  idsOfLoadingTodos,
 }) => {
   return (
     <section className="todoapp__main">
@@ -54,7 +58,12 @@ export const Main: React.FC<Props> = ({
                 </button>
               </>
             )}
-          <div className="modal overlay">
+          <div
+            className={cn(
+              'modal overlay',
+              { 'is-active': idsOfLoadingTodos.includes(todo.id) },
+            )}
+          >
             <div className="modal-background has-background-white-ter" />
             <div className="loader" />
           </div>
@@ -73,23 +82,25 @@ export const Main: React.FC<Props> = ({
           <div className="modal-background has-background-white-ter" />
           <div className="loader" />
         </div>
-      </div>
-
-      This todo is in loadind state
-      <div className="todo">
-        <label className="todo__status-label">
-          <input type="checkbox" className="todo__status" />
-        </label>
-
-        <span className="todo__title">Todo is being saved now</span>
-        <button type="button" className="todo__remove">×</button>
-
-        'is-active' class puts this modal on top of the todo
-        <div className="modal overlay is-active">
-          <div className="modal-background has-background-white-ter" />
-          <div className="loader" />
-        </div>
       </div> */}
+
+      {/* This todo is in loadind state */}
+      {tempTodo && (
+        <div className="todo">
+          <label className="todo__status-label">
+            <input type="checkbox" className="todo__status" />
+          </label>
+
+          <span className="todo__title">{tempTodo.title}</span>
+          <button type="button" className="todo__remove">×</button>
+
+          <div className="modal overlay is-active">
+            <div className="modal-background has-background-white-ter" />
+            <div className="loader" />
+          </div>
+        </div>
+      )}
+
     </section>
   );
 };

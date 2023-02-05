@@ -4,11 +4,11 @@ import { Todo } from '../types/Todo';
 type Props = {
   activeTodos: Todo[],
   completedTodos: Todo[],
-  filteredTodos: Todo[],
   onFilterAll: () => void,
   onFilterActive: () => void,
   onFilterCompleted: () => void,
   selectedFilter: string,
+  onClearCompleted: () => void,
 };
 
 export const Footer: React.FC<Props> = ({
@@ -18,6 +18,7 @@ export const Footer: React.FC<Props> = ({
   onFilterActive,
   onFilterCompleted,
   selectedFilter,
+  onClearCompleted,
 }) => {
   return (
     <footer className="todoapp__footer">
@@ -59,12 +60,12 @@ export const Footer: React.FC<Props> = ({
           Completed
         </a>
       </nav>
-
-      {/* don't show this button if there are no completed todos */}
-      {completedTodos && (
+      {completedTodos.length > 0 && (
         <button
           type="button"
           className="todoapp__clear-completed"
+          onClick={onClearCompleted}
+
         >
           Clear completed
         </button>

@@ -8,6 +8,7 @@ type Props = {
   onNewTitleAdd: (event: ChangeEvent<HTMLInputElement>) => void;
   onSubmit: (event: FormEvent<HTMLFormElement>) => void,
   activeTodos: Todo[],
+  isInputDisabled: boolean,
 };
 
 export const Header: React.FC<Props> = ({
@@ -15,10 +16,10 @@ export const Header: React.FC<Props> = ({
   onNewTitleAdd,
   onSubmit,
   activeTodos,
+  isInputDisabled,
 }) => {
   return (
     <header className="todoapp__header">
-      {/* this buttons is active only if there are some active todos */}
       <button
         type="button"
         className={cn(
@@ -26,8 +27,6 @@ export const Header: React.FC<Props> = ({
           { active: activeTodos.length > 0 },
         )}
       />
-
-      {/* Add a todo on form submit */}
       <form onSubmit={onSubmit}>
         <input
           type="text"
@@ -35,6 +34,7 @@ export const Header: React.FC<Props> = ({
           placeholder="What needs to be done?"
           value={todoTitleToAdd}
           onChange={onNewTitleAdd}
+          disabled={isInputDisabled}
         />
       </form>
     </header>

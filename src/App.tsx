@@ -24,18 +24,23 @@ export const App: React.FC = () => {
   // const [hasChangesInTodos, setHasChangesInTodos] = useState(0);
   const [filteredTodos, setFilteredTodos] = useState<Todo[]>(todos);
   const [selectedFilter, setSelectedFilter] = useState<
-  'all' | 'active' | 'completed'
-  >('all');
-
-  // HEADER
+    'all' | 'active' | 'completed'>('all');
   const [todoTitleToAdd, setTodoTitleToAdd] = useState('');
+  const [tempTodo, setTempTodo] = useState<Todo | null>(null);
+  const [idsOfLoadingTodos, setIdsOfLoadingTodos] = useState<number[]>([]);
+  const [isInputDisabled, setIsInputDisabled] = useState(false);
+
+  const activeTodos = todos.filter(todo => !todo.completed);
+  const completedTodos = todos.filter(todo => todo.completed);
+
   const onNewTitleAdd = (event: ChangeEvent<HTMLInputElement>) => {
     setTodoTitleToAdd(event.target.value);
   };
 
   const onSubmit = (event: FormEvent<HTMLFormElement>) => {
     event.preventDefault();
-    if (todoTitleToAdd.length) {
+    if (todoTitleToAdd) {
+      setIsInputDisabled(true);
       const todoToAdd: Todo = {
         id: 0,
         userId: USER_ID,
@@ -43,35 +48,64 @@ export const App: React.FC = () => {
         completed: false,
       };
 
+      setTempTodo(todoToAdd);
+
       addTodo(todoToAdd)
-        .then(() => {
-          getTodos(USER_ID)
-            .then(todosFromServer => {
-              setTodos(todosFromServer);
-              setFilteredTodos(todosFromServer);
-            });
+        .then((newTodo) => {
+          setTodos([...todos, newTodo]);
+          setFilteredTodos([...todos, newTodo]);
+          setTempTodo(null);
+          setIsInputDisabled(false);
+        })
+        .catch(() => {
+          setError('Unable to add a todo');
+          setShowError(true);
         });
-      // setHasChangesInTodos(hasChangesInTodos + 1);
       setTodoTitleToAdd('');
+    } else {
+      setError('Title cant be empty');
+      setShowError(true);
     }
   };
 
-  // MAIN
   const onRemove = (todoId: number) => {
     removeTodo(todoId)
+      .then(() => {
+        setIdsOfLoadingTodos([...idsOfLoadingTodos, todoId]);
+        getTodos(USER_ID)
+          .then(todosFromServer => {
+            setTodos(todosFromServer);
+            setFilteredTodos(todosFromServer);
+            setIdsOfLoadingTodos(idsOfLoadingTodos.filter(id => id !== todoId));
+          })
+          .catch(() => {
+            setError('Unable to delete a todo');
+            setShowError(true);
+          });
+      });
+
+    setIdsOfLoadingTodos([]);
+  };
+
+  const onClearCompleted = () => {
+    setIdsOfLoadingTodos(
+      [...idsOfLoadingTodos, ...completedTodos.map(todo => todo.id)],
+    );
+
+    Promise.all(completedTodos.map(todo => removeTodo(todo.id)))
       .then(() => {
         getTodos(USER_ID)
           .then(todosFromServer => {
             setTodos(todosFromServer);
             setFilteredTodos(todosFromServer);
+          })
+          .catch(() => {
+            setError('Unable to delete a todo');
+            setShowError(true);
           });
+        setIdsOfLoadingTodos([]);
       });
-    // setHasChangesInTodos(hasChangesInTodos + 1);
   };
-
-  // FOOTER
-  const activeTodos = todos.filter(todo => !todo.completed);
-  const completedTodos = todos.filter(todo => todo.completed);
 
   const onFilterAll = () => {
     setSelectedFilter('all');
@@ -119,28 +153,28 @@ export const App: React.FC = () => {
           onNewTitleAdd={onNewTitleAdd}
           onSubmit={onSubmit}
           activeTodos={activeTodos}
+          isInputDisabled={isInputDisabled}
         />
         <>
           <Main
             isEditing={isEditing}
             filteredTodos={filteredTodos}
             onRemove={onRemove}
+            tempTodo={tempTodo}
+            idsOfLoadingTodos={idsOfLoadingTodos}
           />
           <Footer
             activeTodos={activeTodos}
             completedTodos={completedTodos}
-            filteredTodos={filteredTodos}
             onFilterActive={onFilterActive}
             onFilterAll={onFilterAll}
             onFilterCompleted={onFilterCompleted}
             selectedFilter={selectedFilter}
+            onClearCompleted={onClearCompleted}
           />
         </>
 
       </div>
-
-      {/* Notification is shown in case of any error */}
-      {/* Add the 'hidden' class to hide the message smoothly */}
       {error && (
         <ErrorPanel
           errorMessage={error}
