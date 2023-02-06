@@ -1,13 +1,15 @@
 import React from 'react';
 import { FilterStatus } from '../../types/FilterStatus';
-import { Todo } from '../../types/Todo';
+import { TempTodo, Todo } from '../../types/Todo';
 import { TodoInfo } from '../TodoInfo';
 
 type Props = {
   todos: Todo[];
   filterStatus: FilterStatus;
+  tempTodo: TempTodo | null,
   onSetTodos: (todos: Todo[]) => void,
-  onSetError: (message: string) => void
+  onSetError: (message: string) => void,
+  addedTodoIsLoading: boolean,
 };
 
 export const TodoList: React.FC<Props> = ({
@@ -15,6 +17,8 @@ export const TodoList: React.FC<Props> = ({
   filterStatus,
   onSetTodos,
   onSetError,
+  tempTodo,
+  addedTodoIsLoading,
 
 }) => {
   const visibleTodos = todos.filter(todo => {
@@ -39,6 +43,13 @@ export const TodoList: React.FC<Props> = ({
           onSetError={onSetError}
         />
       ))}
+      {tempTodo && (
+        <TodoInfo
+          key={tempTodo.id}
+          todo={tempTodo}
+          addedTodoIsLoading={addedTodoIsLoading}
+        />
+      )}
     </section>
   );
 };

@@ -5,17 +5,28 @@ import { Todo } from '../../types/Todo';
 import { AuthContext } from '../Auth/AuthContext';
 
 type Props = {
-  submitTodo: (todo: Todo) => void
-  onSetError: (message: string) => void
+  submitTodo: (todo: Todo) => void,
+  onSetError: (message: string) => void,
+  onAddTempTodo: (title: string) => void,
+  onSetTempTodo: (tempTodo: null) => void,
+  onSetLoading: (isLoading: boolean) => void,
 };
 
-export const Header: React.FC<Props> = ({ submitTodo, onSetError }) => {
+export const Header: React.FC<Props> = ({
+  submitTodo,
+  onSetError,
+  onAddTempTodo,
+  onSetTempTodo,
+  onSetLoading,
+}) => {
   const [title, setTitle] = useState('');
   const [isDisabled, setIsDisabled] = useState(false);
   const user = useContext(AuthContext);
 
   const creatNewTodo = async () => {
     setIsDisabled(true);
+    onAddTempTodo(title);
+    onSetLoading(true);
 
     try {
       const createdTodo = await creatTodo(title, user?.id || 0);
@@ -25,6 +36,8 @@ export const Header: React.FC<Props> = ({ submitTodo, onSetError }) => {
       onSetError('Unable to add a todo');
     } finally {
       setIsDisabled(false);
+      onSetTempTodo(null);
+      onSetLoading(true);
     }
   };
 

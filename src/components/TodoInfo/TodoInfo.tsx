@@ -1,35 +1,40 @@
 import React, { useEffect, useState } from 'react';
 import cn from 'classnames';
-import { Todo } from '../../types/Todo';
+import { TempTodo, Todo } from '../../types/Todo';
 import { removeTodo } from '../../api/todos';
 
 type Props = {
-  todo: Todo,
-  todos: Todo[],
-  onSetTodos: (todos: Todo[]) => void,
-  onSetError: (message: string) => void,
+  todo: Todo | TempTodo,
+  todos?: Todo[],
+  onSetTodos?: (todos: Todo[]) => void,
+  onSetError?: (message: string) => void,
+  addedTodoIsLoading?: boolean,
 };
 export const TodoInfo: React.FC<Props> = ({
   todo,
   onSetTodos,
   todos,
   onSetError,
+  addedTodoIsLoading,
 }) => {
   const [isEditing] = useState(false);
-  const [isLoading, setIsLoading] = useState(false);
-  // const [isDeleted, setIsDeleted] = useState(false);
+  const [loading, setLoading] = useState(false);
 
   const deleteTodo = async () => {
-    setIsLoading(true);
-    const filteredTodos = todos.filter(({ id }) => id !== todo.id);
+    setLoading(true);
+    const filteredTodos = todos?.filter(({ id }) => id !== todo.id);
 
     try {
       await removeTodo(todo.id);
-      onSetTodos(filteredTodos);
+      if (onSetTodos) {
+        onSetTodos(filteredTodos as Todo[]);
+      }
     } catch {
-      onSetError('Unable to delete a todo');
+      if (onSetError) {
+        onSetError('Unable to delete a todo');
+      }
     } finally {
-      setIsLoading(false);
+      setLoading(false);
     }
   };
 
@@ -38,6 +43,8 @@ export const TodoInfo: React.FC<Props> = ({
       deleteTodo();
     }
   }, []);
+
+  const isActive = loading || addedTodoIsLoading;
 
   return (
     <div
@@ -81,7 +88,7 @@ export const TodoInfo: React.FC<Props> = ({
       <div
         data-cy="TodoLoader"
         className={cn('modal overlay', {
-          'is-active': isLoading,
+          'is-active': isActive,
         })}
       >
         <div className="modal-background has-background-white-ter" />
