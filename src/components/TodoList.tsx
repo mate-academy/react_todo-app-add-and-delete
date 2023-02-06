@@ -6,24 +6,23 @@ import { TodoModal } from './TodoModal';
 
 type Props = {
   todos: Todo[],
-  title: string
-  setTitle: (title: string) => void,
-  onSubmit: (event: React.FormEvent<HTMLFormElement>) => void
+  onSubmit: (todo: Todo) => void
   onRemove: (todoId: number) => void
   onSetLoading: (value: boolean) => void
   isLoading: boolean
+  userId: number
 };
 
 export const TodoList: React.FC<Props> = ({
   todos,
-  title,
-  setTitle,
   onSubmit,
   onRemove,
   onSetLoading,
   isLoading,
+  userId,
 }) => {
   const [editing, setEditing] = useState(false);
+  const [selectedTodoId, setSelectedTodoId] = useState(0);
 
   return (
     <section className="todoapp__main">
@@ -45,13 +44,14 @@ export const TodoList: React.FC<Props> = ({
             />
           </label>
 
-          {!editing
+          {todo.id !== selectedTodoId
             ? (
               <>
                 <span
                   className="todo__title"
                   onDoubleClick={() => {
                     setEditing(true);
+                    setSelectedTodoId(todo.id);
                   }}
                   onSubmit={() => {
                     setEditing(false);
@@ -75,9 +75,9 @@ export const TodoList: React.FC<Props> = ({
             : (
               <>
                 <Form
-                  title={title}
                   onSubmit={onSubmit}
-                  setTitle={setTitle}
+                  todos={todos}
+                  userId={userId}
                   isLoading={isLoading}
                   className="todo__title-field"
                   placeholder="Empty todo will be deleted"

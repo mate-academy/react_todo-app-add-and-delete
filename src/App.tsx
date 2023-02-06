@@ -13,9 +13,7 @@ import { UserWarning } from './UserWarning';
 const USER_ID = 6101;
 
 export const App: React.FC = () => {
-  const [title, setTitle] = useState<string>('');
   const [todos, setTodos] = useState<Todo[]>([]);
-  const [completed] = useState(false);
   const [filter, setFilter] = useState('all');
   const [error, setError] = useState('');
   const [showError, setShowError] = useState(false);
@@ -39,16 +37,8 @@ export const App: React.FC = () => {
       });
   }, [loading]);
 
-  const newTodo = {
-    title,
-    id: Math.max(...todos.map(todo => todo.id)) + 1,
-    completed,
-    userId: USER_ID,
-  };
-
-  const addTodo = (event: React.FormEvent<HTMLFormElement>) => {
-    event.preventDefault();
-    if (!newTodo.title) {
+  const addTodo = (todo: Todo) => {
+    if (!todo.title) {
       setError('Title cant be empty');
       setShowError(true);
 
@@ -59,10 +49,9 @@ export const App: React.FC = () => {
       return;
     }
 
-    postTodo(newTodo);
+    postTodo(todo);
     setLoading(true);
-    setTodos([...todos, newTodo]);
-    setTitle('');
+    setTodos([...todos, todo]);
   };
 
   const visibleTodos = todos
@@ -95,21 +84,20 @@ export const App: React.FC = () => {
             )}
           />
           <Form
-            title={title}
             onSubmit={addTodo}
-            setTitle={setTitle}
+            todos={todos}
             className="todoapp__new-todo"
             placeholder="What needs to be done?"
             isLoading={loading}
+            userId={USER_ID}
           />
         </header>
         {todos.length !== 0 && (
           <>
             <TodoList
               onSubmit={() => {}}
+              userId={USER_ID}
               onRemove={removeTodo}
-              title={title}
-              setTitle={setTitle}
               todos={visibleTodos}
               onSetLoading={setLoading}
               isLoading={loading}
