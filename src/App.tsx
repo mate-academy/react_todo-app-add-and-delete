@@ -19,6 +19,7 @@ export const App: React.FC = () => {
   const [filter, setFilter] = useState('all');
   const [error, setError] = useState('');
   const [showError, setShowError] = useState(false);
+  const [loading, setLoading] = useState(false);
 
   useEffect(() => {
     getTodos(USER_ID)
@@ -29,12 +30,14 @@ export const App: React.FC = () => {
       .catch(() => {
         setShowError(true);
         setError('Unable to load todos');
-
+      })
+      .finally(() => {
+        setLoading(false);
         setTimeout(() => {
           setShowError(false);
         }, 3000);
       });
-  }, []);
+  }, [loading]);
 
   const newTodo = {
     title,
@@ -45,15 +48,21 @@ export const App: React.FC = () => {
 
   const addTodo = (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
-    if (!title) {
+    if (!newTodo.title) {
       setError('Title cant be empty');
+      setShowError(true);
+
+      setTimeout(() => {
+        setShowError(false);
+      }, 3000);
 
       return;
     }
 
     postTodo(newTodo);
-
+    setLoading(true);
     setTodos([...todos, newTodo]);
+    setTitle('');
   };
 
   const visibleTodos = todos
@@ -91,6 +100,7 @@ export const App: React.FC = () => {
             setTitle={setTitle}
             className="todoapp__new-todo"
             placeholder="What needs to be done?"
+            isLoading={loading}
           />
         </header>
         {todos.length !== 0 && (
@@ -101,6 +111,8 @@ export const App: React.FC = () => {
               title={title}
               setTitle={setTitle}
               todos={visibleTodos}
+              onSetLoading={setLoading}
+              isLoading={loading}
             />
             <Footer
               todos={todos}

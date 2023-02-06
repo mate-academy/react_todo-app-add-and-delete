@@ -4,6 +4,7 @@ type Props = {
   setTitle: (event: string) => void
   placeholder: string
   className: string
+  isLoading: boolean
 };
 
 export const Form: React.FC<Props> = ({
@@ -12,6 +13,7 @@ export const Form: React.FC<Props> = ({
   setTitle,
   placeholder,
   className,
+  isLoading,
 }) => {
   return (
     <form
@@ -25,6 +27,7 @@ export const Form: React.FC<Props> = ({
         onChange={(event) => {
           setTitle(event.target.value);
         }}
+        disabled={isLoading}
 
       />
     </form>

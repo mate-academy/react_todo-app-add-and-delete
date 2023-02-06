@@ -10,6 +10,8 @@ type Props = {
   setTitle: (title: string) => void,
   onSubmit: (event: React.FormEvent<HTMLFormElement>) => void
   onRemove: (todoId: number) => void
+  onSetLoading: (value: boolean) => void
+  isLoading: boolean
 };
 
 export const TodoList: React.FC<Props> = ({
@@ -18,6 +20,8 @@ export const TodoList: React.FC<Props> = ({
   setTitle,
   onSubmit,
   onRemove,
+  onSetLoading,
+  isLoading,
 }) => {
   const [editing, setEditing] = useState(false);
 
@@ -37,22 +41,12 @@ export const TodoList: React.FC<Props> = ({
             <input
               type="checkbox"
               className="todo__status"
-              id="todo_selected"
               checked={todo.completed}
             />
           </label>
 
-          {editing
+          {!editing
             ? (
-              <Form
-                title={title}
-                onSubmit={onSubmit}
-                setTitle={setTitle}
-                className="todo__title-field"
-                placeholder="Empty todo will be deleted"
-              />
-            )
-            : (
               <>
                 <span
                   className="todo__title"
@@ -69,17 +63,31 @@ export const TodoList: React.FC<Props> = ({
                 <button
                   type="button"
                   className="todo__remove"
-                  onClick={() => onRemove(todo.id)}
+                  onClick={() => {
+                    onRemove(todo.id);
+                    onSetLoading(true);
+                  }}
                 >
                   ×
                 </button>
               </>
+            )
+            : (
+              <>
+                <Form
+                  title={title}
+                  onSubmit={onSubmit}
+                  setTitle={setTitle}
+                  isLoading={isLoading}
+                  className="todo__title-field"
+                  placeholder="Empty todo will be deleted"
+                />
+
+                <TodoModal
+                  editing={editing}
+                />
+              </>
             )}
-          {editing && (
-            <TodoModal
-              editing={editing}
-            />
-          )}
         </div>
       ))}
     </section>
