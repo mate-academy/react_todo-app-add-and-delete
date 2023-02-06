@@ -5,14 +5,14 @@ import { Loader } from '../Loader/Loader';
 
 type Props = {
   todo: Todo,
-  onDeleteTodo: (todoId: number) => void,
+  removeTodo: (todoId: number) => void,
   isLoading: boolean,
   isDeleting: boolean,
 };
 
 export const TodoInfo: React.FC <Props> = memo(({
   todo,
-  onDeleteTodo,
+  removeTodo,
   isLoading,
   isDeleting,
 
@@ -37,7 +37,7 @@ export const TodoInfo: React.FC <Props> = memo(({
         type="button"
         className="todo__remove"
         data-cy="TodoDeleteButton"
-        onClick={() => onDeleteTodo(todo.id)}
+        onClick={() => removeTodo(todo.id)}
       >
         ×
       </button>

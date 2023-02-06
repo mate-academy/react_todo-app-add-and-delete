@@ -1,20 +1,28 @@
-import { memo } from 'react';
+import { memo, useState } from 'react';
 
 type Props = {
   newTodoField: React.RefObject<HTMLInputElement>,
-  todoTitle: string,
-  setTodoTitle: (title: string) => void,
+  // todoTitle: string,
+  // setTodoTitle: (title: string) => void,
   isLoading: boolean,
-  onSubmit: (event: React.FormEvent<HTMLFormElement>) => void,
+  onAddTodo: (newTitle: string) => void,
 };
 
 export const Header: React.FC<Props> = memo(({
   newTodoField,
-  todoTitle,
-  setTodoTitle,
+  // todoTitle,
+  // setTodoTitle,
   isLoading,
-  onSubmit,
+  onAddTodo,
 }) => {
+  const [todoTitle, setTodoTitle] = useState('');
+
+  const handleSubmit = async (event: React.FormEvent) => {
+    event.preventDefault();
+    await onAddTodo(todoTitle);
+    setTodoTitle('');
+  };
+
   return (
     <header className="todoapp__header">
       {/* eslint-disable-next-line jsx-a11y/control-has-associated-label */}
@@ -24,7 +32,7 @@ export const Header: React.FC<Props> = memo(({
         className="todoapp__toggle-all active"
       />
 
-      <form onSubmit={(event) => onSubmit(event)}>
+      <form onSubmit={handleSubmit}>
         <input
           data-cy="NewTodoField"
           type="text"

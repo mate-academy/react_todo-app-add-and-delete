@@ -8,7 +8,6 @@ import { AuthContext } from './components/Auth/AuthContext';
 import { ErrorNotification } from './components/ErrorNotification/ErrorNotification';
 import { Footer } from './components/Footer/Footer';
 import { Header } from './components/Header/Header';
-import { TodoInfo } from './components/TodoInfo/TodoInfo';
 import { TodoList } from './components/TodoList/TodoList';
 import { ErrorTypes, FilterTypes } from './types/Enums';
 import { Todo } from './types/Todo';
@@ -16,8 +15,8 @@ import { Todo } from './types/Todo';
 export const App: React.FC = () => {
   const [todos, setTodos] = useState<Todo[]>([]);
   const [errorMessage, setErrorMessage] = useState('');
+  const [isError, setIsError] = useState(false);
   const [filterType, setFilterType] = useState('All');
-  const [todoTitle, setTodoTitle] = useState('');
   const [isLoading, setIsLoading] = useState(false);
   const [tempTodo, setTempTodo] = useState<Todo | null>(null);
   const [deletingTodosIds, setDeletingTodosIds] = useState<number[]>([]);
@@ -38,12 +37,10 @@ export const App: React.FC = () => {
     setFilterType(FilterTypes.COMPLETED);
   };
 
-  const onSubmit = useCallback((event: React.FormEvent<HTMLFormElement>) => {
-    event.preventDefault();
-
-    if (!todoTitle.trim()) {
+  const addNewTodo = useCallback(async (newTitle: string) => {
+    if (!newTitle.trim()) {
+      setIsError(true);
       setErrorMessage(ErrorTypes.EmptyTitle);
-      setTodoTitle('');
 
       return;
     }
@@ -51,49 +48,54 @@ export const App: React.FC = () => {
     setIsLoading(true);
 
     if (user) {
-      setTempTodo({
-        id: 0,
-        title: todoTitle,
-        completed: false,
-        userId: user.id,
-      });
-
-      addTodo(todoTitle, user.id)
-        .then(response => {
-          setTodos(prev => [...prev, {
-            id: response.id,
-            title: response.title,
-            completed: response.completed,
-            userId: response.userId,
-          }]);
-        })
-        .catch(() => setErrorMessage(ErrorTypes.UnableToAdd))
-        .finally(() => {
-          setIsLoading(false);
-          setTempTodo(null);
-          setTodoTitle('');
+      try {
+        setTempTodo({
+          id: 0,
+          title: newTitle.trim(),
+          completed: false,
+          userId: user.id,
         });
-    }
-  }, [todoTitle, user]);
 
-  const onDeleteTodo = useCallback(async (todoId: number) => {
+        const newTodo = await addTodo({
+          title: newTitle.trim(),
+          userId: user?.id,
+          completed: false,
+        });
+
+        setTodos(prev => [...prev, newTodo]);
+        setErrorMessage('');
+        setIsError(false);
+      } catch (error) {
+        setIsError(true);
+        setErrorMessage(ErrorTypes.UnableToAdd);
+      } finally {
+        setIsLoading(false);
+        setTempTodo(null);
+      }
+    }
+  }, [user]);
+
+  const removeTodo = useCallback(async (todoId: number) => {
     try {
       setDeletingTodosIds(prev => [...prev, todoId]);
 
       await deleteTodo(todoId);
 
       setTodos(currentTodos => currentTodos.filter(todo => todo.id !== todoId));
+      setErrorMessage('');
+      setIsError(false);
     } catch (error) {
       setErrorMessage('todo is not delete');
+      setIsError(true);
     } finally {
       setDeletingTodosIds(prev => prev.filter(id => id !== todoId));
     }
   }, []);
 
-  const clearCompleated = () => {
+  const deleteCompleated = () => {
     todos.forEach(todo => {
       if (todo.completed) {
-        onDeleteTodo(todo.id);
+        removeTodo(todo.id);
       }
     });
   };
@@ -110,24 +112,32 @@ export const App: React.FC = () => {
         return todos;
 
       default:
-        return todos;
+        throw new Error('Invalid sorting type');
     }
   }, [todos, filterType]);
 
-  if (errorMessage) {
+  if (isError) {
     setTimeout(() => {
-      setErrorMessage('');
+      setIsError(false);
     }, 3000);
   }
 
-  const todosLeft = visibleTodos.filter(todo => !todo.completed);
-  const todosCompleted = visibleTodos.filter(todo => todo.completed).length;
+  const handleCloseErrorMessage = () => {
+    setIsError(false);
+  };
+
+  const incompletedTodos = visibleTodos.filter(todo => !todo.completed);
+  const completedTodosAmount = visibleTodos
+    .filter(todo => todo.completed).length;
 
   useEffect(() => {
     if (user) {
       getTodos(user.id)
         .then(setTodos)
-        .catch(() => (setErrorMessage(ErrorTypes.UnableToLoad)));
+        .catch(() => {
+          setIsError(true);
+          setErrorMessage(ErrorTypes.UnableToLoad);
+        });
     }
 
     if (newTodoField.current) {
@@ -142,37 +152,27 @@ export const App: React.FC = () => {
       <div className="todoapp__content">
         <Header
           newTodoField={newTodoField}
-          todoTitle={todoTitle}
-          setTodoTitle={setTodoTitle}
           isLoading={isLoading}
-          onSubmit={onSubmit}
+          onAddTodo={addNewTodo}
         />
         {todos.length !== 0 && (
           <>
             <TodoList
               todos={visibleTodos}
-              onDeleteTodo={onDeleteTodo}
+              tempTodo={tempTodo}
+              removeTodo={removeTodo}
               isLoading={isLoading}
               deletingTodosIds={deletingTodosIds}
             />
 
-            {tempTodo && (
-              <TodoInfo
-                todo={tempTodo}
-                isLoading={isLoading}
-                onDeleteTodo={onDeleteTodo}
-                isDeleting={deletingTodosIds.includes(tempTodo.id)}
-              />
-            )}
-
             <Footer
               filterType={filterType}
-              todosLeft={todosLeft}
+              incompletedTodos={incompletedTodos}
               handleButtonClickAll={handleButtonClickAll}
               handleButtonClickActive={handleButtonClickActive}
               handleButtonClickCompleted={handleButtonClickCompleted}
-              todosCompleted={todosCompleted}
-              clearCompleated={clearCompleated}
+              completedTodosAmount={completedTodosAmount}
+              deleteCompleated={deleteCompleated}
             />
           </>
         )}
@@ -181,6 +181,8 @@ export const App: React.FC = () => {
       {errorMessage && (
         <ErrorNotification
           errorMessage={errorMessage}
+          isError={isError}
+          onCloseErrorMessage={handleCloseErrorMessage}
         />
       )}
     </div>
