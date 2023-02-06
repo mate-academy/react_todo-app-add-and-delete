@@ -9,18 +9,14 @@ import { Navigation } from './components/Navigation';
 import { ErrorNotification } from './components/ErrorNotification';
 
 export const App: React.FC = () => {
-  const [todos, setTodos] = useState<any>([]);
+  const [todos, setTodos] = useState<Todo[]>([]);
   const user = useContext(AuthContext);
   const newTodoField = useRef<HTMLInputElement>(null);
   const [error, setError] = useState<boolean>(false);
   const [status, setStatus] = useState('All');
   const [textField, setTextField] = useState<string>('');
-  const [emptyInput, setEmptyInput] = useState<boolean>(false);
+  const [isEmptyInput, setIsEmptyInput] = useState<boolean>(false);
   const [isAdding, setIsAdding] = useState<boolean>(true);
-
-  const changeStatusOnClick = (event: React.MouseEvent) => {
-    setStatus(event.currentTarget.innerHTML);
-  };
 
   const handleDelete = (todoId: number) => {
     setTodos((prev: Todo[]) => prev.filter((todo) => todo.id !== todoId));
@@ -31,21 +27,21 @@ export const App: React.FC = () => {
       return;
     }
 
+    event.preventDefault();
+
     if (!textField) {
-      setEmptyInput(true);
-      setTimeout(() => setEmptyInput(false), 3000);
+      setIsEmptyInput(true);
+      setTimeout(() => setIsEmptyInput(false), 3000);
 
       return;
     }
 
-    event.preventDefault();
-
     addTodo(user.id, {
       title: textField,
       userId: user.id,
-      completed: true,
+      completed: false,
     }).then((loadedTodos) => {
-      setTodos((prev: Todo[]) => [...prev, loadedTodos]);
+      setTodos((prev: any) => [...prev, loadedTodos]);
     })
       .catch(() => {
         setError(true);
@@ -87,7 +83,7 @@ export const App: React.FC = () => {
         return todos.filter((todo: Todo) => todo.completed);
 
       default:
-        return null;
+        throw Error('Specify your status');
     }
   }
 
@@ -130,10 +126,13 @@ export const App: React.FC = () => {
           </form>
         </header>
 
-        <TodosList
-          setOfItems={updatedTodos}
-          deleteItem={handleDelete}
-        />
+        {todos.length > 0 ? (
+          <TodosList
+            setOfItems={updatedTodos}
+            deleteItem={handleDelete}
+          />
+        ) : null}
+
         {todos.length ? (
           <footer className="todoapp__footer" data-cy="Footer">
             <span className="todo-count" data-cy="todosCounter">
@@ -142,7 +141,10 @@ export const App: React.FC = () => {
               items left
             </span>
 
-            <Navigation changeFunction={changeStatusOnClick} />
+            <Navigation
+              changeStatus={setStatus}
+              status={status}
+            />
             {completedTodos.length > 0 ? (
               <button
                 data-cy="ClearCompletedButton"
@@ -165,7 +167,7 @@ export const App: React.FC = () => {
         />
       ) : null}
 
-      {emptyInput ? (
+      {isEmptyInput ? (
         <div>
           Title cannot be empty
         </div>

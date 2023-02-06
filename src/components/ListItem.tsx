@@ -9,6 +9,12 @@ type Props = {
 };
 
 export const ListItem: React.FC<Props> = ({ todo, deleteItem }) => {
+  const deleteHandler = () => {
+    removeTodo(todo.id).then(() => {
+      deleteItem(todo.id);
+    });
+  };
+
   return (
     <div
       data-cy="Todo"
@@ -31,11 +37,7 @@ export const ListItem: React.FC<Props> = ({ todo, deleteItem }) => {
         type="button"
         className="todo__remove"
         data-cy="TodoDeleteButton"
-        onClick={() => {
-          removeTodo(todo.id).then(() => {
-            deleteItem(todo.id);
-          });
-        }}
+        onClick={deleteHandler}
       >
         ×
       </button>

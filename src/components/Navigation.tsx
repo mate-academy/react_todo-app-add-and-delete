@@ -1,13 +1,12 @@
-import React, { useState } from 'react';
+import React from 'react';
 import classnames from 'classnames';
 
 type Props = {
-  changeFunction: (event: React.MouseEvent) => void
+  changeStatus: React.Dispatch<React.SetStateAction<string>>,
+  status: string,
 };
 
-export const Navigation: React.FC<Props> = ({ changeFunction }) => {
-  const [active, setActive] = useState('All');
-
+export const Navigation: React.FC<Props> = ({ changeStatus, status }) => {
   return (
     <nav className="filter" data-cy="Filter">
       <a
@@ -15,11 +14,10 @@ export const Navigation: React.FC<Props> = ({ changeFunction }) => {
         href="#/"
         className={classnames({
           filter__link: true,
-          selected: active === 'All',
+          selected: status === 'All',
         })}
         onClick={(event) => {
-          changeFunction(event);
-          setActive(event.currentTarget.innerHTML);
+          changeStatus(event.currentTarget.innerHTML);
         }}
       >
         All
@@ -30,11 +28,10 @@ export const Navigation: React.FC<Props> = ({ changeFunction }) => {
         href="#/active"
         className={classnames({
           filter__link: true,
-          selected: active === 'Active',
+          selected: status === 'Active',
         })}
         onClick={(event) => {
-          changeFunction(event);
-          setActive(event.currentTarget.innerHTML);
+          changeStatus(event.currentTarget.innerHTML);
         }}
       >
         Active
@@ -44,11 +41,10 @@ export const Navigation: React.FC<Props> = ({ changeFunction }) => {
         href="#/completed"
         className={classnames({
           filter__link: true,
-          selected: active === 'Completed',
+          selected: status === 'Completed',
         })}
         onClick={(event) => {
-          changeFunction(event);
-          setActive(event.currentTarget.innerHTML);
+          changeStatus(event.currentTarget.innerHTML);
         }}
       >
         Completed
