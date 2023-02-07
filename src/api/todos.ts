@@ -13,12 +13,8 @@ export const postTodo = (data: Todo) => {
   return client.post('/todos/', data);
 };
 
-export const patchTodo = (
-  todoId: number,
-  title: string,
-  completed: boolean,
-) => {
-  return client.patch(`/todos/${todoId}`, { title, completed });
+export const patchTodo = (todoId: number, data: Todo) => {
+  return client.patch(`/todos/${todoId}`, data);
 };
 
 export const removeTodo = (todoId: number) => {

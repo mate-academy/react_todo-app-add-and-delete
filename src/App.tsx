@@ -3,7 +3,12 @@
 
 import classNames from 'classnames';
 import React, { useEffect, useState } from 'react';
-import { getTodos, postTodo, removeTodo } from './api/todos';
+import {
+  getTodos,
+  patchTodo,
+  postTodo,
+  removeTodo,
+} from './api/todos';
 import { Footer } from './components/Footer';
 import { Form } from './components/Form';
 import { TodoList } from './components/TodoList';
@@ -60,6 +65,8 @@ export const App: React.FC = () => {
   const updateTodo = (updated: Todo) => {
     setTodos(todos.map((todo) => {
       if (todo.id === updated.id) {
+        patchTodo(todo.id, updated);
+
         return updated;
       }
 
