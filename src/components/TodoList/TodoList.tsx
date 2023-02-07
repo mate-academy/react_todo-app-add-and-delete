@@ -28,7 +28,6 @@ export const TodoList: React.FC<Props> = React.memo(
             key={todoItem.id}
             onDelete={onDelete}
             deletedTodosId={deletedTodosId}
-            isTodoLoading={isTodoLoading}
             activeTodoId={activeTodoId}
           />
         ))}
@@ -39,7 +38,6 @@ export const TodoList: React.FC<Props> = React.memo(
             key={tempTodo.id}
             onDelete={onDelete}
             deletedTodosId={deletedTodosId}
-            isTodoLoading={isTodoLoading}
             activeTodoId={activeTodoId}
           />
         )}

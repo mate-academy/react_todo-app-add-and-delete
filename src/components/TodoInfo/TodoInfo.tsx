@@ -6,7 +6,6 @@ type Props = {
   todoList: Todo,
   onDelete: (id: number) => void,
   deletedTodosId: number[],
-  isTodoLoading: boolean,
   activeTodoId: number[]
 };
 
@@ -14,14 +13,11 @@ export const TodoInfo: React.FC<Props> = React.memo(({
   todoList,
   onDelete,
   deletedTodosId,
-  isTodoLoading,
   activeTodoId,
 }) => {
   const { title, completed, id } = todoList;
   const isSpinerActive = deletedTodosId.includes(id)
   || activeTodoId.includes(id);
-
-  console.log(isTodoLoading);
 
   return (
     <>
