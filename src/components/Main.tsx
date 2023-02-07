@@ -5,17 +5,17 @@ import { Todo } from '../types/Todo';
 type Props = {
   filteredTodos: Todo[],
   isEditing: boolean,
-  onRemove: (todoId: number) => void,
+  deleteTodo: (todoId: number) => void,
   tempTodo: Todo | null,
-  idsOfLoadingTodos: number[],
+  loadingTodoIds: number[],
 };
 
 export const Main: React.FC<Props> = ({
   filteredTodos,
   isEditing,
-  onRemove,
+  deleteTodo,
   tempTodo,
-  idsOfLoadingTodos,
+  loadingTodoIds,
 }) => (
   <section className="todoapp__main">
     {filteredTodos.map(todo => (
@@ -51,7 +51,7 @@ export const Main: React.FC<Props> = ({
               <button
                 type="button"
                 className="todo__remove"
-                onClick={() => onRemove(todo.id)}
+                onClick={() => deleteTodo(todo.id)}
               >
                 ×
               </button>
@@ -60,7 +60,7 @@ export const Main: React.FC<Props> = ({
         <div
           className={cn(
             'modal overlay',
-            { 'is-active': idsOfLoadingTodos.includes(todo.id) },
+            { 'is-active': loadingTodoIds.includes(todo.id) },
           )}
         >
           <div className="modal-background has-background-white-ter" />

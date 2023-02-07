@@ -4,19 +4,19 @@ import React, { ChangeEvent, FormEvent } from 'react';
 import { Todo } from '../types/Todo';
 
 type Props = {
-  todoTitleToAdd: string,
+  newTodoTitle: string,
   onNewTitleAdd: (event: ChangeEvent<HTMLInputElement>) => void;
-  onSubmit: (event: FormEvent<HTMLFormElement>) => void,
+  createNewTodo: (event: FormEvent<HTMLFormElement>) => void,
   activeTodos: Todo[],
-  isInputDisabled: boolean,
+  areTodosLoading: boolean,
 };
 
 export const Header: React.FC<Props> = ({
-  todoTitleToAdd,
+  newTodoTitle,
   onNewTitleAdd,
-  onSubmit,
+  createNewTodo,
   activeTodos,
-  isInputDisabled,
+  areTodosLoading,
 }) => {
   return (
     <header className="todoapp__header">
@@ -27,14 +27,14 @@ export const Header: React.FC<Props> = ({
           { active: activeTodos.length > 0 },
         )}
       />
-      <form onSubmit={onSubmit}>
+      <form onSubmit={createNewTodo}>
         <input
           type="text"
           className="todoapp__new-todo"
           placeholder="What needs to be done?"
-          value={todoTitleToAdd}
+          value={newTodoTitle}
           onChange={onNewTitleAdd}
-          disabled={isInputDisabled}
+          disabled={areTodosLoading}
         />
       </form>
     </header>
