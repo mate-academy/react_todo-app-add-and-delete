@@ -5,12 +5,14 @@ type Props = {
   todos: Todo[],
   filter: string,
   onSetFilter: (filter: string) => void,
+  onSetClearHandler: (selectedTodosIds: number[]) => void
 };
 
 export const Footer: React.FC<Props> = ({
   todos,
   onSetFilter,
   filter,
+  onSetClearHandler,
 }) => (
   <footer className="todoapp__footer">
     <span className="todo-count">
@@ -57,12 +59,17 @@ export const Footer: React.FC<Props> = ({
         Completed
       </a>
     </nav>
-    {/* don't show this button if there are no completed todos */}
     {todos.find((todo) => todo.completed) && (
       <button
         type="button"
         className="todoapp__clear-completed"
-        onClick={() => { }}
+        onClick={() => {
+          const selectedTodosIds = todos
+            .filter((todo) => todo.completed)
+            .map((todo) => todo.id);
+
+          onSetClearHandler(selectedTodosIds);
+        }}
       >
         Clear completed
       </button>

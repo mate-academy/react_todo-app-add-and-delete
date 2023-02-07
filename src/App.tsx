@@ -87,7 +87,7 @@ export const App: React.FC = () => {
       });
   };
 
-  const updateTodo = (updated: Todo) => {
+  const handleUpdate = (updated: Todo) => {
     setTodos(todos.map((todo) => {
       if (todo.id === updated.id) {
         patchTodo(todo.id, updated)
@@ -149,7 +149,7 @@ export const App: React.FC = () => {
               userId={USER_ID}
               onRemove={handleRemove}
               todos={visibleTodos}
-              onTodoUpdate={updateTodo}
+              onTodoUpdate={handleUpdate}
             />
             {tempTodo && (
               <div
@@ -187,6 +187,7 @@ export const App: React.FC = () => {
               todos={todos}
               filter={filter}
               onSetFilter={setFilter}
+              onSetClearHandler={() => {}}
             />
           </>
         )}
