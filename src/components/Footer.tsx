@@ -1,4 +1,5 @@
 import cn from 'classnames';
+import { Filters } from '../types/Filters';
 import { Todo } from '../types/Todo';
 
 type Props = {
@@ -20,6 +21,10 @@ export const Footer: React.FC<Props> = ({
   selectedFilter,
   onClearCompleted,
 }) => {
+  const hasFilterAll = selectedFilter === Filters.All;
+  const hasFilterActive = selectedFilter === Filters.Active;
+  const hasFilterCompleted = selectedFilter === Filters.Completed;
+
   return (
     <footer className="todoapp__footer">
       <span className="todo-count">
@@ -31,7 +36,7 @@ export const Footer: React.FC<Props> = ({
           href="#/"
           className={cn(
             'filter__link',
-            { selected: selectedFilter === 'all' },
+            { selected: hasFilterAll },
           )}
           onClick={onFilterAll}
         >
@@ -42,7 +47,7 @@ export const Footer: React.FC<Props> = ({
           href="#/active"
           className={cn(
             'filter__link',
-            { selected: selectedFilter === 'active' },
+            { selected: hasFilterActive },
           )}
           onClick={onFilterActive}
         >
@@ -53,7 +58,7 @@ export const Footer: React.FC<Props> = ({
           href="#/completed"
           className={cn(
             'filter__link',
-            { selected: selectedFilter === 'completed' },
+            { selected: hasFilterCompleted },
           )}
           onClick={onFilterCompleted}
         >

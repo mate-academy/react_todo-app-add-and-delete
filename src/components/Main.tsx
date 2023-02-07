@@ -16,91 +16,89 @@ export const Main: React.FC<Props> = ({
   onRemove,
   tempTodo,
   idsOfLoadingTodos,
-}) => {
-  return (
-    <section className="todoapp__main">
-      {filteredTodos.map(todo => (
-        <div
-          key={todo.id}
-          className={cn(
-            'todo',
-            { completed: todo.completed },
-          )}
-        >
-          <label className="todo__status-label">
-            <input
-              type="checkbox"
-              className="todo__status"
-              checked={todo.completed}
-            />
-          </label>
-
-          {isEditing
-            ? (
-              <form>
-                <input
-                  type="text"
-                  className="todo__title-field"
-                  placeholder="Empty todo will be deleted"
-                  value="Todo is being edited now"
-                />
-              </form>
-            )
-            : (
-              <>
-                <span className="todo__title">{todo.title}</span>
-                <button
-                  type="button"
-                  className="todo__remove"
-                  onClick={() => onRemove(todo.id)}
-                >
-                  ×
-                </button>
-              </>
-            )}
-          <div
-            className={cn(
-              'modal overlay',
-              { 'is-active': idsOfLoadingTodos.includes(todo.id) },
-            )}
-          >
-            <div className="modal-background has-background-white-ter" />
-            <div className="loader" />
-          </div>
-        </div>
-      ))}
-      {/* This todo is being edited
-      <div className="todo">
+}) => (
+  <section className="todoapp__main">
+    {filteredTodos.map(todo => (
+      <div
+        key={todo.id}
+        className={cn(
+          'todo',
+          { completed: todo.completed },
+        )}
+      >
         <label className="todo__status-label">
           <input
             type="checkbox"
             className="todo__status"
+            checked={todo.completed}
           />
         </label>
 
-        <div className="modal overlay">
+        {isEditing
+          ? (
+            <form>
+              <input
+                type="text"
+                className="todo__title-field"
+                placeholder="Empty todo will be deleted"
+                value="Todo is being edited now"
+              />
+            </form>
+          )
+          : (
+            <>
+              <span className="todo__title">{todo.title}</span>
+              <button
+                type="button"
+                className="todo__remove"
+                onClick={() => onRemove(todo.id)}
+              >
+                ×
+              </button>
+            </>
+          )}
+        <div
+          className={cn(
+            'modal overlay',
+            { 'is-active': idsOfLoadingTodos.includes(todo.id) },
+          )}
+        >
           <div className="modal-background has-background-white-ter" />
           <div className="loader" />
         </div>
-      </div> */}
+      </div>
+    ))}
+    {/* This todo is being edited
+    <div className="todo">
+      <label className="todo__status-label">
+        <input
+          type="checkbox"
+          className="todo__status"
+        />
+      </label>
 
-      {/* This todo is in loadind state */}
-      {tempTodo && (
-        <div className="todo">
-          <label className="todo__status-label">
-            <input type="checkbox" className="todo__status" />
-          </label>
+      <div className="modal overlay">
+        <div className="modal-background has-background-white-ter" />
+        <div className="loader" />
+      </div>
+    </div> */}
 
-          <span className="todo__title">{tempTodo.title}</span>
-          <button type="button" className="todo__remove">×</button>
+    {/* This todo is in loadind state */}
+    {tempTodo && (
+      <div className="todo">
+        <label className="todo__status-label">
+          <input type="checkbox" className="todo__status" />
+        </label>
 
-          <div className="modal overlay is-active">
-            <div className="modal-background has-background-white-ter" />
-            <div className="loader" />
-          </div>
+        <span className="todo__title">{tempTodo.title}</span>
+        <button type="button" className="todo__remove">×</button>
+
+        <div className="modal overlay is-active">
+          <div className="modal-background has-background-white-ter" />
+          <div className="loader" />
         </div>
-      )}
+      </div>
+    )}
 
-    </section>
-  );
-};
+  </section>
+);

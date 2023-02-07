@@ -12,6 +12,8 @@ import { Footer } from './components/Footer';
 import { ErrorPanel } from './components/ErrorPanel';
 
 import { Todo } from './types/Todo';
+import { Filters } from './types/Filters';
+
 import { getTodos, addTodo, removeTodo } from './api/todos';
 
 const USER_ID = 6160;
@@ -19,12 +21,10 @@ const USER_ID = 6160;
 export const App: React.FC = () => {
   const [todos, setTodos] = useState<Todo[]>([]);
   const [error, setError] = useState('');
-  const [showError, setShowError] = useState(false);
   const [isEditing] = useState(false);
   // const [hasChangesInTodos, setHasChangesInTodos] = useState(0);
   const [filteredTodos, setFilteredTodos] = useState<Todo[]>(todos);
-  const [selectedFilter, setSelectedFilter] = useState<
-    'all' | 'active' | 'completed'>('all');
+  const [selectedFilter, setSelectedFilter] = useState<Filters>(Filters.All);
   const [todoTitleToAdd, setTodoTitleToAdd] = useState('');
   const [tempTodo, setTempTodo] = useState<Todo | null>(null);
   const [idsOfLoadingTodos, setIdsOfLoadingTodos] = useState<number[]>([]);
@@ -59,12 +59,10 @@ export const App: React.FC = () => {
         })
         .catch(() => {
           setError('Unable to add a todo');
-          setShowError(true);
         });
       setTodoTitleToAdd('');
     } else {
-      setError('Title cant be empty');
-      setShowError(true);
+      setError('Title can\'t be empty');
     }
   };
 
@@ -80,7 +78,6 @@ export const App: React.FC = () => {
           })
           .catch(() => {
             setError('Unable to delete a todo');
-            setShowError(true);
           });
       });
 
@@ -101,24 +98,23 @@ export const App: React.FC = () => {
           })
           .catch(() => {
             setError('Unable to delete a todo');
-            setShowError(true);
           });
         setIdsOfLoadingTodos([]);
       });
   };
 
   const onFilterAll = () => {
-    setSelectedFilter('all');
+    setSelectedFilter(Filters.All);
     setFilteredTodos(todos);
   };
 
   const onFilterActive = () => {
-    setSelectedFilter('active');
+    setSelectedFilter(Filters.Active);
     setFilteredTodos(activeTodos);
   };
 
   const onFilterCompleted = () => {
-    setSelectedFilter('completed');
+    setSelectedFilter(Filters.Completed);
     setFilteredTodos(completedTodos);
   };
 
@@ -131,17 +127,16 @@ export const App: React.FC = () => {
       })
       .catch(() => {
         setError('There was an error loading the content');
-        setShowError(true);
       });
   }, []);
 
   useEffect(() => {
-    if (showError) {
+    if (error) {
       setTimeout(() => {
-        setShowError(false);
+        setError('');
       }, 3000);
     }
-  }, [showError]);
+  }, [error]);
 
   return (
     <div className="todoapp">
@@ -178,8 +173,7 @@ export const App: React.FC = () => {
       {error && (
         <ErrorPanel
           errorMessage={error}
-          showError={showError}
-          clearError={() => setShowError(false)}
+          clearError={() => setError('')}
         />
       )}
 
