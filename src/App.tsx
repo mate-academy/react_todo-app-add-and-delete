@@ -57,6 +57,16 @@ export const App: React.FC = () => {
     todos.filter((todo) => todo.id !== todoId);
   };
 
+  const updateTodo = (updated: Todo) => {
+    setTodos(todos.map((todo) => {
+      if (todo.id === updated.id) {
+        return updated;
+      }
+
+      return todo;
+    }));
+  };
+
   const visibleTodos = todos
     .filter((todo) => {
       switch (filter) {
@@ -94,13 +104,13 @@ export const App: React.FC = () => {
             userId={USER_ID}
           />
         </header>
-        {todos.length !== 0 && (
+        {todos && (
           <>
             <TodoList
-              onSubmit={() => { }}
               userId={USER_ID}
               onRemove={handleRemove}
               todos={visibleTodos}
+              onTodoUpdate={updateTodo}
             />
             <Footer
               todos={todos}

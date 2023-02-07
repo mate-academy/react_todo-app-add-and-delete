@@ -6,16 +6,16 @@ import { TodoModal } from './TodoModal';
 
 type Props = {
   todos: Todo[],
-  onSubmit: (todo: Todo) => void
   onRemove: (todoId: number) => void
   userId: number
+  onTodoUpdate: (todo: Todo) => void
 };
 
 export const TodoList: React.FC<Props> = ({
   todos,
-  onSubmit,
   onRemove,
   userId,
+  onTodoUpdate,
 }) => {
   const [editing, setEditing] = useState(false);
   const [selectedTodoId, setSelectedTodoId] = useState(0);
@@ -40,17 +40,36 @@ export const TodoList: React.FC<Props> = ({
             />
           </label>
 
-          {todo.id !== selectedTodoId
+          {todo.id === selectedTodoId
             ? (
+              <>
+                <Form
+                  todo={todo}
+                  onSubmit={(updated:Todo) => {
+                    onTodoUpdate(updated);
+                    setSelectedTodoId(0);
+                  }}
+                  todos={todos}
+                  userId={userId}
+                  className="todo__title-field"
+                  placeholder="Empty todo will be deleted"
+                />
+
+                <TodoModal
+                  editing={editing}
+                />
+              </>
+            )
+            : (
               <>
                 <span
                   className="todo__title"
                   onDoubleClick={() => {
                     setEditing(true);
                     setSelectedTodoId(todo.id);
-                  }}
-                  onSubmit={() => {
-                    setEditing(false);
+                    setTimeout(() => {
+                      setEditing(false);
+                    }, 300);
                   }}
                 >
                   {todo.title}
@@ -65,22 +84,6 @@ export const TodoList: React.FC<Props> = ({
                 >
                   ×
                 </button>
-              </>
-            )
-            : (
-              <>
-                <Form
-                  todo={todo}
-                  onSubmit={onSubmit}
-                  todos={todos}
-                  userId={userId}
-                  className="todo__title-field"
-                  placeholder="Empty todo will be deleted"
-                />
-
-                <TodoModal
-                  editing={editing}
-                />
               </>
             )}
         </div>

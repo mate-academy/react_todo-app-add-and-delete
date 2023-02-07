@@ -27,7 +27,7 @@ export const Form: React.FC<Props> = ({
 
     const newTodo = {
       title,
-      id: Math.max(...todos.map(element => element.id)) + 1,
+      id: todo?.id || Math.max(...todos.map(element => element.id)) + 1,
       completed,
       userId,
     };
