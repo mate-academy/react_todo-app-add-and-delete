@@ -22,6 +22,7 @@ export const App: React.FC = () => {
   const [filter, setFilter] = useState('all');
   const [error, setError] = useState('');
   const [showError, setShowError] = useState(false);
+  const [tempTodo, setTempTodo] = useState<Todo | null>(null);
 
   useEffect(() => {
     getTodos(USER_ID)
@@ -40,7 +41,7 @@ export const App: React.FC = () => {
       });
   }, []);
 
-  const addTodo = (todo: Todo) => {
+  const handleAdd = (todo: Todo) => {
     if (!todo.title) {
       setError('Title cant be empty');
       setShowError(true);
@@ -52,22 +53,53 @@ export const App: React.FC = () => {
       return;
     }
 
-    postTodo(todo);
-    setTodos([...todos, todo]);
+    setTempTodo(todo);
+
+    postTodo(todo)
+      .then(() => (
+        setTimeout(() => {
+          setTodos([...todos, todo]);
+          setTempTodo(null);
+        }, 3000)
+      ))
+      .catch(() => {
+        setError('Unable to add a todo');
+        setShowError(true);
+
+        setTimeout(() => {
+          setShowError(false);
+        }, 3000);
+      });
   };
 
   const handleRemove = (todoId: number) => {
-    removeTodo(todoId);
+    removeTodo(todoId)
+      .then(() => (
+        todos.filter((todo) => todo.id !== todoId)
+      ))
+      .catch(() => {
+        setError('Unable to remove a todo');
+        setShowError(true);
 
-    todos.filter((todo) => todo.id !== todoId);
+        setTimeout(() => {
+          setShowError(false);
+        }, 3000);
+      });
   };
 
   const updateTodo = (updated: Todo) => {
     setTodos(todos.map((todo) => {
       if (todo.id === updated.id) {
-        patchTodo(todo.id, updated);
+        patchTodo(todo.id, updated)
+          .then(() => updated)
+          .catch(() => {
+            setError('Unable to update a todo');
+            setShowError(true);
 
-        return updated;
+            setTimeout(() => {
+              setShowError(false);
+            }, 3000);
+          });
       }
 
       return todo;
@@ -104,7 +136,7 @@ export const App: React.FC = () => {
             )}
           />
           <Form
-            onSubmit={addTodo}
+            onSubmit={handleAdd}
             todos={todos}
             className="todoapp__new-todo"
             placeholder="What needs to be done?"
@@ -119,6 +151,31 @@ export const App: React.FC = () => {
               todos={visibleTodos}
               onTodoUpdate={updateTodo}
             />
+            {tempTodo && (
+              <div
+                id="0"
+                key={tempTodo.id}
+                className={classNames(
+                  'todo',
+                  { completed: tempTodo.completed },
+                )}
+              >
+                <label
+                  className="todo__status-label"
+                >
+                  <input
+                    type="checkbox"
+                    className="todo__status"
+                    checked={tempTodo.completed}
+                  />
+                </label>
+                <span
+                  className="todo__title"
+                >
+                  {tempTodo.title}
+                </span>
+              </div>
+            )}
             <Footer
               todos={todos}
               filter={filter}

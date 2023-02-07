@@ -6,16 +6,16 @@ import { TodoModal } from './TodoModal';
 
 type Props = {
   todos: Todo[],
-  onRemove: (todoId: number) => void
+  onRemove?: (todoId: number) => void
   userId: number
-  onTodoUpdate: (todo: Todo) => void
+  onTodoUpdate?: (todo: Todo) => void
 };
 
 export const TodoList: React.FC<Props> = ({
   todos,
-  onRemove,
+  onRemove = () => { },
   userId,
-  onTodoUpdate,
+  onTodoUpdate = () => { },
 }) => {
   const [editing, setEditing] = useState(false);
   const [selectedTodoId, setSelectedTodoId] = useState(0);
@@ -23,45 +23,44 @@ export const TodoList: React.FC<Props> = ({
   return (
     <section className="todoapp__main">
       {todos.map((todo) => (
-        <div
-          key={todo.id}
-          className={classNames(
-            'todo',
-            { completed: todo.completed },
-          )}
-        >
-          <label
-            className="todo__status-label"
-          >
-            <input
-              type="checkbox"
-              className="todo__status"
-              checked={todo.completed}
-            />
-          </label>
+        todo.id === selectedTodoId
+          ? (
+            <>
+              <Form
+                todo={todo}
+                onSubmit={(updated: Todo) => {
+                  onTodoUpdate(updated);
+                  setSelectedTodoId(0);
+                }}
+                todos={todos}
+                userId={userId}
+                className="todo__title-field"
+                placeholder="Empty todo will be deleted"
+              />
 
-          {todo.id === selectedTodoId
-            ? (
-              <>
-                <Form
-                  todo={todo}
-                  onSubmit={(updated:Todo) => {
-                    onTodoUpdate(updated);
-                    setSelectedTodoId(0);
-                  }}
-                  todos={todos}
-                  userId={userId}
-                  className="todo__title-field"
-                  placeholder="Empty todo will be deleted"
-                />
-
-                <TodoModal
-                  editing={editing}
-                />
-              </>
-            )
-            : (
-              <>
+              <TodoModal
+                editing={editing}
+              />
+            </>
+          )
+          : (
+            <>
+              <div
+                key={todo.id}
+                className={classNames(
+                  'todo',
+                  { completed: todo.completed },
+                )}
+              >
+                <label
+                  className="todo__status-label"
+                >
+                  <input
+                    type="checkbox"
+                    className="todo__status"
+                    checked={todo.completed}
+                  />
+                </label>
                 <span
                   className="todo__title"
                   onDoubleClick={() => {
@@ -84,9 +83,9 @@ export const TodoList: React.FC<Props> = ({
                 >
                   ×
                 </button>
-              </>
-            )}
-        </div>
+              </div>
+            </>
+          )
       ))}
     </section>
   );
