@@ -6,16 +6,16 @@ import { TodoModal } from './TodoModal';
 
 type Props = {
   todos: Todo[],
-  onRemove?: (todoId: number) => void
+  onRemove: (todoId: number) => void
   userId: number
-  onTodoUpdate?: (todo: Todo) => void
+  onTodoUpdate: (todo: Todo) => void
 };
 
 export const TodoList: React.FC<Props> = ({
   todos,
-  onRemove = () => { },
+  onRemove,
   userId,
-  onTodoUpdate = () => { },
+  onTodoUpdate,
 }) => {
   const [editing, setEditing] = useState(false);
   const [selectedTodoId, setSelectedTodoId] = useState(0);

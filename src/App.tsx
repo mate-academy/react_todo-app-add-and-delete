@@ -174,6 +174,12 @@ export const App: React.FC = () => {
                 >
                   {tempTodo.title}
                 </span>
+                <button
+                  type="button"
+                  className="todo__remove"
+                >
+                  ×
+                </button>
               </div>
             )}
             <Footer
