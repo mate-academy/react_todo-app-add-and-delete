@@ -124,6 +124,12 @@ export const App: React.FC = () => {
           setTimeout(() => {
             setShowError(false);
           }, 3000);
+        })
+        .finally(() => {
+          setReload(true);
+          setTimeout(() => {
+            setReload(false);
+          }, 1000);
         });
     });
   };
