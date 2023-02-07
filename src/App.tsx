@@ -22,7 +22,7 @@ const USER_ID = 6160;
 export const App: React.FC = () => {
   const [todos, setTodos] = useState<Todo[]>([]);
   const [error, setError] = useState<Errors>(Errors.NoError);
-  const [isEditing] = useState(false);
+  const [isEditing] = useState(false); // state for later usage (hiding html for now)
   const [filteredTodos, setFilteredTodos] = useState<Todo[]>(todos);
   const [selectedFilter, setSelectedFilter] = useState<Filters>(Filters.All);
   const [newTodoTitle, setNewTodoTitle] = useState('');
