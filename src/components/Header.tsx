@@ -5,7 +5,7 @@ import { Todo } from '../types/Todo';
 
 type Props = {
   newTodoTitle: string,
-  onNewTitleAdd: (event: ChangeEvent<HTMLInputElement>) => void;
+  addNewTodoTitle: (event: ChangeEvent<HTMLInputElement>) => void;
   createNewTodo: (event: FormEvent<HTMLFormElement>) => void,
   activeTodos: Todo[],
   areTodosLoading: boolean,
@@ -13,7 +13,7 @@ type Props = {
 
 export const Header: React.FC<Props> = ({
   newTodoTitle,
-  onNewTitleAdd,
+  addNewTodoTitle,
   createNewTodo,
   activeTodos,
   areTodosLoading,
@@ -33,7 +33,7 @@ export const Header: React.FC<Props> = ({
           className="todoapp__new-todo"
           placeholder="What needs to be done?"
           value={newTodoTitle}
-          onChange={onNewTitleAdd}
+          onChange={addNewTodoTitle}
           disabled={areTodosLoading}
         />
       </form>

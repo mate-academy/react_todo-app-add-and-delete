@@ -33,7 +33,7 @@ export const App: React.FC = () => {
   const activeTodos = todos.filter(todo => !todo.completed);
   const completedTodos = todos.filter(todo => todo.completed);
 
-  const onNewTitleAdd = (event: ChangeEvent<HTMLInputElement>) => {
+  const addNewTodoTitle = (event: ChangeEvent<HTMLInputElement>) => {
     setNewTodoTitle(event.target.value);
   };
 
@@ -87,7 +87,7 @@ export const App: React.FC = () => {
     setLoadingTodoIds([]);
   };
 
-  const onClearCompleted = () => {
+  const clearCompletedTodos = () => {
     setLoadingTodoIds(
       [...loadingTodoIds, ...completedTodos.map(todo => todo.id)],
     );
@@ -106,17 +106,17 @@ export const App: React.FC = () => {
       });
   };
 
-  const onFilterAll = () => {
+  const filterByAll = () => {
     setSelectedFilter(Filters.All);
     setFilteredTodos(todos);
   };
 
-  const onFilterActive = () => {
+  const filterByActive = () => {
     setSelectedFilter(Filters.Active);
     setFilteredTodos(activeTodos);
   };
 
-  const onFilterCompleted = () => {
+  const filterByCompleted = () => {
     setSelectedFilter(Filters.Completed);
     setFilteredTodos(completedTodos);
   };
@@ -148,7 +148,7 @@ export const App: React.FC = () => {
       <div className="todoapp__content">
         <Header
           newTodoTitle={newTodoTitle}
-          onNewTitleAdd={onNewTitleAdd}
+          addNewTodoTitle={addNewTodoTitle}
           createNewTodo={createNewTodo}
           activeTodos={activeTodos}
           areTodosLoading={areTodosLoading}
@@ -164,11 +164,11 @@ export const App: React.FC = () => {
           <Footer
             activeTodos={activeTodos}
             completedTodos={completedTodos}
-            onFilterActive={onFilterActive}
-            onFilterAll={onFilterAll}
-            onFilterCompleted={onFilterCompleted}
+            filterByActive={filterByActive}
+            filterByAll={filterByAll}
+            filterByCompleted={filterByCompleted}
             selectedFilter={selectedFilter}
-            onClearCompleted={onClearCompleted}
+            clearCompletedTodos={clearCompletedTodos}
           />
         </>
 

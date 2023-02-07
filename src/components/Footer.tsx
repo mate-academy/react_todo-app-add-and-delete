@@ -5,21 +5,21 @@ import { Todo } from '../types/Todo';
 type Props = {
   activeTodos: Todo[],
   completedTodos: Todo[],
-  onFilterAll: () => void,
-  onFilterActive: () => void,
-  onFilterCompleted: () => void,
+  filterByAll: () => void,
+  filterByActive: () => void,
+  filterByCompleted: () => void,
   selectedFilter: string,
-  onClearCompleted: () => void,
+  clearCompletedTodos: () => void,
 };
 
 export const Footer: React.FC<Props> = ({
   activeTodos,
   completedTodos,
-  onFilterAll,
-  onFilterActive,
-  onFilterCompleted,
+  filterByAll,
+  filterByActive,
+  filterByCompleted,
   selectedFilter,
-  onClearCompleted,
+  clearCompletedTodos,
 }) => {
   const hasFilterAll = selectedFilter === Filters.All;
   const hasFilterActive = selectedFilter === Filters.Active;
@@ -38,7 +38,7 @@ export const Footer: React.FC<Props> = ({
             'filter__link',
             { selected: hasFilterAll },
           )}
-          onClick={onFilterAll}
+          onClick={filterByAll}
         >
           All
         </a>
@@ -49,7 +49,7 @@ export const Footer: React.FC<Props> = ({
             'filter__link',
             { selected: hasFilterActive },
           )}
-          onClick={onFilterActive}
+          onClick={filterByActive}
         >
           Active
         </a>
@@ -60,7 +60,7 @@ export const Footer: React.FC<Props> = ({
             'filter__link',
             { selected: hasFilterCompleted },
           )}
-          onClick={onFilterCompleted}
+          onClick={filterByCompleted}
         >
           Completed
         </a>
@@ -69,7 +69,7 @@ export const Footer: React.FC<Props> = ({
         <button
           type="button"
           className="todoapp__clear-completed"
-          onClick={onClearCompleted}
+          onClick={clearCompletedTodos}
 
         >
           Clear completed
