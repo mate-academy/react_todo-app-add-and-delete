@@ -35,6 +35,14 @@ export const TodoList: React.FC<Props> = ({
     setSelectedTodoId(0);
   };
 
+  const handleDoubleClick = (todoId: number) => {
+    setEditing(true);
+    setSelectedTodoId(todoId);
+    setTimeout(() => {
+      setEditing(false);
+    }, 300);
+  };
+
   return (
     <section className="todoapp__main">
       {todos.map((todo) => (
@@ -76,11 +84,7 @@ export const TodoList: React.FC<Props> = ({
                 <span
                   className="todo__title"
                   onDoubleClick={() => {
-                    setEditing(true);
-                    setSelectedTodoId(todo.id);
-                    setTimeout(() => {
-                      setEditing(false);
-                    }, 300);
+                    handleDoubleClick(todo.id);
                   }}
                 >
                   {todo.title}
