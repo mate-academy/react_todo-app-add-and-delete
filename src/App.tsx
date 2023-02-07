@@ -23,6 +23,7 @@ export const App: React.FC = () => {
   const [error, setError] = useState('');
   const [showError, setShowError] = useState(false);
   const [tempTodo, setTempTodo] = useState<Todo | null>(null);
+  const [reload, setReload] = useState(false);
 
   useEffect(() => {
     getTodos(USER_ID)
@@ -39,7 +40,7 @@ export const App: React.FC = () => {
           setShowError(false);
         }, 3000);
       });
-  }, []);
+  }, [reload]);
 
   const handleAdd = (todo: Todo) => {
     if (!todo.title) {
@@ -74,9 +75,11 @@ export const App: React.FC = () => {
 
   const handleRemove = (todoId: number) => {
     removeTodo(todoId)
-      .then(() => (
-        todos.filter((todo) => todo.id !== todoId)
-      ))
+      .then(() => {
+        const filteredTodos = todos.filter((todo) => todo.id !== todoId);
+
+        setTodos(filteredTodos);
+      })
       .catch(() => {
         setError('Unable to remove a todo');
         setShowError(true);
@@ -87,23 +90,42 @@ export const App: React.FC = () => {
       });
   };
 
-  const handleUpdate = (updated: Todo) => {
-    setTodos(todos.map((todo) => {
-      if (todo.id === updated.id) {
-        patchTodo(todo.id, updated)
-          .then(() => updated)
-          .catch(() => {
-            setError('Unable to update a todo');
-            setShowError(true);
+  const handleUpdate = (updatedTodo: Todo) => {
+    patchTodo(updatedTodo.id, updatedTodo)
+      .then(() => {
+        setTodos(todos);
+      })
+      .catch(() => {
+        setError('Unable to update a todo');
+        setShowError(true);
 
-            setTimeout(() => {
-              setShowError(false);
-            }, 3000);
-          });
-      }
+        setTimeout(() => {
+          setShowError(false);
+        }, 3000);
+      })
 
-      return todo;
-    }));
+      .finally(() => (
+        setReload(false)
+      ));
+  };
+
+  const handleClear = (todoIds: number[]) => {
+    todoIds.map((id) => {
+      return removeTodo(id)
+        .then(() => {
+          const filteredTodos = todos.filter((todo) => todo.id !== id);
+
+          setTodos(filteredTodos);
+        })
+        .catch(() => {
+          setError('Unable to remove a todo');
+          setShowError(true);
+
+          setTimeout(() => {
+            setShowError(false);
+          }, 3000);
+        });
+    });
   };
 
   const visibleTodos = todos
@@ -150,6 +172,7 @@ export const App: React.FC = () => {
               onRemove={handleRemove}
               todos={visibleTodos}
               onTodoUpdate={handleUpdate}
+              setReload={setReload}
             />
             {tempTodo && (
               <div
@@ -187,7 +210,7 @@ export const App: React.FC = () => {
               todos={todos}
               filter={filter}
               onSetFilter={setFilter}
-              onSetClearHandler={() => {}}
+              onSetClearHandler={handleClear}
             />
           </>
         )}

@@ -9,6 +9,7 @@ type Props = {
   onRemove: (todoId: number) => void
   userId: number
   onTodoUpdate: (todo: Todo) => void
+  setReload: (state: boolean) => void
 };
 
 export const TodoList: React.FC<Props> = ({
@@ -16,9 +17,23 @@ export const TodoList: React.FC<Props> = ({
   onRemove,
   userId,
   onTodoUpdate,
+  setReload,
 }) => {
   const [editing, setEditing] = useState(false);
   const [selectedTodoId, setSelectedTodoId] = useState(0);
+
+  const handleSubmit = (updatedTodo: Todo) => {
+    todos.map((todo) => {
+      if (todo.id === updatedTodo.id) {
+        return updatedTodo;
+      }
+
+      return todo;
+    });
+    setReload(true);
+    onTodoUpdate(updatedTodo);
+    setSelectedTodoId(0);
+  };
 
   return (
     <section className="todoapp__main">
@@ -28,10 +43,7 @@ export const TodoList: React.FC<Props> = ({
             <>
               <Form
                 todo={todo}
-                onSubmit={(updated: Todo) => {
-                  onTodoUpdate(updated);
-                  setSelectedTodoId(0);
-                }}
+                onSubmit={handleSubmit}
                 todos={todos}
                 userId={userId}
                 className="todo__title-field"
