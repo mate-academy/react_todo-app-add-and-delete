@@ -12,7 +12,6 @@ import { TodoList } from './components/TodoList/TodoList';
 import { Todo } from './types/Todo';
 
 export const App: React.FC = () => {
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   const [isLoadError, setIsLoadError] = useState(false);
   const [isUploadError, setIsUploadError] = useState(false);
   const [isRemoveError, setIsRemoveError] = useState(false);
