@@ -180,6 +180,7 @@ export const App: React.FC = () => {
                 >
                   ×
                 </button>
+                <div className="loader" />
               </div>
             )}
             <Footer
