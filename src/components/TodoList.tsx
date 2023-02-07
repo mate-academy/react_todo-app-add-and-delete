@@ -8,8 +8,6 @@ type Props = {
   todos: Todo[],
   onSubmit: (todo: Todo) => void
   onRemove: (todoId: number) => void
-  onSetLoading: (value: boolean) => void
-  isLoading: boolean
   userId: number
 };
 
@@ -17,8 +15,6 @@ export const TodoList: React.FC<Props> = ({
   todos,
   onSubmit,
   onRemove,
-  onSetLoading,
-  isLoading,
   userId,
 }) => {
   const [editing, setEditing] = useState(false);
@@ -65,7 +61,6 @@ export const TodoList: React.FC<Props> = ({
                   className="todo__remove"
                   onClick={() => {
                     onRemove(todo.id);
-                    onSetLoading(true);
                   }}
                 >
                   ×
@@ -75,10 +70,10 @@ export const TodoList: React.FC<Props> = ({
             : (
               <>
                 <Form
+                  todo={todo}
                   onSubmit={onSubmit}
                   todos={todos}
                   userId={userId}
-                  isLoading={isLoading}
                   className="todo__title-field"
                   placeholder="Empty todo will be deleted"
                 />

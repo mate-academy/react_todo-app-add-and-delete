@@ -17,7 +17,6 @@ export const App: React.FC = () => {
   const [filter, setFilter] = useState('all');
   const [error, setError] = useState('');
   const [showError, setShowError] = useState(false);
-  const [loading, setLoading] = useState(false);
 
   useEffect(() => {
     getTodos(USER_ID)
@@ -30,12 +29,11 @@ export const App: React.FC = () => {
         setError('Unable to load todos');
       })
       .finally(() => {
-        setLoading(false);
         setTimeout(() => {
           setShowError(false);
         }, 3000);
       });
-  }, [loading]);
+  }, []);
 
   const addTodo = (todo: Todo) => {
     if (!todo.title) {
@@ -50,8 +48,13 @@ export const App: React.FC = () => {
     }
 
     postTodo(todo);
-    setLoading(true);
     setTodos([...todos, todo]);
+  };
+
+  const handleRemove = (todoId: number) => {
+    removeTodo(todoId);
+
+    todos.filter((todo) => todo.id !== todoId);
   };
 
   const visibleTodos = todos
@@ -88,19 +91,16 @@ export const App: React.FC = () => {
             todos={todos}
             className="todoapp__new-todo"
             placeholder="What needs to be done?"
-            isLoading={loading}
             userId={USER_ID}
           />
         </header>
         {todos.length !== 0 && (
           <>
             <TodoList
-              onSubmit={() => {}}
+              onSubmit={() => { }}
               userId={USER_ID}
-              onRemove={removeTodo}
+              onRemove={handleRemove}
               todos={visibleTodos}
-              onSetLoading={setLoading}
-              isLoading={loading}
             />
             <Footer
               todos={todos}
