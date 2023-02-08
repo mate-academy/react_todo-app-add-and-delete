@@ -1,18 +1,18 @@
 /* eslint-disable jsx-a11y/control-has-associated-label */
-import React, { useEffect, useState } from "react";
-import { Errors } from "./components/Errors";
-import { TodoContent } from "./components/TodoContent";
-import { UserWarning } from "./UserWarning";
-import { getTodos } from "./api/todos";
-import { Todo } from "./types/Todo";
-import { Filter } from "./types/Filter";
+import React, { useEffect, useState } from 'react';
+import { Errors } from './components/Errors';
+import { TodoContent } from './components/TodoContent';
+import { UserWarning } from './UserWarning';
+import { getTodos } from './api/todos';
+import { Todo } from './types/Todo';
+import { Filter } from './types/Filter';
 
 const USER_ID = 6232;
 
 export const App: React.FC = () => {
   const [todos, setTodos] = useState<Todo[]>([]);
   const [filteredTodos, setFilteredTodos] = useState<Todo[]>([]);
-  const [error, setError] = useState("");
+  const [error, setError] = useState('');
 
   const filterTodos = (filterBy: Filter) => {
     if (filterBy === Filter.active) {
@@ -31,7 +31,7 @@ export const App: React.FC = () => {
         setFilteredTodos(result);
       })
       .catch(() => {
-        setError("Unable to load todos");
+        setError('Unable to load todos');
       });
   }, []);
 
@@ -45,7 +45,7 @@ export const App: React.FC = () => {
 
       <TodoContent todos={filteredTodos} filterTodos={filterTodos} />
 
-      {error !== "" && <Errors error={error} />}
+      {error !== '' && <Errors error={error} />}
     </div>
   );
 };
