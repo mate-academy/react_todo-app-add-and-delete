@@ -54,7 +54,6 @@ export const Form: React.FC<Props> = ({
           setTitle(event.target.value);
         }}
         disabled={tempDisable}
-
       />
     </form>
   );

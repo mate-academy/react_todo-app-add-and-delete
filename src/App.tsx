@@ -11,7 +11,7 @@ import {
 import { Footer } from './components/Footer';
 import { Form } from './components/Form';
 import { TodoList } from './components/TodoList';
-import { Todo } from './types/Todo';
+import { Errors, Filter, Todo } from './types/Todo';
 import { UserWarning } from './UserWarning';
 
 const USER_ID = 6101;
@@ -20,9 +20,9 @@ export const App: React.FC = () => {
   const [todos, setTodos] = useState<Todo[]>([]);
   const [filter, setFilter] = useState('all');
   const [error, setError] = useState('');
-  const [showError, setShowError] = useState(false);
+  const [isItError, setIsItError] = useState(false);
   const [tempTodo, setTempTodo] = useState<Todo | null>(null);
-  const [reload, setReload] = useState(false);
+  const [isReloading, setIsReloading] = useState(false);
 
   useEffect(() => {
     getTodos(USER_ID)
@@ -31,23 +31,23 @@ export const App: React.FC = () => {
         setError('');
       })
       .catch(() => {
-        setShowError(true);
-        setError('Unable to load todos');
+        setIsItError(true);
+        setError(Errors.LOADING);
       })
       .finally(() => {
         setTimeout(() => {
-          setShowError(false);
+          setIsItError(false);
         }, 3000);
       });
-  }, [reload]);
+  }, [isReloading]);
 
-  const handleAdd = (todo: Todo) => {
+  const handleAddTodo = (todo: Todo) => {
     if (!todo.title) {
-      setError('Title cant be empty');
-      setShowError(true);
+      setError(Errors.TITLE);
+      setIsItError(true);
 
       setTimeout(() => {
-        setShowError(false);
+        setIsItError(false);
       }, 3000);
 
       return;
@@ -60,19 +60,19 @@ export const App: React.FC = () => {
         setTimeout(() => {
           setTodos([...todos, todo]);
           setTempTodo(null);
-        }, 3000)
+        }, 1000)
       ))
       .catch(() => {
-        setError('Unable to add a todo');
-        setShowError(true);
+        setError(Errors.ADDING);
+        setIsItError(true);
 
         setTimeout(() => {
-          setShowError(false);
+          setIsItError(false);
         }, 3000);
       });
   };
 
-  const handleRemove = (todoId: number) => {
+  const handleRemoveTodo = (todoId: number) => {
     removeTodo(todoId)
       .then(() => {
         const filteredTodos = todos.filter((todo) => todo.id !== todoId);
@@ -80,16 +80,16 @@ export const App: React.FC = () => {
         setTodos(filteredTodos);
       })
       .catch(() => {
-        setError('Unable to remove a todo');
-        setShowError(true);
+        setError(Errors.REMOVING);
+        setIsItError(true);
 
         setTimeout(() => {
-          setShowError(false);
+          setIsItError(false);
         }, 3000);
       });
   };
 
-  const handleClear = (todoIds: number[]) => {
+  const handleClearTodos = (todoIds: number[]) => {
     todoIds.map((id) => {
       return removeTodo(id)
         .then(() => {
@@ -98,17 +98,17 @@ export const App: React.FC = () => {
           setTodos(filteredTodos);
         })
         .catch(() => {
-          setError('Unable to remove a todo');
-          setShowError(true);
+          setError(Errors.REMOVING);
+          setIsItError(true);
 
           setTimeout(() => {
-            setShowError(false);
+            setIsItError(false);
           }, 3000);
         })
         .finally(() => {
-          setReload(true);
+          setIsReloading(true);
           setTimeout(() => {
-            setReload(false);
+            setIsReloading(false);
           }, 1000);
         });
     });
@@ -117,9 +117,9 @@ export const App: React.FC = () => {
   const visibleTodos = todos
     .filter((todo) => {
       switch (filter) {
-        case 'active':
+        case Filter.ACTIVE:
           return !todo.completed;
-        case 'completed':
+        case Filter.COMPLETED:
           return todo.completed;
         default:
           return true;
@@ -144,7 +144,7 @@ export const App: React.FC = () => {
             )}
           />
           <Form
-            onSubmit={handleAdd}
+            onSubmit={handleAddTodo}
             todos={todos}
             className="todoapp__new-todo"
             placeholder="What needs to be done?"
@@ -154,7 +154,7 @@ export const App: React.FC = () => {
         {todos && (
           <>
             <TodoList
-              onRemove={handleRemove}
+              onRemove={handleRemoveTodo}
               todos={visibleTodos}
             />
             {tempTodo && (
@@ -193,22 +193,22 @@ export const App: React.FC = () => {
               todos={todos}
               filter={filter}
               onSetFilter={setFilter}
-              onSetClearHandler={handleClear}
+              onSetClearHandler={handleClearTodos}
             />
           </>
         )}
-        {showError && (
+        {isItError && (
           <div
             className={classNames(
               'notification is-danger is-light has-text-weight-normal',
-              { hidden: !showError },
+              { hidden: !isItError },
             )}
           >
             <button
               type="button"
               className="delete"
               onClick={() => {
-                setShowError(false);
+                setIsItError(false);
               }}
             />
             {error}

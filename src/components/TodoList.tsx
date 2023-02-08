@@ -10,7 +10,6 @@ type Props = {
 export const TodoList: React.FC<Props> = ({
   todos,
   onRemove,
-
 }) => {
   return (
     <section className="todoapp__main">
