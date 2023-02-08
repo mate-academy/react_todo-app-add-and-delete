@@ -5,15 +5,24 @@ import { Todo } from '../../types/Todo';
 type Props = {
   todos: Todo[] | null;
   tempTodo: Todo | null;
+  deleteTodo: (id: number) => void;
 };
 
-export const TodoMain: React.FC<Props> = ({ todos, tempTodo }) => {
+export const TodoMain: React.FC<Props> = ({ todos, tempTodo, deleteTodo }) => {
   const [changeCheck, setChangeCheck] = useState<number>(-1);
+  const [loading, setLoading] = useState(0);
 
-  const onSubmitChanges = (event: React.FormEvent<HTMLFormElement>) => {
+  const onSubmitChanges = (
+    event: React.FormEvent<HTMLFormElement>,
+  ) => {
     event.preventDefault();
 
     setChangeCheck(-1);
+  };
+
+  const onDelete = (id: number) => {
+    setLoading(id);
+    deleteTodo(id);
   };
 
   return (
@@ -48,16 +57,24 @@ export const TodoMain: React.FC<Props> = ({ todos, tempTodo }) => {
                 >
                   {title}
                 </span>
-                <button type="button" className="todo__remove">
+                <button
+                  type="button"
+                  className="todo__remove"
+                  onClick={() => onDelete(id)}
+                >
                   ×
                 </button>
+
+                {loading === id && (
+                  <div className="modal overlay is-active">
+                    <div
+                      className="modal-background has-background-white-ter"
+                    />
+                    <div className="loader" />
+                  </div>
+                )}
               </>
             )}
-
-            <div className={cn('modal overlay', { 'is-active': !todo })}>
-              <div className="modal-background has-background-white-ter" />
-              <div className="loader" />
-            </div>
           </div>
         );
       })}

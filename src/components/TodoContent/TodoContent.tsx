@@ -12,6 +12,7 @@ type Props = {
   createTodo: (title: string) => void;
   tempTodo: Todo | null;
   isInputDisabled: boolean;
+  deleteTodo: (id: number) => void;
 };
 
 export const TodoContent: React.FC<Props> = ({
@@ -21,6 +22,7 @@ export const TodoContent: React.FC<Props> = ({
   createTodo,
   tempTodo,
   isInputDisabled,
+  deleteTodo,
 }) => {
   const [filter, setFilter] = useState<Filter>(Filter.all);
 
@@ -32,7 +34,7 @@ export const TodoContent: React.FC<Props> = ({
         isInputDisabled={isInputDisabled}
       />
 
-      <TodoMain todos={todos} tempTodo={tempTodo} />
+      <TodoMain todos={todos} tempTodo={tempTodo} deleteTodo={deleteTodo} />
 
       {todos && (
         <TodoFooter

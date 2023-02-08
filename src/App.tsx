@@ -3,7 +3,7 @@ import React, { useEffect, useState } from 'react';
 import { Errors } from './components/Errors';
 import { TodoContent } from './components/TodoContent';
 import { UserWarning } from './UserWarning';
-import { getTodos, addTodo } from './api/todos';
+import { getTodos, addTodo, deleteTodo } from './api/todos';
 import { Todo } from './types/Todo';
 import { Filter } from './types/Filter';
 
@@ -55,6 +55,16 @@ export const App: React.FC = () => {
     setIsInputDisabled(false);
   };
 
+  const removeTodo = async (id: number) => {
+    await deleteTodo(id)
+      .then(() => {
+        setFilteredTodos(filteredTodos.filter((todo) => todo.id !== id));
+      })
+      .catch(() => {
+        setErrors('Unable to delete a todo');
+      });
+  };
+
   useEffect(() => {
     getTodos(USER_ID)
       .then((result) => {
@@ -81,6 +91,7 @@ export const App: React.FC = () => {
         createTodo={createTodo}
         tempTodo={tempTodo}
         isInputDisabled={isInputDisabled}
+        deleteTodo={removeTodo}
       />
 
       {error !== '' && <Errors error={error} setError={setError} />}
