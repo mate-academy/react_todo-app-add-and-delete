@@ -2,7 +2,12 @@ import cn from 'classnames';
 import { useState } from 'react';
 import { Todo } from '../../types/Todo';
 
-export const TodoMain: React.FC<{ todos: Todo[] | null }> = ({ todos }) => {
+type Props = {
+  todos: Todo[] | null;
+  tempTodo: Todo | null;
+};
+
+export const TodoMain: React.FC<Props> = ({ todos, tempTodo }) => {
   const [changeCheck, setChangeCheck] = useState<number>(-1);
 
   const onSubmitChanges = (event: React.FormEvent<HTMLFormElement>) => {
@@ -56,6 +61,25 @@ export const TodoMain: React.FC<{ todos: Todo[] | null }> = ({ todos }) => {
           </div>
         );
       })}
+
+      {tempTodo && (
+        <div className="todo">
+          <label className="todo__status-label">
+            <input type="checkbox" className="todo__status" />
+          </label>
+
+          <span className="todo__title">{tempTodo.title}</span>
+          <button type="button" className="todo__remove">
+            ×
+          </button>
+
+          {/* 'is-active' class puts this modal on top of the todo */}
+          <div className="modal overlay is-active">
+            <div className="modal-background has-background-white-ter" />
+            <div className="loader" />
+          </div>
+        </div>
+      )}
     </section>
   );
 };

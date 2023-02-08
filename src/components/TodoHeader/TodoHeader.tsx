@@ -3,17 +3,29 @@ import cn from 'classnames';
 
 type Props = {
   onError: (value: string) => void;
+  createTodo: (title: string) => void;
+  isInputDisabled: boolean;
 };
 
-export const TodoHeader: React.FC<Props> = ({ onError }) => {
+export const TodoHeader: React.FC<Props> = ({
+  onError,
+  createTodo,
+  isInputDisabled,
+}) => {
   const [newTodo, setNewTodo] = useState<string>('');
 
   const addTodo = (e: FormEvent) => {
     e.preventDefault();
+    const todoName = newTodo.trim();
 
-    if (newTodo.trim() === '') {
+    if (todoName === '') {
       onError("Title can't be empty");
+
+      return;
     }
+
+    createTodo(todoName);
+    setNewTodo('');
   };
 
   return (
@@ -32,6 +44,7 @@ export const TodoHeader: React.FC<Props> = ({ onError }) => {
           placeholder="What needs to be done?"
           value={newTodo}
           onChange={(e) => setNewTodo(e.target.value)}
+          disabled={isInputDisabled}
         />
       </form>
     </header>
