@@ -5,7 +5,6 @@ import classNames from 'classnames';
 import React, { useEffect, useState } from 'react';
 import {
   getTodos,
-  patchTodo,
   postTodo,
   removeTodo,
 } from './api/todos';
@@ -90,25 +89,6 @@ export const App: React.FC = () => {
       });
   };
 
-  const handleUpdate = (updatedTodo: Todo) => {
-    patchTodo(updatedTodo.id, updatedTodo)
-      .then(() => {
-        setTodos(todos);
-      })
-      .catch(() => {
-        setError('Unable to update a todo');
-        setShowError(true);
-
-        setTimeout(() => {
-          setShowError(false);
-        }, 3000);
-      })
-
-      .finally(() => (
-        setReload(false)
-      ));
-  };
-
   const handleClear = (todoIds: number[]) => {
     todoIds.map((id) => {
       return removeTodo(id)
@@ -174,11 +154,8 @@ export const App: React.FC = () => {
         {todos && (
           <>
             <TodoList
-              userId={USER_ID}
               onRemove={handleRemove}
               todos={visibleTodos}
-              onTodoUpdate={handleUpdate}
-              setReload={setReload}
             />
             {tempTodo && (
               <div
