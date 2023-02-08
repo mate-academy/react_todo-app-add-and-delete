@@ -8,14 +8,20 @@ import { TodoMain } from '../TodoMain';
 type Props = {
   filterTodos: (filterBy: Filter) => void;
   todos: Todo[] | null;
+  onError: (value: string) => void;
 };
 
-export const TodoContent: React.FC<Props> = ({ todos, filterTodos }) => {
+export const TodoContent: React.FC<Props> = ({
+  todos,
+  filterTodos,
+  onError,
+}) => {
   const [filter, setFilter] = useState<Filter>(Filter.all);
 
   return (
     <div className="todoapp__content">
-      <TodoHeader />
+      <TodoHeader onError={onError} />
+
       <TodoMain todos={todos} />
       {todos && (
         <TodoFooter

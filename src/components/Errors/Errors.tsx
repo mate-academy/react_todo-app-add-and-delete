@@ -1,12 +1,18 @@
 import React, { useEffect, useState } from 'react';
 import classNames from 'classnames';
 
-export const Errors: React.FC<{ error: string }> = ({ error }) => {
+type Props = {
+  error: string;
+  setError: (v: string) => void;
+};
+
+export const Errors: React.FC<Props> = ({ error, setError }) => {
   const [visible, setVisible] = useState<boolean>(true);
 
   useEffect(() => {
     setTimeout(() => {
       setVisible(false);
+      setError('');
     }, 3000);
   }, []);
 

@@ -24,6 +24,10 @@ export const App: React.FC = () => {
     }
   };
 
+  const setErrors = (e: string) => {
+    setError(e);
+  };
+
   useEffect(() => {
     getTodos(USER_ID)
       .then((result) => {
@@ -31,7 +35,7 @@ export const App: React.FC = () => {
         setFilteredTodos(result);
       })
       .catch(() => {
-        setError('Unable to load todos');
+        setErrors('Unable to load todos');
       });
   }, []);
 
@@ -43,9 +47,13 @@ export const App: React.FC = () => {
     <div className="todoapp">
       <h1 className="todoapp__title">todos</h1>
 
-      <TodoContent todos={filteredTodos} filterTodos={filterTodos} />
+      <TodoContent
+        todos={filteredTodos}
+        filterTodos={filterTodos}
+        onError={setErrors}
+      />
 
-      {error !== '' && <Errors error={error} />}
+      {error !== '' && <Errors error={error} setError={setError} />}
     </div>
   );
 };
