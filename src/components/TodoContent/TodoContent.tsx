@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { Filter } from '../../types/Filter';
 import { Todo } from '../../types/Todo';
 import { TodoFooter } from '../TodoFooter';
@@ -13,6 +13,7 @@ type Props = {
   tempTodo: Todo | null;
   isInputDisabled: boolean;
   deleteTodo: (id: number) => void;
+  clearCompleted: () => void;
 };
 
 export const TodoContent: React.FC<Props> = ({
@@ -23,8 +24,16 @@ export const TodoContent: React.FC<Props> = ({
   tempTodo,
   isInputDisabled,
   deleteTodo,
+  clearCompleted,
 }) => {
   const [filter, setFilter] = useState<Filter>(Filter.all);
+  const [activeClearBtn, setActiveClearBtn] = useState(false);
+
+  useEffect(() => {
+    if (todos?.some((todo) => todo.completed)) {
+      setActiveClearBtn(true);
+    }
+  });
 
   return (
     <div className="todoapp__content">
@@ -44,6 +53,8 @@ export const TodoContent: React.FC<Props> = ({
             setFilter(selectedFilter);
             filterTodos(selectedFilter);
           }}
+          activeClearBtn={activeClearBtn}
+          clearCompleted={clearCompleted}
         />
       )}
     </div>

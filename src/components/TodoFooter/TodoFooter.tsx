@@ -7,12 +7,16 @@ type Props = {
   todosLength: number | undefined;
   filter: Filter;
   onChange: (selector: Filter) => void;
+  activeClearBtn: boolean;
+  clearCompleted: () => void;
 };
 
 export const TodoFooter: React.FC<Props> = ({
   todosLength,
   filter,
   onChange,
+  activeClearBtn,
+  clearCompleted,
 }) => {
   const onAllClick = () => {
     onChange(Filter.all);
@@ -63,9 +67,15 @@ export const TodoFooter: React.FC<Props> = ({
         </a>
       </nav>
 
-      <button type="button" className="todoapp__clear-completed">
-        Clear completed
-      </button>
+      {activeClearBtn && (
+        <button
+          type="button"
+          className="todoapp__clear-completed"
+          onClick={clearCompleted}
+        >
+          Clear completed
+        </button>
+      )}
     </footer>
   );
 };

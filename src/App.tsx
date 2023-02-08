@@ -65,6 +65,14 @@ export const App: React.FC = () => {
       });
   };
 
+  const clearCompleted = () => {
+    filteredTodos.forEach((todo) => {
+      if (todo.completed) {
+        removeTodo(todo.id);
+      }
+    });
+  };
+
   useEffect(() => {
     getTodos(USER_ID)
       .then((result) => {
@@ -92,6 +100,7 @@ export const App: React.FC = () => {
         tempTodo={tempTodo}
         isInputDisabled={isInputDisabled}
         deleteTodo={removeTodo}
+        clearCompleted={clearCompleted}
       />
 
       {error !== '' && <Errors error={error} setError={setError} />}
