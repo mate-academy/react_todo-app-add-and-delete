@@ -1,24 +1,51 @@
-/* eslint-disable max-len */
 /* eslint-disable jsx-a11y/control-has-associated-label */
-import React from 'react';
-import { UserWarning } from './UserWarning';
+import React, { useEffect, useState } from "react";
+import { Errors } from "./components/Errors";
+import { TodoContent } from "./components/TodoContent";
+import { UserWarning } from "./UserWarning";
+import { getTodos } from "./api/todos";
+import { Todo } from "./types/Todo";
+import { Filter } from "./types/Filter";
 
-const USER_ID = 0;
+const USER_ID = 6232;
 
 export const App: React.FC = () => {
+  const [todos, setTodos] = useState<Todo[]>([]);
+  const [filteredTodos, setFilteredTodos] = useState<Todo[]>([]);
+  const [error, setError] = useState("");
+
+  const filterTodos = (filterBy: Filter) => {
+    if (filterBy === Filter.active) {
+      setFilteredTodos(todos.filter((todo) => todo.completed === false));
+    } else if (filterBy === Filter.completed) {
+      setFilteredTodos(todos.filter((todo) => todo.completed === true));
+    } else {
+      setFilteredTodos(todos);
+    }
+  };
+
+  useEffect(() => {
+    getTodos(USER_ID)
+      .then((result) => {
+        setTodos(result);
+        setFilteredTodos(result);
+      })
+      .catch(() => {
+        setError("Unable to load todos");
+      });
+  }, []);
+
   if (!USER_ID) {
     return <UserWarning />;
   }
 
   return (
-    <section className="section container">
-      <p className="title is-4">
-        Copy all you need from the prev task:
-        <br />
-        <a href="https://github.com/mate-academy/react_todo-app-loading-todos#react-todo-app-load-todos">React Todo App - Load Todos</a>
-      </p>
+    <div className="todoapp">
+      <h1 className="todoapp__title">todos</h1>
 
-      <p className="subtitle">Styles are already copied</p>
-    </section>
+      <TodoContent todos={filteredTodos} filterTodos={filterTodos} />
+
+      {error !== "" && <Errors error={error} />}
+    </div>
   );
 };
