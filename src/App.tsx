@@ -89,7 +89,7 @@ export const App: React.FC = () => {
       });
   };
 
-  const handleClearTodos = (todoIds: number[]) => {
+  const handleClearTodos = async (todoIds: number[]) => {
     todoIds.map((id) => {
       return removeTodo(id)
         .then(() => {
