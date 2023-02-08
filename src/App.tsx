@@ -22,7 +22,6 @@ export const App: React.FC = () => {
   const [error, setError] = useState('');
   const [isItError, setIsItError] = useState(false);
   const [tempTodo, setTempTodo] = useState<Todo | null>(null);
-  const [isReloading, setIsReloading] = useState(false);
 
   useEffect(() => {
     getTodos(USER_ID)
@@ -39,7 +38,7 @@ export const App: React.FC = () => {
           setIsItError(false);
         }, 3000);
       });
-  }, [isReloading]);
+  }, []);
 
   const handleAddTodo = (todo: Todo) => {
     if (!todo.title) {
@@ -91,26 +90,7 @@ export const App: React.FC = () => {
 
   const handleClearTodos = async (todoIds: number[]) => {
     todoIds.map((id) => {
-      return removeTodo(id)
-        .then(() => {
-          const filteredTodos = todos.filter((todo) => todo.id !== id);
-
-          setTodos(filteredTodos);
-        })
-        .catch(() => {
-          setError(Errors.REMOVING);
-          setIsItError(true);
-
-          setTimeout(() => {
-            setIsItError(false);
-          }, 3000);
-        })
-        .finally(() => {
-          setIsReloading(true);
-          setTimeout(() => {
-            setIsReloading(false);
-          }, 1000);
-        });
+      return handleRemoveTodo(id);
     });
   };
 
