@@ -6,29 +6,34 @@ import { UserWarning } from './UserWarning';
 import { getTodos, addTodo, deleteTodo } from './api/todos';
 import { Todo } from './types/Todo';
 import { Filter } from './types/Filter';
+import { ErrorMessages } from './types/ErrorMessages';
 
 const USER_ID = 6232;
-
-// create().then((response) => console.log(response));
 
 export const App: React.FC = () => {
   const [todos, setTodos] = useState<Todo[]>([]);
   const [filteredTodos, setFilteredTodos] = useState<Todo[]>([]);
-  const [error, setError] = useState('');
+  const [error, setError] = useState<ErrorMessages | null>(null);
   const [tempTodo, setTempTodo] = useState<Todo | null>(null);
   const [isInputDisabled, setIsInputDisabled] = useState(false);
 
   const filterTodos = (filterBy: Filter) => {
-    if (filterBy === Filter.active) {
-      setFilteredTodos(todos.filter((todo) => todo.completed === false));
-    } else if (filterBy === Filter.completed) {
-      setFilteredTodos(todos.filter((todo) => todo.completed === true));
-    } else {
-      setFilteredTodos(todos);
+    switch (filterBy) {
+      case Filter.active:
+        setFilteredTodos(todos.filter((todo) => todo.completed === false));
+        break;
+
+      case Filter.completed:
+        setFilteredTodos(todos.filter((todo) => todo.completed === true));
+        break;
+
+      default:
+        setFilteredTodos(todos);
+        break;
     }
   };
 
-  const setErrors = (e: string) => {
+  const setErrors = (e: ErrorMessages | null) => {
     setError(e);
   };
 
@@ -49,7 +54,7 @@ export const App: React.FC = () => {
         setFilteredTodos((state) => [...state, response]);
       })
       .catch(() => {
-        setErrors('Unable to add a todo');
+        setErrors(ErrorMessages.addTodo);
       });
 
     setIsInputDisabled(false);
@@ -61,7 +66,7 @@ export const App: React.FC = () => {
         setFilteredTodos(filteredTodos.filter((todo) => todo.id !== id));
       })
       .catch(() => {
-        setErrors('Unable to delete a todo');
+        setErrors(ErrorMessages.deleteTodo);
       });
   };
 
@@ -80,7 +85,7 @@ export const App: React.FC = () => {
         setFilteredTodos(result);
       })
       .catch(() => {
-        setErrors('Unable to load todos');
+        setErrors(ErrorMessages.loadingTodos);
       });
   }, []);
 
@@ -103,7 +108,7 @@ export const App: React.FC = () => {
         clearCompleted={clearCompleted}
       />
 
-      {error !== '' && <Errors error={error} setError={setError} />}
+      {error && <Errors error={error} setError={setError} />}
     </div>
   );
 };

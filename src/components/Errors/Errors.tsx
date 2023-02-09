@@ -1,24 +1,25 @@
 import React, { useEffect, useState } from 'react';
 import classNames from 'classnames';
+import { ErrorMessages } from '../../types/ErrorMessages';
 
 type Props = {
   error: string;
-  setError: (v: string) => void;
+  setError: (v: ErrorMessages | null) => void;
 };
 
 export const Errors: React.FC<Props> = ({ error, setError }) => {
-  const [visible, setVisible] = useState<boolean>(true);
+  const [isVisible, setIsVisible] = useState<boolean>(true);
 
   useEffect(() => {
     setTimeout(() => {
-      setVisible(false);
-      setError('');
+      setIsVisible(false);
+      setError(null);
     }, 3000);
   }, []);
 
   return (
     <>
-      {visible && (
+      {isVisible && (
         <div
           className={classNames(
             'notification is-danger is-light has-text-weight-normal',
@@ -29,18 +30,11 @@ export const Errors: React.FC<Props> = ({ error, setError }) => {
             className="delete"
             aria-label="Close error"
             onClick={() => {
-              setVisible(false);
+              setIsVisible(false);
             }}
           />
 
           {error}
-
-          {/* show only one message at a time */}
-          {/* Unable to add a todo
-      <br />
-      Unable to delete a todo
-      <br />
-      Unable to update a todo */}
         </div>
       )}
     </>

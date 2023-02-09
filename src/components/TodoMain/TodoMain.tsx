@@ -9,15 +9,13 @@ type Props = {
 };
 
 export const TodoMain: React.FC<Props> = ({ todos, tempTodo, deleteTodo }) => {
-  const [changeCheck, setChangeCheck] = useState<number>(-1);
+  const [isEditActive, setIsEditActive] = useState<number>(-1);
   const [loading, setLoading] = useState(0);
 
-  const onSubmitChanges = (
-    event: React.FormEvent<HTMLFormElement>,
-  ) => {
+  const onSubmitChanges = (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
 
-    setChangeCheck(-1);
+    setIsEditActive(-1);
   };
 
   const onDelete = (id: number) => {
@@ -36,7 +34,7 @@ export const TodoMain: React.FC<Props> = ({ todos, tempTodo, deleteTodo }) => {
               <input type="checkbox" className="todo__status" checked />
             </label>
 
-            {changeCheck === id ? (
+            {isEditActive === id ? (
               <>
                 <form onSubmit={onSubmitChanges}>
                   <input
@@ -52,7 +50,7 @@ export const TodoMain: React.FC<Props> = ({ todos, tempTodo, deleteTodo }) => {
                 <span
                   className="todo__title"
                   onDoubleClick={() => {
-                    setChangeCheck(id);
+                    setIsEditActive(id);
                   }}
                 >
                   {title}

@@ -1,8 +1,9 @@
 import React, { FormEvent, useState } from 'react';
 import cn from 'classnames';
+import { ErrorMessages } from '../../types/ErrorMessages';
 
 type Props = {
-  onError: (value: string) => void;
+  onError: (value: ErrorMessages | null) => void;
   createTodo: (title: string) => void;
   isInputDisabled: boolean;
 };
@@ -19,7 +20,7 @@ export const TodoHeader: React.FC<Props> = ({
     const todoName = newTodo.trim();
 
     if (todoName === '') {
-      onError("Title can't be empty");
+      onError(ErrorMessages.emptyTitle);
 
       return;
     }

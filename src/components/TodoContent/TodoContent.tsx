@@ -1,4 +1,5 @@
 import { useEffect, useState } from 'react';
+import { ErrorMessages } from '../../types/ErrorMessages';
 import { Filter } from '../../types/Filter';
 import { Todo } from '../../types/Todo';
 import { TodoFooter } from '../TodoFooter';
@@ -8,7 +9,7 @@ import { TodoMain } from '../TodoMain';
 type Props = {
   filterTodos: (filterBy: Filter) => void;
   todos: Todo[] | null;
-  onError: (value: string) => void;
+  onError: (value: ErrorMessages | null) => void;
   createTodo: (title: string) => void;
   tempTodo: Todo | null;
   isInputDisabled: boolean;
@@ -29,6 +30,11 @@ export const TodoContent: React.FC<Props> = ({
   const [filter, setFilter] = useState<Filter>(Filter.all);
   const [activeClearBtn, setActiveClearBtn] = useState(false);
 
+  const onSwitchFilter = (f: Filter) => {
+    setFilter(f);
+    filterTodos(f);
+  };
+
   useEffect(() => {
     if (todos?.some((todo) => todo.completed)) {
       setActiveClearBtn(true);
@@ -48,11 +54,8 @@ export const TodoContent: React.FC<Props> = ({
       {todos && (
         <TodoFooter
           todosLength={todos?.length}
-          filter={filter}
-          onChange={(selectedFilter) => {
-            setFilter(selectedFilter);
-            filterTodos(selectedFilter);
-          }}
+          selectFilter={filter}
+          switchFilter={(selectedFilter) => onSwitchFilter(selectedFilter)}
           activeClearBtn={activeClearBtn}
           clearCompleted={clearCompleted}
         />

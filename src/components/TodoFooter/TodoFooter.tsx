@@ -5,29 +5,33 @@ import { Filter } from '../../types/Filter';
 
 type Props = {
   todosLength: number | undefined;
-  filter: Filter;
-  onChange: (selector: Filter) => void;
+  selectFilter: Filter;
+  switchFilter: (selector: Filter) => void;
   activeClearBtn: boolean;
   clearCompleted: () => void;
 };
 
 export const TodoFooter: React.FC<Props> = ({
   todosLength,
-  filter,
-  onChange,
+  selectFilter,
+  switchFilter,
   activeClearBtn,
   clearCompleted,
 }) => {
-  const onAllClick = () => {
-    onChange(Filter.all);
-  };
+  const changeFilterBy = (filter: Filter) => {
+    switch (filter) {
+      case Filter.active:
+        switchFilter(Filter.active);
+        break;
 
-  const onActiveClick = () => {
-    onChange(Filter.active);
-  };
+      case Filter.completed:
+        switchFilter(Filter.completed);
+        break;
 
-  const onCompletedClick = () => {
-    onChange(Filter.completed);
+      default:
+        switchFilter(Filter.all);
+        break;
+    }
   };
 
   return (
@@ -39,9 +43,9 @@ export const TodoFooter: React.FC<Props> = ({
         <a
           href="#/"
           className={classNames('filter__link', {
-            selected: filter === Filter.all,
+            selected: selectFilter === Filter.all,
           })}
-          onClick={onAllClick}
+          onClick={() => changeFilterBy(Filter.all)}
         >
           All
         </a>
@@ -49,9 +53,9 @@ export const TodoFooter: React.FC<Props> = ({
         <a
           href="#/active"
           className={classNames('filter__link', {
-            selected: filter === Filter.active,
+            selected: selectFilter === Filter.active,
           })}
-          onClick={onActiveClick}
+          onClick={() => changeFilterBy(Filter.active)}
         >
           Active
         </a>
@@ -59,9 +63,9 @@ export const TodoFooter: React.FC<Props> = ({
         <a
           href="#/completed"
           className={classNames('filter__link', {
-            selected: filter === Filter.completed,
+            selected: selectFilter === Filter.completed,
           })}
-          onClick={onCompletedClick}
+          onClick={() => changeFilterBy(Filter.completed)}
         >
           Completed
         </a>
