@@ -7,7 +7,7 @@ type Props = {
   todosLength: number | undefined;
   selectFilter: Filter;
   switchFilter: (selector: Filter) => void;
-  activeClearBtn: boolean;
+  hasIncompleteTodos: boolean;
   clearCompleted: () => void;
 };
 
@@ -15,25 +15,9 @@ export const TodoFooter: React.FC<Props> = ({
   todosLength,
   selectFilter,
   switchFilter,
-  activeClearBtn,
+  hasIncompleteTodos,
   clearCompleted,
 }) => {
-  const changeFilterBy = (filter: Filter) => {
-    switch (filter) {
-      case Filter.active:
-        switchFilter(Filter.active);
-        break;
-
-      case Filter.completed:
-        switchFilter(Filter.completed);
-        break;
-
-      default:
-        switchFilter(Filter.all);
-        break;
-    }
-  };
-
   return (
     <footer className="todoapp__footer">
       <span className="todo-count">{`${todosLength} items left`}</span>
@@ -45,7 +29,7 @@ export const TodoFooter: React.FC<Props> = ({
           className={classNames('filter__link', {
             selected: selectFilter === Filter.all,
           })}
-          onClick={() => changeFilterBy(Filter.all)}
+          onClick={() => switchFilter(Filter.all)}
         >
           All
         </a>
@@ -55,7 +39,7 @@ export const TodoFooter: React.FC<Props> = ({
           className={classNames('filter__link', {
             selected: selectFilter === Filter.active,
           })}
-          onClick={() => changeFilterBy(Filter.active)}
+          onClick={() => switchFilter(Filter.active)}
         >
           Active
         </a>
@@ -65,13 +49,13 @@ export const TodoFooter: React.FC<Props> = ({
           className={classNames('filter__link', {
             selected: selectFilter === Filter.completed,
           })}
-          onClick={() => changeFilterBy(Filter.completed)}
+          onClick={() => switchFilter(Filter.completed)}
         >
           Completed
         </a>
       </nav>
 
-      {activeClearBtn && (
+      {hasIncompleteTodos && (
         <button
           type="button"
           className="todoapp__clear-completed"

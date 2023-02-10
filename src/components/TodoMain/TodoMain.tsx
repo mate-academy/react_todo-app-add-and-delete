@@ -9,18 +9,24 @@ type Props = {
 };
 
 export const TodoMain: React.FC<Props> = ({ todos, tempTodo, deleteTodo }) => {
-  const [isEditActive, setIsEditActive] = useState<number>(-1);
-  const [loading, setLoading] = useState(0);
+  const [activateEditById, setActivateEditById] = useState<number>(-1);
+  const [activateLoadingOnTodo, setActivateLoadingOnTodo] = useState(0);
+  const [tempTodoTitle, setTempTodoTitle] = useState('');
 
   const onSubmitChanges = (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
 
-    setIsEditActive(-1);
+    setActivateEditById(-1);
   };
 
   const onDelete = (id: number) => {
-    setLoading(id);
+    setActivateLoadingOnTodo(id);
     deleteTodo(id);
+  };
+
+  const activateEdit = (title: string, id: number) => {
+    setTempTodoTitle(title);
+    setActivateEditById(id);
   };
 
   return (
@@ -34,14 +40,17 @@ export const TodoMain: React.FC<Props> = ({ todos, tempTodo, deleteTodo }) => {
               <input type="checkbox" className="todo__status" checked />
             </label>
 
-            {isEditActive === id ? (
+            {activateEditById === id ? (
               <>
                 <form onSubmit={onSubmitChanges}>
                   <input
                     type="text"
                     className="todo__title-field"
                     placeholder="Empty todo will be deleted"
-                    value={title}
+                    value={tempTodoTitle}
+                    onChange={(e: React.FormEvent<HTMLInputElement>) => {
+                      setTempTodoTitle(e.currentTarget.value);
+                    }}
                   />
                 </form>
               </>
@@ -49,9 +58,7 @@ export const TodoMain: React.FC<Props> = ({ todos, tempTodo, deleteTodo }) => {
               <>
                 <span
                   className="todo__title"
-                  onDoubleClick={() => {
-                    setIsEditActive(id);
-                  }}
+                  onDoubleClick={() => activateEdit(title, id)}
                 >
                   {title}
                 </span>
@@ -63,7 +70,7 @@ export const TodoMain: React.FC<Props> = ({ todos, tempTodo, deleteTodo }) => {
                   ×
                 </button>
 
-                {loading === id && (
+                {activateLoadingOnTodo === id && (
                   <div className="modal overlay is-active">
                     <div
                       className="modal-background has-background-white-ter"

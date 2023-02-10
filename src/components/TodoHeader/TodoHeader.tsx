@@ -13,11 +13,11 @@ export const TodoHeader: React.FC<Props> = ({
   createTodo,
   isInputDisabled,
 }) => {
-  const [newTodo, setNewTodo] = useState<string>('');
+  const [newTodoTitle, setNewTodoTitle] = useState<string>('');
 
   const addTodo = (e: FormEvent) => {
     e.preventDefault();
-    const todoName = newTodo.trim();
+    const todoName = newTodoTitle.trim();
 
     if (todoName === '') {
       onError(ErrorMessages.emptyTitle);
@@ -26,7 +26,7 @@ export const TodoHeader: React.FC<Props> = ({
     }
 
     createTodo(todoName);
-    setNewTodo('');
+    setNewTodoTitle('');
   };
 
   return (
@@ -43,8 +43,8 @@ export const TodoHeader: React.FC<Props> = ({
           type="text"
           className="todoapp__new-todo"
           placeholder="What needs to be done?"
-          value={newTodo}
-          onChange={(e) => setNewTodo(e.target.value)}
+          value={newTodoTitle}
+          onChange={(e) => setNewTodoTitle(e.target.value)}
           disabled={isInputDisabled}
         />
       </form>

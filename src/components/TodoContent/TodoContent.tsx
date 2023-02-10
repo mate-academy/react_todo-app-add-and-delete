@@ -28,7 +28,7 @@ export const TodoContent: React.FC<Props> = ({
   clearCompleted,
 }) => {
   const [filter, setFilter] = useState<Filter>(Filter.all);
-  const [activeClearBtn, setActiveClearBtn] = useState(false);
+  const [hasIncompleteTodos, setHasIncompleteTodos] = useState(false);
 
   const onSwitchFilter = (f: Filter) => {
     setFilter(f);
@@ -37,7 +37,7 @@ export const TodoContent: React.FC<Props> = ({
 
   useEffect(() => {
     if (todos?.some((todo) => todo.completed)) {
-      setActiveClearBtn(true);
+      setHasIncompleteTodos(true);
     }
   });
 
@@ -56,7 +56,7 @@ export const TodoContent: React.FC<Props> = ({
           todosLength={todos?.length}
           selectFilter={filter}
           switchFilter={(selectedFilter) => onSwitchFilter(selectedFilter)}
-          activeClearBtn={activeClearBtn}
+          hasIncompleteTodos={hasIncompleteTodos}
           clearCompleted={clearCompleted}
         />
       )}

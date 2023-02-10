@@ -33,10 +33,6 @@ export const App: React.FC = () => {
     }
   };
 
-  const setErrors = (e: ErrorMessages | null) => {
-    setError(e);
-  };
-
   const createTodo = async (title: string) => {
     setIsInputDisabled(true);
 
@@ -54,7 +50,7 @@ export const App: React.FC = () => {
         setFilteredTodos((state) => [...state, response]);
       })
       .catch(() => {
-        setErrors(ErrorMessages.addTodo);
+        setError(ErrorMessages.addTodo);
       });
 
     setIsInputDisabled(false);
@@ -66,7 +62,7 @@ export const App: React.FC = () => {
         setFilteredTodos(filteredTodos.filter((todo) => todo.id !== id));
       })
       .catch(() => {
-        setErrors(ErrorMessages.deleteTodo);
+        setError(ErrorMessages.deleteTodo);
       });
   };
 
@@ -85,7 +81,7 @@ export const App: React.FC = () => {
         setFilteredTodos(result);
       })
       .catch(() => {
-        setErrors(ErrorMessages.loadingTodos);
+        setError(ErrorMessages.loadingTodos);
       });
   }, []);
 
@@ -100,7 +96,7 @@ export const App: React.FC = () => {
       <TodoContent
         todos={filteredTodos}
         filterTodos={filterTodos}
-        onError={setErrors}
+        onError={(e: ErrorMessages | null) => setError(e)}
         createTodo={createTodo}
         tempTodo={tempTodo}
         isInputDisabled={isInputDisabled}
