@@ -1,24 +1,194 @@
-/* eslint-disable max-len */
-/* eslint-disable jsx-a11y/control-has-associated-label */
-import React from 'react';
-import { UserWarning } from './UserWarning';
+import React, {
+  useContext,
+  useEffect,
+  useState,
+  useRef,
+} from 'react';
+import { AuthContext } from './components/Auth/AuthContext';
 
-const USER_ID = 0;
+import { postTodos, getTodos, deleteTodos } from './api/todos';
+import { ErrorType } from './types/ErrorType';
+import { Filter } from './types/Filter';
+
+import { UserWarning } from './UserWarning';
+import { TodoList } from './components/TodosList/TodosList';
+import { Header } from './components/Header/Header';
+import { Footer } from './components/Footer/Footer';
+import { Error } from './components/Error/Error';
+
+import { Todo } from './types/Todo';
 
 export const App: React.FC = () => {
-  if (!USER_ID) {
+  const user = useContext(AuthContext);
+  const newTodoField = useRef<HTMLInputElement>(null);
+
+  const [isInputDisabled, setIsInputDisabled] = useState(false);
+  const [filterType, setFilterType] = useState(Filter.all);
+  const [isCreating, setIscreating] = useState(false);
+  const [title, setTitle] = useState('');
+  const [typeOfError, setTypeOfError] = useState(ErrorType.success);
+  const [processings, setProcessings] = useState<number[]>([]);
+  const [todos, setTodos] = useState<Todo[]>([]);
+
+  const loadingTodosApi = () => {
+    const handleRequest = (todoList: Todo[]) => {
+      setTodos(todoList);
+      setTypeOfError(ErrorType.success);
+    };
+
+    if (user) {
+      getTodos(user.id)
+        .then(list => handleRequest(list))
+        .catch(() => setTypeOfError(ErrorType.get));
+    }
+  };
+
+  useEffect(() => {
+    if (newTodoField.current) {
+      newTodoField.current.focus();
+    }
+
+    loadingTodosApi();
+  }, []);
+
+  useEffect(() => {
+    const timeoutID = setTimeout(() => setTypeOfError(ErrorType.success), 3000);
+
+    return () => {
+      clearTimeout(timeoutID);
+    };
+  });
+
+  const handleInput = (event: React.ChangeEvent<HTMLInputElement>) => {
+    const { value } = event.target;
+
+    setTitle(value);
+  };
+
+  const listModified = (type: Filter) => {
+    switch (type) {
+      case Filter.active:
+        return todos.filter(item => !item.completed);
+      case Filter.completed:
+        return todos.filter(item => item.completed);
+      default:
+        return todos;
+    }
+  };
+
+  const uploadTodos = (newTodo: Todo) => {
+    setTodos([
+      ...todos,
+      newTodo,
+    ]);
+
+    setTitle('');
+    setIsInputDisabled(false);
+    setIscreating(false);
+  };
+
+  const failResponse = () => {
+    setTypeOfError(ErrorType.post);
+    setIscreating(false);
+    setIsInputDisabled(false);
+  };
+
+  const handleSubmit
+  = (event: React.FormEvent<HTMLFormElement>) => {
+    event.preventDefault();
+
+    if (!title.length) {
+      setTypeOfError(ErrorType.emptyTitle);
+
+      return;
+    }
+
+    setIsInputDisabled(true);
+    setIscreating(true);
+
+    const data = {
+      title,
+      userId: user?.id,
+      completed: false,
+    };
+
+    if (user) {
+      postTodos(user.id, data)
+        .then((response) => uploadTodos(response))
+        .catch(failResponse);
+    }
+  };
+
+  const handleDelete = (id: number) => {
+    const addProcessings = (todoId: number) => {
+      setProcessings([
+        ...processings,
+        todoId,
+      ]);
+    };
+
+    const deleteTodo = () => {
+      setTodos(prevTodos => prevTodos.filter(item => item.id !== id));
+    };
+
+    if (user) {
+      deleteTodos(id)
+        .then(() => deleteTodo())
+        .catch(() => setTypeOfError(ErrorType.delete))
+        .finally(() => addProcessings(id));
+    }
+  };
+
+  const errorDisable = () => {
+    setTypeOfError(ErrorType.success);
+  };
+
+  const deleteCompletedTodos = () => {
+    listModified(Filter.completed).forEach(todo => handleDelete(todo.id));
+  };
+
+  const activeTodos = listModified(Filter.active).length;
+  const completedTodos = listModified(Filter.completed).length;
+  const todosFiltered = listModified(filterType);
+
+  if (!user?.id) {
     return <UserWarning />;
   }
 
   return (
-    <section className="section container">
-      <p className="title is-4">
-        Copy all you need from the prev task:
-        <br />
-        <a href="https://github.com/mate-academy/react_todo-app-loading-todos#react-todo-app-load-todos">React Todo App - Load Todos</a>
-      </p>
+    <div className="todoapp">
+      <h1 className="todoapp__title">todos</h1>
 
-      <p className="subtitle">Styles are already copied</p>
-    </section>
+      <div className="todoapp__content">
+        <Header
+          onHandleSubmit={handleSubmit}
+          onHandleInput={handleInput}
+          isDisabled={isInputDisabled}
+          newTodoField={newTodoField}
+          inputValue={title}
+        />
+        <TodoList
+          onDelete={handleDelete}
+          todos={todosFiltered}
+          creating={isCreating}
+          title={title}
+          processings={processings}
+        />
+        {!!todos.length && (
+          <Footer
+            onSetFilterType={setFilterType}
+            onDeleteCompletedTodos={deleteCompletedTodos}
+            completedTodos={completedTodos}
+            activeTodos={activeTodos}
+            filterType={filterType}
+          />
+        )}
+      </div>
+
+      <Error
+        onErrorDisable={errorDisable}
+        errorType={typeOfError}
+      />
+    </div>
   );
 };
