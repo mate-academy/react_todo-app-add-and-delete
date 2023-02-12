@@ -57,9 +57,19 @@ export const App: React.FC = () => {
 
   const addTodo = (todoData: Omit<Todo, 'id'>) => {
     if (todoData.title !== '') {
+      setProcessedTodos(prev => [...prev, 0]);
+      setTodos([...todos, {
+        id: 0,
+        title: todoData.title,
+        completed: false,
+        userId: USER_ID,
+      }]);
       createTodo(todoData)
         .then(newTodo => setTodos([...todos, newTodo]))
-        .catch(() => setErrorMsg(ErrorMessage.Adding));
+        .catch(() => setErrorMsg(ErrorMessage.Adding))
+        .finally(() => {
+          setTodos(prev => prev.filter(td => td.id !== 0));
+        });
     } else {
       setError(true);
       setErrorMsg(ErrorMessage.Empty);
@@ -115,6 +125,8 @@ export const App: React.FC = () => {
   };
 
   const todoUpdate = (todoToUpdate: Todo) => {
+    setProcessedTodos(prev => [...prev, todoToUpdate.id]);
+
     updateTodo(todoToUpdate)
       .then(() => {
         setTodos(
@@ -132,6 +144,9 @@ export const App: React.FC = () => {
         setTimeout(() => {
           setErrorMsg('');
         }, 3000);
+      })
+      .finally(() => {
+        setProcessedTodos(prev => prev.filter(id => id !== todoToUpdate.id));
       });
   };
 

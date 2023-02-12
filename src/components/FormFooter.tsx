@@ -69,17 +69,21 @@ export const FormFooter: React.FC<Props> = ({
       </nav>
 
       {/* don't show this button if there are no completed todos */}
-      {completedTodos.length > 0 && (
-        <button
-          type="button"
-          className={classNames(
-            'todoapp__clear-completed',
-          )}
-          onClick={() => onClearCompleted()}
-        >
-          Clear completed
-        </button>
-      )}
+
+      <button
+        type="button"
+        className={classNames(
+          'todoapp__clear-completed',
+        )}
+        onClick={() => onClearCompleted()}
+        style={{
+          visibility: completedTodos.length
+            ? ('visible')
+            : ('hidden'),
+        }}
+      >
+        Clear completed
+      </button>
 
     </footer>
   );

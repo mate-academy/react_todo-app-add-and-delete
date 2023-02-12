@@ -24,12 +24,6 @@ export const FormMain: React.FC<Props> = (
             { completed: todo.completed },
           )}
         >
-          {processedTodos.includes(todo.id) && (
-            <div className="modal overlay">
-              <div className="modal-background has-background-white-ter" />
-              <div className="loader" />
-            </div>
-          )}
           <label className="todo__status-label">
             <input
               type="checkbox"
@@ -53,11 +47,17 @@ export const FormMain: React.FC<Props> = (
             ×
           </button>
 
+          {/* processedTodos.includes(todo.id) */}
+
           {/* overlay will cover the todo while it is being updated */}
-          {/* <div className="modal overlay">
+          <div className={classNames(
+            'modal overlay',
+            { 'is-active': processedTodos.includes(todo.id) },
+          )}
+          >
             <div className="modal-background has-background-white-ter" />
             <div className="loader" />
-          </div> */}
+          </div>
         </div>
       ))}
     </section>
