@@ -1,3 +1,4 @@
+/* eslint-disable react/jsx-fragments */
 import classNames from 'classnames';
 import React from 'react';
 import { Todo } from '../types/Todo';
@@ -14,9 +15,8 @@ export const TodoList: React.FC<Props> = ({
   return (
     <section className="todoapp__main">
       {todos.map((todo) => (
-        <>
+        <React.Fragment key={todo.id}>
           <div
-            key={todo.id}
             className={classNames(
               'todo',
               { completed: todo.completed },
@@ -47,7 +47,7 @@ export const TodoList: React.FC<Props> = ({
               ×
             </button>
           </div>
-        </>
+        </React.Fragment>
       ))}
     </section>
   );

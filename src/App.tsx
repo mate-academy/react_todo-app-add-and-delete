@@ -88,14 +88,6 @@ export const App: React.FC = () => {
       });
   };
 
-  const handleClearTodos = async (todoIds: number[]) => {
-    try {
-      await Promise.all(todoIds.map((id) => handleRemoveTodo(id)));
-    } catch (mistake) {
-      setError(Errors.REMOVING);
-    }
-  };
-
   const visibleTodos = todos
     .filter((todo) => {
       switch (filter) {
@@ -112,6 +104,9 @@ export const App: React.FC = () => {
     return <UserWarning />;
   }
 
+  const hasActiveTodos = todos.some((todo) => !todo.completed);
+  const completedTodos = todos.filter((todo) => todo.completed);
+
   return (
     <div className="todoapp">
       <h1 className="todoapp__title">todos</h1>
@@ -122,7 +117,7 @@ export const App: React.FC = () => {
             type="button"
             className={classNames(
               'todoapp__toggle-all',
-              { active: todos.some((todo) => !todo.completed) },
+              { active: !hasActiveTodos },
             )}
           />
           <Form
@@ -175,7 +170,8 @@ export const App: React.FC = () => {
               todos={todos}
               filter={filter}
               onSetFilter={setFilter}
-              onSetClearHandler={handleClearTodos}
+              onSetClearHandler={handleRemoveTodo}
+              completedTodos={completedTodos}
             />
           </>
         )}
