@@ -1,30 +1,33 @@
 import classNames from 'classnames';
-import React, { useState } from 'react';
-import { deleteTodo } from '../../api/todos';
+import React, { useEffect, useState } from 'react';
 import { Todo } from '../../types/Todo';
 
 type Props = {
   todo: Todo;
-  onError: (error: string) => void;
-  onListChange: React.Dispatch<React.SetStateAction<Todo []>>
+  onDelete: (id: number) => Promise<void>;
   isAdding?: boolean;
+  clearCompleted: boolean;
 };
 
 export const TodoItem: React.FC<Props> = React.memo(({
   todo,
-  onError,
-  onListChange,
+  onDelete,
   isAdding,
+  clearCompleted,
 }) => {
   const { completed, title, id } = todo;
   const [isLoading, setIsLoading] = useState(false);
   const remove = () => {
     setIsLoading(true);
-    deleteTodo(id)
-      .then(() => onListChange((state) => state.filter(item => item.id !== id)))
-      .catch(() => onError('Cannot delete todo'))
+    onDelete(id)
       .finally(() => setIsLoading(false));
   };
+
+  useEffect(() => {
+    if (clearCompleted && completed) {
+      remove();
+    }
+  }, [clearCompleted]);
 
   return (
     <div

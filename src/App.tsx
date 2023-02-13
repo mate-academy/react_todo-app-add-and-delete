@@ -10,7 +10,7 @@ import { AuthContext } from './components/Auth/AuthContext';
 import { TodoList } from './components/TodoList';
 import { Error } from './components/Error';
 import { Todo } from './types/Todo';
-import { addTodo, getTodos } from './api/todos';
+import { addTodo, deleteTodo, getTodos } from './api/todos';
 import { Header } from './components/Header';
 import { TodoStatus } from './types/TodoStatus';
 import { Footer } from './components/Footer';
@@ -26,9 +26,14 @@ export const App: React.FC = () => {
   const [tempTodo, setTempTodo] = useState<Todo | null>(null);
   const [title, setTitle] = useState('');
   const [filterStatus, setFilterStatus] = useState(TodoStatus.All);
+  const [clearCompleted, setClearCompleted] = useState(false);
   const activeTodos = useMemo(() => {
     return todos.filter(todo => !todo.completed).length;
   }, [todos]);
+  const completedTodos = useMemo(() => {
+    return todos.filter(todo => todo.completed).length;
+  }, [todos]);
+
   const isListEmpty = useMemo(() => todos.length === 0, [todos]);
 
   useEffect(() => {
@@ -88,6 +93,12 @@ export const App: React.FC = () => {
     }
   };
 
+  const handleDeleteTodo = (id: number) => {
+    return deleteTodo(id)
+      .then(() => setTodos((state) => state.filter(item => item.id !== id)))
+      .catch(() => setErrorMessage('Cannot delete todo'));
+  };
+
   return (
     <div className="todoapp">
       <h1 className="todoapp__title">todos</h1>
@@ -104,17 +115,17 @@ export const App: React.FC = () => {
 
         <TodoList
           todos={todos}
-          onError={setErrorMessage}
-          onListChange={setTodos}
+          onDelete={handleDeleteTodo}
           filterStatus={filterStatus}
+          clearCompleted={clearCompleted}
         />
 
         {tempTodo && (
           <TodoItem
             todo={tempTodo}
-            onError={setErrorMessage}
-            onListChange={setTodos}
+            onDelete={handleDeleteTodo}
             isAdding={isAdding}
+            clearCompleted={clearCompleted}
           />
         )}
 
@@ -123,6 +134,8 @@ export const App: React.FC = () => {
             onStatusChange={setFilterStatus}
             status={filterStatus}
             activeTodos={activeTodos}
+            completedTodos={completedTodos}
+            onClear={setClearCompleted}
           />
         )}
       </div>

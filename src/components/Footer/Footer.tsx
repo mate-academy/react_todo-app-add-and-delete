@@ -1,18 +1,28 @@
 import classNames from 'classnames';
-import React from 'react';
+import React, { useEffect } from 'react';
 import { TodoStatus } from '../../types/TodoStatus';
 
 type Props = {
   onStatusChange: (status: TodoStatus) => void;
   activeTodos: number;
   status: TodoStatus;
+  completedTodos: number;
+  onClear: (clear: boolean) => void;
 };
 
-export const Footer: React.FC<Props> = ({
+export const Footer: React.FC<Props> = React.memo(({
   onStatusChange,
   status,
   activeTodos,
+  completedTodos,
+  onClear,
 }) => {
+  useEffect(() => {
+    if (completedTodos === 0) {
+      onClear(false);
+    }
+  }, [completedTodos]);
+
   return (
     <footer className="todoapp__footer" data-cy="Footer">
       <span className="todo-count" data-cy="todosCounter">
@@ -57,9 +67,11 @@ export const Footer: React.FC<Props> = ({
         data-cy="ClearCompletedButton"
         type="button"
         className="todoapp__clear-completed"
+        disabled={completedTodos === 0}
+        onClick={() => onClear(true)}
       >
         Clear completed
       </button>
     </footer>
   );
-};
+});

@@ -5,18 +5,18 @@ import { TodoItem } from '../Todo';
 
 type Props = {
   todos: Todo[];
-  onError: (error: string) => void;
-  onListChange: React.Dispatch<React.SetStateAction<Todo []>>;
+  onDelete: (id: number) => Promise<void>;
   tempTodo?: Todo;
   isAdding?: boolean;
   filterStatus: TodoStatus,
+  clearCompleted: boolean,
 };
 
 export const TodoList: React.FC<Props> = React.memo(({
   todos,
-  onError,
-  onListChange,
+  onDelete,
   filterStatus,
+  clearCompleted,
 }) => {
   const visibleTodos = useMemo(() => {
     switch (filterStatus) {
@@ -35,8 +35,8 @@ export const TodoList: React.FC<Props> = React.memo(({
         <TodoItem
           todo={todo}
           key={todo.id}
-          onError={onError}
-          onListChange={onListChange}
+          onDelete={onDelete}
+          clearCompleted={clearCompleted}
         />
       ))}
     </section>
