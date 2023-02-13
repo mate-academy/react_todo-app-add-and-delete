@@ -89,9 +89,11 @@ export const App: React.FC = () => {
   };
 
   const handleClearTodos = async (todoIds: number[]) => {
-    todoIds.map((id) => {
-      return handleRemoveTodo(id);
-    });
+    try {
+      await Promise.all(todoIds.map((id) => handleRemoveTodo(id)));
+    } catch (mistake) {
+      setError(Errors.REMOVING);
+    }
   };
 
   const visibleTodos = todos
