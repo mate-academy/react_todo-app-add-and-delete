@@ -3,7 +3,7 @@ import React, { Dispatch, SetStateAction, useState } from 'react';
 type Props = {
   setNewTodoTitle: Dispatch<SetStateAction<string>>;
   onInputError: () => void;
-  disable: boolean;
+  disable: number[];
 };
 
 export const Header: React.FC<Props> = ({
@@ -44,7 +44,7 @@ export const Header: React.FC<Props> = ({
           placeholder="What needs to be done?"
           value={titleInput}
           onChange={(event) => setTitleInput(event.target.value)}
-          disabled={disable}
+          disabled={disable.length > 0}
         />
       </form>
     </header>

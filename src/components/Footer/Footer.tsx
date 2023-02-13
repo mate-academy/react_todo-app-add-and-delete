@@ -8,15 +8,17 @@ const filterTitles = Object.keys(FilterOptions);
 type Props = {
   todos: Todo[],
   currentFilter: string,
-  onSelectFilter: Dispatch<SetStateAction<FilterOptions>>
+  onSelectFilter: Dispatch<SetStateAction<FilterOptions>>,
+  onDeleteTodo: (id: number) => void,
 };
 
 export const Footer: React.FC<Props> = ({
   todos,
   currentFilter,
   onSelectFilter,
+  onDeleteTodo,
 }) => {
-  const hasCompletedTodo = todos.some(({ completed }) => completed);
+  const completedTodos = todos.filter(({ completed }) => completed);
   const activeTodos = todos.filter(({ completed }) => !completed);
 
   return (
@@ -38,8 +40,13 @@ export const Footer: React.FC<Props> = ({
             ))}
           </nav>
 
-          {hasCompletedTodo && (
-            <button type="button" className="todoapp__clear-completed">
+          {completedTodos.length > 0 && (
+            <button
+              type="button"
+              className="todoapp__clear-completed"
+              onClick={() => completedTodos
+                .forEach(({ id }) => onDeleteTodo(id))}
+            >
               Clear completed
             </button>
           )}
