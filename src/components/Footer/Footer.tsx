@@ -20,6 +20,8 @@ export const Footer: React.FC<Props> = ({
 }) => {
   const completedTodos = todos.filter(({ completed }) => completed);
   const activeTodos = todos.filter(({ completed }) => !completed);
+  const clearCompleted = () => completedTodos
+    .forEach(({ id }) => onDeleteTodo(id));
 
   return (
     <>
@@ -44,8 +46,7 @@ export const Footer: React.FC<Props> = ({
             <button
               type="button"
               className="todoapp__clear-completed"
-              onClick={() => completedTodos
-                .forEach(({ id }) => onDeleteTodo(id))}
+              onClick={clearCompleted}
             >
               Clear completed
             </button>
