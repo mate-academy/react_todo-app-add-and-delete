@@ -1,23 +1,27 @@
 /* eslint-disable jsx-a11y/control-has-associated-label */
 import React, { useEffect, useState } from 'react';
-import { getTodos } from './api/todos';
-import { Footer } from './components/Footer';
+import { addTodo, getTodos } from './api/todos';
 import { Header } from './components/Header';
-import { Notification } from './components/Notification';
 import { Todos } from './components/Todos';
-import { FilterOptions } from './types/FilterOptions';
+import { Footer } from './components/Footer';
+import { Notification } from './components/Notification';
 import { Todo } from './types/Todo';
+import { FilterOptions } from './types/FilterOptions';
 import { UserWarning } from './UserWarning';
+import { Errors } from './types/Errors';
 
 const USER_ID = 6133;
 
 export const App: React.FC = () => {
   const [todos, setTodos] = useState<Todo[]>([]);
+  const [newTodoTitle, setNewTodoTitle] = useState<string>('');
+  const [updatingTodos, setUpdatingTodos] = useState(false);
   const [filter, setFilter] = useState(FilterOptions.All);
-  const [notification, setNotification] = useState('');
+  const [notification, setNotification] = useState(Errors.None);
   const [hideNotification, setHideNotification] = useState(false);
 
-  const handleError = (error: string) => {
+  const handleError = (error: Errors) => {
+    setHideNotification(false);
     setNotification(error);
     setTimeout(() => {
       setHideNotification(true);
@@ -29,9 +33,33 @@ export const App: React.FC = () => {
       .then(loadedTodos => {
         setTodos(loadedTodos);
       }).catch(() => {
-        handleError('Unable to load Todos');
+        handleError(Errors.CantGet);
       });
   }, []);
+
+  useEffect(() => {
+    if (newTodoTitle.length) {
+      const todoToAdd = {
+        id: 0,
+        userId: USER_ID,
+        title: newTodoTitle,
+        completed: false,
+      };
+
+      setUpdatingTodos(true);
+
+      addTodo(todoToAdd)
+        .then(newTodo => {
+          setTodos([...todos, newTodo]);
+        })
+        .catch(() => {
+          handleError(Errors.CantAdd);
+        })
+        .finally(() => {
+          setUpdatingTodos(false);
+        });
+    }
+  }, [newTodoTitle]);
 
   const filteredTodos = todos.filter(({
     completed,
@@ -57,7 +85,11 @@ export const App: React.FC = () => {
       <h1 className="todoapp__title">todos</h1>
 
       <div className="todoapp__content">
-        <Header />
+        <Header
+          setNewTodoTitle={setNewTodoTitle}
+          onInputError={() => handleError(Errors.EmptyTitle)}
+          disable={updatingTodos}
+        />
         <Todos todos={filteredTodos} />
         <Footer
           todos={todos}
@@ -65,18 +97,6 @@ export const App: React.FC = () => {
           onSelectFilter={setFilter}
         />
       </div>
-
-      {/* Added following button for review/testing behaviour, will be removed on the next task */}
-      <button
-        type="button"
-        className="button is-warning active mb-2"
-        onClick={() => {
-          setHideNotification(false);
-          handleError('in case of error, this behaviour...');
-        }}
-      >
-        test error notification
-      </button>
 
       <Notification
         message={notification}

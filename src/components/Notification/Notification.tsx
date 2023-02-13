@@ -14,7 +14,7 @@ export const Notification: React.FC<Props> = ({
 }) => {
   return (
     <>
-      { message.length !== 0 && (
+      { message.length > 0 && (
         <div
           className={cn(
             'notification is-danger is-light has-text-weight-normal',
