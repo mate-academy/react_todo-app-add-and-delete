@@ -113,7 +113,7 @@ export const App: React.FC = () => {
     };
 
     if (user) {
-      postTodos(user.id, data)
+      postTodos(data)
         .then((response) => uploadTodos(response))
         .catch(failResponse);
     }
