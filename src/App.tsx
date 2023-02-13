@@ -8,7 +8,7 @@ import { Notification } from './components/Notification';
 import { Todo } from './types/Todo';
 import { FilterOptions } from './types/FilterOptions';
 import { UserWarning } from './UserWarning';
-import { Error } from './types/Errors';
+import { Error } from './types/Error';
 
 const USER_ID = 6133;
 
