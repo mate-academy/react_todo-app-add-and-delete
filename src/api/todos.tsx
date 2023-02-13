@@ -9,7 +9,7 @@ export const getTodo = (todoId: number) => {
   return client.get<Todo>(`/todos/${todoId}`);
 };
 
-export const postTodo = (data: Todo) => {
+export const postTodo = (data: Omit<Todo, 'id'>): Promise<Todo> => {
   return client.post('/todos/', data);
 };
 

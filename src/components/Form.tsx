@@ -2,12 +2,11 @@ import { useState } from 'react';
 import { Todo } from '../types/Todo';
 
 type Props = {
-  onSubmit: (todo:Todo) => void
+  onSubmit: (todo:Omit<Todo, 'id'>) => void
   placeholder: string
   className: string,
   todo?: Todo,
   userId: number
-  todos: Todo[]
 };
 
 export const Form: React.FC<Props> = ({
@@ -16,7 +15,6 @@ export const Form: React.FC<Props> = ({
   className,
   todo,
   userId,
-  todos,
 }) => {
   const [title, setTitle] = useState<string>(todo?.title || '');
   const [completed] = useState(todo?.completed || false);
@@ -25,14 +23,13 @@ export const Form: React.FC<Props> = ({
   const handleSubmit = (event: React.FormEvent) => {
     event.preventDefault();
 
-    const newTodo = {
+    const todoData = {
       title,
-      id: todo?.id || Math.max(...todos.map(element => element.id)) + 1,
       completed,
       userId,
     };
 
-    onSubmit(newTodo);
+    onSubmit(todoData);
     setTempDisable(true);
     setTitle('');
 

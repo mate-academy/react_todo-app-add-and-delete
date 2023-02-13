@@ -1,15 +1,6 @@
-import classNames from 'classnames';
-
-type Props = {
-  editing: boolean
-};
-
-export const TodoModal: React.FC<Props> = ({ editing }) => (
+export const TodoModal: React.FC = () => (
   <div
-    className={classNames(
-      'modal overlay',
-      { 'is-active': editing },
-    )}
+    className="modal overlay is-active"
   >
     <div className="modal-background has-background-white-ter" />
     <div className="loader" />

@@ -11,6 +11,7 @@ import {
 import { Footer } from './components/Footer';
 import { Form } from './components/Form';
 import { TodoList } from './components/TodoList';
+import { TodoModal } from './components/TodoModal';
 import { Errors, Filter, Todo } from './types/Todo';
 import { UserWarning } from './UserWarning';
 
@@ -40,8 +41,8 @@ export const App: React.FC = () => {
       });
   }, []);
 
-  const handleAddTodo = (todo: Todo) => {
-    if (!todo.title) {
+  const handleAddTodo = (todoData: Omit<Todo, 'id'>) => {
+    if (!todoData.title) {
       setError(Errors.TITLE);
       setIsItError(true);
 
@@ -52,12 +53,12 @@ export const App: React.FC = () => {
       return;
     }
 
-    setTempTodo(todo);
+    setTempTodo({ ...todoData, id: 0 });
 
-    postTodo(todo)
-      .then(() => (
+    postTodo(todoData)
+      .then((newTodo) => (
         setTimeout(() => {
-          setTodos([...todos, todo]);
+          setTodos([...todos, newTodo]);
           setTempTodo(null);
         }, 1000)
       ))
@@ -122,7 +123,6 @@ export const App: React.FC = () => {
           />
           <Form
             onSubmit={handleAddTodo}
-            todos={todos}
             className="todoapp__new-todo"
             placeholder="What needs to be done?"
             userId={USER_ID}
@@ -136,7 +136,6 @@ export const App: React.FC = () => {
             />
             {tempTodo && (
               <div
-                id="0"
                 key={tempTodo.id}
                 className={classNames(
                   'todo',
@@ -146,6 +145,7 @@ export const App: React.FC = () => {
                 <label
                   className="todo__status-label"
                 >
+                  <TodoModal />
                   <input
                     type="checkbox"
                     className="todo__status"
@@ -163,7 +163,6 @@ export const App: React.FC = () => {
                 >
                   ×
                 </button>
-                <div className="loader" />
               </div>
             )}
             <Footer
