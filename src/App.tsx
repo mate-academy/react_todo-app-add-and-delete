@@ -3,7 +3,7 @@
 import React, {
   useContext, useEffect, useState,
 } from 'react';
-import { postTodos, getTodos } from './api/todos';
+import { postTodos, getTodos, deleteTodo } from './api/todos';
 import { AuthContext } from './components/Auth/AuthContext';
 // eslint-disable-next-line max-len
 import { ErrorNotification } from './components/ErrorNotification/ErrorNotification';
@@ -53,7 +53,7 @@ export const App: React.FC = () => {
   };
 
   // Delete Todo
-  const deleteTodo = async (id:number) => {
+  const removeTodo = async (id:number) => {
     try {
       await deleteTodo(id);
     } catch {
@@ -105,7 +105,7 @@ export const App: React.FC = () => {
         <TodoList
           todos={filteredTodos}
           temporaryTodo={tempTodo}
-          deleteTodo={deleteTodo}
+          deleteTodo={removeTodo}
         />
 
         <Footer
