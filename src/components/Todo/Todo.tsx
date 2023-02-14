@@ -16,7 +16,9 @@ export const TodoItem: React.FC<Props> = React.memo(({
   clearCompleted,
 }) => {
   const { completed, title, id } = todo;
+
   const [isLoading, setIsLoading] = useState(false);
+
   const remove = () => {
     setIsLoading(true);
     onDelete(id)
@@ -27,7 +29,7 @@ export const TodoItem: React.FC<Props> = React.memo(({
     if (clearCompleted && completed) {
       remove();
     }
-  }, [clearCompleted]);
+  }, [clearCompleted, completed]);
 
   return (
     <div
@@ -48,6 +50,7 @@ export const TodoItem: React.FC<Props> = React.memo(({
       <span data-cy="TodoTitle" className="todo__title">
         {title}
       </span>
+
       <button
         type="button"
         className="todo__remove"

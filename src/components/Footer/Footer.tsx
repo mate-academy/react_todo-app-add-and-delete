@@ -18,7 +18,7 @@ export const Footer: React.FC<Props> = React.memo(({
   onClear,
 }) => {
   useEffect(() => {
-    if (completedTodos === 0) {
+    if (!completedTodos) {
       onClear(false);
     }
   }, [completedTodos]);
@@ -67,7 +67,7 @@ export const Footer: React.FC<Props> = React.memo(({
         data-cy="ClearCompletedButton"
         type="button"
         className="todoapp__clear-completed"
-        disabled={completedTodos === 0}
+        disabled={!completedTodos}
         onClick={() => onClear(true)}
       >
         Clear completed

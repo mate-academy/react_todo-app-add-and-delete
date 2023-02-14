@@ -15,6 +15,7 @@ import { Header } from './components/Header';
 import { TodoStatus } from './types/TodoStatus';
 import { Footer } from './components/Footer';
 import { TodoItem } from './components/Todo';
+import { ErrorMessages } from './types/ErrorMessages';
 
 export const App: React.FC = () => {
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
@@ -27,9 +28,11 @@ export const App: React.FC = () => {
   const [title, setTitle] = useState('');
   const [filterStatus, setFilterStatus] = useState(TodoStatus.All);
   const [clearCompleted, setClearCompleted] = useState(false);
+
   const activeTodos = useMemo(() => {
     return todos.filter(todo => !todo.completed).length;
   }, [todos]);
+
   const completedTodos = useMemo(() => {
     return todos.filter(todo => todo.completed).length;
   }, [todos]);
@@ -47,14 +50,14 @@ export const App: React.FC = () => {
     if (user) {
       getTodos(user.id)
         .then(setTodos)
-        .catch(() => setErrorMessage('Cannot load todos list'));
+        .catch(() => setErrorMessage(ErrorMessages.TodosWereNotLoaded));
     }
   }, [user]);
 
   const handleSubmit = (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
-    if (title.trim() === '') {
-      setErrorMessage("Title can't be empty");
+    if (!title.trim()) {
+      setErrorMessage(ErrorMessages.TitleIsEmpty);
 
       return;
     }
@@ -70,21 +73,16 @@ export const App: React.FC = () => {
 
       addTodo(title, user?.id)
         .then((newTodo) => {
-          setTodos((state) => ([
-            ...state,
-            {
-              id: newTodo.id,
-              userId: newTodo.userId,
-              completed: newTodo.completed,
-              title: newTodo.title,
-            },
+          setTodos((prevTodos) => ([
+            ...prevTodos,
+            newTodo,
           ]));
 
           if (newTodoField.current) {
             newTodoField.current.value = '';
           }
         })
-        .catch(() => setErrorMessage('Unable to add a todo'))
+        .catch(() => setErrorMessage(ErrorMessages.TodoIsNotAdded))
         .finally(() => {
           setIsAdding(false);
           setTempTodo(null);
@@ -95,8 +93,9 @@ export const App: React.FC = () => {
 
   const handleDeleteTodo = (id: number) => {
     return deleteTodo(id)
-      .then(() => setTodos((state) => state.filter(item => item.id !== id)))
-      .catch(() => setErrorMessage('Cannot delete todo'));
+      .then(() => setTodos((listOfTodos) => (
+        listOfTodos.filter(todo => todo.id !== id))))
+      .catch(() => setErrorMessage(ErrorMessages.TodoIsNotDeleted));
   };
 
   return (
