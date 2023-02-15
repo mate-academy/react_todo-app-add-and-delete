@@ -4,7 +4,7 @@ import { Todo } from '../../types/Todo';
 type Props = {
   todo: Todo,
   isProcessed: boolean,
-  onDelete?: React.MouseEventHandler<HTMLButtonElement>,
+  onDelete: (id: number) => void,
 };
 
 export const TodoItem: React.FC<Props> = ({
@@ -40,17 +40,19 @@ export const TodoItem: React.FC<Props> = ({
         className="todo__remove"
         data-cy="TodoDeleteButton"
         disabled={isProcessed}
-        onClick={onDelete}
+        onClick={() => onDelete(todo.id)}
       >
         ×
       </button>
 
-      <div data-cy="TodoLoader" className="modal overlay">
-        <div
-          className="
-            modal-background
-            has-background-white-ter"
-        />
+      <div
+        data-cy="TodoLoader"
+        className={classNames(
+          'modal overlay',
+          { 'is-active': isProcessed },
+        )}
+      >
+        <div className="modal-background has-background-white-ter" />
         <div className="loader" />
       </div>
     </li>

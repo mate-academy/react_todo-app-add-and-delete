@@ -7,7 +7,7 @@ import { Todo } from '../../types/Todo';
 import '../../styles/transition.scss';
 
 type Props = {
-  onDelete(id: number): void,
+  onDelete: (id: number) => void,
   processings: number[],
   creating?: boolean,
   todos: Todo[],
@@ -55,6 +55,7 @@ export const TodoList: React.FC<Props> = ({
                   completed: false,
                   userId: user?.id || 0,
                 }}
+                onDelete={onDelete}
                 isProcessed
               />
             </CSSTransition>

@@ -26,7 +26,7 @@ export const Error: React.FC<Props> = ({
         data-cy="HideErrorButton"
         type="button"
         className="delete"
-        onClick={() => onErrorDisable}
+        onClick={onErrorDisable}
       />
       {errorType}
     </div>

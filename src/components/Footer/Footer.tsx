@@ -3,7 +3,7 @@ import React from 'react';
 import { Filter } from '../../types/Filter';
 
 type Props = {
-  onSetFilterType: React.Dispatch<Filter>,
+  onSetFilterType: (type: Filter) => void,
   onDeleteCompletedTodos: () => void,
   activeTodos: number,
   completedTodos: number,

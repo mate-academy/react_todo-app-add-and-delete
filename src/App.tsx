@@ -27,7 +27,7 @@ export const App: React.FC = () => {
   const [isCreating, setIscreating] = useState(false);
   const [title, setTitle] = useState('');
   const [typeOfError, setTypeOfError] = useState(ErrorType.success);
-  const [processings, setProcessings] = useState<number[]>([]);
+  const [processings, setProcessings] = useState<number[]>([0]);
   const [todos, setTodos] = useState<Todo[]>([]);
 
   const loadingTodosApi = () => {
@@ -49,7 +49,7 @@ export const App: React.FC = () => {
     }
 
     loadingTodosApi();
-  }, []);
+  }, [user]);
 
   useEffect(() => {
     const timeoutID = setTimeout(() => setTypeOfError(ErrorType.success), 3000);
@@ -119,23 +119,29 @@ export const App: React.FC = () => {
     }
   };
 
-  const handleDelete = (id: number) => {
-    const addProcessings = (todoId: number) => {
-      setProcessings([
-        ...processings,
-        todoId,
-      ]);
-    };
+  const addProcessing = (id: number) => {
+    setProcessings(currentProc => [
+      ...currentProc,
+      id,
+    ]);
+  };
 
+  const deleteProcessing = () => {
+    setProcessings(currentProcessings => currentProcessings.slice(0, -1));
+  };
+
+  const handleDelete = (id: number) => {
     const deleteTodo = () => {
       setTodos(prevTodos => prevTodos.filter(item => item.id !== id));
     };
+
+    addProcessing(id);
 
     if (user) {
       deleteTodos(id)
         .then(() => deleteTodo())
         .catch(() => setTypeOfError(ErrorType.delete))
-        .finally(() => addProcessings(id));
+        .finally(() => deleteProcessing());
     }
   };
 

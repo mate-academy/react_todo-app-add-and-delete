@@ -2,9 +2,13 @@ import { User } from '../types/User';
 import { client } from '../utils/fetchClient';
 
 export const getUserByEmail = async (email: string) => {
-  const users = await client.get<User[]>(`/users?email=${email}`);
+  try {
+    const users = await client.get<User[]>(`/users?email=${email}`);
 
-  return users[0] || null;
+    return users[0] || null;
+  } catch (error) {
+    return null;
+  }
 };
 
 type UserData = Pick<User, 'name' | 'email'>;
