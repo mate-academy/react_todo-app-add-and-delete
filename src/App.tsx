@@ -16,55 +16,15 @@ const USER_ID = 6156;
 export const App: React.FC = () => {
   const [todos, setTodos] = useState<Todo[]>([]);
   const [visibleTodos, setVisibleTodos] = useState<Todo[]>([]);
-  const [todoFilter, setTodoFilter] = useState('All');
+  const [todoFilter, setTodoFilter] = useState(FilterBy.all);
   const [error, setError] = useState(ErrorOf.none);
+  const [completedTodoIds, setCompletedTodoIds] = useState<number[]>([]);
+  const [todoTitle, setTodoTitle] = useState('');
 
   const isAnyTodoCompleted
     = todos.some(todo => todo.completed);
 
-  const createTodo = (todoTitle: string) => {
-    if (todoTitle.trim() === '') {
-      setError(ErrorOf.emptyTitle);
-    } else {
-      postTodo(USER_ID, todoTitle)
-        .then(todo => {
-          //
-          // page needs a reload before showing new todo
-          // and i could not figure out why
-          //
-          setTodos([...todos, todo]);
-        })
-        .catch(() => {
-          setError(ErrorOf.add);
-        });
-    }
-  };
-
-  const removeTodo = (todoId: number) => {
-    deleteTodo(todoId)
-      .catch(() => {
-        // page also needs to reload to show  correct todos after delete
-        setError(ErrorOf.delete);
-      });
-  };
-
-  useEffect(() => {
-    getTodos(USER_ID)
-      .then(response => {
-        setTodos(response);
-        setVisibleTodos(response);
-      });
-  }, []);
-
-  if (!USER_ID) {
-    return <UserWarning />;
-  }
-
   const changeTodosFilter = (filter: FilterBy) => {
-    if (todoFilter === filter) {
-      return;
-    }
-
     setTodoFilter(filter);
     setVisibleTodos(todos.filter(todo => {
       switch (filter) {
@@ -79,12 +39,63 @@ export const App: React.FC = () => {
     }));
   };
 
+  const createTodo = (title: string) => {
+    if (title.trim() === '') {
+      setError(ErrorOf.emptyTitle);
+    } else {
+      postTodo(USER_ID, title)
+        .then(todo => {
+          setTodos(current => [...current, todo]);
+          setTodoTitle('');
+        })
+        .catch(() => {
+          setError(ErrorOf.add);
+        });
+    }
+  };
+
+  const removeTodo = (todoId: number) => {
+    deleteTodo(todoId)
+      .then(() => {
+        setTodos(current => current.filter(todo => todo.id !== todoId));
+      })
+      .catch(() => {
+        // page also needs to reload to show correct todos after delete
+        setError(ErrorOf.delete);
+      });
+  };
+
+  const removeCompletedTodos = () => {
+    completedTodoIds.forEach(id => removeTodo(id));
+  };
+
+  useEffect(() => {
+    changeTodosFilter(todoFilter);
+    setCompletedTodoIds(todos.filter(todo => todo.completed).map(todo => todo.id));
+  }, [todos]);
+
+  useEffect(() => {
+    getTodos(USER_ID)
+      .then(response => {
+        setTodos(response);
+        setVisibleTodos(response);
+      });
+  }, []);
+
+  if (!USER_ID) {
+    return <UserWarning />;
+  }
+
   return (
     <div className="todoapp">
       <h1 className="todoapp__title">todos</h1>
 
       <div className="todoapp__content">
-        <Header createTodo={createTodo} />
+        <Header
+          createTodo={createTodo}
+          todoTitle={todoTitle}
+          setTodoTitle={setTodoTitle}
+        />
 
         <TodoList
           removeTodo={removeTodo}
@@ -95,6 +106,7 @@ export const App: React.FC = () => {
           <TodoFilter
             filter={todoFilter}
             filterTodos={changeTodosFilter}
+            removeCompletedTodos={removeCompletedTodos}
             renderClearCompleted={isAnyTodoCompleted}
           />
         )}

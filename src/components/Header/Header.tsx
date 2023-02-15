@@ -1,14 +1,15 @@
 /* eslint-disable jsx-a11y/control-has-associated-label */
-
-import { useState } from 'react';
-
 type Props = {
   createTodo: (title: string) => void,
+  todoTitle: string,
+  setTodoTitle: (title: string) => void,
 };
 
-export const Header: React.FC<Props> = ({ createTodo: postTodo }) => {
-  const [todoTitle, setTodoTitle] = useState('');
-
+export const Header: React.FC<Props> = ({
+  createTodo,
+  todoTitle,
+  setTodoTitle,
+}) => {
   return (
     <header className="todoapp__header">
       <button
@@ -17,11 +18,9 @@ export const Header: React.FC<Props> = ({ createTodo: postTodo }) => {
         className="todoapp__toggle-all active"
       />
 
-      {/* Add a todo on form submit */}
       <form onSubmit={(event) => {
         event.preventDefault();
-        postTodo(todoTitle);
-        setTodoTitle('');
+        createTodo(todoTitle);
       }}
       >
         <input

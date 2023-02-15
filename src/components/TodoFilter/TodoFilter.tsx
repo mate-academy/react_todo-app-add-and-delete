@@ -5,12 +5,14 @@ import { FilterBy } from '../../types/Filter';
 type Props = {
   filter: string,
   filterTodos: (filter: FilterBy) => void,
+  removeCompletedTodos: () => void,
   renderClearCompleted: boolean,
 };
 
 export const TodoFilter: React.FC<Props> = ({
   filter,
-  filterTodos: onFilterClick,
+  filterTodos,
+  removeCompletedTodos,
   renderClearCompleted,
 }) => {
   return (
@@ -26,7 +28,7 @@ export const TodoFilter: React.FC<Props> = ({
             'filter__link',
             { selected: filter === FilterBy.all },
           )}
-          onClick={() => onFilterClick(FilterBy.all)}
+          onClick={() => filterTodos(FilterBy.all)}
         >
           All
         </a>
@@ -37,7 +39,7 @@ export const TodoFilter: React.FC<Props> = ({
             'filter__link',
             { selected: filter === FilterBy.active },
           )}
-          onClick={() => onFilterClick(FilterBy.active)}
+          onClick={() => filterTodos(FilterBy.active)}
         >
           Active
         </a>
@@ -48,7 +50,7 @@ export const TodoFilter: React.FC<Props> = ({
             'filter__link',
             { selected: filter === FilterBy.completed },
           )}
-          onClick={() => onFilterClick(FilterBy.completed)}
+          onClick={() => filterTodos(FilterBy.completed)}
         >
           Completed
         </a>
@@ -58,6 +60,7 @@ export const TodoFilter: React.FC<Props> = ({
         <button
           type="button"
           className="todoapp__clear-completed"
+          onClick={() => removeCompletedTodos()}
         >
           Clear completed
         </button>

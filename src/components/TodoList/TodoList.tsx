@@ -31,13 +31,13 @@ export const TodoList: React.FC<Props> = ({ removeTodo, todos }) => {
             </button>
 
             {/* overlay will cover the todo while it is being updated */}
-            <div className="modal overlay">
+            <div className="modal overlay is-active">
               <div className="modal-background has-background-white-ter" />
               <div className="loader" />
             </div>
           </div>
         ) : (
-          <div className="todo">
+          <div key={todo.id} className="todo">
             <label className="todo__status-label">
               <input
                 title="status"
