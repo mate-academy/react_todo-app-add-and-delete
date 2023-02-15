@@ -3,10 +3,10 @@
 import { useState } from 'react';
 
 type Props = {
-  postTodo: (title: string) => void,
+  createTodo: (title: string) => void,
 };
 
-export const Header: React.FC<Props> = ({ postTodo }) => {
+export const Header: React.FC<Props> = ({ createTodo: postTodo }) => {
   const [todoTitle, setTodoTitle] = useState('');
 
   return (

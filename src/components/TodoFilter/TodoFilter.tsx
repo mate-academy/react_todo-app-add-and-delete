@@ -4,13 +4,13 @@ import { FilterBy } from '../../types/Filter';
 
 type Props = {
   filter: string,
-  onFilterClick: (filter: FilterBy) => void,
+  filterTodos: (filter: FilterBy) => void,
   renderClearCompleted: boolean,
 };
 
 export const TodoFilter: React.FC<Props> = ({
   filter,
-  onFilterClick,
+  filterTodos: onFilterClick,
   renderClearCompleted,
 }) => {
   return (

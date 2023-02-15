@@ -3,12 +3,13 @@
 import React, { useEffect, useState } from 'react';
 import { deleteTodo, getTodos, postTodo } from './api/todos';
 import { TodoFilter } from './components/TodoFilter/TodoFilter';
-import { Error } from './components/ShowError/ShowError';
+import { Error } from './components/Error/Error';
 import { Todo } from './types/Todo';
 import { UserWarning } from './UserWarning';
 import { TodoList } from './components/TodoList/TodoList';
 import { Header } from './components/Header/Header';
 import { FilterBy } from './types/Filter';
+import { ErrorOf } from './types/Error';
 
 const USER_ID = 6156;
 
@@ -16,14 +17,14 @@ export const App: React.FC = () => {
   const [todos, setTodos] = useState<Todo[]>([]);
   const [visibleTodos, setVisibleTodos] = useState<Todo[]>([]);
   const [todoFilter, setTodoFilter] = useState('All');
-  const [error, setError] = useState('');
+  const [error, setError] = useState(ErrorOf.none);
 
   const isAnyTodoCompleted
-    = Boolean(todos.filter(todo => todo.completed).length);
+    = todos.some(todo => todo.completed);
 
-  const handlePostTodo = (todoTitle: string) => {
+  const createTodo = (todoTitle: string) => {
     if (todoTitle.trim() === '') {
-      setError('Title can\'t be empty');
+      setError(ErrorOf.emptyTitle);
     } else {
       postTodo(USER_ID, todoTitle)
         .then(todo => {
@@ -34,16 +35,16 @@ export const App: React.FC = () => {
           setTodos([...todos, todo]);
         })
         .catch(() => {
-          setError('Unable to add todo');
+          setError(ErrorOf.add);
         });
     }
   };
 
-  const handleDeleteTodo = (todoId: number) => {
+  const removeTodo = (todoId: number) => {
     deleteTodo(todoId)
       .catch(() => {
         // page also needs to reload to show  correct todos after delete
-        setError('Unable to delete todo');
+        setError(ErrorOf.delete);
       });
   };
 
@@ -59,23 +60,23 @@ export const App: React.FC = () => {
     return <UserWarning />;
   }
 
-  const handleFilterClick = (filter: FilterBy) => {
-    if (todoFilter !== filter) {
-      setTodoFilter(filter);
+  const changeTodosFilter = (filter: FilterBy) => {
+    if (todoFilter === filter) {
+      return;
+    }
 
+    setTodoFilter(filter);
+    setVisibleTodos(todos.filter(todo => {
       switch (filter) {
         case FilterBy.all:
         default:
-          setVisibleTodos(todos);
-          break;
+          return true;
         case FilterBy.active:
-          setVisibleTodos(todos.filter(todo => !todo.completed));
-          break;
+          return !todo.completed;
         case FilterBy.completed:
-          setVisibleTodos(todos.filter(todo => todo.completed));
-          break;
+          return todo.completed;
       }
-    }
+    }));
   };
 
   return (
@@ -83,17 +84,17 @@ export const App: React.FC = () => {
       <h1 className="todoapp__title">todos</h1>
 
       <div className="todoapp__content">
-        <Header postTodo={handlePostTodo} />
+        <Header createTodo={createTodo} />
 
         <TodoList
-          removeTodo={handleDeleteTodo}
+          removeTodo={removeTodo}
           todos={visibleTodos}
         />
 
         {todos.length > 0 && (
           <TodoFilter
             filter={todoFilter}
-            onFilterClick={handleFilterClick}
+            filterTodos={changeTodosFilter}
             renderClearCompleted={isAnyTodoCompleted}
           />
         )}
