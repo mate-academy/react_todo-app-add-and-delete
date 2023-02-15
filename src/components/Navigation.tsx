@@ -1,8 +1,9 @@
 import React from 'react';
 import classnames from 'classnames';
+import { TodoStatus } from '../types/TodoStatus';
 
 type Props = {
-  changeStatus: React.Dispatch<React.SetStateAction<string>>,
+  changeStatus: React.Dispatch<React.SetStateAction<TodoStatus>>,
   status: string,
 };
 
@@ -16,8 +17,8 @@ export const Navigation: React.FC<Props> = ({ changeStatus, status }) => {
           filter__link: true,
           selected: status === 'All',
         })}
-        onClick={(event) => {
-          changeStatus(event.currentTarget.innerHTML);
+        onClick={() => {
+          changeStatus(TodoStatus.All);
         }}
       >
         All
@@ -30,8 +31,8 @@ export const Navigation: React.FC<Props> = ({ changeStatus, status }) => {
           filter__link: true,
           selected: status === 'Active',
         })}
-        onClick={(event) => {
-          changeStatus(event.currentTarget.innerHTML);
+        onClick={() => {
+          changeStatus(TodoStatus.Active);
         }}
       >
         Active
@@ -43,8 +44,8 @@ export const Navigation: React.FC<Props> = ({ changeStatus, status }) => {
           filter__link: true,
           selected: status === 'Completed',
         })}
-        onClick={(event) => {
-          changeStatus(event.currentTarget.innerHTML);
+        onClick={() => {
+          changeStatus(TodoStatus.Completed);
         }}
       >
         Completed

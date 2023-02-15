@@ -1,24 +1,35 @@
 import React from 'react';
-import classnames from 'classnames';
+import classNames from 'classnames';
 import { Todo } from '../types/Todo';
 import { removeTodo } from '../api/todos';
 
 type Props = {
   todo: Todo,
   deleteItem: (todoId: number) => void,
+  isProcessing: boolean,
+  setIsProcessing: React.Dispatch<React.SetStateAction<boolean>>,
 };
 
-export const ListItem: React.FC<Props> = ({ todo, deleteItem }) => {
+export const ListItem: React.FC<Props> = ({
+  todo, deleteItem, isProcessing, setIsProcessing,
+}) => {
   const deleteHandler = () => {
-    removeTodo(todo.id).then(() => {
-      deleteItem(todo.id);
-    });
+    setIsProcessing(true);
+
+    removeTodo(todo.id)
+      .then(() => {
+        setIsProcessing(false);
+        deleteItem(todo.id);
+      })
+      .catch(() => {
+        setIsProcessing(false);
+      });
   };
 
   return (
     <div
       data-cy="Todo"
-      className={classnames({
+      className={classNames({
         todo: true,
         completed: todo.completed,
       })}
@@ -42,10 +53,18 @@ export const ListItem: React.FC<Props> = ({ todo, deleteItem }) => {
         ×
       </button>
 
-      <div data-cy="TodoLoader" className="modal overlay">
+      <div
+        data-cy="TodoLoader"
+        className={classNames({
+          modal: true,
+          overlay: true,
+          'is-active': isProcessing,
+        })}
+      >
         <div className="modal-background has-background-white-ter" />
         <div className="loader" />
       </div>
+
     </div>
   );
 };

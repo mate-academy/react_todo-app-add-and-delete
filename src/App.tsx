@@ -7,16 +7,17 @@ import { getTodos, addTodo, removeTodo } from './api/todos';
 import { Todo } from './types/Todo';
 import { Navigation } from './components/Navigation';
 import { ErrorNotification } from './components/ErrorNotification';
+import { TodoStatus } from './types/TodoStatus';
 
 export const App: React.FC = () => {
   const [todos, setTodos] = useState<Todo[]>([]);
   const user = useContext(AuthContext);
   const newTodoField = useRef<HTMLInputElement>(null);
   const [error, setError] = useState<boolean>(false);
-  const [status, setStatus] = useState('All');
+  const [status, setStatus] = useState<TodoStatus>(TodoStatus.All);
   const [textField, setTextField] = useState<string>('');
   const [isEmptyInput, setIsEmptyInput] = useState<boolean>(false);
-  const [isAdding, setIsAdding] = useState<boolean>(true);
+  const [isProcessing, setIsProcessing] = useState(false);
 
   const handleDelete = (todoId: number) => {
     setTodos((prev: Todo[]) => prev.filter((todo) => todo.id !== todoId));
@@ -29,12 +30,14 @@ export const App: React.FC = () => {
 
     event.preventDefault();
 
-    if (!textField) {
+    if (!textField.trim()) {
       setIsEmptyInput(true);
       setTimeout(() => setIsEmptyInput(false), 3000);
 
       return;
     }
+
+    setIsProcessing(true);
 
     addTodo(user.id, {
       title: textField,
@@ -45,6 +48,10 @@ export const App: React.FC = () => {
     })
       .catch(() => {
         setError(true);
+        setIsProcessing(false);
+      })
+      .finally(() => {
+        setIsProcessing(false);
       });
 
     setTextField('');
@@ -58,7 +65,6 @@ export const App: React.FC = () => {
     getTodos(user.id)
       .then((loadedTodos) => {
         setTodos(loadedTodos);
-        setIsAdding(false);
       })
       .catch(() => {
         setError(true);
@@ -71,15 +77,15 @@ export const App: React.FC = () => {
     }
   }, []);
 
-  function filterStatus(value: string) {
+  function filterStatus(value: TodoStatus) {
     switch (value) {
-      case 'All':
+      case TodoStatus.All:
         return todos;
 
-      case 'Active':
+      case TodoStatus.Active:
         return todos.filter((todo: Todo) => !todo.completed);
 
-      case 'Completed':
+      case TodoStatus.Completed:
         return todos.filter((todo: Todo) => todo.completed);
 
       default:
@@ -115,7 +121,7 @@ export const App: React.FC = () => {
             <input
               data-cy="NewTodoField"
               type="text"
-              disabled={isAdding}
+              disabled={isProcessing}
               ref={newTodoField}
               className="todoapp__new-todo"
               placeholder="What needs to be done?"
@@ -126,14 +132,16 @@ export const App: React.FC = () => {
           </form>
         </header>
 
-        {todos.length > 0 ? (
+        {!!todos.length && (
           <TodosList
             setOfItems={updatedTodos}
             deleteItem={handleDelete}
+            isProcessing={isProcessing}
+            setIsProcessing={setIsProcessing}
           />
-        ) : null}
+        )}
 
-        {todos.length ? (
+        {!!todos.length && (
           <footer className="todoapp__footer" data-cy="Footer">
             <span className="todo-count" data-cy="todosCounter">
               {todos.length}
@@ -145,33 +153,35 @@ export const App: React.FC = () => {
               changeStatus={setStatus}
               status={status}
             />
-            {completedTodos.length > 0 ? (
-              <button
-                data-cy="ClearCompletedButton"
-                type="button"
-                className="todoapp__clear-completed"
-                onClick={removeCompletedTodos}
-              >
-                Clear completed
-              </button>
-            ) : null}
+
+            <button
+              data-cy="ClearCompletedButton"
+              type="button"
+              className="todoapp__clear-completed"
+              onClick={removeCompletedTodos}
+              disabled={completedTodos.length === 0}
+            >
+              Clear completed
+            </button>
 
           </footer>
-        ) : null}
+        )}
       </div>
 
-      {error ? (
+      {!!error && (
         <ErrorNotification
           error={error}
           setError={setError}
         />
-      ) : null}
+      )}
 
-      {isEmptyInput ? (
+      {!!isEmptyInput && (
         <div>
           Title cannot be empty
         </div>
-      ) : null }
+      )}
+
     </div>
+
   );
 };

@@ -8,31 +8,37 @@ type Props = {
 
 export const ErrorNotification: React.FC<Props> = ({ error, setError }) => {
   useEffect(() => {
-    setTimeout(() => {
-      setError(false);
+    const timeoutID = setTimeout(() => {
+      setError(true);
     }, 3000);
+
+    return () => {
+      clearTimeout(timeoutID);
+    };
   });
 
   return (
-    <div
-      data-cy="ErrorNotification"
-      className={classnames({
-        notification: true,
-        'is-danger': true,
-        'is-light': true,
-        'has-text-weight-normal': true,
-        hidden: !error,
-      })}
-    >
-      <button
-        data-cy="HideErrorButton"
-        type="button"
-        className="delete"
-        aria-label="hide-error-button"
-      />
+    <>
+      <div
+        data-cy="ErrorNotification"
+        className={classnames({
+          notification: true,
+          'is-danger': true,
+          'is-light': true,
+          'has-text-weight-normal': true,
+          hidden: !error,
+        })}
+      >
+        <button
+          data-cy="HideErrorButton"
+          type="button"
+          className="delete"
+          aria-label="hide-error-button"
+        />
 
-      Unable to fetch data
-      <br />
-    </div>
+        Unable to fetch data
+        <br />
+      </div>
+    </>
   );
 };
