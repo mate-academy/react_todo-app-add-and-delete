@@ -1,10 +1,11 @@
 import { Todo } from '../../types/Todo';
 
 type Props = {
+  removeTodo: (todoId: number) => void,
   todos: Todo[],
 };
 
-export const TodoList: React.FC<Props> = ({ todos }) => {
+export const TodoList: React.FC<Props> = ({ removeTodo, todos }) => {
   return (
     <section className="todoapp__main">
       {todos.map(todo => (
@@ -24,7 +25,7 @@ export const TodoList: React.FC<Props> = ({ todos }) => {
             <button
               type="button"
               className="todo__remove"
-              // onClick={}
+              onClick={() => removeTodo(todo.id)}
             >
               x
             </button>
@@ -46,7 +47,13 @@ export const TodoList: React.FC<Props> = ({ todos }) => {
             </label>
 
             <span className="todo__title">{todo.title}</span>
-            <button type="button" className="todo__remove">×</button>
+            <button
+              type="button"
+              className="todo__remove"
+              onClick={() => removeTodo(todo.id)}
+            >
+              x
+            </button>
 
             <div className="modal overlay">
               <div className="modal-background has-background-white-ter" />

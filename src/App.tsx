@@ -1,7 +1,7 @@
 /* eslint-disable max-len */
 /* eslint-disable jsx-a11y/control-has-associated-label */
 import React, { useEffect, useState } from 'react';
-import { getTodos, postTodo } from './api/todos';
+import { deleteTodo, getTodos, postTodo } from './api/todos';
 import { TodoFilter } from './components/TodoFilter/TodoFilter';
 import { Error } from './components/ShowError/ShowError';
 import { Todo } from './types/Todo';
@@ -37,6 +37,14 @@ export const App: React.FC = () => {
           setError('Unable to add todo');
         });
     }
+  };
+
+  const handleDeleteTodo = (todoId: number) => {
+    deleteTodo(todoId)
+      .catch(() => {
+        // page also needs to reload to show  correct todos after delete
+        setError('Unable to delete todo');
+      });
   };
 
   useEffect(() => {
@@ -77,7 +85,10 @@ export const App: React.FC = () => {
       <div className="todoapp__content">
         <Header postTodo={handlePostTodo} />
 
-        <TodoList todos={visibleTodos} />
+        <TodoList
+          removeTodo={handleDeleteTodo}
+          todos={visibleTodos}
+        />
 
         {todos.length > 0 && (
           <TodoFilter
