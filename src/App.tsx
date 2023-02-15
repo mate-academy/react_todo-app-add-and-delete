@@ -2,7 +2,7 @@
 /* eslint-disable jsx-a11y/control-has-associated-label */
 
 import classNames from 'classnames';
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useMemo, useState } from 'react';
 import {
   getTodos,
   postTodo,
@@ -21,8 +21,8 @@ export const App: React.FC = () => {
   const [todos, setTodos] = useState<Todo[]>([]);
   const [filter, setFilter] = useState('all');
   const [error, setError] = useState('');
-  const [isItError, setIsItError] = useState(false);
   const [tempTodo, setTempTodo] = useState<Todo | null>(null);
+  const [todosBeingTransform, setTodosBeingTransform] = useState<number[]>([]);
 
   useEffect(() => {
     getTodos(USER_ID)
@@ -31,12 +31,11 @@ export const App: React.FC = () => {
         setError('');
       })
       .catch(() => {
-        setIsItError(true);
         setError(Errors.LOADING);
       })
       .finally(() => {
         setTimeout(() => {
-          setIsItError(false);
+          setError('');
         }, 3000);
       });
   }, []);
@@ -44,10 +43,9 @@ export const App: React.FC = () => {
   const handleAddTodo = (todoData: Omit<Todo, 'id'>) => {
     if (!todoData.title) {
       setError(Errors.TITLE);
-      setIsItError(true);
 
       setTimeout(() => {
-        setIsItError(false);
+        setError('');
       }, 3000);
 
       return;
@@ -60,46 +58,52 @@ export const App: React.FC = () => {
         setTimeout(() => {
           setTodos([...todos, newTodo]);
           setTempTodo(null);
-        }, 1000)
+        }, 500)
       ))
       .catch(() => {
         setError(Errors.ADDING);
-        setIsItError(true);
 
         setTimeout(() => {
-          setIsItError(false);
+          setError('');
         }, 3000);
       });
   };
 
   const handleRemoveTodo = (todoId: number) => {
+    setTodosBeingTransform(current => [...current, todoId]);
     removeTodo(todoId)
       .then(() => {
-        const filteredTodos = todos.filter((todo) => todo.id !== todoId);
-
-        setTodos(filteredTodos);
+        setTodos(
+          current => current.filter((todo) => todo.id !== todoId),
+        );
       })
       .catch(() => {
         setError(Errors.REMOVING);
-        setIsItError(true);
 
         setTimeout(() => {
-          setIsItError(false);
+          setError('');
         }, 3000);
+      })
+      .finally(() => {
+        setTodosBeingTransform(
+          todosBeingTransform.filter((id) => id !== todoId),
+        );
       });
   };
 
-  const visibleTodos = todos
-    .filter((todo) => {
-      switch (filter) {
-        case Filter.ACTIVE:
-          return !todo.completed;
-        case Filter.COMPLETED:
-          return todo.completed;
-        default:
-          return true;
-      }
-    });
+  const visibleTodos = useMemo(() => {
+    return todos
+      .filter((todo) => {
+        switch (filter) {
+          case Filter.ACTIVE:
+            return !todo.completed;
+          case Filter.COMPLETED:
+            return todo.completed;
+          default:
+            return true;
+        }
+      });
+  }, [filter, todos]);
 
   if (!USER_ID) {
     return <UserWarning />;
@@ -107,6 +111,7 @@ export const App: React.FC = () => {
 
   const hasActiveTodos = todos.some((todo) => !todo.completed);
   const completedTodos = todos.filter((todo) => todo.completed);
+  const activeTodos = todos.filter((todo) => !todo.completed);
 
   return (
     <div className="todoapp">
@@ -149,7 +154,7 @@ export const App: React.FC = () => {
                   <input
                     type="checkbox"
                     className="todo__status"
-                    checked={tempTodo.completed}
+                    defaultChecked
                   />
                 </label>
                 <span
@@ -166,26 +171,26 @@ export const App: React.FC = () => {
               </div>
             )}
             <Footer
-              todos={todos}
+              activeTodos={activeTodos}
               filter={filter}
               onSetFilter={setFilter}
-              onSetClearHandler={handleRemoveTodo}
+              handleRemoveAll={handleRemoveTodo}
               completedTodos={completedTodos}
             />
           </>
         )}
-        {isItError && (
+        {error && (
           <div
             className={classNames(
               'notification is-danger is-light has-text-weight-normal',
-              { hidden: !isItError },
+              { hidden: !error },
             )}
           >
             <button
               type="button"
               className="delete"
               onClick={() => {
-                setIsItError(false);
+                setError('');
               }}
             />
             {error}
