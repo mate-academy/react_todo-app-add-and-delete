@@ -21,7 +21,13 @@ export const TodoList: React.FC<Props> = ({ todos }) => {
 
             <span className="todo__title">{todo.title}</span>
 
-            <button type="button" className="todo__remove">×</button>
+            <button
+              type="button"
+              className="todo__remove"
+              // onClick={}
+            >
+              x
+            </button>
 
             {/* overlay will cover the todo while it is being updated */}
             <div className="modal overlay">

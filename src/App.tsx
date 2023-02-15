@@ -27,6 +27,10 @@ export const App: React.FC = () => {
     } else {
       postTodo(USER_ID, todoTitle)
         .then(todo => {
+          //
+          // page needs a reload before showing new todo
+          // and i could not figure out why
+          //
           setTodos([...todos, todo]);
         })
         .catch(() => {

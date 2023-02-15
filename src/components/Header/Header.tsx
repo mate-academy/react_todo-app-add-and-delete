@@ -18,7 +18,12 @@ export const Header: React.FC<Props> = ({ postTodo }) => {
       />
 
       {/* Add a todo on form submit */}
-      <form onSubmit={() => postTodo(todoTitle)}>
+      <form onSubmit={(event) => {
+        event.preventDefault();
+        postTodo(todoTitle);
+        setTodoTitle('');
+      }}
+      >
         <input
           type="text"
           className="todoapp__new-todo"
