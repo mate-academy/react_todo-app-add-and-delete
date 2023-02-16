@@ -1,6 +1,6 @@
 import cn from 'classnames';
 
-enum FilterQuery {
+enum FilterStatus {
   All = 'all',
   Active = 'active',
   Completed = 'completed',
@@ -8,14 +8,14 @@ enum FilterQuery {
 
 type Props = {
   filteredItemsCount: number
-  onFilterChange: (value: FilterQuery) => void
-  filterQuery: FilterQuery
+  changeFilterStatus: (value: FilterStatus) => void
+  filterStatus: FilterStatus
 };
 
 export const Footer:React.FC<Props> = ({
   filteredItemsCount,
-  onFilterChange,
-  filterQuery,
+  changeFilterStatus,
+  filterStatus,
 }) => {
   return (
     <footer className="todoapp__footer" data-cy="Footer">
@@ -28,9 +28,9 @@ export const Footer:React.FC<Props> = ({
           data-cy="FilterLinkAll"
           href="#/"
           className={cn('filter__link',
-            { selected: filterQuery === FilterQuery.All })}
+            { selected: filterStatus === FilterStatus.All })}
           onClick={() => {
-            onFilterChange(FilterQuery.All);
+            changeFilterStatus(FilterStatus.All);
           }}
         >
           All
@@ -40,9 +40,9 @@ export const Footer:React.FC<Props> = ({
           data-cy="FilterLinkActive"
           href="#/active"
           className={cn('filter__link',
-            { selected: filterQuery === FilterQuery.Active })}
+            { selected: filterStatus === FilterStatus.Active })}
           onClick={() => {
-            onFilterChange(FilterQuery.Active);
+            changeFilterStatus(FilterStatus.Active);
           }}
         >
           Active
@@ -51,9 +51,9 @@ export const Footer:React.FC<Props> = ({
           data-cy="FilterLinkCompleted"
           href="#/completed"
           className={cn('filter__link',
-            { selected: filterQuery === FilterQuery.Completed })}
+            { selected: filterStatus === FilterStatus.Completed })}
           onClick={() => {
-            onFilterChange(FilterQuery.Completed);
+            changeFilterStatus(FilterStatus.Completed);
           }}
         >
           Completed

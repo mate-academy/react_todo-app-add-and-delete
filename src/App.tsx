@@ -1,10 +1,9 @@
 /* eslint-disable max-len */
 /* eslint-disable jsx-a11y/control-has-associated-label */
 import React, {
-  useContext, useEffect, useState,
+  useEffect, useState,
 } from 'react';
 import { postTodos, getTodos, deleteTodo } from './api/todos';
-import { AuthContext } from './components/Auth/AuthContext';
 // eslint-disable-next-line max-len
 import { ErrorNotification } from './components/ErrorNotification/ErrorNotification';
 import { Footer } from './components/Footer';
@@ -13,63 +12,57 @@ import { TodoList } from './components/TodoList';
 import { Error } from './types/Error';
 import { TempTodo, Todo } from './types/Todo';
 
-enum FilterQuery {
+enum FilterStatus {
   All = 'all',
   Active = 'active',
   Completed = 'completed',
 }
 
+const USER_ID = 5997;
+
 export const App: React.FC = () => {
   const [todos, setTodos] = useState<Todo[]>([]);
   const [newTodoTitle, setNewTodoTitle] = useState('');
   const [errorMessage, setErrorMessage] = useState(Error.None);
-  const [filterQuery, setFilterQuery] = useState(FilterQuery.All);
+  const [filterStatus, setFilterStatus] = useState(FilterStatus.All);
   const [isLoading, setIsLoading] = useState(false);
-  const [tempTodo, setTempTodo] = useState<TempTodo | null>(null);
-  const user = useContext(AuthContext);
+  const [tempTodo] = useState<TempTodo | null>(null);
 
   // Add Todo
-  const addTodo = async (title:string) => {
+  const addTodo = async () => {
     setIsLoading(true);
-    setTempTodo({ id: 0, title, completed: false });
+    const newTodo = {
+      id: 0,
+      userId: USER_ID,
+      title: newTodoTitle,
+      completed: false,
+    };
 
-    if (user) {
-      try {
-        const newTodo = {
-          userId: user.id,
-          title,
-          completed: false,
-        };
+    setTodos(curr => [...curr, newTodo]);
 
-        const newAddedTodo = await postTodos(newTodo);
-
-        setTodos(prevTodos => [...prevTodos, newAddedTodo]);
-      } catch (error) {
+    return postTodos(newTodo)
+      .then(addedTodo => {
+        setTodos([...todos, addedTodo]);
+      })
+      .catch(() => {
         setErrorMessage(Error.AddTodo);
-      } finally {
+      })
+      .finally(() => {
+        setNewTodoTitle('');
         setIsLoading(false);
-      }
-    }
+      });
   };
 
   // Delete Todo
-  const removeTodo = async (id:number) => {
-    try {
-      await deleteTodo(id);
-    } catch {
-      setErrorMessage(Error.DeleteTodo);
-    }
-
-    setTodos(prevTodos => prevTodos.filter(todo => todo.id !== id));
+  const handleDeleteTodo = (todoId:number) => {
+    deleteTodo(todoId)
+      .then(() => setTodos(currentTodos => currentTodos.filter(todo => todo.id !== todoId)))
+      .catch(() => setErrorMessage(Error.DeleteTodo));
   };
 
   // Get Todo
   useEffect(() => {
-    if (!user) {
-      return;
-    }
-
-    getTodos()
+    getTodos(USER_ID)
       .then(loadedTodos => {
         setTodos(loadedTodos);
       })
@@ -79,10 +72,10 @@ export const App: React.FC = () => {
   }, []);
 
   const filteredTodos = [...todos].filter(todo => {
-    switch (filterQuery) {
-      case FilterQuery.Active:
+    switch (filterStatus) {
+      case FilterStatus.Active:
         return !todo.completed;
-      case FilterQuery.Completed:
+      case FilterStatus.Completed:
         return todo.completed;
       default:
         return todo;
@@ -105,13 +98,13 @@ export const App: React.FC = () => {
         <TodoList
           todos={filteredTodos}
           temporaryTodo={tempTodo}
-          deleteTodo={removeTodo}
+          deleteTodo={handleDeleteTodo}
         />
 
         <Footer
           filteredItemsCount={filteredTodos.length}
-          onFilterChange={setFilterQuery}
-          filterQuery={filterQuery}
+          changeFilterStatus={setFilterStatus}
+          filterStatus={filterStatus}
         />
       </div>
 
