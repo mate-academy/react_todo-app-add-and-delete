@@ -4,12 +4,17 @@ import classnames from 'classnames';
 type Props = {
   error: boolean,
   setError: React.Dispatch<React.SetStateAction<boolean>>,
+  message: string,
+  setMessage: React.Dispatch<React.SetStateAction<string>>,
 };
 
-export const ErrorNotification: React.FC<Props> = ({ error, setError }) => {
+export const ErrorNotification: React.FC<Props> = ({
+  error, setError, message, setMessage,
+}) => {
   useEffect(() => {
     const timeoutID = setTimeout(() => {
-      setError(true);
+      setError(false);
+      setMessage('');
     }, 3000);
 
     return () => {
@@ -34,9 +39,10 @@ export const ErrorNotification: React.FC<Props> = ({ error, setError }) => {
           type="button"
           className="delete"
           aria-label="hide-error-button"
+          onClick={() => setError(false)}
         />
 
-        Unable to fetch data
+        {message}
         <br />
       </div>
     </>

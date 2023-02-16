@@ -13,17 +13,18 @@ export const App: React.FC = () => {
   const [todos, setTodos] = useState<Todo[]>([]);
   const user = useContext(AuthContext);
   const newTodoField = useRef<HTMLInputElement>(null);
+  const [tempTodo, setTempTodo] = useState<Todo | null>(null);
   const [error, setError] = useState<boolean>(false);
+  const [messageError, setMessageError] = useState<string>('');
   const [status, setStatus] = useState<TodoStatus>(TodoStatus.All);
   const [textField, setTextField] = useState<string>('');
-  const [isEmptyInput, setIsEmptyInput] = useState<boolean>(false);
   const [isProcessing, setIsProcessing] = useState(false);
 
   const handleDelete = (todoId: number) => {
     setTodos((prev: Todo[]) => prev.filter((todo) => todo.id !== todoId));
   };
 
-  const submitAction = (event: React.KeyboardEvent<HTMLInputElement>) => {
+  const submitAction = async (event: React.KeyboardEvent<HTMLInputElement>) => {
     if (event.key !== 'Enter' || !user) {
       return;
     }
@@ -31,30 +32,36 @@ export const App: React.FC = () => {
     event.preventDefault();
 
     if (!textField.trim()) {
-      setIsEmptyInput(true);
-      setTimeout(() => setIsEmptyInput(false), 3000);
+      setError(true);
+      setMessageError("Title can't be empty");
 
       return;
     }
 
     setIsProcessing(true);
 
-    addTodo(user.id, {
-      title: textField,
-      userId: user.id,
-      completed: false,
-    }).then((loadedTodos) => {
-      setTodos((prev: any) => [...prev, loadedTodos]);
-    })
-      .catch(() => {
-        setError(true);
-        setIsProcessing(false);
-      })
-      .finally(() => {
-        setIsProcessing(false);
+    try {
+      setTempTodo({
+        id: 0,
+        title: textField,
+        userId: user.id,
+        completed: false,
       });
 
-    setTextField('');
+      const newTodo = await addTodo(user.id, {
+        title: textField,
+        userId: user.id,
+        completed: false,
+      });
+
+      setTempTodo(null);
+      setTodos((prev: any) => [...prev, newTodo]);
+    } catch (mistake) {
+      setError(true);
+      setMessageError('Unable to add todo');
+    } finally {
+      setIsProcessing(false);
+    }
   };
 
   useEffect(() => {
@@ -68,6 +75,7 @@ export const App: React.FC = () => {
       })
       .catch(() => {
         setError(true);
+        setMessageError('Unable to fetch data');
       });
   }, [user]);
 
@@ -136,8 +144,10 @@ export const App: React.FC = () => {
           <TodosList
             setOfItems={updatedTodos}
             deleteItem={handleDelete}
+            tempTodo={tempTodo}
+            setMessageError={setMessageError}
+            setError={setError}
             isProcessing={isProcessing}
-            setIsProcessing={setIsProcessing}
           />
         )}
 
@@ -172,15 +182,10 @@ export const App: React.FC = () => {
         <ErrorNotification
           error={error}
           setError={setError}
+          message={messageError}
+          setMessage={setMessageError}
         />
       )}
-
-      {!!isEmptyInput && (
-        <div>
-          Title cannot be empty
-        </div>
-      )}
-
     </div>
 
   );

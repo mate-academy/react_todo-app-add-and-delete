@@ -1,28 +1,33 @@
-import React from 'react';
+import React, { useState } from 'react';
 import classNames from 'classnames';
 import { Todo } from '../types/Todo';
 import { removeTodo } from '../api/todos';
+import { Loader } from './Loader';
 
 type Props = {
   todo: Todo,
   deleteItem: (todoId: number) => void,
-  isProcessing: boolean,
-  setIsProcessing: React.Dispatch<React.SetStateAction<boolean>>,
+  setMessageError: React.Dispatch<React.SetStateAction<string>>,
+  setError: React.Dispatch<React.SetStateAction<boolean>>
 };
 
 export const ListItem: React.FC<Props> = ({
-  todo, deleteItem, isProcessing, setIsProcessing,
+  todo, deleteItem, setMessageError, setError,
 }) => {
+  const [isDeleting, setIsDeleting] = useState(false);
+
   const deleteHandler = () => {
-    setIsProcessing(true);
+    setIsDeleting(true);
 
     removeTodo(todo.id)
       .then(() => {
-        setIsProcessing(false);
+        setIsDeleting(false);
         deleteItem(todo.id);
       })
       .catch(() => {
-        setIsProcessing(false);
+        setIsDeleting(false);
+        setError(true);
+        setMessageError('Unable to delete todo');
       });
   };
 
@@ -53,17 +58,10 @@ export const ListItem: React.FC<Props> = ({
         ×
       </button>
 
-      <div
-        data-cy="TodoLoader"
-        className={classNames({
-          modal: true,
-          overlay: true,
-          'is-active': isProcessing,
-        })}
-      >
-        <div className="modal-background has-background-white-ter" />
-        <div className="loader" />
-      </div>
+      <Loader
+        id={todo.id}
+        isDeleting={isDeleting}
+      />
 
     </div>
   );
