@@ -20,6 +20,9 @@ export const App: React.FC = () => {
   const [error, setError] = useState(ErrorOf.none);
   const [completedTodoIds, setCompletedTodoIds] = useState<number[]>([]);
   const [todoTitle, setTodoTitle] = useState('');
+  const [tempTodo, setTempTodo] = useState<unknown | null>(null);
+  const [isTitleDisabled, setIsTitleDisabled] = useState(false);
+  const [todoIdsToRemove, setTodoIdsToRemove] = useState<number[]>([]);
 
   const isAnyTodoCompleted
     = todos.some(todo => todo.completed);
@@ -50,6 +53,10 @@ export const App: React.FC = () => {
         })
         .catch(() => {
           setError(ErrorOf.add);
+        })
+        .finally(() => {
+          setIsTitleDisabled(false);
+          setTempTodo(null);
         });
     }
   };
@@ -60,7 +67,6 @@ export const App: React.FC = () => {
         setTodos(current => current.filter(todo => todo.id !== todoId));
       })
       .catch(() => {
-        // page also needs to reload to show correct todos after delete
         setError(ErrorOf.delete);
       });
   };
@@ -92,14 +98,21 @@ export const App: React.FC = () => {
 
       <div className="todoapp__content">
         <Header
+          isTitleDisabled={isTitleDisabled}
+          setIsTitleDisabled={setIsTitleDisabled}
           createTodo={createTodo}
           todoTitle={todoTitle}
           setTodoTitle={setTodoTitle}
+          setTempTodo={setTempTodo}
         />
 
         <TodoList
           removeTodo={removeTodo}
+          tempTodo={tempTodo}
+          todoTitle={todoTitle}
           todos={visibleTodos}
+          todoIdsToRemove={todoIdsToRemove}
+          setTodoIdsToRemove={setTodoIdsToRemove}
         />
 
         {todos.length > 0 && (
@@ -108,6 +121,9 @@ export const App: React.FC = () => {
             filterTodos={changeTodosFilter}
             removeCompletedTodos={removeCompletedTodos}
             renderClearCompleted={isAnyTodoCompleted}
+            completedTodoIds={completedTodoIds}
+            todoIdsToRemove={todoIdsToRemove}
+            setTodoIdsToRemove={setTodoIdsToRemove}
           />
         )}
       </div>

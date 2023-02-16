@@ -7,6 +7,9 @@ type Props = {
   filterTodos: (filter: FilterBy) => void,
   removeCompletedTodos: () => void,
   renderClearCompleted: boolean,
+  completedTodoIds: number[],
+  todoIdsToRemove: number[],
+  setTodoIdsToRemove: (n: number[]) => void,
 };
 
 export const TodoFilter: React.FC<Props> = ({
@@ -14,6 +17,9 @@ export const TodoFilter: React.FC<Props> = ({
   filterTodos,
   removeCompletedTodos,
   renderClearCompleted,
+  completedTodoIds,
+  todoIdsToRemove,
+  setTodoIdsToRemove,
 }) => {
   return (
     <footer className="todoapp__footer">
@@ -60,7 +66,10 @@ export const TodoFilter: React.FC<Props> = ({
         <button
           type="button"
           className="todoapp__clear-completed"
-          onClick={() => removeCompletedTodos()}
+          onClick={() => {
+            setTodoIdsToRemove([...todoIdsToRemove, ...completedTodoIds]);
+            removeCompletedTodos();
+          }}
         >
           Clear completed
         </button>

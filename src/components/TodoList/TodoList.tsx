@@ -1,11 +1,25 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
+import classNames from 'classnames';
 import { Todo } from '../../types/Todo';
+import { TemporaryTodo } from '../TemporaryTodo/TemporaryTodo';
 
 type Props = {
   removeTodo: (todoId: number) => void,
+  tempTodo: unknown,
+  todoTitle: string,
   todos: Todo[],
+  todoIdsToRemove: number[],
+  setTodoIdsToRemove: (n: number[]) => void,
 };
 
-export const TodoList: React.FC<Props> = ({ removeTodo, todos }) => {
+export const TodoList: React.FC<Props> = ({
+  removeTodo,
+  tempTodo,
+  todoTitle,
+  todos,
+  todoIdsToRemove,
+  setTodoIdsToRemove,
+}) => {
   return (
     <section className="todoapp__main">
       {todos.map(todo => (
@@ -25,13 +39,19 @@ export const TodoList: React.FC<Props> = ({ removeTodo, todos }) => {
             <button
               type="button"
               className="todo__remove"
-              onClick={() => removeTodo(todo.id)}
+              onClick={() => {
+                setTodoIdsToRemove([...todoIdsToRemove, todo.id]);
+                removeTodo(todo.id);
+              }}
             >
               x
             </button>
 
-            {/* overlay will cover the todo while it is being updated */}
-            <div className="modal overlay is-active">
+            <div className={classNames(
+              'modal overlay',
+              { 'is-active': todoIdsToRemove.includes(todo.id) },
+            )}
+            >
               <div className="modal-background has-background-white-ter" />
               <div className="loader" />
             </div>
@@ -50,18 +70,27 @@ export const TodoList: React.FC<Props> = ({ removeTodo, todos }) => {
             <button
               type="button"
               className="todo__remove"
-              onClick={() => removeTodo(todo.id)}
+              onClick={() => {
+                setTodoIdsToRemove([...todoIdsToRemove, todo.id]);
+                removeTodo(todo.id);
+              }}
             >
               x
             </button>
 
-            <div className="modal overlay">
+            <div className={classNames(
+              'modal overlay',
+              { 'is-active': todoIdsToRemove.includes(todo.id) },
+            )}
+            >
               <div className="modal-background has-background-white-ter" />
               <div className="loader" />
             </div>
           </div>
         )
       ))}
+
+      {tempTodo !== null && <TemporaryTodo title={todoTitle} />}
     </section>
   );
 };
