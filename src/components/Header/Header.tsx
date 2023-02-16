@@ -15,7 +15,7 @@ export const Header: React.FC<Props> = ({
   title,
   onTitleChange,
   onAddTodo,
-  isInputDisabled
+  isInputDisabled,
 }) => (
   <header className="todoapp__header">
     <button

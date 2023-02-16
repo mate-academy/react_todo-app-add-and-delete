@@ -19,7 +19,7 @@ export const App: React.FC = () => {
   const [filterBy, setFilterBy] = useState<FilterBy>(FilterBy.ALL);
   const [title, setTitle] = useState('');
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
-  const [tempTodo, setTempTodo] = useState<Todo | null>(null);
+  const [, setTempTodo] = useState<Todo | null>(null);
   const [isError, setIsError] = useState(false);
   const [isInputDisabled, setIsInputDisabled] = useState(false);
   const [
@@ -75,12 +75,15 @@ export const App: React.FC = () => {
 
       const newTodo = await addTodo(USER_ID, todoToAdd);
 
+      setTempTodo(newTodo);
+
       setTodos(currentTodos => ([
         ...currentTodos, newTodo,
       ]));
     } catch {
       setIsError(true);
       setErrorMessage(ErrorMessages.ADD);
+      closeNotification(setIsError, false, 3000);
     } finally {
       setTempTodo(null);
       setIsInputDisabled(false);
@@ -97,6 +100,7 @@ export const App: React.FC = () => {
     } catch {
       setIsError(true);
       setErrorMessage(ErrorMessages.DELETE);
+      closeNotification(setIsError, false, 3000);
     }
   };
 
