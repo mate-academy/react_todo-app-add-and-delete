@@ -1,0 +1,9 @@
+export enum ErrorTypes {
+  NONE,
+  EMPTY_TITLE,
+  UPLOAD_ERROR,
+  UPDATE_ERROR,
+  ADD_ERROR,
+  DELETE_ERROR,
+
+}
