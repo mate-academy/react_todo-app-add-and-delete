@@ -59,7 +59,7 @@ export const ToDoFooter: React.FC<Props> = ({ todos, setStatus, status }) => {
         type="button"
         data-cy="ClearCompletedButton"
         className="todoapp__clear-completed"
-        disabled={completedTodos.length === 0}
+        disabled={!completedTodos.length}
       >
         Clear completed
       </button>

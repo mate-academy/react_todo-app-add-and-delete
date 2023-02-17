@@ -8,18 +8,11 @@ import { TodoError } from './components/TodoError';
 import { Status, ToDoFooter } from './components/TodoFooter';
 import { Header } from './components/TodoHeader';
 import { TodoMain } from './components/TodoMain';
+import { ErrorMessage } from './types/ErrorMessage';
 import { Todo } from './types/Todo';
 import { UserWarning } from './UserWarning';
 
 const USER_ID = 6245;
-
-enum ErrorMessage {
-  onLoad = 'Unable to load todos',
-  OnAdd = 'Unable to add todos',
-  onDelete = 'Unable to delete todos',
-  onUpdate = 'Unable to update todos',
-  onEmpty = "Title can't be empty",
-}
 
 export const App: React.FC = () => {
   const [todos, setTodos] = useState<Todo[]>([]);
@@ -54,7 +47,7 @@ export const App: React.FC = () => {
   }
 
   const addTodo = (todoData: Omit<Todo, 'id'>) => {
-    if (todoData.title !== '') {
+    if (todoData.title) {
       createTodo(todoData)
         .then(newTodo => setTodos([...todos, newTodo]))
         .catch(() => setErrorMsg(ErrorMessage.OnAdd));
@@ -131,7 +124,7 @@ export const App: React.FC = () => {
         />
         {todos.length > 0 && (
           <ToDoFooter
-            todos={visibleTodos}
+            todos={todos}
             status={status}
             setStatus={setStatus}
           />
