@@ -14,8 +14,8 @@ and implement the ability to add and remove todos.
 
 Add a todo with the entered title on the form submit:
 
-- if the title is empty show the `Title can't be empty` notification at the bottom;
-- use your `userId` for the new todo;
+<!-- - if the title is empty show the `Title can't be empty` notification at the bottom; -->
+<!-- - use your `userId` for the new todo; -->
 - send a POST request to the API (check the [API Documentation](https://mate-academy.github.io/fe-students-api/))
 - disable the input until receiving a response from the API;
 - immediately after sending a request create a todo with `id: 0` and save it to the `tempTodo` variable in the state (NOT to the `todos` array);
@@ -45,13 +45,13 @@ Remove all the completed todos after the `Clear completed` button click:
 
 - Implement a solution following the [React task guideline](https://github.com/mate-academy/react_task-guideline#react-tasks-guideline).
 - Use the [React TypeScript cheat sheet](https://mate-academy.github.io/fe-program/js/extra/react-typescript).
-- Replace `<your_account>` with your Github username in the [DEMO LINK](https://<your_account>.github.io/react_todo-app-add-and-delete/) and add it to the PR description.
+- Replace `<your_account>` with your Github username in the [DEMO LINK](https://alaaashkar.github.io/react_todo-app-add-and-delete/) and add it to the PR description.
 
 ## IF you want to implement smooth animations
 
 <details>
   <summary>Click here to see the hint</summary>
-  
+
   Use [React Transition Group](https://reactcommunity.org/react-transition-group/transition-group)
 
   ```tsx
@@ -92,7 +92,7 @@ Remove all the completed todos after the `Clear completed` button click:
     </TransitionGroup>
   </section>
   ```
-    
+
   Here are the styles used in this example
   ```css
   .item-enter {
