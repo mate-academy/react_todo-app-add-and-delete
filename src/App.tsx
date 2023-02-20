@@ -1,4 +1,3 @@
-/* eslint-disable jsx-a11y/control-has-associated-label */
 import React, { useState, useEffect, useMemo } from 'react';
 import { Header } from './components/Header';
 import { TodoList } from './components/TodoList';
@@ -12,7 +11,7 @@ import { getFilteredTodos } from './utils/getFilteredTodos';
 import { ErrorMessage } from './components/ErrorMessage';
 import { ErrorMessages } from './types/ErrorMessages';
 
-export const App: React.FC<Todo[]> = () => {
+export const App: React.FC = () => {
   const [todos, setTodos] = useState<Todo[]>([]);
   const [filterType, setFilterType] = useState(FilterType.All);
   const [errorType, setErrorType] = useState<ErrorMessages>(ErrorMessages.None);
