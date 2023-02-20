@@ -22,7 +22,10 @@ export const TodoList: React.FC<Props> = ({
           key={todo.id}
           todo={todo}
           removeTodo={removeTodo}
-          tempTodoId={completedTodos.includes(todo) ? todo.id : null}
+          tempTodoId={completedTodos.includes(todo)
+            || (tempTodo?.id === todo.id)
+            ? todo.id
+            : null}
         />
       ))}
       {tempTodo?.id === 0 && (
