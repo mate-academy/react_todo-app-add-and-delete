@@ -1,37 +1,24 @@
 /* eslint-disable jsx-a11y/control-has-associated-label */
 import React, { useEffect, useState } from 'react';
 import {
-  createTodo,
-  deleteTodo,
-  getTodos,
-  updateTodo,
+  createTodo, deleteTodo, getTodo, getTodos, updateTodo,
 } from './api/todos';
 import { Todo } from './types/Todo';
 import { UserWarning } from './UserWarning';
+import { Todos } from './components/Todos';
 import { Main } from './components/Main';
 import { Footer } from './components/Footer';
 import { Errors } from './components/Errors';
-import { Todos } from './components/Todos';
+import { Filters, filterTodos } from './utils/filters';
+import { ErrorMessage, Timeout } from './utils/ErrorsMessages';
 
 const USER_ID = 6277;
 
-enum Filters {
-  Active = 'active',
-  Completed = 'completed',
-  All = 'all',
-}
-
-enum ErrorMessage {
-  Loading = 'Unable to load todos',
-  Adding = 'Unable to add todo',
-  Deleting = 'Unable to delete todo',
-  Updating = 'Unable to update todo',
-  Empty = 'Title cant be empty',
-}
-
 export const App: React.FC = () => {
+  const [processedTodos, setProcessedTodos] = useState<number[]>([]);
   const [todos, setTodos] = useState<Todo[]>([]);
-  const [error, setError] = useState<boolean>(false);
+  const [todo, setTodo] = useState<Todo | null>(null);
+  const [error, setError] = useState(false);
   const [errorMsg, setErrorMsg] = useState('');
   const [filter, setFilter] = useState<Filters>(Filters.All);
   const [newTodoTitle, setNewTodoTitle] = useState('');
@@ -45,14 +32,42 @@ export const App: React.FC = () => {
 
         setTimeout(() => {
           setError(false);
-        }, 3000);
+          setErrorMsg('');
+        }, Timeout);
       });
   }, []);
 
+  useEffect(() => {
+    if (todo) {
+      getTodo(todo.id).then(setTodo);
+    }
+  }, [todo]);
+
+  const handleError = (message: string) => {
+    setError(true);
+    setErrorMsg(message);
+
+    setTimeout(() => {
+      setError(false);
+      setErrorMsg('');
+    }, Timeout);
+  };
+
   const addTodo = (todoData: Omit<Todo, 'id'>) => {
+    if (!todoData.title) {
+      handleError(ErrorMessage.Empty);
+
+      return;
+    }
+
+    setProcessedTodos(prev => [...prev, 0]);
+    setTodos([...todos, { ...todoData, id: 0 }]);
     createTodo(todoData)
       .then(newTodo => setTodos([...todos, newTodo]))
-      .catch(() => setErrorMsg(ErrorMessage.Adding));
+      .catch(() => handleError(ErrorMessage.Adding))
+      .finally(() => {
+        setTodos(prev => prev.filter(td => td.id !== 0));
+      });
   };
 
   const handleSubmit = (event: React.FormEvent<HTMLFormElement>) => {
@@ -62,7 +77,6 @@ export const App: React.FC = () => {
       completed: false,
       userId: USER_ID,
     });
-
     setNewTodoTitle('');
   };
 
@@ -70,48 +84,46 @@ export const App: React.FC = () => {
     return <UserWarning />;
   }
 
-  const visibleTodos = todos.filter((td) => {
-    switch (filter) {
-      case Filters.Active:
-        return !td.completed;
-      case Filters.Completed:
-        return td.completed;
-      default:
-        return true;
-    }
-  });
-
-  const removeTodo = async (todoId: number) => {
-    try {
-      await deleteTodo(todoId);
-      setTodos(todos.filter(td => td.id !== todoId));
-    } catch {
-      setErrorMsg(ErrorMessage.Deleting);
-    }
+  const handleDelete = (id: number) => {
+    setProcessedTodos(prev => [...prev, id]);
+    deleteTodo(id)
+      .then(() => setTodos(todos.filter(td => td.id !== id)))
+      .catch(() => handleError(ErrorMessage.Deleting))
+      .finally(() => setProcessedTodos(prev => prev.filter(tid => tid !== id)));
   };
 
-  const todoUpdate = async (todoToUpdate: Todo) => {
-    try {
-      await updateTodo(todoToUpdate);
-      setTodos(
-        todos.map(td => {
-          if (td.id === todoToUpdate.id) {
-            return todoToUpdate;
-          }
+  const handleUpdate = (todoToUpdate: Todo) => {
+    setProcessedTodos(prev => [...prev, todoToUpdate.id]);
+    updateTodo(todoToUpdate)
+      .then(() => setTodos(todos.map(
+        td => (td.id === todoToUpdate.id ? todoToUpdate : td),
+      )))
+      .catch(() => handleError(ErrorMessage.Updating))
+      .finally(() => setProcessedTodos(prev => prev.filter(
+        tid => tid !== todoToUpdate.id,
+      )));
+  };
 
-          return td;
-        }),
-      );
-    } catch {
-      setErrorMsg(ErrorMessage.Updating);
-    }
+  const handleToggleAll = () => {
+    const allCompleted = todos.every(td => td.completed);
+    const updatedTodos = todos.map(td => ({ ...td, completed: !allCompleted }));
+
+    setTodos(updatedTodos);
   };
 
   const completedTodos = todos.filter(td => td.completed);
+  const visibleTodos = filterTodos(todos, filter);
+  const removeTodo = handleDelete;
+  const todoUpdate = handleUpdate;
   const clearCompleted = () => {
-    completedTodos.forEach(td => {
-      removeTodo(td.id);
+    const promises = completedTodos.map((td) => {
+      setProcessedTodos((prev) => [...prev, td.id]);
+
+      return deleteTodo(td.id)
+        .then(() => setTodos(todos.filter((t) => t.id !== td.id)));
     });
+
+    return Promise.all(promises);
   };
 
   return (
@@ -120,26 +132,29 @@ export const App: React.FC = () => {
 
       <div className="todoapp__content">
         <Todos
-          todos={visibleTodos}
           onSubmit={handleSubmit}
           newTodoTitle={newTodoTitle}
           setNewTodoTitle={setNewTodoTitle}
+          allCompleted={completedTodos.length === todos.length}
+          onhandleToggleAll={handleToggleAll}
         />
-        {todos.length > 0 && (
-          <Main
-            todos={visibleTodos}
-            onRemove={removeTodo}
-            onTodoUpdate={todoUpdate}
-          />
-        )}
 
         {todos.length > 0 && (
-          <Footer
-            todos={todos}
-            filter={filter}
-            setFilter={setFilter}
-            onClearCompleted={clearCompleted}
-          />
+          <>
+            <Main
+              todos={visibleTodos}
+              onRemove={removeTodo}
+              onTodoUpdate={todoUpdate}
+              processedTodos={processedTodos}
+            />
+
+            <Footer
+              todos={todos}
+              filter={filter}
+              setFilter={setFilter}
+              onClearCompleted={clearCompleted}
+            />
+          </>
         )}
       </div>
 
