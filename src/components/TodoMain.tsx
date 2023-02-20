@@ -5,9 +5,12 @@ type Props = {
   todos: Todo[];
   onDelete: (todoId: number) => void;
   onUpdate: (todo: Todo) => void;
+  updatingTodos: number[];
 };
 
-export const TodoMain: React.FC<Props> = ({ todos, onDelete, onUpdate }) => {
+export const TodoMain: React.FC<Props> = ({
+  todos, onDelete, onUpdate, updatingTodos,
+}) => {
   return (
     <section className="todoapp__main">
       {todos.map(todo => (
@@ -28,7 +31,6 @@ export const TodoMain: React.FC<Props> = ({ todos, onDelete, onUpdate }) => {
 
           <span className="todo__title">{todo.title}</span>
 
-          {/* Remove button appears only on hover */}
           <button
             type="button"
             className="todo__remove"
@@ -37,8 +39,12 @@ export const TodoMain: React.FC<Props> = ({ todos, onDelete, onUpdate }) => {
             ×
           </button>
 
-          {/* overlay will cover the todo while it is being updated */}
-          <div className="modal overlay">
+          <div
+            data-cy="TodoLoader"
+            className={classNames('modal overlay', {
+              'is-active': updatingTodos.includes(todo.id),
+            })}
+          >
             <div className="modal-background has-background-white-ter" />
             <div className="loader" />
           </div>

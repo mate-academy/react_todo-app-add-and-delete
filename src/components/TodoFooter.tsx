@@ -7,9 +7,12 @@ type Props = {
   todos: Todo[];
   status: Status;
   setStatus: (status: Status) => void;
+  onClearCompleted: () => void;
 };
 
-export const ToDoFooter: React.FC<Props> = ({ todos, setStatus, status }) => {
+export const ToDoFooter: React.FC<Props> = ({
+  todos, setStatus, status, onClearCompleted,
+}) => {
   const completedTodos = todos.filter(todo => todo.completed);
   const activeTodos = todos.filter(todo => !todo.completed);
 
@@ -59,7 +62,12 @@ export const ToDoFooter: React.FC<Props> = ({ todos, setStatus, status }) => {
         type="button"
         data-cy="ClearCompletedButton"
         className="todoapp__clear-completed"
-        disabled={!completedTodos.length}
+        style={{
+          visibility: completedTodos.length
+            ? ('visible')
+            : ('hidden'),
+        }}
+        onClick={() => onClearCompleted()}
       >
         Clear completed
       </button>

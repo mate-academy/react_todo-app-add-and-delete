@@ -21,6 +21,7 @@ export const App: React.FC = () => {
   const [errorMsg, setErrorMsg] = useState('');
   const [newTodoTitle, setNewTodoTitle] = useState('');
   const [status, setStatus] = useState<Status>('all');
+  const [updatingTodos, setUpdatingTodos] = useState<number[]>([]);
 
   useEffect(() => {
     getTodos(USER_ID)
@@ -70,6 +71,8 @@ export const App: React.FC = () => {
   };
 
   const updateTodo = (todoToUpdate: Todo) => {
+    setUpdatingTodos(curr => [...curr, todoToUpdate.id]);
+
     refreshTodo(todoToUpdate)
       .then(() => {
         setTodos(
@@ -82,7 +85,10 @@ export const App: React.FC = () => {
           }),
         );
       })
-      .catch(() => setErrorMsg(ErrorMessage.onUpdate));
+      .catch(() => setErrorMsg(ErrorMessage.onUpdate))
+      .finally(() => {
+        setUpdatingTodos(curr => curr.filter(id => id !== todoToUpdate.id));
+      });
   };
 
   const handleSubmit = (event: React.FormEvent<HTMLFormElement>) => {
@@ -106,6 +112,15 @@ export const App: React.FC = () => {
     visibleTodos = todos.filter(todo => todo.completed);
   }
 
+  const completedTodos = todos.filter(td => td.completed);
+
+  const clearCompleted = () => {
+    completedTodos.forEach(td => {
+      deleteTodo(td.id);
+    });
+    setTodos(current => current.filter(todo => !todo.completed));
+  };
+
   return (
     <div className="todoapp">
       <h1 className="todoapp__title">todos</h1>
@@ -121,9 +136,11 @@ export const App: React.FC = () => {
           todos={visibleTodos}
           onDelete={deleteTodo}
           onUpdate={updateTodo}
+          updatingTodos={updatingTodos}
         />
         {todos.length > 0 && (
           <ToDoFooter
+            onClearCompleted={clearCompleted}
             todos={todos}
             status={status}
             setStatus={setStatus}

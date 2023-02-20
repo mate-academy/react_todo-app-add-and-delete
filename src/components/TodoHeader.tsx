@@ -1,3 +1,4 @@
+/* eslint-disable jsx-a11y/control-has-associated-label */
 import { useEffect, useState } from 'react';
 import { getTodo } from '../api/todos';
 import { Todo } from '../types/Todo';
@@ -23,15 +24,11 @@ export const Header: React.FC<Props> = ({
 
   return (
     <header className="todoapp__header">
-      {/* this buttons is active only if there are some active todos */}
-
-      {/* <button
+      <button
         type="button"
         className="todoapp__toggle-all active"
-      // onClick={() => ()}
-      /> */}
+      />
 
-      {/* Add a todo on form submit */}
       <form onSubmit={onSubmit}>
         <input
           type="text"
