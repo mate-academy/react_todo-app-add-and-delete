@@ -4,16 +4,16 @@ import classNames from 'classnames';
 type Props = {
   isAllCompleted: boolean;
   onToogleAllTodo: () => void;
-  handleSubmit: (e: React.FormEvent<HTMLFormElement>) => void;
-  query: string
+  onSubmit: (e: React.FormEvent<HTMLFormElement>) => void;
+  title: string
   onEventChange: (e: React.ChangeEvent<HTMLInputElement>) => void;
 };
 
 export const Header: React.FC<Props> = ({
   isAllCompleted,
   onToogleAllTodo,
-  handleSubmit,
-  query,
+  onSubmit,
+  title,
   onEventChange,
 }) => {
   return (
@@ -29,18 +29,14 @@ export const Header: React.FC<Props> = ({
       />
 
       <form
-        onSubmit={(e) => {
-          handleSubmit(e);
-        }}
+        onSubmit={onSubmit}
       >
         <input
           type="text"
           className="todoapp__new-todo"
           placeholder="What needs to be done?"
-          value={query}
-          onChange={(e) => {
-            onEventChange(e);
-          }}
+          value={title}
+          onChange={onEventChange}
         />
       </form>
     </header>

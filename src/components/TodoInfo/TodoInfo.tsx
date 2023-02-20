@@ -29,11 +29,10 @@ export const TodoInfo: React.FC<Props> = ({
 
   const handleOnSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-
+    setIsEditing(false);
     const trimTodoTitle = todoTitle.trim();
 
     if (trimTodoTitle === todo.title) {
-      setIsEditing(false);
       setTodoTitle(title);
 
       return;
@@ -49,8 +48,6 @@ export const TodoInfo: React.FC<Props> = ({
       ...todo,
       title: todoTitle,
     });
-
-    setIsEditing(false);
   };
 
   const onCancelEditing = (
@@ -94,9 +91,9 @@ export const TodoInfo: React.FC<Props> = ({
             value={todoTitle}
             placeholder="Empty todo will be deleted"
             className="todo__title-field"
-            onChange={(e) => eventChange(e)}
+            onChange={eventChange}
             onBlur={handleOnSubmit}
-            onKeyUp={(e) => onCancelEditing(e)}
+            onKeyUp={onCancelEditing}
           />
         </form>
       ) : (

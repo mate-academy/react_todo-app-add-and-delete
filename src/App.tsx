@@ -26,34 +26,33 @@ const USER_ID = 6336;
 
 export const App: React.FC = () => {
   const [todos, setTodos] = useState<Todo[]>([]);
+  const [creatingTodo, setCreatingTodo] = useState<Todo | null>(null);
   const [todosInProcessed, setTodosInProcessed] = useState<Todo[]>([]);
-  const [query, setQuery] = useState('');
-  const [hasError, setHasError] = useState(false);
+  const [title, setTitle] = useState('');
   const [errorMessage, setErrorMessage] = useState('');
   const [selectFilter, setSelectFilter] = useState('all');
 
-  const itemsLeft = todos.filter(todo => todo.completed === false);
+  const activeTodos = todos.filter(({ completed }) => !completed);
 
-  const eventChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+  const handleEventChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { value } = e.target;
 
-    setQuery(value);
+    setTitle(value);
   };
 
   const handleAddTodo = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
 
-    if (!query) {
-      setHasError(true);
+    if (!title.trim().length) {
       setErrorMessage('Title can\'t be empty');
-      warningTimer(setHasError, false, 3000);
+      warningTimer(setErrorMessage, '', 3000);
 
       return;
     }
 
     const newTodo = {
       id: 0,
-      title: query,
+      title,
       userId: USER_ID,
       completed: false,
     };
@@ -62,10 +61,12 @@ export const App: React.FC = () => {
       const addedTodo = await createTodo(USER_ID, newTodo);
 
       setTodos(currentTodos => [...currentTodos, addedTodo]);
-      setQuery('');
     } catch (error) {
-      setHasError(true);
       setErrorMessage('Unable to add a todo');
+      warningTimer(setErrorMessage, '', 3000);
+    } finally {
+      setCreatingTodo(null);
+      setTitle('');
     }
   };
 
@@ -77,9 +78,11 @@ export const App: React.FC = () => {
       setTodos(prevTodos => prevTodos
         .filter(todo => todo.id !== removeTodo.id));
     } catch (error) {
-      setHasError(true);
       setErrorMessage('Unable to delete a todo');
-      warningTimer(setHasError, false, 3000);
+      warningTimer(setErrorMessage, '', 3000);
+    } finally {
+      setTodosInProcessed(currentTodos => currentTodos
+        .filter(todo => todo.id !== removeTodo.id));
     }
   };
 
@@ -87,13 +90,14 @@ export const App: React.FC = () => {
 
   const isAllCompleted = allCompleted.length === todos.length;
 
-  const clearCompleted = () => {
+  const clearCompleted = useCallback(() => {
     allCompleted.forEach(todo => deleteTodo(USER_ID, todo.id));
     setTodos(prevTodos => prevTodos.filter(todo => todo.completed === false));
-  };
+  }, [todos]);
 
   const onToogleTodo = async (todoTogle: Todo) => {
     try {
+      setTodosInProcessed(currentTodos => [...currentTodos, todoTogle]);
       const todoChangeStatus = await toogleTodo(USER_ID, todoTogle.id, !todoTogle.completed);
 
       setTodos(currentTodos => currentTodos.map(todo => {
@@ -102,17 +106,20 @@ export const App: React.FC = () => {
           : todo;
       }));
     } catch (error) {
-      setHasError(true);
       setErrorMessage('Unable to change completed');
-      warningTimer(setHasError, false, 3000);
+      warningTimer(setErrorMessage, '', 3000);
+    } finally {
+      setTodosInProcessed(currentTodos => currentTodos
+        .filter(todo => todo.id !== todoTogle.id));
     }
   };
 
   const toogleAllTodo = () => {
-    if (isAllCompleted) {
+    const toogleAll = (isCheck: boolean) => {
       todos.map(async (todoToogle) => {
         try {
-          const todoChangeStatus = await toogleTodo(USER_ID, todoToogle.id, false);
+          setTodosInProcessed(currentTodos => [...currentTodos, todoToogle]);
+          const todoChangeStatus = await toogleTodo(USER_ID, todoToogle.id, isCheck);
 
           setTodos(currentTodos => currentTodos.map(todo => {
             return todo.id === todoChangeStatus.id
@@ -120,27 +127,19 @@ export const App: React.FC = () => {
               : todo;
           }));
         } catch (error) {
-          setHasError(true);
           setErrorMessage('Unable to change completed');
-          warningTimer(setHasError, false, 3000);
+          warningTimer(setErrorMessage, '', 3000);
+        } finally {
+          setTodosInProcessed(currentTodos => currentTodos
+            .filter(todo => todo.id !== todoToogle.id));
         }
       });
+    };
+
+    if (isAllCompleted) {
+      toogleAll(false);
     } else {
-      todos.map(async todoToogle => {
-        try {
-          const todoChangeStatus = await toogleTodo(USER_ID, todoToogle.id, true);
-
-          setTodos(currentTodos => currentTodos.map(todo => {
-            return todo.id === todoChangeStatus.id
-              ? todoChangeStatus
-              : todo;
-          }));
-        } catch (error) {
-          setHasError(true);
-          setErrorMessage('Unable to change completed');
-          warningTimer(setHasError, false, 3000);
-        }
-      });
+      toogleAll(true);
     }
   };
 
@@ -156,9 +155,12 @@ export const App: React.FC = () => {
           : todo;
       }));
     } catch (error) {
-      setHasError(true);
       setErrorMessage('Unable to delete a todo');
-      warningTimer(setHasError, false, 3000);
+      warningTimer(setErrorMessage, '', 3000);
+    } finally {
+      setTodosInProcessed(currentTodos => (
+        currentTodos.filter(todo => todo.id !== todoToUpdate.id)
+      ));
     }
   }, []);
 
@@ -177,7 +179,7 @@ export const App: React.FC = () => {
           return false;
       }
     });
-  }, [todos, query, selectFilter]);
+  }, [todos, title, selectFilter]);
 
   useEffect(() => {
     const onLoadGetTodos = async () => {
@@ -186,9 +188,8 @@ export const App: React.FC = () => {
 
         setTodos(todosData);
       } catch (error) {
-        setHasError(true);
         setErrorMessage('Unable to load todos');
-        warningTimer(setHasError, false, 3000);
+        warningTimer(setErrorMessage, '', 3000);
       }
     };
 
@@ -207,13 +208,14 @@ export const App: React.FC = () => {
         <Header
           isAllCompleted={isAllCompleted}
           onToogleAllTodo={toogleAllTodo}
-          handleSubmit={handleAddTodo}
-          query={query}
-          onEventChange={eventChange}
+          onSubmit={handleAddTodo}
+          title={title}
+          onEventChange={handleEventChange}
         />
 
         <TodoList
           todos={visibleTodos}
+          creatingTodo={creatingTodo}
           onRemoveTodo={onRemoveTodo}
           onToogleTodo={onToogleTodo}
           todosLoadingState={todosInProcessed}
@@ -222,7 +224,7 @@ export const App: React.FC = () => {
 
         {todos.length !== 0 ? (
           <Footer
-            itemsLeft={itemsLeft}
+            itemsLeft={activeTodos}
             selectFilter={selectFilter}
             setSelectFilter={setSelectFilter}
             allCompleted={allCompleted}
@@ -232,8 +234,7 @@ export const App: React.FC = () => {
       </div>
 
       <Notification
-        hasError={hasError}
-        setHasError={setHasError}
+        setErrorMessage={setErrorMessage}
         errorMessage={errorMessage}
       />
     </div>
