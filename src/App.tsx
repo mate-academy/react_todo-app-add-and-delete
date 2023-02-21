@@ -8,6 +8,7 @@ import { TodoList } from './components/TodoList';
 import { ErrorMessages } from './types/errorMessages';
 import { Status } from './types/Status';
 import { Todo } from './types/Todo';
+import { getVisibleTodos } from './utils/PreparedTodo';
 
 const USER_ID = 6386;
 
@@ -17,18 +18,9 @@ export const App: React.FC = () => {
   const [status, setStatus] = useState<Status>(Status.All);
   const [name, setName] = useState('');
   const [errorType, setErrorType] = useState<ErrorMessages>(ErrorMessages.NONE);
-  const [,setTempTodo] = useState<Todo | null>(null);
+  const [tempTodo, setTempTodo] = useState<Todo | null>(null);
 
-  const visibletodos = todos.filter(todo => {
-    switch (status) {
-      case Status.Active:
-        return !todo.completed;
-      case Status.Completed:
-        return todo.completed;
-      default:
-        return todo;
-    }
-  });
+  const visibletodos = getVisibleTodos(todos, status);
 
   const getTodosFromServer = async () => {
     try {
@@ -60,12 +52,13 @@ export const App: React.FC = () => {
       completed: false,
     };
 
+    const newTodo = await addTodos(USER_ID, todoToAdd);
+
+    setTempTodo(newTodo);
+
     try {
       setName('');
-
-      const newTodo = await addTodos(USER_ID, todoToAdd);
-
-      setTempTodo(newTodo);
+      setTempTodo(null);
 
       await getTodosFromServer();
     } catch {
@@ -104,7 +97,11 @@ export const App: React.FC = () => {
           setName={setName}
           handleAddTodo={handleAddTodo}
         />
-        <TodoList todos={visibletodos} handleDeleteTodo={handleDeleteTodo} />
+        <TodoList
+          todos={visibletodos}
+          handleDeleteTodo={handleDeleteTodo}
+          tempTodo={tempTodo}
+        />
 
         {todos.length > 0 && (
           <Footer

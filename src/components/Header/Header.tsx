@@ -15,6 +15,7 @@ export const Header:React.FC<Props> = ({
   handleAddTodo,
 }) => {
   const isActive = todos.filter(todo => !todo.completed);
+  const trimedName = name.trimStart();
 
   return (
     <header className="todoapp__header">
@@ -34,7 +35,7 @@ export const Header:React.FC<Props> = ({
           type="text"
           className="todoapp__new-todo"
           placeholder="What needs to be done?"
-          value={name}
+          value={trimedName}
           onChange={event => setName(event.target.value)}
         />
       </form>
