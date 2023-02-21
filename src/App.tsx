@@ -1,5 +1,7 @@
 /* eslint-disable jsx-a11y/control-has-associated-label */
-import React, { useCallback, useEffect, useState } from 'react';
+import React, {
+  useCallback, useEffect, useMemo, useState,
+} from 'react';
 import { addTodo, deleteTodo, getTodos } from './api/todos';
 import { Footer } from './components/Footer';
 import { Header } from './components/Header';
@@ -20,35 +22,42 @@ export const App: React.FC = () => {
     = useState<ErrorMessage>(ErrorMessage.NONE);
   const [tempTodo, setTempTodo] = useState<Todo | null>(null);
   const [todoTitle, setTodoTitle] = useState('');
-  const [isBeingAdded, setIsBeingAdded] = useState(false);
+  const [isBeingLoading, setIsBeingLoading] = useState(false);
+  const [idCheck, setidCheck] = useState(-1);
 
   const showError = (message: ErrorMessage) => {
     setHasError(true);
     setErrorMessage(message);
   };
 
+  const loadTodos = async () => {
+    try {
+      const loadedTodos = await getTodos(USER_ID);
+
+      setTodos(loadedTodos);
+    } catch {
+      setHasError(true);
+      setErrorMessage(ErrorMessage.ONLOAD);
+    }
+  };
+
   useEffect(() => {
-    getTodos(USER_ID)
-      .then(fetchTodos => {
-        setTodos(fetchTodos);
-      })
-      .catch(() => {
-        setHasError(true);
-        setErrorMessage(ErrorMessage.ONLOAD);
-      });
+    loadTodos();
   }, []);
 
-  const visibleTodos = getFiltredTodos(todos, filterBy);
+  const visibleTodos = useMemo(() => (
+    getFiltredTodos(todos, filterBy)
+  ), [todos, filterBy]);
 
-  const countActiveTodos = todos.filter(todo => !todo.completed).length;
+  const activeTodosAmount = todos.filter(todo => !todo.completed).length;
   const isFooterVisible = !!todos.length;
-  const isClearButtonVisible = !!(todos.length - countActiveTodos);
+  const isClearButtonVisible = !!(todos.length - activeTodosAmount);
 
   const clearNotification = useCallback(() => {
     setHasError(false);
   }, []);
 
-  const handleAddTodo = useCallback((title: string) => {
+  const handleAddTodo = useCallback(async (title: string) => {
     clearNotification();
 
     if (!title.trim()) {
@@ -66,34 +75,34 @@ export const App: React.FC = () => {
     };
 
     setTempTodo(todoToAdd);
-    setIsBeingAdded(true);
+    setIsBeingLoading(true);
 
-    addTodo(USER_ID, todoToAdd)
-      .then(todo => {
-        setTodos(curTodos => [...curTodos, todo]);
-        setTodoTitle('');
-      })
-      .catch(() => {
-        showError(ErrorMessage.ONADD);
-      })
-      .finally(() => {
-        setTempTodo(null);
-        setIsBeingAdded(false);
-      });
+    try {
+      const todoAdder = await addTodo(USER_ID, todoToAdd);
+
+      setTodos(curTodos => [...curTodos, todoAdder]);
+      setTodoTitle('');
+    } catch {
+      showError(ErrorMessage.ONADD);
+    } finally {
+      setTempTodo(null);
+      setIsBeingLoading(false);
+    }
   }, []);
 
-  const handleDeleteTodo = useCallback((todoId: number) => {
+  const handleDeleteTodo = useCallback(async (todoId: number) => {
     clearNotification();
-
-    deleteTodo(todoId)
-      .then(() => {
-        setTodos(curTodos => (
-          curTodos.filter(todo => todo.id !== todoId)
-        ));
-      })
-      .catch(() => {
-        showError(ErrorMessage.ONDELETE);
-      });
+    try {
+      setidCheck(todoId);
+      setIsBeingLoading(true);
+      await deleteTodo(todoId);
+      await loadTodos();
+    } catch {
+      showError(ErrorMessage.ONDELETE);
+    } finally {
+      setidCheck(-1);
+      setIsBeingLoading(false);
+    }
   }, []);
 
   const handleDeleteCompletedTodos = useCallback(() => {
@@ -113,13 +122,15 @@ export const App: React.FC = () => {
           onAddTodo={handleAddTodo}
           todoTitle={todoTitle}
           setTodoTitle={setTodoTitle}
-          isBeingAdded={isBeingAdded}
+          isBeingLoading={isBeingLoading}
+          showExpendIcon={todos.length > 0}
         />
 
         <TodoList
           todos={visibleTodos}
           tempTodo={tempTodo}
-          isBeingAdded={isBeingAdded}
+          isBeingLoading={isBeingLoading}
+          idCheck={idCheck}
           onRemove={handleDeleteTodo}
         />
 
@@ -127,18 +138,20 @@ export const App: React.FC = () => {
           <Footer
             filterBy={filterBy}
             setFilterBy={setFilterBy}
-            countActiveTodos={countActiveTodos}
+            activeTodosAmount={activeTodosAmount}
             isClearButtonVisible={isClearButtonVisible}
             onClearCompleted={handleDeleteCompletedTodos}
           />
         )}
       </div>
 
-      <Notification
-        hasError={hasError}
-        errorMessage={errorMessage}
-        onClear={clearNotification}
-      />
+      {hasError && (
+        <Notification
+          hasError={hasError}
+          errorMessage={errorMessage}
+          onClear={clearNotification}
+        />
+      )}
     </div>
   );
 };

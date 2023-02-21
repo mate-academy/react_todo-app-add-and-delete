@@ -6,13 +6,13 @@ import { Todo } from '../../types/Todo';
 type Props = {
   todo: Todo,
   onRemove: (todoId: number) => void,
-  isBeingAdded: boolean,
+  isBeingLoading: boolean,
 };
 
 export const TodoItem: React.FC<Props> = ({
   todo,
   onRemove,
-  isBeingAdded,
+  isBeingLoading,
 }) => {
   const { title, completed, id } = todo;
 
@@ -40,7 +40,7 @@ export const TodoItem: React.FC<Props> = ({
 
       <div className={classNames(
         'modal overlay',
-        { 'is-active': isBeingAdded },
+        { 'is-active': isBeingLoading },
       )}
       >
 

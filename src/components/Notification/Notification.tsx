@@ -1,9 +1,10 @@
 import React, { useEffect } from 'react';
 import classNames from 'classnames';
+import { ErrorMessage } from '../../types/ErrorMessage';
 
 type Props = {
   hasError: boolean,
-  errorMessage: string,
+  errorMessage: ErrorMessage,
   onClear: () => void,
 };
 

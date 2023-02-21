@@ -4,14 +4,16 @@ type Props = {
   onAddTodo: (title: string) => void,
   todoTitle: string,
   setTodoTitle: (todoTitle: string) => void,
-  isBeingAdded: boolean,
+  isBeingLoading: boolean,
+  showExpendIcon: boolean,
 };
 
 export const Header: React.FC<Props> = ({
   onAddTodo,
   todoTitle,
   setTodoTitle,
-  isBeingAdded,
+  isBeingLoading,
+  showExpendIcon,
 }) => {
   const handleSubmit = (event: FormEvent) => {
     event.preventDefault();
@@ -25,12 +27,18 @@ export const Header: React.FC<Props> = ({
     if (newTodoField.current) {
       newTodoField.current.focus();
     }
-  }, [isBeingAdded]);
+  }, [isBeingLoading]);
 
   return (
     <header className="todoapp__header">
-      {/* eslint-disable-next-line jsx-a11y/control-has-associated-label */}
-      <button type="button" className="todoapp__toggle-all active" />
+      {showExpendIcon
+        && (
+          // eslint-disable-next-line jsx-a11y/control-has-associated-label
+          <button
+            type="button"
+            className="todoapp__toggle-all active"
+          />
+        )}
 
       <form onSubmit={handleSubmit}>
         <input
@@ -40,7 +48,7 @@ export const Header: React.FC<Props> = ({
           placeholder="What needs to be done?"
           value={todoTitle}
           onChange={(e) => setTodoTitle(e.target.value)}
-          disabled={isBeingAdded}
+          disabled={isBeingLoading}
         />
       </form>
     </header>
