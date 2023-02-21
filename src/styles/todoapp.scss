@@ -130,4 +130,10 @@
       text-decoration: none;
     }
   }
+
+  .hidden {
+    min-height: 0;
+    opacity: 0;
+    cursor: default;
+  }
 }
