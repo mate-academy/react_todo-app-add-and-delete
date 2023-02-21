@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useMemo, useState } from 'react';
 import { addTodos, deleteTodo, getTodos } from './api/todos';
 import { Footer } from './components/Footer';
 import { Header } from './components/Header';
@@ -18,8 +18,11 @@ export const App: React.FC = () => {
   const [name, setName] = useState('');
   const [errorType, setErrorType] = useState<ErrorMessages>(ErrorMessages.NONE);
   const [tempTodo, setTempTodo] = useState<Todo | null>(null);
+  const [isDisableInput, setIsDisableInput] = useState(false);
 
-  const visibletodos = getVisibleTodos(todos, status);
+  const visibletodos = useMemo(() => {
+    return getVisibleTodos(todos, status);
+  }, [todos, status]);
 
   const getTodosFromServer = async () => {
     try {
@@ -48,18 +51,19 @@ export const App: React.FC = () => {
       completed: false,
     };
 
-    const newTodo = await addTodos(USER_ID, todoToAdd);
-
-    setTempTodo({ ...newTodo, id: 0 });
-
     try {
+      setIsDisableInput(true);
       setName('');
-      setTempTodo(null);
+      const newTodo = await addTodos(USER_ID, todoToAdd);
 
+      setTempTodo(newTodo);
       await getTodosFromServer();
     } catch {
       setHasServerError(true);
       setErrorType(ErrorMessages.ADD);
+    } finally {
+      setIsDisableInput(false);
+      setTempTodo(null);
     }
   };
 
@@ -92,6 +96,7 @@ export const App: React.FC = () => {
           name={name}
           setName={setName}
           handleAddTodo={handleAddTodo}
+          isDisableInput={isDisableInput}
         />
         <TodoList
           todos={visibletodos}
@@ -112,11 +117,13 @@ export const App: React.FC = () => {
 
       {/* Notification is shown in case of any error */}
       {/* Add the 'hidden' class to hide the message smoothly */}
-      <Notification
-        errorType={errorType}
-        hasError={hasServerError}
-        setHasError={setHasServerError}
-      />
+      {hasServerError && (
+        <Notification
+          errorType={errorType}
+          hasError={hasServerError}
+          setHasError={setHasServerError}
+        />
+      ) }
     </div>
   );
 };
