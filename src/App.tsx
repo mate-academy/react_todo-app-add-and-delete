@@ -6,6 +6,7 @@ import { Header } from './components/Header';
 import { TodoList } from './components/TodoList';
 import { Footer } from './components/Footer';
 import { Todo } from './types/Todo';
+import { TempTodo } from './types/TempTodo';
 import {
   getTodos, addTodo, removeTodo, updateTodo,
 } from './api/todos';
@@ -21,6 +22,11 @@ export const App: React.FC = () => {
   const [isErrorHidden, setIsErrorHidden] = useState(true);
   const [updatingStage, setUpdatingStage] = useState<number[]>([]);
   const [editedTodoId, setEditedTodoId] = useState(0);
+  const [tempTodo, setTempTodo] = useState<TempTodo | null>(null);
+  const [isMainInputDisabled, setIsMainInputDisabled] = useState(false);
+
+  const isSomeThingDone = todos.some((todo) => todo.completed);
+  const activeTodosAmount = todos.filter((todo) => !todo.completed).length;
 
   const loadTodos = async () => {
     try {
@@ -33,16 +39,6 @@ export const App: React.FC = () => {
     }
   };
 
-  const addToUpdateStage = (id: number) => {
-    setUpdatingStage(prev => [...prev, id]);
-  };
-
-  const removeFromUpdateStage = (id: number) => {
-    setTimeout(() => {
-      setUpdatingStage(prev => prev.filter(prevInd => prevInd !== id));
-    }, 500);
-  };
-
   const filteredTodos = useMemo(() => {
     return getFilteredTodos(todos, filterType);
   }, [filterType, todos]);
@@ -52,32 +48,39 @@ export const App: React.FC = () => {
   }, []);
 
   useEffect(() => {
-    setTimeout(setIsErrorHidden, 3000, true);
+    const timerId = setTimeout(setIsErrorHidden, 3000, true);
+
+    return () => clearTimeout(timerId);
   }, [isErrorHidden]);
 
-  const addTodoOnServer = useCallback(async (todo: Todo) => {
-    try {
-      addToUpdateStage(todo.id);
-      await addTodo(todo);
-      await loadTodos();
-    } catch (error) {
-      setErrorType(ErrorMessages.Add);
-      setIsErrorHidden(false);
-    } finally {
-      removeFromUpdateStage(todo.id);
-    }
+  const handleFiltering = useCallback((filter: FilterType) => {
+    setFilterType(filter);
   }, []);
 
-  const removeTodoFromServer = useCallback(async (id: number) => {
+  const addTodoOnServer = async (title: string) => {
     try {
-      addToUpdateStage(id);
-      await removeTodo(id);
+      setIsMainInputDisabled(true);
+      const newTodo = await addTodo(title);
+
+      setTodos((current) => [...current, newTodo]);
+    } catch {
+      setErrorType(ErrorMessages.Add);
+    } finally {
+      setIsMainInputDisabled(false);
+      setTempTodo(null);
+    }
+  };
+
+  const removeTodoFromServer = useCallback(async (todoId: number) => {
+    try {
+      setUpdatingStage((prev) => [...prev, todoId]);
+      await removeTodo(todoId);
       await loadTodos();
     } catch (error) {
       setErrorType(ErrorMessages.Delete);
       setIsErrorHidden(false);
     } finally {
-      removeFromUpdateStage(id);
+      setUpdatingStage((prev) => prev.filter((prevId) => prevId !== todoId));
     }
   }, []);
 
@@ -91,16 +94,20 @@ export const App: React.FC = () => {
     });
   };
 
+  const saveTempTodo = useCallback((todo: TempTodo) => {
+    setTempTodo(todo);
+  }, []);
+
   const updateTodoOnServer = useCallback(async (todo: Todo) => {
     try {
-      addToUpdateStage(todo.id);
+      setUpdatingStage(prev => [...prev, todo.id]);
       await updateTodo(todo);
       await loadTodos();
     } catch (error) {
       setErrorType(ErrorMessages.Update);
       setIsErrorHidden(false);
     } finally {
-      removeFromUpdateStage(todo.id);
+      setUpdatingStage(prev => prev.filter(id => id !== todo.id));
     }
   }, []);
 
@@ -128,7 +135,7 @@ export const App: React.FC = () => {
     setIsErrorHidden(true);
   }, []);
 
-  const handleEditingTodo = useCallback((id: number) => {
+  const handleTodoEditor = useCallback((id: number) => {
     setEditedTodoId(id);
   }, []);
 
@@ -142,22 +149,29 @@ export const App: React.FC = () => {
           todos={todos}
           toggleAllTodos={toggleAllTodos}
           handleErrors={handleErrors}
+          saveTempTodo={saveTempTodo}
+          isMainInputDisabled={isMainInputDisabled}
         />
+
         <TodoList
           todos={filteredTodos}
           removeTodoFromServer={removeTodoFromServer}
           updateTodoOnServer={updateTodoOnServer}
           updatingStage={updatingStage}
-          handleEditingTodo={handleEditingTodo}
+          handleTodoEditor={handleTodoEditor}
           editedTodoId={editedTodoId}
+          tempTodo={tempTodo}
         />
+
         <Footer
-          filterBy={setFilterType}
           filterType={filterType}
-          todos={todos}
           removeCompletedTodos={removeCompletedTodos}
+          handleFiltering={handleFiltering}
+          isSomeThingDone={isSomeThingDone}
+          activeTodosAmount={activeTodosAmount}
         />
       </div>
+
       {errorType && (
         <ErrorMessage
           errorType={errorType}

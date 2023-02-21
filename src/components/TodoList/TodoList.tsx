@@ -1,23 +1,27 @@
 import React from 'react';
 import { TodoItem } from '../TodoItem';
 import { Todo } from '../../types/Todo';
+import { TempTodo } from '../../types/TempTodo';
+import { TemporaryTodo } from '../TemporaryTodo';
 
 type Props = {
   todos: Todo[];
   removeTodoFromServer: (id: number) => void;
   updateTodoOnServer: (todo: Todo) => void;
   updatingStage: number[];
-  handleEditingTodo: (id: number) => void;
+  handleTodoEditor: (id: number) => void;
   editedTodoId: number;
+  tempTodo: TempTodo | null;
 };
 
-export const TodoList: React.FC<Props> = ({
+export const TodoList: React.FC<Props> = React.memo(({
   todos,
   removeTodoFromServer,
   updateTodoOnServer,
   updatingStage,
-  handleEditingTodo,
+  handleTodoEditor,
   editedTodoId,
+  tempTodo,
 }) => (
   <section className="todoapp__main">
     {todos.map((todo) => (
@@ -27,9 +31,12 @@ export const TodoList: React.FC<Props> = ({
         removeTodoFromServer={removeTodoFromServer}
         updateTodoOnServer={updateTodoOnServer}
         updatingStage={updatingStage}
-        handleEditingTodo={handleEditingTodo}
+        handleTodoEditor={handleTodoEditor}
         editedTodoId={editedTodoId}
       />
     ))}
+    {tempTodo && (
+      <TemporaryTodo todo={tempTodo} />
+    )}
   </section>
-);
+));

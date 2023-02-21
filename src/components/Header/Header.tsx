@@ -1,21 +1,25 @@
 import React, { useState } from 'react';
 import classNames from 'classnames';
-import { USER_ID } from '../../api/todos';
 import { Todo } from '../../types/Todo';
+import { TempTodo } from '../../types/TempTodo';
 import { ErrorMessages } from '../../types/ErrorMessages';
 
 type Props = {
-  addTodoOnServer: (todo: Todo) => void;
+  addTodoOnServer: (title: string) => void;
   todos: Todo[];
   toggleAllTodos: (condition: boolean) => void;
   handleErrors: (errorType: ErrorMessages) => void;
+  saveTempTodo: (todo: TempTodo) => void;
+  isMainInputDisabled: boolean,
 };
 
-export const Header: React.FC<Props> = ({
+export const Header: React.FC<Props> = React.memo(({
   addTodoOnServer,
   todos,
   toggleAllTodos,
   handleErrors,
+  saveTempTodo,
+  isMainInputDisabled,
 }) => {
   const areAllTodosDone = todos.every((todo) => todo.completed);
   const [title, setTitle] = useState('');
@@ -30,27 +34,21 @@ export const Header: React.FC<Props> = ({
     handleErrors(ErrorMessages.None);
   };
 
-  const handleSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
+  const handleSubmit = (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
+    const trimmedTitle = title.trim();
 
-    const normalizedTitle = title.trim();
-
-    if (!normalizedTitle) {
+    if (!trimmedTitle) {
       handleErrors(ErrorMessages.EmptyInput);
 
       return;
     }
 
-    const newTodoInd = Math.max(...todos.map((todo) => todo.id)) + 1;
-
-    const newTodo: Todo = {
-      title: normalizedTitle,
-      userId: USER_ID,
-      completed: false,
-      id: newTodoInd,
-    };
-
-    addTodoOnServer(newTodo);
+    addTodoOnServer(trimmedTitle);
+    saveTempTodo({
+      id: 0,
+      title,
+    });
     resetForm();
   };
 
@@ -77,8 +75,9 @@ export const Header: React.FC<Props> = ({
           placeholder="What needs to be done?"
           value={title}
           onChange={handleChange}
+          disabled={isMainInputDisabled}
         />
       </form>
     </header>
   );
-};
+});
