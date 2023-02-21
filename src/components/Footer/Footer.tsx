@@ -63,7 +63,6 @@ export const Footer: React.FC<Props> = ({
         disabled={!isClearButtonVisible}
         onClick={onClearCompleted}
       >
-        Clear completed
         {isClearButtonVisible && 'Clear completed'}
       </button>
     </footer>
