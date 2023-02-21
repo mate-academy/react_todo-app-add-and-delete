@@ -33,7 +33,7 @@ export const Header: React.FC<Props> = ({
             active: activeTodos,
           },
         )}
-
+        disabled={activeTodos}
       />
 
       {/* Add a todo on form submit */}

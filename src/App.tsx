@@ -8,6 +8,7 @@ import { TodoList } from './components/TodoList';
 import { ErrorType } from './types/ErrorType';
 import { FilterType } from './types/FilterType';
 import { Todo } from './types/Todo';
+import { prepareTodos } from './utils/prepareTodos';
 
 const USER_ID = 6396;
 
@@ -28,7 +29,6 @@ export const App: React.FC = () => {
     } catch (error) {
       setHasError(true);
       setErrorType(ErrorType.Update);
-      throw new Error('Error downloading todos');
     }
   };
 
@@ -36,27 +36,9 @@ export const App: React.FC = () => {
     fetchAllTodos();
   }, []);
 
-  const visibleTodos = useMemo(() => {
-    let preparedTodos = [...todos];
-
-    if (filterType) {
-      switch (filterType) {
-        case FilterType.All:
-          preparedTodos = [...todos];
-          break;
-        case FilterType.Active:
-          preparedTodos = todos.filter(todo => !todo.completed);
-          break;
-        case FilterType.Completed:
-          preparedTodos = todos.filter(todo => todo.completed);
-          break;
-        default:
-          throw new Error('Unexpected filter error');
-      }
-    }
-
-    return preparedTodos;
-  }, [todos, filterType]);
+  const visibleTodos = useMemo(() => (
+    prepareTodos(todos, filterType)
+  ), [todos, filterType]);
 
   const handleError = (error: boolean) => {
     setHasError(error);
@@ -138,7 +120,7 @@ export const App: React.FC = () => {
           isTitleDisabled={isTitleDisabled}
         />
 
-        {todos.length > 0 && (
+        {todos.length && (
           <>
             <TodoList
               todos={visibleTodos}

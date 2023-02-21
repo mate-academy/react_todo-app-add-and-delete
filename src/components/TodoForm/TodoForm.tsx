@@ -12,24 +12,22 @@ export const TodoForm: React.FC<Props> = ({
   handleInput,
   handleAddTodo,
   isTitleDisabled,
-}) => {
-  return (
-    <form
-      onSubmit={(event) => {
-        event.preventDefault();
-        handleAddTodo(title);
+}) => (
+  <form
+    onSubmit={(event) => {
+      event.preventDefault();
+      handleAddTodo(title);
+    }}
+  >
+    <input
+      type="text"
+      className="todoapp__new-todo"
+      placeholder="What needs to be done?"
+      value={title}
+      onChange={(event) => {
+        handleInput(event.target.value);
       }}
-    >
-      <input
-        type="text"
-        className="todoapp__new-todo"
-        placeholder="What needs to be done?"
-        value={title}
-        onChange={(event) => {
-          handleInput(event.target.value);
-        }}
-        disabled={isTitleDisabled}
-      />
-    </form>
-  );
-};
+      disabled={isTitleDisabled}
+    />
+  </form>
+);
