@@ -1,15 +1,14 @@
 import React from 'react';
 import classNames from 'classnames';
 import { Filter } from '../../types/Filter';
-import { Todo } from '../../types/Todo';
+// import { Todo } from '../../types/Todo';
 
 type Props = {
   filterType: Filter;
   onFilterTypeChange: (value: Filter) => void;
-  completedTodos: Todo[];
+  completedTodos: number;
   activeTodos: number;
-  deleteTodo: (id: number) => void;
-  changeRemoveTodoIds: (ids: number[]) => void;
+  deleteCompletedTodos : () => void;
 };
 
 export const TodoFilter: React.FC<Props> = React.memo(
@@ -19,20 +18,15 @@ export const TodoFilter: React.FC<Props> = React.memo(
       onFilterTypeChange,
       completedTodos,
       activeTodos,
-      deleteTodo,
-      changeRemoveTodoIds,
+      deleteCompletedTodos,
     },
   ) => {
     const changeFilterType = (newFilterType: Filter) => {
       onFilterTypeChange(newFilterType);
     };
 
-    const completedTodoIds = completedTodos.map(todo => todo.id);
-
     const handleClearButtonClick = () => {
-      changeRemoveTodoIds(completedTodoIds);
-
-      completedTodoIds.map(id => deleteTodo(id));
+      deleteCompletedTodos();
     };
 
     return (
@@ -82,7 +76,7 @@ export const TodoFilter: React.FC<Props> = React.memo(
           </a>
         </nav>
 
-        {completedTodos.length !== 0 && (
+        {completedTodos !== 0 && (
           <button
             type="button"
             className="todoapp__clear-completed"

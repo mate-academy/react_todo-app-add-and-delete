@@ -112,6 +112,14 @@ export const App: React.FC = () => {
     setError(currentError);
   };
 
+  const completedTodoIds = completedTodos.map(todo => todo.id);
+
+  const deleteCompletedTodos = () => {
+    setOnRemoveTodoIds(completedTodoIds);
+
+    completedTodoIds.map(id => deleteTodo(id));
+  };
+
   if (!USER_ID) {
     return <UserWarning />;
   }
@@ -143,10 +151,9 @@ export const App: React.FC = () => {
             <TodoFilter
               filterType={filterType}
               onFilterTypeChange={onFilterTypeChange}
-              completedTodos={completedTodos}
+              completedTodos={completedTodos.length}
               activeTodos={activeTodos}
-              deleteTodo={deleteTodo}
-              changeRemoveTodoIds={changeRemoveTodoIds}
+              deleteCompletedTodos={deleteCompletedTodos}
             />
           </>
         )}
