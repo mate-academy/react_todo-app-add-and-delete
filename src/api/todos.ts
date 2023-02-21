@@ -17,7 +17,7 @@ export const getTodos = (userId: number) => {
 //     .then(todos => todos.filter(todo => !todo.completed));
 // };
 
-export const createTodo = (newTodo: unknown, userId: number): Promise<Todo> => {
+export const createTodo = (newTodo: unknown, userId: {}): Promise<Todo> => {
   return client.post<Todo>(`/todos?userId=${userId}`, newTodo);
 };
 
