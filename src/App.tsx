@@ -140,11 +140,7 @@ export const App: React.FC = () => {
       });
     };
 
-    if (isAllCompleted) {
-      toogleAll(false);
-    } else {
-      toogleAll(true);
-    }
+    toogleAll(!isAllCompleted);
   };
 
   const handleUpdateTodo = useCallback(async (todoToUpdate: Todo) => {
