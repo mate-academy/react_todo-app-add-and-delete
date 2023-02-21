@@ -156,33 +156,16 @@ export const App: React.FC = () => {
     }
   }, []);
 
-  const filterTodosCompleted = () => {
-    return todos.filter(({ completed }) => completed);
-  };
-
-  const filterTodosActive = () => {
-    return todos.filter(({ completed }) => !completed);
-  };
-
-  const getFilteredTodos = useCallback((
-    todosByFilter: Todo[],
-    filterTodos: FilterTodos,
-  ) => {
-    switch (filterTodos) {
-      case FilterTodos.ALL:
-        return todosByFilter;
+  const visibleTodos = useMemo(() => {
+    switch (selectFilter) {
       case FilterTodos.ACTIVE:
-        return filterTodosActive();
+        return todos.filter(({ completed }) => !completed);
       case FilterTodos.COMPLETED:
-        return filterTodosCompleted();
+        return todos.filter(({ completed }) => completed);
       default:
-        return todosByFilter;
+        return todos;
     }
-  }, [selectFilter]);
-
-  const visibleTodos = useMemo(() => (
-    getFilteredTodos(todos, selectFilter)
-  ), [todos, selectFilter]);
+  }, [todos, selectFilter]);
 
   useEffect(() => {
     const onLoadGetTodos = async () => {
