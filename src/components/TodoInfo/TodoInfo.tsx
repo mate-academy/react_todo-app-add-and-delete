@@ -1,4 +1,5 @@
 import classNames from 'classnames';
+import { useState } from 'react';
 import { Todo } from '../../types/Todo';
 
 type Props = {
@@ -7,6 +8,8 @@ type Props = {
 };
 
 export const TodoInfo: React.FC<Props> = ({ todo, handleDeleteTodo }) => {
+  const [disabled, setDisabled] = useState(false);
+
   return (
     <div
       className={classNames(
@@ -40,6 +43,7 @@ export const TodoInfo: React.FC<Props> = ({ todo, handleDeleteTodo }) => {
         className="todo__remove"
         onClick={() => {
           handleDeleteTodo(todo);
+          setDisabled(true);
         }}
       >
         ×
@@ -47,7 +51,7 @@ export const TodoInfo: React.FC<Props> = ({ todo, handleDeleteTodo }) => {
       </button>
 
       {/* overlay will cover the todo while it is being updated */}
-      <div className="modal overlay">
+      <div className={classNames('modal overlay', { 'is-active': disabled })}>
         <div className="modal-background has-background-white-ter" />
         <div className="loader" />
       </div>
