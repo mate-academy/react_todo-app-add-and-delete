@@ -63,10 +63,8 @@ export const App: React.FC = () => {
       await addTodo(USER_ID, newTodo);
 
       const demoTodo = {
+        ...newTodo,
         id: 0,
-        userId: USER_ID,
-        title: todoTitle,
-        completed: false,
       };
 
       setTempTodo(demoTodo);
