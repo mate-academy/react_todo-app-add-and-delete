@@ -1,24 +1,19 @@
 import React from 'react';
-import { ErrorType } from '../../types/ErrorType';
 import { Todo } from '../../types/Todo';
 import { TodoItem } from '../TodoItem';
 
 type Props = {
   todos: Todo[],
-  userId: number,
-  fetchTodos: (userId: number) => void,
-  changeHasError: (typeError: ErrorType) => void,
-  changeIsError: () => void,
   tempTodo: Todo | null,
+  fetchDeleteTodo: (todoId: number) => void,
+  activeTodoId: number[],
 };
 
 export const TodoList: React.FC<Props> = ({
   todos,
-  userId,
-  fetchTodos,
-  changeHasError,
-  changeIsError,
   tempTodo,
+  fetchDeleteTodo,
+  activeTodoId,
 }) => {
   return (
     <section className="todoapp__main">
@@ -26,23 +21,18 @@ export const TodoList: React.FC<Props> = ({
         <TodoItem
           key={todo.id}
           todo={todo}
-          userId={userId}
-          fetchTodos={fetchTodos}
-          changeHasError={changeHasError}
-          changeIsError={changeIsError}
+          fetchDeleteTodo={fetchDeleteTodo}
+          isLoading={activeTodoId.some(id => id === todo.id)}
         />
       ))}
 
-      {tempTodo !== null && (
+      {tempTodo && (
         <TodoItem
           todo={tempTodo}
-          userId={userId}
-          fetchTodos={fetchTodos}
-          changeHasError={changeHasError}
-          changeIsError={changeIsError}
+          fetchDeleteTodo={fetchDeleteTodo}
+          isLoading
         />
       )}
-
     </section>
   );
 };

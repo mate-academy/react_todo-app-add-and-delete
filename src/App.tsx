@@ -2,13 +2,13 @@
 import React, {
   useCallback, useEffect, useMemo, useState,
 } from 'react';
-import { getTodos } from './api/todos';
-import { TodoList } from './components/TodoList';
-import { ErrorMessage } from './components/ErrorMassage';
+import { addTodo, deleteTodo, getTodos } from './api/todos';
+import { ErrorMassage } from './components/ErrorMassage';
 import { Footer } from './components/Footer';
 import { Header } from './components/Header';
+import { TodoList } from './components/TodoList';
 import { ErrorType } from './types/ErrorType';
-import { FilterField } from './types/FilterField';
+import { FilterType } from './types/FilterType';
 import { Todo } from './types/Todo';
 import { UserWarning } from './UserWarning';
 import { prepareTodos } from './utils/prepareTodos';
@@ -17,24 +17,34 @@ const USER_ID = 6372;
 
 export const App: React.FC = () => {
   const [todos, setTodos] = useState<Todo[]>([]);
-  const [hasError, setHasError] = useState(ErrorType.NONE);
+  const [errorMassage, setErrorMassage] = useState(ErrorType.NONE);
   const [isError, setIsError] = useState(false);
-  const [filterBy, setFilterBy] = useState<FilterField>(FilterField.ALL);
+  const [filterBy, setFilterBy] = useState<FilterType>(FilterType.ALL);
   const [tempTodo, setTempTodo] = useState<Todo | null>(null);
-
-  const count = todos.length;
+  const [isDisable, setIsDisable] = useState(false);
+  const [activeTodoId, setActiveTodoId] = useState<number[]>([]);
 
   const preparedTodos = useMemo(() => {
     return prepareTodos(filterBy, todos);
   }, [filterBy, todos]);
 
-  const isActive = useMemo(() => {
+  const closeError = useCallback(() => {
+    setIsError(false);
+  }, []);
+
+  const setFilterField = useCallback((field: FilterType) => {
+    setFilterBy(field);
+  }, []);
+
+  const hasCompletedTodos = useMemo(() => {
+    return todos.some(todo => todo.completed);
+  }, [todos]);
+
+  const hasActiveTodos = useMemo(() => {
     return todos.filter(todo => !todo.completed);
   }, [todos]);
 
-  const completedTodo = useMemo(() => {
-    return todos.filter(todo => todo.completed);
-  }, [todos]);
+  const hasTodos = todos.length > 0;
 
   const fetchTodos = async (userId: number) => {
     try {
@@ -42,8 +52,38 @@ export const App: React.FC = () => {
 
       setTodos(data);
     } catch {
-      setHasError(ErrorType.UPLOAD_ERROR);
+      setErrorMassage(ErrorType.UPLOAD_ERROR);
       setIsError(true);
+    }
+  };
+
+  const fetchNewTodo = async (title: string) => {
+    if (!title) {
+      setErrorMassage(ErrorType.TITLE_ERROR);
+      setIsError(true);
+
+      return;
+    }
+
+    const newTodo = {
+      id: 0,
+      title,
+      userId: USER_ID,
+      completed: false,
+    };
+
+    try {
+      setIsDisable(true);
+      setTempTodo(newTodo);
+      await addTodo(newTodo);
+
+      await fetchTodos(USER_ID);
+    } catch {
+      setErrorMassage(ErrorType.ADD_ERROR);
+      setIsError(true);
+    } finally {
+      setTempTodo(null);
+      setIsDisable(false);
     }
   };
 
@@ -51,25 +91,29 @@ export const App: React.FC = () => {
     fetchTodos(USER_ID);
   }, [USER_ID]);
 
-  const errorClose = useCallback(() => {
-    setIsError(false);
-  }, []);
+  const fetchDeleteTodo = async (todoId: number) => {
+    setActiveTodoId(prev => [
+      ...prev,
+      todoId,
+    ]);
+    try {
+      await deleteTodo(todoId);
+      await fetchTodos(USER_ID);
+    } catch {
+      setIsError(true);
+      setErrorMassage(ErrorType.DELETE_ERROR);
+    } finally {
+      setActiveTodoId(prev => prev.filter(id => id !== todoId));
+    }
+  };
 
-  const setFilterByField = useCallback((field: FilterField) => {
-    setFilterBy(field);
-  }, []);
-
-  const changeHasError = useCallback((typeError: ErrorType) => {
-    return setHasError(typeError);
-  }, []);
-
-  const changeIsError = useCallback(() => {
-    return setIsError(true);
-  }, []);
-
-  const addTempTodo = useCallback((todo: Todo | null) => {
-    return setTempTodo(todo);
-  }, []);
+  const handleDeleteCompletedTodos = () => {
+    return todos.forEach(todo => {
+      if (todo.completed) {
+        fetchDeleteTodo(todo.id);
+      }
+    });
+  };
 
   if (!USER_ID) {
     return <UserWarning />;
@@ -81,46 +125,35 @@ export const App: React.FC = () => {
 
       <div className="todoapp__content">
         <Header
-          count={count}
-          isActiveCount={isActive.length}
-          userId={USER_ID}
-          fetchTodos={fetchTodos}
-          changeHasError={changeHasError}
-          changeIsError={changeIsError}
-          addTempTodo={addTempTodo}
+          hasTodos={hasTodos}
+          hasCompletedTodos={hasCompletedTodos}
+          fetchNewTodo={fetchNewTodo}
+          isDisable={isDisable}
+        />
+
+        <TodoList
+          todos={preparedTodos}
+          tempTodo={tempTodo}
+          fetchDeleteTodo={fetchDeleteTodo}
+          activeTodoId={activeTodoId}
         />
 
         {todos.length > 0 && (
-          <>
-            <TodoList
-              todos={preparedTodos}
-              userId={USER_ID}
-              fetchTodos={fetchTodos}
-              changeHasError={changeHasError}
-              changeIsError={changeIsError}
-              tempTodo={tempTodo}
-            />
-
-            <Footer
-              filterBy={filterBy}
-              isActiveCount={isActive.length}
-              hascompletedTodo={completedTodo.length}
-              onSetFilterByField={setFilterByField}
-            />
-          </>
+          <Footer
+            setFilterField={setFilterField}
+            filterBy={filterBy}
+            hasCompletedTodos={hasCompletedTodos}
+            activeTodo={hasActiveTodos.length}
+            handleDeleteCompletedTodos={handleDeleteCompletedTodos}
+          />
         )}
       </div>
 
-      {/* Notification is shown in case of any error */}
-      {/* Add the 'hidden' class to hide the message smoothly */}
-      {isError
-        && (
-          <ErrorMessage
-            errorMassage={hasError}
-            onErrorClose={errorClose}
-            isError={isError}
-          />
-        )}
+      <ErrorMassage
+        errorMassage={errorMassage}
+        closeError={closeError}
+        isError={isError}
+      />
     </div>
   );
 };

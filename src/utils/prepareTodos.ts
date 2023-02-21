@@ -1,18 +1,18 @@
+import { FilterType } from '../types/FilterType';
 import { Todo } from '../types/Todo';
-import { FilterField } from '../types/FilterField';
 
-export function prepareTodos(field: FilterField, todos: Todo[]): Todo[] {
+export function prepareTodos(field: FilterType, todos: Todo[]): Todo[] {
   let visibleTodos = [...todos];
 
   switch (field) {
-    case (FilterField.ALL):
+    case (FilterType.ALL):
       break;
 
-    case (FilterField.ACTIVE):
+    case (FilterType.ACTIVE):
       visibleTodos = visibleTodos.filter(todo => !todo.completed);
       break;
 
-    case (FilterField.COMPLETED):
+    case (FilterType.COMPLETED):
       visibleTodos = visibleTodos.filter(todo => todo.completed);
       break;
 

@@ -1,65 +1,75 @@
-import React from 'react';
-
 import classNames from 'classnames';
-
-import { FilterField } from '../../types/FilterField';
+import React from 'react';
+import { FilterType } from '../../types/FilterType';
 
 type Props = {
-  filterBy: FilterField,
-  isActiveCount: number,
-  hascompletedTodo: number,
-  onSetFilterByField: (field: FilterField) => void,
+  setFilterField: (field: FilterType) => void,
+  filterBy: FilterType,
+  hasCompletedTodos: boolean,
+  activeTodo: number,
+  handleDeleteCompletedTodos: () => void,
 };
 
 export const Footer: React.FC<Props> = ({
+  setFilterField,
   filterBy,
-  isActiveCount,
-  hascompletedTodo,
-  onSetFilterByField,
+  hasCompletedTodos,
+  activeTodo,
+  handleDeleteCompletedTodos,
 }) => {
   return (
     <footer className="todoapp__footer">
       <span className="todo-count">
-        {`${isActiveCount} items left`}
+        {`${activeTodo} items left`}
       </span>
 
       <nav className="filter">
         <a
           href="#/"
-          className={classNames('filter__link', {
-            selected: filterBy === FilterField.ALL,
-          })}
-          onClick={() => onSetFilterByField(FilterField.ALL)}
+          className={classNames(
+            'filter__link', {
+              selected: filterBy === FilterType.ALL,
+            },
+          )}
+          onClick={() => setFilterField(FilterType.ALL)}
         >
           All
         </a>
 
         <a
           href="#/active"
-          className={classNames('filter__link', {
-            selected: filterBy === FilterField.ACTIVE,
-          })}
-          onClick={() => onSetFilterByField(FilterField.ACTIVE)}
+          className={classNames(
+            'filter__link', {
+              selected: filterBy === FilterType.ACTIVE,
+            },
+          )}
+          onClick={() => setFilterField(FilterType.ACTIVE)}
         >
           Active
         </a>
 
         <a
           href="#/completed"
-          className={classNames('filter__link', {
-            selected: filterBy === FilterField.COMPLETED,
-          })}
-          onClick={() => onSetFilterByField(FilterField.COMPLETED)}
+          className={classNames(
+            'filter__link', {
+              selected: filterBy === FilterType.COMPLETED,
+            },
+          )}
+          onClick={() => setFilterField(FilterType.COMPLETED)}
         >
           Completed
         </a>
       </nav>
 
-      {/* don't show this button if there are no completed todos */}
       <button
         type="button"
         className="todoapp__clear-completed"
-        disabled={hascompletedTodo === 0}
+        style={{
+          visibility: hasCompletedTodos
+            ? 'visible'
+            : 'hidden',
+        }}
+        onClick={handleDeleteCompletedTodos}
       >
         Clear completed
       </button>

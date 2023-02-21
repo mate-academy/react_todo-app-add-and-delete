@@ -5,53 +5,47 @@ import { ErrorType } from '../../types/ErrorType';
 
 type Props = {
   errorMassage: ErrorType,
-  onErrorClose: () => void,
+  closeError: () => void,
   isError: boolean,
 };
 
-export const ErrorMessage: React.FC<Props> = ({
+export const ErrorMassage: React.FC<Props> = ({
   errorMassage,
-  onErrorClose,
+  closeError,
   isError,
 }) => {
   let massage = '';
-  const errorUpload = 'Unable to upload todos';
-  const errorAdd = 'Unable to add a todo';
-  const errorDelete = 'Unable to delete a todo';
-  const errorUpdate = 'Unable to update a todo';
-  const errorTittle = 'Title can/\'t be empty';
 
   useEffect(() => {
     if (isError) {
-      const timer = setTimeout(() => {
-        onErrorClose();
-        clearTimeout(timer);
+      setTimeout(() => {
+        closeError();
       }, 3000);
     }
   }, [isError]);
 
   switch (errorMassage) {
     case ErrorType.UPLOAD_ERROR:
-      massage = errorUpload;
+      massage = ErrorType.UPLOAD_ERROR;
       break;
 
-    case (ErrorType.ADD_ERROR):
-      massage = errorAdd;
+    case ErrorType.ADD_ERROR:
+      massage = ErrorType.ADD_ERROR;
       break;
 
-    case (ErrorType.DELETE_ERROR):
-      massage = errorDelete;
+    case ErrorType.DELETE_ERROR:
+      massage = ErrorType.DELETE_ERROR;
       break;
 
-    case (ErrorType.UPDATE_ERROR):
-      massage = errorUpdate;
+    case ErrorType.UPDATE_ERROR:
+      massage = ErrorType.UPDATE_ERROR;
       break;
 
-    case (ErrorType.TITLE_ERROR):
-      massage = errorTittle;
+    case ErrorType.TITLE_ERROR:
+      massage = ErrorType.TITLE_ERROR;
       break;
 
-    case (ErrorType.NONE):
+    case ErrorType.NONE:
       break;
 
     default:
@@ -59,19 +53,21 @@ export const ErrorMessage: React.FC<Props> = ({
   }
 
   return (
-    <div className={classNames(
-      'notification',
-      'is-danger',
-      'is-light',
-      'has-text-weight-normal',
-      { hidden: !isError },
-    )}
+    <div
+      className={classNames(
+        'notification',
+        'is-danger',
+        'is-light',
+        'has-text-weight-normal', {
+          hidden: !isError,
+        },
+      )}
     >
       <button
-        aria-label="delete error massage"
+        aria-label="delete error"
         type="button"
         className="delete"
-        onClick={onErrorClose}
+        onClick={closeError}
       />
 
       {massage}

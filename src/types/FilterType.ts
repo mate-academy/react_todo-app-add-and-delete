@@ -1,6 +1,5 @@
-export enum FilterField {
+export enum FilterType {
   ALL,
   ACTIVE,
   COMPLETED,
-
 }
