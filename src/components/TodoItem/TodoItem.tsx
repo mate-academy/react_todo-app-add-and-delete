@@ -6,12 +6,14 @@ type Props = {
   todo: Todo;
   removeTodoFromServer: (id: number) => void;
   updateTodoOnServer: (todo: Todo) => void;
+  updatingStage: number[],
 };
 
 export const TodoItem: React.FC<Props> = ({
   todo,
   removeTodoFromServer,
   updateTodoOnServer,
+  updatingStage,
 }) => {
   const { title, completed, id } = todo;
 
@@ -39,7 +41,6 @@ export const TodoItem: React.FC<Props> = ({
 
       <span className="todo__title">{title}</span>
 
-      {/* Remove button appears only on hover */}
       <button
         type="button"
         className="todo__remove"
@@ -47,9 +48,23 @@ export const TodoItem: React.FC<Props> = ({
       >
         ×
       </button>
+      {/* This form is shown instead of the title and remove button */}
+      {/* <form>
+          <input
+            type="text"
+            className="todo__title-field"
+            placeholder="Empty todo will be deleted"
+            value="Todo is being edited now"
+          />
+        </form> */}
 
       {/* overlay will cover the todo while it is being updated */}
-      <div className="modal overlay">
+
+      <div
+        className={classNames('modal overlay', {
+          'is-active': updatingStage.includes(id),
+        })}
+      >
         <div className="modal-background has-background-white-ter" />
         <div className="loader" />
       </div>
