@@ -7,6 +7,8 @@ type Props = {
   removeTodoFromServer: (id: number) => void;
   updateTodoOnServer: (todo: Todo) => void;
   updatingStage: number[];
+  handleEditingTodo: (id: number) => void;
+  editedTodoId: number;
 };
 
 export const TodoList: React.FC<Props> = ({
@@ -14,6 +16,8 @@ export const TodoList: React.FC<Props> = ({
   removeTodoFromServer,
   updateTodoOnServer,
   updatingStage,
+  handleEditingTodo,
+  editedTodoId,
 }) => (
   <section className="todoapp__main">
     {todos.map((todo) => (
@@ -23,6 +27,8 @@ export const TodoList: React.FC<Props> = ({
         removeTodoFromServer={removeTodoFromServer}
         updateTodoOnServer={updateTodoOnServer}
         updatingStage={updatingStage}
+        handleEditingTodo={handleEditingTodo}
+        editedTodoId={editedTodoId}
       />
     ))}
   </section>

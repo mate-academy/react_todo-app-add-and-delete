@@ -1,5 +1,7 @@
 /* eslint-disable jsx-a11y/control-has-associated-label */
-import React, { useState, useEffect, useMemo } from 'react';
+import React, {
+  useState, useEffect, useMemo, useCallback,
+} from 'react';
 import { Header } from './components/Header';
 import { TodoList } from './components/TodoList';
 import { Footer } from './components/Footer';
@@ -18,6 +20,7 @@ export const App: React.FC = () => {
   const [errorType, setErrorType] = useState<ErrorMessages>(ErrorMessages.None);
   const [isErrorHidden, setIsErrorHidden] = useState(true);
   const [updatingStage, setUpdatingStage] = useState<number[]>([]);
+  const [editedTodoId, setEditedTodoId] = useState(0);
 
   const loadTodos = async () => {
     try {
@@ -52,7 +55,7 @@ export const App: React.FC = () => {
     setTimeout(setIsErrorHidden, 3000, true);
   }, [isErrorHidden]);
 
-  const addTodoOnServer = async (todo: Todo) => {
+  const addTodoOnServer = useCallback(async (todo: Todo) => {
     try {
       addToUpdateStage(todo.id);
       await addTodo(todo);
@@ -63,9 +66,9 @@ export const App: React.FC = () => {
     } finally {
       removeFromUpdateStage(todo.id);
     }
-  };
+  }, []);
 
-  const removeTodoFromServer = async (id: number) => {
+  const removeTodoFromServer = useCallback(async (id: number) => {
     try {
       addToUpdateStage(id);
       await removeTodo(id);
@@ -76,7 +79,7 @@ export const App: React.FC = () => {
     } finally {
       removeFromUpdateStage(id);
     }
-  };
+  }, []);
 
   const removeCompletedTodos = () => {
     const completedTodosId = todos
@@ -88,7 +91,7 @@ export const App: React.FC = () => {
     });
   };
 
-  const updateTodoOnServer = async (todo: Todo) => {
+  const updateTodoOnServer = useCallback(async (todo: Todo) => {
     try {
       addToUpdateStage(todo.id);
       await updateTodo(todo);
@@ -99,7 +102,7 @@ export const App: React.FC = () => {
     } finally {
       removeFromUpdateStage(todo.id);
     }
-  };
+  }, []);
 
   const selectAllTodos = (isEverythingDone: boolean) => {
     todos
@@ -116,14 +119,18 @@ export const App: React.FC = () => {
     selectAllTodos(isEverythingDone);
   };
 
-  const handleErrors = (error: ErrorMessages) => {
+  const handleErrors = useCallback((error: ErrorMessages) => {
     setErrorType(error);
     setIsErrorHidden(false);
-  };
+  }, []);
 
-  const closeErrorMessage = () => {
+  const closeErrorMessage = useCallback(() => {
     setIsErrorHidden(true);
-  };
+  }, []);
+
+  const handleEditingTodo = useCallback((id: number) => {
+    setEditedTodoId(id);
+  }, []);
 
   return (
     <div className="todoapp">
@@ -141,6 +148,8 @@ export const App: React.FC = () => {
           removeTodoFromServer={removeTodoFromServer}
           updateTodoOnServer={updateTodoOnServer}
           updatingStage={updatingStage}
+          handleEditingTodo={handleEditingTodo}
+          editedTodoId={editedTodoId}
         />
         <Footer
           filterBy={setFilterType}
