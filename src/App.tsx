@@ -123,24 +123,20 @@ export const App: React.FC = () => {
   };
 
   const toogleAllTodo = () => {
-    const toogleAll = (isCheck: boolean) => {
-      todos.map(async (todoToogle) => {
-        try {
-          setTodosInProcessed(currentTodos => [...currentTodos, todoToogle]);
-          const todoChangeStatus = await toogleTodo(USER_ID, todoToogle.id, isCheck);
+    todos.map(async (todoToogle) => {
+      try {
+        setTodosInProcessed(currentTodos => [...currentTodos, todoToogle]);
+        const todoChangeStatus = await toogleTodo(USER_ID, todoToogle.id, !isAllCompleted);
 
-          changeTodos(todoChangeStatus);
-        } catch (error) {
-          setErrorMessage('Unable to change completed');
-          warningTimer(setErrorMessage, '', 3000);
-        } finally {
-          setTodosInProcessed(currentTodos => currentTodos
-            .filter(({ id }) => id !== todoToogle.id));
-        }
-      });
-    };
-
-    toogleAll(!isAllCompleted);
+        changeTodos(todoChangeStatus);
+      } catch (error) {
+        setErrorMessage('Unable to change completed');
+        warningTimer(setErrorMessage, '', 3000);
+      } finally {
+        setTodosInProcessed(currentTodos => currentTodos
+          .filter(({ id }) => id !== todoToogle.id));
+      }
+    });
   };
 
   const handleUpdateTodo = useCallback(async (todoToUpdate: Todo) => {
