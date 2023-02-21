@@ -16,10 +16,12 @@ import { Footer } from './components/Footer/Footer';
 import { Todo } from './types/Todo';
 import { FilterStatus } from './types/FilterStatus';
 import { ErrorType } from './types/ErrorType';
+import { activeTodosAmount, completedTodosAmount } from './helpers';
 
 export const App: React.FC = () => {
   const [todos, setTodos] = useState<Todo[]>([]);
-  const [filterByStatus, setFilterByStatus] = useState(FilterStatus.All);
+  const [filterByStatus, setFilterByStatus]
+    = useState<FilterStatus>(FilterStatus.All);
   const [errorType, setErrorType] = useState(ErrorType.None);
   const [hasError, setHasError] = useState(false);
   const [tempTodoName, setTempTodoName] = useState('');
@@ -41,15 +43,9 @@ export const App: React.FC = () => {
     getTodosFromServer();
   }, []);
 
-  const activeTodosAmount = todos.filter(todo => !todo.completed).length;
-  const completedTodosAmount = todos.filter(todo => todo.completed).length;
-
   const filterTodos = useMemo(() => {
     return todos.filter((todo) => {
       switch (filterByStatus) {
-        case FilterStatus.All:
-          return true;
-
         case FilterStatus.Active:
           return !todo.completed;
 
@@ -110,7 +106,7 @@ export const App: React.FC = () => {
 
       <div className="todoapp__content">
         <Header
-          activeTodosAmount={activeTodosAmount}
+          activeTodosAmount={activeTodosAmount(todos)}
           showError={showError}
           hideError={hideError}
           showTempTodo={setTempTodoName}
@@ -127,10 +123,10 @@ export const App: React.FC = () => {
 
         />
 
-        {todos.length > 0 && (
+        {todos.length && (
           <Footer
-            activeTodosAmount={activeTodosAmount}
-            completedTodosAmount={completedTodosAmount}
+            activeTodosAmount={activeTodosAmount(todos)}
+            completedTodosAmount={completedTodosAmount(todos)}
             filterByStatus={filterByStatus}
             setFilterByStatus={setFilterByStatus}
             onClearCompleted={onClearCompleted}
