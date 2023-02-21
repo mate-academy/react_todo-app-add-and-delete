@@ -5,7 +5,12 @@ import React, {
   useMemo,
   useState,
 } from 'react';
-import { addTodos, deleteTodos, getTodos } from './api/todos';
+import {
+  addTodos,
+  deleteTodos,
+  getTodos,
+  updateTodos,
+} from './api/todos';
 import { ErrorNotification } from './components/ErrorNotification';
 import { Footer } from './components/Footer';
 import { Header } from './components/Header';
@@ -22,7 +27,7 @@ export const App: React.FC = () => {
   const [visibleTodos, setVisibleTodos] = useState<Todo[]>([]);
   const [completedTodos, setCompletedTodos] = useState<Todo[]>([]);
   const [tempTodo, setTempTodo] = useState<Todo | null>(null);
-  const [isCompletedTodoIncludes, setIsCompletedTodoIncludes] = useState(false);
+  const [completedTodoLength, setCompletedTodoLength] = useState(0);
 
   const getTodosFromServer = async (uri: string) => {
     try {
@@ -32,11 +37,10 @@ export const App: React.FC = () => {
 
       setVisibleTodos(data);
       setTodos(data);
-      if (data
-        .filter(todo => todo.completed)
-        .map(filteredTodo => filteredTodo.id).length) {
-        setIsCompletedTodoIncludes(true);
-      }
+
+      const completedTodoLenth = data.filter(todo => todo.completed);
+
+      setCompletedTodoLength(completedTodoLenth.length);
     } catch (error) {
       if (error instanceof Error) {
         setCurrentError(error.message);
@@ -45,6 +49,8 @@ export const App: React.FC = () => {
   };
 
   const addNewTodo = useCallback(async (title: string) => {
+    setCurrentError('');
+
     const data = {
       title,
       userId: USER_ID,
@@ -61,13 +67,14 @@ export const App: React.FC = () => {
       if (error instanceof Error) {
         setCurrentError(error.message);
       }
+    } finally {
+      setTempTodo(null);
     }
-
-    setTempTodo(null);
   }, []);
 
   const removeTodo = useCallback(async (todo: Todo) => {
     try {
+      setCurrentError('');
       setTempTodo(todo);
       await deleteTodos(`/${todo.id}?userId=${USER_ID}`);
       await getTodosFromServer(`?userId=${USER_ID}`);
@@ -75,9 +82,10 @@ export const App: React.FC = () => {
       if (error instanceof Error) {
         setCurrentError(error.message);
       }
+    } finally {
+      setCompletedTodoLength(completedTodos.length);
+      setTempTodo(null);
     }
-
-    setTempTodo(null);
   }, []);
 
   const removeAllCompletedTodos = useCallback(() => {
@@ -87,8 +95,64 @@ export const App: React.FC = () => {
     currentCompletedTodos.forEach(currentCompletedTodo => (
       removeTodo(currentCompletedTodo)
     ));
-    setIsCompletedTodoIncludes(false);
+    setCompletedTodoLength(0);
   }, [todos]);
+
+  const updateTodoStatus = useCallback(async (
+    isCompleted: boolean,
+    todo: Todo,
+  ) => {
+    try {
+      setCurrentError('');
+      setTempTodo(todo);
+      await updateTodos(`/${todo.id}?userId=${USER_ID}`, { completed: isCompleted });
+      await getTodosFromServer(`?userId=${USER_ID}`);
+
+      if (completedTodos.find(t => todo.id === t.id)) {
+        setCompletedTodos(currentCompletedTodos => (
+          currentCompletedTodos.filter(currentTodo => (
+            currentTodo.id !== todo.id
+          ))
+        ));
+      }
+    } catch (error) {
+      if (error instanceof Error) {
+        setCurrentError(error.message);
+      }
+    } finally {
+      setTempTodo(null);
+    }
+  }, [completedTodos]);
+
+  const updateAllTodosStatus = useCallback((isCompleted: boolean) => {
+    const updatedTodos = todos.filter(todo => todo.completed !== isCompleted);
+
+    setCompletedTodos(updatedTodos);
+    updatedTodos.forEach(async activeTodo => {
+      await updateTodoStatus(isCompleted, activeTodo);
+    });
+
+    if (isCompleted) {
+      setCompletedTodoLength(todos.length);
+    } else {
+      setCompletedTodoLength(0);
+    }
+  }, [todos]);
+
+  const updateTodoTitle = useCallback(async (title: string, todo: Todo) => {
+    try {
+      setCurrentError('');
+      setTempTodo(todo);
+      await updateTodos(`/${todo.id}?userId=${USER_ID}`, { title });
+      await getTodosFromServer(`?userId=${USER_ID}`);
+    } catch (error) {
+      if (error instanceof Error) {
+        setCurrentError(error.message);
+      }
+    } finally {
+      setTempTodo(null);
+    }
+  }, []);
 
   useEffect(() => {
     getTodosFromServer(`?userId=${USER_ID}`);
@@ -122,6 +186,10 @@ export const App: React.FC = () => {
     todos.filter(todo => !todo.completed).length
   ), [todos]);
 
+  const isAllTodosCompleted = useMemo(() => {
+    return todos.length === completedTodoLength && !!todos.length;
+  }, [todos, completedTodoLength]);
+
   if (!USER_ID) {
     return <UserWarning />;
   }
@@ -130,7 +198,11 @@ export const App: React.FC = () => {
     <div className="todoapp">
       <h1 className="todoapp__title">todos</h1>
       <div className="todoapp__content">
-        <Header addNewTodo={addNewTodo} />
+        <Header
+          addNewTodo={addNewTodo}
+          updateAllTodosStatus={updateAllTodosStatus}
+          isAllTodosCompleted={isAllTodosCompleted}
+        />
         {!(todos.length === 0) && (
           <>
             <TodoList
@@ -138,11 +210,13 @@ export const App: React.FC = () => {
               removeTodo={removeTodo}
               tempTodo={tempTodo}
               completedTodos={completedTodos}
+              updateTodoStatus={updateTodoStatus}
+              updateTodoTitle={updateTodoTitle}
             />
             <Footer
               filterTodos={filterTodos}
               countOfActiveTodos={countOfActiveTodos}
-              completedTodosCount={isCompletedTodoIncludes}
+              completedTodoLength={completedTodoLength}
               removeAllCompletedTodos={removeAllCompletedTodos}
             />
           </>

@@ -12,5 +12,7 @@ export const addTodos = (uri: string, data: any) => {
 export const deleteTodos = (uri: string) => {
   return client.delete(`/todos${uri}`);
 };
-
-// Add more methods here
+// eslint-disable-next-line
+export const updateTodos = (uri: string, data: any) => {
+  return client.patch(`/todos${uri}`, data);
+};

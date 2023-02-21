@@ -1,12 +1,24 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
+import cn from 'classnames';
 
 type Props = {
   addNewTodo: (title: string) => void;
+  updateAllTodosStatus: (isCompleted: boolean) => void;
+  isAllTodosCompleted: boolean;
 };
 
-export const Header: React.FC<Props> = React.memo(({ addNewTodo }) => {
+export const Header: React.FC<Props> = React.memo(({
+  addNewTodo,
+  updateAllTodosStatus,
+  isAllTodosCompleted,
+}) => {
   const [query, setQuery] = useState('');
   const [isTitleEmpty, setIsTitleEmpty] = useState(false);
+  const [isAllCompleted, setIsAllCompleted] = useState(false);
+
+  useEffect(() => {
+    setIsAllCompleted(isAllTodosCompleted);
+  }, [isAllTodosCompleted]);
 
   const handleInput = (event: React.ChangeEvent<HTMLInputElement>) => {
     setQuery(event.target.value);
@@ -15,14 +27,20 @@ export const Header: React.FC<Props> = React.memo(({ addNewTodo }) => {
 
   const handleSubmit = (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
-    addNewTodo(query);
-    setQuery('');
-  };
-
-  const checkIsTitleEmpty = () => {
-    if (!query) {
+    if (query) {
+      addNewTodo(query.trim());
+      setQuery('');
+      setIsTitleEmpty(false);
+    } else {
       setIsTitleEmpty(true);
     }
+  };
+
+  const toggleTodosStatusForAll = () => {
+    setIsAllCompleted(currentStatus => {
+      return !currentStatus;
+    });
+    updateAllTodosStatus(!isAllCompleted);
   };
 
   return (
@@ -30,8 +48,10 @@ export const Header: React.FC<Props> = React.memo(({ addNewTodo }) => {
       {/* this buttons is active only if there are some active todos */}
       <button
         type="button"
-        className="todoapp__toggle-all active"
-        aria-label="Toogle active"
+        // eslint-disable-next-line
+        className={cn('todoapp__toggle-all', { 'active': isAllCompleted })}
+        aria-label="Toogle all"
+        onClick={toggleTodosStatusForAll}
       />
 
       {/* Add a todo on form submit */}
@@ -42,7 +62,6 @@ export const Header: React.FC<Props> = React.memo(({ addNewTodo }) => {
           placeholder="What needs to be done?"
           value={query}
           onChange={(event) => handleInput(event)}
-          onBlur={checkIsTitleEmpty}
         />
       </form>
       {isTitleEmpty && (

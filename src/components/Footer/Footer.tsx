@@ -5,14 +5,14 @@ import { Filter } from '../../types/Filter';
 type Props = {
   filterTodos: (type: Filter) => void;
   countOfActiveTodos: number;
-  completedTodosCount: boolean;
+  completedTodoLength: number;
   removeAllCompletedTodos: () => void;
 };
 
 export const Footer: React.FC<Props> = React.memo(({
   filterTodos,
   countOfActiveTodos,
-  completedTodosCount,
+  completedTodoLength,
   removeAllCompletedTodos,
 }) => {
   const [isFilterSelected, setIsFilterSelected] = useState(Filter.All);
@@ -74,15 +74,16 @@ export const Footer: React.FC<Props> = React.memo(({
         </nav>
 
         {/* don't show this button if there are no completed todos */}
-        {completedTodosCount && (
-          <button
-            type="button"
-            className="todoapp__clear-completed"
-            onClick={removeAllCompletedTodos}
-          >
-            Clear completed
-          </button>
-        )}
+        <button
+          type="button"
+          className={cn('todoapp__clear-completed', {
+            'todoapp__clear-completed--novisible': !completedTodoLength,
+          })}
+          onClick={removeAllCompletedTodos}
+          disabled={!completedTodoLength}
+        >
+          Clear completed
+        </button>
       </footer>
     </>
   );

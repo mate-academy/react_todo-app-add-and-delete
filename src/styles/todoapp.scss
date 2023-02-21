@@ -129,6 +129,11 @@
     &:active {
       text-decoration: none;
     }
+
+    &--novisible {
+      opacity: 0;
+      cursor: default;
+    }
   }
 
   &__notification-empty {
