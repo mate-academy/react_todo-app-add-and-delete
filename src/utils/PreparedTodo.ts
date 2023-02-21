@@ -11,7 +11,7 @@ export const getVisibleTodos = (todos: Todo[], status: string) => {
       case Status.Completed:
         return todo.completed;
       default:
-        return todos;
+        return todo;
     }
   });
 
