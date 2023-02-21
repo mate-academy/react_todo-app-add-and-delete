@@ -10,7 +10,7 @@ type Props = {
   handleDeleteCompletedTodos: () => void,
 };
 
-export const Footer: React.FC<Props> = ({
+export const Footer: React.FC<Props> = React.memo(({
   setFilterField,
   filterBy,
   hasCompletedTodos,
@@ -75,4 +75,4 @@ export const Footer: React.FC<Props> = ({
       </button>
     </footer>
   );
-};
+});

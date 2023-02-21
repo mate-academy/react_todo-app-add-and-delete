@@ -9,7 +9,7 @@ type Props = {
   isError: boolean,
 };
 
-export const ErrorMassage: React.FC<Props> = ({
+export const ErrorMassage: React.FC<Props> = React.memo(({
   errorMassage,
   closeError,
   isError,
@@ -73,4 +73,4 @@ export const ErrorMassage: React.FC<Props> = ({
       {massage}
     </div>
   );
-};
+});
