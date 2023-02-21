@@ -1,5 +1,5 @@
 import classNames from 'classnames';
-import React from 'react';
+import React, { useMemo } from 'react';
 import { FilterType } from '../../types/FilterType';
 import { Todo } from '../../types/Todo';
 
@@ -7,14 +7,21 @@ type Props = {
   todos: Todo[],
   filterType: FilterType,
   handleFilterType: (filter: FilterType) => void,
+  handleCompletedTodos: () => void,
 };
 
 export const Footer: React.FC<Props> = ({
   todos,
   filterType,
   handleFilterType,
+  handleCompletedTodos,
 }) => {
-  const todosLeft = todos.filter(todo => todo.completed).length;
+  const todosLeft = useMemo(() => {
+    return todos.filter(todo => !todo.completed).length;
+  }, [todos]);
+  const todosCompleted = useMemo(() => {
+    return todos.filter(todo => todo.completed).length;
+  }, [todos]);
 
   return (
     <footer className="todoapp__footer">
@@ -65,9 +72,15 @@ export const Footer: React.FC<Props> = ({
       </nav>
 
       {/* don't show this button if there are no completed todos */}
-      <button type="button" className="todoapp__clear-completed">
-        Clear completed
-      </button>
+      {todosCompleted > 0 && (
+        <button
+          type="button"
+          className="todoapp__clear-completed"
+          onClick={() => handleCompletedTodos()}
+        >
+          Clear completed
+        </button>
+      )}
     </footer>
   );
 };

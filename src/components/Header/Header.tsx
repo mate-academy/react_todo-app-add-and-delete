@@ -5,14 +5,22 @@ import { Todo } from '../../types/Todo';
 import { TodoForm } from '../TodoForm';
 
 type Props = {
-  query: string,
+  title: string,
   todos: Todo[],
   handleInput: (input: string) => void,
+  handleAddTodo: (todoTitle: string) => void,
+  isTitleDisabled: boolean,
 };
 
-export const Header: React.FC<Props> = ({ query, todos, handleInput }) => {
+export const Header: React.FC<Props> = ({
+  title,
+  todos,
+  handleInput,
+  handleAddTodo,
+  isTitleDisabled,
+}) => {
   const activeTodos = useMemo(() => {
-    return todos.filter(todo => !todo.completed);
+    return todos.some(todo => !todo.completed);
   }, [todos]);
 
   return (
@@ -22,7 +30,7 @@ export const Header: React.FC<Props> = ({ query, todos, handleInput }) => {
         type="button"
         className={classNames(
           'todoapp__toggle-all', {
-            active: activeTodos.length,
+            active: activeTodos,
           },
         )}
 
@@ -30,8 +38,10 @@ export const Header: React.FC<Props> = ({ query, todos, handleInput }) => {
 
       {/* Add a todo on form submit */}
       <TodoForm
-        query={query}
+        title={title}
         handleInput={handleInput}
+        handleAddTodo={handleAddTodo}
+        isTitleDisabled={isTitleDisabled}
       />
     </header>
   );

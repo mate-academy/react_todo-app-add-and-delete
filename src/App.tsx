@@ -1,21 +1,24 @@
 /* eslint-disable jsx-a11y/control-has-associated-label */
 import React, { useEffect, useMemo, useState } from 'react';
-import { getTodos } from './api/todos';
+import { addTodo, getTodos, removeTodo } from './api/todos';
 import { Footer } from './components/Footer';
 import { Header } from './components/Header';
 import { Notification } from './components/Notification';
 import { TodoList } from './components/TodoList';
+import { ErrorType } from './types/ErrorType';
 import { FilterType } from './types/FilterType';
 import { Todo } from './types/Todo';
 
 const USER_ID = 6396;
 
 export const App: React.FC = () => {
-  const [query, setQuery] = useState('');
   const [todos, setTodos] = useState<Todo[]>([]);
+  const [title, setTitle] = useState('');
+  const [isTitleDisabled, setIsTitleDisabled] = useState(false);
+  const [tempTodo, setTempTodo] = useState<Todo | null>(null);
   const [filterType, setFilterType] = useState<FilterType>(FilterType.All);
   const [hasError, setHasError] = useState(false);
-  const [errorType, setErrorType] = useState('');
+  const [errorType, setErrorType] = useState<ErrorType>(ErrorType.None);
 
   const fetchAllTodos = async () => {
     try {
@@ -24,21 +27,14 @@ export const App: React.FC = () => {
       setTodos(todosFromServer);
     } catch (error) {
       setHasError(true);
-      setErrorType('update');
+      setErrorType(ErrorType.Update);
+      throw new Error('Error downloading todos');
     }
   };
 
   useEffect(() => {
     fetchAllTodos();
   }, []);
-
-  const handleInput = (input: string) => {
-    setQuery(input);
-  };
-
-  const handleFilterType = (filter: FilterType) => {
-    setFilterType(filter);
-  };
 
   const visibleTodos = useMemo(() => {
     let preparedTodos = [...todos];
@@ -60,7 +56,73 @@ export const App: React.FC = () => {
     }
 
     return preparedTodos;
-  }, [query, todos, filterType]);
+  }, [todos, filterType]);
+
+  const handleError = (error: boolean) => {
+    setHasError(error);
+  };
+
+  const handleInput = (input: string) => {
+    setTitle(input);
+  };
+
+  const handleFilterType = (filter: FilterType) => {
+    setFilterType(filter);
+  };
+
+  const handleAddTodo = async (todoTitle: string) => {
+    if (todoTitle.length === 0) {
+      setHasError(true);
+      setErrorType(ErrorType.Title);
+
+      return;
+    }
+
+    const todoToAdd = {
+      id: 0,
+      title: todoTitle,
+      userId: USER_ID,
+      completed: false,
+    };
+
+    try {
+      setIsTitleDisabled(true);
+
+      const newTodo = await addTodo(USER_ID, todoToAdd);
+
+      setTempTodo(newTodo);
+
+      setTodos(currTodos => ([
+        ...currTodos, newTodo,
+      ]));
+    } catch (error) {
+      setHasError(true);
+      setErrorType(ErrorType.Add);
+    } finally {
+      setTitle('');
+      setTempTodo(null);
+      setIsTitleDisabled(false);
+    }
+  };
+
+  const handleDeleteTodo = async (todoId: number) => {
+    try {
+      await removeTodo(USER_ID, todoId);
+
+      setTodos(currTodos => currTodos.filter(todo => todo.id !== todoId));
+    } catch (error) {
+      setHasError(true);
+      setErrorType(ErrorType.Delete);
+    }
+  };
+
+  const handleCompletedTodos = () => {
+    todos.forEach(todo => {
+      if (todo.completed) {
+        handleDeleteTodo(todo.id);
+      }
+    });
+  };
 
   return (
     <div className="todoapp">
@@ -69,19 +131,27 @@ export const App: React.FC = () => {
       <div className="todoapp__content">
 
         <Header
-          query={query}
+          title={title}
           todos={todos}
           handleInput={handleInput}
+          handleAddTodo={handleAddTodo}
+          isTitleDisabled={isTitleDisabled}
         />
 
-        <TodoList todos={visibleTodos} />
-
-        {todos.length && (
-          <Footer
-            todos={visibleTodos}
-            filterType={filterType}
-            handleFilterType={handleFilterType}
-          />
+        {todos.length > 0 && (
+          <>
+            <TodoList
+              todos={visibleTodos}
+              handleDeleteTodo={handleDeleteTodo}
+              tempTodo={tempTodo}
+            />
+            <Footer
+              todos={visibleTodos}
+              filterType={filterType}
+              handleFilterType={handleFilterType}
+              handleCompletedTodos={handleCompletedTodos}
+            />
+          </>
         )}
 
       </div>
@@ -89,7 +159,11 @@ export const App: React.FC = () => {
       {/* Notification is shown in case of any error */}
       {/* Add the 'hidden' class to hide the message smoothly */}
       {hasError && (
-        <Notification errorType={errorType} />
+        <Notification
+          errorType={errorType}
+          hasError={hasError}
+          handleError={handleError}
+        />
       )}
     </div>
   );

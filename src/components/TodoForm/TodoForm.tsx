@@ -1,21 +1,34 @@
 import React from 'react';
 
 type Props = {
-  query: string,
+  title: string,
   handleInput: (input: string) => void,
+  handleAddTodo: (todoTitle: string) => void,
+  isTitleDisabled: boolean,
 };
 
-export const TodoForm: React.FC<Props> = ({ query, handleInput }) => {
+export const TodoForm: React.FC<Props> = ({
+  title,
+  handleInput,
+  handleAddTodo,
+  isTitleDisabled,
+}) => {
   return (
-    <form>
+    <form
+      onSubmit={(event) => {
+        event.preventDefault();
+        handleAddTodo(title);
+      }}
+    >
       <input
         type="text"
         className="todoapp__new-todo"
         placeholder="What needs to be done?"
-        value={query}
+        value={title}
         onChange={(event) => {
           handleInput(event.target.value);
         }}
+        disabled={isTitleDisabled}
       />
     </form>
   );
