@@ -1,4 +1,5 @@
 export enum ErrorMessage {
+  NONE = '',
   FIND = 'Unable to find a todos. Please, try later',
   DELETE = 'Unable to delete a todo',
   ADD = 'Unable to add a todo',

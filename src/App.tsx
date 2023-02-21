@@ -1,5 +1,9 @@
 /* eslint-disable jsx-a11y/control-has-associated-label */
-import React, { useEffect, useMemo, useState } from 'react';
+import React, {
+  useEffect,
+  useMemo,
+  useState,
+} from 'react';
 
 import { addTodo, deleteTodo, getTodos } from './api/todos';
 import { AddTodoForm } from './components/AddTodoForm';
@@ -19,7 +23,7 @@ export const App: React.FC = () => {
   const [tempTodo, setTempTodo] = useState<Todo | null>(null);
   const [filterType, setFilterType] = useState(FilterTypes.ALL);
   const [hasError, setHasError] = useState(false);
-  const [errorMessage, setErrorMessage] = useState<ErrorMessage | string>('');
+  const [errorMessage, setErrorMessage] = useState(ErrorMessage.NONE);
   const [inputDisabled, setInputDisabled] = useState(false);
   const [toDeleteTodos, setToDeleteTodos] = useState<number[]>([]);
 

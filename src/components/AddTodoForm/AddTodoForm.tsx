@@ -19,7 +19,7 @@ export const AddTodoForm: React.FC<Props> = ({
   const handleSubmit = (event: FormEvent) => {
     event.preventDefault();
 
-    handleAddTodo(todoTitle);
+    handleAddTodo(todoTitle.trim());
     setTodoTitle('');
   };
 
