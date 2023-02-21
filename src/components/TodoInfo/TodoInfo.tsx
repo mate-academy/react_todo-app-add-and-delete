@@ -9,7 +9,7 @@ type Props = {
   tempTodoId?: number | null;
 };
 
-export const TodoInfo: React.FC<Props> = ({
+export const TodoInfo: React.FC<Props> = React.memo(({
   todo,
   removeTodo,
   tempTodoId,
@@ -74,4 +74,4 @@ export const TodoInfo: React.FC<Props> = ({
       </div>
     </>
   );
-};
+});

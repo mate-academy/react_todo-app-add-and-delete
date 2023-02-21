@@ -1,10 +1,10 @@
 import React, { useState } from 'react';
 
 type Props = {
-  addNewTodos: (title: string) => void;
+  addNewTodo: (title: string) => void;
 };
 
-export const Header: React.FC<Props> = ({ addNewTodos }) => {
+export const Header: React.FC<Props> = React.memo(({ addNewTodo }) => {
   const [query, setQuery] = useState('');
   const [isTitleEmpty, setIsTitleEmpty] = useState(false);
 
@@ -15,7 +15,7 @@ export const Header: React.FC<Props> = ({ addNewTodos }) => {
 
   const handleSubmit = (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
-    addNewTodos(query);
+    addNewTodo(query);
     setQuery('');
   };
 
@@ -52,4 +52,4 @@ export const Header: React.FC<Props> = ({ addNewTodos }) => {
       )}
     </header>
   );
-};
+});

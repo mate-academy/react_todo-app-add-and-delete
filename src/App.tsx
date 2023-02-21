@@ -1,5 +1,5 @@
 /* eslint-disable jsx-a11y/control-has-associated-label */
-import React, { useEffect, useState } from 'react';
+import React, { useCallback, useEffect, useState } from 'react';
 import { addTodos, deleteTodos, getTodos } from './api/todos';
 import { ErrorNotification } from './components/ErrorNotification';
 import { Footer } from './components/Footer';
@@ -39,7 +39,7 @@ export const App: React.FC = () => {
     }
   };
 
-  const addNewTodos = async (title: string) => {
+  const addNewTodo = useCallback(async (title: string) => {
     const data = {
       title,
       userId: USER_ID,
@@ -59,9 +59,9 @@ export const App: React.FC = () => {
     }
 
     setTempTodo(null);
-  };
+  }, []);
 
-  const removeTodo = async (todo: Todo) => {
+  const removeTodo = useCallback(async (todo: Todo) => {
     try {
       setTempTodo(todo);
       await deleteTodos(`/${todo.id}?userId=${USER_ID}`);
@@ -73,9 +73,9 @@ export const App: React.FC = () => {
     }
 
     setTempTodo(null);
-  };
+  }, []);
 
-  const removeAllCompletedTodos = () => {
+  const removeAllCompletedTodos = useCallback(() => {
     const currentCompletedTodos = todos.filter(todo => todo.completed);
 
     setCompletedTodos(currentCompletedTodos);
@@ -83,7 +83,7 @@ export const App: React.FC = () => {
       removeTodo(currentCompletedTodo)
     ));
     setIsCompletedTodoIncludes(false);
-  };
+  }, [todos]);
 
   useEffect(() => {
     getTodosFromServer(`?userId=${USER_ID}`);
@@ -93,11 +93,11 @@ export const App: React.FC = () => {
     setVisibleTodos(todos);
   }, [todos]);
 
-  const removeError = () => {
+  const removeError = useCallback(() => {
     setCurrentError('');
-  };
+  }, []);
 
-  const filterTodos = (type: Filter) => {
+  const filterTodos = useCallback((type: Filter) => {
     switch (type) {
       case Filter.All:
         setVisibleTodos(todos);
@@ -111,7 +111,7 @@ export const App: React.FC = () => {
       default:
         setVisibleTodos(todos);
     }
-  };
+  }, [todos]);
 
   if (!USER_ID) {
     return <UserWarning />;
@@ -121,7 +121,7 @@ export const App: React.FC = () => {
     <div className="todoapp">
       <h1 className="todoapp__title">todos</h1>
       <div className="todoapp__content">
-        <Header addNewTodos={addNewTodos} />
+        <Header addNewTodo={addNewTodo} />
         {!(todos.length === 0) && (
           <>
             <TodoList

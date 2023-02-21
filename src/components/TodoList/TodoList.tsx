@@ -9,7 +9,7 @@ type Props = {
   completedTodos: Todo[];
 };
 
-export const TodoList: React.FC<Props> = ({
+export const TodoList: React.FC<Props> = React.memo(({
   todos,
   tempTodo,
   removeTodo,
@@ -37,4 +37,4 @@ export const TodoList: React.FC<Props> = ({
       )}
     </section>
   );
-};
+});

@@ -9,7 +9,7 @@ type Props = {
   removeAllCompletedTodos: () => void;
 };
 
-export const Footer: React.FC<Props> = ({
+export const Footer: React.FC<Props> = React.memo(({
   filterTodos,
   todosCount,
   completedTodosCount,
@@ -86,4 +86,4 @@ export const Footer: React.FC<Props> = ({
       </footer>
     </>
   );
-};
+});

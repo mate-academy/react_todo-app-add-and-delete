@@ -4,7 +4,10 @@ type Props = {
   error: string;
   removeError: () => void
 };
-export const ErrorNotification: React.FC<Props> = ({ error, removeError }) => {
+export const ErrorNotification: React.FC<Props> = React.memo(({
+  error,
+  removeError,
+}) => {
   useEffect(() => {
     setTimeout(removeError, 3000);
   }, []);
@@ -25,4 +28,4 @@ export const ErrorNotification: React.FC<Props> = ({ error, removeError }) => {
       </div>
     </>
   );
-};
+});

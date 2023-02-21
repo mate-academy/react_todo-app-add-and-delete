@@ -5,11 +5,11 @@ type Props = {
   isTodoUpdated: boolean;
 };
 
-export const ModalOverlay: React.FC<Props> = ({ isTodoUpdated }) => {
+export const ModalOverlay: React.FC<Props> = React.memo(({ isTodoUpdated }) => {
   return (
     <div className={cn('modal overlay', { 'is-active': isTodoUpdated })}>
       <div className="modal-background has-background-white-ter" />
       <div className="loader" />
     </div>
   );
-};
+});
