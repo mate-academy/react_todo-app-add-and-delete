@@ -4,14 +4,14 @@ import { Filter } from '../../types/Filter';
 
 type Props = {
   filterTodos: (type: Filter) => void;
-  todosCount: number;
+  countOfActiveTodos: number;
   completedTodosCount: boolean;
   removeAllCompletedTodos: () => void;
 };
 
 export const Footer: React.FC<Props> = React.memo(({
   filterTodos,
-  todosCount,
+  countOfActiveTodos,
   completedTodosCount,
   removeAllCompletedTodos,
 }) => {
@@ -22,7 +22,7 @@ export const Footer: React.FC<Props> = React.memo(({
       {/* Hide the footer if there are no todos */}
       <footer className="todoapp__footer">
         <span className="todo-count">
-          {`${todosCount} items left`}
+          {`${countOfActiveTodos} items left`}
         </span>
 
         {/* Active filter should have a 'selected' class */}

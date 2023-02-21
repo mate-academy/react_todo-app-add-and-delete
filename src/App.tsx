@@ -1,5 +1,10 @@
 /* eslint-disable jsx-a11y/control-has-associated-label */
-import React, { useCallback, useEffect, useState } from 'react';
+import React, {
+  useCallback,
+  useEffect,
+  useMemo,
+  useState,
+} from 'react';
 import { addTodos, deleteTodos, getTodos } from './api/todos';
 import { ErrorNotification } from './components/ErrorNotification';
 import { Footer } from './components/Footer';
@@ -113,6 +118,10 @@ export const App: React.FC = () => {
     }
   }, [todos]);
 
+  const countOfActiveTodos = useMemo(() => (
+    todos.filter(todo => !todo.completed).length
+  ), [todos]);
+
   if (!USER_ID) {
     return <UserWarning />;
   }
@@ -132,7 +141,7 @@ export const App: React.FC = () => {
             />
             <Footer
               filterTodos={filterTodos}
-              todosCount={todos.length}
+              countOfActiveTodos={countOfActiveTodos}
               completedTodosCount={isCompletedTodoIncludes}
               removeAllCompletedTodos={removeAllCompletedTodos}
             />
