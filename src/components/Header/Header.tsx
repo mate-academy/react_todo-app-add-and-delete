@@ -14,7 +14,7 @@ export const Header:React.FC<Props> = ({
   setName,
   handleAddTodo,
 }) => {
-  const isActive = todos.filter(todo => !todo.completed);
+  const isActive = todos.filter(todo => todo.completed).length > 0;
   const trimedName = name.trimStart();
 
   return (

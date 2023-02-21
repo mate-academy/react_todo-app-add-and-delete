@@ -13,7 +13,7 @@ const USER_ID = 6386;
 
 export const App: React.FC = () => {
   const [todos, setTodos] = useState<Todo[]>([]);
-  const [hasServerError, setServerError] = useState(false);
+  const [hasServerError, setHasServerError] = useState(false);
   const [status, setStatus] = useState<Status>(Status.All);
   const [name, setName] = useState('');
   const [errorType, setErrorType] = useState<ErrorMessages>(ErrorMessages.NONE);
@@ -23,12 +23,11 @@ export const App: React.FC = () => {
 
   const getTodosFromServer = async () => {
     try {
-      setServerError(false);
       const todosFromServer = await getTodos(USER_ID);
 
       setTodos(todosFromServer);
     } catch {
-      setServerError(true);
+      setHasServerError(true);
     }
   };
 
@@ -39,13 +38,11 @@ export const App: React.FC = () => {
   const handleAddTodo = async (todoName: string) => {
     if (todoName.length === 0) {
       setErrorType(ErrorMessages.TITLE);
-      setServerError(true);
 
       return;
     }
 
     const todoToAdd = {
-      id: 0,
       userId: USER_ID,
       title: todoName,
       completed: false,
@@ -53,7 +50,7 @@ export const App: React.FC = () => {
 
     const newTodo = await addTodos(USER_ID, todoToAdd);
 
-    setTempTodo(newTodo);
+    setTempTodo({ ...newTodo, id: 0 });
 
     try {
       setName('');
@@ -61,7 +58,7 @@ export const App: React.FC = () => {
 
       await getTodosFromServer();
     } catch {
-      setServerError(true);
+      setHasServerError(true);
       setErrorType(ErrorMessages.ADD);
     }
   };
@@ -72,7 +69,7 @@ export const App: React.FC = () => {
 
       await getTodosFromServer();
     } catch {
-      setServerError(true);
+      setHasServerError(true);
       setErrorType(ErrorMessages.DELETE);
     }
   };
@@ -118,7 +115,7 @@ export const App: React.FC = () => {
       <Notification
         errorType={errorType}
         hasError={hasServerError}
-        setHasError={setServerError}
+        setHasError={setHasServerError}
       />
     </div>
   );

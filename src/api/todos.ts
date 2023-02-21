@@ -1,4 +1,4 @@
-import { Todo } from '../types/Todo';
+import { Todo, TodoWithoutId } from '../types/Todo';
 import { client } from '../utils/fetchClient';
 
 export const getTodos = (userId: number) => {
@@ -7,7 +7,7 @@ export const getTodos = (userId: number) => {
 
 // Add more methods here
 
-export function addTodos(userId: number, todo: Todo) {
+export function addTodos(userId: number, todo: TodoWithoutId) {
   return client.post<Todo>(`/todos?userId=${userId}`, todo);
 }
 
