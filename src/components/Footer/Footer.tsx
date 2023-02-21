@@ -1,13 +1,14 @@
 import React from 'react';
-import classNames from 'classnames';
+import cn from 'classnames';
 import { Todo } from '../../types/Todo';
+import { FilterTodos } from '../../types/FIlterTodos';
 
 type Props = {
   itemsLeft: Todo[];
-  selectFilter: string;
-  setSelectFilter: (str: string) => void
+  selectFilter: FilterTodos;
+  setSelectFilter: (filter: FilterTodos) => void
   allCompleted: Todo[];
-  clearCompleted: () => void;
+  onClearCompleted: () => void;
 };
 
 export const Footer: React.FC<Props> = ({
@@ -15,7 +16,7 @@ export const Footer: React.FC<Props> = ({
   selectFilter,
   setSelectFilter,
   allCompleted,
-  clearCompleted,
+  onClearCompleted,
 }) => {
   return (
     <footer className="todoapp__footer">
@@ -23,51 +24,51 @@ export const Footer: React.FC<Props> = ({
         {`${itemsLeft.length} items left`}
       </span>
 
-      {/* Active filter should have a 'selected' class */}
       <nav className="filter">
         <a
           href="#/"
-          className={classNames(
+          className={cn(
             'filter__link',
-            { selected: selectFilter === 'all' },
+            { selected: selectFilter === FilterTodos.ALL },
           )}
-          onClick={() => setSelectFilter('all')}
+          onClick={() => setSelectFilter(FilterTodos.ALL)}
         >
           All
         </a>
 
         <a
           href="#/active"
-          className={classNames(
+          className={cn(
             'filter__link',
-            { selected: selectFilter === 'active' },
+            { selected: selectFilter === FilterTodos.ACTIVE },
           )}
-          onClick={() => setSelectFilter('active')}
+          onClick={() => setSelectFilter(FilterTodos.ACTIVE)}
         >
           Active
         </a>
 
         <a
           href="#/completed"
-          className={classNames(
+          className={cn(
             'filter__link',
-            { selected: selectFilter === 'completed' },
+            { selected: selectFilter === FilterTodos.COMPLETED },
           )}
-          onClick={() => setSelectFilter('completed')}
+          onClick={() => setSelectFilter(FilterTodos.COMPLETED)}
         >
           Completed
         </a>
       </nav>
 
-      {allCompleted.length !== 0 ? (
-        <button
-          type="button"
-          className="todoapp__clear-completed"
-          onClick={clearCompleted}
-        >
-          Clear completed
-        </button>
-      ) : ''}
+      <button
+        type="button"
+        className={cn(
+          'todoapp__clear-completed',
+          { visible: allCompleted.length },
+        )}
+        onClick={onClearCompleted}
+      >
+        Clear completed
+      </button>
     </footer>
   );
 };

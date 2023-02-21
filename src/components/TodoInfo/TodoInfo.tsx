@@ -30,6 +30,7 @@ export const TodoInfo: React.FC<Props> = ({
   const handleOnSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     setIsEditing(false);
+
     const trimTodoTitle = todoTitle.trim();
 
     if (trimTodoTitle === todo.title) {

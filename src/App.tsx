@@ -21,6 +21,7 @@ import { Header } from './components/Header/Header';
 import { Footer } from './components/Footer/Footer';
 import { Notification } from './components/Notifications/Notifications';
 import { warningTimer } from './utils/warningTimer';
+import { FilterTodos } from './types/FIlterTodos';
 
 const USER_ID = 6336;
 
@@ -30,7 +31,7 @@ export const App: React.FC = () => {
   const [todosInProcessed, setTodosInProcessed] = useState<Todo[]>([]);
   const [title, setTitle] = useState('');
   const [errorMessage, setErrorMessage] = useState('');
-  const [selectFilter, setSelectFilter] = useState('all');
+  const [selectFilter, setSelectFilter] = useState<FilterTodos>(FilterTodos.ALL);
 
   const activeTodos = todos.filter(({ completed }) => !completed);
 
@@ -46,6 +47,7 @@ export const App: React.FC = () => {
     if (!title.trim().length) {
       setErrorMessage('Title can\'t be empty');
       warningTimer(setErrorMessage, '', 3000);
+      setTitle('');
 
       return;
     }
@@ -58,6 +60,8 @@ export const App: React.FC = () => {
     };
 
     try {
+      setCreatingTodo(newTodo);
+
       const addedTodo = await createTodo(USER_ID, newTodo);
 
       setTodos(currentTodos => [...currentTodos, addedTodo]);
@@ -76,41 +80,45 @@ export const App: React.FC = () => {
       await deleteTodo(USER_ID, removeTodo.id);
 
       setTodos(prevTodos => prevTodos
-        .filter(todo => todo.id !== removeTodo.id));
+        .filter(({ id }) => id !== removeTodo.id));
     } catch (error) {
       setErrorMessage('Unable to delete a todo');
       warningTimer(setErrorMessage, '', 3000);
     } finally {
       setTodosInProcessed(currentTodos => currentTodos
-        .filter(todo => todo.id !== removeTodo.id));
+        .filter(({ id }) => id !== removeTodo.id));
     }
   };
 
-  const allCompleted = todos.filter(todo => todo.completed === true);
+  const allCompleted = todos.filter(({ completed }) => completed);
 
   const isAllCompleted = allCompleted.length === todos.length;
 
   const clearCompleted = useCallback(() => {
     allCompleted.forEach(todo => deleteTodo(USER_ID, todo.id));
-    setTodos(prevTodos => prevTodos.filter(todo => todo.completed === false));
+    setTodos(prevTodos => prevTodos.filter(({ completed }) => !completed));
   }, [todos]);
+
+  const changeTodos = (todoChange: Todo) => {
+    setTodos(currentTodos => currentTodos.map(todo => {
+      return todo.id === todoChange.id
+        ? todoChange
+        : todo;
+    }));
+  };
 
   const onToogleTodo = async (todoTogle: Todo) => {
     try {
       setTodosInProcessed(currentTodos => [...currentTodos, todoTogle]);
       const todoChangeStatus = await toogleTodo(USER_ID, todoTogle.id, !todoTogle.completed);
 
-      setTodos(currentTodos => currentTodos.map(todo => {
-        return todo.id === todoChangeStatus.id
-          ? todoChangeStatus
-          : todo;
-      }));
+      changeTodos(todoChangeStatus);
     } catch (error) {
       setErrorMessage('Unable to change completed');
       warningTimer(setErrorMessage, '', 3000);
     } finally {
       setTodosInProcessed(currentTodos => currentTodos
-        .filter(todo => todo.id !== todoTogle.id));
+        .filter(({ id }) => id !== todoTogle.id));
     }
   };
 
@@ -121,17 +129,13 @@ export const App: React.FC = () => {
           setTodosInProcessed(currentTodos => [...currentTodos, todoToogle]);
           const todoChangeStatus = await toogleTodo(USER_ID, todoToogle.id, isCheck);
 
-          setTodos(currentTodos => currentTodos.map(todo => {
-            return todo.id === todoChangeStatus.id
-              ? todoChangeStatus
-              : todo;
-          }));
+          changeTodos(todoChangeStatus);
         } catch (error) {
           setErrorMessage('Unable to change completed');
           warningTimer(setErrorMessage, '', 3000);
         } finally {
           setTodosInProcessed(currentTodos => currentTodos
-            .filter(todo => todo.id !== todoToogle.id));
+            .filter(({ id }) => id !== todoToogle.id));
         }
       });
     };
@@ -149,37 +153,44 @@ export const App: React.FC = () => {
 
       const updatedTodo = await updateTodo(USER_ID, todoToUpdate);
 
-      setTodos(currentTodos => currentTodos.map(todo => {
-        return todo.id === updatedTodo.id
-          ? updatedTodo
-          : todo;
-      }));
+      changeTodos(updatedTodo);
     } catch (error) {
       setErrorMessage('Unable to delete a todo');
       warningTimer(setErrorMessage, '', 3000);
     } finally {
       setTodosInProcessed(currentTodos => (
-        currentTodos.filter(todo => todo.id !== todoToUpdate.id)
+        currentTodos.filter(({ id }) => id !== todoToUpdate.id)
       ));
     }
   }, []);
 
-  const visibleTodos = useMemo(() => {
-    return todos.filter(todo => {
-      const completedTodo = todo.completed;
+  const filterTodosCompleted = () => {
+    return todos.filter(({ completed }) => completed);
+  };
 
-      switch (selectFilter) {
-        case 'all':
-          return todo;
-        case 'active':
-          return !completedTodo;
-        case 'completed':
-          return completedTodo;
-        default:
-          return false;
-      }
-    });
-  }, [todos, title, selectFilter]);
+  const filterTodosActive = () => {
+    return todos.filter(({ completed }) => !completed);
+  };
+
+  const getFilteredTodos = useCallback((
+    todosByFilter: Todo[],
+    filterTodos: FilterTodos,
+  ) => {
+    switch (filterTodos) {
+      case FilterTodos.ALL:
+        return todosByFilter;
+      case FilterTodos.ACTIVE:
+        return filterTodosActive();
+      case FilterTodos.COMPLETED:
+        return filterTodosCompleted();
+      default:
+        return todosByFilter;
+    }
+  }, [selectFilter]);
+
+  const visibleTodos = useMemo(() => (
+    getFilteredTodos(todos, selectFilter)
+  ), [todos, selectFilter]);
 
   useEffect(() => {
     const onLoadGetTodos = async () => {
@@ -228,7 +239,7 @@ export const App: React.FC = () => {
             selectFilter={selectFilter}
             setSelectFilter={setSelectFilter}
             allCompleted={allCompleted}
-            clearCompleted={clearCompleted}
+            onClearCompleted={clearCompleted}
           />
         ) : ''}
       </div>
