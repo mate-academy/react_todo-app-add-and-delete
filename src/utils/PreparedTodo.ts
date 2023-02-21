@@ -6,14 +6,12 @@ export const getVisibleTodos = (todos: Todo[], status: string) => {
 
   preparedTodos = preparedTodos.filter(todo => {
     switch (status) {
-      case Status.All:
-        return true;
       case Status.Active:
         return !todo.completed;
       case Status.Completed:
         return todo.completed;
       default:
-        throw new Error('Filter type is incorrect');
+        return todos;
     }
   });
 
