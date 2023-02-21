@@ -2,13 +2,13 @@ import React, { useState } from 'react';
 import cn from 'classnames';
 
 type Props = {
-  hasActiveTodos: number,
+  someActiveTodos: number,
   isInputDisabled: boolean,
   onSubmitAddTodo: (title: string) => void,
 };
 
 export const Header: React.FC<Props> = ({
-  hasActiveTodos,
+  someActiveTodos,
   isInputDisabled,
   onSubmitAddTodo,
 }) => {
@@ -23,12 +23,11 @@ export const Header: React.FC<Props> = ({
 
   return (
     <header className="todoapp__header">
-      {/* this buttons is active only if there are some active todos */}
-      {/* eslint-disable-next-line jsx-a11y/control-has-associated-label */}
       <button
         type="button"
+        aria-label="toggle"
         className={cn('todoapp__toggle-all', {
-          active: !hasActiveTodos,
+          active: !someActiveTodos,
         })}
       />
 

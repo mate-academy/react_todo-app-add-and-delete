@@ -1,5 +1,10 @@
 /* eslint-disable jsx-a11y/control-has-associated-label */
-import React, { useMemo, useEffect, useState } from 'react';
+import React, {
+  useMemo,
+  useEffect,
+  useState,
+  useCallback,
+} from 'react';
 import { addTodo, deleteTodo, getTodos } from './api/todos';
 import { Todo } from './types/Todo';
 import { UserWarning } from './UserWarning';
@@ -9,6 +14,8 @@ import { Footer } from './components/Footer/Footer';
 import { Header } from './components/Header';
 import { Notification } from './components/Notification';
 import { TodoList } from './components/TodoList';
+import { getFilteredTodos } from './utils/getFilteredTodos';
+import { ErrorMessages } from './types/ErrorMessages';
 
 const USER_ID = 6316;
 
@@ -19,10 +26,21 @@ export const App: React.FC = () => {
   const [tempTodo, setTempTodo] = useState<Todo | null>(null);
   const [isInputDisabled, setIsInputDisabled] = useState(false);
   const [todosLoadingState, setTodosLoadingState] = useState<Todo[]>([]);
-  const [errorMessage, setErrorMessage] = useState('');
+  const [errorMessage, setErrorMessage] = useState(ErrorMessages.NOUN);
 
-  const hasActiveTodos = todos.filter(todo => !todo.completed);
-  const hasCompletedTodos = todos.some(todo => todo.completed);
+  const countActiveTodos = useMemo(
+    () => todos.filter(todo => !todo.completed).length,
+    [todos],
+  );
+  const hasCompletedTodos = useMemo(
+    () => todos.some(todo => todo.completed),
+    [todos],
+  );
+
+  const showErrorMessage = useCallback((message: ErrorMessages) => {
+    setHasError(true);
+    setErrorMessage(message);
+  }, []);
 
   useEffect(() => {
     const onLoadGetTodos = async () => {
@@ -31,8 +49,7 @@ export const App: React.FC = () => {
 
         setTodos(todosData);
       } catch (error) {
-        setHasError(true);
-        setErrorMessage('Unable to load todos');
+        showErrorMessage(ErrorMessages.ONLOAD);
       }
     };
 
@@ -46,9 +63,10 @@ export const App: React.FC = () => {
   }, [hasError]);
 
   const handleAddTodo = async (title: string) => {
+    setHasError(false);
+
     if (!title) {
-      setHasError(true);
-      setErrorMessage('Title can\'t be empty');
+      showErrorMessage(ErrorMessages.EMPTY);
 
       return;
     }
@@ -68,8 +86,7 @@ export const App: React.FC = () => {
 
       setTodos(currentTodos => [...currentTodos, addedTodo]);
     } catch (error) {
-      setHasError(true);
-      setErrorMessage('Unable to add a todo');
+      showErrorMessage(ErrorMessages.ONADD);
     } finally {
       setTempTodo(null);
       setIsInputDisabled(false);
@@ -77,6 +94,8 @@ export const App: React.FC = () => {
   };
 
   const handleRemoveTodo = async (removingTodo: Todo) => {
+    setHasError(false);
+
     try {
       setTodosLoadingState(currentTodos => [...currentTodos, removingTodo]);
       await deleteTodo(USER_ID, removingTodo.id);
@@ -84,8 +103,7 @@ export const App: React.FC = () => {
       setTodos(prevTodos => prevTodos
         .filter(todo => todo.id !== removingTodo.id));
     } catch (error) {
-      setHasError(true);
-      setErrorMessage('Unable to delete a todo');
+      showErrorMessage(ErrorMessages.ONDELETE);
     } finally {
       setTodosLoadingState(currentTodos => currentTodos
         .filter(todo => todo.id !== removingTodo.id));
@@ -105,8 +123,7 @@ export const App: React.FC = () => {
 
       setTodos(prevTodos => prevTodos.filter(todo => !todo.completed));
     } catch (error) {
-      setHasError(true);
-      setErrorMessage('Unable to delete a todo');
+      showErrorMessage(ErrorMessages.ONDELETE);
     } finally {
       setTodosLoadingState(currentTodos => (
         currentTodos.filter(todo => !compeletedTodos
@@ -115,20 +132,17 @@ export const App: React.FC = () => {
     }
   };
 
-  const visibleTodos = useMemo(() => {
-    const filteredTodos = todos.filter(todo => {
-      switch (filterBy) {
-        case FilterBy.ACTIVE:
-          return !todo.completed;
-        case FilterBy.COMPLETED:
-          return todo.completed;
-        default:
-          return true;
-      }
-    });
+  const handleHasError = (isError: boolean) => {
+    setHasError(isError);
+  };
 
-    return filteredTodos;
-  }, [todos, filterBy]);
+  const handleFilterBy = (filterType: FilterBy) => {
+    setFilterBy(filterType);
+  };
+
+  const visibleTodos = useMemo(() => (
+    getFilteredTodos(todos, filterBy)
+  ), [todos, filterBy]);
 
   if (!USER_ID) {
     return <UserWarning />;
@@ -140,7 +154,7 @@ export const App: React.FC = () => {
 
       <div className="todoapp__content">
         <Header
-          hasActiveTodos={hasActiveTodos.length}
+          someActiveTodos={countActiveTodos}
           isInputDisabled={isInputDisabled}
           onSubmitAddTodo={handleAddTodo}
         />
@@ -152,22 +166,20 @@ export const App: React.FC = () => {
           onClickRemoveTodo={handleRemoveTodo}
         />
 
-        {/* Hide the footer if there are no todos */}
         {!!todos.length && (
           <Footer
-            quantity={hasActiveTodos.length}
+            quantity={countActiveTodos}
             filterBy={filterBy}
-            setFilterBy={setFilterBy}
+            setFilterBy={handleFilterBy}
             hasCompletedTodos={hasCompletedTodos}
             onRemoveCompletedTodo={removeCompletedTodo}
           />
         )}
       </div>
 
-      {/* Notification is shown in case of any error */}
       <Notification
         hasError={hasError}
-        setHasError={setHasError}
+        setHasError={handleHasError}
         errorMessage={errorMessage}
       />
     </div>

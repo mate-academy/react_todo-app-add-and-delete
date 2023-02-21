@@ -11,27 +11,20 @@ export const Notification: React.FC<Props> = ({
   hasError,
   setHasError,
   errorMessage,
-}) => {
-  return (
-    <div
-      className={cn(
-        'notification is-danger is-light has-text-weight-normal',
-        { hidden: !hasError },
-      )}
-    >
-      {/* eslint-disable-next-line jsx-a11y/control-has-associated-label */}
-      <button
-        type="button"
-        className="delete"
-        onClick={() => setHasError(false)}
-      />
+}) => (
+  <div
+    className={cn(
+      'notification is-danger is-light has-text-weight-normal',
+      { hidden: !hasError },
+    )}
+  >
+    <button
+      type="button"
+      aria-label="delete compeleted"
+      className="delete"
+      onClick={() => setHasError(false)}
+    />
 
-      {/* show only one message at a time */}
-      {errorMessage}
-      {/* <br />
-      Unable to delete a todo
-      <br />
-      Unable to update a todo */}
-    </div>
-  );
-};
+    {errorMessage}
+  </div>
+);
