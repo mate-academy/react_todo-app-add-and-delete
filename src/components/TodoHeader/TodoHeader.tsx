@@ -1,13 +1,15 @@
 import { Todo } from '../../types/Todo';
 
 type Props = {
-  newTodo: Todo;
+  inputValue: string;
+  tempTodo: Todo | null;
   onChangeTodoInput: (event: React.ChangeEvent<HTMLInputElement>) => void;
   onSubmitTodo: (event: React.FormEvent<HTMLFormElement>) => void;
 };
 
 export const TodoHeader: React.FC<Props> = ({
-  newTodo,
+  inputValue,
+  tempTodo,
   onChangeTodoInput,
   onSubmitTodo,
 }) => {
@@ -23,9 +25,9 @@ export const TodoHeader: React.FC<Props> = ({
           type="text"
           className="todoapp__new-todo"
           placeholder="What needs to be done?"
-          name="title"
-          value={newTodo.title}
+          value={inputValue}
           onChange={onChangeTodoInput}
+          disabled={!!tempTodo}
         />
       </form>
     </header>

@@ -8,16 +8,8 @@ import { Todo } from './types/Todo';
 import { UserWarning } from './UserWarning';
 import { TodoFooter } from './components/TodoFooter/TodoFooter';
 import { TodoHeader } from './components/TodoHeader/TodoHeader';
-import { NewTodo } from './types/NewTodo';
 
 const USER_ID = 6419;
-
-const emptyTodo: NewTodo = {
-  id: 0,
-  userId: USER_ID,
-  title: '',
-  completed: false,
-};
 
 export const App: React.FC = () => {
   const [todos, setTodos] = useState<Todo[]>([]);
@@ -25,7 +17,8 @@ export const App: React.FC = () => {
   const [todoSelector, setTodoSelector] = useState<string | null>(
     TodoSelector.ALL,
   );
-  const [newTodo, setNewTodo] = useState<NewTodo>(emptyTodo);
+  const [inputValue, setInputValue] = useState('');
+  const [tempTodo, setTempTodo] = useState<Todo | null>(null);
 
   useEffect(() => {
     getTodos(USER_ID)
@@ -51,9 +44,9 @@ export const App: React.FC = () => {
   };
 
   const getVisibleTodos = () => {
-    const needsToFilter
-      = todoSelector === TodoSelector.ACTIVE
-      || todoSelector === TodoSelector.COMPLETED;
+    const needsToFilter =
+      todoSelector === TodoSelector.ACTIVE ||
+      todoSelector === TodoSelector.COMPLETED;
 
     if (!needsToFilter) {
       return todos;
@@ -90,33 +83,40 @@ export const App: React.FC = () => {
   const handleTodoInputChanging = (
     event: React.ChangeEvent<HTMLInputElement>,
   ) => {
-    const { name, value } = event.target;
+    const { value } = event.target;
 
-    setNewTodo((todo) => ({
-      ...todo,
-      [name]: value,
-    }));
+    setInputValue(value);
   };
 
   const handleAddTodo = (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
 
-    if (!newTodo.title.trim()) {
-      setError(new Error('Title can\'t be empty'));
+    if (!inputValue.trim()) {
+      setError(new Error("Title can't be empty"));
       deleteErrorMessageAfterDelay(3000);
 
       return;
     }
 
+    const newTodo: Todo = {
+      id: 0,
+      userId: USER_ID,
+      title: inputValue,
+      completed: false,
+    };
+
     postTodo(newTodo)
-      .then(() => {
-        setTodos((t) => [...t, newTodo]);
-        setNewTodo(emptyTodo);
+      .then((response) => {
+        setTodos((t) => [...t, response]);
+        setTempTodo(null);
+        setInputValue('');
       })
       .catch(() => {
         setError(new Error('Unable to add a todo'));
         deleteErrorMessageAfterDelay(3000);
       });
+
+    setTempTodo(newTodo);
   };
 
   return (
@@ -125,12 +125,15 @@ export const App: React.FC = () => {
 
       <div className="todoapp__content">
         <TodoHeader
-          newTodo={newTodo}
+          inputValue={inputValue}
+          tempTodo={tempTodo}
           onChangeTodoInput={handleTodoInputChanging}
           onSubmitTodo={handleAddTodo}
         />
 
-        {todos.length > 0 && <TodoList todos={visibleTodos} />}
+        {todos.length > 0 && (
+          <TodoList tempTodo={tempTodo} todos={visibleTodos} />
+        )}
 
         {/* Hide the footer if there are no todos */}
         {todos.length > 0 && (

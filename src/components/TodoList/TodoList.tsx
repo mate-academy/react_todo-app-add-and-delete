@@ -3,9 +3,10 @@ import { TodoItem } from '../TodoItem/TodoItem';
 
 type Props = {
   todos: Todo[];
+  tempTodo: Todo | null;
 };
 
-export const TodoList: React.FC<Props> = ({ todos }) => {
+export const TodoList: React.FC<Props> = ({ todos, tempTodo }) => {
   return (
     <section className="todoapp__main">
       <div>
@@ -13,6 +14,7 @@ export const TodoList: React.FC<Props> = ({ todos }) => {
           return <TodoItem todo={todo} />;
         })}
       </div>
+      {!!tempTodo && <TodoItem todo={tempTodo} />}
     </section>
   );
 };
