@@ -18,49 +18,23 @@ export const Footer: React.FC<Props> = React.memo(
           3 items left
         </span>
 
-        {/* Active filter should have a 'selected' class */}
         <nav className="filter">
-          <a
-            href="#/"
-            className={classNames(
-              'filter__link',
-              { selected: selectedOption === Options.ALL },
-            )}
-            onClick={() => {
-              setFilterType(Options.ALL);
-              setSelectedOption(Options.ALL);
-            }}
-          >
-            All
-          </a>
-
-          <a
-            href="#/active"
-            className={classNames(
-              'filter__link',
-              { selected: selectedOption === Options.ACTIVE },
-            )}
-            onClick={() => {
-              setFilterType(Options.ACTIVE);
-              setSelectedOption(Options.ACTIVE);
-            }}
-          >
-            Active
-          </a>
-
-          <a
-            href="#/completed"
-            className={classNames(
-              'filter__link',
-              { selected: selectedOption === Options.COMPLETED },
-            )}
-            onClick={() => {
-              setFilterType(Options.COMPLETED);
-              setSelectedOption(Options.COMPLETED);
-            }}
-          >
-            Completed
-          </a>
+          { Object.values(Options).map(option => (
+            <a
+              key={option}
+              href={`#/${option.toLowerCase()}`}
+              className={classNames(
+                'filter__link',
+                { selected: selectedOption === option },
+              )}
+              onClick={() => {
+                setFilterType(option);
+                setSelectedOption(option);
+              }}
+            >
+              {option}
+            </a>
+          ))}
         </nav>
 
         {completedTodos
@@ -68,7 +42,6 @@ export const Footer: React.FC<Props> = React.memo(
           <button
             type="button"
             className="todoapp__clear-completed"
-            // disabled={!completedTodos}
             onClick={deleteCompletedTodos}
           >
             Clear completed

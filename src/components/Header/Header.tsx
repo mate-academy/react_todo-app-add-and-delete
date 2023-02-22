@@ -6,6 +6,7 @@ import React, {
 } from 'react';
 import { Todo } from '../../types/Todo';
 import { createTodo } from '../../api/todos';
+import { ErrorMessages } from '../../types/ErrorMessages';
 
 type Props = {
   setTempTodo: Dispatch<SetStateAction<Todo | null>>,
@@ -29,12 +30,12 @@ export const Header: React.FC<Props> = ({
 
     try {
       if (!todoTitle.trim().length) {
-        setErrorMessage('Title can\'t be empty');
+        setErrorMessage(ErrorMessages.ONEMPTYADD);
 
         return;
       }
 
-      setErrorMessage('');
+      setErrorMessage(ErrorMessages.NOERROR);
       setTempTodo({
         id: 0,
         userId,
@@ -52,7 +53,7 @@ export const Header: React.FC<Props> = ({
 
       setTempTodo(null);
     } catch (error) {
-      setErrorMessage('Unable to add a todo');
+      setErrorMessage(ErrorMessages.ONADD);
       setTempTodo(null);
     }
   };

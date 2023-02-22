@@ -6,6 +6,7 @@ import React, {
 } from 'react';
 import classNames from 'classnames';
 import { debounce } from 'lodash';
+import { ErrorMessages } from '../../types/ErrorMessages';
 
 type Props = {
   errorMessage: string,
@@ -20,7 +21,7 @@ export const ErrorNotification: React.FC<Props> = ({
 
   const handleCloseClick = () => {
     setIsHidden(true);
-    setErrorMessage('');
+    setErrorMessage(ErrorMessages.NOERROR);
   };
 
   const closeNotification = useCallback(debounce(handleCloseClick, 3000), []);

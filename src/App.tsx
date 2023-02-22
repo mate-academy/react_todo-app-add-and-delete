@@ -9,28 +9,29 @@ import { Header } from './components/Header';
 import { ErrorNotification } from './components/ErrorNotification';
 import { Options } from './types/Options';
 import { getFilteredTodos } from './utils/filterTodos';
+import { ErrorMessages } from './types/ErrorMessages';
 
 const USER_ID = 6345;
 
 export const App: React.FC = () => {
   const [todos, setTodos] = useState<Todo[]>([]);
-  const [errorMessage, setErrorMessage] = useState<string>('');
+  const [errorMessage, setErrorMessage] = useState<string>(
+    ErrorMessages.NOERROR,
+  );
   const [tempTodo, setTempTodo] = useState<Todo | null>(null);
   const [filterType, setFilterType] = useState(Options.ALL);
   const [loadingTodoIds, setLoadingTodoIds] = useState([0]);
 
-  // const [userId, setUserId] = useState<number>(USER_ID);
-
   const removeTodo = async (todoId: number) => {
     try {
-      setErrorMessage('');
       await deleteTodo(todoId);
+      setErrorMessage(ErrorMessages.NOERROR);
 
       setTodos((prevTodos: Todo[]): Todo[] => {
         return prevTodos.filter(item => item.id !== todoId);
       });
     } catch (error) {
-      setErrorMessage('Unable to delete a todo');
+      setErrorMessage(ErrorMessages.ONDELETE);
     }
   };
 
@@ -52,12 +53,13 @@ export const App: React.FC = () => {
 
   const loadTodos = async () => {
     try {
-      setErrorMessage('');
       const todosFromServer = await getTodos(USER_ID);
+
+      setErrorMessage(ErrorMessages.NOERROR);
 
       setTodos(todosFromServer);
     } catch (error) {
-      setErrorMessage('Unable to recieve todos');
+      setErrorMessage(ErrorMessages.ONLOAD);
     }
   };
 
@@ -97,39 +99,13 @@ export const App: React.FC = () => {
           />
         )}
 
-        {/* This todo is being edited */}
-        {/* <div className="todo">
-          <label className="todo__status-label">
-            <input
-              type="checkbox"
-              className="todo__status"
-            />
-          </label> */}
-
-        {/* This form is shown instead of the title and remove button */}
-        {/* <form>
-          <input
-            type="text"
-            className="todo__title-field"
-            placeholder="Empty todo will be deleted"
-            value="Todo is being edited now"
+        {!!todos.length && (
+          <Footer
+            setFilterType={setFilterType}
+            completedTodos={completedTodos}
+            deleteCompletedTodos={deleteCompletedTodos}
           />
-        </form> */}
-
-        {/* <div className="modal overlay">
-          <div className="modal-background has-background-white-ter" />
-          <div className="loader" />
-        </div>
-      </div> */}
-
-        {!!todos.length
-          && (
-            <Footer
-              setFilterType={setFilterType}
-              completedTodos={completedTodos}
-              deleteCompletedTodos={deleteCompletedTodos}
-            />
-          )}
+        )}
 
       </div>
       {!!errorMessage
