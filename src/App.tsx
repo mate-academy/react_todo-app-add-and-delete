@@ -44,6 +44,12 @@ export const App: React.FC = () => {
     setError(null);
   };
 
+  const deleteErrorMessageAfterDelay = (delay: number) => {
+    setTimeout(() => {
+      setError(null);
+    }, delay);
+  };
+
   const getVisibleTodos = () => {
     const needsToFilter =
       todoSelector === TodoSelector.ACTIVE ||
@@ -95,16 +101,21 @@ export const App: React.FC = () => {
   const handleAddTodo = (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
 
+    if (!newTodo.title.trim()) {
+      setError(new Error(`Title can't be empty`));
+      deleteErrorMessageAfterDelay(3000);
+
+      return;
+    }
+
     postTodo(newTodo)
       .then(() => {
         setTodos((t) => [...t, newTodo]);
         setNewTodo(emptyTodo);
       })
       .catch(() => {
-        setError(new Error("Can't add todo to server!"));
-        setTimeout(() => {
-          setError(null);
-        }, 3000);
+        setError(new Error('Unable to add a todo'));
+        deleteErrorMessageAfterDelay(3000);
       });
   };
 
