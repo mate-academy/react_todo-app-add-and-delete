@@ -19,6 +19,8 @@ export const ErrorMessage: React.FC<Props> = ({ error, onDeleteClick }) => {
         return 'Unable to show todos';
       case Error.ADD:
         return 'Unable to add a todo';
+      case Error.FORM:
+        return 'Unable to add a todo, fill the todo form';
       case Error.DELETE:
         return 'Unable to delete a todo';
       case Error.CHANGE:

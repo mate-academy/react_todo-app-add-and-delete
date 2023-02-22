@@ -16,6 +16,7 @@ export const Header: React.FC<Props> = ({ addNewTodo }) => {
 
   const handleSubmit = async (event: FormEvent<HTMLFormElement>) => {
     event.preventDefault();
+
     setIsFormDisabled(true);
 
     await addNewTodo(input);

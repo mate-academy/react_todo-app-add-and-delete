@@ -18,21 +18,31 @@ export const App: React.FC = () => {
   const [error, setError] = useState<Error>(Error.NONE);
   const [tempTodo, setTempTodo] = useState<Todo | null>(null);
 
+  const setErrorStatus = (newError: Error) => {
+    setError(newError);
+
+    setTimeout(() => {
+      setError(Error.NONE);
+    }, 3000);
+  };
+
   const fetchTodos = async () => {
     try {
       const todosFromServer = await getTodos(USER_ID);
 
       setTodos(todosFromServer);
     } catch {
-      setError(Error.FETCH);
-
-      setTimeout(() => {
-        setError(Error.NONE);
-      }, 3000);
+      setErrorStatus(Error.FETCH);
     }
   };
 
   const addNewTodo = async (title: string) => {
+    if (title.trim() === '') {
+      setErrorStatus(Error.FORM);
+
+      return;
+    }
+
     const todoToAdd = {
       title,
       userId: USER_ID,
@@ -46,11 +56,7 @@ export const App: React.FC = () => {
 
       setTodos(currentTodos => [...currentTodos, response]);
     } catch {
-      setError(Error.ADD);
-
-      setTimeout(() => {
-        setError(Error.NONE);
-      }, 3000);
+      setErrorStatus(Error.ADD);
     } finally {
       setTempTodo(null);
     }
@@ -64,11 +70,7 @@ export const App: React.FC = () => {
         currentTodos.filter(({ id }) => id !== todoId)
       ));
     } catch {
-      setError(Error.DELETE);
-
-      setTimeout(() => {
-        setError(Error.NONE);
-      }, 3000);
+      setErrorStatus(Error.DELETE);
     }
   };
 
