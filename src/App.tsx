@@ -50,12 +50,6 @@ export const App: React.FC = () => {
   };
 
   useEffect(() => {
-    if (!inputQuery) {
-      showError(ErrorMessages.ONTITLE);
-
-      return;
-    }
-
     const handleAddTodo = async () => {
       clearError();
 
@@ -110,6 +104,7 @@ export const App: React.FC = () => {
         <Header
           todos={todos}
           setInputQuery={setInputQuery}
+          showError={showError}
         />
         <TodoList
           todosToShow={todosToShow}
