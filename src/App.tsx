@@ -51,9 +51,9 @@ export const App: React.FC = () => {
   };
 
   const getVisibleTodos = () => {
-    const needsToFilter =
-      todoSelector === TodoSelector.ACTIVE ||
-      todoSelector === TodoSelector.COMPLETED;
+    const needsToFilter
+      = todoSelector === TodoSelector.ACTIVE
+      || todoSelector === TodoSelector.COMPLETED;
 
     if (!needsToFilter) {
       return todos;
@@ -102,7 +102,7 @@ export const App: React.FC = () => {
     e.preventDefault();
 
     if (!newTodo.title.trim()) {
-      setError(new Error(`Title can't be empty`));
+      setError(new Error('Title can\'t be empty'));
       deleteErrorMessageAfterDelay(3000);
 
       return;
