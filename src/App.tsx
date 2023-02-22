@@ -74,15 +74,16 @@ export const App: React.FC = () => {
       const selectTodo = todos.find(t => t.id === id);
 
       if (selectTodo) {
-        setTempTodos([selectTodo]);
+        setTempTodos((prev) => ([...prev,
+          selectTodo]));
       }
 
       await deleteTodo(id);
       await getTodosFromServer();
-
-      setTempTodos([]);
     } catch {
       pushError('delete');
+    } finally {
+      setTempTodos([]);
     }
   };
 
@@ -102,7 +103,6 @@ export const App: React.FC = () => {
   };
 
   const removeAllComplited = () => {
-    setTempTodos(complitedTodos);
     complitedTodos.map(t => deleteTodoFromServer(t.id));
   };
 

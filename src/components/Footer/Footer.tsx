@@ -62,7 +62,11 @@ export const Footer:React.FC<Props> = ({
       {/* don't show this button if there are no completed todos */}
       <button
         type="button"
-        hidden={!isCompleted}
+        style={{
+          visibility: isCompleted
+            ? 'visible'
+            : 'hidden',
+        }}
         className="todoapp__clear-completed"
         onClick={removeAllComplited}
       >
