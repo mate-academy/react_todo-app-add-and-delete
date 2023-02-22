@@ -37,14 +37,16 @@ export const App: React.FC = () => {
   };
 
   const addNewTodo = async (title: string) => {
-    if (title.trim() === '') {
+    const trimmedTitle = title.trim();
+
+    if (trimmedTitle === '') {
       setErrorStatus(Error.FORM);
 
       return;
     }
 
     const todoToAdd = {
-      title,
+      title: trimmedTitle,
       userId: USER_ID,
       completed: false,
     };
