@@ -74,7 +74,7 @@ export const App: React.FC = () => {
     }
   };
 
-  const onRemoveTodo = async (removeTodo: Todo) => {
+  const onRemoveTodo = useCallback(async (removeTodo: Todo) => {
     try {
       setTodosInProcessed(currentTodos => [...currentTodos, removeTodo]);
       await deleteTodo(USER_ID, removeTodo.id);
@@ -88,15 +88,26 @@ export const App: React.FC = () => {
       setTodosInProcessed(currentTodos => currentTodos
         .filter(({ id }) => id !== removeTodo.id));
     }
-  };
+  }, [todos]);
 
   const allCompleted = todos.filter(({ completed }) => completed);
 
   const isAllCompleted = allCompleted.length === todos.length;
 
   const clearCompleted = useCallback(() => {
-    allCompleted.forEach(todo => deleteTodo(USER_ID, todo.id));
-    setTodos(prevTodos => prevTodos.filter(({ completed }) => !completed));
+    allCompleted.forEach(async todo => {
+      try {
+        setTodosInProcessed(currentTodos => [...currentTodos, todo]);
+        await deleteTodo(USER_ID, todo.id);
+        setTodos(prevTodos => prevTodos.filter(({ completed }) => !completed));
+      } catch (error) {
+        setErrorMessage('Unable to delete a todo');
+        warningTimer(setErrorMessage, '', 3000);
+      } finally {
+        setTodosInProcessed(currentTodos => currentTodos
+          .filter(({ completed }) => !completed));
+      }
+    });
   }, [todos]);
 
   const changeTodos = (todoChange: Todo) => {
@@ -107,7 +118,7 @@ export const App: React.FC = () => {
     }));
   };
 
-  const onToogleTodo = async (todoTogle: Todo) => {
+  const onToogleUpdateTodo = useCallback(async (todoTogle: Todo) => {
     try {
       setTodosInProcessed(currentTodos => [...currentTodos, todoTogle]);
       const todoChangeStatus = await toogleTodo(USER_ID, todoTogle.id, !todoTogle.completed);
@@ -120,9 +131,9 @@ export const App: React.FC = () => {
       setTodosInProcessed(currentTodos => currentTodos
         .filter(({ id }) => id !== todoTogle.id));
     }
-  };
+  }, [todos]);
 
-  const toogleAllTodo = () => {
+  const toogleUpdateTodos = useCallback(() => {
     todos.map(async (todoToogle) => {
       try {
         setTodosInProcessed(currentTodos => [...currentTodos, todoToogle]);
@@ -137,7 +148,7 @@ export const App: React.FC = () => {
           .filter(({ id }) => id !== todoToogle.id));
       }
     });
-  };
+  }, [todos]);
 
   const handleUpdateTodo = useCallback(async (todoToUpdate: Todo) => {
     try {
@@ -193,7 +204,7 @@ export const App: React.FC = () => {
       <div className="todoapp__content">
         <Header
           isAllCompleted={isAllCompleted}
-          onToogleAllTodo={toogleAllTodo}
+          onToogleUpdateTodos={toogleUpdateTodos}
           onSubmit={handleAddTodo}
           title={title}
           onEventChange={handleEventChange}
@@ -203,7 +214,7 @@ export const App: React.FC = () => {
           todos={visibleTodos}
           creatingTodo={creatingTodo}
           onRemoveTodo={onRemoveTodo}
-          onToogleTodo={onToogleTodo}
+          onToogleUpdateTodo={onToogleUpdateTodo}
           todosLoadingState={todosInProcessed}
           onHandleUpdate={handleUpdateTodo}
         />

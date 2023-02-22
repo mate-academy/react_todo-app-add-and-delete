@@ -1,3 +1,4 @@
+import React from 'react';
 import { CSSTransition, TransitionGroup } from 'react-transition-group';
 import { Todo } from '../../types/Todo';
 import { TodoInfo } from '../TodoInfo/TodoInfo';
@@ -6,16 +7,16 @@ type Props = {
   todos: Todo[];
   creatingTodo: Todo | null;
   onRemoveTodo: (todo: Todo) => void;
-  onToogleTodo: (todo: Todo) => void;
+  onToogleUpdateTodo: (todo: Todo) => void;
   onHandleUpdate: (todo: Todo) => void;
   todosLoadingState: Todo[];
 };
 
-export const TodoList: React.FC<Props> = ({
+export const TodoList: React.FC<Props> = React.memo(({
   todos,
   creatingTodo,
   onRemoveTodo,
-  onToogleTodo,
+  onToogleUpdateTodo,
   onHandleUpdate,
   todosLoadingState,
 }) => {
@@ -33,7 +34,7 @@ export const TodoList: React.FC<Props> = ({
               key={todo.id}
               todosLoadingState={todosLoadingState}
               onRemoveTodo={onRemoveTodo}
-              onToogleTodo={onToogleTodo}
+              onToogleUpdateTodo={onToogleUpdateTodo}
               onHandleUpdate={onHandleUpdate}
             />
           </CSSTransition>
@@ -49,7 +50,7 @@ export const TodoList: React.FC<Props> = ({
               todo={creatingTodo}
               todosLoadingState={todosLoadingState}
               onRemoveTodo={() => { }}
-              onToogleTodo={onToogleTodo}
+              onToogleUpdateTodo={onToogleUpdateTodo}
               onHandleUpdate={onHandleUpdate}
             />
           </CSSTransition>
@@ -58,4 +59,4 @@ export const TodoList: React.FC<Props> = ({
       </TransitionGroup>
     </ul>
   );
-};
+});

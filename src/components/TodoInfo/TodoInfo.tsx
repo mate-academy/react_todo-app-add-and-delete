@@ -6,7 +6,7 @@ type Props = {
   todo: Todo;
   todosLoadingState: Todo[],
   onRemoveTodo: (todo: Todo) => void;
-  onToogleTodo: (todo: Todo) => void;
+  onToogleUpdateTodo: (todo: Todo) => void;
   onHandleUpdate: (todo: Todo) => void;
 };
 
@@ -14,7 +14,7 @@ export const TodoInfo: React.FC<Props> = ({
   todo,
   todosLoadingState,
   onRemoveTodo,
-  onToogleTodo,
+  onToogleUpdateTodo,
   onHandleUpdate,
 }) => {
   const { title, completed } = todo;
@@ -78,7 +78,7 @@ export const TodoInfo: React.FC<Props> = ({
           type="checkbox"
           className="todo__status"
           onClick={() => {
-            onToogleTodo(todo);
+            onToogleUpdateTodo(todo);
           }}
         />
       </label>
