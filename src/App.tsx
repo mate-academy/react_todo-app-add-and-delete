@@ -1,6 +1,6 @@
 /* eslint-disable jsx-a11y/control-has-associated-label */
 import React, { useEffect, useMemo, useState } from 'react';
-import { addTodo, getTodos } from './api/todos';
+import { addTodo, deleteTodo, getTodos } from './api/todos';
 import { Footer } from './components/Footer';
 import { Header } from './components/Header';
 import { TodoList } from './components/TodoList';
@@ -22,6 +22,7 @@ export const App: React.FC = () => {
     = useState<ErrorNotifications>(ErrorNotifications.NONE);
   const [query, setQuery] = useState('');
   const [tempTodo, setTempTodo] = useState<Todo | null>(null);
+  const [deletedTodoId, setDeletedTodoId] = useState(0);
 
   const setErrorType = (error: ErrorNotifications) => {
     setErrorMessage(error);
@@ -75,19 +76,18 @@ export const App: React.FC = () => {
         userId: USER_ID,
         title: query,
         completed: false,
-        id: 0,
+        id: todos.length + 1,
       };
 
       setTempTodo({
         ...addedTodo,
+        id: 0,
       });
       try {
         setQuery('');
-        setError(false);
         const justCreatedTodo = await addTodo(USER_ID, addedTodo);
-        // console.log(justCreatedTodo, todos)
 
-        setTodos(prevState => [...prevState, justCreatedTodo]);
+        setTodos(prevTodos => [...prevTodos, justCreatedTodo]);
       } catch (error) {
         setError(true);
         setErrorType(ErrorNotifications.ADD);
@@ -97,26 +97,48 @@ export const App: React.FC = () => {
     }
   };
 
+  const handleDelete = async (todoId: number) => {
+    try {
+      await deleteTodo(todoId);
+      setDeletedTodoId(todoId);
+
+      setTodos(prevTodos => prevTodos.filter(todo => todo.id !== todoId));
+    } catch {
+      setError(true);
+      setErrorType(ErrorNotifications.DELETE);
+    }
+  };
+
+  const removeCompletedTodos = () => {
+    const filteredCompleted = todos.filter(todo => todo.completed);
+
+    filteredCompleted.map(todo => handleDelete(todo.id));
+  };
+
   return (
     <div className="todoapp">
       <h1 className="todoapp__title">todos</h1>
 
       <div className="todoapp__content">
-        {activeTodosAmount !== 0 && (
-          <Header
-            query={query}
-            setQuery={handleSetQuery}
-            handleSubmit={handleSubmit}
-            tempTodo={tempTodo}
-          />
-        )}
-        <TodoList todos={visibleTodos} />
+        <Header
+          query={query}
+          setQuery={handleSetQuery}
+          handleSubmit={handleSubmit}
+          tempTodo={tempTodo}
+          activeTodosAmount={activeTodosAmount}
+        />
+        <TodoList
+          todos={visibleTodos}
+          handleDelete={handleDelete}
+          deletedTodoId={deletedTodoId}
+        />
         {todos.length && (
           <Footer
             filter={filter}
             filterTodosBy={filterTodosBy}
             activeTodosAmount={activeTodosAmount}
             isThereCompleted={isThereCompleted}
+            removeCompletedTodos={removeCompletedTodos}
           />
         )}
 

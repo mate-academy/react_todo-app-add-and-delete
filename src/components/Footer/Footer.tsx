@@ -7,6 +7,7 @@ type Props = {
   filterTodosBy: (filter: Filter) => void,
   activeTodosAmount: number,
   isThereCompleted: boolean
+  removeCompletedTodos: () => void;
 };
 
 export const Footer: React.FC<Props> = React.memo(
@@ -15,6 +16,7 @@ export const Footer: React.FC<Props> = React.memo(
     filterTodosBy,
     activeTodosAmount,
     isThereCompleted,
+    removeCompletedTodos,
   }) => (
     <footer className="todoapp__footer">
       <span className="todo-count">
@@ -38,7 +40,11 @@ export const Footer: React.FC<Props> = React.memo(
       </nav>
 
       {isThereCompleted && (
-        <button type="button" className="todoapp__clear-completed">
+        <button
+          type="button"
+          className="todoapp__clear-completed"
+          onClick={removeCompletedTodos}
+        >
           Clear completed
         </button>
       )}

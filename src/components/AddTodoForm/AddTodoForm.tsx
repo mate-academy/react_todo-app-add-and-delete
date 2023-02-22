@@ -5,7 +5,7 @@ type Props = {
   setQuery: (value: string) => void,
   query: string,
   handleSubmit: () => void,
-  tempTodo: Todo | null
+  tempTodo: Todo | null,
 };
 
 export const AddTodoForm: React.FC<Props> = ({

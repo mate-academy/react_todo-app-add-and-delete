@@ -1,13 +1,18 @@
 import React from 'react';
+
 import classNames from 'classnames';
 import { Todo } from '../../types/Todo';
 
 type Props = {
   todo: Todo,
+  handleDelete: (todoId: number) => void,
+  deletedTodoId: number,
 };
 
 export const TodoInfo: React.FC<Props> = React.memo(({
   todo,
+  handleDelete,
+  deletedTodoId,
 }) => {
   const { title, completed } = todo;
 
@@ -32,6 +37,7 @@ export const TodoInfo: React.FC<Props> = React.memo(({
       <button
         type="button"
         className="todo__remove"
+        onClick={() => handleDelete(todo.id)}
       >
         ×
       </button>
@@ -44,7 +50,14 @@ export const TodoInfo: React.FC<Props> = React.memo(({
         />
       </form> */}
 
-      <div className="modal overlay">
+      <div className={classNames(
+        'modal',
+        'overlay',
+        {
+          'is-active': deletedTodoId === todo.id,
+        },
+      )}
+      >
         <div className="modal-background has-background-white-ter" />
         <div className="loader" />
       </div>
