@@ -75,18 +75,19 @@ export const App: React.FC = () => {
         userId: USER_ID,
         title: query,
         completed: false,
+        id: 0,
       };
 
       setTempTodo({
         ...addedTodo,
-        id: 0,
       });
       try {
         setQuery('');
         setError(false);
-        const justCreatedTodo = addTodo(addedTodo, USER_ID);
+        const justCreatedTodo = await addTodo(USER_ID, addedTodo);
+        // console.log(justCreatedTodo, todos)
 
-        setTodos(prevTodos => [...prevTodos, justCreatedTodo]);
+        setTodos(prevState => [...prevState, justCreatedTodo]);
       } catch (error) {
         setError(true);
         setErrorType(ErrorNotifications.ADD);
