@@ -1,0 +1,61 @@
+import React, { ChangeEvent, FormEvent } from 'react';
+import { Error } from '../../types/Error';
+
+type Props = {
+  todoTitle: string;
+  setTodoTitleWrapper: (value: string) => void;
+  setErrorWrapper: (error: Error) => void;
+  addNewTodo: () => void;
+  isLoading: boolean;
+};
+
+export const Header: React.FC<Props> = ({
+  todoTitle,
+  setTodoTitleWrapper,
+  setErrorWrapper,
+  addNewTodo,
+  isLoading,
+}) => {
+  const changeTitle = (event: ChangeEvent<HTMLInputElement>) => {
+    const { value } = event.target;
+
+    setTodoTitleWrapper(value);
+  };
+
+  const onFormSubmit = (event: FormEvent) => {
+    event.preventDefault();
+
+    if (todoTitle.trim().length === 0) {
+      setErrorWrapper(Error.EMPTY);
+
+      return;
+    }
+
+    addNewTodo();
+
+    setTodoTitleWrapper('');
+  };
+
+  return (
+    <header className="todoapp__header">
+      {/* this buttons is active only if there are some active todos */}
+      <button
+        type="button"
+        className="todoapp__toggle-all active"
+        aria-label="Toggle-active"
+      />
+
+      {/* Add a todo on form submit */}
+      <form onSubmit={onFormSubmit}>
+        <input
+          type="text"
+          className="todoapp__new-todo"
+          placeholder="What needs to be done?"
+          disabled={isLoading}
+          value={todoTitle}
+          onChange={changeTitle}
+        />
+      </form>
+    </header>
+  );
+};
