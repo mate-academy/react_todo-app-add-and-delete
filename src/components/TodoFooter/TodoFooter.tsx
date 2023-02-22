@@ -1,12 +1,15 @@
 import cn from 'classnames';
+import { TodoSelector } from '../../types/TodoSelector';
 
 type Props = {
+  hasCompletedTodos: boolean;
   leftTodosCount: number;
   todoSelector: string | null;
   onChangeTodoSelector: (event: React.MouseEvent<HTMLAnchorElement>) => void;
 };
 
 export const TodoFooter: React.FC<Props> = ({
+  hasCompletedTodos,
   leftTodosCount,
   todoSelector,
   onChangeTodoSelector,
@@ -15,11 +18,12 @@ export const TodoFooter: React.FC<Props> = ({
     <footer className="todoapp__footer">
       <span className="todo-count">{`${leftTodosCount} items left`}</span>
 
-      {/* Active filter should have a 'selected' class */}
       <nav className="filter">
         <a
           href="#/"
-          className={cn('filter__link', { selected: todoSelector === 'All' })}
+          className={cn('filter__link', {
+            selected: todoSelector === TodoSelector.ALL,
+          })}
           onClick={onChangeTodoSelector}
         >
           All
@@ -28,7 +32,7 @@ export const TodoFooter: React.FC<Props> = ({
         <a
           href="#/active"
           className={cn('filter__link', {
-            selected: todoSelector === 'Active',
+            selected: todoSelector === TodoSelector.ACTIVE,
           })}
           onClick={onChangeTodoSelector}
         >
@@ -38,7 +42,7 @@ export const TodoFooter: React.FC<Props> = ({
         <a
           href="#/completed"
           className={cn('filter__link', {
-            selected: todoSelector === 'Completed',
+            selected: todoSelector === TodoSelector.COMPLETED,
           })}
           onClick={onChangeTodoSelector}
         >
@@ -47,7 +51,11 @@ export const TodoFooter: React.FC<Props> = ({
       </nav>
 
       {/* don't show this button if there are no completed todos */}
-      <button type="button" className="todoapp__clear-completed">
+      <button
+        type="button"
+        className="todoapp__clear-completed"
+        style={{ visibility: hasCompletedTodos ? 'visible' : 'hidden' }}
+      >
         Clear completed
       </button>
     </footer>
