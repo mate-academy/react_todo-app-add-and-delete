@@ -2,7 +2,7 @@
 import { useEffect, useMemo, useState } from 'react';
 import cn from 'classnames';
 import { TodoSelector } from './types/TodoSelector';
-import { getTodos, postTodo } from './api/todos';
+import { deleteTodo, getTodos, postTodo } from './api/todos';
 import { TodoList } from './components/TodoList/TodoList';
 import { Todo } from './types/Todo';
 import { UserWarning } from './UserWarning';
@@ -19,6 +19,7 @@ export const App: React.FC = () => {
   );
   const [inputValue, setInputValue] = useState('');
   const [tempTodo, setTempTodo] = useState<Todo | null>(null);
+  const [isDeleting, setIsDeleting] = useState(false);
 
   useEffect(() => {
     getTodos(USER_ID)
@@ -26,7 +27,7 @@ export const App: React.FC = () => {
         setTodos(data);
       })
       .catch(() => {
-        setError(new Error("Can't get todos from server!"));
+        setError(new Error('Unable to get todos from server'));
         setTimeout(() => {
           setError(null);
         }, 3000);
@@ -44,9 +45,9 @@ export const App: React.FC = () => {
   };
 
   const getVisibleTodos = () => {
-    const needsToFilter =
-      todoSelector === TodoSelector.ACTIVE ||
-      todoSelector === TodoSelector.COMPLETED;
+    const needsToFilter
+      = todoSelector === TodoSelector.ACTIVE
+      || todoSelector === TodoSelector.COMPLETED;
 
     if (!needsToFilter) {
       return todos;
@@ -119,6 +120,38 @@ export const App: React.FC = () => {
     setTempTodo(newTodo);
   };
 
+  const handleDeleteTodo = (todoId: number) => () => {
+    setIsDeleting(true);
+
+    deleteTodo(todoId)
+      .then(() => {
+        setTodos((prevTodos) => prevTodos.filter((todo) => todo.id !== todoId));
+        setIsDeleting(false);
+      })
+      .catch(() => {
+        setError(new Error('Unable to delete a todo'));
+        deleteErrorMessageAfterDelay(3000);
+      });
+  };
+
+  const handleCompletedTodoDeleting = () => {
+    todos
+      .filter((todo) => todo.completed)
+      .forEach((todo) => {
+        setIsDeleting(true);
+
+        deleteTodo(todo.id)
+          .then(() => {
+            setTodos((prevTodos) => prevTodos.filter((t) => t.id !== todo.id));
+            setIsDeleting(false);
+          })
+          .catch(() => {
+            setError(new Error('Unable to delete a todo'));
+            deleteErrorMessageAfterDelay(3000);
+          });
+      });
+  };
+
   return (
     <div className="todoapp">
       <h1 className="todoapp__title">todos</h1>
@@ -132,7 +165,12 @@ export const App: React.FC = () => {
         />
 
         {todos.length > 0 && (
-          <TodoList tempTodo={tempTodo} todos={visibleTodos} />
+          <TodoList
+            tempTodo={tempTodo}
+            todos={visibleTodos}
+            onDeleteTodo={handleDeleteTodo}
+            isDeleting={isDeleting}
+          />
         )}
 
         {/* Hide the footer if there are no todos */}
@@ -142,6 +180,7 @@ export const App: React.FC = () => {
             leftTodosCount={leftTodosCount}
             todoSelector={todoSelector}
             onChangeTodoSelector={handleTodoSelection}
+            onClearCompleted={handleCompletedTodoDeleting}
           />
         )}
       </div>

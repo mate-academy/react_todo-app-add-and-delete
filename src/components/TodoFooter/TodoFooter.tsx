@@ -6,6 +6,7 @@ type Props = {
   leftTodosCount: number;
   todoSelector: string | null;
   onChangeTodoSelector: (event: React.MouseEvent<HTMLAnchorElement>) => void;
+  onClearCompleted: () => void;
 };
 
 export const TodoFooter: React.FC<Props> = ({
@@ -13,6 +14,7 @@ export const TodoFooter: React.FC<Props> = ({
   leftTodosCount,
   todoSelector,
   onChangeTodoSelector,
+  onClearCompleted,
 }) => {
   return (
     <footer className="todoapp__footer">
@@ -55,6 +57,7 @@ export const TodoFooter: React.FC<Props> = ({
         type="button"
         className="todoapp__clear-completed"
         style={{ visibility: hasCompletedTodos ? 'visible' : 'hidden' }}
+        onClick={onClearCompleted}
       >
         Clear completed
       </button>
