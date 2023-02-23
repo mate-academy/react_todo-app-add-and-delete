@@ -28,9 +28,7 @@ export const Header: React.FC<Props> = ({
         onClick={onToogleUpdateTodos}
       />
 
-      <form
-        onSubmit={onSubmit}
-      >
+      <form onSubmit={onSubmit}>
         <input
           type="text"
           className="todoapp__new-todo"

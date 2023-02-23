@@ -84,9 +84,7 @@ export const TodoInfo: React.FC<Props> = ({
       </label>
 
       {isEditing ? (
-        <form
-          onSubmit={handleOnSubmit}
-        >
+        <form onSubmit={handleOnSubmit}>
           <input
             type="text"
             value={todoTitle}

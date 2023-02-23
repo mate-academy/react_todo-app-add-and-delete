@@ -219,7 +219,7 @@ export const App: React.FC = () => {
           onHandleUpdate={handleUpdateTodo}
         />
 
-        {todos.length !== 0 ? (
+        {todos.length ? (
           <Footer
             itemsLeft={activeTodos}
             selectFilter={selectFilter}
