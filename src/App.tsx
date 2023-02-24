@@ -120,7 +120,7 @@ export const App: React.FC = () => {
     setTempTodo(newTodo);
   };
 
-  const deleteTodoHandler = (todoId: number) => {
+  const handleDeleteTodo = (todoId: number) => () => {
     setIsDeleting(true);
 
     deleteTodo(todoId)
@@ -135,15 +135,11 @@ export const App: React.FC = () => {
       });
   };
 
-  const handleDeleteTodo = (todoId: number) => () => {
-    deleteTodoHandler(todoId);
-  };
-
   const handleCompletedTodoDeleting = () => {
     todos
       .filter((todo) => todo.completed)
       .forEach((todo) => {
-        deleteTodoHandler(todo.id);
+        handleDeleteTodo(todo.id);
       });
   };
 
