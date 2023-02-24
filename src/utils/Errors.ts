@@ -1,4 +1,4 @@
-import { Error } from '../enum/Error';
+import { Error } from '../enums/Error';
 
 export const handlerError = (isError: Error) => {
   switch (isError) {

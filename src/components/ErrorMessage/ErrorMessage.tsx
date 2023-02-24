@@ -1,4 +1,4 @@
-import { Error } from '../../enum/Error';
+import { Error } from '../../enums/Error';
 
 type Props = {
   setError: (value: Error) => void;

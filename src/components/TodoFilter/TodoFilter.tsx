@@ -1,6 +1,6 @@
 import classNames from 'classnames';
 import React from 'react';
-import { Filter } from '../../enum/Filter';
+import { Filter } from '../../enums/Filter';
 import { Todo } from '../../types/Todo';
 
 type Props = {

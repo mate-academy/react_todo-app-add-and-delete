@@ -5,18 +5,19 @@ import classNames from 'classnames';
 import { getTodos, removeTodo, updateTodo } from './api/todos';
 import { TodoFilter } from './components/TodoFilter';
 import { TodoList } from './components/TodoList';
-import { Filter } from './enum/Filter';
+import { Filter } from './enums/Filter';
 import { Todo } from './types/Todo';
 import { UserWarning } from './UserWarning';
 import { filteredTodos } from './utils/filter';
 import { INITIAL_STATE_TEMPTODO } from './constants/initial_state_newTodo';
 import { USER_ID } from './constants/user_id';
 import { ErrorMessage } from './components/ErrorMessage';
-import { Error } from './enum/Error';
+import { Error } from './enums/Error';
 import { handlerError } from './utils/Errors';
 import { client } from './utils/fetchClient';
 import { TodoForm } from './components/TodoForm';
 import { reducer } from './reducer';
+import { ReducerType } from './enums/Reducer';
 
 export const App: React.FC = () => {
   const [filter, setFilter] = useState(Filter.ALL);
@@ -65,7 +66,7 @@ export const App: React.FC = () => {
     return client.post<Todo>('/todos', { title, userId, completed })
       .then(result => {
         setTodos(prev => [...prev, result]);
-        dispatch({ type: 'reset' });
+        dispatch({ type: ReducerType.RESET });
       })
       .catch(() => setIsError(Error.ADD))
       .finally(() => setIsCreated(false));
@@ -125,7 +126,7 @@ export const App: React.FC = () => {
 
   const dispatchTitle = (e: string) => {
     dispatch({
-      type: 'title',
+      type: ReducerType.TITLE,
       newTitle: e,
     });
   };

@@ -1,4 +1,4 @@
-import { Filter } from '../enum/Filter';
+import { Filter } from '../enums/Filter';
 import { Todo } from '../types/Todo';
 
 export const filteredTodos = (
