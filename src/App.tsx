@@ -45,9 +45,9 @@ export const App: React.FC = () => {
   };
 
   const getVisibleTodos = () => {
-    const needsToFilter
-      = todoSelector === TodoSelector.ACTIVE
-      || todoSelector === TodoSelector.COMPLETED;
+    const needsToFilter =
+      todoSelector === TodoSelector.ACTIVE ||
+      todoSelector === TodoSelector.COMPLETED;
 
     if (!needsToFilter) {
       return todos;
@@ -139,7 +139,7 @@ export const App: React.FC = () => {
     todos
       .filter((todo) => todo.completed)
       .forEach((todo) => {
-        handleDeleteTodo(todo.id);
+        handleDeleteTodo(todo.id)();
       });
   };
 
