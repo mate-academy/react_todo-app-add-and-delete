@@ -120,7 +120,7 @@ export const App: React.FC = () => {
     setTempTodo(newTodo);
   };
 
-  const handleDeleteTodo = (todoId: number) => () => {
+  const deleteTodoHandler = (todoId: number) => {
     setIsDeleting(true);
 
     deleteTodo(todoId)
@@ -131,24 +131,19 @@ export const App: React.FC = () => {
       .catch(() => {
         setError(new Error('Unable to delete a todo'));
         deleteErrorMessageAfterDelay(3000);
+        setIsDeleting(false);
       });
+  };
+
+  const handleDeleteTodo = (todoId: number) => () => {
+    deleteTodoHandler(todoId);
   };
 
   const handleCompletedTodoDeleting = () => {
     todos
       .filter((todo) => todo.completed)
       .forEach((todo) => {
-        setIsDeleting(true);
-
-        deleteTodo(todo.id)
-          .then(() => {
-            setTodos((prevTodos) => prevTodos.filter((t) => t.id !== todo.id));
-            setIsDeleting(false);
-          })
-          .catch(() => {
-            setError(new Error('Unable to delete a todo'));
-            deleteErrorMessageAfterDelay(3000);
-          });
+        deleteTodoHandler(todo.id);
       });
   };
 
@@ -173,7 +168,6 @@ export const App: React.FC = () => {
           />
         )}
 
-        {/* Hide the footer if there are no todos */}
         {todos.length > 0 && (
           <TodoFooter
             hasCompletedTodos={hasCompletedTodos}
@@ -185,7 +179,6 @@ export const App: React.FC = () => {
         )}
       </div>
 
-      {/* Notification is shown in case of any error */}
       {error && (
         <div
           className={cn(
