@@ -6,12 +6,16 @@ type Props = {
   todos: Todo[],
   tempTodo: Todo | null,
   deleteTodoHandler: (value: number) => void,
+  selectedTodoId: number,
+  setSelectedTodoId: (value: number) => void,
 };
 
 export const TodosList: React.FC<Props> = ({
   todos,
   tempTodo,
   deleteTodoHandler,
+  selectedTodoId,
+  setSelectedTodoId,
 }) => {
   return (
     <section className="todoapp__main">
@@ -38,12 +42,22 @@ export const TodosList: React.FC<Props> = ({
               <button
                 type="button"
                 className="todo__remove"
-                onClick={() => deleteTodoHandler(todo.id)}
+                onClick={() => {
+                  deleteTodoHandler(todo.id);
+                  setSelectedTodoId(todo.id);
+                }}
               >
                 ×
               </button>
 
-              <div className="modal overlay">
+              <div
+                className={
+                  classNames(
+                    'modal overlay',
+                    { 'is-active': todo.id === selectedTodoId },
+                  )
+                }
+              >
                 <div className="modal-background has-background-white-ter" />
                 <div className="loader" />
               </div>

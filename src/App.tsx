@@ -19,6 +19,7 @@ export const App: React.FC = () => {
   const [title, setTitle] = useState<string>('');
   const [isAdding, setIsAdding] = useState<boolean>(false);
   const [tempTodo, setTempTodo] = useState<Todo | null>(null);
+  const [selectedTodoId, setSelectedTodoId] = useState(0);
 
   useEffect(() => {
     getTodos(USER_ID)
@@ -118,6 +119,8 @@ export const App: React.FC = () => {
               todos={visibleTodos}
               tempTodo={tempTodo}
               deleteTodoHandler={deleteTodoHandler}
+              selectedTodoId={selectedTodoId}
+              setSelectedTodoId={setSelectedTodoId}
             />
 
             <Footer
