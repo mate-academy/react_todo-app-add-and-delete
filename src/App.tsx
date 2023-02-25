@@ -1,24 +1,140 @@
 /* eslint-disable max-len */
 /* eslint-disable jsx-a11y/control-has-associated-label */
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import { UserWarning } from './UserWarning';
+import { Todo } from './types/Todo';
+import { getTodos, addTodo, deleteTodo } from './api/todos';
+import { Filter } from './types/Filter';
+import { ErrorTypes } from './types/ErrorTypes';
+import {
+  Header, TodosList, Footer, ErrorNotifications,
+} from './components';
 
-const USER_ID = 0;
+const USER_ID = 6335;
 
 export const App: React.FC = () => {
+  const [allTodos, setAllTodos] = useState<Todo[]>([]);
+  const [error, setError] = useState<ErrorTypes | null>(null);
+  const [filter, setFilter] = useState<Filter>(Filter.All);
+  const [title, setTitle] = useState<string>('');
+  const [isAdding, setIsAdding] = useState<boolean>(false);
+  const [tempTodo, setTempTodo] = useState<Todo | null>(null);
+
+  useEffect(() => {
+    getTodos(USER_ID)
+      .then(setAllTodos)
+      .catch(() => {
+        setError(ErrorTypes.Load);
+        setTimeout(() => setError(null), 3000);
+      });
+  }, []);
+
+  const filterHandler = (array: Todo[], filterType: string) => {
+    switch (filterType) {
+      case Filter.Active:
+        return array.filter(item => !item.completed);
+      case Filter.Completed:
+        return array.filter(item => item.completed);
+      default:
+        return array;
+    }
+  };
+
+  const addTodoHandler = () => {
+    if (!title.trim()) {
+      setError(ErrorTypes.Empty);
+
+      return;
+    }
+
+    setIsAdding(true);
+    const todo = {
+      title,
+      userId: USER_ID,
+      completed: false,
+    };
+
+    setTempTodo({
+      id: 0,
+      title,
+      userId: USER_ID,
+      completed: false,
+    });
+
+    addTodo(todo)
+      .then(result => {
+        setAllTodos(
+          prevTodos => [...prevTodos, result],
+        );
+        setTempTodo(null);
+      })
+      .catch(() => {
+        setError(ErrorTypes.Add);
+        setTempTodo(null);
+      })
+      .finally(() => {
+        setIsAdding(false);
+        setTitle('');
+      });
+  };
+
+  const deleteTodoHandler = (id: number) => {
+    deleteTodo(id)
+      .then(() => setAllTodos(
+        prevAllTodos => prevAllTodos.filter(prevTodo => prevTodo.id !== id),
+      ))
+      .catch(() => setError(ErrorTypes.Delete));
+  };
+
+  const activeTodos = filterHandler(allTodos, Filter.Active);
+  const completedTodos = filterHandler(allTodos, Filter.Completed);
+  const visibleTodos = filterHandler(allTodos, filter);
+
+  const deleteAllCompletedHandler = () => {
+    completedTodos.forEach(completedTodo => deleteTodoHandler(completedTodo.id));
+  };
+
   if (!USER_ID) {
     return <UserWarning />;
   }
 
   return (
-    <section className="section container">
-      <p className="title is-4">
-        Copy all you need from the prev task:
-        <br />
-        <a href="https://github.com/mate-academy/react_todo-app-loading-todos#react-todo-app-load-todos">React Todo App - Load Todos</a>
-      </p>
+    <div className="todoapp">
+      <h1 className="todoapp__title">todos</h1>
 
-      <p className="subtitle">Styles are already copied</p>
-    </section>
+      <div className="todoapp__content">
+        <Header
+          title={title}
+          setTitle={setTitle}
+          allTodos={allTodos}
+          activeTodos={activeTodos}
+          addTodoHandler={addTodoHandler}
+          isAdding={isAdding}
+        />
+
+        {!!allTodos.length && (
+          <>
+            <TodosList
+              todos={visibleTodos}
+              tempTodo={tempTodo}
+              deleteTodoHandler={deleteTodoHandler}
+            />
+
+            <Footer
+              activeTodos={activeTodos}
+              completedTodos={completedTodos}
+              filter={filter}
+              setFilter={setFilter}
+              deleteAllCompletedHandler={deleteAllCompletedHandler}
+            />
+          </>
+        )}
+      </div>
+
+      <ErrorNotifications
+        error={error}
+        setIsError={setError}
+      />
+    </div>
   );
 };
