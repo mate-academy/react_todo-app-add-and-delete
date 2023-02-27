@@ -18,6 +18,12 @@ export const Header: React.FC<Props> = ({
   setTitle,
   addTodoHandler,
 }) => {
+  const enterKeyHandler = (key: string) => {
+    if (key === 'Enter') {
+      addTodoHandler();
+    }
+  };
+
   return (
     <header className="todoapp__header">
       {/* eslint-disable-next-line jsx-a11y/control-has-associated-label */}
@@ -38,11 +44,7 @@ export const Header: React.FC<Props> = ({
           type="text"
           className="todoapp__new-todo"
           placeholder="What needs to be done?"
-          onKeyUp={e => {
-            if (e.key === 'Enter') {
-              addTodoHandler();
-            }
-          }}
+          onKeyUp={e => enterKeyHandler(e.key)}
         />
       </form>
     </header>

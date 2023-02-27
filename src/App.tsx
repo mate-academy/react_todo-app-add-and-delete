@@ -1,6 +1,6 @@
 /* eslint-disable max-len */
 /* eslint-disable jsx-a11y/control-has-associated-label */
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useMemo, useState } from 'react';
 import { UserWarning } from './UserWarning';
 import { Todo } from './types/Todo';
 import { getTodos, addTodo, deleteTodo } from './api/todos';
@@ -44,11 +44,13 @@ export const App: React.FC = () => {
   const addTodoHandler = () => {
     if (!title.trim()) {
       setError(ErrorTypes.Empty);
+      setTimeout(() => setError(null), 3000);
 
       return;
     }
 
     setIsAdding(true);
+
     const todo = {
       title,
       userId: USER_ID,
@@ -76,6 +78,7 @@ export const App: React.FC = () => {
       .finally(() => {
         setIsAdding(false);
         setTitle('');
+        setTempTodo(null);
       });
   };
 
@@ -87,8 +90,8 @@ export const App: React.FC = () => {
       .catch(() => setError(ErrorTypes.Delete));
   };
 
-  const activeTodos = filterHandler(allTodos, Filter.Active);
-  const completedTodos = filterHandler(allTodos, Filter.Completed);
+  const activeTodos = useMemo(() => filterHandler(allTodos, Filter.Active), [allTodos]);
+  const completedTodos = useMemo(() => filterHandler(allTodos, Filter.Completed), [allTodos]);
   const visibleTodos = filterHandler(allTodos, filter);
 
   const deleteAllCompletedHandler = () => {

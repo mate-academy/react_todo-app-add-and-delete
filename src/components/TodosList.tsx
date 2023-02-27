@@ -17,6 +17,11 @@ export const TodosList: React.FC<Props> = ({
   selectedTodoId,
   setSelectedTodoId,
 }) => {
+  const deleteButtonHandler = (id: number) => {
+    deleteTodoHandler(id);
+    setSelectedTodoId(id);
+  };
+
   return (
     <section className="todoapp__main">
       <TransitionGroup>
@@ -42,10 +47,7 @@ export const TodosList: React.FC<Props> = ({
               <button
                 type="button"
                 className="todo__remove"
-                onClick={() => {
-                  deleteTodoHandler(todo.id);
-                  setSelectedTodoId(todo.id);
-                }}
+                onClick={() => deleteButtonHandler(todo.id)}
               >
                 ×
               </button>
