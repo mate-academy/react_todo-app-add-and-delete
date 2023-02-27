@@ -25,6 +25,7 @@ export const App: React.FC = () => {
 
   const [todoTitle, setTodoTitle] = useState('');
   const [loadingInput, setLoadingInput] = useState(false);
+  const [isDeleting, setIsDeleting] = useState(false);
   const [tempTodo, setTempTodo] = useState<Todo | null>(null);
 
   const getTodosFromServer = useCallback(
@@ -33,8 +34,6 @@ export const App: React.FC = () => {
         Api.getTodos(user.id)
           .then((data) => {
             setTodoList(data);
-            // eslint-disable-next-line no-console
-            console.log(data);
 
             if (data.length) {
               setShowFooter(true);
@@ -44,7 +43,10 @@ export const App: React.FC = () => {
             setError('Error 404 unable to get todos');
             setTimeout(() => setError(''), 3000);
           })
-          .finally(() => setTempTodo(null));
+          .finally(() => {
+            setTempTodo(null);
+            setIsDeleting(false);
+          });
       }
     },
     [],
@@ -57,7 +59,7 @@ export const App: React.FC = () => {
       setTodoTitle('');
 
       Api.addTodo(todoTitle, user.id)
-        .then((todo) => {
+        .then(() => {
           setTempTodo({
             id: 0,
             userId: user.id,
@@ -65,8 +67,6 @@ export const App: React.FC = () => {
             completed: false,
           });
 
-          // eslint-disable-next-line no-console
-          console.log(todo);
           getTodosFromServer();
         })
         .catch(() => {
@@ -81,6 +81,8 @@ export const App: React.FC = () => {
 
   const removeTodoFromServer = useCallback(
     (todoId: number) => {
+      setIsDeleting(true);
+
       Api.removeTodo(todoId)
         .then(() => {
           getTodosFromServer();
@@ -88,7 +90,8 @@ export const App: React.FC = () => {
         .catch(() => {
           setError('Unable to delete a todo');
           setTimeout(() => setError(''), 3000);
-        });
+        })
+        .finally(() => {});
     },
     [],
   );
@@ -122,6 +125,7 @@ export const App: React.FC = () => {
               className="todoapp__new-todo"
               placeholder="What needs to be done?"
               disabled={loadingInput}
+              value={todoTitle}
               onChange={(event) => {
                 setTodoTitle(event.target.value);
               }}
@@ -142,6 +146,7 @@ export const App: React.FC = () => {
             filterBy={filterBy}
             tempTodo={tempTodo}
             onRemove={removeTodoFromServer}
+            isDeleting={isDeleting}
           />
         )}
 

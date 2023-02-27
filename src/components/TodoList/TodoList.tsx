@@ -8,6 +8,7 @@ type Props = {
   filterBy: FilterBy;
   tempTodo: Todo | null;
   onRemove: (id: number) => void;
+  isDeleting: boolean;
 };
 
 export const TodoList: React.FC<Props> = ({
@@ -15,8 +16,10 @@ export const TodoList: React.FC<Props> = ({
   filterBy,
   tempTodo,
   onRemove,
+  isDeleting,
 }) => {
   const [visibleTodos, setVisibleTodos] = useState<Todo[]>([]);
+  const [toDeleteId, setToDeleteId] = useState(0);
 
   useEffect(() => {
     switch (filterBy) {
@@ -35,7 +38,7 @@ export const TodoList: React.FC<Props> = ({
       default:
         setVisibleTodos(todoList);
     }
-  }, [filterBy, todoList]);
+  }, [filterBy, todoList, isDeleting]);
 
   return (
     <section className="todoapp__main" data-cy="TodoList">
@@ -43,32 +46,49 @@ export const TodoList: React.FC<Props> = ({
         <div
           key={todo.id}
           data-cy="Todo"
-          className={classNames('todo', {
-            completed: todo.completed,
-          })}
+          className={classNames(
+            'todo',
+            {
+              completed: todo.completed,
+            },
+          )}
         >
           <label className="todo__status-label">
             <input
               data-cy="TodoStatus"
               type="checkbox"
               className="todo__status"
-              defaultChecked
+              checked={todo.completed}
             />
           </label>
 
-          <span data-cy="TodoTitle" className="todo__title">
+          <span
+            data-cy="TodoTitle"
+            className="todo__title"
+          >
             {todo.title}
           </span>
           <button
             type="button"
             className="todo__remove"
             data-cy="TodoDeleteButton"
-            onClick={() => onRemove(todo.id)}
+            onClick={() => {
+              onRemove(todo.id);
+              setToDeleteId(todo.id);
+            }}
           >
             ×
           </button>
 
-          <div data-cy="TodoLoader" className="modal overlay">
+          <div
+            data-cy="TodoLoader"
+            className={classNames(
+              'modal overlay',
+              {
+                'is-active': isDeleting && todo.id === toDeleteId,
+              },
+            )}
+          >
             <div className="modal-background has-background-white-ter" />
             <div className="loader" />
           </div>
@@ -76,33 +96,25 @@ export const TodoList: React.FC<Props> = ({
       ))}
 
       {tempTodo && (
-        <div
-          data-cy="Todo"
-          className={classNames('todo', {
-            completed: tempTodo.completed,
-          })}
-        >
+        <div className="todo">
           <label className="todo__status-label">
             <input
-              data-cy="TodoStatus"
               type="checkbox"
               className="todo__status"
-              defaultChecked
             />
           </label>
 
-          <span data-cy="TodoTitle" className="todo__title">
+          <span className="todo__title">
             {tempTodo.title}
           </span>
           <button
             type="button"
             className="todo__remove"
-            data-cy="TodoDeleteButton"
           >
             ×
           </button>
 
-          <div data-cy="TodoLoader" className="modal overlay">
+          <div className="modal overlay is-active">
             <div className="modal-background has-background-white-ter" />
             <div className="loader" />
           </div>
