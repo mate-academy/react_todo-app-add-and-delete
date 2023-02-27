@@ -1,26 +1,26 @@
-import classNames from "classnames";
-import React, { useEffect, useState } from "react";
-import { createUser, getUserByEmail } from "../App/api/users";
-import { User } from "../../types/User";
+import classNames from 'classnames';
+import React, { useEffect, useState } from 'react';
+import { createUser, getUserByEmail } from '../App/api/users';
+import { User } from '../../types/User';
 
 export type Props = {
   onLogin: (user: User) => void;
 };
 
 export const AuthForm: React.FC<Props> = ({ onLogin }) => {
-  const [email, setEmail] = useState("");
-  const [name, setName] = useState("");
+  const [email, setEmail] = useState('');
+  const [name, setName] = useState('');
   const [needToRegister, setNeedToRegister] = useState(false);
   const [loading, setLoading] = useState(false);
-  const [errorMessage, setErrorMessage] = useState("");
+  const [errorMessage, setErrorMessage] = useState('');
 
   const saveUser = (user: User) => {
-    localStorage.setItem("user", JSON.stringify(user));
+    localStorage.setItem('user', JSON.stringify(user));
     onLogin(user);
   };
 
   useEffect(() => {
-    const userData = localStorage.getItem("user");
+    const userData = localStorage.getItem('user');
 
     if (!userData) {
       return;
@@ -52,7 +52,7 @@ export const AuthForm: React.FC<Props> = ({ onLogin }) => {
   const handleSubmit = async (event: React.FormEvent) => {
     event.preventDefault();
 
-    setErrorMessage("");
+    setErrorMessage('');
     setLoading(true);
 
     try {
@@ -62,7 +62,7 @@ export const AuthForm: React.FC<Props> = ({ onLogin }) => {
         await loadUser();
       }
     } catch (error) {
-      setErrorMessage("Something went wrtong");
+      setErrorMessage('Something went wrtong');
     } finally {
       setLoading(false);
     }
@@ -71,7 +71,7 @@ export const AuthForm: React.FC<Props> = ({ onLogin }) => {
   return (
     <form onSubmit={handleSubmit} className="box mt-5">
       <h1 className="title is-3">
-        {needToRegister ? "You need to register" : "Log in to open todos"}
+        {needToRegister ? 'You need to register' : 'Log in to open todos'}
       </h1>
 
       <div className="field">
@@ -80,15 +80,15 @@ export const AuthForm: React.FC<Props> = ({ onLogin }) => {
         </label>
 
         <div
-          className={classNames("control has-icons-left", {
-            "is-loading": loading,
+          className={classNames('control has-icons-left', {
+            'is-loading': loading,
           })}
         >
           <input
             type="email"
             id="user-email"
-            className={classNames("input", {
-              "is-danger": !needToRegister && errorMessage,
+            className={classNames('input', {
+              'is-danger': !needToRegister && errorMessage,
             })}
             placeholder="Enter your email"
             disabled={loading || needToRegister}
@@ -114,15 +114,15 @@ export const AuthForm: React.FC<Props> = ({ onLogin }) => {
           </label>
 
           <div
-            className={classNames("control has-icons-left", {
-              "is-loading": loading,
+            className={classNames('control has-icons-left', {
+              'is-loading': loading,
             })}
           >
             <input
               type="text"
               id="user-name"
-              className={classNames("input", {
-                "is-danger": needToRegister && errorMessage,
+              className={classNames('input', {
+                'is-danger': needToRegister && errorMessage,
               })}
               placeholder="Enter your name"
               required
@@ -146,11 +146,11 @@ export const AuthForm: React.FC<Props> = ({ onLogin }) => {
       <div className="field">
         <button
           type="submit"
-          className={classNames("button is-primary", {
-            "is-loading": loading,
+          className={classNames('button is-primary', {
+            'is-loading': loading,
           })}
         >
-          {needToRegister ? "Register" : "Login"}
+          {needToRegister ? 'Register' : 'Login'}
         </button>
       </div>
     </form>
