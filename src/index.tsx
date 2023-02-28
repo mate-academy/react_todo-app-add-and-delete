@@ -8,7 +8,7 @@ import './styles/index.scss';
 import { App } from './components/App';
 import { AuthProvider } from './components/Auth/AuthContext';
 
-const Root = () => (
+export const Root = () => (
   <AuthProvider>
     <App />
   </AuthProvider>
