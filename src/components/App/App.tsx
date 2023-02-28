@@ -11,8 +11,8 @@ import { AuthContext } from '../Auth/AuthContext';
 import { Todo } from '../../types/Todo';
 import * as Api from './api/todos';
 import { FilterBy } from '../../types/FilterBy';
-import { TodoList } from '../TodoList/TodoList';
-import { Footer } from '../Footer/Footer';
+import { TodoList } from '../TodoList';
+import { Footer } from '../Footer';
 
 export const App: React.FC = () => {
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
