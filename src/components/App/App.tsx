@@ -27,6 +27,7 @@ export const App: React.FC = () => {
   const [loadingInput, setLoadingInput] = useState(false);
   const [isDeleting, setIsDeleting] = useState(false);
   const [tempTodo, setTempTodo] = useState<Todo | null>(null);
+  const [completedTodos, setCompletedTodos] = useState(0);
 
   const getTodosFromServer = useCallback(
     () => {
@@ -34,6 +35,10 @@ export const App: React.FC = () => {
         Api.getTodos(user.id)
           .then((data) => {
             setTodoList(data);
+            const completed = data
+              .filter(todo => todo.completed);
+
+            setCompletedTodos(completed.length);
 
             if (data.length) {
               setShowFooter(true);
@@ -155,6 +160,7 @@ export const App: React.FC = () => {
             filterBy={filterBy}
             setFilterBy={setFilterBy}
             todosLength={todoList?.length}
+            todosCompleted={completedTodos}
           />
         )}
       </div>

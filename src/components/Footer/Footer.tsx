@@ -5,17 +5,21 @@ type Props = {
   filterBy: FilterBy;
   setFilterBy: (status: FilterBy) => void;
   todosLength: number | undefined;
+  todosCompleted: number;
 };
 
 export const Footer: React.FC<Props> = ({
   filterBy,
   setFilterBy,
   todosLength = 0,
+  todosCompleted = 0,
 }) => {
+  const todoLeft = todosLength - todosCompleted;
+
   return (
     <footer className="todoapp__footer" data-cy="Footer">
       <span className="todo-count" data-cy="todosCounter">
-        { `${todosLength} items left`}
+        { `${todoLeft} items left`}
       </span>
 
       <nav className="filter" data-cy="Filter">
@@ -61,13 +65,15 @@ export const Footer: React.FC<Props> = ({
         </a>
       </nav>
 
-      <button
-        data-cy="ClearCompletedButton"
-        type="button"
-        className="todoapp__clear-completed"
-      >
-        Clear completed
-      </button>
+      {todosCompleted > 0 && (
+        <button
+          data-cy="ClearCompletedButton"
+          type="button"
+          className="todoapp__clear-completed"
+        >
+          Clear completed
+        </button>
+      )}
     </footer>
   );
 };
