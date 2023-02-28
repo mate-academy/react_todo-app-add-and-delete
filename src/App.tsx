@@ -3,7 +3,12 @@
 import React, { useEffect, useMemo, useState } from 'react';
 import { UserWarning } from './UserWarning';
 import { Todo } from './types/Todo';
-import { getTodos, addTodo, deleteTodo } from './api/todos';
+import {
+  getTodos,
+  addTodo,
+  deleteTodo,
+  completeTodo,
+} from './api/todos';
 import { Filter } from './types/Filter';
 import { ErrorTypes } from './types/ErrorTypes';
 import {
@@ -98,6 +103,28 @@ export const App: React.FC = () => {
     completedTodos.forEach(completedTodo => deleteTodoHandler(completedTodo.id));
   };
 
+  const todoStausChangeHandler = (id: number, data: boolean) => {
+    completeTodo(id, data)
+      .then(() => setAllTodos(prevTodos => {
+        const changingTodo = prevTodos.find(todo => todo.id === id);
+
+        if (changingTodo) {
+          changingTodo.completed = data;
+        }
+
+        return [...prevTodos];
+      }))
+      .catch(() => setError(ErrorTypes.Update));
+  };
+
+  const completeAll = () => {
+    if (allTodos.every(todo => todo.completed)) {
+      allTodos.forEach(todo => todoStausChangeHandler(todo.id, false));
+    } else {
+      allTodos.forEach(todo => todoStausChangeHandler(todo.id, true));
+    }
+  };
+
   if (!USER_ID) {
     return <UserWarning />;
   }
@@ -105,7 +132,6 @@ export const App: React.FC = () => {
   return (
     <div className="todoapp">
       <h1 className="todoapp__title">todos</h1>
-
       <div className="todoapp__content">
         <Header
           title={title}
@@ -114,8 +140,8 @@ export const App: React.FC = () => {
           activeTodos={activeTodos}
           addTodoHandler={addTodoHandler}
           isAdding={isAdding}
+          completeAll={completeAll}
         />
-
         {!!allTodos.length && (
           <>
             <TodosList
@@ -124,6 +150,7 @@ export const App: React.FC = () => {
               deleteTodoHandler={deleteTodoHandler}
               selectedTodoId={selectedTodoId}
               setSelectedTodoId={setSelectedTodoId}
+              todoStausChangeHandler={todoStausChangeHandler}
             />
 
             <Footer

@@ -8,6 +8,7 @@ type Props = {
   deleteTodoHandler: (value: number) => void,
   selectedTodoId: number,
   setSelectedTodoId: (value: number) => void,
+  todoStausChangeHandler: (id: number, data: boolean) => void,
 };
 
 export const TodosList: React.FC<Props> = ({
@@ -16,6 +17,7 @@ export const TodosList: React.FC<Props> = ({
   deleteTodoHandler,
   selectedTodoId,
   setSelectedTodoId,
+  todoStausChangeHandler,
 }) => {
   const deleteButtonHandler = (id: number) => {
     deleteTodoHandler(id);
@@ -39,6 +41,9 @@ export const TodosList: React.FC<Props> = ({
                   type="checkbox"
                   className="todo__status"
                   checked={todo.completed}
+                  onClick={() => {
+                    todoStausChangeHandler(todo.id, !todo.completed);
+                  }}
                 />
               </label>
 
@@ -60,7 +65,11 @@ export const TodosList: React.FC<Props> = ({
                   )
                 }
               >
-                <div className="modal-background has-background-white-ter" />
+                <div
+                  className="
+                  modal-background
+                  has-background-white-ter"
+                />
                 <div className="loader" />
               </div>
             </div>
@@ -74,7 +83,12 @@ export const TodosList: React.FC<Props> = ({
             classNames="temp-item"
           >
             <div
-              className={classNames('todo', { completed: tempTodo.completed })}
+              className={
+                classNames(
+                  'todo',
+                  { completed: tempTodo.completed },
+                )
+              }
             >
               <label className="todo__status-label">
                 <input

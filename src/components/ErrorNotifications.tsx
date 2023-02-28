@@ -15,6 +15,8 @@ const errors = {
   [ErrorTypes.Empty]: 'Title can\'t be empty',
 };
 
+/* eslint-disable jsx-a11y/control-has-associated-label */
+
 export const ErrorNotifications: React.FC<Props> = ({
   error,
   setIsError,
@@ -25,7 +27,6 @@ export const ErrorNotifications: React.FC<Props> = ({
       { hidden: !error },
     )}
     >
-      {/* eslint-disable-next-line jsx-a11y/control-has-associated-label */}
       <button
         type="button"
         className="delete"

@@ -8,8 +8,10 @@ type Props = {
   isAdding: boolean;
   setTitle: (value: string) => void;
   addTodoHandler: () => void;
+  completeAll: () => void;
 };
 
+/* eslint-disable jsx-a11y/control-has-associated-label */
 export const Header: React.FC<Props> = ({
   allTodos,
   activeTodos,
@@ -17,6 +19,7 @@ export const Header: React.FC<Props> = ({
   isAdding,
   setTitle,
   addTodoHandler,
+  completeAll,
 }) => {
   const enterKeyHandler = (key: string) => {
     if (key === 'Enter') {
@@ -26,21 +29,19 @@ export const Header: React.FC<Props> = ({
 
   return (
     <header className="todoapp__header">
-      {/* eslint-disable-next-line jsx-a11y/control-has-associated-label */}
       <button
         type="button"
         className={classNames(
           'todoapp__toggle-all', { active: activeTodos.length === 0 },
         )}
         style={{ opacity: +Boolean(allTodos.length) }}
+        onClick={completeAll}
       />
-
-      {/* Add a todo on form submit */}
       <form onSubmit={e => e.preventDefault()}>
         <input
           value={title}
           onChange={e => setTitle(e.target.value)}
-          disabled={isAdding === true}
+          disabled={isAdding}
           type="text"
           className="todoapp__new-todo"
           placeholder="What needs to be done?"
