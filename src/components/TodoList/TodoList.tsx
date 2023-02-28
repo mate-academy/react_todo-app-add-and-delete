@@ -8,7 +8,10 @@ type Props = {
   filterBy: FilterBy;
   tempTodo: Todo | null;
   onRemove: (id: number) => void;
-  isDeleting: boolean;
+  // isDeleting: boolean;
+  completedTodosId: Array<number> | undefined;
+  shouldDeleteCompleted: boolean;
+  resetCompleted: () => void;
 };
 
 export const TodoList: React.FC<Props> = ({
@@ -16,10 +19,29 @@ export const TodoList: React.FC<Props> = ({
   filterBy,
   tempTodo,
   onRemove,
-  isDeleting,
+  // isDeleting,
+  completedTodosId = [],
+  shouldDeleteCompleted,
+  resetCompleted,
 }) => {
   const [visibleTodos, setVisibleTodos] = useState<Todo[]>([]);
   const [toDeleteId, setToDeleteId] = useState(0);
+
+  useEffect(() => {
+    if (shouldDeleteCompleted) {
+      const promises = [];
+
+      for (let i = 0; i < completedTodosId.length; i += 1) {
+        const id = completedTodosId[i];
+        const promise = onRemove(id);
+
+        promises.push(promise);
+      }
+
+      Promise.all(promises);
+      resetCompleted();
+    }
+  }, [completedTodosId, shouldDeleteCompleted]);
 
   useEffect(() => {
     switch (filterBy) {
@@ -38,7 +60,7 @@ export const TodoList: React.FC<Props> = ({
       default:
         setVisibleTodos(todoList);
     }
-  }, [filterBy, todoList, isDeleting]);
+  }, [filterBy, todoList]);
 
   return (
     <section className="todoapp__main" data-cy="TodoList">
@@ -85,7 +107,10 @@ export const TodoList: React.FC<Props> = ({
             className={classNames(
               'modal overlay',
               {
-                'is-active': isDeleting && todo.id === toDeleteId,
+                'is-active': todo.id === toDeleteId
+                  || (
+                    shouldDeleteCompleted && completedTodosId.includes(todo.id)
+                  ),
               },
             )}
           >

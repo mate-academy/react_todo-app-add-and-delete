@@ -25,9 +25,13 @@ export const App: React.FC = () => {
 
   const [todoTitle, setTodoTitle] = useState('');
   const [loadingInput, setLoadingInput] = useState(false);
-  const [isDeleting, setIsDeleting] = useState(false);
+  // const [isDeleting, setIsDeleting] = useState(false);
+  const [shouldDeleteCompleted, setShouldDeleteCompleted] = useState(false);
   const [tempTodo, setTempTodo] = useState<Todo | null>(null);
-  const [completedTodos, setCompletedTodos] = useState(0);
+  const [
+    completedTodosId,
+    setCompletedTodosId,
+  ] = useState< Array<number> | undefined>(undefined);
 
   const getTodosFromServer = useCallback(
     () => {
@@ -38,7 +42,11 @@ export const App: React.FC = () => {
             const completed = data
               .filter(todo => todo.completed);
 
-            setCompletedTodos(completed.length);
+            const availableIds = completed.map(todo => {
+              return todo.id;
+            });
+
+            setCompletedTodosId(availableIds);
 
             if (data.length) {
               setShowFooter(true);
@@ -50,7 +58,7 @@ export const App: React.FC = () => {
           })
           .finally(() => {
             setTempTodo(null);
-            setIsDeleting(false);
+            // setIsDeleting(false);
           });
       }
     },
@@ -86,7 +94,7 @@ export const App: React.FC = () => {
 
   const removeTodoFromServer = useCallback(
     (todoId: number) => {
-      setIsDeleting(true);
+      // setIsDeleting(true);
 
       Api.removeTodo(todoId)
         .then(() => {
@@ -96,7 +104,9 @@ export const App: React.FC = () => {
           setError('Unable to delete a todo');
           setTimeout(() => setError(''), 3000);
         })
-        .finally(() => {});
+        .finally(() => {
+          setShouldDeleteCompleted(false);
+        });
     },
     [],
   );
@@ -151,7 +161,10 @@ export const App: React.FC = () => {
             filterBy={filterBy}
             tempTodo={tempTodo}
             onRemove={removeTodoFromServer}
-            isDeleting={isDeleting}
+            // isDeleting={isDeleting}
+            completedTodosId={completedTodosId}
+            shouldDeleteCompleted={shouldDeleteCompleted}
+            resetCompleted={() => setCompletedTodosId([])}
           />
         )}
 
@@ -160,7 +173,8 @@ export const App: React.FC = () => {
             filterBy={filterBy}
             setFilterBy={setFilterBy}
             todosLength={todoList?.length}
-            todosCompleted={completedTodos}
+            todosCompleted={completedTodosId?.length}
+            onDeleteCompleted={() => setShouldDeleteCompleted(true)}
           />
         )}
       </div>

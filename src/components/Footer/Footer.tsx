@@ -5,7 +5,8 @@ type Props = {
   filterBy: FilterBy;
   setFilterBy: (status: FilterBy) => void;
   todosLength: number | undefined;
-  todosCompleted: number;
+  todosCompleted: number | undefined;
+  onDeleteCompleted: () => void;
 };
 
 export const Footer: React.FC<Props> = ({
@@ -13,6 +14,7 @@ export const Footer: React.FC<Props> = ({
   setFilterBy,
   todosLength = 0,
   todosCompleted = 0,
+  onDeleteCompleted,
 }) => {
   const todoLeft = todosLength - todosCompleted;
 
@@ -70,6 +72,9 @@ export const Footer: React.FC<Props> = ({
           data-cy="ClearCompletedButton"
           type="button"
           className="todoapp__clear-completed"
+          onClick={() => {
+            onDeleteCompleted();
+          }}
         >
           Clear completed
         </button>
