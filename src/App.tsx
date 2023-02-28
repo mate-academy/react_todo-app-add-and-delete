@@ -92,7 +92,7 @@ export const App: React.FC = () => {
 
   const activeTodos = useMemo(() => filterHandler(allTodos, Filter.Active), [allTodos]);
   const completedTodos = useMemo(() => filterHandler(allTodos, Filter.Completed), [allTodos]);
-  const visibleTodos = filterHandler(allTodos, filter);
+  const visibleTodos = useMemo(() => filterHandler(allTodos, filter), [allTodos, filter]);
 
   const deleteAllCompletedHandler = () => {
     completedTodos.forEach(completedTodo => deleteTodoHandler(completedTodo.id));
