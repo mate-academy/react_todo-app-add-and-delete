@@ -15,8 +15,6 @@ const errors = {
   [ErrorTypes.Empty]: 'Title can\'t be empty',
 };
 
-/* eslint-disable jsx-a11y/control-has-associated-label */
-
 export const ErrorNotifications: React.FC<Props> = ({
   error,
   setIsError,
@@ -29,6 +27,7 @@ export const ErrorNotifications: React.FC<Props> = ({
     >
       <button
         type="button"
+        aria-label="close notification"
         className="delete"
         onClick={() => setIsError(null)}
       />

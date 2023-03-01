@@ -10,8 +10,6 @@ type Props = {
   addTodoHandler: () => void;
   completeAll: () => void;
 };
-
-/* eslint-disable jsx-a11y/control-has-associated-label */
 export const Header: React.FC<Props> = ({
   allTodos,
   activeTodos,
@@ -34,6 +32,7 @@ export const Header: React.FC<Props> = ({
         className={classNames(
           'todoapp__toggle-all', { active: activeTodos.length === 0 },
         )}
+        aria-label="toggle-all"
         style={{ opacity: +Boolean(allTodos.length) }}
         onClick={completeAll}
       />

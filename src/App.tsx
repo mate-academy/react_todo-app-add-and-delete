@@ -1,6 +1,9 @@
-/* eslint-disable max-len */
-/* eslint-disable jsx-a11y/control-has-associated-label */
-import React, { useEffect, useMemo, useState } from 'react';
+import React, {
+  useCallback,
+  useEffect,
+  useMemo,
+  useState,
+} from 'react';
 import { UserWarning } from './UserWarning';
 import { Todo } from './types/Todo';
 import {
@@ -26,12 +29,14 @@ export const App: React.FC = () => {
   const [tempTodo, setTempTodo] = useState<Todo | null>(null);
   const [selectedTodoId, setSelectedTodoId] = useState(0);
 
+  const clearError = () => setError(null);
+
   useEffect(() => {
     getTodos(USER_ID)
       .then(setAllTodos)
       .catch(() => {
         setError(ErrorTypes.Load);
-        setTimeout(() => setError(null), 3000);
+        setTimeout(clearError, 3000);
       });
   }, []);
 
@@ -46,10 +51,10 @@ export const App: React.FC = () => {
     }
   };
 
-  const addTodoHandler = () => {
+  const addTodoHandler = useCallback(() => {
     if (!title.trim()) {
       setError(ErrorTypes.Empty);
-      setTimeout(() => setError(null), 3000);
+      setTimeout(clearError, 3000);
 
       return;
     }
@@ -85,25 +90,36 @@ export const App: React.FC = () => {
         setTitle('');
         setTempTodo(null);
       });
-  };
+  }, [title]);
 
-  const deleteTodoHandler = (id: number) => {
+  const deleteTodoHandler = useCallback((id: number) => {
     deleteTodo(id)
       .then(() => setAllTodos(
         prevAllTodos => prevAllTodos.filter(prevTodo => prevTodo.id !== id),
       ))
-      .catch(() => setError(ErrorTypes.Delete));
-  };
+      .catch(() => {
+        setError(ErrorTypes.Delete);
+        setTimeout(clearError, 3000);
+      });
+  }, []);
 
-  const activeTodos = useMemo(() => filterHandler(allTodos, Filter.Active), [allTodos]);
-  const completedTodos = useMemo(() => filterHandler(allTodos, Filter.Completed), [allTodos]);
-  const visibleTodos = useMemo(() => filterHandler(allTodos, filter), [allTodos, filter]);
+  const activeTodos = useMemo(
+    () => filterHandler(allTodos, Filter.Active), [allTodos],
+  );
+  const completedTodos = useMemo(
+    () => filterHandler(allTodos, Filter.Completed), [allTodos],
+  );
+  const visibleTodos = useMemo(
+    () => filterHandler(allTodos, filter), [allTodos, filter],
+  );
 
-  const deleteAllCompletedHandler = () => {
-    completedTodos.forEach(completedTodo => deleteTodoHandler(completedTodo.id));
-  };
+  const deleteAllCompletedHandler = useCallback(() => {
+    completedTodos.forEach(
+      completedTodo => deleteTodoHandler(completedTodo.id),
+    );
+  }, [allTodos]);
 
-  const todoStausChangeHandler = (id: number, data: boolean) => {
+  const todoStausChangeHandler = useCallback((id: number, data: boolean) => {
     completeTodo(id, data)
       .then(() => setAllTodos(prevTodos => {
         const changingTodo = prevTodos.find(todo => todo.id === id);
@@ -114,16 +130,19 @@ export const App: React.FC = () => {
 
         return [...prevTodos];
       }))
-      .catch(() => setError(ErrorTypes.Update));
-  };
+      .catch(() => {
+        setError(ErrorTypes.Update);
+        setTimeout(clearError, 3000);
+      });
+  }, []);
 
-  const completeAll = () => {
+  const completeAll = useCallback(() => {
     if (allTodos.every(todo => todo.completed)) {
-      allTodos.forEach(todo => todoStausChangeHandler(todo.id, false));
+      Promise.all(allTodos.map(todo => todoStausChangeHandler(todo.id, false)));
     } else {
-      allTodos.forEach(todo => todoStausChangeHandler(todo.id, true));
+      Promise.all(allTodos.map(todo => todoStausChangeHandler(todo.id, true)));
     }
-  };
+  }, [allTodos]);
 
   if (!USER_ID) {
     return <UserWarning />;

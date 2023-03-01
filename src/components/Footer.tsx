@@ -11,13 +11,15 @@ type Props = {
   deleteAllCompletedHandler: () => void;
 };
 
-export const Footer: React.FC<Props> = ({
-  activeTodos,
-  completedTodos,
-  filter,
-  setFilter,
-  deleteAllCompletedHandler,
-}) => {
+export const Footer: React.FC<Props> = (props) => {
+  const {
+    activeTodos,
+    completedTodos,
+    filter,
+    setFilter,
+    deleteAllCompletedHandler,
+  } = props;
+
   return (
     <footer className="todoapp__footer">
       <span className="todo-count">
@@ -60,7 +62,7 @@ export const Footer: React.FC<Props> = ({
         type="button"
         className="todoapp__clear-completed"
         style={{ opacity: +Boolean(completedTodos.length) }}
-        onClick={() => deleteAllCompletedHandler()}
+        onClick={deleteAllCompletedHandler}
       >
         Clear completed
       </button>
