@@ -20,6 +20,9 @@ body {
   pointer-events: none;
 }
 
+@import "./utils/variables.scss";
+
 @import "./todoapp";
 @import "./todo";
 @import "./filter";
+@import "./transitions.scss";
