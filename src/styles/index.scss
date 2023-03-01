@@ -20,7 +20,7 @@ body {
   pointer-events: none;
 }
 
-@import "./utils/variables";
+@import "./utils/_variables";
 @import "./todoapp";
 @import "./todo";
 @import "./filter";
