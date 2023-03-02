@@ -166,7 +166,7 @@ export const App: React.FC = () => {
           disable={inputDisable}
         />
 
-        {todos.length > 0 && (
+        {todos.length && (
           <>
             <TodoList
               todos={visibleTodos}
