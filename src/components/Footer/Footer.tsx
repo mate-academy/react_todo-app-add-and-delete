@@ -4,7 +4,8 @@ type Props = {
   noCompleteTodos: boolean,
   filterBy: string,
   setFilterBy: (value: string) => void,
-  clearCompleted: () => void
+  clearCompleted: () => void,
+  leftTodos: number,
 };
 
 const navigation = ['All', 'Active', 'Completed'];
@@ -14,11 +15,12 @@ export const Footer: React.FC<Props> = ({
   filterBy,
   setFilterBy,
   clearCompleted,
+  leftTodos,
 }) => {
   return (
     <footer className="todoapp__footer">
       <span className="todo-count">
-        3 items left
+        {`${leftTodos} items left`}
       </span>
 
       <nav className="filter">

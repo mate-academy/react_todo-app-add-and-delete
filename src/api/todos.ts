@@ -6,9 +6,13 @@ export const getTodos = (userId: number) => {
 };
 
 export const addTodo = (newTodo: Todo) => {
-  return client.post<Todo>('/todos', newTodo);
+  return client.post('/todos', newTodo);
 };
 
 export const onDelete = (todoId: number) => {
   return client.delete(`/todos/${todoId}`);
+};
+
+export const onUpdate = (todoId: number, data: Todo) => {
+  return client.patch(`/todos/${todoId}`, data);
 };

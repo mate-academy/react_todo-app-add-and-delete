@@ -20,7 +20,11 @@ export const Header: React.FC<Props> = ({
           placeholder="What needs to be done?"
           disabled={disable}
           value={title}
-          onChange={(event) => setTitle(event.target.value)}
+          onChange={(event) => {
+            if (event.target.value !== ' ') {
+              setTitle(event.target.value);
+            }
+          }}
         />
       </form>
     </header>

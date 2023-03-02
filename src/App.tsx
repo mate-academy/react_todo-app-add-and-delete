@@ -9,7 +9,9 @@ import { Notification } from './components/Notification/Notification';
 
 import { Todo } from './types/Todo';
 
-import { getTodos, addTodo, onDelete } from './api/todos';
+import {
+  getTodos, addTodo, onDelete, onUpdate,
+} from './api/todos';
 
 const USER_ID = 6476;
 
@@ -50,6 +52,7 @@ export const App: React.FC = () => {
   }, [filterBy, todos]);
 
   const noCompleteTodos = todos.some((todo) => todo.completed);
+  const isMustBeCompleted = todos.filter((todo) => !todo.completed).length;
 
   const loadTodosData = async () => {
     try {
@@ -70,18 +73,29 @@ export const App: React.FC = () => {
     loadTodosData();
   }, []);
 
-  const createNewTodo = (query: string): Todo => {
-
+  const createNewTodo = (query: string) => {
     const newId = Math.max(...todos.map((todo) => todo.id + 1));
 
     const newTodo = {
       id: newId,
       userId: USER_ID,
       title: query,
-      completed: true,
+      completed: false,
     };
 
     return newTodo;
+  };
+
+  const onCompletedChange = (todo: Todo): Todo | void => {
+    onUpdate(todo.id, {
+      id: todo.id,
+      userId: todo.userId,
+      title: todo.title,
+      completed: !todo.completed,
+    });
+
+    setTempTodo(null);
+    loadTodosData();
   };
 
   const dataTodo = {
@@ -94,14 +108,19 @@ export const App: React.FC = () => {
     setTempTodo({ id: 0, ...dataTodo });
 
     try {
-      await addTodo(createNewTodo(title));
-      loadTodosData();
+      if (title) {
+        await addTodo(createNewTodo(title));
+      } else {
+        setErrorMessage('....');
+      }
 
+      loadTodosData();
       setIsError(false);
     } catch {
       setErrorMessage('Unable to add a todo');
       setTempTodo(null);
       setIsError(true);
+      setInputDisable(false);
     }
   };
 
@@ -115,8 +134,6 @@ export const App: React.FC = () => {
   };
 
   const removeTodo = async (todoId: number) => {
-    setTempTodo({ id: 0, ...dataTodo });
-
     try {
       await onDelete(todoId);
       loadTodosData();
@@ -151,10 +168,11 @@ export const App: React.FC = () => {
 
         {todos.length > 0 && (
           <>
-            <TodoList 
-              todos={visibleTodos} 
-              isTemp={tempTodo} 
-              onRemoveTodo={removeTodo} 
+            <TodoList
+              todos={visibleTodos}
+              isTemp={tempTodo}
+              onRemoveTodo={removeTodo}
+              onCompletedChange={onCompletedChange}
             />
 
             <Footer
@@ -162,6 +180,7 @@ export const App: React.FC = () => {
               filterBy={filterBy}
               setFilterBy={setFilterBy}
               clearCompleted={clearCompleted}
+              leftTodos={isMustBeCompleted}
             />
           </>
         )}
