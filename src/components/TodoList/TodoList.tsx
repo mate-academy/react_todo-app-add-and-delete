@@ -17,23 +17,31 @@ export const TodoList: React.FC<Props> = React.memo(
   }) => {
     return (
       <section className="todoapp__main">
-        {todos.map((todo) => (
-          <TodoItem
-            key={todo.id}
-            todo={todo}
-            onRemoveTodo={onRemoveTodo}
-            onCompletedChange={onCompletedChange}
-          />
-        ))}
+        <ul>
+          {todos.map((todo) => (
+            <li>
+              <TodoItem
+                key={todo.id}
+                todo={todo}
+                onRemoveTodo={onRemoveTodo}
+                onCompletedChange={onCompletedChange}
+              />
+            </li>
 
-        {isTemp && (
-          <TodoItem
-            todo={isTemp}
-            withLoader
-            onRemoveTodo={onRemoveTodo}
-            onCompletedChange={onCompletedChange}
-          />
-        )}
+          ))}
+
+          {isTemp && (
+            <li>
+              <TodoItem
+                todo={isTemp}
+                withLoader
+                onRemoveTodo={onRemoveTodo}
+                onCompletedChange={onCompletedChange}
+              />
+            </li>
+          )}
+
+        </ul>
       </section>
     );
   },

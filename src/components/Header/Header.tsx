@@ -2,11 +2,11 @@ type Props = {
   title: string,
   setTitle: (value: string) => void,
   onSubmit: (event: React.FormEvent) => void,
-  disable: boolean,
+  isDisabled: boolean,
 };
 
 export const Header: React.FC<Props> = ({
-  title, setTitle, onSubmit, disable,
+  title, setTitle, onSubmit, isDisabled,
 }) => {
   return (
     <header className="todoapp__header">
@@ -18,7 +18,7 @@ export const Header: React.FC<Props> = ({
           type="text"
           className="todoapp__new-todo"
           placeholder="What needs to be done?"
-          disabled={disable}
+          disabled={isDisabled}
           value={title}
           onChange={(event) => {
             if (event.target.value !== ' ') {

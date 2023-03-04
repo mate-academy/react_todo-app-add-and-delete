@@ -25,8 +25,7 @@ export const TodoItem: React.FC<Props> = ({
     setHasLoader(true);
   };
 
-  const onHandleChangeClick = () => {
-    // setHasLoader(true);
+  const handleClick = () => {
     onCompletedChange(todo);
   };
 
@@ -45,9 +44,7 @@ export const TodoItem: React.FC<Props> = ({
         <input
           type="checkbox"
           className="todo__status"
-          onClick={() => {
-            onHandleChangeClick();
-          }}
+          onClick={handleClick}
         />
       </label>
 

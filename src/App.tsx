@@ -163,10 +163,10 @@ export const App: React.FC = () => {
           title={title}
           setTitle={setTitle}
           onSubmit={handleFromSubmit}
-          disable={inputDisable}
+          isDisabled={inputDisable}
         />
 
-        {todos.length && (
+        {todos.length > 0 && (
           <>
             <TodoList
               todos={visibleTodos}

@@ -25,21 +25,19 @@ export const Footer: React.FC<Props> = ({
 
       <nav className="filter">
 
-        {navigation.map((nav) => {
-          return (
-            <a
-              key={nav}
-              href="#/"
-              className={classNames(
-                'filter__link',
-                { selected: filterBy === nav },
-              )}
-              onClick={() => setFilterBy(nav)}
-            >
-              {nav}
-            </a>
-          );
-        })}
+        {navigation.map((nav) => (
+          <a
+            key={nav}
+            href="#/"
+            className={classNames(
+              'filter__link',
+              { selected: filterBy === nav },
+            )}
+            onClick={() => setFilterBy(nav)}
+          >
+            {nav}
+          </a>
+        ))}
       </nav>
 
       <button
