@@ -12,7 +12,7 @@ enum TypeFilter {
 }
 
 export const Filter: React.FC<Props> = ({ setFilter }) => {
-  const [typeFilter, setTypeFilter] = useState(TypeFilter[1]);
+  const [typeFilter, setTypeFilter] = useState(TypeFilter[0]);
 
   const chooseFilter = (type: string, filter?: boolean) => {
     setFilter(filter);

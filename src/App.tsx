@@ -1,5 +1,6 @@
 /* eslint-disable jsx-a11y/control-has-associated-label */
 import React, { useCallback, useEffect, useState } from 'react';
+import { v4 as uuid } from 'uuid';
 import { deleteTodo, getTodos, postTodo } from './api/todos';
 import { Error } from './components/Error/Error';
 import { Filter } from './components/Filter/Filter';
@@ -33,17 +34,19 @@ export const App: React.FC = () => {
 
   const onSubmitHandler = async (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
-    setTempTodo(true);
-    try {
-      await postTodo(
-        { title: titleTodo, userId: USER_ID, completed: false },
-      );
+    if (titleTodo) {
+      setTempTodo(true);
+      try {
+        await postTodo(
+          { title: titleTodo, userId: USER_ID, completed: false },
+        );
 
-      getListTodo();
-      setTitleTodo('');
-      setTempTodo(false);
-    } catch (e) {
-      setError('Oops, something were wrong, please try again later');
+        getListTodo();
+        setTitleTodo('');
+        setTempTodo(false);
+      } catch (e) {
+        setError('Oops, something were wrong, please try again later');
+      }
     }
   };
 
@@ -65,10 +68,10 @@ export const App: React.FC = () => {
 
       <div className="todoapp__content">
         <header className="todoapp__header">
-          {/* this buttons is active only if there are some active todos */}
-          <button type="button" className="todoapp__toggle-all active" />
-
-          {/* Add a todo on form submit */}
+          <button
+            type="button"
+            className="todoapp__toggle-all active"
+          />
           <form onSubmit={onSubmitHandler}>
             <input
               type="text"
@@ -82,10 +85,10 @@ export const App: React.FC = () => {
 
         <section className="todoapp__main">
           {
-            listTodo.map((el: Todo) => (
+            listTodo.map((todo: Todo) => (
               <Item
-                todo={el}
-                key={el.id}
+                todo={todo}
+                key={todo.id}
                 deleteTodo={deleteTodoHandler}
               />
             ))
@@ -93,7 +96,7 @@ export const App: React.FC = () => {
           {tempTodo && (
             <Item
               todo={{
-                id: Math.random(),
+                id: +uuid(),
                 userId: USER_ID,
                 title: titleTodo,
                 completed: false,
@@ -102,8 +105,6 @@ export const App: React.FC = () => {
             />
           )}
         </section>
-
-        {/* Hide the footer if there are no todos */}
         <footer className="todoapp__footer">
           <span className="todo-count">
             {`${listTodo.length} items left`}
@@ -111,7 +112,6 @@ export const App: React.FC = () => {
 
           <Filter setFilter={getListTodo} />
 
-          {/* don't show this button if there are no completed todos */}
           <button type="button" className="todoapp__clear-completed">
             Clear completed
           </button>
