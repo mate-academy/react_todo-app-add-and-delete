@@ -1,24 +1,166 @@
-/* eslint-disable max-len */
 /* eslint-disable jsx-a11y/control-has-associated-label */
-import React from 'react';
+import React, { useCallback, useEffect, useState } from 'react';
+import { addTodo, getTodos, removeTodo } from './api/todos';
+import { ErrorNotification } from './components/ErrorNotification';
+import { Footer } from './components/Footer';
+import { Header } from './components/Header';
+import { Todolist } from './components/Todolist';
+import { filterValues } from './constants';
+import { Todo } from './types/Todo';
 import { UserWarning } from './UserWarning';
 
-const USER_ID = 0;
+const USER_ID = 6438;
 
 export const App: React.FC = () => {
+  const [todos, setTodos] = useState<Todo[]>([]);
+  const [tempTodo, setTempTodo] = useState<Todo | null>(null);
+  const [hasError, setHasError] = useState(false);
+  const [hasCompleted, setHasCompleted] = useState(false);
+  const [selectedFilter, setSelectedFilter] = useState('All');
+  const [errorType, setErrorType] = useState('');
+  const [isTodoAdding, setIsTodoAdding] = useState(false);
+  const [isTodoRemoving, setIsTodoRemoving] = useState(false);
+  const [removingTodoIds, setRemovingTodoIds] = useState<number[]>([]);
+  const [title, setTitle] = useState('');
+
+  const getTodosFromServer = async () => {
+    try {
+      const response = await getTodos(USER_ID);
+
+      setTodos(response);
+    } catch (error) {
+      setHasError(true);
+      setErrorType('upload');
+    }
+  };
+
+  useEffect(() => {
+    getTodosFromServer();
+  }, []);
+
   if (!USER_ID) {
     return <UserWarning />;
   }
 
-  return (
-    <section className="section container">
-      <p className="title is-4">
-        Copy all you need from the prev task:
-        <br />
-        <a href="https://github.com/mate-academy/react_todo-app-loading-todos#react-todo-app-load-todos">React Todo App - Load Todos</a>
-      </p>
+  const filteredTodos = todos.filter(todo => {
+    if (selectedFilter === filterValues.completed) {
+      return todo.completed;
+    }
 
-      <p className="subtitle">Styles are already copied</p>
-    </section>
+    if (selectedFilter === filterValues.active) {
+      return !todo.completed;
+    }
+
+    return true;
+  });
+
+  const handleAddTodo = async () => {
+    try {
+      setIsTodoAdding(true);
+
+      const newTodo = {
+        userId: USER_ID,
+        title,
+        completed: false,
+      };
+
+      await addTodo(newTodo);
+
+      const demoTodo = {
+        ...newTodo,
+        id: 0,
+      };
+
+      setTempTodo(demoTodo);
+
+      await getTodosFromServer();
+
+      setHasError(false);
+    } catch (error) {
+      setHasError(true);
+      setErrorType('add');
+    } finally {
+      setIsTodoAdding(false);
+      setTempTodo(null);
+    }
+  };
+
+  // eslint-disable-next-line
+  const handleDeleteTodo = useCallback(async (todoId: number) => {
+    try {
+      setIsTodoRemoving(true);
+      await removeTodo(todoId);
+      await getTodosFromServer();
+    } catch (error) {
+      setHasError(true);
+      setErrorType('delete');
+    } finally {
+      setIsTodoRemoving(false);
+    }
+  }, []);
+
+  const handleDeleteButtonClick = (todoId: number) => {
+    setRemovingTodoIds(prevTodoIds => [...prevTodoIds, todoId]);
+    handleDeleteTodo(todoId);
+  };
+
+  const clearCompletedTodos = async () => {
+    todos.map(todo => {
+      if (todo.completed) {
+        handleDeleteButtonClick(todo.id);
+      }
+
+      return true;
+    });
+
+    await getTodosFromServer();
+    setIsTodoRemoving(false);
+  };
+
+  return (
+    <div className="todoapp">
+      <h1 className="todoapp__title">todos</h1>
+
+      <div className="todoapp__content">
+        <Header
+          todos={todos}
+          title={title}
+          setTitle={setTitle}
+          setHasError={setHasError}
+          setErrorType={setErrorType}
+          isTodoAdding={isTodoAdding}
+          handleAddTodo={handleAddTodo}
+        />
+
+        { !!todos.length && (
+          <>
+            <Todolist
+              tempTodo={tempTodo}
+              todos={filteredTodos}
+              isTodoRemoving={isTodoRemoving}
+              removingTodoIds={removingTodoIds}
+              setHasCompleted={setHasCompleted}
+              handleDeleteButtonClick={handleDeleteButtonClick}
+            />
+
+            <Footer
+              todos={todos}
+              hasCompleted={hasCompleted}
+              selectedFilter={selectedFilter}
+              setSelectedFilter={setSelectedFilter}
+              clearCompletedTodos={clearCompletedTodos}
+            />
+          </>
+        ) }
+      </div>
+
+      { hasError && (
+        <ErrorNotification
+          hasError={hasError}
+          errorType={errorType}
+          setHasError={setHasError}
+        />
+      ) }
+    </div>
   );
 };
