@@ -1,29 +1,26 @@
 /* eslint-disable jsx-a11y/control-has-associated-label */
 import React, { FormEvent } from 'react';
 import classNames from 'classnames';
-import { Todo } from '../types/Todo';
 
 type Props = {
-  todos: Todo[];
   title: string;
-  setTitle: React.Dispatch<string>;
+  hasActive: boolean;
+  isTodoAdding: boolean;
   handleAddTodo: () => void;
+  setTitle: React.Dispatch<string>;
   setHasError: React.Dispatch<boolean>;
   setErrorType: React.Dispatch<string>;
-  isTodoAdding: boolean;
 };
 
 export const Header: React.FC<Props> = ({
-  todos,
   title,
   setTitle,
-  handleAddTodo,
+  hasActive,
   setHasError,
   setErrorType,
   isTodoAdding,
+  handleAddTodo,
 }) => {
-  const hasActive = todos.some(todoItem => !todoItem.completed);
-
   const onFormSubmit = (event: FormEvent<HTMLFormElement>) => {
     event.preventDefault();
 

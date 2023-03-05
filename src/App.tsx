@@ -12,16 +12,18 @@ import { UserWarning } from './UserWarning';
 const USER_ID = 6438;
 
 export const App: React.FC = () => {
+  const [title, setTitle] = useState('');
+  const [errorType, setErrorType] = useState('');
   const [todos, setTodos] = useState<Todo[]>([]);
-  const [tempTodo, setTempTodo] = useState<Todo | null>(null);
   const [hasError, setHasError] = useState(false);
   const [hasCompleted, setHasCompleted] = useState(false);
-  const [selectedFilter, setSelectedFilter] = useState('All');
-  const [errorType, setErrorType] = useState('');
   const [isTodoAdding, setIsTodoAdding] = useState(false);
   const [isTodoRemoving, setIsTodoRemoving] = useState(false);
+  const [tempTodo, setTempTodo] = useState<Todo | null>(null);
+  const [selectedFilter, setSelectedFilter] = useState('All');
   const [removingTodoIds, setRemovingTodoIds] = useState<number[]>([]);
-  const [title, setTitle] = useState('');
+
+  const hasActive = todos.some(todoItem => !todoItem.completed);
 
   const getTodosFromServer = async () => {
     try {
@@ -123,9 +125,9 @@ export const App: React.FC = () => {
 
       <div className="todoapp__content">
         <Header
-          todos={todos}
           title={title}
           setTitle={setTitle}
+          hasActive={hasActive}
           setHasError={setHasError}
           setErrorType={setErrorType}
           isTodoAdding={isTodoAdding}
