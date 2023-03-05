@@ -20,7 +20,7 @@ export const TodoItem: React.FC<Props> = ({
 
   const [hasLoader, setHasLoader] = useState(withLoader);
 
-  const onHandleDeleteClick = () => {
+  const hadnleDetele = () => {
     onRemoveTodo(id);
     setHasLoader(true);
   };
@@ -53,7 +53,7 @@ export const TodoItem: React.FC<Props> = ({
       <button
         type="button"
         className="todo__remove"
-        onClick={onHandleDeleteClick}
+        onClick={hadnleDetele}
       >
         ×
       </button>
