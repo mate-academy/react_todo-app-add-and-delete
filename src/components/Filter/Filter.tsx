@@ -2,7 +2,7 @@ import classNames from 'classnames';
 import { useState } from 'react';
 
 type Props = {
-  setFilter: (filter?: boolean) => void
+  setFilter: (filter?: boolean, type?: string) => void
 };
 
 enum TypeFilter {
@@ -15,8 +15,9 @@ export const Filter: React.FC<Props> = ({ setFilter }) => {
   const [typeFilter, setTypeFilter] = useState(TypeFilter[0]);
 
   const chooseFilter = (type: string, filter?: boolean) => {
-    setFilter(filter);
+    setFilter(filter, type);
     setTypeFilter(type);
+    localStorage.setItem('filter', type);
   };
 
   return (

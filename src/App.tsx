@@ -16,11 +16,15 @@ export const App: React.FC = () => {
   const [error, setError] = useState('');
   const [tempTodo, setTempTodo] = useState(false);
 
-  const getListTodo = async (filter?: boolean) => {
+  const getListTodo = async (filter?: boolean, type?: string) => {
     try {
       const result = await getTodos(USER_ID, filter);
 
-      setListTodo(result);
+      if (type === 'active') {
+        setListTodo(result.filter((el:Todo) => !el.completed));
+      } else {
+        setListTodo(result);
+      }
     } catch (e) {
       setError('Oops, something were wrong, please try again later');
     }
