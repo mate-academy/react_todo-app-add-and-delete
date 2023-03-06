@@ -15,7 +15,7 @@ export const ErrorNotification: FC<Props> = ({ customError, setError }) => (
     <button
       type="button"
       className="delete"
-      onClick={() => setError(CustomError.noError)}
+      onClick={() => setError(CustomError.NoError)}
     />
 
     <p>

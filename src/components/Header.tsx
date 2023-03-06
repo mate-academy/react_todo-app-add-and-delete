@@ -5,6 +5,8 @@ import {
   useState,
   useRef,
   useEffect,
+  SetStateAction,
+  Dispatch,
 } from 'react';
 import classNames from 'classnames';
 
@@ -16,9 +18,9 @@ import { initData } from '../constants/initData';
 
 type Props = {
   tempTodo: Todo | null,
-  setTodos: React.Dispatch<React.SetStateAction<Todo[]>>,
+  setTodos: Dispatch<SetStateAction<Todo[]>>,
   activeTodoData: ActiveTodoData,
-  setTempTodo: React.Dispatch<React.SetStateAction<Todo | null>>,
+  setTempTodo: Dispatch<SetStateAction<Todo | null>>,
   setError: (newError: CustomError, delay?: number) => void,
 };
 
@@ -30,9 +32,9 @@ export const Header: FC<Props> = ({
   setError,
 }) => {
   const [newTodo, setNewTodo] = useState<NewTodo>(initData.newTodo);
-  const [inputDisabled, setInputDisabled] = useState<boolean>(false);
+  const [inputDisabled, setInputDisabled] = useState(false);
 
-  const focusInput = useRef<HTMLInputElement>(null);
+  const focusInput = useRef<HTMLInputElement | null>(null);
 
   useEffect(() => {
     if (focusInput.current) {
@@ -43,7 +45,7 @@ export const Header: FC<Props> = ({
   const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     if (!newTodo.title.length) {
-      setError(CustomError.emptyTitle, 3000);
+      setError(CustomError.EmptyTitle, 3000);
     } else {
       setInputDisabled(true);
       setTempTodo({ ...newTodo, id: 0 });
@@ -57,8 +59,14 @@ export const Header: FC<Props> = ({
           setNewTodo(initData.newTodo);
           setInputDisabled(false);
         })
-        .catch(() => setError(CustomError.add, 3000));
+        .catch(() => setError(CustomError.Add, 3000));
     }
+  };
+
+  const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    setNewTodo((prevState) => {
+      return { ...prevState, title: e.target.value };
+    });
   };
 
   return (
@@ -79,9 +87,7 @@ export const Header: FC<Props> = ({
           className="todoapp__new-todo"
           placeholder="What needs to be done?"
           value={newTodo.title}
-          onChange={(e) => setNewTodo((prevState) => {
-            return { ...prevState, title: e.target.value };
-          })}
+          onChange={handleInputChange}
         />
       </form>
     </header>

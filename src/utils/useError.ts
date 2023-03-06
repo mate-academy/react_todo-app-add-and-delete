@@ -3,7 +3,7 @@ import { CustomError } from '../types/CustomError';
 
 export const useError = (init: CustomError) => {
   const [customError, setError]
-    = useState<CustomError>(init);
+    = useState(init);
 
   const setDelayError = (
     newError: CustomError,
@@ -11,7 +11,7 @@ export const useError = (init: CustomError) => {
   ) => {
     setError(newError);
     if (delay) {
-      setTimeout(() => setError(CustomError.noError), delay);
+      setTimeout(() => setError(CustomError.NoError), delay);
     }
   };
 

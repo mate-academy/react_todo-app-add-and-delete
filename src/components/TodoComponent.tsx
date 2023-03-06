@@ -5,14 +5,14 @@ type Props = {
   completed: boolean,
   title: string,
   id: number,
-  handleRemoveTodo: (id: number) => void,
+  onRemove: (id: number) => void,
 };
 
 export const TodoComponent: FC<Props> = ({
   completed,
   title,
   id,
-  handleRemoveTodo,
+  onRemove: handleRemoveTodo,
 }) => {
   return (
     <div

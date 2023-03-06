@@ -40,9 +40,9 @@ export const ListOfTodos: FC<Props> = ({
             ];
           });
         })
-        .catch(() => setError(CustomError.delete, 3000));
+        .catch(() => setError(CustomError.Delete, 3000));
     } else {
-      setError(CustomError.delete, 3000);
+      setError(CustomError.Delete, 3000);
     }
   };
 
@@ -54,7 +54,7 @@ export const ListOfTodos: FC<Props> = ({
         <TodoComponent
           key={id}
           id={id}
-          handleRemoveTodo={handleRemoveTodo}
+          onRemove={handleRemoveTodo}
           completed={completed}
           title={title}
         />
@@ -62,7 +62,7 @@ export const ListOfTodos: FC<Props> = ({
 
       {!!tempTodo && (
         <TodoComponent
-          handleRemoveTodo={handleRemoveTodo}
+          onRemove={handleRemoveTodo}
           completed={tempTodo.completed}
           title={tempTodo.title}
           id={tempTodo.id}

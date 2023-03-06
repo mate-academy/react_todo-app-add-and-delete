@@ -25,10 +25,10 @@ export const FooterMenu: FC<Props> = ({
   setError,
 }) => {
   const handleClearCompleted = () => {
-    const idForDelete = todos.filter(({ completed }: Todo) => completed)
+    const deleteIds = todos.filter(({ completed }: Todo) => completed)
       .map(({ id }: Todo) => id);
 
-    if (idForDelete.length) {
+    if (deleteIds.length) {
       setTodos((prevTodos) => {
         return [
           ...prevTodos.map(todo => {
@@ -41,7 +41,7 @@ export const FooterMenu: FC<Props> = ({
         ];
       });
 
-      idForDelete.forEach(id => {
+      deleteIds.forEach(id => {
         deleteTodo(id);
       });
 
@@ -49,7 +49,7 @@ export const FooterMenu: FC<Props> = ({
         return [...prevTodos.filter(({ id }: Todo) => id)];
       });
     } else {
-      setError(CustomError.delete, 3000);
+      setError(CustomError.Delete, 3000);
     }
   };
 

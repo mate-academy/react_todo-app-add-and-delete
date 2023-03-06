@@ -5,7 +5,7 @@ import { USER_ID } from '../utils/fetchClient';
 export const initData = {
   todos: [],
   filter: Filter.All,
-  customError: CustomError.noError,
+  customError: CustomError.NoError,
   activeTodoData: { hasActiveTodo: false, activeLeft: 0 },
   editField: '',
   tempTodo: null,

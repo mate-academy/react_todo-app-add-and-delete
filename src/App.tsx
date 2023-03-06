@@ -21,22 +21,11 @@ import { useError } from './utils/useError';
 export const App: React.FC = () => {
   const [todos, setTodos] = useState<Todo[]>(initData.todos);
   const [filter, setFilter] = useState<Filter>(initData.filter);
-  const [customError, setDelayError]
+  const [customError, setError]
     = useError(initData.customError);
   const [activeTodoData, setActiveTodo]
     = useState<ActiveTodoData>(initData.activeTodoData);
   const [tempTodo, setTempTodo] = useState<Todo | null>(initData.tempTodo);
-
-  const filterCallback = ((todo: Todo) => {
-    switch (filter) {
-      case Filter.Completed:
-        return todo.completed;
-      case Filter.Active:
-        return !todo.completed;
-      default:
-        return true;
-    }
-  });
 
   useEffect(() => {
     getTodos(USER_ID)
@@ -48,7 +37,7 @@ export const App: React.FC = () => {
         });
       })
       .catch(() => {
-        setDelayError(CustomError.update, 3000);
+        setError(CustomError.Update, 3000);
       });
   }, []);
 
@@ -57,13 +46,31 @@ export const App: React.FC = () => {
       hasActiveTodo: !!todos.some(todo => !todo.completed),
       activeLeft: todos.filter(todo => !todo.completed).length,
     });
-    setDelayError(CustomError.noError);
+    setError(CustomError.NoError);
   }, [todos]);
 
-  const filteredTodos = useMemo(
-    () => todos.filter(filterCallback),
-    [todos, filter],
-  );
+  const filteredTodos = useMemo(() => {
+    switch (filter) {
+      case Filter.All: {
+        return todos;
+      }
+
+      case Filter.Active: {
+        return todos.filter(todo => !todo.completed);
+      }
+
+      case Filter.Completed: {
+        return todos.filter(todo => todo.completed);
+      }
+
+      default: {
+        setError(CustomError.Update);
+
+        return todos;
+      }
+    }
+  },
+  [todos, filter]);
 
   if (!USER_ID) {
     return <UserWarning />;
@@ -79,14 +86,14 @@ export const App: React.FC = () => {
           setTodos={setTodos}
           activeTodoData={activeTodoData}
           setTempTodo={setTempTodo}
-          setError={setDelayError}
+          setError={setError}
         />
 
         <ListOfTodos
           todos={filteredTodos}
           setTodos={setTodos}
           tempTodo={tempTodo}
-          setError={setDelayError}
+          setError={setError}
         />
 
         {!!todos.length && (
@@ -96,7 +103,7 @@ export const App: React.FC = () => {
             activeTodoData={activeTodoData}
             filter={filter}
             setFilter={setFilter}
-            setError={setDelayError}
+            setError={setError}
           />
         )}
       </div>
@@ -104,7 +111,7 @@ export const App: React.FC = () => {
       {customError && (
         <ErrorNotification
           customError={customError}
-          setError={setDelayError}
+          setError={setError}
         />
       )}
     </div>
