@@ -51,8 +51,8 @@ export const App: React.FC = () => {
     );
   }, [filterBy, todos]);
 
-  const noCompleteTodos = todos.some((todo) => todo.completed);
-  const isMustBeCompleted = todos.filter((todo) => !todo.completed).length;
+  const hasCompleteTodos = todos.some((todo) => todo.completed);
+  const mustBeCompleted = todos.filter((todo) => !todo.completed).length;
 
   const loadTodosData = async () => {
     try {
@@ -171,11 +171,11 @@ export const App: React.FC = () => {
             />
 
             <Footer
-              noCompleteTodos={noCompleteTodos}
+              hasCompleteTodos={hasCompleteTodos}
               filterBy={filterBy}
               setFilterBy={setFilterBy}
               clearCompleted={clearCompleted}
-              leftTodos={isMustBeCompleted}
+              leftTodos={mustBeCompleted}
             />
           </>
         )}
