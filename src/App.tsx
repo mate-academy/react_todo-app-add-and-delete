@@ -58,22 +58,22 @@ export const App: React.FC = () => {
 
   // eslint-disable-next-line
   const handleAddTodo = useCallback(async () => {
-    const newTodo = {
+    const newTodoToFetch = {
       userId: USER_ID,
       title,
       completed: false,
     };
 
-    const prevTodo = {
-      ...newTodo,
+    const newTodoToShow = {
+      ...newTodoToFetch,
       id: 0,
     };
 
     setIsTodoAdding(true);
-    setTempTodo(prevTodo);
+    setTempTodo(newTodoToShow);
 
     try {
-      const addedTodo = await addTodo(newTodo);
+      const addedTodo = await addTodo(newTodoToFetch);
 
       setTodos(prevTodos => [...prevTodos, addedTodo]);
 
