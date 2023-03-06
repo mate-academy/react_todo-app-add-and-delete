@@ -28,13 +28,15 @@ export const Todolist: React.FC<Props> = ({
           setHasCompleted(true);
         }
 
+        const isLoaderVisible = isTodoRemoving
+          && removingTodoIds.includes(todo.id);
+
         return (
           <TodoInfo
-            todo={todo}
             key={todo.id}
+            todo={todo}
+            isLoaderVisible={isLoaderVisible}
             handleDeleteButtonClick={handleDeleteButtonClick}
-            isTodoRemoving={isTodoRemoving}
-            removingTodoIds={removingTodoIds}
           />
         );
       })}

@@ -44,7 +44,7 @@ export const App: React.FC = () => {
     return <UserWarning />;
   }
 
-  const filteredTodos = todos.filter(todo => {
+  const visibleTodos = todos.filter(todo => {
     if (selectedFilter === filterValues.completed) {
       return todo.completed;
     }
@@ -56,26 +56,26 @@ export const App: React.FC = () => {
     return true;
   });
 
-  const handleAddTodo = async () => {
+  // eslint-disable-next-line
+  const handleAddTodo = useCallback(async () => {
+    const newTodo = {
+      userId: USER_ID,
+      title,
+      completed: false,
+    };
+
+    const prevTodo = {
+      ...newTodo,
+      id: 0,
+    };
+
+    setIsTodoAdding(true);
+    setTempTodo(prevTodo);
+
     try {
-      setIsTodoAdding(true);
+      const addedTodo = await addTodo(newTodo);
 
-      const newTodo = {
-        userId: USER_ID,
-        title,
-        completed: false,
-      };
-
-      await addTodo(newTodo);
-
-      const demoTodo = {
-        ...newTodo,
-        id: 0,
-      };
-
-      setTempTodo(demoTodo);
-
-      await getTodosFromServer();
+      setTodos(prevTodos => [...prevTodos, addedTodo]);
 
       setHasError(false);
     } catch (error) {
@@ -85,37 +85,37 @@ export const App: React.FC = () => {
       setIsTodoAdding(false);
       setTempTodo(null);
     }
-  };
+  }, [title]);
 
   // eslint-disable-next-line
   const handleDeleteTodo = useCallback(async (todoId: number) => {
     try {
       setIsTodoRemoving(true);
       await removeTodo(todoId);
-      await getTodosFromServer();
+
+      const updatedTodos = todos.filter(todo => todo.id !== todoId);
+
+      setTodos(updatedTodos);
     } catch (error) {
       setHasError(true);
       setErrorType('delete');
     } finally {
       setIsTodoRemoving(false);
     }
-  }, []);
+  }, [todos]);
 
   const handleDeleteButtonClick = (todoId: number) => {
     setRemovingTodoIds(prevTodoIds => [...prevTodoIds, todoId]);
     handleDeleteTodo(todoId);
   };
 
-  const clearCompletedTodos = async () => {
-    todos.map(todo => {
+  const clearCompletedTodos = () => {
+    todos.forEach(todo => {
       if (todo.completed) {
         handleDeleteButtonClick(todo.id);
       }
-
-      return true;
     });
 
-    await getTodosFromServer();
     setIsTodoRemoving(false);
   };
 
@@ -134,11 +134,11 @@ export const App: React.FC = () => {
           handleAddTodo={handleAddTodo}
         />
 
-        { !!todos.length && (
+        { (!!todos.length || tempTodo) && (
           <>
             <Todolist
               tempTodo={tempTodo}
-              todos={filteredTodos}
+              todos={visibleTodos}
               isTodoRemoving={isTodoRemoving}
               removingTodoIds={removingTodoIds}
               setHasCompleted={setHasCompleted}

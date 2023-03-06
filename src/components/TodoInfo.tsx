@@ -4,22 +4,18 @@ import { Todo } from '../types/Todo';
 
 type Props = {
   todo: Todo;
-  isTodoRemoving: boolean;
-  removingTodoIds: number[];
+  isLoaderVisible: boolean;
   handleDeleteButtonClick: (todoId: number) => void;
 };
 
 export const TodoInfo: React.FC<Props> = ({
   todo,
-  isTodoRemoving,
-  removingTodoIds,
+  isLoaderVisible,
   handleDeleteButtonClick,
 }) => {
   const [isCompleted, setIsCompleted] = useState(todo.completed);
   const [query, setQuery] = useState(todo.title);
   const [isEditing, setIsEditing] = useState(false);
-  const isLoaderVisible = isTodoRemoving
-    && removingTodoIds.includes(todo.id);
 
   const todoContent = isEditing
     ? (
