@@ -1,7 +1,6 @@
-/* eslint-disable import/no-cycle */
 /* eslint-disable jsx-a11y/control-has-associated-label */
 import React, { useState } from 'react';
-import { USER_ID } from '../App';
+import { USER_ID } from '../utils/userId';
 import { Todo } from '../types/Todo';
 
 type Props = {
@@ -23,22 +22,23 @@ export const Header: React.FC<Props> = ({ onAddTodo, inputDisable }) => {
     setNewTodoValue('');
   };
 
+  const onFormSubmit = (e:React.FormEvent<HTMLFormElement>) => {
+    e.preventDefault();
+    createNewTodo();
+  };
+
   return (
     <header className="todoapp__header">
       <button type="button" className="todoapp__toggle-all active" />
 
-      <form onSubmit={(e) => {
-        e.preventDefault();
-        createNewTodo();
-      }}
-      >
+      <form onSubmit={onFormSubmit}>
         <input
           type="text"
           className="todoapp__new-todo"
           placeholder="What needs to be done?"
           value={newTodoValue}
           onChange={(e) => setNewTodoValue(e.target.value)}
-          disabled={inputDisable === false}
+          disabled={!inputDisable}
         />
       </form>
     </header>

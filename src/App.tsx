@@ -1,5 +1,3 @@
-/* eslint-disable import/no-cycle */
-/* eslint-disable jsx-a11y/control-has-associated-label */
 import React, {
   useCallback, useEffect, useState,
 } from 'react';
@@ -12,8 +10,7 @@ import { Todo } from './types/Todo';
 import { SelectOptions } from './types/SelectOptions';
 import { ErrorType } from './types/ErrorType';
 import { deleteTodos, getTodos, postTodos } from './api/todos';
-
-export const USER_ID = 6447;
+import { USER_ID } from './utils/userId';
 
 export const App: React.FC = () => {
   const [todos, setTodos] = useState<Todo[]>([]);
@@ -30,23 +27,21 @@ export const App: React.FC = () => {
     return allTodos
       .filter((todo: Todo) => todo.completed)
       .map(todoItem => todoItem.id);
-  }, [todos]);
+  }, []);
 
-  const filterTodosBySelectOptions = useCallback(
-    () => (type: SelectOptions) => {
-      switch (type) {
-        case SelectOptions.ACTIVE:
-          setVisibleTodos(todos.filter((todo: Todo) => !todo.completed));
-          break;
-        case SelectOptions.COMPLETED:
-          setVisibleTodos(todos.filter((todo: Todo) => todo.completed));
-          break;
-        case SelectOptions.ALL:
-        default:
-          setVisibleTodos(todos);
-      }
-    }, [todos],
-  );
+  const filterTodosBySelectOptions = () => (type: SelectOptions) => {
+    switch (type) {
+      case SelectOptions.ACTIVE:
+        setVisibleTodos(todos.filter((todo: Todo) => !todo.completed));
+        break;
+      case SelectOptions.COMPLETED:
+        setVisibleTodos(todos.filter((todo: Todo) => todo.completed));
+        break;
+      case SelectOptions.ALL:
+      default:
+        setVisibleTodos(todos);
+    }
+  };
 
   const loadTodosFromServer = useCallback(async () => {
     try {
@@ -57,12 +52,8 @@ export const App: React.FC = () => {
       setCompletedTodosId(filteredCompletedTodosId(todosData));
     } catch (err) {
       setIsError(true);
-      if (err instanceof Error) {
-        // eslint-disable-next-line no-alert
-        alert(err);
-      }
     }
-  }, [todos]);
+  }, []);
 
   const emptyTodo = useCallback((title = '') => {
     const emptyNewTodo = {
@@ -128,9 +119,9 @@ export const App: React.FC = () => {
     return () => clearTimeout(timeoutID);
   }, [isError]);
 
-  const closeNotification = useCallback(() => {
+  const closeNotification = () => {
     setIsError(false);
-  }, []);
+  };
 
   const addComplitedTodo = (todoId:number) => {
     const currentTodo = todos.find(todo => todo.id === todoId);
@@ -198,7 +189,7 @@ export const App: React.FC = () => {
       <div className="todoapp__content">
         <Header onAddTodo={addTodo} inputDisable={isResponce} />
 
-        {todos.length > 0
+        {!!todos.length
           && (
             <Main
               todos={visibleTodos}
@@ -209,14 +200,15 @@ export const App: React.FC = () => {
             />
           )}
 
-        {todos.length > 0 && (
-          <Footer
-            filterTodos={filterTodosBySelectOptions}
-            todosCount={todos.length}
-            completedTodosCount={completedTodosId.length}
-            deleteCompletedTodos={deleteCompletedTodos}
-          />
-        )}
+        {!!todos.length
+          && (
+            <Footer
+              filterTodos={filterTodosBySelectOptions}
+              todosCount={todos.length}
+              completedTodosCount={completedTodosId.length}
+              deleteCompletedTodos={deleteCompletedTodos}
+            />
+          )}
       </div>
 
       {isError && (
