@@ -1,4 +1,3 @@
-/* eslint-disable jsx-a11y/control-has-associated-label */
 import React, { useCallback, useEffect, useState } from 'react';
 import { addTodo, getTodos, removeTodo } from './api/todos';
 import { ErrorNotification } from './components/ErrorNotification';
@@ -16,9 +15,7 @@ export const App: React.FC = () => {
   const [errorType, setErrorType] = useState('');
   const [todos, setTodos] = useState<Todo[]>([]);
   const [hasError, setHasError] = useState(false);
-  const [hasCompleted, setHasCompleted] = useState(false);
   const [isTodoAdding, setIsTodoAdding] = useState(false);
-  const [isTodoRemoving, setIsTodoRemoving] = useState(false);
   const [tempTodo, setTempTodo] = useState<Todo | null>(null);
   const [selectedFilter, setSelectedFilter] = useState('All');
   const [removingTodoIds, setRemovingTodoIds] = useState<number[]>([]);
@@ -36,27 +33,6 @@ export const App: React.FC = () => {
     }
   };
 
-  useEffect(() => {
-    getTodosFromServer();
-  }, []);
-
-  if (!USER_ID) {
-    return <UserWarning />;
-  }
-
-  const visibleTodos = todos.filter(todo => {
-    if (selectedFilter === filterValues.completed) {
-      return todo.completed;
-    }
-
-    if (selectedFilter === filterValues.active) {
-      return !todo.completed;
-    }
-
-    return true;
-  });
-
-  // eslint-disable-next-line
   const handleAddTodo = useCallback(async () => {
     const newTodoToFetch = {
       userId: USER_ID,
@@ -87,10 +63,10 @@ export const App: React.FC = () => {
     }
   }, [title]);
 
-  // eslint-disable-next-line
   const handleDeleteTodo = useCallback(async (todoId: number) => {
+    setRemovingTodoIds(prevTodoIds => [...prevTodoIds, todoId]);
+
     try {
-      setIsTodoRemoving(true);
       await removeTodo(todoId);
 
       const updatedTodos = todos.filter(todo => todo.id !== todoId);
@@ -100,23 +76,45 @@ export const App: React.FC = () => {
       setHasError(true);
       setErrorType('delete');
     } finally {
-      setIsTodoRemoving(false);
+      setRemovingTodoIds(prevTodoIds => prevTodoIds
+        .filter((id) => id === todoId));
     }
   }, [todos]);
 
-  const handleDeleteButtonClick = (todoId: number) => {
-    setRemovingTodoIds(prevTodoIds => [...prevTodoIds, todoId]);
-    handleDeleteTodo(todoId);
-  };
+  useEffect(() => {
+    getTodosFromServer();
+  }, []);
 
-  const clearCompletedTodos = () => {
-    todos.forEach(todo => {
-      if (todo.completed) {
-        handleDeleteButtonClick(todo.id);
-      }
-    });
+  if (!USER_ID) {
+    return <UserWarning />;
+  }
 
-    setIsTodoRemoving(false);
+  const visibleTodos = todos.filter(todo => {
+    if (selectedFilter === filterValues.completed) {
+      return todo.completed;
+    }
+
+    if (selectedFilter === filterValues.active) {
+      return !todo.completed;
+    }
+
+    return true;
+  });
+
+  const clearCompletedTodos = async () => {
+    const completedTodosIds = [...todos]
+      .filter(todo => todo.completed)
+      .map((todo) => todo.id);
+
+    setRemovingTodoIds(completedTodosIds);
+
+    Promise.all(completedTodosIds.map((id) => removeTodo(id)))
+      .then(() => {
+        const activeTodos = todos
+          .filter(todo => !todo.completed);
+
+        setTodos(activeTodos);
+      });
   };
 
   return (
@@ -139,15 +137,12 @@ export const App: React.FC = () => {
             <Todolist
               tempTodo={tempTodo}
               todos={visibleTodos}
-              isTodoRemoving={isTodoRemoving}
               removingTodoIds={removingTodoIds}
-              setHasCompleted={setHasCompleted}
-              handleDeleteButtonClick={handleDeleteButtonClick}
+              handleDeleteTodo={handleDeleteTodo}
             />
 
             <Footer
               todos={todos}
-              hasCompleted={hasCompleted}
               selectedFilter={selectedFilter}
               setSelectedFilter={setSelectedFilter}
               clearCompletedTodos={clearCompletedTodos}

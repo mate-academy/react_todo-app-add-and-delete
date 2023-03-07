@@ -5,13 +5,13 @@ import { Todo } from '../types/Todo';
 type Props = {
   todo: Todo;
   isLoaderVisible: boolean;
-  handleDeleteButtonClick: (todoId: number) => void;
+  handleDeleteTodo: (todoId: number) => void;
 };
 
 export const TodoInfo: React.FC<Props> = ({
   todo,
   isLoaderVisible,
-  handleDeleteButtonClick,
+  handleDeleteTodo,
 }) => {
   const [isCompleted, setIsCompleted] = useState(todo.completed);
   const [query, setQuery] = useState(todo.title);
@@ -44,7 +44,7 @@ export const TodoInfo: React.FC<Props> = ({
         <button
           type="button"
           className="todo__remove"
-          onClick={() => handleDeleteButtonClick(todo.id)}
+          onClick={() => handleDeleteTodo(todo.id)}
         >
           ×
         </button>
@@ -52,7 +52,7 @@ export const TodoInfo: React.FC<Props> = ({
     );
 
   return (
-    <div className={classNames('todo', {
+    <li className={classNames('todo', {
       completed: isCompleted,
     })}
     >
@@ -80,6 +80,6 @@ export const TodoInfo: React.FC<Props> = ({
         <div className="modal-background has-background-white-ter" />
         <div className="loader" />
       </div>
-    </div>
+    </li>
   );
 };

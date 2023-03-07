@@ -1,4 +1,3 @@
-/* eslint-disable jsx-a11y/control-has-associated-label */
 import React, { useEffect, useState } from 'react';
 import classNames from 'classnames';
 
@@ -48,6 +47,7 @@ export const ErrorNotification: React.FC<Props> = ({
     >
       <button
         type="button"
+        aria-label="delete button"
         className="delete"
         onClick={() => setIsHidden(true)}
       />

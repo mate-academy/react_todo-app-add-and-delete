@@ -1,4 +1,3 @@
-/* eslint-disable jsx-a11y/control-has-associated-label */
 import React, { FormEvent } from 'react';
 import classNames from 'classnames';
 
@@ -39,6 +38,7 @@ export const Header: React.FC<Props> = ({
     <header className="todoapp__header">
       <button
         type="button"
+        aria-label="toggle all todo statuses"
         className={classNames('todoapp__toggle-all', {
           active: hasActive,
         })}

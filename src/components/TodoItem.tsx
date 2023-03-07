@@ -5,10 +5,8 @@ type Props = {
   tempTodo: Todo;
 };
 
-export const TodoItem: React.FC<Props> = ({
-  tempTodo,
-}) => (
-  <div className="todo">
+export const TodoItem: React.FC<Props> = ({ tempTodo }) => (
+  <li className="todo">
     <label className="todo__status-label">
       <input type="checkbox" className="todo__status" />
     </label>
@@ -22,5 +20,5 @@ export const TodoItem: React.FC<Props> = ({
       <div className="modal-background has-background-white-ter" />
       <div className="loader" />
     </div>
-  </div>
+  </li>
 );

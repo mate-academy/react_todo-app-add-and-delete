@@ -1,4 +1,3 @@
-/* eslint-disable jsx-a11y/control-has-associated-label */
 import React from 'react';
 import classNames from 'classnames';
 import { filterValues } from '../constants';
@@ -6,7 +5,6 @@ import { Todo } from '../types/Todo';
 
 type Props = {
   todos: Todo[];
-  hasCompleted: boolean;
   selectedFilter: string;
   setSelectedFilter: React.Dispatch<string>;
   clearCompletedTodos: () => void;
@@ -14,16 +12,17 @@ type Props = {
 
 export const Footer: React.FC<Props> = ({
   todos,
-  hasCompleted,
   selectedFilter,
   setSelectedFilter,
   clearCompletedTodos,
 }) => {
-  const todosCount = `${todos.length} items left`;
+  const notCompletedTodos = [...todos].filter(todo => !todo.completed);
+  const todosCountMessage = `${notCompletedTodos.length} items left`;
+  const isClearCompletedDisabled = todos.length === notCompletedTodos.length;
 
   return (
     <footer className="todoapp__footer">
-      <span className="todo-count">{todosCount}</span>
+      <span className="todo-count">{todosCountMessage}</span>
 
       <nav className="filter">
         { Object.values(filterValues).map((value) => (
@@ -43,7 +42,7 @@ export const Footer: React.FC<Props> = ({
       <button
         type="button"
         className="todoapp__clear-completed"
-        disabled={!hasCompleted}
+        disabled={isClearCompletedDisabled}
         onClick={clearCompletedTodos}
       >
         Clear completed
