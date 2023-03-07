@@ -114,7 +114,13 @@ export const App: React.FC = () => {
           .filter(todo => !todo.completed);
 
         setTodos(activeTodos);
-      });
+      })
+      .catch(() => {
+        setHasError(true);
+        setErrorType('delete');
+      })
+      .finally(() => setRemovingTodoIds(prevTodoIds => prevTodoIds
+        .filter((id) => !completedTodosIds.includes(id))));
   };
 
   return (
