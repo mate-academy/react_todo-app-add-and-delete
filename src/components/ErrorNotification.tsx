@@ -4,7 +4,7 @@ import classNames from 'classnames';
 type Props = {
   errorType: string;
   hasError: boolean;
-  setHasError: React.Dispatch<boolean>;
+  setHasError: React.Dispatch<React.SetStateAction<boolean>>;
 };
 
 export const ErrorNotification: React.FC<Props> = ({

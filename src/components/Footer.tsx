@@ -6,8 +6,8 @@ import { Todo } from '../types/Todo';
 type Props = {
   todos: Todo[];
   selectedFilter: string;
-  setSelectedFilter: React.Dispatch<string>;
   clearCompletedTodos: () => void;
+  setSelectedFilter: React.Dispatch<React.SetStateAction<string>>;
 };
 
 export const Footer: React.FC<Props> = ({

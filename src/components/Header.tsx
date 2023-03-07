@@ -6,9 +6,9 @@ type Props = {
   hasActive: boolean;
   isTodoAdding: boolean;
   handleAddTodo: () => void;
-  setTitle: React.Dispatch<string>;
-  setHasError: React.Dispatch<boolean>;
-  setErrorType: React.Dispatch<string>;
+  setTitle: React.Dispatch<React.SetStateAction<string>>;
+  setHasError: React.Dispatch<React.SetStateAction<boolean>>;
+  setErrorType: React.Dispatch<React.SetStateAction<string>>;
 };
 
 export const Header: React.FC<Props> = ({
