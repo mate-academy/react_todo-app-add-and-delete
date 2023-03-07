@@ -12,7 +12,6 @@ import { getTodos } from './api/todos';
 import { Todo } from './types/Todo';
 import { Filter } from './types/Filter';
 import { CustomError } from './types/CustomError';
-import { ActiveTodoData } from './types/ActiveTodoData';
 
 import { USER_ID } from './utils/fetchClient';
 import { initData } from './constants/initData';
@@ -23,18 +22,15 @@ export const App: React.FC = () => {
   const [filter, setFilter] = useState<Filter>(initData.filter);
   const [customError, setError]
     = useError(initData.customError);
-  const [activeTodoData, setActiveTodo]
-    = useState<ActiveTodoData>(initData.activeTodoData);
+  const [activeLeft, setActiveLeft]
+    = useState<number>(initData.activeLeft);
   const [tempTodo, setTempTodo] = useState<Todo | null>(initData.tempTodo);
 
   useEffect(() => {
     getTodos(USER_ID)
       .then(todosFromServer => {
         setTodos(todosFromServer);
-        setActiveTodo({
-          hasActiveTodo: todosFromServer.some(todo => !todo.completed),
-          activeLeft: todosFromServer.filter(todo => !todo.completed).length,
-        });
+        setActiveLeft(todosFromServer.filter(todo => !todo.completed).length);
       })
       .catch(() => {
         setError(CustomError.Update, 3000);
@@ -42,10 +38,7 @@ export const App: React.FC = () => {
   }, []);
 
   useEffect(() => {
-    setActiveTodo({
-      hasActiveTodo: !!todos.some(todo => !todo.completed),
-      activeLeft: todos.filter(todo => !todo.completed).length,
-    });
+    setActiveLeft(todos.filter(todo => !todo.completed).length);
     setError(CustomError.NoError);
   }, [todos]);
 
@@ -84,7 +77,7 @@ export const App: React.FC = () => {
         <Header
           tempTodo={tempTodo}
           setTodos={setTodos}
-          activeTodoData={activeTodoData}
+          activeLeft={activeLeft}
           setTempTodo={setTempTodo}
           setError={setError}
         />
@@ -100,7 +93,7 @@ export const App: React.FC = () => {
           <FooterMenu
             todos={filteredTodos}
             setTodos={setTodos}
-            activeTodoData={activeTodoData}
+            activeLeft={activeLeft}
             filter={filter}
             setFilter={setFilter}
             setError={setError}

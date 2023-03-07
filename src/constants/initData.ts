@@ -6,7 +6,7 @@ export const initData = {
   todos: [],
   filter: Filter.All,
   customError: CustomError.NoError,
-  activeTodoData: { hasActiveTodo: false, activeLeft: 0 },
+  activeLeft: 0,
   editField: '',
   tempTodo: null,
   newTodo: {

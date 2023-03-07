@@ -1,7 +1,6 @@
 import { FC, useMemo } from 'react';
 import classNames from 'classnames';
 
-import { ActiveTodoData } from '../types/ActiveTodoData';
 import { Filter } from '../types/Filter';
 import { Todo } from '../types/Todo';
 import { deleteTodo } from '../api/todos';
@@ -10,7 +9,7 @@ import { CustomError } from '../types/CustomError';
 type Props = {
   todos: Todo[],
   setTodos: React.Dispatch<React.SetStateAction<Todo[]>>,
-  activeTodoData: ActiveTodoData,
+  activeLeft: number,
   filter: Filter;
   setFilter: (filter: Filter) => void,
   setError: (newError: CustomError, delay?: number) => void,
@@ -19,7 +18,7 @@ type Props = {
 export const FooterMenu: FC<Props> = ({
   todos,
   setTodos,
-  activeTodoData,
+  activeLeft,
   filter,
   setFilter,
   setError,
@@ -63,7 +62,7 @@ export const FooterMenu: FC<Props> = ({
       className="todoapp__footer"
     >
       <span className="todo-count">
-        {`${activeTodoData.activeLeft} items left`}
+        {`${activeLeft} items left`}
       </span>
 
       <nav className="filter">
@@ -101,15 +100,13 @@ export const FooterMenu: FC<Props> = ({
         </a>
       </nav>
 
-      {Boolean(hasCompleted) && (
-        <button
-          type="button"
-          className="todoapp__clear-completed"
-          onClick={() => handleClearCompleted()}
-        >
-          Clear completed
-        </button>
-      )}
+      <button
+        type="button"
+        className="todoapp__clear-completed"
+        onClick={handleClearCompleted}
+      >
+        {hasCompleted ? 'Clear completed' : null}
+      </button>
     </footer>
 
   );

@@ -10,7 +10,6 @@ import {
 } from 'react';
 import classNames from 'classnames';
 
-import { ActiveTodoData } from '../types/ActiveTodoData';
 import { CustomError } from '../types/CustomError';
 import { NewTodo, Todo } from '../types/Todo';
 import { postTodo } from '../api/todos';
@@ -19,7 +18,7 @@ import { initData } from '../constants/initData';
 type Props = {
   tempTodo: Todo | null,
   setTodos: Dispatch<SetStateAction<Todo[]>>,
-  activeTodoData: ActiveTodoData,
+  activeLeft: number,
   setTempTodo: Dispatch<SetStateAction<Todo | null>>,
   setError: (newError: CustomError, delay?: number) => void,
 };
@@ -27,7 +26,7 @@ type Props = {
 export const Header: FC<Props> = ({
   tempTodo,
   setTodos,
-  activeTodoData,
+  activeLeft,
   setTempTodo,
   setError,
 }) => {
@@ -75,7 +74,7 @@ export const Header: FC<Props> = ({
         type="button"
         className={classNames(
           'todoapp__toggle-all',
-          { active: activeTodoData.hasActiveTodo },
+          { active: activeLeft },
         )}
       />
 
