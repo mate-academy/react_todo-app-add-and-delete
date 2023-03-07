@@ -21,7 +21,7 @@ export const App: React.FC = () => {
 
   const [tempTodo, setTempTodo] = useState<Todo | null>(null);
   const [isResponce, setIsResponce] = useState(true);
-  const [todoToDeleteId, setTodoToDeleteId] = useState<number[]>([-1]);
+  const [todoToDeleteId, setTodoToDeleteId] = useState<number[]>([]);
 
   const filteredCompletedTodosId = useCallback((allTodos: Todo[]) => () => {
     return allTodos
@@ -29,7 +29,7 @@ export const App: React.FC = () => {
       .map(todoItem => todoItem.id);
   }, []);
 
-  const filterTodosBySelectOptions = () => (type: SelectOptions) => {
+  const filterTodosBySelectOptions = (type: SelectOptions) => {
     switch (type) {
       case SelectOptions.ACTIVE:
         setVisibleTodos(todos.filter((todo: Todo) => !todo.completed));
