@@ -14,7 +14,6 @@ const USER_ID = 6481;
 export const App: React.FC = () => {
   const [todos, setTodos] = useState<Todo[]>([]);
   const [errorMessage, setErrorMessage] = useState(ErrorType.None);
-  const [visibleTodos, setVisibleTodos] = useState(todos);
   const [filterBy, setFilterBy] = useState(FilterBy.All);
 
   const [tempTodo, setTempTodo] = useState<Todo | null>(null);
@@ -44,24 +43,20 @@ export const App: React.FC = () => {
     [todos],
   );
 
-  useEffect(() => {
-    const filteredTodos = (() => {
-      switch (filterBy) {
-        case FilterBy.All:
-          return todos;
+  const visibleTodos = useMemo(() => {
+    switch (filterBy) {
+      case FilterBy.All:
+        return todos;
 
-        case FilterBy.Active:
-          return todos.filter(todo => !todo.completed);
+      case FilterBy.Active:
+        return todos.filter(todo => !todo.completed);
 
-        case FilterBy.Completed:
-          return todos.filter(todo => todo.completed);
+      case FilterBy.Completed:
+        return todos.filter(todo => todo.completed);
 
-        default:
-          return todos;
-      }
-    });
-
-    setVisibleTodos(filteredTodos);
+      default:
+        return todos;
+    }
   }, [filterBy, todos]);
 
   const addTodo = (title: string) => {
