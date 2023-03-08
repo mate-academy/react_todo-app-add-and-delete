@@ -2,15 +2,15 @@ import React, { useEffect, useState } from 'react';
 import classNames from 'classnames';
 
 type Props = {
+  isError: boolean;
   errorType: string;
-  hasError: boolean;
-  setHasError: React.Dispatch<React.SetStateAction<boolean>>;
+  onError: React.Dispatch<React.SetStateAction<boolean>>;
 };
 
 export const ErrorNotification: React.FC<Props> = ({
+  isError,
+  onError,
   errorType,
-  hasError,
-  setHasError,
 }) => {
   const [isHidden, setIsHidden] = useState(true);
   const emptyTitleNotification = 'Title can\'t be empty';
@@ -22,11 +22,11 @@ export const ErrorNotification: React.FC<Props> = ({
     const removeNotification = () => {
       window.setTimeout(() => {
         setIsHidden(true);
-        setHasError(false);
+        onError(false);
       }, 3000);
     };
 
-    if (hasError) {
+    if (isError) {
       setIsHidden(false);
       removeNotification();
     } else {

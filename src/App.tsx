@@ -4,7 +4,7 @@ import { ErrorNotification } from './components/ErrorNotification';
 import { Footer } from './components/Footer';
 import { Header } from './components/Header';
 import { Todolist } from './components/Todolist';
-import { filterValues } from './constants';
+import { FilterValues } from './constants';
 import { Todo } from './types/Todo';
 import { UserWarning } from './UserWarning';
 
@@ -17,7 +17,7 @@ export const App: React.FC = () => {
   const [hasError, setHasError] = useState(false);
   const [isTodoAdding, setIsTodoAdding] = useState(false);
   const [tempTodo, setTempTodo] = useState<Todo | null>(null);
-  const [selectedFilter, setSelectedFilter] = useState('All');
+  const [selectedFilter, setSelectedFilter] = useState(FilterValues.ALL);
   const [removingTodoIds, setRemovingTodoIds] = useState<number[]>([]);
 
   const hasActive = todos.some(todoItem => !todoItem.completed);
@@ -90,15 +90,15 @@ export const App: React.FC = () => {
   }
 
   const visibleTodos = todos.filter(todo => {
-    if (selectedFilter === filterValues.completed) {
-      return todo.completed;
-    }
+    switch (selectedFilter) {
+      case FilterValues.COMPLETED:
+        return todo.completed;
 
-    if (selectedFilter === filterValues.active) {
-      return !todo.completed;
-    }
+      case FilterValues.ACTIVE:
+        return !todo.completed;
 
-    return true;
+      default: return true;
+    }
   });
 
   const clearCompletedTodos = async () => {
@@ -131,14 +131,14 @@ export const App: React.FC = () => {
         <Header
           title={title}
           setTitle={setTitle}
+          onAdd={handleAddTodo}
           hasActive={hasActive}
-          setHasError={setHasError}
+          onError={setHasError}
           setErrorType={setErrorType}
           isTodoAdding={isTodoAdding}
-          handleAddTodo={handleAddTodo}
         />
 
-        { (!!todos.length || tempTodo) && (
+        {(!!todos.length || tempTodo) && (
           <>
             <Todolist
               tempTodo={tempTodo}
@@ -149,21 +149,21 @@ export const App: React.FC = () => {
 
             <Footer
               todos={todos}
+              onChange={setSelectedFilter}
               selectedFilter={selectedFilter}
-              setSelectedFilter={setSelectedFilter}
               clearCompletedTodos={clearCompletedTodos}
             />
           </>
-        ) }
+        )}
       </div>
 
-      { hasError && (
+      {hasError && (
         <ErrorNotification
-          hasError={hasError}
+          isError={hasError}
           errorType={errorType}
-          setHasError={setHasError}
+          onError={setHasError}
         />
-      ) }
+      )}
     </div>
   );
 };

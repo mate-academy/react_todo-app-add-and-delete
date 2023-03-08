@@ -1,55 +1,55 @@
-import React, { useState } from 'react';
+import React, { useMemo, useState } from 'react';
 import classNames from 'classnames';
 import { Todo } from '../types/Todo';
 
 type Props = {
   todo: Todo;
   isLoaderVisible: boolean;
-  handleDeleteTodo: (todoId: number) => void;
+  onDelete: (todoId: number) => void;
 };
 
 export const TodoInfo: React.FC<Props> = ({
   todo,
+  onDelete,
   isLoaderVisible,
-  handleDeleteTodo,
 }) => {
   const [isCompleted, setIsCompleted] = useState(todo.completed);
   const [query, setQuery] = useState(todo.title);
   const [isEditing, setIsEditing] = useState(false);
 
-  const todoContent = isEditing
-    ? (
-      <form>
-        <input
-          type="text"
-          className="todo__title-field"
-          placeholder="Empty todo will be deleted"
-          value={query}
-          onChange={(event) => {
-            setQuery(event.target.value);
-          }}
-          onBlur={() => setIsEditing(false)}
-        />
-      </form>
-    )
-    : (
-      <>
-        <span
-          className="todo__title"
-          onDoubleClick={() => setIsEditing(true)}
-        >
-          {todo.title}
-        </span>
-
-        <button
-          type="button"
-          className="todo__remove"
-          onClick={() => handleDeleteTodo(todo.id)}
-        >
-          ×
-        </button>
-      </>
-    );
+  const todoContent = useMemo(() => (
+    isEditing
+      ? (
+        <form>
+          <input
+            type="text"
+            className="todo__title-field"
+            placeholder="Empty todo will be deleted"
+            value={query}
+            onChange={(event) => {
+              setQuery(event.target.value);
+            }}
+            onBlur={() => setIsEditing(false)}
+          />
+        </form>
+      )
+      : (
+        <>
+          <span
+            onDoubleClick={() => setIsEditing(true)}
+          >
+            {todo.title}
+          </span>
+          <button
+            type="button"
+            className="todo__remove"
+            onClick={() => onDelete(todo.id)}
+          >
+            ×
+          </button>
+        </>
+      )
+  ), [isEditing, query]);
 
   return (
     <li className={classNames('todo', {
@@ -67,7 +67,9 @@ export const TodoInfo: React.FC<Props> = ({
         />
       </label>
 
-      {todoContent}
+      <div className="todo__title">
+        {todoContent}
+      </div>
 
       <div
         className={classNames(

@@ -1,19 +1,19 @@
 import React from 'react';
 import classNames from 'classnames';
-import { filterValues } from '../constants';
+import { FilterValues } from '../constants';
 import { Todo } from '../types/Todo';
 
 type Props = {
   todos: Todo[];
   selectedFilter: string;
   clearCompletedTodos: () => void;
-  setSelectedFilter: React.Dispatch<React.SetStateAction<string>>;
+  onChange: React.Dispatch<React.SetStateAction<FilterValues>>;
 };
 
 export const Footer: React.FC<Props> = ({
   todos,
   selectedFilter,
-  setSelectedFilter,
+  onChange,
   clearCompletedTodos,
 }) => {
   const notCompletedTodos = [...todos].filter(todo => !todo.completed);
@@ -25,18 +25,18 @@ export const Footer: React.FC<Props> = ({
       <span className="todo-count">{todosCountMessage}</span>
 
       <nav className="filter">
-        { Object.values(filterValues).map((value) => (
+        {Object.values(FilterValues).map((value) => (
           <a
             href="#/"
             key={value}
             className={classNames('filter__link', {
               selected: selectedFilter === value,
             })}
-            onClick={() => setSelectedFilter(value)}
+            onClick={() => onChange(value)}
           >
             {value}
           </a>
-        )) }
+        ))}
       </nav>
 
       <button

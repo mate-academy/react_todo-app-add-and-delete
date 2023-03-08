@@ -18,24 +18,24 @@ export const Todolist: React.FC<Props> = ({
 }) => {
   return (
     <ul className="todoapp__main">
-      { todos.map(todo => {
+      {todos.map(todo => {
         const isLoaderVisible = removingTodoIds.includes(todo.id);
 
         return (
           <TodoInfo
             key={todo.id}
             todo={todo}
+            onDelete={handleDeleteTodo}
             isLoaderVisible={isLoaderVisible}
-            handleDeleteTodo={handleDeleteTodo}
           />
         );
-      }) }
+      })}
 
-      { tempTodo && (
+      {tempTodo && (
         <TodoItem
           tempTodo={tempTodo}
         />
-      ) }
+      )}
     </ul>
   );
 };

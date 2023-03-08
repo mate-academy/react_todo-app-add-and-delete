@@ -3,34 +3,34 @@ import classNames from 'classnames';
 
 type Props = {
   title: string;
+  onAdd: () => void;
   hasActive: boolean;
   isTodoAdding: boolean;
-  handleAddTodo: () => void;
   setTitle: React.Dispatch<React.SetStateAction<string>>;
-  setHasError: React.Dispatch<React.SetStateAction<boolean>>;
+  onError: React.Dispatch<React.SetStateAction<boolean>>;
   setErrorType: React.Dispatch<React.SetStateAction<string>>;
 };
 
 export const Header: React.FC<Props> = ({
   title,
+  onAdd,
+  onError,
   setTitle,
   hasActive,
-  setHasError,
-  setErrorType,
   isTodoAdding,
-  handleAddTodo,
+  setErrorType,
 }) => {
   const onFormSubmit = (event: FormEvent<HTMLFormElement>) => {
     event.preventDefault();
 
     if (!title.trim()) {
-      setHasError(true);
+      onError(true);
       setErrorType('empty title');
 
       return;
     }
 
-    handleAddTodo();
+    onAdd();
     setTitle('');
   };
 
