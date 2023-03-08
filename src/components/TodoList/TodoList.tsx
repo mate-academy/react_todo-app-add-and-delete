@@ -6,23 +6,23 @@ type Props = {
   todos: Todo[];
   tempTodo: Todo | null;
   removeTodo: (id:number) => void;
-  updatingId: number[];
+  updatingIds: number[];
 };
 
 export const TodoList: React.FC<Props> = ({
   todos,
   tempTodo,
   removeTodo,
-  updatingId,
+  updatingIds,
 }) => {
   return (
-    <section className="todoapp__main">
+    <ul className="todoapp__main">
       {todos.map(todo => (
         <TodoInfo
           key={todo.id}
           todo={todo}
           removeTodo={removeTodo}
-          updatingId={updatingId}
+          updatingIds={updatingIds}
         />
       ))}
 
@@ -30,9 +30,9 @@ export const TodoList: React.FC<Props> = ({
         <TodoInfo
           todo={tempTodo}
           removeTodo={removeTodo}
-          updatingId={updatingId}
+          updatingIds={updatingIds}
         />
       )}
-    </section>
+    </ul>
   );
 };

@@ -20,7 +20,7 @@ export const App: React.FC = () => {
   const [tempTodo, setTempTodo] = useState<Todo | null>(null);
   const [isInputActive, setIsInputActive] = useState(true);
 
-  const [updatingId, setUpdatingId] = useState([0]);
+  const [updatingIds, setUpdatingIds] = useState([0]);
 
   const getTodosFromServer = async () => {
     try {
@@ -49,10 +49,13 @@ export const App: React.FC = () => {
       switch (filterBy) {
         case FilterBy.All:
           return todos;
+
         case FilterBy.Active:
           return todos.filter(todo => !todo.completed);
+
         case FilterBy.Completed:
           return todos.filter(todo => todo.completed);
+
         default:
           return todos;
       }
@@ -79,8 +82,9 @@ export const App: React.FC = () => {
 
         setIsInputActive(false);
         setTempTodo({ ...newTodo, id: 0 });
-        await createTodo(USER_ID, newTodo);
-        await getTodosFromServer();
+        const createdTodo = await createTodo(USER_ID, newTodo);
+
+        setTodos(prevTodos => [...prevTodos, createdTodo]);
       } catch (error) {
         setErrorMessage(ErrorType.Add);
       } finally {
@@ -95,20 +99,21 @@ export const App: React.FC = () => {
   const removeTodo = async (id: number) => {
     try {
       setErrorMessage(ErrorType.None);
-      setUpdatingId(prev => [...prev, id]);
+      setUpdatingIds(prev => [...prev, id]);
       await deleteTodo(USER_ID, id);
-      await getTodosFromServer();
+
+      setTodos(todos.filter(todo => todo.id !== id));
     } catch (error) {
       setErrorMessage(ErrorType.Delete);
     } finally {
-      setUpdatingId([0]);
+      setUpdatingIds([0]);
     }
   };
 
   const removeCompletedTodos = () => {
-    todos.forEach(todo => {
+    todos.forEach(async (todo) => {
       if (todo.completed) {
-        removeTodo(todo.id);
+        await removeTodo(todo.id);
       }
     });
   };
@@ -134,7 +139,7 @@ export const App: React.FC = () => {
               todos={visibleTodos}
               tempTodo={tempTodo}
               removeTodo={removeTodo}
-              updatingId={updatingId}
+              updatingIds={updatingIds}
             />
 
             <Footer
