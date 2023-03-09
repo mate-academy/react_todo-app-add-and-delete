@@ -44,6 +44,10 @@
     background-color: transparent;
     cursor: pointer;
 
+    &:focus {
+      outline: none;
+    }
+
     &.active {
       color: #737373;
     }
@@ -71,6 +75,10 @@
     background: rgba(0, 0, 0, 0.01);
     box-shadow: inset 0 -2px 1px rgba(0,0,0,0.03);
 
+    &:focus {
+      outline: none;
+    }
+
     &::placeholder {
       font-style: italic;
       font-weight: 300;
@@ -80,6 +88,7 @@
 
   &__main {
     border-top: 1px solid #e6e6e6;
+    list-style: none;
   }
 
   &__footer {
@@ -126,8 +135,16 @@
       text-decoration: underline;
     }
 
+    &:focus {
+      outline: none;
+    }
+
     &:active {
       text-decoration: none;
+    }
+
+    &:disabled {
+      opacity: 0;
     }
   }
 }
