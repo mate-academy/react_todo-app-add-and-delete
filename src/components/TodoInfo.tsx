@@ -49,7 +49,7 @@ export const TodoInfo: React.FC<Props> = ({
           </button>
         </>
       )
-  ), [isEditing, query, onDelete]);
+  ), [onDelete]);
 
   return (
     <li className={classNames('todo', {
