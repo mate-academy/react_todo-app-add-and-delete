@@ -46,7 +46,7 @@ export const Header: React.FC<Props> = ({
           placeholder="What needs to be done?"
           value={query}
           onChange={event => setQuery(event.target.value)}
-          disabled={tempTodo !== null}
+          disabled={!!tempTodo}
         />
       </form>
     </header>

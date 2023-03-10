@@ -19,6 +19,8 @@ export const Footer: React.FC<Props> = ({
   const activeTodosLeft = todosToShow.filter(todo => !todo.completed);
   const completedTodos = todosToShow.filter(todo => todo.completed);
 
+  const filtersName = Object.values(FilteredBy);
+
   return (
     <footer className="todoapp__footer">
       <span className="todo-count">
@@ -26,40 +28,21 @@ export const Footer: React.FC<Props> = ({
       </span>
 
       <nav className="filter">
-        <a
-          href="#/"
-          className={classnames(
-            'filter__link',
-            { selected: todoStatus === FilteredBy.ALL },
-          )}
-          onClick={() => setTodoStatus(FilteredBy.ALL)}
-        >
-          All
-        </a>
-
-        <a
-          href="#/active"
-          className={classnames(
-            'filter__link',
-            { selected: todoStatus === FilteredBy.ACTIVE },
-          )}
-          onClick={() => setTodoStatus(FilteredBy.ACTIVE)}
-        >
-          Active
-        </a>
-
-        <a
-          href="#/completed"
-          className={classnames(
-            'filter__link',
-            { selected: todoStatus === FilteredBy.COMPLETED },
-          )}
-          onClick={() => setTodoStatus(FilteredBy.COMPLETED)}
-        >
-          Completed
-        </a>
+        {filtersName.map(filterLink => (
+          <a
+            key={filterLink}
+            href={filterLink === FilteredBy.ALL ? ('#/') : (`#/${filterLink}"`)}
+            className={classnames(
+              'filter__link',
+              { selected: todoStatus === filterLink },
+            )}
+            onClick={() => setTodoStatus(filterLink)}
+          >
+            {filterLink}
+          </a>
+        ))}
       </nav>
-      {completedTodos.length > 0 && (
+      {completedTodos.length && (
         <button
           type="button"
           className="todoapp__clear-completed"

@@ -53,7 +53,7 @@ export const App: React.FC = () => {
   }
 
   const handleAddTodo = async () => {
-    if (query.length > 0) {
+    if (query.length) {
       const newTodo: TodoRequest = {
         userId: USER_ID,
         title: query,

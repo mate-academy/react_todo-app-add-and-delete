@@ -19,7 +19,7 @@ export const Notifications: React.FC<Props> = ({
       window.clearTimeout(timerId);
     };
 
-    if (errorMessage.length > 0) {
+    if (errorMessage.length) {
       setisHidden(false);
       notificationCloser();
     } else {
