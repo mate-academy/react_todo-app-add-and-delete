@@ -4,9 +4,14 @@ import { Todo } from '../types/Todo';
 type Props = {
   filterTodo: Todo[];
   handleDeleteTodo: (todoId: number) => void;
+  updateTodo: (todo: Todo) => void;
 };
 
-export const Todos: React.FC<Props> = ({ filterTodo, handleDeleteTodo }) => {
+export const Todos: React.FC<Props> = ({
+  filterTodo,
+  handleDeleteTodo,
+  updateTodo,
+}) => {
   return (
     <section className="todoapp__main">
       {filterTodo.map((todo) => (
@@ -15,13 +20,15 @@ export const Todos: React.FC<Props> = ({ filterTodo, handleDeleteTodo }) => {
             <input
               type="checkbox"
               className="todo__status"
-              checked
+              // checked
+              onChange={() =>
+                updateTodo({ ...todo, completed: !todo.completed })
+              }
             />
           </label>
 
           <span className="todo__title">{todo.title}</span>
 
-          {/* Remove button appears only on hover */}
           <button
             type="button"
             className="todo__remove"
