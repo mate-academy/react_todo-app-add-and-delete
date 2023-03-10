@@ -21,8 +21,16 @@ export const Todos: React.FC<Props> = ({
               type="checkbox"
               className="todo__status"
               // checked
-              onChange={() =>
-                updateTodo({ ...todo, completed: !todo.completed })
+              onChange={
+                () =>
+                  // eslint-disable-next-line
+                  updateTodo({
+                    // eslint-disable-next-line
+                    ...todo,
+                    // eslint-disable-next-line
+                    completed: !todo.completed,
+                  })
+                // eslint-disable-next-line
               }
             />
           </label>

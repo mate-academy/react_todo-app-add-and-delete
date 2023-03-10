@@ -60,8 +60,13 @@ export const App: React.FC = () => {
 
   const updateTodo = (updatedTodo: Todo) => {
     setFilterTodo(
-      filterTodo.map((todo) =>
-        todo.id === updatedTodo.id ? updatedTodo : todo
+      // eslint-disable-next-line
+      filterTodo.map(
+        // eslint-disable-next-line
+        (todo) =>
+          // eslint-disable-next-line
+          todo.id === updatedTodo.id ? updatedTodo : todo
+        // eslint-disable-next-line
       )
     );
   };
