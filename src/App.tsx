@@ -77,7 +77,7 @@ export const App: React.FC = () => {
       setCurrentError('');
       setTempTodo(todo);
       await deleteTodos(`/${todo.id}?userId=${USER_ID}`);
-      await getTodosFromServer(`?userId=${USER_ID}`);
+      setTodos((prevTodos) => prevTodos.filter((t) => t.id !== todo.id));
     } catch (error) {
       if (error instanceof Error) {
         setCurrentError(error.message);
@@ -88,12 +88,12 @@ export const App: React.FC = () => {
     }
   }, []);
 
-  const removeAllCompletedTodos = useCallback(() => {
+  const removeAllCompletedTodos = useCallback(async () => {
     const currentCompletedTodos = todos.filter(todo => todo.completed);
 
     setCompletedTodos(currentCompletedTodos);
-    currentCompletedTodos.forEach(currentCompletedTodo => (
-      removeTodo(currentCompletedTodo)
+    await Promise.all(currentCompletedTodos.map(
+      currentCompletedTodo => removeTodo(currentCompletedTodo),
     ));
     setCompletedTodoLength(0);
   }, [todos]);
@@ -108,13 +108,13 @@ export const App: React.FC = () => {
       await updateTodos(`/${todo.id}?userId=${USER_ID}`, { completed: isCompleted });
       await getTodosFromServer(`?userId=${USER_ID}`);
 
-      if (completedTodos.find(t => todo.id === t.id)) {
-        setCompletedTodos(currentCompletedTodos => (
-          currentCompletedTodos.filter(currentTodo => (
-            currentTodo.id !== todo.id
-          ))
-        ));
-      }
+      setTodos((prevTodos) => prevTodos.map((t) => {
+        if (t.id === todo.id) {
+          return { ...t, completed: isCompleted };
+        }
+
+        return t;
+      }));
     } catch (error) {
       if (error instanceof Error) {
         setCurrentError(error.message);
@@ -144,7 +144,13 @@ export const App: React.FC = () => {
       setCurrentError('');
       setTempTodo(todo);
       await updateTodos(`/${todo.id}?userId=${USER_ID}`, { title });
-      await getTodosFromServer(`?userId=${USER_ID}`);
+      setTodos((prevTodos) => prevTodos.map((t) => {
+        if (t.id === todo.id) {
+          return { ...t, title };
+        }
+
+        return t;
+      }));
     } catch (error) {
       if (error instanceof Error) {
         setCurrentError(error.message);
@@ -168,15 +174,13 @@ export const App: React.FC = () => {
 
   const filterTodos = useCallback((type: Status) => {
     switch (type) {
-      case Status.ALL:
-        setVisibleTodos(todos);
-        break;
       case Status.ACTIVE:
         setVisibleTodos(todos.filter((todo => !todo.completed)));
         break;
       case Status.COMPLETED:
         setVisibleTodos(todos.filter((todo => todo.completed)));
         break;
+      case Status.ALL:
       default:
         setVisibleTodos(todos);
     }
