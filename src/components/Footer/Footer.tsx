@@ -49,24 +49,14 @@ export const Footer: React.FC<Props> = ({
           </li>
         ))}
       </nav>
-      {completedTodos ? (
-        <button
-          type="button"
-          className="todoapp__clear-completed"
-          onClick={onRemoveComletedTodos}
-        >
-          Clear completed
-        </button>
-      ) : (
-        <button
-          type="button"
-          className="todoapp__clear-completed"
-          onClick={onRemoveComletedTodos}
-          style={{ visibility: 'hidden' }}
-        >
-          Clear completed
-        </button>
-      )}
+      <button
+        type="button"
+        className="todoapp__clear-completed"
+        onClick={onRemoveComletedTodos}
+        style={{ visibility: completedTodos ? 'visible' : 'hidden' }}
+      >
+        Clear completed
+      </button>
     </footer>
   );
 };

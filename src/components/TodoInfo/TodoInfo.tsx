@@ -14,7 +14,7 @@ export const TodoInfo: React.FC<Props> = ({ todo, onDelete, isRemoveAll }) => {
     completed,
     id,
   } = todo;
-  const [isEdited, setEdit] = useState(false);
+  const [isEditing, setEdit] = useState(false);
   const [isLoading, setLoading] = useState(false);
 
   const handleClick = () => {
@@ -28,7 +28,7 @@ export const TodoInfo: React.FC<Props> = ({ todo, onDelete, isRemoveAll }) => {
 
   return (
     <>
-      {isEdited ? (
+      {isEditing ? (
         <div className="todo">
           <label className="todo__status-label">
             <input

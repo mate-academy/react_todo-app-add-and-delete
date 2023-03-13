@@ -42,9 +42,8 @@ export const Header: React.FC<Props> = ({
             'todoapp__toggle-all',
             { active: activeTodos },
           )}
-        >
-          {}
-        </button>
+          aria-label="Complete All"
+        />
       )}
       <form onSubmit={handleSubmit}>
         <input

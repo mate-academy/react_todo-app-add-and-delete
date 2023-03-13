@@ -16,9 +16,8 @@ export const ErrorNotification: React.FC<Props> = ({
         type="button"
         className="delete"
         onClick={() => setErrorText('')}
-      >
-        {}
-      </button>
+        aria-label="Delete"
+      />
       {errorText}
     </div>
   );
