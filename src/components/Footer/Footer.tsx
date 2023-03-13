@@ -19,13 +19,11 @@ export const Footer: React.FC<Props> = React.memo(({
 
   return (
     <>
-      {/* Hide the footer if there are no todos */}
       <footer className="todoapp__footer">
         <span className="todo-count">
           {`${countOfActiveTodos} items left`}
         </span>
 
-        {/* Active filter should have a 'selected' class */}
         <nav className="filter">
           <a
             href="#/"
@@ -73,7 +71,6 @@ export const Footer: React.FC<Props> = React.memo(({
           </a>
         </nav>
 
-        {/* don't show this button if there are no completed todos */}
         <button
           type="button"
           className={classNames('todoapp__clear-completed', {

@@ -14,8 +14,6 @@ export const ErrorNotification: React.FC<Props> = React.memo(({
 
   return (
     <>
-      {/* Notification is shown in case of any error */}
-      {/* Add the 'hidden' class to hide the message smoothly */}
       <div className="notification is-danger is-light has-text-weight-normal">
         {/* // eslint-disable-next-line */}
         <button

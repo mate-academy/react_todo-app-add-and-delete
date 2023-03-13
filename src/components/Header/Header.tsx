@@ -45,7 +45,6 @@ export const Header: React.FC<Props> = React.memo(({
 
   return (
     <header className="todoapp__header">
-      {/* this buttons is active only if there are some active todos */}
       <button
         type="button"
         className={classNames('todoapp__toggle-all',
@@ -54,7 +53,6 @@ export const Header: React.FC<Props> = React.memo(({
         onClick={toggleTodosStatusForAll}
       />
 
-      {/* Add a todo on form submit */}
       <form onSubmit={handleSubmit}>
         <input
           type="text"
