@@ -1,30 +1,30 @@
 import classNames from 'classnames';
 import { TodoType } from '../../types/TodoType';
 
-export enum SortType {
+export enum FilterType {
   All = 'All',
   Active = 'Active',
   Completed = 'Completed',
 }
 
-const sortTypes = [
-  { id: 1, type: SortType.All },
-  { id: 2, type: SortType.Active },
-  { id: 3, type: SortType.Completed },
+const fitlerTypes = [
+  { id: 1, type: FilterType.All },
+  { id: 2, type: FilterType.Active },
+  { id: 3, type: FilterType.Completed },
 ];
 
 type Props = {
-  onSortType: (newSortType: SortType) => void;
+  onFilterType: (newFilterType: FilterType) => void;
   onRemoveComletedTodos: () => void;
-  selectedSortType: SortType;
+  selectedFilterType: FilterType;
   itemsLeft: TodoType[];
   completedTodos: number;
 };
 
 export const Footer: React.FC<Props> = ({
-  onSortType,
+  onFilterType,
   onRemoveComletedTodos,
-  selectedSortType,
+  selectedFilterType,
   itemsLeft,
   completedTodos,
 }) => {
@@ -34,26 +34,35 @@ export const Footer: React.FC<Props> = ({
         {`${itemsLeft.length} items left`}
       </span>
       <nav className="filter">
-        {sortTypes.map(sortType => (
-          <li key={sortType.id} style={{ listStyle: 'none' }}>
+        {fitlerTypes.map(filterType => (
+          <li key={filterType.id} style={{ listStyle: 'none' }}>
             <a
               href="#/"
               className={classNames(
                 'filter__link',
-                { selected: selectedSortType === sortType.type },
+                { selected: selectedFilterType === filterType.type },
               )}
-              onClick={() => onSortType(sortType.type)}
+              onClick={() => onFilterType(filterType.type)}
             >
-              {sortType.type}
+              {filterType.type}
             </a>
           </li>
         ))}
       </nav>
-      {!!completedTodos && (
+      {completedTodos ? (
         <button
           type="button"
           className="todoapp__clear-completed"
           onClick={onRemoveComletedTodos}
+        >
+          Clear completed
+        </button>
+      ) : (
+        <button
+          type="button"
+          className="todoapp__clear-completed"
+          onClick={onRemoveComletedTodos}
+          style={{ visibility: 'hidden' }}
         >
           Clear completed
         </button>

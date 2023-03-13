@@ -3,16 +3,17 @@ import { addTodo, deleteTodo, getTodos } from './api/todos';
 import { UserWarning } from './UserWarning';
 import { TodoType } from './types/TodoType';
 import { Header } from './components/Header';
-import { Footer, SortType } from './components/Footer';
+import { Footer, FilterType } from './components/Footer';
 import { Section } from './components/Section';
+import { ErrorNotification } from './components/ErrorNotification';
 
 const USER_ID = 6526;
 
-const getReorderedList = (sortType: SortType, list: TodoType[]) => {
-  switch (sortType) {
-    case SortType.Active:
+const getReorderedList = (filterType: FilterType, list: TodoType[]) => {
+  switch (filterType) {
+    case FilterType.Active:
       return list.filter(item => !item.completed);
-    case SortType.Completed:
+    case FilterType.Completed:
       return list.filter(item => item.completed);
     default:
       return list;
@@ -22,26 +23,24 @@ const getReorderedList = (sortType: SortType, list: TodoType[]) => {
 export const App: React.FC = () => {
   const [query, setQuery] = useState('');
   const [todos, setTodos] = useState<TodoType[]>([]);
-  const [selectedSortType, setSortType] = useState(SortType.All);
-  const [isError, setError] = useState(false);
+  const [selectedFilterType, setFilterType] = useState(FilterType.All);
   const [errorText, setErrorText] = useState('');
   const [isDisable, setDisable] = useState(false);
   const [tempTodo, setTempTodo] = useState<TodoType | null>();
   const [isRemoveAll, setRemoveAll] = useState(false);
 
-  const activeTodos = getReorderedList(SortType.Active, todos);
-  const completedTodos = getReorderedList(SortType.Completed, todos);
+  const activeTodos = getReorderedList(FilterType.Active, todos);
+  const completedTodos = getReorderedList(FilterType.Completed, todos);
 
   const getQuery = (newQuery: string) => {
     setQuery(newQuery);
   };
 
   const getError = (text: string) => {
-    setError(true);
     setErrorText(text);
 
     setTimeout(() => {
-      setError(false);
+      setErrorText('');
     }, 3000);
   };
 
@@ -101,12 +100,12 @@ export const App: React.FC = () => {
     fetchTodos();
   }, []);
 
-  const getSortType = (newSortType: SortType) => {
-    setSortType(newSortType);
+  const getFilterType = (newFilterType: FilterType) => {
+    setFilterType(newFilterType);
   };
 
-  const visibleList = useMemo(() => getReorderedList(selectedSortType, todos),
-    [selectedSortType, todos]);
+  const visibleList = useMemo(() => getReorderedList(selectedFilterType, todos),
+    [selectedFilterType, todos]);
 
   if (!USER_ID) {
     return <UserWarning />;
@@ -134,26 +133,17 @@ export const App: React.FC = () => {
         {!!todos.length && (
           <Footer
             itemsLeft={activeTodos}
-            selectedSortType={selectedSortType}
-            onSortType={getSortType}
+            selectedFilterType={selectedFilterType}
+            onFilterType={getFilterType}
             onRemoveComletedTodos={removeAllCompletedTodos}
             completedTodos={completedTodos.length}
           />
         )}
       </div>
-      <div
-        className="notification is-danger is-light has-text-weight-normal"
-        hidden={!isError}
-      >
-        <button
-          type="button"
-          className="delete"
-          onClick={() => setError(false)}
-        >
-          {}
-        </button>
-        {errorText}
-      </div>
+      <ErrorNotification
+        errorText={errorText}
+        setErrorText={setErrorText}
+      />
     </div>
   );
 };
