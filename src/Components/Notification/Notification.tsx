@@ -6,17 +6,17 @@ import { filterMessage } from '../../utils/filterError';
 
 type Props = {
   errorMessage: Errors | null;
-  closeError: () => void;
+  onCloseError: () => void;
 };
 
 const Notification: React.FC<Props> = ({
   errorMessage,
-  closeError,
+  onCloseError,
 }) => {
   useEffect(() => {
     if (errorMessage) {
       setTimeout(() => {
-        closeError();
+        onCloseError();
       }, 3000);
     }
   });
@@ -39,7 +39,7 @@ const Notification: React.FC<Props> = ({
         type="button"
         className="delete"
         aria-label="close error"
-        onClick={closeError}
+        onClick={onCloseError}
       />
 
       {showNotification}

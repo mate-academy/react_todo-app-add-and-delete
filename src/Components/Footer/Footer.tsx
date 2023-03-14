@@ -6,13 +6,13 @@ type Props = {
   filter: Filters;
   todosLength: number;
   completedTodosLength: number;
-  changeFilter: (value: Filters) => void;
+  onChangeFilter: (value: Filters) => void;
   removeAllCompletedTodo: () => void;
 };
 
 const Footer: React.FC<Props> = ({
   filter,
-  changeFilter,
+  onChangeFilter,
   completedTodosLength,
   todosLength,
   removeAllCompletedTodo: removeAllTodo,
@@ -24,7 +24,7 @@ const Footer: React.FC<Props> = ({
 
     <Filter
       filter={filter}
-      changeFilter={changeFilter}
+      changeFilter={onChangeFilter}
     />
 
     <button

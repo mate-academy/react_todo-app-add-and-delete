@@ -1,4 +1,5 @@
 import React, {
+  useCallback,
   useEffect,
   useMemo,
   useState,
@@ -43,13 +44,11 @@ export const App: React.FC = () => {
     fetchingTodos();
   }, []);
 
-  const todosLength = useMemo(() => todos.length, [todos]);
-
   const completedTodos = useMemo(() => {
     return filterTodos(Filters.COMPLETED, todos);
   }, [todos]);
 
-  const addNewTodo = async (value: string) => {
+  const addNewTodo = useCallback(async (value: string) => {
     if (!value.length) {
       setErrorMessage(Errors.EMPTY);
 
@@ -72,9 +71,9 @@ export const App: React.FC = () => {
     } finally {
       setTempTodo(null);
     }
-  };
+  }, []);
 
-  const removeTodo = async (id: number): Promise<void> => {
+  const removeTodo = useCallback(async (id: number): Promise<void> => {
     try {
       await deleteTodo(id);
 
@@ -83,9 +82,9 @@ export const App: React.FC = () => {
     } catch (error) {
       setErrorMessage(Errors.DEL);
     }
-  };
+  }, []);
 
-  const removeAllCompletedTodo = async () => {
+  const removeAllCompletedTodo = useCallback(async () => {
     const completedTodosId = completedTodos
       .map(todo => removeTodo(todo.id));
 
@@ -95,13 +94,13 @@ export const App: React.FC = () => {
       .then(() => {
         setTodos(todos.filter(todo => !todo.completed));
       }).finally(() => setActiveDelComTodo(false));
-  };
+  }, []);
 
   const visibleTodos = useMemo(() => (
     filterTodos(filter, todos)
   ), [todos, filter]);
 
-  const changeFilter = (value: Filters) => {
+  const onChangeFilter = (value: Filters) => {
     if (value === filter) {
       return;
     }
@@ -109,7 +108,7 @@ export const App: React.FC = () => {
     setFilter(value);
   };
 
-  const closeError = () => {
+  const onCloseError = () => {
     setErrorMessage(null);
   };
 
@@ -120,7 +119,7 @@ export const App: React.FC = () => {
       <div className="todoapp__content">
         <Header
           completedTodosLength={completedTodos.length}
-          todosLength={todosLength}
+          todosLength={todos.length}
           addNewTodo={addNewTodo}
         />
 
@@ -136,9 +135,9 @@ export const App: React.FC = () => {
         {!!todos.length && (
           <Footer
             filter={filter}
-            changeFilter={changeFilter}
+            onChangeFilter={onChangeFilter}
             completedTodosLength={completedTodos.length}
-            todosLength={todosLength}
+            todosLength={todos.length}
             removeAllCompletedTodo={removeAllCompletedTodo}
           />
         )}
@@ -146,7 +145,7 @@ export const App: React.FC = () => {
 
       <Notification
         errorMessage={errorMessage}
-        closeError={closeError}
+        onCloseError={onCloseError}
       />
     </div>
   );

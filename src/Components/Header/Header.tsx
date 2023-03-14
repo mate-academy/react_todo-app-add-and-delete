@@ -2,9 +2,12 @@ import classNames from 'classnames';
 import React, {
   ChangeEvent,
   FormEvent,
+  useEffect,
   useRef,
   useState,
 } from 'react';
+
+import { Submits } from '../../types/Submits';
 
 type Props = {
   todosLength: number;
@@ -20,7 +23,7 @@ const Header: React.FC<Props> = ({
   const inputRef = useRef<HTMLInputElement>(null);
 
   const [value, setValue] = useState('');
-  const [isSubmitValue, setSubmitValue] = useState(false);
+  const [submitState, setSubmitState] = useState(Submits.none);
 
   const onChangeValue = (e: ChangeEvent<HTMLInputElement>) => {
     setValue(e.target.value);
@@ -29,13 +32,24 @@ const Header: React.FC<Props> = ({
   const onSubmit = (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault();
 
-    setSubmitValue(true);
+    setSubmitState(Submits.pending);
     addNewTodo(value)
-      .finally(() => {
+      .finally(async () => {
         setValue('');
-        setSubmitValue(false);
-        inputRef.current?.focus();
+        setSubmitState(Submits.success);
       });
+  };
+
+  useEffect(() => {
+    if (submitState !== Submits.success) {
+      return;
+    }
+
+    inputRef.current?.focus();
+  }, [submitState]);
+
+  const onBlurInput = () => {
+    setSubmitState(Submits.none);
   };
 
   return (
@@ -61,7 +75,8 @@ const Header: React.FC<Props> = ({
           placeholder="What needs to be done?"
           value={value}
           onChange={onChangeValue}
-          disabled={isSubmitValue}
+          disabled={submitState === Submits.pending}
+          onBlur={onBlurInput}
         />
       </form>
     </header>
