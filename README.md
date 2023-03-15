@@ -1,19 +1,12 @@
 # React Todo App Add and Delete
-
 It is the second part of the React Todo App with API.
-
 Take your code implemented for [Loading todos](https://github.com/mate-academy/react_todo-app-loading-todos)
 and implement the ability to add and remove todos.
-
 > Here is [the working example](https://mate-academy.github.io/react_todo-app-with-api/)
 # ❗️❗️❗️</br>Please implement only adding and deleting todos in addition to what was already implemented.<br><br>All the other features from the working version will be implemented in the next task.</br>❗️❗️❗️
-
 > Check the [API Documentation](https://mate-academy.github.io/fe-students-api/)
-
 ## Adding a todo
-
 Add a todo with the entered title on the form submit:
-
 - if the title is empty show the `Title can't be empty` notification at the bottom;
 - use your `userId` for the new todo;
 - send a POST request to the API (check the [API Documentation](https://mate-academy.github.io/fe-students-api/))
@@ -24,34 +17,29 @@ Add a todo with the entered title on the form submit:
 - in case of success add the todo created by the API to the array (take it from the POST response);
 - in case of an API error show `Unable to add a todo` notification at the bottom;
 - set `tempTodo` to `null` to hide the extra `TodoItem`;
-
 > Don't try to implement animations for adding or removing Todos (at least until you finish everything else).
 > If you really fill confident to try, there is a hint at the end of the description.
-
 ## Deleting todos
-
 Remove a todo on `TodoDeleteButton` click:
-
 - covered the todo with the loader while wating for the API response;
 - remove the todo from the list on success;
 - in case of API error show `Unable to delete a todo` notification at the bottom (the todo must stay in the list);
-
 Remove all the completed todos after the `Clear completed` button click:
-
 - the button should be visible only if there is at least 1 completed todo;
 - the deletion should work as a several individual deletions running at the same time;
-
 ## Instructions
 
 - Implement a solution following the [React task guideline](https://github.com/mate-academy/react_task-guideline#react-tasks-guideline).
 - Use the [React TypeScript cheat sheet](https://mate-academy.github.io/fe-program/js/extra/react-typescript).
 - Replace `<your_account>` with your Github username in the [DEMO LINK](https://<your_account>.github.io/react_todo-app-add-and-delete/) and add it to the PR description.
+- Replace `<your_account>` with your Github username in the [DEMO LINK](https://bohdan-gavrilyk.github.io/react_todo-app-add-and-delete/) and add it to the PR description.
 
 ## IF you want to implement smooth animations
 
 <details>
   <summary>Click here to see the hint</summary>
   
+
   Use [React Transition Group](https://reactcommunity.org/react-transition-group/transition-group)
 
   ```tsx
@@ -71,7 +59,6 @@ Remove all the completed todos after the `Clear completed` button click:
           />
         </CSSTransition>
       ))}
-
       {creating && (
         <CSSTransition
           key={0}
@@ -93,42 +80,36 @@ Remove all the completed todos after the `Clear completed` button click:
   </section>
   ```
     
+
   Here are the styles used in this example
   ```css
   .item-enter {
     max-height: 0;
   }
-
   .item-enter-active {
     overflow: hidden;
     max-height: 58px;
     transition: max-height 0.3s ease-in-out;
   }
-
   .item-exit {
     max-height: 58px;
   }
-
   .item-exit-active {
     overflow: hidden;
     max-height: 0;
     transition: max-height 0.3s ease-in-out;
   }
-
   .temp-item-enter {
     max-height: 0;
   }
-
   .temp-item-enter-active {
     overflow: hidden;
     max-height: 58px;
     transition: max-height 0.3s ease-in-out;
   }
-
   .temp-item-exit {
     max-height: 58px;
   }
-
   .temp-item-exit-active {
     transform: translateY(-58px);
     max-height: 0;
@@ -136,7 +117,6 @@ Remove all the completed todos after the `Clear completed` button click:
     transition: 0.3s ease-in-out;
     transition-property: opacity, max-height, transform;
   }
-
   .has-error .temp-item-exit-active {
     transform: translateY(0);
     overflow: hidden;
