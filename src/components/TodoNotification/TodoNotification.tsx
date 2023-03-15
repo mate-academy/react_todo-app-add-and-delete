@@ -4,22 +4,40 @@ import classNames from 'classnames';
 
 type Props = {
   errorMessage: string,
+  setIsError: (error: boolean) => void,
 };
 
 export const TodoNotification: React.FC<Props> = ({
   errorMessage,
+  setIsError,
 }) => {
-  const [isError, setIsError] = useState(true);
+  const [timeoutId, setTimeoutId] = useState<NodeJS.Timeout
+  | undefined>(undefined);
+
   const deleteError = () => {
-    setTimeout(() => {
-      setIsError(false);
-    }, 1000);
+    if (timeoutId) {
+      clearTimeout(timeoutId);
+    }
+
+    setIsError(false);
+  };
+
+  const handleButtonClick = () => {
+    deleteError();
   };
 
   useEffect(() => {
-    setTimeout(() => {
+    const newTimeoutId = setTimeout(() => {
       deleteError();
     }, 3000);
+
+    setTimeoutId(newTimeoutId);
+
+    return () => {
+      if (timeoutId) {
+        clearTimeout(timeoutId);
+      }
+    };
   }, []);
 
   return (
@@ -29,13 +47,13 @@ export const TodoNotification: React.FC<Props> = ({
         'is-danger',
         'is-light',
         'has-text-weight-normal',
-        { hidden: !isError },
+        { hidden: !errorMessage },
       )}
     >
       <button
         type="button"
         className="delete"
-        onClick={deleteError}
+        onClick={handleButtonClick}
       />
       {errorMessage}
     </div>

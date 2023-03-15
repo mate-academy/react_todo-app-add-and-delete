@@ -5,6 +5,7 @@ type Props = {
   todos: Todo[],
   createTodoOnServer: (query: string) => void,
   setErrorMessage: (message: string) => void,
+  setIsError: (error: boolean) => void,
   isTodoLoaded: boolean,
 };
 
@@ -13,6 +14,7 @@ export const Header: React.FC<Props> = ({
   createTodoOnServer: postTodoOnServer,
   setErrorMessage,
   isTodoLoaded,
+  setIsError,
 }) => {
   const isActiveTodos = todos.some(todo => todo.completed === false);
   const [query, setQuery] = useState<string>('');
@@ -20,8 +22,11 @@ export const Header: React.FC<Props> = ({
   const handleSubmit = (event: React.FormEvent) => {
     event.preventDefault();
 
-    if (!query) {
+    if (query.length === 0) {
       setErrorMessage('Title can\'t be empty');
+      setIsError(true);
+
+      return;
     }
 
     postTodoOnServer(query);

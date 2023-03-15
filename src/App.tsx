@@ -16,6 +16,7 @@ export const App: React.FC = () => {
   const [isTodoLoaded, setIsTodoLoaded] = useState(false);
   const [filterBy, setFilterBy] = useState<FilteredBy>(FilteredBy.ALL);
   const [errorMessage, setErrorMessage] = useState('');
+  const [isError, setIsError] = useState(false);
 
   const isActiveTodos = todos.some(todo => todo.completed !== true);
 
@@ -99,7 +100,7 @@ export const App: React.FC = () => {
           isTodoLoaded={isTodoLoaded}
           createTodoOnServer={createTodoOnServer}
           setErrorMessage={setErrorMessage}
-
+          setIsError={setIsError}
         />
 
         {!getVisibleTodos.length && (
@@ -118,8 +119,11 @@ export const App: React.FC = () => {
           </>
         )}
       </div>
-      {errorMessage && (
-        <TodoNotification errorMessage={errorMessage} />
+      {isError && (
+        <TodoNotification
+          errorMessage={errorMessage}
+          setIsError={setIsError}
+        />
       )}
     </div>
   );
