@@ -1,8 +1,7 @@
 import React, { useState } from 'react';
-import { Todo } from '../../types/Todo';
 
 type Props = {
-  todos: Todo[],
+  isActiveTodos: boolean,
   createTodoOnServer: (query: string) => void,
   setErrorMessage: (message: string) => void,
   setIsError: (error: boolean) => void,
@@ -10,13 +9,13 @@ type Props = {
 };
 
 export const Header: React.FC<Props> = ({
-  todos,
   createTodoOnServer: postTodoOnServer,
   setErrorMessage,
   isTodoLoaded,
   setIsError,
+  isActiveTodos,
 }) => {
-  const isActiveTodos = todos.some(todo => todo.completed === false);
+  // const isActiveTodos = todos.some(todo => todo.completed === false);
   const [query, setQuery] = useState<string>('');
 
   const handleSubmit = (event: React.FormEvent) => {

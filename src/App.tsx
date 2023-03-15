@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useMemo } from 'react';
 import { getTodos, createTodo, deleteTodo } from './api/todos';
 import { Header } from './components/Header';
 import { Footer } from './components/Footer';
@@ -69,7 +69,7 @@ export const App: React.FC = () => {
     completedTodos.forEach(todo => removeTodoOnServer(todo.id));
   };
 
-  const getVisibleTodos = () => {
+  const getVisibleTodos: Todo[] = useMemo(() => {
     switch (filterBy) {
       case FilteredBy.ACTIVE:
         return todos.filter(todo => !todo.completed);
@@ -80,7 +80,7 @@ export const App: React.FC = () => {
       default:
         throw new Error('Unexpected filter type');
     }
-  };
+  }, [filterBy, todos]);
 
   useEffect(() => {
     getTodosFromServer();
@@ -96,17 +96,17 @@ export const App: React.FC = () => {
 
       <div className="todoapp__content">
         <Header
-          todos={getVisibleTodos()}
           isTodoLoaded={isTodoLoaded}
           createTodoOnServer={createTodoOnServer}
           setErrorMessage={setErrorMessage}
           setIsError={setIsError}
+          isActiveTodos={isActiveTodos}
         />
 
-        {!getVisibleTodos.length && (
+        {getVisibleTodos.length && (
           <>
             <TodoList
-              todos={getVisibleTodos()}
+              todos={getVisibleTodos}
               tempTodo={tempTodo}
               removeTodoOnServer={removeTodoOnServer}
             />

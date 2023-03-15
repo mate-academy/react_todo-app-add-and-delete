@@ -19,13 +19,18 @@ export const TodoItem: React.FC<Props> = ({
     completed,
   } = todo;
   const [hasLoader, setHasLoader] = useState(isLoader);
+  const [updatedTodo, setUpdatedTodo] = useState(todo);
+
+  const handleCheckboxChange = () => {
+    const newTodo = { ...updatedTodo, completed: !completed };
+
+    setUpdatedTodo(newTodo);
+  };
 
   const handleClick = () => {
     removeTodoOnServer(id);
     setHasLoader(true);
   };
-
-  const handleChange = () => {};
 
   return (
     <div
@@ -36,7 +41,7 @@ export const TodoItem: React.FC<Props> = ({
           type="checkbox"
           className="todo__status"
           checked={completed}
-          onChange={handleChange}
+          onChange={handleCheckboxChange}
         />
       </label>
 

@@ -1,5 +1,5 @@
 /* eslint-disable jsx-a11y/control-has-associated-label */
-import React, { useState, useEffect } from 'react';
+import React, { useEffect, useRef } from 'react';
 import classNames from 'classnames';
 
 type Props = {
@@ -11,12 +11,11 @@ export const TodoNotification: React.FC<Props> = ({
   errorMessage,
   setIsError,
 }) => {
-  const [timeoutId, setTimeoutId] = useState<NodeJS.Timeout
-  | undefined>(undefined);
+  const timeoutIdRef = useRef<NodeJS.Timeout>();
 
   const deleteError = () => {
-    if (timeoutId) {
-      clearTimeout(timeoutId);
+    if (timeoutIdRef.current) {
+      clearTimeout(timeoutIdRef.current);
     }
 
     setIsError(false);
@@ -27,15 +26,13 @@ export const TodoNotification: React.FC<Props> = ({
   };
 
   useEffect(() => {
-    const newTimeoutId = setTimeout(() => {
+    timeoutIdRef.current = setTimeout(() => {
       deleteError();
     }, 3000);
 
-    setTimeoutId(newTimeoutId);
-
     return () => {
-      if (timeoutId) {
-        clearTimeout(timeoutId);
+      if (timeoutIdRef.current) {
+        clearTimeout(timeoutIdRef.current);
       }
     };
   }, []);

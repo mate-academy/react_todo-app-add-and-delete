@@ -15,15 +15,12 @@ export const Footer: React.FC<Props> = ({
   isActiveTodos,
   clearCompletedTodo,
 }) => {
-  const handleClick = (value: FilteredBy) => {
-    if (filterBy !== value) {
-      setFilterBy(value);
+  const onFilterChange = (filter: FilteredBy) => () => {
+    if (filterBy !== filter) {
+      setFilterBy(filter);
     }
   };
 
-  const handleAllClick = () => handleClick(FilteredBy.ALL);
-  const handleActiveClick = () => handleClick(FilteredBy.ACTIVE);
-  const handleCompletedClick = () => handleClick(FilteredBy.COMPLETED);
   const handleClearCompleted = () => {
     clearCompletedTodo();
   };
@@ -40,7 +37,7 @@ export const Footer: React.FC<Props> = ({
           className={classNames(
             'filter__link', { selected: filterBy === FilteredBy.ALL },
           )}
-          onClick={handleAllClick}
+          onClick={onFilterChange(FilteredBy.ALL)}
         >
           All
         </a>
@@ -50,7 +47,7 @@ export const Footer: React.FC<Props> = ({
           className={classNames(
             'filter__link', { selected: filterBy === FilteredBy.ACTIVE },
           )}
-          onClick={handleActiveClick}
+          onClick={onFilterChange(FilteredBy.ACTIVE)}
         >
           Active
         </a>
@@ -60,7 +57,7 @@ export const Footer: React.FC<Props> = ({
           className={classNames(
             'filter__link', { selected: filterBy === FilteredBy.COMPLETED },
           )}
-          onClick={handleCompletedClick}
+          onClick={onFilterChange(FilteredBy.COMPLETED)}
         >
           Completed
         </a>
