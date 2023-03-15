@@ -1,145 +1,47 @@
-# React Todo App Add and Delete
+# React Todo App Load Todos
 
-It is the second part of the React Todo App with API.
+It is the first part of the React Todo App with API. You will implement the
+final app step by step and use the result of this task in the next tasks.
 
-Take your code implemented for [Loading todos](https://github.com/mate-academy/react_todo-app-loading-todos)
-and implement the ability to add and remove todos.
+You are given the markup of the Todo App. Split it into components and
+implement the functionality saving all the changes to [the API](https://mate-academy.github.io/fe-students-api/).
 
 > Here is [the working example](https://mate-academy.github.io/react_todo-app-with-api/)
-# ❗️❗️❗️</br>Please implement only adding and deleting todos in addition to what was already implemented.<br><br>All the other features from the working version will be implemented in the next task.</br>❗️❗️❗️
+# ❗️❗️❗️<br>Please implement ONLY todos loading, errors and filtering. <br><br>All the rest will be implemented in the next tasks<br>❗️❗️❗️
 
-> Check the [API Documentation](https://mate-academy.github.io/fe-students-api/)
+## General info
 
-## Adding a todo
+- register a user by your email [here](https://mate-academy.github.io/react_student-registration/)
+- save the received `userId` in the `App` and use to load load todos
+- log in to the [Demo Page](https://mate-academy.github.io/react_todo-app-with-api/) with your email
+- create some todos to see them later in your App
+- load your todos when the `App` is loaded (put your userId instead of `???`);
+    ```
+    https://mate.academy/students-api/todos?userId=???
+    ```
+- hide the list and the footer if there are no todos yet;
 
-Add a todo with the entered title on the form submit:
+> The API client is already implemented in the `src/utils/fetchClient.ts`. Learn it to understand how to interact with the API. If you want to implement it yourself you can delete the `fetchClient`.
 
-- if the title is empty show the `Title can't be empty` notification at the bottom;
-- use your `userId` for the new todo;
-- send a POST request to the API (check the [API Documentation](https://mate-academy.github.io/fe-students-api/))
-- disable the input until receiving a response from the API;
-- immediately after sending a request create a todo with `id: 0` and save it to the `tempTodo` variable in the state (NOT to the `todos` array);
-- show an independent `TodoItem` **after** the list if `tempTodo` is not `null`;
-- temp TodoItem should have the loader (check the original markup);
-- in case of success add the todo created by the API to the array (take it from the POST response);
-- in case of an API error show `Unable to add a todo` notification at the bottom;
-- set `tempTodo` to `null` to hide the extra `TodoItem`;
+## Error messages
 
-> Don't try to implement animations for adding or removing Todos (at least until you finish everything else).
-> If you really fill confident to try, there is a hint at the end of the description.
+In case of any error show the notification with an appropriate message at the bottom
 
-## Deleting todos
+- the notification can be closed with the `close` button (add the `hidden` class);
+- automatically hide the notification after 3 seconds;
+- also hide the notification before any next request;
+- use a wrong todos URL to test the error;
+- there are no tests yet.
 
-Remove a todo on `TodoDeleteButton` click:
+## Filtering todos
 
-- covered the todo with the loader while wating for the API response;
-- remove the todo from the list on success;
-- in case of API error show `Unable to delete a todo` notification at the bottom (the todo must stay in the list);
+Filter todos by status `All` / `Active` / `Completed`:
 
-Remove all the completed todos after the `Clear completed` button click:
-
-- the button should be visible only if there is at least 1 completed todo;
-- the deletion should work as a several individual deletions running at the same time;
+- `all` is the default value;
+- use the `selected` class to highlight a selected link;
 
 ## Instructions
 
 - Implement a solution following the [React task guideline](https://github.com/mate-academy/react_task-guideline#react-tasks-guideline).
 - Use the [React TypeScript cheat sheet](https://mate-academy.github.io/fe-program/js/extra/react-typescript).
-- Replace `<your_account>` with your Github username in the [DEMO LINK](https://<your_account>.github.io/react_todo-app-add-and-delete/) and add it to the PR description.
-
-## IF you want to implement smooth animations
-
-<details>
-  <summary>Click here to see the hint</summary>
-  
-  Use [React Transition Group](https://reactcommunity.org/react-transition-group/transition-group)
-
-  ```tsx
-  <section className="todoapp__main" data-cy="TodoList">
-    <TransitionGroup>
-      {visibleTodos.map(todo => (
-        <CSSTransition
-          key={todo.id}
-          timeout={300}
-          classNames="item"
-        >
-          <TodoItem
-            todo={todo}
-            isProcessed={processings.includes(todo.id)}
-            onDelete={() => deleteTodo(todo.id)}
-            onUpdate={updateTodo}
-          />
-        </CSSTransition>
-      ))}
-
-      {creating && (
-        <CSSTransition
-          key={0}
-          timeout={300}
-          classNames="temp-item"
-        >
-          <TodoItem
-            todo={{
-              id: Math.random(),
-              title,
-              completed: false,
-              userId: user.id,
-            }}
-            isProcessed
-          />
-        </CSSTransition>
-      )}
-    </TransitionGroup>
-  </section>
-  ```
-    
-  Here are the styles used in this example
-  ```css
-  .item-enter {
-    max-height: 0;
-  }
-
-  .item-enter-active {
-    overflow: hidden;
-    max-height: 58px;
-    transition: max-height 0.3s ease-in-out;
-  }
-
-  .item-exit {
-    max-height: 58px;
-  }
-
-  .item-exit-active {
-    overflow: hidden;
-    max-height: 0;
-    transition: max-height 0.3s ease-in-out;
-  }
-
-  .temp-item-enter {
-    max-height: 0;
-  }
-
-  .temp-item-enter-active {
-    overflow: hidden;
-    max-height: 58px;
-    transition: max-height 0.3s ease-in-out;
-  }
-
-  .temp-item-exit {
-    max-height: 58px;
-  }
-
-  .temp-item-exit-active {
-    transform: translateY(-58px);
-    max-height: 0;
-    opacity: 0;
-    transition: 0.3s ease-in-out;
-    transition-property: opacity, max-height, transform;
-  }
-
-  .has-error .temp-item-exit-active {
-    transform: translateY(0);
-    overflow: hidden;
-  }
-  ```
-</details>
+- Replace `<your_account>` with your Github username in the [DEMO LINK](https://bohdan-gavrilyk.github.io/react_todo-app-loading-todos/) and add it to the PR description.
