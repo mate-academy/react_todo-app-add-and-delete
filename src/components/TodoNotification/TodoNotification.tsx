@@ -3,19 +3,16 @@ import React, { useState, useEffect } from 'react';
 import classNames from 'classnames';
 
 type Props = {
-  setError: (error: boolean) => void,
   errorMessage: string,
 };
 
 export const TodoNotification: React.FC<Props> = ({
-  setError,
   errorMessage,
 }) => {
   const [isError, setIsError] = useState(true);
   const deleteError = () => {
-    setIsError(false);
     setTimeout(() => {
-      setError(false);
+      setIsError(false);
     }, 1000);
   };
 

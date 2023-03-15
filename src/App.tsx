@@ -15,7 +15,6 @@ export const App: React.FC = () => {
   const [tempTodo, setTempTodo] = useState<Todo | null>(null);
   const [isTodoLoaded, setIsTodoLoaded] = useState(false);
   const [filterBy, setFilterBy] = useState<FilteredBy>(FilteredBy.ALL);
-  const [isError, setIsError] = useState(false);
   const [errorMessage, setErrorMessage] = useState('');
 
   const isActiveTodos = todos.some(todo => todo.completed !== true);
@@ -28,7 +27,6 @@ export const App: React.FC = () => {
       setIsTodoLoaded(true);
       setTodos(todosFromServer);
     } catch (error) {
-      setIsError(true);
       setErrorMessage('Data couldn\'t be loaded from the server');
     }
   };
@@ -50,7 +48,6 @@ export const App: React.FC = () => {
       getTodosFromServer();
     } catch (error) {
       setTempTodo(null);
-      setIsError(true);
       setErrorMessage('Unable to add a todo');
     }
   };
@@ -61,7 +58,6 @@ export const App: React.FC = () => {
       getTodosFromServer();
     } catch (error) {
       setTempTodo(null);
-      setIsError(true);
       setErrorMessage('Unable to delete a todo');
     }
   };
@@ -122,11 +118,8 @@ export const App: React.FC = () => {
           </>
         )}
       </div>
-      {isError && (
-        <TodoNotification
-          setIsError={setIsError}
-          errorMessage={errorMessage}
-        />
+      {errorMessage && (
+        <TodoNotification errorMessage={errorMessage} />
       )}
     </div>
   );
