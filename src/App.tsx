@@ -69,7 +69,7 @@ export const App: React.FC = () => {
     completedTodos.forEach(todo => removeTodoOnServer(todo.id));
   };
 
-  const getVisibleTodos: Todo[] = useMemo(() => {
+  const visibleTodos: Todo[] = useMemo(() => {
     switch (filterBy) {
       case FilteredBy.ACTIVE:
         return todos.filter(todo => !todo.completed);
@@ -103,10 +103,10 @@ export const App: React.FC = () => {
           isActiveTodos={isActiveTodos}
         />
 
-        {getVisibleTodos.length && (
+        {visibleTodos.length !== 0 && (
           <>
             <TodoList
-              todos={getVisibleTodos}
+              todos={visibleTodos}
               tempTodo={tempTodo}
               removeTodoOnServer={removeTodoOnServer}
             />
