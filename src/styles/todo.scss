@@ -8,7 +8,7 @@
   font-size: 24px;
   line-height: 1.4em;
   border-bottom: 1px solid #ededed;
-  
+
   &:last-child {
     border-bottom: 0;
   }
@@ -30,7 +30,7 @@
 
   &__title {
     padding: 12px 15px;
-  
+
     word-break: break-all;
     transition: color 0.4s;
   }
@@ -56,7 +56,7 @@
     border: 0;
     background: none;
     cursor: pointer;
-  
+
     transform: translateY(-2px);
     opacity: 0;
     transition: color 0.2s ease-out;
@@ -65,7 +65,7 @@
       color: #af5b5e;
     }
   }
-  
+
   &:hover &__remove {
     opacity: 1;
   }
@@ -73,13 +73,13 @@
   &__title-field {
     width: 100%;
     padding: 11px 14px;
-  
+
     font-size: inherit;
     line-height: inherit;
     font-family: inherit;
     font-weight: inherit;
     color: inherit;
-  
+
     border: 1px solid #999;
     box-shadow: inset 0 -1px 5px 0 rgba(0, 0, 0, 0.2);
 
@@ -98,5 +98,73 @@
     top: 0;
 
     opacity: 0.5;
+
+    display: flex;
+    justify-content: center;
+    align-items: center;
   }
+}
+
+.fade-appear {
+  opacity: 0;
+  z-index: 1;
+}
+
+.fade-appear.fade-appear-active {
+  opacity: 1;
+  transition: opacity 500ms linear;
+}
+
+/* enter */
+.fade-enter {
+  opacity: 0;
+  z-index: 1;
+}
+
+.fade-enter.fade-enter-active {
+  opacity: 1;
+  transition: opacity 5000ms linear 5000ms;
+}
+
+/* exit */
+.fade-exit {
+  opacity: 1;
+}
+
+.fade-exit.fade-exit-active {
+  opacity: 0;
+  transition: opacity 5000ms linear;
+}
+
+.fade-exit-done {
+  opacity: 0;
+}
+
+.slide-enter {
+  opacity: 0;
+  transform: scale(0.97) translateY(5px);
+  z-index: 1;
+}
+
+.slide-enter.slide-enter-active {
+  opacity: 1;
+  transform: scale(1) translateY(0);
+  transition: opacity 3000ms linear 1000ms, transform 3000ms ease-in-out 1000ms;
+}
+
+/* slide exit */
+.slide-exit {
+  opacity: 1;
+  transform: scale(1) translateY(0);
+
+}
+
+.slide-exit.slide-exit-active {
+  opacity: 0;
+  transform: scale(0.97) translateY(5px);
+  transition: opacity 1500ms linear, transform 1500ms ease-out;
+}
+
+.slide-exit-done {
+  opacity: 0;
 }
