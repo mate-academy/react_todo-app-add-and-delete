@@ -6,10 +6,12 @@ import { TodoList } from './components/TodoList';
 import { Footer } from './components/Footer';
 import { TodoNotification } from './components/TodoNotification';
 import { getTodos, filterTodos } from './api/todos';
-import { Todo } from './types/Todo';
-import { Filter } from './types/Filter';
-import { ErrorType } from './types/ErrorType';
-import { Error } from './types/Error';
+import {
+  Error,
+  Filter,
+  Todo,
+  ErrorType,
+} from './types';
 
 const initialError: Error = {
   state: false,
@@ -21,17 +23,27 @@ const USER_ID = 6657;
 export const App: React.FC = () => {
   const [todos, setTodos] = useState<Todo[]>([]);
   const [tempTodo, setTempTodo] = useState<Todo | null>(null);
-  const [filter, setFilter] = useState<Filter>(Filter.All);
-  const [error, setError] = useState<Error>(initialError);
+  const [filter, setFilter] = useState(Filter.All);
+  const [error, setError] = useState(initialError);
 
   useEffect(() => {
-    getTodos(USER_ID)
-      .then(response => setTodos(response))
-      .catch(() => setError({
+    try {
+      const getServerTodos = async () => {
+        const response = await getTodos(USER_ID);
+
+        return response;
+      };
+
+      getServerTodos()
+        .then(setTodos);
+    } catch {
+      setError({
         state: true,
         type: ErrorType.Update,
-      }))
-      .finally(() => setTempTodo(null));
+      });
+    } finally {
+      setTempTodo(null);
+    }
   }, [todos]);
 
   if (!USER_ID) {
@@ -49,17 +61,16 @@ export const App: React.FC = () => {
           setError={setError}
         />
 
-        {todos.length
-          ? (
-            <>
-              <TodoList
-                todos={filterTodos(todos, filter)}
-                tempTodo={tempTodo}
-                setError={setError}
-              />
-              <Footer todos={todos} setFilter={setFilter} filter={filter} />
-            </>
-          ) : null}
+        {todos.length > 0 && (
+          <>
+            <TodoList
+              todos={filterTodos(todos, filter)}
+              tempTodo={tempTodo}
+              setError={setError}
+            />
+            <Footer todos={todos} setFilter={setFilter} filter={filter} />
+          </>
+        )}
       </div>
 
       {error.state && (

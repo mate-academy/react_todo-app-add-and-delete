@@ -3,8 +3,7 @@ import { CSSTransition } from 'react-transition-group';
 import classNames from 'classnames';
 import { Todo } from '../../types/Todo';
 import { deleteTodo, USER_ID } from '../../api/todos';
-import { Error } from '../../types/Error';
-import { ErrorType } from '../../types/ErrorType';
+import { Error, ErrorType } from '../../types';
 
 type Props = {
   todo: Todo,

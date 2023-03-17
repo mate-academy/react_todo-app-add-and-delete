@@ -7,7 +7,7 @@ import { ErrorType } from '../../types/ErrorType';
 
 type Props = {
   setTempTodo: (value: Todo) => void,
-  setError: (v: Error) => void,
+  setError: (err: Error) => void,
   tempTodo: Todo | null,
 };
 

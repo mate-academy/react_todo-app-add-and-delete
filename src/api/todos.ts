@@ -3,6 +3,7 @@ import { client } from '../utils/fetchClient';
 import { Filter } from '../types/Filter';
 
 export const USER_ID = 6657;
+export const links = ['All', 'Active', 'Completed'];
 
 export const getTodos = (userId: number) => {
   return client.get<Todo[]>(`/todos?userId=${userId}`);

@@ -1,11 +1,11 @@
 import React from 'react';
 import classNames from 'classnames';
-import { Todo } from '../../types/Todo';
-import { Filter } from '../../types/Filter';
+import { Todo, Filter, FilterValue } from '../../types';
 import {
   countActiveTodos,
   checkCompletedTodos,
   deleteCompletedTodos,
+  links,
 } from '../../api/todos';
 
 type Props = {
@@ -19,8 +19,7 @@ export const Footer: React.FC<Props> = ({ todos, setFilter, filter }) => {
   const activeTodosAmount = countActiveTodos(todos);
 
   const changeFilter = (event: React.MouseEvent<HTMLAnchorElement>) => {
-    const filterType
-      = event.currentTarget.textContent as 'All' | 'Active' | 'Completed';
+    const filterType = event.currentTarget.textContent as FilterValue;
 
     if (filterType) {
       setFilter(Filter[filterType]);
@@ -34,7 +33,7 @@ export const Footer: React.FC<Props> = ({ todos, setFilter, filter }) => {
       </span>
 
       <nav className="filter">
-        {['All', 'Active', 'Completed'].map(link => (
+        {links.map(link => (
           <a
             key={link}
             href={`#/${link.toLowerCase()}`}
