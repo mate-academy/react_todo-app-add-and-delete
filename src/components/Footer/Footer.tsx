@@ -5,6 +5,7 @@ import { SortType } from '../../types/SortType';
 type Props = {
   sortType: SortType,
   activeTodoListLength: number,
+  completedTodoListLength: number,
   onSetSortType: (sortBy: SortType) => void;
 };
 
@@ -12,6 +13,7 @@ export const Footer: React.FC<Props> = ({
   sortType,
   onSetSortType,
   activeTodoListLength,
+  completedTodoListLength,
 }) => {
   const handleSortType = (value: SortType) => {
     onSetSortType(value);
@@ -64,6 +66,11 @@ export const Footer: React.FC<Props> = ({
       <button
         type="button"
         className="todoapp__clear-completed"
+        style={{
+          visibility: completedTodoListLength
+            ? 'visible'
+            : 'hidden',
+        }}
       >
         Clear completed
       </button>

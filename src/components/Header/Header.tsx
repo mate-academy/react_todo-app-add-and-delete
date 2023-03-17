@@ -1,11 +1,21 @@
 /* eslint-disable jsx-a11y/control-has-associated-label */
-// import classNames from 'classnames';
 
 type Props = {
   totalTodoListLength: number,
+  query: string,
+  onSetQuery: (query: string) => void,
+  isDisabledForm: boolean,
+  handleSubmit: (event: React.FormEvent<HTMLFormElement>) =>
+  void | Promise<void>;
 };
 
-export const Header: React.FC<Props> = ({ totalTodoListLength }) => {
+export const Header: React.FC<Props> = ({
+  totalTodoListLength,
+  query,
+  onSetQuery,
+  isDisabledForm,
+  handleSubmit,
+}) => {
   return (
     <header className="todoapp__header">
       {totalTodoListLength !== 0 && (
@@ -15,11 +25,16 @@ export const Header: React.FC<Props> = ({ totalTodoListLength }) => {
         />
       )}
 
-      <form>
+      <form onSubmit={(event) => handleSubmit(event)}>
         <input
           type="text"
           className="todoapp__new-todo"
           placeholder="What needs to be done?"
+          value={query}
+          onChange={(event) => {
+            onSetQuery(event.target.value);
+          }}
+          disabled={isDisabledForm}
         />
       </form>
     </header>
