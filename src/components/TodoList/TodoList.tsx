@@ -1,34 +1,38 @@
 import React from 'react';
 import { Todo } from '../../types/Todo';
 import { TodoItem } from '../TodoItem/TodoItem';
-import { Error } from '../../types/Error';
 
 type Props = {
   todos: Todo[],
   tempTodo: Todo | null,
-  setError: (v: Error) => void,
+  removeTodo: (id: number) => void,
+  removedTodoId: number | null
 };
 
-export const TodoList: React.FC<Props> = ({ todos, tempTodo, setError }) => (
+export const TodoList: React.FC<Props> = ({
+  todos,
+  tempTodo,
+  removeTodo,
+  removedTodoId,
+}) => (
   <section className="todoapp__main">
     {todos.map(todo => (
       <TodoItem
         key={todo.id}
         todo={todo}
-        setError={setError}
+        removeTodo={removeTodo}
+        removedTodoId={removedTodoId}
       />
     ))}
     {tempTodo && (
       <div className="todo">
         <label className="todo__status-label">
-          <input
-            type="checkbox"
-            className="todo__status"
-            checked={false}
-          />
+          <input type="checkbox" className="todo__status" />
         </label>
+
         <span className="todo__title">{tempTodo.title}</span>
-        <button type="button" className="todo__remove">×1</button>
+        <button type="button" className="todo__remove">×</button>
+
         <div className="overlay">
           <div className="modal-background has-background-white-ter" />
           <div className="loader" />

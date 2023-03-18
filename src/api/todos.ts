@@ -9,32 +9,28 @@ export const getTodos = (userId: number) => {
   return client.get<Todo[]>(`/todos?userId=${userId}`);
 };
 
-export const postTodo = (userId: number, todo: {}) => {
+export const postTodo = (userId: number, todo: Todo) => {
   return client.post(`/todos?userId=${userId}`, todo);
 };
 
-export const deleteTodo = (userId: number, todoId: number) => {
+export const deleteTodo = (todoId: number) => {
   return client.delete(`/todos/${todoId}`);
-
-  // eslint-disable-next-line no-console
-  console.log(userId);
 };
 
 export const filterTodos = (
   todos: Todo[],
   filterParam: Filter,
 ) => {
-  const visibleTodos = filterParam !== Filter.All
-    ? todos.filter(todo => {
-      if (filterParam === Filter.Active) {
-        return !todo.completed;
-      }
+  const visibleTodos = [...todos];
 
-      return todo.completed;
-    })
-    : todos;
-
-  return visibleTodos;
+  switch (filterParam) {
+    case Filter.Active:
+      return visibleTodos.filter(todo => !todo.completed);
+    case Filter.Completed:
+      return visibleTodos.filter(todo => todo.completed);
+    default:
+      return visibleTodos;
+  }
 };
 
 export const countActiveTodos = (todos: Todo[]): number => {
@@ -45,12 +41,4 @@ export const countActiveTodos = (todos: Todo[]): number => {
 
 export const checkCompletedTodos = (todos: Todo[]): boolean => {
   return todos.some(todo => todo.completed);
-};
-
-export const deleteCompletedTodos = (todos: Todo[]): void => {
-  for (let i = 0; i < todos.length; i += 1) {
-    if (todos[i].completed) {
-      deleteTodo(1, todos[i].id);
-    }
-  }
 };

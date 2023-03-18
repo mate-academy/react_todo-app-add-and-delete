@@ -4,7 +4,6 @@ import { Todo, Filter, FilterValue } from '../../types';
 import {
   countActiveTodos,
   checkCompletedTodos,
-  deleteCompletedTodos,
   links,
 } from '../../api/todos';
 
@@ -12,12 +11,15 @@ type Props = {
   todos: Todo[],
   filter: Filter,
   setFilter: (filterType: Filter) => void,
+  removeCompletedTodos: () => void,
 };
 
-export const Footer: React.FC<Props> = ({ todos, setFilter, filter }) => {
-  const isAnyTodoCompleted = checkCompletedTodos(todos);
-  const activeTodosAmount = countActiveTodos(todos);
-
+export const Footer: React.FC<Props> = ({
+  todos,
+  setFilter,
+  filter,
+  removeCompletedTodos,
+}) => {
   const changeFilter = (event: React.MouseEvent<HTMLAnchorElement>) => {
     const filterType = event.currentTarget.textContent as FilterValue;
 
@@ -29,7 +31,7 @@ export const Footer: React.FC<Props> = ({ todos, setFilter, filter }) => {
   return (
     <footer className="todoapp__footer">
       <span className="todo-count">
-        {`${activeTodosAmount} items left`}
+        {`${countActiveTodos(todos)} items left`}
       </span>
 
       <nav className="filter">
@@ -54,9 +56,9 @@ export const Footer: React.FC<Props> = ({ todos, setFilter, filter }) => {
         type="button"
         className={classNames(
           'todoapp__clear-completed',
-          { 'todoapp__clear-completed-disabled': !isAnyTodoCompleted },
+          { 'todoapp__clear-completed-disabled': !checkCompletedTodos(todos) },
         )}
-        onClick={() => deleteCompletedTodos(todos)}
+        onClick={removeCompletedTodos}
       >
         Clear completed
       </button>
