@@ -1,24 +1,203 @@
-/* eslint-disable max-len */
 /* eslint-disable jsx-a11y/control-has-associated-label */
-import React from 'react';
-import { UserWarning } from './UserWarning';
+import {
+  FC,
+  useEffect,
+  useMemo,
+  useState,
+} from 'react';
+import {
+  USER_ID as id,
+  getTodos,
+  postTodo,
+  deleteTodo,
+} from './api/todos';
+import Footer from './Components/Footer/Footer';
+import Header from './Components/Header/Header';
+import TodoList from './Components/TodoList/TodoList';
+import Notification from './Components/Notification/Notification';
+import Loader from './Components/Loader/Loader';
+import { Todo } from './types/Todo';
+import { Error, ErrorMessage } from './types/Error';
+import { FilterType } from './types/FilterType';
+import { filterTodoList, getMountCompletedTodos } from './utils/filterTodoList';
 
-const USER_ID = 0;
+export const App: FC = () => {
+  const [todos, setTodos] = useState<Todo[]>([]);
+  const [error, setError] = useState<Error>({
+    status: false,
+    message: ErrorMessage.NONE,
+  });
+  const [isLoader, setIsLoader] = useState(true);
+  const [filterTodosBy, setFilterTodos] = useState(FilterType.All);
 
-export const App: React.FC = () => {
-  if (!USER_ID) {
-    return <UserWarning />;
-  }
+  const [isDisabledAddingForm, setIsDisabledAddingForm] = useState(false);
+  const [isAddingTodo, setIsAddingTodo] = useState(false);
+  const [tempTodo, setTempTodo] = useState<Todo | null>(null);
+
+  const [deleteTodosId, setDeleteTodosId] = useState<number[] | null>(null);
+
+  const visibleTodoList = useMemo(() => (
+    filterTodoList(todos, filterTodosBy)
+  ), [todos, filterTodosBy]);
+
+  const amountCompletedTodosMemo: number = useMemo(() => (
+    getMountCompletedTodos(todos)
+  ), [todos]);
+
+  const fetchTodos = async () => {
+    try {
+      const todosFromServer = await getTodos(id);
+
+      setTodos(todosFromServer);
+
+      if (!todosFromServer.length) {
+        setError({
+          status: true,
+          message: ErrorMessage.LOAD,
+        });
+      }
+    } catch {
+      setError({
+        status: true,
+        message: ErrorMessage.LOAD,
+      });
+    } finally {
+      setIsLoader(false);
+    }
+  };
+
+  useEffect(() => {
+    fetchTodos();
+  }, []);
+
+  const addNewTodo = async (todo: string) => {
+    setIsDisabledAddingForm(true);
+    setError({
+      status: false,
+      message: ErrorMessage.NONE,
+    });
+    setIsAddingTodo(true);
+
+    setTempTodo({
+      id: Date.now(),
+      userId: id,
+      title: todo,
+      completed: false,
+    });
+
+    try {
+      const post = await postTodo(id, {
+        title: todo,
+        userId: id,
+        completed: false,
+      });
+      const prevTodos = [...todos, post];
+
+      setTodos(prevTodos);
+    } catch {
+      setError({
+        status: true,
+        message: ErrorMessage.ADD,
+      });
+    } finally {
+      setIsDisabledAddingForm(false);
+      setIsAddingTodo(false);
+      setTempTodo(null);
+    }
+  };
+
+  const deleteTodoPromise = (idTodo: number) => (
+    new Promise((response, reject) => {
+      deleteTodo(id, idTodo)
+        .then(() => {
+          response(idTodo);
+        })
+        .catch(() => {
+          reject();
+        });
+    })
+  );
+
+  const deleteArrayTodos = (deleteTodos: number[]) => {
+    setError({
+      status: false,
+      message: ErrorMessage.NONE,
+    });
+    const arrayPromises: Promise<unknown>[] = [];
+
+    setDeleteTodosId(deleteTodos);
+    deleteTodos.forEach(idDell => {
+      arrayPromises.push(deleteTodoPromise(idDell));
+    });
+
+    Promise.all(arrayPromises)
+      .then(idWilDeletedTodos => {
+        const filteredTodos = todos.filter(todo => {
+          return !idWilDeletedTodos.includes(todo.id);
+        });
+
+        setTodos(filteredTodos);
+      })
+      .catch(() => setError({
+        status: true,
+        message: ErrorMessage.DELETE,
+      }))
+      .finally(() => setDeleteTodosId(null));
+  };
+
+  const deleteTodoFromList = async (idTodo: number) => {
+    deleteArrayTodos([idTodo]);
+  };
+
+  const deleteAllCompletedTodos = () => {
+    const deleteTodos = todos
+      .filter(({ completed }) => completed)
+      .map(todo => todo.id);
+
+    deleteArrayTodos(deleteTodos);
+  };
 
   return (
-    <section className="section container">
-      <p className="title is-4">
-        Copy all you need from the prev task:
-        <br />
-        <a href="https://github.com/mate-academy/react_todo-app-loading-todos#react-todo-app-load-todos">React Todo App - Load Todos</a>
-      </p>
+    <div className="todoapp">
+      <h1 className="todoapp__title">todos</h1>
 
-      <p className="subtitle">Styles are already copied</p>
-    </section>
+      <div className="todoapp__content">
+        <Header
+          onEmptyForm={setError}
+          isDisabled={isDisabledAddingForm}
+          onAdd={addNewTodo}
+          statusPost={isAddingTodo}
+        />
+
+        {isLoader ? (
+          <Loader />
+        ) : (
+          <TodoList
+            todos={visibleTodoList}
+            addTodo={tempTodo}
+            isAdd={isAddingTodo}
+            deleteTodosId={deleteTodosId}
+            onDelete={deleteTodoFromList}
+          />
+        )}
+
+        {!todos.length || (
+          <Footer
+            amountCompletedTodos={amountCompletedTodosMemo}
+            todosLength={todos.length}
+            filterType={filterTodosBy}
+            setFilterType={setFilterTodos}
+            onClear={deleteAllCompletedTodos}
+          />
+        )}
+      </div>
+
+      {error.status && (
+        <Notification
+          errorMessage={error.message}
+          closeError={setError}
+        />
+      )}
+    </div>
   );
 };
