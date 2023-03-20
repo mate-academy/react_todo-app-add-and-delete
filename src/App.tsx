@@ -89,10 +89,10 @@ export const App: FC = () => {
         userId: id,
         completed: false,
       });
+      const resultTodos = [...todos, post];
 
-      if (post) {
-        setTodos([...todos, post]);
-      }
+      setTodos(resultTodos);
+      setAmountCompletedTodos(getMountCompletedTodos(resultTodos));
     } catch {
       setError({
         status: true,
@@ -131,7 +131,12 @@ export const App: FC = () => {
 
     Promise.all(arrayPromises)
       .then(idWilDeletedTodos => {
-        setTodos(todos.filter(todo => !idWilDeletedTodos.includes(todo.id)));
+        const filteredTodos = todos.filter(todo => {
+          return !idWilDeletedTodos.includes(todo.id);
+        });
+
+        setTodos(filteredTodos);
+        setAmountCompletedTodos(getMountCompletedTodos(filteredTodos));
       })
       .catch(() => setError({
         status: true,
