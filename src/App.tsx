@@ -13,8 +13,7 @@ import { TodoList } from './components/TodoList';
 import { ToggleButton } from './components/ToggleButton';
 import { ErrorTypes } from './types/ErrorTypes';
 import { FilterCases } from './types/FilterCases';
-import { Todo } from './types/Todo';
-import { TodoData } from './types/TodoData';
+import { Todo, TodoToSend } from './types/Todo';
 
 const USER_ID = 6683;
 
@@ -36,7 +35,7 @@ const filterByStatus = (
 
 export const App: React.FC = () => {
   const [todos, setTodos] = useState<Todo[]>([]);
-  const [filter, setFilter] = useState(FilterCases.All);
+  const [filterType, setFilterType] = useState(FilterCases.All);
   const [error, setError] = useState(ErrorTypes.None);
   const [inputValue, setInputValue] = useState('');
   const [isAddingProceeding, setIsAddingProceeding] = useState(false);
@@ -81,14 +80,14 @@ export const App: React.FC = () => {
   }, []);
 
   const handleFilterUpdate = (newFilter: FilterCases) => {
-    setFilter(newFilter);
+    setFilterType(newFilter);
   };
 
   const handleNotificationClose = () => {
     setError(ErrorTypes.None);
   };
 
-  const handleTodoAdd = (data: TodoData) => {
+  const handleTodoAdd = (data: TodoToSend) => {
     const todo = addTodo(data);
 
     setTempTodo({
@@ -102,17 +101,19 @@ export const App: React.FC = () => {
   const handleFormSubmit = async (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     let addedTodo: Todo;
-    const newTodoData: TodoData = {
+
+    if (!inputValue.trim()) {
+      generateError(ErrorTypes.EmptyTitleError);
+      setInputValue('');
+
+      return;
+    }
+
+    const newTodoData: TodoToSend = {
       title: inputValue,
       userId: USER_ID,
       completed: false,
     };
-
-    if (!inputValue) {
-      generateError(ErrorTypes.EmptyTitleError);
-
-      return;
-    }
 
     setIsAddingProceeding(true);
     setInputValue('');
@@ -133,13 +134,15 @@ export const App: React.FC = () => {
   };
 
   const filteredArray = useMemo(() => {
-    return filterByStatus(todos, filter);
-  }, [filter, todos]);
+    return filterByStatus(todos, filterType);
+  }, [filterType, todos]);
 
   const amountOfItemsLeft = todos
     .filter(({ completed }) => !completed).length;
 
   const isAllTodosActive = amountOfItemsLeft === 0;
+
+  const isTodosEmpty = todos.length === 0;
 
   return (
     <div className="todoapp">
@@ -147,7 +150,7 @@ export const App: React.FC = () => {
 
       <div className="todoapp__content">
         <header className="todoapp__header">
-          {todos.length && (
+          {!isTodosEmpty && (
             <ToggleButton isActive={isAllTodosActive} />
           )}
 
@@ -179,12 +182,12 @@ export const App: React.FC = () => {
           )}
         </section>
 
-        {todos.length && (
+        {!isTodosEmpty && (
           <Footer
             handleClearAll={clearCompletedTodos}
             amountOfItemsLeft={amountOfItemsLeft}
             amountOfItems={todos.length}
-            currentFilter={filter}
+            currentFilter={filterType}
             handleLinkClick={handleFilterUpdate}
           />
         )}
