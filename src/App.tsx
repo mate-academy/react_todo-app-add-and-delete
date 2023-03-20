@@ -23,7 +23,6 @@ import { filterTodoList, getMountCompletedTodos } from './utils/filterTodoList';
 
 export const App: FC = () => {
   const [todos, setTodos] = useState<Todo[]>([]);
-  const [amountCompletedTodos, setAmountCompletedTodos] = useState(0);
   const [error, setError] = useState<Error>({
     status: false,
     message: ErrorMessage.NONE,
@@ -41,12 +40,15 @@ export const App: FC = () => {
     filterTodoList(todos, filterTodosBy)
   ), [todos, filterTodosBy]);
 
+  const amountCompletedTodosMemo: number = useMemo(() => (
+    getMountCompletedTodos(todos)
+  ), [todos]);
+
   const fetchTodos = async () => {
     try {
       const todosFromServer = await getTodos(id);
 
       setTodos(todosFromServer);
-      setAmountCompletedTodos(getMountCompletedTodos(todosFromServer));
 
       if (!todosFromServer.length) {
         setError({
@@ -89,10 +91,9 @@ export const App: FC = () => {
         userId: id,
         completed: false,
       });
-      const resultTodos = [...todos, post];
+      const prevTodos = [...todos, post];
 
-      setTodos(resultTodos);
-      setAmountCompletedTodos(getMountCompletedTodos(resultTodos));
+      setTodos(prevTodos);
     } catch {
       setError({
         status: true,
@@ -136,7 +137,6 @@ export const App: FC = () => {
         });
 
         setTodos(filteredTodos);
-        setAmountCompletedTodos(getMountCompletedTodos(filteredTodos));
       })
       .catch(() => setError({
         status: true,
@@ -183,7 +183,7 @@ export const App: FC = () => {
 
         {!todos.length || (
           <Footer
-            amountCompletedTodos={amountCompletedTodos}
+            amountCompletedTodos={amountCompletedTodosMemo}
             todosLength={todos.length}
             filterType={filterTodosBy}
             setFilterType={setFilterTodos}

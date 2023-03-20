@@ -45,7 +45,6 @@ const Header: FC<Props> = ({
 
   return (
     <header className="todoapp__header">
-      {/* this buttons is active only if there are some active todos */}
       {/* eslint-disable-next-line */}
       <button
         type="button"

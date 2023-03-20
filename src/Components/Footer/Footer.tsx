@@ -65,7 +65,7 @@ const Footer: FC<Props> = ({
       type="button"
       className="todoapp__clear-completed disabled"
       onClick={onClear}
-      disabled={todosLength - completedTodos === 0}
+      disabled={todosLength === completedTodos}
     >
       Clear completed
     </button>
