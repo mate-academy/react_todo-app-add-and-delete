@@ -9,7 +9,7 @@ export const getTodos = (userId: number) => {
   return client.get<Todo[]>(`/todos?userId=${userId}`);
 };
 
-export const postTodo = (userId: number, todo: {}) => {
+export const postTodo = (userId: number, todo: Omit<Todo, 'id'>) => {
   return client.post(`/todos?userId=${userId}`, todo);
 };
 
@@ -28,6 +28,7 @@ export const filterTodos = (
       return visibleTodos.filter(todo => !todo.completed);
     case Filter.Completed:
       return visibleTodos.filter(todo => todo.completed);
+    case Filter.All:
     default:
       return visibleTodos;
   }

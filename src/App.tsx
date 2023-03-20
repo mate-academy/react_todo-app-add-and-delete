@@ -1,6 +1,6 @@
 /* eslint-disable object-curly-newline */
 /* eslint-disable jsx-a11y/control-has-associated-label */
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, useMemo } from 'react';
 import { UserWarning } from './UserWarning';
 import { Header } from './components/Header';
 import { TodoList } from './components/TodoList';
@@ -22,12 +22,13 @@ export const App: React.FC = () => {
   const [filterType, setFilterType] = useState(Filter.All);
   const [error, setError] = useState(initialError);
   const [removedTodoId, setRemovedTodoId] = useState<number | null>(null);
+  const filteredTodos = useMemo(() => {
+    return filterTodos(todos, filterType);
+  }, [todos, filterType]);
 
   useEffect(() => {
     getTodos(USER_ID)
-      .then(response => {
-        setTodos(response);
-      })
+      .then(setTodos)
       .catch(() => setError({
         state: true,
         type: ErrorType.Update,
@@ -91,9 +92,7 @@ export const App: React.FC = () => {
 
     completed.forEach(todo => {
       deleteTodo(todo.id)
-        .then(() => {
-          setTodos(uncompleted);
-        })
+        .then(() => setTodos(uncompleted))
         .catch(() => {
           setError({
             state: true,
@@ -120,7 +119,7 @@ export const App: React.FC = () => {
         {todos.length > 0 && (
           <>
             <TodoList
-              todos={filterTodos(todos, filterType)}
+              todos={filteredTodos}
               tempTodo={tempTodo}
               removeTodo={removeTodo}
               removedTodoId={removedTodoId}
