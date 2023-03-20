@@ -12,3 +12,7 @@ export const addTodo = (userId: number, title: string) => {
     completed: false,
   });
 };
+
+export const deleteTodo = (todoId:number) => {
+  return client.delete(`/todos/${todoId}`);
+};

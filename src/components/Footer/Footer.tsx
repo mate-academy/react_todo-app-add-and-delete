@@ -7,6 +7,7 @@ type Props = {
   activeTodoListLength: number,
   completedTodoListLength: number,
   onSetSortType: (sortBy: SortType) => void;
+  removeCompletedTodos: () => void;
 };
 
 export const Footer: React.FC<Props> = ({
@@ -14,6 +15,7 @@ export const Footer: React.FC<Props> = ({
   onSetSortType,
   activeTodoListLength,
   completedTodoListLength,
+  removeCompletedTodos,
 }) => {
   const handleSortType = (value: SortType) => {
     onSetSortType(value);
@@ -71,6 +73,7 @@ export const Footer: React.FC<Props> = ({
             ? 'visible'
             : 'hidden',
         }}
+        onClick={removeCompletedTodos}
       >
         Clear completed
       </button>

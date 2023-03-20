@@ -6,7 +6,7 @@ import { TodoList } from './components/TodoList/TodoList';
 import { ErrorNotification }
   from './components/ErrorNotification/ErrorNotification';
 
-import { getTodos, addTodo } from './api/todos';
+import { getTodos, addTodo, deleteTodo } from './api/todos';
 
 import { Todo } from './types/Todo';
 import { SortType } from './types/SortType';
@@ -20,9 +20,11 @@ export const App: React.FC = () => {
   const [errorType, setErrorType] = useState('');
   const [sortType, setSortType] = useState(SortType.ALL);
   const [isDisabledForm, setIsDisabledForm] = useState(false);
-  // const [tempTodo, setTempTodo] = useState<Todo | null>(null);
+  const [tempTodo, setTempTodo] = useState<Todo | null>(null);
+  const [tempTodos, setTempTodos] = useState<Todo[]>([]);
 
   let visibleTodoList = todosList;
+  const copletedTodos = todosList.filter(todo => todo.completed === true);
 
   switch (sortType) {
     case SortType.ACTIVE:
@@ -58,24 +60,43 @@ export const App: React.FC = () => {
     setIsDisabledForm(true);
 
     try {
-      /* const todo = {
+      const todo = {
         id: 0,
         title: query,
         userId: USER_ID,
         completed: false,
-      }; */
+      };
 
-      // setTempTodo(todo);
+      setTempTodo(todo);
 
       await addTodo(USER_ID, query);
       await getTodosFromServer();
 
       setIsDisabledForm(false);
       setQuery('');
-      // setTempTodo(null);
+      setTempTodo(null);
     } catch {
       setQuery('');
-      showError('add');
+      showError('unable to add element');
+    } finally {
+      setIsDisabledForm(false);
+    }
+  };
+
+  const deleteTodoFromServer = async (id:number) => {
+    try {
+      const selectedTodo = todosList.find(todo => todo.id === id);
+
+      if (selectedTodo) {
+        setTempTodos((prev) => [...prev, selectedTodo]);
+      }
+
+      await deleteTodo(id);
+      await getTodosFromServer();
+    } catch {
+      showError('unable to delete element');
+    } finally {
+      setTempTodos([]);
     }
   };
 
@@ -98,6 +119,14 @@ export const App: React.FC = () => {
     return addTodoOnServer();
   };
 
+  const removeTodo = (id:number) => {
+    deleteTodoFromServer(id);
+  };
+
+  const removeCompletedTodos = () => {
+    copletedTodos.map(todo => deleteTodoFromServer(todo.id));
+  };
+
   return (
     <div className="todoapp">
       <h1 className="todoapp__title">todos</h1>
@@ -111,7 +140,12 @@ export const App: React.FC = () => {
           handleSubmit={handleSubmit}
         />
 
-        <TodoList todos={visibleTodoList} />
+        <TodoList
+          todos={visibleTodoList}
+          tempTodo={tempTodo}
+          tempTodos={tempTodos}
+          removeTodo={removeTodo}
+        />
 
         {totalTodoListLength !== 0 && (
           <Footer
@@ -119,6 +153,7 @@ export const App: React.FC = () => {
             onSetSortType={setSortType}
             activeTodoListLength={activeTodoListLength}
             completedTodoListLength={completedTodoListLength}
+            removeCompletedTodos={removeCompletedTodos}
           />
         )}
 
