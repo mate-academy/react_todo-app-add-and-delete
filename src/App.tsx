@@ -27,12 +27,21 @@ export const App: React.FC = () => {
   }, [todos, filterType]);
 
   useEffect(() => {
-    getTodos(USER_ID)
-      .then(setTodos)
-      .catch(() => setError({
+    try {
+      const serverTodos = async () => {
+        const response = await getTodos(USER_ID);
+
+        return response;
+      };
+
+      serverTodos()
+        .then(setTodos);
+    } catch {
+      setError({
         state: true,
         type: ErrorType.Update,
-      }));
+      });
+    }
   }, []);
 
   const addTodo = (title: string) => {
@@ -56,11 +65,11 @@ export const App: React.FC = () => {
       userId: USER_ID,
       title,
       completed: false,
-    }).then(r => {
+    }).then(response => {
       setTodos(prev => (
         [
-          ...prev as Todo [],
-          r as Todo,
+          ...prev,
+          response,
         ]
       ));
     })
@@ -73,7 +82,7 @@ export const App: React.FC = () => {
     setRemovedTodoId(id);
     deleteTodo(id)
       .then(() => {
-        setTodos(todos.filter(t => t.id !== id));
+        setTodos(todos.filter(currentTodo => currentTodo.id !== id));
       })
       .catch(() => {
         setError({
@@ -89,17 +98,16 @@ export const App: React.FC = () => {
   const removeCompletedTodos = () => {
     const completed = todos.filter(todo => todo.completed);
     const uncompleted = todos.filter(todo => !todo.completed);
+    const removePromises = completed.map(todo => deleteTodo(todo.id));
 
-    completed.forEach(todo => {
-      deleteTodo(todo.id)
-        .then(() => setTodos(uncompleted))
-        .catch(() => {
-          setError({
-            state: true,
-            type: ErrorType.Delete,
-          });
+    Promise.all(removePromises)
+      .then(() => setTodos(uncompleted))
+      .catch(() => {
+        setError({
+          state: true,
+          type: ErrorType.Delete,
         });
-    });
+      });
   };
 
   if (!USER_ID) {
