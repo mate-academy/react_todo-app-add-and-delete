@@ -9,6 +9,7 @@ type Props = {
   tempTodoId?: number | null;
   updateTodoStatus: (isCompleted: boolean, todo: Todo) => void;
   updateTodoTitle: (title: string, todo: Todo) => void;
+  isLoading: boolean;
 };
 
 export const TodoItem: React.FC<Props> = React.memo(({
@@ -17,11 +18,11 @@ export const TodoItem: React.FC<Props> = React.memo(({
   tempTodoId,
   updateTodoStatus,
   updateTodoTitle,
+  isLoading,
 }) => {
   const [isTodoEditing, setIsTodoEditing] = useState(false);
   const [inputQuery, setInputQuery] = useState(todo.title);
   const [compareInputQuery, setCompareInputQuery] = useState(inputQuery);
-  const [completedStatus, setCompletedStatus] = useState(todo.completed);
 
   const {
     title,
@@ -30,7 +31,6 @@ export const TodoItem: React.FC<Props> = React.memo(({
   } = todo;
 
   useEffect(() => {
-    setCompletedStatus(todo.completed);
     setCompareInputQuery(compareInputQuery);
   }, [todo]);
 
@@ -65,11 +65,7 @@ export const TodoItem: React.FC<Props> = React.memo(({
   };
 
   const toggleStatus = () => {
-    setCompletedStatus(currentStatus => {
-      return !currentStatus;
-    });
-
-    updateTodoStatus(!completedStatus, todo);
+    updateTodoStatus(!todo.completed, todo);
   };
 
   return (
@@ -88,7 +84,7 @@ export const TodoItem: React.FC<Props> = React.memo(({
         </label>
 
         {isTodoEditing ? (
-          <form onSubmit={(event) => handlerSubmit(event)}>
+          <form onSubmit={handlerSubmit}>
             <input
               type="text"
               className="todo__title-field"
@@ -117,7 +113,9 @@ export const TodoItem: React.FC<Props> = React.memo(({
             </>
           )}
 
-        <ModalOverlay isTodoUpdated={id === tempTodoId} />
+        {isLoading && (
+          <ModalOverlay isTodoUpdated={id === tempTodoId} />
+        )}
       </div>
     </>
   );

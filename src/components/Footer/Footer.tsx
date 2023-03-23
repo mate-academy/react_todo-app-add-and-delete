@@ -1,22 +1,22 @@
-import React, { useState } from 'react';
+import React from 'react';
 import classNames from 'classnames';
 import { Status } from '../../types/Status';
 
 type Props = {
-  filterTodos: (type: Status) => void;
+  onFilterChange: (type: Status) => void;
+  filter: Status;
   countOfActiveTodos: number;
   completedTodoLength: number;
   removeAllCompletedTodos: () => void;
 };
 
 export const Footer: React.FC<Props> = React.memo(({
-  filterTodos,
+  onFilterChange,
+  filter,
   countOfActiveTodos,
   completedTodoLength,
   removeAllCompletedTodos,
 }) => {
-  const [isFilterSelected, setIsFilterSelected] = useState(Status.ALL);
-
   return (
     <>
       <footer className="todoapp__footer">
@@ -30,11 +30,10 @@ export const Footer: React.FC<Props> = React.memo(({
             className={classNames(
               'filter__link',
               // eslint-disable-next-line
-              { 'selected': isFilterSelected === Status.ALL },
+              { 'selected': filter === Status.ALL },
             )}
             onClick={() => {
-              filterTodos(Status.ALL);
-              setIsFilterSelected(Status.ALL);
+              onFilterChange(Status.ALL);
             }}
           >
             All
@@ -45,11 +44,10 @@ export const Footer: React.FC<Props> = React.memo(({
             className={classNames(
               'filter__link',
               // eslint-disable-next-line
-              { 'selected': isFilterSelected === Status.ACTIVE },
+              { 'selected': filter === Status.ACTIVE },
             )}
             onClick={() => {
-              filterTodos(Status.ACTIVE);
-              setIsFilterSelected(Status.ACTIVE);
+              onFilterChange(Status.ACTIVE);
             }}
           >
             Active
@@ -60,11 +58,10 @@ export const Footer: React.FC<Props> = React.memo(({
             className={classNames(
               'filter__link',
               // eslint-disable-next-line
-              { 'selected': isFilterSelected === Status.COMPLETED },
+              { 'selected': filter === Status.COMPLETED },
             )}
             onClick={() => {
-              filterTodos(Status.COMPLETED);
-              setIsFilterSelected(Status.COMPLETED);
+              onFilterChange(Status.COMPLETED);
             }}
           >
             Completed
