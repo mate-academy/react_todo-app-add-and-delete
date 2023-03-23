@@ -16,7 +16,7 @@ export const Header: React.FC<Props> = ({
   isDisabledForm,
   handleSubmit,
 }) => {
-  const isActiveToggleButton = totalTodoListLength !== 0;
+  const isActiveToggleButton = !!totalTodoListLength;
 
   return (
     <header className="todoapp__header">

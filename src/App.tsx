@@ -108,7 +108,7 @@ export const App: React.FC = () => {
   const activeTodoListLength = todosList.filter(
     todo => !todo.completed,
   ).length;
-  const isActiveFooter = totalTodoListLength !== 0;
+  const isActiveFooter = !!totalTodoListLength;
   const completedTodoListLength = totalTodoListLength - activeTodoListLength;
 
   const handleSubmit = (event: React.FormEvent<HTMLFormElement>) => {
