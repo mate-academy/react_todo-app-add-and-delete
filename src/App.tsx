@@ -24,7 +24,7 @@ export const App: React.FC = () => {
   const [tempTodos, setTempTodos] = useState<Todo[]>([]);
 
   let visibleTodoList = todosList;
-  const copletedTodos = todosList.filter(todo => todo.completed === true);
+  const copletedTodos = todosList.filter(todo => todo.completed);
 
   switch (sortType) {
     case SortType.ACTIVE:
@@ -108,6 +108,7 @@ export const App: React.FC = () => {
   const activeTodoListLength = todosList.filter(
     todo => !todo.completed,
   ).length;
+  const isActiveFooter = totalTodoListLength !== 0;
   const completedTodoListLength = totalTodoListLength - activeTodoListLength;
 
   const handleSubmit = (event: React.FormEvent<HTMLFormElement>) => {
@@ -147,7 +148,7 @@ export const App: React.FC = () => {
           removeTodo={removeTodo}
         />
 
-        {totalTodoListLength !== 0 && (
+        {isActiveFooter && (
           <Footer
             sortType={sortType}
             onSetSortType={setSortType}

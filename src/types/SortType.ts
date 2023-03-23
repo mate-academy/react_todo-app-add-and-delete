@@ -1,5 +1,5 @@
 export enum SortType {
-  ALL = 'all',
-  ACTIVE = 'active',
-  COMPLETE = 'complete',
+  ALL = 'All',
+  ACTIVE = 'Active',
+  COMPLETE = 'Complete',
 }

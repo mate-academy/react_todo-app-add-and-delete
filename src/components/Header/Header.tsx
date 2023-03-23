@@ -16,9 +16,11 @@ export const Header: React.FC<Props> = ({
   isDisabledForm,
   handleSubmit,
 }) => {
+  const isActiveToggleButton = totalTodoListLength !== 0;
+
   return (
     <header className="todoapp__header">
-      {totalTodoListLength !== 0 && (
+      {isActiveToggleButton && (
         <button
           type="button"
           className="todoapp__toggle-all active"

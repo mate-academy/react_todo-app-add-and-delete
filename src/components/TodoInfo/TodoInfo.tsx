@@ -21,7 +21,6 @@ export const TodoInfo: React.FC<Props> = ({ todo, isLoading, removeTodo }) => {
         <input
           type="checkbox"
           className="todo__status"
-          // checked
         />
       </label>
 

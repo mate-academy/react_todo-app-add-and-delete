@@ -21,6 +21,8 @@ export const Footer: React.FC<Props> = ({
     onSetSortType(value);
   };
 
+  const sortTypeEntries = Object.entries(SortType);
+
   return (
     <footer className="todoapp__footer">
       <span className="todo-count">
@@ -28,41 +30,32 @@ export const Footer: React.FC<Props> = ({
       </span>
 
       <nav className="filter">
-        <a
-          href="#/"
-          className={classNames(
-            'filter__link', { selected: sortType === SortType.ALL },
-          )}
-          onClick={() => {
-            handleSortType(SortType.ALL);
-          }}
-        >
-          All
-        </a>
-
-        <a
-          href="#/active"
-          className={classNames(
-            'filter__link', { selected: sortType === SortType.ACTIVE },
-          )}
-          onClick={() => {
-            handleSortType(SortType.ACTIVE);
-          }}
-        >
-          Active
-        </a>
-
-        <a
-          href="#/completed"
-          className={classNames(
-            'filter__link', { selected: sortType === SortType.COMPLETE },
-          )}
-          onClick={() => {
-            handleSortType(SortType.COMPLETE);
-          }}
-        >
-          Completed
-        </a>
+        {sortTypeEntries.map(item => (
+          <a
+            href="#/"
+            className={classNames(
+              'filter__link', { selected: sortType === item[1] },
+            )}
+            key={item[1]}
+            onClick={() => {
+              switch (item[0]) {
+                case 'ALL':
+                  handleSortType(SortType.ALL);
+                  break;
+                case 'COMPLETE':
+                  handleSortType(SortType.COMPLETE);
+                  break;
+                case 'ACTIVE':
+                  handleSortType(SortType.ACTIVE);
+                  break;
+                default:
+                  break;
+              }
+            }}
+          >
+            {item[1]}
+          </a>
+        ))}
       </nav>
 
       <button
