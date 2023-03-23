@@ -129,5 +129,18 @@
     &:active {
       text-decoration: none;
     }
+
+    &--novisible {
+      opacity: 0;
+      cursor: default;
+    }
+  }
+
+  &__notification-empty {
+    font-size: 32px;
+    font-weight: 200;
+    text-align: center;
+    background-color: #feecf0;
+    color: #cc0f35;
   }
 }
