@@ -1,5 +1,6 @@
 import cn from 'classnames';
 import { FilterCases } from '../types/FilterCases';
+import { getLinkText } from '../utils/helper';
 
 type TodoFilterProps = {
   onLinkClick: (filter: FilterCases) => void,
@@ -8,30 +9,12 @@ type TodoFilterProps = {
 
 const filterLinks = Object.values(FilterCases);
 
-const getLinkText = (filter: FilterCases) => {
-  switch (filter) {
-    case FilterCases.All:
-      return 'All';
-
-    case FilterCases.Active:
-      return 'Active';
-
-    case FilterCases.Completed:
-      return 'Completed';
-
-    default:
-      return 'All';
-  }
-};
-
 export const TodoFilter: React.FC<TodoFilterProps> = ({
   onLinkClick,
   currentFilter,
 }) => {
   return (
-    <nav
-      className="filter"
-    >
+    <nav className="filter">
       {filterLinks.map(filterLink => {
         const isSelected = currentFilter === filterLink;
 
@@ -39,7 +22,7 @@ export const TodoFilter: React.FC<TodoFilterProps> = ({
           (
             <a
               key={filterLink}
-              href={filterLink}
+              href={`#/${filterLink}`}
               className={cn(
                 'filter__link',
                 {

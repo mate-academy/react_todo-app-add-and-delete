@@ -4,12 +4,12 @@ import { TodoItem } from './TodoItem';
 
 type TodoListProps = {
   todos: Todo[],
-  handleTodoDelete: (id: number) => void,
+  onDelete: (id: number) => void,
 };
 
 export const TodoList: React.FC<TodoListProps> = ({
   todos,
-  handleTodoDelete,
+  onDelete,
 }) => {
   return (
     <>
@@ -17,7 +17,7 @@ export const TodoList: React.FC<TodoListProps> = ({
         <TodoItem
           key={todo.id}
           todo={todo}
-          onDelete={handleTodoDelete}
+          onDelete={onDelete}
         />
       ))}
     </>

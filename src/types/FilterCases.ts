@@ -1,5 +1,5 @@
 export enum FilterCases {
-  All = '#/',
-  Active = '#/active',
-  Completed = '#/completed',
+  All = '',
+  Active = 'active',
+  Completed = 'completed',
 }

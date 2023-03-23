@@ -13,15 +13,15 @@ export const TodoItem: React.FC<TodoProps> = ({
   isAddingProceeding,
   onDelete,
 }) => {
-  const [isDeleting, setIsDeleting] = useState(false);
+  const [loading, setIsLoading] = useState(false);
   const { title, completed, id } = todo;
 
   const handleTodoDeleting = async () => {
-    setIsDeleting(true);
+    setIsLoading(true);
 
     await onDelete(id);
 
-    setIsDeleting(false);
+    setIsLoading(false);
   };
 
   return (
@@ -52,7 +52,7 @@ export const TodoItem: React.FC<TodoProps> = ({
           'modal',
           'overlay',
           {
-            'is-active': isAddingProceeding || isDeleting,
+            'is-active': isAddingProceeding || loading,
           },
         )}
       >

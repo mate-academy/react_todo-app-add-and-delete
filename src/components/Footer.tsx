@@ -6,16 +6,16 @@ type FooterProps = {
   amountOfItemsLeft: number,
   amountOfItems: number,
   currentFilter: FilterCases;
-  handleLinkClick: (filter: FilterCases) => void,
-  handleClearAll: () => void
+  onFilterChange: (filter: FilterCases) => void,
+  onClear: () => void
 };
 
 export const Footer: React.FC<FooterProps> = ({
   amountOfItemsLeft,
   amountOfItems,
   currentFilter,
-  handleLinkClick,
-  handleClearAll,
+  onFilterChange,
+  onClear,
 }) => {
   const hasCompletedTodos = amountOfItems === amountOfItemsLeft;
 
@@ -27,18 +27,15 @@ export const Footer: React.FC<FooterProps> = ({
 
       <TodoFilter
         currentFilter={currentFilter}
-        onLinkClick={handleLinkClick}
+        onLinkClick={onFilterChange}
       />
 
       <button
         type="button"
-        className={cn(
-          'todoapp__clear-completed',
-          {
-            hide_button: hasCompletedTodos,
-          },
-        )}
-        onClick={handleClearAll}
+        className={cn('todoapp__clear-completed', {
+          hide_button: hasCompletedTodos,
+        })}
+        onClick={onClear}
       >
         Clear completed
       </button>

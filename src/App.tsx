@@ -1,6 +1,7 @@
 /* eslint-disable jsx-a11y/control-has-associated-label */
 import React, {
   FormEvent,
+  useCallback,
   useEffect,
   useMemo,
   useState,
@@ -14,24 +15,9 @@ import { ToggleButton } from './components/ToggleButton';
 import { ErrorTypes } from './types/ErrorTypes';
 import { FilterCases } from './types/FilterCases';
 import { Todo, TodoToSend } from './types/Todo';
+import { filterByStatus, generateError } from './utils/helper';
 
 const USER_ID = 6683;
-
-const filterByStatus = (
-  todos: Todo[],
-  filter: FilterCases,
-) => {
-  switch (filter) {
-    case FilterCases.Active:
-      return todos.filter(({ completed }) => !completed);
-
-    case FilterCases.Completed:
-      return todos.filter(({ completed }) => completed);
-
-    default:
-      return todos;
-  }
-};
 
 export const App: React.FC = () => {
   const [todos, setTodos] = useState<Todo[]>([]);
@@ -41,53 +27,46 @@ export const App: React.FC = () => {
   const [isAddingProceeding, setIsAddingProceeding] = useState(false);
   const [tempTodo, setTempTodo] = useState<null | Todo>(null);
 
-  const generateError = (errorType: ErrorTypes) => {
-    setError(errorType);
+  const fetchTodos = async () => {
+    const todosFromServer = await getTodos(USER_ID);
 
-    const timer = setTimeout(() => {
-      setError(ErrorTypes.None);
-      clearTimeout(timer);
-    }, 3000);
+    setTodos(todosFromServer);
   };
 
   const handleTodoDelete = async (id: number) => {
     try {
       await deleteTodo(id);
 
-      setTodos(current => {
-        return current.filter(todo => todo.id !== id);
-      });
+      setTodos(current => current.filter(todo => todo.id !== id));
     } catch {
-      generateError(ErrorTypes.DeleteTodoError);
+      generateError(ErrorTypes.DeleteTodoError, setError);
     }
   };
 
   const clearCompletedTodos = () => {
+    const arrayOfPromises:Promise<void>[] = [];
     const completedTodos = todos
       .filter(({ completed }) => completed);
 
     completedTodos.forEach(todo => {
-      handleTodoDelete(todo.id);
+      arrayOfPromises.push(handleTodoDelete(todo.id));
     });
+    Promise.all(arrayOfPromises);
   };
 
   useEffect(() => {
-    const fetchTodos = async () => {
-      setTodos(await getTodos(USER_ID));
-    };
-
     fetchTodos();
   }, []);
 
-  const handleFilterUpdate = (newFilter: FilterCases) => {
+  const handleFilterUpdate = useCallback((newFilter: FilterCases) => {
     setFilterType(newFilter);
-  };
+  }, []);
 
-  const handleNotificationClose = () => {
+  const handleNotificationClose = useCallback(() => {
     setError(ErrorTypes.None);
-  };
+  }, []);
 
-  const handleTodoAdd = (data: TodoToSend) => {
+  const handleTodoAdd = useCallback((data: TodoToSend) => {
     const todo = addTodo(data);
 
     setTempTodo({
@@ -96,14 +75,13 @@ export const App: React.FC = () => {
     });
 
     return todo;
-  };
+  }, []);
 
   const handleFormSubmit = async (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault();
-    let addedTodo: Todo;
 
     if (!inputValue.trim()) {
-      generateError(ErrorTypes.EmptyTitleError);
+      generateError(ErrorTypes.EmptyTitleError, setError);
       setInputValue('');
 
       return;
@@ -119,14 +97,14 @@ export const App: React.FC = () => {
     setInputValue('');
 
     try {
-      addedTodo = await handleTodoAdd(newTodoData);
+      const addedTodo = await handleTodoAdd(newTodoData);
 
       setTodos(current => [
         ...current,
         addedTodo,
       ]);
     } catch {
-      generateError(ErrorTypes.AddTodoError);
+      generateError(ErrorTypes.AddTodoError, setError);
     } finally {
       setIsAddingProceeding(false);
       setTempTodo(null);
@@ -137,8 +115,7 @@ export const App: React.FC = () => {
     return filterByStatus(todos, filterType);
   }, [filterType, todos]);
 
-  const amountOfItemsLeft = todos
-    .filter(({ completed }) => !completed).length;
+  const amountOfItemsLeft = todos.filter(({ completed }) => !completed).length;
 
   const isAllTodosActive = amountOfItemsLeft === 0;
 
@@ -154,9 +131,7 @@ export const App: React.FC = () => {
             <ToggleButton isActive={isAllTodosActive} />
           )}
 
-          <form
-            onSubmit={handleFormSubmit}
-          >
+          <form onSubmit={handleFormSubmit}>
             <input
               disabled={isAddingProceeding}
               value={inputValue}
@@ -171,8 +146,9 @@ export const App: React.FC = () => {
         <section className="todoapp__main">
           <TodoList
             todos={filteredArray}
-            handleTodoDelete={handleTodoDelete}
+            onDelete={handleTodoDelete}
           />
+
           {tempTodo && (
             <TodoItem
               todo={tempTodo}
@@ -184,11 +160,11 @@ export const App: React.FC = () => {
 
         {!isTodosEmpty && (
           <Footer
-            handleClearAll={clearCompletedTodos}
+            onClear={clearCompletedTodos}
             amountOfItemsLeft={amountOfItemsLeft}
             amountOfItems={todos.length}
             currentFilter={filterType}
-            handleLinkClick={handleFilterUpdate}
+            onFilterChange={handleFilterUpdate}
           />
         )}
       </div>
