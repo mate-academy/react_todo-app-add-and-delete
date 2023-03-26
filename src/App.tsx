@@ -64,8 +64,6 @@ export const App: React.FC = () => {
     } catch (error) {
       setErrorText('Unable to add todo');
       closeError();
-
-      throw error;
     } finally {
       setTempTodo(null);
       setDisabledInput(false);
@@ -102,17 +100,12 @@ export const App: React.FC = () => {
 
   useEffect(() => {
     fetchTodos();
-    addTodo(query);
   }, [fetchTodos]);
 
   const handleSubmitForm = (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
     addTodo(query);
     setQuery('');
-  };
-
-  const removeCompleted = () => {
-    removeCompletedTodos();
   };
 
   const visibleTodos = useMemo(() => {
@@ -137,7 +130,7 @@ export const App: React.FC = () => {
       <h1 className="todoapp__title">todos</h1>
       <div className="todoapp__content">
         <header className="todoapp__header">
-          {activeTodos.length > 0 && (
+          {!!activeTodos.length && (
             /* eslint-disable-next-line jsx-a11y/control-has-associated-label */
             <button type="button" className="todoapp__toggle-all active" />
           )}
@@ -162,13 +155,13 @@ export const App: React.FC = () => {
           removeTodo={removeTodo}
           deletedTodoId={deletedTodoId}
         />
-        {todos.length > 0 && (
+        {!!todos.length && (
           <Footer
             activeTodos={activeTodos}
             filterType={filterType}
             setFilterType={setFilterType}
             completedTodos={completedTodos}
-            removeCompleted={removeCompleted}
+            removeCompletedTodos={removeCompletedTodos}
           />
         )}
       </div>

@@ -7,11 +7,11 @@ type Props = {
   setFilterType: (filter: FilterType) => void,
   completedTodos: Todo[];
   activeTodos: Todo[];
-  removeCompleted: () => void,
+  removeCompletedTodos: () => void,
 };
 
 export const Footer: React.FC<Props> = ({
-  activeTodos, filterType, setFilterType, completedTodos, removeCompleted,
+  activeTodos, filterType, setFilterType, completedTodos, removeCompletedTodos,
 }) => {
   return (
     <footer className="todoapp__footer">
@@ -58,15 +58,14 @@ export const Footer: React.FC<Props> = ({
       </nav>
 
       {/* don't show this button if there are no completed todos */}
-      {completedTodos.length > 0 && (
-        <button
-          type="button"
-          className="todoapp__clear-completed"
-          onClick={removeCompleted}
-        >
-          Clear completed
-        </button>
-      )}
+      <button
+        type="button"
+        className={classNames('todoapp__clear-completed',
+          { 'is-invisible': !completedTodos.length })}
+        onClick={removeCompletedTodos}
+      >
+        Clear completed
+      </button>
     </footer>
   );
 };
