@@ -1,4 +1,4 @@
-import { createRoot } from 'react-dom/client';
+import React, { createRoot } from 'react-dom/client';
 
 import 'bulma/css/bulma.css';
 import '@fortawesome/fontawesome-free/css/all.css';
