@@ -1,4 +1,5 @@
 import { Todo } from '../types/Todo';
+import { NewTodo } from '../types/NewTodo';
 import { client } from '../utils/fetchClient';
 import { TypeFilter } from '../components/Filter/Filter';
 
