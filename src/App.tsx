@@ -19,7 +19,7 @@ export const App: React.FC = () => {
 
   const getListTodo = useCallback(async (filter = TypeFilter.ALL) => {
     try {
-      if (filter !== undefined) {
+      if (filter) {
         const result = await getTodos(USER_ID, filter);
 
         setFilterTodo(filter);
@@ -64,12 +64,12 @@ export const App: React.FC = () => {
     patchTodo(id, completed).then(() => getListTodo());
   };
 
-  const clearCompleated = (list: Todo[]) => {
-    return list.filter(obj => obj.completed === true);
+  const clearCompleated = (todos: Todo[]) => {
+    return todos.filter(todo => todo.completed);
   };
 
   const clearActive = (list: Todo[]) => {
-    return list.filter(obj => obj.completed === false);
+    return list.filter(obj => !obj.completed);
   };
 
   const completedTodo = clearCompleated(listTodo);
@@ -93,7 +93,7 @@ export const App: React.FC = () => {
 
       <div className="todoapp__content">
         <header className="todoapp__header">
-          {activeTodo.length > 0
+          {!!activeTodo.length
             && (
               <button
                 type="button"
@@ -124,7 +124,7 @@ export const App: React.FC = () => {
           ))}
         </section>
 
-        {listTodo.length > 0 || filterTodo !== TypeFilter.ALL
+        {!!listTodo.length || filterTodo !== TypeFilter.ALL
           ? (
             <footer className="todoapp__footer">
               <span className="todo-count">

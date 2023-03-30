@@ -13,7 +13,7 @@ export enum TypeFilter {
 
 export const Filter: React.FC<Props> = ({ setFilter }) => {
   const [typeFilter, setTypeFilter] = useState(TypeFilter.ALL);
-  const filters = [TypeFilter.ALL, TypeFilter.ACTIVE, TypeFilter.COMPLETED];
+  const filters = Object.values(TypeFilter);
 
   const typeFunc = (type: TypeFilter) => {
     switch (type) {
