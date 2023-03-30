@@ -76,11 +76,15 @@ export const App: React.FC = () => {
   const activeTodo = clearActive(listTodo);
 
   function deleteAllTodosHandler(todos: Todo[]) {
-    todos.forEach((todo) => deleteTodoHandler(todo.id));
+    const promises = todos.map((todo) => deleteTodoHandler(todo.id));
+
+    return Promise.all(promises);
   }
 
   function changeAllTodosHandler(todos: Todo[]) {
-    todos.forEach((todo) => changeTodo(todo.id, true));
+    const promises = todos.map((todo) => changeTodo(todo.id, true));
+
+    return Promise.all(promises);
   }
 
   if (!USER_ID) {
