@@ -32,11 +32,11 @@ export const Header: React.FC<Props> = ({
     try {
       setIsInputDisabled(true);
       await addNewTodo(todoTitle);
+      setTodoTitle('');
     } catch {
       setErrorMessage(ErrorMessage.ADD);
     } finally {
       setIsInputDisabled(false);
-      setTodoTitle('');
     }
   };
 

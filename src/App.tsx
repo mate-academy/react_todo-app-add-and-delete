@@ -124,15 +124,13 @@ export const App: React.FC = () => {
         />
 
         {!!todos.length && (
-          <>
-            <Footer
-              todoStatus={todoStatus}
-              setTodoStatus={setTodoStatus}
-              clearCompleted={clearCompleted}
-              isTodoCompleted={isTodoCompleted}
-              activeTodosCount={activeTodosCount}
-            />
-          </>
+          <Footer
+            todoStatus={todoStatus}
+            setTodoStatus={setTodoStatus}
+            clearCompleted={clearCompleted}
+            isTodoCompleted={isTodoCompleted}
+            activeTodosCount={activeTodosCount}
+          />
         )}
       </div>
 

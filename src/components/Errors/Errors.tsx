@@ -12,9 +12,7 @@ export const Errors: React.FC<Props> = ({
   closeError,
 }) => {
   useEffect(() => {
-    setTimeout(() => {
-      closeError();
-    }, 3000);
+    setTimeout(closeError, 3000);
   }, []);
 
   return (
@@ -35,7 +33,7 @@ export const Errors: React.FC<Props> = ({
         ×
       </button>
 
-      <>{errorMessage}</>
+      {errorMessage}
     </div>
   );
 };
