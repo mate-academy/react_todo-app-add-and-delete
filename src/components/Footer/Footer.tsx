@@ -77,7 +77,8 @@ export const Footer: React.FC<Props> = ({
           href="#/completed"
           className={
             classNames(
-              'filter__link', { selected: currentFilter === Filter.completed },
+              'filter__link',
+              { selected: currentFilter === Filter.completed },
             )
           }
           onClick={() => loadFilteringTodos(true)}
@@ -86,15 +87,14 @@ export const Footer: React.FC<Props> = ({
         </a>
       </nav>
 
-      {isCompletedTodos && (
-        <button
-          type="button"
-          className="todoapp__clear-completed"
-          onClick={(event) => removeCompletedTodos(event)}
-        >
-          Clear completed
-        </button>
-      )}
+      <button
+        type="button"
+        className="todoapp__clear-completed"
+        onClick={(event) => removeCompletedTodos(event)}
+        disabled={!isCompletedTodos}
+      >
+        Clear completed
+      </button>
     </footer>
   );
 };

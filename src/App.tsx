@@ -150,7 +150,7 @@ export const App: React.FC = () => {
     setProcessings([]);
   };
 
-  const handleChecker = async (id: number, data: unknown) => {
+  const handleChecker = async (id: number, data: Partial<Todo>) => {
     setErrorMessage('');
     setProcessings((prev) => [...prev, id]);
 
@@ -242,7 +242,7 @@ export const App: React.FC = () => {
       <CSSTransition
         key={0}
         timeout={300}
-        classNames="has-error"
+        classNames="item-temp"
       >
         <div className="todoapp">
           <h1 className="todoapp__title">todos</h1>

@@ -6,7 +6,7 @@ import { ErrorsMessages } from '../../types/ErrorsMessages';
 
 type Props = {
   todo: Todo,
-  handleChecker: (id: number, data: unknown) => void,
+  handleChecker: (id: number, data: Partial<Todo>) => void,
   removeTodo: (id: number) => void,
   processings: number[],
   errorMessage: (message: ErrorsMessages) => void
@@ -63,6 +63,11 @@ export const TodoItem: React.FC<Props> = ({
     )
   );
 
+  function onSubmit(event: React.FormEvent) {
+    event.preventDefault();
+    changeTodoTitle();
+  }
+
   return (
     <div className={classNames('todo', { completed })}>
       <label className="todo__status-label">
@@ -75,11 +80,7 @@ export const TodoItem: React.FC<Props> = ({
       </label>
 
       {isFormActive ? (
-        <form onSubmit={(event) => {
-          event.preventDefault();
-          changeTodoTitle();
-        }}
-        >
+        <form onSubmit={onSubmit}>
           <input
             type="text"
             className="todo__title-field"

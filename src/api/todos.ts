@@ -5,11 +5,12 @@ export const getTodos = () => {
   return client.get<Todo[]>(`/todos?userId=${6725}`);
 };
 
-export const postTodo = (data: unknown) => {
+export const postTodo = (data: Omit<Todo, 'id'>) => {
   return client.post<Todo>(`/todos?userId=${6725}`, data);
 };
 
-export const patchTodo = (id: number, data: unknown) => {
+// eslint-disable-next-line max-len
+export const patchTodo = (id: number, data: Partial<Todo>) => {
   return client.patch<Todo>(`/todos/${id}`, data);
 };
 

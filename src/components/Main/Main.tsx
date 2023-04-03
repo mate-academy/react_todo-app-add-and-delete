@@ -7,7 +7,7 @@ import { TodoItemLoader } from '../TodoItemLoader';
 
 type Props = {
   todos: Todo[],
-  handleChecker: (id: number, data: unknown) => void,
+  handleChecker: (id: number, data: Partial<Todo>) => void,
   removeTodo: (id: number) => void,
   processings: number[],
   errorMessage: (message: ErrorsMessages) => void,
