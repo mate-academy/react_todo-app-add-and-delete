@@ -1,5 +1,5 @@
 /* eslint-disable jsx-a11y/control-has-associated-label */
-import React, { useEffect, useState } from 'react';
+import React, { useState } from 'react';
 import classNames from 'classnames';
 import debounce from 'lodash.debounce';
 import { TodoCreate } from './components/TodoCreate';
@@ -23,9 +23,6 @@ export const App: React.FC = () => {
   const [countComplited, setCountComplited] = useState(false);
   const [countNotComplited, setCountNotComplited] = useState(false);
 
-  useEffect(() => {
-  }, [todosFromServer]);
-
   if (!USER_ID) {
     return <UserWarning />;
   }
@@ -38,9 +35,10 @@ export const App: React.FC = () => {
   const statusComplited = {
     countComplited,
     countNotComplited,
+    todosFromServer,
   };
 
-  const askServer = (url: string) => {
+  const fetchTodos = (url: string) => {
     client
       .get(url)
       .then((todos) => {
@@ -49,7 +47,7 @@ export const App: React.FC = () => {
       .catch(() => setErrorMessage('Unable to update a todo'));
   };
 
-  const askTodos = debounce((url) => askServer(url), 1000);
+  const askTodos = debounce((url) => fetchTodos(url), 1000);
 
   const clearCompleted = async (status: string) => {
     if (todosFromServer) {

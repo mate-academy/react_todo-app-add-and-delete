@@ -1,7 +1,7 @@
 import classNames from 'classnames';
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { client } from '../utils/fetchClient';
-// import { Todo } from '../types/Todo';
+import { Todo } from '../types/Todo';
 
 export const TodoCreate: React.FC<{
   setErrorMessage: React.Dispatch<React.SetStateAction<string>>
@@ -10,6 +10,7 @@ export const TodoCreate: React.FC<{
   statusComplited: {
     countComplited: boolean;
     countNotComplited: boolean;
+    todosFromServer: Todo[] | undefined;
   }
 }> = ({
   setErrorMessage,
@@ -18,28 +19,35 @@ export const TodoCreate: React.FC<{
   statusComplited,
 }) => {
   const [inputPlace, setInputPlace] = useState('');
-
+  const [isLoading, setIsLoading] = useState(!statusComplited.todosFromServer);
   const handleNewTodo = (
     event: React.KeyboardEvent<HTMLInputElement>,
   ) => {
     if (event.key === 'Enter') {
       event.preventDefault();
-      client.post('/todos',
-        {
-          title: inputPlace,
-          userId: 6757,
-          completed: false,
-        })
-        .finally(() => {
-          askTodos('/todos?userId=6757');
-          setInputPlace('');
-        })
-        .catch(() => setErrorMessage('Unable to add a todo'));
+      setIsLoading(true);
+      if (inputPlace !== '') {
+        client.post('/todos',
+          {
+            title: inputPlace,
+            userId: 6757,
+            completed: false,
+          })
+          .then(() => {
+            askTodos('/todos?userId=6757');
+            setInputPlace('');
+          })
+          .catch(() => setErrorMessage('Unable to add a todo'));
+      }
     }
   };
 
+  useEffect(() => {
+    setIsLoading(!statusComplited.todosFromServer);
+  }, [statusComplited.todosFromServer]);
+
   const handleChange = (event: React.ChangeEvent<HTMLInputElement>) => {
-    setInputPlace(event.currentTarget.value);
+    setInputPlace(event.currentTarget.value.trimStart());
   };
 
   return (
@@ -62,6 +70,7 @@ export const TodoCreate: React.FC<{
           value={inputPlace}
           className="todoapp__new-todo"
           placeholder="What needs to be done?"
+          disabled={isLoading}
           onKeyDown={handleNewTodo}
           onChange={handleChange}
         />
