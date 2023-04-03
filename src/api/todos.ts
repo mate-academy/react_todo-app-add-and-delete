@@ -9,7 +9,6 @@ export const postTodo = (data: Omit<Todo, 'id'>) => {
   return client.post<Todo>(`/todos?userId=${6725}`, data);
 };
 
-// eslint-disable-next-line max-len
 export const patchTodo = (id: number, data: Partial<Todo>) => {
   return client.patch<Todo>(`/todos/${id}`, data);
 };
