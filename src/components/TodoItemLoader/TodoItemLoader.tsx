@@ -13,7 +13,13 @@ export const TodoItemLoader: React.FC<Props> = ({ todo }) => {
       </label>
 
       <span className="todo__title">{todo.title}</span>
-      <button type="button" className="todo__remove">×</button>
+      <button
+        type="button"
+        aria-label="remove todo"
+        className="todo__remove"
+      >
+        ×
+      </button>
 
       <div className="modal overlay is-active">
         <div className="modal-background has-background-white-ter" />

@@ -1,5 +1,4 @@
 import React from 'react';
-// eslint-disable-next-line max-len
 import { CSSTransition, TransitionGroup } from 'react-transition-group';
 import { Todo } from '../../types/Todo';
 import { TodoItem } from '../TodoItem';

@@ -13,31 +13,31 @@ type Props = {
 export const Footer: React.FC<Props> = ({
   todos,
   filter,
-  removeCompletedTodos: removeAll,
+  removeCompletedTodos: removeCompleted,
   currentFilter,
 }) => {
   const loadFilteringTodos = (isActive: boolean) => {
     if (!isActive) {
-      filter('active');
+      filter(Filter.active);
     } else {
-      filter('completed');
+      filter(Filter.completed);
     }
   };
 
   const allTodo = () => {
-    filter('all');
+    filter(Filter.all);
   };
 
   const isCompletedTodos = todos.some(todo => todo.completed);
+
   const activeTodosCount = (
     todos.length - todos.filter(
       item => item.completed,
     ).length);
+
   const removeCompletedTodos = (event: React.MouseEvent<HTMLButtonElement>) => {
     event.preventDefault();
-    removeAll();
-
-    return null;
+    removeCompleted();
   };
 
   return (
@@ -50,7 +50,10 @@ export const Footer: React.FC<Props> = ({
         <a
           href="#/"
           className={
-            classNames('filter__link', { selected: currentFilter === 'all' })
+            classNames(
+              'filter__link',
+              { selected: currentFilter === Filter.all },
+            )
           }
           onClick={() => allTodo()}
         >
@@ -60,7 +63,10 @@ export const Footer: React.FC<Props> = ({
         <a
           href="#/active"
           className={
-            classNames('filter__link', { selected: currentFilter === 'active' })
+            classNames(
+              'filter__link',
+              { selected: currentFilter === Filter.active },
+            )
           }
           onClick={() => loadFilteringTodos(false)}
         >
@@ -71,7 +77,7 @@ export const Footer: React.FC<Props> = ({
           href="#/completed"
           className={
             classNames(
-              'filter__link', { selected: currentFilter === 'completed' },
+              'filter__link', { selected: currentFilter === Filter.completed },
             )
           }
           onClick={() => loadFilteringTodos(true)}

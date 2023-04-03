@@ -1,4 +1,3 @@
-/* eslint-disable jsx-a11y/control-has-associated-label */
 import React from 'react';
 import classNames from 'classnames';
 
@@ -19,6 +18,7 @@ export const Error: React.FC<Props> = (
     )}
     >
       <button
+        aria-label="close error"
         type="button"
         className="delete"
         onClick={removeMessage}

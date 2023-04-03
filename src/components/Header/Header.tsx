@@ -1,4 +1,3 @@
-/* eslint-disable jsx-a11y/control-has-associated-label */
 import React, { useState } from 'react';
 import classNames from 'classnames';
 import { Todo } from '../../types/Todo';
@@ -39,6 +38,7 @@ export const Header: React.FC<Props> = ({
     <header className="todoapp__header">
       <button
         type="button"
+        aria-label="tooggle All"
         className={classNames(
           'todoapp__toggle-all',
           { active: isActive },
@@ -46,14 +46,16 @@ export const Header: React.FC<Props> = ({
         onClick={() => switchBtn(isActive)}
       />
       <form onSubmit={validateTodo}>
-        <input
-          type="text"
-          className="todoapp__new-todo"
-          value={newTodo}
-          onChange={(e) => setNewTodo(e.target.value)}
-          placeholder="What needs to be done?"
-          disabled={disabled}
-        />
+        <label>
+          <input
+            type="text"
+            className="todoapp__new-todo"
+            value={newTodo}
+            onChange={(e) => setNewTodo(e.target.value)}
+            placeholder="What needs to be done?"
+            disabled={disabled}
+          />
+        </label>
       </form>
     </header>
   );

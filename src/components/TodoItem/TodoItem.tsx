@@ -34,22 +34,29 @@ export const TodoItem: React.FC<Props> = ({
       removeTodo(id);
       errorMessage(ErrorsMessages.Title);
 
-      return null;
+      return false;
     }
 
-    if (title === inputValue) {
+    if (title === inputValue.trim()) {
       setIsFormActive(false);
 
-      return null;
+      return false;
     }
 
     setIsFormActive(false);
-    handleChecker(id, { title: inputValue });
 
-    return null;
+    return true;
   };
 
-  const cursorToEnd = (e: React.FocusEvent<HTMLInputElement>) => (
+  const changeTodoTitle = () => {
+    return validateTitle() ? (
+      handleChecker(id, { title: inputValue })
+    ) : (
+      null
+    );
+  };
+
+  const moveCursorToEndOfInput = (e: React.FocusEvent<HTMLInputElement>) => (
     e.currentTarget.setSelectionRange(
       e.currentTarget.value.length,
       e.currentTarget.value.length,
@@ -70,7 +77,7 @@ export const TodoItem: React.FC<Props> = ({
       {isFormActive ? (
         <form onSubmit={(event) => {
           event.preventDefault();
-          validateTitle();
+          changeTodoTitle();
         }}
         >
           <input
@@ -79,9 +86,9 @@ export const TodoItem: React.FC<Props> = ({
             placeholder="Empty todo will be deleted"
             value={inputValue}
             onChange={(event) => handleChange(event)}
-            onBlur={() => validateTitle()}
+            onBlur={() => changeTodoTitle()}
             ref={ref => ref && ref.focus()}
-            onFocus={(e) => cursorToEnd(e)}
+            onFocus={(e) => moveCursorToEndOfInput(e)}
           />
         </form>
       ) : (

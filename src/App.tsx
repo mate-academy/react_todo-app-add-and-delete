@@ -23,7 +23,7 @@ export const App: React.FC = () => {
   const [isHeaderDisabled, setIsHeaderDisabled] = useState(false);
   const [tempTodo, setTempTodo] = useState<Todo>();
   const [processings, setProcessings] = useState<number[]>([]);
-  const [currentFilter, setCurrentFilter] = useState<Filter>('all');
+  const [currentFilter, setCurrentFilter] = useState<Filter>(Filter.all);
 
   const removeMessage = () => {
     setErrorMessage('');
@@ -35,7 +35,7 @@ export const App: React.FC = () => {
 
   const showErrorMessage = (message: ErrorsMessages) => {
     createErrorMessage(message);
-    setTimeout(() => (removeMessage()), 3000);
+    setTimeout(() => removeMessage(), 3000);
   };
 
   const loadTodos = async () => {
@@ -56,13 +56,13 @@ export const App: React.FC = () => {
 
   const filterTodos = (filteringProperty: Filter) => {
     return (
-      filteringProperty === 'all'
+      filteringProperty === Filter.all
         ? todos
         : todos.filter(todo => {
           switch (filteringProperty) {
-            case 'active':
+            case Filter.active:
               return !todo.completed;
-            case 'completed':
+            case Filter.completed:
               return todo.completed;
             default:
               return null;
@@ -135,12 +135,12 @@ export const App: React.FC = () => {
 
     try {
       const removed = await Promise.all(
-        completedTodos.map(el => deleteTodo(el)),
+        completedTodos.map(todo => deleteTodo(todo)),
       );
 
       if (removed) {
-        setTodos((prev) => {
-          return prev.filter((todo) => !todo.completed);
+        setTodos((prevState) => {
+          return prevState.filter((todo) => !todo.completed);
         });
       }
     } catch (error) {
