@@ -1,4 +1,4 @@
-import React, { useEffect } from 'react';
+import React, { useEffect, useState } from 'react';
 import classNames from 'classnames';
 import { ErrorType } from '../../types/ErrorType';
 
@@ -13,26 +13,26 @@ export const Error: React.FC<Props> = ({
   hasError,
   onNotificationClose,
 }) => {
-  let errorMessage = '';
+  const [errorMessage, setErrorMessage] = useState('');
 
-  switch (errorType) {
-    case ErrorType.Add:
-    case ErrorType.Delete:
-    case ErrorType.Update:
-    case ErrorType.Load:
-      errorMessage = `Unable to ${errorType} a todo`;
+  useEffect(() => {
+    switch (errorType) {
+      case ErrorType.Add:
+      case ErrorType.Delete:
+      case ErrorType.Update:
+      case ErrorType.Load:
+        setErrorMessage(`Unable to ${errorType} a todo`);
+        break;
 
-      break;
+      case ErrorType.EmptyTitle:
+        setErrorMessage('Title can\'t be empty');
+        break;
 
-    case ErrorType.EmptyTitle:
-      errorMessage = 'Title can\'t be empty';
-
-      break;
-
-    default:
-      errorMessage = '';
-      break;
-  }
+      default:
+        setErrorMessage('');
+        break;
+    }
+  }, [errorType]);
 
   useEffect(() => {
     const timer = setTimeout(() => onNotificationClose(), 3000);

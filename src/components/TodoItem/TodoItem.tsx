@@ -1,6 +1,7 @@
-import React, { useState } from 'react';
+import React, { useContext, useState } from 'react';
 import classNames from 'classnames';
 import { Todo } from '../../types/Todo';
+import { Loader } from '../../Loader';
 
 type Props = {
   todo: Todo,
@@ -10,9 +11,16 @@ type Props = {
 export const TodoItem: React.FC<Props> = React.memo(({ todo, removeTodo }) => {
   const [completed, setCompleted] = useState(todo.completed);
 
+  const {
+    title,
+    id,
+  } = todo;
+
   const toggleCompleted = () => {
     setCompleted(prev => !prev);
   };
+
+  const loadingContext = useContext(Loader);
 
   return (
     <div
@@ -30,16 +38,23 @@ export const TodoItem: React.FC<Props> = React.memo(({ todo, removeTodo }) => {
         />
       </label>
 
-      <span className="todo__title">{todo.title}</span>
+      <span className="todo__title">{title}</span>
       <button
         type="button"
         className="todo__remove"
-        onClick={() => removeTodo(todo.id)}
+        onClick={() => removeTodo(id)}
       >
         ×
       </button>
 
-      <div className="modal overlay">
+      <div
+        className={classNames(
+          'modal overlay',
+          {
+            'is-active': loadingContext.includes(id),
+          },
+        )}
+      >
         <div className="modal-background has-background-white-ter" />
         <div className="loader" />
       </div>

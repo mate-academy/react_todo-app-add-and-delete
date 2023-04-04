@@ -5,9 +5,14 @@ import { TodoItem } from '../TodoItem';
 type Props = {
   todos: Todo[],
   removeTodo: (todoId: number) => void,
+  tempTodo: Todo | null,
 };
 
-export const TodoList: React.FC<Props> = React.memo(({ todos, removeTodo }) => {
+export const TodoList: React.FC<Props> = React.memo(({
+  todos,
+  removeTodo,
+  tempTodo,
+}) => {
   return (
     <section className="todoapp__main">
       {todos.map(todo => (
@@ -17,6 +22,14 @@ export const TodoList: React.FC<Props> = React.memo(({ todos, removeTodo }) => {
           removeTodo={removeTodo}
         />
       ))}
+
+      {tempTodo && (
+        <TodoItem
+          key={0}
+          todo={tempTodo}
+          removeTodo={removeTodo}
+        />
+      )}
     </section>
   );
 });

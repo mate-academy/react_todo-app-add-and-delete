@@ -22,9 +22,9 @@ export const Footer: React.FC<Props> = ({
   removeTodo,
 }) => {
   const handleFilterChange = (event: React.MouseEvent<HTMLAnchorElement>) => {
-    const href = event.currentTarget.text;
+    const valueOfSortType = event.currentTarget.text;
 
-    switch (href) {
+    switch (valueOfSortType) {
       case FilterParam.All:
         return setFilterType(FilterParam.All);
 
@@ -71,15 +71,17 @@ export const Footer: React.FC<Props> = ({
         ))}
       </nav>
 
-      {checkCompletedTodo(todos) && (
-        <button
-          type="button"
-          className="todoapp__clear-completed"
-          onClick={removeCompletedTodos}
-        >
-          Clear completed
-        </button>
-      )}
+      <button
+        type="button"
+        className={classNames(
+          'todoapp__clear-completed',
+          { 'is-invisible': !checkCompletedTodo(todos) },
+        )}
+        onClick={removeCompletedTodos}
+
+      >
+        Clear completed
+      </button>
 
     </footer>
   );
