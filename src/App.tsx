@@ -121,7 +121,7 @@ export const App: React.FC = () => {
             handleFormSubmit={handleFormSubmit}
           />
 
-          {todos && (
+          {(todos.length > 0) && (
             <>
               <TodoList
                 todos={filterTodos(todos, filterType)}
