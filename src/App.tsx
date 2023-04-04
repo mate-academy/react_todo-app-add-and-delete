@@ -51,7 +51,7 @@ export const App: React.FC = () => {
     setHasError(false);
   }, []);
 
-  const removeTodo = async (todoId: any) => {
+  const removeTodo = async (todoId: number) => {
     try {
       setLoadingTodo(prevTodo => [...prevTodo, todoId]);
 
@@ -67,7 +67,7 @@ export const App: React.FC = () => {
     }
   };
 
-  const addNewTodoInList = async (newTodo: any) => {
+  const addNewTodoInList = async (newTodo: Todo) => {
     try {
       const downloadNewTodo = await addTodo(USER_ID, newTodo);
 
@@ -94,6 +94,7 @@ export const App: React.FC = () => {
       userId: USER_ID,
       title,
       completed: false,
+      id: 0,
     };
 
     setTempTodo({ ...newTodo, id: 0 });
