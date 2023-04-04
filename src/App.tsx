@@ -21,6 +21,7 @@ export const App: React.FC = () => {
   const [title, setTitle] = useState('');
   const [tempTodo, setTempTodo] = useState<null | Todo>(null);
   const [loadingTodo, setLoadingTodo] = useState([0]);
+  const [isSending, setIsSending] = useState(false);
 
   const handleTextChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     setTitle(event.target.value);
@@ -68,15 +69,18 @@ export const App: React.FC = () => {
   };
 
   const addNewTodoInList = async (newTodo: Todo) => {
-    try {
-      const downloadNewTodo = await addTodo(USER_ID, newTodo);
+    if (!isSending) {
+      try {
+        const downloadNewTodo = await addTodo(USER_ID, newTodo);
 
-      addNewTodo(downloadNewTodo);
-    } catch {
-      showError(ErrorType.Add);
-    } finally {
-      setTitle('');
-      setTempTodo(null);
+        addNewTodo(downloadNewTodo);
+      } catch {
+        showError(ErrorType.Add);
+      } finally {
+        setTitle('');
+        setTempTodo(null);
+        setIsSending(false);
+      }
     }
   };
 
@@ -98,6 +102,7 @@ export const App: React.FC = () => {
     };
 
     setTempTodo({ ...newTodo, id: 0 });
+    setIsSending(true);
 
     addNewTodoInList(newTodo);
   };
