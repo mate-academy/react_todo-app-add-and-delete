@@ -14,6 +14,7 @@ import { TodoFilter } from '../TodoFilter/TodoFilter';
 import { TodoItem } from '../TodoItem/TodoItem';
 
 enum Error {
+  download = 'download',
   add = 'add',
   update = 'update',
   delete = 'delete',
@@ -28,34 +29,45 @@ export const TodoApp: React.FC<Props> = ({ userId }) => {
   const [todosOriginal, setTodosOriginal] = useState<Todo[] | undefined>();
   const [todos, setTodos] = useState<Todo[] | undefined>();
   const [activeTodo, setActiveTodo] = useState(0);
-  const [statusTodo, setStatus] = useState('All');
-  const [all, setAll] = useState(true);
-  const [active, setActive] = useState(false);
-  const [completedTodo, setCompletedTodo] = useState(false);
+  const [selected, setSelected] = useState('all');
   const [query, setQuery] = useState('');
+  const [errorFailed, setErrorFailed] = useState(false);
   const [error, setError] = useState<Error | null>(null);
   const [idTodo, setIdTodo] = useState(0);
   const [loading, setLoading] = useState(false);
   const [creating, setCreating] = useState<Todo | null>(null);
 
+  const notificationsHandler = (value: Error) => {
+    setError(value);
+    setErrorFailed(true);
+    setTimeout(() => [setError(null), setErrorFailed(false)], 3000);
+  };
+
   const fetchTodos = async () => {
-    const todosArr: Todo[] = await getTodos(userId);
+    setErrorFailed(false);
 
-    const activeCount = todosArr.filter(el => !el.completed).length;
+    try {
+      const todosArr: Todo[] = await getTodos(userId);
 
-    setTodosOriginal(todosArr);
-    setTodos(todosArr);
-    setActiveTodo(activeCount);
-    setIdTodo(0);
+      const activeCount = todosArr.filter(el => !el.completed).length;
+
+      setTodosOriginal(todosArr);
+      setTodos(todosArr);
+      setActiveTodo(activeCount);
+    } catch {
+      notificationsHandler(Error.download);
+    }
+
     setCreating(null);
+    setIdTodo(0);
   };
 
   const createTodo = async (value: string) => {
     setLoading(true);
+    setErrorFailed(false);
 
     if (!query) {
-      setError(Error.empty);
-      setTimeout(() => setError(null), 3000);
+      notificationsHandler(Error.empty);
       setLoading(false);
       setCreating(null);
 
@@ -78,8 +90,8 @@ export const TodoApp: React.FC<Props> = ({ userId }) => {
       fetchTodos();
     } catch {
       setIdTodo(0);
-      setError(Error.add);
-      setTimeout(() => setError(null), 3000);
+      notificationsHandler(Error.add);
+      setCreating(null);
     }
 
     setLoading(false);
@@ -101,21 +113,20 @@ export const TodoApp: React.FC<Props> = ({ userId }) => {
       fetchTodos();
     } catch {
       setIdTodo(0);
-      setError(Error.update);
-      setTimeout(() => setError(null), 3000);
+      notificationsHandler(Error.update);
     }
   };
 
   const deleteTodo = async (id: number) => {
     setIdTodo(id);
+    setErrorFailed(false);
 
     try {
       await deleteTodos(`/todos/${id}`);
       fetchTodos();
     } catch {
       setIdTodo(0);
-      setError(Error.delete);
-      setTimeout(() => setError(null), 3000);
+      notificationsHandler(Error.delete);
     }
   };
 
@@ -136,8 +147,7 @@ export const TodoApp: React.FC<Props> = ({ userId }) => {
         fetchTodos();
       } catch {
         setIdTodo(0);
-        setError(Error.delete);
-        setTimeout(() => setError(null), 3000);
+        notificationsHandler(Error.delete);
       }
     });
   };
@@ -151,26 +161,17 @@ export const TodoApp: React.FC<Props> = ({ userId }) => {
     let newTodos: Todo[] | undefined = [];
 
     switch (value) {
-      case 'Active':
+      case 'active':
         newTodos = todosOriginal?.filter((ele: Todo) => !ele.completed);
-        setAll(false);
-        setActive(true);
-        setCompletedTodo(false);
         setTodos(newTodos);
 
         return;
-      case 'Completed':
+      case 'completed':
         newTodos = todosOriginal?.filter((ele: Todo) => ele.completed);
-        setAll(false);
-        setActive(false);
-        setCompletedTodo(true);
         setTodos(newTodos);
 
         return;
       default:
-        setAll(true);
-        setActive(false);
-        setCompletedTodo(false);
         setTodos(todosOriginal);
     }
   };
@@ -186,7 +187,7 @@ export const TodoApp: React.FC<Props> = ({ userId }) => {
               type="button"
               className={classNames(
                 'todoapp__toggle-all',
-                { active: (activeTodo === 0) },
+                { active: !activeTodo },
               )}
             />
           )}
@@ -201,6 +202,7 @@ export const TodoApp: React.FC<Props> = ({ userId }) => {
               value={query}
               onChange={(event) => {
                 setQuery(event.target.value);
+                setErrorFailed(false);
                 setError(null);
               }}
               disabled={loading}
@@ -234,12 +236,9 @@ export const TodoApp: React.FC<Props> = ({ userId }) => {
             </span>
 
             <TodoFilter
-              all={all}
-              active={active}
-              completedTodo={completedTodo}
               statusTodosHandler={statusTodosHandler}
-              statusTodo={statusTodo}
-              setStatus={setStatus}
+              selected={selected}
+              setSelected={setSelected}
             />
 
             {activeTodo !== todosOriginal.length && (
@@ -257,50 +256,17 @@ export const TodoApp: React.FC<Props> = ({ userId }) => {
 
       <div
         className="notification is-danger is-light has-text-weight-normal"
-        hidden={error !== Error.empty}
+        hidden={!errorFailed}
       >
         <button
           type="button"
           className="delete"
-          onClick={() => setError(null)}
+          onClick={() => {
+            setError(null);
+            setErrorFailed(false);
+          }}
         />
-        Title can&apos;t be empty
-      </div>
-
-      <div
-        className="notification is-danger is-light has-text-weight-normal"
-        hidden={error !== Error.add}
-      >
-        <button
-          type="button"
-          className="delete"
-          onClick={() => setError(null)}
-        />
-        Unable to add a todo
-      </div>
-
-      <div
-        className="notification is-danger is-light has-text-weight-normal"
-        hidden={error !== Error.update}
-      >
-        <button
-          type="button"
-          className="delete"
-          onClick={() => setError(null)}
-        />
-        Unable to update a todo
-      </div>
-
-      <div
-        className="notification is-danger is-light has-text-weight-normal"
-        hidden={error !== Error.delete}
-      >
-        <button
-          type="button"
-          className="delete"
-          onClick={() => setError(null)}
-        />
-        Unable to delete a todo
+        {error !== 'empty' ? (`Unable to ${error} a todo`) : ("Title can't be empty")}
       </div>
     </div>
   );

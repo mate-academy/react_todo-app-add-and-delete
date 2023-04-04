@@ -2,31 +2,25 @@ import classNames from 'classnames';
 import { useEffect } from 'react';
 
 type Props = {
-  all: boolean,
-  active: boolean,
-  completedTodo: boolean,
   statusTodosHandler: (value: string) => void,
-  statusTodo: string,
-  setStatus: (value: string) => void,
+  selected: string,
+  setSelected: (value: string) => void,
 };
 
 export const TodoFilter: React.FC<Props> = ({
-  all,
-  active,
-  completedTodo,
   statusTodosHandler,
-  statusTodo,
-  setStatus,
+  selected,
+  setSelected,
 }) => {
   useEffect(() => {
-    statusTodosHandler(statusTodo);
-  }, [statusTodo]);
+    statusTodosHandler(selected);
+  }, [selected]);
 
   const changeStatus = (
     event: React.MouseEvent<HTMLAnchorElement>,
   ) => {
     if (event.currentTarget.textContent) {
-      setStatus(event.currentTarget.textContent);
+      setSelected(event.currentTarget.textContent.toLowerCase());
     }
   };
 
@@ -34,7 +28,9 @@ export const TodoFilter: React.FC<Props> = ({
     <nav className="filter">
       <a
         href="#/"
-        className={classNames('filter__link', { selected: all })}
+        className={classNames('filter__link', {
+          selected: selected === 'all',
+        })}
         onClick={changeStatus}
       >
         All
@@ -42,7 +38,9 @@ export const TodoFilter: React.FC<Props> = ({
 
       <a
         href="#/active"
-        className={classNames('filter__link', { selected: active })}
+        className={classNames('filter__link', {
+          selected: selected === 'active',
+        })}
         onClick={changeStatus}
       >
         Active
@@ -50,7 +48,9 @@ export const TodoFilter: React.FC<Props> = ({
 
       <a
         href="#/completed"
-        className={classNames('filter__link', { selected: completedTodo })}
+        className={classNames('filter__link', {
+          selected: selected === 'completed',
+        })}
         onClick={changeStatus}
       >
         Completed
