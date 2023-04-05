@@ -10,7 +10,7 @@ type Props = {
   todos: Todo[],
   creating: Todo | null,
   onDelete: (todoId: number) => void,
-  isProcessedIDs: number[],
+  inProcessing: number[],
 };
 
 export const TodoList: React.FC<Props> = React.memo(
@@ -18,7 +18,7 @@ export const TodoList: React.FC<Props> = React.memo(
     todos,
     creating,
     onDelete,
-    isProcessedIDs,
+    inProcessing,
   }) => {
     return (
       <section className="todoapp__main" data-cy="TodoList">
@@ -32,24 +32,25 @@ export const TodoList: React.FC<Props> = React.memo(
               <TodoItem
                 todo={todo}
                 onDelete={onDelete}
-                isProcessedIDs={isProcessedIDs}
+                isProcessedIDs={inProcessing.includes(todo.id)}
               />
             </CSSTransition>
           ))}
+
+          {creating && (
+            <CSSTransition
+              key={0}
+              timeout={300}
+              classNames="temp-item"
+            >
+              <TodoItem
+                todo={creating}
+                onDelete={onDelete}
+                isProcessedIDs
+              />
+            </CSSTransition>
+          )}
         </TransitionGroup>
-        {creating && (
-          <CSSTransition
-            key={0}
-            timeout={300}
-            classNames="temp-item"
-          >
-            <TodoItem
-              todo={creating}
-              onDelete={onDelete}
-              isProcessedIDs={isProcessedIDs}
-            />
-          </CSSTransition>
-        )}
       </section>
     );
   },

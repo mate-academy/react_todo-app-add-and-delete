@@ -21,7 +21,7 @@ export const App: React.FC = () => {
   const [filter, setFilter] = useState(Filter.ALL);
   const [title, setNewTitle] = useState('');
   const [tempTodo, setTempTodo] = useState<Todo | null>(null);
-  const [isProcessedIDs, setProcessingIDs] = useState([0]);
+  const [inProcessing, setProcessingIDs] = useState<number[]>([0]);
 
   const showError = (message: string) => {
     setError(true);
@@ -36,40 +36,13 @@ export const App: React.FC = () => {
       setTodos(todos);
     } catch (error) {
       showError(ErrorNotice.LOADING);
+      setTodos(state => [...state]);
     }
   };
 
   useEffect(() => {
     loadingTodos();
   }, []);
-
-  //   event.preventDefault();
-
-  //   if (!title.trim()) {
-  //     showError(ErrorNotice.TYTLE);
-
-  //     return;
-  //   }
-
-  //   const createTodo = {
-  //     id: 0,
-  //     userId: USER_ID,
-  //     title,
-  //     completed: false,
-  //   };
-
-  //   setTempTodo(createTodo);
-
-  //   try {
-  //     await addTodos(createTodo);
-
-  //     setTempTodo(null);
-  //     setNewTitle('');
-  //     loadingTodos();
-  //   } catch (error) {
-  //     showError(ErrorNotice.ADD);
-  //   }
-  // };
 
   const handleSubmit = useCallback(
     async (event: React.FormEvent<HTMLFormElement>) => {
@@ -92,9 +65,10 @@ export const App: React.FC = () => {
 
       try {
         await addTodos(createTodo);
+        setTodos(state => [...state, createTodo]);
 
-        setTempTodo(null);
         setNewTitle('');
+        setTempTodo(null);
         loadingTodos();
       } catch (error) {
         showError(ErrorNotice.ADD);
@@ -130,7 +104,7 @@ export const App: React.FC = () => {
       } finally {
         setProcessingIDs([0]);
       }
-    }, [isProcessedIDs],
+    }, [inProcessing],
   );
 
   const visibleTodos = useMemo(
@@ -140,7 +114,7 @@ export const App: React.FC = () => {
 
   const completedTodos = useMemo(
     () => todosFromServer.filter(todo => (todo.completed)),
-    [todosFromServer],
+    [todosFromServer, tempTodo],
   );
 
   const activeTodos = useMemo(
@@ -167,7 +141,7 @@ export const App: React.FC = () => {
           todos={visibleTodos}
           creating={tempTodo}
           onDelete={handleDelete}
-          isProcessedIDs={isProcessedIDs}
+          inProcessing={inProcessing}
         />
 
         {!!todosFromServer.length && (
