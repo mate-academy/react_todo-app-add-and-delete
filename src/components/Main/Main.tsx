@@ -48,7 +48,7 @@ export const Main: React.FC<Props> = ({
             timeout={300}
             classNames="temp-item"
           >
-            <TodoItemLoader todo={tempTodo} />
+            <TodoItemLoader todoTitle={tempTodo} />
           </CSSTransition>
         )}
       </TransitionGroup>

@@ -1,12 +1,14 @@
 import { Todo } from '../types/Todo';
 import { client } from '../utils/fetchClient';
 
+const USER_ID = 6725;
+
 export const getTodos = () => {
-  return client.get<Todo[]>(`/todos?userId=${6725}`);
+  return client.get<Todo[]>(`/todos?userId=${USER_ID}`);
 };
 
 export const postTodo = (data: Omit<Todo, 'id'>) => {
-  return client.post<Todo>(`/todos?userId=${6725}`, data);
+  return client.post<Todo>(`/todos?userId=${USER_ID}`, data);
 };
 
 export const patchTodo = (id: number, data: Partial<Todo>) => {

@@ -1,18 +1,19 @@
 import React from 'react';
 import { Todo } from '../../types/Todo';
+import { Loader } from '../Loader';
 
 type Props = {
-  todo: Todo,
+  todoTitle: Pick<Todo, 'title'>,
 };
 
-export const TodoItemLoader: React.FC<Props> = ({ todo }) => {
+export const TodoItemLoader: React.FC<Props> = ({ todoTitle }) => {
   return (
     <div className="todo">
       <label className="todo__status-label">
         <input type="checkbox" className="todo__status" />
       </label>
 
-      <span className="todo__title">{todo.title}</span>
+      <span className="todo__title">{todoTitle.title}</span>
       <button
         type="button"
         aria-label="remove todo"
@@ -21,10 +22,7 @@ export const TodoItemLoader: React.FC<Props> = ({ todo }) => {
         ×
       </button>
 
-      <div className="modal overlay is-active">
-        <div className="modal-background has-background-white-ter" />
-        <div className="loader" />
-      </div>
+      <Loader isActive />
     </div>
   );
 };
