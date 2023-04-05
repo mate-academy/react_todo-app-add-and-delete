@@ -2,6 +2,7 @@ import {
   FC,
   useCallback,
   useEffect,
+  useMemo,
   useState,
 } from 'react';
 import classNames from 'classnames';
@@ -42,7 +43,7 @@ export const App: FC = () => {
   const [tempTodos, setTempTodos] = useState<Todo | null>(null);
   const [activeInput, setActiveInput] = useState(true);
   const [isQuery, setIsQuery] = useState(false);
-  const [deletedTodoId, setDeletedTodoId] = useState<number | null>(null);
+  const [deletedTodoIds, setDeletedTodoIds] = useState<number[]>([]);
 
   const addError = (message: string) => {
     setErrorMessage(message);
@@ -67,7 +68,7 @@ export const App: FC = () => {
 
   const handleRemoveTodo = useCallback(
     (id: number) => {
-      setDeletedTodoId(id);
+      setDeletedTodoIds(prev => [...prev, id]);
 
       setTimeout(() => {
         try {
@@ -82,98 +83,89 @@ export const App: FC = () => {
         } catch {
           setErrorMessage('Unable to delete a todo');
         } finally {
-          setDeletedTodoId(null);
+          setDeletedTodoIds([]);
         }
       }, 300);
     }, [allTodos],
   );
 
-  // const handleRemoveTodo = (id: number) => {
-  //   setDeletedTodoId(id);
-
-  //   setTimeout(() => {
-  //     try {
-  //       removeTodo(id)
-  //         .then(() => {
-  //           const todosWithoutDeleted = allTodos.filter((todo) => (
-  //             todo.id !== id
-  //           ));
-
-  //           setAllTodos(todosWithoutDeleted);
-  //         });
-  //     } catch {
-  //       setErrorMessage('Unable to delete a todo');
-  //     } finally {
-  //       setDeletedTodoId(null);
-  //     }
-  //   }, 300);
-  // };
-
   useEffect(() => {
     loadAllTodos();
   }, []);
 
-  const handleRemoveAllComplitedTodo = () => {
+  const handleRemoveAllComplitedTodo = useCallback(() => {
     const completedTodos = allTodos.filter(({ completed }) => completed);
 
     completedTodos.forEach(todo => {
-      try {
-        removeTodo(todo.id)
-          .then(() => {
-            const todosWithoutDeleted = allTodos.filter(({ completed }) => (
-              completed
-            ));
+      setDeletedTodoIds(prev => [...prev, todo.id]);
 
-            setAllTodos(todosWithoutDeleted);
-          });
-      } catch {
-        setErrorMessage('Unable to delete a todo');
-      }
+      setTimeout(() => {
+        try {
+          removeTodo(todo.id)
+            .then(() => {
+              const todosWithoutDeleted = allTodos.filter(({ completed }) => (
+                !completed
+              ));
+
+              setAllTodos(todosWithoutDeleted);
+            });
+        } catch {
+          setErrorMessage('Unable to delete a todo');
+        } finally {
+          setDeletedTodoIds([]);
+        }
+      }, 300);
     });
-  };
+  }, [allTodos]);
 
-  const visibleTodos = filterTodosByCompleted(allTodos, filteredTodos);
+  const visibleTodos = useMemo(() => {
+    return filterTodosByCompleted(allTodos, filteredTodos);
+  }, [allTodos, filteredTodos]);
 
-  const countActiveTodos = visibleTodos.reduce((sum, todo) => {
-    if (!todo.completed) {
-      return sum + 1;
-    }
+  const countActiveTodos = useMemo(() => {
+    return visibleTodos.reduce((sum, todo) => {
+      if (!todo.completed) {
+        return sum + 1;
+      }
 
-    return sum;
-  }, 0);
+      return sum;
+    }, 0);
+  }, [visibleTodos]);
 
   const isComplitedTodo = allTodos.some(todo => todo.completed);
   const isActiveTodo = allTodos.some(todo => !todo.completed);
 
-  const handleAddNewTodo = (event: React.FormEvent<HTMLFormElement>) => {
-    event.preventDefault();
-    if (!todoTitle.trim()) {
-      addError('Title can not be empty');
+  const handleAddNewTodo = useCallback(
+    (event: React.FormEvent<HTMLFormElement>) => {
+      event.preventDefault();
+      if (!todoTitle.trim()) {
+        addError('Title can not be empty');
 
-      return;
-    }
+        return;
+      }
 
-    const newTodo = {
-      userId: USER_ID,
-      title: todoTitle,
-      completed: false,
-    };
+      const newTodo = {
+        userId: USER_ID,
+        title: todoTitle,
+        completed: false,
+      };
 
-    setTempTodos({ ...newTodo, id: 0 });
-    setActiveInput(false);
+      setTempTodos({ ...newTodo, id: 0 });
+      setActiveInput(false);
 
-    addTodo(newTodo)
-      .then(todo => {
-        setAllTodos(todos => [...todos, todo]);
-      })
-      .catch(() => addError('Unable to add a todo'))
-      .finally(() => {
-        setActiveInput(true);
-        setTodoTitle('');
-        setTempTodos(null);
-        loadAllTodos();
-      });
-  };
+      addTodo(newTodo)
+        .then(todo => {
+          setAllTodos(todos => [...todos, todo]);
+        })
+        .catch(() => addError('Unable to add a todo'))
+        .finally(() => {
+          setActiveInput(true);
+          setTodoTitle('');
+          setTempTodos(null);
+          loadAllTodos();
+        });
+    }, [todoTitle],
+  );
 
   return (
     <div className="todoapp">
@@ -223,7 +215,7 @@ export const App: FC = () => {
                 todos={visibleTodos}
                 tempTodos={tempTodos}
                 handleRemoveTodo={handleRemoveTodo}
-                deletedTodoId={deletedTodoId}
+                deletedTodoIds={deletedTodoIds}
               />
             </section>
           )}
