@@ -20,16 +20,12 @@ export const TodoList: React.FC<TodoListPropsType> = ({
   tempTodo,
   added,
 }) => {
-  const toShow = todosToShow;
-
-  if (added) {
-    toShow.push(tempTodo);
-  }
+  const todosToShown = added ? [...todosToShow, tempTodo] : todosToShow;
 
   return (
     <section className="todoapp__main">
       <TransitionGroup>
-        {toShow.map(todo => (
+        {todosToShown.map(todo => (
           <CSSTransition
             key={todo.id}
             timeout={300}

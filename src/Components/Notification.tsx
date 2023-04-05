@@ -25,7 +25,7 @@ export const Notification: React.FC<NotificationPropsType> = ({
     } else {
       setHidden(true);
     }
-  });
+  }, [hasErrorFromServer]);
 
   return (
     <div className={classNames(

@@ -1,4 +1,3 @@
-/* eslint-disable jsx-a11y/control-has-associated-label */
 import React, { useEffect, useMemo, useState } from 'react';
 import { UserWarning } from './UserWarning';
 import { Todo } from './types/Todo';
@@ -7,6 +6,7 @@ import { Header } from './Components/Header';
 import { TodoList } from './Components/Todolist';
 import { Footer } from './Components/Footer';
 import { Notification } from './Components/Notification';
+import { Filters } from './types/enums';
 
 const USER_ID = 6342;
 
@@ -20,21 +20,23 @@ const temp = {
 export const App: React.FC = () => {
   const [todos, setTodos] = useState<Todo[]>([]);
   const [searchQuery, setSearchQuery] = useState('');
-  const [selectedStatus, setSelectedStatus] = useState('all');
+  const [selectedStatus, setSelectedStatus] = useState(Filters.all);
   const [errorMessage, setErrorMessage] = useState('');
-  const [hasErrorFromServer, setHasErrorFromServer] = useState(false);
+  const hasErrorFromServer = !!errorMessage;
   const [deletedId, setDeletedId] = useState(0);
   const [tempTodo, setTempTodo] = useState<Todo>(temp);
   const [added, setAdded] = useState(false);
 
   const filteredTodos = useMemo(() => {
     return todos.filter(todo => {
+      const { all, active, completed } = Filters;
+
       switch (selectedStatus) {
-        case 'all':
+        case all:
           return true;
-        case 'active':
+        case active:
           return !todo.completed;
-        case 'completed':
+        case completed:
           return todo.completed;
         default:
           return todo;
@@ -44,14 +46,11 @@ export const App: React.FC = () => {
 
   const fetchTodos = async () => {
     try {
-      setHasErrorFromServer(false);
       const todosFromServer = await getTodos(USER_ID);
 
       setTodos(todosFromServer);
     } catch {
-      setHasErrorFromServer(true);
       setErrorMessage('fetch');
-      setTodos((state) => [...state]);
     }
   };
 
@@ -63,7 +62,6 @@ export const App: React.FC = () => {
     setAdded(true);
     setSearchQuery('');
     try {
-      setHasErrorFromServer(false);
       const addedResultFromServer = await addTodos(USER_ID, {
         title,
         userId: USER_ID,
@@ -79,15 +77,12 @@ export const App: React.FC = () => {
         setAdded(false);
       }
     } catch {
-      setHasErrorFromServer(true);
       setErrorMessage('add');
       setAdded(false);
-      setTodos((state) => [...state]);
     }
   };
 
   const onEmpty = () => {
-    setHasErrorFromServer(true);
     setErrorMessage('Title can\'t be empty');
   };
 
@@ -100,14 +95,13 @@ export const App: React.FC = () => {
         fetchTodos();
       }
     } catch {
-      setHasErrorFromServer(true);
       setErrorMessage('delete');
       setDeletedId(0);
     }
   };
 
   const clearNotification = () => {
-    setHasErrorFromServer(false);
+    setErrorMessage('');
   };
 
   useEffect(() => {
@@ -129,7 +123,7 @@ export const App: React.FC = () => {
           setSearchQuery={setSearchQuery}
           addTodo={addTodo}
           onEmpty={onEmpty}
-          added={added}
+          addDisabled={added}
         />
         <TodoList
           todosToShow={filteredTodos}

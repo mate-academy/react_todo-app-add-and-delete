@@ -8,7 +8,7 @@ interface HeaderPropsType {
   setSearchQuery: (searchQuery: string) => void,
   addTodo: (title: string) => unknown,
   onEmpty: () => void,
-  added: boolean,
+  addDisabled: boolean,
 }
 
 export const Header: React.FC<HeaderPropsType> = ({
@@ -17,7 +17,7 @@ export const Header: React.FC<HeaderPropsType> = ({
   setSearchQuery,
   addTodo,
   onEmpty,
-  added,
+  addDisabled,
 }) => {
   const isActicve = todos.filter(todo => !todo.completed);
 
@@ -48,7 +48,7 @@ export const Header: React.FC<HeaderPropsType> = ({
           placeholder="What needs to be done?"
           value={searchQuery}
           onChange={(event) => setSearchQuery(event.target.value)}
-          disabled={added}
+          disabled={addDisabled}
         />
       </form>
     </header>

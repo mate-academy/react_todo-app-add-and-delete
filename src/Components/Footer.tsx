@@ -1,11 +1,12 @@
 import React from 'react';
 import classNames from 'classnames';
 import { Todo } from '../types/Todo';
+import { Filters } from '../types/enums';
 
 interface FooterPropsType {
   todosToShow: Todo[],
   selectedStatus: string,
-  setSelectedStatus: (selectedStatus: string) => void,
+  setSelectedStatus: (selectedStatus: Filters) => void,
 }
 
 export const Footer: React.FC<FooterPropsType> = ({
@@ -25,9 +26,9 @@ export const Footer: React.FC<FooterPropsType> = ({
           href="#/"
           className={classNames(
             'filter__link',
-            { selected: selectedStatus === 'all' },
+            { selected: selectedStatus === Filters.all },
           )}
-          onClick={() => setSelectedStatus('all')}
+          onClick={() => setSelectedStatus(Filters.all)}
         >
           All
         </a>
@@ -36,9 +37,9 @@ export const Footer: React.FC<FooterPropsType> = ({
           href="#/active"
           className={classNames(
             'filter__link',
-            { selected: selectedStatus === 'active' },
+            { selected: selectedStatus === Filters.active },
           )}
-          onClick={() => setSelectedStatus('active')}
+          onClick={() => setSelectedStatus(Filters.active)}
         >
           Active
         </a>
@@ -47,9 +48,9 @@ export const Footer: React.FC<FooterPropsType> = ({
           href="#/completed"
           className={classNames(
             'filter__link',
-            { selected: selectedStatus === 'completed' },
+            { selected: selectedStatus === Filters.completed },
           )}
-          onClick={() => setSelectedStatus('completed')}
+          onClick={() => setSelectedStatus(Filters.completed)}
         >
           Completed
         </a>
