@@ -35,7 +35,7 @@ export const Footer: React.FC<Props> = React.memo(
                 'filter__link',
                 { selected: filter === link.title },
               )}
-              onClick={() => onFilter(link.title as Filter)}
+              onClick={() => onFilter(link.title)}
             >
               {link.title}
             </a>

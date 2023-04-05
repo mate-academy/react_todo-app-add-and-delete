@@ -107,10 +107,9 @@ export const App: React.FC = () => {
     }, [inProcessing],
   );
 
-  const visibleTodos = useMemo(
-    () => getVisibleTodos(todosFromServer, filter),
-    [todosFromServer, filter],
-  );
+  const visibleTodos = useMemo(() => (
+    getVisibleTodos(todosFromServer, filter)
+  ), [todosFromServer, filter]);
 
   const completedTodos = useMemo(
     () => todosFromServer.filter(todo => (todo.completed)),
