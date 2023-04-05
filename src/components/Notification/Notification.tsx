@@ -4,14 +4,14 @@ import React from 'react';
 type Props = {
   error: boolean,
   errorNotice: string,
-  setError: (state: boolean) => void,
+  closeErrorNotice: (state: string) => void,
 };
 
 export const Notification: React.FC<Props> = React.memo(
   ({
     error,
     errorNotice,
-    setError,
+    closeErrorNotice,
   }) => {
     return (
       <div
@@ -24,7 +24,7 @@ export const Notification: React.FC<Props> = React.memo(
           aria-label="btn"
           type="button"
           className="delete"
-          onClick={() => setError(false)}
+          onClick={() => closeErrorNotice('')}
         />
 
         {errorNotice}

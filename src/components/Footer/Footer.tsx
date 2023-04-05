@@ -42,15 +42,14 @@ export const Footer: React.FC<Props> = React.memo(
           ))}
         </nav>
 
-        {!!completedTodos.length && (
-          <button
-            type="button"
-            className="todoapp__clear-completed"
-            onClick={() => deleteCompleted(completedTodos)}
-          >
-            Clear completed
-          </button>
-        )}
+        <button
+          type="button"
+          className="todoapp__clear-completed"
+          disabled={!completedTodos.length}
+          onClick={() => deleteCompleted(completedTodos)}
+        >
+          Clear completed
+        </button>
       </footer>
     );
   },

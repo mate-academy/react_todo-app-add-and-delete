@@ -16,17 +16,16 @@ const USER_ID = 6762;
 
 export const App: React.FC = () => {
   const [todosFromServer, setTodos] = useState<Todo[]>([]);
-  const [hasError, setError] = useState(false);
   const [errorMessage, setMessageError] = useState('');
   const [filter, setFilter] = useState(Filter.ALL);
   const [title, setNewTitle] = useState('');
   const [tempTodo, setTempTodo] = useState<Todo | null>(null);
   const [inProcessing, setProcessingIDs] = useState<number[]>([0]);
+  const hasError = !!errorMessage || errorMessage !== '';
 
   const showError = (message: string) => {
-    setError(true);
     setMessageError(message);
-    setTimeout(setError, 3000);
+    setTimeout(() => setMessageError(''), 3000);
   };
 
   const loadingTodos = async () => {
@@ -72,6 +71,7 @@ export const App: React.FC = () => {
         loadingTodos();
       } catch (error) {
         showError(ErrorNotice.ADD);
+        setTempTodo(null);
       }
     }, [title],
   );
@@ -157,7 +157,7 @@ export const App: React.FC = () => {
       <Notification
         error={hasError}
         errorNotice={errorMessage}
-        setError={setError}
+        closeErrorNotice={setMessageError}
       />
     </div>
   );
