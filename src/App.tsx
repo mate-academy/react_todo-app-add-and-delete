@@ -2,8 +2,8 @@ import React, { useState, useEffect, useMemo } from 'react';
 import { CSSTransition, TransitionGroup } from 'react-transition-group';
 import {
   getTodos,
-  postTodo,
-  patchTodo,
+  createTodo,
+  updateTodo,
   deleteTodo,
 } from './api/todos';
 import { Todo } from './types/Todo';
@@ -87,9 +87,9 @@ export const App: React.FC = () => {
         title: newTodoTitle,
         completed: false,
       });
-      const newTodoPost = await postTodo({
+      const newTodoPost = await createTodo({
         title: newTodoTitle,
-        userId: 6725,
+        userId: USER_ID,
         completed: false,
       });
 
@@ -155,7 +155,7 @@ export const App: React.FC = () => {
     setProcessings((prev) => [...prev, id]);
 
     try {
-      const response = await patchTodo(id, data);
+      const response = await updateTodo(id, data);
       const todoEdited = todos.find((todo) => todo.id === id);
       const isTitleChanged = response.title !== todoEdited?.title;
       const isCompletedChanged = response.completed !== todoEdited?.completed;
@@ -197,10 +197,10 @@ export const App: React.FC = () => {
     try {
       const changedElements = (!AllChecked
         ? await Promise.all(
-          todosIdArray.map(el => patchTodo(el, { completed: true })),
+          todosIdArray.map(el => updateTodo(el, { completed: true })),
         ) : (
           await Promise.all(
-            todosIdArray.map(el => patchTodo(el, { completed: false })),
+            todosIdArray.map(el => updateTodo(el, { completed: false })),
           )
         ));
 
@@ -266,7 +266,7 @@ export const App: React.FC = () => {
             {isFooterVisible && (
               <Footer
                 todos={todos}
-                filter={setFilter}
+                setFilter={setFilter}
                 currentFilter={currentFilter}
                 removeCompletedTodos={removeCompletedTodos}
               />

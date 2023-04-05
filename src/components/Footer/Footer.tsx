@@ -5,29 +5,17 @@ import { Filter } from '../../types/Filter';
 
 type Props = {
   todos: Todo[],
-  filter: (filter: Filter) => void
+  setFilter: (filter: Filter) => void
   removeCompletedTodos: () => void,
   currentFilter: Filter
 };
 
 export const Footer: React.FC<Props> = ({
   todos,
-  filter,
+  setFilter,
   removeCompletedTodos: removeCompleted,
   currentFilter,
 }) => {
-  const loadFilteringTodos = (isActive: boolean) => {
-    if (!isActive) {
-      filter(Filter.active);
-    } else {
-      filter(Filter.completed);
-    }
-  };
-
-  const allTodo = () => {
-    filter(Filter.all);
-  };
-
   const isCompletedTodos = todos.some(todo => todo.completed);
 
   const activeTodosCount = (
@@ -55,7 +43,7 @@ export const Footer: React.FC<Props> = ({
               { selected: currentFilter === Filter.all },
             )
           }
-          onClick={() => allTodo()}
+          onClick={() => setFilter(Filter.all)}
         >
           All
         </a>
@@ -68,7 +56,7 @@ export const Footer: React.FC<Props> = ({
               { selected: currentFilter === Filter.active },
             )
           }
-          onClick={() => loadFilteringTodos(false)}
+          onClick={() => setFilter(Filter.active)}
         >
           Active
         </a>
@@ -81,7 +69,7 @@ export const Footer: React.FC<Props> = ({
               { selected: currentFilter === Filter.completed },
             )
           }
-          onClick={() => loadFilteringTodos(true)}
+          onClick={() => setFilter(Filter.completed)}
         >
           Completed
         </a>
