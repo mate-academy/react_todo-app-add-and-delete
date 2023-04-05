@@ -4,7 +4,7 @@ import { Todo } from '../../types/Todo';
 
 type Props = {
   todo: Todo;
-  handleRemoveTodo: (id: number) => void;
+  handleRemoveTodo?: (id: number) => void;
   deletedTodoIds: number[]
 };
 
@@ -35,7 +35,11 @@ export const TodoInfo: React.FC<Props> = React.memo(
         <button
           type="button"
           className="todo__remove"
-          onClick={() => handleRemoveTodo(todo.id)}
+          onClick={() => {
+            if (handleRemoveTodo) {
+              handleRemoveTodo(todo.id);
+            }
+          }}
         >
           ×
         </button>

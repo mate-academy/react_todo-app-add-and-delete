@@ -39,7 +39,7 @@ export const App: FC = () => {
   const [allTodos, setAllTodos] = useState<Todo[]>([]);
   const [errorMessage, setErrorMessage] = useState('');
   const [todoTitle, setTodoTitle] = useState('');
-  const [filteredTodos, setFilteredTodos] = useState<FilterBy>(FilterBy.ALL);
+  const [filterType, setFilterType] = useState<FilterBy>(FilterBy.ALL);
   const [tempTodos, setTempTodos] = useState<Todo | null>(null);
   const [activeInput, setActiveInput] = useState(true);
   const [isQuery, setIsQuery] = useState(false);
@@ -119,8 +119,8 @@ export const App: FC = () => {
   }, [allTodos]);
 
   const visibleTodos = useMemo(() => {
-    return filterTodosByCompleted(allTodos, filteredTodos);
-  }, [allTodos, filteredTodos]);
+    return filterTodosByCompleted(allTodos, filterType);
+  }, [allTodos, filterType]);
 
   const countActiveTodos = useMemo(() => {
     return visibleTodos.reduce((sum, todo) => {
@@ -229,8 +229,8 @@ export const App: FC = () => {
 
             <nav className="filter">
               <TodoFilter
-                filteredTodos={filteredTodos}
-                setFilteredTodos={setFilteredTodos}
+                filteredTodos={filterType}
+                setFilteredTodos={setFilterType}
               />
             </nav>
 
