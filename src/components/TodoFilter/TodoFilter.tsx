@@ -1,60 +1,39 @@
 import classNames from 'classnames';
 import { useEffect } from 'react';
+import { Filter } from '../../enums/Filter';
+import { Todo } from '../../types/Todo';
 
 type Props = {
+  todos: Todo[] | undefined,
   statusTodosHandler: (value: string) => void,
-  selected: string,
-  setSelected: (value: string) => void,
+  selected: Filter,
+  setSelected: (value: Filter) => void,
 };
 
 export const TodoFilter: React.FC<Props> = ({
+  todos,
   statusTodosHandler,
   selected,
   setSelected,
 }) => {
   useEffect(() => {
     statusTodosHandler(selected);
-  }, [selected]);
-
-  const changeStatus = (
-    event: React.MouseEvent<HTMLAnchorElement>,
-  ) => {
-    if (event.currentTarget.textContent) {
-      setSelected(event.currentTarget.textContent.toLowerCase());
-    }
-  };
+  }, [selected, todos]);
 
   return (
     <nav className="filter">
-      <a
-        href="#/"
-        className={classNames('filter__link', {
-          selected: selected === 'all',
-        })}
-        onClick={changeStatus}
-      >
-        All
-      </a>
-
-      <a
-        href="#/active"
-        className={classNames('filter__link', {
-          selected: selected === 'active',
-        })}
-        onClick={changeStatus}
-      >
-        Active
-      </a>
-
-      <a
-        href="#/completed"
-        className={classNames('filter__link', {
-          selected: selected === 'completed',
-        })}
-        onClick={changeStatus}
-      >
-        Completed
-      </a>
+      {Object.values(Filter).map(element => (
+        <a
+          key={element}
+          href={`#/${element !== 'all' && element}`}
+          className={classNames('filter__link', {
+            selected: selected === element,
+          })}
+          onClick={() => setSelected(element)}
+        >
+          {`${element[0].toUpperCase()}${element.slice(1, element.length)}`}
+        </a>
+      ))}
     </nav>
   );
 };
