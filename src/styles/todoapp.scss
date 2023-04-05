@@ -117,6 +117,12 @@
     cursor: pointer;
     background: none;
 
+    transition: opacity 0.3s;
+
+    &.hidden {
+      opacity: 0;
+    }
+
     -webkit-appearance: none;
     appearance: none;
     -webkit-font-smoothing: antialiased;
