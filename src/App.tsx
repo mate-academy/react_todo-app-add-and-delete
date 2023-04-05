@@ -50,7 +50,8 @@ export const App: React.FC = () => {
 
       setTodos(todosFromServer);
     } catch {
-      setErrorMessage('fetch');
+      setErrorMessage('Unable to fetch a todo');
+      setTodos([...todos]);
     }
   };
 
@@ -77,8 +78,9 @@ export const App: React.FC = () => {
         setAdded(false);
       }
     } catch {
-      setErrorMessage('add');
+      setErrorMessage('Unable to add a todo');
       setAdded(false);
+      setTodos([...todos]);
     }
   };
 
@@ -95,7 +97,7 @@ export const App: React.FC = () => {
         fetchTodos();
       }
     } catch {
-      setErrorMessage('delete');
+      setErrorMessage('Unable to delete a todo');
       setDeletedId(0);
     }
   };

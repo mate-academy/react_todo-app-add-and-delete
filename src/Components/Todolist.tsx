@@ -2,6 +2,7 @@ import {
   CSSTransition,
   TransitionGroup,
 } from 'react-transition-group';
+import classNames from 'classnames';
 import { Todo } from '../types/Todo';
 import { TodoItem } from './TodoItem';
 
@@ -20,16 +21,21 @@ export const TodoList: React.FC<TodoListPropsType> = ({
   tempTodo,
   added,
 }) => {
-  const todosToShown = added ? [...todosToShow, tempTodo] : todosToShow;
+  if (added) {
+    todosToShow.push(tempTodo);
+  }
 
   return (
     <section className="todoapp__main">
       <TransitionGroup>
-        {todosToShown.map(todo => (
+        {todosToShow.map(todo => (
           <CSSTransition
             key={todo.id}
             timeout={300}
-            classNames="item"
+            classNames={classNames(
+              'item',
+              { 'temp-item': todo.id === 0 },
+            )}
           >
             <TodoItem
               todo={todo}

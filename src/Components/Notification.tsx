@@ -40,9 +40,7 @@ export const Notification: React.FC<NotificationPropsType> = ({
         onClick={() => clearNotification()}
       />
 
-      {errorMessage === 'Title can\'t be empty'
-        ? 'Title can\'t be empty'
-        : `Unable to ${errorMessage} a todo`}
+      {errorMessage}
       <br />
     </div>
   );
