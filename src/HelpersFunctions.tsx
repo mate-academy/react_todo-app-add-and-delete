@@ -5,3 +5,12 @@ export function getErrorMessage(error: unknown) {
 
   return String(error);
 }
+
+export function setSingleOrPluralWordByCount(
+  word: string,
+  count: number,
+): string {
+  return count > 1
+    ? `${word}s`
+    : word;
+}

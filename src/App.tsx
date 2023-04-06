@@ -14,10 +14,11 @@ import { FilterBy } from './types/FilteredBy';
 import { TodoFilter } from './components/TodoFilter';
 import { Form } from './components/Form';
 import { ErrorMessage } from './components/ErrorMessage';
+import { setSingleOrPluralWordByCount } from './HelpersFunctions';
 
 const USER_ID = 6894;
 
-function filterTodosByCompleted(todos: Todo[], filterBy: string): Todo[] {
+function filterTodosByCompleted(todos: Todo[], filterBy: FilterBy): Todo[] {
   switch (filterBy) {
     case FilterBy.ACTIVE:
       return todos.filter(todo => !todo.completed);
@@ -67,25 +68,22 @@ export const App: FC = () => {
   };
 
   const handleRemoveTodo = useCallback(
-    (id: number) => {
-      setDeletedTodoIds(prev => [...prev, id]);
+    async (id: number) => {
+      try {
+        setDeletedTodoIds(prev => [...prev, id]);
+        await removeTodo(id)
+          .then(() => {
+            const todosWithoutDeleted = allTodos.filter((todo) => (
+              todo.id !== id
+            ));
 
-      setTimeout(() => {
-        try {
-          removeTodo(id)
-            .then(() => {
-              const todosWithoutDeleted = allTodos.filter((todo) => (
-                todo.id !== id
-              ));
-
-              setAllTodos(todosWithoutDeleted);
-            });
-        } catch {
-          setErrorMessage('Unable to delete a todo');
-        } finally {
-          setDeletedTodoIds([]);
-        }
-      }, 300);
+            setAllTodos(todosWithoutDeleted);
+          });
+      } catch {
+        setErrorMessage('Unable to delete a todo');
+      } finally {
+        setDeletedTodoIds([]);
+      }
     }, [allTodos],
   );
 
@@ -93,28 +91,25 @@ export const App: FC = () => {
     loadAllTodos();
   }, []);
 
-  const handleRemoveAllComplitedTodo = useCallback(() => {
+  const handleRemoveAllComplitedTodo = useCallback(async () => {
     const completedTodos = allTodos.filter(({ completed }) => completed);
 
-    completedTodos.forEach(todo => {
-      setDeletedTodoIds(prev => [...prev, todo.id]);
+    completedTodos.forEach(async todo => {
+      try {
+        setDeletedTodoIds(prev => [...prev, todo.id]);
+        await removeTodo(todo.id)
+          .then(() => {
+            const todosWithoutDeleted = allTodos.filter(({ completed }) => (
+              !completed
+            ));
 
-      setTimeout(() => {
-        try {
-          removeTodo(todo.id)
-            .then(() => {
-              const todosWithoutDeleted = allTodos.filter(({ completed }) => (
-                !completed
-              ));
-
-              setAllTodos(todosWithoutDeleted);
-            });
-        } catch {
-          setErrorMessage('Unable to delete a todo');
-        } finally {
-          setDeletedTodoIds([]);
-        }
-      }, 300);
+            setAllTodos(todosWithoutDeleted);
+          });
+      } catch {
+        setErrorMessage('Unable to delete a todo');
+      } finally {
+        setDeletedTodoIds([]);
+      }
     });
   }, [allTodos]);
 
@@ -122,18 +117,13 @@ export const App: FC = () => {
     return filterTodosByCompleted(allTodos, filterType);
   }, [allTodos, filterType]);
 
-  const countActiveTodos = useMemo(() => {
-    return visibleTodos.reduce((sum, todo) => {
-      if (!todo.completed) {
-        return sum + 1;
-      }
+  const countActiveTodos = filterTodosByCompleted(
+    allTodos,
+    FilterBy.ACTIVE,
+  ).length;
 
-      return sum;
-    }, 0);
-  }, [visibleTodos]);
-
-  const isComplitedTodo = allTodos.some(todo => todo.completed);
-  const isActiveTodo = allTodos.some(todo => !todo.completed);
+  const isComplitedTodo = allTodos.length - countActiveTodos > 0;
+  const isActiveTodo = countActiveTodos > 0;
 
   const handleAddNewTodo = useCallback(
     (event: React.FormEvent<HTMLFormElement>) => {
@@ -162,7 +152,6 @@ export const App: FC = () => {
           setActiveInput(true);
           setTodoTitle('');
           setTempTodos(null);
-          loadAllTodos();
         });
     }, [todoTitle],
   );
@@ -224,7 +213,7 @@ export const App: FC = () => {
         || (
           <footer className="todoapp__footer">
             <span className="todo-count">
-              {`${countActiveTodos} items left`}
+              {`${countActiveTodos} ${setSingleOrPluralWordByCount('item', countActiveTodos)} left`}
             </span>
 
             <nav className="filter">
