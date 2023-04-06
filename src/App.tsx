@@ -32,6 +32,7 @@ export const App: React.FC = () => {
   ] = useState<FilterMode>(FilterMode.All);
   const [tempTodo, setTempTodo] = useState<Todo | null>(null);
 
+  // eslint-disable-next-line no-unused-vars
   const {
     loadingTodosIds,
     setLoadingTodosIds,
