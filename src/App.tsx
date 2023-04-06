@@ -1,28 +1,31 @@
 /* eslint-disable jsx-a11y/control-has-associated-label */
 import React, { useEffect, useState } from 'react';
+
 import { Todo } from './types/Todo';
 import { Filter } from './types/Filter';
 import { Error } from './types/Error';
 import { TodoCondition } from './types/TodoCondition';
 
 import { filterTodos } from './utils/filterTodos';
-import { deleteTodo, getTodos } from './api/todos';
+import { USER_ID, deleteTodo, getTodos } from './api/todos';
 
 import { UserWarning } from './UserWarning';
+import { Header } from './components/Header';
 import { TodoList } from './components/TodoList';
+import { TodoItem } from './components/TodoItem';
 import { Footer } from './components/Footer/Footer';
 import { ErrorMessage } from './components/ErrorMessage';
-
-const USER_ID = 6864;
 
 export const App: React.FC = () => {
   const [todos, setTodos] = useState<Todo[] | null>(null);
   const [filterType, setFilterType] = useState<Filter>(Filter.All);
   const [errorType, setErrorType] = useState(Error.None);
-  const [containsCompleted, setContainsCompleted] = useState(true);
+  const [containsCompleted, setContainsCompleted] = useState(false);
+  const [containsActive, setContainsActive] = useState(false);
   const [todoCondition, setTodoCondition]
     = useState<TodoCondition>(TodoCondition.neutral);
   const [procesingTodosId, setProcesingTodosId] = useState<number[]>([]);
+  const [tempTodo, setTempTodo] = useState<Todo | null>(null);
 
   const handleError = (err: Error) => {
     if (err !== Error.None) {
@@ -59,6 +62,7 @@ export const App: React.FC = () => {
       .then(result => {
         setTodos(result);
         setContainsCompleted(result.some(todo => todo.completed === true));
+        setContainsActive(result.some(todo => todo.completed === false));
       })
       .catch(() => handleError(Error.Load));
   }, [todos]);
@@ -74,19 +78,13 @@ export const App: React.FC = () => {
       <h1 className="todoapp__title">todos</h1>
 
       <div className="todoapp__content">
-        <header className="todoapp__header">
-          {/* this buttons is active only if there are some active todos */}
-          <button type="button" className="todoapp__toggle-all active" />
 
-          {/* Add a todo on form submit */}
-          <form>
-            <input
-              type="text"
-              className="todoapp__new-todo"
-              placeholder="What needs to be done?"
-            />
-          </form>
-        </header>
+        <Header
+          containsActive={containsActive}
+          handleError={handleError}
+          setTodoCondition={setTodoCondition}
+          onTrickTempTodo={setTempTodo}
+        />
 
         {filteredTodos && (
           <>
@@ -97,21 +95,33 @@ export const App: React.FC = () => {
                 todoCondition={todoCondition}
                 procesingTodosId={procesingTodosId}
               />
-            </section>
 
-            <Footer
-              onFilter={setFilterType}
-              filterType={filterType}
-              containsCompleted={containsCompleted}
-              onClearCompleted={clearCompleted}
-            />
+              {tempTodo && (
+                <TodoItem
+                  todo={tempTodo}
+                  todoCondition={todoCondition}
+                  onDeleteTodo={todoDelete}
+                />
+              )}
+            </section>
           </>
+        )}
+
+        {!!todos?.length && (
+          <Footer
+            onFilter={setFilterType}
+            filterType={filterType}
+            containsCompleted={containsCompleted}
+            onClearCompleted={clearCompleted}
+          />
         )}
       </div>
 
-      {errorType !== Error.None && (
-        <ErrorMessage errorType={errorType} handleError={setErrorType} />
-      )}
+      {
+        errorType !== Error.None && (
+          <ErrorMessage errorType={errorType} handleError={setErrorType} />
+        )
+      }
     </div>
   );
 };

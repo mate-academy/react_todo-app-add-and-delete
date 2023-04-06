@@ -4,4 +4,5 @@ export enum Error {
   Delete = 'delete',
   Update = 'update',
   Load = 'load',
+  EmptyInput = 'EmptyInput',
 }

@@ -22,7 +22,8 @@ export const ErrorMessage: FC<Props> = ({ errorType, handleError }) => (
       onClick={() => handleError(Error.None)}
       aria-label="close error"
     />
-
-    {`Unable to ${errorType} a todo`}
+    {errorType === Error.EmptyInput
+      ? "Title can't be empty"
+      : `Unable to ${errorType} a todo`}
   </div>
 );
