@@ -1,14 +1,14 @@
 import {
   createContext,
   useCallback,
+  useContext,
   useEffect,
   useState,
 } from 'react';
 import { Filters } from '../../types/enums';
 import { Todo } from '../../types/Todo';
 import { addTodo, getTodos, removeTodo } from '../../api/todos';
-
-const USER_ID = 6816;
+import { USER_ID } from '../../utils/constants';
 
 interface AppContextType {
   selectedFilter: Filters;
@@ -17,14 +17,13 @@ interface AppContextType {
   updateTodos: (todos: Todo[]) => void;
   tempTodo: Todo | null;
   addTempTodo: (todo: string) => Promise<void>;
-  userId: number;
-  error: string;
+  errorMessage: string;
   hideNotification: boolean;
   setHideNotification: (hide: boolean) => void;
   isTodosLoading: boolean;
   removeTodoById: (id: number) => Promise<void>;
-  triggerRemoveCompleted: boolean;
-  setTriggerRemoveCompleted: (triggered: boolean) => void;
+  arrayOfTodosToRemove: Todo[];
+  setArrayOfTodosToRemove: React.Dispatch<React.SetStateAction<Todo[]>>;
 }
 
 export const AppContext = createContext<AppContextType>(
@@ -35,16 +34,17 @@ export const AppContext = createContext<AppContextType>(
     updateTodos: () => {},
     tempTodo: null,
     addTempTodo: async () => {},
-    userId: USER_ID,
-    error: '',
+    errorMessage: '',
     hideNotification: true,
     setHideNotification: () => {},
     isTodosLoading: false,
     removeTodoById: async () => {},
-    triggerRemoveCompleted: false,
-    setTriggerRemoveCompleted: () => {},
+    arrayOfTodosToRemove: [],
+    setArrayOfTodosToRemove: () => {},
   },
 );
+
+export const useAppContext = () => useContext(AppContext);
 
 type AppProviderProps = {
   children: React.ReactNode;
@@ -54,17 +54,10 @@ export const AppProvider: React.FC<AppProviderProps> = ({ children }) => {
   const [todos, setTodos] = useState<Todo[]>([]);
   const [selectedFilter, setSelectedFilter] = useState(Filters.All);
   const [tempTodo, setTempTodo] = useState<Todo | null>(null);
-  const [userId] = useState(USER_ID);
-  const [error, setError] = useState('');
+  const [errorMessage, setErrorMessage] = useState('');
   const [hideNotification, setHideNotification] = useState(true);
   const [isTodosLoading, setIsTodosLoading] = useState(false);
-  const [triggerRemoveCompleted, setTriggerRemoveCompleted] = useState(false);
-
-  useEffect(() => {
-    if (triggerRemoveCompleted) {
-      setTriggerRemoveCompleted(false);
-    }
-  }, [triggerRemoveCompleted]);
+  const [arrayOfTodosToRemove, setArrayOfTodosToRemove] = useState<Todo[]>([]);
 
   const updateTodos = useCallback((newTodos: Todo[]) => {
     setTodos(newTodos);
@@ -79,7 +72,7 @@ export const AppProvider: React.FC<AppProviderProps> = ({ children }) => {
     };
 
     try {
-      setError('');
+      setErrorMessage('');
       setHideNotification(true);
       setTempTodo(todo);
       const newTodo = await addTodo(todo);
@@ -88,9 +81,9 @@ export const AppProvider: React.FC<AppProviderProps> = ({ children }) => {
         ...prevTodos,
         newTodo,
       ]));
-    } catch (err) {
+    } catch {
       setHideNotification(false);
-      setError('Unable to add a todo');
+      setErrorMessage('Unable to add a todo');
     } finally {
       setTempTodo(null);
     }
@@ -99,8 +92,8 @@ export const AppProvider: React.FC<AppProviderProps> = ({ children }) => {
   const removeTodoById = useCallback(async (id: number) => {
     try {
       await removeTodo(id);
-    } catch (err) {
-      setError('Unable to delete a todo');
+    } catch {
+      setErrorMessage('Unable to delete a todo');
     }
 
     setTodos(prevTodos => prevTodos.filter(todo => todo.id !== id));
@@ -109,14 +102,14 @@ export const AppProvider: React.FC<AppProviderProps> = ({ children }) => {
   const loadTodosFromServer = useCallback(async () => {
     try {
       setIsTodosLoading(true);
-      setError('');
+      setErrorMessage('');
       setHideNotification(true);
-      const result = await getTodos(userId);
+      const result = await getTodos(USER_ID);
 
       updateTodos(result);
     } catch (err) {
       if (err instanceof Error) {
-        setError(err.message);
+        setErrorMessage(err.message);
         setHideNotification(false);
         setTimeout(setHideNotification, 3000, [true]);
       }
@@ -124,6 +117,13 @@ export const AppProvider: React.FC<AppProviderProps> = ({ children }) => {
       setIsTodosLoading(false);
     }
   }, [updateTodos]);
+
+  useEffect(() => {
+    Promise.all(arrayOfTodosToRemove.map(
+      todo => removeTodoById(todo.id),
+    ))
+      .then(() => setArrayOfTodosToRemove([]));
+  }, [arrayOfTodosToRemove]);
 
   useEffect(() => {
     loadTodosFromServer();
@@ -138,14 +138,13 @@ export const AppProvider: React.FC<AppProviderProps> = ({ children }) => {
         updateTodos,
         tempTodo,
         addTempTodo,
-        userId,
-        error,
+        errorMessage,
         hideNotification,
         setHideNotification,
         isTodosLoading,
         removeTodoById,
-        triggerRemoveCompleted,
-        setTriggerRemoveCompleted,
+        arrayOfTodosToRemove,
+        setArrayOfTodosToRemove,
       }}
     >
       { children }

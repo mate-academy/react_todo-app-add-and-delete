@@ -1,19 +1,23 @@
 import classNames from 'classnames';
-import { useContext, useMemo } from 'react';
+import { useMemo } from 'react';
 import { Filters } from '../../types/enums';
-import { AppContext } from '../AppProvider';
+import { useAppContext } from '../AppProvider';
 
 export const Footer: React.FC = () => {
   const {
     selectedFilter,
     setSelectedFilter,
     todos,
-    setTriggerRemoveCompleted,
-  } = useContext(AppContext);
+    setArrayOfTodosToRemove,
+  } = useAppContext();
 
   const activeTodos = useMemo(() => {
     return todos.filter(({ completed }) => !completed).length;
   }, [todos]);
+
+  const handleRemoveCompleted = () => {
+    setArrayOfTodosToRemove(todos.filter(({ completed }) => completed));
+  };
 
   const hasCompletedTodos = todos.length - activeTodos > 0;
 
@@ -43,7 +47,7 @@ export const Footer: React.FC = () => {
         type="button"
         className="todoapp__clear-completed"
         style={{ visibility: hasCompletedTodos ? 'visible' : 'hidden' }}
-        onClick={() => setTriggerRemoveCompleted(true)}
+        onClick={handleRemoveCompleted}
         disabled={!hasCompletedTodos}
       >
         Clear completed

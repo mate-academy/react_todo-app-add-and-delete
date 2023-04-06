@@ -8,4 +8,8 @@ import { App } from './App';
 import { AppProvider } from './components/AppProvider';
 
 createRoot(document.getElementById('root') as HTMLDivElement)
-  .render(<AppProvider><App /></AppProvider>);
+  .render(
+    <AppProvider>
+      <App />
+    </AppProvider>,
+  );

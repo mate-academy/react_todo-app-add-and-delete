@@ -1,14 +1,14 @@
 /* eslint-disable jsx-a11y/control-has-associated-label */
 import classNames from 'classnames';
-import { useContext, useEffect } from 'react';
-import { AppContext } from '../AppProvider';
+import { useEffect } from 'react';
+import { useAppContext } from '../AppProvider';
 
 export const Notification: React.FC = () => {
   const {
-    error,
+    errorMessage: error,
     setHideNotification,
     hideNotification,
-  } = useContext(AppContext);
+  } = useAppContext();
 
   useEffect(() => {
     if (!hideNotification) {

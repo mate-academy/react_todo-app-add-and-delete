@@ -1,18 +1,16 @@
-import React, {
-  useContext,
-} from 'react';
-import { AppContext } from './components/AppProvider';
 import { Footer } from './components/Footer';
 import { Header } from './components/Header';
 import { Loader } from './components/Loader';
 import { TodoList } from './components/TodoList';
 import { UserWarning } from './UserWarning';
 import { Notification } from './components/Notification';
+import { USER_ID } from './utils/constants';
+import { useAppContext } from './components/AppProvider';
 
 export const App: React.FC = () => {
-  const { todos, userId, isTodosLoading } = useContext(AppContext);
+  const { todos, isTodosLoading } = useAppContext();
 
-  if (!userId) {
+  if (!USER_ID) {
     return <UserWarning />;
   }
 
@@ -21,17 +19,17 @@ export const App: React.FC = () => {
       <h1 className="todoapp__title">todos</h1>
 
       <div className="todoapp__content">
-
         <Header />
 
         {isTodosLoading && (
           <Loader />
         )}
 
-        <TodoList />
-
         {todos.length > 0 && (
-          <Footer />
+          <>
+            <TodoList />
+            <Footer />
+          </>
         )}
       </div>
 

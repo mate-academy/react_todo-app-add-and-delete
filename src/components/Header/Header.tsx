@@ -1,10 +1,10 @@
 /* eslint-disable jsx-a11y/control-has-associated-label */
-import { useContext, useState } from 'react';
-import { AppContext } from '../AppProvider';
+import { useState } from 'react';
+import { useAppContext } from '../AppProvider';
 
 export const Header = () => {
   const [title, setTitle] = useState('');
-  const { addTempTodo } = useContext(AppContext);
+  const { addTempTodo } = useAppContext();
   const [isLoading, setIsLoading] = useState(false);
 
   const handleTitleChange = (event: React.ChangeEvent<HTMLInputElement>) => {

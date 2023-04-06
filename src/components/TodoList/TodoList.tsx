@@ -1,17 +1,24 @@
-import { useContext, useMemo } from 'react';
+import { useMemo } from 'react';
 import { Filters } from '../../types/enums';
 import { TodoItem } from '../TodoItem';
-import { AppContext } from '../AppProvider';
+import { useAppContext } from '../AppProvider';
 
 export const TodoList: React.FC = () => {
-  const { todos, selectedFilter, tempTodo } = useContext(AppContext);
+  const { todos, selectedFilter, tempTodo } = useAppContext();
   const filteredTodos = useMemo(
     () => todos.filter(({ completed }) => {
       switch (selectedFilter) {
-        case Filters.All: return true;
-        case Filters.Active: return !completed;
-        case Filters.Completed: return completed;
-        default: return true;
+        case Filters.All:
+          return true;
+
+        case Filters.Active:
+          return !completed;
+
+        case Filters.Completed:
+          return completed;
+
+        default:
+          return true;
       }
     }),
     [todos, selectedFilter],

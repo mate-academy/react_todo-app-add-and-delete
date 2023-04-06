@@ -1,7 +1,7 @@
 import classNames from 'classnames';
-import { useContext, useEffect, useState } from 'react';
+import { useEffect, useState } from 'react';
 import { Todo } from '../../types/Todo';
-import { AppContext } from '../AppProvider';
+import { useAppContext } from '../AppProvider';
 
 interface Props {
   todo: Todo;
@@ -14,11 +14,19 @@ export const TodoItem: React.FC<Props> = ({ todo }) => {
     completed,
   } = todo;
 
-  const { removeTodoById, triggerRemoveCompleted } = useContext(AppContext);
+  const {
+    removeTodoById,
+    arrayOfTodosToRemove,
+    setArrayOfTodosToRemove,
+  } = useAppContext();
 
   const [isLoading, setIsLoading] = useState(id === 0);
 
   const handleRemove = () => {
+    setArrayOfTodosToRemove((prev: Todo[]) => [
+      ...prev,
+      todo,
+    ]);
     setIsLoading(true);
     removeTodoById(id).finally(() => {
       setIsLoading(false);
@@ -26,10 +34,12 @@ export const TodoItem: React.FC<Props> = ({ todo }) => {
   };
 
   useEffect(() => {
-    if (triggerRemoveCompleted && completed) {
-      handleRemove();
-    }
-  }, [triggerRemoveCompleted, completed]);
+    const isTodoBeeingRemoved = arrayOfTodosToRemove.some(
+      todoToRemove => todoToRemove.id === id,
+    );
+
+    setIsLoading(isTodoBeeingRemoved);
+  }, [arrayOfTodosToRemove]);
 
   return (
     <div className={classNames('todo', { completed })}>
