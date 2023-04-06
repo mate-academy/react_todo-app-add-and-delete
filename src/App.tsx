@@ -3,6 +3,7 @@ import React, { useEffect, useState } from 'react';
 import { Todo } from './types/Todo';
 import { Filter } from './types/Filter';
 import { Error } from './types/Error';
+import { TodoCondition } from './types/TodoCondition';
 
 import { filterTodos } from './utils/filterTodos';
 import { deleteTodo, getTodos } from './api/todos';
@@ -19,6 +20,9 @@ export const App: React.FC = () => {
   const [filterType, setFilterType] = useState<Filter>(Filter.All);
   const [errorType, setErrorType] = useState(Error.None);
   const [containsCompleted, setContainsCompleted] = useState(true);
+  const [todoCondition, setTodoCondition]
+    = useState<TodoCondition>(TodoCondition.neutral);
+  const [procesingTodosId, setProcesingTodosId] = useState<number[]>([]);
 
   const handleError = (err: Error) => {
     if (err !== Error.None) {
@@ -28,14 +32,24 @@ export const App: React.FC = () => {
     setErrorType(err);
   };
 
+  const todoDelete = (todoId: number) => {
+    setTodoCondition(TodoCondition.deleting);
+    setProcesingTodosId([todoId]);
+    deleteTodo(todoId)
+      .catch(() => handleError(Error.Delete))
+      .finally(() => setTodoCondition(TodoCondition.neutral));
+  };
+
   const clearCompleted = () => {
+    setTodoCondition(TodoCondition.deleting);
     setContainsCompleted(false);
 
     todos?.forEach(todo => {
       if (todo.completed) {
+        setProcesingTodosId((state) => [...state, todo.id]);
         deleteTodo(todo.id)
-          .then(() => { })
-          .catch(() => setErrorType(Error.Delete));
+          .catch(() => handleError(Error.Delete))
+          .finally(() => setTodoCondition(TodoCondition.neutral));
       }
     });
   };
@@ -77,7 +91,12 @@ export const App: React.FC = () => {
         {filteredTodos && (
           <>
             <section className="todoapp__main">
-              <TodoList todos={filteredTodos} />
+              <TodoList
+                todos={filteredTodos}
+                onDeleteTodo={todoDelete}
+                todoCondition={todoCondition}
+                procesingTodosId={procesingTodosId}
+              />
             </section>
 
             <Footer

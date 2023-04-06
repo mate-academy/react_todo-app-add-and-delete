@@ -1,17 +1,20 @@
-import React, { useState } from 'react';
+import React from 'react';
 import classNames from 'classnames';
 import { Todo } from '../../types/Todo';
+import { TodoCondition } from '../../types/TodoCondition';
 
 type Props = {
   todo: Todo,
+  onDeleteTodo: (todoIs: number) => void,
+  todoCondition: TodoCondition,
 };
 
-type TodoCondition = 'neutral' | 'seving' | 'editing';
-
-export const TodoItem: React.FC<Props> = ({ todo }) => {
-  const [todoCondition] = useState<TodoCondition>('neutral');
-
-  const { title, completed } = todo;
+export const TodoItem: React.FC<Props> = ({
+  todo,
+  onDeleteTodo,
+  todoCondition,
+}) => {
+  const { id, title, completed } = todo;
 
   return (
     <div className={classNames(
@@ -27,7 +30,7 @@ export const TodoItem: React.FC<Props> = ({ todo }) => {
         />
       </label>
 
-      {todoCondition === 'editing'
+      {todoCondition === TodoCondition.editing
         ? (
           <form>
             <input
@@ -43,14 +46,20 @@ export const TodoItem: React.FC<Props> = ({ todo }) => {
             <span className="todo__title">{title}</span>
 
             {/* Remove button appears only on hover */}
-            <button type="button" className="todo__remove">×</button>
+            <button
+              type="button"
+              className="todo__remove"
+              onClick={() => onDeleteTodo(id)}
+            >
+              ×
+            </button>
           </>
         )}
 
       <div className={classNames(
         'modal',
         'overlay',
-        { 'is-active': todoCondition === 'seving' },
+        { 'is-active': todoCondition !== TodoCondition.neutral },
       )}
       >
         <div className="modal-background has-background-white-ter" />
