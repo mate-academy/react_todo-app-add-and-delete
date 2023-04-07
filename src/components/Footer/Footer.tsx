@@ -60,9 +60,7 @@ export const Footer: FC<Props> = ({
       type="button"
       className="todoapp__clear-completed"
       style={{ visibility: containsCompleted ? 'visible' : 'hidden' }}
-      onClick={() => {
-        onClearCompleted();
-      }}
+      onClick={onClearCompleted}
     >
       Clear completed
     </button>

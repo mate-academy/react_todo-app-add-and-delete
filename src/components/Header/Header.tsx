@@ -10,6 +10,7 @@ type Props = {
   handleError: (err: Error) => void,
   setTodoCondition: (arg: TodoCondition) => void,
   onTrickTempTodo: (newTodo: Todo | null) => void,
+  setTodos: (prev: any) => void,
 };
 
 export const Header: FC<Props> = ({
@@ -17,8 +18,10 @@ export const Header: FC<Props> = ({
   handleError,
   setTodoCondition,
   onTrickTempTodo,
+  setTodos,
 }) => {
   const [title, setTitle] = useState<string>('');
+  const [isInputDisabled, setIsInputDisabled] = useState<boolean>(false);
 
   const handleSubmit = (event: FormEvent<HTMLFormElement>) => {
     event.preventDefault();
@@ -27,6 +30,7 @@ export const Header: FC<Props> = ({
       return handleError(Error.EmptyInput);
     }
 
+    setIsInputDisabled(true);
     setTodoCondition(TodoCondition.seving);
 
     const newTodo = {
@@ -40,9 +44,15 @@ export const Header: FC<Props> = ({
     setTitle('');
 
     return addTodo(newTodo)
-      .then(() => onTrickTempTodo(null))
+      .then(() => {
+        onTrickTempTodo(null);
+        setTodos((prev: Todo[]) => [...prev, newTodo]);
+      })
       .catch(() => handleError(Error.Add))
-      .finally(() => setTodoCondition(TodoCondition.neutral));
+      .finally(() => {
+        setTodoCondition(TodoCondition.neutral);
+        setIsInputDisabled(false);
+      });
   };
 
   return (
@@ -56,7 +66,6 @@ export const Header: FC<Props> = ({
         aria-label="Complete all todos button"
       />
 
-      {/* Add a todo on form submit */}
       <form onSubmit={(e) => handleSubmit(e)}>
         <input
           type="text"
@@ -64,6 +73,7 @@ export const Header: FC<Props> = ({
           placeholder="What needs to be done?"
           value={title}
           onChange={({ target }) => setTitle(target.value)}
+          disabled={isInputDisabled}
         />
       </form>
     </header>
