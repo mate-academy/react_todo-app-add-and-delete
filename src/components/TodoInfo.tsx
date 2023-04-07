@@ -1,4 +1,4 @@
-import React, { useEffect } from 'react';
+import React from 'react';
 import { TodoItem } from './TodoItem';
 import { Todo } from '../types/Todo';
 
@@ -7,30 +7,11 @@ export const TodoInfo = React.memo(
     todosFromServer,
     askTodos,
     setErrorMessage,
-    setBlock,
   }: {
     todosFromServer: Todo[] | undefined;
     askTodos: (url: string) => void;
     setErrorMessage: React.Dispatch<React.SetStateAction<string>>;
-    setBlock: {
-      setCountComplited: React.Dispatch<React.SetStateAction<boolean>>;
-      setCountNotComplited: React.Dispatch<React.SetStateAction<boolean>>;
-    }
   }) => {
-    useEffect(() => {
-      if (todosFromServer) {
-        const isCount = todosFromServer.some(
-          (todo: Todo) => todo.completed === true,
-        );
-        const isNotCount = todosFromServer.some(
-          (todo: Todo) => todo.completed === false,
-        );
-
-        setBlock.setCountNotComplited(isNotCount);
-        setBlock.setCountComplited(isCount);
-      }
-    }, [todosFromServer]);
-
     if (!todosFromServer) {
       askTodos('/todos?userId=6757');
 

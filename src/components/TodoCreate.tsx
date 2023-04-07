@@ -7,26 +7,25 @@ export const TodoCreate: React.FC<{
   setErrorMessage: React.Dispatch<React.SetStateAction<string>>
   clearCompleted: (status: string) => void
   askTodos: (url: string) => void
-  statusComplited: {
-    countComplited: boolean;
-    countNotComplited: boolean;
-    todosFromServer: Todo[] | undefined;
-  }
+  todosFromServer: Todo[] | undefined;
+  countNotComplited: boolean | undefined;
 }> = ({
   setErrorMessage,
   clearCompleted,
   askTodos,
-  statusComplited,
+  todosFromServer,
+  countNotComplited,
 }) => {
   const [inputPlace, setInputPlace] = useState('');
-  const [isLoading, setIsLoading] = useState(!statusComplited.todosFromServer);
+  const [isLoading, setIsLoading] = useState(!todosFromServer);
   const handleNewTodo = (
     event: React.KeyboardEvent<HTMLInputElement>,
   ) => {
     if (event.key === 'Enter') {
       event.preventDefault();
       setIsLoading(true);
-      if (inputPlace !== '') {
+
+      const util = () => {
         client.post('/todos',
           {
             title: inputPlace,
@@ -38,13 +37,17 @@ export const TodoCreate: React.FC<{
             setInputPlace('');
           })
           .catch(() => setErrorMessage('Unable to add a todo'));
+      };
+
+      if (inputPlace !== '') {
+        util();
       }
     }
   };
 
   useEffect(() => {
-    setIsLoading(!statusComplited.todosFromServer);
-  }, [statusComplited.todosFromServer]);
+    setIsLoading(!todosFromServer);
+  }, [todosFromServer]);
 
   const handleChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     setInputPlace(event.currentTarget.value.trimStart());
@@ -56,7 +59,7 @@ export const TodoCreate: React.FC<{
         type="button"
         className={classNames(
           'todoapp__toggle-all',
-          { active: !statusComplited.countNotComplited },
+          { active: !countNotComplited },
         )}
         onClick={() => clearCompleted('invert')}
       >
