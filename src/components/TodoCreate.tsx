@@ -5,7 +5,7 @@ import { Todo } from '../types/Todo';
 
 export const TodoCreate: React.FC<{
   setErrorMessage: React.Dispatch<React.SetStateAction<string>>
-  clearCompleted: (status: string) => void
+  clearCompleted: () => void
   askTodos: (url: string) => void
   todosFromServer: Todo[] | undefined;
   countNotComplited: boolean | undefined;
@@ -61,7 +61,7 @@ export const TodoCreate: React.FC<{
           'todoapp__toggle-all',
           { active: !countNotComplited },
         )}
-        onClick={() => clearCompleted('invert')}
+        onClick={clearCompleted}
       >
         {}
 

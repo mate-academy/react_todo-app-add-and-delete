@@ -1,43 +1,37 @@
 import classNames from 'classnames';
 import { useState } from 'react';
 import { Todo } from '../types/Todo';
-
-enum SortType {
-  completed,
-  active,
-  all,
-}
+import { SortType } from '../types/SortType';
+import { url } from './Urls';
 
 export const Footer: React.FC<{
   askTodos: (url: string) => void
-  clearCompleted: (status: string) => void
+  deleteCompleted: () => void
   todosFromServer: Todo[] | undefined
   countComplited: boolean | undefined;
 }> = ({
   askTodos,
-  clearCompleted,
+  deleteCompleted,
   todosFromServer,
   countComplited,
 }) => {
-  const [selectedForm, setSelectedForm] = useState(SortType.all);
+  const [selectedForm, setSelectedForm] = useState(SortType.All);
 
   const sortTodos = (format: SortType) => {
-    const url = '/todos?userId=6757';
-
     switch (format) {
-      case SortType.active:
+      case SortType.Active:
         askTodos(`${url}&completed=false`);
-        setSelectedForm(SortType.active);
+        setSelectedForm(SortType.Active);
         break;
-      case SortType.completed:
+      case SortType.Completed:
         askTodos(`${url}&completed=true`);
-        setSelectedForm(SortType.completed);
+        setSelectedForm(SortType.Completed);
         break;
 
-      case SortType.all:
+      case SortType.All:
       default:
         askTodos(url);
-        setSelectedForm(SortType.all);
+        setSelectedForm(SortType.All);
         break;
     }
   };
@@ -53,10 +47,10 @@ export const Footer: React.FC<{
           href="#/"
           className={classNames(
             'filter__link', {
-              selected: selectedForm === SortType.all,
+              selected: selectedForm === SortType.All,
             },
           )}
-          onClick={() => sortTodos(SortType.all)}
+          onClick={() => sortTodos(SortType.All)}
         >
           All
         </a>
@@ -65,10 +59,10 @@ export const Footer: React.FC<{
           href="#/active"
           className={classNames(
             'filter__link', {
-              selected: selectedForm === SortType.active,
+              selected: selectedForm === SortType.Active,
             },
           )}
-          onClick={() => sortTodos(SortType.active)}
+          onClick={() => sortTodos(SortType.Active)}
         >
           Active
         </a>
@@ -77,10 +71,10 @@ export const Footer: React.FC<{
           href="#/completed"
           className={classNames(
             'filter__link', {
-              selected: selectedForm === SortType.completed,
+              selected: selectedForm === SortType.Completed,
             },
           )}
-          onClick={() => sortTodos(SortType.completed)}
+          onClick={() => sortTodos(SortType.Completed)}
         >
           Completed
         </a>
@@ -89,7 +83,7 @@ export const Footer: React.FC<{
       <button
         type="button"
         className="todoapp__clear-completed"
-        onClick={() => clearCompleted('completed')}
+        onClick={deleteCompleted}
         hidden={!countComplited}
       >
         Clear completed

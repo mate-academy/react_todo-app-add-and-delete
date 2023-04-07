@@ -28,31 +28,31 @@ export const TodoItem = React.memo(
       setIsComplited(prevState => !prevState);
 
       client.patch(`/todos/${id}`, { completed: !isComplited })
+        .catch(() => setErrorMessage('Unable to update a todo'))
         .finally(() => {
           setIsLoading(prevState => !prevState);
           askTodos('/todos?userId=6757');
-        })
-        .catch(() => setErrorMessage('Unable to update a todo'));
+        });
     };
 
     const handleDelete = () => {
       setIsLoading(prevState => !prevState);
       client.delete(`/todos/${id}`)
+        .catch(() => setErrorMessage('Unable to delete a todo'))
         .finally(() => {
           setIsLoading(prevState => !prevState);
           askTodos('/todos?userId=6757');
-        })
-        .catch(() => setErrorMessage('Unable to delete a todo'));
+        });
     };
 
     const handleEdit = (text: string) => {
       setIsLoading(prevState => !prevState);
       client.patch(`/todos/${id}`, { title: text })
+        .catch(() => setErrorMessage('Unable to update a todo'))
         .finally(() => {
           setIsLoading(prevState => !prevState);
           askTodos('/todos?userId=6757');
-        })
-        .catch(() => setErrorMessage('Unable to update a todo'));
+        });
     };
 
     const handleChange = (event: React.ChangeEvent<HTMLInputElement>) => {

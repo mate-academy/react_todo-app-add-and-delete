@@ -15,11 +15,11 @@ export const App: React.FC = () => {
   const [errorMessage, setErrorMessage] = useState('');
 
   const countNotComplited = useMemo(() => todosFromServer?.some(
-    (todo: Todo) => todo.completed === false,
+    (todo: Todo) => !todo.completed,
   ), [todosFromServer]);
 
   const countComplited = useMemo(() => todosFromServer?.some(
-    (todo: Todo) => todo.completed === true,
+    (todo: Todo) => todo.completed,
   ), [todosFromServer]);
 
   if (!USER_ID) {
@@ -37,40 +37,38 @@ export const App: React.FC = () => {
 
   const askTodos = debounce((url) => fetchTodos(url), 1000);
 
-  const reloadTodos = (ask: Promise<unknown>) => {
-    ask
+  const reloadTodos = (promise: Promise<unknown>) => {
+    promise
       .finally(() => {
         askTodos(`/todos?userId=${USER_ID}`);
       })
       .catch(() => setErrorMessage('Unable to update a todo'));
   };
 
-  const clearCompleted = async (status: string) => {
+  const deleteCompleted = async () => {
     if (todosFromServer) {
       todosFromServer.forEach((todo => {
-        switch (status) {
-          case 'completed':
-            if (todo.completed) {
-              const ask = client.delete(`/todos/${todo.id}`);
+        if (todo.completed) {
+          const promise = client.delete(`/todos/${todo.id}`);
 
-              reloadTodos(ask);
-            }
+          reloadTodos(promise);
+        }
+      }
+      ));
+    }
+  };
 
-            break;
+  const clearCompleted = () => {
+    if (todosFromServer) {
+      todosFromServer.forEach((todo => {
+        if (countComplited && !countNotComplited) {
+          const promise = client.patch(`/todos/${todo.id}`, { completed: false });
 
-          case 'invert':
-          default:
-            if (countComplited && !countNotComplited) {
-              const ask = client.patch(`/todos/${todo.id}`, { completed: false });
+          reloadTodos(promise);
+        } else if (countNotComplited) {
+          const promise = client.patch(`/todos/${todo.id}`, { completed: true });
 
-              reloadTodos(ask);
-            } else if (countNotComplited) {
-              const ask = client.patch(`/todos/${todo.id}`, { completed: true });
-
-              reloadTodos(ask);
-            }
-
-            break;
+          reloadTodos(promise);
         }
       }));
     }
@@ -102,7 +100,7 @@ export const App: React.FC = () => {
         <footer className="todoapp__footer">
           <Footer
             askTodos={askTodos}
-            clearCompleted={clearCompleted}
+            deleteCompleted={deleteCompleted}
             todosFromServer={todosFromServer}
             countComplited={countComplited}
           />
