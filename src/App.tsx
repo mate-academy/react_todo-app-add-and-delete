@@ -13,9 +13,9 @@ import {
 } from './components/TodoFilter/TodoFilter';
 import { TodoForm, TodoFormProps } from './components/TodoForm/TodoForm';
 
-const USER_ID = 6848;
-
 import { ErrorTypes } from './types/ErrorTypes';
+
+const USER_ID = 6848;
 
 export const App: React.FC = () => {
   const [todos, setTodos] = useState<Todo[]>([]);
