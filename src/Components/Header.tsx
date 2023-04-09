@@ -35,7 +35,7 @@ export const Header: React.FC<HeaderPropsType> = ({
         onSubmit={async (e) => {
           e.preventDefault();
 
-          if (!searchQuery) {
+          if (!searchQuery.trim()) {
             onEmpty();
           } else {
             addTodo(searchQuery);
