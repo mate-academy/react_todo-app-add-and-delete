@@ -7,19 +7,17 @@ import { TodoList } from './components/Todolist';
 import { Footer } from './components/Footer';
 import { getTodos, postTodo, removeTodo } from './api/todos';
 import { ErrorNotification } from './components/ErrorNotification';
-import { TodoModal } from './components/TodoModal';
-
 
 const USER_ID = 6910;
 
 export const App: React.FC = () => {
   const [todos, setTodos] = useState<Todo[]>([]);
-  const [filter, setFilter] = useState('all');
+  const [filter, setFilter] = useState<string>(Filter.ALL);
   const [error, setError] = useState('');
-  const showError = !!error || error !== '';
   const [tempTodo, setTempTodo] = useState<Todo | null>(null);
   const [todosBeingTransform, setTodosBeingTransform] = useState<number[]>([]);
-
+  const [isDeleted, setIsDeleted] = useState(false);
+  const showError = error.length > 0;
   useEffect(() => {
     getTodos(USER_ID)
       .then(data => {
@@ -36,14 +34,16 @@ export const App: React.FC = () => {
       });
   }, []);
 
+  const setErrorTimeout = () => {
+    setTimeout(() => {
+      setError('');
+    }, 3000);
+  };
+
   const handleAddTodo = (todoData: Omit<Todo, 'id'>) => {
-    if (!todoData.title) {
+    if (!todoData.title.trim()) {
       setError(Errors.TITLE);
-
-      setTimeout(() => {
-        setError('');
-      }, 3000);
-
+      setErrorTimeout()
       return;
     }
 
@@ -61,11 +61,13 @@ export const App: React.FC = () => {
 
         setTimeout(() => {
           setError('');
+          setTempTodo(null);
         }, 3000);
       });
   };
 
   const handleRemoveTodos = (todoId: number) => {
+    setIsDeleted(true);
     setTodosBeingTransform(curr => [...curr, todoId]);
     removeTodo(todoId)
       .then(() => {
@@ -75,12 +77,10 @@ export const App: React.FC = () => {
       })
       .catch(() => {
         setError(Errors.REMOVING);
-
-        setTimeout(() => {
-          setError('');
-        }, 3000);
+        setErrorTimeout();
       })
       .finally(() => {
+        setIsDeleted(false);
         setTodosBeingTransform(
           todosBeingTransform.filter(id => id !== todoId),
         );
@@ -106,9 +106,13 @@ export const App: React.FC = () => {
     return <UserWarning />;
   }
 
-  const hasActiveTodos = todos.some(todo => !todo.completed);
-  const activeTodos = todos.filter(todo => !todo.completed);
-  const completedTodos = todos.filter(todo => todo.completed);
+  const activeTodos = useMemo(() => {
+    return todos.filter(todo => !todo.completed);
+  }, [todos]);
+
+  const completedTodos = useMemo(() => {
+    return todos.filter(todo => todo.completed);
+  }, [todos]);
 
   return (
     <div className="todoapp">
@@ -120,7 +124,7 @@ export const App: React.FC = () => {
             type="button"
             className={classNames(
               'todoapp__toggle-all',
-              { active: !hasActiveTodos },
+              { active: activeTodos.length > 0 },
             )}
           />
           <Form
@@ -136,6 +140,7 @@ export const App: React.FC = () => {
             <TodoList
               onRemove={handleRemoveTodos}
               todos={visibleTodos}
+              onDeleted={isDeleted}
             />
             {tempTodo && (
               <div
@@ -148,7 +153,6 @@ export const App: React.FC = () => {
                 <label
                   className="todo__status-label"
                 >
-                  <TodoModal />
                   <input
                     type="checkbox"
                     className="todo__status"
@@ -166,6 +170,13 @@ export const App: React.FC = () => {
                 >
                   ×
                 </button>
+
+                <div
+                  className="modal overlay is-active"
+                >
+                  <div className="modal-background has-background-white-ter" />
+                  <div className="loader" />
+                </div>
               </div>
             )}
             <Footer
