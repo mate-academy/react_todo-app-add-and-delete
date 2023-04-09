@@ -1,24 +1,75 @@
-/* eslint-disable max-len */
-/* eslint-disable jsx-a11y/control-has-associated-label */
-import React from 'react';
-import { UserWarning } from './UserWarning';
+import React, {
+  useCallback,
+  useContext,
+  useEffect,
+  useState,
+} from 'react';
 
-const USER_ID = 0;
+import { getTodos } from './api/todos';
+import { UserWarning } from './UserWarning';
+import { TodoList } from './components/TodoList';
+import { ErrorMessage } from './components/ErrorMessage';
+import { Loader } from './components/Loader';
+import { AppContext } from './components/AppContext';
+import { Header } from './components/Header';
+import { Footer } from './components/Footer';
 
 export const App: React.FC = () => {
-  if (!USER_ID) {
+  const [isLoadingTodos, setIsLoadingTodos] = useState(false);
+
+  // eslint-disable-next-line no-unused-vars
+  const {
+    userId,
+    allTodos,
+    setAllTodos,
+    setShouldShowError,
+    showError,
+  } = useContext(AppContext);
+
+  const loadTodosFromServer = useCallback(async () => {
+    setIsLoadingTodos(true);
+    setShouldShowError(false);
+
+    try {
+      const todosFromServer = await getTodos(userId);
+
+      setAllTodos(todosFromServer);
+    } catch {
+      showError('Unable to load todos');
+    } finally {
+      setIsLoadingTodos(false);
+    }
+  }, []);
+
+  useEffect(() => {
+    loadTodosFromServer();
+  }, []);
+
+  if (!userId) {
     return <UserWarning />;
   }
 
   return (
-    <section className="section container">
-      <p className="title is-4">
-        Copy all you need from the prev task:
-        <br />
-        <a href="https://github.com/mate-academy/react_todo-app-loading-todos#react-todo-app-load-todos">React Todo App - Load Todos</a>
-      </p>
+    <div className="todoapp">
+      <h1 className="todoapp__title">
+        todos
+      </h1>
 
-      <p className="subtitle">Styles are already copied</p>
-    </section>
+      <div className="todoapp__content">
+        <Header />
+
+        {isLoadingTodos && (
+          <Loader />
+        )}
+
+        <TodoList />
+
+        {allTodos.length > 0 && (
+          <Footer />
+        )}
+      </div>
+
+      <ErrorMessage />
+    </div>
   );
 };
