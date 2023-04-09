@@ -1,18 +1,18 @@
-import React from 'react';
+import React, { useContext } from 'react';
 import classNames from 'classnames';
 
-type Props = {
-  errorMessage: string,
-  shouldBeShown: boolean,
-  onClose: () => void,
-};
+import { AppContext } from '../AppContext';
 
-export const ErrorMessage: React.FC<Props> = React.memo(({
-  errorMessage,
-  shouldBeShown,
-  onClose,
-}) => {
-  window.console.log('rendering error component');
+export const ErrorMessage: React.FC = React.memo(() => {
+  const {
+    shouldShowError,
+    errorMessage,
+    setShouldShowError,
+  } = useContext(AppContext);
+
+  const handleCloseButtonClick = () => {
+    setShouldShowError(false);
+  };
 
   return (
     <div
@@ -21,14 +21,14 @@ export const ErrorMessage: React.FC<Props> = React.memo(({
         'is-danger',
         'is-light',
         'has-text-weight-normal',
-        { hidden: !shouldBeShown },
+        { hidden: !shouldShowError },
       )}
     >
       <button
         aria-label="Close"
         type="button"
         className="delete"
-        onClick={onClose}
+        onClick={handleCloseButtonClick}
       />
 
       {errorMessage}

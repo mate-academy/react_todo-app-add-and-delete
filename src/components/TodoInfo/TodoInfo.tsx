@@ -1,21 +1,19 @@
-import React, { useContext, useMemo } from 'react';
+import React, {
+  useCallback,
+  useContext,
+  useMemo,
+} from 'react';
 import classNames from 'classnames';
 
 import { deleteTodo } from '../../api/todos';
 import { Todo } from '../../types/Todo';
-import { LoadingTodosContext } from '../LoadingTodosContext';
+import { AppContext } from '../AppContext';
 
 type Props = {
   todo: Todo;
-  showError: (errorMessage: string) => void,
-  setAllTodos: React.Dispatch<React.SetStateAction<Todo[]>>,
 };
 
-export const TodoInfo: React.FC<Props> = ({
-  todo,
-  showError,
-  setAllTodos,
-}) => {
+export const TodoInfo: React.FC<Props> = ({ todo }) => {
   const {
     id,
     title,
@@ -23,16 +21,21 @@ export const TodoInfo: React.FC<Props> = ({
   } = todo;
 
   const {
+    allTodos,
+    setAllTodos,
+    showError,
+    setShouldShowError,
     loadingTodosIds,
     setLoadingTodosIds,
-  } = useContext(LoadingTodosContext);
+  } = useContext(AppContext);
 
   const isLoadingState = useMemo(() => (
     loadingTodosIds.includes(id)
   ), [loadingTodosIds]);
 
-  const deleteTodoFromServer = async () => {
+  const deleteTodoFromServer = useCallback(async () => {
     try {
+      setShouldShowError(false);
       setLoadingTodosIds(prevIds => [...prevIds, id]);
 
       await deleteTodo(id);
@@ -43,11 +46,13 @@ export const TodoInfo: React.FC<Props> = ({
     } catch {
       showError('Unable to delete a todo');
     } finally {
-      setLoadingTodosIds(prevIds => prevIds.filter(prevId => prevId !== id));
+      setLoadingTodosIds([0]);
     }
-  };
+  }, [loadingTodosIds, allTodos]);
 
-  window.console.log('rendering toodo info');
+  const handleRemoveButtonClick = () => {
+    deleteTodoFromServer();
+  };
 
   return (
     <div
@@ -69,6 +74,15 @@ export const TodoInfo: React.FC<Props> = ({
         {title}
       </span>
 
+      <button
+        aria-label="Remove"
+        type="button"
+        className="todo__remove"
+        onClick={handleRemoveButtonClick}
+      >
+        ×
+      </button>
+
       <div
         className={classNames(
           'modal',
@@ -79,15 +93,6 @@ export const TodoInfo: React.FC<Props> = ({
         <div className="modal-background has-background-white-ter" />
         <div className="loader" />
       </div>
-
-      <button
-        aria-label="Remove"
-        type="button"
-        className="todo__remove"
-        onClick={() => deleteTodoFromServer()}
-      >
-        ×
-      </button>
     </div>
   );
 };

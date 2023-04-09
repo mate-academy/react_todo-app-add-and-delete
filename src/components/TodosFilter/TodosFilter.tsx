@@ -1,19 +1,17 @@
-import React from 'react';
+import React, { useContext } from 'react';
 import classNames from 'classnames';
 
 import { FilterMode } from '../../types/FilterMode';
+import { AppContext } from '../AppContext';
 
 const filterModes = Object.values(FilterMode);
 
-type Props = {
-  currentFilterMode: FilterMode,
-  onFilterModeChange: (newFilterMode: FilterMode) => void;
-};
+export const TodosFilter: React.FC = React.memo(() => {
+  const {
+    currentFilterMode,
+    setCurrentFilterMode,
+  } = useContext(AppContext);
 
-export const TodosFilter: React.FC<Props> = React.memo(({
-  currentFilterMode,
-  onFilterModeChange,
-}) => {
   return (
     <nav className="filter">
       {filterModes.map(filterMode => {
@@ -28,7 +26,7 @@ export const TodosFilter: React.FC<Props> = React.memo(({
               'filter__link',
               { selected: isCurrentFilterMode },
             )}
-            onClick={() => onFilterModeChange(filterMode)}
+            onClick={() => setCurrentFilterMode(filterMode)}
           >
             {filterMode}
           </a>
