@@ -8,7 +8,7 @@ interface Props {
 
 export const ErrorList: React.FC<Props> = ({ errors, onClear }) => {
   useEffect(() => {
-    if (errors.length > 0) {
+    if (errors.length) {
       setTimeout(onClear, 3000);
     }
   }, [errors, onClear]);
@@ -17,7 +17,7 @@ export const ErrorList: React.FC<Props> = ({ errors, onClear }) => {
     <div
       className={classNames(
         'notification is-danger is-light has-text-weight-normal',
-        { hidden: errors.length === 0 },
+        { hidden: !errors.length },
       )}
     >
       <button

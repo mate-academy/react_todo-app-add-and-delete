@@ -24,7 +24,7 @@ export const TodoModal: React.FC<Props> = ({
 
       <span className="todo__title">{title}</span>
 
-      <DeleteTodo todoId={todo.id} onclick={deleteTodo} />
+      <DeleteTodo todoId={todo.id} onDelete={() => deleteTodo(todo.id)} />
 
       <div
         className={classNames('modal overlay', { 'is-active': isBeingEdited })}

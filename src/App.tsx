@@ -29,7 +29,7 @@ export const App: React.FC = () => {
   useEffect(() => {
     getTodos(USER_ID)
       .then((result) => setTodos(result))
-      .catch(() => setErrors(ErrorTypes.LOAD));
+      .catch(() => setErrors(ErrorTypes.Load));
   }, []);
 
   const activeTodos = useMemo(
@@ -83,14 +83,14 @@ export const App: React.FC = () => {
       const response = await deleteTodo(todoId);
 
       if (response === 0) {
-        throw new Error(ErrorTypes.DELETE);
+        throw new Error(ErrorTypes.Delete);
       }
 
       const newTodos = todos.filter((todo) => todo.id !== todoId);
 
       setTodos([...newTodos]);
     } catch {
-      setErrors(ErrorTypes.DELETE);
+      setErrors(ErrorTypes.Delete);
     } finally {
       setDeletedTodosIds(
         deletedTodosIds.filter((deletedTodoId) => deletedTodoId !== todoId),
@@ -138,7 +138,7 @@ export const App: React.FC = () => {
           />
         </header>
 
-        {todos.length !== 0 && (
+        {!!todos.length && (
           <>
             <section className="todoapp__main">
               <TodoList

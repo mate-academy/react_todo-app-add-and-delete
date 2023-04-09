@@ -24,7 +24,7 @@ export const TodoForm: React.FC<TodoFormProps> = ({
     event.preventDefault();
 
     if (todoTitle.trim() === '') {
-      onError(ErrorTypes.TITLE);
+      onError(ErrorTypes.Title);
 
       return;
     }
@@ -45,7 +45,7 @@ export const TodoForm: React.FC<TodoFormProps> = ({
 
       onSuccess(response);
     } catch {
-      onError(ErrorTypes.ADD);
+      onError(ErrorTypes.Add);
     } finally {
       setIsSubmitting(false);
       setTodoTitle('');
