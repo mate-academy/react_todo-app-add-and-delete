@@ -21,7 +21,10 @@ export const TodoList: FC<TodoListProps> = ({
   loadTodoById,
 }) => {
   return (
-    <section className="todoapp__main" data-cy="TodoList">
+    <section
+      className="todoapp__main"
+      data-cy="TodoList"
+    >
       <TransitionGroup>
         {todos.map((todo) => (
           <CSSTransition

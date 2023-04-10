@@ -8,7 +8,11 @@ interface TodoProps {
   loadTodoById: number[];
 }
 
-export const TodoItem: FC<TodoProps> = ({ todo, onRemove, loadTodoById }) => {
+export const TodoItem: FC<TodoProps> = ({
+  todo,
+  onRemove,
+  loadTodoById,
+}) => {
   const {
     completed,
     title,
@@ -51,6 +55,7 @@ export const TodoItem: FC<TodoProps> = ({ todo, onRemove, loadTodoById }) => {
       })}
       >
         <div className="modal-background has-background-white-ter" />
+
         <div className="loader" />
       </div>
     </div>

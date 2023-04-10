@@ -8,7 +8,7 @@ interface FilterProps {
   sortType: TaskStatus;
   onChangeSortType: (sortType: TaskStatus) => void;
   onRemove: () => void
-  activeTodosLength: number;
+  activeTodosCount: number;
 }
 
 export const Filter: FC<FilterProps> = ({
@@ -16,12 +16,12 @@ export const Filter: FC<FilterProps> = ({
   sortType,
   onChangeSortType,
   onRemove,
-  activeTodosLength,
+  activeTodosCount,
 }) => {
   return (
     <footer className="todoapp__footer">
       <span className="todo-count">
-        {`${activeTodosLength} items left`}
+        {`${activeTodosCount} items left`}
       </span>
 
       <nav className="filter">

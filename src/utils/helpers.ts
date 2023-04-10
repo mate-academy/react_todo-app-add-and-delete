@@ -1,5 +1,6 @@
 import { Todo } from '../types/Todo';
 import { TaskStatus } from '../types/Sort';
+import { ErrorType } from '../types/Error';
 
 export const getFilteredTodos = (todos: Todo[], sortType: TaskStatus) => {
   return todos.filter(todo => {
@@ -14,4 +15,8 @@ export const getFilteredTodos = (todos: Todo[], sortType: TaskStatus) => {
         return todos;
     }
   });
+};
+
+export const closeErrorMessage = (error: ErrorType) => {
+  return setTimeout(() => error, 3000);
 };

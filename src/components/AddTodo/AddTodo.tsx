@@ -4,15 +4,15 @@ import {
 import classNames from 'classnames';
 
 interface AddTodoProps {
-  onAddTodo: (query: string) => void;
   onDisable: boolean;
-  activeTodosLength: number
+  onAddTodo: (query: string) => void;
+  activeTodosCount: number
 }
 
 export const AddTodo: FC<AddTodoProps> = ({
   onAddTodo,
   onDisable,
-  activeTodosLength,
+  activeTodosCount,
 }) => {
   const [title, setTitle] = useState('');
 
@@ -31,7 +31,7 @@ export const AddTodo: FC<AddTodoProps> = ({
       <button
         type="button"
         className={classNames('todoapp__toggle-all', {
-          active: !activeTodosLength,
+          active: !activeTodosCount,
         })}
         aria-label="all"
       />

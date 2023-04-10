@@ -13,10 +13,8 @@ import { AddTodo } from './components/AddTodo';
 import { TodoList } from './components/TodoList';
 import { Notification } from './components/Notification';
 import { Filter } from './components/Filter';
-import { getFilteredTodos } from './utils/helpers';
-import { DEFAULT_TASK_ID } from './utils/constants';
-
-const USER_ID = 6972;
+import { closeErrorMessage, getFilteredTodos } from './utils/helpers';
+import { DEFAULT_TASK_ID, USER_ID } from './utils/constants';
 
 export const App: FC = () => {
   const [todos, setTodos] = useState<Todo[]>([]);
@@ -25,6 +23,7 @@ export const App: FC = () => {
   const [tempTodo, setTempTodo] = useState<Todo | null>(null);
   const [isDisabled, setIsDisabled] = useState<boolean>(false);
   const [loadTodoById, setLoadTodoById] = useState([DEFAULT_TASK_ID]);
+
   const fetchTodos = async () => {
     try {
       const getData = await getTodos(USER_ID);
@@ -32,14 +31,14 @@ export const App: FC = () => {
       setTodos(getData);
     } catch {
       setError(ErrorType.LOAD);
-      setTimeout(() => setError(ErrorType.NONE), 3000);
+      closeErrorMessage(ErrorType.NONE);
     }
   };
 
   const addTodo = async (title: string) => {
     if (!title.trim()) {
       setError(ErrorType.EMPTY_TITLE);
-      setTimeout(() => setError(ErrorType.NONE), 3000);
+      closeErrorMessage(ErrorType.NONE);
 
       return;
     }
@@ -85,26 +84,24 @@ export const App: FC = () => {
     fetchTodos();
   }, []);
 
-  const handleDeleteTodo = useCallback(() => {
-    todos.forEach(todo => {
-      if (todo.completed) {
-        removeTodo(todo.id);
-      }
-    });
-  }, [todos]);
-
   const filteredTodos = useMemo(
     () => getFilteredTodos(todos, sortType),
     [todos, sortType],
   );
 
-  const activeTodosLength = useMemo(
+  const activeTodosCount = useMemo(
     () => todos.filter(todo => !todo.completed).length, [todos],
   );
 
-  const handleRemoveError = () => {
+  const handleRemoveError = useCallback(() => {
     setError(ErrorType.NONE);
-  };
+  }, []);
+
+  const handleClearCompleted = useCallback(() => {
+    todos.forEach(({ completed, id }) => {
+      return completed && removeTodo(id);
+    });
+  }, [todos]);
 
   if (!USER_ID) {
     return <UserWarning />;
@@ -118,7 +115,7 @@ export const App: FC = () => {
         <AddTodo
           onAddTodo={addTodo}
           onDisable={isDisabled}
-          activeTodosLength={activeTodosLength}
+          activeTodosCount={activeTodosCount}
         />
 
         <TodoList
@@ -133,8 +130,8 @@ export const App: FC = () => {
             todos={todos}
             sortType={sortType}
             onChangeSortType={setSortType}
-            onRemove={handleDeleteTodo}
-            activeTodosLength={activeTodosLength}
+            onRemove={handleClearCompleted}
+            activeTodosCount={activeTodosCount}
           />
         )}
       </div>
