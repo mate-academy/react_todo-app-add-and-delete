@@ -4,7 +4,7 @@ type Props = {
   activeTodos: Todo[];
   completedTodos: Todo[];
   filter: string;
-  onSetFilter: (filter: string) => void;
+  onSetFilter: (filter: Filter) => void;
   handleRemoveAll: (selectedTodosId: number) => void;
 };
 

@@ -12,7 +12,7 @@ const USER_ID = 6910;
 
 export const App: React.FC = () => {
   const [todos, setTodos] = useState<Todo[]>([]);
-  const [filter, setFilter] = useState<string>(Filter.ALL);
+  const [filter, setFilter] = useState<Filter>(Filter.ALL);
   const [error, setError] = useState('');
   const [tempTodo, setTempTodo] = useState<Todo | null>(null);
   const [todosBeingTransform, setTodosBeingTransform] = useState<number[]>([]);
@@ -43,14 +43,14 @@ export const App: React.FC = () => {
   const handleAddTodo = (todoData: Omit<Todo, 'id'>) => {
     if (!todoData.title.trim()) {
       setError(Errors.TITLE);
-      setErrorTimeout()
+      setErrorTimeout();
       return;
     }
 
     setTempTodo({ ...todoData, id: 0 });
 
     postTodo(todoData)
-      .then((newTodo: any) => (
+      .then((newTodo: Todo | any) => (
         setTimeout(() => {
           setTodos([...todos, newTodo]);
           setTempTodo(null);
