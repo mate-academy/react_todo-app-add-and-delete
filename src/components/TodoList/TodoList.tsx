@@ -20,14 +20,12 @@ export const TodoList: React.FC<Props> = ({
         deleteTodo={deleteTodo}
       />
     ))}
-    {
-      tempTodo && (
+        {tempTodo && (
         <TodoModal
           todo={tempTodo}
           isBeingEdited
           deleteTodo={deleteTodo}
         />
-      )
-    }
+    )}
   </>
 );

@@ -8,7 +8,7 @@ interface Props {
 
 export const ErrorList: React.FC<Props> = ({ errors, onClear }) => {
   useEffect(() => {
-    if (errors.length) {
+    if (errors) {
       setTimeout(onClear, 3000);
     }
   }, [errors, onClear]);

@@ -103,14 +103,9 @@ export const App: React.FC = () => {
   }, []);
 
   const handleClearCompleted = async () => {
-    const tasks: Promise<void>[] = [];
-
-    todos
-      .filter((todo) => todo.completed)
-      .forEach((todo) => {
-        handleDeleteTodo(todo.id);
-        tasks.push(deleteTodo(todo.id) as Promise<void>);
-      });
+    const tasks = todos
+    .filter((todo) => todo.completed)
+    .map((todo) => handleDeleteTodo(todo.id));
 
     await Promise.all(tasks);
 
