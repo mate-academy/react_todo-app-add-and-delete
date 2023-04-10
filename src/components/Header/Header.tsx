@@ -2,17 +2,22 @@ import classNames from 'classnames';
 import { useState } from 'react';
 
 interface Props {
-  onAdd: (title: string) => void;
+  onAdd: (title: string) => Promise<void>;
+  isLoading: boolean;
   hasActiveTodos: boolean;
 }
 
-export const Header: React.FC<Props> = ({ onAdd, hasActiveTodos }) => {
+export const Header: React.FC<Props> = ({
+  onAdd,
+  isLoading,
+  hasActiveTodos,
+}) => {
   const [todoTitle, setTodoTitle] = useState('');
 
-  const handleSubmit = (event: React.FormEvent<HTMLFormElement>) => {
+  const handleSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
+    await onAdd(todoTitle);
     setTodoTitle('');
-    onAdd(todoTitle);
   };
 
   return (
@@ -32,6 +37,7 @@ export const Header: React.FC<Props> = ({ onAdd, hasActiveTodos }) => {
           placeholder="What needs to be done?"
           value={todoTitle}
           onChange={(event) => setTodoTitle(event.target.value)}
+          disabled={isLoading}
         />
       </form>
     </header>

@@ -78,6 +78,7 @@ export const App: React.FC = () => {
 
       <div className="todoapp__content">
         <Header
+          isLoading={!!tempTodo}
           hasActiveTodos={!getActiveTodosCount()}
           onAdd={addTodo}
         />
