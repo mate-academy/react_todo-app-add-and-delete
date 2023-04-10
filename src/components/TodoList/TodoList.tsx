@@ -2,13 +2,16 @@ import React from 'react';
 import { Todo } from '../../types/Todo';
 import { TodoItem } from '../TodoItem';
 import { TodoEditForm } from '../TodoEditForm';
-import { TodoLoadingOverlay } from '../TodoLoadingOverlay';
 
 type Props = {
   todos: Todo[];
+  tempTodo: Todo | null;
 };
 
-export const TodoList: React.FC<Props> = ({ todos }) => {
+export const TodoList: React.FC<Props> = ({
+  todos,
+  tempTodo,
+}) => {
   return (
     <section className="todoapp__main">
       {todos.map(todo => (
@@ -35,17 +38,13 @@ export const TodoList: React.FC<Props> = ({ todos }) => {
         </div>
       </div>
 
-      {/* This todo is in loadind state */}
-      <div className="todo">
-        <label className="todo__status-label">
-          <input type="checkbox" className="todo__status" />
-        </label>
-
-        <span className="todo__title">Todo is being saved now</span>
-        <button type="button" className="todo__remove">×</button>
-
-        <TodoLoadingOverlay />
-      </div>
+      {tempTodo && (
+        <TodoItem
+          key={tempTodo.id}
+          todo={tempTodo}
+          isLoading
+        />
+      )}
     </section>
   );
 };

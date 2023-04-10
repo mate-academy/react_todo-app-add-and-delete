@@ -1,12 +1,17 @@
 import classNames from 'classnames';
 import React from 'react';
 import { Todo } from '../../types/Todo';
+import { TodoLoadingOverlay } from '../TodoLoadingOverlay';
 
 type Props = {
   todo: Todo;
+  isLoading?: boolean;
 };
 
-export const TodoItem: React.FC<Props> = ({ todo }) => {
+export const TodoItem: React.FC<Props> = ({
+  todo,
+  isLoading = false,
+}) => {
   return (
     <div
       className={classNames(
@@ -26,14 +31,9 @@ export const TodoItem: React.FC<Props> = ({ todo }) => {
 
       <span className="todo__title">{todo.title}</span>
 
-      {/* Remove button appears only on hover */}
       <button type="button" className="todo__remove">×</button>
 
-      {/* overlay will cover the todo while it is being updated */}
-      <div className="modal overlay">
-        <div className="modal-background has-background-white-ter" />
-        <div className="loader" />
-      </div>
+      {isLoading && <TodoLoadingOverlay />}
     </div>
   );
 };

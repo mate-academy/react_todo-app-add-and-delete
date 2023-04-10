@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { UserWarning } from './components/UserWarning';
-import { getTodos } from './api/todos';
+import { getTodos, addTodo } from './api/todos';
 
 import { TodoHeader } from './components/TodoHeader';
 import { TodoList } from './components/TodoList';
@@ -19,6 +19,40 @@ export const App: React.FC = () => {
   const [error, setError] = useState<ErrorType>(ErrorType.None);
   const [selectedFilterOption, setSelectedFilterOption]
     = useState(TodoCompletionType.All);
+
+  const [tempTodo, setTempTodo] = useState<Todo | null>(null);
+
+  const onTodoAdd = async (todoTitle: string): Promise<void> => {
+    if (todoTitle === '') {
+      setError(ErrorType.EmptyTitle);
+
+      return;
+    }
+
+    const newTodo: Todo = {
+      id: 0,
+      title: todoTitle,
+      completed: false,
+      userId: USER_ID,
+    };
+
+    setTempTodo(newTodo);
+
+    try {
+      const newTodoFromServer = await addTodo(USER_ID, newTodo);
+
+      setTodos((prevTodos) => (
+        [
+          ...prevTodos,
+          newTodoFromServer,
+        ]
+      ));
+    } catch {
+      setError(ErrorType.AddTodo);
+    } finally {
+      setTempTodo(null);
+    }
+  };
 
   useEffect(() => {
     getTodos(USER_ID)
@@ -40,11 +74,14 @@ export const App: React.FC = () => {
       <h1 className="todoapp__title">todos</h1>
 
       <div className="todoapp__content">
-        <TodoHeader />
+        <TodoHeader onTodoAdd={onTodoAdd} />
 
         {todos.length > 0 && (
           <>
-            <TodoList todos={filteredTodos} />
+            <TodoList
+              todos={filteredTodos}
+              tempTodo={tempTodo}
+            />
 
             <TodoFooter
               selectedFilterOption={selectedFilterOption}
