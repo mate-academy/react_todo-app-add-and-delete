@@ -1,24 +1,65 @@
-/* eslint-disable max-len */
-/* eslint-disable jsx-a11y/control-has-associated-label */
-import React from 'react';
-import { UserWarning } from './UserWarning';
+import React, { useEffect, useState } from 'react';
+import { UserWarning } from './components/UserWarning';
+import { getTodos } from './api/todos';
 
-const USER_ID = 0;
+import { TodoHeader } from './components/TodoHeader';
+import { TodoList } from './components/TodoList';
+import { TodoFooter } from './components/TodoFooter';
+import { ErrorNotification } from './components/ErrorNotification';
+
+import { Todo } from './types/Todo';
+import { TodoCompletionType } from './types/TodoCompletionType';
+import { ErrorType } from './types/ErrorType';
+import { filterTodos, getActiveTodosCount } from './common/helpers';
+
+const USER_ID = 6955;
 
 export const App: React.FC = () => {
+  const [todos, setTodos] = useState<Todo[]>([]);
+  const [error, setError] = useState<ErrorType>(ErrorType.None);
+  const [selectedFilterOption, setSelectedFilterOption]
+    = useState(TodoCompletionType.All);
+
+  useEffect(() => {
+    getTodos(USER_ID)
+      .then(setTodos)
+      .catch(() => setError(ErrorType.LoadTodos));
+  }, []);
+
+  const filteredTodos = filterTodos(todos, selectedFilterOption);
+
+  const activeTodosCount = getActiveTodosCount(todos);
+  const hasCompletedTodos = activeTodosCount !== todos.length;
+
   if (!USER_ID) {
     return <UserWarning />;
   }
 
   return (
-    <section className="section container">
-      <p className="title is-4">
-        Copy all you need from the prev task:
-        <br />
-        <a href="https://github.com/mate-academy/react_todo-app-loading-todos#react-todo-app-load-todos">React Todo App - Load Todos</a>
-      </p>
+    <div className="todoapp">
+      <h1 className="todoapp__title">todos</h1>
 
-      <p className="subtitle">Styles are already copied</p>
-    </section>
+      <div className="todoapp__content">
+        <TodoHeader />
+
+        {todos.length > 0 && (
+          <>
+            <TodoList todos={filteredTodos} />
+
+            <TodoFooter
+              selectedFilterOption={selectedFilterOption}
+              onFilterSelect={setSelectedFilterOption}
+              activeTodosCount={activeTodosCount}
+              hasCompletedTodos={hasCompletedTodos}
+            />
+          </>
+        )}
+      </div>
+
+      <ErrorNotification
+        error={error}
+        onClose={() => setError(ErrorType.None)}
+      />
+    </div>
   );
 };
