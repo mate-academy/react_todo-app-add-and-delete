@@ -7,7 +7,7 @@ interface NotificationProps {
   onRemoveError: () => void;
 }
 
-export const Notification: FC<NotificationProps> = ({
+export const ErrorNotification: FC<NotificationProps> = ({
   error,
   onRemoveError,
 }) => {
@@ -27,8 +27,7 @@ export const Notification: FC<NotificationProps> = ({
         aria-label="close the notification"
         onClick={onRemoveError}
       />
-
-      {`Unable to ${error} a todo`}
+      {error}
     </div>
   );
 };

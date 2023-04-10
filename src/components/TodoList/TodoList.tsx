@@ -33,7 +33,6 @@ export const TodoList: FC<TodoListProps> = ({
             classNames="item"
           >
             <TodoItem
-              key={todo.id}
               todo={todo}
               onRemove={onRemove}
               loadTodoById={loadTodoById}
@@ -48,7 +47,6 @@ export const TodoList: FC<TodoListProps> = ({
             classNames="temp-item"
           >
             <TodoItem
-              key={0}
               todo={tempTodo}
               onRemove={onRemove}
               loadTodoById={loadTodoById}

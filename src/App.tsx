@@ -11,9 +11,9 @@ import { TaskStatus } from './types/Sort';
 import { deleteTodo, getTodos, postTodo } from './api/todos';
 import { AddTodo } from './components/AddTodo';
 import { TodoList } from './components/TodoList';
-import { Notification } from './components/Notification';
+import { ErrorNotification } from './components/ErrorNotification';
 import { Filter } from './components/Filter';
-import { closeErrorMessage, getFilteredTodos } from './utils/helpers';
+import { getFilteredTodos } from './utils/helpers';
 import { DEFAULT_TASK_ID, USER_ID } from './utils/constants';
 
 export const App: FC = () => {
@@ -24,21 +24,25 @@ export const App: FC = () => {
   const [isDisabled, setIsDisabled] = useState<boolean>(false);
   const [loadTodoById, setLoadTodoById] = useState([DEFAULT_TASK_ID]);
 
-  const fetchTodos = async () => {
+  const clearErrorMessage = () => {
+    setTimeout(() => setError(ErrorType.NONE), 3000);
+  };
+
+  const fetchTodos = useCallback(async () => {
     try {
       const getData = await getTodos(USER_ID);
 
       setTodos(getData);
     } catch {
       setError(ErrorType.LOAD);
-      closeErrorMessage(ErrorType.NONE);
+      clearErrorMessage();
     }
-  };
+  }, []);
 
-  const addTodo = async (title: string) => {
+  const addTodo = useCallback(async (title: string) => {
     if (!title.trim()) {
       setError(ErrorType.EMPTY_TITLE);
-      closeErrorMessage(ErrorType.NONE);
+      clearErrorMessage();
 
       return;
     }
@@ -58,14 +62,14 @@ export const App: FC = () => {
       setTodos(state => [...state, todo]);
     } catch {
       setError(ErrorType.ADD);
+      clearErrorMessage();
     } finally {
-      setError(ErrorType.NONE);
       setTempTodo(null);
       setIsDisabled(false);
     }
-  };
+  }, []);
 
-  const removeTodo = async (taskId: number) => {
+  const removeTodo = useCallback(async (taskId: number) => {
     try {
       setLoadTodoById(prevState => [...prevState, taskId]);
 
@@ -74,11 +78,11 @@ export const App: FC = () => {
       setTodos(state => state.filter(({ id }) => id !== taskId));
     } catch {
       setError(ErrorType.DELETE);
+      clearErrorMessage();
     } finally {
       setLoadTodoById([DEFAULT_TASK_ID]);
-      setError(ErrorType.NONE);
     }
-  };
+  }, []);
 
   useEffect(() => {
     fetchTodos();
@@ -138,7 +142,7 @@ export const App: FC = () => {
 
       {error
         && (
-          <Notification
+          <ErrorNotification
             error={error}
             onRemoveError={handleRemoveError}
           />

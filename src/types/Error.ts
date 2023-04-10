@@ -1,8 +1,8 @@
 export enum ErrorType {
-  ADD = 'add',
   EMPTY_TITLE = 'Title can\'t be empty',
-  DELETE = 'delete',
-  UPDATE = 'update',
-  LOAD = 'load',
+  ADD = 'Unable to add todo',
+  DELETE = 'Unable to delete todo',
+  UPDATE = 'Unable to update todo',
+  LOAD = 'Unable to load todo',
   NONE = '',
 }
