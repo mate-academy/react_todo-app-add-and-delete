@@ -106,13 +106,8 @@ export const App: React.FC = () => {
     return <UserWarning />;
   }
 
-  const activeTodos = useMemo(() => {
-    return todos.filter(todo => !todo.completed);
-  }, [todos]);
-
-  const completedTodos = useMemo(() => {
-    return todos.filter(todo => todo.completed);
-  }, [todos]);
+  const activeTodos = todos.filter(todo => !todo.completed);
+  const completedTodos = todos.filter(todo => todo.completed);
 
   return (
     <div className="todoapp">
@@ -121,6 +116,7 @@ export const App: React.FC = () => {
       <div className="todoapp__content">
         <header className="todoapp__header">
           <button
+            data-cy="toggle_all_button"
             type="button"
             className={classNames(
               'todoapp__toggle-all',
