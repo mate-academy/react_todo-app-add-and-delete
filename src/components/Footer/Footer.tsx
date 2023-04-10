@@ -2,9 +2,10 @@ import classNames from 'classnames';
 import { FilterType } from '../../helpers/filterTodos';
 
 interface Props {
-  activeTodosCount: number,
-  hasCompletedTodo: boolean,
+  activeTodosCount: number;
+  hasCompletedTodo: boolean;
   filterType: FilterType;
+  deleteAllCompleted: () => void;
   setFilter: React.Dispatch<React.SetStateAction<FilterType>>;
 }
 
@@ -12,6 +13,7 @@ export const Footer: React.FC<Props> = ({
   activeTodosCount,
   hasCompletedTodo,
   filterType,
+  deleteAllCompleted,
   setFilter,
 }) => {
   return (
@@ -65,6 +67,9 @@ export const Footer: React.FC<Props> = ({
             : 0,
         }}
         disabled={!hasCompletedTodo}
+        onClick={() => {
+          deleteAllCompleted();
+        }}
       >
         Clear completed
       </button>

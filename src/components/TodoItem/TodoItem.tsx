@@ -1,14 +1,23 @@
 import classNames from 'classnames';
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { Todo } from '../../types/Todo';
 
 interface Props {
   onDelete: () => void;
+  deleting?: boolean;
   todo: Todo;
 }
 
-export const TodoItem: React.FC<Props> = ({ onDelete, todo }) => {
+export const TodoItem: React.FC<Props> = ({
+  onDelete,
+  deleting = false,
+  todo,
+}) => {
   const [isDeleting, setIsDeleting] = useState(false);
+
+  useEffect(() => {
+    setIsDeleting(deleting);
+  }, [deleting]);
 
   return (
     <div className={classNames('todo', {

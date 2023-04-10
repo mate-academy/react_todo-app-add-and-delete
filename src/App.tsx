@@ -1,6 +1,6 @@
 /* eslint-disable jsx-a11y/control-has-associated-label */
 import React, { useEffect, useMemo, useState } from 'react';
-import { deleteTodo, getTodos, postTodo } from './api/todos';
+import { deleteTodo as deleteTodoById, getTodos, postTodo } from './api/todos';
 import { Header } from './components/Header';
 import { Footer } from './components/Footer';
 import { Todo } from './types/Todo';
@@ -19,6 +19,10 @@ export const App: React.FC = () => {
   const [errorType, setErrorType] = useState(AppError.None);
   const [filterType, setFilterType] = useState(FilterType.None);
   const [tempTodo, setTempTodo] = useState<Todo | null>(null);
+  const [
+    deletingAllCompletedTodos,
+    setDeletingAllCompletedTodos,
+  ] = useState(false);
 
   const fetchTodos = async () => {
     try {
@@ -55,9 +59,18 @@ export const App: React.FC = () => {
   };
 
   const deleteTodoFromServer = async (todoId: number) => {
-    await deleteTodo(todoId);
+    await deleteTodoById(todoId);
 
     fetchTodos();
+  };
+
+  const deleteAllCompleted = async () => {
+    const completedTodos = todos.filter(({ completed }) => completed);
+
+    setDeletingAllCompletedTodos(true);
+    await Promise.all(completedTodos.map(({ id }) => deleteTodoById(id)));
+    await fetchTodos();
+    setDeletingAllCompletedTodos(false);
   };
 
   const getHasCompletedTodos = () => {
@@ -84,6 +97,7 @@ export const App: React.FC = () => {
         />
 
         <TodoList
+          deletingAllCompleted={deletingAllCompletedTodos}
           onDelete={deleteTodoFromServer}
           todos={visibleTodos}
         />
@@ -96,6 +110,7 @@ export const App: React.FC = () => {
               activeTodosCount={getActiveTodosCount()}
               hasCompletedTodo={getHasCompletedTodos()}
               setFilter={setFilterType}
+              deleteAllCompleted={deleteAllCompleted}
               filterType={filterType}
             />
           )}
