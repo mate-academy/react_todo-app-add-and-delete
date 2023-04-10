@@ -2,16 +2,31 @@
 
 type Props = {
   errorMessage: string,
+  setErrorMessage: React.Dispatch<React.SetStateAction<string>>;
 };
 
 export const ErrorNotification: React.FC<Props> = ({
   errorMessage,
-}) => (
-  <>
-    <div className="notification is-danger is-light has-text-weight-normal">
-      <button type="button" className="delete" />
+  setErrorMessage,
+}) => {
+  const deleteError = () => {
+    setErrorMessage('');
+  };
 
-      {errorMessage}
-    </div>
-  </>
-);
+  return (
+    <>
+      <div
+        className="notification is-danger is-light has-text-weight-normal"
+      >
+        <button
+          type="button"
+          className="delete"
+          onClick={deleteError}
+
+        />
+
+        {errorMessage}
+      </div>
+    </>
+  );
+};

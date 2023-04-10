@@ -2,7 +2,7 @@ import classNames from 'classnames';
 import { useState } from 'react';
 import { Todo } from '../types/Todo';
 import { SortType } from '../types/SortType';
-import { url } from './Urls';
+import { url } from './url';
 
 export const Footer: React.FC<{
   askTodos: (url: string) => void
@@ -36,6 +36,10 @@ export const Footer: React.FC<{
     }
   };
 
+  const onFilterChange = (filter: SortType) => () => {
+    sortTodos(filter);
+  };
+
   return (
     <>
       <span className="todo-count">
@@ -50,7 +54,7 @@ export const Footer: React.FC<{
               selected: selectedForm === SortType.All,
             },
           )}
-          onClick={() => sortTodos(SortType.All)}
+          onClick={onFilterChange(SortType.All)}
         >
           All
         </a>
@@ -62,7 +66,7 @@ export const Footer: React.FC<{
               selected: selectedForm === SortType.Active,
             },
           )}
-          onClick={() => sortTodos(SortType.Active)}
+          onClick={onFilterChange(SortType.Active)}
         >
           Active
         </a>
@@ -74,7 +78,7 @@ export const Footer: React.FC<{
               selected: selectedForm === SortType.Completed,
             },
           )}
-          onClick={() => sortTodos(SortType.Completed)}
+          onClick={onFilterChange(SortType.Completed)}
         >
           Completed
         </a>
