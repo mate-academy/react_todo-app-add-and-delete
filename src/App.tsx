@@ -43,7 +43,7 @@ export const App: React.FC = () => {
     getTodosFromServer();
   }, []);
 
-  const handleTodoAdd = useCallback(async (title: string) => {
+  const handleTodoAdd = async (title: string) => {
     const trimmedTitle = title.trim();
 
     if (!trimmedTitle) {
@@ -83,7 +83,7 @@ export const App: React.FC = () => {
       setIsTodoAdding(false);
       setTempTodo(null);
     }
-  }, []);
+  };
 
   const handleTodoDelete = async (todoId: number) => {
     try {
