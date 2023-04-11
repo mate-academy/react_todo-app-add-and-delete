@@ -1,26 +1,59 @@
+import { useState, useEffect } from 'react';
 import classNames from 'classnames';
 import { Todo } from '../../types/Todo';
 
 type Props = {
   todo: Todo;
+  onDelete: () => void;
+  deleting?: boolean
 };
 
-export const TodoInfo: React.FC<Props> = ({ todo }) => (
-  <div className={classNames(
-    'todo', { completed: todo.completed },
-  )}
-  >
-    <label className="todo__status-label">
-      <input
-        type="checkbox"
-        className="todo__status"
-        checked
-      />
-    </label>
+export const TodoInfo: React.FC<Props> = ({
+  todo,
+  onDelete,
+  deleting = false,
+}) => {
+  const [isDeleting, setIsDeleting] = useState(false);
 
-    <span className="todo__title">{todo.title}</span>
+  useEffect(() => {
+    setIsDeleting(deleting);
+  }, [deleting]);
 
-    {/* Remove button appears only on hover */}
-    <button type="button" className="todo__remove">×</button>
-  </div>
-);
+  return (
+    <div className={classNames(
+      'todo', { completed: todo.completed },
+    )}
+    >
+      <label className="todo__status-label">
+        <input
+          type="checkbox"
+          className="todo__status"
+          checked
+        />
+      </label>
+
+      <span className="todo__title">{todo.title}</span>
+
+      <button
+        type="button"
+        className="todo__remove"
+        onClick={() => {
+          setIsDeleting(true);
+          onDelete();
+        }}
+      >
+        ×
+      </button>
+
+      <div
+        className={classNames(
+          'modal overlay',
+          { 'is-active': todo.id === 0 || isDeleting },
+        )}
+      >
+        <div className="modal-background has-background-white-ter" />
+        <div className="loader" />
+      </div>
+    </div>
+  );
+};

@@ -3,11 +3,10 @@ import React, { useEffect, useState } from 'react';
 import classNames from 'classnames';
 import { UserWarning } from './components/UserWarning/UserWarning';
 
-import { getTodos } from './api/todos';
+import { getTodos, postTodo, deleteTodo } from './api/todos';
 import { Todo } from './types/Todo';
 import { FilterType } from './utils/filterTypes';
 
-import { Header } from './components/Header/Header';
 import { Loader } from './components/Loader/Loader';
 import { TodoList } from './components/TodoList/TodoList';
 import { Footer } from './components/Footer/Footer';
@@ -19,6 +18,15 @@ export const App: React.FC = () => {
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState('');
   const [filterType, setFilterType] = useState<FilterType>(FilterType.All);
+  const [query, setQuery] = useState('');
+  const [isDisabledInput, setIsDisabledInput] = useState(false);
+  const [deletingCompleted, setDeletingCompleted] = useState(false);
+
+  const clearError = () => {
+    setTimeout(() => {
+      setError('');
+    }, 3000);
+  };
 
   const loadTodos = async () => {
     setIsLoading(true);
@@ -28,16 +36,59 @@ export const App: React.FC = () => {
 
       setTodos(todosFromServer);
     } catch {
-      setError('load');
+      setError('Unable to load a todo');
 
-      setTimeout(() => {
-        setError('');
-      }, 3000);
+      clearError();
 
       setTodos([]);
     } finally {
       setIsLoading(false);
     }
+  };
+
+  const addTodo = async (title: string) => {
+    setIsDisabledInput(true);
+
+    const newTodo = {
+      title,
+      userId: USER_ID,
+      completed: false,
+    };
+
+    try {
+      const data = await postTodo(newTodo);
+
+      setTodos(state => [...state, data]);
+    } catch {
+      setError('Unable to add a todo');
+      clearError();
+    } finally {
+      setIsDisabledInput(false);
+    }
+  };
+
+  const removeTodo = async (id: number) => {
+    try {
+      await deleteTodo(id);
+
+      setTodos(() => todos.filter(todo => todo.id !== id));
+    } catch {
+      setError('Unable to delete a todo');
+      clearError();
+    }
+  };
+
+  const removeCompleted = () => {
+    const completed = todos.filter(todo => todo.completed);
+
+    setDeletingCompleted(true);
+
+    completed.forEach(todo => {
+      removeTodo(todo.id)
+        .then(() => setTodos(todos.filter(item => !item.completed)))
+        .catch(() => setError('Unable to delete todos'))
+        .finally(() => setDeletingCompleted(false));
+    });
   };
 
   const filterTodos = (allTodos: Todo[], filterMode: FilterType): Todo[] => {
@@ -51,6 +102,27 @@ export const App: React.FC = () => {
       default:
         return allTodos;
     }
+  };
+
+  const handleInputChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+    setQuery(event.target.value);
+  };
+
+  const handleFormSubmit = (event: React.FormEvent) => {
+    event.preventDefault();
+
+    if (!query.trim()) {
+      setError("Title can't be empty");
+      setIsDisabledInput(true);
+      setQuery('');
+      setTimeout(() => {
+        setError('');
+        setIsDisabledInput(false);
+      }, 2500);
+    }
+
+    addTodo(query);
+    setQuery('');
   };
 
   const visibleTodos = filterTodos(todos, filterType);
@@ -68,17 +140,41 @@ export const App: React.FC = () => {
       <h1 className="todoapp__title">todos</h1>
 
       <div className="todoapp__content">
-        <Header />
+        <header className="todoapp__header">
+          <button
+            type="button"
+            className="todoapp__toggle-all active"
+            aria-label="Toggle all"
+          />
+
+          <form onSubmit={handleFormSubmit}>
+            <input
+              type="text"
+              className="todoapp__new-todo"
+              placeholder="What needs to be done?"
+              value={query}
+              onChange={handleInputChange}
+              disabled={isDisabledInput}
+            />
+          </form>
+        </header>
 
         {isLoading && <Loader />}
 
-        {!error && <TodoList todos={visibleTodos} />}
+        {visibleTodos.length > 0 && (
+          <TodoList
+            todos={visibleTodos}
+            onDelete={removeTodo}
+            deletingCompleted={deletingCompleted}
+          />
+        )}
 
         {todos.length > 0 && (
           <Footer
             todos={visibleTodos}
             filterType={filterType}
             onFilterTypeChange={setFilterType}
+            onRemoveCompleted={removeCompleted}
           />
         )}
       </div>
@@ -89,7 +185,7 @@ export const App: React.FC = () => {
       )}
       >
         <button type="button" className="delete" />
-        {`Unable to ${error} a todo`}
+        {error}
       </div>
     </div>
   );
