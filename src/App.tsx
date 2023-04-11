@@ -18,6 +18,7 @@ export const App: React.FC = () => {
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState('');
   const [filterType, setFilterType] = useState<FilterType>(FilterType.All);
+  const [tempTodo, setTempTodo] = useState<Todo>();
   const [query, setQuery] = useState('');
   const [isDisabledInput, setIsDisabledInput] = useState(false);
   const [deletingCompleted, setDeletingCompleted] = useState(false);
@@ -55,6 +56,8 @@ export const App: React.FC = () => {
       completed: false,
     };
 
+    setTempTodo({ ...newTodo, id: 0 });
+
     try {
       const data = await postTodo(newTodo);
 
@@ -64,6 +67,7 @@ export const App: React.FC = () => {
       clearError();
     } finally {
       setIsDisabledInput(false);
+      setTempTodo(undefined);
     }
   };
 
@@ -164,6 +168,7 @@ export const App: React.FC = () => {
         {visibleTodos.length > 0 && (
           <TodoList
             todos={visibleTodos}
+            tempTodo={tempTodo}
             onDelete={removeTodo}
             deletingCompleted={deletingCompleted}
           />

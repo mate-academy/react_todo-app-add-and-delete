@@ -3,23 +3,35 @@ import { TodoInfo } from '../TodoInfo/TodoInfo';
 
 type Props = {
   todos: Todo[];
+  tempTodo: Todo | undefined;
   onDelete: (id: number) => void;
   deletingCompleted: boolean;
 };
 
 export const TodoList: React.FC<Props> = ({
   todos,
+  tempTodo,
   onDelete,
   deletingCompleted,
 }) => (
-  <section className="todoapp__main">
-    {todos.map(todo => (
+  <>
+    <section className="todoapp__main">
+      {todos.map(todo => (
+        <TodoInfo
+          key={todo.id}
+          todo={todo}
+          deleting={deletingCompleted && todo.completed}
+          onDelete={() => onDelete(todo.id)}
+        />
+      ))}
+    </section>
+
+    {tempTodo && (
       <TodoInfo
-        key={todo.id}
-        todo={todo}
-        deleting={deletingCompleted && todo.completed}
-        onDelete={() => onDelete(todo.id)}
+        todo={tempTodo}
+        key={tempTodo.id}
+        onDelete={() => {}}
       />
-    ))}
-  </section>
+    )}
+  </>
 );
