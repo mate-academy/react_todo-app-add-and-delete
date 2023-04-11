@@ -1,5 +1,4 @@
-import React, { useEffect, useState } from 'react';
-import classNames from 'classnames';
+import React, { useCallback, useEffect, useState } from 'react';
 
 import { Todo } from './types/Todo';
 import { FilterType } from './enums/FilterType';
@@ -12,6 +11,7 @@ import { ListFilter } from './components/ListFilter';
 import { TodoList } from './components/TodosList';
 import { Header } from './components/Header';
 import { TodoListItem } from './components/TodoListItem';
+import { ErrorModal } from './components/ErrorModal';
 
 import { USER_ID } from './constants';
 
@@ -21,9 +21,12 @@ export const App: React.FC = () => {
   const [errorMessage, setErrorMessage] = useState('');
   const [isTodoAdding, setIsTodoAdding] = useState(false);
   const [tempTodo, setTempTodo] = useState<Todo | null>(null);
-  const [completedTodoId, setCompletedTodoId] = useState<number | null>(null);
+  const [completedTodosId, setCompletedTodosId] = useState<number[]>([]);
 
-  const clearErrorMessage = () => setTimeout(() => setErrorMessage(''), 3000);
+  const clearErrorMessage = useCallback(
+    () => setTimeout(() => setErrorMessage(''), 3000),
+    [],
+  );
 
   useEffect(() => {
     const getTodosFromServer = async () => {
@@ -40,7 +43,7 @@ export const App: React.FC = () => {
     getTodosFromServer();
   }, []);
 
-  const handleTodoAdd = async (title: string) => {
+  const handleTodoAdd = useCallback(async (title: string) => {
     const trimmedTitle = title.trim();
 
     if (!trimmedTitle) {
@@ -80,7 +83,7 @@ export const App: React.FC = () => {
       setIsTodoAdding(false);
       setTempTodo(null);
     }
-  };
+  }, []);
 
   const handleTodoDelete = async (todoId: number) => {
     try {
@@ -96,24 +99,28 @@ export const App: React.FC = () => {
   const activeTodos = todos.filter(todo => !todo.completed);
   const hasActiveTodos = activeTodos.length !== 0;
 
-  const getCompletedTodos = () => {
+  const getCompletedTodos = useCallback(() => {
     return todos.filter(todo => todo.completed);
-  };
+  }, [todos]);
 
   const hasCompletedTodos = getCompletedTodos().length !== 0;
 
-  const handleDeleteCompleted = () => {
+  const handleDeleteCompleted = useCallback(() => {
     getCompletedTodos().forEach(({ id }) => {
+      setCompletedTodosId((prevCompleted) => [
+        ...prevCompleted,
+        id,
+      ]);
+
       handleTodoDelete(id)
         .then(() => {
-          setCompletedTodoId(id);
           setTodos(
             (prevTodos) => prevTodos.filter(todo => !todo.completed),
           );
         })
-        .finally(() => setCompletedTodoId(null));
+        .finally(() => setCompletedTodosId([]));
     });
-  };
+  }, [todos]);
 
   const visibleTodos = getVisibleTodos(todos, filterType);
 
@@ -131,7 +138,7 @@ export const App: React.FC = () => {
         <TodoList
           todos={visibleTodos}
           onTodoDelete={handleTodoDelete}
-          completedTodoId={completedTodoId}
+          completedTodosId={completedTodosId}
         />
 
         {tempTodo && (
@@ -149,25 +156,10 @@ export const App: React.FC = () => {
         )}
       </div>
 
-      <div
-        className={classNames(
-          'notification',
-          'is-danger',
-          'is-light',
-          'has-text-weight-normal',
-          {
-            hidden: !errorMessage,
-          },
-        )}
-      >
-        <button
-          aria-label="error-close-button"
-          type="button"
-          className="delete"
-          onClick={() => setErrorMessage('')}
-        />
-        {errorMessage}
-      </div>
+      <ErrorModal
+        errorMessage={errorMessage}
+        onClearErrorMessage={setErrorMessage}
+      />
     </div>
   );
 };

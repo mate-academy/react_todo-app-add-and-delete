@@ -1,3 +1,4 @@
+import React from 'react';
 import classNames from 'classnames';
 import { FilterType } from '../../enums/FilterType';
 
@@ -9,7 +10,7 @@ type Props = {
   onCompletedDelete: () => void;
 };
 
-export const ListFilter: React.FC<Props> = ({
+export const ListFilter: React.FC<Props> = React.memo(({
   activeTodosCount,
   hasCompletedTodos,
   filterType,
@@ -56,4 +57,4 @@ export const ListFilter: React.FC<Props> = ({
       Clear completed
     </button>
   </footer>
-);
+));

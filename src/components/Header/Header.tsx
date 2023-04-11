@@ -1,5 +1,5 @@
 import classNames from 'classnames';
-import { useState } from 'react';
+import React, { useState } from 'react';
 
 type Props = {
   hasActiveTodos: boolean;
@@ -7,7 +7,7 @@ type Props = {
   isTodoAdding: boolean;
 };
 
-export const Header: React.FC<Props> = ({
+export const Header: React.FC<Props> = React.memo(({
   hasActiveTodos,
   onTodoAdd,
   isTodoAdding,
@@ -45,4 +45,4 @@ export const Header: React.FC<Props> = ({
       </form>
     </header>
   );
-};
+});

@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import React, { useState } from 'react';
 import classNames from 'classnames';
 
 import { Todo } from '../../types/Todo';
@@ -7,13 +7,13 @@ type Props = {
   todo: Todo;
   onTodoDelete?: (todoId: number) => void,
   deletingTodoId?: number | null;
-  completedTodoId?: number | null;
+  completedTodosId?: number[];
 };
 
-export const TodoListItem: React.FC<Props> = ({
+export const TodoListItem: React.FC<Props> = React.memo(({
   todo,
   onTodoDelete = () => true,
-  completedTodoId,
+  completedTodosId,
 }) => {
   const [deletingTodoId, setDeletingTodoId] = useState<number | null>(null);
 
@@ -60,7 +60,7 @@ export const TodoListItem: React.FC<Props> = ({
         {
           'is-active': id === 0
             || id === deletingTodoId
-            || completedTodoId === id,
+            || completedTodosId?.includes(id),
         },
       )}
       >
@@ -69,4 +69,4 @@ export const TodoListItem: React.FC<Props> = ({
       </div>
     </div>
   );
-};
+});

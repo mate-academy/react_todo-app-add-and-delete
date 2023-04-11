@@ -6,13 +6,13 @@ import { Todo } from '../../types/Todo';
 type Props = {
   todos: Todo[];
   onTodoDelete: (todoId: number) => void,
-  completedTodoId: number | null;
+  completedTodosId: number[];
 };
 
-export const TodoList: React.FC<Props> = ({
+export const TodoList: React.FC<Props> = React.memo(({
   todos,
   onTodoDelete,
-  completedTodoId,
+  completedTodosId,
 }) => (
   <section className="todoapp__main">
     {todos?.map(todo => (
@@ -20,8 +20,8 @@ export const TodoList: React.FC<Props> = ({
         todo={todo}
         key={todo.id}
         onTodoDelete={onTodoDelete}
-        completedTodoId={completedTodoId}
+        completedTodosId={completedTodosId}
       />
     ))}
   </section>
-);
+));
