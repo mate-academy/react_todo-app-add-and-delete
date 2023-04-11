@@ -14,7 +14,7 @@ import { getTodos, createTodo, deleteTodo } from './api/todos';
 import { TodoList } from './components/TodoList/TodoList';
 import { Loader } from './components/Loader/Loader';
 import { TodoFilter } from './components/Todo/TodoFilter';
-import { FilterType } from './types/FilterType';
+import { FilterType } from './enums/FilterType';
 import { getFilteredTodos } from './helpers/GetTodosFiltered';
 
 const USER_ID = 6981;

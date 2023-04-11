@@ -1,4 +1,4 @@
-import { FilterType } from '../types/FilterType';
+import { FilterType } from '../enums/FilterType';
 import { Todo } from '../types/Todo';
 
 export const getFilteredTodos = (todos: Todo[], filterType: FilterType) => {

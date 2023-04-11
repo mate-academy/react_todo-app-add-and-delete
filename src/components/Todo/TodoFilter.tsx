@@ -1,6 +1,6 @@
 import React from 'react';
 import classNames from 'classnames';
-import { FilterType } from '../../types/FilterType';
+import { FilterType } from '../../enums/FilterType';
 
 type Props = {
   filterType: FilterType;
