@@ -7,6 +7,7 @@ type Props = {
   onFilterSelect: (newFilterOption: TodoCompletionType) => void
   activeTodosCount: number;
   hasCompletedTodos: boolean;
+  onCompletedTodosDelete: () => void;
 };
 
 export const TodoFooter: React.FC<Props> = ({
@@ -14,6 +15,7 @@ export const TodoFooter: React.FC<Props> = ({
   onFilterSelect,
   activeTodosCount,
   hasCompletedTodos,
+  onCompletedTodosDelete,
 }) => {
   return (
     <>
@@ -46,6 +48,7 @@ export const TodoFooter: React.FC<Props> = ({
           type="button"
           className="todoapp__clear-completed"
           disabled={!hasCompletedTodos}
+          onClick={onCompletedTodosDelete}
         >
           Clear completed
         </button>

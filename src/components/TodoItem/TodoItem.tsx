@@ -1,23 +1,36 @@
-import classNames from 'classnames';
 import React from 'react';
-import { Todo } from '../../types/Todo';
+import classNames from 'classnames';
+import { TodoRich } from '../../types/TodoRich';
 import { TodoLoadingOverlay } from '../TodoLoadingOverlay';
 
 type Props = {
-  todo: Todo;
-  isLoading?: boolean;
+  todo: TodoRich;
+  onTodoDelete?: (todoId: number) => Promise<void>;
 };
 
 export const TodoItem: React.FC<Props> = ({
-  todo,
-  isLoading = false,
+  todo: {
+    id,
+    title,
+    completed,
+    isLoading,
+  },
+  onTodoDelete,
 }) => {
+  const hadndleTodoDelete = async () => {
+    if (!onTodoDelete) {
+      return;
+    }
+
+    await onTodoDelete(id);
+  };
+
   return (
     <div
       className={classNames(
         'todo',
         {
-          completed: todo.completed,
+          completed,
         },
       )}
     >
@@ -29,9 +42,17 @@ export const TodoItem: React.FC<Props> = ({
         />
       </label>
 
-      <span className="todo__title">{todo.title}</span>
+      <span className="todo__title">
+        {title}
+      </span>
 
-      <button type="button" className="todo__remove">×</button>
+      <button
+        type="button"
+        className="todo__remove"
+        onClick={hadndleTodoDelete}
+      >
+        ×
+      </button>
 
       {isLoading && <TodoLoadingOverlay />}
     </div>

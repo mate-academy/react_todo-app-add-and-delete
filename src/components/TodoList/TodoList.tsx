@@ -1,16 +1,18 @@
 import React from 'react';
-import { Todo } from '../../types/Todo';
+import { TodoRich } from '../../types/TodoRich';
 import { TodoItem } from '../TodoItem';
 import { TodoEditForm } from '../TodoEditForm';
 
 type Props = {
-  todos: Todo[];
-  tempTodo: Todo | null;
+  todos: TodoRich[];
+  tempTodo: TodoRich | null;
+  onTodoDelete: (todoId: number) => Promise<void>;
 };
 
 export const TodoList: React.FC<Props> = ({
   todos,
   tempTodo,
+  onTodoDelete,
 }) => {
   return (
     <section className="todoapp__main">
@@ -18,6 +20,7 @@ export const TodoList: React.FC<Props> = ({
         <TodoItem
           key={todo.id}
           todo={todo}
+          onTodoDelete={onTodoDelete}
         />
       ))}
 
@@ -42,7 +45,6 @@ export const TodoList: React.FC<Props> = ({
         <TodoItem
           key={tempTodo.id}
           todo={tempTodo}
-          isLoading
         />
       )}
     </section>

@@ -1,10 +1,10 @@
-import { Todo } from '../types/Todo';
+import { TodoRich } from '../types/TodoRich';
 import { TodoCompletionType } from '../types/TodoCompletionType';
 
 export const filterTodos = (
-  todos: Todo[],
+  todos: TodoRich[],
   todoCompletionFilterOption: TodoCompletionType,
-): Todo[] => (
+): TodoRich[] => (
   todos
     .filter(todo => {
       switch (todoCompletionFilterOption) {
@@ -18,6 +18,6 @@ export const filterTodos = (
     })
 );
 
-export const getActiveTodosCount = (todos: Todo[]): number => (
+export const getActiveTodosCount = (todos: TodoRich[]): number => (
   todos.filter(todo => todo.completed === false).length
 );
