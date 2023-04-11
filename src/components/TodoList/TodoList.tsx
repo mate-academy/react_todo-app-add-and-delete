@@ -3,7 +3,7 @@ import { TodoInfo } from '../TodoInfo/TodoInfo';
 
 type Props = {
   todos: Todo[];
-  tempTodo: Todo | undefined;
+  tempTodo: Todo | null;
   onDelete: (id: number) => void;
   deletingCompleted: boolean;
 };
