@@ -27,8 +27,8 @@ export const App: React.FC = () => {
     [todosFromServer],
   );
 
-  const fetchTodos = (pass: string, callback?: () => void) => {
-    return client
+  const fetchTodos = (pass: string, callback?: () => void): void => {
+    client
       .get(pass)
       .then((todos) => {
         setTodosFromServer(todos as Todo[]);
@@ -43,7 +43,7 @@ export const App: React.FC = () => {
   };
 
   const askTodos = debounce(
-    (pass, callback?: () => void) => fetchTodos(pass, callback),
+    (pass, callback?: () => void): void => fetchTodos(pass, callback),
     1000,
   );
 
@@ -55,7 +55,7 @@ export const App: React.FC = () => {
     return <UserWarning />;
   }
 
-  const reloadTodos = (promise: Promise<unknown>) => {
+  const reloadTodos = (promise: Promise<unknown>): void => {
     promise
       .finally(() => {
         askTodos(url);
@@ -63,7 +63,7 @@ export const App: React.FC = () => {
       .catch(() => setErrorMessage('Unable to update a todo'));
   };
 
-  const deleteCompleted = async () => {
+  const deleteCompleted = (): void => {
     if (todosFromServer) {
       todosFromServer.forEach((todo) => {
         if (todo.completed) {
@@ -75,7 +75,7 @@ export const App: React.FC = () => {
     }
   };
 
-  const clearCompleted = () => {
+  const clearCompleted = (): void => {
     if (todosFromServer) {
       todosFromServer.forEach((todo) => {
         if (countComplited && !countNotComplited) {
