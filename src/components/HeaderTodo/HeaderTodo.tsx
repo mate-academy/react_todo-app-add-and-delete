@@ -1,33 +1,39 @@
-import React from 'react';
-
+import React, { useState } from 'react';
 import classNames from 'classnames';
-
 import { Todo } from '../../types/Todo';
 
 interface Props {
   todos: Todo[],
-  value: string,
-  onInput: (title: string) => void,
+  // value: string,
+  // onInput: (title: string) => void,
+  onAddTodo: (title: string) => void,
 }
 
-export const HeaderTodo: React.FC<Props> = (props) => {
+export const AddingTodo: React.FC<Props> = (props) => {
   const {
     todos,
-    value,
-    onInput,
+    onAddTodo,
+    // value,
+    // onInput,
   } = props;
 
+  const [newTitleTodo, setNewTitleTodo] = useState('');
+
   const isTodos = todos.length > 0;
-  const hasCompletedTodo = todos.some(todo => todo.completed);
+  const hasCompletedTodo = todos.some((todo: Todo) => todo.completed);
 
-  const handleQuery = (event: React.ChangeEvent<HTMLInputElement>) => {
-    const query = event.target.value;
+  const handlerTitle = (event: React.ChangeEvent<HTMLInputElement>) => {
+    const title = event.target.value;
 
-    onInput(query);
+    setNewTitleTodo(title);
+  };
+
+  const handlerSubmit = () => {
+    onAddTodo(newTitleTodo);
   };
 
   return (
-    <header className="todoapp__header">
+    <>
       {isTodos && (
         <button
           type="button"
@@ -41,15 +47,15 @@ export const HeaderTodo: React.FC<Props> = (props) => {
         />
       )}
 
-      <form>
+      <form onSubmit={handlerSubmit}>
         <input
           type="text"
           className="todoapp__new-todo"
           placeholder="What needs to be done?"
-          value={value}
-          onChange={handleQuery}
+          value={newTitleTodo}
+          onChange={handlerTitle}
         />
       </form>
-    </header>
+    </>
   );
 };
