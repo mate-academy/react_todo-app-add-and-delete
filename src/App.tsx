@@ -1,6 +1,6 @@
 /* eslint-disable jsx-a11y/control-has-associated-label */
 import React, { useEffect, useMemo, useState } from 'react';
-import { deleteTodo as deleteTodoById, getTodos, postTodo } from './api/todos';
+import { deleteTodo, getTodos, postTodo } from './api/todos';
 import { Header } from './components/Header';
 import { Footer } from './components/Footer';
 import { Todo } from './types/Todo';
@@ -59,17 +59,28 @@ export const App: React.FC = () => {
   };
 
   const deleteTodoFromServer = async (todoId: number) => {
-    await deleteTodoById(todoId);
-
-    fetchTodos();
+    try {
+      await deleteTodo(todoId);
+      await fetchTodos();
+    } catch {
+      setHasError(true);
+      setErrorType(AppError.Delete);
+    }
   };
 
   const deleteAllCompleted = async () => {
     const completedTodos = todos.filter(({ completed }) => completed);
 
     setDeletingAllCompletedTodos(true);
-    await Promise.all(completedTodos.map(({ id }) => deleteTodoById(id)));
-    await fetchTodos();
+
+    try {
+      await Promise.all(completedTodos.map(({ id }) => deleteTodo(id)));
+      await fetchTodos();
+    } catch {
+      setHasError(true);
+      setErrorType(AppError.Delete);
+    }
+
     setDeletingAllCompletedTodos(false);
   };
 
