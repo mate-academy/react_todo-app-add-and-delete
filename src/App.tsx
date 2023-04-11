@@ -2,6 +2,7 @@
 import React, { useEffect, useState } from 'react';
 import { UserWarning } from './UserWarning';
 import {
+  addTodo,
   deleteTodo,
   getTodos,
 } from './api/todos';
@@ -35,6 +36,29 @@ export const App: React.FC = () => {
     fetchTodos();
   }, []);
 
+  const addNewTodo = (title: string) => {
+    if (!title.length) {
+      setErrorMessage("Title can't be empty");
+    }
+
+    const newTodo = {
+      id: 0,
+      userId: USER_ID,
+      completed: false,
+      title,
+    };
+
+    return addTodo(USER_ID, newTodo)
+      .then((todo: Todo[]) => {
+        setTodos((prevTodos) => {
+          return prevTodos?.concat(todo) || null;
+        });
+      })
+      .catch(() => {
+        setErrorMessage('Unable to add a todo!');
+      });
+  };
+
   const removeTodo = (id: number) => {
     return deleteTodo(id)
       .then(() => {
@@ -67,6 +91,7 @@ export const App: React.FC = () => {
           <FormTodo
             setTodoTitle={setTodoTitle}
             todoTitle={todoTitle}
+            onAdd={addNewTodo}
           />
         </header>
 
