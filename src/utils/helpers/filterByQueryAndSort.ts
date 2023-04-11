@@ -3,14 +3,10 @@ import { Todo } from '../../types/Todo';
 
 export const filterTodos = (
   todos: Todo[],
-  query: string,
   sortBy: SortType,
 ): Todo[] => {
   return todos.filter(todo => {
     let isSort = true;
-
-    const normalizedQuery = query.trim().toLowerCase();
-    const normalizedTitle = todo.title.toLowerCase();
 
     switch (sortBy) {
       case SortType.ACTIVE:
@@ -25,6 +21,6 @@ export const filterTodos = (
         break;
     }
 
-    return isSort && normalizedTitle.includes(normalizedQuery);
+    return isSort;
   });
 };

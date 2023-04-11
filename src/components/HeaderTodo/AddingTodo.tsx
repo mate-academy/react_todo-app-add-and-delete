@@ -4,17 +4,15 @@ import { Todo } from '../../types/Todo';
 
 interface Props {
   todos: Todo[],
-  // value: string,
-  // onInput: (title: string) => void,
+  isDisable: boolean,
   onAddTodo: (title: string) => void,
 }
 
 export const AddingTodo: React.FC<Props> = (props) => {
   const {
     todos,
+    isDisable,
     onAddTodo,
-    // value,
-    // onInput,
   } = props;
 
   const [newTitleTodo, setNewTitleTodo] = useState('');
@@ -28,8 +26,12 @@ export const AddingTodo: React.FC<Props> = (props) => {
     setNewTitleTodo(title);
   };
 
-  const handlerSubmit = () => {
+  const handlerSubmit = (event: React.FormEvent<HTMLFormElement>) => {
+    event.preventDefault();
+
     onAddTodo(newTitleTodo);
+
+    setNewTitleTodo('');
   };
 
   return (
@@ -54,6 +56,7 @@ export const AddingTodo: React.FC<Props> = (props) => {
           placeholder="What needs to be done?"
           value={newTitleTodo}
           onChange={handlerTitle}
+          disabled={isDisable}
         />
       </form>
     </>
