@@ -5,6 +5,9 @@ import { Todo } from './types/Todo';
 import { deleteTodo, getTodos, postTodo } from './Api/todos';
 import { TodosList } from './components/TodoList';
 import { FilterTodosBy } from './types/FilterTodosBy/FilterTodoBy';
+import { Error } from './components/Error';
+import { Footer } from './components/Footer';
+import { Header } from './components/Header';
 
 const USER_ID = 6998;
 
@@ -51,8 +54,6 @@ export const App: React.FC = () => {
     return <UserWarning />;
   }
 
-  const filteredByOptions = Object.entries(FilterTodosBy);
-
   const removeTodo = (id: number) => {
     return deleteTodo(id)
       .then(() => {
@@ -93,69 +94,30 @@ export const App: React.FC = () => {
       <h1 className="todoapp__title">todos</h1>
 
       <div className="todoapp__content">
-        <header className="todoapp__header">
-          {/* this buttons is active only if there are some active todos */}
-          <button type="button" className="todoapp__toggle-all active" />
-
-          {/* Add a todo on form submit */}
-          <form onSubmit={handleSubmit}>
-            <input
-              type="text"
-              className="todoapp__new-todo"
-              placeholder="What needs to be done?"
-              value={query}
-              onChange={(event) => setQuery(event.target.value)}
-            />
-          </form>
-        </header>
+        <Header
+          handleSubmit={handleSubmit}
+          query={query}
+          setQuery={setQuery}
+        />
 
         <TodosList
           todos={visibleTodos}
           removeTodo={removeTodo}
         />
 
-        {/* Hide the footer if there are no todos */}
-        <footer className="todoapp__footer">
-          <span className="todo-count">
-            {`${todos.length} items left`}
-          </span>
-
-          {/* Active filter should have a 'selected' class */}
-          <nav className="filter">
-
-            {filteredByOptions.map(([label, value]) => (
-              <a
-                href={`#/${value}`}
-                className="filter__link selected"
-                key={value}
-                onClick={() => setFilterBy(value)}
-              >
-                {label}
-              </a>
-            ))}
-          </nav>
-
-          {/* don't show this button if there are no completed todos */}
-          <button type="button" className="todoapp__clear-completed">
-            Clear completed
-          </button>
-        </footer>
+        {todos.length && (
+          <Footer
+            todos={todos}
+            setFilterBy={setFilterBy}
+            filterBy={filterBy}
+          />
+        )}
       </div>
 
-      {/* Notification is shown in case of any error */}
-      {/* Add the 'hidden' class to hide the message smoothly */}
-      {hasError && (
-        <div className="notification is-danger is-light has-text-weight-normal">
-          <button
-            type="button"
-            className="delete"
-            onClick={() => setHasError('')}
-          />
-
-          {/* show only one message at a time */}
-          {hasError}
-        </div>
-      )}
+      <Error
+        hasError={hasError}
+        setHasError={setHasError}
+      />
     </div>
   );
 };
