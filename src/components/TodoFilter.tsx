@@ -47,7 +47,7 @@ export const TodoFilter: FC<Props> = ({
         <button
           type="button"
           className="todoapp__clear-completed"
-          onClick={() => deleteComplete()}
+          onClick={deleteComplete}
         >
           Clear completed
         </button>

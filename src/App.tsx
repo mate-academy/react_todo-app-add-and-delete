@@ -95,6 +95,7 @@ export const App: React.FC = () => {
         deleteTodo(todo.id);
       }
     });
+    setTodos(todos.filter((todo) => !todo.completed));
   }, [todos]);
 
   useEffect(() => {
@@ -148,14 +149,16 @@ export const App: React.FC = () => {
           )}
         </section>
 
-        {/* Hide the footer if there are no todos */}
-        <TodoFilter
-          filterBy={filterBy}
-          setFilterBy={setFilterBy}
-          itemsLeft={itemsLeft.length}
-          todos={todos}
-          deleteComplete={deleteCompleteTodos}
-        />
+        {todos.length > 0 && (
+          <TodoFilter
+            filterBy={filterBy}
+            setFilterBy={setFilterBy}
+            itemsLeft={itemsLeft.length}
+            todos={todos}
+            deleteComplete={deleteCompleteTodos}
+          />
+        )}
+
       </div>
 
       {error && (
