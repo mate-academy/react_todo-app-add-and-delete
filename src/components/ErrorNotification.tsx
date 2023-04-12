@@ -14,19 +14,17 @@ export const ErrorNotification: React.FC<Props> = ({
   };
 
   return (
-    <>
-      <div
-        className="notification is-danger is-light has-text-weight-normal"
-      >
-        <button
-          type="button"
-          className="delete"
-          onClick={deleteError}
+    <div
+      className="notification is-danger is-light has-text-weight-normal"
+    >
+      <button
+        type="button"
+        className="delete"
+        onClick={deleteError}
 
-        />
+      />
 
-        {errorMessage}
-      </div>
-    </>
+      {errorMessage}
+    </div>
   );
 };
