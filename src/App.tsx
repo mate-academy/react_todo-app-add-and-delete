@@ -14,7 +14,7 @@ import { Todo } from './types/Todo';
 import {
   getTodos,
   addTodo,
-  // deleteTodo,
+  deleteTodo,
   updateTodo,
 } from './api/todos';
 import { BASE_URL } from './utils/fetchClient';
@@ -30,6 +30,9 @@ export const App: React.FC = () => {
   const [errorToShow, setErrorToShow] = useState<ErrorType>('none');
   const [todosToShow, setTodosToShow] = useState(todos);
   const [chosenFilter, setChosenFilter] = useState<string>('all');
+  const [creating, setCreating] = useState(false);
+  const [tempTodo, setTempTodo] = useState<Todo | null>(null);
+  const [processings, setProcessing] = useState<number[]>([]);
 
   useEffect(() => {
     getTodos(USER_ID)
@@ -64,37 +67,32 @@ export const App: React.FC = () => {
     return Math.max(...todos.map(todo => todo.id)) + 1;
   }, []);
 
-  // const deleteById = useCallback(() => {
-  //   return deleteTodo(todoId);
-  // }, []);
-
-  // const activeTodos = useCallback(() => {
-  //   return todos.filter(todo => !todo.completed);
-  // }, [todos]);
   const activeTodos = todos.filter(todo => !todo.completed);
 
-  const completedTodos = useCallback(() => {
-    return todos.filter(todo => todo.completed);
-  }, [todos]);
+  const completedTodos = todos.filter(todo => todo.completed);
 
   const activeTodosNumber = activeTodos.length;
-  const areCompletedTodos = completedTodos().length > 0;
+  const areActiveTodos = activeTodosNumber > 0;
+  const areCompletedTodos = completedTodos.length > 0;
 
-  const timer = useCallback(() => {
-    // eslint-disable-next-line @typescript-eslint/no-unused-vars
-    const errorBlock = document.getElementById('#error');
-    const hideError = () => {
-      errorBlock?.classList.add('hideNow');
-      setTimeout(() => {
-        // eslint-disable-next-line @typescript-eslint/no-use-before-define
-        clearTimeout(timerId);
-        setErrorToShow('none');
-      }, 500);
-    };
+  const errorBlock = document.querySelector('.notification');
 
-    const timerId: NodeJS.Timeout = setTimeout(() => hideError(), 5000);
+  const hideError = () => {
+    errorBlock?.classList.add('hidden');
+    setTimeout(() => {
+      setErrorToShow('none');
+    }, 500);
+  };
 
-    return timerId;
+  useEffect(() => {
+    let timerId: NodeJS.Timeout;
+
+    if (errorToShow !== 'none') {
+      errorBlock?.classList.remove('hidden');
+      timerId = setTimeout(() => hideError(), 3000);
+    }
+
+    return () => clearTimeout(timerId);
   }, [errorToShow]);
 
   if (!USER_ID) {
@@ -119,31 +117,19 @@ export const App: React.FC = () => {
       completed: false,
     };
 
+    setCreating(true);
+    setTempTodo(newTodo);
+
+    processings.push(newTodoId);
+
     const response = addTodo(USER_ID, newTodo)
       .then((todo) => {
         // eslint-disable-next-line no-console
         console.log(todo);
 
-        const {
-          id,
-          userId,
-          title,
-          completed,
-        } = todo;
-
-        const freshTodo = {
-          id,
-          userId,
-          title,
-          completed,
-        };
-
-        setTodos((prevTodos) => {
-          prevTodos.push(freshTodo);
-
-          return prevTodos;
-        });
-        // const error = new Error('adding error');
+        setAddingTodoTitle('');
+        setTempTodo(null);
+        setCreating(false);
       })
       .catch(() => setErrorToShow('add'));
 
@@ -170,17 +156,43 @@ export const App: React.FC = () => {
     setChosenFilter(filter);
   };
 
-  const handleAllChecked = (
-    // event: React.MouseEvent<HTMLButtonElement, MouseEvent>,
-  ) => {
-    // event.preventDefault();
-    // eslint-disable-next-line no-console
-    console.log(activeTodos);
+  const handleAllChecked = () => {
+    return areActiveTodos
+      ? activeTodos.map((activeTodo: Todo) => {
+        setProcessing((prevState) => [...prevState, activeTodo.id]);
 
-    const hasActive = activeTodosNumber > 0;
+        return updateTodo(activeTodo.id, { completed: areActiveTodos })
+          .then()
+          .catch(() => {
+            return setErrorToShow('update');
+          });
+      })
+      : completedTodos.map((completedTodo: Todo) => {
+        setProcessing((prevState) => [...prevState, completedTodo.id]);
 
-    activeTodos.map((activeTodo: Todo) => {
-      return updateTodo(activeTodo.id, { completed: hasActive });
+        return updateTodo(completedTodo.id, { completed: areActiveTodos })
+          .then()
+          .catch(() => {
+            return setErrorToShow('update');
+          });
+      });
+  };
+
+  const handleDeleteAllCompleted = () => {
+    return completedTodos.map((completedTodo: Todo) => {
+      setProcessing((prevState) => [...prevState, completedTodo.id]);
+
+      return deleteTodo(completedTodo.id).then().catch(() => {
+        return setErrorToShow('delete');
+      });
+    });
+  };
+
+  const handleDeleteTodo = (idToDelete: number) => {
+    setProcessing((prevState) => [...prevState, idToDelete]);
+
+    return deleteTodo(idToDelete).then().catch(() => {
+      return setErrorToShow('delete');
     });
   };
 
@@ -214,14 +226,16 @@ export const App: React.FC = () => {
               placeholder="What needs to be done?"
               value={addingTodoTitle}
               onChange={handleSetNewTitle}
-              // onKeyDown={}
             />
           </form>
         </header>
 
         <TodoList
           visibleTodos={todosToShow}
-          // deleteById={deleteById}
+          deleteTodo={handleDeleteTodo}
+          processings={processings}
+          creating={creating}
+          tempTodo={tempTodo}
         />
 
         {todos.length > 0 && (
@@ -278,9 +292,10 @@ export const App: React.FC = () => {
               className={
                 classNames(
                   'todoapp__clear-completed',
-                  { 'no-completed': areCompletedTodos },
+                  { 'no-completed': !areCompletedTodos },
                 )
               }
+              onClick={handleDeleteAllCompleted}
             >
               Clear completed
             </button>
@@ -294,10 +309,7 @@ export const App: React.FC = () => {
       {/* Add the 'hidden' class to hide the message smoothly */}
       <ErrorShow
         errorToShow={errorToShow}
-        setErrorToShow={setErrorToShow}
-        // hideError={errorSet.hideError}
-        // handleHideError={}
-        timerId={timer}
+        hideError={hideError}
       />
     </div>
   );

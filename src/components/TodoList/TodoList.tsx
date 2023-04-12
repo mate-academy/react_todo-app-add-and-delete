@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React from 'react';
 import {
   CSSTransition,
   TransitionGroup,
@@ -6,24 +6,24 @@ import {
 import './TodoList.scss';
 import { TodoItem } from '../TodoItem';
 import { Todo } from '../../types/Todo';
-// import { deleteTodo } from '../../api/todos';
 
 export const USER_ID = 6980;
 
 interface Props {
   visibleTodos: Todo[];
-  // deleteById: (todoId: number) => Promise<unknown>,
+  deleteTodo: (idToDelete: number) => Promise<unknown>;
+  creating: boolean;
+  processings: number[];
+  tempTodo: Todo | null;
 }
 
-type DefaultTodo = Todo | null;
-
-export const TodoList: React.FC<Props> = ({ visibleTodos }) => {
-  const [
-    creating,
-    // setCreating,
-    // deleteById,
-  ] = useState<DefaultTodo>(null);
-
+export const TodoList: React.FC<Props> = ({
+  visibleTodos,
+  deleteTodo,
+  creating,
+  tempTodo,
+  processings,
+}) => {
   return (
     <section className="todoapp__main" data-cy="TodoList">
       <TransitionGroup>
@@ -35,8 +35,8 @@ export const TodoList: React.FC<Props> = ({ visibleTodos }) => {
           >
             <TodoItem
               todo={todo}
-              // isProcessed={processings.includes(todo.id)}
-              // onDelete={() => deleteById(todo.id)}
+              isProcessed={processings.includes(todo.id)}
+              onDelete={() => deleteTodo(todo.id)}
               // onUpdate={updateTodo}
             />
           </CSSTransition>
@@ -44,18 +44,13 @@ export const TodoList: React.FC<Props> = ({ visibleTodos }) => {
 
         {creating && (
           <CSSTransition
-            key={0}
+            key={tempTodo?.id}
             timeout={300}
             classNames="temp-item"
           >
             <TodoItem
-              todo={{
-                id: Math.random(),
-                title: 'shit',
-                completed: false,
-                userId: USER_ID,
-              }}
-              // isProcessed
+              todo={tempTodo}
+              isProcessed
             />
           </CSSTransition>
         )}

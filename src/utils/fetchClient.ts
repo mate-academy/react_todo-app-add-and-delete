@@ -1,4 +1,6 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
+// import { Todo } from "../types/Todo";
+
 export const BASE_URL = 'https://mate.academy/students-api';
 
 // returns a promise resolved after a given delay
@@ -24,6 +26,11 @@ function request<T>(
     options.headers = {
       'Content-Type': 'application/json; charset=UTF-8',
     };
+  }
+
+  if (method === 'PATCH' || method === 'DELETE') {
+    // eslint-disable-next-line no-console
+    console.dir(data);
   }
 
   // we wait for testing purpose to see loaders

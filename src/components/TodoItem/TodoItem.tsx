@@ -1,54 +1,67 @@
 import React from 'react';
+import classNames from 'classnames';
 import { Todo } from '../../types/Todo';
 
-import { deleteTodo, updateTodo } from '../../api/todos';
+import { updateTodo } from '../../api/todos';
 
 interface Props {
-  todo: Todo;
+  todo?: Partial<Todo> | null;
+  isProcessed: boolean;
+  onDelete?: () => void;
 }
 
 export const TodoItem: React.FC<Props> = ({
   todo,
+  isProcessed,
+  onDelete,
 }) => {
-  const { completed, title, id } = todo;
-
   const handleToggleChecked = (
     event: React.ChangeEvent<HTMLInputElement>,
-    idToUpdate: number,
+    idToUpdate: number | undefined,
   ) => {
     const { target } = event;
     const { checked } = target;
 
-    updateTodo(idToUpdate, { completed: !checked });
+    if (idToUpdate) {
+      updateTodo(idToUpdate, { completed: checked });
+    }
   };
 
   return (
-    <div className={`todo ${completed ? 'completed' : ''}`}>
+    <div className={
+      classNames(
+        'todo',
+        { completed: todo?.completed },
+      )
+    }
+    >
       <label className="todo__status-label">
         <input
           type="checkbox"
           className="todo__status"
-          checked={completed}
-          onChange={(event) => handleToggleChecked(event, id)}
+          checked={todo?.completed}
+          onChange={(event) => handleToggleChecked(event, todo?.id)}
         />
       </label>
 
-      <span className="todo__title">{title}</span>
+      <span className="todo__title">{todo?.title}</span>
 
       {/* Remove button appears only on hover */}
       <button
         type="button"
         className="todo__remove"
-        onClick={() => deleteTodo(id)}
+        onClick={onDelete}
       >
         ×
       </button>
 
       {/* overlay will cover the todo while it is being updated */}
-      <div className="modal overlay">
-        <div className="modal-background has-background-white-ter" />
-        <div className="loader" />
-      </div>
+      {isProcessed && (
+        <div className="modal overlay">
+          <div className="modal-background has-background-white-ter" />
+          <div className="loader" />
+        </div>
+      )}
     </div>
   );
 };
