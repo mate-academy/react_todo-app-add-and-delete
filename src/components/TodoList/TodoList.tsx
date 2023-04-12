@@ -38,6 +38,7 @@ export const TodoList: React.FC<Props> = ({
             onDelete={onDelete}
           />
         </CSSTransition>
+
       ))}
       {tempTodo && (
         <CSSTransition

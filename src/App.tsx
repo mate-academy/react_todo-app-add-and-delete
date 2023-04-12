@@ -5,31 +5,23 @@ import { addTodo, getTodos, removeTodo } from './api/todos';
 
 import { Todo } from './types/Todo';
 import { SortType } from './types/SortType';
-import { filterTodos } from './utils/helpers/filterByQueryAndSort';
+import { ErrorsType } from './types/ErrorsType';
+
+import { filterTodos } from './utils/helpers/filterBySort';
 
 import { UserWarning } from './UserWarning';
-import { AddingTodo } from './components/HeaderTodo';
+import { HeaderTodo } from './components/HeaderTodo';
 import { TodoList } from './components/TodoList';
 import { TodoFooter } from './components/TodoFooter';
 
 const USER_ID = 7036;
 // const USER_ID = 6749;
 
-export enum ErrorsType {
-  EMPTY = 'Title cannot be empty',
-  ADD = 'Unable to add todo',
-  DELETE = 'Unable to delete todo',
-  UPDATE = 'Unable to update todo',
-}
-
 export const App: React.FC = () => {
   const [todos, setTodos] = useState<Todo[]>([]);
   const [tempTodo, setTempTodo] = useState<Todo | null>(null);
-
   const [sortType, setSortType] = useState<SortType>(SortType.ALL);
-
   const [error, setError] = useState<ErrorsType>(ErrorsType.EMPTY);
-
   const [isHiddenError, setIsHiddenError] = useState(true);
   const [loadingTodosIds, setLoadingTodosIds] = useState<number[]>([]);
 
@@ -61,6 +53,7 @@ export const App: React.FC = () => {
   }
 
   const visibleTodos = filterTodos(todos, sortType);
+  const hasCompletedTodos = todos.some(todo => todo.completed);
 
   const addNewTodo = async (title: string) => {
     if (!title.trim()) {
@@ -142,9 +135,10 @@ export const App: React.FC = () => {
 
       <div className="todoapp__content">
         <header className="todoapp__header">
-          <AddingTodo
+          <HeaderTodo
             todos={todos}
             onAddTodo={addNewTodo}
+            hasCompletedTodos={hasCompletedTodos}
           />
         </header>
 
@@ -155,12 +149,13 @@ export const App: React.FC = () => {
           idsForLoader={loadingTodosIds}
         />
 
-        {todos.length > 0 && (
+        {todos[0] && (
           <TodoFooter
             todos={todos}
             sortType={sortType}
             onSelect={handlerSortType}
             onClearCompleted={handlerRemoveAllCompletedTodo}
+            hasCompletedTodos={hasCompletedTodos}
           />
         )}
       </div>

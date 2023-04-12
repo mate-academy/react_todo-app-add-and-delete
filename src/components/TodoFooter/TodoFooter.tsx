@@ -10,6 +10,7 @@ interface Props {
   sortType: SortType,
   onSelect: (typeOfSort: SortType) => void,
   onClearCompleted: () => void,
+  hasCompletedTodos: boolean,
 }
 
 export const TodoFooter: React.FC<Props> = (props) => {
@@ -18,6 +19,7 @@ export const TodoFooter: React.FC<Props> = (props) => {
     sortType,
     onSelect,
     onClearCompleted,
+    hasCompletedTodos,
   } = props;
 
   const handlerSortSelect = (type: SortType) => {
@@ -27,8 +29,6 @@ export const TodoFooter: React.FC<Props> = (props) => {
 
     onSelect(type);
   };
-
-  const hasCompletdTodo = todos.some(todo => todo.completed);
 
   return (
     <footer className="todoapp__footer">
@@ -64,7 +64,7 @@ export const TodoFooter: React.FC<Props> = (props) => {
         className={classNames(
           'todoapp__clear-completed',
           {
-            'is-invisible': !hasCompletdTodo,
+            'is-invisible': !hasCompletedTodos,
           },
         )}
         onClick={onClearCompleted}

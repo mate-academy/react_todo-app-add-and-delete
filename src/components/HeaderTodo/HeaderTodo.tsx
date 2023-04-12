@@ -1,23 +1,33 @@
-import React, { useState } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
+
 import classNames from 'classnames';
+
 import { Todo } from '../../types/Todo';
 
 interface Props {
   todos: Todo[],
   onAddTodo: (title: string) => void,
+  hasCompletedTodos: boolean,
 }
 
-export const AddingTodo: React.FC<Props> = (props) => {
+export const HeaderTodo: React.FC<Props> = (props) => {
   const {
     todos,
     onAddTodo,
+    hasCompletedTodos,
   } = props;
 
   const [newTitleTodo, setNewTitleTodo] = useState('');
   const [inputDisabled, setInputDisabled] = useState(false);
+  const inputRef = useRef<HTMLInputElement>(null);
 
   const isHasTodos = todos.length < 1;
-  const hasCompletedTodos = todos.some(todo => todo.completed);
+
+  useEffect(() => {
+    return () => {
+      inputRef.current?.focus();
+    };
+  }, [inputDisabled]);
 
   const handlerTitle = (event: React.ChangeEvent<HTMLInputElement>) => {
     const title = event.target.value;
@@ -57,6 +67,7 @@ export const AddingTodo: React.FC<Props> = (props) => {
           value={newTitleTodo}
           onChange={handlerTitle}
           disabled={inputDisabled}
+          ref={inputRef}
         />
       </form>
     </>
