@@ -81,7 +81,7 @@ export const App: React.FC = () => {
       await postTodo(newTodo)
         .then((response) => setTodos([...todos, response]));
     } catch {
-      throw new Error('ADD!');
+      handleShowError(TodosError.AddTodo);
     } finally {
       setDisableField(false);
       setTempTodo(null);
@@ -96,7 +96,7 @@ export const App: React.FC = () => {
 
       setTodos(newTodos);
     } catch {
-      throw new Error('asdsad');
+      handleShowError(TodosError.DeleteTodo);
     }
   };
 
