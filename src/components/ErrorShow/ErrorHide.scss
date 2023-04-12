@@ -1,0 +1,31 @@
+@keyframes hide {
+  from {
+    opacity: 1;
+  }
+  to {
+    opacity: 0;
+  }
+}
+
+@keyframes show {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+.hideNow {
+  animation: hide 500ms;
+  animation-timing-function: ease-out;
+}
+
+.show {
+  animation: show 500ms;
+}
+
+.hide {
+  animation: hide 500ms;
+  animation-delay: 3000ms;
+}
