@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
 
 import classNames from 'classnames';
-import { addTodo, getTodos } from './api/todos';
+import { addTodo, getTodos, removeTodo } from './api/todos';
 
 import { Todo } from './types/Todo';
 import { SortType } from './types/SortType';
@@ -114,9 +114,24 @@ export const App: React.FC = () => {
     setIsHiddenError(true);
   };
 
-  // const deleteTodo = async (todoId: number) => {
+  const deleteTodo = async (todoId: number) => {
+    try {
+      await removeTodo(todoId);
 
-  // };
+      setTodos((prevTodos => prevTodos.filter(todo => todoId !== todo.id)));
+    } catch {
+      handlerError(ErrorsType.DELETE);
+    }
+  };
+
+  const handlerRemoveTodo = async (
+    todoId: number,
+    setIsDeleting: (isDeleting: boolean) => void,
+  ) => {
+    setIsDeleting(true);
+
+    await deleteTodo(todoId);
+  };
 
   return (
     <div className="todoapp">
@@ -133,7 +148,7 @@ export const App: React.FC = () => {
 
         <TodoList
           todos={visibleTodos}
-          // onDelete={deleteTodo}
+          onDelete={handlerRemoveTodo}
         />
 
         {tempTodo && (

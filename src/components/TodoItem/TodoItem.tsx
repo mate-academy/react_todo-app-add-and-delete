@@ -7,13 +7,16 @@ import { Todo } from '../../types/Todo';
 interface Props {
   todo: Todo,
   isActive: boolean,
-  // onDelete?: (todoId: number) => void,
+  onDelete?: (
+    todoId: number,
+    setIsDeleting: (isDeleting: boolean) => void,
+  ) => void,
 }
 
 export const TodoItem: React.FC<Props> = ({
   todo,
   isActive,
-  // onDelete,
+  onDelete,
 }) => {
   const {
     id,
@@ -21,16 +24,11 @@ export const TodoItem: React.FC<Props> = ({
     title,
   } = todo;
 
-  const [isDeleting] = useState(false); // setIsDeleting
+  const [isDeleting, setIsDeleting] = useState(false);
 
-  // const handlerRemoveTodo = async () => {
-  //   setIsDeleting(true);
-  //   // onDelete?.(id);
-
-  //   try {
-
-  //   }
-  // };
+  const handlerRemoveTodo = () => {
+    onDelete?.(id, setIsDeleting);
+  };
 
   return (
     <div
@@ -57,7 +55,7 @@ export const TodoItem: React.FC<Props> = ({
       <button
         type="button"
         className="todo__remove"
-        // onClick={handlerRemoveTodo}
+        onClick={handlerRemoveTodo}
       >
         ×
       </button>

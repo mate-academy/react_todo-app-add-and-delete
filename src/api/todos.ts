@@ -19,6 +19,6 @@ export const changeTodo = (todoId: number, todo: Todo) => {
   return client.patch<Todo>(todoEndPoint + todoId, todo);
 };
 
-export const deleteTodo = (todoId: number) => {
+export const removeTodo = (todoId: number) => {
   return client.delete<Todo>(todoEndPoint + todoId);
 };
