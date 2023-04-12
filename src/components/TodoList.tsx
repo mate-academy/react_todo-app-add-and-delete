@@ -5,14 +5,14 @@ import { SingleTodo } from './SingleTodo';
 interface Props {
   todos: Todo[],
   onDeleteTodo: (todoId: number) => Promise<void>
-  loaded: boolean,
+  todoInLoading: number,
 }
 
 export const TodoList: React.FC<Props> = React.memo(
   ({
     todos,
     onDeleteTodo,
-    loaded,
+    todoInLoading,
   }) => {
     return (
       <section className="todoapp__main">
@@ -21,7 +21,7 @@ export const TodoList: React.FC<Props> = React.memo(
             todo={todo}
             key={todo.id}
             onDelete={onDeleteTodo}
-            inLoading={loaded}
+            todoInLoading={todoInLoading}
           />
         ))}
       </section>

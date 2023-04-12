@@ -1,5 +1,10 @@
 /* eslint-disable jsx-a11y/control-has-associated-label */
-import React, { useCallback, useEffect, useMemo, useState } from 'react';
+import React, {
+  useCallback,
+  useEffect,
+  useMemo,
+  useState,
+} from 'react';
 import { UserWarning } from './UserWarning';
 import { Todo } from './types/Todo';
 import { getTodos, addTodoOnServer, deleteTodoFromServer } from './api/todos';
@@ -30,6 +35,7 @@ export const App: React.FC = () => {
   const [hasError, setError] = useState('');
   const [isLoading, setLoading] = useState(false);
   const [tempTodo, setTempTodo] = useState<Todo | null>(null);
+  const [todoIdInLoading, setTodoIdInLoading] = useState(0);
 
   const changeStatus = (newStatus: Status) => {
     setStatus(newStatus);
@@ -53,10 +59,12 @@ export const App: React.FC = () => {
     loadTodos();
   }, []);
 
-  const vidibleTodos = filteredTodos(todos, status);
+  const vidibleTodos = useMemo(() => {
+    return filteredTodos(todos, status);
+  }, [todos, status]);
 
-  const addTodo = useMemo(() => {
-    return async (title: string) => {
+  const addTodo = useCallback(
+    async (title: string) => {
       setLoading(true);
       if (!title) {
         setError('Title can t be empty');
@@ -76,26 +84,38 @@ export const App: React.FC = () => {
         await addTodoOnServer(newTodo);
         setTempTodo(newTodo);
         setTodos(currentTodos => [...currentTodos, newTodo]);
+        setTodoIdInLoading(newTodo.id);
       } catch {
         setError('Unable to add todo!');
         setTimeout(() => setError(''), 3000);
       } finally {
         setLoading(false);
+        setTodoIdInLoading(0);
         setTempTodo(null);
       }
-    };
-  }, [todos]);
+    }, [todos],
+  );
 
-  const deleteTodo = async (todoId: number) => {
-    await deleteTodoFromServer(todoId);
+  const deleteTodo = useCallback(
+    async (todoId: number) => {
+      setLoading(true);
+      setTodoIdInLoading(todoId);
 
-    try {
-      setTodos(currentTodos => currentTodos.filter(todo => todo.id !== todoId));
-    } catch {
-      setError('Unable to delete a todo!');
-      setTimeout(() => setError(''), 3000);
-    }
-  };
+      await deleteTodoFromServer(todoId);
+
+      try {
+        setTodos(currentTodos => (
+          currentTodos.filter(todo => todo.id !== todoId)
+        ));
+      } catch {
+        setError('Unable to delete a todo!');
+        setTimeout(() => setError(''), 3000);
+      } finally {
+        setLoading(false);
+        setTodoIdInLoading(0);
+      }
+    }, [todos],
+  );
 
   const deleteComplitedTodos = () => {
     const completedTodos = todos.filter(todo => todo.completed);
@@ -127,12 +147,13 @@ export const App: React.FC = () => {
             <TodoList
               todos={vidibleTodos}
               onDeleteTodo={deleteTodo}
-              loaded={isLoading}
+              todoInLoading={todoIdInLoading}
             />
             {tempTodo && (
               <SingleTodo
                 todo={tempTodo}
                 onDelete={deleteTodo}
+                todoInLoading={todoIdInLoading}
               />
             )}
             <Footer
