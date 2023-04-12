@@ -123,6 +123,19 @@ export const App: React.FC = () => {
     }
   };
 
+  const handlerRemoveAllCompletedTodo = async () => {
+    const completedTodosIds = todos
+      .filter(todo => todo.completed)
+      .map(todo => todo.id);
+
+    setLoadingTodosIds(prevLoadIds => ([
+      ...prevLoadIds,
+      ...completedTodosIds,
+    ]));
+
+    await Promise.all(completedTodosIds.map(id => handlerDeleteTodo(id)));
+  };
+
   return (
     <div className="todoapp">
       <h1 className="todoapp__title">todos</h1>
@@ -147,6 +160,7 @@ export const App: React.FC = () => {
             todos={todos}
             sortType={sortType}
             onSelect={handlerSortType}
+            onClearCompleted={handlerRemoveAllCompletedTodo}
           />
         )}
       </div>
