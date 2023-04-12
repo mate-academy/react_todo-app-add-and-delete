@@ -6,26 +6,26 @@ import { deleteTodo } from '../../api/todos';
 type Props = {
   filteredBy: string;
   todosLengh: number;
-  handleChange: (value: string) => void;
+  handleChangeFilterType: (filterBy: string) => void;
   todos: Todo[];
   setTodoList: (todos: Todo[]) => void;
-  setErrorMessage: (value: string) => void;
-  setDeletedTodos: (value: number[]) => void;
+  setErrorMessage: (errorMessage: string) => void;
+  setDeletedTodos: (deletedTodos: number[]) => void;
 };
 
 export const Footer: React.FC<Props> = ({
   filteredBy,
   todosLengh,
-  handleChange,
+  handleChangeFilterType,
   todos,
   setTodoList,
   setErrorMessage,
   setDeletedTodos,
 }) => {
   const handleDeleteAllCompletedTodo = async () => {
-    const completedTodos = todos.filter(todo => todo.completed);
-    const incompletedTodos = todos.filter(todo => !todo.completed);
-    const completedTodosID = todos.map(todo => {
+    const completedTodos = todos.filter((todo) => todo.completed);
+    const incompletedTodos = todos.filter((todo) => !todo.completed);
+    const completedTodosID = todos.map((todo) => {
       if (todo.completed) {
         return todo.id;
       }
@@ -33,7 +33,7 @@ export const Footer: React.FC<Props> = ({
       return 0;
     });
 
-    completedTodos.forEach(async todo => {
+    completedTodos.forEach(async (todo) => {
       try {
         setDeletedTodos([...completedTodosID]);
         await deleteTodo(`/todos/${todo.id}`).then(() => {
@@ -55,12 +55,11 @@ export const Footer: React.FC<Props> = ({
         {Object.keys(Links).map((key) => (
           <a
             href="#/completed"
-            className={classNames('filter__link',
-              {
-                selected: filteredBy === key,
-              })}
+            className={classNames('filter__link', {
+              selected: filteredBy === key,
+            })}
             key={key}
-            onClick={() => handleChange(key)}
+            onClick={() => handleChangeFilterType(key)}
           >
             {key}
           </a>

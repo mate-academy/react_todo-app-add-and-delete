@@ -8,7 +8,7 @@ type Props = {
   title: string;
   handleChangeTitle: (event: React.ChangeEvent<HTMLInputElement>) => void;
   setTitleTodo: (value: string) => void;
-  setErrorMessage: (value: string) => void;
+  setErrorMessage: (errorMessage: string) => void;
   setTempTodo: (value: Todo | null) => void;
   activeInput: boolean;
   setActiveInput: (value: boolean) => void;
@@ -47,6 +47,7 @@ export const Header: React.FC<Props> = ({
 
         await addTodo(newTodo)
           .then((response) => setTodoList([...todos, response]));
+
         setTitleTodo('');
       } catch {
         setErrorMessage('Unable to add a todo');

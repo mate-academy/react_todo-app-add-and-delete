@@ -80,7 +80,7 @@ export const App: React.FC = () => {
             setTodoList={setTodoList}
             filteredBy={filteredBy}
             todosLengh={visibleTodos.length}
-            handleChange={handleChangeFilterBy}
+            handleChangeFilterType={handleChangeFilterBy}
             todos={visibleTodos}
             setErrorMessage={setErrorMessage}
             setDeletedTodos={setDeletedTodos}

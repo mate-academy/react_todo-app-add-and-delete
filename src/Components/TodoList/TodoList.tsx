@@ -1,13 +1,13 @@
-import classNames from 'classnames';
 import { Todo } from '../../types/Todo';
 import { TodoInfo } from '../TodoInfo/TodoInfo';
+import { deleteTodo } from '../../api/todos';
 
 type Props = {
   setTodoList: (todos: Todo[]) => void;
   todos: Todo[];
-  setErrorMessage: (value: string) => void;
+  setErrorMessage: (errorMessage: string) => void;
   deletedTodos: number[];
-  setDeletedTodos: (value: number[]) => void;
+  setDeletedTodos: (deletedTodos: number[]) => void;
   tempTodo: Todo | null;
 };
 
@@ -18,41 +18,45 @@ export const TodoList: React.FC<Props> = ({
   deletedTodos,
   setDeletedTodos,
   tempTodo,
-}) => (
-  <section className="todoapp__main">
-    {todos.map((todo) => (
-      <div
-        className={classNames('todo', {
-          completed: todo.completed,
-        })}
-        key={todo.id}
-      >
+}) => {
+  const handleDeleteTodo = async (todoID: number) => {
+    try {
+      setDeletedTodos([todoID]);
+      const newTodos = todos.filter((todo) => todo.id !== todoID);
+
+      await deleteTodo(`/todos/${todoID}`);
+
+      setTodoList(newTodos);
+    } catch {
+      setErrorMessage('Unable to delete a todo');
+    } finally {
+      setDeletedTodos([]);
+    }
+  };
+
+  const isIncludesTempTodo = deletedTodos.includes(0);
+
+  return (
+    <section className="todoapp__main">
+      {todos.map((todo) => {
+        const isIncludes = deletedTodos.includes(todo.id);
+
+        return (
+          <TodoInfo
+            isIncludes={isIncludes}
+            todo={todo}
+            onDelete={handleDeleteTodo}
+            key={todo.id}
+          />
+        );
+      })}
+      {tempTodo && (
         <TodoInfo
-          setTodoList={setTodoList}
-          todo={todo}
-          todos={todos}
-          setErrorMessage={setErrorMessage}
-          deletedTodos={deletedTodos}
-          setDeletedTodos={setDeletedTodos}
+          isIncludes={isIncludesTempTodo}
+          todo={tempTodo}
+          onDelete={handleDeleteTodo}
         />
-      </div>
-    ))}
-    {tempTodo && (
-      <div className="todo">
-        <label className="todo__status-label">
-          <input type="checkbox" className="todo__status" />
-        </label>
-
-        <span className="todo__title">{tempTodo.title}</span>
-        <button type="button" className="todo__remove">
-          ×
-        </button>
-
-        <div className="modal overlay">
-          <div className="modal-background has-background-white-ter" />
-          <div className="loader" />
-        </div>
-      </div>
-    )}
-  </section>
-);
+      )}
+    </section>
+  );
+};
