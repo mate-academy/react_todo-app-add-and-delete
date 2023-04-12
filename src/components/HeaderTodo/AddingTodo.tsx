@@ -4,21 +4,20 @@ import { Todo } from '../../types/Todo';
 
 interface Props {
   todos: Todo[],
-  isDisable: boolean,
   onAddTodo: (title: string) => void,
 }
 
 export const AddingTodo: React.FC<Props> = (props) => {
   const {
     todos,
-    isDisable,
     onAddTodo,
   } = props;
 
   const [newTitleTodo, setNewTitleTodo] = useState('');
+  const [inputDisabled, setInputDisabled] = useState(false);
 
-  const isTodos = todos.length > 0;
-  const hasCompletedTodo = todos.some((todo: Todo) => todo.completed);
+  const isHasTodos = todos.length < 1;
+  const hasCompletedTodos = todos.some(todo => todo.completed);
 
   const handlerTitle = (event: React.ChangeEvent<HTMLInputElement>) => {
     const title = event.target.value;
@@ -26,28 +25,29 @@ export const AddingTodo: React.FC<Props> = (props) => {
     setNewTitleTodo(title);
   };
 
-  const handlerSubmit = (event: React.FormEvent<HTMLFormElement>) => {
+  const handlerSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
 
-    onAddTodo(newTitleTodo);
+    setInputDisabled(true);
+    await onAddTodo(newTitleTodo);
 
+    setInputDisabled(false);
     setNewTitleTodo('');
   };
 
   return (
     <>
-      {isTodos && (
-        <button
-          type="button"
-          className={classNames(
-            'todoapp__toggle-all',
-            {
-              active: hasCompletedTodo,
-            },
-          )}
-          aria-label="active"
-        />
-      )}
+      <button
+        type="button"
+        className={classNames(
+          'todoapp__toggle-all',
+          {
+            active: hasCompletedTodos,
+            'is-invisible': isHasTodos,
+          },
+        )}
+        aria-label="active"
+      />
 
       <form onSubmit={handlerSubmit}>
         <input
@@ -56,7 +56,7 @@ export const AddingTodo: React.FC<Props> = (props) => {
           placeholder="What needs to be done?"
           value={newTitleTodo}
           onChange={handlerTitle}
-          disabled={isDisable}
+          disabled={inputDisabled}
         />
       </form>
     </>

@@ -13,7 +13,8 @@ import { TodoList } from './components/TodoList';
 import { TodoFooter } from './components/TodoFooter';
 import { TodoItem } from './components/TodoItem';
 
-const USER_ID = 6749;
+const USER_ID = 7036;
+// const USER_ID = 6749;
 
 export enum ErrorsType {
   EMPTY = 'Title cannot be empty',
@@ -31,7 +32,6 @@ export const App: React.FC = () => {
   const [error, setError] = useState<ErrorsType>(ErrorsType.EMPTY);
 
   const [isHiddenError, setIsHiddenError] = useState(true);
-  const [isDisableField, setIsDisableField] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
 
   const handlerError = (whatError: ErrorsType) => {
@@ -46,15 +46,11 @@ export const App: React.FC = () => {
   useEffect(() => {
     const fetchTodos = async () => {
       try {
-        setIsDisableField(true);
-
         const fetchedTodos = await getTodos(USER_ID);
 
         setTodos(fetchedTodos);
       } catch {
         handlerError(ErrorsType.UPDATE);
-      } finally {
-        setIsDisableField(false);
       }
     };
 
@@ -90,8 +86,6 @@ export const App: React.FC = () => {
     });
 
     try {
-      setIsDisableField(true);
-
       const addingTodo = await addTodo(newTodo);
 
       setTodos(prevTodos => ([
@@ -101,7 +95,6 @@ export const App: React.FC = () => {
     } catch {
       handlerError(ErrorsType.ADD);
     } finally {
-      setIsDisableField(false);
       setTempTodo(null);
     }
   };
@@ -140,9 +133,8 @@ export const App: React.FC = () => {
       <div className="todoapp__content">
         <header className="todoapp__header">
           <AddingTodo
-            todos={visibleTodos}
+            todos={todos}
             onAddTodo={addNewTodo}
-            isDisable={isDisableField}
           />
         </header>
 
@@ -155,12 +147,13 @@ export const App: React.FC = () => {
           <TodoItem todo={tempTodo} isActive={isLoading} />
         )}
 
-        <TodoFooter
-          todos={todos}
-          filteredTodos={visibleTodos}
-          sortType={sortType}
-          onSelect={handlerSortType}
-        />
+        {todos.length > 0 && (
+          <TodoFooter
+            todos={todos}
+            sortType={sortType}
+            onSelect={handlerSortType}
+          />
+        )}
       </div>
 
       <div
