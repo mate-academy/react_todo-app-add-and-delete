@@ -2,7 +2,7 @@
 import React, { useEffect, useState } from 'react';
 import { getTodos, deleteTodo, postTodo } from './api/todos';
 import { ErrorMessage } from './components/ErrorMessage/ErrorMessage';
-import { TodoFilter } from './components/ErrorMessage/TodoFilter/TodoFilter';
+import { TodoFilter } from './components/TodoFilter/TodoFilter';
 import { Header } from './components/Header/Header';
 import { Loader } from './components/Loader/Loader';
 import { TodoList } from './components/TodoList/TodoList';
@@ -24,6 +24,10 @@ export const App: React.FC = () => {
   const handleShowError = (text: string) => {
     setLoadingError(true);
     setErrorText(text);
+
+    setTimeout(() => {
+      setLoadingError(false);
+    }, 3000);
   };
 
   const loadTodos = (userId: number) => {
@@ -34,9 +38,6 @@ export const App: React.FC = () => {
       .then(loadedTodos => setTodos(loadedTodos))
       .catch(() => {
         handleShowError(TodosError.FailedLoadingGoods);
-        setTimeout(() => {
-          setLoadingError(false);
-        }, 3000);
       })
       .finally(() => setIsLoading(false));
   };
@@ -52,9 +53,9 @@ export const App: React.FC = () => {
   const visiableTodos = todos.filter(todo => {
     switch (sortTodosBy) {
       case SortTodoBy.Completed:
-        return todo.completed;
+        return todo.completed === true;
       case SortTodoBy.Active:
-        return !todo.completed;
+        return todo.completed === false;
       default:
         return todo;
     }
@@ -124,7 +125,7 @@ export const App: React.FC = () => {
           deleteTodo={handleDeleteTodo}
         />
 
-        {visiableTodos.length > 0 && (
+        {todos.length > 0 && (
           <TodoFilter
             changeSortBy={setSortTodosBy}
           />

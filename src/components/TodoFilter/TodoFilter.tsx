@@ -1,5 +1,5 @@
 import { Dispatch, SetStateAction } from 'react';
-import { SortTodoBy } from '../../../types';
+import { SortTodoBy } from '../../types';
 
 type Props = {
   changeSortBy: Dispatch<SetStateAction<SortTodoBy>>;
@@ -16,7 +16,11 @@ export const TodoFilter: React.FC<Props> = (props) => {
 
       {/* Active filter should have a 'selected' class */}
       <nav className="filter">
-        <a href="#/" className="filter__link selected">
+        <a
+          href="#/"
+          className="filter__link selected"
+          onClick={() => changeSortBy(SortTodoBy.Default)}
+        >
           All
         </a>
 

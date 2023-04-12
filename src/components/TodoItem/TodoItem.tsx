@@ -13,6 +13,10 @@ export const TodoItem: React.FC<Props> = (props) => {
 
   const [isCompleted, setIsCompleted] = useState(completed);
 
+  const handleChange = () => {
+    setIsCompleted(prevStatus => !prevStatus);
+  };
+
   return (
     <div className={classNames(
       'todo',
@@ -26,7 +30,7 @@ export const TodoItem: React.FC<Props> = (props) => {
           type="checkbox"
           className="todo__status"
           checked={isCompleted}
-          onChange={() => setIsCompleted(prevStatus => !prevStatus)}
+          onChange={() => handleChange}
         />
       </label>
 
