@@ -5,21 +5,29 @@ import { TodoItem } from '../TodoItem';
 
 interface Props {
   todos: Todo[],
-  onDelete?: (
-    todoId: number,
-    setIsDeleting: (isDeleting: boolean) => void,
-  ) => void,
+  tempTodo?: Todo | null,
+  onDelete?: (todoId: number) => void,
+  idsForLoader: number[],
 }
 
-export const TodoList: React.FC<Props> = ({ todos, onDelete }) => ( // delete
+export const TodoList: React.FC<Props> = ({
+  todos,
+  tempTodo,
+  onDelete,
+  idsForLoader,
+}) => (
   <section className="todoapp__main">
     {todos.map(todo => (
       <TodoItem
         todo={todo}
         key={todo.id}
-        isActive={false}
+        isLoading={idsForLoader.includes(todo.id)}
         onDelete={onDelete}
       />
     ))}
+
+    {tempTodo && (
+      <TodoItem todo={tempTodo} />
+    )}
   </section>
 );

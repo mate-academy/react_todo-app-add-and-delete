@@ -11,7 +11,6 @@ import { UserWarning } from './UserWarning';
 import { AddingTodo } from './components/HeaderTodo';
 import { TodoList } from './components/TodoList';
 import { TodoFooter } from './components/TodoFooter';
-import { TodoItem } from './components/TodoItem';
 
 const USER_ID = 7036;
 // const USER_ID = 6749;
@@ -32,7 +31,7 @@ export const App: React.FC = () => {
   const [error, setError] = useState<ErrorsType>(ErrorsType.EMPTY);
 
   const [isHiddenError, setIsHiddenError] = useState(true);
-  const [isLoading, setIsLoading] = useState(false);
+  const [loadingTodosIds, setLoadingTodosIds] = useState<number[]>([]);
 
   const handlerError = (whatError: ErrorsType) => {
     setError(whatError);
@@ -78,8 +77,6 @@ export const App: React.FC = () => {
       completed: false,
     };
 
-    setIsLoading(true);
-
     setTempTodo({
       ...newTodo,
       id: 0,
@@ -107,23 +104,23 @@ export const App: React.FC = () => {
     setIsHiddenError(true);
   };
 
-  const deleteTodo = async (todoId: number) => {
+  const handlerDeleteTodo = async (todoId: number) => {
     try {
+      setLoadingTodosIds(prevLoaderIds => ([
+        ...prevLoaderIds,
+        todoId,
+      ]));
+
       await removeTodo(todoId);
 
       setTodos((prevTodos => prevTodos.filter(todo => todoId !== todo.id)));
     } catch {
       handlerError(ErrorsType.DELETE);
+    } finally {
+      setLoadingTodosIds(prevLoaderIds => (
+        prevLoaderIds.filter(id => id !== todoId)
+      ));
     }
-  };
-
-  const handlerRemoveTodo = async (
-    todoId: number,
-    setIsDeleting: (isDeleting: boolean) => void,
-  ) => {
-    setIsDeleting(true);
-
-    await deleteTodo(todoId);
   };
 
   return (
@@ -140,12 +137,10 @@ export const App: React.FC = () => {
 
         <TodoList
           todos={visibleTodos}
-          onDelete={handlerRemoveTodo}
+          tempTodo={tempTodo}
+          onDelete={handlerDeleteTodo}
+          idsForLoader={loadingTodosIds}
         />
-
-        {tempTodo && (
-          <TodoItem todo={tempTodo} isActive={isLoading} />
-        )}
 
         {todos.length > 0 && (
           <TodoFooter

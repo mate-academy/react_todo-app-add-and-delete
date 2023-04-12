@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React from 'react';
 
 import classNames from 'classnames';
 
@@ -6,16 +6,13 @@ import { Todo } from '../../types/Todo';
 
 interface Props {
   todo: Todo,
-  isActive: boolean,
-  onDelete?: (
-    todoId: number,
-    setIsDeleting: (isDeleting: boolean) => void,
-  ) => void,
+  isLoading?: boolean,
+  onDelete?: (todoId: number) => void,
 }
 
 export const TodoItem: React.FC<Props> = ({
   todo,
-  isActive,
+  isLoading = true,
   onDelete,
 }) => {
   const {
@@ -24,10 +21,8 @@ export const TodoItem: React.FC<Props> = ({
     title,
   } = todo;
 
-  const [isDeleting, setIsDeleting] = useState(false);
-
   const handlerRemoveTodo = () => {
-    onDelete?.(id, setIsDeleting);
+    onDelete?.(id);
   };
 
   return (
@@ -63,7 +58,7 @@ export const TodoItem: React.FC<Props> = ({
       <div
         className={classNames(
           'modal overlay',
-          { 'is-active': isActive || isDeleting },
+          { 'is-active': isLoading },
         )}
       >
         <div className="modal-background has-background-white-ter" />
