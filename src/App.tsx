@@ -1,24 +1,68 @@
-/* eslint-disable max-len */
-/* eslint-disable jsx-a11y/control-has-associated-label */
-import React from 'react';
-import { UserWarning } from './UserWarning';
+import React, {
+  ChangeEvent,
+  useEffect,
+  useState,
+} from 'react';
 
-const USER_ID = 0;
+import { getTodos } from './api/todos';
+import { UserWarning } from './UserWarning';
+import { Todo } from './types/Todo';
+import { Filter } from './components/Filter/Filter';
+import { NewTodo } from './components/NewTodo/NewTodo';
+import NotificationError from
+  './components/NotificationError/NotificationError';
+
+const USER_ID = 6846;
 
 export const App: React.FC = () => {
+  const [task, setTask] = useState('');
+  const [todos, setTodos] = useState<Todo[]>([]);
+  const [error, setError] = useState('');
+
+  const handleTodoChange = (event: ChangeEvent<HTMLInputElement>) => {
+    setTask(event.target.value);
+  };
+
+  const loadTodos = async () => {
+    try {
+      await getTodos(Number(USER_ID)).then(res => setTodos(res));
+    } catch {
+      setError('unable to get todos');
+    }
+  };
+
+  useEffect(() => {
+    loadTodos();
+  }, []);
+
+  const resetError = () => setError('');
+
   if (!USER_ID) {
     return <UserWarning />;
   }
 
   return (
-    <section className="section container">
-      <p className="title is-4">
-        Copy all you need from the prev task:
-        <br />
-        <a href="https://github.com/mate-academy/react_todo-app-loading-todos#react-todo-app-load-todos">React Todo App - Load Todos</a>
-      </p>
+    <div className="todoapp">
+      <h1 className="todoapp__title is-1">todos</h1>
 
-      <p className="subtitle">Styles are already copied</p>
-    </section>
+      <div className="todoapp__content">
+        <NewTodo
+          handleTodoChange={handleTodoChange}
+          task={task}
+        />
+
+        <Filter todos={todos} />
+      </div>
+
+      {
+        error
+        && (
+          <NotificationError
+            error={error}
+            resetError={resetError}
+          />
+        )
+      }
+    </div>
   );
 };
