@@ -1,5 +1,5 @@
 /* eslint-disable jsx-a11y/control-has-associated-label */
-import React, { useEffect, useState } from 'react';
+import React, { useCallback, useEffect, useState } from 'react';
 import { getTodos, deleteTodo, postTodo } from './api/todos';
 import { ErrorMessage } from './components/ErrorMessage/ErrorMessage';
 import { TodoFilter } from './components/TodoFilter/TodoFilter';
@@ -14,6 +14,8 @@ import { UserWarning } from './UserWarning';
 export const App: React.FC = () => {
   const [todos, setTodos] = useState<Todo[]>([]);
   const [sortTodosBy, setSortTodosBy] = useState(SortTodoBy.Default);
+  const [completedTodo, setCompletedTodo] = useState<Todo[]>([]);
+
   const [isLoading, setIsLoading] = useState(false);
   const [loadingError, setLoadingError] = useState(false);
   const [errorText, setErrorText] = useState('');
@@ -101,9 +103,32 @@ export const App: React.FC = () => {
     }
   };
 
+  const handleAddCompletedTodo = (todoId: number) => {
+    const selectedTodo = todos.find(todo => todo.id === todoId);
+
+    if (selectedTodo) {
+      setCompletedTodo(prevTodo => [...prevTodo, selectedTodo]);
+    }
+  };
+
+  const handleRemoveCompletedTodo = (todoId: number) => {
+    setCompletedTodo(prevTodos => ([...prevTodos
+      .filter(todo => todo.id !== todoId)]));
+  };
+
+  const handleRemoveCompletedTodos = useCallback(() => {
+    todos.forEach(todo => {
+      if (todo.completed) {
+        handleDeleteTodo(todo.id);
+      }
+    });
+  }, [todos]);
+
   if (!USER_ID) {
     return <UserWarning />;
   }
+
+  const activeTodos = todos.length - completedTodo.length;
 
   return (
     <div className="todoapp">
@@ -123,11 +148,20 @@ export const App: React.FC = () => {
           todos={visiableTodos}
           tempTodo={tempTodo}
           deleteTodo={handleDeleteTodo}
+          completedTodos={completedTodo}
+          addCompletedTodo={handleAddCompletedTodo}
+          removeCompletedTodo={handleRemoveCompletedTodo}
         />
 
         {todos.length > 0 && (
           <TodoFilter
+            onRemoveTodos={handleRemoveCompletedTodos}
+            todos={todos}
+            changeTodos={setTodos}
+            sortBy={sortTodosBy}
             changeSortBy={setSortTodosBy}
+            count={activeTodos}
+            completedTodo={completedTodo}
           />
         )}
       </div>

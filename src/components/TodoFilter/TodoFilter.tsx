@@ -1,24 +1,40 @@
+import classNames from 'classnames';
 import { Dispatch, SetStateAction } from 'react';
 import { SortTodoBy } from '../../types';
+import { Todo } from '../../types/Todo';
 
 type Props = {
+  onRemoveTodos: () => void;
+  todos: Todo[];
+  changeTodos: React.Dispatch<React.SetStateAction<Todo[]>>;
+  sortBy: SortTodoBy;
   changeSortBy: Dispatch<SetStateAction<SortTodoBy>>;
+  count: number;
+  completedTodo: Todo[];
 };
 
 export const TodoFilter: React.FC<Props> = (props) => {
-  const { changeSortBy } = props;
+  const {
+    onRemoveTodos,
+    sortBy,
+    changeSortBy,
+    count,
+    completedTodo,
+  } = props;
 
   return (
     <footer className="todoapp__footer">
       <span className="todo-count">
-        3 items left
+        {`${count} items left`}
       </span>
 
-      {/* Active filter should have a 'selected' class */}
       <nav className="filter">
         <a
           href="#/"
-          className="filter__link selected"
+          className={classNames(
+            'filter__link',
+            { selected: sortBy === SortTodoBy.Default },
+          )}
           onClick={() => changeSortBy(SortTodoBy.Default)}
         >
           All
@@ -26,7 +42,10 @@ export const TodoFilter: React.FC<Props> = (props) => {
 
         <a
           href="#/active"
-          className="filter__link"
+          className={classNames(
+            'filter__link',
+            { selected: sortBy === SortTodoBy.Active },
+          )}
           onClick={() => changeSortBy(SortTodoBy.Active)}
         >
           Active
@@ -34,17 +53,25 @@ export const TodoFilter: React.FC<Props> = (props) => {
 
         <a
           href="#/completed"
-          className="filter__link"
+          className={classNames(
+            'filter__link',
+            { selected: sortBy === SortTodoBy.Completed },
+          )}
           onClick={() => changeSortBy(SortTodoBy.Completed)}
         >
           Completed
         </a>
       </nav>
 
-      {/* don't show this button if there are no completed todos */}
-      <button type="button" className="todoapp__clear-completed">
-        Clear completed
-      </button>
+      {completedTodo.length > 0 && (
+        <button
+          type="button"
+          className="todoapp__clear-completed"
+          onClick={onRemoveTodos}
+        >
+          Clear completed
+        </button>
+      )}
     </footer>
   );
 };
