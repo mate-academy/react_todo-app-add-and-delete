@@ -129,5 +129,11 @@
     &:active {
       text-decoration: none;
     }
+
+    &:disabled {
+      opacity: 0;
+      text-decoration: none;
+      cursor: auto;
+    }
   }
 }
