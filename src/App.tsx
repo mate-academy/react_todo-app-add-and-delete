@@ -95,7 +95,7 @@ export const App: React.FC = () => {
         return todo;
       }));
     } catch {
-      setErrorMessage('Unable to add a todo');
+      setErrorMessage('Unable to update a todo');
       setTimeout(() => {
         setErrorMessage('');
       }, 3000);
