@@ -1,9 +1,13 @@
-/* eslint-disable jsx-a11y/control-has-associated-label */
 import React, { useEffect, useMemo, useState } from 'react';
 import { UserWarning } from './UserWarning';
 import { getTodos, postTodo, deleteTodo } from './api/todos';
 import { Todo } from './types/Todo';
 import { FilterType } from './types/Filter';
+import { ErrorType } from './types/Error';
+import { ErrorNotification } from './components/ErrorNotification';
+import { Footer } from './components/Footer';
+import { Header } from './components/Header';
+import { ToDoList } from './components/ToDoList';
 
 const USER_ID = 6701;
 
@@ -11,32 +15,25 @@ export const App: React.FC = () => {
   const [todos, setTodos] = useState<Todo[]>([]);
   const [tempTodo, setTempTodo] = useState<Todo | null>(null);
   const [statusFilter, setStatusFilter] = useState<FilterType>(FilterType.All);
-  const [loadingError, setLoadingError] = useState(false);
-  const [postError, setPostError] = useState(false);
-  const [deleteError, setDeleteError] = useState(false);
-  const [emptyTitleError, setEmptyTitleError] = useState(false);
+  const [error, setError] = useState<ErrorType>(ErrorType.None);
   const [input, setInput] = useState('');
   const [isLoading, setIsLoading] = useState(false);
   const [deleting, setDeleting] = useState(0);
-  const error = useMemo(() => (
-    loadingError || postError || emptyTitleError || deleteError
-  ), [loadingError, postError, emptyTitleError, deleteError]);
 
   useEffect(() => {
     getTodos(USER_ID)
       .then(res => {
         setTodos(res);
-        // console.log(res);
       })
       .catch(() => {
-        setLoadingError(true);
+        setError(ErrorType.Loading);
         setTodos([]);
       });
   }, []);
 
   const addTodo = (title:string) => {
     if (!title) {
-      setEmptyTitleError(true);
+      setError(ErrorType.EmptyTitle);
 
       return;
     }
@@ -57,7 +54,7 @@ export const App: React.FC = () => {
         setTodos(oldTodos => ([...oldTodos, res]));
       })
       .catch(() => {
-        setPostError(true);
+        setError(ErrorType.Post);
       })
       .finally(() => {
         setTempTodo(null);
@@ -86,9 +83,7 @@ export const App: React.FC = () => {
   };
 
   const deleteNotificationHandler = () => {
-    setLoadingError(false);
-    setPostError(false);
-    setEmptyTitleError(false);
+    setError(ErrorType.None);
   };
 
   const numActiveTodos = filterTodos(FilterType.Active).length;
@@ -114,7 +109,7 @@ export const App: React.FC = () => {
         ));
       })
       .catch(() => {
-        setDeleteError(true);
+        setError(ErrorType.Delete);
       })
       .finally(() => {
         setIsLoading(false);
@@ -141,135 +136,34 @@ export const App: React.FC = () => {
       <h1 className="todoapp__title">todos</h1>
 
       <div className="todoapp__content">
-        <header className="todoapp__header">
-          <button type="button" className="todoapp__toggle-all active" />
-
-          <form
-            onSubmit={submitHandler}
-          >
-            <input
-              type="text"
-              className="todoapp__new-todo"
-              placeholder="What needs to be done?"
-              value={input}
-              onChange={onChangeHandler}
-            />
-          </form>
-        </header>
-
-        <section className="todoapp__main">
-          {visibleTodos.map(todo => (
-            <div
-              className={todo.completed ? 'todo completed' : 'todo'}
-              key={todo.id}
-            >
-              <label className="todo__status-label">
-                <input
-                  type="checkbox"
-                  className="todo__status"
-                  checked={todo.completed}
-                />
-              </label>
-
-              <span className="todo__title">{todo.title}</span>
-
-              <button
-                type="button"
-                className="todo__remove"
-                onClick={() => deleteHandler(todo.id)}
-              >
-                ×
-              </button>
-
-              <div
-                className={`modal overlay ${isLoading && deleting === todo.id && 'is-active'}`}
-              >
-                <div className="modal-background has-background-white-ter" />
-                <div className="loader" />
-              </div>
-            </div>
-          ))}
-
-          {tempTodo && (
-            <div className={tempTodo.completed ? 'todo completed' : 'todo'}>
-              <label className="todo__status-label">
-                <input
-                  type="checkbox"
-                  className="todo__status"
-                  checked={tempTodo.completed}
-                />
-              </label>
-
-              <span className="todo__title">{tempTodo.title}</span>
-              <button type="button" className="todo__remove">×</button>
-
-              <div className="modal overlay is-active">
-                <div className="modal-background has-background-white-ter" />
-                <div className="loader" />
-              </div>
-            </div>
-          )}
-        </section>
-
-        <footer
-          className="todoapp__footer"
-          hidden={!todos}
-        >
-          <span className="todo-count">
-            {`${numActiveTodos} items left`}
-          </span>
-
-          <nav className="filter">
-            <a
-              href="#/"
-              className={`filter__link ${statusFilter === FilterType.All && 'selected'}`}
-              onClick={() => clickFilterHandler(FilterType.All)}
-            >
-              All
-            </a>
-
-            <a
-              href="#/active"
-              className={`filter__link ${statusFilter === FilterType.Active && 'selected'}`}
-              onClick={() => clickFilterHandler(FilterType.Active)}
-            >
-              Active
-            </a>
-
-            <a
-              href="#/completed"
-              className={`filter__link ${statusFilter === FilterType.Completed && 'selected'}`}
-              onClick={() => clickFilterHandler(FilterType.Completed)}
-            >
-              Completed
-            </a>
-          </nav>
-
-          <button
-            type="button"
-            className="todoapp__clear-completed"
-            onClick={clearCompletedHandler}
-            disabled={!numCompletedTodos}
-          >
-            Clear completed
-          </button>
-        </footer>
-      </div>
-
-      <div
-        className={`notification is-danger is-light has-text-weight-normal ${!error && 'hidden'}`}
-      >
-        <button
-          type="button"
-          className="delete"
-          onClick={deleteNotificationHandler}
+        <Header
+          input={input}
+          submitHandler={submitHandler}
+          onChangeHandler={onChangeHandler}
         />
 
-        {loadingError && 'Unable to load a todo'}
-        {postError && 'Unable to add a todo'}
-        {emptyTitleError && 'Title can\'t be empty'}
-        {deleteError && 'Unable to delete a todo'}
+        <ToDoList
+          visibleTodos={visibleTodos}
+          deleteHandler={deleteHandler}
+          isLoading={isLoading}
+          deleting={deleting}
+          tempTodo={tempTodo}
+        />
+
+        <Footer
+          numActiveTodos={numActiveTodos}
+          numCompletedTodos={numCompletedTodos}
+          statusFilter={statusFilter}
+          todos={todos}
+          clickFilterHandler={clickFilterHandler}
+          clearCompletedHandler={clearCompletedHandler}
+        />
       </div>
+
+      <ErrorNotification
+        error={error}
+        deleteNotificationHandler={deleteNotificationHandler}
+      />
     </div>
   );
 };
