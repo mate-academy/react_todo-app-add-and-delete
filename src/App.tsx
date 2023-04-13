@@ -4,7 +4,7 @@ import React, {
   useState,
 } from 'react';
 
-import { getTodos } from './api/todos';
+import { getTodos, addTodo } from './api/todos';
 import { UserWarning } from './UserWarning';
 import { Todo } from './types/Todo';
 import { Filter } from './components/Filter/Filter';
@@ -31,6 +31,25 @@ export const App: React.FC = () => {
     }
   };
 
+  const handleTodoSubmit = async (event: ChangeEvent<HTMLFormElement>) => {
+    event.preventDefault();
+
+    const nextId = todos[todos.length - 1].id + 1;
+
+    try {
+      await addTodo({
+        id: nextId,
+        userId: USER_ID,
+        title: task,
+        completed: false,
+      }).then(() => loadTodos());
+    } catch {
+      setError('unable to add todos');
+    }
+
+    setTask('');
+  };
+
   useEffect(() => {
     loadTodos();
   }, []);
@@ -48,6 +67,7 @@ export const App: React.FC = () => {
       <div className="todoapp__content">
         <NewTodo
           handleTodoChange={handleTodoChange}
+          handleTodoSubmit={handleTodoSubmit}
           task={task}
         />
 
