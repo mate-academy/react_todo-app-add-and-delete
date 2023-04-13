@@ -1,27 +1,26 @@
 import classNames from 'classnames';
-import { useState } from 'react';
 import { Todo } from '../../types/Todo';
 
 type Props = {
   todo: Todo
   onDelete: (id: number) => void
+  onUpdate: (id: number, data: Partial<Todo>) => void,
   isLoading: boolean
 };
 
-export const TodoInfo: React.FC<Props> = ({ todo, onDelete, isLoading }) => {
+export const TodoInfo: React.FC<Props> = ({
+  todo,
+  onDelete,
+  isLoading,
+  onUpdate,
+}) => {
   const { title, completed, id } = todo;
-
-  const [isCompleted, setIsCompleted] = useState(completed);
-
-  const handleChangeTodoStatus = () => {
-    setIsCompleted((state) => !state);
-  };
 
   return (
     <div className={
       classNames(
         'todo',
-        { completed: isCompleted },
+        { completed },
       )
     }
     >
@@ -29,7 +28,7 @@ export const TodoInfo: React.FC<Props> = ({ todo, onDelete, isLoading }) => {
         <input
           type="checkbox"
           className="todo__status"
-          onClick={handleChangeTodoStatus}
+          onClick={() => onUpdate(id, { completed: !completed })}
         />
       </label>
 

@@ -4,10 +4,12 @@ type Props = {
   title: string
   onChangeTitle: (event: React.ChangeEvent<HTMLInputElement>) => void;
   onSubmitForm: (event: React.FormEvent) => void
+  isInputDisabled: boolean
 };
 
 export const Header: React.FC<Props> = ({
   title,
+  isInputDisabled,
   onChangeTitle,
   onSubmitForm,
 }) => (
@@ -22,6 +24,7 @@ export const Header: React.FC<Props> = ({
       <input
         type="text"
         value={title}
+        disabled={isInputDisabled}
         onChange={onChangeTitle}
         className="todoapp__new-todo"
         placeholder="What needs to be done?"

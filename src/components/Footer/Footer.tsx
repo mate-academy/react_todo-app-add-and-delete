@@ -6,9 +6,11 @@ type Props = {
   completedTodos: number
   selectedFilter: FilterType
   onSelectFilter: (filterType: FilterType) => void
+  onDeleteComplete: () => void
 };
 
 export const Footer: React.FC<Props> = ({
+  onDeleteComplete,
   onSelectFilter,
   completedTodos,
   selectedFilter,
@@ -39,6 +41,7 @@ export const Footer: React.FC<Props> = ({
         <button
           type="button"
           className="todoapp__clear-completed"
+          onClick={onDeleteComplete}
         >
           Clear completed
         </button>

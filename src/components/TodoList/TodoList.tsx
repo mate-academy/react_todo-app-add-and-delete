@@ -8,6 +8,7 @@ type Props = {
   filter: FilterType;
   loadingIds: number[];
   onDeleteTodo: (id: number) => void
+  onUpdateTodo: (id: number, data: Partial<Todo>) => void,
   temporaryTodo: Todo | undefined;
 };
 
@@ -16,6 +17,7 @@ export const ToodList: React.FC<Props> = ({
   filter,
   loadingIds,
   onDeleteTodo,
+  onUpdateTodo,
   temporaryTodo,
 }) => {
   const filteredTodoList: Todo[] = useMemo(() => {
@@ -46,6 +48,7 @@ export const ToodList: React.FC<Props> = ({
             <TodoInfo
               isLoading={isLoading}
               key={todo.id}
+              onUpdate={onUpdateTodo}
               onDelete={onDeleteTodo}
               todo={todo}
             />
@@ -56,6 +59,7 @@ export const ToodList: React.FC<Props> = ({
       {temporaryTodo && (
         <TodoInfo
           isLoading
+          onUpdate={() => {}}
           todo={temporaryTodo}
           key={temporaryTodo.id}
           onDelete={() => {}}

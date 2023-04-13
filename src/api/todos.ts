@@ -13,3 +13,7 @@ export const postTodo = (todo: NewTodo) => {
 export const deleteTodo = (id: number) => {
   return client.delete(`/todos/${id}`);
 };
+
+export const patchTodo = (id: number, data: Partial<Todo>) => {
+  return client.patch<Todo>(`/todos/${id}`, data);
+};
