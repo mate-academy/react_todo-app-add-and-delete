@@ -3,12 +3,12 @@ import { ErrorType } from '../../types/Error';
 
 type Props = {
   error: ErrorType;
-  deleteNotificationHandler: () => void;
+  handleDeleteNotification: () => void;
 };
 
 export const ErrorNotification: React.FC<Props> = ({
   error,
-  deleteNotificationHandler,
+  handleDeleteNotification,
 }) => {
   return (
     <div
@@ -17,7 +17,7 @@ export const ErrorNotification: React.FC<Props> = ({
       <button
         type="button"
         className="delete"
-        onClick={deleteNotificationHandler}
+        onClick={handleDeleteNotification}
       />
 
       {error === ErrorType.Loading && 'Unable to load a todo'}

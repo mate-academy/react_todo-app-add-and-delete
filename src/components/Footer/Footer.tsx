@@ -6,8 +6,8 @@ type Props = {
   numCompletedTodos: number;
   statusFilter: FilterType;
   todos: Todo[];
-  clickFilterHandler: (filter: FilterType) => void;
-  clearCompletedHandler: () => void;
+  handleClickFilter: (filter: FilterType) => void;
+  handleClearCompleted: () => void;
 };
 
 export const Footer: React.FC<Props> = ({
@@ -15,13 +15,13 @@ export const Footer: React.FC<Props> = ({
   numCompletedTodos,
   statusFilter,
   todos,
-  clickFilterHandler,
-  clearCompletedHandler,
+  handleClickFilter,
+  handleClearCompleted,
 }) => {
   return (
     <footer
       className="todoapp__footer"
-      hidden={!todos}
+      hidden={!todos.length}
     >
       <span className="todo-count">
         {`${numActiveTodos} items left`}
@@ -31,7 +31,7 @@ export const Footer: React.FC<Props> = ({
         <a
           href="#/"
           className={`filter__link ${statusFilter === FilterType.All && 'selected'}`}
-          onClick={() => clickFilterHandler(FilterType.All)}
+          onClick={() => handleClickFilter(FilterType.All)}
         >
           All
         </a>
@@ -39,7 +39,7 @@ export const Footer: React.FC<Props> = ({
         <a
           href="#/active"
           className={`filter__link ${statusFilter === FilterType.Active && 'selected'}`}
-          onClick={() => clickFilterHandler(FilterType.Active)}
+          onClick={() => handleClickFilter(FilterType.Active)}
         >
           Active
         </a>
@@ -47,7 +47,7 @@ export const Footer: React.FC<Props> = ({
         <a
           href="#/completed"
           className={`filter__link ${statusFilter === FilterType.Completed && 'selected'}`}
-          onClick={() => clickFilterHandler(FilterType.Completed)}
+          onClick={() => handleClickFilter(FilterType.Completed)}
         >
           Completed
         </a>
@@ -56,7 +56,7 @@ export const Footer: React.FC<Props> = ({
       <button
         type="button"
         className="todoapp__clear-completed"
-        onClick={clearCompletedHandler}
+        onClick={handleClearCompleted}
         disabled={!numCompletedTodos}
       >
         Clear completed

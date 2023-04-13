@@ -2,7 +2,7 @@ import { Todo } from '../../types/Todo';
 
 type Props = {
   visibleTodos: Todo[];
-  deleteHandler: (todoId: number) => void,
+  handleDelete: (todoId: number) => void,
   isLoading: boolean,
   deleting: number,
   tempTodo: Todo | null,
@@ -10,7 +10,7 @@ type Props = {
 
 export const ToDoList: React.FC<Props> = ({
   visibleTodos,
-  deleteHandler,
+  handleDelete,
   isLoading,
   deleting,
   tempTodo,
@@ -35,7 +35,7 @@ export const ToDoList: React.FC<Props> = ({
           <button
             type="button"
             className="todo__remove"
-            onClick={() => deleteHandler(todo.id)}
+            onClick={() => handleDelete(todo.id)}
           >
             ×
           </button>

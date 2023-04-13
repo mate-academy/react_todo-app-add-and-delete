@@ -78,28 +78,28 @@ export const App: React.FC = () => {
     () => filterTodos(statusFilter), [statusFilter, todos],
   );
 
-  const clickFilterHandler = (filter: FilterType) => {
+  const handleClickFilter = (filter: FilterType) => {
     setStatusFilter(filter);
   };
 
-  const deleteNotificationHandler = () => {
+  const handleDeleteNotification = () => {
     setError(ErrorType.None);
   };
 
   const numActiveTodos = filterTodos(FilterType.Active).length;
   const numCompletedTodos = filterTodos(FilterType.Completed).length;
 
-  const onChangeHandler = (event: React.ChangeEvent<HTMLInputElement>) => {
+  const handleChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     setInput(event.target.value);
   };
 
-  const submitHandler = (event: React.FormEvent<HTMLFormElement>) => {
+  const handleSubmit = (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
     addTodo(input);
     setInput('');
   };
 
-  const deleteHandler = (todoId: number) => {
+  const handleDelete = (todoId: number) => {
     setIsLoading(true);
     setDeleting(todoId);
     deleteTodo(todoId)
@@ -117,13 +117,11 @@ export const App: React.FC = () => {
       });
   };
 
-  const clearCompletedHandler = () => {
-    todos.map(todo => {
+  const handleClearCompleted = () => {
+    todos.forEach(todo => {
       if (todo.completed) {
-        deleteHandler(todo.id);
+        handleDelete(todo.id);
       }
-
-      return todo;
     });
   };
 
@@ -138,13 +136,13 @@ export const App: React.FC = () => {
       <div className="todoapp__content">
         <Header
           input={input}
-          submitHandler={submitHandler}
-          onChangeHandler={onChangeHandler}
+          handleSubmit={handleSubmit}
+          handleChange={handleChange}
         />
 
         <ToDoList
           visibleTodos={visibleTodos}
-          deleteHandler={deleteHandler}
+          handleDelete={handleDelete}
           isLoading={isLoading}
           deleting={deleting}
           tempTodo={tempTodo}
@@ -155,14 +153,14 @@ export const App: React.FC = () => {
           numCompletedTodos={numCompletedTodos}
           statusFilter={statusFilter}
           todos={todos}
-          clickFilterHandler={clickFilterHandler}
-          clearCompletedHandler={clearCompletedHandler}
+          handleClickFilter={handleClickFilter}
+          handleClearCompleted={handleClearCompleted}
         />
       </div>
 
       <ErrorNotification
         error={error}
-        deleteNotificationHandler={deleteNotificationHandler}
+        handleDeleteNotification={handleDeleteNotification}
       />
     </div>
   );
