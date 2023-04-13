@@ -5,9 +5,10 @@ import { Todo } from '../../types/Todo';
 type Props = {
   todo: Todo
   onDelete: (id: number) => void
+  isLoading: boolean
 };
 
-export const TodoInfo: React.FC<Props> = ({ todo, onDelete }) => {
+export const TodoInfo: React.FC<Props> = ({ todo, onDelete, isLoading }) => {
   const { title, completed, id } = todo;
 
   const [isCompleted, setIsCompleted] = useState(completed);
@@ -44,7 +45,13 @@ export const TodoInfo: React.FC<Props> = ({ todo, onDelete }) => {
         ×
       </button>
 
-      <div className="modal overlay">
+      <div className={classNames(
+        'modal overlay',
+        {
+          'is-active': isLoading,
+        },
+      )}
+      >
         <div className="modal-background has-background-white-ter" />
         <div className="loader" />
       </div>

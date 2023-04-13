@@ -1,5 +1,5 @@
-/* eslint-disable jsx-a11y/control-has-associated-label */
 import React, { useEffect, useMemo, useState } from 'react';
+import { Notification } from './components/Notification';
 import { UserWarning } from './UserWarning';
 import { Todo } from './types/Todo';
 import { ToodList } from './components/TodoList/TodoList';
@@ -8,17 +8,16 @@ import { Loader } from './components/Loader';
 import { FilterType } from './types/FilterEnum';
 import { Header } from './components/Header/Header';
 import { Footer } from './components/Footer';
-import { Notification } from './components/Notification';
 
 const USER_ID = 7006;
 
 export const App: React.FC = () => {
   const [todos, setTodos] = useState<Todo[]>([]);
-  const [isError, setIsError] = useState('');
+  const [errorMessage, setErrorMessage] = useState('');
   const [title, setTitle] = useState('');
   const [temporaryTodo, setTemporaryTodo] = useState<Todo>();
-  const [isLoading, setIsLoading] = useState(false);
-  const [isHiddenNotification, setIsHiddenNotification] = useState(true);
+  const [isLoading, setIsLoading] = useState(true);
+  const [loadingIds, setLoadingIds] = useState<number[]>([]);
   const [selectedFilter, setSelectedFilter] = useState(FilterType.All);
 
   const activeTodos = useMemo(() => {
@@ -27,6 +26,10 @@ export const App: React.FC = () => {
 
   const handleInputChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     setTitle(event.target.value);
+  };
+
+  const removeError = () => {
+    setErrorMessage('');
   };
 
   const addTodo = (todoTitle: string) => {
@@ -43,9 +46,9 @@ export const App: React.FC = () => {
         setTodos(state => [...state, result]);
       })
       .catch(() => {
-        setIsError('Unable to add a todo');
+        setErrorMessage('Unable to add a todo');
         setTimeout(() => {
-          setIsError('');
+          setErrorMessage('');
         }, 3000);
       })
       .finally(() => {
@@ -57,9 +60,9 @@ export const App: React.FC = () => {
     event.preventDefault();
 
     if (!title) {
-      setIsError('Tittle can not be empty');
+      setErrorMessage('Tittle cannot be empty');
       setTimeout(() => {
-        setIsError('');
+        setErrorMessage('');
       }, 3000);
 
       return;
@@ -70,35 +73,33 @@ export const App: React.FC = () => {
   };
 
   const removeTodo = (id: number) => {
+    setLoadingIds(state => [...state, id]);
+
     return deleteTodo(id)
       .then(() => {
         setTodos(todos.filter(todo => todo.id !== id));
       })
       .catch(() => {
-        setIsError('Cant to delete a todo');
+        setErrorMessage('Cant to delete a todo');
         setTimeout(() => {
-          setIsError('');
+          setErrorMessage('');
         }, 3000);
       })
       .finally(() => {
-        setIsLoading(false);
+        setLoadingIds(state => state.filter(el => el !== id));
       });
   };
 
   useEffect(() => {
     const getTodosFromServer = async () => {
       try {
-        setIsLoading(true);
-        setIsError('');
-        setIsHiddenNotification(true);
+        setErrorMessage('');
         const todosFromServer = await getTodos(USER_ID);
 
         setTodos(todosFromServer);
       } catch (error) {
         if (error instanceof Error) {
-          setIsHiddenNotification(false);
-          setIsError(error.message);
-          setTimeout(setIsHiddenNotification, 3000, [true]);
+          setErrorMessage(error.message);
         }
       } finally {
         setIsLoading(false);
@@ -128,29 +129,28 @@ export const App: React.FC = () => {
 
       <div className="todoapp__content">
         {todos.length > 0 && (
-          <ToodList
-            temporaryTodo={temporaryTodo}
-            onDeleteTodo={removeTodo}
-            todos={todos}
-            filter={selectedFilter}
-          />
-        )}
+          (
+            <>
+              <ToodList
+                temporaryTodo={temporaryTodo}
+                onDeleteTodo={removeTodo}
+                loadingIds={loadingIds}
+                todos={todos}
+                filter={selectedFilter}
+              />
 
-        {todos.length > 0 && (
-          <Footer
-            activeTodos={activeTodos}
-            selectedFilter={selectedFilter}
-            onSelectFilter={setSelectedFilter}
-            completedTodos={todos.length - activeTodos}
-          />
+              <Footer
+                activeTodos={activeTodos}
+                selectedFilter={selectedFilter}
+                onSelectFilter={setSelectedFilter}
+                completedTodos={todos.length - activeTodos}
+              />
+            </>
+          )
         )}
       </div>
 
-      <Notification
-        isError={isError}
-        onChangeStatus={() => setIsHiddenNotification}
-        isHiddenNotification={isHiddenNotification}
-      />
+      <Notification errorMessage={errorMessage} onDelete={removeError} />
     </div>
   );
 };

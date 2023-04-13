@@ -1,15 +1,13 @@
 import classNames from 'classnames';
 
 type Props = {
-  isError: string
-  onChangeStatus: (hidden: boolean) => void
-  isHiddenNotification: boolean
+  errorMessage: string
+  onDelete: () => void
 };
 
 export const Notification: React.FC<Props> = ({
-  isError,
-  isHiddenNotification,
-  onChangeStatus,
+  errorMessage,
+  onDelete,
 }) => {
   return (
     <div
@@ -18,16 +16,16 @@ export const Notification: React.FC<Props> = ({
         'is-danger',
         'is-light',
         'has-text-weight-normal',
-        { hidden: isHiddenNotification },
+        { hidden: !errorMessage },
       )}
     >
       <button
         aria-label="delete-button"
         type="button"
         className="delete"
-        onClick={() => onChangeStatus(true)}
+        onClick={onDelete}
       />
-      {isError}
+      {errorMessage}
     </div>
   );
 };
