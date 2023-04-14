@@ -14,7 +14,7 @@ function getVisibleTodos(todos: Todo[], currentFilter: string) {
   let visibleTodos = [...todos];
 
   if (currentFilter !== Filter.All) {
-    visibleTodos = visibleTodos.filter(({ completed }) => {
+    visibleTodos = todos.filter(({ completed }) => {
       switch (currentFilter) {
         case Filter.Active:
           return !completed;
@@ -55,6 +55,10 @@ export const App: React.FC = () => {
     }
   };
 
+  useEffect(() => {
+    loadTodos();
+  }, []);
+
   const visibleTodos = getVisibleTodos(todos, filterBy);
 
   const addNewTodo = async () => {
@@ -94,6 +98,9 @@ export const App: React.FC = () => {
     try {
       setLoadingTodos(prev => [...prev, todoId]);
       await deleteTodo(todoId);
+      setTodos((prevTodos) => {
+        return prevTodos.filter(todo => todo.id !== todoId);
+      });
     } catch {
       setErrorMessage('Unable to delete a todo');
 
@@ -113,6 +120,9 @@ export const App: React.FC = () => {
       await Promise.all(
         completedTodoIds.map(id => deleteTodo(id)),
       );
+      setTodos((prevTodos) => {
+        return prevTodos.filter(todo => !todo.completed);
+      });
     } catch {
       setErrorMessage('Unable to delete completed todos');
 
@@ -121,10 +131,6 @@ export const App: React.FC = () => {
       setLoadingTodos([0]);
     }
   };
-
-  useEffect(() => {
-    loadTodos();
-  }, [todos]);
 
   if (!USER_ID) {
     return <UserWarning />;

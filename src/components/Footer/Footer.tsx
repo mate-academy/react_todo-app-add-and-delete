@@ -16,8 +16,8 @@ export const Footer: React.FC<Props> = ({
   onChangeFilter,
   onDeleteCompletedTodos,
 }) => {
-  const activeTodos = [...todos].filter(todo => !todo.completed).length;
-  const completedTodos = [...todos].filter(todo => todo.completed).length;
+  const activeTodos = todos.filter(todo => !todo.completed).length;
+  const completedTodos = todos.filter(todo => todo.completed).length;
 
   return (
     <footer className="todoapp__footer">
