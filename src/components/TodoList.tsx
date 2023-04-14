@@ -4,14 +4,14 @@ import { TodoInfo } from './TodoInfo';
 
 type Props = {
   todos: Todo[],
-  tempTodo: Todo | null,
+  temporaryTodo: Todo | null,
   onDelete: (id: number) => void,
   onToggle: (id: number) => void,
-  loadingTodoId: number,
+  loadingTodoIds: number,
 };
 
 export const TodoList: React.FC<Props> = ({
-  todos, tempTodo, onDelete, onToggle, loadingTodoId,
+  todos, temporaryTodo, onDelete, onToggle, loadingTodoIds,
 }) => {
   return (
     <section className="todoapp__main">
@@ -21,14 +21,15 @@ export const TodoList: React.FC<Props> = ({
           todo={todo}
           onDelete={onDelete}
           onToggle={onToggle}
-          isLoading={loadingTodoId === todo.id}
+          isLoading={loadingTodoIds === todo.id}
+        // isLoading={loadingTodoIds.includes(todo.id)}
         />
       ))}
 
-      {tempTodo && (
+      {temporaryTodo && (
         <TodoInfo
-          todo={tempTodo}
-          key={tempTodo.id}
+          todo={temporaryTodo}
+          key={temporaryTodo.id}
           onDelete={onDelete}
           onToggle={onToggle}
           isLoading

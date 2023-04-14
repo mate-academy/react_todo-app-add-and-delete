@@ -14,6 +14,14 @@ export const TodoInfo: React.FC<Props> = ({
 }) => {
   const { title, completed } = todo;
 
+  const handleOnToggleChange = () => {
+    onToggle(todo.id);
+  };
+
+  const handleOnDeleteChange = () => {
+    onDelete(todo.id);
+  };
+
   return (
     <div className={
       classNames('todo', { completed })
@@ -23,7 +31,8 @@ export const TodoInfo: React.FC<Props> = ({
         <input
           type="checkbox"
           className="todo__status"
-          onChange={() => onToggle(todo.id)}
+          onChange={handleOnToggleChange}
+          checked={completed}
         />
       </label>
 
@@ -32,7 +41,7 @@ export const TodoInfo: React.FC<Props> = ({
       <button
         type="button"
         className="todo__remove"
-        onClick={() => onDelete(todo.id)}
+        onClick={handleOnDeleteChange}
       >
         ×
       </button>

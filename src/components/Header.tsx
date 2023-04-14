@@ -1,9 +1,7 @@
 import React, { useState } from 'react';
-// import { Todo } from '../types/Todo';
 
 type Props = {
   activeTodosLength: number,
-  // todo: Todo,
   onSubmit: (title: string) => void,
 };
 
@@ -15,6 +13,10 @@ export const Header: React.FC<Props> = ({ activeTodosLength, onSubmit }) => {
 
     onSubmit(title);
     setTitle('');
+  };
+
+  const handleTitleChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+    setTitle(event.target.value);
   };
 
   return (
@@ -30,7 +32,7 @@ export const Header: React.FC<Props> = ({ activeTodosLength, onSubmit }) => {
           className="todoapp__new-todo"
           placeholder="What needs to be done?"
           value={title}
-          onChange={(event) => setTitle(event.target.value)}
+          onChange={handleTitleChange}
         />
       </form>
     </header>

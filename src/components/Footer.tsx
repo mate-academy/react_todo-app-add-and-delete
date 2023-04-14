@@ -1,18 +1,18 @@
 import React from 'react';
 import classNames from 'classnames';
-import { SortType } from '../types/SortType';
+import { FilterType } from '../types/FilterType';
 
 type Props = {
-  sortType: SortType,
-  setSortType: (sortBy: SortType) => void,
+  filterType: FilterType,
+  setFilterType: (sortBy: FilterType) => void,
   activeTodosLength: number,
   completedTodosLength: number,
   onClearCompleted: () => void,
 };
 
 export const Footer: React.FC<Props> = ({
-  setSortType,
-  sortType,
+  setFilterType,
+  filterType,
   activeTodosLength,
   completedTodosLength,
   onClearCompleted,
@@ -20,18 +20,16 @@ export const Footer: React.FC<Props> = ({
   return (
     <footer className="todoapp__footer">
       <span className="todo-count">
-        {activeTodosLength}
-        {' '}
-        items left
+        {`${activeTodosLength} items left`}
       </span>
 
       <nav className="filter">
         <a
           href="#/"
           className={classNames('filter__link', {
-            selected: sortType === SortType.ALL,
+            selected: filterType === FilterType.ALL,
           })}
-          onClick={() => setSortType(SortType.ALL)}
+          onClick={() => setFilterType(FilterType.ALL)}
         >
           All
         </a>
@@ -39,9 +37,9 @@ export const Footer: React.FC<Props> = ({
         <a
           href="#/active"
           className={classNames('filter__link', {
-            selected: sortType === SortType.ACTIVE,
+            selected: filterType === FilterType.ACTIVE,
           })}
-          onClick={() => setSortType(SortType.ACTIVE)}
+          onClick={() => setFilterType(FilterType.ACTIVE)}
         >
           Active
         </a>
@@ -49,9 +47,9 @@ export const Footer: React.FC<Props> = ({
         <a
           href="#/completed"
           className={classNames('filter__link', {
-            selected: sortType === SortType.COMPLETE,
+            selected: filterType === FilterType.COMPLETE,
           })}
-          onClick={() => setSortType(SortType.COMPLETE)}
+          onClick={() => setFilterType(FilterType.COMPLETE)}
         >
           Completed
         </a>

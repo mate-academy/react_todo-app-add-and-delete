@@ -2,7 +2,7 @@ import React, {
   useCallback, useEffect, useMemo, useState,
 } from 'react';
 import { addTodo, deleteTodo, getTodos } from './api/todos';
-import { SortType } from './types/SortType';
+import { FilterType } from './types/FilterType';
 import { Todo } from './types/Todo';
 import { TodoList } from './components/TodoList';
 import { Header } from './components/Header';
@@ -14,28 +14,28 @@ const USER_ID = 6713;
 
 export const App: React.FC = () => {
   const [todos, setTodos] = useState<Todo[]>([]);
-  const [sortType, setSortType] = useState<SortType>(SortType.ALL);
+  const [filterType, setFilterType] = useState<FilterType>(FilterType.ALL);
   const [errorMessage, setErrorMessage]
     = useState<ErrorMessage>(ErrorMessage.NONE);
-  const [tempTodo, setTempTodo] = useState<Todo | null>(null);
-  const [loadingTodoId, setLoadingTodoId] = useState(0);
+  const [temporaryTodo, setTemporaryTodo] = useState<Todo | null>(null);
+  const [loadingTodoIds, setLoadingTodoIds] = useState<number>(0);
 
   const activeTodosLength = todos.filter((todo) => !todo.completed).length;
   const completedTodosLength = todos.length - activeTodosLength;
 
   const visibleTodos = useMemo(() => {
     return (todos.filter((todo) => {
-      switch (sortType) {
-        case SortType.ACTIVE:
+      switch (filterType) {
+        case FilterType.ACTIVE:
           return !todo.completed;
-        case SortType.COMPLETE:
+        case FilterType.COMPLETE:
           return todo.completed;
         default:
           return true;
       }
     })
     );
-  }, [sortType, todos]);
+  }, [filterType, todos]);
 
   useEffect(() => {
     const fetchData = async () => {
@@ -63,7 +63,7 @@ export const App: React.FC = () => {
         title,
       };
 
-      setTempTodo(newTodo);
+      setTemporaryTodo(newTodo);
       setErrorMessage(ErrorMessage.NONE);
 
       addTodo(USER_ID, newTodo)
@@ -77,14 +77,14 @@ export const App: React.FC = () => {
           setTimeout(() => setErrorMessage(ErrorMessage.NONE), 3000);
         })
         .finally(() => {
-          setTempTodo(null);
+          setTemporaryTodo(null);
         });
     }
   };
 
   const handleDeleteTodo = useCallback(
     (id: number) => {
-      setLoadingTodoId(id);
+      setLoadingTodoIds(id);
 
       return deleteTodo(id)
         .then(() => {
@@ -97,28 +97,26 @@ export const App: React.FC = () => {
           setTimeout(() => setErrorMessage(ErrorMessage.NONE), 3000);
         })
         .finally(() => {
-          setTempTodo(null);
-          setLoadingTodoId(0);
+          setTemporaryTodo(null);
+          setLoadingTodoIds(0);
         });
     },
-    [deleteTodo],
+    [],
   );
 
   const handleClearCompleted = () => {
-    todos.filter((todo) => todo.completed).forEach((todo) => {
-      handleDeleteTodo(todo.id)
-        .then(() => setTodos(todos.filter(({ completed }) => !completed)));
-    });
+    const completed = todos.filter((todo) => todo.completed).map(t => t.id);
+
+    Promise.all(completed.map(completeId => handleDeleteTodo(completeId)));
   };
 
   const handleToggleTodo = (id: number) => {
-    const todoCheck = todos.find((todo) => todo.id === id) as Todo;
-
-    todoCheck.completed = !todoCheck?.completed;
-
-    const notChanged = todos.filter(todo => todo.id !== id);
-
-    setTodos(() => [...notChanged, todoCheck]);
+    todos.forEach(todo => {
+      if (todo.id === id) {
+        todo.completed = !todo.completed; // eslint-disable-line no-param-reassign
+      }
+    });
+    setTodos([...todos]);
   };
 
   return (
@@ -127,23 +125,23 @@ export const App: React.FC = () => {
 
       <div className="todoapp__content">
         <Header
-          activeTodosLength={visibleTodos.length}
+          activeTodosLength={activeTodosLength}
           onSubmit={handleAddTodo}
         />
 
         <TodoList
           todos={visibleTodos}
-          tempTodo={tempTodo}
+          temporaryTodo={temporaryTodo}
           onDelete={handleDeleteTodo}
-          loadingTodoId={loadingTodoId}
+          loadingTodoIds={loadingTodoIds}
           onToggle={handleToggleTodo}
         />
 
-        {todos.length && (
+        {todos.length > 0 && (
           <Footer
-            sortType={sortType}
-            setSortType={setSortType}
-            activeTodosLength={visibleTodos.length}
+            filterType={filterType}
+            setFilterType={setFilterType}
+            activeTodosLength={activeTodosLength}
             completedTodosLength={completedTodosLength}
             onClearCompleted={handleClearCompleted}
           />

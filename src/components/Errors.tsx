@@ -16,7 +16,7 @@ export const Errors: React.FC<Props> = ({ errorMessage, closeError }) => {
     return () => {
       clearTimeout(timerId);
     };
-  }, []);
+  }, [errorMessage, closeError]);
 
   return (
     <div className={classNames(
@@ -36,6 +36,5 @@ export const Errors: React.FC<Props> = ({ errorMessage, closeError }) => {
       </button>
       <div>{errorMessage}</div>
     </div>
-
   );
 };
