@@ -17,6 +17,10 @@ export const Footer: React.FC<Props> = ({
   completedTodosLength,
   onClearCompleted,
 }) => {
+  const onFilterChange = (filter: FilterType) => () => {
+    setFilterType(filter);
+  };
+
   return (
     <footer className="todoapp__footer">
       <span className="todo-count">
@@ -29,7 +33,7 @@ export const Footer: React.FC<Props> = ({
           className={classNames('filter__link', {
             selected: filterType === FilterType.ALL,
           })}
-          onClick={() => setFilterType(FilterType.ALL)}
+          onClick={onFilterChange(FilterType.ALL)}
         >
           All
         </a>
@@ -39,7 +43,7 @@ export const Footer: React.FC<Props> = ({
           className={classNames('filter__link', {
             selected: filterType === FilterType.ACTIVE,
           })}
-          onClick={() => setFilterType(FilterType.ACTIVE)}
+          onClick={onFilterChange(FilterType.ACTIVE)}
         >
           Active
         </a>
@@ -49,7 +53,7 @@ export const Footer: React.FC<Props> = ({
           className={classNames('filter__link', {
             selected: filterType === FilterType.COMPLETE,
           })}
-          onClick={() => setFilterType(FilterType.COMPLETE)}
+          onClick={onFilterChange(FilterType.COMPLETE)}
         >
           Completed
         </a>
