@@ -1,3 +1,4 @@
+import classNames from 'classnames';
 import { Filter } from './Filter';
 import { Sort } from '../types/Sort';
 import { Todo } from '../types/Todo';
@@ -25,16 +26,16 @@ export const Footer: React.FC<Props> = ({
 
       <Filter setSort={setSort} sort={sort} />
 
-      {completedTodos.length > 0
-        && (
-          <button
-            type="button"
-            className="todoapp__clear-completed"
-            onClick={handleRemoveCompletedTodos}
-          >
-            Clear completed
-          </button>
+      <button
+        type="button"
+        className={classNames(
+          'todoapp__clear-completed',
+          { todoapp__hidden: !completedTodos.length },
         )}
+        onClick={handleRemoveCompletedTodos}
+      >
+        Clear completed
+      </button>
     </footer>
   );
 };

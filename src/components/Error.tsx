@@ -3,18 +3,18 @@ import { useEffect } from 'react';
 
 type Props = {
   isError: boolean;
-  setIsError: (value: boolean) => void;
   errorType: string;
+  setErrorType: (value: string) => void
 };
 
-export const Error:React.FC<Props> = ({ isError, setIsError, errorType }) => {
+export const Error:React.FC<Props> = ({ isError, errorType, setErrorType }) => {
   const handleCloseError = () => {
-    setIsError(false);
+    setErrorType('');
   };
 
   useEffect(() => {
     setTimeout(() => {
-      setIsError(false);
+      setErrorType('');
     },
     3000);
   }, []);

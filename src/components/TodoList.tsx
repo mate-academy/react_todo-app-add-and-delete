@@ -5,12 +5,12 @@ import { Todo } from '../types/Todo';
 type Props = {
   todos : Todo[],
   removeTodo: (value: number) => void,
-  isLoading: boolean,
-  tempTodo: Todo | null
+  tempTodo: Todo | null,
+  loadingTodo: number[],
 };
 
 export const TodoList: React.FC<Props> = ({
-  todos, removeTodo, isLoading, tempTodo,
+  todos, removeTodo, tempTodo, loadingTodo,
 }) => {
   return (
     <section className="todoapp__main">
@@ -25,7 +25,7 @@ export const TodoList: React.FC<Props> = ({
               todo={todo}
               removeTodo={removeTodo}
               key={todo.id}
-              isLoading={isLoading}
+              loadingTodo={loadingTodo}
             />
           </CSSTransition>
         ))}
@@ -39,7 +39,7 @@ export const TodoList: React.FC<Props> = ({
             <TodoItem
               todo={tempTodo}
               removeTodo={removeTodo}
-              isLoading={isLoading}
+              loadingTodo={loadingTodo}
             />
           </CSSTransition>
         )}

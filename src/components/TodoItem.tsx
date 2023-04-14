@@ -5,10 +5,12 @@ import { Todo } from '../types/Todo';
 type Props = {
   todo: Todo,
   removeTodo: (value: number) => void,
-  isLoading: boolean,
+  loadingTodo: number[]
 };
 
-export const TodoItem: React.FC<Props> = ({ todo, removeTodo, isLoading }) => {
+export const TodoItem: React.FC<Props> = ({
+  todo, removeTodo, loadingTodo,
+}) => {
   return (
     <div className={classNames(
       'todo',
@@ -32,7 +34,7 @@ export const TodoItem: React.FC<Props> = ({ todo, removeTodo, isLoading }) => {
       <div
         className={classNames(
           'modal overlay',
-          { 'is-active': isLoading },
+          { 'is-active': loadingTodo.includes(todo.id) },
         )}
       >
         <div className="modal-background has-background-white-ter" />

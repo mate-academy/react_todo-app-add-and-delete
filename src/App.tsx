@@ -13,21 +13,20 @@ const USER_ID = 6771;
 
 export const App: React.FC = () => {
   const [todos, setTodos] = useState<Todo[]>([]);
-  const [isError, setIsError] = useState<boolean>(false);
   const [errorType, setErrorType] = useState<string>('');
   const [sortBy, setSortBy] = useState<Sort>(Sort.all);
-  const [isLoading, setIsLoading] = useState<boolean>(false);
   const [isInputDisabled, setIsInputDisabled] = useState<boolean>(false);
   const [tempTodo, setTempTodo] = useState<Todo | null>(null);
+  const [loadingTodo, setLoadingTodo] = useState([0]);
+  const isError = !!errorType || errorType !== '';
 
   async function fetchTodos() {
-    setIsError(false);
+    setErrorType('');
     try {
       const todosData = await getTodos(USER_ID);
 
       setTodos(todosData);
     } catch {
-      setIsError(true);
       setErrorType('Error loading data');
     }
   }
@@ -40,48 +39,42 @@ export const App: React.FC = () => {
 
   const addTodo = async (title: string) => {
     if (!title.trim()) {
-      setIsError(true);
       setErrorType('Title can\'t be empty');
 
       return;
     }
 
-    setIsLoading(true);
-    setIsError(false);
     setIsInputDisabled(true);
 
     try {
       const newTodo = await createTodo(USER_ID, {
         title,
         userId: USER_ID,
-        completed: false,
+        completed: true,
       });
 
       setTempTodo({ ...newTodo, id: 0 });
 
       setTodos([...todos, newTodo]);
     } catch {
-      setIsError(true);
       setErrorType('Unable to add a todo');
     } finally {
-      setIsLoading(false);
       setIsInputDisabled(false);
       setTempTodo(null);
     }
   };
 
   const removeTodo = async (selectedTodoId: number) => {
-    setIsError(false);
-    setIsLoading(true);
+    setErrorType('');
 
     try {
+      setLoadingTodo(prevTodo => [...prevTodo, selectedTodoId]);
       await deleteTodo(selectedTodoId);
       setTodos(todos.filter(elem => elem.id !== selectedTodoId));
-      setIsLoading(false);
     } catch {
-      setIsError(true);
       setErrorType('Unable to delete a todo');
-      setIsLoading(false);
+    } finally {
+      setLoadingTodo([0]);
     }
   };
 
@@ -107,13 +100,12 @@ export const App: React.FC = () => {
           addTodo={addTodo}
           isInputDisabled={isInputDisabled}
         />
-        {sortedTodos.length > 0
-        && (
+        {sortedTodos.length > 0 && (
           <TodoList
             todos={sortedTodos}
             removeTodo={removeTodo}
-            isLoading={isLoading}
             tempTodo={tempTodo}
+            loadingTodo={loadingTodo}
           />
         )}
         <Footer
@@ -124,14 +116,13 @@ export const App: React.FC = () => {
         />
       </div>
 
-      {isError
-        && (
-          <Error
-            setIsError={setIsError}
-            isError={isError}
-            errorType={errorType}
-          />
-        )}
+      {isError && (
+        <Error
+          isError={isError}
+          errorType={errorType}
+          setErrorType={setErrorType}
+        />
+      )}
     </div>
   );
 };
