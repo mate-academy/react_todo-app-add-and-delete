@@ -14,7 +14,7 @@ export const TodoList: React.FC<Props> = ({
   todos, temporaryTodo, onDelete, onToggle, loadingTodoIds,
 }) => {
   return (
-    <section className="todoapp__main">
+    <ul className="todoapp__main">
       {todos.map(todo => (
         <TodoInfo
           key={todo.id}
@@ -34,6 +34,6 @@ export const TodoList: React.FC<Props> = ({
           isLoading={loadingTodoIds.includes(temporaryTodo.id)}
         />
       )}
-    </section>
+    </ul>
   );
 };
