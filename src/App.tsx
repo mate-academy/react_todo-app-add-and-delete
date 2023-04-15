@@ -11,7 +11,7 @@ import { Filter } from './types/Filter';
 const USER_ID = 7033;
 
 function getVisibleTodos(todos: Todo[], currentFilter: string) {
-  let visibleTodos = [...todos];
+  let visibleTodos = todos;
 
   if (currentFilter !== Filter.All) {
     visibleTodos = todos.filter(({ completed }) => {
@@ -35,7 +35,7 @@ export const App: React.FC = () => {
   const [errorMessage, setErrorMessage] = useState('');
   const [tempTodo, setTempTodo] = useState<Todo | null>(null);
   const [title, setTitle] = useState('');
-  const [loadingTodos, setLoadingTodos] = useState([0]);
+  const [loadingTodos, setLoadingTodos] = useState<number[]>([]);
 
   function clearError() {
     setTimeout(() => {
@@ -88,7 +88,7 @@ export const App: React.FC = () => {
     } finally {
       setTitle('');
       setTempTodo(null);
-      setLoadingTodos([0]);
+      setLoadingTodos([]);
     }
   };
 
@@ -106,7 +106,7 @@ export const App: React.FC = () => {
 
       clearError();
     } finally {
-      setLoadingTodos([0]);
+      setLoadingTodos([]);
     }
   };
 
@@ -128,7 +128,7 @@ export const App: React.FC = () => {
 
       clearError();
     } finally {
-      setLoadingTodos([0]);
+      setLoadingTodos([]);
     }
   };
 
