@@ -1,17 +1,16 @@
-import classNames from 'classnames';
-import { Todo } from '../../types/Todo';
+import classNames from "classnames";
+import { todo } from "../../types/todo";
 
 type Props = {
-  todo: Todo;
-  key: number;
+  todo: todo;
   onDelete: (id: number) => void;
 };
 
-export const Todos: React.FC<Props> = ({ todo, onDelete }) => {
+export const Todo: React.FC<Props> = ({ todo, onDelete }) => {
   const { completed, title, id } = todo;
 
   return (
-    <div className={classNames('todo', { completed })}>
+    <div className={classNames("todo", { completed })}>
       <label className="todo__status-label">
         <input type="checkbox" className="todo__status" checked={completed} />
       </label>

@@ -1,8 +1,8 @@
 import React, { useEffect, useMemo, useState } from "react";
 import { UserWarning } from "./UserWarning";
 import { getTodos, postTodo, deleteTodo } from "./api/todos";
-import { Todo } from "./types/Todo";
-import { ListofTodo } from "./Components/ListofTodo/ListofTodo";
+import { todo } from "./types/todo";
+import { TodoList } from "./Components/TodoList/TodoList";
 import { Error } from "./Components/Error/Error";
 import { FilterTodo } from "./Components/FilterTodo/FilterTodo";
 import { FilterStatus } from "./types/FilterStatus";
@@ -10,12 +10,12 @@ import { FilterStatus } from "./types/FilterStatus";
 const USER_ID = 6429;
 
 export const App: React.FC = () => {
-  const [todos, setTodos] = useState<Todo[]>([]);
+  const [todos, setTodos] = useState<todo[]>([]);
   const [error, setError] = useState("");
   const [title, setTitle] = useState("");
-  const [temporaryTodo, setTemporaryTodo] = useState<Todo>();
+  const [temporaryTodo, setTemporaryTodo] = useState<todo>();
   const [filter, setFilter] = useState<FilterStatus>(FilterStatus.all);
-  const activeTodos = useMemo(() => {
+  const activeTodosСount = useMemo(() => {
     return todos.filter(({ completed }) => !completed).length;
   }, [todos]);
   const completedTodos = useMemo(() => {
@@ -24,7 +24,7 @@ export const App: React.FC = () => {
 
   useEffect(() => {
     getTodos(USER_ID)
-      .then((result: React.SetStateAction<Todo[]>) => setTodos(result))
+      .then((result: React.SetStateAction<todo[]>) => setTodos(result))
       .catch(() => setError("Unable to load the todos"));
   }, []);
 
@@ -70,6 +70,9 @@ export const App: React.FC = () => {
         setTemporaryTodo(undefined);
       });
   };
+  useEffect(() => {
+    return;
+  }, [error]);
 
   const removeTodo = (id: number) => {
     return deleteTodo(id)
@@ -128,7 +131,7 @@ export const App: React.FC = () => {
         {todos.length > 0 && (
           <>
             <section className="todoapp__main">
-              <ListofTodo
+              <TodoList
                 todos={currentTodos}
                 onDeleteTodo={removeTodo}
                 temporaryTodo={temporaryTodo}
@@ -136,7 +139,7 @@ export const App: React.FC = () => {
             </section>
 
             <footer className="todoapp__footer">
-              <span className="todo-count">{`${activeTodos} items left`}</span>
+              <span className="todo-count">{`${activeTodosСount} items left`}</span>
 
               <FilterTodo filter={filter} onFilterChange={setFilter} />
 
@@ -150,7 +153,7 @@ export const App: React.FC = () => {
         )}
       </div>
 
-      {error !== " " && <Error error={error} onClear={() => setError(" ")} />}
+      {error && <Error error={error} onClear={() => setError("")} />}
     </div>
   );
 };
