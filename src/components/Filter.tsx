@@ -6,7 +6,10 @@ type Props = {
   sort: Sort,
 };
 
-export const Filter: React.FC<Props> = ({ setSort, sort }) => {
+export const Filter: React.FC<Props> = ({
+  setSort,
+  sort,
+}) => {
   return (
     <nav className="filter">
       <a

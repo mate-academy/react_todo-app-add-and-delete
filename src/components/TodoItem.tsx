@@ -9,12 +9,16 @@ type Props = {
 };
 
 export const TodoItem: React.FC<Props> = ({
-  todo, removeTodo, loadingTodo,
+  todo,
+  removeTodo,
+  loadingTodo,
 }) => {
+  const { id, title, completed } = todo;
+
   return (
     <div className={classNames(
       'todo',
-      { completed: todo.completed },
+      { completed },
     )}
     >
       <label className="todo__status-label">
@@ -23,18 +27,18 @@ export const TodoItem: React.FC<Props> = ({
           className="todo__status"
         />
       </label>
-      <span className="todo__title">{todo.title}</span>
+      <span className="todo__title">{title}</span>
       <button
         type="button"
         className="todo__remove"
-        onClick={() => removeTodo(todo.id)}
+        onClick={() => removeTodo(id)}
       >
         ×
       </button>
       <div
         className={classNames(
           'modal overlay',
-          { 'is-active': loadingTodo.includes(todo.id) },
+          { 'is-active': loadingTodo.includes(id) },
         )}
       >
         <div className="modal-background has-background-white-ter" />

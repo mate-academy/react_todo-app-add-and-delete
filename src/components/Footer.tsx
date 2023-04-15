@@ -11,7 +11,10 @@ type Props = {
 };
 
 export const Footer: React.FC<Props> = ({
-  setSort, sort, todos, handleRemoveCompletedTodos,
+  setSort,
+  sort,
+  todos,
+  handleRemoveCompletedTodos,
 }) => {
   const completedTodos = todos.filter(todo => todo.completed);
   const activeTodos = todos.filter(todo => !todo.completed);

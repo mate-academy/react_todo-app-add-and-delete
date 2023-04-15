@@ -8,7 +8,9 @@ type Props = {
 };
 
 export const Header: React.FC<Props> = ({
-  todos, addTodo, isInputDisabled,
+  todos,
+  addTodo,
+  isInputDisabled,
 }) => {
   const [title, setTitle] = useState('');
 
@@ -25,8 +27,7 @@ export const Header: React.FC<Props> = ({
   return (
     <header className="todoapp__header">
 
-      {todos.length > 0
-      && (
+      {todos.length > 0 && (
         <button
           type="button"
           className="todoapp__toggle-all active"

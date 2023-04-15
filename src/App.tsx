@@ -56,11 +56,12 @@ export const App: React.FC = () => {
       setTempTodo({ ...newTodo, id: 0 });
 
       setTodos([...todos, newTodo]);
+      setTempTodo(null);
     } catch {
       setErrorType('Unable to add a todo');
     } finally {
       setIsInputDisabled(false);
-      setTempTodo(null);
+      // setTempTodo(null);
     }
   };
 

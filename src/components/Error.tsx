@@ -7,7 +7,11 @@ type Props = {
   setErrorType: (value: string) => void
 };
 
-export const Error:React.FC<Props> = ({ isError, errorType, setErrorType }) => {
+export const Error:React.FC<Props> = ({
+  isError,
+  errorType,
+  setErrorType,
+}) => {
   const handleCloseError = () => {
     setErrorType('');
   };
