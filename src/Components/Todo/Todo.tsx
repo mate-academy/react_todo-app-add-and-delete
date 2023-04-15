@@ -1,8 +1,8 @@
 import classNames from "classnames";
-import { todo } from "../../types/todo";
+import { Todos } from "../../types/todo";
 
 type Props = {
-  todo: todo;
+  todo: Todos;
   onDelete: (id: number) => void;
 };
 

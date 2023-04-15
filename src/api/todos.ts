@@ -1,12 +1,12 @@
-import { todo } from "../types/todo";
-import { client } from "../utils/fetchClients";
+import { Todos } from '../types/todo';
+import { client } from '../utils/fetchClients';
 
 export const getTodos = (userId: number) => {
-  return client.get<todo[]>(`/todos?userId=${userId}`);
+  return client.get<Todos[]>(`/todos?userId=${userId}`);
 };
 
-export const postTodo = (userId: number, todo: Omit<todo, "id">) => {
-  return client.post<todo>(`/todos?userId=${userId}`, todo);
+export const postTodo = (userId: number, todo: Omit<Todos, 'id'>) => {
+  return client.post<Todos>(`/todos?userId=${userId}`, todo);
 };
 
 export const deleteTodo = (id: number) => {
