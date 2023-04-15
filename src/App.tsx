@@ -34,11 +34,14 @@ export const App: React.FC = () => {
   const handleTodoSubmit = async (event: ChangeEvent<HTMLFormElement>) => {
     event.preventDefault();
 
-    const nextId = todos[todos.length - 1].id + 1;
+    if (task === '') {
+      setError("The title can't be empty");
+
+      return;
+    }
 
     try {
       await addTodo({
-        id: nextId,
         userId: USER_ID,
         title: task,
         completed: false,
@@ -71,7 +74,10 @@ export const App: React.FC = () => {
           task={task}
         />
 
-        <Filter todos={todos} />
+        <Filter
+          todos={todos}
+          loadTodos={loadTodos}
+        />
       </div>
 
       {

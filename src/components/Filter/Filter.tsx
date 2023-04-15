@@ -27,10 +27,12 @@ const LINKS = [
 
 type Props = {
   todos: Todo[];
+  loadTodos: () => void;
 };
 
 export const Filter: FC<Props> = ({
   todos,
+  loadTodos,
 }) => {
   const [filter, setFilter] = useState<FILTERS>(FILTERS.all);
 
@@ -58,7 +60,10 @@ export const Filter: FC<Props> = ({
 
   return (
     <>
-      <TodoList visibleTodos={visibleTodos} />
+      <TodoList
+        visibleTodos={visibleTodos}
+        loadTodos={loadTodos}
+      />
 
       <footer className="todoapp__footer">
         <span className="todo-count">

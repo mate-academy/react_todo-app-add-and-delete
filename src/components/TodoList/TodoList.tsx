@@ -1,12 +1,22 @@
 import { FC } from 'react';
 import cn from 'classnames';
 import { Todo } from '../../types/Todo';
+import { removeTodo } from '../../api/todos';
 
 type Props = {
   visibleTodos: Todo[];
+  loadTodos: () => void;
 };
 
-export const TodoList: FC<Props> = ({ visibleTodos }) => {
+export const TodoList: FC<Props> = ({
+  visibleTodos,
+  loadTodos,
+}) => {
+  const handleRemoveTodo = (id: number) => {
+    removeTodo(id);
+    setTimeout(() => loadTodos(), 300);
+  };
+
   return (
     <section className="todoapp__main">
       {
@@ -32,7 +42,13 @@ export const TodoList: FC<Props> = ({ visibleTodos }) => {
 
             <span className="todo__title">{title}</span>
 
-            <button type="button" className="todo__remove">×</button>
+            <button
+              type="button"
+              className="todo__remove"
+              onClick={() => handleRemoveTodo(id)}
+            >
+              ×
+            </button>
 
             <div className="modal overlay">
               <div

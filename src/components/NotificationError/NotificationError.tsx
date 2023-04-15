@@ -17,7 +17,7 @@ const NotificationError: FC<Props> = ({ error, resetError }) => {
 
   useEffect(() => {
     setTimeout(() => {
-      errorElement.current?.classList.add('hidden');
+      resetError();
     }, 3000);
   }, [error]);
 
