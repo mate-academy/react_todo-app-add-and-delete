@@ -5,12 +5,14 @@ type Props = {
   handleTodoChange: (event: ChangeEvent<HTMLInputElement>) => void;
   handleTodoSubmit: (event: ChangeEvent<HTMLFormElement>) => void;
   task: string;
+  isDataUpdated: boolean;
 };
 
 export const NewTodo: FC<Props> = ({
   handleTodoChange,
   handleTodoSubmit,
   task,
+  isDataUpdated,
 }) => {
   return (
     <header className="todoapp__header">
@@ -23,6 +25,7 @@ export const NewTodo: FC<Props> = ({
           placeholder="What needs to be done?"
           onChange={handleTodoChange}
           value={task}
+          disabled={isDataUpdated && !!task}
         />
       </form>
     </header>

@@ -6,7 +6,7 @@ export const getTodos = (userId: number) => (
 );
 
 export const addTodo = (todo: SendedTodo) => (
-  client.post<Todo>('/todos', todo)
+  client.post<SendedTodo>('/todos', todo)
 );
 
 export const removeTodo = (itemId: number) => {

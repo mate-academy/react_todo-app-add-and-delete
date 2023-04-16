@@ -2,7 +2,7 @@ import { FC, useMemo, useState } from 'react';
 import { NavLink } from 'react-router-dom';
 import cn from 'classnames';
 import { TodoList } from '../TodoList/TodoList';
-import { Todo } from '../../types/Todo';
+import { LoadTodos, Todo } from '../../types/Todo';
 
 enum FILTERS {
   all = 'All',
@@ -26,13 +26,15 @@ const LINKS = [
 ];
 
 type Props = {
+  loadTodos: LoadTodos;
   todos: Todo[];
-  loadTodos: () => void;
+  tempTodo: Todo | null;
 };
 
 export const Filter: FC<Props> = ({
-  todos,
   loadTodos,
+  todos,
+  tempTodo,
 }) => {
   const [filter, setFilter] = useState<FILTERS>(FILTERS.all);
 
@@ -61,8 +63,9 @@ export const Filter: FC<Props> = ({
   return (
     <>
       <TodoList
-        visibleTodos={visibleTodos}
         loadTodos={loadTodos}
+        visibleTodos={visibleTodos}
+        tempTodo={tempTodo}
       />
 
       <footer className="todoapp__footer">

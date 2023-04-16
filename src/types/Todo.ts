@@ -6,3 +6,5 @@ export interface Todo {
 }
 
 export type SendedTodo = Omit<Todo, 'id'>;
+
+export type LoadTodos = () => void;

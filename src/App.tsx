@@ -18,14 +18,31 @@ export const App: React.FC = () => {
   const [task, setTask] = useState('');
   const [todos, setTodos] = useState<Todo[]>([]);
   const [error, setError] = useState('');
+  const [tempTodo, setTemptodo] = useState<Todo | null>(null);
+  const [isDataUpdated, setIsdataUpdated] = useState(false);
 
   const handleTodoChange = (event: ChangeEvent<HTMLInputElement>) => {
     setTask(event.target.value);
   };
 
   const loadTodos = async () => {
+    setIsdataUpdated(true);
+
+    if (task) {
+      setTemptodo({
+        id: 0,
+        userId: USER_ID,
+        title: task,
+        completed: false,
+      });
+    }
+
     try {
-      await getTodos(Number(USER_ID)).then(res => setTodos(res));
+      await getTodos(Number(USER_ID)).then(res => {
+        setTodos(res);
+        setTemptodo(null);
+        setIsdataUpdated(false);
+      });
     } catch {
       setError('unable to get todos');
     }
@@ -72,12 +89,18 @@ export const App: React.FC = () => {
           handleTodoChange={handleTodoChange}
           handleTodoSubmit={handleTodoSubmit}
           task={task}
+          isDataUpdated={isDataUpdated}
         />
 
-        <Filter
-          todos={todos}
-          loadTodos={loadTodos}
-        />
+        {
+          todos.length > 0 && (
+            <Filter
+              todos={todos}
+              tempTodo={tempTodo}
+              loadTodos={loadTodos}
+            />
+          )
+        }
       </div>
 
       {
