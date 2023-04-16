@@ -50,7 +50,7 @@ export const App: React.FC = () => {
       const newTodo = await createTodo(USER_ID, {
         title,
         userId: USER_ID,
-        completed: true,
+        completed: false,
       });
 
       setTempTodo({ ...newTodo, id: 0 });
