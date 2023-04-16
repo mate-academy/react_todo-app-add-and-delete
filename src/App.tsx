@@ -46,7 +46,7 @@ export const App: React.FC = () => {
   }, []);
 
   const handleAddTodo = (title: string) => {
-    if (title.length === 0) {
+    if (!title.length) {
       setErrorMessage(ErrorMessage.EMPTY);
       setTimeout(() => setErrorMessage(ErrorMessage.NONE), 3000);
     } else {
