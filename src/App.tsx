@@ -1,24 +1,157 @@
-/* eslint-disable max-len */
-/* eslint-disable jsx-a11y/control-has-associated-label */
-import React from 'react';
-import { UserWarning } from './UserWarning';
+import React, { useEffect, useMemo, useState } from "react";
+import { UserWarning } from "./UserWarning";
+import { getTodos, postTodo, deleteTodo } from "./api/todos";
+import { TodoInterface } from "./types/todo";
+import { TodoList } from "./Components/TodoList/TodoList";
+import { Error } from "./Components/Error/Error";
+import { FilterTodo } from "./Components/FilterTodo/FilterTodo";
+import { FilterStatus } from "./types/FilterStatus";
 
-const USER_ID = 0;
+const USER_ID = 6429;
 
 export const App: React.FC = () => {
+  const [todos, setTodos] = useState<TodoInterface[]>([]);
+  const [error, setError] = useState("");
+  const [title, setTitle] = useState("");
+  const [temporaryTodo, setTemporaryTodo] = useState<TodoInterface>();
+  const [filter, setFilter] = useState<FilterStatus>(FilterStatus.all);
+  const activeTodosСount = useMemo(() => {
+    return todos.filter(({ completed }) => !completed).length;
+  }, [todos]);
+  const completedTodos = useMemo(() => {
+    return todos.filter(({ completed }) => completed);
+  }, [todos]);
+
+  useEffect(() => {}, [error]);
+  useEffect(() => {
+    getTodos(USER_ID)
+      .then((result: React.SetStateAction<TodoInterface[]>) => setTodos(result))
+      .catch(() => setError("Unable to load the todos"));
+  }, []);
+
+  const currentTodos = useMemo(() => {
+    return todos.filter((todo) => {
+      switch (filter) {
+        case FilterStatus.active:
+          return !todo.completed;
+
+        case FilterStatus.completed:
+          return todo.completed;
+
+        default:
+          return todo;
+      }
+    });
+  }, [todos, filter]);
+
   if (!USER_ID) {
     return <UserWarning />;
   }
 
-  return (
-    <section className="section container">
-      <p className="title is-4">
-        Copy all you need from the prev task:
-        <br />
-        <a href="https://github.com/mate-academy/react_todo-app-loading-todos#react-todo-app-load-todos">React Todo App - Load Todos</a>
-      </p>
+  const addTodo = (todoTitle: string) => {
+    const newTodo = {
+      title: todoTitle,
+      userId: USER_ID,
+      completed: false,
+    };
 
-      <p className="subtitle">Styles are already copied</p>
-    </section>
+    setTemporaryTodo({ ...newTodo, id: 0 });
+
+    postTodo(USER_ID, newTodo)
+      .then((result) => {
+        setTodos((state) => [...state, result]);
+      })
+      .catch(() => {
+        setError("Unable to add a todo");
+        setTimeout(() => {
+          setError("");
+        }, 3000);
+      })
+      .finally(() => {
+        setTemporaryTodo(undefined);
+      });
+  };
+
+  const removeTodo = (id: number) => {
+    return deleteTodo(id)
+      .then(() => {
+        setTodos(todos.filter((todo) => todo.id !== id));
+      })
+      .catch(() => {
+        setError("Cant to delete a todo");
+        setTimeout(() => {
+          setError("");
+        }, 3000);
+      });
+  };
+
+  const handleSubmit = (e: { preventDefault: () => void }) => {
+    e.preventDefault();
+    if (!title || title.trim() === "") {
+      setError("Tittle can not be empty");
+      setTimeout(() => {
+        setError("");
+      }, 3000);
+
+      return;
+    }
+
+    addTodo(title);
+    setTitle("");
+  };
+
+  const changeHandler = (e: {
+    target: { value: React.SetStateAction<string> };
+  }) => {
+    setTitle(e.target.value);
+  };
+
+  return (
+    <div className="todoapp">
+      <h1 className="todoapp__title">todos</h1>
+
+      <div className="todoapp__content">
+        <header className="todoapp__header">
+          <button type="button" className="todoapp__toggle-all active">
+            {" "}
+          </button>
+          <form onSubmit={handleSubmit}>
+            <input
+              type="text"
+              className="todoapp__new-todo"
+              placeholder="What needs to be done?"
+              value={title}
+              onChange={changeHandler}
+            />
+          </form>
+        </header>
+
+        {todos.length > 0 && (
+          <>
+            <section className="todoapp__main">
+              <TodoList
+                todos={currentTodos}
+                onDeleteTodo={removeTodo}
+                temporaryTodo={temporaryTodo}
+              />
+            </section>
+
+            <footer className="todoapp__footer">
+              <span className="todo-count">{`${activeTodosСount} items left`}</span>
+
+              <FilterTodo filter={filter} onFilterChange={setFilter} />
+
+              {!completedTodos && (
+                <button type="button" className="todoapp__clear-completed">
+                  Clear completed
+                </button>
+              )}
+            </footer>
+          </>
+        )}
+      </div>
+
+      {error && <Error error={error} onClear={() => setError("")} />}
+    </div>
   );
 };
