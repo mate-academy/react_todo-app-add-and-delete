@@ -3,21 +3,24 @@ import classNames from 'classnames';
 import { Todo } from '../types/Todo';
 
 type Props = {
-  todos: Todo[],
+  isActiveTodos: Todo[],
   title: string,
   handleNewTitle: (event: React.ChangeEvent<HTMLInputElement>) => void,
-  addNewTodo: (title: string) => void,
+  onAddNewTodo: (title: string) => void,
   isDisabledInput: boolean,
 };
 
 export const Header: React.FC<Props> = ({
-  todos,
+  isActiveTodos,
   title,
   handleNewTitle,
-  addNewTodo,
+  onAddNewTodo,
   isDisabledInput,
 }) => {
-  const isActive = todos.filter(todo => !todo.completed);
+  const hanleSubmit = (event: React.FormEvent<HTMLFormElement>) => {
+    event.preventDefault();
+    onAddNewTodo(title);
+  };
 
   return (
     <header className="todoapp__header">
@@ -25,15 +28,12 @@ export const Header: React.FC<Props> = ({
         type="button"
         className={classNames(
           'todoapp__toggle-all',
-          { active: isActive },
+          { active: isActiveTodos },
         )}
         aria-label="Add todo"
       />
       <form
-        onSubmit={(event) => {
-          event.preventDefault();
-          addNewTodo(title);
-        }}
+        onSubmit={hanleSubmit}
       >
         <input
           type="text"

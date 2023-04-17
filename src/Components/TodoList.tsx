@@ -1,59 +1,31 @@
 import classNames from 'classnames';
 import { Todo } from '../types/Todo';
+import { TodoItem } from './TodoItem';
 
 type Props = {
   todosToShow: Todo[],
   tempTodo: Todo | null,
-  removeTodo:(id: number) => void,
-  isWaitingForDelete: number,
+  onRemoveTodo:(id: number) => void,
+  deletingTodoId: number,
   isDeletingCompleted: boolean,
 };
 
 export const TodoList: React.FC<Props> = ({
   todosToShow,
   tempTodo,
-  removeTodo,
-  isWaitingForDelete,
+  onRemoveTodo,
+  deletingTodoId,
   isDeletingCompleted,
 }) => {
   return (
     <section className="todoapp__main">
       {todosToShow.map(todo => (
-        <div
-          key={todo.id}
-          className={classNames(
-            'todo',
-            { completed: todo.completed },
-          )}
-        >
-          <label className="todo__status-label">
-            <input
-              type="checkbox"
-              className="todo__status"
-              checked={todo.completed}
-            />
-          </label>
-          <span className="todo__title">{todo.title}</span>
-          <button
-            type="button"
-            className="todo__remove"
-            onClick={() => removeTodo(todo.id)}
-          >
-            ×
-          </button>
-          <div className={classNames(
-            'modal overlay',
-            {
-              'is-active': (todo.id === 0
-            || isWaitingForDelete === todo.id
-            || (isDeletingCompleted && todo.completed)),
-            },
-          )}
-          >
-            <div className="modal-background has-background-white-ter" />
-            <div className="loader" />
-          </div>
-        </div>
+        <TodoItem
+          todo={todo}
+          deletingTodoId={deletingTodoId}
+          isDeletingCompleted={isDeletingCompleted}
+          onRemoveTodo={onRemoveTodo}
+        />
       ))}
 
       {tempTodo && (
@@ -75,7 +47,7 @@ export const TodoList: React.FC<Props> = ({
           <button
             type="button"
             className="todo__remove"
-            onClick={() => removeTodo(tempTodo.id)}
+            onClick={() => onRemoveTodo(tempTodo.id)}
           >
             ×
           </button>

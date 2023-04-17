@@ -7,21 +7,21 @@ type Props = {
   todosToShow: Todo[],
   selectedStatus: Status,
   setSelectedStatus: (value:Status) => void,
-  removeTodoCompleted:() => void;
+  onRemoveCompletedTodo:() => void;
 };
 
 export const Footer: React.FC<Props> = ({
   todosToShow,
   selectedStatus,
   setSelectedStatus,
-  removeTodoCompleted,
+  onRemoveCompletedTodo,
 }) => {
-  const todoLeft = todosToShow.filter(todo => !todo.completed).length;
+  const todosLeft = todosToShow.filter(todo => !todo.completed).length;
 
   return (
     <footer className="todoapp__footer">
       <span className="todo-count">
-        {`${todoLeft} items left`}
+        {`${todosLeft} items left`}
       </span>
       <nav className="filter">
         <a
@@ -60,7 +60,7 @@ export const Footer: React.FC<Props> = ({
       <button
         type="button"
         className="todoapp__clear-completed"
-        onClick={removeTodoCompleted}
+        onClick={onRemoveCompletedTodo}
       >
         Clear completed
       </button>

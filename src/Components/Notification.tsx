@@ -1,27 +1,25 @@
 import classNames from 'classnames';
 
 type Props = {
-  isError: boolean,
-  setIsError: (boolean: boolean) => void,
+  setErrorMessage: (string: string) => void,
   errorMessage: string,
 };
 
 export const Notification: React.FC<Props> = ({
-  isError,
-  setIsError,
+  setErrorMessage,
   errorMessage,
 }) => {
   return (
     <div className={classNames(
       'notification is-danger is-light has-text-weight-normal',
-      { hidden: !isError },
+      { hidden: !errorMessage },
     )}
     >
       {/* eslint-disable-next-line */}
       <button
         type="button"
         className="delete"
-        onClick={() => setIsError(false)}
+        onClick={() => setErrorMessage('')}
       />
       <span>{errorMessage}</span>
     </div>
