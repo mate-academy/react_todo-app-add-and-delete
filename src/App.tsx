@@ -24,11 +24,17 @@ export const App: React.FC = () => {
 
   const isActiveTodos = todos.filter(todo => !todo.completed);
 
-  function clearErrorMessage() {
-    setTimeout(() => {
-      setErrorMessage('');
-    }, 3000);
-  }
+  useEffect(() => {
+    const clearErrorMessage = () => {
+      setTimeout(() => {
+        setErrorMessage('');
+      }, 3000);
+    };
+
+    if (errorMessage && errorMessage.length > 0) {
+      clearErrorMessage();
+    }
+  }, [errorMessage]);
 
   const handleNewTitle = (event: React.ChangeEvent<HTMLInputElement>) => {
     setTitle(event.target.value);
@@ -54,15 +60,12 @@ export const App: React.FC = () => {
       })
       .catch(() => {
         setErrorMessage('Unable to add a todo');
-        clearErrorMessage();
       });
   }, []);
 
   const addNewTodo = (titleInput: string) => {
     if (!titleInput.trim()) {
       setErrorMessage('Title can\'t be empty');
-
-      clearErrorMessage();
 
       return;
     }
@@ -83,7 +86,6 @@ export const App: React.FC = () => {
       })
       .catch(() => {
         setErrorMessage('Unable to update a todo!');
-        clearErrorMessage();
       })
       .finally(() => {
         setIsDisabledInput(false);
@@ -100,7 +102,6 @@ export const App: React.FC = () => {
       })
       .catch(() => {
         setErrorMessage('Unable to delete a todo');
-        clearErrorMessage();
       })
       .finally(() => {
         setDeletingTodoId(0);
