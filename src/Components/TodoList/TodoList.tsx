@@ -1,10 +1,10 @@
-import { Todos } from '../../types/todo';
-import { Todo } from '../Todo/Todo';
+import { TodoInterface } from "../../types/todo";
+import { Todo } from "../Todo/Todo";
 
 type Props = {
-  todos: Todos[];
+  todos: TodoInterface[];
   onDeleteTodo: (id: number) => void;
-  temporaryTodo: Todos | undefined;
+  temporaryTodo: TodoInterface | undefined;
 };
 
 export const TodoList: React.FC<Props> = ({

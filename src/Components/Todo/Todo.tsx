@@ -1,8 +1,8 @@
 import classNames from "classnames";
-import { Todos } from "../../types/todo";
+import { TodoInterface } from "../../types/todo";
 
 type Props = {
-  todo: Todos;
+  todo: TodoInterface;
   onDelete: (id: number) => void;
 };
 
@@ -17,7 +17,6 @@ export const Todo: React.FC<Props> = ({ todo, onDelete }) => {
 
       <span className="todo__title">{title}</span>
 
-      {/* Remove button appears only on hover */}
       <button
         type="button"
         className="todo__remove"
@@ -26,7 +25,6 @@ export const Todo: React.FC<Props> = ({ todo, onDelete }) => {
         ×
       </button>
 
-      {/* overlay will cover the todo while it is being updated */}
       <div className="modal overlay">
         <div className="modal-background has-background-white-ter" />
         <div className="loader" />
