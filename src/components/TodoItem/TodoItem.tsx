@@ -1,4 +1,4 @@
-import { FC } from 'react';
+import { FC, useRef } from 'react';
 import cn from 'classnames';
 import { LoadTodos, Todo } from '../../types/Todo';
 import { removeTodo } from '../../api/todos';
@@ -12,12 +12,18 @@ export const TodoItem: FC<Props> = ({
   todo,
   loadTodos,
 }) => {
+  const isActive = useRef(false);
   const { title, completed, id } = todo;
 
   const handleRemoveTodo = () => {
+    isActive.current = true;
     removeTodo(id);
     setTimeout(() => loadTodos(), 300);
   };
+
+  if (todo.id === 0) {
+    isActive.current = true;
+  }
 
   return (
     <div
@@ -42,15 +48,17 @@ export const TodoItem: FC<Props> = ({
         ×
       </button>
 
-      <div className={cn(
-        'overlay',
-        { modal: id > 0 },
-      )}
+      <div
+        className={cn(
+          'overlay',
+          'modal',
+          { 'is-active': isActive.current },
+        )}
       >
         <div
           className="modal-background has-background-white-ter"
         />
-        <div className="loader is-loading" />
+        <div className="loader" />
       </div>
     </div>
   );

@@ -2,7 +2,6 @@
 import {
   FC,
   useEffect,
-  useRef,
 } from 'react';
 
 import cn from 'classnames';
@@ -13,8 +12,6 @@ type Props = {
 };
 
 const NotificationError: FC<Props> = ({ error, resetError }) => {
-  const errorElement = useRef<HTMLDivElement>(null);
-
   useEffect(() => {
     setTimeout(() => {
       resetError();
@@ -29,7 +26,6 @@ const NotificationError: FC<Props> = ({ error, resetError }) => {
         'is-light',
         'has-text-weight-normal',
       )}
-      ref={errorElement}
     >
       <button
         type="button"
