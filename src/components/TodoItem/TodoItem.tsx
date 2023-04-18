@@ -1,29 +1,19 @@
-import { FC, useRef } from 'react';
+import { FC } from 'react';
 import cn from 'classnames';
-import { LoadTodos, Todo } from '../../types/Todo';
-import { removeTodo } from '../../api/todos';
+import { Todo } from '../../types/Todo';
 
 type Props = {
   todo: Todo;
-  loadTodos: LoadTodos;
+  handleRemoveTodo: (buttonId: number) => void;
+  activeIds: Array<number>;
 };
 
 export const TodoItem: FC<Props> = ({
   todo,
-  loadTodos,
+  handleRemoveTodo,
+  activeIds,
 }) => {
-  const isActive = useRef(false);
   const { title, completed, id } = todo;
-
-  const handleRemoveTodo = () => {
-    isActive.current = true;
-    removeTodo(id);
-    setTimeout(() => loadTodos(), 300);
-  };
-
-  if (todo.id === 0) {
-    isActive.current = true;
-  }
 
   return (
     <div
@@ -43,7 +33,7 @@ export const TodoItem: FC<Props> = ({
       <button
         type="button"
         className="todo__remove"
-        onClick={handleRemoveTodo}
+        onClick={() => handleRemoveTodo(id)}
       >
         ×
       </button>
@@ -52,7 +42,9 @@ export const TodoItem: FC<Props> = ({
         className={cn(
           'overlay',
           'modal',
-          { 'is-active': isActive.current },
+          {
+            'is-active': activeIds.some(activeId => activeId === id),
+          },
         )}
       >
         <div

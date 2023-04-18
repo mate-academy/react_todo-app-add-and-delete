@@ -2,7 +2,7 @@ import { FC, useMemo, useState } from 'react';
 import { NavLink } from 'react-router-dom';
 import cn from 'classnames';
 import { TodoList } from '../TodoList/TodoList';
-import { LoadTodos, Todo } from '../../types/Todo';
+import { Todo } from '../../types/Todo';
 
 enum FILTERS {
   all = 'All',
@@ -26,15 +26,19 @@ const LINKS = [
 ];
 
 type Props = {
-  loadTodos: LoadTodos;
+  handleRemoveTodo: (id: number) => void;
   todos: Todo[];
   tempTodo: Todo | null;
+  activeIds: Array<number>;
+  handleClearCompleted: () => void;
 };
 
 export const Filter: FC<Props> = ({
-  loadTodos,
+  handleRemoveTodo,
   todos,
   tempTodo,
+  activeIds,
+  handleClearCompleted,
 }) => {
   const [filter, setFilter] = useState<FILTERS>(FILTERS.all);
 
@@ -63,9 +67,10 @@ export const Filter: FC<Props> = ({
   return (
     <>
       <TodoList
-        loadTodos={loadTodos}
+        handleRemoveTodo={handleRemoveTodo}
         visibleTodos={visibleTodos}
         tempTodo={tempTodo}
+        activeIds={activeIds}
       />
 
       <footer className="todoapp__footer">
@@ -95,6 +100,7 @@ export const Filter: FC<Props> = ({
           type="button"
           className="todoapp__clear-completed"
           disabled={completedTodosCount === 0}
+          onClick={handleClearCompleted}
         >
           Clear completed
         </button>

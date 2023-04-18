@@ -4,7 +4,7 @@ import React, {
   useState,
 } from 'react';
 
-import { getTodos, addTodo } from './api/todos';
+import { getTodos, addTodo, removeTodo } from './api/todos';
 import { UserWarning } from './UserWarning';
 import { Todo } from './types/Todo';
 import { Filter } from './components/Filter/Filter';
@@ -20,6 +20,8 @@ export const App: React.FC = () => {
   const [error, setError] = useState('');
   const [tempTodo, setTemptodo] = useState<Todo | null>(null);
   const [isDataUpdated, setIsdataUpdated] = useState(false);
+
+  const [activeIds, setActiveIds] = useState([0]);
 
   const handleTodoChange = (event: ChangeEvent<HTMLInputElement>) => {
     setTask(event.target.value);
@@ -74,6 +76,28 @@ export const App: React.FC = () => {
     loadTodos();
   }, []);
 
+  const handleRemoveTodo = async (id: number) => {
+    setActiveIds((activeId) => [...activeId, id]);
+
+    try {
+      await removeTodo(id)
+        .then(() => {
+          loadTodos();
+        });
+    } catch {
+      setActiveIds([0]);
+      setError('Unable to delete a todo');
+    }
+  };
+
+  const handleClearCompleted = () => {
+    todos.forEach(todo => {
+      if (todo.completed) {
+        handleRemoveTodo(todo.id);
+      }
+    });
+  };
+
   const resetError = () => setError('');
 
   if (!USER_ID) {
@@ -97,7 +121,9 @@ export const App: React.FC = () => {
             <Filter
               todos={todos}
               tempTodo={tempTodo}
-              loadTodos={loadTodos}
+              handleRemoveTodo={handleRemoveTodo}
+              activeIds={activeIds}
+              handleClearCompleted={handleClearCompleted}
             />
           )
         }

@@ -1,17 +1,19 @@
 import { FC } from 'react';
-import { LoadTodos, Todo } from '../../types/Todo';
+import { Todo } from '../../types/Todo';
 import { TodoItem } from '../TodoItem/TodoItem';
 
 type Props = {
   visibleTodos: Todo[];
   tempTodo: Todo | null;
-  loadTodos: LoadTodos;
+  handleRemoveTodo: (id: number) => void;
+  activeIds: Array<number>;
 };
 
 export const TodoList: FC<Props> = ({
   visibleTodos,
   tempTodo,
-  loadTodos,
+  handleRemoveTodo,
+  activeIds,
 }) => {
   return (
     <section className="todoapp__main">
@@ -20,7 +22,8 @@ export const TodoList: FC<Props> = ({
           <TodoItem
             todo={todo}
             key={todo.id}
-            loadTodos={loadTodos}
+            handleRemoveTodo={handleRemoveTodo}
+            activeIds={activeIds}
           />
         ))
       }
@@ -29,7 +32,8 @@ export const TodoList: FC<Props> = ({
           <TodoItem
             todo={tempTodo}
             key="tempTodo"
-            loadTodos={loadTodos}
+            handleRemoveTodo={handleRemoveTodo}
+            activeIds={activeIds}
           />
         )
       }

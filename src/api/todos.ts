@@ -9,6 +9,6 @@ export const addTodo = (todo: SendedTodo) => (
   client.post<SendedTodo>('/todos', todo)
 );
 
-export const removeTodo = (itemId: number) => {
-  client.delete(`/todos/${itemId}`);
-};
+export const removeTodo = (itemId: number) => (
+  client.delete(`/todos/${itemId}`)
+);
