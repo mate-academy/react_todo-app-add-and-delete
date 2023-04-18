@@ -49,14 +49,15 @@ export const TodosFilter: React.FC<Props> = React.memo(({
         ))}
       </nav>
 
-      <button
-        type="button"
-        className="todoapp__clear-completed"
-        disabled={!todosCompleted}
-        onClick={onRemoveCompleted}
-      >
-        Clear completed
-      </button>
+      {todosCompleted !== 0 && (
+        <button
+          type="button"
+          className="todoapp__clear-completed"
+          onClick={onRemoveCompleted}
+        >
+          Clear completed
+        </button>
+      )}
     </footer>
   );
 });
