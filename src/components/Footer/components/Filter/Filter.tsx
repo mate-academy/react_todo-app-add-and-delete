@@ -1,41 +1,27 @@
 import classNames from 'classnames';
+import { Status } from '../../../../types/Status';
 
 interface Props {
-  status: string;
-  setStatus: (value: string) => void;
+  status: Status;
+  setStatus: (value: Status) => void;
 }
-
-const statuses = [
-  {
-    path: '',
-    title: 'All',
-  },
-  {
-    path: 'active',
-    title: 'Active',
-  },
-  {
-    path: 'completed',
-    title: 'Completed',
-  },
-];
 
 export const Filter: React.FC<Props> = ({
   status,
   setStatus,
 }) => (
   <nav className="filter">
-    {statuses.map(({ title, path }) => (
+    {Object.values(Status).map((item) => (
       <a
-        key={title}
-        href={`#/${path}`}
+        key={item}
+        href={`#/${item}`}
         className={classNames(
           'filter__link',
-          { selected: status === title },
+          { selected: status === item },
         )}
-        onClick={() => setStatus(title)}
+        onClick={() => setStatus(item)}
       >
-        {title}
+        {item}
       </a>
     ))}
   </nav>

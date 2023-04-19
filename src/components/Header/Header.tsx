@@ -5,7 +5,7 @@ import { Submit } from '../../types/FormEvent';
 interface Props {
   query: string;
   hasTodos: boolean;
-  isAcitveButton: boolean;
+  isActiveButton: boolean;
   isDisabledField: boolean;
   onSubmit: Submit;
   onChange: (value: string) => void;
@@ -14,7 +14,7 @@ interface Props {
 export const Header: React.FC<Props> = ({
   query,
   hasTodos,
-  isAcitveButton,
+  isActiveButton,
   isDisabledField,
   onChange,
   onSubmit,
@@ -25,7 +25,7 @@ export const Header: React.FC<Props> = ({
         type="button"
         className={classNames(
           'todoapp__toggle-all',
-          { active: isAcitveButton },
+          { active: isActiveButton },
         )}
       />
     )}

@@ -14,6 +14,7 @@ import { TodoList } from './components/TodoList';
 import { Notification } from './components/Notification';
 import { Error } from './types/Error';
 import { Todo } from './types/Todo';
+import { Status } from './types/Status';
 import { Submit } from './types/FormEvent';
 
 const USER_ID = 6994;
@@ -21,7 +22,7 @@ const USER_ID = 6994;
 export const App: FC = () => {
   const [todos, setTodos] = useState<Todo[]>([]);
   const [error, setError] = useState<Error>(Error.None);
-  const [status, setStatus] = useState('All');
+  const [status, setStatus] = useState<Status>(Status.All);
   const [query, setQuery] = useState('');
   const [tempTodo, setTempTodo] = useState<Todo | null>(null);
   const [deletingTodoIDs, setDeletingTodoIDs] = useState<number[]>([]);
@@ -50,10 +51,10 @@ export const App: FC = () => {
 
   const visibleTodos = useMemo(() => {
     switch (status) {
-      case 'Active':
+      case Status.Active:
         return todos.filter(todo => !todo.completed);
 
-      case 'Completed':
+      case Status.Completed:
         return todos.filter(todo => todo.completed);
 
       default:
@@ -80,7 +81,7 @@ export const App: FC = () => {
 
       completedTodoIds.forEach(todo => handleRemoveTodo(todo.id));
     },
-    [todos],
+    [completedTodoIds],
   );
 
   const handleOnChange = useCallback(
@@ -126,7 +127,7 @@ export const App: FC = () => {
           query={query}
           hasTodos={!!todos.length}
           isDisabledField={!!tempTodo}
-          isAcitveButton={isCompletedTodos}
+          isActiveButton={isCompletedTodos}
           onSubmit={handleSubmit}
           onChange={handleOnChange}
         />

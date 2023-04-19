@@ -1,12 +1,13 @@
 import { useMemo } from 'react';
 import { Todo } from '../../types/Todo';
+import { Status } from '../../types/Status';
 import { Filter } from './components/Filter';
 
 interface Props {
   todos: Todo[];
-  status: string;
+  status: Status;
   handleClearCompleted: () => void;
-  setStatus: (value: string) => void;
+  setStatus: (value: Status) => void;
 }
 
 export const Footer: React.FC<Props> = ({
@@ -15,7 +16,7 @@ export const Footer: React.FC<Props> = ({
   setStatus,
   handleClearCompleted,
 }) => {
-  const isActiveTodos = useMemo(
+  const activeTodos = useMemo(
     () => todos.filter(todo => !todo.completed), [todos],
   );
 
@@ -26,7 +27,7 @@ export const Footer: React.FC<Props> = ({
   return (
     <footer className="todoapp__footer">
       <span className="todo-count">
-        {`${isActiveTodos.length} items left`}
+        {`${activeTodos.length} items left`}
       </span>
 
       <Filter
