@@ -3,9 +3,15 @@ import { Todo } from '../../types/Todo';
 
 type Props = {
   todo: Todo,
+  deleteTodo: (id: number) => void,
+  processedIds: number[],
 };
 
-export const TodoItem: React.FC<Props> = ({ todo }) => {
+export const TodoItem: React.FC<Props> = ({
+  todo,
+  deleteTodo,
+  processedIds,
+}) => {
   return (
     <div
       className={classNames('todo', { completed: todo.completed })}
@@ -18,10 +24,18 @@ export const TodoItem: React.FC<Props> = ({ todo }) => {
       </label>
 
       <span className="todo__title">{todo.title}</span>
-      <button type="button" className="todo__remove">×</button>
+      <button
+        type="button"
+        className="todo__remove"
+        onClick={() => deleteTodo(todo.id)}
+      >
+        ×
+      </button>
 
       <div className={classNames(
-        'modal overlay', { 'is-active': todo.id === 0 },
+        'modal overlay', {
+          'is-active': todo.id === 0 || processedIds.includes(todo.id),
+        },
       )}
       >
         <div className="modal-background has-background-white-ter" />

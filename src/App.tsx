@@ -1,6 +1,8 @@
 /* eslint-disable jsx-a11y/control-has-associated-label */
-import React, { useEffect, useState } from 'react';
-import { getTodos, postTodo } from './api/todos';
+import React, {
+  useCallback, useEffect, useMemo, useState,
+} from 'react';
+import { deleteTodo, getTodos, postTodo } from './api/todos';
 import { Footer } from './components/Footer/Footer';
 import { Header } from './components/Header/Header';
 import { Notification } from './components/Notification/Notification';
@@ -18,6 +20,7 @@ export const App: React.FC = () => {
   const [error, setError] = useState<ErrorTypes | null>(null);
   const [tempTodo, setTempTodo] = useState<Todo | null>(null);
   const [isDisableInput, setIsDisableInput] = useState(false);
+  const [processedIds, setProcessedIds] = useState<number[]>([]);
 
   useEffect(() => {
     getTodos(USER_ID)
@@ -43,7 +46,7 @@ export const App: React.FC = () => {
     }
   };
 
-  const handleAddTodo = async (title: string) => {
+  const handleAddTodo = useCallback(async (title: string) => {
     setError(null);
     setIsDisableInput(true);
 
@@ -80,7 +83,31 @@ export const App: React.FC = () => {
       setTempTodo(null);
       setIsDisableInput(false);
     }
-  };
+  }, []);
+
+  const handleDeleteTodo = useCallback(async (todoId: number) => {
+    setError(null);
+    setProcessedIds(deleteIds => [...deleteIds, todoId]);
+
+    try {
+      await deleteTodo(todoId);
+
+      setTodos(currentTodos => currentTodos
+        .filter(currentTodo => currentTodo.id !== todoId));
+    } catch {
+      setError(ErrorTypes.DELETE);
+    } finally {
+      setProcessedIds(deleteIds => deleteIds.filter(id => id !== todoId));
+    }
+  }, [processedIds]);
+
+  const completedTodos = useMemo(() => todos.filter(todo => todo.completed),
+    [todos]);
+
+  const handleClearCompleted = useCallback(async () => {
+    setProcessedIds(completedTodos.map(todo => todo.id));
+    completedTodos.forEach(todo => handleDeleteTodo(todo.id));
+  }, [completedTodos]);
 
   if (!USER_ID) {
     return <UserWarning />;
@@ -100,6 +127,8 @@ export const App: React.FC = () => {
           <TodoList
             todos={filteredTodos()}
             tempTodo={tempTodo}
+            deleteTodo={handleDeleteTodo}
+            processedIds={processedIds}
           />
         </section>
 
@@ -107,8 +136,10 @@ export const App: React.FC = () => {
         {todos.length > 0
             && (
               <Footer
+                todos={todos}
                 setFilterType={setFilterType}
                 filterType={filterType}
+                onClearCompleted={handleClearCompleted}
               />
             )}
       </div>

@@ -1,20 +1,36 @@
 // import classNames from "classnames"
 import classNames from 'classnames';
+import { useMemo } from 'react';
 import { Status } from '../../types/Status';
+import { Todo } from '../../types/Todo';
 
 type Props = {
+  todos: Todo[],
   setFilterType: (value: Status) => void,
   filterType: Status,
+  onClearCompleted: () => void,
 };
 
 export const Footer: React.FC<Props> = ({
+  todos,
   setFilterType,
   filterType,
+  onClearCompleted,
 }) => {
+  const hasCompleted = useMemo(() => {
+    return todos.some(todo => todo.completed);
+  }, [todos]);
+
+  const activeTodos = useMemo(() => {
+    return todos.filter(todo => !todo.completed);
+  }, [todos]);
+
   return (
     <footer className="todoapp__footer">
       <span className="todo-count">
-        3 items left
+        {activeTodos.length}
+        {' '}
+        items left
       </span>
 
       {/* Active filter should have a 'selected' class */}
@@ -53,7 +69,10 @@ export const Footer: React.FC<Props> = ({
       {/* don't show this button if there are no completed todos */}
       <button
         type="button"
-        className="todoapp__clear-completed"
+        className={classNames('todoapp__clear-completed', {
+          'todoapp__clear-completed--unvisible': !hasCompleted,
+        })}
+        onClick={onClearCompleted}
       >
         Clear completed
       </button>
