@@ -14,7 +14,7 @@ export const postTodos = async (userId: number, todo: Todo | null) => {
 };
 
 export const updateTodos = async (
-  userId: number, todoId: number, todo: Todo,
+  userId: number, todoId: number, todo: Todo | null,
 ) => {
   const response = await client.patch<Todo[]>(`/todos/${todoId}?userId=${userId}`, todo);
 
