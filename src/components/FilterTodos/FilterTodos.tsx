@@ -17,11 +17,11 @@ export const FilterForTodos: React.FC<Props> = ({
         className={
           classNames(
             'filter__link',
-            { selected: filter === FilterStatus.all },
+            { selected: filter === FilterStatus.All },
           )
         }
         onClick={() => {
-          onFilterChange(FilterStatus.all);
+          onFilterChange(FilterStatus.All);
         }}
       >
         All
@@ -32,11 +32,11 @@ export const FilterForTodos: React.FC<Props> = ({
         className={
           classNames(
             'filter__link',
-            { selected: filter === FilterStatus.active },
+            { selected: filter === FilterStatus.Active },
           )
         }
         onClick={() => {
-          onFilterChange(FilterStatus.active);
+          onFilterChange(FilterStatus.Active);
         }}
       >
         Active
@@ -47,11 +47,11 @@ export const FilterForTodos: React.FC<Props> = ({
         className={
           classNames(
             'filter__link',
-            { selected: filter === FilterStatus.completed },
+            { selected: filter === FilterStatus.Completed },
           )
         }
         onClick={() => {
-          onFilterChange(FilterStatus.completed);
+          onFilterChange(FilterStatus.Completed);
         }}
       >
         Completed

@@ -7,7 +7,7 @@ import { FilterStatus } from './types/FilterStatus';
 
 import { Header } from './components/Header/Header';
 import { ListOfTodos } from './components/ListOfTodos/ListOfTodos';
-import { FilterForTodos } from './components/FilterForTodos/FilterForTodos';
+import { FilterForTodos } from './components/FilterTodos/FilterTodos';
 import {
   ErrorNotification,
 } from './components/ErrorNotification/ErrorNotification';
@@ -17,7 +17,7 @@ const USER_ID = 6984;
 export const App: React.FC = () => {
   const [todos, setTodos] = useState<Todo[]>([]);
   const [error, setError] = useState('');
-  const [filter, setFilter] = useState<FilterStatus>(FilterStatus.all);
+  const [filter, setFilter] = useState<FilterStatus>(FilterStatus.All);
   const [filteredTodos, setFilteredTodos] = useState<Todo[]>([]);
   const unfinishedTodos = todos.filter(todo => !todo.completed);
   const finishedTodos = todos.filter(todo => todo.completed);
@@ -27,17 +27,17 @@ export const App: React.FC = () => {
 
   useEffect(() => {
     getTodos(USER_ID)
-      .then(result => setTodos(result))
+      .then(setTodos)
       .catch(() => setError('Unable to load the list'));
   }, []);
 
   useEffect(() => {
     const currentTodos = todos.filter((todo) => {
       switch (filter) {
-        case FilterStatus.active:
+        case FilterStatus.Active:
           return !todo.completed;
 
-        case FilterStatus.completed:
+        case FilterStatus.Completed:
           return todo.completed;
 
         default:
