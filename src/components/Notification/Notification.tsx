@@ -22,7 +22,6 @@ export const Notification: React.FC<Props> = ({ error }) => {
         onClick={() => setOnButtonDelete(false)}
       />
 
-      {/* show only one message at a time */}
       {error}
     </div>
   );

@@ -1,6 +1,9 @@
 /* eslint-disable jsx-a11y/control-has-associated-label */
 import React, {
-  useCallback, useEffect, useMemo, useState,
+  useCallback,
+  useEffect,
+  useMemo,
+  useState,
 } from 'react';
 import { deleteTodo, getTodos, postTodo } from './api/todos';
 import { Footer } from './components/Footer/Footer';
@@ -22,25 +25,32 @@ export const App: React.FC = () => {
   const [isDisableInput, setIsDisableInput] = useState(false);
   const [processedIds, setProcessedIds] = useState<number[]>([]);
 
+  const handleGetTodos = async () => {
+    try {
+      if (USER_ID) {
+        const listOfTodos = await getTodos(USER_ID);
+
+        setTodos(listOfTodos);
+      }
+    } catch {
+      setError(ErrorTypes.LOAD);
+    } finally {
+      setTimeout(() => setError(null), 3000);
+    }
+  };
+
   useEffect(() => {
-    getTodos(USER_ID)
-      .then(todosFromServer => {
-        setTodos(todosFromServer);
-      })
-      .catch(() => {
-        setError(ErrorTypes.LOAD);
-        setTimeout(() => {
-          setError(null);
-        }, 3000);
-      });
+    handleGetTodos();
   }, []);
 
   const filteredTodos = () => {
     switch (filterType) {
       case Status.Active:
         return todos.filter(todo => !todo.completed);
+
       case Status.Completed:
         return todos.filter(todo => todo.completed);
+
       default:
         return todos;
     }
@@ -58,20 +68,13 @@ export const App: React.FC = () => {
       }
 
       if (USER_ID) {
-        const dataTempTodo = {
-          id: 0,
-          userId: USER_ID,
-          title,
-          completed: false,
-        };
-
         const dataNewTodo = {
           userId: USER_ID,
           title,
           completed: false,
         };
 
-        setTempTodo(dataTempTodo);
+        setTempTodo({ ...dataNewTodo, id: 0 });
 
         const newTodo = await postTodo(dataNewTodo);
 
@@ -104,7 +107,7 @@ export const App: React.FC = () => {
   const completedTodos = useMemo(() => todos.filter(todo => todo.completed),
     [todos]);
 
-  const handleClearCompleted = useCallback(async () => {
+  const handleClearCompleted = useCallback(() => {
     setProcessedIds(completedTodos.map(todo => todo.id));
     completedTodos.forEach(todo => handleDeleteTodo(todo.id));
   }, [completedTodos]);
@@ -132,7 +135,6 @@ export const App: React.FC = () => {
           />
         </section>
 
-        {/* Hide the footer if there are no todos */}
         {todos.length > 0
             && (
               <Footer
@@ -144,8 +146,6 @@ export const App: React.FC = () => {
             )}
       </div>
 
-      {/* Notification is shown in case of any error */}
-      {/* Add the 'hidden' class to hide the message smoothly */}
       {error
         && (
           <Notification

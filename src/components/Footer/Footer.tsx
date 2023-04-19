@@ -1,4 +1,3 @@
-// import classNames from "classnames"
 import classNames from 'classnames';
 import { useMemo } from 'react';
 import { Status } from '../../types/Status';
@@ -28,12 +27,9 @@ export const Footer: React.FC<Props> = ({
   return (
     <footer className="todoapp__footer">
       <span className="todo-count">
-        {activeTodos.length}
-        {' '}
-        items left
+        {`${activeTodos.length} items left`}
       </span>
 
-      {/* Active filter should have a 'selected' class */}
       <nav className="filter">
         <a
           href="#/"
@@ -66,7 +62,6 @@ export const Footer: React.FC<Props> = ({
         </a>
       </nav>
 
-      {/* don't show this button if there are no completed todos */}
       <button
         type="button"
         className={classNames('todoapp__clear-completed', {
