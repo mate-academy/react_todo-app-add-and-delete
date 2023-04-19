@@ -29,6 +29,25 @@ export const App: React.FC = () => {
   const loadTodos = async () => {
     setIsdataUpdated(true);
 
+    await getTodos(Number(USER_ID))
+      .then(res => {
+        setTodos(res);
+        setTemptodo(null);
+        setIsdataUpdated(false);
+      })
+      .catch(() => setError('unable to get todos'));
+  };
+
+  const handleTodoSubmit = async (event: ChangeEvent<HTMLFormElement>) => {
+    event.preventDefault();
+
+    if (task.trim() === '') {
+      setError("The title can't be empty");
+      setTask('');
+
+      return;
+    }
+
     if (task) {
       setTemptodo({
         id: 0,
@@ -36,37 +55,16 @@ export const App: React.FC = () => {
         title: task,
         completed: false,
       });
+      setTask('');
     }
 
-    try {
-      await getTodos(Number(USER_ID)).then(res => {
-        setTodos(res);
-        setTemptodo(null);
-        setIsdataUpdated(false);
-      });
-    } catch {
-      setError('unable to get todos');
-    }
-  };
-
-  const handleTodoSubmit = async (event: ChangeEvent<HTMLFormElement>) => {
-    event.preventDefault();
-
-    if (task === '') {
-      setError("The title can't be empty");
-
-      return;
-    }
-
-    try {
-      await addTodo({
-        userId: USER_ID,
-        title: task,
-        completed: false,
-      }).then(() => loadTodos());
-    } catch {
-      setError('unable to add todos');
-    }
+    await addTodo({
+      userId: USER_ID,
+      title: task,
+      completed: false,
+    })
+      .then(() => loadTodos())
+      .catch(() => setError('unable to add todos'));
 
     setActiveIds([0]);
     setTask('');
@@ -79,15 +77,14 @@ export const App: React.FC = () => {
   const handleRemoveTodo = async (id: number) => {
     setActiveIds((activeId) => [...activeId, id]);
 
-    try {
-      await removeTodo(id)
-        .then(() => {
-          loadTodos();
-        });
-    } catch {
-      setError('Unable to delete a todo');
-      setActiveIds([0]);
-    }
+    await removeTodo(id)
+      .then(() => {
+        loadTodos();
+      })
+      .catch(() => {
+        setError('Unable to delete a todo');
+        setActiveIds([0]);
+      });
   };
 
   const handleClearCompleted = () => {
@@ -116,28 +113,23 @@ export const App: React.FC = () => {
           handleTodoSubmit={handleTodoSubmit}
         />
 
-        {
-          (todos.length > 0 || tempTodo) && (
-            <Filter
-              todos={todos}
-              tempTodo={tempTodo}
-              activeIds={activeIds}
-              handleRemoveTodo={handleRemoveTodo}
-              handleClearCompleted={handleClearCompleted}
-            />
-          )
-        }
+        {(todos.length > 0 || tempTodo) && (
+          <Filter
+            todos={todos}
+            tempTodo={tempTodo}
+            activeIds={activeIds}
+            handleRemoveTodo={handleRemoveTodo}
+            handleClearCompleted={handleClearCompleted}
+          />
+        )}
       </div>
 
-      {
-        error
-        && (
-          <NotificationError
-            error={error}
-            resetError={resetError}
-          />
-        )
-      }
+      {error && (
+        <NotificationError
+          error={error}
+          resetError={resetError}
+        />
+      )}
     </div>
   );
 };

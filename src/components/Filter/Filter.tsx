@@ -2,13 +2,7 @@ import { FC, useMemo, useState } from 'react';
 import { NavLink } from 'react-router-dom';
 import cn from 'classnames';
 import { TodoList } from '../TodoList/TodoList';
-import { Todo } from '../../types/Todo';
-
-enum FILTERS {
-  all = 'All',
-  completed = 'Completed',
-  active = 'Active',
-}
+import { Todo, FILTERS } from '../../types/Todo';
 
 const LINKS = [
   {
@@ -99,7 +93,7 @@ export const Filter: FC<Props> = ({
         <button
           type="button"
           className="todoapp__clear-completed"
-          disabled={completedTodosCount === 0}
+          disabled={!completedTodosCount}
           onClick={handleClearCompleted}
         >
           Clear completed

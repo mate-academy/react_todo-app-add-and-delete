@@ -1,4 +1,3 @@
-/* eslint-disable jsx-a11y/control-has-associated-label */
 import {
   FC,
   useEffect,
@@ -13,9 +12,11 @@ type Props = {
 
 const NotificationError: FC<Props> = ({ error, resetError }) => {
   useEffect(() => {
-    setTimeout(() => {
+    const errorId = setTimeout(() => {
       resetError();
     }, 3000);
+
+    return () => clearTimeout(errorId);
   }, [error]);
 
   return (
@@ -31,6 +32,7 @@ const NotificationError: FC<Props> = ({ error, resetError }) => {
         type="button"
         className="delete"
         onClick={resetError}
+        aria-label="delete"
       />
 
       {error}

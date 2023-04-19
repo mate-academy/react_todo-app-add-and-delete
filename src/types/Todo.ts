@@ -8,3 +8,9 @@ export interface Todo {
 export type SendedTodo = Omit<Todo, 'id'>;
 
 export type LoadTodos = () => void;
+
+export enum FILTERS {
+  all = 'All',
+  completed = 'Completed',
+  active = 'Active',
+}
