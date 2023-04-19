@@ -117,13 +117,13 @@ export const App: React.FC = () => {
 
   const handleClearCompleted = () => {
     setIsLoading(true);
-  
+
     const completedTodoIds = completedTodos
       .filter(todo => todo.id !== undefined)
-      .map(todo => todo.id!);
-  
+      .map(todo => todo.id ?? -1);
+
     Promise.all(
-      completedTodoIds.map(todoId => handleRemoveTodo(todoId))
+      completedTodoIds.map(todoId => handleRemoveTodo(todoId)),
     )
       .then(() => {
         setTodos(activeTodos);
