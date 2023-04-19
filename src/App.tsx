@@ -121,7 +121,6 @@ export const App: React.FC = () => {
     const completedTodoIds = completedTodos
       .filter(todo => todo.id !== undefined)
       .map(todo => todo.id ?? -1);
-
     Promise.all(
       completedTodoIds.map(todoId => handleRemoveTodo(todoId)),
     )
