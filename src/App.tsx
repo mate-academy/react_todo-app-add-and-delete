@@ -78,9 +78,7 @@ export const App: React.FC = () => {
     setActiveIds((activeId) => [...activeId, id]);
 
     await removeTodo(id)
-      .then(() => {
-        loadTodos();
-      })
+      .then(() => loadTodos())
       .catch(() => {
         setError('Unable to delete a todo');
         setActiveIds([0]);
