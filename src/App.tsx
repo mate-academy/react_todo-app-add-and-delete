@@ -20,7 +20,6 @@ export const App: React.FC = () => {
   const [error, setError] = useState('');
   const [tempTodo, setTemptodo] = useState<Todo | null>(null);
   const [isDataUpdated, setIsdataUpdated] = useState(false);
-
   const [activeIds, setActiveIds] = useState([0]);
 
   const handleTodoChange = (event: ChangeEvent<HTMLInputElement>) => {
@@ -69,6 +68,7 @@ export const App: React.FC = () => {
       setError('unable to add todos');
     }
 
+    setActiveIds([0]);
     setTask('');
   };
 
@@ -85,8 +85,8 @@ export const App: React.FC = () => {
           loadTodos();
         });
     } catch {
-      setActiveIds([0]);
       setError('Unable to delete a todo');
+      setActiveIds([0]);
     }
   };
 
@@ -110,10 +110,10 @@ export const App: React.FC = () => {
 
       <div className="todoapp__content">
         <NewTodo
-          handleTodoChange={handleTodoChange}
-          handleTodoSubmit={handleTodoSubmit}
           task={task}
           isDataUpdated={isDataUpdated}
+          handleTodoChange={handleTodoChange}
+          handleTodoSubmit={handleTodoSubmit}
         />
 
         {
@@ -121,8 +121,8 @@ export const App: React.FC = () => {
             <Filter
               todos={todos}
               tempTodo={tempTodo}
-              handleRemoveTodo={handleRemoveTodo}
               activeIds={activeIds}
+              handleRemoveTodo={handleRemoveTodo}
               handleClearCompleted={handleClearCompleted}
             />
           )

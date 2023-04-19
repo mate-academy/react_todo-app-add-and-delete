@@ -26,18 +26,18 @@ const LINKS = [
 ];
 
 type Props = {
-  handleRemoveTodo: (id: number) => void;
   todos: Todo[];
   tempTodo: Todo | null;
-  activeIds: Array<number>;
+  activeIds: number[];
+  handleRemoveTodo: (id: number) => void;
   handleClearCompleted: () => void;
 };
 
 export const Filter: FC<Props> = ({
-  handleRemoveTodo,
   todos,
   tempTodo,
   activeIds,
+  handleRemoveTodo,
   handleClearCompleted,
 }) => {
   const [filter, setFilter] = useState<FILTERS>(FILTERS.all);
@@ -67,10 +67,10 @@ export const Filter: FC<Props> = ({
   return (
     <>
       <TodoList
-        handleRemoveTodo={handleRemoveTodo}
         visibleTodos={visibleTodos}
         tempTodo={tempTodo}
         activeIds={activeIds}
+        handleRemoveTodo={handleRemoveTodo}
       />
 
       <footer className="todoapp__footer">

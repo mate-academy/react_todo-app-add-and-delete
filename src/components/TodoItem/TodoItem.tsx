@@ -4,14 +4,14 @@ import { Todo } from '../../types/Todo';
 
 type Props = {
   todo: Todo;
+  activeIds: number[];
   handleRemoveTodo: (buttonId: number) => void;
-  activeIds: Array<number>;
 };
 
 export const TodoItem: FC<Props> = ({
   todo,
-  handleRemoveTodo,
   activeIds,
+  handleRemoveTodo,
 }) => {
   const { title, completed, id } = todo;
 
