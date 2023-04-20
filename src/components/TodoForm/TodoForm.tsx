@@ -6,11 +6,15 @@ type Props = {
   onAdd: (title: string) => void;
 };
 
-export const FormTodo: React.FC<Props> = ({
+export const TodoForm: React.FC<Props> = ({
   setTodoTitle,
   todoTitle,
   onAdd,
 }) => {
+  const handleTodoTitle = (event: React.ChangeEvent<HTMLInputElement>) => {
+    setTodoTitle(event.target.value);
+  };
+
   const handleSubmit = (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
 
@@ -27,7 +31,7 @@ export const FormTodo: React.FC<Props> = ({
         value={todoTitle}
         required
         pattern="^(?!\s*$).+"
-        onChange={(event) => setTodoTitle(event.target.value)}
+        onChange={handleTodoTitle}
         title="Field cannot be empty"
       />
     </form>

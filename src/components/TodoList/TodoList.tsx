@@ -11,7 +11,11 @@ export const TodoList: React.FC<Props> = ({ todos, onDelete }) => {
   return (
     <>
       {todos.map(todo => (
-        <TodoInfo todo={todo} key={todo.id} onDelete={onDelete} />
+        <TodoInfo
+          todo={todo}
+          key={todo.id}
+          onDelete={onDelete}
+        />
       ))}
     </>
   );
