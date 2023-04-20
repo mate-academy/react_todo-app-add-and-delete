@@ -26,9 +26,7 @@ export const Header: React.FC<Props> = ({
         aria-label="Mute volume"
       />
 
-      <form
-        onSubmit={(event) => handleSubmit(event)}
-      >
+      <form onSubmit={handleSubmit}>
         <input
           type="text"
           className="todoapp__new-todo"
