@@ -1,5 +1,5 @@
 /* eslint-disable jsx-a11y/control-has-associated-label */
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useMemo, useState } from 'react';
 import { UserWarning } from './UserWarning';
 import {
   addTodo,
@@ -11,15 +11,19 @@ import { ErrorMessage } from './components/ErrorMesage/ErrorMesage';
 import { FormTodo } from './components/FormTodo/FormTodo';
 import { TodoList } from './components/TodoList/TodoList';
 import { TodoFilter } from './components/TodoFilter/TodoFilter';
+import { FilterType } from './types/FilterType';
 
 const USER_ID = 6926;
 
 export const App: React.FC = () => {
-  const [todos, setTodos] = useState<Todo[] | null>(null);
+  const [todos, setTodos] = useState<Todo[]>([]);
   const [hasError, setHasError] = useState(false);
   const [errorMesage, setErrorMessage] = useState('');
   const [todoTitle, setTodoTitle] = useState('');
-  const [filteredTodos, setFilteredTodos] = useState<Todo[] | null>(null);
+  const [
+    currentFilter,
+    setCurrentFilter,
+  ] = useState<FilterType>(FilterType.All);
 
   useEffect(() => {
     const fetchTodos = async () => {
@@ -60,9 +64,9 @@ export const App: React.FC = () => {
   };
 
   const removeTodo = (id: number) => {
-    return deleteTodo(id)
+    deleteTodo(id)
       .then(() => {
-        const newTodosList = todos && todos.filter(todo => todo.id !== id);
+        const newTodosList = todos.filter(todo => todo.id !== id);
 
         setTodos(newTodosList);
       })
@@ -70,6 +74,19 @@ export const App: React.FC = () => {
         setErrorMessage('Unable to delete a todo');
       });
   };
+
+  const filteredTodos: Todo[] = useMemo(() => {
+    return todos.filter((todo) => {
+      switch (currentFilter) {
+        case FilterType.Active:
+          return !todo.completed;
+        case FilterType.Completed:
+          return todo.completed;
+        default:
+          return true;
+      }
+    });
+  }, [todos, currentFilter]);
 
   if (!USER_ID) {
     return <UserWarning />;
@@ -100,15 +117,18 @@ export const App: React.FC = () => {
         </section>
 
         {/* Hide the footer if there are no todos */}
-        {todos
+        {todos.length > 0
           && (
             <footer className="todoapp__footer">
               <span className="todo-count">
-                {`${todos?.length} items left`}
+                {`${todos.length} items left`}
               </span>
 
               {/* Active filter should have a 'selected' class */}
-              <TodoFilter todos={todos} setFilteredTodos={setFilteredTodos} />
+              <TodoFilter
+                onChangeFilter={setCurrentFilter}
+                currentFilter={currentFilter}
+              />
 
               {/* don't show this button if there are no completed todos */}
               <button type="button" className="todoapp__clear-completed">

@@ -25,7 +25,10 @@ export const FormTodo: React.FC<Props> = ({
         className="todoapp__new-todo"
         placeholder="What needs to be done?"
         value={todoTitle}
+        required
+        pattern="^(?!\s*$).+"
         onChange={(event) => setTodoTitle(event.target.value)}
+        title="Field cannot be empty"
       />
     </form>
   );
