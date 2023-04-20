@@ -4,7 +4,6 @@ import React, {
   useMemo,
   useState,
 } from 'react';
-import classNames from 'classnames';
 import { UserWarning } from './UserWarning';
 import { getTodos, addTodo, removeTodo } from './api/todos';
 import { Todo } from './types/Todo';
@@ -13,6 +12,7 @@ import { TodoInput } from './components/TodoInput/TodoInput';
 import { FilterType } from './types/FilterType';
 import { Notification } from './components/Notification/Notification';
 import { ErrorType } from './types/ErrorType';
+import { Footer } from './components/Footer/Footer';
 
 const USER_ID = 7022;
 
@@ -22,7 +22,7 @@ export const App: React.FC = () => {
   const [isError, setIsError] = useState<ErrorType>(ErrorType.None);
   const [tempTodo, setTempTodo] = useState<Todo | null>(null);
   const [isLoading, setIsLoading] = useState(false);
-  const [loadingTodo, setLoadingTodo] = useState<number[]>([]);
+  const [loadingTodo, setLoadingTodo] = useState<number[]>([0]);
 
   const showError = (errorType : ErrorType) => {
     setIsError(errorType);
@@ -49,7 +49,7 @@ export const App: React.FC = () => {
     () => todos.filter(todo => todo.completed), [todos],
   );
 
-  const filteredTodos = useCallback(() => {
+  const filteredTodos = useMemo(() => {
     switch (filterType) {
       case FilterType.Completed:
         return completedTodos;
@@ -76,7 +76,7 @@ export const App: React.FC = () => {
       return;
     }
 
-    const newTodo: Todo = {
+    const newTodo = {
       userId: USER_ID,
       title,
       completed: false,
@@ -111,7 +111,7 @@ export const App: React.FC = () => {
       })
       .finally(() => {
         setIsLoading(false);
-        setLoadingTodo([]);
+        setLoadingTodo([0]);
       });
   };
 
@@ -153,7 +153,7 @@ export const App: React.FC = () => {
 
         <section className="todoapp__main">
           <TodoList
-            todos={filteredTodos()}
+            todos={filteredTodos}
             tempTodo={tempTodo}
             onRemove={handleRemoveTodo}
             loadingTodo={loadingTodo}
@@ -161,57 +161,13 @@ export const App: React.FC = () => {
         </section>
 
         {todos.length > 0 && (
-          <footer className="todoapp__footer">
-            <span className="todo-count">
-              {`${activeTodos.length} item${activeTodos.length === 1 ? '' : 's'} left`}
-            </span>
-
-            <nav className="filter">
-              <a
-                href="#/"
-                className={classNames(
-                  'filter__link',
-                  { selected: filterType === FilterType.All },
-                )}
-                onClick={handleChangeFilter(FilterType.All)}
-              >
-                {FilterType.All}
-              </a>
-
-              <a
-                href="#/active"
-                className={classNames(
-                  'filter__link',
-                  { selected: filterType === FilterType.Active },
-                )}
-                onClick={handleChangeFilter(FilterType.Active)}
-              >
-                {FilterType.Active}
-              </a>
-
-              <a
-                href="#/completed"
-                className={classNames(
-                  'filter__link',
-                  { selected: filterType === FilterType.Completed },
-                )}
-                onClick={handleChangeFilter(FilterType.Completed)}
-              >
-                {FilterType.Completed}
-              </a>
-            </nav>
-
-            {completedTodos.length > 0 && (
-              <button
-                type="button"
-                className="todoapp__clear-completed"
-                onClick={handleClearCompleted}
-              >
-                Clear completed
-              </button>
-            )}
-
-          </footer>
+          <Footer
+            activeTodosCount={activeTodos.length}
+            completedTodosCount={completedTodos.length}
+            filterType={filterType}
+            onChangeFilter={handleChangeFilter}
+            onClearCompleted={handleClearCompleted}
+          />
         )}
       </div>
 
