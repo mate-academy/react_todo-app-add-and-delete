@@ -39,7 +39,7 @@ export const App: React.FC = () => {
       .catch(() => {
         showError(ErrorType.Load);
       });
-  }, [todos]);
+  }, []);
 
   const activeTodos = useMemo(
     () => todos.filter(todo => !todo.completed), [todos],
@@ -49,7 +49,7 @@ export const App: React.FC = () => {
     () => todos.filter(todo => todo.completed), [todos],
   );
 
-  const filteredTodos = () => {
+  const filteredTodos = useCallback(() => {
     switch (filterType) {
       case FilterType.Completed:
         return completedTodos;
@@ -60,7 +60,7 @@ export const App: React.FC = () => {
       default:
         return todos;
     }
-  };
+  }, [filterType, activeTodos, completedTodos, todos]);
 
   const handleChangeFilter = (filter: FilterType) => (
     event: React.MouseEvent<HTMLAnchorElement>,
@@ -69,7 +69,7 @@ export const App: React.FC = () => {
     setFilterType(filter);
   };
 
-  const handleAddTodo = (title: string) => {
+  const handleAddTodo = useCallback((title: string) => {
     if (!title.trim()) {
       showError(ErrorType.Title);
 
@@ -96,7 +96,7 @@ export const App: React.FC = () => {
         setIsLoading(false);
         setTempTodo(null);
       });
-  };
+  }, []);
 
   const handleRemoveTodo = (todoId: number) => {
     setIsLoading(true);
@@ -121,6 +121,7 @@ export const App: React.FC = () => {
     const completedTodoIds = completedTodos
       .filter(todo => todo.id !== undefined)
       .map(todo => todo.id ?? -1);
+
     Promise.all(
       completedTodoIds.map(todoId => handleRemoveTodo(todoId)),
     )
