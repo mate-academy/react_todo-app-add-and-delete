@@ -4,16 +4,18 @@ import { Todo } from '../types/Todo';
 
 type TodoLoaderProps = {
   todo: Todo,
-  activeTodoId: number,
+  loadingActiveTodoId: number[],
 };
 
 export const TodoLoader: React.FC<TodoLoaderProps> = ({
-  todo, activeTodoId,
+  todo, loadingActiveTodoId,
 }) => {
+  const isLoading = loadingActiveTodoId.includes(todo.id);
+
   return (
     <div
       className={classNames(
-        'modal', 'overlay', { 'is-active': activeTodoId === todo.id },
+        'modal', 'overlay', { 'is-active': isLoading },
       )}
     >
       <div className="modal-background has-background-white-ter" />

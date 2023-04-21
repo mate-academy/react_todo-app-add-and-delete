@@ -12,12 +12,22 @@ type TodoListProps = {
   setTodos: React.Dispatch<React.SetStateAction<Todo[]>>,
   filter: Filter,
   showErrorNotification: (error: string) => void,
-  isAddingNewTodo: boolean,
   todos: Todo[],
+  setLoading: React.Dispatch<React.SetStateAction<boolean>>,
+  loading: boolean,
+  setLoadingActiveTodoId: React.Dispatch<React.SetStateAction<number[]>>,
+  loadingActiveTodoId: number[],
 };
 
 export const TodoList: React.FC<TodoListProps> = ({
-  setTodos, filter, showErrorNotification, isAddingNewTodo, todos,
+  setTodos,
+  filter,
+  showErrorNotification,
+  todos,
+  setLoading,
+  loading,
+  setLoadingActiveTodoId,
+  loadingActiveTodoId,
 }) => {
   const [activeTodoId, setActiveTodoId] = useState<number>(0);
 
@@ -34,57 +44,77 @@ export const TodoList: React.FC<TodoListProps> = ({
 
   const handleTodoDelete = async (todoId: number) => {
     try {
+      setLoadingActiveTodoId(prev => [...prev, todoId]);
+      setLoading(true);
       await deleteTodos(USER_ID, todoId);
       setTodos(todos.filter((todo) => todo.id !== todoId));
     } catch (error) {
       showErrorNotification('Unable to delete the todo');
+    } finally {
+      setLoadingActiveTodoId([]);
+      setLoading(false);
     }
   };
 
   const handleTodoCheck = async (idTodo: number) => {
-    setTodos((prevTodos) => prevTodos.map((todo) => {
-      if (todo.id === idTodo) {
-        const updatedTodo = {
-          ...todo,
-          completed: !todo.completed,
-        };
+    try {
+      setLoadingActiveTodoId([idTodo]);
+      setLoading(true);
+      const updatedTodo = todos.find((todo) => todo.id === idTodo) || null;
 
-        updateTodos(USER_ID, idTodo, updatedTodo);
-
-        return updatedTodo;
+      if (!updatedTodo) {
+        throw new Error('Todo not found');
       }
 
-      return todo;
-    }));
+      updatedTodo.completed = !updatedTodo.completed;
+      await updateTodos(USER_ID, idTodo, updatedTodo);
+
+      setTodos((prevTodos) => prevTodos
+        .map((todo) => (todo.id === idTodo ? updatedTodo : todo)));
+    } catch (error) {
+      showErrorNotification('Unable to update the todo');
+    } finally {
+      setLoading(false);
+      setLoadingActiveTodoId([]);
+    }
   };
 
-  const handleTitleBlur = async () => {
+  const handleTitleBlur = async (todoId: number) => {
+    setLoading(true);
+    setActiveTodoId(0);
+    setLoadingActiveTodoId(prev => [...prev, todoId]);
     const updatedTodo = todos
       .find((todoItem) => todoItem.id === activeTodoId) || null;
 
     if (!updatedTodo?.title) {
-      handleTodoDelete(activeTodoId);
+      await handleTodoDelete(activeTodoId);
     } else {
       await updateTodos(USER_ID, activeTodoId, updatedTodo);
     }
 
-    setActiveTodoId(0);
+    setLoading(false);
+    setLoadingActiveTodoId([]);
   };
 
   const handleNewTitleSubmit = async (
     event: React.FormEvent<HTMLFormElement>,
+    todoId: number,
   ) => {
     event.preventDefault();
+    setActiveTodoId(0);
+    setLoading(true);
+    setLoadingActiveTodoId(prev => [...prev, todoId]);
     const updatedTodo = todos
       .find((todoItem) => todoItem.id === activeTodoId) || null;
 
     if (!updatedTodo?.title) {
-      handleTodoDelete(activeTodoId);
+      await handleTodoDelete(activeTodoId);
     } else {
       await updateTodos(USER_ID, activeTodoId, updatedTodo);
     }
 
-    setActiveTodoId(0);
+    setLoadingActiveTodoId([]);
+    setLoading(false);
   };
 
   const handleTodoTitleChange = (
@@ -117,7 +147,6 @@ export const TodoList: React.FC<TodoListProps> = ({
               onChange={() => handleTodoCheck(todo.id)}
             />
           </label>
-
           {activeTodoId !== todo.id ? (
             <TodoItemTitle
               todo={todo}
@@ -129,13 +158,13 @@ export const TodoList: React.FC<TodoListProps> = ({
               handleNewTitleSubmit={handleNewTitleSubmit}
               todo={todo}
               handleTodoTitleChange={handleTodoTitleChange}
-              handleTitleBlur={handleTitleBlur}
+              handleTitleBlur={() => handleTitleBlur(todo.id)}
             />
           )}
-          {isAddingNewTodo && (
+          {loading && (
             <TodoLoader
               todo={todo}
-              activeTodoId={activeTodoId}
+              loadingActiveTodoId={loadingActiveTodoId}
             />
           )}
         </div>

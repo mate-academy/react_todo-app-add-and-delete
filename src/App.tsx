@@ -18,6 +18,8 @@ export const App: React.FC = () => {
   const [filter, setFilter] = useState<Filter>(Filter.All);
   const [errorMessage, setErrorMessage] = useState<string>('');
   const [isAddingNewTodo, setIsAddingNewTodo] = useState(false);
+  const [loading, setLoading] = useState(false);
+  const [loadingActiveTodoId, setLoadingActiveTodoId] = useState<number[]>([]);
 
   const allTodosCompleted = todos.every((todo) => todo.completed);
   const allTodosIncompleted = todos.every((todo) => !todo.completed);
@@ -48,7 +50,7 @@ export const App: React.FC = () => {
     return <UserWarning />;
   }
 
-  const handleTaggleAll = async () => {
+  const handleToggleAll = async () => {
     let copyTodo = [...todos];
 
     if (!allTodosCompleted && !allTodosIncompleted) {
@@ -56,25 +58,30 @@ export const App: React.FC = () => {
     }
 
     try {
-      const todoUpdates = copyTodo.map(async (todo) => {
+      setLoading(true);
+      const todoUpdates = copyTodo.map((todo) => {
         const updatedTodo = { ...todo, completed: !todo.completed };
-
-        await updateTodos(USER_ID, todo.id, updatedTodo);
 
         return updatedTodo;
       });
+      const todoIds = todoUpdates.map(todoItem => todoItem.id);
 
-      const updatedTodos = await Promise.all(todoUpdates);
-
+      setLoadingActiveTodoId(todoIds);
       const mergedTodos = todos.map(todo => {
-        const updatedTodo = updatedTodos.find(t => t.id === todo.id);
+        const updatedTodo = todoUpdates.find(t => t.id === todo.id);
 
         return updatedTodo || todo;
       });
 
       setTodos(mergedTodos);
+      const todoUpdatesPromise = todoUpdates.map(todo => updateTodos(USER_ID, todo.id, todo));
+
+      await Promise.all(todoUpdatesPromise);
     } catch (error) {
       showErrorNotification('Unable to taggle todos');
+    } finally {
+      setLoading(false);
+      setLoadingActiveTodoId([]);
     }
   };
 
@@ -86,19 +93,25 @@ export const App: React.FC = () => {
         <div className="todoapp__content">
           <Header
             allTodosCompleted={allTodosCompleted}
-            handleTaggleAll={handleTaggleAll}
-            fetchTodos={fetchTodos}
+            handleTaggleAll={handleToggleAll}
             showErrorNotification={showErrorNotification}
             setIsAddingNewTodo={setIsAddingNewTodo}
             isAddingNewTodo={isAddingNewTodo}
+            setTodos={setTodos}
+            setLoading={setLoading}
+            todos={todos}
+            setLoadingActiveTodoId={setLoadingActiveTodoId}
           />
 
           <TodoList
+            setLoading={setLoading}
             setTodos={setTodos}
             filter={filter}
             showErrorNotification={showErrorNotification}
-            isAddingNewTodo={isAddingNewTodo}
             todos={todos}
+            loading={loading}
+            loadingActiveTodoId={loadingActiveTodoId}
+            setLoadingActiveTodoId={setLoadingActiveTodoId}
           />
 
           <Footer
@@ -108,6 +121,8 @@ export const App: React.FC = () => {
             allTodosIncompleted={allTodosIncompleted}
             setTodos={setTodos}
             showErrorNotification={showErrorNotification}
+            setLoading={setLoading}
+            setLoadingActiveTodoId={setLoadingActiveTodoId}
           />
         </div>
 

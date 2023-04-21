@@ -8,7 +8,7 @@ export const getTodos = async (userId: number) => {
 };
 
 export const postTodos = async (userId: number, todo: Todo | null) => {
-  const response = await client.post<Todo[]>(`/todos?userId=${userId}`, todo);
+  const response = await client.post<Todo>(`/todos?userId=${userId}`, todo);
 
   return response;
 };
@@ -16,7 +16,7 @@ export const postTodos = async (userId: number, todo: Todo | null) => {
 export const updateTodos = async (
   userId: number, todoId: number, todo: Todo | null,
 ) => {
-  const response = await client.patch<Todo[]>(`/todos/${todoId}?userId=${userId}`, todo);
+  const response = await client.patch<Todo>(`/todos/${todoId}?userId=${userId}`, todo);
 
   return response;
 };
@@ -25,15 +25,4 @@ export const deleteTodos = async (userId: number, todoId: number) => {
   const response = await client.delete(`/todos/${todoId}?userId=${userId}`);
 
   return response;
-};
-
-export const deleteCompletedTodos = (userId: number) => {
-  return getTodos(userId)
-    .then(todosData => {
-      const completedTodos = todosData.filter(todo => todo.completed);
-      const deletePromises = completedTodos
-        .map(todo => deleteTodos(userId, todo.id));
-
-      return Promise.all(deletePromises);
-    });
 };

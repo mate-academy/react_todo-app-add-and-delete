@@ -7,16 +7,30 @@ type AddNewTodoProps = {
   showErrorNotification: (error: string) => void,
   setIsAddingNewTodo: React.Dispatch<React.SetStateAction<boolean>>,
   isAddingNewTodo: boolean,
-  fetchTodos: () => Promise<void>,
+  setTodos: React.Dispatch<React.SetStateAction<Todo[]>>,
+  setLoading: React.Dispatch<React.SetStateAction<boolean>>,
+  todos: Todo[],
+  setLoadingActiveTodoId: React.Dispatch<React.SetStateAction<number[]>>,
+};
+
+const findMaxId = (todos: Todo[]): number => {
+  return Math.max(...todos.map(todo => todo.id));
 };
 
 export const AddNewTodo: React.FC<AddNewTodoProps> = ({
-  showErrorNotification, setIsAddingNewTodo, isAddingNewTodo, fetchTodos,
+  showErrorNotification,
+  setIsAddingNewTodo,
+  isAddingNewTodo,
+  setTodos,
+  setLoading,
+  todos,
+  setLoadingActiveTodoId,
 }) => {
   const [newTodoTitle, setNewTodoTitle] = useState<string>('');
 
   const handleNewTodoSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
+    setLoading(true);
     if (!newTodoTitle) {
       showErrorNotification("Title can't be empty");
 
@@ -24,23 +38,27 @@ export const AddNewTodo: React.FC<AddNewTodoProps> = ({
     }
 
     try {
-      setIsAddingNewTodo(true); // disable input
+      setIsAddingNewTodo(true);
       const tempTodo: Todo = {
-        id: 0,
+        id: findMaxId(todos) + 1,
         userId: USER_ID,
         title: newTodoTitle,
         completed: false,
       };
 
-      await postTodos(USER_ID, tempTodo);
+      setLoadingActiveTodoId(prev => [...prev, tempTodo.id]);
 
-      fetchTodos();
+      setTodos(prev => [...prev, tempTodo]);
+
+      await postTodos(USER_ID, tempTodo);
 
       setNewTodoTitle('');
     } catch (error) {
       showErrorNotification('Unable to add a todo');
     } finally {
-      setIsAddingNewTodo(false); // enable input
+      setIsAddingNewTodo(false);
+      setLoading(false);
+      setLoadingActiveTodoId([]);
     }
   };
 
