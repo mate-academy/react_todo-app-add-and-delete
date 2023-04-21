@@ -73,21 +73,19 @@ export const Filter: FC<Props> = ({
         </span>
 
         <nav className="filter">
-          {
-            LINKS.map(({ to, recentFilter }) => (
-              <NavLink
-                key={to}
-                to={to}
-                className={({ isActive }) => (cn(
-                  'filter__link',
-                  { selected: isActive },
-                ))}
-                onClick={() => handleFilterChange(recentFilter)}
-              >
-                {recentFilter}
-              </NavLink>
-            ))
-          }
+          {LINKS.map(({ to, recentFilter }) => (
+            <NavLink
+              key={to}
+              to={to}
+              className={({ isActive }) => (cn(
+                'filter__link',
+                { selected: isActive },
+              ))}
+              onClick={() => handleFilterChange(recentFilter)}
+            >
+              {recentFilter}
+            </NavLink>
+          ))}
         </nav>
 
         <button

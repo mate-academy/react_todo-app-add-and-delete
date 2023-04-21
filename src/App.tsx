@@ -29,45 +29,49 @@ export const App: React.FC = () => {
   const loadTodos = async () => {
     setIsdataUpdated(true);
 
-    await getTodos(Number(USER_ID))
-      .then(res => {
-        setTodos(res);
-        setTemptodo(null);
-        setIsdataUpdated(false);
-      })
-      .catch(() => setError('unable to get todos'));
+    try {
+      const todosFromServer = await getTodos(Number(USER_ID));
+
+      setTodos(todosFromServer);
+    } catch {
+      setError('unable to get todos');
+    } finally {
+      setIsdataUpdated(false);
+      setTemptodo(null);
+    }
   };
 
   const handleTodoSubmit = async (event: ChangeEvent<HTMLFormElement>) => {
     event.preventDefault();
 
-    if (task.trim() === '') {
+    if (!task.trim().length) {
       setError("The title can't be empty");
       setTask('');
 
       return;
     }
 
-    if (task) {
-      setTemptodo({
-        id: 0,
+    setTemptodo({
+      id: 0,
+      userId: USER_ID,
+      title: task,
+      completed: false,
+    });
+    setTask('');
+
+    try {
+      await addTodo({
         userId: USER_ID,
         title: task,
         completed: false,
       });
-      setTask('');
+    } catch {
+      setError('unable to add todos');
+      setTemptodo(null);
+    } finally {
+      loadTodos();
+      setActiveIds([0]);
     }
-
-    await addTodo({
-      userId: USER_ID,
-      title: task,
-      completed: false,
-    })
-      .then(() => loadTodos())
-      .catch(() => setError('unable to add todos'));
-
-    setActiveIds([0]);
-    setTask('');
   };
 
   useEffect(() => {
@@ -77,12 +81,13 @@ export const App: React.FC = () => {
   const handleRemoveTodo = async (id: number) => {
     setActiveIds((activeId) => [...activeId, id]);
 
-    await removeTodo(id)
-      .then(() => loadTodos())
-      .catch(() => {
-        setError('Unable to delete a todo');
-        setActiveIds([0]);
-      });
+    try {
+      await removeTodo(id);
+    } catch {
+      setError('unable to delete a todo');
+    } finally {
+      loadTodos();
+    }
   };
 
   const handleClearCompleted = () => {

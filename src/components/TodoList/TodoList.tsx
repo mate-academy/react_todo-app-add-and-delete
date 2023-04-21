@@ -16,25 +16,21 @@ export const TodoList: FC<Props> = ({
   handleRemoveTodo,
 }) => (
   <section className="todoapp__main">
-    {
-      visibleTodos.map((todo) => (
-        <TodoItem
-          todo={todo}
-          key={todo.id}
-          activeIds={activeIds}
-          handleRemoveTodo={handleRemoveTodo}
-        />
-      ))
-    }
-    {
-      tempTodo && (
-        <TodoItem
-          todo={tempTodo}
-          key={activeIds[0]}
-          activeIds={activeIds}
-          handleRemoveTodo={handleRemoveTodo}
-        />
-      )
-    }
+    {visibleTodos.map((todo) => (
+      <TodoItem
+        todo={todo}
+        key={todo.id}
+        activeIds={activeIds}
+        handleRemoveTodo={handleRemoveTodo}
+      />
+    ))}
+    {tempTodo && (
+      <TodoItem
+        todo={tempTodo}
+        key={activeIds[0]}
+        activeIds={activeIds}
+        handleRemoveTodo={handleRemoveTodo}
+      />
+    )}
   </section>
 );
