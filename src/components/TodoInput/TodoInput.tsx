@@ -18,17 +18,20 @@ export const TodoInput: React.FC<Props> = React.memo(({
 }) => {
   const [input, setInput] = useState('');
 
-  const handleFormSubmit = (event: React.FormEvent<HTMLFormElement>) => {
-    event.preventDefault();
-    const title = input.trim();
+  const handleFormSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
+    try {
+      event.preventDefault();
+      const title = input.trim();
 
-    if (!title) {
+      if (title) {
+        await addTodo(title);
+        setInput('');
+      } else {
+        throw new Error();
+      }
+    } catch {
       setError(ErrorAction.EMPTY);
-    } else {
-      addTodo(title);
     }
-
-    setInput('');
   };
 
   return (

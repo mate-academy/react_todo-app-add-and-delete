@@ -6,13 +6,13 @@ import { TodoItem } from '../TodoItem';
 
 type Props = {
   todos: Todo[];
-  clearIsPressed: boolean;
+  isClearPressed: boolean;
   removeTodo: (id: number) => void;
 };
 
 export const TodosList: React.FC<Props> = ({
   todos,
-  clearIsPressed,
+  isClearPressed,
   removeTodo,
 }) => {
   return (
@@ -27,7 +27,7 @@ export const TodosList: React.FC<Props> = ({
             todo={todo}
             key={todo.id}
             isTempTodo={false}
-            clearIsPressed={clearIsPressed}
+            isClearPressed={isClearPressed}
             removeTodo={removeTodo}
           />
         </CSSTransition>

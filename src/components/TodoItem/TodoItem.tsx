@@ -5,20 +5,20 @@ import { Todo } from '../../types/Todo';
 type Props = {
   todo: Todo;
   isTempTodo: boolean;
-  clearIsPressed?: boolean;
+  isClearPressed?: boolean;
   removeTodo?: (id: number) => void;
 };
 
 export const TodoItem: React.FC<Props> = ({
   todo,
   isTempTodo,
-  clearIsPressed,
+  isClearPressed,
   removeTodo,
 }) => {
   const { title, completed, id } = todo;
   const [isBeingRemoved, setIsBeingRemoved] = useState(false);
   const isLoaderCovered = (isTempTodo || isBeingRemoved)
-    || (clearIsPressed && completed);
+    || (isClearPressed && completed);
 
   const handleTodoRemove = () => {
     setIsBeingRemoved(true);

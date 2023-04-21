@@ -1,4 +1,3 @@
-/* eslint-disable no-console */
 /* eslint-disable jsx-a11y/control-has-associated-label */
 import React, {
   useEffect, useMemo, useState,
@@ -11,7 +10,7 @@ import { TodosFilter } from './components/TodosFilter';
 import { NotificationError } from './components/NotificationError';
 import { Filter } from './types/Filter';
 import { createTempTodo, filterTodos } from './utils/helpers';
-import { deleteTodos, getTodos, postTodos } from './api/todos';
+import { deleteTodo, getTodos, addTodo } from './api/todos';
 import { ErrorAction } from './types/ErrorAction';
 import { TodoItem } from './components/TodoItem';
 
@@ -23,12 +22,12 @@ export const App: React.FC = () => {
   const [error, setError] = useState<ErrorAction | null>(null);
   const [tempTodo, setTempTodo] = useState<Todo | null>(null);
   const [isInProgress, setIsInProgress] = useState<boolean>(false);
-  const [clearIsPressed, setClearIsPressed] = useState<boolean>(false);
+  const [isClearPressed, setIsClearPressed] = useState<boolean>(false);
   const activeTodos = filterTodos(todos, Filter.ACTIVE);
   const completedTodos = filterTodos(todos, Filter.COMPLETED);
   const areAllTodosCompleted = todos.length === completedTodos.length;
 
-  const loadTodos = async () => {
+  const handleLoadTodos = async () => {
     try {
       const todosFromServer = await getTodos(USER_ID);
 
@@ -38,12 +37,12 @@ export const App: React.FC = () => {
     }
   };
 
-  const addTodo = async (title: string) => {
+  const handleAddTodo = async (title: string) => {
     try {
       setIsInProgress(true);
       setTempTodo(createTempTodo(title));
       const data = { userId: USER_ID, title, completed: false };
-      const newTodo = await postTodos(data);
+      const newTodo = await addTodo(data);
 
       setTodos(stateTodos => [...stateTodos, newTodo]);
     } catch {
@@ -54,13 +53,11 @@ export const App: React.FC = () => {
     }
   };
 
-  const removeTodo = async (todoId: number) => {
+  const handleRemoveTodo = async (todoId: number) => {
     try {
-      await deleteTodos(todoId);
+      await deleteTodo(todoId);
 
-      const todosWithoutRemoved = todos.filter(todo => {
-        return todo.id !== todoId;
-      });
+      const todosWithoutRemoved = todos.filter(todo => todo.id !== todoId);
 
       setTodos(todosWithoutRemoved);
     } catch {
@@ -68,14 +65,18 @@ export const App: React.FC = () => {
     }
   };
 
-  const removeCompletedTodos = async () => {
-    setClearIsPressed(true);
-    const todosToRemove = completedTodos.map(todo => deleteTodos(todo.id));
+  const handleClearCompleted = async () => {
+    try {
+      setIsClearPressed(true);
+      const todosToRemove = completedTodos.map(todo => deleteTodo(todo.id));
 
-    await Promise.all(todosToRemove);
+      await Promise.all(todosToRemove);
 
-    setTodos(activeTodos);
-    setClearIsPressed(false);
+      setTodos(activeTodos);
+      setIsClearPressed(false);
+    } catch {
+      setError(ErrorAction.DELETE);
+    }
   };
 
   const visibleTodos = useMemo(
@@ -84,7 +85,7 @@ export const App: React.FC = () => {
   );
 
   useEffect(() => {
-    loadTodos();
+    handleLoadTodos();
   }, []);
 
   const resetError = () => {
@@ -106,14 +107,14 @@ export const App: React.FC = () => {
           isButtonActive={areAllTodosCompleted}
           isInputDisabled={isInProgress}
           setError={setError}
-          addTodo={addTodo}
+          addTodo={handleAddTodo}
         />
 
         <section className="todoapp__main">
           <TodosList
             todos={visibleTodos}
-            clearIsPressed={clearIsPressed}
-            removeTodo={removeTodo}
+            isClearPressed={isClearPressed}
+            removeTodo={handleRemoveTodo}
           />
           {tempTodo && (<TodoItem todo={tempTodo} isTempTodo />)}
         </section>
@@ -124,7 +125,7 @@ export const App: React.FC = () => {
             completedLeft={completedTodos.length}
             currentFilter={currentFilter}
             setCurrentFilter={setCurrentFilter}
-            onClearCompleted={removeCompletedTodos}
+            onClearCompleted={handleClearCompleted}
           />
         )}
       </div>
