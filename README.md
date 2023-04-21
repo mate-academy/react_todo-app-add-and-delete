@@ -32,7 +32,7 @@ Add a todo with the entered title on the form submit:
 
 Remove a todo on `TodoDeleteButton` click:
 
-- covered the todo with the loader while wating for the API response;
+- cover the todo with the loader while wating for the API response;
 - remove the todo from the list on success;
 - in case of API error show `Unable to delete a todo` notification at the bottom (the todo must stay in the list);
 
@@ -45,7 +45,7 @@ Remove all the completed todos after the `Clear completed` button click:
 
 - Implement a solution following the [React task guideline](https://github.com/mate-academy/react_task-guideline#react-tasks-guideline).
 - Use the [React TypeScript cheat sheet](https://mate-academy.github.io/fe-program/js/extra/react-typescript).
-- Replace `<your_account>` with your Github username in the [DEMO LINK](https://<your_account>.github.io/react_todo-app-add-and-delete/) and add it to the PR description.
+- Replace `<your_account>` with your Github username in the [DEMO LINK](https://Oleksii-Mishchenko.github.io/react_todo-app-add-and-delete/) and add it to the PR description.
 
 ## IF you want to implement smooth animations
 
