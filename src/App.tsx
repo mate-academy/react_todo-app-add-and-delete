@@ -65,11 +65,11 @@ export const App: React.FC = () => {
         title: task,
         completed: false,
       });
+      loadTodos();
     } catch {
       setError('unable to add todos');
-      setTemptodo(null);
     } finally {
-      loadTodos();
+      setTemptodo(null);
       setActiveIds([0]);
     }
   };
@@ -83,10 +83,11 @@ export const App: React.FC = () => {
 
     try {
       await removeTodo(id);
+      loadTodos();
     } catch {
       setError('unable to delete a todo');
     } finally {
-      loadTodos();
+      setActiveIds([0]);
     }
   };
 
