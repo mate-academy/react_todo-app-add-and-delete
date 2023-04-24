@@ -12,7 +12,7 @@ import { TodoList } from './components/TodoList';
 import { Footer } from './components/Footer';
 import { ErrorNotification } from './components/ErrorNotification';
 
-const statusTodos = (todos: Todo[], filterBy: TodoStatus) => {
+const getVisibleTodos = (todos: Todo[], filterBy: TodoStatus) => {
   let filteredTodos = todos;
 
   switch (filterBy) {
@@ -100,16 +100,14 @@ export const App: React.FC = () => {
   };
 
   const handleChangeCompleted = (todoId: number) => {
-    const changed = todos.map(todo => (
+    setTodos(prevState => prevState.map(todo => (
       todo.id === todoId
         ? {
           ...todo,
           completed: !todo.completed,
         }
         : todo
-    ));
-
-    setTodos(changed);
+    )));
   };
 
   const handleClearCompleted = () => {
@@ -146,7 +144,7 @@ export const App: React.FC = () => {
     return <UserWarning />;
   }
 
-  const visibleTodos = statusTodos(todos, todoStatus);
+  const visibleTodos = getVisibleTodos(todos, todoStatus);
 
   return (
     <div className="todoapp">
