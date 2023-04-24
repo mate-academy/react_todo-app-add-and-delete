@@ -5,7 +5,7 @@ import { TodoStatus } from '../../types/TodoStatus';
 type Props = {
   todoStatus: TodoStatus;
   setTodoStatus: (status: TodoStatus) => void;
-  onClearComponent: () => void;
+  onClearCompleted: () => void;
   notCompletedTodo: number;
   completedTodo: number;
 };
@@ -13,14 +13,10 @@ type Props = {
 export const Footer: React.FC<Props> = ({
   todoStatus,
   setTodoStatus,
-  onClearComponent,
+  onClearCompleted,
   notCompletedTodo,
   completedTodo,
 }) => {
-  const onFilterChange = (filter: TodoStatus) => () => {
-    setTodoStatus(filter);
-  };
-
   return (
     <footer className="todoapp__footer">
       <span className="todo-count">
@@ -34,7 +30,7 @@ export const Footer: React.FC<Props> = ({
             'filter__link',
             { selected: todoStatus === TodoStatus.ALL },
           )}
-          onClick={onFilterChange(TodoStatus.ALL)}
+          onClick={() => setTodoStatus(TodoStatus.ALL)}
         >
           {TodoStatus.ALL}
         </a>
@@ -45,7 +41,7 @@ export const Footer: React.FC<Props> = ({
             'filter__link',
             { selected: todoStatus === TodoStatus.ACTIVE },
           )}
-          onClick={onFilterChange(TodoStatus.ACTIVE)}
+          onClick={() => setTodoStatus(TodoStatus.ACTIVE)}
         >
           {TodoStatus.ACTIVE}
         </a>
@@ -56,7 +52,7 @@ export const Footer: React.FC<Props> = ({
             'filter__link',
             { selected: todoStatus === TodoStatus.COMPLETED },
           )}
-          onClick={onFilterChange(TodoStatus.COMPLETED)}
+          onClick={() => setTodoStatus(TodoStatus.COMPLETED)}
         >
           {TodoStatus.COMPLETED}
         </a>
@@ -66,7 +62,7 @@ export const Footer: React.FC<Props> = ({
         <button
           type="button"
           className="todoapp__clear-completed"
-          onClick={onClearComponent}
+          onClick={onClearCompleted}
         >
           Clear completed
         </button>

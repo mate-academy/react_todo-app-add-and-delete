@@ -35,7 +35,7 @@ export const App: React.FC = () => {
   const [todoStatus, setTodoStatus] = useState<TodoStatus>(TodoStatus.ALL);
   const [hasError, setHasError] = useState<ErrorMessage>(ErrorMessage.NONE);
   const [isDisabled, setIsDisabled] = useState(false);
-  const [TempTodo, setTempTodo] = useState<Todo | null>(null);
+  const [tempTodo, setTempTodo] = useState<Todo | null>(null);
   const [isActive, setIsActive] = useState(false);
   const [deletedTodoId, setDeletedTodoId] = useState([0]);
 
@@ -165,7 +165,7 @@ export const App: React.FC = () => {
           todos={visibleTodos}
           onDelete={deleteTodo}
           onChangeCompleted={handleChangeCompleted}
-          tempTodo={TempTodo}
+          tempTodo={tempTodo}
           deletedTodoId={deletedTodoId}
         />
 
@@ -174,7 +174,7 @@ export const App: React.FC = () => {
             <Footer
               todoStatus={todoStatus}
               setTodoStatus={setTodoStatus}
-              onClearComponent={handleClearCompleted}
+              onClearCompleted={handleClearCompleted}
               notCompletedTodo={notCompletedTodo}
               completedTodo={completedTodo}
             />
