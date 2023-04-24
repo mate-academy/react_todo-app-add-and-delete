@@ -6,7 +6,7 @@ type Props = {
   todo: Todo;
   onDelete: (todoId: number) => void,
   onChangeCompleted: (todoId: number) => void,
-  deletedTodoId: number,
+  deletedTodoId: number[],
 };
 
 export const TodoInfo: React.FC<Props> = ({
@@ -38,7 +38,7 @@ export const TodoInfo: React.FC<Props> = ({
         ×
       </button>
 
-      <div className={`modal overlay ${(!id || deletedTodoId === id) && ('is-active')}`}>
+      <div className={`modal overlay ${(!id || deletedTodoId.includes(id)) && ('is-active')}`}>
         <div className="modal-background has-background-white-ter" />
         <div className="loader" />
       </div>

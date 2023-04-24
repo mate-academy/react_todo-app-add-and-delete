@@ -37,12 +37,10 @@ export const App: React.FC = () => {
   const [isDisabled, setIsDisabled] = useState(false);
   const [TempTodo, setTempTodo] = useState<Todo | null>(null);
   const [isActive, setIsActive] = useState(false);
-  const [deletedTodoId, setDeletedTodoId] = useState(0);
+  const [deletedTodoId, setDeletedTodoId] = useState([0]);
 
   const notCompletedTodo = todos.filter(todo => !todo.completed).length;
   const completedTodo = todos.filter(todo => todo.completed).length;
-
-  const onCloseError = () => setHasError(ErrorMessage.NONE);
 
   useEffect(() => {
     getTodos(USER_ID)
@@ -85,7 +83,7 @@ export const App: React.FC = () => {
   };
 
   const deleteTodo = (id: number) => {
-    setDeletedTodoId(id);
+    setDeletedTodoId(prevState => [...prevState, id]);
 
     removeTodo(id)
       .then(() => {
@@ -97,7 +95,7 @@ export const App: React.FC = () => {
         setHasError(ErrorMessage.DELETE);
       })
       .finally(() => {
-        setDeletedTodoId(null || 0);
+        setDeletedTodoId([]);
       });
   };
 
@@ -116,19 +114,25 @@ export const App: React.FC = () => {
 
   const handleClearCompleted = () => {
     const filteredTodos = todos.filter(todo => !todo.completed);
+    const completedTodos = todos.filter(todo => todo.completed);
 
-    todos.forEach(todo => {
-      if (todo.completed) {
-        deleteTodo(todo.id);
-      }
+    const promises = completedTodos.map(todo => {
+      setDeletedTodoId(prevState => [...prevState, todo.id]);
+
+      return removeTodo(todo.id);
     });
 
-    setTodos(filteredTodos);
+    Promise.all(promises).then(() => {
+      setTodos(filteredTodos);
+      setDeletedTodoId([]);
+    });
   };
 
   const handleToggleAll = () => {
     setIsActive(!isActive);
   };
+
+  const onCloseError = () => setHasError(ErrorMessage.NONE);
 
   useEffect(() => {
     const result = todos.map(item => {
@@ -157,15 +161,16 @@ export const App: React.FC = () => {
           onToggleAll={handleToggleAll}
         />
 
+        <TodoList
+          todos={visibleTodos}
+          onDelete={deleteTodo}
+          onChangeCompleted={handleChangeCompleted}
+          tempTodo={TempTodo}
+          deletedTodoId={deletedTodoId}
+        />
+
         {todos.length > 0 && (
           <>
-            <TodoList
-              todos={visibleTodos}
-              onDelete={deleteTodo}
-              onChangeCompleted={handleChangeCompleted}
-              tempTodo={TempTodo}
-              deletedTodoId={deletedTodoId}
-            />
             <Footer
               todoStatus={todoStatus}
               setTodoStatus={setTodoStatus}

@@ -3,11 +3,11 @@ import { Todo } from '../../types/Todo';
 import { TodoInfo } from '../TodoInfo';
 
 type Props = {
-  todos: Todo[],
+  todos: (Todo[]),
   onDelete: (todoId: number) => void,
   onChangeCompleted: (todoId: number) => void,
   tempTodo: Todo | null,
-  deletedTodoId: number,
+  deletedTodoId: number[],
 };
 
 export const TodoList: React.FC<Props> = ({
