@@ -17,10 +17,8 @@ export const App: React.FC = () => {
   const [todos, setTodos] = useState<Todo[]>([]);
   const [errorMessage, setErrorMessage] = useState(ErrorType.None);
   const [filterBy, setFilterBy] = useState(FilterBy.All);
-
   const [tempTodo, setTempTodo] = useState<Todo | null>(null);
   const [isInputActive, setIsInputActive] = useState(true);
-
   const [updatingIds, setUpdatingIds] = useState([0]);
 
   const getTodosFromServer = async () => {
@@ -33,10 +31,6 @@ export const App: React.FC = () => {
       setErrorMessage(ErrorType.Load);
     }
   };
-
-  useEffect(() => {
-    getTodosFromServer();
-  }, []);
 
   const allTodosCount = todos.length;
 
@@ -111,6 +105,10 @@ export const App: React.FC = () => {
       }
     });
   };
+
+  useEffect(() => {
+    getTodosFromServer();
+  }, []);
 
   if (!USER_ID) {
     return <UserWarning />;
