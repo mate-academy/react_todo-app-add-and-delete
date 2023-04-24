@@ -1,5 +1,6 @@
 import React, {
   ChangeEvent,
+  useCallback,
   useEffect,
   useState,
 } from 'react';
@@ -26,6 +27,11 @@ export const App: React.FC = () => {
     setTask(event.target.value);
   };
 
+  const resetTempTodo = useCallback(() => {
+    setTemptodo(null);
+    setActiveIds([0]);
+  }, []);
+
   const loadTodos = async () => {
     setIsdataUpdated(true);
 
@@ -37,7 +43,7 @@ export const App: React.FC = () => {
       setError('unable to get todos');
     } finally {
       setIsdataUpdated(false);
-      setTemptodo(null);
+      resetTempTodo();
     }
   };
 
@@ -68,15 +74,9 @@ export const App: React.FC = () => {
       loadTodos();
     } catch {
       setError('unable to add todos');
-    } finally {
-      setTemptodo(null);
-      setActiveIds([0]);
+      resetTempTodo();
     }
   };
-
-  useEffect(() => {
-    loadTodos();
-  }, []);
 
   const handleRemoveTodo = async (id: number) => {
     setActiveIds((activeId) => [...activeId, id]);
@@ -86,8 +86,7 @@ export const App: React.FC = () => {
       loadTodos();
     } catch {
       setError('unable to delete a todo');
-    } finally {
-      setActiveIds([0]);
+      resetTempTodo();
     }
   };
 
@@ -101,6 +100,9 @@ export const App: React.FC = () => {
 
   const resetError = () => setError('');
 
+  useEffect(() => {
+    loadTodos();
+  }, []);
   if (!USER_ID) {
     return <UserWarning />;
   }
