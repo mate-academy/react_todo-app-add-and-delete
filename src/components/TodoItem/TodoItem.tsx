@@ -1,6 +1,6 @@
 import { FC } from 'react';
 import cn from 'classnames';
-import { Todo } from '../../types/Todo';
+import { Todo } from '../../types/types';
 
 type Props = {
   todo: Todo;

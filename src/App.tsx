@@ -7,7 +7,7 @@ import React, {
 
 import { getTodos, addTodo, removeTodo } from './api/todos';
 import { UserWarning } from './UserWarning';
-import { Todo } from './types/Todo';
+import { Todo, ErrorTypes } from './types/types';
 import { Filter } from './components/Filter/Filter';
 import { NewTodo } from './components/NewTodo/NewTodo';
 import NotificationError from
@@ -18,7 +18,7 @@ const USER_ID = 6846;
 export const App: React.FC = () => {
   const [task, setTask] = useState('');
   const [todos, setTodos] = useState<Todo[]>([]);
-  const [error, setError] = useState('');
+  const [error, setError] = useState(ErrorTypes.none);
   const [tempTodo, setTemptodo] = useState<Todo | null>(null);
   const [isDataUpdated, setIsdataUpdated] = useState(false);
   const [activeIds, setActiveIds] = useState([0]);
@@ -40,7 +40,7 @@ export const App: React.FC = () => {
 
       setTodos(todosFromServer);
     } catch {
-      setError('unable to get todos');
+      setError(ErrorTypes.get);
     } finally {
       setIsdataUpdated(false);
       resetTempTodo();
@@ -51,7 +51,7 @@ export const App: React.FC = () => {
     event.preventDefault();
 
     if (!task.trim().length) {
-      setError("The title can't be empty");
+      setError(ErrorTypes.emptyTitle);
       setTask('');
 
       return;
@@ -73,7 +73,7 @@ export const App: React.FC = () => {
       });
       loadTodos();
     } catch {
-      setError('unable to add todos');
+      setError(ErrorTypes.add);
       resetTempTodo();
     }
   };
@@ -85,7 +85,7 @@ export const App: React.FC = () => {
       await removeTodo(id);
       loadTodos();
     } catch {
-      setError('unable to delete a todo');
+      setError(ErrorTypes.delete);
       resetTempTodo();
     }
   };
@@ -98,7 +98,7 @@ export const App: React.FC = () => {
     });
   };
 
-  const resetError = () => setError('');
+  const resetError = () => setError(ErrorTypes.none);
 
   useEffect(() => {
     loadTodos();

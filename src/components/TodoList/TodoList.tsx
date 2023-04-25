@@ -1,5 +1,5 @@
 import { FC } from 'react';
-import { Todo } from '../../types/Todo';
+import { Todo } from '../../types/types';
 import { TodoItem } from '../TodoItem/TodoItem';
 
 type Props = {

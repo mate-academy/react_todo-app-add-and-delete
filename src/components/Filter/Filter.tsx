@@ -2,7 +2,7 @@ import { FC, useMemo, useState } from 'react';
 import { NavLink } from 'react-router-dom';
 import cn from 'classnames';
 import { TodoList } from '../TodoList/TodoList';
-import { Todo, FILTERS } from '../../types/Todo';
+import { Todo, FILTERS } from '../../types/types';
 
 const LINKS = [
   {
