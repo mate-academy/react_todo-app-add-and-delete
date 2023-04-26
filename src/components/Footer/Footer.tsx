@@ -1,11 +1,11 @@
 import classNames from 'classnames';
 import { useMemo } from 'react';
-import { Status } from '../../types/Status';
+import { FilterStatus } from '../../types/FilterStatus';
 import { Todo } from '../../types/Todo';
 
 type Props = {
-  filterType: Status,
-  setFilterType: (value: Status) => void,
+  filterType: FilterStatus,
+  setFilterType: (value: FilterStatus) => void,
   todos: Todo[],
   onClearCompleted: () => void,
 };
@@ -34,8 +34,8 @@ export const Footer: React.FC<Props> = ({
         <a
           href="#/"
           className={classNames('filter__link',
-            { selected: filterType === Status.All })}
-          onClick={() => setFilterType(Status.All)}
+            { selected: filterType === FilterStatus.All })}
+          onClick={() => setFilterType(FilterStatus.All)}
         >
           All
         </a>
@@ -43,8 +43,8 @@ export const Footer: React.FC<Props> = ({
         <a
           href="#/active"
           className={classNames('filter__link',
-            { selected: filterType === Status.Active })}
-          onClick={() => setFilterType(Status.Active)}
+            { selected: filterType === FilterStatus.Active })}
+          onClick={() => setFilterType(FilterStatus.Active)}
         >
           Active
         </a>
@@ -52,8 +52,8 @@ export const Footer: React.FC<Props> = ({
         <a
           href="#/completed"
           className={classNames('filter__link',
-            { selected: filterType === Status.Completed })}
-          onClick={() => setFilterType(Status.Completed)}
+            { selected: filterType === FilterStatus.Completed })}
+          onClick={() => setFilterType(FilterStatus.Completed)}
         >
           Completed
         </a>

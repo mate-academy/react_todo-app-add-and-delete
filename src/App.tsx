@@ -6,7 +6,7 @@ import { getTodos, deleteTodo, postTodo } from './api/todos';
 import { Footer } from './components/Footer/Footer';
 import { Notification } from './components/Notification/Notification';
 import { TodoList } from './components/TodoList/TodoList';
-import { Status } from './types/Status';
+import { FilterStatus } from './types/FilterStatus';
 import { Todo } from './types/Todo';
 import { UserWarning } from './UserWarning';
 import { ErrorTypes } from './types/ErrorTypes';
@@ -16,7 +16,7 @@ const USER_ID = 9943;
 
 export const App: React.FC = () => {
   const [todos, setTodos] = useState<Todo[]>([]);
-  const [filterType, setFilterType] = useState<Status>(Status.All);
+  const [filterType, setFilterType] = useState<FilterStatus>(FilterStatus.All);
   const [error, setError] = useState<ErrorTypes | null>(null);
   const [tempTodo, setTempTodo] = useState<Todo | null>(null);
   const [isDisableInput, setIsDisableInput] = useState(false);
@@ -42,10 +42,10 @@ export const App: React.FC = () => {
 
   const filterTodos = () => {
     switch (filterType) {
-      case Status.Active:
+      case FilterStatus.Active:
         return todos.filter(todo => !todo.completed);
 
-      case Status.Completed:
+      case FilterStatus.Completed:
         return todos.filter(todo => todo.completed);
 
       default:
