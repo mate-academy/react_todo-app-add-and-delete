@@ -62,7 +62,7 @@ export const Footer: React.FC<Props> = ({
       <button
         type="button"
         className={classNames('todoapp__clear-completed', {
-          'todoapp__clear-completed--unvisible': !hasCompleted,
+          'todoapp__clear-completed--invisible': !hasCompleted,
         })}
         onClick={onClearCompleted}
       >

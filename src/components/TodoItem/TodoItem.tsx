@@ -3,13 +3,13 @@ import { Todo } from '../../types/Todo';
 
 type Props = {
   todo: Todo,
-  deleteTodo: (id: number) => void,
+  onDeleteTodo: (id: number) => void,
   processedIds: number[],
 };
 
 export const TodoItem: React.FC<Props> = ({
   todo,
-  deleteTodo,
+  onDeleteTodo,
   processedIds,
 }) => {
   const { id, completed, title } = todo;
@@ -30,7 +30,7 @@ export const TodoItem: React.FC<Props> = ({
       <button
         type="button"
         className="todo__remove"
-        onClick={() => deleteTodo(id)}
+        onClick={() => onDeleteTodo(id)}
       >
         ×
       </button>

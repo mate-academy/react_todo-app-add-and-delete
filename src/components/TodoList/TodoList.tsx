@@ -14,12 +14,12 @@ export const TodoList: React.FC<Props> = ({
   deleteTodo,
   processedIds,
 }) => (
-  <ul style={{ listStyleType: 'none' }}>
+  <ul className="todoapp__todolist">
     {todos.map((todo: Todo) => (
       <TodoItem
         key={todo.id}
         todo={todo}
-        deleteTodo={deleteTodo}
+        onDeleteTodo={deleteTodo}
         processedIds={processedIds}
       />
     ))}
@@ -27,7 +27,7 @@ export const TodoList: React.FC<Props> = ({
     {tempTodo && (
       <TodoItem
         todo={tempTodo}
-        deleteTodo={deleteTodo}
+        onDeleteTodo={deleteTodo}
         processedIds={processedIds}
       />
     )}

@@ -20,7 +20,7 @@ export const Header: React.FC<Props> = ({ createTodo, isDisableInput }) => {
       <button
         type="button"
         className="todoapp__toggle-all active"
-        aria-label="Mute volume"
+        aria-label="Toggle all todos"
       />
 
       <form onSubmit={handleSubmit}>
