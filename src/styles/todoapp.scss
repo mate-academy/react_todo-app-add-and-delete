@@ -82,6 +82,10 @@
     border-top: 1px solid #e6e6e6;
   }
 
+  &__todolist {
+    list-style-type: none;
+  }
+
   &__footer {
     display: flex;
     justify-content: space-between;
@@ -128,6 +132,11 @@
 
     &:active {
       text-decoration: none;
+    }
+
+    &--invisible {
+      opacity: 0;
+      cursor: default;
     }
   }
 }
