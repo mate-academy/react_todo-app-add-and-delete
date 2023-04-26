@@ -5,8 +5,9 @@ type Props = {
 };
 
 export const TempTodo:React.FC<Props> = ({ title }) => {
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   return (
-    <div className="todo">
+    <div className="todo" id="0">
       <label className="todo__status-label">
         <input type="checkbox" className="todo__status" />
       </label>

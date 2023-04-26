@@ -20,4 +20,9 @@ export const postTodos = (userId: number, title: string) => {
     completed: false,
   });
 };
+
+export const deleteTodos = (id: number) => {
+  return client.delete(`/todos/${id}`);
+};
+
 // Add more methods here

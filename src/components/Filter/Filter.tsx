@@ -3,12 +3,15 @@ import classNames from 'classnames';
 import { FilterParams } from './FilterParams';
 
 type Props = {
-  setFilterParamHandler: (param: FilterParams) => void
+  setFilterParam: (param: FilterParams) => void
   filterParam: FilterParams
 };
 
 export const Filter: React.FC<Props>
-= ({ setFilterParamHandler, filterParam }) => {
+= ({
+  setFilterParam: setFilterParamHandler,
+  filterParam = FilterParams.all,
+}) => {
   return (
     <nav className="filter">
       <a

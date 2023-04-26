@@ -6,6 +6,7 @@ import {
   getActiveTodos,
   getCompletedTodos,
   postTodos,
+  deleteTodos,
 } from './api/todos';
 
 import { Todo as TodoType } from './types/Todo';
@@ -27,21 +28,29 @@ export const App: React.FC = () => {
   const [inputValue, setInputValue] = useState('');
   const [isGetError, setGetError] = useState(false);
   const [isPostError, setPostError] = useState(false);
+  const [isDeleteError, setDeleteError] = useState(false);
   const [isInputEmpty, setEmptyInputState] = useState(false);
   const [isInputLocked, setLockInput] = useState(false);
   const [tempTodo, setTempTodo] = useState<string | null>(null);
+  const [isClearAllCompleted, setClearAllCompleted] = useState(false);
+
+  const handleErrorState
+  = (setErrorFunc: (state: boolean) => void, state = true) => {
+    setError(state);
+    setErrorFunc(state);
+
+    if (state === false) {
+      return;
+    }
+
+    setTimeout(() => handleErrorState(setErrorFunc, !state), 3000);
+  };
 
   useEffect(() => {
     getTodos(USER_ID)
       .then(result => setTodos(result))
       .catch(() => {
-        setError(true);
-        setGetError(true);
-
-        setTimeout(() => {
-          setError(false);
-          setGetError(false);
-        }, 2000);
+        handleErrorState(setGetError);
       });
   }, [todos]);
 
@@ -81,26 +90,14 @@ export const App: React.FC = () => {
 
     if (key === 'Enter') {
       if (!inputValue) {
-        setEmptyInputState(true);
-        setError(true);
-
-        setTimeout(() => {
-          setError(false);
-          setEmptyInputState(false);
-        }, 2000);
+        handleErrorState(setEmptyInputState);
       } else {
         setLockInput(true);
         setTempTodo(inputValue);
 
         postTodos(USER_ID, inputValue)
           .catch(() => {
-            setError(true);
-            setPostError(true);
-
-            setTimeout(() => {
-              setError(false);
-              setPostError(false);
-            }, 2000);
+            handleErrorState(setPostError);
           })
           .finally(() => {
             setLockInput(false);
@@ -108,6 +105,22 @@ export const App: React.FC = () => {
             setInputValue('');
           });
       }
+    }
+  };
+
+  const deleteAllCompleted = async () => {
+    try {
+      setClearAllCompleted(true);
+
+      const arrayOfCompletedTodos
+      = await getCompletedTodos(USER_ID);
+
+      const deletePromises
+      = arrayOfCompletedTodos.map(todo => deleteTodos(todo.id));
+
+      await Promise.all(deletePromises);
+    } finally {
+      setClearAllCompleted(false);
     }
   };
 
@@ -119,7 +132,7 @@ export const App: React.FC = () => {
         <header className="todoapp__header">
           <button type="button" className="todoapp__toggle-all active" />
 
-          <form>
+          <form onSubmit={(event) => event.preventDefault()}>
             <input
               type="text"
               className="todoapp__new-todo"
@@ -132,11 +145,18 @@ export const App: React.FC = () => {
           </form>
         </header>
 
-        {(!!visibleTodos.length || inputValue) && (
+        {(!!visibleTodos.length || tempTodo) && (
           <>
             <section className="todoapp__main">
               {visibleTodos.map(todo => (
-                <Todo todoItem={todo} key={todo.id} />
+                <Todo
+                  todoItem={todo}
+                  setDeleteError={setDeleteError}
+                  setError={setError}
+                  handleErrorState={handleErrorState}
+                  isClearAllCompleted={isClearAllCompleted}
+                  key={todo.id}
+                />
               ))}
               {tempTodo && (
                 <TempTodo title={inputValue} />
@@ -145,35 +165,37 @@ export const App: React.FC = () => {
           </>
         )}
 
-        {!!todos.length && (
+        {(!!todos.length || tempTodo) && (
           <footer className="todoapp__footer">
             <span className="todo-count">
               {`${activeTodos} items left`}
             </span>
 
             <Filter
-              setFilterParamHandler={setFilterParam}
+              setFilterParam={setFilterParam}
               filterParam={filterParam}
             />
 
-            {!!completedTodos && (
-              <button type="button" className="todoapp__clear-completed">
-                Clear completed
-              </button>
-            )}
+            <button
+              type="button"
+              className="todoapp__clear-completed"
+              disabled={!completedTodos}
+              onClick={deleteAllCompleted}
+            >
+              {!!completedTodos && 'Clear completed'}
+            </button>
           </footer>
         )}
       </div>
 
-      {error && (
-        <Error
-          error={error}
-          getDataError={isGetError}
-          postDataError={isPostError}
-          inputState={isInputEmpty}
-          handleErrorState={setError}
-        />
-      )}
+      <Error
+        error={error}
+        getDataError={isGetError}
+        postDataError={isPostError}
+        deleteDataError={isDeleteError}
+        inputState={isInputEmpty}
+        handleErrorState={setError}
+      />
     </div>
   );
 };
