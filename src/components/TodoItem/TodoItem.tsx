@@ -9,6 +9,7 @@ type Props = {
 
 export const TodoItem: React.FC<Props> = ({ todo, handleDeleteTodo }) => {
   const { title, completed, id } = todo;
+
   const removeTodo = () => {
     if (handleDeleteTodo) {
       handleDeleteTodo(id);

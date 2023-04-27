@@ -3,9 +3,14 @@ import { UserWarning } from './UserWarning';
 import { Todo, FilterType } from './types/Todo';
 import { AddInput } from './components/AddInput/AddInput';
 import { TodoFilter } from './components/TodoFilter/TodoFilter';
+import { Loading } from './components/isLoading';
 import { TodoList } from './components/TodoList';
 import { AddError } from './components/AddError/AddError';
-import { getTodos, deleteTodos, postTodos } from './api/todos';
+import {
+  getTodos,
+  deleteTodos,
+  postTodos,
+} from './api/todos';
 import { TodoItem } from './components/TodoItem';
 import { createTitle } from './utils/helpers';
 
@@ -17,24 +22,19 @@ export const App: React.FC = () => {
   const [filterType, setFilterType] = useState<FilterType>(FilterType.ALL);
   const [tempTodo, setTempTodo] = useState<Todo | null>(null);
   const [disInput, setDisInput] = useState<boolean>(false);
+  const [isLoading, setIsLoading] = useState<boolean>(true);
 
   const fetchData = async () => {
     const todosFromServer = await getTodos(USER_ID);
 
     try {
       setTodo(todosFromServer);
+      setIsLoading(false);
     } catch {
       setError('Unable to load a todo');
-
-      setTimeout(() => {
-        setError('');
-      }, 2000);
+      setIsLoading(true);
     }
   };
-
-  useEffect(() => {
-    fetchData();
-  }, []);
 
   const filterTodo = useMemo(() => {
     return todos.filter((todo) => {
@@ -70,9 +70,6 @@ export const App: React.FC = () => {
       setTodo(todo => [...todo, newTodo]);
     } catch {
       setError('Unable to add a todo');
-      setTimeout(() => {
-        setError('');
-      }, 3000);
     } finally {
       setTempTodo(null);
       setDisInput(false);
@@ -88,12 +85,20 @@ export const App: React.FC = () => {
       setError('');
     } catch {
       setError('Unable to delete a todo');
+    }
+  };
 
+  useEffect(() => {
+    if (error) {
       setTimeout(() => {
         setError('');
       }, 3000);
     }
-  };
+  }, []);
+
+  useEffect(() => {
+    fetchData();
+  }, []);
 
   if (!USER_ID) {
     return <UserWarning />;
@@ -103,32 +108,36 @@ export const App: React.FC = () => {
     <div className="todoapp">
       <h1 className="todoapp__title">todos</h1>
 
-      <div className="todoapp__content">
-        <AddInput
-          disInput={disInput}
-          handleAddTodo={handleAddTodo}
-          setError={setError}
-        />
+      {isLoading
+        ? <Loading />
+        : (
+          <div className="todoapp__content">
+            <AddInput
+              disInput={disInput}
+              handleAddTodo={handleAddTodo}
+              setError={setError}
+            />
 
-        <TodoList
-          todos={filterTodo}
-          handleDeleteTodo={handleDeleteTodo}
-        />
-        {tempTodo && (
-          <TodoItem
-            todo={tempTodo}
-            handleDeleteTodo={handleDeleteTodo}
-          />
-        )}
+            <TodoList
+              todos={filterTodo}
+              handleDeleteTodo={handleDeleteTodo}
+            />
+            {tempTodo && (
+              <TodoItem
+                todo={tempTodo}
+                handleDeleteTodo={handleDeleteTodo}
+              />
+            )}
 
-        {todos.length > 0 && (
-          <TodoFilter
-            todos={todos}
-            filterType={filterType}
-            setFilterType={setFilterType}
-          />
+            {todos.length > 0 && (
+              <TodoFilter
+                todos={todos}
+                filterType={filterType}
+                setFilterType={setFilterType}
+              />
+            )}
+          </div>
         )}
-      </div>
 
       {error && (
         <AddError
