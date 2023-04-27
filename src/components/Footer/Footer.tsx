@@ -61,6 +61,7 @@ export const Footer: FC<Props> = ({
       <nav className="filter">
         {filterNames.map(filterName => (
           <a
+            key={filterName}
             href={filterName === Filter.ALL ? '#/' : `#/${filterName}`}
             onClick={handleOnClickFilter}
             className={classNames('filter__link', {
