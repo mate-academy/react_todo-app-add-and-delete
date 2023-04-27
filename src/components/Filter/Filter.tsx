@@ -10,7 +10,7 @@ type Props = {
 export const Filter: React.FC<Props>
 = ({
   setFilterParam: setFilterParamHandler,
-  filterParam = FilterParams.all,
+  filterParam = FilterParams.All,
 }) => {
   return (
     <nav className="filter">
@@ -18,9 +18,9 @@ export const Filter: React.FC<Props>
         href="#/"
         className={classNames(
           'filter__link',
-          { selected: filterParam === FilterParams.all },
+          { selected: filterParam === FilterParams.All },
         )}
-        onClick={() => setFilterParamHandler(FilterParams.all)}
+        onClick={() => setFilterParamHandler(FilterParams.All)}
 
       >
         All
@@ -30,9 +30,9 @@ export const Filter: React.FC<Props>
         href="#/active"
         className={classNames(
           'filter__link',
-          { selected: filterParam === FilterParams.active },
+          { selected: filterParam === FilterParams.Active },
         )}
-        onClick={() => setFilterParamHandler(FilterParams.active)}
+        onClick={() => setFilterParamHandler(FilterParams.Active)}
       >
         Active
       </a>
@@ -41,9 +41,9 @@ export const Filter: React.FC<Props>
         href="#/completed"
         className={classNames(
           'filter__link',
-          { selected: filterParam === FilterParams.completed },
+          { selected: filterParam === FilterParams.Completed },
         )}
-        onClick={() => setFilterParamHandler(FilterParams.completed)}
+        onClick={() => setFilterParamHandler(FilterParams.Completed)}
       >
         Completed
       </a>

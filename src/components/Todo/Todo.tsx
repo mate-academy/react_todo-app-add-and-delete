@@ -32,10 +32,10 @@ export const Todo: React.FC<Props>
     deleteTodos(todoId)
       .then(() => setLoading(false))
       .catch(() => {
-        setLoading(false);
         handleErrorState(setError, true);
         handleErrorState(setDeleteError, true);
-      });
+      })
+      .finally(() => setLoading(false));
   };
 
   return (

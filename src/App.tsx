@@ -20,7 +20,7 @@ const USER_ID = 9925;
 
 export const App: React.FC = () => {
   const [todos, setTodos] = useState<TodoType[]>([]);
-  const [filterParam, setFilterParam] = useState(FilterParams.all);
+  const [filterParam, setFilterParam] = useState(FilterParams.All);
   const [error, setError] = useState(false);
   const [activeTodos, setActiveTodos] = useState(0);
   const [completedTodos, setCompletedTodos] = useState(0);
@@ -34,8 +34,10 @@ export const App: React.FC = () => {
   const [tempTodo, setTempTodo] = useState<string | null>(null);
   const [isClearAllCompleted, setClearAllCompleted] = useState(false);
 
-  const handleErrorState
-  = (setErrorFunc: (state: boolean) => void, state = true) => {
+  const handleErrorState = (
+    setErrorFunc: (state: boolean) => void,
+    state = true,
+  ) => {
     setError(state);
     setErrorFunc(state);
 
@@ -67,11 +69,11 @@ export const App: React.FC = () => {
   const visibleTodos = todos.filter(todo => {
     const { completed } = todo;
 
-    switch (true) {
-      case filterParam === FilterParams.active:
+    switch (filterParam) {
+      case FilterParams.Active:
         return !completed;
 
-      case filterParam === FilterParams.completed:
+      case FilterParams.Completed:
         return completed;
 
       default:
