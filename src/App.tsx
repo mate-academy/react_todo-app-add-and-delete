@@ -1,4 +1,6 @@
-import React, { useEffect, useMemo, useState } from 'react';
+import React, {
+  useCallback, useEffect, useMemo, useState,
+} from 'react';
 import classNames from 'classnames';
 import { UserWarning } from './UserWarning';
 import { getTodos } from './api/todos';
@@ -17,7 +19,7 @@ export const App: React.FC = () => {
   const [filter, setFilter] = useState<Filter>(Filter.ALL);
   const [processings, setProcessings] = useState<number[]>([]);
 
-  const filterTodos = () => {
+  const filterTodos = useCallback(() => {
     switch (filter) {
       case Filter.ACTIVE:
         return todos.filter(todo => !todo.completed);
@@ -27,7 +29,7 @@ export const App: React.FC = () => {
       default:
         return [...todos];
     }
-  };
+  }, [filter, todos]);
 
   useEffect(() => {
     const uploadTodos = async () => {
@@ -47,7 +49,8 @@ export const App: React.FC = () => {
     setError(ErrorType.NONE);
   };
 
-  const filteredTodos = useMemo(() => filterTodos(), [filter, todos]);
+  const filteredTodos = useMemo(() => filterTodos(),
+    [filter, todos, filterTodos]);
 
   useEffect(
     () => {
@@ -90,7 +93,7 @@ export const App: React.FC = () => {
           setProcessings={setProcessings}
         />
 
-        {!!filteredTodos && (
+        {!!todos.length && (
           <Footer
             todos={todos}
             filter={filter}

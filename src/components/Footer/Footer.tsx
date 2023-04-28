@@ -32,7 +32,7 @@ export const Footer: FC<Props> = ({
 
   const activeTodos = todos.filter(todo => !todo.completed);
 
-  const handleClearActive = () => {
+  const handleClearCompleted = () => {
     todos.forEach(async todo => {
       if (!todo.completed) {
         return;
@@ -77,7 +77,7 @@ export const Footer: FC<Props> = ({
         <button
           type="button"
           className="todoapp__clear-completed"
-          onClick={handleClearActive}
+          onClick={handleClearCompleted}
         >
           Clear completed
         </button>
