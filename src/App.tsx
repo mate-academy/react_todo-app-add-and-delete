@@ -13,10 +13,14 @@ import { UserWarning } from './UserWarning';
 
 export const App: React.FC = () => {
   const [todos, setTodos] = useState<Todo[]>([]);
+  const [tempTodo, setTempTodo] = useState<Todo | null>(null);
+
+  const [isTodoCreating, setIsTodoCreating] = useState(false);
+
   const [error, setError] = useState<string | null>(null);
   const [status, setStatus] = useState<Statuses>(Statuses.ALL);
-  const [isTodoCreating, setIsTodoCreating] = useState(false);
-  const [tempTodo, setTempTodo] = useState<Todo | null>(null);
+
+  const isDeleteCompletedButtonShown = todos.some((todo) => todo.completed);
 
   const visibleTodos = todos.filter((todo) => {
     switch (status) {
@@ -30,24 +34,6 @@ export const App: React.FC = () => {
         return true;
     }
   });
-
-  const isDeleteCompletedButtonShown = todos.some((todo) => todo.completed);
-
-  const handleDeleteCompleted = () => {
-    const completedTodoIds = todos
-      .filter((todo) => todo.completed)
-      .map((todo) => todo.id);
-
-    Promise.all(completedTodoIds.map((todoId) => deleteTodo(todoId)))
-      .then(() => {
-        setTodos((prevTodos) => {
-          return prevTodos.filter((prevTodo) => !prevTodo.completed);
-        });
-      })
-      .catch(() => {
-        setError('Unable to delete todos');
-      });
-  };
 
   const handleTodoCreate = (title: string) => {
     if (!title) {
@@ -79,15 +65,21 @@ export const App: React.FC = () => {
       });
   };
 
-  useEffect(() => {
-    getTodos(USER_ID)
-      .then((fetchedTodos: Todo[]) => {
-        setTodos(fetchedTodos);
+  const handleDeleteCompleted = () => {
+    const completedTodoIds = todos
+      .filter((todo) => todo.completed)
+      .map((todo) => todo.id);
+
+    Promise.all(completedTodoIds.map((todoId) => deleteTodo(todoId)))
+      .then(() => {
+        setTodos((prevTodos) => {
+          return prevTodos.filter((prevTodo) => !prevTodo.completed);
+        });
       })
-      .catch((fetchedError: Error) => {
-        setError(fetchedError?.message ?? 'Something went wrong');
+      .catch(() => {
+        setError('Unable to delete todos');
       });
-  }, []);
+  };
 
   useEffect(() => {
     let timeout: NodeJS.Timeout;
@@ -103,6 +95,16 @@ export const App: React.FC = () => {
     };
   }, [error]);
 
+  useEffect(() => {
+    getTodos(USER_ID)
+      .then((fetchedTodos: Todo[]) => {
+        setTodos(fetchedTodos);
+      })
+      .catch((fetchedError: Error) => {
+        setError(fetchedError?.message ?? 'Something went wrong');
+      });
+  }, []);
+
   if (!USER_ID) {
     return <UserWarning />;
   }
@@ -116,7 +118,6 @@ export const App: React.FC = () => {
           {/* this buttons is active only if there are some active todos */}
           <button type="button" className="todoapp__toggle-all active" />
 
-          {/* Add a todo on form submit */}
           <TodoForm
             inputDisabled={isTodoCreating}
             onFormSubmit={handleTodoCreate}
