@@ -1,5 +1,5 @@
 /* eslint-disable jsx-a11y/control-has-associated-label */
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useMemo, useState } from 'react';
 import { UserWarning } from './UserWarning';
 import {
   getTodos,
@@ -41,26 +41,41 @@ export const App: React.FC = () => {
     setError(state);
     setErrorFunc(state);
 
-    if (state === false) {
-      return;
-    }
+    let timerId: NodeJS.Timeout | null = null;
 
-    setTimeout(() => handleErrorState(setErrorFunc, !state), 3000);
+    const startTimer = () => {
+      timerId = setTimeout(() => {
+        handleErrorState(setErrorFunc, !state);
+      }, 3000);
+    };
+
+    if (!state) {
+      if (timerId) {
+        clearTimeout(timerId);
+        timerId = null;
+      }
+    } else if (!timerId) {
+      startTimer();
+    }
   };
 
-  useEffect(() => {
+  const todosGetter = () => {
     getTodos(USER_ID)
       .then(result => setTodos(result))
       .catch(() => {
         handleErrorState(setGetError);
       });
-  }, [todos]);
+  };
 
   useEffect(() => {
+    todosGetter();
+  }, []);
+
+  useMemo(() => {
     getActiveTodos(USER_ID).then(result => setActiveTodos(result.length));
 
     getCompletedTodos(USER_ID).then(result => setCompletedTodos(result.length));
-  }, [filterParam, todos]);
+  }, [filterParam]);
 
   if (!USER_ID) {
     return <UserWarning />;
@@ -84,7 +99,7 @@ export const App: React.FC = () => {
   const formInputHandler = (event: React.ChangeEvent<HTMLInputElement>) => {
     const { value } = event.currentTarget;
 
-    setInputValue(value);
+    setInputValue(value.trim());
   };
 
   const postTodoToServer = (event: React.KeyboardEvent<HTMLInputElement>) => {
@@ -98,6 +113,7 @@ export const App: React.FC = () => {
         setTempTodo(inputValue);
 
         postTodos(USER_ID, inputValue)
+          .then(() => todosGetter())
           .catch(() => {
             handleErrorState(setPostError);
           })
@@ -121,6 +137,7 @@ export const App: React.FC = () => {
       = arrayOfCompletedTodos.map(todo => deleteTodos(todo.id));
 
       await Promise.all(deletePromises);
+      todosGetter();
     } finally {
       setClearAllCompleted(false);
     }
