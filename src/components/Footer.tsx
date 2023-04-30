@@ -1,7 +1,6 @@
 import classNames from 'classnames';
 import { Todo } from '../types/Todo';
 import { Filter } from '../types/Filter';
-import { TransitionGroup } from 'react-transition-group';
 
 type Props = {
   filter: string,

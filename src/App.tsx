@@ -43,18 +43,6 @@ export const App: React.FC = () => {
       });
   }, [tempTodo]);
 
-  const handleSubmit = (event: React.FormEvent) => {
-    event.preventDefault();
-
-    const todoData = {
-      title,
-      completed: false,
-      userId: USER_ID,
-    };
-
-    addTodo(todoData);
-  };
-
   const addTodo = (todoData: Omit<Todo, 'id'>) => {
     if (!todoData.title.trim()) {
       setError(Error.TITLE);
@@ -76,6 +64,19 @@ export const App: React.FC = () => {
         errorTimeoutId();
       });
   };
+
+  const handleSubmit = (event: React.FormEvent) => {
+    event.preventDefault();
+
+    const todoData = {
+      title,
+      completed: false,
+      userId: USER_ID,
+    };
+
+    addTodo(todoData);
+  };
+
 
   const removeTodo = (todoId: number) => {
     setIsDeleting(true);
@@ -131,7 +132,6 @@ export const App: React.FC = () => {
         <header className="todoapp__header">
           {todos.length > 0 && (
             <button
-              data-cy="ToggleAllButton"
               type="button"
               className={classNames(
                 'todoapp__toggle-all',
@@ -152,7 +152,6 @@ export const App: React.FC = () => {
               onChange={(event) => {
                 setTitle(event.target.value)
               }}
-              
               disabled={tempTodo !== null}
             />
           </form>
