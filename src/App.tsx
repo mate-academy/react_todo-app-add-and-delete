@@ -1,6 +1,5 @@
 /* eslint-disable jsx-a11y/control-has-associated-label */
-import React, { useState, useEffect, useMemo } from 'react';
-import classNames from 'classnames';
+import React, { useState, useEffect } from 'react';
 import { UserWarning } from './UserWarning';
 import { Todo } from './types/Todo';
 import { MainFilter } from './types/MainFilter';
@@ -8,6 +7,7 @@ import { getTodos, addTodo, deleteTodo } from './api/todos';
 import { TodoList } from './components/TodoList/TodoList';
 import { TodoFilter } from './components/TodoFilter/TodoFilter';
 import { Loader } from './components/Loader/Loader';
+import { TodoError } from './components/TodoError/TodoError';
 
 const USER_ID = 9975;
 
@@ -17,16 +17,15 @@ export const App: React.FC = () => {
   const [isTodosLoading, setIsTodosLoading] = useState(true);
   const [filterOption, setFilterOption] = useState(MainFilter.All);
   const [tempTodo, setTempTodo] = useState<Todo | null>(null);
-  const [inputStatus, setInputStatus] = useState(false);
   const [textOfInput, setTextOfInput] = useState('');
   const [loadingIds, setLoadingIds] = useState<number[]>([]);
-  const [numberOfActiveTodos, numberOfCompletedTodos] = useMemo(
-    () => [
-      todos.filter(({ completed }) => !completed).length,
-      todos.filter(({ completed }) => completed).length,
-    ],
-    [todos],
-  );
+
+  const numberOfActiveTodos = todos
+    .filter(({ completed }) => !completed).length;
+  const numberOfCompletedTodos = todos
+    .filter(({ completed }) => completed).length;
+
+  const isInputDisabled = !!tempTodo && !!loadingIds.length;
 
   const getTodosFromServer = async () => {
     try {
@@ -40,6 +39,12 @@ export const App: React.FC = () => {
     }
   };
 
+  useEffect(() => {
+    setErrorOfUpdate('');
+    getTodosFromServer();
+    setTimeout(() => setErrorOfUpdate(''), 3000);
+  }, []);
+
   const getFilteredTodos = (filter: MainFilter, someTodos: Todo[]) => {
     switch (filter) {
       case MainFilter.Active:
@@ -51,9 +56,7 @@ export const App: React.FC = () => {
     }
   };
 
-  const addSomeTodo = async (title: string) => {
-    setInputStatus(true);
-
+  const addNewTodo = async (title: string) => {
     const newTodo = {
       title,
       userId: USER_ID,
@@ -62,7 +65,6 @@ export const App: React.FC = () => {
 
     if (title.trim() === '') {
       setErrorOfUpdate('Title can\'t be empty');
-      setInputStatus(false);
       setTextOfInput('');
 
       return;
@@ -77,13 +79,12 @@ export const App: React.FC = () => {
     } catch {
       setErrorOfUpdate('Unable to add a todo');
     } finally {
-      setInputStatus(false);
       setTempTodo(null);
       setTextOfInput('');
     }
   };
 
-  const deleteSomeTodo = async (todoId: number) => {
+  const deleteTodoItem = async (todoId: number) => {
     try {
       setLoadingIds(state => [...state, todoId]);
       await deleteTodo(todoId);
@@ -101,6 +102,8 @@ export const App: React.FC = () => {
   const clearCompletedTodos = () => {
     const completedTodos = todos.filter(todo => todo.completed);
 
+    setLoadingIds(completedTodos.map(todo => todo.id));
+
     completedTodos.forEach(todo => {
       deleteTodo(todo.id)
         .then(() => {
@@ -115,19 +118,13 @@ export const App: React.FC = () => {
   const handleSubmit = (event: React.FormEvent) => {
     event.preventDefault();
 
-    addSomeTodo(textOfInput);
+    addNewTodo(textOfInput);
     setTextOfInput('');
   };
 
   const handleChange = (event: React.KeyboardEvent<HTMLInputElement>) => {
     setTextOfInput(event.target.value);
   };
-
-  useEffect(() => {
-    setErrorOfUpdate('');
-    getTodosFromServer();
-    setTimeout(() => setErrorOfUpdate(''), 3000);
-  }, []);
 
   const visibleTodos = getFilteredTodos(filterOption, todos);
 
@@ -149,7 +146,7 @@ export const App: React.FC = () => {
               placeholder="What needs to be done?"
               value={textOfInput}
               onChange={handleChange}
-              disabled={inputStatus}
+              disabled={isInputDisabled}
             />
           </form>
         </header>
@@ -161,7 +158,7 @@ export const App: React.FC = () => {
               <TodoList
                 todos={visibleTodos}
                 tempTodo={tempTodo}
-                onDelete={deleteSomeTodo}
+                onDelete={deleteTodoItem}
                 loadingIds={loadingIds}
               />
             )}
@@ -177,24 +174,8 @@ export const App: React.FC = () => {
           />
         )}
       </div>
-      <div
-        className={classNames(
-          'notification',
-          'is-danger',
-          'has-text-weight-normal',
-          'is-light',
-          {
-            hidden: !errorOfUpdate,
-          },
-        )}
-      >
-        <button
-          type="button"
-          className="delete"
-          onClick={() => setErrorOfUpdate('')}
-        />
-        {errorOfUpdate}
-      </div>
+      {errorOfUpdate && (
+        <TodoError error={errorOfUpdate} setError={setErrorOfUpdate} />)}
     </div>
   );
 };

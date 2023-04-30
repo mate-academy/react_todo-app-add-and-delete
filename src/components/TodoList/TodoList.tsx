@@ -6,35 +6,33 @@ type Props = {
   todos: Todo[];
   tempTodo: Todo | null;
   onDelete: (todoId: number) => void;
-  loadingIds: number [];
+  loadingIds: number[];
 };
 
 export const TodoList: React.FC<Props> = ({
   todos, tempTodo, onDelete, loadingIds,
-}) => {
-  return (
-    <div>
-      {todos.map(todo => {
-        const isLoading = loadingIds.some(id => id === todo.id);
+}) => (
+  <div>
+    {todos.map(todo => {
+      const isLoading = loadingIds.some(id => id === todo.id);
 
-        return (
-          <TodoInfo
-            todo={todo}
-            key={todo.id}
-            onDelete={() => onDelete(todo.id)}
-            isLoading={isLoading}
-          />
-        );
-      })}
-
-      {tempTodo && (
+      return (
         <TodoInfo
-          todo={tempTodo}
-          key={tempTodo.id}
-          onDelete={() => onDelete(tempTodo.id)}
-          isLoading
+          todo={todo}
+          key={todo.id}
+          onDelete={() => onDelete(todo.id)}
+          isLoading={isLoading}
         />
-      )}
-    </div>
-  );
-};
+      );
+    })}
+
+    {tempTodo && (
+      <TodoInfo
+        todo={tempTodo}
+        key={tempTodo.id}
+        onDelete={() => onDelete(tempTodo.id)}
+        isLoading
+      />
+    )}
+  </div>
+);
