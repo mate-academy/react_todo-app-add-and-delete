@@ -121,6 +121,8 @@ export const App: React.FC = () => {
     return <UserWarning />;
   }
 
+  const showFooter = todos.length > 0 || tempTodo;
+
   return (
     <div className="todoapp">
       <h1 className="todoapp__title">todos</h1>
@@ -168,7 +170,7 @@ export const App: React.FC = () => {
           </>
         )}
 
-          {todos.length > 0 && (
+          {showFooter && (
             <Footer
               filter={filter}
               onSetFilter={setFilter}
