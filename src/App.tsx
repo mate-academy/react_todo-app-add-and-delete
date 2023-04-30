@@ -21,7 +21,6 @@ const USER_ID = 9925;
 export const App: React.FC = () => {
   const [todos, setTodos] = useState<TodoType[]>([]);
   const [filterParam, setFilterParam] = useState(FilterParams.All);
-  const [error, setError] = useState(false);
   const [activeTodos, setActiveTodos] = useState(0);
   const [completedTodos, setCompletedTodos] = useState(0);
 
@@ -38,7 +37,6 @@ export const App: React.FC = () => {
     setErrorFunc: (state: boolean) => void,
     state = true,
   ) => {
-    setError(state);
     setErrorFunc(state);
 
     let timerId: NodeJS.Timeout | null = null;
@@ -59,9 +57,18 @@ export const App: React.FC = () => {
     }
   };
 
+  const disableErrorHandling = () => {
+    setGetError(false);
+    setPostError(false);
+    setDeleteError(false);
+    setEmptyInputState(false);
+  };
+
   const todosGetter = () => {
     getTodos(USER_ID)
-      .then(result => setTodos(result))
+      .then(result => {
+        setTodos(result);
+      })
       .catch(() => {
         handleErrorState(setGetError);
       });
@@ -75,7 +82,7 @@ export const App: React.FC = () => {
     getActiveTodos(USER_ID).then(result => setActiveTodos(result.length));
 
     getCompletedTodos(USER_ID).then(result => setCompletedTodos(result.length));
-  }, [filterParam]);
+  }, [todos, filterParam]);
 
   if (!USER_ID) {
     return <UserWarning />;
@@ -113,7 +120,6 @@ export const App: React.FC = () => {
         setTempTodo(inputValue);
 
         postTodos(USER_ID, inputValue)
-          .then(() => todosGetter())
           .catch(() => {
             handleErrorState(setPostError);
           })
@@ -121,6 +127,7 @@ export const App: React.FC = () => {
             setLockInput(false);
             setTempTodo(null);
             setInputValue('');
+            todosGetter();
           });
       }
     }
@@ -137,9 +144,9 @@ export const App: React.FC = () => {
       = arrayOfCompletedTodos.map(todo => deleteTodos(todo.id));
 
       await Promise.all(deletePromises);
-      todosGetter();
     } finally {
       setClearAllCompleted(false);
+      todosGetter();
     }
   };
 
@@ -171,8 +178,8 @@ export const App: React.FC = () => {
                 <Todo
                   todoItem={todo}
                   setDeleteError={setDeleteError}
-                  setError={setError}
                   handleErrorState={handleErrorState}
+                  todosGetter={todosGetter}
                   isClearAllCompleted={isClearAllCompleted}
                   key={todo.id}
                 />
@@ -208,12 +215,11 @@ export const App: React.FC = () => {
       </div>
 
       <Error
-        error={error}
         getDataError={isGetError}
         postDataError={isPostError}
         deleteDataError={isDeleteError}
         inputState={isInputEmpty}
-        handleErrorState={setError}
+        disableErrorHandling={disableErrorHandling}
       />
     </div>
   );

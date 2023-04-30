@@ -2,36 +2,39 @@ import React from 'react';
 import classNames from 'classnames';
 
 type Props = {
-  error: boolean,
   getDataError: boolean,
   postDataError: boolean,
   deleteDataError: boolean,
   inputState: boolean,
-  handleErrorState: (value: React.SetStateAction<boolean>) => void
+  disableErrorHandling: () => void,
 };
 
 export const Error: React.FC<Props> = ({
-  error,
   getDataError,
   postDataError,
   deleteDataError,
   inputState,
-  handleErrorState,
+  disableErrorHandling,
 }) => {
+  const isHidden = !getDataError
+  && !postDataError
+  && !deleteDataError
+  && !inputState;
+
   return (
     <div className={classNames(
       'notification',
       'is-danger',
       'is-light',
       'has-text-weight-normal',
-      { hidden: !error },
+      { hidden: isHidden },
     )}
     >
       <button
         type="button"
         className="delete"
         aria-label="delete"
-        onClick={() => handleErrorState(false)}
+        onClick={() => disableErrorHandling()}
       />
 
       {getDataError && 'Error, can\'t get todos from server'}
