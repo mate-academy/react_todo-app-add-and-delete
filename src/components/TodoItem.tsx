@@ -14,10 +14,12 @@ export const TodoItem: React.FC<Props> = ({
   onDeleting,
   todosTransform,
 }) => {
+  const { completed, title, id } = todo;
+
   return (
     <div
       className={classNames('todo', {
-        completed: todo.completed,
+        completed: completed,
       })}
     >
       <label className="todo__status-label">
@@ -27,13 +29,13 @@ export const TodoItem: React.FC<Props> = ({
         />
       </label>
 
-      <span className="todo__title">{todo.title}</span>
+      <span className="todo__title">{title}</span>
 
       <button
         type="button"
         className="todo__remove"
         onClick={()=> {
-          onRemove(todo.id);
+          onRemove(id);
         }}
       >
         ×
@@ -44,7 +46,7 @@ export const TodoItem: React.FC<Props> = ({
         <div className={classNames(
           'modal overlay',
           {
-            'is-active': todosTransform.includes(todo.id)
+            'is-active': todosTransform.includes(id)
           },
           )}
         >

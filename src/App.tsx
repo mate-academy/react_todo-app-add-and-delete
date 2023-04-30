@@ -22,9 +22,11 @@ export const App: React.FC = () => {
 
   const focusInput = useRef<HTMLInputElement | null>(null);
 
-  const errorTimeout = () => setTimeout(() => {
+  const errorTimeoutId = () => setTimeout(() => {
     setError('');
+    clearTimeout(errorTimeoutId());
   }, 3000);
+
 
   useEffect(() => {
     if (focusInput.current) {
@@ -37,8 +39,7 @@ export const App: React.FC = () => {
       })
       .catch(() => {
         setError(Error.LOAD);
-        errorTimeout();
-        clearTimeout(errorTimeout());
+        errorTimeoutId();
       });
   }, [tempTodo]);
 
@@ -57,8 +58,7 @@ export const App: React.FC = () => {
   const addTodo = (todoData: Omit<Todo, 'id'>) => {
     if (!todoData.title.trim()) {
       setError(Error.TITLE);
-      errorTimeout();
-      clearTimeout(errorTimeout());
+      errorTimeoutId();
       return;
     }
 
@@ -73,8 +73,7 @@ export const App: React.FC = () => {
       .catch(() => {
         setError(Error.ADD);
         setTempTodo(null);
-        errorTimeout();
-        clearTimeout(errorTimeout());
+        errorTimeoutId();
       });
   };
 
@@ -89,8 +88,7 @@ export const App: React.FC = () => {
       })
       .catch(() => {
         setError(Error.DELETE);
-        errorTimeout();
-        clearTimeout(errorTimeout());
+        errorTimeoutId();
       })
       .finally(() => {
         setIsDeleting(false);
@@ -117,7 +115,7 @@ export const App: React.FC = () => {
 
   const activeTodos = useMemo(() => {
     return todos.filter(todo => !todo.completed)
-  }, todos);
+  }, [todos]);
 
   if (!USER_ID) {
     return <UserWarning />;
@@ -158,41 +156,19 @@ export const App: React.FC = () => {
           </form>
         </header>
 
-        {todos.length > 0 && (
+        {todos && (
           <>
             <TodoList
               todos={visibleTodos}
               onRemove={removeTodo}
               onDeleting={isDeleting}
               todosTransform={todosTransform}
+              tempTodo={tempTodo}
             />
+          </>
+        )}
 
-          {tempTodo && (
-            <div
-              className="todo"
-            >
-              <label className="todo__status-label">
-                <input
-                  type="checkbox"
-                  className="todo__status"
-                />
-              </label>
-        
-              <span className="todo__title">{tempTodo.title}</span>
-        
-              <button
-                type="button"
-                className="todo__remove"
-              >
-                ×
-              </button>
-        
-              <div className="modal overlay is-active">
-                <div className="modal-background has-background-white-ter" />
-                <div className="loader" />
-              </div>
-            </div>
-          )}
+          {todos.length > 0 && (
             <Footer
               filter={filter}
               onSetFilter={setFilter}
@@ -200,8 +176,7 @@ export const App: React.FC = () => {
               onRemoveAll={removeTodo}
               activeTodos={activeTodos}
             />
-          </>
-        )}
+          )}
       </div>
 
       {error && (
