@@ -18,7 +18,6 @@ export const App: React.FC = () => {
   const [title, setTitle] = useState('');
   const [tempTodo, setTempTodo] = useState<Todo | null> (null);
   const [todosTransform, setTodosTransform] = useState<number[]>([]);
-  const [isDeleting, setIsDeleting] = useState<boolean>(false);
 
   const focusInput = useRef<HTMLInputElement | null>(null);
 
@@ -80,23 +79,19 @@ export const App: React.FC = () => {
     addTodo(todoData);
   };
 
-
-  const removeTodo = (todoId: number) => {
-    setIsDeleting(true);
+const removeTodo = async (todoId: number) => {
     setTodosTransform(curr => [...curr, todoId]);
-    deleteTodo(todoId)
-      .then(() => {
-        setTodos(curr =>
-          curr.filter(todo => todo.id !== todoId),
-        );
-      })
-      .catch(() => {
-        setError(Error.Delete);
-      })
-      .finally(() => {
-        setIsDeleting(false);
-        setTodosTransform(todosTransform.filter(id => id !== todoId));
-      });
+
+    try {
+      await deleteTodo(todoId);
+      setTodos(curr => curr.filter(todo => todo.id !== todoId));
+
+    } catch {
+      setError(Error.Delete);
+
+    } finally {
+      setTodosTransform(todosTransform.filter(id => id !== todoId))
+    };
   };
 
   const visibleTodos = useMemo(() => {
@@ -127,7 +122,7 @@ export const App: React.FC = () => {
   };
 
   const handleError = () => setError('');
-  const showFooter = todos.length > 0 || tempTodo;
+  const showFooter = todos.length || tempTodo;
 
   return (
     <div className="todoapp">
@@ -135,7 +130,7 @@ export const App: React.FC = () => {
 
       <div className="todoapp__content">
         <header className="todoapp__header">
-          {todos.length > 0 && (
+          {!!todos.length && (
             <button
               aria-label='Toggle-all'
               type="button"
@@ -149,15 +144,17 @@ export const App: React.FC = () => {
           )}
 
           <form onSubmit={handleSubmit}>
-            <input
-              ref={focusInput}
-              type="text"
-              className="todoapp__new-todo"
-              placeholder="What needs to be done?"
-              value={title}
-              onChange={handleChange}
-              disabled={!!tempTodo}
-            />
+            <label>
+              <input
+                ref={focusInput}
+                type="text"
+                className="todoapp__new-todo"
+                placeholder="What needs to be done?"
+                value={title}
+                onChange={handleChange}
+                disabled={!!tempTodo}
+              />
+            </label>
           </form>
         </header>
 
@@ -165,7 +162,6 @@ export const App: React.FC = () => {
           <TodoList
             todos={visibleTodos}
             onRemove={removeTodo}
-            isDeleting={isDeleting}
             todosTransform={todosTransform}
             tempTodo={tempTodo}
           />

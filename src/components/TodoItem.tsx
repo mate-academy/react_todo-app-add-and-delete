@@ -4,14 +4,12 @@ import { Todo } from '../types/Todo';
 type Props = {
   todo: Todo;
   onRemove: (userId: number) => void;
-  isDeleting: boolean;
   todosTransform: number[];
 };
 
 export const TodoItem: React.FC<Props> = ({
   todo,
   onRemove,
-  isDeleting,
   todosTransform,
 }) => {
   const { completed, title, id } = todo;
@@ -41,18 +39,16 @@ export const TodoItem: React.FC<Props> = ({
       </button>
 
 
-      {isDeleting && (
-        <div className={classNames(
-          'modal overlay',
-          {
-            'is-active': todosTransform.includes(id)
-          },
-          )}
-        >
-          <div className="modal-background has-background-white-ter" />
-          <div className="loader" />
-        </div>
-      )}
+      <div className={classNames(
+        'modal overlay',
+        {
+          'is-active': todosTransform.includes(id)
+        },
+        )}
+      >
+        <div className="modal-background has-background-white-ter" />
+        <div className="loader" />
+      </div>
     </div>
   );
 };
