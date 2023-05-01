@@ -15,6 +15,7 @@ export const TodoItem: React.FC<Props> = ({
   todosTransform,
 }) => {
   const { completed, title, id } = todo;
+  const handlerRemove = () => onRemove(id);
 
   return (
     <div
@@ -34,9 +35,7 @@ export const TodoItem: React.FC<Props> = ({
       <button
         type="button"
         className="todo__remove"
-        onClick={()=> {
-          onRemove(id);
-        }}
+        onClick={handlerRemove}
       >
         ×
       </button>

@@ -18,6 +18,9 @@ export const Footer: React.FC<Props> = ({
   activeTodos,
 }) => {
   const removeAllcompleted = () => {completedTodos.forEach(todo => onRemoveAll(todo.id))};
+  const handlerStatusAll = () => onSetFilter(Filter.All);
+  const handlerStatusActive = () => onSetFilter(Filter.Active);
+  const handlerStatusCompleted = () => onSetFilter(Filter.Completed);
 
     return (
       <footer className="todoapp__footer">
@@ -34,8 +37,8 @@ export const Footer: React.FC<Props> = ({
                 selected: filter === Filter.All,
               },
             )}
-            onClick={() => onSetFilter(Filter.All)}
-          >
+            onClick={handlerStatusAll}
+          > 
             All
           </a>
 
@@ -47,7 +50,7 @@ export const Footer: React.FC<Props> = ({
                 selected: filter === Filter.Active,
               },
             )}
-            onClick={() => onSetFilter(Filter.Active)}
+            onClick={handlerStatusActive}
           >
             Active
           </a>
@@ -60,7 +63,7 @@ export const Footer: React.FC<Props> = ({
                 selected: filter === Filter.Completed,
               },
             )}
-            onClick={() => onSetFilter(Filter.Completed)}
+            onClick={handlerStatusCompleted}
           >
             Completed
           </a>

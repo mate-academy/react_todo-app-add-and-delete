@@ -15,7 +15,7 @@ export const ErrorsNotification: React.FC<Props> = ({
         aria-label="Close"
         type="button"
         className="delete"
-        onClick={() => onCloseError()}
+        onClick={onCloseError}
       />
       <span>{error}</span>
     </div>

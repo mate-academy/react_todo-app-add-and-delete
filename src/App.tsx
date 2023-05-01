@@ -100,16 +100,14 @@ export const App: React.FC = () => {
   };
 
   const visibleTodos = useMemo(() => {
-    return todos.filter(todo => {
-      switch (filter) {
-        case Filter.Active:
-          return !todo.completed;
-        case Filter.Completed:
-          return todo.completed;
-        default:
-          return true;
-      }
-    })
+    switch(filter) {
+      case Filter.Active:
+        return todos.filter(todo => !todo.completed);
+      case Filter.Completed:
+        return todos.filter(todo => todo.completed);
+      default:
+        return todos;
+    };
   }, [filter, todos]);
 
   const completedTodos = useMemo(() => {
@@ -123,6 +121,9 @@ export const App: React.FC = () => {
   if (!USER_ID) {
     return <UserWarning />;
   }
+
+  const handleChange = (event: React.FormEvent<HTMLInputElement>) => setTitle(event.currentTarget.value);
+  const handleError = () => setError('');
 
   const showFooter = todos.length > 0 || tempTodo;
 
@@ -152,9 +153,7 @@ export const App: React.FC = () => {
               className="todoapp__new-todo"
               placeholder="What needs to be done?"
               value={title}
-              onChange={(event) => {
-                setTitle(event.target.value)
-              }}
+              onChange={handleChange}
               disabled={!!tempTodo}
             />
           </form>
@@ -184,7 +183,7 @@ export const App: React.FC = () => {
       {error && (
         <ErrorsNotification
           error={error}
-          onCloseError={() => setError('')}
+          onCloseError={handleError}
         />
       )}
     </div>
