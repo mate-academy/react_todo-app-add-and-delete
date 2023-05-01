@@ -4,14 +4,14 @@ import { Todo } from '../types/Todo';
 type Props = {
   todo: Todo;
   onRemove: (userId: number) => void;
-  onDeleting: boolean;
+  isDeleting: boolean;
   todosTransform: number[];
 };
 
 export const TodoItem: React.FC<Props> = ({
   todo,
   onRemove,
-  onDeleting,
+  isDeleting,
   todosTransform,
 }) => {
   const { completed, title, id } = todo;
@@ -42,7 +42,7 @@ export const TodoItem: React.FC<Props> = ({
       </button>
 
 
-      {onDeleting && (
+      {isDeleting && (
         <div className={classNames(
           'modal overlay',
           {

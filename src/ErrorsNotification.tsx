@@ -1,5 +1,4 @@
 import React from 'react';
-import classNames from 'classnames';
 
 type Props = {
   error: string,
@@ -10,14 +9,8 @@ export const ErrorsNotification: React.FC<Props> = ({
   error,
   onCloseError,
 }) => {
-  const showError = true;
-
   return (
-    <div className={classNames(
-      'notification is-danger is-light has-text-weight-normal',
-      { hidden: !showError },
-    )}
-    >
+    <div className="notification is-danger is-light has-text-weight-normal">
       <button
         aria-label="Close"
         type="button"

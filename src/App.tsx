@@ -14,7 +14,7 @@ const USER_ID = 6910;
 export const App: React.FC = () => {
   const [todos, setTodos] = useState<Todo []>([]);
   const [error, setError] = useState('');
-  const [filter, setFilter] = useState(Filter.ALL);
+  const [filter, setFilter] = useState(Filter.All);
   const [title, setTitle] = useState('');
   const [tempTodo, setTempTodo] = useState<Todo | null> (null);
   const [todosTransform, setTodosTransform] = useState<number[]>([]);
@@ -38,14 +38,14 @@ export const App: React.FC = () => {
         setTodos(data);
       })
       .catch(() => {
-        setError(Error.LOAD);
+        setError(Error.Load);
         errorTimeoutId();
       });
   }, [tempTodo]);
 
   const addTodo = (todoData: Omit<Todo, 'id'>) => {
     if (!todoData.title.trim()) {
-      setError(Error.TITLE);
+      setError(Error.Title);
       errorTimeoutId();
       return;
     }
@@ -59,7 +59,7 @@ export const App: React.FC = () => {
         setTitle('');
       })
       .catch(() => {
-        setError(Error.ADD);
+        setError(Error.Add);
         setTempTodo(null);
         errorTimeoutId();
       });
@@ -88,7 +88,7 @@ export const App: React.FC = () => {
         );
       })
       .catch(() => {
-        setError(Error.DELETE);
+        setError(Error.Delete);
         errorTimeoutId();
       })
       .finally(() => {
@@ -100,9 +100,9 @@ export const App: React.FC = () => {
   const visibleTodos = useMemo(() => {
     return todos.filter(todo => {
       switch (filter) {
-        case Filter.ACTIVE:
+        case Filter.Active:
           return !todo.completed;
-        case Filter.COMPLETED:
+        case Filter.Completed:
           return todo.completed;
         default:
           return true;
@@ -132,6 +132,7 @@ export const App: React.FC = () => {
         <header className="todoapp__header">
           {todos.length > 0 && (
             <button
+              aria-label='Toggle-all'
               type="button"
               className={classNames(
                 'todoapp__toggle-all',
@@ -158,15 +159,13 @@ export const App: React.FC = () => {
         </header>
 
         {todos && (
-          <>
-            <TodoList
-              todos={visibleTodos}
-              onRemove={removeTodo}
-              onDeleting={isDeleting}
-              todosTransform={todosTransform}
-              tempTodo={tempTodo}
-            />
-          </>
+          <TodoList
+            todos={visibleTodos}
+            onRemove={removeTodo}
+            isDeleting={isDeleting}
+            todosTransform={todosTransform}
+            tempTodo={tempTodo}
+          />
         )}
 
           {showFooter && (

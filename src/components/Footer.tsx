@@ -3,7 +3,7 @@ import { Todo } from '../types/Todo';
 import { Filter } from '../types/Filter';
 
 type Props = {
-  filter: string,
+  filter: Filter,
   onSetFilter: (filter: Filter) => void,
   completedTodos: Todo[],
   onRemoveAll: (userId: number) => void,
@@ -31,7 +31,7 @@ export const Footer: React.FC<Props> = ({
             selected: filter === 'all',
           },
         )}
-        onClick={() => onSetFilter(Filter.ALL)}
+        onClick={() => onSetFilter(Filter.All)}
       >
         All
       </a>
@@ -44,7 +44,7 @@ export const Footer: React.FC<Props> = ({
             selected: filter === 'active',
           },
         )}
-        onClick={() => onSetFilter(Filter.ACTIVE)}
+        onClick={() => onSetFilter(Filter.Active)}
       >
         Active
       </a>
@@ -57,7 +57,7 @@ export const Footer: React.FC<Props> = ({
             selected: filter === 'completed',
           },
         )}
-        onClick={() => onSetFilter(Filter.COMPLETED)}
+        onClick={() => onSetFilter(Filter.Completed)}
       >
         Completed
       </a>

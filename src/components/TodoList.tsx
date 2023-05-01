@@ -9,8 +9,8 @@ import '../styles/animation.scss';
 
 type Props = {
   todos: Todo[];
-  onRemove: (userId: number) => void;
-  onDeleting: boolean;
+  onRemove: (todoId: number) => void;
+  isDeleting: boolean;
   todosTransform: number[];
   tempTodo: Todo | null;
 }
@@ -18,7 +18,7 @@ type Props = {
 export const TodoList: React.FC<Props> = ({
   todos,
   onRemove,
-  onDeleting,
+  isDeleting,
   todosTransform,
   tempTodo,
 }) => {
@@ -35,7 +35,7 @@ export const TodoList: React.FC<Props> = ({
               key={todo.id}
               todo={todo}
               onRemove={onRemove}
-              onDeleting={onDeleting}
+              isDeleting={isDeleting}
               todosTransform={todosTransform}
             />
           </CSSTransition>
