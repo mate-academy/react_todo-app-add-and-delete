@@ -122,9 +122,11 @@ export const App: React.FC = () => {
     return <UserWarning />;
   }
 
-  const handleChange = (event: React.FormEvent<HTMLInputElement>) => setTitle(event.currentTarget.value);
-  const handleError = () => setError('');
+  const handleChange = (event: React.FormEvent<HTMLInputElement>) => {
+    setTitle(event.currentTarget.value);
+  };
 
+  const handleError = () => setError('');
   const showFooter = todos.length > 0 || tempTodo;
 
   return (
