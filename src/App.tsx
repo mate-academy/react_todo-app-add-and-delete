@@ -22,31 +22,34 @@ export const App: React.FC = () => {
 
   const focusInput = useRef<HTMLInputElement | null>(null);
 
-  const errorTimeoutId = () => setTimeout(() => {
-    setError('');
-    clearTimeout(errorTimeoutId());
-  }, 3000);
-
-
   useEffect(() => {
     if (focusInput.current) {
       focusInput.current.focus();
     }
 
+    const timeoutId = setTimeout(() => {
+      setError('');
+    }, 3000);
+
+    return () => {
+      clearTimeout(timeoutId);
+    }
+  }, [tempTodo, error]);
+
+  useEffect(() => {
     getTodos(USER_ID)
       .then(data => {
         setTodos(data);
       })
       .catch(() => {
         setError(Error.Load);
-        errorTimeoutId();
+        
       });
-  }, [tempTodo]);
+  }, []);
 
   const addTodo = (todoData: Omit<Todo, 'id'>) => {
     if (!todoData.title.trim()) {
       setError(Error.Title);
-      errorTimeoutId();
       return;
     }
 
@@ -59,10 +62,10 @@ export const App: React.FC = () => {
         setTitle('');
       })
       .catch(() => {
+        setTitle('');
         setError(Error.Add);
         setTempTodo(null);
-        errorTimeoutId();
-      });
+      })
   };
 
   const handleSubmit = (event: React.FormEvent) => {
@@ -89,7 +92,6 @@ export const App: React.FC = () => {
       })
       .catch(() => {
         setError(Error.Delete);
-        errorTimeoutId();
       })
       .finally(() => {
         setIsDeleting(false);
@@ -153,7 +155,7 @@ export const App: React.FC = () => {
               onChange={(event) => {
                 setTitle(event.target.value)
               }}
-              disabled={tempTodo !== null}
+              disabled={!!tempTodo}
             />
           </form>
         </header>

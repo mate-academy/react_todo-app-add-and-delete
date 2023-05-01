@@ -16,64 +16,64 @@ export const Footer: React.FC<Props> = ({
   completedTodos,
   onRemoveAll,
   activeTodos,
-}) => (
-  <footer className="todoapp__footer">
-    <span className="todo-count">
-      {`${activeTodos.length} items left`}
-    </span>
+}) => {
+  const removeAllcompleted = () => {completedTodos.forEach(todo => onRemoveAll(todo.id))};
 
-    <nav className="filter">
-      <a
-        href="#/"
-        className={classNames(
-          'filter__link',
-          {
-            selected: filter === 'all',
-          },
-        )}
-        onClick={() => onSetFilter(Filter.All)}
-      >
-        All
-      </a>
+    return (
+      <footer className="todoapp__footer">
+        <span className="todo-count">
+          {`${activeTodos.length} items left`}
+        </span>
 
-      <a
-        href="#/active"
-        className={classNames(
-          'filter__link',
-          {
-            selected: filter === 'active',
-          },
-        )}
-        onClick={() => onSetFilter(Filter.Active)}
-      >
-        Active
-      </a>
+        <nav className="filter">
+          <a
+            href="#/"
+            className={classNames(
+              'filter__link',
+              {
+                selected: filter === Filter.All,
+              },
+            )}
+            onClick={() => onSetFilter(Filter.All)}
+          >
+            All
+          </a>
 
-      <a
-        href="#/completed"
-        className={classNames(
-          'filter__link',
-          {
-            selected: filter === 'completed',
-          },
-        )}
-        onClick={() => onSetFilter(Filter.Completed)}
-      >
-        Completed
-      </a>
-    </nav>
+          <a
+            href="#/active"
+            className={classNames(
+              'filter__link',
+              {
+                selected: filter === Filter.Active,
+              },
+            )}
+            onClick={() => onSetFilter(Filter.Active)}
+          >
+            Active
+          </a>
 
-    <button
-      type="button"
-      className="todoapp__clear-completed"
-      disabled={completedTodos.length === 0}
-      onClick={() => {
-        completedTodos.forEach(todo => {
-          onRemoveAll(todo.id)
-        })
-      }}
-    >
-      Clear completed
-    </button>
-  </footer>
-)
+          <a
+            href="#/completed"
+            className={classNames(
+              'filter__link',
+              {
+                selected: filter === Filter.Completed,
+              },
+            )}
+            onClick={() => onSetFilter(Filter.Completed)}
+          >
+            Completed
+          </a>
+        </nav>
+
+        <button
+          type="button"
+          className="todoapp__clear-completed"
+          disabled={!completedTodos.length}
+          onClick={removeAllcompleted}
+        >
+          Clear completed
+        </button>
+      </footer>
+    );
+};
