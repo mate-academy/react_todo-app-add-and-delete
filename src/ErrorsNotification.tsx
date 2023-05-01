@@ -17,7 +17,7 @@ export const ErrorsNotification: React.FC<Props> = ({
         className="delete"
         onClick={() => onCloseError()}
       />
-      {error}
+      <span>{error}</span>
     </div>
   );
 };
