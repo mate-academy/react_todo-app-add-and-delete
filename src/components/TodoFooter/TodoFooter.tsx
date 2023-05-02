@@ -17,7 +17,7 @@ export const TodoFooter: React.FC<Props> = React.memo(
       todos.filter(todo => todo.completed)
     ), [todos]);
 
-    const handlerOnClick = () => completedTodos.map(todo => onRemove(todo.id));
+    const handleClick = () => completedTodos.forEach(todo => onRemove(todo.id));
 
     return (
       <footer className="todoapp__footer">
@@ -31,7 +31,7 @@ export const TodoFooter: React.FC<Props> = React.memo(
           type="button"
           className="todoapp__clear-completed"
           disabled={todos.length === todosLeft}
-          onClick={handlerOnClick}
+          onClick={handleClick}
         >
           Clear completed
         </button>

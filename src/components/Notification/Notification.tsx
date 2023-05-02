@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import classNames from 'classnames';
 import { ErrorType } from '../../types/ErrorType';
 
@@ -9,11 +9,13 @@ type Props = {
 
 export const Notification: React.FC<Props> = React.memo(
   ({ hasError, setHasError }) => {
-    setTimeout(() => {
-      setHasError(ErrorType.NONE);
-    }, 3000);
+    useEffect(() => {
+      setTimeout(() => {
+        setHasError(ErrorType.None);
+      }, 3000);
+    }, [hasError]);
 
-    const handlerOnClick = () => setHasError(ErrorType.NONE);
+    const handleClick = () => setHasError(ErrorType.None);
 
     return (
       <div
@@ -23,7 +25,7 @@ export const Notification: React.FC<Props> = React.memo(
           'is-light',
           'has-text-weight-normal',
           {
-            hidden: !(hasError !== ErrorType.NONE),
+            hidden: hasError === ErrorType.None,
           },
         )}
       >
@@ -31,7 +33,7 @@ export const Notification: React.FC<Props> = React.memo(
           type="button"
           aria-label="delete"
           className="delete"
-          onClick={handlerOnClick}
+          onClick={handleClick}
         />
         {hasError}
       </div>

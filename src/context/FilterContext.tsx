@@ -11,12 +11,12 @@ type Props = {
 };
 
 export const FilterContext = React.createContext<FilterContextType>({
-  filter: FilterType.ALL,
+  filter: FilterType.All,
   setFilter: () => {},
 });
 
 export const FilterContextProvider = ({ children }: Props) => {
-  const [filter, setFilter] = useState(FilterType.ALL);
+  const [filter, setFilter] = useState(FilterType.All);
 
   const contextValue = useMemo(() => (
     {

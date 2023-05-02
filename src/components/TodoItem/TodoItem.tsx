@@ -18,7 +18,7 @@ export const TodoItem: React.FC<Props> = React.memo(
       return loadingId.some(item => item === todoId);
     };
 
-    const handlerOnClick = () => onRemove(todo.id);
+    const handleClick = () => onRemove(todo.id);
 
     return (
       <div
@@ -38,7 +38,7 @@ export const TodoItem: React.FC<Props> = React.memo(
         <button
           type="button"
           className="todo__remove"
-          onClick={handlerOnClick}
+          onClick={handleClick}
         >
           ×
         </button>

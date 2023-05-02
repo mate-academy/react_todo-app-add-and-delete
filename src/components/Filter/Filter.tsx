@@ -8,26 +8,26 @@ export const Filter: React.FC = React.memo(
   () => {
     const { filter, setFilter } = useContext(FilterContext);
 
-    const onFilterChange = (value: string) => {
+    const onFilterChange = (value: FilterType) => {
       switch (value) {
-        case FilterType.ACTIVE:
-          setFilter(FilterType.ACTIVE);
+        case FilterType.Active:
+          setFilter(FilterType.Active);
           break;
 
-        case FilterType.COMPLETED:
-          setFilter(FilterType.COMPLETED);
+        case FilterType.Completed:
+          setFilter(FilterType.Completed);
           break;
 
         default:
-          setFilter(FilterType.ALL);
+          setFilter(FilterType.All);
       }
     };
 
-    const handlerOnClick = (event: MouseEvent<HTMLAnchorElement>) => {
+    const handleClick = (event: MouseEvent<HTMLAnchorElement>) => {
       event.preventDefault();
       const target = event.currentTarget;
 
-      onFilterChange(target.innerText);
+      onFilterChange(target.innerText as FilterType);
     };
 
     return (
@@ -35,9 +35,9 @@ export const Filter: React.FC = React.memo(
         <a
           href="#/"
           className={classNames('filter__link', {
-            selected: filter === FilterType.ALL,
+            selected: filter === FilterType.All,
           })}
-          onClick={handlerOnClick}
+          onClick={handleClick}
         >
           All
         </a>
@@ -45,9 +45,9 @@ export const Filter: React.FC = React.memo(
         <a
           href="#/active"
           className={classNames('filter__link', {
-            selected: filter === FilterType.ACTIVE,
+            selected: filter === FilterType.Active,
           })}
-          onClick={handlerOnClick}
+          onClick={handleClick}
         >
           Active
         </a>
@@ -55,9 +55,9 @@ export const Filter: React.FC = React.memo(
         <a
           href="#/completed"
           className={classNames('filter__link', {
-            selected: filter === FilterType.COMPLETED,
+            selected: filter === FilterType.Completed,
           })}
-          onClick={handlerOnClick}
+          onClick={handleClick}
         >
           Completed
         </a>

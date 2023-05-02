@@ -1,7 +1,7 @@
 export enum ErrorType {
-  NONE = '',
-  LOADING = 'Unable to load a todo',
-  ADD = 'Unable to add a todo',
-  REMOVE = 'Unable to delete a todo',
-  TITLE = 'Title can\'t be empty',
+  None = '',
+  Loading = 'Unable to load a todo',
+  Add = 'Unable to add a todo',
+  Remove = 'Unable to delete a todo',
+  Title = 'Title can\'t be empty',
 }

@@ -17,10 +17,10 @@ type Props = {
 
 const getVisibleTodos = (filter: FilterType, allTodos: Todo[]) => {
   switch (filter) {
-    case FilterType.ACTIVE:
+    case FilterType.Active:
       return allTodos.filter(todo => todo.completed === false);
 
-    case FilterType.COMPLETED:
+    case FilterType.Completed:
       return allTodos.filter(todo => todo.completed === true);
 
     default:

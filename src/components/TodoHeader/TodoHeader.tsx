@@ -7,7 +7,7 @@ type Props = {
   todos: Todo[],
   isInputDisabled: boolean,
   setHasError: React.Dispatch<React.SetStateAction<ErrorType>>,
-  onTodoAdd: (userId: number, data: Todo) => void
+  onTodoAdd: (userId: number, title: string) => void
 };
 
 const USER_ID = 9955;
@@ -22,27 +22,20 @@ export const TodoHeader: React.FC<Props> = React.memo(
     const [todoTitle, setTodoTitle] = useState('');
     const isAllTodosActive = todos.every(todo => todo.completed === true);
 
-    const hanlderOnSubmit = (event: FormEvent<HTMLFormElement>) => {
+    const hanldeSubmit = (event: FormEvent<HTMLFormElement>) => {
       event.preventDefault();
 
       if (!todoTitle.trim()) {
-        setHasError(ErrorType.TITLE);
+        setHasError(ErrorType.Title);
 
         return;
       }
 
-      const newTodo: Todo = {
-        id: 0,
-        userId: USER_ID,
-        title: todoTitle,
-        completed: false,
-      };
-
-      onTodoAdd(USER_ID, newTodo);
+      onTodoAdd(USER_ID, todoTitle);
       setTodoTitle('');
     };
 
-    const handlerOnChange = (event: ChangeEvent<HTMLInputElement>) => (
+    const handleChange = (event: ChangeEvent<HTMLInputElement>) => (
       setTodoTitle(event.target.value)
     );
 
@@ -58,13 +51,13 @@ export const TodoHeader: React.FC<Props> = React.memo(
           />
         )}
 
-        <form onSubmit={hanlderOnSubmit}>
+        <form onSubmit={hanldeSubmit}>
           <input
             type="text"
             className="todoapp__new-todo"
             placeholder="What needs to be done?"
             value={todoTitle}
-            onChange={handlerOnChange}
+            onChange={handleChange}
             disabled={isInputDisabled}
           />
         </form>
