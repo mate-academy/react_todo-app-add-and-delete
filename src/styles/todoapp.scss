@@ -122,6 +122,11 @@
     -webkit-font-smoothing: antialiased;
     -moz-osx-font-smoothing: grayscale;
 
+    &:disabled {
+      opacity: 0;
+      cursor: default;
+    }
+
     &:hover {
       text-decoration: underline;
     }
