@@ -1,6 +1,6 @@
 import React from 'react';
 import classNames from 'classnames';
-import { CSSTransition } from 'react-transition-group';
+import { CSSTransition, TransitionGroup } from 'react-transition-group';
 import { Todo } from '../../types/Todo';
 import { TempTodo } from '../TempTodo';
 
@@ -16,7 +16,7 @@ export const Todos: React.FC<Props> = ({
   todos, newTodoTitle, isTodoAdded, removeTodo, deleteTodosId,
 }) => {
   return (
-    <>
+    <TransitionGroup>
       {todos?.map(todo => (
         <CSSTransition
           key={todo.id}
@@ -68,6 +68,6 @@ export const Todos: React.FC<Props> = ({
           <TempTodo title={newTodoTitle} />
         </CSSTransition>
       ) }
-    </>
+    </TransitionGroup>
   );
 };

@@ -1,15 +1,11 @@
-import React, {
-  useEffect, useState, useMemo, useRef,
-} from 'react';
-import { TransitionGroup } from 'react-transition-group';
-
+import React, { useEffect, useState, useMemo } from 'react';
 import { UserWarning } from './UserWarning';
 import { Header } from './components/Header';
 import { Todos } from './components/Todos';
 import { Footer } from './components/Footer';
 import { Notification } from './components/Notification';
 
-import { getTodos, postTodos, deleteTodos } from './api/todos';
+import { getTodos, postTodos, deleteTodo } from './api/todos';
 
 import { Todo } from './types/Todo';
 import { FilteredBy } from './types/FilteredBy';
@@ -26,7 +22,6 @@ export const App: React.FC = () => {
   const [isTodoAdded, setTodoAdded] = useState(false);
   const [newTodoTitle, setNewTodoTitle] = useState('');
   const [deleteTodosId, setDeleteTodosId] = useState<number[]>([]);
-  const timerId = useRef(0);
   const newTodo = {
     id: 0,
     title: newTodoTitle,
@@ -34,24 +29,13 @@ export const App: React.FC = () => {
     completed: false,
   };
 
-  function showError(
-    targetSetFunction: React.Dispatch<React.SetStateAction<boolean>>,
-  ) {
-    targetSetFunction(true);
-    timerId.current = window.setTimeout(() => {
-      targetSetFunction(false);
-    }, 3000);
-  }
-
   async function getTodoList() {
-    setLoadingError(false);
-
     try {
       const todoList = await getTodos(USER_ID);
 
       setTodos(todoList);
     } catch (error) {
-      showError(setLoadingError);
+      setLoadingError(true);
     }
   }
 
@@ -74,12 +58,12 @@ export const App: React.FC = () => {
 
         setNewTodoTitle('');
       } catch (error) {
-        showError(setAddTodoError);
+        setAddTodoError(true);
       } finally {
         setTodoAdded(false);
       }
     } else {
-      showError(setTitleEmpty);
+      setTitleEmpty(true);
     }
   };
 
@@ -92,10 +76,10 @@ export const App: React.FC = () => {
       setDeleteTodosId(currIds => {
         return [...currIds, deletedTodo?.id || 0];
       });
-      await deleteTodos(deletedTodo?.id || 0);
+      await deleteTodo(deletedTodo?.id || 0);
       setTodos(todos?.filter(todo => todo.id !== +targetId) || null);
     } catch (error) {
-      showError(setTodoDeleteError);
+      setTodoDeleteError(true);
     } finally {
       setDeleteTodosId((currIds: number[]) => {
         return currIds.filter((id: number) => id !== targetId);
@@ -109,7 +93,7 @@ export const App: React.FC = () => {
 
     todos?.forEach(todo => {
       if (todo.completed) {
-        todosForDeleting.push(deleteTodos(todo.id));
+        todosForDeleting.push(deleteTodo(todo.id));
         completedTodoIds.push(todo.id);
       }
     });
@@ -122,7 +106,7 @@ export const App: React.FC = () => {
 
       setTodos(todos?.filter(todo => !todo.completed) || null);
     } catch (error) {
-      showError(setTodoDeleteError);
+      setTodoDeleteError(true);
     } finally {
       setDeleteTodosId([]);
     }
@@ -161,12 +145,24 @@ export const App: React.FC = () => {
     setAddTodoError(false);
     setTodoDeleteError(false);
     setTitleEmpty(false);
-    window.clearTimeout(timerId.current);
   };
 
   useEffect(() => {
     getTodoList();
   }, []);
+
+  useEffect(() => {
+    const timer = window.setTimeout(() => {
+      setLoadingError(false);
+      setTitleEmpty(false);
+      setAddTodoError(false);
+      setTodoDeleteError(false);
+    }, 3000);
+
+    return () => {
+      window.clearTimeout(timer);
+    };
+  }, [isLoadingError, isTitleEmpty, isAddTodoError, isTodoDeleteError]);
 
   if (!USER_ID) {
     return <UserWarning />;
@@ -187,15 +183,13 @@ export const App: React.FC = () => {
         {!!todos?.length && (
           <>
             <section className="todoapp__main" data-cy="TodoList">
-              <TransitionGroup>
-                <Todos
-                  todos={visibleTodos}
-                  newTodoTitle={newTodoTitle}
-                  isTodoAdded={isTodoAdded}
-                  removeTodo={removeTodo}
-                  deleteTodosId={deleteTodosId}
-                />
-              </TransitionGroup>
+              <Todos
+                todos={visibleTodos}
+                newTodoTitle={newTodoTitle}
+                isTodoAdded={isTodoAdded}
+                removeTodo={removeTodo}
+                deleteTodosId={deleteTodosId}
+              />
             </section>
 
             <Footer
