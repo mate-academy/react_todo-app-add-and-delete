@@ -5,10 +5,11 @@ type Props = {
   newTodoTitle: string;
   handleInput: (event: React.ChangeEvent<HTMLInputElement>) => void;
   postNewTodo: (event: React.FormEvent<HTMLFormElement>) => void;
+  isTodoAdded: boolean;
 };
 
 export const Header: React.FC<Props> = ({
-  newTodoTitle, handleInput, postNewTodo,
+  newTodoTitle, handleInput, postNewTodo, isTodoAdded,
 }) => {
   return (
     <header className="todoapp__header">
@@ -22,6 +23,7 @@ export const Header: React.FC<Props> = ({
           placeholder="What needs to be done?"
           value={newTodoTitle}
           onChange={handleInput}
+          disabled={isTodoAdded}
         />
       </form>
     </header>

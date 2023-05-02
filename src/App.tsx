@@ -1,6 +1,7 @@
 import React, {
   useEffect, useState, useMemo, useRef,
 } from 'react';
+import { TransitionGroup } from 'react-transition-group';
 
 import { UserWarning } from './UserWarning';
 import { Header } from './components/Header';
@@ -17,10 +18,7 @@ const USER_ID = 9964;
 
 export const App: React.FC = () => {
   const [todos, setTodos] = useState<Todo[] | null>(null);
-  const [isDataLoaded, setDataLoaded] = useState(false);
   const [filteredBy, setFilteredBy] = useState<FilteredBy>(FilteredBy.All);
-  const [isCompletedPresent, setCompletedPresent] = useState(false);
-  const [isErrorPresent, setErrorPresent] = useState(false);
   const [isLoadingError, setLoadingError] = useState(false);
   const [isAddTodoError, setAddTodoError] = useState(false);
   const [isTodoDeleteError, setTodoDeleteError] = useState(false);
@@ -30,6 +28,7 @@ export const App: React.FC = () => {
   const [deleteTodosId, setDeleteTodosId] = useState<number[]>([]);
   const timerId = useRef(0);
   const newTodo = {
+    id: 0,
     title: newTodoTitle,
     userId: USER_ID,
     completed: false,
@@ -39,26 +38,20 @@ export const App: React.FC = () => {
     targetSetFunction: React.Dispatch<React.SetStateAction<boolean>>,
   ) {
     targetSetFunction(true);
-    setErrorPresent(true);
     timerId.current = window.setTimeout(() => {
-      setErrorPresent(false);
       targetSetFunction(false);
     }, 3000);
   }
 
   async function getTodoList() {
-    setDataLoaded(false);
     setLoadingError(false);
 
     try {
       const todoList = await getTodos(USER_ID);
 
       setTodos(todoList);
-      setCompletedPresent(todoList.some(todo => todo.completed));
     } catch (error) {
       showError(setLoadingError);
-    } finally {
-      setDataLoaded(true);
     }
   }
 
@@ -78,6 +71,8 @@ export const App: React.FC = () => {
 
           return todo;
         });
+
+        setNewTodoTitle('');
       } catch (error) {
         showError(setAddTodoError);
       } finally {
@@ -88,9 +83,8 @@ export const App: React.FC = () => {
     }
   };
 
-  const removeTodo = async (event: React.MouseEvent<HTMLButtonElement>) => {
-    const targetId = event.currentTarget.parentElement?.id || 0;
-    const deletedTodo = todos?.find(todo => todo.id === +targetId);
+  const removeTodo = async (targetId: number) => {
+    const deletedTodo = todos?.find(todo => todo.id === targetId);
 
     setTodoDeleteError(false);
 
@@ -132,8 +126,6 @@ export const App: React.FC = () => {
     } finally {
       setDeleteTodosId([]);
     }
-
-    setCompletedPresent(false);
   };
 
   const visibleTodos = useMemo(() => {
@@ -156,10 +148,6 @@ export const App: React.FC = () => {
     }
   }, [filteredBy, todos]);
 
-  useEffect(() => {
-    getTodoList();
-  }, []);
-
   const setFilter = (value: FilteredBy) => {
     setFilteredBy(value);
   };
@@ -169,13 +157,16 @@ export const App: React.FC = () => {
   };
 
   const removeNotification = () => {
-    setErrorPresent(false);
     setLoadingError(false);
     setAddTodoError(false);
     setTodoDeleteError(false);
     setTitleEmpty(false);
     window.clearTimeout(timerId.current);
   };
+
+  useEffect(() => {
+    getTodoList();
+  }, []);
 
   if (!USER_ID) {
     return <UserWarning />;
@@ -190,25 +181,28 @@ export const App: React.FC = () => {
           newTodoTitle={newTodoTitle}
           handleInput={handleInput}
           postNewTodo={postNewTodo}
+          isTodoAdded={isTodoAdded}
         />
 
-        {!!todos?.length && isDataLoaded && (
+        {!!todos?.length && (
           <>
             <section className="todoapp__main" data-cy="TodoList">
-              <Todos
-                todos={visibleTodos}
-                newTodoTitle={newTodoTitle}
-                isTodoAdded={isTodoAdded}
-                removeTodo={removeTodo}
-                deleteTodosId={deleteTodosId}
-              />
+              <TransitionGroup>
+                <Todos
+                  todos={visibleTodos}
+                  newTodoTitle={newTodoTitle}
+                  isTodoAdded={isTodoAdded}
+                  removeTodo={removeTodo}
+                  deleteTodosId={deleteTodosId}
+                />
+              </TransitionGroup>
             </section>
 
             <Footer
               setFilter={setFilter}
               filteredBy={filteredBy}
               todoAmount={todos?.length}
-              isCompletedPresent={isCompletedPresent}
+              isCompletedPresent={todos.some(todo => todo.completed)}
               clearCompleted={clearCompleted}
             />
           </>
@@ -216,7 +210,6 @@ export const App: React.FC = () => {
       </div>
 
       <Notification
-        isErrorPresent={isErrorPresent}
         isLoadingError={isLoadingError}
         isAddTodoError={isAddTodoError}
         isTodoDeleteError={isTodoDeleteError}

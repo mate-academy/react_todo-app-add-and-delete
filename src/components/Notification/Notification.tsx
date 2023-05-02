@@ -3,7 +3,6 @@ import React from 'react';
 import classNames from 'classnames';
 
 type Props = {
-  isErrorPresent: boolean;
   isLoadingError: boolean;
   isAddTodoError: boolean;
   isTodoDeleteError: boolean;
@@ -12,13 +11,15 @@ type Props = {
 };
 
 export const Notification: React.FC<Props> = ({
-  isErrorPresent,
   isLoadingError,
   isAddTodoError,
   isTodoDeleteError,
   isTitleEmpty,
   removeNotification,
 }) => {
+  const isErrorPresent = isTitleEmpty || isLoadingError
+  || isAddTodoError || isTodoDeleteError;
+
   return (
     <div
       className={classNames(
