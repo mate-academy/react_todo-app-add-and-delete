@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import classNames from 'classnames';
 
 type Props = {
@@ -16,10 +16,19 @@ export const Error: React.FC<Props> = ({
   inputState,
   disableErrorHandling,
 }) => {
-  const isHidden = !getDataError
-  && !postDataError
-  && !deleteDataError
-  && !inputState;
+  const [timerId, setTimerId] = useState<NodeJS.Timeout | null>(null);
+
+  useEffect(() => {
+    const id = setTimeout(() => disableErrorHandling(), 3000);
+
+    setTimerId(id);
+
+    return () => {
+      if (timerId) {
+        clearTimeout(timerId);
+      }
+    };
+  }, []);
 
   return (
     <div className={classNames(
@@ -27,14 +36,19 @@ export const Error: React.FC<Props> = ({
       'is-danger',
       'is-light',
       'has-text-weight-normal',
-      { hidden: isHidden },
     )}
     >
       <button
         type="button"
         className="delete"
         aria-label="delete"
-        onClick={() => disableErrorHandling()}
+        onClick={() => {
+          if (timerId) {
+            clearTimeout(timerId);
+          }
+
+          disableErrorHandling();
+        }}
       />
 
       {getDataError && 'Error, can\'t get todos from server'}

@@ -33,30 +33,6 @@ export const App: React.FC = () => {
   const [tempTodo, setTempTodo] = useState<string | null>(null);
   const [isClearAllCompleted, setClearAllCompleted] = useState(false);
 
-  const handleErrorState = (
-    setErrorFunc: (state: boolean) => void,
-    state = true,
-  ) => {
-    setErrorFunc(state);
-
-    let timerId: NodeJS.Timeout | null = null;
-
-    const startTimer = () => {
-      timerId = setTimeout(() => {
-        handleErrorState(setErrorFunc, !state);
-      }, 3000);
-    };
-
-    if (!state) {
-      if (timerId) {
-        clearTimeout(timerId);
-        timerId = null;
-      }
-    } else if (!timerId) {
-      startTimer();
-    }
-  };
-
   const disableErrorHandling = () => {
     setGetError(false);
     setPostError(false);
@@ -70,7 +46,7 @@ export const App: React.FC = () => {
         setTodos(result);
       })
       .catch(() => {
-        handleErrorState(setGetError);
+        setGetError(true);
       });
   };
 
@@ -114,14 +90,14 @@ export const App: React.FC = () => {
 
     if (key === 'Enter') {
       if (!inputValue) {
-        handleErrorState(setEmptyInputState);
+        setEmptyInputState(true);
       } else {
         setLockInput(true);
         setTempTodo(inputValue);
 
         postTodos(USER_ID, inputValue)
           .catch(() => {
-            handleErrorState(setPostError);
+            setPostError(true);
           })
           .finally(() => {
             setLockInput(false);
@@ -178,7 +154,6 @@ export const App: React.FC = () => {
                 <Todo
                   todoItem={todo}
                   setDeleteError={setDeleteError}
-                  handleErrorState={handleErrorState}
                   todosGetter={todosGetter}
                   isClearAllCompleted={isClearAllCompleted}
                   key={todo.id}
@@ -214,13 +189,15 @@ export const App: React.FC = () => {
         )}
       </div>
 
-      <Error
-        getDataError={isGetError}
-        postDataError={isPostError}
-        deleteDataError={isDeleteError}
-        inputState={isInputEmpty}
-        disableErrorHandling={disableErrorHandling}
-      />
+      {(isGetError || isPostError || isDeleteError || isInputEmpty) && (
+        <Error
+          getDataError={isGetError}
+          postDataError={isPostError}
+          deleteDataError={isDeleteError}
+          inputState={isInputEmpty}
+          disableErrorHandling={disableErrorHandling}
+        />
+      )}
     </div>
   );
 };

@@ -6,10 +6,6 @@ import { deleteTodos } from '../../api/todos';
 type Props = {
   todoItem: TodoType
   setDeleteError: (errorState: boolean) => void;
-  handleErrorState:(
-    secondFunction: (state: boolean) => void,
-    state: boolean,
-  ) => void;
   todosGetter: () => void,
   isClearAllCompleted: boolean;
 };
@@ -18,7 +14,6 @@ export const Todo: React.FC<Props>
 = ({
   todoItem,
   setDeleteError,
-  handleErrorState,
   todosGetter,
   isClearAllCompleted,
 }) => {
@@ -34,7 +29,7 @@ export const Todo: React.FC<Props>
         setLoading(false);
       })
       .catch(() => {
-        handleErrorState(setDeleteError, true);
+        setDeleteError(true);
       })
       .finally(() => {
         setLoading(false);
