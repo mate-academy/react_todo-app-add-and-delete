@@ -82,14 +82,14 @@ export const App: React.FC = () => {
   const formInputHandler = (event: React.ChangeEvent<HTMLInputElement>) => {
     const { value } = event.currentTarget;
 
-    setInputValue(value.trim());
+    setInputValue(value);
   };
 
   const postTodoToServer = (event: React.KeyboardEvent<HTMLInputElement>) => {
     const { key } = event.nativeEvent;
 
     if (key === 'Enter') {
-      if (!inputValue) {
+      if (!inputValue.trim()) {
         setEmptyInputState(true);
       } else {
         setLockInput(true);
