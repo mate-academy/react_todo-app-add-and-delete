@@ -81,6 +81,7 @@ export const App: React.FC = () => {
 
       setNewTodo(tempTodo);
       setIsLoading(false);
+      setTodoTitle('');
     } catch {
       handleError(Error.ADD);
     }
