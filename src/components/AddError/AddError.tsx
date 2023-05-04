@@ -6,7 +6,7 @@ type Props = {
 };
 
 export const AddError: React.FC<Props> = ({ error }) => {
-  const [closeError, setCloseError] = useState(false);
+  const [isCloseError, setIsCloseError] = useState(false);
 
   return (
     <div className={cn(
@@ -14,14 +14,14 @@ export const AddError: React.FC<Props> = ({ error }) => {
       'is-danger',
       'is-light',
       'has-text-weight-normal',
-      { hidden: !closeError },
+      { hidden: !isCloseError },
     )}
     >
       <button
         type="button"
         className="delete"
         aria-label="Close"
-        onClick={() => setCloseError(true)}
+        onClick={() => setIsCloseError(true)}
       />
 
       {error}

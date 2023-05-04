@@ -1,16 +1,21 @@
 import cn from 'classnames';
 import React, { useState } from 'react';
+import { Todo } from '../../types/Todo';
 
 type Props = {
-  disInput: boolean,
+  isDisableInput: boolean,
   setError: (title: string) => void,
   handleAddTodo: (title: string) => Promise<void>,
+  handleToggleAll: () => void,
+  completedTodos: Todo,
 };
 
 export const AddInput: React.FC<Props> = React.memo(({
   setError,
   handleAddTodo,
-  disInput,
+  isDisableInput,
+  handleToggleAll,
+  completedTodos,
 }) => {
   const [input, setInput] = useState('');
 
@@ -37,7 +42,9 @@ export const AddInput: React.FC<Props> = React.memo(({
         aria-label="All"
         className={cn(
           'todoapp__toggle-all',
+          { active: completedTodos },
         )}
+        onClick={handleToggleAll}
       />
 
       <form
@@ -48,8 +55,8 @@ export const AddInput: React.FC<Props> = React.memo(({
           className="todoapp__new-todo"
           placeholder="What needs to be done?"
           value={input}
+          disabled={isDisableInput}
           onChange={e => setInput(e.target.value)}
-          disabled={disInput}
         />
       </form>
     </header>
