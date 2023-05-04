@@ -10,7 +10,7 @@ import {
   getTodo,
   deleteTodo,
   postTodo,
-  updateTodo,
+  // updateTodo,
 } from './api/todos';
 import { TodoItem } from './components/TodoItem';
 import { createTitle } from './utils/helpers';
@@ -24,8 +24,8 @@ export const App: React.FC = () => {
   const [tempTodo, setTempTodo] = useState<Todo | null>(null);
   const [isDisableInput, setIsDisableInput] = useState<boolean>(false);
   const [isLoading, setIsLoading] = useState<boolean>(true);
-  const completedTodos = todos.every(todo => todo.completed);
-  const activeTodos = todos.filter(todo => !todo.completed);
+  // const completedTodos = todos.every(todo => todo.completed);
+  // const activeTodos = todos.filter(todo => !todo.completed);
 
   const fetchData = async () => {
     const todosFromServer = await getTodo(USER_ID);
@@ -94,7 +94,7 @@ export const App: React.FC = () => {
     }
   };
 
-// Im working here
+  // Im working here
 
   // const handleToggleAll = async () => {
   //   if (completedTodos) {
@@ -139,14 +139,14 @@ export const App: React.FC = () => {
               isDisableInput={isDisableInput}
               handleAddTodo={handleAddTodo}
               setError={setError}
-              handleToggleAll={handleToggleAll}
-              completedTodos={completedTodos}
+              // handleToggleAll={handleToggleAll}
+              // completedTodos={completedTodos}
             />
 
             <TodoList
               todos={filterTodo}
               handleDeleteTodo={handleDeleteTodo}
-              handleUpdateTodo={handleUpdateTodo}
+              // handleUpdateTodo={handleUpdateTodo}
             />
             {tempTodo && (
               <TodoItem

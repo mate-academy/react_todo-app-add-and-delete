@@ -5,13 +5,13 @@ import { Todo } from '../../types/Todo';
 type Props = {
   todo: Todo;
   handleDeleteTodo: (id: number) => void,
-  handleUpdateTodo: (id: number, data: Partial<Todo>) => Promise<void>,
+  // handleUpdateTodo: (id: number, data: Partial<Todo>) => Promise<void>,
 };
 
 export const TodoItem: React.FC<Props> = ({
   todo,
   handleDeleteTodo,
-  handleUpdateTodo,
+  // handleUpdateTodo,
 }) => {
   const { title, completed, id } = todo;
 
