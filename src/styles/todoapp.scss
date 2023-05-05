@@ -80,6 +80,7 @@
 
   &__main {
     border-top: 1px solid #e6e6e6;
+    list-style: none;
   }
 
   &__footer {
@@ -129,5 +130,9 @@
     &:active {
       text-decoration: none;
     }
+  }
+
+  &__clear-completed.hidden {
+    visibility: hidden;
   }
 }
