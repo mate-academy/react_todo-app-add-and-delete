@@ -4,7 +4,7 @@ import classNames from 'classnames';
 interface Props {
   query: string;
   isQueryDisabled: boolean;
-  filteredTodosLength?: number;
+  filteredTodosLength: number;
   handleQueryChange: (value: string) => void;
   isEveryTodoCompleted: boolean;
   handleSubmit: (e: React.FormEvent<HTMLFormElement>) => void;
@@ -20,7 +20,7 @@ export const Header: React.FC<Props> = ({
 }) => {
   return (
     <header className="todoapp__header">
-      {(filteredTodosLength !== undefined && filteredTodosLength > 0) && (
+      {(filteredTodosLength > 0) && (
         <button
           type="button"
           aria-label="ToggleAll"

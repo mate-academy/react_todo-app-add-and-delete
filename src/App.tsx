@@ -17,7 +17,7 @@ import { getTodos, post, remove } from './api/todos';
 const USER_ID = 10217;
 
 export const App: React.FC = () => {
-  const [todos, setTodos] = useState<Todo[] | null>(null);
+  const [todos, setTodos] = useState<Todo[]>([]);
   const [tempTodo, setTempTodo] = useState<Todo[]>([]);
   const [query, setQuery] = useState<string>('');
   const [isLoading, setIsLoading] = useState<boolean>(false);
@@ -40,7 +40,7 @@ export const App: React.FC = () => {
   }, []);
 
   const filteredTodos = useMemo(() => (
-    todos?.filter(todo => {
+    todos.filter(todo => {
       switch (filterBy) {
         case FilterBy.ACTIVE:
           return !todo.completed;
@@ -55,15 +55,15 @@ export const App: React.FC = () => {
   ), [todos, filterBy]);
 
   const isSomeTodoCompleted = useMemo(() => (
-    todos?.some(todo => todo.completed) || false
+    todos.some(todo => todo.completed) || false
   ), [filteredTodos]);
 
   const isEveryTodoCompleted = useMemo(() => (
-    filteredTodos?.every(todo => todo.completed) || false
+    filteredTodos.every(todo => todo.completed) || false
   ), [filteredTodos]);
 
   const counter = useMemo(() => (
-    todos?.filter(todo => !todo.completed).length || 0
+    todos.filter(todo => !todo.completed).length || 0
   ), [filteredTodos]);
 
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
@@ -135,7 +135,7 @@ export const App: React.FC = () => {
         <Header
           query={query}
           isQueryDisabled={isQueryDisabled}
-          filteredTodosLength={filteredTodos?.length}
+          filteredTodosLength={filteredTodos.length}
           handleQueryChange={handleQueryChange}
           isEveryTodoCompleted={isEveryTodoCompleted}
           handleSubmit={handleSubmit}
@@ -146,7 +146,7 @@ export const App: React.FC = () => {
             <Loader />
           )
         ) : (
-          (filteredTodos && (
+          (!!filteredTodos.length && (
             <TodosList
               todos={filteredTodos}
               handleRemove={handleRemove}
@@ -154,7 +154,7 @@ export const App: React.FC = () => {
           ))
         )}
 
-        {!!todos?.length && (
+        {!!todos.length && (
           <Footer
             filterBy={filterBy}
             isSomeTodoCompleted={isSomeTodoCompleted}
