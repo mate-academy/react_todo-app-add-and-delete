@@ -63,20 +63,20 @@ export const App: React.FC = () => {
     e.preventDefault();
     setIsQueryDisabled(true);
 
+    const newTodo = {
+      userId: USER_ID,
+      title: query,
+      completed: false,
+    };
+
+    setTempTodo({ ...newTodo, id: 0 });
+
     if (query.trim().length) {
-      const newTodo = {
-        userId: USER_ID,
-        title: query,
-        completed: false,
-      };
-
-      setTempTodo({ ...newTodo, id: 0 });
-
       try {
-        await post(USER_ID, query);
+        const newTodoFromServer = await post(USER_ID, query);
 
+        setTodos(currTodos => [...currTodos, newTodoFromServer]);
         setQuery('');
-        loadData();
       } catch (errorFromServer) {
         setError(ErrorType.POST);
       } finally {
@@ -87,6 +87,7 @@ export const App: React.FC = () => {
     }
 
     setIsQueryDisabled(false);
+    setTempTodo(null);
   };
 
   const handleRemove = async (todoId: number | number[]) => {
