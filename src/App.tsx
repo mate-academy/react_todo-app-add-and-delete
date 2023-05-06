@@ -57,7 +57,10 @@ export const App: React.FC = () => {
   const clearCompletedTodos = () => {
     const completeTodos = todos.filter(todo => todo.completed);
 
-    return completeTodos.map(todo => deleteTodo(todo.id));
+    return completeTodos
+      .map(todo => deleteTodo(todo.id)
+        .catch(() => setError(TodoErrors.Delete))
+    );
   };
 
   const itemsLeft = todos.filter(todo => !todo.completed).length;
