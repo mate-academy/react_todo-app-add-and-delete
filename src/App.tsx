@@ -7,7 +7,6 @@ import { Footer } from './components/Footer';
 import { FilterBy } from './utils/Enums/FilterBy';
 import { Header } from './components/Header';
 import { ErrorType } from './utils/Enums/ErrorType';
-import { Loader } from './components/Loader';
 
 import { Todo } from './types/Todo';
 import { FilterByType } from './types/FilterBy';
@@ -18,26 +17,20 @@ const USER_ID = 10217;
 
 export const App: React.FC = () => {
   const [todos, setTodos] = useState<Todo[]>([]);
-  const [tempTodo, setTempTodo] = useState<Todo[]>([]);
+  const [tempTodo, setTempTodo] = useState<Todo | null>(null);
   const [query, setQuery] = useState<string>('');
-  const [isLoading, setIsLoading] = useState<boolean>(false);
   const [isQueryDisabled, setIsQueryDisabled] = useState<boolean>(false);
   const [filterBy, setFilterBy] = useState<FilterByType>(FilterBy.ALL);
   const [error, setError] = useState<ErrorType>(ErrorType.INITIAL);
+  const [processedIds, setProcessedIds] = useState<number[]>([]);
 
   const loadData = () => {
-    setIsLoading(true);
     getTodos(USER_ID)
       .then(todosFromServer => setTodos(todosFromServer))
       .catch(() => {
         setError(ErrorType.GET);
-      })
-      .finally(() => setIsLoading(false));
+      });
   };
-
-  useEffect(() => {
-    loadData();
-  }, []);
 
   const filteredTodos = useMemo(() => (
     todos.filter(todo => {
@@ -68,17 +61,26 @@ export const App: React.FC = () => {
 
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
-    setQuery('');
     setIsQueryDisabled(true);
 
     if (query.trim().length) {
-      try {
-        const newTodo = await post(USER_ID, query);
+      const newTodo = {
+        userId: USER_ID,
+        title: query,
+        completed: false,
+      };
 
+      setTempTodo({ ...newTodo, id: 0 });
+
+      try {
+        await post(USER_ID, query);
+
+        setQuery('');
         loadData();
-        setTempTodo([...tempTodo, { ...newTodo, id: 0 }]);
       } catch (errorFromServer) {
         setError(ErrorType.POST);
+      } finally {
+        setTempTodo(null);
       }
     } else {
       setError(ErrorType.QUERY);
@@ -87,17 +89,21 @@ export const App: React.FC = () => {
     setIsQueryDisabled(false);
   };
 
-  const handleRemove = async (id: number | number[]) => {
+  const handleRemove = async (todoId: number | number[]) => {
     try {
-      if (typeof id === 'number') {
-        await remove(id);
+      if (typeof todoId === 'number') {
+        setProcessedIds(currIds => [...currIds, todoId]);
+        await remove(todoId);
       } else {
-        await Promise.all(id.map(remove));
+        setProcessedIds(todoId);
+        await Promise.all(todoId.map(remove));
       }
 
       loadData();
     } catch (errorFromServer) {
       setError(ErrorType.DELETE);
+    } finally {
+      setProcessedIds(currIds => currIds.filter(id => id !== todoId));
     }
   };
 
@@ -117,12 +123,16 @@ export const App: React.FC = () => {
 
   const handleClear = () => {
     if (todos) {
-      const idOfCompletedTodos
+      const idsOfCompletedTodos
         = todos.filter(todo => todo.completed).map(todo => todo.id);
 
-      handleRemove(idOfCompletedTodos);
+      handleRemove(idsOfCompletedTodos);
     }
   };
+
+  useEffect(() => {
+    loadData();
+  }, []);
 
   if (!USER_ID) {
     return <UserWarning />;
@@ -141,18 +151,12 @@ export const App: React.FC = () => {
           handleSubmit={handleSubmit}
         />
 
-        {isLoading ? (
-          (!error) && (
-            <Loader />
-          )
-        ) : (
-          (!!filteredTodos.length && (
-            <TodosList
-              todos={filteredTodos}
-              handleRemove={handleRemove}
-            />
-          ))
-        )}
+        <TodosList
+          todos={filteredTodos}
+          handleRemove={handleRemove}
+          tempTodo={tempTodo}
+          processedIds={processedIds}
+        />
 
         {!!todos.length && (
           <Footer
