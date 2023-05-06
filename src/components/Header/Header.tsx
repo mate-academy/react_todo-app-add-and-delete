@@ -37,7 +37,6 @@ export const Header: React.FC<Props> = ({
           placeholder="What needs to be done?"
           value={query}
           readOnly={isQueryDisabled}
-          
           onChange={(e) => handleQueryChange(e.target.value)}
         />
       </form>
