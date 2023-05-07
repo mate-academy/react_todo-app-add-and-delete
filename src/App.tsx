@@ -68,6 +68,8 @@ export const App: React.FC = () => {
 
     return completeTodos
       .map(todo => deleteTodo(todo.id)
+        .then(() => setTodos(filtredTodos => filtredTodos
+          .filter(filtrTodo => !filtrTodo.completed)))
         .catch(() => setError(TodoErrors.Delete)));
   };
 
