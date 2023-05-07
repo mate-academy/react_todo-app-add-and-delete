@@ -35,7 +35,7 @@ export const TodoItem: React.FC<Props> = ({ todo, onDelete, deletedId }) => {
         ×
       </button>
 
-      <div className={`modal overlay ${todo.id !== null && deletedId === todo.id ? 'is-active' : ''}`}>
+      <div className={`modal overlay ${todo.id === 0 || deletedId === todo.id ? 'is-active' : ''}`}>
         <div className="modal-background has-background-white-ter" />
         <div className="loader" />
       </div>

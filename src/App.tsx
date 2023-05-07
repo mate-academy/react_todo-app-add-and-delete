@@ -45,8 +45,6 @@ export const App: React.FC = () => {
         completed: false,
         userId: USER_ID,
       });
-
-      setIsProcessed(true);
       createTodo(USER_ID, title)
         .then((todo) => {
           if (todo) {
@@ -61,6 +59,7 @@ export const App: React.FC = () => {
           setIsProcessed(false);
           setTitle('');
         });
+      setIsProcessed(true);
     }
   };
 
