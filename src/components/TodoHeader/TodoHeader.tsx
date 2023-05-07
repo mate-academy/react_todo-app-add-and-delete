@@ -1,4 +1,4 @@
-import React, { KeyboardEventHandler } from 'react';
+import React from 'react';
 import classnames from 'classnames';
 
 interface Props {
@@ -6,7 +6,7 @@ interface Props {
   title: string
   isProcessed: boolean
   onAddTitle: (value: string) => void
-  onAddTodo: KeyboardEventHandler<HTMLInputElement>
+  onAddTodo: (event: React.FormEvent<HTMLFormElement>) => void
 }
 
 export const TodoHeader: React.FC<Props> = ({
@@ -23,14 +23,13 @@ export const TodoHeader: React.FC<Props> = ({
         aria-label="button-toggle-all"
       />
 
-      <form>
+      <form onSubmit={onAddTodo}>
         <input
           type="text"
           className="todoapp__new-todo"
           placeholder="What needs to be done?"
           value={title}
           onChange={(event) => onAddTitle(event.target.value)}
-          onKeyUp={onAddTodo}
           disabled={isProcessed}
         />
       </form>

@@ -28,29 +28,34 @@ export const App: React.FC = () => {
       .catch(() => setError(TodoErrors.Delete));
   };
 
-  const createTodoHandler = (event: React.KeyboardEvent<HTMLInputElement>) => {
-    if (event.key === 'Enter') {
-      if (!title.trim()) {
-        setError(TodoErrors.Empty);
-      } else {
-        setTempTodo({
-          id: 0,
-          title,
-          completed: false,
-          userId: USER_ID,
-        });
+  const createTodoHandler = (event: React.FormEvent<HTMLFormElement>) => {
+    event.preventDefault();
 
-        createTodo(USER_ID, title)
-          .then(() => setTempTodo(null))
-          .catch(() => {
-            setError(TodoErrors.Add);
-          })
-          .finally(() => {
-            setIsProcessed(false);
-            setTitle('');
-          });
-        setIsProcessed(true);
-      }
+    if (!title.trim()) {
+      setError(TodoErrors.Empty);
+    } else {
+      setTempTodo({
+        id: 0,
+        title,
+        completed: false,
+        userId: USER_ID,
+      });
+
+      setIsProcessed(true);
+      createTodo(USER_ID, title)
+        .then((todo) => {
+          if (todo) {
+            setTempTodo(null);
+            setTodos([...todos, todo]);
+          }
+        })
+        .catch(() => {
+          setError(TodoErrors.Add);
+        })
+        .finally(() => {
+          setIsProcessed(false);
+          setTitle('');
+        });
     }
   };
 
@@ -73,7 +78,7 @@ export const App: React.FC = () => {
       .catch(() => {
         setError(TodoErrors.Get);
       });
-  });
+  }, [deletedId]);
 
   useEffect(() => {
     let timeout: NodeJS.Timeout;
@@ -91,11 +96,11 @@ export const App: React.FC = () => {
 
   const filtredTodos = useMemo(() => {
     switch (status) {
-      case 'all':
+      case TodoStatus.All:
         return todos;
-      case 'active':
+      case TodoStatus.Active:
         return todos.filter((todo) => !todo.completed);
-      case 'completed':
+      case TodoStatus.Completed:
         return todos.filter((todo) => todo.completed);
       default:
         return todos;
