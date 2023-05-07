@@ -19,8 +19,11 @@ export const TodoForm: React.FC<Props> = ({
 
   return (
     <header className="todoapp__header">
-      {/* eslint-disable-next-line jsx-a11y/control-has-associated-label */}
-      <button type="button" className="todoapp__toggle-all active" />
+      <button
+        type="button"
+        className="todoapp__toggle-all active"
+        aria-label="toggle-all"
+      />
 
       <form
         onSubmit={onSubmit}

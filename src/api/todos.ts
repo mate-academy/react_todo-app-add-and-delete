@@ -12,5 +12,3 @@ export const addTodoToServer = (userId: number, data: Todo) => {
 export const removeTodo = (todoId: string) => {
   return client.delete(`/todos/${todoId}`);
 };
-
-// Add more methods here
