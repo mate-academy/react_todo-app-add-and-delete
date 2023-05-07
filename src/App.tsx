@@ -23,8 +23,13 @@ export const App: React.FC = () => {
   const [deletedId, setDeletedId] = useState<number | null>(null);
 
   const deleteTodoHandler = (todoId: number) => {
+    setDeletedId(todoId);
+
     deleteTodo(todoId)
-      .then(() => setDeletedId(todoId))
+      .then(() => {
+        setTodos(filtredTodos => filtredTodos
+          .filter(todo => todo.id !== todoId));
+      })
       .catch(() => setError(TodoErrors.Delete));
   };
 
@@ -78,7 +83,7 @@ export const App: React.FC = () => {
       .catch(() => {
         setError(TodoErrors.Get);
       });
-  }, [deletedId]);
+  }, []);
 
   useEffect(() => {
     let timeout: NodeJS.Timeout;
