@@ -1,27 +1,45 @@
-import { Dispatch, SetStateAction, useState } from 'react';
+import { Dispatch, SetStateAction } from 'react';
 import classNames from 'classnames';
 import { FilterBy } from '../types/FilterBy';
 
 interface Props {
   setFilterBy: Dispatch<SetStateAction<FilterBy>>,
   itemsQuantity: number,
+  filterBy: FilterBy,
 }
 
-export const TodoFooter: React.FC<Props> = ({ setFilterBy, itemsQuantity }) => {
-  const navItems = [
-    {
-      title: 'All',
-      id: 'ALL',
-    },
-    {
-      title: 'Active',
-      id: 'ACTIVE',
-    },
-    {
-      title: 'Completed',
-      id: 'COMPLETED',
-    }];
-  const [selectedType, setSelectedType] = useState('ALL');
+const navItems = [
+  {
+    title: 'All',
+    id: FilterBy.ALL,
+  },
+  {
+    title: 'Active',
+    id: FilterBy.ACTIVE,
+  },
+  {
+    title: 'Completed',
+    id: FilterBy.COMPLETED,
+  }];
+
+export const TodoFooter: React.FC<Props> = ({
+  setFilterBy, itemsQuantity, filterBy,
+}) => {
+  const onChangeFilter = (navItemId: FilterBy) => () => {
+    switch (navItemId) {
+      case FilterBy.ACTIVE:
+        setFilterBy(FilterBy.ACTIVE);
+        break;
+
+      case FilterBy.COMPLETED:
+        setFilterBy(FilterBy.COMPLETED);
+        break;
+
+      default:
+        setFilterBy(FilterBy.ALL);
+        break;
+    }
+  };
 
   return (
     <footer className="todoapp__footer">
@@ -37,27 +55,11 @@ export const TodoFooter: React.FC<Props> = ({ setFilterBy, itemsQuantity }) => {
             className={classNames(
               'filter__link',
               {
-                selected: selectedType === navItem.id,
+                selected: filterBy === navItem.id,
               },
             )}
             key={navItem.id}
-            onClick={() => {
-              switch (navItem.id) {
-                case FilterBy.ACTIVE:
-                  setFilterBy(FilterBy.ACTIVE);
-                  break;
-
-                case FilterBy.COMPLETED:
-                  setFilterBy(FilterBy.COMPLETED);
-                  break;
-
-                default:
-                  setFilterBy(FilterBy.ALL);
-                  break;
-              }
-
-              setSelectedType(navItem.id);
-            }}
+            onClick={onChangeFilter(navItem.id)}
           >
             {navItem.title}
           </a>

@@ -11,6 +11,20 @@ interface Props {
 export const TodoList: React.FC<Props> = ({
   todos, setError, setTodoWasDeleted,
 }) => {
+  const onClick = (todoId: number | undefined) => () => {
+    if (todoId) {
+      removeTodo(`${todoId}`)
+        .then(() => setTodoWasDeleted(true))
+        .catch((fetchedError) => {
+          setError(
+            fetchedError?.message
+              ? fetchedError.message
+              : 'Something went wrong',
+          );
+        });
+    }
+  };
+
   return (
     <section className="todoapp__main is-loading">
       {todos.map(todo => (
@@ -37,19 +51,7 @@ export const TodoList: React.FC<Props> = ({
           <button
             type="button"
             className="todo__remove"
-            onClick={() => {
-              if (todo.id) {
-                removeTodo(`${todo.id}`)
-                  .then(() => setTodoWasDeleted(true))
-                  .catch((fetchedError) => {
-                    setError(
-                      fetchedError?.message
-                        ? fetchedError.message
-                        : 'Something went wrong',
-                    );
-                  });
-              }
-            }}
+            onClick={onClick(todo.id)}
           >
             ×
           </button>

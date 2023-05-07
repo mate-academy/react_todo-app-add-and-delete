@@ -15,8 +15,24 @@ export const App: React.FC = () => {
   const [todos, setTodos] = useState<Todo[]>([]);
   const [error, setError] = useState<string | null>(null);
   const [filterBy, setFilterBy] = useState<FilterBy>(FilterBy.ALL);
-  const [title, setTitle] = useState<string | undefined>();
+  const [title, setTitle] = useState<string | undefined>('');
   const [todoWasDeleted, setTodoWasDeleted] = useState(false);
+  const [visibleTodos, setVisibleTodos] = useState<Todo[]>([]);
+
+  function getVisibleTodos(filterType: FilterBy) {
+    switch (filterType) {
+      case FilterBy.ACTIVE:
+        setVisibleTodos(todos.filter((todo: Todo) => !todo.completed));
+        break;
+
+      case FilterBy.COMPLETED:
+        setVisibleTodos(todos.filter((todo: Todo) => todo.completed));
+        break;
+
+      default:
+        setVisibleTodos(todos);
+    }
+  }
 
   useEffect(() => {
     getTodos(USER_ID)
@@ -35,7 +51,7 @@ export const App: React.FC = () => {
       });
   }, [todoWasDeleted === true]);
 
-  useEffect(() => {
+  const onAddTodo = () => {
     if (title) {
       addTodoToServer(USER_ID, {
         userId: USER_ID,
@@ -54,20 +70,9 @@ export const App: React.FC = () => {
           );
         });
     }
-  }, [title]);
+  };
 
-  function getFilterCallback(filterType: FilterBy) {
-    switch (filterType) {
-      case FilterBy.ACTIVE:
-        return (todo: Todo) => !todo.completed;
-
-      case FilterBy.COMPLETED:
-        return (todo: Todo) => todo.completed;
-
-      default:
-        return (todo: Todo) => !!todo.id;
-    }
-  }
+  useEffect(() => getVisibleTodos(filterBy), [filterBy]);
 
   if (!USER_ID) {
     return <UserWarning />;
@@ -78,18 +83,25 @@ export const App: React.FC = () => {
       <h1 className="todoapp__title">todos</h1>
 
       <div className="todoapp__content">
-        <TodoForm addTodo={setTitle} />
+        <TodoForm
+          setTitle={setTitle}
+          title={title}
+          onAdd={onAddTodo}
+        />
 
         {todos.length ? (
           <>
             <TodoList
-              todos={todos.filter(getFilterCallback(filterBy))}
+              todos={filterBy !== FilterBy.ALL ? visibleTodos : todos}
               setError={setError}
               setTodoWasDeleted={setTodoWasDeleted}
             />
             <TodoFooter
               setFilterBy={setFilterBy}
-              itemsQuantity={todos.filter(getFilterCallback(filterBy)).length}
+              itemsQuantity={filterBy !== FilterBy.ALL
+                ? visibleTodos.length
+                : todos.length}
+              filterBy={filterBy}
             />
           </>
         ) : null}

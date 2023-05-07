@@ -6,6 +6,8 @@ interface Props {
 }
 
 export const Notification: React.FC<Props> = ({ onClose, error }) => {
+  const onClick = () => onClose(null);
+
   return (
     <div
       className={classNames(
@@ -18,11 +20,11 @@ export const Notification: React.FC<Props> = ({ onClose, error }) => {
         },
       )}
     >
-      {/* eslint-disable-next-line jsx-a11y/control-has-associated-label */}
       <button
         type="button"
+        aria-label={error || ''}
         className="delete"
-        onClick={() => onClose(null)}
+        onClick={onClick}
       />
 
       {error}
