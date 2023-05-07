@@ -39,7 +39,6 @@ export const TodoItem: React.FC<Props> = ({ todo, onDelete, deletedId }) => {
         <div className="modal-background has-background-white-ter" />
         <div className="loader" />
       </div>
-
     </div>
   );
 };
