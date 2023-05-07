@@ -1,30 +1,21 @@
 import classNames from 'classnames';
 import { Todo } from '../types/Todo';
-import { removeTodo } from '../api/todos';
 
 interface Props {
   todos: Todo[],
-  setError: React.Dispatch<React.SetStateAction<string | null>>,
-  setTodoWasDeleted: React.Dispatch<React.SetStateAction<boolean>>
+  tempTodo: Todo | null,
+  idProcessed: number,
+  disableList: boolean,
+  onDelete: (todoId: number | undefined) => () => void,
 }
 
 export const TodoList: React.FC<Props> = ({
-  todos, setError, setTodoWasDeleted,
+  todos,
+  tempTodo,
+  idProcessed,
+  disableList,
+  onDelete,
 }) => {
-  const onClick = (todoId: number | undefined) => () => {
-    if (todoId) {
-      removeTodo(`${todoId}`)
-        .then(() => setTodoWasDeleted(true))
-        .catch((fetchedError) => {
-          setError(
-            fetchedError?.message
-              ? fetchedError.message
-              : 'Something went wrong',
-          );
-        });
-    }
-  };
-
   return (
     <section className="todoapp__main is-loading">
       {todos.map(todo => (
@@ -43,6 +34,7 @@ export const TodoList: React.FC<Props> = ({
             <input
               type="checkbox"
               className="todo__status"
+              disabled={disableList}
             />
           </label>
 
@@ -51,17 +43,58 @@ export const TodoList: React.FC<Props> = ({
           <button
             type="button"
             className="todo__remove"
-            onClick={onClick(todo.id)}
+            onClick={onDelete(todo.id)}
+            disabled={disableList}
           >
             ×
           </button>
 
-          <div className="modal overlay">
+          <div className={classNames('modal overlay', {
+            'is-active': idProcessed === todo.id,
+          })}
+          >
             <div className="modal-background has-background-white-ter" />
             <div className="loader" />
           </div>
         </div>
       ))}
+
+      {tempTodo !== null ? (
+        <div
+          className={classNames(
+            'todo',
+            {
+              completed: tempTodo.completed,
+            },
+          )}
+        >
+          <label
+            className="todo__status-label"
+          >
+            <input
+              type="checkbox"
+              className="todo__status"
+            />
+          </label>
+
+          <span className="todo__title">{tempTodo.title}</span>
+
+          <button
+            type="button"
+            className="todo__remove"
+          >
+            ×
+          </button>
+
+          <div className={classNames('modal overlay', {
+            'is-active': tempTodo.id === 0,
+          })}
+          >
+            <div className="modal-background has-background-white-ter" />
+            <div className="loader" />
+          </div>
+        </div>
+      ) : tempTodo}
     </section>
   );
 };

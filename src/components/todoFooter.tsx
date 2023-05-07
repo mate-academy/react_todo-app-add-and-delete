@@ -6,6 +6,8 @@ interface Props {
   setFilterBy: Dispatch<SetStateAction<FilterBy>>,
   itemsQuantity: number,
   filterBy: FilterBy,
+  onClear: () => Promise<void>,
+  completedLength: number,
 }
 
 const navItems = [
@@ -23,7 +25,11 @@ const navItems = [
   }];
 
 export const TodoFooter: React.FC<Props> = ({
-  setFilterBy, itemsQuantity, filterBy,
+  setFilterBy,
+  itemsQuantity,
+  filterBy,
+  onClear,
+  completedLength,
 }) => {
   const onChangeFilter = (navItemId: FilterBy) => () => {
     switch (navItemId) {
@@ -66,9 +72,15 @@ export const TodoFooter: React.FC<Props> = ({
         ))}
       </nav>
 
-      <button type="button" className="todoapp__clear-completed">
-        Clear completed
-      </button>
+      {completedLength ? (
+        <button
+          type="button"
+          className="todoapp__clear-completed"
+          onClick={onClear}
+        >
+          Clear completed
+        </button>
+      ) : null}
     </footer>
   );
 };
