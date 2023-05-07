@@ -1,24 +1,160 @@
-/* eslint-disable max-len */
 /* eslint-disable jsx-a11y/control-has-associated-label */
-import React from 'react';
+import React, { useState, useEffect, useMemo } from 'react';
 import { UserWarning } from './UserWarning';
+import { TodoHeader } from './components/TodoHeader/TodoHeader';
+import { TodoList } from './components/TodoList/TodoList';
+import { TodoFilter } from './components/TodoFilter/TodoFilter';
+import { Notification } from './components/Notification/Notification';
 
-const USER_ID = 0;
+import { Todo } from './types/Todo';
+import { TodoStatus } from './types/TodoStatus';
+import { TodoErrors } from './types/TodoErrors';
+import {
+  getTodos, USER_ID, createTodo, deleteTodo,
+} from './api/todos';
 
 export const App: React.FC = () => {
+  const [todos, setTodos] = useState<Todo[]>([]);
+  const [error, setError] = useState<TodoErrors | null>(null);
+  const [status, setStatus] = useState<TodoStatus>(TodoStatus.All);
+  const [title, setTitle] = useState<string>('');
+  const [tempTodo, setTempTodo] = useState<Todo | null>(null);
+  const [isProcessed, setIsProcessed] = useState<boolean>(false);
+  const [deletedId, setDeletedId] = useState<number | null>(null);
+
+  const deleteTodoHandler = (todoId: number) => {
+    setDeletedId(todoId);
+
+    deleteTodo(todoId)
+      .then(() => {
+        setTodos(filtredTodos => filtredTodos
+          .filter(todo => todo.id !== todoId));
+      })
+      .catch(() => setError(TodoErrors.Delete));
+  };
+
+  const createTodoHandler = (event: React.FormEvent<HTMLFormElement>) => {
+    event.preventDefault();
+
+    if (!title.trim()) {
+      setError(TodoErrors.Empty);
+    } else {
+      setTempTodo({
+        id: 0,
+        title,
+        completed: false,
+        userId: USER_ID,
+      });
+      createTodo(USER_ID, title)
+        .then((todo) => {
+          if (todo) {
+            setTempTodo(null);
+            setTodos([...todos, todo]);
+          }
+        })
+        .catch(() => {
+          setError(TodoErrors.Add);
+        })
+        .finally(() => {
+          setIsProcessed(false);
+          setTitle('');
+        });
+      setIsProcessed(true);
+    }
+  };
+
+  const clearCompletedTodos = () => {
+    const completeTodos = todos.filter(todo => todo.completed);
+
+    return completeTodos
+      .map(todo => deleteTodo(todo.id)
+        .then(() => setTodos(filtredTodos => filtredTodos
+          .filter(filtrTodo => !filtrTodo.completed)))
+        .catch(() => setError(TodoErrors.Delete)));
+  };
+
+  const itemsLeft = todos.filter(todo => !todo.completed).length;
+  const itemsCompleted = todos.filter(todo => todo.completed).length;
+
+  useEffect(() => {
+    getTodos(USER_ID)
+      .then((fetchedTodos: Todo[]) => {
+        setTodos(fetchedTodos);
+      })
+      .catch(() => {
+        setError(TodoErrors.Get);
+      });
+  }, []);
+
+  useEffect(() => {
+    let timeout: NodeJS.Timeout;
+
+    if (error) {
+      timeout = setTimeout(() => {
+        setError(null);
+      }, 3000);
+    }
+
+    return () => {
+      clearTimeout(timeout);
+    };
+  }, [error]);
+
+  const filtredTodos = useMemo(() => {
+    switch (status) {
+      case TodoStatus.All:
+        return todos;
+      case TodoStatus.Active:
+        return todos.filter((todo) => !todo.completed);
+      case TodoStatus.Completed:
+        return todos.filter((todo) => todo.completed);
+      default:
+        return todos;
+    }
+  }, [todos, status]);
+
   if (!USER_ID) {
     return <UserWarning />;
   }
 
   return (
-    <section className="section container">
-      <p className="title is-4">
-        Copy all you need from the prev task:
-        <br />
-        <a href="https://github.com/mate-academy/react_todo-app-loading-todos#react-todo-app-load-todos">React Todo App - Load Todos</a>
-      </p>
+    <div className="todoapp">
+      <h1 className="todoapp__title">todos</h1>
 
-      <p className="subtitle">Styles are already copied</p>
-    </section>
+      <div className="todoapp__content">
+        <TodoHeader
+          activeTodos={itemsLeft}
+          title={title}
+          onAddTitle={setTitle}
+          isProcessed={isProcessed}
+          onAddTodo={createTodoHandler}
+
+        />
+
+        <TodoList
+          todos={filtredTodos}
+          creating={tempTodo}
+          onDelete={deleteTodoHandler}
+          deletedId={deletedId}
+        />
+
+        {todos.length !== 0
+          && (
+            <TodoFilter
+              onStatusChanged={setStatus}
+              status={status}
+              itemsLeft={itemsLeft}
+              itemsCompleted={itemsCompleted}
+              clearCompletedTodos={clearCompletedTodos}
+            />
+          )}
+      </div>
+
+      <Notification
+        onClose={setError}
+        error={error}
+      />
+
+    </div>
   );
 };
