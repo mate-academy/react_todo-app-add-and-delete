@@ -63,7 +63,7 @@ export const TodoList: React.FC<Props> = ({
         </div>
       ))}
 
-      {tempTodo !== null ? (
+      {tempTodo ? (
         <div
           className={classNames(
             'todo',
