@@ -22,7 +22,7 @@ export const Notification: React.FC<Props> = ({ onClose, error }) => {
     >
       <button
         type="button"
-        aria-label={error || ''}
+        aria-label={error ?? ''}
         className="delete"
         onClick={onClick}
       />

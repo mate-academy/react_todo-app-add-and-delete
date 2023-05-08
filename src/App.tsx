@@ -55,7 +55,7 @@ export const App: React.FC = () => {
 
         setTodoWasDeleted(false);
       });
-  }, [todoWasDeleted === true]);
+  }, [todoWasDeleted]);
 
   const onAddTodo = () => {
     if (title) {
@@ -87,7 +87,7 @@ export const App: React.FC = () => {
     }
   };
 
-  const onDelete = (todoId: number | undefined) => () => {
+  const onDelete = (todoId: number) => {
     if (todoId) {
       setIdProcessed(todoId);
       setDisableList(true);
@@ -110,7 +110,11 @@ export const App: React.FC = () => {
     [todos]);
 
   const handleClearCompleted = useCallback(async () => {
-    completedTodos.forEach(todo => onDelete(todo.id));
+    completedTodos.forEach(todo => {
+      if (todo.id) {
+        onDelete(todo.id);
+      }
+    });
   }, [completedTodos]);
 
   useEffect(() => getVisibleTodos(filterBy), [filterBy]);

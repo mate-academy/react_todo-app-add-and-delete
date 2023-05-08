@@ -6,7 +6,7 @@ interface Props {
   tempTodo: Todo | null,
   idProcessed: number,
   disableList: boolean,
-  onDelete: (todoId: number | undefined) => () => void,
+  onDelete: (todoId: number) => void,
 }
 
 export const TodoList: React.FC<Props> = ({
@@ -16,6 +16,10 @@ export const TodoList: React.FC<Props> = ({
   disableList,
   onDelete,
 }) => {
+  const onRemove = (todoId: number | undefined) => () => (
+    todoId ? onDelete(todoId) : null
+  );
+
   return (
     <section className="todoapp__main is-loading">
       {todos.map(todo => (
@@ -43,7 +47,7 @@ export const TodoList: React.FC<Props> = ({
           <button
             type="button"
             className="todo__remove"
-            onClick={onDelete(todo.id)}
+            onClick={onRemove(todo.id)}
             disabled={disableList}
           >
             ×
