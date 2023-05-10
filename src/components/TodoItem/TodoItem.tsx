@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { Todo } from '../../types/Todo';
 import { Loader } from '../Loader';
 import { deleteTodo } from '../../api/todos';
@@ -9,6 +9,7 @@ type Props = {
   setTodos?: (todos: Todo[]) => void,
   pushError?: (title: string) => void,
   todos?: Todo[],
+  toBeCleared?: Todo[],
 };
 
 export const TodoItem: React.FC<Props> = ({
@@ -17,6 +18,7 @@ export const TodoItem: React.FC<Props> = ({
   setTodos = () => {},
   pushError = () => {},
   todos,
+  toBeCleared,
 }) => {
   const { completed, title, id } = todo;
   const [isBeingEdited] = useState(false);
@@ -36,6 +38,14 @@ export const TodoItem: React.FC<Props> = ({
         setIsLoading(false);
       });
   };
+
+  useEffect(() => {
+    toBeCleared?.forEach(item => {
+      if (item.id === id) {
+        onDelete();
+      }
+    });
+  }, [toBeCleared]);
 
   return (
     <div className={`todo${completed ? ' completed' : ''}`}>
@@ -71,7 +81,6 @@ export const TodoItem: React.FC<Props> = ({
           </>
         )}
 
-      {/* overlay will cover the todo while it is being updated */}
       <div className={`modal overlay${isTempLoading || isLoading ? ' is-active' : ''}`}>
         <div className="modal-background has-background-white-ter" />
         <Loader />

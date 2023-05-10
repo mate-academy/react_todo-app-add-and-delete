@@ -5,10 +5,10 @@ import { TodoItem } from '../TodoItem';
 type Props = {
   todos: Todo[],
   tempTodo: Todo | null,
-  isTempLoading: boolean;
-  setTodos: (todos: Todo[]) => void;
-
-  pushError: (title: string) => void;
+  isTempLoading: boolean,
+  setTodos: (todos: Todo[]) => void,
+  pushError: (title: string) => void,
+  toBeCleared: Todo[] | undefined,
 };
 
 export const Main: React.FC<Props> = ({
@@ -17,6 +17,7 @@ export const Main: React.FC<Props> = ({
   isTempLoading,
   pushError,
   setTodos,
+  toBeCleared,
 }) => {
   return (
     <section className="todoapp__main">
@@ -27,6 +28,7 @@ export const Main: React.FC<Props> = ({
           todos={todos}
           pushError={pushError}
           setTodos={setTodos}
+          toBeCleared={toBeCleared}
         />
       ))}
       {tempTodo && (

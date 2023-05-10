@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import { Todo } from '../../types/Todo';
 import { postTodo } from '../../api/todos';
 import { formatTodo } from '../../utils/formatResponse';
@@ -22,6 +22,8 @@ export const Header: React.FC<Props> = ({
 }) => {
   const [value, setValue] = useState('');
   const [isDisabled, setIsDisabled] = useState(false);
+  const [focus, setFocus] = useState(false);
+  const refInput = useRef<HTMLInputElement>(null);
 
   const onInputChange = (str: string) => {
     setValue(() => str);
@@ -57,30 +59,37 @@ export const Header: React.FC<Props> = ({
       userId: 10222,
       completed: false,
     };
-    const postTodoPromise = postTodo(rawTodo);
 
     setIsDisabled(true);
     setTempTodo({ id: 0, ...rawTodo });
     setIsTempLoading(true);
 
-    postTodoPromise.then(res => {
-      setTodos([...todosToRender, {
-        ...formatTodo(res),
-      }]);
-      setTempTodo(null);
-      setIsDisabled(false);
-      setValue('');
-    }).catch(() => {
-      pushError('Unable to add a todo');
-      setIsDisabled(false);
-      setTempTodo(null);
-    });
+    postTodo(rawTodo)
+      .then(res => {
+        setTodos([...todosToRender, {
+          ...formatTodo(res),
+        }]);
+        setValue('');
+      })
+      .catch(() => {
+        pushError('Unable to add a todo');
+      })
+      .finally(() => {
+        setTempTodo(null);
+        setIsDisabled(false);
+        setFocus(true);
+      });
   };
+
+  useEffect(() => {
+    if (focus) {
+      refInput.current?.focus();
+    }
+  }, [focus]);
 
   return (
     <header className="todoapp__header">
 
-      {/* this buttons is active only if there are some active todos */}
       <button
         type="button"
         className={`todoapp__toggle-all${todosToRender?.some(todo => !todo.completed) ? ' active' : ''}`}
@@ -96,6 +105,7 @@ export const Header: React.FC<Props> = ({
           value={value}
           onChange={(e) => onInputChange(e.target.value)}
           disabled={isDisabled}
+          ref={refInput}
         />
       </form>
     </header>

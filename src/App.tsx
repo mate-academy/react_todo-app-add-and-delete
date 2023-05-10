@@ -15,18 +15,19 @@ export const App: React.FC = () => {
   const [todos, setTodos] = useState<Todo[]>();
   const [errors, setErrors] = useState<Error[]>([{
     title: 'test error',
-    isDanger: false,
+    isImportant: false,
   }]);
   const [todosToRender, setTodosToRender] = useState<Todo[]>();
   const [isLoading, setIsLoading] = useState(false);
   const [tempTodo, setTempTodo] = useState<Todo | null>(null);
   const [isTempLoading, setIsTempLoading] = useState(false);
+  const [toBeCleared, setToBeCleared] = useState<Todo[]>();
 
   const pushError = (title = 'Unable to load') => {
     setErrors((prev: Error[] | undefined) => {
-      const newError = { // error obj can be adjusted if needed
+      const newError = {
         title,
-        isDanger: true,
+        isImportant: true,
       };
 
       return prev ? [...prev, newError] : [newError];
@@ -72,11 +73,13 @@ export const App: React.FC = () => {
                 isTempLoading={isTempLoading}
                 setTodos={setTodos}
                 pushError={pushError}
+                toBeCleared={toBeCleared}
               />
               <Footer
                 todos={todos}
                 todosToRender={todosToRender || todos}
                 setTodosToRender={setTodosToRender}
+                setToBeCleared={setToBeCleared}
               />
             </>
           )

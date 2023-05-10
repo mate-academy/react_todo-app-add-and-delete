@@ -9,7 +9,7 @@ type Props = {
 
 export const Notification: React.FC<Props> = ({ errors, setErrors }) => {
   const [isHidden, setIsHidden] = useState(false);
-  const { title, isDanger } = errors[0];
+  const { title, isImportant } = errors[0];
 
   const closeError = () => {
     setIsHidden(true);
@@ -28,7 +28,7 @@ export const Notification: React.FC<Props> = ({ errors, setErrors }) => {
   }, []);
 
   return (
-    <div className={`notification${isDanger ? ' is-danger' : ' is-light'} has-text-weight-normal${isHidden ? ' hidden' : ''}`}>
+    <div className={`notification${isImportant ? ' is-danger' : ' is-light'} has-text-weight-normal${isHidden ? ' hidden' : ''}`}>
       <button
         type="button"
         className="delete"

@@ -6,12 +6,14 @@ type Props = {
   todos: Todo[],
   todosToRender: Todo[]
   setTodosToRender: (arr: Todo[]) => void;
+  setToBeCleared: (arr: Todo[]) => void
 };
 
 export const Footer: React.FC<Props> = ({
   todos,
   todosToRender,
   setTodosToRender,
+  setToBeCleared,
 }) => {
   const [selectedButton, setSelectedButton] = useState('All');
   const itemsLeft = useMemo(() => {
@@ -36,11 +38,7 @@ export const Footer: React.FC<Props> = ({
   };
 
   const onClearCompleted = () => {
-    const completed = [...todos].filter(item => item.completed);
-
-    completed.map(item => {
-      return item;
-    });
+    setToBeCleared([...todos].filter(item => item.completed));
   };
 
   return (
