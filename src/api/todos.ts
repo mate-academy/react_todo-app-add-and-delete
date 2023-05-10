@@ -1,13 +1,14 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import { client } from '../utils/fetchClient';
 import { Todo } from '../types/Todo';
+import { USER_ID } from '../utils/constants';
 
 export const getTodos = () => {
-  return client.get<Todo[]>('/todos?userId=10222');
+  return client.get<Todo[]>(`/todos?userId=${USER_ID}`);
 };
 
 export const postTodo = (data: any) => {
-  return client.post('/todos?userId=10222', data);
+  return client.post(`/todos?userId=${USER_ID}`, data);
 };
 
 export const deleteTodo = (id: number) => {

@@ -1,5 +1,6 @@
 import React, { useEffect, useRef, useState } from 'react';
 import { Todo } from '../../types/Todo';
+import { TodoResponse } from '../../types/TodoResponse';
 import { postTodo } from '../../api/todos';
 import { formatTodo } from '../../utils/formatResponse';
 
@@ -56,7 +57,6 @@ export const Header: React.FC<Props> = ({
 
     const rawTodo = {
       title: value,
-      userId: 10222,
       completed: false,
     };
 
@@ -64,10 +64,10 @@ export const Header: React.FC<Props> = ({
     setTempTodo({ id: 0, ...rawTodo });
     setIsTempLoading(true);
 
-    postTodo(rawTodo)
+    postTodo({ ...rawTodo, userId: 10222 })
       .then(res => {
         setTodos([...todosToRender, {
-          ...formatTodo(res),
+          ...formatTodo(res as TodoResponse),
         }]);
         setValue('');
       })

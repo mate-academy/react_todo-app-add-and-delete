@@ -81,10 +81,14 @@ export const TodoItem: React.FC<Props> = ({
           </>
         )}
 
-      <div className={`modal overlay${isTempLoading || isLoading ? ' is-active' : ''}`}>
-        <div className="modal-background has-background-white-ter" />
-        <Loader />
-      </div>
+      {(isTempLoading || isLoading) && (
+        <>
+          <div className="modal overlay is-active">
+            <div className="modal-background has-background-white-ter" />
+          </div>
+          <Loader />
+        </>
+      )}
     </div>
   );
 };

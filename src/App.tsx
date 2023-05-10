@@ -1,19 +1,22 @@
 /* eslint-disable jsx-a11y/control-has-associated-label */
 import React, { useEffect, useState } from 'react';
+import { UserWarning } from './components/UserWarning';
+import { USER_ID } from './utils/constants';
 import { Header } from './components/Header';
 import { Main } from './components/Main';
 import { Footer } from './components/Footer';
 import { Notification } from './components/Notification';
 
 import { Todo } from './types/Todo';
-import { Error } from './types/Error';
+import { TodoError } from './types/TodoError';
 import { getTodos } from './api/todos';
 import { Loader } from './components/Loader';
 import { formatTodos } from './utils/formatResponse';
+import { TodoResponse } from './types/TodoResponse';
 
 export const App: React.FC = () => {
   const [todos, setTodos] = useState<Todo[]>();
-  const [errors, setErrors] = useState<Error[]>([{
+  const [errors, setErrors] = useState<TodoError[]>([{
     title: 'test error',
     isImportant: false,
   }]);
@@ -21,10 +24,10 @@ export const App: React.FC = () => {
   const [isLoading, setIsLoading] = useState(false);
   const [tempTodo, setTempTodo] = useState<Todo | null>(null);
   const [isTempLoading, setIsTempLoading] = useState(false);
-  const [toBeCleared, setToBeCleared] = useState<Todo[]>();
+  const [toBeCleared, setToBeCleared] = useState<Todo[]>([]);
 
   const pushError = (title = 'Unable to load') => {
-    setErrors((prev: Error[] | undefined) => {
+    setErrors(prev => {
       const newError = {
         title,
         isImportant: true,
@@ -37,7 +40,7 @@ export const App: React.FC = () => {
   useEffect(() => {
     setIsLoading(true);
     getTodos().then(res => {
-      setTodos(formatTodos(res));
+      setTodos(formatTodos(res as TodoResponse[]));
     })
       .catch(() => pushError())
       .finally(() => {
@@ -48,6 +51,10 @@ export const App: React.FC = () => {
   useEffect(() => {
     setTodosToRender(todos);
   }, [todos]);
+
+  if (!USER_ID) {
+    return <UserWarning />;
+  }
 
   return (
     <div className="todoapp">

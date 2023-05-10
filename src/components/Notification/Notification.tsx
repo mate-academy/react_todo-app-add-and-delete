@@ -1,10 +1,10 @@
 import React, { useEffect, useState } from 'react';
 import { wait } from '../../utils/fetchClient';
-import { Error } from '../../types/Error';
+import { TodoError } from '../../types/TodoError';
 
 type Props = {
-  errors: Error[];
-  setErrors: (cb: (prev: Error[]) => Error[]) => void;
+  errors: TodoError[];
+  setErrors: (cb: (prev: TodoError[]) => TodoError[]) => void;
 };
 
 export const Notification: React.FC<Props> = ({ errors, setErrors }) => {
@@ -25,7 +25,7 @@ export const Notification: React.FC<Props> = ({ errors, setErrors }) => {
     return () => {
       clearInterval(intervalId);
     };
-  }, []);
+  }, [closeError]);
 
   return (
     <div className={`notification${isImportant ? ' is-danger' : ' is-light'} has-text-weight-normal${isHidden ? ' hidden' : ''}`}>

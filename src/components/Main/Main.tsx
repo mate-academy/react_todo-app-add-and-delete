@@ -8,7 +8,7 @@ type Props = {
   isTempLoading: boolean,
   setTodos: (todos: Todo[]) => void,
   pushError: (title: string) => void,
-  toBeCleared: Todo[] | undefined,
+  toBeCleared: Todo[],
 };
 
 export const Main: React.FC<Props> = ({
@@ -22,6 +22,7 @@ export const Main: React.FC<Props> = ({
   return (
     <section className="todoapp__main">
       {todos.map(todo => (
+
         <TodoItem
           key={todo.id}
           todo={todo}
