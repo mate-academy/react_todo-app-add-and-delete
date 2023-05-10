@@ -33,6 +33,15 @@
   
     word-break: break-all;
     transition: color 0.4s;
+
+    &-edit {
+      font-family: inherit;
+      font-size: 24px;
+      line-height: 1.4em;
+      padding: 12px 15px;
+      transition: inherit;
+
+    }
   }
 
   &.completed &__title {
