@@ -49,6 +49,7 @@ export const TodoItem: React.FC<Props> = ({
       className={classNames(
         'todo',
         { completed },
+        { 'todo-temp': id === 0 },
       )}
     >
       <label className="todo__status-label">

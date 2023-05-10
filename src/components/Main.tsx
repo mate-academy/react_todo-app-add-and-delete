@@ -1,3 +1,5 @@
+import { TransitionGroup, CSSTransition } from 'react-transition-group';
+
 import { Todo } from '../types/Todo';
 import { Errors } from '../types/Errors';
 import { TodoItem } from './TodoItem';
@@ -23,28 +25,40 @@ export const Main: React.FC<Props> = ({
 }) => {
   return (
     <section className="todoapp__main">
-      {filteringList?.map(todo => (
-        <TodoItem
-          key={todo.id}
-          todo={todo}
-          setTypeError={setTypeError}
-          setNotificationError={setNotificationError}
-          todoList={todoList}
-          setTodoList={setTodoList}
-          loadersTodosId={loadersTodosId}
-        />
-      ))}
+      <TransitionGroup>
+        {filteringList?.map(todo => (
+          <CSSTransition
+            key={todo.id}
+            timeout={300}
+            classNames="todo"
+          >
+            <TodoItem
+              todo={todo}
+              setTypeError={setTypeError}
+              setNotificationError={setNotificationError}
+              todoList={todoList}
+              setTodoList={setTodoList}
+              loadersTodosId={loadersTodosId}
+            />
+          </CSSTransition>
+        ))}
 
-      {tempTodo && (
-        <TodoItem
-          todo={tempTodo}
-          setTypeError={setTypeError}
-          setNotificationError={setNotificationError}
-          todoList={todoList}
-          setTodoList={setTodoList}
-          loadersTodosId={loadersTodosId}
-        />
-      )}
+        {tempTodo && (
+          <CSSTransition
+            timeout={300}
+            classNames="todo-temp"
+          >
+            <TodoItem
+              todo={tempTodo}
+              setTypeError={setTypeError}
+              setNotificationError={setNotificationError}
+              todoList={todoList}
+              setTodoList={setTodoList}
+              loadersTodosId={loadersTodosId}
+            />
+          </CSSTransition>
+        )}
+      </TransitionGroup>
     </section>
   );
 };
