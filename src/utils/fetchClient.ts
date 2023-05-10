@@ -2,7 +2,7 @@ import { Todo } from '../types/Todo';
 
 const BASE_URL = 'https://mate.academy/students-api';
 
-function wait(delay: number) {
+function wait(delay: number): Promise<number> {
   return new Promise(resolve => {
     setTimeout(resolve, delay);
   });
@@ -13,7 +13,7 @@ type RequestMethod = 'GET' | 'POST' | 'PATCH' | 'DELETE';
 function request<T>(
   url: string,
   method: RequestMethod = 'GET',
-  data: any = null,
+  data: Omit<Todo, 'id'> | Partial<Todo> | unknown = null,
 ): Promise<T> {
   const options: RequestInit = { method };
 

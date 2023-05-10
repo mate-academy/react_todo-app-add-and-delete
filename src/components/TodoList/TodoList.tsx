@@ -6,12 +6,14 @@ type Props = {
   todos: Todo[];
   handleDeleteTodo: (id: number) => void,
   handleUpdateTodo: (id: number, data: Partial<Todo>) => Promise<void>,
+  setError: (title: string) => void,
 };
 
 export const TodoList: React.FC<Props> = ({
   todos,
   handleDeleteTodo,
   handleUpdateTodo,
+  setError,
 }) => {
   return (
     <section className="todoapp__main">
@@ -22,6 +24,7 @@ export const TodoList: React.FC<Props> = ({
             todo={todo}
             handleDeleteTodo={handleDeleteTodo}
             handleUpdateTodo={handleUpdateTodo}
+            setError={setError}
           />
         );
       })}

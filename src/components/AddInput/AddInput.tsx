@@ -1,13 +1,12 @@
 import cn from 'classnames';
-import React, { useState } from 'react';
-import { Todo } from '../../types/Todo';
+import React, { useState, useRef } from 'react';
 
 type Props = {
   isDisableInput: boolean,
   setError: (title: string) => void,
   handleAddTodo: (title: string) => Promise<void>,
   handleToggleAll: () => void,
-  completedTodos: Todo,
+  completedTodos: boolean,
 };
 
 export const AddInput: React.FC<Props> = React.memo(({
@@ -18,6 +17,7 @@ export const AddInput: React.FC<Props> = React.memo(({
   completedTodos,
 }) => {
   const [input, setInput] = useState('');
+  const inputElem = useRef<HTMLInputElement>(null);
 
   const handleFormSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     try {
@@ -27,11 +27,17 @@ export const AddInput: React.FC<Props> = React.memo(({
       if (title) {
         await handleAddTodo(title);
         setInput('');
-      } else {
-        throw new Error('log');
       }
     } catch {
       setError('Title can&#8242;t be empty');
+    }
+  };
+
+  const handleCancelInput = (
+    e: React.KeyboardEvent<HTMLInputElement>,
+  ): void => {
+    if (e.key === 'Escape') {
+      setInput('');
     }
   };
 
@@ -57,6 +63,8 @@ export const AddInput: React.FC<Props> = React.memo(({
           value={input}
           disabled={isDisableInput}
           onChange={e => setInput(e.target.value)}
+          onKeyUp={handleCancelInput}
+          ref={inputElem}
         />
       </form>
     </header>

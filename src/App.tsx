@@ -10,32 +10,30 @@ import {
   getTodo,
   deleteTodo,
   postTodo,
-  // updateTodo,
+  updateTodo,
 } from './api/todos';
 import { TodoItem } from './components/TodoItem';
-import { createTitle } from './utils/helpers';
 
 const USER_ID = 7025;
 
 export const App: React.FC = () => {
-  const [todos, setTodo] = useState<Todo []>([]);
+  const [todos, setTodo] = useState<Todo[]>([]);
   const [error, setError] = useState('');
   const [filterType, setFilterType] = useState<FilterType>(FilterType.ALL);
   const [tempTodo, setTempTodo] = useState<Todo | null>(null);
   const [isDisableInput, setIsDisableInput] = useState<boolean>(false);
   const [isLoading, setIsLoading] = useState<boolean>(true);
-  // const completedTodos = todos.every(todo => todo.completed);
-  // const activeTodos = todos.filter(todo => !todo.completed);
+  const completedTodos = todos.every((todo) => todo.completed);
 
   const fetchData = async () => {
     const todosFromServer = await getTodo(USER_ID);
 
     try {
       setTodo(todosFromServer);
-      setIsLoading(false);
+      setIsLoading(true);
     } catch {
       setError('Unable to load a todo');
-      setIsLoading(true);
+      setIsLoading(false);
     } finally {
       setIsLoading(false);
     }
@@ -62,10 +60,9 @@ export const App: React.FC = () => {
   const handleAddTodo = async (title: string) => {
     try {
       setIsDisableInput(true);
-      setTempTodo(createTitle(title));
 
       const data = {
-        id: 0,
+        id: Math.floor(Math.random() * 100),
         userId: USER_ID,
         title,
         completed: false,
@@ -74,6 +71,7 @@ export const App: React.FC = () => {
       const newTodo = await postTodo(data);
 
       setTodo(todo => [...todo, newTodo]);
+      setTempTodo({ ...data, id: 0 });
     } catch {
       setError('Unable to add a todo');
     } finally {
@@ -94,28 +92,57 @@ export const App: React.FC = () => {
     }
   };
 
-  // Im working here
+  const handleClearCompleted = async () => {
+    const completedMap = todos.filter(todo => todo.completed);
 
-  // const handleToggleAll = async () => {
-  //   if (completedTodos) {
-  //     todos.forEach(todo => {
-  //       updateTodo(todo.id, { completed: false });
-  //     });
-  //   } else {
-  //     activeTodos.forEach(todo => {
-  //       updateTodo(todo.id, { completed: true });
-  //     });
-  //   }
-  // };
+    try {
+      completedMap.map(todo => deleteTodo(todo.id));
 
-  // const handleUpdateTodo = async (id: number, data: Partial<Todo>) => {
-  // };
+      setTodo(todos.filter(todo => !todo.completed));
+    } catch {
+      setError('Unable to clear completed a todo');
+    }
+  };
+
+  const handleToggleAll = async () => {
+    try {
+      const updateCompleted = todos.map((todo) => {
+        if (todo.completed === completedTodos) {
+          updateTodo(todo.id, { completed: !completedTodos });
+        }
+
+        return { ...todo, completed: !completedTodos };
+      });
+
+      setTodo(updateCompleted);
+    } catch {
+      setError('Unable to update a todo');
+    }
+  };
+
+  const handleUpdateTodo = async (id: number, data: Partial<Todo>) => {
+    try {
+      await updateTodo(id, data);
+
+      setTodo(prev => prev.map(todo => {
+        if (todo.id === id) {
+          return { ...todo, ...data };
+        }
+
+        return todo;
+      }));
+    } catch {
+      setError('Unable to update a todo');
+    }
+  };
 
   useEffect(() => {
     if (error) {
-      setTimeout(() => {
+      const timeout = setTimeout(() => {
         setError('');
       }, 3000);
+
+      clearTimeout(timeout);
     }
   }, [error]);
 
@@ -139,19 +166,22 @@ export const App: React.FC = () => {
               isDisableInput={isDisableInput}
               handleAddTodo={handleAddTodo}
               setError={setError}
-              // handleToggleAll={handleToggleAll}
-              // completedTodos={completedTodos}
+              handleToggleAll={handleToggleAll}
+              completedTodos={completedTodos}
             />
 
             <TodoList
               todos={filterTodo}
               handleDeleteTodo={handleDeleteTodo}
-              // handleUpdateTodo={handleUpdateTodo}
+              handleUpdateTodo={handleUpdateTodo}
+              setError={setError}
             />
             {tempTodo && (
               <TodoItem
                 todo={tempTodo}
                 handleDeleteTodo={handleDeleteTodo}
+                handleUpdateTodo={handleUpdateTodo}
+                setError={setError}
               />
             )}
 
@@ -160,6 +190,7 @@ export const App: React.FC = () => {
                 todos={todos}
                 filterType={filterType}
                 setFilterType={setFilterType}
+                handleClearCompleted={handleClearCompleted}
               />
             )}
           </div>

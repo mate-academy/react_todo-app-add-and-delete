@@ -7,12 +7,14 @@ type Props = {
   todos: Todo[],
   filterType: FilterType,
   setFilterType: (filter: FilterType) => void,
+  handleClearCompleted: () => void,
 };
 
 export const TodoFilter: React.FC<Props> = ({
   todos,
   filterType,
   setFilterType,
+  handleClearCompleted,
 }) => {
   const itemsLeft = todos.filter((todo) => !todo.completed).length;
 
@@ -66,6 +68,7 @@ export const TodoFilter: React.FC<Props> = ({
       <button
         type="button"
         className="todoapp__clear-completed"
+        onClick={handleClearCompleted}
       >
         Clear completed
       </button>
