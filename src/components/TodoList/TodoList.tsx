@@ -32,7 +32,7 @@ export const TodoList: FC<Props> = ({ visibleTodos }) => {
         ))}
         {newTodo && (
           <CSSTransition
-            key={0}
+            key={newTodo.id}
             timeout={500}
             classNames="temp-item"
           >
