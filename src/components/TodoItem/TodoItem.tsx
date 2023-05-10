@@ -1,5 +1,5 @@
-import classNames from 'classnames';
 import { FC, useContext, useState } from 'react';
+import classNames from 'classnames';
 import { deleteTodos } from '../../api/todos';
 import { ErrorMessage, Todo } from '../../types';
 import { TodosContext } from '../TodosContext/TodosContext';

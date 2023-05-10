@@ -20,7 +20,6 @@ export const App: FC = () => {
   const {
     todos,
     setTodos,
-    error,
     setError,
     filterStatus,
     USER_ID,
@@ -87,9 +86,8 @@ export const App: FC = () => {
         )}
       </div>
 
-      {error && (
-        <TodoError />
-      )}
+      <TodoError />
+
     </div>
   );
 };
