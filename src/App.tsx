@@ -70,10 +70,6 @@ export const App: React.FC = () => {
       // eslint-disable-next-line no-console
       console.error(err);
     }
-
-    if (todos) {
-      setCompletedTodos(todos?.filter(todo => todo.completed));
-    }
   };
 
   const updateTodos = (todo: Todo) => {
@@ -83,6 +79,12 @@ export const App: React.FC = () => {
   useEffect(() => {
     loadTodos();
   }, []);
+
+  useEffect(() => {
+    if (todos) {
+      setCompletedTodos(todos?.filter(todoa => todoa.completed));
+    }
+  }, [todos]);
 
   // eslint-disable-next-line no-console
   console.log('app renders');
