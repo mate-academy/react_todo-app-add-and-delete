@@ -1,48 +1,23 @@
 import classNames from 'classnames';
 import { useState } from 'react';
 import { Todo } from '../types/Todo';
-import { Errors } from '../types/Errors';
-import { postDelete } from '../api/todos';
 
 type Props = {
   todo: Todo | null;
-  setTypeError: (typeError: Errors) => void;
-  setNotificationError: (notificationError: boolean) => void;
-  todoList: Todo[];
-  setTodoList: (todoList: Todo[] | null) => void;
-  loadersTodosId: number[] | null;
+  loadingTodoIds: number[];
+  deleteClickHandler: (
+    id: number,
+    loaderState: (loaderTodo: boolean) => void
+  ) => void;
 };
 
 export const TodoItem: React.FC<Props> = ({
   todo,
-  setTypeError,
-  setNotificationError,
-  todoList,
-  setTodoList,
-  loadersTodosId,
+  loadingTodoIds,
+  deleteClickHandler,
 }) => {
   const [loaderTodo, setLoaderTodo] = useState(false);
   const { id, title, completed } = todo || { id: 0 };
-
-  const deleteClickHandler = () => {
-    setLoaderTodo(true);
-
-    if (id) {
-      postDelete(id)
-        .then(() => {
-          const newArray = [...todoList];
-          const objFindIndex = newArray.findIndex(obj => obj.id === id);
-
-          newArray.splice(objFindIndex, 1);
-          setTodoList(newArray);
-          setLoaderTodo(false);
-        })
-        .catch(() => {
-          setTypeError(Errors.REMOVE);
-          setNotificationError(true);
-        });
-    }
-  };
 
   return (
     <div
@@ -65,7 +40,9 @@ export const TodoItem: React.FC<Props> = ({
       <button
         type="button"
         className="todo__remove"
-        onClick={deleteClickHandler}
+        onClick={() => {
+          deleteClickHandler(id, setLoaderTodo);
+        }}
       >
         ×
       </button>
@@ -77,7 +54,7 @@ export const TodoItem: React.FC<Props> = ({
           'is-active':
           loaderTodo
           || id === 0
-          || loadersTodosId?.includes(id),
+          || loadingTodoIds?.includes(id),
         },
       )}
       >

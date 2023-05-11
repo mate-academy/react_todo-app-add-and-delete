@@ -1,27 +1,23 @@
 import { TransitionGroup, CSSTransition } from 'react-transition-group';
 
 import { Todo } from '../types/Todo';
-import { Errors } from '../types/Errors';
 import { TodoItem } from './TodoItem';
 
 type Props = {
   filteringList: Todo[] | null
-  setTypeError: (typeError: Errors) => void
-  setNotificationError: (notificationError: boolean) => void
   tempTodo: Todo | null;
-  todoList: Todo[];
-  setTodoList: (todoList: Todo[] | null) => void;
-  loadersTodosId: number[] | null;
+  loadingTodoIds: number[] ;
+  deleteClickHandler: (
+    id: number,
+    loaderState: (loaderTodo: boolean) => void
+  ) => void;
 };
 
-export const Main: React.FC<Props> = ({
+export const TodoList: React.FC<Props> = ({
   filteringList,
-  setTypeError,
-  setNotificationError,
   tempTodo,
-  todoList,
-  setTodoList,
-  loadersTodosId,
+  loadingTodoIds,
+  deleteClickHandler,
 }) => {
   return (
     <section className="todoapp__main">
@@ -34,11 +30,8 @@ export const Main: React.FC<Props> = ({
           >
             <TodoItem
               todo={todo}
-              setTypeError={setTypeError}
-              setNotificationError={setNotificationError}
-              todoList={todoList}
-              setTodoList={setTodoList}
-              loadersTodosId={loadersTodosId}
+              loadingTodoIds={loadingTodoIds}
+              deleteClickHandler={deleteClickHandler}
             />
           </CSSTransition>
         ))}
@@ -50,11 +43,8 @@ export const Main: React.FC<Props> = ({
           >
             <TodoItem
               todo={tempTodo}
-              setTypeError={setTypeError}
-              setNotificationError={setNotificationError}
-              todoList={todoList}
-              setTodoList={setTodoList}
-              loadersTodosId={loadersTodosId}
+              loadingTodoIds={loadingTodoIds}
+              deleteClickHandler={deleteClickHandler}
             />
           </CSSTransition>
         )}

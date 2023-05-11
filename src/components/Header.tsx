@@ -6,9 +6,8 @@ import { postTodo } from '../api/todos';
 
 type Props = {
   USER_ID: number;
-  counterItemLeft: () => number;
+  counterItemLeft: number | undefined;
   setTypeError: (typeError: Errors) => void;
-  setNotificationError: (notificationError: boolean) => void;
   todoList: Todo[] | null;
   setTempTodo: (tempTodo: Todo | null) => void;
   setTodoList: (todoList: Todo[] | null) => void;
@@ -18,7 +17,6 @@ export const Header: React.FC<Props> = ({
   USER_ID,
   counterItemLeft,
   setTypeError,
-  setNotificationError,
   todoList,
   setTempTodo,
   setTodoList,
@@ -36,7 +34,6 @@ export const Header: React.FC<Props> = ({
     });
 
     if (!newTodoTitle) {
-      setNotificationError(true);
       setTypeError(Errors.EMPTY);
     } else {
       postTodo(USER_ID, {
@@ -54,7 +51,6 @@ export const Header: React.FC<Props> = ({
           }
         })
         .catch(() => {
-          setNotificationError(true);
           setTypeError(Errors.ADD);
         });
     }
@@ -68,7 +64,7 @@ export const Header: React.FC<Props> = ({
         className={classNames(
           'todoapp__toggle-all',
           { 'is-invisible': todoList?.length === 0 || !todoList },
-          { active: (!counterItemLeft()) },
+          { active: (!counterItemLeft) },
         )}
       />
 

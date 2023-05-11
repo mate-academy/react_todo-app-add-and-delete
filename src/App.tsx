@@ -3,8 +3,8 @@ import React, { useState, useEffect, useMemo } from 'react';
 import { UserWarning } from './UserWarning';
 import { Todo } from './types/Todo';
 import { Select } from './types/Select';
-import { getTodos } from './api/todos';
-import { Main } from './components/Main';
+import { getTodos, postDelete } from './api/todos';
+import { TodoList } from './components/TodoList';
 import { Footer } from './components/Footer';
 import { Notification } from './components/Notification';
 import { Errors } from './types/Errors';
@@ -16,12 +16,11 @@ export const App: React.FC = () => {
   const [todoList, setTodoList] = useState<Todo[] | null>(null);
   const [selectedFilter, setSelectedFilter] = useState(Select.ALL);
   const [typeError, setTypeError] = useState<Errors | null>(null);
-  const [notificationError, setNotificationError] = useState(false);
   const [tempTodo, setTempTodo] = useState<Todo | null>(null);
-  const [loadersTodosId, setLoadersTodoId] = useState<number[] | null>(null);
+  const [loadingTodoIds, setLoadingTodoIds] = useState<number[]>([]);
 
-  const filteringList = useMemo(() => {
-    const filter = todoList && todoList.filter((todo) => {
+  const filteredList = useMemo(() => {
+    return todoList && todoList.filter((todo) => {
       switch (selectedFilter) {
         case Select.ACTIVE:
           return !todo.completed;
@@ -31,20 +30,55 @@ export const App: React.FC = () => {
           return true;
       }
     });
-
-    return filter;
   }, [selectedFilter, todoList]);
 
-  const countItemLeft = () => {
-    let count = 0;
+  const countItemLeft = todoList?.filter(todo => !todo.completed).length;
 
-    todoList?.forEach(todo => {
-      if (!todo.completed) {
-        count += 1;
-      }
+  const deleteClickHandlerItem = (
+    id: number,
+    loaderState: (loaderTodo: boolean) => void,
+  ) => {
+    loaderState(true);
+
+    if (id) {
+      postDelete(id)
+        .then(() => {
+          const newArray = todoList ? [...todoList] : [];
+          const objFindIndex = newArray.findIndex(obj => obj.id === id);
+
+          newArray.splice(objFindIndex, 1);
+          setTodoList(newArray);
+          loaderState(false);
+        })
+        .catch(() => {
+          setTypeError(Errors.REMOVE);
+        });
+    }
+  };
+
+  const deleteClickHandlerFooter = () => {
+    const completedTodo
+    = todoList?.filter(todo => todo.completed).map(todo => todo.id);
+
+    if (completedTodo) {
+      setLoadingTodoIds(completedTodo);
+    }
+
+    completedTodo?.forEach(todo => {
+      postDelete(todo)
+        .then(() => {
+          if (todoList) {
+            setTodoList(
+              todoList.filter(todoFilter => {
+                return !completedTodo.includes(todoFilter.id);
+              }),
+            );
+          }
+        })
+        .catch(() => {
+          setTypeError(Errors.REMOVE);
+        });
     });
-
-    return count;
   };
 
   useEffect(() => {
@@ -52,7 +86,6 @@ export const App: React.FC = () => {
       .then(setTodoList)
       .catch(() => {
         setTypeError(Errors.UPDATE);
-        setNotificationError(true);
       });
   }, []);
 
@@ -69,24 +102,18 @@ export const App: React.FC = () => {
           USER_ID={USER_ID}
           counterItemLeft={countItemLeft}
           setTypeError={setTypeError}
-          setNotificationError={setNotificationError}
           todoList={todoList}
           setTempTodo={setTempTodo}
           setTodoList={setTodoList}
         />
 
         {todoList && (
-          <>
-            <Main
-              filteringList={filteringList}
-              setTypeError={setTypeError}
-              setNotificationError={setNotificationError}
-              tempTodo={tempTodo}
-              todoList={todoList}
-              setTodoList={setTodoList}
-              loadersTodosId={loadersTodosId}
-            />
-          </>
+          <TodoList
+            filteringList={filteredList}
+            tempTodo={tempTodo}
+            loadingTodoIds={loadingTodoIds}
+            deleteClickHandler={deleteClickHandlerItem}
+          />
         )}
 
         {(todoList?.length !== 0 && todoList) && (
@@ -95,19 +122,15 @@ export const App: React.FC = () => {
             selectedFilter={selectedFilter}
             setSelectedFilter={setSelectedFilter}
             todoList={todoList}
-            setTodoList={setTodoList}
-            setTypeError={setTypeError}
-            setNotificationError={setNotificationError}
-            setLoadersTodoId={setLoadersTodoId}
+            deleteClickHandlerFooter={deleteClickHandlerFooter}
           />
         )}
 
       </div>
 
       <Notification
+        setTypeError={setTypeError}
         typeError={typeError}
-        setNotificationError={setNotificationError}
-        notificationError={notificationError}
       />
     </div>
   );

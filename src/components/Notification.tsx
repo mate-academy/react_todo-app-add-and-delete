@@ -2,21 +2,19 @@ import classNames from 'classnames';
 import { Errors } from '../types/Errors';
 
 type Props = {
+  setTypeError: (typeError: Errors | null) => void
   typeError: string | null
-  setNotificationError: (notificationError: boolean) => void
-  notificationError: boolean;
 };
 
 export const Notification: React.FC<Props> = ({
+  setTypeError,
   typeError,
-  setNotificationError,
-  notificationError,
 }) => {
   const { ADD, REMOVE, EMPTY } = Errors;
 
-  if (notificationError) {
+  if (typeError) {
     setTimeout(() => {
-      setNotificationError(false);
+      setTypeError(null);
     }, 3000);
   }
 
@@ -39,7 +37,7 @@ export const Notification: React.FC<Props> = ({
       'is-danger',
       'is-light',
       'has-text-weight-normal',
-      { hidden: !notificationError },
+      { hidden: !typeError },
     )}
     >
       {/* eslint-disable-next-line jsx-a11y/control-has-associated-label */}
@@ -47,7 +45,7 @@ export const Notification: React.FC<Props> = ({
         type="button"
         className="delete"
         onClick={() => {
-          setNotificationError(false);
+          setTypeError(null);
         }}
       />
       {returnTextError(typeError)}

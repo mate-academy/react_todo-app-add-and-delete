@@ -1,18 +1,13 @@
 import classNames from 'classnames';
 import { Todo } from '../types/Todo';
 import { Select } from '../types/Select';
-import { Errors } from '../types/Errors';
-import { postDelete } from '../api/todos';
 
 type Props = {
-  countItemLeft: () => number;
+  countItemLeft: number | undefined;
   selectedFilter: Select
   setSelectedFilter: (selectedFilter: Select) => void;
   todoList: Todo [] | null;
-  setTodoList: (todoList: Todo[] | null) => void;
-  setTypeError: (typeError: Errors) => void
-  setNotificationError: (notificationError: boolean) => void
-  setLoadersTodoId: (loadersTodosId: number[]) => void
+  deleteClickHandlerFooter: (todoListHandler: Todo[] | null) => void
 };
 
 export const Footer: React.FC<Props> = ({
@@ -20,43 +15,14 @@ export const Footer: React.FC<Props> = ({
   selectedFilter,
   setSelectedFilter,
   todoList,
-  setTodoList,
-  setTypeError,
-  setNotificationError,
-  setLoadersTodoId,
+  deleteClickHandlerFooter,
 }) => {
   const { ALL, ACTIVE, COMPLETED } = Select;
-
-  const deleteClickHandler = () => {
-    const completedTodo
-    = todoList?.filter(todo => todo.completed).map(todo => todo.id);
-
-    if (completedTodo) {
-      setLoadersTodoId(completedTodo);
-    }
-
-    completedTodo?.forEach(todo => {
-      postDelete(todo)
-        .then(() => {
-          if (todoList) {
-            setTodoList(
-              todoList.filter(todoFilter => {
-                return !completedTodo.includes(todoFilter.id);
-              }),
-            );
-          }
-        })
-        .catch(() => {
-          setTypeError(Errors.REMOVE);
-          setNotificationError(true);
-        });
-    });
-  };
 
   return (
     <footer className="todoapp__footer">
       <span className="todo-count">
-        {`${countItemLeft()} items left`}
+        {`${countItemLeft} items left`}
       </span>
       <nav className="filter">
         <a
@@ -101,7 +67,9 @@ export const Footer: React.FC<Props> = ({
 
       <button
         type="button"
-        onClick={deleteClickHandler}
+        onClick={() => {
+          deleteClickHandlerFooter(todoList);
+        }}
         className={classNames(
           'todoapp__clear-completed',
           {
