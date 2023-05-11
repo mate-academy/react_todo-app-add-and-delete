@@ -7,7 +7,7 @@ type Props = {
   tempTodo: Todo | null,
   isTempLoading: boolean,
   setTodos: (todos: Todo[]) => void,
-  pushError: (title: string) => void,
+  showError: (title: string) => void,
   toBeCleared: Todo[],
 };
 
@@ -15,7 +15,7 @@ export const Main: React.FC<Props> = ({
   todos,
   tempTodo,
   isTempLoading,
-  pushError,
+  showError,
   setTodos,
   toBeCleared,
 }) => {
@@ -27,7 +27,7 @@ export const Main: React.FC<Props> = ({
           key={todo.id}
           todo={todo}
           todos={todos}
-          pushError={pushError}
+          showError={showError}
           setTodos={setTodos}
           toBeCleared={toBeCleared}
         />

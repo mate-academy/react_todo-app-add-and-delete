@@ -16,17 +16,14 @@ import { TodoResponse } from './types/TodoResponse';
 
 export const App: React.FC = () => {
   const [todos, setTodos] = useState<Todo[]>();
-  const [errors, setErrors] = useState<TodoError[]>([{
-    title: 'test error',
-    isImportant: false,
-  }]);
+  const [errors, setErrors] = useState<TodoError[]>([]);
   const [todosToRender, setTodosToRender] = useState<Todo[]>();
   const [isLoading, setIsLoading] = useState(false);
   const [tempTodo, setTempTodo] = useState<Todo | null>(null);
   const [isTempLoading, setIsTempLoading] = useState(false);
   const [toBeCleared, setToBeCleared] = useState<Todo[]>([]);
 
-  const pushError = (title = 'Unable to load') => {
+  const showError = (title = 'Unable to load') => {
     setErrors(prev => {
       const newError = {
         title,
@@ -42,7 +39,7 @@ export const App: React.FC = () => {
     getTodos().then(res => {
       setTodos(formatTodos(res as TodoResponse[]));
     })
-      .catch(() => pushError())
+      .catch(() => showError())
       .finally(() => {
         setIsLoading(false);
       });
@@ -65,7 +62,7 @@ export const App: React.FC = () => {
           <Header
             todosToRender={todosToRender}
             setTodosToRender={setTodosToRender}
-            pushError={pushError}
+            showError={showError}
             setTempTodo={setTempTodo}
             setIsTempLoading={setIsTempLoading}
             setTodos={setTodos}
@@ -79,7 +76,7 @@ export const App: React.FC = () => {
                 tempTodo={tempTodo}
                 isTempLoading={isTempLoading}
                 setTodos={setTodos}
-                pushError={pushError}
+                showError={showError}
                 toBeCleared={toBeCleared}
               />
               <Footer

@@ -1,13 +1,13 @@
 import React, { useEffect, useState } from 'react';
 import { Todo } from '../../types/Todo';
 import { Loader } from '../Loader';
-import { deleteTodo } from '../../api/todos';
+import { deleteTodo, updateTodo } from '../../api/todos';
 
 type Props = {
   todo: Todo,
   isTempLoading?: boolean,
   setTodos?: (todos: Todo[]) => void,
-  pushError?: (title: string) => void,
+  showError?: (title: string) => void,
   todos?: Todo[],
   toBeCleared?: Todo[],
 };
@@ -16,7 +16,7 @@ export const TodoItem: React.FC<Props> = ({
   todo,
   isTempLoading,
   setTodos = () => {},
-  pushError = () => {},
+  showError = () => {},
   todos,
   toBeCleared,
 }) => {
@@ -34,7 +34,7 @@ export const TodoItem: React.FC<Props> = ({
         }
       })
       .catch(() => {
-        pushError('Unable to delete todo');
+        showError('Unable to delete todo');
         setIsLoading(false);
       });
   };
@@ -47,6 +47,25 @@ export const TodoItem: React.FC<Props> = ({
     });
   }, [toBeCleared]);
 
+  const onStatusShange = () => {
+    setIsLoading(true);
+    updateTodo(id, { completed: !completed }).then(() => {
+      if (todos) {
+        setTodos(todos.map(item => {
+          return item.id === id
+            ? { ...item, completed: !item.completed }
+            : item;
+        }));
+      }
+    })
+      .catch(() => {
+        showError('Unable to update a todo');
+      })
+      .finally(() => {
+        setIsLoading(false);
+      });
+  };
+
   return (
     <div className={`todo${completed ? ' completed' : ''}`}>
       <label className="todo__status-label">
@@ -54,6 +73,7 @@ export const TodoItem: React.FC<Props> = ({
           type="checkbox"
           className="todo__status"
           checked={completed}
+          onChange={onStatusShange}
         />
       </label>
 

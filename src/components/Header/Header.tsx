@@ -7,7 +7,7 @@ import { formatTodo } from '../../utils/formatResponse';
 type Props = {
   todosToRender: Todo[];
   setTodosToRender: (arr: Todo[]) => void;
-  pushError: (title: string) => void;
+  showError: (title: string) => void;
   setTempTodo: (todo: Todo | null) => void;
   setIsTempLoading: (val: boolean) => void;
   setTodos: (arr: Todo[]) => void;
@@ -16,7 +16,7 @@ type Props = {
 export const Header: React.FC<Props> = ({
   todosToRender,
   setTodosToRender,
-  pushError,
+  showError,
   setTempTodo,
   setIsTempLoading,
   setTodos,
@@ -50,7 +50,7 @@ export const Header: React.FC<Props> = ({
   const onFormSubmit = (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     if (!value) {
-      pushError('Title can\'t be empty');
+      showError('Title can\'t be empty');
 
       return;
     }
@@ -72,7 +72,7 @@ export const Header: React.FC<Props> = ({
         setValue('');
       })
       .catch(() => {
-        pushError('Unable to add a todo');
+        showError('Unable to add a todo');
       })
       .finally(() => {
         setTempTodo(null);
