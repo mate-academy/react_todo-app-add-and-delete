@@ -1,11 +1,19 @@
 import cn from 'classnames';
+import { Todo } from '../../types/Todo';
 
 interface Props {
   setFilter: (filter: string) => void;
+  clearComplitedTodos: () => void;
   selectedFilter: string;
+  comletedTodos: Todo[] | null;
 }
 
-export const Footer: React.FC<Props> = ({ setFilter, selectedFilter }) => {
+export const Footer: React.FC<Props> = ({
+  setFilter,
+  clearComplitedTodos,
+  selectedFilter,
+  comletedTodos,
+}) => {
   return (
     <footer className="todoapp__footer">
       {/* Hide the footer if there are no todos */}
@@ -57,9 +65,15 @@ export const Footer: React.FC<Props> = ({ setFilter, selectedFilter }) => {
       </nav>
 
       {/* don't show this button if there are no completed todos */}
-      <button type="button" className="todoapp__clear-completed">
-        Clear completed
-      </button>
+      {comletedTodos && (
+        <button
+          type="button"
+          className="todoapp__clear-completed"
+          onClick={clearComplitedTodos}
+        >
+          Clear completed
+        </button>
+      )}
     </footer>
   );
 };

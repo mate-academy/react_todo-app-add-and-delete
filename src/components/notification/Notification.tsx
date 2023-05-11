@@ -1,9 +1,17 @@
+import { useEffect } from 'react';
+
 interface Props {
   setError: (errVal: string | boolean) => void;
   errorText: string | true;
 }
 
 export const Notification: React.FC<Props> = ({ errorText, setError }) => {
+  useEffect(() => {
+    setTimeout(() => {
+      setError(false);
+    }, 3000);
+  }, []);
+
   return (
     <div className="notification is-danger is-light has-text-weight-normal">
       {/* Notification is shown in case of any error */}
@@ -16,10 +24,9 @@ export const Notification: React.FC<Props> = ({ errorText, setError }) => {
           setError(false);
         }}
       />
-      {`Unable to ${errorText} a todo`}
-      {/* Unable to delete a todo
-      <br />
-      Unable to update a todo */}
+      {errorText === 'empty'
+        ? ('Title can\'t be empty')
+        : `Unable to ${errorText} a todo`}
     </div>
   );
 };

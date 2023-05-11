@@ -1,24 +1,28 @@
 import { Todo } from '../../types/Todo';
+import { TodoItem } from '../todoItem/TodoItem';
+import { TempTodo } from '../todoItem/TempTodo';
 import {
-  deleteTodo,
   updateTodoComplited,
   // updateTodoTitle,
 } from '../../api/todos';
 
 interface Props {
   todos: Todo[] | null;
+  tempTodo: Todo | null;
   showError: (errText: string | boolean) => void;
+  handleDeleteTodo: (id: number) => void;
+  loading: boolean;
+  loadingID: number;
 }
-export const Main: React.FC<Props> = ({ todos, showError }) => {
-  const handleDeleteTodo = async (todoId: number) => {
-    try {
-      await deleteTodo(todoId);
-    } catch {
-      showError('delete');
-    }
-  };
-
-  const handleUpdateTodoCompleted = async (
+export const Main: React.FC<Props> = ({
+  todos,
+  tempTodo,
+  showError,
+  handleDeleteTodo,
+  loading,
+  loadingID,
+}) => {
+  const handleUpdateTodoIsCompleted = async (
     id: number,
     complitedCurrVal: boolean,
   ) => {
@@ -32,51 +36,27 @@ export const Main: React.FC<Props> = ({ todos, showError }) => {
     }
   };
 
-  // const handleUpdateTodo = () => {
-
-  // };
-
   return (
     <section className="todoapp__main">
-      {todos ? todos.map(({
+      {todos
+      && todos.map(({
         title,
         id,
         completed,
       }) => (
-        <div key={id} className="todo">
-          <label className="todo__status-label">
-            <input
-              type="checkbox"
-              className="todo__status"
-              checked={completed}
-              onChange={() => {
-                handleUpdateTodoCompleted(
-                  id,
-                  completed,
-                );
-              }}
-            />
-          </label>
-
-          <span className="todo__title">{title}</span>
-          <button
-            type="button"
-            className="todo__remove"
-            onClick={() => {
-              handleDeleteTodo(id);
-            }}
-          >
-            ×
-          </button>
-
-          <div className="modal overlay">
-            <div className="modal-background has-background-white-ter" />
-            <div className="loader" />
-          </div>
-        </div>
-      )) : (
-        <span>Loading...</span>
-      )}
+        <TodoItem
+          loading={loading}
+          loadingID={loadingID}
+          key={id}
+          title={title}
+          id={id}
+          completed={completed}
+          onDelete={handleDeleteTodo}
+          onIsComplitedUpdate={handleUpdateTodoIsCompleted}
+        />
+      ))}
+      {tempTodo
+      && <TempTodo tempTodo={tempTodo} />}
 
       {/* This is a completed todo */}
       <div className="todo completed">
@@ -138,22 +118,6 @@ export const Main: React.FC<Props> = ({ todos, showError }) => {
         </form>
 
         <div className="modal overlay">
-          <div className="modal-background has-background-white-ter" />
-          <div className="loader" />
-        </div>
-      </div>
-
-      {/* This todo is in loadind state */}
-      <div className="todo">
-        <label className="todo__status-label">
-          <input type="checkbox" className="todo__status" />
-        </label>
-
-        <span className="todo__title">Todo is being saved now</span>
-        <button type="button" className="todo__remove">×</button>
-
-        {/* 'is-active' class puts this modal on top of the todo */}
-        <div className="modal overlay is-active">
           <div className="modal-background has-background-white-ter" />
           <div className="loader" />
         </div>
