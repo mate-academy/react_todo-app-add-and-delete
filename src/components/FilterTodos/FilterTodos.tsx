@@ -1,23 +1,18 @@
-import React, { useCallback } from 'react';
+import React from 'react';
 import classNames from 'classnames';
 import { FilterType } from '../../types/FilterType';
-import { Todo } from '../../types/Todo';
 
 type Props = {
-  uncompletedCount: number;
-  completedTodos: Todo[];
+  activeTodosCount: number;
+  isCompletedTodos: boolean;
   filterType: FilterType;
   onFilter: (filterType: FilterType) => void;
-  removeTodo: (id: number) => void;
+  clearCompleted: () => void;
 };
 
 export const FilterTodos: React.FC<Props> = ({
-  uncompletedCount, completedTodos, filterType, onFilter, removeTodo,
+  activeTodosCount, isCompletedTodos, filterType, onFilter, clearCompleted,
 }) => {
-  const handleRemoveCompleted = useCallback(() => {
-    completedTodos.map(todo => removeTodo(todo.id));
-  }, [completedTodos]);
-
   const handlerFilter = (
     e: React.MouseEvent<HTMLAnchorElement, MouseEvent>,
   ) => {
@@ -27,7 +22,7 @@ export const FilterTodos: React.FC<Props> = ({
   return (
     <footer className="todoapp__footer">
       <span className="todo-count">
-        {`${uncompletedCount} items left`}
+        {`${activeTodosCount} items left`}
       </span>
 
       <nav className="filter">
@@ -68,8 +63,8 @@ export const FilterTodos: React.FC<Props> = ({
       <button
         type="button"
         className="todoapp__clear-completed"
-        onClick={handleRemoveCompleted}
-        disabled={!completedTodos.length}
+        onClick={clearCompleted}
+        disabled={!isCompletedTodos}
       >
         Clear completed
       </button>

@@ -7,10 +7,11 @@ type Props = {
   todos: Todo[];
   removeTodo: (id: number) => void;
   tempTodo: Todo | null;
+  isProcessingId: number[];
 };
 
 export const TodoList: React.FC<Props> = React.memo(({
-  todos, removeTodo, tempTodo,
+  todos, removeTodo, tempTodo, isProcessingId,
 }) => (
   <section className="todoapp__main">
     <TransitionGroup>
@@ -23,8 +24,8 @@ export const TodoList: React.FC<Props> = React.memo(({
           <TodoItem
             todo={todo}
             key={todo.id}
+            isProcessingId={isProcessingId}
             removeTodo={removeTodo}
-            isTempTodo={false}
           />
         </CSSTransition>
       ))}
@@ -36,7 +37,6 @@ export const TodoList: React.FC<Props> = React.memo(({
         >
           <TodoItem
             todo={tempTodo}
-            isTempTodo
           />
         </CSSTransition>
       )}

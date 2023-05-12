@@ -19,6 +19,7 @@ export const App: React.FC = () => {
   const [error, setError] = useState<ErrorType | null>(null);
   const [loading, setLoading] = useState(false);
   const [tempTodo, setTempTodo] = useState<Todo | null>(null);
+  const [isProcessingId, setIsProcessingId] = useState<number[]>([]);
 
   const getTodosFromServer = async () => {
     try {
@@ -57,6 +58,7 @@ export const App: React.FC = () => {
 
   const removeTodo = useCallback(async (todoId: number) => {
     try {
+      setIsProcessingId(currentIds => currentIds.concat(todoId));
       await deleteTodo(todoId);
       await getTodosFromServer();
     } catch {
@@ -67,28 +69,34 @@ export const App: React.FC = () => {
     }
   }, []);
 
-  const filteredTodos = useMemo(() => {
-    return todos.filter(todo => {
-      switch (filterType) {
-        case FilterType.ACTIVE:
-          return !todo.completed;
-
-        case FilterType.COMPLETED:
-          return todo.completed;
-
-        default:
-          return true;
+  const clearCompleted = useCallback(() => {
+    todos.forEach(todo => {
+      if (todo.completed) {
+        removeTodo(todo.id);
       }
     });
+  }, [todos]);
+
+  const visibleTodos = useMemo(() => {
+    switch (filterType) {
+      case FilterType.ACTIVE:
+        return todos.filter(todo => !todo.completed);
+
+      case FilterType.COMPLETED:
+        return todos.filter(todo => todo.completed);
+
+      default:
+        return todos;
+    }
   }, [todos, filterType]);
 
-  const uncompletedTodosCount = useMemo(() => (
-    filteredTodos.filter(todo => !todo.completed).length
-  ), [filteredTodos]);
-
-  const completedTodos = useMemo(() => (
-    todos.filter(todo => todo.completed)
+  const isCompletedTodos = useMemo(() => (
+    todos.some(todo => todo.completed)
   ), [todos]);
+
+  const activeTodosCount = useMemo(() => (
+    visibleTodos.filter(todo => !todo.completed).length
+  ), [visibleTodos]);
 
   useEffect(() => {
     getTodosFromServer();
@@ -103,22 +111,23 @@ export const App: React.FC = () => {
           post={postTodo}
           setError={setError}
           loading={loading}
-          activeTodosCount={uncompletedTodosCount}
+          activeTodosCount={activeTodosCount}
         />
 
         <TodoList
-          todos={filteredTodos}
-          removeTodo={removeTodo}
+          todos={visibleTodos}
           tempTodo={tempTodo}
+          isProcessingId={isProcessingId}
+          removeTodo={removeTodo}
         />
 
         {!!todos.length && (
           <FilterTodos
-            uncompletedCount={uncompletedTodosCount}
-            completedTodos={completedTodos}
+            activeTodosCount={activeTodosCount}
+            isCompletedTodos={isCompletedTodos}
             filterType={filterType}
             onFilter={setFilterType}
-            removeTodo={removeTodo}
+            clearCompleted={clearCompleted}
           />
         )}
       </div>

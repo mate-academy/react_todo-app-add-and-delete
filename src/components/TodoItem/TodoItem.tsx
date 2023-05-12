@@ -1,24 +1,21 @@
 /* eslint-disable no-console */
-import React, { useState } from 'react';
+import React from 'react';
 import classNames from 'classnames';
 import { Todo } from '../../types/Todo';
 
 type Props = {
   todo: Todo;
   removeTodo?: (id: number) => void;
-  isTempTodo: boolean;
-  isDeleted?: boolean
+  isProcessingId?: number[];
 };
 
 export const TodoItem: React.FC<Props> = React.memo(({
-  todo, removeTodo, isTempTodo,
+  todo, removeTodo, isProcessingId = [0],
 }) => {
   const { title, completed, id } = todo;
-  const [isDeleted, setIsDeleted] = useState(false);
 
   const handleRemove = () => {
     if (removeTodo) {
-      setIsDeleted(true);
       removeTodo(id);
     }
   };
@@ -45,7 +42,7 @@ export const TodoItem: React.FC<Props> = React.memo(({
 
       <div className={classNames(
         'modal overlay',
-        { 'is-active': isTempTodo || isDeleted },
+        { 'is-active': isProcessingId.includes(id) },
       )}
       >
         <div className="modal-background has-background-white-ter" />
