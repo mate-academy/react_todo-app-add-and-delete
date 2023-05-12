@@ -1,4 +1,4 @@
-import { FC, useState } from 'react';
+import React, { FC, useState } from 'react';
 import { addTodo } from '../../api/todos';
 import { Todo } from '../../types/Todo';
 
@@ -7,6 +7,7 @@ interface Props {
   USER_ID: number;
   setTempTodo: (tempTodo: Todo | null) => void;
   setIsEmplty: (isEmpty: boolean) => void;
+  setErrorAddTodo: (errorAddTodo: boolean) => void;
 }
 
 const getNewId = (todos: Todo[]) => {
@@ -19,11 +20,12 @@ const getNewId = (todos: Todo[]) => {
   }, 0) + 1;
 };
 
-export const HeaderTodoApp: FC<Props> = ({
+export const HeaderTodoApp: FC<Props> = React.memo(({
   todos,
   USER_ID,
   setTempTodo,
   setIsEmplty,
+  setErrorAddTodo,
 }) => {
   const [query, setQuery] = useState('');
 
@@ -45,9 +47,6 @@ export const HeaderTodoApp: FC<Props> = ({
 
           if (!query) {
             setIsEmplty(true);
-            setTimeout(() => {
-              setIsEmplty(false);
-            }, 2000);
 
             return;
           }
@@ -59,11 +58,16 @@ export const HeaderTodoApp: FC<Props> = ({
             completed: false,
           });
 
-          addTodo({
+          const newTodo = addTodo({
             id: getNewId(todos),
             userId: USER_ID,
             title: query,
             completed: false,
+          });
+
+          newTodo.catch(() => {
+            setErrorAddTodo(true);
+            setTempTodo(null);
           });
 
           setQuery('');
@@ -79,4 +83,4 @@ export const HeaderTodoApp: FC<Props> = ({
       </form>
     </header>
   );
-};
+});

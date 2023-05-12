@@ -1,19 +1,24 @@
-import { FC } from 'react';
+import React, { FC } from 'react';
 import { deleteTodo } from '../../api/todos';
 
 interface Props {
   id: number;
   title: string;
+  setErrorDeleteTodo: (errorDeleteTodo: boolean) => void;
 }
 
-export const CompletedTodo: FC<Props> = ({ id, title }) => {
+export const CompletedTodo: FC<Props> = React.memo(({
+  id,
+  title,
+  setErrorDeleteTodo,
+}) => {
   return (
     <div className="todo completed">
       <label className="todo__status-label">
         <input
           type="checkbox"
           className="todo__status"
-          checked
+          defaultChecked
         />
       </label>
 
@@ -22,7 +27,11 @@ export const CompletedTodo: FC<Props> = ({ id, title }) => {
       <button
         type="button"
         className="todo__remove"
-        onClick={() => deleteTodo(id)}
+        onClick={() => {
+          const deletedTodo = deleteTodo(id);
+
+          deletedTodo.catch(setErrorDeleteTodo);
+        }}
       >
         ×
       </button>
@@ -33,4 +42,4 @@ export const CompletedTodo: FC<Props> = ({ id, title }) => {
       </div>
     </div>
   );
-};
+});

@@ -1,5 +1,5 @@
 import classNames from 'classnames';
-import { FC } from 'react';
+import React, { FC } from 'react';
 import { Category } from '../../types/Category';
 import { Todo } from '../../types/Todo';
 import { deleteTodo } from '../../api/todos';
@@ -12,11 +12,17 @@ interface Props {
   setCategory: (category: Category) => void;
 }
 
-export const FooterTodoApp: FC<Props> = ({ todos, category, setCategory }) => {
+export const FooterTodoApp: FC<Props> = React.memo(({
+  todos,
+  category,
+  setCategory,
+}) => {
+  const leftItems = todos.filter(({ completed }) => completed === false).length;
+
   return (
     <footer className="todoapp__footer">
       <span className="todo-count">
-        3 items left
+        {`${leftItems} items left`}
       </span>
 
       {/* Active filter should have a 'selected' class */}
@@ -52,19 +58,20 @@ export const FooterTodoApp: FC<Props> = ({ todos, category, setCategory }) => {
         </a>
       </nav>
 
-      {todos.some(({ completed }) => completed === true) && (
-        <button
-          type="button"
-          className="todoapp__clear-completed"
-          onClick={() => {
-            todos
-              .filter(({ completed }) => completed === true)
-              .map(({ id }) => deleteTodo(id));
-          }}
-        >
-          Clear completed
-        </button>
-      )}
+      <button
+        type="button"
+        className={classNames('todoapp__clear-completed', {
+          notification: todos.length - leftItems <= 0,
+          hidden: todos.length - leftItems <= 0,
+        })}
+        onClick={() => {
+          todos
+            .filter(({ completed }) => completed === true)
+            .map(({ id }) => deleteTodo(id));
+        }}
+      >
+        Clear completed
+      </button>
     </footer>
   );
-};
+});

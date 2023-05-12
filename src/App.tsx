@@ -12,19 +12,13 @@ export const App: React.FC = () => {
   const [category, setCategory] = useState<Category>('all');
   const [tempTodo, setTempTodo] = useState<Todo | null>(null);
   const [isEmpty, setIsEmplty] = useState(false);
-  const [errorGetTodos, setErrorGetTodos] = useState(false);
+  const [errorAddTodo, setErrorAddTodo] = useState(false);
+  const [errorDeleteTodo, setErrorDeleteTodo] = useState(false);
 
   const loadTodos = async () => {
-    try {
-      const todosFromServer = await getTodos();
+    const todosFromServer = await getTodos();
 
-      setTodos(todosFromServer);
-    } catch {
-      setErrorGetTodos(true);
-      setTimeout(() => {
-        setErrorGetTodos(false);
-      }, 5000);
-    }
+    setTodos(todosFromServer);
   };
 
   useEffect(() => {
@@ -45,6 +39,7 @@ export const App: React.FC = () => {
           USER_ID={USER_ID}
           setTempTodo={setTempTodo}
           setIsEmplty={setIsEmplty}
+          setErrorAddTodo={setErrorAddTodo}
         />
         {todos.length > 0 && (
           <MainTodoApp
@@ -52,6 +47,7 @@ export const App: React.FC = () => {
             category={category}
             tempTodo={tempTodo}
             setTempTodo={setTempTodo}
+            setErrorDeleteTodo={setErrorDeleteTodo}
           />
         )}
         {todos.length > 0 && (
@@ -65,7 +61,7 @@ export const App: React.FC = () => {
 
       {/* Notification is shown in case of any error */}
       {/* Add the 'hidden' class to hide the message smoothly */}
-      {(isEmpty || errorGetTodos) && (
+      {(isEmpty || errorAddTodo || errorDeleteTodo) && (
         <div className="notification is-danger is-light has-text-weight-normal">
           {/* eslint-disable jsx-a11y/control-has-associated-label */}
           <button
@@ -73,16 +69,16 @@ export const App: React.FC = () => {
             className="delete"
             onClick={() => {
               setIsEmplty(false);
-              setErrorGetTodos(false);
+              setErrorAddTodo(false);
+              setErrorDeleteTodo(false);
             }}
           />
 
           {/* show only one message at a time */}
-          {errorGetTodos && "Don't found server"}
-          {false && 'Unable to add a todo'}
-          {false && 'Unable to delete a todo'}
-          {false && 'Unable to update a todo'}
-          {isEmpty && "Title can't be empty"}
+          {(isEmpty && "Title can't be empty")
+            || (errorAddTodo && 'Unable to add a todo')
+            || (errorDeleteTodo && 'Unable to delete a todo')
+            || (false && 'Unable to update a todo')}
         </div>
       )}
     </div>

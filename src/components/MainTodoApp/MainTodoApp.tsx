@@ -1,4 +1,4 @@
-import { FC } from 'react';
+import React, { FC } from 'react';
 import { Todo } from '../../types/Todo';
 import { Category } from '../../types/Category';
 import { CompletedTodo } from '../CompletedTodo';
@@ -11,13 +11,15 @@ interface Props {
   category: Category;
   tempTodo: Todo | null;
   setTempTodo: (tempTodo: Todo | null) => void;
+  setErrorDeleteTodo: (errorDeleteTodo: boolean) => void;
 }
 
-export const MainTodoApp: FC<Props> = ({
+export const MainTodoApp: FC<Props> = React.memo(({
   todos,
   category,
   tempTodo,
   setTempTodo,
+  setErrorDeleteTodo,
 }) => {
   let visibleTodos = todos;
 
@@ -37,12 +39,12 @@ export const MainTodoApp: FC<Props> = ({
         }
 
         return (
-          <>
+          <div key={id}>
             {completed && (
               <CompletedTodo
                 id={id}
                 title={title}
-                key={id}
+                setErrorDeleteTodo={setErrorDeleteTodo}
               />
             )}
 
@@ -50,16 +52,16 @@ export const MainTodoApp: FC<Props> = ({
               <ActiveTodo
                 id={id}
                 title={title}
-                key={id}
+                setErrorDeleteTodo={setErrorDeleteTodo}
               />
             )}
 
             {false && <UpdateTodo />}
-          </>
+          </div>
         );
       })}
 
       {tempTodo && <LoadingTodo title={tempTodo.title} />}
     </section>
   );
-};
+});

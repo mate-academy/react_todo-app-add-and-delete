@@ -1,12 +1,17 @@
-import { FC } from 'react';
+import React, { FC } from 'react';
 import { deleteTodo } from '../../api/todos';
 
 interface Props {
   id: number;
   title: string;
+  setErrorDeleteTodo: (errorDeleteTodo: boolean) => void;
 }
 
-export const ActiveTodo: FC<Props> = ({ id, title }) => {
+export const ActiveTodo: FC<Props> = React.memo(({
+  id,
+  title,
+  setErrorDeleteTodo,
+}) => {
   return (
     <div className="todo">
       <label className="todo__status-label">
@@ -20,7 +25,11 @@ export const ActiveTodo: FC<Props> = ({ id, title }) => {
       <button
         type="button"
         className="todo__remove"
-        onClick={() => deleteTodo(id)}
+        onClick={() => {
+          const deletedTodo = deleteTodo(id);
+
+          deletedTodo.catch(setErrorDeleteTodo);
+        }}
       >
         ×
       </button>
@@ -31,4 +40,4 @@ export const ActiveTodo: FC<Props> = ({ id, title }) => {
       </div>
     </div>
   );
-};
+});
