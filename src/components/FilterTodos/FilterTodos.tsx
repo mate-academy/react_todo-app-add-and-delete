@@ -16,7 +16,13 @@ export const FilterTodos: React.FC<Props> = ({
 }) => {
   const handleRemoveCompleted = useCallback(() => {
     completedTodos.map(todo => removeTodo(todo.id));
-  }, []);
+  }, [completedTodos]);
+
+  const handlerFilter = (
+    e: React.MouseEvent<HTMLAnchorElement, MouseEvent>,
+  ) => {
+    onFilter(e.currentTarget.innerText as FilterType);
+  };
 
   return (
     <footer className="todoapp__footer">
@@ -31,7 +37,7 @@ export const FilterTodos: React.FC<Props> = ({
             'filter__link',
             { selected: filterType === FilterType.ALL },
           )}
-          onClick={() => onFilter(FilterType.ALL)}
+          onClick={handlerFilter}
         >
           All
         </a>
@@ -42,7 +48,7 @@ export const FilterTodos: React.FC<Props> = ({
             'filter__link',
             { selected: filterType === FilterType.ACTIVE },
           )}
-          onClick={() => onFilter(FilterType.ACTIVE)}
+          onClick={handlerFilter}
         >
           Active
         </a>
@@ -53,7 +59,7 @@ export const FilterTodos: React.FC<Props> = ({
             'filter__link',
             { selected: filterType === FilterType.COMPLETED },
           )}
-          onClick={() => onFilter(FilterType.COMPLETED)}
+          onClick={handlerFilter}
         >
           Completed
         </a>

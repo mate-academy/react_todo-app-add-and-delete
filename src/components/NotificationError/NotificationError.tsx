@@ -3,8 +3,8 @@ import classNames from 'classnames';
 import { ErrorType } from '../../types/ErrorType';
 
 type Props = {
-  error: ErrorType;
-  setError: (error: ErrorType) => void;
+  error: ErrorType | null;
+  setError: (error: null) => void;
 };
 
 export const NotificationError: React.FC<Props> = React.memo(
@@ -22,7 +22,7 @@ export const NotificationError: React.FC<Props> = React.memo(
         type="button"
         className="delete"
         aria-label="delete_button"
-        onClick={() => setError(ErrorType.NOERROR)}
+        onClick={() => setError(null)}
       />
       {error}
     </div>

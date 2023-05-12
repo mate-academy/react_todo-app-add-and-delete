@@ -16,10 +16,9 @@ const USER_ID = 10210;
 export const App: React.FC = () => {
   const [todos, setTodos] = useState<Todo[]>([]);
   const [filterType, setFilterType] = useState<FilterType>(FilterType.ALL);
-  const [error, setError] = useState<ErrorType>(ErrorType.NOERROR);
-  const [waitngResponse, setWaitingResponse] = useState(false);
+  const [error, setError] = useState<ErrorType | null>(null);
+  const [loading, setLoading] = useState(false);
   const [tempTodo, setTempTodo] = useState<Todo | null>(null);
-  const [isDeleted, setIsDeleted] = useState(false);
 
   const getTodosFromServer = async () => {
     try {
@@ -29,42 +28,41 @@ export const App: React.FC = () => {
     } catch {
       setError(ErrorType.LOAD);
       setTimeout(() => {
-        setError(ErrorType.NOERROR);
+        setError(null);
       }, 3000);
     }
   };
 
   const postTodo = useCallback(async (title: string) => {
     try {
-      setWaitingResponse(true);
-      setTempTodo({
-        userId: USER_ID, completed: false, title, id: 0,
-      });
-      const newTodo = await addTodo(
-        { userId: USER_ID, completed: false, title },
-      );
+      const newTodo = {
+        userId: USER_ID, completed: false, title,
+      };
+      const temp = { ...newTodo, id: 0 };
 
-      setTodos(currentTodos => [...currentTodos, newTodo]);
+      setLoading(true);
+      setTempTodo(temp);
+      await addTodo(newTodo);
+      await getTodosFromServer();
     } catch {
       setError(ErrorType.ADD);
       setTimeout(() => {
-        setError(ErrorType.NOERROR);
+        setError(null);
       }, 3000);
     } finally {
       setTempTodo(null);
-      setWaitingResponse(false);
+      setLoading(false);
     }
   }, []);
 
   const removeTodo = useCallback(async (todoId: number) => {
     try {
-      setIsDeleted(true);
       await deleteTodo(todoId);
-      setTodos(currentTodos => currentTodos.filter(todo => todo.id !== todoId));
+      await getTodosFromServer();
     } catch {
       setError(ErrorType.DELETE);
       setTimeout(() => {
-        setError(ErrorType.NOERROR);
+        setError(null);
       }, 3000);
     }
   }, []);
@@ -72,9 +70,6 @@ export const App: React.FC = () => {
   const filteredTodos = useMemo(() => {
     return todos.filter(todo => {
       switch (filterType) {
-        case FilterType.ALL:
-          return todo;
-
         case FilterType.ACTIVE:
           return !todo.completed;
 
@@ -82,7 +77,7 @@ export const App: React.FC = () => {
           return todo.completed;
 
         default:
-          return todo;
+          return true;
       }
     });
   }, [todos, filterType]);
@@ -107,7 +102,7 @@ export const App: React.FC = () => {
         <Form
           post={postTodo}
           setError={setError}
-          isDataReciving={waitngResponse}
+          loading={loading}
           activeTodosCount={uncompletedTodosCount}
         />
 
@@ -115,7 +110,6 @@ export const App: React.FC = () => {
           todos={filteredTodos}
           removeTodo={removeTodo}
           tempTodo={tempTodo}
-          isDeleted={isDeleted}
         />
 
         {!!todos.length && (
@@ -129,7 +123,9 @@ export const App: React.FC = () => {
         )}
       </div>
 
-      <NotificationError error={error} setError={setError} />
+      {error && (
+        <NotificationError error={error} setError={setError} />
+      )}
     </div>
   );
 };

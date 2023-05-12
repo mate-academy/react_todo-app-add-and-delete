@@ -4,13 +4,13 @@ import { ErrorType } from '../../types/ErrorType';
 
 type Props = {
   post:(title: string) => void;
-  setError: (error: ErrorType) => void;
-  isDataReciving: boolean;
+  setError: (error: ErrorType | null) => void;
+  loading: boolean;
   activeTodosCount: number;
 };
 
 export const Form: React.FC<Props> = React.memo(({
-  post, setError, isDataReciving, activeTodosCount,
+  post, setError, loading, activeTodosCount,
 }) => {
   const [query, setQuery] = useState('');
 
@@ -19,7 +19,7 @@ export const Form: React.FC<Props> = React.memo(({
     if (!query.trim()) {
       setError(ErrorType.EMPTY);
       setTimeout(() => {
-        return setError(ErrorType.NOERROR);
+        return setError(null);
       }, 3000);
 
       return;
@@ -47,7 +47,7 @@ export const Form: React.FC<Props> = React.memo(({
           placeholder="What needs to be done?"
           value={query}
           onChange={(e) => setQuery(e.target.value)}
-          disabled={isDataReciving}
+          disabled={loading}
         />
       </form>
     </header>
