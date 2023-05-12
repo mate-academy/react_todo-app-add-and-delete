@@ -66,6 +66,8 @@ export const App: React.FC = () => {
       setTimeout(() => {
         setError(null);
       }, 3000);
+    } finally {
+      setIsProcessingId([]);
     }
   }, []);
 
@@ -101,6 +103,9 @@ export const App: React.FC = () => {
   useEffect(() => {
     getTodosFromServer();
   }, []);
+
+  // eslint-disable-next-line no-console
+  console.log(isProcessingId);
 
   return (
     <div className="todoapp">
