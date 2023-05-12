@@ -1,17 +1,18 @@
 import React, { FC } from 'react';
 import { deleteTodo } from '../../api/todos';
+import { Todo } from '../../types/Todo';
 
 interface Props {
-  id: number;
-  title: string;
+  todo: Todo;
   setError: (error: string) => void;
 }
 
 export const ActiveTodo: FC<Props> = React.memo(({
-  id,
-  title,
+  todo,
   setError,
 }) => {
+  const { id, title } = todo;
+
   return (
     <div className="todo">
       <label className="todo__status-label">

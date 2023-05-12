@@ -1,4 +1,5 @@
-import React, { FC, useState } from 'react';
+/* eslint-disable jsx-a11y/control-has-associated-label */
+import React, { FC, FormEvent, useState } from 'react';
 import { addTodo } from '../../api/todos';
 import { Todo } from '../../types/Todo';
 
@@ -27,10 +28,42 @@ export const HeaderTodoApp: FC<Props> = React.memo(({
 }) => {
   const [query, setQuery] = useState('');
 
+  const handleSubmit = (event: FormEvent) => {
+    event.preventDefault();
+
+    if (!query) {
+      setError("Title can't be empty");
+
+      return;
+    }
+
+    const newTodo = addTodo({
+      id: getNewId(todos),
+      userId: USER_ID,
+      title: query,
+      completed: false,
+    });
+
+    newTodo.catch(() => {
+      setError('Unable to add a todo');
+    });
+
+    setTempTodo({
+      id: getNewId(todos),
+      userId: USER_ID,
+      title: query,
+      completed: false,
+    });
+
+    setTimeout(() => {
+      setTempTodo(null);
+    }, 500);
+
+    setQuery('');
+  };
+
   return (
     <header className="todoapp__header">
-      {/* this buttons is active only if there are some active todos */}
-      {/* eslint-disable jsx-a11y/control-has-associated-label */}
       {todos.length > 0 && (
         <button
           type="button"
@@ -38,38 +71,8 @@ export const HeaderTodoApp: FC<Props> = React.memo(({
         />
       )}
 
-      {/* Add a todo on form submit */}
       <form
-        onSubmit={(event) => {
-          event.preventDefault();
-
-          if (!query) {
-            setError("Title can't be empty");
-
-            return;
-          }
-
-          setTempTodo({
-            id: getNewId(todos),
-            userId: USER_ID,
-            title: query,
-            completed: false,
-          });
-
-          const newTodo = addTodo({
-            id: getNewId(todos),
-            userId: USER_ID,
-            title: query,
-            completed: false,
-          });
-
-          newTodo.catch(() => {
-            setError('Unable to add a todo');
-            setTempTodo(null);
-          });
-
-          setQuery('');
-        }}
+        onSubmit={handleSubmit}
       >
         <input
           type="text"

@@ -2,11 +2,13 @@ import React, { useEffect, useState } from 'react';
 import { UserWarning } from './UserWarning';
 import { HeaderTodoApp } from './components/HeaderTodoApp';
 import { MainTodoApp } from './components/MainTodoApp';
-import { USER_ID, getTodos } from './api/todos';
+import { getTodos } from './api/todos';
 import { Todo } from './types/Todo';
 import { FooterTodoApp } from './components/FooterTodoApp';
 import { Category } from './types/Category';
 import { ErrorComponent } from './components/ErrorComponent';
+
+const USER_ID = 10299;
 
 export const App: React.FC = () => {
   const [todos, setTodos] = useState<Todo[]>([]);
@@ -15,7 +17,7 @@ export const App: React.FC = () => {
   const [error, setError] = useState('');
 
   const loadTodos = async () => {
-    const todosFromServer = await getTodos();
+    const todosFromServer = await getTodos(USER_ID);
 
     setTodos(todosFromServer);
   };

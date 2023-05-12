@@ -33,7 +33,9 @@ export const MainTodoApp: FC<Props> = React.memo(({
 
   return (
     <section className="todoapp__main">
-      {visibleTodos.map(({ id, completed, title }) => {
+      {visibleTodos.map((todo) => {
+        const { id, completed } = todo;
+
         if (tempTodo?.id === id) {
           setTempTodo(null);
         }
@@ -42,16 +44,14 @@ export const MainTodoApp: FC<Props> = React.memo(({
           <div key={id}>
             {completed && (
               <CompletedTodo
-                id={id}
-                title={title}
+                todo={todo}
                 setError={setError}
               />
             )}
 
             {!completed && (
               <ActiveTodo
-                id={id}
-                title={title}
+                todo={todo}
                 setError={setError}
               />
             )}
