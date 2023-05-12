@@ -11,7 +11,7 @@ interface Props {
   category: Category;
   tempTodo: Todo | null;
   setTempTodo: (tempTodo: Todo | null) => void;
-  setErrorDeleteTodo: (errorDeleteTodo: boolean) => void;
+  setError: (error: string) => void;
 }
 
 export const MainTodoApp: FC<Props> = React.memo(({
@@ -19,7 +19,7 @@ export const MainTodoApp: FC<Props> = React.memo(({
   category,
   tempTodo,
   setTempTodo,
-  setErrorDeleteTodo,
+  setError,
 }) => {
   let visibleTodos = todos;
 
@@ -44,7 +44,7 @@ export const MainTodoApp: FC<Props> = React.memo(({
               <CompletedTodo
                 id={id}
                 title={title}
-                setErrorDeleteTodo={setErrorDeleteTodo}
+                setError={setError}
               />
             )}
 
@@ -52,7 +52,7 @@ export const MainTodoApp: FC<Props> = React.memo(({
               <ActiveTodo
                 id={id}
                 title={title}
-                setErrorDeleteTodo={setErrorDeleteTodo}
+                setError={setError}
               />
             )}
 

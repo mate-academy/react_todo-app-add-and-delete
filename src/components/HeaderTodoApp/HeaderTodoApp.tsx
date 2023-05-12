@@ -6,8 +6,7 @@ interface Props {
   todos: Todo[];
   USER_ID: number;
   setTempTodo: (tempTodo: Todo | null) => void;
-  setIsEmplty: (isEmpty: boolean) => void;
-  setErrorAddTodo: (errorAddTodo: boolean) => void;
+  setError: (error: string) => void;
 }
 
 const getNewId = (todos: Todo[]) => {
@@ -24,8 +23,7 @@ export const HeaderTodoApp: FC<Props> = React.memo(({
   todos,
   USER_ID,
   setTempTodo,
-  setIsEmplty,
-  setErrorAddTodo,
+  setError,
 }) => {
   const [query, setQuery] = useState('');
 
@@ -46,7 +44,7 @@ export const HeaderTodoApp: FC<Props> = React.memo(({
           event.preventDefault();
 
           if (!query) {
-            setIsEmplty(true);
+            setError("Title can't be empty");
 
             return;
           }
@@ -66,7 +64,7 @@ export const HeaderTodoApp: FC<Props> = React.memo(({
           });
 
           newTodo.catch(() => {
-            setErrorAddTodo(true);
+            setError('Unable to add a todo');
             setTempTodo(null);
           });
 

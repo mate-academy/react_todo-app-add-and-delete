@@ -4,13 +4,13 @@ import { deleteTodo } from '../../api/todos';
 interface Props {
   id: number;
   title: string;
-  setErrorDeleteTodo: (errorDeleteTodo: boolean) => void;
+  setError: (error: string) => void;
 }
 
 export const ActiveTodo: FC<Props> = React.memo(({
   id,
   title,
-  setErrorDeleteTodo,
+  setError,
 }) => {
   return (
     <div className="todo">
@@ -28,7 +28,7 @@ export const ActiveTodo: FC<Props> = React.memo(({
         onClick={() => {
           const deletedTodo = deleteTodo(id);
 
-          deletedTodo.catch(setErrorDeleteTodo);
+          deletedTodo.catch(() => setError('Unable to delete a todo'));
         }}
       >
         ×

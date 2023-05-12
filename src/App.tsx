@@ -6,14 +6,13 @@ import { USER_ID, getTodos } from './api/todos';
 import { Todo } from './types/Todo';
 import { FooterTodoApp } from './components/FooterTodoApp';
 import { Category } from './types/Category';
+import { ErrorComponent } from './components/ErrorComponent';
 
 export const App: React.FC = () => {
   const [todos, setTodos] = useState<Todo[]>([]);
   const [category, setCategory] = useState<Category>('all');
   const [tempTodo, setTempTodo] = useState<Todo | null>(null);
-  const [isEmpty, setIsEmplty] = useState(false);
-  const [errorAddTodo, setErrorAddTodo] = useState(false);
-  const [errorDeleteTodo, setErrorDeleteTodo] = useState(false);
+  const [error, setError] = useState('');
 
   const loadTodos = async () => {
     const todosFromServer = await getTodos();
@@ -38,8 +37,7 @@ export const App: React.FC = () => {
           todos={todos}
           USER_ID={USER_ID}
           setTempTodo={setTempTodo}
-          setIsEmplty={setIsEmplty}
-          setErrorAddTodo={setErrorAddTodo}
+          setError={setError}
         />
         {todos.length > 0 && (
           <MainTodoApp
@@ -47,7 +45,7 @@ export const App: React.FC = () => {
             category={category}
             tempTodo={tempTodo}
             setTempTodo={setTempTodo}
-            setErrorDeleteTodo={setErrorDeleteTodo}
+            setError={setError}
           />
         )}
         {todos.length > 0 && (
@@ -59,27 +57,8 @@ export const App: React.FC = () => {
         )}
       </div>
 
-      {/* Notification is shown in case of any error */}
-      {/* Add the 'hidden' class to hide the message smoothly */}
-      {(isEmpty || errorAddTodo || errorDeleteTodo) && (
-        <div className="notification is-danger is-light has-text-weight-normal">
-          {/* eslint-disable jsx-a11y/control-has-associated-label */}
-          <button
-            type="button"
-            className="delete"
-            onClick={() => {
-              setIsEmplty(false);
-              setErrorAddTodo(false);
-              setErrorDeleteTodo(false);
-            }}
-          />
-
-          {/* show only one message at a time */}
-          {(isEmpty && "Title can't be empty")
-            || (errorAddTodo && 'Unable to add a todo')
-            || (errorDeleteTodo && 'Unable to delete a todo')
-            || (false && 'Unable to update a todo')}
-        </div>
+      {error && (
+        <ErrorComponent error={error} setError={setError} />
       )}
     </div>
   );
