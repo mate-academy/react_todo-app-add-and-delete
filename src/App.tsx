@@ -14,7 +14,9 @@ import { TodosContext } from './TodoContext';
 const USER_ID = 9968;
 
 export const App: React.FC = () => {
-  const { todos, setTodos, isDeleteError, isAddError } = useContext(TodosContext);
+  const {
+    todos, setTodos, isDeleteError, isAddError,
+  } = useContext(TodosContext);
   const [filter, setFilter] = useState(FilterStatus.all);
   const [isUpdateError, setIsUpdateError] = useState(false);
   const active = todos.filter(todo => todo.completed === false).length;
