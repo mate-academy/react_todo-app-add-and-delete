@@ -30,9 +30,9 @@ export const TodoCard: React.FC<Props> = ({ currentTodo }) => {
       if (response !== 0) {
         setTodos(
           todos.filter(todo => todo.id !== currentTodo.id),
-        )
+        );
       } else {
-        setIsDeleteError(true)
+        setIsDeleteError(true);
       }
     } catch {
       setIsDeleteError(true);
