@@ -7,6 +7,7 @@ type Props = {
   setError: (error: ErrorType | null) => void;
   loading: boolean;
   activeTodosCount: number;
+  todosExist: boolean;
 };
 
 export const Form: React.FC<Props> = React.memo(({
@@ -14,6 +15,7 @@ export const Form: React.FC<Props> = React.memo(({
   setError,
   loading,
   activeTodosCount,
+  todosExist,
 }) => {
   const [query, setQuery] = useState('');
 
@@ -34,14 +36,16 @@ export const Form: React.FC<Props> = React.memo(({
 
   return (
     <header className="todoapp__header">
-      <button
-        type="button"
-        className={classNames(
-          'todoapp__toggle-all',
-          { active: !activeTodosCount },
-        )}
-        aria-label="active_toggle"
-      />
+      {todosExist && (
+        <button
+          type="button"
+          className={classNames(
+            'todoapp__toggle-all',
+            { active: !activeTodosCount },
+          )}
+          aria-label="active_toggle"
+        />
+      )}
 
       <form onSubmit={handleSubmit}>
         <input

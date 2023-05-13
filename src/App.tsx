@@ -88,8 +88,8 @@ export const App: React.FC = () => {
   ), [todos]);
 
   const activeTodosCount = useMemo(() => (
-    visibleTodos.filter(todo => !todo.completed).length
-  ), [visibleTodos]);
+    todos.filter(todo => !todo.completed).length
+  ), [todos]);
 
   useEffect(() => {
     getTodosFromServer();
@@ -113,6 +113,7 @@ export const App: React.FC = () => {
           setError={setError}
           loading={loading}
           activeTodosCount={activeTodosCount}
+          todosExist={!!todos.length}
         />
 
         <TodoList
