@@ -11,7 +11,10 @@ type Props = {
 };
 
 export const TodoList: React.FC<Props> = React.memo(({
-  todos, removeTodo, tempTodo, isProcessingId,
+  todos,
+  removeTodo,
+  tempTodo,
+  isProcessingId,
 }) => (
   <section className="todoapp__main">
     <TransitionGroup>

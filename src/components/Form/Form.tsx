@@ -10,7 +10,10 @@ type Props = {
 };
 
 export const Form: React.FC<Props> = React.memo(({
-  post, setError, loading, activeTodosCount,
+  post,
+  setError,
+  loading,
+  activeTodosCount,
 }) => {
   const [query, setQuery] = useState('');
 

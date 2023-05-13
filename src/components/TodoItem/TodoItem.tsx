@@ -10,7 +10,9 @@ type Props = {
 };
 
 export const TodoItem: React.FC<Props> = React.memo(({
-  todo, removeTodo, isProcessingId = [0],
+  todo,
+  removeTodo,
+  isProcessingId = [0],
 }) => {
   const { title, completed, id } = todo;
 

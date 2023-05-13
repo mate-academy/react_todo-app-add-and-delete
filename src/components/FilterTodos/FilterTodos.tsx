@@ -11,7 +11,11 @@ type Props = {
 };
 
 export const FilterTodos: React.FC<Props> = ({
-  activeTodosCount, isCompletedTodos, filterType, onFilter, clearCompleted,
+  activeTodosCount,
+  isCompletedTodos,
+  filterType,
+  onFilter,
+  clearCompleted,
 }) => {
   const handlerFilter = (
     e: React.MouseEvent<HTMLAnchorElement, MouseEvent>,

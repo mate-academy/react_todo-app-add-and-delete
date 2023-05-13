@@ -28,9 +28,6 @@ export const App: React.FC = () => {
       setTodos(todosFromServer);
     } catch {
       setError(ErrorType.LOAD);
-      setTimeout(() => {
-        setError(null);
-      }, 3000);
     }
   };
 
@@ -47,9 +44,6 @@ export const App: React.FC = () => {
       await getTodosFromServer();
     } catch {
       setError(ErrorType.ADD);
-      setTimeout(() => {
-        setError(null);
-      }, 3000);
     } finally {
       setTempTodo(null);
       setLoading(false);
@@ -63,9 +57,6 @@ export const App: React.FC = () => {
       await getTodosFromServer();
     } catch {
       setError(ErrorType.DELETE);
-      setTimeout(() => {
-        setError(null);
-      }, 3000);
     } finally {
       setIsProcessingId([]);
     }
@@ -104,6 +95,14 @@ export const App: React.FC = () => {
     getTodosFromServer();
   }, []);
 
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      setError(null);
+    }, 3000);
+
+    return () => clearTimeout(timer);
+  }, [error]);
+
   return (
     <div className="todoapp">
       <h1 className="todoapp__title">todos</h1>
@@ -134,9 +133,7 @@ export const App: React.FC = () => {
         )}
       </div>
 
-      {error && (
-        <NotificationError error={error} setError={setError} />
-      )}
+      <NotificationError error={error} setError={setError} />
     </div>
   );
 };
