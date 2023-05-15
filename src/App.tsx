@@ -59,7 +59,7 @@ export const App: React.FC = () => {
 
   const handleTodoDelete = useCallback(async (todoToDelete: Todo) => {
     try {
-      setErrorMessage('');
+      deleteErrorMessage();
       setTempTodo(todoToDelete);
       await deleteTodo(todoToDelete.id);
       loadData();
