@@ -3,7 +3,7 @@ import classNames from 'classnames';
 import { FC } from 'react';
 import { Error } from '../../types/ErrorEnum';
 
-interface ErrorMessageProps {
+interface Props {
   hasError: boolean;
   error: Error;
   onClose: () => void;
@@ -24,7 +24,7 @@ const renderSwitch = (err: Error) => {
   }
 };
 
-export const ErrorMessage: FC<ErrorMessageProps> = (
+export const ErrorMessage: FC<Props> = (
   {
     hasError,
     onClose,

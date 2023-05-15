@@ -3,12 +3,12 @@
 import { ChangeEvent, FC, useState } from 'react';
 import { Todo } from '../../types/Todo';
 
-interface TodoFormProps {
+interface Props {
   addTodo: (query: string) => void;
   tempTodo: Todo | null;
 }
 
-export const TodoForm: FC<TodoFormProps> = ({ addTodo, tempTodo }) => {
+export const TodoForm: FC<Props> = ({ addTodo, tempTodo }) => {
   const [query, setQuery] = useState('');
 
   const handleChangeInput = (event: ChangeEvent<HTMLInputElement>) => {

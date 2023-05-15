@@ -2,7 +2,7 @@ import classNames from 'classnames';
 import { FC, memo } from 'react';
 import { Filter } from '../../types/FilterEnum';
 
-interface BottomPanelProps {
+interface Props {
   itemsCount: number;
   selectedFilter: Filter;
   showClearAllButton: boolean;
@@ -10,7 +10,7 @@ interface BottomPanelProps {
   deleteAllCompleted: () => void;
 }
 
-export const BottomPanel: FC<BottomPanelProps> = memo(({
+export const BottomPanel: FC<Props> = memo(({
   itemsCount,
   selectedFilter,
   showClearAllButton,

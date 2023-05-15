@@ -2,7 +2,7 @@ import { FC } from 'react';
 import { Todo } from '../../types/Todo';
 import { TodoItem } from '../TodoItem';
 
-interface TodoListProps {
+interface Props {
   todos: Todo[];
   tempTodo: Todo | null;
   idOfDeletedTodo: number | null;
@@ -10,7 +10,7 @@ interface TodoListProps {
   deleteTodo: (id: number) => void;
 }
 
-export const TodoList: FC<TodoListProps> = (
+export const TodoList: FC<Props> = (
   {
     todos,
     tempTodo,

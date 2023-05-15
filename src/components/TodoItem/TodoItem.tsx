@@ -2,14 +2,14 @@ import { FC } from 'react';
 import classNames from 'classnames';
 import { Todo } from '../../types/Todo';
 
-interface TodoItemProps {
+interface Props {
   todo: Todo;
   idOfDeletedTodo: number | null;
   completedTodosID: number[] | null;
   deleteTodo: (id: number) => void;
 }
 
-export const TodoItem: FC<TodoItemProps> = (
+export const TodoItem: FC<Props> = (
   {
     todo,
     idOfDeletedTodo,
