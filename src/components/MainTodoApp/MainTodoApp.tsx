@@ -1,67 +1,34 @@
 import React, { FC } from 'react';
 import { Todo } from '../../types/Todo';
-import { Category } from '../../types/Category';
-import { CompletedTodo } from '../CompletedTodo';
-import { ActiveTodo } from '../ActiveTodo';
 import { LoadingTodo } from '../LoadingTodo';
-import { UpdateTodo } from '../UpdateTodo';
+import { TodoComponent } from '../TodoComponent/TodoComponent';
 
 interface Props {
   todos: Todo[];
-  category: Category;
+  removeTodo: (todoData: Todo) => void;
   tempTodo: Todo | null;
-  setTempTodo: (tempTodo: Todo | null) => void;
-  setError: (error: string) => void;
+  removingTodoId: number | null;
 }
 
 export const MainTodoApp: FC<Props> = React.memo(({
   todos,
-  category,
+  removeTodo,
   tempTodo,
-  setTempTodo,
-  setError,
+  removingTodoId,
 }) => {
-  let visibleTodos = todos;
-
-  if (category !== 'all') {
-    visibleTodos = todos.filter(({ completed }) => {
-      return (category === 'completed')
-        ? completed
-        : !completed;
-    });
-  }
-
   return (
     <section className="todoapp__main">
-      {visibleTodos.map((todo) => {
-        const { id, completed } = todo;
+      {todos.map((todo) => {
+        const { id, title } = todo;
 
-        if (tempTodo?.id === id) {
-          setTempTodo(null);
-        }
-
-        return (
-          <div key={id}>
-            {completed && (
-              <CompletedTodo
-                todo={todo}
-                setError={setError}
-              />
-            )}
-
-            {!completed && (
-              <ActiveTodo
-                todo={todo}
-                setError={setError}
-              />
-            )}
-
-            {false && <UpdateTodo />}
-          </div>
-        );
+        return removingTodoId !== id
+          ? <TodoComponent key={id} todo={todo} removeTodo={removeTodo} />
+          : <LoadingTodo key={id} title={title} />;
       })}
 
-      {tempTodo && <LoadingTodo title={tempTodo.title} />}
+      {tempTodo && (
+        <LoadingTodo title={tempTodo.title} />
+      )}
     </section>
   );
 });

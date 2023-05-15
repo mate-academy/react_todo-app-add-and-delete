@@ -1,20 +1,23 @@
 import React, { FC } from 'react';
-import { deleteTodo } from '../../api/todos';
+import classNames from 'classnames';
 import { Todo } from '../../types/Todo';
 
 interface Props {
   todo: Todo;
-  setError: (error: string) => void;
+  removeTodo: (todoData: Todo) => void;
 }
 
-export const ActiveTodo: FC<Props> = React.memo(({
-  todo,
-  setError,
+export const TodoComponent: FC<Props> = React.memo(({
+  todo, removeTodo,
 }) => {
-  const { id, title } = todo;
+  const { title, completed } = todo;
+
+  const handleDeleteTodo = () => {
+    removeTodo(todo);
+  };
 
   return (
-    <div className="todo">
+    <div className={classNames('todo', { completed })}>
       <label className="todo__status-label">
         <input
           type="checkbox"
@@ -26,11 +29,7 @@ export const ActiveTodo: FC<Props> = React.memo(({
       <button
         type="button"
         className="todo__remove"
-        onClick={() => {
-          const deletedTodo = deleteTodo(id);
-
-          deletedTodo.catch(() => setError('Unable to delete a todo'));
-        }}
+        onClick={handleDeleteTodo}
       >
         ×
       </button>

@@ -1,34 +1,27 @@
 /* eslint-disable jsx-a11y/control-has-associated-label */
-import React, { FC, FormEvent, useState } from 'react';
-import { addTodo } from '../../api/todos';
+import React, {
+  FC, FormEvent, useState,
+} from 'react';
 import { Todo } from '../../types/Todo';
 
 interface Props {
   todos: Todo[];
   USER_ID: number;
-  setTempTodo: (tempTodo: Todo | null) => void;
+  createTodo: (todoData: Todo) => void;
+  tempTodo: Todo | null;
   setError: (error: string) => void;
 }
-
-const getNewId = (todos: Todo[]) => {
-  return todos.reduce((acum: number, { id }: Todo) => {
-    if (acum < id) {
-      return id;
-    }
-
-    return acum;
-  }, 0) + 1;
-};
 
 export const HeaderTodoApp: FC<Props> = React.memo(({
   todos,
   USER_ID,
-  setTempTodo,
+  createTodo,
+  tempTodo,
   setError,
 }) => {
   const [query, setQuery] = useState('');
 
-  const handleSubmit = (event: FormEvent) => {
+  const handleSubmit = async (event: FormEvent) => {
     event.preventDefault();
 
     if (!query) {
@@ -37,27 +30,12 @@ export const HeaderTodoApp: FC<Props> = React.memo(({
       return;
     }
 
-    const newTodo = addTodo({
-      id: getNewId(todos),
+    await createTodo({
+      id: 0,
       userId: USER_ID,
       title: query,
       completed: false,
     });
-
-    newTodo.catch(() => {
-      setError('Unable to add a todo');
-    });
-
-    setTempTodo({
-      id: getNewId(todos),
-      userId: USER_ID,
-      title: query,
-      completed: false,
-    });
-
-    setTimeout(() => {
-      setTempTodo(null);
-    }, 500);
 
     setQuery('');
   };
@@ -80,6 +58,7 @@ export const HeaderTodoApp: FC<Props> = React.memo(({
           placeholder="What needs to be done?"
           value={query}
           onChange={(event) => setQuery(event.target.value)}
+          disabled={!!tempTodo}
         />
       </form>
     </header>
