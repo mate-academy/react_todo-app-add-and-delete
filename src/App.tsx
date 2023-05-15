@@ -29,12 +29,15 @@ export const App: FC = () => {
   const [typeOfError, setTypeOfError] = useState<Error>(Error.NONE);
   const [tempTodo, setTempTodo] = useState<Todo | null>(null);
 
-  const changeFilterOfTodo = useCallback((status: Filter) => {
-    setFilterOfTodo(status);
-  }, []);
+  const loadTodoFromServer = useCallback(async () => {
+    try {
+      const todosFromServer = await getTodos(USER_ID);
 
-  const closeErrorMessage = useCallback(() => {
-    setHasError(false);
+      setTodos(todosFromServer);
+    } catch {
+      setHasError(true);
+      setTypeOfError(Error.SERVER);
+    }
   }, []);
 
   const createTodoOnServer = useCallback(async (data: Todo) => {
@@ -88,7 +91,7 @@ export const App: FC = () => {
     deleteTodoFromServer(id);
   }, []);
 
-  const deleteAllCompleted = () => {
+  const deleteAllCompleted = useCallback(() => {
     const completedTodoIds = todos
       .filter(({ completed }) => completed)
       .map(({ id }) => id);
@@ -98,11 +101,19 @@ export const App: FC = () => {
     completedTodoIds.forEach(id => {
       deleteTodoFromServer(id);
     });
-  };
+  }, [todos]);
 
-  const isCompletedTodos = () => {
+  const isCompletedTodos = useCallback(() => {
     return todos.some(({ completed }) => completed);
-  };
+  }, [todos]);
+
+  const closeErrorMessage = useCallback(() => {
+    setHasError(false);
+  }, []);
+
+  const changeFilterOfTodo = useCallback((status: Filter) => {
+    setFilterOfTodo(status);
+  }, []);
 
   const filterTodos = useCallback(() => {
     switch (filterOfTodo) {
@@ -116,17 +127,6 @@ export const App: FC = () => {
   }, [todos, filterOfTodo]);
 
   useEffect(() => {
-    const loadTodoFromServer = async () => {
-      try {
-        const todosFromServer = await getTodos(USER_ID);
-
-        setTodos(todosFromServer);
-      } catch {
-        setHasError(true);
-        setTypeOfError(Error.SERVER);
-      }
-    };
-
     loadTodoFromServer();
   }, []);
 
@@ -145,6 +145,9 @@ export const App: FC = () => {
   }, [hasError]);
 
   const visibleTodos = useMemo(() => filterTodos(), [todos, filterOfTodo]);
+  const countOfActiveTodos = useMemo(() => visibleTodos
+    .filter(({ completed }) => !completed)
+    .length, [visibleTodos]);
 
   if (!USER_ID) {
     return <UserWarning />;
@@ -171,7 +174,7 @@ export const App: FC = () => {
         {todos.length !== 0
           && (
             <BottomPanel
-              countOfItems={visibleTodos.length}
+              countOfItems={countOfActiveTodos}
               selectedFilter={filterOfTodo}
               changeFilterOfTodo={changeFilterOfTodo}
               deleteAllCompleted={deleteAllCompleted}
