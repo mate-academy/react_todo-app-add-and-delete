@@ -23,6 +23,8 @@ export const App: React.FC = () => {
   const [query, setQuery] = useState<string>('');
   const [isTitleEmpty, setIsTitleEmpty] = useState<boolean>(false);
   const [isAddError, setIsAddError] = useState<boolean>(false);
+  const [isRemoveError, setIsRemoveError] = useState<boolean>(false);
+  const [isRemCompleted, setIsRemCompleted] = useState<boolean>(false);
 
   const visibleTodos = useMemo(() => (
     todos.filter((todo) => {
@@ -105,6 +107,32 @@ export const App: React.FC = () => {
     setIsAddError(false);
   }, []);
 
+  const handleRemoveTodo = useCallback(async (todoId: number) => {
+    try {
+      await client.delete(`/todos/${todoId}`);
+
+      setTodos((prevTodos) => prevTodos.filter((todo) => todo.id !== todoId));
+    } catch (error) {
+      setIsRemoveError(true);
+    }
+  }, []);
+
+  const handleRemoveCompletedTodos = useCallback(async () => {
+    setIsRemCompleted(true);
+
+    try {
+      await Promise.all(
+        todos
+          .filter((todo) => todo.completed)
+          .map((todo) => client.delete(`/todos/${todo.id}`)),
+      );
+
+      setTodos((prevTodos) => prevTodos.filter((todo) => !todo.completed));
+    } catch (error) {
+      setIsRemoveError(true);
+    }
+  }, [todos]);
+
   return (
     <div className="todoapp">
       <h1 className="todoapp__title">todos</h1>
@@ -133,9 +161,17 @@ export const App: React.FC = () => {
           </form>
         </header>
 
-        <TodoList todos={visibleTodos} />
+        <TodoList
+          todos={visibleTodos}
+          onTodoRemove={handleRemoveTodo}
+          isRemCompleted={isRemCompleted}
+        />
         {tempTodo && (
-          <TodoItem todo={tempTodo} />
+          <TodoItem
+            todo={tempTodo}
+            onTodoRemove={handleRemoveTodo}
+            isRemovingCompleted={isRemCompleted}
+          />
         )}
 
         {isTodosNoEmpty && (
@@ -153,6 +189,7 @@ export const App: React.FC = () => {
               data-cy="ClearCompletedButton"
               type="button"
               className="todoapp__clear-completed"
+              onClick={handleRemoveCompletedTodos}
             >
               Clear completed
             </button>
@@ -171,6 +208,7 @@ export const App: React.FC = () => {
 
           {isTitleEmpty && (<strong>Title can&apos;t be empty</strong>)}
           {isAddError && (<strong>Unable to add a todo</strong>)}
+          {isRemoveError && (<strong>Unable to delete a todo</strong>)}
         </div>
       </div>
     </div>
