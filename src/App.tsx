@@ -1,24 +1,105 @@
-/* eslint-disable max-len */
 /* eslint-disable jsx-a11y/control-has-associated-label */
-import React from 'react';
-import { UserWarning } from './UserWarning';
+import React, {
+  useCallback, useEffect, useMemo, useState,
+} from 'react';
 
-const USER_ID = 0;
+import { UserWarning } from './UserWarning';
+import { Header } from './components/Header';
+import { TodoList } from './components/TodoList';
+import { Footer } from './components/Footer';
+import { Notification } from './components/Notification';
+
+import { Select } from './types/Select';
+import { Todo } from './types/Todo';
+import { TodoData } from './types/TodoData';
+import { client, todoUrlEnd } from './utils/fetchClient';
+import { createTodo, deleteTodo } from './api/todos';
+
+const USER_ID = 10364;
 
 export const App: React.FC = () => {
+  const [todos, setTodos] = useState<Todo[]>([]);
+  const [select, setSelect] = useState(Select.All);
+  const [errorMessage, setErrorMessage] = useState('');
+  const [isLoading, setIsLoading] = useState(false);
+
+  const getTodos = useCallback(async () => {
+    const data: Todo[] = await client.get(todoUrlEnd);
+
+    setTodos(data);
+  }, []);
+
+  useEffect(() => {
+    getTodos();
+  }, []);
+
+  const addTodo = useCallback(async (data: TodoData) => {
+    try {
+      setIsLoading(true);
+      await createTodo(data);
+    } catch {
+      setErrorMessage('Unable to add a todo');
+    } finally {
+      getTodos();
+      setIsLoading(false);
+    }
+  }, []);
+
+  const removeTodo = useCallback(async (id: number) => {
+    await deleteTodo(id);
+    getTodos();
+  }, []);
+
+  const handleSelectedTodos = useMemo(() => {
+    let visibleTodos: Todo[] = [...todos];
+
+    switch (select) {
+      case Select.Active:
+        visibleTodos = visibleTodos.filter(todo => todo.completed === false);
+        break;
+
+      case Select.Completed:
+        visibleTodos = visibleTodos.filter(todo => todo.completed === true);
+        break;
+
+      case Select.All:
+      default:
+        break;
+    }
+
+    return visibleTodos;
+  }, [todos, select]);
+
   if (!USER_ID) {
     return <UserWarning />;
   }
 
   return (
-    <section className="section container">
-      <p className="title is-4">
-        Copy all you need from the prev task:
-        <br />
-        <a href="https://github.com/mate-academy/react_todo-app-loading-todos#react-todo-app-load-todos">React Todo App - Load Todos</a>
-      </p>
+    <div className="todoapp">
+      <h1 className="todoapp__title">todos</h1>
 
-      <p className="subtitle">Styles are already copied</p>
-    </section>
+      <div className="todoapp__content">
+        <Header
+          addTodo={addTodo}
+          handleError={setErrorMessage}
+          isLoading={isLoading}
+        />
+        <TodoList todos={handleSelectedTodos} onRemove={removeTodo} />
+
+        {todos.length !== 0 && (
+          <Footer
+            onSelect={setSelect}
+            todos={handleSelectedTodos}
+            select={select}
+          />
+        )}
+      </div>
+      {errorMessage && (
+        <Notification
+          message={errorMessage}
+          handleError={setErrorMessage}
+        />
+      )}
+    </div>
   );
 };
