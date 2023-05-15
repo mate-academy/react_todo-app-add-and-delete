@@ -111,11 +111,11 @@ export const App: FC = () => {
     setHasError(false);
   }, []);
 
-  const changeFilterOfTodo = useCallback((status: Filter) => {
+  const handleSelect = useCallback((status: Filter) => {
     setFilterOfTodo(status);
   }, []);
 
-  const filterTodos = useCallback(() => {
+  const visibleTodos = useMemo(() => {
     switch (filterOfTodo) {
       case Filter.ACTIVE:
         return todos.filter(({ completed }) => !completed);
@@ -144,7 +144,6 @@ export const App: FC = () => {
     };
   }, [hasError]);
 
-  const visibleTodos = useMemo(() => filterTodos(), [todos, filterOfTodo]);
   const countOfActiveTodos = useMemo(() => visibleTodos
     .filter(({ completed }) => !completed)
     .length, [visibleTodos]);
@@ -160,7 +159,7 @@ export const App: FC = () => {
       <div className="todoapp__content">
         <TodoForm addTodo={addTodo} tempTodo={tempTodo} />
 
-        {visibleTodos.length !== 0
+        {!!visibleTodos.length
           && (
             <TodoList
               todos={visibleTodos}
@@ -171,12 +170,12 @@ export const App: FC = () => {
             />
           ) }
 
-        {todos.length !== 0
+        {!!todos.length
           && (
             <BottomPanel
-              countOfItems={countOfActiveTodos}
+              itemsCount={countOfActiveTodos}
               selectedFilter={filterOfTodo}
-              changeFilterOfTodo={changeFilterOfTodo}
+              onChange={handleSelect}
               deleteAllCompleted={deleteAllCompleted}
               showClearAllButton={isCompletedTodos()}
             />
@@ -188,7 +187,7 @@ export const App: FC = () => {
           <ErrorMessage
             hasError={hasError}
             error={typeOfError}
-            closeErrorMessage={closeErrorMessage}
+            onClose={closeErrorMessage}
           />
         )}
     </div>

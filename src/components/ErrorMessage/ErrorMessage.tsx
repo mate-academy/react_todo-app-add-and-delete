@@ -6,7 +6,7 @@ import { Error } from '../../types/ErrorEnum';
 interface ErrorMessageProps {
   hasError: boolean;
   error: Error;
-  closeErrorMessage: () => void;
+  onClose: () => void;
 }
 
 const renderSwitch = (err: Error) => {
@@ -27,7 +27,7 @@ const renderSwitch = (err: Error) => {
 export const ErrorMessage: FC<ErrorMessageProps> = (
   {
     hasError,
-    closeErrorMessage,
+    onClose,
     error,
   },
 ) => {
@@ -41,7 +41,7 @@ export const ErrorMessage: FC<ErrorMessageProps> = (
       <button
         type="button"
         className="delete"
-        onClick={() => closeErrorMessage()}
+        onClick={onClose}
       />
       {renderSwitch(error)}
     </div>
