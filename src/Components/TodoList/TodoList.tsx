@@ -39,7 +39,7 @@ export const TodoList: React.FC<Props> = ({
         {createTodo && (
           <CSSTransition
             key={tempTodo.id}
-            timeout={0}
+            timeout={300}
             classNames="temp-item"
           >
             <TodoInfo
