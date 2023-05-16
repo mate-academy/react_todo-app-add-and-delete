@@ -16,7 +16,7 @@ export const Footer: React.FC<Props> = ({ todosCount, activeTodosCount }) => {
       .filter(todo => todo.completed)
       .map(todo => todo.id);
 
-    todosForDeletingId.forEach(id => removeTodo(id));
+    removeTodo(todosForDeletingId);
   };
 
   return (

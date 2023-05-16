@@ -1,5 +1,7 @@
 /* eslint-disable jsx-a11y/control-has-associated-label */
-import React, { useEffect, useMemo, useState } from 'react';
+import React, {
+  useCallback, useEffect, useMemo, useState,
+} from 'react';
 import { UserWarning } from './UserWarning';
 import { Todo } from './types/Todo';
 import { addTodo, deleteTodo, getTodos } from './api/todos';
@@ -45,7 +47,7 @@ export const App: React.FC = () => {
   const activeTodosCount = useMemo(() => (
     todos.filter(todo => !todo.completed).length), [todos]);
 
-  const loadTodos = async () => {
+  const loadTodos = useCallback(async () => {
     setErrorNotification('');
     try {
       const todosFromServer = await getTodos(USER_ID);
@@ -54,9 +56,9 @@ export const App: React.FC = () => {
     } catch {
       setErrorNotification('Error on loading');
     }
-  };
+  }, []);
 
-  const createTodo = async (todoTitle: string) => {
+  const createTodo = useCallback(async (todoTitle: string) => {
     if (!todoTitle) {
       setErrorNotification('Title can`t be empty');
 
@@ -82,28 +84,30 @@ export const App: React.FC = () => {
     } finally {
       setTempTodo(null);
     }
-  };
+  }, []);
 
-  const removeTodo = async (todoId: number) => {
+  const removeTodos = useCallback(async (todosId: number[]) => {
+    setErrorNotification('');
+    console.log(todosId);
     try {
-      const todoWaitingForDeleting = todos
-        .find(todo => todoId === todo.id);
+      setWaitingForResponseTodosId(
+        [...waitingForResponseTodosId, ...todosId],
+      );
+      console.log(waitingForResponseTodosId);
 
-      if (todoWaitingForDeleting) {
-        setWaitingForResponseTodosId(
-          [...waitingForResponseTodosId, todoWaitingForDeleting.id],
-        );
+      await Promise.all(
+        todosId.map(async (id) => {
+          await deleteTodo(id);
+        }),
+      );
 
-        await deleteTodo(todoId);
-
-        await loadTodos();
-      }
+      await loadTodos();
     } catch {
       setErrorNotification('Unable to delete a todo');
     } finally {
       setWaitingForResponseTodosId([]);
     }
-  };
+  }, []);
 
   useEffect(() => {
     loadTodos();
@@ -125,7 +129,7 @@ export const App: React.FC = () => {
             <TodosContext.Provider value={{
               todos: filteredTodos,
               waitingForResponseTodosId,
-              removeTodo,
+              removeTodo: removeTodos,
             }}
             >
               <Main tempTodo={tempTodo} />

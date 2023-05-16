@@ -10,6 +10,7 @@ export const TodoList:React.FC = () => {
     <div className="todos_list">
       {todos.map(todo => {
         const isWaiting = waitingForResponseTodosId.includes(todo.id);
+        console.log(waitingForResponseTodosId);
 
         return (
           <TodoInfo

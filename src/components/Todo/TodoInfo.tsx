@@ -33,7 +33,9 @@ export const TodoInfo:React.FC<Props> = ({
         <button
           type="button"
           className="todo__remove"
-          onClick={() => removeTodo(todo.id)}
+          onClick={() => {
+            removeTodo([todo.id]);
+          }}
         >
           ×
         </button>
