@@ -20,6 +20,28 @@ body {
   pointer-events: none;
 }
 
+.fade-enter {
+  opacity: 0;
+  transform: translateX(500px);
+}
+
+.fade-enter-active {
+  opacity: 1;
+  transform: translateY(0);
+  transition: opacity 300ms, transform 300ms;
+}
+
+.fade-exit {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+.fade-exit-active {
+  opacity: 0;
+  transform: translateX(-500px);
+  transition: opacity 300ms, transform 300ms;
+}
+
 @import "./todoapp";
 @import "./todo";
 @import "./filter";
