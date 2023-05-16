@@ -56,7 +56,7 @@ export const App: FC = () => {
           return true;
       }
     });
-  }, [todos]);
+  }, [todos, typeOfFilter]);
 
   const clearTitle = useCallback(() => setTitle(''), []);
 
