@@ -19,7 +19,7 @@ body {
   opacity: 0;
   pointer-events: none;
 }
-
+@import "./Transtition.scss";
 @import "./todoapp";
 @import "./todo";
 @import "./filter";
