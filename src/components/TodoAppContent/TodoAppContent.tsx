@@ -4,12 +4,14 @@ import { TodoItem } from '../TodoItem/TodoItem';
 type Props = {
   todoList: Todo[];
   tempTodo: Todo | null;
+  deletingId: number | null;
   onDeleteClick: (id: number) => void;
 };
 
 export const TodoAppContent: React.FC<Props> = ({
   todoList,
   tempTodo,
+  deletingId,
   onDeleteClick,
 }) => {
   return (
@@ -18,11 +20,16 @@ export const TodoAppContent: React.FC<Props> = ({
         <TodoItem
           todo={todo}
           key={todo.id}
+          deletingId={deletingId}
           onDeleteClick={onDeleteClick}
         />
       ))}
       {tempTodo && (
-        <TodoItem todo={tempTodo} onDeleteClick={onDeleteClick} />
+        <TodoItem
+          todo={tempTodo}
+          deletingId={deletingId}
+          onDeleteClick={onDeleteClick}
+        />
       )}
     </section>
   );

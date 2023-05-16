@@ -45,10 +45,11 @@ export const App: React.FC = () => {
   const [todoList, setTodoList] = useState<Todo[] | null>(null);
   const [filterType, setFilterType] = useState(FilterType.ALL);
   const [errorType, setErrorType] = useState(ErrorType.NONE);
-
+  const [isErrorShown, setIsErrorShown] = useState(false);
   const [todoInputValue, setTodoInputValue] = useState('');
   const [tempTodo, setTempTodo] = useState<Todo | null>(null);
   const [isAddDisabled, setIsAddDisabled] = useState(false);
+  const [deletingId, setDeletingId] = useState<number | null>(null);
 
   const getTodoList = useCallback(async () => {
     const todos = await getTodos();
@@ -73,9 +74,7 @@ export const App: React.FC = () => {
   };
 
   const handleTodoInputChange = (value: string) => {
-    if (errorType !== ErrorType.NONE) {
-      setErrorType(ErrorType.NONE);
-    }
+    setIsErrorShown(false);
 
     setTodoInputValue(value);
   };
@@ -115,6 +114,7 @@ export const App: React.FC = () => {
       })
       .catch(() => {
         setErrorType(ErrorType.ADD);
+        setIsErrorShown(true);
         throw new Error('Add todo error');
       })
       .finally(() => {
@@ -126,6 +126,7 @@ export const App: React.FC = () => {
     event.preventDefault();
 
     if (todoInputValue.trim().length === 0) {
+      setIsErrorShown(true);
       setErrorType(ErrorType.TITLE);
 
       return;
@@ -137,6 +138,8 @@ export const App: React.FC = () => {
   };
 
   const handleDeleteTodo = async (todoId: number) => {
+    setDeletingId(todoId);
+
     try {
       await deleteTodo(todoId);
 
@@ -145,7 +148,14 @@ export const App: React.FC = () => {
       setTodoList(newList);
     } catch (error) {
       setErrorType(ErrorType.DELETE);
+      setIsErrorShown(true);
+    } finally {
+      setDeletingId(null);
     }
+  };
+
+  const handleCloseError = () => {
+    setIsErrorShown(false);
   };
 
   useEffect(() => {
@@ -173,6 +183,7 @@ export const App: React.FC = () => {
             <TodoAppContent
               todoList={preparedTodos}
               tempTodo={tempTodo}
+              deletingId={deletingId}
               onDeleteClick={handleDeleteTodo}
             />
 
@@ -186,19 +197,11 @@ export const App: React.FC = () => {
         )}
       </div>
 
-      <Notifications errorType={errorType} />
+      <Notifications
+        errorType={errorType}
+        isErrorShown={isErrorShown}
+        onCloseClick={handleCloseError}
+      />
     </div>
   );
 };
-
-/*
-<section className="section container">
-  <p className="title is-4">
-    Copy all you need from the prev task:
-    <br />
-    <a href="https://github.com/mate-academy/react_todo-app-loading-todos#react-todo-app-load-todos">React Todo App - Load Todos</a>
-  </p>
-
-  <p className="subtitle">Styles are already copied</p>
-</section>
-*/

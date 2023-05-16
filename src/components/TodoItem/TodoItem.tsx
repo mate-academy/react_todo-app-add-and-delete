@@ -1,19 +1,20 @@
-import { useState } from 'react';
 import classNames from 'classnames';
 import { Todo } from '../../types/Todo';
 
 type Props = {
   todo: Todo;
+  deletingId: number | null;
   onDeleteClick: (id: number) => void;
 };
 
-export const TodoItem: React.FC<Props> = ({ todo, onDeleteClick }) => {
-  const [isDeleted, setIsDeleted] = useState(false);
-
+export const TodoItem: React.FC<Props> = ({
+  todo,
+  deletingId,
+  onDeleteClick,
+}) => {
   const { id, title, completed: isCompleted } = todo;
 
   const handleDelete = () => {
-    setIsDeleted(true);
     onDeleteClick(id);
   };
 
@@ -32,6 +33,8 @@ export const TodoItem: React.FC<Props> = ({ todo, onDeleteClick }) => {
           className="todo__status"
           checked={isCompleted}
           readOnly={isCompleted}
+          // empty onChange to temporaly get rid of console error about checked without onChange
+          onChange={() => {}}
         />
       </label>
 
@@ -63,7 +66,7 @@ export const TodoItem: React.FC<Props> = ({ todo, onDeleteClick }) => {
         className={classNames(
           'modal',
           'overlay',
-          { 'is-active': id === 0 || isDeleted },
+          { 'is-active': id === 0 || id === deletingId },
         )}
       >
         <div className="modal-background has-background-white-ter" />
