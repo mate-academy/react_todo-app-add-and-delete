@@ -65,7 +65,8 @@ export const App: React.FC = () => {
       event.preventDefault();
 
       if (!title.trim()) {
-        setErrorMessage('Title can\'t be empty');
+        // setErrorMessage('Title can\'t be empty');
+        setErrorMessage('Sergii are you seriously?');
 
         return;
       }

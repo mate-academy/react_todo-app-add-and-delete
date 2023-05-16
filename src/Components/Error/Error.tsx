@@ -8,7 +8,11 @@ type Props = {
 
 export const Error: React.FC<Props> = ({ message, onDelete }) => {
   useEffect(() => {
-    onDelete();
+    const timerId = setTimeout(() => onDelete(), 3000);
+
+    return () => {
+      clearTimeout(timerId);
+    };
   }, [message]);
 
   return (
