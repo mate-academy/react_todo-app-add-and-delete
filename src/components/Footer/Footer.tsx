@@ -2,12 +2,7 @@ import { useContext } from 'react';
 import { Filter } from '../Filter';
 import { TodosContext } from '../../contexts/TodosContext';
 
-interface Props {
-  todosCount: number;
-  activeTodosCount: number;
-}
-
-export const Footer: React.FC<Props> = ({ todosCount, activeTodosCount }) => {
+export const Footer: React.FC = () => {
   const { todos } = useContext(TodosContext);
   const { removeTodo } = useContext(TodosContext);
 
@@ -19,9 +14,11 @@ export const Footer: React.FC<Props> = ({ todosCount, activeTodosCount }) => {
     removeTodo(todosForDeletingId);
   };
 
+  const activeTodosCount = todos.filter(todo => !todo.completed).length;
+
   return (
     <footer className="todoapp__footer">
-      {activeTodosCount && (
+      {!!activeTodosCount && (
         <span className="todo-count">
           {`${activeTodosCount} items left`}
         </span>
@@ -29,7 +26,7 @@ export const Footer: React.FC<Props> = ({ todosCount, activeTodosCount }) => {
 
       <Filter />
 
-      {activeTodosCount !== todosCount && (
+      {activeTodosCount !== todos.length && (
         <button
           type="button"
           className="todoapp__clear-completed"

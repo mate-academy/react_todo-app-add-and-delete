@@ -10,13 +10,14 @@ export const Filter: React.FC = () => {
     <nav className="filter">
       {Object.values(FilterType).map(filter => {
         const isDefalutFilter = filter === FilterType.All;
+        const lowerFilterString = filter.toLowerCase();
 
         return (
           <a
             key={filter}
             href={`#/${isDefalutFilter
               ? ''
-              : filter[0].toLowerCase() + filter.slice(1)}`}
+              : lowerFilterString}`}
             className={cn('filter__link',
               { selected: filterType === filter })}
             onClick={() => setFilter(filter)}

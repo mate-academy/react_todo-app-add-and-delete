@@ -44,9 +44,6 @@ export const App: React.FC = () => {
   const filteredTodos: Todo[] = useMemo(() => (
     getFilteredTodos(todos, filterType)), [todos, filterType]);
 
-  const activeTodosCount = useMemo(() => (
-    todos.filter(todo => !todo.completed).length), [todos]);
-
   const loadTodos = useCallback(async () => {
     setErrorNotification('');
     try {
@@ -88,12 +85,10 @@ export const App: React.FC = () => {
 
   const removeTodos = useCallback(async (todosId: number[]) => {
     setErrorNotification('');
-    console.log(todosId);
     try {
       setWaitingForResponseTodosId(
         [...waitingForResponseTodosId, ...todosId],
       );
-      console.log(waitingForResponseTodosId);
 
       await Promise.all(
         todosId.map(async (id) => {
@@ -124,7 +119,7 @@ export const App: React.FC = () => {
       <div className="todoapp__content">
         <Header todosCount={filteredTodos.length} addTodo={createTodo} />
 
-        {!!filteredTodos.length && (
+        {!!todos.length && (
           <>
             <TodosContext.Provider value={{
               todos: filteredTodos,
@@ -139,10 +134,7 @@ export const App: React.FC = () => {
                 setFilter: setFilterType,
               }}
               >
-                <Footer
-                  todosCount={filteredTodos.length}
-                  activeTodosCount={activeTodosCount}
-                />
+                <Footer />
               </FilterContext.Provider>
             </TodosContext.Provider>
           </>
