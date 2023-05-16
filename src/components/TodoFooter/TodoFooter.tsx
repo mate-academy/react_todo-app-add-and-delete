@@ -5,6 +5,7 @@ interface Props {
   todoCounter: number;
   filterTodos: Filter;
   setFilterTodos: (filter: Filter) => void;
+  deleteCompletedTodos?: () => void;
 }
 
 export const TodoFooter: React.FC<Props> = ({
@@ -67,7 +68,10 @@ export const TodoFooter: React.FC<Props> = ({
         </a>
       </nav>
 
-      <button type="button" className="todoapp__clear-completed">
+      <button
+        type="button"
+        className="todoapp__clear-completed"
+      >
         Clear completed
       </button>
     </footer>

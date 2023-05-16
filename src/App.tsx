@@ -12,7 +12,7 @@ import { TodoList } from './components/TodoList';
 import { TodoFooter } from './components/TodoFooter';
 import { ErrorMessage } from './components/ErrorMessage';
 
-import { getTodos } from './api/todos';
+import { getTodos, removeTodo } from './api/todos';
 
 import { Todo } from './types/Todo';
 import { Filter } from './types/FilterEnum';
@@ -36,6 +36,18 @@ export const App: React.FC = () => {
 
   const addTodo = useCallback(async (newTodo: Todo) => {
     setTodos(prevTodos => [...prevTodos, newTodo]);
+  }, []);
+
+  const deleteTodo = useCallback(async (deletingTodo: Todo) => {
+    try {
+      setTempTodo(deletingTodo);
+      await removeTodo(deletingTodo.id);
+      loadTodos();
+    } catch {
+      setErrorMessage('Unable to delete todo');
+    }
+
+    setTempTodo(null);
   }, []);
 
   const closeError = useCallback(() => {
@@ -80,6 +92,7 @@ export const App: React.FC = () => {
         <TodoList
           todos={filteredTodos}
           tempTodo={tempTodo}
+          deleteTodo={deleteTodo}
         />
 
         {todos.length !== 0 && (

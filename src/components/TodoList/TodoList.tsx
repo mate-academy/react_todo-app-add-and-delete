@@ -6,9 +6,14 @@ import { TodoItem } from '../TodoItem';
 interface Props {
   todos: Todo[];
   tempTodo: Todo | null;
+  deleteTodo: (deletingTodo: Todo) => void;
 }
 
-export const TodoList: React.FC<Props> = ({ todos, tempTodo }) => {
+export const TodoList: React.FC<Props> = ({
+  todos,
+  tempTodo,
+  deleteTodo,
+}) => {
   const creating = tempTodo?.id === 0;
 
   return (
@@ -23,13 +28,14 @@ export const TodoList: React.FC<Props> = ({ todos, tempTodo }) => {
             <TodoItem
               key={todo.id}
               todo={todo}
+              deleteTodo={deleteTodo}
             />
           </CSSTransition>
         ))}
 
         {creating && (
           <CSSTransition
-            key={tempTodo.id}
+            key={0}
             timeout={300}
             classNames="temp-item"
           >

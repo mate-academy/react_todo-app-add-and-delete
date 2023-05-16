@@ -5,15 +5,17 @@ import { Todo } from '../../types/Todo';
 interface Props {
   todo: Todo;
   tempTodoId?: number;
+  deleteTodo?: (deletingTodo: Todo) => void;
 }
 
 export const TodoItem: React.FC<Props> = ({
   todo,
   tempTodoId = 0,
+  deleteTodo = () => {},
 }) => {
   const { title, completed } = todo;
 
-  const [isLoading] = useState(tempTodoId === todo.id);
+  const [isLoading, setIsLoading] = useState(tempTodoId === todo.id);
 
   return (
     <div
@@ -34,6 +36,12 @@ export const TodoItem: React.FC<Props> = ({
       <button
         type="button"
         className="todo__remove"
+        onClick={async () => {
+          setIsLoading(true);
+          await deleteTodo?.(todo);
+          setIsLoading(false);
+        }}
+        disabled={isLoading}
       >
         ×
       </button>
