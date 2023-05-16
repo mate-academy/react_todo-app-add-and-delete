@@ -135,6 +135,7 @@ export const App: React.FC = () => {
     setIsAddDisabled(true);
     executePostTodo();
     setIsAddDisabled(false);
+    setTodoInputValue('');
   };
 
   const handleDeleteTodo = async (todoId: number) => {
