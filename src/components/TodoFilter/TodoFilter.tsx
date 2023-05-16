@@ -4,17 +4,20 @@ import { FilterBy } from '../../types/FilterBy';
 
 interface Props {
   typeFilter: FilterBy;
-  onChangeFilter: (type: FilterBy) => void;
+  onFilter: (type: FilterBy) => void;
 }
 
-export const TodoFilter: React.FC<Props> = ({ typeFilter, onChangeFilter }) => (
+export const TodoFilter: React.FC<Props> = ({ typeFilter, onFilter }) => (
   <nav className="filter">
     <a
       href="#/"
       className={classNames('filter__link', {
-        selected: typeFilter === FilterBy.ALL,
+        selected: typeFilter === FilterBy.all,
       })}
-      onClick={() => onChangeFilter(FilterBy.ALL)}
+      onClick={(event) => {
+        event.preventDefault();
+        onFilter(FilterBy.all);
+      }}
     >
       All
     </a>
@@ -22,9 +25,12 @@ export const TodoFilter: React.FC<Props> = ({ typeFilter, onChangeFilter }) => (
     <a
       href="#/active"
       className={classNames('filter__link', {
-        selected: typeFilter === FilterBy.ACTIVE,
+        selected: typeFilter === FilterBy.active,
       })}
-      onClick={() => onChangeFilter(FilterBy.ACTIVE)}
+      onClick={(event) => {
+        event.preventDefault();
+        onFilter(FilterBy.active);
+      }}
     >
       Active
     </a>
@@ -32,9 +38,12 @@ export const TodoFilter: React.FC<Props> = ({ typeFilter, onChangeFilter }) => (
     <a
       href="#/completed"
       className={classNames('filter__link', {
-        selected: typeFilter === FilterBy.COMPLETED,
+        selected: typeFilter === FilterBy.completed,
       })}
-      onClick={() => onChangeFilter(FilterBy.COMPLETED)}
+      onClick={(event) => {
+        event.preventDefault();
+        onFilter(FilterBy.completed);
+      }}
     >
       Completed
     </a>

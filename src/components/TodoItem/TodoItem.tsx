@@ -1,17 +1,22 @@
 import cn from 'classnames';
-import React, { useEffect, useState } from 'react';
+import {
+  memo, useEffect, useState, FC,
+} from 'react';
 import { Todo } from '../../types/Todo';
 
 interface Props {
   todo: Todo;
-  onChangeCompleted: (id: number, completed: boolean) => void;
+  completedTodos: number[];
+  isClearCompletedTodos: boolean;
+  onUpdateCompleted: (id: number, completed: boolean) => void;
   onDelete: (id: number) => void;
 }
 
-export const TodoItem: React.FC<Props> = ({
-  todo, onChangeCompleted, onDelete,
+export const TodoItem: FC<Props> = memo(({
+  todo, onUpdateCompleted, onDelete, completedTodos, isClearCompletedTodos,
 }) => {
   const { completed, id, title } = todo;
+  const [todoIsEditing] = useState(false);
   const [todoIsLoading, setTodoIsLoading] = useState(false);
 
   useEffect(() => {
@@ -23,6 +28,12 @@ export const TodoItem: React.FC<Props> = ({
       setTodoIsLoading(true);
     }
   }, []);
+
+  useEffect(() => {
+    if (isClearCompletedTodos && completedTodos.includes(id)) {
+      setTodoIsLoading(true);
+    }
+  }, [isClearCompletedTodos]);
 
   return (
     <div
@@ -36,13 +47,13 @@ export const TodoItem: React.FC<Props> = ({
           className="todo__status"
           checked={completed}
           onClick={() => {
-            onChangeCompleted(id, completed);
+            onUpdateCompleted(id, completed);
             setTodoIsLoading(true);
           }}
         />
       </label>
 
-      {false
+      {todoIsEditing
         ? (
           <form>
             <input
@@ -77,4 +88,4 @@ export const TodoItem: React.FC<Props> = ({
       </div>
     </div>
   );
-};
+});

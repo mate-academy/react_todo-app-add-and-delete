@@ -1,6 +1,7 @@
 export enum ErrorBy {
-  EMPTY = 'Title can\'t be empty',
-  LOAD = 'Unable to load todos',
-  ADD = 'Unable to add a todo',
-  DELETE = 'Unable to delete a todo',
+  todoIsEmpty = 'Title can\'t be empty',
+  loading = 'Unable to load todos',
+  adding = 'Unable to add a todo',
+  deleting = 'Unable to delete a todo',
+  updating = 'Unable to update a todo ',
 }

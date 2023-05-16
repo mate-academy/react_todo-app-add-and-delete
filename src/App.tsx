@@ -1,19 +1,21 @@
 /* eslint-disable jsx-a11y/control-has-associated-label */
 import {
-  useCallback, useEffect, useState, FC,
+  useCallback, useEffect, useState, FC, useMemo,
 } from 'react';
 import cn from 'classnames';
 import {
   deleteTodo, getTodos, patchTodo, postTodo,
 } from './api/todos';
+
 import { UserWarning } from './UserWarning';
 import { Todo } from './types/Todo';
-import { FilterBy } from './types/FilterBy';
+import { TodoItem } from './components/TodoItem/TodoItem';
 import { TodoList } from './components/TodoList';
 import { TodoFilter } from './components/TodoFilter';
+
 import { TodoData } from './types/TodoData';
 import { ErrorBy } from './types/ErrorBy';
-import { TodoItem } from './components/TodoItem/TodoItem';
+import { FilterBy } from './types/FilterBy';
 
 const USER_ID = 10331;
 
@@ -21,29 +23,42 @@ export const App: FC = () => {
   const [todoTemp, setTodoTemp] = useState<Todo | null>(null);
   const [todos, setTodos] = useState<Todo[]>([]);
   const [title, setTitle] = useState('');
-  const [typeOfFilter, setTypeOfFilter] = useState<FilterBy>(FilterBy.ALL);
+  const [typeOfFilter, setTypeOfFilter] = useState<FilterBy>(FilterBy.all);
+  const [disableWriting, setDisableWriting] = useState(false);
   const [typeOfError, setTypeOfError] = useState<ErrorBy | null>(null);
   const [isError, setIsError] = useState(false);
-  const [disableWriting, setDisableWriting] = useState(false);
+  const [isClearCompletedTodos, setIsClearCompletedTodos] = useState(false);
 
-  const numberOfItemsLeft = todos
-    .filter(({ completed }) => !completed).length;
+  const completedTodos = useMemo(() => {
+    return todos
+      .filter(todo => todo.completed)
+      .map(todo => todo.id);
+  }, [todos]);
 
-  const hasCompletedTodos = numberOfItemsLeft !== todos.length;
-  const hasTodos = todos.length > 0;
+  const numberOfItemsLeft = useMemo(() => (
+    todos.filter(({ completed }) => !completed).length
+  ), [todos]);
 
-  const visibleTodos = todos.filter(({ completed }) => {
-    switch (typeOfFilter) {
-      case FilterBy.ACTIVE:
-        return !completed;
-      case FilterBy.COMPLETED:
-        return completed;
-      default:
-        return true;
-    }
-  });
+  const hasCompletedTodos = useMemo(() => (
+    numberOfItemsLeft !== todos.length
+  ), [todos]);
 
-  const clearTitle = () => setTitle('');
+  const hasTodos = useMemo(() => todos.length > 0, [todos]);
+
+  const visibleTodos = useMemo(() => {
+    return todos.filter(({ completed }) => {
+      switch (typeOfFilter) {
+        case FilterBy.active:
+          return !completed;
+        case FilterBy.completed:
+          return completed;
+        default:
+          return true;
+      }
+    });
+  }, [todos]);
+
+  const clearTitle = useCallback(() => setTitle(''), []);
 
   const loadTodos = useCallback(async () => {
     setIsError(false);
@@ -55,69 +70,76 @@ export const App: FC = () => {
       setTodos(todosFromServer);
     } catch {
       setIsError(true);
-      setTypeOfError(ErrorBy.LOAD);
+      setTypeOfError(ErrorBy.loading);
     }
 
     setDisableWriting(false);
   }, []);
 
-  const handleAddTodo = async (event: React.ChangeEvent<HTMLFormElement>) => {
+  const handleAddTodo = useCallback(async (
+    event: React.ChangeEvent<HTMLFormElement>,
+  ) => {
     event.preventDefault();
 
-    try {
-      const newTodo: TodoData = {
-        userId: USER_ID,
-        title,
-        completed: false,
-      };
+    const newTodo: TodoData = {
+      userId: USER_ID,
+      title,
+      completed: false,
+    };
 
-      if (typeOfError === ErrorBy.LOAD
-      || typeOfError === ErrorBy.ADD) {
-        setTypeOfError(ErrorBy.ADD);
+    try {
+      if (typeOfError === ErrorBy.loading || typeOfError === ErrorBy.adding) {
+        setTypeOfError(ErrorBy.adding);
         throw new Error();
       }
 
       if (!title.trim()) {
-        setTypeOfError(ErrorBy.EMPTY);
+        setTypeOfError(ErrorBy.todoIsEmpty);
         throw new Error();
       }
 
-      const temp = { ...newTodo, id: 0 };
+      const temporaryTodo = { ...newTodo, id: 0 };
 
-      setTodoTemp(temp);
-
+      setTodoTemp(temporaryTodo);
       await postTodo(newTodo);
       await loadTodos();
       setTodoTemp(null);
     } catch {
       setIsError(true);
+      setTypeOfError(ErrorBy.adding);
     }
 
     clearTitle();
-  };
+  }, [title]);
 
-  const handleDeleteTodo = async (id: number) => {
+  const handleDeleteTodo = useCallback(async (id: number) => {
     try {
       await deleteTodo(id);
-      loadTodos();
+      setIsClearCompletedTodos(false);
     } catch {
-      setTypeOfError(ErrorBy.DELETE);
+      setTypeOfError(ErrorBy.deleting);
       setIsError(true);
     }
-  };
 
-  const deleteAllCompleded = async () => {
+    loadTodos();
+  }, []);
+
+  const deleteAllComplededTodos = useCallback(async () => {
+    setIsClearCompletedTodos(true);
+
     todos.forEach(todo => {
       if (todo.completed) {
         handleDeleteTodo(todo.id);
       }
     });
-  };
+  }, [todos]);
 
-  const handleChangeTodoCompleted = async (id: number, completed: boolean) => {
+  const handleUpdateTodoCompleted = useCallback(async (
+    id: number, completed: boolean,
+  ) => {
     await patchTodo(id, { completed: !completed });
     loadTodos();
-  };
+  }, []);
 
   useEffect(() => {
     loadTodos();
@@ -133,7 +155,6 @@ export const App: FC = () => {
 
       <div className="todoapp__content">
         <header className="todoapp__header">
-          {/* this buttons is active only if there are some active todos */}
           {hasTodos && (
             <button
               type="button"
@@ -157,14 +178,18 @@ export const App: FC = () => {
 
         <TodoList
           todos={visibleTodos}
-          onChangeCompleted={handleChangeTodoCompleted}
+          completedTodos={completedTodos}
+          isClearCompletedTodos={isClearCompletedTodos}
+          onUpdateCompleted={handleUpdateTodoCompleted}
           onDelete={handleDeleteTodo}
         />
 
         {todoTemp && (
           <TodoItem
             todo={todoTemp}
-            onChangeCompleted={handleChangeTodoCompleted}
+            completedTodos={completedTodos}
+            isClearCompletedTodos={isClearCompletedTodos}
+            onUpdateCompleted={handleUpdateTodoCompleted}
             onDelete={handleDeleteTodo}
           />
         )}
@@ -177,13 +202,13 @@ export const App: FC = () => {
 
             <TodoFilter
               typeFilter={typeOfFilter}
-              onChangeFilter={setTypeOfFilter}
+              onFilter={setTypeOfFilter}
             />
 
             <button
               type="button"
               className="todoapp__clear-completed"
-              onClick={deleteAllCompleded}
+              onClick={deleteAllComplededTodos}
               hidden={!hasCompletedTodos}
             >
               Clear completed
@@ -201,7 +226,6 @@ export const App: FC = () => {
             onClick={() => setIsError(false)}
           />
 
-          {/* Unable to update a todo */}
           {typeOfError}
         </div>
       )}
