@@ -1,24 +1,101 @@
-/* eslint-disable max-len */
 /* eslint-disable jsx-a11y/control-has-associated-label */
-import React from 'react';
+import React, { useEffect, useState } from 'react';
+import classNames from 'classnames';
 import { UserWarning } from './UserWarning';
+import { getTodos } from './api/todos';
+import { Todo } from './types/Todo';
+import { TodoList } from './Components/TodoList';
+import { TodoFilter } from './Components/TodoFilter';
+import { SortType } from './types/SortType';
+import { Error } from './Components/Error';
 
-const USER_ID = 0;
+const USER_ID = 10390;
 
 export const App: React.FC = () => {
+  const [todos, setTodos] = useState<Todo[]>([]);
+  const [filteredTodos, setFilteredTodos] = useState<Todo[]>([]);
+  const [sort, setSort] = useState(SortType.All);
+  const [errorMessage, setErrorMessage] = useState('');
+
+  const completedTodo = todos.filter(todo => todo.completed === true);
+  const activeTodo = todos.length - completedTodo.length;
+
+  const getFiltered = (filter: SortType) => {
+    switch (filter) {
+      case SortType.Active:
+        return todos.filter(todo => !todo.completed);
+
+      case SortType.Completed:
+        return todos.filter(todo => todo.completed);
+
+      default:
+        return todos;
+    }
+  };
+
+  const onDeleteError = () => setErrorMessage('');
+
+  useEffect(() => {
+    getTodos(USER_ID).then(todosFromServer => {
+      setTodos(todosFromServer);
+      setFilteredTodos(todosFromServer);
+    })
+      .catch(error => setErrorMessage(error.message));
+  }, []);
+
+  useEffect(() => setFilteredTodos(getFiltered(sort)), [sort]);
+
   if (!USER_ID) {
     return <UserWarning />;
   }
 
   return (
-    <section className="section container">
-      <p className="title is-4">
-        Copy all you need from the prev task:
-        <br />
-        <a href="https://github.com/mate-academy/react_todo-app-loading-todos#react-todo-app-load-todos">React Todo App - Load Todos</a>
-      </p>
+    <div className="todoapp">
+      <h1 className="todoapp__title">todos</h1>
 
-      <p className="subtitle">Styles are already copied</p>
-    </section>
+      <div className="todoapp__content">
+        <header className="todoapp__header">
+          {/* this buttons is active only if there are some active todos */}
+          <button
+            type="button"
+            className={classNames(
+              'todoapp__toggle-all', {
+                active: getFiltered(SortType.Completed)
+                && filteredTodos.length === todos.length,
+              },
+            )}
+          />
+
+          {/* Add a todo on form submit */}
+          <form>
+            <input
+              type="text"
+              className="todoapp__new-todo"
+              placeholder="What needs to be done?"
+            />
+          </form>
+        </header>
+        <TodoList todosFromServer={filteredTodos} />
+
+        {todos.length > 0
+        && (
+          <footer className="todoapp__footer">
+            <span className="todo-count">
+              {`${activeTodo} items left`}
+            </span>
+            <TodoFilter sort={sort} setSort={setSort} />
+
+            {/* don't show this button if there are no completed todos */}
+            <button
+              type="button"
+              className="todoapp__clear-completed"
+            >
+              Clear completed
+            </button>
+          </footer>
+        )}
+      </div>
+      <Error message={errorMessage} onDelete={onDeleteError} />
+    </div>
   );
 };
