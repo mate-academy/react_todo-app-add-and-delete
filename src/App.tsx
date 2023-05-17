@@ -123,16 +123,16 @@ export const App: React.FC = () => {
         <TodoList
           todos={filteredTodos}
           query={query}
-          showError={showError}
-          hideError={hideError}
+          onShowError={showError}
+          onHideError={hideError}
           handleDelete={handleDelete}
           isClearCompleted={isClearCompleted}
         />
 
         {todos.length > 0 && (
           <Filter
-            counterActiveTodos={counterActiveTodos}
-            counterCompletedTodos={counterCompletedTodos}
+            countActiveTodos={counterActiveTodos}
+            countCompletedTodos={counterCompletedTodos}
             selectedFilter={selectedFilter}
             onFilterSelect={setSelectedFilter}
             onClear={handleClearCompleted}

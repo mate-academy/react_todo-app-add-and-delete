@@ -9,8 +9,8 @@ type Props = {
   todos: Todo[];
   query: string;
   isClearCompleted: boolean;
-  showError: (errorType: ErrorMessage) => void;
-  hideError: () => void;
+  onShowError: (errorType: ErrorMessage) => void;
+  onHideError: () => void;
   handleDelete: (todoId: number) => void;
 };
 
@@ -19,8 +19,8 @@ export const TodoList: React.FC<Props> = React.memo(({
   query,
   isClearCompleted,
   handleDelete,
-  showError,
-  hideError,
+  onShowError,
+  onHideError,
 }) => {
   const creatingTodo: Todo | null = !query
     ? null
@@ -37,8 +37,8 @@ export const TodoList: React.FC<Props> = React.memo(({
         <TodoItem
           key={todo.id}
           todo={todo}
-          showError={showError}
-          hideError={hideError}
+          onShowError={onShowError}
+          onHideError={onHideError}
           handleDelete={handleDelete}
           isLoading={todo.completed && isClearCompleted}
         />

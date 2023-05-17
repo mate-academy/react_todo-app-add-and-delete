@@ -8,16 +8,16 @@ type Props = {
   todo: Todo;
   isLoading: boolean;
   handleDelete: (todoId: number) => void;
-  showError: (errorType: ErrorMessage) => void;
-  hideError: () => void;
+  onShowError: (errorType: ErrorMessage) => void;
+  onHideError: () => void;
 };
 
 export const TodoItem: React.FC<Props> = React.memo(({
   todo,
   isLoading,
   handleDelete,
-  showError,
-  hideError,
+  onShowError,
+  onHideError,
 }) => {
   const [isEdited] = useState(false);
   const [isWaiting, setIsWaiting] = useState(false);
@@ -25,7 +25,7 @@ export const TodoItem: React.FC<Props> = React.memo(({
   const { title, completed, id } = todo;
 
   const handleDeleteTodo = () => {
-    hideError();
+    onHideError();
     setIsWaiting(true);
 
     deleteTodos(id)
@@ -33,7 +33,7 @@ export const TodoItem: React.FC<Props> = React.memo(({
         handleDelete(id);
       })
       .catch(() => {
-        showError(ErrorMessage.Delete);
+        onShowError(ErrorMessage.Delete);
         setIsWaiting(false);
       });
   };

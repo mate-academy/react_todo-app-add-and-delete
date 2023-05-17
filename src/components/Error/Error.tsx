@@ -20,10 +20,8 @@ export const Error: React.FC<Props> = ({
       case ErrorMessage.Delete:
       case ErrorMessage.Update:
         return `Unable to ${errorMessage} a todo`;
-        break;
       case ErrorMessage.EmptyTitle:
         return 'Title can\'t be empty';
-        break;
       default:
         return '';
     }
