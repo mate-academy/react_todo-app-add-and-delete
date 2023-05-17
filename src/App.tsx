@@ -8,8 +8,7 @@ import { TodoList } from './components/TodoList';
 import { TodoForm } from './components/TodoForm';
 import { FooterFilter } from './components/FooterFilter';
 import { ErrorMessage } from './components/ErrorMessage';
-
-const USER_ID = 10407;
+import { USER_ID } from './utils/constants';
 
 export const App: React.FC = () => {
   const {

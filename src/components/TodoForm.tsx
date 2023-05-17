@@ -2,6 +2,7 @@ import { useState } from 'react';
 import { useTodoContext } from '../context/TodoContext';
 import { addTodo } from '../api/todos';
 import { TodoError } from '../types/Error';
+import { USER_ID } from '../utils/constants';
 
 export const TodoForm: React.FC = () => {
   const {
@@ -25,8 +26,7 @@ export const TodoForm: React.FC = () => {
     setIsCreating(true);
 
     const newTodo = {
-      id: 0,
-      userId: 10407,
+      userId: USER_ID,
       title: todoTitle,
       completed: false,
     };

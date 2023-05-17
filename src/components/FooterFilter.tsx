@@ -5,6 +5,8 @@ import { Filter } from '../types/Filter';
 export const FooterFilter: React.FC = () => {
   const { todos, filter, setFilter } = useTodoContext();
 
+  const isClearButtonVisible = todos.some((todo) => todo.completed);
+
   return (
     <>
       <nav className="filter">
@@ -48,7 +50,7 @@ export const FooterFilter: React.FC = () => {
         </a>
       </nav>
 
-      {todos.some((todo) => todo.completed) && (
+      {isClearButtonVisible && (
         <button type="button" className="todoapp__clear-completed">
           Clear completed
         </button>

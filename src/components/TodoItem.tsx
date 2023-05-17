@@ -20,9 +20,9 @@ export const TodoItem: React.FC<Props> = ({ todo }) => {
       await deleteTodo(todo.id);
 
       setTodos((prevTodos) => prevTodos.filter((t) => t.id !== todo.id));
-      setIsTodoDeleting(false);
     } catch {
       setError(TodoError.DELETE);
+    } finally {
       setIsTodoDeleting(false);
     }
   };
