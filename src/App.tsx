@@ -1,11 +1,13 @@
 /* eslint-disable max-len */
 /* eslint-disable jsx-a11y/control-has-associated-label */
 import React, { useEffect, useState } from 'react';
-import classNames from 'classnames';
 import { Triangle } from 'react-loader-spinner';
 import { UserWarning } from './UserWarning';
 import { addTodo, deleteTodo, getTodos } from './api/todos';
 import { Todo } from './types/Todo';
+import { TodoList } from './Components/Todolist';
+import { Footer } from './Components/Footer';
+import { Header } from './Components/Header';
 
 const USER_ID = 10413;
 
@@ -13,7 +15,7 @@ export const App: React.FC = () => {
   const [todos, setTodos] = useState<Todo[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [hasError, setHasError] = useState(false);
-  const [filter, setFilter] = useState('all');
+  const [filter, setFilter] = useState<string>('all');
   const [errorName, setErrorName] = useState('');
   const [disabledInput, setDisabledInput] = useState(false);
 
@@ -29,6 +31,9 @@ export const App: React.FC = () => {
         return todo.completed;
     }
   });
+  const handleTitleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    setTitle(e.target.value);
+  };
 
   const handleFormSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
@@ -104,105 +109,25 @@ export const App: React.FC = () => {
         />
       ) : (
         <div className="todoapp__content">
-          <header className="todoapp__header">
-            {/* this buttons is active only if there are some active todos */}
-            <button type="button" className="todoapp__toggle-all active" />
+          <Header
+            onSubmit={handleFormSubmit}
+            onChangeTitle={handleTitleChange}
+            title={title}
+            isInputDisabled={disabledInput}
+          />
 
-            {/* Add a todo on form submit */}
-            <form onSubmit={(e) => handleFormSubmit(e)}>
-              <input
-                type="text"
-                className="todoapp__new-todo"
-                placeholder="What needs to be done?"
-                value={title}
-                onChange={(e) => setTitle(e.target.value)}
-                disabled={disabledInput}
-              />
-            </form>
-          </header>
-
-          <section className="todoapp__main">
-            {visibleTodos.map(todo => {
-              return (
-                <div className={classNames('todo', {
-                  completed: todo.completed,
-                })}
-                >
-                  <label className="todo__status-label">
-                    <input
-                      type="checkbox"
-                      className="todo__status"
-                      checked={todo.completed}
-                    />
-                  </label>
-
-                  <span className="todo__title">{todo.title}</span>
-
-                  {/* Remove button appears only on hover */}
-                  <button
-                    type="button"
-                    className="todo__remove"
-                    onClick={() => handleDeleteTodo(todo.id)}
-                  >
-                    ×
-
-                  </button>
-
-                  {/* overlay will cover the todo while it is being updated */}
-                  <div className="modal overlay">
-                    <div className="modal-background has-background-white-ter" />
-                    <div className="loader" />
-                  </div>
-                </div>
-              );
-            })}
-          </section>
+          <TodoList
+            todos={visibleTodos}
+            handleDeleteTodo={handleDeleteTodo}
+          />
 
           {/* Hide the footer if there are no todos */}
           {todos.length !== 0 && (
-            <footer className="todoapp__footer">
-              <span className="todo-count">
-                {`${visibleTodos.filter(todo => !todo.completed).length} items left`}
-              </span>
-
-              {/* Active filter should have a 'selected' class */}
-              <nav className="filter">
-                <a
-                  href="#/"
-                  className={classNames('filter__link', {
-                    selected: filter === 'all',
-                  })}
-                  onClick={() => setFilter('all')}
-                >
-                  All
-                </a>
-
-                <a
-                  href="#/active"
-                  className={classNames('filter__link', {
-                    selected: filter === 'active',
-                  })}
-                  onClick={() => setFilter('active')}
-                >
-                  Active
-                </a>
-
-                <a
-                  href="#/completed"
-                  className={classNames('filter__link', {
-                    selected: filter === 'completed',
-                  })}
-                  onClick={() => setFilter('completed')}
-                >
-                  Completed
-                </a>
-              </nav>
-
-              {/* don't show this button if there are no completed todos */}
-              <button type="button" className="todoapp__clear-completed">
-                Clear completed
-              </button>
-            </footer>
+            <Footer
+              todos={visibleTodos}
+              setFilter={e => setFilter(e)}
+              filter={filter}
+            />
           )}
         </div>
       )}
