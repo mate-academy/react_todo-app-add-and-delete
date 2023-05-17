@@ -1,16 +1,12 @@
 /* eslint-disable jsx-a11y/control-has-associated-label */
 
-import { useState } from 'react';
+import { useContext, useState } from 'react';
+import { TodosContext } from '../../contexts/TodosContext';
 
-interface Props {
-  todosCount: number;
-  addTodo: (todoTitle: string) => Promise<void>;
-
-}
-
-export const Header:React.FC<Props> = ({ todosCount, addTodo }) => {
+export const Header:React.FC = () => {
   const [input, setInput] = useState('');
   const [isWaitingResponse, setIsWaitingResponse] = useState(false);
+  const { createTodo, todos } = useContext(TodosContext);
 
   const handleChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     const { value } = event.target;
@@ -23,7 +19,7 @@ export const Header:React.FC<Props> = ({ todosCount, addTodo }) => {
 
     setIsWaitingResponse(true);
 
-    await addTodo(input);
+    await createTodo(input);
 
     setIsWaitingResponse(false);
     setInput('');
@@ -31,7 +27,7 @@ export const Header:React.FC<Props> = ({ todosCount, addTodo }) => {
 
   return (
     <header className="todoapp__header">
-      {todosCount > 0 && (
+      {todos.length > 0 && (
         <button type="button" className="todoapp__toggle-all active" />
       )}
 

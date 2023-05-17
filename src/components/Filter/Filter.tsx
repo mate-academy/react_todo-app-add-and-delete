@@ -4,23 +4,24 @@ import { FilterType } from '../../types/FilterType';
 import { FilterContext } from '../../contexts/FilterContext';
 
 export const Filter: React.FC = () => {
-  const { filter: filterType, setFilter } = useContext(FilterContext);
+  const { filterType, setFilterType } = useContext(FilterContext);
 
   return (
     <nav className="filter">
       {Object.values(FilterType).map(filter => {
         const isDefalutFilter = filter === FilterType.All;
         const lowerFilterString = filter.toLowerCase();
+        const filterHref = `#/${isDefalutFilter
+          ? ''
+          : lowerFilterString}`;
 
         return (
           <a
             key={filter}
-            href={`#/${isDefalutFilter
-              ? ''
-              : lowerFilterString}`}
+            href={filterHref}
             className={cn('filter__link',
               { selected: filterType === filter })}
-            onClick={() => setFilter(filter)}
+            onClick={() => setFilterType(filter)}
           >
             {filter}
           </a>

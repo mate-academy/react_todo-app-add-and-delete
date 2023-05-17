@@ -9,7 +9,7 @@ export const getTodos = (userId: number) => {
     });
 };
 
-export const addTodo = (userId: number, todo: Omit<Todo, 'id'>) => {
+export const addTodo = (userId: number, todo: Omit<Todo, keyof Todo>) => {
   return client
     .post<Todo>(`/todos?userId=${userId}`, todo)
     .catch(() => {

@@ -4,14 +4,14 @@ import { TodosContext } from '../../contexts/TodosContext';
 
 export const Footer: React.FC = () => {
   const { todos } = useContext(TodosContext);
-  const { removeTodo } = useContext(TodosContext);
+  const { removeTodos } = useContext(TodosContext);
 
   const handleClick = () => {
     const todosForDeletingId = todos
       .filter(todo => todo.completed)
       .map(todo => todo.id);
 
-    removeTodo(todosForDeletingId);
+    removeTodos(todosForDeletingId);
   };
 
   const activeTodosCount = todos.filter(todo => !todo.completed).length;

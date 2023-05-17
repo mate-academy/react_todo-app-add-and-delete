@@ -8,12 +8,16 @@ interface Props {
 export const ErrorNotification: React.FC<Props> = ({ errorNotification }) => {
   const [isHidden, setHidden] = useState(false);
 
-  const hadleHidding = () => {
+  const handleClose = () => {
     setHidden(true);
   };
 
   useEffect(() => {
-    setTimeout(hadleHidding, 3000);
+    const timeoutId = setTimeout(handleClose, 3000);
+
+    return () => {
+      clearTimeout(timeoutId);
+    };
   }, []);
 
   return (
@@ -29,7 +33,7 @@ export const ErrorNotification: React.FC<Props> = ({ errorNotification }) => {
       <button
         type="button"
         className="delete"
-        onClick={hadleHidding}
+        onClick={handleClose}
       />
       {errorNotification}
     </div>

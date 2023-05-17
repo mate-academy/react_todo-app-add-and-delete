@@ -13,7 +13,7 @@ export const TodoInfo:React.FC<Props> = ({
   isWaitingResponse = false,
 }) => {
   const [isHovered, setHover] = useState(false);
-  const { removeTodo } = useContext(TodosContext);
+  const { removeTodos } = useContext(TodosContext);
 
   return (
     <div
@@ -29,12 +29,13 @@ export const TodoInfo:React.FC<Props> = ({
       </label>
 
       <span className="todo__title">{todo.title}</span>
+
       {isHovered && (
         <button
           type="button"
           className="todo__remove"
           onClick={() => {
-            removeTodo([todo.id]);
+            removeTodos([todo.id]);
           }}
         >
           ×
