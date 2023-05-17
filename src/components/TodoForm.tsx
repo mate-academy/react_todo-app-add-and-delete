@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import { useTodoContext } from '../context/TodoContext';
 import { addTodo } from '../api/todos';
-import { Error } from '../types/Error';
+import { TodoError } from '../types/Error';
 
 export const TodoForm: React.FC = () => {
   const {
@@ -16,11 +16,12 @@ export const TodoForm: React.FC = () => {
     event.preventDefault();
 
     if (!todoTitle) {
-      setError(Error.INVALID_INPUT);
+      setError(TodoError.INVALID_INPUT);
 
       return;
     }
 
+    setError(null);
     setIsCreating(true);
 
     const newTodo = {
@@ -35,7 +36,7 @@ export const TodoForm: React.FC = () => {
 
       setTodos((prevTodos) => [...prevTodos, todo]);
     } catch {
-      setError(Error.ADD);
+      setError(TodoError.ADD);
     } finally {
       setIsCreating(false);
     }

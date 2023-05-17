@@ -13,7 +13,10 @@ export const FooterFilter: React.FC = () => {
           className={cn('filter__link', {
             selected: filter === Filter.ALL,
           })}
-          onClick={() => setFilter(Filter.ALL)}
+          onClick={(event) => {
+            event.preventDefault();
+            setFilter(Filter.ALL);
+          }}
         >
           All
         </a>
@@ -23,7 +26,10 @@ export const FooterFilter: React.FC = () => {
           className={cn('filter__link', {
             selected: filter === Filter.ACTIVE,
           })}
-          onClick={() => setFilter(Filter.ACTIVE)}
+          onClick={(event) => {
+            event.preventDefault();
+            setFilter(Filter.ACTIVE);
+          }}
         >
           Active
         </a>
@@ -33,7 +39,10 @@ export const FooterFilter: React.FC = () => {
           className={cn('filter__link', {
             selected: filter === Filter.COMPLETED,
           })}
-          onClick={() => setFilter(Filter.COMPLETED)}
+          onClick={(event) => {
+            event.preventDefault();
+            setFilter(Filter.COMPLETED);
+          }}
         >
           Completed
         </a>

@@ -1,8 +1,9 @@
+/* eslint-disable no-console */
 /* eslint-disable jsx-a11y/control-has-associated-label */
 import { useEffect } from 'react';
 import { useTodoContext } from './context/TodoContext';
 import { getTodos } from './api/todos';
-import { Error } from './types/Error';
+import { TodoError } from './types/Error';
 import { TodoList } from './components/TodoList';
 import { TodoForm } from './components/TodoForm';
 import { FooterFilter } from './components/FooterFilter';
@@ -24,8 +25,9 @@ export const App: React.FC = () => {
       const todosFromServer = await getTodos(USER_ID);
 
       setTodos(todosFromServer);
-    } catch {
-      setError(Error.LOAD);
+    } catch (errorData) {
+      console.log(errorData);
+      setError(TodoError.LOAD);
     }
   };
 
