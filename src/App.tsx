@@ -212,7 +212,7 @@ export const App: React.FC = () => {
 
             {/* don't show this button if there are no completed todos */}
             {comletedTodos.length > 0 && (
-                <button
+              <button
                 type="button"
                 className="todoapp__clear-completed"
                 onClick={removeCompleted}
