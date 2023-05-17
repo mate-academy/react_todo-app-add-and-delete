@@ -35,6 +35,7 @@ export const TodoList: React.FC<Props> = React.memo(({
     <section className="todoapp__main">
       {todos.map((todo) => (
         <TodoItem
+          key={todo.id}
           todo={todo}
           showError={showError}
           hideError={hideError}
@@ -46,9 +47,6 @@ export const TodoList: React.FC<Props> = React.memo(({
       {creatingTodo && (
         <TempTodo
           todo={creatingTodo}
-          showError={() => {}}
-          hideError={() => {}}
-          handleDelete={() => {}}
           isLoading
         />
       )}

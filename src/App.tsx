@@ -78,12 +78,9 @@ export const App: React.FC = () => {
     [],
   );
 
-  const handleDelete = useCallback(
-    (todoId: number): void => (
-      setTodos((oldTodos) => oldTodos.filter(todo => todo.id !== todoId))
-    ),
-    [],
-  );
+  const handleDelete = useCallback((todoId: number) => (
+    setTodos((oldTodos) => oldTodos.filter(todo => todo.id !== todoId))
+  ), []);
 
   const handleClearCompleted = useCallback(async () => {
     const completedTodos = filterTodos(todos, TodoStatus.Completed);
@@ -138,7 +135,7 @@ export const App: React.FC = () => {
             counterCompletedTodos={counterCompletedTodos}
             selectedFilter={selectedFilter}
             onFilterSelect={setSelectedFilter}
-            handleClearCompleted={handleClearCompleted}
+            onClear={handleClearCompleted}
           />
         )}
 

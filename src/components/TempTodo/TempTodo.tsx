@@ -1,42 +1,19 @@
 import React, { useState } from 'react';
 import cn from 'classnames';
 import { Todo } from '../../types/Todo';
-import { ErrorMessage } from '../../types/ErrorMessage';
-import { deleteTodos } from '../../api/todos';
 
 type Props = {
   todo: Todo;
   isLoading: boolean;
-  handleDelete: (todoId: number) => void;
-  showError: (errorType: ErrorMessage) => void;
-  hideError: () => void;
 };
 
 export const TempTodo: React.FC<Props> = React.memo(({
   todo,
   isLoading,
-  handleDelete,
-  showError,
-  hideError,
 }) => {
   const [isEdited] = useState(false);
-  const [isWaiting, setIsWaiting] = useState(false);
 
-  const { title, completed, id } = todo;
-
-  function handleDeleteTodo(): void {
-    hideError();
-    setIsWaiting(true);
-
-    deleteTodos(id)
-      .then(() => {
-        handleDelete(id);
-      })
-      .catch(() => {
-        showError(ErrorMessage.Delete);
-        setIsWaiting(false);
-      });
-  }
+  const { title, completed } = todo;
 
   return (
     <div
@@ -72,7 +49,6 @@ export const TempTodo: React.FC<Props> = React.memo(({
             <button
               type="button"
               className="todo__remove"
-              onClick={handleDeleteTodo}
             >
               {'\u00d7'}
             </button>
@@ -81,7 +57,7 @@ export const TempTodo: React.FC<Props> = React.memo(({
 
       <div
         className={cn('modal overlay', {
-          'is-active': isLoading || isWaiting,
+          'is-active': isLoading,
         })}
       >
         <div className="modal-background has-background-white-ter" />

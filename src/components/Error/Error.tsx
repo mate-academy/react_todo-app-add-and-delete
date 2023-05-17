@@ -13,21 +13,19 @@ export const Error: React.FC<Props> = ({
   isError,
   onClose,
 }) => {
-  let errorString = '';
-
-  useMemo(() => {
+  const errorString = useMemo(() => {
     switch (errorMessage) {
       case ErrorMessage.Add:
       case ErrorMessage.Download:
       case ErrorMessage.Delete:
       case ErrorMessage.Update:
-        errorString = `Unable to ${errorMessage} a todo`;
+        return `Unable to ${errorMessage} a todo`;
         break;
       case ErrorMessage.EmptyTitle:
-        errorString = 'Title can\'t be empty';
+        return 'Title can\'t be empty';
         break;
       default:
-        errorString = '';
+        return '';
     }
   }, [errorMessage]);
 
