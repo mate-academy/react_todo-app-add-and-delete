@@ -18,7 +18,6 @@ export const NewTodo: React.FC<P> = ({
     event.preventDefault();
 
     if (title.trim() === '') {
-      // console.log('handlesubmit', title);
       setIsEmptyTitleError(true);
 
       return;

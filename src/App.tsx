@@ -38,7 +38,6 @@ export const App: React.FC = () => {
   };
 
   const uploadNewTodo = async (title: string) => {
-    // console.log(title)
     setTempTodo({
       id: 0,
       title,
@@ -52,7 +51,6 @@ export const App: React.FC = () => {
       setTodos(curTodos => [newTodo, ...curTodos]);
     } catch (error) {
       setIsCreatingError(true);
-      // console.log(error);
     }
 
     setIsUploadingTitle(false);
