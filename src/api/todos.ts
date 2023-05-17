@@ -12,5 +12,3 @@ export const createTodo = (userId: number, todo: Todo) => {
 export const destroyTodo = (id: number) => {
   return client.delete(`/todos/${id}`);
 };
-
-// Add more methods here

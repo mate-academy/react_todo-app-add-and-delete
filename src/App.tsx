@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useMemo, useState } from 'react';
 import { UserWarning } from './UserWarning';
 import { Todo } from './types/Todo';
 import { getTodos, createTodo, destroyTodo } from './api/todos';
@@ -21,11 +21,24 @@ export const App: React.FC = () => {
   const [selectedTodoId, setSelectedTodoId] = useState<number | null>(null);
   const [isClearCompletedClicked, setIsClearCompletedClicked] = useState(false);
 
-  const hasCompletedTodos = todos.some((todo) => todo.completed);
+  const hasCompletedTodos = useMemo(() => {
+    return todos.some((todo) => todo.completed);
+  }, [todos]);
   const activeTodosCount = todos.filter((todo) => !todo.completed).length;
   const completedTodosId = todos
     .filter((todo) => todo.completed)
     .map((todo) => todo.id);
+
+  const filteredTodos = useMemo(() => todos.filter(({ completed }) => {
+    switch (filter) {
+      case FilterStatus.ACTIVE:
+        return !completed;
+      case FilterStatus.COMPLETED:
+        return completed;
+      default:
+        return true;
+    }
+  }), [todos, filter]);
 
   const handleInputChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     setInputValue(event.target.value);
@@ -108,17 +121,6 @@ export const App: React.FC = () => {
     setError(null);
   };
 
-  const filteredTodos = todos.filter(({ completed }) => {
-    switch (filter) {
-      case FilterStatus.ACTIVE:
-        return !completed;
-      case FilterStatus.COMPLETED:
-        return completed;
-      default:
-        return true;
-    }
-  });
-
   useEffect(() => {
     async function fetchTodos() {
       try {
@@ -174,8 +176,6 @@ export const App: React.FC = () => {
         )}
       </div>
 
-      {/* Notification is shown in case of any error */}
-      {/* Add the 'hidden' class to hide the message smoothly */}
       {error && (
         <ErrorBlock
           onClose={handleCloseError}
