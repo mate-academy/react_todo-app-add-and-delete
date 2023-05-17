@@ -7,16 +7,14 @@ interface TodoListProps {
   onDeleteTodo: (todoId: number) => void;
 }
 
-export const TodoList: FC<TodoListProps> = ({ todos, onDeleteTodo }) => {
-  return (
-    <section className="todoapp__main">
-      {todos.map((todo) => (
-        <TodoItem
-          todo={todo}
-          key={todo.id}
-          onDeleteTodo={() => onDeleteTodo(todo.id)}
-        />
-      ))}
-    </section>
-  );
-};
+export const TodoList: FC<TodoListProps> = ({ todos, onDeleteTodo }) => (
+  <section className="todoapp__main">
+    {todos.map((todo) => (
+      <TodoItem
+        todo={todo}
+        key={todo.id}
+        onDeleteTodo={() => onDeleteTodo(todo.id)}
+      />
+    ))}
+  </section>
+);

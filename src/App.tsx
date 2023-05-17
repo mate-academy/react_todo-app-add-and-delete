@@ -11,20 +11,22 @@ import { TodoList } from './components/TodoList';
 import { createTodo, getTodos, removeTodo } from './api/todos';
 import { NewTodoData, Todo } from './types/Todo';
 import { Footer } from './components/Footer';
-import { Status } from './enum/Status';
+import { FilterType } from './enum/FilterType';
 import { USER_ID } from './utils/fetchClient';
 
 export const App: FC = () => {
   const [todos, setTodos] = useState<Todo[]>([]);
-  const [todoStatus, setTodoStatus] = useState<Status>(Status.All);
+  const [todoStatus, setTodoStatus] = useState<FilterType>(FilterType.All);
   const [hasErrorMessage, setHasErrorMessage] = useState(false);
   const [isLoadErrorMessage, setIsLoadErrorMessage] = useState(false);
   const [isAddErrorMessage, setIsAddErrorMessage] = useState(false);
   const [isDeleteErrorMessage, setIsDeleteErrorMessage] = useState(false);
 
+  let timeout: ReturnType<typeof setTimeout>;
+
   const showError = useCallback(() => {
     setHasErrorMessage(true);
-    window.setTimeout(() => {
+    timeout = setTimeout(() => {
       setHasErrorMessage(false);
     }, 3000);
   }, []);
@@ -61,32 +63,32 @@ export const App: FC = () => {
     loadTodos();
   }, []);
 
-  useEffect(() => {
-    try {
-      loadTodos();
-    } catch {
-      showError();
-    }
-  }, []);
-
   const filteredTodos = useMemo(() => {
     return todos.filter(({ completed }) => {
       switch (todoStatus) {
-        case Status.Active:
+        case FilterType.Active:
           return !completed;
 
-        case Status.Completed:
+        case FilterType.Completed:
           return completed;
 
-        case Status.All:
+        case FilterType.All:
         default:
           return todos;
       }
     });
   }, [todos, todoStatus]);
 
-  const handleStatus = useCallback((status: Status) => {
-    setTodoStatus(status);
+  const handleStatus = useCallback((filter: FilterType) => {
+    setTodoStatus(filter);
+  }, []);
+
+  useEffect(() => {
+    try {
+      loadTodos();
+    } catch {
+      clearTimeout(timeout);
+    }
   }, []);
 
   return (

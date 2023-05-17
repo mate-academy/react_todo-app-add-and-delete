@@ -9,18 +9,15 @@ interface TodoItemProps {
 
 export const TodoItem: FC<TodoItemProps> = ({ todo, onDeleteTodo }) => {
   const {
-    id,
     completed,
     title,
   } = todo;
 
   return (
     <div
-      key={id}
-      className={classNames(
-        'todo',
-        { completed },
-      )}
+      className={classNames('todo', {
+        completed,
+      })}
     >
       <label className="todo__status-label">
         <input

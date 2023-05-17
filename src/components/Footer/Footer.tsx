@@ -1,11 +1,11 @@
 import { FC, useCallback, useMemo } from 'react';
 import classNames from 'classnames';
-import { Status } from '../../enum/Status';
+import { FilterType } from '../../enum/FilterType';
 import { Todo } from '../../types/Todo';
 
 interface FooterProps {
   todos: Todo[],
-  onStatusSelect: (status: Status) => void;
+  onStatusSelect: (status: FilterType) => void;
   todoStatus: string;
 }
 
@@ -15,9 +15,9 @@ export const Footer: FC<FooterProps> = ({
   todoStatus,
 }) => {
   const handleClick = useCallback((
-    event: React.MouseEvent<HTMLAnchorElement, MouseEvent>,
+    filter: FilterType,
   ) => {
-    onStatusSelect(event.currentTarget.text as Status);
+    onStatusSelect(filter);
   }, []);
 
   const notCompletedCount = useMemo(() => {
@@ -34,10 +34,10 @@ export const Footer: FC<FooterProps> = ({
         <a
           href="#/"
           className={classNames('filter__link', {
-            selected: todoStatus === Status.All,
+            selected: todoStatus === FilterType.All,
 
           })}
-          onClick={handleClick}
+          onClick={() => handleClick(FilterType.All)}
         >
           All
         </a>
@@ -46,9 +46,9 @@ export const Footer: FC<FooterProps> = ({
           href="#/active"
           className={classNames(
             'filter__link',
-            { selected: todoStatus === Status.Active },
+            { selected: todoStatus === FilterType.Active },
           )}
-          onClick={handleClick}
+          onClick={() => handleClick(FilterType.Active)}
         >
           Active
         </a>
@@ -57,9 +57,9 @@ export const Footer: FC<FooterProps> = ({
           href="#/completed"
           className={classNames(
             'filter__link',
-            { selected: todoStatus === Status.Completed },
+            { selected: todoStatus === FilterType.Completed },
           )}
-          onClick={handleClick}
+          onClick={() => handleClick(FilterType.Completed)}
         >
           Completed
         </a>
