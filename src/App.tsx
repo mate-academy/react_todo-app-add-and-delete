@@ -1,20 +1,17 @@
 /* eslint-disable jsx-a11y/control-has-associated-label */
 /* eslint-disable no-console */
 import React, { useEffect, useState } from 'react';
-import cn from 'classnames';
+import { TodoList } from './components/TodoList';
+import { Footer } from './components/Footer';
+import { Eror } from './components/ERROR';
 import { getTodos, addTodo, deleteTodo } from './api/todos';
 import { Todo } from './types/Todo';
+import { FilterBy } from './types/FilterEnum';
 
 const USER_ID = 10387;
 
 export enum Error {
   LOAD = 'load',
-}
-
-export enum FilterBy {
-  All = 'All',
-  Active = 'Active',
-  Completed = 'Completed',
 }
 
 export const App: React.FC = () => {
@@ -123,101 +120,27 @@ export const App: React.FC = () => {
           </form>
         </header>
 
-        <section className="todoapp__main">
-          {visibleTodos.map(todo => (
-            <div
-              className={cn('todo',
-                { completed: todo.completed })}
-              key={todo.id}
-            >
-              <label className="todo__status-label">
-                <input
-                  type="checkbox"
-                  className="todo__status"
-                  checked={todo.completed}
-                />
-              </label>
+        <TodoList
+          todos={visibleTodos}
+          handleDelete={handleDelete}
+          isDeleting={isDeleting}
+        />
 
-              <span className="todo__title">{todo.title}</span>
-
-              <button
-                type="button"
-                className="todo__remove"
-                onClick={() => handleDelete(todo.id)}
-              >
-                ×
-              </button>
-
-              <div className={cn('modal overlay',
-                { 'is-active': isDeleting })}
-              >
-                <div
-                  className="modal-background has-background-white-ter"
-                />
-                <div className="loader" />
-              </div>
-            </div>
-          ))}
-        </section>
-
-        {todos.length > 0 && (
-          <footer className="todoapp__footer">
-            <span className="todo-count">
-              {`${todos.length} items left`}
-            </span>
-
-            <nav className="filter">
-              <a
-                href="#/"
-                className={cn('filter__link', {
-                  selected: filterBy === FilterBy.All,
-                })}
-                onClick={() => setFilterBy(FilterBy.All)}
-              >
-                All
-              </a>
-
-              <a
-                href="#/active"
-                className={cn('filter__link', {
-                  selected: filterBy === FilterBy.Active,
-                })}
-                onClick={() => setFilterBy(FilterBy.Active)}
-              >
-                Active
-              </a>
-
-              <a
-                href="#/completed"
-                className={cn('filter__link', {
-                  selected: filterBy === FilterBy.Completed,
-                })}
-                onClick={() => setFilterBy(FilterBy.Completed)}
-              >
-                Completed
-              </a>
-            </nav>
-
-            {visibleTodos.some((todo) => todo.completed) && (
-              <button type="button" className="todoapp__clear-completed">
-                Clear completed
-              </button>
-            )}
-          </footer>
-        )}
+        <Footer
+          todos={todos}
+          visibleTodos={visibleTodos}
+          filterBy={filterBy}
+          setFilterBy={setFilterBy}
+        />
       </div>
 
-      {errorMessage && (
-        <div className="notification is-danger is-light has-text-weight-normal">
-          <button
-            type="button"
-            className="delete"
-            onClick={() => setErrorMessage(null)}
+      {errorMessage
+        && (
+          <Eror
+            errorMessage={errorMessage}
+            setErrorMessage={setErrorMessage}
           />
-
-          {`Unable to ${errorMessage} a todos`}
-        </div>
-      )}
+        )}
     </div>
   );
 };
