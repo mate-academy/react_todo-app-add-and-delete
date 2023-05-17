@@ -4,17 +4,11 @@ import { Todo } from '../../types/Todo';
 
 interface Props {
   todo: Todo;
-  deletedTodoIds: number | null;
-  completedTodoIds: number[] | null;
-  deleteTodo: (id: number) => void;
 }
 
-export const TodoItem: FC<Props> = (
+export const TempTodo: FC<Props> = (
   {
     todo,
-    deletedTodoIds,
-    completedTodoIds,
-    deleteTodo,
   },
 ) => {
   const { id, completed, title } = todo;
@@ -35,18 +29,8 @@ export const TodoItem: FC<Props> = (
 
       <span className="todo__title">{title}</span>
 
-      <button
-        type="button"
-        className="todo__remove"
-        onClick={() => deleteTodo(id)}
-      >
-        ×
-      </button>
-
       <div className={classNames('modal overlay', {
-        'is-active': !id
-          || deletedTodoIds === id
-          || completedTodoIds?.includes(id),
+        'is-active': !id,
       })}
       >
         <div className="modal-background has-background-white-ter" />

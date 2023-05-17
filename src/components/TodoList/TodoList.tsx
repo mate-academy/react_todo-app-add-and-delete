@@ -1,12 +1,13 @@
 import { FC } from 'react';
 import { Todo } from '../../types/Todo';
 import { TodoItem } from '../TodoItem';
+import { TempTodo } from '../TempTodo';
 
 interface Props {
   todos: Todo[];
   tempTodo: Todo | null;
-  idOfDeletedTodo: number | null;
-  completedTodosID: number[] | null;
+  deletedTodoIds: number | null;
+  completedTodoIds: number[] | null;
   deleteTodo: (id: number) => void;
 }
 
@@ -14,8 +15,8 @@ export const TodoList: FC<Props> = (
   {
     todos,
     tempTodo,
-    idOfDeletedTodo,
-    completedTodosID,
+    deletedTodoIds,
+    completedTodoIds,
     deleteTodo,
   },
 ) => {
@@ -26,17 +27,13 @@ export const TodoList: FC<Props> = (
           todo={todo}
           key={todo.id}
           deleteTodo={deleteTodo}
-          completedTodosID={completedTodosID}
-          idOfDeletedTodo={idOfDeletedTodo}
+          completedTodoIds={completedTodoIds}
+          deletedTodoIds={deletedTodoIds}
         />
       ))}
+
       {tempTodo && (
-        <TodoItem
-          todo={tempTodo}
-          deleteTodo={deleteTodo}
-          completedTodosID={completedTodosID}
-          idOfDeletedTodo={idOfDeletedTodo}
-        />
+        <TempTodo todo={tempTodo} />
       )}
     </section>
   );

@@ -21,10 +21,10 @@ export const App: FC = () => {
   const [todos, setTodos] = useState<Todo[]>([]);
   const [filterOfTodo, setFilterOfTodo] = useState(Filter.ALL);
   const [hasError, setHasError] = useState(false);
-  const [idOfDeletedTodo, setIdOfDeletedTodo] = useState<number | null>(null);
+  const [deletedTodoIds, setDeletedTodoIds] = useState<number | null>(null);
   const [
-    completedTodosID,
-    setCompletedTodosID,
+    completedTodoIds,
+    setcompletedTodoIds,
   ] = useState<number[] | null>(null);
   const [typeOfError, setTypeOfError] = useState<Error>(Error.NONE);
   const [tempTodo, setTempTodo] = useState<Todo | null>(null);
@@ -58,7 +58,7 @@ export const App: FC = () => {
       const deletedTodo = await deleteTodos(id);
 
       if (deletedTodo) {
-        setIdOfDeletedTodo(null);
+        setDeletedTodoIds(null);
         setTodos(prevTodos => prevTodos.filter(todo => todo.id !== id));
       }
     } catch {
@@ -67,7 +67,7 @@ export const App: FC = () => {
     }
   }, []);
 
-  const addTodo = useCallback((query: string) => {
+  const handleAddTodo = useCallback((query: string) => {
     if (!query.trim()) {
       setHasError(true);
       setTypeOfError(Error.EMPTY);
@@ -86,24 +86,24 @@ export const App: FC = () => {
     createTodoOnServer(data);
   }, []);
 
-  const deleteTodo = useCallback((id: number) => {
-    setIdOfDeletedTodo(id);
+  const handleDeleteTodo = useCallback((id: number) => {
+    setDeletedTodoIds(id);
     deleteTodoFromServer(id);
   }, []);
 
   const deleteAllCompleted = useCallback(() => {
-    const completedTodoIds = todos
+    const completedIds = todos
       .filter(({ completed }) => completed)
       .map(({ id }) => id);
 
-    setCompletedTodosID(completedTodoIds);
+    setcompletedTodoIds(completedIds);
 
-    completedTodoIds.forEach(id => {
+    completedIds.forEach(id => {
       deleteTodoFromServer(id);
     });
   }, [todos]);
 
-  const isCompletedTodos = useCallback(() => {
+  const isCompletedTodos = useMemo(() => {
     return todos.some(({ completed }) => completed);
   }, [todos]);
 
@@ -157,39 +157,36 @@ export const App: FC = () => {
       <h1 className="todoapp__title">todos</h1>
 
       <div className="todoapp__content">
-        <TodoForm addTodo={addTodo} tempTodo={tempTodo} />
+        <TodoForm addTodo={handleAddTodo} tempTodo={tempTodo} />
 
-        {!!visibleTodos.length
-          && (
-            <TodoList
-              todos={visibleTodos}
-              tempTodo={tempTodo}
-              deleteTodo={deleteTodo}
-              idOfDeletedTodo={idOfDeletedTodo}
-              completedTodosID={completedTodosID}
-            />
-          ) }
+        {!!visibleTodos.length && (
+          <TodoList
+            todos={visibleTodos}
+            tempTodo={tempTodo}
+            deleteTodo={handleDeleteTodo}
+            deletedTodoIds={deletedTodoIds}
+            completedTodoIds={completedTodoIds}
+          />
+        ) }
 
-        {!!todos.length
-          && (
-            <BottomPanel
-              itemsCount={countOfActiveTodos}
-              selectedFilter={filterOfTodo}
-              onChange={handleSelect}
-              deleteAllCompleted={deleteAllCompleted}
-              showClearAllButton={isCompletedTodos()}
-            />
-          ) }
+        {!!todos.length && (
+          <BottomPanel
+            itemsCount={countOfActiveTodos}
+            selectedFilter={filterOfTodo}
+            onChange={handleSelect}
+            deleteAllCompleted={deleteAllCompleted}
+            showClearAllButton={isCompletedTodos}
+          />
+        ) }
       </div>
 
-      {hasError
-        && (
-          <ErrorMessage
-            hasError={hasError}
-            error={typeOfError}
-            onClose={closeErrorMessage}
-          />
-        )}
+      {hasError && (
+        <ErrorMessage
+          hasError={hasError}
+          error={typeOfError}
+          onClose={closeErrorMessage}
+        />
+      )}
     </div>
   );
 };
