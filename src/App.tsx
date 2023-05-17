@@ -75,14 +75,14 @@ export const App: FC = () => {
   }, []);
 
   const clearCompletedTodos = useCallback(async () => {
-    const completedTodos = todos.filter((todo) => todo.completed);
-
     try {
-      await Promise.all(completedTodos.map((todo) => removeTodo(
-        todo.id,
+      const completedTodos = todos.filter(({ completed }) => completed);
+
+      await Promise.all(completedTodos.map(({ id }) => removeTodo(
+        id,
       )));
 
-      setTodos((prevTodos) => prevTodos.filter((todo) => !todo.completed));
+      setTodos((prevTodos) => prevTodos.filter(({ completed }) => !completed));
     } catch {
       handleError(TodoError.DELETE);
     }
