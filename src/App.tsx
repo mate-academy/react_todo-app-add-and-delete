@@ -6,7 +6,7 @@ import { Header } from './components/Header/Header';
 import { TodoList } from './components/TodoList/TodoList';
 import { Footer } from './components/Footer/Footer';
 import { FilterStatus } from './types/FilterStatus';
-import { Error } from './components/ErrorBlock/Error';
+import { ErrorBlock } from './components/ErrorBlock/ErrorBlock';
 
 const USER_ID = 10266;
 
@@ -22,7 +22,6 @@ export const App: React.FC = () => {
   const [isClearCompletedClicked, setIsClearCompletedClicked] = useState(false);
 
   const hasCompletedTodos = todos.some((todo) => todo.completed);
-  const hasActiveTodos = todos.some((todo) => !todo.completed);
   const activeTodosCount = todos.filter((todo) => !todo.completed).length;
   const completedTodosId = todos
     .filter((todo) => todo.completed)
@@ -109,12 +108,12 @@ export const App: React.FC = () => {
     setError(null);
   };
 
-  const filteredTodos = todos.filter((todo) => {
+  const filteredTodos = todos.filter(({ completed }) => {
     switch (filter) {
       case FilterStatus.ACTIVE:
-        return !todo.completed;
+        return !completed;
       case FilterStatus.COMPLETED:
-        return todo.completed;
+        return completed;
       default:
         return true;
     }
@@ -146,14 +145,14 @@ export const App: React.FC = () => {
 
       <div className="todoapp__content">
         <Header
-          hasActiveTodos={hasActiveTodos}
+          activeTodosCount={activeTodosCount}
           onInputChange={handleInputChange}
           inputValue={inputValue}
           onSubmit={handleSubmit}
           inputDisabled={isInputDisable}
         />
 
-        {todos.length !== 0 && (
+        {todos.length > 0 && (
           <>
             <TodoList
               todos={filteredTodos}
@@ -168,7 +167,7 @@ export const App: React.FC = () => {
               hasCompletedTodos={hasCompletedTodos}
               activeTodosCount={activeTodosCount}
               filter={filter}
-              setFilter={setFilter}
+              onChangeFilter={setFilter}
               onDeleteCompletedTodos={handleDeleteComplitedTodos}
             />
           </>
@@ -178,7 +177,7 @@ export const App: React.FC = () => {
       {/* Notification is shown in case of any error */}
       {/* Add the 'hidden' class to hide the message smoothly */}
       {error && (
-        <Error
+        <ErrorBlock
           onClose={handleCloseError}
           error={error}
           setError={setError}

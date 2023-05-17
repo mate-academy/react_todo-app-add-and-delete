@@ -7,7 +7,7 @@ interface Props {
   setError: (error: string | null) => void;
 }
 
-export const Error: React.FC<Props> = ({ onClose, error, setError }) => {
+export const ErrorBlock: React.FC<Props> = ({ onClose, error, setError }) => {
   useEffect(() => {
     const hideNotification = setTimeout(() => {
       setError(null);

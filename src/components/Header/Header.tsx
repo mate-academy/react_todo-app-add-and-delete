@@ -3,7 +3,7 @@ import React from 'react';
 import classNames from 'classnames';
 
 interface Props {
-  hasActiveTodos: boolean;
+  activeTodosCount: number;
   onInputChange: (event: React.ChangeEvent<HTMLInputElement>) => void;
   inputValue: string;
   onSubmit: (event: React.FormEvent<HTMLFormElement>) => void;
@@ -11,7 +11,7 @@ interface Props {
 }
 
 export const Header: React.FC<Props> = ({
-  hasActiveTodos,
+  activeTodosCount,
   onInputChange,
   inputValue,
   onSubmit,
@@ -21,7 +21,7 @@ export const Header: React.FC<Props> = ({
     <button
       type="button"
       className={classNames('todoapp__toggle-all', {
-        active: hasActiveTodos,
+        active: activeTodosCount > 0,
       })}
     />
 

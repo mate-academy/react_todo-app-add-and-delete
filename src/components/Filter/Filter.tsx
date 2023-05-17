@@ -4,10 +4,10 @@ import { FilterStatus } from '../../types/FilterStatus';
 
 interface Props {
   filter: FilterStatus;
-  setFilter: (filter: FilterStatus) => void;
+  onChangeFilter: (filter: FilterStatus) => void;
 }
 
-export const Filter: React.FC<Props> = ({ filter, setFilter }) => (
+export const Filter: React.FC<Props> = ({ filter, onChangeFilter }) => (
   <nav className="filter">
     <a
       href="#/"
@@ -16,7 +16,7 @@ export const Filter: React.FC<Props> = ({ filter, setFilter }) => (
       })}
       onClick={(event) => {
         event.preventDefault();
-        setFilter(FilterStatus.ALL);
+        onChangeFilter(FilterStatus.ALL);
       }}
     >
       All
@@ -29,7 +29,7 @@ export const Filter: React.FC<Props> = ({ filter, setFilter }) => (
       })}
       onClick={(event) => {
         event.preventDefault();
-        setFilter(FilterStatus.ACTIVE);
+        onChangeFilter(FilterStatus.ACTIVE);
       }}
     >
       Active
@@ -42,7 +42,7 @@ export const Filter: React.FC<Props> = ({ filter, setFilter }) => (
       })}
       onClick={(event) => {
         event.preventDefault();
-        setFilter(FilterStatus.COMPLETED);
+        onChangeFilter(FilterStatus.COMPLETED);
       }}
     >
       Completed
