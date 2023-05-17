@@ -1,6 +1,6 @@
 import { FC } from 'react';
 import { Todo } from '../../types/Todo';
-import { TodoInfo } from '../TodoInfo';
+import { TodoTask } from '../TodoTask';
 import { ErrorType } from '../../types/Error';
 
 interface Props {
@@ -23,7 +23,7 @@ export const TodoList: FC<Props> = ({
   return (
     <section className="todoapp__main">
       {preparedTodos.map(todo => (
-        <TodoInfo
+        <TodoTask
           key={todo.id}
           todo={todo}
           isLoading={processing.includes(todo.id)}
@@ -34,7 +34,7 @@ export const TodoList: FC<Props> = ({
       ))}
 
       {tempTodo && (
-        <TodoInfo
+        <TodoTask
           todo={tempTodo}
           isLoading={processing.includes(tempTodo.id)}
           onChangeTodos={onChangeTodos}

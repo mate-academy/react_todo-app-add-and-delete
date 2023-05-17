@@ -1,6 +1,6 @@
 /* eslint-disable jsx-a11y/control-has-associated-label */
 import {
-  FC, useEffect, useMemo, useState,
+  FC, useCallback, useEffect, useMemo, useState,
 } from 'react';
 import classNames from 'classnames';
 import { UserWarning } from './UserWarning';
@@ -16,21 +16,21 @@ import { USER_ID } from './constants';
 export const App: FC = () => {
   const [todos, setTodos] = useState<Todo[]>([]);
   const [tempTodo, setTempTodo] = useState<Todo | null>(null);
-  const [isError, setIsError] = useState<ErrorType>(ErrorType.None);
+  const [error, setError] = useState<ErrorType>(ErrorType.None);
   const [filter, setFilter] = useState<Filter>(Filter.All);
   const [processing, setProcessing] = useState<number[]>([]);
 
+  const uploadTodos = useCallback(async () => {
+    try {
+      const uploadedTodos = await getTodos(USER_ID);
+
+      setTodos(uploadedTodos);
+    } catch {
+      setError(ErrorType.Load);
+    }
+  }, []);
+
   useEffect(() => {
-    const uploadTodos = async () => {
-      try {
-        const uploadedTodos = await getTodos(USER_ID);
-
-        setTodos(uploadedTodos);
-      } catch (error) {
-        setIsError(ErrorType.Load);
-      }
-    };
-
     uploadTodos();
   }, []);
 
@@ -47,15 +47,15 @@ export const App: FC = () => {
   }, [todos, filter]);
 
   useEffect(() => {
-    const timerId = setTimeout(() => setIsError(ErrorType.None), 3000);
+    const timerId = setTimeout(() => setError(ErrorType.None), 3000);
 
     return () => {
       clearTimeout(timerId);
     };
-  }, [isError]);
+  }, [error]);
 
   const handleErrorNotification = () => {
-    setIsError(ErrorType.None);
+    setError(ErrorType.None);
   };
 
   if (!USER_ID) {
@@ -70,7 +70,7 @@ export const App: FC = () => {
         <Header
           onChangeTempTodo={setTempTodo}
           onChangeTodos={setTodos}
-          onChangeError={setIsError}
+          onChangeError={setError}
           onChangeProcessing={setProcessing}
         />
 
@@ -79,16 +79,16 @@ export const App: FC = () => {
           tempTodo={tempTodo}
           processing={processing}
           onChangeTodos={setTodos}
-          onChangeError={setIsError}
+          onChangeError={setError}
           onChangeProcessing={setProcessing}
         />
 
         {todos.length && (
           <Footer
-            todos={todos}
-            filter={filter}
+            allTodos={todos}
+            filterCondition={filter}
             onChangeFilter={setFilter}
-            onChangeError={setIsError}
+            onChangeError={setError}
             onChangeTodos={setTodos}
             onChangeProcessing={setProcessing}
           />
@@ -96,9 +96,8 @@ export const App: FC = () => {
       </div>
 
       <div className={classNames(
-        'notification is-danger is-light has-text-weight-normal',
-        {
-          hidden: isError === ErrorType.None,
+        'notification is-danger is-light has-text-weight-normal', {
+          hidden: error === ErrorType.None,
         },
       )}
       >
@@ -107,7 +106,7 @@ export const App: FC = () => {
           className="delete"
           onClick={handleErrorNotification}
         />
-        {isError}
+        {error}
       </div>
     </div>
   );

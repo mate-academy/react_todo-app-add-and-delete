@@ -51,7 +51,7 @@ export const Header: FC<Props> = ({
 
         onChangeTodos(prev => [...prev, newTodo]);
         setNewTodoQuery('');
-      } catch (error) {
+      } catch {
         onChangeError(ErrorType.Add);
       } finally {
         setIsLoading(false);

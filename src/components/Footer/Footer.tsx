@@ -6,8 +6,8 @@ import { ErrorType } from '../../types/Error';
 import { removeTodo } from '../../api/todos';
 
 interface Props {
-  todos: Todo[];
-  filter: Filter;
+  allTodos: Todo[];
+  filterCondition: Filter;
   onChangeFilter: React.Dispatch<React.SetStateAction<Filter>>;
   onChangeError: React.Dispatch<React.SetStateAction<ErrorType>>;
   onChangeTodos: React.Dispatch<React.SetStateAction<Todo[]>>;
@@ -15,8 +15,8 @@ interface Props {
 }
 
 export const Footer: FC<Props> = ({
-  todos,
-  filter,
+  allTodos,
+  filterCondition,
   onChangeFilter,
   onChangeError,
   onChangeTodos,
@@ -27,10 +27,10 @@ export const Footer: FC<Props> = ({
   };
 
   const filterNames = Object.values(Filter);
-  const activeTodos = todos.filter(todo => !todo.completed);
+  const activeTodos = allTodos.filter(todo => !todo.completed);
 
   const handleClearCompletedClick = () => {
-    todos.forEach(async todo => {
+    allTodos.forEach(async todo => {
       if (!todo.completed) {
         return;
       }
@@ -39,7 +39,7 @@ export const Footer: FC<Props> = ({
         onChangeProcessing(prev => [...prev, todo.id]);
         await removeTodo(todo.id);
         onChangeTodos(prev => prev.filter(({ id }) => id !== todo.id));
-      } catch (error) {
+      } catch {
         onChangeError(ErrorType.Delete);
       } finally {
         onChangeProcessing(prev => prev.filter(id => id !== todo.id));
@@ -60,7 +60,7 @@ export const Footer: FC<Props> = ({
             href={filterName === Filter.All ? '#/' : `#/${filterName}`}
             onClick={handleFilterClick}
             className={classNames('filter__link', {
-              selected: filter === filterName,
+              selected: filterCondition === filterName,
             })}
           >
             {filterName}
@@ -68,7 +68,7 @@ export const Footer: FC<Props> = ({
         ))}
       </nav>
 
-      {todos.some(todo => todo.completed) && (
+      {allTodos.some(todo => todo.completed) && (
         <button
           type="button"
           className="todoapp__clear-completed"
