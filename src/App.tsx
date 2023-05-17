@@ -130,12 +130,14 @@ export const App: FC = () => {
           tempTodo={tempTodo}
         />
 
-        <Footer
-          todos={vissibleTodos}
-          onChangeFilter={setActiveFilter}
-          activeFilter={activeFilter}
-          onClearCompletedTodos={clearCompletedTodos}
-        />
+        {todos.length > 0 && (
+          <Footer
+            todos={vissibleTodos}
+            onChangeFilter={setActiveFilter}
+            activeFilter={activeFilter}
+            onClearCompletedTodos={clearCompletedTodos}
+          />
+        )}
       </div>
 
       {errorMessage && (
