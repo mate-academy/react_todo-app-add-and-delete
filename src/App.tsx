@@ -15,6 +15,7 @@ export const App: React.FC = () => {
   const [hasError, setHasError] = useState(false);
   const [filter, setFilter] = useState('all');
   const [errorName, setErrorName] = useState('');
+  const [disabledInput, setDisabledInput] = useState(false);
 
   const [title, setTitle] = useState('');
 
@@ -35,6 +36,9 @@ export const App: React.FC = () => {
     if (!title.trim()) {
       setHasError(true);
       setErrorName('Title can\'t be empty');
+      setTimeout(() => {
+        setHasError(false);
+      }, 3000);
 
       return;
     }
@@ -44,12 +48,15 @@ export const App: React.FC = () => {
     };
 
     try {
+      setDisabledInput(true);
       const addedTodo: Todo = await addTodo(USER_ID, newTodo);
 
       setTodos([...todos, addedTodo]);
       setTitle('');
     } catch (e) {
       setHasError(true);
+    } finally {
+      setDisabledInput(false);
     }
   };
 
@@ -102,13 +109,14 @@ export const App: React.FC = () => {
             <button type="button" className="todoapp__toggle-all active" />
 
             {/* Add a todo on form submit */}
-            <form onSubmit={handleFormSubmit}>
+            <form onSubmit={(e) => handleFormSubmit(e)}>
               <input
                 type="text"
                 className="todoapp__new-todo"
                 placeholder="What needs to be done?"
                 value={title}
                 onChange={(e) => setTitle(e.target.value)}
+                disabled={disabledInput}
               />
             </form>
           </header>
