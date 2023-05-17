@@ -7,13 +7,10 @@ import React, {
 } from 'react';
 
 import { USER_ID } from './App.constants';
-
 import { TodoList } from './components/TodoList';
 import { TodoFooter } from './components/TodoFooter';
 import { ErrorMessage } from './components/ErrorMessage';
-
 import { getTodos, removeTodo } from './api/todos';
-
 import { Todo } from './types/Todo';
 import { Filter } from './types/FilterEnum';
 import { TodoForm } from './components/TodoForm.tsx';
@@ -40,7 +37,6 @@ export const App: React.FC = () => {
 
   const deleteTodo = useCallback(async (deletingTodo: Todo) => {
     try {
-      setTempTodo(deletingTodo);
       await removeTodo(deletingTodo.id);
       loadTodos();
     } catch {
@@ -50,22 +46,34 @@ export const App: React.FC = () => {
     setTempTodo(null);
   }, []);
 
+  const deleteCompletedTodos = useCallback(async () => {
+    const completedTodos = todos.filter((todo) => todo.completed);
+
+    completedTodos.map(todo => {
+      return deleteTodo(todo);
+    });
+  }, [todos]);
+
   const closeError = useCallback(() => {
     setErrorMessage('');
   }, []);
 
   const filteredTodos = useMemo(() => {
-    const visibleTodos = [...todos];
-
     switch (filter) {
       case Filter.ACTIVE:
-        return visibleTodos.filter((todo) => !todo.completed);
+        return todos.filter((todo) => !todo.completed);
       case Filter.COMPLETED:
-        return visibleTodos.filter((todo) => todo.completed);
+        return todos.filter((todo) => todo.completed);
       default:
-        return visibleTodos;
+        return todos;
     }
   }, [filter, todos]);
+
+  const activeTodosCounter = useMemo(() => {
+    return todos.filter((todo) => !todo.completed).length;
+  }, [todos]);
+
+  const completedTodosCounter = todos.length - activeTodosCounter;
 
   useEffect(() => {
     loadTodos();
@@ -78,8 +86,6 @@ export const App: React.FC = () => {
       <div className="todoapp__content">
 
         <header className="todoapp__header">
-          {/* this buttons is active only if there are some active todos */}
-          {/* eslint-disable-next-line jsx-a11y/control-has-associated-label */}
           <button type="button" className="todoapp__toggle-all active" />
 
           <TodoForm
@@ -95,11 +101,13 @@ export const App: React.FC = () => {
           deleteTodo={deleteTodo}
         />
 
-        {todos.length !== 0 && (
+        {todos.length > 0 && (
           <TodoFooter
-            todoCounter={todos.length}
-            filterTodos={filter}
-            setFilterTodos={setFilter}
+            itemCounter={activeTodosCounter}
+            completedTodosCounter={completedTodosCounter}
+            selectedFilter={filter}
+            onFilterSelect={setFilter}
+            deleteCompletedTodos={deleteCompletedTodos}
           />
         )}
       </div>

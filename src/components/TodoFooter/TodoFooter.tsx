@@ -2,29 +2,32 @@ import classNames from 'classnames';
 import { Filter } from '../../types/FilterEnum';
 
 interface Props {
-  todoCounter: number;
-  filterTodos: Filter;
-  setFilterTodos: (filter: Filter) => void;
-  deleteCompletedTodos?: () => void;
+  itemCounter: number;
+  completedTodosCounter: number;
+  selectedFilter: Filter;
+  onFilterSelect: (filter: Filter) => void;
+  deleteCompletedTodos: () => void;
 }
 
 export const TodoFooter: React.FC<Props> = ({
-  todoCounter,
-  filterTodos,
-  setFilterTodos,
+  itemCounter,
+  completedTodosCounter,
+  selectedFilter,
+  onFilterSelect,
+  deleteCompletedTodos,
 }) => {
   const handleFilter = (event: React.MouseEvent<HTMLAnchorElement>) => {
     event.preventDefault();
 
     switch (event.currentTarget.hash) {
       case '#/active':
-        setFilterTodos(Filter.ACTIVE);
+        onFilterSelect(Filter.ACTIVE);
         break;
       case '#/completed':
-        setFilterTodos(Filter.COMPLETED);
+        onFilterSelect(Filter.COMPLETED);
         break;
       default:
-        setFilterTodos(Filter.ALL);
+        onFilterSelect(Filter.ALL);
         break;
     }
   };
@@ -32,15 +35,14 @@ export const TodoFooter: React.FC<Props> = ({
   return (
     <footer className="todoapp__footer">
       <span className="todo-count">
-        {`${todoCounter} items left`}
+        {`${itemCounter} items left`}
       </span>
 
-      {/* Active filter should have a 'selected' class */}
       <nav className="filter">
         <a
           href="#/"
           className={classNames('filter__link', {
-            selected: filterTodos === Filter.ALL,
+            selected: selectedFilter === Filter.ALL,
           })}
           onClick={handleFilter}
         >
@@ -50,7 +52,7 @@ export const TodoFooter: React.FC<Props> = ({
         <a
           href="#/active"
           className={classNames('filter__link', {
-            selected: filterTodos === Filter.ACTIVE,
+            selected: selectedFilter === Filter.ACTIVE,
           })}
           onClick={handleFilter}
         >
@@ -60,7 +62,7 @@ export const TodoFooter: React.FC<Props> = ({
         <a
           href="#/completed"
           className={classNames('filter__link', {
-            selected: filterTodos === Filter.COMPLETED,
+            selected: selectedFilter === Filter.COMPLETED,
           })}
           onClick={handleFilter}
         >
@@ -71,6 +73,10 @@ export const TodoFooter: React.FC<Props> = ({
       <button
         type="button"
         className="todoapp__clear-completed"
+        onClick={() => deleteCompletedTodos()}
+        style={{
+          visibility: completedTodosCounter === 0 ? 'hidden' : 'visible',
+        }}
       >
         Clear completed
       </button>

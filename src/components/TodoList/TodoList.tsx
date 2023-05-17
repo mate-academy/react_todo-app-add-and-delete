@@ -13,39 +13,35 @@ export const TodoList: React.FC<Props> = ({
   todos,
   tempTodo,
   deleteTodo,
-}) => {
-  const creating = tempTodo?.id === 0;
-
-  return (
-    <section className="todoapp__main">
-      <TransitionGroup>
-        {todos.map((todo) => (
-          <CSSTransition
+}) => (
+  <section className="todoapp__main">
+    <TransitionGroup>
+      {todos.map((todo) => (
+        <CSSTransition
+          key={todo.id}
+          timeout={300}
+          classNames="item"
+        >
+          <TodoItem
             key={todo.id}
-            timeout={300}
-            classNames="item"
-          >
-            <TodoItem
-              key={todo.id}
-              todo={todo}
-              deleteTodo={deleteTodo}
-            />
-          </CSSTransition>
-        ))}
+            todo={todo}
+            deleteTodo={deleteTodo}
+          />
+        </CSSTransition>
+      ))}
 
-        {creating && (
-          <CSSTransition
-            key={0}
-            timeout={300}
-            classNames="temp-item"
-          >
-            <TodoItem
-              todo={tempTodo}
-              tempTodoId={tempTodo.id}
-            />
-          </CSSTransition>
-        )}
-      </TransitionGroup>
-    </section>
-  );
-};
+      {tempTodo && (
+        <CSSTransition
+          key={0}
+          timeout={300}
+          classNames="temp-item"
+        >
+          <TodoItem
+            todo={tempTodo}
+            tempTodoId={tempTodo.id}
+          />
+        </CSSTransition>
+      )}
+    </TransitionGroup>
+  </section>
+);

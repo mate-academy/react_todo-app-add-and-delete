@@ -38,8 +38,7 @@ export const TodoItem: React.FC<Props> = ({
         className="todo__remove"
         onClick={async () => {
           setIsLoading(true);
-          await deleteTodo?.(todo);
-          setIsLoading(false);
+          deleteTodo?.(todo);
         }}
         disabled={isLoading}
       >
