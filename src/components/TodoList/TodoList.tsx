@@ -1,9 +1,9 @@
 import React from 'react';
-import { TransitionGroup, CSSTransition } from 'react-transition-group';
 import { Todo } from '../../types/Todo';
 import { TodoItem } from '../TodoItem';
 import { ErrorMessage } from '../../types/ErrorMessage';
 import { USER_ID } from '../../types/ConstantTypes';
+import { TempTodo } from '../TempTodo';
 
 type Props = {
   todos: Todo[];
@@ -11,14 +11,14 @@ type Props = {
   isClearCompleted: boolean;
   showError: (errorType: ErrorMessage) => void;
   hideError: () => void;
-  DeleteTodo: (todoId: number) => void;
+  handleDelete: (todoId: number) => void;
 };
 
 export const TodoList: React.FC<Props> = React.memo(({
   todos,
   query,
   isClearCompleted,
-  DeleteTodo,
+  handleDelete,
   showError,
   hideError,
 }) => {
@@ -33,39 +33,25 @@ export const TodoList: React.FC<Props> = React.memo(({
 
   return (
     <section className="todoapp__main">
-      <TransitionGroup>
-        {todos.map((todo) => (
-          <CSSTransition
-            timeout={300}
-            classNames="item"
-          >
-            <TodoItem
-              key={todo.id}
-              todo={todo}
-              showError={showError}
-              hideError={hideError}
-              DeleteTodo={DeleteTodo}
-              isLoading={todo.completed && isClearCompleted}
-            />
-          </CSSTransition>
-        ))}
+      {todos.map((todo) => (
+        <TodoItem
+          todo={todo}
+          showError={showError}
+          hideError={hideError}
+          handleDelete={handleDelete}
+          isLoading={todo.completed && isClearCompleted}
+        />
+      ))}
 
-        {creatingTodo && (
-          <CSSTransition
-            key={0}
-            timeout={300}
-            classNames="temp-item"
-          >
-            <TodoItem
-              todo={creatingTodo}
-              showError={() => {}}
-              hideError={() => {}}
-              DeleteTodo={() => {}}
-              isLoading
-            />
-          </CSSTransition>
-        )}
-      </TransitionGroup>
+      {creatingTodo && (
+        <TempTodo
+          todo={creatingTodo}
+          showError={() => {}}
+          hideError={() => {}}
+          handleDelete={() => {}}
+          isLoading
+        />
+      )}
     </section>
   );
 });

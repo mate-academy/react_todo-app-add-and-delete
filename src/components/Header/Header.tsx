@@ -1,4 +1,4 @@
-import classNames from 'classnames';
+import cn from 'classnames';
 import React, { useState } from 'react';
 import { ErrorMessage } from '../../types/ErrorMessage';
 import { Todo } from '../../types/Todo';
@@ -6,38 +6,38 @@ import { addTodos } from '../../api/todos';
 import { USER_ID } from '../../types/ConstantTypes';
 
 type Props = {
-  counterActiveTodos: number;
-  showError: (errorType: ErrorMessage) => void;
-  hideError: () => void;
-  onAddQuery: (newTitle: string) => void;
-  addNewTodo: (newTodo: Todo) => void;
+  countActiveTodos: number;
+  onShowError: (errorType: ErrorMessage) => void;
+  onHideError: () => void;
+  onChange: (newTitle: string) => void;
+  onAddTodo: (newTodo: Todo) => void;
 };
 
 export const Header: React.FC<Props> = React.memo(({
-  counterActiveTodos,
-  showError,
-  hideError,
-  onAddQuery,
-  addNewTodo,
+  countActiveTodos,
+  onShowError,
+  onHideError,
+  onChange,
+  onAddTodo,
 }) => {
   const [newTodoTitle, setNewTodoTitle] = useState('');
   const [hasInputDisabled, setHasInputDisabled] = useState(false);
 
-  function handleAddNewTodo(
+  const handleAddNewTodo = (
     event: React.FormEvent<HTMLFormElement>,
-  ): void {
+  ) => {
     event.preventDefault();
 
     const title = newTodoTitle.trim();
 
     if (!title) {
-      showError(ErrorMessage.EmptyTitle);
+      onShowError(ErrorMessage.EmptyTitle);
 
       return;
     }
 
-    hideError();
-    onAddQuery(title);
+    onHideError();
+    onChange(title);
 
     setHasInputDisabled(true);
 
@@ -46,23 +46,23 @@ export const Header: React.FC<Props> = React.memo(({
       title: newTodoTitle,
       completed: false,
     })
-      .then((newTodo) => addNewTodo(newTodo))
+      .then((newTodo) => onAddTodo(newTodo))
       .catch(() => {
-        showError(ErrorMessage.Add);
+        onShowError(ErrorMessage.Add);
       })
       .finally(() => {
-        onAddQuery('');
+        onChange('');
         setNewTodoTitle('');
         setHasInputDisabled(false);
       });
-  }
+  };
 
   return (
     <header className="todoapp__header">
       <button
         type="button"
-        className={classNames('todoapp__toggle-all', {
-          active: counterActiveTodos === 0,
+        className={cn('todoapp__toggle-all', {
+          active: countActiveTodos === 0,
         })}
         aria-label="Toggle all todos"
       />

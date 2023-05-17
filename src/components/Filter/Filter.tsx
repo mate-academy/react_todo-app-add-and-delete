@@ -1,5 +1,5 @@
 import React from 'react';
-import classNames from 'classnames';
+import cn from 'classnames';
 import { TodoStatus } from '../../types/TodoStatus';
 
 type Props = {
@@ -7,7 +7,7 @@ type Props = {
   counterCompletedTodos: number;
   selectedFilter: TodoStatus;
   onFilterSelect: (newFilter: TodoStatus) => void;
-  onClearCompleted: () => void;
+  handleClearCompleted: () => void;
 };
 
 const filterOptions = Object.values(TodoStatus);
@@ -18,7 +18,7 @@ export const Filter: React.FC<Props> = React.memo(
     counterCompletedTodos,
     selectedFilter,
     onFilterSelect,
-    onClearCompleted,
+    handleClearCompleted,
   }) => {
     return (
       <footer className="todoapp__footer">
@@ -29,7 +29,7 @@ export const Filter: React.FC<Props> = React.memo(
             <a
               key={option}
               href={`#/${option}`}
-              className={classNames('filter__link', {
+              className={cn('filter__link', {
                 selected: option === selectedFilter,
               })}
               onClick={() => onFilterSelect(option)}
@@ -41,10 +41,10 @@ export const Filter: React.FC<Props> = React.memo(
 
         <button
           type="button"
-          className={classNames('todoapp__clear-completed', {
+          className={cn('todoapp__clear-completed', {
             hidden: counterCompletedTodos === 0,
           })}
-          onClick={onClearCompleted}
+          onClick={handleClearCompleted}
         >
           Clear completed
         </button>

@@ -12,7 +12,7 @@ type Props = {
   hideError: () => void;
 };
 
-export const TodoItem: React.FC<Props> = React.memo(({
+export const TempTodo: React.FC<Props> = React.memo(({
   todo,
   isLoading,
   handleDelete,
@@ -24,7 +24,7 @@ export const TodoItem: React.FC<Props> = React.memo(({
 
   const { title, completed, id } = todo;
 
-  const handleDeleteTodo = () => {
+  function handleDeleteTodo(): void {
     hideError();
     setIsWaiting(true);
 
@@ -36,7 +36,7 @@ export const TodoItem: React.FC<Props> = React.memo(({
         showError(ErrorMessage.Delete);
         setIsWaiting(false);
       });
-  };
+  }
 
   return (
     <div

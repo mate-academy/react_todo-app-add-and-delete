@@ -1,4 +1,3 @@
-/* eslint-disable jsx-a11y/control-has-associated-label */
 import React, {
   useCallback,
   useEffect,
@@ -41,14 +40,16 @@ export const App: React.FC = () => {
   const [query, setQuery] = useState('');
   const [isClearCompleted, setIsClearCompleted] = useState(false);
 
-  useEffect(() => {
-    getTodos(USER_ID)
-      .then((userTodos) => setTodos(userTodos))
-      .catch(() => {
-        setErrorType(ErrorMessage.Download);
-        setIsErrorShown(true);
-      });
-  }, []);
+  const loadTodos = async () => {
+    const todosFromServer = await getTodos(USER_ID);
+
+    try {
+      setTodos(todosFromServer);
+    } catch {
+      setErrorType(ErrorMessage.Download);
+      setIsErrorShown(true);
+    }
+  };
 
   const counterActiveTodos = useMemo(
     () => todos.reduce((num, todo) => {
@@ -59,10 +60,9 @@ export const App: React.FC = () => {
 
   const counterCompletedTodos = todos.length - counterActiveTodos;
 
-  const filteredTodos = useMemo(
-    () => filterTodos(todos, selectedFilter),
-    [selectedFilter, todos],
-  );
+  const filteredTodos = useMemo(() => (
+    filterTodos(todos, selectedFilter)
+  ), [selectedFilter, todos]);
 
   const showError = useCallback((error: ErrorMessage) => {
     setErrorType(error);
@@ -73,39 +73,42 @@ export const App: React.FC = () => {
     setIsErrorShown(false);
   }, []);
 
-  const AddTodo = useCallback(
+  const handleAdd = useCallback(
     (newTodo: Todo): void => setTodos((oldTodos) => [...oldTodos, newTodo]),
     [],
   );
 
-  const DeleteTodo = useCallback(
+  const handleDelete = useCallback(
     (todoId: number): void => (
       setTodos((oldTodos) => oldTodos.filter(todo => todo.id !== todoId))
     ),
     [],
   );
 
-  const onClearCompleted = useCallback(() => {
+  const handleClearCompleted = useCallback(async () => {
     const completedTodos = filterTodos(todos, TodoStatus.Completed);
 
     setIsClearCompleted(true);
     hideError();
 
-    Promise.all(
-      completedTodos.map((todo) => deleteTodos(todo.id).then(() => todo.id)),
-    )
-      .then((ids) => {
-        setTodos((oldTodos) => {
-          return oldTodos.filter((todo) => !ids.includes(todo.id));
-        });
-      })
-      .catch(() => {
-        showError(ErrorMessage.Delete);
-      })
-      .finally(() => {
-        setIsClearCompleted(false);
+    try {
+      const todosIds = await Promise.all(
+        completedTodos.map(({ id }) => deleteTodos(id).then(() => id)),
+      );
+
+      setTodos((oldTodos) => {
+        return oldTodos.filter(({ id }) => !todosIds.includes(id));
       });
+    } catch {
+      showError(ErrorMessage.Delete);
+    } finally {
+      setIsClearCompleted(false);
+    }
   }, [todos]);
+
+  useEffect(() => {
+    loadTodos();
+  }, []);
 
   return (
     <div className="todoapp">
@@ -113,11 +116,11 @@ export const App: React.FC = () => {
 
       <div className="todoapp__content">
         <Header
-          counterActiveTodos={counterActiveTodos}
-          showError={showError}
-          hideError={hideError}
-          onAddQuery={setQuery}
-          addNewTodo={AddTodo}
+          countActiveTodos={counterActiveTodos}
+          onShowError={showError}
+          onHideError={hideError}
+          onChange={setQuery}
+          onAddTodo={handleAdd}
         />
 
         <TodoList
@@ -125,7 +128,7 @@ export const App: React.FC = () => {
           query={query}
           showError={showError}
           hideError={hideError}
-          DeleteTodo={DeleteTodo}
+          handleDelete={handleDelete}
           isClearCompleted={isClearCompleted}
         />
 
@@ -135,14 +138,14 @@ export const App: React.FC = () => {
             counterCompletedTodos={counterCompletedTodos}
             selectedFilter={selectedFilter}
             onFilterSelect={setSelectedFilter}
-            onClearCompleted={onClearCompleted}
+            handleClearCompleted={handleClearCompleted}
           />
         )}
 
         <Error
           errorMessage={errorType}
-          isErrorShown={isErrorShown}
-          onErrorClose={() => setIsErrorShown(false)}
+          isError={isErrorShown}
+          onClose={() => setIsErrorShown(false)}
         />
       </div>
     </div>
