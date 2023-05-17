@@ -3,16 +3,14 @@ import { Todo } from '../../types/Todo';
 
 interface P {
   todo: Todo;
-  isActive?: boolean;
+  isLoading?: boolean;
   deleteTodo: (id: number) => void;
-  isDeleting?: boolean
 }
 
 export const TodoInfo: React.FC<P> = ({
   todo,
-  isActive = false,
+  isLoading = false,
   deleteTodo,
-  isDeleting,
 }) => {
   const { completed, title, id } = todo;
   const handleDeleteTodo = () => {
@@ -42,7 +40,7 @@ export const TodoInfo: React.FC<P> = ({
 
       {/* overlay will cover the todo while it is being updated */}
       <div className={classNames('modal', 'overlay',
-        { 'is-active': (isActive || isDeleting) })}
+        { 'is-active': isLoading })}
       >
         <div className="modal-background has-background-white-ter" />
         <div className="loader" />

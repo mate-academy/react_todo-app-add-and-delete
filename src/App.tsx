@@ -24,7 +24,7 @@ export const App: React.FC = () => {
   const [isDeletedError, setIsDeletedError] = useState(false);
   const [tempTodo, setTempTodo] = useState<Todo | null>(null);
   const [isUploadingTitle, setIsUploadingTitle] = useState(false);
-  const [isDeletingTodoId, setIsDeletingTodoId] = useState<number | null>(null);
+  const [isLoadingTodoId, setIsLoadingTodoId] = useState<number | null>(null);
 
   const loadTodos = async () => {
     setIsLoadingError(false);
@@ -59,7 +59,7 @@ export const App: React.FC = () => {
   };
 
   const deleteTodo = async (id: number) => {
-    setIsDeletingTodoId(id);
+    setIsLoadingTodoId(id);
     try {
       await destroyTodo(id);
       setTodos(curTodo => curTodo.filter(todo => todo.id !== id));
@@ -67,7 +67,7 @@ export const App: React.FC = () => {
       setIsDeletedError(true);
     }
 
-    setIsDeletingTodoId(null);
+    setIsLoadingTodoId(null);
   };
 
   const closeAllWarnings = () => {
@@ -114,14 +114,14 @@ export const App: React.FC = () => {
         {tempTodo && (
           <TodoInfo
             todo={tempTodo}
-            isActive
+            isLoading
             deleteTodo={deleteTodo}
           />
         )}
         <TodoList
           todos={visibleTodos}
           deleteTodo={deleteTodo}
-          isDeletingTodoId={isDeletingTodoId}
+          isLoadingTodoId={isLoadingTodoId}
         />
         {todos.length !== 0 && (
           <Footer

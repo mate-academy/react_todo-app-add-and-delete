@@ -5,13 +5,13 @@ import { TodoInfo } from '../TodoInfo/TodoInfo';
 interface P {
   todos: Todo[];
   deleteTodo: (id: number) => void;
-  isDeletingTodoId: number | null;
+  isLoadingTodoId: number | null;
 }
 
 export const TodoList: React.FC<P> = ({
   todos,
   deleteTodo,
-  isDeletingTodoId,
+  isLoadingTodoId,
 }) => (
   <section className="todoapp__main">
     {todos.map(todo => (
@@ -19,7 +19,7 @@ export const TodoList: React.FC<P> = ({
         todo={todo}
         deleteTodo={deleteTodo}
         key={todo.id}
-        isDeleting={todo.id === isDeletingTodoId}
+        isLoading={todo.id === isLoadingTodoId}
       />
     ))}
   </section>
