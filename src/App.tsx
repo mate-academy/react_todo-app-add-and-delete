@@ -21,8 +21,7 @@ export const App: FC = () => {
   const [activeFilter, setActiveFilter] = useState<SortTypes>(SortTypes.All);
   const [errorMessage, setErrorMessage] = useState('');
   const [isLoading, setIsloading] = useState(false);
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
-  const [isEditedTodo, setIsEditet] = useState(false);
+  const [isEditedTodo] = useState(false);
   const [todoId, setTodoId] = useState<number | null>(null);
   const [tempTodo, setTempTodo] = useState<Todo | null>(null);
 
