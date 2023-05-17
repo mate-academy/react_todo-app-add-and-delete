@@ -1,9 +1,9 @@
 import classNames from 'classnames';
-import { FilterBy } from '../../utils/FilterBy';
+import { Status } from '../../types/TodoFilter';
 
 type Props = {
-  filterBy: FilterBy;
-  onFilterChange: (filter: FilterBy) => void;
+  filterBy: Status;
+  onFilterChange: (filter: Status) => void;
 };
 
 export const TodoFilter: React.FC<Props> = ({
@@ -14,31 +14,31 @@ export const TodoFilter: React.FC<Props> = ({
     <a
       href="#/"
       className={classNames('filter__link', {
-        selected: filterBy === FilterBy.All,
+        selected: filterBy === Status.All,
       })}
-      onClick={() => onFilterChange(FilterBy.All)}
+      onClick={() => onFilterChange(Status.All)}
     >
-      {FilterBy.All}
+      {Status.All}
     </a>
 
     <a
       href="#/active"
       className={classNames('filter__link', {
-        selected: filterBy === FilterBy.Active,
+        selected: filterBy === Status.Active,
       })}
-      onClick={() => onFilterChange(FilterBy.Active)}
+      onClick={() => onFilterChange(Status.Active)}
     >
-      Active
+      {Status.Active}
     </a>
 
     <a
       href="#/completed"
       className={classNames('filter__link', {
-        selected: filterBy === FilterBy.Completed,
+        selected: filterBy === Status.Completed,
       })}
-      onClick={() => onFilterChange(FilterBy.Completed)}
+      onClick={() => onFilterChange(Status.Completed)}
     >
-      Completed
+      {Status.Completed}
     </a>
   </nav>
 );
