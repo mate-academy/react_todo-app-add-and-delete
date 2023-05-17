@@ -3,14 +3,14 @@ import React, { useEffect } from 'react';
 
 interface Props {
   onClose: () => void;
-  error: string | null;
-  setError: (error: string | null) => void;
+  error: string;
+  setError: (error: string) => void;
 }
 
 export const ErrorBlock: React.FC<Props> = ({ onClose, error, setError }) => {
   useEffect(() => {
     const hideNotification = setTimeout(() => {
-      setError(null);
+      setError('');
     }, 3000);
 
     return () => clearTimeout(hideNotification);

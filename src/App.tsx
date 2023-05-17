@@ -12,7 +12,7 @@ const USER_ID = 10266;
 
 export const App: React.FC = () => {
   const [todos, setTodos] = useState<Todo[]>([]);
-  const [error, setError] = useState<string | null>(null);
+  const [error, setError] = useState<string>('');
   const [filter, setFilter] = useState(FilterStatus.ALL);
   const [inputValue, setInputValue] = useState('');
   const [tempTodo, setTempTodo] = useState<Todo | null>(null);
@@ -24,10 +24,16 @@ export const App: React.FC = () => {
   const hasCompletedTodos = useMemo(() => {
     return todos.some((todo) => todo.completed);
   }, [todos]);
-  const activeTodosCount = todos.filter((todo) => !todo.completed).length;
-  const completedTodosId = todos
-    .filter((todo) => todo.completed)
-    .map((todo) => todo.id);
+
+  const activeTodosCount = useMemo(() => {
+    return todos.filter((todo) => !todo.completed).length;
+  }, [todos]);
+
+  const completedTodosId = useMemo(() => {
+    return todos
+      .filter((todo) => todo.completed)
+      .map((todo) => todo.id);
+  }, [todos]);
 
   const filteredTodos = useMemo(() => todos.filter(({ completed }) => {
     switch (filter) {
@@ -54,7 +60,7 @@ export const App: React.FC = () => {
     }
 
     try {
-      setError(null);
+      setError('');
       setIsInputDisable(true);
       setIsLoaderVisible(true);
       setTempTodo({
@@ -84,7 +90,7 @@ export const App: React.FC = () => {
 
   const handleDeleteTodo = async (id: number) => {
     try {
-      setError(null);
+      setError('');
       setSelectedTodoId(id);
       setIsLoaderVisible(true);
 
@@ -101,7 +107,7 @@ export const App: React.FC = () => {
 
   const handleDeleteComplitedTodos = async () => {
     try {
-      setError(null);
+      setError('');
       setIsClearCompletedClicked(true);
       setIsLoaderVisible(true);
 
@@ -118,13 +124,13 @@ export const App: React.FC = () => {
   };
 
   const handleCloseError = () => {
-    setError(null);
+    setError('');
   };
 
   useEffect(() => {
     async function fetchTodos() {
       try {
-        setError(null);
+        setError('');
         const response = await getTodos(USER_ID);
 
         setTodos(response);
