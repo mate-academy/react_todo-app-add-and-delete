@@ -1,24 +1,118 @@
-/* eslint-disable max-len */
 /* eslint-disable jsx-a11y/control-has-associated-label */
-import React from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import { UserWarning } from './UserWarning';
+import { createTodo, getTodos, removeTodo } from './api/todos';
+import { Todo } from './types/Todo';
+import { Errors, Sort } from './utils/enums';
+import { TodoList } from './components/TodoList/TodoList';
+import { Footer } from './components/Footer/Footer';
+// eslint-disable-next-line max-len
+import { ErrorNotification } from './components/ErrorNotification/ErrorNotification';
+// eslint-disable-next-line import/no-cycle
+import { Header } from './components/Header';
 
-const USER_ID = 0;
+export const USER_ID = 10284;
 
 export const App: React.FC = () => {
+  const [todos, setTodos] = useState<Todo[]>([]);
+  const [tempTodo, setTempTodo] = useState<Todo | null>(null);
+
+  const [sort, setSort] = useState(Sort.All);
+
+  const [isLoading, setIsLoading] = useState(false);
+
+  const [Error, setError] = useState<Errors | null>(null);
+
+  const loadTodos = useCallback(async () => {
+    try {
+      const todoList = await getTodos(USER_ID);
+
+      setTodos(todoList);
+    } catch {
+      setError(Errors.Url);
+    }
+  }, []);
+
+  if (Error) {
+    setTimeout(() => {
+      setError(null);
+    }, 3000);
+  }
+
+  const addTodo = useCallback(async (todo: Todo) => {
+    try {
+      setIsLoading(true);
+      await createTodo(todo);
+    } catch {
+      setError(Errors.Add);
+    } finally {
+      loadTodos();
+      setIsLoading(false);
+    }
+  }, []);
+
+  const deleteTodo = useCallback(async (todoId:number) => {
+    setError(null);
+    try {
+      await removeTodo(todoId);
+    } catch {
+      setError(Errors.Delete);
+    }
+
+    loadTodos();
+  }, []);
+
+  useEffect(() => {
+    loadTodos();
+  }, []);
+
+  const visibleTodos = todos.filter(todo => {
+    switch (sort) {
+      case Sort.Active: return !todo.completed;
+      case Sort.Completed: return todo.completed;
+      default: return todos;
+    }
+  });
+
   if (!USER_ID) {
     return <UserWarning />;
   }
 
   return (
-    <section className="section container">
-      <p className="title is-4">
-        Copy all you need from the prev task:
-        <br />
-        <a href="https://github.com/mate-academy/react_todo-app-loading-todos#react-todo-app-load-todos">React Todo App - Load Todos</a>
-      </p>
+    <div className="todoapp">
+      <h1 className="todoapp__title">todos</h1>
+      <div className="todoapp__content">
+        <Header
+          todos={visibleTodos}
+          onAdd={addTodo}
+          setError={setError}
+          setTempTodo={setTempTodo}
+        />
 
-      <p className="subtitle">Styles are already copied</p>
-    </section>
+        <TodoList
+          todos={visibleTodos}
+          tempTodo={tempTodo}
+          setTodos={setTodos}
+          setError={setError}
+          isLoading={isLoading}
+        />
+
+        {todos.length > 0 && (
+          <Footer
+            todos={visibleTodos}
+            filter={sort}
+            setSort={setSort}
+            onDelete={deleteTodo}
+          />
+        )}
+      </div>
+
+      {Error && (
+        <ErrorNotification
+          setHasError={setError}
+          hasError={Error}
+        />
+      )}
+    </div>
   );
 };
