@@ -1,4 +1,3 @@
-/* eslint-disable jsx-a11y/control-has-associated-label */
 import {
   FC,
   useCallback,
@@ -25,6 +24,7 @@ export const App: FC = () => {
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
   const [isEditedTodo, setIsEditet] = useState(false);
   const [todoId, setTodoId] = useState<number | null>(null);
+  const [tempTodo, setTempTodo] = useState<Todo | null>(null);
 
   const handleError = (message: TodoError) => {
     setErrorMessage(message);
@@ -47,14 +47,21 @@ export const App: FC = () => {
 
   const addTodo = useCallback(async (todoData: Todo) => {
     setTodoId(0);
+    setTempTodo(todoData);
+
     try {
-      const newTodo = await createTodo(todoData);
+      const newTodo = await createTodo({
+        title: todoData.title,
+        completed: false,
+        userId: USER_ID,
+      });
 
       setTodos((prevTodos) => [...prevTodos, newTodo]);
     } catch {
       handleError(TodoError.LOAD);
     }
 
+    setTempTodo(null);
     setTodoId(null);
   }, []);
 
@@ -121,6 +128,7 @@ export const App: FC = () => {
           onDelete={deleteTodo}
           todoId={todoId}
           setTodoId={setTodoId}
+          tempTodo={tempTodo}
         />
 
         <Footer

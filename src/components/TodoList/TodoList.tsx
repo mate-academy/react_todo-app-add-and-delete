@@ -1,6 +1,7 @@
 import { FC } from 'react';
 import { Todo } from '../../types/Todo';
 import { TodoItem } from '../TodoItem';
+import { TempTodo } from '../TempTodo';
 
 interface Props {
   todos: Todo[];
@@ -8,6 +9,7 @@ interface Props {
   onDelete: (id: number) => void;
   todoId: number | null;
   setTodoId: (id: number | null) => void;
+  tempTodo: Todo | null;
 }
 
 export const TodoList: FC<Props> = ({
@@ -16,6 +18,7 @@ export const TodoList: FC<Props> = ({
   onDelete,
   todoId,
   setTodoId,
+  tempTodo,
 }) => {
   return (
     <section className="todoapp__main">
@@ -32,6 +35,8 @@ export const TodoList: FC<Props> = ({
             />
           ))
         )}
+
+        {tempTodo && <TempTodo todoId={todoId} tempTodo={tempTodo} />}
       </>
 
       {/* This todo is being edited */}
