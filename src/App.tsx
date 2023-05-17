@@ -14,6 +14,7 @@ export const App: React.FC = () => {
   const [isLoading, setIsLoading] = useState(true);
   const [hasError, setHasError] = useState(false);
   const [filter, setFilter] = useState('all');
+  const [errorName, setErrorName] = useState('');
 
   const [title, setTitle] = useState('');
 
@@ -30,6 +31,13 @@ export const App: React.FC = () => {
 
   const handleFormSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
+
+    if (!title.trim()) {
+      setHasError(true);
+      setErrorName('Title can\'t be empty');
+
+      return;
+    }
 
     const newTodo = {
       id: 0, userId: USER_ID, title, completed: false,
@@ -200,8 +208,8 @@ export const App: React.FC = () => {
             className="delete"
             onClick={() => setHasError(false)}
           />
-
-          Unable to add a todo
+          {errorName}
+          {/* Unable to add a todo */}
           {/* <br />
           Unable to delete a todo
           <br />
