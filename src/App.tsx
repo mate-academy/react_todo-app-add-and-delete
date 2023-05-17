@@ -124,7 +124,7 @@ export const App: React.FC = () => {
         </header>
 
         <section className="todoapp__main">
-          {todos.map(todo => (
+          {visibleTodos.map(todo => (
             <div
               className={cn('todo',
                 { completed: todo.completed })}
