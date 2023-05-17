@@ -101,6 +101,8 @@ export const App: React.FC = () => {
 
   const isCompleted = todos.some((todo) => todo.completed);
 
+  const showTodos = todos.length > 0 || tempTodo;
+
   if (!USER_ID) {
     return <UserWarning />;
   }
@@ -124,7 +126,7 @@ export const App: React.FC = () => {
           />
         </header>
 
-        {todos.length > 0 && (
+        {showTodos && (
           <>
             <TodoList
               todos={visibleTodos}
