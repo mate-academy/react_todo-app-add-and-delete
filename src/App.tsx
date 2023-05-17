@@ -37,7 +37,7 @@ export const App: React.FC = () => {
 
     try {
       await createTodo(todoData);
-      loadTodos();
+      await loadTodos();
       setTempTodo(null);
     } catch {
       setIsCreatingError(true);
