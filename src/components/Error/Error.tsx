@@ -42,10 +42,8 @@ export const Error: React.FC<Props> = ({
         'is-danger',
         'is-light',
         'has-text-weight-normal',
-        {
-          hidden: !isError,
-        },
       )}
+      hidden={!isError}
     >
       <button
         type="button"

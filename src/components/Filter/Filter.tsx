@@ -39,15 +39,17 @@ export const Filter: React.FC<Props> = React.memo(
           ))}
         </nav>
 
-        <button
-          type="button"
-          className={cn('todoapp__clear-completed', {
-            hidden: countCompletedTodos === 0,
-          })}
-          onClick={onClear}
-        >
-          Clear completed
-        </button>
+        {countCompletedTodos > 0 && (
+          <button
+            type="button"
+            className={cn('todoapp__clear-completed', {
+              hidden: countCompletedTodos === 0,
+            })}
+            onClick={onClear}
+          >
+            Clear completed
+          </button>
+        )}
       </footer>
     );
   },
