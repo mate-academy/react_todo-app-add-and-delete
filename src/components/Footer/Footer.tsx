@@ -5,7 +5,7 @@ import { Filter } from '../../types/Filter';
 
 interface Props {
   filterBy: Filter;
-  setFilterBy: (filter: Filter) => void;
+  onSelect: (filter: Filter) => void;
   activeCount: number;
   isCompleted: boolean;
   clearCompleted: () => void;
@@ -13,31 +13,29 @@ interface Props {
 
 export const Footer: React.FC<Props> = ({
   filterBy,
-  setFilterBy,
+  onSelect,
   activeCount,
   isCompleted,
   clearCompleted,
-}) => {
-  return (
-    <footer className="todoapp__footer">
-      <span className="todo-count">
-        {`${activeCount} items left`}
-      </span>
+}) => (
+  <footer className="todoapp__footer">
+    <span className="todo-count">
+      {`${activeCount} items left`}
+    </span>
 
-      <TodoFilter
-        filterBy={filterBy}
-        setFilterBy={setFilterBy}
-      />
+    <TodoFilter
+      filterBy={filterBy}
+      onSelect={onSelect}
+    />
 
-      <button
-        type="button"
-        className={classNames('todoapp__clear-completed', {
-          hidden: !isCompleted,
-        })}
-        onClick={clearCompleted}
-      >
-        Clear completed
-      </button>
-    </footer>
-  );
-};
+    <button
+      type="button"
+      className={classNames('todoapp__clear-completed', {
+        hidden: !isCompleted,
+      })}
+      onClick={clearCompleted}
+    >
+      Clear completed
+    </button>
+  </footer>
+);
