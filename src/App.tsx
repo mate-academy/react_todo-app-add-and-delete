@@ -2,31 +2,24 @@
 /* eslint-disable jsx-a11y/control-has-associated-label */
 import React, { useEffect, useMemo, useState } from 'react';
 import classNames from 'classnames';
+
 import { Todo } from './types/Todo';
+import { FilterTypes } from './types/FilterTypes';
+import { ErrorTypes } from './types/ErrorTypes';
+
 import { getTodos, createTodo, deleteTodo } from './api/todos';
+import { RequestTodoBody } from './types/RequestTodo';
 
 const USER_ID = 10329;
-
-enum FilterTypes {
-  All,
-  Active,
-  Complited,
-}
-
-enum ErrorTypes {
-  NoError,
-  UnableToShowTodos = 'Unable to show todos',
-  UnableToAddTodo = 'Unable to add a todo',
-  UnableToDeleteTodo = 'Unable to delete a todo',
-  UnableToUpdateTodo = 'Unable to update a todo',
-}
 
 export const App: React.FC = () => {
   const [todos, setTodos] = useState<Todo[]>([]);
   const [error, setError] = useState<ErrorTypes>(ErrorTypes.NoError);
+  const [isError, setIsError] = useState(false);
   const [filterType, setFilterType] = useState<FilterTypes>(FilterTypes.All);
   const [todoTitle, setTodoTitle] = useState('');
   const [inputDisable, setInputDisable] = useState(false);
+  const [tempTodo, setTempTodo] = useState<RequestTodoBody | null>(null);
   const [waitForDeletingTodoId, setWaitForDeletingTodoId] = useState<number | null>(null);
 
   const visibleTodos = useMemo(() => {
@@ -46,7 +39,7 @@ export const App: React.FC = () => {
 
   const hideNotifications = () => {
     setTimeout(() => {
-      setError(ErrorTypes.NoError);
+      setIsError(false);
     }, 3000);
   };
 
@@ -56,22 +49,23 @@ export const App: React.FC = () => {
 
       setTodos(newTodos);
       setInputDisable(false);
-      setWaitForDeletingTodoId(null);
     } catch (error1) {
       setError(ErrorTypes.UnableToShowTodos);
+      setIsError(true);
       hideNotifications();
     }
   };
 
   const hendlerAddTodo = async () => {
-    setInputDisable(true);
+    if (!todoTitle) {
+      setError(ErrorTypes.UnableToAddTodo);
+      setIsError(true);
+      hideNotifications();
 
-    visibleTodos.push({
-      id: 0,
-      title: todoTitle,
-      userId: USER_ID,
-      completed: false,
-    });
+      return;
+    }
+
+    setInputDisable(true);
 
     const newData = {
       title: todoTitle,
@@ -81,14 +75,19 @@ export const App: React.FC = () => {
 
     setTodoTitle('');
 
+    setTempTodo(newData);
+
     try {
+      setIsError(false);
       await createTodo(USER_ID, newData);
       fetchTodos();
     } catch (error2) {
       setError(ErrorTypes.UnableToAddTodo);
-      visibleTodos.pop();
+      setIsError(true);
       hideNotifications();
     }
+
+    setTempTodo(null);
   };
 
   const handlerDeleteTodo = async (todoId: number) => {
@@ -99,6 +98,7 @@ export const App: React.FC = () => {
       fetchTodos();
     } catch (error3) {
       setError(ErrorTypes.UnableToDeleteTodo);
+      setIsError(true);
       hideNotifications();
       setWaitForDeletingTodoId(null);
     }
@@ -177,13 +177,38 @@ export const App: React.FC = () => {
 
               <div
                 className={classNames('modal overlay',
-                  { 'is-active': todo.id === 0 || todo.id === waitForDeletingTodoId })}
+                  { 'is-active': todo.id === waitForDeletingTodoId })}
               >
                 <div className="modal-background has-background-white-ter" />
                 <div className="loader" />
               </div>
             </div>
           ))}
+
+          {tempTodo && (
+            <div className="todo">
+              <label className="todo__status-label">
+                <input
+                  type="checkbox"
+                  className="todo__status"
+                />
+              </label>
+
+              <span className="todo__title">{tempTodo?.title}</span>
+
+              <button
+                type="button"
+                className="todo__remove"
+              >
+                ×
+              </button>
+
+              <div className="modal overlay is-active">
+                <div className="modal-background has-background-white-ter" />
+                <div className="loader" />
+              </div>
+            </div>
+          )}
         </section>
 
         {todos.length > 0 && (
@@ -234,16 +259,16 @@ export const App: React.FC = () => {
         )}
       </div>
 
-      {error !== ErrorTypes.NoError && (
-        <div className="notification is-danger is-light has-text-weight-normal">
-          <button
-            type="button"
-            className="delete"
-            onClick={() => setError(ErrorTypes.NoError)}
-          />
-          {error}
-        </div>
-      )}
+      <div className={classNames('notification is-danger is-light has-text-weight-normal',
+        { hidden: !isError })}
+      >
+        <button
+          type="button"
+          className="delete"
+          onClick={hideNotifications}
+        />
+        {error}
+      </div>
     </div>
   );
 };
