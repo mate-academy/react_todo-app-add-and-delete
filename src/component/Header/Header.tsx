@@ -1,21 +1,23 @@
 /* eslint-disable jsx-a11y/control-has-associated-label */
 import { FC, FormEvent, useState } from 'react';
-import { TodoAdd } from '../../types/Todo';
+import { TodoData } from '../../types/Todo';
 
 interface Props {
   userId: number;
-  onSubmit: (dataAddTodo: TodoAdd) => void;
+  onSubmit: (todoData: TodoData) => void;
   onError: (titleToError: string) => void;
 }
 
 export const Header: FC<Props> = ({
   userId,
-  onError,
   onSubmit,
+  onError,
 }) => {
   const [title, setTitle] = useState('');
 
-  const dataAddTodo = {
+  let isDisabled = false;
+
+  const todoData = {
     title,
     userId,
     completed: false,
@@ -24,13 +26,19 @@ export const Header: FC<Props> = ({
   const handleSubmit = (event: FormEvent) => {
     event.preventDefault();
 
+    isDisabled = true;
+
     if (title.trim() !== '') {
-      onSubmit(dataAddTodo);
+      onSubmit(todoData);
       setTitle('');
+      isDisabled = false;
     }
 
-    onError('Title can\'t be empty');
-    setTitle('');
+    if (title.trim() === '') {
+      onError('Title can\'t be empty');
+      setTitle('');
+      isDisabled = false;
+    }
   };
 
   return (
@@ -42,6 +50,7 @@ export const Header: FC<Props> = ({
           type="text"
           className="todoapp__new-todo"
           placeholder="What needs to be done?"
+          disabled={isDisabled}
           value={title}
           onChange={event => setTitle(event.target.value)}
         />

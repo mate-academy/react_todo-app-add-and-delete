@@ -6,7 +6,7 @@ import React, {
   useState,
 } from 'react';
 import { deleteTodo, getTodos, postTodo } from './api/todos';
-import { Todo, TodoAdd } from './types/Todo';
+import { Todo, TodoData } from './types/Todo';
 import { TodoList } from './component/TodoList';
 import { Footer } from './component/Footer';
 import { Error } from './component/Error';
@@ -46,9 +46,16 @@ export const App: React.FC = () => {
     }
   };
 
-  const postTodoToServer = async (dataAddTodo: TodoAdd) => {
+  const postTodoToServer = async (todoData: TodoData) => {
+    const tempTodo = {
+      ...todoData,
+      id: 0,
+    };
+
+    setTodos(prevTodos => ([...prevTodos, tempTodo]));
+
     try {
-      await postTodo(USER_ID, dataAddTodo);
+      await postTodo(USER_ID, todoData);
     } catch {
       handleError('Unable to add new todo');
     }
@@ -62,17 +69,25 @@ export const App: React.FC = () => {
     }
   };
 
-  const handleAddTodo = useCallback((dataAddTodo: TodoAdd) => {
-    postTodoToServer(dataAddTodo);
+  const handleAddTodo = useCallback(async (todoData: TodoData) => {
+    await postTodoToServer(todoData);
 
     getTodosFromServer();
   }, []);
 
-  const handleDeleteTodo = useCallback((todoId: number) => {
-    deleteTodoFromServer(todoId);
+  const handleDeleteTodo = useCallback(async (todoId: number) => {
+    await deleteTodoFromServer(todoId);
 
     getTodosFromServer();
   }, []);
+
+  const handleDeleteCompletedTodo = useCallback(async () => {
+    const completedTodos = todos.filter(({ completed }) => completed);
+
+    completedTodos.map(({ id }) => deleteTodoFromServer(id));
+
+    getTodosFromServer();
+  }, [todos]);
 
   const prepareTodos = useMemo(() => {
     let visibleTodos = [...todos];
@@ -105,9 +120,10 @@ export const App: React.FC = () => {
         />
 
         <Footer
-          todos={filterTodos}
-          itemsCount={prepareTodos.length}
+          filterTodos={filterTodos}
+          todos={todos}
           onSelect={handleFilterTodos}
+          onDeleteCompleted={handleDeleteCompletedTodo}
         />
 
       </div>

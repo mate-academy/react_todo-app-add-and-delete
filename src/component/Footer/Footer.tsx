@@ -1,23 +1,28 @@
 import React from 'react';
 import classNames from 'classnames';
 import { FilterBy } from '../../types/typedefs';
+import { Todo } from '../../types/Todo';
 
 interface Props {
-  todos: FilterBy,
-  itemsCount: number,
+  filterTodos: FilterBy,
+  todos: Todo[],
   onSelect: (filterTodos: FilterBy) => void;
+  onDeleteCompleted: () => void;
 }
 
 export const Footer: React.FC<Props> = ({
-  todos: filterTodos,
-  itemsCount: itemsLeft,
-  onSelect: onfilterTodos,
+  filterTodos,
+  todos,
+  onSelect: handleFilterTodos,
+  onDeleteCompleted: handleDeleteCompletedTodo,
 }) => {
+  const completedTodos = todos.filter(todo => !todo.completed);
+
   return (
-    itemsLeft > 0 ? (
+    todos.length > 0 ? (
       <footer className="todoapp__footer">
         <span className="todo-count">
-          {`${itemsLeft} items left`}
+          {`${completedTodos.length} items left`}
         </span>
 
         <nav className="filter">
@@ -26,7 +31,7 @@ export const Footer: React.FC<Props> = ({
             className={classNames('filter__link', {
               selected: filterTodos === FilterBy.ALL,
             })}
-            onClick={() => onfilterTodos(FilterBy.ALL)}
+            onClick={() => handleFilterTodos(FilterBy.ALL)}
           >
             All
           </a>
@@ -36,7 +41,7 @@ export const Footer: React.FC<Props> = ({
             className={classNames('filter__link', {
               selected: filterTodos === FilterBy.ACTIVE,
             })}
-            onClick={() => onfilterTodos(FilterBy.ACTIVE)}
+            onClick={() => handleFilterTodos(FilterBy.ACTIVE)}
           >
             Active
           </a>
@@ -46,15 +51,20 @@ export const Footer: React.FC<Props> = ({
             className={classNames('filter__link', {
               selected: filterTodos === FilterBy.COMPLETED,
             })}
-            onClick={() => onfilterTodos(FilterBy.COMPLETED)}
+            onClick={() => handleFilterTodos(FilterBy.COMPLETED)}
           >
             Completed
           </a>
         </nav>
 
-        <button type="button" className="todoapp__clear-completed">
+        <button
+          type="button"
+          className="todoapp__clear-completed"
+          onClick={() => handleDeleteCompletedTodo()}
+        >
           Clear completed
         </button>
+
       </footer>
     )
       : (<></>)

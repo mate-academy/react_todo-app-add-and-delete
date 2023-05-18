@@ -3,3 +3,7 @@ export enum FilterBy {
   ACTIVE,
   COMPLETED,
 }
+
+export enum Error {
+  Server = 'Not connect to server',
+}

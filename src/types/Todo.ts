@@ -5,7 +5,7 @@ export interface Todo {
   completed: boolean;
 }
 
-export interface TodoAdd {
+export interface TodoData {
   title: string;
   userId: number;
   completed: boolean;

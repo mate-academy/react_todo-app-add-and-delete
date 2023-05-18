@@ -32,7 +32,7 @@ export const TodoItem: FC<Props> = ({ todo, onDelete: handleDeleteTodo }) => {
         ×
       </button>
 
-      <div className="modal overlay">
+      <div className={classNames('modal', 'overlay')}>
         <div className="modal-background has-background-white-ter" />
         <div className="loader" />
       </div>
