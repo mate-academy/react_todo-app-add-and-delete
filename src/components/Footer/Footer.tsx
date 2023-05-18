@@ -5,7 +5,7 @@ import { Filter } from '../../types/Filter';
 
 interface Props {
   filterBy: Filter;
-  setFilterBy: (filter: Filter) => void;
+  onSelect: (filter: Filter) => void;
   activeCount: number;
   isCompleted: boolean;
   clearCompleted: () => void;
@@ -13,7 +13,7 @@ interface Props {
 
 export const Footer: React.FC<Props> = ({
   filterBy,
-  setFilterBy,
+  onSelect,
   activeCount,
   isCompleted,
   clearCompleted,
@@ -26,7 +26,7 @@ export const Footer: React.FC<Props> = ({
 
       <TodoFilter
         filterBy={filterBy}
-        setFilterBy={setFilterBy}
+        onSelect={onSelect}
       />
 
       <button

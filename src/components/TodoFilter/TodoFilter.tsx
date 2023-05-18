@@ -4,10 +4,10 @@ import { Filter } from '../../types/Filter';
 
 interface Props {
   filterBy: Filter;
-  setFilterBy: (filter: Filter) => void;
+  onSelect: (filter: Filter) => void;
 }
 
-export const TodoFilter: React.FC<Props> = ({ filterBy, setFilterBy }) => {
+export const TodoFilter: React.FC<Props> = ({ filterBy, onSelect }) => {
   return (
     <nav className="filter">
       <a
@@ -16,7 +16,7 @@ export const TodoFilter: React.FC<Props> = ({ filterBy, setFilterBy }) => {
           { selected: filterBy === Filter.All })}
         onClick={(event) => {
           event.preventDefault();
-          setFilterBy(Filter.All);
+          onSelect(Filter.All);
         }}
       >
         All
@@ -28,7 +28,7 @@ export const TodoFilter: React.FC<Props> = ({ filterBy, setFilterBy }) => {
           { selected: filterBy === Filter.Active })}
         onClick={(event) => {
           event.preventDefault();
-          setFilterBy(Filter.Active);
+          onSelect(Filter.Active);
         }}
       >
         {Filter.Active}
@@ -40,7 +40,7 @@ export const TodoFilter: React.FC<Props> = ({ filterBy, setFilterBy }) => {
           { selected: filterBy === Filter.Completed })}
         onClick={(event) => {
           event.preventDefault();
-          setFilterBy(Filter.Completed);
+          onSelect(Filter.Completed);
         }}
       >
         {Filter.Completed}

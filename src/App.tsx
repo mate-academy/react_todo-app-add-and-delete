@@ -35,10 +35,6 @@ export const App: React.FC = () => {
     }
   }, []);
 
-  useEffect(() => {
-    loadTodos();
-  }, []);
-
   const activeCount = todos.filter(todo => !todo.completed).length;
   const isCompleted = todos.some(todo => todo.completed);
 
@@ -103,6 +99,10 @@ export const App: React.FC = () => {
     todoIds.forEach(todoId => deleteTodo(todoId));
   }, [todos]);
 
+  useEffect(() => {
+    loadTodos();
+  }, []);
+
   if (!USER_ID) {
     return <UserWarning />;
   }
@@ -139,7 +139,7 @@ export const App: React.FC = () => {
               />
               <Footer
                 filterBy={filterBy}
-                setFilterBy={setFilterBy}
+                onSelect={setFilterBy}
                 activeCount={activeCount}
                 isCompleted={isCompleted}
                 clearCompleted={clearCompleted}
