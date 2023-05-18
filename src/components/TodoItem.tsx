@@ -31,7 +31,6 @@ export const TodoItem: React.FC<Props> = ({
 
       <span className="todo__title">
         {todo.title}
-        {todo.id}
       </span>
 
       <button

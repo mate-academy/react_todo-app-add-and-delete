@@ -32,16 +32,16 @@ export const App: React.FC = () => {
       case Filter.All:
         return todos;
       case Filter.Completed:
-        return todos?.filter(todo => todo.completed);
+        return todos.filter(todo => todo.completed);
       case Filter.Active:
-        return todos?.filter(todo => !todo.completed);
+        return todos.filter(todo => !todo.completed);
       default:
         return todos;
     }
   }
 
   const visibleTodos = useMemo(filterTodos, [todos, filterStatus]);
-  const activeTodos = todos?.filter(todo => todo.completed === false);
+  const activeTodos = todos?.filter(todo => !todo.completed);
   const isCompletedTodos = todos.some(todo => todo.completed);
   const allCompletedTodosId = todos
     .filter(todo => todo.completed)
@@ -92,7 +92,7 @@ export const App: React.FC = () => {
     if (!query) {
       setError(ErrorType.isEmpty);
 
-      return false;
+      return;
     }
 
     setError(null);
