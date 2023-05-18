@@ -3,6 +3,7 @@ import React, {
   useState,
   useCallback,
   useEffect,
+  useMemo,
 } from 'react';
 import classNames from 'classnames';
 import { UserWarning } from './UserWarning';
@@ -38,19 +39,19 @@ export const App: React.FC = () => {
   const activeCount = todos.filter(todo => !todo.completed).length;
   const isCompleted = todos.some(todo => todo.completed);
 
-  const filteredTodos = todos.filter(todo => {
+  const filteredTodos = useMemo(() => {
     switch (filterBy) {
-      case Filter.Completed:
-        return todo.completed;
-
       case Filter.Active:
-        return !todo.completed;
+        return todos.filter(todo => !todo.completed);
+
+      case Filter.Completed:
+        return todos.filter(todo => todo.completed);
 
       case Filter.All:
       default:
-        return true;
+        return todos;
     }
-  });
+  }, [todos, filterBy]);
 
   const makeTodo = useCallback(async (title: string) => {
     setIsLoading(true);
@@ -113,7 +114,7 @@ export const App: React.FC = () => {
 
       <div className="todoapp__content">
         <header className="todoapp__header">
-          { todos.length ? (
+          { todos.length > 0 && (
             <button
               type="button"
               className={classNames('todoapp__toggle-all', {
@@ -121,7 +122,7 @@ export const App: React.FC = () => {
                 active: !activeCount,
               })}
             />
-          ) : null}
+          )}
 
           <NewTodo
             makeTodo={makeTodo}
@@ -129,23 +130,22 @@ export const App: React.FC = () => {
           />
         </header>
 
-        {todos.length
-          ? (
-            <>
-              <TodoList
-                todos={filteredTodos}
-                tempTodo={tempTodo}
-                deleteTodo={deleteTodo}
-              />
-              <Footer
-                filterBy={filterBy}
-                onSelect={setFilterBy}
-                activeCount={activeCount}
-                isCompleted={isCompleted}
-                clearCompleted={clearCompleted}
-              />
-            </>
-          ) : null}
+        {todos.length > 0 && (
+          <>
+            <TodoList
+              todos={filteredTodos}
+              tempTodo={tempTodo}
+              deleteTodo={deleteTodo}
+            />
+            <Footer
+              filterBy={filterBy}
+              onSelect={setFilterBy}
+              activeCount={activeCount}
+              isCompleted={isCompleted}
+              clearCompleted={clearCompleted}
+            />
+          </>
+        )}
       </div>
 
       <div
