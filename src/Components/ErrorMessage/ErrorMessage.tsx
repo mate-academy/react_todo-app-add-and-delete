@@ -6,7 +6,7 @@ type Props = {
   onDelete: () => void;
 };
 
-export const Error: React.FC<Props> = ({ message, onDelete }) => {
+export const ErrorMessage: React.FC<Props> = ({ message, onDelete }) => {
   useEffect(() => {
     const timerId = setTimeout(() => onDelete(), 3000);
 
@@ -26,7 +26,7 @@ export const Error: React.FC<Props> = ({ message, onDelete }) => {
       <button
         type="button"
         className="delete"
-        onClick={() => onDelete()}
+        onClick={onDelete}
       />
       {message}
     </div>

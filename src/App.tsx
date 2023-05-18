@@ -10,27 +10,27 @@ import { addTodo, deleteTodo, getTodos } from './api/todos';
 import { Todo } from './types/Todo';
 import { TodoList } from './Components/TodoList';
 import { TodoFilter } from './Components/TodoFilter';
-import { SortType } from './types/SortType';
-import { Error } from './Components/Error';
+import { FilterType } from './types/FilterType';
+import { ErrorMessage } from './Components/ErrorMessage';
 
 const USER_ID = 10390;
 
 export const App: React.FC = () => {
   const [todos, setTodos] = useState<Todo[]>([]);
-  const [sort, setSort] = useState(SortType.All);
+  const [filterBy, setFilterBy] = useState(FilterType.All);
   const [errorMessage, setErrorMessage] = useState('');
   const [title, setTitle] = useState('');
   const [tempTodo, setTempTodo] = useState<Todo | null>(null);
 
   const completedTodo = todos.filter(todo => todo.completed === true);
-  const activeTodo = todos.length - completedTodo.length;
+  const activeTodos = todos.length - completedTodo.length;
 
-  const getFiltered = (filter: SortType) => {
+  const getFiltered = (filter: FilterType) => {
     switch (filter) {
-      case SortType.Active:
+      case FilterType.Active:
         return todos.filter(todo => !todo.completed);
 
-      case SortType.Completed:
+      case FilterType.Completed:
         return todos.filter(todo => todo.completed);
 
       default:
@@ -52,13 +52,15 @@ export const App: React.FC = () => {
     }
   }, []);
 
-  const onDeleteError = () => setErrorMessage('');
+  const onDeleteError = useCallback(
+    async () => setErrorMessage(''), [errorMessage],
+  );
 
   useEffect(() => {
     loadTodos();
   }, []);
 
-  const filteredTodo = useMemo(() => getFiltered(sort), [todos, sort]);
+  const filteredTodo = useMemo(() => getFiltered(filterBy), [todos, filterBy]);
 
   const handleFormSubmit = useCallback(
     async (event: React.FormEvent<HTMLFormElement>) => {
@@ -125,8 +127,7 @@ export const App: React.FC = () => {
             type="button"
             className={classNames(
               'todoapp__toggle-all', {
-                active: getFiltered(SortType.Completed)
-                && filteredTodo.length === todos.length,
+                active: filteredTodo.length === completedTodo.length,
               },
             )}
           />
@@ -142,18 +143,17 @@ export const App: React.FC = () => {
           </form>
         </header>
         <TodoList
-          todosFromServer={filteredTodo}
+          todos={filteredTodo}
           onDelete={handleDelete}
           tempTodo={tempTodo}
         />
 
-        {todos.length > 0
-        && (
+        {todos.length > 0 && (
           <footer className="todoapp__footer">
             <span className="todo-count">
-              {`${activeTodo} items left`}
+              {`${activeTodos} items left`}
             </span>
-            <TodoFilter sort={sort} setSort={setSort} />
+            <TodoFilter filter={filterBy} setFilter={setFilterBy} />
 
             <button
               type="button"
@@ -172,7 +172,7 @@ export const App: React.FC = () => {
           </footer>
         )}
       </div>
-      <Error message={errorMessage} onDelete={onDeleteError} />
+      <ErrorMessage message={errorMessage} onDelete={onDeleteError} />
     </div>
   );
 };

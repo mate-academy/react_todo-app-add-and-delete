@@ -1,21 +1,21 @@
 import React from 'react';
 import classNames from 'classnames';
-import { SortType } from '../../types/SortType';
+import { FilterType } from '../../types/FilterType';
 
 type Props = {
-  sort: SortType;
-  setSort: (newSort: SortType) => void;
+  filter: FilterType;
+  setFilter: (newSort: FilterType) => void;
 };
 
-export const TodoFilter: React.FC<Props> = ({ sort, setSort }) => {
+export const TodoFilter: React.FC<Props> = ({ filter, setFilter }) => {
   return (
     <nav className="filter">
       <a
         href="#/"
         className={classNames('filter__link', {
-          selected: sort === SortType.All,
+          selected: filter === FilterType.All,
         })}
-        onClick={() => setSort(SortType.All)}
+        onClick={() => setFilter(FilterType.All)}
       >
         All
       </a>
@@ -23,9 +23,9 @@ export const TodoFilter: React.FC<Props> = ({ sort, setSort }) => {
       <a
         href="#/active"
         className={classNames('filter__link', {
-          selected: sort === SortType.Active,
+          selected: filter === FilterType.Active,
         })}
-        onClick={() => setSort(SortType.Active)}
+        onClick={() => setFilter(FilterType.Active)}
       >
         Active
       </a>
@@ -33,9 +33,9 @@ export const TodoFilter: React.FC<Props> = ({ sort, setSort }) => {
       <a
         href="#/completed"
         className={classNames('filter__link', {
-          selected: sort === SortType.Completed,
+          selected: filter === FilterType.Completed,
         })}
-        onClick={() => setSort(SortType.Completed)}
+        onClick={() => setFilter(FilterType.Completed)}
       >
         Completed
       </a>
