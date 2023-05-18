@@ -4,18 +4,18 @@ import { Todo } from '../../types/Todo';
 
 interface Props {
   todo: Todo;
-  tempTodoId?: number;
+  loadingTodoId?: number;
   deleteTodo?: (deletingTodo: Todo) => void;
 }
 
 export const TodoItem: React.FC<Props> = ({
   todo,
-  tempTodoId = 0,
+  loadingTodoId = 0,
   deleteTodo = () => {},
 }) => {
   const { title, completed } = todo;
 
-  const [isLoading, setIsLoading] = useState(tempTodoId === todo.id);
+  const [isLoading, setIsLoading] = useState(loadingTodoId === todo.id);
 
   return (
     <div
@@ -27,7 +27,6 @@ export const TodoItem: React.FC<Props> = ({
         <input
           type="checkbox"
           className="todo__status"
-          checked
         />
       </label>
 

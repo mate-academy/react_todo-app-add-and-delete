@@ -38,7 +38,7 @@ export const TodoList: React.FC<Props> = ({
         >
           <TodoItem
             todo={tempTodo}
-            tempTodoId={tempTodo.id}
+            loadingTodoId={tempTodo.id}
           />
         </CSSTransition>
       )}

@@ -13,7 +13,7 @@ import { ErrorMessage } from './components/ErrorMessage';
 import { getTodos, removeTodo } from './api/todos';
 import { Todo } from './types/Todo';
 import { Filter } from './types/FilterEnum';
-import { TodoForm } from './components/TodoForm.tsx';
+import { TodoForm } from './components/TodoForm';
 
 export const App: React.FC = () => {
   const [todos, setTodos] = useState<Todo[]>([]);
@@ -49,9 +49,7 @@ export const App: React.FC = () => {
   const deleteCompletedTodos = useCallback(async () => {
     const completedTodos = todos.filter((todo) => todo.completed);
 
-    completedTodos.map(todo => {
-      return deleteTodo(todo);
-    });
+    Promise.all(completedTodos.map((todo) => deleteTodo(todo)));
   }, [todos]);
 
   const closeError = useCallback(() => {
@@ -73,7 +71,9 @@ export const App: React.FC = () => {
     return todos.filter((todo) => !todo.completed).length;
   }, [todos]);
 
-  const completedTodosCounter = todos.length - activeTodosCounter;
+  const completedTodosCounter = useMemo(() => (
+    todos.length - activeTodosCounter
+  ), [todos, activeTodosCounter]);
 
   useEffect(() => {
     loadTodos();

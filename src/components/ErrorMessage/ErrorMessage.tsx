@@ -19,7 +19,7 @@ export const ErrorMessage: React.FC<Props> = ({
     return () => {
       clearTimeout(timeoutId);
     };
-  }, [errorMessage]);
+  }, [errorMessage, onClose]);
 
   return (
     <div className={classNames(
