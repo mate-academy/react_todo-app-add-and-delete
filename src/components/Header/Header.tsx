@@ -16,7 +16,7 @@ export const Header: React.FC<Props> = ({
 
   const handleSubmit = (event: React.FormEvent) => {
     event.preventDefault();
-    if (!todoTitle) {
+    if (!todoTitle.trim()) {
       handleError("Title can't be empty");
 
       return;

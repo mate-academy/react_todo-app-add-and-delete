@@ -23,6 +23,8 @@ export const App: React.FC = () => {
   const [errorMessage, setErrorMessage] = useState('');
   const [isLoading, setIsLoading] = useState(false);
 
+  const activeTodos = todos.filter(({ completed }) => completed === false);
+
   const getTodos = useCallback(async () => {
     const data: Todo[] = await client.get(todoUrlEnd);
 
@@ -89,7 +91,7 @@ export const App: React.FC = () => {
         {todos.length !== 0 && (
           <Footer
             onSelect={setSelect}
-            todos={handleSelectedTodos}
+            activeTodos={activeTodos}
             select={select}
           />
         )}

@@ -6,18 +6,17 @@ import { Todo } from '../../types/Todo';
 
 interface Props {
   onSelect: (value: Select) => void;
-  todos: Todo[];
+  activeTodos: Todo[];
   select: Select;
 }
 
-export const Footer: React.FC<Props> = ({ onSelect, todos, select }) => {
+export const Footer: React.FC<Props> = ({ onSelect, activeTodos, select }) => {
   return (
     <footer className="todoapp__footer">
       <span className="todo-count">
-        {`${todos.length} items left`}
+        {`${activeTodos.length} items left`}
       </span>
 
-      {/* Active filter should have a 'selected' class */}
       <nav className="filter">
         <a
           href="#/"
@@ -53,7 +52,6 @@ export const Footer: React.FC<Props> = ({ onSelect, todos, select }) => {
         </a>
       </nav>
 
-      {/* don't show this button if there are no completed todos */}
       <button type="button" className="todoapp__clear-completed">
         Clear completed
       </button>
