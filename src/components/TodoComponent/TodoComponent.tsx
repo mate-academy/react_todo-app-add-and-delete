@@ -8,7 +8,8 @@ interface Props {
 }
 
 export const TodoComponent: FC<Props> = React.memo(({
-  todo, removeTodo,
+  todo,
+  removeTodo,
 }) => {
   const { title, completed } = todo;
 
@@ -22,10 +23,16 @@ export const TodoComponent: FC<Props> = React.memo(({
         <input
           type="checkbox"
           className="todo__status"
+          checked={completed}
         />
       </label>
 
-      <span className="todo__title">{title}</span>
+      <span
+        className="todo__title"
+      >
+        {title}
+      </span>
+
       <button
         type="button"
         className="todo__remove"

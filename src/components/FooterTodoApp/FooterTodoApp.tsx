@@ -1,12 +1,12 @@
 import classNames from 'classnames';
 import React, { FC } from 'react';
-import { FILTERS } from '../../types/FILTERS';
+import { Filters } from '../../types/Filters';
 import { Todo } from '../../types/Todo';
 
 interface Props {
   todos: Todo[];
-  category: FILTERS;
-  onChange: (category: FILTERS) => void;
+  category: Filters;
+  onChange: (category: Filters) => void;
   removeTodo: (todoData: Todo) => void;
 }
 
@@ -28,9 +28,9 @@ export const FooterTodoApp: FC<Props> = React.memo(({
         <a
           href="#/"
           className={classNames('filter__link', {
-            selected: category === FILTERS.all,
+            selected: category === Filters.All,
           })}
-          onClick={() => onChange(FILTERS.all)}
+          onClick={() => onChange(Filters.All)}
         >
           All
         </a>
@@ -38,9 +38,9 @@ export const FooterTodoApp: FC<Props> = React.memo(({
         <a
           href="#/active"
           className={classNames('filter__link', {
-            selected: category === FILTERS.active,
+            selected: category === Filters.Active,
           })}
-          onClick={() => onChange(FILTERS.active)}
+          onClick={() => onChange(Filters.Active)}
         >
           Active
         </a>
@@ -48,9 +48,9 @@ export const FooterTodoApp: FC<Props> = React.memo(({
         <a
           href="#/completed"
           className={classNames('filter__link', {
-            selected: category === FILTERS.completed,
+            selected: category === Filters.completed,
           })}
-          onClick={() => onChange(FILTERS.completed)}
+          onClick={() => onChange(Filters.completed)}
         >
           Completed
         </a>

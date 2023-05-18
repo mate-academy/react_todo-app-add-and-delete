@@ -4,26 +4,26 @@ import React, {
 import { UserWarning } from './UserWarning';
 import { HeaderTodoApp } from './components/HeaderTodoApp';
 import { MainTodoApp } from './components/MainTodoApp';
-import { addTodo, deleteTodo, getTodos } from './api/todos';
+import {
+  addTodo, deleteTodo, getTodos,
+} from './api/todos';
 import { Todo } from './types/Todo';
 import { FooterTodoApp } from './components/FooterTodoApp';
-import { FILTERS } from './types/FILTERS';
+import { Filters } from './types/Filters';
 import { ErrorComponent } from './components/ErrorComponent';
 
 const USER_ID = 10299;
 
 export const App: React.FC = () => {
   const [todos, setTodos] = useState<Todo[]>([]);
-  const [category, setCategory] = useState<FILTERS>(FILTERS.all);
+  const [category, setCategory] = useState<Filters>(Filters.All);
   const [tempTodo, setTempTodo] = useState<Todo | null>(null);
-  const [removingTodoId, setRemovingTodoId] = useState<number | null>(null);
   const [error, setError] = useState('');
 
   const loadTodos = useCallback(async () => {
     const todosFromServer = await getTodos(USER_ID);
 
     setTodos(todosFromServer);
-    setRemovingTodoId(null);
     setTempTodo(null);
   }, []);
 
@@ -33,9 +33,9 @@ export const App: React.FC = () => {
 
   const visibleTodos = useMemo(() => todos.filter(({ completed }) => {
     switch (category) {
-      case FILTERS.completed:
+      case Filters.completed:
         return completed === true;
-      case FILTERS.active:
+      case Filters.Active:
         return completed === false;
       default:
         return true;
@@ -49,21 +49,21 @@ export const App: React.FC = () => {
     } catch {
       setError('Unable to add a todo');
       setTempTodo(null);
-    } finally {
-      loadTodos();
     }
+
+    loadTodos();
   }, []);
 
   const removeTodo = useCallback(async (todoData: Todo) => {
     try {
-      setRemovingTodoId(todoData.id);
+      setTempTodo(todoData);
       await deleteTodo(todoData.id);
     } catch {
       setError('Unable to delete a todo');
-      setRemovingTodoId(null);
-    } finally {
-      loadTodos();
+      setTempTodo(null);
     }
+
+    loadTodos();
   }, []);
 
   if (!USER_ID) {
@@ -87,7 +87,6 @@ export const App: React.FC = () => {
           todos={visibleTodos}
           removeTodo={removeTodo}
           tempTodo={tempTodo}
-          removingTodoId={removingTodoId}
         />
 
         {todos.length > 0 && (
@@ -101,7 +100,7 @@ export const App: React.FC = () => {
       </div>
 
       {error && (
-        <ErrorComponent error={error} setError={setError} />
+        <ErrorComponent error={error} onChangeError={setError} />
       )}
     </div>
   );

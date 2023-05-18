@@ -7,28 +7,28 @@ interface Props {
   todos: Todo[];
   removeTodo: (todoData: Todo) => void;
   tempTodo: Todo | null;
-  removingTodoId: number | null;
 }
 
 export const MainTodoApp: FC<Props> = React.memo(({
   todos,
   removeTodo,
   tempTodo,
-  removingTodoId,
-}) => {
-  return (
-    <section className="todoapp__main">
-      {todos.map((todo) => {
-        const { id, title } = todo;
+}) => (
+  <section className="todoapp__main">
+    {todos.map((todo) => (
+      tempTodo?.id !== todo.id
+        ? (
+          <TodoComponent
+            key={todo.id}
+            todo={todo}
+            removeTodo={removeTodo}
+          />
+        )
+        : <LoadingTodo key={todo.id} todo={tempTodo} />
+    ))}
 
-        return removingTodoId !== id
-          ? <TodoComponent key={id} todo={todo} removeTodo={removeTodo} />
-          : <LoadingTodo key={id} title={title} />;
-      })}
-
-      {tempTodo && (
-        <LoadingTodo title={tempTodo.title} />
-      )}
-    </section>
-  );
-});
+    {todos.every(({ id }) => id !== tempTodo?.id) && tempTodo && (
+      <LoadingTodo todo={tempTodo} />
+    )}
+  </section>
+));

@@ -1,18 +1,20 @@
 /* eslint-disable jsx-a11y/control-has-associated-label */
-import React, { FC } from 'react';
+import React, { FC, useEffect } from 'react';
 
 interface Props {
   error: string;
-  setError: (error: string) => void;
+  onChangeError: (error: string) => void;
 }
 
 export const ErrorComponent: FC<Props> = React.memo(({
   error,
-  setError,
+  onChangeError,
 }) => {
-  setTimeout(() => {
-    setError('');
-  }, 3000);
+  useEffect(() => {
+    setTimeout(() => {
+      onChangeError('');
+    }, 3000);
+  }, [error]);
 
   return (
     <div className="notification is-danger is-light has-text-weight-normal">
@@ -20,11 +22,10 @@ export const ErrorComponent: FC<Props> = React.memo(({
         type="button"
         className="delete"
         onClick={() => {
-          setError('');
+          onChangeError('');
         }}
       />
       {error}
-      {/* 'Unable to update a todo' */}
     </div>
   );
 });
