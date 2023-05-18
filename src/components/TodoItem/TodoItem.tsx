@@ -1,4 +1,4 @@
-import React, { memo } from 'react';
+import { FC, memo } from 'react';
 import classNames from 'classnames';
 import { Todo } from '../../types/Todo';
 
@@ -7,7 +7,7 @@ interface Props {
   deleteTodo: (todoId: number) => void;
 }
 
-export const TodoItem: React.FC<Props> = memo(({
+export const TodoItem: FC<Props> = memo(({
   todo,
   deleteTodo,
 }) => {
