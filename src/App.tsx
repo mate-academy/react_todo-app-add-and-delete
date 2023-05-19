@@ -21,7 +21,7 @@ export const App: React.FC = () => {
 
   const loadTodos = async () => {
     try {
-      const response = await client.get<Todo[]>('/todos?userId=10332');
+      const response = await client.get<Todo[]>(`/todos?userId=${USER_ID}`);
 
       setTodos(response);
     } catch {

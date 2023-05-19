@@ -16,7 +16,10 @@ export const TodosHeader:React.FC<Props> = ({
   disableInput,
 }) => {
   return (
-    <header className="todoapp__header">
+    <header
+      className="todoapp__header"
+      aria-label="todos header"
+    >
       {uncompletedTodosLength > 0 && (
         <button
           type="button"
@@ -25,7 +28,6 @@ export const TodosHeader:React.FC<Props> = ({
         />
       )}
 
-      {/* Add a todo on form submit */}
       <form
         onSubmit={(event) => onSubmit(event)}
       >

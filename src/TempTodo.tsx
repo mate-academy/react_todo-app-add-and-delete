@@ -1,5 +1,5 @@
 import React from 'react';
-import clasnames from 'classnames';
+import classNames from 'classnames';
 import { Todo } from './types/Todo';
 
 type Props = {
@@ -19,7 +19,7 @@ export const TempTodo: React.FC<Props> = ({
 
   return (
     <div
-      className={clasnames('todo', {
+      className={classNames('todo', {
         completed,
       })}
     >
@@ -37,7 +37,7 @@ export const TempTodo: React.FC<Props> = ({
 
       {/* overlay will cover the todo while it is being updated */}
       <div
-        className={clasnames('modal overlay', {
+        className={classNames('modal overlay', {
           'is-active': loadingTodoId === id,
         })}
       >
