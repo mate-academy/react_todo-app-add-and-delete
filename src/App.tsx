@@ -89,7 +89,7 @@ export const App: React.FC = () => {
 
         <MainTodoApp
           todos={visibleTodos}
-          removeTodo={removeTodo}
+          onRemove={removeTodo}
           tempTodo={tempTodo}
         />
 
