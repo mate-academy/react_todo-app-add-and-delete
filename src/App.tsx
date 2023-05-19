@@ -129,7 +129,6 @@ export const App: React.FC = () => {
             )}
           />
 
-          {/* Add a todo on form submit */}
           <form onSubmit={handleFormSubmit}>
             <input
               type="text"
@@ -161,9 +160,7 @@ export const App: React.FC = () => {
               onClick={handleAllDelete}
               style={
                 {
-                  opacity: completedTodo.length === 0
-                    ? 0
-                    : 1,
+                  opacity: completedTodo.length ? 1 : 0,
                 }
               }
             >
