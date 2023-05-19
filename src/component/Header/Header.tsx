@@ -7,29 +7,26 @@ interface Props {
 }
 
 export const Header: FC<Props> = ({
-  onSubmit,
+  onSubmit: handleAddTodo,
   onError,
 }) => {
   const [title, setTitle] = useState('');
-
-  let isDisabled = false;
+  const [isDisabled, setIsDisabled] = useState(false);
 
   const handleSubmit = (event: FormEvent) => {
     event.preventDefault();
 
-    isDisabled = true;
-
-    if (title.trim() !== '') {
-      onSubmit(title);
-      setTitle('');
-      isDisabled = false;
-    }
-
-    if (title.trim() === '') {
+    if (!title.trim()) {
       onError('Title can\'t be empty');
       setTitle('');
-      isDisabled = false;
+
+      return;
     }
+
+    setIsDisabled(true);
+    handleAddTodo(title);
+    setTitle('');
+    setIsDisabled(false);
   };
 
   return (

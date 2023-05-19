@@ -3,27 +3,27 @@ import classNames from 'classnames';
 import React from 'react';
 
 interface Props {
-  titleError: string,
-  closeError: () => void,
+  error: string,
+  onClose: () => void,
 }
 
 export const Error: React.FC<Props> = ({
-  titleError,
-  closeError,
+  error,
+  onClose: handleCloseError,
 }) => {
   return (
     <div className={classNames(
       'notification is-danger is-light has-text-weight-normal', {
-        hidden: !titleError,
+        hidden: !error,
       },
     )}
     >
       <button
         type="button"
         className="delete"
-        onClick={closeError}
+        onClick={handleCloseError}
       />
-      {titleError}
+      {error}
     </div>
   );
 };

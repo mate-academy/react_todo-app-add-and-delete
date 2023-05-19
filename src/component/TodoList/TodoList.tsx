@@ -1,18 +1,19 @@
 import { FC } from 'react';
 import { Todo } from '../../types/Todo';
 import { TodoItem } from '../TodoItem';
+import { TempTodo } from '../TempTodo';
 
 interface Props {
   todos: Todo[];
   tempTodo: Todo | null,
-  loader: boolean;
+  isloadingId: number;
   onDelete: (todoId: number) => void;
 }
 
 export const TodoList: FC<Props> = ({
   todos,
   tempTodo,
-  loader,
+  isloadingId,
   onDelete: handleDeleteTodo,
 }) => {
   return (
@@ -21,16 +22,14 @@ export const TodoList: FC<Props> = ({
         <TodoItem
           todo={todo}
           key={todo.id}
-          loader={loader}
+          isloadingId={isloadingId}
           onDelete={handleDeleteTodo}
         />
       ))}
 
       {tempTodo && (
-        <TodoItem
+        <TempTodo
           todo={tempTodo}
-          loader={loader}
-          onDelete={() => {}}
         />
       )}
     </section>

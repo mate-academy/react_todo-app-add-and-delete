@@ -21,7 +21,7 @@ export const App: React.FC = () => {
   const [filterTodos, setFilterTodos] = useState(FilterBy.ALL);
   const [titleError, setTitleError] = useState('');
   const [tempTodo, setTempTodo] = useState<Todo | null>(null);
-  const [loader, setLoader] = useState(false);
+  const [isloadingId, setIsloadingId] = useState(0);
 
   const handleFilterTodos = useCallback((userFilter: FilterBy) => {
     setFilterTodos(userFilter);
@@ -33,6 +33,8 @@ export const App: React.FC = () => {
 
   const handleError = useCallback((titleToError: string) => {
     setTitleError(titleToError);
+
+    setTimeout(() => setTitleError(''), 3000);
   }, []);
 
   const getTodosFromServer = async () => {
@@ -54,9 +56,6 @@ export const App: React.FC = () => {
     };
 
     setTempTodo(newTodo);
-    setLoader(true);
-
-    // setTodos(prevTodos => ([...prevTodos, newTodo]));
 
     try {
       await postTodo(USER_ID, newTodo);
@@ -65,11 +64,10 @@ export const App: React.FC = () => {
     }
 
     setTempTodo(null);
-    setLoader(false);
   };
 
   const deleteTodoFromServer = async (todoId: number) => {
-    setLoader(true);
+    setIsloadingId(todoId);
 
     try {
       await deleteTodo(todoId);
@@ -77,7 +75,7 @@ export const App: React.FC = () => {
       handleError('Unable to delete todo');
     }
 
-    setLoader(false);
+    setIsloadingId(0);
   };
 
   const handleAddTodo = useCallback(async (todoTitle: string) => {
@@ -133,22 +131,22 @@ export const App: React.FC = () => {
         <TodoList
           todos={prepareTodos}
           tempTodo={tempTodo}
-          loader={loader}
+          isloadingId={isloadingId}
           onDelete={handleDeleteTodo}
         />
-
-        <Footer
-          filterTodos={filterTodos}
-          todos={todos}
-          onSelect={handleFilterTodos}
-          onDeleteCompleted={handleDeleteCompletedTodo}
-        />
-
+        {!!todos.length && (
+          <Footer
+            filterTodos={filterTodos}
+            todos={todos}
+            onSelect={handleFilterTodos}
+            onDeleteCompleted={handleDeleteCompletedTodo}
+          />
+        )}
       </div>
 
       <Error
-        titleError={titleError}
-        closeError={handleCloseError}
+        error={titleError}
+        onClose={handleCloseError}
       />
     </div>
   );
