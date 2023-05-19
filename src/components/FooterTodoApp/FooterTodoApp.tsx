@@ -1,22 +1,23 @@
 import classNames from 'classnames';
 import React, { FC } from 'react';
-import { Filters } from '../../types/Filters';
+import { Filter } from '../../types/Filter';
 import { Todo } from '../../types/Todo';
 
 interface Props {
   todos: Todo[];
-  category: Filters;
-  onChange: (category: Filters) => void;
-  removeTodo: (todoData: Todo) => void;
+  category: Filter;
+  onChange: (category: Filter) => void;
+  onDelete: () => void;
 }
 
 export const FooterTodoApp: FC<Props> = React.memo(({
   todos,
   category,
   onChange,
-  removeTodo,
+  onDelete,
 }) => {
   const leftItems = todos.filter(({ completed }) => completed === false).length;
+  const areActive = todos.length - leftItems <= 0;
 
   return (
     <footer className="todoapp__footer">
@@ -28,9 +29,9 @@ export const FooterTodoApp: FC<Props> = React.memo(({
         <a
           href="#/"
           className={classNames('filter__link', {
-            selected: category === Filters.All,
+            selected: category === Filter.All,
           })}
-          onClick={() => onChange(Filters.All)}
+          onClick={() => onChange(Filter.All)}
         >
           All
         </a>
@@ -38,9 +39,9 @@ export const FooterTodoApp: FC<Props> = React.memo(({
         <a
           href="#/active"
           className={classNames('filter__link', {
-            selected: category === Filters.Active,
+            selected: category === Filter.Active,
           })}
-          onClick={() => onChange(Filters.Active)}
+          onClick={() => onChange(Filter.Active)}
         >
           Active
         </a>
@@ -48,9 +49,9 @@ export const FooterTodoApp: FC<Props> = React.memo(({
         <a
           href="#/completed"
           className={classNames('filter__link', {
-            selected: category === Filters.completed,
+            selected: category === Filter.Completed,
           })}
-          onClick={() => onChange(Filters.completed)}
+          onClick={() => onChange(Filter.Completed)}
         >
           Completed
         </a>
@@ -59,14 +60,10 @@ export const FooterTodoApp: FC<Props> = React.memo(({
       <button
         type="button"
         className={classNames('todoapp__clear-completed', {
-          notification: todos.length - leftItems <= 0,
-          hidden: todos.length - leftItems <= 0,
+          notification: areActive,
+          hidden: areActive,
         })}
-        onClick={() => {
-          todos
-            .filter(({ completed }) => completed === true)
-            .map(todo => removeTodo(todo));
-        }}
+        onClick={onDelete}
       >
         Clear completed
       </button>

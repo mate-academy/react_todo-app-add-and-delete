@@ -3,17 +3,19 @@ import React, { FC, useEffect } from 'react';
 
 interface Props {
   error: string;
-  onChangeError: (error: string) => void;
+  onError: (error: string) => void;
 }
 
 export const ErrorComponent: FC<Props> = React.memo(({
   error,
-  onChangeError,
+  onError,
 }) => {
   useEffect(() => {
-    setTimeout(() => {
-      onChangeError('');
+    const timeoutId = setTimeout(() => {
+      onError('');
     }, 3000);
+
+    return clearTimeout(timeoutId);
   }, [error]);
 
   return (
@@ -22,7 +24,7 @@ export const ErrorComponent: FC<Props> = React.memo(({
         type="button"
         className="delete"
         onClick={() => {
-          onChangeError('');
+          onError('');
         }}
       />
       {error}
