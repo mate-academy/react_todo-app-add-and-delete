@@ -1,15 +1,12 @@
 /* eslint-disable jsx-a11y/control-has-associated-label */
 import { FC, FormEvent, useState } from 'react';
-import { TodoData } from '../../types/Todo';
 
 interface Props {
-  userId: number;
-  onSubmit: (todoData: TodoData) => void;
+  onSubmit: (todoTitle: string) => void;
   onError: (titleToError: string) => void;
 }
 
 export const Header: FC<Props> = ({
-  userId,
   onSubmit,
   onError,
 }) => {
@@ -17,19 +14,13 @@ export const Header: FC<Props> = ({
 
   let isDisabled = false;
 
-  const todoData = {
-    title,
-    userId,
-    completed: false,
-  };
-
   const handleSubmit = (event: FormEvent) => {
     event.preventDefault();
 
     isDisabled = true;
 
     if (title.trim() !== '') {
-      onSubmit(todoData);
+      onSubmit(title);
       setTitle('');
       isDisabled = false;
     }

@@ -6,7 +6,7 @@ import React, {
   useState,
 } from 'react';
 import { deleteTodo, getTodos, postTodo } from './api/todos';
-import { Todo, TodoData } from './types/Todo';
+import { Todo } from './types/Todo';
 import { TodoList } from './component/TodoList';
 import { Footer } from './component/Footer';
 import { Error } from './component/Error';
@@ -19,20 +19,19 @@ const USER_ID = 10363;
 export const App: React.FC = () => {
   const [todos, setTodos] = useState<Todo[]>([]);
   const [filterTodos, setFilterTodos] = useState(FilterBy.ALL);
-  const [isError, setIsError] = useState(false);
   const [titleError, setTitleError] = useState('');
+  const [tempTodo, setTempTodo] = useState<Todo | null>(null);
+  const [loader, setLoader] = useState(false);
 
   const handleFilterTodos = useCallback((userFilter: FilterBy) => {
     setFilterTodos(userFilter);
   }, []);
 
   const handleCloseError = useCallback(() => {
-    setIsError(false);
     setTitleError('');
   }, []);
 
   const handleError = useCallback((titleToError: string) => {
-    setIsError(true);
     setTitleError(titleToError);
   }, []);
 
@@ -46,31 +45,43 @@ export const App: React.FC = () => {
     }
   };
 
-  const postTodoToServer = async (todoData: TodoData) => {
-    const tempTodo = {
-      ...todoData,
+  const postTodoToServer = async (todoTitle: string) => {
+    const newTodo = {
       id: 0,
+      userId: USER_ID,
+      title: todoTitle,
+      completed: false,
     };
 
-    setTodos(prevTodos => ([...prevTodos, tempTodo]));
+    setTempTodo(newTodo);
+    setLoader(true);
+
+    // setTodos(prevTodos => ([...prevTodos, newTodo]));
 
     try {
-      await postTodo(USER_ID, todoData);
+      await postTodo(USER_ID, newTodo);
     } catch {
       handleError('Unable to add new todo');
     }
+
+    setTempTodo(null);
+    setLoader(false);
   };
 
   const deleteTodoFromServer = async (todoId: number) => {
+    setLoader(true);
+
     try {
       await deleteTodo(todoId);
     } catch {
       handleError('Unable to delete todo');
     }
+
+    setLoader(false);
   };
 
-  const handleAddTodo = useCallback(async (todoData: TodoData) => {
-    await postTodoToServer(todoData);
+  const handleAddTodo = useCallback(async (todoTitle: string) => {
+    await postTodoToServer(todoTitle);
 
     getTodosFromServer();
   }, []);
@@ -82,9 +93,15 @@ export const App: React.FC = () => {
   }, []);
 
   const handleDeleteCompletedTodo = useCallback(async () => {
-    const completedTodos = todos.filter(({ completed }) => completed);
-
-    completedTodos.map(({ id }) => deleteTodoFromServer(id));
+    try {
+      await Promise.all(
+        todos
+          .filter(({ completed }) => completed)
+          .map(({ id }) => deleteTodoFromServer(id)),
+      );
+    } catch {
+      handleError('Unable to delete todos');
+    }
 
     getTodosFromServer();
   }, [todos]);
@@ -109,13 +126,14 @@ export const App: React.FC = () => {
 
       <div className="todoapp__content">
         <Header
-          userId={USER_ID}
           onSubmit={handleAddTodo}
           onError={handleError}
         />
 
         <TodoList
           todos={prepareTodos}
+          tempTodo={tempTodo}
+          loader={loader}
           onDelete={handleDeleteTodo}
         />
 
@@ -129,7 +147,6 @@ export const App: React.FC = () => {
       </div>
 
       <Error
-        isError={isError}
         titleError={titleError}
         closeError={handleCloseError}
       />

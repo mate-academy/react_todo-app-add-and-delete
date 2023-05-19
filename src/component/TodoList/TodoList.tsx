@@ -4,11 +4,15 @@ import { TodoItem } from '../TodoItem';
 
 interface Props {
   todos: Todo[];
+  tempTodo: Todo | null,
+  loader: boolean;
   onDelete: (todoId: number) => void;
 }
 
 export const TodoList: FC<Props> = ({
   todos,
+  tempTodo,
+  loader,
   onDelete: handleDeleteTodo,
 }) => {
   return (
@@ -17,9 +21,18 @@ export const TodoList: FC<Props> = ({
         <TodoItem
           todo={todo}
           key={todo.id}
+          loader={loader}
           onDelete={handleDeleteTodo}
         />
       ))}
+
+      {tempTodo && (
+        <TodoItem
+          todo={tempTodo}
+          loader={loader}
+          onDelete={() => {}}
+        />
+      )}
     </section>
   );
 };

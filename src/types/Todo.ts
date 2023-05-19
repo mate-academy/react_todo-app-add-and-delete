@@ -4,9 +4,3 @@ export interface Todo {
   title: string;
   completed: boolean;
 }
-
-export interface TodoData {
-  title: string;
-  userId: number;
-  completed: boolean;
-}
