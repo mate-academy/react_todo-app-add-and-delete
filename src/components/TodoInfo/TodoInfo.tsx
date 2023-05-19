@@ -1,13 +1,21 @@
-import React from 'react';
+import React, { useState } from 'react';
 import classNames from 'classnames';
 import { Todo } from '../../types/Todo';
 
 type Props = {
   todo: Todo;
+  tempTodoId?: number;
+  onDelete?: (todoDelete: Todo) => void;
 };
 
-export const TodoInfo: React.FC<Props> = ({ todo }) => {
-  const isSuccess = todo.completed === true;
+export const TodoInfo: React.FC<Props> = ({
+  todo,
+  tempTodoId = 0,
+  onDelete = () => {},
+}) => {
+  const { completed, title } = todo;
+  const isSuccess = completed === true;
+  const [isLoading, setIsLoading] = useState(tempTodoId === todo.id);
 
   return (
     <div className={classNames('todo', {
@@ -22,16 +30,30 @@ export const TodoInfo: React.FC<Props> = ({ todo }) => {
         />
       </label>
 
-      <span className="todo__title">{todo.title}</span>
+      <span className="todo__title">{title}</span>
 
-      {/* Remove button appears only on hover */}
-      <button type="button" className="todo__remove">×</button>
+      <button
+        type="button"
+        className="todo__remove"
+        onClick={async () => {
+          setIsLoading(true);
 
-      {/* overlay will cover the todo while it is being updated */}
-      {/*       <div className="modal overlay">
+          await onDelete(todo);
+
+          setIsLoading(false);
+        }}
+        disabled={isLoading}
+      >
+        ×
+      </button>
+
+      <div className={classNames('modal overlay', {
+        'is-active': isLoading,
+      })}
+      >
         <div className="modal-background has-background-white-ter" />
         <div className="loader" />
-      </div> */}
+      </div>
     </div>
   );
 };

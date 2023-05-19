@@ -52,7 +52,9 @@ export const App: React.FC = () => {
     }
   }, []);
 
-  const onDeleteError = () => setErrorMessage('');
+  const onDeleteError = useCallback(
+    async () => setErrorMessage(''), [errorMessage],
+  );
 
   useEffect(() => {
     loadTodos();
@@ -123,8 +125,7 @@ export const App: React.FC = () => {
             type="button"
             className={classNames(
               'todoapp__toggle-all', {
-                active: getFiltered(SortType.Completed)
-                && filteredTodo.length === todos.length,
+                active: filteredTodo.length === completedTodo.length,
               },
             )}
           />
@@ -141,7 +142,7 @@ export const App: React.FC = () => {
         </header>
 
         <TodoList
-          todosFromServer={filteredTodo}
+          todos={filteredTodo}
           onDelete={handleDelete}
           tempTodo={tempTodo}
         />

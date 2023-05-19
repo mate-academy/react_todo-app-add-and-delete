@@ -3,13 +3,13 @@ import { Todo } from '../../types/Todo';
 import { TodoInfo } from '../TodoInfo/TodoInfo';
 
 type Props = {
-  todosFromServer: Todo[];
+  todos: Todo[];
   onDelete: (todoToDelete: Todo) => void;
   tempTodo: Todo | null;
 };
 
 export const TodoList: React.FC<Props> = ({
-  todosFromServer,
+  todos,
   onDelete,
   tempTodo,
 }) => {
@@ -17,7 +17,7 @@ export const TodoList: React.FC<Props> = ({
 
   return (
     <section className="todoapp__main">
-      {todosFromServer.map(todo => (
+      {todos.map(todo => (
         <TodoInfo
           key={todo.id}
           todo={todo}
