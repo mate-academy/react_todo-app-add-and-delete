@@ -1,4 +1,4 @@
-import classNames from 'classnames';
+import cn from 'classnames';
 import { memo, useEffect } from 'react';
 
 type Props = {
@@ -16,7 +16,7 @@ export const ErrorMessage: React.FC<Props> = memo(({ message, onDelete }) => {
   }, [message]);
 
   return (
-    <div className={classNames(
+    <div className={cn(
       'notification is-danger is-light has-text-weight-normal', {
         hidden: !message.length,
       },
@@ -28,6 +28,7 @@ export const ErrorMessage: React.FC<Props> = memo(({ message, onDelete }) => {
         className="delete"
         onClick={onDelete}
       />
+
       {message}
     </div>
   );

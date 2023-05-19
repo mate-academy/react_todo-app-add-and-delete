@@ -1,11 +1,11 @@
 import { memo, useState } from 'react';
-import classNames from 'classnames';
+import cn from 'classnames';
 import { Todo } from '../../types/Todo';
 
 type Props = {
   todo: Todo;
   tempTodoId?: number;
-  onDelete?: (todoToDelete: Todo) => void;
+  onDelete: (todoToDelete: Todo) => void;
 };
 
 export const TodoItem: React.FC<Props> = memo(({
@@ -17,7 +17,7 @@ export const TodoItem: React.FC<Props> = memo(({
   const { title, completed } = todo;
 
   return (
-    <div className={classNames('todo', {
+    <div className={cn('todo', {
       completed,
     })}
     >
@@ -34,10 +34,10 @@ export const TodoItem: React.FC<Props> = memo(({
       <button
         type="button"
         className="todo__remove"
-        onClick={async () => {
+        onClick={() => {
           setIsLoading(true);
 
-          await onDelete(todo);
+          onDelete(todo);
 
           setIsLoading(false);
         }}
@@ -46,7 +46,7 @@ export const TodoItem: React.FC<Props> = memo(({
         ×
       </button>
 
-      <div className={classNames('modal overlay', {
+      <div className={cn('modal overlay', {
         'is-active': isLoading,
       })}
       >

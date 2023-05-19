@@ -5,15 +5,15 @@ import { addTodo } from '../../api/todos';
 import { Todo } from '../../types/Todo';
 
 type Props = {
-  setErrorMessage: (message: string) => void;
-  setTempTodo: (newTodo: Todo | null) => void;
-  createTodo: (newTodo: Todo) => void;
+  onError: (message: string) => void;
+  onChange: (newTodo: Todo | null) => void;
+  onCreate: (newTodo: Todo) => void;
 };
 
 export const TodoForm: React.FC<Props> = memo(({
-  setErrorMessage,
-  setTempTodo,
-  createTodo,
+  onError,
+  onChange,
+  onCreate,
 }) => {
   const [query, setQuery] = useState('');
   const [isInputDisabled, setIsInputDisabled] = useState(false);
@@ -22,13 +22,13 @@ export const TodoForm: React.FC<Props> = memo(({
     async (event: React.FormEvent<HTMLFormElement>) => {
       event.preventDefault();
 
-      if (query.trim().length === 0) {
-        setErrorMessage('Title can\'t be empty');
+      if (!query.trim().length) {
+        onError('Title can\'t be empty');
 
         return;
       }
 
-      setErrorMessage('');
+      onError('');
 
       const todoToAdd: TodoData = {
         title: query,
@@ -36,18 +36,18 @@ export const TodoForm: React.FC<Props> = memo(({
         completed: false,
       };
 
-      setTempTodo({ ...todoToAdd, id: 0 });
+      onChange({ ...todoToAdd, id: 0 });
 
       try {
         setIsInputDisabled(true);
         const newTodo = await addTodo(todoToAdd);
 
-        createTodo(newTodo);
+        onCreate(newTodo);
         setQuery('');
       } catch {
-        setErrorMessage('Unable to add a todo');
+        onError('Unable to add a todo');
       } finally {
-        setTempTodo(null);
+        onChange(null);
         setIsInputDisabled(false);
       }
     }, [query],

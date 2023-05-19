@@ -1,5 +1,5 @@
 import { memo } from 'react';
-import classNames from 'classnames';
+import cn from 'classnames';
 import { FilterBy } from '../../enums/FilterBy';
 
 type Props = {
@@ -14,7 +14,7 @@ export const TodoFilter: React.FC<Props> = memo(({
   <nav className="filter">
     <a
       href="#/"
-      className={classNames('filter__link', {
+      className={cn('filter__link', {
         selected: filter === FilterBy.All,
       })}
       onClick={() => onChange(FilterBy.All)}
@@ -24,7 +24,7 @@ export const TodoFilter: React.FC<Props> = memo(({
 
     <a
       href="#/active"
-      className={classNames('filter__link', {
+      className={cn('filter__link', {
         selected: filter === FilterBy.Active,
       })}
       onClick={() => onChange(FilterBy.Active)}
@@ -34,7 +34,7 @@ export const TodoFilter: React.FC<Props> = memo(({
 
     <a
       href="#/completed"
-      className={classNames('filter__link', {
+      className={cn('filter__link', {
         selected: filter === FilterBy.Completed,
       })}
       onClick={() => onChange(FilterBy.Completed)}

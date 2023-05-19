@@ -4,6 +4,7 @@ import {
 } from 'react-transition-group';
 import { Todo } from '../../types/Todo';
 import { TodoItem } from '../TodoItem';
+import { TempTodo } from '../TempTodo';
 
 type Props = {
   todos: Todo[];
@@ -33,10 +34,7 @@ export const TodoList: React.FC<Props> = ({ todos, onDelete, tempTodo }) => {
             timeout={300}
             classNames="temp-item"
           >
-            <TodoItem
-              todo={tempTodo}
-              tempTodoId={tempTodo.id}
-            />
+            <TempTodo title={tempTodo.title} />
           </CSSTransition>
         )}
       </TransitionGroup>

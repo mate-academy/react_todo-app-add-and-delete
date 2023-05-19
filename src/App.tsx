@@ -5,15 +5,15 @@ import React, {
   useMemo,
   useState,
 } from 'react';
-import classNames from 'classnames';
+import cn from 'classnames';
 import { Todo } from './types/Todo';
 import { TodoList } from './components/TodoList';
 import { FilterBy } from './enums/FilterBy';
-import { TodoFilter } from './components/TodoFilter';
 import { getTodos, deleteTodo } from './api/todos';
-import { ErrorMessage } from './components/ErrorMessage/ErrorMessage';
+import { ErrorMessage } from './components/ErrorMessage';
 import { USER_ID } from './App.constants';
 import { TodoForm } from './components/TodoForm';
+import { Footer } from './components/Footer';
 
 export const App: React.FC = () => {
   const [todos, setTodos] = useState<Todo[]>([]);
@@ -25,19 +25,6 @@ export const App: React.FC = () => {
     .filter(todo => todo.completed === false).length;
   const completedTodosNumber = todos.length - activeTodosNumber;
   const areThereCompleted = completedTodosNumber > 0;
-
-  const getFilteredTodos = useCallback((filter: FilterBy) => {
-    switch (filter) {
-      case FilterBy.Active:
-        return todos.filter(todo => !todo.completed);
-
-      case FilterBy.Completed:
-        return todos.filter(todo => todo.completed);
-
-      default:
-        return todos;
-    }
-  }, [filterBy, todos]);
 
   const createTodo = (newTodo: Todo) => {
     setTodos(prevTodos => [...prevTodos, newTodo]);
@@ -71,12 +58,9 @@ export const App: React.FC = () => {
   }, []);
 
   const handleClearCompleted = useCallback(() => {
-    const completedTodos = todos
-      .filter(todo => todo.completed === true);
+    const completedTodos = todos.filter(({ completed }) => completed);
 
-    for (let i = 0; i < completedTodos.length; i += 1) {
-      handleTodoDelete(completedTodos[i]);
-    }
+    completedTodos.forEach(todo => handleTodoDelete(todo));
   }, [todos]);
 
   useEffect(() => {
@@ -84,7 +68,16 @@ export const App: React.FC = () => {
   }, []);
 
   const filteredTodos = useMemo(() => {
-    return getFilteredTodos(filterBy);
+    switch (filterBy) {
+      case FilterBy.Active:
+        return todos.filter(todo => !todo.completed);
+
+      case FilterBy.Completed:
+        return todos.filter(todo => todo.completed);
+
+      default:
+        return todos;
+    }
   }, [todos, filterBy]);
 
   return (
@@ -95,15 +88,15 @@ export const App: React.FC = () => {
         <header className="todoapp__header">
           <button
             type="button"
-            className={classNames('todoapp__toggle-all', {
+            className={cn('todoapp__toggle-all', {
               active: activeTodosNumber > 0,
             })}
           />
 
           <TodoForm
-            setErrorMessage={setErrorMessage}
-            setTempTodo={setTempTodo}
-            createTodo={createTodo}
+            onError={setErrorMessage}
+            onChange={setTempTodo}
+            onCreate={createTodo}
           />
         </header>
 
@@ -114,26 +107,13 @@ export const App: React.FC = () => {
         />
 
         {todos && (
-          <footer className="todoapp__footer">
-            <span className="todo-count">
-              {`${activeTodosNumber} items left`}
-            </span>
-
-            <TodoFilter
-              filter={filterBy}
-              onChange={setFilterBy}
-            />
-
-            <button
-              type="button"
-              className="todoapp__clear-completed"
-              disabled={!areThereCompleted}
-              onClick={handleClearCompleted}
-              style={areThereCompleted ? {} : { color: 'white' }}
-            >
-              Clear completed
-            </button>
-          </footer>
+          <Footer
+            filter={filterBy}
+            onChange={setFilterBy}
+            onClear={handleClearCompleted}
+            areThereCompleted={areThereCompleted}
+            activeTodosNumber={activeTodosNumber}
+          />
         )}
       </div>
 
