@@ -153,6 +153,7 @@ export const App: React.FC = () => {
             <span className="todo-count">
               {`${activeTodo} items left`}
             </span>
+
             <TodoFilter sort={sort} setSort={setSort} />
 
             <button
