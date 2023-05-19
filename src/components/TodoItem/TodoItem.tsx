@@ -1,20 +1,20 @@
-import { memo, useState } from 'react';
+import { memo } from 'react';
 import cn from 'classnames';
 import { Todo } from '../../types/Todo';
 
 type Props = {
   todo: Todo;
-  tempTodoId?: number;
-  onDelete: (todoToDelete: Todo) => void;
+  onDelete: (todoToDeleteId: number) => void;
+  loadingTodoIds: number[];
 };
 
 export const TodoItem: React.FC<Props> = memo(({
   todo,
-  tempTodoId = 0,
   onDelete = () => {},
+  loadingTodoIds,
 }) => {
-  const [isLoading, setIsLoading] = useState(tempTodoId === todo.id);
   const { title, completed } = todo;
+  const isLoading = loadingTodoIds.includes(todo.id);
 
   return (
     <div className={cn('todo', {
@@ -34,14 +34,8 @@ export const TodoItem: React.FC<Props> = memo(({
       <button
         type="button"
         className="todo__remove"
-        onClick={() => {
-          setIsLoading(true);
-
-          onDelete(todo);
-
-          setIsLoading(false);
-        }}
-        disabled={todo.id === tempTodoId}
+        onClick={() => onDelete(todo.id)}
+        disabled={isLoading}
       >
         ×
       </button>

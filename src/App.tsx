@@ -20,6 +20,7 @@ export const App: React.FC = () => {
   const [filterBy, setFilterBy] = useState(FilterBy.All);
   const [errorMessage, setErrorMessage] = useState('');
   const [tempTodo, setTempTodo] = useState<Todo | null>(null);
+  const [loadingTodoIds, setLoadingTodoIds] = useState<number[]>([]);
 
   const activeTodosNumber = todos
     .filter(todo => todo.completed === false).length;
@@ -34,6 +35,14 @@ export const App: React.FC = () => {
     setErrorMessage('');
   }, []);
 
+  const addLoadingTodoId = (todoId: number) => {
+    setLoadingTodoIds(prevIds => [...prevIds, todoId]);
+  };
+
+  const removeLoadingTodoId = (todoId: number) => {
+    setLoadingTodoIds(prevIds => prevIds.filter(id => id !== todoId));
+  };
+
   const loadData = useCallback(async () => {
     try {
       const todosFromServer = await getTodos(USER_ID);
@@ -44,23 +53,23 @@ export const App: React.FC = () => {
     }
   }, []);
 
-  const handleTodoDelete = useCallback(async (todoToDelete: Todo) => {
+  const handleTodoDelete = useCallback(async (todoToDeleteId: number) => {
     try {
       deleteErrorMessage();
-      setTempTodo(todoToDelete);
-      await deleteTodo(todoToDelete.id);
+      addLoadingTodoId(todoToDeleteId);
+      await deleteTodo(todoToDeleteId);
       loadData();
     } catch {
       setErrorMessage('Unable to delete a todo');
     } finally {
-      setTempTodo(null);
+      removeLoadingTodoId(todoToDeleteId);
     }
   }, []);
 
   const handleClearCompleted = useCallback(() => {
     const completedTodos = todos.filter(({ completed }) => completed);
 
-    completedTodos.forEach(todo => handleTodoDelete(todo));
+    completedTodos.forEach(({ id }) => handleTodoDelete(id));
   }, [todos]);
 
   useEffect(() => {
@@ -70,10 +79,10 @@ export const App: React.FC = () => {
   const filteredTodos = useMemo(() => {
     switch (filterBy) {
       case FilterBy.Active:
-        return todos.filter(todo => !todo.completed);
+        return todos.filter(({ completed }) => !completed);
 
       case FilterBy.Completed:
-        return todos.filter(todo => todo.completed);
+        return todos.filter(({ completed }) => completed);
 
       default:
         return todos;
@@ -104,6 +113,7 @@ export const App: React.FC = () => {
           todos={filteredTodos}
           onDelete={handleTodoDelete}
           tempTodo={tempTodo}
+          loadingTodoIds={loadingTodoIds}
         />
 
         {todos && (

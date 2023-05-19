@@ -8,11 +8,17 @@ import { TempTodo } from '../TempTodo';
 
 type Props = {
   todos: Todo[];
-  onDelete: (todoToDelete: Todo) => void;
+  onDelete: (todoToDeleteId: number) => void;
   tempTodo: Todo | null;
+  loadingTodoIds: number[];
 };
 
-export const TodoList: React.FC<Props> = ({ todos, onDelete, tempTodo }) => {
+export const TodoList: React.FC<Props> = ({
+  todos,
+  onDelete,
+  tempTodo,
+  loadingTodoIds,
+}) => {
   const isCreating = tempTodo?.id === 0;
 
   return (
@@ -24,7 +30,12 @@ export const TodoList: React.FC<Props> = ({ todos, onDelete, tempTodo }) => {
             timeout={300}
             classNames="item"
           >
-            <TodoItem key={todo.id} todo={todo} onDelete={onDelete} />
+            <TodoItem
+              key={todo.id}
+              todo={todo}
+              onDelete={onDelete}
+              loadingTodoIds={loadingTodoIds}
+            />
           </CSSTransition>
         ))}
 
