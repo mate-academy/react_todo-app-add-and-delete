@@ -1,4 +1,3 @@
-/* eslint-disable jsx-a11y/control-has-associated-label */
 import React, { useEffect, useMemo, useState } from 'react';
 import classNames from 'classnames';
 import { Todo } from './types/Todo';
@@ -158,6 +157,7 @@ export const App: React.FC = () => {
           {todos.length > 0 && (
             <button
               type="button"
+              aria-label="Toggle all todos"
               className={classNames('todoapp__toggle-all', {
                 active: isAllCompleted,
               })}
@@ -173,18 +173,16 @@ export const App: React.FC = () => {
           />
         </header>
 
-        {todos && (
-          <section className="todoapp__main">
-            <TodoList
-              todos={visibleTodos}
-              tempTodo={tempTodo}
-              isLoading={isLoading}
-              onSetDeleteTodoID={setDeleteTodoID}
-              deleteTodoID={deleteTodoID}
-              isDeletingCompleted={isDeletingCompleted}
-            />
-          </section>
-        )}
+        <section className="todoapp__main">
+          <TodoList
+            todos={visibleTodos}
+            tempTodo={tempTodo}
+            isLoading={isLoading}
+            onSetDeleteTodoID={setDeleteTodoID}
+            deleteTodoID={deleteTodoID}
+            isDeletingCompleted={isDeletingCompleted}
+          />
+        </section>
 
         {todos.length > 0 && (
           <footer className="todoapp__footer">
@@ -220,6 +218,7 @@ export const App: React.FC = () => {
           type="button"
           className="delete"
           onClick={handleErrorMessage}
+          aria-label="Delete error message"
         />
 
         {errorMessage}
