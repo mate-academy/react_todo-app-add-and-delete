@@ -7,6 +7,5 @@ export interface Todo {
 
 export interface TodoData {
   title: string;
-  userId: number;
   completed: boolean;
 }

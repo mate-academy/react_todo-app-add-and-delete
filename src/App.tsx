@@ -2,7 +2,12 @@
 import React, { useCallback, useEffect, useState } from 'react';
 import classNames from 'classnames';
 import { UserWarning } from './UserWarning';
-import { createTodo, deleteTodo, getTodos } from './api/todos';
+import {
+  createTodo,
+  deleteTodo,
+  getTodos,
+  updatingTodo,
+} from './api/todos';
 import { Todo, TodoData } from './types/Todo';
 import { SelectedFiltering } from './types/SelectedType';
 import { TodoList } from './TodoMain/TodoList';
@@ -13,11 +18,11 @@ const USER_ID = 10397;
 
 export const App: React.FC = () => {
   const [todos, setTodos] = useState<Todo[]>([]);
-  const [hasTitleError, setHasTitleError] = useState(false);
   const [isLoadingError, setIsLoadingError] = useState(false);
   const [filteringBy, setFilteringBy] = useState(SelectedFiltering.All);
   const [tempTodo, setTempTodo] = useState<null | TodoData>(null);
   const [isCreatingError, setIsCreatingError] = useState(false);
+  const [isUpdatingError, setIsUpdatingError] = useState(false);
 
   const loadTodos = useCallback(async () => {
     setIsLoadingError(false);
@@ -45,11 +50,44 @@ export const App: React.FC = () => {
   }, []);
 
   const removeTodo = useCallback(async (todoDeletedId: number) => {
-    const deletedTodo = await deleteTodo(todoDeletedId);
+    await deleteTodo(todoDeletedId);
 
-    setTodos(prevTodos => prevTodos.filter(todo => todo !== deletedTodo));
     loadTodos();
   }, []);
+
+  const updateTodoChek = useCallback(
+    async (todoId: number, completed: boolean) => {
+      setTodos(prevTodos => prevTodos.map((todo) => {
+        return todo.id !== todoId ? todo : { ...todo, completed };
+      }));
+
+      try {
+        await updatingTodo(todoId, { completed });
+      } catch (error) {
+        setIsUpdatingError(true);
+      }
+
+      setIsUpdatingError(false);
+      loadTodos();
+    }, [],
+  );
+
+  const updateTodoTitle = useCallback(
+    async (todoId: number, title: string) => {
+      setTodos(prevTodos => prevTodos.map((todo) => {
+        return todo.id !== todoId ? todo : { ...todo, title };
+      }));
+
+      try {
+        await updatingTodo(todoId, { title });
+      } catch (error) {
+        setIsUpdatingError(true);
+      }
+
+      setIsUpdatingError(false);
+      loadTodos();
+    }, [],
+  );
 
   useEffect(
     () => {
@@ -81,15 +119,17 @@ export const App: React.FC = () => {
 
       <div className="todoapp__content">
         <AddTodoForm
-          setHasTitleError={setHasTitleError}
+          setIsCreatingError={setIsCreatingError}
           addTodo={addTodo}
-          userId={USER_ID}
         />
 
         <TodoList
           visibleTodos={visibleTodos}
           tempTodo={tempTodo}
           removeTodo={removeTodo}
+          updateTodoChek={updateTodoChek}
+          updateTodoTitle={updateTodoTitle}
+          setIsUpdatingError={setIsUpdatingError}
         />
 
         {isLoadingError && <TodoLoadingError />}
@@ -147,11 +187,26 @@ export const App: React.FC = () => {
           </footer>
         )}
 
-        {hasTitleError && isCreatingError && (
+        {isCreatingError && (
           // eslint-disable-next-line max-len
           <div className="notification is-danger is-light has-text-weight-normal">
-            <button type="button" className="delete" />
+            <button
+              type="button"
+              className="delete"
+              onClick={() => setIsCreatingError(false)}
+            />
             Unable to add a todo
+          </div>
+        )}
+        {isUpdatingError && (
+          // eslint-disable-next-line max-len
+          <div className="notification is-danger is-light has-text-weight-normal">
+            <button
+              type="button"
+              className="delete"
+              onClick={() => setIsUpdatingError(false)}
+            />
+            Unable to update todo
           </div>
         )}
       </div>

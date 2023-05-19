@@ -4,15 +4,13 @@ import React, { useState } from 'react';
 import { TodoData } from '../types/Todo';
 
 interface Props {
-  setHasTitleError: (arg: boolean) => void
-  addTodo: (todoData: TodoData) => void
-  userId: number
+  setIsCreatingError: (arg: boolean) => void;
+  addTodo: (todoData: TodoData) => Promise<void>;
 }
 
 export const AddTodoForm: React.FC<Props> = ({
-  setHasTitleError,
+  setIsCreatingError,
   addTodo,
-  userId,
 }) => {
   const [title, setTitle] = useState('');
 
@@ -20,14 +18,13 @@ export const AddTodoForm: React.FC<Props> = ({
     event.preventDefault();
 
     if (!title) {
-      setHasTitleError(true);
+      setIsCreatingError(true);
 
       return;
     }
 
     const todoData = {
       title,
-      userId,
       completed: false,
     };
 

@@ -1,20 +1,28 @@
 /* eslint-disable linebreak-style */
-import React from 'react';
+import React, { useState } from 'react';
 import classNames from 'classnames';
 import { Todo, TodoData } from '../types/Todo';
 import { TodoItem } from '../TodoItem/TodoItem';
 
 interface Props {
-  visibleTodos: Todo[]
-  tempTodo: TodoData | null
-  removeTodo: (todoId: number) => void
+  visibleTodos: Todo[];
+  tempTodo: TodoData | null;
+  removeTodo: (todoId: number) => Promise<void>;
+  updateTodoChek: (arg: number, completed: boolean) => Promise<void>;
+  updateTodoTitle: (arg: number, title: string) => Promise<void>;
+  setIsUpdatingError: (arg: boolean) => void;
 }
 
 export const TodoList: React.FC<Props> = ({
   visibleTodos,
   tempTodo,
   removeTodo,
+  updateTodoChek,
+  updateTodoTitle,
+  setIsUpdatingError,
 }) => {
+  const [todoEditingId, setTodoEditingId] = useState<number | null>(null);
+
   return (
     <section className="todoapp__main">
       {visibleTodos.map(todo => (
@@ -22,6 +30,11 @@ export const TodoList: React.FC<Props> = ({
           todo={todo}
           key={todo.id}
           removeTodo={removeTodo}
+          updateTodoChek={updateTodoChek}
+          updateTodoTitle={updateTodoTitle}
+          setTodoEditingId={setTodoEditingId}
+          todoEditingId={todoEditingId}
+          setIsUpdatingError={setIsUpdatingError}
         />
       ))}
       {tempTodo && (
