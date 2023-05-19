@@ -4,11 +4,11 @@ import { ChangeEvent, FC, useState } from 'react';
 import { Todo } from '../../types/Todo';
 
 interface Props {
-  addTodo: (query: string) => void;
-  tempTodo: Todo | null;
+  onAdd: (query: string) => void;
+  todo: Todo | null;
 }
 
-export const TodoForm: FC<Props> = ({ addTodo, tempTodo }) => {
+export const TodoForm: FC<Props> = ({ onAdd, todo }) => {
   const [query, setQuery] = useState('');
 
   const handleChangeInput = (event: ChangeEvent<HTMLInputElement>) => {
@@ -17,16 +17,14 @@ export const TodoForm: FC<Props> = ({ addTodo, tempTodo }) => {
 
   const handleSubmitForm = (event: ChangeEvent<HTMLFormElement>) => {
     event.preventDefault();
-    addTodo(query);
+    onAdd(query);
     setQuery('');
   };
 
   return (
     <header className="todoapp__header">
-      {/* this buttons is active only if there are some active todos */}
       <button type="button" className="todoapp__toggle-all active" />
 
-      {/* Add a todo on form submit */}
       <form onSubmit={handleSubmitForm}>
         <input
           type="text"
@@ -34,7 +32,7 @@ export const TodoForm: FC<Props> = ({ addTodo, tempTodo }) => {
           placeholder="What needs to be done?"
           value={query}
           onChange={handleChangeInput}
-          disabled={tempTodo !== null}
+          disabled={!!todo}
         />
       </form>
     </header>

@@ -18,6 +18,7 @@ export const TodoItem: FC<Props> = (
   },
 ) => {
   const { id, completed, title } = todo;
+  const isActive = !id;
 
   return (
     <div
@@ -44,11 +45,12 @@ export const TodoItem: FC<Props> = (
       </button>
 
       <div className={classNames('modal overlay', {
-        'is-active': !id
-          || idOfDeletedTodo === id
-          || completedTodosID?.includes(id),
+        'is-active': isActive
+        || idOfDeletedTodo === id
+        || completedTodosID?.includes(id),
       })}
       >
+
         <div className="modal-background has-background-white-ter" />
         <div className="loader" />
       </div>

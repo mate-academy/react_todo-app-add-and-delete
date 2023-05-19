@@ -5,17 +5,17 @@ import { Filter } from '../../types/FilterEnum';
 interface Props {
   itemsCount: number;
   selectedFilter: Filter;
-  showClearAllButton: boolean;
+  isDisable: boolean;
   onChange: (filter: Filter) => void;
-  deleteAllCompleted: () => void;
+  onDeleteCompleted: () => void;
 }
 
 export const BottomBar: FC<Props> = memo(({
   itemsCount,
   selectedFilter,
-  showClearAllButton,
+  isDisable,
   onChange,
-  deleteAllCompleted,
+  onDeleteCompleted,
 }) => {
   const handleClick = (
     event: React.MouseEvent<HTMLAnchorElement, MouseEvent>,
@@ -65,8 +65,8 @@ export const BottomBar: FC<Props> = memo(({
       <button
         type="button"
         className="todoapp__clear-completed"
-        style={{ display: showClearAllButton ? undefined : 'none' }}
-        onClick={() => deleteAllCompleted()}
+        style={{ display: isDisable ? undefined : 'none' }}
+        onClick={() => onDeleteCompleted()}
       >
         Clear completed
       </button>

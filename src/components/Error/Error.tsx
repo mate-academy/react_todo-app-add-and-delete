@@ -2,27 +2,13 @@
 import classNames from 'classnames';
 import { FC } from 'react';
 import { ErrorMessage } from '../../types/ErrorEnum';
+import { renderSwitch } from '../../utils/errorUtils';
 
 interface Props {
   hasError: boolean;
   error: ErrorMessage;
   onClose: () => void;
 }
-
-const renderSwitch = (err: ErrorMessage) => {
-  switch (err) {
-    case ErrorMessage.ADD:
-      return ErrorMessage.ADD;
-    case ErrorMessage.EMPTY:
-      return ErrorMessage.EMPTY;
-    case ErrorMessage.SERVER:
-      return ErrorMessage.SERVER;
-    case ErrorMessage.DELETE:
-      return ErrorMessage.DELETE;
-    default:
-      return ErrorMessage.NONE;
-  }
-};
 
 export const Error: FC<Props> = (
   {

@@ -5,18 +5,18 @@ import { TodoItem } from '../TodoItem';
 interface Props {
   todos: Todo[];
   tempTodo: Todo | null;
-  idOfDeletedTodo: number | null;
+  deletedTodoIds: number | null;
   completedTodosID: number[] | null;
-  deleteTodo: (id: number) => void;
+  onDelete: (id: number) => void;
 }
 
 export const TodoList: FC<Props> = (
   {
     todos,
     tempTodo,
-    idOfDeletedTodo,
+    deletedTodoIds,
     completedTodosID,
-    deleteTodo,
+    onDelete,
   },
 ) => {
   return (
@@ -25,17 +25,18 @@ export const TodoList: FC<Props> = (
         <TodoItem
           todo={todo}
           key={todo.id}
-          deleteTodo={deleteTodo}
+          deleteTodo={onDelete}
           completedTodosID={completedTodosID}
-          idOfDeletedTodo={idOfDeletedTodo}
+          idOfDeletedTodo={deletedTodoIds}
         />
       ))}
+
       {tempTodo && (
         <TodoItem
           todo={tempTodo}
-          deleteTodo={deleteTodo}
+          deleteTodo={onDelete}
           completedTodosID={completedTodosID}
-          idOfDeletedTodo={idOfDeletedTodo}
+          idOfDeletedTodo={deletedTodoIds}
         />
       )}
     </section>

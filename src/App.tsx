@@ -103,7 +103,7 @@ export const App: FC = () => {
     });
   }, [todos]);
 
-  const isCompletedTodos = useCallback(() => {
+  const isCompletedTodos = useMemo(() => {
     return todos.some(({ completed }) => completed);
   }, [todos]);
 
@@ -157,14 +157,14 @@ export const App: FC = () => {
       <h1 className="todoapp__title">todos</h1>
 
       <div className="todoapp__content">
-        <TodoForm addTodo={addTodo} tempTodo={tempTodo} />
+        <TodoForm onAdd={addTodo} todo={tempTodo} />
 
         {!!visibleTodos.length && (
           <TodoList
             todos={visibleTodos}
             tempTodo={tempTodo}
-            deleteTodo={deleteTodo}
-            idOfDeletedTodo={idOfDeletedTodo}
+            onDelete={deleteTodo}
+            deletedTodoIds={idOfDeletedTodo}
             completedTodosID={completedTodosID}
           />
         ) }
@@ -174,8 +174,8 @@ export const App: FC = () => {
             itemsCount={countOfActiveTodos}
             selectedFilter={filterOfTodo}
             onChange={handleSelect}
-            deleteAllCompleted={deleteAllCompleted}
-            showClearAllButton={isCompletedTodos()}
+            onDeleteCompleted={deleteAllCompleted}
+            isDisable={isCompletedTodos}
           />
         ) }
       </div>
