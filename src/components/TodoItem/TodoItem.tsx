@@ -1,7 +1,6 @@
-import { FC, useState } from 'react';
+import React, { FC, useState } from 'react';
 import cn from 'classnames';
 import { Todo } from '../../types/Todo';
-import React from 'react'
 
 interface Props {
   todo: Todo,
@@ -9,23 +8,22 @@ interface Props {
   deleteTodo?: (todo: Todo) => void,
 }
 
-export const TodoItem: FC<Props> = React.memo(({ 
+export const TodoItem: FC<Props> = React.memo(({
   todo,
   deleteTodo = () => {},
-  todoId 
+  todoId,
 }) => {
   const { completed, title } = todo;
   const isLoad = todo.id === todoId;
   const [isLoading, setIsLoading] = useState(isLoad);
 
-  const handeleDelete  = async () => {
-     setIsLoading(true);
+  const handeleDelete = async () => {
+    setIsLoading(true);
 
-     await deleteTodo(todo);
+    await deleteTodo(todo);
 
-     setIsLoading(false);
-  }
-  
+    setIsLoading(false);
+  };
 
   return (
     <div className={cn('todo', {
@@ -50,7 +48,7 @@ export const TodoItem: FC<Props> = React.memo(({
       </button>
 
       <div className={cn('modal overlay', {
-        'is-active': isLoading
+        'is-active': isLoading,
       })}
       >
         <div className="modal-background has-background-white-ter" />

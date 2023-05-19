@@ -1,4 +1,4 @@
-import React, { FC, memo, useCallback, useState } from 'react';
+/* import React, { FC, memo, useCallback, useState } from 'react';
 import { Todo } from '../../types/Todo';
 import { TodoData } from '../../types/TodoData'
 import { ErrorsType } from '../../types/ErrorsType'
@@ -61,4 +61,4 @@ function displayError(EMPTY: ErrorsType) {
 function setTempTodo(arg0: { id: number; title: string; userId: number; completed: boolean }) {
   throw new Error('Function not implemented.')
 }
-
+*/
