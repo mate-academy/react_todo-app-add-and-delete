@@ -1,5 +1,5 @@
 /* eslint-disable jsx-a11y/control-has-associated-label */
-import React, { FC, useEffect } from 'react';
+import React, { FC, useCallback, useEffect } from 'react';
 
 interface Props {
   error: string;
@@ -10,12 +10,16 @@ export const ErrorComponent: FC<Props> = React.memo(({
   error,
   onError,
 }) => {
-  useEffect(() => {
-    const timeoutId = setTimeout(() => {
+  const waitErrorOff = useCallback(() => {
+    setTimeout(() => {
       onError('');
     }, 3000);
+  }, []);
 
-    return clearTimeout(timeoutId);
+  useEffect(() => {
+    waitErrorOff();
+
+    return waitErrorOff();
   }, [error]);
 
   return (

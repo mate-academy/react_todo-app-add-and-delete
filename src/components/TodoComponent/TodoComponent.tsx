@@ -27,9 +27,7 @@ export const TodoComponent: FC<Props> = React.memo(({
         />
       </label>
 
-      <span
-        className="todo__title"
-      >
+      <span className="todo__title">
         {title}
       </span>
 
