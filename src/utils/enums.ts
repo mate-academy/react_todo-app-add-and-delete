@@ -4,7 +4,7 @@ export enum Filters {
   Completed = 'Completed',
 }
 
-export enum Errors {
+export enum TodoErrors {
   AddError = 'Unable to add a todo',
   UpdateError = 'Unable to update a todo',
   DeleteError = 'Unable to delete a todo',

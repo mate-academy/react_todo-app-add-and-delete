@@ -10,15 +10,15 @@ import { getAllTodos } from './api/todos';
 import { client } from './utils/fetchClient';
 import { Todo } from './types/Todo';
 import { UserWarning } from './UserWarning';
-import { Filters, Errors } from './utils/enums';
+import { Filters, TodoErrors } from './utils/enums';
 
 const USER_ID = 10306;
 
 export const App: React.FC = () => {
   const [todos, setTodos] = useState<Todo[]>([]);
-  const [selectedFilter, setSelectedFilter] = useState('All');
+  const [selectedFilter, setSelectedFilter] = useState<Filters>(Filters.All);
   const [hasError, setHasError] = useState(false);
-  const [errorMessage, setErrorMessage] = useState(Errors.NoErrors);
+  const [errorMessage, setErrorMessage] = useState(TodoErrors.NoErrors);
   const [todoTitle, setTodoTitle] = useState('');
   const [isLoading, setIsLoading] = useState(false);
   const [tempTodo, setTempTodo] = useState<Todo | null>(null);
@@ -35,14 +35,14 @@ export const App: React.FC = () => {
       .then(setTodos);
   }, []);
 
-  const handleFilterSelection = useCallback((value: string) => {
+  const handleFilterSelection = useCallback((value: Filters) => {
     setSelectedFilter(value);
-  }, [selectedFilter]);
+  }, []);
 
   const handleChangeInputValue = useCallback((value: string) => {
     setHasError(false);
     setTodoTitle(value);
-  }, [todoTitle]);
+  }, []);
 
   const handleAddTodo = async (event: FormEvent<HTMLFormElement>) => {
     setIsLoading(true);
@@ -50,7 +50,7 @@ export const App: React.FC = () => {
 
     if (!todoTitle) {
       setHasError(true);
-      setErrorMessage(Errors.TitleError);
+      setErrorMessage(TodoErrors.TitleError);
       delayErrorDisappear();
       setIsLoading(false);
 
@@ -76,7 +76,7 @@ export const App: React.FC = () => {
       setTodos(prevTodos => [...prevTodos, todoToAdd]);
     } catch {
       setHasError(true);
-      setErrorMessage(Errors.AddError);
+      setErrorMessage(TodoErrors.AddError);
       delayErrorDisappear();
     } finally {
       setTodoTitle('');
@@ -90,7 +90,7 @@ export const App: React.FC = () => {
       setTodos(prevTodos => prevTodos.filter(({ id }) => id !== todoId));
     } catch {
       setHasError(true);
-      setErrorMessage(Errors.DeleteError);
+      setErrorMessage(TodoErrors.DeleteError);
       delayErrorDisappear();
     } finally {
       setDeletingTodoId(null);
@@ -128,7 +128,7 @@ export const App: React.FC = () => {
         return completed;
 
       default:
-        return 0;
+        return false;
     }
   });
 
@@ -140,10 +140,8 @@ export const App: React.FC = () => {
 
       <div className="todoapp__content">
         <header className="todoapp__header">
-          {/* this buttons is active only if there are some active todos */}
           <button type="button" className="todoapp__toggle-all active" />
 
-          {/* Add a todo on form submit */}
           <form onSubmit={handleAddTodo}>
             <input
               type="text"
@@ -224,73 +222,14 @@ export const App: React.FC = () => {
               </div>
             </div>
           )}
-          {/* <div className="todo">
-            <label className="todo__status-label">
-              <input
-                type="checkbox"
-                className="todo__status"
-              />
-            </label>
-
-            <span className="todo__title">Not Completed Todo</span>
-            <button type="button" className="todo__remove">×</button>
-
-            <div className="modal overlay">
-              <div className="modal-background has-background-white-ter" />
-              <div className="loader" />
-            </div>
-          </div> */}
-
-          {/* This todo is being edited */}
-          {/* <div className="todo">
-            <label className="todo__status-label">
-              <input
-                type="checkbox"
-                className="todo__status"
-              />
-            </label> */}
-
-          {/* This form is shown instead of the title and remove button */}
-          {/* <form>
-            <input
-              type="text"
-              className="todo__title-field"
-              placeholder="Empty todo will be deleted"
-              value="Todo is being edited now"
-            />
-          </form>
-
-          <div className="modal overlay">
-            <div className="modal-background has-background-white-ter" />
-            <div className="loader" />
-          </div>
-        </div> */}
-
-          {/* This todo is in loadind state */}
-          {/* <div className="todo">
-            <label className="todo__status-label">
-              <input type="checkbox" className="todo__status" />
-            </label>
-
-            <span className="todo__title">Todo is being saved now</span>
-            <button type="button" className="todo__remove">×</button> */}
-
-          {/* 'is-active' class puts this modal on top of the todo */}
-          {/* <div className="modal overlay is-active">
-            <div className="modal-background has-background-white-ter" />
-            <div className="loader" />
-          </div>
-        </div> */}
         </section>
 
-        {/* Hide the footer if there are no todos */}
         {todos.length > 0 && (
           <footer className="todoapp__footer">
             <span className="todo-count">
               {`${visibleTodos.length} items left`}
             </span>
 
-            {/* Active filter should have a 'selected' class */}
             <nav className="filter">
               <a
                 href="#/"
@@ -326,7 +265,6 @@ export const App: React.FC = () => {
               </a>
             </nav>
 
-            {/* don't show this button if there are no completed todos */}
             <button
               type="button"
               className={cn('todoapp__clear-completed',
@@ -339,8 +277,6 @@ export const App: React.FC = () => {
         )}
       </div>
 
-      {/* Notification is shown in case of any error */}
-      {/* Add the 'hidden' class to hide the message smoothly */}
       {hasError && (
         <div className={cn(
           'notification',
@@ -356,10 +292,6 @@ export const App: React.FC = () => {
             onClick={() => setHasError(false)}
           />
 
-          {/* show only one message at a time
-          (addError && 'Unable to add a todo')
-          || (deleteError && 'Unable to delete a todo')
-          || (updateError && 'Unable to update a todo') */}
           {(hasError && errorMessage)}
         </div>
       )}
