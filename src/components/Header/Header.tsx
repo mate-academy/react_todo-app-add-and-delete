@@ -14,6 +14,8 @@ interface Props {
   onAdd: (newTodo: Todo) => void;
   setError: (error: null | Errors) => void;
   setTempTodo: (newTodo: Todo | null) => void;
+  setIsLoading: (boolean: boolean) => void
+  loadTodos: () => void;
 }
 
 export const Header:FC<Props> = ({
@@ -21,6 +23,8 @@ export const Header:FC<Props> = ({
   onAdd,
   setError,
   setTempTodo,
+  setIsLoading,
+  loadTodos,
 }) => {
   const [query, setQuery] = useState('');
   const [isDisabled, setIsDisabled] = useState(false);
@@ -41,6 +45,7 @@ export const Header:FC<Props> = ({
     };
 
     setTempTodo({ ...todoData, id: 0 });
+    setIsLoading(true);
     try {
       setIsDisabled(true);
       const newTodo = await createTodo(todoData);
@@ -50,7 +55,9 @@ export const Header:FC<Props> = ({
     } catch {
       setError(Errors.Add);
     } finally {
+      loadTodos();
       setTempTodo(null);
+      setIsLoading(false);
       setIsDisabled(false);
     }
   }, [query]);

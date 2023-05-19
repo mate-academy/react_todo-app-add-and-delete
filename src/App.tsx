@@ -39,18 +39,6 @@ export const App: React.FC = () => {
     }, 3000);
   }
 
-  const addTodo = useCallback(async (todo: Todo) => {
-    try {
-      setIsLoading(true);
-      await createTodo(todo);
-    } catch {
-      setError(Errors.Add);
-    } finally {
-      loadTodos();
-      setIsLoading(false);
-    }
-  }, []);
-
   const deleteTodo = useCallback(async (todoId:number) => {
     setError(null);
     try {
@@ -84,9 +72,11 @@ export const App: React.FC = () => {
       <div className="todoapp__content">
         <Header
           todos={visibleTodos}
-          onAdd={addTodo}
+          onAdd={createTodo}
           setError={setError}
           setTempTodo={setTempTodo}
+          setIsLoading={setIsLoading}
+          loadTodos={loadTodos}
         />
 
         <TodoList
