@@ -17,11 +17,12 @@ export const Footer:FC<Props> = ({
   onDelete,
 }) => {
   const completedTodos = todos.filter(todo => todo.completed);
+  const activeTodos = todos.filter(todo => !todo.completed);
 
   return (
     <footer className="todoapp__footer">
       <span className="todo-count">
-        {`${todos.length} items left`}
+        {`${activeTodos.length} items left`}
       </span>
 
       <nav className="filter">

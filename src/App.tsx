@@ -38,6 +38,16 @@ export const App: React.FC = () => {
     setTodos(prevtodos => [...prevtodos, newTodo]);
   }, []);
 
+  const updateTodo = useCallback(async (updatingTodo: Todo) => {
+    setTodos(prevTodos => prevTodos.map((todo) => {
+      if (todo.id === updatingTodo.id) {
+        return updatingTodo;
+      }
+
+      return todo;
+    }));
+  }, []);
+
   const deleteTodo = useCallback(async (todoId:number) => {
     setError(null);
     try {
@@ -82,6 +92,7 @@ export const App: React.FC = () => {
           tempTodo={tempTodo}
           setTodos={setTodos}
           setError={setError}
+          onUpdate={updateTodo}
         />
 
         {todos.length > 0 && (

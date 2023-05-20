@@ -9,6 +9,7 @@ interface Props {
   tempTodo: Todo | null;
   setTodos: Dispatch<SetStateAction<Todo[]>>;
   setError:(error: Errors) => void;
+  onUpdate:(Todo: Todo) => void;
 }
 
 export const TodoList: FC<Props> = ({
@@ -16,6 +17,7 @@ export const TodoList: FC<Props> = ({
   tempTodo,
   setTodos,
   setError,
+  onUpdate,
 }) => (
   <section className="todoapp__main">
     <TransitionGroup>
@@ -30,6 +32,7 @@ export const TodoList: FC<Props> = ({
             key={todo.id}
             setTodos={setTodos}
             setError={setError}
+            onUpdate={onUpdate}
           />
         </CSSTransition>
       ))}
@@ -44,6 +47,7 @@ export const TodoList: FC<Props> = ({
             todo={tempTodo}
             setTodos={setTodos}
             setError={setError}
+            onUpdate={onUpdate}
             tempTodoId={tempTodo.id}
           />
         </CSSTransition>

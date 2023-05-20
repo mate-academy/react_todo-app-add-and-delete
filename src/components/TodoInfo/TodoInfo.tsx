@@ -1,33 +1,37 @@
 import {
+  ChangeEvent,
   Dispatch,
   FC,
   SetStateAction,
+  useCallback,
   useState,
 } from 'react';
 import classNames from 'classnames';
 import { Todo } from '../../types/Todo';
-import { removeTodo } from '../../api/todos';
+import { patchTodo, removeTodo } from '../../api/todos';
 import { Errors } from '../../utils/enums';
 
 interface Props {
   todo: Todo;
   setTodos: Dispatch<SetStateAction<Todo[]>>;
   setError:(error:Errors) => void;
-  tempTodoId?: number
+  onUpdate:(Todo: Todo) => void;
+  tempTodoId?: number;
 }
 
 export const TodoInfo:FC<Props> = ({
   todo,
   setTodos,
   setError,
+  onUpdate,
   tempTodoId,
 }) => {
   const {
     completed,
     title,
+    id,
   } = todo;
 
-  // const [isTodoDeleting, setIsTodoDeleting] = useState(false);
   const [isLoading, setIsLoading] = useState(tempTodoId === todo.id);
 
   const handleTodoDelete = () => {
@@ -47,6 +51,29 @@ export const TodoInfo:FC<Props> = ({
       });
   };
 
+  const handleTodoUpdate = useCallback(async (
+    event: ChangeEvent<HTMLInputElement>,
+  ) => {
+    event?.preventDefault();
+
+    const todoData = {
+      ...todo,
+      completed: event.target.checked,
+    };
+
+    try {
+      setIsLoading(true);
+
+      const updatedTodo = await patchTodo(id, todoData);
+
+      onUpdate(updatedTodo);
+    } catch {
+      setError(Errors.Update);
+    }
+
+    setIsLoading(false);
+  }, [completed]);
+
   return (
     <div
       className={classNames('todo',
@@ -58,6 +85,7 @@ export const TodoInfo:FC<Props> = ({
           type="checkbox"
           className="todo__status"
           checked={completed}
+          onChange={handleTodoUpdate}
         />
       </label>
 

@@ -34,5 +34,9 @@ export const ErrorNotification:FC<Props> = ({
     {hasError === Errors.Delete && (
       <p>{Errors.Delete}</p>
     )}
+
+    {hasError === Errors.Update && (
+      <p>{Errors.Update}</p>
+    )}
   </div>
 );
