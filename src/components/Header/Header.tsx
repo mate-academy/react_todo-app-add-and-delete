@@ -1,24 +1,24 @@
-import { FC, FormEvent, useState } from 'react';
-import { TodoError } from '../../types/TodoError';
-import { Todo } from '../../types/Todo';
+import React, { FC, useEffect, useState } from 'react';
 import { USER_ID } from '../../consts/consts';
+import { Todo } from '../../types/Todo';
+import { TodoError } from '../../types/TodoError';
 
 interface Props {
-  onAddTodo: (todo: Todo) => void;
-  onError: (message: TodoError) => void;
+  handleError: (message: TodoError) => void;
+  onAddTodo: (todoData: Todo) => void;
 }
 
-export const Header: FC<Props> = ({ onAddTodo, onError }) => {
-  const [title, setTitle] = useState('');
+export const Header: FC<Props> = ({
+  handleError,
+  onAddTodo,
+}) => {
   const [isInputDisabled, setIsInputDisabled] = useState(false);
+  const [title, setTitle] = useState('');
 
-  const handleSubmit = (event: FormEvent<HTMLFormElement>) => {
+  const handleSubmit = (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
-
     if (!title) {
-      onError(TodoError.EMPTY_TITLE);
-
-      return;
+      handleError(TodoError.EMPTY_TITLE);
     }
 
     const tempTodo: Todo = {
@@ -30,27 +30,30 @@ export const Header: FC<Props> = ({ onAddTodo, onError }) => {
 
     setIsInputDisabled(true);
     onAddTodo(tempTodo);
-    setIsInputDisabled(false);
-    setTitle('');
   };
+
+  useEffect(() => {
+    if (isInputDisabled) {
+      setIsInputDisabled(false);
+      setTitle('');
+    }
+  }, [isInputDisabled]);
 
   return (
     <header className="todoapp__header">
-      {/* this buttons is active only if there are some active todos */}
       {/* eslint-disable-next-line jsx-a11y/control-has-associated-label */}
       <button
         type="button"
         className="todoapp__toggle-all active"
       />
 
-      {/* Add a todo on form submit */}
       <form onSubmit={handleSubmit}>
         <input
           type="text"
           className="todoapp__new-todo"
           placeholder="What needs to be done?"
           value={title}
-          onChange={(event) => setTitle(event.target.value)}
+          onChange={event => setTitle(event.target.value)}
           disabled={isInputDisabled}
         />
       </form>

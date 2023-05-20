@@ -1,4 +1,4 @@
-import { FC } from 'react';
+import { FC, useMemo } from 'react';
 import { Todo } from '../../types/Todo';
 import { SortTypes } from '../../types/SortTypes';
 import { Nav } from '../Nav';
@@ -16,7 +16,9 @@ export const Footer: FC<Props> = ({
   activeFilter,
   onClearCompletedTodos,
 }) => {
-  const activeTodos = todos.filter(todo => !todo.completed).length;
+  const activeTodos = useMemo(() => (
+    todos.filter(todo => !todo.completed).length
+  ), [todos]);
 
   return (
     <>

@@ -4,17 +4,14 @@ import { Todo } from '../../types/Todo';
 
 interface Props {
   tempTodo: Todo;
-  todoId: number | null;
 }
 
 export const TempTodo: FC<Props> = ({
   tempTodo,
-  todoId,
 }) => {
   const {
     title,
     completed,
-    id,
   } = tempTodo;
 
   return (
@@ -37,9 +34,7 @@ export const TempTodo: FC<Props> = ({
 
       {/* overlay will cover the todo while it is being updated */}
       <div
-        className={cn('modal overlay', {
-          'is-active': todoId === id,
-        })}
+        className={cn('modal overlay is-active')}
       >
         <div className="modal-background has-background-white-ter" />
         <div className="loader" />

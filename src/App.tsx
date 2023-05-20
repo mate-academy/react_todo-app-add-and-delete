@@ -33,15 +33,16 @@ export const App: FC = () => {
   };
 
   const loadTodos = useCallback(async () => {
+    setIsloading(true);
     try {
-      setIsloading(true);
       const response = await getTodos(USER_ID);
 
       setTodos(response);
-      setIsloading(false);
     } catch (error: unknown) {
       handleError(TodoError.LOAD);
     }
+
+    setIsloading(false);
   }, []);
 
   const addTodo = useCallback(async (todoData: Todo) => {
@@ -91,11 +92,13 @@ export const App: FC = () => {
   const vissibleTodos = todos.filter((todo) => {
     switch (activeFilter) {
       case SortTypes.Active:
-      case SortTypes.AllCompleted:
         return !todo.completed;
 
       case SortTypes.Completed:
         return todo.completed;
+
+      case SortTypes.All:
+        return true;
 
       default: return true;
     }
@@ -103,7 +106,7 @@ export const App: FC = () => {
 
   useEffect(() => {
     loadTodos();
-  }, []);
+  }, [loadTodos]);
 
   if (!USER_ID) {
     return <UserWarning />;
@@ -116,18 +119,18 @@ export const App: FC = () => {
       <div className="todoapp__content">
 
         <Header
+          handleError={handleError}
           onAddTodo={addTodo}
-          onError={handleError}
         />
 
-        {isLoading && <Loader />}
+        {isLoading && !todos.length && <Loader />}
         <TodoList
           todos={vissibleTodos}
           isEdited={isEditedTodo}
-          onDelete={deleteTodo}
           todoId={todoId}
-          setTodoId={setTodoId}
           tempTodo={tempTodo}
+          onDelete={deleteTodo}
+          setTodoId={setTodoId}
         />
 
         {todos.length > 0 && (

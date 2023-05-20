@@ -17,9 +17,9 @@ export const TodoItem: FC<Props> = ({
 }) => {
   const { id, title, completed } = todo;
 
-  const handleDelete = (selectedTodoId: number) => {
-    setTodoId(selectedTodoId);
-    onDelete(selectedTodoId);
+  const handleDelete = () => {
+    setTodoId(id);
+    onDelete(id);
   };
 
   return (
@@ -32,6 +32,7 @@ export const TodoItem: FC<Props> = ({
           type="checkbox"
           className="todo__status"
           checked={completed}
+          readOnly
         />
       </label>
 
@@ -39,7 +40,7 @@ export const TodoItem: FC<Props> = ({
       <button
         type="button"
         className="todo__remove"
-        onClick={() => handleDelete(id)}
+        onClick={handleDelete}
       >
         ×
       </button>
