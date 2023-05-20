@@ -1,19 +1,19 @@
 import { FC } from 'react';
 import classNames from 'classnames';
 import { Todo } from '../../types/Todo';
-import { Sort } from '../../utils/enums';
+import { FilterType } from '../../utils/enums';
 
 interface Props {
   todos: Todo[];
-  filter: Sort;
-  setSort: (sort: Sort) => void;
+  filter: FilterType;
+  onChangeSort: (sort: FilterType) => void;
   onDelete: (todoId: number) => void;
 }
 
 export const Footer:FC<Props> = ({
   todos,
   filter,
-  setSort,
+  onChangeSort,
   onDelete,
 }) => {
   const completedTodos = todos.filter(todo => todo.completed);
@@ -29,7 +29,7 @@ export const Footer:FC<Props> = ({
           href="#/"
           className={classNames('filter__link',
             { selected: filter === 'All' })}
-          onClick={() => setSort(Sort.All)}
+          onClick={() => onChangeSort(FilterType.All)}
         >
           All
         </a>
@@ -38,7 +38,7 @@ export const Footer:FC<Props> = ({
           href="#/active"
           className={classNames('filter__link',
             { selected: filter === 'Active' })}
-          onClick={() => setSort(Sort.Active)}
+          onClick={() => onChangeSort(FilterType.Active)}
         >
           Active
         </a>
@@ -47,7 +47,7 @@ export const Footer:FC<Props> = ({
           href="#/completed"
           className={classNames('filter__link',
             { selected: filter === 'Completed' })}
-          onClick={() => setSort(Sort.Completed)}
+          onClick={() => onChangeSort(FilterType.Completed)}
         >
           Completed
         </a>

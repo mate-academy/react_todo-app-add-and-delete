@@ -1,4 +1,3 @@
-/* eslint-disable jsx-a11y/control-has-associated-label */
 import {
   FC, FormEvent, useCallback, useState,
 } from 'react';
@@ -6,15 +5,13 @@ import { Todo } from '../../types/Todo';
 import { Errors } from '../../utils/enums';
 import { TodoData } from '../../types/TodoData';
 import { createTodo } from '../../api/todos';
-
-const USER_ID = 10284;
+import { USER_ID } from '../../utils/UserId';
 
 interface Props {
   todos: Todo[];
   onAdd: (newTodo: Todo) => void;
   setError: (error: null | Errors) => void;
   setTempTodo: (newTodo: Todo | null) => void;
-  setIsLoading: (boolean: boolean) => void
   loadTodos: () => void;
 }
 
@@ -23,7 +20,6 @@ export const Header:FC<Props> = ({
   onAdd,
   setError,
   setTempTodo,
-  setIsLoading,
   loadTodos,
 }) => {
   const [query, setQuery] = useState('');
@@ -45,7 +41,6 @@ export const Header:FC<Props> = ({
     };
 
     setTempTodo({ ...todoData, id: 0 });
-    setIsLoading(true);
     try {
       setIsDisabled(true);
       const newTodo = await createTodo(todoData);
@@ -57,23 +52,27 @@ export const Header:FC<Props> = ({
     } finally {
       loadTodos();
       setTempTodo(null);
-      setIsLoading(false);
       setIsDisabled(false);
     }
-  }, [query]);
+  }, [
+    query,
+    setError,
+    setTempTodo,
+    loadTodos,
+    onAdd,
+  ]);
 
   return (
     <header className="todoapp__header">
       {todos.length > 0 && (
         <button
+          aria-label="button"
           type="button"
           className="todoapp__toggle-all active"
         />
       )}
 
       <form
-        action="/api/todos"
-        method="POST"
         onSubmit={handleSubmit}
       >
         <input

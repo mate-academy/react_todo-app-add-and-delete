@@ -1,27 +1,22 @@
-/* eslint-disable jsx-a11y/control-has-associated-label */
 import React, { useState, useEffect, useCallback } from 'react';
 import { UserWarning } from './UserWarning';
-import { createTodo, getTodos, removeTodo } from './api/todos';
 import { Todo } from './types/Todo';
-import { Errors, Sort } from './utils/enums';
+import { Errors, FilterType } from './utils/enums';
 import { TodoList } from './components/TodoList/TodoList';
 import { Footer } from './components/Footer/Footer';
 // eslint-disable-next-line max-len
 import { ErrorNotification } from './components/ErrorNotification/ErrorNotification';
-// eslint-disable-next-line import/no-cycle
 import { Header } from './components/Header';
-
-export const USER_ID = 10284;
+import { getTodos, removeTodo } from './api/todos';
+import { USER_ID } from './utils/UserId';
 
 export const App: React.FC = () => {
   const [todos, setTodos] = useState<Todo[]>([]);
   const [tempTodo, setTempTodo] = useState<Todo | null>(null);
 
-  const [sort, setSort] = useState(Sort.All);
+  const [filter, setFilter] = useState(FilterType.All);
 
-  const [isLoading, setIsLoading] = useState(false);
-
-  const [Error, setError] = useState<Errors | null>(null);
+  const [error, setError] = useState<Errors | null>(null);
 
   const loadTodos = useCallback(async () => {
     try {
@@ -33,11 +28,15 @@ export const App: React.FC = () => {
     }
   }, []);
 
-  if (Error) {
+  if (error) {
     setTimeout(() => {
       setError(null);
     }, 3000);
   }
+
+  const addTodo = useCallback(async (newTodo: Todo) => {
+    setTodos(prevtodos => [...prevtodos, newTodo]);
+  }, []);
 
   const deleteTodo = useCallback(async (todoId:number) => {
     setError(null);
@@ -55,10 +54,10 @@ export const App: React.FC = () => {
   }, []);
 
   const visibleTodos = todos.filter(todo => {
-    switch (sort) {
-      case Sort.Active: return !todo.completed;
-      case Sort.Completed: return todo.completed;
-      default: return todos;
+    switch (filter) {
+      case FilterType.Active: return !todo.completed;
+      case FilterType.Completed: return todo.completed;
+      default: return todo;
     }
   });
 
@@ -72,10 +71,9 @@ export const App: React.FC = () => {
       <div className="todoapp__content">
         <Header
           todos={visibleTodos}
-          onAdd={createTodo}
+          onAdd={addTodo}
           setError={setError}
           setTempTodo={setTempTodo}
-          setIsLoading={setIsLoading}
           loadTodos={loadTodos}
         />
 
@@ -84,23 +82,22 @@ export const App: React.FC = () => {
           tempTodo={tempTodo}
           setTodos={setTodos}
           setError={setError}
-          isLoading={isLoading}
         />
 
         {todos.length > 0 && (
           <Footer
             todos={visibleTodos}
-            filter={sort}
-            setSort={setSort}
+            filter={filter}
+            onChangeSort={setFilter}
             onDelete={deleteTodo}
           />
         )}
       </div>
 
-      {Error && (
+      {error && (
         <ErrorNotification
-          setHasError={setError}
-          hasError={Error}
+          onChangeError={setError}
+          hasError={error}
         />
       )}
     </div>

@@ -13,24 +13,25 @@ interface Props {
   todo: Todo;
   setTodos: Dispatch<SetStateAction<Todo[]>>;
   setError:(error:Errors) => void;
-  isLoading: boolean;
+  tempTodoId?: number
 }
 
 export const TodoInfo:FC<Props> = ({
   todo,
   setTodos,
   setError,
-  isLoading,
+  tempTodoId,
 }) => {
   const {
     completed,
     title,
   } = todo;
 
-  const [isTodoDeleting, setIsTodoDeleting] = useState(false);
+  // const [isTodoDeleting, setIsTodoDeleting] = useState(false);
+  const [isLoading, setIsLoading] = useState(tempTodoId === todo.id);
 
   const handleTodoDelete = () => {
-    setIsTodoDeleting(true);
+    setIsLoading(true);
 
     removeTodo(todo.id)
       .then(() => {
@@ -42,7 +43,7 @@ export const TodoInfo:FC<Props> = ({
         setError(Errors.Delete);
       })
       .finally(() => {
-        setIsTodoDeleting(false);
+        setIsLoading(false);
       });
   };
 
@@ -72,7 +73,7 @@ export const TodoInfo:FC<Props> = ({
 
       <div
         className={classNames('modal', 'overlay', {
-          'is-active': isTodoDeleting || isLoading,
+          'is-active': isLoading,
         })}
       >
         <div

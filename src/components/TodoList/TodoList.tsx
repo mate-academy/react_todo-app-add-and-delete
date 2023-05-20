@@ -9,7 +9,6 @@ interface Props {
   tempTodo: Todo | null;
   setTodos: Dispatch<SetStateAction<Todo[]>>;
   setError:(error: Errors) => void;
-  isLoading: boolean;
 }
 
 export const TodoList: FC<Props> = ({
@@ -17,42 +16,38 @@ export const TodoList: FC<Props> = ({
   tempTodo,
   setTodos,
   setError,
-  isLoading,
-}) => {
-  return (
-    <section className="todoapp__main">
-      <TransitionGroup>
-        {todos.map((todo) => (
-          <CSSTransition
+}) => (
+  <section className="todoapp__main">
+    <TransitionGroup>
+      {todos.map((todo) => (
+        <CSSTransition
+          key={todo.id}
+          timeout={300}
+          classNames="item"
+        >
+          <TodoInfo
+            todo={todo}
             key={todo.id}
-            timeout={300}
-            classNames="item"
-          >
-            <TodoInfo
-              todo={todo}
-              key={todo.id}
-              setTodos={setTodos}
-              setError={setError}
-              isLoading={isLoading}
-            />
-          </CSSTransition>
-        ))}
+            setTodos={setTodos}
+            setError={setError}
+          />
+        </CSSTransition>
+      ))}
 
-        {tempTodo && (
-          <CSSTransition
-            key={0}
-            timeout={300}
-            classNames="temp-item"
-          >
-            <TodoInfo
-              todo={tempTodo}
-              setTodos={setTodos}
-              setError={setError}
-              isLoading={isLoading}
-            />
-          </CSSTransition>
-        )}
-      </TransitionGroup>
-    </section>
-  );
-};
+      {tempTodo && (
+        <CSSTransition
+          key={0}
+          timeout={300}
+          classNames="temp-item"
+        >
+          <TodoInfo
+            todo={tempTodo}
+            setTodos={setTodos}
+            setError={setError}
+            tempTodoId={tempTodo.id}
+          />
+        </CSSTransition>
+      )}
+    </TransitionGroup>
+  </section>
+);
