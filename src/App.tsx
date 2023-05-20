@@ -38,14 +38,23 @@ export const App: React.FC = () => {
     });
   }, [todos, filterBy]);
 
-  const loadTodos = async () => {
+  const displayError = useCallback((error: ErrorsType) => {
+    setErrorType(error);
+    setIsError(true);
+  }, []);
+
+  const hideError = useCallback(() => {
     setIsError(false);
+  }, []);
+
+  const loadTodos = async () => {
+    hideError();
     try {
       const todosFromServer = await getTodos(USER_ID);
 
       setTodos(todosFromServer);
     } catch (error) {
-      setIsError(true);
+      displayError(ErrorsType.DOWNLOAD);
     }
   };
 
@@ -69,7 +78,7 @@ export const App: React.FC = () => {
       await deleteTodo(todo.id);
       loadTodos();
     } catch {
-      setErrorType(ErrorsType.DELETE);
+      displayError(ErrorsType.DELETE);
     } finally {
       setTempTodo(null);
     }
@@ -79,7 +88,7 @@ export const App: React.FC = () => {
     const completedTodosList = todos.filter(todo => todo.completed);
 
     setIsDeletedCompleted(true);
-    setIsError(false);
+    hideError();
 
     try {
       const completedIds = await Promise.all(
@@ -90,16 +99,11 @@ export const App: React.FC = () => {
         return prevTodos.filter(({ id }) => !completedIds.includes(id));
       });
     } catch {
-      setErrorType(ErrorsType.DELETE);
+      displayError(ErrorsType.DELETE);
     } finally {
       setIsDeletedCompleted(false);
     }
   }, [todos]);
-
-  /*  const displayError = useCallback((error: ErrorsType) => {
-    setErrorType(error);
-    setIsError(true);
-  }, []); */
 
   const handleFormSubmit = useCallback(
     async (event: React.FormEvent<HTMLFormElement>) => {
@@ -134,10 +138,6 @@ export const App: React.FC = () => {
       setTempTodo(null);
     }, [title],
   );
-
-  const hideErrorMessage = useCallback(() => {
-    setIsError(false);
-  }, []);
 
   useEffect(() => {
     loadTodos();
@@ -197,7 +197,7 @@ export const App: React.FC = () => {
       {isError && (
         <Error
           isError={isError}
-          onHide={hideErrorMessage}
+          onHide={hideError}
           errorType={errorType}
         />
       )}

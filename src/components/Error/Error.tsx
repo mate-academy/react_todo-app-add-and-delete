@@ -1,5 +1,4 @@
-import { FC } from 'react';
-import cn from 'classnames';
+import { FC, useEffect } from 'react';
 import { ErrorsType } from '../../types/ErrorsType';
 
 interface Props {
@@ -13,19 +12,18 @@ export const Error: FC<Props> = ({
   onHide,
   errorType,
 }) => {
-  /* const errorMessage= useMemo(() => {
-    switch (errorType) {
-      case errorType.
-      default:
-        return '';
-    }
-  }, [errorType]); */
+  useEffect(() => {
+    const errorTimeOut = setTimeout(() => onHide(), 3000);
+
+    return () => {
+      clearTimeout(errorTimeOut);
+    };
+  }, [isError]);
 
   return (
     <div
-      className={cn('notification is-danger is-light has-text-weight-normal', {
-        hidden: !isError,
-      })}
+      className="notification is-danger is-light has-text-weight-normal"
+
     >
       <button
         type="button"
