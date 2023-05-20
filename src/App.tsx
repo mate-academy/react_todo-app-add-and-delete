@@ -22,6 +22,7 @@ export const App: React.FC = () => {
   const [errorType, setErrorType] = useState<ErrorsType>(ErrorsType.NONE);
   const [tempTodo, setTempTodo] = useState<Todo | null>(null);
   const [title, setTitle] = useState('');
+  const [isDeletedCompleted, setIsDeletedCompleted] = useState(false);
 
   const visibleTodos = useMemo(() => {
     return todos.filter(todo => {
@@ -73,6 +74,27 @@ export const App: React.FC = () => {
       setTempTodo(null);
     }
   }, []);
+
+  const deleteCompleted = useCallback(async () => {
+    const completedTodosList = todos.filter(todo => todo.completed);
+
+    setIsDeletedCompleted(true);
+    setIsError(false);
+
+    try {
+      const completedIds = await Promise.all(
+        completedTodosList.map(({ id }) => deleteTodo(id).then(() => id)),
+      );
+
+      setTodos((prevTodos) => {
+        return prevTodos.filter(({ id }) => !completedIds.includes(id));
+      });
+    } catch {
+      setErrorType(ErrorsType.DELETE);
+    } finally {
+      setIsDeletedCompleted(false);
+    }
+  }, [todos]);
 
   /*  const displayError = useCallback((error: ErrorsType) => {
     setErrorType(error);
@@ -155,6 +177,7 @@ export const App: React.FC = () => {
             todos={visibleTodos}
             tempTodo={tempTodo}
             deleteTodo={DeleteTodo}
+            isDeletedCompleted={isDeletedCompleted}
           />
         )}
 
@@ -165,6 +188,7 @@ export const App: React.FC = () => {
             filter={filterBy}
             completedTodos={completedTodos}
             setFilter={setFilterBy}
+            deleteCompleted={deleteCompleted}
           />
         )}
 

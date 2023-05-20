@@ -6,10 +6,16 @@ import { TodoItem } from '../TodoItem';
 interface Props {
   todos: Todo[],
   deleteTodo: (todo: Todo) => void,
+  isDeletedCompleted: boolean,
   tempTodo: Todo | null,
 }
 
-export const TodoList: FC<Props> = ({ todos, deleteTodo, tempTodo }) => {
+export const TodoList: FC<Props> = ({
+  todos,
+  deleteTodo,
+  isDeletedCompleted,
+  tempTodo,
+}) => {
   const isDelete = tempTodo?.id === 0;
 
   return (
@@ -19,6 +25,7 @@ export const TodoList: FC<Props> = ({ todos, deleteTodo, tempTodo }) => {
           todo={todo}
           key={todo.id}
           deleteTodo={deleteTodo}
+          isDeleted={todo.completed && isDeletedCompleted}
         />
       ))}
 
@@ -26,6 +33,7 @@ export const TodoList: FC<Props> = ({ todos, deleteTodo, tempTodo }) => {
         <TodoItem
           todo={tempTodo}
           todoId={tempTodo.id}
+          isDeleted
         />
       )}
     </section>

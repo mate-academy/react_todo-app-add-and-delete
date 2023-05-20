@@ -5,11 +5,13 @@ import { Todo } from '../../types/Todo';
 interface Props {
   todo: Todo,
   todoId?: number,
+  isDeleted: boolean,
   deleteTodo?: (todo: Todo) => void,
 }
 
 export const TodoItem: FC<Props> = React.memo(({
   todo,
+  isDeleted,
   deleteTodo = () => {},
   todoId,
 }) => {
@@ -48,7 +50,7 @@ export const TodoItem: FC<Props> = React.memo(({
       </button>
 
       <div className={cn('modal overlay', {
-        'is-active': isLoading,
+        'is-active': isLoading || isDeleted,
       })}
       >
         <div className="modal-background has-background-white-ter" />

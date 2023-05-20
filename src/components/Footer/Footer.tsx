@@ -9,6 +9,7 @@ interface Props {
   filter: Filter,
   completedTodos: number,
   setFilter: (filter: Filter) => void,
+  deleteCompleted: () => void,
 }
 
 export const Footer: FC<Props> = ({
@@ -17,6 +18,7 @@ export const Footer: FC<Props> = ({
   filter,
   completedTodos,
   setFilter,
+  deleteCompleted,
 }) => {
   return (
     <footer className={cn('todoapp__footer', {
@@ -57,14 +59,15 @@ export const Footer: FC<Props> = ({
         </a>
       </nav>
 
-      {/* don't show this button if there are no completed todos */}
-      <button
-        type="button"
-        className={cn('todoapp__clear-completed',
-          { hidden: !completedTodos })}
-      >
-        Clear completed
-      </button>
+      {completedTodos > 0 && (
+        <button
+          type="button"
+          className="todoapp__clear-completed"
+          onClick={deleteCompleted}
+        >
+          Clear completed
+        </button>
+      )}
     </footer>
   );
 };
