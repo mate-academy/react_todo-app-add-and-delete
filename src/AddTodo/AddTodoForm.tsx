@@ -17,7 +17,7 @@ export const AddTodoForm: React.FC<Props> = ({
   const handleSubmit = (event: React.FormEvent) => {
     event.preventDefault();
 
-    if (!title) {
+    if (!title.trim()) {
       setIsCreatingError(true);
 
       return;
@@ -25,6 +25,7 @@ export const AddTodoForm: React.FC<Props> = ({
 
     const todoData = {
       title,
+      userId: 10397,
       completed: false,
     };
 
@@ -34,10 +35,8 @@ export const AddTodoForm: React.FC<Props> = ({
 
   return (
     <header className="todoapp__header">
-      {/* this buttons is active only if there are some active todos */}
       <button type="button" className="todoapp__toggle-all active" />
 
-      {/* Add a todo on form submit */}
       <form action="/api/users" method="POST" onSubmit={handleSubmit}>
         <input
           type="text"

@@ -36,6 +36,12 @@ export const App: React.FC = () => {
     }
   }, []);
 
+  const clearErrorAfterDelay = (setError: (arg: boolean) => void) => {
+    setTimeout(() => {
+      setError(false);
+    }, 3000);
+  };
+
   const addTodo = useCallback(async (todoData: TodoData) => {
     setIsCreatingError(false);
     setTempTodo(todoData);
@@ -67,7 +73,6 @@ export const App: React.FC = () => {
         setIsUpdatingError(true);
       }
 
-      setIsUpdatingError(false);
       loadTodos();
     }, [],
   );
@@ -84,7 +89,7 @@ export const App: React.FC = () => {
         setIsUpdatingError(true);
       }
 
-      setIsUpdatingError(false);
+      clearErrorAfterDelay(setIsUpdatingError);
       loadTodos();
     }, [],
   );
@@ -108,6 +113,18 @@ export const App: React.FC = () => {
         return true;
     }
   });
+
+  const handelingDeleteCompleted = () => {
+    const deleteComplete = todos.filter(todo => {
+      if (todo.completed) {
+        deleteTodo(todo.id);
+      }
+
+      return !todo.completed;
+    });
+
+    setTodos(deleteComplete);
+  };
 
   if (!USER_ID) {
     return <UserWarning />;
@@ -134,14 +151,12 @@ export const App: React.FC = () => {
 
         {isLoadingError && <TodoLoadingError />}
 
-        {/* Hide the footer if there are no todos */}
         {todos.length > 0 && (
           <footer className="todoapp__footer">
             <span className="todo-count">
-              {`${todos.length} items left`}
+              {`${todos.filter(todo => !todo.completed).length} items left`}
             </span>
 
-            {/* Active filter should have a 'selected' class */}
             <nav className="filter">
               <a
                 href="#/"
@@ -180,8 +195,11 @@ export const App: React.FC = () => {
               </a>
             </nav>
 
-            {/* don't show this button if there are no completed todos */}
-            <button type="button" className="todoapp__clear-completed">
+            <button
+              type="button"
+              className="todoapp__clear-completed"
+              onClick={handelingDeleteCompleted}
+            >
               Clear completed
             </button>
           </footer>

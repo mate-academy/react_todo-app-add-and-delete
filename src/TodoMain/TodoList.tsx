@@ -50,13 +50,6 @@ export const TodoList: React.FC<Props> = ({
               defaultChecked={tempTodo.completed}
             />
           </label>
-          {/* <form>
-                    <input
-                      type="text"
-                      className="todo__title-field"
-                      placeholder="Empty todo will be deleted"
-                    />
-                  </form> */}
           <span className="todo__title">
             {tempTodo.title}
           </span>

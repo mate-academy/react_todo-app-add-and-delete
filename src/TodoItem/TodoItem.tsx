@@ -98,7 +98,6 @@ export const TodoItem: React.FC<Props> = ({
           </button>
         </>
       )}
-      {/* overlay will cover the todo while it is being updated */}
       {todo.id === selected && <Loader />}
     </div>
   );
