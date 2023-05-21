@@ -2,16 +2,16 @@
 import {
   FC, useCallback, useEffect, useMemo, useState,
 } from 'react';
-import classNames from 'classnames';
 import { UserWarning } from './UserWarning';
 import { Todo } from './types/Todo';
-import { getTodos } from './api/todos';
+import { getTodos, removeTodo } from './api/todos';
 import { ErrorType } from './types/Error';
 import { TodoList } from './components/TodoList/TodoList';
 import { Header } from './components/Header/Header';
 import { Footer } from './components/Footer';
 import { Filter } from './types/FilterConditions';
 import { USER_ID } from './constants';
+import { ErrorNotification } from './components/ErrorNotification';
 
 export const App: FC = () => {
   const [todos, setTodos] = useState<Todo[]>([]);
@@ -30,10 +30,6 @@ export const App: FC = () => {
     }
   }, []);
 
-  useEffect(() => {
-    uploadTodos();
-  }, []);
-
   const filteredTodos = useMemo(() => {
     switch (filter) {
       case Filter.Active:
@@ -46,17 +42,39 @@ export const App: FC = () => {
     }
   }, [todos, filter]);
 
-  useEffect(() => {
-    const timerId = setTimeout(() => setError(ErrorType.None), 3000);
+  const handleClearCompletedClick = () => {
+    todos.forEach(async todo => {
+      if (!todo.completed) {
+        return;
+      }
 
-    return () => {
-      clearTimeout(timerId);
-    };
-  }, [error]);
-
-  const handleErrorNotification = () => {
-    setError(ErrorType.None);
+      try {
+        setProcessing(prev => [...prev, todo.id]);
+        await removeTodo(todo.id);
+        setTodos(prev => prev.filter(({ id }) => id !== todo.id));
+      } catch {
+        setError(ErrorType.Delete);
+      } finally {
+        setProcessing(prev => prev.filter(id => id !== todo.id));
+      }
+    });
   };
+
+  const deleteTodo = async (todoId: number) => {
+    try {
+      setProcessing(prev => [...prev, todoId]);
+      await removeTodo(todoId);
+      setTodos(prev => prev.filter(({ id }) => id !== todoId));
+    } catch {
+      setError(ErrorType.Delete);
+    } finally {
+      setProcessing(prev => prev.filter(id => id !== todoId));
+    }
+  };
+
+  useEffect(() => {
+    uploadTodos();
+  }, []);
 
   if (!USER_ID) {
     return <UserWarning />;
@@ -78,36 +96,20 @@ export const App: FC = () => {
           preparedTodos={filteredTodos}
           tempTodo={tempTodo}
           processing={processing}
-          onChangeTodos={setTodos}
-          onChangeError={setError}
-          onChangeProcessing={setProcessing}
+          onRemoveTodo={deleteTodo}
         />
 
         {todos.length && (
           <Footer
-            allTodos={todos}
+            todos={todos}
             filterCondition={filter}
             onChangeFilter={setFilter}
-            onChangeError={setError}
-            onChangeTodos={setTodos}
-            onChangeProcessing={setProcessing}
+            handleClearCompleted={handleClearCompletedClick}
           />
         )}
       </div>
 
-      <div className={classNames(
-        'notification is-danger is-light has-text-weight-normal', {
-          hidden: error === ErrorType.None,
-        },
-      )}
-      >
-        <button
-          type="button"
-          className="delete"
-          onClick={handleErrorNotification}
-        />
-        {error}
-      </div>
+      <ErrorNotification error={error} onChangeError={setError} />
     </div>
   );
 };

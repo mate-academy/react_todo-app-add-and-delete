@@ -1,36 +1,18 @@
 import { FC } from 'react';
 import classNames from 'classnames';
 import { Todo } from '../../types/Todo';
-import { ErrorType } from '../../types/Error';
-import { removeTodo } from '../../api/todos';
 
 interface Props {
   todo: Todo;
-  onChangeTodos: React.Dispatch<React.SetStateAction<Todo[]>>
-  onChangeError: React.Dispatch<React.SetStateAction<ErrorType>>
   isLoading: boolean;
-  onChangeProcessing: React.Dispatch<React.SetStateAction<number[]>>;
+  onRemoveTodo: (id: number) => void;
 }
 
 export const TodoTask: FC<Props> = ({
   todo,
   isLoading,
-  onChangeTodos,
-  onChangeError,
-  onChangeProcessing,
+  onRemoveTodo,
 }) => {
-  const handleRemoveTodo = async () => {
-    try {
-      onChangeProcessing(prev => [...prev, todo.id]);
-      await removeTodo(todo.id);
-      onChangeTodos(prev => prev.filter(item => item.id !== todo.id));
-    } catch {
-      onChangeError(ErrorType.Delete);
-    } finally {
-      onChangeProcessing(prev => prev.filter(item => item !== todo.id));
-    }
-  };
-
   return (
     <div
       className={classNames('todo', {
@@ -49,7 +31,7 @@ export const TodoTask: FC<Props> = ({
         <button
           type="button"
           className="todo__remove"
-          onClick={handleRemoveTodo}
+          onClick={() => onRemoveTodo?.(todo.id)}
         >
           ×
         </button>
