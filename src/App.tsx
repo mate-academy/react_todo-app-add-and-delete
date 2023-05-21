@@ -5,9 +5,9 @@ import { Triangle } from 'react-loader-spinner';
 import { UserWarning } from './UserWarning';
 import { addTodo, deleteTodo, getTodos } from './api/todos';
 import { Todo } from './types/Todo';
-import { TodoList } from './Components/Todolist';
 import { Footer } from './Components/Footer';
 import { Header } from './Components/Header';
+import { TodoItem } from './Components/TodoItem';
 
 const USER_ID = 10413;
 
@@ -18,8 +18,12 @@ export const App: React.FC = () => {
   const [filter, setFilter] = useState<string>('all');
   const [errorName, setErrorName] = useState('');
   const [disabledInput, setDisabledInput] = useState(false);
-
+  const [tempTodo, setTempTodo] = useState<Todo | null>(null);
   const [title, setTitle] = useState('');
+
+  const [todoID, setTodoID] = useState<number[]>([]);
+
+  const [preparing, setPreparing] = useState(false);
 
   const visibleTodos = todos.filter(todo => {
     switch (filter) {
@@ -27,8 +31,10 @@ export const App: React.FC = () => {
         return true;
       case 'active':
         return !todo.completed;
-      default:
+      case 'completed':
         return todo.completed;
+      default:
+        throw new Error('Can not filter Todo');
     }
   });
   const handleTitleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -53,26 +59,40 @@ export const App: React.FC = () => {
     };
 
     try {
+      setPreparing(true);
+      setTempTodo(newTodo);
       setDisabledInput(true);
       const addedTodo: Todo = await addTodo(USER_ID, newTodo);
 
-      setTodos([...todos, addedTodo]);
+      setTodos(prev => [...prev, addedTodo]);
       setTitle('');
+      setHasError(false);
     } catch (e) {
       setHasError(true);
     } finally {
+      setTempTodo(null);
       setDisabledInput(false);
+      setPreparing(false);
     }
   };
 
   const handleDeleteTodo = async (todoId: number) => {
+    setTodoID(current => [...current, todoId]);
+
     try {
       await deleteTodo(todoId);
       setTodos(prevTodos => prevTodos.filter(todo => todo.id !== todoId));
       setHasError(false);
     } catch (error) {
       setHasError(true);
+      setErrorName('Unable to delete a todo');
     }
+  };
+
+  const completedTodos = todos.filter(todo => todo.completed);
+
+  const clearCompletedTodos = () => {
+    completedTodos.map(todo => handleDeleteTodo(todo.id));
   };
 
   useEffect(() => {
@@ -116,10 +136,24 @@ export const App: React.FC = () => {
             isInputDisabled={disabledInput}
           />
 
-          <TodoList
-            todos={visibleTodos}
-            handleDeleteTodo={handleDeleteTodo}
-          />
+          <section className="todoapp__main">
+            {visibleTodos.map(todo => {
+              return (
+                <TodoItem
+                  todo={todo}
+                  onDelete={() => handleDeleteTodo(todo.id)}
+                  userId={todoID.includes(todo.id)}
+                />
+              );
+            })}
+            {preparing
+            && (
+              <TodoItem
+                todo={tempTodo}
+                userId
+              />
+            )}
+          </section>
 
           {/* Hide the footer if there are no todos */}
           {todos.length !== 0 && (
@@ -127,6 +161,8 @@ export const App: React.FC = () => {
               todos={visibleTodos}
               setFilter={e => setFilter(e)}
               filter={filter}
+              onDeleteCompleted={() => clearCompletedTodos()}
+              selectedTodos={completedTodos}
             />
           )}
         </div>
