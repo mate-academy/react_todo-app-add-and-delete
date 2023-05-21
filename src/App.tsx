@@ -133,14 +133,14 @@ export const App: FC = () => {
           setTodoId={setTodoId}
         />
 
-        {todos.length > 0 && (
-          <Footer
-            todos={vissibleTodos}
-            onChangeFilter={setActiveFilter}
-            activeFilter={activeFilter}
-            onClearCompletedTodos={clearCompletedTodos}
-          />
-        )}
+        {/* {todos.length > 0 && ( */}
+        <Footer
+          todos={todos}
+          onChangeFilter={setActiveFilter}
+          activeFilter={activeFilter}
+          onClearCompletedTodos={clearCompletedTodos}
+        />
+        {/* )} */}
       </div>
 
       {errorMessage && (

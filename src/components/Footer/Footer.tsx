@@ -29,8 +29,8 @@ export const Footer: FC<Props> = ({
               {`${activeTodos} items left`}
             </span>
 
-            {/* Active filter should have a 'selected' class */}
             <Nav
+              todos={todos}
               onChangeFilter={onChangeFilter}
               activeFilter={activeFilter}
               onClearCompletedTodos={onClearCompletedTodos}
