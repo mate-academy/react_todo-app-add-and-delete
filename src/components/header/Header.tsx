@@ -22,7 +22,7 @@ export const Header: React.FC<Props> = ({
     event.preventDefault();
 
     if (!inputValue) {
-      setError('empty');
+      setError('Title can not be empty');
 
       return;
     }
@@ -42,7 +42,7 @@ export const Header: React.FC<Props> = ({
         completed: false,
       }).then(response => updateTodos(response as Todo));
     } catch {
-      setError('add');
+      setError('can not add a todo');
     }
 
     setIsLoading(false);
@@ -52,11 +52,12 @@ export const Header: React.FC<Props> = ({
 
   return (
     <header className="todoapp__header">
-      {/* this buttons is active only if there are some active todos */}
-      {/* eslint-disable-next-line jsx-a11y/control-has-associated-label */}
-      <button type="button" className="todoapp__toggle-all active" />
+      <button
+        type="button"
+        className="todoapp__toggle-all active"
+        aria-label="Toggle All Todos"
+      />
 
-      {/* Add a todo on form submit */}
       <form onSubmit={handleAddTodo}>
         <input
           disabled={isLoading}

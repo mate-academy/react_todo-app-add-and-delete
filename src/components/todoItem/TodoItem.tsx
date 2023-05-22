@@ -1,3 +1,4 @@
+import React from 'react';
 import cn from 'classnames';
 
 interface Props {
@@ -5,20 +6,20 @@ interface Props {
   id: number;
   completed: boolean;
   onDelete: (id: number) => void;
-  onIsComplitedUpdate: (
+  onIsCompletedUpdate: (
     id: number,
-    complitedCurrVal: boolean,
+    completedCurrVal: boolean,
   ) => void;
   loading: boolean;
   loadingID: number;
 }
 
-export const TodoItem: React.FC<Props> = ({
+export const TodoItem: React.FC<Props> = React.memo(({
   title,
   id,
   completed,
   onDelete,
-  onIsComplitedUpdate,
+  onIsCompletedUpdate,
   loading,
   loadingID,
 }) => {
@@ -30,7 +31,7 @@ export const TodoItem: React.FC<Props> = ({
           className="todo__status"
           checked={completed}
           onChange={() => {
-            onIsComplitedUpdate(
+            onIsCompletedUpdate(
               id,
               completed,
             );
@@ -59,4 +60,4 @@ export const TodoItem: React.FC<Props> = ({
       </div>
     </div>
   );
-};
+});

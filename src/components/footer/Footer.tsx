@@ -1,37 +1,38 @@
 import cn from 'classnames';
 import { Todo } from '../../types/Todo';
+import { Filter } from '../../types/Filter';
 
 interface Props {
   setFilter: (filter: string) => void;
-  clearComplitedTodos: () => void;
+  clearCompletedTodos: () => void;
   selectedFilter: string;
-  comletedTodos: Todo[] | null;
+  comletedTodos: Todo[];
+  uncomletedTodoCount: number;
 }
 
 export const Footer: React.FC<Props> = ({
   setFilter,
-  clearComplitedTodos,
+  clearCompletedTodos,
   selectedFilter,
   comletedTodos,
+  uncomletedTodoCount,
 }) => {
   return (
     <footer className="todoapp__footer">
       {/* Hide the footer if there are no todos */}
 
       <span className="todo-count">
-        3 items left
+        {`${uncomletedTodoCount} items left`}
       </span>
 
-      {/* Active filter should have a 'selected' class */}
       <nav className="filter">
         <a
           href="#/"
           className={cn('filter__link', {
-            // eslint-disable-next-line quote-props
-            'selected': selectedFilter === 'all',
+            selected: selectedFilter === Filter.ALL,
           })}
           onClick={() => {
-            setFilter('all');
+            setFilter(Filter.ALL);
           }}
         >
           All
@@ -40,11 +41,10 @@ export const Footer: React.FC<Props> = ({
         <a
           href="#/active"
           className={cn('filter__link', {
-            // eslint-disable-next-line quote-props
-            'selected': selectedFilter === 'active',
+            selected: selectedFilter === Filter.ACTIVE,
           })}
           onClick={() => {
-            setFilter('active');
+            setFilter(Filter.ACTIVE);
           }}
         >
           Active
@@ -53,23 +53,21 @@ export const Footer: React.FC<Props> = ({
         <a
           href="#/completed"
           className={cn('filter__link', {
-            // eslint-disable-next-line quote-props
-            'selected': selectedFilter === 'completed',
+            selected: selectedFilter === Filter.COMPLETED,
           })}
           onClick={() => {
-            setFilter('completed');
+            setFilter(Filter.COMPLETED);
           }}
         >
           Completed
         </a>
       </nav>
 
-      {/* don't show this button if there are no completed todos */}
-      {comletedTodos && (
+      {comletedTodos.length > 0 && (
         <button
           type="button"
           className="todoapp__clear-completed"
-          onClick={clearComplitedTodos}
+          onClick={clearCompletedTodos}
         >
           Clear completed
         </button>

@@ -1,19 +1,25 @@
 import { useEffect } from 'react';
+import cn from 'classnames';
 
 interface Props {
-  setError: (errVal: string | boolean) => void;
-  errorText: string | true;
+  setError: (errVal: string) => void;
+  errorText: string;
 }
 
 export const Notification: React.FC<Props> = ({ errorText, setError }) => {
   useEffect(() => {
     setTimeout(() => {
-      setError(false);
+      setError('');
     }, 3000);
-  }, []);
+  }, [setError]);
 
   return (
-    <div className="notification is-danger is-light has-text-weight-normal">
+    <div className={
+      cn('notification is-danger is-light has-text-weight-normal', {
+        hidden: errorText === '',
+      })
+    }
+    >
       {/* Notification is shown in case of any error */}
       {/* Add the 'hidden' class to hide the message smoothly */}
       {/* eslint-disable-next-line jsx-a11y/control-has-associated-label */}
@@ -21,12 +27,10 @@ export const Notification: React.FC<Props> = ({ errorText, setError }) => {
         type="button"
         className="delete"
         onClick={() => {
-          setError(false);
+          setError('');
         }}
       />
-      {errorText === 'empty'
-        ? ('Title can\'t be empty')
-        : `Unable to ${errorText} a todo`}
+      {errorText}
     </div>
   );
 };

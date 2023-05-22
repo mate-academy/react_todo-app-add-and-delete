@@ -1,6 +1,7 @@
 /* eslint-disable jsx-a11y/control-has-associated-label */
 import React, {
   useEffect,
+  useMemo,
   useState,
 } from 'react';
 import { Header } from './components/header';
@@ -9,35 +10,41 @@ import { Footer } from './components/footer';
 import { Notification } from './components/notification';
 import { Todo } from './types/Todo';
 import { getTodos, deleteTodo } from './api/todos';
-
-const USER_ID = 10283;
+import { USER_ID } from './utils/constants';
+import { Filter } from './types/Filter';
 
 export const App: React.FC = () => {
-  const [todos, setTodos] = useState<Todo[] | null>(null);
+  const [todos, setTodos] = useState<Todo[]>([]);
   const [tempTodo, setTempTodo] = useState<Todo | null>(null);
-  const [error, setError] = useState<boolean | string>(false);
+  const [error, setError] = useState<string>('');
   const [filter, setFilter] = useState<string>('all');
   const [loading, isLoading] = useState(false);
   const [loadingID, setLoadingID] = useState(0);
-  const [comletedTodos, setCompletedTodos] = useState<Todo[] | null>(null);
-  let visibleTodos: Todo[] | null = todos;
+  const [comletedTodos, setCompletedTodos] = useState<Todo[]>([]);
+  const [uncomletedTodoCount, setUncomletedTodoCount] = useState<number>(0);
 
-  if (filter === 'active') {
-    visibleTodos = todos ? todos.filter(todo => !todo.completed) : null;
-  }
+  const visibleTodos = useMemo(() => {
+    let filteredTodos: Todo[] = todos;
 
-  if (filter === 'completed') {
-    visibleTodos = todos ? todos.filter(todo => todo.completed) : null;
-  }
+    if (filter === Filter.ACTIVE) {
+      filteredTodos = todos.filter(todo => !todo.completed);
+    }
+
+    if (filter === Filter.COMPLETED) {
+      filteredTodos = todos.filter(todo => todo.completed);
+    }
+
+    return filteredTodos || [];
+  }, [filter, todos]);
 
   const handleDeleteTodo = async (todoId: number) => {
     try {
       setLoadingID(todoId);
       isLoading(true);
       await deleteTodo(todoId);
-      setTodos((visibleTodos?.filter(todo => todo.id !== todoId) || null));
+      setTodos((visibleTodos.filter(todo => todo.id !== todoId)));
     } catch {
-      setError('delete');
+      setError('Can not delete todo');
     }
 
     isLoading(false);
@@ -47,19 +54,17 @@ export const App: React.FC = () => {
     setTempTodo(todo);
   };
 
-  const handleSetError = (errVal: string | boolean) => {
+  const handleSetError = (errVal: string) => {
     setError(errVal);
   };
 
-  const HandleSelectFilter = (filterValue: string) => {
+  const handleSelectFilter = (filterValue: string) => {
     setFilter(filterValue);
   };
 
   const handleClearComplitedTodos = () => {
-    // eslint-disable-next-line no-console
-    console.log(comletedTodos);
-    comletedTodos?.map(todo => handleDeleteTodo(todo.id));
-    setCompletedTodos(null);
+    comletedTodos.map(todo => handleDeleteTodo(todo.id));
+    setCompletedTodos([]);
   };
 
   const loadTodos = async () => {
@@ -67,8 +72,7 @@ export const App: React.FC = () => {
       await getTodos(USER_ID)
         .then(res => setTodos(res));
     } catch (err) {
-      // eslint-disable-next-line no-console
-      console.error(err);
+      setError('Can not load todos');
     }
   };
 
@@ -81,13 +85,9 @@ export const App: React.FC = () => {
   }, []);
 
   useEffect(() => {
-    if (todos) {
-      setCompletedTodos(todos?.filter(todoa => todoa.completed));
-    }
+    setCompletedTodos(todos.filter(todoa => todoa.completed));
+    setUncomletedTodoCount(todos.filter(todo => !todo.completed).length);
   }, [todos]);
-
-  // eslint-disable-next-line no-console
-  console.log('app renders');
 
   return (
     <div className="todoapp">
@@ -112,10 +112,11 @@ export const App: React.FC = () => {
             />
 
             <Footer
-              setFilter={HandleSelectFilter}
+              setFilter={handleSelectFilter}
               selectedFilter={filter}
               comletedTodos={comletedTodos}
-              clearComplitedTodos={handleClearComplitedTodos}
+              clearCompletedTodos={handleClearComplitedTodos}
+              uncomletedTodoCount={uncomletedTodoCount}
             />
           </>
         )}
