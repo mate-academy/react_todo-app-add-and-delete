@@ -5,7 +5,7 @@ import { Todo } from '../../types/Todo';
 interface Props {
   todo: Todo,
   todoId?: number,
-  isDeleted: boolean,
+  isDeleted?: boolean,
   deleteTodo?: (todo: Todo) => void,
 }
 

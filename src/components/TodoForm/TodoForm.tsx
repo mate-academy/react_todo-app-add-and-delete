@@ -1,19 +1,28 @@
-/* import React, { FC, memo, useCallback, useState } from 'react';
+import {
+  FC,
+  memo,
+  useCallback,
+  useState,
+} from 'react';
 import { Todo } from '../../types/Todo';
-import { TodoData } from '../../types/TodoData'
-import { ErrorsType } from '../../types/ErrorsType'
+import { TodoData } from '../../types/TodoData';
+import { ErrorsType } from '../../types/ErrorsType';
+import { addTodo } from '../../api/todos';
 
 interface Props {
-  addTodo: (newTodo: Todo) => void,
-  setTempTodo: (newTodo: Todo | null) => void,
-  displayError: (message: string) => void,
+  onAdd: (newTodo: Todo) => void,
+  onChange: (newTodo: Todo | null) => void,
+  displayError: (error: ErrorsType) => void,
+  hideError: () => void,
+  userId: number,
 }
 
 export const TodoForm: FC<Props> = memo(({
-  addTodo,
-  setTempTodo,
-  displayError
-})) => {
+  onAdd,
+  onChange,
+  displayError,
+  userId,
+}) => {
   const [title, setTitle] = useState('');
   const [isDisabled, setIsDisabled] = useState(false);
 
@@ -21,26 +30,35 @@ export const TodoForm: FC<Props> = memo(({
     async (event: React.FormEvent<HTMLFormElement>) => {
       event.preventDefault();
 
-      if (!title.trim().length) {
-        displayError(ErrorsType.EMPTY)
+      if (title.trim().length === 0) {
+        displayError(ErrorsType.EMPTY);
+
         return;
       }
 
-      displayError(ErrorsType.NONE);
-
-      const todoToAdd: TodoData = {
+      const addingTodo: TodoData = {
         title,
-        userId: USER_ID,
-        completed: false
+        userId,
+        completed: false,
       };
 
-      setTempTodo({...todoToAdd, id: 0});
+      onChange({ ...addingTodo, id: 0 });
 
       try {
         setIsDisabled(true);
+        const todoToAdd = await addTodo(addingTodo);
+
+        onAdd(todoToAdd);
+        setTitle('');
+      } catch {
+        displayError(ErrorsType.ADD);
+      } finally {
+        onChange(null);
+        setIsDisabled(false);
       }
-    }
-  )
+    }, [title],
+  );
+
   return (
     <form onSubmit={handleFormSubmit}>
       <input
@@ -54,11 +72,3 @@ export const TodoForm: FC<Props> = memo(({
     </form>
   );
 });
-function displayError(EMPTY: ErrorsType) {
-  throw new Error('Function not implemented.')
-}
-
-function setTempTodo(arg0: { id: number; title: string; userId: number; completed: boolean }) {
-  throw new Error('Function not implemented.')
-}
-*/

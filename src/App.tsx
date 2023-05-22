@@ -1,4 +1,3 @@
-/* eslint-disable jsx-a11y/control-has-associated-label */
 import React, {
   useEffect, useMemo, useState, useCallback,
 } from 'react';
@@ -10,7 +9,7 @@ import { getTodos, deleteTodo } from './api/todos';
 import { Filter } from './types/Filter';
 import { TodoList } from './components/TodoList';
 import { Error } from './components/Error';
-
+import { TodoForm } from './components/TodoForm';
 import { ErrorsType } from './types/ErrorsType';
 
 const USER_ID = 10344;
@@ -21,7 +20,6 @@ export const App: React.FC = () => {
   const [filterBy, setFilterBy] = useState<Filter>(Filter.ALL);
   const [errorType, setErrorType] = useState<ErrorsType>(ErrorsType.NONE);
   const [tempTodo, setTempTodo] = useState<Todo | null>(null);
-  const [title, setTitle] = useState('');
   const [isDeletedCompleted, setIsDeletedCompleted] = useState(false);
 
   const visibleTodos = useMemo(() => {
@@ -67,9 +65,9 @@ export const App: React.FC = () => {
 
   const completedTodos = visibleTodos.length - activeTodos;
 
-  /* const addTodo = (newTodo: Todo) => {
+  const addTodo = (newTodo: Todo) => {
     setTodos(prevTodos => [...prevTodos, newTodo]);
-  }; */
+  };
 
   const DeleteTodo = useCallback(async (todo: Todo) => {
     try {
@@ -105,40 +103,6 @@ export const App: React.FC = () => {
     }
   }, [todos]);
 
-  const handleFormSubmit = useCallback(
-    async (event: React.FormEvent<HTMLFormElement>) => {
-      event.preventDefault();
-
-      if (!title.trim()) {
-        setErrorType(ErrorsType.EMPTY);
-
-        return;
-      }
-
-      setErrorType(ErrorsType.NONE);
-
-      const todoToAdd: Todo = {
-        id: 0,
-        title,
-        userId: USER_ID,
-        completed: false,
-      };
-
-      setTempTodo({ ...todoToAdd });
-
-      try {
-        // const newTodo = await addTodo(todoToAdd);
-
-        // addTodo(newTodo);
-        setTitle('');
-      } catch {
-        setErrorType(ErrorsType.ADD);
-      }
-
-      setTempTodo(null);
-    }, [title],
-  );
-
   useEffect(() => {
     loadTodos();
   }, []);
@@ -155,6 +119,7 @@ export const App: React.FC = () => {
         <header className="todoapp__header">
           {todos.length > 0 && (
             <button
+              aria-label="display all"
               type="button"
               className={cn('todoapp__toggle-all', {
                 active: !activeTodos,
@@ -162,14 +127,13 @@ export const App: React.FC = () => {
             />
 
           )}
-
-          <form onSubmit={handleFormSubmit}>
-            <input
-              type="text"
-              className="todoapp__new-todo"
-              placeholder="What needs to be done?"
-            />
-          </form>
+          <TodoForm
+            onAdd={addTodo}
+            onChange={setTempTodo}
+            displayError={displayError}
+            hideError={hideError}
+            userId={USER_ID}
+          />
         </header>
 
         {visibleTodos && (
