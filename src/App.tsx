@@ -1,130 +1,100 @@
 import React, { useEffect, useState } from 'react';
+import { addTodo, getTodos, removeTodo } from './api/todos';
+import { USER_ID } from './utils/USER_ID';
 import { Todo } from './types/Todo';
-import { Category } from './utils/Category';
-import { Error } from './utils/Error';
-import { UserWarning } from './UserWarning';
+import { Category } from './types/Category';
+import { TodoError } from './types/TodoError';
 import { TodoForm } from './Components/TodoForm';
 import { TodoList } from './Components/TodoList';
 import { TodoFilter } from './Components/TodoFilter';
-import { addTodo, getTodos, removeTodo } from './api/todos';
-
-const USER_ID = 10156;
+import { UserWarning } from './UserWarning';
 
 export const App: React.FC = () => {
-  const [visibleTodos, setVisibleTodos] = useState<Todo[]>([]);
-  const [todoTitle, setTodoTitle] = useState('');
-  const [isError, setIsError] = useState<Error | string>('');
+  const [todos, setTodos] = useState<Todo[]>([]);
+  const [isError, setIsError] = useState(false);
+  const [todoError, setTodoError] = useState<TodoError | string>('');
   const [filterCategory, setFilterCategory] = useState(Category.All);
-  const [newTodo, setNewTodo] = useState<Todo | null>(null);
+  const [tempTodo, setTempTodo] = useState<Todo | null>(null);
   const [isLoading, setIsLoading] = useState(false);
-  const todosAmount = visibleTodos.length;
-  const hasCompleted = visibleTodos.some(todo => todo.completed);
+  const todosAmount = todos.length;
+  const hasCompleted = todos.some(todo => todo.completed);
 
-  const handleError = (error: Error) => {
-    setIsError(error);
+  const handleError = (error: TodoError) => {
+    setIsError(true);
+    setTodoError(error);
+
     window.setTimeout(() => {
-      setIsError('');
+      setIsError(false);
+      setTodoError('');
     }, 3000);
   };
 
   const loadTodos = async () => {
     try {
-      const todos = await getTodos(USER_ID);
+      const todosFromServer = await getTodos(USER_ID);
 
-      setVisibleTodos(todos);
+      setTodos(todosFromServer);
     } catch {
-      handleError(Error.LOAD);
+      handleError(TodoError.UNABLE_LOAD);
     }
   };
-
-  const filterTodos = async (category: Category) => {
-    const allTodos = await getTodos(USER_ID);
-
-    const filteredTodos = allTodos.filter(todo => {
-      switch (category) {
-        case Category.Active:
-          return !todo.completed;
-        case Category.Completed:
-          return todo.completed;
-        default:
-          return true;
-      }
-    });
-
-    setVisibleTodos(filteredTodos);
-  };
-
-  useEffect(() => {
-    filterTodos(filterCategory);
-  }, [filterCategory]);
 
   useEffect(() => {
     loadTodos();
   }, []);
 
-  const handleAdd = async () => {
-    if (!todoTitle) {
-      handleError(Error.TITLE);
-
-      return;
-    }
-
+  const handleAdd = async (todoTitle: string) => {
     try {
-      const todo: Todo = {
+      setIsLoading(true);
+      const newTodo: Todo = {
         title: todoTitle,
         id: 0,
         userId: USER_ID,
         completed: false,
       };
 
-      const tempTodo = await addTodo(todo);
+      setTempTodo(newTodo);
 
-      setNewTodo(tempTodo);
-      setIsLoading(false);
-      setTodoTitle('');
+      const todo = await addTodo(newTodo);
+
+      setTodos([
+        ...todos,
+        todo,
+      ]);
     } catch {
-      handleError(Error.ADD);
+      handleError(TodoError.UNABLE_ADD);
+    } finally {
+      setIsLoading(false);
+      setTempTodo(null);
     }
   };
 
   const handleDelete = async (todoId: number) => {
     try {
       await removeTodo(todoId);
-      const filteredTodos = visibleTodos.filter(todo => todo.id !== todoId);
+      const filteredTodos = todos.filter(todo => todo.id !== todoId);
 
-      setVisibleTodos(filteredTodos);
-      setNewTodo(null);
+      setTodos(filteredTodos);
     } catch {
-      handleError(Error.DELETE);
+      handleError(TodoError.UNABLE_DELETE);
     }
-  };
-
-  const handleTodoTitle = (title: string) => {
-    setTodoTitle(title);
   };
 
   const clearCompletedTodo = async () => {
     try {
-      const allId = visibleTodos
+      const allId = todos
         .filter(todo => todo.completed)
         .map(todo => todo.id);
 
-      visibleTodos.forEach(todo => {
+      todos.forEach(todo => {
         if (allId.includes(todo.id)) {
           removeTodo(todo.id);
         }
       });
     } catch {
-      handleError(Error.DELETE);
+      handleError(TodoError.UNABLE_DELETE);
     }
   };
-  // const handleTodoUpdate = async (todoId: number, title: string) => {
-  //   try {
-  //     await updateTodo(todoId, title);
-  //   } catch {
-  //     handleError(Error.UPDATE);
-  //   }
-  // };
 
   if (!USER_ID) {
     return <UserWarning />;
@@ -140,18 +110,19 @@ export const App: React.FC = () => {
           <button type="button" className="todoapp__toggle-all active" />
 
           <TodoForm
-            title={todoTitle}
-            onChange={handleTodoTitle}
             onAdd={handleAdd}
             isLoading={isLoading}
             onLoad={setIsLoading}
+            setError={handleError}
+            setIsError={setIsError}
           />
         </header>
 
         <TodoList
-          todos={visibleTodos}
+          todos={todos}
           onDelete={handleDelete}
-          newTodo={newTodo}
+          tempTodo={tempTodo}
+          category={filterCategory}
         />
 
         <footer className="todoapp__footer">
@@ -164,7 +135,6 @@ export const App: React.FC = () => {
             changeCategory={setFilterCategory}
           />
 
-          {/* don't show this button if there are no completed todos */}
           {hasCompleted && (
             <button
               type="button"
@@ -177,17 +147,15 @@ export const App: React.FC = () => {
         </footer>
       </div>
 
-      {/* Notification is shown in case of any error */}
-      {/* Add the 'hidden' class to hide the message smoothly */}
       {isError && (
         <div className="notification is-danger is-light has-text-weight-normal">
           {/* eslint-disable-next-line jsx-a11y/control-has-associated-label */}
           <button
             type="button"
             className="delete"
-            onClick={() => setIsError('')}
+            onClick={() => setTodoError('')}
           />
-          {isError}
+          {todoError}
         </div>
       )}
     </div>

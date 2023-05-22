@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { memo } from 'react';
 import classNames from 'classnames';
 import { Todo } from '../../types/Todo';
 
@@ -6,7 +6,7 @@ interface Props {
   todo: Todo;
   onDelete: (todoId: number) => void
 }
-export const TodoItem: React.FC<Props> = ({
+export const TodoItem: React.FC<Props> = memo(({
   todo,
   onDelete,
 }) => {
@@ -28,7 +28,6 @@ export const TodoItem: React.FC<Props> = ({
 
       <span className="todo__title">{title}</span>
 
-      {/* Remove button appears only on hover */}
       <button
         type="button"
         className="todo__remove"
@@ -37,7 +36,6 @@ export const TodoItem: React.FC<Props> = ({
         ×
       </button>
 
-      {/* overlay will cover the todo while it is being updated */}
       <div
         className="modal overlay"
       >
@@ -46,4 +44,4 @@ export const TodoItem: React.FC<Props> = ({
       </div>
     </div>
   );
-};
+});
