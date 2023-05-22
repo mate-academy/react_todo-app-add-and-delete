@@ -1,66 +1,67 @@
-import React, { useState } from 'react';
+import { useState, useContext } from 'react';
 import classNames from 'classnames';
 import { Todo } from '../types/Todo';
 import { deleteTodo } from '../api/todos';
+import { TodoContext } from '../contexts/TodoContext';
 
 type Props = {
-  todos: Todo[];
   todo: Todo;
-  isLoading: boolean;
-  setTodos: (todos: Todo[]) => void;
-  setError: (error: string | null) => void;
-  isDeleting: boolean;
-  setIsDeleting: (isDeleting: boolean) => void;
+  isCreating?: boolean;
 };
 
-export const TodoItem:React.FC<Props> = ({
-  todos,
+export const TodoItem: React.FC<Props> = ({
   todo,
-  isLoading,
-  setError,
-  setTodos,
-  isDeleting,
-  setIsDeleting,
+  isCreating,
 }) => {
+  const { todos, setTodos, setError } = useContext(TodoContext);
   const [isEditing, setIsEditing] = useState(false);
+  const [isLoading, setIsLoading] = useState(false);
+  const [todoTitle, setTodoTitle] = useState(todo.title);
 
   const handleDelete = (id: number) => {
-    setIsDeleting(true);
+    setIsLoading(true);
 
-    deleteTodo(id)
+    deleteTodo(todo.id)
       .then(() => {
-        setTodos(todos.filter((todoItem: Todo) => todoItem.id !== id));
+        setTodos(todos.filter((currentTodo) => currentTodo.id !== id));
       })
-      .catch(() => setError('Unable to delete a todo'))
-      .finally(() => setIsDeleting(false));
+      .catch(() => {
+        setError('Unable to delete a todo');
+      })
+      .finally(() => {
+        setIsLoading(false);
+      });
   };
 
   return (
-    <div
-      className={classNames('todo', { completed: todo.completed })}
-    >
+    <div className={classNames('todo', { completed: todo.completed })}>
       <label className="todo__status-label">
         <input
           type="checkbox"
           className="todo__status"
           value={todo.title}
           checked={todo.completed}
-          onDoubleClick={() => setIsEditing(true)}
+          onChange={() => setIsEditing(true)}
         />
       </label>
-
       {isEditing ? (
         <form>
           <input
             type="text"
             className="todo__title-field"
             placeholder="Empty todo will be deleted"
-            value="Todo is being edited now"
+            value={todoTitle}
+            onChange={(event) => setTodoTitle(event.target.value)}
           />
         </form>
       ) : (
         <>
-          <span className="todo__title">{todo.title}</span>
+          <span
+            className="todo__title"
+            onDoubleClick={() => setIsEditing(true)}
+          >
+            {todo.title}
+          </span>
           <button
             type="button"
             className="todo__remove"
@@ -71,8 +72,10 @@ export const TodoItem:React.FC<Props> = ({
         </>
       )}
 
-      <div className={classNames('modal overlay',
-        { 'is-active': isDeleting || isLoading })}
+      <div
+        className={classNames('modal overlay', {
+          'is-active': isLoading || isCreating,
+        })}
       >
         <div className="modal-background has-background-white-ter" />
         <div className="loader" />

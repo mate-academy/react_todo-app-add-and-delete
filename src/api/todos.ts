@@ -10,8 +10,5 @@ export const addTodo = (todo: Todo) => {
 };
 
 export const deleteTodo = (id: number) => {
-  return client.delete(`/todos/${id}`)
-    .catch(() => {
-      throw new Error('Unable to delete a todo');
-    });
+  return client.delete(`/todos/${id}`);
 };

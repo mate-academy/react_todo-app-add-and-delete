@@ -1,26 +1,42 @@
-import React from 'react';
+import { FC, useContext, useMemo } from 'react';
 import classNames from 'classnames';
-import { Filter } from '../types/Filter';
+import { TodoContext } from '../contexts/TodoContext';
+import { Filters } from '../types/Filters';
+import { deleteTodo } from '../api/todos';
 
-type Props = {
-  activeTodosNumber: number;
-  completedTodosNumber: number;
-  filter: Filter;
-  setFilter: (filter: Filter) => void;
-  onDeleteCompleted: () => void;
-};
+export const Footer: FC = () => {
+  const {
+    todos,
+    setTodos,
+    filter,
+    setError,
+    setFilter,
+  } = useContext(TodoContext);
 
-export const Footer: React.FC<Props> = ({
-  activeTodosNumber,
-  completedTodosNumber,
-  filter,
-  setFilter,
-  onDeleteCompleted,
-}) => {
+  const activeTodos = useMemo(() => (
+    todos.filter((todo) => !todo.completed)
+  ), [todos]);
+
+  const completedTodos = useMemo(() => (
+    todos.filter((todo) => todo.completed)
+  ), [todos]);
+
+  const handleDeleteCompleted = () => {
+    const completedTodosIds = todos
+      .filter((todo) => todo.completed)
+      .map((todo) => todo.id);
+
+    Promise.all(completedTodosIds.map((id) => deleteTodo(id)))
+      .then(() => {
+        setTodos(todos.filter((todo) => !todo.completed));
+      })
+      .catch(() => setError('Unable to delete a todo'));
+  };
+
   return (
     <footer className="todoapp__footer">
       <span className="todo-count">
-        {`${activeTodosNumber} items left`}
+        {`${activeTodos.length} items left`}
       </span>
 
       <nav className="filter">
@@ -28,7 +44,7 @@ export const Footer: React.FC<Props> = ({
           href="#/"
           className={classNames('filter__link',
             { selected: filter === 'all' })}
-          onClick={() => setFilter(Filter.All)}
+          onClick={() => setFilter(Filters.All)}
         >
           All
         </a>
@@ -37,7 +53,7 @@ export const Footer: React.FC<Props> = ({
           href="#/active"
           className={classNames('filter__link',
             { selected: filter === 'active' })}
-          onClick={() => setFilter(Filter.Active)}
+          onClick={() => setFilter(Filters.Active)}
         >
           Active
         </a>
@@ -46,7 +62,7 @@ export const Footer: React.FC<Props> = ({
           href="#/completed"
           className={classNames('filter__link',
             { selected: filter === 'completed' })}
-          onClick={() => setFilter(Filter.Completed)}
+          onClick={() => setFilter(Filters.Completed)}
         >
           Completed
         </a>
@@ -55,8 +71,8 @@ export const Footer: React.FC<Props> = ({
       <button
         type="button"
         className="todoapp__clear-completed"
-        onClick={onDeleteCompleted}
-        style={{ color: completedTodosNumber > 0 ? 'inherit' : 'transparent' }}
+        onClick={handleDeleteCompleted}
+        style={{ color: completedTodos.length > 0 ? 'inherit' : 'transparent' }}
       >
         Clear completed
       </button>

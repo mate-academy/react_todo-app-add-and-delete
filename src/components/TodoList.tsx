@@ -1,51 +1,35 @@
-import { useContext } from 'react';
+import { useContext, useMemo } from 'react';
 import { Todo } from '../types/Todo';
 import { TodoItem } from './TodoItem';
 import { TodoContext } from '../contexts/TodoContext';
+import { Filters } from '../types/Filters';
 
-type Props = {
-  todos: Todo[];
-  tempTodo: Todo | null;
-};
-
-export const TodoList: React.FC<Props> = ({
-  todos,
-  tempTodo,
-}) => {
+export const TodoList: React.FC = () => {
   const {
-    setTodos,
-    isLoading,
-    setError,
-    isDeleting,
-    setIsDeleting,
+    todos,
+    filter,
+    tempTodo,
   } = useContext(TodoContext);
+
+  const filteredTodos = useMemo(() => todos.filter((todo) => {
+    switch (filter) {
+      case Filters.Completed:
+        return todo.completed;
+      case Filters.Active:
+        return !todo.completed;
+      default:
+        return todo;
+    }
+  }), [todos, filter]);
 
   return (
     <section className="todoapp__main">
-      {todos.map((todo: Todo) => (
-        <TodoItem
-          key={todo.id}
-          todos={todos}
-          todo={todo}
-          isLoading={isLoading}
-          setTodos={setTodos}
-          setError={setError}
-          isDeleting={isDeleting}
-          setIsDeleting={setIsDeleting}
-        />
+      {filteredTodos.map((todo: Todo) => (
+        <TodoItem key={todo.id} todo={todo} />
       ))}
 
       {tempTodo && (
-        <TodoItem
-          key={tempTodo.id}
-          todos={todos}
-          todo={tempTodo}
-          isLoading
-          setTodos={setTodos}
-          setError={setError}
-          isDeleting={isDeleting}
-          setIsDeleting={setIsDeleting}
-        />
+        <TodoItem todo={tempTodo} isCreating />
       )}
     </section>
   );
