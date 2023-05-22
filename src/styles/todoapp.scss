@@ -14,6 +14,7 @@
   }
 
   &__title {
+    user-select: none;
     font-size: 100px;
     font-weight: 100;
     text-align: center;
@@ -56,6 +57,7 @@
   }
 
   &__new-todo {
+    outline: none;
     width: 100%;
     padding: 16px 16px 16px 60px;
 
@@ -63,7 +65,7 @@
     line-height: 1.4em;
     font-family: inherit;
     font-weight: inherit;
-    color: inherit;
+    color: #977d81;
     -webkit-font-smoothing: antialiased;
     -moz-osx-font-smoothing: grayscale;
 
@@ -84,6 +86,7 @@
 
   &__footer {
     display: flex;
+    user-select: none;
     justify-content: space-between;
     align-items: center;
 
@@ -122,8 +125,10 @@
     -webkit-font-smoothing: antialiased;
     -moz-osx-font-smoothing: grayscale;
 
+    transition: color 0.2s ease-out;
+
     &:hover {
-      text-decoration: underline;
+      color: #af5b5e;
     }
 
     &:active {
