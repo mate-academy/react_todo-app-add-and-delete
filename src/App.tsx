@@ -3,7 +3,7 @@
 import React, { useEffect, useState } from 'react';
 import { TodoList } from './components/TodoList';
 import { Footer } from './components/Footer';
-import { Eror } from './components/ERROR';
+import { ErrorComponent } from './components/ERROR';
 import { getTodos, addTodo, deleteTodo } from './api/todos';
 import { Todo } from './types/Todo';
 import { FilterBy } from './types/FilterEnum';
@@ -35,7 +35,7 @@ export const App: React.FC = () => {
     }
   });
 
-  const addError = (error: Error) => {
+  const displayError = (error: Error) => {
     setErrorMessage(error);
     window.setTimeout(() => {
       setErrorMessage(null);
@@ -50,7 +50,7 @@ export const App: React.FC = () => {
 
         setTodos(todosFromServer);
       } catch (error) {
-        addError(Error.LOAD);
+        displayError(Error.LOAD);
       }
     };
 
@@ -99,8 +99,6 @@ export const App: React.FC = () => {
       .finally(() => setIsDeleting(false));
   };
 
-  console.log(todos);
-
   return (
     <div className="todoapp">
       <h1 className="todoapp__title">todos</h1>
@@ -127,7 +125,6 @@ export const App: React.FC = () => {
         />
 
         <Footer
-          todos={todos}
           visibleTodos={visibleTodos}
           filterBy={filterBy}
           setFilterBy={setFilterBy}
@@ -136,8 +133,7 @@ export const App: React.FC = () => {
 
       {errorMessage
         && (
-          <Eror
-            errorMessage={errorMessage}
+          <ErrorComponent
             setErrorMessage={setErrorMessage}
           />
         )}

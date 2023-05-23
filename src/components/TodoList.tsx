@@ -1,6 +1,5 @@
 import { FC } from 'react';
 import cn from 'classnames';
-// import { TodoInfo } from '../TodoInfo/TodoInfo';
 import { Todo } from '../types/Todo';
 
 interface Props {

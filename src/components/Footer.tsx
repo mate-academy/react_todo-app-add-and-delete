@@ -4,14 +4,12 @@ import { Todo } from '../types/Todo';
 import { FilterBy } from '../types/FilterEnum';
 
 interface Props {
-  todos: Todo[];
   visibleTodos: Todo[];
   filterBy:FilterBy;
   setFilterBy:React.Dispatch<React.SetStateAction<FilterBy>>;
 }
 
 export const Footer: FC<Props> = ({
-  todos,
   visibleTodos,
   filterBy,
   setFilterBy,
@@ -19,7 +17,7 @@ export const Footer: FC<Props> = ({
   return (
     <footer className="todoapp__footer">
       <span className="todo-count">
-        {`${todos.length} items left`}
+        {`${visibleTodos.length} items left`}
       </span>
 
       <nav className="filter">
