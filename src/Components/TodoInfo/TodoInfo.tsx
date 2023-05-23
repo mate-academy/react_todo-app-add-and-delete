@@ -18,6 +18,14 @@ export const TodoInfo: React.FC<Props> = ({
   const isSuccess = completed === true;
   const [isLoading, setIsLoading] = useState(tempTodoId === todo.id);
 
+  const DeleteButton = async () => {
+    setIsLoading(true);
+
+    await onDelete(todo);
+
+    setIsLoading(false);
+  };
+
   return (
     <div className={classNames('todo', {
       completed: isSuccess,
@@ -36,13 +44,7 @@ export const TodoInfo: React.FC<Props> = ({
       <button
         type="button"
         className="todo__remove"
-        onClick={async () => {
-          setIsLoading(true);
-
-          await onDelete(todo);
-
-          setIsLoading(false);
-        }}
+        onClick={DeleteButton}
         disabled={isLoading}
       >
         ×

@@ -5,13 +5,13 @@ import React, {
   useMemo,
   useState,
 } from 'react';
-import classNames from 'classnames';
 import { addTodo, deleteTodo, getTodos } from './api/todos';
 import { Todo } from './types/Todo';
 import { TodoList } from './Components/TodoList';
-import { TodoFilter } from './Components/TodoFilter';
 import { FilterType } from './types/FilterType';
 import { ErrorMessage } from './Components/ErrorMessage';
+import { Header } from './Components/Header';
+import { Footer } from './Components/Footer';
 
 const USER_ID = 10390;
 
@@ -25,8 +25,8 @@ export const App: React.FC = () => {
   const completedTodo = todos.filter(todo => todo.completed === true);
   const activeTodos = todos.length - completedTodo.length;
 
-  const getFiltered = (filter: FilterType) => {
-    switch (filter) {
+  const filteredTodo = useMemo(() => {
+    switch (filterBy) {
       case FilterType.Active:
         return todos.filter(todo => !todo.completed);
 
@@ -36,7 +36,7 @@ export const App: React.FC = () => {
       default:
         return todos;
     }
-  };
+  }, [todos, filterBy]);
 
   const createTodo = (newTodo: Todo) => {
     setTodos(prevTodos => [...prevTodos, newTodo]);
@@ -55,12 +55,6 @@ export const App: React.FC = () => {
   const onDeleteError = useCallback(
     async () => setErrorMessage(''), [errorMessage],
   );
-
-  useEffect(() => {
-    loadTodos();
-  }, []);
-
-  const filteredTodo = useMemo(() => getFiltered(filterBy), [todos, filterBy]);
 
   const handleFormSubmit = useCallback(
     async (event: React.FormEvent<HTMLFormElement>) => {
@@ -116,62 +110,35 @@ export const App: React.FC = () => {
     completedTodos.map(todo => handleDelete(todo));
   }, [todos]);
 
+  useEffect(() => {
+    loadTodos();
+  }, []);
+
   return (
     <div className="todoapp">
       <h1 className="todoapp__title">todos</h1>
+      <Header
+        filteredTodo={filteredTodo}
+        completedTodo={completedTodo}
+        handleFormSubmit={handleFormSubmit}
+        title={title}
+        setTitle={setTitle}
+      />
+      <TodoList
+        todos={filteredTodo}
+        onDelete={handleDelete}
+        tempTodo={tempTodo}
+      />
 
-      <div className="todoapp__content">
-        <header className="todoapp__header">
-
-          <button
-            type="button"
-            className={classNames(
-              'todoapp__toggle-all', {
-                active: filteredTodo.length === completedTodo.length,
-              },
-            )}
-          />
-
-          <form onSubmit={handleFormSubmit}>
-            <input
-              type="text"
-              className="todoapp__new-todo"
-              placeholder="What needs to be done?"
-              value={title}
-              onChange={(event) => setTitle(event.target.value)}
-            />
-          </form>
-        </header>
-        <TodoList
-          todos={filteredTodo}
-          onDelete={handleDelete}
-          tempTodo={tempTodo}
+      {todos.length > 0 && (
+        <Footer
+          activeTodos={activeTodos}
+          completedTodo={completedTodo}
+          handleAllDelete={handleAllDelete}
+          setFilterBy={setFilterBy}
+          filterBy={filterBy}
         />
-
-        {todos.length > 0 && (
-          <footer className="todoapp__footer">
-            <span className="todo-count">
-              {`${activeTodos} items left`}
-            </span>
-            <TodoFilter filter={filterBy} setFilter={setFilterBy} />
-
-            <button
-              type="button"
-              className="todoapp__clear-completed"
-              onClick={handleAllDelete}
-              style={
-                {
-                  opacity: completedTodo.length === 0
-                    ? 0
-                    : 1,
-                }
-              }
-            >
-              Clear completed
-            </button>
-          </footer>
-        )}
-      </div>
+      )}
       <ErrorMessage message={errorMessage} onDelete={onDeleteError} />
     </div>
   );
