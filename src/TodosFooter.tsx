@@ -6,7 +6,7 @@ type Props = {
   onStatusFilter: (status:TodoStatus) => void;
   todosQuantity: number;
   statusFilter: TodoStatus;
-  completedTodosLength: number;
+  completedTodosCount: number;
   onDeleteCompletedTodos: () => void;
 };
 
@@ -14,13 +14,13 @@ export const TodosFooter:React.FC<Props> = ({
   onStatusFilter,
   todosQuantity,
   statusFilter,
-  completedTodosLength,
+  completedTodosCount,
   onDeleteCompletedTodos,
 }) => {
   return (
     <footer className="todoapp__footer">
       <span className="todo-count">
-        {`${todosQuantity - completedTodosLength} items left`}
+        {`${todosQuantity - completedTodosCount} items left`}
       </span>
 
       <nav className="filter">
@@ -55,7 +55,7 @@ export const TodosFooter:React.FC<Props> = ({
         </a>
       </nav>
 
-      {completedTodosLength > 0 && (
+      {completedTodosCount > 0 && (
         <button
           type="button"
           className="todoapp__clear-completed"

@@ -12,12 +12,12 @@ export const ErrorNotification:React.FC<Props> = ({ error }) => {
     const timeoutId = setTimeout(() => {
       setHidden(true);
     }, 3000);
-  
+
     return () => {
       clearTimeout(timeoutId);
     };
   }, []);
-  
+
   useEffect(() => {
     return autoHideError();
   }, [autoHideError, error]);

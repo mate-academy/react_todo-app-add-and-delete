@@ -7,14 +7,13 @@ import { ErrorNotification } from './ErrorNotification';
 import { TodosList } from './TodosList';
 import { TodosHeader } from './TodosHeader';
 import { TodosFooter } from './TodosFooter';
-
-const USER_ID = 10332;
+import { USER_ID } from './UserID';
 
 export const App: React.FC = () => {
   const [todos, setTodos] = useState<Todo[]>([]);
   const [error, setError] = useState('');
   const [statusFilter, setStatusFilter] = useState<TodoStatus>(TodoStatus.All);
-  const [todoAddQuery, setTodoAddQuery] = useState('');
+  const [todoTitle, setTodoTitle] = useState('');
   const [disableInput, setDisableInput] = useState(false);
   const [tempTodo, setTempTodo] = useState<Todo | null>(null);
   const [loadingTodoId, setLoadingTodoId] = useState<number | null>(null);
@@ -36,7 +35,7 @@ export const App: React.FC = () => {
   const addTodo = async (event:React.FormEvent) => {
     event.preventDefault();
 
-    if (!todoAddQuery) {
+    if (!todoTitle) {
       setError("Title can't be empty");
 
       return;
@@ -44,17 +43,17 @@ export const App: React.FC = () => {
 
     setLoadingTodoId(0);
     setDisableInput(true);
-    setTodoAddQuery('');
+    setTodoTitle('');
     setTempTodo({
       id: 0,
-      title: todoAddQuery,
+      title: todoTitle,
       completed: false,
       userId: USER_ID,
     });
 
     try {
       const response = await client.post<Todo>('/todos', {
-        title: todoAddQuery,
+        title: todoTitle,
         userId: USER_ID,
         completed: false,
       });
@@ -100,7 +99,7 @@ export const App: React.FC = () => {
   );
 
   const handleInputTodo = (event:React.ChangeEvent<HTMLInputElement>) => {
-    setTodoAddQuery(event.target.value.trim());
+    setTodoTitle(event.target.value.trim());
   };
 
   let preparedTodos = todos;
@@ -118,10 +117,10 @@ export const App: React.FC = () => {
     });
   }
 
-  const completedTodosLength = preparedTodos
+  const completedTodosCount = preparedTodos
     .filter(todo => todo.completed).length;
 
-  const uncompletedTodosLength = preparedTodos
+  const uncompletedTodosCount = preparedTodos
     .filter(todo => !todo.completed).length;
 
   if (!USER_ID) {
@@ -134,8 +133,8 @@ export const App: React.FC = () => {
 
       <div className="todoapp__content">
         <TodosHeader
-          uncompletedTodosLength={uncompletedTodosLength}
-          todoAddQuery={todoAddQuery}
+          uncompletedTodosCount={uncompletedTodosCount}
+          todoTitle={todoTitle}
           onInput={handleInputTodo}
           onSubmit={addTodo}
           disableInput={disableInput}
@@ -153,7 +152,7 @@ export const App: React.FC = () => {
             onStatusFilter={handleStatusFilter}
             todosQuantity={todos.length}
             statusFilter={statusFilter}
-            completedTodosLength={completedTodosLength}
+            completedTodosCount={completedTodosCount}
             onDeleteCompletedTodos={deleteCompletedTodos}
           />
         )}

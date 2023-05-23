@@ -15,23 +15,21 @@ export const TodosList:React.FC<Props> = ({
   tempTodo,
   loadingTodoId,
   onDelete,
-}) => {
-  return (
-    <section className="todoapp__main">
-      {todos.map(todo => (
-        <TodoComponent
-          key={todo.id}
-          todo={todo}
-          loadingTodoId={loadingTodoId}
-          onDelete={onDelete}
-        />
-      ))}
-      {tempTodo && (
-        <TempTodo
-          tempTodo={tempTodo}
-          loadingTodoId={loadingTodoId}
-        />
-      )}
-    </section>
-  );
-};
+}) => (
+  <section className="todoapp__main">
+    {todos.map(todo => (
+      <TodoComponent
+        key={todo.id}
+        todo={todo}
+        loadingTodoId={loadingTodoId}
+        onDelete={onDelete}
+      />
+    ))}
+    {tempTodo && (
+      <TempTodo
+        todo={tempTodo}
+        loadingId={loadingTodoId}
+      />
+    )}
+  </section>
+);

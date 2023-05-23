@@ -3,19 +3,19 @@ import classNames from 'classnames';
 import { Todo } from './types/Todo';
 
 type Props = {
-  tempTodo: Todo;
-  loadingTodoId: number | null;
+  todo: Todo;
+  loadingId: number | null;
 };
 
 export const TempTodo: React.FC<Props> = ({
-  tempTodo,
-  loadingTodoId,
+  todo,
+  loadingId,
 }) => {
   const {
     title,
     completed,
     id,
-  } = tempTodo;
+  } = todo;
 
   return (
     <div
@@ -38,7 +38,7 @@ export const TempTodo: React.FC<Props> = ({
       {/* overlay will cover the todo while it is being updated */}
       <div
         className={classNames('modal overlay', {
-          'is-active': loadingTodoId === id,
+          'is-active': loadingId === id,
         })}
       >
         <div className="modal-background has-background-white-ter" />
