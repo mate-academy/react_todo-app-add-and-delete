@@ -3,7 +3,7 @@ import classnames from 'classnames';
 import { TodoStatus } from './types/Todo';
 
 type Props = {
-  onStatusFilter: (status:TodoStatus) => void;
+  onChangeStatusFilter: (status:TodoStatus) => void;
   todosQuantity: number;
   statusFilter: TodoStatus;
   completedTodosCount: number;
@@ -11,7 +11,7 @@ type Props = {
 };
 
 export const TodosFooter:React.FC<Props> = ({
-  onStatusFilter,
+  onChangeStatusFilter,
   todosQuantity,
   statusFilter,
   completedTodosCount,
@@ -29,7 +29,7 @@ export const TodosFooter:React.FC<Props> = ({
           className={classnames('filter__link', {
             selected: statusFilter === TodoStatus.All,
           })}
-          onClick={() => onStatusFilter(TodoStatus.All)}
+          onClick={() => onChangeStatusFilter(TodoStatus.All)}
         >
           All
         </a>
@@ -39,7 +39,7 @@ export const TodosFooter:React.FC<Props> = ({
           className={classnames('filter__link', {
             selected: statusFilter === TodoStatus.Uncompleted,
           })}
-          onClick={() => onStatusFilter(TodoStatus.Uncompleted)}
+          onClick={() => onChangeStatusFilter(TodoStatus.Uncompleted)}
         >
           Active
         </a>
@@ -49,7 +49,7 @@ export const TodosFooter:React.FC<Props> = ({
           className={classnames('filter__link', {
             selected: statusFilter === TodoStatus.Completed,
           })}
-          onClick={() => onStatusFilter(TodoStatus.Completed)}
+          onClick={() => onChangeStatusFilter(TodoStatus.Completed)}
         >
           Completed
         </a>

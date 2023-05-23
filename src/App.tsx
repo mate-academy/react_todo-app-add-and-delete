@@ -149,7 +149,7 @@ export const App: React.FC = () => {
 
         {todos.length > 0 && (
           <TodosFooter
-            onStatusFilter={handleStatusFilter}
+            onChangeStatusFilter={handleStatusFilter}
             todosQuantity={todos.length}
             statusFilter={statusFilter}
             completedTodosCount={completedTodosCount}
