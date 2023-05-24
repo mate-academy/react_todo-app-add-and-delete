@@ -4,9 +4,10 @@ import { Todo } from '../../types/Todo';
 
 interface Props {
   todo: Todo;
+  handleDelete: (todoId: number) => void;
 }
 
-export const TodoItem: React.FC<Props> = ({ todo }) => {
+export const TodoItem: React.FC<Props> = ({ todo, handleDelete }) => {
   const [isHovered, setHover] = useState(false);
 
   return (
@@ -28,7 +29,11 @@ export const TodoItem: React.FC<Props> = ({ todo }) => {
       <span className="todo__title">{todo.title}</span>
 
       {isHovered && (
-        <button type="button" className="todo__remove">
+        <button
+          type="button"
+          className="todo__remove"
+          onClick={() => handleDelete(todo.id)}
+        >
           ×
         </button>
       )}

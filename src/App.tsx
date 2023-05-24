@@ -1,7 +1,7 @@
 import React, { useEffect, useMemo, useState } from 'react';
 import { Todo } from './types/Todo';
 import { FilterOption } from './types/FilterOption';
-import { getTodos, createTodo } from './api/todos';
+import { getTodos, createTodo, deleteTodo } from './api/todos';
 import { AddTodoInput } from './components/AddTodoInput';
 import { Footer } from './components/Footer';
 import { Alert } from './components/Alert';
@@ -18,7 +18,6 @@ export const App: React.FC = () => {
   const [errorMessage, setErrorMessage] = useState('');
   const [title, setTitle] = useState('');
   const [isLoading, setIsLoading] = useState(false);
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   const [tempTodo, setTempTodo] = useState<Todo | null>(null);
 
   const handleAlert = (alertMessage: string) => {
@@ -38,13 +37,6 @@ export const App: React.FC = () => {
       setTodos(todosFromServer);
     } catch {
       handleAlert(ErrorMessage.LOADING);
-      // setErrorMessage('ErrorMessage.LOADING');
-      // setHasError(true);
-
-      // setTimeout(() => {
-      //   setHasError(false);
-      //   setErrorMessage('');
-      // }, 3000);
     }
   };
 
@@ -76,7 +68,7 @@ export const App: React.FC = () => {
     try {
       const todo = {
         title,
-        id: 2,
+        id: 0,
         userId: USER_ID,
         completed: false,
       };
@@ -94,6 +86,18 @@ export const App: React.FC = () => {
       handleAlert(ErrorMessage.ADDING);
     } finally {
       setTempTodo(null);
+    }
+  };
+
+  const handleDelete = async (todoId: number) => {
+    try {
+      await deleteTodo(todoId);
+
+      const filteredTodos = visibleTodos.filter((todo) => todo.id !== todoId);
+
+      setTodos(filteredTodos);
+    } catch (error) {
+      handleAlert(ErrorMessage.DELETING);
     }
   };
 
@@ -128,7 +132,13 @@ export const App: React.FC = () => {
           />
         </header>
 
-        {todos.length > 0 && <TodoList todos={visibleTodos} />}
+        {todos.length > 0 && (
+          <TodoList
+            todos={visibleTodos}
+            tempTodo={tempTodo}
+            handleDelete={handleDelete}
+          />
+        )}
 
         {todos.length > 0 && (
           <Footer todos={todos} filter={filter} setFilter={setFilter} />
