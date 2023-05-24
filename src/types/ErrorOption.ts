@@ -1,5 +1,7 @@
 export enum ErrorOption {
-  ADD = 'Unable to add a todo',
-  DELETE = 'Unable to delete a todo',
-  UPDATE = 'Unable to update a todo',
+  ADDING = 'Unable to add a todo',
+  DELETING = 'Unable to delete a todo',
+  UPDATING = 'Unable to update a todo',
+  LOADING = 'Something wrong',
+  INPUT = 'Title can\'t be empty',
 }

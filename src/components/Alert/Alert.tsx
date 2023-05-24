@@ -1,8 +1,11 @@
 import React, { useState } from 'react';
 import cn from 'classnames';
-import { ErrorOption } from '../../types/ErrorOption';
 
-export const Alert: React.FC = () => {
+type Props = {
+  errorMessage: string;
+};
+
+export const Alert: React.FC<Props> = ({ errorMessage }) => {
   const [hasAlert, setHasAlert] = useState(false);
 
   const closeAlert = () => {
@@ -31,7 +34,7 @@ export const Alert: React.FC = () => {
         onClick={closeAlert}
       />
 
-      {ErrorOption.ADD}
+      {errorMessage}
     </div>
   );
 };

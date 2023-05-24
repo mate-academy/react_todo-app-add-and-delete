@@ -1,12 +1,13 @@
 import React, { useEffect, useMemo, useState } from 'react';
 import { Todo } from './types/Todo';
 import { FilterOption } from './types/FilterOption';
-import { getTodos } from './api/todos';
-import { Header } from './components/Header';
+import { getTodos, createTodo } from './api/todos';
+import { AddTodoInput } from './components/AddTodoInput';
 import { Footer } from './components/Footer';
 import { Alert } from './components/Alert';
 import { UserWarning } from './UserWarning';
 import { TodoList } from './components/TodoList';
+import { ErrorOption } from './types/ErrorOption';
 
 const USER_ID = 10527;
 
@@ -14,6 +15,21 @@ export const App: React.FC = () => {
   const [todos, setTodos] = useState<Todo[]>([]);
   const [filter, setFilter] = useState(FilterOption.ALL);
   const [hasError, setHasError] = useState(false);
+  const [errorMessage, setErrorMessage] = useState('');
+  const [title, setTitle] = useState('');
+  const [isLoading, setIsLoading] = useState(false);
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
+  const [tempTodo, setTempTodo] = useState<Todo | null>(null);
+
+  const handleAlert = (alertMessage: string) => {
+    setErrorMessage(alertMessage);
+    setHasError(true);
+
+    setTimeout(() => {
+      setHasError(false);
+      setErrorMessage('');
+    }, 3000);
+  };
 
   const loadTodos = async () => {
     try {
@@ -21,11 +37,14 @@ export const App: React.FC = () => {
 
       setTodos(todosFromServer);
     } catch {
-      setHasError(true);
+      handleAlert(ErrorOption.LOADING);
+      // setErrorMessage('ErrorOption.LOADING');
+      // setHasError(true);
 
-      setTimeout(() => {
-        setHasError(false);
-      }, 3000);
+      // setTimeout(() => {
+      //   setHasError(false);
+      //   setErrorMessage('');
+      // }, 3000);
     }
   };
 
@@ -47,6 +66,37 @@ export const App: React.FC = () => {
     });
   }, [todos, filter]);
 
+  const addTodo = async () => {
+    if (!title) {
+      handleAlert(ErrorOption.INPUT);
+
+      return;
+    }
+
+    try {
+      const todo = {
+        title,
+        id: 2,
+        userId: USER_ID,
+        completed: false,
+      };
+
+      setIsLoading(true);
+
+      await createTodo(todo);
+      setTempTodo(todo);
+
+      loadTodos();
+
+      setIsLoading(false);
+      setTitle('');
+    } catch {
+      handleAlert(ErrorOption.ADDING);
+    } finally {
+      setTempTodo(null);
+    }
+  };
+
   useEffect(() => {
     loadTodos();
   }, []);
@@ -60,7 +110,20 @@ export const App: React.FC = () => {
       <h1 className="todoapp__title">todos</h1>
 
       <div className="todoapp__content">
-        <Header todos={todos} />
+        <header className="todoapp__header">
+          {todos.length > 0 && (
+            // eslint-disable-next-line jsx-a11y/control-has-associated-label
+            <button type="button" className="todoapp__toggle-all active" />
+          )}
+
+          <AddTodoInput
+            title={title}
+            setTitle={setTitle}
+            addTodo={addTodo}
+            isLoading={isLoading}
+            setIsLoading={setIsLoading}
+          />
+        </header>
 
         {todos.length > 0 && <TodoList todos={visibleTodos} />}
 
@@ -69,7 +132,7 @@ export const App: React.FC = () => {
         )}
       </div>
 
-      {hasError && <Alert />}
+      {hasError && <Alert errorMessage={errorMessage} />}
     </div>
   );
 };
