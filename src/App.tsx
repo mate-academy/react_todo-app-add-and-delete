@@ -7,7 +7,7 @@ import { Footer } from './components/Footer';
 import { Alert } from './components/Alert';
 import { UserWarning } from './UserWarning';
 import { TodoList } from './components/TodoList';
-import { ErrorOption } from './types/ErrorOption';
+import { ErrorMessage } from './types/ErrorMessage';
 
 const USER_ID = 10527;
 
@@ -37,8 +37,8 @@ export const App: React.FC = () => {
 
       setTodos(todosFromServer);
     } catch {
-      handleAlert(ErrorOption.LOADING);
-      // setErrorMessage('ErrorOption.LOADING');
+      handleAlert(ErrorMessage.LOADING);
+      // setErrorMessage('ErrorMessage.LOADING');
       // setHasError(true);
 
       // setTimeout(() => {
@@ -68,7 +68,7 @@ export const App: React.FC = () => {
 
   const addTodo = async () => {
     if (!title) {
-      handleAlert(ErrorOption.INPUT);
+      handleAlert(ErrorMessage.INPUT);
 
       return;
     }
@@ -91,7 +91,7 @@ export const App: React.FC = () => {
       setIsLoading(false);
       setTitle('');
     } catch {
-      handleAlert(ErrorOption.ADDING);
+      handleAlert(ErrorMessage.ADDING);
     } finally {
       setTempTodo(null);
     }
@@ -112,8 +112,11 @@ export const App: React.FC = () => {
       <div className="todoapp__content">
         <header className="todoapp__header">
           {todos.length > 0 && (
-            // eslint-disable-next-line jsx-a11y/control-has-associated-label
-            <button type="button" className="todoapp__toggle-all active" />
+            <button
+              type="button"
+              aria-label="Toggle all todos"
+              className="todoapp__toggle-all active"
+            />
           )}
 
           <AddTodoInput

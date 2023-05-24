@@ -1,4 +1,4 @@
-export enum ErrorOption {
+export enum ErrorMessage {
   ADDING = 'Unable to add a todo',
   DELETING = 'Unable to delete a todo',
   UPDATING = 'Unable to update a todo',

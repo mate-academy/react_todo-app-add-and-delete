@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import cn from 'classnames';
 
 type Props = {
@@ -10,9 +10,13 @@ export const Alert: React.FC<Props> = ({ errorMessage }) => {
 
   const closeAlert = () => {
     setHasAlert(true);
-
-    setTimeout(closeAlert, 3000);
   };
+
+  useEffect(() => {
+    const timerID = setTimeout(closeAlert, 3000);
+
+    return () => clearTimeout(timerID);
+  }, []);
 
   return (
     <div
@@ -26,7 +30,6 @@ export const Alert: React.FC<Props> = ({ errorMessage }) => {
         },
       )}
     >
-      {/* eslint-disable-next-line jsx-a11y/control-has-associated-label */}
       <button
         type="button"
         aria-label="Close"

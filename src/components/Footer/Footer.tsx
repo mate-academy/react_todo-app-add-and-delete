@@ -10,11 +10,13 @@ interface Props {
 }
 
 export const Footer: React.FC<Props> = ({ todos, filter, setFilter }) => {
+  const completedTodos = todos.filter((todo) => todo.completed);
+  const hasCompletedTodo = todos.find((todo) => todo.completed);
+
   return (
     <footer className="todoapp__footer">
-      <span className="todo-count">{`${todos.length} items left`}</span>
+      <span className="todo-count">{`${completedTodos.length} items left`}</span>
 
-      {/* Active filter should have a 'selected' class */}
       <nav className="filter">
         <a
           href="#/"
@@ -23,7 +25,7 @@ export const Footer: React.FC<Props> = ({ todos, filter, setFilter }) => {
           })}
           onClick={() => setFilter(FilterOption.ALL)}
         >
-          All
+          {FilterOption.ALL}
         </a>
 
         <a
@@ -33,7 +35,7 @@ export const Footer: React.FC<Props> = ({ todos, filter, setFilter }) => {
           })}
           onClick={() => setFilter(FilterOption.ACTIVE)}
         >
-          Active
+          {FilterOption.ACTIVE}
         </a>
 
         <a
@@ -43,11 +45,11 @@ export const Footer: React.FC<Props> = ({ todos, filter, setFilter }) => {
           })}
           onClick={() => setFilter(FilterOption.COMPLETED)}
         >
-          Completed
+          {FilterOption.COMPLETED}
         </a>
       </nav>
 
-      {todos.find((todo) => todo.completed) && (
+      {hasCompletedTodo && (
         <button type="button" className="todoapp__clear-completed">
           Clear completed
         </button>
