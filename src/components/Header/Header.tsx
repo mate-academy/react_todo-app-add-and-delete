@@ -3,13 +3,13 @@ import { TodoData } from '../../types/TodoData';
 
 interface Props {
   addTodo: (data: TodoData) => void;
-  handleError: (value: string) => void;
+  onError: (value: string) => void;
   isLoading: boolean;
 }
 
 export const Header: React.FC<Props> = ({
   addTodo,
-  handleError,
+  onError,
   isLoading,
 }) => {
   const [todoTitle, setTodoTitle] = useState('');
@@ -17,7 +17,7 @@ export const Header: React.FC<Props> = ({
   const handleSubmit = (event: React.FormEvent) => {
     event.preventDefault();
     if (!todoTitle.trim()) {
-      handleError("Title can't be empty");
+      onError("Title can't be empty");
 
       return;
     }

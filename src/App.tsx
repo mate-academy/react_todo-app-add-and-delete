@@ -3,7 +3,6 @@ import React, {
   useCallback, useEffect, useMemo, useState,
 } from 'react';
 
-import { UserWarning } from './UserWarning';
 import { Header } from './components/Header';
 import { TodoList } from './components/TodoList';
 import { Footer } from './components/Footer';
@@ -14,8 +13,6 @@ import { Todo } from './types/Todo';
 import { TodoData } from './types/TodoData';
 import { client, todoUrlEnd } from './utils/fetchClient';
 import { createTodo, deleteTodo } from './api/todos';
-
-const USER_ID = 10364;
 
 export const App: React.FC = () => {
   const [todos, setTodos] = useState<Todo[]>([]);
@@ -29,10 +26,6 @@ export const App: React.FC = () => {
     const data: Todo[] = await client.get(todoUrlEnd);
 
     setTodos(data);
-  }, []);
-
-  useEffect(() => {
-    getTodos();
   }, []);
 
   const addTodo = useCallback(async (data: TodoData) => {
@@ -72,9 +65,9 @@ export const App: React.FC = () => {
     return visibleTodos;
   }, [todos, select]);
 
-  if (!USER_ID) {
-    return <UserWarning />;
-  }
+  useEffect(() => {
+    getTodos();
+  }, []);
 
   return (
     <div className="todoapp">
@@ -83,12 +76,13 @@ export const App: React.FC = () => {
       <div className="todoapp__content">
         <Header
           addTodo={addTodo}
-          handleError={setErrorMessage}
+          onError={setErrorMessage}
           isLoading={isLoading}
         />
+
         <TodoList todos={handleSelectedTodos} onRemove={removeTodo} />
 
-        {todos.length !== 0 && (
+        {todos.length > 0 && (
           <Footer
             onSelect={setSelect}
             activeTodos={activeTodos}
@@ -96,6 +90,7 @@ export const App: React.FC = () => {
           />
         )}
       </div>
+
       {errorMessage && (
         <Notification
           message={errorMessage}
