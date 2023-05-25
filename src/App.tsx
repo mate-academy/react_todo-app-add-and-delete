@@ -19,6 +19,7 @@ export const App: React.FC = () => {
   const [select, setSelect] = useState(Select.All);
   const [errorMessage, setErrorMessage] = useState('');
   const [isLoading, setIsLoading] = useState(false);
+  const [tempTodo, setTempTodo] = useState<Todo | null>(null);
 
   const activeTodos = todos.filter(({ completed }) => completed === false);
 
@@ -31,11 +32,13 @@ export const App: React.FC = () => {
   const addTodo = useCallback(async (data: TodoData) => {
     try {
       setIsLoading(true);
+      setTempTodo({ ...data, id: 0 });
       await createTodo(data);
     } catch {
       setErrorMessage('Unable to add a todo');
     } finally {
       getTodos();
+      setTempTodo(null);
       setIsLoading(false);
     }
   }, []);
@@ -80,7 +83,11 @@ export const App: React.FC = () => {
           isLoading={isLoading}
         />
 
-        <TodoList todos={handleSelectedTodos} onRemove={removeTodo} />
+        <TodoList
+          todos={handleSelectedTodos}
+          onRemove={removeTodo}
+          tempTodo={tempTodo}
+        />
 
         {todos.length > 0 && (
           <Footer
