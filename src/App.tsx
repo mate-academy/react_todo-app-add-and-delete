@@ -98,14 +98,12 @@ export const App: React.FC = () => {
   };
 
   const handleDeleteTodo = (todoId: number) => {
-    setIsPending(true);
     setPendingTodoIds([...pendingTodoIds, todoId]);
 
     deleteTodo(todoId)
       .then(() => setTodos(todos.filter(todo => todo.id !== todoId)))
       .catch(() => handleError(Error.DELETE))
       .finally(() => {
-        setIsPending(false);
         setPendingTodoIds([]);
       });
   };
@@ -117,12 +115,10 @@ export const App: React.FC = () => {
     = completedTodos.map(todo => todo.id);
 
     setPendingTodoIds([...completedTodosIds]);
-    setIsPending(true);
 
     Promise.all(completedTodosIds.map(id => deleteTodo(id)))
       .then(() => setTodos(todos.filter(todo => todo.completed === false)))
-      .catch(() => handleError(Error.DELETE))
-      .finally(() => setIsPending(false));
+      .catch(() => handleError(Error.DELETE));
   };
 
   return (
@@ -142,7 +138,6 @@ export const App: React.FC = () => {
           visibleTodos={visibleTodos}
           handleDeleteTodo={handleDeleteTodo}
           tempTodo={tempTodo}
-          pendingStatus={isPending}
           pendingTodoIds={pendingTodoIds}
         />
 

@@ -6,7 +6,6 @@ type Props = {
   visibleTodos: Todo[],
   tempTodo: Todo | null,
   handleDeleteTodo: (todoId: number) => void,
-  pendingStatus: boolean,
   pendingTodoIds: number[],
 };
 
@@ -14,7 +13,6 @@ export const TodosList: React.FC<Props> = ({
   visibleTodos,
   tempTodo,
   handleDeleteTodo,
-  pendingStatus,
   pendingTodoIds,
 }) => {
   return (
@@ -24,8 +22,7 @@ export const TodosList: React.FC<Props> = ({
           key={todo.id}
           todo={todo}
           handleDeleteTodo={handleDeleteTodo}
-          pendingStatus={pendingStatus}
-          pendingTodoIds={pendingTodoIds}
+          isProcessed={pendingTodoIds.includes(todo.id)}
         />
       ))}
 
@@ -33,8 +30,7 @@ export const TodosList: React.FC<Props> = ({
         <TodoInfo
           todo={tempTodo}
           handleDeleteTodo={handleDeleteTodo}
-          pendingStatus={pendingStatus}
-          pendingTodoIds={pendingTodoIds}
+          isProcessed={pendingTodoIds.includes(0)}
         />
       )}
     </section>

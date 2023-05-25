@@ -6,15 +6,13 @@ import { Loader } from '../Loader/Loader';
 type Props = {
   todo: Todo,
   handleDeleteTodo: (todoId: number) => void,
-  pendingStatus: boolean,
-  pendingTodoIds: number[],
+  isProcessed: boolean
 };
 
 export const TodoInfo: React.FC<Props> = ({
   todo,
   handleDeleteTodo,
-  pendingStatus,
-  pendingTodoIds,
+  isProcessed,
 }) => {
   return (
     <div
@@ -42,7 +40,7 @@ export const TodoInfo: React.FC<Props> = ({
         ×
       </button>
 
-      {pendingStatus && pendingTodoIds.includes(todo.id) && <Loader />}
+      {isProcessed && <Loader />}
     </div>
   );
 };
