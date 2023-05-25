@@ -24,7 +24,7 @@ export const App: React.FC = () => {
         setTodos(response);
       })
       .catch(() => setError('Unable to Load todos'));
-  }, []);
+  }, [deleteIds]);
 
   useEffect(() => {
     getTodos(USER_ID)
@@ -114,12 +114,12 @@ export const App: React.FC = () => {
 
   const handleRemoveCompletedTodos = () => {
     completedTodos.forEach(completedTodo => {
-      setDeleteIds(prevState => ([
-        ...prevState,
-        completedTodo.id,
-      ]));
       removeTodo(completedTodo.id).then(() => {
         setTodos(todos.filter((todo) => todo.id !== completedTodo.id));
+        setDeleteIds(prevState => ([
+          ...prevState,
+          completedTodo.id,
+        ]));
       }).catch(() => setError('Unable to delete a todo'));
     });
   };
