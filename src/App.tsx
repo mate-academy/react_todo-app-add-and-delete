@@ -66,6 +66,7 @@ export const App: React.FC = () => {
       await removeTodo(todoId);
 
       setTodos(todos.filter(todo => todo.id !== todoId));
+      setSelectedTodoId((prevTodo) => prevTodo.filter(id => id !== todoId));
     } catch {
       errorNotification(ErrorType.Delete);
     } finally {
