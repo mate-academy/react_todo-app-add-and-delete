@@ -19,7 +19,14 @@ type TodosMap = {
 export const App = () => {
   const [activeFilter, setActiveFilter] = useState<Filters>('all');
 
-  const { todos, error } = useTodos(USER_ID);
+  const {
+    todos,
+    error,
+    tempTodo,
+    handleAddTodo,
+    handleDeleteTodo,
+    handleClearCompleted,
+  } = useTodos(USER_ID);
 
   const todosMap: TodosMap = useMemo(
     () => todos.reduce(
@@ -57,17 +64,22 @@ export const App = () => {
             <button type="button" className="todoapp__toggle-all active" />
           )}
 
-          <TodoForm />
+          <TodoForm addTodo={handleAddTodo} loading={!!tempTodo} />
         </header>
 
-        <TodoList todos={filteredTodos} />
+        <TodoList
+          todos={filteredTodos}
+          deleteTodo={handleDeleteTodo}
+          tempTodo={tempTodo}
+        />
 
         {todos.length > 0 && (
           <TodoFilter
             activeFilter={activeFilter}
             changeFilter={setActiveFilter}
-            activeTodos={active}
-            completedTodos={completed}
+            activeTodosCount={active.length}
+            completedTodosCount={completed.length}
+            clearCompleted={() => handleClearCompleted(completed)}
           />
         )}
       </div>
