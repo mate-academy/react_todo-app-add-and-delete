@@ -1,5 +1,6 @@
-/* eslint-disable no-console */
-import React, { useEffect, useMemo, useState } from 'react';
+import React, {
+  useEffect, useMemo, useState, useCallback,
+} from 'react';
 import { Todo } from './types/Todo';
 import { FilterOption } from './types/FilterOption';
 import { getTodos, createTodo, deleteTodo } from './api/todos';
@@ -22,15 +23,15 @@ export const App: React.FC = () => {
 
   const hasError = errorMessage !== '';
 
-  const handleAlert = (alertMessage: string) => {
+  const handleAlert = useCallback((alertMessage: string) => {
     setErrorMessage(alertMessage);
 
     setTimeout(() => {
       setErrorMessage('');
     }, 3000);
-  };
+  }, []);
 
-  const loadTodos = async () => {
+  const loadTodos = useCallback(async () => {
     try {
       const todosFromServer = await getTodos(USER_ID);
 
@@ -38,7 +39,7 @@ export const App: React.FC = () => {
     } catch {
       handleAlert(ErrorMessage.Load);
     }
-  };
+  }, []);
 
   const visibleTodos: Todo[] = useMemo(() => {
     return todos.filter((todo) => {
@@ -92,7 +93,9 @@ export const App: React.FC = () => {
     }
   };
 
-  const handleDelete = async (todoId: number) => {
+  const handleDelete = useCallback(async (todoId: number) => {
+    setIsLoading(true);
+
     try {
       await deleteTodo(todoId);
 
@@ -101,8 +104,10 @@ export const App: React.FC = () => {
       setTodos(filteredTodos);
     } catch (error) {
       handleAlert(ErrorMessage.Delete);
+    } finally {
+      setIsLoading(false);
     }
-  };
+  }, []);
 
   useEffect(() => {
     loadTodos();
