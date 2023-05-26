@@ -36,7 +36,7 @@ export const TodoForm: React.FC = () => {
 
       setTodos((prevTodos) => [...prevTodos, todo]);
     } catch {
-      setError(TodoError.ADD);
+      setError(TodoError.UNABLE_ADD);
     } finally {
       setIsCreating(false);
     }

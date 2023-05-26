@@ -24,9 +24,8 @@ export const App: React.FC = () => {
       const todosFromServer = await getTodos(USER_ID);
 
       setTodos(todosFromServer);
-    } catch (errorData) {
-      console.log(errorData);
-      setError(TodoError.LOAD);
+    } catch {
+      setError(TodoError.UNABLE_LOAD);
     }
   };
 
