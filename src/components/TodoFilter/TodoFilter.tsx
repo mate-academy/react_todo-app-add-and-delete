@@ -1,25 +1,26 @@
 import classNames from 'classnames';
-import { TodoType } from '../../types/Todo';
 
 export type Filters = 'all' | 'active' | 'completed';
 
 type TodoFilterProps = {
   activeFilter: Filters;
+  completedTodosCount: number;
+  activeTodosCount: number;
   changeFilter: (filterName: Filters) => void;
-  completedTodos: TodoType[];
-  activeTodos: TodoType[];
+  clearCompleted: () => void;
 };
 
 export const TodoFilter = ({
   changeFilter,
   activeFilter,
-  completedTodos,
-  activeTodos,
+  completedTodosCount,
+  activeTodosCount,
+  clearCompleted,
 }: TodoFilterProps) => {
   return (
     <footer className="todoapp__footer">
       <span className="todo-count">
-        {`${activeTodos.length} items left`}
+        {`${activeTodosCount} items left`}
       </span>
 
       <nav className="filter">
@@ -64,8 +65,12 @@ export const TodoFilter = ({
       </nav>
 
       {
-        completedTodos.length > 0 && (
-          <button type="button" className="todoapp__clear-completed">
+        completedTodosCount > 0 && (
+          <button
+            type="button"
+            className="todoapp__clear-completed"
+            onClick={clearCompleted}
+          >
             Clear completed
           </button>
         )
