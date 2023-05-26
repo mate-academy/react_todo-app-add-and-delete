@@ -10,25 +10,23 @@ import { TodoAppHeader } from './components/TodoAppHeader/TodoAppHeader';
 import { TodoAppContent } from './components/TodoAppContent/TodoAppContent';
 import { TodoAppFooter } from './components/TodoAppFooter/TodoAppFooter';
 import { Notifications } from './components/Notifications/Notifications';
-import { client } from './utils/fetchClient';
 import { Todo } from './types/Todo';
 import { FilterType } from './types/FilterType';
 import { ErrorType } from './types/ErrorType';
-import { TodoPostData } from './types/TodoPostData';
-
-const USER_ID = 10308;
-
-const getTodos = () => client.get<Todo[]>(`/todos?userId=${USER_ID}`);
-const postTodo = (data: TodoPostData) => client.post<Todo>(`/todos?userId=${USER_ID}`, data);
-const deleteTodo = (todoId: number) => client.delete(`/todos/${todoId}`);
+import {
+  USER_ID,
+  getTodos,
+  postTodo,
+  deleteTodo,
+} from './api/todos';
 
 const prepareTodos = (todoList: Todo[], filterType: FilterType) => (
   todoList.filter(todo => {
     switch (filterType) {
-      case FilterType.ACTIVE:
+      case FilterType.Active:
         return !todo.completed;
 
-      case FilterType.COMPLETED:
+      case FilterType.Completed:
         return todo.completed;
 
       default:
@@ -43,19 +41,19 @@ const getActiveTodosCount = (todoList: Todo[]) => (
 
 export const App: React.FC = () => {
   const [todoList, setTodoList] = useState<Todo[] | null>(null);
-  const [filterType, setFilterType] = useState(FilterType.ALL);
-  const [errorType, setErrorType] = useState(ErrorType.NONE);
+  const [filterType, setFilterType] = useState(FilterType.All);
+  const [errorType, setErrorType] = useState(ErrorType.None);
   const [isErrorShown, setIsErrorShown] = useState(false);
   const [todoInputValue, setTodoInputValue] = useState('');
   const [tempTodo, setTempTodo] = useState<Todo | null>(null);
   const [isAddDisabled, setIsAddDisabled] = useState(false);
   const [deletingId, setDeletingId] = useState<number | null>(null);
 
-  const getTodoList = useCallback(async () => {
+  const getTodoList = async () => {
     const todos = await getTodos();
 
     setTodoList(todos);
-  }, []);
+  };
 
   const preparedTodos = useMemo(() => (
     prepareTodos(todoList || [], filterType)
@@ -69,18 +67,18 @@ export const App: React.FC = () => {
     ? activeTodosCount < todoList.length
     : false;
 
-  const handleFilterChange = (newFilterType: FilterType) => {
+  const handleFilterChange = useCallback((newFilterType: FilterType) => {
     setFilterType(newFilterType);
-  };
+  }, []);
 
-  const handleTodoInputChange = (value: string) => {
+  const handleTodoInputChange = useCallback((value: string) => {
     setIsErrorShown(false);
 
     setTodoInputValue(value);
-  };
+  }, [todoList]);
 
-  const executePostTodo = () => {
-    const addedTodo = {
+  const executePostTodo = useCallback(async () => {
+    const postedTodo = {
       title: todoInputValue,
       userId: USER_ID,
       completed: false,
@@ -88,57 +86,56 @@ export const App: React.FC = () => {
 
     setTempTodo({
       id: 0,
-      ...addedTodo,
+      ...postedTodo,
     });
 
-    postTodo(addedTodo)
-      .then(response => {
-        const {
-          id,
-          title,
-          userId,
-          completed,
-        } = response;
-        const newTodo = {
-          id,
-          title,
-          userId,
-          completed,
-        };
+    try {
+      const {
+        id,
+        title,
+        userId,
+        completed,
+      } = await postTodo(postedTodo);
 
-        setTodoList(currentList => (
-          currentList
-            ? [...currentList, newTodo]
-            : [newTodo]
-        ));
-      })
-      .catch(() => {
-        setErrorType(ErrorType.ADD);
-        setIsErrorShown(true);
-        throw new Error('Add todo error');
-      })
-      .finally(() => {
-        setTempTodo(null);
-      });
-  };
+      const newTodo = {
+        id,
+        title,
+        userId,
+        completed,
+      };
 
-  const handleAddTodo = async (event: FormEvent<HTMLFormElement>) => {
+      setTodoList(currentList => (
+        currentList
+          ? [...currentList, newTodo]
+          : [newTodo]
+      ));
+    } catch {
+      setErrorType(ErrorType.Add);
+      setIsErrorShown(true);
+    } finally {
+      setTempTodo(null);
+    }
+  }, [todoInputValue]);
+
+  const handleAddTodo = useCallback(async (
+    event: FormEvent<HTMLFormElement>,
+  ) => {
     event.preventDefault();
 
     if (todoInputValue.trim().length === 0) {
       setIsErrorShown(true);
-      setErrorType(ErrorType.TITLE);
+      setErrorType(ErrorType.Title);
 
       return;
     }
 
     setIsAddDisabled(true);
-    executePostTodo();
+    await executePostTodo();
     setIsAddDisabled(false);
     setTodoInputValue('');
-  };
+  }, [todoInputValue]);
 
-  const handleDeleteTodo = async (todoId: number) => {
+  const handleDeleteTodo = useCallback(async (todoId: number) => {
     setDeletingId(todoId);
 
     try {
@@ -148,16 +145,16 @@ export const App: React.FC = () => {
 
       setTodoList(newList);
     } catch (error) {
-      setErrorType(ErrorType.DELETE);
+      setErrorType(ErrorType.Delete);
       setIsErrorShown(true);
     } finally {
       setDeletingId(null);
     }
-  };
+  }, [todoList]);
 
-  const handleCloseError = () => {
+  const handleCloseError = useCallback(() => {
     setIsErrorShown(false);
-  };
+  }, []);
 
   useEffect(() => {
     getTodoList();
@@ -185,7 +182,7 @@ export const App: React.FC = () => {
               todoList={preparedTodos}
               tempTodo={tempTodo}
               deletingId={deletingId}
-              onDeleteClick={handleDeleteTodo}
+              onDelete={handleDeleteTodo}
             />
 
             <TodoAppFooter
@@ -200,8 +197,8 @@ export const App: React.FC = () => {
 
       <Notifications
         errorType={errorType}
-        isErrorShown={isErrorShown}
-        onCloseClick={handleCloseError}
+        isError={isErrorShown}
+        onClose={handleCloseError}
       />
     </div>
   );

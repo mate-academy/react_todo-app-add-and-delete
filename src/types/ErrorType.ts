@@ -1,7 +1,7 @@
 export enum ErrorType {
-  NONE = 'none',
-  ADD = 'add',
-  DELETE = 'delete',
-  EDIT = 'edit',
-  TITLE = 'title',
+  None = 'none',
+  Add = 'add',
+  Delete = 'delete',
+  Edit = 'edit',
+  Title = 'title',
 }

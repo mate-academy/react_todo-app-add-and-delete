@@ -1,28 +1,28 @@
-import classNames from 'classnames';
+import cn from 'classnames';
 import { Todo } from '../../types/Todo';
 
 type Props = {
   todo: Todo;
   deletingId: number | null;
-  onDeleteClick: (id: number) => void;
+  onDelete: (id: number) => void;
 };
 
 export const TodoItem: React.FC<Props> = ({
   todo,
   deletingId,
-  onDeleteClick,
+  onDelete,
 }) => {
   const { id, title, completed: isCompleted } = todo;
 
   const handleDelete = () => {
-    onDeleteClick(id);
+    onDelete(id);
   };
 
   const isEdited = false;
 
   return (
     <div
-      className={classNames(
+      className={cn(
         'todo',
         { completed: isCompleted },
       )}
@@ -31,10 +31,6 @@ export const TodoItem: React.FC<Props> = ({
         <input
           type="checkbox"
           className="todo__status"
-          checked={isCompleted}
-          readOnly={isCompleted}
-          // empty onChange to temporaly get rid of console error about checked without onChange
-          onChange={() => {}}
         />
       </label>
 
@@ -63,7 +59,7 @@ export const TodoItem: React.FC<Props> = ({
       )}
 
       <div
-        className={classNames(
+        className={cn(
           'modal',
           'overlay',
           { 'is-active': id === 0 || id === deletingId },

@@ -5,14 +5,14 @@ type Props = {
   todoList: Todo[];
   tempTodo: Todo | null;
   deletingId: number | null;
-  onDeleteClick: (id: number) => void;
+  onDelete: (id: number) => void;
 };
 
 export const TodoAppContent: React.FC<Props> = ({
   todoList,
   tempTodo,
   deletingId,
-  onDeleteClick,
+  onDelete,
 }) => {
   return (
     <section className="todoapp__main">
@@ -21,14 +21,15 @@ export const TodoAppContent: React.FC<Props> = ({
           todo={todo}
           key={todo.id}
           deletingId={deletingId}
-          onDeleteClick={onDeleteClick}
+          onDelete={onDelete}
         />
       ))}
+
       {tempTodo && (
         <TodoItem
           todo={tempTodo}
           deletingId={deletingId}
-          onDeleteClick={onDeleteClick}
+          onDelete={onDelete}
         />
       )}
     </section>

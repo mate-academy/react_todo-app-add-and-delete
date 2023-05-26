@@ -4,16 +4,16 @@ import { ErrorType } from '../../types/ErrorType';
 
 type Props = {
   errorType: ErrorType;
-  isErrorShown: boolean;
-  onCloseClick: () => void;
+  isError: boolean;
+  onClose: () => void;
 };
 
 export const Notifications: React.FC<Props> = ({
   errorType,
-  isErrorShown,
-  onCloseClick,
+  isError,
+  onClose,
 }) => {
-  const errorMessage = errorType === ErrorType.TITLE
+  const errorMessage = errorType === ErrorType.Title
     ? 'Title can\'t be empty'
     : `Unable to ${errorType} a todo`;
 
@@ -21,13 +21,13 @@ export const Notifications: React.FC<Props> = ({
     <div
       className={classNames(
         'notification is-danger is-light has-text-weight-normal',
-        { hidden: !isErrorShown },
+        { hidden: !isError },
       )}
     >
       <button
         type="button"
         className="delete"
-        onClick={onCloseClick}
+        onClick={onClose}
       />
       {errorMessage}
     </div>
