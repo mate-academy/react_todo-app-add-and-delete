@@ -2,10 +2,10 @@ import React, { useState, useEffect } from 'react';
 import cn from 'classnames';
 
 type Props = {
-  errorMessage: string;
+  message: string;
 };
 
-export const Alert: React.FC<Props> = ({ errorMessage }) => {
+export const Alert: React.FC<Props> = ({ message }) => {
   const [hasAlert, setHasAlert] = useState(true);
 
   const closeAlert = () => {
@@ -16,7 +16,6 @@ export const Alert: React.FC<Props> = ({ errorMessage }) => {
     const timerID = setTimeout(closeAlert, 3000);
 
     return () => {
-      setHasAlert(false);
       clearTimeout(timerID);
     };
   }, []);
@@ -40,7 +39,7 @@ export const Alert: React.FC<Props> = ({ errorMessage }) => {
         onClick={closeAlert}
       />
 
-      {errorMessage}
+      {message}
     </div>
   );
 };

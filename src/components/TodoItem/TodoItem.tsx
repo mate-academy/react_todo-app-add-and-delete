@@ -1,4 +1,3 @@
-import { useState } from 'react';
 import cn from 'classnames';
 import { Todo } from '../../types/Todo';
 
@@ -8,15 +7,12 @@ interface Props {
 }
 
 export const TodoItem: React.FC<Props> = ({ todo, handleDelete }) => {
-  const [isHovered, setIsHovered] = useState(false);
-
   return (
     <div
       className={cn('todo', {
         completed: todo.completed,
       })}
-      onMouseEnter={() => setIsHovered(true)}
-      onMouseLeave={() => setIsHovered(false)}
+      style={{ position: 'relative' }}
     >
       <label className="todo__status-label">
         <input
@@ -28,15 +24,14 @@ export const TodoItem: React.FC<Props> = ({ todo, handleDelete }) => {
 
       <span className="todo__title">{todo.title}</span>
 
-      {isHovered && (
-        <button
-          type="button"
-          className="todo__remove"
-          onClick={() => handleDelete(todo.id)}
-        >
-          ×
-        </button>
-      )}
+      <button
+        type="button"
+        className="todo__remove"
+        style={{ position: 'absolute' }}
+        onClick={() => handleDelete(todo.id)}
+      >
+        ×
+      </button>
 
       <div className="modal overlay">
         <div className="modal-background has-background-white-ter" />

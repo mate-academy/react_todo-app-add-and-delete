@@ -1,3 +1,4 @@
+/* eslint-disable no-console */
 import React, { useEffect, useMemo, useState } from 'react';
 import { Todo } from './types/Todo';
 import { FilterOption } from './types/FilterOption';
@@ -14,18 +15,17 @@ const USER_ID = 10527;
 export const App: React.FC = () => {
   const [todos, setTodos] = useState<Todo[]>([]);
   const [filter, setFilter] = useState(FilterOption.All);
-  const [hasError, setHasError] = useState(false);
-  const [errorMessage, setErrorMessage] = useState('');
+  const [errorMessage, setErrorMessage] = useState<string>('');
   const [title, setTitle] = useState('');
   const [isLoading, setIsLoading] = useState(false);
   const [tempTodo, setTempTodo] = useState<Todo | null>(null);
 
+  const hasError = errorMessage !== '';
+
   const handleAlert = (alertMessage: string) => {
     setErrorMessage(alertMessage);
-    setHasError(true);
 
     setTimeout(() => {
-      setHasError(false);
       setErrorMessage('');
     }, 3000);
   };
@@ -63,26 +63,32 @@ export const App: React.FC = () => {
     }
 
     try {
+      setIsLoading(true);
+
       const todo = {
-        title,
         id: 0,
+        title,
         userId: USER_ID,
         completed: false,
       };
 
-      setIsLoading(true);
-
       await createTodo(todo);
-      setTempTodo(todo);
-
-      loadTodos();
 
       setIsLoading(false);
+
+      setTempTodo(todo);
+
+      setIsLoading(true);
+
+      await loadTodos();
+
+      setIsLoading(false);
+
       setTitle('');
     } catch {
       handleAlert(ErrorMessage.Add);
     } finally {
-      setTempTodo(null);
+      setTempTodo(null); // hides extra TodoItem after the list
     }
   };
 
@@ -142,7 +148,7 @@ export const App: React.FC = () => {
         )}
       </div>
 
-      {hasError && <Alert errorMessage={errorMessage} />}
+      {hasError && <Alert message={errorMessage} />}
     </div>
   );
 };
