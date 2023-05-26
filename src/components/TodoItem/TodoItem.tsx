@@ -8,15 +8,15 @@ interface Props {
 }
 
 export const TodoItem: React.FC<Props> = ({ todo, handleDelete }) => {
-  const [isHovered, setHover] = useState(false);
+  const [isHovered, setIsHovered] = useState(false);
 
   return (
     <div
       className={cn('todo', {
         completed: todo.completed,
       })}
-      onMouseEnter={() => setHover(true)}
-      onMouseLeave={() => setHover(false)}
+      onMouseEnter={() => setIsHovered(true)}
+      onMouseLeave={() => setIsHovered(false)}
     >
       <label className="todo__status-label">
         <input

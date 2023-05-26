@@ -9,9 +9,13 @@ interface Props {
   setFilter: (filter: FilterOption) => void;
 }
 
-export const Footer: React.FC<Props> = ({ todos, filter, setFilter }) => {
+export const Footer: React.FC<Props> = ({
+  todos,
+  filter,
+  setFilter,
+}) => {
   const completedTodos = todos.filter((todo) => todo.completed);
-  const hasCompletedTodo = todos.find((todo) => todo.completed);
+  const hasCompletedTodo = completedTodos.length > 0;
 
   return (
     <footer className="todoapp__footer">
@@ -21,31 +25,31 @@ export const Footer: React.FC<Props> = ({ todos, filter, setFilter }) => {
         <a
           href="#/"
           className={cn('filter__link', {
-            selected: filter === FilterOption.ALL,
+            selected: filter === FilterOption.All,
           })}
-          onClick={() => setFilter(FilterOption.ALL)}
+          onClick={() => setFilter(FilterOption.All)}
         >
-          {FilterOption.ALL}
+          {FilterOption.All}
         </a>
 
         <a
           href="#/active"
           className={cn('filter__link', {
-            selected: filter === FilterOption.ACTIVE,
+            selected: filter === FilterOption.Active,
           })}
-          onClick={() => setFilter(FilterOption.ACTIVE)}
+          onClick={() => setFilter(FilterOption.Active)}
         >
-          {FilterOption.ACTIVE}
+          {FilterOption.Active}
         </a>
 
         <a
           href="#/completed"
           className={cn('filter__link', {
-            selected: filter === FilterOption.COMPLETED,
+            selected: filter === FilterOption.Completed,
           })}
-          onClick={() => setFilter(FilterOption.COMPLETED)}
+          onClick={() => setFilter(FilterOption.Completed)}
         >
-          {FilterOption.COMPLETED}
+          {FilterOption.Completed}
         </a>
       </nav>
 

@@ -6,16 +6,19 @@ type Props = {
 };
 
 export const Alert: React.FC<Props> = ({ errorMessage }) => {
-  const [hasAlert, setHasAlert] = useState(false);
+  const [hasAlert, setHasAlert] = useState(true);
 
   const closeAlert = () => {
-    setHasAlert(true);
+    setHasAlert(false);
   };
 
   useEffect(() => {
     const timerID = setTimeout(closeAlert, 3000);
 
-    return () => clearTimeout(timerID);
+    return () => {
+      setHasAlert(false);
+      clearTimeout(timerID);
+    };
   }, []);
 
   return (
@@ -26,7 +29,7 @@ export const Alert: React.FC<Props> = ({ errorMessage }) => {
         'is-light',
         'has-text-weight-normal',
         {
-          hidden: hasAlert,
+          hidden: !hasAlert,
         },
       )}
     >
