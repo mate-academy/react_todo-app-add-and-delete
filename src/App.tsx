@@ -1,24 +1,66 @@
-/* eslint-disable max-len */
+/* eslint-disable no-console */
 /* eslint-disable jsx-a11y/control-has-associated-label */
-import React from 'react';
-import { UserWarning } from './UserWarning';
-
-const USER_ID = 0;
+import { useEffect } from 'react';
+import { useTodoContext } from './context/TodoContext';
+import { getTodos } from './api/todos';
+import { TodoError } from './types/Error';
+import { TodoList } from './components/TodoList';
+import { TodoForm } from './components/TodoForm';
+import { FooterFilter } from './components/FooterFilter';
+import { ErrorMessage } from './components/ErrorMessage';
+import { USER_ID } from './utils/constants';
 
 export const App: React.FC = () => {
-  if (!USER_ID) {
-    return <UserWarning />;
-  }
+  const {
+    todos,
+    error,
+    setTodos,
+    setError,
+  } = useTodoContext();
+
+  const loadTodos = async () => {
+    try {
+      setError(null);
+      const todosFromServer = await getTodos(USER_ID);
+
+      setTodos(todosFromServer);
+    } catch {
+      setError(TodoError.UNABLE_LOAD);
+    }
+  };
+
+  useEffect(() => {
+    loadTodos();
+  }, []);
 
   return (
-    <section className="section container">
-      <p className="title is-4">
-        Copy all you need from the prev task:
-        <br />
-        <a href="https://github.com/mate-academy/react_todo-app-loading-todos#react-todo-app-load-todos">React Todo App - Load Todos</a>
-      </p>
+    <div className="todoapp">
+      <h1 className="todoapp__title">todos</h1>
 
-      <p className="subtitle">Styles are already copied</p>
-    </section>
+      <div className="todoapp__content">
+        <header className="todoapp__header">
+          <button type="button" className="todoapp__toggle-all active" />
+
+          <TodoForm />
+        </header>
+
+        {todos.length > 0 && (
+          <>
+            <TodoList />
+
+            <footer className="todoapp__footer">
+              <span className="todo-count">
+                {`${todos.length} items left`}
+              </span>
+
+              <FooterFilter />
+            </footer>
+
+          </>
+        )}
+      </div>
+
+      {error && <ErrorMessage />}
+    </div>
   );
 };
