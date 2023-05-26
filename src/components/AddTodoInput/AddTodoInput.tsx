@@ -1,18 +1,21 @@
+import { useState } from 'react';
+import { Todo } from '../../types/Todo';
+import { ErrorMessage } from '../../types/ErrorMessage';
+
+const USER_ID = 10527;
+
 interface Props {
-  title: string;
-  setTitle: (title: string) => void;
-  addTodo: () => void;
-  isLoading: boolean;
-  setIsLoading: (boolean: boolean) => void;
+  handleAddTodo: (newTodo: Todo) => void;
+  handleAlert: (message: string) => void;
 }
 
 export const AddTodoInput: React.FC<Props> = ({
-  addTodo,
-  title,
-  setTitle,
-  isLoading,
-  setIsLoading,
+  handleAddTodo,
+  handleAlert,
 }) => {
+  const [title, setTitle] = useState('');
+  const [isInputDisabled, setIsInputDisabled] = useState(false);
+
   const handleTitleChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     const typedInput: string = event.target.value;
 
@@ -22,9 +25,25 @@ export const AddTodoInput: React.FC<Props> = ({
   const handleSubmit = (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
 
-    setIsLoading(true);
-    addTodo();
-    setIsLoading(false);
+    if (!title) {
+      handleAlert(ErrorMessage.EmptyTitle);
+
+      return;
+    }
+
+    const tempTodo: Todo = {
+      id: 0,
+      title,
+      completed: false,
+      userId: USER_ID,
+    };
+
+    setIsInputDisabled(true);
+
+    handleAddTodo(tempTodo);
+
+    setTitle('');
+    setIsInputDisabled(false);
   };
 
   return (
@@ -35,7 +54,7 @@ export const AddTodoInput: React.FC<Props> = ({
         placeholder="What needs to be done?"
         value={title}
         onChange={handleTitleChange}
-        disabled={isLoading}
+        disabled={isInputDisabled}
       />
     </form>
   );

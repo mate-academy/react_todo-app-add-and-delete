@@ -1,5 +1,8 @@
 import React, {
-  useEffect, useMemo, useState, useCallback,
+  useEffect,
+  useMemo,
+  useState,
+  useCallback,
 } from 'react';
 import { Todo } from './types/Todo';
 import { FilterOption } from './types/FilterOption';
@@ -17,29 +20,8 @@ export const App: React.FC = () => {
   const [todos, setTodos] = useState<Todo[]>([]);
   const [filter, setFilter] = useState(FilterOption.All);
   const [errorMessage, setErrorMessage] = useState<string>('');
-  const [title, setTitle] = useState('');
   const [isLoading, setIsLoading] = useState(false);
   const [tempTodo, setTempTodo] = useState<Todo | null>(null);
-
-  const hasError = errorMessage !== '';
-
-  const handleAlert = useCallback((alertMessage: string) => {
-    setErrorMessage(alertMessage);
-
-    setTimeout(() => {
-      setErrorMessage('');
-    }, 3000);
-  }, []);
-
-  const loadTodos = useCallback(async () => {
-    try {
-      const todosFromServer = await getTodos(USER_ID);
-
-      setTodos(todosFromServer);
-    } catch {
-      handleAlert(ErrorMessage.Load);
-    }
-  }, []);
 
   const visibleTodos: Todo[] = useMemo(() => {
     return todos.filter((todo) => {
@@ -56,58 +38,70 @@ export const App: React.FC = () => {
     });
   }, [todos, filter]);
 
-  const addTodo = async () => {
-    if (!title) {
-      handleAlert(ErrorMessage.EmptyTitle);
+  const hasError = errorMessage !== '';
 
-      return;
-    }
+  const handleAlert = useCallback((alertMessage: string) => {
+    setErrorMessage(alertMessage);
 
-    try {
-      setIsLoading(true);
+    setTimeout(() => {
+      setErrorMessage('');
+    }, 3000);
+  }, []);
 
-      const todo = {
-        id: 0,
-        title,
-        userId: USER_ID,
-        completed: false,
-      };
-
-      await createTodo(todo);
-
-      setIsLoading(false);
-
-      setTempTodo(todo);
-
-      setIsLoading(true);
-
-      await loadTodos();
-
-      setIsLoading(false);
-
-      setTitle('');
-    } catch {
-      handleAlert(ErrorMessage.Add);
-    } finally {
-      setTempTodo(null); // hides extra TodoItem after the list
-    }
-  };
-
-  const handleDelete = useCallback(async (todoId: number) => {
+  const loadTodos = useCallback(async () => {
     setIsLoading(true);
 
     try {
-      await deleteTodo(todoId);
+      const todosFromServer = await getTodos(USER_ID);
 
-      const filteredTodos = visibleTodos.filter((todo) => todo.id !== todoId);
-
-      setTodos(filteredTodos);
-    } catch (error) {
-      handleAlert(ErrorMessage.Delete);
+      setTodos(todosFromServer);
+    } catch {
+      handleAlert(ErrorMessage.Load);
     } finally {
       setIsLoading(false);
     }
   }, []);
+
+  const handleAddTodo = useCallback(async (newTodo: Todo) => {
+    setTempTodo(newTodo);
+
+    setIsLoading(true);
+
+    try {
+      const todoToAdd = await createTodo({
+        id: 0,
+        title: newTodo.title,
+        completed: false,
+        userId: USER_ID,
+      });
+
+      setTodos((prevTodos) => [...prevTodos, todoToAdd]);
+    } catch {
+      handleAlert(ErrorMessage.Add);
+    } finally {
+      setIsLoading(false);
+      setTempTodo(null);
+    }
+  }, []);
+
+  const handleDelete = useCallback(
+    async (todoId: number) => {
+      setIsLoading(true);
+
+      try {
+        await deleteTodo(todoId);
+
+        const filteredTodos = visibleTodos.filter((todo) => todo.id !== todoId);
+
+        setTodos(filteredTodos);
+      } catch (error) {
+        handleAlert(ErrorMessage.Delete);
+      } finally {
+        setIsLoading(false);
+      }
+    },
+    [visibleTodos],
+  );
 
   useEffect(() => {
     loadTodos();
@@ -132,11 +126,8 @@ export const App: React.FC = () => {
           )}
 
           <AddTodoInput
-            title={title}
-            setTitle={setTitle}
-            addTodo={addTodo}
-            isLoading={isLoading}
-            setIsLoading={setIsLoading}
+            handleAddTodo={handleAddTodo}
+            handleAlert={handleAlert}
           />
         </header>
 
@@ -146,6 +137,7 @@ export const App: React.FC = () => {
               todos={visibleTodos}
               tempTodo={tempTodo}
               handleDelete={handleDelete}
+              isLoading={isLoading}
             />
 
             <Footer todos={todos} filter={filter} setFilter={setFilter} />
