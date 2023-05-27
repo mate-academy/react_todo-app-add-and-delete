@@ -6,31 +6,39 @@ interface Props {
   todos: Todo[];
   tempTodo: Todo | null;
   handleDelete: (todoId: number) => void;
-  isLoading: boolean;
+  isBeingAdded: boolean;
+  isClearingDoneTodos: boolean;
 }
 
 export const TodoList: React.FC<Props> = ({
   todos,
   tempTodo,
   handleDelete,
-  isLoading,
+  isBeingAdded,
+  isClearingDoneTodos,
 }) => {
   return (
     <section className="todoapp__main">
-      {todos.map((todo) => (
-        <TodoItem
-          key={`todos-${todo.id}`}
-          todo={todo}
-          handleDelete={handleDelete}
-        />
-      ))}
+      {todos.map((todo) => {
+        // Only completed todos are being cleared
+        const isTodoCompleted = todo.completed;
+
+        return (
+          <TodoItem
+            key={`todos-${todo.id}`}
+            todo={todo}
+            handleDelete={handleDelete}
+            isBeingCleared={isClearingDoneTodos && isTodoCompleted}
+          />
+        );
+      })}
 
       {tempTodo && (
         <TodoItem
           key={`tempTodo-${tempTodo.id}`}
           todo={tempTodo}
           handleDelete={handleDelete}
-          isLoading={isLoading}
+          isBeingAdded={isBeingAdded}
         />
       )}
     </section>

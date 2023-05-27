@@ -18,9 +18,11 @@ const USER_ID = 10527;
 
 export const App: React.FC = () => {
   const [todos, setTodos] = useState<Todo[]>([]);
-  const [filter, setFilter] = useState(FilterOption.All);
+  const [filter, setFilter] = useState<string>(FilterOption.All);
   const [errorMessage, setErrorMessage] = useState<string>('');
-  const [isLoading, setIsLoading] = useState(false);
+  const [isBeingAdded, setIsBeingAdded] = useState<boolean>(false);
+  const [isClearingDoneTodos, setIsClearingDoneTodos]
+    = useState<boolean>(false);
   const [tempTodo, setTempTodo] = useState<Todo | null>(null);
 
   const visibleTodos: Todo[] = useMemo(() => {
@@ -49,23 +51,19 @@ export const App: React.FC = () => {
   }, []);
 
   const loadTodos = useCallback(async () => {
-    setIsLoading(true);
-
     try {
       const todosFromServer = await getTodos(USER_ID);
 
       setTodos(todosFromServer);
     } catch {
       handleAlert(ErrorMessage.Load);
-    } finally {
-      setIsLoading(false);
     }
   }, []);
 
   const handleAddTodo = useCallback(async (newTodo: Todo) => {
     setTempTodo(newTodo);
 
-    setIsLoading(true);
+    setIsBeingAdded(true);
 
     try {
       const todoToAdd = await createTodo({
@@ -79,29 +77,51 @@ export const App: React.FC = () => {
     } catch {
       handleAlert(ErrorMessage.Add);
     } finally {
-      setIsLoading(false);
+      setIsBeingAdded(false);
       setTempTodo(null);
     }
   }, []);
 
   const handleDelete = useCallback(
     async (todoId: number) => {
-      setIsLoading(true);
-
       try {
         await deleteTodo(todoId);
 
-        const filteredTodos = visibleTodos.filter((todo) => todo.id !== todoId);
+        const filteredTodos = todos.filter((todo) => todo.id !== todoId);
 
         setTodos(filteredTodos);
       } catch (error) {
         handleAlert(ErrorMessage.Delete);
-      } finally {
-        setIsLoading(false);
       }
     },
+    [todos],
+  );
+
+  // Get an array of ids for completed todos
+  const completedIds = useMemo(
+    () => visibleTodos.filter((todo) => todo.completed).map((todo) => todo.id),
     [visibleTodos],
   );
+
+  const handleClearCompleted = useCallback(async () => {
+    setIsClearingDoneTodos(true);
+
+    try {
+      // Delete completed todos in parallel using Promise.all()
+      await Promise.all(completedIds.map((id) => deleteTodo(id)));
+
+      // Remove completed todos from visibleTodos
+      const uncompletedTodos = todos.filter(
+        (todo) => !completedIds.includes(todo.id),
+      );
+
+      setTodos(uncompletedTodos);
+    } catch (error) {
+      handleAlert(ErrorMessage.Delete);
+    } finally {
+      setIsClearingDoneTodos(false);
+    }
+  }, [todos, visibleTodos, deleteTodo]);
 
   useEffect(() => {
     loadTodos();
@@ -137,10 +157,16 @@ export const App: React.FC = () => {
               todos={visibleTodos}
               tempTodo={tempTodo}
               handleDelete={handleDelete}
-              isLoading={isLoading}
+              isBeingAdded={isBeingAdded}
+              isClearingDoneTodos={isClearingDoneTodos}
             />
 
-            <Footer todos={todos} filter={filter} setFilter={setFilter} />
+            <Footer
+              todos={todos}
+              filter={filter}
+              setFilter={setFilter}
+              handleClearCompleted={handleClearCompleted}
+            />
           </>
         )}
       </div>

@@ -5,22 +5,24 @@ import { Todo } from '../../types/Todo';
 interface Props {
   todo: Todo;
   handleDelete: (todoId: number) => void;
-  isLoading?: boolean;
+  isBeingAdded?: boolean;
+  isBeingCleared?: boolean;
 }
 
 export const TodoItem: React.FC<Props> = ({
   todo,
   handleDelete,
-  isLoading = false,
+  isBeingAdded = false,
+  isBeingCleared = false,
 }) => {
-  const [isDeleting, setIsDeleting] = useState(false);
+  const [isBeingDeleted, setIsBeingDeleted] = useState(false);
 
   const onDelete = async () => {
-    setIsDeleting(true);
+    setIsBeingDeleted(true);
 
     await handleDelete(todo.id);
 
-    setIsDeleting(false);
+    setIsBeingDeleted(false);
   };
 
   return (
@@ -45,14 +47,14 @@ export const TodoItem: React.FC<Props> = ({
         className="todo__remove"
         style={{ position: 'absolute' }}
         onClick={onDelete}
-        disabled={isLoading}
+        disabled={isBeingAdded}
       >
         ×
       </button>
 
       <div
         className={cn('modal overlay', {
-          'is-active': isLoading || isDeleting,
+          'is-active': isBeingAdded || isBeingDeleted || isBeingCleared,
         })}
       >
         <div className="modal-background has-background-white-ter" />

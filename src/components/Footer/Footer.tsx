@@ -7,12 +7,14 @@ interface Props {
   todos: Todo[];
   filter: string;
   setFilter: (filter: FilterOption) => void;
+  handleClearCompleted: () => void;
 }
 
 export const Footer: React.FC<Props> = ({
   todos,
   filter,
   setFilter,
+  handleClearCompleted,
 }) => {
   const completedTodos = todos.filter((todo) => todo.completed);
   const hasCompletedTodo = completedTodos.length > 0;
@@ -54,7 +56,11 @@ export const Footer: React.FC<Props> = ({
       </nav>
 
       {hasCompletedTodo && (
-        <button type="button" className="todoapp__clear-completed">
+        <button
+          type="button"
+          className="todoapp__clear-completed"
+          onClick={handleClearCompleted}
+        >
           Clear completed
         </button>
       )}
