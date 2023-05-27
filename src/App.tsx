@@ -108,7 +108,7 @@ export const App: React.FC = () => {
       {error && (
         <ErrorNotification
           onChangeError={setError}
-          hasError={error}
+          error={error}
         />
       )}
     </div>

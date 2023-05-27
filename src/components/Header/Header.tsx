@@ -28,7 +28,7 @@ export const Header:FC<Props> = ({
   const handleSubmit = useCallback(async (event: FormEvent) => {
     event.preventDefault();
 
-    if (!query) {
+    if (!query.trim()) {
       setError(Errors.Title);
 
       return;
