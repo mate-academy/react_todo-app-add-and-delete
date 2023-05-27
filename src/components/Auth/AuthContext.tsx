@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
-import { User } from '../types/User';
-import { AuthForm } from '../components/AuthForm';
+import { User } from '../../types/User';
+import { AuthForm } from './AuthForm';
 
 export const AuthContext = React.createContext<User | null>(null);
 
@@ -15,5 +15,9 @@ export const AuthProvider: React.FC<Props> = ({ children }) => {
     return <AuthForm onLogin={setUser} />;
   }
 
-  return <AuthContext.Provider value={user}>{children}</AuthContext.Provider>;
+  return (
+    <AuthContext.Provider value={user}>
+      {children}
+    </AuthContext.Provider>
+  );
 };

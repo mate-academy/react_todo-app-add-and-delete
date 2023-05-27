@@ -1,10 +1,10 @@
 import classNames from 'classnames';
 import React, { useEffect, useState } from 'react';
-import { createUser, getUserByEmail } from '../api/users';
-import { User } from '../types/User';
+import { createUser, getUserByEmail } from '../../api/users';
+import { User } from '../../types/User';
 
 export type Props = {
-  onLogin: (user: User) => void;
+  onLogin: (user: User) => void,
 };
 
 export const AuthForm: React.FC<Props> = ({ onLogin }) => {
@@ -46,7 +46,8 @@ export const AuthForm: React.FC<Props> = ({ onLogin }) => {
   };
 
   const registerUser = () => {
-    return createUser({ name, email }).then(saveUser);
+    return createUser({ name, email })
+      .then(saveUser);
   };
 
   const handleSubmit = async (event: React.FormEvent) => {
@@ -69,19 +70,13 @@ export const AuthForm: React.FC<Props> = ({ onLogin }) => {
   };
 
   return (
-    <form
-      onSubmit={handleSubmit}
-      className="box mt-5"
-    >
+    <form onSubmit={handleSubmit} className="box mt-5">
       <h1 className="title is-3">
         {needToRegister ? 'You need to register' : 'Log in to open todos'}
       </h1>
 
       <div className="field">
-        <label
-          className="label"
-          htmlFor="user-email"
-        >
+        <label className="label" htmlFor="user-email">
           Email
         </label>
 
@@ -100,7 +95,7 @@ export const AuthForm: React.FC<Props> = ({ onLogin }) => {
             disabled={loading || needToRegister}
             value={email}
             required
-            onChange={(e) => setEmail(e.target.value)}
+            onChange={e => setEmail(e.target.value)}
           />
 
           <span className="icon is-small is-left">
@@ -115,10 +110,7 @@ export const AuthForm: React.FC<Props> = ({ onLogin }) => {
 
       {needToRegister && (
         <div className="field">
-          <label
-            className="label"
-            htmlFor="user-name"
-          >
+          <label className="label" htmlFor="user-name">
             Your Name
           </label>
 
@@ -138,7 +130,7 @@ export const AuthForm: React.FC<Props> = ({ onLogin }) => {
               minLength={4}
               disabled={loading}
               value={name}
-              onChange={(e) => setName(e.target.value)}
+              onChange={e => setName(e.target.value)}
             />
 
             <span className="icon is-small is-left">
