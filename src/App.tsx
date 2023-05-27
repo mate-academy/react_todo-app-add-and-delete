@@ -1,5 +1,5 @@
-/* eslint-disable jsx-a11y/control-has-associated-label */
 import { useMemo, useState } from 'react';
+
 import { UserWarning } from './UserWarning';
 import { TodoList } from './components/TodoList/TodoList';
 import { Filters, TodoFilter } from './components/TodoFilter/TodoFilter';
@@ -61,7 +61,11 @@ export const App = () => {
       <div className="todoapp__content">
         <header className="todoapp__header">
           {active.length > 0 && (
-            <button type="button" className="todoapp__toggle-all active" />
+            <button
+              type="button"
+              className="todoapp__toggle-all active"
+              aria-label="AddTodo"
+            />
           )}
 
           <TodoForm addTodo={handleAddTodo} loading={!!tempTodo} />

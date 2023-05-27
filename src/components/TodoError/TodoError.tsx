@@ -1,5 +1,3 @@
-/* eslint-disable jsx-a11y/control-has-associated-label */
-
 import { useEffect, useState } from 'react';
 import classNames from 'classnames';
 
@@ -29,6 +27,7 @@ export const TodoError = ({ errorMsg }: TodoErrorProps) => {
         type="button"
         className="delete"
         onClick={() => setHidden(true)}
+        aria-label="clear Error notification"
       />
 
       {errorMsg}
