@@ -1,6 +1,6 @@
 import cn from 'classnames';
 import { Todo } from '../../types/Todo';
-import { TodoFilter } from '../../types/Select';
+import { TodoFilter } from '../../types/TodoFilter';
 import { deleteTodo } from '../../api/todos';
 import { ErrorMessage } from '../../types/ErrorMessage';
 

@@ -8,7 +8,7 @@ import { UserWarning } from './UserWarning';
 import { Warnings } from './components/warnings/Warnings';
 import { getTodos } from './api/todos';
 import { Todo } from './types/Todo';
-import { TodoFilter } from './types/Select';
+import { TodoFilter } from './types/TodoFilter';
 import { ErrorMessage } from './types/ErrorMessage';
 
 const USER_ID = 10514;
