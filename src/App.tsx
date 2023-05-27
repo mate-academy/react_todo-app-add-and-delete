@@ -46,7 +46,7 @@ export const App: React.FC = () => {
 
       case Completed:
         return todoList
-          .filter((todo: Todo) => todo.completed);
+          .filter((todo: Todo) => !todo.id || todo.completed);
 
       default:
         return todoList;
