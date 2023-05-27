@@ -1,8 +1,8 @@
 import cn from 'classnames';
 // import { useState } from 'react';
 import { Todo } from '../../types/Todo';
-import { deleteTodos } from '../../api/todos';
-import { Error } from '../../types/Error';
+import { deleteTodo } from '../../api/todos';
+import { ErrorMessage } from '../../types/ErrorMessage';
 
 type Props = {
   todoList: Todo[];
@@ -21,9 +21,9 @@ export const List: React.FC<Props> = ({
 }) => {
   function onDeleteTodo(id: number) {
     setProcessings(id);
-    deleteTodos(id)
+    deleteTodo(id)
       .then(() => setTodoList(todoList.filter((todo: Todo) => todo.id !== id)))
-      .catch(() => setError(Error.Delete))
+      .catch(() => setError(ErrorMessage.Delete))
       .finally(() => setProcessings(null));
   }
 

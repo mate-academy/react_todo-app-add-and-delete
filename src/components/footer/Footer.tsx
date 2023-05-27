@@ -1,19 +1,19 @@
 import cn from 'classnames';
 import { Todo } from '../../types/Todo';
-import { Select } from '../../types/Select';
-import { deleteTodos } from '../../api/todos';
-import { Error } from '../../types/Error';
+import { TodoFilter } from '../../types/Select';
+import { deleteTodo } from '../../api/todos';
+import { ErrorMessage } from '../../types/ErrorMessage';
 
 type Props = {
   filterBy: string,
-  setFilterBy: (select: Select) => void,
+  setFilterBy: (select: TodoFilter) => void,
   todoList: Todo[],
   setTodoList:(todos:Todo[]) => void,
-  setError:(error: Error) => void,
+  setError:(error: ErrorMessage) => void,
   setProcessings:(id: number | null) => void,
 };
 
-const { All, Active, Completed } = Select;
+const { All, Active, Completed } = TodoFilter;
 
 export const Footer: React.FC<Props> = ({
   filterBy,
@@ -29,16 +29,18 @@ export const Footer: React.FC<Props> = ({
   const leftItems = todoList.length - completedTodos;
 
   function onDeleteCompleted() {
+    const activeTodos = todoList.filter(todo => !todo.completed);
+    const promises: Promise<unknown> [] = [];
+
     todoList.forEach(todo => {
       if (todo.completed) {
         setProcessings(todo.id);
-        deleteTodos(todo.id)
-          .then(() => {
-            setTodoList(todoList.filter(item => !item.completed));
-          })
-          .catch(() => setError(Error.Delete));
+        promises.push(deleteTodo(todo.id));
       }
     });
+    Promise.all(promises)
+      .then(() => setTodoList(activeTodos))
+      .catch(() => setError(ErrorMessage.Delete));
   }
 
   return (
@@ -67,8 +69,7 @@ export const Footer: React.FC<Props> = ({
 
         <a
           href="#/completed"
-          className={cn('filter__link',
-            { selected: filterBy === Completed })}
+          className={cn('filter__link', { selected: filterBy === Completed })}
           onClick={() => setFilterBy(Completed)}
         >
           {Completed}

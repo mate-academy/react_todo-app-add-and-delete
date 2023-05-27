@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-unused-expressions */
 /* eslint-disable jsx-a11y/control-has-associated-label */
 import React, { useEffect, useState } from 'react';
 import { Header } from './components/header/Header';
@@ -7,23 +8,23 @@ import { UserWarning } from './UserWarning';
 import { Warnings } from './components/warnings/Warnings';
 import { getTodos } from './api/todos';
 import { Todo } from './types/Todo';
-import { Select } from './types/Select';
-import { Error } from './types/Error';
+import { TodoFilter } from './types/Select';
+import { ErrorMessage } from './types/ErrorMessage';
 
 const USER_ID = 10514;
 
-const { All, Active, Completed } = Select;
+const { All, Active, Completed } = TodoFilter;
 
 export const App: React.FC = () => {
-  const [todoList, setTodoList] = useState<[] | Todo[]>([]);
+  const [todoList, setTodoList] = useState<Todo[]>([]);
   const [filterBy, setFilterBy] = useState(All);
   const [error, setError] = useState('');
-  const [processings, setProcessings] = useState<number[] | []>([]);
+  const [processings, setProcessings] = useState<number[]>([]);
 
   const loadTodos = () => {
     getTodos(USER_ID)
       .then((todos) => setTodoList(todos))
-      .catch(() => setError(Error.Get));
+      .catch(() => setError(ErrorMessage.Get));
   };
 
   useEffect(() => {
@@ -45,7 +46,7 @@ export const App: React.FC = () => {
 
       case Completed:
         return todoList
-          .filter((todo: Todo) => todo.completed || todo.completed === null);
+          .filter((todo: Todo) => todo.completed);
 
       default:
         return todoList;
@@ -53,7 +54,6 @@ export const App: React.FC = () => {
   }
 
   function getactiveId(id : number | null) {
-    // eslint-disable-next-line @typescript-eslint/no-unused-expressions
     !id ? setProcessings([]) : setProcessings(prev => [...prev, id]);
   }
 

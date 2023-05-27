@@ -1,9 +1,9 @@
 /* eslint-disable jsx-a11y/control-has-associated-label */
 import cn from 'classnames';
 import { useEffect, useState } from 'react';
-import { patchTodos, postTodos } from '../../api/todos';
+import { updateTodo, postTodo } from '../../api/todos';
 import { Todo } from '../../types/Todo';
-import { Error } from '../../types/Error';
+import { ErrorMessage } from '../../types/ErrorMessage';
 
 type Props = {
   setTodoList:(todo: Todo[]) => void,
@@ -28,21 +28,21 @@ export const Header:React.FC<Props> = ({
   function onAddTodo(key: string, id: number, todoTitle: string) {
     if (key === 'Enter') {
       if (!inputValue) {
-        setError(Error.Title);
+        setError(ErrorMessage.Title);
 
         return;
       }
 
       const newTodo = {
         title: inputValue,
-        completed: null,
+        completed: false,
         userId: 10514,
         id: 0,
       };
 
       setTodoList([...todoList, newTodo]);
 
-      postTodos(id, todoTitle)
+      postTodo(id, todoTitle)
         .then(response => {
           setTodoList(todoList.filter(todo => todo.id));
           setTodoList([...todoList, response]);
@@ -50,7 +50,7 @@ export const Header:React.FC<Props> = ({
         })
         .catch(() => {
           setTodoList(todoList.filter(todo => todo.id));
-          setError(Error.Post);
+          setError(ErrorMessage.Post);
         });
     }
   }
@@ -60,7 +60,7 @@ export const Header:React.FC<Props> = ({
       if (todo.completed !== allActiveButton) {
         setProcessings(todo.id);
 
-        patchTodos(todo.id, { ...todo, completed: allActiveButton })
+        updateTodo(todo.id, { ...todo, completed: allActiveButton })
           .then(() => setTodoList(todoList.map(item => {
             return { ...item, completed: allActiveButton };
           })))
