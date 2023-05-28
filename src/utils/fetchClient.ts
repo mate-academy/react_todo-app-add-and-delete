@@ -31,7 +31,11 @@ function request<T>(
     .then(() => fetch(BASE_URL + url, options))
     .then(response => {
       if (!response.ok) {
-        throw new Error();
+        throw new Error(`${response.status} - ${response.statusText}`);
+      }
+
+      if (!response.headers.get('content-type')?.includes('application/json')) {
+        return new Error('Content-type is not supported');
       }
 
       return response.json();

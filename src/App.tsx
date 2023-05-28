@@ -4,9 +4,10 @@ import React, { useEffect, useState } from 'react';
 import { UserWarning } from './UserWarning';
 import { Todo } from './types/Todo';
 import { createTodo, getTodos, deleteTodo } from './api/todos';
-import { Footer } from './components/footer_filter/footer_filter';
-import { Header } from './components/header_input/header_input';
-import { Main } from './components/main_todos-list/main_todos-list';
+import { Footer } from './components/Footer/Footer';
+import { Header } from './components/Header/Header';
+import { Main } from './components/Main/Main';
+import { ErrorMessages } from './components/ErrorMessages/ErrorMessages';
 
 const USER_ID = 10548;
 
@@ -14,18 +15,26 @@ export const App: React.FC = () => {
   const [todos, setTodos] = useState<Todo[]>([]);
   const [input, setInput] = useState('');
   const [status, setStatus] = useState('all');
-  const [addTodo, setAddTodo] = useState('');
-  const [removeTodo, setRemoveTodo] = useState(0);
+  const [disableInput, setDisableInput] = useState(false);
+  const [tempTodo, setTempTodo] = useState<Todo | null>();
+  const [hasError, setHasError] = useState(false);
+  const [typeError, setTypeError] = useState('');
 
   async function loadedTodos(f: (USER_ID: number) => Promise<Todo[]>) {
-    const result = await f(USER_ID);
+    try {
+      const result = await f(USER_ID);
 
-    setTodos(result);
+      setTodos(result);
+      setHasError(false);
+    } catch (error) {
+      setTypeError('Unable to load a todo');
+      setHasError(true);
+    }
   }
 
   useEffect(() => {
     loadedTodos(getTodos);
-  }, [!addTodo]);
+  }, []);
 
   const handleChangeInput = (event : React.ChangeEvent<HTMLInputElement>) => {
     setInput(event.target.value);
@@ -37,34 +46,44 @@ export const App: React.FC = () => {
     setStatus(event.currentTarget.type);
   };
 
-  const handleAddTodo = (event: React.FormEvent<HTMLFormElement>) => {
+  const handleAddTodo = async (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
-    if (input.trim().length > 0) {
-      setAddTodo(input);
-    }
-
-    setInput('');
-  };
-
-  useEffect(() => {
-    createTodo(USER_ID, {
-      title: addTodo,
+    setDisableInput(true);
+    setTempTodo({
+      id: 0,
       userId: USER_ID,
+      title: input,
       completed: false,
     });
 
-    setAddTodo('');
-  }, [!addTodo]);
+    setInput('');
+    try {
+      await createTodo(USER_ID, {
+        title: input,
+        userId: USER_ID,
+        completed: false,
+      });
 
-  const handleRemoveTodo = (id: number) => {
-    setRemoveTodo(id);
-    // eslint-disable-next-line no-console
-    console.log(removeTodo);
-    deleteTodo(removeTodo);
+      await loadedTodos(getTodos);
+      setTempTodo(null);
+      setDisableInput(false);
+      setHasError(false);
+    } catch (error) {
+      setTypeError('Unable to add a todo');
+      setHasError(true);
+    }
   };
 
-  useEffect(() => {
-  }, [removeTodo]);
+  const handleRemoveTodo = async (id: number) => {
+    try {
+      await deleteTodo(id);
+      loadedTodos(getTodos);
+      setHasError(false);
+    } catch (error) {
+      setTypeError('Unable to delete a todo');
+      setHasError(true);
+    }
+  };
 
   const visibleTodos = todos.filter((todo) => {
     switch (status) {
@@ -80,11 +99,21 @@ export const App: React.FC = () => {
     }
   });
 
+  (function handdleTempTodo() {
+    if (tempTodo) {
+      visibleTodos.push(tempTodo);
+    }
+
+    if (visibleTodos[visibleTodos.length - 1] === null) {
+      visibleTodos.slice(0, -1);
+    }
+  }());
+
+  const itemsLeftCount = visibleTodos.filter(todo => !todo.completed).length;
+
   if (!USER_ID) {
     return <UserWarning />;
   }
-
-  const itemsLeftCount = visibleTodos.filter(todo => !todo.completed).length;
 
   return (
     <div className="todoapp">
@@ -96,30 +125,29 @@ export const App: React.FC = () => {
           inputValue={input}
           onHandleInput={handleChangeInput}
           onHandleAddTodo={handleAddTodo}
+          disabeled={disableInput}
         />
 
-        <Main visibleTodos={visibleTodos} onRemoveTodo={handleRemoveTodo} />
+        <Main
+          visibleTodos={visibleTodos}
+          onRemoveTodo={handleRemoveTodo}
+          tempTodo={tempTodo}
+        />
 
         {/* Hide the footer if there are no todos */}
-        <Footer
-          selectedStatus={status}
-          onHandleStatus={handleStatus}
-          itemsLeftCount={itemsLeftCount}
-        />
+        {!!itemsLeftCount && (
+          <Footer
+            selectedStatus={status}
+            onHandleStatus={handleStatus}
+            itemsLeftCount={itemsLeftCount}
+          />
+        )}
+
       </div>
 
       {/* Notification is shown in case of any error */}
       {/* Add the 'hidden' class to hide the message smoothly */}
-      <div className="notification is-danger is-light has-text-weight-normal">
-        <button type="button" className="delete" />
-
-        {/* show only one message at a time */}
-        Unable to add a todo
-        <br />
-        Unable to delete a todo
-        <br />
-        Unable to update a todo
-      </div>
+      {hasError && <ErrorMessages typeError={typeError} />}
     </div>
   );
 };

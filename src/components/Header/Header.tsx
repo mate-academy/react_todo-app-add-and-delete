@@ -7,6 +7,7 @@ type Props = {
   onHandleInput: (event: React.ChangeEvent<HTMLInputElement>) => void,
   inputValue: string,
   onHandleAddTodo: (event: React.FormEvent<HTMLFormElement>) => void,
+  disabeled: boolean,
 };
 
 export const Header: React.FC<Props> = ({
@@ -14,6 +15,7 @@ export const Header: React.FC<Props> = ({
   onHandleInput,
   inputValue,
   onHandleAddTodo,
+  disabeled,
 }) => {
   return (
     <header className="todoapp__header">
@@ -36,6 +38,7 @@ export const Header: React.FC<Props> = ({
           placeholder="What needs to be done?"
           value={inputValue}
           onChange={onHandleInput}
+          disabled={disabeled}
         />
       </form>
     </header>

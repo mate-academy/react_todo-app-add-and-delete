@@ -5,45 +5,73 @@ import { Todo } from '../../types/Todo';
 type Props = {
   visibleTodos: Todo[],
   onRemoveTodo: (number: number) => void
+  tempTodo: Todo | null | undefined,
 };
 
 export const Main: React.FC<Props> = ({
   visibleTodos,
   onRemoveTodo,
+  tempTodo,
 }) => {
   return (
     <section className="todoapp__main">
       {/* This is a completed todo */}
-      {visibleTodos.map(todo => {
-        return (
-          <div
-            className={cn(
-              'todo',
-              { completed: todo.completed },
-            )}
-            key={todo.id}
-          >
-            <label className="todo__status-label">
-              <input
-                type="checkbox"
-                className="todo__status"
-              />
-            </label>
+      {visibleTodos.map((todo, index) => {
+        if (tempTodo && index === visibleTodos.length - 1) {
+          return (
+            <div className="todo" key={todo.id}>
+              <label className="todo__status-label">
+                <input type="checkbox" className="todo__status" />
+              </label>
 
-            <span className="todo__title">{todo.title}</span>
-            <button
-              type="button"
-              className="todo__remove"
-              onClick={() => onRemoveTodo(todo.id)}
-            >
-              ×
-            </button>
+              <span className="todo__title">{tempTodo.title}</span>
+              <button
+                type="button"
+                className="todo__remove"
+              >
+                ×
+              </button>
 
-            <div className="modal overlay">
-              <div className="modal-background has-background-white-ter" />
-              <div className="loader" />
+              {/* 'is-active' class puts this modal on top of the todo */}
+              <div className="modal overlay is-active">
+                <div className="modal-background has-background-white-ter" />
+                <div className="loader" />
+              </div>
             </div>
-          </div>
+          );
+        }
+
+        return (
+          <>
+            <div
+              className={cn(
+                'todo',
+                { completed: todo.completed },
+              )}
+              key={todo.id}
+            >
+              <label className="todo__status-label">
+                <input
+                  type="checkbox"
+                  className="todo__status"
+                />
+              </label>
+
+              <span className="todo__title">{todo.title}</span>
+              <button
+                type="button"
+                className="todo__remove"
+                onClick={() => onRemoveTodo(todo.id)}
+              >
+                ×
+              </button>
+
+              <div className="modal overlay">
+                <div className="modal-background has-background-white-ter" />
+                <div className="loader" />
+              </div>
+            </div>
+          </>
         );
       })}
       <div className="todo completed">
