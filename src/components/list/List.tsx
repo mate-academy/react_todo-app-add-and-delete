@@ -1,5 +1,4 @@
 import cn from 'classnames';
-// import { useState } from 'react';
 import { Todo } from '../../types/Todo';
 import { deleteTodo } from '../../api/todos';
 import { ErrorMessage } from '../../types/ErrorMessage';
