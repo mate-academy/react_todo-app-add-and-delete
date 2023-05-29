@@ -102,8 +102,7 @@ export const App: React.FC = () => {
 
     try {
       await deleteTodo(todo.id);
-      // eslint-disable-next-line array-callback-return, consistent-return
-      setTodos(todos.filter(prevTodo => prevTodo.id !== todo.id));
+      setTodos(prev => prev.filter(({ id }) => id !== todo.id));
 
       setTempTodo(null);
       setHasError(false);
