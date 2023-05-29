@@ -3,10 +3,10 @@ import React, {
 } from 'react';
 import { addNewTodo, getTodos, removeTodo } from './api/todos';
 import { Todo as TodoType } from './types/Todo';
-import { Filter } from './components/Filter';
 import { Notification } from './components/Notification';
 import { Header } from './components/Header';
 import { TodoList } from './components/TodoList';
+import { Footer } from './components/Footer';
 
 const USER_ID = 10542;
 
@@ -21,7 +21,6 @@ export const App: React.FC = () => {
   const [filter, setFilter] = useState('all');
   const [errorMessage, setErrorMessage] = useState('');
   const [todoText, setTodoText] = useState('');
-  const [newId, setNewId] = useState(0);
   const [isInputDisabled, setIsInputDisabled] = useState(false);
   const [tempTodo, setTempTodo] = useState<TodoType | null>(null);
   const [loadingTodoIds, setLoadingTodoIds] = useState<string[]>([]);
@@ -39,7 +38,6 @@ export const App: React.FC = () => {
 
   useEffect(() => {
     loadTodos();
-    setNewId(generateId(todos));
   }, []);
 
   const hasCompleted = todos.filter(todo => todo.completed).length > 0;
@@ -48,10 +46,18 @@ export const App: React.FC = () => {
   const visibleTodos = useMemo(() => {
     let filteredTodos = todos;
 
-    if (filter === 'completed') {
-      filteredTodos = filteredTodos.filter(todo => todo.completed);
-    } else if (filter === 'active') {
-      filteredTodos = filteredTodos.filter(todo => !todo.completed);
+    switch (filter) {
+      case 'completed':
+        filteredTodos = filteredTodos.filter(todo => todo.completed);
+        break;
+      case 'active':
+        filteredTodos = filteredTodos.filter(todo => !todo.completed);
+        break;
+      case 'all':
+        filteredTodos = todos;
+        break;
+      default:
+        break;
     }
 
     return filteredTodos;
@@ -73,9 +79,11 @@ export const App: React.FC = () => {
     setErrorMessage('');
   }, []);
 
-  const handleTextChange = (event: React.ChangeEvent<HTMLInputElement>) => {
-    setTodoText(event.target.value);
-  };
+  const handleTextChange = useCallback(
+    (event: React.ChangeEvent<HTMLInputElement>) => {
+      setTodoText(event.target.value);
+    }, [],
+  );
 
   const handleNewTodoSubmit
   = async (event: React.FormEvent<HTMLFormElement>) => {
@@ -91,13 +99,11 @@ export const App: React.FC = () => {
     }
 
     const newTodo = {
-      id: newId,
+      id: generateId(todos),
       userId: USER_ID,
       title: todoText,
       completed: false,
     };
-
-    setNewId(prevId => prevId + 1);
 
     try {
       setIsInputDisabled(true);
@@ -109,7 +115,7 @@ export const App: React.FC = () => {
         completed: false,
       });
 
-      setTodos(await getTodos(USER_ID));
+      setTodos(prevTodos => [...prevTodos, newTodo]);
     } catch (error) {
       setErrorMessage('Unable to add a todo');
       setTimeout(() => {
@@ -122,12 +128,13 @@ export const App: React.FC = () => {
     }
   };
 
-  const handleRemoveTodo = async (id: string) => {
+  const handleRemoveTodo = useCallback(async (id: string) => {
     try {
       setLoadingTodoIds(prevIds => [...prevIds, id]);
       await removeTodo(id);
 
-      setTodos(await getTodos(USER_ID));
+      setTodos(prevTodos => prevTodos
+        .filter(todo => todo.id.toString() !== id));
     } catch (error) {
       setErrorMessage('Unable to delete a todo');
       setTimeout(() => {
@@ -136,15 +143,15 @@ export const App: React.FC = () => {
     } finally {
       setLoadingTodoIds([]);
     }
-  };
+  }, []);
 
-  const handleRemoveCompleted = () => {
+  const handleRemoveCompleted = useCallback(() => {
     const completedTodosId = todos
       .filter(todo => todo.completed)
       .map(todo => todo.id);
 
     completedTodosId.forEach(todoId => handleRemoveTodo(todoId.toString()));
-  };
+  }, [todos]);
 
   return (
     <div className="todoapp">
@@ -164,29 +171,15 @@ export const App: React.FC = () => {
           handleRemoveTodo={handleRemoveTodo}
           isLoading={loadingTodoIds}
         />
-        {todos.length > 0 && (
-          <footer className="todoapp__footer">
-            <span className="todo-count">
-              {`${todos.length} items left`}
-            </span>
-
-            <Filter
-              filter={filter}
-              filterActive={filterActive}
-              filterAll={filterAll}
-              filterCompleted={filterCompleted}
-            />
-
-            <button
-              type="button"
-              className="todoapp__clear-completed"
-              style={{ visibility: hasCompleted ? 'visible' : 'hidden' }}
-              onClick={handleRemoveCompleted}
-            >
-              Clear completed
-            </button>
-          </footer>
-        )}
+        <Footer
+          filter={filter}
+          filterAll={filterAll}
+          filterActive={filterActive}
+          filterCompleted={filterCompleted}
+          hasCompleted={hasCompleted}
+          todosLength={todos.length}
+          onRemoveCompleted={handleRemoveCompleted}
+        />
       </div>
 
       {errorMessage
