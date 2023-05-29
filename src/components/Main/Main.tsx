@@ -17,7 +17,6 @@ export const Main: React.FC<Props> = ({
 }) => {
   return (
     <section className="todoapp__main">
-      {/* This is a completed todo */}
       {visibleTodos.map((todo, index) => {
         if (tempTodo && index === indexUpdatedTodo) {
           return (
@@ -34,7 +33,6 @@ export const Main: React.FC<Props> = ({
                 ×
               </button>
 
-              {/* 'is-active' class puts this modal on top of the todo */}
               <div className="modal overlay is-active">
                 <div className="modal-background has-background-white-ter" />
                 <div className="loader" />

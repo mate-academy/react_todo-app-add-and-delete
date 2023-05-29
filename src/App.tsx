@@ -8,6 +8,7 @@ import { Footer } from './components/Footer/Footer';
 import { Header } from './components/Header/Header';
 import { Main } from './components/Main/Main';
 import { ErrorMessages } from './components/ErrorMessages/ErrorMessages';
+import { ErrorTypes } from './types/ErrorTypes';
 
 const USER_ID = 10548;
 
@@ -17,18 +18,17 @@ export const App: React.FC = () => {
   const [status, setStatus] = useState('all');
   const [disableInput, setDisableInput] = useState(false);
   const [tempTodo, setTempTodo] = useState<Todo | null>();
-  const [hasError, setHasError] = useState(false);
-  const [typeError, setTypeError] = useState('');
+  const [typeError, setTypeError] = useState(ErrorTypes.default);
   const [indexUpdatedTodo, setIndexUpdatedTodo] = useState(0);
 
   const getVisibleTodos = (statusTodo: string, todosArr: Todo[]) => {
     switch (statusTodo) {
       case 'active':
-        return todosArr.filter(todo => !todo.completed);
+        return [...todosArr].filter(todo => !todo.completed);
       case 'completed':
-        return todosArr.filter(todo => todo.completed);
+        return [...todosArr].filter(todo => todo.completed);
       default:
-        return todosArr;
+        return [...todosArr];
     }
   };
 
@@ -39,16 +39,17 @@ export const App: React.FC = () => {
       const result = await getTodos(USER_ID);
 
       setTodos(result);
-      setHasError(false);
+      setTypeError(ErrorTypes.default);
     } catch (error) {
-      setTypeError('Unable to load a todo');
-      setHasError(true);
+      setTypeError(ErrorTypes.ErrorGet);
     }
   }
 
-  useEffect(() => {
-    loadedTodos();
-  }, []);
+  (function handleTempTodo() {
+    if (tempTodo) {
+      visibleTodos.splice(indexUpdatedTodo, 1, tempTodo);
+    }
+  }());
 
   const handleChangeInput = (event : React.ChangeEvent<HTMLInputElement>) => {
     setInput(event.target.value);
@@ -83,10 +84,9 @@ export const App: React.FC = () => {
       setTempTodo(null);
       setDisableInput(false);
       setIndexUpdatedTodo(0);
-      setHasError(false);
+      setTypeError(ErrorTypes.default);
     } catch (error) {
-      setTypeError('Unable to add a todo');
-      setHasError(true);
+      setTypeError(ErrorTypes.ErrorPost);
     }
   };
 
@@ -101,23 +101,20 @@ export const App: React.FC = () => {
 
     try {
       await deleteTodo(todo.id);
-      setTodos(prev => prev.filter(({ id }) => id !== todo.id));
-
       setTempTodo(null);
-      setHasError(false);
+      setTodos(prev => prev.filter(({ id }) => id !== todo.id));
+      setTypeError(ErrorTypes.default);
+      setTempTodo(null);
     } catch (error) {
-      setTypeError('Unable to delete a todo');
-      setHasError(true);
+      setTypeError(ErrorTypes.ErrorDelete);
     }
   };
 
-  (function handleTempTodo() {
-    if (tempTodo) {
-      visibleTodos.splice(indexUpdatedTodo, 1, tempTodo);
-    }
-  }());
-
   const itemsLeftCount = todos.filter(todo => !todo.completed).length;
+
+  useEffect(() => {
+    loadedTodos();
+  }, []);
 
   if (!USER_ID) {
     return <UserWarning />;
@@ -143,7 +140,6 @@ export const App: React.FC = () => {
           indexUpdatedTodo={indexUpdatedTodo}
         />
 
-        {/* Hide the footer if there are no todos */}
         {!!todos.length && (
           <Footer
             selectedStatus={status}
@@ -154,13 +150,11 @@ export const App: React.FC = () => {
 
       </div>
 
-      {/* Notification is shown in case of any error */}
-      {/* Add the 'hidden' class to hide the message smoothly */}
-      {hasError
+      {typeError !== ErrorTypes.default
         && (
           <ErrorMessages
             typeError={typeError}
-            setHasError={setHasError}
+            setTypeError={setTypeError}
           />
         )}
     </div>

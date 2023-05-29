@@ -1,21 +1,21 @@
 /* eslint-disable jsx-a11y/control-has-associated-label */
 import React from 'react';
+import { ErrorTypes } from '../../types/ErrorTypes';
 
 type Props = {
   typeError: string,
-  setHasError: React.Dispatch<React.SetStateAction<boolean>>;
+  setTypeError: React.Dispatch<React.SetStateAction<ErrorTypes>>,
 };
 
-export const ErrorMessages: React.FC<Props> = ({ typeError, setHasError }) => {
+export const ErrorMessages: React.FC<Props> = ({ typeError, setTypeError }) => {
   return (
     <div className="notification is-danger is-light has-text-weight-normal">
       <button
         type="button"
         className="delete"
-        onClick={() => (setHasError(false))}
+        onClick={() => (setTypeError(ErrorTypes.default))}
       />
 
-      {/* show only one message at a time */}
       {typeError}
       <br />
     </div>
