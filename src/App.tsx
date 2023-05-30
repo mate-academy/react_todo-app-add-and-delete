@@ -121,7 +121,7 @@ export const App: React.FC = () => {
     } finally {
       setIsClearingDoneTodos(false);
     }
-  }, [todos, visibleTodos, deleteTodo]);
+  }, [todos, visibleTodos]);
 
   useEffect(() => {
     loadTodos();

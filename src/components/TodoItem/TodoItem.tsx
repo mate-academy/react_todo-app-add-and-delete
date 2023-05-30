@@ -17,7 +17,7 @@ export const TodoItem: React.FC<Props> = ({
 }) => {
   const [isBeingDeleted, setIsBeingDeleted] = useState(false);
 
-  const onDelete = async () => {
+  const handleDeleteOnClick = async () => {
     setIsBeingDeleted(true);
 
     await handleDelete(todo.id);
@@ -46,7 +46,7 @@ export const TodoItem: React.FC<Props> = ({
         type="button"
         className="todo__remove"
         style={{ position: 'absolute' }}
-        onClick={onDelete}
+        onClick={handleDeleteOnClick}
         disabled={isBeingAdded}
       >
         ×
