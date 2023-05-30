@@ -1,15 +1,16 @@
 import React from 'react';
 import cn from 'classnames';
+import { StatusTypes } from '../../types/StatusTypes';
 
 type Props = {
-  selectedStatus: string,
-  onHandleStatus: (event: React.MouseEvent<HTMLAnchorElement>) => void,
+  selectedStatus: StatusTypes,
+  setStatus: React.Dispatch<React.SetStateAction<StatusTypes>>,
   itemsLeftCount: number,
 };
 
 export const Footer: React.FC<Props> = ({
   selectedStatus,
-  onHandleStatus: onHanbleStatus,
+  setStatus,
   itemsLeftCount,
 }) => {
   return (
@@ -25,11 +26,10 @@ export const Footer: React.FC<Props> = ({
           className={
             cn(
               'filter__link',
-              { selected: selectedStatus === 'all' },
+              { selected: selectedStatus === StatusTypes.all },
             )
           }
-          onClick={onHanbleStatus}
-          type="all"
+          onClick={() => (setStatus(StatusTypes.all))}
         >
           All
         </a>
@@ -39,11 +39,10 @@ export const Footer: React.FC<Props> = ({
           className={
             cn(
               'filter__link',
-              { selected: selectedStatus === 'active' },
+              { selected: selectedStatus === StatusTypes.active },
             )
           }
-          onClick={onHanbleStatus}
-          type="active"
+          onClick={() => (setStatus(StatusTypes.active))}
         >
           Active
         </a>
@@ -53,11 +52,10 @@ export const Footer: React.FC<Props> = ({
           className={
             cn(
               'filter__link',
-              { selected: selectedStatus === 'completed' },
+              { selected: selectedStatus === StatusTypes.completed },
             )
           }
-          onClick={onHanbleStatus}
-          type="completed"
+          onClick={() => (setStatus(StatusTypes.completed))}
         >
           Completed
         </a>

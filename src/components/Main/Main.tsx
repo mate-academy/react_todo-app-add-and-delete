@@ -42,36 +42,34 @@ export const Main: React.FC<Props> = ({
         }
 
         return (
-          <>
-            <div
-              className={cn(
-                'todo',
-                { completed: todo.completed },
-              )}
-              key={todo.id}
+          <div
+            className={cn(
+              'todo',
+              { completed: todo.completed },
+            )}
+            key={todo.id}
+          >
+            <label className="todo__status-label">
+              <input
+                type="checkbox"
+                className="todo__status"
+              />
+            </label>
+
+            <span className="todo__title">{todo.title}</span>
+            <button
+              type="button"
+              className="todo__remove"
+              onClick={() => onRemoveTodo(todo, index)}
             >
-              <label className="todo__status-label">
-                <input
-                  type="checkbox"
-                  className="todo__status"
-                />
-              </label>
+              ×
+            </button>
 
-              <span className="todo__title">{todo.title}</span>
-              <button
-                type="button"
-                className="todo__remove"
-                onClick={() => onRemoveTodo(todo, index)}
-              >
-                ×
-              </button>
-
-              <div className="modal overlay">
-                <div className="modal-background has-background-white-ter" />
-                <div className="loader" />
-              </div>
+            <div className="modal overlay">
+              <div className="modal-background has-background-white-ter" />
+              <div className="loader" />
             </div>
-          </>
+          </div>
         );
       })}
     </section>

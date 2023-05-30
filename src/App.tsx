@@ -9,23 +9,24 @@ import { Header } from './components/Header/Header';
 import { Main } from './components/Main/Main';
 import { ErrorMessages } from './components/ErrorMessages/ErrorMessages';
 import { ErrorTypes } from './types/ErrorTypes';
+import { StatusTypes } from './types/StatusTypes';
 
 const USER_ID = 10548;
 
 export const App: React.FC = () => {
   const [todos, setTodos] = useState<Todo[]>([]);
   const [input, setInput] = useState('');
-  const [status, setStatus] = useState('all');
+  const [status, setStatus] = useState(StatusTypes.all);
   const [disableInput, setDisableInput] = useState(false);
   const [tempTodo, setTempTodo] = useState<Todo | null>();
   const [typeError, setTypeError] = useState(ErrorTypes.default);
   const [indexUpdatedTodo, setIndexUpdatedTodo] = useState(0);
 
-  const getVisibleTodos = (statusTodo: string, todosArr: Todo[]) => {
+  const getVisibleTodos = (statusTodo: StatusTypes, todosArr: Todo[]) => {
     switch (statusTodo) {
-      case 'active':
+      case StatusTypes.active:
         return [...todosArr].filter(todo => !todo.completed);
-      case 'completed':
+      case StatusTypes.completed:
         return [...todosArr].filter(todo => todo.completed);
       default:
         return [...todosArr];
@@ -53,12 +54,6 @@ export const App: React.FC = () => {
 
   const handleChangeInput = (event : React.ChangeEvent<HTMLInputElement>) => {
     setInput(event.target.value);
-  };
-
-  const handleStatus = (
-    event: React.MouseEvent<HTMLAnchorElement, MouseEvent>,
-  ) => {
-    setStatus(event.currentTarget.type);
   };
 
   const handleAddTodo = async (event: React.FormEvent<HTMLFormElement>) => {
@@ -145,7 +140,7 @@ export const App: React.FC = () => {
         {!!todos.length && (
           <Footer
             selectedStatus={status}
-            onHandleStatus={handleStatus}
+            setStatus={setStatus}
             itemsLeftCount={itemsLeftCount}
           />
         )}
