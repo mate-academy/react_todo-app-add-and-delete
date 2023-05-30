@@ -1,23 +1,20 @@
+import { FilterType } from '../types/FilterType';
 import { Filter } from './Filter';
 
 interface FooterProps {
   filter: string,
-  filterAll: () => void,
-  filterActive: () => void,
-  filterCompleted: () => void,
   hasCompleted: boolean,
   todosLength: number,
   onRemoveCompleted: () => void;
+  onFilterChange: (filterType: FilterType) => void;
 }
 
 export const Footer: React.FC<FooterProps> = ({
   filter,
-  filterAll,
-  filterActive,
-  filterCompleted,
   hasCompleted,
   todosLength,
   onRemoveCompleted,
+  onFilterChange,
 }) => {
   return (
     todosLength > 0 ? (
@@ -28,9 +25,7 @@ export const Footer: React.FC<FooterProps> = ({
 
         <Filter
           filter={filter}
-          filterActive={filterActive}
-          filterAll={filterAll}
-          filterCompleted={filterCompleted}
+          onFilterChange={onFilterChange}
         />
 
         <button

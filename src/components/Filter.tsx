@@ -1,26 +1,23 @@
 import cn from 'classnames';
+import { FilterType } from '../types/FilterType';
 
 interface FilterProps {
   filter: string,
-  filterAll: () => void,
-  filterActive: () => void,
-  filterCompleted: () => void,
+  onFilterChange: (filter: FilterType) => void;
 }
 
 export const Filter: React.FC<FilterProps> = ({
   filter,
-  filterActive,
-  filterAll,
-  filterCompleted,
+  onFilterChange,
 }) => {
   return (
     <nav className="filter">
       <a
         href="#/"
         className={cn('filter__link', {
-          selected: filter === 'all',
+          selected: filter === FilterType.All,
         })}
-        onClick={filterAll}
+        onClick={() => onFilterChange(FilterType.All)}
       >
         All
       </a>
@@ -28,9 +25,9 @@ export const Filter: React.FC<FilterProps> = ({
       <a
         href="#/active"
         className={cn('filter__link', {
-          selected: filter === 'active',
+          selected: filter === FilterType.Active,
         })}
-        onClick={filterActive}
+        onClick={() => onFilterChange(FilterType.Active)}
       >
         Active
       </a>
@@ -38,9 +35,9 @@ export const Filter: React.FC<FilterProps> = ({
       <a
         href="#/completed"
         className={cn('filter__link', {
-          selected: filter === 'completed',
+          selected: filter === FilterType.Completed,
         })}
-        onClick={filterCompleted}
+        onClick={() => onFilterChange(FilterType.Completed)}
       >
         Completed
       </a>

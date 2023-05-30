@@ -7,6 +7,7 @@ import { Notification } from './components/Notification';
 import { Header } from './components/Header';
 import { TodoList } from './components/TodoList';
 import { Footer } from './components/Footer';
+import { FilterType } from './types/FilterType';
 
 const USER_ID = 10542;
 
@@ -18,7 +19,7 @@ const generateId = (todos: TodoType[]) => {
 
 export const App: React.FC = () => {
   const [todos, setTodos] = useState<TodoType[] | []>([]);
-  const [filter, setFilter] = useState('all');
+  const [filter, setFilter] = useState<FilterType>(FilterType.All);
   const [errorMessage, setErrorMessage] = useState('');
   const [todoText, setTodoText] = useState('');
   const [isInputDisabled, setIsInputDisabled] = useState(false);
@@ -43,37 +44,32 @@ export const App: React.FC = () => {
   const hasCompleted = todos.filter(todo => todo.completed).length > 0;
   const hasActive = todos.filter(todo => !todo.completed).length > 0;
 
-  const visibleTodos = useMemo(() => {
-    let filteredTodos = todos;
+  const filterVisibleTodos
+    = (filterList: FilterType, todoList: TodoType[]) => {
+      const filteredTodos = todoList;
 
-    switch (filter) {
-      case 'completed':
-        filteredTodos = filteredTodos.filter(todo => todo.completed);
-        break;
-      case 'active':
-        filteredTodos = filteredTodos.filter(todo => !todo.completed);
-        break;
-      case 'all':
-        filteredTodos = todos;
-        break;
-      default:
-        break;
-    }
+      return filteredTodos.filter(todo => {
+        switch (filterList) {
+          case FilterType.Completed:
+            return todo.completed;
+          case FilterType.Active:
+            return !todo.completed;
+          case FilterType.All:
+          default:
+            return todo;
+        }
+      });
+    };
 
-    return filteredTodos;
-  }, [filter, todos]);
+  const visibleTodos = useMemo(
+    () => filterVisibleTodos(filter, todos),
+    [todos, filterVisibleTodos],
+  );
 
-  const filterAll = useCallback(() => {
-    setFilter('all');
-  }, []);
-
-  const filterCompleted = useCallback(() => {
-    setFilter('completed');
-  }, []);
-
-  const filterActive = useCallback(() => {
-    setFilter('active');
-  }, []);
+  const handleFilterChange = useCallback(
+    (newFilter: FilterType) => setFilter(newFilter),
+    [],
+  );
 
   const handleCleanErrorMessage = useCallback(() => {
     setErrorMessage('');
@@ -107,13 +103,14 @@ export const App: React.FC = () => {
 
     try {
       setIsInputDisabled(true);
-      await addNewTodo(newTodo);
       setTempTodo({
         id: 0,
         userId: USER_ID,
         title: todoText,
         completed: false,
       });
+
+      await addNewTodo(newTodo);
 
       setTodos(prevTodos => [...prevTodos, newTodo]);
     } catch (error) {
@@ -148,9 +145,9 @@ export const App: React.FC = () => {
   const handleRemoveCompleted = useCallback(() => {
     const completedTodosId = todos
       .filter(todo => todo.completed)
-      .map(todo => todo.id);
+      .map(todo => todo.id.toString());
 
-    completedTodosId.forEach(todoId => handleRemoveTodo(todoId.toString()));
+    Promise.all(completedTodosId.map(id => handleRemoveTodo(id)));
   }, [todos]);
 
   return (
@@ -173,9 +170,7 @@ export const App: React.FC = () => {
         />
         <Footer
           filter={filter}
-          filterAll={filterAll}
-          filterActive={filterActive}
-          filterCompleted={filterCompleted}
+          onFilterChange={handleFilterChange}
           hasCompleted={hasCompleted}
           todosLength={todos.length}
           onRemoveCompleted={handleRemoveCompleted}
