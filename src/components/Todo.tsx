@@ -4,12 +4,12 @@ import { Todo as TodoType } from '../types/Todo';
 
 interface TodoProps {
   todo: TodoType,
-  handleRemoveTodo: (id: string) => void;
+  onTodoRemove: (id: string) => void;
 }
 
 export const Todo: React.FC<TodoProps> = React.memo(({
   todo,
-  handleRemoveTodo,
+  onTodoRemove,
 }) => {
   const { completed, id, title } = todo;
 
@@ -32,7 +32,7 @@ export const Todo: React.FC<TodoProps> = React.memo(({
       <button
         type="button"
         className="todo__remove"
-        onClick={() => handleRemoveTodo(id.toString())}
+        onClick={() => onTodoRemove(id.toString())}
       >
         ×
 

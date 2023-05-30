@@ -2,29 +2,29 @@ import { NewTodo } from './NewTodo';
 
 /* eslint-disable jsx-a11y/control-has-associated-label */
 interface HeaderProps {
-  hasActive: boolean
+  hasActiveTodos: boolean
   todoText: string;
-  handleChangeTodoText: (event:React.ChangeEvent<HTMLInputElement>) => void;
-  handleNewTodoSubmit: (event: React.FormEvent<HTMLFormElement>) => void;
-  handleDisableInput: boolean;
+  onTodoTextChange: (event:React.ChangeEvent<HTMLInputElement>) => void;
+  onNewTodoSubmit: (event: React.FormEvent<HTMLFormElement>) => void;
+  isInputDisabled: boolean;
 }
 
 export const Header: React.FC<HeaderProps> = ({
-  hasActive,
+  hasActiveTodos,
   todoText,
-  handleChangeTodoText,
-  handleNewTodoSubmit,
-  handleDisableInput,
+  onTodoTextChange,
+  onNewTodoSubmit,
+  isInputDisabled,
 }) => {
   return (
     <header className="todoapp__header">
-      {hasActive
+      {hasActiveTodos
           && <button type="button" className="todoapp__toggle-all active" />}
       <NewTodo
-        handleChangeTodoText={handleChangeTodoText}
+        onTodoTextChange={onTodoTextChange}
         todoText={todoText}
-        handleNewTodoSubmit={handleNewTodoSubmit}
-        isInputDisabled={handleDisableInput}
+        onNewTodoSubmit={onNewTodoSubmit}
+        isInputDisabled={isInputDisabled}
       />
     </header>
   );

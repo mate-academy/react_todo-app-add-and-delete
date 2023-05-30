@@ -23,13 +23,8 @@ export const Notification: React.FC<NotificationProps> = ({
         onClick={onCleanErrorMessage}
       />
 
-      {/* show only one message at a time */}
       {errorMessage}
-      {/* Unable to add a todo
-      <br />
-      Unable to delete a todo
-      <br />
-      Unable to update a todo */}
+
     </div>
   );
 };

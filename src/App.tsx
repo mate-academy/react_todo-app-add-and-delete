@@ -26,7 +26,7 @@ export const App: React.FC = () => {
   const [tempTodo, setTempTodo] = useState<TodoType | null>(null);
   const [loadingTodoIds, setLoadingTodoIds] = useState<string[]>([]);
 
-  const loadTodos = useCallback(async () => {
+  const handleLoadTodos = useCallback(async () => {
     try {
       setTodos(await getTodos(USER_ID));
     } catch (error) {
@@ -38,11 +38,11 @@ export const App: React.FC = () => {
   }, []);
 
   useEffect(() => {
-    loadTodos();
+    handleLoadTodos();
   }, []);
 
-  const hasCompleted = todos.filter(todo => todo.completed).length > 0;
-  const hasActive = todos.filter(todo => !todo.completed).length > 0;
+  const hasCompletedTodos = todos.filter(todo => todo.completed).length > 0;
+  const hasActiveTodos = todos.filter(todo => !todo.completed).length > 0;
 
   const filterVisibleTodos
     = (filterList: FilterType, todoList: TodoType[]) => {
@@ -75,7 +75,7 @@ export const App: React.FC = () => {
     setErrorMessage('');
   }, []);
 
-  const handleTextChange = useCallback(
+  const handleTodoTextChange = useCallback(
     (event: React.ChangeEvent<HTMLInputElement>) => {
       setTodoText(event.target.value);
     }, [],
@@ -143,11 +143,11 @@ export const App: React.FC = () => {
   }, []);
 
   const handleRemoveCompleted = useCallback(() => {
-    const completedTodosId = todos
+    const completedTodosPromises = todos
       .filter(todo => todo.completed)
-      .map(todo => todo.id.toString());
+      .map(todo => handleRemoveTodo(todo.id.toString()));
 
-    Promise.all(completedTodosId.map(id => handleRemoveTodo(id)));
+    Promise.all(completedTodosPromises);
   }, [todos]);
 
   return (
@@ -156,22 +156,22 @@ export const App: React.FC = () => {
 
       <div className="todoapp__content">
         <Header
-          hasActive={hasActive}
-          handleChangeTodoText={handleTextChange}
+          hasActiveTodos={hasActiveTodos}
+          onTodoTextChange={handleTodoTextChange}
           todoText={todoText}
-          handleNewTodoSubmit={handleNewTodoSubmit}
-          handleDisableInput={isInputDisabled}
+          onNewTodoSubmit={handleNewTodoSubmit}
+          isInputDisabled={isInputDisabled}
         />
         <TodoList
           tempTodo={tempTodo}
           visibleTodos={visibleTodos}
-          handleRemoveTodo={handleRemoveTodo}
+          onTodoRemove={handleRemoveTodo}
           isLoading={loadingTodoIds}
         />
         <Footer
           filter={filter}
           onFilterChange={handleFilterChange}
-          hasCompleted={hasCompleted}
+          hasCompletedTodos={hasCompletedTodos}
           todosLength={todos.length}
           onRemoveCompleted={handleRemoveCompleted}
         />

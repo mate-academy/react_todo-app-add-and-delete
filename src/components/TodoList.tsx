@@ -4,14 +4,14 @@ import { Todo } from './Todo';
 
 interface TodoListProps {
   visibleTodos: TodoType[];
-  handleRemoveTodo: (id: string) => void;
+  onTodoRemove: (id: string) => void;
   tempTodo: TodoType | null;
   isLoading: string[];
 }
 
 export const TodoList: React.FC<TodoListProps> = ({
   visibleTodos,
-  handleRemoveTodo,
+  onTodoRemove,
   tempTodo,
   isLoading,
 }) => {
@@ -24,7 +24,7 @@ export const TodoList: React.FC<TodoListProps> = ({
               <Todo
                 todo={todo}
                 key={todo.id}
-                handleRemoveTodo={handleRemoveTodo}
+                onTodoRemove={onTodoRemove}
               />
             )
             : (
