@@ -11,12 +11,6 @@ import { FilterType } from './types/FilterType';
 
 const USER_ID = 10542;
 
-const generateId = (todos: TodoType[]) => {
-  const biggestId = Math.max(...todos.map(todo => todo.id));
-
-  return biggestId + 1;
-};
-
 export const App: React.FC = () => {
   const [todos, setTodos] = useState<TodoType[] | []>([]);
   const [filter, setFilter] = useState<FilterType>(FilterType.All);
@@ -95,7 +89,7 @@ export const App: React.FC = () => {
     }
 
     const newTodo = {
-      id: generateId(todos),
+      id: 0,
       userId: USER_ID,
       title: todoText,
       completed: false,
@@ -103,16 +97,11 @@ export const App: React.FC = () => {
 
     try {
       setIsInputDisabled(true);
-      setTempTodo({
-        id: 0,
-        userId: USER_ID,
-        title: todoText,
-        completed: false,
-      });
+      setTempTodo(newTodo);
 
-      await addNewTodo(newTodo);
+      const createdTodo = await addNewTodo(newTodo);
 
-      setTodos(prevTodos => [...prevTodos, newTodo]);
+      setTodos(prevTodos => [...prevTodos, createdTodo]);
     } catch (error) {
       setErrorMessage('Unable to add a todo');
       setTimeout(() => {
