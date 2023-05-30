@@ -87,6 +87,8 @@ export const App: React.FC = () => {
       setTypeError(ErrorTypes.default);
     } catch (error) {
       setTypeError(ErrorTypes.ErrorPost);
+      setTempTodo(null);
+      setDisableInput(false);
     }
   };
 
@@ -104,9 +106,9 @@ export const App: React.FC = () => {
       setTempTodo(null);
       setTodos(prev => prev.filter(({ id }) => id !== todo.id));
       setTypeError(ErrorTypes.default);
-      setTempTodo(null);
     } catch (error) {
       setTypeError(ErrorTypes.ErrorDelete);
+      setTempTodo(null);
     }
   };
 
