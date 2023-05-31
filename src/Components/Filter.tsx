@@ -1,3 +1,5 @@
+import classnames from 'classnames';
+
 interface Props {
   countNotCompletedtodos: number,
   handleFilter: (value: string) => void,
@@ -17,11 +19,13 @@ export const Filter: React.FC<Props> = ({
         {`${countNotCompletedtodos} items left`}
       </span>
 
-      {/* Active filter should have a 'selected' class */}
       <nav className="filter">
         <a
           href="#/"
-          className={`filter__link ${filter === 'All' && 'selected'}`}
+          className={classnames(
+            'filter__link',
+            { selected: filter === 'All' },
+          )}
           onClick={() => handleFilter('All')}
         >
           All
@@ -29,7 +33,10 @@ export const Filter: React.FC<Props> = ({
 
         <a
           href="#/active"
-          className={`filter__link ${filter === 'Active' && 'selected'}`}
+          className={classnames(
+            'filter__link',
+            { selected: filter === 'Active' },
+          )}
           onClick={() => handleFilter('Active')}
         >
           Active
@@ -37,14 +44,16 @@ export const Filter: React.FC<Props> = ({
 
         <a
           href="#/completed"
-          className={`filter__link ${filter === 'Completed' && 'selected'}`}
+          className={classnames(
+            'filter__link',
+            { selected: filter === 'Completed' },
+          )}
           onClick={() => handleFilter('Completed')}
         >
           Completed
         </a>
       </nav>
 
-      {/* don't show this button if there are no completed todos */}
       <button
         type="button"
         className="todoapp__clear-completed"

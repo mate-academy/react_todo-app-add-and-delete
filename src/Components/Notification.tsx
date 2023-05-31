@@ -13,10 +13,6 @@ export const Notification: React.FC<Props> = ({ message, handleClose }) => {
         onClick={handleClose}
       />
       {message}
-
-      {/* Unable to add a todo
-      Unable to delete a todo
-      Unable to update a todo */}
     </div>
   );
 };

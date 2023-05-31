@@ -9,12 +9,12 @@ interface Props {
 
 export const Todo: React.FC<Props> = ({ todo, temp, handleRemoveTodo }) => {
   const { title, completed } = todo;
-  const [isDeleting, setIsDeleting] = useState(false);
+  const [isRemoved, setIsRemoved] = useState(false);
 
   const handleRemoveClick = () => {
     if (!temp && handleRemoveTodo) {
       handleRemoveTodo(todo.id);
-      setIsDeleting(true);
+      setIsRemoved(true);
     }
   };
 
@@ -22,7 +22,7 @@ export const Todo: React.FC<Props> = ({ todo, temp, handleRemoveTodo }) => {
     <div
       className={`todo ${completed && 'completed'}`}
       style={{
-        opacity: `${temp || isDeleting ? '0.1' : '1'}`,
+        opacity: `${temp || isRemoved ? '0.1' : '1'}`,
       }}
     >
       <label className="todo__status-label">

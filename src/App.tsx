@@ -2,7 +2,7 @@
 import React, { FormEvent, useEffect, useState } from 'react';
 import { Todo } from './Components/Todo';
 import { Todo as TodoType } from './types/Todo';
-import { getTodos, addTodo, removeTodo } from './api/todos';
+import { getTodosById, addTodo, removeTodo } from './api/todos';
 import { Notification } from './Components/Notification';
 import { Filter } from './Components/Filter';
 
@@ -14,12 +14,12 @@ export const App: React.FC = () => {
   const [filteredTodos, setFilteredTodos] = useState<TodoType[]>([]);
   const [filter, setFilter] = useState('');
   const [addValue, setAddValue] = useState('');
-  const [isInputDisable, setIsInputDisable] = useState(false);
+  const [isInputDisabled, setIsInputDisabled] = useState(false);
   const [tempTodo, setTempTodo] = useState<TodoType | null>(null);
   const [deleteIds, setDeleteIds] = useState<number[]>([]);
 
   useEffect(() => {
-    getTodos(USER_ID)
+    getTodosById(USER_ID)
       .then(response => {
         setTodos(response);
       })
@@ -27,7 +27,7 @@ export const App: React.FC = () => {
   }, [deleteIds]);
 
   useEffect(() => {
-    getTodos(USER_ID)
+    getTodosById(USER_ID)
       .then(response => {
         setFilteredTodos(response);
       })
@@ -80,11 +80,11 @@ export const App: React.FC = () => {
       };
 
       setTempTodo(newTodo);
-      setIsInputDisable(true);
+      setIsInputDisabled(true);
 
       addTodo(USER_ID, newTodo).then(() => {
         setAddValue('');
-        setIsInputDisable(false);
+        setIsInputDisabled(false);
         setTempTodo(null);
       }).catch(() => setError('Unable to add a todo'));
     }
@@ -130,10 +130,8 @@ export const App: React.FC = () => {
 
       <div className="todoapp__content">
         <header className="todoapp__header">
-          {/* this buttons is active only if there are some active todos */}
           <button type="button" className="todoapp__toggle-all active" />
 
-          {/* Add a todo on form submit */}
           <form onSubmit={handleAddTodo}>
             <input
               type="text"
@@ -141,7 +139,7 @@ export const App: React.FC = () => {
               placeholder="What needs to be done?"
               value={addValue}
               onChange={(event) => setAddValue(event.target.value)}
-              disabled={isInputDisable && true}
+              disabled={isInputDisabled}
             />
           </form>
         </header>
