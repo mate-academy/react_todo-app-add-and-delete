@@ -1,3 +1,4 @@
+/* eslint-disable no-console */
 /* eslint-disable jsx-a11y/control-has-associated-label */
 import React, { useEffect, useState } from 'react';
 import classNames from 'classnames';
@@ -7,8 +8,13 @@ import { Todo } from './types/Todo';
 import { TodoList } from './components/TodoList';
 
 const USER_ID = 10565;
-
-enum ShowTodos {
+const enum ShowError {
+  fetchTodos = 'Todos not found, error',
+  createTodo = "Title can't be empty",
+  addTodo = 'Unable to add a todo',
+  deleteTodo = 'Unable to delete a todo',
+}
+const enum ShowTodos {
   All,
   Active,
   Completed,
@@ -16,11 +22,22 @@ enum ShowTodos {
 
 const todosFromServer = client
   .get<Todo[]>(`/todos?userId=${USER_ID}`);
+const createTodoOnServer = (title: string) => client
+  .post<Todo>('/todos', {
+  title,
+  userId: USER_ID,
+  completed: false,
+});
+const deleteTodoOnServer = (todoID: number) => client
+  .delete(`/todos/${todoID}`);
 
 export const App: React.FC = () => {
   const [todos, setTodos] = useState<Todo[]>([]);
-  const [error, setError] = useState<string | null>(null);
+  const [error, setError] = useState<ShowError | null>(null);
   const [selectedTodos, setSelectedTodos] = useState<ShowTodos>(ShowTodos.All);
+  const [todoTitle, setTodoTitle] = useState<string | null>(null);
+  const [isDisabled, setIsDisabled] = useState(false);
+  const [tempTodo, setTempTodo] = useState<Todo | null>(null);
 
   const clearError = () => {
     setTimeout(() => {
@@ -28,14 +45,33 @@ export const App: React.FC = () => {
     }, 3000);
   };
 
+  const showErrors = (showError: ShowError) => {
+    switch (showError) {
+      case ShowError.fetchTodos:
+        setError(ShowError.fetchTodos);
+        break;
+      case ShowError.createTodo:
+        setError(ShowError.createTodo);
+        break;
+      case ShowError.addTodo:
+        setError(ShowError.addTodo);
+        break;
+      case ShowError.deleteTodo:
+        setError(ShowError.deleteTodo);
+        break;
+
+      default:
+        break;
+    }
+
+    clearError();
+  };
+
   useEffect(() => {
     setError(null);
     todosFromServer
-      .then(fetchTodos => setTodos(fetchTodos))
-      .catch(() => {
-        setError('Todos not found, error');
-        clearError();
-      });
+      .then(fetchedTodos => setTodos(fetchedTodos))
+      .catch(() => showErrors(ShowError.fetchTodos));
   }, []);
   const handleFilterSelect = (event: React.MouseEvent<HTMLAnchorElement>) => {
     switch (event.currentTarget.textContent) {
@@ -67,6 +103,62 @@ export const App: React.FC = () => {
     return getFilteredTodos(selectedTodos);
   }, [selectedTodos, todos]);
 
+  const createTodo = (event: React.FormEvent) => {
+    if (todoTitle === '') {
+      showErrors(ShowError.createTodo);
+    }
+
+    event.preventDefault();
+    if (todoTitle !== null) {
+      setIsDisabled(true);
+      setTempTodo({
+        id: 0,
+        title: '',
+        userId: USER_ID,
+        completed: false,
+      });
+      createTodoOnServer(todoTitle)
+        .then(data => {
+          setTodos([
+            ...todos,
+            data,
+          ]);
+        })
+        .catch(() => showErrors(ShowError.addTodo))
+        .finally(() => {
+          setIsDisabled(false);
+          setTempTodo(null);
+          setTodoTitle(null);
+        });
+    }
+  };
+
+  const deleteTodo = (todoID: number) => {
+    setTempTodo({
+      id: 0,
+      title: '',
+      userId: USER_ID,
+      completed: false,
+    });
+    deleteTodoOnServer(todoID)
+      .then(() => {
+        setTodos(todos.filter(todo => todo.id !== todoID));
+      })
+      .catch(() => {
+        showErrors(ShowError.deleteTodo);
+      })
+      .finally(() => setTempTodo(null));
+  };
+
+  const deleteComplitedTodos = () => {
+    Promise.all(
+      todos
+        .filter(todo => todo.completed)
+        .map(todo => deleteTodoOnServer(todo.id)),
+    )
+      .then(() => setTodos(todos.filter(todo => !todo.completed)));
+  };
+
   if (!USER_ID) {
     return <UserWarning />;
   }
@@ -80,12 +172,14 @@ export const App: React.FC = () => {
           {/* this buttons is active only if there are some active todos */}
           <button type="button" className="todoapp__toggle-all active" />
 
-          {/* Add a todo on form submit */}
-          <form>
+          <form onSubmit={createTodo}>
             <input
               type="text"
               className="todoapp__new-todo"
               placeholder="What needs to be done?"
+              value={todoTitle ?? ''}
+              disabled={isDisabled}
+              onChange={(event) => setTodoTitle(event.target.value.trim())}
             />
           </form>
         </header>
@@ -93,7 +187,12 @@ export const App: React.FC = () => {
         <section className="todoapp__main">
           {filteredTodos
           && filteredTodos.length > 0
-          && <TodoList todos={filteredTodos} />}
+          && (
+            <TodoList
+              todos={filteredTodos}
+              deleteTodo={deleteTodo}
+            />
+          )}
 
           {/* This todo is being edited */}
           <div className="todo">
@@ -120,21 +219,22 @@ export const App: React.FC = () => {
             </div>
           </div>
 
-          {/* This todo is in loadind state */}
-          <div className="todo">
-            <label className="todo__status-label">
-              <input type="checkbox" className="todo__status" />
-            </label>
+          {tempTodo && (
+            <div className="todo">
+              <label className="todo__status-label">
+                <input type="checkbox" className="todo__status" />
+              </label>
 
-            <span className="todo__title">Todo is being saved now</span>
-            <button type="button" className="todo__remove">×</button>
+              <span className="todo__title">Todo is being saved now</span>
+              <button type="button" className="todo__remove">×</button>
 
-            {/* 'is-active' class puts this modal on top of the todo */}
-            <div className="modal overlay is-active">
-              <div className="modal-background has-background-white-ter" />
-              <div className="loader" />
+              {/* 'is-active' class puts this modal on top of the todo */}
+              <div className="modal overlay is-active">
+                <div className="modal-background has-background-white-ter" />
+                <div className="loader" />
+              </div>
             </div>
-          </div>
+          )}
         </section>
 
         {filteredTodos
@@ -186,13 +286,19 @@ export const App: React.FC = () => {
               </a>
             </nav>
 
-            {/* don't show this button if there are no completed todos */}
-            <button type="button" className="todoapp__clear-completed">
-              Clear completed
-            </button>
+            {todos.filter(todo => todo.completed).length > 0
+            && (
+              <button
+                type="button"
+                className="todoapp__clear-completed"
+                onClick={deleteComplitedTodos}
+              >
+                Clear completed
+              </button>
+            )}
+
           </footer>
         )}
-
       </div>
 
       <div className={classNames(
@@ -209,12 +315,6 @@ export const App: React.FC = () => {
           onClick={() => setError(null)}
         />
         {error}
-        {/* show only one message at a time */}
-        {/* Unable to add a todo
-        <br />
-        Unable to delete a todo
-        <br />
-        Unable to update a todo */}
       </div>
     </div>
   );
