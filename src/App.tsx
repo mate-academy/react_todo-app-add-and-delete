@@ -40,10 +40,10 @@ export const App: React.FC = () => {
           return item;
 
         case Filter.ACTIVE:
-          return item.completed === false;
+          return !item.completed;
 
         case Filter.COMPLETED:
-          return item.completed === true;
+          return item.completed;
 
         default:
           return item;
