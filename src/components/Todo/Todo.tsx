@@ -18,7 +18,11 @@ export const Todo = ({
   return (
     <div className={classNames('todo', { completed })}>
       <label className="todo__status-label">
-        <input type="checkbox" className="todo__status" checked={completed} />
+        <input
+          type="checkbox"
+          className="todo__status"
+          defaultChecked={completed}
+        />
       </label>
 
       {editing ? (
