@@ -32,7 +32,7 @@ Add a todo with the entered title on the form submit:
 
 Remove a todo on `TodoDeleteButton` click:
 
-- covered the todo with the loader while wating for the API response;
+- covered the todo with the loader while waiting for the API response;
 - remove the todo from the list on success;
 - in case of API error show `Unable to delete a todo` notification at the bottom (the todo must stay in the list);
 

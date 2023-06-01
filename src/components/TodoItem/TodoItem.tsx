@@ -9,7 +9,9 @@ type Props = {
 };
 
 export const TodoItem: React.FC<Props> = ({
-  todo, onDelete, todosLoading,
+  todo,
+  onDelete,
+  todosLoading,
 }) => {
   const {
     completed,
