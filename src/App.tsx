@@ -22,8 +22,8 @@ export const App: React.FC = () => {
   const [errorMessageName, setErrorMessageName] = useState<string | null>(null);
   const [todosLoading, setTodosLoading] = useState<number[]>([]);
 
-  const handleChangeTitle = (e: React.ChangeEvent<HTMLInputElement>) => {
-    setTitle(e.target.value);
+  const handleChangeTitle = (event: React.ChangeEvent<HTMLInputElement>) => {
+    setTitle(event.target.value);
   };
 
   const handleCreateTodo = () => {
@@ -55,10 +55,8 @@ export const App: React.FC = () => {
       });
   };
 
-  const handleKeyUp = (e: React.KeyboardEvent<HTMLInputElement>) => {
-    if (e.key !== 'Enter') {
-      return;
-    }
+  const handleSubmit = (event: React.FormEvent) => {
+    event.preventDefault();
 
     if (!title) {
       setIsErrorMessage(true);
@@ -155,7 +153,7 @@ export const App: React.FC = () => {
         <Header
           title={title}
           handleChange={handleChangeTitle}
-          handleKeyUp={handleKeyUp}
+          handleSubmit={handleSubmit}
           todosLoading={todosLoading}
         />
 

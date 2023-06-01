@@ -1,16 +1,16 @@
 import React from 'react';
 
 type Props = {
-  title: string
-  handleChange: (e: React.ChangeEvent<HTMLInputElement>) => void
-  handleKeyUp: (e: React.KeyboardEvent<HTMLInputElement>) => void
-  todosLoading: number[]
+  title: string,
+  handleChange: (event: React.ChangeEvent<HTMLInputElement>) => void,
+  handleSubmit: (event: React.FormEvent) => void,
+  todosLoading: number[],
 };
 
 export const Header: React.FC<Props> = ({
   title,
   handleChange,
-  handleKeyUp,
+  handleSubmit,
   todosLoading,
 }) => {
   return (
@@ -21,14 +21,13 @@ export const Header: React.FC<Props> = ({
         className="todoapp__toggle-all active"
       />
 
-      <form>
+      <form onSubmit={handleSubmit}>
         <input
           type="text"
           className="todoapp__new-todo"
           placeholder="What needs to be done?"
           value={title}
           onChange={handleChange}
-          onKeyUp={handleKeyUp}
           disabled={!!todosLoading.length}
         />
       </form>
