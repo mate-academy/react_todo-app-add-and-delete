@@ -26,7 +26,7 @@ export const App: React.FC = () => {
     setTitle(e.target.value);
   };
 
-  const createTodo = () => {
+  const handleCreateTodo = () => {
     const newTodo = {
       id: 0,
       title,
@@ -51,7 +51,7 @@ export const App: React.FC = () => {
         setTempTodo(null);
       })
       .finally(() => {
-        setTodosLoading((prevState) => prevState.filter((id) => id !== 0));
+        setTodosLoading((prevState) => prevState.filter((id) => id));
       });
   };
 
@@ -64,7 +64,7 @@ export const App: React.FC = () => {
       setIsErrorMessage(true);
       setErrorMessageName(ErrorMessages.TitleIsEmpty);
     } else if (title.trim()) {
-      createTodo();
+      handleCreateTodo();
       setTitle('');
     }
   };
@@ -87,7 +87,7 @@ export const App: React.FC = () => {
     },
   };
 
-  const remove = (todoId: number) => {
+  const handleRemoveTodo = (todoId: number) => {
     setTodosLoading((prevState) => [...prevState, todoId]);
 
     return deleteTodos(todoId)
@@ -98,7 +98,6 @@ export const App: React.FC = () => {
       .catch(() => {
         setIsErrorMessage(true);
         setErrorMessageName(ErrorMessages.DeleteTodo);
-        // resetMessage();
       })
       .finally(() => {
         setTodosLoading((prevState) => prevState.filter((id) => id !== todoId));
@@ -123,7 +122,7 @@ export const App: React.FC = () => {
       .filter((todo) => todo.completed)
       .map((todo) => todo.id);
 
-    Promise.all(completedTodoIds.map((todoId) => remove(todoId)))
+    Promise.all(completedTodoIds.map((todoId) => handleRemoveTodo(todoId)))
       .then(() => getTodos(USER_ID))
       .then((prevTodos: Todo[]) => {
         setTodos(prevTodos);
@@ -143,8 +142,10 @@ export const App: React.FC = () => {
     getTodos(USER_ID)
       .then(setTodos)
       .then(() => setIsConnection(true))
-      .catch();
-  }, [USER_ID, isErrorMessage]);
+      .catch(() => {
+        setIsErrorMessage(true);
+      });
+  }, []);
 
   return (
     <div className="todoapp">
@@ -160,7 +161,7 @@ export const App: React.FC = () => {
 
         <TodoList
           visibleTodos={visibleTodos}
-          remove={remove}
+          remove={handleRemoveTodo}
           tempTodo={tempTodo}
           isConnection={isConnection}
           todosLoading={todosLoading}

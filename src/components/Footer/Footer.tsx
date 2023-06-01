@@ -27,7 +27,7 @@ export const Footer: React.FC<Props> = ({
   return (
     <footer className={classNames(
       'todoapp__footer', {
-        'todoapp__footer--hidden': todos.length === 0,
+        'todoapp__footer--hidden': !todos.length,
       },
     )}
     >
