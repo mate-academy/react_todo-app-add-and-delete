@@ -59,7 +59,7 @@ export const TodosConstextProvider = (
   const USER_ID = 10529;
   const url = `/todos?userId=${USER_ID}`;
 
-  if (error === true) {
+  if (error) {
     setTimeout(() => setError(false), 3000);
   }
 
@@ -101,19 +101,22 @@ export const TodosConstextProvider = (
     setLoading(true);
     const newTodos = todos.map(async todo => {
       let newTodo: Todo;
+      const {
+        id, title, userId,
+      } = todo;
 
       if (todos.find(tod => tod.completed === false)) {
         newTodo = {
-          id: todo.id,
-          title: todo.title,
-          userId: todo.userId,
+          id,
+          title,
+          userId,
           completed: true,
         };
       } else {
         newTodo = {
-          id: todo.id,
-          title: todo.title,
-          userId: todo.userId,
+          id,
+          title,
+          userId,
           completed: false,
         };
       }
@@ -137,7 +140,7 @@ export const TodosConstextProvider = (
   const handleDeleteCompleted = useCallback(() => {
     const filterdTodos = todos
       .map(todo => {
-        if (todo.completed === true) {
+        if (todo.completed) {
           const uniqUrl = `/todos/${todo.id}?userId=${USER_ID}`;
 
           return client.delete(uniqUrl)
@@ -165,7 +168,7 @@ export const TodosConstextProvider = (
     const urlId = `/todos/${todo.id}?userId=${USER_ID}`;
     let data;
 
-    if (todo.completed === false) {
+    if (!todo.completed) {
       data = { completed: true };
     } else {
       data = { completed: false };

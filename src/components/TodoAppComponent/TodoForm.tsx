@@ -1,7 +1,7 @@
 import { useTodosContext } from '../../utils/TodosContext';
 
 interface PropsNewTodo {
-  value: string,
+  value: string;
   setValue(val: string): void;
 }
 export const NewTodo = ({ value, setValue }: PropsNewTodo) => {
@@ -17,7 +17,7 @@ export const NewTodo = ({ value, setValue }: PropsNewTodo) => {
         placeholder="What needs to be done?"
         value={value}
         onChange={(event) => setValue(event.target.value)}
-        disabled={tempTodo !== null}
+        disabled={!!tempTodo}
       />
     </form>
   );

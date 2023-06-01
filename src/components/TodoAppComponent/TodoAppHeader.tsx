@@ -7,6 +7,7 @@ export const TodoAppHeader = () => {
   const {
     todos, value, setValue, handleToggleComplete,
   } = useTodosContext();
+  const isActive = todos.filter(todo => !todo.completed).length > 0;
 
   return (
     <header className="todoapp__header">
@@ -15,10 +16,8 @@ export const TodoAppHeader = () => {
         <button
           type="button"
           className={cn({
-            'todoapp__toggle-all active': !todos
-              .filter(todo => !todo.completed).length,
-            'todoapp__toggle-all': todos
-              .filter(todo => !todo.completed).length,
+            'todoapp__toggle-all active': isActive,
+            'todoapp__toggle-all': !isActive,
           })}
           onClick={handleToggleComplete}
         />
