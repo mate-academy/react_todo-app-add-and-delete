@@ -1,6 +1,8 @@
 import cn from 'classnames';
+import { TransitionGroup, CSSTransition } from 'react-transition-group';
 import { Todo as TodoType } from '../types/Todo';
 import { Todo } from './Todo';
+import '../styles/animations.css';
 
 interface TodoListProps {
   visibleTodos: TodoType[];
@@ -17,55 +19,45 @@ export const TodoList: React.FC<TodoListProps> = ({
 }) => {
   return (
     <section className="todoapp__main">
-      {visibleTodos.map(todo => {
-        return (
-          !isLoading.includes(todo.id.toString())
-            ? (
-              <Todo
-                todo={todo}
-                key={todo.id}
-                onTodoRemove={onTodoRemove}
-              />
-            )
-            : (
-              <div
-                className={cn('todo', {
-                  completed: todo.completed,
-                })}
-                key={todo.id}
-              >
-                <label className="todo__status-label">
-                  <input type="checkbox" className="todo__status" />
-                </label>
-
-                <span className="todo__title">{todo.title}</span>
-                <button type="button" className="todo__remove">×</button>
-                <div className={cn('modal overlay',
-                  { 'is-active': isLoading.includes(todo.id.toString()) })}
-                >
-                  <div className="modal-background has-background-white-ter" />
-                  <div className="loader" />
-                </div>
-              </div>
-            )
-        );
-      })}
-      {tempTodo && (
-        <div className="todo">
-          <label className="todo__status-label">
-            <input type="checkbox" className="todo__status" />
-          </label>
-
-          <span className="todo__title">{tempTodo.title}</span>
-          <button type="button" className="todo__remove">×</button>
-          <div className={cn('modal overlay',
-            { 'is-active': tempTodo !== null })}
+      <TransitionGroup>
+        {visibleTodos.map(todo => (
+          <CSSTransition
+            key={todo.id}
+            timeout={300}
+            classNames="item"
           >
-            <div className="modal-background has-background-white-ter" />
-            <div className="loader" />
-          </div>
-        </div>
-      )}
+            <Todo
+              todo={todo}
+              key={todo.id}
+              onTodoRemove={onTodoRemove}
+              isLoading={isLoading}
+            />
+          </CSSTransition>
+        ))}
+
+        {tempTodo && (
+          <CSSTransition
+            key={0}
+            timeout={300}
+            classNames="temp-item"
+          >
+            <div className="todo">
+              <label className="todo__status-label">
+                <input type="checkbox" className="todo__status" />
+              </label>
+
+              <span className="todo__title">{tempTodo.title}</span>
+              <button type="button" className="todo__remove">×</button>
+              <div className={cn('modal overlay',
+                { 'is-active': tempTodo !== null })}
+              >
+                <div className="modal-background has-background-white-ter" />
+                <div className="loader" />
+              </div>
+            </div>
+          </CSSTransition>
+        )}
+      </TransitionGroup>
     </section>
   );
 };
