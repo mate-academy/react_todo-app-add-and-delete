@@ -43,12 +43,12 @@ export const App: React.FC = () => {
   useEffect(() => {
     switch (filter) {
       case 'Active': {
-        setFilteredTodos(todos.filter(todo => todo.completed === false));
+        setFilteredTodos(todos.filter(todo => !todo.completed));
         break;
       }
 
       case 'Completed': {
-        setFilteredTodos(todos.filter(todo => todo.completed === true));
+        setFilteredTodos(todos.filter(todo => todo.completed));
         break;
       }
 
@@ -105,11 +105,11 @@ export const App: React.FC = () => {
     />
   ));
   const countNotCompletedtodos = todos.filter(todo => (
-    todo.completed === false
+    !todo.completed
   )).length;
 
   const completedTodos = todos.filter(todo => (
-    todo.completed === true
+    todo.completed
   ));
 
   const handleRemoveCompletedTodos = () => {
