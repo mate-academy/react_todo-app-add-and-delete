@@ -129,5 +129,8 @@
     &:active {
       text-decoration: none;
     }
+    &__clear-completed.opacity {
+    opacity: 0;
+    }
   }
 }
