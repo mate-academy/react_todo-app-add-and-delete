@@ -7,38 +7,38 @@ import { Header } from './components/Header';
 import { TodoList } from './components/TodoList';
 import { Footer } from './components/Footer';
 import { Notification } from './components/Notification';
-import { SelectTodo } from './types/SelectTodo';
+import { Filters } from './types/Filters';
 
 const USER_ID = 10586;
 
 export const App: React.FC = () => {
   const [query, setQuery] = useState<string>('');
-  const [selected, setSelected] = useState<string>('All');
+  const [selected, setSelected] = useState<string>(Filters.All);
   const [todos, setTodos] = useState<Todo[]>([]);
-  const [showError, setShowError] = useState<boolean>(false);
+  const [error, setError] = useState<Error | null>(null);
   const [isEmptyTitle, setEmptyTitle] = useState<boolean>(false);
   const [tempTodo, setTempTodo] = useState<Todo | null>(null);
   const [disableInput, setDisableInput] = useState<boolean>(false);
   const [unableToAdd, setUnableToAdd] = useState<boolean>(false);
-  const [showClearCopleted, setShowClearCopleted] = useState<boolean>(false);
+  const [showClearCompleted, setShowClearCompleted] = useState<boolean>(false);
   const [unableToRemove, setUnableToRemove] = useState<boolean>(false);
   const [showLoading, setShowLoading] = useState<number | boolean>();
 
-  const showClearCompleted = () => {
+  const showBtnClearCompleted = () => {
     todos.forEach(todo => {
       if (todo.completed) {
-        setShowClearCopleted(true);
+        setShowClearCompleted(true);
       }
     });
   };
 
   useEffect(() => {
-    showClearCompleted();
+    showBtnClearCompleted();
   }, [todos]);
 
   useEffect(() => {
     const timerId = setTimeout(() => {
-      setShowError(false);
+      setError(null);
     }, 3000);
 
     return () => {
@@ -48,14 +48,14 @@ export const App: React.FC = () => {
 
   const filterTodo = useCallback(() => {
     switch (selected) {
-      case SelectTodo.All:
+      case Filters.All:
 
         return todos;
 
-      case SelectTodo.Active:
+      case Filters.Active:
         return todos.filter(todo => !todo.completed);
 
-      case SelectTodo.Completed:
+      case Filters.Completed:
         return todos.filter(todo => todo.completed);
 
       default:
@@ -65,7 +65,7 @@ export const App: React.FC = () => {
 
   const loadTodos = async () => {
     try {
-      setShowError(false);
+      setError(null);
 
       const data = await getTodos(USER_ID);
 
@@ -75,7 +75,7 @@ export const App: React.FC = () => {
         setTodos(data);
       }
     } catch {
-      setShowError(true);
+      setError(new Error('Error 404 no connection to the server'));
 
       throw new Error('Error 404 no connection to the server');
     }
@@ -88,7 +88,7 @@ export const App: React.FC = () => {
   const addTodo = async () => {
     if (!query) {
       setEmptyTitle(true);
-      setShowError(true);
+      setError(new Error('imposible add todo with empty value'));
 
       return;
     }
@@ -111,7 +111,7 @@ export const App: React.FC = () => {
       setTodos(prevTodo => ([...prevTodo, todo]));
       setQuery('');
     } catch {
-      setShowError(true);
+      setError(new Error('Error 404 no connection to the server'));
       setUnableToAdd(true);
     } finally {
       setTempTodo(null);
@@ -130,7 +130,7 @@ export const App: React.FC = () => {
       setTodos((prevTodo) => prevTodo.filter(prev => prev.id !== todoId));
     } catch {
       setUnableToRemove(true);
-      setShowError(true);
+      setError(new Error('Error 404 no connection to the server'));
     } finally {
       setShowLoading(false);
     }
@@ -140,7 +140,7 @@ export const App: React.FC = () => {
     todos.forEach(todo => {
       if (todo.completed) {
         revomeTodo(todo.id);
-        setShowClearCopleted(false);
+        setShowClearCompleted(false);
       }
     });
   };
@@ -174,15 +174,15 @@ export const App: React.FC = () => {
               selectTodo={setSelected}
               selected={selected}
               onRemoveCompleted={removeCompleted}
-              isClearCopleted={showClearCopleted}
+              isClearCopleted={showClearCompleted}
             />
           </>
         )}
-        {showError && (
+        {error && (
           <Notification
             isEmptyTitle={isEmptyTitle}
-            setIsHideError={setShowError}
-            isShowError={showError}
+            setShowError={setError}
+            ShowError={error}
             isUnableToAdd={unableToAdd}
             isUnableToRemove={unableToRemove}
           />
