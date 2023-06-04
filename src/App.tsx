@@ -1,6 +1,8 @@
 /* eslint-disable max-len */
 /* eslint-disable jsx-a11y/control-has-associated-label */
-import React, { useState, useEffect, useMemo } from 'react';
+import React, {
+  useState, useEffect, useMemo, useCallback,
+} from 'react';
 import { UserWarning } from './UserWarning';
 import { client } from './utils/fetchClient';
 import { getTodos, getPostTodos, deleteTodos } from './api/todos';
@@ -16,10 +18,10 @@ const USER_ID = 10589;
 export const App: React.FC = () => {
   const [todos, setTodos] = useState<Todo[]>([]);
   const [select, setSelect] = useState('all');
-  const [isError, setIsError] = useState(false);
+  const [isError, setIsError] = useState('');
   const [querySearch, setQuerySearch] = useState('');
 
-  const lengTodos = todos.filter(todo => todo.completed === false).length;
+  const lengTodos = todos.filter(({ completed }) => !completed).length;
 
   const getTodosAll = async () => {
     try {
@@ -27,7 +29,10 @@ export const App: React.FC = () => {
 
       setTodos(receivedTodos);
     } catch {
-      setIsError(true);
+      setIsError('Failed to load todos');
+      setTimeout(() => {
+        setIsError('');
+      }, 3000);
     }
   };
 
@@ -62,7 +67,10 @@ export const App: React.FC = () => {
       await getPostTodos(USER_ID, newTodo);
       await getTodosAll();
     } catch {
-      setIsError(true);
+      setIsError('Unable to add a todo');
+      setTimeout(() => {
+        setIsError('');
+      }, 3000);
     }
   };
 
@@ -71,7 +79,10 @@ export const App: React.FC = () => {
       await deleteTodos(todoId);
       await getTodosAll();
     } catch {
-      setIsError(true);
+      setIsError('Unable to delete a todo');
+      setTimeout(() => {
+        setIsError('');
+      }, 3000);
     }
   };
 
@@ -105,9 +116,16 @@ export const App: React.FC = () => {
         });
       }
     } catch {
-      setIsError(true);
+      setIsError('Unable to override task status');
+      setTimeout(() => {
+        setIsError('');
+      }, 3000);
     }
   };
+
+  const handleCleanErrorMessage = useCallback(() => {
+    setIsError('');
+  }, []);
 
   if (!USER_ID) {
     return <UserWarning />;
@@ -146,12 +164,9 @@ export const App: React.FC = () => {
           <button
             type="button"
             className="delete"
+            onClick={handleCleanErrorMessage}
           />
-          Unable to add a todo
-          <br />
-          Unable to delete a todo
-          <br />
-          Unable to update a todo
+          {isError}
         </div>
       )}
 
