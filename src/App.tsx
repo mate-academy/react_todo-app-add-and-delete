@@ -1,5 +1,4 @@
 /* eslint-disable jsx-a11y/control-has-associated-label */
-/* eslint-disable max-len */
 import React, { useState, useMemo, useEffect } from 'react';
 import classNames from 'classnames';
 import { UserWarning } from './UserWarning';
@@ -8,7 +7,9 @@ import { Header } from './component/Header/Header';
 import { Footer } from './component/Footer/Footer';
 import { TodoApp } from './component/TodoApp/TodoApp';
 import {
-  getTodos, deleteTodos, addTodos,
+  getTodos,
+  deleteTodo,
+  addTodo,
 } from './api/todos';
 import { NewTodo } from './types/NewTodo';
 import { TodoFilter } from './types/TodoFilter';
@@ -21,13 +22,14 @@ export const App: React.FC = () => {
   const [filteredBy, setFilteredBy] = useState(TodoFilter.ALL);
   const [isError, setIsError] = useState('');
   const [query, setQuery] = useState('');
+  const [tempTodo, setTempTodo] = useState<Todo | null>(null);
 
   const getAllTodos = async () => {
     try {
       const todosFromServer = await getTodos(USER_ID);
 
       setTodos(todosFromServer);
-    } catch {
+    } catch (error) {
       setIsError('Loading...');
       setTimeout(() => {
         setIsError('');
@@ -53,16 +55,24 @@ export const App: React.FC = () => {
     };
 
     try {
-      await addTodos(USER_ID, newTodo);
+      setTempTodo({
+        id: 0,
+        ...newTodo,
+      });
+      setQuery('');
+
+      await addTodo(USER_ID, newTodo);
       await getAllTodos();
-    } catch {
+    } catch (error) {
       setIsError('Unable to add a todo');
+    } finally {
+      setTempTodo(null);
     }
   };
 
   const handleDeleteTodo = async (todoId: number) => {
     try {
-      await deleteTodos(todoId);
+      await deleteTodo(todoId);
       await getAllTodos();
     } catch (error) {
       setIsError('Unable to delete a todo');
@@ -72,7 +82,7 @@ export const App: React.FC = () => {
   const handleDeleteCompletedTodo = async () => {
     try {
       const completedTodos = todos.filter((todo) => todo.completed);
-      const deletePromises = completedTodos.map((todo) => deleteTodos(todo.id));
+      const deletePromises = completedTodos.map((todo) => deleteTodo(todo.id));
 
       await Promise.all(deletePromises);
       await getAllTodos();
@@ -112,7 +122,9 @@ export const App: React.FC = () => {
           setQuery={setQuery}
         />
         <TodoApp
-          todos={todos}
+          todos={filteredTodos}
+          // todos={todos}
+          tempTodo={tempTodo}
           deleteTodo={handleDeleteTodo}
         />
         <Footer

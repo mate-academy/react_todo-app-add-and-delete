@@ -1,11 +1,10 @@
-/* eslint-disable jsx-a11y/control-has-associated-label */
 import React from 'react';
 import classNames from 'classnames';
 import { Todo } from '../../types/Todo';
 
 interface HeaderProps {
   todos: Todo[],
-  addTodo: () => void,
+  addTodo: (title: string) => void;
   query: string,
   setQuery: (query: string) => void,
 }
@@ -18,7 +17,7 @@ export const Header: React.FC<HeaderProps> = ({
 }) => {
   const handleSubmit = (event:React.SyntheticEvent) => {
     event.preventDefault();
-    addTodo();
+    addTodo(query);
     setQuery('');
   };
 
@@ -30,6 +29,7 @@ export const Header: React.FC<HeaderProps> = ({
           'todoapp__toggle-all',
           { active: todos.some(todo => !todo.completed) },
         )}
+        aria-label="Toggle all todos"
       />
 
       <form onSubmit={handleSubmit}>
