@@ -96,6 +96,22 @@ export const App: React.FC = () => {
       });
   };
 
+  const handleClearCompleted = () => {
+    const completedTodos = todos.filter((todo) => todo.completed);
+
+    setIsLoading(true);
+
+    Promise.all(completedTodos.map((todo) => client.delete(`/todos/${todo.id}`)))
+      .then(() => {
+        fetchTodos();
+        setIsLoading(false);
+      })
+      .catch(() => {
+        setError('Unable to delete completed todos');
+        setIsLoading(false);
+      });
+  };
+
   if (!userId) {
     return <UserWarning />;
   }
@@ -133,6 +149,7 @@ export const App: React.FC = () => {
           todos={todos}
           filterType={filterType}
           onFilterChange={handleFilterChange}
+          onClearCompleted={handleClearCompleted} // Added the onClearCompleted prop
         />
       </div>
 

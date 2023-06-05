@@ -6,10 +6,13 @@ interface FooterProps {
   todos: Todo[],
   filterType: string,
   onFilterChange: (type: string) => void,
+  onClearCompleted: () => void,
 }
 
 const Footer: React.FC<FooterProps>
-= ({ todos, filterType, onFilterChange }) => {
+= ({
+  todos, filterType, onFilterChange, onClearCompleted,
+}) => {
   const filteredTodos = useMemo(() => {
     switch (filterType) {
       case 'active':
@@ -20,6 +23,12 @@ const Footer: React.FC<FooterProps>
         return todos;
     }
   }, [todos, filterType]);
+
+  const hasCompletedTodos = todos.some((todo) => todo.completed);
+
+  const handleClearCompleted = () => {
+    onClearCompleted();
+  };
 
   return (
     <>
@@ -63,11 +72,11 @@ const Footer: React.FC<FooterProps>
             </a>
           </nav>
 
-          {todos.some((todo) => todo.completed) && (
+          {hasCompletedTodos && (
             <button
               type="button"
               className="todoapp__clear-completed"
-              onClick={() => {}}
+              onClick={handleClearCompleted}
             >
               Clear completed
             </button>
