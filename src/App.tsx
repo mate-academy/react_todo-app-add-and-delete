@@ -12,6 +12,8 @@ export const App: React.FC = () => {
   const [error, setError] = useState<string | null>(null);
   const [filterType, setFilterType] = useState('all');
   const [newTodo, setNewTodo] = useState('');
+  const [tempTodo, setTempTodo] = useState<Todo | null>(null);
+  const [isLoading, setIsLoading] = useState(false);
 
   const fetchTodos = () => {
     client
@@ -50,19 +52,36 @@ export const App: React.FC = () => {
     return () => {};
   }, [error]);
 
-  const handleAddTodo = (event: React.FormEvent) => {
+  const handleAddTodo = async (event: React.FormEvent) => {
     event.preventDefault();
 
     if (newTodo.trim() !== '') {
-      const todo: Todo = {
-        id: Date.now(),
+      setIsLoading(true);
+      setTempTodo({
+        id: 0,
         title: newTodo,
         completed: false,
         userId,
-      };
-
-      setTodos((prevTodos) => [...prevTodos, todo]);
+      });
       setNewTodo('');
+
+      try {
+        const response = await client.post<Todo>('/todos', {
+          title: newTodo,
+          completed: false,
+          userId,
+        });
+
+        setTodos((prevTodos) => [...prevTodos, response]);
+        setTempTodo(null);
+        setIsLoading(false);
+      } catch (apiError) {
+        setError('Unable to add a todo');
+        setTempTodo(null);
+        setIsLoading(false);
+      }
+    } else {
+      setError("Title can't be empty");
     }
   };
 
@@ -93,8 +112,16 @@ export const App: React.FC = () => {
             placeholder="What needs to be done?"
             value={newTodo}
             onChange={(event) => setNewTodo(event.target.value)}
+            disabled={isLoading}
           />
         </form>
+
+        {tempTodo !== null && (
+          <div className="todoapp__item todoapp__item--loading">
+            <div className="loader" />
+            <span>{tempTodo.title}</span>
+          </div>
+        )}
 
         <TodoList
           todos={todos}
