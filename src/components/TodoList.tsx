@@ -1,30 +1,37 @@
 import React from 'react';
-import TodoItem from './TodoItem';
 import { Todo } from '../types/Todo';
+import TodoItem from './TodoItem';
 
 interface TodoListProps {
   todos: Todo[],
   filterType: string,
+  onDeleteTodo: (id: number) => void,
 }
 
-const TodoList: React.FC<TodoListProps> = ({ todos, filterType }) => {
+const TodoList: React.FC<TodoListProps>
+= ({ todos, filterType, onDeleteTodo }) => {
   const filteredTodos = todos.filter((todo) => {
-    switch (filterType) {
-      case 'active':
-        return !todo.completed;
-      case 'completed':
-        return todo.completed;
-      default:
-        return true;
+    if (filterType === 'active') {
+      return !todo.completed;
     }
+
+    if (filterType === 'completed') {
+      return todo.completed;
+    }
+
+    return true;
   });
 
   return (
-    <section className="todoapp__main">
-      {filteredTodos.map(todo => (
-        <TodoItem key={todo.id} todo={todo} />
+    <div className="todoapp__list">
+      {filteredTodos.map((todo) => (
+        <TodoItem
+          key={todo.id}
+          todo={todo}
+          onDeleteTodo={onDeleteTodo}
+        />
       ))}
-    </section>
+    </div>
   );
 };
 

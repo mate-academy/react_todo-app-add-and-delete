@@ -11,6 +11,7 @@ export const App: React.FC = () => {
   const [todos, setTodos] = useState<Todo[]>([]);
   const [error, setError] = useState<string | null>(null);
   const [filterType, setFilterType] = useState('all');
+  const [newTodo, setNewTodo] = useState('');
 
   const fetchTodos = () => {
     client
@@ -49,6 +50,33 @@ export const App: React.FC = () => {
     return () => {};
   }, [error]);
 
+  const handleAddTodo = (event: React.FormEvent) => {
+    event.preventDefault();
+
+    if (newTodo.trim() !== '') {
+      const todo: Todo = {
+        id: Date.now(),
+        title: newTodo,
+        completed: false,
+        userId,
+      };
+
+      setTodos((prevTodos) => [...prevTodos, todo]);
+      setNewTodo('');
+    }
+  };
+
+  const handleDeleteTodo = (id: number) => {
+    client
+      .delete(`/todos/${id}`)
+      .then(() => {
+        fetchTodos();
+      })
+      .catch(() => {
+        setError('Unable to delete a todo');
+      });
+  };
+
   if (!userId) {
     return <UserWarning />;
   }
@@ -58,16 +86,21 @@ export const App: React.FC = () => {
       <h1 className="todoapp__title">todos</h1>
 
       <div className="todoapp__content">
-        <form>
+        <form onSubmit={handleAddTodo}>
           <input
             type="text"
             className="todoapp__new-todo"
             placeholder="What needs to be done?"
-            name="newTodo"
+            value={newTodo}
+            onChange={(event) => setNewTodo(event.target.value)}
           />
         </form>
 
-        <TodoList todos={todos} filterType={filterType} />
+        <TodoList
+          todos={todos}
+          filterType={filterType}
+          onDeleteTodo={handleDeleteTodo}
+        />
 
         <Footer
           todos={todos}
