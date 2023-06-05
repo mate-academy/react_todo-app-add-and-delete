@@ -149,7 +149,7 @@ export const App: React.FC = () => {
           todos={todos}
           filterType={filterType}
           onFilterChange={handleFilterChange}
-          onClearCompleted={handleClearCompleted} // Added the onClearCompleted prop
+          onClearCompleted={handleClearCompleted}
         />
       </div>
 
