@@ -1,24 +1,347 @@
-/* eslint-disable max-len */
+/* eslint-disable prefer-const */
 /* eslint-disable jsx-a11y/control-has-associated-label */
-import React from 'react';
+import React, {
+  useCallback,
+  useEffect,
+  useMemo,
+  useReducer,
+  useState,
+} from 'react';
+import classNames from 'classnames';
 import { UserWarning } from './UserWarning';
 
-const USER_ID = 0;
+import { getTodos, createTodo, deleteTodo } from './api/todos';
+
+import { Todo } from './types/Todo';
+import { TodoItem } from './components/TodoItem';
+
+const USER_ID = 10613;
+
+enum FilterStatus {
+  all = 'all',
+  active = 'active',
+  completed = 'completed',
+}
+
+enum ErrorType {
+  onLoad,
+  onAdd,
+  onDelete,
+  onUpdate,
+  missingTitle,
+}
+
+type SetError = {
+  type: 'set_error';
+  value: ErrorType;
+};
+
+type RemoveError = {
+  type: 'remove_error';
+};
+
+const reducer = (state: {
+  isError: boolean,
+  errorType: ErrorType | null,
+}, action: SetError | RemoveError) => {
+  switch (action.type) {
+    case 'set_error':
+      return {
+        errorType: action.value,
+        isError: true,
+      };
+
+    case 'remove_error':
+      return {
+        ...state,
+        isError: false,
+      };
+
+    default:
+      return state;
+  }
+};
 
 export const App: React.FC = () => {
+  const [todos, setTodos] = useState<Todo[]>([]);
+  const [processedTodoIds, setProcessedTodoIds] = useState<number[]>([]);
+  const [filterStatus, setFilterStatus] = useState(FilterStatus.all);
+  const [todoTitle, setTodoTitle] = useState('');
+  const [isCreating, setIsCreating] = useState(false);
+  const [tempTodo, setTempTodo] = useState<Todo | null>(null);
+  const [error, dispatch] = useReducer(reducer, {
+    isError: false,
+    errorType: null,
+  });
+
+  const showError = useCallback(
+    (value: ErrorType) => {
+      dispatch({ type: 'set_error', value });
+
+      setTimeout(() => {
+        dispatch({ type: 'remove_error' });
+      }, 3000);
+    },
+    [],
+  );
+
+  const loadTodos = async () => {
+    try {
+      const todosFromServer = await getTodos(USER_ID);
+
+      setTodos(todosFromServer);
+    } catch {
+      showError(ErrorType.onLoad);
+    }
+  };
+
+  useEffect(() => {
+    loadTodos();
+  }, []);
+
+  const visibleTodos = useMemo(() => {
+    return todos.filter((todo) => {
+      switch (filterStatus) {
+        case FilterStatus.active:
+          return !todo.completed;
+
+        case FilterStatus.completed:
+          return todo.completed;
+
+        case FilterStatus.all:
+        default:
+          return todo;
+      }
+    });
+  }, [todos, filterStatus]);
+
+  const handleFormSubmit = async (event: React.FormEvent) => {
+    event.preventDefault();
+
+    if (!todoTitle.trim()) {
+      showError(ErrorType.missingTitle);
+
+      return;
+    }
+
+    try {
+      dispatch({ type: 'remove_error' }); // hide error before any next request
+
+      setIsCreating(true);
+
+      setTempTodo({
+        id: 0,
+        userId: USER_ID,
+        title: todoTitle,
+        completed: false,
+      });
+
+      const todo = await createTodo(USER_ID, todoTitle);
+
+      setTodos([
+        ...todos,
+        todo,
+      ]);
+
+      setTodoTitle('');
+
+      setTempTodo(null);
+
+      // eslint-disable-next-line no-console
+      console.log(todo);
+    } catch {
+      showError(ErrorType.onAdd);
+    } finally {
+      setIsCreating(false);
+    }
+  };
+
+  const handleDeleteTodo = async (todoId: number) => {
+    try {
+      setProcessedTodoIds([
+        ...processedTodoIds,
+        todoId,
+      ]);
+
+      dispatch({ type: 'remove_error' });
+
+      await deleteTodo(todoId);
+
+      setTodos(todos.filter(todo => todo.id !== todoId));
+    } catch {
+      showError(ErrorType.onDelete);
+    } finally {
+      setProcessedTodoIds([]);
+    }
+  };
+
+  const handleClearCompleted = async () => {
+    try {
+      const completedTodoIds = todos.filter(todo => todo.completed)
+        .map(todo => todo.id);
+
+      setProcessedTodoIds(completedTodoIds);
+
+      await Promise.all(completedTodoIds.map(todoId => deleteTodo(todoId)));
+
+      setTodos(todos.filter(todo => !todo.completed));
+    } catch {
+      showError(ErrorType.onDelete);
+    } finally {
+      setProcessedTodoIds([]);
+    }
+  };
+
   if (!USER_ID) {
     return <UserWarning />;
   }
 
   return (
-    <section className="section container">
-      <p className="title is-4">
-        Copy all you need from the prev task:
-        <br />
-        <a href="https://github.com/mate-academy/react_todo-app-loading-todos#react-todo-app-load-todos">React Todo App - Load Todos</a>
-      </p>
+    <div className="todoapp">
+      <h1 className="todoapp__title">todos</h1>
 
-      <p className="subtitle">Styles are already copied</p>
-    </section>
+      <div className="todoapp__content">
+        <header className="todoapp__header">
+          {todos.length !== 0 && (
+            <button
+              type="button"
+              className={classNames(
+                'todoapp__toggle-all',
+                { active: todos.every(todo => todo.completed) },
+              )}
+            />
+          )}
+
+          <form onSubmit={handleFormSubmit}>
+            <input
+              type="text"
+              className="todoapp__new-todo"
+              placeholder="What needs to be done?"
+              value={todoTitle}
+              onChange={(event) => setTodoTitle(event.target.value)}
+              disabled={isCreating}
+            />
+          </form>
+        </header>
+
+        <section className="todoapp__main">
+          {visibleTodos.map(todo => (
+            <TodoItem
+              key={todo.id}
+              todo={todo}
+              onDelete={handleDeleteTodo}
+              isProcessed={processedTodoIds.includes(todo.id)}
+            />
+          ))}
+
+          {tempTodo !== null && (
+            <TodoItem
+              todo={tempTodo}
+              isProcessed
+            />
+          )}
+
+          {/* This todo is being edited */}
+          <div className="todo">
+            <label className="todo__status-label">
+              <input
+                type="checkbox"
+                className="todo__status"
+              />
+            </label>
+
+            {/* This form is shown instead of the title and remove button */}
+            <form>
+              <input
+                type="text"
+                className="todo__title-field"
+                placeholder="Empty todo will be deleted"
+                // value="Todo is being edited now"
+              />
+            </form>
+
+            <div className="modal overlay">
+              <div className="modal-background has-background-white-ter" />
+              <div className="loader" />
+            </div>
+          </div>
+        </section>
+
+        {todos.length !== 0 && (
+          <footer className="todoapp__footer">
+            <span className="todo-count">
+              {`${todos.filter(todo => !todo.completed).length} items left`}
+            </span>
+
+            <nav className="filter">
+              <a
+                href="#/"
+                className={classNames(
+                  'filter__link',
+                  { selected: filterStatus === 'all' },
+                )}
+                onClick={() => setFilterStatus(FilterStatus.all)}
+              >
+                All
+              </a>
+
+              <a
+                href="#/active"
+                className={classNames(
+                  'filter__link',
+                  { selected: filterStatus === 'active' },
+                )}
+                onClick={() => setFilterStatus(FilterStatus.active)}
+              >
+                Active
+              </a>
+
+              <a
+                href="#/completed"
+                className={classNames(
+                  'filter__link',
+                  { selected: filterStatus === 'completed' },
+                )}
+                onClick={() => setFilterStatus(FilterStatus.completed)}
+              >
+                Completed
+              </a>
+            </nav>
+
+            <button
+              type="button"
+              className="todoapp__clear-completed"
+              disabled={todos.every(todo => !todo.completed)}
+              onClick={() => handleClearCompleted()}
+            >
+              Clear completed
+            </button>
+          </footer>
+        )}
+      </div>
+
+      <div className={classNames(
+        'notification',
+        'is-danger',
+        'is-light',
+        'has-text-weight-normal',
+        { hidden: !error.isError },
+      )}
+      >
+        <button
+          type="button"
+          className="delete"
+          onClick={() => dispatch({ type: 'remove_error' })}
+        />
+
+        {error.errorType === ErrorType.onLoad && 'Unable to load the todos'}
+        {error.errorType === ErrorType.onAdd && 'Unable to add a todo'}
+        {error.errorType === ErrorType.onDelete && 'Unable to delete a todo'}
+        {error.errorType === ErrorType.onUpdate && 'Unable to update a todo'}
+        {error.errorType === ErrorType.missingTitle && (
+          "Title can't be empty"
+        )}
+      </div>
+    </div>
   );
 };
