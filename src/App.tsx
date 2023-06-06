@@ -22,9 +22,9 @@ export const App: React.FC = () => {
   const [filter, setFilter] = useState<FilterType>(FilterType.All);
   const [todos, setTodos] = useState<Todo[]>([]);
   const [newTodo, setNewTodo] = useState('');
-  // const [tempTodo, setTempTodo] = useState<Todo | null>(null);
-  const [isUpdating, setIsUpdating] = useState(false);
-  // const [selectedTodoId, setSelectedTodoId] = useState<number | null>(null);
+  const [tempTodo, setTempTodo] = useState<Todo | null>(null);
+  const [isUpdating, setIsUpdating] = useState<number[]>([]);
+  const [inputDisabled, setInputDisabled] = useState(false);
 
   const handleCloseErrorMessage = useCallback(() => {
     setErrorMessage('');
@@ -70,7 +70,7 @@ export const App: React.FC = () => {
   const addNewTodo = async (event: React.FormEvent) => {
     event.preventDefault();
 
-    setIsUpdating(true);
+    setInputDisabled(true);
 
     if (newTodo.trim() === '') {
       setErrorMessage(ErrorType.EmptyTitle);
@@ -89,7 +89,8 @@ export const App: React.FC = () => {
         completed: false,
       };
 
-      // setTempTodo(userTodo);
+      setIsUpdating(prev => [...prev, userTodo.id]);
+      setTempTodo(userTodo);
       const res = await addTodo(userTodo);
 
       setTodos((prev) => [...prev, res]);
@@ -99,15 +100,16 @@ export const App: React.FC = () => {
         setErrorMessage('');
       }, 3000);
     } finally {
-      // setTempTodo(null);
+      setTempTodo(null);
       setNewTodo('');
-      setIsUpdating(false);
+      setInputDisabled(false);
     }
   };
 
   const onDeleteTodo = async (id: number) => {
     // setSelectedTodoId(id);
-    setIsUpdating(true);
+    setInputDisabled(true);
+    setIsUpdating(prev => [...prev, id]);
 
     try {
       await deleteTodo(id);
@@ -115,14 +117,15 @@ export const App: React.FC = () => {
     } catch {
       setErrorMessage(ErrorType.Delete);
     } finally {
-      setIsUpdating(false);
+      setInputDisabled(false);
+      setIsUpdating([]);
     }
   };
 
   const completedTodosId = useMemo(() => completedTodos.map(todo => todo.id), [todos]);
 
   const onDeleteCompleted = async () => {
-    setIsUpdating(true);
+    setInputDisabled(true);
 
     try {
       await Promise.all(
@@ -130,8 +133,6 @@ export const App: React.FC = () => {
       );
     } catch {
       setErrorMessage(ErrorType.Delete);
-    } finally {
-      setIsUpdating(false);
     }
   };
 
@@ -148,7 +149,7 @@ export const App: React.FC = () => {
           hasActiveTodos={activeTodos.length > 0}
           newTodo={newTodo}
           setNewTodo={handleNewTodoChange}
-          isUpdating={isUpdating}
+          inputDisabled={inputDisabled}
           onNewTodoSubmit={addNewTodo}
         />
 
@@ -156,6 +157,7 @@ export const App: React.FC = () => {
           visibleTodos={filteredTodos}
           onDeleteTodo={onDeleteTodo}
           isUpdating={isUpdating}
+          tempTodo={tempTodo}
         />
 
         {(filteredTodos.length

@@ -3,7 +3,7 @@ import { NewTodo } from '../NewTodo/NewTodo';
 interface HeaderProps {
   hasActiveTodos: boolean,
   newTodo: string,
-  isUpdating: boolean,
+  inputDisabled: boolean,
   setNewTodo(event: React.ChangeEvent<HTMLInputElement>): void,
   onNewTodoSubmit(event: React.FormEvent<HTMLFormElement>): void,
 }
@@ -12,7 +12,7 @@ interface HeaderProps {
 export const Header: React.FC<HeaderProps> = ({
   hasActiveTodos,
   newTodo,
-  isUpdating,
+  inputDisabled,
   setNewTodo,
   onNewTodoSubmit,
 }) => {
@@ -28,7 +28,7 @@ export const Header: React.FC<HeaderProps> = ({
       <NewTodo
         newTodo={newTodo}
         setNewTodo={setNewTodo}
-        isUpdating={isUpdating}
+        inputDisabled={inputDisabled}
         onNewTodoSubmit={onNewTodoSubmit}
       />
     </header>

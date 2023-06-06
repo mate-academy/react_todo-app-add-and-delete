@@ -5,7 +5,7 @@ import { Todo } from '../../types/Todo';
 interface TodoProps {
   todo: Todo,
   onDeleteTodo(id: number): void,
-  isUpdating: boolean,
+  isUpdating: number[],
 }
 
 export const TodoItem: React.FC<TodoProps> = ({
@@ -31,9 +31,11 @@ export const TodoItem: React.FC<TodoProps> = ({
         />
       </label>
 
-      <span className="todo__title">{title}</span>
+      <span className="todo__title">
+        {title}
+      </span>
 
-      {isUpdating
+      {isUpdating.includes(id)
         ? (
           <div className={classNames('modal overlay', {
             'is-active': isUpdating,

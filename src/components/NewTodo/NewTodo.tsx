@@ -2,7 +2,7 @@ import React from 'react';
 
 interface NewTodoProps {
   newTodo: string,
-  isUpdating: boolean,
+  inputDisabled: boolean,
   setNewTodo(event: React.ChangeEvent<HTMLInputElement>): void,
   onNewTodoSubmit(event: React.FormEvent<HTMLFormElement>): void,
 }
@@ -10,7 +10,7 @@ interface NewTodoProps {
 export const NewTodo:React.FC<NewTodoProps> = ({
   newTodo,
   setNewTodo,
-  isUpdating,
+  inputDisabled,
   onNewTodoSubmit,
 }) => {
   return (
@@ -21,7 +21,7 @@ export const NewTodo:React.FC<NewTodoProps> = ({
         placeholder="What needs to be done?"
         value={newTodo}
         onChange={setNewTodo}
-        disabled={isUpdating}
+        disabled={inputDisabled}
       />
     </form>
   );
