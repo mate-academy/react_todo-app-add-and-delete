@@ -34,7 +34,9 @@ export const App: React.FC = () => {
     }
 
     setIsInputDisabled(true);
-    setTempTodo({ id: 0, title: newTodo, userId: USER_ID });
+    setTempTodo({
+      id: 0, title: newTodo, completed: false, userId: USER_ID,
+    });
 
     client
       .post('/todos?userId=10599', {
@@ -43,7 +45,9 @@ export const App: React.FC = () => {
         userId: USER_ID,
       })
       .then((response) => {
-        setFormValue((prevTodos) => [...prevTodos, response]);
+        const newTodos = Array.isArray(response) ? response[0] : response;
+
+        setFormValue((prevTodos) => [...prevTodos, newTodos]);
       })
       .catch(() => {
         setError('Unable to add a todo');

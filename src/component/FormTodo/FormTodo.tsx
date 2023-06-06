@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 
 type Props = {
-  addNewTodo: (newTodo: string) => Promise<void>;
+  addNewTodo: (newTodo: string) => void;
   isInputDisabled: boolean;
 };
 
