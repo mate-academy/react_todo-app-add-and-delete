@@ -21,10 +21,16 @@ export const App: React.FC = () => {
   useEffect(() => {
     getTodos(USER_ID)
       .then(setFormValue)
-      .catch((err) => {
+      .catch((err: Error) => {
         setError(err.message);
       });
   }, []);
+
+  useEffect(() => {
+    if (tempTodo !== null) {
+      setTempTodo(null);
+    }
+  }, [todos]);
 
   const addNewTodo = (newTodo: string) => {
     if (newTodo.trim() === '') {
@@ -34,9 +40,6 @@ export const App: React.FC = () => {
     }
 
     setIsInputDisabled(true);
-    setTempTodo({
-      id: 0, title: newTodo, completed: false, userId: USER_ID,
-    });
 
     client
       .post('/todos?userId=10599', {
@@ -48,13 +51,18 @@ export const App: React.FC = () => {
         const newTodos = Array.isArray(response) ? response[0] : response;
 
         setFormValue((prevTodos) => [...prevTodos, newTodos]);
+        setTempTodo({
+          id: 0,
+          title: newTodo,
+          completed: false,
+          userId: USER_ID,
+        });
       })
       .catch(() => {
         setError('Unable to add a todo');
       })
       .finally(() => {
         setIsInputDisabled(false);
-        setTempTodo(null);
       });
   };
 
@@ -104,18 +112,17 @@ export const App: React.FC = () => {
           deleteToDo={deleteToDo}
           tempTodo={tempTodo}
         />
-        <footer className="todoapp__footer">
-          <Footer
-            setFilterHandler={setFilterStatus}
-            todoCounter={copyTodoArray.length}
-          />
-        </footer>
+        {todos.length >= 1 ? (
+          <footer className="todoapp__footer">
+            <Footer
+              setFilterHandler={setFilterStatus}
+              todoCounter={copyTodoArray.length}
+            />
+          </footer>
+        ) : null}
       </div>
 
-      <Error
-        error={error}
-        closeErrorBanner={closeErrorBanner}
-      />
+      <Error error={error} closeErrorBanner={closeErrorBanner} />
     </div>
   );
 };

@@ -10,6 +10,7 @@ interface Props {
 
 export const MainTodo: React.FC<Props> = (
   { formValue, deleteToDo, tempTodo },
+
 ) => {
   return (
     <section className="todoapp__main">

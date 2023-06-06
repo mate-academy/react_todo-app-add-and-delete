@@ -9,6 +9,8 @@ interface Props {
 export const MainList: React.FC<Props> = ({ formList, deleteToDo }) => {
   const { title, completed, id } = formList;
 
+  /* const isActiveClass = id === 0 ? 'modal overlay is-active' : 'modal overlay'; */
+
   const handleClick = () => {
     deleteToDo(id);
   };
@@ -20,26 +22,16 @@ export const MainList: React.FC<Props> = ({ formList, deleteToDo }) => {
           <input type="checkbox" className="todo__status" />
         </label>
 
-        <span
-          className="todo__title"
-        >
-          {title}
-        </span>
+        <span className="todo__title">{title}</span>
 
-        <button
-          type="button"
-          className="todo__remove"
-          onClick={handleClick}
-        >
+        <button type="button" className="todo__remove" onClick={handleClick}>
           ×
         </button>
 
-        {/* {formList.isLoading && (
-          <div className="modal overlay">
-            <div className="modal-background has-background-white-ter" />
-            <div className="loader" />
-          </div>
-        )} */}
+        <div className="modal overlay">
+          <div className="modal-background has-background-white-ter" />
+          <div className="loader" />
+        </div>
       </div>
     </>
   );
