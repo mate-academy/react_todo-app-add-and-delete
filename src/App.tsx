@@ -8,6 +8,7 @@ import React, {
   useState,
 } from 'react';
 import classNames from 'classnames';
+import { TransitionGroup, CSSTransition } from 'react-transition-group';
 import { UserWarning } from './UserWarning';
 
 import { getTodos, createTodo, deleteTodo } from './api/todos';
@@ -225,46 +226,35 @@ export const App: React.FC = () => {
         </header>
 
         <section className="todoapp__main">
-          {visibleTodos.map(todo => (
-            <TodoItem
-              key={todo.id}
-              todo={todo}
-              onDelete={handleDeleteTodo}
-              isProcessed={processedTodoIds.includes(todo.id)}
-            />
-          ))}
+          <TransitionGroup>
+            {visibleTodos.map(todo => (
+              <CSSTransition
+                key={todo.id}
+                timeout={300}
+                classNames="item"
+              >
+                <TodoItem
+                  todo={todo}
+                  onDelete={handleDeleteTodo}
+                  isProcessed={processedTodoIds.includes(todo.id)}
+                />
+              </CSSTransition>
+            ))}
 
-          {tempTodo !== null && (
-            <TodoItem
-              todo={tempTodo}
-              isProcessed
-            />
-          )}
+            {tempTodo !== null && (
+              <CSSTransition
+                key={0}
+                timeout={300}
+                classNames="temp-item"
+              >
+                <TodoItem
+                  todo={tempTodo}
+                  isProcessed
+                />
+              </CSSTransition>
+            )}
+          </TransitionGroup>
 
-          {/* This todo is being edited */}
-          <div className="todo">
-            <label className="todo__status-label">
-              <input
-                type="checkbox"
-                className="todo__status"
-              />
-            </label>
-
-            {/* This form is shown instead of the title and remove button */}
-            <form>
-              <input
-                type="text"
-                className="todo__title-field"
-                placeholder="Empty todo will be deleted"
-                // value="Todo is being edited now"
-              />
-            </form>
-
-            <div className="modal overlay">
-              <div className="modal-background has-background-white-ter" />
-              <div className="loader" />
-            </div>
-          </div>
         </section>
 
         {todos.length !== 0 && (

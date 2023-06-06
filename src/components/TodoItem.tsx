@@ -36,6 +36,14 @@ export const TodoItem: React.FC<Props> = ({
         ×
       </button>
 
+      {/* <form>
+        <input
+          type="text"
+          className="todo__title-field"
+          placeholder="Empty todo will be deleted"
+        />
+      </form> */}
+
       <div className={classNames(
         'modal',
         'overlay',
