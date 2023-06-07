@@ -1,10 +1,12 @@
+import { memo } from 'react';
+
 interface NotificationProps {
   isHidden: boolean,
   setIsHidden: (value: boolean) => void,
   error: string,
 }
 
-export const Notification: React.FC<NotificationProps> = (
+export const Notification: React.FC<NotificationProps> = memo((
   { isHidden, setIsHidden, error }: NotificationProps,
 ) => {
   return (
@@ -20,4 +22,4 @@ export const Notification: React.FC<NotificationProps> = (
       {error && <p>{error}</p>}
     </div>
   );
-};
+});

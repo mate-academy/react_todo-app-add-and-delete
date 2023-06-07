@@ -60,7 +60,7 @@ export const TodoItem = ({ todo, onDelete, isLoading }: TodoItemProps) => {
       })}
       >
         <div className="modal-background has-background-white-ter" />
-        <div className="loader" />
+        {isLoading && <div className="loader" />}
       </div>
     </div>
   );

@@ -6,12 +6,13 @@ interface TodoFooterProps {
   todos: Todo[],
   filterType: string,
   setFilterType(filterType: FilterType): void,
+  foundCompletedTodo: Todo | undefined,
   clearCompleted: () => void;
 }
 
 export const TodoFooter: React.FC<TodoFooterProps> = (
   {
-    todos, filterType, setFilterType, clearCompleted,
+    todos, filterType, setFilterType, foundCompletedTodo, clearCompleted,
   }: TodoFooterProps,
 ) => {
   return (
@@ -25,7 +26,7 @@ export const TodoFooter: React.FC<TodoFooterProps> = (
         setFilterType={setFilterType}
       />
 
-      {todos.find(todo => todo.completed) && (
+      {foundCompletedTodo && (
         <button
           type="button"
           className="todoapp__clear-completed"
