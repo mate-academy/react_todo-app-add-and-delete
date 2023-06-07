@@ -16,7 +16,8 @@ const USER_ID = 10524;
 export const App: React.FC = () => {
   const [todos, setTodos] = useState<TodoData[]>([]);
   const [filteredTodos, setFilteredTodos] = useState<TodoData[]>([]);
-  const [errorMessage, setErrorMessage] = useState<ActionError | string>('');
+  const [errorMessage, setErrorMessage]
+  = useState<ActionError>(ActionError.NONE);
   const [tempTodo, setTempTodo] = useState<TodoData | null>(null);
   const [wasTodoCompleted] = useState(false);
 
@@ -27,27 +28,27 @@ export const App: React.FC = () => {
         setFilteredTodos(downloadedTodos);
       })
       .catch(() => {
-        setErrorMessage(ActionError.read);
+        setErrorMessage(ActionError.READ);
       });
   }, []);
 
   useEffect(() => {
     if (errorMessage) {
       setTimeout(() => {
-        setErrorMessage('');
+        setErrorMessage(ActionError.NONE);
       }, 3000);
     }
   }, [errorMessage]);
 
   const handleFilterStatusChange = useCallback((filter: Status) => {
     switch (filter) {
-      case 'all':
+      case Status.ALL:
         setFilteredTodos([...todos]);
         break;
-      case 'completed':
+      case Status.COMPLETED:
         setFilteredTodos(todos.filter(todo => todo.completed));
         break;
-      case 'active':
+      case Status.ACTIVE:
         setFilteredTodos(todos.filter(todo => !todo.completed));
         break;
       default:
@@ -75,7 +76,7 @@ export const App: React.FC = () => {
         setTodos(prevTodos => [...prevTodos, newTodo]);
         setFilteredTodos(prevTodos => [...prevTodos, newTodo]);
       })
-      .catch(() => setErrorMessage(ActionError.add))
+      .catch(() => setErrorMessage(ActionError.ADD))
       .finally(() => setTempTodo(null));
   }, [todos]);
 
@@ -87,13 +88,25 @@ export const App: React.FC = () => {
         setTodos(newTodos);
         setFilteredTodos(newTodos);
       })
-      .catch(() => setErrorMessage(ActionError.delete));
+      .catch(() => setErrorMessage(ActionError.DELETE));
   }, [todos]);
 
-  const clearCompletedTodos = () => {
-    const completedTodos = todos.filter(todo => todo.completed);
+  const handleCompletedTodosDelete = () => {
+    const completedTodoIds = todos
+      .filter(todo => todo.completed)
+      .map(todo => todo.id);
 
-    completedTodos.forEach(completedTodo => handleTodoDelete(completedTodo.id));
+    Promise.all(
+      completedTodoIds.map(todoId => deleteTodo(todoId, USER_ID)),
+    )
+      .then(() => {
+        const updatedTodos = todos
+          .filter(todo => !completedTodoIds.includes(todo.id));
+
+        setTodos(updatedTodos);
+        setFilteredTodos(updatedTodos);
+      })
+      .catch(() => setErrorMessage(ActionError.DELETE));
   };
 
   return (
@@ -111,7 +124,6 @@ export const App: React.FC = () => {
           && (
             <Todo
               todo={tempTodo}
-              isTempTodo
               onTodoDelete={handleTodoDelete}
             />
           )}
@@ -123,7 +135,7 @@ export const App: React.FC = () => {
         <button
           type="button"
           className="todoapp__clear-completed"
-          onClick={clearCompletedTodos}
+          onClick={handleCompletedTodosDelete}
           disabled={!wasTodoCompleted}
           style={
             {

@@ -6,11 +6,10 @@ import { TodoData } from '../types/TodoData';
 
 interface TodoFieldProps {
   todo: TodoData,
-  isTempTodo: boolean,
   onTodoDelete: (todoId: number) => Promise<void>;
 }
 
-export const Todo = ({ onTodoDelete, isTempTodo, todo }: TodoFieldProps) => {
+export const Todo = ({ onTodoDelete, todo }: TodoFieldProps) => {
   const { completed, title, id } = todo;
   const [editTodo, setEditTodo] = useState(false);
   const [isDeleting, setIsDeleting] = useState(false);
@@ -40,7 +39,7 @@ export const Todo = ({ onTodoDelete, isTempTodo, todo }: TodoFieldProps) => {
           </span>
         )}
         <div className={classNames('modal overlay', {
-          'is-active': isTempTodo || isDeleting,
+          'is-active': id === 0 || isDeleting,
         })}
         >
           <div className="modal-background has-background-white-ter" />

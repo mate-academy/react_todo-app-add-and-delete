@@ -13,7 +13,6 @@ export const TodoList = ({ onTodoDelete, todos }: TodoListProps) => {
         <Todo
           key={todo.id}
           todo={todo}
-          isTempTodo={false}
           onTodoDelete={onTodoDelete}
         />
       ))}
