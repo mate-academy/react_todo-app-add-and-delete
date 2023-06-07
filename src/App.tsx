@@ -26,9 +26,7 @@ export const App: React.FC = () => {
   const [isUpdating, setIsUpdating] = useState<number[]>([]);
   const [inputDisabled, setInputDisabled] = useState(false);
 
-  const handleCloseErrorMessage = useCallback(() => {
-    setErrorMessage('');
-  }, []);
+  const handleCloseErrorMessage = () => setErrorMessage('');
 
   const handleLoadTodos = useCallback(async () => {
     try {
@@ -91,9 +89,9 @@ export const App: React.FC = () => {
 
       setIsUpdating(prev => [...prev, userTodo.id]);
       setTempTodo(userTodo);
-      const res = await addTodo(userTodo);
+      const addedTodo = await addTodo(userTodo);
 
-      setTodos((prev) => [...prev, res]);
+      setTodos((prev) => [...prev, addedTodo]);
     } catch (err) {
       setErrorMessage(ErrorType.Add);
       setTimeout(() => {
@@ -107,7 +105,6 @@ export const App: React.FC = () => {
   };
 
   const onDeleteTodo = async (id: number) => {
-    // setSelectedTodoId(id);
     setInputDisabled(true);
     setIsUpdating(prev => [...prev, id]);
 

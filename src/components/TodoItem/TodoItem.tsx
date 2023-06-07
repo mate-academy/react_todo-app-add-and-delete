@@ -1,5 +1,6 @@
+/* eslint-disable max-len */
 import classNames from 'classnames';
-import React from 'react';
+import React, { useState } from 'react';
 import { Todo } from '../../types/Todo';
 
 interface TodoProps {
@@ -17,6 +18,9 @@ export const TodoItem: React.FC<TodoProps> = ({
     title,
   } = todo;
 
+  const [isEditing, setIsEditing] = useState(false);
+  const [updateTodo, setUpdateTodo] = useState('');
+
   return (
     <div
       className={classNames('todo', {
@@ -31,9 +35,23 @@ export const TodoItem: React.FC<TodoProps> = ({
         />
       </label>
 
-      <span className="todo__title">
-        {title}
-      </span>
+      {isEditing
+        ? (
+          <form onSubmit={() => setIsEditing(false)}>
+            <input
+              type="text"
+              className="todoapp__new-todo"
+              placeholder="What needs to be done?"
+              value={updateTodo}
+              onChange={(event) => setUpdateTodo(event.target.value)}
+            />
+          </form>
+        )
+        : (
+          <span className="todo__title" onDoubleClick={() => setIsEditing(true)}>
+            {title}
+          </span>
+        )}
 
       {isUpdating.includes(id)
         ? (
