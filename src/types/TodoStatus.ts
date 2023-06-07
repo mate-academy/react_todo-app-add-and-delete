@@ -1,1 +1,5 @@
-export type TodoStatus = 'all' | 'active' | 'completed';
+export enum TodoStatus {
+  ALL = 'all',
+  ACTIVE = 'active',
+  COMPLETED = 'completed',
+}

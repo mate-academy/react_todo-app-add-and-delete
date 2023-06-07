@@ -13,7 +13,7 @@ export default function ErrorMessage({ handleSetError, errorType }: Props) {
       <button
         type="button"
         className="delete"
-        onClick={() => handleSetError('')}
+        onClick={() => handleSetError(Errors.NULL)}
       />
       {errorType}
     </div>

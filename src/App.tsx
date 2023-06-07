@@ -17,9 +17,9 @@ const USER_ID = 10595;
 export const App: React.FC = () => {
   const [todosList, setTodosList] = useState<Todo[]>([]);
   const [visibleTodos, setVisibleTodos] = useState<Todo[]>([]);
-  const [status, setStatus] = useState<TodoStatus>('all');
+  const [status, setStatus] = useState<TodoStatus>(TodoStatus.ALL);
 
-  const [error, setError] = useState<Errors>('');
+  const [error, setError] = useState<Errors>(Errors.NULL);
 
   const [tempTodo, setTempTodo] = useState<Todo | null>(null);
 
@@ -29,7 +29,7 @@ export const App: React.FC = () => {
         setTodosList(response);
         setVisibleTodos(response);
       })
-      .catch(() => setError('Unable to load a todo'));
+      .catch(() => setError(Errors.LOAD));
   }, []);
 
   const handleAddNewTodo = (
@@ -46,7 +46,7 @@ export const App: React.FC = () => {
         completed: false,
       });
     } else {
-      setError('Title can\'t be empty');
+      setError(Errors.EMPTY_TITLE);
     }
   };
 
@@ -55,7 +55,7 @@ export const App: React.FC = () => {
       .then(() => {
         setTodosList(prev => prev.filter(todo => !ids.includes(todo.id)));
       })
-      .catch(() => setError('Unable to delete a todo'));
+      .catch(() => setError(Errors.DELETE));
   };
 
   const handleClearCompleted = () => {
@@ -69,10 +69,10 @@ export const App: React.FC = () => {
     setStatus(newStatus);
 
     switch (newStatus) {
-      case 'completed':
+      case TodoStatus.COMPLETED:
         setVisibleTodos(todosList.filter(todo => todo.completed));
         break;
-      case 'active':
+      case TodoStatus.ACTIVE:
         setVisibleTodos(todosList.filter(todo => !todo.completed));
         break;
       default:
@@ -86,7 +86,7 @@ export const App: React.FC = () => {
         .then(response => {
           setTodosList(prev => [...prev, response]);
         })
-        .catch(() => setError('Unable to add a todo'));
+        .catch(() => setError(Errors.ADD));
     }
   }, [tempTodo]);
 

@@ -32,17 +32,17 @@ export default function FooterMenu({
       <nav className="filter">
         <a
           href="#/"
-          className={`filter__link ${status === 'all' ? 'selected' : ''}`}
-          onClick={() => handleFilterTodos('all')}
+          className={`filter__link ${status === TodoStatus.ALL ? 'selected' : ''}`}
+          onClick={() => handleFilterTodos(TodoStatus.ALL)}
         >
           All
         </a>
 
         <a
           href="#/active"
-          className={`filter__link ${status === 'active' ? 'selected' : ''}`}
+          className={`filter__link ${status === TodoStatus.ACTIVE ? 'selected' : ''}`}
           onClick={
-            () => handleFilterTodos('active')
+            () => handleFilterTodos(TodoStatus.ACTIVE)
           }
         >
           Active
@@ -50,9 +50,9 @@ export default function FooterMenu({
 
         <a
           href="#/completed"
-          className={`filter__link ${status === 'completed' ? 'selected' : ''}`}
+          className={`filter__link ${status === TodoStatus.COMPLETED ? 'selected' : ''}`}
           onClick={
-            () => handleFilterTodos('completed')
+            () => handleFilterTodos(TodoStatus.COMPLETED)
           }
         >
           Completed
