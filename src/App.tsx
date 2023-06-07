@@ -8,7 +8,7 @@ import { Filter } from './components/Filter/Filter';
 import { TodoError } from './components/Notification/TodoError';
 import { FilterEnum } from './types/FilterEnum';
 
-const USER_ID = 6709;
+const USER_ID = 10640;
 
 export const App: React.FC = () => {
   const [todos, setTodos] = useState<Todo[]>([]);
@@ -197,7 +197,7 @@ export const App: React.FC = () => {
         )}
       </div>
 
-      {error && (<TodoError error={error} setError={setError} />) }
+      {error && (<TodoError error={error} setError={setError} />)}
     </div>
   );
 };
