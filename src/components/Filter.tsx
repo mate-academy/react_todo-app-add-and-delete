@@ -7,7 +7,7 @@ interface FilterProps {
 }
 
 export const Filter = ({ onFilterStatusChange }:FilterProps) => {
-  const [filterStatus, setFilterStatus] = useState<Status>('all');
+  const [filterStatus, setFilterStatus] = useState<Status>(Status.ALL);
 
   useEffect(() => {
     onFilterStatusChange(filterStatus);
@@ -18,9 +18,9 @@ export const Filter = ({ onFilterStatusChange }:FilterProps) => {
       <a
         href="#/"
         className={classNames('filter__link', {
-          selected: filterStatus === 'all',
+          selected: filterStatus === Status.ALL,
         })}
-        onClick={() => setFilterStatus('all')}
+        onClick={() => setFilterStatus(Status.ALL)}
       >
         All
       </a>
@@ -28,9 +28,9 @@ export const Filter = ({ onFilterStatusChange }:FilterProps) => {
       <a
         href="#/active"
         className={classNames('filter__link', {
-          selected: filterStatus === 'active',
+          selected: filterStatus === Status.ACTIVE,
         })}
-        onClick={() => setFilterStatus('active')}
+        onClick={() => setFilterStatus(Status.ACTIVE)}
       >
         Active
       </a>
@@ -38,9 +38,9 @@ export const Filter = ({ onFilterStatusChange }:FilterProps) => {
       <a
         href="#/completed"
         className={classNames('filter__link', {
-          selected: filterStatus === 'completed',
+          selected: filterStatus === Status.COMPLETED,
         })}
-        onClick={() => setFilterStatus('completed')}
+        onClick={() => setFilterStatus(Status.COMPLETED)}
       >
         Completed
       </a>
