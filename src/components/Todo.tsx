@@ -40,7 +40,7 @@ export const Todo = ({ onTodoDelete, isTempTodo, todo }: TodoFieldProps) => {
           </span>
         )}
         <div className={classNames('modal overlay', {
-          todo: isTempTodo || isDeleting,
+          'is-active': isTempTodo || isDeleting,
         })}
         >
           <div className="modal-background has-background-white-ter" />

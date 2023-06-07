@@ -8,8 +8,9 @@ export const NewTodo = ({ onTodoAdd }: NewTodoProps) => {
   const [newTodoTitle, setNewTodoTitle] = useState<string>('');
 
   return (
-    <form onSubmit={() => {
+    <form onSubmit={(event) => {
       if (newTodoTitle) {
+        event.preventDefault();
         onTodoAdd(newTodoTitle);
       }
     }}
