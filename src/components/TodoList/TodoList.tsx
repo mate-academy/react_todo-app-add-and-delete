@@ -1,11 +1,11 @@
-import classNames from 'classnames';
 import { TransitionGroup, CSSTransition } from 'react-transition-group';
 import { Todo } from '../../types/Todo';
+import { TodoItem } from '../TodoItem/TodoItem';
 
 interface TodoListProps {
   todos: Todo[];
   tempTodo: Todo | null;
-  onDeleteTodo: (todoId: string) => void;
+  onDeleteTodo: (todoId: number) => void;
 }
 
 export const TodoList: React.FC<TodoListProps> = ({
@@ -24,31 +24,12 @@ export const TodoList: React.FC<TodoListProps> = ({
             timeout={300}
             classNames="item"
           >
-            <div key={id} className={classNames('todo', { completed })}>
-              <label className="todo__status-label">
-                <input
-                  type="checkbox"
-                  className="todo__status"
-                  checked
-                  readOnly
-                />
-              </label>
-
-              <span className="todo__title">{title}</span>
-
-              <button
-                type="button"
-                className="todo__remove"
-                onClick={() => onDeleteTodo(String(todo.id))}
-              >
-                ×
-              </button>
-
-              <div className="modal overlay">
-                <div className="modal-background has-background-white-ter" />
-                <div className="loader" />
-              </div>
-            </div>
+            <TodoItem
+              title={title}
+              id={id}
+              completed={completed}
+              onDeleteTodo={onDeleteTodo}
+            />
           </CSSTransition>
         );
       })}
@@ -59,7 +40,7 @@ export const TodoList: React.FC<TodoListProps> = ({
           timeout={300}
           classNames="item"
         >
-          <div key={tempTodo.id} className="todo">
+          <div className="todo">
             <label className="todo__status-label">
               <input type="checkbox" className="todo__status" />
             </label>

@@ -32,7 +32,7 @@ export const Filter: React.FC<FilterProps> = ({
             key={filter}
             href={filter === FilterTypes.ALL ? '#/' : `#/${filter}`}
             className={classNames('filter__link',
-              { selected: currentFilter === 'all' })}
+              { selected: currentFilter === filterTypes[0] })}
             onClick={() => handleSelectFilter(filter)}
           >
             {title}

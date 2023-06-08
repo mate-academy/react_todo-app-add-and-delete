@@ -1,6 +1,6 @@
 /* eslint-disable jsx-a11y/control-has-associated-label */
 import React, { useEffect, useState } from 'react';
-import { addTodo, deleteTodo, getTodos } from './api/todos';
+import { deleteTodo, getTodos } from './api/todos';
 import { NewTodo } from './components/NewTodo/NewTodo';
 import { TodoList } from './components/TodoList/TodoList';
 import { Notification } from './components/Notification/Notification';
@@ -23,8 +23,8 @@ export const App: React.FC = () => {
     setErrorMessage(`Unable to ${type} a Todo`);
   };
 
-  const handleDeleteTodo = (todoId: string) => {
-    deleteTodo(todoId)
+  const handleDeleteTodo = (todoId: number) => {
+    deleteTodo(String(todoId))
       .then(() => setNeedUpdate(true))
       .catch(() => handleErrorMessage('delete'));
   };
@@ -48,12 +48,12 @@ export const App: React.FC = () => {
 
   useEffect(() => {
     switch (filterType) {
-      case 'completed': {
+      case FilterTypes.COMPLETED: {
         setCurrentTodos(todos.filter((todo) => todo.completed));
         break;
       }
 
-      case 'active': {
+      case FilterTypes.ACTIVE: {
         setCurrentTodos(todos.filter((todo) => !todo.completed));
         break;
       }
@@ -63,20 +63,6 @@ export const App: React.FC = () => {
       }
     }
   }, [todos, filterType]);
-
-  useEffect(() => {
-    if (tempTodo) {
-      addTodo(tempTodo)
-        .then((thisTodo) => {
-          setTodos([...todos, thisTodo]);
-          setTempTodo(null);
-        })
-        .catch(() => {
-          handleErrorMessage('add');
-          setTempTodo(null);
-        });
-    }
-  }, [tempTodo]);
 
   return (
     <div className="todoapp">
@@ -90,9 +76,12 @@ export const App: React.FC = () => {
             tempTodo={tempTodo}
             userId={USER_ID}
             inputText={inputText}
+            todos={todos}
             onTextChange={setInputText}
-            onTodoSubmit={setTempTodo}
             onError={setErrorMessage}
+            onTempTodo={setTempTodo}
+            onTodoAdded={setTodos}
+            onGenericError={handleErrorMessage}
           />
         </header>
 
@@ -102,7 +91,7 @@ export const App: React.FC = () => {
           onDeleteTodo={handleDeleteTodo}
         />
 
-        {todos.length && (
+        {!!todos.length && (
           <Footer
             allTodos={todos}
             currentTodos={currentTodos}
