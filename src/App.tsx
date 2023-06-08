@@ -13,6 +13,7 @@ import { TodoFooter } from './components/TodoFooter/TodoFooter';
 import {
   TodoNotification,
 } from './components/TodoNotification/TodoNotification';
+import { FilterType } from './types/FilterType';
 
 const USER_ID = 10594;
 
@@ -146,11 +147,9 @@ export const App: React.FC = () => {
 
   const filteredTodos = todos.filter(todo => {
     switch (filter) {
-      case 'all':
-        return true;
-      case 'active':
+      case FilterType.ACTIVE:
         return !todo.completed;
-      case 'completed':
+      case FilterType.COMPLETED:
         return todo.completed;
       default:
         return true;
