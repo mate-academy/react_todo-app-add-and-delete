@@ -94,6 +94,8 @@ export const App: React.FC = () => {
     } else {
       setErrorMessageField(true);
     }
+
+    setInputValue('');
   };
 
   const deleteTodo = async (id: number) => {
