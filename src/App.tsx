@@ -1,11 +1,13 @@
+/* eslint-disable no-console */
 import classNames from 'classnames';
 import React, {
-  useEffect, useState, FormEvent, useMemo,
+  useEffect, useState, useMemo,
 } from 'react';
 import { Todo } from './Types';
 import { UserWarning } from './UserWarning';
 import { getTodos } from './todos';
 import { client } from './utils/client';
+import { Error } from './components/errorMessages';
 
 const USER_ID = 10377;
 
@@ -29,84 +31,76 @@ export const App: React.FC = () => {
   const [isAddingTodoAllowed, setIsAddingTodoAllowed] = useState(false);
   const [isDeleteingTodoAllowed, setIsDeleteingTodoAllowed] = useState(false);
   const [isEditingTodoAllowed, setIsEditingTodoAllowed] = useState(false);
+  const [isHidden, setIsHidden] = useState('');
+  const [isThereIssue, setIsThereIssue] = useState(false);
   const [numberOfActiveTodos, setNumberOfActivTodos] = useState(0);
   const [errorMessageField, setErrorMessageField] = useState(false);
-  const [newTodo, setNewTodo] = useState({
+  const [deleteErrorMessage, setDeleteErrorMessage] = useState('');
+  const [editTodo, setEditTodo] = useState('');
+  const [tempTodo, settempTodo] = useState({
     title: '',
     userId: USER_ID,
     completed: false,
     id: getRandomNumber(),
   });
 
-  const handleKeyPress
-  = async (event: React.KeyboardEvent<HTMLInputElement>) => {
-    if (event.key === 'Enter' && event.target.value.trim() !== '') {
-      event.preventDefault();
+  const handleFormSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
+    event.preventDefault();
 
-      const updatedObjectTitle = {
-        ...newTodo,
-        title: event.target.value,
+    if (inputValue.trim() !== '') {
+      const tempTodoItem: Todo = {
+        title: inputValue,
+        userId: USER_ID,
+        completed: false,
         id: getRandomNumber(),
       };
 
-      setNewTodo(updatedObjectTitle);
-      setTodo([...todo, updatedObjectTitle]);
-
-      const resetedTitle = {
-        ...newTodo,
-        title: '',
-        id: 0,
-      };
-
-      setNewTodo(resetedTitle);
-
-      setInputValue(resetedTitle.title);
-
       try {
-        await client.post('/todos', updatedObjectTitle);
+        await client.post('/todos', tempTodoItem);
+        setTodo((prevTodo) => [...prevTodo, tempTodoItem]);
       } catch (error) {
-        throw Error('There is an issue.');
+        console.log('There is an error', error);
       }
-    }
-
-    if (event.key === 'Enter' && inputValue.trim() === '') {
-      setIsAddingTodoAllowed(true);
+    } else {
       setErrorMessageField(true);
     }
   };
 
   const deleteTodo = async (id: number) => {
-    const newTodos = todo.filter((element) => {
+    const tempTodos = todo.filter((element) => {
       return element.id !== id;
     });
 
-    if (newTodos === todo) {
-      setIsDeleteingTodoAllowed(true);
-      setErrorMessageField(true);
-    }
-
-    setTodo(newTodos);
+    setTodo(tempTodos);
 
     try {
       await client.delete(`/todos/${id}`);
     } catch (error) {
-      throw Error('There is an issue.');
+      console.log('There is an issue.', error);
+      setDeleteErrorMessage('Unable to delete a todo');
     }
   };
 
-  const changeAll = () => {
-    const chnagedArr = todo.map((element) => {
+  const changeAll = async () => {
+    const updatedTodos = todo.map((element) => {
       return {
         ...element,
         completed: !element.completed,
       };
     });
 
-    setTodo(chnagedArr);
-  };
+    setTodo(updatedTodos);
 
-  const handleSubmit = (event: FormEvent) => {
-    event.preventDefault();
+    try {
+      updatedTodos.map(async (todoItem) => {
+        await client.patch(`/todos/${todoItem.id}`, {
+          ...todoItem,
+          completed: todoItem.completed,
+        });
+      });
+    } catch (error) {
+      console.log('There is an issue updating todos.', error);
+    }
   };
 
   const searchTodo = async (id: number) => {
@@ -128,6 +122,8 @@ export const App: React.FC = () => {
     if (!none) {
       setIsEditingTodoAllowed(true);
       setErrorMessageField(true);
+      setEditTodo('Unable to loading a todo');
+      setIsThereIssue(true);
     }
 
     setTodo(updatedTodo);
@@ -144,33 +140,65 @@ export const App: React.FC = () => {
         });
       }
     } catch (error) {
-      throw Error('There is an issue.');
+      setDeleteErrorMessage('Unable to delete a todo');
+      console.log('There is an issue.');
     }
   };
 
-  const resetEverything = () => {
-    const onlyActives = todo.filter((obj) => {
-      return obj.completed === false;
-    });
+  let timeoutId: NodeJS.Timeout;
 
-    setTodo(onlyActives);
+  const deleteCompletedTodos = async () => {
+    const completedTodoIds = todo
+      .filter((element) => element.completed)
+      .map((element) => element.id);
+
+    try {
+      await Promise.all(
+        completedTodoIds.map((id) => client.delete(`/todos/${id}`)),
+      );
+
+      setTodo((prevTodo) => prevTodo.filter((element) => !element.completed));
+    } catch (error) {
+      console.log('There is an issue deleting completed todos.', error);
+      setDeleteErrorMessage('Unable to delete completed todos');
+    }
+  };
+
+  const fetchTodos = async () => {
+    try {
+      setIsLoading(true);
+      const response = await getTodos(USER_ID);
+
+      setTodo(response);
+    } catch (error) {
+      // eslint-disable-next-line no-console
+      console.log('Unable to add a todo');
+      setIsHidden('Unable to add a todo');
+      setIsThereIssue(true);
+      timeoutId = setTimeout(() => {
+        setIsThereIssue(false);
+      }, 3000);
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  const updatetempTodo = (value: string) => {
+    setInputValue(value);
+
+    settempTodo({
+      ...tempTodo,
+      title: inputValue,
+      id: getRandomNumber(),
+    });
   };
 
   useEffect(() => {
-    const fetchTodos = async () => {
-      try {
-        setIsLoading(true);
-        const response = await getTodos(123);
-
-        setTodo(response);
-      } catch (error) {
-        throw Error('There is an issue.');
-      } finally {
-        setIsLoading(false);
-      }
-    };
-
     fetchTodos();
+
+    return () => {
+      clearTimeout(timeoutId);
+    };
   }, []);
 
   useEffect(() => {
@@ -221,19 +249,20 @@ export const App: React.FC = () => {
                 {null}
               </button>
             </label>
-            <form onSubmit={handleSubmit}>
+            <form onSubmit={handleFormSubmit}>
               <input
                 type="text"
                 className="todoapp__new-todo"
                 placeholder="What needs to be done?"
                 value={inputValue}
-                onChange={(event) => setInputValue(event.target.value)}
-                onKeyPress={handleKeyPress}
+                onChange={(event) => {
+                  updatetempTodo(event.target.value);
+                }}
               />
             </form>
           </header>
           <section className="todoapp__main">
-            {todo.length > 0 && (
+            {todo.length !== 0 && (
               <>
                 {visibleTodos.map((task) => {
                   if (!isLoading) {
@@ -248,16 +277,14 @@ export const App: React.FC = () => {
                           <input
                             type="checkbox"
                             className="todo__status todo__title-field"
-                            value={newTodo.title}
+                            value={tempTodo.title}
                             checked={task.completed}
                             onChange={() => {
                               searchTodo(task.id);
                             }}
                           />
                         </label>
-                        <span className="todo__title">
-                          {task.title}
-                        </span>
+                        <span className="todo__title">{task.title}</span>
                         <button
                           type="button"
                           className="todo__remove"
@@ -268,7 +295,7 @@ export const App: React.FC = () => {
                         <div className="modal overlay">
                           <div
                             className="modal-background
-                             has-background-white-ter"
+            has-background-white-ter"
                           />
                         </div>
                       </div>
@@ -327,7 +354,7 @@ export const App: React.FC = () => {
                 <button
                   type="button"
                   className="todoapp__clear-completed"
-                  onClick={resetEverything}
+                  onClick={deleteCompletedTodos}
                 >
                   Clear completed
                 </button>
@@ -336,6 +363,14 @@ export const App: React.FC = () => {
           )}
 
         </div>
+
+        <Error
+          message={isHidden}
+          deleteErrorMessage={deleteErrorMessage}
+          isThereIssue={isThereIssue}
+          editTodo={editTodo}
+          setIsThereIssue={setIsThereIssue}
+        />
 
         {errorMessageField && (
           <div
@@ -353,6 +388,10 @@ export const App: React.FC = () => {
             >
               {null}
             </button>
+
+            {inputValue.trim().length === 0 && (
+              'Title can\'t be empty'
+            )}
 
             {isAddingTodoAllowed && (
               'Unable to add a todo'
