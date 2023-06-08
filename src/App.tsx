@@ -43,6 +43,36 @@ export const App: React.FC = () => {
     completed: false,
     id: getRandomNumber(),
   });
+  let timeoutId: NodeJS.Timeout;
+
+  const fetchTodos = async () => {
+    try {
+      setIsLoading(true);
+      const response = await getTodos(USER_ID);
+
+      setTodo(response);
+    } catch (error) {
+      // eslint-disable-next-line no-console
+      console.log('Unable to add a todo');
+      setIsHidden('Unable to add a todo');
+      setIsThereIssue(true);
+      timeoutId = setTimeout(() => {
+        setIsThereIssue(false);
+      }, 3000);
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  const updatetempTodo = (value: string) => {
+    setInputValue(value);
+
+    settempTodo({
+      ...tempTodo,
+      title: inputValue,
+      id: getRandomNumber(),
+    });
+  };
 
   const handleFormSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
@@ -103,7 +133,7 @@ export const App: React.FC = () => {
     }
   };
 
-  const searchTodo = async (id: number) => {
+  const setCompleted = async (id: number) => {
     const updatedTodo = todo.map((obj) => {
       if (obj.id === id) {
         return {
@@ -145,8 +175,6 @@ export const App: React.FC = () => {
     }
   };
 
-  let timeoutId: NodeJS.Timeout;
-
   const deleteCompletedTodos = async () => {
     const completedTodoIds = todo
       .filter((element) => element.completed)
@@ -162,35 +190,6 @@ export const App: React.FC = () => {
       console.log('There is an issue deleting completed todos.', error);
       setDeleteErrorMessage('Unable to delete completed todos');
     }
-  };
-
-  const fetchTodos = async () => {
-    try {
-      setIsLoading(true);
-      const response = await getTodos(USER_ID);
-
-      setTodo(response);
-    } catch (error) {
-      // eslint-disable-next-line no-console
-      console.log('Unable to add a todo');
-      setIsHidden('Unable to add a todo');
-      setIsThereIssue(true);
-      timeoutId = setTimeout(() => {
-        setIsThereIssue(false);
-      }, 3000);
-    } finally {
-      setIsLoading(false);
-    }
-  };
-
-  const updatetempTodo = (value: string) => {
-    setInputValue(value);
-
-    settempTodo({
-      ...tempTodo,
-      title: inputValue,
-      id: getRandomNumber(),
-    });
   };
 
   useEffect(() => {
@@ -280,7 +279,7 @@ export const App: React.FC = () => {
                             value={tempTodo.title}
                             checked={task.completed}
                             onChange={() => {
-                              searchTodo(task.id);
+                              setCompleted(task.id);
                             }}
                           />
                         </label>
