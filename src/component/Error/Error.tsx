@@ -12,7 +12,7 @@ export const Error: React.FC<Props> = ({ error, closeErrorBanner }) => {
 
   return (
     <>
-      {error ? (
+      {error && (
         <div className="notification is-danger is-light has-text-weight-normal">
           <label htmlFor="errorButton">Error:</label>
           <button
@@ -24,7 +24,7 @@ export const Error: React.FC<Props> = ({ error, closeErrorBanner }) => {
           />
           {error}
         </div>
-      ) : null}
+      )}
     </>
   );
 };

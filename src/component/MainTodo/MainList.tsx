@@ -2,14 +2,12 @@ import React from 'react';
 import { Todo } from '../../types/Todo';
 
 interface Props {
-  formList: Todo;
-  deleteToDo: (userId: number) => void;
+  todo: Todo;
+  deleteToDo: (todoId: number) => void;
 }
 
-export const MainList: React.FC<Props> = ({ formList, deleteToDo }) => {
-  const { title, completed, id } = formList;
-
-  /* const isActiveClass = id === 0 ? 'modal overlay is-active' : 'modal overlay'; */
+export const MainList: React.FC<Props> = ({ todo, deleteToDo }) => {
+  const { title, completed, id } = todo;
 
   const handleClick = () => {
     deleteToDo(id);

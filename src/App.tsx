@@ -14,7 +14,7 @@ const USER_ID = 10599;
 export const App: React.FC = () => {
   const [todos, setFormValue] = useState<Todo[]>([]);
   const [filterStatus, setFilterStatus] = useState(FilterByWords.All);
-  const [error, setError] = useState<string>('');
+  const [error, setError] = useState('');
   const [tempTodo, setTempTodo] = useState<Todo | null>(null);
   const [isInputDisabled, setIsInputDisabled] = useState(false);
 
@@ -40,9 +40,15 @@ export const App: React.FC = () => {
     }
 
     setIsInputDisabled(true);
+    setTempTodo({
+      id: 0,
+      title: newTodo,
+      completed: false,
+      userId: USER_ID,
+    });
 
     client
-      .post('/todos?userId=10599', {
+      .post(`/todos?userId=${USER_ID}`, {
         title: newTodo,
         completed: false,
         userId: USER_ID,
@@ -51,18 +57,13 @@ export const App: React.FC = () => {
         const newTodos = Array.isArray(response) ? response[0] : response;
 
         setFormValue((prevTodos) => [...prevTodos, newTodos]);
-        setTempTodo({
-          id: 0,
-          title: newTodo,
-          completed: false,
-          userId: USER_ID,
-        });
       })
       .catch(() => {
         setError('Unable to add a todo');
       })
       .finally(() => {
         setIsInputDisabled(false);
+        setTempTodo(null);
       });
   };
 
@@ -108,11 +109,11 @@ export const App: React.FC = () => {
         />
 
         <MainTodo
-          formValue={copyTodoArray}
+          todos={copyTodoArray}
           deleteToDo={deleteToDo}
           tempTodo={tempTodo}
         />
-        {todos.length >= 1 ? (
+        {todos.length > 0 ? (
           <footer className="todoapp__footer">
             <Footer
               setFilterHandler={setFilterStatus}

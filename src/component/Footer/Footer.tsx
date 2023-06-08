@@ -50,7 +50,6 @@ export const Footer: React.FC<Props> = ({ setFilterHandler, todoCounter }) => {
       <button
         type="button"
         className="todoapp__clear-completed"
-      /*   onClick={() => setFilterHandler(FilterByWords.Clear)} */
       >
         Clear completed
       </button>
