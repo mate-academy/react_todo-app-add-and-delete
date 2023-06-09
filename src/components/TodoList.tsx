@@ -1,18 +1,21 @@
 import cn from 'classnames';
 import { useContext, useState } from 'react';
 import { Todo } from '../types/Todo';
-import { addTodo } from '../api/todos';
+import { addTodo, getTodos } from '../api/todos';
 import { SetErrorContext } from '../utils/setErrorContext';
 
 interface Props {
   todos: Todo[] | null,
   filteringMode: string,
   userId: number,
+  setTodos: React.Dispatch<React.SetStateAction<Todo[] | null>>,
 }
 
 let filteredTodos: Todo[] | null = [];
 
-export const TodoList: React.FC<Props> = ({ todos, filteringMode, userId }) => {
+export const TodoList: React.FC<Props> = ({
+  todos, filteringMode, userId, setTodos,
+}) => {
   const [todoTitle, setTodoTitle] = useState('');
   const [processing, setProcessing] = useState(false);
   // const [tempTodo, setTempTodo] = useState(null);
@@ -42,8 +45,15 @@ export const TodoList: React.FC<Props> = ({ todos, filteringMode, userId }) => {
           completed: false,
           userId,
         })
-          .then(() => setProcessing(false))
+          .then(() => {
+            setProcessing(false);
+            getTodos(userId)
+              .then((response) => setTodos(response))
+              .catch(() => setError?.('cantfetch'));
+          })
           .catch(() => setError?.('cantadd'));
+        // #TODO: get rid of the nasty ?. somehow
+
         setTodoTitle('');
       } else {
         setError?.('emptytitle');
