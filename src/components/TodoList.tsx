@@ -19,6 +19,8 @@ export const TodoList: React.FC<Props> = ({
   const [todoTitle, setTodoTitle] = useState('');
   const [processing, setProcessing] = useState(false);
   const [tempTodo, setTempTodo] = useState<Todo | null>(null);
+  const [todoToBeDeleted, setTodoToBeDeleted]
+    = useState<Todo['id'] | null>(null);
 
   if (filteringMode !== 'all' && todos !== null) {
     switch (filteringMode) {
@@ -69,6 +71,7 @@ export const TodoList: React.FC<Props> = ({
 
   const handleDeletion = (todoId: number) => {
     if (todos) {
+      setTodoToBeDeleted(todoId);
       deleteTodo(todoId)
         .then(() => {
           const deletedId = todos?.findIndex(todo => todo.id === todoId);
@@ -76,6 +79,7 @@ export const TodoList: React.FC<Props> = ({
 
           splicedTodos?.splice(deletedId, 1);
           setTodos(splicedTodos);
+          setTodoToBeDeleted(null);
         });
     }
   };
@@ -131,7 +135,10 @@ export const TodoList: React.FC<Props> = ({
               ×
             </button>
 
-            <div className="modal overlay">
+            <div className={todoToBeDeleted === todo.id
+              ? 'modal overlay is-active'
+              : 'modal overlay'}
+            >
               <div className="modal-background has-background-white-ter" />
               <div className="loader" />
             </div>
