@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useMemo } from 'react';
 import { UserWarning } from './UserWarning';
 import { FormTodo } from './component/FormTodo/FormTodo';
-import { MainTodo } from './component/MainTodo/MainTodo';
+import { MainTodoList } from './component/MainTodo/MainTodoList';
 import { Footer } from './component/Footer/Footer';
 import { Error } from './component/Error/Error';
 import { Todo } from './types/Todo';
@@ -27,7 +27,7 @@ export const App: React.FC = () => {
   }, []);
 
   useEffect(() => {
-    if (tempTodo !== null) {
+    if (tempTodo) {
       setTempTodo(null);
     }
   }, [todos]);
@@ -108,7 +108,7 @@ export const App: React.FC = () => {
           isInputDisabled={isInputDisabled}
         />
 
-        <MainTodo
+        <MainTodoList
           todos={copyTodoArray}
           deleteToDo={deleteToDo}
           tempTodo={tempTodo}
