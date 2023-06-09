@@ -1,12 +1,14 @@
-import { useEffect, useState } from 'react';
+import { useContext, useEffect, useState } from 'react';
+import { SetErrorContext } from '../utils/setErrorContext';
 
 interface Props {
   error: string | null;
-  setError: (arg0: string | null) => void,
 }
 
-export const TodoError: React.FC<Props> = ({ error, setError }) => {
+export const TodoError: React.FC<Props> = ({ error }) => {
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
+
+  const setError = useContext(SetErrorContext);
 
   useEffect(() => {
     switch (error) {
@@ -22,6 +24,9 @@ export const TodoError: React.FC<Props> = ({ error, setError }) => {
       case 'cantupdate':
         setErrorMessage('Unable to update a todo');
         break;
+      case 'emptytitle':
+        setErrorMessage('Title can\'t be empty');
+        break;
       default:
     }
   }, []);
@@ -32,7 +37,9 @@ export const TodoError: React.FC<Props> = ({ error, setError }) => {
         type="button"
         className="delete"
         aria-label="Close error"
-        onClick={() => setError(null)}
+        onClick={() => setError?.(null)}
+        // #TODO: get rid of the nasty ?. somehow
+
       />
       {errorMessage}
     </div>

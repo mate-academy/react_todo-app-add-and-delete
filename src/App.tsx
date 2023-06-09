@@ -4,7 +4,7 @@ import { UserWarning } from './UserWarning';
 import { TodoError, TodoFooter, TodoList } from './components';
 import { getTodos } from './api/todos';
 import { Todo } from './types/Todo';
-import { UserIdContext } from './utils/userIdContext';
+import { SetErrorContext } from './utils/setErrorContext';
 
 const USER_ID = 10624;
 
@@ -24,12 +24,16 @@ export const App: React.FC = () => {
   }
 
   return (
-    <UserIdContext.Provider value={USER_ID}>
+    <SetErrorContext.Provider value={setError}>
       <div className="todoapp">
         <h1 className="todoapp__title">todos</h1>
 
         <div className="todoapp__content">
-          <TodoList todos={todos} filteringMode={filteringMode} />
+          <TodoList
+            todos={todos}
+            filteringMode={filteringMode}
+            userId={USER_ID}
+          />
           {/* handle rendering the todo list and the todo entry field */}
 
           {/* Hide the footer if there are no todos */}
@@ -43,8 +47,8 @@ export const App: React.FC = () => {
 
         {/* Notification is shown in case of any error */}
         {/* Add the 'hidden' class to hide the message smoothly */}
-        {error && <TodoError error={error} setError={setError} />}
+        {error && <TodoError error={error} />}
       </div>
-    </UserIdContext.Provider>
+    </SetErrorContext.Provider>
   );
 };

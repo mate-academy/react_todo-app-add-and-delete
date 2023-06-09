@@ -4,12 +4,13 @@ import { TodoSubmit } from './TodoSubmit';
 
 interface Props {
   todos: Todo[] | null,
-  filteringMode: string;
+  filteringMode: string,
+  userId: number,
 }
 
 let filteredTodos: Todo[] | null = [];
 
-export const TodoList: React.FC<Props> = ({ todos, filteringMode }) => {
+export const TodoList: React.FC<Props> = ({ todos, filteringMode, userId }) => {
   if (filteringMode !== 'all' && todos !== null) {
     switch (filteringMode) {
       case 'active':
@@ -26,7 +27,7 @@ export const TodoList: React.FC<Props> = ({ todos, filteringMode }) => {
 
   return (
     <>
-      <TodoSubmit />
+      <TodoSubmit userId={userId} />
 
       <section className="todoapp__main">
         {filteredTodos?.map(todo => (

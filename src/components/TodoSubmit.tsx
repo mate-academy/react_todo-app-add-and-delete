@@ -1,9 +1,31 @@
-import { useContext } from 'react';
-import { UserIdContext } from '../utils/userIdContext';
+import { useContext, useState } from 'react';
+import { addTodo } from '../api/todos';
+import { SetErrorContext } from '../utils/setErrorContext';
 
-export const TodoSubmit: React.FC = () => {
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
-  const userId = useContext(UserIdContext);
+interface Props {
+  userId: number,
+}
+
+export const TodoSubmit: React.FC<Props> = ({ userId }) => {
+  const [todoTitle, setTodoTitle] = useState('');
+
+  const setError = useContext(SetErrorContext);
+
+  const handleSubmit = (event: React.KeyboardEvent<HTMLElement>) => {
+    if (event.key === 'Enter') {
+      if (todoTitle) {
+        addTodo({
+          title: todoTitle,
+          completed: false,
+          userId,
+        });
+        setTodoTitle('');
+      } else {
+        setError?.('emptytitle');
+        // #TODO: get rid of the nasty ?. somehow
+      }
+    }
+  };
 
   return (
     <header className="todoapp__header">
@@ -20,6 +42,9 @@ export const TodoSubmit: React.FC = () => {
           type="text"
           className="todoapp__new-todo"
           placeholder="What needs to be done?"
+          value={todoTitle}
+          onChange={(event) => setTodoTitle(event.target.value)}
+          onKeyDown={handleSubmit}
         />
       </form>
     </header>
