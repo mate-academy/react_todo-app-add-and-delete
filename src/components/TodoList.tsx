@@ -1,19 +1,20 @@
 import cn from 'classnames';
 import { useContext, useState } from 'react';
 import { Todo } from '../types/Todo';
-import { addTodo } from '../api/todos';
+import { addTodo, deleteTodo } from '../api/todos';
 import { SetErrorContext } from '../utils/setErrorContext';
 
 interface Props {
   todos: Todo[] | null,
   filteringMode: string,
   userId: number,
+  setTodos: React.Dispatch<React.SetStateAction<Todo[] | null>>,
 }
 
 let filteredTodos: Todo[] | null = [];
 
 export const TodoList: React.FC<Props> = ({
-  todos, filteringMode, userId,
+  todos, filteringMode, userId, setTodos,
 }) => {
   const [todoTitle, setTodoTitle] = useState('');
   const [processing, setProcessing] = useState(false);
@@ -66,6 +67,19 @@ export const TodoList: React.FC<Props> = ({
     }
   };
 
+  const handleDeletion = (todoId: number) => {
+    if (todos) {
+      deleteTodo(todoId)
+        .then(() => {
+          const deletedId = todos?.findIndex(todo => todo.id === todoId);
+          const splicedTodos = [...todos];
+
+          splicedTodos?.splice(deletedId, 1);
+          setTodos(splicedTodos);
+        });
+    }
+  };
+
   return (
     <>
       <header className="todoapp__header">
@@ -109,7 +123,13 @@ export const TodoList: React.FC<Props> = ({
 
             <span className="todo__title">{todo.title}</span>
 
-            <button type="button" className="todo__remove">×</button>
+            <button
+              type="button"
+              className="todo__remove"
+              onClick={() => handleDeletion(todo.id)}
+            >
+              ×
+            </button>
 
             <div className="modal overlay">
               <div className="modal-background has-background-white-ter" />
