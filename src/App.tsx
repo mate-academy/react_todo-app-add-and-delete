@@ -42,6 +42,7 @@ export const App: React.FC = () => {
             <TodoFooter
               setFilteringMode={setFilteringMode}
               filteringMode={filteringMode}
+              todos={todos}
             />
           )}
         </div>

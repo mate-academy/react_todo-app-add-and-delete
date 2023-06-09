@@ -1,12 +1,14 @@
 import cn from 'classnames';
+import { Todo } from '../types/Todo';
 
 interface Props {
   setFilteringMode: (arg0: string) => void,
   filteringMode: string;
+  todos: Todo[],
 }
 
 export const TodoFooter: React.FC<Props>
-  = ({ setFilteringMode, filteringMode }) => {
+  = ({ setFilteringMode, filteringMode, todos }) => {
     return (
       <footer className="todoapp__footer">
         <span className="todo-count">
@@ -50,7 +52,14 @@ export const TodoFooter: React.FC<Props>
         </nav>
 
         {/* don't show this button if there are no completed todos */}
-        <button type="button" className="todoapp__clear-completed">
+        <button
+          type="button"
+          className={cn({
+            'todoapp__clear-completed': true,
+            'todoapp__clear-completed__hidden':
+              !todos.find(todo => todo.completed),
+          })}
+        >
           Clear completed
         </button>
       </footer>
