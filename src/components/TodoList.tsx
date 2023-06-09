@@ -80,6 +80,10 @@ export const TodoList: React.FC<Props> = ({
           splicedTodos?.splice(deletedId, 1);
           setTodos(splicedTodos);
           setTodoToBeDeleted(null);
+        })
+        .catch(() => {
+          setTodoToBeDeleted(null);
+          setError?.('cantdelete');
         });
     }
   };
