@@ -23,7 +23,7 @@ export const Header: React.FC<Props> = ({
   const handleSubmit = (event: React.SyntheticEvent) => {
     event.preventDefault();
 
-    if (search.trim() === '') {
+    if (!search.trim()) {
       setError(true);
       setErrorMessage('Title can\'t be empty');
     } else {
