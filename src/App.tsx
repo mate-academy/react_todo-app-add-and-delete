@@ -19,6 +19,9 @@ export const App: React.FC = () => {
   const [errorNotification, setErrorNotification]
     = useState<ErrorNotification>(ErrorNotification.NONE);
   const [search, setSearch] = useState('');
+  const [tempTodo, setTempTodo] = useState<Todo | null>(null);
+  const [todosForDeleting, setTodosForDeleting] = useState<number[]>([]);
+  const [completedID, setCompletedsID] = useState<number[]>([]);
 
   const initialTodos = useMemo(() => {
     return (todos.filter(todo => {
@@ -47,6 +50,12 @@ export const App: React.FC = () => {
     fetchData();
   }, []);
 
+  useEffect(() => {
+    setCompletedsID(todos
+      .filter(todo => todo.completed)
+      .map(todo => todo.id));
+  }, [todos]);
+
   if (!USER_ID) {
     return <UserWarning />;
   }
@@ -58,21 +67,36 @@ export const App: React.FC = () => {
       title: search,
     };
 
-    await createTodo(USER_ID, newTodo);
-    await fetchData();
+    setTempTodo({
+      id: 0,
+      ...newTodo,
+    });
+
+    createTodo(USER_ID, newTodo)
+      .then(res => setTodos(prevTodos => [...prevTodos, res]))
+      .catch(() => setErrorNotification(ErrorNotification.ADD))
+      .finally(() => setTempTodo(null));
+
     setSearch('');
   };
 
-  const handleDeleteTodo = async (todoId: number) => {
-    try {
-      await deleteTodo(todoId);
-      await fetchData();
-    } catch {
-      setErrorNotification(ErrorNotification.DELETE);
-    }
+  const handleDeleteTodo = async (id: number) => {
+    setTempTodo({
+      id,
+      userId: 0,
+      title: '',
+      completed: false,
+    });
+
+    deleteTodo(id)
+      .then(() => setTodos(prevTodos => prevTodos
+        .filter(todo => todo.id !== id)))
+      .catch(() => setErrorNotification(ErrorNotification.DELETE))
+      .finally(() => setTempTodo(null));
   };
 
-  const deleteTodosCompleted = async () => {
+  const deleteTodosCompleted = async (idsForDeleting: number[]) => {
+    setTodosForDeleting([...idsForDeleting]);
     todos.filter(todo => todo.completed)
       .map(todo => handleDeleteTodo(todo.id));
   };
@@ -95,12 +119,15 @@ export const App: React.FC = () => {
             <TodoList
               todos={initialTodos}
               handleDeleteTodo={handleDeleteTodo}
+              tempTodo={tempTodo}
+              todosForDeleting={todosForDeleting}
             />
             <Footer
               todos={initialTodos}
               todoFilter={todoFilter}
               setTodoFilter={setTodoFilter}
               deleteTodosCompleted={deleteTodosCompleted}
+              completedId={completedID}
             />
           </>
         )}
