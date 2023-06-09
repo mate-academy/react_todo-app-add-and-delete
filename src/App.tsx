@@ -12,6 +12,8 @@ export const App: React.FC = () => {
   const [todos, setTodos] = useState<Todo[] | null>(null);
   const [filteringMode, setFilteringMode] = useState<string>('all');
   const [error, setError] = useState<string | null>(null);
+  const [todosToBeDeleted, setTodosToBeDeleted]
+  = useState<Todo['id'][] | null>(null);
 
   useEffect(() => {
     getTodos(USER_ID)
@@ -34,6 +36,8 @@ export const App: React.FC = () => {
             filteringMode={filteringMode}
             userId={USER_ID}
             setTodos={setTodos}
+            todosToBeDeleted={todosToBeDeleted}
+            setTodosToBeDeleted={setTodosToBeDeleted}
           />
           {/* handle rendering the todo list and the todo entry field */}
 
@@ -43,6 +47,8 @@ export const App: React.FC = () => {
               setFilteringMode={setFilteringMode}
               filteringMode={filteringMode}
               todos={todos}
+              setTodos={setTodos}
+              setTodosToBeDeleted={setTodosToBeDeleted}
             />
           )}
         </div>
