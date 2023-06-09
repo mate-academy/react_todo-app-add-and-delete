@@ -18,7 +18,7 @@ export const TodoList: React.FC<Props> = ({
 }) => {
   const [todoTitle, setTodoTitle] = useState('');
   const [processing, setProcessing] = useState(false);
-  // const [tempTodo, setTempTodo] = useState(null);
+  const [tempTodo, setTempTodo] = useState<Todo | null>(null);
 
   if (filteringMode !== 'all' && todos !== null) {
     switch (filteringMode) {
@@ -40,6 +40,12 @@ export const TodoList: React.FC<Props> = ({
     if (event.key === 'Enter') {
       if (todoTitle) {
         setProcessing(true);
+        setTempTodo({
+          title: todoTitle,
+          completed: false,
+          userId,
+          id: 0,
+        });
         addTodo({
           title: todoTitle,
           completed: false,
@@ -48,7 +54,10 @@ export const TodoList: React.FC<Props> = ({
           .then(() => {
             setProcessing(false);
             getTodos(userId)
-              .then((response) => setTodos(response))
+              .then((response) => {
+                setTempTodo(null);
+                setTodos(response);
+              })
               .catch(() => setError?.('cantfetch'));
           })
           .catch(() => setError?.('cantadd'));
@@ -114,6 +123,23 @@ export const TodoList: React.FC<Props> = ({
           </div>
         ))}
 
+        {tempTodo
+        && (
+          <div className="todo">
+            <label className="todo__status-label">
+              <input type="checkbox" className="todo__status" />
+            </label>
+
+            <span className="todo__title">{tempTodo.title}</span>
+            <button type="button" className="todo__remove">×</button>
+
+            <div className="modal overlay is-active">
+              <div className="modal-background has-background-white-ter" />
+              <div className="loader" />
+            </div>
+          </div>
+        )}
+
         {/* This todo is being edited */}
         {/* <div className="todo">
           <label className="todo__status-label">
@@ -140,20 +166,7 @@ export const TodoList: React.FC<Props> = ({
         </div> */}
 
         {/* This todo is in loadind state */}
-        {/* <div className="todo">
-          <label className="todo__status-label">
-            <input type="checkbox" className="todo__status" />
-          </label>
 
-          <span className="todo__title">Todo is being saved now</span>
-          <button type="button" className="todo__remove">×</button> */}
-
-        {/* 'is-active' class puts this modal on top of the todo */}
-        {/* <div className="modal overlay is-active">
-            <div className="modal-background has-background-white-ter" />
-            <div className="loader" />
-          </div>
-        </div> */}
       </section>
     </>
   );
