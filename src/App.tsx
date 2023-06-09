@@ -33,7 +33,6 @@ export const App: React.FC = () => {
             todos={todos}
             filteringMode={filteringMode}
             userId={USER_ID}
-            setTodos={setTodos}
           />
           {/* handle rendering the todo list and the todo entry field */}
 

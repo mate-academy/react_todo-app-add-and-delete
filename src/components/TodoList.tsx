@@ -1,20 +1,19 @@
 import cn from 'classnames';
 import { useContext, useState } from 'react';
 import { Todo } from '../types/Todo';
-import { addTodo, getTodos } from '../api/todos';
+import { addTodo } from '../api/todos';
 import { SetErrorContext } from '../utils/setErrorContext';
 
 interface Props {
   todos: Todo[] | null,
   filteringMode: string,
   userId: number,
-  setTodos: React.Dispatch<React.SetStateAction<Todo[] | null>>,
 }
 
 let filteredTodos: Todo[] | null = [];
 
 export const TodoList: React.FC<Props> = ({
-  todos, filteringMode, userId, setTodos,
+  todos, filteringMode, userId,
 }) => {
   const [todoTitle, setTodoTitle] = useState('');
   const [processing, setProcessing] = useState(false);
@@ -51,14 +50,10 @@ export const TodoList: React.FC<Props> = ({
           completed: false,
           userId,
         })
-          .then(() => {
+          .then((response) => {
             setProcessing(false);
-            getTodos(userId)
-              .then((response) => {
-                setTempTodo(null);
-                setTodos(response);
-              })
-              .catch(() => setError?.('cantfetch'));
+            setTempTodo(null);
+            todos?.push(response);
           })
           .catch(() => setError?.('cantadd'));
         // #TODO: get rid of the nasty ?. somehow
