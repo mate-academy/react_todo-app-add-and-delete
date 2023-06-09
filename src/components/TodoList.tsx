@@ -14,6 +14,8 @@ let filteredTodos: Todo[] | null = [];
 
 export const TodoList: React.FC<Props> = ({ todos, filteringMode, userId }) => {
   const [todoTitle, setTodoTitle] = useState('');
+  const [processing, setProcessing] = useState(false);
+  // const [tempTodo, setTempTodo] = useState(null);
 
   if (filteringMode !== 'all' && todos !== null) {
     switch (filteringMode) {
@@ -34,11 +36,14 @@ export const TodoList: React.FC<Props> = ({ todos, filteringMode, userId }) => {
   const handleSubmit = (event: React.KeyboardEvent<HTMLElement>) => {
     if (event.key === 'Enter') {
       if (todoTitle) {
+        setProcessing(true);
         addTodo({
           title: todoTitle,
           completed: false,
           userId,
-        });
+        })
+          .then(() => setProcessing(false))
+          .catch(() => setError?.('cantadd'));
         setTodoTitle('');
       } else {
         setError?.('emptytitle');
@@ -66,10 +71,10 @@ export const TodoList: React.FC<Props> = ({ todos, filteringMode, userId }) => {
             value={todoTitle}
             onChange={(event) => setTodoTitle(event.target.value)}
             onKeyDown={handleSubmit}
+            disabled={processing}
           />
         </form>
       </header>
-      );
 
       <section className="todoapp__main">
         {filteredTodos?.map(todo => (
