@@ -8,7 +8,7 @@ interface Props {
   setIsThereIssue: (value: boolean) => void,
 }
 
-export const Error: React.FC<Props> = ({
+export const ErrorMessage: React.FC<Props> = ({
   message,
   deleteErrorMessage,
   isThereIssue,
