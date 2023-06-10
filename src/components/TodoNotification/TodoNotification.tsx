@@ -1,3 +1,5 @@
+import { useEffect } from 'react';
+
 /* eslint-disable jsx-a11y/control-has-associated-label */
 interface TodoNotificationProps {
   message: string;
@@ -6,14 +8,22 @@ interface TodoNotificationProps {
 
 export const TodoNotification: React.FC<TodoNotificationProps> = (
   { message, onDismiss },
-) => (
-  <div className="notification is-danger is-light has-text-weight-normal">
-    <button
-      type="button"
-      className="delete"
-      onClick={onDismiss}
-    />
+) => {
+  useEffect(() => {
+    const timer = setTimeout(onDismiss, 3000);
 
-    {message}
-  </div>
-);
+    return () => clearTimeout(timer);
+  }, []);
+
+  return (
+    <div className="notification is-danger is-light has-text-weight-normal">
+      <button
+        type="button"
+        className="delete"
+        onClick={onDismiss}
+      />
+
+      {message}
+    </div>
+  );
+};

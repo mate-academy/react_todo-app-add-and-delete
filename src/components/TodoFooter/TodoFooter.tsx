@@ -1,4 +1,5 @@
 import classNames from 'classnames';
+import { FilterType } from '../../types/FilterType';
 
 interface TodoFooterProps {
   remainingTodos: number;
@@ -29,10 +30,10 @@ export const TodoFooter: React.FC<TodoFooterProps> = (
         className={
           classNames(
             'filter__link',
-            { selected: filter === 'all' },
+            { selected: filter === FilterType.ALL },
           )
         }
-        onClick={() => setFilter('all')}
+        onClick={() => setFilter(FilterType.ALL)}
       >
         All
       </a>
@@ -42,10 +43,10 @@ export const TodoFooter: React.FC<TodoFooterProps> = (
         className={
           classNames(
             'filter__link',
-            { selected: filter === 'active' },
+            { selected: filter === FilterType.ACTIVE },
           )
         }
-        onClick={() => setFilter('active')}
+        onClick={() => setFilter(FilterType.ACTIVE)}
       >
         Active
       </a>
@@ -55,10 +56,10 @@ export const TodoFooter: React.FC<TodoFooterProps> = (
         className={
           classNames(
             'filter__link',
-            { selected: filter === 'completed' },
+            { selected: filter === FilterType.COMPLETED },
           )
         }
-        onClick={() => setFilter('completed')}
+        onClick={() => setFilter(FilterType.COMPLETED)}
       >
         Completed
       </a>
