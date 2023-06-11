@@ -3,12 +3,13 @@ import { useContext, useState } from 'react';
 import { Todo } from '../types/Todo';
 import { addTodo, deleteTodo } from '../api/todos';
 import { SetErrorContext } from '../utils/setErrorContext';
+import { ErrorMessage } from '../utils/ErrorMessage';
 
 interface Props {
   todos: Todo[] | null,
   filteringMode: string,
   userId: number,
-  setTodos: React.Dispatch<React.SetStateAction<Todo[] | null>>,
+  setTodos: React.Dispatch<React.SetStateAction<Todo[]>>,
   todosToBeDeleted: Todo['id'][] | null,
   setTodosToBeDeleted: React.Dispatch<React.SetStateAction<number[] | null>>,
 }
@@ -58,12 +59,12 @@ export const TodoList: React.FC<Props> = ({
             setTempTodo(null);
             todos?.push(response);
           })
-          .catch(() => setError?.('cantadd'));
+          .catch(() => setError?.(ErrorMessage.CantAdd));
         // #TODO: get rid of the nasty ?. somehow
 
         setTodoTitle('');
       } else {
-        setError?.('emptytitle');
+        setError?.(ErrorMessage.EmptyTitle);
         // #TODO: get rid of the nasty ?. somehow
       }
     }
@@ -83,7 +84,7 @@ export const TodoList: React.FC<Props> = ({
         })
         .catch(() => {
           setTodosToBeDeleted(null);
-          setError?.('cantdelete');
+          setError?.(ErrorMessage.CantDelete);
         });
     }
   };

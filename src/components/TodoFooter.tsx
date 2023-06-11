@@ -3,12 +3,13 @@ import { useContext } from 'react';
 import { Todo } from '../types/Todo';
 import { deleteTodo } from '../api/todos';
 import { SetErrorContext } from '../utils/setErrorContext';
+import { ErrorMessage } from '../App';
 
 interface Props {
   setFilteringMode: (arg0: string) => void,
   filteringMode: string;
   todos: Todo[],
-  setTodos: React.Dispatch<React.SetStateAction<Todo[] | null>>,
+  setTodos: React.Dispatch<React.SetStateAction<Todo[]>>,
   setTodosToBeDeleted: React.Dispatch<React.SetStateAction<number[] | null>>,
 }
 
@@ -28,7 +29,7 @@ export const TodoFooter: React.FC<Props>
           .then(resolve))
           .catch(() => {
             setTodosToBeDeleted([]);
-            setError?.('cantdelete');
+            setError?.(ErrorMessage.CantDelete);
           });
       }))
         .then(() => {

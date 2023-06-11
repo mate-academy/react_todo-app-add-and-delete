@@ -1,6 +1,7 @@
 import { Dispatch, SetStateAction, createContext } from 'react';
+import { ErrorMessage } from './ErrorMessage';
 
 export const SetErrorContext
-  = createContext<Dispatch<SetStateAction<string | null>> | null>(
-    null as unknown as Dispatch<SetStateAction<string | null>>,
+  = createContext<Dispatch<SetStateAction<ErrorMessage>> | null>(
+    null as unknown as Dispatch<SetStateAction<ErrorMessage>>,
   );
