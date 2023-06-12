@@ -3,15 +3,11 @@ import React, { useEffect, useState } from 'react';
 import classNames from 'classnames';
 
 type Props = {
-  isError: boolean;
   errorType: string;
-  onError: React.Dispatch<React.SetStateAction<boolean>>;
 };
 
 export const ErrorNotification: React.FC<Props> = ({
-  isError,
   errorType,
-  onError,
 }) => {
   const [isHidden, setIsHidden] = useState(true);
   const emptyTitleMessage = 'Title can\'t be empty';
@@ -23,11 +19,10 @@ export const ErrorNotification: React.FC<Props> = ({
     const removeNotification = () => {
       window.setTimeout(() => {
         setIsHidden(true);
-        onError(false);
       }, 3000);
     };
 
-    if (isError) {
+    if (errorType) {
       setIsHidden(false);
       removeNotification();
     } else {

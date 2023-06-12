@@ -5,13 +5,13 @@ type Props = {
   tempTodo: Todo;
 };
 
-export const TodoItem: React.FC<Props> = ({ tempTodo }) => (
+export const TodoItem: React.FC<Props> = ({ tempTodo: { title } }) => (
   <li className="todo">
     <label className="todo__status-label">
       <input type="checkbox" className="todo__status" />
     </label>
 
-    <span className="todo__title">{tempTodo.title}</span>
+    <span className="todo__title">{title}</span>
     <button type="button" className="todo__remove">×</button>
 
     <div

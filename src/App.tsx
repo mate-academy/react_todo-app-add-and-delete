@@ -11,14 +11,13 @@ import { Header } from './components/Header';
 import { TodoList } from './components/TodoList';
 import { Footer } from './components/Footer';
 import { ErrorNotification } from './components/ErrorNotification';
-import { UserWarning } from './UserWarning';
+import { UserWarning } from './components/UserWarning';
 import { Todo } from './types/Todo';
 
 export const App: React.FC = () => {
   const [title, setTitle] = useState('');
   const [errorType, setErrorType] = useState('');
   const [todos, setTodos] = useState<Todo[]>([]);
-  const [hasError, setHasError] = useState(false);
   const [isTodoAdding, setIsTodoAdding] = useState(false);
   const [tempTodo, setTempTodo] = useState<Todo | null>(null);
   const [selectedFilter, setSelectedFilter] = useState(FilterValues.ALL);
@@ -49,7 +48,6 @@ export const App: React.FC = () => {
 
       setTodos(response);
     } catch (error) {
-      setHasError(false);
       setErrorType('upload');
     }
   };
@@ -57,7 +55,7 @@ export const App: React.FC = () => {
   const addTodoToServer = useCallback(async () => {
     const newTodoToFetch = {
       title,
-      completed: true,
+      completed: false,
       userId: USER_ID,
     };
 
@@ -73,10 +71,7 @@ export const App: React.FC = () => {
       const addedTodo = await addTodo(newTodoToFetch);
 
       setTodos(prevTodos => [...prevTodos, addedTodo]);
-
-      setHasError(false);
     } catch (error) {
-      setHasError(true);
       setErrorType('add');
     } finally {
       setIsTodoAdding(false);
@@ -94,7 +89,6 @@ export const App: React.FC = () => {
 
       setTodos(updatedTodos);
     } catch (error) {
-      setHasError(true);
       setErrorType('delete');
     } finally {
       setRemovingTodoIds(prevTodoIds => prevTodoIds
@@ -125,7 +119,6 @@ export const App: React.FC = () => {
         setTodos(activeTodos);
       })
       .catch(() => {
-        setHasError(true);
         setErrorType('delete');
       })
       .finally(() => setRemovingTodoIds(prevTodoIds => prevTodoIds
@@ -142,7 +135,6 @@ export const App: React.FC = () => {
           setTitle={setTitle}
           onAdd={addTodoToServer}
           hasActive={hasActive}
-          onError={setHasError}
           setErrorType={setErrorType}
           isTodoAdding={isTodoAdding}
         />
@@ -165,13 +157,11 @@ export const App: React.FC = () => {
         )}
       </div>
 
-      {hasError && (
+      {errorType ? (
         <ErrorNotification
-          isError={hasError}
           errorType={errorType}
-          onError={setHasError}
         />
-      )}
+      ) : null}
     </div>
   );
 };

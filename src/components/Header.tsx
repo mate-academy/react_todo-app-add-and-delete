@@ -7,14 +7,12 @@ type Props = {
   isTodoAdding: boolean;
   onAdd: () => void;
   setTitle: React.Dispatch<React.SetStateAction<string>>;
-  onError: React.Dispatch<React.SetStateAction<boolean>>;
   setErrorType: React.Dispatch<React.SetStateAction<string>>;
 };
 
 export const Header: React.FC<Props> = ({
   title,
   onAdd,
-  onError,
   setTitle,
   hasActive,
   isTodoAdding,
@@ -24,7 +22,6 @@ export const Header: React.FC<Props> = ({
     event.preventDefault();
 
     if (!title.trim()) {
-      onError(true);
       setErrorType('empty title');
 
       return;
