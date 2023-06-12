@@ -22,9 +22,8 @@ export const Header: React.FC<HeaderProps> = ({
   const handleFormSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
 
-    if (!todoTitle.trim().length) {
+    if (!todoTitle.trim()) {
       setErrorMessage(ErrorMessage.TITLE);
-      setTodoTitle('');
 
       return;
     }

@@ -13,7 +13,7 @@ import { Notification } from './components/Notification';
 
 export const App: React.FC = () => {
   const [todos, setTodos] = useState<Todo[]>([]);
-  const [tempoTodo, setTempoTodo] = useState<Todo | null>(null);
+  const [tempoTodo, setTempTodo] = useState<Todo | null>(null);
   const [todoStatus, setTodoStatus] = useState<TodoStatus>(TodoStatus.ALL);
   const [loadingTodo, setLoadingTodo] = useState([0]);
   const [errorMessage, setErrorMessage]
@@ -64,7 +64,7 @@ export const App: React.FC = () => {
         completed: false,
       };
 
-      setTempoTodo({
+      setTempTodo({
         id: 0,
         ...newTodo,
       });
@@ -74,7 +74,7 @@ export const App: React.FC = () => {
     } catch (error) {
       setErrorMessage(ErrorMessage.ADD);
     } finally {
-      setTempoTodo(null);
+      setTempTodo(null);
     }
   };
 
@@ -88,7 +88,7 @@ export const App: React.FC = () => {
     } catch (error) {
       setErrorMessage(ErrorMessage.DELETE);
     } finally {
-      setTempoTodo(null);
+      setTempTodo(null);
       setLoadingTodo([0]);
     }
   };
