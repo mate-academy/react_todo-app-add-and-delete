@@ -1,4 +1,3 @@
-/* eslint-disable jsx-a11y/control-has-associated-label */
 import React, { useEffect, useState } from 'react';
 import classNames from 'classnames';
 
@@ -9,7 +8,7 @@ type Props = {
 export const ErrorNotification: React.FC<Props> = ({
   errorType,
 }) => {
-  const [isHidden, setIsHidden] = useState(true);
+  const [isHidden, setIsHidden] = useState(false);
   const emptyTitleMessage = 'Title can\'t be empty';
   const errorMessage = errorType !== 'empty title'
     ? `Unable to ${errorType} a todo`
@@ -42,6 +41,7 @@ export const ErrorNotification: React.FC<Props> = ({
       )}
     >
       <button
+        aria-label="delete"
         type="button"
         className="delete"
         onClick={() => setIsHidden(true)}
