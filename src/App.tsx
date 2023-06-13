@@ -172,8 +172,8 @@ export const App: React.FC = () => {
   }, []);
 
   useEffect(() => {
-    const isActive = todos.some((obj) => !obj?.completed);
-    const isCompleted = todos.some((obj) => obj?.completed);
+    const isActive = todos.some((obj) => !obj.completed);
+    const isCompleted = todos.some((obj) => obj.completed);
     const todoLength = todos.filter((obj) => {
       return obj.completed === false;
     });
@@ -186,9 +186,9 @@ export const App: React.FC = () => {
   const visibleTodos: Todo[] = useMemo(() => todos.filter((element) => {
     switch (selectedTab) {
       case SortType.Completed:
-        return element?.completed;
+        return element.completed;
       case SortType.Active:
-        return !element?.completed;
+        return !element.completed;
       case SortType.All:
         return todos;
       default:
