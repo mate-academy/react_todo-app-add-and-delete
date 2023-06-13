@@ -1,4 +1,3 @@
-/* eslint-disable no-console */
 import React, {
   useEffect, useState, useMemo, useRef,
 } from 'react';
@@ -18,22 +17,26 @@ function getRandomNumber(): number {
 }
 
 export const App: React.FC = () => {
-  const [todo, setTodo] = useState<Todo[]>([]);
+  const [todos, setTodos] = useState<Todo[]>([]);
+  const [apiResponseReceived, setApiResponseReceived] = useState(false);
   const [selectedTab, setSelectedTab] = useState(SortType.All);
   const [inputValue, setInputValue] = useState('');
-  const [isLoading, setIsLoading] = useState(false);
+  const [isLoading, setIsLoading] = useState(true);
+  const [deletedTodoId, setDeletedTodoId] = useState(0);
   const [isThereActiveTodo, setIsThereActiveTodo] = useState(false);
+  const [isPlusOne, setIsPlusOne] = useState(false);
   const [isThereCompletedTodos, setIsThereCompletedTodos] = useState(false);
   const [isHidden, setIsHidden] = useState('');
   const [isThereIssue, setIsThereIssue] = useState(false);
-  const [numberOfActiveTodos, setNumberOfActivTodos] = useState(0);
+  const [numberOfActiveTodos, setNumberOfActiveTodos] = useState(0);
   const [deleteErrorMessage, setDeleteErrorMessage] = useState('');
+  const [isTitleEmpty, setIsTitleEmpty] = useState('');
   const [editTodo, setEditTodo] = useState('');
   const [tempTodo, setTempTodo] = useState({
     title: '',
-    userId: USER_ID,
-    completed: false,
     id: getRandomNumber(),
+    completed: false,
+    userId: USER_ID,
   });
   const timeoutId = useRef<NodeJS.Timeout | null>(null);
 
@@ -42,128 +45,37 @@ export const App: React.FC = () => {
       setIsLoading(true);
       const response = await getTodos(USER_ID);
 
-      setTodo(response);
+      setTodos(response);
+      setApiResponseReceived(true);
     } catch (error) {
-      // eslint-disable-next-line no-console
-      console.log('Unable to add a todo');
-      setIsHidden('Unable to add a todo');
+      setIsHidden('Unable to load todos');
       setIsThereIssue(true);
       timeoutId.current = setTimeout(() => {
         setIsThereIssue(false);
       }, 3000);
+      throw Error('Unable to load todos');
     } finally {
       setIsLoading(false);
+      setApiResponseReceived(false);
     }
   };
 
-  const updatetempTodo = (value: string) => {
-    value.trim();
-
-    setInputValue(value);
-
-    setTempTodo({
-      ...tempTodo,
-      title: inputValue.trim(),
-      id: getRandomNumber(),
-    });
-  };
-
-  const handleFormSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
-    event.preventDefault();
-
-    if (inputValue.trim() !== '') {
-      const tempTodoItem: Todo = {
-        title: inputValue.trim(),
-        userId: USER_ID,
-        completed: false,
-        id: getRandomNumber(),
-      };
-
-      try {
-        await client.post('/todos', tempTodoItem);
-        setTodo((prevTodo) => [...prevTodo, tempTodoItem]);
-      } catch (error) {
-        console.log('There is an error', error);
-      }
-    } else {
-      // setErrorMessageField(true);
-    }
-
-    setInputValue('');
-  };
-
-  const deleteTodo = async (id: number) => {
-    const tempTodos = todo.filter((element) => {
-      return element.id !== id;
-    });
-
-    setTodo(tempTodos);
-
+  const updateTodos = async (id: number) => {
     try {
-      await client.delete(`/todos/${id}`);
-    } catch (error) {
-      console.log('There is an issue.', error);
-      setDeleteErrorMessage('Unable to delete a todo');
-    }
-  };
+      const updatedTodo = todos.map((obj) => {
+        if (obj.id === id) {
+          return {
+            ...obj,
+            completed: !obj.completed,
+          };
+        }
 
-  const updateAllTodo = async () => {
-    const everyCompleted = todo.every((item) => item.completed);
-
-    const updatedTodos = todo.map((element) => {
-      return everyCompleted
-        ? ({
-          ...element,
-          completed: !element.completed,
-        }) : (
-          {
-            ...element,
-            completed: true,
-          }
-        );
-    });
-
-    setTodo(updatedTodos);
-
-    try {
-      updatedTodos.map(async (todoItem) => {
-        await client.patch(`/todos/${todoItem.id}`, {
-          ...todoItem,
-          completed: todoItem.completed,
-        });
+        return obj;
       });
-    } catch (error) {
-      console.log('There is an issue updating todos.', error);
-    }
-  };
 
-  const updateIndividualTodo = async (id: number) => {
-    const updatedTodo = todo.map((obj) => {
-      if (obj.id === id) {
-        return {
-          ...obj,
-          completed: !obj.completed,
-        };
-      }
+      setTodos(updatedTodo);
 
-      return obj;
-    });
-
-    const none = todo.some((element) => {
-      return element.id === id;
-    });
-
-    if (!none) {
-      // setIsEditingTodoAllowed(true);
-      // setErrorMessageField(true);
-      setEditTodo('Unable to loading a todo');
-      setIsThereIssue(true);
-    }
-
-    setTodo(updatedTodo);
-
-    try {
-      const todoToUpdate = todo.find((elem) => elem.id === id);
+      const todoToUpdate = todos.find((elem) => elem.id === id);
 
       if (todoToUpdate) {
         await client.patch(`/todos/${id}`, {
@@ -175,7 +87,77 @@ export const App: React.FC = () => {
       }
     } catch (error) {
       setDeleteErrorMessage('Unable to delete a todo');
-      console.log('There is an issue.');
+      setEditTodo('Unable to update a todo');
+      setIsThereIssue(true);
+      throw Error('There is an issue deleting the todo.');
+    }
+  };
+
+  const updateTempTodo = (value: string) => {
+    setInputValue(value);
+  };
+
+  const handleFormSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
+    event.preventDefault();
+    setIsLoading(true);
+    setIsPlusOne(true);
+
+    setTempTodo({
+      ...tempTodo,
+      title: inputValue.trim(),
+      id: 0,
+      completed: false,
+      userId: USER_ID,
+    });
+
+    if (inputValue.trim() !== '') {
+      const tempTodoItem: Todo = {
+        title: inputValue.trim(),
+        userId: USER_ID,
+        completed: false,
+        id: getRandomNumber(),
+      };
+
+      try {
+        await client.post('/todos', tempTodoItem);
+        setTodos((prevTodo) => [...prevTodo, tempTodoItem]);
+        setApiResponseReceived(true);
+      } catch (error) {
+        setEditTodo('Unable to update a todo');
+        setIsThereIssue(true);
+        timeoutId.current = setTimeout(() => {
+          setIsThereIssue(false);
+        }, 3000);
+        throw Error('Unable to update a todo');
+      } finally {
+        setApiResponseReceived(false);
+        setIsLoading(false);
+        setIsPlusOne(false);
+      }
+    } else {
+      setIsThereIssue(true);
+      setIsTitleEmpty('Title can\'t be empty');
+    }
+
+    setInputValue('');
+  };
+
+  const deleteTodo = async (id: number) => {
+    setDeletedTodoId(id);
+
+    try {
+      setIsLoading(true);
+      await client.delete(`/todos/${id}`);
+      setTodos(todos.filter((todo) => todo.id !== id));
+    } catch (error) {
+      setDeleteErrorMessage('Unable to delete the todo');
+      setIsThereIssue(true);
+      timeoutId.current = setTimeout(() => {
+        setIsThereIssue(false);
+      }, 3000);
+      throw Error('Unable to delete the todo');
+    } finally {
+      setIsLoading(false);
     }
   };
 
@@ -190,29 +172,29 @@ export const App: React.FC = () => {
   }, []);
 
   useEffect(() => {
-    const isActive = todo.some((obj) => obj.completed === false);
-    const isCompleted = todo.some((obj) => obj.completed === true);
-    const todoLength = todo.filter((obj) => {
+    const isActive = todos.some((obj) => !obj?.completed);
+    const isCompleted = todos.some((obj) => obj?.completed);
+    const todoLength = todos.filter((obj) => {
       return obj.completed === false;
     });
 
     setIsThereActiveTodo(isActive);
-    setIsThereCompletedTodos(isCompleted);
-    setNumberOfActivTodos(todoLength.length);
-  }, [todo]);
+    setIsThereCompletedTodos(isCompleted || false);
+    setNumberOfActiveTodos(todoLength.length);
+  }, [todos]);
 
-  const visibleTodos: Todo[] = useMemo(() => todo.filter((element) => {
+  const visibleTodos: Todo[] = useMemo(() => todos.filter((element) => {
     switch (selectedTab) {
       case SortType.Completed:
-        return element.completed;
+        return element?.completed;
       case SortType.Active:
-        return !element.completed;
+        return !element?.completed;
       case SortType.All:
-        return todo;
+        return todos;
       default:
-        return todo;
+        return todos;
     }
-  }), [todo, selectedTab]);
+  }), [todos, selectedTab]);
 
   if (!USER_ID) {
     return <UserWarning />;
@@ -226,29 +208,30 @@ export const App: React.FC = () => {
         <div className="todoapp__content">
           <Header
             isThereActiveTodo={isThereActiveTodo}
-            updateAllTodo={updateAllTodo}
             handleFormSubmit={handleFormSubmit}
-            inputValue={inputValue}
-            updatetempTodo={updatetempTodo}
+            updatetempTodo={updateTempTodo}
+            apiResponseReceived={apiResponseReceived}
+            tempTodo={inputValue}
           />
           <section className="todoapp__main">
             <TodoList
-              todo={todo}
+              todo={todos}
               visibleTodos={visibleTodos}
               isLoading={isLoading}
-              tempTodo={tempTodo}
-              updateIndividualTodo={updateIndividualTodo}
               deleteTodo={deleteTodo}
+              updateTodos={updateTodos}
+              deletedTodoId={deletedTodoId}
+              isPlusOne={isPlusOne}
             />
           </section>
-          {todo.length > 0 && (
+          {todos.length > 0 && (
             <Footer
               numberOfActiveTodos={numberOfActiveTodos}
               selectedTab={selectedTab}
               setSelectedTab={setSelectedTab}
               isThereCompletedTodos={isThereCompletedTodos}
-              todo={todo}
-              setTodo={setTodo}
+              todo={todos}
+              setTodos={setTodos}
               setDeleteErrorMessage={setDeleteErrorMessage}
             />
           )}
@@ -261,6 +244,7 @@ export const App: React.FC = () => {
           isThereIssue={isThereIssue}
           editTodo={editTodo}
           setIsThereIssue={setIsThereIssue}
+          isTitleEmpty={isTitleEmpty}
         />
       </div>
     </>

@@ -1,4 +1,3 @@
-/* eslint-disable no-console */
 import classNames from 'classnames';
 import React from 'react';
 import { SortType, Todo } from '../Types';
@@ -10,7 +9,7 @@ interface Props {
   setSelectedTab: (sortingType: SortType) => void,
   isThereCompletedTodos: boolean,
   todo: Todo[],
-  setTodo: React.Dispatch<React.SetStateAction<Todo[]>>,
+  setTodos: React.Dispatch<React.SetStateAction<Todo[]>>,
   setDeleteErrorMessage: React.Dispatch<React.SetStateAction<string>>,
 }
 
@@ -20,7 +19,7 @@ export const Footer: React.FC<Props> = ({
   setSelectedTab,
   isThereCompletedTodos,
   todo,
-  setTodo,
+  setTodos,
   setDeleteErrorMessage,
 }) => {
   const deleteCompletedTodos = async () => {
@@ -33,10 +32,10 @@ export const Footer: React.FC<Props> = ({
         completedTodoIds.map((id) => client.delete(`/todos/${id}`)),
       );
 
-      setTodo((prevTodo) => prevTodo.filter((element) => !element.completed));
+      setTodos((prevTodo) => prevTodo.filter((element) => !element.completed));
     } catch (error) {
-      console.log('There is an issue deleting completed todos.', error);
       setDeleteErrorMessage('Unable to delete completed todos');
+      throw Error('There is an issue deleting completed todos.');
     }
   };
 
@@ -50,7 +49,7 @@ export const Footer: React.FC<Props> = ({
         <a
           href="#/"
           className={classNames('filter__link', {
-            selected: selectedTab === 'All',
+            selected: selectedTab === SortType.All,
           })}
           onClick={() => setSelectedTab(SortType.All)}
           role="button"
@@ -61,7 +60,7 @@ export const Footer: React.FC<Props> = ({
         <a
           href="#/active"
           className={classNames('filter__link', {
-            selected: selectedTab === 'Active',
+            selected: selectedTab === SortType.Active,
           })}
           onClick={() => setSelectedTab(SortType.Active)}
           role="button"
@@ -72,7 +71,7 @@ export const Footer: React.FC<Props> = ({
         <a
           href="#/completed"
           className={classNames('filter__link', {
-            selected: selectedTab === 'Completed',
+            selected: selectedTab === SortType.Completed,
           })}
           onClick={() => setSelectedTab(SortType.Completed)}
           role="button"
