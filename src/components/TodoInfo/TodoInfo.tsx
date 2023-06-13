@@ -4,13 +4,12 @@ import { Todo } from '../../types/Todo';
 
 interface TodoInfoProps {
   todo: Todo,
-  handleChangeCompleted: (id: number) => void,
   deleteTodo: (id: number) => void,
   deleteTodoId: number,
 }
 
 export const TodoInfo: React.FC<TodoInfoProps> = ({
-  handleChangeCompleted, todo, deleteTodo, deleteTodoId,
+  todo, deleteTodo, deleteTodoId,
 }) => {
   const { id, title, completed } = todo;
 
@@ -21,7 +20,6 @@ export const TodoInfo: React.FC<TodoInfoProps> = ({
           type="checkbox"
           className="todo__status"
           checked={completed}
-          onChange={() => handleChangeCompleted(id)}
         />
       </label>
       <span

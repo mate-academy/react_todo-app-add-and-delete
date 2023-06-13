@@ -19,8 +19,10 @@ export const App: React.FC = () => {
   const [tempTodo, setTempTodo] = useState<Todo | null>(null);
   const [deleteTodoId, setDeleteTodoId] = useState(0);
 
-  const activeTodo = todos.filter(todo => !todo.completed).length;
-  const completedTodo = todos.filter(todo => todo.completed).length;
+  const activeTodo = useMemo(() => todos
+    .filter(todo => !todo.completed).length, [todos]);
+  const completedTodo = useMemo(() => todos
+    .filter(todo => todo.completed).length, [todos]);
 
   useEffect(() => {
     getTodos(USER_ID)
@@ -42,7 +44,7 @@ export const App: React.FC = () => {
 
   const addTodo = (title: string) => {
     if (!title.trim()) {
-      setError('Title can`t be empty');
+      setError('Title can\'t be empty');
       setTimeout(() => {
         setError('');
       }, 3000);
@@ -104,21 +106,8 @@ export const App: React.FC = () => {
         };
       })
       .finally(() => {
-        setDeleteTodoId(null || 0);
+        setDeleteTodoId(0);
       });
-  };
-
-  const handleChangeCompleted = (id: number) => {
-    const completed = todos.map(item => (
-      item.id === id
-        ? {
-          ...item,
-          completed: !item.completed,
-        }
-        : item
-    ));
-
-    setTodos(completed);
   };
 
   const handleClearCompleted = () => {
@@ -146,7 +135,7 @@ export const App: React.FC = () => {
   }, [isActive]);
 
   const filteredTodos = useMemo(() => {
-    return todos?.filter(todo => {
+    return todos.filter(todo => {
       switch (filterValue) {
         case FilterEnum.Active:
           return !todo.completed;
@@ -178,13 +167,12 @@ export const App: React.FC = () => {
         <section className="todoapp__main">
           <TodosList
             todos={filteredTodos}
-            handleChangeCompleted={handleChangeCompleted}
             deleteTodo={deleteTodo}
             tempTodo={tempTodo}
             deleteTodoId={deleteTodoId}
           />
         </section>
-        {todos.length !== 0 && (
+        {todos.length && (
           <footer className="todoapp__footer">
             <Filter
               handleFilter={setFilterValue}

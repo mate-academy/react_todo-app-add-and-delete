@@ -16,41 +16,31 @@ export const Filter: React.FC<FilterProps> = ({
   completedTodo,
   activeTodo,
 }) => {
+  const filterOptions = [
+    FilterEnum.All,
+    FilterEnum.Active,
+    FilterEnum.Completed,
+  ];
+
   return (
     <>
       <span className="todo-count">
         {`${activeTodo} items left`}
       </span>
       <nav className="filter">
-        <a
-          href={`#/${FilterEnum.All}`}
-          className={classNames('filter__link', {
-            selected: activeFilter === FilterEnum.All,
-          })}
-          onClick={() => handleFilter(FilterEnum.All)}
-        >
-          {FilterEnum.All}
-        </a>
+        {filterOptions.map((option) => (
+          <a
+            key={option}
+            href={`#/${option}`}
+            className={classNames('filter__link', {
+              selected: activeFilter === option,
+            })}
+            onClick={() => handleFilter(option)}
+          >
+            {option}
+          </a>
+        ))}
 
-        <a
-          href={`#/${FilterEnum.Active}`}
-          className={classNames('filter__link', {
-            selected: activeFilter === FilterEnum.Active,
-          })}
-          onClick={() => handleFilter(FilterEnum.Active)}
-        >
-          {FilterEnum.Active}
-        </a>
-
-        <a
-          href={`#/${FilterEnum.Completed}`}
-          className={classNames('filter__link', {
-            selected: activeFilter === FilterEnum.Completed,
-          })}
-          onClick={() => handleFilter(FilterEnum.Completed)}
-        >
-          {FilterEnum.Completed}
-        </a>
       </nav>
 
       <button
