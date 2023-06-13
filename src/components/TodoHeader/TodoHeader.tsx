@@ -13,13 +13,13 @@ interface TodoHeaderProps {
 export const TodoHeader: React.FC<TodoHeaderProps> = ({
   handleToggleAll, todos, addTodo, isDisabled, activeTodo,
 }) => {
-  const [newTodo, setNewTodo] = useState('');
+  const [addingTodo, setAddingTodo] = useState('');
 
   const handleSumbmit = (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
 
-    addTodo(newTodo);
-    setNewTodo('');
+    addTodo(addingTodo);
+    setAddingTodo('');
   };
 
   return (
@@ -39,8 +39,8 @@ export const TodoHeader: React.FC<TodoHeaderProps> = ({
           type="text"
           className="todoapp__new-todo"
           placeholder="What needs to be done?"
-          value={newTodo}
-          onChange={({ target }) => setNewTodo(target.value)}
+          value={addingTodo}
+          onChange={({ target }) => setAddingTodo(target.value)}
           disabled={isDisabled}
         />
       </form>
