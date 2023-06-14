@@ -1,19 +1,17 @@
 import React from 'react';
 
 interface Props {
-  message: string,
+  loadError: string,
   deleteErrorMessage: string,
   isThereIssue: boolean,
-  editTodo: string,
   setIsThereIssue: (value: boolean) => void,
   isTitleEmpty: string,
 }
 
 export const ErrorMessage: React.FC<Props> = ({
-  message,
+  loadError,
   deleteErrorMessage,
   isThereIssue,
-  editTodo,
   setIsThereIssue,
   isTitleEmpty,
 }) => {
@@ -33,11 +31,9 @@ export const ErrorMessage: React.FC<Props> = ({
           <br />
           {isTitleEmpty}
           <br />
-          {message}
+          {loadError}
           <br />
           {deleteErrorMessage}
-          <br />
-          {editTodo}
         </div>
       )}
     </>

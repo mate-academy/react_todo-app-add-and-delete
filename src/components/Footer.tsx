@@ -11,6 +11,7 @@ interface Props {
   todo: Todo[],
   setTodos: React.Dispatch<React.SetStateAction<Todo[]>>,
   setDeleteErrorMessage: React.Dispatch<React.SetStateAction<string>>,
+  setIsEveryThingDelete: (value: boolean) => void,
 }
 
 export const Footer: React.FC<Props> = ({
@@ -21,8 +22,11 @@ export const Footer: React.FC<Props> = ({
   todo,
   setTodos,
   setDeleteErrorMessage,
+  setIsEveryThingDelete,
 }) => {
   const deleteCompletedTodos = async () => {
+    setIsEveryThingDelete(true);
+
     const completedTodoIds = todo
       .filter((element) => element.completed)
       .map((element) => element.id);
@@ -36,6 +40,8 @@ export const Footer: React.FC<Props> = ({
     } catch (error) {
       setDeleteErrorMessage('Unable to delete completed todos');
       throw Error('There is an issue deleting completed todos.');
+    } finally {
+      setIsEveryThingDelete(false);
     }
   };
 
