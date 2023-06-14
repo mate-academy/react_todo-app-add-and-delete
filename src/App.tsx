@@ -4,8 +4,8 @@ import React, {
   useState,
   useMemo,
 } from 'react';
-import { addTodo, deleteTodo, getTodos } from './api/todos';
-import { FilterValues, USER_ID } from './constants';
+import { deleteTodo, getTodos } from './api/todos';
+import { ErrorTypes, FilterValues, USER_ID } from './constants';
 import { Header } from './components/Header';
 import { TodoList } from './components/TodoList';
 import { Footer } from './components/Footer';
@@ -14,10 +14,8 @@ import { UserWarning } from './components/UserWarning';
 import { Todo } from './types/Todo';
 
 export const App: React.FC = () => {
-  const [title, setTitle] = useState('');
   const [errorType, setErrorType] = useState('');
   const [todos, setTodos] = useState<Todo[]>([]);
-  const [isTodoAdding, setIsTodoAdding] = useState(false);
   const [tempTodo, setTempTodo] = useState<Todo | null>(null);
   const [selectedFilter, setSelectedFilter] = useState(FilterValues.ALL);
   const [removingTodoIds, setRemovingTodoIds] = useState<number[]>([]);
@@ -47,36 +45,9 @@ export const App: React.FC = () => {
 
       setTodos(response);
     } catch (error) {
-      setErrorType('upload');
+      setErrorType(ErrorTypes.UPLOAD);
     }
   };
-
-  const addTodoToServer = useCallback(async () => {
-    const newTodoToFetch = {
-      title,
-      completed: false,
-      userId: USER_ID,
-    };
-
-    const newTodoToShow = {
-      ...newTodoToFetch,
-      id: 0,
-    };
-
-    setIsTodoAdding(true);
-    setTempTodo(newTodoToShow);
-
-    try {
-      const addedTodo = await addTodo(newTodoToFetch);
-
-      setTodos(prevTodos => [...prevTodos, addedTodo]);
-    } catch (error) {
-      setErrorType('add');
-    } finally {
-      setIsTodoAdding(false);
-      setTempTodo(null);
-    }
-  }, [title]);
 
   const deleteTodoFromServer = useCallback(async (todoId: number) => {
     setRemovingTodoIds(prevTodoIds => [...prevTodoIds, todoId]);
@@ -88,7 +59,7 @@ export const App: React.FC = () => {
 
       setTodos(updatedTodos);
     } catch (error) {
-      setErrorType('delete');
+      setErrorType(ErrorTypes.DELETE);
     } finally {
       setRemovingTodoIds(prevTodoIds => prevTodoIds
         .filter((id) => id === todoId));
@@ -130,12 +101,10 @@ export const App: React.FC = () => {
 
       <div className="todoapp__content">
         <Header
-          title={title}
-          setTitle={setTitle}
-          onAdd={addTodoToServer}
+          setTodos={setTodos}
           hasActive={hasActive}
+          setTempTodo={setTempTodo}
           setErrorType={setErrorType}
-          isTodoAdding={isTodoAdding}
         />
         {(!!todos.length || tempTodo) && (
           <>
@@ -155,12 +124,11 @@ export const App: React.FC = () => {
           </>
         )}
       </div>
-
-      {errorType ? (
+      {errorType && (
         <ErrorNotification
           errorType={errorType}
         />
-      ) : null}
+      )}
     </div>
   );
 };
