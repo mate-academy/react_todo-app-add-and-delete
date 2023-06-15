@@ -1,82 +1,146 @@
-/* eslint-disable max-len */
 /* eslint-disable jsx-a11y/control-has-associated-label */
-import React, { useEffect, useState } from 'react';
+/* eslint-disable max-len */
+import {
+  FC,
+  ChangeEvent,
+  FormEvent,
+  useEffect,
+  useRef,
+  useState,
+} from 'react';
 import cn from 'classnames';
 import './App.scss';
 import { UserWarning } from './UserWarning';
-import { getTodos } from './api/todos';
+import { getTodos, removeTodo, setTodoToServer } from './api/todos';
 import { TodosList } from './components/TodosList/TodosList';
 import { Todo } from './types/Todo';
-
-enum FilterForTodo {
-  ALL,
-  ACTIVE,
-  COMPLETED,
-}
+import { ErrorInfo } from './components/ErrorInfo/ErrorInfo';
+import {
+  visibleTodos,
+  FilterForTodo,
+  updateIsValidData,
+  getCompletedTodosIds,
+} from './utils/todoUtils';
 
 const USER_ID = 10725;
 
-export const App: React.FC = () => {
+export const App: FC = () => {
+  const windowRef = useRef<HTMLInputElement | null>(null);
+
   const [todos, setTodos] = useState<Todo[]>([]);
+  const [completedTodosId, setCompletedTodosId] = useState<number[]>([]);
+  const [loadingTodos, setLoadingTodos] = useState<number[]>([]);
+  const [queryTodo, setQueryTodo] = useState('');
   const [filterTodo, setFilterTodo] = useState<FilterForTodo>(FilterForTodo.ALL);
+  const [tempTodo, setTempTodo] = useState<Todo | null>(null);
+
+  const [isInputDisabled, setIsInputDisabled] = useState(false);
+
   const [isVisibleError, setIsVisibleError] = useState(false);
   const [isValidData, setIsValidData] = useState({
     isAddError: false,
     isDeleteError: false,
     isUpdateError: false,
     isLoadError: false,
+    isTitleEmpty: false,
   });
 
   useEffect(() => {
+    if (windowRef.current) {
+      windowRef.current.focus();
+    }
+
     getTodos(USER_ID)
-      .then(todo => (setTodos(todo as Todo[])))
+      .then(fetchedTodos => {
+        setTodos(fetchedTodos as Todo[]);
+
+        setCompletedTodosId(
+          getCompletedTodosIds(fetchedTodos),
+        );
+      })
       .catch(() => {
-        setIsValidData((prevData) => ({
-          ...prevData,
-          isLoadError: true,
-        }));
+        setIsValidData((prevData) => (
+          updateIsValidData(prevData, 'isLoadError', true)));
+
         setIsVisibleError(true);
       });
-  }, []);
+  }, [tempTodo]);
 
   if (!USER_ID) {
     return <UserWarning />;
   }
 
-  const handleRemoveError = () => {
-    setIsVisibleError(false);
+  const handleOnSubmit = async (
+    event: FormEvent<HTMLFormElement>,
+  ) => {
+    event.preventDefault();
+
+    if (!queryTodo.trim()) {
+      setIsValidData((prevData) => (
+        updateIsValidData(prevData, 'isTitleEmpty', true)));
+
+      setQueryTodo('');
+      setIsVisibleError(true);
+
+      return;
+    }
+
+    const newTodo = {
+      id: 0,
+      title: queryTodo,
+      completed: false,
+      userId: USER_ID,
+    };
+
+    setTempTodo(newTodo);
+    setIsInputDisabled(true);
+
+    try {
+      await setTodoToServer('/todos', { ...newTodo });
+    } catch (error) {
+      setIsValidData((prevData) => (
+        updateIsValidData(prevData, 'isAddError', true)));
+
+      setIsVisibleError(true);
+    } finally {
+      setIsInputDisabled(false);
+      setTempTodo(null);
+      setQueryTodo('');
+    }
   };
 
-  setTimeout(() => {
-    if (isVisibleError) {
-      handleRemoveError();
+  const handleOnQuery = (
+    event: ChangeEvent<HTMLInputElement>,
+  ) => {
+    setQueryTodo(event.target.value);
+  };
+
+  const getTodoId = (id: number) => {
+    setCompletedTodosId((prevIds) => {
+      return [...prevIds, id];
+    });
+
+    setLoadingTodos((prevIds) => {
+      return [...prevIds, id];
+    });
+  };
+
+  const removesTodo = async (todosIds: number[]) => {
+    try {
+      await Promise.all(todosIds.map(id => removeTodo(id)));
+
+      const updatedTodos = todos.filter(todo => !todosIds.includes(todo.id));
+
+      setTodos(updatedTodos);
+    } catch (error) {
+      setIsValidData((prevData) => (
+        updateIsValidData(prevData, 'isDeleteError', true)));
+
+      setIsVisibleError(true);
+    } finally {
+      setLoadingTodos([]);
     }
-  }, 3000);
-
-  const visibleTodos = todos.filter(todo => {
-    switch (filterTodo) {
-      case FilterForTodo.ALL:
-        return todo;
-
-      case FilterForTodo.ACTIVE:
-        return todo.completed === false;
-
-      case FilterForTodo.COMPLETED:
-        return todo.completed === true;
-
-      default:
-        throw new Error(`Wrong filter, ${filterTodo} is not defined`);
-    }
-  });
-
-  const isCompleted = Boolean(visibleTodos.find(todo => todo.completed));
-
-  const {
-    isAddError,
-    isDeleteError,
-    isUpdateError,
-    isLoadError,
-  } = isValidData;
+  };
 
   return (
     <div className="todoapp">
@@ -90,18 +154,27 @@ export const App: React.FC = () => {
             className="todoapp__toggle-all active"
           />
 
-          {/* Add a todo on form submit */}
-          <form>
+          <form
+            onSubmit={handleOnSubmit}
+          >
             <input
               type="text"
               className="todoapp__new-todo"
               placeholder="What needs to be done?"
+              value={queryTodo}
+              onChange={handleOnQuery}
+              disabled={isInputDisabled}
+              ref={windowRef}
             />
           </form>
         </header>
 
         <TodosList
-          todos={visibleTodos}
+          todos={visibleTodos(todos, filterTodo)}
+          tempTodo={tempTodo}
+          getTodoId={getTodoId}
+          removesTodo={removesTodo}
+          loadingTodos={loadingTodos}
         />
 
         {todos.length > 0 && (
@@ -146,7 +219,12 @@ export const App: React.FC = () => {
             <button
               type="button"
               className="todoapp__clear-completed"
-              disabled={!isCompleted}
+              disabled={!completedTodosId.length}
+              onClick={() => {
+                removesTodo(completedTodosId);
+                setLoadingTodos(completedTodosId);
+                setCompletedTodosId([]);
+              }}
             >
               Clear completed
             </button>
@@ -154,50 +232,11 @@ export const App: React.FC = () => {
         )}
       </div>
 
-      <div className={cn(
-        'notification',
-        'is-danger',
-        'is-light',
-        'has-text-weight-normal',
-        {
-          hidden: !isVisibleError,
-        },
-      )}
-      >
-        <button
-          type="button"
-          className="delete"
-          onClick={handleRemoveError}
-        />
-
-        {isAddError && (
-          <>
-            Unable to add a todo
-            <br />
-          </>
-        )}
-
-        {isDeleteError && (
-          <>
-            Unable to delete a todo
-            <br />
-          </>
-        )}
-
-        {isUpdateError && (
-          <>
-            Unable to update a todo
-            <br />
-          </>
-        )}
-
-        {isLoadError && (
-          <>
-            Unable to load a todos
-            <br />
-          </>
-        )}
-      </div>
+      <ErrorInfo
+        isVisibleError={isVisibleError}
+        isValidData={isValidData}
+        setIsVisibleError={setIsVisibleError}
+      />
     </div>
   );
 };
