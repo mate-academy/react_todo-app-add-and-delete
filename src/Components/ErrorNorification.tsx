@@ -6,9 +6,13 @@ import { ErrorType } from '../types/ErrorType';
 
 type ErrorComponent = {
   errorType: ErrorType,
+  resetError: (error: ErrorType) => void,
 };
 
-export const ErrorNorification: React.FC<ErrorComponent> = ({ errorType }) => {
+export const ErrorNorification: React.FC<ErrorComponent> = ({
+  errorType,
+  resetError,
+}) => {
   const [isError, setIsError] = useState(false);
 
   let timeOutId: NodeJS.Timeout;
@@ -17,6 +21,7 @@ export const ErrorNorification: React.FC<ErrorComponent> = ({ errorType }) => {
     if (!isError) {
       timeOutId = setTimeout(() => {
         setIsError(true);
+        resetError(ErrorType.none);
       }, 3000);
     }
 

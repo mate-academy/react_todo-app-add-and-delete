@@ -1,5 +1,7 @@
 import classNames from 'classnames';
 import { SortBy } from '../types/SortBy';
+import { Todo } from '../types/Todo';
+// import { useMemo } from 'react';
 
 type Footer = {
   onFilterAllTodos: () => void,
@@ -8,6 +10,7 @@ type Footer = {
   onClearCompleted: () => void,
   selectedFilter: SortBy
   activeTodos: number,
+  todos: Todo[]
 };
 
 export const TodoFooter: React.FC<Footer> = ({
@@ -17,7 +20,10 @@ export const TodoFooter: React.FC<Footer> = ({
   onClearCompleted,
   selectedFilter,
   activeTodos,
+  todos,
 }) => {
+  const completedTodosLength = todos.filter(todo => todo.completed).length;
+
   return (
     <footer className="todoapp__footer">
       <span className="todo-count">
@@ -67,7 +73,13 @@ export const TodoFooter: React.FC<Footer> = ({
 
       <button
         type="button"
-        className="todoapp__clear-completed"
+        // className="todoapp__clear-completed"
+        className={classNames(
+          'todoapp__clear-completed',
+          {
+            'hide-btn': completedTodosLength === 0,
+          },
+        )}
         onClick={onClearCompleted}
       >
         Clear completed
