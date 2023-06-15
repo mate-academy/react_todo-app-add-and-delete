@@ -3,12 +3,11 @@ import React, {
   ChangeEvent,
   useEffect,
   useMemo,
-  useRef,
   useState,
 } from 'react';
 import { UserWarning } from './UserWarning';
 import { Todo } from './types/Todo';
-import { getTodos, postTodo } from './api/todos';
+import { deleteTodo, getTodos, postTodo } from './api/todos';
 import { ErrorType } from './types/ErrorType';
 import { ErrorNorification } from './Components/ErrorNorification';
 import { TodosList } from './Components/TodosList';
@@ -24,8 +23,8 @@ export const App: React.FC = () => {
   const [newTodoTitle, setNewTodoTitle] = useState('');
   const [filterBy, setFilterBY] = useState(SortBy.all);
   const [tempTodo, setTempTodo] = useState<Todo | null>(null);
-  const [isLoading, setIsLoading] = useState(false);
-  const inputRef = useRef<HTMLInputElement>(null);
+  const [loadingIds, setLoadingIds] = useState<number[]>([]);
+  const [isAllCompleted, setIsAllCompleted] = useState(false);
 
   const countActiveTodos = useMemo(() => {
     const activeTodosCount = todos.reduce((count, current) => {
@@ -68,23 +67,27 @@ export const App: React.FC = () => {
   };
 
   const postNewTodoOnServer = (newTodo: Todo) => {
+    setLoadingIds([...loadingIds, newTodo.id]);
+
     postTodo(USER_ID, newTodo)
       .then(newTodoFromServer => {
-        setTodos([...todos].filter(todo => todo.id !== 0));
-        setTodos(prevTodos => [...prevTodos, newTodoFromServer]);
-        setIsLoading(false);
+        setTodos(prevTodos => [...prevTodos.filter(
+          todo => todo.id !== 0,
+        ), newTodoFromServer]);
       })
       .catch(() => {
         setTypeOfError(ErrorType.add);
+      })
+      .finally(() => {
+        setLoadingIds([]);
+        setTempTodo(null);
       });
   };
 
   const handleOnKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
     if (e.key === 'Enter') {
-      setIsLoading(true);
       if (!newTodoTitle.trim()) {
         setTypeOfError(ErrorType.empty);
-        setIsLoading(false);
       } else {
         const newTodo = {
           completed: false,
@@ -93,7 +96,8 @@ export const App: React.FC = () => {
           title: newTodoTitle,
         };
 
-        setTempTodo(newTodo);
+        setLoadingIds([...loadingIds]);
+        setTempTodo({ ...newTodo, id: 0 });
         setNewTodoTitle('');
         postNewTodoOnServer(newTodo);
       }
@@ -127,27 +131,50 @@ export const App: React.FC = () => {
     setTodos(updatedTodos);
   };
 
-  const handleMakeAllTodosCompleted = () => {
+  const handleMarkAllTodos = () => {
     const allTodosToCompleted = todos.map(todo => ({
       ...todo,
-      completed: true,
+      completed: !isAllCompleted,
     }));
+
+    setIsAllCompleted(!isAllCompleted);
 
     setTodos(allTodosToCompleted);
   };
 
-  const handleClearCompletedTodos = () => {
+  const handleClearCompletedTodos = async () => {
     const clearedTodos = todos.filter(
       todo => !todo.completed,
     );
+
+    try {
+      const completedTodo = todos.filter(todo => todo.completed)
+        .map(todo => {
+          return deleteTodo(todo.id);
+        });
+
+      await Promise.all(completedTodo);
+    } catch {
+      setTypeOfError(ErrorType.delete);
+    }
 
     setTodos(clearedTodos);
   };
 
   const handleDeleteTodo = (deletedTodo: Todo) => {
-    const newTodos = todos.filter(todo => todo.id !== deletedTodo.id);
+    // setTodos([...todos.filter(todo => todo.id !== deletedTodo.id)]);
 
-    setTodos(newTodos);
+    // setTempTodo(deletedTodo);
+    setLoadingIds([...loadingIds, deletedTodo.id]);
+    deleteTodo(deletedTodo.id)
+      .then((data) => {
+        if (!data) {
+          setTypeOfError(ErrorType.delete);
+        }
+
+        setTodos([...todos.filter(todo => todo.id !== deletedTodo.id)]);
+        setTempTodo(null);
+      });
   };
 
   const visibleTodosList = [...todos].filter(todo => {
@@ -171,13 +198,12 @@ export const App: React.FC = () => {
           <button
             type="button"
             className="todoapp__toggle-all active"
-            onClick={handleMakeAllTodosCompleted}
+            onClick={handleMarkAllTodos}
           />
 
           <form onSubmit={(e) => e.preventDefault()}>
             <input
-              ref={inputRef}
-              disabled={isLoading}
+              // disabled={loadingIds}
               type="text"
               className="todoapp__new-todo"
               placeholder="What needs to be done?"
@@ -192,7 +218,7 @@ export const App: React.FC = () => {
           todos={visibleTodosList}
           updateTodoStatus={updateTodoStatus}
           onDeleteTodo={handleDeleteTodo}
-          loadingAnimation={isLoading}
+          loadingIds={loadingIds}
           tempTodo={tempTodo}
         />
 

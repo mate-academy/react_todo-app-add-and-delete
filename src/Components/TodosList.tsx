@@ -5,7 +5,7 @@ type ListOfTodos = {
   todos: Todo[],
   updateTodoStatus: (todo: Todo) => void,
   onDeleteTodo: (todo: Todo) => void,
-  loadingAnimation: boolean,
+  loadingIds: number[],
   tempTodo: Todo | null,
 };
 
@@ -13,7 +13,7 @@ export const TodosList: React.FC<ListOfTodos> = ({
   todos,
   updateTodoStatus,
   onDeleteTodo,
-  loadingAnimation,
+  loadingIds,
   tempTodo,
 }) => {
   return (
@@ -50,7 +50,8 @@ export const TodosList: React.FC<ListOfTodos> = ({
               'modal',
               'overlay',
               {
-                'is-active': tempTodo?.id === todo.id && loadingAnimation,
+                'is-active': tempTodo?.id === todo.id
+                  || loadingIds.some(id => todo.id === id),
               },
             )}
           >
