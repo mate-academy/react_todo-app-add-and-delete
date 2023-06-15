@@ -1,6 +1,8 @@
 /* eslint-disable jsx-a11y/control-has-associated-label */
 
-import { ChangeEvent, useEffect, useRef, useState } from 'react';
+import {
+  ChangeEvent, useEffect, useRef, useState,
+} from 'react';
 import { Todo } from '../types/Todo';
 import { ErrorType } from '../types/ErrorType';
 import { getTodoId } from '../utils/functionsHelper';
@@ -67,18 +69,19 @@ export const Header: React.FC<HeaderProps> = ({
 
   useEffect(() => {
     if (inputRef.current && todos.length) {
-      console.log(inputRef);
       inputRef.current.focus();
     }
   }, [todos.length, loadingIds]);
 
   return (
     <header className="todoapp__header">
-      <button
-        type="button"
-        className="todoapp__toggle-all active"
-        onClick={handleMarkAllTodos}
-      />
+      {todos.length > 0 && (
+        <button
+          type="button"
+          className="todoapp__toggle-all active"
+          onClick={handleMarkAllTodos}
+        />
+      )}
 
       <form onSubmit={(e) => e.preventDefault()}>
         <input
