@@ -1,6 +1,6 @@
 /* eslint-disable jsx-a11y/control-has-associated-label */
 
-import { ChangeEvent, useState } from 'react';
+import { ChangeEvent, useEffect, useRef, useState } from 'react';
 import { Todo } from '../types/Todo';
 import { ErrorType } from '../types/ErrorType';
 import { getTodoId } from '../utils/functionsHelper';
@@ -26,8 +26,8 @@ export const Header: React.FC<HeaderProps> = ({
   addToLoadingList,
   addTempTodo,
 }) => {
+  const inputRef = useRef<HTMLInputElement>(null);
   const [newTodoTitle, setNewTodoTitle] = useState('');
-
   const [isAllCompleted, setIsAllCompleted] = useState(false);
 
   const handleInputChange = (e: ChangeEvent<HTMLInputElement>) => {
@@ -65,6 +65,13 @@ export const Header: React.FC<HeaderProps> = ({
     }
   };
 
+  useEffect(() => {
+    if (inputRef.current && todos.length) {
+      console.log(inputRef);
+      inputRef.current.focus();
+    }
+  }, [todos.length, loadingIds]);
+
   return (
     <header className="todoapp__header">
       <button
@@ -75,6 +82,7 @@ export const Header: React.FC<HeaderProps> = ({
 
       <form onSubmit={(e) => e.preventDefault()}>
         <input
+          ref={inputRef}
           disabled={loadingIds.length > 0}
           type="text"
           className="todoapp__new-todo"
