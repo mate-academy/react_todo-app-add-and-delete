@@ -147,24 +147,27 @@ export const App: React.FC = () => {
       todo => !todo.completed,
     );
 
+    const clearedTodosID: number[] = [];
+
     try {
       const completedTodo = todos.filter(todo => todo.completed)
         .map(todo => {
+          clearedTodosID.push(todo.id);
+
           return deleteTodo(todo.id);
         });
 
+      setLoadingIds(clearedTodosID);
       await Promise.all(completedTodo);
     } catch {
       setTypeOfError(ErrorType.delete);
     }
 
     setTodos(clearedTodos);
+    setLoadingIds([]);
   };
 
   const handleDeleteTodo = (deletedTodo: Todo) => {
-    // setTodos([...todos.filter(todo => todo.id !== deletedTodo.id)]);
-
-    // setTempTodo(deletedTodo);
     setLoadingIds([...loadingIds, deletedTodo.id]);
     deleteTodo(deletedTodo.id)
       .then((data) => {
