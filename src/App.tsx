@@ -145,12 +145,15 @@ export const App: React.FC = () => {
   };
 
   const visibleTodosList = [...todos].filter(todo => {
-    if (filterBy === SortBy.active) {
-      return !todo.completed;
-    }
+    switch (filterBy) {
+      case SortBy.active:
+        return !todo.completed;
 
-    if (filterBy === SortBy.completed) {
-      return todo.completed;
+      case SortBy.completed:
+        return todo.completed;
+
+      default:
+        break;
     }
 
     return todo;

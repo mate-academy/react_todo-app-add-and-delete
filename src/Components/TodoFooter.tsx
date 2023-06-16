@@ -1,7 +1,6 @@
 import classNames from 'classnames';
 import { SortBy } from '../types/SortBy';
 import { Todo } from '../types/Todo';
-// import { useMemo } from 'react';
 
 type Footer = {
   onFilterAllTodos: () => void,
@@ -73,7 +72,6 @@ export const TodoFooter: React.FC<Footer> = ({
 
       <button
         type="button"
-        // className="todoapp__clear-completed"
         className={classNames(
           'todoapp__clear-completed',
           {
