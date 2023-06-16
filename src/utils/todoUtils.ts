@@ -1,39 +1,27 @@
-import { IsValidData } from '../components/ErrorInfo/ErrorInfo';
 import { Todo } from '../types/Todo';
 
-export enum FilterForTodo {
+export enum StatusValue {
   ALL,
   ACTIVE,
   COMPLETED,
 }
 
-export const visibleTodos = (todos: Todo[], filterTodo: FilterForTodo) => {
+export const visibleTodos = (todos: Todo[], statusTodo: StatusValue) => {
   return todos.filter(todo => {
-    switch (filterTodo) {
-      case FilterForTodo.ALL:
+    switch (statusTodo) {
+      case StatusValue.ALL:
         return todo;
 
-      case FilterForTodo.ACTIVE:
+      case StatusValue.ACTIVE:
         return todo.completed === false;
 
-      case FilterForTodo.COMPLETED:
+      case StatusValue.COMPLETED:
         return todo.completed === true;
 
       default:
-        throw new Error(`Wrong filter, ${filterTodo} is not defined`);
+        throw new Error(`Wrong filter, ${statusTodo} is not defined`);
     }
   });
-};
-
-export const updateIsValidData = (
-  prevData: IsValidData,
-  field: keyof IsValidData,
-  value: boolean,
-): IsValidData => {
-  return {
-    ...prevData,
-    [field]: value,
-  };
 };
 
 export const getCompletedTodosIds = (todos: Todo[]) => {

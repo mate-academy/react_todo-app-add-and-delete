@@ -1,39 +1,53 @@
 import { FC } from 'react';
+import { CSSTransition, TransitionGroup } from 'react-transition-group';
 import { Todo } from '../../types/Todo';
-import { TempTodoInfo } from '../TodoInfo/TempTodoInfo';
 import { TodoInfo } from '../TodoInfo/TodoInfo';
+import './item.scss';
 
 interface Props {
-  todos: Todo[],
-  tempTodo: Todo | null,
-  getTodoId: (id: number) => void,
-  removesTodo: (id: number[]) => void,
-  loadingTodos: number[],
+  todos: Todo[];
+  tempTodo: Todo | null;
+  removesTodo: (id: number[]) => void;
+  loadingTodos: number[];
 }
 
 export const TodosList: FC<Props> = ({
   todos,
   tempTodo,
-  getTodoId,
   removesTodo,
   loadingTodos,
-}) => (
-  <section className="todoapp__main">
-    {todos.map(todo => (
-      <TodoInfo
-        todo={todo}
-        getTodoId={getTodoId}
-        removesTodo={removesTodo}
-        loadingTodos={loadingTodos}
-        key={todo.id}
-      />
-    ))}
+}) => {
+  return (
+    <section className="todoapp__main">
+      <TransitionGroup>
+        {todos.map(todo => (
+          <CSSTransition
+            key={todo.id}
+            timeout={300}
+            classNames="item"
+          >
+            <TodoInfo
+              todo={todo}
+              removesTodo={removesTodo}
+              loadingTodos={loadingTodos}
+            />
+          </CSSTransition>
+        ))}
 
-    {tempTodo && (
-      <TempTodoInfo
-        tempTodo={tempTodo}
-        key={tempTodo.id}
-      />
-    )}
-  </section>
-);
+        {tempTodo && (
+          <CSSTransition
+            key={tempTodo.id}
+            timeout={300}
+            classNames="temp-item"
+          >
+            <TodoInfo
+              todo={tempTodo}
+              removesTodo={removesTodo}
+              loadingTodos={loadingTodos}
+            />
+          </CSSTransition>
+        )}
+      </TransitionGroup>
+    </section>
+  );
+};

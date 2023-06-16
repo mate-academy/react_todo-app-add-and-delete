@@ -2,40 +2,22 @@
 import { FC } from 'react';
 import cn from 'classnames';
 
-export interface IsValidData {
-  isAddError: boolean,
-  isDeleteError: boolean,
-  isUpdateError: boolean,
-  isLoadError: boolean,
-  isTitleEmpty: boolean,
-}
-
 interface Props {
-  isVisibleError: boolean,
-  isValidData: IsValidData,
-  setIsVisibleError: (value: React.SetStateAction<boolean>) => void,
+  visibleError: string,
+  setVisibleError: (value: React.SetStateAction<string>) => void,
 }
 
 export const ErrorInfo: FC<Props> = ({
-  isVisibleError,
-  isValidData,
-  setIsVisibleError,
+  visibleError,
+  setVisibleError,
 }) => {
-  const {
-    isAddError,
-    isDeleteError,
-    isUpdateError,
-    isLoadError,
-    isTitleEmpty,
-  } = isValidData;
-
-  const handleRemoveError = () => {
-    setIsVisibleError(false);
+  const removeErrorOnClick = () => {
+    setVisibleError('');
   };
 
   setTimeout(() => {
-    if (isVisibleError) {
-      handleRemoveError();
+    if (visibleError) {
+      removeErrorOnClick();
     }
   }, 3000);
 
@@ -46,50 +28,27 @@ export const ErrorInfo: FC<Props> = ({
       'is-light',
       'has-text-weight-normal',
       {
-        hidden: !isVisibleError,
+        hidden: !visibleError,
       },
     )}
     >
       <button
         type="button"
         className="delete"
-        onClick={handleRemoveError}
+        onClick={removeErrorOnClick}
       />
 
-      {isAddError && (
-        <>
-          Unable to add a todo
-          <br />
-        </>
-      )}
-
-      {isDeleteError && (
-        <>
-          Unable to delete a todo
-          <br />
-        </>
-      )}
-
-      {isUpdateError && (
+      {/* {isUpdateError && ( //will be changed in future
         <>
           Unable to update a todo
           <br />
         </>
-      )}
+      )} */}
 
-      {isLoadError && (
-        <>
-          Unable to load a todos
-          <br />
-        </>
-      )}
+      {visibleError}
 
-      {isTitleEmpty && (
-        <>
-          {'Title can\'t be empty'}
-          <br />
-        </>
-      )}
+      <br />
+
     </div>
   );
 };

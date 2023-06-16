@@ -11,102 +11,100 @@ import {
 import cn from 'classnames';
 import './App.scss';
 import { UserWarning } from './UserWarning';
-import { getTodos, removeTodo, setTodoToServer } from './api/todos';
+import { getTodos, removeTodo, addTodoToServer } from './api/todos';
 import { TodosList } from './components/TodosList/TodosList';
 import { Todo } from './types/Todo';
 import { ErrorInfo } from './components/ErrorInfo/ErrorInfo';
 import {
   visibleTodos,
-  FilterForTodo,
-  updateIsValidData,
+  StatusValue,
   getCompletedTodosIds,
 } from './utils/todoUtils';
 
 const USER_ID = 10725;
 
 export const App: FC = () => {
-  const windowRef = useRef<HTMLInputElement | null>(null);
+  const formRef = useRef<HTMLInputElement | null>(null);
 
   const [todos, setTodos] = useState<Todo[]>([]);
+  const [queryTodo, setQueryTodo] = useState('');
   const [completedTodosId, setCompletedTodosId] = useState<number[]>([]);
   const [loadingTodos, setLoadingTodos] = useState<number[]>([]);
-  const [queryTodo, setQueryTodo] = useState('');
-  const [filterTodo, setFilterTodo] = useState<FilterForTodo>(FilterForTodo.ALL);
+  const [statusTodo, setstatusTodo] = useState<StatusValue>(StatusValue.ALL);
   const [tempTodo, setTempTodo] = useState<Todo | null>(null);
 
   const [isInputDisabled, setIsInputDisabled] = useState(false);
 
-  const [isVisibleError, setIsVisibleError] = useState(false);
-  const [isValidData, setIsValidData] = useState({
-    isAddError: false,
-    isDeleteError: false,
-    isUpdateError: false,
-    isLoadError: false,
-    isTitleEmpty: false,
-  });
+  const [visibleError, setVisibleError] = useState('');
+
+  const getTodosFromServer = async () => {
+    try {
+      const fetchedTodos = await getTodos(USER_ID);
+
+      setTodos(fetchedTodos as Todo[]);
+      setCompletedTodosId(
+        getCompletedTodosIds(fetchedTodos),
+      );
+    } catch (error) {
+      setVisibleError('Unable to load a todos');
+    }
+  };
 
   useEffect(() => {
-    if (windowRef.current) {
-      windowRef.current.focus();
+    if (formRef.current) {
+      formRef.current.focus();
     }
 
-    getTodos(USER_ID)
-      .then(fetchedTodos => {
-        setTodos(fetchedTodos as Todo[]);
-
-        setCompletedTodosId(
-          getCompletedTodosIds(fetchedTodos),
-        );
-      })
-      .catch(() => {
-        setIsValidData((prevData) => (
-          updateIsValidData(prevData, 'isLoadError', true)));
-
-        setIsVisibleError(true);
-      });
+    getTodosFromServer();
   }, [tempTodo]);
 
   if (!USER_ID) {
     return <UserWarning />;
   }
 
-  const handleOnSubmit = async (
+  const addTodo = async () => {
+    try {
+      const newTodo = {
+        title: queryTodo,
+        completed: false,
+        userId: USER_ID,
+      };
+
+      const tempId = 0;
+
+      setTempTodo({
+        ...newTodo,
+        id: tempId,
+      });
+      setIsInputDisabled(true);
+      setLoadingTodos([tempId]);
+
+      const setNewTodo = await addTodoToServer('/todos', newTodo);
+
+      setTodos((currentTodos) => [...currentTodos, setNewTodo]);
+    } catch (error) {
+      setVisibleError('Unable to add a todo');
+    } finally {
+      setIsInputDisabled(false);
+      setTempTodo(null);
+      setLoadingTodos([]);
+      setQueryTodo('');
+    }
+  };
+
+  const handleOnSubmit = (
     event: FormEvent<HTMLFormElement>,
   ) => {
     event.preventDefault();
 
     if (!queryTodo.trim()) {
-      setIsValidData((prevData) => (
-        updateIsValidData(prevData, 'isTitleEmpty', true)));
-
       setQueryTodo('');
-      setIsVisibleError(true);
+      setVisibleError('Title can\'t be empty');
 
       return;
     }
 
-    const newTodo = {
-      id: 0,
-      title: queryTodo,
-      completed: false,
-      userId: USER_ID,
-    };
-
-    setTempTodo(newTodo);
-    setIsInputDisabled(true);
-
-    try {
-      await setTodoToServer('/todos', { ...newTodo });
-    } catch (error) {
-      setIsValidData((prevData) => (
-        updateIsValidData(prevData, 'isAddError', true)));
-
-      setIsVisibleError(true);
-    } finally {
-      setIsInputDisabled(false);
-      setTempTodo(null);
-      setQueryTodo('');
-    }
+    addTodo();
   };
 
   const handleOnQuery = (
@@ -115,28 +113,20 @@ export const App: FC = () => {
     setQueryTodo(event.target.value);
   };
 
-  const getTodoId = (id: number) => {
-    setCompletedTodosId((prevIds) => {
-      return [...prevIds, id];
-    });
-
-    setLoadingTodos((prevIds) => {
-      return [...prevIds, id];
-    });
-  };
-
   const removesTodo = async (todosIds: number[]) => {
     try {
-      await Promise.all(todosIds.map(id => removeTodo(id)));
+      await Promise.all(
+        todosIds.map(async (id) => {
+          setLoadingTodos((prevIds) => [...prevIds, id]);
+          await removeTodo(id);
+        }),
+      );
 
       const updatedTodos = todos.filter(todo => !todosIds.includes(todo.id));
 
       setTodos(updatedTodos);
     } catch (error) {
-      setIsValidData((prevData) => (
-        updateIsValidData(prevData, 'isDeleteError', true)));
-
-      setIsVisibleError(true);
+      setVisibleError('Unable to delete a todo');
     } finally {
       setLoadingTodos([]);
     }
@@ -164,15 +154,14 @@ export const App: FC = () => {
               value={queryTodo}
               onChange={handleOnQuery}
               disabled={isInputDisabled}
-              ref={windowRef}
+              ref={formRef}
             />
           </form>
         </header>
 
         <TodosList
-          todos={visibleTodos(todos, filterTodo)}
+          todos={visibleTodos(todos, statusTodo)}
           tempTodo={tempTodo}
-          getTodoId={getTodoId}
           removesTodo={removesTodo}
           loadingTodos={loadingTodos}
         />
@@ -180,17 +169,17 @@ export const App: FC = () => {
         {todos.length > 0 && (
           <footer className="todoapp__footer">
             <span className="todo-count">
-              {`${todos.length} items left`}
+              {`${completedTodosId.length} items left`}
             </span>
 
             <nav className="filter">
               <a
                 href="#/"
                 className={cn('filter__link', {
-                  selected: filterTodo === FilterForTodo.ALL,
+                  selected: statusTodo === StatusValue.ALL,
                 })}
                 defaultValue="all"
-                onClick={() => setFilterTodo(FilterForTodo.ALL)}
+                onClick={() => setstatusTodo(StatusValue.ALL)}
               >
                 All
               </a>
@@ -198,9 +187,9 @@ export const App: FC = () => {
               <a
                 href="#/active"
                 className={cn('filter__link', {
-                  selected: filterTodo === FilterForTodo.ACTIVE,
+                  selected: statusTodo === StatusValue.ACTIVE,
                 })}
-                onClick={() => setFilterTodo(FilterForTodo.ACTIVE)}
+                onClick={() => setstatusTodo(StatusValue.ACTIVE)}
               >
                 Active
               </a>
@@ -208,9 +197,9 @@ export const App: FC = () => {
               <a
                 href="#/completed"
                 className={cn('filter__link', {
-                  selected: filterTodo === FilterForTodo.COMPLETED,
+                  selected: statusTodo === StatusValue.COMPLETED,
                 })}
-                onClick={() => setFilterTodo(FilterForTodo.COMPLETED)}
+                onClick={() => setstatusTodo(StatusValue.COMPLETED)}
               >
                 Completed
               </a>
@@ -233,9 +222,8 @@ export const App: FC = () => {
       </div>
 
       <ErrorInfo
-        isVisibleError={isVisibleError}
-        isValidData={isValidData}
-        setIsVisibleError={setIsVisibleError}
+        visibleError={visibleError}
+        setVisibleError={setVisibleError}
       />
     </div>
   );

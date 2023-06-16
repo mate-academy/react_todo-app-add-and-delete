@@ -3,15 +3,13 @@ import cn from 'classnames';
 import { Todo } from '../../types/Todo';
 
 interface Props {
-  todo: Todo,
-  getTodoId: (id: number) => void,
-  removesTodo: (id: number[]) => void,
-  loadingTodos: number[],
+  todo: Todo;
+  removesTodo: (id: number[]) => void;
+  loadingTodos: number[];
 }
 
 export const TodoInfo: FC<Props> = ({
   todo,
-  getTodoId,
   removesTodo,
   loadingTodos,
 }) => {
@@ -35,9 +33,6 @@ export const TodoInfo: FC<Props> = ({
           type="checkbox"
           className="todo__status"
           defaultChecked={completed}
-          onClick={() => {
-            getTodoId(todo.id);
-          }}
         />
       </label>
 
@@ -62,7 +57,6 @@ export const TodoInfo: FC<Props> = ({
             type="button"
             className="todo__remove"
             onClick={() => {
-              getTodoId(id);
               removesTodo([id]);
             }}
           >
@@ -71,7 +65,6 @@ export const TodoInfo: FC<Props> = ({
         </>
       )}
 
-      {/* 'is-active' class puts this modal on top of the todo */}
       <div
         className={cn('modal overlay', {
           'is-active': loadingTodos.includes(id),
