@@ -75,7 +75,7 @@ export const TodoFooter: React.FC<Footer> = ({
         className={classNames(
           'todoapp__clear-completed',
           {
-            'hide-btn': completedTodosLength === 0,
+            'hide-btn': !completedTodosLength,
           },
         )}
         onClick={onClearCompleted}

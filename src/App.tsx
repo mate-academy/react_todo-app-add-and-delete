@@ -66,12 +66,12 @@ export const App: React.FC = () => {
       const newTodoFromServer = await postTodo(USER_ID, newTodo);
 
       setTodos(prevTodos => [
-        ...prevTodos.filter(todo => todo.id !== 0),
+        ...prevTodos.filter(todo => todo.id),
         newTodoFromServer,
       ]);
     } catch (error) {
       setTypeOfError(ErrorType.add);
-      setTodos(prevTodos => prevTodos.filter(todo => todo.id !== 0));
+      setTodos(prevTodos => prevTodos.filter(todo => todo.id));
     } finally {
       setLoadingIds([]);
       setTempTodo(null);
