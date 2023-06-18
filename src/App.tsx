@@ -1,11 +1,11 @@
 /* eslint-disable jsx-a11y/control-has-associated-label */
 import React, { useEffect, useState } from 'react';
 import { UserWarning } from './UserWarning';
-import { TodoError, TodoFooter, TodoList } from './components';
 import { getTodos } from './api/todos';
 import { Todo } from './types/Todo';
 import { ErrorMessage } from './utils/ErrorMessage';
 import { SetErrorContext } from './utils/setErrorContext';
+import { TodoList, TodoFooter, TodoError } from './components';
 
 const USER_ID = 10624;
 

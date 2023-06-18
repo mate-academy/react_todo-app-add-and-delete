@@ -3,7 +3,7 @@ import { useContext } from 'react';
 import { Todo } from '../types/Todo';
 import { deleteTodo } from '../api/todos';
 import { SetErrorContext } from '../utils/setErrorContext';
-import { ErrorMessage } from '../App';
+import { ErrorMessage } from '../utils/ErrorMessage';
 
 interface Props {
   setFilteringMode: (arg0: string) => void,

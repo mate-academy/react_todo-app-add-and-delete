@@ -92,14 +92,12 @@ export const TodoList: React.FC<Props> = ({
   return (
     <>
       <header className="todoapp__header">
-        {/* this buttons is active only if there are some active todos */}
         <button
           type="button"
           className="todoapp__toggle-all active"
           aria-label="Toggle all"
         />
 
-        {/* Add a todo on form submit */}
         <form>
           <input
             type="text"
@@ -114,34 +112,36 @@ export const TodoList: React.FC<Props> = ({
       </header>
 
       <section className="todoapp__main">
-        {filteredTodos?.map(todo => (
+        {filteredTodos?.map(({
+          id, title, completed,
+        }) => (
           <div
             className={cn({
               todo: true,
-              completed: todo.completed,
+              completed,
             })}
-            key={todo.id}
+            key={id}
           >
             <label className="todo__status-label">
               <input
                 type="checkbox"
                 className="todo__status"
-                defaultChecked={todo.completed}
+                defaultChecked={completed}
               />
             </label>
 
-            <span className="todo__title">{todo.title}</span>
+            <span className="todo__title">{title}</span>
 
             <button
               type="button"
               className="todo__remove"
-              onClick={() => handleDeletion(todo.id)}
+              onClick={() => handleDeletion(id)}
             >
               ×
             </button>
 
             <div className={
-              todosToBeDeleted?.includes(todo.id)
+              todosToBeDeleted?.includes(id)
                 ? 'modal overlay is-active'
                 : 'modal overlay'
             }
@@ -168,33 +168,6 @@ export const TodoList: React.FC<Props> = ({
             </div>
           </div>
         )}
-
-        {/* This todo is being edited */}
-        {/* <div className="todo">
-          <label className="todo__status-label">
-            <input
-              type="checkbox"
-              className="todo__status"
-            />
-          </label> */}
-
-        {/* This form is shown instead of the title and remove button */}
-        {/* <form>
-            <input
-              type="text"
-              className="todo__title-field"
-              placeholder="Empty todo will be deleted"
-              value="Todo is being edited now"
-            />
-          </form>
-
-          <div className="modal overlay">
-            <div className="modal-background has-background-white-ter" />
-            <div className="loader" />
-          </div>
-        </div> */}
-
-        {/* This todo is in loadind state */}
 
       </section>
     </>

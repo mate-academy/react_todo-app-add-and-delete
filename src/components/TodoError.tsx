@@ -1,6 +1,6 @@
 import { useContext } from 'react';
 import { SetErrorContext } from '../utils/setErrorContext';
-import { ErrorMessage } from '../App';
+import { ErrorMessage } from '../utils/ErrorMessage';
 
 interface Props {
   error: string | null;
