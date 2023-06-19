@@ -1,24 +1,158 @@
 /* eslint-disable max-len */
 /* eslint-disable jsx-a11y/control-has-associated-label */
-import React from 'react';
-import { UserWarning } from './UserWarning';
+import React, {
+  useState, useEffect, useMemo, useCallback,
+} from 'react';
 
-const USER_ID = 0;
+import classNames from 'classnames';
+import { UserWarning } from './UserWarning';
+import { Header } from './Components/Header/Header';
+import { TodoList } from './Components/TodoList/TodoList';
+import { Footer } from './Components/Footer/Footer';
+import { Todo } from './types/Todo';
+import { deleteTodo, getTodos, postTodo } from './api/todos';
+import { Error } from './types/Error';
+import { Type } from './types/TodoTypes';
+
+const USER_ID = 10788;
+
+if (!USER_ID) {
+  <UserWarning />;
+}
 
 export const App: React.FC = () => {
-  if (!USER_ID) {
-    return <UserWarning />;
-  }
+  const [todos, setTodos] = useState<Todo[]>([]);
+  const [selectedType, setSelectedType] = useState(Type.All);
+  const [isError, setIsError] = useState<Error>(Error.NONE);
+  const [tempTodo, setTempTodo] = useState<Todo | null>(null);
+  const [isInputActive, setIsInputActive] = useState(true);
+  const [todoIdUpdate, setTodoIdUpdate] = useState([0]);
+
+  useEffect(() => {
+    const loadTodos = async () => {
+      try {
+        const loadedTodos = await getTodos(USER_ID);
+
+        setTodos(loadedTodos);
+      } catch (error) {
+        setIsError(Error.DOWNLOAD);
+      }
+    };
+
+    loadTodos();
+  }, []);
+
+  const filteredTodos = useMemo(() => {
+    switch (selectedType) {
+      case Type.ACTIVE:
+        return todos.filter(todo => !todo.completed);
+      case Type.COMPLETED:
+        return todos.filter(todo => todo.completed);
+      default:
+        return todos;
+    }
+  }, [todos, selectedType]);
+
+  useEffect(() => {
+    if (isError) {
+      setIsError(isError);
+
+      setTimeout(() => {
+        setIsError(Error.NONE);
+      }, 3000);
+    }
+  }, [isError]);
+
+  const addTodo = useCallback(async (title: string) => {
+    if (!title.trim()) {
+      setIsError(Error.NOTITLE);
+
+      return;
+    }
+
+    try {
+      const newTodo = {
+        userId: USER_ID,
+        title,
+        completed: false,
+      };
+
+      setIsInputActive(false);
+
+      setTempTodo({
+        ...newTodo,
+        id: 0,
+      });
+
+      const postedTodoToServer = await postTodo(newTodo);
+
+      setTodos(prevTodos => [...prevTodos, postedTodoToServer]);
+    } catch (error) {
+      setIsError(Error.ADD);
+    } finally {
+      setTempTodo(null);
+      setIsInputActive(true);
+    }
+  }, [USER_ID, todos]);
+
+  const removeTodo = async (todoId: number) => {
+    try {
+      setTodoIdUpdate(prevState => [...prevState, todoId]);
+      await deleteTodo(todoId);
+      setTodos(todos.filter(todo => todo.id !== todoId));
+    } catch (error) {
+      setIsError(Error.DELETE);
+    } finally {
+      setTodoIdUpdate([0]);
+    }
+  };
+
+  /* const clearCompletedTodos = async () => {
+    const completedTodosId = todos
+      .filter((todo) => todo.completed)
+      .map(todo => todo.id);
+  }; */
 
   return (
-    <section className="section container">
-      <p className="title is-4">
-        Copy all you need from the prev task:
-        <br />
-        <a href="https://github.com/mate-academy/react_todo-app-loading-todos#react-todo-app-load-todos">React Todo App - Load Todos</a>
-      </p>
+    <div className="todoapp">
+      <h1 className="todoapp__title">todos</h1>
 
-      <p className="subtitle">Styles are already copied</p>
-    </section>
+      <div className="todoapp__content">
+        <Header
+          todos={todos}
+          onError={setIsError}
+          addTodo={addTodo}
+          isInputActive={isInputActive}
+        />
+        <TodoList
+          todos={filteredTodos}
+          onError={() => setIsError}
+          removeTodo={removeTodo}
+          todoIdUpdate={todoIdUpdate}
+          tempTodo={tempTodo}
+        />
+
+        {todos.length && (
+          <Footer
+            todos={todos}
+            selectType={selectedType}
+            onClickType={setSelectedType}
+            /* clearTodos={clearCompletedTodos} */
+          />
+        )}
+      </div>
+
+      <div className={classNames(
+        'notification is-danger is-light has-text-weight-normal',
+        { hidden: isError === Error.NONE },
+      )}
+      >
+        <button
+          type="button"
+          className="delete"
+        />
+        {isError}
+      </div>
+    </div>
   );
 };
