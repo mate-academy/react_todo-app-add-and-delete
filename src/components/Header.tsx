@@ -5,7 +5,7 @@ import { Todo } from '../types/Todo';
 
 // eslint-disable-next-line @typescript-eslint/no-empty-interface
 interface HeaderProps {
-  setTempTodos:React.Dispatch<React.SetStateAction<Todo[]>>
+  setTempTodos:React.Dispatch<React.SetStateAction<Todo | null>>
   setError: (value: SetStateAction<string>) => void,
   isInputLocked: boolean,
   setIsInputLocked: (arg0:boolean) => void,
@@ -21,17 +21,13 @@ export const Header: React.FC<HeaderProps> = ({
       event.preventDefault();
 
       if (query) {
-        setTempTodos(prev => {
-          return [
-            ...prev,
-            {
+        setTempTodos({
               id: Date.now(),
               userId: 0,
               title: query,
               completed: false,
-            },
-          ];
-        });
+          }
+        );
         setIsInputLocked(true);
       } else {
         setError('Title can\'t be empty');

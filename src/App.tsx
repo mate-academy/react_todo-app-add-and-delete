@@ -13,10 +13,10 @@ export const USER_ID = 10583;
 
 export const App: React.FC = () => {
   const [todos, setTodos] = useState<TodoType[]>([]);
-  const [tempTodos, setTempTodos] = useState<TodoType[]>([]);
+  const [tempTodos, setTempTodos] = useState<TodoType | null>(null);
   const [error, setError] = useState<string>('');
   const [isInputLocked, setIsInputLocked] = useState(false);
-  const [filter, setFilter] = useState<Filter>('all');
+  const [filter, setFilter] = useState<Filter>(Filter.all);
 
   useEffect(() => {
     getTodos(USER_ID)
@@ -31,22 +31,24 @@ export const App: React.FC = () => {
   }, [error]);
 
   useEffect(() => {
-    tempTodos.forEach((todo) => addTodo({
-      title: todo.title,
-      completed: todo.completed,
+    if(tempTodos){
+    addTodo({
+      title: tempTodos.title,
+      completed: tempTodos.completed,
       userId: USER_ID,
     })
       .then((res) => {
         if (res) {
-          const newTodo = { ...todo };
+          const newTodo = { ...tempTodos };
 
-          setTempTodos((prev) => prev.filter((task) => task.id !== todo.id));
+          setTempTodos(null);
           newTodo.id = res.id;
           setTodos((prev) => [...prev, newTodo]);
         }
       })
       .catch(() => setError('Unable to add a todo'))
-      .finally(() => setIsInputLocked(false)));
+      .finally(() => setIsInputLocked(false));
+    }
   }, [tempTodos]);
 
   if (!USER_ID) {
@@ -71,7 +73,7 @@ export const App: React.FC = () => {
       <h1 className="todoapp__title">todos</h1>
 
       <div className="todoapp__content">
-        {todos?.length && (
+        {todos.length > 0 && (
           <Header
             setTempTodos={setTempTodos}
             setError={setError}
@@ -84,11 +86,9 @@ export const App: React.FC = () => {
           {todos
             ?.filter((todo: TodoType) => {
               switch (filter) {
-                case 'all':
-                  return true;
-                case 'active':
+                case Filter.active:
                   return !todo.completed;
-                case 'completed':
+                case Filter.completed:
                   return todo.completed;
                 default:
                   return true;
@@ -104,15 +104,15 @@ export const App: React.FC = () => {
               />
             ))}
 
-          {tempTodos?.map((tempTodo) => (
+          {tempTodos && 
             <Todo
               deleteTask={deleteTask}
-              key={tempTodo.id}
-              todo={tempTodo}
+              key={tempTodos.id}
+              todo={tempTodos}
               setError={setError}
               temp
             />
-          ))}
+          }
         </section>
 
         {todos?.length && (
