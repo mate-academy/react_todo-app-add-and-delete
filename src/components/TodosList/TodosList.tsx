@@ -1,17 +1,10 @@
-import { FC } from 'react';
+import { FC, memo } from 'react';
 import { CSSTransition, TransitionGroup } from 'react-transition-group';
-import { Todo } from '../../types/Todo';
 import { TodoInfo } from '../TodoInfo/TodoInfo';
-import './item.scss';
+import '../../App.scss';
+import { TodosListProps } from './TodosListProps';
 
-interface Props {
-  todos: Todo[];
-  tempTodo: Todo | null;
-  removesTodo: (id: number[]) => void;
-  loadingTodos: number[];
-}
-
-export const TodosList: FC<Props> = ({
+export const TodosList: FC<TodosListProps> = memo(({
   todos,
   tempTodo,
   removesTodo,
@@ -50,4 +43,4 @@ export const TodosList: FC<Props> = ({
       </TransitionGroup>
     </section>
   );
-};
+});

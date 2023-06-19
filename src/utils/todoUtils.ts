@@ -1,10 +1,5 @@
+import { StatusValue } from '../types/StatusValue';
 import { Todo } from '../types/Todo';
-
-export enum StatusValue {
-  ALL,
-  ACTIVE,
-  COMPLETED,
-}
 
 export const visibleTodos = (todos: Todo[], statusTodo: StatusValue) => {
   return todos.filter(todo => {
@@ -24,7 +19,7 @@ export const visibleTodos = (todos: Todo[], statusTodo: StatusValue) => {
   });
 };
 
-export const getCompletedTodosIds = (todos: Todo[]) => {
+export const getcompletedTodosIds = (todos: Todo[]) => {
   return todos
     .filter(todo => todo.completed)
     .map(todo => todo.id);

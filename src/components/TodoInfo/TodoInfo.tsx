@@ -1,14 +1,8 @@
-import { useState, FC } from 'react';
+import { useState, FC, memo } from 'react';
 import cn from 'classnames';
-import { Todo } from '../../types/Todo';
+import { TodoInfoProps } from './TodoInfoProps';
 
-interface Props {
-  todo: Todo;
-  removesTodo: (id: number[]) => void;
-  loadingTodos: number[];
-}
-
-export const TodoInfo: FC<Props> = ({
+export const TodoInfo: FC<TodoInfoProps> = memo(({
   todo,
   removesTodo,
   loadingTodos,
@@ -26,7 +20,6 @@ export const TodoInfo: FC<Props> = ({
       className={cn('todo', {
         completed,
       })}
-      key={id}
     >
       <label className="todo__status-label">
         <input
@@ -75,4 +68,4 @@ export const TodoInfo: FC<Props> = ({
       </div>
     </div>
   );
-};
+});

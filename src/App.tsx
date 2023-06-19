@@ -15,11 +15,8 @@ import { getTodos, removeTodo, addTodoToServer } from './api/todos';
 import { TodosList } from './components/TodosList/TodosList';
 import { Todo } from './types/Todo';
 import { ErrorInfo } from './components/ErrorInfo/ErrorInfo';
-import {
-  visibleTodos,
-  StatusValue,
-  getCompletedTodosIds,
-} from './utils/todoUtils';
+import { getcompletedTodosIds, visibleTodos } from './utils/todoUtils';
+import { StatusValue } from './types/StatusValue';
 
 const USER_ID = 10725;
 
@@ -28,23 +25,19 @@ export const App: FC = () => {
 
   const [todos, setTodos] = useState<Todo[]>([]);
   const [queryTodo, setQueryTodo] = useState('');
-  const [completedTodosId, setCompletedTodosId] = useState<number[]>([]);
   const [loadingTodos, setLoadingTodos] = useState<number[]>([]);
   const [statusTodo, setstatusTodo] = useState<StatusValue>(StatusValue.ALL);
   const [tempTodo, setTempTodo] = useState<Todo | null>(null);
-
   const [isInputDisabled, setIsInputDisabled] = useState(false);
-
   const [visibleError, setVisibleError] = useState('');
+
+  const completedTodosIds = getcompletedTodosIds(todos);
 
   const getTodosFromServer = async () => {
     try {
       const fetchedTodos = await getTodos(USER_ID);
 
       setTodos(fetchedTodos as Todo[]);
-      setCompletedTodosId(
-        getCompletedTodosIds(fetchedTodos),
-      );
     } catch (error) {
       setVisibleError('Unable to load a todos');
     }
@@ -56,11 +49,31 @@ export const App: FC = () => {
     }
 
     getTodosFromServer();
-  }, [tempTodo]);
+  }, [tempTodo, loadingTodos, visibleError]);
 
   if (!USER_ID) {
     return <UserWarning />;
   }
+
+  const removesTodo = async (todosId: number[]) => {
+    try {
+      setLoadingTodos(prevIds => [...prevIds, ...todosId]);
+
+      await Promise.all(
+        todosId.map(async id => {
+          await removeTodo(id);
+        }),
+      );
+
+      const updatedTodos = todos.filter(todo => !todosId.includes(todo.id));
+
+      setTodos(updatedTodos);
+    } catch (error) {
+      setVisibleError('Unable to delete a todo');
+    } finally {
+      setLoadingTodos([]);
+    }
+  };
 
   const addTodo = async () => {
     try {
@@ -113,25 +126,6 @@ export const App: FC = () => {
     setQueryTodo(event.target.value);
   };
 
-  const removesTodo = async (todosIds: number[]) => {
-    try {
-      await Promise.all(
-        todosIds.map(async (id) => {
-          setLoadingTodos((prevIds) => [...prevIds, id]);
-          await removeTodo(id);
-        }),
-      );
-
-      const updatedTodos = todos.filter(todo => !todosIds.includes(todo.id));
-
-      setTodos(updatedTodos);
-    } catch (error) {
-      setVisibleError('Unable to delete a todo');
-    } finally {
-      setLoadingTodos([]);
-    }
-  };
-
   return (
     <div className="todoapp">
       <h1 className="todoapp__title">todos</h1>
@@ -169,7 +163,7 @@ export const App: FC = () => {
         {todos.length > 0 && (
           <footer className="todoapp__footer">
             <span className="todo-count">
-              {`${completedTodosId.length} items left`}
+              {`${todos.length - completedTodosIds.length} items left`}
             </span>
 
             <nav className="filter">
@@ -208,11 +202,11 @@ export const App: FC = () => {
             <button
               type="button"
               className="todoapp__clear-completed"
-              disabled={!completedTodosId.length}
+              disabled={!completedTodosIds.length}
               onClick={() => {
-                removesTodo(completedTodosId);
-                setLoadingTodos(completedTodosId);
-                setCompletedTodosId([]);
+                removesTodo(completedTodosIds);
+                setLoadingTodos(completedTodosIds);
+                setstatusTodo(StatusValue.ALL);
               }}
             >
               Clear completed

@@ -4,3 +4,8 @@ export interface Todo {
   title: string;
   completed: boolean;
 }
+
+export interface CommonTodosProps {
+  removesTodo: (todosIds: number[]) => void;
+  loadingTodos: number[];
+}
