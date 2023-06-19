@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React from 'react';
 import classNames from 'classnames';
 import { Todo } from '../../types/Todo';
 import { Error } from '../../types/Error';
@@ -7,28 +7,29 @@ type Props = {
   todo: Todo,
   onError: (isError: Error) => void,
   removeTodo: (todoId: number) => void,
-  todoIdUpdate: number[]
+  todoIdUpdate: number[],
+  handleChange: (todoId: Todo) => Promise<void>
 };
 
 export const TodoInfo: React.FC<Props> = ({
-  todo, onError, removeTodo, todoIdUpdate,
+  todo, onError, removeTodo, todoIdUpdate, handleChange,
 }) => {
-  const [isCompleted, setIsCompleted] = useState(todo.completed);
-  const { id, title } = todo;
+  const { id, title, completed } = todo;
 
   return (
     <li
+      key={id}
       className={classNames(
         'todo',
-        { completed: isCompleted },
+        { completed },
       )}
     >
       <label className="todo__status-label">
         <input
           type="checkbox"
           className="todo__status"
-          checked={isCompleted}
-          onChange={() => setIsCompleted(!isCompleted)}
+          onChange={() => handleChange(todo)}
+          defaultChecked
         />
       </label>
 
@@ -56,7 +57,7 @@ export const TodoInfo: React.FC<Props> = ({
       )}
       >
         <div className="modal-background has-background-white-ter" />
-        <div className="loader" />
+        <div className="loader is-loading" />
       </div>
     </li>
   );

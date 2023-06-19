@@ -10,15 +10,13 @@ import { Header } from './Components/Header/Header';
 import { TodoList } from './Components/TodoList/TodoList';
 import { Footer } from './Components/Footer/Footer';
 import { Todo } from './types/Todo';
-import { deleteTodo, getTodos, postTodo } from './api/todos';
+import {
+  deleteTodo, getTodos, postTodo, updateTodo,
+} from './api/todos';
 import { Error } from './types/Error';
 import { Type } from './types/TodoTypes';
 
 const USER_ID = 10788;
-
-if (!USER_ID) {
-  <UserWarning />;
-}
 
 export const App: React.FC = () => {
   const [todos, setTodos] = useState<Todo[]>([]);
@@ -26,7 +24,8 @@ export const App: React.FC = () => {
   const [isError, setIsError] = useState<Error>(Error.NONE);
   const [tempTodo, setTempTodo] = useState<Todo | null>(null);
   const [isInputActive, setIsInputActive] = useState(true);
-  const [todoIdUpdate, setTodoIdUpdate] = useState([0]);
+  const [todoIdUpdate, setTodoIdUpdate] = useState<number[]>([]);
+  const [todoStatus, setStatus] = useState(false);
 
   useEffect(() => {
     const loadTodos = async () => {
@@ -95,23 +94,52 @@ export const App: React.FC = () => {
     }
   }, [USER_ID, todos]);
 
-  const removeTodo = async (todoId: number) => {
+  const removeTodo = useCallback(async (todoId: number) => {
+    setTodoIdUpdate([todoId]);
     try {
-      setTodoIdUpdate(prevState => [...prevState, todoId]);
       await deleteTodo(todoId);
       setTodos(todos.filter(todo => todo.id !== todoId));
     } catch (error) {
       setIsError(Error.DELETE);
-    } finally {
-      setTodoIdUpdate([0]);
+      setTodoIdUpdate([]);
     }
-  };
+  }, [todos]);
 
-  /* const clearCompletedTodos = async () => {
-    const completedTodosId = todos
-      .filter((todo) => todo.completed)
-      .map(todo => todo.id);
-  }; */
+  const completedTodos = todos.filter(todo => todo.completed);
+
+  const removeCompletedTodos = useCallback(() => {
+    setTodoIdUpdate(completedTodos.map(todo => todo.id));
+
+    Promise.all(completedTodos.map(todo => deleteTodo(todo.id)))
+      .then(() => setTodos(todos.filter(todo => !todo.completed)))
+      .catch(() => {
+        setIsError(Error.DELETE);
+        setTodoIdUpdate([]);
+      });
+  }, [todos, todoIdUpdate]);
+
+  const handleChange = useCallback(async (todoId: Todo) => {
+    setStatus((current: boolean) => current);
+
+    try {
+      await updateTodo(todoId.id, todoStatus);
+
+      setTodos(state => [...state].map(todo => {
+        if (todo.id === todoId.id) {
+          // eslint-disable-next-line no-param-reassign
+          todo.completed = !todo.completed;
+        }
+
+        return todo;
+      }));
+    } catch {
+      setIsError(Error.UPDATE);
+    }
+  }, [todoStatus, todos]);
+
+  if (!USER_ID) {
+    return <UserWarning />;
+  }
 
   return (
     <div className="todoapp">
@@ -130,14 +158,15 @@ export const App: React.FC = () => {
           removeTodo={removeTodo}
           todoIdUpdate={todoIdUpdate}
           tempTodo={tempTodo}
+          handleChange={handleChange}
         />
 
         {todos.length && (
           <Footer
             todos={todos}
             selectType={selectedType}
-            onClickType={setSelectedType}
-            /* clearTodos={clearCompletedTodos} */
+            setSelectedType={setSelectedType}
+            removeCompletedTodos={removeCompletedTodos}
           />
         )}
       </div>

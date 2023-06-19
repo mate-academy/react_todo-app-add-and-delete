@@ -23,6 +23,11 @@ export const Header: React.FC<Props> = ({
 
   const isActive = todos.some(todo => !todo.completed);
 
+  const clickHandler = (event: React.MouseEvent<HTMLButtonElement>) => {
+    event.preventDefault();
+    onError(Error.ADD);
+  };
+
   return (
     <header className="todoapp__header">
       <button
@@ -31,13 +36,9 @@ export const Header: React.FC<Props> = ({
           'todoapp__toggle-all',
           { active: isActive },
         )}
-        onClick={(event) => {
-          event.preventDefault();
-          onError(Error.ADD);
-        }}
+        onClick={clickHandler}
         aria-label="toggleButton"
       />
-
 
       <form onSubmit={formSubmit}>
         <input

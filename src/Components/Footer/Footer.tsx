@@ -6,17 +6,20 @@ import { Type } from '../../types/TodoTypes';
 type Props = {
   todos: Todo[],
   selectType: Type,
-  onClickType: (selectType: Type) => void,
-  /* clearTodos: () => void, */
+  setSelectedType: (selectType: Type) => void,
+  removeCompletedTodos: () => void,
 };
 
 export const Footer: React.FC<Props> = ({
-  todos, selectType, onClickType,
+  todos, selectType, setSelectedType, removeCompletedTodos,
 }) => {
+  const todosCompleted = todos.filter(todo => todo.completed).length;
+  const todosActive = todos.filter(todo => !todo.completed).length;
+
   return (
     <footer className="todoapp__footer">
       <span className="todo-count">
-        {`${(todos.filter(todo => !todo.completed)).length} items left`}
+        {`${todosActive} items left`}
       </span>
 
       <nav className="filter">
@@ -26,10 +29,7 @@ export const Footer: React.FC<Props> = ({
             'filter__link',
             { selected: selectType === 'All' },
           )}
-          onClick={(event) => {
-            event.preventDefault();
-            onClickType(Type.All);
-          }}
+          onClick={() => setSelectedType(Type.All)}
         >
           {Type.All}
         </a>
@@ -40,10 +40,7 @@ export const Footer: React.FC<Props> = ({
             'filter__link',
             { selected: selectType === 'Active' },
           )}
-          onClick={(event) => {
-            event.preventDefault();
-            onClickType(Type.ACTIVE);
-          }}
+          onClick={() => setSelectedType(Type.ACTIVE)}
         >
           {Type.ACTIVE}
         </a>
@@ -54,24 +51,19 @@ export const Footer: React.FC<Props> = ({
             'filter__link',
             { selected: selectType === 'Completed' },
           )}
-          onClick={(event) => {
-            event.preventDefault();
-            onClickType(Type.COMPLETED);
-          }}
+          onClick={() => setSelectedType(Type.COMPLETED)}
         >
           {Type.COMPLETED}
         </a>
       </nav>
 
-      {(todos.some(todo => todo.completed)) && (
-        <button
-          type="button"
-          className="todoapp__clear-completed"
-          /* onClick={clearTodos} */
-        >
-          Clear completed
-        </button>
-      )}
+      <button
+        type="button"
+        className="todoapp__clear-completed"
+        onClick={removeCompletedTodos}
+      >
+        {todosCompleted > 0 && ('Clear completed')}
+      </button>
     </footer>
   );
 };
