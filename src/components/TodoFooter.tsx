@@ -4,10 +4,11 @@ import { Todo } from '../types/Todo';
 import { deleteTodo } from '../api/todos';
 import { SetErrorContext } from '../utils/setErrorContext';
 import { ErrorMessage } from '../utils/ErrorMessage';
+import { FilteringMode } from '../utils/FilteringMode';
 
 interface Props {
-  setFilteringMode: (arg0: string) => void,
-  filteringMode: string;
+  setFilteringMode: (arg0: FilteringMode) => void,
+  filteringMode: FilteringMode;
   todos: Todo[],
   setTodos: React.Dispatch<React.SetStateAction<Todo[]>>,
   setTodosToBeDeleted: React.Dispatch<React.SetStateAction<number[] | null>>,
@@ -44,15 +45,14 @@ export const TodoFooter: React.FC<Props>
           3 items left
         </span>
 
-        {/* Active filter should have a 'selected' class */}
         <nav className="filter">
           <a
             href="#/"
             className={cn({
               filter__link: true,
-              selected: filteringMode === 'all',
+              selected: filteringMode === FilteringMode.all,
             })}
-            onClick={() => setFilteringMode('all')}
+            onClick={() => setFilteringMode(FilteringMode.all)}
           >
             All
           </a>
@@ -61,9 +61,9 @@ export const TodoFooter: React.FC<Props>
             href="#/active"
             className={cn({
               filter__link: true,
-              selected: filteringMode === 'active',
+              selected: filteringMode === FilteringMode.active,
             })}
-            onClick={() => setFilteringMode('active')}
+            onClick={() => setFilteringMode(FilteringMode.active)}
           >
             Active
           </a>
@@ -72,15 +72,14 @@ export const TodoFooter: React.FC<Props>
             href="#/completed"
             className={cn({
               filter__link: true,
-              selected: filteringMode === 'completed',
+              selected: filteringMode === FilteringMode.completed,
             })}
-            onClick={() => setFilteringMode('completed')}
+            onClick={() => setFilteringMode(FilteringMode.completed)}
           >
             Completed
           </a>
         </nav>
 
-        {/* don't show this button if there are no completed todos */}
         <button
           type="button"
           className={cn({

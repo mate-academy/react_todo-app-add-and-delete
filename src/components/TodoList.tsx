@@ -4,10 +4,11 @@ import { Todo } from '../types/Todo';
 import { addTodo, deleteTodo } from '../api/todos';
 import { SetErrorContext } from '../utils/setErrorContext';
 import { ErrorMessage } from '../utils/ErrorMessage';
+import { FilteringMode } from '../utils/FilteringMode';
 
 interface Props {
   todos: Todo[] | null,
-  filteringMode: string,
+  filteringMode: FilteringMode,
   userId: number,
   setTodos: React.Dispatch<React.SetStateAction<Todo[]>>,
   todosToBeDeleted: Todo['id'][] | null,
@@ -23,12 +24,12 @@ export const TodoList: React.FC<Props> = ({
   const [processing, setProcessing] = useState(false);
   const [tempTodo, setTempTodo] = useState<Todo | null>(null);
 
-  if (filteringMode !== 'all' && todos !== null) {
+  if (filteringMode !== FilteringMode.all && todos !== null) {
     switch (filteringMode) {
-      case 'active':
+      case FilteringMode.active:
         filteredTodos = todos.filter(todo => !todo.completed);
         break;
-      case 'completed':
+      case FilteringMode.completed:
         filteredTodos = todos.filter(todo => todo.completed);
         break;
       default:
@@ -60,12 +61,10 @@ export const TodoList: React.FC<Props> = ({
             todos?.push(response);
           })
           .catch(() => setError?.(ErrorMessage.CantAdd));
-        // #TODO: get rid of the nasty ?. somehow
 
         setTodoTitle('');
       } else {
         setError?.(ErrorMessage.EmptyTitle);
-        // #TODO: get rid of the nasty ?. somehow
       }
     }
   };
