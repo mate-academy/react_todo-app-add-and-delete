@@ -4,26 +4,28 @@ import { Todo } from '../types/Todo';
 import { Filter } from '../types/Filter';
 
 interface Props {
-  todosShow: Todo[];
+  todos: Todo[];
   filter: Filter;
   setFilter: (filter: Filter) => void;
+  onClearCompleted: () => void;
   // tempTodo: Todo | null;
   // isLoading: boolean;
 }
 
 export const Footer: React.FC<Props> = ({
-  todosShow,
+  todos,
   filter,
   setFilter,
+  onClearCompleted,
   // tempTodo,
   // isLoading,
 }) => {
-  const incompleteTodoCount = todosShow.filter(todo => !todo.completed).length;
+  const incompleteTodoCount = todos.filter(todo => !todo.completed);
 
   return (
     <footer className="todoapp__footer">
       <span className="todo-count">
-        {`${incompleteTodoCount} items left`}
+        {`${incompleteTodoCount.length} items left`}
       </span>
 
       {/* Active filter should have a 'selected' class */}
@@ -66,9 +68,7 @@ export const Footer: React.FC<Props> = ({
       <button
         type="button"
         className="todoapp__clear-completed"
-        onClick={() => {
-
-        }}
+        onClick={onClearCompleted}
       >
         Clear completed
       </button>

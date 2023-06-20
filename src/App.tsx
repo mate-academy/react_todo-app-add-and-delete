@@ -33,50 +33,57 @@ export const App: React.FC = () => {
       setTimeout(() => {
         setError('');
       }, 3000);
-    } else {
-      const newTodo = {
-        id: 0,
-        userId: USER_ID,
-        title,
-        completed: false,
-      };
 
-      setTempTodo(newTodo);
-      setIsDisabled(true);
-      setError('');
-
-      fetchAddTodo(USER_ID, newTodo)
-        .then((res) => {
-          setTodos((prevTodo) => {
-            return [...prevTodo, res];
-          });
-        })
-        .catch(() => {
-          setError('Unable to add a todo');
-
-          const timer = setTimeout(() => {
-            setError('');
-          }, 3000);
-
-          return () => {
-            clearTimeout(timer);
-          };
-        })
-        .finally(() => {
-          setIsDisabled(false);
-          setTempTodo(null);
-        });
+      return;
     }
+
+    const newTodo = {
+      id: 0,
+      userId: USER_ID,
+      title,
+      completed: false,
+    };
+
+    setTempTodo(newTodo);
+    setIsDisabled(true);
+    setError('');
+
+    fetchAddTodo(USER_ID, newTodo)
+      .then((res) => {
+        setTodos((prevTodo) => {
+          return [...prevTodo, res];
+        });
+
+        setFilter(Filter.ALL);
+      })
+      .catch(() => {
+        setError('Unable to add a todo');
+
+        const timer = setTimeout(() => {
+          setError('');
+        }, 3000);
+
+        return () => {
+          clearTimeout(timer);
+        };
+      })
+      .finally(() => {
+        setIsDisabled(false);
+        setTempTodo(null);
+      });
   };
 
   const deleteTodo = (id: number) => {
     setDeleteTodoId(id);
-
     remove(id)
       .then(() => {
-        const result = todos.filter(todo => todo.id !== id);
+        // const result = todos.filter(todo => todo.id !== id);
 
-        setTodos(result);
+        setTodos((prevTodo) => {
+          return prevTodo.filter(todo => todo.id !== id);
+        });
+
+        // setTodos(result);
         setError('');
       })
       .catch(() => {
@@ -109,7 +116,7 @@ export const App: React.FC = () => {
     if (USER_ID) {
       fetchData();
     }
-  }, [USER_ID, setTodos]);
+  }, []);
 
   const filteredTodos = useMemo(() => {
     return todos.filter(todo => {
@@ -118,11 +125,17 @@ export const App: React.FC = () => {
           return !todo.completed;
         case Filter.COMPLETED:
           return todo.completed;
+        case Filter.ALL:
+          return true;
         default:
-          return todos;
+          return todo;
       }
     });
-  }, [Filter, todos]);
+  }, [filter, todos]);
+
+  const handleClearCompleted = () => {
+
+  };
 
   if (!USER_ID) {
     return <UserWarning />;
@@ -151,9 +164,10 @@ export const App: React.FC = () => {
 
         {!!todos.length && (
           <Footer
-            todosShow={filteredTodos}
+            todos={filteredTodos}
             filter={filter}
             setFilter={setFilter}
+            onClearCompleted={handleClearCompleted}
             // tempTodo={tempTodo}
             // isLoading={isLoading}
           />
