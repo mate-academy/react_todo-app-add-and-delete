@@ -25,7 +25,7 @@ export const App: React.FC = () => {
   const [tempTodo, setTempTodo] = useState<Todo | null>(null);
   const [isInputActive, setIsInputActive] = useState(true);
   const [todoIdUpdate, setTodoIdUpdate] = useState<number[]>([]);
-  const [todoStatus, setStatus] = useState(false);
+  const [todoState, setTodoState] = useState(false);
 
   useEffect(() => {
     const loadTodos = async () => {
@@ -118,14 +118,14 @@ export const App: React.FC = () => {
       });
   }, [todos, todoIdUpdate]);
 
-  const handleChange = useCallback(async (todoId: Todo) => {
-    setStatus((current: boolean) => current);
+  const handleChange = useCallback(async (TodoForUpdate: Todo) => {
+    setTodoState((current: boolean) => current);
 
     try {
-      await updateTodo(todoId.id, todoStatus);
+      await updateTodo(TodoForUpdate.id, todoState);
 
       setTodos(state => [...state].map(todo => {
-        if (todo.id === todoId.id) {
+        if (todo.id === TodoForUpdate.id) {
           // eslint-disable-next-line no-param-reassign
           todo.completed = !todo.completed;
         }
@@ -135,7 +135,7 @@ export const App: React.FC = () => {
     } catch {
       setIsError(Error.UPDATE);
     }
-  }, [todoStatus, todos]);
+  }, [todoState, todos]);
 
   if (!USER_ID) {
     return <UserWarning />;
@@ -161,7 +161,7 @@ export const App: React.FC = () => {
           handleChange={handleChange}
         />
 
-        {todos.length && (
+        {!!todos.length && (
           <Footer
             todos={todos}
             selectType={selectedType}
