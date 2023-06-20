@@ -9,27 +9,10 @@ type Props = {
 };
 
 export const TodoHeader: React.FC<Props> = ({
-  searchValue, searchHandler, onAdd,
+  searchValue,
+  searchHandler,
+  onAdd,
 }) => {
-  // const [searchValue, setSearchValue] = useState('');
-  // const validValue = searchValue.trim();
-
-  // const searchHandler = (value: string) => {
-  //   setSearchValue(value);
-  // };
-
-  // const handleSubmit = (event: React.FormEvent) => {
-  //   event.preventDefault();
-
-  //   // if (!validValue) {
-  //   //   return;
-  //   // }
-
-  //   onAdd(searchValue);
-
-  //   // onAdd(searchValue);
-  // };
-
   return (
     <header className="todoapp__header">
       <button type="button" className="todoapp__toggle-all active" />
