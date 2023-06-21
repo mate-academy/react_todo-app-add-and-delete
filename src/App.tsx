@@ -6,6 +6,7 @@ import React,
   useState,
   useEffect,
   useMemo,
+  useCallback,
 } from 'react';
 import { UserWarning } from './UserWarning';
 import { Header } from './components/Header';
@@ -77,13 +78,9 @@ export const App: React.FC = () => {
     setDeleteTodoId(id);
     remove(id)
       .then(() => {
-        // const result = todos.filter(todo => todo.id !== id);
-
         setTodos((prevTodo) => {
           return prevTodo.filter(todo => todo.id !== id);
         });
-
-        // setTodos(result);
         setError('');
       })
       .catch(() => {
@@ -133,9 +130,11 @@ export const App: React.FC = () => {
     });
   }, [filter, todos]);
 
-  const handleClearCompleted = () => {
+  const handleClearCompleted = useCallback(() => {
+    const completedTodos = todos.filter(todo => todo.completed === true);
 
-  };
+    completedTodos.forEach((todo) => deleteTodo(todo.id));
+  }, [todos]);
 
   if (!USER_ID) {
     return <UserWarning />;
@@ -162,7 +161,7 @@ export const App: React.FC = () => {
           deleteTodoId={deleteTodoId}
         />
 
-        {!!todos.length && (
+        {todos.length > 0 && (
           <Footer
             todos={filteredTodos}
             filter={filter}
