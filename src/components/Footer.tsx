@@ -1,5 +1,5 @@
 import React from 'react';
-import classNames from 'classnames';
+import cn from 'classnames';
 import { Todo } from '../types/Todo';
 import { Filter } from '../types/Filter';
 
@@ -17,8 +17,6 @@ export const Footer: React.FC<Props> = ({
   filter,
   setFilter,
   onClearCompleted,
-  // tempTodo,
-  // isLoading,
 }) => {
   const incompleteTodoCount = todos.filter(todo => !todo.completed);
 
@@ -28,11 +26,10 @@ export const Footer: React.FC<Props> = ({
         {`${incompleteTodoCount.length} items left`}
       </span>
 
-      {/* Active filter should have a 'selected' class */}
       <nav className="filter">
         <a
           href="#/"
-          className={classNames(
+          className={cn(
             'filter__link',
             { selected: filter === Filter.ALL },
           )}
@@ -43,9 +40,10 @@ export const Footer: React.FC<Props> = ({
 
         <a
           href="#/active"
-          className={classNames(
-            'filter__link',
-            { selected: filter === Filter.ACTIVE },
+          className={cn(
+            'filter__link', {
+              selected: filter === Filter.ACTIVE,
+            },
           )}
           onClick={() => setFilter(Filter.ACTIVE)}
         >
@@ -54,9 +52,10 @@ export const Footer: React.FC<Props> = ({
 
         <a
           href="#/completed"
-          className={classNames(
-            'filter__link',
-            { selected: filter === Filter.COMPLETED },
+          className={cn(
+            'filter__link', {
+              selected: filter === Filter.COMPLETED,
+            },
           )}
           onClick={() => setFilter(Filter.COMPLETED)}
         >
@@ -64,7 +63,6 @@ export const Footer: React.FC<Props> = ({
         </a>
       </nav>
 
-      {/* don't show this button if there are no completed todos */}
       <button
         type="button"
         className="todoapp__clear-completed"

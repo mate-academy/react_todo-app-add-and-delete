@@ -22,7 +22,7 @@ export const TodoList: React.FC<Props> = ({
           <TodoItem
             todo={todo}
             key={todo.id}
-            deleteTodo={deleteTodo}
+            onDelete={deleteTodo}
             deleteTodoId={deleteTodoId}
           />
         );
@@ -31,7 +31,7 @@ export const TodoList: React.FC<Props> = ({
       {tempTodo && (
         <TodoItem
           todo={tempTodo}
-          deleteTodo={deleteTodo}
+          onDelete={deleteTodo}
           deleteTodoId={deleteTodoId}
         />
       )}

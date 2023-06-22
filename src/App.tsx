@@ -28,12 +28,9 @@ export const App: React.FC = () => {
   const [deleteTodoId, setDeleteTodoId] = useState(0);
   const [isDisabled, setIsDisabled] = useState(false);
 
-  const addTodo = (title: string) => {
+  const addTodo = async (title: string) => {
     if (!title.trim()) {
-      setError('Title can\'t be empty');
-      setTimeout(() => {
-        setError('');
-      }, 3000);
+      setError("Title can't be empty");
 
       return;
     }
@@ -49,29 +46,23 @@ export const App: React.FC = () => {
     setIsDisabled(true);
     setError('');
 
-    fetchAddTodo(USER_ID, newTodo)
-      .then((res) => {
-        setTodos((prevTodo) => {
-          return [...prevTodo, res];
-        });
+    try {
+      const res = await fetchAddTodo(USER_ID, newTodo);
 
-        setFilter(Filter.ALL);
-      })
-      .catch(() => {
-        setError('Unable to add a todo');
+      setTodos((prevTodo) => [...prevTodo, res]);
+      setFilter(Filter.ALL);
+    } catch {
+      setError('Unable to add a todo');
 
-        const timer = setTimeout(() => {
-          setError('');
-        }, 3000);
+      const timer = setTimeout(() => {
+        setError('');
+      }, 3000);
 
-        return () => {
-          clearTimeout(timer);
-        };
-      })
-      .finally(() => {
-        setIsDisabled(false);
-        setTempTodo(null);
-      });
+      clearTimeout(timer);
+    } finally {
+      setIsDisabled(false);
+      setTempTodo(null);
+    }
   };
 
   const deleteTodo = (id: number) => {
@@ -148,9 +139,9 @@ export const App: React.FC = () => {
 
         <Header
           todos={todos}
-          addTodo={addTodo}
+          onAdd={addTodo}
           newTodoTitle={newTodoTitle}
-          setNewTodoTitle={setNewTodoTitle}
+          onChangeTitle={setNewTodoTitle}
           isDisabled={isDisabled}
         />
 
@@ -167,14 +158,13 @@ export const App: React.FC = () => {
             filter={filter}
             setFilter={setFilter}
             onClearCompleted={handleClearCompleted}
-            // tempTodo={tempTodo}
-            // isLoading={isLoading}
           />
         )}
       </div>
 
-      {error
-        && (<ErrorMesage error={error} setError={setError} />)}
+      {error && (
+        <ErrorMesage error={error} setError={setError} />
+      )}
     </div>
   );
 };

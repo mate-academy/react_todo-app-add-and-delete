@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import classNames from 'classnames';
 
 type Props = {
@@ -6,21 +6,37 @@ type Props = {
   setError: (value: string) => void,
 };
 
-export const ErrorMesage: React.FC<Props> = ({ error, setError }) => (
-  <div className={classNames(
-    'notification is-danger is-light has-text-weight-normal', {
-      hidden: !error,
-    },
-  )}
-  >
+export const ErrorMesage: React.FC<Props> = ({ error, setError }) => {
+  useEffect(() => {
+    let timer: NodeJS.Timeout;
 
-    <button
-      type="button"
-      className="delete"
-      onClick={() => setError('')}
+    if (error) {
+      timer = setTimeout(() => {
+        setError('');
+      }, 3000);
+    }
+
+    return () => {
+      clearTimeout(timer);
+    };
+  }, [error, setError]);
+
+  return (
+    <div
+      className={classNames(
+        'notification is-danger is-light has-text-weight-normal', {
+          hidden: !error,
+        },
+      )}
     >
-      х
-    </button>
-    {error}
-  </div>
-);
+      <button
+        type="button"
+        className="delete"
+        onClick={() => setError('')}
+      >
+        х
+      </button>
+      {error}
+    </div>
+  );
+};

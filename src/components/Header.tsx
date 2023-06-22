@@ -4,17 +4,17 @@ import { Todo } from '../types/Todo';
 
 type Props = {
   todos: Todo[];
-  addTodo: (title: string) => void;
+  onAdd: (title: string) => void;
   newTodoTitle: string;
-  setNewTodoTitle: (title: string) => void;
+  onChangeTitle: (title: string) => void;
   isDisabled: boolean,
 };
 
 export const Header: React.FC<Props> = ({
   todos,
-  addTodo,
+  onAdd,
   newTodoTitle,
-  setNewTodoTitle,
+  onChangeTitle,
   isDisabled,
 }) => {
   const isActive = todos.filter((todo) => !todo.completed);
@@ -22,8 +22,8 @@ export const Header: React.FC<Props> = ({
   const handleSubmit = (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
 
-    addTodo(newTodoTitle);
-    setNewTodoTitle('');
+    onAdd(newTodoTitle);
+    onChangeTitle('');
   };
 
   return (
@@ -41,7 +41,7 @@ export const Header: React.FC<Props> = ({
           placeholder="What needs to be done?"
           disabled={isDisabled}
           value={newTodoTitle}
-          onChange={(event) => setNewTodoTitle(event.target.value)}
+          onChange={(event) => onChangeTitle(event.target.value)}
         />
       </form>
     </header>
