@@ -156,7 +156,7 @@ export const App: React.FC = () => {
           <Footer
             todos={filteredTodos}
             filter={filter}
-            setFilter={setFilter}
+            onSelect={setFilter}
             onClearCompleted={handleClearCompleted}
           />
         )}
