@@ -5,16 +5,19 @@ import { UserWarning } from './UserWarning';
 import { Loader } from './components/Loader';
 import { FilterTypes } from './components/TodoFilter';
 import { Todos } from './components/Todos';
-import { client } from './utils/fetchClient';
 import { Todo } from './types/Todo';
 import { Footer } from './components/Footer';
+import {
+  deleteTodos, getTodos, patchTodos, postTodos,
+} from './api/todos';
 
-const USER_ID = '10682';
+export const USER_ID = '10682';
 
 export enum TodoErros {
-  add = ' Unable to add a todo',
-  delete = 'Unable to delete a todo',
-  update = 'Unable to update a todo',
+  Add = ' Unable to add a todo',
+  Delete = 'Unable to delete a todo',
+  Update = 'Unable to update a todo',
+  ErrorTodo = 'Can not find todos',
 }
 
 export const App: React.FC = () => {
@@ -31,13 +34,17 @@ export const App: React.FC = () => {
   useEffect(() => {
     setIsLoading(true);
 
-    client.get((`?userId=${USER_ID}`)).then(
+    getTodos(USER_ID).then(
       fetchedTodos => {
         setTodos(fetchedTodos as Todo[]);
         setIsLoading(false);
       },
-    );
+    ).catch(() => setError(TodoErros.ErrorTodo));
   }, []);
+
+  const preventSubmit = (e: React.FormEvent<HTMLFormElement>) => {
+    e.preventDefault();
+  };
 
   const handleImputTodo = (
     e: React.ChangeEvent<HTMLInputElement>,
@@ -48,33 +55,60 @@ export const App: React.FC = () => {
   const handleAddTodo = (
     e: React.KeyboardEvent<HTMLElement>,
   ) => {
-    if (input.trim() !== '' && e.key === 'Enter') {
+    if (input.trim() && e.key === 'Enter') {
       const newTodo: Omit<Todo, 'id'> = {
         userId: Number(USER_ID),
         title: input,
         completed: false,
       };
 
-      client.post(`?userId=${USER_ID}`, newTodo).then((todo) => {
+      postTodos(USER_ID, newTodo).then((todo) => {
         setTodos((prevTodos) => [...prevTodos, todo as Todo]);
         setInput('');
 
-        if (error && error === TodoErros.add) {
+        if (error && error === TodoErros.Add) {
           setError('');
         }
-      }).catch(() => setError(TodoErros.add));
+      }).catch(() => setError(TodoErros.Add));
     }
   };
 
   const handleRemoveTodo = (todoId: number) => {
-    client.delete(`/${todoId}?userId=${USER_ID}`)
-      .then(() => {
-        setTodos(prevTodos => prevTodos.filter(todo => todo.id !== todoId));
+    deleteTodos(USER_ID, todoId).then(() => {
+      setTodos(prevTodos => prevTodos.filter(todo => todo.id !== todoId));
 
-        if (error && error === TodoErros.delete) {
-          setError('');
-        }
-      }).catch(() => setError(TodoErros.delete));
+      if (error && error === TodoErros.Delete) {
+        setError('');
+      }
+    }).catch(() => setError(TodoErros.Delete));
+  };
+
+  const handleCheckBoxTodo = (todoId: number) => {
+    const curentTodo: Todo | undefined = todos.find(todo => todo.id === todoId);
+
+    if (!curentTodo) {
+      return;
+    }
+
+    patchTodos(todoId, USER_ID, curentTodo).then(() => {
+      setTodos(prevTodos => prevTodos.map(
+        todo => {
+          if (todo.id === todoId) {
+            return {
+              ...todo,
+              completed: !todo.completed,
+            };
+          }
+
+          return todo;
+        },
+      ));
+    });
+  };
+
+  const removeCompletedTodos = () => {
+    setTodos(prevTodos => prevTodos
+      .filter(todo => todo.completed === false));
   };
 
   const filteredTodos = filter === FilterTypes.All
@@ -91,10 +125,6 @@ export const App: React.FC = () => {
     type: FilterTypes,
   ) => {
     setFilter(type);
-  };
-
-  const preventSubmit = (e: React.FormEvent<HTMLFormElement>) => {
-    e.preventDefault();
   };
 
   return (
@@ -123,12 +153,14 @@ export const App: React.FC = () => {
             <Todos
               todos={filteredTodos}
               onRemoveTodo={handleRemoveTodo}
+              onCheckedTodo={handleCheckBoxTodo}
             />
           )}
         {todos.length ? (
           <Footer
             todos={todos}
             onFilterType={filterTodos}
+            onRemoveTodos={removeCompletedTodos}
           />
         ) : undefined}
       </div>
