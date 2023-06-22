@@ -6,7 +6,7 @@ import { Filter } from '../types/Filter';
 interface Props {
   todos: Todo[];
   filter: Filter;
-  setFilter: (filter: Filter) => void;
+  onSelect: (filter: Filter) => void;
   onClearCompleted: () => void;
   // tempTodo: Todo | null;
   // isLoading: boolean;
@@ -15,7 +15,7 @@ interface Props {
 export const Footer: React.FC<Props> = ({
   todos,
   filter,
-  setFilter,
+  onSelect,
   onClearCompleted,
 }) => {
   const incompleteTodoCount = todos.filter(todo => !todo.completed);
@@ -33,7 +33,7 @@ export const Footer: React.FC<Props> = ({
             'filter__link',
             { selected: filter === Filter.ALL },
           )}
-          onClick={() => setFilter(Filter.ALL)}
+          onClick={() => onSelect(Filter.ALL)}
         >
           All
         </a>
@@ -45,7 +45,7 @@ export const Footer: React.FC<Props> = ({
               selected: filter === Filter.ACTIVE,
             },
           )}
-          onClick={() => setFilter(Filter.ACTIVE)}
+          onClick={() => onSelect(Filter.ACTIVE)}
         >
           Active
         </a>
@@ -57,7 +57,7 @@ export const Footer: React.FC<Props> = ({
               selected: filter === Filter.COMPLETED,
             },
           )}
-          onClick={() => setFilter(Filter.COMPLETED)}
+          onClick={() => onSelect(Filter.COMPLETED)}
         >
           Completed
         </a>
