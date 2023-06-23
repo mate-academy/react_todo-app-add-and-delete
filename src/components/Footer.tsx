@@ -8,8 +8,6 @@ interface Props {
   filter: Filter;
   onSelect: (filter: Filter) => void;
   onClearCompleted: () => void;
-  // tempTodo: Todo | null;
-  // isLoading: boolean;
 }
 
 export const Footer: React.FC<Props> = ({

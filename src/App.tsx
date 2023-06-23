@@ -107,22 +107,20 @@ export const App: React.FC = () => {
   }, []);
 
   const filteredTodos = useMemo(() => {
-    return todos.filter(todo => {
-      switch (filter) {
-        case Filter.ACTIVE:
-          return !todo.completed;
-        case Filter.COMPLETED:
-          return todo.completed;
-        case Filter.ALL:
-          return true;
-        default:
-          return todo;
-      }
-    });
+    switch (filter) {
+      case Filter.ACTIVE:
+        return todos.filter(todo => !todo.completed);
+      case Filter.COMPLETED:
+        return todos.filter(todo => todo.completed);
+      case Filter.ALL:
+        return todos;
+      default:
+        return todos;
+    }
   }, [filter, todos]);
 
   const handleClearCompleted = useCallback(() => {
-    const completedTodos = todos.filter(todo => todo.completed === true);
+    const completedTodos = todos.filter(todo => todo.completed);
 
     completedTodos.forEach((todo) => deleteTodo(todo.id));
   }, [todos]);
