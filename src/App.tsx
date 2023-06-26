@@ -2,36 +2,13 @@
 import React, { useEffect, useState } from 'react';
 import classNames from 'classnames';
 import { UserWarning } from './UserWarning';
-import {
-  getTodos, addTodo, deleteTodo, updateTodoCheck,
-} from './api/todos';
+import { deleteTodo, getTodos } from './api/todos';
+
 import { Todo } from './types/Todo';
-
-enum FilterType {
-  NONE,
-  ACTIVE,
-  COMPLETED,
-}
-
-enum ErrorType {
-  NONE,
-  LOAD,
-  ADD,
-  DELETE,
-  UPDATE,
-}
-
-const filter = (type: FilterType, todos: Todo[]) => {
-  if (type === FilterType.ACTIVE) {
-    return todos.filter((todo) => !todo.completed);
-  }
-
-  if (type === FilterType.COMPLETED) {
-    return todos.filter((todo) => todo.completed);
-  }
-
-  return todos;
-};
+import { Form } from './components/form';
+import { Todos } from './components/todos';
+import { ErrorType } from './types/Error';
+import { FilterType } from './types/Filter';
 
 const USER_ID = 10378;
 
@@ -39,13 +16,6 @@ export const App: React.FC = () => {
   const [todos, setTodos] = useState<Todo[]>([]);
   const [filterType, setFilterType] = useState(FilterType.NONE);
   const [errorType, setErrorType] = useState<ErrorType>(ErrorType.NONE);
-  const [todoLoadId] = useState<number | null>(null);
-
-  const [editableTodoId, setEditableTodoId] = useState<number | null>(null);
-  // const [inputValue, setInputValue] = useState('');
-  const filteredTodos = filter(filterType, todos);
-
-  const [newTodoTitle, setNewTodoTitle] = useState('');
 
   useEffect(() => {
     getTodos(USER_ID)
@@ -78,146 +48,22 @@ export const App: React.FC = () => {
             />
           )}
 
-          <form onSubmit={(e) => {
-            e.preventDefault();
+          <Form
+            todos={todos}
+            setTodos={setTodos}
+            setErrorType={setErrorType}
+            USER_ID={USER_ID}
+          />
 
-            addTodo(USER_ID, newTodoTitle)
-              .then((newTodo) => {
-                setTodos([...todos, newTodo]);
-              })
-              .catch(() => setErrorType(ErrorType.ADD))
-              .finally(() => {
-                setNewTodoTitle('');
-              });
-          }}
-          >
-            <input
-              name="title"
-              type="text"
-              className="todoapp__new-todo"
-              placeholder="What needs to be done?"
-              value={newTodoTitle}
-              onChange={(e) => setNewTodoTitle(e.target.value)}
-            />
-          </form>
         </header>
 
         <section className="todoapp__main">
-          {filteredTodos.map((todo: Todo) => {
-            if (todo.id === editableTodoId) {
-              return (
-                <>
-                  <div className="todo" key={todo.id}>
-                    <label className="todo__status-label">
-                      <input
-                        type="checkbox"
-                        className="todo__status"
-                      />
-                    </label>
-
-                    <form onSubmit={(e) => {
-                      e.preventDefault();
-                    }}
-                    >
-                      <input
-                        type="text"
-                        className="todo__title-field"
-                        placeholder="Empty todo will be deleted"
-                        defaultValue={todo.title}
-                        // onChange={(e) => setInputValue(e.target.value)}
-                        onBlur={() => setEditableTodoId(null)}
-                      />
-                    </form>
-
-                    <div className="modal overlay">
-                      <div
-                        className="modal-background has-background-white-ter"
-                      />
-                      <div className="loader" />
-                    </div>
-                  </div>
-                </>
-              );
-            }
-
-            if (todoLoadId === todo.id) {
-              return (
-                <div className="todo" key={todo.id}>
-                  <label className="todo__status-label">
-                    <input type="checkbox" className="todo__status" />
-                  </label>
-
-                  <span className="todo__title">{todo.title}</span>
-                  <button type="button" className="todo__remove">×</button>
-
-                  <div className="modal overlay is-active">
-                    <div
-                      className="modal-background has-background-white-ter"
-                    />
-                    <div className="loader" />
-                  </div>
-                </div>
-              );
-            }
-
-            return (
-              <div
-                className={classNames('todo', { completed: todo.completed })}
-                key={todo.id}
-                onDoubleClick={() => {
-                  setEditableTodoId(todo.id);
-                }}
-              >
-                <label className="todo__status-label">
-                  <input
-                    type="checkbox"
-                    className="todo__status"
-                    checked={todo.completed}
-                    onClick={() => {
-                      updateTodoCheck(todo.id, !todo.completed)
-                        .then(() => {
-                          setTodos(todos.map((currentTodo) => {
-                            if (currentTodo.id === todo.id) {
-                              return {
-                                ...currentTodo,
-                                completed: !todo.completed,
-                              };
-                            }
-
-                            return currentTodo;
-                          }));
-                        })
-                        .catch(() => {
-                          setErrorType(ErrorType.UPDATE);
-                        });
-                    }}
-                  />
-                </label>
-                <span className="todo__title">{todo.title}</span>
-
-                <button
-                  type="button"
-                  className="todo__remove"
-                  onClick={() => {
-                    deleteTodo(todo.id)
-                      .then(() => {
-                        setTodos(todos.filter((item) => todo.id !== item.id));
-                      })
-                      .catch(() => setErrorType(ErrorType.DELETE));
-                  }}
-                >
-                  ×
-                </button>
-
-                <div className="modal overlay">
-                  <div
-                    className="modal-background has-background-white-ter"
-                  />
-                  <div className="loader" />
-                </div>
-              </div>
-            );
-          })}
+          <Todos
+            todos={todos}
+            filterType={filterType}
+            setErrorType={setErrorType}
+            setTodos={setTodos}
+          />
         </section>
 
         {todos.length > 0 && (
