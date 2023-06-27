@@ -2,10 +2,11 @@
 import React, { useEffect, useState } from 'react';
 import classNames from 'classnames';
 import { UserWarning } from './UserWarning';
-import { deleteTodo, getTodos } from './api/todos';
+import { getTodos } from './api/todos';
 
 import { Todo } from './types/Todo';
 import { Form } from './components/form';
+import { TodosFooter } from './components/todosFooter';
 import { Todos } from './components/todos';
 import { ErrorType } from './types/Error';
 import { FilterType } from './types/Filter';
@@ -54,7 +55,6 @@ export const App: React.FC = () => {
             setErrorType={setErrorType}
             USER_ID={USER_ID}
           />
-
         </header>
 
         <section className="todoapp__main">
@@ -66,77 +66,12 @@ export const App: React.FC = () => {
           />
         </section>
 
-        {todos.length > 0 && (
-          <footer className="todoapp__footer">
-            <span className="todo-count" data-cy="todosCounter">
-              {`${todos.filter((todo) => !todo.completed).length} items left`}
-            </span>
-
-            <nav className="filter">
-              <a
-                href="#/"
-                className={classNames('filter__link', {
-                  selected: filterType === FilterType.NONE,
-                })}
-                onClick={(e) => {
-                  e.preventDefault();
-                  setFilterType(FilterType.NONE);
-                }}
-              >
-                All
-              </a>
-
-              <a
-                href="#/active"
-                className={classNames('filter__link', {
-                  selected: filterType === FilterType.ACTIVE,
-                })}
-                onClick={(e) => {
-                  e.preventDefault();
-                  setFilterType(FilterType.ACTIVE);
-                }}
-              >
-                Active
-              </a>
-
-              <a
-                href="#/completed"
-                className={classNames('filter__link', {
-                  selected: filterType === FilterType.COMPLETED,
-                })}
-                onClick={(e) => {
-                  e.preventDefault();
-                  setFilterType(FilterType.COMPLETED);
-                }}
-              >
-                Completed
-              </a>
-            </nav>
-
-            {todos.some((todo) => todo.completed) && (
-              <button
-                type="button"
-                className="todoapp__clear-completed"
-                onClick={() => {
-                  todos.map((item) => {
-                    if (item.completed) {
-                      return (
-                        deleteTodo(item.id)
-                          .then(() => {
-                            setTodos(todos.filter((todo) => !todo.completed));
-                          })
-                      );
-                    }
-
-                    return item;
-                  });
-                }}
-              >
-                Clear completed
-              </button>
-            )}
-          </footer>
-        )}
+        <TodosFooter
+          todos={todos}
+          filterType={filterType}
+          setFilterType={setFilterType}
+          setTodos={setTodos}
+        />
       </div>
 
       <div
