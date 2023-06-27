@@ -9,6 +9,6 @@ export const addTodos = (userId: number, todo: Todo) => {
   return client.post<Todo[]>(`/todos?userId=${userId}`, todo);
 };
 
-export const deleteTodos = (id: number) => {
+export const deleteTodo = (id: number) => {
   return client.delete(`/todos/${id}`);
 };

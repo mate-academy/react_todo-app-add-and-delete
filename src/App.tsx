@@ -8,7 +8,7 @@ import { Filter } from './enums/filter';
 import { ErrorMessage } from './enums/error';
 import { Error } from './components/Error';
 import { TodoList } from './components/TodoList';
-import { getTodos, addTodos, deleteTodos } from './api/todos';
+import { getTodos, addTodos, deleteTodo } from './api/todos';
 
 const USER_ID = 10567;
 
@@ -43,10 +43,10 @@ export const App: React.FC = () => {
     ), 3000);
   }, [errorMessage]);
 
-  const handleDeletedTodo = (id: number) => {
+  const handleDeleteTodo = (id: number) => {
     setDeletedTodosId([id]);
 
-    deleteTodos(id)
+    deleteTodo(id)
       .then(() => {
         const newTodoList = todos.filter(todo => todo.id !== id);
 
@@ -63,7 +63,7 @@ export const App: React.FC = () => {
 
     setDeletedTodosId(completedTodosId);
 
-    Promise.all(completedTodosId.map(id => deleteTodos(id)))
+    Promise.all(completedTodosId.map(id => deleteTodo(id)))
       .then(() => {
         const filteredTodos = todos.filter(todo => !todo.completed);
 
@@ -144,7 +144,7 @@ export const App: React.FC = () => {
               todos={filteredTodos}
               tempTodo={tempTodo}
               deletedTodosId={deletedTodosId}
-              handleDeletedTodo={handleDeletedTodo}
+              handleDeletedTodo={handleDeleteTodo}
             />
 
             <Footer
