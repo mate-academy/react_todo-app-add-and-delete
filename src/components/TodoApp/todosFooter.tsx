@@ -1,18 +1,38 @@
 import classNames from 'classnames';
-import { FilterType } from '../types/Filter';
-import { Todo } from '../types/Todo';
-import { deleteTodo } from '../api/todos';
+import { FilterType } from '../../types/Filter';
+import { Todo } from '../../types/Todo';
+import { deleteTodo } from '../../api/todos';
 
 type Props = {
   todos: Todo[],
   setTodos : (todos: Todo[]) => void,
-  filterType: FilterType,
-  setFilterType: (type: FilterType) => void,
+  filter: FilterType,
+  setFilter: (type: FilterType) => void,
 };
 
 export const TodosFooter: React.FC<Props> = ({
-  todos, filterType, setFilterType, setTodos,
+  todos,
+  filter: filterType,
+  setFilter: setFilterType,
+  setTodos,
 }) => {
+  const clearCompleted = () => {
+    todos.map((item) => {
+      if (item.completed) {
+        return (
+          deleteTodo(item.id)
+            .then(() => {
+              setTodos(todos.filter((todo) => !todo.completed));
+            })
+        );
+      }
+
+      return item;
+    });
+  };
+
+  const hasCompleted = todos.some((todo) => todo.completed);
+
   return (
     <>
       {todos.length > 0 && (
@@ -62,24 +82,11 @@ export const TodosFooter: React.FC<Props> = ({
             </a>
           </nav>
 
-          {todos.some((todo) => todo.completed) && (
+          {hasCompleted && (
             <button
               type="button"
               className="todoapp__clear-completed"
-              onClick={() => {
-                todos.map((item) => {
-                  if (item.completed) {
-                    return (
-                      deleteTodo(item.id)
-                        .then(() => {
-                          setTodos(todos.filter((todo) => !todo.completed));
-                        })
-                    );
-                  }
-
-                  return item;
-                });
-              }}
+              onClick={clearCompleted}
             >
               Clear completed
             </button>
