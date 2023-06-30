@@ -11,7 +11,7 @@ type Props = {
 export const TodoForm: React.FC<Props> = ({ setError, addTodo, tempTodo }) => {
   const [newTodoTitle, setNewTodoTitle] = useState('');
 
-  const handleSubmit = (event: React.FormEvent<HTMLFormElement>) => {
+  const handleSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
 
     if (!newTodoTitle.trim()) {
@@ -20,7 +20,7 @@ export const TodoForm: React.FC<Props> = ({ setError, addTodo, tempTodo }) => {
       return;
     }
 
-    addTodo(newTodoTitle);
+    await addTodo(newTodoTitle);
     setNewTodoTitle('');
   };
 

@@ -7,7 +7,7 @@ import { Notifications } from './components/Notifications';
 import { TodoList } from './components/TodoList';
 import { FilterOptions } from './types/FilterOptions';
 import { Todo } from './types/Todo';
-import { getTodos, createTodo } from './api/todos';
+import { getTodos, createTodo, removeTodo } from './api/todos';
 import { UserWarning } from './UserWarning';
 
 const USER_ID = 10873;
@@ -70,9 +70,31 @@ export const App: React.FC = () => {
 
       setTodos(prevTodos => [...prevTodos, createdTodo]);
     } catch {
-      setError('Unable to add todo');
+      setError('Unable to add a todo');
     } finally {
       setTempTodo(null);
+    }
+  };
+
+  const deleteTodo = async (todoId: number) => {
+    try {
+      setLoadingTodos(prevIds => [...prevIds, todoId]);
+      await removeTodo(todoId);
+      setTodos(prevTodos => prevTodos.filter(todo => todo.id !== todoId));
+    } catch {
+      setError('Unable to delete a todo');
+    } finally {
+      setLoadingTodos(prevIds => prevIds.filter(id => id !== todoId));
+    }
+  };
+
+  const handleDeleteCompletedButton = async () => {
+    const deletePromises = completedTodos.map(todo => deleteTodo(todo.id));
+
+    try {
+      await Promise.all(deletePromises);
+    } catch {
+      setError('Unable to delete todos');
     }
   };
 
@@ -96,6 +118,7 @@ export const App: React.FC = () => {
           todos={visibleTodos}
           tempTodo={tempTodo}
           loadingTodos={loadingTodos}
+          deleteTodo={deleteTodo}
         />
 
         {todos.length > 0 && (
@@ -110,6 +133,7 @@ export const App: React.FC = () => {
               <button
                 type="button"
                 className="todoapp__clear-completed"
+                onClick={handleDeleteCompletedButton}
               >
                 Clear completed
               </button>
@@ -118,12 +142,7 @@ export const App: React.FC = () => {
         )}
       </div>
 
-      {/* show only one message at a time */}
-      {/* Unable to add a todo
-      <br />
-      Unable to delete a todo
-      <br />
-      Unable to update a todo */}
+      {/* Unable to update a todo */}
       <Notifications error={error} setError={setError} />
     </div>
   );
