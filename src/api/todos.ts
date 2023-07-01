@@ -15,4 +15,4 @@ export const addTodo = (userId: number, title: string) => {
     userId,
     completed: false,
   });
-}
+};

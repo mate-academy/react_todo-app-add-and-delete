@@ -5,11 +5,13 @@ import { Todo } from '../../types/Todo';
 interface Props {
   todo: Todo,
   onDeleteTodo?: (todoId: number) => void,
+  isProcesed?: boolean,
 }
 
 export const TodoItem: React.FC<Props> = ({
   todo,
   onDeleteTodo = () => {},
+  isProcesed,
 }) => {
   return (
     <div
@@ -34,7 +36,12 @@ export const TodoItem: React.FC<Props> = ({
         ×
       </button>
 
-      <div className="modal overlay">
+      <div className={classNames(
+        'modal',
+        'overlay',
+        { 'is-active': isProcesed },
+      )}
+      >
         <div className="modal-background has-background-white-ter" />
         <div className="loader" />
       </div>
