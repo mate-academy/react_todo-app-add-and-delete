@@ -6,7 +6,7 @@ type Props = {
   visibleTodos: Todo[] | null,
   filter: string,
   setFilter: (status: TodoStatus) => void,
-  completedTodos: Todo[] | null,
+  completedTodos: Todo[],
   handleRemoveCompleted: () => void,
 };
 
@@ -56,14 +56,14 @@ export const Footer: React.FC<Props> = ({
       </a>
     </nav>
 
-    {completedTodos && (
-      <button
-        type="button"
-        className="todoapp__clear-completed"
-        onClick={handleRemoveCompleted}
-      >
-        Clear completed
-      </button>
-    )}
+    <button
+      type="button"
+      className={cn('todoapp__clear-completed', {
+        hidden: completedTodos.length === 0,
+      })}
+      onClick={handleRemoveCompleted}
+    >
+      Clear completed
+    </button>
   </footer>
 );

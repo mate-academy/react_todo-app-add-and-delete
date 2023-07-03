@@ -27,7 +27,7 @@ export const Header: React.FC<Props> = ({
     />
 
     <form
-      onSubmit={(e) => handleSubmit(e)}
+      onSubmit={handleSubmit}
     >
       <input
         type="text"

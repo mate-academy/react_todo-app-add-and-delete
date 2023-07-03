@@ -129,5 +129,10 @@
     &:active {
       text-decoration: none;
     }
+
+    &.hidden {
+      opacity: 0;
+      cursor: none;
+    }
   }
 }

@@ -65,6 +65,7 @@ export const App: React.FC = () => {
     if (!newTodoTitle.trim()) {
       setIsError(ErrorMessage.titleError);
       setIsLoading(false);
+      setTempTodo(null);
 
       return;
     }
