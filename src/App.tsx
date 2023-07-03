@@ -2,7 +2,6 @@
 import React, {
   useCallback, useEffect, useMemo, useState,
 } from 'react';
-// import { UserWarning } from './UserWarning';
 import { Todo } from './types/Todo';
 import { deleteTodo, getTodos, postTodo } from './api/todos';
 import { TodoList } from './components/TodoList';

@@ -1,4 +1,4 @@
-import { FC, memo } from 'react';
+import React, { FC, memo } from 'react';
 import { Todo as TodoType } from '../types/Todo';
 import { Todo } from './Todo';
 
@@ -20,13 +20,10 @@ export const TodoList: FC<Props> = memo(({ todos, removeTodo, tempTodo }) => {
       ))}
 
       {tempTodo && (
-        <>
-          <Todo
-            todo={tempTodo}
-            removeTodo={removeTodo}
-          />
-          загрузка
-        </>
+        <Todo
+          todo={tempTodo}
+          removeTodo={removeTodo}
+        />
       )}
     </ul>
   );

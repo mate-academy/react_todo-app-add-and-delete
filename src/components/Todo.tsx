@@ -1,4 +1,4 @@
-import { FC } from 'react';
+import React, { FC } from 'react';
 import classNames from 'classnames';
 import { Todo as TodoType } from '../types/Todo';
 
@@ -14,8 +14,8 @@ export const Todo:FC<Props> = ({ todo, removeTodo }) => {
     title,
   } = todo;
 
-  const handleRemove = async () => {
-    await removeTodo(id);
+  const handleRemove = () => {
+    removeTodo(id);
   };
 
   return (
