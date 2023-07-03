@@ -1,3 +1,4 @@
+import cn from 'classnames';
 import { FC, useMemo } from 'react';
 import { FilterType } from '../Enums/FilterType';
 import { Todo } from '../types/Todo';
@@ -37,7 +38,9 @@ export const Footer:FC<Props> = ({
       {/* don't show this button if there are no completed todos */}
       <button
         type="button"
-        className="todoapp__clear-completed"
+        className={cn('todoapp__clear-completed', {
+          hidden: completedTodosIds.length === 0,
+        })}
         onClick={() => removeTodos(completedTodosIds)}
       >
         Clear completed

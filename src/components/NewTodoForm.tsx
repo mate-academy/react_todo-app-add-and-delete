@@ -12,7 +12,8 @@ interface Props {
 }
 
 export const NewTodoForm:FC<Props> = ({ addNewTodo, setError }) => {
-  const [newTodoQuery, setNewTodoQuery] = useState('');
+  const [newTodoQuery, setNewTodoQuery] = useState<string>('');
+  const [isInputDisabled, setIsInputDisabled] = useState<boolean>(false);
 
   const handleFormInputChange = (event:ChangeEvent<HTMLInputElement>) => {
     setNewTodoQuery(event.target.value);
@@ -26,15 +27,19 @@ export const NewTodoForm:FC<Props> = ({ addNewTodo, setError }) => {
         status: true,
         message: 'Title can\'t be empty',
       });
+      setIsInputDisabled(false);
 
       return;
     }
 
+    setIsInputDisabled(true);
     const isSucsess = await addNewTodo(newTodoQuery);
 
     if (isSucsess) {
       setNewTodoQuery('');
     }
+
+    setIsInputDisabled(false);
   };
 
   return (
@@ -47,6 +52,7 @@ export const NewTodoForm:FC<Props> = ({ addNewTodo, setError }) => {
         placeholder="What needs to be done?"
         value={newTodoQuery}
         onChange={handleFormInputChange}
+        disabled={isInputDisabled}
       />
     </form>
   );
