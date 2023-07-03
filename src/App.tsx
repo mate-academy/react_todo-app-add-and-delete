@@ -64,7 +64,7 @@ export const App: React.FC = () => {
     setError(null);
   }, []);
 
-  const addTodo = async (todoTitle: string) => {
+  const addTodo = useCallback(async (todoTitle: string) => {
     const newTodo = {
       userId: USER_ID,
       completed: false,
@@ -83,9 +83,9 @@ export const App: React.FC = () => {
       setTempTodo(null);
       setInputTitle('');
     }
-  };
+  }, [todos]);
 
-  const removeTodo = async (todoId: number) => {
+  const removeTodo = useCallback(async (todoId: number) => {
     try {
       setIsLoading((currentTodoIds) => [...currentTodoIds, todoId]);
       await deleteTodo(todoId);
@@ -97,11 +97,11 @@ export const App: React.FC = () => {
       setIsLoading((currentTodos) => (
         currentTodos.filter((id => id !== todoId))));
     }
-  };
+  }, [isLoadingTodo]);
 
-  const onIputTodoTitle = (todoTitle: string) => {
+  const onIputTodoTitle = useCallback((todoTitle: string) => {
     setInputTitle(todoTitle);
-  };
+  }, []);
 
   const activeTodosCount = todos.filter(todo => !todo.completed).length;
   const completedTodosCount = todos.filter(todo => todo.completed).length;

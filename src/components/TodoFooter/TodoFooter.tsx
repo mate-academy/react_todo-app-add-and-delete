@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useCallback } from 'react';
 import { TodoFilter } from '../TodoFilter/TodoFilter';
 import { TodoStatusFilter } from '../../types/TodoStatusFilter';
 import { Todo } from '../../types/Todo';
@@ -12,7 +12,7 @@ type Props = {
   onRemoveTodo: (todoId: number) => void,
 };
 
-export const TodoFooter: React.FC<Props> = ({
+export const TodoFooter: React.FC<Props> = React.memo(({
   status,
   onSelectStatusFilter,
   uncompletedTodosCount,
@@ -20,13 +20,13 @@ export const TodoFooter: React.FC<Props> = ({
   todos,
   onRemoveTodo,
 }) => {
-  const removeAllCompletedTodos = (todosFromServer: Todo[]) => {
+  const removeAllCompletedTodos = useCallback((todosFromServer: Todo[]) => {
     todosFromServer.forEach((todo) => {
       if (todo.completed) {
         onRemoveTodo(todo.id);
       }
     });
-  };
+  }, todos);
 
   return (
     <footer className="todoapp__footer">
@@ -50,4 +50,4 @@ export const TodoFooter: React.FC<Props> = ({
       )}
     </footer>
   );
-};
+});

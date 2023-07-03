@@ -6,7 +6,10 @@ type Props = {
   onCloseError: () => void,
 };
 
-export const TodoError: React.FC<Props> = ({ error, onCloseError }) => {
+export const TodoError: React.FC<Props> = React.memo(({
+  error,
+  onCloseError,
+}) => {
   return (
     <div className={cn(`
         notification is-danger
@@ -23,4 +26,4 @@ export const TodoError: React.FC<Props> = ({ error, onCloseError }) => {
       {error}
     </div>
   );
-};
+});

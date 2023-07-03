@@ -9,7 +9,7 @@ type Props = {
   onRemoveTodo: (todoId: number) => void,
 };
 
-export const TodoInfo: React.FC<Props> = ({
+export const TodoInfo: React.FC<Props> = React.memo(({
   todo,
   isLoadingTodo,
   onRemoveTodo,
@@ -45,4 +45,4 @@ export const TodoInfo: React.FC<Props> = ({
       </div>
     </div>
   );
-};
+});
