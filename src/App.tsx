@@ -43,7 +43,7 @@ export const App: React.FC = () => {
 
       return newTodo;
     } catch (error) {
-      setVisibleError('Can\'t add todo');
+      setVisibleError('Unable to add a todo');
 
       return null;
     }
@@ -55,9 +55,31 @@ export const App: React.FC = () => {
         setTodos(prevTodos => prevTodos.filter(todo => todo.id !== id));
       })
       .catch(() => {
-        setVisibleError("Can't delete todo");
+        setVisibleError('Unable to delete a todo');
       });
   }, []);
+
+  const removeCompletedTodo = useCallback(() => {
+    const completedTodoIds = todos
+      .filter(todo => todo.completed)
+      .map(todo => todo.id);
+
+    Promise.all(
+      completedTodoIds.map(id => (
+        client.delete(`/todos/${id}`)
+          .catch(() => {
+            setVisibleError(`Unable to delete todo with ID ${id}`);
+          }))),
+    )
+      .then(() => {
+        const filteredTodos = todos.filter(todo => !todo.completed);
+
+        setTodos(filteredTodos);
+      })
+      .catch(() => {
+        setVisibleError('Unable to delete completed todos');
+      });
+  }, [todos]);
 
   if (!USER_ID) {
     return <UserWarning />;
@@ -85,6 +107,7 @@ export const App: React.FC = () => {
             setTodoFilter={setTodoFilter}
             todoFilter={todoFilter}
             todos={todos}
+            removeCompletedTodo={removeCompletedTodo}
           />
         )}
       </div>
