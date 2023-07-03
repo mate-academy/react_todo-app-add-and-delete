@@ -33,7 +33,6 @@ export const Footer: React.FC<Props> = ({
             3 items left
           </span>
 
-          {/* Active filter should have a 'selected' class */}
           <nav className="filter">
             {sortMethods.map(method => (
               <a
@@ -50,7 +49,6 @@ export const Footer: React.FC<Props> = ({
             ))}
           </nav>
 
-          {/* don't show this button if there are no completed todos */}
           {noCompletedTodos() && (
             <button
               type="button"

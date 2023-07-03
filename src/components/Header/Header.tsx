@@ -7,7 +7,7 @@ interface Props {
   formSummit: (event: React.FormEvent) => void,
   todoTitle: string,
   setTodoTitle: (title: string) => void,
-  isCreating: boolean,
+  tempTodo: Todo | null,
 }
 
 export const Header: React.FC<Props> = ({
@@ -15,7 +15,7 @@ export const Header: React.FC<Props> = ({
   formSummit,
   todoTitle,
   setTodoTitle,
-  isCreating,
+  tempTodo,
 }) => {
   return (
     <header className="todoapp__header">
@@ -32,7 +32,7 @@ export const Header: React.FC<Props> = ({
           placeholder="What needs to be done?"
           value={todoTitle}
           onChange={(event) => setTodoTitle(event.target.value)}
-          disabled={isCreating}
+          disabled={!!tempTodo}
         />
       </form>
     </header>

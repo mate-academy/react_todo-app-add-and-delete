@@ -51,7 +51,6 @@ export const App: React.FC = () => {
   const [todoTitle, setTodoTitle] = useState('');
   const [tempTodo, setTempTodo] = useState<Todo | null>(null);
   const [errorType, setErrorType] = useState<ErrorType>(ErrorType.NONE);
-  const [isCreating, setIsCreating] = useState(false);
   const [procesingTodos, SetProcesingTodos] = useState<number[]>([]);
 
   const noneError = (): void => {
@@ -113,18 +112,16 @@ export const App: React.FC = () => {
 
     try {
       noneError();
-      setIsCreating(true);
       setTempTodo(creatTempTodo(USER_ID, todoTitle));
 
       const todo = await addTodo(USER_ID, todoTitle);
 
       setTodos([...todos, todo]);
       setTodoTitle('');
-      setTempTodo(null);
     } catch {
       newError(ErrorType.ADD);
     } finally {
-      setIsCreating(false);
+      setTempTodo(null);
     }
   };
 
@@ -132,7 +129,7 @@ export const App: React.FC = () => {
     try {
       noneError();
 
-      SetProcesingTodos([...procesingTodos, todoId]);
+      SetProcesingTodos([todoId]);
 
       await deleteTodo(todoId);
 
@@ -180,7 +177,7 @@ export const App: React.FC = () => {
           formSummit={handleFormSubmit}
           todoTitle={todoTitle}
           setTodoTitle={setTodoTitle}
-          isCreating={isCreating}
+          tempTodo={tempTodo}
         />
 
         <TodoList
