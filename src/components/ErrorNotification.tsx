@@ -4,12 +4,12 @@ import { LoadError } from '../types/LoadError';
 
 interface Props {
   loadError: LoadError,
-  setLoadError: React.Dispatch<React.SetStateAction<LoadError>>,
+  setError: React.Dispatch<React.SetStateAction<LoadError>>,
 }
 
-export const ErrorNotification:FC<Props> = ({ loadError, setLoadError }) => {
+export const ErrorNotification:FC<Props> = ({ loadError, setError }) => {
   const disableError = () => {
-    setLoadError((current) => ({
+    setError((current) => ({
       ...current,
       status: false,
     }));
