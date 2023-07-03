@@ -1,5 +1,5 @@
 import cn from 'classnames';
-import { FC, useEffect } from 'react';
+import { FC } from 'react';
 import { LoadError } from '../types/LoadError';
 
 interface Props {
@@ -15,9 +15,11 @@ export const ErrorNotification:FC<Props> = ({ loadError, setError }) => {
     }));
   };
 
-  useEffect(() => {
-    setTimeout(disableError, 3000);
-  }, []);
+  if (loadError.status) {
+    setTimeout(() => {
+      disableError();
+    }, 3000);
+  }
 
   return (
     <div

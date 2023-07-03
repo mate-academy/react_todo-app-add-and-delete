@@ -72,6 +72,7 @@ export const App: React.FC = () => {
         status: true,
         message: 'Failed to add new Todo, try again...',
       });
+      setTempTodo(null);
 
       return false;
     }
