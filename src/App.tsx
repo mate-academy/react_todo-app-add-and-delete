@@ -49,6 +49,16 @@ export const App: React.FC = () => {
     }
   }, []);
 
+  const removeTodo = useCallback((id: number) => {
+    client.delete(`/todos/${id}`)
+      .then(() => {
+        setTodos(prevTodos => prevTodos.filter(todo => todo.id !== id));
+      })
+      .catch(() => {
+        setVisibleError("Can't delete todo");
+      });
+  }, []);
+
   if (!USER_ID) {
     return <UserWarning />;
   }
@@ -67,6 +77,7 @@ export const App: React.FC = () => {
 
         <TodoList
           todos={FilterTodos(todos, todoFilter)}
+          removeTodo={removeTodo}
         />
 
         {todos.length > 0 && (

@@ -4,9 +4,10 @@ import { Todo } from '../types/Todo';
 
 type Props = {
   todos: Todo[];
+  removeTodo: (value: number) => void;
 };
 
-export const TodoList: React.FC<Props> = ({ todos }) => {
+export const TodoList: React.FC<Props> = ({ todos, removeTodo }) => {
   const [isEditing] = useState(false);
 
   return (
@@ -53,6 +54,7 @@ export const TodoList: React.FC<Props> = ({ todos }) => {
                 <button
                   type="button"
                   className="todo__remove"
+                  onClick={() => removeTodo(id)}
                 >
                   ×
                 </button>
