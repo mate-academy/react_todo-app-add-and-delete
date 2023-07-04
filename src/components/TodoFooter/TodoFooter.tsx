@@ -26,7 +26,7 @@ export const TodoFooter: React.FC<Props> = React.memo(({
         onRemoveTodo(todo.id);
       }
     });
-  }, todos);
+  }, [todos]);
 
   return (
     <footer className="todoapp__footer">

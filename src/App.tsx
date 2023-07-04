@@ -56,9 +56,9 @@ export const App: React.FC = () => {
     setStatusFilter(status);
   }, []);
 
-  const addError = (errorText: string) => {
+  const addError = useCallback((errorText: string) => {
     setError(errorText);
-  };
+  }, []);
 
   const closeError = useCallback(() => {
     setError(null);
@@ -99,7 +99,7 @@ export const App: React.FC = () => {
     }
   }, [isLoadingTodo]);
 
-  const onIputTodoTitle = useCallback((todoTitle: string) => {
+  const onInputTodoTitle = useCallback((todoTitle: string) => {
     setInputTitle(todoTitle);
   }, []);
 
@@ -121,7 +121,7 @@ export const App: React.FC = () => {
           isActiveToggleAllActive={isActiveToggleAllActive}
           isVisibleToggleAllActive={isVisibleToggleAllActive}
           title={inputTitle}
-          onInputTitle={onIputTodoTitle}
+          onInputTitle={onInputTodoTitle}
           onAddTodo={addTodo}
           onAddError={addError}
         />
