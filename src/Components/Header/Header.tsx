@@ -6,17 +6,16 @@ import {
 } from 'react';
 
 interface Props {
-  isLoadingTodo: boolean;
   setError: React.Dispatch<string | null>;
   addTodo: (title: string) => Promise<void>;
 }
 
 export const Header: FC<Props> = ({
-  isLoadingTodo,
   addTodo,
   setError,
 }) => {
   const [value, setValue] = useState<string>('');
+  const [isLoading, setIsLoading] = useState<boolean>(false);
 
   const inputRef = useRef<HTMLInputElement>(null);
 
@@ -31,8 +30,11 @@ export const Header: FC<Props> = ({
       return;
     }
 
+    setIsLoading(true);
+
     await addTodo(normalizeTitle);
 
+    setIsLoading(false);
     setValue('');
   };
 
@@ -45,7 +47,7 @@ export const Header: FC<Props> = ({
     if (inputRef.current) {
       inputRef.current.focus();
     }
-  }, [isLoadingTodo]);
+  }, [isLoading]);
 
   return (
     <header className="todoapp__header">
@@ -59,7 +61,7 @@ export const Header: FC<Props> = ({
           placeholder="What needs to be done?"
           value={value}
           onChange={handleChangeInput}
-          disabled={isLoadingTodo}
+          disabled={isLoading}
           ref={inputRef}
         />
       </form>
