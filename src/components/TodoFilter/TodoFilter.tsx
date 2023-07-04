@@ -1,18 +1,18 @@
 import cn from 'classnames';
 
 type Props = {
-  completionStatus: string,
-  setCompletionStatus: (newStatus:string) => void;
+  filter: string,
+  setFilter: (newFilter:string) => void;
 };
 
 export const TodoFilter:React.FC<Props> = ({
-  completionStatus,
-  setCompletionStatus,
+  filter,
+  setFilter,
 }) => {
-  const handleFilterClick = (event: React.MouseEvent<HTMLAnchorElement>) => {
-    const clickedStatus = event.currentTarget.textContent || '';
+  const handleFilterChange = (event: React.MouseEvent<HTMLAnchorElement>) => {
+    const newFilter = event.currentTarget.textContent || '';
 
-    setCompletionStatus(clickedStatus);
+    setFilter(newFilter);
   };
 
   return (
@@ -20,9 +20,9 @@ export const TodoFilter:React.FC<Props> = ({
       <a
         href="#/"
         className={cn('filter__link', {
-          selected: completionStatus === 'All',
+          selected: filter === 'All',
         })}
-        onClick={handleFilterClick}
+        onClick={handleFilterChange}
       >
         All
       </a>
@@ -30,9 +30,9 @@ export const TodoFilter:React.FC<Props> = ({
       <a
         href="#/active"
         className={cn('filter__link', {
-          selected: completionStatus === 'Active',
+          selected: filter === 'Active',
         })}
-        onClick={handleFilterClick}
+        onClick={handleFilterChange}
       >
         Active
       </a>
@@ -40,9 +40,9 @@ export const TodoFilter:React.FC<Props> = ({
       <a
         href="#/completed"
         className={cn('filter__link', {
-          selected: completionStatus === 'Completed',
+          selected: filter === 'Completed',
         })}
-        onClick={handleFilterClick}
+        onClick={handleFilterChange}
       >
         Completed
       </a>

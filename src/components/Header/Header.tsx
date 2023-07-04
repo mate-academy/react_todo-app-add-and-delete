@@ -1,15 +1,18 @@
 import { useState } from 'react';
+import cn from 'classnames';
 
 type Props = {
   setError: (error:string) => void;
   addNewTodo: (newTitle:string) => void;
   isLoading: boolean,
+  hasCompletedTodos: boolean,
 };
 
 export const Header:React.FC<Props> = ({
   setError,
   addNewTodo,
   isLoading,
+  hasCompletedTodos,
 }) => {
   const [newTodoTitle, setNewTodoTitle] = useState('');
 
@@ -30,9 +33,13 @@ export const Header:React.FC<Props> = ({
 
   return (
     <header className="todoapp__header">
-      {/* this buttons is active only if there are some active todos */}
       {/*  eslint-disable-next-line jsx-a11y/control-has-associated-label */}
-      <button type="button" className="todoapp__toggle-all active" />
+      <button
+        type="button"
+        className={cn('todoapp__toggle-all', {
+          active: hasCompletedTodos,
+        })}
+      />
 
       <form onSubmit={handleSubmit}>
         <input

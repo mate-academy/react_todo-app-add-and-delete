@@ -4,9 +4,14 @@ import { Todo } from '../../types/Todo';
 type Props = {
   todo: Todo;
   isLoading: boolean,
+  deleteTodo:(todoId:number) => void;
 };
 
-export const TodoItem:React.FC<Props> = ({ todo, isLoading }) => {
+export const TodoItem:React.FC<Props> = ({
+  todo,
+  isLoading,
+  deleteTodo,
+}) => {
   return (
     <div className={cn('todo', {
       completed: todo.completed,
@@ -22,8 +27,13 @@ export const TodoItem:React.FC<Props> = ({ todo, isLoading }) => {
 
       <span className="todo__title">{todo.title}</span>
 
-      {/* Remove button appears only on hover */}
-      <button type="button" className="todo__remove">×</button>
+      <button
+        type="button"
+        className="todo__remove"
+        onClick={() => deleteTodo(todo.id)}
+      >
+        ×
+      </button>
 
       {/* overlay will cover the todo while it is being updated */}
       <div className={cn('modal overlay', {
