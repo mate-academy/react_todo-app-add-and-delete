@@ -1,12 +1,12 @@
 import { FC } from 'react';
 import { TodoFilter } from '../TodoFilter';
-import { FilterOptions } from '../../enums/FilterOptions';
+import { FilterOption } from '../../enums/FilterOption';
 import { Todo } from '../../types/Todo';
 
 interface Props {
   todos: Todo[];
-  filterOption: FilterOptions;
-  setFilterOption: (filterOption: FilterOptions) => void;
+  filterOption: FilterOption;
+  setFilterOption: (filterOption: FilterOption) => void;
   removeCompleted: () => void;
 }
 

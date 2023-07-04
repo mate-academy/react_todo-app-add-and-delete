@@ -10,7 +10,7 @@ import { UserWarning } from './UserWarning';
 import { Todo } from './types/Todo';
 import { TodoList } from './Components/TodoList';
 import { createTodo, getTodos, remove } from './api/api.todos';
-import { FilterOptions } from './enums/FilterOptions';
+import { FilterOption } from './enums/FilterOption';
 import { Footer } from './Components/Footer';
 import { TodoNotification } from './Components/TodoNotification';
 import { Header } from './Components/Header';
@@ -19,7 +19,7 @@ const USER_ID = 10898;
 
 export const App: FC = () => {
   const [todos, setTodos] = useState<Todo[]>([]);
-  const [filterOption, setFilterOption] = useState(FilterOptions.all);
+  const [filterOption, setFilterOption] = useState(FilterOption.All);
   const [error, setError] = useState<string | null>(null);
   const [tempTodo, setTempTodo] = useState<Todo | null>(null);
   const [isLoadingTodo, setIsLoadingTodo] = useState<boolean>(false);
@@ -28,14 +28,14 @@ export const App: FC = () => {
   const visibleTodos = useMemo(() => {
     return todos.filter((todo) => {
       switch (filterOption) {
-        case FilterOptions.active:
+        case FilterOption.Active:
           return !todo.completed;
 
-        case FilterOptions.completed:
+        case FilterOption.Completed:
           return todo.completed;
 
         default:
-          return FilterOptions.all;
+          return FilterOption.All;
       }
     });
   }, [filterOption, todos]);
