@@ -38,7 +38,7 @@ export const App: React.FC = () => {
   const uncompletedTodos = todos.filter(todo => !todo.completed);
   const completedTodos = todos.filter(todo => todo.completed);
 
-  const filterTodos = () => {
+  const filteredTodos = () => {
     switch (filter) {
       case Filters.ACTIVE:
         return uncompletedTodos;
@@ -49,8 +49,6 @@ export const App: React.FC = () => {
         return todos;
     }
   };
-
-  const filteredTodos = filterTodos();
 
   const createTodo = async (title: string) => {
     try {
@@ -125,7 +123,7 @@ export const App: React.FC = () => {
           </form>
         </header>
 
-        <TodoList todos={filteredTodos} removeTodo={removeTodo} />
+        <TodoList todos={filteredTodos()} removeTodo={removeTodo} />
 
         {todos.length !== 0
         && (
@@ -134,7 +132,6 @@ export const App: React.FC = () => {
               {`${uncompletedTodos.length} items left`}
             </span>
 
-            {/* Active filter should have a 'selected' class */}
             <nav className="filter">
               <a
                 href="#/"
