@@ -1,45 +1,26 @@
 import React, {
   ChangeEvent,
   FormEvent,
-  useState,
 } from 'react';
 import cn from 'classnames';
 import { Todo } from '../types/Todo';
 
 type Props = {
   todos: Todo[];
-  setVisibleError: (value: string) => void;
-  addTodo: (value: string) => void;
+  isLoading: boolean;
+  handleSubmit: (e: FormEvent<HTMLFormElement>) => void;
+  inputValue: string
+  setInputValue: (input: string) => void;
 };
 
 export const Header: React.FC<Props> = ({
   todos,
-  setVisibleError,
-  addTodo,
+  setInputValue,
+  handleSubmit,
+  inputValue,
+  isLoading,
 }) => {
-  const [inputValue, setInputValue] = useState('');
   const isToggleButtonVisible = todos.every(todo => todo.completed);
-
-  const handleOnSubmit = (
-    event: FormEvent<HTMLFormElement>,
-  ) => {
-    event.preventDefault();
-
-    if (!inputValue.trim()) {
-      setInputValue('');
-      setVisibleError('Title can\'t be empty');
-
-      return;
-    }
-
-    try {
-      addTodo(inputValue);
-    } catch {
-      setVisibleError('Can`t add todo');
-    }
-
-    setInputValue('');
-  };
 
   const handleInputChange = (
     event: ChangeEvent<HTMLInputElement>,
@@ -58,7 +39,7 @@ export const Header: React.FC<Props> = ({
       />
 
       <form
-        onSubmit={handleOnSubmit}
+        onSubmit={handleSubmit}
       >
         <input
           type="text"
@@ -66,6 +47,7 @@ export const Header: React.FC<Props> = ({
           placeholder="What needs to be done?"
           value={inputValue}
           onChange={handleInputChange}
+          disabled={isLoading}
         />
       </form>
     </header>
