@@ -23,6 +23,7 @@ export const App: React.FC = () => {
   const [visibleError, setVisibleError] = useState('');
   const [isLoading, setIsLoading] = useState(false);
   const [inputValue, setInputValue] = useState('');
+  const [tempTodo, setTempTodo] = useState<Todo | null>(null);
   const [deletedTodoId, setDeletedTodoId] = useState([0]);
 
   useEffect(() => {
@@ -33,14 +34,22 @@ export const App: React.FC = () => {
       });
   }, []);
 
-  const handleSubmit = (e: FormEvent<HTMLFormElement>) => {
+  const handleSubmit = useCallback((e: FormEvent<HTMLFormElement>) => {
     e.preventDefault();
 
     setIsLoading(true);
 
+    setTempTodo({
+      id: 0,
+      title: inputValue,
+      completed: false,
+      userId: USER_ID,
+    });
+
     if (!inputValue.trim()) {
       setVisibleError('Title can`t be empty');
       setIsLoading(false);
+      setTempTodo(null);
 
       return;
     }
@@ -60,9 +69,10 @@ export const App: React.FC = () => {
       })
       .finally(() => {
         setIsLoading(false);
+        setTempTodo(null);
         setInputValue('');
       });
-  };
+  }, [inputValue, todos]);
 
   const removeTodo = (todoId: number) => {
     setDeletedTodoId((prevState) => [...prevState, todoId]);
@@ -124,6 +134,7 @@ export const App: React.FC = () => {
       <div className="todoapp__content">
 
         <TodoList
+          tempTodo={tempTodo}
           todos={FilterTodos(todos, todoFilter)}
           removeTodo={removeTodo}
           deletedTodoId={deletedTodoId}

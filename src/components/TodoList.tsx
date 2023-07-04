@@ -6,12 +6,14 @@ type Props = {
   todos: Todo[];
   removeTodo: (value: number) => void;
   deletedTodoId: number[];
+  tempTodo: Todo | null;
 };
 
 export const TodoList: React.FC<Props> = ({
   todos,
   removeTodo,
   deletedTodoId,
+  tempTodo,
 }) => {
   const [isEditing] = useState(false);
 
@@ -68,7 +70,7 @@ export const TodoList: React.FC<Props> = ({
 
             <div
               className={cn('modal overlay ', {
-                'is-active': todo.id === 0 || deletedTodoId.includes(id),
+                'is-active': deletedTodoId.includes(id),
               })}
             >
               <div className="modal-background has-background-white-ter" />
@@ -77,6 +79,58 @@ export const TodoList: React.FC<Props> = ({
           </div>
         );
       })}
+
+      {tempTodo && (
+        <div
+          className="todo"
+        >
+          <label className="todo__status-label">
+            <input
+              type="checkbox"
+              className="todo__status"
+              defaultChecked={tempTodo.completed}
+            />
+          </label>
+
+          {isEditing ? (
+            <form>
+              <input
+                type="text"
+                className="todo__title-field"
+                placeholder="Empty todo will be deleted"
+                defaultValue="Todo is being edited now"
+              />
+            </form>
+          ) : (
+            <>
+              <span
+                className="todo__title"
+              >
+                {tempTodo.title}
+              </span>
+
+              <button
+                type="button"
+                className="todo__remove"
+                onClick={() => removeTodo(tempTodo.id)}
+              >
+                ×
+              </button>
+            </>
+          )}
+
+          <div
+            className={cn('modal overlay ', {
+              'is-active': tempTodo?.id === 0
+              || deletedTodoId.includes(tempTodo.id),
+            })}
+          >
+            <div className="modal-background has-background-white-ter" />
+            <div className="loader" />
+          </div>
+        </div>
+      )}
+
     </section>
   );
 };
