@@ -51,95 +51,95 @@ Remove all the completed todos after the `Clear completed` button click:
 
 <details>
   <summary>Click here to see the hint</summary>
-  
+
   Use [React Transition Group](https://reactcommunity.org/react-transition-group/transition-group)
 
   ```tsx
-  <section className="todoapp__main" data-cy="TodoList">
-    <TransitionGroup>
-      {visibleTodos.map(todo => (
-        <CSSTransition
-          key={todo.id}
-          timeout={300}
-          classNames="item"
-        >
-          <TodoItem
-            todo={todo}
-            isProcessed={processings.includes(todo.id)}
-            onDelete={() => deleteTodo(todo.id)}
-            onUpdate={updateTodo}
-          />
-        </CSSTransition>
-      ))}
+  // <section className="todoapp__main" data-cy="TodoList">
+  //   <TransitionGroup>
+  //     {visibleTodos.map(todo => (
+  //       <CSSTransition
+  //         key={todo.id}
+  //         timeout={300}
+  //         classNames="item"
+  //       >
+  //         <TodoItem
+  //           todo={todo}
+  //           isProcessed={processings.includes(todo.id)}
+  //           onDelete={() => deleteTodo(todo.id)}
+  //           onUpdate={updateTodo}
+  //         />
+  //       </CSSTransition>
+  //     ))}
 
-      {creating && (
-        <CSSTransition
-          key={0}
-          timeout={300}
-          classNames="temp-item"
-        >
-          <TodoItem
-            todo={{
-              id: Math.random(),
-              title,
-              completed: false,
-              userId: user.id,
-            }}
-            isProcessed
-          />
-        </CSSTransition>
-      )}
-    </TransitionGroup>
-  </section>
-  ```
-    
-  Here are the styles used in this example
-  ```css
-  .item-enter {
-    max-height: 0;
-  }
+  //     {creating && (
+  //       <CSSTransition
+  //         key={0}
+  //         timeout={300}
+  //         classNames="temp-item"
+  //       >
+  //         <TodoItem
+  //           todo={{
+  //             id: Math.random(),
+  //             title,
+  //             completed: false,
+  //             userId: user.id,
+  //           }}
+  //           isProcessed
+  //         />
+  //       </CSSTransition>
+  //     )}
+  //   </TransitionGroup>
+  // </section>
+  // ```
 
-  .item-enter-active {
-    overflow: hidden;
-    max-height: 58px;
-    transition: max-height 0.3s ease-in-out;
-  }
+  // Here are the styles used in this example
+  // ```css
+  // .item-enter {
+  //   max-height: 0;
+  // }
 
-  .item-exit {
-    max-height: 58px;
-  }
+  // .item-enter-active {
+  //   overflow: hidden;
+  //   max-height: 58px;
+  //   transition: max-height 0.3s ease-in-out;
+  // }
 
-  .item-exit-active {
-    overflow: hidden;
-    max-height: 0;
-    transition: max-height 0.3s ease-in-out;
-  }
+  // .item-exit {
+  //   max-height: 58px;
+  // }
 
-  .temp-item-enter {
-    max-height: 0;
-  }
+  // .item-exit-active {
+  //   overflow: hidden;
+  //   max-height: 0;
+  //   transition: max-height 0.3s ease-in-out;
+  // }
 
-  .temp-item-enter-active {
-    overflow: hidden;
-    max-height: 58px;
-    transition: max-height 0.3s ease-in-out;
-  }
+  // .temp-item-enter {
+  //   max-height: 0;
+  // }
 
-  .temp-item-exit {
-    max-height: 58px;
-  }
+  // .temp-item-enter-active {
+  //   overflow: hidden;
+  //   max-height: 58px;
+  //   transition: max-height 0.3s ease-in-out;
+  // }
 
-  .temp-item-exit-active {
-    transform: translateY(-58px);
-    max-height: 0;
-    opacity: 0;
-    transition: 0.3s ease-in-out;
-    transition-property: opacity, max-height, transform;
-  }
+  // .temp-item-exit {
+  //   max-height: 58px;
+  // }
 
-  .has-error .temp-item-exit-active {
-    transform: translateY(0);
-    overflow: hidden;
-  }
+  // .temp-item-exit-active {
+  //   transform: translateY(-58px);
+  //   max-height: 0;
+  //   opacity: 0;
+  //   transition: 0.3s ease-in-out;
+  //   transition-property: opacity, max-height, transform;
+  // }
+
+  // .has-error .temp-item-exit-active {
+  //   transform: translateY(0);
+  //   overflow: hidden;
+  // }
   ```
 </details>
