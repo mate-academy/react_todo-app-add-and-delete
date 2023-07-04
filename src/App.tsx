@@ -4,6 +4,7 @@ import React, {
   useMemo,
   useEffect,
   useState,
+  useCallback,
 } from 'react';
 import { UserWarning } from './UserWarning';
 import { Todo } from './types/Todo';
@@ -67,7 +68,7 @@ export const App: React.FC = () => {
     setError(null);
   };
 
-  const addTodo = async (title: string) => {
+  const addTodo = useCallback(async (title: string) => {
     try {
       const newTodo = {
         userId: USER_ID,
@@ -88,13 +89,13 @@ export const App: React.FC = () => {
     } finally {
       setTempTodo(null);
     }
-  };
+  }, []);
 
   const showTitleError = (erorMessage: string) => {
     setError(erorMessage);
   };
 
-  const removeTodo = async (todoId: number) => {
+  const removeTodo = useCallback(async (todoId: number) => {
     try {
       setLoadingTodo(prevTodoId => [...prevTodoId, todoId]);
       await deleteTodo(todoId);
@@ -105,7 +106,7 @@ export const App: React.FC = () => {
       setTempTodo(null);
       setLoadingTodo([0]);
     }
-  };
+  }, []);
 
   const handleclearCompletedTodo = () => {
     completedTodos.forEach(async (todo) => {

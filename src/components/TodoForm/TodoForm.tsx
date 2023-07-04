@@ -28,7 +28,6 @@ export const TodoForm: FC<Props> = ({
 
     try {
       setIsLoading(true);
-
       onAddTodo(todoTitle);
       setTodoTitle('');
     } catch {
