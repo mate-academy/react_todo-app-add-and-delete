@@ -27,15 +27,7 @@ export const TodoNotification: FC<Props> = ({ error, setError }) => {
         aria-label="close"
         onClick={closeNotification}
       />
-
       {error}
-
-      {/* show only one message at a time */}
-      {/* Unable to add a todo
-      <br />
-      Unable to delete a todo
-      <br />
-      Unable to update a todo */}
     </div>
   );
 };
