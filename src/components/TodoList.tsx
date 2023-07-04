@@ -1,4 +1,4 @@
-import React, { FC, memo } from 'react';
+import { FC, memo } from 'react';
 import { Todo as TodoType } from '../types/Todo';
 import { Todo } from './Todo';
 

@@ -1,14 +1,16 @@
-/* eslint-disable jsx-a11y/control-has-associated-label */
-import React, {
-  useCallback, useEffect, useMemo, useState,
+import {
+  useCallback,
+  useEffect,
+  useMemo,
+  useState,
 } from 'react';
 import { Todo } from './types/Todo';
+import { ErrorType, FilterType, TodosInfo } from './types/HelperTypes';
+import { getFilteredTodos, getTodosInfo } from './Helper';
 import { deleteTodo, getTodos, postTodo } from './api/todos';
 import { TodoList } from './components/TodoList';
 import { Header } from './components/Header';
-import { ErrorType, FilterType, TodosInfo } from './types/HelperTypes';
 import { ErrorMessage } from './components/ErrorMessage';
-import { getFilteredTodos, getTodosInfo } from './Helper';
 import { Footer } from './components/Footer';
 import { UserWarning } from './UserWarning';
 
@@ -17,7 +19,7 @@ const USER_ID = 10923;
 const initialTodosInfo: TodosInfo = {
   length: 0,
   countOfActive: 0,
-  someCompleted: false,
+  hasCompleted: false,
 };
 
 const initialTodo: Todo = {
@@ -110,26 +112,6 @@ export const App: React.FC = () => {
     setErrorType(null);
   };
 
-  const errorMessage = useMemo(() => {
-    const timerId = setTimeout(() => {
-      setErrorType(null);
-      clearTimeout(timerId);
-    }, 3000);
-
-    switch (errorType) {
-      case ErrorType.DATALOADING:
-        return 'Error loading data';
-      case ErrorType.EMPTY_FIELD:
-        return 'Title can\'t be empty';
-      case ErrorType.ADD_UNABLE:
-        return 'Unable to add a todo';
-      case ErrorType.DELETE_UNABLE:
-        return 'Unable to delete a todo';
-      default:
-        return null;
-    }
-  }, [errorType]);
-
   if (!USER_ID) {
     return <UserWarning />;
   }
@@ -148,28 +130,27 @@ export const App: React.FC = () => {
 
         {todosInfo.length !== 0
           && (
-            <TodoList
-              todos={visibleTodos}
-              removeTodo={removeTodo}
-              tempTodo={tempTodo}
-            />
+            <>
+              <TodoList
+                todos={visibleTodos}
+                removeTodo={removeTodo}
+                tempTodo={tempTodo}
+              />
+              <Footer
+                filterType={filterType}
+                handleFilterType={handleFilterType}
+                hasCompleted={todosInfo.hasCompleted}
+                countOfActive={todosInfo.countOfActive}
+                removeCompletedTodos={removeCompletedTodos}
+              />
+            </>
           )}
-
-        {todosInfo.length !== 0 && (
-          <Footer
-            filterType={filterType}
-            handleFilterType={handleFilterType}
-            someCompleted={todosInfo.someCompleted}
-            countOfActive={todosInfo.countOfActive}
-            removeCompletedTodos={removeCompletedTodos}
-          />
-        )}
       </div>
 
-      {errorMessage
+      {errorType
         && (
           <ErrorMessage
-            errorMessage={errorMessage}
+            errorType={errorType}
             removeError={removeError}
           />
         )}

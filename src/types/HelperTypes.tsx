@@ -5,14 +5,14 @@ export enum FilterType {
 }
 
 export enum ErrorType {
-  DATALOADING = 'DATALOADING',
-  EMPTY_FIELD = 'EMPTY_FIELD',
-  ADD_UNABLE = 'ADD_UNABLE',
-  DELETE_UNABLE = ' DELETE_UNABLE',
+  DATALOADING = 'Error loading data',
+  EMPTY_FIELD = 'Title can\'t be empty',
+  ADD_UNABLE = 'Title can\'t be empty',
+  DELETE_UNABLE = 'Unable to delete a todo',
 }
 
 export interface TodosInfo {
   length: number,
   countOfActive: number,
-  someCompleted: boolean,
+  hasCompleted: boolean,
 }

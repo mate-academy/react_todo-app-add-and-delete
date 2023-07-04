@@ -5,7 +5,7 @@ import { FilterType } from '../types/HelperTypes';
 type Props = {
   filterType: FilterType | null;
   handleFilterType: (value: FilterType) => void
-  someCompleted: boolean
+  hasCompleted: boolean
   countOfActive: number,
   removeCompletedTodos: () => void;
 };
@@ -13,7 +13,7 @@ type Props = {
 export const Footer: FC<Props> = ({
   filterType,
   handleFilterType,
-  someCompleted,
+  hasCompleted,
   countOfActive,
   removeCompletedTodos,
 }) => {
@@ -55,7 +55,7 @@ export const Footer: FC<Props> = ({
         </a>
       </nav>
 
-      {someCompleted
+      {hasCompleted
         && (
           <button
             type="button"

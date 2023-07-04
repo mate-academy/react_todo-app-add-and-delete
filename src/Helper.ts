@@ -26,11 +26,11 @@ export const getTodosInfo = (todos: Todo[]): TodosInfo => {
     todos, FilterType.ACTIVE,
   ).length;
 
-  const someCompleted = todos.some(todo => todo?.completed);
+  const hasCompleted = todos.some(todo => todo?.completed);
 
   return {
     length,
     countOfActive,
-    someCompleted,
+    hasCompleted,
   };
 };

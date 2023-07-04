@@ -1,12 +1,21 @@
 /* eslint-disable jsx-a11y/control-has-associated-label */
-import { FC, memo } from 'react';
+import { FC, memo, useEffect } from 'react';
+import { ErrorType } from '../types/HelperTypes';
 
 type Props = {
-  errorMessage: string;
+  errorType: ErrorType;
   removeError: () => void
 };
 
-export const ErrorMessage: FC<Props> = memo(({ errorMessage, removeError }) => {
+export const ErrorMessage: FC<Props> = memo(({ errorType, removeError }) => {
+  useEffect(() => {
+    const timerId = setTimeout(() => {
+      removeError();
+    }, 3000);
+
+    return () => clearTimeout(timerId);
+  }, []);
+
   return (
     <div className="notification is-danger is-light has-text-weight-normal">
       <button
@@ -14,7 +23,7 @@ export const ErrorMessage: FC<Props> = memo(({ errorMessage, removeError }) => {
         className="delete"
         onClick={removeError}
       />
-      <h2>{errorMessage}</h2>
+      <h2>{errorType}</h2>
     </div>
   );
 });

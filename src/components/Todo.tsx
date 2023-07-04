@@ -1,4 +1,4 @@
-import React, { FC } from 'react';
+import { FC, useState } from 'react';
 import classNames from 'classnames';
 import { Todo as TodoType } from '../types/Todo';
 
@@ -8,14 +8,18 @@ type Props = {
 };
 
 export const Todo:FC<Props> = ({ todo, removeTodo }) => {
+  const [isDeleting, setIsDeleting] = useState(false);
+
   const {
     id,
     completed,
     title,
   } = todo;
 
-  const handleRemove = () => {
-    removeTodo(id);
+  const handleRemove = async () => {
+    setIsDeleting(true);
+    await removeTodo(id);
+    setIsDeleting(false);
   };
 
   return (
@@ -43,7 +47,10 @@ export const Todo:FC<Props> = ({ todo, removeTodo }) => {
         ×
       </button>
 
-      <div className="modal overlay">
+      <div className={classNames('modal overlay', {
+        'is-active': id === 0 || isDeleting,
+      })}
+      >
         <div className="modal-background has-background-white-ter" />
         <div className="loader" />
       </div>

@@ -1,5 +1,5 @@
 /* eslint-disable jsx-a11y/control-has-associated-label */
-import React, { ChangeEvent, FC, useState } from 'react';
+import { ChangeEvent, FC, useState } from 'react';
 import classNames from 'classnames';
 import { ErrorType } from '../types/HelperTypes';
 
@@ -17,7 +17,7 @@ export const Header: FC<Props> = ({ countOfActive, addTodo, setErrorType }) => {
     setTodoTitle(event.target.value);
   };
 
-  const handleSubmit = (event: ChangeEvent<HTMLFormElement>) => {
+  const handleSubmit = async (event: ChangeEvent<HTMLFormElement>) => {
     event.preventDefault();
 
     if (!todoTitle) {
@@ -28,7 +28,7 @@ export const Header: FC<Props> = ({ countOfActive, addTodo, setErrorType }) => {
 
     try {
       setInputDisable(true);
-      addTodo(todoTitle);
+      await addTodo(todoTitle);
     } finally {
       setInputDisable(false);
       setTodoTitle('');
