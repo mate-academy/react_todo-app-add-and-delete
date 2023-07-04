@@ -22,7 +22,6 @@ export const App: FC = () => {
   const [filterOption, setFilterOption] = useState(FilterOption.All);
   const [error, setError] = useState<string | null>(null);
   const [tempTodo, setTempTodo] = useState<Todo | null>(null);
-  // const [isLoadingTodo, setIsLoadingTodo] = useState<boolean>(false);
   const [activeTodoId, setActiveTodoid] = useState<number | null>(null);
 
   const visibleTodos = useMemo(() => {
@@ -124,7 +123,6 @@ export const App: FC = () => {
 
       <div className="todoapp__content">
         <Header
-          // isLoadingTodo={isLoadingTodo}
           addTodo={addTodo}
           setError={setError}
         />
