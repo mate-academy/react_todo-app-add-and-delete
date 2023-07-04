@@ -95,6 +95,14 @@ export const App: React.FC = () => {
     }
   };
 
+  const handleClearCompleted = () => {
+    todos.forEach(async (todo) => {
+      if (todo.completed) {
+        await removeTodo(todo.id);
+      }
+    });
+  };
+
   if (!USER_ID) {
     return <UserWarning />;
   }
@@ -139,6 +147,7 @@ export const App: React.FC = () => {
             todos={todos}
             filterBy={filterBy}
             setFilterBy={setFilterBy}
+            handleClearCompleted={handleClearCompleted}
           />
         )}
       </div>

@@ -7,12 +7,19 @@ type Props = {
   todos: Todo[];
   filterBy: FilterBy;
   setFilterBy: (value: FilterBy) => void;
+  handleClearCompleted: () => void
 };
 
-export const Footer: React.FC<Props> = ({ todos, filterBy, setFilterBy }) => (
+export const Footer: React.FC<Props> = ({
+  todos,
+  filterBy,
+  setFilterBy,
+  handleClearCompleted,
+}) => (
   <footer className="todoapp__footer">
     <span className="todo-count">
       {todos.filter(todo => !todo.completed).length}
+      {' '}
       items left
     </span>
 
@@ -47,7 +54,11 @@ export const Footer: React.FC<Props> = ({ todos, filterBy, setFilterBy }) => (
     </nav>
 
     {/* don't show this button if there are no completed todos */}
-    <button type="button" className="todoapp__clear-completed">
+    <button
+      type="button"
+      className="todoapp__clear-completed"
+      onClick={() => handleClearCompleted()}
+    >
       Clear completed
     </button>
   </footer>
