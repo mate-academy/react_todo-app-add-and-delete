@@ -44,6 +44,7 @@ export const TodoFooter: FC<Props> = ({
           : 'visible',
       }}
       className="todoapp__clear-completed"
+      onClick={() => onDeleteCompeted()}
     >
       Clear completed
     </button>

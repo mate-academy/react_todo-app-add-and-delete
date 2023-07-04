@@ -1,7 +1,12 @@
 /* eslint-disable jsx-a11y/control-has-associated-label */
 import React, { useCallback, useEffect, useState } from 'react';
 import { UserWarning } from './UserWarning';
-import { getTodos } from './api/todos';
+import {
+  addTodo,
+  deleteTodo,
+  getTodos,
+  updateTodo,
+} from './api/todos';
 import { Todo } from './types/Todo';
 import { getFilteredTodos } from './heplers/getFilteredTodos';
 import { SortType } from './enum/SortType';
@@ -14,81 +19,50 @@ const USER_ID = 10922;
 export const App: React.FC = () => {
   const [todos, setTodos] = useState<Todo[]>([]);
   const [sortBy, setSortBy] = useState(SortType.All);
-
-  const createTodo = useCallback((title: string): Promise<Todo> => {
-    const body = {
-      title,
-      completed: false,
-      userId: USER_ID,
-
-    };
-
-    return fetch('https://mate.academy/students-api/todos', {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json; charset=UTF-8',
-      },
-      body: JSON.stringify(body),
-    })
-      .then(response => response.json() as Promise<Todo>)
-      .then(createdTodo => {
-        setTodos(prevTodos => [...prevTodos, createdTodo]);
-
-        return createdTodo;
-      });
-  }, []);
-
-  const deleteTodo = useCallback((todoId: number): Promise<boolean> => {
-    return fetch(`https://mate.academy/students-api/todos/${todoId}`, {
-      method: 'DELETE',
-    })
-      .then(response => response.json()
-        .then(result => {
-          const isDeleted = Boolean(result);
-
-          if (isDeleted) {
-            setTodos(prevTodos => prevTodos.filter(
-              todo => todo.id !== todoId,
-            ));
-          }
-
-          return isDeleted;
-        }));
-  }, []);
-
-  const updateStatus = useCallback(
-    (todoId: number, newStatus: boolean): Promise<Todo> => {
-      const body = {
-        completed: newStatus,
-      };
-
-      return fetch(`https://mate.academy/students-api/todos/${todoId}`, {
-        method: 'PATCH',
-        headers: {
-          'Content-Type': 'application/json; charset=UTF-8',
-        },
-        body: JSON.stringify(body),
-      })
-        .then(response => response.json()
-          .then(result => {
-            const updatedStatus = result;
-
-            setTodos(prevTodos => prevTodos.map(todo => {
-              if (todo.id !== todoId) {
-                return todo;
-              }
-
-              return updatedStatus;
-            }));
-
-            return updatedStatus;
-          }));
-    }, [],
-  );
+  const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
     getTodos(USER_ID)
       .then(data => setTodos(data));
+  }, []);
+
+  const createTodo = useCallback(async (title: string) => {
+    const newTodo = {
+      title,
+      completed: false,
+      userId: USER_ID,
+    };
+
+    const createdTodo = await addTodo(newTodo);
+
+    setTodos(prevTodos => [...prevTodos, createdTodo]);
+  }, []);
+
+  const removeTodo = useCallback(async (id: number) => {
+    try {
+      await deleteTodo(id);
+      setTodos(prevTodos => prevTodos.filter(todo => todo.id !== id));
+    } catch {
+      setError('Unable to delete a todo');
+    }
+  }, []);
+
+  const updateStatus = useCallback(async (id: number, status: boolean) => {
+    try {
+      await updateTodo(id, status);
+      setTodos(prevTodos => prevTodos.map(todo => {
+        if (todo.id !== id) {
+          return todo;
+        }
+
+        return {
+          ...todo,
+          completed: status,
+        };
+      }));
+    } catch {
+      setError('Unable to update a todo');
+    }
   }, []);
 
   if (!USER_ID) {
@@ -123,7 +97,7 @@ export const App: React.FC = () => {
         <TodoMain
           todos={visibleTodos}
           onCheck={updateStatus}
-          deleteTodo={deleteTodo}
+          onDelete={removeTodo}
         />
         <TodoFooter
           count={amountCompletedTodos}
@@ -134,21 +108,19 @@ export const App: React.FC = () => {
         />
       </div>
 
-      {/* Notification is shown in case of any error */}
-      {/* Add the 'hidden' class to hide the message smoothly */}
-      <div
-        className="notification is-danger is-light
-          has-text-weight-normal hidden"
-      >
-        <button type="button" className="delete" />
-
-        {/* show only one message at a time */}
-        Unable to add a todo
-        <br />
-        Unable to delete a todo
-        <br />
-        Unable to update a todo
-      </div>
+      {error && (
+        <div
+          className={`notification is-danger is-light
+          has-text-weight-normal ${!error ? 'hidden' : ''}`}
+        >
+          <button
+            type="button"
+            className="delete"
+            onClick={() => setError(null)}
+          />
+          {error}
+        </div>
+      )}
     </div>
   );
 };

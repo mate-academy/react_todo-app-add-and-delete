@@ -4,14 +4,14 @@ import { Todo } from '../types/Todo';
 
 type Props = {
   todos: Todo[];
-  deleteTodo:(todoId: number) => Promise<boolean>;
-  onCheck: (id: number, status: boolean) => Promise<Todo>;
+  onDelete:(todoId: number) => void;
+  onCheck: (id: number, status: boolean) => void;
 };
 
 export const TodoMain: FC<Props> = ({
   todos,
   onCheck,
-  deleteTodo,
+  onDelete,
 }) => (
   <section className="todoapp__main">
     {todos?.map(todo => (
@@ -36,7 +36,7 @@ export const TodoMain: FC<Props> = ({
         <button
           type="button"
           className="todo__remove"
-          onClick={() => deleteTodo(todo.id)}
+          onClick={() => onDelete(todo.id)}
         >
           ×
         </button>

@@ -1,9 +1,8 @@
 /* eslint-disable jsx-a11y/control-has-associated-label */
 import { FC, useState } from 'react';
-import { Todo } from '../types/Todo';
 
 interface Props {
-  createTodo: (title: string) => Promise<Todo>;
+  createTodo: (title: string) => void;
 }
 
 export const TodoHeader: FC<Props> = ({ createTodo }) => {
