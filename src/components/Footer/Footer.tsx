@@ -3,7 +3,7 @@ import { Todo } from '../../types/Todo';
 import { TodoStatus } from '../../types/TodoStatus';
 
 type Props = {
-  visibleTodos: Todo[] | null,
+  activeTodos: Todo[] | null,
   filter: string,
   setFilter: (status: TodoStatus) => void,
   completedTodos: Todo[],
@@ -11,7 +11,7 @@ type Props = {
 };
 
 export const Footer: React.FC<Props> = ({
-  visibleTodos,
+  activeTodos,
   filter,
   setFilter,
   completedTodos,
@@ -19,18 +19,18 @@ export const Footer: React.FC<Props> = ({
 }) => (
   <footer className="todoapp__footer">
     <span className="todo-count">
-      {visibleTodos?.length === 1
-        ? `${visibleTodos.length} item left`
-        : `${visibleTodos?.length} items left`}
+      {activeTodos?.length === 1
+        ? `${activeTodos.length} item left`
+        : `${activeTodos?.length} items left`}
     </span>
 
     <nav className="filter">
       <a
         href="#/"
         className={cn('filter__link', {
-          selected: filter === TodoStatus.ALL,
+          selected: filter === TodoStatus.all,
         })}
-        onClick={() => setFilter(TodoStatus.ALL)}
+        onClick={() => setFilter(TodoStatus.all)}
       >
         All
       </a>
@@ -38,9 +38,9 @@ export const Footer: React.FC<Props> = ({
       <a
         href="#/active"
         className={cn('filter__link', {
-          selected: filter === TodoStatus.ACTIVE,
+          selected: filter === TodoStatus.active,
         })}
-        onClick={() => setFilter(TodoStatus.ACTIVE)}
+        onClick={() => setFilter(TodoStatus.active)}
       >
         Active
       </a>
@@ -48,9 +48,9 @@ export const Footer: React.FC<Props> = ({
       <a
         href="#/completed"
         className={cn('filter__link', {
-          selected: filter === TodoStatus.COMPLETED,
+          selected: filter === TodoStatus.completed,
         })}
-        onClick={() => setFilter(TodoStatus.COMPLETED)}
+        onClick={() => setFilter(TodoStatus.completed)}
       >
         Completed
       </a>

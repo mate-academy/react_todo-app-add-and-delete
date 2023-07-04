@@ -14,7 +14,7 @@ const USER_ID = 10890;
 
 export const App: React.FC = () => {
   const [visibleTodos, setVisibleTodos] = useState<Todo[]>([]);
-  const [filter, setFilter] = useState<TodoStatus>(TodoStatus.ALL);
+  const [filter, setFilter] = useState<TodoStatus>(TodoStatus.all);
   const [isError, setIsError] = useState<ErrorMessage>(ErrorMessage.noError);
   const [newTodoTitle, setNewTodoTitle] = useState('');
   const [isLoading, setIsLoading] = useState(false);
@@ -33,12 +33,12 @@ export const App: React.FC = () => {
     setIsError(ErrorMessage.noError);
   };
 
-  const filterTodos = useCallback(() => {
+  const filteredTodos = useCallback(() => {
     switch (filter) {
-      case TodoStatus.COMPLETED:
+      case TodoStatus.completed:
         return visibleTodos.filter(todo => todo.completed);
 
-      case TodoStatus.ACTIVE:
+      case TodoStatus.active:
         return visibleTodos.filter(todo => !todo.completed);
 
       default:
@@ -46,10 +46,8 @@ export const App: React.FC = () => {
     }
   }, [filter, visibleTodos]);
 
-  const filteredTodos = filterTodos();
-
-  const completedTodos = filteredTodos.filter(todo => todo.completed);
-  const activeTodos = filteredTodos.filter(todo => !todo.completed);
+  const completedTodos = filteredTodos().filter(todo => todo.completed);
+  const activeTodos = filteredTodos().filter(todo => !todo.completed);
 
   const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
@@ -140,15 +138,15 @@ export const App: React.FC = () => {
           isLoading={isLoading}
         />
         <Todolist
-          filteredTodos={filteredTodos}
+          filteredTodos={filteredTodos()}
           tempTodo={tempTodo}
           removeTodo={removeTodo}
           deletedTodoId={deletedTodoId}
         />
 
-        {filteredTodos && (
+        {filteredTodos() && (
           <Footer
-            visibleTodos={visibleTodos}
+            activeTodos={activeTodos}
             filter={filter}
             setFilter={setFilter}
             completedTodos={completedTodos}
