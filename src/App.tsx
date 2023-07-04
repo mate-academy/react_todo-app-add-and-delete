@@ -73,7 +73,7 @@ export const App: React.FC = () => {
     const newTodo = {
       userId: USER_ID,
       title: todoTitle,
-      completed: true,
+      completed: false,
     };
 
     setTempTodo({
