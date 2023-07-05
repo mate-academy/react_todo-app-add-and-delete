@@ -17,6 +17,7 @@ export const TodoList: React.FC<TodoListProps> = ({
     <section className="todoapp__main">
       {visibleTodos.map((todo: Todo) => (
         <TodoItem
+          key={todo.id}
           todo={todo}
           loadingTodosId={loadingTodosId}
           handleDeleteTodo={handleDeleteTodo}

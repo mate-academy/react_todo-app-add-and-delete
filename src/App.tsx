@@ -15,7 +15,7 @@ export const App: React.FC = () => {
   const [title, setTitle] = useState<string>('');
   const [todos, setTodos] = useState<Todo[]>([]);
   const [selectedFilter, setSelectedFilter] = useState('All');
-  const [loadingTodosId, setLoadingTodosId] = useState<number[]>([]);
+  const [loadingTodosId, setLoadingTodosId] = useState<number[]>([0]);
   const [isDisabled, setIsDisabled] = useState(false);
   const [isError, setIsError] = useState(false);
   const [tempTodo, setTempTodo] = useState<Todo | null>(null);
@@ -41,7 +41,6 @@ export const App: React.FC = () => {
     }
 
     setIsDisabled(true);
-    setLoadingTodosId(prevTodos => [...prevTodos, 0]);
     setTempTodo({
       id: 0,
       userId: USER_ID,
