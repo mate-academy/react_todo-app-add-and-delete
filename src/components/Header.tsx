@@ -20,7 +20,7 @@ export const Header: FC<Props> = ({ countOfActive, addTodo, setErrorType }) => {
   const handleSubmit = async (event: ChangeEvent<HTMLFormElement>) => {
     event.preventDefault();
 
-    if (!todoTitle) {
+    if (!todoTitle.trim()) {
       setErrorType(ErrorType.EMPTY_FIELD);
 
       return;
@@ -28,7 +28,7 @@ export const Header: FC<Props> = ({ countOfActive, addTodo, setErrorType }) => {
 
     try {
       setInputDisable(true);
-      await addTodo(todoTitle);
+      addTodo(todoTitle);
     } finally {
       setInputDisable(false);
       setTodoTitle('');

@@ -1,4 +1,4 @@
-import { FilterType, TodosInfo } from './types/HelperTypes';
+import { FilterType } from './types/HelperTypes';
 import { Todo } from './types/Todo';
 
 export const getFilteredTodos = (
@@ -17,20 +17,4 @@ export const getFilteredTodos = (
         throw Error('Error in filtering');
     }
   });
-};
-
-export const getTodosInfo = (todos: Todo[]): TodosInfo => {
-  const { length } = todos;
-
-  const countOfActive = getFilteredTodos(
-    todos, FilterType.ACTIVE,
-  ).length;
-
-  const hasCompleted = todos.some(todo => todo?.completed);
-
-  return {
-    length,
-    countOfActive,
-    hasCompleted,
-  };
 };

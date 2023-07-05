@@ -10,9 +10,3 @@ export enum ErrorType {
   ADD_UNABLE = 'Title can\'t be empty',
   DELETE_UNABLE = 'Unable to delete a todo',
 }
-
-export interface TodosInfo {
-  length: number,
-  countOfActive: number,
-  hasCompleted: boolean,
-}

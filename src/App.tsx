@@ -5,8 +5,8 @@ import {
   useState,
 } from 'react';
 import { Todo } from './types/Todo';
-import { ErrorType, FilterType, TodosInfo } from './types/HelperTypes';
-import { getFilteredTodos, getTodosInfo } from './Helper';
+import { ErrorType, FilterType } from './types/HelperTypes';
+import { getFilteredTodos } from './Helper';
 import { deleteTodo, getTodos, postTodo } from './api/todos';
 import { TodoList } from './components/TodoList';
 import { Header } from './components/Header';
@@ -15,12 +15,6 @@ import { Footer } from './components/Footer';
 import { UserWarning } from './UserWarning';
 
 const USER_ID = 10923;
-
-const initialTodosInfo: TodosInfo = {
-  length: 0,
-  countOfActive: 0,
-  hasCompleted: false,
-};
 
 const initialTodo: Todo = {
   id: 0,
@@ -33,7 +27,6 @@ export const App: React.FC = () => {
   const [todos, setTodos] = useState<Todo[]>([]);
   const [filterType, setFilterType] = useState<FilterType>(FilterType.ALL);
   const [errorType, setErrorType] = useState<ErrorType | null>(null);
-  const [todosInfo, setTodosInfo] = useState<TodosInfo>(initialTodosInfo);
   const [tempTodo, setTempTodo] = useState<Todo | null>(null);
 
   const loadTodos = async () => {
@@ -55,10 +48,14 @@ export const App: React.FC = () => {
   const visibleTodos: Todo[] = useMemo(() => {
     const filteredTodos = getFilteredTodos(todos, filterType);
 
-    setTodosInfo(getTodosInfo(todos));
-
     return filteredTodos;
   }, [todos, filterType]);
+
+  const countOfActive = getFilteredTodos(
+    todos, FilterType.ACTIVE,
+  ).length;
+
+  const hasCompleted = todos.some(todo => todo?.completed);
 
   const addTodo = useCallback(async (title: string) => {
     try {
@@ -123,12 +120,12 @@ export const App: React.FC = () => {
       <div className="todoapp__content">
 
         <Header
-          countOfActive={todosInfo.countOfActive}
+          countOfActive={countOfActive}
           addTodo={addTodo}
           setErrorType={setErrorType}
         />
 
-        {todosInfo.length !== 0
+        {todos.length !== 0
           && (
             <>
               <TodoList
@@ -139,8 +136,8 @@ export const App: React.FC = () => {
               <Footer
                 filterType={filterType}
                 handleFilterType={handleFilterType}
-                hasCompleted={todosInfo.hasCompleted}
-                countOfActive={todosInfo.countOfActive}
+                hasCompleted={hasCompleted}
+                countOfActive={countOfActive}
                 removeCompletedTodos={removeCompletedTodos}
               />
             </>
