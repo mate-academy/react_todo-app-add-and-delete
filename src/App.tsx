@@ -1,4 +1,3 @@
-/* eslint-disable max-len */
 /* eslint-disable jsx-a11y/control-has-associated-label */
 import React, {
   useState,
@@ -18,22 +17,18 @@ import {
   removeTodo,
 } from './api/todos';
 import { TempTodoItem } from './components/TempTodoItem';
+import { ErrorMessage } from './types/ErrorMessage';
+import { FilterStatus } from './types/FilterStatus';
 
 const USER_ID = 10906;
 
-enum ErrorMessages {
-  load = 'Unable to load the todos',
-  add = 'Unable to add a todo',
-  remove = 'Unable to delete a todo',
-  update = 'Unable to update a todo',
-  title = 'Title can\'t be empty',
-}
-
 export const App: React.FC = () => {
   const [todos, setTodos] = useState<Todo[]>([]);
-  const [errorMessage, setErrorMessage] = useState('');
+  const [errorMessage, setErrorMessage] = useState<ErrorMessage | null>(null);
   const [newTodoTitle, setNewTodoTitle] = useState('');
-  const [selectedFilter, setSelectedFilter] = useState('All');
+  const [selectedFilter, setSelectedFilter] = useState<
+  FilterStatus>(FilterStatus.ALL);
+
   const [tempTodo, setTempTodo] = useState<Todo | null>(null);
   const [isLoading, setIsLoading] = useState(false);
   const [loadingTodosIds, setLoadingTodosIds] = useState<number[]>([]);
@@ -42,14 +37,14 @@ export const App: React.FC = () => {
     getTodos(USER_ID)
       .then(setTodos)
       .catch(() => {
-        setErrorMessage(ErrorMessages.load);
+        setErrorMessage(ErrorMessage.LOAD);
       });
   }, []);
 
   useEffect(() => {
     if (errorMessage) {
       setTimeout(() => {
-        setErrorMessage('');
+        setErrorMessage(null);
       }, 3000);
     }
   }, [errorMessage]);
@@ -70,7 +65,7 @@ export const App: React.FC = () => {
   const onAddTodo = async (
   ) => {
     if (!newTodoTitle) {
-      setErrorMessage(ErrorMessages.title);
+      setErrorMessage(ErrorMessage.TITLE);
 
       return;
     }
@@ -85,7 +80,7 @@ export const App: React.FC = () => {
       clearForm();
     } catch {
       clearForm();
-      setErrorMessage(ErrorMessages.add);
+      setErrorMessage(ErrorMessage.ADD);
     }
   };
 
@@ -96,18 +91,25 @@ export const App: React.FC = () => {
 
       setTodos((prevTodos => (
         prevTodos.filter(todo => todo.id !== todoId))));
-      setLoadingTodosIds((prevIds) => prevIds.filter(prevId => prevId !== todoId));
+
+      setLoadingTodosIds((prevIds) => (
+        prevIds.filter(prevId => prevId !== todoId)));
     } catch {
-      setErrorMessage(ErrorMessages.remove);
+      setErrorMessage(ErrorMessage.REMOVE);
     }
   }, []);
 
-  const handleClickDeleteError = () => {
-    setErrorMessage('');
+  const handleDeleteError = () => {
+    setErrorMessage(null);
   };
 
-  const activeTodos = todos.filter(todo => !todo.completed);
-  const completedTodos = todos.filter(todo => todo.completed);
+  const activeTodos = useMemo(() => (
+    todos.filter(todo => !todo.completed)
+  ), [todos]);
+
+  const completedTodos = useMemo(() => (
+    todos.filter(todo => todo.completed)
+  ), [todos]);
 
   const visibleTodos = useMemo(() => {
     switch (selectedFilter) {
@@ -128,7 +130,7 @@ export const App: React.FC = () => {
         onDeleteTodo(todo.id);
       });
     } catch {
-      setErrorMessage(ErrorMessages.remove);
+      setErrorMessage(ErrorMessage.REMOVE);
     }
   };
 
@@ -203,7 +205,7 @@ export const App: React.FC = () => {
         <button
           type="button"
           className="delete"
-          onClick={handleClickDeleteError}
+          onClick={handleDeleteError}
         />
 
         {errorMessage}

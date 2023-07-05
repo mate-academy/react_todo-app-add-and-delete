@@ -1,8 +1,9 @@
 import React from 'react';
 import classNames from 'classnames';
+import { FilterStatus } from '../../types/FilterStatus';
 
 interface Props {
-  setSelectedFilter: (filter: string) => void;
+  setSelectedFilter: React.Dispatch<React.SetStateAction<FilterStatus>>;
   selectedFilter: string;
 }
 
@@ -10,9 +11,13 @@ export const Filter: React.FC<Props> = ({
   setSelectedFilter,
   selectedFilter,
 }) => {
-  const filters = ['All', 'Active', 'Completed'];
+  const filters = [
+    FilterStatus.ALL,
+    FilterStatus.ACTIVE,
+    FilterStatus.COMPLETED,
+  ];
 
-  const handleClickFilter = (filter: string) => {
+  const handleFilterChange = (filter: FilterStatus) => {
     setSelectedFilter(filter);
   };
 
@@ -25,7 +30,7 @@ export const Filter: React.FC<Props> = ({
           className={classNames('filter__link', {
             selected: filter === selectedFilter,
           })}
-          onClick={() => handleClickFilter(filter)}
+          onClick={() => handleFilterChange(filter)}
         >
           {filter}
         </a>

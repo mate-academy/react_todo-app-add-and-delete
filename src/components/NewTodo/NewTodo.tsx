@@ -1,9 +1,10 @@
 import React from 'react';
+import { ErrorMessage } from '../../types/ErrorMessage';
 
 interface Props {
   newTodoTitle: string;
   setNewTodoTitle: (title: string) => void;
-  setErrorMessage: (message: string) => void;
+  setErrorMessage: React.Dispatch<React.SetStateAction<ErrorMessage | null>>;
   onAddTodo: () => void;
   isLoading: boolean;
 }
@@ -19,7 +20,7 @@ export const NewTodo: React.FC<Props> = ({
     event: React.ChangeEvent<HTMLInputElement>,
   ) => {
     setNewTodoTitle(event.target.value);
-    setErrorMessage('');
+    setErrorMessage(null);
   };
 
   const handleOnSubmit = (
