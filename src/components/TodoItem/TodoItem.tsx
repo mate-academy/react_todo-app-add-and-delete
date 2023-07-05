@@ -13,40 +13,50 @@ export const TodoItem: React.FC<Props> = memo(
     todo,
     onDelete,
     isLoading = true,
-  }) => (
-    <div
-      className={cN('todo', {
-        completed: todo.completed,
-      })}
-      key={todo.id}
-    >
-      <label className="todo__status-label">
-        <input
-          type="checkbox"
-          className="todo__status"
-          checked={todo.completed}
-          readOnly
-        />
-      </label>
+  }) => {
+    const {
+      id,
+      title,
+      completed,
+    } = todo;
 
-      <span className="todo__title">{todo.title}</span>
+    const handleDeleteTodo = () => onDelete(id);
 
-      <button
-        type="button"
-        className="todo__remove"
-        onClick={() => onDelete(todo.id)}
-      >
-        ×
-      </button>
-
+    return (
       <div
-        className={cN('modal overlay', {
-          'is-active': isLoading,
+        className={cN('todo', {
+          completed,
         })}
+        key={todo.id}
       >
-        <div className="modal-background has-background-white-ter" />
-        <div className="loader" />
+        <label className="todo__status-label">
+          <input
+            type="checkbox"
+            className="todo__status"
+            checked={completed}
+            readOnly
+          />
+        </label>
+
+        <span className="todo__title">{title}</span>
+
+        <button
+          type="button"
+          className="todo__remove"
+          onClick={handleDeleteTodo}
+        >
+          ×
+        </button>
+
+        <div
+          className={cN('modal overlay', {
+            'is-active': isLoading,
+          })}
+        >
+          <div className="modal-background has-background-white-ter" />
+          <div className="loader" />
+        </div>
       </div>
-    </div>
-  ),
+    );
+  },
 );

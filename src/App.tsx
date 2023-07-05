@@ -14,7 +14,7 @@ const USER_ID = 10897;
 export const App: React.FC = () => {
   const [todos, setTodos] = useState<Todo[]>([]);
   const [tempTodo, setTempTodo] = useState<null | Todo>(null);
-  const [loadingTodoId, setLoadingTodoId] = useState<number[]>([]);
+  const [loadingTodoIds, setLoadingTodoIds] = useState<number[]>([]);
   const [filterBy, setFilterBy] = useState(FilterBy.All);
   const [errorText, setErrorText] = useState<null | string>(null);
 
@@ -24,9 +24,7 @@ export const App: React.FC = () => {
 
   useEffect(() => {
     getTodos(USER_ID)
-      .then(response => {
-        setTodos(response);
-      })
+      .then(setTodos)
       .catch((error) => {
         setErrorText(error.message);
         setTimeout(resetError, 3000);
@@ -39,17 +37,7 @@ export const App: React.FC = () => {
     setFilterBy(target.innerText.toLowerCase() as FilterBy);
   }, []);
 
-  const visibleTodos = filterBy === FilterBy.All
-    ? todos
-    : todos.filter(todo => (
-      filterBy === FilterBy.Active
-        ? !todo.completed
-        : todo.completed
-    ));
-
-  const activeactiveTodosNumber = todos.filter(todo => !todo.completed).length;
-
-  const onSubmit = async (title: string) => {
+  const onAddTodo = async (title: string) => {
     if (!/\S/g.test(title)) {
       setErrorText('Title can\'t be empty');
 
@@ -77,8 +65,8 @@ export const App: React.FC = () => {
     return true;
   };
 
-  const onDelete = useCallback(async (todoId: number) => {
-    setLoadingTodoId(prevIds => [...prevIds, todoId]);
+  const onDeleteTodo = useCallback(async (todoId: number) => {
+    setLoadingTodoIds(prevIds => [...prevIds, todoId]);
 
     try {
       await deleteTodo(todoId);
@@ -87,17 +75,17 @@ export const App: React.FC = () => {
     } catch {
       setErrorText('Unable to delete a todo');
     } finally {
-      setLoadingTodoId(prevIds => prevIds.filter(id => id !== todoId));
+      setLoadingTodoIds(prevIds => prevIds.filter(id => id !== todoId));
     }
   }, []);
 
-  const clearCompleted = () => {
-    const completedTodosId = todos
-      .filter(todo => todo.completed)
-      .map(todo => todo.id);
-
-    completedTodosId.forEach(onDelete);
-  };
+  const visibleTodos = filterBy === FilterBy.All
+    ? todos
+    : todos.filter(todo => (
+      filterBy === FilterBy.Active
+        ? !todo.completed
+        : todo.completed
+    ));
 
   if (!USER_ID) {
     return <UserWarning />;
@@ -109,9 +97,8 @@ export const App: React.FC = () => {
 
       <div className="todoapp__content">
         <TodoForm
-          hasActive={todos.some(todo => !todo.completed)}
-          onSubmit={onSubmit}
-          hasTodos={Boolean(todos.length)}
+          todos={todos}
+          onAddTodo={onAddTodo}
         />
 
         {Boolean(todos.length) && (
@@ -119,15 +106,14 @@ export const App: React.FC = () => {
             <TodoList
               todos={visibleTodos}
               tempTodo={tempTodo}
-              onDelete={onDelete}
-              loadingTodoId={loadingTodoId}
+              onDelete={onDeleteTodo}
+              loadingTodoIds={loadingTodoIds}
             />
             <TodoFilter
-              activeTodosNumber={activeactiveTodosNumber}
+              todos={todos}
               statusFilter={filterBy}
               handleFilterChange={handleFilterChange}
-              hasCompleted={todos.some(todo => todo.completed)}
-              clearCompleted={clearCompleted}
+              onDeleteTodo={onDeleteTodo}
             />
           </>
         )}

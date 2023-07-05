@@ -1,33 +1,35 @@
 import React, { useState } from 'react';
 import cN from 'classnames';
+import { Todo } from '../../types/Todo';
 
 type Props = {
-  hasActive: boolean;
-  onSubmit: (title: string) => void;
-  hasTodos: boolean;
+  todos: Todo[],
+  onAddTodo: (title: string) => void;
 };
 
 export const TodoForm: React.FC<Props> = ({
-  hasActive,
-  onSubmit,
-  hasTodos,
+  todos,
+  onAddTodo,
 }) => {
-  const [query, setQuery] = useState('');
+  const [todoTitle, setTodoTitle] = useState('');
   const [isLoading, setIsLoading] = useState(false);
+
+  const hasTodos = Boolean(todos.length);
+  const hasActiveTodos = todos.filter(todo => !todo.completed);
 
   const handleSubmit = async (event: React.FormEvent) => {
     event.preventDefault();
 
     setIsLoading(true);
 
-    await onSubmit(query);
+    await onAddTodo(todoTitle);
 
     setIsLoading(false);
-    setQuery('');
+    setTodoTitle('');
   };
 
   const handleChange = (event: React.ChangeEvent<HTMLInputElement>) => {
-    setQuery(event.target.value);
+    setTodoTitle(event.target.value);
   };
 
   return (
@@ -37,7 +39,7 @@ export const TodoForm: React.FC<Props> = ({
           aria-label="setAllComplete"
           type="button"
           className={cN('todoapp__toggle-all', {
-            active: !hasActive,
+            active: !hasActiveTodos,
           })}
         />
       )}
@@ -49,7 +51,7 @@ export const TodoForm: React.FC<Props> = ({
           type="text"
           className="todoapp__new-todo"
           placeholder="What needs to be done?"
-          value={query}
+          value={todoTitle}
           onChange={handleChange}
           disabled={isLoading}
         />
