@@ -1,12 +1,12 @@
 import React from 'react';
 import classNames from 'classnames';
 import { Todo } from '../../types/Todo';
-import { FilterTypes } from '../../types/FilterTypes';
+import { FilterTypes, FilterTypesHref } from '../../types/FilterTypes';
 
 const filterLinks = [
-  { name: FilterTypes.ALL, way: '' },
-  { name: FilterTypes.ACTIVE, way: 'active' },
-  { name: FilterTypes.COMPLETED, way: 'completed' },
+  { name: FilterTypes.ALL, way: FilterTypesHref.ALL },
+  { name: FilterTypes.ACTIVE, way: FilterTypesHref.ALL },
+  { name: FilterTypes.COMPLETED, way: FilterTypesHref.ALL },
 ];
 
 interface FooterProps {

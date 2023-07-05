@@ -1,4 +1,6 @@
-import React, { useEffect, useRef, useState } from 'react';
+import React, {
+  useEffect, useMemo, useRef, useState,
+} from 'react';
 import { UserWarning } from './UserWarning';
 import { addTodos, deleteTodos, getTodos } from './api/todos';
 import { Todo } from './types/Todo';
@@ -58,12 +60,12 @@ export const App: React.FC = () => {
     })
       .then((res) => {
         setTodos(prevTodos => [...prevTodos, res]);
-        setIsDisabled(false);
-        setTempTodo(null);
       })
       .catch(() => {
         setErrorMessage(ErrorTypes.ADD);
         showAndDeleteError();
+      })
+      .finally(() => {
         setIsDisabled(false);
         setTempTodo(null);
       });
@@ -79,7 +81,6 @@ export const App: React.FC = () => {
       case FilterTypes.COMPLETED:
         return todos.filter(todo => todo.completed);
 
-      case FilterTypes.ALL:
       default:
         return todos;
     }
@@ -91,12 +92,12 @@ export const App: React.FC = () => {
       .then(() => {
         setTodos(prevTodos => [...prevTodos
           .filter(todo => todo.id !== todoId)]);
-        setLoadingTodosId(prevLoadingTodos => [...prevLoadingTodos
-          .filter(Id => Id !== todoId)]);
       })
       .catch(() => {
         setErrorMessage(ErrorTypes.DELETE);
         showAndDeleteError();
+      })
+      .finally(() => {
         setLoadingTodosId(prevLoadingTodos => [...prevLoadingTodos
           .filter(Id => Id !== todoId)]);
       });
@@ -127,8 +128,13 @@ export const App: React.FC = () => {
     }, 400);
   }, [isDisabled]);
 
-  const visibleTodos = filterTodos(selectedFilter);
-  const todosLeftToFinish = filterTodos(FilterTypes.ACTIVE);
+  const visibleTodos = useMemo(() => {
+    return filterTodos(selectedFilter);
+  }, [selectedFilter, todos]);
+
+  const todosLeftToFinish = useMemo(() => {
+    return filterTodos(FilterTypes.ACTIVE);
+  }, [todos]);
 
   if (!USER_ID) {
     return <UserWarning />;

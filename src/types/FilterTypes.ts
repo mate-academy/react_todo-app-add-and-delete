@@ -3,3 +3,9 @@ export enum FilterTypes {
   ACTIVE = 'Active',
   COMPLETED = 'Completed',
 }
+
+export enum FilterTypesHref {
+  ALL = '',
+  ACTIVE = 'active',
+  COMPLETED = 'completed',
+}
