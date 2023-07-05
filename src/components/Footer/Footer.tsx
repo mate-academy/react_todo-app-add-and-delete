@@ -1,20 +1,20 @@
 import React from 'react';
 import classNames from 'classnames';
 import { Todo } from '../../types/Todo';
-import './Footer.scss';
+import { FilterTypes } from '../../types/FilterTypes';
 
 const filterLinks = [
-  { name: 'All', way: '' },
-  { name: 'Active', way: 'active' },
-  { name: 'Completed', way: 'completed' },
+  { name: FilterTypes.ALL, way: '' },
+  { name: FilterTypes.ACTIVE, way: 'active' },
+  { name: FilterTypes.COMPLETED, way: 'completed' },
 ];
 
 interface FooterProps {
   todos: Todo[]
   todosLeftToFinish: Todo[],
-  setSelectedFilter: (filterNames: string) => void,
+  setSelectedFilter: (filterNames: FilterTypes) => void,
   handleDeleteTodo: (todoId: number) => void
-  selectedFilter: string,
+  selectedFilter: FilterTypes,
 }
 
 export const Footer: React.FC<FooterProps> = ({
@@ -24,8 +24,14 @@ export const Footer: React.FC<FooterProps> = ({
   handleDeleteTodo,
   selectedFilter,
 }) => {
-  const handleSelectedFilter = (todosSelected: string) => {
+  const handleSelectedFilter = (todosSelected: FilterTypes) => {
     setSelectedFilter(todosSelected);
+  };
+
+  const handleMultipleDelete = () => {
+    todos
+      .filter(todo => todo.completed)
+      .map(todo => handleDeleteTodo(todo.id));
   };
 
   return (
@@ -53,11 +59,7 @@ export const Footer: React.FC<FooterProps> = ({
         type="button"
         className="todoapp__clear-completed"
         disabled={todos.length === todosLeftToFinish.length}
-        onClick={() => {
-          todos
-            .filter(todo => todo.completed)
-            .map(todo => handleDeleteTodo(todo.id));
-        }}
+        onClick={handleMultipleDelete}
       >
         Clear completed
       </button>

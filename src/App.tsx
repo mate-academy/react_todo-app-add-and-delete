@@ -1,4 +1,3 @@
-/* eslint-disable jsx-a11y/control-has-associated-label */
 import React, { useEffect, useRef, useState } from 'react';
 import { UserWarning } from './UserWarning';
 import { addTodos, deleteTodos, getTodos } from './api/todos';
@@ -8,13 +7,14 @@ import { Footer } from './components/Footer';
 import { ErrorTypes } from './types/ErrorTypes';
 import { ErrorMessage } from './components/ErrorMessage';
 import { TodoItem } from './components/TodoItem';
+import { FilterTypes } from './types/FilterTypes';
 
 const USER_ID = 10905;
 
 export const App: React.FC = () => {
   const [title, setTitle] = useState<string>('');
   const [todos, setTodos] = useState<Todo[]>([]);
-  const [selectedFilter, setSelectedFilter] = useState('All');
+  const [selectedFilter, setSelectedFilter] = useState(FilterTypes.ALL);
   const [loadingTodosId, setLoadingTodosId] = useState<number[]>([0]);
   const [isDisabled, setIsDisabled] = useState(false);
   const [isError, setIsError] = useState(false);
@@ -29,15 +29,18 @@ export const App: React.FC = () => {
 
   const showAndDeleteError = () => {
     setIsError(true);
-    setTimeout(() => setIsError(false), 3000);
+
+    return setTimeout(() => setIsError(false), 3000);
   };
 
   const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
 
-    if (!title) {
+    if (!title.trim()) {
       setErrorMessage(ErrorTypes.TITLE);
-      showAndDeleteError();
+      setTitle('');
+
+      return showAndDeleteError();
     }
 
     setIsDisabled(true);
@@ -65,18 +68,18 @@ export const App: React.FC = () => {
         setTempTodo(null);
       });
 
-    setTitle('');
+    return setTitle('');
   };
 
-  const filterTodos = (filterTodosBy: string) => {
+  const filterTodos = (filterTodosBy: FilterTypes) => {
     switch (filterTodosBy) {
-      case 'Active':
+      case FilterTypes.ACTIVE:
         return todos.filter(todo => !todo.completed);
 
-      case 'Completed':
+      case FilterTypes.COMPLETED:
         return todos.filter(todo => todo.completed);
 
-      case 'All':
+      case FilterTypes.ALL:
       default:
         return todos;
     }
@@ -106,20 +109,26 @@ export const App: React.FC = () => {
         setErrorMessage(ErrorTypes.LOAD);
         showAndDeleteError();
       });
+
+    return () => {
+      clearTimeout(showAndDeleteError());
+    };
   }, []);
 
   useEffect(() => {
-    if (isDisabled) {
-      setTimeout(() => {
-        if (titleField.current) {
-          titleField.current.focus();
-        }
-      }, 400);
+    if (!isDisabled) {
+      return;
     }
+
+    setTimeout(() => {
+      if (titleField.current) {
+        titleField.current.focus();
+      }
+    }, 400);
   }, [isDisabled]);
 
   const visibleTodos = filterTodos(selectedFilter);
-  const todosLeftToFinish = filterTodos('Active');
+  const todosLeftToFinish = filterTodos(FilterTypes.ACTIVE);
 
   if (!USER_ID) {
     return <UserWarning />;
@@ -131,7 +140,11 @@ export const App: React.FC = () => {
 
       <div className="todoapp__content">
         <header className="todoapp__header">
-          <button type="button" className="todoapp__toggle-all active" />
+          <button
+            type="button"
+            aria-label="To complete all todos"
+            className="todoapp__toggle-all active"
+          />
 
           <form
             onSubmit={handleSubmit}

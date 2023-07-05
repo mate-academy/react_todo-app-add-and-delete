@@ -1,4 +1,3 @@
-/* eslint-disable jsx-a11y/control-has-associated-label */
 import React from 'react';
 import classNames from 'classnames';
 import { ErrorTypes } from '../../types/ErrorTypes';
@@ -30,6 +29,7 @@ export const ErrorMessage: React.FC<ErrorMessageProps> = ({
     >
       <button
         type="button"
+        aria-label="To delete an error"
         className="delete"
         onClick={handleDeleteError}
       />

@@ -13,26 +13,27 @@ export const TodoItem: React.FC<TodoItemProps> = ({
   loadingTodosId,
   handleDeleteTodo,
 }) => {
+  const { id, completed, title } = todo;
+
   return (
     <div
-      key={todo.id}
       className={classNames('todo', {
-        completed: todo.completed,
+        completed,
       })}
     >
       <label className="todo__status-label">
         <input
           type="checkbox"
           className="todo__status"
-          checked={todo.completed}
+          checked={completed}
         />
       </label>
 
-      <span className="todo__title">{todo.title}</span>
+      <span className="todo__title">{title}</span>
       <button
         type="button"
         className="todo__remove"
-        onClick={() => handleDeleteTodo(todo.id)}
+        onClick={() => handleDeleteTodo(id)}
       >
         ×
       </button>
@@ -40,7 +41,7 @@ export const TodoItem: React.FC<TodoItemProps> = ({
       <div
         className={classNames('modal overlay', {
           'is-active': loadingTodosId
-            .filter(todoId => todo.id === todoId).length,
+            .filter(todoId => id === todoId).length,
         })}
       >
         <div
