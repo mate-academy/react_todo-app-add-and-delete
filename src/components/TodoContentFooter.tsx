@@ -2,6 +2,9 @@ import { FC } from 'react';
 import classNames from 'classnames';
 import { getEnumKeys } from '../helpers/getEnumKeys';
 import { TodoStatus } from '../types/TodoStatus';
+import { useTodoContext } from '../context/todoContext/useTodoContext';
+import { todosApi } from '../api/todos-api';
+import { useErrorContext } from '../context/errorContext/useErrorContext';
 
 interface TodoContentFooterProps {
   selectedStatusTodo: TodoStatus,
@@ -9,21 +12,44 @@ interface TodoContentFooterProps {
 }
 
 export const TodoContentFooter: FC<TodoContentFooterProps> = (props) => {
-  const { selectedStatusTodo, onSelectStatusTodo } = props;
+  const {
+    selectedStatusTodo,
+    onSelectStatusTodo,
+  } = props;
+
+  const { todos, setRemovingTodoIds } = useTodoContext();
+  const { notifyAboutError } = useErrorContext();
+  const { size, countCompleted, removeCompletedTodos } = useTodoContext();
   const statusKeys = getEnumKeys(TodoStatus);
+
+  const onRemoveCompletedTodos = async () => {
+    const ids = todos.filter(todo => todo.completed).map(todo => todo.id);
+
+    setRemovingTodoIds(ids);
+
+    try {
+      const result = await todosApi.removeCompleted(ids);
+
+      if (result) {
+        removeCompletedTodos(ids);
+      }
+    } catch {
+      notifyAboutError('Unable to delete a todo');
+    } finally {
+      setRemovingTodoIds([]);
+    }
+  };
 
   return (
     <footer className="todoapp__footer">
       <span className="todo-count">
-        3 items left
+        {`${size} items left`}
       </span>
 
-      {/* Active filter should have a 'selected' class */}
       <nav className="filter">
         {statusKeys.map(status => (
           <a
             href="#/"
-            // className="filter__link selected"
             className={classNames(
               'filter__link',
               {
@@ -38,10 +64,15 @@ export const TodoContentFooter: FC<TodoContentFooterProps> = (props) => {
         ))}
       </nav>
 
-      {/* don't show this button if there are no completed todos */}
-      <button type="button" className="todoapp__clear-completed">
-        Clear completed
-      </button>
+      {countCompleted > 0 && (
+        <button
+          type="button"
+          className="todoapp__clear-completed"
+          onClick={onRemoveCompletedTodos}
+        >
+          Clear completed
+        </button>
+      )}
     </footer>
   );
 };

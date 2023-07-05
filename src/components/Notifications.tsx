@@ -1,10 +1,13 @@
 import { FC, useEffect } from 'react';
 
 interface NotificationsProps {
-  onClose: () => void
+  onClose: () => void,
+  errorMessage: string,
 }
 
-export const Notifications: FC<NotificationsProps> = ({ onClose }) => {
+export const Notifications: FC<NotificationsProps> = (props) => {
+  const { onClose, errorMessage } = props;
+
   useEffect(() => {
     setTimeout(() => {
       onClose();
@@ -19,13 +22,13 @@ export const Notifications: FC<NotificationsProps> = ({ onClose }) => {
         className="delete"
         onClick={onClose}
       />
-
+      <p>{errorMessage}</p>
       {/* show only one message at a time */}
-      Unable to add a todo
+      {/* Unable to add a todo
       <br />
       Unable to delete a todo
       <br />
-      Unable to update a todo
+      Unable to update a todo */}
     </div>
   );
 };

@@ -1,26 +1,33 @@
 import { useState } from 'react';
-import { createTodo } from '../api/todos';
+import { todosApi } from '../api/todos-api';
+import { useTodoContext } from '../context/todoContext/useTodoContext';
+import { useErrorContext } from '../context/errorContext/useErrorContext';
 
 export const TodoContentHeader = () => {
   const [title, setTitle] = useState('');
   const [isHandleRequest, setIsHandleRequest] = useState(false);
+  const { addTodo } = useTodoContext();
+  const { notifyAboutError } = useErrorContext();
+
   const submit = async (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
     if (!title) {
+      notifyAboutError("Title can't be empty");
+
       return;
     }
 
     try {
       setIsHandleRequest(true);
-      const tempTodo = await createTodo({
+      const tempTodo = await todosApi.create({
         title,
         completed: false,
         userId: 10875,
       });
 
-      console.log(tempTodo);
+      addTodo(tempTodo);
     } catch {
-      console.log('something went wrong');
+      notifyAboutError('Unable to add a todo');
     } finally {
       setTitle('');
       setIsHandleRequest(false);
@@ -33,7 +40,6 @@ export const TodoContentHeader = () => {
       {/* eslint-disable-next-line jsx-a11y/control-has-associated-label */}
       <button type="button" className="todoapp__toggle-all active" />
 
-      {/* Add a todo on form submit */}
       <form onSubmit={submit}>
         <input
           type="text"
