@@ -1,24 +1,70 @@
-/* eslint-disable max-len */
 /* eslint-disable jsx-a11y/control-has-associated-label */
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import { UserWarning } from './UserWarning';
+import { getTodos } from './api/todos';
+import { Todo } from './types/Todo';
+import { Notification } from './components/Notification';
+import { Footer } from './components/Footer';
+import { FilterBy } from './types/FilterBy';
+import { TodoList } from './components/TodoList';
+import { getFilteredTodos } from './helpers/helpers';
 
-const USER_ID = 0;
+const USER_ID = 10929;
 
 export const App: React.FC = () => {
+  const [todos, setTodos] = useState<Todo[]>([]);
+  const [filterBy, setFilterBy] = useState(FilterBy.all);
+  const [erorrMessage, setErrorMessage] = useState<string | null>(null);
+
+  useEffect(() => {
+    getTodos(USER_ID)
+      .then(setTodos)
+      .catch((loadedError: Error) => {
+        setErrorMessage(loadedError?.message ?? 'Error');
+      });
+  }, []);
+
   if (!USER_ID) {
     return <UserWarning />;
   }
 
-  return (
-    <section className="section container">
-      <p className="title is-4">
-        Copy all you need from the prev task:
-        <br />
-        <a href="https://github.com/mate-academy/react_todo-app-loading-todos#react-todo-app-load-todos">React Todo App - Load Todos</a>
-      </p>
+  const filteredTodos = getFilteredTodos(todos, filterBy);
 
-      <p className="subtitle">Styles are already copied</p>
-    </section>
+  return (
+    <div className="todoapp">
+      <h1 className="todoapp__title">todos</h1>
+
+      <div className="todoapp__content">
+        <header className="todoapp__header">
+          {/* this buttons is active only if there are some active todos */}
+          {todos.length > 0 && (
+            <button type="button" className="todoapp__toggle-all active" />
+          )}
+
+          {/* Add a todo on form submit */}
+          <form>
+            <input
+              type="text"
+              className="todoapp__new-todo"
+              placeholder="What needs to be done?"
+            />
+          </form>
+        </header>
+
+        {todos.length > 0 && (
+          <TodoList todos={filteredTodos} />
+        )}
+
+        {(todos.length > 0) && (
+          <Footer
+            todos={todos}
+            filterBy={filterBy}
+            setFilterBy={setFilterBy}
+          />
+        )}
+      </div>
+
+      {erorrMessage && <Notification />}
+    </div>
   );
 };
