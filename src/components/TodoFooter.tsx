@@ -1,18 +1,19 @@
 import { FC } from 'react';
 import cn from 'classnames';
 import { Todo } from '../types/Todo';
+import { FilterTodos } from '../types/FilterTodos';
 
 interface Props {
   visibleTodos: Todo[],
-  selectedNav: string,
-  setSelectedNav: (value: string) => void,
+  filtredTodos: string,
+  setFiltredTodos: (value: string) => void,
   handleClearCompletedTodos: () => void,
 }
 
 export const TodoFooter: FC<Props> = ({
   visibleTodos,
-  selectedNav,
-  setSelectedNav,
+  filtredTodos,
+  setFiltredTodos,
   handleClearCompletedTodos,
 }) => {
   const isSomeCompeletedTodos = visibleTodos.some(todo => (
@@ -29,9 +30,9 @@ export const TodoFooter: FC<Props> = ({
         <a
           href="#/"
           className={cn('filter__link', {
-            selected: selectedNav === 'All',
+            selected: filtredTodos === FilterTodos.all,
           })}
-          onClick={() => setSelectedNav('All')}
+          onClick={() => setFiltredTodos(FilterTodos.all)}
         >
           All
         </a>
@@ -39,9 +40,9 @@ export const TodoFooter: FC<Props> = ({
         <a
           href="#/active"
           className={cn('filter__link', {
-            selected: selectedNav === 'Active',
+            selected: filtredTodos === FilterTodos.active,
           })}
-          onClick={() => setSelectedNav('Active')}
+          onClick={() => setFiltredTodos(FilterTodos.active)}
         >
           Active
         </a>
@@ -49,15 +50,14 @@ export const TodoFooter: FC<Props> = ({
         <a
           href="#/completed"
           className={cn('filter__link', {
-            selected: selectedNav === 'Completed',
+            selected: filtredTodos === FilterTodos.completed,
           })}
-          onClick={() => setSelectedNav('Completed')}
+          onClick={() => setFiltredTodos(FilterTodos.completed)}
         >
           Completed
         </a>
       </nav>
 
-      {/* don't show this button if there are no completed todos */}
       <button
         type="button"
         className="todoapp__clear-completed"

@@ -1,47 +1,41 @@
 /* eslint-disable jsx-a11y/control-has-associated-label */
 import React, { useEffect, useMemo, useState } from 'react';
-import { UserWarning } from './UserWarning';
 import { getTodos, createTodo, removeTodo } from './api/todos';
 import { Todo, CreatedTodo } from './types/Todo';
 import { Message } from './components/ErrorMessage';
 import { TodoList } from './components/TodoList';
 import { TodoFooter } from './components/TodoFooter';
 import { TodoHeader } from './components/TodoHeader';
+import { FilterTodos } from './types/FilterTodos';
 
 const USER_ID = 10910;
 
 export const App: React.FC = () => {
   const [todos, setTodos] = useState<Todo[]>([]);
-  const [selectedNav, setSelectedNav] = useState('All');
+  const [filtredTodos, setFiltredTodos] = useState<string>(FilterTodos.all);
   const [visibleError, setVisibleError] = useState('');
   const [title, setTitle] = useState('');
 
-  if (!USER_ID) {
-    return <UserWarning />;
-  }
-
-  // eslint-disable-next-line react-hooks/rules-of-hooks
   useEffect(() => {
+    if (!USER_ID) {
+      return;
+    }
+
     getTodos(USER_ID)
       .then(setTodos)
-      .catch(() => setVisibleError('Unable to load a todos'));
+      .catch(() => setVisibleError('Unable to load todos'));
   }, []);
 
-  // eslint-disable-next-line react-hooks/rules-of-hooks
-  let visibleTodos = useMemo<Todo[]>(() => todos, [todos]);
-
-  switch (selectedNav) {
-    case 'Active':
-      visibleTodos = visibleTodos.filter(todo => todo.completed === false);
-      break;
-
-    case 'Completed':
-      visibleTodos = visibleTodos.filter(todo => todo.completed === true);
-      break;
-
-    default:
-      break;
-  }
+  const visibleTodos = useMemo<Todo[]>(() => {
+    switch (filtredTodos) {
+      case 'Active':
+        return todos.filter(todo => !todo.completed);
+      case 'Completed':
+        return todos.filter(todo => todo.completed);
+      default:
+        return todos;
+    }
+  }, [todos, filtredTodos]);
 
   const handleSubmit = async (data: CreatedTodo) => {
     try {
@@ -119,8 +113,8 @@ export const App: React.FC = () => {
         {/* Hide the footer if there are no todos */}
         <TodoFooter
           visibleTodos={visibleTodos}
-          selectedNav={selectedNav}
-          setSelectedNav={setSelectedNav}
+          filtredTodos={filtredTodos}
+          setFiltredTodos={setFiltredTodos}
           handleClearCompletedTodos={handleClearCompletedTodos}
         />
       </div>
