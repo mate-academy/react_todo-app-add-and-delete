@@ -68,6 +68,8 @@ export const TodoContent: React.FC<Props> = ({
             filterStatuses={filterStatuses}
             filter={filter}
             handleFilterChange={handleFilterChange}
+            initialTodos={initialTodos}
+            removeTodo={removeTodo}
           />
         </>
       )}

@@ -2,12 +2,15 @@
 import React from 'react';
 import classNames from 'classnames';
 import { FilterStatus } from '../../helper';
+import { Todo } from '../../types/Todo';
 
 interface Props {
   activeTodosQuantity: number;
   filterStatuses: string[];
   filter: string;
   handleFilterChange: (arg: FilterStatus) => void
+  initialTodos: Todo[]
+  removeTodo: (arg: number) => void;
 }
 
 export const ContentFooter: React.FC<Props> = ({
@@ -15,7 +18,15 @@ export const ContentFooter: React.FC<Props> = ({
   filterStatuses,
   filter,
   handleFilterChange,
+  initialTodos,
+  removeTodo,
 }) => {
+  const completedTodo = initialTodos.filter(todo => todo.completed);
+
+  const removeCompletedTodos = () => {
+    completedTodo.map(todo => removeTodo(todo.id));
+  };
+
   return (
     <footer className="todoapp__footer">
       <span className="todo-count">
@@ -38,7 +49,11 @@ export const ContentFooter: React.FC<Props> = ({
       </nav>
 
       {/* don't show this button if there are no completed todos */}
-      <button type="button" className="todoapp__clear-completed">
+      <button
+        type="button"
+        className="todoapp__clear-completed"
+        onClick={removeCompletedTodos}
+      >
         Clear completed
       </button>
     </footer>
