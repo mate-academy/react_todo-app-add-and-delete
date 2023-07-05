@@ -1,18 +1,20 @@
 /* eslint-disable jsx-a11y/control-has-associated-label */
 import React, { useEffect, useState } from 'react';
-import cn from 'classnames';
 import { UserWarning } from './UserWarning';
 import { Todo } from './types/Todo';
 import { addTodo, deleteTodo, getTodos } from './api/todos';
 import { TodoList } from './components/TodoList';
 import { Filters } from './types/Filter';
+import { TodoHeader } from './components/TodoHeader';
+import { TodoFooter } from './components/TodoFooter';
+import { TodoError } from './components/TodoError';
 
 const USER_ID = 10908;
 
 export const App: React.FC = () => {
   const [todos, setTodos] = useState<Todo[]>([]);
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
-  const [filter, setFilter] = useState(Filters.ALL);
+  const [filter, setFilter] = useState(Filters.All);
   const [todoTitle, setTodoTitle] = useState('');
   const [tempTodo, setTempTodo] = useState<Todo | null>(null);
 
@@ -40,10 +42,10 @@ export const App: React.FC = () => {
 
   const filteredTodos = () => {
     switch (filter) {
-      case Filters.ACTIVE:
+      case Filters.Active:
         return uncompletedTodos;
 
-      case Filters.COMPLETED:
+      case Filters.Completed:
         return completedTodos;
       default:
         return todos;
@@ -104,86 +106,35 @@ export const App: React.FC = () => {
       <h1 className="todoapp__title">todos</h1>
 
       <div className="todoapp__content">
-        <header className="todoapp__header">
-          <button
-            type="button"
-            className={cn('todoapp__toggle-all',
-              { active: uncompletedTodos.length !== 0 })}
-          />
+        <TodoHeader
+          handleSubmit={handleSubmit}
+          handleTodoTitle={handleTodoTitle}
+          uncompletedTodos={uncompletedTodos}
+          tempTodo={tempTodo}
+          todoTitle={todoTitle}
+        />
 
-          <form onSubmit={handleSubmit}>
-            <input
-              type="text"
-              className="todoapp__new-todo"
-              placeholder="What needs to be done?"
-              value={todoTitle}
-              onChange={handleTodoTitle}
-              disabled={tempTodo !== null}
-            />
-          </form>
-        </header>
-
-        <TodoList todos={filteredTodos()} removeTodo={removeTodo} />
+        <TodoList
+          todos={filteredTodos()}
+          removeTodo={removeTodo}
+          tempTodo={tempTodo}
+        />
 
         {todos.length !== 0
         && (
-          <footer className="todoapp__footer">
-            <span className="todo-count">
-              {`${uncompletedTodos.length} items left`}
-            </span>
-
-            <nav className="filter">
-              <a
-                href="#/"
-                className={cn('filter__link',
-                  { selected: filter === Filters.ALL })}
-                onClick={() => setFilter(Filters.ALL)}
-              >
-                All
-              </a>
-
-              <a
-                href="#/active"
-                className={cn('filter__link',
-                  { selected: filter === Filters.ACTIVE })}
-                onClick={() => setFilter(Filters.ACTIVE)}
-              >
-                Active
-              </a>
-
-              <a
-                href="#/completed"
-                className={cn('filter__link',
-                  { selected: filter === Filters.COMPLETED })}
-                onClick={() => setFilter(Filters.COMPLETED)}
-              >
-                Completed
-              </a>
-            </nav>
-
-            <button
-              type="button"
-              className="todoapp__clear-completed"
-              disabled={!completedTodos.length}
-              onClick={handleClearCompleted}
-            >
-              Clear completed
-            </button>
-          </footer>
+          <TodoFooter
+            completedTodos={completedTodos}
+            uncompletedTodos={uncompletedTodos}
+            filter={filter}
+            setFilter={setFilter}
+            handleClearCompleted={handleClearCompleted}
+          />
         )}
       </div>
-      <div className={cn(
-        'notification is-danger is-light has-text-weight-normal',
-        { hidden: !errorMessage },
-      )}
-      >
-        <button
-          type="button"
-          className="delete"
-          onClick={() => setErrorMessage(null)}
-        />
-        {errorMessage}
-      </div>
+      <TodoError
+        errorMessage={errorMessage}
+        setErrorMessage={setErrorMessage}
+      />
     </div>
   );
 };

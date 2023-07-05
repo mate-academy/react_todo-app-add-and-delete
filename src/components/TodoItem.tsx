@@ -7,7 +7,10 @@ interface Props {
   removeTodo: (todoId: number) => void;
 }
 
-export const TodoItem: React.FC<Props> = ({ todo, removeTodo }) => {
+export const TodoItem: React.FC<Props> = ({
+  todo,
+  removeTodo,
+}) => {
   const [isLoading, setIsLoading] = useState(false);
 
   const { completed, title, id } = todo;
@@ -44,7 +47,7 @@ export const TodoItem: React.FC<Props> = ({ todo, removeTodo }) => {
         </button>
 
         <div className={cn('modal overlay', {
-          'is-active': isLoading,
+          'is-active': isLoading || id === 0,
         })}
         >
           <div className="modal-background has-background-white-ter" />
