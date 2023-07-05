@@ -21,7 +21,7 @@ export const App: React.FC = () => {
   const [error, setError] = useState<string | null>(null);
   const [filter, setFilter] = useState(StatusFilterType.ALL);
   const [tempTodo, setTempTodo] = useState<Todo | null>(null);
-  const [loadingTodo, setLoadingTodo] = useState([0]);
+  const [loadingTodoIds, setLoadingTodoIds] = useState<number[]>([]);
 
   useEffect(() => {
     getTodos(USER_ID)
@@ -86,24 +86,24 @@ export const App: React.FC = () => {
     }
   }, []);
 
-  const showTitleError = (erorMessage: string) => {
-    setError(erorMessage);
+  const showTitleError = (errorMessage: string) => {
+    setError(errorMessage);
   };
 
   const removeTodo = useCallback(async (todoId: number) => {
     try {
-      setLoadingTodo(prevTodoId => [...prevTodoId, todoId]);
+      setLoadingTodoIds(prevTodoId => [...prevTodoId, todoId]);
       await deleteTodo(todoId);
       setTodos(prevTodos => prevTodos.filter(todo => todo.id !== todoId));
     } catch {
       setError('Unable to delete a todo');
     } finally {
       setTempTodo(null);
-      setLoadingTodo([0]);
+      setLoadingTodoIds([0]);
     }
   }, []);
 
-  const handleclearCompletedTodo = () => {
+  const handleClearCompletedTodos = () => {
     completedTodos.forEach(async (todo) => {
       await removeTodo(todo.id);
     });
@@ -122,7 +122,7 @@ export const App: React.FC = () => {
           <button type="button" className="todoapp__toggle-all active" />
           <TodoForm
             onAddTodo={addTodo}
-            onShowInputError={showTitleError}
+            showInputError={showTitleError}
           />
         </header>
 
@@ -130,7 +130,7 @@ export const App: React.FC = () => {
           todos={filteredTodos}
           onRemoveTodo={removeTodo}
           tempTodo={tempTodo}
-          loadingTodo={loadingTodo}
+          loadingTodo={loadingTodoIds}
         />
 
         {todos.length > 0 && (
@@ -139,13 +139,13 @@ export const App: React.FC = () => {
               {`${activeTodos.length} items left`}
             </span>
 
-            <StatusFilter filter={filter} onChangeFilter={setFilter} />
+            <StatusFilter filter={filter} onFilterChange={setFilter} />
 
             {completedTodos && (
               <button
                 type="button"
                 className="todoapp__clear-completed"
-                onClick={handleclearCompletedTodo}
+                onClick={handleClearCompletedTodos}
               >
                 Clear completed
               </button>
@@ -154,7 +154,7 @@ export const App: React.FC = () => {
         )}
       </div>
 
-      <ErrorMessage error={error} onCloseError={handleCloseError} />
+      <ErrorMessage error={error} onErrorClose={handleCloseError} />
     </div>
   );
 };

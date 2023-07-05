@@ -3,11 +3,11 @@ import cn from 'classnames';
 
 interface Props {
   error: string | null;
-  onCloseError: () => void;
+  onErrorClose: () => void;
 }
 
 /* eslint-disable jsx-a11y/control-has-associated-label */
-export const ErrorMessage: FC<Props> = ({ error, onCloseError }) => (
+export const ErrorMessage: FC<Props> = ({ error, onErrorClose }) => (
   <div
     className={cn('notification is-danger is-light has-text-weight-normal', {
       hidden: !error,
@@ -16,7 +16,7 @@ export const ErrorMessage: FC<Props> = ({ error, onCloseError }) => (
     <button
       type="button"
       className="delete"
-      onClick={onCloseError}
+      onClick={onErrorClose}
     />
     {error}
   </div>

@@ -4,17 +4,17 @@ import { StatusFilterType } from '../../types/StatusFilterType';
 
 interface Props {
   filter: StatusFilterType
-  onChangeFilter: (filter: StatusFilterType) => void
+  onFilterChange: (filter: StatusFilterType) => void
 }
 
-export const StatusFilter: FC<Props> = ({ filter, onChangeFilter }) => (
+export const StatusFilter: FC<Props> = ({ filter, onFilterChange }) => (
   <nav className="filter">
     <a
       href="#/"
       className={cn('filter__link ', {
         selected: filter === StatusFilterType.ALL,
       })}
-      onClick={() => onChangeFilter(StatusFilterType.ALL)}
+      onClick={() => onFilterChange(StatusFilterType.ALL)}
     >
       All
     </a>
@@ -24,7 +24,7 @@ export const StatusFilter: FC<Props> = ({ filter, onChangeFilter }) => (
       className={cn('filter__link ', {
         selected: filter === StatusFilterType.ACTIVE,
       })}
-      onClick={() => onChangeFilter(StatusFilterType.ACTIVE)}
+      onClick={() => onFilterChange(StatusFilterType.ACTIVE)}
     >
       Active
     </a>
@@ -34,7 +34,7 @@ export const StatusFilter: FC<Props> = ({ filter, onChangeFilter }) => (
       className={cn('filter__link ', {
         selected: filter === StatusFilterType.COMPLETED,
       })}
-      onClick={() => onChangeFilter(StatusFilterType.COMPLETED)}
+      onClick={() => onFilterChange(StatusFilterType.COMPLETED)}
     >
       Completed
     </a>

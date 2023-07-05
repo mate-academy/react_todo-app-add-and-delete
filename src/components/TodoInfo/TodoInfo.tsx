@@ -9,11 +9,15 @@ interface Props {
 }
 
 export const TodoInfo: FC<Props> = ({
-  todo: { id, completed, title },
+  todo,
   onRemoveTodo,
   loadingTodo,
 }) => {
+  const { id, completed, title } = todo;
   const isLoadingTodo = loadingTodo.includes(id);
+  const handleRemoveTodo = () => {
+    onRemoveTodo(id);
+  };
 
   return (
     <div className={cn('todo', { completed })}>
@@ -30,7 +34,7 @@ export const TodoInfo: FC<Props> = ({
       <button
         type="button"
         className="todo__remove"
-        onClick={() => onRemoveTodo(id)}
+        onClick={handleRemoveTodo}
       >
         ×
       </button>

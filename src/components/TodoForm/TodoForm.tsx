@@ -3,17 +3,17 @@ import { FC, useState } from 'react';
 
 interface Props {
   onAddTodo: (value: string) => void;
-  onShowInputError: (value: string) => void;
+  showInputError: (value: string) => void;
 }
 
 export const TodoForm: FC<Props> = ({
   onAddTodo,
-  onShowInputError,
+  showInputError,
 }) => {
   const [todoTitle, setTodoTitle] = useState<string>('');
   const [isLoading, setIsLoading] = useState(false);
 
-  const changeTitleHandler = (event: React.ChangeEvent<HTMLInputElement>) => {
+  const handleTitleChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     setTodoTitle(event.target.value);
   };
 
@@ -21,7 +21,7 @@ export const TodoForm: FC<Props> = ({
     event.preventDefault();
 
     if (!todoTitle.trim()) {
-      onShowInputError('Title cant be empty');
+      showInputError('Title cant be empty');
 
       return;
     }
@@ -31,7 +31,7 @@ export const TodoForm: FC<Props> = ({
       onAddTodo(todoTitle);
       setTodoTitle('');
     } catch {
-      onShowInputError('Unable to add todo title');
+      showInputError('Unable to add todo title');
     } finally {
       setIsLoading(false);
     }
@@ -44,7 +44,7 @@ export const TodoForm: FC<Props> = ({
         type="text"
         className="todoapp__new-todo"
         placeholder="What needs to be done?"
-        onChange={changeTitleHandler}
+        onChange={handleTitleChange}
         disabled={isLoading}
       />
     </form>

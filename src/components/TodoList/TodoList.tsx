@@ -14,25 +14,23 @@ export const TodoList: FC<Props> = ({
   onRemoveTodo,
   loadingTodo,
   tempTodo,
-}) => {
-  return (
-    <section className="todoapp__main">
-      {todos.map((todo) => (
-        <TodoInfo
-          key={todo.id}
-          todo={todo}
-          onRemoveTodo={onRemoveTodo}
-          loadingTodo={loadingTodo}
-        />
-      ))}
+}) => (
+  <section className="todoapp__main">
+    {todos.map((todo) => (
+      <TodoInfo
+        key={todo.id}
+        todo={todo}
+        onRemoveTodo={onRemoveTodo}
+        loadingTodo={loadingTodo}
+      />
+    ))}
 
-      {tempTodo && (
-        <TodoInfo
-          todo={tempTodo}
-          loadingTodo={loadingTodo}
-          onRemoveTodo={onRemoveTodo}
-        />
-      )}
-    </section>
-  );
-};
+    {tempTodo && (
+      <TodoInfo
+        todo={tempTodo}
+        loadingTodo={loadingTodo}
+        onRemoveTodo={onRemoveTodo}
+      />
+    )}
+  </section>
+);
