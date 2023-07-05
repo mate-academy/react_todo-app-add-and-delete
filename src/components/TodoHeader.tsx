@@ -7,25 +7,25 @@ import { Todo } from '../types/Todo';
 
 type Props = {
   todos: Todo[];
-  isLoading: boolean;
-  handleSubmit: (e: FormEvent<HTMLFormElement>) => void;
-  inputValue: string
-  setInputValue: (input: string) => void;
+  isTodoLoading: boolean;
+  FormSubmit: (e: FormEvent<HTMLFormElement>) => void;
+  todoTitle: string
+  setTodoTitle: (input: string) => void;
 };
 
 export const Header: React.FC<Props> = ({
   todos,
-  setInputValue,
-  handleSubmit,
-  inputValue,
-  isLoading,
+  setTodoTitle,
+  FormSubmit,
+  todoTitle,
+  isTodoLoading,
 }) => {
   const isToggleButtonVisible = todos.every(todo => todo.completed);
 
   const handleInputChange = (
     event: ChangeEvent<HTMLInputElement>,
   ) => {
-    setInputValue(event.target.value);
+    setTodoTitle(event.target.value);
   };
 
   return (
@@ -39,15 +39,15 @@ export const Header: React.FC<Props> = ({
       />
 
       <form
-        onSubmit={handleSubmit}
+        onSubmit={FormSubmit}
       >
         <input
           type="text"
           className="todoapp__new-todo"
           placeholder="What needs to be done?"
-          value={inputValue}
+          value={todoTitle}
           onChange={handleInputChange}
-          disabled={isLoading}
+          disabled={isTodoLoading}
         />
       </form>
     </header>
