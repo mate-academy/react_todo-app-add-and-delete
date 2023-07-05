@@ -56,12 +56,6 @@ export const App: React.FC = () => {
     setTempTodo(null);
   };
 
-  const newTodoData = () => ({
-    userId: USER_ID,
-    title: newTodoTitle,
-    completed: false,
-  });
-
   const onAddTodo = async (
   ) => {
     if (!newTodoTitle) {
@@ -72,9 +66,16 @@ export const App: React.FC = () => {
 
     try {
       setIsLoading(true);
-      setTempTodo({ ...newTodoData(), id: 0 });
 
-      const addedTodo = await addTodos(USER_ID, newTodoData());
+      const newTodoData = {
+        userId: USER_ID,
+        title: newTodoTitle,
+        completed: false,
+      };
+
+      setTempTodo({ ...newTodoData, id: 0 });
+
+      const addedTodo = await addTodos(USER_ID, newTodoData);
 
       setTodos((prevTodos => [...prevTodos, addedTodo]));
       clearForm();
