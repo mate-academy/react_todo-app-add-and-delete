@@ -98,7 +98,6 @@ export const App: React.FC = () => {
     } catch {
       setError('Unable to delete a todo');
     } finally {
-      setTempTodo(null);
       setLoadingTodoIds([0]);
     }
   }, []);
