@@ -11,11 +11,7 @@ export const Filter: React.FC<Props> = ({
   setSelectedFilter,
   selectedFilter,
 }) => {
-  const filters = [
-    FilterStatus.ALL,
-    FilterStatus.ACTIVE,
-    FilterStatus.COMPLETED,
-  ];
+  const filters = Object.values(FilterStatus);
 
   const handleFilterChange = (filter: FilterStatus) => {
     setSelectedFilter(filter);
