@@ -68,20 +68,22 @@ export const App: FC = () => {
     setActiveTodoid(0);
 
     const newTodo = {
+      id: 0,
       completed: false,
       title,
       userId: USER_ID,
     };
 
-    setTempTodo({
-      id: 0,
-      ...newTodo,
-    });
+    setTempTodo({ ...newTodo });
+    // setTempTodo({
+    //   id: 0,
+    //   ...newTodo,
+    // });
 
     try {
       const createdTodo = await createTodo(newTodo);
 
-      setTodos(prevTodos => [...prevTodos, createdTodo] as Todo[]);
+      setTodos(prevTodos => [...prevTodos, createdTodo]);
     } catch (err) {
       setError('Unable to add a todo');
     } finally {

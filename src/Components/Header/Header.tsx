@@ -51,8 +51,11 @@ export const Header: FC<Props> = ({
 
   return (
     <header className="todoapp__header">
-      {/* eslint-disable-next-line jsx-a11y/control-has-associated-label */}
-      <button type="button" className="todoapp__toggle-all active" />
+      <button
+        type="button"
+        aria-label="Toggle All"
+        className="todoapp__toggle-all active"
+      />
 
       <form onSubmit={handleOnSubmit}>
         <input
