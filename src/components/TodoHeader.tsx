@@ -40,11 +40,14 @@ export const TodoHeader: FC<Props> = ({
       />
 
       {/* Add a todo on form submit */}
-      <form onSubmit={() => handleSubmit({
-        title,
-        completed: false,
-        userId,
-      })}
+      <form onSubmit={(event) => {
+        event.preventDefault();
+        handleSubmit({
+          title,
+          completed: false,
+          userId,
+        });
+      }}
       >
         <input
           type="text"
