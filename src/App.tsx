@@ -114,7 +114,7 @@ export const App: React.FC = () => {
     }
   };
 
-  const deleteTodos = (todosToDelete: Todo[]) => {
+  const removeCompletedTodos = (todosToDelete: Todo[]) => {
     todosToDelete.forEach(async todoToDelete => {
       await deleteTodo(todoToDelete.id);
     });
@@ -146,7 +146,7 @@ export const App: React.FC = () => {
             setFilterOption={setFilterOption}
             activeVisibleTodosLength={activeVisibleTodos.length}
             completedVisibleTodos={completedVisibleTodos}
-            deleteTodos={deleteTodos}
+            deleteTodos={removeCompletedTodos}
           />
         )}
       </div>

@@ -49,18 +49,13 @@ export const TodoFooter: React.FC<Props> = (
         })}
       </nav>
 
-      {/* don't show this button if there are no completed todos */}
-
       <button
         type="button"
-        className="todoapp__clear-completed"
+        className={cn(
+          'todoapp__clear-completed',
+          { hidden: isCompletedTodosPresent },
+        )}
         onClick={() => deleteTodos(completedVisibleTodos)}
-        style={{
-          visibility: isCompletedTodosPresent
-            ? 'visible'
-            : 'hidden',
-        }}
-
       >
         Clear completed
       </button>
