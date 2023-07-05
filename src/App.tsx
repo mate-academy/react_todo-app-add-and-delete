@@ -14,13 +14,13 @@ const USER_ID = 10929;
 export const App: React.FC = () => {
   const [todos, setTodos] = useState<Todo[]>([]);
   const [filterBy, setFilterBy] = useState(FilterBy.all);
-  const [isError, setIsError] = useState<string | null>(null);
+  const [erorrMessage, setErrorMessage] = useState<string | null>(null);
 
   useEffect(() => {
     getTodos(USER_ID)
       .then(setTodos)
       .catch((loadedError: Error) => {
-        setIsError(loadedError?.message ?? 'Error');
+        setErrorMessage(loadedError?.message ?? 'Error');
       });
   }, []);
 
@@ -37,7 +37,7 @@ export const App: React.FC = () => {
       <div className="todoapp__content">
         <header className="todoapp__header">
           {/* this buttons is active only if there are some active todos */}
-          {(todos.length > 0) && (
+          {todos.length > 0 && (
             <button type="button" className="todoapp__toggle-all active" />
           )}
 
@@ -64,7 +64,7 @@ export const App: React.FC = () => {
         )}
       </div>
 
-      {isError && <Notification />}
+      {erorrMessage && <Notification />}
     </div>
   );
 };
