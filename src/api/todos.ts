@@ -12,7 +12,7 @@ export const postTodos = (
   return client.post(`?userId=${userId}`, newTodo);
 };
 
-export const deleteTodos = (userId: string, todoId: namber) => {
+export const deleteTodos = (userId: string, todoId: number) => {
   return client.delete(`/${todoId}?userId=${userId}`);
 };
 

@@ -14,10 +14,12 @@ export const Footer: React.FC<Props> = ({
   onFilterType,
   onRemoveTodos,
 }) => {
+  const leftTodos = todos.filter(todo => !todo.completed);
+
   return (
     <footer className="todoapp__footer">
       <span className="todo-count">
-        {`${todos.length} items left`}
+        {`${leftTodos.length} items left`}
       </span>
 
       <TodoFilter onFilterType={onFilterType} />

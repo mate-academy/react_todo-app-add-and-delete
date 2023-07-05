@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-unused-vars */
 /* eslint-disable react-hooks/rules-of-hooks */
 /* eslint-disable jsx-a11y/control-has-associated-label */
 import React, { useState, useEffect } from 'react';
@@ -30,6 +31,7 @@ export const App: React.FC = () => {
   const [filter, setFilter] = useState(FilterTypes.All);
   const [isLoading, setIsLoading] = useState<boolean>(true);
   const [error, setError] = useState<string>('');
+  const [tempTodoId, setTempTodoId] = useState<number | null>(null);
 
   useEffect(() => {
     setIsLoading(true);
@@ -42,10 +44,6 @@ export const App: React.FC = () => {
     ).catch(() => setError(TodoErros.ErrorTodo));
   }, []);
 
-  const preventSubmit = (e: React.FormEvent<HTMLFormElement>) => {
-    e.preventDefault();
-  };
-
   const handleImputTodo = (
     e: React.ChangeEvent<HTMLInputElement>,
   ) => {
@@ -53,9 +51,10 @@ export const App: React.FC = () => {
   };
 
   const handleAddTodo = (
-    e: React.KeyboardEvent<HTMLElement>,
+    e: React.FormEvent<HTMLFormElement>,
   ) => {
-    if (input.trim() && e.key === 'Enter') {
+    e.preventDefault();
+    if (input.trim()) {
       const newTodo: Omit<Todo, 'id'> = {
         userId: Number(USER_ID),
         title: input,
@@ -63,8 +62,13 @@ export const App: React.FC = () => {
       };
 
       postTodos(USER_ID, newTodo).then((todo) => {
-        setTodos((prevTodos) => [...prevTodos, todo as Todo]);
+        const receivedTodo = todo as Todo;
+
+        setTempTodoId(receivedTodo.id);
+
+        setTodos((prevTodos) => [...prevTodos, receivedTodo]);
         setInput('');
+        setTempTodoId(null);
 
         if (error && error === TodoErros.Add) {
           setError('');
@@ -74,13 +78,28 @@ export const App: React.FC = () => {
   };
 
   const handleRemoveTodo = (todoId: number) => {
+    setTempTodoId(todoId);
     deleteTodos(USER_ID, todoId).then(() => {
       setTodos(prevTodos => prevTodos.filter(todo => todo.id !== todoId));
+      setTempTodoId(null);
 
       if (error && error === TodoErros.Delete) {
         setError('');
       }
     }).catch(() => setError(TodoErros.Delete));
+  };
+
+  const removeCompletedTodos = () => {
+    todos.filter(todo => todo.completed === true)
+      .map(currentTodo => deleteTodos(USER_ID, currentTodo.id)
+        .then(() => {
+          setTodos(prevTodos => prevTodos
+            .filter(todo => todo.completed === false));
+
+          if (error && error === TodoErros.Delete) {
+            setError('');
+          }
+        }).catch(() => setError(TodoErros.Delete)));
   };
 
   const handleCheckBoxTodo = (todoId: number) => {
@@ -106,9 +125,28 @@ export const App: React.FC = () => {
     });
   };
 
-  const removeCompletedTodos = () => {
-    setTodos(prevTodos => prevTodos
-      .filter(todo => todo.completed === false));
+  const handleChackAllTodos = () => {
+    setTodos(currentTodos => currentTodos
+      .map(
+        currentTodo => {
+          return {
+            ...currentTodo,
+            completed: true,
+          };
+        },
+      ));
+
+    if (todos.every(currTodo => currTodo.completed === true)) {
+      setTodos(currentTodos => currentTodos
+        .map(
+          currentTodo => {
+            return {
+              ...currentTodo,
+              completed: !currentTodo.completed,
+            };
+          },
+        ));
+    }
   };
 
   const filteredTodos = filter === FilterTypes.All
@@ -133,16 +171,19 @@ export const App: React.FC = () => {
 
       <div className="todoapp__content">
         <header className="todoapp__header">
-          <button type="button" className="todoapp__toggle-all active" />
+          <button
+            type="button"
+            className={`todoapp__toggle-all ${todos.length > 0 && 'active'}`}
+            onClick={handleChackAllTodos}
+          />
 
-          <form onSubmit={preventSubmit}>
+          <form onSubmit={handleAddTodo}>
             <input
               type="text"
               className="todoapp__new-todo"
               placeholder="What needs to be done?"
               value={input}
               onChange={handleImputTodo}
-              onKeyDown={handleAddTodo}
             />
           </form>
         </header>
@@ -154,15 +195,17 @@ export const App: React.FC = () => {
               todos={filteredTodos}
               onRemoveTodo={handleRemoveTodo}
               onCheckedTodo={handleCheckBoxTodo}
+              tempTodoId={tempTodoId}
+              handleImputTodo={handleImputTodo}
             />
           )}
-        {todos.length ? (
+        {!!todos.length && (
           <Footer
             todos={todos}
             onFilterType={filterTodos}
             onRemoveTodos={removeCompletedTodos}
           />
-        ) : undefined}
+        )}
       </div>
 
       {error && (
