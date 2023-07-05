@@ -72,7 +72,7 @@ export const App: React.FC = () => {
     }
   }, []);
 
-  const removeTodo = async (todoId: number) => {
+  const removeTodo = useCallback(async (todoId: number) => {
     try {
       setRemovingTodoId(todoId);
 
@@ -83,7 +83,7 @@ export const App: React.FC = () => {
     } finally {
       setRemovingTodoId(0);
     }
-  };
+  }, []);
 
   const filteredTodos: Todo[] = useMemo(() => {
     return todos.filter(todo => {
