@@ -15,7 +15,8 @@ const USER_ID = 10890;
 export const App: React.FC = () => {
   const [visibleTodos, setVisibleTodos] = useState<Todo[]>([]);
   const [filter, setFilter] = useState<TodoStatus>(TodoStatus.all);
-  const [isError, setIsError] = useState<ErrorMessage>(ErrorMessage.noError);
+  const [errorMessage, setErrorMessage]
+  = useState<ErrorMessage>(ErrorMessage.noError);
   const [newTodoTitle, setNewTodoTitle] = useState('');
   const [isLoading, setIsLoading] = useState(false);
   const [tempTodo, setTempTodo] = useState<Todo | null>(null);
@@ -25,12 +26,12 @@ export const App: React.FC = () => {
     getTodos(USER_ID)
       .then(setVisibleTodos)
       .catch(() => {
-        setIsError(ErrorMessage.loadError);
+        setErrorMessage(ErrorMessage.loadError);
       });
   }, []);
 
   const handleCloseError = () => {
-    setIsError(ErrorMessage.noError);
+    setErrorMessage(ErrorMessage.noError);
   };
 
   const filteredTodos = useCallback(() => {
@@ -61,7 +62,7 @@ export const App: React.FC = () => {
     });
 
     if (!newTodoTitle.trim()) {
-      setIsError(ErrorMessage.titleError);
+      setErrorMessage(ErrorMessage.titleError);
       setIsLoading(false);
       setTempTodo(null);
 
@@ -79,7 +80,7 @@ export const App: React.FC = () => {
         });
       })
       .catch(() => {
-        setIsError(ErrorMessage.addError);
+        setErrorMessage(ErrorMessage.addError);
       })
       .finally(() => {
         setIsLoading(false);
@@ -100,7 +101,7 @@ export const App: React.FC = () => {
         );
       })
       .catch(() => {
-        setIsError(ErrorMessage.deleteError);
+        setErrorMessage(ErrorMessage.deleteError);
       })
       .finally(() => {
         setDeletedTodoId([0]);
@@ -155,9 +156,9 @@ export const App: React.FC = () => {
         )}
       </div>
 
-      {isError && (
+      {errorMessage && (
         <Error
-          isError={isError}
+          errorMessage={errorMessage}
           handleCloseError={handleCloseError}
         />
       )}

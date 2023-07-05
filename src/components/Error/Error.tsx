@@ -3,14 +3,13 @@ import cn from 'classnames';
 import { ErrorMessage } from '../../types/ErrorMessage';
 
 type Props = {
-  isError: ErrorMessage,
+  errorMessage: ErrorMessage,
   handleCloseError: () => void,
 };
 
 export const Error: React.FC<Props> = ({
-  isError,
+  errorMessage,
   handleCloseError,
-  // setIsLoading,
 }) => {
   useEffect(() => {
     const delay = setTimeout(() => {
@@ -26,7 +25,7 @@ export const Error: React.FC<Props> = ({
     <div
       className={(cn(
         'notification', 'is-danger', 'is-light', 'has-text-weight-normal', {
-          hidden: !isError,
+          hidden: !errorMessage,
         },
       ))}
     >
@@ -36,7 +35,7 @@ export const Error: React.FC<Props> = ({
         aria-label="delete"
         onClick={handleCloseError}
       />
-      {isError}
+      {errorMessage}
     </div>
   );
 };
