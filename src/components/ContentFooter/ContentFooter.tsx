@@ -2,8 +2,6 @@
 import React from 'react';
 import classNames from 'classnames';
 import { FilterStatus } from '../../helper';
-// import { Todo } from '../../types/Todo';
-// import { FilterStatus } from '../../helper';
 
 interface Props {
   activeTodosQuantity: number;

@@ -24,7 +24,6 @@ export const ContentMain: React.FC<Props> = ({
           key={id}
           className={classNames('todo', {
             completed,
-            // 'is-active': setIsLoading,
           })}
         >
           <label className="todo__status-label">
