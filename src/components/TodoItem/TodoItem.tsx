@@ -4,13 +4,13 @@ import { Todo } from '../../types/todo';
 
 interface Props {
   todo: Todo;
-  loadingTodos: number[];
+  loadingTodoIds: number[];
   onDelete: CallableFunction;
 }
 
 export const TodoItem: React.FC<Props> = ({
   todo,
-  loadingTodos,
+  loadingTodoIds,
   onDelete,
 }) => {
   const { id, title, completed } = todo;
@@ -37,7 +37,7 @@ export const TodoItem: React.FC<Props> = ({
 
       {/* overlay will cover the todo while it is being updated */}
       <div className={classNames('modal overlay', {
-        'is-active': loadingTodos.includes(id),
+        'is-active': loadingTodoIds.includes(id),
       })}
       >
         <div className="modal-background has-background-white-ter" />

@@ -3,13 +3,13 @@ import { Todo } from '../../types/todo';
 
 interface Props {
   setError: (error: string) => void;
-  onAdd: (title: string) => void;
+  onTodoAdd: (title: string) => void;
   tempTodo: Todo | null;
 }
 
 export const TodoForm: React.FC<Props> = ({
   setError,
-  onAdd,
+  onTodoAdd,
   tempTodo,
 }) => {
   const [newTodoTitle, setNewTodoTitle] = useState('');
@@ -23,7 +23,7 @@ export const TodoForm: React.FC<Props> = ({
       return;
     }
 
-    await onAdd(newTodoTitle);
+    await onTodoAdd(newTodoTitle);
     setNewTodoTitle('');
   };
 
@@ -35,7 +35,7 @@ export const TodoForm: React.FC<Props> = ({
         placeholder="What needs to be done?"
         value={newTodoTitle}
         onChange={(event) => setNewTodoTitle(event.target.value)}
-        disabled={!!tempTodo}
+        disabled={Boolean(tempTodo)}
       />
     </form>
   );

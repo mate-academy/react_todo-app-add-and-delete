@@ -1,47 +1,45 @@
 import React from 'react';
 import classNames from 'classnames';
-import { FilteringOptions } from '../../types/Filter';
+import { FilteringOption } from '../../types/Filter';
 
 interface Props {
-  filter: FilteringOptions;
-  setFilter: (filter: FilteringOptions) => void;
+  filter: FilteringOption;
+  setFilter: (filter: FilteringOption) => void;
 }
 
 export const Filter: React.FC<Props> = ({
   filter,
   setFilter,
-}) => {
-  return (
-    <nav className="filter">
-      <a
-        href="#/"
-        className={classNames('filter__link', {
-          selected: filter === FilteringOptions.all,
-        })}
-        onClick={() => setFilter(FilteringOptions.all)}
-      >
-        All
-      </a>
+}) => (
+  <nav className="filter">
+    <a
+      href="#/"
+      className={classNames('filter__link', {
+        selected: filter === FilteringOption.all,
+      })}
+      onClick={() => setFilter(FilteringOption.all)}
+    >
+      All
+    </a>
 
-      <a
-        href="#/active"
-        className={classNames('filter__link', {
-          selected: filter === FilteringOptions.active,
-        })}
-        onClick={() => setFilter(FilteringOptions.active)}
-      >
-        Active
-      </a>
+    <a
+      href="#/active"
+      className={classNames('filter__link', {
+        selected: filter === FilteringOption.active,
+      })}
+      onClick={() => setFilter(FilteringOption.active)}
+    >
+      Active
+    </a>
 
-      <a
-        href="#/completed"
-        className={classNames('filter__link', {
-          selected: filter === FilteringOptions.completed,
-        })}
-        onClick={() => setFilter(FilteringOptions.completed)}
-      >
-        Completed
-      </a>
-    </nav>
-  );
-};
+    <a
+      href="#/completed"
+      className={classNames('filter__link', {
+        selected: filter === FilteringOption.completed,
+      })}
+      onClick={() => setFilter(FilteringOption.completed)}
+    >
+      Completed
+    </a>
+  </nav>
+);

@@ -4,10 +4,10 @@ import classNames from 'classnames';
 
 interface Props {
   error: string | null;
-  setError: React.Dispatch<React.SetStateAction<string | null>>;
+  handleCloseError: () => void;
 }
 
-export const Notifications: React.FC<Props> = ({ error, setError }) => {
+export const Notifications: React.FC<Props> = ({ error, handleCloseError }) => {
   return (
     <div className={classNames(
       'notification is-danger is-light has-text-weight-normal',
@@ -17,15 +17,9 @@ export const Notifications: React.FC<Props> = ({ error, setError }) => {
       <button
         type="button"
         className="delete"
-        onClick={() => setError(null)}
+        onClick={handleCloseError}
       />
       {error}
-      {/* show only one message at a time */}
-      {/* Unable to add a todo
-      <br />
-      Unable to delete a todo
-      <br />
-      Unable to update a todo */}
     </div>
   );
 };

@@ -5,13 +5,13 @@ import { TodoForm } from '../TodoForm';
 
 interface Props {
   setError: (error: string) => void;
-  onAdd: (title: string) => void;
+  onTodoAdd: (title: string) => void;
   tempTodo: Todo | null;
 }
 
 export const Header: React.FC<Props> = ({
   setError,
-  onAdd,
+  onTodoAdd,
   tempTodo,
 }) => (
   <header className="todoapp__header">
@@ -19,6 +19,6 @@ export const Header: React.FC<Props> = ({
     <button type="button" className="todoapp__toggle-all active" />
 
     {/* Add a todo on form submit */}
-    <TodoForm setError={setError} onAdd={onAdd} tempTodo={tempTodo} />
+    <TodoForm setError={setError} onTodoAdd={onTodoAdd} tempTodo={tempTodo} />
   </header>
 );
