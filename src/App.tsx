@@ -23,6 +23,7 @@ export const App: React.FC = () => {
   const [error, setError] = useState<string | null>(null);
   const [tempTodo, setTempTodo] = useState<Todo | null>(null);
   const [deletedTodoId, setDeletedTodoId] = useState<number[]>([]);
+  const [isFormDisabled, setIsFormDisabled] = useState(false);
 
   useEffect(() => {
     getTodos(USER_ID)
@@ -66,10 +67,12 @@ export const App: React.FC = () => {
       title,
       completed: false,
     });
+    setIsFormDisabled(true);
 
     addTodo(title)
       .then(newTodo => {
         setTempTodo(null);
+        setIsFormDisabled(false);
         setTodos(prevTodos => [...prevTodos, newTodo]);
 
         return newTodo;
@@ -77,6 +80,7 @@ export const App: React.FC = () => {
       .catch(() => {
         setError('Unable to add a todo');
         setTempTodo(null);
+        setIsFormDisabled(false);
       });
   }, []);
 
@@ -119,6 +123,7 @@ export const App: React.FC = () => {
 
       <div className="todoapp__content">
         <Header
+          isFormDisabled={isFormDisabled}
           onTodoAdd={handleTodoAdd}
           setError={setError}
         />

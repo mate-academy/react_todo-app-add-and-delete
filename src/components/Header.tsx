@@ -2,34 +2,34 @@
 import { useState } from 'react';
 
 type Props = {
+  isFormDisabled: boolean;
   onTodoAdd: (title: string) => void;
   setError: (error: string) => void;
 };
 
 export const Header: React.FC<Props> = ({
+  isFormDisabled,
   onTodoAdd,
   setError,
 }) => {
   const [newTitle, setNewTitle] = useState('');
-  const [isFormDisabled, setIsFormDisabled] = useState(false);
 
   const handleTitleChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     setNewTitle(event.target.value);
   };
 
-  const handleFormSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
+  const handleFormSubmit = (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
 
-    if (!newTitle) {
+    if (!newTitle.trim()) {
       setError("Title can't be empty");
+
+      return;
     }
 
-    setIsFormDisabled(true);
-
-    await onTodoAdd(newTitle);
+    onTodoAdd(newTitle);
 
     setNewTitle('');
-    setIsFormDisabled(false);
   };
 
   return (
