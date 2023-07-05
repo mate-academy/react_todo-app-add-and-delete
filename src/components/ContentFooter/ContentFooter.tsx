@@ -51,7 +51,9 @@ export const ContentFooter: React.FC<Props> = ({
       {/* don't show this button if there are no completed todos */}
       <button
         type="button"
-        className="todoapp__clear-completed"
+        className={classNames('todoapp__clear-completed', {
+          'is-invisible': completedTodo.length === 0,
+        })}
         onClick={removeCompletedTodos}
       >
         Clear completed
