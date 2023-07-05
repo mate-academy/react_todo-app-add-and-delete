@@ -7,7 +7,7 @@ import React, {
 } from 'react';
 import classNames from 'classnames';
 import { UserWarning } from './UserWarning';
-import { NewTodo } from './components/NewTodo';
+import { CreateNewTodo } from './components/CreateNewTodo';
 import { Todo } from './types/Todo';
 import { TodoList } from './components/TodoList';
 import { Filter } from './components/Filter';
@@ -16,22 +16,21 @@ import {
   addTodos,
   removeTodo,
 } from './api/todos';
-import { TempTodoItem } from './components/TempTodoItem';
+import { TodoInfo } from './components/TodoInfo';
 import { ErrorMessage } from './types/ErrorMessage';
-import { FilterStatus } from './types/FilterStatus';
+import { StatusFilter } from './types/StatusFilter';
 
 const USER_ID = 10906;
 
 export const App: React.FC = () => {
   const [todos, setTodos] = useState<Todo[]>([]);
   const [errorMessage, setErrorMessage] = useState<ErrorMessage | null>(null);
-  const [newTodoTitle, setNewTodoTitle] = useState('');
   const [selectedFilter, setSelectedFilter] = useState<
-  FilterStatus>(FilterStatus.ALL);
+  StatusFilter>(StatusFilter.ALL);
 
   const [tempTodo, setTempTodo] = useState<Todo | null>(null);
   const [isLoading, setIsLoading] = useState(false);
-  const [loadingTodosIds, setLoadingTodosIds] = useState<number[]>([]);
+  const [loadingTodoIds, setLoadingTodoIds] = useState<number[]>([]);
 
   useEffect(() => {
     getTodos(USER_ID)
@@ -50,15 +49,12 @@ export const App: React.FC = () => {
   }, [errorMessage]);
 
   const clearForm = () => {
-    setNewTodoTitle('');
     setTempTodo(null);
     setIsLoading(false);
-    setTempTodo(null);
   };
 
-  const onAddTodo = async (
-  ) => {
-    if (!newTodoTitle) {
+  const onAddTodo = useCallback(async (newTitle: string) => {
+    if (!newTitle) {
       setErrorMessage(ErrorMessage.TITLE);
 
       return;
@@ -69,7 +65,7 @@ export const App: React.FC = () => {
 
       const newTodoData = {
         userId: USER_ID,
-        title: newTodoTitle,
+        title: newTitle,
         completed: false,
       };
 
@@ -83,24 +79,26 @@ export const App: React.FC = () => {
       clearForm();
       setErrorMessage(ErrorMessage.ADD);
     }
-  };
+  }, []);
 
   const onDeleteTodo = useCallback(async (todoId: number) => {
     try {
-      setLoadingTodosIds((prevIds) => [...prevIds, todoId]);
+      setLoadingTodoIds((prevIds) => [...prevIds, todoId]);
       await removeTodo(todoId);
 
       setTodos((prevTodos => (
-        prevTodos.filter(todo => todo.id !== todoId))));
+        prevTodos.filter(todo => todo.id !== todoId)
+      )));
 
-      setLoadingTodosIds((prevIds) => (
-        prevIds.filter(prevId => prevId !== todoId)));
+      setLoadingTodoIds((prevIds) => (
+        prevIds.filter(prevId => prevId !== todoId)
+      ));
     } catch {
       setErrorMessage(ErrorMessage.REMOVE);
     }
   }, []);
 
-  const handleDeleteError = () => {
+  const handleCloseError = () => {
     setErrorMessage(null);
   };
 
@@ -113,11 +111,13 @@ export const App: React.FC = () => {
   ), [todos]);
 
   const visibleTodos = useMemo(() => {
+    const { ACTIVE, COMPLETED } = StatusFilter;
+
     switch (selectedFilter) {
-      case 'Active':
+      case ACTIVE:
         return activeTodos;
 
-      case 'Completed':
+      case COMPLETED:
         return completedTodos;
 
       default:
@@ -150,9 +150,7 @@ export const App: React.FC = () => {
             className="todoapp__toggle-all active"
           />
 
-          <NewTodo
-            setNewTodoTitle={setNewTodoTitle}
-            newTodoTitle={newTodoTitle}
+          <CreateNewTodo
             setErrorMessage={setErrorMessage}
             onAddTodo={onAddTodo}
             isLoading={isLoading}
@@ -165,10 +163,13 @@ export const App: React.FC = () => {
             <TodoList
               todos={visibleTodos}
               onDeleteTodo={onDeleteTodo}
-              loadingTodosIds={loadingTodosIds}
+              loadingTodoIds={loadingTodoIds}
             />
             {tempTodo && (
-              <TempTodoItem tempTodo={tempTodo} />
+              <TodoInfo
+                todo={tempTodo}
+                loadingTodoId={tempTodo.id}
+              />
             )}
 
             <footer className="todoapp__footer">
@@ -206,7 +207,7 @@ export const App: React.FC = () => {
         <button
           type="button"
           className="delete"
-          onClick={handleDeleteError}
+          onClick={handleCloseError}
         />
 
         {errorMessage}

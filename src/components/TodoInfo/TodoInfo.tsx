@@ -4,47 +4,52 @@ import { Todo } from '../../types/Todo';
 
 interface Props {
   todo: Todo;
-  onDeleteTodo: (todoId: number) => void;
-  loadingTodosIds: number[];
+  onDeleteTodo?: (todoId: number) => void;
+  loadingTodoId?: number | null;
 }
 
 export const TodoInfo: React.FC<Props> = ({
   todo,
-  onDeleteTodo,
-  loadingTodosIds,
+  onDeleteTodo = () => {},
+  loadingTodoId = null,
 }) => {
   const [isLoading, setIsLoading] = useState(false);
+  const { id, title, completed } = todo;
 
   useEffect(() => {
-    if (loadingTodosIds.includes(todo.id)) {
+    if (loadingTodoId === id) {
       setIsLoading(true);
     } else {
       setIsLoading(false);
     }
-  }, [loadingTodosIds]);
+  }, [loadingTodoId]);
+
+  const handleDeleteTodo = () => {
+    onDeleteTodo(id);
+  };
 
   return (
     <div
       className={classNames('todo', {
-        completed: todo.completed === true,
+        completed: completed === true,
       })}
     >
       <label className="todo__status-label">
         <input
           type="checkbox"
           className="todo__status"
-          checked={todo.completed}
+          checked={completed}
         />
       </label>
 
       <span className="todo__title">
-        {todo.title}
+        {title}
       </span>
 
       <button
         type="button"
         className="todo__remove"
-        onClick={() => onDeleteTodo(todo.id)}
+        onClick={handleDeleteTodo}
         disabled={isLoading}
       >
         ×

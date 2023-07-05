@@ -1,19 +1,19 @@
 import React from 'react';
 import classNames from 'classnames';
-import { FilterStatus } from '../../types/FilterStatus';
+import { StatusFilter } from '../../types/StatusFilter';
 
 interface Props {
-  setSelectedFilter: React.Dispatch<React.SetStateAction<FilterStatus>>;
-  selectedFilter: string;
+  setSelectedFilter: (filter: StatusFilter) => void;
+  selectedFilter: StatusFilter;
 }
 
 export const Filter: React.FC<Props> = ({
   setSelectedFilter,
   selectedFilter,
 }) => {
-  const filters = Object.values(FilterStatus);
+  const filters = Object.values(StatusFilter);
 
-  const handleFilterChange = (filter: FilterStatus) => {
+  const handleFilterChange = (filter: StatusFilter) => {
     setSelectedFilter(filter);
   };
 

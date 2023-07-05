@@ -1,45 +1,44 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { ErrorMessage } from '../../types/ErrorMessage';
 
 interface Props {
-  newTodoTitle: string;
-  setNewTodoTitle: (title: string) => void;
   setErrorMessage: React.Dispatch<React.SetStateAction<ErrorMessage | null>>;
-  onAddTodo: () => void;
+  onAddTodo: (newTitle: string) => void;
   isLoading: boolean;
 }
 
-export const NewTodo: React.FC<Props> = ({
-  newTodoTitle,
-  setNewTodoTitle,
+export const CreateNewTodo: React.FC<Props> = ({
   setErrorMessage,
   onAddTodo,
   isLoading,
 }) => {
-  const handleChangeTodoTitle = (
+  const [newTodoTitle, setNewTodoTitle] = useState('');
+
+  const handleTodoTitleChange = (
     event: React.ChangeEvent<HTMLInputElement>,
   ) => {
     setNewTodoTitle(event.target.value);
     setErrorMessage(null);
   };
 
-  const handleOnSubmit = (
+  const handleSubmit = (
     event: React.FormEvent<HTMLFormElement>,
   ) => {
     event.preventDefault();
-    onAddTodo();
+    onAddTodo(newTodoTitle);
+    setNewTodoTitle('');
   };
 
   return (
     <form
-      onSubmit={handleOnSubmit}
+      onSubmit={handleSubmit}
     >
       <input
         type="text"
         className="todoapp__new-todo"
         placeholder="What needs to be done?"
         value={newTodoTitle}
-        onChange={handleChangeTodoTitle}
+        onChange={handleTodoTitleChange}
         disabled={isLoading}
       />
     </form>
