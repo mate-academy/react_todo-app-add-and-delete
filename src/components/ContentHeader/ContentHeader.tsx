@@ -47,7 +47,7 @@ export const ContentHeader: React.FC<Props> = ({
       <button
         type="button"
         className="todoapp__toggle-all active"
-        aria-label=""
+        aria-label="toggle status"
       />
 
       {/* Add a todo on form submit */}

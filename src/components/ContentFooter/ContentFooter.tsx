@@ -43,7 +43,7 @@ export const ContentFooter: React.FC<Props> = ({
             })}
             onClick={() => handleFilterChange(status as FilterStatus)}
           >
-            {`${status.slice(0, 1).toUpperCase()}${status.slice(1)}`}
+            {status[0].toUpperCase() + status.slice(1)}
           </a>
         ))}
       </nav>
