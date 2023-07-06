@@ -1,34 +1,41 @@
 /* eslint-disable jsx-a11y/control-has-associated-label */
-import React, { useEffect, useState } from 'react';
+import React, { useEffect } from 'react';
 import cn from 'classnames';
+import { ErrorMessage } from '../../types/ErrorMessage';
 
-export const Notification: React.FC = () => {
-  const [hidden, setHiden] = useState(false);
+type Props = {
+  errorMessage: ErrorMessage,
+  handleCloseError: () => void,
+};
 
+export const Notification: React.FC<Props> = ({
+  errorMessage,
+  handleCloseError,
+}) => {
   useEffect(() => {
-    setTimeout(() => {
-      setHiden(true);
+    const delay = setTimeout(() => {
+      handleCloseError();
     }, 3000);
-  }, []);
+
+    return () => {
+      clearTimeout(delay);
+    };
+  }, [handleCloseError]);
 
   return (
     <div className={cn(
-      'notification is-danger is-light has-text-weight-normal',
-      { hidden },
+      'notification is-danger is-light has-text-weight-normal', {
+        hidden: !errorMessage,
+      },
     )}
     >
       <button
         type="button"
         className="delete"
-        onClick={() => setHiden(true)}
+        aria-label="delete"
+        onClick={handleCloseError}
       />
-
-      {/* show only one message at a time */}
-      Unable to add a todo
-      <br />
-      Unable to delete a todo
-      <br />
-      Unable to update a todo
+      {errorMessage}
     </div>
   );
 };

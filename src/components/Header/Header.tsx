@@ -1,18 +1,41 @@
 /* eslint-disable jsx-a11y/control-has-associated-label */
 import React from 'react';
+import cn from 'classnames';
+import { Todo } from '../../types/Todo';
 
-export const Header: React.FC = () => {
+type Props = {
+  activeTodos: Todo[] | null,
+  handleSubmit: (event: React.FormEvent<HTMLFormElement>) => void,
+  isLoading: boolean,
+  newTodoTitle: string
+  setNewTodoTitle: (title: string) => void,
+};
+
+export const Header: React.FC<Props> = ({
+  activeTodos,
+  handleSubmit,
+  isLoading,
+  newTodoTitle,
+  setNewTodoTitle,
+}) => {
   return (
     <header className="todoapp__header">
-      {/* this buttons is active only if there are some active todos */}
-      <button type="button" className="todoapp__toggle-all active" />
+      <button
+        type="button"
+        className={cn('todoapp__toggle-all', {
+          active: activeTodos,
+        })}
+        aria-label="button"
+      />
 
-      {/* Add a todo on form submit */}
-      <form>
+      <form onSubmit={handleSubmit}>
         <input
           type="text"
           className="todoapp__new-todo"
           placeholder="What needs to be done?"
+          disabled={isLoading}
+          value={newTodoTitle}
+          onChange={(event) => setNewTodoTitle(event.target.value)}
         />
       </form>
     </header>

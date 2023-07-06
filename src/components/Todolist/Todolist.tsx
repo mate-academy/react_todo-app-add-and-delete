@@ -3,15 +3,35 @@ import { Todo } from '../../types/Todo';
 import { TodoInfo } from '../TodoInfo/TodoInfo';
 
 type Props = {
-  filteredTodos: Todo[] | null;
+  todos: Todo[];
+  filteredTodos: Todo | null; // tempTodo
+  loadingTodos: number[];
+  deleteTodo: (todoId: number) => void;
 };
 
-export const Todolist: React.FC<Props> = ({ filteredTodos }) => {
+export const Todolist: React.FC<Props> = ({
+  todos,
+  filteredTodos,
+  loadingTodos,
+  deleteTodo,
+}) => {
   return (
     <section className="todoapp__main">
-      {filteredTodos?.map((todo) => (
-        <TodoInfo todo={todo} key={todo.id} />
+      {todos.map((todo) => (
+        <TodoInfo
+          todo={todo}
+          loadingTodos={loadingTodos}
+          deleteTodo={deleteTodo}
+          key={todo.id}
+        />
       ))}
+      {filteredTodos && (
+        <TodoInfo
+          todo={filteredTodos}
+          loadingTodos={loadingTodos}
+          deleteTodo={deleteTodo}
+        />
+      )}
     </section>
   );
 };

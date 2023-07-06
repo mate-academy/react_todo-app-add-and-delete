@@ -5,17 +5,21 @@ import { Todo } from '../../types/Todo';
 import { TodoStatus } from '../../types/TodoStatus';
 
 type Props = {
-  todos: Todo[];
-  todoStatus: TodoStatus;
-  setTodoStatus: (value: TodoStatus) => void;
+  activeTodos: Todo[] | null,
+  todoStatus: string, // filter
+  setTodoStatus: (value: TodoStatus) => void, // setFilter
+  completedTodos: Todo[],
+  handleRemoveCompleted: () => void,
 };
 
 export const Footer :React.FC<Props> = ({
-  todos,
+  activeTodos,
   todoStatus,
   setTodoStatus,
+  completedTodos,
+  handleRemoveCompleted,
 }) => {
-  const itemsLeft = todos.filter(todo => !todo.completed).length;
+  const itemsLeft = activeTodos?.filter(todo => !todo.completed).length;
 
   return (
     <footer className="todoapp__footer">
@@ -38,10 +42,17 @@ export const Footer :React.FC<Props> = ({
         ))}
       </nav>
 
-      {/* don't show this button if there are no completed todos */}
-      <button type="button" className="todoapp__clear-completed">
-        Clear completed
-      </button>
+      {completedTodos.length > 0 && (
+        <button
+          type="button"
+          className={cn('todoapp__clear-completed', {
+            hidden: completedTodos.length === 0,
+          })}
+          onClick={handleRemoveCompleted}
+        >
+          Clear completed
+        </button>
+      )}
     </footer>
   );
 };
