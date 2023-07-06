@@ -40,10 +40,9 @@ export const TodoListItem: React.FC<Props> = ({
         ×
       </button>
 
-      {/* overlay will cover the todo while it is being updated */}
       <div
         className={cn('modal', 'overlay', {
-          'is-active': completedIds.includes(todo.id), // deletedIds.includes(todo.id)
+          'is-active': completedIds.includes(todo.id),
         })}
       >
         <div className="modal-background has-background-white-ter" />

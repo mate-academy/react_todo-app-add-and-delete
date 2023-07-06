@@ -113,7 +113,6 @@ export const App: React.FC = () => {
           visibleTodos={visibleTodos}
           addTodo={addTodo}
           onError={setError}
-          isLoading={isLoading}
         />
 
         {todos.length > 0 && (

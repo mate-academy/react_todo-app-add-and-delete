@@ -7,15 +7,14 @@ interface Props {
   visibleTodos: Todo[];
   addTodo: (title: string) => void;
   onError: Dispatch<SetStateAction<string | null>>;
-  isLoading: boolean;
 }
 
 export const Header: React.FC<Props> = ({
   visibleTodos,
   addTodo,
   onError,
-  isLoading,
 }) => {
+  const [isLoading, setIsLoading] = useState(false);
   const [newTitle, setNewTitle] = useState('');
 
   const handleSubmitButton = async (
@@ -24,9 +23,14 @@ export const Header: React.FC<Props> = ({
     event.preventDefault();
 
     if (newTitle.trim()) {
-      addTodo(newTitle);
-      setNewTitle('');
+      setIsLoading(true);
+
+      await addTodo(newTitle);
+
+      setIsLoading(false);
     }
+
+    setNewTitle('');
 
     if (!newTitle.trim()) {
       onError("Title can't be empty");
@@ -35,7 +39,6 @@ export const Header: React.FC<Props> = ({
 
   return (
     <header className="todoapp__header">
-      {/* this buttons is active only if there are some active todos */}
       {visibleTodos.length > 0 && (
         <button
           type="button"
@@ -45,7 +48,6 @@ export const Header: React.FC<Props> = ({
         />
       )}
 
-      {/* Add a todo on form submit */}
       <form
         onSubmit={handleSubmitButton}
       >
