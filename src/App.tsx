@@ -20,7 +20,7 @@ export const App: React.FC = () => {
 
   useEffect(() => {
     getTodos(USER_ID)
-      .then((todosFromServer: Todo[]) => setTodos(todosFromServer))
+      .then(setTodos)
       .catch(() => setError('Unable to get todos'));
   }, []);
 
@@ -107,7 +107,6 @@ export const App: React.FC = () => {
 
       <div className="todoapp__content">
         <header className="todoapp__header">
-          {/* this buttons is active only if there are some active todos */}
           <button
             type="button"
             className="todoapp__toggle-all active"
@@ -133,9 +132,8 @@ export const App: React.FC = () => {
               {`${activeTodos.length} items left`}
             </span>
 
-            {/* Active filter should have a 'selected' class */}
             <Filter filter={filter} setFilter={setFilter} />
-            {/* don't show this button if there are no completed todos */}
+
             {completedTodos.length > 0 && (
               <button
                 type="button"
