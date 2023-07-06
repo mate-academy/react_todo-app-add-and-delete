@@ -1,13 +1,13 @@
 import React, { useState } from 'react';
-import { Todo } from '../types/Todo';
+import { Todo } from '../../types/Todo';
 
 type Props = {
-  todo: Todo
-  onRemoveTodo: (todoId: number) => void
-  onCheckedTodo: (todoId: number) => void
-  loading: boolean
-  handleImputTodo: (e: React.ChangeEvent<HTMLInputElement>) => void
-
+  todo: Todo;
+  onRemoveTodo: (todoId: number) => void;
+  onCheckedTodo: (todoId: number) => void;
+  loading: boolean;
+  handleImputTodo: (e: React.ChangeEvent<HTMLInputElement>) => void;
+  error: string
 };
 
 export const TodoItem: React.FC<Props> = ({
@@ -16,26 +16,24 @@ export const TodoItem: React.FC<Props> = ({
   onCheckedTodo,
   loading,
   handleImputTodo,
+  error,
 }) => {
+  const { id, completed, title } = todo;
+
   const [activeRenameTodo, setActiveRenameTodo] = useState<boolean>(false);
 
-  const handleTargetTodo = (
-    todoId: number,
-  ) => {
-    setActiveRenameTodo(() => todo.id === todoId);
+  const handleTargetTodo = (todoId: number) => {
+    setActiveRenameTodo(() => id === todoId);
   };
 
   return (
     <>
-      <div
-        key={todo.id}
-        className={`todo ${todo.completed && 'completed'}`}
-      >
+      <div className={`todo ${completed && 'completed'}`}>
         <label className="todo__status-label">
           <input
             type="checkbox"
             className="todo__status"
-            onChange={() => onCheckedTodo(todo.id)}
+            onChange={() => onCheckedTodo(id)}
           />
         </label>
 
@@ -45,7 +43,7 @@ export const TodoItem: React.FC<Props> = ({
               type="text"
               className="todo__title-field"
               placeholder="Empty todo will be deleted"
-              value={todo.title}
+              value={title}
               onChange={handleImputTodo}
             />
           )
@@ -53,28 +51,27 @@ export const TodoItem: React.FC<Props> = ({
             <>
               <span
                 className="todo__title"
-                onDoubleClick={() => handleTargetTodo(todo.id)}
+                onDoubleClick={() => handleTargetTodo(id)}
               >
-                {todo.title}
+                {title}
               </span>
 
               <button
                 type="button"
                 className="todo__remove"
-                onClick={() => onRemoveTodo(todo.id)}
+                onClick={() => onRemoveTodo(id)}
               >
                 ×
               </button>
 
-              {loading && (
+              {!error.length && loading && (
                 <div className="modal overlay is-active">
                   <div className="modal-background has-background-white-ter" />
                   <div className="loader" />
                 </div>
-              ) }
+              )}
             </>
           )}
-
       </div>
     </>
   );

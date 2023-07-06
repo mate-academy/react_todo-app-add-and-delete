@@ -1,3 +1,4 @@
+import classNames from 'classnames';
 import React from 'react';
 
 export enum FilterTypes {
@@ -8,16 +9,20 @@ export enum FilterTypes {
 
 type Props = {
   onFilterType: (type: FilterTypes) => void
+  filter: FilterTypes
 };
 
 export const TodoFilter: React.FC<Props> = ({
   onFilterType,
+  filter,
 }) => {
   return (
     <nav className="filter">
       <a
         href="#/"
-        className="filter__link"
+        className={classNames('filter__link', {
+          selected: filter === FilterTypes.All,
+        })}
         onClick={() => onFilterType(FilterTypes.All)}
       >
         All
@@ -25,7 +30,9 @@ export const TodoFilter: React.FC<Props> = ({
 
       <a
         href="#/active"
-        className="filter__link"
+        className={classNames('filter__link', {
+          selected: filter === FilterTypes.Active,
+        })}
         onClick={() => onFilterType(FilterTypes.Active)}
       >
         Active
@@ -33,7 +40,9 @@ export const TodoFilter: React.FC<Props> = ({
 
       <a
         href="#/completed"
-        className="filter__link"
+        className={classNames('filter__link', {
+          selected: filter === FilterTypes.Completed,
+        })}
         onClick={() => onFilterType(FilterTypes.Completed)}
       >
         Completed

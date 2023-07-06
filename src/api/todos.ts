@@ -19,10 +19,10 @@ export const deleteTodos = (userId: string, todoId: number) => {
 export const patchTodos = (
   todoId: number,
   userId: string,
-  curentTodo: Todo,
+  currentTodo: Todo,
 ) => {
   return client.patch(
     `/${todoId}?userId=${userId}`,
-    { completed: !curentTodo.completed },
+    { completed: !currentTodo.completed },
   );
 };

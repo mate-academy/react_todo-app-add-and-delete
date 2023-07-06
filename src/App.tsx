@@ -1,5 +1,3 @@
-/* eslint-disable @typescript-eslint/no-unused-vars */
-/* eslint-disable react-hooks/rules-of-hooks */
 /* eslint-disable jsx-a11y/control-has-associated-label */
 import React, { useState, useEffect } from 'react';
 import { UserWarning } from './UserWarning';
@@ -15,23 +13,19 @@ import {
 export const USER_ID = '10682';
 
 export enum TodoErros {
-  Add = ' Unable to add a todo',
+  Add = 'Unable to add a todo',
   Delete = 'Unable to delete a todo',
   Update = 'Unable to update a todo',
   ErrorTodo = 'Can not find todos',
 }
 
 export const App: React.FC = () => {
-  if (!USER_ID) {
-    return <UserWarning />;
-  }
-
   const [todos, setTodos] = useState<Todo[]>([]);
   const [input, setInput] = useState<string>('');
+  const [tempTodoId, setTempTodoId] = useState<number | null>(null);
   const [filter, setFilter] = useState(FilterTypes.All);
   const [isLoading, setIsLoading] = useState<boolean>(true);
   const [error, setError] = useState<string>('');
-  const [tempTodoId, setTempTodoId] = useState<number | null>(null);
 
   useEffect(() => {
     setIsLoading(true);
@@ -41,7 +35,9 @@ export const App: React.FC = () => {
         setTodos(fetchedTodos as Todo[]);
         setIsLoading(false);
       },
-    ).catch(() => setError(TodoErros.ErrorTodo));
+    ).catch(() => {
+      setError(TodoErros.ErrorTodo);
+    });
   }, []);
 
   const handleImputTodo = (
@@ -73,7 +69,9 @@ export const App: React.FC = () => {
         if (error && error === TodoErros.Add) {
           setError('');
         }
-      }).catch(() => setError(TodoErros.Add));
+      }).catch(() => {
+        setError(TodoErros.Add);
+      });
     }
   };
 
@@ -99,7 +97,9 @@ export const App: React.FC = () => {
           if (error && error === TodoErros.Delete) {
             setError('');
           }
-        }).catch(() => setError(TodoErros.Delete)));
+        }).catch(() => {
+          setError(TodoErros.Delete);
+        }));
   };
 
   const handleCheckBoxTodo = (todoId: number) => {
@@ -119,9 +119,15 @@ export const App: React.FC = () => {
             };
           }
 
+          if (error && error === TodoErros.Update) {
+            setError('');
+          }
+
           return todo;
         },
       ));
+    }).catch(() => {
+      setError(TodoErros.Update);
     });
   };
 
@@ -165,6 +171,10 @@ export const App: React.FC = () => {
     setFilter(type);
   };
 
+  if (!USER_ID) {
+    return <UserWarning />;
+  }
+
   return (
     <div className="todoapp">
       <h1 className="todoapp__title">todos</h1>
@@ -192,6 +202,7 @@ export const App: React.FC = () => {
           ? <Loader />
           : (
             <Todos
+              error={error}
               todos={filteredTodos}
               onRemoveTodo={handleRemoveTodo}
               onCheckedTodo={handleCheckBoxTodo}
@@ -203,6 +214,7 @@ export const App: React.FC = () => {
           <Footer
             todos={todos}
             onFilterType={filterTodos}
+            filter={filter}
             onRemoveTodos={removeCompletedTodos}
           />
         )}

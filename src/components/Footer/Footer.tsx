@@ -7,30 +7,40 @@ type Props = {
   todos: Todo[]
   onFilterType: (type: FilterTypes) => void
   onRemoveTodos: () => void
+  filter: FilterTypes
 };
 
 export const Footer: React.FC<Props> = ({
   todos,
   onFilterType,
   onRemoveTodos,
+  filter,
 }) => {
   const leftTodos = todos.filter(todo => !todo.completed);
 
   return (
     <footer className="todoapp__footer">
       <span className="todo-count">
-        {`${leftTodos.length} items left`}
+        {`${leftTodos.length} ${leftTodos.length > 1 ? 'items' : 'item'} left`}
       </span>
 
-      <TodoFilter onFilterType={onFilterType} />
+      <TodoFilter
+        onFilterType={onFilterType}
+        filter={filter}
+      />
 
-      <button
-        type="button"
-        className="todoapp__clear-completed"
-        onClick={onRemoveTodos}
-      >
-        Clear completed
-      </button>
+      {
+        leftTodos.length !== 0
+        && (
+          <button
+            type="button"
+            className="todoapp__clear-completed"
+            onClick={onRemoveTodos}
+          >
+            Clear completed
+          </button>
+        )
+      }
     </footer>
   );
 };
