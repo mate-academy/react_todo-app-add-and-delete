@@ -1,5 +1,5 @@
 /* eslint-disable jsx-a11y/control-has-associated-label */
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useMemo, useState } from 'react';
 import { UserWarning } from './UserWarning';
 import { TodoList } from './components/TodoList';
 import { TodoFilter } from './components/TodoFilter';
@@ -7,15 +7,16 @@ import { Header } from './components/Header';
 import { getTodos, createTodo, removeTodo } from './api/todos';
 import { Todo } from './types/Todo';
 import { ErrorNotification } from './components/ErrorNotification';
+import { Filters } from './types/filters';
 
 const USER_ID = 10953;
 
 export const App: React.FC = () => {
   const [todos, setTodos] = useState<Todo[]>([]);
-  const [isCompleted, setIsCompleted] = useState('all');
   const [err, setErr] = useState<string | null>(null);
   const [tempTodo, setTempTodo] = useState<Todo | null>(null);
   const [loadingTodos, setLoadingTodos] = useState([0]);
+  const [filter, setFilter] = useState(Filters.ALL);
 
   useEffect(() => {
     getTodos(USER_ID)
@@ -39,19 +40,21 @@ export const App: React.FC = () => {
     };
   }, [err]);
 
-  let visibleTodos = [...todos];
-  /* make filter using Enum later */
-  const filterByStatus = (todosList: Todo[], todoStatus: boolean) => (
-    todosList.filter(todo => todo.completed === todoStatus)
-  );
+  const activeTodos = todos.filter(todo => !todo.completed);
+  const completedTodos = todos.filter(todo => todo.completed);
 
-  if (isCompleted === 'completed') {
-    visibleTodos = filterByStatus(visibleTodos, true);
-  }
+  const visibleTodos = useMemo(() => {
+    switch (filter) {
+      case Filters.COMPLETED:
+        return completedTodos;
 
-  if (isCompleted === 'active') {
-    visibleTodos = filterByStatus(visibleTodos, false);
-  }
+      case Filters.ACTIVE:
+        return activeTodos;
+
+      default:
+        return todos;
+    }
+  }, [todos, filter]);
 
   const addTodo = async (title: string) => {
     try {
@@ -88,6 +91,16 @@ export const App: React.FC = () => {
     }
   };
 
+  const handleDeleteCompletedButton = async () => {
+    const deletePromises = completedTodos.map(todo => deleteTodo(todo.id));
+
+    try {
+      await Promise.all(deletePromises);
+    } catch {
+      setErr('Unable to delete todos');
+    }
+  };
+
   if (!USER_ID) {
     return <UserWarning />;
   }
@@ -113,8 +126,9 @@ export const App: React.FC = () => {
         {visibleTodos.length > 0 && (
           <TodoFilter
             todos={visibleTodos}
-            isCompleted={isCompleted}
-            setIsCompleted={setIsCompleted}
+            filter={filter}
+            onChangeFilter={setFilter}
+            handleDeleteCompletedButton={handleDeleteCompletedButton}
           />
         )}
       </div>
