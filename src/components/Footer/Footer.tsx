@@ -17,6 +17,7 @@ export const Footer: React.FC<Props> = ({
   filter,
 }) => {
   const leftTodos = todos.filter(todo => !todo.completed);
+  const doneTodos = todos.filter(todo => todo.completed);
 
   return (
     <footer className="todoapp__footer">
@@ -30,7 +31,7 @@ export const Footer: React.FC<Props> = ({
       />
 
       {
-        leftTodos.length !== 0
+        doneTodos.length !== 0
         && (
           <button
             type="button"
