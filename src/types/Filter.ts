@@ -1,1 +1,1 @@
-export enum Filter { 'all', 'active', 'completed' };
+export enum Filter { 'all', 'active', 'completed' }

@@ -36,6 +36,7 @@ export const Todo: React.FC<TodoProps> = ({
   const handleEnter = (event: KeyboardEvent<HTMLInputElement>) => {
     if (event.keyCode === 13) {
       event.preventDefault();
+      setEditable(false);
     }
   };
 

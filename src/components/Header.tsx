@@ -22,12 +22,11 @@ export const Header: React.FC<HeaderProps> = ({
 
       if (query) {
         setTempTodos({
-              id: Date.now(),
-              userId: 0,
-              title: query,
-              completed: false,
-          }
-        );
+          id: Date.now(),
+          userId: 0,
+          title: query,
+          completed: false,
+        });
         setIsInputLocked(true);
       } else {
         setError('Title can\'t be empty');
