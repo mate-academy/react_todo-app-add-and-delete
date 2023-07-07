@@ -4,12 +4,12 @@ import { FilterStatus } from '../../types/FilterStatus';
 import './TodoFilter.scss';
 
 interface TodoFilterProps {
-  filterStatus: FilterStatus;
+  statusFilter: FilterStatus;
   onFilter: (filterBy: FilterStatus) => void;
 }
 
 export const TodoFilter: React.FC<TodoFilterProps> = memo(({
-  filterStatus,
+  statusFilter,
   onFilter,
 }) => {
   const handleFilterClick = (
@@ -31,7 +31,7 @@ export const TodoFilter: React.FC<TodoFilterProps> = memo(({
           <a
             href={status !== 'all' ? `#/${status}` : '#/'}
             className={cn('filter__link', {
-              selected: status === filterStatus,
+              selected: status === statusFilter,
             })}
             onClick={event => handleFilterClick(event, FilterStatus[status])}
           >

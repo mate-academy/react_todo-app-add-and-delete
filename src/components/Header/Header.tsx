@@ -2,19 +2,19 @@ import React, { memo } from 'react';
 import cn from 'classnames';
 
 interface HeaderProps {
-  isSomeActiveTodos: boolean;
+  hasSomeActiveTodos: boolean;
   onAddTodo: (title: string) => void;
   onChangeNotification: (errorMessage: string) => void;
-  isFetching: boolean;
+  isLoading: boolean;
   title: string;
   onChangeTitle: (title: string) => void;
 }
 
 export const Header: React.FC<HeaderProps> = memo(({
-  isSomeActiveTodos,
+  hasSomeActiveTodos,
   onAddTodo,
   onChangeNotification,
-  isFetching,
+  isLoading,
   title,
   onChangeTitle,
 }) => {
@@ -36,13 +36,13 @@ export const Header: React.FC<HeaderProps> = memo(({
 
   return (
     <header className="todoapp__header">
-      {isSomeActiveTodos && (
+      {hasSomeActiveTodos && (
         // eslint-disable-next-line jsx-a11y/control-has-associated-label
         <button
           type="button"
           className={cn(
             'todoapp__toggle-all', {
-              active: isSomeActiveTodos,
+              active: hasSomeActiveTodos,
             },
           )}
         />
@@ -55,7 +55,7 @@ export const Header: React.FC<HeaderProps> = memo(({
           placeholder="What needs to be done?"
           value={title}
           onChange={handleTitleChange}
-          disabled={isFetching}
+          disabled={isLoading}
         />
       </form>
     </header>
