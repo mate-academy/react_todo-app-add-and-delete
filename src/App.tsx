@@ -1,24 +1,132 @@
-/* eslint-disable max-len */
 /* eslint-disable jsx-a11y/control-has-associated-label */
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import { UserWarning } from './UserWarning';
+import { Header } from './components/Header';
+import { Footer } from './components/Footer';
+import { Todo } from './components/Todo';
+import { Error } from './components/Error';
+import { Todo as TodoType } from './types/Todo';
+import { addTodo, deleteTodo, getTodos } from './api/todos';
+import { Filter } from './types/Filter';
 
-const USER_ID = 0;
+export const USER_ID = 10583;
 
 export const App: React.FC = () => {
+  const [todos, setTodos] = useState<TodoType[]>([]);
+  const [tempTodo, setTempTodo] = useState<TodoType | null>(null);
+  const [error, setError] = useState('');
+  const [isInputLocked, setIsInputLocked] = useState(false);
+  const [filter, setFilter] = useState<Filter>(Filter.all);
+
+  useEffect(() => {
+    getTodos(USER_ID)
+      .then((data) => setTodos(data))
+      .catch(() => setError('Unable to fetch data'));
+  }, []);
+
+  useEffect(() => {
+    setTimeout(() => {
+      setError('');
+    }, 3000);
+  }, [error]);
+
+  useEffect(() => {
+    if (tempTodo) {
+      addTodo({
+        title: tempTodo.title,
+        completed: tempTodo.completed,
+        userId: USER_ID,
+      })
+        .then((res) => {
+          if (res) {
+            const newTodo = { ...tempTodo };
+
+            setTempTodo(null);
+            newTodo.id = res.id;
+            setTodos((prev) => [...prev, newTodo]);
+          }
+        })
+        .catch(() => setError('Unable to add a todo'))
+        .finally(() => setIsInputLocked(false));
+    }
+  }, [tempTodo]);
+
   if (!USER_ID) {
     return <UserWarning />;
   }
 
-  return (
-    <section className="section container">
-      <p className="title is-4">
-        Copy all you need from the prev task:
-        <br />
-        <a href="https://github.com/mate-academy/react_todo-app-loading-todos#react-todo-app-load-todos">React Todo App - Load Todos</a>
-      </p>
+  const deleteTask = (id: number): void => {
+    setTodos((prev) => prev.filter((todo) => todo.id !== id));
+  };
 
-      <p className="subtitle">Styles are already copied</p>
-    </section>
+  const removeAllCompleted = () => {
+    todos
+      .filter((todo) => todo.completed)
+      .forEach((todo) => deleteTodo(todo.id)
+        .then(() => setTodos((prev) => prev
+          .filter((todoNew) => !todoNew.completed)))
+        .catch(() => setError('Unable to delete a todo')));
+  };
+
+  return (
+    <div className="todoapp">
+      <h1 className="todoapp__title">todos</h1>
+
+      <div className="todoapp__content">
+        {todos.length > 0 && (
+          <Header
+            setTempTodos={setTempTodo}
+            setError={setError}
+            isInputLocked={isInputLocked}
+            setIsInputLocked={setIsInputLocked}
+          />
+        )}
+
+        <section className="todoapp__main">
+          {todos
+            .filter((todo: TodoType) => {
+              switch (filter) {
+                case Filter.active:
+                  return !todo.completed;
+                case Filter.completed:
+                  return todo.completed;
+                default:
+                  return true;
+              }
+            })
+            .map((todo) => (
+              <Todo
+                deleteTask={deleteTask}
+                key={todo.id}
+                todo={todo}
+                setError={setError}
+                temp={false}
+              />
+            ))}
+
+          {tempTodo
+            && (
+              <Todo
+                deleteTask={deleteTask}
+                key={tempTodo.id}
+                todo={tempTodo}
+                setError={setError}
+                temp
+              />
+            )}
+        </section>
+
+        {todos?.length && (
+          <Footer
+            setFilter={setFilter}
+            filter={filter}
+            todos={todos}
+            removeAllCompleted={removeAllCompleted}
+          />
+        )}
+      </div>
+
+      {error && <Error error={error} />}
+    </div>
   );
 };
