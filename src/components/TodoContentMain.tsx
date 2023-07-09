@@ -7,9 +7,11 @@ import { useErrorContext } from '../context/errorContext/useErrorContext';
 
 interface TodoContentMainProps {
   todos: Todo[],
+  tempTodo: Todo | null,
 }
 
-export const TodoContentMain: FC<TodoContentMainProps> = ({ todos }) => {
+export const TodoContentMain: FC<TodoContentMainProps> = (props) => {
+  const { todos, tempTodo } = props;
   const {
     removeTodo,
     setRemovingTodoIds,
@@ -53,7 +55,6 @@ export const TodoContentMain: FC<TodoContentMainProps> = ({ todos }) => {
 
           <span className="todo__title">{todo.title}</span>
 
-          {/* Remove button appears only on hover */}
           <button
             type="button"
             className="todo__remove"
@@ -63,7 +64,6 @@ export const TodoContentMain: FC<TodoContentMainProps> = ({ todos }) => {
           </button>
 
           <div
-            // className="modal overlay"
             className={classNames(
               'modal',
               'overlay',
@@ -77,6 +77,41 @@ export const TodoContentMain: FC<TodoContentMainProps> = ({ todos }) => {
           </div>
         </div>
       ))}
+      {tempTodo && (
+        <article>
+          <div
+            className={classNames(
+              'todo',
+              {
+                completed: tempTodo.completed,
+              },
+            )}
+          >
+            <label className="todo__status-label">
+              <input
+                type="checkbox"
+                className="todo__status"
+                checked
+              />
+            </label>
+
+            <span className="todo__title">{tempTodo.title}</span>
+
+            <div
+              className={classNames(
+                'modal',
+                'overlay',
+                {
+                  'is-active': true,
+                },
+              )}
+            >
+              <div className="modal-background has-background-white-ter" />
+              <div className="loader" />
+            </div>
+          </div>
+        </article>
+      )}
     </section>
   );
 };

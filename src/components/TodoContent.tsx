@@ -14,14 +14,15 @@ export const TodoContent: FC<TodoContentProps> = ({ todos }) => {
   const [
     selectedStatusTodo, setSelectedStatusTodo,
   ] = useState<TodoStatus>(TodoStatus.All);
+  const [tempTodo, setTempTodo] = useState<Todo | null>(null);
 
   const visibleTodos = getFilteredTodos(todos, selectedStatusTodo);
 
   return (
     <div className="todoapp__content">
-      <TodoContentHeader />
+      <TodoContentHeader setTempTodo={setTempTodo} />
 
-      <TodoContentMain todos={visibleTodos} />
+      <TodoContentMain todos={visibleTodos} tempTodo={tempTodo} />
 
       {todos.length > 0 && (
         <TodoContentFooter
