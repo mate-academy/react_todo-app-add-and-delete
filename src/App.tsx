@@ -91,11 +91,20 @@ export const App: React.FC = () => {
   }, []);
 
   const handleRemoveTodo = useCallback(async (todoId: number) => {
+    setIsLoading(true);
+
     try {
+      setTodos((currentTodos) => currentTodos.map((todo) => (todo.id === todoId
+        ? { ...todo, isLoading: true }
+        : todo)));
+
       await removeTodo(todoId);
+
       setTodos((currentTodos) => currentTodos.filter((todo) => todo.id !== todoId));
     } catch {
       setErrorMessage('Unable to delete a todo');
+    } finally {
+      setIsLoading(false);
     }
   }, []);
 
@@ -115,6 +124,13 @@ export const App: React.FC = () => {
     handleAddTodo(todoTitle);
     setTodoTitle('');
   };
+
+  const makeSetFilterStatus = useCallback(
+    (filter: FilterStatus) => () => {
+      setFilterStatus(filter);
+    },
+    [],
+  );
 
   if (!USER_ID) {
     return <UserWarning />;
@@ -170,7 +186,7 @@ export const App: React.FC = () => {
 
               <div
                 className={cn('modal', 'overlay', {
-                  'is-active': isLoading && todo.id === 0,
+                  'is-active': todo.isLoading,
                 })}
               >
                 <div className="modal-background has-background-white-ter" />
@@ -222,7 +238,7 @@ export const App: React.FC = () => {
                 className={cn('filter__link', {
                   selected: filterStatus === FilterStatus.ALL,
                 })}
-                onClick={() => setFilterStatus(FilterStatus.ALL)}
+                onClick={makeSetFilterStatus(FilterStatus.ALL)}
               >
                 All
               </a>
@@ -232,7 +248,7 @@ export const App: React.FC = () => {
                 className={cn('filter__link', {
                   selected: filterStatus === FilterStatus.ACTIVE,
                 })}
-                onClick={() => setFilterStatus(FilterStatus.ACTIVE)}
+                onClick={makeSetFilterStatus(FilterStatus.ACTIVE)}
               >
                 Active
               </a>
@@ -242,7 +258,7 @@ export const App: React.FC = () => {
                 className={cn('filter__link', {
                   selected: filterStatus === FilterStatus.COMPLETED,
                 })}
-                onClick={() => setFilterStatus(FilterStatus.COMPLETED)}
+                onClick={makeSetFilterStatus(FilterStatus.COMPLETED)}
               >
                 Completed
               </a>
