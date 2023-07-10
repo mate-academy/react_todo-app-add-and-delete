@@ -1,34 +1,48 @@
 /* eslint-disable jsx-a11y/control-has-associated-label */
 import { FC, useState } from 'react';
+import cn from 'classnames';
+import { Todo } from '../types/Todo';
 
 interface Props {
+  showError: (message: string) => void;
   createTodo: (title: string) => void;
+  todos:Todo[];
 }
 
-export const TodoHeader: FC<Props> = ({ createTodo }) => {
+export const TodoHeader: FC<Props> = ({
+  createTodo,
+  showError,
+  todos,
+}) => {
   const [title, setTitle] = useState('');
   const [isDisabled, setIsDisabled] = useState(false);
 
   const handleSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
+    event.preventDefault();
     if (!title) {
+      showError('Title can not be empty');
+
       return;
     }
 
-    event.preventDefault();
     setIsDisabled(true);
 
-    await createTodo(title);
+    createTodo(title);
 
     setIsDisabled(false);
     setTitle('');
   };
 
+  const isActive = todos.every(todo => todo.completed);
+
   return (
     <header className="todoapp__header">
-      {/* this buttons is active only if there are some active todos */}
-      <button type="button" className="todoapp__toggle-all active" />
+      <button
+        type="button"
+        className={cn('todoapp__toggle-all',
+          { active: isActive })}
+      />
 
-      {/* Add a todo on form submit */}
       <form
         onSubmit={handleSubmit}
       >

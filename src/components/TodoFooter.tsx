@@ -8,6 +8,7 @@ interface Props {
   sortBy: string;
   isVisible: boolean;
   onSortType: (value: SortType) => void;
+  onDeleteCompleted: () => void;
 }
 
 export const TodoFooter: FC<Props> = ({
@@ -16,13 +17,13 @@ export const TodoFooter: FC<Props> = ({
   sortBy,
   onSortType,
   isVisible,
+  onDeleteCompleted,
 }) => (
   <footer className="todoapp__footer">
     <span className="todo-count">
       {`${count} items left`}
     </span>
 
-    {/* Active filter should have a 'selected' class */}
     <nav className="filter">
       {filters.map(filter => (
         <a
@@ -43,8 +44,8 @@ export const TodoFooter: FC<Props> = ({
           ? 'hidden'
           : 'visible',
       }}
+      onClick={onDeleteCompleted}
       className="todoapp__clear-completed"
-      onClick={() => onDeleteCompeted()}
     >
       Clear completed
     </button>
