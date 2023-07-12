@@ -21,11 +21,13 @@ export const App = () => {
 
   const {
     todos,
+    processedIds,
     error,
     tempTodo,
     handleAddTodo,
     handleDeleteTodo,
     handleClearCompleted,
+    setProcessedIds,
   } = useTodos(USER_ID);
 
   const todosMap: TodosMap = useMemo(
@@ -74,7 +76,9 @@ export const App = () => {
         <TodoList
           todos={filteredTodos}
           deleteTodo={handleDeleteTodo}
+          setProcessed={setProcessedIds}
           tempTodo={tempTodo}
+          processedTodos={processedIds}
         />
 
         {todos.length > 0 && (
