@@ -1,24 +1,46 @@
 /* eslint-disable max-len */
 /* eslint-disable jsx-a11y/control-has-associated-label */
-import React from 'react';
+import React, { useEffect } from 'react';
 import { UserWarning } from './UserWarning';
+import { TodoContent } from './components/TodoContent';
+import { Notifications } from './components/Notifications';
+import { todosApi } from './api/todos-api';
+import { useTodoContext } from './context/todoContext/useTodoContext';
+import { useErrorContext } from './context/errorContext/useErrorContext';
 
-const USER_ID = 0;
+const USER_ID = 10875;
 
 export const App: React.FC = () => {
+  const { todos, setTodos } = useTodoContext();
+  const { errorMessage, notifyAboutError } = useErrorContext();
+
+  useEffect(() => {
+    todosApi.getByUser(USER_ID)
+      .then(setTodos)
+      .catch(() => {
+        notifyAboutError('Something went wrong');
+      });
+  }, []);
+
   if (!USER_ID) {
     return <UserWarning />;
   }
 
-  return (
-    <section className="section container">
-      <p className="title is-4">
-        Copy all you need from the prev task:
-        <br />
-        <a href="https://github.com/mate-academy/react_todo-app-loading-todos#react-todo-app-load-todos">React Todo App - Load Todos</a>
-      </p>
+  const closeNotification = () => {
+    notifyAboutError('');
+  };
 
-      <p className="subtitle">Styles are already copied</p>
-    </section>
+  return (
+    <div className="todoapp">
+      <h1 className="todoapp__title">todos</h1>
+
+      <TodoContent todos={todos} />
+      {errorMessage && (
+        <Notifications
+          onClose={closeNotification}
+          errorMessage={errorMessage}
+        />
+      )}
+    </div>
   );
 };
