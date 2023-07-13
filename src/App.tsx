@@ -146,7 +146,7 @@ export const App: React.FC = () => {
         )}
       </div>
 
-      {isError && <Notification isError={setIsError} />}
+      {isError && <Notification isError={Boolean(isError)} />}
     </div>
   );
 };
