@@ -13,12 +13,13 @@ import { Status } from './types/Status';
 import { Todo } from './types/Todo';
 
 import { UserWarning } from './UserWarning';
+import { ErrorMessage } from './types/ErrorMessage';
 
 const USER_ID = 11073;
 
 export const App: React.FC = () => {
   const [todos, setTodos] = useState<Todo[]>([]);
-  const [errorMessage, setErrorMessage] = useState<string | null>(null);
+  const [errorMessage, setErrorMessage] = useState<ErrorMessage | null>(null);
   const [filterStatus, setFilterStatus] = useState(Status.ALL);
   const [todoTitle, setTodoTitle] = useState<string>('');
   const [isLoading, setIsLoading] = useState(false);
@@ -29,14 +30,12 @@ export const App: React.FC = () => {
       .then((todosFromServer) => {
         setTodos(todosFromServer);
       })
-      .catch((error: Error) => {
-        setErrorMessage('Unable to load todos');
-        // eslint-disable-next-line no-console
-        console.error(error.message);
+      .catch(() => {
+        setErrorMessage(ErrorMessage.LOAD);
       });
   }, []);
 
-  useEffect(() => {
+  useEffect((): (() => void) | undefined => {
     if (errorMessage) {
       const timeout = setTimeout(() => {
         setErrorMessage(null);
@@ -45,7 +44,7 @@ export const App: React.FC = () => {
       return () => clearTimeout(timeout);
     }
 
-    return () => {};
+    return undefined;
   }, [errorMessage]);
 
   const handleCheckboxChange = (todoId: number) => {
@@ -76,7 +75,7 @@ export const App: React.FC = () => {
 
       setTodos((currentTodos) => [...currentTodos, createdTodo]);
     } catch {
-      setErrorMessage('Unable to add a todo');
+      setErrorMessage(ErrorMessage.ADD);
     } finally {
       setTempTodo(null);
       setIsLoading(false);
@@ -98,7 +97,7 @@ export const App: React.FC = () => {
 
       setTodos((currentTodos) => currentTodos.filter((todo) => todo.id !== todoId));
     } catch {
-      setErrorMessage('Unable to delete a todo');
+      setErrorMessage(ErrorMessage.DELETE);
     } finally {
       setIsLoading(false);
     }
@@ -114,7 +113,7 @@ export const App: React.FC = () => {
     event.preventDefault();
 
     if (!todoTitle.trim()) {
-      setErrorMessage("Title can't be empty");
+      setErrorMessage(ErrorMessage.TITLE);
     }
 
     handleAddTodo(todoTitle);
