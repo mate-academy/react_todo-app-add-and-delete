@@ -10,6 +10,7 @@ type Props = {
   tempTodoId: number | null;
   handleImputTodo: (e: React.ChangeEvent<HTMLInputElement>) => void;
   error: string;
+  temporaryNewTodo?: Todo | null
 };
 
 export const Todos: React.FC<Props> = ({
@@ -19,6 +20,7 @@ export const Todos: React.FC<Props> = ({
   tempTodoId,
   handleImputTodo,
   error,
+  temporaryNewTodo,
 }) => {
   return (
     <section className="todoapp__main">
@@ -33,6 +35,15 @@ export const Todos: React.FC<Props> = ({
           handleImputTodo={handleImputTodo}
         />
       ))}
+      {
+        temporaryNewTodo
+        && (
+          <TodoItem
+            todo={temporaryNewTodo}
+            loading
+          />
+        )
+      }
     </section>
   );
 };

@@ -7,7 +7,10 @@ import { Todos } from './components/Todos';
 import { Todo } from './types/Todo';
 import { Footer } from './components/Footer';
 import {
-  deleteTodos, getTodos, patchTodos, postTodos,
+  deleteTodos,
+  getTodos,
+  patchTodos,
+  postTodos,
 } from './api/todos';
 
 export const USER_ID = '10682';
@@ -26,6 +29,8 @@ export const App: React.FC = () => {
   const [filter, setFilter] = useState(FilterTypes.All);
   const [isLoading, setIsLoading] = useState<boolean>(true);
   const [error, setError] = useState<string>('');
+
+  const [temporaryNewTodo, setTemporaryNewTodo] = useState<Todo | null>(null);
 
   useEffect(() => {
     setIsLoading(true);
@@ -50,6 +55,7 @@ export const App: React.FC = () => {
     e: React.FormEvent<HTMLFormElement>,
   ) => {
     e.preventDefault();
+
     if (input.trim()) {
       const newTodo: Omit<Todo, 'id'> = {
         userId: Number(USER_ID),
@@ -57,21 +63,20 @@ export const App: React.FC = () => {
         completed: false,
       };
 
+      setTemporaryNewTodo({ ...newTodo, id: 1 });
+
       postTodos(USER_ID, newTodo).then((todo) => {
         const receivedTodo = todo as Todo;
 
-        setTempTodoId(receivedTodo.id);
-
         setTodos((prevTodos) => [...prevTodos, receivedTodo]);
         setInput('');
-        setTempTodoId(null);
 
         if (error && error === TodoErros.Add) {
           setError('');
         }
       }).catch(() => {
         setError(TodoErros.Add);
-      });
+      }).finally(() => setTemporaryNewTodo(null));
     }
   };
 
@@ -102,46 +107,38 @@ export const App: React.FC = () => {
         }));
   };
 
-  const handleCheckBoxTodo = (todoId: number) => {
+  const handleCheckBoxTodo = async (todoId: number) => {
     const curentTodo: Todo | undefined = todos.find(todo => todo.id === todoId);
 
     if (!curentTodo) {
       return;
     }
 
-    patchTodos(todoId, USER_ID, curentTodo).then(() => {
-      setTodos(prevTodos => prevTodos.map(
-        todo => {
-          if (todo.id === todoId) {
-            return {
-              ...todo,
-              completed: !todo.completed,
-            };
-          }
+    setTodos(prevTodos => prevTodos.map(
+      todo => {
+        if (todo.id === todoId) {
+          return {
+            ...todo,
+            completed: !todo.completed,
+          };
+        }
 
-          if (error && error === TodoErros.Update) {
-            setError('');
-          }
+        if (error && error === TodoErros.Update) {
+          setError('');
+        }
 
-          return todo;
-        },
-      ));
-    }).catch(() => {
-      setError(TodoErros.Update);
-    });
+        return todo;
+      },
+    ));
+
+    await Promise.all(todos.map(async (todo) => {
+      await patchTodos(USER_ID, todo).catch(() => {
+        setError(TodoErros.Update);
+      });
+    }));
   };
 
-  const handleChackAllTodos = () => {
-    setTodos(currentTodos => currentTodos
-      .map(
-        currentTodo => {
-          return {
-            ...currentTodo,
-            completed: true,
-          };
-        },
-      ));
-
+  const handleChackAllTodos = async () => {
     if (todos.every(currTodo => currTodo.completed === true)) {
       setTodos(currentTodos => currentTodos
         .map(
@@ -152,7 +149,21 @@ export const App: React.FC = () => {
             };
           },
         ));
+    } else {
+      setTodos(currentTodos => currentTodos
+        .map(
+          currentTodo => {
+            return {
+              ...currentTodo,
+              completed: true,
+            };
+          },
+        ));
     }
+
+    await Promise.all(todos.map(async (todo) => {
+      await patchTodos(USER_ID, todo);
+    }));
   };
 
   const filteredTodos = filter === FilterTypes.All
@@ -189,6 +200,7 @@ export const App: React.FC = () => {
 
           <form onSubmit={handleAddTodo}>
             <input
+              // disabled={tempTodoId === null && true}
               type="text"
               className="todoapp__new-todo"
               placeholder="What needs to be done?"
@@ -208,6 +220,7 @@ export const App: React.FC = () => {
               onCheckedTodo={handleCheckBoxTodo}
               tempTodoId={tempTodoId}
               handleImputTodo={handleImputTodo}
+              temporaryNewTodo={temporaryNewTodo}
             />
           )}
         {!!todos.length && (

@@ -3,11 +3,11 @@ import { Todo } from '../../types/Todo';
 
 type Props = {
   todo: Todo;
-  onRemoveTodo: (todoId: number) => void;
-  onCheckedTodo: (todoId: number) => void;
+  onRemoveTodo?: (todoId: number) => void;
+  onCheckedTodo?: (todoId: number) => void;
   loading: boolean;
-  handleImputTodo: (e: React.ChangeEvent<HTMLInputElement>) => void;
-  error: string
+  handleImputTodo?: (e: React.ChangeEvent<HTMLInputElement>) => void;
+  error?: string
 };
 
 export const TodoItem: React.FC<Props> = ({
@@ -33,7 +33,7 @@ export const TodoItem: React.FC<Props> = ({
           <input
             type="checkbox"
             className="todo__status"
-            onChange={() => onCheckedTodo(id)}
+            onChange={() => onCheckedTodo && onCheckedTodo(id)}
           />
         </label>
 
@@ -59,12 +59,13 @@ export const TodoItem: React.FC<Props> = ({
               <button
                 type="button"
                 className="todo__remove"
-                onClick={() => onRemoveTodo(id)}
+                onClick={() => onRemoveTodo && onRemoveTodo(id)}
               >
                 ×
+
               </button>
 
-              {!error.length && loading && (
+              {!error?.length && loading && (
                 <div className="modal overlay is-active">
                   <div className="modal-background has-background-white-ter" />
                   <div className="loader" />
