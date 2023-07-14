@@ -87,9 +87,12 @@ export const App: React.FC = () => {
     setIsLoading(true);
 
     try {
-      setTodos((currentTodos) => currentTodos.map((todo) => (todo.id === todoId
-        ? { ...todo, isLoading: true }
-        : todo)));
+      setTempTodo({
+        id: todoId,
+        title: '',
+        userId: USER_ID,
+        completed: false,
+      });
 
       await todoService.deleteTodo(todoId);
 
@@ -199,14 +202,12 @@ export const App: React.FC = () => {
                 ×
               </button>
 
-              <div
-                className={cn('modal', 'overlay', {
-                  'is-active': isLoading,
-                })}
-              >
-                <div className="modal-background has-background-white-ter" />
-                <div className="loader" />
-              </div>
+              {tempTodo?.id === todo.id && isLoading && (
+                <div className={cn('modal', 'overlay', { 'is-active': true })}>
+                  <div className="modal-background has-background-white-ter" />
+                  <div className="loader" />
+                </div>
+              )}
             </div>
           ))}
         </section>
