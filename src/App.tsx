@@ -14,40 +14,28 @@ const emptyTodo = {
 export const App: React.FC = () => {
   const [todos, setTodos] = useState<Todo[]>([]);
   const [filterType, setFilterType] = useState<string>('all');
-  const [hideError, setHideError] = useState<boolean>(true);
+  const [isHideError, setIsHideError] = useState<boolean>(true);
   const [error, setError] = useState<string>('');
   const [query, setQuery] = useState<string>('');
   const [tempTodo, setTempTodo]
     = useState<{ id: number, title: string }>(emptyTodo);
-  const [loadNewTodo, setLoadNewTodo] = useState<boolean>(false);
-  const [deleteTodoId, setDeleteTodoId] = useState<number>();
+  const [isTodoLoaded, setIsTodoLoaded] = useState<boolean>(false);
+  const [deleteTodoIds, setDeleteTodoIds] = useState([0]);
 
   const handleErrorMessage = (message: string) => {
-    setHideError(false);
+    setIsHideError(false);
     setError(message);
 
     setTimeout(() => {
-      setHideError(true);
+      setIsHideError(true);
     }, 3000);
   };
 
   useEffect(() => {
-    try {
-      const fetchData = async () => {
-        const todosFromServer = await postService.getTodos(USER_ID);
-
-        if (!todosFromServer.length) {
-          handleErrorMessage('Unable to get todos from server');
-        }
-
-        setTodos(todosFromServer);
-      };
-
-      fetchData();
-    } catch (err) {
-      throw new Error();
-    }
-  }, [todos]);
+    postService.getTodos(USER_ID)
+      .then((todosFromServer: Todo[]) => setTodos(todosFromServer))
+      .catch(() => setError('Unable to get todos'));
+  }, []);
 
   const activeTodos = useMemo(
     () => todos.filter(todo => !todo.completed), [todos],
@@ -74,52 +62,31 @@ export const App: React.FC = () => {
     setFilterType(filter);
   };
 
-  const handleErrorDelete = () => setHideError(true);
+  const handleErrorDelete = () => setIsHideError(true);
 
-  const handleSubmit = (event: React.FormEvent<HTMLFormElement>) => {
-    event.preventDefault();
-
-    if (!query) {
-      handleErrorMessage('Title can\'t be empty');
-
-      return;
-    }
-
+  const addTodo = async (title: string) => {
     try {
-      const fetchData = async () => {
-        const newTodo = await postService.postTodos(USER_ID, query);
-
-        if (!newTodo) {
-          handleErrorMessage('Unable to add a todo');
-        }
-
-        setTempTodo({
-          id: newTodo.id,
-          title: newTodo.title,
-        });
+      const newTodo = {
+        title,
+        userId: USER_ID,
+        completed: false,
       };
 
-      setLoadNewTodo(true);
-      fetchData();
+      setIsTodoLoaded(true);
+      setTempTodo({
+        id: 0,
+        ...newTodo,
+      });
 
-      if (tempTodo) {
-        setTodos(
-          todosList => [
-            ...todosList,
-            {
-              id: tempTodo.id,
-              userId: USER_ID,
-              title: tempTodo.title,
-              completed: false,
-            },
-          ],
-        );
-        setLoadNewTodo(false);
-        setTempTodo(emptyTodo);
-        setQuery('');
-      }
-    } catch (err) {
-      throw new Error();
+      const createdTodo = await postService.postTodo(newTodo);
+
+      setTodos(prevTodos => [...prevTodos, createdTodo]);
+    } catch {
+      handleErrorMessage('Unable to add a todo');
+    } finally {
+      setTempTodo(emptyTodo);
+      setIsTodoLoaded(false);
+      setQuery('');
     }
   };
 
@@ -127,21 +94,22 @@ export const App: React.FC = () => {
     setQuery(e.target.value);
   };
 
-  const handleTodoDelete = (currentId: number) => {
+  const deleteTodo = async (currentId: number) => {
     try {
-      const fetchData = async () => {
-        const selectedTodo = await postService.deleteTodo(currentId);
-
-        if (!selectedTodo) {
-          handleErrorMessage('Unable to delete a todo');
-        }
-      };
-
-      setDeleteTodoId(currentId);
-      fetchData();
-    } catch (err) {
-      throw new Error();
+      setDeleteTodoIds(prevIds => [...prevIds, currentId]);
+      await postService.deleteTodo(currentId);
+      setTodos(prevTodos => prevTodos.filter(todo => todo.id !== currentId));
+    } catch {
+      handleErrorMessage('Unable to delete a todo');
+    } finally {
+      setTempTodo(emptyTodo);
     }
+  };
+
+  const handleClearCompleted = () => {
+    completedTodos.forEach(todo => {
+      deleteTodo(todo.id);
+    });
   };
 
   return (
@@ -152,10 +120,13 @@ export const App: React.FC = () => {
         <header className="todoapp__header">
           <button type="button" className="todoapp__toggle-all active" />
 
-          <form onSubmit={handleSubmit}>
+          <form onSubmit={() => addTodo(query)}>
             <input
               type="text"
-              className="todoapp__new-todo"
+              className={classNames(
+                'todoapp__new-todo',
+                { 'todoapp__new-todo__load': isTodoLoaded },
+              )}
               placeholder="What needs to be done?"
               onChange={handleTodoInput}
               value={query}
@@ -163,140 +134,134 @@ export const App: React.FC = () => {
           </form>
         </header>
 
-        {
-          todos.length > 0
-            && (
-              <section className="todoapp__main">
-                {visibleTodos.map(todo => (
-                  <div
-                    className={classNames(
-                      'todo',
-                      { completed: todo.completed },
-                    )}
-                    key={todo.id}
+        {todos.length > 0 && (
+          <section className="todoapp__main">
+            {visibleTodos.map(todo => {
+              const { id, title, completed } = todo;
+
+              return (
+                <div
+                  className={classNames(
+                    'todo', { completed },
+                  )}
+                  key={id}
+                >
+                  <label className="todo__status-label">
+                    <input
+                      type="checkbox"
+                      className="todo__status"
+                      checked
+                    />
+                  </label>
+
+                  <span className="todo__title">{title}</span>
+
+                  <button
+                    type="button"
+                    className="todo__remove"
+                    onClick={() => deleteTodo(id)}
                   >
-                    <label className="todo__status-label">
-                      <input
-                        type="checkbox"
-                        className="todo__status"
-                        checked
-                      />
-                    </label>
+                    ×
+                  </button>
 
-                    <span className="todo__title">{todo.title}</span>
-
-                    <button
-                      type="button"
-                      className="todo__remove"
-                      onClick={() => handleTodoDelete(todo.id)}
-                    >
-                      ×
-                    </button>
-
-                    <div className={classNames(
-                      'modal',
-                      'overlay',
-                      { 'is-active': todo.id === deleteTodoId },
-                    )}
-                    >
-                      <div className="
-                        modal-background
-                        has-background-white-ter
-                        "
-                      />
-                      <div className="loader" />
-                    </div>
+                  <div className={classNames(
+                    'modal',
+                    'overlay',
+                    { 'is-active': deleteTodoIds.includes(id) },
+                  )}
+                  >
+                    <div className="
+                      modal-background
+                      has-background-white-ter
+                      "
+                    />
+                    <div className="loader" />
                   </div>
-                ))}
+                </div>
+              );
+            })}
 
-                {
-                  tempTodo.title && loadNewTodo && (
-                    <div className="todo">
-                      <label className="todo__status-label">
-                        <input type="checkbox" className="todo__status" />
-                      </label>
+            {tempTodo.title && isTodoLoaded && (
+              <div className="todo">
+                <label className="todo__status-label">
+                  <input type="checkbox" className="todo__status" />
+                </label>
 
-                      <span className="todo__title">
-                        Todo is being saved now
-                      </span>
-
-                      <div className="modal overlay is-active">
-                        <div className="
-                          modal-background
-                          has-background-white-ter
-                          "
-                        />
-                        <div className="loader" />
-                      </div>
-                    </div>
-                  )
-                }
-              </section>
-            )
-        }
-
-        {
-          todos.length > 0
-            && (
-              <footer className="todoapp__footer">
-                <span className="todo-count">
-                  {`${visibleTodos.length} items left`}
+                <span className="todo__title">
+                  Todo is being saved now
                 </span>
 
-                <nav className="filter">
-                  <a
-                    role="button"
-                    href="#/"
-                    className={classNames(
-                      'filter__link',
-                      'filter__link__all',
-                      { selected: filterType === 'all' },
-                    )}
-                    onClick={() => handleFilterChange('all')}
-                  >
-                    All
-                  </a>
+                <div className="modal overlay is-active">
+                  <div className="
+                    modal-background
+                    has-background-white-ter
+                    "
+                  />
+                  <div className="loader" />
+                </div>
+              </div>
+            )}
+          </section>
+        )}
 
-                  <a
-                    href="#/active"
-                    className={classNames(
-                      'filter__link',
-                      'filter__link__active',
-                      { selected: filterType === 'active' },
-                    )}
-                    onClick={() => handleFilterChange('active')}
-                  >
-                    Active
-                  </a>
+        {todos.length > 0 && (
+          <footer className="todoapp__footer">
+            <span className="todo-count">
+              {`${visibleTodos.length} ${visibleTodos.length > 1 ? 'items' : 'item'} left`}
+            </span>
 
-                  <a
-                    href="#/completed"
-                    className={classNames(
-                      'filter__link',
-                      'filter__link__completed',
-                      { selected: filterType === 'completed' },
-                    )}
-                    onClick={() => handleFilterChange('completed')}
-                  >
-                    Completed
-                  </a>
-                </nav>
+            <nav className="filter">
+              <a
+                role="button"
+                href="#/"
+                className={classNames(
+                  'filter__link',
+                  'filter__link__all',
+                  { selected: filterType === 'all' },
+                )}
+                onClick={() => handleFilterChange('all')}
+              >
+                All
+              </a>
 
-                <button
-                  type="button"
-                  className={classNames(
-                    'todoapp__clear-completed',
-                    'clear-completed',
-                    {
-                      'clear-completed__hide': completedTodos.length === 0,
-                    },
-                  )}
-                >
-                  Clear completed
-                </button>
-              </footer>
-            )
-        }
+              <a
+                href="#/active"
+                className={classNames(
+                  'filter__link',
+                  'filter__link__active',
+                  { selected: filterType === 'active' },
+                )}
+                onClick={() => handleFilterChange('active')}
+              >
+                Active
+              </a>
+
+              <a
+                href="#/completed"
+                className={classNames(
+                  'filter__link',
+                  'filter__link__completed',
+                  { selected: filterType === 'completed' },
+                )}
+                onClick={() => handleFilterChange('completed')}
+              >
+                Completed
+              </a>
+            </nav>
+
+            <button
+              type="button"
+              className={classNames(
+                'todoapp__clear-completed',
+                'clear-completed',
+                { 'clear-completed__hide': completedTodos.length === 0 },
+              )}
+              onClick={handleClearCompleted}
+            >
+              Clear completed
+            </button>
+          </footer>
+        )}
       </div>
 
       <div
@@ -306,7 +271,7 @@ export const App: React.FC = () => {
           is-light
           has-text-weight-normal
         "
-        hidden={hideError}
+        hidden={isHideError}
       >
         <button type="button" className="delete" onClick={handleErrorDelete} />
         {error}
