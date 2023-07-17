@@ -1,3 +1,4 @@
+import { TransitionGroup, CSSTransition } from 'react-transition-group';
 import { useTodoContext } from '../hooks/useTodoContext';
 import TodoItem from './TodoItem';
 
@@ -10,14 +11,32 @@ const TodoList = () => {
 
   return (
     <section className="todoapp__main">
-      {todos.map(todo => (
-        <TodoItem
-          todo={todo}
-          onProcessed={processed.includes(todo.id)}
-        />
-      ))}
+      <TransitionGroup>
+        {todos.map(todo => (
+          <CSSTransition
+            timeout={300}
+            classNames="item"
+            key={todo.id}
 
-      {tempTodo && <TodoItem todo={tempTodo} onProcessed />}
+          >
+            <TodoItem
+              todo={todo}
+              onProcessed={processed.includes(todo.id)}
+            />
+          </CSSTransition>
+        ))}
+
+        {tempTodo
+          && (
+            <CSSTransition
+              timeout={300}
+              classNames="temp-item"
+              key={tempTodo.id}
+            >
+              <TodoItem todo={tempTodo} onProcessed />
+            </CSSTransition>
+          )}
+      </TransitionGroup>
     </section>
   );
 };

@@ -1,9 +1,18 @@
 /* eslint-disable jsx-a11y/control-has-associated-label */
 import classNames from 'classnames';
+import { useEffect } from 'react';
 import { useTodoContext } from '../hooks/useTodoContext';
 
 const TodoNotification = () => {
   const { errorMessage, onError } = useTodoContext();
+
+  useEffect(() => {
+    if (errorMessage) {
+      setTimeout(() => {
+        onError('');
+      }, 3000);
+    }
+  }, [errorMessage]);
 
   return (
     <div className={
