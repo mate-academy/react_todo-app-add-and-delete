@@ -6,26 +6,19 @@ import * as postService from './api/todos';
 import { Todo } from './types/Todo';
 
 const USER_ID = 10876;
-const emptyTodo = {
-  userId: 0,
-  id: 0,
-  title: '',
-  completed: false,
-};
 
 enum Filter {
-  all = 'all',
-  active = 'active',
-  completed = 'completed',
+  ALL = 'all',
+  ACTIVE = 'active',
+  COMPLETED = 'completed',
 }
 
 export const App: React.FC = () => {
   const [todos, setTodos] = useState<Todo[]>([]);
-  const [filterType, setFilterType] = useState<Filter>(Filter.all);
+  const [filterType, setFilterType] = useState<Filter>(Filter.ALL);
   const [isHideError, setIsHideError] = useState<boolean>(true);
   const [error, setError] = useState<string>('');
   const [query, setQuery] = useState<string>('');
-  const [tempTodo, setTempTodo] = useState<Todo>(emptyTodo);
   const [isTodoLoaded, setIsTodoLoaded] = useState<boolean>(false);
   const [deleteTodoIds, setDeleteTodoIds] = useState([0]);
 
@@ -73,6 +66,13 @@ export const App: React.FC = () => {
   const handleErrorDelete = () => setIsHideError(true);
 
   const addTodo = async (title: string) => {
+    if (!title.trim()) {
+      handleErrorMessage('Title can\'t be empty');
+      setQuery('');
+
+      return;
+    }
+
     try {
       const newTodo = {
         title,
@@ -81,10 +81,6 @@ export const App: React.FC = () => {
       };
 
       setIsTodoLoaded(true);
-      setTempTodo({
-        id: 0,
-        ...newTodo,
-      });
 
       const createdTodo = await postService.postTodo(newTodo);
 
@@ -92,7 +88,6 @@ export const App: React.FC = () => {
     } catch {
       handleErrorMessage('Unable to add a todo');
     } finally {
-      setTempTodo(emptyTodo);
       setIsTodoLoaded(false);
       setQuery('');
     }
@@ -109,8 +104,6 @@ export const App: React.FC = () => {
       setTodos(prevTodos => prevTodos.filter(todo => todo.id !== currentId));
     } catch {
       handleErrorMessage('Unable to delete a todo');
-    } finally {
-      setTempTodo(emptyTodo);
     }
   };
 
@@ -189,7 +182,7 @@ export const App: React.FC = () => {
               );
             })}
 
-            {tempTodo.title && isTodoLoaded && (
+            {query && isTodoLoaded && (
               <div className="todo">
                 <label className="todo__status-label">
                   <input type="checkbox" className="todo__status" />
@@ -225,9 +218,9 @@ export const App: React.FC = () => {
                 className={classNames(
                   'filter__link',
                   'filter__link__all',
-                  { selected: filterType === Filter.all },
+                  { selected: filterType === Filter.ALL },
                 )}
-                onClick={() => handleFilterChange(Filter.all)}
+                onClick={() => handleFilterChange(Filter.ALL)}
               >
                 All
               </a>
@@ -237,9 +230,9 @@ export const App: React.FC = () => {
                 className={classNames(
                   'filter__link',
                   'filter__link__active',
-                  { selected: filterType === Filter.active },
+                  { selected: filterType === Filter.ACTIVE },
                 )}
-                onClick={() => handleFilterChange(Filter.active)}
+                onClick={() => handleFilterChange(Filter.ACTIVE)}
               >
                 Active
               </a>
@@ -249,9 +242,9 @@ export const App: React.FC = () => {
                 className={classNames(
                   'filter__link',
                   'filter__link__completed',
-                  { selected: filterType === Filter.completed },
+                  { selected: filterType === Filter.COMPLETED },
                 )}
-                onClick={() => handleFilterChange(Filter.completed)}
+                onClick={() => handleFilterChange(Filter.COMPLETED)}
               >
                 Completed
               </a>
