@@ -7,18 +7,25 @@ import { Todo } from './types/Todo';
 
 const USER_ID = 10876;
 const emptyTodo = {
+  userId: 0,
   id: 0,
   title: '',
+  completed: false,
 };
+
+enum Filter {
+  all = 'all',
+  active = 'active',
+  completed = 'completed',
+}
 
 export const App: React.FC = () => {
   const [todos, setTodos] = useState<Todo[]>([]);
-  const [filterType, setFilterType] = useState<string>('all');
+  const [filterType, setFilterType] = useState<Filter>(Filter.all);
   const [isHideError, setIsHideError] = useState<boolean>(true);
   const [error, setError] = useState<string>('');
   const [query, setQuery] = useState<string>('');
-  const [tempTodo, setTempTodo]
-    = useState<{ id: number, title: string }>(emptyTodo);
+  const [tempTodo, setTempTodo] = useState<Todo>(emptyTodo);
   const [isTodoLoaded, setIsTodoLoaded] = useState<boolean>(false);
   const [deleteTodoIds, setDeleteTodoIds] = useState([0]);
 
@@ -55,11 +62,12 @@ export const App: React.FC = () => {
     completed: completedTodos,
   };
 
-  const visibleTodos:Todo[]
-    = filteredTodos[filterType as keyof typeof filteredTodos];
+  const visibleTodos:Todo[] = filteredTodos[
+    filterType as keyof typeof filteredTodos
+  ];
 
-  const handleFilterChange = (filter: string) => {
-    setFilterType(filter);
+  const handleFilterChange = (selectedFilter: Filter) => {
+    setFilterType(selectedFilter);
   };
 
   const handleErrorDelete = () => setIsHideError(true);
@@ -217,9 +225,9 @@ export const App: React.FC = () => {
                 className={classNames(
                   'filter__link',
                   'filter__link__all',
-                  { selected: filterType === 'all' },
+                  { selected: filterType === Filter.all },
                 )}
-                onClick={() => handleFilterChange('all')}
+                onClick={() => handleFilterChange(Filter.all)}
               >
                 All
               </a>
@@ -229,9 +237,9 @@ export const App: React.FC = () => {
                 className={classNames(
                   'filter__link',
                   'filter__link__active',
-                  { selected: filterType === 'active' },
+                  { selected: filterType === Filter.active },
                 )}
-                onClick={() => handleFilterChange('active')}
+                onClick={() => handleFilterChange(Filter.active)}
               >
                 Active
               </a>
@@ -241,9 +249,9 @@ export const App: React.FC = () => {
                 className={classNames(
                   'filter__link',
                   'filter__link__completed',
-                  { selected: filterType === 'completed' },
+                  { selected: filterType === Filter.completed },
                 )}
-                onClick={() => handleFilterChange('completed')}
+                onClick={() => handleFilterChange(Filter.completed)}
               >
                 Completed
               </a>
