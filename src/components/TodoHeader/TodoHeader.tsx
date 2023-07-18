@@ -14,6 +14,7 @@ type Props = {
   userID: number;
   isDisable: boolean;
   setIsDisable: (arg: boolean) => void;
+  setCreatingTodoTitle: (arg: string) => void;
 };
 
 export const TodoHeader: React.FC<Props> = ({
@@ -26,6 +27,7 @@ export const TodoHeader: React.FC<Props> = ({
   userID,
   isDisable,
   setIsDisable,
+  setCreatingTodoTitle,
 }) => {
   const [todoInput, setTodoInput] = useState('');
 
@@ -34,8 +36,12 @@ export const TodoHeader: React.FC<Props> = ({
     setIsDisable(true);
 
     if (!todoInput.trim()) {
+      setIsDisable(false);
+
       return setRespError(ResponseError.EMPTY);
     }
+
+    setCreatingTodoTitle(todoInput);
 
     createTodo(todoInput.trim(), userID)
       .then(() => {
@@ -44,6 +50,7 @@ export const TodoHeader: React.FC<Props> = ({
           checkCompletedTodo(todoList);
           setIsShowFooter(Boolean(todoList.length));
           setIsDisable(false);
+          setCreatingTodoTitle('');
         });
       })
       .catch(() => setRespError(ResponseError.ADD));

@@ -1,10 +1,11 @@
 import cn from 'classnames';
 import { useEffect, useRef, useState } from 'react';
 import { Todo } from '../../types/Todo';
+import { Loading } from '../Loading';
 
 type Props = {
   todo: Todo;
-  deleteTodo: (arg: number) => void;
+  deleteTodo: (arg: number) => Promise<void>;
   updateTodo: (arg: number, obj: Partial<Todo>) => void;
 };
 
@@ -15,6 +16,7 @@ export const TodoItem: React.FC<Props> = ({
 }) => {
   const { id, title, completed } = todo;
   const [isUpdate, setIsUpdate] = useState(false);
+  const [isLoading, setIsLoading] = useState(false);
   const inputRef = useRef<HTMLInputElement>(null);
 
   const editHandler = (e: React.FocusEvent<HTMLInputElement, Element>) => {
@@ -26,6 +28,12 @@ export const TodoItem: React.FC<Props> = ({
     }
   };
 
+  const deleteTodoHandler = () => {
+    setIsLoading(true);
+    deleteTodo(id)
+      .then(() => setIsLoading(false));
+  };
+
   useEffect(() => {
     if (isUpdate && inputRef.current) {
       inputRef.current.focus();
@@ -34,6 +42,7 @@ export const TodoItem: React.FC<Props> = ({
 
   return (
     <div className={cn('todo', { completed })}>
+      {isLoading && <Loading />}
       <label
         className={cn('todo__status-label', { outline: !completed })}
       >
@@ -56,7 +65,7 @@ export const TodoItem: React.FC<Props> = ({
             <button
               type="button"
               className="todo__remove"
-              onClick={() => deleteTodo(id)}
+              onClick={deleteTodoHandler}
             >
               ×
             </button>

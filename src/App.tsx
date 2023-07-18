@@ -1,4 +1,3 @@
-/* eslint-disable no-console */
 import React, { useEffect, useState } from 'react';
 import { CSSTransition, TransitionGroup } from 'react-transition-group';
 import { Etodos, ResponseError } from './types/enum';
@@ -30,6 +29,7 @@ export const App: React.FC = () => {
   const [respError, setRespError] = useState<ResponseError>(ResponseError.NOT);
   const [isToggleActiveTodos, setIsToggleActiveTodos] = useState(true);
   const [isTodoInputDisabled, setIsTodoInputDisabled] = useState(false);
+  const [creatingTodoTitle, setCreatingTodoTitle] = useState('');
 
   const toggleTodosActive = () => {
     const promiseList = todos.map((todo) => {
@@ -66,7 +66,8 @@ export const App: React.FC = () => {
 
   const deleteTodo = (id: number) => {
     setIsTodoInputDisabled(true);
-    deleteTodoOnServer(id)
+
+    return deleteTodoOnServer(id)
       .then(() => {
         getTodos(user.id).then((todoList) => {
           setTodos(todoList);
@@ -139,6 +140,7 @@ export const App: React.FC = () => {
           setIsShowFooter={setIsShowFooter}
           isDisable={isTodoInputDisabled}
           setIsDisable={setIsTodoInputDisabled}
+          setCreatingTodoTitle={setCreatingTodoTitle}
         />
 
         <section className="todoapp__main">
@@ -151,13 +153,32 @@ export const App: React.FC = () => {
               >
                 <TodoItem
                   todo={todoObj}
-                  deleteTodo={deleteTodo}
                   key={todoObj.id}
+                  deleteTodo={deleteTodo}
                   updateTodo={updateTodo}
                 />
               </CSSTransition>
             ))}
+            {creatingTodoTitle && (
+              <CSSTransition
+                key={0}
+                timeout={300}
+                classNames="temp-item"
+              >
+                <TodoItem
+                  todo={{
+                    id: 0,
+                    userId: user.id,
+                    title: creatingTodoTitle,
+                    completed: false,
+                  }}
+                  deleteTodo={deleteTodo}
+                  updateTodo={updateTodo}
+                />
+              </CSSTransition>
+            )}
           </TransitionGroup>
+
         </section>
 
         {isShowFooter && (
