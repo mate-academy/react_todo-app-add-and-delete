@@ -114,24 +114,41 @@ export const App: React.FC = () => {
       return;
     }
 
-    setTodos(prevTodos => prevTodos.map(
-      todo => {
-        if (todo.id === todoId) {
-          return {
-            ...todo,
-            completed: !todo.completed,
-          };
-        }
+    const updatedTodos = todos.map(todo => {
+      if (todo.id === todoId) {
+        return {
+          ...todo,
+          completed: !todo.completed,
+        };
+      }
 
-        if (error && error === TodoErros.Update) {
-          setError('');
-        }
+      if (error && error === TodoErros.Update) {
+        setError('');
+      }
 
-        return todo;
-      },
-    ));
+      return todo;
+    });
 
-    await Promise.all(todos.map(async (todo) => {
+    setTodos(updatedTodos);
+
+    // setTodos(prevTodos => prevTodos.map(
+    //   todo => {
+    //     if (todo.id === todoId) {
+    //       return {
+    //         ...todo,
+    //         completed: !todo.completed,
+    //       };
+    //     }
+
+    //     if (error && error === TodoErros.Update) {
+    //       setError('');
+    //     }
+
+    //     return todo;
+    //   },
+    // ));
+
+    await Promise.all(updatedTodos.map(async (todo) => {
       await patchTodos(USER_ID, todo).catch(() => {
         setError(TodoErros.Update);
       });
@@ -139,29 +156,31 @@ export const App: React.FC = () => {
   };
 
   const handleChackAllTodos = async () => {
+    let updatedTodos = [];
+
     if (todos.every(currTodo => currTodo.completed === true)) {
-      setTodos(currentTodos => currentTodos
-        .map(
-          currentTodo => {
-            return {
-              ...currentTodo,
-              completed: !currentTodo.completed,
-            };
-          },
-        ));
+      updatedTodos = todos.map(
+        currentTodo => {
+          return {
+            ...currentTodo,
+            completed: !currentTodo.completed,
+          };
+        },
+      );
     } else {
-      setTodos(currentTodos => currentTodos
-        .map(
-          currentTodo => {
-            return {
-              ...currentTodo,
-              completed: true,
-            };
-          },
-        ));
+      updatedTodos = todos.map(
+        currentTodo => {
+          return {
+            ...currentTodo,
+            completed: true,
+          };
+        },
+      );
     }
 
-    await Promise.all(todos.map(async (todo) => {
+    setTodos(updatedTodos);
+
+    await Promise.all(updatedTodos.map(async (todo) => {
       await patchTodos(USER_ID, todo);
     }));
   };
