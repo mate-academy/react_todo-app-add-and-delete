@@ -42,7 +42,7 @@ export const App: React.FC = () => {
       return () => clearTimeout(timeout);
     }
 
-    return () => { };
+    return () => {};
   }, [errorMessage]);
 
   const handleCheckboxChange = (todoId: number) => {
@@ -84,12 +84,9 @@ export const App: React.FC = () => {
     setIsLoading(true);
 
     try {
-      setTempTodo({
-        id: todoId,
-        title: '',
-        userId: USER_ID,
-        completed: false,
-      });
+      setTodos((currentTodos) => currentTodos.map((todo) => (todo.id === todoId
+        ? { ...todo, isLoading: true }
+        : todo)));
 
       await todoService.deleteTodo(todoId);
 
