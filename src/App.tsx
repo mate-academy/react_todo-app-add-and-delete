@@ -3,13 +3,18 @@ import { CSSTransition, TransitionGroup } from 'react-transition-group';
 import { Etodos, ResponseError } from './types/enum';
 import { UserData } from './types/userData';
 import { Todo } from './types/Todo';
-import { deleteTodoOnServer, getTodos, updateTodoProp } from './api';
+import {
+  createTodo,
+  deleteTodoOnServer,
+  getTodos,
+  updateTodoProp,
+} from './api';
 import { TodoItem } from './components/Todo';
 import { TodoHeader } from './components/TodoHeader';
 import { Footer } from './components/Footer';
 import { Notification } from './components/Notification';
 
-const defaultUser = {
+const user: UserData = {
   createdAt: '2023-07-10T13:09:53.578Z',
   email: 'gookidoo@gmail.com',
   id: 11038,
@@ -20,15 +25,15 @@ const defaultUser = {
   website: null,
 };
 
+let isUncomplete = 0;
+
 export const App: React.FC = () => {
-  const [user] = useState<UserData>(defaultUser);
   const [todos, setTodos] = useState<Todo[]>([]);
-  const [isUncomplete, setIsUncomplete] = useState<number>(0);
   const [isShowFooter, setIsShowFooter] = useState<boolean>(true);
   const [sortTodosBy, setSortTodosBy] = useState<Etodos>(Etodos.ALL);
-  const [respError, setRespError] = useState<ResponseError>(ResponseError.NOT);
+  const [error, setError] = useState<ResponseError>(ResponseError.NOT);
   const [isToggleActiveTodos, setIsToggleActiveTodos] = useState(true);
-  const [isTodoInputDisabled, setIsTodoInputDisabled] = useState(false);
+  const [isLoading, setIsLoading] = useState(false);
   const [creatingTodoTitle, setCreatingTodoTitle] = useState('');
 
   const toggleTodosActive = () => {
@@ -53,19 +58,16 @@ export const App: React.FC = () => {
   };
 
   const checkCompletedTodo = (arr: Todo[]) => {
-    let counter = 0;
-
+    isUncomplete = 0;
     for (let i = 0; i < arr.length; i += 1) {
       if (!arr[i].completed) {
-        counter += 1;
+        isUncomplete += 1;
       }
     }
-
-    setIsUncomplete(counter);
   };
 
   const deleteTodo = (id: number) => {
-    setIsTodoInputDisabled(true);
+    setIsLoading(true);
 
     return deleteTodoOnServer(id)
       .then(() => {
@@ -73,24 +75,40 @@ export const App: React.FC = () => {
           setTodos(todoList);
           checkCompletedTodo(todoList);
           setIsShowFooter(Boolean(todoList.length));
-          setIsTodoInputDisabled(false);
+          setIsLoading(false);
         });
       })
-      .catch(() => setRespError(ResponseError.ADD));
+      .catch(() => setError(ResponseError.ADD));
+  };
+
+  const deleteCompletedTodo = () => {
+    getTodos(user.id, 'completed=true')
+      .then((todoList) => {
+        return Promise.all(
+          todoList.map((todo: Todo) => deleteTodoOnServer(todo.id)),
+        );
+      })
+      .then(() => getTodos(user.id))
+      .then((todoList) => {
+        setTodos(todoList);
+        checkCompletedTodo(todoList);
+        setIsShowFooter(Boolean(todoList.length));
+      })
+      .catch((errorresp) => new Error(errorresp.message));
   };
 
   const updateTodo = (todoId: number, obj: Partial<Todo>) => {
-    setIsTodoInputDisabled(true);
+    setIsLoading(true);
     updateTodoProp(todoId, obj)
       .then(() => {
         getTodos(user.id).then((todoList) => {
           setTodos(todoList);
           checkCompletedTodo(todoList);
           setIsShowFooter(Boolean(todoList.length));
-          setIsTodoInputDisabled(false);
+          setIsLoading(false);
         });
       })
-      .catch(() => setRespError(ResponseError.UPDATE));
+      .catch(() => setError(ResponseError.UPDATE));
   };
 
   const displayTodos = (sortBy: Etodos) => {
@@ -106,23 +124,27 @@ export const App: React.FC = () => {
     }
   };
 
+  const headerAddTodo = (str: string) => {
+    createTodo(str.trim(), user.id)
+      .then(() => {
+        getTodos(user.id).then((todoList) => {
+          setTodos(todoList);
+          checkCompletedTodo(todoList);
+          setIsShowFooter(Boolean(todoList.length));
+          setIsLoading(false);
+          setCreatingTodoTitle('');
+        });
+      })
+      .catch(() => setError(ResponseError.ADD));
+  };
+
   useEffect(() => {
-    setIsTodoInputDisabled(true);
-    getTodos(user.id)
-      .then((todosList) => {
-        setIsUncomplete(
-          todosList.reduce((acc: number, todo: Todo):number => {
-            if (!todo.completed) {
-              return acc + 1;
-            }
-
-            return acc;
-          }, 0),
-        );
-
-        setTodos(todosList);
-        setIsTodoInputDisabled(false);
-      });
+    setIsLoading(true);
+    getTodos(user.id).then((todosList) => {
+      checkCompletedTodo(todosList);
+      setTodos(todosList);
+      setIsLoading(false);
+    });
   }, []);
 
   return (
@@ -133,24 +155,18 @@ export const App: React.FC = () => {
         <TodoHeader
           todos={todos}
           toggleTodosActive={toggleTodosActive}
-          userID={user.id}
-          setRespError={setRespError}
-          setTodos={setTodos}
-          checkCompletedTodo={checkCompletedTodo}
+          setError={setError}
           setIsShowFooter={setIsShowFooter}
-          isDisable={isTodoInputDisabled}
-          setIsDisable={setIsTodoInputDisabled}
+          isDisable={isLoading}
+          setIsLoading={setIsLoading}
           setCreatingTodoTitle={setCreatingTodoTitle}
+          headerAddTodo={headerAddTodo}
         />
 
         <section className="todoapp__main">
           <TransitionGroup>
             {displayTodos(sortTodosBy).map((todoObj) => (
-              <CSSTransition
-                key={todoObj.id}
-                timeout={500}
-                classNames="item"
-              >
+              <CSSTransition key={todoObj.id} timeout={500} classNames="item">
                 <TodoItem
                   todo={todoObj}
                   key={todoObj.id}
@@ -160,11 +176,7 @@ export const App: React.FC = () => {
               </CSSTransition>
             ))}
             {creatingTodoTitle && (
-              <CSSTransition
-                key={0}
-                timeout={300}
-                classNames="temp-item"
-              >
+              <CSSTransition key={0} timeout={300} classNames="temp-item">
                 <TodoItem
                   todo={{
                     id: 0,
@@ -178,7 +190,6 @@ export const App: React.FC = () => {
               </CSSTransition>
             )}
           </TransitionGroup>
-
         </section>
 
         {isShowFooter && (
@@ -187,16 +198,13 @@ export const App: React.FC = () => {
             sortTodosBy={sortTodosBy}
             setSortTodosBy={setSortTodosBy}
             todos={todos}
-            setTodos={setTodos}
-            checkCompletedTodo={checkCompletedTodo}
-            setIsShowFooter={setIsShowFooter}
-            userID={user.id}
+            deleteCompletedTodo={deleteCompletedTodo}
           />
         )}
       </div>
 
-      {respError !== ResponseError.NOT && (
-        <Notification respError={respError} setRespError={setRespError} />
+      {error !== ResponseError.NOT && (
+        <Notification error={error} setError={setError} />
       )}
     </div>
   );

@@ -2,64 +2,48 @@
 import { useState } from 'react';
 import { Todo } from '../../types/Todo';
 import { ResponseError } from '../../types/enum';
-import { getTodos, createTodo } from '../../api';
 
 type Props = {
   todos: Todo[];
   toggleTodosActive: () => void;
   setIsShowFooter: (arg: boolean) => void;
-  setRespError: (arg: ResponseError) => void;
-  setTodos: (arg: Todo[]) => void;
-  checkCompletedTodo: (arg: Todo[]) => void;
-  userID: number;
+  setError: (arg: ResponseError) => void;
   isDisable: boolean;
-  setIsDisable: (arg: boolean) => void;
+  setIsLoading: (arg: boolean) => void;
   setCreatingTodoTitle: (arg: string) => void;
+  headerAddTodo: (arg: string) => void;
 };
 
 export const TodoHeader: React.FC<Props> = ({
   todos,
   toggleTodosActive,
-  setIsShowFooter,
-  setRespError,
-  setTodos,
-  checkCompletedTodo,
-  userID,
+  setError,
   isDisable,
-  setIsDisable,
+  setIsLoading,
   setCreatingTodoTitle,
+  headerAddTodo,
 }) => {
   const [todoInput, setTodoInput] = useState('');
 
   const todoFormHandler = (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
-    setIsDisable(true);
+    setIsLoading(true);
 
     if (!todoInput.trim()) {
-      setIsDisable(false);
+      setIsLoading(false);
 
-      return setRespError(ResponseError.EMPTY);
+      return setError(ResponseError.EMPTY);
     }
 
     setCreatingTodoTitle(todoInput);
 
-    createTodo(todoInput.trim(), userID)
-      .then(() => {
-        getTodos(userID).then((todoList) => {
-          setTodos(todoList);
-          checkCompletedTodo(todoList);
-          setIsShowFooter(Boolean(todoList.length));
-          setIsDisable(false);
-          setCreatingTodoTitle('');
-        });
-      })
-      .catch(() => setRespError(ResponseError.ADD));
+    headerAddTodo(todoInput);
 
     return setTodoInput('');
   };
 
   const todoInputHandler = (e: React.ChangeEvent<HTMLInputElement>) => {
-    setRespError(ResponseError.NOT);
+    setError(ResponseError.NOT);
     setTodoInput(e.target.value);
   };
 

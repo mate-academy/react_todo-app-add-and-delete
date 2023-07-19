@@ -2,13 +2,13 @@
 import { ResponseError } from '../../types/enum';
 
 type Props = {
-  respError: ResponseError;
-  setRespError: (arg: ResponseError) => void;
+  error: ResponseError;
+  setError: (arg: ResponseError) => void;
 };
 
-export const Notification: React.FC<Props> = ({ respError, setRespError }) => {
-  if (respError !== ResponseError.NOT) {
-    setTimeout(() => setRespError(ResponseError.NOT), 3000);
+export const Notification: React.FC<Props> = ({ error, setError }) => {
+  if (error !== ResponseError.NOT) {
+    setTimeout(() => setError(ResponseError.NOT), 3000);
   }
 
   return (
@@ -16,13 +16,12 @@ export const Notification: React.FC<Props> = ({ respError, setRespError }) => {
       <button
         type="button"
         className="delete"
-        onClick={() => setRespError(ResponseError.NOT)}
+        onClick={() => setError(ResponseError.NOT)}
       />
-      {respError === ResponseError.ADD && 'Unable to add a todo'}
-      {respError === ResponseError.DELETE && 'Unable to delete a todo'}
-      {respError === ResponseError.UPDATE && 'Unable to update a todo'}
-      {respError === ResponseError.EMPTY && "Title can't be empty"}
+      {error === ResponseError.ADD && ResponseError.ADD}
+      {error === ResponseError.DELETE && ResponseError.DELETE}
+      {error === ResponseError.UPDATE && ResponseError.UPDATE}
+      {error === ResponseError.EMPTY && ResponseError.EMPTY}
     </div>
-
   );
 };
