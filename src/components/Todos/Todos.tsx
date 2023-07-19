@@ -2,6 +2,7 @@ import React from 'react';
 
 import { TodoItem } from '../TodoItem';
 import { Todo } from '../../types/Todo';
+import { TodoErrors } from '../../types/Errors';
 
 type Props = {
   todos: Todo[];
@@ -9,7 +10,7 @@ type Props = {
   onCheckedTodo: (todoId: number) => void;
   tempTodoId: number | null;
   handleImputTodo: (e: React.ChangeEvent<HTMLInputElement>) => void;
-  error: string;
+  error: TodoErrors | null;
   temporaryNewTodo?: Todo | null
 };
 

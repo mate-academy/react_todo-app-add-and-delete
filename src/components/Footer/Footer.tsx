@@ -1,9 +1,8 @@
-import React from 'react';
+import React, { useMemo } from 'react';
 import { FilterTypes, TodoFilter } from '../TodoFilter';
+import { Todo } from '../../types/Todo';
 
 import './Footer.scss';
-
-import { Todo } from '../../types/Todo';
 
 type Props = {
   todos: Todo[]
@@ -18,8 +17,12 @@ export const Footer: React.FC<Props> = ({
   onRemoveTodos,
   filter,
 }) => {
-  const leftTodos = todos.filter(todo => !todo.completed);
-  const doneTodos = todos.filter(todo => todo.completed);
+  const leftTodos = useMemo(() => todos.filter(
+    todo => !todo.completed,
+  ), [todos]);
+  const doneTodos = useMemo(() => todos.filter(
+    todo => todo.completed,
+  ), [todos]);
 
   return (
     <footer className="todoapp__footer">

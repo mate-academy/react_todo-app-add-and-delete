@@ -23,7 +23,7 @@ export const App: React.FC = () => {
   const [tempTodoId, setTempTodoId] = useState<number | null>(null);
   const [filter, setFilter] = useState(FilterTypes.All);
   const [isLoading, setIsLoading] = useState<boolean>(true);
-  const [error, setError] = useState<string>('');
+  const [error, setError] = useState<TodoErrors | null>(null);
 
   const [temporaryNewTodo, setTemporaryNewTodo] = useState<Todo | null>(null);
 
@@ -33,11 +33,10 @@ export const App: React.FC = () => {
     getTodos(USER_ID).then(
       fetchedTodos => {
         setTodos(fetchedTodos as Todo[]);
-        setIsLoading(false);
       },
     ).catch(() => {
       setError(TodoErrors.ErrorTodo);
-    });
+    }).finally(() => setIsLoading(false));
   }, []);
 
   const handleImputTodo = (
@@ -67,7 +66,7 @@ export const App: React.FC = () => {
         setInput('');
 
         if (error && error === TodoErrors.Add) {
-          setError('');
+          setError(null);
         }
       }).catch(() => {
         setError(TodoErrors.Add);
@@ -82,7 +81,7 @@ export const App: React.FC = () => {
       setTempTodoId(null);
 
       if (error && error === TodoErrors.Delete) {
-        setError('');
+        setError(null);
       }
     }).catch(() => setError(TodoErrors.Delete));
   };
@@ -95,7 +94,7 @@ export const App: React.FC = () => {
             .filter(todo => todo.completed === false));
 
           if (error && error === TodoErrors.Delete) {
-            setError('');
+            setError(null);
           }
         }).catch(() => {
           setError(TodoErrors.Delete);
@@ -118,7 +117,7 @@ export const App: React.FC = () => {
       }
 
       if (error && error === TodoErrors.Update) {
-        setError('');
+        setError(null);
       }
 
       return todo;
@@ -136,25 +135,12 @@ export const App: React.FC = () => {
   const handleChackAllTodos = async () => {
     let updatedTodos = [];
 
-    if (todos.every(currTodo => currTodo.completed === true)) {
-      updatedTodos = todos.map(
-        currentTodo => {
-          return {
-            ...currentTodo,
-            completed: !currentTodo.completed,
-          };
-        },
-      );
-    } else {
-      updatedTodos = todos.map(
-        currentTodo => {
-          return {
-            ...currentTodo,
-            completed: true,
-          };
-        },
-      );
-    }
+    updatedTodos = todos.map(currTodo => {
+      return {
+        ...currTodo,
+        completed: !todos.every(currentTodo => currentTodo.completed),
+      };
+    });
 
     setTodos(updatedTodos);
 
@@ -174,12 +160,6 @@ export const App: React.FC = () => {
 
       return !todo.completed;
     });
-
-  const filterTodos = (
-    type: FilterTypes,
-  ) => {
-    setFilter(type);
-  };
 
   if (!USER_ID) {
     return <UserWarning />;
@@ -214,7 +194,7 @@ export const App: React.FC = () => {
         {!!todos.length && (
           <Footer
             todos={todos}
-            onFilterType={filterTodos}
+            onFilterType={setFilter}
             filter={filter}
             onRemoveTodos={removeCompletedTodos}
           />

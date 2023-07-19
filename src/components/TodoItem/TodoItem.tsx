@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import { Todo } from '../../types/Todo';
+import { TodoErrors } from '../../types/Errors';
 
 type Props = {
   todo: Todo;
@@ -7,7 +8,7 @@ type Props = {
   onCheckedTodo?: (todoId: number) => void;
   loading: boolean;
   handleImputTodo?: (e: React.ChangeEvent<HTMLInputElement>) => void;
-  error?: string
+  error?: TodoErrors | null
 };
 
 export const TodoItem: React.FC<Props> = ({
@@ -23,7 +24,7 @@ export const TodoItem: React.FC<Props> = ({
   const [activeRenameTodo, setActiveRenameTodo] = useState<boolean>(false);
 
   const handleTargetTodo = (todoId: number) => {
-    setActiveRenameTodo(() => id === todoId);
+    setActiveRenameTodo(id === todoId);
   };
 
   return (
