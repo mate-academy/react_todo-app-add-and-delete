@@ -1,6 +1,8 @@
 import React from 'react';
 import { FilterTypes, TodoFilter } from '../TodoFilter';
 
+import './Footer.scss';
+
 import { Todo } from '../../types/Todo';
 
 type Props = {

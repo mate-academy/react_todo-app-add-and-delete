@@ -12,15 +12,10 @@ import {
   patchTodos,
   postTodos,
 } from './api/todos';
+import { TodoErrors } from './types/Errors';
+import { Header } from './components/Header/Header';
 
 export const USER_ID = '10682';
-
-export enum TodoErros {
-  Add = 'Unable to add a todo',
-  Delete = 'Unable to delete a todo',
-  Update = 'Unable to update a todo',
-  ErrorTodo = 'Can not find todos',
-}
 
 export const App: React.FC = () => {
   const [todos, setTodos] = useState<Todo[]>([]);
@@ -41,7 +36,7 @@ export const App: React.FC = () => {
         setIsLoading(false);
       },
     ).catch(() => {
-      setError(TodoErros.ErrorTodo);
+      setError(TodoErrors.ErrorTodo);
     });
   }, []);
 
@@ -71,11 +66,11 @@ export const App: React.FC = () => {
         setTodos((prevTodos) => [...prevTodos, receivedTodo]);
         setInput('');
 
-        if (error && error === TodoErros.Add) {
+        if (error && error === TodoErrors.Add) {
           setError('');
         }
       }).catch(() => {
-        setError(TodoErros.Add);
+        setError(TodoErrors.Add);
       }).finally(() => setTemporaryNewTodo(null));
     }
   };
@@ -86,10 +81,10 @@ export const App: React.FC = () => {
       setTodos(prevTodos => prevTodos.filter(todo => todo.id !== todoId));
       setTempTodoId(null);
 
-      if (error && error === TodoErros.Delete) {
+      if (error && error === TodoErrors.Delete) {
         setError('');
       }
-    }).catch(() => setError(TodoErros.Delete));
+    }).catch(() => setError(TodoErrors.Delete));
   };
 
   const removeCompletedTodos = () => {
@@ -99,11 +94,11 @@ export const App: React.FC = () => {
           setTodos(prevTodos => prevTodos
             .filter(todo => todo.completed === false));
 
-          if (error && error === TodoErros.Delete) {
+          if (error && error === TodoErrors.Delete) {
             setError('');
           }
         }).catch(() => {
-          setError(TodoErros.Delete);
+          setError(TodoErrors.Delete);
         }));
   };
 
@@ -122,7 +117,7 @@ export const App: React.FC = () => {
         };
       }
 
-      if (error && error === TodoErros.Update) {
+      if (error && error === TodoErrors.Update) {
         setError('');
       }
 
@@ -131,26 +126,9 @@ export const App: React.FC = () => {
 
     setTodos(updatedTodos);
 
-    // setTodos(prevTodos => prevTodos.map(
-    //   todo => {
-    //     if (todo.id === todoId) {
-    //       return {
-    //         ...todo,
-    //         completed: !todo.completed,
-    //       };
-    //     }
-
-    //     if (error && error === TodoErros.Update) {
-    //       setError('');
-    //     }
-
-    //     return todo;
-    //   },
-    // ));
-
     await Promise.all(updatedTodos.map(async (todo) => {
       await patchTodos(USER_ID, todo).catch(() => {
-        setError(TodoErros.Update);
+        setError(TodoErrors.Update);
       });
     }));
   };
@@ -181,7 +159,9 @@ export const App: React.FC = () => {
     setTodos(updatedTodos);
 
     await Promise.all(updatedTodos.map(async (todo) => {
-      await patchTodos(USER_ID, todo);
+      await patchTodos(USER_ID, todo).catch(() => {
+        setError(TodoErrors.Update);
+      });
     }));
   };
 
@@ -210,24 +190,13 @@ export const App: React.FC = () => {
       <h1 className="todoapp__title">todos</h1>
 
       <div className="todoapp__content">
-        <header className="todoapp__header">
-          <button
-            type="button"
-            className={`todoapp__toggle-all ${todos.length > 0 && 'active'}`}
-            onClick={handleChackAllTodos}
-          />
-
-          <form onSubmit={handleAddTodo}>
-            <input
-              // disabled={tempTodoId === null && true}
-              type="text"
-              className="todoapp__new-todo"
-              placeholder="What needs to be done?"
-              value={input}
-              onChange={handleImputTodo}
-            />
-          </form>
-        </header>
+        <Header
+          todos={todos}
+          input={input}
+          addTodo={handleAddTodo}
+          onCheckAllTodos={handleChackAllTodos}
+          handleImputTodo={handleImputTodo}
+        />
 
         {isLoading
           ? <Loader />
