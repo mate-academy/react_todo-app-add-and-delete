@@ -80,8 +80,9 @@ export const TodoApp: React.FC<Props> = ({ userId }) => {
 
   const handleDeleteTodo = async (todoId: number) => {
     try {
-      await deleteTodo(todoId);
       setIsUpdatingTodoId(todoId);
+
+      await deleteTodo(todoId);
       setTodos(currentTodos => currentTodos.filter(todo => todo.id !== todoId));
     } catch {
       setErrorMessage(ErrorNames.DeleteError);

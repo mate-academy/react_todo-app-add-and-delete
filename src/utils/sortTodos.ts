@@ -5,24 +5,18 @@ export const filterTodos = (
   sortType: SortType,
   todos: Todo[],
 ) => {
-  let filteredTodos = [...todos];
-
   switch (sortType) {
     case SortType.ACTIVE: {
-      filteredTodos = filteredTodos.filter(todo => todo.completed === false);
-      break;
+      return todos.filter(todo => todo.completed === false);
     }
 
     case SortType.COMPLETED: {
-      filteredTodos = filteredTodos.filter(todo => todo.completed);
-      break;
+      return todos.filter(todo => todo.completed);
     }
 
     case SortType.ALL:
     default: {
-      return filteredTodos;
+      return todos;
     }
   }
-
-  return filteredTodos;
 };

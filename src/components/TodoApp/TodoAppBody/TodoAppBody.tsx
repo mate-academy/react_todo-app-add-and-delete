@@ -17,20 +17,16 @@ export const TodoAppBody: React.FC<Props> = ({
 }) => {
   return (
     <section className="todoapp__main">
-      {todos.map((todo: Todo) => {
-        const { title, id, completed } = todo;
-
-        return (
-          <TodoItem
-            key={id}
-            title={title}
-            id={id}
-            completed={completed}
-            onDelete={onDelete}
-            isUpdatingTodoId={isUpdatingTodoId}
-          />
-        );
-      })}
+      {todos.map(({ title, id, completed }: Todo) => (
+        <TodoItem
+          key={id}
+          title={title}
+          id={id}
+          completed={completed}
+          onDelete={onDelete}
+          isUpdatingTodoId={isUpdatingTodoId}
+        />
+      ))}
     </section>
   );
 };
