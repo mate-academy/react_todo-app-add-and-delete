@@ -16,18 +16,18 @@ enum Filter {
 export const App: React.FC = () => {
   const [todos, setTodos] = useState<Todo[]>([]);
   const [filterType, setFilterType] = useState<Filter>(Filter.ALL);
-  const [isHideError, setIsHideError] = useState<boolean>(true);
+  const [isShowError, setIsShowError] = useState<boolean>(false);
   const [error, setError] = useState<string>('');
   const [query, setQuery] = useState<string>('');
   const [isTodoLoaded, setIsTodoLoaded] = useState<boolean>(false);
   const [deleteTodoIds, setDeleteTodoIds] = useState([0]);
 
   const handleErrorMessage = (message: string) => {
-    setIsHideError(false);
+    setIsShowError(true);
     setError(message);
 
     setTimeout(() => {
-      setIsHideError(true);
+      setIsShowError(false);
     }, 3000);
   };
 
@@ -63,9 +63,11 @@ export const App: React.FC = () => {
     setFilterType(selectedFilter);
   };
 
-  const handleErrorDelete = () => setIsHideError(true);
+  const handleErrorDelete = () => setIsShowError(false);
 
-  const addTodo = async (title: string) => {
+  const addTodo = async (event: React.FormEvent, title: string) => {
+    event.preventDefault();
+
     if (!title.trim()) {
       handleErrorMessage('Title can\'t be empty');
       setQuery('');
@@ -74,15 +76,13 @@ export const App: React.FC = () => {
     }
 
     try {
-      const newTodo = {
+      setIsTodoLoaded(true);
+
+      const createdTodo = await postService.postTodo({
         title,
         userId: USER_ID,
         completed: false,
-      };
-
-      setIsTodoLoaded(true);
-
-      const createdTodo = await postService.postTodo(newTodo);
+      });
 
       setTodos(prevTodos => [...prevTodos, createdTodo]);
     } catch {
@@ -121,7 +121,7 @@ export const App: React.FC = () => {
         <header className="todoapp__header">
           <button type="button" className="todoapp__toggle-all active" />
 
-          <form onSubmit={() => addTodo(query)}>
+          <form onSubmit={(event) => addTodo(event, query)}>
             <input
               type="text"
               className={classNames(
@@ -142,9 +142,7 @@ export const App: React.FC = () => {
 
               return (
                 <div
-                  className={classNames(
-                    'todo', { completed },
-                  )}
+                  className={classNames('todo', { completed })}
                   key={id}
                 >
                   <label className="todo__status-label">
@@ -272,7 +270,7 @@ export const App: React.FC = () => {
           is-light
           has-text-weight-normal
         "
-        hidden={isHideError}
+        hidden={!isShowError}
       >
         <button type="button" className="delete" onClick={handleErrorDelete} />
         {error}
