@@ -50,7 +50,7 @@ export const TodoApp: React.FC<Props> = ({ userId }) => {
   const handleFormSubmit = async (
     title: string,
   ) => {
-    if (title.length === 0 && title.trim()) {
+    if (!title.trim().length) {
       setErrorMessage(ErrorNames.TitleError);
 
       return;
