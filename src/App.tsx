@@ -1,5 +1,3 @@
-/* eslint-disable max-len */
-/* eslint-disable jsx-a11y/control-has-associated-label */
 import React, {
   useCallback,
   useEffect,
@@ -35,7 +33,7 @@ export const App: React.FC = () => {
       });
   }, []);
 
-  useEffect((): (() => void) | undefined => {
+  useEffect(() => {
     if (errorMessage) {
       const timeout = setTimeout(() => {
         setErrorMessage(null);
@@ -44,7 +42,7 @@ export const App: React.FC = () => {
       return () => clearTimeout(timeout);
     }
 
-    return undefined;
+    return () => { };
   }, [errorMessage]);
 
   const handleCheckboxChange = (todoId: number) => {
@@ -95,7 +93,8 @@ export const App: React.FC = () => {
 
       await todoService.deleteTodo(todoId);
 
-      setTodos((currentTodos) => currentTodos.filter((todo) => todo.id !== todoId));
+      setTodos((currentTodos) => currentTodos
+        .filter((todo) => todo.id !== todoId));
     } catch {
       setErrorMessage(ErrorMessage.DELETE);
     } finally {
@@ -161,7 +160,12 @@ export const App: React.FC = () => {
       <div className="todoapp__content">
         <header className="todoapp__header">
           {todoIsActive && (
-            <button type="button" className="todoapp__toggle-all active" />
+
+          /* eslint-disable jsx-a11y/control-has-associated-label */
+            <button
+              type="button"
+              className="todoapp__toggle-all active"
+            />
           )}
 
           <form
@@ -173,13 +177,13 @@ export const App: React.FC = () => {
               type="text"
               className="todoapp__new-todo"
               placeholder="What needs to be done?"
-              disabled={tempTodo !== null}
+              disabled={!!tempTodo}
             />
           </form>
         </header>
 
         <section className="todoapp__main">
-          {visibleTodos?.map((todo: Todo) => (
+          {visibleTodos?.map((todo) => (
             <div
               key={todo.id}
               className={cn('todo', {
@@ -197,7 +201,11 @@ export const App: React.FC = () => {
 
               <span className="todo__title">{todo?.title}</span>
 
-              <button onClick={() => handleRemoveTodo(todo.id)} type="button" className="todo__remove">
+              <button
+                onClick={() => handleRemoveTodo(todo.id)}
+                type="button"
+                className="todo__remove"
+              >
                 ×
               </button>
 
@@ -276,7 +284,7 @@ export const App: React.FC = () => {
           className="delete"
           onClick={() => setErrorMessage(null)}
         />
-        Unable to load todos
+        {errorMessage}
       </div>
     </div>
   );
