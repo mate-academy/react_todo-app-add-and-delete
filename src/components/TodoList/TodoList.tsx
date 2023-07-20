@@ -5,56 +5,51 @@ import { Todo } from '../../types/Todo';
 interface TodoListProps {
   todos: Todo[];
   onDeleteTodo: (todoId: number) => void;
-  loading: boolean;
+  loadingTodoId: number | null;
+  addingTodo: boolean;
 }
 
 export const TodoList: React.FC<TodoListProps> = ({
   todos,
   onDeleteTodo,
-  loading,
+  loadingTodoId,
+  addingTodo,
 }) => {
-  console.log(loading);
-
   return (
     <section className="todoapp__main">
       <ul className="todo-list">
-        {todos.map((todo) => (
+        {todos.map(({ completed, title, id }) => (
           <li
             className={classNames('todo', {
-              completed: todo.completed,
+              completed,
             })}
-            key={todo.id}
+            key={id}
           >
             <label className="todo__status-label">
               <input
                 type="checkbox"
                 className="todo__status"
-                checked={todo.completed}
+                checked={completed}
               />
             </label>
 
-            <span className="todo__title">{todo.title}</span>
+            <span className="todo__title">{title}</span>
 
             <button
               type="button"
               className="todo__remove"
-              onClick={() => onDeleteTodo(todo.id)}
-              disabled={loading}
+              onClick={() => onDeleteTodo(id)}
+              disabled={loadingTodoId === id}
             >
               ×
             </button>
 
-            {loading && (
-              <div className="modal overlay">
+            {((loadingTodoId === id) || (addingTodo && id === 0)) && (
+              <div className="modal overlay is-active">
                 <div className="modal-background has-background-white-ter" />
                 <div className="loader" />
               </div>
             )}
-
-            {/* <div className="modal overlay">
-              <div className="modal-background has-background-white-ter" />
-              <div className="loader" />
-            </div> */}
           </li>
         ))}
       </ul>

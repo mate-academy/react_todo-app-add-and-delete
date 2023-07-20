@@ -7,6 +7,7 @@ interface Props {
   completedCount: number;
   filter: FilterType;
   setFilter: (filter: FilterType) => void;
+  onClearCompleted: () => void;
 }
 
 export const Footer: React.FC<Props> = ({
@@ -14,6 +15,7 @@ export const Footer: React.FC<Props> = ({
   completedCount,
   filter,
   setFilter,
+  onClearCompleted,
 }) => {
   const handleFilterChange = (newFilter: FilterType) => {
     setFilter(newFilter);
@@ -23,10 +25,13 @@ export const Footer: React.FC<Props> = ({
     switch (filter) {
       case 'all':
         return todosCount;
+
       case 'active':
         return todosCount - completedCount;
+
       case 'completed':
         return (completedCount > 0) ? completedCount : todosCount;
+
       default:
         return todosCount;
     }
@@ -76,6 +81,7 @@ export const Footer: React.FC<Props> = ({
         style={{
           visibility: (completedCount === 0) ? 'hidden' : 'visible',
         }}
+        onClick={onClearCompleted}
       >
         Clear completed
       </button>

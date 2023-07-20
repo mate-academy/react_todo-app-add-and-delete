@@ -7,28 +7,28 @@ interface Props {
 }
 
 export const Notification: React.FC<Props> = ({ errorMessage, onClose }) => {
-  const [showNotification, setShowNotification] = useState(false);
+  const [isShowNotification, setIsShowNotification] = useState(false);
 
   useEffect(() => {
     let hideTimeout: NodeJS.Timeout;
 
     if (errorMessage) {
-      setShowNotification(true);
+      setIsShowNotification(true);
 
       hideTimeout = setTimeout(() => {
-        setShowNotification(false);
+        setIsShowNotification(false);
         onClose();
       }, 3000);
     }
 
     return () => {
       clearTimeout(hideTimeout);
-      setShowNotification(false);
+      setIsShowNotification(false);
     };
   }, [errorMessage, onClose]);
 
   const handleClose = () => {
-    setShowNotification(false);
+    setIsShowNotification(false);
     onClose();
   };
 
@@ -40,7 +40,7 @@ export const Notification: React.FC<Props> = ({ errorMessage, onClose }) => {
         'is-light',
         'has-text-weight-normal',
         {
-          hidden: !showNotification,
+          hidden: !isShowNotification,
         },
       )}
     >

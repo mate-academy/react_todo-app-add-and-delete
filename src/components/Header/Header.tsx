@@ -1,10 +1,12 @@
 import React, { useState } from 'react';
+import { ErrorMessage } from '../../types/ErrorMessage';
 
 interface Props {
   addTodo: (title: string) => void;
+  setEmptyTitleError?: (message: ErrorMessage) => void;
 }
 
-export const Header: React.FC<Props> = ({ addTodo }) => {
+export const Header: React.FC<Props> = ({ addTodo, setEmptyTitleError }) => {
   const [newTodo, setNewTodo] = useState('');
 
   const handleFormSubmit = (event: React.FormEvent) => {
@@ -13,6 +15,8 @@ export const Header: React.FC<Props> = ({ addTodo }) => {
     if (newTodo.trim()) {
       addTodo(newTodo.trim());
       setNewTodo('');
+    } else {
+      setEmptyTitleError?.(ErrorMessage.EmptyTitle);
     }
   };
 
