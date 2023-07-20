@@ -10,7 +10,7 @@ const TodoHeader: React.FC<Props> = React.memo(({
   createNewTodo,
 }) => {
   const [newTodoValue, setNewTodoValue] = useState<string>('');
-  const [disableInput, setDisableInput] = useState<boolean>(false);
+  const [isInputDisabled, setIsInputDisabled] = useState<boolean>(false);
 
   const onChangeHandler = useCallback(
     (event: React.ChangeEvent<HTMLInputElement>) => {
@@ -20,11 +20,11 @@ const TodoHeader: React.FC<Props> = React.memo(({
 
   const onSubmitHandler = useCallback(
     (e: React.FormEvent<HTMLFormElement>) => {
-      setDisableInput(true);
+      setIsInputDisabled(true);
       e.preventDefault();
 
       createNewTodo(newTodoValue).finally(() => {
-        setDisableInput(false);
+        setIsInputDisabled(false);
       });
 
       if (newTodoValue !== '') {
@@ -47,7 +47,7 @@ const TodoHeader: React.FC<Props> = React.memo(({
       <form onSubmit={onSubmitHandler}>
         <input
           type="text"
-          disabled={disableInput}
+          disabled={isInputDisabled}
           onChange={onChangeHandler}
           value={newTodoValue}
           className="todoapp__new-todo"

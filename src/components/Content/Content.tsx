@@ -10,7 +10,7 @@ type Props = {
   tempTodo: Todo | null
   createNewTodo: (title: string) => Promise<void>
   deleteTodo: (id: string) => Promise<void>
-  deleteAllTodos: () => Promise<void>
+  deleteAllTodos:() => Promise<void>
 };
 const Content: React.FC<Props> = React.memo(({
   todos,

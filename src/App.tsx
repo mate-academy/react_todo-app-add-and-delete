@@ -8,8 +8,8 @@ import { ErrorNotification } from
 import { Content } from './components/Content/Content';
 import { Todo } from './types/Todo';
 import { ErrorMessages } from './enums/ErrorMessages';
-import { addTodos, deleteTodos, getTodos } from './api/todos';
-import { Values } from './enums/values';
+import { addTodo, deleteTodo, getTodos } from './api/todos';
+import { Identifiers } from './enums/identifiers';
 import { ErrorState } from './types/ErrorState';
 
 const USER_ID = 11076;
@@ -23,20 +23,20 @@ export const App: React.FC = () => {
   );
 
   const resetErrorMessage = useCallback((clearTimer = false) => {
-    const timerId = localStorage.getItem(Values.TimerId);
+    const timerId = localStorage.getItem(Identifiers.TimerId);
 
     if (timerId && clearTimer) {
       setErrorState((prevState) => ({ ...prevState, showError: false }));
       clearTimeout(+timerId);
 
-      return localStorage.removeItem(Values.TimerId);
+      return localStorage.removeItem(Identifiers.TimerId);
     }
 
     const timer = setTimeout(() => {
       setErrorState((prevState) => ({ ...prevState, showError: false }));
     }, 3000);
 
-    return localStorage.setItem(Values.TimerId, String(timer));
+    return localStorage.setItem(Identifiers.TimerId, String(timer));
   }, []);
   const createNotification = useCallback(
     (message: ErrorMessages) => {
@@ -60,7 +60,7 @@ export const App: React.FC = () => {
   }, []);
 
   const createNewTodo = useCallback(async (title: string) => {
-    if (!title.length) {
+    if (!title.trim().length) {
       createNotification(ErrorMessages.emptyValue);
 
       return;
@@ -77,18 +77,19 @@ export const App: React.FC = () => {
     };
 
     try {
-      const newTodo = await addTodos(dataToServer);
+      const newTodo = await addTodo(dataToServer);
 
       setTodosList(currentList => [...currentList, newTodo]);
       setTempTodo(null);
     } catch (e) {
       createNotification(ErrorMessages.addError);
+      setTempTodo(null);
     }
   }, []);
 
-  const deleteTodo = useCallback(async (id: string) => {
+  const deleteTodoById = useCallback(async (id: string) => {
     try {
-      await deleteTodos(+id);
+      await deleteTodo(+id);
 
       setTodosList(list => list.filter(t => t.id !== +id));
     } catch (e) {
@@ -99,7 +100,7 @@ export const App: React.FC = () => {
   const deleteCompletedTodos = useCallback(async () => {
     try {
       const preparedToDelete = todosList.filter(t => t.completed)
-        .map(t => deleteTodos(+t.id));
+        .map(t => deleteTodo(+t.id));
 
       await Promise.all(preparedToDelete);
       setTodosList(list => list.filter(t => !t.completed));
@@ -116,7 +117,7 @@ export const App: React.FC = () => {
         todos={todosList}
         tempTodo={tempTodo}
         createNewTodo={createNewTodo}
-        deleteTodo={deleteTodo}
+        deleteTodo={deleteTodoById}
         deleteAllTodos={deleteCompletedTodos}
       />
 
