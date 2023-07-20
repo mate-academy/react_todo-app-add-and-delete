@@ -53,7 +53,8 @@ export const App: React.FC = () => {
       getTodos(user.id).then((todoList) => {
         setTodos(todoList);
         setIsShowFooter(Boolean(todoList.length));
-      });
+      }).catch(err => new Error(err.message))
+        .finally(() => setIsLoading(false));
     });
   };
 
@@ -75,10 +76,10 @@ export const App: React.FC = () => {
           setTodos(todoList);
           checkCompletedTodo(todoList);
           setIsShowFooter(Boolean(todoList.length));
-          setIsLoading(false);
         });
       })
-      .catch(() => setError(ResponseError.ADD));
+      .catch(() => setError(ResponseError.ADD))
+      .finally(() => setIsLoading(false));
   };
 
   const deleteCompletedTodo = () => {
@@ -94,7 +95,8 @@ export const App: React.FC = () => {
         checkCompletedTodo(todoList);
         setIsShowFooter(Boolean(todoList.length));
       })
-      .catch((errorresp) => new Error(errorresp.message));
+      .catch((errorresp) => new Error(errorresp.message))
+      .finally(() => setIsLoading(false));
   };
 
   const updateTodo = (todoId: number, obj: Partial<Todo>) => {
@@ -105,10 +107,10 @@ export const App: React.FC = () => {
           setTodos(todoList);
           checkCompletedTodo(todoList);
           setIsShowFooter(Boolean(todoList.length));
-          setIsLoading(false);
         });
       })
-      .catch(() => setError(ResponseError.UPDATE));
+      .catch(() => setError(ResponseError.UPDATE))
+      .finally(() => setIsLoading(false));
   };
 
   const displayTodos = (sortBy: Etodos) => {
@@ -131,11 +133,11 @@ export const App: React.FC = () => {
           setTodos(todoList);
           checkCompletedTodo(todoList);
           setIsShowFooter(Boolean(todoList.length));
-          setIsLoading(false);
           setCreatingTodoTitle('');
         });
       })
-      .catch(() => setError(ResponseError.ADD));
+      .catch(() => setError(ResponseError.ADD))
+      .finally(() => setIsLoading(false));
   };
 
   useEffect(() => {
@@ -144,7 +146,8 @@ export const App: React.FC = () => {
       checkCompletedTodo(todosList);
       setTodos(todosList);
       setIsLoading(false);
-    });
+    }).catch(err => new Error(err.message))
+      .finally(() => setIsLoading(false));
   }, []);
 
   return (

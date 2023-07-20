@@ -18,10 +18,7 @@ export const Notification: React.FC<Props> = ({ error, setError }) => {
         className="delete"
         onClick={() => setError(ResponseError.NOT)}
       />
-      {error === ResponseError.ADD && ResponseError.ADD}
-      {error === ResponseError.DELETE && ResponseError.DELETE}
-      {error === ResponseError.UPDATE && ResponseError.UPDATE}
-      {error === ResponseError.EMPTY && ResponseError.EMPTY}
+      {error}
     </div>
   );
 };

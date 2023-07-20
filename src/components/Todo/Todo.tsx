@@ -1,7 +1,7 @@
-import cn from "classnames";
-import { useEffect, useRef, useState } from "react";
-import { Todo } from "../../types/Todo";
-import { Loading } from "../Loading";
+import cn from 'classnames';
+import { useEffect, useRef, useState } from 'react';
+import { Todo } from '../../types/Todo';
+import { Loading } from '../Loading';
 
 type Props = {
   todo: Todo;
@@ -36,9 +36,9 @@ export const TodoItem: React.FC<Props> = ({ todo, deleteTodo, updateTodo }) => {
   }, [isUpdate]);
 
   return (
-    <div className={cn("todo", { completed })}>
+    <div className={cn('todo', { completed })}>
       {isLoading && <Loading />}
-      <label className={cn("todo__status-label", { outline: !completed })}>
+      <label className={cn('todo__status-label', { outline: !completed })}>
         <input
           type="checkbox"
           className="todo__status"
@@ -65,7 +65,7 @@ export const TodoItem: React.FC<Props> = ({ todo, deleteTodo, updateTodo }) => {
             <input
               type="text"
               className="todo__title-field"
-              style={{ outline: "none" }}
+              style={{ outline: 'none' }}
               placeholder="Empty todo will be deleted"
               defaultValue={title}
               onBlur={editHandler}
