@@ -208,6 +208,17 @@ export const App: React.FC = () => {
                 Completed
               </a>
             </nav>
+            <button
+              type="button"
+              className="todoapp__clear-completed"
+              style={{
+                opacity: completedTodos.length > 0 ? '1' : '0',
+                pointerEvents: completedTodos.length > 0 ? 'auto' : 'none',
+              }}
+              disabled={!completedTodos?.length}
+            >
+              Clear completed
+            </button>
           </footer>
         )}
       </div>
