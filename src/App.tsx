@@ -16,14 +16,14 @@ export const App: React.FC = () => {
   const [visibleTodos, setVisibleTodos] = useState<Todo[]>([]);
   const [tempTodo, setTempTodo] = useState<Todo | null>(null);
 
-  const [activeTodosCount, setActiveTodosCount] = useState(0);
-  const [complitedTodosCount, setComplitedTodosCount] = useState(0);
+  const [activeTodosCount, setActiveTodosCount] = useState<number>(0);
+  const [complitedTodosCount, setComplitedTodosCount] = useState<number>(0);
 
-  const [filterValue, setFilterValue] = useState(FilterBy.ALL);
+  const [filterValue, setFilterValue] = useState<FilterBy>(FilterBy.ALL);
 
   const [errorMessage, setErrorMessage] = useState<ErrorType | null>(null);
-  const [isLoading, setIsLoading] = useState(false);
-  const [isHidden, setIsHidden] = useState(false);
+  const [isLoading, setIsLoading] = useState<boolean>(false);
+  const [isHidden, setIsHidden] = useState<boolean>(false);
   const [isDeleting, setIsDeleting] = useState<number[]>([]);
 
   const showNotification = (value: ErrorType) => {
