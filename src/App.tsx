@@ -145,7 +145,6 @@ export const App: React.FC = () => {
     getTodos(user.id).then((todosList) => {
       checkCompletedTodo(todosList);
       setTodos(todosList);
-      setIsLoading(false);
     }).catch(err => new Error(err.message))
       .finally(() => setIsLoading(false));
   }, []);
