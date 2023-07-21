@@ -17,7 +17,6 @@ export const App: React.FC = () => {
   const [filter, setFilter] = useState<FilterType>('all');
   const [loadingTodoId, setLoadingTodoId] = useState<number | null>(null);
   const [tempTodo, setTempTodo] = useState<Todo | null>(null);
-  const [addingTodo, setAddingTodo] = useState(false);
   const [
     errorMessage,
     setErrorMessage,
@@ -45,8 +44,6 @@ export const App: React.FC = () => {
     }
 
     try {
-      setAddingTodo(true);
-
       const newTempTodo: Todo = {
         id: 0,
         userId: USER_ID,
@@ -68,7 +65,6 @@ export const App: React.FC = () => {
       setErrorMessage(ErrorMessage.AddTodo);
     } finally {
       setTempTodo(null);
-      setAddingTodo(false);
     }
   };
 
@@ -140,17 +136,9 @@ export const App: React.FC = () => {
           todos={filteredTodos}
           onDeleteTodo={handleDeleteTodo}
           loadingTodoId={loadingTodoId}
-          addingTodo={addingTodo}
+          tempTodo={tempTodo}
         />
 
-        {tempTodo && (
-          <div className="todo">
-            <label htmlFor="loader" className="todo__status-label">
-              <div className="loader" id="loader" />
-            </label>
-            <span className="todo__title">{tempTodo.title}</span>
-          </div>
-        )}
         <Footer
           todosCount={todos.length}
           completedCount={completedCount}
