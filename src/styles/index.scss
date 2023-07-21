@@ -20,6 +20,16 @@ body {
   pointer-events: none;
 }
 
+.loadskin {
+  position: absolute;
+  width: 100%;
+  height: 100%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  background-color: #b6b6b62f;
+}
+
 @import "./todoapp";
 @import "./todo";
 @import "./filter";
