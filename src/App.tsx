@@ -30,7 +30,6 @@ export const App: React.FC = () => {
       });
   }, []);
 
-  // ADD
   const addTodo = useCallback(async (title: string) => {
     try {
       const newTodo = {
@@ -51,14 +50,12 @@ export const App: React.FC = () => {
     }
   }, [USER_ID, todos]);
 
-  // DELETE
   const deleteTodo = (todoId: number) => {
     setTodos(currTodo => currTodo.filter(todo => todo.id !== todoId));
 
     return todoServise.delTodos(todoId)
       .catch((err) => {
         setTodos(todos);
-        setIsError(false);
         setErrorMessage('Unable to delete a todo');
         throw err;
       });
@@ -67,17 +64,15 @@ export const App: React.FC = () => {
   const preparedTodos = useMemo(() => {
     return todos.filter(todo => {
       switch (todosFilterBy) {
-        case Status.ALL:
-          return todos;
-
         case Status.ACTIVE:
           return !todo.completed;
 
         case Status.COMPLETED:
           return todo.completed;
 
+        case Status.ALL:
         default:
-          throw new Error('Unable to add a todo');
+          return todos;
       }
     });
   }, [todosFilterBy, todos]);
