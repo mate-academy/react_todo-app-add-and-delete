@@ -1,24 +1,70 @@
-/* eslint-disable max-len */
 /* eslint-disable jsx-a11y/control-has-associated-label */
-import React from 'react';
+import React, { useEffect, useState } from 'react';
+import { getTodos } from './api/todos';
+import { Footer } from './components/Footer/Footer';
+import { Header } from './components/Header/Header';
+import { Notification } from './components/Notification/Notification';
+import { TodoList } from './components/TodoList/TodoList';
+import { Error, Filter, Todo } from './types/todo';
 import { UserWarning } from './UserWarning';
+import { filterTodos } from './utils/helpers';
 
-const USER_ID = 0;
+const USER_ID = 11096;
 
 export const App: React.FC = () => {
+  const [todos, setTodos] = useState<Todo[]>([]);
+  const [filter, setFilter] = useState(Filter.All);
+  const [hasError, setHasError] = useState(Error.Not);
+
+  useEffect(() => {
+    getTodos(USER_ID).then(data => {
+      setTodos(data);
+    })
+      .catch(() => {
+        setHasError(Error.Load);
+      });
+  }, [filter]);
+
   if (!USER_ID) {
     return <UserWarning />;
   }
 
   return (
-    <section className="section container">
-      <p className="title is-4">
-        Copy all you need from the prev task:
-        <br />
-        <a href="https://github.com/mate-academy/react_todo-app-loading-todos#react-todo-app-load-todos">React Todo App - Load Todos</a>
-      </p>
+    <div className="todoapp">
+      <h1 className="todoapp__title">todos</h1>
 
-      <p className="subtitle">Styles are already copied</p>
-    </section>
+      <div className="todoapp__content">
+        <Header
+          userId={USER_ID}
+          todos={todos}
+          setTodos={setTodos}
+          filter={filter}
+          setHasError={setHasError}
+        />
+
+        {!!todos.length && (
+          <TodoList
+            todos={filterTodos(filter, todos)}
+            setTodos={setTodos}
+            setHasError={setHasError}
+          />
+        )}
+
+        {!!todos.length && (
+          <Footer
+            setFilter={setFilter}
+            filter={filter}
+            todos={todos}
+            setTodos={setTodos}
+            setHasError={setHasError}
+          />
+        )}
+      </div>
+
+      <Notification
+        hasError={hasError}
+        setHasError={setHasError}
+      />
+    </div>
   );
 };
