@@ -6,9 +6,9 @@ type Props = {
   todo: Todo;
   onRemoveTodo?: (todoId: number) => void;
   onCheckedTodo?: (todoId: number) => void;
-  loading: boolean;
+  loading: boolean | undefined;
   handleImputTodo?: (e: React.ChangeEvent<HTMLInputElement>) => void;
-  error?: TodoErrors | null
+  error?: TodoErrors | null;
 };
 
 export const TodoItem: React.FC<Props> = ({

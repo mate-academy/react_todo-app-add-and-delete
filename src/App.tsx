@@ -23,6 +23,7 @@ export const App: React.FC = () => {
   const [tempTodoId, setTempTodoId] = useState<number | null>(null);
   const [filter, setFilter] = useState(FilterTypes.All);
   const [isLoading, setIsLoading] = useState<boolean>(true);
+  const [loadingTodos, setLoadingTodos] = useState<number[] | null>(null);
   const [error, setError] = useState<TodoErrors | null>(null);
 
   const [temporaryNewTodo, setTemporaryNewTodo] = useState<Todo | null>(null);
@@ -87,18 +88,23 @@ export const App: React.FC = () => {
   };
 
   const removeCompletedTodos = () => {
-    todos.filter(todo => todo.completed === true)
-      .map(currentTodo => deleteTodos(USER_ID, currentTodo.id)
-        .then(() => {
-          setTodos(prevTodos => prevTodos
-            .filter(todo => todo.completed === false));
+    const complitedTodos = todos.filter(todo => todo.completed === true);
 
-          if (error && error === TodoErrors.Delete) {
-            setError(null);
-          }
-        }).catch(() => {
-          setError(TodoErrors.Delete);
-        }));
+    const complitedIds = complitedTodos.map(todo => todo.id);
+
+    setLoadingTodos(complitedIds);
+
+    complitedTodos.map(currentTodo => deleteTodos(USER_ID, currentTodo.id)
+      .then(() => {
+        setTodos(prevTodos => prevTodos
+          .filter(todo => todo.completed === false));
+
+        if (error && error === TodoErrors.Delete) {
+          setError(null);
+        }
+      }).catch(() => {
+        setError(TodoErrors.Delete);
+      }).finally(() => setLoadingTodos(null)));
   };
 
   const handleCheckBoxTodo = async (todoId: number) => {
@@ -184,6 +190,7 @@ export const App: React.FC = () => {
             <Todos
               error={error}
               todos={filteredTodos}
+              loadingTodos={loadingTodos}
               onRemoveTodo={handleRemoveTodo}
               onCheckedTodo={handleCheckBoxTodo}
               tempTodoId={tempTodoId}

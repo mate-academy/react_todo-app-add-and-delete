@@ -12,6 +12,7 @@ type Props = {
   handleImputTodo: (e: React.ChangeEvent<HTMLInputElement>) => void;
   error: TodoErrors | null;
   temporaryNewTodo?: Todo | null
+  loadingTodos?: number[] | null
 };
 
 export const Todos: React.FC<Props> = ({
@@ -22,6 +23,7 @@ export const Todos: React.FC<Props> = ({
   handleImputTodo,
   error,
   temporaryNewTodo,
+  loadingTodos,
 }) => {
   return (
     <section className="todoapp__main">
@@ -32,7 +34,10 @@ export const Todos: React.FC<Props> = ({
           key={todo.id}
           onRemoveTodo={onRemoveTodo}
           onCheckedTodo={onCheckedTodo}
-          loading={todo.id === tempTodoId}
+          loading={
+            todo.id === tempTodoId
+            || loadingTodos?.includes(todo.id)
+          }
           handleImputTodo={handleImputTodo}
         />
       ))}
