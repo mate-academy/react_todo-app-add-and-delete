@@ -1,5 +1,7 @@
 import classNames from 'classnames';
-import React, { FormEvent, useEffect, useRef, useState } from 'react';
+import React, {
+  FormEvent, useEffect, useRef, useState,
+} from 'react';
 import { createTodo, getTodos, updateComplete } from '../../api/todos';
 import { Error, Filter, Todo } from '../../types/todo';
 import { filterTodos } from '../../utils/helpers';
