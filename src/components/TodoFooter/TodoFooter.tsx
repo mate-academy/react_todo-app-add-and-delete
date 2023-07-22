@@ -1,4 +1,4 @@
-import React, { useCallback } from 'react';
+import React from 'react';
 import cn from 'classnames';
 import { Filter } from '../../enums/Filter';
 
@@ -22,7 +22,7 @@ const TodoFooter: React.FC<Props> = React.memo(({
 
   const countText = `${itemsCount} item${itemsCount > 1 ? 's' : ''} left`;
 
-  const clearCompletedHandler = useCallback(() => deleteAllTodos(), []);
+  const clearCompletedHandler = () => deleteAllTodos();
 
   return (
     <footer className="todoapp__footer">
@@ -32,7 +32,7 @@ const TodoFooter: React.FC<Props> = React.memo(({
 
       <nav className="filter">
         <a
-          href="#/"
+          href="src/components/TodoHeader#/"
           className={cn(
             'filter__link',
             { selected: filter === Filter.All },
@@ -43,7 +43,7 @@ const TodoFooter: React.FC<Props> = React.memo(({
         </a>
 
         <a
-          href="#/active"
+          href="src/components/TodoHeader#/active"
           className={cn(
             'filter__link',
             { selected: filter === Filter.Active },
@@ -54,7 +54,7 @@ const TodoFooter: React.FC<Props> = React.memo(({
         </a>
 
         <a
-          href="#/completed"
+          href="src/components/TodoHeader#/completed"
           className={cn(
             'filter__link',
             { selected: filter === Filter.Completed },

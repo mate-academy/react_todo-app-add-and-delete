@@ -1,7 +1,7 @@
 import React, { useMemo, useState, memo } from 'react';
 import { Todo } from '../../types/Todo';
 import { TodoHeader } from '../TodoHeader/TodoHeader';
-import { TodoFooter } from '../TodoHeader/TodoFooter';
+import { TodoFooter } from '../TodoFooter/TodoFooter';
 import { TodoMain } from '../TodoMain/TodoMain';
 import { Filter } from '../../enums/Filter';
 
