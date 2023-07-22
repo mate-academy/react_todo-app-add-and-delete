@@ -29,7 +29,7 @@ const Task: React.FC<Props> = React.memo(({
           setShowSpinner(false);
         });
       }
-    }, [],
+    }, [deleteTodo],
   );
 
   return (

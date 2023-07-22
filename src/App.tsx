@@ -38,11 +38,12 @@ export const App: React.FC = () => {
 
     return localStorage.setItem(Identifiers.TimerId, String(timer));
   }, []);
+
   const createNotification = useCallback(
     (message: ErrorMessages) => {
       setErrorState({ message, showError: true });
       resetErrorMessage();
-    }, [],
+    }, [resetErrorMessage],
   );
 
   useEffect(() => {
@@ -57,7 +58,7 @@ export const App: React.FC = () => {
     };
 
     fetchTodos();
-  }, []);
+  }, [createNotification]);
 
   const createNewTodo = useCallback(async (title: string) => {
     if (!title.trim().length) {
@@ -85,7 +86,7 @@ export const App: React.FC = () => {
       createNotification(ErrorMessages.addError);
       setTempTodo(null);
     }
-  }, []);
+  }, [createNotification]);
 
   const deleteTodoById = useCallback(async (id: string) => {
     try {
@@ -95,7 +96,7 @@ export const App: React.FC = () => {
     } catch (e) {
       createNotification(ErrorMessages.deleteError);
     }
-  }, []);
+  }, [createNotification]);
 
   const deleteCompletedTodos = useCallback(async () => {
     try {
@@ -107,7 +108,7 @@ export const App: React.FC = () => {
     } catch (e) {
       createNotification(ErrorMessages.deleteError);
     }
-  }, [todosList]);
+  }, [todosList, createNotification]);
 
   return (
     <div className="todoapp">

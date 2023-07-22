@@ -1,4 +1,4 @@
-import React, { useMemo, useState } from 'react';
+import React, { useMemo, useState, memo } from 'react';
 import { Todo } from '../../types/Todo';
 import { TodoHeader } from '../TodoHeader/TodoHeader';
 import { TodoFooter } from '../TodoHeader/TodoFooter';
@@ -12,7 +12,8 @@ type Props = {
   deleteTodo: (id: string) => Promise<void>
   deleteAllTodos:() => Promise<void>
 };
-const Content: React.FC<Props> = React.memo(({
+
+const Content: React.FC<Props> = memo(({
   todos,
   createNewTodo,
   deleteTodo,
