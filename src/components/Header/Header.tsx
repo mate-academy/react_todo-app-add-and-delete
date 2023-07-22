@@ -1,5 +1,5 @@
 import classNames from 'classnames';
-import React, { FormEvent, useState } from 'react';
+import React, { FormEvent, useEffect, useRef, useState } from 'react';
 import { createTodo, getTodos, updateComplete } from '../../api/todos';
 import { Error, Filter, Todo } from '../../types/todo';
 import { filterTodos } from '../../utils/helpers';
@@ -10,6 +10,8 @@ type Props = {
   setTodos: (todos: Todo[]) => void;
   filter: Filter;
   setHasError: (value: Error) => void;
+  setIsLoading: (value: boolean) => void;
+  isLoading: boolean;
 };
 
 export const Header: React.FC<Props> = ({
@@ -18,11 +20,19 @@ export const Header: React.FC<Props> = ({
   setTodos,
   filter,
   setHasError,
+  setIsLoading,
+  isLoading,
 }) => {
   const [todoTitle, setTodoTitle] = useState('');
-  const [isLoading, setIsLoading] = useState(false);
 
   const isBtnActive = todos.every(todo => todo.completed);
+  const inputRef = useRef<HTMLInputElement>(null);
+
+  useEffect(() => {
+    if (inputRef.current) {
+      inputRef.current.focus();
+    }
+  }, [todos.length]);
 
   const submitHandler = (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault();
@@ -91,6 +101,7 @@ export const Header: React.FC<Props> = ({
           className="todoapp__new-todo"
           placeholder="What needs to be done?"
           disabled={isLoading}
+          ref={inputRef}
           value={todoTitle}
           onChange={e => setTodoTitle(e.target.value)}
         />

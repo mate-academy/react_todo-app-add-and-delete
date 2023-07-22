@@ -8,6 +8,8 @@ type Props = {
   todos: Todo[];
   setTodos: (todos: Todo[]) => void;
   setHasError: (value: Error) => void;
+  isLoading: boolean;
+  setIsLoading: (value: boolean) => void;
 };
 
 export const TodoItem: React.FC<Props> = ({
@@ -15,11 +17,15 @@ export const TodoItem: React.FC<Props> = ({
   setTodos,
   todos,
   setHasError,
+  isLoading,
+  setIsLoading,
 }) => {
   const [isHovered, setIsHovered] = useState(false);
   const [isEdited] = useState(false);
 
   const removeTodoHandler = (todoId: number) => {
+    setIsLoading(true);
+
     removeTodo(todoId)
       .then(() => {
         const newTodos = todos.filter(t => t.id !== todoId);
@@ -28,10 +34,13 @@ export const TodoItem: React.FC<Props> = ({
       })
       .catch(() => {
         setHasError(Error.Delete);
-      });
+      })
+      .finally(() => setIsLoading(false));
   };
 
   const toggleComplete = (todoId: number) => {
+    setIsLoading(true);
+
     updateComplete(todoId, { completed: !todo.completed })
       .then(() => {
         const newTodos = todos.map(t => {
@@ -49,7 +58,8 @@ export const TodoItem: React.FC<Props> = ({
       })
       .catch(() => {
         setHasError(Error.Update);
-      });
+      })
+      .finally(() => setIsLoading(false));
   };
 
   return (
@@ -94,7 +104,9 @@ export const TodoItem: React.FC<Props> = ({
         </form>
       )}
 
-      <div className="modal overlay">
+      <div className={classNames('modal overlay', {
+        'is-active': isLoading,
+      })}>
         <div className="modal-background has-background-white-ter" />
         <div className="loader" />
       </div>

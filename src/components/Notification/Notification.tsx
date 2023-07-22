@@ -19,7 +19,7 @@ export const Notification: React.FC<Props> = ({ hasError, setHasError }) => {
     <div
       className={classNames(
         'notification is-danger is-light has-text-weight-normal', {
-          hidden: !hasError,
+          'hidden': !hasError,
         },
       )}
     >
@@ -30,23 +30,23 @@ export const Notification: React.FC<Props> = ({ hasError, setHasError }) => {
       />
 
       {hasError === Error.Add && (
-        <>Unable to add a todo</>
+        'Unable to add a todo'
       )}
 
       {hasError === Error.Delete && (
-        <>Unable to delete a todo</>
+        'Unable to delete a todo'
       )}
 
       {hasError === Error.Update && (
-        <>Unable to update a todo</>
+        'Unable to update a todo'
       )}
 
       {hasError === Error.Empty && (
-        <>Title can't be empty</>
+        'Title can\'t be empty'
       )}
 
       {hasError === Error.Load && (
-        <>Some trouble with loading. Please, check you internet connection</>
+        'Some trouble with loading. Please, check you internet connection'
       )}
     </div>
   );

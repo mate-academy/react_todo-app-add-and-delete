@@ -9,6 +9,7 @@ type Props = {
   todos: Todo[];
   setTodos: (todos: Todo[]) => void;
   setHasError: (value: Error) => void;
+  setIsLoading: (value: boolean) => void;
 };
 
 export const Footer: React.FC<Props> = ({
@@ -17,6 +18,7 @@ export const Footer: React.FC<Props> = ({
   todos,
   setTodos,
   setHasError,
+  setIsLoading,
 }) => {
   const countItems = todos.filter(todo => !todo.completed).length;
   const item = countItems > 1 ? 'items' : 'item';
@@ -51,10 +53,13 @@ export const Footer: React.FC<Props> = ({
       .map(t => t.id);
 
     ids.forEach(id => {
+      setIsLoading(true);
+
       removeTodo(id)
         .catch(() => {
           setHasError(Error.Delete);
-        });
+        })
+        .finally(() => setIsLoading(false));
     });
 
     setTodos(todos.filter(t => !t.completed));
