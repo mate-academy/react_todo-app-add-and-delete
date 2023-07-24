@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { UserWarning } from './UserWarning';
 import {
-  ErrorNotification
+  ErrorNotification,
 } from './components/ErrorNotification/ErrorNotification';
 import { Footer } from './components/Footer/Footer';
 import { Header } from './components/Header/Header';
@@ -59,9 +59,9 @@ export const App: React.FC = () => {
       userId: USER_ID,
       title,
       completed: false,
+      id: 0
     };
-
-    setTempTodo({ ...newTodo, id: 0 });
+    setTempTodo({ ...newTodo });
     try {
       const addedTodo = await todoService.createTodo(newTodo);
 

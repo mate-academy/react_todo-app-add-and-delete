@@ -19,7 +19,7 @@ export const Header: React.FC<Props> = ({
 
   const handleSubmit = (event: React.FormEvent) => {
     event.preventDefault();
-    if (titleQuery.trim() === '') {
+    if (!titleQuery.trim()) {
       onEmptyValue(ErrorType.EMPTY);
     } else {
       onSubmit(titleQuery);
