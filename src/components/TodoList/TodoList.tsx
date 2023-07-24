@@ -4,23 +4,34 @@ import { TodoInfo } from '../TodoInfo';
 
 type Props = {
   todos: Todo[];
-  activeTodo: Todo | null;
-  setActiveTodo: (todo: Todo) => void;
+  activeTodoId: number | null;
+  temporaryTodo: Todo | null;
+  onDelete: (id: number) => void;
 };
 
 export const TodoList: React.FC<Props> = ({
   todos,
-  activeTodo,
-  setActiveTodo,
+  activeTodoId,
+  temporaryTodo,
+  onDelete,
 }) => (
   <section className="todoapp__main">
     {todos.map(todo => (
       <TodoInfo
         key={todo.id}
         todo={todo}
-        isLoading={activeTodo ? activeTodo.id === todo.id : false}
-        setActiveTodo={setActiveTodo}
+        onDelete={onDelete}
+        isLoading={activeTodoId ? activeTodoId === todo.id : false}
       />
     ))}
+
+    {temporaryTodo && (
+      <TodoInfo
+        key={temporaryTodo.id}
+        todo={temporaryTodo}
+        onDelete={onDelete}
+        isLoading={!!temporaryTodo}
+      />
+    )}
   </section>
 );

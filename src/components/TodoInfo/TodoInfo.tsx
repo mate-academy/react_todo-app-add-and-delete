@@ -4,21 +4,19 @@ import { Todo } from '../../types/Todo';
 
 type Props = {
   todo: Todo;
-  isLoading: boolean;
-  setActiveTodo: (todo: Todo) => void;
+  isLoading?: boolean;
+  onDelete: (todoId: number) => void;
 };
 
 export const TodoInfo: React.FC<Props> = ({
   todo,
-  isLoading,
-  setActiveTodo,
+  isLoading = true,
+  onDelete,
 }) => (
-  // eslint-disable-next-line jsx-a11y/click-events-have-key-events, jsx-a11y/no-static-element-interactions
   <div
     className={classNames('todo', {
       completed: todo.completed,
     })}
-    onClick={() => setActiveTodo(todo)}
   >
     <label className="todo__status-label">
       <input
@@ -30,7 +28,13 @@ export const TodoInfo: React.FC<Props> = ({
 
     <span className="todo__title">{todo.title}</span>
 
-    <button type="button" className="todo__remove">×</button>
+    <button
+      type="button"
+      className="todo__remove"
+      onClick={() => onDelete(todo.id)}
+    >
+      ×
+    </button>
 
     <div className={classNames('modal overlay', {
       'is-active': isLoading,

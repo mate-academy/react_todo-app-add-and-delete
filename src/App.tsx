@@ -1,7 +1,9 @@
-import React, { useEffect, useState, useMemo } from 'react';
+import React, {
+  useEffect, useState, useMemo, FormEvent,
+} from 'react';
 import { UserWarning } from './UserWarning';
 import { Todo, TodoStatus } from './types/Todo';
-import { getTodos } from './api/todos';
+import { createTodo, deleteTodo, getTodos } from './api/todos';
 import { filterTodos } from './utils/todoUtil';
 import { TodoList } from './components/TodoList';
 import { Header } from './components/Header';
@@ -11,12 +13,58 @@ import { ErrorMessage } from './components/ErrorMessage';
 const USER_ID = 11082;
 
 export const App: React.FC = () => {
+  // #region states
   const [title, setTitle] = useState('');
   const [isLoading, setIsLoading] = useState(false);
   const [filterBy, setFilterBy] = useState(TodoStatus.ALL);
   const [errorMessage, setErrorMessage] = useState('');
   const [todos, setTodos] = useState<Todo[]>([]);
-  const [activeTodo, setActiveTodo] = useState<Todo | null>(null);
+  const [activeTodoId, setActiveTodoId] = useState<number | null>(null);
+  const [temporatyTodo, setTemporatyTodo] = useState<Todo | null>(null);
+  // #endregion
+
+  // #region handlers
+  const handleTodoDelete = (todoId: number) => {
+    setActiveTodoId(todoId);
+
+    deleteTodo(todoId)
+      .then(() => {
+        setTodos(prev => prev.filter(todo => todo.id !== todoId));
+      })
+      .catch(() => setErrorMessage('Unable to delete todo'))
+      .finally(() => {
+        setActiveTodoId(null);
+        setTitle('');
+      });
+  };
+
+  const handleTodoAdd = (event: FormEvent<HTMLFormElement>) => {
+    event.preventDefault();
+
+    if (!title) {
+      setErrorMessage('Title can\'t be empty');
+
+      return;
+    }
+
+    const todo = {
+      id: 0,
+      title,
+      userId: USER_ID,
+      completed: false,
+    };
+
+    setTemporatyTodo(todo);
+    createTodo(todo)
+      .then(newTodo => {
+        setTodos(prev => [...prev, newTodo]);
+        setTitle('');
+      })
+      .finally(() => {
+        setTemporatyTodo(null);
+      });
+  };
+  // #endregion
 
   useEffect(() => {
     setIsLoading(true);
@@ -50,12 +98,14 @@ export const App: React.FC = () => {
           title={title}
           setTitle={setTitle}
           activeTodosQuantity={activeTodos.length}
+          onAdd={handleTodoAdd}
         />
 
         <TodoList
           todos={visibleTodos}
-          activeTodo={activeTodo}
-          setActiveTodo={setActiveTodo}
+          activeTodoId={activeTodoId}
+          temporaryTodo={temporatyTodo}
+          onDelete={handleTodoDelete}
         />
 
         {todos.length > 0 && (
@@ -63,6 +113,7 @@ export const App: React.FC = () => {
             filterBy={filterBy}
             setFilterBy={setFilterBy}
             activeTodosQuantity={activeTodos.length}
+            completedTodosQuantity={todos.length - activeTodos.length}
           />
         )}
       </div>

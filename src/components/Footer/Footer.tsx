@@ -6,12 +6,14 @@ type Props = {
   filterBy: TodoStatus,
   setFilterBy: (filterBy: TodoStatus) => void;
   activeTodosQuantity: number;
+  completedTodosQuantity: number;
 };
 
 export const Footer: React.FC<Props> = ({
   filterBy,
   setFilterBy,
   activeTodosQuantity,
+  completedTodosQuantity,
 }) => (
   <footer className="todoapp__footer">
     <span className="todo-count">
@@ -52,12 +54,14 @@ export const Footer: React.FC<Props> = ({
     </nav>
 
     {/* don't show this button if there are no completed todos */}
-    <button
-      type="button"
-      className="todoapp__clear-completed"
-      hidden={!(activeTodosQuantity > 0)}
-    >
-      Clear completed
-    </button>
+    {completedTodosQuantity ? (
+      <button
+        type="button"
+        className="todoapp__clear-completed"
+        hidden={!(activeTodosQuantity > 0)}
+      >
+        Clear completed
+      </button>
+    ) : ('')}
   </footer>
 );

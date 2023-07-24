@@ -1,16 +1,18 @@
 /* eslint-disable jsx-a11y/control-has-associated-label */
-import React from 'react';
+import React, { FormEvent } from 'react';
 import classNames from 'classnames';
 
 type Props = {
   title: string,
   setTitle: (value: string) => void;
+  onAdd: (event: FormEvent<HTMLFormElement>) => void;
   activeTodosQuantity: number;
 };
 
 export const Header: React.FC<Props> = ({
   title,
   setTitle,
+  onAdd,
   activeTodosQuantity,
 }) => (
   <header className="todoapp__header">
@@ -22,7 +24,7 @@ export const Header: React.FC<Props> = ({
     />
 
     {/* Add a todo on form submit */}
-    <form>
+    <form onSubmit={onAdd}>
       <input
         type="text"
         className="todoapp__new-todo"
