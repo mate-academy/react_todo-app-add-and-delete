@@ -1,61 +1,69 @@
-import classNames from 'classnames';
-import { Todo } from '../../types/Todo';
+import cn from 'classnames';
 import { Filter } from '../../types/Filter';
 
-interface Props {
-  filter: Filter,
-  isActive: Todo[],
-  setFilter: (filter: Filter) => void,
-}
+type Props = {
+  filterValue: Filter;
+  activeTodosCount: number;
+  complitedTodosCount: number;
+  setFilterValue: (value: Filter) => void;
+  onClear: () => void;
+};
 
 export const Footer: React.FC<Props> = ({
-  filter,
-  isActive,
-  setFilter,
+  activeTodosCount, complitedTodosCount, filterValue, setFilterValue, onClear,
 }) => {
+  const handleFilterChange = (event: React.MouseEvent<HTMLAnchorElement>) => {
+    event.preventDefault();
+    const value = event.currentTarget.innerText as Filter;
+
+    setFilterValue(value);
+  };
+
   return (
     <footer className="todoapp__footer">
-      <span className="todocount">
-        {`${isActive.length} items left`}
+      <span className="todo-count">
+        {`${activeTodosCount} items left`}
       </span>
 
       <nav className="filter">
         <a
           href="#/"
-          className={classNames(
-            'filter__link',
-            { selected: filter === Filter.ALL },
-          )}
-          onClick={() => setFilter(Filter.ALL)}
+          className={cn('filter__link', {
+            selected: filterValue === Filter.ALL,
+          })}
+          onClick={(event) => handleFilterChange(event)}
         >
-          All
+          {Filter.ALL}
         </a>
 
         <a
           href="#/active"
-          className={classNames(
-            'filter__link',
-            { selected: filter === Filter.ACTIVE },
-          )}
-          onClick={() => setFilter(Filter.ACTIVE)}
+          className={cn('filter__link', {
+            selected: filterValue === Filter.ACTIVE,
+          })}
+          onClick={(event) => handleFilterChange(event)}
         >
-          Active
+          {Filter.ACTIVE}
         </a>
 
         <a
           href="#/completed"
-          className={classNames(
-            'filter__link',
-            { selected: filter === Filter.COMPLETED },
-          )}
-          onClick={() => setFilter(Filter.COMPLETED)}
+          className={cn('filter__link', {
+            selected: filterValue === Filter.COMPLETED,
+          })}
+          onClick={(event) => handleFilterChange(event)}
         >
-          Completed
+          {Filter.COMPLETED}
         </a>
       </nav>
 
-      {!isActive && (
-        <button type="button" className="todoapp__clear-completed">
+      {complitedTodosCount > 0 && (
+        <button
+          type="button"
+          className="todoapp__clear-completed"
+          disabled={complitedTodosCount === 0}
+          onClick={onClear}
+        >
           Clear completed
         </button>
       )}

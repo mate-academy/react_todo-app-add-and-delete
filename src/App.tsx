@@ -1,71 +1,114 @@
-/* eslint-disable jsx-a11y/control-has-associated-label */
-import React, { useEffect, useState, useMemo } from 'react';
+import React, { useEffect, useState } from 'react';
 import { UserWarning } from './UserWarning';
+import {
+  ErrorNotification
+} from './components/ErrorNotification/ErrorNotification';
+import { Footer } from './components/Footer/Footer';
 import { Header } from './components/Header/Header';
 import { TodoList } from './components/TodoList/TodoList';
-import { Footer } from './components/Footer/Footer';
-import { ErrorMesage } from './components/ErrorMessage/ErrorMesage';
-import { Filter } from './types/Filter';
+import * as todoService from './api/todos';
 import { Todo } from './types/Todo';
-import * as postService from './api/todos';
-// import { fetchTodos } from './api/todos';
+import { ErrorType } from './types/ErrorType';
+import { Filter } from './types/Filter';
 
 const USER_ID = 11028;
 
 export const App: React.FC = () => {
   const [todos, setTodos] = useState<Todo[]>([]);
-  const [filter, setFilter] = useState(Filter.ALL);
-  const [isError, setIsError] = useState('');
+  const [visibleTodos, setVisibleTodos] = useState<Todo[]>([]);
+  const [tempTodo, setTempTodo] = useState<Todo | null>(null);
 
-  const showError = (text: string) => {
-    setIsError(text);
+  const [activeTodosCount, setActiveTodosCount] = useState<number>(0);
+  const [complitedTodosCount, setComplitedTodosCount] = useState<number>(0);
+
+  const [filterValue, setFilterValue] = useState<Filter>(Filter.ALL);
+
+  const [errorMessage, setErrorMessage] = useState<ErrorType | null>(null);
+  const [isLoading, setIsLoading] = useState<boolean>(false);
+  const [isHidden, setIsHidden] = useState<boolean>(false);
+  const [isDeleting, setIsDeleting] = useState<number[]>([]);
+
+  const showNotification = (value: ErrorType) => {
+    setErrorMessage(value);
     setTimeout(() => {
-      setIsError('');
-    }, 2000);
+      setIsHidden(true);
+    }, 3000);
+  };
+
+  const loadTodos = async () => {
+    setErrorMessage(null);
+    setIsHidden(false);
+    setIsLoading(true);
+    try {
+      const loadedTodos = await todoService.getTodos(USER_ID);
+
+      setTodos(loadedTodos);
+    } catch {
+      showNotification(ErrorType.LOAD);
+    } finally {
+      setIsLoading(false);
+    }
   };
 
   useEffect(() => {
-    postService.getTodos(USER_ID)
-      .then((todo) => setTodos(todo))
-      .catch(() => setIsError('Unable to load a todo'));
+    loadTodos();
   }, []);
 
-  const addTodo = ({
-    userId,
-    title,
-    completed,
-  }: Omit<Todo, 'id'>) => {
-    postService
-      .createTodos(USER_ID, { userId, title, completed })
-      .then((newTodo) => setTodos((prevTodo) => [...prevTodo, newTodo]))
-      .catch(() => showError('Unable to add a todo'));
-  };
+  const addTodo = async (title: string) => {
+    const newTodo = {
+      userId: USER_ID,
+      title,
+      completed: false,
+    };
 
-  const deleteTodo = (todoId: number) => {
-    postService.deleteTodos(todoId);
-    setTodos(currentTodos => currentTodos.filter(todo => todo.id !== todoId));
-  };
+    setTempTodo({ ...newTodo, id: 0 });
+    try {
+      const addedTodo = await todoService.createTodo(newTodo);
 
-  const filteredTodos = useMemo(() => {
-    if (filter === Filter.ALL) {
-      return todos;
+      setTodos(currentTodos => [...currentTodos, addedTodo]);
+    } catch {
+      showNotification(ErrorType.ADD);
+    } finally {
+      setTempTodo(null);
     }
+  };
 
-    return todos.filter(todo => {
-      switch (filter) {
-        case Filter.ACTIVE:
-          return !todo.completed;
-        case Filter.COMPLETED:
-          return todo.completed;
-        default:
-          return todo;
-      }
-    });
-  }, [filter, todos]);
+  const deleteTodo = async (todoId: number) => {
+    setIsDeleting(currentTodoId => [...currentTodoId, todoId]);
+    try {
+      await todoService.deleteTodo(todoId);
+      setTodos(currentTodos => currentTodos.filter(({ id }) => id !== todoId));
+    } catch {
+      showNotification(ErrorType.DELETE);
+    } finally {
+      setIsDeleting([]);
+    }
+  };
 
-  const isActiveTodos = useMemo(() => {
-    return todos.filter((todo) => !todo.completed);
-  }, [todos]);
+  const deleteAllCompletedTodos = () => {
+    todos.filter(({ completed }) => completed)
+      .forEach(({ id }) => deleteTodo(id));
+  };
+
+  useEffect(() => {
+    const activeTodos = todos.filter(({ completed }) => !completed);
+    const complitedTodos = todos.filter(({ completed }) => completed);
+
+    setActiveTodosCount(activeTodos.length);
+    setComplitedTodosCount(complitedTodos.length);
+
+    switch (filterValue) {
+      case Filter.ACTIVE:
+        setVisibleTodos(activeTodos);
+        break;
+      case Filter.COMPLETED:
+        setVisibleTodos(complitedTodos);
+        break;
+      default:
+        setVisibleTodos(todos);
+        break;
+    }
+  }, [todos, filterValue]);
 
   if (!USER_ID) {
     return <UserWarning />;
@@ -76,30 +119,35 @@ export const App: React.FC = () => {
       <h1 className="todoapp__title">todos</h1>
       <div className="todoapp__content">
         <Header
-          showError={showError}
-          todos={todos}
-          isActive={isActiveTodos.length}
-          createTodo={addTodo}
+          activeTodosCount={activeTodosCount}
+          onSubmit={addTodo}
+          onEmptyValue={showNotification}
         />
-
-        {todos.length && (
-          <>
-            <TodoList
-              todos={filteredTodos}
-              deleteTodo={deleteTodo}
-            />
-
-            <Footer
-              filter={filter}
-              isActive={isActiveTodos}
-              setFilter={setFilter}
-            />
-          </>
+        {visibleTodos.length > 0 && (
+          <TodoList
+            visibleTodos={visibleTodos}
+            isLoading={isLoading}
+            tempTodo={tempTodo}
+            onDelete={deleteTodo}
+            isDeleting={isDeleting}
+          />
+        )}
+        {todos.length > 0 && (
+          <Footer
+            filterValue={filterValue}
+            activeTodosCount={activeTodosCount}
+            complitedTodosCount={complitedTodosCount}
+            setFilterValue={setFilterValue}
+            onClear={deleteAllCompletedTodos}
+          />
         )}
       </div>
-
-      {isError && (
-        <ErrorMesage error={isError} setIsError={setIsError} />
+      {errorMessage && (
+        <ErrorNotification
+          errorMessage={errorMessage}
+          isHidden={isHidden}
+          onCloseError={setErrorMessage}
+        />
       )}
     </div>
   );

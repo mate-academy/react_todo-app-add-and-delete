@@ -1,60 +1,49 @@
 import { useState } from 'react';
-import classNames from 'classnames';
-import { Todo } from '../../types/Todo';
+import cn from 'classnames';
+import { ErrorType } from '../../types/ErrorType';
 
-interface Props {
-  showError: (text: string) => void;
-  todos: Todo[],
-  isActive: number;
-  createTodo: (data: Omit<Todo, 'id'>) => void;
-}
+type Props = {
+  activeTodosCount: number;
+  onSubmit: (title: string) => void;
+  onEmptyValue: (value: ErrorType) => void;
+};
 
 export const Header: React.FC<Props> = ({
-  todos,
-  isActive,
-  showError,
-  createTodo,
+  activeTodosCount, onSubmit, onEmptyValue,
 }) => {
-  const [query, setQuery] = useState('');
+  const [titleQuery, setTitleQuery] = useState('');
 
-  const handleSubmit = (e: React.FormEvent<EventTarget>): void => {
-    e.preventDefault();
-    if (query.length === 0) {
-      showError("Title can't be empty");
-
-      return;
-    }
-
-    createTodo({
-      title: query,
-      completed: false,
-      userId: 0,
-    });
-    setQuery('');
+  const handleTitleChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+    setTitleQuery(event.target.value);
   };
 
-  const handleButtonCompleted = () => {};
+  const handleSubmit = (event: React.FormEvent) => {
+    event.preventDefault();
+    if (titleQuery.trim() === '') {
+      onEmptyValue(ErrorType.EMPTY);
+    } else {
+      onSubmit(titleQuery);
+      setTitleQuery('');
+    }
+  };
 
   return (
     <header className="todoapp__header">
-      {todos.length > 0 && (
-        <button
-          aria-label="todo comleted"
-          type="button"
-          className={classNames('todoapp__toggle-all', {
-            active: !isActive,
-          })}
-          onClick={handleButtonCompleted}
-        />
-      )}
+      <button
+        aria-label="toggle todos"
+        type="button"
+        className={cn('todoapp__toggle-all', {
+          active: !activeTodosCount,
+        })}
+      />
 
       <form onSubmit={handleSubmit}>
         <input
           type="text"
           className="todoapp__new-todo"
           placeholder="What needs to be done?"
-          value={query}
-          onChange={(event) => setQuery(event.target.value)}
+          value={titleQuery}
+          onChange={handleTitleChange}
         />
       </form>
     </header>

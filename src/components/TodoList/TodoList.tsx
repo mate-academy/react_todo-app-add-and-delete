@@ -1,62 +1,35 @@
-import React from 'react';
 import { Todo } from '../../types/Todo';
+import { TodoItem } from '../TodoItem/TodoItem';
 
-interface Props {
-  todos: Todo[];
-  deleteTodo: (id: number) => void;
-}
+type Props = {
+  visibleTodos: Todo[];
+  isLoading: boolean;
+  tempTodo: Todo | null;
+  onDelete: (id: number) => void;
+  isDeleting: number[];
+};
 
-export const TodoList: React.FC<Props> = ({ todos, deleteTodo }) => {
+export const TodoList: React.FC<Props> = ({
+  visibleTodos, isLoading, tempTodo, onDelete, isDeleting,
+}) => {
   return (
-    <>
-      <section className="todoapp__main">
-        {todos.map((todo) => (
-          <>
-            {todo.completed ? (
-              <div className="todo completed">
-                <label className="todo__status-label">
-                  <input type="checkbox" className="todo__status" checked />
-                </label>
+    <section className="todoapp__main">
+      {visibleTodos.map(todo => (
+        <TodoItem
+          key={todo.id}
+          todo={todo}
+          isLoading={isLoading}
+          onDelete={onDelete}
+          isDeleting={isDeleting}
+        />
+      ))}
 
-                <span className="todo__title" key={todo.id}>
-                  {todo.title}
-                </span>
-
-                <button type="button" className="todo__remove">
-                  ×
-                </button>
-
-                <div className="modal overlay">
-                  <div className="modal-background has-background-white-ter" />
-                  <div className="loader" />
-                </div>
-              </div>
-            ) : (
-              <div className="todo">
-                <label className="todo__status-label">
-                  <input type="checkbox" className="todo__status" />
-                </label>
-
-                <span className="todo__title" key={todo.id}>
-                  {todo.title}
-                </span>
-                <button
-                  type="button"
-                  className="todo__remove"
-                  onClick={() => deleteTodo(todo.id)}
-                >
-                  ×
-                </button>
-
-                <div className="modal overlay">
-                  <div className="modal-background has-background-white-ter" />
-                  <div className="loader" />
-                </div>
-              </div>
-            )}
-          </>
-        ))}
-      </section>
-    </>
+      {tempTodo && (
+        <TodoItem
+          todo={tempTodo}
+          isLoading={isLoading}
+        />
+      )}
+    </section>
   );
 };
