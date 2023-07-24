@@ -6,6 +6,7 @@ type Props = {
   title: string,
   setTitle: (value: string) => void;
   onAdd: (event: FormEvent<HTMLFormElement>) => void;
+  isDisabled: boolean | null | 0;
   activeTodosQuantity: number;
 };
 
@@ -13,6 +14,7 @@ export const Header: React.FC<Props> = ({
   title,
   setTitle,
   onAdd,
+  isDisabled,
   activeTodosQuantity,
 }) => (
   <header className="todoapp__header">
@@ -24,11 +26,14 @@ export const Header: React.FC<Props> = ({
     />
 
     {/* Add a todo on form submit */}
-    <form onSubmit={onAdd}>
+    <form
+      onSubmit={onAdd}
+    >
       <input
         type="text"
         className="todoapp__new-todo"
         placeholder="What needs to be done?"
+        disabled={!!isDisabled}
         value={title}
         onChange={event => setTitle(event.target.value)}
       />

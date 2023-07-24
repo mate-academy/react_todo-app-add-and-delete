@@ -6,12 +6,14 @@ type Props = {
   todo: Todo;
   isLoading?: boolean;
   onDelete: (todoId: number) => void;
+  isDeleteDisabled: boolean | null | 0;
 };
 
 export const TodoInfo: React.FC<Props> = ({
   todo,
   isLoading = true,
   onDelete,
+  isDeleteDisabled,
 }) => (
   <div
     className={classNames('todo', {
@@ -32,6 +34,7 @@ export const TodoInfo: React.FC<Props> = ({
       type="button"
       className="todo__remove"
       onClick={() => onDelete(todo.id)}
+      disabled={!!isDeleteDisabled}
     >
       ×
     </button>

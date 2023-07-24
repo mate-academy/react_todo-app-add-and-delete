@@ -1,5 +1,5 @@
 import React, {
-  useEffect, useState, useMemo, FormEvent,
+  useEffect, useState, useMemo, FormEvent, useCallback,
 } from 'react';
 import { UserWarning } from './UserWarning';
 import { Todo, TodoStatus } from './types/Todo';
@@ -24,7 +24,7 @@ export const App: React.FC = () => {
   // #endregion
 
   // #region handlers
-  const handleTodoDelete = (todoId: number) => {
+  const handleTodoDelete = useCallback((todoId: number) => {
     setActiveTodoId(todoId);
 
     deleteTodo(todoId)
@@ -36,9 +36,9 @@ export const App: React.FC = () => {
         setActiveTodoId(null);
         setTitle('');
       });
-  };
+  }, []);
 
-  const handleTodoAdd = (event: FormEvent<HTMLFormElement>) => {
+  const handleTodoAdd = useCallback((event: FormEvent<HTMLFormElement>) => {
     event.preventDefault();
 
     if (!title) {
@@ -63,7 +63,7 @@ export const App: React.FC = () => {
       .finally(() => {
         setTemporatyTodo(null);
       });
-  };
+  }, [title]);
   // #endregion
 
   useEffect(() => {
@@ -85,6 +85,8 @@ export const App: React.FC = () => {
     return filterTodos(todos, TodoStatus.ACTIVE);
   }, [todos]);
 
+  const isDisabled = activeTodoId && isLoading;
+
   if (!USER_ID) {
     return <UserWarning />;
   }
@@ -97,6 +99,7 @@ export const App: React.FC = () => {
         <Header
           title={title}
           setTitle={setTitle}
+          isDisabled={isDisabled}
           activeTodosQuantity={activeTodos.length}
           onAdd={handleTodoAdd}
         />
@@ -106,6 +109,7 @@ export const App: React.FC = () => {
           activeTodoId={activeTodoId}
           temporaryTodo={temporatyTodo}
           onDelete={handleTodoDelete}
+          isDeleteDisabled={isDisabled}
         />
 
         {todos.length > 0 && (
