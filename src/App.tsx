@@ -157,7 +157,7 @@ export const App: React.FC = () => {
                   >
                     ×
                   </button>
-
+                  {/* overlay will cover the todo while it is being updated */}
                   {/* overlay will cover the todo while it is being updated */}
                   <div className="modal overlay">
                     <div
