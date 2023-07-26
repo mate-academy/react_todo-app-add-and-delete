@@ -7,16 +7,14 @@ type Props = {
   todos: Todo[];
   setTodos: (todos: Todo[]) => void;
   setHasError: (value: Error) => void;
-  isLoading: boolean;
-  setIsLoading: (value: boolean) => void;
+  completedIdx: number[];
 };
 
 export const TodoList: React.FC<Props> = ({
   todos,
   setTodos,
   setHasError,
-  isLoading,
-  setIsLoading,
+  completedIdx,
 }) => {
   return (
     <section className="todoapp__main" data-cy="TodoList">
@@ -32,8 +30,7 @@ export const TodoList: React.FC<Props> = ({
               todos={todos}
               setTodos={setTodos}
               setHasError={setHasError}
-              isLoading={isLoading}
-              setIsLoading={setIsLoading}
+              isProcessing={completedIdx.includes(todo.id)}
             />
           </CSSTransition>
         ))}

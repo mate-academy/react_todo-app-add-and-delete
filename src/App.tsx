@@ -16,6 +16,7 @@ export const App: React.FC = () => {
   const [filter, setFilter] = useState(Filter.All);
   const [hasError, setHasError] = useState(Error.Not);
   const [isLoading, setIsLoading] = useState(false);
+  const [completedIdx, setCompletedIdx] = useState<number[]>([]);
 
   useEffect(() => {
     getTodos(USER_ID).then(data => {
@@ -50,8 +51,7 @@ export const App: React.FC = () => {
             todos={filterTodos(filter, todos)}
             setTodos={setTodos}
             setHasError={setHasError}
-            isLoading={isLoading}
-            setIsLoading={setIsLoading}
+            completedIdx={completedIdx}
           />
         )}
 
@@ -63,6 +63,7 @@ export const App: React.FC = () => {
             setTodos={setTodos}
             setHasError={setHasError}
             setIsLoading={setIsLoading}
+            setCompletedIdx={setCompletedIdx}
           />
         )}
       </div>
