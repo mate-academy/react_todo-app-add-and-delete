@@ -26,8 +26,8 @@ export const App: React.FC = () => {
   const [errorMessage, setErrorMessage] = useState<string>('');
   const [value, setValue] = useState('');
 
-  const completedTodos = todos.filter(todo => todo.completed);
-  const notCompletedTodos = todos.filter(todo => !todo.completed);
+  const completedTodos = todos.filter((todo) => todo.completed);
+  const notCompletedTodos = todos.filter((todo) => !todo.completed);
 
   const { setDeleteModal } = useContext(DeleteModalContext);
 
@@ -46,34 +46,46 @@ export const App: React.FC = () => {
   }, []);
 
   useEffect(() => {
+    let timeoutId: NodeJS.Timeout | undefined;
+
     if (errorMessage) {
-      setTimeout(() => {
+      timeoutId = setTimeout(() => {
         setErrorMessage('');
       }, 3000);
     }
+
+    return () => {
+      if (timeoutId) {
+        clearTimeout(timeoutId);
+      }
+    };
   }, [errorMessage]);
 
   const deleteTodo = (id: number) => {
-    setTodos((prevState) => prevState.filter(todo => todo.id !== id));
+    setTodos((prevState) => prevState.filter((todo) => todo.id !== id));
   };
 
   const updatedTodos = (newTodo: Todo) => {
-    setTodos(prevTodos => [...prevTodos, newTodo]);
+    setTodos((prevTodos) => [...prevTodos, newTodo]);
   };
 
-  const clearCompletedTodos = () => {
-    const idOfCompletedTodos = completedTodos.map(item => item.id);
+  const clearCompletedTodos = async () => {
+    const idOfCompletedTodos = completedTodos.map((item) => item.id);
 
     setDeleteModal([...idOfCompletedTodos]);
 
-    idOfCompletedTodos.forEach(id => (
-      removeTodo(id)
-        .then(() => deleteTodo(id))
-        .catch(() => 'Clear completed error')
-        .finally(
-          () => setDeleteModal([]),
-        )
-    ));
+    try {
+      await Promise.all(
+        idOfCompletedTodos.map((id) => removeTodo(id)),
+      );
+
+      setTodos((prevTodos) => prevTodos.filter((todo) => !todo.completed));
+
+      setDeleteModal([]);
+    } catch (error) {
+      setErrorMessage(ErrorType.Delete);
+      setDeleteModal([]);
+    }
   };
 
   const handleKeyDown = (event: React.KeyboardEvent<HTMLInputElement>) => {
@@ -96,13 +108,12 @@ export const App: React.FC = () => {
 
         setTempTodo(newTempTodo);
 
-        postTodos(newTodo).then(
-          (data) => updatedTodos(data),
-        ).catch(
-          () => setErrorMessage('Unable to add todo'),
-        ).finally(() => setTempTodo(null));
+        postTodos(newTodo)
+          .then((data) => updatedTodos(data))
+          .catch(() => setErrorMessage(ErrorType.Post))
+          .finally(() => setTempTodo(null));
       } else {
-        setErrorMessage("Title can't be empty");
+        setErrorMessage(ErrorType.Validation);
       }
 
       setValue('');
@@ -134,12 +145,9 @@ export const App: React.FC = () => {
             {todos.length > 0 && (
               <button
                 type="button"
-                className={cn(
-                  'todoapp__toggle-all',
-                  {
-                    active: completedTodos.length > 0,
-                  },
-                )}
+                className={cn('todoapp__toggle-all', {
+                  active: completedTodos.length > 0,
+                })}
               />
             )}
 
@@ -173,11 +181,14 @@ export const App: React.FC = () => {
                     </label>
 
                     <span className="todo__title">{tempTodo.title}</span>
-                    <button type="button" className="todo__remove">×</button>
+                    <button type="button" className="todo__remove">
+                      ×
+                    </button>
 
                     <div className="modal overlay is-active">
                       <div
-                        className="modal-background has-background-white-ter"
+                        className="modal-background
+                      has-background-white-ter"
                       />
                       <div className="loader" />
                     </div>
@@ -187,7 +198,9 @@ export const App: React.FC = () => {
 
               <footer className="todoapp__footer">
                 <span className="todo-count">
-                  {notCompletedTodos.length === 1 ? `${notCompletedTodos.length} item left` : `${notCompletedTodos.length} items left`}
+                  {notCompletedTodos.length === 1
+                    ? `${notCompletedTodos.length} item left`
+                    : `${notCompletedTodos.length} items left`}
                 </span>
 
                 <TodoFilter filter={filter} setFilter={setFilter} />
@@ -200,27 +213,20 @@ export const App: React.FC = () => {
                   >
                     Clear completed
                   </button>
-                ) : (
-                  <button
-                    style={{ visibility: 'hidden' }}
-                    type="button"
-                    className="todoapp__clear-completed"
-                  >
-                    Clear completed
-                  </button>
-                )}
+                ) : null}
               </footer>
             </>
           )}
         </div>
 
-        <div className={cn(
-          'notification',
-          'is-danger',
-          'is-light',
-          'has-text-weight-normal',
-          { hidden: errorMessage === '' },
-        )}
+        <div
+          className={cn(
+            'notification',
+            'is-danger',
+            'is-light',
+            'has-text-weight-normal',
+            { hidden: errorMessage === '' },
+          )}
         >
           <button
             type="button"

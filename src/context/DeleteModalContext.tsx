@@ -2,7 +2,7 @@ import React, { ReactNode, useState } from 'react';
 
 type ContextType = {
   deleteModal: number[];
-  setDeleteModal: (loadDelete: number[]) => void;
+  setDeleteModal: (deleteModal: number[]) => void;
 };
 
 export const DeleteModalContext = React.createContext<ContextType>({
