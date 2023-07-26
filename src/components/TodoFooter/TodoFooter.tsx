@@ -2,7 +2,7 @@ import { useContext } from 'react';
 import cn from 'classnames';
 import { Filter } from '../../services/enums';
 import { TodosContext } from '../../TodosContext';
-import { Todo } from '../../services/types';
+import { Todo } from '../../types';
 
 function countActiveTodos(todos: Todo[]): number {
   return todos.filter(todo => {

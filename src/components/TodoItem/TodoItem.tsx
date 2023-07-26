@@ -5,8 +5,8 @@
 
 import cn from 'classnames';
 import { useState, useContext } from 'react';
-import { Todo } from '../../services/types';
 import { TodosContext } from '../../TodosContext';
+import { Todo } from '../../types';
 
 interface Props {
   todo: Todo,

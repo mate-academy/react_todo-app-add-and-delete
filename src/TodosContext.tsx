@@ -1,6 +1,5 @@
 /* eslint-disable no-console */
 import React, { useEffect, useState } from 'react';
-import { Todo } from './services/types';
 import { Filter } from './services/enums';
 import {
   addTodo,
@@ -8,6 +7,7 @@ import {
   getTodos,
   updateTodo,
 } from './api/todos';
+import { Todo } from './types';
 
 const USER_ID = 11138;
 
@@ -128,13 +128,14 @@ export const TodosProvider: React.FC<ProviderProps> = ({ children }) => {
       }
 
       const newTodo: Omit<Todo, 'id'> = {
+        userId: USER_ID,
         title: normalizedQuery,
         completed: false,
       };
 
       setTempTodo({ ...newTodo, id: 0 });
 
-      addTodo({ userId: USER_ID, ...newTodo })
+      addTodo(newTodo)
         .then(() => resolve(true))
         .catch(() => {
           handleErrorOccuring('Unable to add a todo');
@@ -180,7 +181,7 @@ export const TodosProvider: React.FC<ProviderProps> = ({ children }) => {
 
   const todoChange = (newTodo: Todo) => {
     return new Promise<boolean>((resolve, reject) => {
-      updateTodo({ userId: USER_ID, ...newTodo })
+      updateTodo(newTodo)
         .then(() => resolve(true))
         .catch(() => {
           handleErrorOccuring('Unable to change todo');
