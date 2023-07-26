@@ -1,37 +1,28 @@
-/* eslint-disable */
-import { FC, useEffect } from 'react';
+import cn from 'classnames';
 import { Error } from '../utils/Error';
 
 type Props = {
-  errorMessage: Error ;
-  showNotification: boolean
-  setShowNotification: (showNotification: boolean)=> void;
+  errorMessage: Error | null;
+  showNotification: boolean;
+  setShowNotification: (value: boolean) => void;
 };
 
-export const Notification: FC <Props> = ({
+export const Notification: React.FC<Props> = ({
   errorMessage, showNotification, setShowNotification,
 }) => {
-  useEffect(() => {
-    if (showNotification) {
-      const timer = setTimeout(() => {
-        setShowNotification(false);
-      }, 3000);
-
-      return () => clearTimeout(timer);
-    } return;
-  }, [showNotification]);
-
-  return showNotification ? (
-    <div className="notification is-danger is-light has-text-weight-normal">
+  return (
+    <div
+      className={cn('notification is-danger is-light has-text-weight-normal', {
+        hidden: !showNotification,
+      })}
+    >
       <button
+        aria-label="delete notification"
         type="button"
         className="delete"
-        aria-label="Mute volume"
         onClick={() => setShowNotification(false)}
       />
       {errorMessage}
     </div>
-  ) : (
-    <></>
   );
 };

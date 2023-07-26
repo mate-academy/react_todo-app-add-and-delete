@@ -16,9 +16,10 @@ export const App: React.FC = () => {
   const [filterValue, setFilterValue] = useState('all');
   const [errorMessage, setErrorMessage] = useState<Error>(Error.NoError);
   const [newTodoTitle, setNewTodoTitle] = useState('');
-  const [showNotification, setShowNotification] = useState(false);
+  const [showNotification, setShowNotification] = useState<boolean>(false);
   const [tempTodo, setTempTodo] = useState<Todo | null>(null);
   const [loading, setLoading] = useState(false);
+
 
   const loadTodos = async () => {
     try {
@@ -35,6 +36,7 @@ export const App: React.FC = () => {
 
   useEffect(() => {
     loadTodos();
+    console.log(tempTodo);
   }, []);
 
   if (!USER_ID) {
@@ -60,11 +62,11 @@ export const App: React.FC = () => {
     return visibleTodos;
   };
 
-  const handleInput = (event: any) => {
+  const handleInput = (event: React.ChangeEvent<HTMLInputElement>) => {
     setNewTodoTitle(event.target.value);
   };
 
-  const handleSubmit = async (event: any) => {
+  const handleSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
 
     const newTodo: Omit<Todo, 'id'> = {
@@ -91,7 +93,6 @@ export const App: React.FC = () => {
         setTodos((prevTodos) => [...prevTodos, newTodoResponse]);
         setTempTodo(null);
       } catch (error) {
-        setErrorMessage(Error.Loading);
         setErrorMessage(Error.Adding);
         setShowNotification(true);
       } finally {
@@ -106,7 +107,6 @@ export const App: React.FC = () => {
       await deleteTodo(id);
       setTodos((prevTodos) => prevTodos.filter(todo => todo.id !== id));
     } catch (error) {
-      setErrorMessage(Error.Loading);
       setErrorMessage(Error.Deleting);
     } finally {
       setLoading(false);
