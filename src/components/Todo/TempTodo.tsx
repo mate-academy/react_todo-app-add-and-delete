@@ -16,11 +16,9 @@ export const TempTodo: React.FC<Props> = (
   },
 ) => {
   return (
-    <div className={
-      classNames('todo', {
-        completed,
-      })
-    }
+    <div className={classNames('todo', {
+      completed,
+    })}
     >
       <Toggler
         completed={completed}

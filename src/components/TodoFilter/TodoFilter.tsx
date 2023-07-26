@@ -2,6 +2,7 @@ import React, { useContext } from 'react';
 import classNames from 'classnames';
 import { StatusType } from '../../types';
 import { DispatchContext, StateContext } from '../GlobalStateProvider';
+import * as todoService from '../../api/todos';
 
 const filterOptions = [
   {
@@ -29,6 +30,33 @@ export const TodoFilter: React.FC = () => {
     dispatch({ type: 'SET_FILTER', payload: newFilter });
   };
 
+  const onClearCompleted = async () => {
+    dispatch({ type: 'SET_LOADING', payload: true });
+    dispatch({ type: 'SET_ERROR', payload: '' });
+
+    try {
+      const completedTodos = todos.filter((todo) => todo.completed);
+      const activeTodos = todos.filter((todo) => !todo.completed);
+      const completedTodoIds = completedTodos.map((todo) => todo.id);
+
+      const deletedTodos = completedTodoIds.map((todoId) => (
+        todoService.deleteTodo(
+          todoId,
+        )
+      ));
+
+      await Promise.all(deletedTodos);
+
+      dispatch({ type: 'SET_TODOS', payload: activeTodos });
+    } catch (error) {
+      dispatch(
+        { type: 'SET_ERROR', payload: 'Unable to clear completed todos' },
+      );
+    } finally {
+      dispatch({ type: 'SET_LOADING', payload: false });
+    }
+  };
+
   return (
     <footer className="todoapp__footer">
       <span className="todo-count">
@@ -53,7 +81,11 @@ export const TodoFilter: React.FC = () => {
       </nav>
 
       {hasCompletedTodos && (
-        <button type="button" className="todoapp__clear-completed">
+        <button
+          type="button"
+          className="todoapp__clear-completed"
+          onClick={onClearCompleted}
+        >
           Clear completed
         </button>
       )}

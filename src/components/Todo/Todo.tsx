@@ -4,9 +4,8 @@ import React, {
 } from 'react';
 import classNames from 'classnames';
 import { ITodo } from '../../types/Todo';
-import { Form, TodoCard } from '../common';
+import { Form, TodoCard, Toggler } from '../common';
 import { StateContext } from '../GlobalStateProvider';
-import { Toggler } from '../common/Toggler';
 
 type Props = {
   todo: ITodo
@@ -52,12 +51,11 @@ export const Todo: React.FC<Props> = (
   };
 
   return (
-    <div className={
-      classNames('todo', {
-        completed,
-      })
-    }
+    <div className={classNames('todo', {
+      completed,
+    })}
     >
+
       <Toggler
         completed={completed}
         onToggle={() => toggleTodoStatus(id)}
@@ -77,10 +75,8 @@ export const Todo: React.FC<Props> = (
           todoTitle={title}
           onSubmit={onEdit}
         />
-
       )}
 
     </div>
-
   );
 };
