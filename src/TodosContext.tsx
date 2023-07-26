@@ -5,7 +5,6 @@ import {
   addTodo,
   deleteTodo,
   getTodos,
-  updateTodo,
 } from './api/todos';
 import { Todo } from './types';
 
@@ -58,9 +57,7 @@ interface ContextProps {
   todos: Todo[],
   visibleTodos: Todo[],
   todoAdd: (newQuery: string) => Promise<boolean>,
-  handleAllCompletedToggle: (isAllActive: boolean) => void,
   clearAllCompleted: () => void,
-  todoChange: (newTodo: Todo) => Promise<boolean>,
   todoDelete: (todoId: number) => Promise<boolean>,
   isTodosHasCompleted: () => boolean,
   isEveryTodoCompleted: () => boolean,
@@ -76,9 +73,7 @@ export const TodosContext = React.createContext<ContextProps>({
   todos: [],
   visibleTodos: [],
   todoAdd: () => new Promise<boolean>(() => {}),
-  handleAllCompletedToggle: () => {},
   clearAllCompleted: () => {},
-  todoChange: () => new Promise<boolean>(() => {}),
   todoDelete: () => new Promise<boolean>(() => {}),
   isTodosHasCompleted: () => false,
   isEveryTodoCompleted: () => false,
@@ -106,7 +101,7 @@ export const TodosProvider: React.FC<ProviderProps> = ({ children }) => {
 
   useEffect(() => {
     getTodos(USER_ID).then(setTodos);
-  }, [todos]);
+  }, []);
 
   const handleErrorOccuring = (errorTitle: string) => {
     setErrorMessage(errorTitle);
@@ -136,7 +131,10 @@ export const TodosProvider: React.FC<ProviderProps> = ({ children }) => {
       setTempTodo({ ...newTodo, id: 0 });
 
       addTodo(newTodo)
-        .then(() => resolve(true))
+        .then((data) => {
+          setTodos([...todos, data]);
+          resolve(true);
+        })
         .catch(() => {
           handleErrorOccuring('Unable to add a todo');
           reject(new Error(errorMessage));
@@ -145,21 +143,16 @@ export const TodosProvider: React.FC<ProviderProps> = ({ children }) => {
       .catch(error => error);
   };
 
-  const handleAllCompletedToggle = (isAllCompleted: boolean) => {
-    const newTodos = [...todos].map(todo => {
-      return {
-        ...todo,
-        completed: isAllCompleted,
-      };
-    });
-
-    setTodos(newTodos);
-  };
-
   const todoDelete = (todoId: number) => {
     return new Promise<boolean>((resolve, reject) => {
       deleteTodo(todoId)
-        .then(() => resolve(true))
+        .then(() => {
+          setTodos(prevTodos => prevTodos.filter(todo => {
+            return todo.id !== todoId;
+          }));
+
+          resolve(true);
+        })
         .catch(() => {
           handleErrorOccuring('Unable to delete a todo');
           reject(new Error(errorMessage));
@@ -176,19 +169,12 @@ export const TodosProvider: React.FC<ProviderProps> = ({ children }) => {
     setAreCompletedDeletingNow(true);
 
     deleteAllTodos(todosIdsToOperate)
-      .then(() => setAreCompletedDeletingNow(false));
-  };
-
-  const todoChange = (newTodo: Todo) => {
-    return new Promise<boolean>((resolve, reject) => {
-      updateTodo(newTodo)
-        .then(() => resolve(true))
-        .catch(() => {
-          handleErrorOccuring('Unable to change todo');
-          reject(new Error(errorMessage));
-        });
-    })
-      .catch(error => error);
+      .then(() => {
+        setTodos(prevTodos => prevTodos.filter(todo => {
+          return !todosIdsToOperate.includes(todo.id);
+        }));
+        setAreCompletedDeletingNow(false);
+      });
   };
 
   const isTodosHasCompleted = () => {
@@ -203,9 +189,7 @@ export const TodosProvider: React.FC<ProviderProps> = ({ children }) => {
     todos,
     visibleTodos,
     todoAdd,
-    handleAllCompletedToggle,
     clearAllCompleted,
-    todoChange,
     todoDelete,
     isTodosHasCompleted,
     isEveryTodoCompleted,

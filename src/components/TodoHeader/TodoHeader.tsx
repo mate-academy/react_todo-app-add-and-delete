@@ -7,13 +7,11 @@ export const TodoHeader: React.FC = () => {
   const {
     todos,
     todoAdd,
-    handleAllCompletedToggle,
     isEveryTodoCompleted,
     setTempTodo,
   } = useContext(TodosContext);
 
   const [query, setQuery] = useState('');
-  const [isAllActive, setIsAllActive] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
 
   const handleOnSubmit = (event: React.FormEvent<HTMLFormElement>) => {
@@ -28,11 +26,6 @@ export const TodoHeader: React.FC = () => {
       });
   };
 
-  const handleOnToggle = () => {
-    setIsAllActive(prevState => !prevState);
-    handleAllCompletedToggle(isAllActive);
-  };
-
   return (
     <header className="todoapp__header">
       {todos.length > 0
@@ -42,7 +35,6 @@ export const TodoHeader: React.FC = () => {
             className={cn('todoapp__toggle-all', {
               active: isEveryTodoCompleted(),
             })}
-            onClick={handleOnToggle}
           />
         )}
 

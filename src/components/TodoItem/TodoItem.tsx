@@ -18,24 +18,11 @@ export const TodoItem: React.FC<Props> = ({
   isTempTodo,
 }) => {
   const {
-    todoChange,
     todoDelete,
     areCompletedDeletingNow,
   } = useContext(TodosContext);
 
   const [isLoading, setIsLoading] = useState(isTempTodo || false);
-
-  const handleOnToggle = (isChecked: boolean) => {
-    const newTodo: Todo = {
-      ...todo,
-      completed: isChecked,
-    };
-
-    setIsLoading(true);
-
-    todoChange(newTodo)
-      .finally(() => setIsLoading(false));
-  };
 
   const handleOnDelete = () => {
     setIsLoading(true);
@@ -56,8 +43,7 @@ export const TodoItem: React.FC<Props> = ({
         <input
           type="checkbox"
           className="todo__status"
-          checked={todo.completed}
-          onChange={(event) => handleOnToggle(event.currentTarget.checked)}
+          defaultChecked={todo.completed}
         />
       </label>
 
