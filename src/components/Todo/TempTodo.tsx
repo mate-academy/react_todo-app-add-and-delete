@@ -32,14 +32,6 @@ export const TempTodo: React.FC<Props> = (
         isSelected
       />
 
-      <div className={classNames('modal overlay', {
-        'is-active': loading,
-      })}
-      >
-        <div className="modal-background has-background-white-ter" />
-        <div className="loader" />
-      </div>
-
     </div>
 
   );

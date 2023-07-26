@@ -1,4 +1,5 @@
 import React, { useContext, useMemo } from 'react';
+import { CSSTransition, TransitionGroup } from 'react-transition-group';
 import { TempTodo, Todo } from '../Todo';
 import * as todoService from '../../api/todos';
 import { ITodo, StatusType } from '../../types';
@@ -61,24 +62,37 @@ export const TodoList: React.FC = () => {
 
   return (
     <section className="todoapp__main">
-      {visibleTodos.map(todo => (
-        <Todo
-          key={todo.id}
-          todo={todo}
-          deleteTodo={deleteTodo}
-          editTodo={editTodo}
-          toggleTodoStatus={toggleTodoStatus}
+      <TransitionGroup>
+        {visibleTodos.map(todo => (
+          <CSSTransition
+            key={todo.id}
+            timeout={300}
+            classNames="item"
+          >
+            <Todo
+              key={todo.id}
+              todo={todo}
+              deleteTodo={deleteTodo}
+              editTodo={editTodo}
+              toggleTodoStatus={toggleTodoStatus}
+            />
+          </CSSTransition>
+        ))}
 
-        />
-      ))}
+        {tempTodo && (
+          <CSSTransition
+            key={0}
+            timeout={300}
+            classNames="temp-item"
+          >
+            <TempTodo
+              todo={tempTodo}
+              loading={loading}
+            />
 
-      {tempTodo && (
-        <TempTodo
-          todo={tempTodo}
-          loading={loading}
-        />
-
-      )}
+          </CSSTransition>
+        )}
+      </TransitionGroup>
     </section>
   );
 };
