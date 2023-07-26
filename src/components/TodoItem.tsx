@@ -5,9 +5,10 @@ import { TodosContext, UpdateTodosContext } from '../context/todosContext';
 
 interface Props {
   todo: Todo;
+  isTempTodoAdded: boolean;
 }
 
-export const TodoItem:React.FC<Props> = ({ todo }) => {
+export const TodoItem:React.FC<Props> = ({ todo, isTempTodoAdded }) => {
   const [isEditing, setIsEditing] = useState(false);
   const {
     loading,
@@ -70,7 +71,7 @@ export const TodoItem:React.FC<Props> = ({ todo }) => {
         </>
       )}
 
-      {loading && isTodoSelected && (
+      {((loading && isTodoSelected) || isTempTodoAdded) && (
         <div
           className={cn('modal overlay', {
             'is-active': loading,
