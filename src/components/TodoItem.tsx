@@ -5,7 +5,7 @@ import { TodosContext, UpdateTodosContext } from '../context/todosContext';
 
 interface Props {
   todo: Todo;
-  isTempTodoAdded: boolean;
+  isTempTodoAdded?: boolean;
 }
 
 export const TodoItem:React.FC<Props> = ({ todo, isTempTodoAdded }) => {
