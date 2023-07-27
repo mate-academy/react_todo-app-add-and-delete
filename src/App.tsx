@@ -36,7 +36,6 @@ export const App: React.FC = () => {
 
   useEffect(() => {
     loadTodos();
-    console.log(tempTodo);
   }, []);
 
   if (!USER_ID) {
