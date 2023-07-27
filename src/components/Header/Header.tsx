@@ -17,29 +17,35 @@ export const Header: React.FC<Props> = ({
 }) => {
   const [query, setQuery] = useState('');
 
-  const handleSubmit = (e: React.FormEvent<EventTarget>): void => {
+  const handleSubmit = async (e:
+  React.FormEvent<EventTarget>): Promise<void> => {
     e.preventDefault();
-    if (query.length === 0) {
+    if (query.trim().length === 0) {
       showError("Title can't be empty");
+      setQuery('');
 
       return;
     }
 
-    createTodo({
-      title: query,
-      completed: false,
-      userId: 0,
-    });
-    setQuery('');
+    try {
+      await createTodo({
+        title: query,
+        completed: false,
+        userId: 0,
+      });
+      setQuery('');
+    } catch (error) {
+      showError('Unable to add a todo');
+    }
   };
 
-  const handleButtonCompleted = () => {};
+  const handleButtonCompleted = () => { };
 
   return (
     <header className="todoapp__header">
       {todos.length > 0 && (
         <button
-          aria-label="todo comleted"
+          aria-label="todo completed"
           type="button"
           className={classNames('todoapp__toggle-all', {
             active: !isActive,

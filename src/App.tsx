@@ -12,17 +12,24 @@ const USER_ID = 11098;
 
 export const App: React.FC = () => {
   const [todos, setTodos] = useState<Todo[]>([]);
-  const [todosFilterBy, setTodosFilterBy] = useState<Status>(
-    Status.ALL,
-  );
+  const [todosFilterBy, setTodosFilterBy] = useState<Status>(Status.ALL);
   const [isError, setIsError] = useState('');
+
+  let timeoutId: NodeJS.Timeout;
 
   const showError = (text: string) => {
     setIsError(text);
-    setTimeout(() => {
+
+    timeoutId = setTimeout(() => {
       setIsError('');
     }, 3000);
   };
+
+  useEffect(() => {
+    return () => {
+      clearTimeout(timeoutId);
+    };
+  }, []);
 
   useEffect(() => {
     postService.getTodos(USER_ID)
@@ -41,9 +48,13 @@ export const App: React.FC = () => {
       .catch(() => showError('Unable to add a todo'));
   };
 
-  const deleteTodo = (todoId: number) => {
-    postService.deleteTodos(todoId);
-    setTodos(currentTodos => currentTodos.filter(todo => todo.id !== todoId));
+  const deleteTodo = async (todoId: number) => {
+    try {
+      await postService.deleteTodos(todoId);
+      setTodos(currentTodos => currentTodos.filter(todo => todo.id !== todoId));
+    } catch (error) {
+      showError('Unable to delete a todo');
+    }
   };
 
   const filteredTodos = useMemo(() => {
@@ -86,6 +97,7 @@ export const App: React.FC = () => {
             <TodoList
               todos={filteredTodos}
               deleteTodo={deleteTodo}
+              showError={showError}
             />
 
             <Footer
