@@ -10,42 +10,44 @@ interface Props {
 
 export const TodoItem: React.FC<Props> = ({
   todo,
-  onDelete = () => {},
+  onDelete = () => { },
   isProcessed,
 }) => {
   const { title, completed } = todo;
 
   return (
-    <div
-      className={classNames('todo', {
-        completed,
-      })}
-    >
-      <label className="todo__status-label">
-        <input
-          type="checkbox"
-          className="todo__status"
+    <li className="todo__item">
+      <div
+        className={classNames('todo', {
+          completed,
+        })}
+      >
+        <label className="todo__status-label">
+          <input
+            type="checkbox"
+            className="todo__status"
           // checked
-        />
-      </label>
+          />
+        </label>
 
-      <span className="todo__title">{title}</span>
+        <span className="todo__title">{title}</span>
 
-      <button
-        type="button"
-        className="todo__remove"
-        onClick={() => onDelete()}
-      >
-        ×
-      </button>
+        <button
+          type="button"
+          className="todo__remove"
+          onClick={() => onDelete()}
+        >
+          ×
+        </button>
 
-      <div className={classNames('modal overlay', {
-        'is-active': isProcessed,
-      })}
-      >
-        <div className="modal-background has-background-white-ter" />
-        <div className="loader" />
+        <div className={classNames('modal overlay', {
+          'is-active': isProcessed,
+        })}
+        >
+          <div className="modal-background has-background-white-ter" />
+          <div className="loader" />
+        </div>
       </div>
-    </div>
+    </li>
   );
 };

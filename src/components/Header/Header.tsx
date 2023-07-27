@@ -26,8 +26,10 @@ export const Header: React.FC<Props> = React.memo(({
     setTempTodo(null);
   }
 
-  const addNewTodo = (title: string) => {
-    if (!title) {
+  const addNewTodo = (event: React.FormEvent<HTMLFormElement>) => {
+    event.preventDefault();
+
+    if (!inputValue) {
       showError(NotificationText.InputIsEmpty);
 
       return;
@@ -36,14 +38,14 @@ export const Header: React.FC<Props> = React.memo(({
     const tempTodo: Todo = {
       id: 0,
       userId: USER_ID,
-      title,
+      title: inputValue,
       completed: false,
     };
 
     setTempTodo(tempTodo);
     setIsInputDisabled(true);
 
-    todosService.addTodo(title, false)
+    todosService.addTodo(inputValue, false)
       .then(setNewTodo)
       .catch((error) => {
         showError(NotificationText.Add);
@@ -60,11 +62,7 @@ export const Header: React.FC<Props> = React.memo(({
       {/* this buttons is active only if there are some active todos */}
       <button type="button" className="todoapp__toggle-all active" />
 
-      <form onSubmit={event => {
-        addNewTodo(inputValue);
-        event.preventDefault();
-      }}
-      >
+      <form onSubmit={addNewTodo}>
         <input
           type="text"
           className="todoapp__new-todo"

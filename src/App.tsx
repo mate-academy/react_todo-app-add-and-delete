@@ -18,12 +18,8 @@ export const App: React.FC = () => {
   const [completedItemsCount, setCompletedItemsCount] = useState(0);
   const [tempTodo, setTempTodo] = useState<Todo | null>(null);
   const [todosInProcess, setTodosInProcess] = useState<number[]>([]);
-
-  // #region Notifications
-  const [
-    notificationMessage,
-    setNotificationMessage,
-  ] = useState<NotificationText | null>(null);
+  const [notificationMessage, setNotificationMessage]
+    = useState<NotificationText | null>(null);
 
   function showNotification(text: NotificationText) {
     setNotificationMessage(text);
@@ -32,9 +28,7 @@ export const App: React.FC = () => {
       setNotificationMessage(null);
     }, 3000);
   }
-  // #endregion
 
-  // #region Add/Delete/Update dunctions
   function addTodoToTheTodoList(newTodo: Todo) {
     setActiveItemsCount(current => current + 1);
     setTodosFromServer(currentTodos => {
@@ -42,7 +36,6 @@ export const App: React.FC = () => {
     });
   }
 
-  // #region Delete
   const deleteTodoFromTodoList = (todoToDevelte: Todo) => {
     const { id, completed } = todoToDevelte;
 
@@ -78,11 +71,7 @@ export const App: React.FC = () => {
 
     completedTodos?.forEach(todo => deleteTodo(todo));
   }
-  // #endregion
 
-  // #endregion
-
-  // #region Filter Todos
   function filterTodos(allTodos: Todo[]) {
     let filteredTodos = allTodos;
     const activeTodos = filteredTodos.filter(todo => !todo.completed);
@@ -104,7 +93,6 @@ export const App: React.FC = () => {
       filterTodos(todosFromServer);
     }
   }, [todosFromServer, filterBy]);
-  // #endregion
 
   useEffect(() => {
     setNotificationMessage(null);

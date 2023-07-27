@@ -21,36 +21,38 @@ export const TodoList: React.FC<Props> = React.memo(({
 }) => {
   return (
     <section className="todoapp__main" data-cy="TodoList">
-      <TransitionGroup>
-        {todos.map(todo => (
-          <CSSTransition
-            key={todo.id}
-            timeout={300}
-            classNames="item"
-          >
-            <TodoItem
-              todo={todo}
-              isProcessed={todosInProcess.includes(todo.id)}
-              onDelete={() => {
-                deleteTodo(todo);
-              }}
-            />
-          </CSSTransition>
-        ))}
+      <ul className="todo__list">
+        <TransitionGroup>
+          {todos.map(todo => (
+            <CSSTransition
+              key={todo.id}
+              timeout={300}
+              classNames="item"
+            >
+              <TodoItem
+                todo={todo}
+                isProcessed={todosInProcess.includes(todo.id)}
+                onDelete={() => {
+                  deleteTodo(todo);
+                }}
+              />
+            </CSSTransition>
+          ))}
 
-        {tempTodo && (
-          <CSSTransition
-            key={0}
-            timeout={300}
-            classNames="temp-item"
-          >
-            <TodoItem
-              todo={tempTodo}
-              isProcessed
-            />
-          </CSSTransition>
-        )}
-      </TransitionGroup>
+          {tempTodo && (
+            <CSSTransition
+              key={0}
+              timeout={300}
+              classNames="temp-item"
+            >
+              <TodoItem
+                todo={tempTodo}
+                isProcessed
+              />
+            </CSSTransition>
+          )}
+        </TransitionGroup>
+      </ul>
     </section>
   );
 });
