@@ -112,7 +112,6 @@ export const App: React.FC = () => {
           isDeleted={deletedTodoId}
           isLoading={isLoading}
           title={title}
-          errorMessage={errorMessage}
         />
 
         {todos.length > 0 && (

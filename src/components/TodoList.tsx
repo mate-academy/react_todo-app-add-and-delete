@@ -8,7 +8,6 @@ type Props = {
   isDeleted: number | null;
   isLoading: boolean,
   title: string,
-  errorMessage: string,
 };
 
 export const AppList: React.FC<Props> = ({
@@ -17,7 +16,6 @@ export const AppList: React.FC<Props> = ({
   isDeleted,
   isLoading,
   title,
-  errorMessage,
 }) => {
   const handleDelete = (todoId: number) => {
     onDelete(todoId);
@@ -58,7 +56,7 @@ export const AppList: React.FC<Props> = ({
           </div>
         </div>
       ))}
-      {(!errorMessage && isLoading) && (
+      {isLoading && (
         <div className="todo">
           <label className="todo__status-label">
             <input type="checkbox" className="todo__status" />
