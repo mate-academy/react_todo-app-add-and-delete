@@ -35,7 +35,8 @@ export const Footer: React.FC<Props> = ({
 
   // const completedItems = todos.some(todo => todo.completed);
 
-  const completedItems = todos.filter(todo => todo.completed);
+  const completedItems = useMemo(() => todos
+    .filter(todo => todo.completed), [todos]);
 
   const handleClear = () => {
     completedItems.forEach(todo => onClear(todo.id));
