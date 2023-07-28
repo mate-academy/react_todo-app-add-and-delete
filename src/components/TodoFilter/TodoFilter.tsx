@@ -80,15 +80,16 @@ export const TodoFilter: React.FC = () => {
         ))}
       </nav>
 
-      {hasCompletedTodos && (
-        <button
-          type="button"
-          className="todoapp__clear-completed"
-          onClick={onClearCompleted}
-        >
-          Clear completed
-        </button>
-      )}
+      <button
+        type="button"
+        className={classNames('todoapp__clear-completed', {
+          hidden: !hasCompletedTodos,
+        })}
+        onClick={onClearCompleted}
+      >
+        Clear completed
+      </button>
+
     </footer>
   );
 };
