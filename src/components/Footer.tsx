@@ -9,7 +9,11 @@ type Props = {
   onClear: (todoId: number) => void,
 };
 
-export const Footer: React.FC<Props> = ({ todos, setFilter, onClear }) => {
+export const Footer: React.FC<Props> = ({
+  todos,
+  setFilter,
+  onClear,
+}) => {
   const [selectedLink, setSelectedLink] = useState<string | null>('All');
 
   const handleChange = (filterType: Filter) => (

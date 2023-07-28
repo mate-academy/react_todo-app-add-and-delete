@@ -27,7 +27,11 @@ export const Notifications: React.FC<Props> = ({ error, reset }) => {
       },
     )}
     >
-      <button type="button" className="delete" />
+      <button
+        type="button"
+        className="delete"
+        onClick={() => reset()}
+      />
       {error}
     </div>
   );

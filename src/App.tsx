@@ -20,6 +20,9 @@ export const App: React.FC = () => {
   const [todos, setTodos] = useState<Todo[]>([]);
   const [filter, setFilter] = useState<Filter>(Filter.All);
   const [errorMessage, setErrorMessage] = useState('');
+  const [deletedTodoId, setDeletingTodoId] = useState<number | null>(null);
+  const [isLoading, setIsLoading] = useState(false);
+  const [title, setTitle] = useState('');
 
   useEffect(() => {
     getTodos(USER_ID)
@@ -44,24 +47,30 @@ export const App: React.FC = () => {
     return <UserWarning />;
   }
 
-  const addTodo = (title: string) => {
+  const addTodo = (newTitle: string) => {
     const newTodo: Omit<Todo, 'id'> = {
       userId: USER_ID,
-      title,
+      title: newTitle,
       completed: false,
     };
+
+    setIsLoading(true);
 
     return createTodo(newTodo)
       .then((createdTodo) => {
         setTodos(currentTodos => [...currentTodos, createdTodo]);
         setErrorMessage('');
+        setIsLoading(false);
       })
       .catch(() => {
         setErrorMessage(ErrorType.addTodo);
+        setIsLoading(false);
       });
   };
 
   const removeTodo = (todoId: number) => {
+    setDeletingTodoId(todoId);
+
     return deleteTodo(todoId)
       .then(() => {
         setTodos(currentTodos => currentTodos.filter(todo => todo.id !== todoId));
@@ -69,6 +78,9 @@ export const App: React.FC = () => {
       })
       .catch(() => {
         setErrorMessage(ErrorType.deleteTodo);
+      })
+      .finally(() => {
+        setDeletingTodoId(null);
       });
   };
 
@@ -89,12 +101,18 @@ export const App: React.FC = () => {
 
           <AddForm
             onSubmit={addTodo}
+            title={title}
+            setTitle={setTitle}
           />
         </header>
 
         <AppList
           todos={filteredTodos}
           onDelete={removeTodo}
+          isDeleted={deletedTodoId}
+          isLoading={isLoading}
+          title={title}
+          errorMessage={errorMessage}
         />
 
         {todos.length > 0 && (

@@ -1,19 +1,19 @@
-import React, { useState } from 'react';
+import React from 'react';
 
 type Props = {
   onSubmit: (title: string) => {},
+  title: string,
+  setTitle: (title: string) => void,
 };
 
-export const AddForm: React.FC<Props> = ({ onSubmit }) => {
-  const [title, setTitle] = useState('');
-
+export const AddForm: React.FC<Props> = ({ onSubmit, title, setTitle }) => {
   const handleTitleChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     setTitle(event.target.value);
   };
 
-  const handleSubmit = (event: React.FormEvent) => {
+  const handleSubmit = async (event: React.FormEvent) => {
     event.preventDefault();
-    onSubmit(title);
+    await onSubmit(title);
     setTitle('');
   };
 
