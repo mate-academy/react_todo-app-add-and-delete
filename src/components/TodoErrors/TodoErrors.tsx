@@ -1,12 +1,22 @@
 import classNames from 'classnames';
+import { useEffect } from 'react';
 
 /* eslint-disable jsx-a11y/control-has-associated-label */
 interface Props {
   error: string,
-  setError: (newError: string) => void,
+  clearError: () => void,
 }
 
-export const TodoErrors: React.FC<Props> = ({ error, setError }) => {
+export const TodoErrors: React.FC<Props> = ({
+  error,
+  clearError,
+}) => {
+  useEffect(() => {
+    setTimeout(() => {
+      clearError();
+    }, 3000);
+  }, [error]);
+
   return (
     <div
       // eslint-disable-next-line max-len
@@ -17,7 +27,7 @@ export const TodoErrors: React.FC<Props> = ({ error, setError }) => {
       <button
         type="button"
         className="delete"
-        onClick={() => setError('')}
+        onClick={clearError}
       />
       {error}
     </div>

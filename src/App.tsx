@@ -1,5 +1,5 @@
 /* eslint-disable jsx-a11y/control-has-associated-label */
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useMemo, useState } from 'react';
 import classNames from 'classnames';
 import { UserWarning } from './UserWarning';
 import { TodoForm } from './components/TodoForm';
@@ -9,8 +9,7 @@ import { TodoErrors } from './components/TodoErrors';
 import { Todo } from './types/Todo';
 import { addTodo, getTodos, deleteTodo } from './api/todos';
 import { FilterParams } from './types/FilterParams';
-
-const USER_ID = 11134;
+import { USER_ID } from './utils/userId';
 
 function getPreperedTodos(todosForFilter: Todo[], filterField: FilterParams) {
   return todosForFilter.filter(todo => {
@@ -33,7 +32,17 @@ export const App: React.FC = () => {
   const [todoTitle, setTodoTitle] = useState('');
   const [tempTodo, setTempTodo] = useState<Todo | null>(null);
 
-  const preparedTodos = getPreperedTodos(todos, filter);
+  const preparedTodos = useMemo(() => {
+    return getPreperedTodos(todos, filter);
+  }, [todos, filter]);
+
+  const clearError = () => {
+    setErrorMessage('');
+  };
+
+  const applyFilter = (filterField: FilterParams) => {
+    setFilter(filterField);
+  };
 
   const tempTodoMarkup = (
     <div className="todo">
@@ -128,12 +137,6 @@ export const App: React.FC = () => {
       .finally(() => setIsLoading(false));
   }, []);
 
-  useEffect(() => {
-    setTimeout(() => {
-      setErrorMessage('');
-    }, 3000);
-  }, [errorMessage]);
-
   if (!USER_ID) {
     return <UserWarning />;
   }
@@ -176,7 +179,7 @@ export const App: React.FC = () => {
         {todosCheck && (
           <TodoFilterBar
             filter={filter}
-            setFilter={(newFilter) => setFilter(newFilter)}
+            applyFilter={applyFilter}
             clearCompleted={clearCompleted}
             todos={todos}
           />
@@ -185,7 +188,7 @@ export const App: React.FC = () => {
 
       <TodoErrors
         error={errorMessage}
-        setError={(newError) => setErrorMessage(newError)}
+        clearError={clearError}
       />
     </div>
   );
