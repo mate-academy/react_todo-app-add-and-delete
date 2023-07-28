@@ -14,6 +14,7 @@ export const App: React.FC = () => {
   const [todos, setTodos] = useState<Todo[]>([]);
   const [todosFilterBy, setTodosFilterBy] = useState<Status>(Status.ALL);
   const [isError, setIsError] = useState('');
+  const [isLoadingTodos, setIsLoadingTodos] = useState(true);
 
   let timeoutId: NodeJS.Timeout;
 
@@ -33,8 +34,14 @@ export const App: React.FC = () => {
 
   useEffect(() => {
     postService.getTodos(USER_ID)
-      .then((todo) => setTodos(todo))
-      .catch(() => setIsError('Unable to load a todo'));
+      .then((todo) => {
+        setTodos(todo);
+        setIsLoadingTodos(false);
+      })
+      .catch(() => {
+        setIsLoadingTodos(false);
+        setIsError('Unable to load a todo');
+      });
   }, []);
 
   const addTodo = ({
@@ -51,7 +58,9 @@ export const App: React.FC = () => {
   const deleteTodo = async (todoId: number) => {
     try {
       await postService.deleteTodos(todoId);
-      setTodos(currentTodos => currentTodos.filter(todo => todo.id !== todoId));
+      setTodos((currentTodos) => currentTodos.filter(
+        (todo) => todo.id !== todoId,
+      ));
     } catch (error) {
       showError('Unable to delete a todo');
     }
@@ -92,20 +101,25 @@ export const App: React.FC = () => {
           createTodo={addTodo}
         />
 
-        {todos.length > 0 && (
-          <>
-            <TodoList
-              todos={filteredTodos}
-              deleteTodo={deleteTodo}
-              showError={showError}
-            />
+        {isLoadingTodos ? (
+          <div className="loader" />
+        ) : (
+          todos.length > 0 && (
+            <>
+              <TodoList
+                todos={filteredTodos}
+                isLoadingTodos={isLoadingTodos}
+                deleteTodo={deleteTodo}
+                showError={showError}
+              />
 
-            <Footer
-              filterBy={todosFilterBy}
-              isActive={isActiveTodos}
-              setFilterBy={setTodosFilterBy}
-            />
-          </>
+              <Footer
+                filterBy={todosFilterBy}
+                isActive={isActiveTodos}
+                setFilterBy={setTodosFilterBy}
+              />
+            </>
+          )
         )}
       </div>
 

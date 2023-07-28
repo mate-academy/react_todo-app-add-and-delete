@@ -6,9 +6,15 @@ interface Props {
   todos: Todo[];
   deleteTodo: (id: number) => Promise<void>;
   showError: (text: string) => void;
+  isLoadingTodos: boolean;
 }
 
-export const TodoList: React.FC<Props> = ({ todos, deleteTodo, showError }) => {
+export const TodoList: React.FC<Props> = ({
+  todos,
+  deleteTodo,
+  showError,
+  isLoadingTodos,
+}) => {
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState('');
 
@@ -38,37 +44,38 @@ export const TodoList: React.FC<Props> = ({ todos, deleteTodo, showError }) => {
   return (
     <>
       <section className="todoapp__main">
-        {todos.map((todo) => (
-          <div
-            className={classNames('todo', { completed: todo.completed })}
-            key={todo.id}
-          >
-            <label className="todo__status-label">
-              <input
-                type="checkbox"
-                className="todo__status"
-                checked={todo.completed}
-              />
-            </label>
-
-            <span className="todo__title">
-              {todo.title}
-            </span>
-
-            <button
-              type="button"
-              className="todo__remove"
-              onClick={() => handleDeleteTodo(todo.id)}
+        {isLoadingTodos ? (
+          <div className="loader" />
+        ) : (
+          todos.map((todo) => (
+            <div
+              className={classNames('todo', { completed: todo.completed })}
+              key={todo.id}
             >
-              {isLoading ? (
-                <div className="modal overlay">
-                  <div className="modal-background has-background-white-ter" />
+              <label className="todo__status-label">
+                <input
+                  type="checkbox"
+                  className="todo__status"
+                  checked={todo.completed}
+                />
+              </label>
+
+              <span className="todo__title">
+                {todo.title}
+              </span>
+
+              <button
+                type="button"
+                className="todo__remove"
+                onClick={() => handleDeleteTodo(todo.id)}
+              >
+                {isLoading ? (
                   <div className="loader" />
-                </div>
-              ) : '×'}
-            </button>
-          </div>
-        ))}
+                ) : '×'}
+              </button>
+            </div>
+          ))
+        )}
       </section>
 
       {error && (
