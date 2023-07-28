@@ -9,5 +9,4 @@ export type TodosContextType = {
   handleSetError: (errorType: string) => void,
   disabledInput: boolean,
   tempTodo: Todo | null,
-  isLoading: boolean,
 };

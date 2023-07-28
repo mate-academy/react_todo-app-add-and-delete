@@ -1,4 +1,4 @@
-import React, { useContext } from 'react';
+import React, { useContext, useState } from 'react';
 import cn from 'classnames';
 import { Todo } from '../types/Todo';
 import { TodosContext } from './TodoContext';
@@ -9,6 +9,7 @@ type Props = {
 
 export const TodoItem: React.FC<Props> = ({ todo }) => {
   const { completed, title, id } = todo;
+  const [isLoading, setIsLoading] = useState(false);
 
   const todosContext = useContext(TodosContext);
 
@@ -16,10 +17,14 @@ export const TodoItem: React.FC<Props> = ({ todo }) => {
     return null;
   }
 
-  const { removeTodo, isLoading } = todosContext;
+  const { removeTodo } = todosContext;
 
   function handleDeleteTodo(todoId: number) {
+    setIsLoading(true);
     removeTodo(todoId);
+    setTimeout(() => {
+      setIsLoading(false);
+    }, 500);
   }
 
   return (
@@ -37,7 +42,6 @@ export const TodoItem: React.FC<Props> = ({ todo }) => {
         />
       </label>
 
-      {/* This todo is being edited */}
       {false && (
         <form>
           <input

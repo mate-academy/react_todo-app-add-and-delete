@@ -1,5 +1,7 @@
 /* eslint-disable react-hooks/rules-of-hooks */
 /* eslint-disable jsx-a11y/control-has-associated-label */
+
+// #region IMPORTS
 import React, {
   useContext,
   useEffect,
@@ -16,6 +18,7 @@ import { Filter } from './types/Filter';
 import { TodoErrors } from './components/TodoErrors';
 import { ErrorType } from './types/Error';
 import { TodoItem } from './components/TodoItem';
+// #endregion
 
 export const App: React.FC = () => {
   const [title, setTitle] = useState('');
@@ -36,11 +39,13 @@ export const App: React.FC = () => {
     tempTodo,
   } = todosContext;
 
-  const activeTodosCount = todos.filter((todo: Todo) => !todo.completed).length;
+  const activeTodosCount = useMemo(() => {
+    return todos.filter((todo: Todo) => !todo.completed).length;
+  }, [todos]);
 
-  const completedTodosCount = todos.filter(
-    (todo: Todo) => todo.completed,
-  ).length;
+  const completedTodosCount = useMemo(() => {
+    return todos.filter((todo: Todo) => todo.completed).length;
+  }, [todos]);
 
   const inputRef = useRef<HTMLInputElement | null>(null);
 

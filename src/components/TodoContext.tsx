@@ -17,7 +17,6 @@ export const TodosProvider: React.FC<Props> = ({ children }) => {
   const [error, setError] = useState('');
   const [disabledInput, setDisabledInput] = useState(false);
   const [tempTodo, setTempTodo] = useState<Todo | null>(null);
-  const [isLoading, setIsLoading] = useState(false);
 
   useEffect(() => {
     getTodos()
@@ -48,7 +47,7 @@ export const TodosProvider: React.FC<Props> = ({ children }) => {
     setTempTodo(newTempTodo);
     setDisabledInput(true);
 
-    createTodo(newTempTodo)
+    return createTodo(newTempTodo)
       .then((createdTodo) => {
         setTempTodo(null);
         setTodos(prevTodos => [createdTodo, ...prevTodos]);
@@ -64,9 +63,7 @@ export const TodosProvider: React.FC<Props> = ({ children }) => {
   };
 
   const removeTodo = (todoId: number) => {
-    setIsLoading(true);
-
-    deleteTodo(todoId)
+    return deleteTodo(todoId)
       .then(() => {
         setTodos(
           currentTodos => currentTodos.filter(todo => todo.id !== todoId),
@@ -74,9 +71,6 @@ export const TodosProvider: React.FC<Props> = ({ children }) => {
       })
       .catch(() => {
         setError(ErrorType.deleteTodo);
-      })
-      .finally(() => {
-        setIsLoading(false);
       });
   };
 
@@ -90,7 +84,6 @@ export const TodosProvider: React.FC<Props> = ({ children }) => {
       handleSetError,
       disabledInput,
       tempTodo,
-      isLoading,
     }}
     >
       {children}
