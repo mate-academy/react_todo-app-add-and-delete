@@ -9,7 +9,7 @@ export const Notification: React.FC = () => {
     setTimeout(() => {
       setError('');
     }, 3000);
-  }, []);
+  });
 
   return (
     <div className={cn(
