@@ -1,4 +1,3 @@
-import classNames from 'classnames';
 import React from 'react';
 import { TransitionGroup, CSSTransition } from 'react-transition-group';
 import { Todo } from '../types/Todo';
