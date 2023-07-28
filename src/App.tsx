@@ -1,29 +1,20 @@
 /* eslint-disable jsx-a11y/control-has-associated-label */
-import React, { useEffect, useState } from 'react';
-import classNames from 'classnames';
+import React, { useState } from 'react';
 import { UserWarning } from './UserWarning';
 import { Header } from './components/Header';
 import { Main } from './components/Main';
 import { Footer } from './components/Footer';
 import { Todo } from './types/Todo';
-import { client } from './utils/fetchClient';
 import { SelectStatus } from './types/SelectStatus';
 import { TodoError } from './types/TodoError';
-
-const USER_ID = 11123;
+import { ErrorTab } from './components/ErrorTab';
+import * as todoService from './api/todos';
 
 export const App: React.FC = () => {
   const [todosFromServer, setTodosFromServer] = useState<Todo[]>([]);
   const [selectedStatus, setSelectedStatus] = useState(SelectStatus.All);
-  const [errorMesage, setErrorMesage] = useState('');
-
-  useEffect(() => {
-    client.get<Todo[]>(`/todos?userId=${USER_ID}`)
-      .then(todos => setTodosFromServer(todos))
-      .catch(() => setErrorMesage(TodoError.load));
-
-    setTimeout(() => setErrorMesage(''), 3000);
-  }, []);
+  const [errorMesage, setErrorMesage] = useState(TodoError.empty);
+  const [newAddedTodoId, setNewAddedTodoId] = useState<number | null>(null);
 
   const getFilteredTodos = (todos: Todo[]) => {
     const filteredTodos = [...todos];
@@ -40,7 +31,27 @@ export const App: React.FC = () => {
     }
   };
 
-  if (!USER_ID) {
+  const visibleTodos = getFilteredTodos(todosFromServer);
+
+  const deleteCompletedTodos = () => {
+    const completedTodos = visibleTodos.filter(todo => todo.completed);
+
+    const deletePromises = completedTodos.map(todo => (
+      todoService.deleteTodo(String(todo.id))
+    ));
+
+    Promise.all(deletePromises)
+      .then(() => {
+        const remainingTodos = visibleTodos.filter(todo => !todo.completed);
+
+        setTodosFromServer(remainingTodos);
+      })
+      .catch(() => {
+        setErrorMesage(TodoError.delete);
+      });
+  };
+
+  if (!todoService.USER_ID) {
     return <UserWarning />;
   }
 
@@ -49,39 +60,35 @@ export const App: React.FC = () => {
       <h1 className="todoapp__title">todos</h1>
 
       <div className="todoapp__content">
-        <Header todos={getFilteredTodos(todosFromServer)} />
-        <Main
-          todos={getFilteredTodos(todosFromServer)}
+        <Header
+          todos={visibleTodos}
+          setTodosFromServer={setTodosFromServer}
           setErrorMesage={setErrorMesage}
+          setNewAddedTodoId={setNewAddedTodoId}
+        />
+        <Main
+          todos={visibleTodos}
+          setTodosFromServer={setTodosFromServer}
+          setErrorMesage={setErrorMesage}
+          newAddedTodoId={newAddedTodoId}
         />
         {todosFromServer.length > 0
           && (
             <Footer
-              todos={getFilteredTodos(todosFromServer)}
+              filteredTodos={visibleTodos}
+              todosFromServer={todosFromServer}
               selectedStatus={selectedStatus}
               setSelectedStatus={setSelectedStatus}
+              deleteCompletedTodos={deleteCompletedTodos}
             />
           )}
       </div>
-      {/* Notification is shown in case of any error */}
-      {/* Add the 'hidden' class to hide the message smoothly */}
-      {errorMesage && (
-        <div className={classNames(
-          'notification',
-          'is-danger',
-          'is-light',
-          'has-text-weight-normal',
-          { hidden: !errorMesage },
-        )}
-        >
-          {errorMesage}
 
-          <button
-            type="button"
-            className="delete"
-            onClick={() => setErrorMesage('')}
-          />
-        </div>
+      {errorMesage && (
+        <ErrorTab
+          errorMesage={errorMesage}
+          setErrorMesage={setErrorMesage}
+        />
       )}
     </div>
   );

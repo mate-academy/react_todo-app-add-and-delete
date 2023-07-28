@@ -4,20 +4,26 @@ import { Todo } from '../types/Todo';
 import { SelectStatus } from '../types/SelectStatus';
 
 type Props = {
-  todos: Todo[],
+  filteredTodos: Todo[],
+  todosFromServer: Todo[],
   selectedStatus: string,
   setSelectedStatus: (value: SelectStatus) => void;
+  deleteCompletedTodos: () => void,
 };
 
 export const Footer: React.FC<Props> = ({
-  todos,
+  filteredTodos: todos,
+  todosFromServer,
   selectedStatus,
   setSelectedStatus,
+  deleteCompletedTodos,
 }) => {
+  const areCompletedTodos = todos.some(todo => todo.completed);
+
   return (
     <footer className="todoapp__footer">
       <span className="todo-count">
-        {`${todos.length} items left`}
+        {`${todosFromServer.length} items left`}
       </span>
 
       <nav className="filter">
@@ -55,15 +61,17 @@ export const Footer: React.FC<Props> = ({
         </a>
       </nav>
 
-      {/* don't show this button if there are no completed todos */}
-      {
-        todos.some(todo => todo.completed)
-        && (
-          <button type="button" className="todoapp__clear-completed">
-            Clear completed
-          </button>
-        )
-      }
+      <button
+        type="button"
+        className={classNames(
+          'todoapp__clear-completed',
+          { 'is-invisible': !areCompletedTodos },
+        )}
+        onClick={deleteCompletedTodos}
+      >
+        Clear completed
+      </button>
+
     </footer>
   );
 };
