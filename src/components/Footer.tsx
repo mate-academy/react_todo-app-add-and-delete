@@ -33,8 +33,6 @@ export const Footer: React.FC<Props> = ({
     return count;
   }, [todos]);
 
-  // const completedItems = todos.some(todo => todo.completed);
-
   const completedItems = useMemo(() => todos
     .filter(todo => todo.completed), [todos]);
 
