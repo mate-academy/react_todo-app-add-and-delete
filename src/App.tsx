@@ -4,33 +4,25 @@ import classNames from 'classnames';
 
 import { Todo } from './types/Todo';
 import { Completion } from './types/Completion';
-import { getTodos } from './api/todos';
-import { wait } from './utils/fetchClient';
+import { TodoError } from './types/TodoError';
+import { deleteTodoFromServer, getTodosFromServer } from './api/todos';
+import { USER_ID } from './constants';
 
 import { TodoForm } from './components/TodoForm';
 import { TodoList } from './components/TodoList';
 import { TodoFilter } from './components/TodoFilter';
-
-enum TodoError {
-  NoError = '',
-  Add = 'Unable to add a todo',
-  Delete = 'Unable to delete a todo',
-  Update = 'Unable to update a todo',
-}
-
-const USER_ID = 11228;
+import { NotificationError } from './components/NotificationError';
 
 export const App: React.FC = () => {
   const [todos, setTodos] = useState<Todo[]>([]);
   const [errorMessage, setErrorMessage] = useState(TodoError.NoError);
   const [completionFilter, setCompletionFilter] = useState(Completion.All);
-
-  if (errorMessage) {
-    wait(3000).then(() => setErrorMessage(TodoError.NoError));
-  }
+  const [tempTodo, setTempTodo] = useState<Todo | null>(null);
 
   useEffect(() => {
-    getTodos(USER_ID).then(setTodos);
+    getTodosFromServer(USER_ID)
+      .then(setTodos)
+      .catch(() => setErrorMessage(TodoError.Load));
   }, []);
 
   const completedTodos = useMemo(() => (
@@ -52,6 +44,24 @@ export const App: React.FC = () => {
     }
   }, [todos, completionFilter]);
 
+  const addTodo = (newTodo: Todo) => {
+    setTodos(currentTodos => [...currentTodos, newTodo]);
+  };
+
+  const deleteTodo = (todoId: number) => {
+    setTodos(currentTodos => (
+      currentTodos.filter(todo => todo.id !== todoId)
+    ));
+  };
+
+  const deleteCompletedTodos = () => {
+    completedTodos.forEach(completedTodo => {
+      deleteTodoFromServer(completedTodo.id)
+        .then(() => deleteTodo(completedTodo.id))
+        .catch(() => setErrorMessage(TodoError.Delete));
+    });
+  };
+
   return (
     <div className="todoapp">
       <h1 className="todoapp__title">todos</h1>
@@ -69,11 +79,20 @@ export const App: React.FC = () => {
           )}
 
           {/* Add a todo on form submit */}
-          <TodoForm />
+          <TodoForm
+            addTodo={addTodo}
+            setErrorMessage={setErrorMessage}
+            setTempTodo={setTempTodo}
+          />
         </header>
 
         <section className="todoapp__main">
-          <TodoList todos={visibleTodos} />
+          <TodoList
+            todos={visibleTodos}
+            tempTodo={tempTodo}
+            deleteTodo={deleteTodo}
+            setErrorMessage={setErrorMessage}
+          />
         </section>
 
         {/* Hide the footer if there are no todos */}
@@ -94,6 +113,7 @@ export const App: React.FC = () => {
               type="button"
               className="todoapp__clear-completed"
               disabled={completedTodos.length === 0}
+              onClick={deleteCompletedTodos}
             >
               Clear completed
             </button>
@@ -103,21 +123,12 @@ export const App: React.FC = () => {
 
       {/* Notification is shown in case of any error */}
       {/* Add the 'hidden' class to hide the message smoothly */}
-      <div
-        className={classNames(
-          'notification is-danger is-light has-text-weight-normal',
-          {
-            hidden: !errorMessage,
-          },
-        )}
-      >
-        <button
-          type="button"
-          className="delete"
-          onClick={() => setErrorMessage(TodoError.NoError)}
+      {errorMessage && (
+        <NotificationError
+          errorMessage={errorMessage}
+          clearError={() => setErrorMessage(TodoError.NoError)}
         />
-        {errorMessage}
-      </div>
+      )}
     </div>
   );
 };
