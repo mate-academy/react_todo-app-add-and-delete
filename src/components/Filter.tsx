@@ -1,24 +1,46 @@
 import React, { useContext } from 'react';
 import cn from 'classnames';
 import { FilterBy } from '../types/Todo';
-import { TodosContext, UpdateTodosContext } from '../context/todosContext';
+import { TodosContext } from '../context/todosContext';
+import { deleteTodo } from '../api/todos';
 
 export const Filter: React.FC = () => {
   const {
     todos,
     filterBy,
-    isSomeTodosCompleted,
-  } = useContext(TodosContext);
-
-  const {
+    onDeleteTodo,
     setFilterBy,
-    onDeleteCompletedTodos,
-  } = useContext(UpdateTodosContext);
+    setErrorMessage,
+    setDeletingCompletedTodo,
+  } = useContext(TodosContext);
 
   const countActiveTodos = React.useMemo(
     () => todos.filter(todo => !todo.completed).length,
     [todos],
   );
+
+  const isSomeTodosCompleted = React.useMemo(() => {
+    return todos.some(todo => todo.completed);
+  }, [todos]);
+
+  function onDeleteCompletedTodos() {
+    const promises = todos.filter(todo => todo.completed)
+      .map(todo => deleteTodo(todo.id));
+
+    setDeletingCompletedTodo(true);
+
+    Promise.all(promises)
+      .then(() => todos.forEach(todo => {
+        if (todo.completed) {
+          onDeleteTodo(todo.id);
+        }
+      }))
+      .catch(() => {
+        setErrorMessage('Unable to delete completed todos');
+        throw new Error('Unable to delete completed todos');
+      })
+      .finally(() => setDeletingCompletedTodo(false));
+  }
 
   return (
     <footer className="todoapp__footer">

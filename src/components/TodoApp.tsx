@@ -14,13 +14,18 @@ import { TodosContext } from '../context/todosContext';
 
 export const TodoApp: React.FC = () => {
   const {
-    USER_ID,
     todos,
-    isAllTodosCompleted,
     filterBy,
+    USER_ID,
   } = useContext(TodosContext);
 
-  const preparedTodos = filterTodos(todos, filterBy);
+  const preparedTodos = React.useMemo(() => {
+    return filterTodos(todos, filterBy);
+  }, [todos, filterBy]);
+
+  const isAllTodosCompleted = React.useMemo(() => {
+    return todos.every(todo => todo.completed);
+  }, [todos]);
 
   if (!USER_ID) {
     return <UserWarning />;

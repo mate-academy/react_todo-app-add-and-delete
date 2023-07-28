@@ -1,28 +1,43 @@
-import React, { useContext, useState } from 'react';
+import React, { useContext, useEffect, useState } from 'react';
 import cn from 'classnames';
 import { Todo } from '../types/Todo';
-import { TodosContext, UpdateTodosContext } from '../context/todosContext';
+import { TodosContext } from '../context/todosContext';
+import { deleteTodo } from '../api/todos';
 
 interface Props {
   todo: Todo;
-  isTempTodoAdded?: boolean;
 }
 
-export const TodoItem:React.FC<Props> = ({ todo, isTempTodoAdded }) => {
+export const TodoItem:React.FC<Props> = ({ todo }) => {
   const [isEditing, setIsEditing] = useState(false);
+  const [loading, setLoading] = useState(false);
   const {
-    loading,
-    selectedTodos,
+    tempTodo,
+    onDeleteTodo,
+    setErrorMessage,
+    deletingCompletedTodo,
   } = useContext(TodosContext);
 
-  const {
-    onDeleteTodo,
-    setSelectedTodos,
-  } = useContext(UpdateTodosContext);
+  const onTodoDelete = (todoId: number) => {
+    setLoading(true);
 
-  const isTodoSelected = selectedTodos.some(
-    todoItem => todo.id === todoItem.id,
-  );
+    deleteTodo(todoId)
+      .then(() => {
+        onDeleteTodo(todoId);
+      })
+      .catch(() => {
+        setErrorMessage('Unable to delete a todo');
+        throw new Error('Unable to delete a todo');
+      })
+      .finally(() => setLoading(false));
+  };
+
+  useEffect(() => {
+    const isLoading = (deletingCompletedTodo && todo.completed)
+      || todo.id === 0;
+
+    setLoading(isLoading);
+  }, [deletingCompletedTodo, tempTodo]);
 
   return (
     <div
@@ -40,7 +55,7 @@ export const TodoItem:React.FC<Props> = ({ todo, isTempTodoAdded }) => {
         />
       </label>
 
-      {isEditing && isTodoSelected ? (
+      {isEditing ? (
         <form>
           <input
             type="text"
@@ -53,10 +68,7 @@ export const TodoItem:React.FC<Props> = ({ todo, isTempTodoAdded }) => {
         <>
           <span
             className="todo__title"
-            onDoubleClick={() => {
-              setSelectedTodos(currentTodos => [...currentTodos, todo]);
-              setIsEditing(true);
-            }}
+            onDoubleClick={() => setIsEditing(true)}
           >
             {todo.title}
           </span>
@@ -64,14 +76,14 @@ export const TodoItem:React.FC<Props> = ({ todo, isTempTodoAdded }) => {
           <button
             type="button"
             className="todo__remove"
-            onClick={() => onDeleteTodo(todo)}
+            onClick={() => onTodoDelete(todo.id)}
           >
             ×
           </button>
         </>
       )}
 
-      {((loading && isTodoSelected) || isTempTodoAdded) && (
+      {loading && (
         <div
           className={cn('modal overlay', {
             'is-active': loading,

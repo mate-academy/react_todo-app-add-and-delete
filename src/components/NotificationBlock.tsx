@@ -1,16 +1,30 @@
-import React, { useContext } from 'react';
+import React, { useContext, useEffect, useState } from 'react';
 import cn from 'classnames';
-import { TodosContext, UpdateTodosContext } from '../context/todosContext';
+import { TodosContext } from '../context/todosContext';
+import { wait } from '../utils/fetchClient';
 
 export const NotificationBlock: React.FC = () => {
+  const [isNotificationOpen, setIsNotificationOpen] = useState(false);
   const {
     errorMessage,
-    isNotificationOpen,
+    setErrorMessage,
   } = useContext(TodosContext);
 
-  const {
-    setIsNotificationOpen,
-  } = useContext(UpdateTodosContext);
+  function showNotificationBlock() {
+    setIsNotificationOpen(true);
+
+    wait(3000)
+      .then(() => {
+        setIsNotificationOpen(false);
+        setErrorMessage('');
+      });
+  }
+
+  useEffect(() => {
+    if (errorMessage) {
+      showNotificationBlock();
+    }
+  }, [errorMessage]);
 
   return (
     <div

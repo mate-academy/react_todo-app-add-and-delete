@@ -24,7 +24,7 @@ export const TodoList:React.FC<Props> = ({ todos }) => {
       ))}
 
       {tempTodo && (
-        <TodoItem todo={tempTodo} isTempTodoAdded={Boolean(tempTodo)} />
+        <TodoItem todo={tempTodo} />
       )}
     </section>
   );
