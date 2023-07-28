@@ -6,5 +6,11 @@ import './styles/index.scss';
 
 import { App } from './App';
 
+import { DeleteModalProvider } from './context/DeleteModalContext';
+
 createRoot(document.getElementById('root') as HTMLDivElement)
-  .render(<App />);
+  .render(
+    <DeleteModalProvider>
+      <App />
+    </DeleteModalProvider>,
+  );
