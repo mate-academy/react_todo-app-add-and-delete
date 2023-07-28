@@ -12,10 +12,7 @@ import { UserWarning } from './UserWarning';
 import { TodoList } from './components/TodoList';
 import { TodoFilter } from './components/TodoFilter';
 
-import {
-  DeleteModalContext,
-  DeleteModalProvider,
-} from './context/DeleteModalContext';
+import { DeleteModalContext } from './context/DeleteModalContext';
 
 const USER_ID = 11200;
 
@@ -30,6 +27,10 @@ export const App: React.FC = () => {
   const notCompletedTodos = todos.filter((todo) => !todo.completed);
 
   const { setDeleteModal } = useContext(DeleteModalContext);
+
+  const deleteTodo = (id: number) => {
+    setTodos((prevState) => prevState.filter((todo) => todo.id !== id));
+  };
 
   useEffect(() => {
     async function fetchTodos() {
@@ -61,10 +62,6 @@ export const App: React.FC = () => {
     };
   }, [errorMessage]);
 
-  const deleteTodo = (id: number) => {
-    setTodos((prevState) => prevState.filter((todo) => todo.id !== id));
-  };
-
   const updatedTodos = (newTodo: Todo) => {
     setTodos((prevTodos) => [...prevTodos, newTodo]);
   };
@@ -75,9 +72,7 @@ export const App: React.FC = () => {
     setDeleteModal([...idOfCompletedTodos]);
 
     try {
-      await Promise.all(
-        idOfCompletedTodos.map((id) => removeTodo(id)),
-      );
+      await Promise.all(idOfCompletedTodos.map((id) => removeTodo(id)));
 
       setTodos((prevTodos) => prevTodos.filter((todo) => !todo.completed));
 
@@ -136,106 +131,104 @@ export const App: React.FC = () => {
   }
 
   return (
-    <DeleteModalProvider>
-      <div className="todoapp">
-        <h1 className="todoapp__title">todos</h1>
+    <div className="todoapp">
+      <h1 className="todoapp__title">todos</h1>
 
-        <div className="todoapp__content">
-          <header className="todoapp__header">
-            {todos.length > 0 && (
-              <button
-                type="button"
-                className={cn('todoapp__toggle-all', {
-                  active: completedTodos.length > 0,
-                })}
-              />
-            )}
-
-            <form>
-              <input
-                type="text"
-                className="todoapp__new-todo"
-                placeholder="What needs to be done?"
-                value={value}
-                onChange={(event) => setValue(event.target.value)}
-                onKeyDown={(event) => {
-                  handleKeyDown(event);
-                }}
-                disabled={!!tempTodo}
-              />
-            </form>
-          </header>
-
+      <div className="todoapp__content">
+        <header className="todoapp__header">
           {todos.length > 0 && (
-            <>
-              <section className="todoapp__main">
-                <TodoList
-                  todos={filteredTodos}
-                  setTodos={setTodos}
-                  deleteTodo={deleteTodo}
-                />
-                {tempTodo && (
-                  <div className="todo">
-                    <label className="todo__status-label">
-                      <input type="checkbox" className="todo__status" />
-                    </label>
+            <button
+              type="button"
+              className={cn('todoapp__toggle-all', {
+                active: completedTodos.length > 0,
+              })}
+            />
+          )}
 
-                    <span className="todo__title">{tempTodo.title}</span>
-                    <button type="button" className="todo__remove">
-                      ×
-                    </button>
+          <form>
+            <input
+              type="text"
+              className="todoapp__new-todo"
+              placeholder="What needs to be done?"
+              value={value}
+              onChange={(event) => setValue(event.target.value)}
+              onKeyDown={(event) => {
+                handleKeyDown(event);
+              }}
+              disabled={!!tempTodo}
+            />
+          </form>
+        </header>
 
-                    <div className="modal overlay is-active">
-                      <div
-                        className="modal-background
-                      has-background-white-ter"
-                      />
-                      <div className="loader" />
-                    </div>
-                  </div>
-                )}
-              </section>
+        {todos.length > 0 && (
+          <>
+            <section className="todoapp__main">
+              <TodoList
+                todos={filteredTodos}
+                setTodos={setTodos}
+                deleteTodo={deleteTodo}
+              />
+              {tempTodo && (
+                <div className="todo">
+                  <label className="todo__status-label">
+                    <input type="checkbox" className="todo__status" />
+                  </label>
 
-              <footer className="todoapp__footer">
-                <span className="todo-count">
-                  {notCompletedTodos.length === 1
-                    ? `${notCompletedTodos.length} item left`
-                    : `${notCompletedTodos.length} items left`}
-                </span>
-
-                <TodoFilter filter={filter} setFilter={setFilter} />
-
-                {completedTodos.length > 0 ? (
-                  <button
-                    type="button"
-                    className="todoapp__clear-completed"
-                    onClick={clearCompletedTodos}
-                  >
-                    Clear completed
+                  <span className="todo__title">{tempTodo.title}</span>
+                  <button type="button" className="todo__remove">
+                    ×
                   </button>
-                ) : null}
-              </footer>
-            </>
-          )}
-        </div>
 
-        <div
-          className={cn(
-            'notification',
-            'is-danger',
-            'is-light',
-            'has-text-weight-normal',
-            { hidden: errorMessage === '' },
-          )}
-        >
-          <button
-            type="button"
-            className="delete"
-            onClick={() => setErrorMessage('')}
-          />
-          {errorMessage}
-        </div>
+                  <div className="modal overlay is-active">
+                    <div
+                      className="modal-background
+                      has-background-white-ter"
+                    />
+                    <div className="loader" />
+                  </div>
+                </div>
+              )}
+            </section>
+
+            <footer className="todoapp__footer">
+              <span className="todo-count">
+                {notCompletedTodos.length === 1
+                  ? `${notCompletedTodos.length} item left`
+                  : `${notCompletedTodos.length} items left`}
+              </span>
+
+              <TodoFilter filter={filter} setFilter={setFilter} />
+
+              {completedTodos.length > 0 ? (
+                <button
+                  type="button"
+                  className="todoapp__clear-completed"
+                  onClick={clearCompletedTodos}
+                >
+                  Clear completed
+                </button>
+              ) : null}
+            </footer>
+          </>
+        )}
       </div>
-    </DeleteModalProvider>
+
+      <div
+        className={cn(
+          'notification',
+          'is-danger',
+          'is-light',
+          'has-text-weight-normal',
+          { hidden: errorMessage === '' },
+        )}
+      >
+        <button
+          type="button"
+          className="delete"
+          onClick={() => setErrorMessage('')}
+        />
+        {errorMessage}
+      </div>
+    </div>
   );
 };
