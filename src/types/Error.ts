@@ -3,4 +3,5 @@ export enum ErrorType {
   deleteTodo = 'Unable to delete a todo',
   updateTodo = 'Unable to update a todo',
   fetchTodo = 'Failed to fetch todos.',
+  emptyValue = 'Title can\'t be empty',
 }

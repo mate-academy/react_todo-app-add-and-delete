@@ -103,6 +103,7 @@ export const App: React.FC = () => {
             onSubmit={addTodo}
             title={title}
             setTitle={setTitle}
+            setError={setErrorMessage}
           />
         </header>
 
