@@ -30,23 +30,7 @@ export const Footer: React.FC<Props> = ({
     type: Filter,
   ) => {
     e.preventDefault();
-
-    switch (type) {
-      case Filter.All:
-        setFilter(Filter.All);
-        break;
-
-      case Filter.Active:
-        setFilter(Filter.Active);
-        break;
-
-      case Filter.Completed:
-        setFilter(Filter.Completed);
-        break;
-
-      default:
-        break;
-    }
+    setFilter(type);
   };
 
   const clearCompletedHandler = () => {

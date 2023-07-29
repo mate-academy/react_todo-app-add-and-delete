@@ -51,7 +51,13 @@ export const Header: React.FC<Props> = ({
       userId,
     };
 
+    const mockTodo = {
+      ...newTodo,
+      id: 0,
+    }
+
     setIsLoading(true);
+    setTodos([...todos, mockTodo]);
 
     createTodo(newTodo).then(() => {
       getTodos(userId)
