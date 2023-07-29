@@ -4,14 +4,14 @@ import React, { useEffect } from 'react';
 
 type Props = {
   error: string,
-  reset: () => void,
+  reset: (error: string) => void,
 };
 
 export const Notifications: React.FC<Props> = ({ error, reset }) => {
   useEffect(() => {
     if (error) {
       const timeoutId = setTimeout(() => {
-        reset();
+        reset('');
       }, 3000);
 
       return () => clearTimeout(timeoutId);
@@ -30,7 +30,7 @@ export const Notifications: React.FC<Props> = ({ error, reset }) => {
       <button
         type="button"
         className="delete"
-        onClick={() => reset()}
+        onClick={() => reset('')}
       />
       {error}
     </div>

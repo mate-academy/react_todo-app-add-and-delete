@@ -34,10 +34,6 @@ export const App: React.FC = () => {
       });
   }, []);
 
-  const resetError = () => {
-    setErrorMessage('');
-  };
-
   const filteredTodos = useMemo(() => getPreparedTodos(
     todos,
     filter,
@@ -126,7 +122,7 @@ export const App: React.FC = () => {
 
       <Notifications
         error={errorMessage}
-        reset={resetError}
+        reset={setErrorMessage}
       />
     </div>
   );
