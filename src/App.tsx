@@ -68,7 +68,6 @@ export const App: React.FC = () => {
 
       <div className="todoapp__content">
         <header className="todoapp__header">
-          {/* this buttons is active only if there are some active todos */}
           {todos.length !== 0 && (
             <button
               type="button"
@@ -78,7 +77,6 @@ export const App: React.FC = () => {
             />
           )}
 
-          {/* Add a todo on form submit */}
           <TodoForm
             addTodo={addTodo}
             setErrorMessage={setErrorMessage}
@@ -95,20 +93,17 @@ export const App: React.FC = () => {
           />
         </section>
 
-        {/* Hide the footer if there are no todos */}
         {todos.length !== 0 && (
           <footer className="todoapp__footer">
             <span className="todo-count">
               {`${activeTodos.length} items left`}
             </span>
 
-            {/* Active filter should have a 'selected' class */}
             <TodoFilter
               completionFilter={completionFilter}
               setCompletionFilter={setCompletionFilter}
             />
 
-            {/* don't show this button if there are no completed todos */}
             <button
               type="button"
               className="todoapp__clear-completed"
@@ -121,8 +116,6 @@ export const App: React.FC = () => {
         )}
       </div>
 
-      {/* Notification is shown in case of any error */}
-      {/* Add the 'hidden' class to hide the message smoothly */}
       {errorMessage && (
         <NotificationError
           errorMessage={errorMessage}
