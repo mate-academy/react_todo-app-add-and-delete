@@ -19,7 +19,9 @@ export const App: React.FC = () => {
   const [todos, setTodos] = useState<Todo[]>([]);
   const [filter, setFilter] = useState<FilterStatus>(FilterStatus.ALL);
   const [errorMessage, setErrorMessage] = useState(TodoError.none);
+  const [isLoadingTodoId, setIsLoadingTodoId] = useState<number | null>(null);
   const [tempTodo, setTempTodo] = useState<Todo | null>(null);
+  // const [isDeleting, setIsDeleting] = useState(false);
 
   const filteredTodos = useMemo(() => {
     return getFilteredTodos(todos, filter);
@@ -42,6 +44,15 @@ export const App: React.FC = () => {
   if (!todoService.USER_ID) {
     return <UserWarning />;
   }
+
+  const handleToggleCompleted = (todoId: number) => {
+    setTodos((curentTodos) => (
+      curentTodos.map(todo => (
+        todo.id === todoId
+          ? { ...todo, completed: !todo.completed }
+          : todo
+      ))));
+  };
 
   const handleAddTodo = (title: string) => {
     const newTodo: Todo = {
@@ -66,12 +77,17 @@ export const App: React.FC = () => {
   };
 
   const handleDeleteTodo = (todoId: number) => {
+    setIsLoadingTodoId(todoId);
+
     todoService.deleteTodo(todoId)
       .then(() => {
         setTodos(currentTodos => currentTodos.filter(todo => todo.id !== todoId));
-        setErrorMessage(TodoError.none);
       })
-      .catch(() => setErrorMessage(TodoError.delete));
+      .catch(() => setErrorMessage(TodoError.delete))
+      .finally(() => {
+        setErrorMessage(TodoError.none);
+        setIsLoadingTodoId(null);
+      });
   };
 
   return (
@@ -88,7 +104,10 @@ export const App: React.FC = () => {
 
         <TodoList
           todos={filteredTodos}
+          handleToggleCompleted={handleToggleCompleted}
           handleDeleteTodo={handleDeleteTodo}
+          isLoadingTodoId={isLoadingTodoId}
+          tempTodo={tempTodo}
         />
 
         <TodoFooter

@@ -11,7 +11,10 @@ type Props = {
 };
 
 export const Header: React.FC<Props> = ({
-  countActiveTodos, onError, handleAddTodo, tempTodo,
+  countActiveTodos,
+  onError,
+  handleAddTodo,
+  tempTodo,
 }) => {
   const [todoTitle, setTodoTitle] = useState('');
 
