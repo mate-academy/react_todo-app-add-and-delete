@@ -54,7 +54,7 @@ export const Header: React.FC<Props> = ({
     const mockTodo = {
       ...newTodo,
       id: 0,
-    }
+    };
 
     setIsLoading(true);
     setTodos([...todos, mockTodo]);
