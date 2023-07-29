@@ -1,8 +1,6 @@
 import React, { useState } from 'react';
 import { Error, Todo } from '../types/Todo';
 import * as todosService from '../api/todos';
-/* eslint-disable-next-line */
-import { USER_ID } from '../App';
 
 type Props = {
   todos: Todo[],
@@ -22,6 +20,8 @@ export const TodoHeader: React.FC<Props> = ({
   setLoading,
 }) => {
   const [title, setTitle] = useState('');
+
+  const USER_ID = 11041;
 
   const handleTodoAdd = (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
@@ -57,7 +57,7 @@ export const TodoHeader: React.FC<Props> = ({
 
   return (
     <header className="todoapp__header">
-      {/* this buttons is active only if there are some active todos */}
+      {/* this buttons are active only if there are some active todos */}
       {/* eslint-disable-next-line */}
       <button
         type="button"
