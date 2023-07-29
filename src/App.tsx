@@ -21,7 +21,6 @@ export const App: React.FC = () => {
   const [errorMessage, setErrorMessage] = useState(TodoError.none);
   const [isLoadingTodoId, setIsLoadingTodoId] = useState<number | null>(null);
   const [tempTodo, setTempTodo] = useState<Todo | null>(null);
-  // const [isDeleting, setIsDeleting] = useState(false);
 
   const filteredTodos = useMemo(() => {
     return getFilteredTodos(todos, filter);
@@ -52,6 +51,17 @@ export const App: React.FC = () => {
           ? { ...todo, completed: !todo.completed }
           : todo
       ))));
+  };
+
+  const handleAllToggle = () => {
+    const isEveryCompleted = todos.every(
+      todo => todo.completed,
+    );
+
+    setTodos((prevTodos) => (
+      prevTodos.map(todo => {
+        return { ...todo, completed: !isEveryCompleted };
+      })));
   };
 
   const handleAddTodo = (title: string) => {
@@ -100,6 +110,7 @@ export const App: React.FC = () => {
           onError={setErrorMessage}
           handleAddTodo={handleAddTodo}
           tempTodo={tempTodo}
+          handleAllToggle={handleAllToggle}
         />
 
         <TodoList

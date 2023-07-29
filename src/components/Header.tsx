@@ -8,6 +8,7 @@ type Props = {
   handleAddTodo: (title: string) => void;
   onError: (errorMessage: TodoError) => void;
   tempTodo: Todo | null;
+  handleAllToggle: () => void;
 };
 
 export const Header: React.FC<Props> = ({
@@ -15,6 +16,7 @@ export const Header: React.FC<Props> = ({
   onError,
   handleAddTodo,
   tempTodo,
+  handleAllToggle,
 }) => {
   const [todoTitle, setTodoTitle] = useState('');
 
@@ -43,6 +45,7 @@ export const Header: React.FC<Props> = ({
         className={classNames('todoapp__toggle-all', {
           active: countActiveTodos,
         })}
+        onClick={handleAllToggle}
       />
 
       {/* Add a todo on form submit */}
