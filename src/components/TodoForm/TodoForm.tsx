@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import { Todo } from '../../types/Todo';
 
 type Props = {
+  loading: boolean,
   addTodo: (newTodo: Todo) => void,
   userId: number,
   setNotification: (value: string) => void,
@@ -11,6 +12,7 @@ type Props = {
 
 export const TodoForm:React.FC<Props> = React.memo(
   ({
+    loading,
     addTodo,
     userId,
     setNotification,
@@ -34,10 +36,6 @@ export const TodoForm:React.FC<Props> = React.memo(
       setTitle('');
     };
 
-    // if (!title) {
-    //   setNotification("Title can't be empty");
-    // }
-
     const handleChange = (event: React.ChangeEvent<HTMLInputElement>) => {
       setTitle(event?.target.value);
       if (!event.target.value) {
@@ -55,7 +53,7 @@ export const TodoForm:React.FC<Props> = React.memo(
           placeholder="What needs to be done?"
           value={title}
           onChange={handleChange}
-          disabled={tempTodo !== null}
+          disabled={tempTodo !== null && loading}
         />
       </form>
     );

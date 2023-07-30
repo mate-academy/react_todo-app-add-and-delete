@@ -1,4 +1,3 @@
-/* eslint-disable @typescript-eslint/no-unused-vars */
 /* eslint-disable padding-line-between-statements */
 /* eslint-disable react-hooks/rules-of-hooks */
 /* eslint-disable @typescript-eslint/no-non-null-assertion */
@@ -121,6 +120,7 @@ export const App: React.FC = () => {
           )}
 
           <TodoForm
+            loading={loading}
             addTodo={(newTodo) => addTodo(newTodo)}
             userId={USER_ID}
             setNotification={setErrorMessage}
