@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import classNames from 'classnames';
 import { TodoError } from '../types/TodoError';
 import { Todo } from '../types/Todo';
@@ -19,6 +19,13 @@ export const Header: React.FC<Props> = ({
   handleAllToggle,
 }) => {
   const [todoTitle, setTodoTitle] = useState('');
+  const inputRef = useRef<HTMLInputElement | null>(null);
+
+  useEffect(() => {
+    if (tempTodo === null && inputRef.current) {
+      inputRef.current.focus();
+    }
+  }, [tempTodo]);
 
   const addTodo = () => {
     if (todoTitle.trim() === '') {
@@ -56,6 +63,7 @@ export const Header: React.FC<Props> = ({
           type="text"
           className="todoapp__new-todo"
           placeholder="What needs to be done?"
+          ref={inputRef}
           value={todoTitle}
           onChange={(event) => setTodoTitle(event.target.value)}
           disabled={tempTodo !== null}

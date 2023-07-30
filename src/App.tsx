@@ -100,6 +100,19 @@ export const App: React.FC = () => {
       });
   };
 
+  const handleDeleteCompletedTodo = async () => {
+    const comletedIds = todos.filter(todo => todo.completed)
+      .map(todo => todo.id);
+
+    try {
+      await Promise.all(
+        comletedIds.map(id => handleDeleteTodo(id)),
+      );
+    } catch (error) {
+      setErrorMessage(TodoError.delete);
+    }
+  };
+
   return (
     <div className="todoapp">
       <h1 className="todoapp__title">todos</h1>
@@ -126,6 +139,7 @@ export const App: React.FC = () => {
           hasCompletedTodos={hasCompletedTodos}
           filter={filter}
           onFilterChange={setFilter}
+          onClearCompleted={handleDeleteCompletedTodo}
         />
 
         {errorMessage !== TodoError.none && (
