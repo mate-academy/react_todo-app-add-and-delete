@@ -99,6 +99,7 @@ export const App: React.FC = () => {
 
   const deleteCompletedTodos = () => {
     completedTodos.forEach(({ id }) => todoService.deleteTodo(id));
+    setTodos(activeTodos);
   };
 
   return (
