@@ -3,8 +3,8 @@ import classNames from 'classnames';
 import { Todo } from '../../types/Todo';
 
 type Props = {
-  todo: Todo,
-  removeTodo: (todoId: number) => void,
+  todo?: Todo,
+  removeTodo?: (todoId: number) => void,
 };
 
 export const TodoItem:React.FC<Props> = ({ todo, removeTodo }) => {
@@ -12,9 +12,9 @@ export const TodoItem:React.FC<Props> = ({ todo, removeTodo }) => {
 
   return (
     <div
-      key={todo.id}
+      key={todo?.id}
       className={classNames('todo', {
-        completed: todo.completed,
+        completed: todo?.completed,
       })}
       onMouseEnter={() => setIsHover(true)}
       onMouseLeave={() => setIsHover(false)}
@@ -23,16 +23,17 @@ export const TodoItem:React.FC<Props> = ({ todo, removeTodo }) => {
         <input
           type="checkbox"
           className="todo__status"
-          checked={todo.completed}
+          checked={todo?.completed}
+          onChange={() => {}}
         />
       </label>
 
-      <span className="todo__title">{todo.title}</span>
+      <span className="todo__title">{todo?.title}</span>
       {isHover && (
         <button
           type="button"
           className="todo__remove"
-          onClick={() => removeTodo(todo.id)}
+          onClick={() => removeTodo && (removeTodo(todo!.id))}
         >
           ×
         </button>
@@ -49,7 +50,7 @@ export const TodoItem:React.FC<Props> = ({ todo, removeTodo }) => {
       </form> */}
 
       <div className={classNames('modal overlay', {
-        // 'is-active': !todo.completed,
+        'is-active': !removeTodo,
       })}
       >
         <div className="modal-background has-background-white-ter" />

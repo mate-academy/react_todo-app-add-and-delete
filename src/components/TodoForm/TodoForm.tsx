@@ -7,7 +7,6 @@ type Props = {
   userId: number,
   setNotification: (value: string) => void,
   tempTodo: Todo | null,
-  onTempTodo: (todo: Todo | null) => void,
 };
 
 export const TodoForm:React.FC<Props> = React.memo(
@@ -17,7 +16,6 @@ export const TodoForm:React.FC<Props> = React.memo(
     userId,
     setNotification,
     tempTodo,
-    onTempTodo,
   }) => {
     const [title, setTitle] = useState<string>('');
 
@@ -32,7 +30,6 @@ export const TodoForm:React.FC<Props> = React.memo(
       };
 
       addTodo(newTodo);
-      onTempTodo(newTodo);
       setTitle('');
     };
 

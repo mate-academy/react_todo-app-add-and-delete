@@ -37,18 +37,20 @@ export const App: React.FC = () => {
       });
   }, []);
 
-  const addTodo = ({ title, completed, userId }: Omit<Todo, 'id'>) => {
+  const addTodo = (createdTodo: Todo) => {
     setLoading(true);
-    postServes.createTodo({ title, completed, userId })
+    setTempTodo(createdTodo);
+
+    postServes.createTodo(createdTodo)
       .then(newTodo => {
         setTodos(currentTodos => [...currentTodos!, newTodo]);
-        setTempTodo(null);
       })
       .catch(() => {
         setErrorMessage('Unable to add a todo');
       })
       .finally(() => {
         setLoading(false);
+        setTempTodo(null);
       });
   };
 
@@ -125,7 +127,6 @@ export const App: React.FC = () => {
             userId={USER_ID}
             setNotification={setErrorMessage}
             tempTodo={tempTodo}
-            onTempTodo={setTempTodo}
           />
         </header>
 
@@ -133,6 +134,7 @@ export const App: React.FC = () => {
           <section className="todoapp__main">
             <TodoList
               todos={vidibleTodos}
+              tempTodo={tempTodo}
               removeTodo={deleteTodo}
             />
           </section>
