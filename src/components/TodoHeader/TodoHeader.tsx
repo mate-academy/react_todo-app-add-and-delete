@@ -21,7 +21,7 @@ export const TodoHeader = () => {
   const handleFormSubmit = async (event: React.FormEvent) => {
     event.preventDefault();
 
-    if (!query) {
+    if (!query.trim()) {
       setErrorMessage(Error.TITLE);
 
       return;
@@ -37,14 +37,7 @@ export const TodoHeader = () => {
         completed: false,
       };
 
-      const tTodo = {
-        id: 0,
-        userId: USER_ID,
-        title: query,
-        completed: false,
-      };
-
-      setTempTodo(tTodo);
+      setTempTodo({ ...newTodo, id: 0 });
 
       const createdTodo = await createTodo(newTodo as Todo);
 
@@ -55,9 +48,10 @@ export const TodoHeader = () => {
         (currentTodos: Todo[]) => [...currentTodos, createdTodo as Todo],
       );
     } catch (error) {
+      setErrorMessage(Error.ADD);
+    } finally {
       setLoading(false);
       setTempTodo(null);
-      setErrorMessage(Error.ADD);
     }
   };
 

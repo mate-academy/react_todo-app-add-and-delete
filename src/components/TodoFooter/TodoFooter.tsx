@@ -62,15 +62,14 @@ export const TodoFooter = () => {
         </a>
       </nav>
 
-      {isCompleted && (
-        <button
-          type="button"
-          className="todoapp__clear-completed"
-          onClick={() => deleteCompletedTodos(todos)}
-        >
-          Clear completed
-        </button>
-      )}
+      <button
+        type="button"
+        className="todoapp__clear-completed"
+        onClick={() => deleteCompletedTodos(todos)}
+        disabled={!isCompleted}
+      >
+        Clear completed
+      </button>
     </footer>
   );
 };
