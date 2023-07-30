@@ -16,8 +16,14 @@ export const TodoErrors: React.FC<Props> = ({
 
   useEffect(() => {
     if (errorMessage) {
-      setTimeout(() => handleCloseError, 3000);
+      const timeoutId = setTimeout(() => {
+        handleCloseError();
+      }, 3000);
+
+      return () => clearTimeout(timeoutId);
     }
+
+    return undefined;
   }, [errorMessage]);
 
   return (

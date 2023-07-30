@@ -6,12 +6,12 @@ type Props = {
   todo: Todo;
   handleToggleCompleted: (id: number) => void,
   handleDeleteTodo: (id: number) => void,
-  isLoadingTodoId: number | null,
+  isLoadingTodoIds: number[],
 };
 
 export const TodoItem: React.FC<Props> = ({
   todo, handleToggleCompleted, handleDeleteTodo,
-  isLoadingTodoId,
+  isLoadingTodoIds,
 }) => {
   return (
     <div
@@ -38,7 +38,7 @@ export const TodoItem: React.FC<Props> = ({
         ×
       </button>
 
-      {isLoadingTodoId === todo.id && <Loader />}
+      {isLoadingTodoIds.includes(todo.id) && <Loader />}
     </div>
   );
 };

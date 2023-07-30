@@ -19,7 +19,7 @@ export const App: React.FC = () => {
   const [todos, setTodos] = useState<Todo[]>([]);
   const [filter, setFilter] = useState<FilterStatus>(FilterStatus.ALL);
   const [errorMessage, setErrorMessage] = useState(TodoError.none);
-  const [isLoadingTodoId, setIsLoadingTodoId] = useState<number | null>(null);
+  const [isLoadingTodoIds, setIsLoadingTodoIds] = useState<number[]>([]);
   const [tempTodo, setTempTodo] = useState<Todo | null>(null);
 
   const filteredTodos = useMemo(() => {
@@ -35,6 +35,8 @@ export const App: React.FC = () => {
   }, [todos]);
 
   useEffect(() => {
+    setErrorMessage(TodoError.none);
+
     todoService.getTodos(todoService.USER_ID)
       .then(setTodos)
       .catch(() => setErrorMessage(TodoError.load));
@@ -65,6 +67,8 @@ export const App: React.FC = () => {
   };
 
   const handleAddTodo = (title: string) => {
+    setErrorMessage(TodoError.none);
+
     const newTodo: Todo = {
       id: 0,
       title: title.trim(),
@@ -74,20 +78,24 @@ export const App: React.FC = () => {
 
     setTempTodo(newTodo);
 
-    todoService
+    return todoService
       .addTodo(newTodo)
       .then((createdTodo) => {
         setTodos((currentTodos) => [...currentTodos, createdTodo]);
       })
-      .catch(() => setErrorMessage(TodoError.add))
+      .catch((error) => {
+        setErrorMessage(TodoError.add);
+        throw error;
+      })
       .finally(() => {
-        setErrorMessage(TodoError.none);
         setTempTodo(null);
       });
   };
 
   const handleDeleteTodo = (todoId: number) => {
-    setIsLoadingTodoId(todoId);
+    setErrorMessage(TodoError.none);
+
+    setIsLoadingTodoIds(prev => [...prev, todoId]);
 
     todoService.deleteTodo(todoId)
       .then(() => {
@@ -95,18 +103,17 @@ export const App: React.FC = () => {
       })
       .catch(() => setErrorMessage(TodoError.delete))
       .finally(() => {
-        setErrorMessage(TodoError.none);
-        setIsLoadingTodoId(null);
+        setIsLoadingTodoIds([]);
       });
   };
 
   const handleDeleteCompletedTodo = async () => {
-    const comletedIds = todos.filter(todo => todo.completed)
+    const completedIds = todos.filter(todo => todo.completed)
       .map(todo => todo.id);
 
     try {
       await Promise.all(
-        comletedIds.map(id => handleDeleteTodo(id)),
+        completedIds.map(id => handleDeleteTodo(id)),
       );
     } catch (error) {
       setErrorMessage(TodoError.delete);
@@ -130,7 +137,7 @@ export const App: React.FC = () => {
           todos={filteredTodos}
           handleToggleCompleted={handleToggleCompleted}
           handleDeleteTodo={handleDeleteTodo}
-          isLoadingTodoId={isLoadingTodoId}
+          isLoadingTodoIds={isLoadingTodoIds}
           tempTodo={tempTodo}
         />
 

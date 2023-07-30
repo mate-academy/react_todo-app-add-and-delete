@@ -6,14 +6,14 @@ type Props = {
   todos: Todo[],
   handleToggleCompleted: (id: number) => void,
   handleDeleteTodo: (id: number) => void,
-  isLoadingTodoId: number | null,
+  isLoadingTodoIds: number[],
   tempTodo: Todo | null,
 
 };
 
 export const TodoList: React.FC<Props> = ({
   todos, handleToggleCompleted, handleDeleteTodo,
-  isLoadingTodoId,
+  isLoadingTodoIds,
   tempTodo,
 }) => (
   <section className="todoapp__main">
@@ -23,7 +23,7 @@ export const TodoList: React.FC<Props> = ({
         todo={todo}
         handleToggleCompleted={handleToggleCompleted}
         handleDeleteTodo={handleDeleteTodo}
-        isLoadingTodoId={isLoadingTodoId}
+        isLoadingTodoIds={isLoadingTodoIds}
       />
     ))}
 
@@ -33,7 +33,7 @@ export const TodoList: React.FC<Props> = ({
         todo={tempTodo}
         handleToggleCompleted={handleToggleCompleted}
         handleDeleteTodo={handleDeleteTodo}
-        isLoadingTodoId={tempTodo?.id}
+        isLoadingTodoIds={[tempTodo?.id]}
       />
     )}
 

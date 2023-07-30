@@ -5,7 +5,7 @@ import { Todo } from '../types/Todo';
 
 type Props = {
   countActiveTodos: number;
-  handleAddTodo: (title: string) => void;
+  handleAddTodo: (title: string) => Promise<void>;
   onError: (errorMessage: TodoError) => void;
   tempTodo: Todo | null;
   handleAllToggle: () => void;
@@ -34,8 +34,8 @@ export const Header: React.FC<Props> = ({
       return;
     }
 
-    handleAddTodo(todoTitle.trim());
-    setTodoTitle('');
+    handleAddTodo(todoTitle.trim())
+      .then(() => setTodoTitle(''));
   };
 
   const handleSubmit = (event: React.FormEvent<HTMLFormElement>) => {
