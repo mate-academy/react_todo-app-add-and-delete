@@ -75,7 +75,9 @@ export const App: React.FC = () => {
 
   const addTodo = ({ userId, title, completed }: Omit<Todo, 'id'>) => {
     const maxId = Math.max(0, ...todos.map(post => post.id));
-    const id = maxId + 1;
+    const id = maxId !== 0
+      ? maxId + 1
+      : 250000;
 
     setTempTodo({
       id: 0,
