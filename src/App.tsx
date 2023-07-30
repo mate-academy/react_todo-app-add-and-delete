@@ -68,11 +68,13 @@ export const App: React.FC = () => {
 
   const removeTodo = (todoId: number) => {
     setIsLoading(true);
-    setTodos(prevTodos => {
-      return prevTodos.filter(todo => todo.id !== todoId);
-    });
 
     return deleteTodo(todoId)
+      .then(() => {
+        setTodos(prevTodos => {
+          return prevTodos.filter(todo => todo.id !== todoId);
+        });
+      })
       .catch((error) => {
         setTodos(todos);
         setErrorMessage('Unable to delete a todo');
@@ -165,17 +167,11 @@ export const App: React.FC = () => {
           <TodoList
             todos={preparedTodos}
             removeTodo={(todoId: number) => removeTodo(todoId)}
+            isLoading={isLoading}
           />
         )}
         {tempTodo !== null && tempTodoMarkup}
-        <div
-          className={classNames('modal overlay', {
-            'is-active': isLoading,
-          })}
-        >
-          <div className="modal-background has-background-white-ter" />
-          <div className="loader" />
-        </div>
+
         {todosCheck && (
           <TodoFilterBar
             filter={filter}
