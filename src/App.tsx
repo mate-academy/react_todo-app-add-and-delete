@@ -18,7 +18,6 @@ export const App: React.FC = () => {
   const [filteredBy, setFilteredBy] = useState(FilteredBy.All);
   const [hasError, setHasError] = useState(TodoErrorType.noError);
   const [isLoading, setIsLoading] = useState(false);
-  const [tempTodo, setTempTodo] = useState<Todo | null>(null);
   const [inputValue, setInputValue] = useState('');
   const [inputDisable, setInputDisable] = useState(false);
 
@@ -43,13 +42,9 @@ export const App: React.FC = () => {
       completed: false,
     };
 
-    setTempTodo(newTempToDo);
-    setIsLoading(true);
-
     addTodos(newTempToDo)
       .then((createdTodo) => {
         setIsLoading(false);
-        setTempTodo(null);
         setTodosFromServer((prevTodos: Todo[]): Todo[] => [...prevTodos, createdTodo]);
 
         setInputValue('');
@@ -57,8 +52,10 @@ export const App: React.FC = () => {
         setHasError(TodoErrorType.noError);
       })
       .catch(() => {
-        setTempTodo(null);
         setHasError(TodoErrorType.addTodoError);
+        setTimeout(() => {
+          setHasError(TodoErrorType.noError);
+        }, 3000);
       })
       .finally(() => {
         setInputDisable(false);
@@ -128,7 +125,6 @@ export const App: React.FC = () => {
           inputValue={inputValue}
           inputDisabled={inputDisable}
         />
-        {false && tempTodo}
         <TodoMain
           todos={preparedTodos}
           setHasError={setHasError}
