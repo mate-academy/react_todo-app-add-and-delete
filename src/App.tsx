@@ -2,12 +2,12 @@
 /* eslint-disable jsx-a11y/control-has-associated-label */
 import React, { useEffect, useMemo, useState } from 'react';
 
-import * as todoService from './api/todos';
-import { getFilteredTodos } from './utils/getFilteredTodo';
-import { UserWarning } from './UserWarning';
 import { Todo } from './types/Todo';
 import { FilterStatus } from './types/FilterStatus';
 import { TodoError } from './types/TodoError';
+import * as todoService from './api/todos';
+import { UserWarning } from './UserWarning';
+import { getFilteredTodos } from './utils/getFilteredTodo';
 import {
   Header,
   TodoErrors,
@@ -37,7 +37,8 @@ export const App: React.FC = () => {
   useEffect(() => {
     setErrorMessage(TodoError.none);
 
-    todoService.getTodos(todoService.USER_ID)
+    todoService
+      .getTodos(todoService.USER_ID)
       .then(setTodos)
       .catch(() => setErrorMessage(TodoError.load));
   }, []);
@@ -47,23 +48,19 @@ export const App: React.FC = () => {
   }
 
   const handleToggleCompleted = (todoId: number) => {
-    setTodos((curentTodos) => (
-      curentTodos.map(todo => (
-        todo.id === todoId
-          ? { ...todo, completed: !todo.completed }
-          : todo
-      ))));
+    setTodos((curentTodos) => (curentTodos.map((todo) => (
+      todo.id === todoId
+        ? { ...todo, completed: !todo.completed }
+        : todo
+    ))));
   };
 
   const handleAllToggle = () => {
-    const isEveryCompleted = todos.every(
-      todo => todo.completed,
-    );
+    const isEveryCompleted = todos.every((todo) => todo.completed);
 
-    setTodos((prevTodos) => (
-      prevTodos.map(todo => {
-        return { ...todo, completed: !isEveryCompleted };
-      })));
+    setTodos((prevTodos) => (prevTodos.map((todo) => (
+      { ...todo, completed: !isEveryCompleted }
+    ))));
   };
 
   const handleAddTodo = (title: string) => {
@@ -95,11 +92,13 @@ export const App: React.FC = () => {
   const handleDeleteTodo = (todoId: number) => {
     setErrorMessage(TodoError.none);
 
-    setIsLoadingTodoIds(prev => [...prev, todoId]);
+    setIsLoadingTodoIds((prev) => [...prev, todoId]);
 
-    todoService.deleteTodo(todoId)
+    todoService
+      .deleteTodo(todoId)
       .then(() => {
-        setTodos(currentTodos => currentTodos.filter(todo => todo.id !== todoId));
+        setTodos((currentTodos) => (
+          currentTodos.filter((todo) => todo.id !== todoId)));
       })
       .catch(() => setErrorMessage(TodoError.delete))
       .finally(() => {
@@ -108,16 +107,12 @@ export const App: React.FC = () => {
   };
 
   const handleDeleteCompletedTodo = async () => {
-    const completedIds = todos.filter(todo => todo.completed)
-      .map(todo => todo.id);
+    const completedIds = todos.filter((todo) => todo.completed)
+      .map((todo) => todo.id);
 
-    try {
-      await Promise.all(
-        completedIds.map(id => handleDeleteTodo(id)),
-      );
-    } catch (error) {
-      setErrorMessage(TodoError.delete);
-    }
+    await Promise.allSettled(
+      completedIds.map((id) => handleDeleteTodo(id)),
+    );
   };
 
   return (
@@ -127,32 +122,34 @@ export const App: React.FC = () => {
       <div className="todoapp__content">
         <Header
           countActiveTodos={countActiveTodos}
-          onError={setErrorMessage}
-          handleAddTodo={handleAddTodo}
           tempTodo={tempTodo}
+          handleAddTodo={handleAddTodo}
           handleAllToggle={handleAllToggle}
+          handleErrorMessage={setErrorMessage}
         />
 
         <TodoList
           todos={filteredTodos}
+          tempTodo={tempTodo}
+          isLoadingTodoIds={isLoadingTodoIds}
           handleToggleCompleted={handleToggleCompleted}
           handleDeleteTodo={handleDeleteTodo}
-          isLoadingTodoIds={isLoadingTodoIds}
-          tempTodo={tempTodo}
         />
 
-        <TodoFooter
-          countActiveTodos={countActiveTodos}
-          hasCompletedTodos={hasCompletedTodos}
-          filter={filter}
-          onFilterChange={setFilter}
-          onClearCompleted={handleDeleteCompletedTodo}
-        />
+        {todos.length > 0 && (
+          <TodoFooter
+            filter={filter}
+            countActiveTodos={countActiveTodos}
+            hasCompletedTodos={hasCompletedTodos}
+            handleFilterChange={setFilter}
+            handleDeleteCompletedTodo={handleDeleteCompletedTodo}
+          />
+        )}
 
         {errorMessage !== TodoError.none && (
           <TodoErrors
             errorMessage={errorMessage}
-            onChangeError={setErrorMessage}
+            handleErrorMessage={setErrorMessage}
           />
         )}
       </div>

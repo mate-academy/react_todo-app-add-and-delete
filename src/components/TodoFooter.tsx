@@ -1,35 +1,32 @@
 import classNames from 'classnames';
-
 import { FilterStatus } from '../types/FilterStatus';
 
 type Props = {
-  countActiveTodos: number,
-  hasCompletedTodos: boolean,
-  filter: FilterStatus,
-  onFilterChange: (filter: FilterStatus) => void,
-  onClearCompleted: () => void,
+  filter: FilterStatus;
+  countActiveTodos: number;
+  hasCompletedTodos: boolean;
+  handleFilterChange: (filter: FilterStatus) => void;
+  handleDeleteCompletedTodo: () => void;
 };
 
 export const TodoFooter: React.FC<Props> = ({
-  countActiveTodos, hasCompletedTodos, filter, onFilterChange, onClearCompleted,
+  filter,
+  countActiveTodos,
+  hasCompletedTodos,
+  handleFilterChange,
+  handleDeleteCompletedTodo,
 }) => {
   return (
-    /* Hide the footer if there are no todos */
-    <footer
-      className="todoapp__footer"
-    >
-      <span className="todo-count">
-        {`${countActiveTodos} items left`}
-      </span>
+    <footer className="todoapp__footer">
+      <span className="todo-count">{`${countActiveTodos} items left`}</span>
 
-      {/* Active filter should have a 'selected' class */}
       <nav className="filter">
         <a
           href="#/"
           className={classNames('filter__link', {
             selected: filter === FilterStatus.ALL,
           })}
-          onClick={() => onFilterChange(FilterStatus.ALL)}
+          onClick={() => handleFilterChange(FilterStatus.ALL)}
         >
           All
         </a>
@@ -39,7 +36,7 @@ export const TodoFooter: React.FC<Props> = ({
           className={classNames('filter__link', {
             selected: filter === FilterStatus.ACTIVE,
           })}
-          onClick={() => onFilterChange(FilterStatus.ACTIVE)}
+          onClick={() => handleFilterChange(FilterStatus.ACTIVE)}
         >
           Active
         </a>
@@ -49,18 +46,17 @@ export const TodoFooter: React.FC<Props> = ({
           className={classNames('filter__link', {
             selected: filter === FilterStatus.COMPLETED,
           })}
-          onClick={() => onFilterChange(FilterStatus.COMPLETED)}
+          onClick={() => handleFilterChange(FilterStatus.COMPLETED)}
         >
           Completed
         </a>
       </nav>
 
-      {/* don't show this button if there are no completed todos */}
       {hasCompletedTodos && (
         <button
           type="button"
           className="todoapp__clear-completed"
-          onClick={onClearCompleted}
+          onClick={handleDeleteCompletedTodo}
         >
           Clear completed
         </button>

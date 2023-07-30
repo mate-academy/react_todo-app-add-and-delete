@@ -1,22 +1,22 @@
 import { useEffect, useRef, useState } from 'react';
 import classNames from 'classnames';
-import { TodoError } from '../types/TodoError';
 import { Todo } from '../types/Todo';
+import { TodoError } from '../types/TodoError';
 
 type Props = {
-  countActiveTodos: number;
-  handleAddTodo: (title: string) => Promise<void>;
-  onError: (errorMessage: TodoError) => void;
   tempTodo: Todo | null;
+  countActiveTodos: number;
   handleAllToggle: () => void;
+  handleAddTodo: (title: string) => Promise<void>;
+  handleErrorMessage: (errorMessage: TodoError) => void;
 };
 
 export const Header: React.FC<Props> = ({
-  countActiveTodos,
-  onError,
-  handleAddTodo,
   tempTodo,
+  countActiveTodos,
   handleAllToggle,
+  handleAddTodo,
+  handleErrorMessage,
 }) => {
   const [todoTitle, setTodoTitle] = useState('');
   const inputRef = useRef<HTMLInputElement | null>(null);
@@ -29,13 +29,12 @@ export const Header: React.FC<Props> = ({
 
   const addTodo = () => {
     if (todoTitle.trim() === '') {
-      onError(TodoError.emptyTitle);
+      handleErrorMessage(TodoError.emptyTitle);
 
       return;
     }
 
-    handleAddTodo(todoTitle.trim())
-      .then(() => setTodoTitle(''));
+    handleAddTodo(todoTitle.trim()).then(() => setTodoTitle(''));
   };
 
   const handleSubmit = (event: React.FormEvent<HTMLFormElement>) => {
@@ -55,10 +54,7 @@ export const Header: React.FC<Props> = ({
         onClick={handleAllToggle}
       />
 
-      {/* Add a todo on form submit */}
-      <form
-        onSubmit={handleSubmit}
-      >
+      <form onSubmit={handleSubmit}>
         <input
           type="text"
           className="todoapp__new-todo"

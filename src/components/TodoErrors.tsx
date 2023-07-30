@@ -1,18 +1,17 @@
 import { useEffect } from 'react';
+import classNames from 'classnames';
 import { TodoError } from '../types/TodoError';
 
 type Props = {
   errorMessage: TodoError;
-  onChangeError: (errorMessage: TodoError) => void;
+  handleErrorMessage: (errorMessage: TodoError) => void;
 };
 
 export const TodoErrors: React.FC<Props> = ({
   errorMessage,
-  onChangeError,
+  handleErrorMessage,
 }) => {
-  const handleCloseError = () => {
-    onChangeError(TodoError.none);
-  };
+  const handleCloseError = () => handleErrorMessage(TodoError.none);
 
   useEffect(() => {
     if (errorMessage) {
@@ -27,9 +26,18 @@ export const TodoErrors: React.FC<Props> = ({
   }, [errorMessage]);
 
   return (
-    <div className="notification is-danger is-light has-text-weight-normal">
+    <div
+      className={classNames(
+        'notification is-danger is-light has-text-weight-normal',
+        { hiden: errorMessage === TodoError.none },
+      )}
+    >
       {/* eslint-disable-next-line */}
-      <button type="button" className="delete" onClick={handleCloseError} />
+      <button
+        type="button"
+        className="delete"
+        onClick={handleCloseError}
+      />
 
       {errorMessage}
     </div>

@@ -4,14 +4,16 @@ import { Loader } from './Loader';
 
 type Props = {
   todo: Todo;
+  isLoadingTodoIds: number[],
   handleToggleCompleted: (id: number) => void,
   handleDeleteTodo: (id: number) => void,
-  isLoadingTodoIds: number[],
 };
 
 export const TodoItem: React.FC<Props> = ({
-  todo, handleToggleCompleted, handleDeleteTodo,
+  todo,
   isLoadingTodoIds,
+  handleToggleCompleted,
+  handleDeleteTodo,
 }) => {
   return (
     <div

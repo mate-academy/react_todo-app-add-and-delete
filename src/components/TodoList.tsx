@@ -4,26 +4,28 @@ import { TodoItem } from './TodoItem';
 
 type Props = {
   todos: Todo[],
+  tempTodo: Todo | null,
+  isLoadingTodoIds: number[],
   handleToggleCompleted: (id: number) => void,
   handleDeleteTodo: (id: number) => void,
-  isLoadingTodoIds: number[],
-  tempTodo: Todo | null,
 
 };
 
 export const TodoList: React.FC<Props> = ({
-  todos, handleToggleCompleted, handleDeleteTodo,
-  isLoadingTodoIds,
+  todos,
   tempTodo,
+  isLoadingTodoIds,
+  handleToggleCompleted,
+  handleDeleteTodo,
 }) => (
   <section className="todoapp__main">
     {todos.map(todo => (
       <TodoItem
         key={todo.id}
         todo={todo}
+        isLoadingTodoIds={isLoadingTodoIds}
         handleToggleCompleted={handleToggleCompleted}
         handleDeleteTodo={handleDeleteTodo}
-        isLoadingTodoIds={isLoadingTodoIds}
       />
     ))}
 
@@ -31,9 +33,9 @@ export const TodoList: React.FC<Props> = ({
       <TodoItem
         key={tempTodo.id}
         todo={tempTodo}
+        isLoadingTodoIds={[tempTodo?.id]}
         handleToggleCompleted={handleToggleCompleted}
         handleDeleteTodo={handleDeleteTodo}
-        isLoadingTodoIds={[tempTodo?.id]}
       />
     )}
 
@@ -49,9 +51,3 @@ export const TodoList: React.FC<Props> = ({
 //     value="Todo is being edited now"
 //   />
 // </form> */}
-
-// {/* 'is-active' class puts this modal on top of the todo
-// <div className="modal overlay is-active">
-//   <div className="modal-background has-background-white-ter" />
-//   <div className="loader" />
-// </div> */}
