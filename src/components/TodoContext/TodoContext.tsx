@@ -3,24 +3,8 @@ import {
 } from 'react';
 import { Todo } from '../../types/Todo';
 import { getTodos } from '../../api/todos';
-
-enum Status{
-  all = 'All',
-  active = 'Active',
-  completed = 'Completed',
-}
-
-const prepareTodos = (currentFilter: Status, allTodos: Todo[]) => {
-  switch (currentFilter) {
-    case Status.all:
-    default:
-      return [...allTodos];
-    case Status.active:
-      return [...allTodos].filter((todo) => !todo.completed);
-    case Status.completed:
-      return [...allTodos].filter((todo) => todo.completed);
-  }
-};
+import { prepareTodos } from '../../utils/PrepareTodos';
+import { Status } from '../../types/Status';
 
 export const TodoContext = createContext({
   todos: [] as Todo[],

@@ -76,14 +76,22 @@ export const TodoApp: React.FC = () => {
   const deleteCompletedTodos = () => {
     setLoading(idsOfCompletedTodos);
 
-    idsOfCompletedTodos.map(id => deleteTodo(id));
+    idsOfCompletedTodos.forEach(id => {
+      deleteTodo(id)
+        .then(() => {
+          setTodos(currentTodos => (
+            currentTodos.filter(currTodo => !currTodo.completed)
+          ));
+          setLoading([]);
+        });
+    });
 
-    setTimeout(() => {
-      setTodos(currentTodos => (
-        currentTodos.filter(currTodo => !currTodo.completed)
-      ));
-      setLoading([]);
-    }, 300);
+    // setTimeout(() => {
+    //   setTodos(currentTodos => (
+    //     currentTodos.filter(currTodo => !currTodo.completed)
+    //   ));
+    //   setLoading([]);
+    // }, 300);
   };
 
   return (
@@ -130,7 +138,7 @@ export const TodoApp: React.FC = () => {
                 type="button"
                 className={cn('todoapp__clear-completed',
                   { 'is-invisible': completedTodos.length === 0 })}
-                onClick={() => deleteCompletedTodos()}
+                onClick={deleteCompletedTodos}
               >
                 Clear completed
               </button>
