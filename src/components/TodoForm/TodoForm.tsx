@@ -22,6 +22,12 @@ export const TodoForm:React.FC<Props> = React.memo(
     const handlerSubmit = (event: React.FormEvent<HTMLFormElement>) => {
       event.preventDefault();
 
+      if (!title) {
+        setNotification("Title can't be empty");
+
+        return;
+      }
+
       const newTodo = {
         id: 0,
         title,
@@ -35,11 +41,6 @@ export const TodoForm:React.FC<Props> = React.memo(
 
     const handleChange = (event: React.ChangeEvent<HTMLInputElement>) => {
       setTitle(event?.target.value);
-      if (!event.target.value) {
-        setNotification("Title can't be empty");
-      } else {
-        setNotification('');
-      }
     };
 
     return (
