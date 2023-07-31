@@ -35,7 +35,7 @@ export const App: React.FC = () => {
   const [error, setError] = useState(Error.None);
   const [tempTodo, setTempTodo] = useState<Todo | null>(null);
   const [title, setTitle] = useState('');
-  const [loadingTempTodo, setLoadingTempTodo] = useState(false);
+  const [loadingIdsList, setLoadingIdsList] = useState<number[]>([]);
 
   useEffect(() => {
     todoService.getTodos(USER_ID)
@@ -62,8 +62,6 @@ export const App: React.FC = () => {
   }
 
   const addTodo = (titleNewTodo: string) => {
-    setLoadingTempTodo(true);
-
     const newTodo: Todo = {
       userId: USER_ID,
       title: titleNewTodo,
@@ -82,7 +80,6 @@ export const App: React.FC = () => {
       })
       .finally(() => {
         setTempTodo(null);
-        setLoadingTempTodo(false);
       });
   };
 
@@ -97,10 +94,30 @@ export const App: React.FC = () => {
     }
   };
 
+  const deleteTodo = (todoId: number) => {
+    setLoadingIdsList(prev => {
+      return [...prev, todoId];
+    });
+
+    todoService.deleteTodo(todoId)
+      .then(() => {
+        setTodos(todos.filter(({ id }) => id !== todoId));
+      })
+      .catch(() => {
+        setError(Error.Delete);
+      })
+      .finally(() => {
+        setLoadingIdsList(prev => prev
+          .filter(itemId => itemId !== todoId));
+      });
+  };
+
   const deleteCompletedTodos = () => {
     completedTodos.forEach(({ id }) => todoService.deleteTodo(id));
     setTodos(activeTodos);
   };
+
+  const allComplited = todos.every(todo => todo.completed);
 
   return (
     <div className="todoapp">
@@ -112,7 +129,7 @@ export const App: React.FC = () => {
             <button
               type="button"
               className={cn('todoapp__toggle-all', {
-                active: todos.every(todo => todo.completed),
+                active: allComplited,
               })}
             />
           )}
@@ -130,12 +147,11 @@ export const App: React.FC = () => {
 
         {!areTodosEmpty && (
           <TodoList
-            todos={visibleTodos}
-            onTodosChange={setTodos}
-            tempTodo={tempTodo}
-            loadingTempTodo={loadingTempTodo}
-            onErrorChange={setError}
-          />
+          todos={visibleTodos}
+          tempTodo={tempTodo}
+          onDeleteTodo={deleteTodo}
+          loadingIdsList={loadingIdsList}
+        />
         )}
 
         {!areTodosEmpty && (

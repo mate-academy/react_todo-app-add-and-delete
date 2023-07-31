@@ -1,39 +1,18 @@
-import { useState } from 'react';
+import React from 'react';
 import cn from 'classnames';
 import { Todo } from '../types/Todo';
-import { Error } from '../types/Error';
-import { deleteTodo } from '../api/todos';
 
 type Props = {
   todo: Todo,
-  todos?: Todo[],
-  onTodosChange?: (todos: Todo[]) => void;
-  loadingTempTodo?: boolean,
-  onErrorChange?: (error: Error) => void;
+  onDeleteTodo: (todoId: number) => void,
+  loading: boolean,
 };
 
 export const TodoItem: React.FC<Props> = ({
   todo,
-  todos = [],
-  onTodosChange = () => { },
-  loadingTempTodo,
-  onErrorChange = () => { },
+  onDeleteTodo,
+  loading,
 }) => {
-  const [loading, setLoading] = useState(false);
-
-  const removeTodo = (todoId: number) => {
-    setLoading(true);
-
-    deleteTodo(todoId)
-      .then(() => {
-        onTodosChange(todos.filter(({ id }) => id !== todoId));
-      })
-      .catch(() => {
-        onErrorChange(Error.Delete);
-      })
-      .finally(() => setLoading(false));
-  };
-
   return (
     <div className={cn('todo', {
       completed: todo.completed,
@@ -47,23 +26,26 @@ export const TodoItem: React.FC<Props> = ({
         />
       </label>
 
-      <span className="todo__title">{todo.title}</span>
+      <span className="todo__title">
+        {todo.title}
+      </span>
+
       <button
         type="button"
         className="todo__remove"
-        onClick={() => removeTodo(todo.id)}
+        onClick={() => onDeleteTodo(todo.id)}
       >
         x
       </button>
-
       <div
         className={cn('modal overlay', {
-          'is-active': loadingTempTodo || loading,
+          'is-active': loading,
         })}
       >
         <div className="modal-background has-background-white-ter" />
         <div className="loader" />
       </div>
+
     </div>
   );
 };

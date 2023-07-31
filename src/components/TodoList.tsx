@@ -1,37 +1,34 @@
+import React from 'react';
 import { Todo } from '../types/Todo';
-import { Error } from '../types/Error';
 import { TodoItem } from './TodoItem';
+import { TempTodo } from './TempTodo';
 
 type Props = {
   todos: Todo[];
-  onTodosChange: (todos: Todo[]) => void;
   tempTodo: Todo | null,
-  onErrorChange: (error: Error) => void;
-  loadingTempTodo: boolean,
+  onDeleteTodo: (todoId: number) => void,
+  loadingIdsList: number[],
 };
 
 export const TodoList: React.FC<Props> = ({
   todos,
-  onTodosChange,
   tempTodo,
-  onErrorChange,
-  loadingTempTodo,
+  onDeleteTodo,
+  loadingIdsList,
 }) => {
   return (
     <section className="todoapp__main">
       {todos.map(todo => (
         <TodoItem
           todo={todo}
-          todos={todos}
-          onTodosChange={onTodosChange}
-          onErrorChange={onErrorChange}
+          loading={loadingIdsList.includes(todo.id)}
+          onDeleteTodo={onDeleteTodo}
           key={todo.id}
         />
       ))}
       {tempTodo && (
-        <TodoItem
-          todo={tempTodo}
-          loadingTempTodo={loadingTempTodo}
+        <TempTodo
+          tempTodo={tempTodo}
         />
       )}
     </section>
