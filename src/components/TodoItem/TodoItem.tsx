@@ -14,17 +14,19 @@ type Props = {
 export const TodoItem: React.FC<Props> = ({ todo, tempLoader }) => {
   const [currentTodoIds, setCurrentTodoIds] = useState<number[]>([]);
 
-  const { deleteTodos, deletedTodos } = useContext(TodoContext);
+  const { deleteTodo, deletedTodos } = useContext(TodoContext);
 
-  const handleDeleteTodos = async (deleteTodo: Todo) => {
-    const todoIdsToDelete = [todo.id];
+  const handleDeleteTodos = async (deletedTodo: Todo) => {
+    setCurrentTodoIds(todoIds => [...todoIds, deletedTodo.id]);
 
-    setCurrentTodoIds(todoIds => [...todoIds, deleteTodo.id]);
-
-    await deleteTodos(todoIdsToDelete);
+    await deleteTodo(todo.id);
 
     setCurrentTodoIds([]);
   };
+
+  const isShowModal = currentTodoIds.includes(todo.id)
+    || (deletedTodos?.includes(todo))
+    || tempLoader;
 
   return (
     <div
@@ -62,18 +64,15 @@ export const TodoItem: React.FC<Props> = ({ todo, tempLoader }) => {
         </form>
       )}
 
-      {(currentTodoIds.includes(todo.id)
-        || (deletedTodos?.includes(todo)) || tempLoader)
-        && (
-          <div className={classNames('modal overlay', {
-            'is-active': currentTodoIds.includes(todo.id)
-              || deletedTodos?.includes(todo) || tempLoader,
-          })}
-          >
-            <div className="modal-background has-background-white-ter" />
-            <div className="loader" />
-          </div>
-        )}
+      {isShowModal && (
+        <div className={classNames('modal overlay', {
+          'is-active': isShowModal,
+        })}
+        >
+          <div className="modal-background has-background-white-ter" />
+          <div className="loader" />
+        </div>
+      )}
     </div>
   );
 };

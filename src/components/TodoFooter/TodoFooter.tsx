@@ -11,7 +11,7 @@ export const TodoFooter = () => {
     todos,
     status,
     setStatus,
-    deleteCompletedTodos,
+    deleteTodos,
   } = useContext(TodoContext);
 
   const uncompletedTodosCount = useMemo(() => {
@@ -65,7 +65,7 @@ export const TodoFooter = () => {
       <button
         type="button"
         className="todoapp__clear-completed"
-        onClick={() => deleteCompletedTodos(todos)}
+        onClick={() => deleteTodos(todos)}
         disabled={!isCompleted}
       >
         Clear completed

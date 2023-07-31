@@ -5,8 +5,7 @@ import React, {
   useMemo,
   useState,
 } from 'react';
-
-import { createTodo, deleteTodo, getTodos } from '../api/todos';
+import * as api from '../api/todos';
 import { USER_ID } from '../utils/constants';
 
 import { Todo } from '../types/Todo';
@@ -28,8 +27,8 @@ export const TodoContext = React.createContext({
   setDeletedTodos: (_value: Todo[]) => { },
   tempTodo: null as Todo | null,
   setTempTodo: (_todo: Todo | null) => { },
-  deleteTodos: (_todoId: number[]) => { },
-  deleteCompletedTodos: (_todos: Todo[]) => { },
+  deleteTodo: (_todoId: number) => { },
+  deleteTodos: (_todos: Todo[]) => { },
   addTodo: (_todo: Todo) => { },
 });
 
@@ -41,35 +40,41 @@ export const TodoProvider: React.FC<Props> = ({ children }) => {
   const [tempTodo, setTempTodo] = useState<Todo | null>(null);
 
   useEffect(() => {
-    getTodos(USER_ID)
+    api.getTodos(USER_ID)
       .then(setTodos)
       .catch(() => setErrorMessage(Error.GET));
   }, []);
 
   const addTodo = async (todo: Todo) => {
-    const newTodo = await createTodo(todo);
+    try {
+      const newTodo = await api.createTodo(todo);
 
-    setTodos(currentTodos => [...currentTodos, newTodo]);
+      setTodos(currentTodos => [...currentTodos, newTodo]);
+    } catch (error) {
+      setErrorMessage(Error.ADD);
+    } finally {
+      setTempTodo(null);
+    }
   };
 
-  const deleteTodos = async (todoIds: number[]) => {
+  const deleteTodo = async (todoId: number) => {
     try {
-      await Promise.all(todoIds.map(todoId => deleteTodo(todoId)));
+      await api.deleteTodo(todoId);
 
       setTodos(currentTodos => currentTodos
-        .filter(todo => !todoIds.includes(todo.id)));
+        .filter(todo => todo.id !== todoId));
     } catch (error) {
       setErrorMessage(Error.DELETE);
     }
   };
 
-  const deleteCompletedTodos = async (allTodos: Todo[]) => {
-    const updadetTodos = allTodos.filter(todo => todo.completed);
-
-    setDeletedTodos(updadetTodos);
-
+  const deleteTodos = async (allTodos: Todo[]) => {
     try {
-      await Promise.all(updadetTodos.map(todo => deleteTodo(todo.id)));
+      const updadetTodos = allTodos.filter(todo => todo.completed);
+
+      setDeletedTodos(updadetTodos);
+
+      await Promise.all(updadetTodos.map(todo => api.deleteTodo(todo.id)));
 
       setTodos(currentTodos => currentTodos
         .filter(todo => !todo.completed));
@@ -90,8 +95,8 @@ export const TodoProvider: React.FC<Props> = ({ children }) => {
       setErrorMessage,
       deletedTodos,
       setDeletedTodos,
+      deleteTodo,
       deleteTodos,
-      deleteCompletedTodos,
       addTodo,
       tempTodo,
       setTempTodo,

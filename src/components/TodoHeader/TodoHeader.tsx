@@ -4,7 +4,6 @@ import { useContext, useState } from 'react';
 
 import { TodoContext } from '../../context/TodoContext';
 import { USER_ID } from '../../utils/constants';
-import { createTodo } from '../../api/todos';
 import { Todo } from '../../types/Todo';
 import { Error } from '../../types/Error';
 
@@ -13,7 +12,7 @@ export const TodoHeader = () => {
   const [loading, setLoading] = useState(false);
 
   const {
-    setTodos,
+    addTodo,
     setErrorMessage,
     setTempTodo,
   } = useContext(TodoContext);
@@ -39,19 +38,9 @@ export const TodoHeader = () => {
 
       setTempTodo({ ...newTodo, id: 0 });
 
-      const createdTodo = await createTodo(newTodo as Todo);
-
-      setTempTodo(null);
-      setLoading(false);
-
-      setTodos(
-        (currentTodos: Todo[]) => [...currentTodos, createdTodo as Todo],
-      );
-    } catch (error) {
-      setErrorMessage(Error.ADD);
+      await addTodo(newTodo as Todo);
     } finally {
       setLoading(false);
-      setTempTodo(null);
     }
   };
 
