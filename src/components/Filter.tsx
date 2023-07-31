@@ -20,7 +20,7 @@ export const Filter: React.FC = () => {
   );
 
   const isSomeTodosCompleted = React.useMemo(() => {
-    return todos.some(todo => todo.completed);
+    return todos.length > countActiveTodos;
   }, [todos]);
 
   function onDeleteCompletedTodos() {

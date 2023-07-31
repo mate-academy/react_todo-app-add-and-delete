@@ -1,23 +1,16 @@
-import React, { useContext, useEffect, useState } from 'react';
+import React, { useContext, useEffect } from 'react';
 import cn from 'classnames';
 import { TodosContext } from '../context/todosContext';
 import { wait } from '../utils/fetchClient';
 
 export const NotificationBlock: React.FC = () => {
-  const [isNotificationOpen, setIsNotificationOpen] = useState(false);
   const {
     errorMessage,
     setErrorMessage,
   } = useContext(TodosContext);
 
   function showNotificationBlock() {
-    setIsNotificationOpen(true);
-
-    wait(3000)
-      .then(() => {
-        setIsNotificationOpen(false);
-        setErrorMessage('');
-      });
+    wait(3000).then(() => setErrorMessage(''));
   }
 
   useEffect(() => {
@@ -31,14 +24,14 @@ export const NotificationBlock: React.FC = () => {
       className={cn(
         'notification is-danger is-light has-text-weight-normal',
         {
-          hidden: !isNotificationOpen,
+          hidden: !errorMessage,
         },
       )}
     >
       <button
         type="button"
         className="delete"
-        onClick={() => setIsNotificationOpen(false)}
+        onClick={() => setErrorMessage('')}
         aria-label="Close error notification"
       />
       {errorMessage}
