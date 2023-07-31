@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import classNames from 'classnames';
 import { TodoErrorType } from '../../types/TodoErrorType';
 
@@ -10,6 +10,10 @@ export const TodoError: React.FC<Props> = ({
   hasError,
   setHasError,
 }) => {
+  useEffect(() => {
+    setTimeout(() => setHasError(TodoErrorType.noError), 3000);
+  }, []);
+
   return (
     <div
       className={classNames(

@@ -53,9 +53,6 @@ export const App: React.FC = () => {
       })
       .catch(() => {
         setHasError(TodoErrorType.addTodoError);
-        setTimeout(() => {
-          setHasError(TodoErrorType.noError);
-        }, 3000);
       })
       .finally(() => {
         setInputDisable(false);
@@ -89,9 +86,9 @@ export const App: React.FC = () => {
       .then(setTodosFromServer)
       .catch(() => {
         setHasError(TodoErrorType.loadTodoError);
-        setTimeout(() => {
-          setHasError(TodoErrorType.noError);
-        }, 3000);
+        // setTimeout(() => {
+        //   setHasError(TodoErrorType.noError);
+        // }, 3000);
       });
   }, []);
   const preparedTodos = useMemo(() => {
@@ -125,6 +122,7 @@ export const App: React.FC = () => {
           inputValue={inputValue}
           inputDisabled={inputDisable}
         />
+
         <TodoMain
           todos={preparedTodos}
           setHasError={setHasError}
@@ -134,7 +132,7 @@ export const App: React.FC = () => {
         {
           todosFromServer.length > 0 && (
             <TodoFooter
-              todos={preparedTodos}
+              todos={todosFromServer}
               filteredBy={filteredBy}
               setFilteredBy={setFilteredBy}
               handleDeleteTodo={handleDeleteTodo}

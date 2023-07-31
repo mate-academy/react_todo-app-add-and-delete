@@ -57,6 +57,7 @@ export const TodoFooter: React.FC<Props> = ({
             'filter__link',
             { selected: filteredBy === FilteredBy.Completed },
           )}
+          onClick={() => setFilteredBy(FilteredBy.Completed)}
         >
           {FilteredBy.Completed}
         </a>
