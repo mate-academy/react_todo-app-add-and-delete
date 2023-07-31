@@ -1,7 +1,6 @@
 import classNames from 'classnames';
 import React, { useState } from 'react';
 import { Todo } from '../../types/Todo';
-import { USER_ID } from '../constants/constants';
 
 type Props = {
   countTodoActive: number;
@@ -25,7 +24,7 @@ export const TodoHeader: React.FC<Props> = ({
 
     const newTodo = {
       id: 0,
-      userId: USER_ID,
+      userId: 1,
       title: todoName,
       completed: false,
     };
