@@ -56,6 +56,7 @@ export const TodoProvider: React.FC<Props> = ({ children }) => {
 
   useEffect(() => {
     setLoading(true);
+    setError(null);
 
     todosService.getTodos(USER_ID)
       .then(setTodos)
@@ -88,7 +89,9 @@ export const TodoProvider: React.FC<Props> = ({ children }) => {
       userId: USER_ID,
     };
 
+    setLoading(true);
     setTodoInCreation(newTodo);
+    setError(null);
 
     return todosService.postTodo(newTodo)
       .then(todo => {
@@ -103,17 +106,20 @@ export const TodoProvider: React.FC<Props> = ({ children }) => {
         return false;
       })
       .finally(() => {
+        setLoading(false);
         setTodoInCreation(null);
       });
   };
 
-  const deleteTodo = (todoId: number) => {
+  const deleteTodo = useCallback((todoId: number) => {
     setLoading(true);
+    setError(null);
+
     todosService.deleteTodo(todoId)
       .then(() => setTodos(currentTodos => currentTodos.filter(todo => todo.id !== todoId)))
       .catch(() => setError(ErrorOption.DeleteError))
       .finally(() => setLoading(false));
-  };
+  }, []);
 
   const handleClearCompleted = useCallback(() => {
     todos.map(todo => (todo.completed ? deleteTodo(todo.id) : todo));

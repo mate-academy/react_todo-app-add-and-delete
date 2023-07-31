@@ -12,7 +12,7 @@ export const TodoInfo: React.FC<Props> = ({
   todo,
   onProcessed,
 }) => {
-  const { deleteTodo } = useContext(TodoContext);
+  const { deleteTodo, todoInCreation } = useContext(TodoContext);
 
   return (
     <div className={classNames('todo', {
@@ -27,7 +27,7 @@ export const TodoInfo: React.FC<Props> = ({
         />
       </label>
 
-      <span className="todo__title">{todo.title}</span>
+      <span className="todo__title">{todo?.title}</span>
       <button
         onClick={() => deleteTodo(todo.id)}
         type="button"
@@ -36,7 +36,7 @@ export const TodoInfo: React.FC<Props> = ({
         ×
       </button>
       <div className={classNames('modal overlay', {
-        'is-active': onProcessed,
+        'is-active': onProcessed || todoInCreation,
       })}
       >
         <div className="modal-background has-background-white-ter" />
