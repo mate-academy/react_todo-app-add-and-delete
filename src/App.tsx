@@ -2,8 +2,8 @@
 import React, { useEffect, useMemo, useState } from 'react';
 import { Filter, Todo } from './types/Todo';
 import { createTodo, getTodos, removeTodo } from './api/todos';
-import { TodoMain } from './components/TodoMain/TodoMain';
 import { TodoHeader } from './components/TodoHeader/TodoHeader';
+import { TodoMain } from './components/TodoMain/TodoMain';
 import { TodoFooter } from './components/TodoFooter/TodoFooter';
 import { TodoError } from './components/TodoError/TodoError';
 import { filterTodosByStatus } from './utils/filterTodo';
