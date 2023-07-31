@@ -16,7 +16,7 @@ interface ITodoContext {
   todoListFilterStatus: TodoListFilterStatus,
   todosStatistics: ITodosStatistics,
   error: ErrorValues | null,
-  handleError: (value: ErrorValues | null) => void,
+  setError: React.Dispatch<React.SetStateAction<ErrorValues | null>>,
   addNewTodo: (title: string) => void,
   loadingTodo: Todo | null,
   removeTodo: (todoId: number) => void,
@@ -55,10 +55,6 @@ export const TodoProvider: React.FC<PropsWithChildren<{}>> = ({ children }) => {
     return getTodosStatistics(todosFromServer);
   }, [todosFromServer]);
 
-  const handleError = (value: ErrorValues | null) => {
-    setError(value);
-  };
-
   const addNewTodo = (title: string) => {
     const newTodo:Todo = {
       id: 0,
@@ -82,6 +78,9 @@ export const TodoProvider: React.FC<PropsWithChildren<{}>> = ({ children }) => {
         );
 
         return createdTodo;
+      })
+      .catch(() => {
+        setError(ErrorValues.CantCreateTodoError);
       })
       .finally(() => setLoadingTodo(null));
   };
@@ -124,7 +123,7 @@ export const TodoProvider: React.FC<PropsWithChildren<{}>> = ({ children }) => {
       todoListFilterStatus,
       todosStatistics,
       error,
-      handleError,
+      setError,
       addNewTodo,
       loadingTodo,
       removeTodo,

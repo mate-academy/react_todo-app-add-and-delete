@@ -2,11 +2,11 @@ import React, { useContext, useEffect } from 'react';
 import { TodoContext } from '../context/todo.context';
 
 const ErrorNotification: React.FC = () => {
-  const { error, handleError } = useContext(TodoContext);
+  const { error, setError } = useContext(TodoContext);
 
   useEffect(() => {
     setTimeout(() => {
-      handleError(null);
+      setError(null);
     }, 3000);
   });
 
@@ -16,7 +16,7 @@ const ErrorNotification: React.FC = () => {
       <button
         type="button"
         className="delete"
-        onClick={() => handleError(null)}
+        onClick={() => setError(null)}
       />
       {error}
     </div>
