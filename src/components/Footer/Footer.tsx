@@ -31,9 +31,21 @@ export const Footer: React.FC<Props> = memo(({
 
     setOnDeleteIds([...idsToDelete]);
     idsToDelete.forEach(id => {
-      deleteTodo(id);
+      deleteTodo(id)
+        .finally(() => {
+          setOnDeleteIds(currentIds => {
+            const filteredIds = currentIds?.filter(filteredId => (
+              filteredId !== id
+            ));
+
+            if (!filteredIds) {
+              return null;
+            }
+
+            return [...filteredIds];
+          });
+        });
     });
-    setOnDeleteIds(null);
   };
 
   return (
@@ -42,7 +54,6 @@ export const Footer: React.FC<Props> = memo(({
         {`${todos.filter(todo => !todo.completed).length} items left`}
       </span>
 
-      {/* Active filter should have a 'selected' class */}
       <nav className="filter">
         <a
           href="#/"

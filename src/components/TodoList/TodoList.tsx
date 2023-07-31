@@ -31,6 +31,7 @@ export const TodoList: React.FC<Props> = memo(({
           todo={todo}
           onDeleteIds={onDeleteIds}
           handleClickRemove={handleClickRemove}
+          key={todo.id}
         />
       ))}
 

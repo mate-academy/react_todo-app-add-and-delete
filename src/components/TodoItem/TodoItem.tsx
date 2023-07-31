@@ -17,7 +17,6 @@ export const TodoItem: React.FC<Props> = ({
       className={cn('todo', {
         completed: todo.completed,
       })}
-      key={todo.id}
     >
       <label className="todo__status-label">
         <input
