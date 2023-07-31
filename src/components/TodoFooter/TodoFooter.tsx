@@ -15,6 +15,8 @@ export const TodoFooter: React.FC<Props> = ({
   setFilteredBy,
   handleDeleteTodo,
 }) => {
+  const activeTodo = todos.filter(todo => !todo.completed).length;
+
   const completedTodos = todos.filter(todo => todo.completed);
   const handleClearCompleted = () => {
     completedTodos.forEach(todo => {
@@ -25,7 +27,7 @@ export const TodoFooter: React.FC<Props> = ({
   return (
     <footer className="todoapp__footer">
       <span className="todo-count">
-        {`${todos.length} items left`}
+        {`${activeTodo} items left`}
       </span>
 
       <nav className="filter">
