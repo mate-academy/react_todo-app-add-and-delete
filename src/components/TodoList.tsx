@@ -20,7 +20,9 @@ export const TodoList:React.FC<Props> = ({ todos }) => {
       })}
     >
       {todos.map(todo => (
-        <TodoItem todo={todo} />
+        <React.Fragment key={todo.id}>
+          <TodoItem todo={todo} />
+        </React.Fragment>
       ))}
 
       {tempTodo && (
