@@ -59,19 +59,25 @@ export const Header: React.FC<Props> = ({
     setIsLoading(true);
     setTodos([...todos, mockTodo]);
 
-    createTodo(newTodo).then(() => {
-      getTodos(userId)
-        .then(data => {
-          const newTodos = filterTodos(filter, data);
+    createTodo(newTodo)
+      .then(() => {
+        setTodos(todos.filter(t => t.id !== 0));
 
-          setTodos(newTodos);
-          setTodoTitle('');
-          setIsLoading(false);
-        });
-    })
+        getTodos(userId)
+          .then(data => {
+            const newTodos = filterTodos(filter, data);
+          
+            setTodos(newTodos);
+            setTodoTitle('');
+          });
+      })
       .catch(() => {
-        setHasError(Error.Add);
+        // setTodos(todos.filter(t => t.id !== 0));
+        setHasError(Error.Add);       
+      })
+      .finally(() => {
         setIsLoading(false);
+        setTodos(todos.filter(t => t.id !== 0));
       });
   };
 
