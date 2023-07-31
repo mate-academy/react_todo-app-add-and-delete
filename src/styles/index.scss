@@ -20,6 +20,10 @@ body {
   pointer-events: none;
 }
 
+.hidden_completed_button {
+  opacity: 0;
+}
+
 @import "./todoapp";
 @import "./todo";
 @import "./filter";
