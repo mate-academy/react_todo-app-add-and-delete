@@ -16,8 +16,6 @@ export const TodoHeader: React.FC<Props> = ({
   inputValue,
   inputDisabled,
 }) => {
-  // const [error, setError] = useState<TodoErrorType>(TodoErrorType.noError);
-
   return (
     <header className="todoapp__header">
       {

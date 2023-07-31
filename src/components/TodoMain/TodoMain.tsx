@@ -7,50 +7,81 @@ type Props = {
   setHasError: (error: TodoErrorType) => void,
   setTodosFromServer: React.Dispatch<React.SetStateAction<Todo[]>>,
   handleDeleteTodo: (todoId: number) => void,
+  tempTodo: Todo | null;
+  isLoading: boolean;
 };
 
 export const TodoMain: React.FC<Props> = ({
   todos,
   setHasError,
   handleDeleteTodo,
+  tempTodo,
+  isLoading,
 }) => {
   return (
     <section className="todoapp__main">
-      {
-        todos.map(todo => (
-          <div
-            key={todo.id}
-            className={classNames(
-              'todo',
-              { complited: todo.completed },
-            )}
+      {todos.map(todo => (
+        <div
+          key={todo.id}
+          className={classNames('todo',
+            { completed: todo.completed })}
+        >
+          <label className="todo__status-label">
+            <input
+              type="checkbox"
+              className="todo__status"
+              checked={todo.completed}
+              onChange={() => setHasError(TodoErrorType.noError)}
+            />
+          </label>
+
+          <span className="todo__title">{todo.title}</span>
+
+          <button
+            type="button"
+            className="todo__remove"
+            onClick={() => handleDeleteTodo(todo.id)}
           >
-            <label className="todo__status-label">
-              <input
-                type="checkbox"
-                className="todo__status"
-                checked={todo.completed}
-                onChange={() => setHasError(TodoErrorType.noError)}
-              />
-            </label>
+            ×
+          </button>
 
-            <span className="todo__title">{todo.title}</span>
-
-            <button
-              type="button"
-              className="todo__remove"
-              onClick={() => handleDeleteTodo(todo.id)}
-            >
-              ×
-            </button>
-
+          {isLoading && (
             <div className="modal overlay">
               <div className="modal-background has-background-white-ter" />
               <div className="loader" />
             </div>
-          </div>
-        ))
-      }
+          )}
+        </div>
+      ))}
+      {tempTodo && (
+        <div className="todo">
+          <label className="todo__status-label">
+            <input
+              type="checkbox"
+              className="todo__status"
+              checked={tempTodo.completed}
+              disabled
+            />
+          </label>
+
+          <span className="todo__title">{tempTodo.title}</span>
+
+          <button
+            type="button"
+            className="todo__remove"
+            disabled
+          >
+            ×
+          </button>
+
+          {isLoading && (
+            <div className="modal overlay">
+              <div className="modal-background has-background-white-ter" />
+              <div className="loader" />
+            </div>
+          )}
+        </div>
+      )}
     </section>
   );
 };

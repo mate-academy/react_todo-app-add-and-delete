@@ -20,6 +20,7 @@ export const App: React.FC = () => {
   const [isLoading, setIsLoading] = useState(false);
   const [inputValue, setInputValue] = useState('');
   const [inputDisable, setInputDisable] = useState(false);
+  const [tempTodo, setTempTodo] = useState<Todo | null>(null);
 
   const handleFormSubmit = (event: React.FormEvent) => {
     event.preventDefault();
@@ -42,13 +43,15 @@ export const App: React.FC = () => {
       completed: false,
     };
 
+    setTempTodo(newTempToDo);
+
     addTodos(newTempToDo)
       .then((createdTodo) => {
         setIsLoading(false);
         setTodosFromServer((prevTodos: Todo[]): Todo[] => [...prevTodos, createdTodo]);
 
         setInputValue('');
-
+        setTempTodo(null);
         setHasError(TodoErrorType.noError);
       })
       .catch(() => {
@@ -68,9 +71,11 @@ export const App: React.FC = () => {
         setTodosFromServer(currentTodos => currentTodos.filter(
           todo => todo.id !== todoId,
         ));
+        setIsLoading(false);
       })
 
       .catch(() => {
+        setIsLoading(false);
         setHasError(TodoErrorType.deleteTodoError);
       })
       .finally(() => {
@@ -125,6 +130,8 @@ export const App: React.FC = () => {
           setHasError={setHasError}
           setTodosFromServer={setTodosFromServer}
           handleDeleteTodo={handleDeleteTodo}
+          tempTodo={tempTodo}
+          isLoading={isLoading}
         />
         {
           todosFromServer.length > 0 && (
@@ -137,7 +144,6 @@ export const App: React.FC = () => {
           )
         }
       </div>
-      {false && isLoading}
       <TodoError
         hasError={hasError}
         setHasError={setHasError}
