@@ -29,7 +29,6 @@ export const App: React.FC = () => {
       .then(setTodos)
       .catch(() => {
         setError(ErrorType.LOAD);
-        setTimeout(() => setError(ErrorType.NONE), 3000);
       });
   }, []);
 
@@ -74,16 +73,10 @@ export const App: React.FC = () => {
       ...addedTodo,
     })
       .then(todo => {
-        setTodos(prevTodos => {
-          const maxId = Math.max(0, ...prevTodos.map(prevTodo => prevTodo.id));
-
-          return [...prevTodos, { ...todo, id: maxId + 1 }];
-        });
+        setTodos(prevTodos => [...prevTodos, todo]);
       })
-      .catch((err) => {
+      .catch(() => {
         setError(ErrorType.ADD);
-        setTimeout(() => setError(ErrorType.NONE), 3000);
-        throw err;
       });
   }, [todos]);
 
@@ -92,9 +85,8 @@ export const App: React.FC = () => {
       .then(() => {
         setTodos(prevTodos => prevTodos.filter(todo => todo.id !== todoId));
       })
-      .catch((err) => {
+      .catch(() => {
         setError(ErrorType.DELETE);
-        throw err;
       });
   }, []);
 

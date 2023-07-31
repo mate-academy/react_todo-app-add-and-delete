@@ -27,7 +27,7 @@ export const Header: React.FC<Props> = memo(({
   const handleSubmit = (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
 
-    if (!value.length) {
+    if (!value.trim().length) {
       setError(ErrorType.EMPTY);
       setTimeout(() => setError(ErrorType.NONE), 3000);
 
@@ -35,7 +35,7 @@ export const Header: React.FC<Props> = memo(({
     }
 
     setIsSubmitting(true);
-    addNewTodo(value)
+    addNewTodo(value.trim())
       .then(() => setValue(''))
       .finally(() => {
         setTempTodo(null);
