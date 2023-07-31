@@ -82,16 +82,10 @@ export const TodoApp: React.FC = () => {
           setTodos(currentTodos => (
             currentTodos.filter(currTodo => !currTodo.completed)
           ));
-          setLoading([]);
-        });
+        })
+        .catch(() => setError('Unable to delete a todos'))
+        .finally(() => setLoading([]));
     });
-
-    // setTimeout(() => {
-    //   setTodos(currentTodos => (
-    //     currentTodos.filter(currTodo => !currTodo.completed)
-    //   ));
-    //   setLoading([]);
-    // }, 300);
   };
 
   return (
