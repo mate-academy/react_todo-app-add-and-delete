@@ -4,7 +4,7 @@ import { TodoContext } from '../context/TodoContext';
 import { TodoInfo } from './TodoInfo';
 
 export const TodoList: React.FC = () => {
-  const { visibleTodos, loading, todoInCreation } = useContext(TodoContext);
+  const { visibleTodos, todoInCreation } = useContext(TodoContext);
 
   return (
     <section className="todoapp__main">
@@ -17,7 +17,6 @@ export const TodoList: React.FC = () => {
           >
             <TodoInfo
               todo={todo}
-              key={todo.id}
             />
           </CSSTransition>
         ))}
@@ -30,7 +29,7 @@ export const TodoList: React.FC = () => {
           >
             <TodoInfo
               todo={todoInCreation}
-              loading={loading}
+              onProcessed={Boolean(todoInCreation)}
             />
           </CSSTransition>
         )}

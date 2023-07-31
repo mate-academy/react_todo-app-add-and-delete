@@ -20,11 +20,9 @@ export const App: React.FC = () => {
         <h1 className="todoapp__title">todos</h1>
         <div className="todoapp__content">
           <TodoHeader />
+          <TodoList />
           {todos.length > 0 && (
-            <>
-              <TodoList />
-              <TodoFooter />
-            </>
+            <TodoFooter />
           )}
         </div>
         <ErrorMessage />

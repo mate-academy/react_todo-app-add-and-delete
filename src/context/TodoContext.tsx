@@ -1,6 +1,6 @@
 /* eslint-disable max-len */
 import React, {
-  ReactNode, useEffect, useMemo, useState,
+  ReactNode, useCallback, useEffect, useMemo, useState,
 } from 'react';
 import { Todo } from '../types/Todo';
 import * as todosService from '../api/todos';
@@ -81,8 +81,6 @@ export const TodoProvider: React.FC<Props> = ({ children }) => {
   };
 
   const addTodo = (todoTitle: string) => {
-    setLoading(true);
-
     const newTodo = {
       id: 0,
       title: todoTitle,
@@ -106,7 +104,6 @@ export const TodoProvider: React.FC<Props> = ({ children }) => {
       })
       .finally(() => {
         setTodoInCreation(null);
-        setLoading(false);
       });
   };
 
@@ -118,9 +115,9 @@ export const TodoProvider: React.FC<Props> = ({ children }) => {
       .finally(() => setLoading(false));
   };
 
-  const handleClearCompleted = () => {
+  const handleClearCompleted = useCallback(() => {
     todos.map(todo => (todo.completed ? deleteTodo(todo.id) : todo));
-  };
+  }, [todos]);
 
   const visibleTodos: Todo[] = useMemo(() => filterTodos(todos, filter),
     [todos, filter]);

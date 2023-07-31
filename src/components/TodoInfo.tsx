@@ -5,12 +5,12 @@ import { TodoContext } from '../context/TodoContext';
 
 type Props = {
   todo: Todo,
-  loading?: boolean,
+  onProcessed?: boolean,
 };
 
 export const TodoInfo: React.FC<Props> = ({
   todo,
-  loading = false,
+  onProcessed,
 }) => {
   const { deleteTodo } = useContext(TodoContext);
 
@@ -36,7 +36,7 @@ export const TodoInfo: React.FC<Props> = ({
         ×
       </button>
       <div className={classNames('modal overlay', {
-        'is-active': loading,
+        'is-active': onProcessed,
       })}
       >
         <div className="modal-background has-background-white-ter" />
