@@ -21,6 +21,8 @@ export const App: React.FC = () => {
   const [errorMessage, setErrorMessage] = useState<Error>(Error.none);
   const [filter, setFilter] = useState<Filter>(Filter.All);
   const [tempTodo, setTempTodo] = useState<Todo | null>(null);
+  const [isProcessing, setIsProcessing] = useState(false);
+  const [deletedTodos, setDeletedTodos] = useState<number[]>([]);
 
   const visibleTodos = useMemo(() => (
     getVisibleTodos(todos, filter)
@@ -32,23 +34,29 @@ export const App: React.FC = () => {
       .catch(() => setErrorMessage(Error.load));
   }, []);
 
-  const numberOfTodos = useMemo(() => visibleTodos.length, [visibleTodos]);
+  const numberOfActiveTodos = useMemo(() => (
+    todos.filter(todo => !todo.completed).length
+  ), [todos]);
 
   const hasActiveTodos = useMemo(() => (
-    visibleTodos.some(todo => !todo.completed)
-  ), [visibleTodos]);
+    todos.some(todo => !todo.completed)
+  ), [todos]);
 
   const completedTodos = useMemo(() => (
-    visibleTodos.filter(todo => todo.completed)
-  ), [visibleTodos]);
+    todos.filter(todo => todo.completed)
+  ), [todos]);
 
-  const deleteTodo = (todoId: number): Promise<void> => {
-    setTodos(currentTodos => currentTodos.filter(todo => todo.id !== todoId));
+  const deleteTodo = (todoId: number) => {
+    setIsProcessing(true);
+    deletedTodos.push(todoId);
 
     return todoService.removeTodo(todoId)
+      .then(() => setTodos(currentTodos => currentTodos.filter(todo => todo.id !== todoId)))
       .catch(() => {
-        setTodos(todos);
         setErrorMessage(Error.delete);
+      }).finally(() => {
+        setDeletedTodos([]);
+        setIsProcessing(false);
       });
   };
 
@@ -65,9 +73,8 @@ export const App: React.FC = () => {
       .then(newTodo => {
         setTodos(currentTodos => [...currentTodos, newTodo]);
       })
-      .catch((error) => {
+      .catch(() => {
         setErrorMessage(Error.add);
-        throw error;
       });
   };
 
@@ -81,7 +88,7 @@ export const App: React.FC = () => {
 
       <div className="todoapp__content">
         <header className="todoapp__header">
-          {numberOfTodos > 0 && (
+          {numberOfActiveTodos > 0 && (
             <button
               type="button"
               className={classNames('todoapp__toggle-all', {
@@ -90,7 +97,6 @@ export const App: React.FC = () => {
             />
           )}
 
-          {/* Add a todo on form submit */}
           <TodoForm
             addTodo={addTodo}
             setErrorMessage={setErrorMessage}
@@ -98,21 +104,42 @@ export const App: React.FC = () => {
           />
         </header>
 
-        {numberOfTodos > 0 && (
+        {numberOfActiveTodos > 0 && (
           <TodoList
             todos={visibleTodos}
             deleteTodo={deleteTodo}
-            tempTodo={tempTodo}
+            isProcessing={isProcessing}
+            deletedTodos={deletedTodos}
           />
         )}
 
-        {numberOfTodos > 0 && (
+        {tempTodo && (
+          <div className="todo">
+            <label className="todo__status-label">
+              <input type="checkbox" className="todo__status" />
+            </label>
+
+            <span className="todo__title">{tempTodo?.title}</span>
+            <button type="button" className="todo__remove">×</button>
+
+            <div
+              className={classNames('modal overlay', {
+                'is-active': tempTodo,
+              })}
+            >
+              <div className="modal-background has-background-white-ter" />
+              <div className="loader" />
+            </div>
+          </div>
+        )}
+
+        {numberOfActiveTodos > 0 && (
           <footer className="todoapp__footer">
             <span className="todo-count">
-              {numberOfTodos === 1 ? (
-                `${numberOfTodos} item left`
+              {numberOfActiveTodos === 1 ? (
+                `${numberOfActiveTodos} item left`
               ) : (
-                `${numberOfTodos} items left`
+                `${numberOfActiveTodos} items left`
               )}
             </span>
 

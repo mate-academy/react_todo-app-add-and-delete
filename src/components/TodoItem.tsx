@@ -1,26 +1,17 @@
 import classNames from 'classnames';
-import { useState } from 'react';
 import { Todo } from '../types/Todo';
-import { wait } from '../utils/fetchClient';
 
 type Props = {
   todo: Todo,
-  onDelete: (todoId: number) => Promise<void>,
+  deleteTodo: (todoId: number) => Promise<void>,
+  isProcessing: boolean,
+  deletedTodos: number[]
 };
 
-export const TodoItem: React.FC<Props> = ({ todo, onDelete }) => {
-  const [isLoading, setIsLoading] = useState(false);
-
-  const handleDelete = () => {
-    setIsLoading(true);
-
-    wait(3000)
-      .then(() => onDelete(todo.id))
-      .finally(() => setIsLoading(false));
-  };
-
+export const TodoItem: React.FC<Props> = ({
+  todo, deleteTodo, isProcessing, deletedTodos,
+}) => {
   return (
-
     <div className={classNames('todo', {
       completed: todo.completed,
     })}
@@ -37,14 +28,16 @@ export const TodoItem: React.FC<Props> = ({ todo, onDelete }) => {
       <button
         type="button"
         className="todo__remove"
-        onClick={handleDelete}
+        onClick={() => deleteTodo(todo.id)}
+        disabled={isProcessing}
       >
         ×
       </button>
 
-      <div className={classNames('modal overlay', {
-        'is-active': isLoading,
-      })}
+      <div
+        className={classNames('modal overlay', {
+          'is-active': deletedTodos.includes(todo.id),
+        })}
       >
         <div className="modal-background has-background-white-ter" />
         <div className="loader" />
