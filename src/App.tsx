@@ -25,6 +25,7 @@ export const App: React.FC = () => {
   const [isLoading, setLoading] = useState(false);
   const [idToDelete, setIdToDelete] = useState(-1);
   const [tempTodo, setTempTodo] = useState<Todo | null>(null);
+  const [isInputDisabled, setIsInputDisabled] = useState(false);
 
   useEffect(() => {
     setErrorMessage('');
@@ -59,6 +60,8 @@ export const App: React.FC = () => {
     setTempTodo(tempTodoData);
 
     if (query.trim()) {
+      setIsInputDisabled(true);
+
       addTodo({
         title: query,
         userId: USER_ID,
@@ -74,6 +77,7 @@ export const App: React.FC = () => {
         })
         .finally(() => {
           setTempTodo(null);
+          setIsInputDisabled(false);
         });
     }
   };
@@ -134,6 +138,7 @@ export const App: React.FC = () => {
           query={query}
           setQuery={setQuery}
           handleSubmit={handleSubmit}
+          isInputDisabled={isInputDisabled}
         />
 
         {todos.length !== 0

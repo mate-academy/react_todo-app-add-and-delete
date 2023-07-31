@@ -4,9 +4,15 @@ interface Props {
   query: string,
   setQuery: (query: string) => void,
   handleSubmit: (event: React.FormEvent<HTMLFormElement>) => void,
+  isInputDisabled: boolean,
 }
 
-export const Header: React.FC<Props> = ({ query, setQuery, handleSubmit }) => (
+export const Header: React.FC<Props> = ({
+  query,
+  setQuery,
+  handleSubmit,
+  isInputDisabled,
+}) => (
   <header className="todoapp__header">
     {/* this buttons is active only if there are some active todos */}
     {/* eslint-disable-next-line jsx-a11y/control-has-associated-label */}
@@ -20,6 +26,7 @@ export const Header: React.FC<Props> = ({ query, setQuery, handleSubmit }) => (
         placeholder="What needs to be done?"
         value={query}
         onChange={(event) => setQuery(event.target.value)}
+        disabled={isInputDisabled}
       />
     </form>
   </header>
