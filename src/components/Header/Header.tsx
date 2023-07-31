@@ -66,14 +66,14 @@ export const Header: React.FC<Props> = ({
         getTodos(userId)
           .then(data => {
             const newTodos = filterTodos(filter, data);
-          
+
             setTodos(newTodos);
             setTodoTitle('');
           });
       })
       .catch(() => {
         // setTodos(todos.filter(t => t.id !== 0));
-        setHasError(Error.Add);       
+        setHasError(Error.Add);
       })
       .finally(() => {
         setIsLoading(false);
