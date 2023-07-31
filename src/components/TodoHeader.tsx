@@ -4,7 +4,7 @@ import { TodoContext } from '../context/todoContext';
 import { ErrorType } from '../enums';
 
 export const TodoHeader: React.FC = () => {
-  const {loading, onErrorHandler,  onAddTodo} = useContext(TodoContext);
+  const { loading, onErrorHandler, onAddTodo } = useContext(TodoContext);
 
   const [title, setTitle] = useState('');
 
@@ -12,15 +12,16 @@ export const TodoHeader: React.FC = () => {
     event.preventDefault();
 
     if (!title) {
-      onErrorHandler(ErrorType.EmptyTitle)
+      onErrorHandler(ErrorType.EmptyTitle);
 
       return;
     }
+
     const titleData = title;
 
     onAddTodo(titleData);
     setTitle('');
-  }
+  };
 
   return (
     <header className="todoapp__header">

@@ -8,7 +8,7 @@ export const TodoFooter: React.FC = () => {
     itemsLeft,
     visibleButtonClearCompleted,
     select,
-    onCompleted,
+    onDeleteCompletedTodos,
     onSelect,
   } = useContext(TodoContext);
 
@@ -54,17 +54,20 @@ export const TodoFooter: React.FC = () => {
         <button
           type="button"
           className="todoapp__clear-completed"
-          onClick={() => onCompleted(true)}
+          onClick={onDeleteCompletedTodos}
         >
-        Clear completed
-      </button>
-      ) :
-      (<button
-        style={{visibility: 'hidden'}}
-        type="button"
-        className="todoapp__clear-completed">
-      Clear completed
-    </button>)}
+          Clear completed
+        </button>
+      )
+        : (
+          <button
+            style={{ visibility: 'hidden' }}
+            type="button"
+            className="todoapp__clear-completed"
+          >
+            Clear completed
+          </button>
+        )}
     </footer>
   );
 };

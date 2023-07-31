@@ -3,7 +3,9 @@ import { TodoContext } from '../context/todoContext';
 import { TodoItem } from './TodoItem';
 
 export const TodoList: React.FC = () => {
-  const { todos, loading, tempTodo, onDeleteTodo } = useContext(TodoContext);
+  const {
+    todos, loading, tempTodo, onDeleteTodo,
+  } = useContext(TodoContext);
 
   return (
     <section className="todoapp__main">

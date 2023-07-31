@@ -14,11 +14,12 @@ interface Context {
   visibleButtonClearCompleted: number;
   error: ErrorType | null;
   select: SelectType;
+  selectedTodoIds: number[];
   onDeleteTodo: (todoId: number) => void;
   onAddTodo: (title: string) => void;
   onErrorHandler: (value: ErrorType | null) => void;
   onSelect: (value: SelectType) => void;
-  onCompleted: (value: boolean) => void;
+  onDeleteCompletedTodos: () => void;
 }
 
 export const TodoContext = React.createContext<Context>({
@@ -30,11 +31,12 @@ export const TodoContext = React.createContext<Context>({
   visibleFooter: 0,
   visibleButtonClearCompleted: 0,
   select: SelectType.All,
+  selectedTodoIds: [],
   onDeleteTodo: () => {},
   onAddTodo: () => {},
   onErrorHandler: () => {},
   onSelect: () => {},
-  onCompleted: () => {},
+  onDeleteCompletedTodos: () => {},
 });
 
 type Props = {
@@ -47,14 +49,14 @@ export const TodoProvider: React.FC<Props> = ({ children }) => {
   const [select, setSelect] = useState(SelectType.All);
   const [tempTodo, setTempTodo] = useState<Todo | null>(null);
   const [loading, setLoading] = useState(false);
-  const [completed, setCompleted] = useState(false);
+  const [selectedTodoIds, setSelectedTodoIds] = useState<number[]>([]);
 
   const getTodos = async () => {
     setLoading(true);
     try {
       const allTodos = await todoService.getTodos(USER_ID);
-      setTodos(allTodos);
 
+      setTodos(allTodos);
     } catch {
       setError(ErrorType.IncorectUrl);
     } finally {
@@ -64,7 +66,7 @@ export const TodoProvider: React.FC<Props> = ({ children }) => {
 
   useEffect(() => {
     getTodos();
-  }, [completed]);
+  }, []);
 
   const selectedTodos = selectTodos(todos, select);
 
@@ -73,7 +75,8 @@ export const TodoProvider: React.FC<Props> = ({ children }) => {
     todoService.deleteTodo(todoId)
       .then(() => {
         setTodos(currentTodos => currentTodos
-          .filter(todo => todo.id !== todoId))})
+          .filter(todo => todo.id !== todoId));
+      })
       .catch(() => setError(ErrorType.DeleteError))
       .finally(() => setLoading(false));
   };
@@ -86,23 +89,50 @@ export const TodoProvider: React.FC<Props> = ({ children }) => {
       title,
       completed: false,
       userId: USER_ID,
-    }
+    };
 
     setTempTodo(newTodo);
 
     todoService.createTodo(newTodo)
-    .then(todo => {
-      setTodos(currenTodos => [...currenTodos, todo])})
-    .catch(() => setError(ErrorType.AddError))
-    .finally(() => {
-      setTempTodo(null);
-      setLoading(false);
-    })
-  }
+      .then(todo => {
+        setTodos(currenTodos => [...currenTodos, todo]);
+      })
+      .catch(() => setError(ErrorType.AddError))
+      .finally(() => {
+        setTempTodo(null);
+        setLoading(false);
+      });
+  };
+
+  const onDeleteCompletedTodos = async () => {
+    setError(null);
+
+    try {
+      const completedTodosIds = todos
+        .filter(todo => todo.completed)
+        .map(todo => todo.id);
+
+      setSelectedTodoIds(completedTodosIds);
+
+      const deleteTasks = completedTodosIds.map(todoId => (
+        deleteTodo(todoId)
+      ));
+
+      await Promise.all(deleteTasks);
+
+      setTodos(prevTodos => prevTodos.filter(todo => !todo.completed));
+    } catch {
+      setError(ErrorType.DeleteError);
+    } finally {
+      setSelectedTodoIds([]);
+    }
+  };
 
   const itemsLeft = selectedTodos.filter(todo => !todo.completed).length;
   const visibleFooter = todos.length;
-  const visibleButtonClearCompleted = selectedTodos.filter(todo => todo.completed).length;
+  const visibleButtonClearCompleted = selectedTodos.filter(
+    (todo) => todo.completed,
+  ).length;
 
   const value: Context = useMemo(() => ({
     todos: selectedTodos,
@@ -111,13 +141,14 @@ export const TodoProvider: React.FC<Props> = ({ children }) => {
     visibleFooter,
     visibleButtonClearCompleted,
     error,
+    selectedTodoIds,
     tempTodo,
     select,
     onDeleteTodo: deleteTodo,
     onAddTodo: addTodo,
     onErrorHandler: setError,
     onSelect: setSelect,
-    onCompleted: setCompleted,
+    onDeleteCompletedTodos,
   }), [selectedTodos, error, select]);
 
   return (
