@@ -1,7 +1,7 @@
 /* eslint-disable import/no-cycle */
-import React, { useContext, useState } from "react";
-import { Todo } from "../../types/Todo";
-import { TodosContext } from "../../context/TodosContext";
+import React, { useContext, useState } from 'react';
+import { Todo } from '../../types/Todo';
+import { TodosContext } from '../../context/TodosContext';
 
 type Props = {
   todo: Todo;
