@@ -51,8 +51,7 @@ export const TodoItem: React.FC<Props> = (
         <>
           <span className="todo__title">
             {
-              todo?.title
-              || 'Todo is being saved now'
+              todo?.title || tempTodo?.title
             }
           </span>
           <button

@@ -25,7 +25,7 @@ export const AddTodoForm: React.FC<Props> = ({
   const handleSubmit = async (event: React.FormEvent) => {
     event.preventDefault();
 
-    if (!title) {
+    if (!title.trim()) {
       setErrorMessage('Title can\'t be empty');
 
       return;
