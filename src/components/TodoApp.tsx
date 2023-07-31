@@ -4,13 +4,13 @@ import React, {
 } from 'react';
 import cn from 'classnames';
 
-import { UserWarning } from '../UserWarning';
 import { filterTodos } from '../services/todos';
 import { Filter } from './Filter';
 import { TodoList } from './TodoList';
 import { NotificationBlock } from './NotificationBlock';
 import { NewTodo } from './NewTodo';
 import { TodosContext } from '../context/todosContext';
+import { UserWarning } from '../UserWarning';
 
 export const TodoApp: React.FC = () => {
   const {
