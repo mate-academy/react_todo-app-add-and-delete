@@ -7,8 +7,7 @@ import { TodoHeader } from './components/TodoHeader/TodoHeader';
 import { TodoFooter } from './components/TodoFooter/TodoFooter';
 import { TodoError } from './components/TodoError/TodoError';
 import { filterTodosByStatus } from './utils/filterTodo';
-
-export const USER_ID = 11132;
+import { USER_ID } from './components/constants/constants';
 
 export const App: React.FC = () => {
   const [baseTodo, setBaseTodo] = useState<Todo[]>([]);
@@ -18,11 +17,9 @@ export const App: React.FC = () => {
   const [listOfTodosIds, setListOfTodosIds] = useState<number[]>([]);
   const [tempTodo, setTempTodo] = useState<Todo | null>(null);
 
-
   const todos = useMemo(
     () => filterTodosByStatus(baseTodo, filterStatus), [baseTodo, filterStatus],
   );
-
 
   useEffect(() => {
     getTodos(USER_ID)
@@ -43,8 +40,8 @@ export const App: React.FC = () => {
     setTempTodo(newTodo);
 
     return createTodo(newTodo)
-      .then(newTodo => {
-        setBaseTodo(currentTodos => [...currentTodos, newTodo]);
+      .then(todo => {
+        setBaseTodo(currentTodos => [...currentTodos, todo]);
       })
       .catch(() => {
         setError('Unable to add a post');

@@ -1,5 +1,6 @@
 import classNames from 'classnames';
-import { Filter} from '../../types/Todo';
+import React from 'react';
+import { Filter } from '../../types/Todo';
 
 type Props = {
   countTodoActive: number;
@@ -58,12 +59,14 @@ export const TodoFooter: React.FC<Props> = ({
       </a>
     </nav>
 
-    {countTodoCompleted > 0 && <button
-      type="button"
-      className="todoapp__clear-completed"
-      onClick={() => deleteCompletedTodos()}
-    >
-      Clear completed
-    </button>}
+    {countTodoCompleted > 0 && (
+      <button
+        type="button"
+        className="todoapp__clear-completed"
+        onClick={() => deleteCompletedTodos()}
+      >
+        Clear completed
+      </button>
+    )}
   </footer>
 );

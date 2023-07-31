@@ -1,7 +1,7 @@
 import classNames from 'classnames';
+import React, { useState } from 'react';
 import { Todo } from '../../types/Todo';
-import { useState } from 'react';
-import { USER_ID } from '../../App';
+import { USER_ID } from '../constants/constants';
 
 type Props = {
   countTodoActive: number;
@@ -9,8 +9,9 @@ type Props = {
   setError: (message: string) => void;
 };
 
-export const TodoHeader: React.FC<Props> = ({ countTodoActive, addTodo, setError}) => {
-
+export const TodoHeader: React.FC<Props> = ({
+  countTodoActive, addTodo, setError,
+}) => {
   const [todoName, setTodoName] = useState('');
 
   const handleSubmit = (event: React.FormEvent<HTMLFormElement>) => {
@@ -32,7 +33,6 @@ export const TodoHeader: React.FC<Props> = ({ countTodoActive, addTodo, setError
     addTodo(newTodo);
     setTodoName('');
   };
-
 
   return (
     <header className="todoapp__header">
