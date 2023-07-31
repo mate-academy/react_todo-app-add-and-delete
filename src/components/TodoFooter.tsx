@@ -9,7 +9,6 @@ type Props = {
   filterBy: string;
   setFilterBy: React.Dispatch<React.SetStateAction<FilteredBy>>;
   deleteCompletedTodos: () => void,
-  // isLoading: boolean;
 };
 
 export const TodoFooter: React.FC<Props> = ({
@@ -17,10 +16,8 @@ export const TodoFooter: React.FC<Props> = ({
   filterBy,
   setFilterBy,
   deleteCompletedTodos,
-  // isLoading,
 }) => {
   const completedTodos = todosForDelete(todos);
-  console.log(completedTodos);
 
   return (
     <footer className="todoapp__footer">

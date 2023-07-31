@@ -6,12 +6,16 @@ type Props = {
   deleteTodo: (todoId: number) => void;
   todos: Todo[];
   isLoading: boolean;
+  listOfTodosIds: number[];
+  tempTodo: Todo | null;
 };
 
 export const TodoMain: React.FC<Props> = ({
   deleteTodo,
   todos,
   isLoading,
+  listOfTodosIds,
+  tempTodo,
 }) => {
   const [todoIdForDelete, setTodoIdForDelete] = useState(0);
 
@@ -46,7 +50,9 @@ export const TodoMain: React.FC<Props> = ({
           </button>
 
           <div className={classNames('modal overlay', {
-            'is-active': isLoading && todoIdForDelete === todo.id,
+            'is-active': isLoading
+              && (todoIdForDelete === todo.id
+              || listOfTodosIds.includes(todo.id)),
           })}
           >
             <div className="modal-background has-background-white-ter" />
@@ -54,6 +60,39 @@ export const TodoMain: React.FC<Props> = ({
           </div>
         </div>
       ))}
+
+      {tempTodo
+        && (
+          <div className={classNames('todo', {
+            'todo completed': tempTodo.completed,
+          })}
+          >
+            <label className="todo__status-label">
+              <input
+                type="checkbox"
+                className="todo__status"
+                checked
+              />
+            </label>
+
+            <span className="todo__title">{tempTodo.title}</span>
+            <button
+              type="button"
+              className="todo__remove"
+              onClick={() => deleteTodo(tempTodo.id)}
+            >
+              ×
+            </button>
+
+            <div className={classNames('modal overley', {
+              'modal overlay is-active': isLoading,
+            })}
+            >
+              <div className="modal-background has-background-white-ter" />
+              <div className="loader" />
+            </div>
+          </div>
+        )}
     </section>
   );
 };

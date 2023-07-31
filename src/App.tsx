@@ -12,14 +12,15 @@ import * as TodoService from './api/todos';
 import { FilteredBy } from './types/FilteredBy';
 import { getFilteredTodos } from './utils/filter';
 import { todosForDelete } from './utils/todosForDelete';
-
-const USER_ID = 11127;
+import { USER_ID } from './utils/UserId';
 
 export const App: React.FC = () => {
   const [todos, setTodos] = useState<Todo[]>([]);
   const [error, setError] = useState('');
   const [filterBy, setFilterBy] = useState(FilteredBy.ALL);
   const [isLoading, setLoading] = useState(false);
+  const [listOfTodosIds, setListOfTodosIds] = useState<number[]>([]);
+  const [tempTodo, setTempTodo] = useState<Todo | null>(null);
 
   useEffect(() => {
     TodoService.getTodos(USER_ID)
@@ -54,6 +55,7 @@ export const App: React.FC = () => {
       })
       .finally(() => {
         setLoading(false);
+        setListOfTodosIds([]);
       });
   };
 
@@ -61,6 +63,9 @@ export const App: React.FC = () => {
     setLoading(true);
 
     const completedTodos = todosForDelete(todos);
+    const completedTodoIds = completedTodos.map(todo => todo.id);
+
+    setListOfTodosIds(completedTodoIds);
 
     if (!completedTodos || completedTodos.length === 0) {
       setError('There are no completed todos');
@@ -69,20 +74,23 @@ export const App: React.FC = () => {
       return;
     }
 
-    const deletePromises = completedTodos.map(todo => deleteTodo(todo.id));
+    completedTodos.map(todo => deleteTodo(todo.id));
+  };
 
-    Promise.all(deletePromises)
-      .then(() => {
-        setTodos((currentTodos) => {
-          return currentTodos.filter(todo => !todo.completed);
-        });
+  const addTodo = (newTodo: Todo) => {
+    setLoading(true);
+    setTempTodo(newTodo);
+
+    TodoService.createTodo(newTodo)
+      .then(todo => {
+        setTodos(currentTodos => [...currentTodos, todo]);
       })
       .catch(() => {
-        setError('unable to delete todos');
+        setError('Unable to add a post');
       })
       .finally(() => {
         setLoading(false);
-        setFilterBy(FilteredBy.ALL);
+        setTempTodo(null);
       });
   };
 
@@ -100,7 +108,11 @@ export const App: React.FC = () => {
               })
             }
           />
-          <TodoForm />
+          <TodoForm
+            loading={isLoading}
+            todos={filteredTodos}
+            addTodo={(newTodo) => addTodo(newTodo)}
+          />
         </header>
 
         {
@@ -111,13 +123,14 @@ export const App: React.FC = () => {
                 deleteTodo={deleteTodo}
                 todos={filteredTodos}
                 isLoading={isLoading}
+                listOfTodosIds={listOfTodosIds}
+                tempTodo={tempTodo}
               />
               <TodoFooter
                 todos={todos}
                 filterBy={filterBy}
                 setFilterBy={setFilterBy}
                 deleteCompletedTodos={deleteCompletedTodos}
-                // isLoading={isLoading}
               />
             </>
           )
