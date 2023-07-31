@@ -12,16 +12,16 @@ type Props = {
 
 export const Todo: React.FC<Props> = ({ todo, onDelete, ids }) => {
   const [completed, setCompleted] = useState(todo.completed);
-  const [loading, setLoading] = useState(false);
+  const [isLoading, setIsLoading] = useState(false);
 
   const handleCompleted = () => setCompleted(!completed);
 
   const deleteTodo = () => {
-    setLoading(true);
+    setIsLoading(true);
 
     onDelete(todo.id)
       .finally(() => {
-        setLoading(false);
+        setIsLoading(false);
       });
   };
 
@@ -45,7 +45,7 @@ export const Todo: React.FC<Props> = ({ todo, onDelete, ids }) => {
         type="button"
         className="todo__remove"
         onClick={deleteTodo}
-        disabled={loading || ids.includes(todo.id)}
+        disabled={isLoading || ids.includes(todo.id)}
       >
         ×
       </button>
@@ -54,37 +54,12 @@ export const Todo: React.FC<Props> = ({ todo, onDelete, ids }) => {
         className={cn(
           'modal',
           'overlay',
-          { 'is-active': loading || ids.includes(todo.id) },
+          { 'is-active': isLoading || ids.includes(todo.id) },
         )}
       >
         <div className="modal-background has-background-white-ter" />
         <div className="loader" />
       </div>
     </div>
-
-  // {/* This todo is being edited */}
-  // <div className="todo">
-  //   <label className="todo__status-label">
-  //     <input
-  //       type="checkbox"
-  //       className="todo__status"
-  //     />
-  //   </label>
-
-  //   {/* This form is shown instead of the title and remove button */}
-  //   <form>
-  //     <input
-  //       type="text"
-  //       className="todo__title-field"
-  //       placeholder="Empty todo will be deleted"
-  //       // value="Todo is being edited now"
-  //     />
-  //   </form>
-
-  //   <div className="modal overlay">
-  //     <div className="modal-background has-background-white-ter" />
-  //     <div className="loader" />
-  //   </div>
-  // </div>
   );
 };

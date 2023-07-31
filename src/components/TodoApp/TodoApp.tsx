@@ -136,8 +136,11 @@ export const TodoApp: React.FC<Props> = ({ userId }) => {
 
       <div className="todoapp__content">
         <header className="todoapp__header">
-          {/* eslint-disable-next-line */}
-          <button type="button" className="todoapp__toggle-all active" />
+          <button
+            type="button"
+            className="todoapp__toggle-all active"
+            aria-label="Change All"
+          />
 
           <form
             onSubmit={addTodo(newTitle)}
@@ -201,10 +204,10 @@ export const TodoApp: React.FC<Props> = ({ userId }) => {
           { hidden: errorMessage === '' },
         )}
       >
-        {/* eslint-disable-next-line */}
         <button
           type="button"
           className="delete"
+          aria-label="Delete"
           onClick={makeSetErrorMessage('')}
         />
 
