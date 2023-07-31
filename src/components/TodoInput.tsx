@@ -4,10 +4,11 @@ type Props = {
   handleFormSubmit: (x: FormEvent<HTMLFormElement>) => void,
   inputValue: string,
   setInputValue: (x: string) => void,
+  inputIsDisabled: boolean,
 };
 
 export const TodoInput: FC<Props> = ({
-  handleFormSubmit, inputValue, setInputValue,
+  handleFormSubmit, inputValue, setInputValue, inputIsDisabled,
 }) => {
   return (
     <header className="todoapp__header">
@@ -22,6 +23,7 @@ export const TodoInput: FC<Props> = ({
           className="todoapp__new-todo"
           placeholder="What needs to be done?"
           value={inputValue}
+          disabled={inputIsDisabled}
           onChange={(event) => setInputValue(event.target.value)}
         />
       </form>

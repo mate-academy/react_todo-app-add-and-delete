@@ -1,4 +1,4 @@
-/* eslint-disable jsx-a11y/control-has-associated-label,no-console,@typescript-eslint/no-unused-vars */
+/* eslint-disable jsx-a11y/control-has-associated-label */
 import React, {
   FormEvent,
   useEffect, useMemo, useState,
@@ -21,12 +21,14 @@ export const App: React.FC = () => {
   const [errorMessage, setErrorMessage] = useState('');
   const [inputValue, setInputValue] = useState('');
   const [inputIsDisabled, setInputIsDisabled] = useState(false);
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   const [tempTodo, setTempTodo] = useState<Todo | null>(null);
 
   const handleFormSubmit = (event :FormEvent<HTMLFormElement>) => {
     event.preventDefault();
+    if (tempTodo) {
+      setInputIsDisabled(true);
 
-    if (inputIsDisabled) {
       return;
     }
 
@@ -45,9 +47,10 @@ export const App: React.FC = () => {
 
     setTempTodo(todoToAdd);
 
+
+
     addTodo(todoToAdd)
       .then(newTodo => {
-        setInputIsDisabled(true);
         setTodos(currentTodos => [...currentTodos, newTodo]);
       })
 
@@ -113,6 +116,7 @@ export const App: React.FC = () => {
           handleFormSubmit={handleFormSubmit}
           inputValue={inputValue}
           setInputValue={setInputValue}
+          inputIsDisabled={inputIsDisabled}
         />
 
         <TodoList
