@@ -15,8 +15,6 @@ interface IContext {
   tempTodo: Todo | null;
   onAddNewTodo: (todo: Todo) => void;
   onDeleteTodo: (todoId: number) => void;
-  deleteLoading: boolean;
-  deletingTodoId: number;
 }
 
 export const TodosContext = createContext<IContext>({
@@ -29,8 +27,6 @@ export const TodosContext = createContext<IContext>({
   tempTodo: null,
   onAddNewTodo: () => {},
   onDeleteTodo: () => {},
-  deleteLoading: false,
-  deletingTodoId: 0,
 });
 
 type Props = {
@@ -43,16 +39,12 @@ export const TodosProvider: React.FC<Props> = ({ children }) => {
   const [sortField, setSortField] = useState<SORT>(SORT.ALL);
   const [todosError, setTodosError] = useState("");
   const [tempTodo, setTempTodo] = useState<Todo | null>(null);
-  const [deleteLoading, setDeleteLoading] = useState(false);
-  const [deletingTodoId, setDeletingTodoId] = useState(0);
 
   useEffect(() => {
     getTodos(USER_ID)
       .then((serverTodos) => setTodos(serverTodos))
       .catch(() => setTodosError("Unable to fetch a todo"));
   }, []);
-
-  
 
   const updateSortField = (term: SORT) => {
     setSortField(term);
@@ -82,8 +74,6 @@ export const TodosProvider: React.FC<Props> = ({ children }) => {
   };
 
   const onDeleteTodo = async (todoId: number) => {
-    setDeleteLoading(true);
-    setDeletingTodoId(todoId);
     try {
       await deleteTodo(todoId);
 
@@ -94,8 +84,6 @@ export const TodosProvider: React.FC<Props> = ({ children }) => {
       setTodosError("Unable to delete a todo");
 
       return;
-    } finally {
-      setDeleteLoading(false);
     }
   };
 
@@ -109,8 +97,6 @@ export const TodosProvider: React.FC<Props> = ({ children }) => {
     todoLoading,
     onAddNewTodo,
     onDeleteTodo,
-    deleteLoading,
-    deletingTodoId,
   };
   return (
     <TodosContext.Provider value={value}>{children}</TodosContext.Provider>
