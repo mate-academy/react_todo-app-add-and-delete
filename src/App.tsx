@@ -1,5 +1,6 @@
 /* eslint-disable jsx-a11y/control-has-associated-label */
 import React, { useEffect, useMemo, useState } from 'react';
+import classNames from 'classnames';
 import { UserWarning } from './UserWarning';
 import { addTodo, deleteTodo, getTodos } from './api/todos';
 import { Todo } from './types/Todo';
@@ -16,18 +17,17 @@ export const App: React.FC = () => {
   const [errorText, setErrorText] = useState('');
   const [title, setTitle] = useState('');
   const [tempTodo, setTempTodo] = useState<Todo | null>(null);
+  const [processing, setProcessing] = useState(false);
+
+  const hasError = !!errorText;
 
   useEffect(() => {
-    setErrorText('');
     getTodos(USER_ID)
       .then((fetchedTodos: Todo[]) => {
         setTodos(fetchedTodos);
       })
       .catch((error: Error) => {
         setErrorText(error.message);
-        setTimeout(() => {
-          setErrorText('');
-        }, 3000);
       });
   }, []);
 
@@ -51,6 +51,8 @@ export const App: React.FC = () => {
       return;
     }
 
+    setProcessing(true);
+
     setTempTodo({
       id: 0,
       title,
@@ -62,7 +64,7 @@ export const App: React.FC = () => {
       addTodo({
         userId: USER_ID,
         title,
-        completed: false,
+        completed: true,
       })
         .then((newTodo) => {
           setTodos([...todos, newTodo]);
@@ -72,6 +74,7 @@ export const App: React.FC = () => {
         })
         .finally(() => {
           setTempTodo(null);
+          setProcessing(false);
         });
     }
 
@@ -79,15 +82,23 @@ export const App: React.FC = () => {
   };
 
   const deleteTodoHandler = (todoId: number) => {
+    setProcessing(true);
     deleteTodo(todoId).then(() => setTodos(todos
       .filter(todo => todo.id !== todoId)))
       .catch(() => {
         setErrorText('Unable to delete a todo');
+      }).finally(() => {
+        setProcessing(false);
       });
   };
 
   const activeTodos = todos.filter(todo => !todo.completed);
   const completedTodos = todos.filter(todo => todo.completed);
+
+  const clearCompletedTodos = () => {
+    completedTodos.forEach((item) => deleteTodo(item.id));
+    setTodos(activeTodos);
+  };
 
   if (!USER_ID) {
     return <UserWarning />;
@@ -103,7 +114,10 @@ export const App: React.FC = () => {
           && (<button type="button" className="todoapp__toggle-all active" />)}
 
           {/* Add a todo on form submit */}
-          <form onSubmit={addTodosHandler}>
+          <form onSubmit={(event) => {
+            addTodosHandler(event);
+          }}
+          >
             <input
               value={title}
               onChange={event => {
@@ -113,15 +127,36 @@ export const App: React.FC = () => {
               type="text"
               className="todoapp__new-todo"
               placeholder="What needs to be done?"
+              disabled={processing}
             />
           </form>
         </header>
 
         <Todolist
-          tempTodo={tempTodo}
+          processing={processing}
           deleteTodoHandler={deleteTodoHandler}
           todos={visibletodos}
         />
+
+        {tempTodo !== null && (
+          <div className="todo">
+            <label className="todo__status-label">
+              <input type="checkbox" className="todo__status" />
+            </label>
+
+            <span className="todo__title">{tempTodo?.title}</span>
+            <button type="button" className="todo__remove">×</button>
+
+            {/* 'is-active' class puts this modal on top of the todo */}
+            <div className={classNames('modal overlay', {
+              'is-active': tempTodo !== null,
+            })}
+            >
+              <div className="modal-background has-background-white-ter" />
+              <div className="loader" />
+            </div>
+          </div>
+        )}
 
         {/* Hide the footer if there are no todos */}
         <footer className="todoapp__footer">
@@ -134,7 +169,11 @@ export const App: React.FC = () => {
 
           {/* don't show this button if there are no completed todos */}
           {completedTodos.length > 0 && (
-            <button type="button" className="todoapp__clear-completed">
+            <button
+              onClick={clearCompletedTodos}
+              type="button"
+              className="todoapp__clear-completed"
+            >
               Clear completed
             </button>
           )}
@@ -143,7 +182,13 @@ export const App: React.FC = () => {
 
       {/* Notification is shown in case of any error */}
       {/* Add the 'hidden' class to hide the message smoothly */}
-      <TodoErrors errorText={errorText} setErrorText={setErrorText} />
+      {hasError && (
+        <TodoErrors
+          hasError={hasError}
+          errorText={errorText}
+          setErrorText={setErrorText}
+        />
+      )}
     </div>
   );
 };

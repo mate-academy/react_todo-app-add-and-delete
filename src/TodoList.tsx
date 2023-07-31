@@ -5,17 +5,17 @@ import { TodoItem } from './TodoItem';
 type Props = {
   todos: Todo[]
   deleteTodoHandler: (todoId: number) => void;
-  tempTodo: Todo | null;
+  processing: boolean;
 };
 
 export const Todolist: React.FC<Props> = (
-  { todos, deleteTodoHandler, tempTodo },
+  { todos, deleteTodoHandler, processing },
 ) => {
   return (
     <section className="todoapp__main">
       {todos.map(todo => (
         <TodoItem
-          tempTodo={tempTodo}
+          processing={processing}
           deleteTodoHandler={deleteTodoHandler}
           todo={todo}
           key={todo.id}

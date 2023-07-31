@@ -5,12 +5,12 @@ import { Todo } from './types/Todo';
 type Props = {
   todo: Todo,
   deleteTodoHandler: (todoId: number) => void,
-  tempTodo: Todo | null;
+  processing: boolean;
 };
 
 export const TodoItem: React.FC<Props> = (
   {
-    todo, deleteTodoHandler, tempTodo,
+    todo, deleteTodoHandler, processing,
   },
 ) => {
   return (
@@ -37,7 +37,7 @@ export const TodoItem: React.FC<Props> = (
 
       {/* overlay will cover the todo while it is being updated */}
       <div className={classNames('modal overlay', {
-        'is-active': tempTodo !== null,
+        'is-active': processing,
       })}
       >
         <div className="modal-background has-background-white-ter" />
