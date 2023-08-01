@@ -55,7 +55,7 @@ export const App: React.FC = () => {
     todos.filter(todo => !todo.completed)
   ), [todos]);
 
-  const areTodosEmpty = visibleTodos.length === 0;
+  const areTodosEmpty = todos.length === 0;
 
   if (!USER_ID) {
     return <UserWarning />;
@@ -145,14 +145,12 @@ export const App: React.FC = () => {
           </form>
         </header>
 
-        {!areTodosEmpty && (
-          <TodoList
+        <TodoList
           todos={visibleTodos}
           tempTodo={tempTodo}
           onDeleteTodo={deleteTodo}
           loadingIdsList={loadingIdsList}
         />
-        )}
 
         {!areTodosEmpty && (
           <footer className="todoapp__footer">
