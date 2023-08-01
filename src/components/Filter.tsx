@@ -6,11 +6,10 @@ import { deleteOnServer } from '../api/todos';
 
 type Props = {
   todos: Todo[];
-  setTodos: (todos: Todo[]) => void;
+  setTodos: React.Dispatch<React.SetStateAction<Todo[]>>;
   filter: FilterTypes,
   setFilter: (filter: FilterTypes) => void;
   setError: (value: ErrorType) => void;
-  setIsLoading: (value: boolean) => void;
   setUpdatingTodos: (value: number[]) => void;
 };
 
@@ -20,7 +19,6 @@ export const Filter: React.FC<Props> = ({
   filter,
   setFilter,
   setError,
-  setIsLoading,
   setUpdatingTodos,
 }) => {
   const amountActiveTodos = todos.filter((todo) => !todo.completed).length;
@@ -32,11 +30,10 @@ export const Filter: React.FC<Props> = ({
 
     setUpdatingTodos(completedTodosId);
     completedTodosId.forEach((id) => {
-      setIsLoading(true);
-      deleteOnServer(id).catch(() => setError(ErrorType.Delete))
+      deleteOnServer(id)
+        .then(() => setTodos(todos.filter((todo) => !todo.completed)))
+        .catch(() => setError(ErrorType.Delete))
         .finally(() => {
-          setIsLoading(false);
-          setTodos(todos.filter((todo) => !todo.completed));
           setUpdatingTodos([]);
         });
     });
@@ -44,7 +41,11 @@ export const Filter: React.FC<Props> = ({
 
   return (
     <footer className="todoapp__footer">
-      <span className="todo-count">{`${amountActiveTodos} items left`}</span>
+      <span className="todo-count">
+        {amountActiveTodos === 1
+          ? `${amountActiveTodos} item left`
+          : `${amountActiveTodos} items left`}
+      </span>
 
       <nav className="filter">
         <a

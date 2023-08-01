@@ -7,11 +7,10 @@ import { addOnServer, getTodos, updateOnServer } from '../api/todos';
 type Props = {
   userId: number;
   todos: Todo[];
-  setTodos: (todos: Todo[]) => void;
+  setTodos: React.Dispatch<React.SetStateAction<Todo[]>>;
   setError: (value: ErrorType) => void;
-  setIsLoading: (value: boolean) => void;
-  isLoading: boolean;
   setUpdatingTodos: (value: number[]) => void;
+  setTempTodo: (value: Todo | null) => void;
 };
 
 export const NewTodo: React.FC<Props> = ({
@@ -19,12 +18,12 @@ export const NewTodo: React.FC<Props> = ({
   todos,
   setTodos,
   setError,
-  setIsLoading,
-  isLoading,
   setUpdatingTodos,
+  setTempTodo,
 
 }) => {
   const [newTodoTitle, setNewTodoTitle] = useState<string>('');
+  const [disabledInput, setDisabledInput] = useState<boolean>(false);
 
   function addTodo(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
@@ -46,20 +45,24 @@ export const NewTodo: React.FC<Props> = ({
       id: 0,
     };
 
-    setIsLoading(true);
-    setTodos([...todos, tempTodo]);
+    setTempTodo(tempTodo);
+
+    setDisabledInput(true);
 
     addOnServer(createdTodo)
       .then(() => getTodos(userId))
       .then((updatedTodoList) => {
         setTodos(updatedTodoList);
-        setNewTodoTitle('');
-        setIsLoading(false);
       })
       .catch(() => {
         setError(ErrorType.Add);
-        setIsLoading(false);
+      })
+      .finally(() => {
+        setTempTodo(null);
+        setDisabledInput(false);
       });
+
+    setNewTodoTitle('');
   }
 
   const visibleTodos = todos.length;
@@ -73,11 +76,10 @@ export const NewTodo: React.FC<Props> = ({
 
     updatedTodos = updatedTodos.map((todo) => ({ ...todo, completed: status }));
 
-    updatedTodos.forEach(todo => updateOnServer(todo)
+    updatedTodos.forEach(todo => updateOnServer(todo.id, { completed: status })
+      .then(() => setTodos(updatedTodos))
       .catch(() => setError(ErrorType.Update))
       .finally(() => setUpdatingTodos([])));
-
-    setTodos(updatedTodos);
   }
 
   return (
@@ -87,11 +89,11 @@ export const NewTodo: React.FC<Props> = ({
         <button
           type="button"
           className={cn('todoapp__toggle-all', {
-            active: completedTodos,
+            active: completedTodos.length === visibleTodos,
           })}
-          onClick={() => (completedTodos.length === todos.length
-            ? handleTodosStatus(false)
-            : handleTodosStatus(true))}
+          onClick={
+            () => handleTodosStatus(completedTodos.length !== todos.length)
+          }
         />
       )}
 
@@ -100,7 +102,7 @@ export const NewTodo: React.FC<Props> = ({
           type="text"
           className="todoapp__new-todo"
           placeholder="What needs to be done?"
-          disabled={isLoading}
+          disabled={disabledInput}
           value={newTodoTitle}
           onChange={(event) => setNewTodoTitle(event.target.value)}
         />

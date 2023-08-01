@@ -8,19 +8,21 @@ import { Notification } from './components/Notification';
 import { Todo } from './types/Todo';
 import { ErrorType } from './types/Error';
 import { FilterTypes } from './types/Filter';
-import { getTodos } from './api/todos';
+import { getTodos, deleteOnServer, updateOnServer } from './api/todos';
 
 const USER_ID = 11133;
 
 export const App: React.FC = () => {
   const [todos, setTodos] = useState<Todo[]>([]);
   const [error, setError] = useState(ErrorType.None);
-  const [isLoading, setIsLoading] = useState(false);
   const [updatingTodos, setUpdatingTodos] = useState<number[]>([]);
   const [filter, setFilter] = useState<FilterTypes>(FilterTypes.All);
+  const [tempTodo, setTempTodo] = useState<Todo | null>(null);
 
   useEffect(() => {
-    getTodos(USER_ID).then(setTodos).catch(() => setError(ErrorType.Load));
+    getTodos(USER_ID)
+      .then(setTodos)
+      .catch(() => setError(ErrorType.Load));
   }, []);
 
   const filteredTodos = useMemo(() => (() => {
@@ -42,6 +44,37 @@ export const App: React.FC = () => {
     return <UserWarning />;
   }
 
+  const deleteTodo = (id: number) => {
+    const updatedTodos = todos.filter((td) => td.id !== id);
+
+    setUpdatingTodos([id]);
+    deleteOnServer(id)
+      .then(() => setTodos(updatedTodos))
+      .catch(() => setError(ErrorType.Delete))
+      .finally(() => {
+        setUpdatingTodos([]);
+      });
+  };
+
+  const updateTodo = (id: number, args: Partial<Todo>) => {
+    const updatedTodos = todos.map((td) => {
+      if (td.id === id) {
+        return {
+          ...td,
+          ...args,
+        };
+      }
+
+      return td;
+    });
+
+    setUpdatingTodos([id]);
+    updateOnServer(id, args)
+      .then(() => setTodos(updatedTodos))
+      .catch(() => setError(ErrorType.Update))
+      .finally(() => setUpdatingTodos([]));
+  };
+
   return (
     <div className="todoapp">
       <h1 className="todoapp__title">todos</h1>
@@ -52,17 +85,17 @@ export const App: React.FC = () => {
           todos={todos}
           setTodos={setTodos}
           setError={setError}
-          setIsLoading={setIsLoading}
-          isLoading={isLoading}
           setUpdatingTodos={setUpdatingTodos}
+          setTempTodo={setTempTodo}
         />
 
         {todos.length > 0 && (
           <TodoList
             todos={filteredTodos}
-            setTodos={setTodos}
-            setError={setError}
             updatingTodos={updatingTodos}
+            tempTodo={tempTodo}
+            deleteTodo={deleteTodo}
+            updateTodo={updateTodo}
           />
         )}
 
@@ -73,7 +106,6 @@ export const App: React.FC = () => {
             filter={filter}
             setFilter={setFilter}
             setError={setError}
-            setIsLoading={setIsLoading}
             setUpdatingTodos={setUpdatingTodos}
           />
         )}

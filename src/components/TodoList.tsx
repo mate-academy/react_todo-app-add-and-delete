@@ -1,32 +1,38 @@
 import { TodoItem } from './TodoItem';
+import { TempTodo } from './TempTodo';
 import { Todo } from '../types/Todo';
-import { ErrorType } from '../types/Error';
 
 type Props = {
   todos: Todo[];
-  setTodos: (todos: Todo[]) => void;
-  setError: (value: ErrorType) => void;
+  deleteTodo: (value: number) => void;
+  updateTodo: (value: number, value2: Partial<Todo>) => void;
   updatingTodos: number[];
+  tempTodo : Todo | null;
 };
 
 export const TodoList: React.FC<Props> = ({
   todos,
-  setTodos,
-  setError,
   updatingTodos,
+  tempTodo,
+  deleteTodo,
+  updateTodo,
 }) => {
   return (
     <section className="todoapp__main">
       {todos.map((todo) => (
         <TodoItem
           todo={todo}
-          todos={todos}
-          setTodos={setTodos}
-          setError={setError}
-          isUpdating={updatingTodos.includes(todo.id)}
+          deleteTodo={deleteTodo}
+          updateTodo={updateTodo}
+          isLoading={updatingTodos.includes(todo.id)}
           key={todo.id}
         />
       ))}
+      {tempTodo && (
+        <TempTodo
+          tempTodo={tempTodo}
+        />
+      )}
     </section>
   );
 };

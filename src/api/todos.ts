@@ -13,6 +13,6 @@ export const deleteOnServer = (todoId: number) => {
   return client.delete(`/todos/${todoId}`);
 };
 
-export const updateOnServer = ({ completed, id, title }: Todo) => {
-  return client.patch<Todo[]>(`/todos/${id}`, { completed, id, title });
+export const updateOnServer = (id: number, args: Partial<Todo>) => {
+  return client.patch<Todo[]>(`/todos/${id}`, args);
 };

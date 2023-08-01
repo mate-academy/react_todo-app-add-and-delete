@@ -1,95 +1,92 @@
-import { useState } from 'react';
+import React, {
+  FormEvent, useEffect, useRef, useState,
+} from 'react';
 import cn from 'classnames';
 import { Todo } from '../types/Todo';
-import { ErrorType } from '../types/Error';
-import { deleteOnServer, updateOnServer } from '../api/todos';
 
 type Props = {
   todo: Todo;
-  todos: Todo[];
-  setTodos: (todos: Todo[]) => void;
-  setError: (value: ErrorType) => void;
-  isUpdating: boolean
+  deleteTodo: (value: number) => void;
+  updateTodo: (value: number, value2: Partial<Todo>) => void;
+  isLoading: boolean;
 };
 
 export const TodoItem: React.FC<Props> = ({
   todo,
-  todos,
-  setTodos,
-  setError,
-  isUpdating,
+  deleteTodo,
+  updateTodo,
+  isLoading,
+
 }) => {
   const [isEditing, setIsEditing] = useState(false);
-  const [isLoading, setIsLoading] = useState(false);
   const [updatedTitle, setUpdatedTitle] = useState<string>(todo.title);
+  const inputRef = useRef<HTMLInputElement>(null);
 
-  function deleteTodo(todoId: number) {
-    const updatedTodos = todos.filter((td) => td.id !== todoId);
+  useEffect(() => {
+    if (inputRef.current) {
+      inputRef.current.focus();
+    }
+  }, [isEditing]);
 
-    setIsLoading(true);
-    deleteOnServer(todoId)
-      .catch(() => setError(ErrorType.Delete))
-      .finally(() => {
-        setIsLoading(false);
-        setTodos(updatedTodos);
-      });
-  }
+  const saveUpdates = () => {
+    setIsEditing(false);
+    if (updatedTitle !== todo.title) {
+      updateTodo(todo.id, { title: updatedTitle });
+    }
 
-  function toggleComplete(id: number) {
-    const updatedTodo = {
-      ...todos.find((td) => td.id === id),
-      completed: !todo.completed,
-    } as Todo;
+    if (!updatedTitle.trim()) {
+      deleteTodo(todo.id);
+    }
+  };
 
-    setIsLoading(true);
-    updateOnServer(updatedTodo)
-      .catch(() => setError(ErrorType.Update))
-      .finally(() => setIsLoading(false));
+  const onSubmitHandler = (e: FormEvent<HTMLFormElement>) => {
+    e.preventDefault();
+    setIsEditing(false);
 
-    const updatedTodos = todos.map((td) => {
-      if (td.id === id) {
-        return {
-          ...td,
-          completed: !td.completed,
-        };
-      }
+    saveUpdates();
+  };
 
-      return td;
-    });
-
-    setTodos(updatedTodos);
-  }
+  const handleKeyUp = (event: React.KeyboardEvent<HTMLInputElement>) => {
+    if (event.key === 'Escape') {
+      setIsEditing(false);
+      setUpdatedTitle(todo.title);
+    }
+  };
 
   return (
-    <div>
+    <>
       <div
         className={cn('todo', {
           completed: todo.completed,
         })}
+        onDoubleClick={() => setIsEditing(true)}
       >
         <label className="todo__status-label">
           <input
             type="checkbox"
             className="todo__status"
             checked={todo.completed}
-            onChange={() => toggleComplete(todo.id)}
+            onChange={() => updateTodo(
+              todo.id,
+              { completed: !todo.completed },
+            )}
           />
         </label>
         {isEditing ? (
-          <form>
+          <form onSubmit={onSubmitHandler}>
             <input
+              ref={inputRef}
               type="text"
               className="todo__title-field"
               placeholder="Empty todo will be deleted"
               value={updatedTitle}
               onChange={(e) => setUpdatedTitle(e.target.value)}
+              onBlur={saveUpdates}
+              onKeyUp={handleKeyUp}
             />
           </form>
         ) : (
-          <span
-            className="todo__title"
-            onDoubleClick={() => setIsEditing(true)}
-          >
+          <span className="todo__title">
             {todo.title}
           </span>
         )}
@@ -102,14 +99,15 @@ export const TodoItem: React.FC<Props> = ({
           ×
         </button>
 
-        <div className={cn('modal overlay', {
-          'is-active': isLoading || isUpdating || todo.id === 0,
-        })}
+        <div
+          className={cn('modal overlay', {
+            'is-active': isLoading,
+          })}
         >
           <div className="modal-background has-background-white-ter" />
           <div className="loader" />
         </div>
       </div>
-    </div>
+    </>
   );
 };
