@@ -1,29 +1,32 @@
 import React, { useContext, useEffect, useState } from 'react';
 import { Todo } from '../../types/Todo';
 import { getTodos } from '../../api/todos';
-import { ContextType } from '../../types/ContextType';
+import { AppContextType } from '../../types/AppContextType';
+import { ErrorTypes } from '../../types/ErrorTypes';
+import { userId } from '../../types/Constants';
 
 type Props = {
   children: React.ReactNode,
 };
 
-const AppContext = React.createContext<ContextType | null>(null);
+const AppContext = React.createContext<AppContextType | null>(null);
 
 export const AppProvider = ({ children }: Props) => {
   const [todos, setTodos] = useState<Todo[]>([]);
   const [todoTitle, setTodoTitle] = useState('');
   const [filterType, setFilterType] = useState('all');
   const [loading, setLoading] = useState(false);
-  const [isError, setIsError] = useState('');
-  const userId = 11230;
+  const [errorType, setErrorType] = useState('');
+  const [processing, setProcessing] = useState<number[]>([]);
+  const [editTodoId, setEditTodoId] = useState<number>(-1);
 
   useEffect(() => {
     setLoading(true);
 
     getTodos(userId)
       .then(setTodos)
-      .catch((error) => {
-        setIsError(error);
+      .catch(() => {
+        setErrorType(ErrorTypes.load);
       })
       .finally(() => {
         setLoading(false);
@@ -40,8 +43,12 @@ export const AppProvider = ({ children }: Props) => {
     setFilterType,
     loading,
     setLoading,
-    isError,
-    setIsError,
+    errorType,
+    setErrorType,
+    processing,
+    setProcessing,
+    editTodoId,
+    setEditTodoId,
   };
 
   return (

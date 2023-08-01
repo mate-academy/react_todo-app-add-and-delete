@@ -2,7 +2,11 @@ import { Todo } from '../../types/Todo';
 import { useAppContext } from '../Context/AppContext';
 import { TodoItem } from '../TodoItem/TodoItem';
 
-export const TodoList = () => {
+type Props = {
+  tempTodo: Todo | null,
+};
+
+export const TodoList = ({ tempTodo }: Props) => {
   const {
     todos,
     filterType,
@@ -21,9 +25,12 @@ export const TodoList = () => {
     <>
       {preparedTodos.map((todo: Todo) => {
         return (
-          <TodoItem todoInfo={todo} />
+          <TodoItem todoInfo={todo} key={todo.id} />
         );
       })}
+      {tempTodo && (
+        <TodoItem todoInfo={tempTodo} key={tempTodo.id} />
+      )}
     </>
   );
 };

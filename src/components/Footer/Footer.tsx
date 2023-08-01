@@ -2,6 +2,9 @@ import cn from 'classnames';
 import { useAppContext } from '../Context/AppContext';
 import { FilterType } from '../../types/FilterType';
 import { client } from '../../utils/fetchClient';
+import { getTodos } from '../../api/todos';
+import { userId } from '../../types/Constants';
+import { ErrorTypes } from '../../types/ErrorTypes';
 
 export const Footer = () => {
   const {
@@ -9,7 +12,8 @@ export const Footer = () => {
     setTodos,
     filterType,
     setFilterType,
-    setIsError,
+    setErrorType,
+    setProcessing,
   } = useAppContext();
 
   const countOfActiveTodos = todos.filter(todo => !todo.completed).length;
@@ -20,14 +24,29 @@ export const Footer = () => {
       .filter(todo => todo.completed)
       .map(todo => todo.id);
 
-    completedTodosId.forEach((id) => {
-      client.delete(`/todos/${id}`)
-        .catch(() => {
-          setIsError('delete');
-        });
-    });
+    setProcessing([...completedTodosId]);
 
-    setTodos(todos.filter((todo) => !completedTodosId.includes(todo.id)));
+    Promise.all(completedTodosId.map((id) => {
+      return client.delete(`/todos/${id}`)
+        .catch(() => {
+          setErrorType(ErrorTypes.delete);
+          setProcessing([]);
+        });
+    }))
+      .then(() => {
+        getTodos(userId)
+          .then(setTodos)
+          .catch(() => {
+            setErrorType(ErrorTypes.load);
+          })
+          .finally(() => {
+            setProcessing([]);
+          });
+      })
+      .catch(() => {
+        setErrorType(ErrorTypes.delete);
+        setProcessing([]);
+      });
   };
 
   return (
@@ -43,7 +62,7 @@ export const Footer = () => {
             className={cn('filter__link', {
               selected: filterType === FilterType.all,
             })}
-            onClick={() => setFilterType('all')}
+            onClick={() => setFilterType(FilterType.all)}
           >
             All
           </a>
@@ -53,7 +72,7 @@ export const Footer = () => {
             className={cn('filter__link', {
               selected: filterType === FilterType.active,
             })}
-            onClick={() => setFilterType('active')}
+            onClick={() => setFilterType(FilterType.active)}
           >
             Active
           </a>
@@ -63,7 +82,7 @@ export const Footer = () => {
             className={cn('filter__link', {
               selected: filterType === FilterType.completed,
             })}
-            onClick={() => setFilterType('completed')}
+            onClick={() => setFilterType(FilterType.completed)}
           >
             Completed
           </a>
