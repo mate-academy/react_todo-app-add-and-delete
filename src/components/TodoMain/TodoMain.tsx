@@ -9,6 +9,7 @@ type Props = {
   handleDeleteTodo: (todoId: number) => void,
   tempTodo: Todo | null;
   isLoading: boolean;
+  loadingIds: number[];
 };
 
 export const TodoMain: React.FC<Props> = ({
@@ -16,7 +17,8 @@ export const TodoMain: React.FC<Props> = ({
   setHasError,
   handleDeleteTodo,
   tempTodo,
-  isLoading,
+  loadingIds,
+  // isLoading,
 }) => {
   return (
     <section className="todoapp__main">
@@ -45,8 +47,8 @@ export const TodoMain: React.FC<Props> = ({
             ×
           </button>
 
-          {isLoading && (
-            <div className="modal overlay">
+          {loadingIds.includes(todo.id) && (
+            <div className="modal overlay is-active">
               <div className="modal-background has-background-white-ter" />
               <div className="loader" />
             </div>
@@ -73,13 +75,10 @@ export const TodoMain: React.FC<Props> = ({
           >
             ×
           </button>
-
-          {isLoading && (
-            <div className="modal overlay">
-              <div className="modal-background has-background-white-ter" />
-              <div className="loader" />
-            </div>
-          )}
+          <div className="modal overlay is-active">
+            <div className="modal-background has-background-white-ter" />
+            <div className="loader" />
+          </div>
         </div>
       )}
     </section>

@@ -21,15 +21,13 @@ export const App: React.FC = () => {
   const [inputValue, setInputValue] = useState('');
   const [inputDisable, setInputDisable] = useState(false);
   const [tempTodo, setTempTodo] = useState<Todo | null>(null);
+  const [loadingIds, setLoadingIds] = useState<number[]>([]);
 
   const handleFormSubmit = (event: React.FormEvent) => {
     event.preventDefault();
 
     if (!inputValue.trim()) {
       setHasError(TodoErrorType.addEmptyTodoError);
-      setTimeout(() => {
-        setHasError(TodoErrorType.noError);
-      }, 3000);
 
       return;
     }
@@ -44,26 +42,28 @@ export const App: React.FC = () => {
     };
 
     setTempTodo(newTempToDo);
+    setHasError(TodoErrorType.noError);
 
     addTodos(newTempToDo)
       .then((createdTodo) => {
-        setIsLoading(false);
         setTodosFromServer((prevTodos: Todo[]): Todo[] => [...prevTodos, createdTodo]);
 
         setInputValue('');
-        setTempTodo(null);
-        setHasError(TodoErrorType.noError);
       })
       .catch(() => {
         setHasError(TodoErrorType.addTodoError);
       })
       .finally(() => {
         setInputDisable(false);
+        setIsLoading(false);
+        setInputDisable(false);
+        setTempTodo(null);
       });
   };
 
   const handleDeleteTodo = (todoId: number) => {
-    setIsLoading(true);
+    setLoadingIds((ids) => [...ids, todoId]);
+
     setHasError(TodoErrorType.noError);
 
     deleteTodos(todoId)
@@ -75,12 +75,10 @@ export const App: React.FC = () => {
       })
 
       .catch(() => {
-        setIsLoading(false);
         setHasError(TodoErrorType.deleteTodoError);
       })
       .finally(() => {
-        setIsLoading(false);
-        setHasError(TodoErrorType.noError);
+        setLoadingIds((ids) => ids.filter(id => id !== todoId));
       });
   };
 
@@ -132,6 +130,7 @@ export const App: React.FC = () => {
           handleDeleteTodo={handleDeleteTodo}
           tempTodo={tempTodo}
           isLoading={isLoading}
+          loadingIds={loadingIds}
         />
         {
           todosFromServer.length > 0 && (

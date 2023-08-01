@@ -64,16 +64,20 @@ export const TodoFooter: React.FC<Props> = ({
           {FilteredBy.Completed}
         </a>
       </nav>
-      <button
-        onClick={handleClearCompleted}
-        type="button"
-        className={classNames(
-          'todoapp__clear-completed',
-          { 'is-invisible': completedTodos },
-        )}
-      >
-        Clear completed
-      </button>
+      {
+        completedTodos && (
+          <button
+            onClick={handleClearCompleted}
+            type="button"
+            className={classNames(
+              'todoapp__clear-completed',
+              { 'is-invisible': completedTodos.length === 0 },
+            )}
+          >
+            Clear completed
+          </button>
+        )
+      }
     </footer>
   );
 };

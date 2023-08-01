@@ -3,7 +3,7 @@ import classNames from 'classnames';
 import { TodoErrorType } from '../../types/TodoErrorType';
 
 type Props = {
-  hasError: string,
+  hasError: TodoErrorType,
   setHasError: (error: TodoErrorType) => void,
 };
 export const TodoError: React.FC<Props> = ({
@@ -12,7 +12,7 @@ export const TodoError: React.FC<Props> = ({
 }) => {
   useEffect(() => {
     setTimeout(() => setHasError(TodoErrorType.noError), 3000);
-  }, []);
+  }, [hasError]);
 
   return (
     <div
