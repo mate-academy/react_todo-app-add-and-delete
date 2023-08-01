@@ -6,6 +6,9 @@ interface Props {
   tempTodo: Todo | null,
   setTodos: (todo: Todo[]) => void,
   setErrorMessage: (msg: string) => void,
+  loading: boolean,
+  completedIds: number[],
+  setCompletedIds: React.Dispatch<React.SetStateAction<number[]>>,
 }
 
 export const TodoMain: React.FC<Props> = ({
@@ -13,6 +16,9 @@ export const TodoMain: React.FC<Props> = ({
   tempTodo,
   setTodos,
   setErrorMessage,
+  loading,
+  completedIds,
+  setCompletedIds,
 }) => {
   return (
     <section className="todoapp__main">
@@ -22,6 +28,9 @@ export const TodoMain: React.FC<Props> = ({
           setTodos={setTodos}
           setErrorMessage={setErrorMessage}
           todo={todo}
+          loading={loading}
+          completedIds={completedIds}
+          setCompletedIds={setCompletedIds}
         />
       ))}
 
@@ -30,6 +39,9 @@ export const TodoMain: React.FC<Props> = ({
           todo={tempTodo}
           setTodos={setTodos}
           setErrorMessage={setErrorMessage}
+          loading={loading}
+          completedIds={completedIds}
+          setCompletedIds={setCompletedIds}
         />
       )}
 

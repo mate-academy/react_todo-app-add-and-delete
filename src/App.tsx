@@ -14,6 +14,8 @@ export const App: React.FC = () => {
   const [errorMessage, setErrorMessage] = useState('');
   const [filterType, setFilterType] = useState(Filter.All);
   const [tempTodo, setTempTodo] = useState<Todo | null>(null);
+  const [loading, setLoading] = useState(false);
+  const [completedIds, setCompletedIds] = useState<number[] | []>([]);
 
   useEffect(() => {
     getTodos(USER_ID)
@@ -54,6 +56,9 @@ export const App: React.FC = () => {
             tempTodo={tempTodo}
             setTodos={setTodos}
             setErrorMessage={setErrorMessage}
+            loading={loading}
+            completedIds={completedIds}
+            setCompletedIds={setCompletedIds}
           />
         )}
 
@@ -62,6 +67,10 @@ export const App: React.FC = () => {
             filterType={filterType}
             setFilterType={setFilterType}
             todos={todos}
+            setTodos={setTodos}
+            setErrorMessage={setErrorMessage}
+            setLoading={setLoading}
+            setCompletedIds={setCompletedIds}
           />
         )}
       </div>

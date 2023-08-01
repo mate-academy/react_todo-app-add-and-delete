@@ -1,5 +1,5 @@
 import classNames from 'classnames';
-import { useState } from 'react';
+// import { useState } from 'react';
 import { Todo } from '../types/Todo';
 import { getTodos, removeTodo } from '../api/todos';
 import { ErrorStatus } from '../types/ErrorStatus';
@@ -9,24 +9,28 @@ interface Props {
   todo: Todo,
   setTodos: (todo: Todo[]) => void,
   setErrorMessage: (msg: string) => void,
+  loading: boolean,
+  completedIds: number[],
+  setCompletedIds: React.Dispatch<React.SetStateAction<number[]>>,
 }
 
 export const TodoItem: React.FC<Props> = ({
   todo,
   setTodos,
   setErrorMessage,
+  loading,
+  completedIds,
+  setCompletedIds,
 }) => {
-  const [deleteId, setDeleteId] = useState<number | null>(null);
-
   const handleDelete = (todoId: number) => {
-    setDeleteId(todo.id);
+    setCompletedIds(currIds => [...currIds, todoId]);
 
     removeTodo(todoId)
       .then(() => {
         getTodos(USER_ID)
           .then((value) => {
             setTodos(value);
-            setDeleteId(null);
+            setCompletedIds(currIds => currIds.filter(id => todoId !== id));
           });
       })
       .catch(() => {
@@ -70,7 +74,8 @@ export const TodoItem: React.FC<Props> = ({
 
       <div className={
         classNames('modal overlay',
-          { 'is-active': todo.id === 0 || deleteId === todo.id })
+          // eslint-disable-next-line max-len
+          { 'is-active': todo.id === 0 || completedIds.includes(todo.id) || loading })
       }
       >
         <div className="modal-background has-background-white-ter" />
