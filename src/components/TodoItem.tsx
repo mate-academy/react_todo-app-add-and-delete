@@ -1,5 +1,4 @@
 import classNames from 'classnames';
-import { useState } from 'react';
 import { Todo } from '../types/Todo';
 
 interface Props {
@@ -15,11 +14,8 @@ export const TodoItem: React.FC<Props> = ({
   isLoading,
   completedTodos,
 }) => {
-  const [currentTodo, setCurrentTodo] = useState<Todo | null>(null);
-
   const handleDeleteTodo = (todoForDelete: Todo) => {
     deleteTodoById(todoForDelete.id);
-    setCurrentTodo(todoForDelete);
   };
 
   return (
@@ -41,14 +37,13 @@ export const TodoItem: React.FC<Props> = ({
         type="button"
         className="todo__remove"
         onClick={() => handleDeleteTodo(todo)}
-        disabled={currentTodo?.id === todo.id}
+        disabled={isLoading}
       >
         ×
       </button>
 
       <div className={classNames('modal', 'overlay', {
-        'is-active': (isLoading && todo.id === currentTodo?.id)
-          || completedTodos.includes(todo),
+        'is-active': isLoading && completedTodos.includes(todo),
       })}
       >
         <div className="modal-background has-background-white-ter" />

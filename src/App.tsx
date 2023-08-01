@@ -72,6 +72,7 @@ export const App: React.FC = () => {
 
   const deleteTodoById = (todoId: number) => {
     setIsLoading(true);
+    setCompletedTodos(todos.filter(todo => todo.id === todoId));
     deleteTodo(todoId)
       .then(() => {
         setTodos(currentTodos => (
@@ -83,6 +84,7 @@ export const App: React.FC = () => {
       })
       .finally(() => {
         setIsLoading(false);
+        setCompletedTodos([]);
       });
   };
 
@@ -92,21 +94,19 @@ export const App: React.FC = () => {
 
     setCompletedTodos(completedList);
 
-    completedList.forEach(todo => {
-      deleteTodo(todo.id)
-        .then(() => {
-          setTodos(currentTodos => currentTodos.filter(currentTodo => (
-            !currentTodo.completed
-          )));
-        })
-        .catch(() => {
-          setErrorMessage(ErrorTypes.clearError);
-        })
-        .finally(() => {
-          setIsLoading(false);
-          setCompletedTodos([]);
-        });
-    });
+    Promise.all(completedList.map(todo => deleteTodo(todo.id)))
+      .then(() => {
+        setTodos(currentTodos => currentTodos.filter(currentTodo => (
+          !currentTodo.completed
+        )));
+      })
+      .catch(() => {
+        setErrorMessage(ErrorTypes.clearError);
+      })
+      .finally(() => {
+        setIsLoading(false);
+        setCompletedTodos([]);
+      });
   };
 
   return (
