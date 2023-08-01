@@ -9,13 +9,13 @@ export const NotificationBlock: React.FC = () => {
     setErrorMessage,
   } = useContext(TodosContext);
 
-  function showNotificationBlock() {
+  function resetError() {
     wait(3000).then(() => setErrorMessage(''));
   }
 
   useEffect(() => {
     if (errorMessage) {
-      showNotificationBlock();
+      resetError();
     }
   }, [errorMessage]);
 

@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { getTodos } from '../api/todos';
 import { FilterBy, Todo } from '../types/Todo';
+import { ErrorType } from '../types/Error';
 
 const USER_ID = 11144;
 
@@ -49,7 +50,7 @@ export const TodosProvider: React.FC<Props> = ({ children }) => {
     getTodos(USER_ID)
       .then(setTodos)
       .catch(() => {
-        setErrorMessage('Can not load data');
+        setErrorMessage(ErrorType.fetchTodo);
       });
   }, []);
 

@@ -3,6 +3,7 @@ import cn from 'classnames';
 import { Todo } from '../types/Todo';
 import { TodosContext } from '../context/todosContext';
 import { deleteTodo } from '../api/todos';
+import { ErrorType } from '../types/Error';
 
 interface Props {
   todo: Todo;
@@ -26,8 +27,7 @@ export const TodoItem:React.FC<Props> = ({ todo }) => {
         onDeleteTodo(todoId);
       })
       .catch(() => {
-        setErrorMessage('Unable to delete a todo');
-        throw new Error('Unable to delete a todo');
+        setErrorMessage(ErrorType.deleteTodo);
       })
       .finally(() => setLoading(false));
   };

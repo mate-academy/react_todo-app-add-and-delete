@@ -3,6 +3,7 @@ import cn from 'classnames';
 import { FilterBy } from '../types/Todo';
 import { TodosContext } from '../context/todosContext';
 import { deleteTodo } from '../api/todos';
+import { ErrorType } from '../types/Error';
 
 export const Filter: React.FC = () => {
   const {
@@ -36,8 +37,7 @@ export const Filter: React.FC = () => {
         }
       }))
       .catch(() => {
-        setErrorMessage('Unable to delete completed todos');
-        throw new Error('Unable to delete completed todos');
+        setErrorMessage(ErrorType.deleteTodo);
       })
       .finally(() => setDeletingCompletedTodo(false));
   }

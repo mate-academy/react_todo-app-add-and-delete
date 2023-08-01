@@ -1,6 +1,7 @@
 import React, { useContext, useState } from 'react';
 import { TodosContext } from '../context/todosContext';
 import { createTodo } from '../api/todos';
+import { ErrorType } from '../types/Error';
 
 export const NewTodo:React.FC = () => {
   const [newTodoTitle, setNewTodoTitle] = useState('');
@@ -18,7 +19,7 @@ export const NewTodo:React.FC = () => {
     const normalizedQuery = newTodoTitle.trim();
 
     if (!normalizedQuery) {
-      setErrorMessage('Title can\'t be empty');
+      setErrorMessage(ErrorType.emptyValue);
 
       return;
     }
@@ -40,8 +41,7 @@ export const NewTodo:React.FC = () => {
         setNewTodoTitle('');
       })
       .catch(() => {
-        setErrorMessage('Unable to add a todo');
-        throw new Error('Unable to add a todo');
+        setErrorMessage(ErrorType.addTodo);
       })
       .finally(() => {
         setLoading(false);
