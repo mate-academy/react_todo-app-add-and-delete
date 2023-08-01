@@ -5,9 +5,10 @@ import { Todo } from '../../types/Todo';
 type Props = {
   todo?: Todo,
   removeTodo?: (todoId: number) => void,
+  removingId?: number | null,
 };
 
-export const TodoItem:React.FC<Props> = ({ todo, removeTodo }) => {
+export const TodoItem:React.FC<Props> = ({ todo, removeTodo, removingId }) => {
   const [isHover, setIsHover] = useState<boolean>(false);
 
   return (
@@ -33,7 +34,7 @@ export const TodoItem:React.FC<Props> = ({ todo, removeTodo }) => {
         <button
           type="button"
           className="todo__remove"
-          onClick={() => removeTodo && (removeTodo(todo!.id))}
+          onClick={() => removeTodo?.(todo!.id)}
         >
           ×
         </button>
@@ -50,7 +51,8 @@ export const TodoItem:React.FC<Props> = ({ todo, removeTodo }) => {
       </form> */}
 
       <div className={classNames('modal overlay', {
-        'is-active': !removeTodo,
+        // 'is-active': !removeTodo,
+        'is-active': removingId === todo?.id,
       })}
       >
         <div className="modal-background has-background-white-ter" />

@@ -22,7 +22,7 @@ export const TodoForm:React.FC<Props> = React.memo(
     const handlerSubmit = (event: React.FormEvent<HTMLFormElement>) => {
       event.preventDefault();
 
-      if (!title) {
+      if (!title.trim()) {
         setNotification("Title can't be empty");
 
         return;

@@ -17,7 +17,7 @@ export const TodoFooter:React.FC<Props> = ({
   onFilterBy,
   removeCompleted,
 }) => {
-  const completedTodo = todos?.filter(todo => todo.completed);
+  const completedTodo = todos?.some(todo => todo.completed);
 
   return (
     <footer className="todoapp__footer">
@@ -57,15 +57,14 @@ export const TodoFooter:React.FC<Props> = ({
         </a>
       </nav>
 
-      {completedTodo?.length !== 0 && (
-        <button
-          type="button"
-          className="todoapp__clear-completed"
-          onClick={removeCompleted}
-        >
-          Clear completed
-        </button>
-      )}
+      <button
+        type="button"
+        className="todoapp__clear-completed"
+        onClick={removeCompleted}
+        disabled={!completedTodo}
+      >
+        Clear completed
+      </button>
     </footer>
   );
 };

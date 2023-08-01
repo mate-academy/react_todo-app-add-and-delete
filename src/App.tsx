@@ -22,6 +22,7 @@ export const App: React.FC = () => {
   const [errorMessage, setErrorMessage] = useState<string>('');
   const [filterBy, setFilterBy] = useState<string>(FilterType.All);
   const [tempTodo, setTempTodo] = useState<Todo | null>(null);
+  const [removingId, setRemovingId] = useState<number | null>(null);
 
   const isError = !!errorMessage;
 
@@ -55,7 +56,7 @@ export const App: React.FC = () => {
   };
 
   const deleteTodo = (todoId: number) => {
-    setLoading(true);
+    setRemovingId(todoId);
     postServes.deleteTodos(todoId)
       .then(() => {
         setTodos((currentTodos: Todo[] | null) => {
@@ -69,7 +70,7 @@ export const App: React.FC = () => {
         setErrorMessage('Unable to delete a todo');
       })
       .finally(() => {
-        setLoading(false);
+        setRemovingId(null);
       });
   };
 
@@ -136,6 +137,7 @@ export const App: React.FC = () => {
               todos={vidibleTodos}
               tempTodo={tempTodo}
               removeTodo={deleteTodo}
+              removingId={removingId}
             />
           </section>
         )}

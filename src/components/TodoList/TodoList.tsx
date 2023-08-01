@@ -6,10 +6,11 @@ type Props = {
   todos: Todo[] | null,
   tempTodo?: Todo | null,
   removeTodo: (todoId: number) => void,
+  removingId: number | null,
 };
 
 export const TodoList:React.FC<Props> = ({
-  todos, tempTodo, removeTodo,
+  todos, tempTodo, removeTodo, removingId,
 }) => {
   return (
     <section className="todoapp__main" data-cy="TodoList">
@@ -24,6 +25,7 @@ export const TodoList:React.FC<Props> = ({
               todo={todo}
               key={todo.id}
               removeTodo={removeTodo}
+              removingId={removingId}
             />
           </CSSTransition>
         ))}
