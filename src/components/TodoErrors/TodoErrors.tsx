@@ -1,24 +1,40 @@
 /* eslint-disable jsx-a11y/control-has-associated-label */
-import { FormEvent, useContext } from 'react';
+import { useState, useContext, useEffect } from 'react';
+import cn from 'classnames';
 import { TodosContext } from '../../TodosContext';
 
 export const TodoErrors: React.FC = () => {
   const {
     errorMessage,
+    setErrorMessage,
   } = useContext(TodosContext);
 
-  const handleOnClick = (event: FormEvent<HTMLButtonElement>) => {
-    event.currentTarget.parentElement?.classList.add('hidden');
-  };
+  const [isHidden, setIsHidden] = useState(false);
+
+  useEffect(() => {
+    const timerId = setTimeout(() => {
+      setErrorMessage('');
+    }, 3000);
+
+    return () => clearTimeout(timerId);
+  }, []);
 
   return (
     <div
-      className="notification is-danger is-light has-text-weight-normal"
+      className={
+        cn(
+          'notification',
+          'is-danger',
+          'is-light',
+          'has-text-weight-normal',
+          { hidde: isHidden },
+        )
+      }
     >
       <button
         type="button"
         className="delete"
-        onClick={handleOnClick}
+        onClick={() => setIsHidden(true)}
       />
       {errorMessage}
     </div>

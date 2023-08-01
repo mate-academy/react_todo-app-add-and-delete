@@ -56,14 +56,15 @@ function deleteAllTodos(todosIds: number[]): Promise<boolean> {
 interface ContextProps {
   todos: Todo[],
   visibleTodos: Todo[],
-  todoAdd: (newQuery: string) => Promise<boolean>,
+  todoAdd: (newQuery: string) => Promise<void>,
   clearAllCompleted: () => void,
-  todoDelete: (todoId: number) => Promise<boolean>,
+  todoDelete: (todoId: number) => Promise<void>,
   isTodosHasCompleted: () => boolean,
   isEveryTodoCompleted: () => boolean,
   filterBy: Filter,
   setFilterBy: (newFilter: Filter) => void,
   errorMessage: string,
+  setErrorMessage: (newError: string) => void,
   areCompletedDeletingNow: boolean,
   tempTodo: Todo | null,
   setTempTodo: (newTodo: Todo | null) => void,
@@ -72,14 +73,15 @@ interface ContextProps {
 export const TodosContext = React.createContext<ContextProps>({
   todos: [],
   visibleTodos: [],
-  todoAdd: () => new Promise<boolean>(() => {}),
+  todoAdd: () => new Promise<void>(() => {}),
   clearAllCompleted: () => {},
-  todoDelete: () => new Promise<boolean>(() => {}),
+  todoDelete: () => new Promise<void>(() => {}),
   isTodosHasCompleted: () => false,
   isEveryTodoCompleted: () => false,
   filterBy: Filter.ALL,
   setFilterBy: () => {},
   errorMessage: '',
+  setErrorMessage: () => {},
   areCompletedDeletingNow: false,
   tempTodo: null,
   setTempTodo: () => {},
@@ -100,23 +102,17 @@ export const TodosProvider: React.FC<ProviderProps> = ({ children }) => {
   const visibleTodos = filterTodos(todos, { filterBy });
 
   useEffect(() => {
-    getTodos(USER_ID).then(setTodos);
+    getTodos(USER_ID)
+      .then(setTodos)
+      .catch(error => setErrorMessage(error));
   }, []);
-
-  const handleErrorOccuring = (errorTitle: string) => {
-    setErrorMessage(errorTitle);
-
-    setTimeout(() => {
-      setErrorMessage('');
-    }, 3000);
-  };
 
   const todoAdd = (newQuery: string) => {
     const normalizedQuery = newQuery.trim();
 
-    return new Promise<boolean>((resolve, reject) => {
+    return new Promise<void>((resolve, reject) => {
       if (!normalizedQuery) {
-        handleErrorOccuring('Title can\'t be empty');
+        setErrorMessage('Title can\'t be empty');
         reject(new Error(errorMessage));
 
         return;
@@ -133,32 +129,30 @@ export const TodosProvider: React.FC<ProviderProps> = ({ children }) => {
       addTodo(newTodo)
         .then((data) => {
           setTodos([...todos, data]);
-          resolve(true);
+          resolve();
         })
         .catch(() => {
-          handleErrorOccuring('Unable to add a todo');
+          setErrorMessage('Unable to add a todo');
           reject(new Error(errorMessage));
         });
-    })
-      .catch(error => error);
+    });
   };
 
   const todoDelete = (todoId: number) => {
-    return new Promise<boolean>((resolve, reject) => {
+    return new Promise<void>((resolve, reject) => {
       deleteTodo(todoId)
         .then(() => {
           setTodos(prevTodos => prevTodos.filter(todo => {
             return todo.id !== todoId;
           }));
 
-          resolve(true);
+          resolve();
         })
         .catch(() => {
-          handleErrorOccuring('Unable to delete a todo');
+          setErrorMessage('Unable to delete a todo');
           reject(new Error(errorMessage));
         });
-    })
-      .catch(error => error);
+    });
   };
 
   const clearAllCompleted = () => {
@@ -196,6 +190,7 @@ export const TodosProvider: React.FC<ProviderProps> = ({ children }) => {
     filterBy,
     setFilterBy,
     errorMessage,
+    setErrorMessage,
     areCompletedDeletingNow,
     tempTodo,
     setTempTodo,
