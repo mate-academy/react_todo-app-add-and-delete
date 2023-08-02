@@ -5,10 +5,14 @@ import { TodoItem } from '../TodoItem';
 interface Props {
   todos: Todo[];
   removeTodo: (todoId: number) => Promise<any>;
-  isLoading: boolean,
+  loadingIds: number[],
 }
 
-export const TodoList: React.FC<Props> = ({ todos, removeTodo, isLoading }) => {
+export const TodoList: React.FC<Props> = ({
+  todos,
+  removeTodo,
+  loadingIds,
+}) => {
   return (
     <section className="todoapp__main">
       {todos.map(todo => (
@@ -16,7 +20,7 @@ export const TodoList: React.FC<Props> = ({ todos, removeTodo, isLoading }) => {
           key={todo.id}
           todo={todo}
           removeTodo={(todoId: number) => removeTodo(todoId)}
-          isLoading={isLoading}
+          loadingIds={loadingIds}
         />
       ))}
     </section>

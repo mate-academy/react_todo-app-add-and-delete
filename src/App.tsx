@@ -10,24 +10,12 @@ import { Todo } from './types/Todo';
 import { addTodo, getTodos, deleteTodo } from './api/todos';
 import { FilterParams } from './types/FilterParams';
 import { USER_ID } from './utils/userId';
-
-function getPreperedTodos(todosForFilter: Todo[], filterField: FilterParams) {
-  return todosForFilter.filter(todo => {
-    switch (filterField) {
-      case FilterParams.active:
-        return !todo.completed;
-      case FilterParams.completed:
-        return todo.completed;
-      default:
-        return todo;
-    }
-  });
-}
+import { getPreperedTodos } from './utils/getPrepereadTodods';
 
 export const App: React.FC = () => {
   const [todos, setTodos] = useState<Todo[] | []>([]);
   const [filter, setFilter] = useState(FilterParams.all);
-  const [isLoading, setIsLoading] = useState(true);
+  const [loadingIds, setLoadingIds] = useState<number[]>([]);
   const [errorMessage, setErrorMessage] = useState('');
   const [todoTitle, setTodoTitle] = useState('');
   const [tempTodo, setTempTodo] = useState<Todo | null>(null);
@@ -38,10 +26,6 @@ export const App: React.FC = () => {
 
   const clearError = () => {
     setErrorMessage('');
-  };
-
-  const applyFilter = (filterField: FilterParams) => {
-    setFilter(filterField);
   };
 
   const tempTodoMarkup = (
@@ -67,34 +51,31 @@ export const App: React.FC = () => {
   const todosCheck = todos.length > 0;
 
   const removeTodo = (todoId: number) => {
-    setIsLoading(true);
-
     return deleteTodo(todoId)
       .then(() => {
         setTodos(prevTodos => {
           return prevTodos.filter(todo => todo.id !== todoId);
         });
       })
-      .catch((error) => {
+      .catch(() => {
         setTodos(todos);
         setErrorMessage('Unable to delete a todo');
-        throw error;
       })
-      .finally(() => setIsLoading(false));
+      .finally(() => setLoadingIds([]));
   };
 
   const clearCompleted = () => {
-    setIsLoading(true);
     setTodos(prevTodos => {
       return prevTodos.filter(todo => {
         if (todo.completed) {
+          setLoadingIds(prevIds => [...prevIds, todo.id]);
+
           deleteTodo(todo.id)
-            .catch((error) => {
+            .catch(() => {
               setTodos(todos);
               setErrorMessage('Unable to delete a todo');
-              throw error;
             })
-            .finally(() => setIsLoading(false));
+            .finally(() => setLoadingIds([]));
 
           return false;
         }
@@ -136,7 +117,7 @@ export const App: React.FC = () => {
         setErrorMessage('Unable to get todos');
         throw error;
       })
-      .finally(() => setIsLoading(false));
+      .finally(() => setLoadingIds([]));
   }, []);
 
   if (!USER_ID) {
@@ -167,7 +148,7 @@ export const App: React.FC = () => {
           <TodoList
             todos={preparedTodos}
             removeTodo={(todoId: number) => removeTodo(todoId)}
-            isLoading={isLoading}
+            loadingIds={loadingIds}
           />
         )}
         {tempTodo !== null && tempTodoMarkup}
@@ -175,7 +156,7 @@ export const App: React.FC = () => {
         {todosCheck && (
           <TodoFilterBar
             filter={filter}
-            applyFilter={applyFilter}
+            applyFilter={setFilter}
             clearCompleted={clearCompleted}
             todos={todos}
           />
