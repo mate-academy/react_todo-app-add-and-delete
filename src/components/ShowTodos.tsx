@@ -6,7 +6,7 @@ import { deleteTodos } from '../api/todos';
 
 type Props = {
   todos: Todo[],
-  activeTab: string,
+  activeTab: TabsFooter,
   setTodos: React.Dispatch<React.SetStateAction<Todo[]>>,
   loading: boolean,
   setLoading: (v: boolean) => void,
@@ -29,7 +29,7 @@ export const ShowTodos: React.FC<Props> = ({
   itemId,
   tempTodo,
 }) => {
-  const getVisibleTodos = (t: Todo[], at: string) => {
+  const getVisibleTodos = (t: Todo[], at: TabsFooter) => {
     switch (at) {
       case TabsFooter.Active:
         return t.filter((el) => !el.completed);
@@ -61,8 +61,8 @@ export const ShowTodos: React.FC<Props> = ({
         prev.filter(todo => todo.id !== postId)
       ));
     })
-      .catch(() => handleCatch())
-      .finally(() => handleFinally());
+      .catch(handleCatch)
+      .finally(handleFinally);
   };
 
   return (

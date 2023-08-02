@@ -2,6 +2,7 @@ import React, { useEffect, useState } from 'react';
 import { UserWarning } from './UserWarning';
 import { getTodos } from './api/todos';
 import { Todo } from './types/Todo';
+import { TabsFooter } from './enums/TabsFooter';
 
 import { Header } from './components/Header';
 import { Footer } from './components/Footer';
@@ -13,7 +14,7 @@ const USER_ID = 11093;
 export const App: React.FC = () => {
   const [todos, setTodos] = useState<Todo[]>([]);
   const [hiddenError, setHiddenError] = useState(true);
-  const [activeTab, setAvtiveTab] = useState('All');
+  const [activeTab, setAvtiveTab] = useState<TabsFooter>(TabsFooter.All);
   const [errorMessage, setErrorMessage] = useState('Unable to loada todo');
   const [loading, setLoading] = useState(false);
   const [itemId, setItemId] = useState([0]);

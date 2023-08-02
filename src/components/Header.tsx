@@ -62,8 +62,8 @@ export const Header: React.FC<Props> = ({
 
         setTodos(prev => [...prev, newTodoRes]);
       })
-        .catch(() => handleCatchApi())
-        .finally(() => handleFinally());
+        .catch(handleCatchApi)
+        .finally(handleFinally);
     };
 
     e.preventDefault();

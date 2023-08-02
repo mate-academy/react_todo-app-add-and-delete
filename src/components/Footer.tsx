@@ -6,8 +6,8 @@ import { deleteTodos } from '../api/todos';
 
 type Props = {
   todos: Todo[],
-  setAvtiveTab: (value: string) => void;
-  avtiveTab: string,
+  setAvtiveTab: React.Dispatch<React.SetStateAction<TabsFooter>>;
+  avtiveTab: TabsFooter,
   setTodos: React.Dispatch<React.SetStateAction<Todo[]>>,
   setErrorMessage: (v: string) => void,
   setHiddenError: (v: boolean) => void,
@@ -29,7 +29,10 @@ export const Footer: React.FC<Props> = ({
   const itemsLeft = todos.filter(todo => !todo.completed).length;
   const finedCompleted = todos.find(todo => todo.completed);
   const handleTabs = (e: React.MouseEvent<HTMLAnchorElement>) => {
-    setAvtiveTab(e.currentTarget.textContent || TabsFooter.All);
+    if (e.currentTarget.textContent) {
+      setAvtiveTab(TabsFooter[e.currentTarget.textContent as TabsFooter
+        || TabsFooter.All]);
+    }
   };
 
   const handleCatch = () => {
@@ -46,7 +49,7 @@ export const Footer: React.FC<Props> = ({
 
     completed.forEach(todo => deleteTodos(todo.id)
       .then(() => setTodos(todos.filter(t => !t.completed)))
-      .catch(() => handleCatch())
+      .catch(handleCatch)
       .finally(() => setLoading(false)));
   };
 
