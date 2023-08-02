@@ -48,7 +48,7 @@ export const App: React.FC = () => {
 
   const deleteTodo = (todoId: number) => {
     setIsProcessing(true);
-    deletedTodos.push(todoId);
+    setDeletedTodos((currentIds) => [...currentIds, todoId]);
 
     return todoService.removeTodo(todoId)
       .then(() => setTodos(currentTodos => currentTodos.filter(todo => todo.id !== todoId)))

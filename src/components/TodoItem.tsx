@@ -5,7 +5,7 @@ type Props = {
   todo: Todo,
   deleteTodo: (todoId: number) => Promise<void>,
   isProcessing: boolean,
-  deletedTodos: number[]
+  deletedTodos: number[],
 };
 
 export const TodoItem: React.FC<Props> = ({
