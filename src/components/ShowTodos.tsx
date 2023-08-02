@@ -62,7 +62,7 @@ export const ShowTodos: React.FC<Props> = ({
       ));
     })
       .catch(() => handleCatch())
-      .finally(() => handleFinally);
+      .finally(() => handleFinally());
   };
 
   return (
