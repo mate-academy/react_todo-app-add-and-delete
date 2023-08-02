@@ -101,7 +101,8 @@ export const App: React.FC = () => {
 
     todoService.deleteTodo(todoId)
       .then(() => {
-        setTodos(todos.filter(({ id }) => id !== todoId));
+        setTodos(currentTodos => currentTodos
+          .filter(({ id }) => id !== todoId));
       })
       .catch(() => {
         setError(Error.Delete);
@@ -113,8 +114,7 @@ export const App: React.FC = () => {
   };
 
   const deleteCompletedTodos = () => {
-    completedTodos.forEach(({ id }) => todoService.deleteTodo(id));
-    setTodos(activeTodos);
+    completedTodos.forEach(({ id }) => deleteTodo(id));
   };
 
   const allComplited = todos.every(todo => todo.completed);
@@ -145,12 +145,14 @@ export const App: React.FC = () => {
           </form>
         </header>
 
-        <TodoList
-          todos={visibleTodos}
-          tempTodo={tempTodo}
-          onDeleteTodo={deleteTodo}
-          loadingIdsList={loadingIdsList}
-        />
+        {!areTodosEmpty && (
+          <TodoList
+            todos={visibleTodos}
+            tempTodo={tempTodo}
+            onDeleteTodo={deleteTodo}
+            loadingIdsList={loadingIdsList}
+          />
+        )}
 
         {!areTodosEmpty && (
           <footer className="todoapp__footer">
