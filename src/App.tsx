@@ -1,9 +1,12 @@
-/* eslint-disable max-len */
-/* eslint-disable jsx-a11y/control-has-associated-label */
 import React from 'react';
 import { UserWarning } from './UserWarning';
+import { AddTodoFormHeader } from './components/AddTodoFormHeader';
+import { TodoListSection } from './components/TodoListSection';
+import { TodoFooter } from './components/TodoFooter';
+import { ErrorNotifications } from './components/ErrorNotifications';
+import { TodoProvider } from './context/todoContext';
 
-const USER_ID = 0;
+const USER_ID = 11238;
 
 export const App: React.FC = () => {
   if (!USER_ID) {
@@ -11,14 +14,18 @@ export const App: React.FC = () => {
   }
 
   return (
-    <section className="section container">
-      <p className="title is-4">
-        Copy all you need from the prev task:
-        <br />
-        <a href="https://github.com/mate-academy/react_todo-app-loading-todos#react-todo-app-load-todos">React Todo App - Load Todos</a>
-      </p>
+    <TodoProvider>
+      <div className="todoapp">
+        <h1 className="todoapp__title">todos</h1>
 
-      <p className="subtitle">Styles are already copied</p>
-    </section>
+        <div className="todoapp__content">
+          <AddTodoFormHeader />
+          <TodoListSection />
+          <TodoFooter />
+        </div>
+
+        <ErrorNotifications />
+      </div>
+    </TodoProvider>
   );
 };
