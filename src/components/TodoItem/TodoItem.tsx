@@ -5,18 +5,18 @@ import { Error, Todo } from '../../types/todo';
 
 type Props = {
   todo: Todo;
-  todos: Todo[];
-  setTodos: (todos: Todo[]) => void;
-  setHasError: (value: Error) => void;
-  isProcessing: boolean;
+  todos?: Todo[];
+  setTodos?: (todos: Todo[]) => void;
+  setHasError?: (value: Error) => void;
+  isProcessing?: boolean;
 };
 
 export const TodoItem: React.FC<Props> = ({
   todo,
-  setTodos,
-  todos,
-  setHasError,
-  isProcessing,
+  setTodos = () => {},
+  todos = [],
+  setHasError = () => {},
+  isProcessing = false,
 }) => {
   const [isHovered, setIsHovered] = useState(false);
   const [isEdited] = useState(false);

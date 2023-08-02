@@ -1,5 +1,5 @@
 /* eslint-disable jsx-a11y/control-has-associated-label */
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, useMemo } from 'react';
 import { getTodos } from './api/todos';
 import { Footer } from './components/Footer/Footer';
 import { Header } from './components/Header/Header';
@@ -17,10 +17,11 @@ export const App: React.FC = () => {
   const [hasError, setHasError] = useState(Error.Not);
   const [isLoading, setIsLoading] = useState(false);
   const [completedIdx, setCompletedIdx] = useState<number[]>([]);
+  const [tempTodo, setTempTodo] = useState<Todo | null>(null);
 
   useEffect(() => {
     getTodos(USER_ID).then(data => {
-      setTodos(data);
+      setTodos(filterTodos(filter, data));
     })
       .catch(() => {
         setHasError(Error.Load);
@@ -31,6 +32,11 @@ export const App: React.FC = () => {
     return <UserWarning />;
   }
 
+  /* eslint-disable-next-line */
+  const filteredTodos = useMemo<Todo[]>(() => {
+    return filterTodos(filter, todos);
+  }, [filter, todos]);
+
   return (
     <div className="todoapp">
       <h1 className="todoapp__title">todos</h1>
@@ -39,19 +45,23 @@ export const App: React.FC = () => {
         <Header
           userId={USER_ID}
           todos={todos}
-          setTodos={setTodos}
+          setTodos={
+            setTodos as (todos: Todo[] | ((todos: Todo[]) => void)) => void
+          }
           filter={filter}
           setHasError={setHasError}
           setIsLoading={setIsLoading}
           isLoading={isLoading}
+          setTempTodo={setTempTodo}
         />
 
         {!!todos.length && (
           <TodoList
-            todos={filterTodos(filter, todos)}
+            todos={filteredTodos}
             setTodos={setTodos}
             setHasError={setHasError}
             completedIdx={completedIdx}
+            tempTodo={tempTodo}
           />
         )}
 

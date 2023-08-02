@@ -8,6 +8,7 @@ type Props = {
   setTodos: (todos: Todo[]) => void;
   setHasError: (value: Error) => void;
   completedIdx: number[];
+  tempTodo: Todo | null;
 };
 
 export const TodoList: React.FC<Props> = ({
@@ -15,6 +16,7 @@ export const TodoList: React.FC<Props> = ({
   setTodos,
   setHasError,
   completedIdx,
+  tempTodo,
 }) => {
   return (
     <section className="todoapp__main" data-cy="TodoList">
@@ -34,6 +36,16 @@ export const TodoList: React.FC<Props> = ({
             />
           </CSSTransition>
         ))}
+
+        {tempTodo && (
+          <CSSTransition
+            key={0}
+            timeout={0}
+            classNames="temp-item"
+          >
+            <TodoItem todo={tempTodo} />
+          </CSSTransition>
+        )}
       </TransitionGroup>
     </section>
   );

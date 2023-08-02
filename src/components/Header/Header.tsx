@@ -9,11 +9,12 @@ import { filterTodos } from '../../utils/helpers';
 type Props = {
   userId: number;
   todos: Todo[];
-  setTodos: (todos: Todo[]) => void;
+  setTodos: (todos: Todo[] | ((todos: Todo[]) => void)) => void;
   filter: Filter;
   setHasError: (value: Error) => void;
   setIsLoading: (value: boolean) => void;
   isLoading: boolean;
+  setTempTodo: (todo: Todo | null) => void;
 };
 
 export const Header: React.FC<Props> = ({
@@ -24,6 +25,7 @@ export const Header: React.FC<Props> = ({
   setHasError,
   setIsLoading,
   isLoading,
+  setTempTodo,
 }) => {
   const [todoTitle, setTodoTitle] = useState('');
 
@@ -51,33 +53,30 @@ export const Header: React.FC<Props> = ({
       userId,
     };
 
-    const mockTodo = {
+    setIsLoading(true);
+    setTempTodo({
       ...newTodo,
       id: 0,
-    };
-
-    setIsLoading(true);
-    setTodos([...todos, mockTodo]);
+    });
 
     createTodo(newTodo)
       .then(() => {
-        setTodos(todos.filter(t => t.id !== 0));
-
         getTodos(userId)
           .then(data => {
             const newTodos = filterTodos(filter, data);
 
+            setTempTodo(null);
             setTodos(newTodos);
             setTodoTitle('');
           });
       })
       .catch(() => {
-        // setTodos(todos.filter(t => t.id !== 0));
+        setTempTodo(null);
         setHasError(Error.Add);
       })
       .finally(() => {
+        setTodoTitle('');
         setIsLoading(false);
-        setTodos(todos.filter(t => t.id !== 0));
       });
   };
 
