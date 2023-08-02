@@ -1,24 +1,79 @@
-/* eslint-disable max-len */
-/* eslint-disable jsx-a11y/control-has-associated-label */
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import { UserWarning } from './UserWarning';
+import { getTodos } from './api/todos';
+import { Todo } from './types/Todo';
 
-const USER_ID = 0;
+import { Header } from './components/Header';
+import { Footer } from './components/Footer';
+import { ShowError } from './components/ShowError';
+import { ShowTodos } from './components/ShowTodos';
+
+const USER_ID = 11093;
 
 export const App: React.FC = () => {
+  const [todos, setTodos] = useState<Todo[]>([]);
+  const [hiddenError, setHiddenError] = useState(true);
+  const [activeTab, setAvtiveTab] = useState('All');
+  const [errorMessage, setErrorMessage] = useState('Unable to loada todo');
+  const [loading, setLoading] = useState(false);
+  const [itemId, setItemId] = useState([0]);
+  const [tempTodo, setTempTodo] = useState<null | Todo>(null);
+
+  useEffect(() => {
+    getTodos(USER_ID)
+      .then(res => setTodos(res))
+      .catch(() => setHiddenError(false));
+  }, []);
+
   if (!USER_ID) {
     return <UserWarning />;
   }
 
   return (
-    <section className="section container">
-      <p className="title is-4">
-        Copy all you need from the prev task:
-        <br />
-        <a href="https://github.com/mate-academy/react_todo-app-loading-todos#react-todo-app-load-todos">React Todo App - Load Todos</a>
-      </p>
+    <div className="todoapp">
+      <h1 className="todoapp__title">todos</h1>
 
-      <p className="subtitle">Styles are already copied</p>
-    </section>
+      <div className="todoapp__content">
+        <Header
+          todos={todos}
+          setTodos={setTodos}
+          setErrorMessage={setErrorMessage}
+          setHiddenError={setHiddenError}
+          loading={loading}
+          setLoading={setLoading}
+          setTempTodo={setTempTodo}
+        />
+
+        <ShowTodos
+          todos={todos}
+          activeTab={activeTab}
+          setTodos={setTodos}
+          loading={loading}
+          setLoading={setLoading}
+          setErrorMessage={setErrorMessage}
+          setHiddenError={setHiddenError}
+          setItemId={setItemId}
+          itemId={itemId}
+          tempTodo={tempTodo}
+        />
+
+        <Footer
+          todos={todos}
+          setAvtiveTab={setAvtiveTab}
+          avtiveTab={activeTab}
+          setTodos={setTodos}
+          setErrorMessage={setErrorMessage}
+          setHiddenError={setHiddenError}
+          setItemId={setItemId}
+          setLoading={setLoading}
+        />
+      </div>
+
+      <ShowError
+        hiddenError={hiddenError}
+        setHiddenError={setHiddenError}
+        errorMessage={errorMessage}
+      />
+    </div>
   );
 };
