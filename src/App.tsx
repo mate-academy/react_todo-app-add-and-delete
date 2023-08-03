@@ -60,8 +60,7 @@ export const App: React.FC = () => {
   };
 
   const deleteTodo = (id: number) => {
-    setLoading(true);
-    setDeletingTodoIds(prevIds => [...prevIds, id]);
+    setDeletingTodoIds(todoIds => [...todoIds, id]);
 
     return todoService.deleteTodo(id)
       .then(() => {
@@ -71,8 +70,7 @@ export const App: React.FC = () => {
         setError(Error.delete);
       })
       .finally(() => {
-        setLoading(false);
-        setDeletingTodoIds(prevIds => prevIds.filter(todoId => todoId !== id));
+        setDeletingTodoIds(todoIds => todoIds.filter(todoId => todoId !== id));
       });
   };
 
