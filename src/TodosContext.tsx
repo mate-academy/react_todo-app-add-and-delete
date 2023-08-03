@@ -1,5 +1,5 @@
 /* eslint-disable no-console */
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useMemo, useState } from 'react';
 import { Filter } from './services/enums';
 import {
   addTodo,
@@ -7,33 +7,12 @@ import {
   getTodos,
 } from './api/todos';
 import { Todo } from './types';
+import { filterTodosByCompleted } from './utils/functions';
 
 const USER_ID = 11138;
 
 interface FilterParams {
   filterBy?: Filter,
-}
-
-function filterTodosByCompleted(todos: Todo[], filter: Filter): Todo[] {
-  let todosCopy = [...todos];
-
-  switch (filter) {
-    case (Filter.ACTIVE): {
-      todosCopy = todosCopy.filter(todo => !todo.completed);
-      break;
-    }
-
-    case (Filter.COMPLETED): {
-      todosCopy = todosCopy.filter(todo => todo.completed);
-      break;
-    }
-
-    default: {
-      break;
-    }
-  }
-
-  return todosCopy;
 }
 
 function filterTodos(todos: Todo[], { filterBy }: FilterParams): Todo[] {
@@ -99,7 +78,9 @@ export const TodosProvider: React.FC<ProviderProps> = ({ children }) => {
   const [errorMessage, setErrorMessage] = useState('');
   const [tempTodo, setTempTodo] = useState<Todo | null>(null);
 
-  const visibleTodos = filterTodos(todos, { filterBy });
+  const visibleTodos = useMemo(() => {
+    return filterTodos(todos, { filterBy });
+  }, [todos, filterBy]);
 
   useEffect(() => {
     getTodos(USER_ID)

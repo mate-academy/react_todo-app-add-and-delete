@@ -18,7 +18,7 @@ export const TodoHeader: React.FC = () => {
     event.preventDefault();
     setIsLoading(true);
     todoAdd(query)
-      .catch()
+      .catch(error => error)
       .finally(() => {
         setIsLoading(false);
         setQuery('');

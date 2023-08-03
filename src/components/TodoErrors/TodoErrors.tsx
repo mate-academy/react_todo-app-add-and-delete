@@ -27,7 +27,7 @@ export const TodoErrors: React.FC = () => {
           'is-danger',
           'is-light',
           'has-text-weight-normal',
-          { hidde: isHidden },
+          { hidden: isHidden },
         )
       }
     >

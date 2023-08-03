@@ -1,4 +1,4 @@
-import { useContext } from 'react';
+import { useContext, useMemo } from 'react';
 import cn from 'classnames';
 import { Filter } from '../../services/enums';
 import { TodosContext } from '../../TodosContext';
@@ -18,6 +18,8 @@ export const TodoFooter: React.FC = () => {
     setFilterBy,
     isTodosHasCompleted,
   } = useContext(TodosContext);
+
+  const isClearAllShown = useMemo(() => isTodosHasCompleted(), [todos]);
 
   return (
     <footer className="todoapp__footer">
@@ -62,7 +64,10 @@ export const TodoFooter: React.FC = () => {
         type="button"
         className="todoapp__clear-completed"
         onClick={clearAllCompleted}
-        style={{ opacity: isTodosHasCompleted() ? 1 : 0 }}
+        style={{
+          opacity: isClearAllShown ? 1 : 0,
+          pointerEvents: isClearAllShown ? 'all' : 'none',
+        }}
       >
         Clear completed
       </button>
