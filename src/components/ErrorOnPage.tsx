@@ -13,9 +13,19 @@ export const ErrorOnPage: React.FC<Props> = ({
   setNewError,
 }) => {
   useEffect(() => {
-    setTimeout(() => {
-      setNewError(null);
-    }, 3000);
+    let timeoutId: NodeJS.Timeout | null = null;
+
+    if (error) {
+      timeoutId = setTimeout(() => {
+        setNewError(null);
+      }, 3000);
+    }
+
+    return () => {
+      if (timeoutId) {
+        clearTimeout(timeoutId);
+      }
+    };
   }, [error, setNewError]);
 
   return (

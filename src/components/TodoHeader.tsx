@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 
 import { Todo } from '../types/Todo';
+import { ErrorMessages } from '../types/ErrorNessages';
 
 type Props = {
   isTodoShow: boolean,
@@ -24,9 +25,17 @@ export const TodoHeader: React.FC<Props> = ({
 
     setTodoAdd(true);
 
-    await addNewTodo(newTodoTitle);
+    try {
+      const newTodo = await addNewTodo(newTodoTitle);
 
-    setTodoAdd(false);
+      if (newTodo === null) {
+        throw new Error(ErrorMessages.AddError);
+      }
+    } catch (error) {
+      throw new Error(ErrorMessages.AddError);
+    } finally {
+      setTodoAdd(false);
+    }
   };
 
   return (

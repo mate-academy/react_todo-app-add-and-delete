@@ -58,10 +58,16 @@ export const App: React.FC = () => {
     }
   };
 
-  const removeCompletTodos = (todosDelete: Todo[]) => {
-    todosDelete.forEach(async (todo) => {
-      await deleteTodo(todo.id);
-    });
+  const removeCompletTodos = async (todosDelete: Todo[]) => {
+    try {
+      const deletePromises
+      = todosDelete.map((todo) => deleteTodo(todo.id));
+
+      await Promise.all(deletePromises);
+
+    } catch (error) {
+      setNewError(ErrorMessages.DeleteError);
+    }
   };
 
   const filterTodos = useMemo(() => {
@@ -76,7 +82,7 @@ export const App: React.FC = () => {
     setNewTodoTitle('');
   };
 
-  const addNewTodo = async (title: string) => {
+  const addNewTodo = async (title: string): Promise<null | Todo> => {
     if (!title) {
       setNewError(ErrorMessages.TitleError);
 
