@@ -75,15 +75,17 @@ export const Footer: React.FC<Props> = ({
             ))}
           </nav>
 
-          { finedCompleted && (
-            <button
-              type="button"
-              className="todoapp__clear-completed"
-              onClick={handleClear}
-            >
-              Clear completed
-            </button>
-          )}
+          <div className="todoapp__clear-completed__wrapper">
+            { finedCompleted && (
+              <button
+                type="button"
+                className="todoapp__clear-completed"
+                onClick={handleClear}
+              >
+                Clear completed
+              </button>
+            )}
+          </div>
         </footer>
       )}
     </>
