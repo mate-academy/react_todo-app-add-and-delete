@@ -1,4 +1,4 @@
-import { ErrorMessages } from "../types/ErrorNessages";
+import { ErrorMessages } from '../types/ErrorNessages';
 
 const BASE_URL = 'https://mate.academy/students-api';
 

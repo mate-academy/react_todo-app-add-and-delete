@@ -58,13 +58,11 @@ export const App: React.FC = () => {
     }
   };
 
-  const removeCompletTodos = async (todosDelete: Todo[]) => {
+  const removeCompletTodos = async (todoIds: number[]) => {
     try {
-      const deletePromises
-      = todosDelete.map((todo) => deleteTodo(todo.id));
+      const deletePromises = todoIds.map((todoId) => deleteTodo(todoId));
 
       await Promise.all(deletePromises);
-
     } catch (error) {
       setNewError(ErrorMessages.DeleteError);
     }

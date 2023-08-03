@@ -8,7 +8,7 @@ type Props = {
   todos: Todo[];
   filterBy: FilterBy;
   filterTodos: (filterBy: FilterBy) => void;
-  deleteTodo: (todoIds: Todo[]) => void;
+  deleteTodo: (todoIds: number[]) => void;
 };
 
 export const TodoFooter: React.FC<Props> = ({
@@ -66,6 +66,7 @@ export const TodoFooter: React.FC<Props> = ({
           const completedTodoIds = todos
             .filter((todo) => todo.completed)
             .map((todo) => todo.id);
+
           deleteTodo(completedTodoIds);
         }}
       >
