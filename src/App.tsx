@@ -117,12 +117,14 @@ export const App: React.FC = () => {
 
   const visibleTodos = useMemo(() => todos.filter((todo) => {
     switch (sortBy) {
+      case SortByStatus.All:
+        return todo;
       case SortByStatus.Active:
         return !todo.completed;
       case SortByStatus.Completed:
         return todo.completed;
       default:
-        return todo;
+        return true;
     }
   }), [todos, sortBy]);
 

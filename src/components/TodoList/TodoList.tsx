@@ -1,3 +1,4 @@
+import { useState } from 'react';
 import { Todo } from '../../types/Todo';
 import { TodoItem } from '../TodoItem/TodoItem';
 
@@ -10,10 +11,12 @@ type Props = {
 
 export const TodoList: React.FC<Props> = ({
   todos,
-  onDeleteTodo = () => { },
+  onDeleteTodo,
   tempTodo,
   loadingTodoId,
 }) => {
+  const [loading] = useState(true);
+
   return (
     <section className="todoapp__main">
       <ul className="todo-list">
@@ -31,7 +34,7 @@ export const TodoList: React.FC<Props> = ({
             key={tempTodo.id}
             todo={tempTodo}
             onDeleteTodo={onDeleteTodo}
-            loading
+            loading={loading}
           />
         )}
       </ul>
