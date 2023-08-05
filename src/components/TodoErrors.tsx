@@ -4,17 +4,17 @@ import { useEffect } from 'react';
 
 interface Error {
   error: string,
-  setError: () => void,
+  unSetError: () => void,
 }
 
 export const TodoErrors: React.FC<Error> = ({
   error,
-  setError,
+  unSetError,
 }) => {
   useEffect(() => {
     if (error) {
       setTimeout(() => {
-        setError();
+        unSetError();
       }, 3000);
     }
   }, [error]);
@@ -22,18 +22,18 @@ export const TodoErrors: React.FC<Error> = ({
   return (
     <div
       className={classNames(
-        'notification is-danger is-light has-text-weight-normal', {
-          hidden: !error,
-        },
+        'notification',
+        'is-danger',
+        'is-light',
+        'has-text-weight-normal',
+        { hidden: !error },
       )}
     >
-
       <button
         type="button"
         className="delete"
-        onClick={setError}
+        onClick={unSetError}
       />
-
       {error}
     </div>
   );

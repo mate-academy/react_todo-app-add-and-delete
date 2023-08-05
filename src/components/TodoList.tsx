@@ -1,28 +1,39 @@
 import { Todo } from '../types/Todo';
-import { TodoItems } from './TodoItems';
+import { TodoItem } from './TodoItem';
 
-interface Props {
-  todos: Todo[],
-  loader: boolean,
-  removedTodo: (todoId: number) => Promise<unknown>
+interface List {
+  todos: Todo[];
+  loaderId: number[],
+  removeTodo: (todoId: number) => Promise<unknown>;
+  updateTodo: (todoId: number) => Promise<unknown>,
+  updateTodoTitle: (todoId: number) => Promise<unknown>,
+  switchTodoTitle: (newTitle: string) => void,
+  newTodoTitle: string,
 }
 
-export const TodoList: React.FC<Props> = ({
+export const TodoList: React.FC<List> = ({
   todos,
-  loader,
-  removedTodo,
+  loaderId,
+  removeTodo,
+  updateTodo,
+  updateTodoTitle,
+  switchTodoTitle,
+  newTodoTitle,
 }) => {
   return (
     <section className="todoapp__main">
       {todos.map(todo => (
-        <TodoItems
-          todo={todo}
+        <TodoItem
           key={todo.id}
-          loader={loader}
-          removedTodo={(todoId: number) => removedTodo(todoId)}
+          todo={todo}
+          loaderId={loaderId}
+          removeTodo={removeTodo}
+          updateTodo={updateTodo}
+          updateTodoTitle={updateTodoTitle}
+          switchTodoTitle={switchTodoTitle}
+          newTodoTitle={newTodoTitle}
         />
       ))}
-
     </section>
   );
 };

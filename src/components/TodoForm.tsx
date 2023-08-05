@@ -1,28 +1,30 @@
+/* eslint-disable jsx-a11y/control-has-associated-label */
 import { useState } from 'react';
 
-type Props = {
-  todoTitle: string;
-  setTodoTitle: (newtodoTitle: string) => void;
-  createdNewTodo: () => Promise<unknown>;
-};
+interface Form {
+  todoTitle: string,
+  onTodoCreate: (newTodoTitle: string) => void,
+  createTodo: () => Promise<unknown>,
+}
 
-export const TodoForm: React.FC<Props> = ({
+export const TodoForm: React.FC<Form> = ({
   todoTitle,
-  setTodoTitle,
-  createdNewTodo,
+  onTodoCreate,
+  createTodo,
 }) => {
   const [processing, setProcessing] = useState(false);
 
   const resetTitleField = () => {
-    setTodoTitle('');
+    onTodoCreate('');
   };
 
   const handleSubmit = async (event: React.FormEvent) => {
     event.preventDefault();
     setProcessing(true);
 
-    await createdNewTodo();
-    setProcessing(false);
+    await createTodo()
+      .finally(() => setProcessing(false));
+
     resetTitleField();
   };
 
@@ -38,7 +40,7 @@ export const TodoForm: React.FC<Props> = ({
         placeholder="What needs to be done?"
         disabled={processing}
         value={todoTitle}
-        onChange={(event) => setTodoTitle(event.target.value)}
+        onChange={(event) => onTodoCreate(event.target.value)}
       />
     </form>
   );

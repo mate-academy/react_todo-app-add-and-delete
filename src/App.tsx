@@ -1,142 +1,127 @@
 /* eslint-disable jsx-a11y/control-has-associated-label */
-import React, { useEffect, useMemo, useState } from 'react';
+import React, { useState, useEffect, useMemo } from 'react';
 import classNames from 'classnames';
 import { UserWarning } from './UserWarning';
-import { TodoFilter } from './components/TodoFilter';
+import { TodoFilterBar } from './components/TodoFilter';
 import { TodoErrors } from './components/TodoErrors';
-import { TodoList } from './components/TodoList';
 import { Todo } from './types/Todo';
-import { FilteredParams } from './types/FilteredParams';
-import { addTodo, deleteTodo, getTodos } from './api/todos';
-import { USER_ID } from './utils/userId';
+import { FilterParams } from './types/FilteredParams';
 import { TodoForm } from './components/TodoForm';
-
-function getPreparedTodos(todosForFilter: Todo[], filterField: FilteredParams) {
-  return todosForFilter.filter(todo => {
-    switch (filterField) {
-      case FilteredParams.active:
-        return !todo.completed;
-
-      case FilteredParams.completed:
-        return todo.completed;
-
-      default:
-        return todo;
-    }
-  });
-}
+import { TodoList } from './components/TodoList';
+import {
+  addTodo,
+  getTodos,
+  deleteTodo,
+  patchTodoStatus,
+  patchTodoTitle,
+} from './api/todos';
+import { USER_ID } from './utils/userId';
+import { getPreperedTodos } from './utils/getPreparedTodos';
+import { TodoItem } from './components/TodoItem';
 
 export const App: React.FC = () => {
   const [todos, setTodos] = useState<Todo[] | []>([]);
-  const [filter, setFilter] = useState(FilteredParams.all);
+  const [filter, setFilter] = useState(FilterParams.all);
   const [errorMessage, setErrorMessage] = useState('');
-  const [loader, setLoader] = useState(true);
+  const [loaderId, setLoaderId] = useState<number[]>([]);
   const [todoTitle, setTodoTitle] = useState('');
-  const [temp, setTemp] = useState<Todo | null>(null);
+  const [tempTodo, setTempTodo] = useState<Todo | null>(null);
+  const [newTodoTitle, setNewTodoTitle] = useState('');
 
   const unSetError = () => {
     setErrorMessage('');
   };
 
-  // eslint-disable-next-line max-len
-  const preparedTodos = useMemo(() => getPreparedTodos(todos, filter), [todos, filter]);
+  const preparedTodos = useMemo(() => {
+    return getPreperedTodos(todos, filter);
+  }, [todos, filter]);
 
-  const tempMarkup = (
-    <div className="todo">
-      <label className="todo__status-label">
-        <input
-          type="checkbox"
-          className="todo__status"
-        />
-      </label>
+  const checkTodo = todos.length > 0;
 
-      <span
-        className="todo__title"
-      >
-        {temp?.title}
-      </span>
-
-      <button
-        type="button"
-        className="todo__remove"
-      >
-        ×
-      </button>
-
-      <div className={classNames('modal overlay', {
-        'is-active': temp !== null,
-      })}
-      >
-        <div className="modal-background has-background-white-ter" />
-        <div className="loader" />
-      </div>
-    </div>
-  );
-
-  const todosCheck = todos.length > 0;
-
-  const createdNewTodo = async () => {
-    const newTodo = {
-      id: 0,
-      userId: USER_ID,
-      title: todoTitle,
-      completed: false,
-    };
-
-    setTemp(newTodo);
-
-    try {
-      const addedTodo = await addTodo(newTodo);
-
-      setTodos(prevTodos => [...prevTodos, addedTodo]);
-    } catch (error) {
-      setErrorMessage('Something went wrong with addition todo');
-      throw error;
-    } finally {
-      setTemp(null);
-    }
-  };
-
-  const removedTodo = async (todoId: number) => {
-    setLoader(true);
-
+  const removeTodo = async (todoId: number) => {
     try {
       await deleteTodo(todoId);
-
-      setTodos(prevTodos => {
-        return prevTodos.filter(todo => todo.id !== todoId);
-      });
+      setTodos(prevTodos => prevTodos.filter(todo => todo.id !== todoId));
     } catch (error) {
       setTodos(todos);
-      setErrorMessage('Something went wrong with deletion todo');
-      throw error;
-    } finally {
-      setLoader(false);
+      setErrorMessage('Unable to delete a todo');
     }
   };
 
   const setClearCompletedTodo = () => {
-    setLoader(true);
+    const completedTodo = todos.filter(todo => todo.completed);
 
-    setTodos(prevTodos => {
-      return prevTodos.filter(todo => {
-        if (todo.completed) {
-          deleteTodo(todo.id)
-            .catch((error) => {
-              setTodos(todos);
-              setErrorMessage('Something went wrong with deletion todo');
-              throw error;
-            })
-            .finally(() => {
-              setLoader(false);
-            });
+    completedTodo.forEach(todo => {
+      setLoaderId(prevIds => [...prevIds, todo.id]);
 
-          return false;
-        }
-
-        return !todo.completed;
-      });
+      removeTodo(todo.id)
+        .finally(() => setLoaderId([]));
     });
+  };
+
+  const createTodo = async () => {
+    if (!todoTitle) {
+      setErrorMessage('Title shouldn`t be empty');
+
+      return;
+    }
+
+    setTempTodo({
+      id: 0,
+      title: todoTitle,
+      completed: false,
+      userId: USER_ID,
+    });
+
+    try {
+      const newTodo = await addTodo({
+        title: todoTitle,
+        completed: false,
+        userId: USER_ID,
+      });
+
+      setTodos(prevTodos => [...prevTodos, newTodo]);
+    } catch (error) {
+      setErrorMessage('Unable to add todo');
+    } finally {
+      setTempTodo(null);
+    }
+  };
+
+  const updateTodoStatus = async (todoId: number) => {
+    try {
+      const switchedTodo = todos.find(t => t.id === todoId);
+
+      await patchTodoStatus(todoId, { completed: !switchedTodo?.completed });
+      setTodos(prevTodos => {
+        return prevTodos.map(todo => {
+          return todo.id === todoId
+            ? { ...todo, completed: !todo.completed } : todo;
+        });
+      });
+    } catch (error) {
+      setErrorMessage('Unable to update todo');
+    }
+  };
+
+  const updateTodoTitle = async (todoId: number) => {
+    try {
+      const changedTodo = todos.find(t => t.id === todoId);
+
+      await patchTodoTitle(todoId, { title: newTodoTitle });
+      if (changedTodo) {
+        setTodos(prevTodos => prevTodos.map(todo => {
+          if (todo.id === todoId) {
+            return { ...todo, title: newTodoTitle };
+          }
+
+          return todo;
+        }));
+      }
+    } catch (error) {
+      setErrorMessage('Unable to update todo');
+      throw error;
+    }
   };
 
   useEffect(() => {
@@ -145,13 +130,21 @@ export const App: React.FC = () => {
     getTodos(USER_ID)
       .then(setTodos)
       .catch(() => {
-        setErrorMessage('Unable getting todos');
-        setTimeout(() => {
-          setErrorMessage('');
-        }, 3000);
-      })
-      .finally(() => setLoader(false));
+        setErrorMessage('Unable to get todos');
+      });
   }, []);
+
+  const toggleAll = () => {
+    const todosToUpdate = todos.every(todo => todo.completed)
+      ? todos.filter(todo => todo.completed)
+      : todos.filter(todo => !todo.completed);
+
+    todosToUpdate.forEach(todo => {
+      setLoaderId(prevIds => [...prevIds, todo.id]);
+      updateTodoStatus(todo.id)
+        .finally(() => setLoaderId([]));
+    });
+  };
 
   if (!USER_ID) {
     return <UserWarning />;
@@ -160,47 +153,62 @@ export const App: React.FC = () => {
   return (
     <div className="todoapp">
       <h1 className="todoapp__title">todos</h1>
-
       <header className="todoapp__header">
-        {todosCheck && (
+        {checkTodo && (
           <button
             type="button"
             className={classNames('todoapp__toggle-all', {
               active: todos.every(todo => todo.completed),
             })}
+            onClick={toggleAll}
           />
         )}
 
         <TodoForm
           todoTitle={todoTitle}
-          setTodoTitle={setTodoTitle}
-          createdNewTodo={createdNewTodo}
+          onTodoCreate={setTodoTitle}
+          createTodo={createTodo}
         />
       </header>
 
       <div className="todoapp__content">
-        {todosCheck && (
+        {checkTodo && (
           <TodoList
             todos={preparedTodos}
-            removedTodo={(todoId: number) => removedTodo(todoId)}
-            loader={loader}
+            removeTodo={removeTodo}
+            loaderId={loaderId}
+            updateTodo={updateTodoStatus}
+            updateTodoTitle={updateTodoTitle}
+            switchTodoTitle={setNewTodoTitle}
+            newTodoTitle={newTodoTitle}
           />
         )}
-        {temp && tempMarkup}
 
-        {todosCheck && (
-          <TodoFilter
+        {tempTodo && (
+          <TodoItem
+            todo={tempTodo}
+            removeTodo={removeTodo}
+            updateTodo={updateTodoStatus}
+            updateTodoTitle={updateTodoTitle}
+            switchTodoTitle={setNewTodoTitle}
+            newTodoTitle={newTodoTitle}
+            loaderId={[tempTodo.id]}
+          />
+        )}
+
+        {checkTodo && (
+          <TodoFilterBar
             filter={filter}
             setFilter={setFilter}
-            todos={todos}
             setClearCompletedTodo={setClearCompletedTodo}
+            todos={todos}
           />
         )}
       </div>
 
       <TodoErrors
         error={errorMessage}
-        setError={unSetError}
+        unSetError={unSetError}
       />
     </div>
   );

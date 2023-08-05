@@ -12,3 +12,13 @@ export const addTodo = ({ title, completed, userId }: Omit<Todo, 'id'>) => {
 export const deleteTodo = (todoId: number) => {
   return client.delete(`/todos/${todoId}`);
 };
+
+export const patchTodoStatus = (todoId: number,
+  { completed }: Pick<Todo, 'completed'>) => {
+  return client.patch(`/todos/${todoId}`, { completed });
+};
+
+export const patchTodoTitle = (todoId: number,
+  { title }: Pick<Todo, 'title'>) => {
+  return client.patch(`/todos/${todoId}`, { title });
+};

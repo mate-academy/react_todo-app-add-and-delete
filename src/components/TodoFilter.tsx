@@ -1,39 +1,41 @@
 import classNames from 'classnames';
-import { FilteredParams } from '../types/FilteredParams';
+import { FilterParams } from '../types/FilteredParams';
 import { Todo } from '../types/Todo';
 
-interface Props {
-  filter: FilteredParams,
-  setFilter: (newFilter: FilteredParams) => void,
+interface Filter {
+  filter: FilterParams,
+  setFilter: (newFilter: FilterParams) => void,
   todos: Todo[],
   setClearCompletedTodo: () => void,
 }
 
-export const TodoFilter: React.FC<Props> = ({
+export const TodoFilterBar: React.FC<Filter> = ({
   filter,
   setFilter,
   todos,
   setClearCompletedTodo,
 }) => {
+  const uncompletedTodos = todos.filter(todo => !todo.completed);
+
   function handleClickAll(event: { preventDefault: () => void; }) {
     event.preventDefault();
-    setFilter(FilteredParams.all);
+    setFilter(FilterParams.all);
   }
 
   function handleClickActive(event: { preventDefault: () => void; }) {
     event.preventDefault();
-    setFilter(FilteredParams.active);
+    setFilter(FilterParams.active);
   }
 
   function handleClickCompleted(event: { preventDefault: () => void; }) {
     event.preventDefault();
-    setFilter(FilteredParams.completed);
+    setFilter(FilterParams.completed);
   }
 
   return (
     <footer className="todoapp__footer">
       <span className="todo-count">
-        {`${todos.length} items left`}
+        {`${uncompletedTodos.length} items left`}
       </span>
 
       {/* Active filter should have a 'selected' class */}
@@ -41,7 +43,7 @@ export const TodoFilter: React.FC<Props> = ({
         <a
           href="#/"
           className={classNames('filter__link', {
-            selected: filter === FilteredParams.all,
+            selected: filter === FilterParams.all,
           })}
           onClick={handleClickAll}
         >
@@ -51,7 +53,7 @@ export const TodoFilter: React.FC<Props> = ({
         <a
           href="#/active"
           className={classNames('filter__link', {
-            selected: filter === FilteredParams.active,
+            selected: filter === FilterParams.active,
           })}
           onClick={handleClickActive}
         >
@@ -61,7 +63,7 @@ export const TodoFilter: React.FC<Props> = ({
         <a
           href="#/completed"
           className={classNames('filter__link', {
-            selected: filter === FilteredParams.completed,
+            selected: filter === FilterParams.completed,
           })}
           onClick={handleClickCompleted}
         >
@@ -73,7 +75,7 @@ export const TodoFilter: React.FC<Props> = ({
         onClick={() => setClearCompletedTodo()}
         type="button"
         style={{
-          visibility: todos.some(todo => todo.completed)
+          visibility: todos.every(todo => !todo.completed)
             ? 'hidden'
             : 'visible',
         }}
