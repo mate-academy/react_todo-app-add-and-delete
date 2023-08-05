@@ -1,12 +1,12 @@
 import { Status } from '../../types/Status';
-import { TodoFilter } from '../TodoFilter/TodoFilter';
+import { TodoFilter } from '../TodoFilter';
 
 type Props = {
   numberOfCompletedTodos: number,
   numberOfNotCompletedTodos: number,
   sortField: Status,
   setSortField: (status: Status) => void,
-  clearCompleted: (todoId: number)=> void,
+  clearCompleted: () => void,
 };
 
 export const Footer: React.FC<Props> = ({
@@ -31,7 +31,7 @@ export const Footer: React.FC<Props> = ({
         <button
           type="button"
           className="todoapp__clear-completed"
-          onClick={() => clearCompleted}
+          onClick={() => clearCompleted()}
         >
           Clear completed
         </button>
