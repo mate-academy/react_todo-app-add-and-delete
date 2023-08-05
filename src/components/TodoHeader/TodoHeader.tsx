@@ -1,10 +1,15 @@
 import React, { useRef } from 'react';
+import cn from 'classnames';
 
 type Props = {
   onAddTodo: (title: string) => Promise<void>;
+  areAllTodosCompleted: boolean;
 };
 
-export const TodoHeader: React.FC<Props> = ({ onAddTodo }) => {
+export const TodoHeader: React.FC<Props> = ({
+  onAddTodo,
+  areAllTodosCompleted,
+}) => {
   const inputField = useRef<HTMLInputElement | null>(null);
 
   const resetInput = () => {
@@ -41,7 +46,10 @@ export const TodoHeader: React.FC<Props> = ({ onAddTodo }) => {
       {/* this buttons is active only if there are some active todos */}
       <button
         type="button"
-        className="todoapp__toggle-all active"
+        className={cn(
+          'todoapp__toggle-all',
+          { active: areAllTodosCompleted },
+        )}
         aria-label="Close"
       />
 

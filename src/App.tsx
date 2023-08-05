@@ -10,6 +10,8 @@ import { Notification } from './components/Notification';
 import { FilterBy } from './types/FilterBy';
 import { Errors } from './types/Errors';
 
+import * as utils from './utils/utils';
+
 const USER_ID = 11246;
 const BASE_ADD_URL = '/todos';
 const URL_GET = `?userId=${USER_ID}`;
@@ -95,9 +97,9 @@ export const App: React.FC = () => {
     }
   });
 
-  const activeTodos = todos.filter(todo => !todo.completed).length;
-
-  const completedTodos = todos.filter(todo => todo.completed).length;
+  const completedTodos = utils.getCompletedTodos(todos);
+  const activeTodos = utils.getActiveTodos(todos);
+  const areAllTodosCompleted = activeTodos.length === 0;
 
   useEffect(() => {
     client.get<Todo[]>(BASE_ADD_URL + URL_GET)
@@ -121,6 +123,7 @@ export const App: React.FC = () => {
       <div className="todoapp__content">
         <TodoHeader
           onAddTodo={addTodo}
+          areAllTodosCompleted={areAllTodosCompleted}
         />
         {todos.length > 0 && (
           <>
@@ -135,8 +138,8 @@ export const App: React.FC = () => {
             <TodoFooter
               onChangeFilter={applyFilter}
               filterSelected={filterBy}
-              activeTodos={activeTodos}
-              completedTodos={completedTodos}
+              activeTodos={completedTodos.length}
+              completedTodos={activeTodos.length}
               clearCompleted={clearCompleted}
             />
           </>
