@@ -5,11 +5,11 @@ import { Todo } from '../../types/Todo';
 type Props = {
   todo: Todo;
   deleteTodo: (id: number) => void;
-  loading: boolean;
+  isProcessed: boolean;
 };
 
 export const TodoItem: React.FC<Props> = ({
-  todo, deleteTodo, loading = false,
+  todo, deleteTodo, isProcessed,
 }) => {
   const [edited, setEdited] = useState(false);
   const [changeTodo, setChangeTodo] = useState('Todo is being edited now');
@@ -71,7 +71,7 @@ export const TodoItem: React.FC<Props> = ({
 
       <div className={classNames(
         'modal overlay',
-        { 'is-active': loading },
+        { 'is-active': isProcessed },
       )}
       >
         <div

@@ -10,6 +10,10 @@ type Props = {
 export const NewTodo: React.FC<Props> = React.memo(({
   addTodo, query, setQuery, isAdding,
 }) => {
+  const handleChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+    setQuery(event.target.value);
+  };
+
   return (
     <form onSubmit={addTodo}>
       <input
@@ -17,7 +21,7 @@ export const NewTodo: React.FC<Props> = React.memo(({
         className="todoapp__new-todo"
         placeholder="What needs to be done?"
         value={query}
-        onChange={event => setQuery(event.target.value)}
+        onChange={handleChange}
         disabled={isAdding}
       />
     </form>

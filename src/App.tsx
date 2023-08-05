@@ -17,7 +17,7 @@ export const App: React.FC = () => {
   const [tempTodo, setTempTodo] = useState<Todo | null>(null);
   const [query, setQuery] = useState('');
   const [isAdding, setIsAdding] = useState(false);
-  const [loading, setLoading] = useState<number[]>([]);
+  const [isProcessed, setIsProcessed] = useState<number[]>([]);
 
   const addTodo = (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
@@ -46,10 +46,8 @@ export const App: React.FC = () => {
         setQuery('');
         setTodos((currentTodos: Todo[]) => [...currentTodos, newTodo]);
       })
-      .catch(error => {
+      .catch(() => {
         setErrorMessage('Unable to add a todo');
-
-        throw error;
       })
       .finally(() => {
         setIsAdding(false);
@@ -59,7 +57,7 @@ export const App: React.FC = () => {
 
   const deleteTodo = (todoId: number) => {
     setErrorMessage('');
-    setLoading(currentId => [...currentId, todoId]);
+    setIsProcessed(currentId => [...currentId, todoId]);
 
     todoService.deleteTodo(todoId)
       .then(() => {
@@ -68,11 +66,11 @@ export const App: React.FC = () => {
         ));
       })
       .catch(() => setErrorMessage('Unable to delete a todo'))
-      .finally(() => setLoading([]));
+      .finally(() => setIsProcessed([]));
   };
 
   const clearCompletedTodos = () => {
-    todos.filter(todo => {
+    todos.map(todo => {
       if (todo.completed) {
         deleteTodo(todo.id);
       }
@@ -125,15 +123,15 @@ export const App: React.FC = () => {
     };
   }, [errorMessage]);
 
-  const allTodoComplited = useMemo(() => {
+  const allTodoCompleted = useMemo(() => {
     return todos.every(todo => todo.completed) && todos.length !== 0;
   }, [todos]);
 
-  const uncomplitedTodos = useMemo(() => (
+  const uncompletedTodos = useMemo(() => (
     todos.filter(todo => !todo.completed).length
   ), [todos]);
 
-  const complitedTodos = useMemo(() => (
+  const completedTodos = useMemo(() => (
     todos.filter(todo => todo.completed).length
   ), [todos]);
 
@@ -152,7 +150,7 @@ export const App: React.FC = () => {
               type="button"
               className={classNames(
                 'todoapp__toggle-all',
-                { active: allTodoComplited },
+                { active: allTodoCompleted },
               )}
             />
           )}
@@ -168,14 +166,14 @@ export const App: React.FC = () => {
         <TodoList
           visibleTodos={visibleTodos}
           deleteTodo={deleteTodo}
-          loading={loading}
+          isProcessed={isProcessed}
           tempTodo={tempTodo}
         />
 
         {todos.length !== 0 && (
           <footer className="todoapp__footer">
             <span className="todo-count">
-              {`${uncomplitedTodos} items left`}
+              {`${uncompletedTodos} items left`}
             </span>
 
             <Filter
@@ -186,7 +184,7 @@ export const App: React.FC = () => {
             <button
               type="button"
               className="todoapp__clear-completed"
-              disabled={complitedTodos === 0}
+              disabled={completedTodos === 0}
               onClick={clearCompletedTodos}
             >
               Clear completed
@@ -197,7 +195,7 @@ export const App: React.FC = () => {
 
       <div className={classNames(
         'notification is-danger is-light has-text-weight-normal',
-        { hidden: errorMessage.length === 0 },
+        { hidden: !errorMessage },
       )}
       >
         <button

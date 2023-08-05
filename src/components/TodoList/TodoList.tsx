@@ -8,12 +8,12 @@ import { TodoItem } from '../TodoItem';
 type Props = {
   visibleTodos: Todo[];
   deleteTodo: (id: number) => void;
-  loading: number[];
+  isProcessed: number[];
   tempTodo: Todo | null;
 };
 
 export const TodoList: React.FC<Props> = ({
-  visibleTodos, deleteTodo, loading, tempTodo,
+  visibleTodos, deleteTodo, isProcessed, tempTodo,
 }) => {
   return (
     <section className="todoapp__main">
@@ -27,7 +27,7 @@ export const TodoList: React.FC<Props> = ({
             <TodoItem
               todo={todo}
               deleteTodo={deleteTodo}
-              loading={loading.includes(todo.id)}
+              isProcessed={isProcessed.includes(todo.id)}
             />
           </CSSTransition>
         ))}
@@ -40,7 +40,7 @@ export const TodoList: React.FC<Props> = ({
             <TodoItem
               todo={tempTodo}
               deleteTodo={deleteTodo}
-              loading={tempTodo !== null}
+              isProcessed={tempTodo !== null}
             />
           </CSSTransition>
         )}
