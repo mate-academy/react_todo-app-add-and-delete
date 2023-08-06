@@ -1,6 +1,7 @@
 import classNames from 'classnames';
 import { useEffect, useRef, useState } from 'react';
 import { Todo } from '../../types/Todo';
+import { Errors } from '../../types/Errors';
 
 type Props = {
   filteringBy: Todo[],
@@ -30,20 +31,25 @@ export const TodoBody: React.FC<Props> = ({
 
   // Submit the edited todo
   const handleEditingTodo = (
-    event: React.FormEvent<HTMLFormElement>,
+    event: React.FormEvent<HTMLFormElement> | null,
     todo: Todo,
   ) => {
-    event.preventDefault();
-
-    if (editValue === todo.title) {
-      return;
+    if (event) {
+      event.preventDefault();
     }
 
-    updateTodo({ ...todo, title: editValue })
-      .then(() => {
-        setIsEditing(null);
-        setEditValue('');
-      });
+    switch (editValue) {
+      case Errors.NULL:
+        return deleteTodo(todo.id);
+      case todo.title:
+        return setIsEditing(null);
+      default:
+        return updateTodo({ ...todo, title: editValue })
+          .then(() => {
+            setIsEditing(null);
+            setEditValue('');
+          });
+    }
   };
 
   // Reset the edited todo on KeyUp "Escape"
@@ -56,6 +62,7 @@ export const TodoBody: React.FC<Props> = ({
 
   return (
     <section className="todoapp__main">
+      {/* Todos from server response */}
       {filteringBy.map(todo => (
         <div
           className={classNames(
@@ -78,6 +85,7 @@ export const TodoBody: React.FC<Props> = ({
             />
           </label>
 
+          {/* Edit input which activate after OnDoubleClick */}
           {todo.id === isEditing ? (
             <form onSubmit={(event) => handleEditingTodo(event, todo)}>
               <input
@@ -87,11 +95,13 @@ export const TodoBody: React.FC<Props> = ({
                 placeholder="Empty todo will be deleted"
                 value={editValue}
                 onKeyUp={resetEditing}
+                onBlur={() => handleEditingTodo(null, todo)}
                 onChange={(event) => setEditValue(event.target.value)}
               />
             </form>
           ) : (
             <>
+              {/* Standart Todo from server */}
               <span className="todo__title">
                 {todo.title}
               </span>
@@ -116,6 +126,8 @@ export const TodoBody: React.FC<Props> = ({
           </div>
         </div>
       ))}
+
+      {/* Temproary Todo during waitind for server response */}
       {tempTodo && (
         <div
           className="todo"

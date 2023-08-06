@@ -14,22 +14,15 @@ export const App: React.FC = () => {
   const [todos, setTodos] = useState<Todo[]>([]);
   const [tempTodo, setTempTodo] = useState<Omit<Todo, 'id'> | null>(null);
   const [filterBy, setFilterBy] = useState(FilterBy.ALL);
-  const [errorMessage, setErrorMessage] = useState<Errors>(Errors.RESET);
+  const [errorMessage, setErrorMessage] = useState<Errors>(Errors.NULL);
   const [newTodoId, setNewTodoId] = useState<number[]>([]);
 
   // Request todos from server on first render
   useEffect(() => {
     todosService.getTodos(todosService.USER_ID)
       .then(setTodos)
-      .catch((error) => {
-        setErrorMessage(Errors.LOAD);
-        throw error;
-      })
-      .finally(() => {
-        setTimeout(() => {
-          setErrorMessage(Errors.RESET);
-        }, 3000);
-      });
+      .catch(() => setErrorMessage(Errors.LOAD))
+      .finally(() => setTimeout(() => setErrorMessage(Errors.NULL), 3000));
   }, []);
 
   // Filtering todos by FilteringBy without request on server
@@ -63,7 +56,7 @@ export const App: React.FC = () => {
         throw error;
       })
       .finally(() => {
-        setTimeout(() => setErrorMessage(Errors.RESET), 3000);
+        setTimeout(() => setErrorMessage(Errors.NULL), 3000);
         setTempTodo(null);
         setNewTodoId([]);
       });
@@ -93,7 +86,7 @@ export const App: React.FC = () => {
       })
       .finally(() => {
         setNewTodoId([]);
-        setTimeout(() => setErrorMessage(Errors.RESET), 3000);
+        setTimeout(() => setErrorMessage(Errors.NULL), 3000);
       });
   };
 
@@ -101,17 +94,14 @@ export const App: React.FC = () => {
   const deleteTodo = (todoId: number) => {
     setNewTodoId(currentIDs => [...currentIDs, todoId]);
 
-    return todosService.deleteTodo(todoId)
+    todosService.deleteTodo(todoId)
       .then(() => setTodos(
         currentTodos => currentTodos.filter(todo => todo.id !== todoId),
       ))
-      .catch((error) => {
-        setErrorMessage(Errors.DELETE);
-        throw error;
-      })
+      .catch(() => setErrorMessage(Errors.DELETE))
       .finally(() => {
         setNewTodoId([]);
-        setTimeout(() => setErrorMessage(Errors.RESET), 3000);
+        setTimeout(() => setErrorMessage(Errors.NULL), 3000);
       });
   };
 
@@ -151,7 +141,7 @@ export const App: React.FC = () => {
               hidden: !errorMessage,
             })}
             onClick={() => {
-              setErrorMessage(Errors.RESET);
+              setErrorMessage(Errors.NULL);
             }}
           />
           {errorMessage}

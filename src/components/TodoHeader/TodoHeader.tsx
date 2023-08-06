@@ -41,12 +41,12 @@ export const TodoHeader: React.FC<Props> = ({
 
     if (!inputValue.trim()) {
       setErrorMessage(Errors.NO_TITLE);
-      setTimeout(() => setErrorMessage(Errors.RESET), 3000);
+      setTimeout(() => setErrorMessage(Errors.NULL), 3000);
 
       return;
     }
 
-    setErrorMessage(Errors.RESET);
+    setErrorMessage(Errors.NULL);
     setIsDisabledInput(true);
 
     addTodo(inputValue)
