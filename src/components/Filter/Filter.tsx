@@ -26,9 +26,8 @@ export const Filter: React.FC<Props> = ({
 
   return (
     <footer className="todoapp__footer">
-      {' '}
       <span className="todo-count">
-        {`${activeTodos.length} items left`}
+        {` ${activeTodos.length} items left`}
       </span>
 
       <nav className="filter">

@@ -9,7 +9,7 @@ type Props = {
   activeTodos: Todo[],
   onSubmit: () => void,
   onSetErrorMessage: (text: ErrorText) => void,
-  disabledInput: boolean,
+  isDisabledInput: boolean,
 };
 
 export const Header: React.FC<Props> = ({
@@ -18,7 +18,7 @@ export const Header: React.FC<Props> = ({
   activeTodos,
   onSubmit,
   onSetErrorMessage,
-  disabledInput,
+  isDisabledInput,
 }) => {
   const handlerCreatedTitle = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { value } = e.target;
@@ -46,7 +46,6 @@ export const Header: React.FC<Props> = ({
         className={classNames(
           'todoapp__toggle-all', { active: activeTodos.length < 1 },
         )}
-        onClick={() => { }}
       />
 
       <form onSubmit={handlerSubmit}>
@@ -54,7 +53,7 @@ export const Header: React.FC<Props> = ({
           type="text"
           className="todoapp__new-todo"
           placeholder="What needs to be done?"
-          disabled={disabledInput}
+          disabled={isDisabledInput}
           value={title}
           onChange={handlerCreatedTitle}
         />

@@ -9,7 +9,9 @@ type Props = {
 };
 
 export const OneTodo: React.FC<Props> = ({
-  todo, loadingTodoId, onDeleteTodo,
+  todo,
+  loadingTodoId,
+  onDeleteTodo,
 }) => {
   return (
     <div className={classNames(

@@ -14,7 +14,10 @@ type Props = {
 };
 
 export const TodoList: React.FC<Props> = ({
-  todos, loadingTodoId, onDeleteTodo, tempTodo,
+  todos,
+  loadingTodoId,
+  onDeleteTodo,
+  tempTodo,
 }) => {
   const visibleTodos = tempTodo !== null ? [...todos, tempTodo] : todos;
 

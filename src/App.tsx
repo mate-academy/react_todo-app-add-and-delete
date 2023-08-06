@@ -20,7 +20,7 @@ export const App: React.FC = () => {
   const [errorMessage, setErrorMessage] = useState(ErrorText.Empty);
   const [selectedFilter, setSelectedFilter] = useState<Filters>(Filters.All);
   const [title, setTitle] = useState('');
-  const [disabledInput, setDisabledInput] = useState(false);
+  const [isDisabledInput, setIsDisabledInput] = useState(false);
   const [tempTodo, setTempTodo] = useState<Todo | null>(null);
 
   const activeTodos = todos.filter(t => t.completed === false);
@@ -72,7 +72,7 @@ export const App: React.FC = () => {
 
     setTempTodo({ ...newTodo, id: 0 });
     setLoadingTodos([0]);
-    setDisabledInput(true);
+    setIsDisabledInput(true);
 
     addTodo(newTodo)
       .then(() => {
@@ -85,7 +85,7 @@ export const App: React.FC = () => {
       .finally(() => {
         setTempTodo(null);
         setLoadingTodos([]);
-        setDisabledInput(false);
+        setIsDisabledInput(false);
       });
   };
 
@@ -112,7 +112,7 @@ export const App: React.FC = () => {
           activeTodos={activeTodos}
           onSubmit={addTodos}
           onSetErrorMessage={setErrorMessage}
-          disabledInput={disabledInput}
+          isDisabledInput={isDisabledInput}
         />
 
         <TodoList
@@ -122,16 +122,15 @@ export const App: React.FC = () => {
           tempTodo={tempTodo}
         />
 
-        {todos.length > 0
-          && (
-            <Filter
-              activeTodos={activeTodos}
-              completedTodos={completedTodos}
-              selectedFilter={selectedFilter}
-              onSetSelectedFilter={setSelectedFilter}
-              onDeleteTodo={deleteTodos}
-            />
-          )}
+        {todos.length > 0 && (
+          <Filter
+            activeTodos={activeTodos}
+            completedTodos={completedTodos}
+            selectedFilter={selectedFilter}
+            onSetSelectedFilter={setSelectedFilter}
+            onDeleteTodo={deleteTodos}
+          />
+        )}
       </div>
 
       <Notifications

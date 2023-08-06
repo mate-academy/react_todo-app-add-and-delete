@@ -8,7 +8,8 @@ type Props = {
 };
 
 export const Notifications: React.FC<Props> = ({
-  errorMessage, onSetErrorMessage,
+  errorMessage,
+  onSetErrorMessage,
 }) => {
   const handlerDeleteError = () => onSetErrorMessage(ErrorText.Empty);
 
