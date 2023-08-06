@@ -1,5 +1,5 @@
 /* eslint-disable jsx-a11y/control-has-associated-label */
-import React from 'react';
+import React, { useRef } from 'react';
 import cn from 'classnames';
 import { ADDING_ERROR, TITLE_ERROR, USER_ID } from '../utils/constants';
 import { addTodo } from '../api/todos';
@@ -7,22 +7,22 @@ import { Todo } from '../types/Todo';
 
 interface Props {
   activeLength: number;
+  todosLength: number;
   setTodos: React.Dispatch<React.SetStateAction<Todo[]>>;
-  isLoading: boolean;
-  setIsLoading: React.Dispatch<React.SetStateAction<boolean>>;
   setTempTodo: React.Dispatch<React.SetStateAction<Todo | null>>;
   errorHandler: (str: string) => void;
+  tempTodo: Todo | null;
 }
 
 export const Header: React.FC<Props> = ({
   activeLength,
+  todosLength,
   setTodos,
-  isLoading,
-  setIsLoading,
   setTempTodo,
   errorHandler,
+  tempTodo,
 }) => {
-  const titleRef = React.useRef<HTMLInputElement | null>(null);
+  const titleRef = useRef<HTMLInputElement | null>(null);
 
   const formSubmit = (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
@@ -41,7 +41,6 @@ export const Header: React.FC<Props> = ({
       };
 
       setTempTodo(newTodo);
-      setIsLoading(true);
 
       addTodo(USER_ID, newTodo)
         .then((todo) => {
@@ -53,7 +52,6 @@ export const Header: React.FC<Props> = ({
           errorHandler(ADDING_ERROR);
         })
         .finally(() => {
-          setIsLoading(false);
           setTempTodo(null);
         });
     }
@@ -61,10 +59,12 @@ export const Header: React.FC<Props> = ({
 
   return (
     <header className="todoapp__header">
-      <button
-        type="button"
-        className={`todoapp__toggle-all ${cn({ active: activeLength > 0 })}`}
-      />
+      {todosLength > 0 && (
+        <button
+          type="button"
+          className={`todoapp__toggle-all ${cn({ active: activeLength === 0 })}`}
+        />
+      )}
 
       <form onSubmit={(event) => formSubmit(event)}>
         <input
@@ -72,7 +72,7 @@ export const Header: React.FC<Props> = ({
           type="text"
           className="todoapp__new-todo"
           placeholder="What needs to be done?"
-          readOnly={isLoading}
+          readOnly={!!tempTodo}
         />
       </form>
     </header>

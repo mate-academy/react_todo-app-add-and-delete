@@ -24,7 +24,6 @@ export const App: React.FC = () => {
   const [loadingTodos, setLoadingTodos] = useState<Todo[]>([]);
 
   const [errorMessage, setErrorMessage] = useState<string>('');
-  const [isLoading, setIsLoading] = useState<boolean>(false);
 
   const [tempTodo, setTempTodo] = useState<Todo | null>(null);
 
@@ -55,8 +54,6 @@ export const App: React.FC = () => {
   }, [errorMessage]);
 
   useEffect(() => {
-    setIsLoading(true);
-
     getTodos(USER_ID)
       .then((todosFromApi) => {
         setTodos(todosFromApi);
@@ -64,8 +61,7 @@ export const App: React.FC = () => {
       })
       .catch(() => {
         errorHandler(FETCH_ERROR);
-      })
-      .finally(() => setIsLoading(false));
+      });
   }, []);
 
   return (
@@ -75,11 +71,11 @@ export const App: React.FC = () => {
       <div className="todoapp__content">
         <Header
           activeLength={activeLength}
+          todosLength={todos.length}
           setTodos={setTodos}
-          isLoading={isLoading}
-          setIsLoading={setIsLoading}
           setTempTodo={setTempTodo}
           errorHandler={errorHandler}
+          tempTodo={tempTodo}
         />
 
         <Main
