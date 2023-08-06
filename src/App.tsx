@@ -95,7 +95,6 @@ export const App: React.FC = () => {
     }
 
     setTempTodo({
-      id: 0,
       ...newTodo,
     });
   };
