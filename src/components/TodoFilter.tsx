@@ -7,6 +7,9 @@ type Props = {
 };
 
 export const TodoFilter: React.FC<Props> = ({ status, onStatusChange }) => {
+  const handleStatusChange
+  = (filterType: FilterType) => () => onStatusChange(filterType);
+
   return (
     <nav className="filter">
       <a
@@ -14,7 +17,7 @@ export const TodoFilter: React.FC<Props> = ({ status, onStatusChange }) => {
         className={cn('filter__link', {
           selected: status === FilterType.All,
         })}
-        onClick={() => onStatusChange(FilterType.All)}
+        onClick={handleStatusChange(FilterType.All)}
       >
         {FilterType.All}
       </a>
@@ -24,7 +27,7 @@ export const TodoFilter: React.FC<Props> = ({ status, onStatusChange }) => {
         className={cn('filter__link', {
           selected: status === FilterType.Active,
         })}
-        onClick={() => onStatusChange(FilterType.Active)}
+        onClick={handleStatusChange(FilterType.Active)}
       >
         {FilterType.Active}
       </a>
@@ -34,7 +37,7 @@ export const TodoFilter: React.FC<Props> = ({ status, onStatusChange }) => {
         className={cn('filter__link', {
           selected: status === FilterType.Completed,
         })}
-        onClick={() => onStatusChange(FilterType.Completed)}
+        onClick={handleStatusChange(FilterType.Completed)}
       >
         {FilterType.Completed}
       </a>

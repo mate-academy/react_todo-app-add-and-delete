@@ -15,19 +15,14 @@ import { TodoItem } from './components/TodoItem';
 const USER_ID = 11260;
 
 const getVisibleTodos = (todos: Todo[], status: FilterType) => {
-  return todos
-    .filter(todo => {
-      switch (status) {
-        case FilterType.Completed:
-          return todo.completed;
-
-        case FilterType.Active:
-          return !todo.completed;
-
-        default:
-          return true;
-      }
-    });
+  switch (status) {
+    case FilterType.Completed:
+      return todos.filter(todo => todo.completed);
+    case FilterType.Active:
+      return todos.filter(todo => !todo.completed);
+    default:
+      return todos;
+  }
 };
 
 export const App: React.FC = () => {
@@ -54,8 +49,7 @@ export const App: React.FC = () => {
   const isCompletedTodos = useMemo(() => todos.some(todo => todo.completed),
     [todos]);
 
-  const isNoTodo = useMemo(() => todos.length === 0,
-    [todos]);
+  const isNoTodo = () => todos.length === 0;
 
   if (!USER_ID) {
     return <UserWarning />;
