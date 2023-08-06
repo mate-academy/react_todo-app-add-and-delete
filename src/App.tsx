@@ -100,6 +100,7 @@ export const App: React.FC = () => {
   const completedTodos = utils.getCompletedTodos(todos);
   const activeTodos = utils.getActiveTodos(todos);
   const areAllTodosCompleted = activeTodos.length === 0;
+  const areThereTodos = todos.length > 0;
 
   useEffect(() => {
     client.get<Todo[]>(BASE_ADD_URL + URL_GET)
@@ -124,6 +125,7 @@ export const App: React.FC = () => {
         <TodoHeader
           onAddTodo={addTodo}
           areAllTodosCompleted={areAllTodosCompleted}
+          areThereTodos={areThereTodos}
         />
         {todos.length > 0 && (
           <>
@@ -138,8 +140,8 @@ export const App: React.FC = () => {
             <TodoFooter
               onChangeFilter={applyFilter}
               filterSelected={filterBy}
-              activeTodos={completedTodos.length}
-              completedTodos={activeTodos.length}
+              activeTodos={activeTodos.length}
+              completedTodos={completedTodos.length}
               clearCompleted={clearCompleted}
             />
           </>

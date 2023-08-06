@@ -32,7 +32,6 @@ export const TodoFooter: React.FC<Props> = ({
         {`${activeTodos} items left`}
       </span>
 
-      {/* Active filter should have a 'selected' class */}
       <nav className="filter">
         {filterButtons.map(button => (
           <a
@@ -44,12 +43,10 @@ export const TodoFooter: React.FC<Props> = ({
             )}
             onClick={() => handleClickFilter(button)}
           >
-            {`${button.charAt(0).toLocaleUpperCase() + button.slice(1)}`}
+            {button}
           </a>
         ))}
       </nav>
-
-      {/* don't show this button if there are no completed todos */}
       <button
         type="button"
         className="todoapp__clear-completed"

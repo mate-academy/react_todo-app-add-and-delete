@@ -4,11 +4,13 @@ import cn from 'classnames';
 type Props = {
   onAddTodo: (title: string) => Promise<void>;
   areAllTodosCompleted: boolean;
+  areThereTodos: boolean;
 };
 
 export const TodoHeader: React.FC<Props> = ({
   onAddTodo,
   areAllTodosCompleted,
+  areThereTodos,
 }) => {
   const inputField = useRef<HTMLInputElement | null>(null);
 
@@ -43,17 +45,17 @@ export const TodoHeader: React.FC<Props> = ({
 
   return (
     <header className="todoapp__header">
-      {/* this buttons is active only if there are some active todos */}
-      <button
-        type="button"
-        className={cn(
-          'todoapp__toggle-all',
-          { active: areAllTodosCompleted },
-        )}
-        aria-label="Close"
-      />
+      {areThereTodos && (
+        <button
+          type="button"
+          className={cn(
+            'todoapp__toggle-all',
+            { active: areAllTodosCompleted },
+          )}
+          aria-label="Close"
+        />
+      )}
 
-      {/* Add a todo on form submit */}
       <form>
         <input
           ref={inputField}
