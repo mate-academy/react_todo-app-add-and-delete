@@ -1,7 +1,10 @@
 /* eslint-disable max-len */
 /* eslint-disable jsx-a11y/control-has-associated-label */
 import React, {
-  useCallback, useEffect, useMemo, useState,
+  useCallback,
+  useEffect,
+  useMemo,
+  useState,
 } from 'react';
 import * as todoService from './api/todos';
 import { Header } from './components/Header/Header';
@@ -52,7 +55,6 @@ export const App: React.FC = () => {
   const handleSubmitForm = useCallback((event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
     setIsTodoLoading(true);
-
     if (!todoTitle) {
       setError(ErrorTypes.Title);
       setIsTodoLoading(false);
@@ -75,15 +77,12 @@ export const App: React.FC = () => {
       userId: USER_ID,
       completed: false,
     })
-
       .then((newTodo) => {
         setTodos(currentTodos => [...currentTodos, newTodo]);
       })
-
       .catch(() => {
         setError(ErrorTypes.Add);
       })
-
       .finally(() => {
         setIsTodoLoading(false);
         setTodoTitle('');
@@ -98,11 +97,9 @@ export const App: React.FC = () => {
       .then(() => {
         setTodos(currentTodos => currentTodos.filter(todo => todoId !== todo.id));
       })
-
       .catch(() => {
         setError(ErrorTypes.Delete);
       });
-
     setLoadingTodoId(null);
   };
 
@@ -153,7 +150,7 @@ export const App: React.FC = () => {
           loadingTodoId={loadingTodoId}
         />
 
-        {(todos.length > 0) && (
+        {todos.length > 0 && (
           <Footer
             sortBy={sortBy}
             numberActiveTodos={numberActiveTodos}
