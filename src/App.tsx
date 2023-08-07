@@ -49,8 +49,6 @@ export const App: React.FC = () => {
   const isCompletedTodos = useMemo(() => todos.some(todo => todo.completed),
     [todos]);
 
-  const isNoTodo = () => todos.length === 0;
-
   if (!USER_ID) {
     return <UserWarning />;
   }
@@ -123,7 +121,7 @@ export const App: React.FC = () => {
 
       <div className="todoapp__content">
         <header className="todoapp__header">
-          {!isNoTodo && (
+          {todos.length !== 0 && (
             <button
               type="button"
               className={cn('todoapp__toggle-all', {
@@ -144,7 +142,7 @@ export const App: React.FC = () => {
           </form>
         </header>
 
-        {!isNoTodo && (
+        {todos.length !== 0 && (
           <>
             <TodoList
               todos={visibleTodos}
