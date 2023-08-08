@@ -12,7 +12,7 @@ export const ToggleAll: React.FC<Props> = ({
   return (
     <button
       type="button"
-      className={cn('todoapp__toggle-all', { active: activeTodos > 0 })}
+      className={cn('todoapp__toggle-all', { active: activeTodos })}
     />
   );
 };

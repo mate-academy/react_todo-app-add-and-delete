@@ -23,7 +23,7 @@ export const ErrorNotification: React.FC<Props> = ({
       <button
         type="button"
         className="delete"
-        onClick={() => setError()}
+        onClick={setError}
       />
       {error}
     </div>

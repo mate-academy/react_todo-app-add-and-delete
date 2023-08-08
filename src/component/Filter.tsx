@@ -9,6 +9,10 @@ type Props = {
 };
 
 export const Filter: React.FC<Props> = ({ category, onClick }) => {
+  const onCategorySelect = (cat: SelectedCategory) => {
+    onClick(cat);
+  };
+
   return (
     <nav className="filter">
       <a
@@ -16,7 +20,7 @@ export const Filter: React.FC<Props> = ({ category, onClick }) => {
         className={cn('filter__link', {
           selected: category === SelectedCategory.All,
         })}
-        onClick={() => onClick(SelectedCategory.All)}
+        onClick={() => onCategorySelect(SelectedCategory.All)}
       >
         {SelectedCategory.All}
       </a>
@@ -26,7 +30,7 @@ export const Filter: React.FC<Props> = ({ category, onClick }) => {
         className={cn('filter__link', {
           selected: category === SelectedCategory.Active,
         })}
-        onClick={() => onClick(SelectedCategory.Active)}
+        onClick={() => onCategorySelect(SelectedCategory.Active)}
       >
         {SelectedCategory.Active}
       </a>
@@ -36,7 +40,7 @@ export const Filter: React.FC<Props> = ({ category, onClick }) => {
         className={cn('filter__link', {
           selected: category === SelectedCategory.Completed,
         })}
-        onClick={() => onClick(SelectedCategory.Completed)}
+        onClick={() => onCategorySelect(SelectedCategory.Completed)}
       >
         {SelectedCategory.Completed}
       </a>

@@ -15,6 +15,11 @@ export const TodoInList: React.FC<Props> = React.memo(({
   setLoadingTodosIds,
   deleteTodo,
 }) => {
+  function handleDeleteTodo() {
+    setLoadingTodosIds([todo.id]);
+    deleteTodo(todo.id);
+  }
+
   return (
     <>
       <div className={cn('todo', { completed: todo.completed })}>
@@ -35,10 +40,7 @@ export const TodoInList: React.FC<Props> = React.memo(({
         <button
           className="todo__remove"
           type="button"
-          onClick={() => {
-            setLoadingTodosIds([todo.id]);
-            deleteTodo(todo.id);
-          }}
+          onClick={handleDeleteTodo}
         >
           x
         </button>
