@@ -82,21 +82,21 @@ export const App: React.FC = () => {
   const deleteAllCompleted = () => {
     const completedTodos = todos.filter(todo => todo.completed);
 
-    completedTodos.forEach(todo => {
-      deleteTodo(todo.id)
-        .then(() => setTodos(currentTodos => currentTodos
-          .filter(t => !t.completed)))
-        .catch((error) => {
-          setErrorWithTimeout(
-            ErrorMessage.Delete,
-            3000,
-            setErrorMessage,
-          );
+    const deletePromises = completedTodos.map(todo => deleteTodo(todo.id));
 
-          throw error;
-        })
-        .finally(() => setIsLoading(false));
-    });
+    Promise.all(deletePromises)
+      .then(() => setTodos(currentTodos => currentTodos
+        .filter(todo => !todo.completed)))
+      .catch((error) => {
+        setErrorWithTimeout(
+          ErrorMessage.Delete,
+          3000,
+          setErrorMessage,
+        );
+
+        throw error;
+      })
+      .finally(() => setIsLoading(false));
   };
 
   if (!USER_ID) {
