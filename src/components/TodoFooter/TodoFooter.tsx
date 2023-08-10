@@ -33,7 +33,7 @@ export const TodoFooter: React.FC<Props> = ({
 
   // delete all complied todos
   const deleteComplitedTodos = () => {
-    todos.map(todo => todo.completed && deleteTodo(todo.id));
+    todos.forEach(todo => todo.completed && deleteTodo(todo.id));
   };
 
   return (

@@ -1,11 +1,10 @@
 import classNames from 'classnames';
 import { useEffect, useRef, useState } from 'react';
 import { Todo } from '../../types/Todo';
-import { Errors } from '../../types/Errors';
 
 type Props = {
   filteringBy: Todo[],
-  newTodoId: number[],
+  isProcessing: number[],
   tempTodo: Omit<Todo, 'id'> | null,
   deleteTodo: (todoId: number) => void,
   updateTodo: (updatedTodo: Todo) => Promise<void>,
@@ -13,7 +12,7 @@ type Props = {
 
 export const TodoBody: React.FC<Props> = ({
   filteringBy,
-  newTodoId,
+  isProcessing,
   tempTodo,
   deleteTodo,
   updateTodo,
@@ -39,7 +38,7 @@ export const TodoBody: React.FC<Props> = ({
     }
 
     switch (editValue) {
-      case Errors.NULL:
+      case '':
         return deleteTodo(todo.id);
       case todo.title:
         return setIsEditing(null);
@@ -118,7 +117,7 @@ export const TodoBody: React.FC<Props> = ({
 
           <div className={classNames(
             'modal overlay',
-            { 'is-active': newTodoId.includes(todo.id || 0) },
+            { 'is-active': isProcessing.includes(todo.id) },
           )}
           >
             <div className="modal-background has-background-white-ter" />

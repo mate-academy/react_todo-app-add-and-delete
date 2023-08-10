@@ -2,9 +2,8 @@
 
 import classNames from 'classnames';
 import {
-  useEffect,
+  useCallback,
   useMemo,
-  useRef,
   useState,
 } from 'react';
 
@@ -26,13 +25,11 @@ export const TodoHeader: React.FC<Props> = ({
 }) => {
   const [inputValue, setInputValue] = useState('');
   const [isDisabledInput, setIsDisabledInput] = useState(false);
-  const headerInputFocus = useRef<HTMLInputElement | null>(null);
+  // const headerInputFocus = useRef<HTMLInputElement | null>(null);
 
   // Autofocus on main input
-  useEffect(() => {
-    if (headerInputFocus.current) {
-      headerInputFocus.current.focus();
-    }
+  const handleFocusOnInput = useCallback((input: HTMLInputElement) => {
+    input?.focus();
   }, [todos]);
 
   // Submition the form to add new Todo
@@ -96,7 +93,7 @@ export const TodoHeader: React.FC<Props> = ({
           type="text"
           className="todoapp__new-todo"
           placeholder="What needs to be done?"
-          ref={headerInputFocus}
+          ref={handleFocusOnInput}
           value={inputValue}
           onChange={(event) => setInputValue(event.target.value)}
           disabled={isDisabledInput}

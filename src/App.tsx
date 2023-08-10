@@ -15,7 +15,7 @@ export const App: React.FC = () => {
   const [tempTodo, setTempTodo] = useState<Omit<Todo, 'id'> | null>(null);
   const [filterBy, setFilterBy] = useState(FilterBy.ALL);
   const [errorMessage, setErrorMessage] = useState<Errors>(Errors.NULL);
-  const [newTodoId, setNewTodoId] = useState<number[]>([]);
+  const [isProcessing, setIsProcessing] = useState<number[]>([]);
 
   // Request todos from server on first render
   useEffect(() => {
@@ -40,13 +40,13 @@ export const App: React.FC = () => {
   // Update or Edit todo on server
   const addTodo = (inputValue: string) => {
     const data = {
+      id: 0,
       title: inputValue,
       completed: false,
       userId: todosService.USER_ID,
     };
 
     setTempTodo(data);
-    setNewTodoId((currentTodos: number[]) => [...currentTodos, 0]);
 
     return todosService.createTodo(data)
       .then(createdTodo => (
@@ -58,13 +58,12 @@ export const App: React.FC = () => {
       .finally(() => {
         setTimeout(() => setErrorMessage(Errors.NULL), 3000);
         setTempTodo(null);
-        setNewTodoId([]);
       });
   };
 
   // Update or Edit todo on server
   const updateTodo = (todoToUpdate: Todo) => {
-    setNewTodoId(currentIDs => [...currentIDs, todoToUpdate.id]);
+    setIsProcessing(currentIds => [...currentIds, todoToUpdate.id]);
 
     return todosService.updateTodo(todoToUpdate.id, todoToUpdate)
       .then((updatedTodo: Todo) => {
@@ -85,14 +84,14 @@ export const App: React.FC = () => {
         throw error;
       })
       .finally(() => {
-        setNewTodoId([]);
+        setIsProcessing([]);
         setTimeout(() => setErrorMessage(Errors.NULL), 3000);
       });
   };
 
   // Delete todo from server
   const deleteTodo = (todoId: number) => {
-    setNewTodoId(currentIDs => [...currentIDs, todoId]);
+    setIsProcessing(currentIds => [...currentIds, todoId]);
 
     todosService.deleteTodo(todoId)
       .then(() => setTodos(
@@ -100,7 +99,7 @@ export const App: React.FC = () => {
       ))
       .catch(() => setErrorMessage(Errors.DELETE))
       .finally(() => {
-        setNewTodoId([]);
+        setIsProcessing([]);
         setTimeout(() => setErrorMessage(Errors.NULL), 3000);
       });
   };
@@ -118,7 +117,7 @@ export const App: React.FC = () => {
         />
         <TodoBody
           filteringBy={filteringBy}
-          newTodoId={newTodoId}
+          isProcessing={isProcessing}
           tempTodo={tempTodo}
           deleteTodo={deleteTodo}
           updateTodo={updateTodo}
