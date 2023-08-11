@@ -14,7 +14,7 @@ const USER_ID = 11276;
 
 export const App: React.FC = () => {
   const [todos, setTodos] = useState<Todo[]>([]);
-  const [isError, setIsError] = useState(false);
+  const [isError, setIsError] = useState<boolean>(false);
   const [errorMessage, setErrorMessage] = useState<ErrorMessage>('');
   const [filterStatus, setFilterStatus] = useState(FilterStatus.All);
   const [loadingTodoIds, setLoadingTodoIds] = useState<number[]>([]);

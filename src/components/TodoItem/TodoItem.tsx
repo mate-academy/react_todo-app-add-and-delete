@@ -19,7 +19,7 @@ export const TodoItem: React.FC<Props> = ({
     completed,
   } = todo;
 
-  const [isEditing, setIsEditing] = useState(false);
+  const [isEditing, setIsEditing] = useState<boolean>(false);
 
   return (
     <li

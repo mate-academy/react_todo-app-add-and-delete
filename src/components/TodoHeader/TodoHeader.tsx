@@ -38,6 +38,10 @@ export const TodoHeader: React.FC<Props> = ({
     setTitle('');
   };
 
+  const handleInputChange = (event: React.ChangeEvent<HTMLInputElement>) => (
+    setTitle(event.target.value)
+  );
+
   return (
     <header className="todoapp__header">
       <button
@@ -56,7 +60,7 @@ export const TodoHeader: React.FC<Props> = ({
           className="todoapp__new-todo"
           placeholder="What needs to be done?"
           value={title}
-          onChange={(event) => setTitle(event.target.value)}
+          onChange={handleInputChange}
         />
       </form>
     </header>
