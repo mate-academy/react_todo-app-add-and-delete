@@ -39,6 +39,7 @@ export const App: React.FC = () => {
   const [isLoading, setIsLoading] = useState(false);
   const [errorMessage, setErrorMessage] = useState<ErrorMessage | null>(null);
   const [tempTodo, setTempTodo] = useState<Todo | null>(null);
+  const [isActiveId, setIsActiveId] = useState<number | null>(null);
 
   useEffect(() => {
     setIsLoading(true);
@@ -109,19 +110,10 @@ export const App: React.FC = () => {
 
       <div className="todoapp__content">
         <header className="todoapp__header">
-          {/* this buttons is active only if there are some active todos */}
           {activeTodos && (
             <button type="button" className="todoapp__toggle-all active" />
           )}
 
-          {/* Add a todo on form submit */}
-          {/* <form>
-            <input
-              type="text"
-              className="todoapp__new-todo"
-              placeholder="What needs to be done?"
-            />
-          </form> */}
           <AddTodo
             setTodos={setTodos}
             todos={todos}
@@ -137,6 +129,8 @@ export const App: React.FC = () => {
           todos={filteredTodos}
           handleDeleteTodo={handleDeleteTodo}
           isLoading={isLoading}
+          isActiveId={isActiveId}
+          setIsActiveId={setIsActiveId}
         />
 
         {tempTodo && (
@@ -144,6 +138,8 @@ export const App: React.FC = () => {
             todo={tempTodo}
             isLoading={isLoading}
             handleDeleteTodo={handleDeleteTodo}
+            isActiveId={isActiveId}
+            setIsActiveId={setIsActiveId}
           />
         )}
 
