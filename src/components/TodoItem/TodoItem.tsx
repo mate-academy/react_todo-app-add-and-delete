@@ -6,23 +6,23 @@ type Props = {
   todo: Todo,
   isLoading: boolean,
   handleDeleteTodo: (id: number) => () => void,
-  isActiveId: number | null,
-  setIsActiveId: (id: number | null) => void,
+  selectedTodo: Todo | null,
+  setSelectedTodo: (todo: Todo) => void,
 };
 
 export const TodoItem: React.FC<Props> = ({
   todo,
   isLoading,
   handleDeleteTodo,
-  isActiveId,
-  setIsActiveId,
+  selectedTodo,
+  setSelectedTodo,
 }) => {
   const { title, completed, id } = todo;
 
   const handleDeleteItem = (todoId: number) => () => {
     handleDeleteTodo(todoId)();
 
-    setIsActiveId(todoId);
+    setSelectedTodo(todo);
   };
 
   return (
@@ -48,7 +48,7 @@ export const TodoItem: React.FC<Props> = ({
       </button>
 
       <div className={classNames('modal overlay', {
-        'is-active': isLoading && (id === isActiveId || id === 0),
+        'is-active': isLoading && (id === selectedTodo?.id || id === 0),
       })}
       >
         <div className="modal-background has-background-white-ter" />

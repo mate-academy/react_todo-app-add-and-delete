@@ -39,7 +39,7 @@ export const App: React.FC = () => {
   const [isLoading, setIsLoading] = useState(false);
   const [errorMessage, setErrorMessage] = useState<ErrorMessage | null>(null);
   const [tempTodo, setTempTodo] = useState<Todo | null>(null);
-  const [isActiveId, setIsActiveId] = useState<number | null>(null);
+  const [selectedTodo, setSelectedTodo] = useState<Todo | null>(null);
 
   useEffect(() => {
     setIsLoading(true);
@@ -129,8 +129,8 @@ export const App: React.FC = () => {
           todos={filteredTodos}
           handleDeleteTodo={handleDeleteTodo}
           isLoading={isLoading}
-          isActiveId={isActiveId}
-          setIsActiveId={setIsActiveId}
+          selectedTodo={selectedTodo}
+          setSelectedTodo={setSelectedTodo}
         />
 
         {tempTodo && (
@@ -138,8 +138,8 @@ export const App: React.FC = () => {
             todo={tempTodo}
             isLoading={isLoading}
             handleDeleteTodo={handleDeleteTodo}
-            isActiveId={isActiveId}
-            setIsActiveId={setIsActiveId}
+            selectedTodo={selectedTodo}
+            setSelectedTodo={setSelectedTodo}
           />
         )}
 

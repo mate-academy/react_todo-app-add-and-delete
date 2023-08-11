@@ -6,23 +6,23 @@ type Props = {
   todos: Todo[],
   handleDeleteTodo: (id: number) => () => void,
   isLoading: boolean,
-  isActiveId: number | null,
-  setIsActiveId: (id: number | null) => void,
+  selectedTodo: Todo | null,
+  setSelectedTodo: (todo: Todo | null) => void,
 };
 
 export const TodoList: React.FC<Props> = ({
   todos,
   handleDeleteTodo,
   isLoading,
-  isActiveId,
-  setIsActiveId,
+  selectedTodo,
+  setSelectedTodo,
 }) => {
   return (
     <section className="todoapp__main">
       {todos.map(todo => (
         <TodoItem
-          isActiveId={isActiveId}
-          setIsActiveId={setIsActiveId}
+          selectedTodo={selectedTodo}
+          setSelectedTodo={setSelectedTodo}
           isLoading={isLoading}
           key={todo.id}
           todo={todo}
