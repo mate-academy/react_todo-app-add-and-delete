@@ -1,5 +1,5 @@
 /* eslint-disable jsx-a11y/control-has-associated-label */
-import React, { useState } from 'react';
+import React, { useCallback, useState } from 'react';
 import cn from 'classnames';
 import { Error } from '../utils/Enum';
 import { Todo } from '../types/Todo';
@@ -23,7 +23,7 @@ export const TodoHeader: React.FC<Props> = ({
   const [title, setTitle] = useState('');
   const [isAdded, setIsAdded] = useState(false);
 
-  const addedTodo = (task: string) => {
+  const handleTodoAdd = useCallback((task: string) => {
     const newTask: Omit<Todo, 'id'> = {
       userId: USER_ID,
       title: task,
@@ -35,27 +35,27 @@ export const TodoHeader: React.FC<Props> = ({
 
     createTodo(newTask)
       .then(actualTodo => {
-        // const currentTodos = [...todos, actualTodo];
-
         setTodos([...todos, actualTodo]);
         setIsAdded(false);
       })
       .catch(() => setHasError(Error.ADD))
       .finally(() => setNewTodo(null));
-  };
+  }, [todos]);
 
-  const handleEnter = (event: React.KeyboardEvent<HTMLInputElement>) => {
+  // eslint-disable-next-line max-len
+  const handleEnter = useCallback((event: React.KeyboardEvent<HTMLInputElement>) => {
     if (event.key === 'Enter') {
       event.preventDefault();
       setIsAdded(true);
 
       if (title === '') {
         setHasError(Error.TITLE);
+        setIsAdded(false);
       } else {
-        addedTodo(title);
+        handleTodoAdd(title);
       }
     }
-  };
+  }, [title]);
 
   return (
     <header className="todoapp__header">

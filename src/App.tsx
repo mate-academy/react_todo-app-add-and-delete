@@ -1,5 +1,10 @@
 /* eslint-disable jsx-a11y/control-has-associated-label */
-import React, { useEffect, useMemo, useState } from 'react';
+import React, {
+  useCallback,
+  useEffect,
+  useMemo,
+  useState,
+} from 'react';
 import { Todo } from './types/Todo';
 import { Error, Filter } from './utils/Enum';
 import * as todoService from './api/todos';
@@ -14,9 +19,8 @@ export const App: React.FC = () => {
   const [filterTodo, setFilterTodo] = useState(Filter.ALL);
   const [isActive, setIsActive] = useState(false);
   const [isCompleted, setIsCompleted] = useState(false);
-  const [isLoading, setIsLoading] = useState(false);
-  const [loadingId, setLoadingId] = useState<null | number>(null);
-  const [newTodo, setNewTodo] = useState<null | Todo>(null);
+  const [loadingId, setLoadingId] = useState<null | number[]>(null);
+  const [tempTodo, setTempTodo] = useState<null | Todo>(null);
 
   const filteredTodos = useMemo(() => {
     switch (filterTodo) {
@@ -31,19 +35,29 @@ export const App: React.FC = () => {
     }
   }, [filterTodo, todos]);
 
-  const deleteTodo = (todoId: number) => {
-    setIsLoading(true);
-    setLoadingId(todoId);
+  const deleteTodo = useCallback((todoId: number) => {
+    if (loadingId) {
+      setLoadingId([...loadingId, todoId]);
+    } else {
+      setLoadingId([todoId]);
+    }
 
     todoService.deleteTodo(todoId)
       .then(() => setTodos(currentTodos => currentTodos
         .filter(todo => todo.id !== todoId)))
       .catch(() => setHasError(Error.DELETE))
       .finally(() => {
-        setIsLoading(false);
-        setLoadingId(null);
+        if (loadingId) {
+          const tempLoadingId = [...loadingId].filter((_num, index) => index);
+
+          if (tempLoadingId.length) {
+            setLoadingId(tempLoadingId);
+          } else {
+            setLoadingId(null);
+          }
+        }
       });
-  };
+  }, [loadingId]);
 
   useEffect(() => {
     todoService.getTodos(todoService.USER_ID)
@@ -66,7 +80,7 @@ export const App: React.FC = () => {
       <div className="todoapp__content">
         <TodoHeader
           activeButton={isActive}
-          setNewTodo={setNewTodo}
+          setNewTodo={setTempTodo}
           setHasError={setHasError}
           setTodos={setTodos}
           todos={todos}
@@ -75,9 +89,8 @@ export const App: React.FC = () => {
         <TodoList
           filteredTodos={filteredTodos}
           onDelete={deleteTodo}
-          isLoading={isLoading}
           loadingId={loadingId}
-          newTodo={newTodo}
+          newTodo={tempTodo}
         />
 
         {todos.length > 0 && (

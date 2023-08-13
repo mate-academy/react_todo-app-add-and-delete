@@ -5,14 +5,12 @@ import { Todo } from '../types/Todo';
 type Props = {
   todo: Todo,
   onDelete?: (id: number) => void,
-  isLoading: boolean,
-  loadingId: null | number,
+  loadingId: null | number[],
 };
 
 export const TodoItem: React.FC<Props> = ({
   todo,
   onDelete = () => {},
-  isLoading,
   loadingId,
 }) => {
   return (
@@ -36,7 +34,7 @@ export const TodoItem: React.FC<Props> = ({
       </button>
 
       <div className={cn('modal overlay', {
-        'is-active': isLoading && loadingId === todo.id,
+        'is-active': loadingId?.includes(todo.id),
       })}
       >
         <div className="modal-background has-background-white-ter" />
