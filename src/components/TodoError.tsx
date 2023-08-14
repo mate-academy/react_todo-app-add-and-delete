@@ -26,29 +26,35 @@ export const TodoError: React.FC<Props> = ({
   }, [currentError]);
 
   return (
-    <TransitionGroup>
-      <CSSTransition
-        timeout={300}
-      >
-        <div
-          className={cn(
-            'notification is-danger is-light has-text-weight-normal',
-            {
-              hidden: !currentError,
-            },
-          )}
+    <TransitionGroup
+      component={null}
+    >
+      {currentError !== Error.NOTHING && (
+        <CSSTransition
+          timeout={2000}
+          classNames="error"
         >
-          <button
-            type="button"
-            className="delete"
-            aria-label="delete"
-            onClick={() => {
-              setCurrentError(Error.NOTHING);
-            }}
-          />
-          {errorMessage}
-        </div>
-      </CSSTransition>
+          <div
+            className={cn(
+              'notification is-danger is-light has-text-weight-normal',
+              {
+                hidden: !currentError,
+              },
+            )}
+          >
+            <button
+              type="button"
+              className="delete"
+              aria-label="delete"
+              onClick={() => {
+                setCurrentError(Error.NOTHING);
+              }}
+            />
+            {errorMessage}
+          </div>
+        </CSSTransition>
+      )}
+
     </TransitionGroup>
   );
 };

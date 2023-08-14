@@ -104,13 +104,10 @@ export const App: React.FC = () => {
           />
         )}
 
-        {currentError !== Error.NOTHING && (
-          <TodoError
-            currentError={currentError}
-            setCurrentError={setCurrentError}
-          />
-        )}
-
+        <TodoError
+          currentError={currentError}
+          setCurrentError={setCurrentError}
+        />
       </div>
     </div>
   );
