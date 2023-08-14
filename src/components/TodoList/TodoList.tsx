@@ -16,7 +16,7 @@ export const TodoList: React.FC<Props> = ({
   setErrorMessage,
 }) => {
   const [isEditing, setIsEditing] = useState<boolean>(false);
-  const [isUpdated, setisUpdated] = useState<boolean>(false);
+  const [isUpdated] = useState<boolean>(false);
   const [checked, setChecked] = useState<boolean>(false);
 
   const handleDoubleClick = () => {
@@ -32,17 +32,14 @@ export const TodoList: React.FC<Props> = ({
       await client.delete(`/todos/${id}`);
 
       if (id) {
-        setTodos((prevTodos: Todo[]) => {
-          return prevTodos.filter(todo => todo.id !== id);
-        });
+        // eslint-disable-next-line max-len
+        setTodos((prevTodos: Todo[]) => prevTodos.filter(todo => todo.id !== id));
       }
     } catch (error) {
       setErrorMessage('Unable to delete todos');
       throw new Error('Unable to delete todos');
     }
   };
-
-  setisUpdated(false);
 
   return (
 
