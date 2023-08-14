@@ -18,16 +18,16 @@ export const Header:React.FC<Props> = ({
 }) => {
   const [newTitle, setNewTitle] = useState('');
 
-  const handerInputTitle = (event: React.ChangeEvent<HTMLInputElement>) => {
+  const handlerInputTitle = (event: React.ChangeEvent<HTMLInputElement>) => {
     setNewTitle(event.target.value);
   };
 
-  const handlerSubmit = (event: React.FormEvent<HTMLFormElement>) => {
+  const handleSubmit = (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
     setNewTitle('');
   };
 
-  const hanldlerEnter = (event: React.KeyboardEvent<HTMLInputElement>) => {
+  const handleEnter = (event: React.KeyboardEvent<HTMLInputElement>) => {
     if (event.key === 'Enter') {
       event.preventDefault();
       if (newTitle.trim()) {
@@ -51,14 +51,14 @@ export const Header:React.FC<Props> = ({
           className="todoapp__toggle-all active"
         />
       )}
-      <form onSubmit={handlerSubmit}>
+      <form onSubmit={handleSubmit}>
         <input
           type="text"
           className="todoapp__new-todo"
           placeholder="What needs to be done?"
           value={newTitle}
-          onChange={handerInputTitle}
-          onKeyDown={hanldlerEnter}
+          onChange={handlerInputTitle}
+          onKeyDown={handleEnter}
         />
       </form>
     </header>
