@@ -1,24 +1,79 @@
-/* eslint-disable max-len */
 /* eslint-disable jsx-a11y/control-has-associated-label */
-import React from 'react';
-import { UserWarning } from './UserWarning';
+import React, { useEffect, useState } from 'react';
 
-const USER_ID = 0;
+import { UserWarning } from './UserWarning';
+import { TodosFilter } from './components/TodosFiltered/TodosFiltered';
+import { Todo } from './types/Todo';
+import { client } from './utils/fetchClient';
+import { TodoList } from './components/TodoList/TodoList';
+import { URL, USER_ID } from './utils/Url';
+import { TodoApp } from './components/TodoApp/TodoApp';
 
 export const App: React.FC = () => {
+  const [todos, setTodos] = useState<Todo[]>([]);
+  const [allTodos, setAllTodos] = useState<Todo[]>([]);
+
+  const [errorMessage, setErrorMessage] = useState<string>('');
+
+  useEffect(() => {
+    client.get(URL).then(data => {
+      const todosData = data as Todo[];
+
+      setTodos(todosData);
+      setAllTodos(todosData);
+    })
+      .catch(error => {
+        setErrorMessage('Unable to load todos');
+        throw new Error('An error occurred:', error);
+      });
+  }, []);
+
   if (!USER_ID) {
     return <UserWarning />;
   }
 
   return (
-    <section className="section container">
-      <p className="title is-4">
-        Copy all you need from the prev task:
-        <br />
-        <a href="https://github.com/mate-academy/react_todo-app-loading-todos#react-todo-app-load-todos">React Todo App - Load Todos</a>
-      </p>
+    <div className="todoapp">
+      <h1 className="todoapp__title">todos</h1>
 
-      <p className="subtitle">Styles are already copied</p>
-    </section>
+      <div className="todoapp__content">
+
+        <TodoApp
+          setTodos={setTodos}
+          todos={todos}
+          setErrorMessage={setErrorMessage}
+        />
+        <section className="todoapp__main">
+          <TodoList
+            todos={todos}
+            setTodos={setTodos}
+            setErrorMessage={setErrorMessage}
+          />
+        </section>
+
+        {/* Hide the footer if there are no todos */}
+        <footer className="todoapp__footer">
+          <TodosFilter
+            todos={todos}
+            setTodos={setTodos}
+            allTodos={allTodos}
+          />
+        </footer>
+      </div>
+
+      {/* Notification is shown in case of any error */}
+      {/* Add the 'hidden' class to hide the message smoothly */}
+      <div className="notification is-danger is-light has-text-weight-normal">
+        <button type="button" className="delete" />
+
+        {/* show only one message at a time */}
+        {errorMessage
+          && (
+            <>
+              {errorMessage}
+            </>
+          )}
+      </div>
+    </div>
   );
 };
