@@ -6,7 +6,7 @@ import { client } from '../../utils/fetchClient';
 
 type Props = {
   todos: Todo[];
-  setTodos: (a: Todo[]) => void;
+  setTodos: (a: Todo[] | any) => void;
   setErrorMessage: (a: string) => void;
 };
 
@@ -32,7 +32,7 @@ export const TodoList: React.FC<Props> = ({
       await client.delete(`/todos/${id}`);
 
       if (id) {
-        // eslint-disable-next-line max-len
+        // eslint-disable-next-line max-len, consistent-return
         setTodos((prevTodos: Todo[]) => prevTodos.filter(todo => todo.id !== id));
       }
     } catch (error) {

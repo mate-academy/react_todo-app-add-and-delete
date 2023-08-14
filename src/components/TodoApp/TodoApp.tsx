@@ -4,7 +4,7 @@ import { URL, USER_ID } from '../../utils/Url';
 import { Todo } from '../../types/Todo';
 
 type Props = {
-  setTodos: (a: Todo[]) => void;
+  setTodos: (a: Todo[] | any) => void;
   setErrorMessage: (a: string) => void;
   todos: Todo[];
 };
