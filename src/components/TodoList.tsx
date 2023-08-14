@@ -7,14 +7,14 @@ import '../styles/transition.scss';
 type Props = {
   filteredTodos: Todo[],
   onDelete?: (id: number) => void,
-  loadingId: null | number[],
+  loadingTodoIds: number[],
   newTodo: null | Todo,
 };
 
 export const TodoList: React.FC<Props> = ({
   filteredTodos,
   onDelete = () => {},
-  loadingId,
+  loadingTodoIds,
   newTodo,
 }) => {
   return (
@@ -29,7 +29,7 @@ export const TodoList: React.FC<Props> = ({
             <TodoItem
               todo={todo}
               onDelete={onDelete}
-              loadingId={loadingId}
+              loadingTodoIds={loadingTodoIds}
             />
           </CSSTransition>
         ))}
@@ -42,7 +42,7 @@ export const TodoList: React.FC<Props> = ({
           >
             <TodoItem
               todo={newTodo}
-              loadingId={[0]}
+              loadingTodoIds={loadingTodoIds}
             />
           </CSSTransition>
         )}

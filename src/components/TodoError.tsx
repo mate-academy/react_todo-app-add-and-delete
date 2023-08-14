@@ -1,45 +1,54 @@
-import React, { useEffect } from 'react';
+import React, { useEffect, useState } from 'react';
 import cn from 'classnames';
-import { Error, ErrorText } from '../utils/Enum';
+import { CSSTransition, TransitionGroup } from 'react-transition-group';
+import { Error, errorMapping } from '../utils/Enum';
+import '../styles/transition.scss';
 
 type Props = {
-  hasError: string
-  setHasError: (value: Error) => void
+  currentError: Error
+  setCurrentError: (value: Error) => void
 };
 
 export const TodoError: React.FC<Props> = ({
-  hasError,
-  setHasError,
+  currentError,
+  setCurrentError,
 }) => {
+  const [errorMessage, setErrorMessage] = useState('');
+
+  useEffect(() => {
+    setErrorMessage(errorMapping[currentError]);
+  }, [currentError]);
+
   useEffect(() => {
     setTimeout(() => {
-      setHasError(Error.NOTHING);
+      setCurrentError(Error.NOTHING);
     }, 3000);
-  }, [hasError]);
+  }, [currentError]);
 
   return (
-    <div
-      className={cn(
-        'notification is-danger is-light has-text-weight-normal',
-        {
-          hidden: !hasError,
-        },
-      )}
-    >
-      {/* eslint-disable-next-line */}
-      <button
-        type="button"
-        className="delete"
-        onClick={() => {
-          setHasError(Error.NOTHING);
-        }}
-      />
-
-      {hasError === Error.ADD && ErrorText.ADD}
-      {hasError === Error.DELETE && ErrorText.DELETE}
-      {hasError === Error.UPDATE && ErrorText.UPDATE}
-      {hasError === Error.FETCH && ErrorText.FETCH}
-      {hasError === Error.TITLE && ErrorText.TITLE}
-    </div>
+    <TransitionGroup>
+      <CSSTransition
+        timeout={300}
+      >
+        <div
+          className={cn(
+            'notification is-danger is-light has-text-weight-normal',
+            {
+              hidden: !currentError,
+            },
+          )}
+        >
+          <button
+            type="button"
+            className="delete"
+            aria-label="delete"
+            onClick={() => {
+              setCurrentError(Error.NOTHING);
+            }}
+          />
+          {errorMessage}
+        </div>
+      </CSSTransition>
+    </TransitionGroup>
   );
 };

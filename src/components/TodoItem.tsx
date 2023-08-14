@@ -5,36 +5,38 @@ import { Todo } from '../types/Todo';
 type Props = {
   todo: Todo,
   onDelete?: (id: number) => void,
-  loadingId: null | number[],
+  loadingTodoIds: number[],
 };
 
 export const TodoItem: React.FC<Props> = ({
   todo,
   onDelete = () => {},
-  loadingId,
+  loadingTodoIds,
 }) => {
+  const { id, title, completed } = todo;
+
   return (
-    <div className={cn('todo', { completed: todo.completed })}>
+    <div className={cn('todo', { completed })}>
       <label className="todo__status-label">
         <input
           type="checkbox"
           className="todo__status"
-          checked={todo.completed}
+          checked={completed}
         />
       </label>
 
-      <span className="todo__title">{todo.title}</span>
+      <span className="todo__title">{title}</span>
 
       <button
         type="button"
         className="todo__remove"
-        onClick={() => onDelete(todo.id)}
+        onClick={() => onDelete(id)}
       >
         ×
       </button>
 
       <div className={cn('modal overlay', {
-        'is-active': loadingId?.includes(todo.id),
+        'is-active': loadingTodoIds.length && loadingTodoIds.includes(id),
       })}
       >
         <div className="modal-background has-background-white-ter" />

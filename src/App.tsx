@@ -15,11 +15,11 @@ import { TodoError } from './components/TodoError';
 
 export const App: React.FC = () => {
   const [todos, setTodos] = useState<Todo[]>([]);
-  const [hasError, setHasError] = useState(Error.NOTHING);
+  const [currentError, setCurrentError] = useState(Error.NOTHING);
   const [filterTodo, setFilterTodo] = useState(Filter.ALL);
   const [isActive, setIsActive] = useState(false);
   const [isCompleted, setIsCompleted] = useState(false);
-  const [loadingId, setLoadingId] = useState<null | number[]>(null);
+  const [loadingTodoIds, setLoadingTodoIds] = useState<number[]>([]);
   const [tempTodo, setTempTodo] = useState<null | Todo>(null);
 
   const filteredTodos = useMemo(() => {
@@ -35,34 +35,35 @@ export const App: React.FC = () => {
     }
   }, [filterTodo, todos]);
 
+  const removeLoading = useCallback((todoId: number) => {
+    const tempLoadingTodoIds = [...loadingTodoIds]
+      .filter((id) => id !== todoId);
+
+    setLoadingTodoIds(tempLoadingTodoIds);
+  }, [loadingTodoIds]);
+
   const deleteTodo = useCallback((todoId: number) => {
-    if (loadingId) {
-      setLoadingId([...loadingId, todoId]);
-    } else {
-      setLoadingId([todoId]);
-    }
+    setLoadingTodoIds(ids => [...ids, todoId]);
 
     todoService.deleteTodo(todoId)
       .then(() => setTodos(currentTodos => currentTodos
         .filter(todo => todo.id !== todoId)))
-      .catch(() => setHasError(Error.DELETE))
-      .finally(() => {
-        if (loadingId) {
-          const tempLoadingId = [...loadingId].filter((_num, index) => index);
+      .catch(() => setCurrentError(Error.DELETE))
+      .finally(() => removeLoading(todoId));
+  }, [loadingTodoIds]);
 
-          if (tempLoadingId.length) {
-            setLoadingId(tempLoadingId);
-          } else {
-            setLoadingId(null);
-          }
-        }
-      });
-  }, [loadingId]);
+  useEffect(() => {
+    if (tempTodo) {
+      setLoadingTodoIds(ids => [...ids, 0]);
+    } else {
+      removeLoading(0);
+    }
+  }, [tempTodo]);
 
   useEffect(() => {
     todoService.getTodos(todoService.USER_ID)
       .then((data) => setTodos(data))
-      .catch(() => setHasError(Error.FETCH));
+      .catch(() => setCurrentError(Error.FETCH));
   }, []);
 
   useEffect(() => {
@@ -81,7 +82,7 @@ export const App: React.FC = () => {
         <TodoHeader
           activeButton={isActive}
           setNewTodo={setTempTodo}
-          setHasError={setHasError}
+          setCurrentError={setCurrentError}
           setTodos={setTodos}
           todos={todos}
         />
@@ -89,7 +90,7 @@ export const App: React.FC = () => {
         <TodoList
           filteredTodos={filteredTodos}
           onDelete={deleteTodo}
-          loadingId={loadingId}
+          loadingTodoIds={loadingTodoIds}
           newTodo={tempTodo}
         />
 
@@ -103,10 +104,10 @@ export const App: React.FC = () => {
           />
         )}
 
-        {hasError !== Error.NOTHING && (
+        {currentError !== Error.NOTHING && (
           <TodoError
-            hasError={hasError}
-            setHasError={setHasError}
+            currentError={currentError}
+            setCurrentError={setCurrentError}
           />
         )}
 
