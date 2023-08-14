@@ -5,7 +5,7 @@ import { Todo } from '../../types/Todo';
 
 type Props = {
   todos: Todo[],
-  setTodos: (a: Todo[]) => void;
+  setTodos: React.Dispatch<React.SetStateAction<Todo[]>>
   allTodos: Todo[];
 };
 
