@@ -33,6 +33,7 @@ export const TodoApp: React.FC<Props> = ({
         title: value,
         completed: false,
         userId: USER_ID,
+        id: 0,
       };
 
       const addedTodo = await client.post<Todo>(URL, newTodoData);
@@ -58,12 +59,12 @@ export const TodoApp: React.FC<Props> = ({
     }
   };
 
-  const activeTodos = todos.map((todo: Todo) => !todo.completed);
+  const activeTodos = todos.filter((todo: Todo) => !todo.completed);
 
   return (
     <header className="todoapp__header">
       {/* this buttons is active only if there are some active todos */}
-      {activeTodos
+      {activeTodos.length > 0
         && (
           // eslint-disable-next-line jsx-a11y/control-has-associated-label
           <button
