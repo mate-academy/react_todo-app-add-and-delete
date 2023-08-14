@@ -24,7 +24,7 @@ export const TodoApp: React.FC<Props> = ({
   };
 
   const addNewTodo = async () => {
-    if (value.trim() === '') {
+    if (!value.trim()) {
       return;
     }
 
