@@ -6,7 +6,7 @@ import { client } from '../../utils/fetchClient';
 
 type Props = {
   todos: Todo[];
-  setTodos: (a: Todo[]) => void;
+  setTodos: React.Dispatch<React.SetStateAction<Todo[]>>
   setErrorMessage: (a: string) => void;
 };
 

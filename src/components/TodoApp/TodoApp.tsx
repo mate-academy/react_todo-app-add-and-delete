@@ -4,7 +4,7 @@ import { URL, USER_ID } from '../../utils/Url';
 import { Todo } from '../../types/Todo';
 
 type Props = {
-  setTodos: (a: Todo[] | any) => void;
+  setTodos: React.Dispatch<React.SetStateAction<Todo[]>>
   setErrorMessage: (a: string) => void;
   todos: Todo[];
 };
