@@ -6,7 +6,7 @@ import { client } from '../../utils/fetchClient';
 
 type Props = {
   todos: Todo[];
-  setTodos: (a: Todo[] | any) => void;
+  setTodos: (a: Todo[]) => void;
   setErrorMessage: (a: string) => void;
 };
 
@@ -16,7 +16,7 @@ export const TodoList: React.FC<Props> = ({
   setErrorMessage,
 }) => {
   const [isEditing, setIsEditing] = useState<boolean>(false);
-  const [isUpdated] = useState<boolean>(false);
+  const [isUpdated, setIsUpdated] = useState<boolean>(false);
   const [checked, setChecked] = useState<boolean>(false);
 
   const handleDoubleClick = () => {
@@ -29,15 +29,13 @@ export const TodoList: React.FC<Props> = ({
 
   const handleRemoveTodo = async (id: number) => {
     try {
+      setIsUpdated(true);
       await client.delete(`/todos/${id}`);
-
-      if (id) {
-        // eslint-disable-next-line max-len, consistent-return
-        setTodos((prevTodos: Todo[]) => prevTodos.filter(todo => todo.id !== id));
-      }
+      setTodos((prevTodos: Todo[]) => prevTodos.filter(todo => todo.id !== id));
     } catch (error) {
       setErrorMessage('Unable to delete todos');
-      throw new Error('Unable to delete todos');
+    } finally {
+      setIsUpdated(false);
     }
   };
 

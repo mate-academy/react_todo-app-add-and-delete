@@ -13,12 +13,12 @@ export const TodosFilter: React.FC<Props> = ({ todos, setTodos, allTodos }) => {
   enum Status {
     ALL = 'all',
     ACTIVE = 'active',
-    COMPLETED = 'Completed',
+    COMPLETED = 'completed',
   }
 
   const [filterBy, setFilterBy] = useState<Status>(Status.ALL);
 
-  const getFilteredTodos = async (filter: Status) => {
+  const getFilteredTodos = (filter: Status) => {
     let filteredTodos: Todo[] = [];
 
     switch (filter) {

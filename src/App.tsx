@@ -24,7 +24,8 @@ export const App: React.FC = () => {
     })
       .catch(error => {
         setErrorMessage('Unable to load todos');
-        throw new Error('An error occurred:', error);
+        // eslint-disable-next-line no-console
+        console.error('An error occurred:', error);
       });
   }, []);
 
@@ -63,17 +64,17 @@ export const App: React.FC = () => {
 
       {/* Notification is shown in case of any error */}
       {/* Add the 'hidden' class to hide the message smoothly */}
-      <div className="notification is-danger is-light has-text-weight-normal">
-        <button type="button" className="delete" />
+      {errorMessage
+        && (
+          <div
+            className="notification is-danger is-light has-text-weight-normal"
+          >
+            <button type="button" className="delete" />
 
-        {/* show only one message at a time */}
-        {errorMessage
-          && (
-            <>
-              {errorMessage}
-            </>
-          )}
-      </div>
+            {/* show only one message at a time */}
+            {errorMessage}
+          </div>
+        )}
     </div>
   );
 };
