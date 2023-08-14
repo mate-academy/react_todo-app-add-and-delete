@@ -6,6 +6,7 @@ type Props = {
   todo: Todo
   setTodos: (toggle: Todo[]) => void
   deleted: () => void
+  loadingTodosIds: number[]
 };
 
 export const TodoItem: React.FC<Props> = ({
@@ -13,7 +14,9 @@ export const TodoItem: React.FC<Props> = ({
   deleted,
   todos,
   setTodos,
+  loadingTodosIds,
 }) => {
+  const loaded = loadingTodosIds.includes(todo.id);
   const toggleTodo = (id: number) => {
     const toggle = todos.map(todoItem => (todoItem.id === id
       ? { ...todoItem, completed: !todoItem.completed } : todoItem));
@@ -41,7 +44,7 @@ export const TodoItem: React.FC<Props> = ({
         ×
       </button>
 
-      <div className="modal overlay">
+      <div className={cn('modal overlay', { 'is-active': loaded })}>
         <div className="modal-background has-background-white-ter" />
         <div className="loader" />
       </div>

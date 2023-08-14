@@ -1,4 +1,4 @@
-import { Dispatch, SetStateAction, useState } from 'react';
+import { useState } from 'react';
 import { Todo } from '../../types/Todo';
 import { ErrorType } from '../../types/error';
 
@@ -7,21 +7,24 @@ type Props = {
   todos: Todo[]
   addTodo: (newTodo: Omit<Todo, 'id'>) => void
   setErrorMessage: (message: ErrorType) => void
-  setNotifcation: Dispatch<SetStateAction<boolean>>
 };
 
 const USER_ID = 11299;
 
-export const TodoApp:React.FC<Props> = ({
+export const Header:React.FC<Props> = ({
   todos,
   addTodo,
   setErrorMessage,
-  setNotifcation,
 }) => {
   const [newTitle, setNewTitle] = useState('');
 
   const handerInputTitle = (event: React.ChangeEvent<HTMLInputElement>) => {
     setNewTitle(event.target.value);
+  };
+
+  const handlerSubmit = (event: React.FormEvent<HTMLFormElement>) => {
+    event.preventDefault();
+    setNewTitle('');
   };
 
   const hanldlerEnter = (event: React.KeyboardEvent<HTMLInputElement>) => {
@@ -36,7 +39,6 @@ export const TodoApp:React.FC<Props> = ({
         setNewTitle('');
       } else {
         setErrorMessage(ErrorType.Empty);
-        setNotifcation(true);
       }
     }
   };
@@ -49,7 +51,7 @@ export const TodoApp:React.FC<Props> = ({
           className="todoapp__toggle-all active"
         />
       )}
-      <form onSubmit={e => e.preventDefault()}>
+      <form onSubmit={handlerSubmit}>
         <input
           type="text"
           className="todoapp__new-todo"
@@ -63,4 +65,4 @@ export const TodoApp:React.FC<Props> = ({
   );
 };
 
-export default TodoApp;
+export default Header;

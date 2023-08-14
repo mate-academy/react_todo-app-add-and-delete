@@ -6,7 +6,7 @@ import { TypeTodos } from './types/type';
 import { addTodos, deleteTodos, getTodos } from './api/todos';
 import { TodoFilter } from './components/Footer/TodoFilter';
 import { TodoList } from './components/TodoList/TodoList';
-import { TodoApp } from './components/TodoApp/TodoApp';
+import { Header } from './components/Header/Header';
 import { TodoError } from './components/TodoError/TodoError';
 import { ErrorType } from './types/error';
 
@@ -16,18 +16,23 @@ export const App: React.FC = () => {
   const [todos, setTodos] = useState<Todo[]>([]);
   const [typeTodos, setTypeTodos] = useState<TypeTodos>(TypeTodos.All);
   const [errorMessage, setErrorMessage] = useState<ErrorType>(ErrorType.None);
-  const [notification, setNotifcation] = useState(false);
   const [tempTodo, setTempTodo] = useState<Todo | null>(null);
+  const [isLoading, setIsLoading] = useState(false);
+  const [loadingTodosIds, setLoadingTodosIds] = useState<number[]>([]);
+
+  const handleError = (errorType: ErrorType,
+    errorFunction: (errorType: ErrorType) => void) => {
+    errorFunction(errorType);
+    setTimeout(() => {
+      errorFunction(ErrorType.None);
+    }, 3000);
+  };
 
   useEffect(() => {
     getTodos(USER_ID)
       .then(setTodos)
       .catch(() => {
-        setErrorMessage(ErrorType.Load);
-        setNotifcation(true);
-        setTimeout(() => {
-          setNotifcation(false);
-        }, 3000);
+        handleError(ErrorType.Load, setErrorMessage);
       });
   }, []);
 
@@ -43,55 +48,59 @@ export const App: React.FC = () => {
   }, [todos, typeTodos]);
 
   const deleted = (postId: number) => {
+    setLoadingTodosIds(prevTodo => [...prevTodo, postId]);
     deleteTodos(postId)
       .then(() => {
         setTodos(todos.filter(todo => todo.id !== postId));
       })
       .catch(() => {
-        setErrorMessage(ErrorType.Delete);
-        setNotifcation(true);
-        setTimeout(() => {
-          setNotifcation(false);
-        }, 3000);
+        handleError(ErrorType.Delete, setErrorMessage);
+      })
+      .finally(() => {
+        setLoadingTodosIds(
+          prevTodo => prevTodo.filter(id => id !== postId),
+        );
       });
   };
 
   const addTodo = (newTodo: Omit<Todo, 'id'>) => {
     setTempTodo({ id: 0, ...newTodo });
+    setIsLoading(true);
     addTodos(newTodo)
       .then((addedTodo) => {
         setTodos(prevTodo => [...prevTodo, addedTodo]);
         setTempTodo(null);
-        setTimeout(() => {
-          setNotifcation(false);
-        }, 3000);
       })
       .catch(() => {
         setErrorMessage(ErrorType.Add);
-        setNotifcation(true);
         setTempTodo(null);
-        setTimeout(() => {
-          setNotifcation(false);
-        }, 3000);
-      });
+        handleError(ErrorType.Add, setErrorMessage);
+      })
+      .finally(() => setIsLoading(false));
   };
 
   const deleteCompletedTodos = () => {
     const allCompletedId
     = todos.filter(todo => todo.completed).map(todo => todo.id);
 
+    setLoadingTodosIds(prev => [...prev, ...allCompletedId]);
+
     Promise.all(allCompletedId.map(todoId => deleteTodos(todoId)))
       .then(() => {
         setTodos(todos.filter(todo => !todo.completed));
       })
       .catch(() => {
-        setErrorMessage(ErrorType.Delete);
-        setNotifcation(true);
+        handleError(ErrorType.Delete, setErrorMessage);
+      })
+      .finally(() => {
+        setLoadingTodosIds(
+          prev => prev.filter(id => !allCompletedId.includes(id)),
+        );
       });
   };
 
   const closeNotification = () => {
-    setNotifcation(false);
+    setErrorMessage(ErrorType.None);
   };
 
   if (!USER_ID) {
@@ -103,11 +112,10 @@ export const App: React.FC = () => {
       <h1 className="todoapp__title">todos</h1>
 
       <div className="todoapp__content">
-        <TodoApp
+        <Header
           todos={todos}
           addTodo={addTodo}
           setErrorMessage={setErrorMessage}
-          setNotifcation={setNotifcation}
         />
         <TodoList
           filteredTodos={filteredTodos}
@@ -115,15 +123,16 @@ export const App: React.FC = () => {
           todos={todos}
           setTodos={setTodos}
           tempTodo={tempTodo}
+          isLoading={isLoading}
+          loadingTodosIds={loadingTodosIds}
         />
         <TodoFilter
           todos={todos}
           setTypeTodos={setTypeTodos}
           deleteCompletedTodos={deleteCompletedTodos}
-          filteredTodos={filteredTodos}
         />
       </div>
-      {notification && (
+      {errorMessage !== ErrorType.None && (
         <TodoError
           errorMessage={errorMessage}
           closeNotification={closeNotification}

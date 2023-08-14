@@ -1,3 +1,4 @@
+import cn from 'classnames';
 import { Todo } from '../../types/Todo';
 import { TodoItem } from '../TodoItem/TodoItem';
 
@@ -7,6 +8,8 @@ type Props = {
   setTodos:(toggle: Todo[]) => void
   deleted:(postId: number) => void
   tempTodo: Todo | null
+  isLoading: boolean
+  loadingTodosIds: number[]
 };
 
 export const TodoList: React.FC<Props> = ({
@@ -15,6 +18,8 @@ export const TodoList: React.FC<Props> = ({
   todos,
   setTodos,
   tempTodo,
+  isLoading,
+  loadingTodosIds,
 }) => {
   return (
     <section className="todoapp__main">
@@ -25,6 +30,7 @@ export const TodoList: React.FC<Props> = ({
           deleted={() => deleted(todo.id)}
           todos={todos}
           setTodos={setTodos}
+          loadingTodosIds={loadingTodosIds}
         />
       ))}
       {tempTodo !== null && (
@@ -44,7 +50,7 @@ export const TodoList: React.FC<Props> = ({
             ×
           </button>
 
-          <div className="modal overlay">
+          <div className={cn('modal overlay', { 'is-active': isLoading })}>
             <div className="modal-background has-background-white-ter" />
             <div className="loader" />
           </div>

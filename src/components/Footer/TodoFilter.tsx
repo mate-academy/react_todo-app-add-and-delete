@@ -7,18 +7,16 @@ type Props = {
   todos: Todo[],
   setTypeTodos: Dispatch<SetStateAction<TypeTodos>>,
   deleteCompletedTodos: () => void,
-  filteredTodos: Todo[]
 };
 
 export const TodoFilter: React.FC<Props> = ({
   todos,
   setTypeTodos,
   deleteCompletedTodos,
-  filteredTodos,
 }) => {
   const [filter, setFilter] = useState<TypeTodos>(TypeTodos.All);
   const activeCount = todos.filter(todo => !todo.completed).length;
-  const countCompleted = filteredTodos.length - activeCount;
+  const countCompleted = todos.length - activeCount;
 
   const handlerFilter = (filterTodo: TypeTodos) => {
     setTypeTodos(filterTodo);
