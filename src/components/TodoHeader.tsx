@@ -1,6 +1,6 @@
 import React, { useCallback, useState } from 'react';
 import cn from 'classnames';
-import { Error } from '../utils/Enum';
+import { Error } from '../utils/collection';
 import { Todo } from '../types/Todo';
 import { USER_ID, createTodo } from '../api/todos';
 

@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import cn from 'classnames';
 import { CSSTransition, TransitionGroup } from 'react-transition-group';
-import { Error, errorMapping } from '../utils/Enum';
+import { Error, errorMapping } from '../utils/collection';
 import '../styles/transition.scss';
 
 type Props = {

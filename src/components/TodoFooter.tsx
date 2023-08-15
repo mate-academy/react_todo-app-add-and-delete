@@ -1,7 +1,7 @@
 import React from 'react';
 import cn from 'classnames';
 import { Todo } from '../types/Todo';
-import { Filter } from '../utils/Enum';
+import { Filter } from '../utils/collection';
 
 type Props = {
   todos: Todo[]

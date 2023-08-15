@@ -5,7 +5,7 @@ import React, {
   useState,
 } from 'react';
 import { Todo } from './types/Todo';
-import { Error, Filter } from './utils/Enum';
+import { Error, Filter } from './utils/collection';
 import * as todoService from './api/todos';
 import { TodoFooter } from './components/TodoFooter';
 import { TodoHeader } from './components/TodoHeader';
