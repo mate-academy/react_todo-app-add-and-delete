@@ -3,6 +3,7 @@ import {
 } from 'react';
 import { TodosContext } from '../../TodosContext';
 import { Error } from '../../types/Error';
+import { KeyEvent } from '../../types/KeyEvent';
 import { USER_ID } from '../../utils/userId';
 
 export const TodosHeader: React.FC = () => {
@@ -38,7 +39,7 @@ export const TodosHeader: React.FC = () => {
   };
 
   const handleKeyPressEnter = (e: React.KeyboardEvent<HTMLInputElement>) => {
-    if (e.key !== 'Enter') {
+    if (e.code !== KeyEvent.Enter) {
       return;
     }
 

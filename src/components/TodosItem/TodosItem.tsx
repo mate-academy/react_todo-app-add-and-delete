@@ -34,7 +34,6 @@ export const TodosItem: React.FC<Props> = ({ todo }) => {
 
       <span className="todo__title">{title}</span>
 
-      {/* Remove button appears only on hover */}
       <button
         type="button"
         className="todo__remove"
@@ -44,7 +43,6 @@ export const TodosItem: React.FC<Props> = ({ todo }) => {
 
       </button>
 
-      {/* overlay will cover the todo while it is being updated */}
       <div
         className={cn('modal overlay',
           { 'is-active': isUpdating || isTodosDeleting })}
