@@ -41,7 +41,7 @@ export const TodoItem: React.FC<Props> = ({
       <button
         type="button"
         className="todo__remove"
-        onClick={() => setTodosIdToDelete((curent) => [...curent, todo.id])}
+        onClick={() => setTodosIdToDelete(current => [...current, todo.id])}
       >
         ×
       </button>
