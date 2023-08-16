@@ -1,11 +1,16 @@
-import { useEffect, useState } from 'react';
+import {
+  Dispatch,
+  useEffect,
+  useState,
+  SetStateAction,
+} from 'react';
 import classNames from 'classnames';
 import { Todo } from '../types/Todo';
 
 type Props = {
   todo: Todo;
   todosIdToDelete: number[];
-  setTodosIdToDelete: (todosId: number[]) => void;
+  setTodosIdToDelete: Dispatch<SetStateAction<number[]>>;
 };
 
 export const TodoItem: React.FC<Props> = ({
@@ -36,7 +41,7 @@ export const TodoItem: React.FC<Props> = ({
       <button
         type="button"
         className="todo__remove"
-        onClick={() => setTodosIdToDelete([...todosIdToDelete, todo.id])}
+        onClick={() => setTodosIdToDelete((curent) => [...curent, todo.id])}
       >
         ×
       </button>
