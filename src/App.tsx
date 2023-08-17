@@ -1,11 +1,13 @@
 /* eslint-disable jsx-a11y/control-has-associated-label */
-import React, { useEffect, useMemo, useState } from 'react';
+import React, {
+  useEffect, useMemo, useRef, useState,
+} from 'react';
 import classNames from 'classnames';
 
 import { UserWarning } from './UserWarning';
 import * as todoService from './api/todos';
-import { TodoList } from './components/TodoList';
-import { TodoFilter } from './components/TodoFilter';
+import { TodoList } from './components/TodoList/TodoList';
+import { TodoFilter } from './components/TodoFilter/TodoFilter';
 import { useTodo } from './hooks/useTodo';
 import { ErrorMessage } from './types/ErrorMessage';
 import { Todo } from './types/Todo';
@@ -20,11 +22,19 @@ export const App: React.FC = () => {
     setIsChecked,
     errorMessage,
     setErrorMessage,
+    setIsProcessing,
   } = useTodo();
 
   const [newTodoTitle, setNewTodoTitle] = useState('');
-
   const [tempTodo, setTempTodo] = useState<Todo | null>(null);
+
+  const inputRef = useRef<HTMLInputElement>(null);
+
+  useEffect(() => {
+    if (inputRef.current) {
+      inputRef.current.focus();
+    }
+  });
 
   useEffect(() => {
     todoService.getTodos(USER_ID)
@@ -47,18 +57,7 @@ export const App: React.FC = () => {
     setNewTodoTitle(event.target.value);
   };
 
-  const handleSubmit = (event: React.FormEvent<HTMLFormElement>) => {
-    event.preventDefault();
-
-    const newTitle = newTodoTitle.trim();
-
-    if (!newTitle) {
-      setErrorMessage(ErrorMessage.TITLE_ERROR);
-      setNewTodoTitle('');
-
-      return;
-    }
-
+  const addNewTodo = (newTitle: string) => {
     const newTodoToAdd = {
       id: 0,
       userId: USER_ID,
@@ -82,6 +81,36 @@ export const App: React.FC = () => {
       });
   };
 
+  const deleteSelectedTodo = (todoId: number): void => {
+    setIsProcessing(currentIds => [...currentIds, todoId]);
+
+    todoService.deleteTodo(todoId)
+      .then(() => {
+        setTodos(curentTodos => curentTodos.filter(item => item.id !== todoId));
+      })
+      .catch((error) => {
+        setTodos(todos);
+        setErrorMessage(ErrorMessage.DELETE_ERROR);
+        throw error;
+      })
+      .finally(() => setIsProcessing([]));
+  };
+
+  const handleSubmit = (event: React.FormEvent<HTMLFormElement>) => {
+    event.preventDefault();
+
+    const newTitle = newTodoTitle.trim();
+
+    if (!newTitle) {
+      setErrorMessage(ErrorMessage.TITLE_ERROR);
+      setNewTodoTitle('');
+
+      return;
+    }
+
+    addNewTodo(newTitle);
+  };
+
   const handleCheckAllTodos = () => {
     setTodos((prev) => prev.map(todo => ({
       ...todo,
@@ -99,8 +128,7 @@ export const App: React.FC = () => {
   }, [todos]);
 
   const clearCompletedTodos = () => {
-    setTodos(todos.filter(todo => !todo.completed));
-    setIsChecked(false);
+    todos.forEach(todo => todo.completed && deleteSelectedTodo(todo.id));
   };
 
   const handleDeleteErrorMessage = () => {
@@ -127,6 +155,7 @@ export const App: React.FC = () => {
 
           <form onSubmit={handleSubmit}>
             <input
+              ref={inputRef}
               type="text"
               className="todoapp__new-todo"
               placeholder="What needs to be done?"

@@ -1,11 +1,12 @@
-import classNames from 'classnames';
 import React, {
   useCallback, useEffect, useRef, useState,
 } from 'react';
-import { Todo } from '../types/Todo';
-import { useTodo } from '../hooks/useTodo';
-import { ErrorMessage } from '../types/ErrorMessage';
-import { deleteTodo } from '../api/todos';
+import classNames from 'classnames';
+
+import { Todo } from '../../types/Todo';
+import { useTodo } from '../../hooks/useTodo';
+import { ErrorMessage } from '../../types/ErrorMessage';
+import { deleteTodo } from '../../api/todos';
 
 type Props = {
   todo: Todo;
@@ -55,9 +56,10 @@ export const TodoItem: React.FC<Props> = ({ todo, loading }) => {
       .then(() => {
         setTodos(curentTodos => curentTodos.filter(item => item.id !== todoId));
       })
-      .catch(() => {
+      .catch((error) => {
         setTodos(todos);
         setErrorMessage(ErrorMessage.DELETE_ERROR);
+        throw error;
       })
       .finally(() => setIsProcessing([]));
   };

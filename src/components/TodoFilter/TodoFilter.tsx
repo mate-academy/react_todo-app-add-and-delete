@@ -1,7 +1,7 @@
 import React from 'react';
 import classNames from 'classnames';
-import { useTodo } from '../hooks/useTodo';
-import { Status } from '../types/Status';
+import { useTodo } from '../../hooks/useTodo';
+import { Status } from '../../types/Status';
 
 export const TodoFilter: React.FC = () => {
   const { filter, setFilter } = useTodo();
