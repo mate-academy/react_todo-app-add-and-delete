@@ -5,7 +5,7 @@ import { Todo } from './Todo';
 export type TodosContextType = {
   todos: Todo[];
   setTodos: (value: Todo[] | { (prev: Todo[]) : Todo[] }) => void;
-  visibleTodos: () => Todo[];
+  visibleTodos: Todo[];
   isChecked: boolean;
   setIsChecked: (value: boolean) => void;
   filter: Status;

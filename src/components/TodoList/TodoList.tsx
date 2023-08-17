@@ -15,7 +15,7 @@ export const TodoList: React.FC<Props> = ({ tempTodo }) => {
   return (
     <section className="todoapp__main" data-cy="TodoList">
       <TransitionGroup>
-        {visibleTodos().map(todo => (
+        {visibleTodos.map(todo => (
           <CSSTransition
             key={todo.id}
             timeout={300}
