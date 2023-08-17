@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import { Todo } from './types/Todo';
 import { Status } from './types/Status';
 import { TodosContextType } from './types/TodosContext';
+import { ErrorMessage } from './types/ErrorMessage';
 
 export const TodosContext = React.createContext<TodosContextType>({
   todos: [],
@@ -11,6 +12,10 @@ export const TodosContext = React.createContext<TodosContextType>({
   setFilter: () => { },
   isChecked: false,
   setIsChecked: () => {},
+  errorMessage: ErrorMessage.DEFAULT,
+  setErrorMessage: () => {},
+  isProcessing: [],
+  setIsProcessing: () => {},
 });
 
 type Props = {
@@ -21,6 +26,8 @@ export const TodoProvider: React.FC<Props> = ({ children }) => {
   const [todos, setTodos] = useState<Todo[]>([]);
   const [isChecked, setIsChecked] = useState<boolean>(false);
   const [filter, setFilter] = useState(Status.ALL);
+  const [errorMessage, setErrorMessage] = useState(ErrorMessage.DEFAULT);
+  const [isProcessing, setIsProcessing] = useState<number[]>([]);
 
   const visibleTodos = () => {
     switch (filter) {
@@ -43,6 +50,10 @@ export const TodoProvider: React.FC<Props> = ({ children }) => {
     setIsChecked,
     filter,
     setFilter,
+    errorMessage,
+    setErrorMessage,
+    isProcessing,
+    setIsProcessing,
   };
 
   return (

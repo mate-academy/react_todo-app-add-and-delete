@@ -18,12 +18,13 @@ export const App: React.FC = () => {
     setTodos,
     isChecked,
     setIsChecked,
+    errorMessage,
+    setErrorMessage,
   } = useTodo();
 
   const [newTodoTitle, setNewTodoTitle] = useState('');
-  const [errorMessage, setErrorMessage] = useState('');
+
   const [tempTodo, setTempTodo] = useState<Todo | null>(null);
-  const [isSubmitting, setIsSubmitting] = useState(false);
 
   useEffect(() => {
     todoService.getTodos(USER_ID)
@@ -33,7 +34,7 @@ export const App: React.FC = () => {
 
   useEffect(() => {
     const timer = setTimeout(() => {
-      setErrorMessage('');
+      setErrorMessage(ErrorMessage.DEFAULT);
     }, 3000);
 
     return () => clearTimeout(timer);
@@ -42,7 +43,7 @@ export const App: React.FC = () => {
   setIsChecked(todos.every(todo => todo.completed) && todos.length > 0);
 
   const handleTitleChange = (event: React.ChangeEvent<HTMLInputElement>) => {
-    setErrorMessage('');
+    setErrorMessage(ErrorMessage.DEFAULT);
     setNewTodoTitle(event.target.value);
   };
 
@@ -57,8 +58,6 @@ export const App: React.FC = () => {
 
       return;
     }
-
-    setIsSubmitting(true);
 
     const newTodoToAdd = {
       id: 0,
@@ -79,7 +78,6 @@ export const App: React.FC = () => {
       })
       .finally(() => {
         setTempTodo(null);
-        setIsSubmitting(false);
         setNewTodoTitle('');
       });
   };
@@ -106,7 +104,7 @@ export const App: React.FC = () => {
   };
 
   const handleDeleteErrorMessage = () => {
-    setErrorMessage('');
+    setErrorMessage(ErrorMessage.DEFAULT);
   };
 
   if (!USER_ID) {
@@ -134,12 +132,12 @@ export const App: React.FC = () => {
               placeholder="What needs to be done?"
               value={newTodoTitle}
               onChange={handleTitleChange}
-              disabled={isSubmitting}
+              disabled={tempTodo !== null}
             />
           </form>
         </header>
 
-        {todos.length > 0 && (
+        {(todos.length > 0 || tempTodo !== null) && (
           <>
             <TodoList tempTodo={tempTodo} />
 

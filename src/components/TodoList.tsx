@@ -7,7 +7,7 @@ type Props = {
   tempTodo: Todo | null;
 };
 
-export const TodoList: React.FC<Props> = React.memo(({ tempTodo }) => {
+export const TodoList: React.FC<Props> = ({ tempTodo }) => {
   const { visibleTodos } = useTodo();
 
   return (
@@ -17,12 +17,26 @@ export const TodoList: React.FC<Props> = React.memo(({ tempTodo }) => {
       ))}
 
       {tempTodo && (
-        <TodoItem
-          key={tempTodo.id}
-          todo={tempTodo}
-          loading
-        />
+        <div
+          className="todo"
+        >
+          <label className="todo__status-label">
+            <input
+              type="checkbox"
+              className="todo__status"
+            />
+          </label>
+
+          <span className="todo__title">
+            {tempTodo.title}
+          </span>
+
+          <div className="modal overlay is-active">
+            <div className="modal-background has-background-white-ter" />
+            <div className="loader" />
+          </div>
+        </div>
       )}
     </section>
   );
-});
+};

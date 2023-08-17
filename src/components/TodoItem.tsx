@@ -4,6 +4,8 @@ import React, {
 } from 'react';
 import { Todo } from '../types/Todo';
 import { useTodo } from '../hooks/useTodo';
+import { ErrorMessage } from '../types/ErrorMessage';
+import { deleteTodo } from '../api/todos';
 
 type Props = {
   todo: Todo;
@@ -15,11 +17,13 @@ export const TodoItem: React.FC<Props> = ({ todo, loading }) => {
     todos,
     setTodos,
     setIsChecked,
+    setErrorMessage,
+    isProcessing,
+    setIsProcessing,
   } = useTodo();
   const [title, setTitle] = useState(todo.title);
   const [isEditing, setIsEditing] = useState(false);
   const [focus, setFocus] = useState(false);
-  const [isLoading, setIsLoading] = useState(false);
 
   const inputRef = useRef<HTMLInputElement>(null);
 
@@ -44,20 +48,25 @@ export const TodoItem: React.FC<Props> = ({ todo, loading }) => {
     setFocus(true);
   }, [isEditing]);
 
-  function deleteTodo(todoId: number): void {
-    setIsLoading(true);
+  const deleteSelectedTodo = (todoId: number): void => {
+    setIsProcessing(currentIds => [...currentIds, todoId]);
 
-    const filteredTodos = todos
-      .filter(item => item.id !== todoId);
-
-    setTodos(filteredTodos);
-  }
+    deleteTodo(todoId)
+      .then(() => {
+        setTodos(curentTodos => curentTodos.filter(item => item.id !== todoId));
+      })
+      .catch(() => {
+        setTodos(todos);
+        setErrorMessage(ErrorMessage.DELETE_ERROR);
+      })
+      .finally(() => setIsProcessing([]));
+  };
 
   const handleBlur = () => {
     const newTitle = title.trim();
 
     if (!newTitle) {
-      deleteTodo(todo.id);
+      deleteSelectedTodo(todo.id);
 
       return;
     }
@@ -113,7 +122,7 @@ export const TodoItem: React.FC<Props> = ({ todo, loading }) => {
           <button
             type="button"
             className="todo__remove"
-            onClick={() => deleteTodo(todo.id)}
+            onClick={() => deleteSelectedTodo(todo.id)}
           >
             ×
           </button>
@@ -135,7 +144,7 @@ export const TodoItem: React.FC<Props> = ({ todo, loading }) => {
 
       <div className={classNames(
         'modal overlay',
-        { 'is-active': loading || isLoading },
+        { 'is-active': loading || isProcessing.includes(todo.id) },
       )}
       >
         <div className="modal-background has-background-white-ter" />
