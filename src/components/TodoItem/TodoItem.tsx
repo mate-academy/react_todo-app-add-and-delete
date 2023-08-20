@@ -28,8 +28,7 @@ export const TodoItem: React.FC<Props> = ({
 
     deleteTodo(id)
       .then(() => setTodos((todos) => todos.filter(todo => todo.id !== id)))
-      .catch(() => showError(Errors.Delete))
-      .finally(() => setShowModal(false));
+      .catch(() => showError(Errors.Delete));
   };
 
   return (

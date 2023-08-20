@@ -1,4 +1,6 @@
 import React from 'react';
+import { CSSTransition, TransitionGroup } from 'react-transition-group';
+
 import { Todo } from '../../types/Todo';
 import { TodoItem } from '../TodoItem/TodoItem';
 
@@ -11,20 +13,33 @@ interface Props {
 export const Main: React.FC<Props> = ({ todos, tempTodo, isAllDeleting }) => {
   return (
     <section className="todoapp__main">
-      {todos.map(todo => (
-        <TodoItem
-          key={todo.id}
-          {...todo}
-          isLoading={todo.completed && isAllDeleting}
-        />
-      ))}
+      <TransitionGroup>
+        {todos.map(todo => (
+          <CSSTransition
+            key={todo.id}
+            timeout={300}
+            classNames="item"
+          >
+            <TodoItem
+              {...todo}
+              isLoading={todo.completed && isAllDeleting}
+            />
+          </CSSTransition>
+        ))}
 
-      {tempTodo && (
-        <TodoItem
-          {...tempTodo}
-          isLoading
-        />
-      )}
+        {tempTodo && (
+          <CSSTransition
+            key={0}
+            timeout={300}
+            classNames="temp-item"
+          >
+            <TodoItem
+              {...tempTodo}
+              isLoading
+            />
+          </CSSTransition>
+        )}
+      </TransitionGroup>
 
       {/* This todo is being edited */}
       {/* <div className="todo">
