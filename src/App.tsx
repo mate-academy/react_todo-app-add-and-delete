@@ -35,6 +35,7 @@ export const App: React.FC = () => {
   const [errorMessage, setErrorMessage] = useState(ErrorMessages.EMPTY);
   const [selected, setSelected]
   = useState<Selected>(Selected.ALL);
+  const [tempTodo, setTempTodo] = useState<Todo | null>(null);
 
   useEffect(() => {
     setisLoading(true);
@@ -64,16 +65,36 @@ export const App: React.FC = () => {
   );
   const amountActive = activeTodos.length;
   const deleteTodo = (todoId: number) => {
-    todosService.deleteTodo(todoId);
+    setisLoading(true);
     setTodos(currentTodos => currentTodos.filter(todo => todo.id !== todoId));
+
+    return todosService.deleteTodo(todoId)
+      .catch((error) => {
+        setTodos(todos);
+        setErrorMessage(ErrorMessages.DELETE);
+        throw error;
+      })
+      .finally(() => setisLoading(false));
   };
 
-  const addTodo = ({ title, completed, userId }: Todo) => {
+  const addTodo = ({
+    title, completed, userId,
+  }: Todo) => {
+    setTempTodo({
+      id: 0,
+      userId,
+      title,
+      completed,
+    });
     setErrorMessage(ErrorMessages.EMPTY);
-    todosService.creatTodo({ title, completed, userId })
-      .then(newTodo => {
-        setTodos(currentTodos => [...currentTodos, newTodo]);
-      });
+
+    return todosService.creatTodo({ title, completed, userId })
+      .then((newTodo) => setTodos((current) => [...current, newTodo]))
+      .catch((error) => {
+        setErrorMessage(ErrorMessages.ADD);
+        throw error;
+      })
+      .finally(() => setTempTodo(null));
   };
 
   if (!USER_ID) {
@@ -95,6 +116,8 @@ export const App: React.FC = () => {
               <TodoList
                 todos={visibleTodos}
                 onDelete={deleteTodo}
+                tempTodo={tempTodo}
+                isLoading={isLoading}
               />
               <FilterTodos
                 amountActive={amountActive}

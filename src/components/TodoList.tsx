@@ -5,9 +5,13 @@ import { TodoItem } from './TodoItem';
 type Props = {
   todos: Todo[];
   onDelete: (id: number) => void;
+  tempTodo: Todo | null;
+  isLoading: boolean;
 };
 
-export const TodoList: React.FC<Props> = ({ todos, onDelete = () => {} }) => {
+export const TodoList: React.FC<Props> = ({
+  todos, onDelete = () => {}, tempTodo, isLoading,
+}) => {
   return (
     <section className="todoapp__main">
       {todos.map(todo => (
@@ -23,6 +27,29 @@ export const TodoList: React.FC<Props> = ({ todos, onDelete = () => {} }) => {
           />
         </div>
       ))}
+
+      {tempTodo && (
+        <div className="todo">
+          <label className="todo__status-label">
+            <input type="checkbox" className="todo__status" />
+          </label>
+
+          <span className="todo__title">{tempTodo.title}</span>
+          <button type="button" className="todo__remove">×</button>
+
+          {/* 'is-active' class puts this modal on top of the todo */}
+          <div className={classNames(
+            'modal overlay',
+            { 'is-active': !isLoading },
+          )}
+          >
+            <div className="modal-background has-background-white-ter" />
+            <div className="Loader">
+              <div className="Loader__content" />
+            </div>
+          </div>
+        </div>
+      )}
     </section>
 
   );

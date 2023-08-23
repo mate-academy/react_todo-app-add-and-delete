@@ -1,4 +1,5 @@
 /* eslint-disable jsx-a11y/control-has-associated-label */
+import classNames from 'classnames';
 import React, { useState } from 'react';
 import { ErrorMessages } from '../types/ErrorMessages';
 import { Todo } from '../types/Todo';
@@ -6,7 +7,9 @@ import { Todo } from '../types/Todo';
 type Props = {
   userId: number;
   setErrorMessage: (error: ErrorMessages) => void;
-  onSubmit: ({ title, completed, userId }: Todo)=> void;
+  onSubmit: ({
+    id, title, completed, userId,
+  }: Todo)=> Promise<void>;
 };
 
 export const Header: React.FC<Props> = ({
@@ -19,6 +22,10 @@ export const Header: React.FC<Props> = ({
     setErrorMessage(ErrorMessages.EMPTY);
   };
 
+  const reset = () => {
+    setTitle('');
+  };
+
   const handleSubmit = (event: React.FormEvent) => {
     event.preventDefault();
 
@@ -29,14 +36,15 @@ export const Header: React.FC<Props> = ({
     }
 
     setIsCreat(true);
+
     onSubmit({
       id: 0,
       title,
       completed: false,
       userId,
-    });
-    setTitle('');
-    setIsCreat(false);
+    })
+      .then(reset)
+      .finally(() => setIsCreat(false));
   };
 
   return (
@@ -50,7 +58,9 @@ export const Header: React.FC<Props> = ({
 
         <input
           type="text"
-          className="todoapp__new-todo"
+          className={classNames('todoapp__new-todo', {
+            'is-loading': isCreat,
+          })}
           placeholder="What needs to be done?"
           value={title}
           onChange={handleTitleChange}
