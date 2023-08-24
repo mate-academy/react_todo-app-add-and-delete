@@ -52,7 +52,7 @@ export const App: React.FC = () => {
           setIsMessageClosed(true);
         }, 3000);
       });
-  }, [todos]);
+  }, []);
 
   const filteredTodos = getFilteredTodos(todos, status);
   const itemsLeft = getFilteredTodos(todos, Status.ACTIVE);
@@ -77,7 +77,7 @@ export const App: React.FC = () => {
       completed: false,
     });
 
-    createTodos({ userId: USER_ID, title: newTitle, completed: false })
+    createTodos({ userId: USER_ID, title: newTitle.trim(), completed: false })
       .then(newTodo => {
         setTodos(currentTodos => [...currentTodos, newTodo]);
       })
@@ -113,7 +113,7 @@ export const App: React.FC = () => {
   }
 
   const ClearCompletedHendlere = (event: React.MouseEvent<HTMLButtonElement>) => {
-    todos.map(todo => todo.completed === true && deleteTodo(event, todo.id));
+    todos.forEach(todo => todo.completed === true && deleteTodo(event, todo.id));
   };
 
   const inputHendlere = (event: React.ChangeEvent<HTMLInputElement>) => {
