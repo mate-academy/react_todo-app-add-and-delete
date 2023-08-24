@@ -15,18 +15,16 @@ function getFilteredTodos(
   todos: Todo[],
   sortBy: string,
 ) {
-  const filteredTodos = todos;
-
   switch (sortBy) {
     case Status.ACTIVE:
-      return filteredTodos.filter(todo => todo.completed === false);
+      return todos.filter(todo => todo.completed === false);
 
     case Status.COMPLETED:
-      return filteredTodos.filter(todo => todo.completed === true);
+      return todos.filter(todo => todo.completed === true);
 
     case Status.ALL:
     default:
-      return filteredTodos;
+      return todos;
   }
 }
 
