@@ -18,15 +18,13 @@ function getFilteredTodos(
   const filteredTodos = todos;
 
   switch (sortBy) {
-    case Status.ALL:
-      return filteredTodos;
-
     case Status.ACTIVE:
       return filteredTodos.filter(todo => todo.completed === false);
 
     case Status.COMPLETED:
       return filteredTodos.filter(todo => todo.completed === true);
 
+    case Status.ALL:
     default:
       return filteredTodos;
   }
