@@ -24,7 +24,8 @@ export const Header: React.FC<Props> = ({
     setTitleTodo(event.target.value);
   };
 
-  const handleSubmitTodo = () => {
+  const handleSubmitTodo = (event: React.FormEvent) => {
+    event.preventDefault();
     setIsblockedInput(true);
 
     if (!titleTodo) {
