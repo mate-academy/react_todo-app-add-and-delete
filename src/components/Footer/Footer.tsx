@@ -1,9 +1,10 @@
-import React, { useState } from 'react';
+import React from 'react';
 
 type Props = {
   changeQuery: (query: string) => void,
   isCompleted: boolean,
   numberActive: number,
+  status: string,
 };
 
 enum StatusTodos {
@@ -16,22 +17,18 @@ export const Footer: React.FC<Props> = ({
   changeQuery,
   isCompleted,
   numberActive,
+  status,
 }) => {
-  const [status, setStatus] = useState('All');
-
   const handleClickAll = () => {
     changeQuery(StatusTodos.all);
-    setStatus(StatusTodos.all);
   };
 
   const handleClickActive = () => {
     changeQuery(StatusTodos.active);
-    setStatus(StatusTodos.active);
   };
 
   const handleClickCompleted = () => {
     changeQuery(StatusTodos.completed);
-    setStatus(StatusTodos.completed);
   };
 
   return (
@@ -45,7 +42,7 @@ export const Footer: React.FC<Props> = ({
         <a
           onClick={handleClickAll}
           href="#/"
-          className={`filter__link ${status === 'All' && 'selected'}`}
+          className={`filter__link ${status === StatusTodos.all && 'selected'}`}
         >
           All
         </a>
@@ -53,7 +50,7 @@ export const Footer: React.FC<Props> = ({
         <a
           onClick={handleClickActive}
           href="#/active"
-          className={`filter__link ${status === 'Active' && 'selected'}`}
+          className={`filter__link ${status === StatusTodos.active && 'selected'}`}
         >
           Active
         </a>
@@ -61,7 +58,7 @@ export const Footer: React.FC<Props> = ({
         <a
           onClick={handleClickCompleted}
           href="#/completed"
-          className={`filter__link ${status === 'Completed' && 'selected'}`}
+          className={`filter__link ${status === StatusTodos.completed && 'selected'}`}
         >
           Completed
         </a>

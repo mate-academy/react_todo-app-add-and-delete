@@ -7,6 +7,11 @@ type Props = {
   hideError: () => void,
   userId: number,
   addTodo: (todo: Todo) => void,
+  spinnerStatus: (value: boolean) => void,
+  changeDate: (date: Date) => void,
+  changeCurrentId: (id: number) => void,
+  setTodos: (todos: Todo[]) => void,
+  todos: Todo[],
 };
 
 export const Header: React.FC<Props> = ({
@@ -14,6 +19,11 @@ export const Header: React.FC<Props> = ({
   hideError,
   userId,
   addTodo,
+  spinnerStatus,
+  changeDate,
+  changeCurrentId,
+  setTodos,
+  todos,
 }) => {
   const [titleTodo, setTitleTodo] = useState('');
   const [isblockedInput, setIsblockedInput] = useState(false);
@@ -28,7 +38,7 @@ export const Header: React.FC<Props> = ({
     event.preventDefault();
     setIsblockedInput(true);
 
-    if (!titleTodo) {
+    if (!titleTodo.trim()) {
       setErrorMassege('Title can\'t be empty');
       hideError();
       setIsblockedInput(false);
@@ -36,18 +46,27 @@ export const Header: React.FC<Props> = ({
       return;
     }
 
-    createTodo({
+    const tempTodo = {
+      id: 0,
       userId,
       title: titleTodo,
       completed: false,
-    })
-      .then(newTodo => {
-        addTodo(newTodo);
+    };
+
+    changeCurrentId(0);
+    spinnerStatus(true);
+    addTodo(tempTodo);
+
+    createTodo(tempTodo)
+      .then(() => {
         setTitleTodo('');
+        spinnerStatus(false);
+        changeDate(new Date());
       })
       .catch(() => {
         setErrorMassege('Unable to add a todo');
         hideError();
+        setTodos(todos);
       })
       .finally(() => setIsblockedInput(false));
   };

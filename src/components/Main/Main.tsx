@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React from 'react';
 import { Todo } from '../../types/Todo';
 import { deleteTodo } from '../../api/todos';
 
@@ -7,6 +7,10 @@ type Props = {
   removeTodo: (todoId: number) => void,
   setErrorMassege: (error: string) => void,
   hideError: () => void,
+  spinner: boolean,
+  spinnerStatus: (value: boolean) => void,
+  cuurentId: number,
+  changeCurrentId: (id: number) => void,
 };
 
 export const Main: React.FC<Props> = ({
@@ -14,25 +18,25 @@ export const Main: React.FC<Props> = ({
   removeTodo,
   setErrorMassege,
   hideError,
+  spinner,
+  spinnerStatus,
+  cuurentId,
+  changeCurrentId,
 }) => {
-  const [isSpinner, setIsSpinner] = useState(false);
-  const [cuurentId, setCurrentId] = useState(0);
-
   const handleClickDeleteTodo = (todoId: number) => {
-    setIsSpinner(true);
-    setCurrentId(todoId);
+    spinnerStatus(true);
+    changeCurrentId(todoId);
     deleteTodo(todoId)
       .then(response => {
         if (response) {
           removeTodo(todoId);
-          setIsSpinner(false);
         }
       })
       .catch(() => {
         setErrorMassege('Unable to delete a todo');
         hideError();
-        setTimeout(() => setIsSpinner(false), 5000);
-      });
+      })
+      .finally(() => spinnerStatus(false));
   };
 
   return (
@@ -55,7 +59,7 @@ export const Main: React.FC<Props> = ({
             ×
           </button>
 
-          <div className={`modal overlay ${cuurentId === id && isSpinner && 'is-active'}`}>
+          <div className={`modal overlay ${cuurentId === id && spinner && 'is-active'}`}>
             <div className="modal-background has-background-white-ter" />
             <div className="loader" />
           </div>

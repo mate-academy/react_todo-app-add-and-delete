@@ -1,6 +1,8 @@
 /* eslint-disable max-len */
 /* eslint-disable jsx-a11y/control-has-associated-label */
-import React, { useState, useEffect, useMemo } from 'react';
+import React, {
+  useState, useEffect, useMemo, useRef,
+} from 'react';
 import { UserWarning } from './UserWarning';
 import { Header } from './components/Header';
 import { Main } from './components/Main';
@@ -17,69 +19,72 @@ enum QueryTodos {
 }
 
 export const App: React.FC = () => {
-  const [myTodos, setMyTodos] = useState<Todo[]>([]);
+  const [todos, setTodos] = useState<Todo[]>([]);
   const [errorMassege, setErrorMassege] = useState('');
   const [query, setQuery] = useState<string>(QueryTodos.all);
   const [isCompleted, setIsCompleted] = useState(false);
+  const [isSpinner, setIsSpinner] = useState(false);
+  const [cuurentId, setCurrentId] = useState(0);
+  const [date, setDate] = useState(new Date());
 
-  function hideError() {
-    setTimeout(() => setErrorMassege(''), 3000);
-  }
+  const timerId = useRef(0);
 
-  function isCompletedTodo() {
-    return myTodos.some(todo => todo.completed);
-  }
-
-  function getNumberActiveTodos(items: Todo[]) {
-    const activeTodos = items.filter(todo => !todo.completed);
-
-    return activeTodos.length;
-  }
-
-  if (isCompletedTodo()) {
-    setIsCompleted(true);
-  }
-
-  const numberOfActive = useMemo(() => {
-    return getNumberActiveTodos(myTodos);
-  }, [myTodos]);
+  const hideError = () => {
+    timerId.current = window.setTimeout(() => setErrorMassege(''), 3000);
+  };
 
   useEffect(() => {
     getTodos(USER_ID)
-      .then((todos) => {
-        setMyTodos(todos);
+      .then((myTodos) => {
+        setTodos(myTodos);
       })
       .catch(() => {
         setErrorMassege('unable to load todos');
         hideError();
       });
-  }, []);
+
+    return () => window.clearTimeout(timerId.current);
+  }, [date]);
+
+  const isCompletedTodo = () => {
+    return todos.some(todo => todo.completed);
+  };
+
+  if (isCompletedTodo()) {
+    setIsCompleted(true);
+  }
+
+  const getNumberActiveTodos = (items: Todo[]) => {
+    const activeTodos = items.filter(todo => !todo.completed);
+
+    return activeTodos.length;
+  };
+
+  const numberOfActive = useMemo(() => {
+    return getNumberActiveTodos(todos);
+  }, [todos]);
 
   if (!USER_ID) {
     return <UserWarning />;
   }
 
-  function filterTodos(param: string) {
+  const filterTodos = (param: string) => {
     switch (param) {
       case QueryTodos.active: {
-        const activeTodos = myTodos.filter(todo => !todo.completed);
-
-        return activeTodos;
+        return todos.filter(todo => !todo.completed);
       }
 
       case QueryTodos.completed: {
-        const completedTodos = myTodos.filter(todo => todo.completed);
-
-        return completedTodos;
+        return todos.filter(todo => todo.completed);
       }
 
       default:
-        return myTodos;
+        return todos;
     }
-  }
+  };
 
-  function removeTodoFromList(todoId: number) {
-    setMyTodos(currentTodos => {
+  const removeTodoFromList = (todoId: number) => {
+    setTodos(currentTodos => {
       const deletedTodo = currentTodos.find(todo => todo.id === todoId);
       let index: number;
 
@@ -90,7 +95,13 @@ export const App: React.FC = () => {
 
       return [...currentTodos];
     });
-  }
+  };
+
+  const addNewTodoToList = (newTodo: Todo) => {
+    setTodos(currentTodos => {
+      return [...currentTodos, newTodo];
+    });
+  };
 
   return (
     <div className="todoapp">
@@ -101,28 +112,34 @@ export const App: React.FC = () => {
           setErrorMassege={setErrorMassege}
           hideError={() => hideError()}
           userId={USER_ID}
-          addTodo={(newTodo) => setMyTodos(currentTodos => {
-            return [...currentTodos, newTodo];
-          })}
+          addTodo={(newTodo) => addNewTodoToList(newTodo)}
+          spinnerStatus={setIsSpinner}
+          changeDate={setDate}
+          changeCurrentId={setCurrentId}
+          setTodos={setTodos}
+          todos={todos}
         />
         <Main
           todos={filterTodos(query)}
           removeTodo={(todoId: number) => removeTodoFromList(todoId)}
           setErrorMassege={setErrorMassege}
           hideError={() => hideError()}
+          spinner={isSpinner}
+          spinnerStatus={setIsSpinner}
+          cuurentId={cuurentId}
+          changeCurrentId={setCurrentId}
         />
 
-        {!!myTodos.length && (
+        {!!todos.length && (
           <Footer
             changeQuery={setQuery}
             isCompleted={isCompleted}
             numberActive={numberOfActive}
+            status={query}
           />
         )}
       </div>
 
-      {/* Notification is shown in case of any error */}
-      {/* Add the 'hidden' class to hide the message smoothly */}
       {errorMassege && (
         <div
           className={`notification is-danger
