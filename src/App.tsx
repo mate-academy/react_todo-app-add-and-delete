@@ -36,6 +36,7 @@ export const App: React.FC = () => {
   const [selected, setSelected]
   = useState<Selected>(Selected.ALL);
   const [tempTodo, setTempTodo] = useState<Todo | null>(null);
+  const [isDeleteTodoId, setIsDeleteTodoId] = useState<number | null>(null);
 
   useEffect(() => {
     setisLoading(true);
@@ -65,21 +66,23 @@ export const App: React.FC = () => {
   );
   const amountActive = activeTodos.length;
   const deleteTodo = (todoId: number) => {
-    setisLoading(true);
-    setTodos(currentTodos => currentTodos.filter(todo => todo.id !== todoId));
+    setIsDeleteTodoId(todoId);
 
     return todosService.deleteTodo(todoId)
+      .then(() => setTodos(currentTodos => currentTodos
+        .filter(todo => todo.id !== todoId)))
       .catch((error) => {
         setTodos(todos);
         setErrorMessage(ErrorMessages.DELETE);
         throw error;
       })
-      .finally(() => setisLoading(false));
+      .finally(() => setIsDeleteTodoId(null));
   };
 
   const addTodo = ({
     title, completed, userId,
   }: Todo) => {
+    setIsDeleteTodoId(0);
     setTempTodo({
       id: 0,
       userId,
@@ -94,7 +97,10 @@ export const App: React.FC = () => {
         setErrorMessage(ErrorMessages.ADD);
         throw error;
       })
-      .finally(() => setTempTodo(null));
+      .finally(() => {
+        setTempTodo(null);
+        setIsDeleteTodoId(null);
+      });
   };
 
   if (!USER_ID) {
@@ -117,7 +123,8 @@ export const App: React.FC = () => {
                 todos={visibleTodos}
                 onDelete={deleteTodo}
                 tempTodo={tempTodo}
-                isLoading={isLoading}
+                isDeleteTodoId={isDeleteTodoId}
+
               />
               <FilterTodos
                 amountActive={amountActive}

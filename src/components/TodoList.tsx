@@ -6,11 +6,11 @@ type Props = {
   todos: Todo[];
   onDelete: (id: number) => void;
   tempTodo: Todo | null;
-  isLoading: boolean;
+  isDeleteTodoId: number | null;
 };
 
 export const TodoList: React.FC<Props> = ({
-  todos, onDelete = () => {}, tempTodo, isLoading,
+  todos, onDelete = () => {}, tempTodo, isDeleteTodoId,
 }) => {
   return (
     <section className="todoapp__main">
@@ -24,6 +24,7 @@ export const TodoList: React.FC<Props> = ({
           <TodoItem
             todo={todo}
             onDelete={onDelete}
+            isLoadingId={isDeleteTodoId === todo.id}
           />
         </div>
       ))}
@@ -40,13 +41,11 @@ export const TodoList: React.FC<Props> = ({
           {/* 'is-active' class puts this modal on top of the todo */}
           <div className={classNames(
             'modal overlay',
-            { 'is-active': !isLoading },
+            { 'is-active': isDeleteTodoId === tempTodo.id },
           )}
           >
             <div className="modal-background has-background-white-ter" />
-            <div className="Loader">
-              <div className="Loader__content" />
-            </div>
+            <div className="loader" />
           </div>
         </div>
       )}

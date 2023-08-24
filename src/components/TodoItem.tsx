@@ -1,11 +1,15 @@
+import classNames from 'classnames';
 import { Todo } from '../types/Todo';
 
 type Props = {
   todo: Todo;
   onDelete: (id: number) => void;
+  isLoadingId: boolean;
 };
 
-export const TodoItem: React.FC<Props> = ({ todo, onDelete = () => {} }) => {
+export const TodoItem: React.FC<Props> = ({
+  todo, onDelete = () => {}, isLoadingId,
+}) => {
   return (
     <>
       <label className="todo__status-label">
@@ -25,12 +29,17 @@ export const TodoItem: React.FC<Props> = ({ todo, onDelete = () => {} }) => {
         type="button"
         className="todo__remove"
         onClick={() => onDelete(todo.id)}
+        disabled={isLoadingId}
       >
         ×
       </button>
 
       {/* overlay will cover the todo while it is being updated  modal */}
-      <div className="modal overlay">
+      <div className={classNames(
+        'modal overlay',
+        { 'is-active': isLoadingId },
+      )}
+      >
         <div className="modal-background has-background-white-ter" />
         <div className="loader" />
       </div>
