@@ -9,9 +9,10 @@ import { Todo } from '../types/Todo';
 
 type Props = {
   tempTodo: Todo | null;
+  processings: number[];
 };
 
-export const Todoslist: React.FC<Props> = ({ tempTodo }) => {
+export const Todoslist: React.FC<Props> = ({ tempTodo, processings }) => {
   const { filterTodos } = useTodo();
 
   return (
@@ -23,7 +24,10 @@ export const Todoslist: React.FC<Props> = ({ tempTodo }) => {
             timeout={300}
             classNames="item"
           >
-            <TodosItems items={todos} />
+            <TodosItems
+              items={todos}
+              isProcessed={processings.includes(todos.id)}
+            />
           </CSSTransition>
         ))}
 
@@ -31,11 +35,12 @@ export const Todoslist: React.FC<Props> = ({ tempTodo }) => {
           <CSSTransition
             key={0}
             timeout={300}
-            classNames="temp-item"
+            classNames="item"
           >
-            <TodosItems items={tempTodo} />
+            <TodosItems items={tempTodo} isProcessed />
           </CSSTransition>
         )}
+
       </TransitionGroup>
     </section>
   );

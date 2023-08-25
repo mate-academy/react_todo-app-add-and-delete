@@ -1,4 +1,6 @@
 import React, { useState } from 'react';
+import classNames from 'classnames';
+
 import { useTodo } from '../Hooks/UseTodo';
 import { USER_ID } from '../variables/userId';
 import { ErrorMessage } from '../Enum/ErrorMessage';
@@ -6,25 +8,33 @@ import { createTodos } from '../api/todos';
 import { Todo } from '../types/Todo';
 
 type Props = {
-  setTempTodo: React.Dispatch<React.SetStateAction<Todo | null>>
+  setTempTodo: React.Dispatch<React.SetStateAction<Todo | null>>,
+  setErrorVisibility: React.Dispatch<React.SetStateAction<boolean>>
 };
 
-export const TodosHeader: React.FC<Props> = ({ setTempTodo }) => {
+export const TodosHeader: React.FC<Props> = ({
+  setTempTodo,
+  setErrorVisibility,
+}) => {
   const {
     todo,
     setTodo,
     setIsError,
-    setloading,
     loading,
+    setLoading,
   } = useTodo();
 
   const [inputTodo, setInputTodo] = useState('');
 
-  const handleInputTodo = (event: React.FormEvent<HTMLFormElement>) => {
+  const addTodo = (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
 
     if (!inputTodo.trim()) {
+      setErrorVisibility(true);
       setIsError(ErrorMessage.EMPTY_TITLE);
+      setTempTodo(null);
+
+      return;
     }
 
     const newTodo = {
@@ -36,47 +46,51 @@ export const TodosHeader: React.FC<Props> = ({ setTempTodo }) => {
 
     setTempTodo(newTodo);
 
-    if (inputTodo.trim()) {
-      createTodos({
-        userId: USER_ID,
-        title: inputTodo,
-        completed: false,
+    createTodos({
+      userId: USER_ID,
+      title: inputTodo,
+      completed: false,
+    })
+      .then(newTodos => {
+        setTodo([...todo, newTodos]);
       })
-        .then(newTodos => {
-          setTodo([...todo, newTodos]);
-          setloading(false);
-          setInputTodo('');
-        })
-        .catch(() => setIsError(ErrorMessage.ADD))
-        .finally(() => {
-          setTempTodo(null);
-        });
-    }
+      .catch(() => {
+        setIsError(ErrorMessage.ADD);
+        setErrorVisibility(true);
+      })
+      .finally(() => {
+        setTempTodo(null);
+        setLoading(false);
+        setInputTodo('');
+      });
   };
 
-  const addTodo = (event: React.ChangeEvent<HTMLInputElement>) => {
+  const handleInputTodo = (event: React.ChangeEvent<HTMLInputElement>) => {
     setInputTodo(event.target.value);
   };
 
-  const activeTodos = todo.filter(todos => !todos.completed).length;
+  const activeTodos = todo.filter(todos => !todos.completed);
 
   return (
     <header className="todoapp__header">
-      {activeTodos > 0 && (
+      {activeTodos.length > 0 && (
         <button
           type="button"
           aria-label="Toggle all todo"
-          className="todoapp__toggle-all active"
+          className={classNames(
+            'todoapp__toggle-all',
+            { active: !activeTodos },
+          )}
         />
       )}
 
-      <form onSubmit={handleInputTodo}>
+      <form onSubmit={(event) => addTodo(event)}>
         <input
           type="text"
           className="todoapp__new-todo"
           placeholder="What needs to be done?"
           value={inputTodo}
-          onChange={addTodo}
+          onChange={handleInputTodo}
           disabled={loading}
         />
       </form>

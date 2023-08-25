@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState } from 'react';
 import classNames from 'classnames';
 import { Todo } from '../types/Todo';
 import { useTodo } from '../Hooks/UseTodo';
@@ -7,12 +7,14 @@ import { ErrorMessage } from '../Enum/ErrorMessage';
 
 type Props = {
   items: Todo;
+  isProcessed: boolean;
 };
 
-export const TodosItems: React.FC<Props> = ({ items }) => {
+export const TodosItems: React.FC<Props> = ({ items, isProcessed }) => {
   const {
-    todo, setTodo, setIsToggleAll, loading, setloading, setIsError,
+    todo, setTodo, setIsToggleAll, setIsError,
   } = useTodo();
+  const [showLoadind, setShowLoadind] = useState(isProcessed);
 
   const handleCompleteTodo = () => {
     const newTodos = (currentTodos: Todo[]) => currentTodos.map(todoItem => (
@@ -24,19 +26,13 @@ export const TodosItems: React.FC<Props> = ({ items }) => {
     setIsToggleAll(newTodos.length < 1);
   };
 
-  const filterTodos = todo.filter(todoItem => todoItem.id !== items.id);
-
   const handleDeleteTodo = () => {
-    setloading(true);
+    setShowLoadind(true);
+    const filterTodos = todo.filter(todoItem => todoItem.id !== items.id);
 
     return deleteTodos(items.id)
-      .then(() => {
-        setTodo(filterTodos);
-      })
-      .catch(() => setIsError(ErrorMessage.DELETE))
-      .finally(() => {
-        setloading(false);
-      });
+      .then(() => setTodo(filterTodos))
+      .catch(() => setIsError(ErrorMessage.DELETE));
   };
 
   return (
@@ -53,6 +49,7 @@ export const TodosItems: React.FC<Props> = ({ items }) => {
             className="todo__status"
             checked={items.completed}
             onChange={handleCompleteTodo}
+            disabled={isProcessed}
           />
         </label>
 
@@ -63,21 +60,19 @@ export const TodosItems: React.FC<Props> = ({ items }) => {
           type="button"
           className="todo__remove"
           onClick={() => handleDeleteTodo()}
-          disabled={loading}
+          disabled={isProcessed}
         >
           ×
         </button>
 
         {/* overlay will cover the todo while it is being updated */}
         {/* 'is-active' class puts this modal on top of the todo */}
-        <div className={classNames(
-          'modal overlay',
-          { 'is-active': loading },
+        {showLoadind && (
+          <div className="modal overlay is-active">
+            <div className="modal-background has-background-white-ter" />
+            <div className="loader" />
+          </div>
         )}
-        >
-          <div className="modal-background has-background-white-ter" />
-          <div className="loader" />
-        </div>
       </div>
     </>
   );

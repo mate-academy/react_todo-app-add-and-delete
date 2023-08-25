@@ -15,13 +15,15 @@ import { Todo } from './types/Todo';
 export const App: React.FC = () => {
   const { setTodo, setIsError } = useTodo();
   const [tempTodo, setTempTodo] = useState<Todo | null>(null);
+  const [errorVisibility, setErrorVisibility] = useState(false);
+  const [processings] = useState<number[]>([]);
 
   useEffect(() => {
     getTodos(USER_ID)
-      .then(data => setTodo(data))
+      .then(setTodo)
       .catch(() => {
+        setErrorVisibility(true);
         setIsError(ErrorMessage.LOADING);
-        setTodo([]);
       });
   }, []);
 
@@ -35,12 +37,21 @@ export const App: React.FC = () => {
 
       <TodosProvider>
         <div className="todoapp__content">
-          <TodosHeader setTempTodo={setTempTodo} />
-          <Todoslist tempTodo={tempTodo} />
+          <TodosHeader
+            setTempTodo={setTempTodo}
+            setErrorVisibility={setErrorVisibility}
+          />
+          <Todoslist
+            tempTodo={tempTodo}
+            processings={processings}
+          />
           <TodosFooter />
         </div>
 
-        <ErrorNotification />
+        <ErrorNotification
+          errorVisibility={errorVisibility}
+          setErrorVisibility={setErrorVisibility}
+        />
       </TodosProvider>
     </div>
   );

@@ -13,5 +13,5 @@ export type TodosContext = {
   isError: ErrorMessage,
   setIsError: (value: ErrorMessage) => void,
   loading: boolean,
-  setloading: (value: boolean) => void,
+  setLoading: (value: boolean) => void,
 };

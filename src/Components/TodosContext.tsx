@@ -15,7 +15,7 @@ export const TodoContext = React.createContext<TodosContext>({
   isError: ErrorMessage.NONE,
   setIsError: () => {},
   loading: false,
-  setloading: () => [],
+  setLoading: () => [],
 });
 
 type Props = {
@@ -27,7 +27,7 @@ export const TodosProvider: React.FC<Props> = ({ children }) => {
   const [filter, setFilter] = useState<ListAction>(ListAction.ALL);
   const [isToggleAll, setIsToggleAll] = useState<boolean>(false);
   const [isError, setIsError] = useState<ErrorMessage>(ErrorMessage.NONE);
-  const [loading, setloading] = useState<boolean>(false);
+  const [loading, setLoading] = useState<boolean>(false);
 
   const filterTodos = () => {
     switch (filter) {
@@ -52,7 +52,7 @@ export const TodosProvider: React.FC<Props> = ({ children }) => {
     isError,
     setIsError,
     loading,
-    setloading,
+    setLoading,
   }), [filter, todo]);
 
   return (
