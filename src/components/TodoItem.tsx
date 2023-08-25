@@ -9,7 +9,8 @@ type Props = {
 
 export const TodoItem: React.FC<Props> = ({ todo }) => {
   const { completed, title, id } = todo;
-  const { deleteTodo } = useContext(GlobalContext);
+
+  const { deleteTodo, isDelitingIds } = useContext(GlobalContext);
 
   const onRemoveHandler = (): MouseEventHandler<HTMLButtonElement> | void => {
     deleteTodo(id);
@@ -32,7 +33,10 @@ export const TodoItem: React.FC<Props> = ({ todo }) => {
           ×
         </button>
 
-        <div className="modal overlay">
+        <div className={
+          cn('modal overlay', { 'is-active': isDelitingIds.includes(id) })
+        }
+        >
           <div className="modal-background has-background-white-ter" />
           <div className="loader" />
         </div>

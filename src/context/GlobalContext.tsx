@@ -11,7 +11,7 @@ interface GlobalContextType {
   todos: Todo[];
   setTodos: Dispatch<SetStateAction<Todo[]>>;
   addTodo: ({ title, completed, userId }: Omit<Todo, 'id'>) => void;
-  deleteTodo: (id: number) => void;
+  deleteTodo(id: number): Promise<void>;
   errorMessage: ErrorEnum | null;
   setErrorAndClear: (error: ErrorEnum, delay: number) => void;
   isInputDisabled: boolean;
@@ -19,6 +19,7 @@ interface GlobalContextType {
   removeAllCompleted: () => void;
   tempTodo: Todo | null;
   setTempTodo: (todo: Todo) => void;
+  isDelitingIds: number[];
 }
 
 export const GlobalContext = React.createContext({} as GlobalContextType);
@@ -28,6 +29,7 @@ export const GlobalContextPropvider: React.FC<Props> = ({ children }) => {
   const [errorMessage, setErrorMessage] = useState<ErrorEnum | null>(null);
   const [isInputDisabled, setIsInputDisabled] = useState(false);
   const [tempTodo, setTempTodo] = useState<Todo | null>(null);
+  const [isDelitingIds, setDeletingIds] = useState<number[]>([]);
 
   const setErrorAndClear = (error: ErrorEnum, delay: number) => {
     setErrorMessage(error);
@@ -53,6 +55,7 @@ export const GlobalContextPropvider: React.FC<Props> = ({ children }) => {
   }
 
   async function deleteTodo(id: number) {
+    setDeletingIds((ids) => [...ids, id]);
     try {
       await removeTodo(id);
       setTodos((prevState) => prevState.filter((item) => item.id !== id));
@@ -62,15 +65,23 @@ export const GlobalContextPropvider: React.FC<Props> = ({ children }) => {
   }
 
   function removeAllCompleted() {
-    return setTodos((prevState) => {
-      return prevState.filter((todo) => {
-        if (todo.completed) {
-          removeTodo(todo.id);
-        }
+    const deletingIds = todos
+      .filter((todo) => todo.completed)
+      .map((todo) => todo.id);
 
-        return !todo.completed;
+    const promises = deletingIds.map((id) => removeTodo(id));
+
+    Promise.all(promises)
+      .then(() => {
+        setTodos(
+          (prevTodos) => prevTodos
+            .filter((todo) => !deletingIds.includes(todo.id)),
+        );
+        setDeletingIds([]);
+      })
+      .catch((error) => {
+        throw error;
       });
-    });
   }
 
   return (
@@ -87,6 +98,7 @@ export const GlobalContextPropvider: React.FC<Props> = ({ children }) => {
         removeAllCompleted,
         setTempTodo,
         tempTodo,
+        isDelitingIds,
       }}
     >
       {children}

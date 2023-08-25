@@ -37,7 +37,7 @@ const TodoList: React.FC<Props> = ({ todos }) => {
             ×
           </button>
 
-          <div className="modal overlay">
+          <div className="modal overlay is-active">
             <div className="modal-background has-background-white-ter" />
             <div className="loader" />
           </div>
