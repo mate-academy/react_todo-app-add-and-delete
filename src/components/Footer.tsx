@@ -11,6 +11,8 @@ type Props = {
 export const Footer: React.FC<Props> = ({ status, setStatus }) => {
   const { todos, removeAllCompleted } = useContext(GlobalContext);
 
+  const handleFilter = (filterType: FilterType) => () => setStatus(filterType);
+
   const includesCompletedTodo = useCallback(() => {
     return todos.some((todo) => todo.completed);
   }, [todos]);
@@ -27,7 +29,7 @@ export const Footer: React.FC<Props> = ({ status, setStatus }) => {
         <a
           href="#/"
           className={cn('filter__link', { selected: status === 'all' })}
-          onClick={() => setStatus(FilterType.ALL)}
+          onClick={handleFilter(FilterType.ALL)}
         >
           All
         </a>
@@ -35,7 +37,7 @@ export const Footer: React.FC<Props> = ({ status, setStatus }) => {
         <a
           href="#/active"
           className={cn('filter__link', { selected: status === 'active' })}
-          onClick={() => setStatus(FilterType.ACTIVE)}
+          onClick={handleFilter(FilterType.ACTIVE)}
         >
           Active
         </a>
@@ -43,7 +45,7 @@ export const Footer: React.FC<Props> = ({ status, setStatus }) => {
         <a
           href="#/completed"
           className={cn('filter__link', { selected: status === 'completed' })}
-          onClick={() => setStatus(FilterType.COMPLETED)}
+          onClick={handleFilter(FilterType.COMPLETED)}
         >
           Completed
         </a>
