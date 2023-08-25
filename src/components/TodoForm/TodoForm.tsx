@@ -4,14 +4,14 @@ import cn from 'classnames';
 type Props = {
   onAddTodo: (title: string) => void;
   isDisabled: boolean;
-  allTodoCompleted: boolean;
+  hasActiveTodo: boolean;
   hasTodo: boolean;
 };
 
 export const TodoForm: React.FC<Props> = React.memo(({
   onAddTodo,
   isDisabled,
-  allTodoCompleted,
+  hasActiveTodo,
   hasTodo,
 }) => {
   const [todoTitle, setTodoTitle] = useState('');
@@ -31,7 +31,9 @@ export const TodoForm: React.FC<Props> = React.memo(({
   const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
 
-    onAddTodo(todoTitle);
+    const preparedTitle = todoTitle.trim();
+
+    onAddTodo(preparedTitle);
     setTodoTitle('');
   };
 
@@ -42,7 +44,7 @@ export const TodoForm: React.FC<Props> = React.memo(({
         type="button"
         className={cn(
           'todoapp__toggle-all',
-          { active: allTodoCompleted },
+          { active: !hasActiveTodo },
         )}
       />
 

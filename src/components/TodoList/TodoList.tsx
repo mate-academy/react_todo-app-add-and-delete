@@ -1,4 +1,4 @@
-import React, { SetStateAction, useState } from 'react';
+import React, { useState } from 'react';
 import cn from 'classnames';
 import { Todo } from '../../types/Todo';
 
@@ -6,57 +6,56 @@ type Props = {
   todos: Todo[];
   tempTodoTitle?: string;
   deletingTodoIds: number[];
-  setDeletingTodoIds: React.Dispatch<SetStateAction<number[]>>
+  deleteTodo: (id: number) => void;
 };
 
 export const TodoList: React.FC<Props> = React.memo(({
   todos,
   tempTodoTitle,
   deletingTodoIds,
-  setDeletingTodoIds,
+  deleteTodo,
 }) => {
   const [selectedTodoId, setSelectedTodoId] = useState<number | null>(null);
 
   const handleDeleteTodo = (todoId: number) => {
-    setDeletingTodoIds(prevIds => [
-      ...prevIds,
-      todoId,
-    ]);
+    deleteTodo(todoId);
   };
 
   return (
     <section className="todoapp__main">
       {todos.map((todo, index) => {
+        const { title, id, completed } = todo;
+
         return (
           <div
-            key={todo.id}
+            key={id}
             className={cn(
               'todo',
-              { completed: todo.completed },
+              { completed },
             )}
             role="button"
             tabIndex={index}
-            onDoubleClick={() => setSelectedTodoId(todo.id)}
+            onDoubleClick={() => setSelectedTodoId(id)}
             onKeyUp={() => {}}
           >
             <label className="todo__status-label">
               <input
                 type="checkbox"
                 className="todo__status"
-                checked={todo.completed}
+                checked={completed}
                 onChange={() => {}}
               />
             </label>
 
-            {selectedTodoId !== todo.id ? (
-              <span className="todo__title">{todo.title}</span>
+            {selectedTodoId !== id ? (
+              <span className="todo__title">{title}</span>
             ) : (
               <form>
                 <input
                   type="text"
                   className="todo__title-field"
                   placeholder="Empty todo will be deleted"
-                  value={todo.title}
+                  value={title}
                 />
               </form>
             )}
@@ -64,14 +63,14 @@ export const TodoList: React.FC<Props> = React.memo(({
             <button
               type="button"
               className="todo__remove"
-              onClick={() => handleDeleteTodo(todo.id)}
+              onClick={() => handleDeleteTodo(id)}
             >
               ×
             </button>
 
             <div className={cn(
               'modal overlay',
-              { 'is-active': deletingTodoIds.includes(todo.id) },
+              { 'is-active': deletingTodoIds.includes(id) },
             )}
             >
               <div className="modal-background has-background-white-ter" />

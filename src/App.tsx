@@ -1,5 +1,7 @@
 /* eslint-disable jsx-a11y/control-has-associated-label */
-import React, { useEffect, useMemo, useState } from 'react';
+import React, {
+  useCallback, useEffect, useMemo, useState,
+} from 'react';
 import { UserWarning } from './UserWarning';
 import { TodoForm } from './components/TodoForm';
 import { TodoList } from './components/TodoList';
@@ -9,7 +11,7 @@ import { Todo } from './types/Todo';
 import { FilterOptions } from './types/FilterOptions';
 import * as postService from './api/todos';
 import { ErrorMessages } from './types/errorMessages';
-import { prepareTodos } from './utils/prepareTodos';
+import { getPrepareTodos } from './utils/getPrepareTodos';
 
 const USER_ID = 11272;
 
@@ -25,10 +27,10 @@ export const App: React.FC = () => {
   const [errorMessage, setErrorMessage] = useState(ErrorMessages.None);
 
   const preparedTodos = useMemo(() => {
-    return prepareTodos(todos, filterOption);
+    return getPrepareTodos(todos, filterOption);
   }, [todos, filterOption]);
 
-  const allTodoCompleted = todos.every(todo => todo.completed);
+  const hasActiveTodo = todos.some(todo => !todo.completed);
   const hasTodo = todos.length > 0;
 
   const activeTodosCount = todos
@@ -48,7 +50,7 @@ export const App: React.FC = () => {
       });
   }, []);
 
-  const addTodo = (title: string) => {
+  const addTodo = useCallback((title: string) => {
     if (!title) {
       setHasError(true);
       setErrorMessage(ErrorMessages.EmptyTitle);
@@ -76,38 +78,33 @@ export const App: React.FC = () => {
         setTempTodo(null);
         setIsDisabled(false);
       });
-  };
+  }, []);
 
-  const deleteTodo = () => {
-    deletingTodoIds.forEach(id => {
-      postService.deleteTodo(id)
-        .then(() => {
-          setTodos(currTodos => currTodos.filter(todo => todo.id !== id));
-        })
-        .catch(() => {
-          setTodos(todos);
-          setHasError(true);
-          setErrorMessage(ErrorMessages.Delete);
-        })
-        .finally(() => {
-          setDeletingTodoIds([]);
-        });
-    });
-  };
+  const deleteTodo = useCallback((todoId: number) => {
+    setDeletingTodoIds(prevIds => [
+      ...prevIds,
+      todoId,
+    ]);
 
-  useEffect(() => {
-    deleteTodo();
-  }, [deletingTodoIds]);
-
-  useEffect(() => {
-    setTimeout(() => {
-      setHasError(false);
-    }, 3000);
-  }, [errorMessage]);
+    postService.deleteTodo(todoId)
+      .then(() => {
+        setTodos(currTodos => currTodos.filter(todo => todo.id !== todoId));
+      })
+      .catch(() => {
+        setTodos(currTodos => currTodos);
+        setHasError(true);
+        setErrorMessage(ErrorMessages.Delete);
+      })
+      .finally(() => {
+        setDeletingTodoIds([]);
+      });
+  }, []);
 
   if (!USER_ID) {
     return <UserWarning />;
   }
+
+  window.console.log(todos);
 
   return (
     <div className="todoapp">
@@ -117,7 +114,7 @@ export const App: React.FC = () => {
         <TodoForm
           onAddTodo={addTodo}
           isDisabled={isDisabled}
-          allTodoCompleted={allTodoCompleted}
+          hasActiveTodo={hasActiveTodo}
           hasTodo={hasTodo}
         />
 
@@ -127,14 +124,14 @@ export const App: React.FC = () => {
               todos={preparedTodos}
               tempTodoTitle={tempTodo?.title}
               deletingTodoIds={deletingTodoIds}
-              setDeletingTodoIds={setDeletingTodoIds}
+              deleteTodo={deleteTodo}
             />
             <TodoFooter
               filterOption={filterOption}
               onSetFilterOption={setFilterOption}
               activeTodosCount={activeTodosCount}
               completedTodoIds={completedTodoIds}
-              setDeletingTodoIds={setDeletingTodoIds}
+              deleteTodo={deleteTodo}
             />
           </>
         )}

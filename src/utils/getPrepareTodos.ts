@@ -1,7 +1,10 @@
 import { FilterOptions } from '../types/FilterOptions';
 import { Todo } from '../types/Todo';
 
-export function prepareTodos(todos: Todo[], filterType: FilterOptions): Todo[] {
+export function getPrepareTodos(
+  todos: Todo[],
+  filterType: FilterOptions,
+): Todo[] {
   let preparedTodos = [...todos];
 
   switch (filterType) {

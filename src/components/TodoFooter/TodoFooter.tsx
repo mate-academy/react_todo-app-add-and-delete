@@ -1,4 +1,4 @@
-import React, { SetStateAction } from 'react';
+import React from 'react';
 import cn from 'classnames';
 import { FilterOptions } from '../../types/FilterOptions';
 
@@ -7,7 +7,7 @@ type Props = {
   onSetFilterOption: React.Dispatch<React.SetStateAction<FilterOptions>>;
   activeTodosCount: number;
   completedTodoIds: number[];
-  setDeletingTodoIds: React.Dispatch<SetStateAction<number[]>>
+  deleteTodo: (id: number) => void;
 };
 
 export const TodoFooter: React.FC<Props> = React.memo(({
@@ -15,17 +15,16 @@ export const TodoFooter: React.FC<Props> = React.memo(({
   onSetFilterOption,
   activeTodosCount,
   completedTodoIds,
-  setDeletingTodoIds,
+  deleteTodo,
 }) => {
   const handleFilter = (filterField: FilterOptions) => {
     onSetFilterOption(filterField);
   };
 
   const handleDeleteCompleted = () => {
-    setDeletingTodoIds(prevIds => [
-      ...prevIds,
-      ...completedTodoIds,
-    ]);
+    completedTodoIds.forEach(todoId => {
+      deleteTodo(todoId);
+    });
   };
 
   return (
