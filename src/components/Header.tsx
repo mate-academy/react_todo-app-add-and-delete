@@ -20,7 +20,7 @@ export const Header = () => {
   const onSubmitHandler = (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault();
 
-    if (query.trim() === '') {
+    if (!query.trim()) {
       setErrorAndClear(ErrorEnum.EMPTY_TITLE, 3000);
 
       return;

@@ -25,18 +25,14 @@ const filterTodos = (todos: Todo[], filterBy: FilterType) => {
 };
 
 export const App: React.FC = () => {
-  const {
-    todos,
-    setTodos,
-    errorMessage,
-    setErrorAndClear,
-  } = useContext(GlobalContext);
+  const { todos, setTodos, errorMessage, setErrorAndClear } =
+    useContext(GlobalContext);
 
   const [status, setStatus] = useState(FilterType.ALL);
 
   useEffect(() => {
     client
-      .get<Todo[]>(`?userId=${11325}`)
+      .get<Todo[]>(`?userId=${USER_ID}`)
       .then((res) => setTodos(res))
       .catch((err) => {
         setErrorAndClear(ErrorEnum.LOAD, 3000);
