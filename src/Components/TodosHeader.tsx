@@ -9,7 +9,7 @@ import { Todo } from '../types/Todo';
 
 type Props = {
   setTempTodo: React.Dispatch<React.SetStateAction<Todo | null>>,
-  setErrorVisibility: React.Dispatch<React.SetStateAction<boolean>>
+  setErrorVisibility: React.Dispatch<React.SetStateAction<boolean>>,
 };
 
 export const TodosHeader: React.FC<Props> = ({
@@ -17,8 +17,8 @@ export const TodosHeader: React.FC<Props> = ({
   setErrorVisibility,
 }) => {
   const {
-    todo,
-    setTodo,
+    todos,
+    setTodos,
     setIsError,
     loading,
     setLoading,
@@ -52,16 +52,16 @@ export const TodosHeader: React.FC<Props> = ({
       completed: false,
     })
       .then(newTodos => {
-        setTodo([...todo, newTodos]);
+        setTodos([...todos, newTodos]);
       })
       .catch(() => {
         setIsError(ErrorMessage.ADD);
         setErrorVisibility(true);
       })
       .finally(() => {
-        setTempTodo(null);
-        setLoading(false);
         setInputTodo('');
+        setLoading(false);
+        setTempTodo(null);
       });
   };
 
@@ -69,7 +69,7 @@ export const TodosHeader: React.FC<Props> = ({
     setInputTodo(event.target.value);
   };
 
-  const activeTodos = todo.filter(todos => !todos.completed);
+  const activeTodos = todos.filter(todo => !todo.completed);
 
   return (
     <header className="todoapp__header">

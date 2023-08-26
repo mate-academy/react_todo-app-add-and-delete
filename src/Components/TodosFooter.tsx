@@ -5,21 +5,21 @@ import { useTodo } from '../Hooks/UseTodo';
 
 export const TodosFooter: React.FC = () => {
   const {
-    todo,
-    setTodo,
+    todos,
+    setTodos,
     filter,
     setFilter,
   } = useTodo();
-  const selectedTodos = todo.filter(todos => !todos.completed);
-  const compleatedTodosLength = todo.filter(todos => todos.completed).length;
+  const selectedTodos = todos.filter(todo => !todo.completed);
+  const compleatedTodosLength = todos.filter(todo => todo.completed).length;
 
   const deleteTodos = () => {
-    setTodo(selectedTodos);
+    setTodos(selectedTodos);
   };
 
   return (
     <>
-      {todo.length > 0 && (
+      {todos.length > 0 && (
         <footer className="todoapp__footer">
           <span className="todo-count">
             {selectedTodos.length === 1

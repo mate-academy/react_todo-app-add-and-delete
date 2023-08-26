@@ -5,8 +5,8 @@ import { TodosContext } from '../types/TodosContext';
 import { ErrorMessage } from '../Enum/ErrorMessage';
 
 export const TodoContext = React.createContext<TodosContext>({
-  todo: [],
-  setTodo: () => {},
+  todos: [],
+  setTodos: () => {},
   filter: ListAction.ALL,
   setFilter: () => {},
   filterTodos: () => [],
@@ -23,7 +23,7 @@ type Props = {
 };
 
 export const TodosProvider: React.FC<Props> = ({ children }) => {
-  const [todo, setTodo] = useState<Todo[]>([]);
+  const [todos, setTodos] = useState<Todo[]>([]);
   const [filter, setFilter] = useState<ListAction>(ListAction.ALL);
   const [isToggleAll, setIsToggleAll] = useState<boolean>(false);
   const [isError, setIsError] = useState<ErrorMessage>(ErrorMessage.NONE);
@@ -32,18 +32,18 @@ export const TodosProvider: React.FC<Props> = ({ children }) => {
   const filterTodos = () => {
     switch (filter) {
       case ListAction.ACTIVE:
-        return todo.filter(todos => !todos.completed);
+        return todos.filter(todo => !todo.completed);
       case ListAction.COMPLETED:
-        return todo.filter(todos => todos.completed);
+        return todos.filter(todo => todo.completed);
       case ListAction.ALL:
       default:
-        return todo;
+        return todos;
     }
   };
 
   const initTodos = useMemo(() => ({
-    todo,
-    setTodo,
+    todos,
+    setTodos,
     filter,
     setFilter,
     filterTodos,
@@ -53,7 +53,7 @@ export const TodosProvider: React.FC<Props> = ({ children }) => {
     setIsError,
     loading,
     setLoading,
-  }), [filter, todo]);
+  }), [filter, todos]);
 
   return (
     <TodoContext.Provider value={initTodos}>

@@ -8,11 +8,16 @@ import { ErrorMessage } from '../Enum/ErrorMessage';
 type Props = {
   items: Todo;
   isProcessed: boolean;
+  setErrorVisibility: React.Dispatch<React.SetStateAction<boolean>>
 };
 
-export const TodosItems: React.FC<Props> = ({ items, isProcessed }) => {
+export const TodosItems: React.FC<Props> = ({
+  items,
+  isProcessed,
+  setErrorVisibility,
+}) => {
   const {
-    todo, setTodo, setIsToggleAll, setIsError,
+    todos, setTodos, setIsToggleAll, setIsError,
   } = useTodo();
   const [showLoadind, setShowLoadind] = useState(isProcessed);
 
@@ -28,11 +33,15 @@ export const TodosItems: React.FC<Props> = ({ items, isProcessed }) => {
 
   const handleDeleteTodo = () => {
     setShowLoadind(true);
-    const filterTodos = todo.filter(todoItem => todoItem.id !== items.id);
+    const filterTodos = todos.filter(todoItem => todoItem.id !== items.id);
 
     return deleteTodos(items.id)
-      .then(() => setTodo(filterTodos))
-      .catch(() => setIsError(ErrorMessage.DELETE));
+      .then(() => setTodos(filterTodos))
+      .catch(() => {
+        setIsError(ErrorMessage.DELETE);
+        setErrorVisibility(true);
+      })
+      .finally(() => setShowLoadind(false));
   };
 
   return (

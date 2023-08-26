@@ -3,8 +3,8 @@ import { ListAction } from '../Enum/ListAction';
 import { Todo } from './Todo';
 
 export type TodosContext = {
-  todo: Todo[],
-  setTodo: (value: Todo[]) => void,
+  todos: Todo[],
+  setTodos: (value: Todo[]) => void,
   filter: ListAction,
   setFilter: (value: ListAction) => void,
   filterTodos: () => Todo[],

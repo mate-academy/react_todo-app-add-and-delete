@@ -10,9 +10,14 @@ import { Todo } from '../types/Todo';
 type Props = {
   tempTodo: Todo | null;
   processings: number[];
+  setErrorVisibility: React.Dispatch<React.SetStateAction<boolean>>
 };
 
-export const Todoslist: React.FC<Props> = ({ tempTodo, processings }) => {
+export const Todoslist: React.FC<Props> = ({
+  tempTodo,
+  processings,
+  setErrorVisibility,
+}) => {
   const { filterTodos } = useTodo();
 
   return (
@@ -27,6 +32,7 @@ export const Todoslist: React.FC<Props> = ({ tempTodo, processings }) => {
             <TodosItems
               items={todos}
               isProcessed={processings.includes(todos.id)}
+              setErrorVisibility={setErrorVisibility}
             />
           </CSSTransition>
         ))}
@@ -37,7 +43,11 @@ export const Todoslist: React.FC<Props> = ({ tempTodo, processings }) => {
             timeout={300}
             classNames="item"
           >
-            <TodosItems items={tempTodo} isProcessed />
+            <TodosItems
+              items={tempTodo}
+              setErrorVisibility={setErrorVisibility}
+              isProcessed
+            />
           </CSSTransition>
         )}
 
