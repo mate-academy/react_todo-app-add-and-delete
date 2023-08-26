@@ -3,6 +3,7 @@ import {
 } from 'react';
 import { GlobalContext } from '../context/GlobalContext';
 import { ErrorEnum } from '../types/ErrorEnum';
+import { USER_ID } from '../constants';
 
 export const Header = () => {
   const [query, setQuery] = useState('');
@@ -29,7 +30,7 @@ export const Header = () => {
     if (query.trim()) {
       const todo = {
         title: query,
-        userId: 11325,
+        userId: USER_ID,
         completed: false,
         id: 0,
       };
@@ -37,7 +38,7 @@ export const Header = () => {
       setTempTodo(todo);
       addTodo({
         title: query,
-        userId: 11325,
+        userId: USER_ID,
         completed: false,
       });
     }

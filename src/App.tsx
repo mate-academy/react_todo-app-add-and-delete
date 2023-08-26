@@ -25,8 +25,10 @@ const filterTodos = (todos: Todo[], filterBy: FilterType) => {
 };
 
 export const App: React.FC = () => {
-  const { todos, setTodos, errorMessage, setErrorAndClear } =
-    useContext(GlobalContext);
+  const {
+    todos, setTodos, errorMessage, setErrorAndClear,
+  }
+    = useContext(GlobalContext);
 
   const [status, setStatus] = useState(FilterType.ALL);
 
