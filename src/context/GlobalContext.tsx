@@ -69,6 +69,8 @@ export const GlobalContextPropvider: React.FC<Props> = ({ children }) => {
       .filter((todo) => todo.completed)
       .map((todo) => todo.id);
 
+    setDeletingIds(prevIds => [...prevIds, ...deletingIds]);
+
     const promises = deletingIds.map((id) => removeTodo(id));
 
     Promise.all(promises)
