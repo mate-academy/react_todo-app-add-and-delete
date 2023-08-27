@@ -1,24 +1,59 @@
-/* eslint-disable max-len */
-/* eslint-disable jsx-a11y/control-has-associated-label */
-import React from 'react';
-import { UserWarning } from './UserWarning';
+import React, { useEffect, useState } from 'react';
 
-const USER_ID = 0;
+import { TodosHeader } from './Components/TodosHeader';
+import { TodosFooter } from './Components/TodosFooter';
+import { Todoslist } from './Components/TodosList';
+import { UserWarning } from './UserWarning';
+import { ErrorNotification } from './Components/ErrorNotification';
+import { ErrorMessage } from './Enum/ErrorMessage';
+import { getTodos } from './api/todos';
+import { useTodo } from './Hooks/UseTodo';
+import { USER_ID } from './variables/userId';
+import { Todo } from './types/Todo';
 
 export const App: React.FC = () => {
+  const { setTodos, setIsError, setLoading } = useTodo();
+  const [tempTodo, setTempTodo] = useState<Todo | null>(null);
+  const [errorVisibility, setErrorVisibility] = useState(false);
+  const [processings, setProcessings] = useState<number[]>([]);
+
+  useEffect(() => {
+    getTodos(USER_ID)
+      .then(setTodos)
+      .catch(() => {
+        setLoading(false);
+        setErrorVisibility(true);
+        setIsError(ErrorMessage.LOADING);
+      });
+  }, []);
+
   if (!USER_ID) {
     return <UserWarning />;
   }
 
   return (
-    <section className="section container">
-      <p className="title is-4">
-        Copy all you need from the prev task:
-        <br />
-        <a href="https://github.com/mate-academy/react_todo-app-loading-todos#react-todo-app-load-todos">React Todo App - Load Todos</a>
-      </p>
+    <div className="todoapp">
+      <h1 className="todoapp__title">todos</h1>
+      <div className="todoapp__content">
+        <TodosHeader
+          setTempTodo={setTempTodo}
+          setErrorVisibility={setErrorVisibility}
+        />
+        <Todoslist
+          tempTodo={tempTodo}
+          setErrorVisibility={setErrorVisibility}
+          processings={processings}
+        />
+        <TodosFooter
+          setProcessings={setProcessings}
+          setErrorVisibility={setErrorVisibility}
+        />
+      </div>
 
-      <p className="subtitle">Styles are already copied</p>
-    </section>
+      <ErrorNotification
+        errorVisibility={errorVisibility}
+        setErrorVisibility={setErrorVisibility}
+      />
+    </div>
   );
 };
