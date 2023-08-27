@@ -4,7 +4,7 @@ import classNames from 'classnames';
 import { useTodo } from '../Hooks/UseTodo';
 import { USER_ID } from '../variables/userId';
 import { ErrorMessage } from '../Enum/ErrorMessage';
-import { createTodos } from '../api/todos';
+import { createTodos, getTodos } from '../api/todos';
 import { Todo } from '../types/Todo';
 
 type Props = {
@@ -51,17 +51,20 @@ export const TodosHeader: React.FC<Props> = ({
       title: inputTodo,
       completed: false,
     })
-      .then(newTodos => {
-        setTodos([...todos, newTodos]);
-      })
-      .catch(() => {
-        setIsError(ErrorMessage.ADD);
-        setErrorVisibility(true);
-      })
-      .finally(() => {
-        setInputTodo('');
-        setLoading(false);
-        setTempTodo(null);
+      .then(() => {
+        getTodos(USER_ID)
+          .then((data) => {
+            setTodos(data);
+          })
+          .catch(() => {
+            setIsError(ErrorMessage.ADD);
+            setErrorVisibility(true);
+          })
+          .finally(() => {
+            setInputTodo('');
+            setLoading(false);
+            setTempTodo(null);
+          });
       });
   };
 

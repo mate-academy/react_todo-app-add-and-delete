@@ -15,7 +15,7 @@ export const App: React.FC = () => {
   const { setTodos, setIsError, setLoading } = useTodo();
   const [tempTodo, setTempTodo] = useState<Todo | null>(null);
   const [errorVisibility, setErrorVisibility] = useState(false);
-  const [processings] = useState<number[]>([]);
+  const [processings, setProcessings] = useState<number[]>([]);
 
   useEffect(() => {
     getTodos(USER_ID)
@@ -41,10 +41,13 @@ export const App: React.FC = () => {
         />
         <Todoslist
           tempTodo={tempTodo}
+          setErrorVisibility={setErrorVisibility}
           processings={processings}
+        />
+        <TodosFooter
+          setProcessings={setProcessings}
           setErrorVisibility={setErrorVisibility}
         />
-        <TodosFooter />
       </div>
 
       <ErrorNotification

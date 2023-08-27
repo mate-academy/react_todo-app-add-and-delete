@@ -2,19 +2,58 @@ import React from 'react';
 import classNames from 'classnames';
 import { ListAction } from '../Enum/ListAction';
 import { useTodo } from '../Hooks/UseTodo';
+import { ErrorMessage } from '../Enum/ErrorMessage';
+import { deleteTodos, getTodos } from '../api/todos';
+import { USER_ID } from '../variables/userId';
 
-export const TodosFooter: React.FC = () => {
+type Props = {
+  setProcessings: React.Dispatch<React.SetStateAction<number[]>>
+  setErrorVisibility: React.Dispatch<React.SetStateAction<boolean>>;
+};
+
+export const TodosFooter: React.FC<Props> = ({
+  setProcessings,
+  setErrorVisibility,
+}) => {
   const {
     todos,
-    setTodos,
     filter,
     setFilter,
+    setLoading,
+    setIsError,
+    setTodos,
   } = useTodo();
   const selectedTodos = todos.filter(todo => !todo.completed);
   const compleatedTodosLength = todos.filter(todo => todo.completed).length;
 
-  const deleteTodos = () => {
-    setTodos(selectedTodos);
+  const deleteTodo = (postId: number) => {
+    setLoading(true);
+    const completed = todos.filter(todo => todo.completed).map(todo => todo.id);
+
+    setProcessings(completed);
+
+    deleteTodos(postId)
+      .then(() => {
+        getTodos(USER_ID)
+          .catch(() => {
+            setIsError(ErrorMessage.DELETE);
+            setErrorVisibility(true);
+          })
+          .finally(() => {
+            setLoading(false);
+            setTodos(todos.filter(todo => !todo.completed));
+          });
+      });
+  };
+
+  const handleDeleteCompleted = () => {
+    todos.filter(todo => {
+      if (todo.completed) {
+        deleteTodo(todo.id);
+      }
+
+      return todo;
+    });
   };
 
   return (
@@ -66,11 +105,9 @@ export const TodosFooter: React.FC = () => {
             type="button"
             className={classNames(
               'todoapp__clear-completed',
-              {
-                'is-invisible': !compleatedTodosLength,
-              },
+              { 'is-invisible': !compleatedTodosLength },
             )}
-            onClick={deleteTodos}
+            onClick={handleDeleteCompleted}
           >
             Clear completed
           </button>

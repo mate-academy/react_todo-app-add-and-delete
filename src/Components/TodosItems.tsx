@@ -2,13 +2,14 @@ import React, { useState } from 'react';
 import classNames from 'classnames';
 import { Todo } from '../types/Todo';
 import { useTodo } from '../Hooks/UseTodo';
-import { deleteTodos } from '../api/todos';
+import { deleteTodos, getTodos, updateTodos } from '../api/todos';
 import { ErrorMessage } from '../Enum/ErrorMessage';
+import { USER_ID } from '../variables/userId';
 
 type Props = {
   items: Todo;
   isProcessed: boolean;
-  setErrorVisibility: React.Dispatch<React.SetStateAction<boolean>>
+  setErrorVisibility: React.Dispatch<React.SetStateAction<boolean>>;
 };
 
 export const TodosItems: React.FC<Props> = ({
@@ -17,31 +18,41 @@ export const TodosItems: React.FC<Props> = ({
   setErrorVisibility,
 }) => {
   const {
-    todos, setTodos, setIsToggleAll, setIsError,
+    todos, setTodos, setIsError,
   } = useTodo();
   const [showLoadind, setShowLoadind] = useState(isProcessed);
 
-  const handleCompleteTodo = () => {
-    const newTodos = (currentTodos: Todo[]) => currentTodos.map(todoItem => (
-      items.id === todoItem.id
-        ? { ...todoItem, completed: !items.completed }
-        : todoItem
-    ));
+  const handleCompleteTodo = (todoId: number) => {
+    setShowLoadind(true);
 
-    setIsToggleAll(newTodos.length < 1);
+    updateTodos(todoId, { completed: !items.completed })
+      .then(() => {
+        getTodos(USER_ID)
+          .then((data) => {
+            setTodos(data);
+          })
+          .catch(() => {
+            setIsError(ErrorMessage.UPDATE);
+            setErrorVisibility(true);
+          })
+          .finally(() => setShowLoadind(false));
+      });
   };
 
-  const handleDeleteTodo = () => {
+  const handleDeleteTodo = (id: number) => {
     setShowLoadind(true);
-    const filterTodos = todos.filter(todoItem => todoItem.id !== items.id);
+    const filterTodos = todos.filter(todoItem => todoItem.id !== id);
 
-    return deleteTodos(items.id)
-      .then(() => setTodos(filterTodos))
-      .catch(() => {
-        setIsError(ErrorMessage.DELETE);
-        setErrorVisibility(true);
-      })
-      .finally(() => setShowLoadind(false));
+    deleteTodos(items.id)
+      .then(() => {
+        getTodos(USER_ID)
+          .then(() => setTodos(filterTodos))
+          .catch(() => {
+            setIsError(ErrorMessage.DELETE);
+            setErrorVisibility(true);
+          })
+          .finally(() => setShowLoadind(false));
+      });
   };
 
   return (
@@ -57,8 +68,7 @@ export const TodosItems: React.FC<Props> = ({
             type="checkbox"
             className="todo__status"
             checked={items.completed}
-            onChange={handleCompleteTodo}
-            disabled={isProcessed}
+            onChange={() => handleCompleteTodo(items.id)}
           />
         </label>
 
@@ -68,15 +78,14 @@ export const TodosItems: React.FC<Props> = ({
         <button
           type="button"
           className="todo__remove"
-          onClick={() => handleDeleteTodo()}
-          disabled={isProcessed}
+          onClick={() => handleDeleteTodo(items.id)}
         >
           ×
         </button>
 
         {/* overlay will cover the todo while it is being updated */}
         {/* 'is-active' class puts this modal on top of the todo */}
-        {showLoadind && (
+        {(showLoadind || isProcessed) && (
           <div className="modal overlay is-active">
             <div className="modal-background has-background-white-ter" />
             <div className="loader" />

@@ -9,14 +9,14 @@ import { Todo } from '../types/Todo';
 
 type Props = {
   tempTodo: Todo | null;
+  setErrorVisibility: React.Dispatch<React.SetStateAction<boolean>>;
   processings: number[];
-  setErrorVisibility: React.Dispatch<React.SetStateAction<boolean>>
 };
 
 export const Todoslist: React.FC<Props> = ({
   tempTodo,
-  processings,
   setErrorVisibility,
+  processings,
 }) => {
   const { filterTodos } = useTodo();
 
