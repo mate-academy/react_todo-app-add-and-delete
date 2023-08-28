@@ -6,7 +6,6 @@ export const useGetTodos = (USER_ID: number, tempTodo: Todo | null) => {
   const [isLoading, setIsLoading] = useState(false);
   const [todos, setTodos] = useState<Todo[]>([]);
   const [errorMessage, setErrorMessage] = useState<string>('');
-  // const [todosNotCompleted, setTodosNotCompleted] = useState(0);
   const [isTodoDeleted, setIsTodoDeleted] = useState(false);
 
   useEffect(() => {
@@ -16,9 +15,6 @@ export const useGetTodos = (USER_ID: number, tempTodo: Todo | null) => {
         const data = await getTodos(USER_ID);
 
         setTodos(data);
-        // setTodosNotCompleted(
-        //   data.filter(todo => todo.completed === false).length,
-        // );
       } catch (error) {
         setErrorMessage('Unable to load a todo');
       } finally {
