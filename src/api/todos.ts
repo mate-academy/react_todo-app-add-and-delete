@@ -10,6 +10,6 @@ export const deleteTodo = (userId: number, todoId: number) => {
   return client.delete(`/todos/${todoId}/?userId=${userId}`);
 };
 
-export const addTodo = (userId: number, data: Todo) => {
+export const addTodo = (userId: number, data: Todo | null) => {
   return client.post<Todo[]>(`/todos/?userId=${userId}`, data);
 };
