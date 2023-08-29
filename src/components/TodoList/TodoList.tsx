@@ -4,21 +4,19 @@ import { TodoItem } from './TodoItem';
 import { useTodo } from '../../api/useTodo';
 
 export const TodoList: React.FC = () => {
-  const { filteredTodos, tempTodo } = useTodo();
+  const { filteredTodos } = useTodo();
 
   return (
     <TransitionGroup>
       {filteredTodos.map(todo => (
-        <CSSTransition key={todo.id} timeout={300} classNames="todo-item">
+        <CSSTransition
+          key={todo.id}
+          timeout={300}
+          classNames="temp-item"
+        >
           <TodoItem todo={todo} />
         </CSSTransition>
       ))}
-
-      {!!tempTodo && (
-        <CSSTransition timeout={300} classNames="temp-item">
-          <TodoItem todo={tempTodo} />
-        </CSSTransition>
-      )}
     </TransitionGroup>
   );
 };

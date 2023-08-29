@@ -45,19 +45,17 @@ export const TodosProvider: React.FC<Props> = ({ children }) => {
   const [toBeCleared, setCleared] = useState<number[]>([]);
 
   const filteredTodos = useMemo(() => {
-    return todos.filter(todo => {
-      switch (filter) {
-        case Filter.active:
-          return !todo.completed;
+    switch (filter) {
+      case Filter.active:
+        return todos.filter(todo => !todo.completed);
 
-        case Filter.completed:
-          return todo.completed;
+      case Filter.completed:
+        return todos.filter(todo => todo.completed);
 
-        case Filter.all:
-        default:
-          return true;
-      }
-    });
+      case Filter.all:
+      default:
+        return todos;
+    }
   }, [todos, filter]);
 
   const value = {

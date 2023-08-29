@@ -1,24 +1,26 @@
 /* eslint-disable jsx-a11y/control-has-associated-label */
 import classNames from 'classnames';
-import React, { useEffect } from 'react';
+import React, { useEffect, useRef } from 'react';
 import { Error } from '../../types/Error';
 import { useTodo } from '../../api/useTodo';
 
 export const Notification: React.FC = () => {
   const { errorMessage, setErrorMessage } = useTodo();
-  let timeoutId: number;
+  const timeoutId = useRef<number | undefined>(0);
 
   useEffect(() => {
     if (timeoutId) {
-      window.clearTimeout(timeoutId);
+      window.clearTimeout(timeoutId.current);
     }
 
     if (errorMessage !== Error.Absent) {
-      timeoutId = window.setTimeout(() => setErrorMessage(Error.Absent), 3000);
+      timeoutId.current = window.setTimeout(
+        () => setErrorMessage(Error.Absent), 3000,
+      );
     }
 
     return () => {
-      window.clearTimeout(timeoutId);
+      window.clearTimeout(timeoutId.current);
     };
   }, [errorMessage]);
 
