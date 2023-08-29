@@ -30,78 +30,80 @@ export const Todos: React.FC<Props> = ({
 
   return (
     <section className="todoapp__main">
-      {filteredTodos.map(todo => (
-        <div
-          className={todo.completed ? 'todo completed' : 'todo'}
-          key={todo.id}
-        >
-          <label className="todo__status-label">
-            <input
-              type="checkbox"
-              className="todo__status"
-              checked={todo.completed}
-            />
-          </label>
-
-          <span className="todo__title">
-            {todo.title}
-          </span>
-
-          {/* Remove button appears only on hover */}
-          <button
-            type="button"
-            className="todo__remove"
-            onClick={() => handleDeleteTodo(todo.id)}
+      <ul>
+        {filteredTodos.map(todo => (
+          <li
+            className={todo.completed ? 'todo completed' : 'todo'}
+            key={todo.id}
           >
-            ×
-          </button>
+            <label className="todo__status-label">
+              <input
+                type="checkbox"
+                className="todo__status"
+                checked={todo.completed}
+              />
+            </label>
 
-          {/* overlay will cover the todo while it is being updated */}
-          <div
-            className={(isLoading && selectedTodo.includes(todo.id))
-              ? 'modal overlay is-active'
-              : 'modal overlay'}
+            <span className="todo__title">
+              {todo.title}
+            </span>
+
+            {/* Remove button appears only on hover */}
+            <button
+              type="button"
+              className="todo__remove"
+              onClick={() => handleDeleteTodo(todo.id)}
+            >
+              ×
+            </button>
+
+            {/* overlay will cover the todo while it is being updated */}
+            <div
+              className={(isLoading && selectedTodo.includes(todo.id))
+                ? 'modal overlay is-active'
+                : 'modal overlay'}
+            >
+              <div className="modal-background has-background-white-ter" />
+              <div className="loader" />
+            </div>
+          </li>
+        ))}
+        {tempTodo && (
+          <li
+            className="todo"
+            key={tempTodo.id}
           >
-            <div className="modal-background has-background-white-ter" />
-            <div className="loader" />
-          </div>
-        </div>
-      ))}
-      {tempTodo && (
-        <div
-          className="todo"
-          key={tempTodo.id}
-        >
-          <label className="todo__status-label">
-            <input
-              type="checkbox"
-              className="todo__status"
-              checked={false}
-            />
-          </label>
+            <label className="todo__status-label">
+              <input
+                type="checkbox"
+                className="todo__status"
+                checked={false}
+              />
+            </label>
 
-          <span className="todo__title">
-            {tempTodo.title}
-          </span>
+            <span className="todo__title">
+              {tempTodo.title}
+            </span>
 
-          {/* Remove button appears only on hover */}
-          <button
-            type="button"
-            className="todo__remove"
-            onClick={() => handleDeleteTodo(tempTodo.id)}
-          >
-            ×
-          </button>
+            {/* Remove button appears only on hover */}
+            <button
+              type="button"
+              className="todo__remove"
+              onClick={() => handleDeleteTodo(tempTodo.id)}
+            >
+              ×
+            </button>
 
-          {/* overlay will cover the todo while it is being updated */}
-          <div
-            className="modal overlay is-active"
-          >
-            <div className="modal-background has-background-white-ter" />
-            <div className="loader" />
-          </div>
-        </div>
-      )}
+            {/* overlay will cover the todo while it is being updated */}
+            <div
+              className="modal overlay is-active"
+            >
+              <div className="modal-background has-background-white-ter" />
+              <div className="loader" />
+            </div>
+          </li>
+        )}
+      </ul>
     </section>
   );
 };

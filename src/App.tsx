@@ -44,34 +44,34 @@ export const App: React.FC = () => {
       event.preventDefault();
       if (!inputValue) {
         handleError("Title can't be empty");
+      } else {
+        setIsLoadingTodo(true);
+
+        setTempTodo({
+          id: 0,
+          userId: 11361,
+          title: inputValue,
+          completed: false,
+        });
+
+        const todo = {
+          id: 0,
+          userId: 11361,
+          title: inputValue,
+          completed: false,
+        };
+
+        try {
+          await addTodo(USER_ID, todo);
+        } catch (error) {
+          handleError('Unable to add a todo');
+        } finally {
+          setIsLoadingTodo(false);
+          setTempTodo(null);
+        }
       }
-
-      setIsLoadingTodo(true);
-
-      setTempTodo({
-        id: 0,
-        userId: 11361,
-        title: inputValue,
-        completed: false,
-      });
-
-      const todo = {
-        id: 0,
-        userId: 11361,
-        title: inputValue,
-        completed: false,
-      };
 
       setInputValue('');
-
-      try {
-        await addTodo(USER_ID, todo);
-      } catch (error) {
-        handleError('Unable to add a todo');
-      } finally {
-        setIsLoadingTodo(false);
-        setTempTodo(null);
-      }
     }
   };
 
