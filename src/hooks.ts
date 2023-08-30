@@ -1,11 +1,12 @@
 import { useEffect, useMemo, useState } from 'react';
 import { getTodos } from './api/todos';
-import { Todo } from './types';
+import { Errors, Todo } from './types';
+
 
 export const useGetTodos = (USER_ID: number, tempTodo: Todo | null) => {
   const [isLoading, setIsLoading] = useState(false);
   const [todos, setTodos] = useState<Todo[]>([]);
-  const [errorMessage, setErrorMessage] = useState<string>('');
+  const [errorMessage, setErrorMessage] = useState<Errors>(Errors.noEroor);
   const [isTodoDeleted, setIsTodoDeleted] = useState(false);
 
   useEffect(() => {
@@ -16,7 +17,7 @@ export const useGetTodos = (USER_ID: number, tempTodo: Todo | null) => {
 
         setTodos(data);
       } catch (error) {
-        setErrorMessage('Unable to load a todo');
+        setErrorMessage(Errors.load);
       } finally {
         setIsLoading(false);
       }
@@ -33,12 +34,12 @@ export const useGetTodos = (USER_ID: number, tempTodo: Todo | null) => {
   useEffect(() => {
     if (errorMessage) {
       setTimeout(() => {
-        setErrorMessage('');
+        setErrorMessage(Errors.noEroor);
       }, 3000);
     }
   }, [errorMessage]);
 
-  const handleError = (error: string) => {
+  const handleError = (error: Errors) => {
     setErrorMessage(error);
   };
 

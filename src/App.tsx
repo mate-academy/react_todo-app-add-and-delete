@@ -6,6 +6,7 @@ import { SortBy } from './types/SortBy';
 import { addTodo, deleteTodo } from './api/todos';
 import { Todos } from './components/Todos';
 import { useGetTodos } from './hooks';
+import { Errors } from './types';
 
 const USER_ID = 11361;
 
@@ -28,7 +29,7 @@ export const App: React.FC = () => {
     try {
       await deleteTodo(USER_ID, todoId);
     } catch (error) {
-      handleError('Unable to delete a todo');
+      handleError(Errors.delete);
     }
 
     handleIsTodoDeleted(true);
@@ -42,8 +43,8 @@ export const App: React.FC = () => {
   ) => {
     if (event.key === 'Enter') {
       event.preventDefault();
-      if (!inputValue) {
-        handleError("Title can't be empty");
+      if (!inputValue.trim()) {
+        handleError(Errors.emptyTitle);
       } else {
         setIsLoadingTodo(true);
 
@@ -64,7 +65,7 @@ export const App: React.FC = () => {
         try {
           await addTodo(USER_ID, todo);
         } catch (error) {
-          handleError('Unable to add a todo');
+          handleError(Errors.add);
         } finally {
           setIsLoadingTodo(false);
           setTempTodo(null);
@@ -182,7 +183,7 @@ export const App: React.FC = () => {
         <button
           type="button"
           className="delete"
-          onClick={() => handleError('')}
+          onClick={() => handleError(Errors.noEroor)}
         />
 
         {/* show only one message at a time */}
