@@ -2,7 +2,6 @@ import { useEffect, useMemo, useState } from 'react';
 import { getTodos } from './api/todos';
 import { Errors, Todo } from './types';
 
-
 export const useGetTodos = (USER_ID: number, tempTodo: Todo | null) => {
   const [isLoading, setIsLoading] = useState(false);
   const [todos, setTodos] = useState<Todo[]>([]);
