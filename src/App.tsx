@@ -113,9 +113,7 @@ export const App: React.FC = () => {
 
         <footer className="todoapp__footer">
           <span className="todo-count">
-            {todosNotCompleted}
-            {' '}
-            items left
+            {`${todosNotCompleted} items left`}
           </span>
 
           <nav className="filter">
