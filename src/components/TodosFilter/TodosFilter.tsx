@@ -1,11 +1,11 @@
 import cn from 'classnames';
 import { Todo } from '../../types/Todo';
-import { Status } from '../../types/Status';
+import { Filter } from '../../types/Filter';
 
 type Props = {
   todos: Todo[];
-  filterBy: Status;
-  setFilterBy: React.Dispatch<React.SetStateAction<Status>>;
+  filterBy: Filter;
+  setFilterBy: React.Dispatch<React.SetStateAction<Filter>>;
   clearCompleted: () => void
 };
 
@@ -17,28 +17,28 @@ export const TodosFilter: React.FC<Props> = (
     clearCompleted,
   },
 ) => {
-  const handleSetFilteredTodos = (filter: Status) => () => {
+  const handleSetFilteredTodos = (filter: Filter) => () => {
     setFilterBy(filter);
   };
 
-  const completedTodos
+  const completedTodosLength
     = todos.filter(todo => todo.completed).length;
 
-  const uncompletedTodos
+  const uncompletedTodosLength
     = todos.filter(todo => !todo.completed).length;
 
   return (
     <footer className="todoapp__footer">
       <span className="todo-count" data-cy="todosCounter">
-        {`${uncompletedTodos} items left`}
+        {`${uncompletedTodosLength} items left`}
       </span>
       <nav className="filter" data-cy="Filter">
         <a
           href="#/"
           className={cn('filter__link', {
-            selected: (filterBy === Status.all),
+            selected: (filterBy === Filter.all),
           })}
-          onClick={handleSetFilteredTodos(Status.all)}
+          onClick={handleSetFilteredTodos(Filter.all)}
         >
           All
         </a>
@@ -46,9 +46,9 @@ export const TodosFilter: React.FC<Props> = (
         <a
           href="#/completed"
           className={cn('filter__link', {
-            selected: (filterBy === Status.completed),
+            selected: (filterBy === Filter.completed),
           })}
-          onClick={handleSetFilteredTodos(Status.completed)}
+          onClick={handleSetFilteredTodos(Filter.completed)}
         >
           Completed
         </a>
@@ -56,9 +56,9 @@ export const TodosFilter: React.FC<Props> = (
         <a
           href="#/active"
           className={cn('filter__link', {
-            selected: (filterBy === Status.active),
+            selected: (filterBy === Filter.active),
           })}
-          onClick={handleSetFilteredTodos(Status.active)}
+          onClick={handleSetFilteredTodos(Filter.active)}
         >
           Active
         </a>
@@ -70,11 +70,11 @@ export const TodosFilter: React.FC<Props> = (
         className={cn(
           'todoapp__clear-completed',
           {
-            hidden: !completedTodos,
+            hidden: !completedTodosLength,
           },
         )}
         onClick={clearCompleted}
-        disabled={!completedTodos}
+        disabled={!completedTodosLength}
       >
         Clear completed
       </button>

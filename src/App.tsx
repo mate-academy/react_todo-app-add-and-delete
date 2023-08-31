@@ -5,7 +5,7 @@ import { Todo } from './types/Todo';
 import { TodoList } from './components/TodoList';
 import { TodosFilter } from './components/TodosFilter';
 import { ErrorMessage } from './types/ErrorMessage';
-import { Status } from './types/Status';
+import { Filter } from './types/Filter';
 import { createTodo, deleteTodo, getTodos } from './api/todos';
 
 const USER_ID = 11357;
@@ -16,7 +16,7 @@ export const App: React.FC = () => {
   const [error, setError] = useState<ErrorMessage | null>(null);
   const [todoTitle, setTodoTitle] = useState<string>('');
   const [tempTodo, setTempTodo] = useState<Todo | null>(null);
-  const [filterBy, setFilterBy] = useState<Status>(Status.all);
+  const [filterBy, setFilterBy] = useState<Filter>(Filter.all);
   const [processingIds, setProcessingIds] = useState<number[]>([]);
 
   const showError = (errorType: ErrorMessage) => {
@@ -30,9 +30,9 @@ export const App: React.FC = () => {
 
   const filteredTodos = useMemo(() => {
     switch (filterBy) {
-      case Status.active:
+      case Filter.active:
         return todos.filter(todo => !todo.completed);
-      case Status.completed:
+      case Filter.completed:
         return todos.filter(todo => todo.completed);
       default:
         return todos;
