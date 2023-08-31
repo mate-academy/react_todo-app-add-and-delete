@@ -96,8 +96,7 @@ export const App: React.FC = () => {
         />
         <Todos
           todos={visibleTodos}
-          tempTodo={tempTodo}
-          onDelete={() => deleteTodo}
+          onDelete={(todoId) => deleteTodo(todoId)}
         />
         {todos.length
           && (
@@ -105,7 +104,7 @@ export const App: React.FC = () => {
               todos={todos}
               filter={filter}
               setFilter={setFilter}
-              onClear={() => clearCompleted}
+              onClear={() => clearCompleted()}
             />
           )}
       </div>
