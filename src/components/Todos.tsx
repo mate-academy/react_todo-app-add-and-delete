@@ -48,7 +48,6 @@ export const Todos: React.FC<Props> = ({
               {todo.title}
             </span>
 
-            {/* Remove button appears only on hover */}
             <button
               type="button"
               className="todo__remove"
@@ -57,7 +56,6 @@ export const Todos: React.FC<Props> = ({
               ×
             </button>
 
-            {/* overlay will cover the todo while it is being updated */}
             <div
               className={(isLoading && selectedTodo.includes(todo.id))
                 ? 'modal overlay is-active'
@@ -85,7 +83,6 @@ export const Todos: React.FC<Props> = ({
               {tempTodo.title}
             </span>
 
-            {/* Remove button appears only on hover */}
             <button
               type="button"
               className="todo__remove"
@@ -94,7 +91,6 @@ export const Todos: React.FC<Props> = ({
               ×
             </button>
 
-            {/* overlay will cover the todo while it is being updated */}
             <div
               className="modal overlay is-active"
             >

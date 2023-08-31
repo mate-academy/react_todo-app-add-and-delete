@@ -1,5 +1,6 @@
+/* eslint-disable consistent-return */
 /* eslint-disable jsx-a11y/control-has-associated-label */
-import React, { useState } from 'react';
+import React, { FormEvent, useState } from 'react';
 import { UserWarning } from './UserWarning';
 import { Todo } from './types/Todo';
 import { SortBy } from './types/SortBy';
@@ -38,42 +39,43 @@ export const App: React.FC = () => {
 
   const handleDeleteTodo = (value: number) => deleteOneTodo(value);
 
-  const handleKeyDown = async (
-    event: React.KeyboardEvent<HTMLInputElement>,
-  ) => {
-    if (event.key === 'Enter') {
-      event.preventDefault();
-      if (!inputValue.trim()) {
-        handleError(Errors.emptyTitle);
-      } else {
-        setIsLoadingTodo(true);
-
-        setTempTodo({
-          id: 0,
-          userId: 11361,
-          title: inputValue,
-          completed: false,
-        });
-
-        const todo = {
-          id: 0,
-          userId: 11361,
-          title: inputValue,
-          completed: false,
+  const handleAddTodo = async (
+    event: FormEvent<HTMLFormElement> & {
+      target: {
+        todoAdd: {
+          value:string;
         };
-
-        try {
-          await addTodo(USER_ID, todo);
-        } catch (error) {
-          handleError(Errors.add);
-        } finally {
-          setIsLoadingTodo(false);
-          setTempTodo(null);
-        }
-      }
-
-      setInputValue('');
+      };
+    },
+  ) => {
+    event.preventDefault();
+    if (!inputValue.trim()) {
+      return handleError(Errors.emptyTitle);
     }
+
+    setIsLoadingTodo(true);
+
+    setTempTodo({
+      id: 0,
+      userId: 11361,
+      title: inputValue,
+      completed: false,
+    });
+
+    try {
+      await addTodo(USER_ID, {
+        id: 0,
+        userId: 11361,
+        title: inputValue,
+        completed: false,
+      });
+    } catch (error) {
+      handleError(Errors.add);
+    }
+
+    setIsLoadingTodo(false);
+    setTempTodo(null);
+    setInputValue('');
   };
 
   if (!USER_ID) {
@@ -88,14 +90,13 @@ export const App: React.FC = () => {
         <header className="todoapp__header">
           <button type="button" className="todoapp__toggle-all active" />
 
-          <form>
+          <form onSubmit={handleAddTodo}>
             <input
               type="text"
               className="todoapp__new-todo"
               placeholder="What needs to be done?"
               value={inputValue}
               onChange={(e) => setInputValue(e.target.value)}
-              onKeyDown={handleKeyDown}
               disabled={isLoadingTodo}
             />
           </form>
