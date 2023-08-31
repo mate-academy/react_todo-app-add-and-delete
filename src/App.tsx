@@ -68,7 +68,9 @@ export const App: React.FC = () => {
     });
   };
 
-  const handleAddTodo = () => {
+  const handleAddTodo = (e: React.FormEvent<HTMLFormElement>) => {
+    e.preventDefault();
+
     if (!todoTitle.trim()) {
       showError(ErrorMessage.emptyTitle);
 
@@ -100,12 +102,6 @@ export const App: React.FC = () => {
       });
 
     resetField();
-  };
-
-  const handleKeyUp = (e: React.KeyboardEvent<HTMLInputElement>) => {
-    if (e.key === 'Enter') {
-      handleAddTodo();
-    }
   };
 
   useEffect(() => {
@@ -151,14 +147,13 @@ export const App: React.FC = () => {
             />
           )}
 
-          <form>
+          <form onSubmit={handleAddTodo}>
             <input
               type="text"
               className="todoapp__new-todo"
               placeholder="What needs to be done?"
               value={todoTitle}
               onChange={event => setTodoTitle(event.target.value)}
-              onKeyUp={handleKeyUp}
               disabled={!!tempTodo}
             />
           </form>
