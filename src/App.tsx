@@ -1,6 +1,7 @@
+/* eslint-disable @typescript-eslint/no-unused-expressions */
 /* eslint-disable consistent-return */
 /* eslint-disable jsx-a11y/control-has-associated-label */
-import React, { FormEvent, useState } from 'react';
+import React, { FormEvent, useMemo, useState } from 'react';
 import { UserWarning } from './UserWarning';
 import { Todo } from './types/Todo';
 import { SortBy } from './types/SortBy';
@@ -17,24 +18,30 @@ export const App: React.FC = () => {
   const [inputValue, setInputValue] = useState<string>('');
   const [isLoadingTodo, setIsLoadingTodo] = useState(false);
   const [tempTodo, setTempTodo] = useState<Todo | null>(null);
+  const [isTodoDeleted, setIsTodoDeleted] = useState(false);
+  const [makeAnyChange, setMakeAnyChange] = useState<boolean>(false);
   const {
     isLoading,
     todos,
     errorMessage,
-    todosNotCompleted,
     handleError,
-    handleIsTodoDeleted,
-  } = useGetTodos(USER_ID, tempTodo);
+  } = useGetTodos(USER_ID, makeAnyChange);
+
+  const todosNotCompleted = useMemo(() => {
+    return todos.filter(todo => todo.completed === false).length;
+  }, [todos, isTodoDeleted]);
 
   const deleteOneTodo = async (todoId: number) => {
+    setIsTodoDeleted(true);
     try {
       await deleteTodo(USER_ID, todoId);
     } catch (error) {
       handleError(Errors.delete);
     }
 
-    handleIsTodoDeleted(true);
+    setIsTodoDeleted(false);
     setSelectedTodo(prevSelectedTodo => [...prevSelectedTodo, todoId]);
+    setMakeAnyChange(!makeAnyChange);
   };
 
   const handleDeleteTodo = (value: number) => deleteOneTodo(value);
@@ -76,6 +83,7 @@ export const App: React.FC = () => {
     setIsLoadingTodo(false);
     setTempTodo(null);
     setInputValue('');
+    setMakeAnyChange(!makeAnyChange);
   };
 
   if (!USER_ID) {
@@ -88,7 +96,10 @@ export const App: React.FC = () => {
 
       <div className="todoapp__content">
         <header className="todoapp__header">
-          <button type="button" className="todoapp__toggle-all active" />
+          <button
+            type="button"
+            className="todoapp__toggle-all"
+          />
 
           <form onSubmit={handleAddTodo}>
             <input

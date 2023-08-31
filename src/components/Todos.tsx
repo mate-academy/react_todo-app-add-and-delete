@@ -1,3 +1,4 @@
+/* eslint-disable no-mixed-operators */
 import { useMemo } from 'react';
 import { SortBy, Todo } from '../types';
 
@@ -57,7 +58,7 @@ export const Todos: React.FC<Props> = ({
             </button>
 
             <div
-              className={(isLoading && selectedTodo.includes(todo.id))
+              className={((isLoading && selectedTodo.includes(todo.id)))
                 ? 'modal overlay is-active'
                 : 'modal overlay'}
             >

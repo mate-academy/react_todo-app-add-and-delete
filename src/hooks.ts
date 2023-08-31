@@ -1,12 +1,11 @@
-import { useEffect, useMemo, useState } from 'react';
+import { useEffect, useState } from 'react';
 import { getTodos } from './api/todos';
 import { Errors, Todo } from './types';
 
-export const useGetTodos = (USER_ID: number, tempTodo: Todo | null) => {
+export const useGetTodos = (USER_ID: number, makeAnyChange: boolean) => {
   const [isLoading, setIsLoading] = useState(false);
   const [todos, setTodos] = useState<Todo[]>([]);
   const [errorMessage, setErrorMessage] = useState<Errors>(Errors.noEroor);
-  const [isTodoDeleted, setIsTodoDeleted] = useState(false);
 
   useEffect(() => {
     setIsLoading(true);
@@ -23,12 +22,7 @@ export const useGetTodos = (USER_ID: number, tempTodo: Todo | null) => {
     }
 
     fetchTodos();
-    setIsTodoDeleted(false);
-  }, [isTodoDeleted, tempTodo]);
-
-  const todosNotCompleted = useMemo(() => {
-    return todos.filter(todo => todo.completed === false).length;
-  }, [todos, isTodoDeleted]);
+  }, [makeAnyChange]);
 
   useEffect(() => {
     if (errorMessage) {
@@ -42,16 +36,10 @@ export const useGetTodos = (USER_ID: number, tempTodo: Todo | null) => {
     setErrorMessage(error);
   };
 
-  const handleIsTodoDeleted = (value: boolean) => {
-    setIsTodoDeleted(value);
-  };
-
   return {
     isLoading,
     todos,
     errorMessage,
-    todosNotCompleted,
     handleError,
-    handleIsTodoDeleted,
   };
 };
