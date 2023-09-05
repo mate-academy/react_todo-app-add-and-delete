@@ -20,6 +20,7 @@ export const App: React.FC = () => {
   const [isLoading, setIsLoading] = useState(false);
   const [tempTodo, setTempTodo] = useState<Todo | null>(null);
   const [wasTodoAdded, setWasTodoAdded] = useState(false);
+  const [areAllCompletedDeleting, setAreAllCompletedDeleting] = useState(false);
 
   const filteredTodos = todos.filter(todo => {
     switch (activeFilter) {
@@ -111,9 +112,12 @@ export const App: React.FC = () => {
   };
 
   const deleteAllCompleted = () => {
+    setAreAllCompletedDeleting(true);
+
     Promise.all(completedTodos.map(todo => client.delete(`/todos/${todo.id}`)))
       .then(() => setTodos(todos.filter(todo => !todo.completed)))
-      .catch(() => handleError('Unable to delete todos'));
+      .catch(() => handleError('Unable to delete todos'))
+      .finally(() => setAreAllCompletedDeleting(false));
   };
 
   if (!USER_ID) {
@@ -157,6 +161,7 @@ export const App: React.FC = () => {
               key={todo.id}
               todo={todo}
               onDelete={deleteTodo}
+              areAllCompletedDeleting={areAllCompletedDeleting}
             />
           ))}
 

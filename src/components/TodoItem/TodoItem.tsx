@@ -7,9 +7,14 @@ type Props = {
   onDelete: (
     todoId: number,
   ) => Promise<void>,
+  areAllCompletedDeleting: boolean,
 };
 
-export const TodoItem: React.FC<Props> = ({ todo, onDelete }) => {
+export const TodoItem: React.FC<Props> = ({
+  todo,
+  onDelete,
+  areAllCompletedDeleting,
+}) => {
   const [isDeleting, setIsDeleting] = useState(false);
 
   const deleteTodo = () => {
@@ -26,7 +31,7 @@ export const TodoItem: React.FC<Props> = ({ todo, onDelete }) => {
       })}
     >
       {/* 'is-active' class puts this modal on top of the todo */}
-      {isDeleting && (
+      {(isDeleting || (areAllCompletedDeleting && todo.completed)) && (
         <div className="modal overlay is-active">
           <div className="modal-background has-background-white-ter" />
           <div className="loader" />
