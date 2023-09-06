@@ -10,7 +10,7 @@ export const Footer: React.FC = () => {
     setFilter,
     filter,
   } = useContext(TodosContext);
-  const [count, setCount] = useState(0);
+  const [count, setCount] = useState<number>(0);
 
   const updateCount = () => {
     const counts = todos.filter(todo => !todo.completed).length;

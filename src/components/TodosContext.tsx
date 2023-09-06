@@ -82,12 +82,12 @@ export const TodosContext = React.createContext<TodoContext>({
 
 export const TodosProvider: React.FC<Props> = ({ children }) => {
   const [todos, setTodos] = useLocalStorage('todos', [] as Todo[]);
-  const [filter, setFilter] = useState(Status.ALL);
-  const [toggleAll, setToggleAll] = useState(false);
-  const [newTodos, setNewTodos] = useState('');
-  const [errorMessage, setErrorMessage] = useState(ErrorType.None);
-  const [notification, setNotification] = useState(false);
-  const [isAddingTodo, setIsAddingTodo] = useState(false);
+  const [filter, setFilter] = useState<Status>(Status.ALL);
+  const [toggleAll, setToggleAll] = useState<boolean>(false);
+  const [newTodos, setNewTodos] = useState<string>('');
+  const [errorMessage, setErrorMessage] = useState<ErrorType>(ErrorType.None);
+  const [notification, setNotification] = useState<boolean>(false);
+  const [isAddingTodo, setIsAddingTodo] = useState<boolean>(false);
   const [tempTodo, setTempTodo] = useState<Todo | null>(null);
 
   useEffect(() => {
