@@ -39,13 +39,14 @@ Remove a todo on `TodoDeleteButton` click:
 Remove all the completed todos after the `Clear completed` button click:
 
 - the button should be visible only if there is at least 1 completed todo;
+
 - the deletion should work as a several individual deletions running at the same time;
 
 ## Instructions
 
 - Implement a solution following the [React task guideline](https://github.com/mate-academy/react_task-guideline#react-tasks-guideline).
 - Use the [React TypeScript cheat sheet](https://mate-academy.github.io/fe-program/js/extra/react-typescript).
-- Replace `<your_account>` with your Github username in the [DEMO LINK](https://<your_account>.github.io/react_todo-app-add-and-delete/) and add it to the PR description.
+- Replace `<your_account>` with your Github username in the [DEMO LINK](https://Dyakovich-R.github.io/react_todo-app-add-and-delete/) and add it to the PR description.
 
 ## IF you want to implement smooth animations
 
