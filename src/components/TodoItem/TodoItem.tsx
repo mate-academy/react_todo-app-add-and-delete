@@ -13,7 +13,7 @@ export const TodoItem: React.FC<Props> = ({ todo }) => {
     toggleTodo,
     deleteTodo,
     updateTodo,
-    onCompliteDeleting,
+    isCompliteDeleting,
   } = useTodo();
   const [isLoading, setIsLoading] = useState(false);
   const [isEditing, setIsEditing] = useState(false);
@@ -54,14 +54,10 @@ export const TodoItem: React.FC<Props> = ({ todo }) => {
   }, [isEditing]);
 
   useEffect(() => {
-    if (todo.completed) {
+    if (isCompliteDeleting && todo.completed) {
       setIsLoading(true);
     }
-
-    if (!todo.completed) {
-      setIsLoading(false);
-    }
-  }, [onCompliteDeleting]);
+  }, [isCompliteDeleting]);
 
   const handleTodoUpdate = (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();

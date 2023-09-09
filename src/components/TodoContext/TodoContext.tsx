@@ -29,7 +29,7 @@ type TodoContextValue = {
   setInputValue: (inputValue: string) => void;
   isOnAdd: boolean;
   setIsOnAdd: (isOnAdd: boolean) => void;
-  onCompliteDeleting: boolean;
+  isCompliteDeleting: boolean;
 };
 
 export const TodoContext = React.createContext<TodoContextValue>({
@@ -52,7 +52,7 @@ export const TodoContext = React.createContext<TodoContextValue>({
   setInputValue: () => {},
   isOnAdd: false,
   setIsOnAdd: () => {},
-  onCompliteDeleting: false,
+  isCompliteDeleting: false,
 });
 
 export const TodoProvider: React.FC<Props> = ({ children }) => {
@@ -62,7 +62,7 @@ export const TodoProvider: React.FC<Props> = ({ children }) => {
   const [tempoTodo, setTempoTodo] = useState<Todo | null>(null);
   const [isOnAdd, setIsOnAdd] = useState(false);
   const [inputValue, setInputValue] = useState('');
-  const [onCompliteDeleting, setOnCompliteDeleting] = useState(false);
+  const [isCompliteDeleting, setIsCompliteDeleting] = useState(false);
 
   useEffect(() => {
     if (USER_ID) {
@@ -107,6 +107,11 @@ export const TodoProvider: React.FC<Props> = ({ children }) => {
     } catch (error) {
       setIsError(true);
       setErrorMessage('Unable to add a todo');
+
+      setTimeout(() => {
+        setIsError(false);
+        setErrorMessage('');
+      }, 3000);
     } finally {
       if (newTodo) {
         setTodos([...todos, newTodo]);
@@ -156,7 +161,7 @@ export const TodoProvider: React.FC<Props> = ({ children }) => {
 
   const deleteComplitedTodo = async () => {
     if (todosCompleted.length > 0) {
-      setOnCompliteDeleting(true);
+      setIsCompliteDeleting(true);
       try {
         const deletionPromises = todosCompleted.map(
           todo => todosService.deleteTodo(todo.id),
@@ -173,7 +178,7 @@ export const TodoProvider: React.FC<Props> = ({ children }) => {
           setErrorMessage('');
         }, 3000);
       } finally {
-        setOnCompliteDeleting(false);
+        setIsCompliteDeleting(false);
       }
     }
   };
@@ -209,7 +214,7 @@ export const TodoProvider: React.FC<Props> = ({ children }) => {
     setInputValue,
     isOnAdd,
     setIsOnAdd,
-    onCompliteDeleting,
+    isCompliteDeleting,
   };
 
   if (!USER_ID) {
