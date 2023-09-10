@@ -14,6 +14,7 @@ export const TodoItem: React.FC<Props> = ({ todo }) => {
     deleteTodo,
     updateTodo,
     isCompliteDeleting,
+    isToogleAllClick,
   } = useTodo();
   const [isLoading, setIsLoading] = useState(false);
   const [isEditing, setIsEditing] = useState(false);
@@ -59,18 +60,32 @@ export const TodoItem: React.FC<Props> = ({ todo }) => {
     }
   }, [isCompliteDeleting]);
 
+  // const handleTodoUpdate = (e: React.FormEvent<HTMLFormElement>) => {
+  //   e.preventDefault();
+  //   setIsLoading(true);
+  //   setIsEditing(false);
+
+  //   setTimeout(() => {
+  //     if (!updatedTitle.trim()) {
+  //       deleteTodo(todo.id);
+  //     } else {
+  //       updateTodo(updatedTitle, todo.id);
+  //     }
+
+  //     setIsLoading(false);
+  //   }, 500);
+  // };
+
   const handleTodoUpdate = (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     setIsLoading(true);
     setIsEditing(false);
 
     setTimeout(() => {
-      if (!updatedTitle.trim()) {
-        deleteTodo(todo.id);
-      } else {
-        updateTodo(updatedTitle, todo.id);
-      }
-
+      // eslint-disable-next-line @typescript-eslint/no-unused-expressions
+      !updatedTitle.trim()
+        ? deleteTodo(todo.id)
+        : updateTodo(updatedTitle, todo.id);
       setIsLoading(false);
     }, 500);
   };
@@ -137,7 +152,7 @@ export const TodoItem: React.FC<Props> = ({ todo }) => {
 
       <div className={classNames(
         'modal overlay',
-        { 'is-active': isLoading },
+        { 'is-active': isLoading || isToogleAllClick },
       )}
       >
         <div className="modal-background has-background-white-ter" />

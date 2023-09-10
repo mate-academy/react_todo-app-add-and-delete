@@ -30,6 +30,7 @@ type TodoContextValue = {
   isOnAdd: boolean;
   setIsOnAdd: (isOnAdd: boolean) => void;
   isCompliteDeleting: boolean;
+  isToogleAllClick: boolean;
 };
 
 export const TodoContext = React.createContext<TodoContextValue>({
@@ -53,6 +54,7 @@ export const TodoContext = React.createContext<TodoContextValue>({
   isOnAdd: false,
   setIsOnAdd: () => {},
   isCompliteDeleting: false,
+  isToogleAllClick: false,
 });
 
 export const TodoProvider: React.FC<Props> = ({ children }) => {
@@ -63,6 +65,7 @@ export const TodoProvider: React.FC<Props> = ({ children }) => {
   const [isOnAdd, setIsOnAdd] = useState(false);
   const [inputValue, setInputValue] = useState('');
   const [isCompliteDeleting, setIsCompliteDeleting] = useState(false);
+  const [isToogleAllClick, setIsToogleAllClick] = useState(false);
 
   useEffect(() => {
     if (USER_ID) {
@@ -85,41 +88,45 @@ export const TodoProvider: React.FC<Props> = ({ children }) => {
     todo => todo.completed,
   ), [todos]);
 
-  const addTodo = async () => {
-    let newTodo: Todo | null = null;
+  const createTempTodo = () => ({
+    id: 0,
+    userId: USER_ID,
+    title: inputValue,
+    completed: false,
+  });
 
+  const handleAddTodoError = () => {
+    setIsError(true);
+    setErrorMessage('Unable to add a todo');
+
+    setTimeout(() => {
+      setIsError(false);
+      setErrorMessage('');
+    }, 3000);
+  };
+
+  const resetAddTodoState = () => {
+    setTempoTodo(null);
+    setInputValue('');
+    setIsOnAdd(false);
+  };
+
+  const addTodo = async () => {
     setIsOnAdd(true);
+
     try {
-      const tempTodo: Todo = {
-        id: 0,
-        userId: USER_ID,
-        title: inputValue,
-        completed: false,
-      };
+      const tempTodo = createTempTodo();
 
       setTempoTodo(tempTodo);
+      const newTodo = await todosService.createTodo(tempTodo);
 
-      newTodo = await todosService.createTodo({
-        userId: USER_ID,
-        title: inputValue,
-        completed: false,
-      });
-    } catch (error) {
-      setIsError(true);
-      setErrorMessage('Unable to add a todo');
-
-      setTimeout(() => {
-        setIsError(false);
-        setErrorMessage('');
-      }, 3000);
-    } finally {
       if (newTodo) {
         setTodos([...todos, newTodo]);
       }
-
-      setTempoTodo(null);
-      setInputValue('');
-      setIsOnAdd(false);
+    } catch (error) {
+      handleAddTodoError();
+    } finally {
+      resetAddTodoState();
     }
   };
 
@@ -135,6 +142,8 @@ export const TodoProvider: React.FC<Props> = ({ children }) => {
   };
 
   const toogleAll = () => {
+    setIsToogleAllClick(true);
+
     const allCompleted = todos.every(todo => todo.completed === true);
     const updatedTodos = todos.map(todo => ({
       ...todo,
@@ -142,6 +151,9 @@ export const TodoProvider: React.FC<Props> = ({ children }) => {
     }));
 
     setTodos(updatedTodos);
+    setTimeout(() => {
+      setIsToogleAllClick(false);
+    }, 500);
   };
 
   const deleteTodo = async (id: number) => {
@@ -215,6 +227,7 @@ export const TodoProvider: React.FC<Props> = ({ children }) => {
     isOnAdd,
     setIsOnAdd,
     isCompliteDeleting,
+    isToogleAllClick,
   };
 
   if (!USER_ID) {
