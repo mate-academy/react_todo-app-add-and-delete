@@ -60,22 +60,6 @@ export const TodoItem: React.FC<Props> = ({ todo }) => {
     }
   }, [isCompliteDeleting]);
 
-  // const handleTodoUpdate = (e: React.FormEvent<HTMLFormElement>) => {
-  //   e.preventDefault();
-  //   setIsLoading(true);
-  //   setIsEditing(false);
-
-  //   setTimeout(() => {
-  //     if (!updatedTitle.trim()) {
-  //       deleteTodo(todo.id);
-  //     } else {
-  //       updateTodo(updatedTitle, todo.id);
-  //     }
-
-  //     setIsLoading(false);
-  //   }, 500);
-  // };
-
   const handleTodoUpdate = (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     setIsLoading(true);
