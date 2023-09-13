@@ -7,7 +7,6 @@ import React, {
 import { Todo } from "../types/Todo";
 import { getTodos } from '../api/todos';
 import { FILTER, ACTIONS } from '.././utils/enums';
-// import { cloneDeep } from 'lodash';
 
 const USER_ID = 11384;
 

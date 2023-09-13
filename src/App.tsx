@@ -107,7 +107,7 @@ export const App: React.FC = () => {
             </div>
           </div>
         )}
-        {(state.totalLength > 0) && (
+        {(state.totalLength > 0 || newTodo) && (
           <footer className="todoapp__footer">
             <span className="todo-count">
               {state.totalLength}
@@ -150,6 +150,11 @@ export const App: React.FC = () => {
               type="button"
               className="todoapp__clear-completed"
               onClick={deleteAll}
+              style={{
+                visibility: (
+                  state.list.some(todo => todo.completed)
+                ) ? 'visible' : 'hidden',
+              }}
             >
               Clear completed
             </button>
@@ -157,7 +162,7 @@ export const App: React.FC = () => {
         )}
       </div>
 
-      {state.error.length > 0 && (
+      {(state.error.length > 0) && (
         <div className="notification is-danger is-light has-text-weight-normal">
           <button type="button" className="delete" />
           {state.error}
