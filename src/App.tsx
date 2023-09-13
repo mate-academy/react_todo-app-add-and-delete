@@ -43,7 +43,7 @@ export const App: React.FC = () => {
   function handleEnter(e: React.KeyboardEvent<HTMLInputElement>) {
     if (e.nativeEvent.code === 'Enter') {
       e.preventDefault();
-      if (!e.target.value.split('').every(element => element === ' ')) {
+      if (!e.target.value.trim()) {
         setNewTodo(initialTodo);
         addTodo(initialTodo)
           .then(() => getTodos(11384)
