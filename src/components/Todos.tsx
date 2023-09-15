@@ -5,14 +5,24 @@ import { Todo } from '../types/Todo';
 type Props = {
   todos: Todo[],
   onDelete: (todoId: number) => void;
+  tempTodo: Todo | null,
 };
 
 export const Todos: React.FC<Props> = ({
   todos,
   onDelete = () => {},
+  tempTodo,
 }) => {
   return (
     <section className="todoapp__main">
+      {tempTodo && (
+        <div
+          className={classNames('todo', 'loading')}
+          key={tempTodo.id}
+        >
+          <span className="loader" />
+        </div>
+      )}
       {todos.map((todo) => (
         <div
           className={classNames('todo', {

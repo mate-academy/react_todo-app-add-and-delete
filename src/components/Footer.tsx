@@ -16,7 +16,7 @@ export const Footer: React.FC<Props> = ({
   setFilter,
   onClear,
 }) => {
-  const completedTodosCount = todos.filter(todo => todo.completed).length;
+  const isButtonDisabled = todos.filter(todo => todo.completed).length === 0;
   const activeTodosCount = todos.filter(todo => !todo.completed).length;
 
   return (
@@ -57,16 +57,15 @@ export const Footer: React.FC<Props> = ({
         </a>
       </nav>
 
-      { completedTodosCount > 0 && (
-        <button
-          type="button"
-          className="todoapp__clear-completed"
-          onClick={onClear}
-        >
-          Clear completed
-        </button>
-      )}
-
+      <button
+        type="button"
+        className="todoapp__clear-completed"
+        onClick={onClear}
+        disabled={isButtonDisabled}
+        style={{ color: isButtonDisabled ? 'white' : '#777' }}
+      >
+        Clear completed
+      </button>
     </footer>
   );
 };

@@ -3,7 +3,7 @@ import { getTodos, deleteTodos, createTodo } from './api/todos';
 import { Todo } from './types/Todo';
 import { Todos } from './components/Todos';
 import { ErrorType } from './types/ErorrType';
-import { ErrorMes } from './components/ErrorMes';
+import { ErrorMessage } from './components/ErrorMes';
 import { Filter } from './types/Filter';
 import { Header } from './components/Header';
 import { Footer } from './components/Footer';
@@ -14,7 +14,9 @@ export const App: React.FC = () => {
   const [todos, setTodos] = useState<Todo[]>([]);
   const [errorMessage, setErrorMessage] = useState<ErrorType>(ErrorType.None);
   const [filter, setFilter] = useState(Filter.All);
+
   const [tempTodo, setTempTodo] = useState<Todo | null>(null);
+
   const showError = (notification: ErrorType) => {
     setErrorMessage(notification);
     setTimeout(() => {
@@ -75,6 +77,8 @@ export const App: React.FC = () => {
 
       const createdTodo = await createTodo(newTodo);
 
+      setTempTodo(createdTodo);
+
       setTodos(prevTodos => [...prevTodos, createdTodo]);
     } catch {
       setErrorMessage(ErrorType.Add);
@@ -96,9 +100,10 @@ export const App: React.FC = () => {
         />
         <Todos
           todos={visibleTodos}
+          tempTodo={tempTodo}
           onDelete={(todoId) => deleteTodo(todoId)}
         />
-        {todos.length
+        {todos.length > 1
           && (
             <Footer
               todos={todos}
@@ -109,7 +114,7 @@ export const App: React.FC = () => {
           )}
       </div>
 
-      <ErrorMes
+      <ErrorMessage
         errorMessage={errorMessage}
         setErrorMessage={setErrorMessage}
       />
