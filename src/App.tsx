@@ -8,6 +8,7 @@ import { TodoList } from './components/TodoList/TodoList';
 import { TodoFilter } from './components/TodoFilter/TodoFilter';
 import { addTodo, deleteTodo, getTodos } from './api/todos';
 import { DeletingTodo } from './types/DeletingTodo';
+import { countTodos } from './utils/countTodos';
 
 const USER_ID = 11437;
 
@@ -27,7 +28,6 @@ export const App: React.FC = () => {
   };
 
   const onDelete = (todoId: number) => {
-    setDeletingTodos(prev => [...prev, { todoId, isDeleting: true }]);
     deleteTodo(todoId)
       .then(() => {
         setTodos(prev => prev.filter(({ id }) => id !== todoId));
@@ -43,6 +43,31 @@ export const App: React.FC = () => {
       .finally(() => {
         setDeletingTodos(prev => [...prev, { todoId, isDeleting: false }]);
       });
+  };
+
+  const clearCompletedTodos = () => {
+    const completedTodos = countTodos(todos, true);
+
+    completedTodos.forEach(({ id }) => {
+      setDeletingTodos(prev => [...prev, { todoId: id, isDeleting: true }]);
+      deleteTodo(id)
+        .then(() => {
+          setTodos(prev => prev.filter((todo) => id !== todo.id));
+        })
+        .catch((error) => {
+          setErrorMessage(JSON.parse(error.message).error);
+          setIsErrorHidden(false);
+
+          setTimeout(() => {
+            setIsErrorHidden(true);
+          }, 3000);
+        })
+        .finally(() => {
+          setDeletingTodos(prev => (
+            [...prev, { todoId: id, isDeleting: false }]
+          ));
+        });
+    });
   };
 
   const onSubmit = (event: React.FormEvent<HTMLFormElement>) => {
@@ -160,6 +185,7 @@ export const App: React.FC = () => {
             todos={todos}
             filterParam={filterParam}
             onFilterChange={(newFilter) => setFilterParam(newFilter)}
+            clearCompleted={clearCompletedTodos}
           />
         )}
       </div>
