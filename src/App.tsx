@@ -6,14 +6,15 @@ import { Filters } from './utils/Filters';
 import { NewTodo } from './components/NewTodo/NewTodo';
 import { TodoList } from './components/TodoList/TodoList';
 import { TodoFilter } from './components/TodoFilter/TodoFilter';
-import { addTodo, getTodos } from './api/todos';
+import { addTodo, deleteTodo, getTodos } from './api/todos';
+import { DeletingTodo } from './types/DeletingTodo';
 
 const USER_ID = 11437;
 
 export const App: React.FC = () => {
   const [todos, setTodos] = useState<Todo[]>([]);
-  const [tempTodo, setTempTodo] = useState<Todo>({} as Todo);
-  const [isTodoLoading, setIsTodoLoading] = useState(false);
+  const [tempTodo, setTempTodo] = useState<Todo | null>(null);
+  const [deletingTodos, setDeletingTodos] = useState<DeletingTodo[]>([]);
 
   const [errorMessage, setErrorMessage] = useState('');
   const [isErrorHidden, setIsErrorHidden] = useState(true);
@@ -23,6 +24,25 @@ export const App: React.FC = () => {
 
   const handleChangeTitle = (event: React.ChangeEvent<HTMLInputElement>) => {
     setNewTitle(event.target.value);
+  };
+
+  const onDelete = (todoId: number) => {
+    setDeletingTodos(prev => [...prev, { todoId, isDeleting: true }]);
+    deleteTodo(todoId)
+      .then(() => {
+        setTodos(prev => prev.filter(({ id }) => id !== todoId));
+      })
+      .catch((error) => {
+        setErrorMessage(JSON.parse(error.message).error);
+        setIsErrorHidden(false);
+
+        setTimeout(() => {
+          setIsErrorHidden(true);
+        }, 3000);
+      })
+      .finally(() => {
+        setDeletingTodos(prev => [...prev, { todoId, isDeleting: false }]);
+      });
   };
 
   const onSubmit = (event: React.FormEvent<HTMLFormElement>) => {
@@ -44,7 +64,7 @@ export const App: React.FC = () => {
       title: newTitle,
       userId: USER_ID,
     });
-    setIsTodoLoading(true);
+
     addTodo(USER_ID, {
       id: 0,
       completed: false,
@@ -63,8 +83,7 @@ export const App: React.FC = () => {
         }, 3000);
       })
       .finally(() => {
-        setIsTodoLoading(false);
-        setTempTodo({} as Todo);
+        setTempTodo(null);
         setNewTitle('');
       });
   };
@@ -110,10 +129,14 @@ export const App: React.FC = () => {
         />
 
         <section className="todoapp__main">
-          <TodoList todos={visibleTodos} />
+          <TodoList
+            todos={visibleTodos}
+            onDelete={(todoId) => onDelete(todoId)}
+            deletingTodos={deletingTodos}
+          />
 
           {/* This todo is in loadind state */}
-          {isTodoLoading && (
+          {tempTodo && (
             <div className="todo">
               <label className="todo__status-label">
                 <input type="checkbox" className="todo__status" />
