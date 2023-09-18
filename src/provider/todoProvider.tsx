@@ -19,6 +19,7 @@ export const ToDoProvider = ({ children }: Props) => {
     = useState<FilterType>('all');
   const [newTodoName, setNewTodoName] = useState<string | null>(null);
   const [temptTodo, setTempTodo] = useState<Todo | null>(null);
+  const [editedTodo, setEditedTodo] = useState<boolean>(false);
 
   const handleShowError = (err: Errors) => {
     setError(err);
@@ -63,7 +64,13 @@ export const ToDoProvider = ({ children }: Props) => {
       setTodos([...todos, todoToAdd]);
       setTempTodo(todoToAdd);
       postTodo(USER_ID, todoToAdd)
-        .then(() => handleGetTodos())
+        .then((response) => {
+          const addedTodo = response;
+
+          setTodos([...todos, addedTodo]);
+          setTempTodo(addedTodo);
+          setNewTodoName(null);
+        })
         .catch(() => handleShowError(Errors.Title))
         .finally(() => setTempTodo(null));
 
@@ -79,16 +86,9 @@ export const ToDoProvider = ({ children }: Props) => {
       .finally(() => setTempTodo(null));
   };
 
-  // const onEdtidTask = (task: Todo) => (
-  //   {
-  //     ...task,
-  //     edited: true,
-  //   }
-  // );
-
   const deleteCompleted = (tasks: Todo[]) => {
-    tasks.map((t) => {
-      setTempTodo(t);
+    tasks.forEach((t) => {
+      setEditedTodo(true);
 
       return deleteTodo(t.id)
         .then(() => handleGetTodos())
@@ -104,6 +104,7 @@ export const ToDoProvider = ({ children }: Props) => {
       filterTodos,
       newTodoName,
       temptTodo,
+      editedTodo,
       setNewTodoName,
       handleShowError,
       handleSetFilterTodos,

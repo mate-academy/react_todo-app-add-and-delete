@@ -7,7 +7,7 @@ type Props = {
 };
 
 export const Task = ({ todo }: Props) => {
-  const { temptTodo, removeTask } = useTodo();
+  const { temptTodo, removeTask, editedTodo } = useTodo();
 
   return (
     <div
@@ -31,14 +31,14 @@ export const Task = ({ todo }: Props) => {
 
       </button>
 
-      {((temptTodo && temptTodo.id === todo.id) || todo.edited)
+      {((temptTodo && temptTodo.id === todo.id)
+      || (editedTodo && todo.completed))
         && (
           <div className="modal overlay is-active">
             <div className="modal-background has-background-white-ter" />
             <div className="loader" />
           </div>
         )}
-
     </div>
   );
 };
