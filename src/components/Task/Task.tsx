@@ -1,39 +1,46 @@
 /* eslint-disable no-lone-blocks */
+import { useTodo } from '../../provider/todoProvider';
 import { Todo } from '../../types/Todo';
 
 type Props = {
   todo: Todo;
 };
 
-export const Task = ({ todo }: Props) => (
-  <div
-    className={todo.completed ? 'todo completed' : 'todo'}
-  >
-    <label className="todo__status-label">
-      <input
-        type="checkbox"
-        className="todo__status"
-      />
-    </label>
+export const Task = ({ todo }: Props) => {
+  const { temptTodo } = useTodo();
 
-    <span className="todo__title">{todo.title}</span>
-
-    {/* Remove button appears only on hover */}
-    <button
-      type="button"
-      className="todo__remove"
+  return (
+    <div
+      className={todo.completed ? 'todo completed' : 'todo'}
     >
-      ×
+      <label className="todo__status-label">
+        <input
+          type="checkbox"
+          className="todo__status"
+        />
+      </label>
 
-    </button>
+      <span className="todo__title">{todo.title}</span>
 
-    {/* overlay will cover the todo while it is being updated */}
-    <div className="modal overlay">
-      <div className="modal-background has-background-white-ter" />
-      <div className="loader" />
+      <button
+        type="button"
+        className="todo__remove"
+      >
+        ×
+
+      </button>
+
+      {(temptTodo && temptTodo.id === todo.id)
+        && (
+          <div className="modal overlay is-active">
+            <div className="modal-background has-background-white-ter" />
+            <div className="loader" />
+          </div>
+        )}
+
     </div>
-  </div>
-);
+  );
+};
 
 { /*
         {/* <section className="todoapp__main">

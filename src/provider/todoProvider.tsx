@@ -1,10 +1,11 @@
 import {
+  FormEventHandler,
   createContext, useContext, useEffect, useState,
 } from 'react';
 import {
   Errors, Props, TodoContextType,
 } from './types';
-import { getTodos } from '../api/todos';
+import { getTodos, postTodo } from '../api/todos';
 import { Todo } from '../types/Todo';
 import { FilterType } from '../types/FilterType';
 
@@ -16,6 +17,8 @@ export const ToDoProvider = ({ children }: Props) => {
   const [error, setError] = useState<Errors | null>(null);
   const [filterTodos, setFilterTodos]
     = useState<FilterType>('all');
+  const [newTodoName, setNewTodoName] = useState<string | null>(null);
+  const [temptTodo, setTempTodo] = useState<Todo | null>(null);
 
   const handleShowError = (err: Errors) => {
     setError(err);
@@ -24,15 +27,20 @@ export const ToDoProvider = ({ children }: Props) => {
     }, 3000);
   };
 
-  useEffect(() => {
-    getTodos(USER_ID)
+  const handleGetTodos = () => {
+    return getTodos(USER_ID)
       .then((data) => {
         setTodos(data);
-      })
+      });
+  };
+
+  useEffect(() => {
+    handleGetTodos()
       .catch(() => {
         handleShowError(Errors.Update);
       });
-  }, [todos]);
+  }, []);
+
   const handleSetFilterTodos = (filterType: FilterType) => {
     setFilterTodos(filterType);
   };
@@ -41,14 +49,41 @@ export const ToDoProvider = ({ children }: Props) => {
     setError(null);
   };
 
+  const addNewTodo: FormEventHandler<HTMLFormElement> = (event) => {
+    event.preventDefault();
+    if (newTodoName === null) {
+      setError(Errors.Title);
+    } else {
+      const todoToAdd: Todo = {
+        id: 0,
+        userId: 11433,
+        title: newTodoName.trim(),
+        completed: false,
+      };
+
+      setTodos([...todos, todoToAdd]);
+      setTempTodo(todoToAdd);
+      postTodo(USER_ID, todoToAdd)
+        .then(() => handleGetTodos())
+        .catch(() => handleShowError(Errors.Title))
+        .finally(() => setTempTodo(null));
+
+      setNewTodoName(null);
+    }
+  };
+
   return (
     <TodoContext.Provider value={{
       todos,
       error,
       filterTodos,
+      newTodoName,
+      temptTodo,
+      setNewTodoName,
       handleShowError,
       handleSetFilterTodos,
       closeErrorMessage,
+      addNewTodo,
     }}
     >
       {children}
