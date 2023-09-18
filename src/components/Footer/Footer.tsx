@@ -4,11 +4,13 @@ import { FilterType } from '../../types/FilterType';
 import { TodoCount } from '../TodoCount';
 
 export const Footer = () => {
-  const { handleSetFilterTodos } = useTodo();
+  const { handleSetFilterTodos, deleteCompleted, todos } = useTodo();
 
   const addFilterType = (filterType: FilterType) => {
     handleSetFilterTodos(filterType);
   };
+
+  const completedTodos = todos.filter(t => t.completed);
 
   return (
     <footer className="todoapp__footer">
@@ -41,7 +43,11 @@ export const Footer = () => {
       </nav>
 
       {/* don't show this button if there are no completed todos */}
-      <button type="button" className="todoapp__clear-completed">
+      <button
+        type="button"
+        className="todoapp__clear-completed"
+        onClick={() => deleteCompleted(completedTodos)}
+      >
         Clear completed
       </button>
     </footer>

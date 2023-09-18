@@ -10,6 +10,6 @@ export const postTodo = (userId: number, newTodo: Todo) => {
 };
 
 export const deleteTodo = (taskId: number) => {
-  return client.delete(`/todos?id=${taskId}`);
+  return client.delete(`/todos/${taskId}`);
 };
 // Add more methods here

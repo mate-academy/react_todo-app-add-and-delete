@@ -13,6 +13,8 @@ export interface TodoContextType {
   handleSetFilterTodos: (filterType: FilterType) => void;
   closeErrorMessage: () => void,
   addNewTodo: (event: FormEvent<HTMLFormElement>) => void;
+  removeTask: (task: Todo) => void;
+  deleteCompleted: (tasks: Todo[]) => void;
 }
 
 export enum Errors {

@@ -5,7 +5,7 @@ import {
 import {
   Errors, Props, TodoContextType,
 } from './types';
-import { getTodos, postTodo } from '../api/todos';
+import { deleteTodo, getTodos, postTodo } from '../api/todos';
 import { Todo } from '../types/Todo';
 import { FilterType } from '../types/FilterType';
 
@@ -27,11 +27,10 @@ export const ToDoProvider = ({ children }: Props) => {
     }, 3000);
   };
 
-  const handleGetTodos = () => {
-    return getTodos(USER_ID)
-      .then((data) => {
-        setTodos(data);
-      });
+  const handleGetTodos = async () => {
+    const data = await getTodos(USER_ID);
+
+    setTodos(data);
   };
 
   useEffect(() => {
@@ -72,6 +71,32 @@ export const ToDoProvider = ({ children }: Props) => {
     }
   };
 
+  const removeTask = (task: Todo) => {
+    setTempTodo(task);
+    deleteTodo(task.id)
+      .then(() => handleGetTodos())
+      .catch(() => handleShowError(Errors.Delete))
+      .finally(() => setTempTodo(null));
+  };
+
+  // const onEdtidTask = (task: Todo) => (
+  //   {
+  //     ...task,
+  //     edited: true,
+  //   }
+  // );
+
+  const deleteCompleted = (tasks: Todo[]) => {
+    tasks.map((t) => {
+      setTempTodo(t);
+
+      return deleteTodo(t.id)
+        .then(() => handleGetTodos())
+        .catch(() => handleShowError(Errors.Delete))
+        .finally(() => setTempTodo(null));
+    });
+  };
+
   return (
     <TodoContext.Provider value={{
       todos,
@@ -84,6 +109,8 @@ export const ToDoProvider = ({ children }: Props) => {
       handleSetFilterTodos,
       closeErrorMessage,
       addNewTodo,
+      removeTask,
+      deleteCompleted,
     }}
     >
       {children}
