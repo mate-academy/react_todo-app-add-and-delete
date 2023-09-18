@@ -1,24 +1,36 @@
-/* eslint-disable max-len */
 /* eslint-disable jsx-a11y/control-has-associated-label */
-import React from 'react';
 import { UserWarning } from './UserWarning';
+import { Input } from './components/Input/Input';
+import { TodoList } from './components/TodoList/TodoList';
+import { Footer } from './components/Footer';
+import { CaseOfErrorMessage } from './components/CaseOfErrorMessage';
+import { useTodo } from './provider/todoProvider';
 
-const USER_ID = 0;
+const USER_ID = 11433;
 
 export const App: React.FC = () => {
+  const { todos, error } = useTodo();
+
   if (!USER_ID) {
     return <UserWarning />;
   }
 
   return (
-    <section className="section container">
-      <p className="title is-4">
-        Copy all you need from the prev task:
-        <br />
-        <a href="https://github.com/mate-academy/react_todo-app-loading-todos#react-todo-app-load-todos">React Todo App - Load Todos</a>
-      </p>
+    <div className="todoapp">
+      <h1 className="todoapp__title">todos</h1>
+      <div className="todoapp__content">
+        <Input />
+        {todos && <TodoList />}
 
-      <p className="subtitle">Styles are already copied</p>
-    </section>
+        {/* Hide the footer if there are no todos */}
+        {todos.length !== 0
+          && (
+            <Footer />
+          )}
+      </div>
+      {error && (
+        <CaseOfErrorMessage />
+      )}
+    </div>
   );
 };
