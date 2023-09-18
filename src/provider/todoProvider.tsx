@@ -63,7 +63,11 @@ export const ToDoProvider = ({ children }: Props) => {
 
       setTodos([...todos, todoToAdd]);
       setTempTodo(todoToAdd);
-      postTodo(USER_ID, todoToAdd)
+      postTodo({
+        userId: 11433,
+        title: newTodoName.trim(),
+        completed: false,
+      })
         .then((response) => {
           const addedTodo = response;
 
