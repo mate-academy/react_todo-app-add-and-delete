@@ -32,7 +32,10 @@ export const TodoFooter: React.FC<Props> = (props) => {
     todos.forEach(({ id, completed }) => {
       if (completed) {
         deletedTodos.push(deleteTodo(id)
-          .then(() => id));
+          .then(() => id)
+          .catch(error => {
+            throw error;
+          }));
       }
     });
 
