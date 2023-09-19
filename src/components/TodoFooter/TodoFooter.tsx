@@ -26,15 +26,23 @@ export const TodoFooter: React.FC<Props> = (props) => {
 
   const handleComplDelete = () => {
     onGlobalLoaderChange(true);
+
+    const deletedTodos: Promise<number>[] = [];
+
     todos.forEach(({ id, completed }) => {
       if (completed) {
-        deleteTodo(id)
-          .then(() => {
-            setTodos(prevState => prevState.filter(todo => todo.id !== id));
-          })
-          .catch(() => setError('Unable to delete a todo'));
+        deletedTodos.push(deleteTodo(id)
+          .then(() => id));
       }
     });
+
+    Promise.all(deletedTodos)
+      .then((res) => {
+        setTodos(prevState => prevState
+          .filter(todo => !res.includes(todo.id)));
+      })
+      .catch(() => setError('Unable to delete a todo'))
+      .finally(() => onGlobalLoaderChange(false));
   };
 
   return (
@@ -49,6 +57,7 @@ export const TodoFooter: React.FC<Props> = (props) => {
 
           return (
             <a
+              key={key}
               href={`#/${value}`}
               className={classNames('filter__link', {
                 selected: value === status,

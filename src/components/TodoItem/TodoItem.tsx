@@ -19,8 +19,7 @@ export const TodoItem: React.FC<Props> = ({ todo, loader }) => {
 
   const { setError } = useContext(ErrorContext);
   const { setTodos } = useContext(TodoContext);
-  const [isLoading, setIsLoading] = useState(loader);
-  const [isCompleted] = useState(completed);
+  const [isLoading, setIsLoading] = useState(false);
 
   const handleDeleteClick = () => {
     setIsLoading(true);
@@ -38,14 +37,14 @@ export const TodoItem: React.FC<Props> = ({ todo, loader }) => {
     <>
       <div
         className={classNames('todo', {
-          completed: isCompleted,
+          completed,
         })}
       >
         <label className="todo__status-label">
           <input
             type="checkbox"
             className="todo__status"
-            checked={isCompleted}
+            checked={completed}
           />
         </label>
 
@@ -62,7 +61,7 @@ export const TodoItem: React.FC<Props> = ({ todo, loader }) => {
         </button>
 
         <div className={classNames('modal', 'overlay', {
-          'is-active': isLoading,
+          'is-active': isLoading || loader,
         })}
         >
           <div className="modal-background has-background-white-ter" />
