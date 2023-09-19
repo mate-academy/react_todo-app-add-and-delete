@@ -17,8 +17,9 @@ export const ToDoProvider = ({ children }: Props) => {
   const [error, setError] = useState<Errors | null>(null);
   const [filterTodos, setFilterTodos]
     = useState<FilterType>('all');
-  const [newTodoName, setNewTodoName] = useState<string | null>(null);
+  const [newTodoName, setNewTodoName] = useState<string>('');
   const [temptTodo, setTempTodo] = useState<Todo | null>(null);
+  const [temptTodos, setTempTodos] = useState<Todo[]>([]);
   const [editedTodo, setEditedTodo] = useState<boolean>(false);
 
   const handleShowError = (err: Errors) => {
@@ -51,17 +52,17 @@ export const ToDoProvider = ({ children }: Props) => {
 
   const addNewTodo: FormEventHandler<HTMLFormElement> = (event) => {
     event.preventDefault();
-    if (newTodoName === null) {
-      setError(Errors.Title);
+    if (newTodoName.trim() === '') {
+      handleShowError(Errors.Title);
     } else {
       const todoToAdd: Todo = {
-        id: 0,
+        id: +(new Date()),
         userId: 11433,
         title: newTodoName.trim(),
         completed: false,
       };
 
-      setTodos([...todos, todoToAdd]);
+      setTempTodos([...temptTodos, todoToAdd]);
       setTempTodo(todoToAdd);
       postTodo({
         userId: 11433,
@@ -71,14 +72,15 @@ export const ToDoProvider = ({ children }: Props) => {
         .then((response) => {
           const addedTodo = response;
 
-          setTodos([...todos, addedTodo]);
+          setTodos((prevTodos) => [...prevTodos, addedTodo]);
           setTempTodo(addedTodo);
-          setNewTodoName(null);
+          setNewTodoName('');
         })
         .catch(() => handleShowError(Errors.Title))
-        .finally(() => setTempTodo(null));
+        .finally(() => setTempTodo(null))
+        .then(() => setTempTodos([]));
 
-      setNewTodoName(null);
+      setNewTodoName('');
     }
   };
 
@@ -109,6 +111,7 @@ export const ToDoProvider = ({ children }: Props) => {
       newTodoName,
       temptTodo,
       editedTodo,
+      temptTodos,
       setNewTodoName,
       handleShowError,
       handleSetFilterTodos,

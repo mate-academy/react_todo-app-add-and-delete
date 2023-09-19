@@ -1,8 +1,8 @@
 import { Task } from '../Task';
 import { useTodo } from '../../provider/todoProvider';
 
-export const TodoList = () => {
-  const { todos, filterTodos } = useTodo();
+export const TaskList = () => {
+  const { todos, filterTodos, temptTodos } = useTodo();
 
   const visibleTodos = () => {
     if (filterTodos === 'active') {
@@ -19,6 +19,10 @@ export const TodoList = () => {
   return (
     <section className="todoapp__main">
       {visibleTodos().map(todo => (
+        <Task key={todo.id} todo={todo} />
+      ))}
+      {temptTodos.length > 0
+      && temptTodos.map(todo => (
         <Task key={todo.id} todo={todo} />
       ))}
     </section>

@@ -1,7 +1,7 @@
 /* eslint-disable jsx-a11y/control-has-associated-label */
 import { UserWarning } from './UserWarning';
-import { Input } from './components/Input/Input';
-import { TodoList } from './components/TodoList/TodoList';
+import { Input } from './components/Input';
+import { TaskList } from './components/TaskList';
 import { Footer } from './components/Footer';
 import { CaseOfErrorMessage } from './components/CaseOfErrorMessage';
 import { useTodo } from './provider/todoProvider';
@@ -20,7 +20,7 @@ export const App: React.FC = () => {
       <h1 className="todoapp__title">todos</h1>
       <div className="todoapp__content">
         <Input />
-        {todos && <TodoList />}
+        {todos && <TaskList />}
 
         {/* Hide the footer if there are no todos */}
         {todos.length !== 0
