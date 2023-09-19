@@ -22,24 +22,24 @@ Add a todo with the entered title on the form submit:
 - show an independent `TodoItem` **after** the list if `tempTodo` is not `null`;
 - temp TodoItem should have the loader (check the original markup);
 - in case of success add the todo created by the API to the array (take it from the POST response);
-- in case of an API error show `Unable to add a todo` notification at the bottom;
+- in case of an API error showing `Unable to add a todo` notification at the bottom;
 - set `tempTodo` to `null` to hide the extra `TodoItem`;
 
 > Don't try to implement animations for adding or removing Todos (at least until you finish everything else).
-> If you really fill confident to try, there is a hint at the end of the description.
+> If you really feel confident to try, there is a hint at the end of the description.
 
 ## Deleting todos
 
-Remove a todo on `TodoDeleteButton` click:
+Remove a todo on the `TodoDeleteButton` click:
 
-- covered the todo with the loader while wating for the API response;
+- covered the todo with the loader while waiting for the API response;
 - remove the todo from the list on success;
 - in case of API error show `Unable to delete a todo` notification at the bottom (the todo must stay in the list);
 
 Remove all the completed todos after the `Clear completed` button click:
 
 - the button should be visible only if there is at least 1 completed todo;
-- the deletion should work as a several individual deletions running at the same time;
+- the deletion should work as several individual deletions running at the same time;
 
 ## Instructions
 
