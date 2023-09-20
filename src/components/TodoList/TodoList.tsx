@@ -1,8 +1,10 @@
 import { useContext } from 'react';
+import { TransitionGroup, CSSTransition } from 'react-transition-group';
 import { Todo } from '../Todo/Todo';
 import { TodoContext } from '../../TodoContext';
 import { Filter } from '../../types/Filter';
 import { TodoType } from '../../types/TodoType';
+import '../../styles/transition.scss';
 
 export const TodoList = () => {
   const { todos, filterTodo, tempTodo } = useContext(TodoContext);
@@ -25,26 +27,31 @@ export const TodoList = () => {
   const filteredList = getFilteredList(todos);
 
   return (
-    <>
+    <TransitionGroup>
       {filteredList.map(todo => (
-        <Todo todo={todo} key={todo.id} />
+        <CSSTransition key={todo.id} timeout={300} classNames="item">
+          <Todo todo={todo} />
+        </CSSTransition>
       ))}
+
       {tempTodo && (
-        <div className="todo">
-          <label className="todo__status-label">
-            <input type="checkbox" className="todo__status" />
-          </label>
+        <CSSTransition key={0} timeout={300} classNames="temp-item">
+          <div className="todo">
+            <label className="todo__status-label">
+              <input type="checkbox" className="todo__status" />
+            </label>
 
-          <span className="todo__title">{tempTodo.title}</span>
-          <button type="button" className="todo__remove">×</button>
+            <span className="todo__title">{tempTodo.title}</span>
+            <button type="button" className="todo__remove">×</button>
 
-          {/* 'is-active' class puts this modal on top of the todo */}
-          <div className="modal overlay is-active">
-            <div className="modal-background has-background-white-ter" />
-            <div className="loader" />
+            {/* 'is-active' class puts this modal on top of the todo */}
+            <div className="modal overlay is-active">
+              <div className="modal-background has-background-white-ter" />
+              <div className="loader" />
+            </div>
           </div>
-        </div>
+        </CSSTransition>
       )}
-    </>
+    </TransitionGroup>
   );
 };
