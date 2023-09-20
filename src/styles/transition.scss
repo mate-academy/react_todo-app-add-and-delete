@@ -12,12 +12,6 @@
   max-height: 58px;
 }
 
-.item-exit-active {
-  overflow: hidden;
-  max-height: 0;
-  transition: max-height 0.3s ease-in-out;
-}
-
 .temp-item-enter {
   max-height: 0;
 }
@@ -26,10 +20,6 @@
   overflow: hidden;
   max-height: 0;
   transition: max-height 0.3s ease-in-out;
-}
-
-.temp-item-enter {
-  max-height: 0;
 }
 
 .temp-item-enter-active {
