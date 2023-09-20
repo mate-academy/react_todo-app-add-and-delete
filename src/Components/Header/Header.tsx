@@ -88,7 +88,7 @@ export const Header: React.FC = () => {
 
       <Form
         ref={ref}
-        placeholder="What needs to be done"
+        placeholder="What needs to be done?"
         onInputChange={handleInputChange}
         value={inputValue}
         onSubmit={handleSubmit}

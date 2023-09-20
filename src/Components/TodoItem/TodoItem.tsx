@@ -1,4 +1,4 @@
-import React, { useContext, useState } from 'react';
+import React, { useContext, useEffect, useState } from 'react';
 import cn from 'classnames';
 
 import { Todo } from '../../types/todosTypes';
@@ -16,9 +16,14 @@ export const TodoItem: React.FC<Props> = ({ todo }) => {
     title,
     completed,
   } = todo;
-  const [isDeleting, setIsDeleting] = useState(todo.isDeleting || false);
+  const isDel = todo.isDeleting;
+  const [isDeleting, setIsDeleting] = useState(isDel || false);
   const { dispatch } = useContext(TodosContext);
   const { setApiError } = useContext(ApiErrorContext);
+
+  useEffect(() => {
+    setIsDeleting(isDel || false);
+  }, [isDel]);
 
   const handleDeleteClick = () => {
     setIsDeleting(true);

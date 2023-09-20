@@ -15,13 +15,14 @@ export const todosReducer
       }
 
       case 'DELETE': {
-        const filtered = todos.filter(({ id }) => id !== payload);
+        const filtered = todos.filter(({ id }) => (
+          id !== payload));
 
-        return [...filtered];
+        return filtered;
       }
 
       case 'IS_DELETING': {
-        const maped = todos.filter((todo) => {
+        const maped = todos.map((todo) => {
           if (todo.id === payload) {
             const copyTodo = { ...todo };
 
@@ -33,11 +34,11 @@ export const todosReducer
           return todo;
         });
 
-        return [...maped];
+        return maped;
       }
 
       case 'REMOVE_IS_DELETING': {
-        const maped = todos.filter((todo) => {
+        const maped = todos.map((todo) => {
           if (todo.id === payload) {
             const copyTodo = { ...todo };
 
@@ -49,7 +50,7 @@ export const todosReducer
           return todo;
         });
 
-        return [...maped];
+        return maped;
       }
 
       default: {

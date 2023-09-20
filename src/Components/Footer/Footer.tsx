@@ -4,7 +4,11 @@ import cn from 'classnames';
 import { FiltersType } from '../../types/filterTypes';
 import { TodosContext, ApiErrorContext } from '../../Context';
 import { deleteTodo } from '../../api/todos';
-import { deleteTodoAction } from '../../Context/actions/actionCreators';
+import {
+  deleteTodoAction,
+  setIsDeletingAction,
+  removeIsDeletingAction,
+} from '../../Context/actions/actionCreators';
 
 import { getActiveTodos, getCompletedTodos } from '../../helpers/getTodos';
 
@@ -23,6 +27,9 @@ export const Footer: React.FC = () => {
 
   const handleClearCompletedClick = () => {
     completedTodos.forEach(({ id }) => {
+      const isDeletingAction = setIsDeletingAction(id);
+
+      dispatch(isDeletingAction);
       deleteTodo(id)
         .then(() => {
           const deleteAction = deleteTodoAction(id);
@@ -30,6 +37,9 @@ export const Footer: React.FC = () => {
           dispatch(deleteAction);
         })
         .catch((error) => {
+          const removeAction = removeIsDeletingAction(id);
+
+          dispatch(removeAction);
           setApiError(error);
         });
     });
