@@ -1,7 +1,10 @@
-import React from 'react';
+import React, { useContext, useState } from 'react';
 import cn from 'classnames';
 
 import { Todo } from '../../types/todosTypes';
+import { TodosContext, ApiErrorContext } from '../../Context';
+import { deleteTodo } from '../../api/todos';
+import { deleteTodoAction } from '../../Context/actions/actionCreators';
 
 type Props = {
   todo: Todo,
@@ -9,9 +12,30 @@ type Props = {
 
 export const TodoItem: React.FC<Props> = ({ todo }) => {
   const {
+    id,
     title,
     completed,
   } = todo;
+  const [isDeleting, setIsDeleting] = useState(todo.isDeleting || false);
+  const { dispatch } = useContext(TodosContext);
+  const { setApiError } = useContext(ApiErrorContext);
+
+  const handleDeleteClick = () => {
+    setIsDeleting(true);
+
+    deleteTodo(id)
+      .then(() => {
+        const deleteAction = deleteTodoAction(id);
+
+        dispatch(deleteAction);
+      })
+      .catch((error) => {
+        setApiError(error);
+      })
+      .finally(() => {
+        setIsDeleting(false);
+      });
+  };
 
   return (
     <div
@@ -31,9 +55,19 @@ export const TodoItem: React.FC<Props> = ({ todo }) => {
         {title}
       </span>
 
-      <button type="button" className="todo__remove">×</button>
+      <button
+        type="button"
+        className="todo__remove"
+        onClick={handleDeleteClick}
+      >
+        ×
+      </button>
 
-      <div className="modal overlay">
+      <div
+        className={cn('modal overlay', {
+          'is-active': id === 0 || isDeleting,
+        })}
+      >
         <div className="modal-background has-background-white-ter" />
         <div className="loader" />
       </div>

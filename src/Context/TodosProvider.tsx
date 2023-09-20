@@ -2,12 +2,12 @@ import React, {
   createContext, useEffect, useReducer, useState,
 } from 'react';
 
-import { TodosListType } from '../types/todosTypes';
+import { TodosListType, Todo } from '../types/todosTypes';
 import { ApiErrorType } from '../types/apiErrorsType';
 import { Actions } from '../types/actionTypes';
 import { FiltersType } from '../types/filterTypes';
 
-import { loadTodosAction } from './actions';
+import { loadTodosAction } from './actions/actionCreators';
 
 import { initialTodos } from './InitialTodos';
 import { todosReducer } from './TodosReducer';
@@ -22,6 +22,8 @@ type TodosContextType = {
   dispatch: React.Dispatch<Actions>,
   filter: FiltersType,
   setFilter: React.Dispatch<React.SetStateAction<FiltersType>>
+  tempTodo: Todo | null,
+  setTempTodo: React.Dispatch<React.SetStateAction<Todo | null>>
 };
 
 type ApiErrorContextType = {
@@ -43,6 +45,8 @@ export const TodosContext = createContext<TodosContextType>({
   dispatch: () => null,
   filter: FiltersType.ALL,
   setFilter: () => {},
+  tempTodo: null,
+  setTempTodo: () => null,
 });
 
 // Component
@@ -54,6 +58,16 @@ export const TodosProvider: React.FC<Props> = ({ children }) => {
   );
   const [apiError, setApiError] = useState<ApiErrorType>(null);
   const [filter, setFilter] = useState<FiltersType>(FiltersType.ALL);
+  const [tempTodo, setTempTodo] = useState<Todo | null>(null);
+
+  const todosContextValue = {
+    todos,
+    dispatch,
+    filter,
+    setFilter,
+    tempTodo,
+    setTempTodo,
+  };
 
   useEffect(() => {
     getTodos(USER_ID)
@@ -67,11 +81,7 @@ export const TodosProvider: React.FC<Props> = ({ children }) => {
 
   return (
     <ApiErrorContext.Provider value={{ apiError, setApiError }}>
-      <TodosContext.Provider
-        value={{
-          todos, dispatch, filter, setFilter,
-        }}
-      >
+      <TodosContext.Provider value={todosContextValue}>
         {children}
       </TodosContext.Provider>
     </ApiErrorContext.Provider>

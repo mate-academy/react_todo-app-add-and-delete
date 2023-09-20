@@ -4,9 +4,10 @@ import cn from 'classnames';
 
 import { ApiErrorContext } from '../../Context';
 import { RequestMethod } from '../../types/requestMethod';
+import { EmptyInputErrorType } from '../../types/apiErrorsType';
 
 type ResponseErrors = {
-  [key in RequestMethod]: string;
+  [key in RequestMethod | EmptyInputErrorType]: string;
 };
 
 const responseErrors: ResponseErrors = {
@@ -14,10 +15,11 @@ const responseErrors: ResponseErrors = {
   POST: 'Unable to add a todo',
   PATCH: 'Unable to update a todo',
   DELETE: 'Unable to delete a todo',
+  REQUIRED: 'Title should not be empty',
 };
 
 export const ApiError: React.FC = () => {
-  const { apiError } = useContext(ApiErrorContext);
+  const { apiError, setApiError } = useContext(ApiErrorContext);
   const [addClassName, setAddClassName] = useState(false);
 
   useEffect(() => {
@@ -25,8 +27,13 @@ export const ApiError: React.FC = () => {
       setAddClassName(true);
     }, 3000);
 
+    const clearError = setTimeout(() => {
+      setApiError(null);
+    }, 4000);
+
     return () => {
       clearTimeout(timeOutId);
+      clearTimeout(clearError);
     };
   }, []);
 
