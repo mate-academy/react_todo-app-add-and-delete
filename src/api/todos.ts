@@ -6,8 +6,8 @@ export const getTodos = (userId: number) => {
 };
 
 // eslint-disable-next-line
-export const addTodo = (userId: number, newTodo: any) => {
-  return client.post<Todo>(`/todos?userId=${userId}`, newTodo);
+export const addTodo = (newTodo: any) => {
+  return client.post<Todo>('/todos', newTodo);
 };
 
 export const deleteTodo = (delatedTodoId: number) => {

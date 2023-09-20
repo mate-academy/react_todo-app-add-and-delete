@@ -19,18 +19,18 @@ export const TodoForm: React.FC<Props> = () => {
 
   const titleField = useRef<HTMLInputElement>(null);
 
-  useEffect(() => {
-    if (titleField.current) {
-      titleField.current.focus();
-    }
-  }, [todos.length]);
-
   const handleTodosUpdate = (newTodo: Todo) => {
     setTodos(prevState => [...prevState, newTodo]);
   };
 
   const [todoTitle, setTodoTitle] = useState('');
   const [isDisabled, setIsDisabled] = useState(false);
+
+  useEffect(() => {
+    if (titleField.current) {
+      titleField.current.focus();
+    }
+  }, [todos.length, isDisabled]);
 
   const addNewTodo = (newTodo: Todo) => {
     setTodoTitle('');
@@ -56,7 +56,6 @@ export const TodoForm: React.FC<Props> = () => {
       completed: false,
       id: 0,
       title: normalisedTitle,
-      userId: USER_ID,
     };
 
     setIsDisabled(true);
@@ -68,9 +67,12 @@ export const TodoForm: React.FC<Props> = () => {
       userId: USER_ID,
     };
 
-    addTodo(USER_ID, newTodo)
+    addTodo(newTodo)
       .then(addNewTodo)
-      .catch(() => setErrorMessage(ErrorMessages.UnableToAdd))
+      .catch(() => {
+        setErrorMessage(ErrorMessages.UnableToAdd);
+        finishAddingNewTodo();
+      })
       .finally(finishAddingNewTodo);
   };
 
