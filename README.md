@@ -6,7 +6,8 @@ Take your code implemented for [Loading todos](https://github.com/mate-academy/r
 and implement the ability to add and remove todos.
 
 > Here is [the working example](https://mate-academy.github.io/react_todo-app-with-api/)
-# ❗️❗️❗️</br>Please implement only adding and deleting todos in addition to what was already implemented.<br><br>All the other features from the working version will be implemented in the next task.</br>❗️❗️❗️
+>
+<!-- # ❗️❗️❗️</br>Please implement only adding and deleting todos in addition to what was already implemented.<br><br>All the other features from the working version will be implemented in the next task.</br>❗️❗️❗️ -->
 
 > Check the [API Documentation](https://mate-academy.github.io/fe-students-api/)
 
@@ -51,11 +52,11 @@ Remove all the completed todos after the `Clear completed` button click:
 
 - Implement a solution following the [React task guideline](https://github.com/mate-academy/react_task-guideline#react-tasks-guideline).
 - Use the [React TypeScript cheat sheet](https://mate-academy.github.io/fe-program/js/extra/react-typescript).
-- Replace `<your_account>` with your Github username in the [DEMO LINK](https://<your_account>.github.io/react_todo-app-add-and-delete/) and add it to the PR description.
+- Replace `<your_account>` with your Github username in the [DEMO LINK](https://Pa1eOrc.github.io/react_todo-app-add-and-delete/) and add it to the PR description.
 
 ## IF you want to implement smooth animations
 
-<details>
+<!-- <details>
   <summary>Click here to see the hint</summary>
 
   Use [React Transition Group](https://reactcommunity.org/react-transition-group/transition-group)
@@ -100,6 +101,7 @@ Remove all the completed todos after the `Clear completed` button click:
   ```
 
   Here are the styles used in this example
+
   ```css
   .item-enter {
     max-height: 0;
@@ -148,4 +150,5 @@ Remove all the completed todos after the `Clear completed` button click:
     overflow: hidden;
   }
   ```
-</details>
+
+</details> -->
