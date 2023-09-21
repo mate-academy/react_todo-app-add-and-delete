@@ -85,7 +85,7 @@ export const App: React.FC = () => {
     if (title !== '') {
       const temporaryTodo = {
         id: 0,
-        title,
+        title: title.trim(),
         userId: USER_ID,
         completed: false,
       };
@@ -93,22 +93,22 @@ export const App: React.FC = () => {
       setTempTodo(temporaryTodo);
 
       addTodo({
-        title,
+        title: title.trim(),
         userId: USER_ID,
         completed: false,
       })
         .then(response => {
           setTodos([...todos, response]);
           setTitle('');
-          setTempTodo(response);
+          setTempTodo(null);
         }).catch(() => {
           setIsError(true);
           setError('Unable to add a todo');
           setTimeout(() => {
             setIsError(false);
           }, 3000);
-        })
-        .finally(() => setTempTodo(null));
+          setTempTodo(null);
+        });
     }
   };
 
