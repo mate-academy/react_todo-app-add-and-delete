@@ -1,14 +1,29 @@
 /* eslint-disable jsx-a11y/control-has-associated-label */
 
-export const Header: React.FC = () => {
+import { Todo } from '../../types/Todo';
+
+type Props = {
+  todos: Todo[],
+};
+
+// type Props = {
+//   todos: boolean,
+// };
+
+export const Header: React.FC<Props> = ({ todos }) => {
   return (
     <header className="todoapp__header">
-      {/* this buttons is active only if there are some active todos */}
-      <button type="button" className="todoapp__toggle-all active" />
+      {todos.length > 0 && (
+        <button
+          type="button"
+          className="todoapp__toggle-all"
+          data-cy="ToggleAllButton"
+        />
+      )}
 
-      {/* Add a todo on form submit */}
       <form>
         <input
+          data-cy="NewTodoField"
           type="text"
           className="todoapp__new-todo"
           placeholder="What needs to be done?"

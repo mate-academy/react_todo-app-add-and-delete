@@ -10,64 +10,63 @@ import { getTodos } from './api/todos';
 
 const USER_ID = 11449;
 
-// enum ErrorMessage {
-//   UNABLE_TO_ADD = 'Unable to add a todo',
-//   UNABLE_TO_DELETE = 'Unable to delete a todo',
-//   UNABLE_TO_UPDATE = 'Unable to update a todo',
-// }
-
 export const App: React.FC = () => {
-  const [todos, setTodos] = useState<Todo[] | null>(null);
-  const [errorMessage, setErrorMessage] = useState('a');
-  const [visibleTodos, setVisibleTodos] = useState<Todo[] | null>(todos);
+  const [todos, setTodos] = useState<Todo[]>([]);
+  const [errorMessage, setErrorMessage] = useState('');
+  const [visibleTodos, setVisibleTodos] = useState<Todo[]>(todos);
 
-  useEffect(() => {
+  const clearError = () => {
+    setTimeout(() => {
+      setErrorMessage('');
+    }, 3000);
+  };
+
+  useEffect(clearError, [errorMessage]);
+
+  function loadTodos() {
     getTodos(USER_ID)
-      .then((promise) => {
-        setTodos(promise);
-        setVisibleTodos(promise);
+      .then(response => {
+        setTodos(response);
+        setVisibleTodos(response);
       })
-      .catch(error => setErrorMessage(error));
-  }, []);
+      .catch(() => {
+        setErrorMessage('Unable to load todos');
+      });
+  }
+
+  useEffect(loadTodos, []);
 
   if (!USER_ID) {
     return <UserWarning />;
   }
-
-  setTimeout(() => {
-    setErrorMessage('');
-  }, 3000);
 
   return (
     <div className="todoapp">
       <h1 className="todoapp__title">todos</h1>
 
       <div className="todoapp__content">
-        <Header />
 
-        {todos && (
-          <>
-            {visibleTodos && (
-              <Section
-                todos={visibleTodos}
-              />
-            )}
+        <Header todos={todos} />
 
-            <Footer
-              todos={todos}
-              setVisibleTodos={setVisibleTodos}
-            />
-          </>
+        {visibleTodos && (
+          <Section
+            visibleTodos={visibleTodos}
+          />
+        )}
+
+        {todos.length > 0 && (
+          <Footer
+            todos={todos}
+            setVisibleTodos={setVisibleTodos}
+          />
         )}
 
       </div>
 
-      {errorMessage && (
-        <Error
-          errorMessage={errorMessage}
-          setErrorMessage={setErrorMessage}
-        />
-      )}
+      <Error
+        errorMessage={errorMessage}
+        setErrorMessage={setErrorMessage}
+      />
     </div>
   );
 };

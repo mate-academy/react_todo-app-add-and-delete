@@ -18,13 +18,13 @@ export const Footer: React.FC<Props> = ({
   setVisibleTodos = () => { },
 }) => {
   const [status, setStatus] = useState(Status.ALL);
+  const completedTodos = todos.filter(todo => todo.completed);
+  const activeTodos = todos.filter(todo => !todo.completed);
+
   const handleClick = (event: React.MouseEvent<HTMLAnchorElement>) => {
     const newStatus = event.currentTarget.textContent as Status;
 
     setStatus(newStatus);
-    const completedTodos = todos.filter(todo => todo.completed);
-    const activeTodos = todos.filter(todo => !todo.completed);
-
     switch (newStatus) {
       case Status.ACTIVE:
         setVisibleTodos(activeTodos);
@@ -40,17 +40,18 @@ export const Footer: React.FC<Props> = ({
   };
 
   return (
-    <footer className="todoapp__footer">
-      <span className="todo-count">
-        {`${todos.length} items left`}
+    <footer className="todoapp__footer" data-cy="Footer">
+      <span className="todo-count" data-cy="TodosCounter">
+        {`${activeTodos.length} items left`}
       </span>
 
-      <nav className="filter">
+      <nav className="filter" data-cy="Filter">
         <a
           href="#/"
           className={classNames('filter__link', {
             selected: status === Status.ALL,
           })}
+          data-cy="FilterLinkAll"
           onClick={handleClick}
         >
           {Status.ALL}
@@ -61,6 +62,7 @@ export const Footer: React.FC<Props> = ({
           className={classNames('filter__link', {
             selected: status === Status.ACTIVE,
           })}
+          data-cy="FilterLinkActive"
           onClick={handleClick}
         >
           {Status.ACTIVE}
@@ -71,14 +73,28 @@ export const Footer: React.FC<Props> = ({
           className={classNames('filter__link', {
             selected: status === Status.COMPLETED,
           })}
+          data-cy="FilterLinkCompleted"
           onClick={handleClick}
         >
           {Status.COMPLETED}
         </a>
       </nav>
 
-      {todos.filter(todo => todo.completed).length > 0 && (
-        <button type="button" className="todoapp__clear-completed">
+      {completedTodos.length > 0 ? (
+        <button
+          type="button"
+          className="todoapp__clear-completed"
+          data-cy="ClearCompletedButton"
+        >
+          Clear completed
+        </button>
+      ) : (
+        <button
+          type="button"
+          className="todoapp__clear-completed"
+          data-cy="ClearCompletedButton"
+          disabled
+        >
           Clear completed
         </button>
       )}
