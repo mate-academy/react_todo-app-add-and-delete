@@ -477,7 +477,7 @@ describe('', () => {
 
     describe('on request fail', () => {
       beforeEach(() => {
-        page.mockCreate({ statusCode: 503 , body: 'Service Unavailable' })
+        page.mockCreate({ statusCode: 503, body: 'Service Unavailable' })
           .as('createRequest');
 
         page.submitTitle('Test Todo');
