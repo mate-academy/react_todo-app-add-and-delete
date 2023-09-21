@@ -6,6 +6,7 @@ type Props = {
   loadingId: number[],
   title: string,
   setTitle: (title: string) => void,
+  isFormActive: boolean,
 };
 
 export const Header: React.FC<Props> = ({
@@ -14,6 +15,7 @@ export const Header: React.FC<Props> = ({
   loadingId,
   title,
   setTitle,
+  isFormActive,
 
 }) => {
   const inputRef = React.useRef<any>();
@@ -42,7 +44,7 @@ export const Header: React.FC<Props> = ({
           type="text"
           className="todoapp__new-todo"
           placeholder="What needs to be done?"
-          disabled={loadingId.length > 0}
+          disabled={loadingId.length > 0 || !isFormActive}
           value={title}
           onChange={(event) => setTitle(event.target.value)}
         />

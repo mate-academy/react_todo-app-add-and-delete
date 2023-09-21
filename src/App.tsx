@@ -19,6 +19,7 @@ export const App: React.FC = () => {
   const [title, setTitle] = useState('');
   const [tempTodo, setTempTodo] = useState<Todo | null>(null);
   const [loadingId, setLoadingId] = useState<number[]>([]);
+  const [isFormActive, setIsFormActive] = useState(true);
 
   const filteredTodos = getFilteredTodos(todoList, filterBy);
 
@@ -43,7 +44,7 @@ export const App: React.FC = () => {
   const hasCompletedTodosCount = todoList
     .some(({ completed }) => completed === true);
 
-  const deleteTodo = (todoId: number) => {
+  const handleDeleteTodo = (todoId: number) => {
     setLoadingId([todoId]);
 
     return postService.deleteTodo(todoId)
@@ -60,42 +61,47 @@ export const App: React.FC = () => {
   };
 
   const clearCompleted = () => {
-    const completedTodosId = todoList
-      .filter(({ completed }) => completed === true)
-      .map(({ id }) => id);
-
-    setLoadingId(completedTodosId);
-
-    Promise.all(completedTodosId.map(id => deleteTodo(id)))
-      .then(() => {
-        setTodoList(currentList => currentList
-          .filter(({ completed }) => !completed));
-        setLoadingId([]);
+    todoList
+      .filter(({ completed }) => completed)
+      .forEach(({ id }) => {
+        handleDeleteTodo(id)
+          .then(() => {
+            setTodoList(currentList => currentList
+              .filter(todo => todo.id !== id));
+          })
+          .catch(() => {
+            setErrorMessage('Unable to delete a todo');
+          });
       });
   };
 
   const addNewTodo = (todo: Todo) => {
-    setErrorMessage('');
-    setLoadingId([0]);
     setTempTodo({
       id: 0,
       userId: USER_ID,
-      title,
+      title: title.trim(),
       completed: false,
     });
+
+    setErrorMessage('');
+    setLoadingId([0]);
+    setIsFormActive(false);
 
     postService.createTodo(todo)
       .then(newTodo => {
         setTodoList(currentTodos => [...currentTodos, newTodo]);
+        setTitle('');
+        setIsFormActive(true);
+        setTimeout(() => {
+          setLoadingId([]);
+        }, 3000);
       })
       .catch(() => {
+        setIsFormActive(true);
+        setLoadingId([0]);
         setErrorMessage('Unable to add a todo');
       })
       .finally(() => {
-        if (!errorMessage) {
-          setTitle('');
-        }
-
         setTempTodo(null);
         setLoadingId([]);
       });
@@ -113,9 +119,11 @@ export const App: React.FC = () => {
     addNewTodo({
       id: +new Date(),
       userId: USER_ID,
-      title,
+      title: title.trim(),
       completed: false,
     });
+
+    setLoadingId([]);
   };
 
   if (!USER_ID) {
@@ -133,6 +141,7 @@ export const App: React.FC = () => {
           loadingId={loadingId}
           title={title}
           setTitle={setTitle}
+          isFormActive={isFormActive}
         />
 
         <section className="todoapp__main" data-cy="TodoList">
@@ -141,7 +150,7 @@ export const App: React.FC = () => {
               <TodoItem
                 key={todo.id}
                 todo={todo}
-                deleteTodo={deleteTodo}
+                deleteTodo={handleDeleteTodo}
                 loadingId={loadingId}
               />
             ))
