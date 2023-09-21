@@ -98,7 +98,6 @@ export const App: React.FC = () => {
         completed: false,
       })
         .then(response => {
-          setTodos([...todos, response]);
           setTitle('');
           setTempTodo(response);
         }).catch(() => {
@@ -107,6 +106,10 @@ export const App: React.FC = () => {
           setTimeout(() => {
             setIsError(false);
           }, 3000);
+          setTempTodo(null);
+        })
+        .finally(() => {
+          setTodos([...todos, temporaryTodo]);
           setTempTodo(null);
         });
     }
