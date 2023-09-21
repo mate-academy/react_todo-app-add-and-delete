@@ -71,7 +71,6 @@ export const TodoForm: React.FC<Props> = () => {
       .then(addNewTodo)
       .catch(() => {
         setErrorMessage(ErrorMessages.UnableToAdd);
-        // finishAddingNewTodo();
       })
       .finally(finishAddingNewTodo);
   };

@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import classNames from 'classnames';
+
 import { Todo } from '../../types/Todo';
 import { deleteTodo, changeTodo } from '../../api/todos';
 import { ErrorMessages } from '../../types/ErrorMessages';
@@ -51,12 +52,21 @@ export const TodoItem: React.FC<Props> = ({ todo }) => {
 
   // eslint-disable-next-line
   const handleTodoUpdate = (updates: any) => {
+    const normalisedTodoTitle = editedTodoTitle.trim();
+
+    if (!normalisedTodoTitle.length) {
+      return removeTodo();
+    }
+
     setIsLoading(true);
 
     changeTodo(id, updates)
       .then((newTodo) => updateTodo(newTodo))
       .catch(() => setErrorMessage(ErrorMessages.CannotUpdate))
-      .finally(() => setIsLoading(false));
+      .finally(() => {
+        setIsLoading(false);
+        setIsEdited(false);
+      });
   };
 
   const handleCompletionStatusChange = () => {
@@ -67,9 +77,18 @@ export const TodoItem: React.FC<Props> = ({ todo }) => {
   const handleSubmit = (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
 
-    handleTodoUpdate({ title: editedTodoTitle });
+    handleTodoUpdate({ title: editedTodoTitle.trim() });
+  };
 
-    setIsEdited(false);
+  const handleInputBlur = () => {
+    handleTodoUpdate({ title: editedTodoTitle.trim() });
+  };
+
+  const handleInputKeyout = (event: React.KeyboardEvent<HTMLInputElement>) => {
+    if (event.key === 'Escape') {
+      setIsEdited(false);
+      setEditedTodoTitle(title);
+    }
   };
 
   useEffect(() => {
@@ -112,8 +131,9 @@ export const TodoItem: React.FC<Props> = ({ todo }) => {
               className="todo__title-field"
               placeholder="Empty todo will be deleted"
               value={editedTodoTitle}
-              onBlur={() => setIsEdited(false)}
+              onBlur={handleInputBlur}
               onChange={(event) => setEditedTodoTitle(event.target.value)}
+              onKeyUp={handleInputKeyout}
               // eslint-disable-next-line
               autoFocus
             />
