@@ -100,7 +100,7 @@ export const App: React.FC = () => {
         .then(response => {
           setTodos([...todos, response]);
           setTitle('');
-          setTempTodo(null);
+          setTempTodo(response);
         }).catch(() => {
           setIsError(true);
           setError('Unable to add a todo');
