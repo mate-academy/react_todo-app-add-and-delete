@@ -8,11 +8,12 @@ type TodoListProps = {
   todos: Todo[];
   handleRemove: (todoId: number) => void;
   tempTodo: Todo | null;
+  deletedTodoId: number | null;
 };
 
 export const TodoList: React.FC<TodoListProps>
 = ({
-  filter, todos, handleRemove, tempTodo,
+  filter, todos, handleRemove, tempTodo, deletedTodoId,
 }) => {
   const visibleTodos = () => {
     if (filter === 'active') {
@@ -34,6 +35,7 @@ export const TodoList: React.FC<TodoListProps>
           todo={todo}
           handleRemove={handleRemove}
           tempTodo={tempTodo}
+          deletedTodoId={deletedTodoId}
         />
       ))}
     </section>
