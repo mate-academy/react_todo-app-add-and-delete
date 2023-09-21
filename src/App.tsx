@@ -41,7 +41,7 @@ export const App: React.FC = () => {
   const activeTodosCount = todoList
     .filter(({ completed }) => completed === false).length;
 
-  const hasCompletedTodosCount = todoList
+  let hasCompletedTodosCount = todoList
     .some(({ completed }) => completed === true);
 
   const handleDeleteTodo = (todoId: number) => {
@@ -66,10 +66,13 @@ export const App: React.FC = () => {
       .forEach(({ id }) => {
         handleDeleteTodo(id)
           .then(() => {
-            setTodoList(currentList => currentList
-              .filter(todo => todo.id !== id));
+            postService.getTodos(USER_ID)
+              .then(setTodoList);
+            // setTodoList(currentList => currentList
+            //   .filter(todo => todo.id !== id));
           })
           .catch(() => {
+            hasCompletedTodosCount = false;
             setErrorMessage('Unable to delete a todo');
           });
       });
