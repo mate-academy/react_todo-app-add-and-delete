@@ -55,10 +55,10 @@ const todos = {
   el: index => cy.byDataCy('Todo').eq(index),
   deleteButton: index => todos.el(index).byDataCy('TodoDelete'),
   assertCount: length => cy.byDataCy('Todo').should('have.length', length),
-  assertTitle: (index, title) => todos.el(index, title),
+  assertTitle: (index, title) => todos.el(index).byDataCy('TodoTitle').should('have.text', title),
   assertLoading: index => todos.el(index).byDataCy('TodoLoader').should('have.class', 'is-active'),
   assertNotLoading: index => todos.el(index).byDataCy('TodoLoader').should('not.have.class', 'is-active'),
-  assertCompleted: index => todos.el(index),
+  assertCompleted: index => todos.el(index).should('have.class', 'completed'),
   assertNotCompleted: index => todos.el(index).should('not.have.class', 'completed'),
 };
 
@@ -609,14 +609,18 @@ describe('', () => {
 
       it('should allow to add a todo', () => {
         page.mockCreate().as('createRequest2');
-        page.submitTitle('Hello world');
+        page.submitTitle('');
 
         cy.wait('@createRequest2');
+
+        // flush any JS animations
+        cy.clock();
+        cy.tick(1000);
 
         todos.assertCount(6);
         todos.assertNotLoading(5);
         todos.assertNotCompleted(5);
-        todos.assertTitle(5, 'Hello world');
+        todos.assertTitle(5, 'Test Todo');
 
         page.todosCounter().should('have.text', '3 items left');
       });
