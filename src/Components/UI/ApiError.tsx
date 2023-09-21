@@ -11,7 +11,7 @@ type ResponseErrors = {
 };
 
 const responseErrors: ResponseErrors = {
-  GET: 'Unable to download todos',
+  GET: 'Unable to load todos',
   POST: 'Unable to add a todo',
   PATCH: 'Unable to update a todo',
   DELETE: 'Unable to delete a todo',
@@ -19,37 +19,36 @@ const responseErrors: ResponseErrors = {
 };
 
 export const ApiError: React.FC = () => {
-  const { apiError, setApiError } = useContext(ApiErrorContext);
-  const [addClassName, setAddClassName] = useState(false);
+  const { apiError } = useContext(ApiErrorContext);
+  const [addClassName, setAddClassName] = useState(true);
 
   useEffect(() => {
-    const timeOutId = setTimeout(() => {
-      setAddClassName(true);
-    }, 3000);
+    let timeOutId: ReturnType<typeof setTimeout>;
 
-    const clearError = setTimeout(() => {
-      setApiError(null);
-    }, 4000);
+    if (apiError) {
+      setAddClassName(false);
+
+      timeOutId = setTimeout(() => {
+        setAddClassName(true);
+      }, 3000);
+    }
 
     return () => {
       clearTimeout(timeOutId);
-      clearTimeout(clearError);
     };
-  }, []);
+  }, [apiError]);
 
-  if (!apiError) {
-    return null;
-  }
-
-  const errorMessage = apiError.message as RequestMethod;
+  const errorMessage = apiError?.message as RequestMethod;
 
   return (
     <div
+      data-cy="ErrorNotification"
       className={cn('notification is-danger is-light has-text-weight-normal', {
         hidden: addClassName,
       })}
     >
       <button
+        data-cy="HideErrorButton"
         type="button"
         className="delete"
         onClick={() => {

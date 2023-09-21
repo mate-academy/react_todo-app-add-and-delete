@@ -2,7 +2,7 @@ import React, { useContext } from 'react';
 import cn from 'classnames';
 
 import { FiltersType } from '../../types/filterTypes';
-import { TodosContext, ApiErrorContext } from '../../Context';
+import { TodosContext, ApiErrorContext, FormFocusContext } from '../../Context';
 import { deleteTodo } from '../../api/todos';
 import {
   deleteTodoAction,
@@ -13,6 +13,7 @@ import {
 import { getActiveTodos, getCompletedTodos } from '../../helpers/getTodos';
 
 export const Footer: React.FC = () => {
+  const { setIsFocused } = useContext(FormFocusContext);
   const {
     todos,
     filter,
@@ -26,6 +27,8 @@ export const Footer: React.FC = () => {
   const isClearCompletedInvisible = completedTodos.length === 0;
 
   const handleClearCompletedClick = () => {
+    setIsFocused(false);
+
     completedTodos.forEach(({ id }) => {
       const isDeletingAction = setIsDeletingAction(id);
 
@@ -41,17 +44,20 @@ export const Footer: React.FC = () => {
 
           dispatch(removeAction);
           setApiError(error);
+        })
+        .finally(() => {
+          setIsFocused(true);
         });
     });
   };
 
   return (
-    <footer className="todoapp__footer">
-      <span className="todo-count">
+    <footer className="todoapp__footer" data-cy="Footer">
+      <span className="todo-count" data-cy="TodosCounter">
         {`${activeTodosNumber} items left`}
       </span>
 
-      <nav className="filter">
+      <nav className="filter" data-cy="Filter">
         {(Object.entries(FiltersType))
           .map(([key, value]) => {
             const url = value === FiltersType.ALL
@@ -60,6 +66,7 @@ export const Footer: React.FC = () => {
 
             return (
               <a
+                data-cy={`FilterLink${value}`}
                 href={`#/${url}`}
                 key={key}
                 className={cn('filter__link', {
@@ -74,11 +81,13 @@ export const Footer: React.FC = () => {
       </nav>
 
       <button
+        data-cy="ClearCompletedButton"
         type="button"
         className={cn('todoapp__clear-completed', {
           'is-invisible': isClearCompletedInvisible,
         })}
         onClick={handleClearCompletedClick}
+        disabled={isClearCompletedInvisible}
       >
         Clear completed
       </button>

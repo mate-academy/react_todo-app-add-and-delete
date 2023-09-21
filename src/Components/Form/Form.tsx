@@ -5,6 +5,7 @@ type Props = {
   onInputChange: (e: React.ChangeEvent<HTMLInputElement>) => void,
   value: string,
   onSubmit: (e: React.FormEvent<HTMLFormElement>) => void,
+  forCypress: string,
 };
 
 type Ref = HTMLInputElement | null;
@@ -14,9 +15,11 @@ export const Form = React.forwardRef<Ref, Props>(({
   onInputChange,
   value,
   onSubmit,
+  forCypress,
 }, ref) => (
   <form onSubmit={onSubmit}>
     <input
+      data-cy={forCypress}
       type="text"
       className="todoapp__new-todo"
       placeholder={placeholder}

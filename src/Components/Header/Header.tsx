@@ -6,16 +6,17 @@ import React, {
 } from 'react';
 import cn from 'classnames';
 
-import { TodosContext, ApiErrorContext } from '../../Context';
+import { TodosContext, ApiErrorContext, FormFocusContext } from '../../Context';
 import { Form } from '../Form';
 import USER_ID from '../../helpers/USER_ID';
-import { postTodos } from '../../api/todos';
+import { addTodo } from '../../api/todos';
 import { postTodoAction } from '../../Context/actions/actionCreators';
 import { emptyInputError } from '../../types/apiErrorsType';
 
 // Component
 export const Header: React.FC = () => {
   const { todos, setTempTodo, dispatch } = useContext(TodosContext);
+  const { isFocused } = useContext(FormFocusContext);
   const { setApiError } = useContext(ApiErrorContext);
   const ref = useRef<HTMLInputElement>(null);
   const [inputValue, setInputValue] = useState('');
@@ -24,10 +25,10 @@ export const Header: React.FC = () => {
   const isToggleActive = todos.every(todo => todo.completed);
 
   useEffect(() => {
-    if (ref.current) {
+    if (ref.current && isFocused) {
       ref.current.focus();
     }
-  }, [ref]);
+  }, [ref, isFocused]);
 
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setInputValue(e.target.value);
@@ -56,7 +57,7 @@ export const Header: React.FC = () => {
       ref.current.disabled = true;
     }
 
-    postTodos(USER_ID, data)
+    addTodo(data)
       .then((newTodo) => {
         const actionPost = postTodoAction(newTodo);
 
@@ -67,7 +68,7 @@ export const Header: React.FC = () => {
       .finally(() => {
         setTempTodo(null);
 
-        if (ref.current) {
+        if (ref.current && isFocused) {
           ref.current.disabled = false;
           ref.current.focus();
         }
@@ -83,10 +84,12 @@ export const Header: React.FC = () => {
           className={cn('todoapp__toggle-all', {
             active: isToggleActive,
           })}
+          data-cy="ToggleAllButton"
         />
       )}
 
       <Form
+        forCypress="NewTodoField"
         ref={ref}
         placeholder="What needs to be done?"
         onInputChange={handleInputChange}

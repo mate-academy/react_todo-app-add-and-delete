@@ -2,7 +2,7 @@ import React, { useContext, useEffect, useState } from 'react';
 import cn from 'classnames';
 
 import { Todo } from '../../types/todosTypes';
-import { TodosContext, ApiErrorContext } from '../../Context';
+import { TodosContext, ApiErrorContext, FormFocusContext } from '../../Context';
 import { deleteTodo } from '../../api/todos';
 import { deleteTodoAction } from '../../Context/actions/actionCreators';
 
@@ -11,22 +11,24 @@ type Props = {
 };
 
 export const TodoItem: React.FC<Props> = ({ todo }) => {
+  const { setIsFocused } = useContext(FormFocusContext);
   const {
     id,
     title,
     completed,
   } = todo;
-  const isDel = todo.isDeleting;
-  const [isDeleting, setIsDeleting] = useState(isDel || false);
+  const isTodoEdited = todo.isDeleting;
+  const [isDeleting, setIsDeleting] = useState(isTodoEdited || false);
   const { dispatch } = useContext(TodosContext);
   const { setApiError } = useContext(ApiErrorContext);
 
   useEffect(() => {
-    setIsDeleting(isDel || false);
-  }, [isDel]);
+    setIsDeleting(isTodoEdited || false);
+  }, [isTodoEdited]);
 
   const handleDeleteClick = () => {
     setIsDeleting(true);
+    setIsFocused(false);
 
     deleteTodo(id)
       .then(() => {
@@ -39,6 +41,7 @@ export const TodoItem: React.FC<Props> = ({ todo }) => {
       })
       .finally(() => {
         setIsDeleting(false);
+        setIsFocused(true);
       });
   };
 
@@ -47,16 +50,18 @@ export const TodoItem: React.FC<Props> = ({ todo }) => {
       className={cn('todo', {
         completed,
       })}
+      data-cy="Todo"
     >
       <label className="todo__status-label">
         <input
+          data-cy="TodoStatus"
           type="checkbox"
           className="todo__status"
           checked={completed}
         />
       </label>
 
-      <span className="todo__title">
+      <span className="todo__title" data-cy="TodoTitle">
         {title}
       </span>
 
@@ -64,6 +69,7 @@ export const TodoItem: React.FC<Props> = ({ todo }) => {
         type="button"
         className="todo__remove"
         onClick={handleDeleteClick}
+        data-cy="TodoDelete"
       >
         ×
       </button>
@@ -72,6 +78,7 @@ export const TodoItem: React.FC<Props> = ({ todo }) => {
         className={cn('modal overlay', {
           'is-active': id === 0 || isDeleting,
         })}
+        data-cy="TodoLoader"
       >
         <div className="modal-background has-background-white-ter" />
         <div className="loader" />
@@ -132,6 +139,7 @@ export const TodoItem: React.FC<Props> = ({ todo }) => {
 //   {/* This form is shown instead of the title and remove button */}
 //   <form>
 //     <input
+//       data-cy="TodoTitleField"
 //       type="text"
 //       className="todo__title-field"
 //       placeholder="Empty todo will be deleted"

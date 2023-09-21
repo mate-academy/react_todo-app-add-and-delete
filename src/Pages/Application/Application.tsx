@@ -1,6 +1,6 @@
 import React, { useContext } from 'react';
 
-import { ApiErrorContext, TodosContext } from '../../Context';
+import { TodosContext } from '../../Context';
 
 // components
 import { Header } from '../../Components/Header';
@@ -9,7 +9,6 @@ import { Footer } from '../../Components/Footer';
 import { ApiError } from '../../Components/UI/ApiError';
 
 export const Application: React.FC = () => {
-  const { apiError } = useContext(ApiErrorContext);
   const { todos, tempTodo } = useContext(TodosContext);
   const isContentVisible = Boolean(todos.length) || Boolean(tempTodo);
 
@@ -27,7 +26,7 @@ export const Application: React.FC = () => {
         </div>
       )}
 
-      {apiError && <ApiError />}
+      <ApiError />
     </div>
   );
 };
