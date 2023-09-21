@@ -48,9 +48,9 @@ export const App: React.FC = () => {
       userId: USER_ID,
       title,
       completed: false,
-    }).then((response) => {
+    }).then(() => {
       setIsInputDisabled(false);
-      setTodos(prev => ({ ...prev, response }));
+      fetchData();
       setTemporaryTodo(null);
     });
   };
