@@ -100,6 +100,7 @@ export const App: React.FC = () => {
         .then(response => {
           setTitle('');
           setTempTodo(response);
+          setTodos([...todos, response]);
         }).catch(() => {
           setIsError(true);
           setError('Unable to add a todo');
@@ -109,7 +110,6 @@ export const App: React.FC = () => {
           setTempTodo(null);
         })
         .finally(() => {
-          setTodos([...todos, temporaryTodo]);
           setTempTodo(null);
         });
     }
