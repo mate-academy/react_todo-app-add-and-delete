@@ -1,24 +1,148 @@
-/* eslint-disable max-len */
+/* eslint-disable @typescript-eslint/indent */
 /* eslint-disable jsx-a11y/control-has-associated-label */
-import React from 'react';
-import { UserWarning } from './UserWarning';
+import React, { useEffect, useState } from 'react';
+import cn from 'classnames';
+import { TodoList } from './components/TodoList';
+import { FooterFilter } from './components/FooterFilter';
+import { Filter } from './types/Filter';
+import { getTodos, deleteTodo, addTodos } from './api/todos';
+import { Todo } from './types/Todo';
+import { Errors } from './types/Errors';
 
-const USER_ID = 0;
+const USER_ID = 11551;
 
 export const App: React.FC = () => {
-  if (!USER_ID) {
-    return <UserWarning />;
-  }
+  const [filter, setFilter] = useState<Filter>('all');
+  const [todos, setTodos] = useState<Todo[]>([]);
+  const [error, setError] = useState<Errors | null>(null);
+  const [title, setTitle] = useState<string>('');
+  const [tempTodo, setTempTodo] = useState<Todo | null>(null);
+
+  const fetchData = async () => {
+    try {
+      const todoss = getTodos(USER_ID);
+
+      setTodos(await todoss);
+    } catch (e) {
+      setError(Errors.load);
+      setTimeout(() => setError(null), 3000);
+    }
+  };
+
+  useEffect(() => {
+    fetchData();
+  }, []);
+
+  const handleFilter = (newFilter: Filter) => {
+    setFilter(newFilter);
+  };
+
+  const handleRemove = (todoId: number) => {
+    const todosLeft = todos.filter(todo => todo.id !== todoId);
+
+    setTodos(todosLeft);
+
+    deleteTodo(todoId)
+      .catch(() => setError(Errors.delete));
+  };
+
+  const handleTitleError = () => {
+    setError(Errors.noTitle);
+    setTimeout(() => {
+      setError(null);
+    }, 3000);
+  };
+
+  const onSubmit = async () => {
+    try {
+      if (title === '') {
+        throw new Error(Errors.noTitle);
+      }
+
+      const trimmedTitle = title.trim();
+
+      const temporaryTodo = {
+        id: 0,
+        title: trimmedTitle,
+        userId: USER_ID,
+        completed: false,
+      };
+
+      setTempTodo(temporaryTodo);
+
+      const response = await addTodos({
+        id: 0,
+        title: trimmedTitle,
+        userId: USER_ID,
+        completed: false,
+      });
+
+      setTodos([...todos, response]);
+      setTitle('');
+      setTempTodo(response);
+    } catch {
+      handleTitleError();
+    }
+  };
 
   return (
-    <section className="section container">
-      <p className="title is-4">
-        Copy all you need from the prev task:
-        <br />
-        <a href="https://github.com/mate-academy/react_todo-app-loading-todos#react-todo-app-load-todos">React Todo App - Load Todos</a>
-      </p>
+    <div className="todoapp">
+      <h1 className="todoapp__title">todos</h1>
 
-      <p className="subtitle">Styles are already copied</p>
-    </section>
+      <div className="todoapp__content">
+        <header className="todoapp__header">
+          {todos.filter(todo => !todo.completed).length !== 0
+            && (
+              <button
+                type="button"
+                className="todoapp__toggle-all active"
+                data-cy="ToggleAllButton"
+              />
+            )}
+          <form onSubmit={onSubmit}>
+            <input
+              data-cy="NewTodoField"
+              type="text"
+              className="todoapp__new-todo"
+              placeholder="What needs to be done?"
+              value={title}
+              onChange={(e) => setTitle(e.target.value)}
+            />
+          </form>
+        </header>
+
+        {todos
+        && (
+        <TodoList
+          filter={filter}
+          todos={todos}
+          handleRemove={handleRemove}
+        />
+)}
+
+        {todos.length !== 0
+          && (
+            <FooterFilter handleFilter={handleFilter} todos={todos} />
+          )}
+
+      </div>
+
+      <div
+        data-cy="ErrorNotification"
+        className={cn('notification is-danger is-light has-text-weight-normal',
+          { hidden: error === null })}
+      >
+        {error
+          && (
+            <button
+              data-cy="HideErrorButton"
+              type="button"
+              className="delete"
+              onClick={() => setError(null)}
+            />
+          )}
+        {error}
+      </div>
+    </div>
   );
 };
