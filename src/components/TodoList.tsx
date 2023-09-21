@@ -7,10 +7,13 @@ type TodoListProps = {
   filter: Filter;
   todos: Todo[];
   handleRemove: (todoId: number) => void;
+  tempTodo: Todo | null;
 };
 
 export const TodoList: React.FC<TodoListProps>
-= ({ filter, todos, handleRemove }) => {
+= ({
+  filter, todos, handleRemove, tempTodo,
+}) => {
   const visibleTodos = () => {
     if (filter === 'active') {
       return todos.filter((todo) => !todo.completed);
@@ -26,7 +29,12 @@ export const TodoList: React.FC<TodoListProps>
   return (
     <section className="todoapp__main" data-cy="TodoList">
       {visibleTodos().map(todo => (
-        <SingleTodo key={todo.id} todo={todo} handleRemove={handleRemove} />
+        <SingleTodo
+          key={todo.id}
+          todo={todo}
+          handleRemove={handleRemove}
+          tempTodo={tempTodo}
+        />
       ))}
     </section>
   );

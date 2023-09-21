@@ -17,6 +17,7 @@ export const App: React.FC = () => {
   const [error, setError] = useState<Errors | null>(null);
   const [title, setTitle] = useState<string>('');
   const [tempTodo, setTempTodo] = useState<Todo | null>(null);
+  const [deletedTodoId, setDeletedTodoId] = useState<number | null>(null);
 
   const fetchData = async () => {
     try {
@@ -39,6 +40,8 @@ export const App: React.FC = () => {
 
   const handleRemove = (todoId: number) => {
     const todosLeft = todos.filter(todo => todo.id !== todoId);
+
+    setDeletedTodoId(todoId);
 
     setTodos(todosLeft);
 
@@ -105,7 +108,10 @@ export const App: React.FC = () => {
               type="text"
               className="todoapp__new-todo"
               placeholder="What needs to be done?"
-              value={title}
+              // eslint-disable-next-line jsx-a11y/no-autofocus
+              ref={input => input && input.focus()}
+              disabled={tempTodo !== null}
+              value={title?.trimStart() || ''}
               onChange={(e) => setTitle(e.target.value)}
             />
           </form>
@@ -117,6 +123,8 @@ export const App: React.FC = () => {
           filter={filter}
           todos={todos}
           handleRemove={handleRemove}
+          tempTodo={tempTodo}
+          deletedTodoId={deletedTodoId}
         />
 )}
 
