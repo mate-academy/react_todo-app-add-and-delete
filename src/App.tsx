@@ -6,7 +6,7 @@ import { TodoList } from './components/TodoList';
 import { FooterFilter } from './components/FooterFilter';
 import { Filter } from './types/Filter';
 import { getTodos, deleteTodo, addTodos } from './api/todos';
-import { Todo } from './types/Todo';
+import { Todo, TempTodo } from './types/Todo';
 import { Errors } from './types/Errors';
 
 const USER_ID = 11551;
@@ -16,7 +16,7 @@ export const App: React.FC = () => {
   const [todos, setTodos] = useState<Todo[]>([]);
   const [error, setError] = useState<Errors | null>(null);
   const [title, setTitle] = useState<string>('');
-  const [tempTodo, setTempTodo] = useState<Todo | null>(null);
+  const [tempTodo, setTempTodo] = useState<TempTodo | null>(null);
   const [deletedTodoId, setDeletedTodoId] = useState<number | null>(null);
 
   const fetchData = async () => {
@@ -49,17 +49,13 @@ export const App: React.FC = () => {
       .catch(() => setError(Errors.delete));
   };
 
-  const handleTitleError = () => {
-    setError(Errors.noTitle);
-    setTimeout(() => {
-      setError(null);
-    }, 3000);
-  };
-
   const onSubmit = async () => {
     try {
       if (title === '') {
-        throw new Error(Errors.noTitle);
+        setError(Errors.noTitle);
+        setTimeout(() => {
+          setError(null);
+        }, 3000);
       }
 
       const trimmedTitle = title.trim();
@@ -74,7 +70,6 @@ export const App: React.FC = () => {
       setTempTodo(temporaryTodo);
 
       const response = await addTodos({
-        id: 0,
         title: trimmedTitle,
         userId: USER_ID,
         completed: false,
@@ -84,8 +79,17 @@ export const App: React.FC = () => {
       setTitle('');
       setTempTodo(response);
     } catch {
-      handleTitleError();
+      setError(Errors.add);
+      setTimeout(() => {
+        setError(null);
+      }, 3000);
     }
+  };
+
+  const handleSubmit: React.FormEventHandler = (event) => {
+    event.preventDefault();
+
+    onSubmit();
   };
 
   return (
@@ -102,7 +106,7 @@ export const App: React.FC = () => {
                 data-cy="ToggleAllButton"
               />
             )}
-          <form onSubmit={onSubmit}>
+          <form onSubmit={handleSubmit}>
             <input
               data-cy="NewTodoField"
               type="text"
@@ -111,7 +115,7 @@ export const App: React.FC = () => {
               // eslint-disable-next-line jsx-a11y/no-autofocus
               ref={input => input && input.focus()}
               disabled={tempTodo !== null}
-              value={title?.trimStart() || ''}
+              value={title}
               onChange={(e) => setTitle(e.target.value)}
             />
           </form>

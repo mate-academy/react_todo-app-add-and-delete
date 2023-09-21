@@ -1,10 +1,10 @@
 import classNames from 'classnames';
-import { Todo } from '../types/Todo';
+import { Todo, TempTodo } from '../types/Todo';
 
 type SingleTodoProps = {
   todo: Todo;
   handleRemove: (todoId: number) => void
-  tempTodo: Todo | null;
+  tempTodo: TempTodo | null;
   deletedTodoId: number | null;
 };
 
@@ -33,15 +33,6 @@ export const SingleTodo
     >
       ×
     </button>
-    <div
-      data-cy="TodoLoader"
-      className={classNames('modal overlay', {
-        'is-active': tempTodo !== null,
-      })}
-    >
-      <div className="modal-background has-background-white-ter" />
-      <div className="loader" />
-    </div>
 
     <div
       data-cy="TodoLoader"
@@ -52,5 +43,36 @@ export const SingleTodo
       <div className="modal-background has-background-white-ter" />
       <div className="loader" />
     </div>
+
+    {tempTodo !== null
+        && (
+          <div data-cy="Todo" className="todo">
+            <label className="todo__status-label">
+              <input
+                data-cy="TodoStatus"
+                type="checkbox"
+                className="todo__status"
+              />
+            </label>
+
+            <span data-cy="TodoTitle" className="todo__title">
+              {tempTodo.title}
+            </span>
+
+            <button type="button" className="todo__remove" data-cy="TodoDelete">
+              ×
+            </button>
+
+            <div
+              data-cy="TodoLoader"
+              className={classNames('modal overlay', {
+                'is-active': tempTodo !== null,
+              })}
+            >
+              <div className="modal-background has-background-white-ter" />
+              <div className="loader" />
+            </div>
+          </div>
+        )}
   </div>
 );

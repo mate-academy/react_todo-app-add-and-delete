@@ -1,13 +1,13 @@
 import React from 'react';
 import { Filter } from '../types/Filter';
-import { Todo } from '../types/Todo';
+import { Todo, TempTodo } from '../types/Todo';
 import { SingleTodo } from './SingleTodo';
 
 type TodoListProps = {
   filter: Filter;
   todos: Todo[];
   handleRemove: (todoId: number) => void;
-  tempTodo: Todo | null;
+  tempTodo: TempTodo | null;
   deletedTodoId: number | null;
 };
 
