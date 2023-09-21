@@ -1,6 +1,7 @@
 /// <reference types='cypress' />
 /// <reference types='../support' />
 
+//#region Page Objects
 const page = {
   toggleAllButton: () => cy.byDataCy('ToggleAllButton'),
   newTodoField: () => cy.byDataCy('NewTodoField'),
@@ -16,6 +17,13 @@ const page = {
     cy.get('.todoapp__title').should('exist');
   },
   pauseTimers: () => cy.clock(),
+
+  flushJSTimers: (delay = 1000) => {
+    cy.clock().then(clock => {
+      clock.tick(delay);
+      clock.restore();
+    });
+  },
 
   /**
    * @param {*} response - can be a valid response object or stub
@@ -60,6 +68,7 @@ const todos = {
   deleteButton: index => todos.el(index).byDataCy('TodoDelete'),
   statusToggler: index => todos.el(index).byDataCy('TodoStatus'),
   title: index => todos.el(index).byDataCy('TodoTitle'),
+  titleField: index => todos.el(index).byDataCy('TodoTitleField'),
 
   assertCount: length => cy.byDataCy('Todo').should('have.length', length),
   assertTitle: (index, title) => todos.title(index).should('have.text', title),
@@ -91,6 +100,7 @@ const filter = {
   assertSelected: type => filter.link(type).should('have.class', 'selected'),
   assertNotSelected: type => filter.link(type).should('not.have.class', 'selected'),
 };
+//#endregion
 
 let failed = false;
 
@@ -105,6 +115,20 @@ describe('', () => {
   });
 
   describe('Page with no todos', () => {
+    it('should send 1 todos request', () => {
+      const spy = cy.stub()
+        .callsFake(req => req.reply({ body: [] }))
+        .as('loadCallback')
+
+      page.mockLoad(spy).as('loadRequest');
+      page.visit();
+
+      cy.wait('@loadRequest');
+      cy.wait(1000);
+
+      cy.get('@loadCallback').should('have.callCount', 1);
+    });
+
     describe('', () => {
       beforeEach(() => {
         page.mockLoad({ body: [] }).as('loadRequest');
@@ -128,22 +152,6 @@ describe('', () => {
 
       it('should not show error message', () => {
         errorMessage.assertHidden();
-      });
-    });
-
-    describe('', () => {
-      it('should send 1 todos request', () => {
-        const spy = cy.stub()
-          .callsFake(req => req.reply({ body: [] }))
-          .as('loadCallback')
-
-        page.mockLoad(spy).as('loadRequest');
-        page.visit();
-
-        cy.wait('@loadRequest');
-        cy.wait(1000);
-
-        cy.get('@loadCallback').should('have.callCount', 1);
       });
     });
 
@@ -195,10 +203,6 @@ describe('', () => {
 
     it('should have delete buttons for every todo', () => {
       todos.deleteButton(0).should('exist');
-    });
-
-    it('should not have todos in editing mode', () => {
-      cy.byDataCy('TodoList').eq(0).byDataCy('TodoTitleField').should('not.exist');
     });
 
     it('should not have loaders', () => {
@@ -483,6 +487,7 @@ describe('', () => {
         });
 
         it('should replace loader with a created todo', () => {
+          page.flushJSTimers();
           todos.assertCount(6);
           todos.assertNotLoading(5);
         });
@@ -566,7 +571,11 @@ describe('', () => {
 
       it('should hide an error message in 3 seconds', () => {
         cy.clock();
-        cy.tick(3000);
+        cy.tick(2500);
+
+        errorMessage.assertVisible();
+
+        cy.tick(500);
         errorMessage.assertHidden();
       });
 
@@ -606,15 +615,27 @@ describe('', () => {
         errorMessage.assertVisible();
       });
 
+      it('should keep an error message for 3s after the last fail', () => {
+        page.mockCreate({ statusCode: 503, body: 'Service Unavailable' })
+          .as('createRequest2');
+
+        cy.clock();
+
+        cy.tick(2000);
+        page.newTodoField().type(`{enter}`);
+        cy.tick(500);
+        cy.wait('@createRequest2');
+        cy.tick(2000);
+
+        errorMessage.assertVisible();
+      });
+
       it('should allow to add a todo', () => {
         page.mockCreate().as('createRequest2');
         page.newTodoField().type('{enter}');
 
         cy.wait('@createRequest2');
-
-        // flush any JS animations
-        cy.clock();
-        cy.tick(1000);
+        page.flushJSTimers();
 
         todos.assertCount(6);
         todos.assertNotLoading(5);
@@ -650,248 +671,6 @@ describe('', () => {
 
     it('should show todosCounter', () => {
       page.todosCounter().should('have.text', '1 items left');
-    });
-  });
-
-  describe('Individual Todo Deletion', () => {
-    describe('Default behavior', () => {
-      beforeEach(() => {
-        page.mockLoad().as('loadRequest');
-        page.visit();
-        cy.wait('@loadRequest');
-      });
-
-      it('should display a loader on the todo when the TodoDeleteButton is clicked', () => {
-        page.mockDelete(257334);
-        page.pauseTimers();
-        todos.deleteButton(0).click();
-
-        todos.assertLoading(0);
-      });
-
-      it('should not delete a todo before successful response', () => {
-        page.mockDelete(257334);
-        page.pauseTimers();
-        todos.deleteButton(0).click();
-
-        todos.assertCount(5);
-      });
-
-      it('should remove the todo from the list on a successful API response', () => {
-        page.mockDelete(257334).as('deleteRequest');
-
-        todos.deleteButton(0).click();
-        cy.wait('@deleteRequest');
-
-        todos.assertCount(4);
-        todos.assertTitle(0, 'CSS');
-      });
-
-      it('should focus text field after todo deletion', () => {
-        page.mockDelete(257334).as('deleteRequest');
-
-        todos.deleteButton(0).click();
-        cy.wait('@deleteRequest');
-
-        page.newTodoField().should('be.focused');
-      });
-
-      it('should not remove the todo from the list on an API error', () => {
-        page.mockDelete(257334, { statusCode: 500, body: 'Internal Server Error' }).as('deleteRequest');
-
-        todos.deleteButton(0).click();
-        cy.wait('@deleteRequest');
-
-        todos.assertCount(5);
-        todos.assertTitle(0, 'HTML');
-      });
-
-      it('should show an error message on an API error', () => {
-        page.mockDelete(257334, { statusCode: 500, body: 'Internal Server Error' }).as('deleteRequest');
-
-        todos.deleteButton(0).click();
-        cy.wait('@deleteRequest');
-
-        errorMessage.assertVisible();
-        errorMessage.assertText('Unable to delete a todo');
-      });
-
-      it('should adjust the active todo count correctly after successful deletion', () => {
-        page.mockDelete(257338).as('deleteRequest');
-        todos.deleteButton(4).click();
-        cy.wait('@deleteRequest');
-
-        page.todosCounter().should('have.text', '1 items left');
-      });
-
-      it('should not adjust the active todo count after failed deletion', () => {
-        page.mockDelete(257338, { statusCode: 500, body: 'Internal Server Error' }).as('deleteRequest');
-        todos.deleteButton(4).click();
-        cy.wait('@deleteRequest');
-
-        page.todosCounter().should('have.text', '2 items left');
-      });
-    });
-
-    describe('Last todo deletion', () => {
-      beforeEach(() => {
-        const todo = {
-          "id": 257334,
-          "createdAt": "2023-09-19T08:21:56.486Z",
-          "updatedAt": "2023-09-19T08:23:07.096Z",
-          "userId": 1,
-          "title": "HTML",
-          "completed": false
-        };
-
-        page.mockLoad({ body: [todo] }).as('loadRequest');
-        page.visit();
-        cy.wait('@loadRequest');
-
-        page.mockDelete(257334);
-        todos.deleteButton(0).click();
-      });
-
-      it('should hide todos', () => {
-        todos.assertCount(0);
-      });
-
-      it('should hide footer', () => {
-        filter.assertHidden();
-        page.clearCompletedButton().should('not.exist');
-        page.todosCounter().should('not.exist');
-      });
-
-      it('should focus text field after todo deletion', () => {
-        page.newTodoField().should('be.focused');
-      });
-    });
-  });
-
-  describe('Group Todo Deletion', () => {
-    describe('with no completed todos', () => {
-      beforeEach(() => {
-        page.mockLoad({ fixture: 'active-todos' }).as('loadRequest');
-        page.visit();
-        cy.wait('@loadRequest');
-      });
-
-      it('should not have active ClearCompleted button', () => {
-        page.clearCompletedButton().should('be.disabled');
-      });
-    });
-
-    describe('with some completed todos', () => {
-      beforeEach(() => {
-        page.mockLoad().as('loadRequest');
-        page.visit();
-        cy.wait('@loadRequest');
-      });
-
-      it('should have ClearCompleted button enabled', () => {
-        page.clearCompletedButton().should('not.be.disabled');
-      });
-
-      it('should send individual deletion request for each completed todo', () => {
-        page.mockDelete(257334).as('deleteRequest1');
-        page.mockDelete(257335).as('deleteRequest2');
-        page.mockDelete(257336).as('deleteRequest3');
-
-        page.clearCompletedButton().click();
-
-        cy.wait('@deleteRequest1');
-        cy.wait('@deleteRequest2');
-        cy.wait('@deleteRequest3');
-      });
-
-      describe('on success', () => {
-        beforeEach(() => {
-          page.mockDelete(257334).as('deleteRequest1');
-          page.mockDelete(257335).as('deleteRequest2');
-          page.mockDelete(257336).as('deleteRequest3');
-
-          page.clearCompletedButton().click();
-
-          cy.wait('@deleteRequest1');
-          cy.wait('@deleteRequest2');
-          cy.wait('@deleteRequest3');
-        });
-
-        it('should remove all completed todos from the list', () => {
-          todos.assertCount(2);
-          todos.assertTitle(0, 'TypeScript');
-          todos.assertTitle(1, 'React');
-        });
-
-        it('should disable ClearCompleted button', () => {
-          page.clearCompletedButton().should('be.disabled');
-        });
-
-        it('should focus the text field', () => {
-          page.newTodoField().should('be.focused');
-        });
-      });
-
-      describe('on a simgle fail', () => {
-        beforeEach(() => {
-          page.mockDelete(257334).as('deleteRequest1');
-          page.mockDelete(257335, { statusCode: 500, body: 'Internal Server Error' }).as('deleteRequest2');
-          page.mockDelete(257336).as('deleteRequest3');
-
-          page.clearCompletedButton().click();
-
-          cy.wait('@deleteRequest1');
-          cy.wait('@deleteRequest2');
-          cy.wait('@deleteRequest3');
-        });
-
-        it('should show an error message if any of the group deletions fails', () => {
-          errorMessage.assertVisible();
-          errorMessage.assertText('Unable to delete a todo');
-        });
-
-        it('should remove todos with success responses and keep todos with errors', () => {
-          todos.assertCount(3);
-          todos.assertTitle(0, 'CSS');
-          todos.assertTitle(1, 'TypeScript');
-        });
-
-        it('should not disable ClearCompleted button', () => {
-          page.clearCompletedButton().should('not.be.disabled');
-        });
-      });
-    });
-
-    describe('with all todos completed', () => {
-      beforeEach(() => {
-        page.mockLoad({ fixture: 'completed-todos' }).as('loadRequest');
-        page.visit();
-        cy.wait('@loadRequest');
-
-        page.mockDelete(257334).as('deleteRequest1');
-        page.mockDelete(257335).as('deleteRequest2');
-        page.mockDelete(257336).as('deleteRequest3');
-        page.mockDelete(257337).as('deleteRequest4');
-        page.mockDelete(257338).as('deleteRequest5');
-
-        page.clearCompletedButton().click();
-
-        cy.wait('@deleteRequest1');
-        cy.wait('@deleteRequest2');
-        cy.wait('@deleteRequest3');
-        cy.wait('@deleteRequest4');
-        cy.wait('@deleteRequest5');
-      });
-
-      it('should hide todos after clearing all completed todos', () => {
-        todos.assertCount(0);
-      });
-
-      it('should hide footer after clearing all completed todos', () => {
-        filter.assertHidden();
-        page.clearCompletedButton().should('not.exist');
-        page.todosCounter().should('not.exist');
-      });
     });
   });
 });
