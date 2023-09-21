@@ -6,13 +6,9 @@ import { Todo } from '../types/Todo';
 export const TodoContext = createContext<{
   todos: Todo[];
   setTodos: React.Dispatch<React.SetStateAction<Todo[]>>;
-  tempTodo: Todo | null;
-  setTempTodo: React.Dispatch<React.SetStateAction<Todo | null>>;
 }>({
   todos: [],
   setTodos: () => {},
-  tempTodo: null,
-  setTempTodo: () => {},
 });
 
 type Props = {
@@ -21,7 +17,6 @@ type Props = {
 
 export const TodoProvider: React.FC<Props> = ({ children }) => {
   const [todos, setTodos] = useState<Todo[]>([]);
-  const [tempTodo, setTempTodo] = useState<Todo | null>(null);
 
   // useEffect(() => {
   //   const todosStorage = localStorage.getItem('todos');
@@ -36,9 +31,7 @@ export const TodoProvider: React.FC<Props> = ({ children }) => {
   const value = useMemo(() => ({
     todos,
     setTodos,
-    tempTodo,
-    setTempTodo,
-  }), [todos, tempTodo]);
+  }), [todos]);
 
   return (
     <TodoContext.Provider value={value}>

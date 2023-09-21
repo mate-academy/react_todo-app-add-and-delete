@@ -1,24 +1,21 @@
 import classnames from 'classnames';
-import { useEffect } from 'react';
+import { useContext, useEffect } from 'react';
+import { ErrorContext } from '../../context/ErrorContext';
 
-type Props = {
-  errorMessage: string;
-  isErrorHidden: boolean;
-  onHideError: (value: boolean) => void;
-};
+export const TodoNotification: React.FC = () => {
+  const {
+    errorMessage,
+    isErrorHidden,
+    setIsErrorHidden,
+  } = useContext(ErrorContext);
 
-export const TodoNotification: React.FC<Props> = ({
-  errorMessage,
-  isErrorHidden,
-  onHideError,
-}) => {
   useEffect(() => {
     if (errorMessage.length !== 0) {
-      onHideError(false);
+      setIsErrorHidden(false);
     }
 
     setTimeout(() => {
-      onHideError(true);
+      setIsErrorHidden(true);
     }, 3000);
   }, [errorMessage]);
 
@@ -37,7 +34,7 @@ export const TodoNotification: React.FC<Props> = ({
         type="button"
         className="delete"
         aria-label="Delete"
-        onClick={() => onHideError(true)}
+        onClick={() => setIsErrorHidden(true)}
       />
 
       {errorMessage}

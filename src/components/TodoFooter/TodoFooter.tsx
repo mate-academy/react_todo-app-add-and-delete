@@ -1,18 +1,31 @@
-import { useContext } from 'react';
+import { useContext, useMemo } from 'react';
 import classnames from 'classnames';
 
 import { Status } from '../../types/Status';
 import { FilterContext } from '../../context/FilterContext';
 import { TodoContext } from '../../context/TodoContext';
+import { deleteTodo } from '../../api/todos';
+import { ErrorContext } from '../../context/ErrorContext';
 
 export const TodoFooter = () => {
   const { todos, setTodos } = useContext(TodoContext);
   const { selectedFilter, setSelectedFilter } = useContext(FilterContext);
+  const { setErrorMessage } = useContext(ErrorContext);
+
+  const hasCompletedTodo = useMemo(() => {
+    return todos.some(todo => todo.completed);
+  }, [todos]);
 
   const clearCompleted = () => {
-    const activeTodos = todos.filter(({ completed }) => !completed);
-
-    setTodos(activeTodos);
+    todos
+      .filter(({ completed }) => completed)
+      .forEach(({ id }) => {
+        deleteTodo(id)
+          .then(() => {
+            setTodos(prevState => prevState.filter(todo => todo.id !== id));
+          })
+          .catch(() => setErrorMessage('Unable to delete a todo'));
+      });
   };
 
   return (
@@ -65,16 +78,15 @@ export const TodoFooter = () => {
         </a>
       </nav>
 
-      {!!todos.filter(({ completed }) => completed).length && (
-        <button
-          data-cy="ClearCompletedButton"
-          type="button"
-          className="todoapp__clear-completed"
-          onClick={clearCompleted}
-        >
-          Clear completed
-        </button>
-      )}
+      <button
+        data-cy="ClearCompletedButton"
+        type="button"
+        className="todoapp__clear-completed"
+        disabled={!hasCompletedTodo}
+        onClick={clearCompleted}
+      >
+        Clear completed
+      </button>
     </footer>
   );
 };

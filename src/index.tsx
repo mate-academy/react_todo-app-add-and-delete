@@ -7,15 +7,18 @@ import './styles/index.scss';
 import { App } from './App';
 import { TodoProvider } from './context/TodoContext';
 import { FilterProvider } from './context/FilterContext';
-import { LoadingProvider } from './context/LoadingContext';
+import { ErrorProvider } from './context/ErrorContext';
+import { TodoTempProvider } from './context/TodoTempContext';
 
 createRoot(document.getElementById('root') as HTMLDivElement)
   .render(
     <TodoProvider>
-      <FilterProvider>
-        <LoadingProvider>
-          <App />
-        </LoadingProvider>
-      </FilterProvider>
+      <TodoTempProvider>
+        <FilterProvider>
+          <ErrorProvider>
+            <App />
+          </ErrorProvider>
+        </FilterProvider>
+      </TodoTempProvider>
     </TodoProvider>,
   );

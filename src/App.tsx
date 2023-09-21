@@ -1,18 +1,18 @@
 import React, { useContext, useEffect, useState } from 'react';
-
 import { TodoHeader } from './components/TodoHeader';
 import { TodoList } from './components/TodoList';
 import { TodoFooter } from './components/TodoFooter';
 import { TodoNotification } from './components/TodoNotification';
 import { TodoContext } from './context/TodoContext';
 import { getTodos } from './api/todos';
+import { ErrorContext } from './context/ErrorContext';
 import { USER_ID } from './utils/variables';
 
 export const App: React.FC = () => {
   const { todos, setTodos } = useContext(TodoContext);
+  const { setErrorMessage } = useContext(ErrorContext);
 
-  const [errorMessage, setErrorMessage] = useState('');
-  const [isErrorHidden, setIsErrorHidden] = useState(true);
+  const [isActive, setIsActive] = useState(false);
 
   useEffect(() => {
     getTodos(USER_ID)
@@ -28,20 +28,18 @@ export const App: React.FC = () => {
 
       <div className="todoapp__content">
         <TodoHeader
-          onAddError={(message) => setErrorMessage(message)}
-          onHideError={(value) => setIsErrorHidden(value)}
+          onHandleActive={(value) => setIsActive(value)}
         />
 
-        <TodoList />
-
-        {!!todos.length && <TodoFooter />}
+        <TodoList
+          isActive={isActive}
+        />
+        {!!todos.length && (
+          <TodoFooter />
+        )}
       </div>
 
-      <TodoNotification
-        errorMessage={errorMessage}
-        isErrorHidden={isErrorHidden}
-        onHideError={(value) => setIsErrorHidden(value)}
-      />
+      <TodoNotification />
     </div>
   );
 };

@@ -1,39 +1,42 @@
 import {
-  useContext, useRef, useEffect, useState,
+  useContext,
+  useEffect,
+  useRef,
+  useState,
 } from 'react';
 
 import { TodoContext } from '../../context/TodoContext';
-import { Todo } from '../../types/Todo';
+import { ErrorContext } from '../../context/ErrorContext';
+import { TodoTempContext } from '../../context/TodoTempContext';
 import { USER_ID } from '../../utils/variables';
 import { createTodo } from '../../api/todos';
-import { LoadingContext } from '../../context/LoadingContext';
+import { Todo } from '../../types/Todo';
 
 type Props = {
-  onAddError: (value: string) => void;
-  onHideError: (value: boolean) => void;
+  onHandleActive: (value: boolean) => void;
 };
 
-export const TodoHeader: React.FC<Props> = ({
-  onAddError, onHideError,
-}) => {
-  const { todos, setTodos, setTempTodo } = useContext(TodoContext);
-  const { isLoading, setIsLoading } = useContext(LoadingContext);
+export const TodoHeader: React.FC<Props> = ({ onHandleActive }) => {
+  const { todos, setTodos } = useContext(TodoContext);
+  const { setTodoTemp } = useContext(TodoTempContext);
+  const { errorMessage, setErrorMessage } = useContext(ErrorContext);
 
   const [title, setTitle] = useState('');
+  const [isInputDisabled, setIsInputDisabled] = useState(false);
 
   const inputRef = useRef<HTMLInputElement>(null);
 
   useEffect(() => {
-    if (inputRef.current) {
-      inputRef.current.focus();
-    }
-  }, [todos, isLoading]);
+    inputRef?.current?.focus();
+  }, [todos, errorMessage]);
 
   const toggleAll = () => {
     setTodos(currentTodos => {
-      return currentTodos.map(currentTodo => ({
-        ...currentTodo,
-        completed: !currentTodo.completed,
+      const todosCopy = [...currentTodos];
+
+      return todosCopy.map(todo => ({
+        ...todo,
+        completed: !todo.completed,
       }));
     });
   };
@@ -42,39 +45,48 @@ export const TodoHeader: React.FC<Props> = ({
     event.preventDefault();
 
     if (!title.trim()) {
-      onAddError('Title should not be empty');
-      onHideError(false);
-
-      setTimeout(() => {
-        onHideError(true);
-      }, 3000);
+      setErrorMessage('Title should not be empty');
+      inputRef?.current?.focus();
 
       return;
     }
 
-    setIsLoading(true);
-
-    setTempTodo({
+    setTodoTemp({
       id: 0,
       userId: USER_ID,
-      title,
+      title: title.trim(),
       completed: false,
     });
 
+    setIsInputDisabled(true);
+    onHandleActive(true);
     createTodo({
       userId: USER_ID,
       title: title.trim(),
       completed: false,
     })
-      .then(newTodo => {
+      .then((newTodo) => {
         setTodos((prevTodos: Todo[]) => [...prevTodos, newTodo]);
+        setIsInputDisabled(false);
         setTitle('');
+
+        setTimeout(() => {
+          onHandleActive(false);
+        }, 3000);
       })
-      .catch(() => onAddError('Unable to add a todo'))
+      .catch(() => {
+        setIsInputDisabled(false);
+        setErrorMessage('Unable to add a todo');
+        inputRef?.current?.focus();
+        onHandleActive(true);
+      })
       .finally(() => {
-        setIsLoading(false);
-        setTempTodo(null);
+        setTodoTemp(null);
+        inputRef?.current?.focus();
+        onHandleActive(false);
       });
+
+    onHandleActive(true);
   };
 
   return (
@@ -91,7 +103,7 @@ export const TodoHeader: React.FC<Props> = ({
 
       <form onSubmit={handleSubmit}>
         <input
-          disabled={isLoading}
+          disabled={isInputDisabled}
           ref={inputRef}
           data-cy="NewTodoField"
           type="text"

@@ -1,14 +1,31 @@
+import { useContext } from 'react';
 import classnames from 'classnames';
-
 import { Todo } from '../../types/Todo';
+import { TodoContext } from '../../context/TodoContext';
 
 type Props = {
   todo: Todo;
   onDelete: (value: number) => void;
+  isLoading: boolean;
 };
 
-export const TodoItem: React.FC<Props> = ({ todo, onDelete }) => {
+export const TodoItem: React.FC<Props> = ({
+  todo, onDelete, isLoading,
+}) => {
+  const { setTodos } = useContext(TodoContext);
   const { id, title, completed } = todo;
+
+  const handleComplete = (
+    event: React.ChangeEvent<HTMLInputElement>,
+  ) => {
+    setTodos(prev => prev.map(currentTodo => {
+      if (currentTodo.id === todo.id) {
+        return { ...currentTodo, completed: event.target.checked };
+      }
+
+      return currentTodo;
+    }));
+  };
 
   return (
     <div
@@ -26,6 +43,7 @@ export const TodoItem: React.FC<Props> = ({ todo, onDelete }) => {
           type="checkbox"
           className="todo__status"
           checked={completed}
+          onChange={handleComplete}
         />
       </label>
 
@@ -45,7 +63,14 @@ export const TodoItem: React.FC<Props> = ({ todo, onDelete }) => {
         ×
       </button>
 
-      <div data-cy="TodoLoader" className="modal overlay">
+      <div
+        data-cy="TodoLoader"
+        className={classnames(
+          'modal overlay', {
+            'is-active': isLoading,
+          },
+        )}
+      >
         <div className="modal-background has-background-white-ter" />
         <div className="loader" />
       </div>

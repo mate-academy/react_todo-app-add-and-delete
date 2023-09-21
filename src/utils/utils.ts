@@ -11,7 +11,7 @@ export const getFilteredTodos = (todos: Todo[], selectedFilter: Status) => {
       case Status.Completed:
         return todosCopy.filter(({ completed }) => completed);
       default:
-        return todos;
+        return todosCopy;
     }
   }
 
