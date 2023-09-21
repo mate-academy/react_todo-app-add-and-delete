@@ -72,7 +72,7 @@ export const TodoList: React.FC<TodoListProps>
             </label>
 
             <span data-cy="TodoTitle" className="todo__title">
-              Todo is being saved now
+              {tempTodo.title}
             </span>
 
             <button type="button" className="todo__remove" data-cy="TodoDelete">
