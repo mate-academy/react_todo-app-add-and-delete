@@ -6,13 +6,17 @@ import { Status } from '../../enums/Status';
 type Props = {
   todos: Todo[],
   filter: Status,
-  temp: Todo | null
+  temp: Todo | null,
+  updateLoading: React.Dispatch<React.SetStateAction<boolean>>,
+  updateError: React.Dispatch<React.SetStateAction<string>>,
 };
 
 export const Main: React.FC<Props> = ({
   todos,
   filter,
   temp,
+  updateLoading,
+  updateError,
 }) => {
   const filteredTodos = useMemo(() => {
     switch (filter) {
@@ -30,6 +34,8 @@ export const Main: React.FC<Props> = ({
       <TodoList
         todos={filteredTodos}
         temp={temp}
+        updateLoading={updateLoading}
+        updateError={updateError}
       />
     </section>
   );

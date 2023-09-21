@@ -1,18 +1,32 @@
 import React, { useState } from 'react';
 import classNames from 'classnames';
 import { Todo } from '../../types/Todo';
+import { deleteTodo } from '../../api/todos';
 
 type Props = {
   todo: Todo,
-  isLoading?: boolean
+  isLoading?: boolean,
+  updateLoading: React.Dispatch<React.SetStateAction<boolean>>,
+  updateError: React.Dispatch<React.SetStateAction<string>>,
 };
 
-export const TodoItem: React.FC<Props> = ({ todo, isLoading }) => {
+export const TodoItem: React.FC<Props> = ({
+  todo,
+  isLoading,
+  updateLoading,
+  updateError,
+}) => {
   const [isEdit] = useState(false);
 
   const handleStatus = () => {};
 
-  const handleDelete = () => {};
+  const handleDelete = () => {
+    updateLoading(true);
+
+    deleteTodo(todo.id)
+      .catch(() => updateError('Unable to delete a todo'))
+      .finally(() => updateLoading(false));
+  };
 
   return (
     <div className={classNames('todo', {

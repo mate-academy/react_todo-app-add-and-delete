@@ -64,11 +64,15 @@ export const App: React.FC = () => {
               todos={todos}
               filter={filter}
               temp={tempTodo}
+              updateLoading={setIsLoading}
+              updateError={setError}
             />
             <Footer
               todos={todos}
               filter={filter}
               updateFilter={(newFilter: Status) => setFilter(newFilter)}
+              updateLoading={setIsLoading}
+              updateError={setError}
             />
           </>
         )}

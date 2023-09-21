@@ -8,22 +8,31 @@ type Props = {
   todos: Todo[],
   filter: Status,
   updateFilter: (newFilter: Status) => void,
+  updateLoading: React.Dispatch<React.SetStateAction<boolean>>,
+  updateError: React.Dispatch<React.SetStateAction<string>>,
 };
 
 export const Footer: React.FC<Props> = ({
   todos,
   filter,
   updateFilter,
+  updateLoading,
+  updateError,
 }) => {
   const handleClearCompleted = (
     event: React.MouseEvent<HTMLButtonElement, MouseEvent>,
   ) => {
     event.preventDefault();
+    updateLoading(true);
 
     todos
       .filter(todo => todo.completed)
       .map(item => item.id)
-      .forEach(id => deleteTodo(id));
+      .forEach(id => {
+        deleteTodo(id).catch(() => updateError('Unable to delete a todo'));
+      });
+
+    updateLoading(false);
   };
 
   const uncompletedTodoCount = todos.filter(
