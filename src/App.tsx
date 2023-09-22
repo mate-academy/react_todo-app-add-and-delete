@@ -2,7 +2,7 @@
 /* eslint-disable no-useless-return */
 /* eslint-disable jsx-a11y/control-has-associated-label */
 import React, {
-  FormEventHandler, useEffect, useState,
+  FormEventHandler, useEffect, useRef, useState,
 } from 'react';
 import cn from 'classnames';
 import { UserWarning } from './UserWarning';
@@ -21,6 +21,8 @@ export const App: React.FC = () => {
   const [title, setTitle] = useState<string>('');
   const [temporaryTodo, setTemporaryTodo] = useState<Todo | null>(null);
   const [isInputDisabled, setIsInputDisabled] = useState<boolean>(false);
+
+  const inputRef = useRef<HTMLInputElement | null>(null);
 
   const fetchData = async () => {
     try {
@@ -52,6 +54,7 @@ export const App: React.FC = () => {
     }).then((response) => {
       setTitle('');
       setIsInputDisabled(false);
+      inputRef.current?.focus();
       setTodos((prevTodos) => [...prevTodos, response] as Todo[]);
       setTemporaryTodo(null);
     }).catch(() => {
@@ -123,6 +126,7 @@ export const App: React.FC = () => {
               onChange={(e) => setTitle(e.target.value)}
               autoFocus
               disabled={isInputDisabled}
+              ref={inputRef}
             />
           </form>
         </header>
