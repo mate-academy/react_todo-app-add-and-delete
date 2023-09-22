@@ -44,22 +44,21 @@ export const App: React.FC = () => {
     setIsInputDisabled(true);
 
     setTitle(prevTitle => prevTitle.trim());
-
     addTodo(USER_ID, {
       id: 0,
       userId: USER_ID,
       title,
       completed: false,
-    }).catch(() => {
-      setError('Unable to add a todo');
-      setTimeout(() => {
-        setError(null);
-      }, 3000);
     }).then((response) => {
       setTitle('');
       setIsInputDisabled(false);
       setTodos((prevTodos) => [...prevTodos, response] as Todo[]);
       setTemporaryTodo(null);
+    }).catch(() => {
+      setError('Unable to add a todo');
+      setTimeout(() => setError(null), 3000);
+      setTemporaryTodo(null);
+      setIsInputDisabled(false);
     });
   };
 
