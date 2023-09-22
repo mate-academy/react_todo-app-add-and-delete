@@ -5,7 +5,6 @@ import { Status } from '../../types/Status';
 import { Todo } from '../../types/Todo';
 import { Footer } from '../Footer/Footer';
 import { Header } from '../Header/Header';
-import { TodoItem } from '../TodoItem/TodoItem';
 import { TodoList } from '../TodoList/TodoList';
 import { TodoNotification } from '../TodoNotification/TodoNotification';
 
@@ -13,7 +12,6 @@ export const TodoApp: React.FC = () => {
   const {
     todos,
     selectedStatus,
-    tempTodo,
   } = useTodos();
 
   function filterTodos(items: Todo[], status: Status) {
@@ -41,9 +39,9 @@ export const TodoApp: React.FC = () => {
       <div className="todoapp__content">
         <Header />
 
-        {todos.length > 0 && (<TodoList items={filteredTodos} />)}
-
-        {tempTodo && (<TodoItem todo={tempTodo} />)}
+        {todos.length > 0 && (
+          <TodoList items={filteredTodos} />
+        )}
 
         {todos.length > 0 && (<Footer />)}
 
