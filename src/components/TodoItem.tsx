@@ -1,5 +1,5 @@
-import React from "react";
-import { Todo } from "../types/Todo";
+import React from 'react';
+import { Todo } from '../types/Todo';
 
 type TodoItemProps = {
   todo: Todo;
@@ -17,7 +17,7 @@ export const TodoItem: React.FC<TodoItemProps> = ({
   return (
     <div
       data-cy="Todo"
-      className={`todo ${todo.completed ? "completed" : ""}`}
+      className={`todo ${todo.completed ? 'completed' : ''}`}
       key={todo.id}
     >
       <label className="todo__status-label">
@@ -48,7 +48,7 @@ export const TodoItem: React.FC<TodoItemProps> = ({
 
       <div
         data-cy="TodoLoader"
-        className={`modal overlay ${isLoading ? "is-active" : ""}`}
+        className={`modal overlay ${isLoading ? 'is-active' : ''}`}
       >
         <div className="modal-background has-background-white-ter" />
         <div className="loader" />

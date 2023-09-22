@@ -1,10 +1,10 @@
-import React from "react";
-import { Todo } from "../types/Todo";
+import React from 'react';
+import { Todo } from '../types/Todo';
 
 type FooterProps = {
   todos: Todo[];
-  filterType: "All" | "Active" | "Completed";
-  changeFilterStatus: (type: "All" | "Active" | "Completed") => void;
+  filterType: 'All' | 'Active' | 'Completed';
+  changeFilterStatus: (type: 'All' | 'Active' | 'Completed') => void;
   handleClearCompleted: () => void;
 };
 
@@ -26,8 +26,8 @@ export const Footer: React.FC<FooterProps> = ({
       <nav className="filter" data-cy="Filter">
         <a
           href="#/"
-          className={`filter__link ${filterType === "All" ? "selected" : ""}`}
-          onClick={() => changeFilterStatus("All")}
+          className={`filter__link ${filterType === 'All' ? 'selected' : ''}`}
+          onClick={() => changeFilterStatus('All')}
           data-cy="FilterLinkAll"
         >
           All
@@ -36,9 +36,9 @@ export const Footer: React.FC<FooterProps> = ({
         <a
           href="#/active"
           className={`filter__link ${
-            filterType === "Active" ? "selected" : ""
+            filterType === 'Active' ? 'selected' : ''
           }`}
-          onClick={() => changeFilterStatus("Active")}
+          onClick={() => changeFilterStatus('Active')}
           data-cy="FilterLinkActive"
         >
           Active
@@ -47,9 +47,9 @@ export const Footer: React.FC<FooterProps> = ({
         <a
           href="#/completed"
           className={`filter__link ${
-            filterType === "Completed" ? "selected" : ""
+            filterType === 'Completed' ? 'selected' : ''
           }`}
-          onClick={() => changeFilterStatus("Completed")}
+          onClick={() => changeFilterStatus('Completed')}
           data-cy="FilterLinkCompleted"
         >
           Completed

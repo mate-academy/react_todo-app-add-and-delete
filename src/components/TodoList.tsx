@@ -1,14 +1,13 @@
-import React from "react";
-import { Todo } from "../types/Todo";
-import { TodoItem } from "./TodoItem";
+import React from 'react';
+import { Todo } from '../types/Todo';
+import { TodoItem } from './TodoItem';
 
 type TodoListProps = {
   todos: Todo[];
-  filterType: "All" | "Active" | "Completed";
+  filterType: 'All' | 'Active' | 'Completed';
   handleDeleteTodo: (todo: Todo) => void;
   handleToggleComplete: (todo: Todo) => void;
   todoItem: Todo | null;
-  setTodoItem: (todo: Todo | null) => void;
   currentTodoLoading: number | null;
 };
 
@@ -22,11 +21,11 @@ export const TodoList: React.FC<TodoListProps> = ({
 }) => {
   const filterTodos = (todosArray: Todo[]) => {
     return todosArray.filter((todo) => {
-      if (filterType === "All") {
+      if (filterType === 'All') {
         return true;
       }
 
-      if (filterType === "Active") {
+      if (filterType === 'Active') {
         return !todo.completed;
       }
 
@@ -51,7 +50,7 @@ export const TodoList: React.FC<TodoListProps> = ({
           todo={todoItem}
           handleDeleteTodo={handleDeleteTodo}
           handleToggleComplete={handleToggleComplete}
-          isLoading={true}
+          isLoading
         />
       )}
     </section>
