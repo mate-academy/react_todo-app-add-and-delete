@@ -1,6 +1,6 @@
-import React, { useState } from "react";
-import { Todo } from "../../types/Todo";
-import { addTodo } from "../../api/todos";
+import React, { useState } from 'react';
+import { Todo } from '../../types/Todo';
+import { addTodo } from '../../api/todos';
 
 interface Props {
   activeTodos: Todo[];
@@ -19,7 +19,7 @@ export const TodoHeader: React.FC<Props> = ({
   userId,
   setTodos,
 }) => {
-  const [title, setTitle] = useState("");
+  const [title, setTitle] = useState('');
   const [isLoading, setIsLoading] = useState(false);
   const [tempTodo, setTempTodo] = useState<Todo | null>(null);
 
@@ -27,20 +27,20 @@ export const TodoHeader: React.FC<Props> = ({
     setTitle(event.target.value);
 
     if (error) {
-      setError("");
+      setError('');
     }
   }
 
   const handleOnSubmit = (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
 
-    setError("");
+    setError('');
 
     if (!title.trim()) {
-      setError("Title should not be empty");
+      setError('Title should not be empty');
 
       setTimeout(() => {
-        setError("");
+        setError('');
       }, 3000);
 
       return;
@@ -59,21 +59,21 @@ export const TodoHeader: React.FC<Props> = ({
 
     addTodo(userId, newTodo)
       .then((response) => {
-        if (response.status === "success") {
+        if (response) {
           // Add the new todo to the todos array
-          setTodos((prevTodos) => [...prevTodos, response.data]);
+          setTodos((prevTodos) => [...prevTodos, response]);
 
           // Reset the title input
-          setTitle("");
+          setTitle('');
 
           // Focus on the newTodoField input
           newTodoField.current?.focus();
         } else {
-          setError("Unable to add a todo");
+          setError('Unable to add a todo');
         }
       })
       .catch(() => {
-        setError("Unable to add a todo");
+        setError('Unable to add a todo');
       })
       .finally(() => {
         setIsLoading(false);
