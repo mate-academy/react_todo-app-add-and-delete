@@ -99,18 +99,16 @@ export const App: React.FC = () => {
       })
         .then(response => {
           setTitle('');
-          setTempTodo(response);
           setTodos([...todos, response]);
-        }).catch(() => {
+          setTempTodo(null);
+        })
+        .catch(() => {
+          setTempTodo(null);
           setIsError(true);
           setError('Unable to add a todo');
           setTimeout(() => {
             setIsError(false);
           }, 3000);
-          setTempTodo(null);
-        })
-        .finally(() => {
-          setTempTodo(null);
         });
     }
   };
