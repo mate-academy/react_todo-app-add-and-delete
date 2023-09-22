@@ -1,10 +1,9 @@
 import { createRoot } from 'react-dom/client';
-
+import { App } from './App';
+import { ToDoProvider } from './provider/todoProvider';
 import 'bulma/css/bulma.css';
 import '@fortawesome/fontawesome-free/css/all.css';
 import './styles/index.scss';
 
-import { App } from './App';
-
 createRoot(document.getElementById('root') as HTMLDivElement)
-  .render(<App />);
+  .render(<ToDoProvider><App /></ToDoProvider>);
