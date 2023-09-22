@@ -31,11 +31,7 @@ export const Footer: React.FC = () => {
         className="todo-count"
         data-cy="TodosCounter"
       >
-        {notCompletedTodos === 1 ? (
-          '1 item left'
-        ) : (
-          `${notCompletedTodos} items left`
-        )}
+        {`${notCompletedTodos} items left`}
       </span>
 
       <nav

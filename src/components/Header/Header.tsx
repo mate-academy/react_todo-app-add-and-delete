@@ -8,6 +8,7 @@ export const Header: React.FC = () => {
     todos,
     addTodo,
     toggleAll,
+    errorMessage,
     setErrorMessage,
     removeErrorIn3sec,
     title,
@@ -20,7 +21,7 @@ export const Header: React.FC = () => {
 
   useEffect(() => {
     inputRef.current?.focus();
-  }, [todos, isSubmiting]);
+  }, [todos, isSubmiting, errorMessage]);
 
   const handleTitle = (event: React.ChangeEvent<HTMLInputElement>) => {
     setTitle(event.target.value);
