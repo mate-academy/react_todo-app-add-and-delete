@@ -11,7 +11,7 @@ import {
   USER_ID,
 } from '../utils/constants';
 import { addTodo, deleteTodo, getTodos } from '../api/todos';
-import { ErrorWithKey } from '../types/ErrorWithKey';
+import { ErrorType } from '../types/ErrorType';
 
 interface TodosContextType {
   todos: Todo[];
@@ -26,8 +26,8 @@ interface TodosContextType {
   todosIdsUpdating: number[];
   setTodosIdsUpdating: (ids: number[]) => void;
 
-  errorMessage: { key: number, message: string } | null;
-  setErrorMessage: (error: ErrorWithKey) => void;
+  errorMessage: ErrorType | null;
+  setErrorMessage: (error: ErrorType) => void;
 
   visibleTodos: Todo[];
 
@@ -66,16 +66,12 @@ export const TodosProvider: React.FC<Props> = ({ children }) => {
   const [todosIdsUpdating, setTodosIdsUpdating] = useState<number[]>([]);
   const [filterType, setFilterType] = useState<FilterType>(FilterType.All);
   const [tempTodo, setTempTodo] = useState<Todo | null>(null);
-  const [errorMessage, setErrorMessage] = useState<ErrorWithKey | null>(null);
-
-  const setErrorMessageWithKey = (message: string) => {
-    setErrorMessage({ key: Date.now(), message });
-  };
+  const [errorMessage, setErrorMessage] = useState<ErrorType | null>(null);
 
   useEffect(() => {
     getTodos(USER_ID)
       .then(setTodos)
-      .catch(() => setErrorMessageWithKey(UNABLE_DOWNLOAD_ERROR_MESSAGE));
+      .catch(() => setErrorMessage({ message: UNABLE_DOWNLOAD_ERROR_MESSAGE}));
   }, []);
 
   const visibleTodos = useMemo(() => {
@@ -89,11 +85,11 @@ export const TodosProvider: React.FC<Props> = ({ children }) => {
   const handleAddTodo = async (
     title: string,
   ): Promise<boolean> => {
-    setErrorMessage(null)
+    setErrorMessage(null);
     const normalizedTitle = title.trim();
 
     if (!normalizedTitle) {
-      setErrorMessageWithKey(INVALID_TITLE_ERROR_MESSAGE);
+      setErrorMessage({ message: INVALID_TITLE_ERROR_MESSAGE });
 
       return false;
     }
@@ -114,7 +110,7 @@ export const TodosProvider: React.FC<Props> = ({ children }) => {
 
       return true;
     } catch {
-      setErrorMessageWithKey(UNABLE_ADD_ERROR_MESSAGE);
+      setErrorMessage({ message: UNABLE_ADD_ERROR_MESSAGE });
 
       return false;
     } finally {
@@ -124,7 +120,7 @@ export const TodosProvider: React.FC<Props> = ({ children }) => {
   };
 
   const handleDeleteTodo = async (...ids: number[]) => {
-    setErrorMessage(null)
+    setErrorMessage(null);
     setTodosIdsUpdating(ids);
     const deletePromises = ids.map(async (id) => {
       try {
@@ -145,7 +141,7 @@ export const TodosProvider: React.FC<Props> = ({ children }) => {
     setTodosIdsUpdating([]);
 
     if (deletedIds.includes(null)) {
-      setErrorMessageWithKey(UNABLE_DELETE_ERROR_MESSAGE);
+      setErrorMessage({ message: UNABLE_DELETE_ERROR_MESSAGE });
     }
   };
 
