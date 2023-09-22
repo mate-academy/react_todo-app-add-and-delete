@@ -1,5 +1,5 @@
 /* eslint-disable jsx-a11y/control-has-associated-label */
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import { UserWarning } from './UserWarning';
 import { USER_ID } from './api/privateID';
 import * as todoService from './api/todos';
@@ -18,9 +18,11 @@ export const App: React.FC = () => {
   const [errorMessage, setErrorMessage] = useState('');
   const [filterType, setFilterType] = useState<FilterType>(FilterType.All);
   const [tempTodo, setTempTodo] = useState<Todo | null>(null);
-  const [isSubmiting, setIsSubmiting] = useState(false);
+  const [isSubmitting, setIsSubmitting] = useState(false);
   const [value, setValue] = useState('');
   const [deletingIds, setDeletingIds] = useState<number[]>([]);
+
+  const inputRef = useRef<HTMLInputElement | null>(null);
 
   useEffect(() => {
     todoService.getTodos()
@@ -70,7 +72,7 @@ export const App: React.FC = () => {
 
   const handleSubmit = (event: React.ChangeEvent<HTMLFormElement>) => {
     event.preventDefault();
-    setIsSubmiting(true);
+    setIsSubmitting(true);
 
     const todoTitle = value.trim();
 
@@ -90,7 +92,7 @@ export const App: React.FC = () => {
 
     if (!todoTitle) {
       setErrorMessage(Error.EmptyTitle);
-      setIsSubmiting(false);
+      setIsSubmitting(false);
     } else {
       setTempTodo(tempTodoProto);
 
@@ -98,7 +100,7 @@ export const App: React.FC = () => {
         .then(() => setValue(''))
         .finally(() => {
           setTempTodo(null);
-          setIsSubmiting(false);
+          setIsSubmitting(false);
         });
     }
   };
@@ -117,6 +119,10 @@ export const App: React.FC = () => {
       .finally(() => {
         setDeletingIds((ids) => ids.filter(id => id !== idTodo));
       });
+
+    if (inputRef.current) {
+      inputRef.current.focus();
+    }
   };
 
   const onDeleteCompleted = () => {
@@ -135,7 +141,8 @@ export const App: React.FC = () => {
           value={value}
           setValue={setValue}
           handleSubmit={handleSubmit}
-          isSubmiting={isSubmiting}
+          isSubmitting={isSubmitting}
+          inputRef={inputRef}
         />
 
         {todos.length !== 0 && (
@@ -149,7 +156,7 @@ export const App: React.FC = () => {
             {tempTodo && (
               <TodoItem
                 todo={tempTodo}
-                isSubmiting={isSubmiting}
+                isSubmitting={isSubmitting}
                 onDelete={onDelete}
                 deletingIds={deletingIds}
               />
