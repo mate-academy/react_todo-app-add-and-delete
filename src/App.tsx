@@ -83,12 +83,7 @@ export const App: React.FC = () => {
       userId: USER_ID,
     };
 
-    const tempTodoProto: Todo = {
-      id: 0,
-      title: todoTitle,
-      completed: false,
-      userId: USER_ID,
-    };
+    const tempTodoProto: Todo = { ...newTodo, id: 0 };
 
     if (!todoTitle) {
       setErrorMessage(Error.EmptyTitle);

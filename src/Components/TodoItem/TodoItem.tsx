@@ -39,9 +39,11 @@ export const TodoItem: React.FC<Props> = ({
         ×
       </button>
 
-      <div className={classNames('modal overlay', {
-        'is-active': isSubmitting || deletingIds.includes(todo.id),
-      })}
+      <div
+        data-cy="TodoLoader"
+        className={classNames('modal overlay', {
+          'is-active': isSubmitting || deletingIds.includes(todo.id),
+        })}
       >
         <div className="modal-background has-background-white-ter" />
         <div className="loader" />
