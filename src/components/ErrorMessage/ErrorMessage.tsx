@@ -1,24 +1,42 @@
-import React, { useState } from 'react';
+import React, { useContext, useEffect, useState } from 'react';
 import classNames from 'classnames';
+import { TodosContext } from '../../contexts/TodosContext';
+import { DELAY_TO_HIDE_ERROR } from '../../utils/constants';
 
-interface Props {
-  error: string
-}
-export const ErrorMessage: React.FC<Props> = ({ error }) => {
-  const [isErrorHiden, setIsErrorHiden] = useState(true);
+export const ErrorMessage: React.FC = () => {
+  const [isErrorHidden, setIsErrorHidden] = useState(true);
+  const { errorMessage } = useContext(TodosContext);
+
+  useEffect(() => {
+    let timer: NodeJS.Timeout | null = null;
+
+    if (errorMessage) {
+      setIsErrorHidden(false);
+      timer = setTimeout(() => setIsErrorHidden(true), DELAY_TO_HIDE_ERROR);
+    } else {
+      setIsErrorHidden(true);
+    }
+
+    return () => {
+      if (timer) {
+        clearTimeout(timer);
+      }
+    };
+  }, [errorMessage]);
 
   const handleErrorClose = () => {
-    setIsErrorHiden(true);
+    setIsErrorHidden(true);
   };
 
   return (
     <div
+      data-cy="ErrorNotification"
       className={classNames(
         'notification',
         'is-danger',
         'is-light',
         'has-text-weight-normal',
-        { hidden: isErrorHiden },
+        { hidden: isErrorHidden },
       )}
     >
       <button
@@ -26,8 +44,9 @@ export const ErrorMessage: React.FC<Props> = ({ error }) => {
         className="delete"
         onClick={handleErrorClose}
         aria-label="Delete"
+        data-cy="HideErrorButton"
       />
-      {error}
+      {errorMessage?.message}
     </div>
   );
 };

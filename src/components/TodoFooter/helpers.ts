@@ -1,14 +1,11 @@
-import { getTodos } from '../../api/todos';
 import { filterBy } from '../../utils/filterBy';
 import { FilterType } from '../../types/TodoStatus';
-import { USER_ID } from '../../utils/constants';
+import { Todo } from '../../types/Todo';
 
-export const getActiveTodoQuantity = () => {
-  let quantity = 0;
+export const getActiveTodoQuantity = (todos: Todo[]) => {
+  return filterBy(todos, FilterType.Active).length;
+};
 
-  getTodos(USER_ID).then(todos => {
-    quantity = filterBy(todos, FilterType.Active).length;
-  });
-
-  return quantity;
+export const getCompletedTodoIds = (todos: Todo[]) => {
+  return filterBy(todos, FilterType.Completed).map(todo => todo.id);
 };

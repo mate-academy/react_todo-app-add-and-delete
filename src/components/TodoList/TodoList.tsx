@@ -1,17 +1,18 @@
-import React from 'react';
+import React, { useContext } from 'react';
 import { TodoListItem } from '../TodoListItem/TodoListItem';
-import { Todo } from '../../types/Todo';
+import { TodosContext } from '../../contexts/TodosContext';
 
-interface Props {
-  todos: Todo[];
-}
+export const TodoList: React.FC = () => {
+  const { tempTodo, visibleTodos } = useContext(TodosContext);
 
-export const TodoList: React.FC<Props> = ({ todos }) => {
   return (
-    <section className="todoapp__main">
-      {todos.map(todo => (
+    <section className="todoapp__main" data-cy="TodoList">
+      {visibleTodos.map(todo => (
         <TodoListItem todo={todo} key={todo.id} />
       ))}
+      {tempTodo && (
+        <TodoListItem todo={tempTodo} key={tempTodo.id} />
+      )}
     </section>
   );
 };

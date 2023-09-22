@@ -1,13 +1,15 @@
-import React from 'react';
+import React, { useContext } from 'react';
 import classNames from 'classnames';
 import { Todo } from '../../types/Todo';
+import { TodosContext } from '../../contexts/TodosContext';
 
 interface Props {
   todo: Todo;
 }
 
 export const TodoListItem: React.FC<Props> = ({ todo }) => {
-  const { title, completed } = todo;
+  const { title, completed, id } = todo;
+  const { handleDeleteTodo, todosIdsUpdating } = useContext(TodosContext);
 
   return (
     <div
@@ -15,6 +17,7 @@ export const TodoListItem: React.FC<Props> = ({ todo }) => {
         'todo',
         { completed },
       )}
+      data-cy="Todo"
     >
       <label className="todo__status-label">
         <input
@@ -25,13 +28,24 @@ export const TodoListItem: React.FC<Props> = ({ todo }) => {
         />
       </label>
 
-      <span className="todo__title">{title}</span>
+      <span className="todo__title" data-cy="TodoTitle">{title}</span>
 
-      {/* Remove button appears only on hover */}
-      <button type="button" className="todo__remove">×</button>
+      <button
+        type="button"
+        className="todo__remove"
+        onClick={() => handleDeleteTodo(id)}
+        data-cy="TodoDelete"
+      >
+        ×
+      </button>
 
-      {/* overlay will cover the todo while it is being updated */}
-      <div className="modal overlay">
+      <div
+        data-cy="TodoLoader"
+        className={classNames(
+          'modal overlay',
+          { 'is-active': todosIdsUpdating.includes(id) },
+        )}
+      >
         <div
           className="modal-background has-background-white-ter"
         />

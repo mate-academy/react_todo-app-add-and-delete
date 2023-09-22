@@ -19,14 +19,12 @@ async function request<T>(
   const options: RequestInit = { method };
 
   if (data) {
-    // We add body and Content-Type only for the requests with data
     options.body = JSON.stringify(data);
     options.headers = {
       'Content-Type': 'application/json; charset=UTF-8',
     };
   }
 
-  // we wait for testing purpose to see loaders
   await wait(300);
 
   const response = await fetch(BASE_URL + url, options);
