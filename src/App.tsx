@@ -42,6 +42,9 @@ export const App: React.FC = () => {
 
   const handleAdd = () => {
     setIsInputDisabled(true);
+
+    setTitle(prevTitle => prevTitle.trim());
+
     addTodo(USER_ID, {
       id: 0,
       userId: USER_ID,
