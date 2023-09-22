@@ -50,6 +50,11 @@ export const App: React.FC = () => {
       userId: USER_ID,
       title,
       completed: false,
+    }).catch(() => {
+      setError('Unable to add a todo');
+      setTimeout(() => {
+        setError(null);
+      }, 3000);
     }).then((response) => {
       setTitle('');
       setIsInputDisabled(false);
