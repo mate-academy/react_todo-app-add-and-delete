@@ -1,24 +1,174 @@
-/* eslint-disable max-len */
 /* eslint-disable jsx-a11y/control-has-associated-label */
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import { UserWarning } from './UserWarning';
-
-const USER_ID = 0;
+import { USER_ID } from './api/privateID';
+import * as todoService from './api/todos';
+import { Todo } from './types/Todo';
+import { TodoForm } from './Components/TodoForm/TodoForm';
+import { TodoList } from './Components/TodoList/TodoList';
+import { Footer } from './Components/Footer/Footer';
+import { ErrorNotification }
+  from './Components/ErrorNotification/ErrorNotification';
+import { FilterType } from './utils/FilterType';
+import { Error } from './utils/Error';
+import { TodoItem } from './Components/TodoItem/TodoItem';
 
 export const App: React.FC = () => {
+  const [todos, setTodos] = useState<Todo[]>([]);
+  const [errorMessage, setErrorMessage] = useState('');
+  const [filterType, setFilterType] = useState<FilterType>(FilterType.All);
+  const [tempTodo, setTempTodo] = useState<Todo | null>(null);
+  const [isSubmiting, setIsSubmiting] = useState(false);
+  const [value, setValue] = useState('');
+  const [deletingIds, setDeletingIds] = useState<number[]>([]);
+
+  useEffect(() => {
+    todoService.getTodos()
+      .then((response) => {
+        setTodos(response);
+      })
+      .catch(() => setErrorMessage(Error.Load));
+  }, []);
+
+  useEffect(() => {
+    if (errorMessage) {
+      setTimeout(() => {
+        setErrorMessage('');
+      }, 3000);
+    }
+  }, [errorMessage]);
+
   if (!USER_ID) {
     return <UserWarning />;
   }
 
-  return (
-    <section className="section container">
-      <p className="title is-4">
-        Copy all you need from the prev task:
-        <br />
-        <a href="https://github.com/mate-academy/react_todo-app-loading-todos#react-todo-app-load-todos">React Todo App - Load Todos</a>
-      </p>
+  const visibleTodos = todos.filter(todo => {
+    switch (filterType) {
+      case FilterType.Active:
+        return !todo.completed;
 
-      <p className="subtitle">Styles are already copied</p>
-    </section>
+      case FilterType.Completed:
+        return todo.completed;
+
+      case FilterType.All:
+      default:
+        return true;
+    }
+  });
+
+  function addTodo({ title, userId, completed }: Todo) {
+    setErrorMessage(Error.None);
+
+    return todoService.createTodos({ title, userId, completed })
+      .then(newTodo => {
+        setTodos(currentTodos => [...currentTodos, newTodo]);
+      })
+      .catch(() => {
+        setErrorMessage(Error.Add);
+      });
+  }
+
+  const handleSubmit = (event: React.ChangeEvent<HTMLFormElement>) => {
+    event.preventDefault();
+    setIsSubmiting(true);
+
+    const todoTitle = value.trim();
+
+    const newTodo: Todo = {
+      id: todos.length + 1,
+      title: todoTitle,
+      completed: false,
+      userId: USER_ID,
+    };
+
+    const tempTodoProto: Todo = {
+      id: 0,
+      title: todoTitle,
+      completed: false,
+      userId: USER_ID,
+    };
+
+    if (!todoTitle) {
+      setErrorMessage(Error.EmptyTitle);
+      setIsSubmiting(false);
+    } else {
+      setTempTodo(tempTodoProto);
+
+      addTodo(newTodo)
+        .then(() => setValue(''))
+        .finally(() => {
+          setTempTodo(null);
+          setIsSubmiting(false);
+        });
+    }
+  };
+
+  const onDelete = (idTodo: number) => {
+    setDeletingIds((ids) => [...ids, idTodo]);
+
+    todoService.deleteTodo(idTodo)
+      .then(() => {
+        setTodos(currentTodos => currentTodos
+          .filter(todo => idTodo !== todo.id));
+      })
+      .catch(() => {
+        setErrorMessage(Error.Delete);
+      })
+      .finally(() => {
+        setDeletingIds((ids) => ids.filter(id => id !== idTodo));
+      });
+  };
+
+  const onDeleteCompleted = () => {
+    todos.filter(todo => todo.completed).forEach((todo) => {
+      onDelete(todo.id);
+    });
+  };
+
+  return (
+    <div className="todoapp">
+      <h1 className="todoapp__title">todos</h1>
+
+      <div className="todoapp__content">
+        <TodoForm
+          todos={todos.length}
+          value={value}
+          setValue={setValue}
+          handleSubmit={handleSubmit}
+          isSubmiting={isSubmiting}
+        />
+
+        {todos.length !== 0 && (
+          <>
+            <TodoList
+              todos={visibleTodos}
+              onDelete={onDelete}
+              deletingIds={deletingIds}
+            />
+
+            {tempTodo && (
+              <TodoItem
+                todo={tempTodo}
+                isSubmiting={isSubmiting}
+                onDelete={onDelete}
+                deletingIds={deletingIds}
+              />
+            )}
+
+            <Footer
+              setFilterType={setFilterType}
+              filterType={filterType}
+              todos={todos}
+              onDeleteCompleted={onDeleteCompleted}
+            />
+          </>
+        )}
+      </div>
+
+      <ErrorNotification
+        errorMessage={errorMessage}
+        setErrorMessage={setErrorMessage}
+      />
+    </div>
   );
 };
