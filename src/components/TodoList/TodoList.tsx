@@ -2,6 +2,7 @@ import React from 'react';
 import { useTodos } from '../../TodosContext';
 import { Todo } from '../../types/Todo';
 import { TodoItem } from '../TodoItem/TodoItem';
+import { TodoListItem } from '../TodoListItem/TodoListItem';
 
 type Props = {
   items: Todo[],
@@ -16,9 +17,10 @@ export const TodoList: React.FC<Props> = ({ items }) => {
       data-cy="TodoList"
     >
       {items.map((item: Todo) => (
-        <TodoItem todo={item} key={item.id} />
+        <TodoListItem todo={item} key={item.id} />
       ))}
-      {tempTodo && (<TodoItem todo={tempTodo} />)}
+
+      {tempTodo && (<TodoItem tempTodo={tempTodo} />)}
     </section>
   );
 };

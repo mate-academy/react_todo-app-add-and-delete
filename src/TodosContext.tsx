@@ -36,8 +36,8 @@ export const TodosContext = React.createContext<TodosContextType>({
   title: '',
   setTitle: () => { },
   completedTodosIds: [],
-  removingCompleted: false,
-  setRemovingCompleted: () => { },
+  removingCompletedTodos: false,
+  setRemovingCompletedTodos: () => { },
 });
 
 export const TodosProvider: React.FC<Props> = ({ children }) => {
@@ -47,7 +47,10 @@ export const TodosProvider: React.FC<Props> = ({ children }) => {
   const [selectedStatus, setSelectedStatus] = useState(Status.All);
   const [errorMessage, setErrorMessage] = useState<string>('');
   const [isSubmiting, setIsSubmiting] = useState<boolean>(false);
-  const [removingCompleted, setRemovingCompleted] = useState<boolean>(false);
+  const [
+    removingCompletedTodos,
+    setRemovingCompletedTodos,
+  ] = useState<boolean>(false);
 
   const removeErrorIn3sec = () => {
     setTimeout(() => {
@@ -82,18 +85,15 @@ export const TodosProvider: React.FC<Props> = ({ children }) => {
 
     todosApi.createTodo(newTodo)
       .then(createdTodo => {
-        setTempTodo(null);
-
         setTodos(currentTodos => [...currentTodos, createdTodo]);
         setTitle('');
       })
       .catch(() => {
-        setTempTodo(null);
         setErrorMessage(Errors.adding);
-
         removeErrorIn3sec();
       })
       .finally(() => {
+        setTempTodo(null);
         setIsSubmiting(false);
       });
   };
@@ -128,7 +128,7 @@ export const TodosProvider: React.FC<Props> = ({ children }) => {
   }, [todos]);
 
   const clearCompleted = () => {
-    setRemovingCompleted(true);
+    setRemovingCompletedTodos(true);
 
     const todosToDelete: Promise<number>[] = [];
 
@@ -146,7 +146,7 @@ export const TodosProvider: React.FC<Props> = ({ children }) => {
           .filter(todo => !res.includes(todo.id)));
       })
       .catch(() => setErrorMessage(Errors.deleting))
-      .finally(() => setRemovingCompleted(false));
+      .finally(() => setRemovingCompletedTodos(false));
   };
 
   const notCompletedTodos = useMemo(() => {
@@ -175,8 +175,8 @@ export const TodosProvider: React.FC<Props> = ({ children }) => {
         title,
         setTitle,
         completedTodosIds,
-        removingCompleted,
-        setRemovingCompleted,
+        removingCompletedTodos,
+        setRemovingCompletedTodos,
       }}
     >
       {children}

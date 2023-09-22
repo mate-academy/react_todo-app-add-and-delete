@@ -21,6 +21,6 @@ export type TodosContextType = {
   title: string,
   setTitle: React.Dispatch<React.SetStateAction<string>>,
   completedTodosIds: Array<number>,
-  removingCompleted: boolean,
-  setRemovingCompleted: React.Dispatch<React.SetStateAction<boolean>>,
+  removingCompletedTodos: boolean,
+  setRemovingCompletedTodos: React.Dispatch<React.SetStateAction<boolean>>,
 };
