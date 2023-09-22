@@ -123,6 +123,10 @@
     -moz-osx-font-smoothing: grayscale;
     transition: opacity 0.3s;
 
+    &--hidden {
+      visibility: hidden;
+    }
+
     &:hover {
       text-decoration: underline;
     }
