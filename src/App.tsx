@@ -41,16 +41,16 @@ export const App: React.FC = () => {
   };
 
   const handleAdd = () => {
-    setTitle('');
     setIsInputDisabled(true);
     addTodo(USER_ID, {
       id: 0,
       userId: USER_ID,
       title,
       completed: false,
-    }).then(() => {
+    }).then((response) => {
+      setTitle('');
       setIsInputDisabled(false);
-      fetchData();
+      setTodos((prevTodos) => [...prevTodos, response] as Todo[]);
       setTemporaryTodo(null);
     });
   };
