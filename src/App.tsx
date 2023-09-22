@@ -45,21 +45,19 @@ export const App: React.FC = () => {
   const handleAdd = () => {
     setIsInputDisabled(true);
 
-    setTitle(prevTitle => prevTitle.trim());
     addTodo(USER_ID, {
       id: 0,
       userId: USER_ID,
-      title,
+      title: title.trim(),
       completed: false,
     }).then((response) => {
       setTitle('');
-      setIsInputDisabled(false);
       inputRef.current?.focus();
       setTodos((prevTodos) => [...prevTodos, response] as Todo[]);
-      setTemporaryTodo(null);
     }).catch(() => {
       setError('Unable to add a todo');
       setTimeout(() => setError(null), 3000);
+    }).finally(() => {
       setTemporaryTodo(null);
       setIsInputDisabled(false);
     });
