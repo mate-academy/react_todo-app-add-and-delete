@@ -88,8 +88,8 @@ export const TodosProvider: React.FC<Props> = ({ children }) => {
         setTitle('');
       })
       .catch(() => {
-        setErrorMessage(Errors.adding);
         setTempTodo(null);
+        setErrorMessage(Errors.adding);
 
         removeErrorIn3sec();
       })

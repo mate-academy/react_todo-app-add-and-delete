@@ -18,6 +18,7 @@ export const TodoItem: React.FC<Props> = ({ todo }) => {
     setErrorMessage,
     removeErrorIn3sec,
     removingCompleted,
+    isSubmiting,
   } = useTodos();
 
   const { title, completed, id } = todo;
@@ -45,7 +46,7 @@ export const TodoItem: React.FC<Props> = ({ todo }) => {
   };
 
   const isModalActive
-    = (tempTodo?.id === id)
+    = (tempTodo?.id === id && isSubmiting)
     || isDeleting
     || (removingCompleted && completed);
 
