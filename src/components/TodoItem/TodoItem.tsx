@@ -31,22 +31,31 @@ export const TodoItem: React.FC<Props> = ({
 
   return (
     <>
-      <div className={classNames(
-        'todo',
-        { completed },
-      )}
+      <div
+        className={classNames(
+          'todo',
+          { completed },
+        )}
+        data-cy="Todo"
       >
         <label className="todo__status-label">
           <input
+            data-cy="TodoStatus"
             type="checkbox"
             className="todo__status"
             checked={completed}
           />
         </label>
 
-        <span className="todo__title">{title}</span>
+        <span
+          className="todo__title"
+          data-cy="TodoTitle"
+        >
+          {title}
+        </span>
 
         <button
+          data-cy="TodoDelete"
           type="button"
           className="todo__remove"
           onClick={() => deleteTodoWithLoader()}
@@ -54,9 +63,11 @@ export const TodoItem: React.FC<Props> = ({
           ×
         </button>
 
-        <div className={classNames('modal overlay', {
-          'is-active': loading,
-        })}
+        <div
+          className={classNames('modal overlay', {
+            'is-active': loading,
+          })}
+          data-cy="TodoLoader"
         >
           <div className="modal-background has-background-white-ter" />
           <div className="loader" />

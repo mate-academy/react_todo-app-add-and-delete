@@ -6,23 +6,38 @@ type Props = {
 };
 
 export const TempoTodoItem: React.FC<Props> = ({ tempoTodo }) => (
-  <div className="todo">
+  <div
+    data-cy="Todo"
+    className="todo"
+  >
     <label className="todo__status-label">
       <input
+        data-cy="TodoStatus"
         type="checkbox"
         className="todo__status"
         title="chekbox"
       />
     </label>
 
-    <span className="todo__title">{tempoTodo.title}</span>
+    <span
+      data-cy="TodoTitle"
+      className="todo__title"
+    >
+      {tempoTodo.title}
+    </span>
+
     <button
+      data-cy="TodoDelete"
       type="button"
       className="todo__remove"
     >
       ×
     </button>
-    <div className="modal overlay is-active">
+
+    <div
+      data-cy="TodoLoader"
+      className="modal overlay is-active"
+    >
       <div className="modal-background has-background-white-ter" />
       <div className="loader" />
     </div>

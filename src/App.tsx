@@ -146,6 +146,7 @@ export const App: React.FC = () => {
               className={classNames('todoapp__toggle-all', {
                 active: completedTodosCount !== 0,
               })}
+              data-cy="ToggleAllButton"
             />
           )}
 
@@ -154,6 +155,7 @@ export const App: React.FC = () => {
               type="text"
               className="todoapp__new-todo"
               placeholder="What needs to be done?"
+              data-cy="NewTodoField"
               value={title}
               onChange={event => setTitle(event.target.value)}
               disabled={disableInput}
@@ -175,19 +177,28 @@ export const App: React.FC = () => {
               isCompliteDeleting={isCompliteDeleting}
             />
 
-            <footer className="todoapp__footer">
-              <span className="todo-count">
+            <footer
+              data-cy="Footer"
+              className="todoapp__footer"
+            >
+              <span
+                data-cy="TodosCounter"
+                className="todo-count"
+              >
                 {`${activeTodosCount} items left`}
               </span>
 
-              <nav className="filter">
+              <nav
+                data-cy="Filter"
+                className="filter"
+              >
                 <a
                   href="#/"
                   className={classNames('filter__link', {
                     selected: status === Status.All,
                   })}
                   onClick={() => setStatus(Status.All)}
-
+                  data-cy="FilterLinkAll"
                 >
                   All
                 </a>
@@ -198,6 +209,7 @@ export const App: React.FC = () => {
                     selected: status === Status.Active,
                   })}
                   onClick={() => setStatus(Status.Active)}
+                  data-cy="FilterLinkActive"
                 >
                   Active
                 </a>
@@ -208,6 +220,7 @@ export const App: React.FC = () => {
                     selected: status === Status.Completed,
                   })}
                   onClick={() => setStatus(Status.Completed)}
+                  data-cy="FilterLinkCompleted"
                 >
                   Completed
                 </a>
@@ -219,6 +232,7 @@ export const App: React.FC = () => {
                   'todoapp__clear-completed--hidden': completedTodosCount === 0,
                 })}
                 onClick={deleteComplitedTodo}
+                data-cy="ClearCompletedButton"
               >
                 Clear completed
               </button>
@@ -228,11 +242,13 @@ export const App: React.FC = () => {
       </div>
 
       <div
+        data-cy="ErrorNotification"
         className={errorMessage
           ? 'notification is-danger is-light has-text-weight-normal'
           : 'notification is-danger is-light has-text-weight-normal hidden'}
       >
         <button
+          data-cy="HideErrorButton"
           type="button"
           className="delete"
           onClick={() => setErrorMessage('')}
