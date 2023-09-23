@@ -16,7 +16,7 @@ export const Footer: React.FC = () => {
     setSelectedStatus(status);
   };
 
-  const areCompleatedTodos = useMemo(() => {
+  const areCompletedTodos = useMemo(() => {
     return todos.some(todo => todo.completed);
   }, [todos]);
 
@@ -77,7 +77,7 @@ export const Footer: React.FC = () => {
         className="todoapp__clear-completed"
         data-cy="ClearCompletedButton"
         onClick={clearCompleted}
-        disabled={!areCompleatedTodos}
+        disabled={!areCompletedTodos}
       >
         Clear completed
       </button>

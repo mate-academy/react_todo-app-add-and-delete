@@ -21,6 +21,7 @@ export type TodosContextType = {
   title: string,
   setTitle: React.Dispatch<React.SetStateAction<string>>,
   completedTodosIds: Array<number>,
-  removingCompletedTodos: boolean,
-  setRemovingCompletedTodos: React.Dispatch<React.SetStateAction<boolean>>,
+  deletingIds: Array<number>,
+  setDeletingIds: React.Dispatch<React.SetStateAction<number[]>>,
+  deleteTodo: (todoId: number) => void,
 };

@@ -48,11 +48,11 @@ export const Header: React.FC = () => {
         // eslint-disable-next-line jsx-a11y/control-has-associated-label
         <button
           type="button"
+          data-cy="ToggleAllButton"
+          onClick={toggleAll}
           className={classNames('todoapp__toggle-all', {
             active: areAllTodosCompleated,
           })}
-          data-cy="ToggleAllButton"
-          onClick={toggleAll}
         />
       )}
 

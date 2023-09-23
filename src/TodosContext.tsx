@@ -36,8 +36,9 @@ export const TodosContext = React.createContext<TodosContextType>({
   title: '',
   setTitle: () => { },
   completedTodosIds: [],
-  removingCompletedTodos: false,
-  setRemovingCompletedTodos: () => { },
+  deletingIds: [],
+  setDeletingIds: () => {},
+  deleteTodo: () => {},
 });
 
 export const TodosProvider: React.FC<Props> = ({ children }) => {
@@ -47,10 +48,7 @@ export const TodosProvider: React.FC<Props> = ({ children }) => {
   const [selectedStatus, setSelectedStatus] = useState(Status.All);
   const [errorMessage, setErrorMessage] = useState<string>('');
   const [isSubmiting, setIsSubmiting] = useState<boolean>(false);
-  const [
-    removingCompletedTodos,
-    setRemovingCompletedTodos,
-  ] = useState<boolean>(false);
+  const [deletingIds, setDeletingIds] = useState<number[]>([]);
 
   const removeErrorIn3sec = () => {
     setTimeout(() => {
@@ -121,6 +119,23 @@ export const TodosProvider: React.FC<Props> = ({ children }) => {
     setTodos(updatedTodos);
   };
 
+  const deleteTodo = (todoId: number) => {
+    setDeletingIds((ids) => [...ids, todoId]);
+
+    todosApi.deleteTodo(todoId)
+      .then(() => {
+        setTodos(currentTodos => currentTodos.filter(
+          item => item.id !== todoId,
+        ));
+      })
+      .catch(() => {
+        setErrorMessage(Errors.deleting);
+
+        removeErrorIn3sec();
+      })
+      .finally(() => setDeletingIds((ids) => ids.filter(id => id !== todoId)));
+  };
+
   const completedTodosIds = useMemo(() => {
     return todos
       .filter(item => item.completed)
@@ -128,25 +143,9 @@ export const TodosProvider: React.FC<Props> = ({ children }) => {
   }, [todos]);
 
   const clearCompleted = () => {
-    setRemovingCompletedTodos(true);
-
-    const todosToDelete: Promise<number>[] = [];
-
-    completedTodosIds.forEach(currentId => {
-      todosToDelete.push(todosApi.deleteTodo(currentId)
-        .then(() => currentId)
-        .catch(error => {
-          throw error;
-        }));
+    todos.filter(todo => todo.completed).forEach((todo) => {
+      deleteTodo(todo.id);
     });
-
-    Promise.all(todosToDelete)
-      .then((res) => {
-        setTodos(prevState => prevState
-          .filter(todo => !res.includes(todo.id)));
-      })
-      .catch(() => setErrorMessage(Errors.deleting))
-      .finally(() => setRemovingCompletedTodos(false));
   };
 
   const notCompletedTodos = useMemo(() => {
@@ -175,8 +174,9 @@ export const TodosProvider: React.FC<Props> = ({ children }) => {
         title,
         setTitle,
         completedTodosIds,
-        removingCompletedTodos,
-        setRemovingCompletedTodos,
+        deletingIds,
+        setDeletingIds,
+        deleteTodo,
       }}
     >
       {children}

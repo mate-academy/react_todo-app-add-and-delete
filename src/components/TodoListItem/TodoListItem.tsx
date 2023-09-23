@@ -1,9 +1,7 @@
 import classNames from 'classnames';
-import React, { useState } from 'react';
-import * as todosApi from '../../api/todos';
+import React from 'react';
 
 import { useTodos } from '../../TodosContext';
-import { Errors } from '../../types/Errors';
 import { Todo } from '../../types/Todo';
 
 type Props = {
@@ -13,38 +11,19 @@ type Props = {
 export const TodoListItem: React.FC<Props> = ({ todo }) => {
   const {
     toggleTodo,
-    setTodos,
-    setErrorMessage,
-    removeErrorIn3sec,
-    removingCompletedTodos,
+    deletingIds,
+    deleteTodo,
   } = useTodos();
 
   const { title, completed, id } = todo;
-  const [isDeleting, setIsDeleting] = useState(false);
 
   const handleToggleTodo = () => {
     toggleTodo(id);
   };
 
   const handleDeleteTodo = () => {
-    setIsDeleting(true);
-
-    todosApi.deleteTodo(id)
-      .then(() => {
-        setTodos(currentTodos => currentTodos.filter(
-          item => item.id !== id,
-        ));
-      })
-      .catch(() => {
-        setErrorMessage(Errors.deleting);
-
-        removeErrorIn3sec();
-      })
-      .finally(() => setIsDeleting(false));
+    deleteTodo(id);
   };
-
-  const isModalActive
-    = isDeleting || (removingCompletedTodos && completed);
 
   return (
     <div
@@ -80,7 +59,7 @@ export const TodoListItem: React.FC<Props> = ({ todo }) => {
 
       <div
         className={classNames('modal overlay', {
-          'is-active': isModalActive,
+          'is-active': deletingIds.includes(todo.id),
         })}
         data-cy="TodoLoader"
       >
