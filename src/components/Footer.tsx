@@ -7,12 +7,14 @@ type Props = {
   todos: Todo[],
   onChangeSelect: (event: TodoStatus) => void,
   selectedOption: string,
+  onHandleDeleteAll: () => void,
 };
 
 export const Footer: React.FC<Props> = ({
   todos,
   onChangeSelect = () => {},
   selectedOption,
+  onHandleDeleteAll,
 }) => {
   function countCompletedTodos() {
     let counterCompletedTodos = 0;
@@ -49,6 +51,7 @@ export const Footer: React.FC<Props> = ({
         type="button"
         className="todoapp__clear-completed"
         data-cy="ClearCompletedButton"
+        onClick={onHandleDeleteAll}
       >
         Clear completed
       </button>

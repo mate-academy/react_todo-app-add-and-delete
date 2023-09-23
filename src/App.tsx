@@ -100,6 +100,23 @@ export const App: React.FC = () => {
       .finally(() => setLoading(false));
   };
 
+  const handleDeleteAll = () => {
+    Promise.all(todos
+      .filter((current) => current.completed)
+      .map(todo => client.delete(`/todos/${todo.id}`)))
+      .then(() => {
+        setTodos(currentTodos => currentTodos.filter(current => !current.completed));
+      })
+      .catch(() => {
+        setErrorMessage('Unable to delete a todo');
+
+        setTimeout(() => {
+          setErrorMessage('');
+        }, 3000);
+      })
+      .finally(() => setLoading(false));
+  };
+
   return (
     <section className="section container">
       <p className="title is-4">
@@ -125,6 +142,7 @@ export const App: React.FC = () => {
                 onChangeSelect={handleChangeSelect}
                 selectedOption={selectedOption}
                 todos={todos}
+                onHandleDeleteAll={handleDeleteAll}
               />
             )}
           </div>
