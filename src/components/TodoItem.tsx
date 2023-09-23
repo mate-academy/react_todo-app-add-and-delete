@@ -5,15 +5,21 @@ import { Todo } from '../types/Todo';
 type Props = {
   todo: Todo,
   onCompletedChange?: (todoId: number) => void,
+  onDeleteTodo: (todoId: number) => void,
 };
 
 export const TodoItem: React.FC<Props> = ({
   todo,
   onCompletedChange = () => {},
+  onDeleteTodo,
 }) => {
   const checkHandler = (event: React.FormEvent<HTMLInputElement>) => {
     event.stopPropagation();
     onCompletedChange(todo.id);
+  };
+
+  const onDeleteClick = () => {
+    onDeleteTodo(todo.id);
   };
 
   return (
@@ -43,7 +49,7 @@ export const TodoItem: React.FC<Props> = ({
         type="button"
         className="todo__remove"
         data-cy="TodoDelete"
-        // onClick={}
+        onClick={onDeleteClick}
       >
         ×
       </button>

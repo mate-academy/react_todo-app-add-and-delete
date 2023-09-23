@@ -1,3 +1,9 @@
+  Delele!!!!!!!!!!!!!
+  1. написати ф-ю  deleteTodo(todo.ID) на oNClick() in APP
+  2. Drilling as props to todoItem
+  3.
+
+
   return (
     <!-- <div className="todoapp">
       <h1 className="todoapp__title">todos</h1> -->

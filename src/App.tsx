@@ -44,7 +44,7 @@ export const App: React.FC = () => {
   const [todos, setTodos] = useState<Todo[]>([]);
   const [errorMessage, setErrorMessage] = useState('');
   const [selectedOption, setSelectedOption] = useState(TodoStatus.All);
-  const onCompletedChange = (todoId: number) => {
+  const handleCompletedChange = (todoId: number) => {
     const foundTodo = todos.find(todo => todo.id === todoId);
 
     if (foundTodo) {
@@ -77,7 +77,7 @@ export const App: React.FC = () => {
 
   const visibleTodos = filterTodos(todos, selectedOption);
 
-  const onChangeSelect = (newOption: TodoStatus) => {
+  const handleChangeSelect = (newOption: TodoStatus) => {
     setSelectedOption(newOption);
   };
 
@@ -85,9 +85,20 @@ export const App: React.FC = () => {
     return <UserWarning />;
   }
 
-  // function deleteTodo(todoId: number) {
-  //   setTodos(currentTodos => currentTodos.filter(todo => todo.id !== todoId));
-  // }
+  const handleDeleteTodo = (todoId: number) => {
+    client.delete(`/todos/${todoId}`)
+      .then(() => {
+        setTodos(currentTodos => currentTodos.filter(todo => todo.id !== todoId));
+      })
+      .catch(() => {
+        setErrorMessage('Unable to delete a todo');
+
+        setTimeout(() => {
+          setErrorMessage('');
+        }, 3000);
+      })
+      .finally(() => setLoading(false));
+  };
 
   return (
     <section className="section container">
@@ -104,13 +115,14 @@ export const App: React.FC = () => {
             {!loading && !errorMessage && (
               <TodoList
                 todos={visibleTodos}
-                onCompletedChange={onCompletedChange}
+                onCompletedChange={handleCompletedChange}
+                onDeleteTodo={handleDeleteTodo}
               />
             )}
 
             {todos.length !== 0 && (
               <Footer
-                onChangeSelect={onChangeSelect}
+                onChangeSelect={handleChangeSelect}
                 selectedOption={selectedOption}
                 todos={todos}
               />
