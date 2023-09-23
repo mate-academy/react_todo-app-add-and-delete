@@ -43,8 +43,9 @@ Remove a todo on the `TodoDeleteButton` click:
 
 Remove all the completed todos after the `Clear completed` button click:
 
-- the button should be visible only if there is at least 1 completed todo;
+- the button should be enabled only if there is at least 1 completed todo;
 - the deletion should work as several individual deletions running at the same time;
+- in case of any error show error message but process success deletions;
 
 ## Instructions
 
