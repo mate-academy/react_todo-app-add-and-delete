@@ -121,6 +121,7 @@
     appearance: none;
     -webkit-font-smoothing: antialiased;
     -moz-osx-font-smoothing: grayscale;
+    transition: opacity 0.3s;
 
     &:hover {
       text-decoration: underline;
@@ -129,6 +130,7 @@
     &:active {
       text-decoration: none;
     }
+
 
     &--hidden {
       visibility: hidden;
