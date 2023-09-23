@@ -9,6 +9,6 @@ export const addTodos = (data: TempTodo) => {
   return client.post<Todo>('/todos', data);
 };
 
-export const deleteTodo = (id: number) => {
-  return client.delete(`/todos/${id}`);
+export const deleteTodo = (todoId: number) => {
+  return client.delete(`/todos/${todoId}`);
 };

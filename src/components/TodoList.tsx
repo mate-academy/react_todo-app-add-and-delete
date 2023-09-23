@@ -1,19 +1,21 @@
 import React from 'react';
 import { Filter } from '../types/Filter';
-import { Todo, TempTodo } from '../types/Todo';
+import { Todo } from '../types/Todo';
 import { SingleTodo } from './SingleTodo';
+import { TempTodo } from './TempTodo';
 
 type TodoListProps = {
   filter: Filter;
   todos: Todo[];
   handleRemove: (todoId: number) => void;
-  tempTodo: TempTodo | null;
+  tempTodo: Todo | null;
   deletedTodoId: number | null;
+  isAddingTodo: boolean;
 };
 
 export const TodoList: React.FC<TodoListProps>
 = ({
-  filter, todos, handleRemove, tempTodo, deletedTodoId,
+  filter, todos, handleRemove, tempTodo, deletedTodoId, isAddingTodo,
 }) => {
   const visibleTodos = () => {
     if (filter === 'active') {
@@ -38,6 +40,16 @@ export const TodoList: React.FC<TodoListProps>
           deletedTodoId={deletedTodoId}
         />
       ))}
+
+      {tempTodo
+      && (
+        <TempTodo
+          handleRemove={handleRemove}
+          tempTodo={tempTodo}
+          deletedTodoId={deletedTodoId}
+          isAddingTodo={isAddingTodo}
+        />
+      )}
     </section>
   );
 };

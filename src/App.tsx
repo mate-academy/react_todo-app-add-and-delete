@@ -1,12 +1,15 @@
+/* eslint-disable no-console */
 /* eslint-disable @typescript-eslint/indent */
 /* eslint-disable jsx-a11y/control-has-associated-label */
-import React, { useEffect, useState } from 'react';
+import React, {
+  useCallback, useEffect, useMemo, useState,
+} from 'react';
 import cn from 'classnames';
 import { TodoList } from './components/TodoList';
 import { FooterFilter } from './components/FooterFilter';
 import { Filter } from './types/Filter';
 import { getTodos, deleteTodo, addTodos } from './api/todos';
-import { Todo, TempTodo } from './types/Todo';
+import { Todo } from './types/Todo';
 import { Errors } from './types/Errors';
 
 const USER_ID = 11551;
@@ -16,56 +19,63 @@ export const App: React.FC = () => {
   const [todos, setTodos] = useState<Todo[]>([]);
   const [error, setError] = useState<Errors | null>(null);
   const [title, setTitle] = useState<string>('');
-  const [tempTodo, setTempTodo] = useState<TempTodo | null>(null);
+  const [tempTodo, setTempTodo] = useState<null | Todo>(null);
   const [deletedTodoId, setDeletedTodoId] = useState<number | null>(null);
+  const [isAddingTodo, setIsAddingTodo] = useState(false);
 
-  const fetchData = async () => {
+  const fetchData = useMemo(() => async () => {
     try {
-      const todoss = getTodos(USER_ID);
+      const todoss = await getTodos(USER_ID);
 
-      setTodos(await todoss);
+      setTodos(todoss);
     } catch (e) {
       setError(Errors.load);
       setTimeout(() => setError(null), 3000);
     }
-  };
+  }, []);
 
   useEffect(() => {
     fetchData();
+  }, [fetchData]);
+
+  const handleFilter = useCallback((newFilter: Filter) => {
+    setFilter(newFilter);
   }, []);
 
-  const handleFilter = (newFilter: Filter) => {
-    setFilter(newFilter);
-  };
-
-  const handleRemove = (todoId: number) => {
-    const todosLeft = todos.filter(todo => todo.id !== todoId);
-
-    setDeletedTodoId(todoId);
-
-    setTodos(todosLeft);
-
-    deleteTodo(todoId)
-      .catch(() => setError(Errors.delete));
-  };
-
-  const onSubmit = async () => {
+  const handleRemove = useCallback(async (todoId: number) => {
     try {
-      if (title === '') {
+      setTodos(prevTodos => prevTodos.filter(todo => todo.id !== todoId));
+      setDeletedTodoId(todoId);
+      await deleteTodo(todoId);
+    } catch {
+      setError(Errors.delete);
+    }
+  }, []);
+
+  const onSubmit = useCallback(async () => {
+    try {
+      setIsAddingTodo(true);
+
+      if (!title.trim()) {
+        console.log('Title is empty. Showing error.');
         setError(Errors.noTitle);
         setTimeout(() => {
           setError(null);
         }, 3000);
+
+        return;
       }
 
       const trimmedTitle = title.trim();
 
       const temporaryTodo = {
-        id: 0,
+        id: +(new Date()),
         title: trimmedTitle,
         userId: USER_ID,
         completed: false,
       };
+
+      console.log('Setting temporary todo:', temporaryTodo);
 
       setTempTodo(temporaryTodo);
 
@@ -75,22 +85,33 @@ export const App: React.FC = () => {
         completed: false,
       });
 
-      setTodos([...todos, response]);
+      console.log('Response from server:', response);
+
       setTitle('');
-      setTempTodo(response);
+      setTempTodo(null);
+      if (tempTodo !== null) {
+        setTempTodo(response);
+      } else {
+        setTodos(prevTodos => [...prevTodos, response]);
+      }
+
+      setIsAddingTodo(false);
     } catch {
+      console.error('Error during todo submission:', error);
       setError(Errors.add);
       setTimeout(() => {
         setError(null);
       }, 3000);
+      setTempTodo(null);
+      setIsAddingTodo(false);
     }
-  };
+  }, [title, tempTodo, setTempTodo, setError, error]);
 
-  const handleSubmit: React.FormEventHandler = (event) => {
+  const handleSubmit: React.FormEventHandler = useCallback((event) => {
     event.preventDefault();
 
     onSubmit();
-  };
+  }, [onSubmit]);
 
   return (
     <div className="todoapp">
@@ -129,6 +150,7 @@ export const App: React.FC = () => {
           handleRemove={handleRemove}
           tempTodo={tempTodo}
           deletedTodoId={deletedTodoId}
+          isAddingTodo={isAddingTodo}
         />
 )}
 
@@ -158,3 +180,5 @@ export const App: React.FC = () => {
     </div>
   );
 };
+
+export default React.memo(App);

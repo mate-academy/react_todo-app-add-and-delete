@@ -3,47 +3,45 @@ import classNames from 'classnames';
 import { Todo } from '../types/Todo';
 
 type SingleTodoProps = {
-  todo: Todo;
   handleRemove: (todoId: number) => void
-  tempTodo: Todo | null;
+  tempTodo: Todo;
   deletedTodoId: number | null;
+  isAddingTodo: boolean;
 };
 
-export const SingleTodo
+export const TempTodo
 = ({
-  todo, handleRemove, tempTodo, deletedTodoId,
+  handleRemove, tempTodo, deletedTodoId, isAddingTodo,
 }: SingleTodoProps) => {
-  console.log('Todo:', todo);
   console.log('Deleted Todo Id:', deletedTodoId);
   console.log('Temp Todo:', tempTodo);
 
   return (
     <div
-      className={todo.completed ? 'todo completed' : 'todo'}
+      className={tempTodo.completed ? 'todo completed' : 'todo'}
       data-cy="Todo"
     >
       <label className="todo__status-label">
         <input
           type="checkbox"
           className="todo__status"
-          checked={todo.completed}
+          checked={tempTodo.completed}
           data-cy="TodoStatus"
         />
       </label>
-      <span className="todo__title" data-cy="TodoTitle">{todo.title}</span>
+      <span className="todo__title" data-cy="TodoTitle">{tempTodo.title}</span>
       <button
         type="button"
         data-cy="TodoDelete"
         className="todo__remove"
-        onClick={() => handleRemove(todo.id)}
+        onClick={() => handleRemove(tempTodo.id)}
       >
         ×
       </button>
-
       <div
         data-cy="TodoLoader"
         className={classNames('modal overlay', {
-          'is-active': deletedTodoId === todo.id,
+          'is-active': isAddingTodo !== null,
         })}
       >
         <div className="modal-background has-background-white-ter" />
