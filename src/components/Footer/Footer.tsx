@@ -1,13 +1,13 @@
 import classNames from 'classnames';
-import { useState } from 'react';
 import { Todo } from '../../types/Todo';
 
 type Props = {
   todos: Todo[],
-  setVisibleTodos: (todos: Todo[]) => void,
+  setStatus: (newStatus: Status) => void,
+  currentStatus: Status,
 };
 
-enum Status {
+export enum Status {
   ALL = 'All',
   ACTIVE = 'Active',
   COMPLETED = 'Completed',
@@ -15,9 +15,9 @@ enum Status {
 
 export const Footer: React.FC<Props> = ({
   todos,
-  setVisibleTodos = () => { },
+  currentStatus,
+  setStatus = () => {},
 }) => {
-  const [status, setStatus] = useState(Status.ALL);
   const completedTodos = todos.filter(todo => todo.completed);
   const activeTodos = todos.filter(todo => !todo.completed);
 
@@ -25,18 +25,6 @@ export const Footer: React.FC<Props> = ({
     const newStatus = event.currentTarget.textContent as Status;
 
     setStatus(newStatus);
-    switch (newStatus) {
-      case Status.ACTIVE:
-        setVisibleTodos(activeTodos);
-        break;
-
-      case Status.COMPLETED:
-        setVisibleTodos(completedTodos);
-        break;
-
-      default:
-        setVisibleTodos(todos);
-    }
   };
 
   return (
@@ -49,7 +37,7 @@ export const Footer: React.FC<Props> = ({
         <a
           href="#/"
           className={classNames('filter__link', {
-            selected: status === Status.ALL,
+            selected: currentStatus === Status.ALL,
           })}
           data-cy="FilterLinkAll"
           onClick={handleClick}
@@ -60,7 +48,7 @@ export const Footer: React.FC<Props> = ({
         <a
           href="#/active"
           className={classNames('filter__link', {
-            selected: status === Status.ACTIVE,
+            selected: currentStatus === Status.ACTIVE,
           })}
           data-cy="FilterLinkActive"
           onClick={handleClick}
@@ -71,7 +59,7 @@ export const Footer: React.FC<Props> = ({
         <a
           href="#/completed"
           className={classNames('filter__link', {
-            selected: status === Status.COMPLETED,
+            selected: currentStatus === Status.COMPLETED,
           })}
           data-cy="FilterLinkCompleted"
           onClick={handleClick}

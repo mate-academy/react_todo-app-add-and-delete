@@ -2,10 +2,18 @@ import classNames from 'classnames';
 import { Todo } from '../../types/Todo';
 
 type Props = {
-  visibleTodos: Todo[]
+  visibleTodos: Todo[];
+  onDelete?: (id: number) => void;
+  selectedId: number | null;
+  isLoading: boolean;
 };
 
-export const Section: React.FC<Props> = ({ visibleTodos }) => {
+export const Section: React.FC<Props> = ({
+  visibleTodos,
+  onDelete = () => { },
+  selectedId,
+  isLoading,
+}) => {
   return (
     <section className="todoapp__main" data-cy="TodoList">
       {visibleTodos.map(todo => (
@@ -22,7 +30,7 @@ export const Section: React.FC<Props> = ({ visibleTodos }) => {
               data-cy="TodoStatus"
               type="checkbox"
               className="todo__status"
-              checked={todo.completed}
+            // checked={todo.completed}
             />
           </label>
 
@@ -31,11 +39,17 @@ export const Section: React.FC<Props> = ({ visibleTodos }) => {
             type="button"
             className="todo__remove"
             data-cy="TodoDelete"
+            onClick={() => onDelete(todo.id)}
           >
             ×
           </button>
 
-          <div data-cy="TodoLoader" className="modal overlay">
+          <div
+            data-cy="TodoLoader"
+            className={classNames('modal overlay', {
+              'is-active': selectedId === todo.id && isLoading,
+            })}
+          >
             <div className="modal-background has-background-white-ter" />
             <div className="loader" />
           </div>
