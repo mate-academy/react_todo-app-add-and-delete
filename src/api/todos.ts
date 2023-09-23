@@ -9,7 +9,7 @@ export const updateTodos = (userId: number, todos: Todo[]) => {
   return client.patch(`/todos?userId=${userId}`, todos);
 };
 
-export const addTodo = (userId: number, todo: Todo) => {
+export const addTodo = (todo: Todo) => {
   return client.post('/todos', todo);
 };
 

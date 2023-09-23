@@ -35,17 +35,20 @@ export const App: React.FC = () => {
     }
   };
 
-  const handleDelete = (todo: Todo) => {
+  const handleDelete = (todo: Todo, callback: () => void) => {
     deleteTodo(todo.id).catch(() => {
       setError('Unable to delete todo');
       setTimeout(() => setError(null), 3000);
-    }).then(() => fetchData());
+    }).then(() => {
+      fetchData();
+      callback();
+    });
   };
 
   const handleAdd = () => {
     setIsInputDisabled(true);
 
-    addTodo(USER_ID, {
+    addTodo({
       id: 0,
       userId: USER_ID,
       title: title.trim(),
