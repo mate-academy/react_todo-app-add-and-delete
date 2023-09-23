@@ -41,7 +41,7 @@ export const TempTodo
       <div
         data-cy="TodoLoader"
         className={classNames('modal overlay', {
-          'is-active': isAddingTodo !== null,
+          'is-active': isAddingTodo,
         })}
       >
         <div className="modal-background has-background-white-ter" />
