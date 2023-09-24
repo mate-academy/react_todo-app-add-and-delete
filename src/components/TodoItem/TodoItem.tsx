@@ -5,13 +5,19 @@ import { Todo } from '../../types/Todo';
 type Props = {
   todo: Todo,
   deletePost: (id: number) => void,
+  key: number,
 };
 
 export const TodoItem: React.FC<Props> = ({
   todo,
   deletePost,
+  key,
 }) => {
-  const [loadingForDelete] = useState(false);
+  const [loading, setLoading] = useState(false);
+  const isTodoAdded = todo.id === key;
+
+  // eslint-disable-next-line no-console
+  console.log(isTodoAdded);
 
   return (
     <div
@@ -32,16 +38,19 @@ export const TodoItem: React.FC<Props> = ({
         className="todo__title"
       >
         {todo.title}
-        {(loadingForDelete) && (
-          <div data-cy="TodoLoader" className="modal overlay is-active">
-            <div className="modal-background has-background-white-ter" />
-            <div className="loader" />
-          </div>
-        )}
+        <div
+          data-cy="TodoLoader"
+          className={cn('modal overlay',
+            { 'is-active': loading || isTodoAdded })}
+        >
+          <div className="modal-background has-background-white-ter" />
+          <div className="loader" />
+        </div>
       </span>
 
       <button
         onClick={() => {
+          setLoading(true);
           setTimeout(() => {
             deletePost(todo.id);
           }, 200);

@@ -1,5 +1,5 @@
 import cn from 'classnames';
-import React from 'react';
+import React, { useState } from 'react';
 import { Todo } from '../../types/Todo';
 import { ERROR_MESSAGES } from '../../utils/constants/ERROR_MESSAGES';
 
@@ -22,7 +22,11 @@ export const Header: React.FC<Props> = ({
   setNewTodoTitle,
   tempTodo,
 }) => {
+  const [isInputDisabled, setInputDisabled] = useState(false);
+
   const visibleToogleAllButton = !!todos.length;
+  // eslint-disable-next-line no-console
+  console.log(setInputDisabled, isInputDisabled);
 
   const handleInputChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     setNewTodoTitle(event.target.value);
@@ -57,6 +61,7 @@ export const Header: React.FC<Props> = ({
         }}
       >
         <input
+          // disabled={isInputDisabled}
           value={newTodoTitle}
           onChange={handleInputChange}
           ref={textInputRef}

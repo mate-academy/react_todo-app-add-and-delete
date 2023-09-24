@@ -7,7 +7,10 @@ type Props = {
   deletePost: (id: number) => void,
 };
 
-export const TodosList: React.FC<Props> = ({ todos, deletePost }) => {
+export const TodosList: React.FC<Props> = ({
+  todos,
+  deletePost,
+}) => {
   return (
     <section className="todoapp__main" data-cy="TodoList">
       {todos.map(todo => {
@@ -16,6 +19,7 @@ export const TodosList: React.FC<Props> = ({ todos, deletePost }) => {
             <TodoItem
               deletePost={deletePost}
               todo={todo}
+              key={todo.id}
             />
           </React.Fragment>
         );

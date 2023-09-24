@@ -32,9 +32,8 @@ export const App: React.FC = () => {
   const [newTodoTitle, setNewTodoTitle] = useState('');
   const [tempTodo, setTempTodo] = useState<Todo>(TODO_BLANK);
   const textInputRef = useRef<HTMLInputElement | null>(null);
-  const [isLoadingTodo, setIsLoadingTodo] = useState(true);
-  // eslint-disable-next-line no-console
-  // console.log(tempTodo);
+  const [isLoadingTodos, setIsLoadingTodos] = useState(true);
+  // const [isLoadingTodo, setIsLoadingTodo] = useState(false);
 
   const deleteOneTodo = (todoId: number) => {
     deleteTodos(todoId)
@@ -42,6 +41,14 @@ export const App: React.FC = () => {
       .then(r => console.log(r));
     setTodos((prevState) => prevState.filter(({ id }) => id !== todoId));
   };
+
+  let timerError: NodeJS.Timeout | undefined;
+
+  if (errorMessage) {
+    timerError = setTimeout(() => {
+      setErrorMessage('');
+    }, 3000);
+  }
 
   const addTodo = useCallback((todo: Todo) => {
     if (newTodoTitle.trim()) {
@@ -52,20 +59,27 @@ export const App: React.FC = () => {
           });
         });
     }
+
+    return () => {
+      clearTimeout(timerError);
+    };
   }, [newTodoTitle, setTodos]);
 
   useEffect(() => {
-    if (textInputRef.current) {
-      textInputRef.current.focus();
-    }
-
     getTodos(USER_ID)
-      .then(setTodos)
+      .then((allTodos) => {
+        setTodos(allTodos);
+        if (textInputRef.current) {
+          textInputRef.current.focus();
+        }
+      })
       .catch(() => setErrorMessage(ERROR_MESSAGES.unableToLoadTodos))
       .finally(() => {
-        setIsLoadingTodo(false);
+        setIsLoadingTodos(false);
         setTempTodo(TODO_BLANK);
       });
+
+    setIsLoadingTodos(true);
   }, []);
 
   useEffect(() => {
@@ -78,10 +92,6 @@ export const App: React.FC = () => {
   const preparedTodos = useMemo(() => {
     return filteredTodos(todos, selectFilter);
   }, [todos, selectFilter]);
-
-  setTimeout(() => {
-    setErrorMessage('');
-  }, 3000);
 
   return (
     <div className="todoapp">
@@ -97,7 +107,7 @@ export const App: React.FC = () => {
           todos={todos}
           textInputRef={textInputRef}
         />
-        {isLoadingTodo ? (
+        {isLoadingTodos ? (
           <Loader />
         ) : (
           <TodosList
@@ -115,7 +125,10 @@ export const App: React.FC = () => {
         )}
       </div>
 
-      <ErrorNotification errorMessage={errorMessage} />
+      <ErrorNotification
+        errorMessage={errorMessage}
+        setErrorMessage={setErrorMessage}
+      />
     </div>
   );
 };
