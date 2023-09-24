@@ -1,5 +1,5 @@
 import React, {
-  FormEvent, useEffect, useRef, useState,
+  FormEvent, useEffect, useMemo, useRef, useState,
 } from 'react';
 import { addTodo } from '../api/todos';
 import { Todo } from '../types/Todo';
@@ -18,6 +18,10 @@ export const TodoForm: React.FC = () => {
     setTempTodos,
   } = useTodoContext() as TContext;
 
+  const counter = useMemo(() => {
+    return Math.max(...todos.map(todo => todo.id)) + 1;
+  }, [todos]);
+
   useEffect(() => {
     if (!isSubmitting) {
       titleInputRef.current?.focus(); // ustaw fokus na input po dodaniu
@@ -27,38 +31,33 @@ export const TodoForm: React.FC = () => {
   const handleSubmit = (event: FormEvent<HTMLFormElement>) => {
     event.preventDefault();
 
-    if (title.trim().length === 0) {
-      setHasError('Title should not be empty');
-      setTimeout(() => setHasError(null), 3000);
-    }
-
     const newTodo: Todo = {
       userId: 11550,
-      id: Math.max(...todos.map(todo => todo.id)) + 1,
-      title,
+      id: counter,
+      title: title.trim(),
       completed: false,
     };
 
-    setTempTodos({ ...newTodo, id: 0 });
-    setIsSubmitting(true);
+    if (title.trim().length === 0) {
+      setHasError('Title should not be empty');
+      setTimeout(() => setHasError(null), 3000);
+    } else {
+      setTempTodos({ ...newTodo, id: 0 });
+      setIsSubmitting(true);
 
-    if (!(title.trim().length === 0)) {
       addTodo(newTodo)
-        .then(res => {
-          // setIdTemp(newTodo.id);
+        .then((res) => {
           setTodos([...todos, res]);
-          setTitle('');
         })
-        .catch(() => {
+        .catch((error) => {
           setHasError('Unable to add a todo');
+          console.log(error);
           setTimeout(() => setHasError(null), 3000);
         })
         .finally(() => {
           setIsSubmitting(false);
           setTempTodos(null);
-          setTodos([...todos, newTodo]);
-          // setIdTemp(null);
-        // titleInputRef.current?.focus(); // Ustaw fokus
+          setTitle('');
         });
     }
   };
