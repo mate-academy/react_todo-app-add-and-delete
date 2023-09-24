@@ -145,7 +145,7 @@ export const App: React.FC = () => {
       const newTodo = {
         id: maxTodoId + 1,
         userId: USER_ID,
-        title: newTitle,
+        title: newTitle.trim(),
         completed: false,
       };
 
