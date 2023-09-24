@@ -3,25 +3,16 @@ import {
 } from 'react';
 import { Errors } from '../../types/Errors';
 
-type AddError = (err: keyof Errors) => void;
+export type AddError = (err: keyof Errors) => void;
 
-type ErrorsContextType = {
+export type ErrorsContextType = {
   addError: AddError,
   errors: Errors,
   clearErrors: () => void,
 };
 
-export const ErrorsContext = createContext<ErrorsContextType>({
-  addError: () => {},
-  errors: {
-    errorLoadingTodos: false,
-    errorEmptyTitle: false,
-    errorUnableToAddTodo: false,
-    errorUnableToDeleteTodo: false,
-    errorUpdateTodo: false,
-  },
-  clearErrors: () => {},
-});
+export const ErrorsContext
+= createContext<ErrorsContextType | undefined>(undefined);
 
 export const ErrorsProvider = ({ children }: PropsWithChildren) => {
   const [errors, setErrors] = useState<Errors>({
@@ -58,9 +49,13 @@ export const ErrorsProvider = ({ children }: PropsWithChildren) => {
     });
   };
 
-  return (
-    <ErrorsContext.Provider value={{ addError, errors, clearErrors }}>
-      {children}
-    </ErrorsContext.Provider>
-  );
+  if (ErrorsContext) {
+    return (
+      <ErrorsContext.Provider value={{ addError, errors, clearErrors }}>
+        {children}
+      </ErrorsContext.Provider>
+    );
+  }
+
+  return null;
 };

@@ -7,5 +7,6 @@ export type TodosContextType = {
   handleFilter: (filter: Filters) => void;
   filteredTodos: TodoType[],
   filter: Filters,
+  handleTodoDel: (todo: TodoType) => void;
   // handleChecked: (todo: TodoType) => void;
 };

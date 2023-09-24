@@ -1,5 +1,6 @@
 /* eslint-disable jsx-a11y/control-has-associated-label */
 import React from 'react';
+import { TransitionGroup } from 'react-transition-group';
 import { UserWarning } from './UserWarning';
 import { NewTodo } from './components/NewTodo';
 import { TodoList } from './components/TodoList';
@@ -17,30 +18,35 @@ export const App: React.FC = () => {
   }
 
   return (
-    <ErrorsProvider>
-      <TodosProvider>
-        <div className="todoapp">
-          <h1 className="todoapp__title">todos</h1>
+    <TransitionGroup>
+      <ErrorsProvider>
+        <NewTodoProvider>
+          <TodosProvider>
 
-          <div className="todoapp__content">
-            <NewTodoProvider>
-              <NewTodo />
-            </NewTodoProvider>
+            <div className="todoapp">
+              <h1 className="todoapp__title">todos</h1>
 
-            <TodoList />
+              <div className="todoapp__content">
 
-            {/* Hide the footer if there are no todos */}
-            <Filter />
+                <NewTodo />
 
-          </div>
+                <TodoList />
 
-          {/* Notification is shown in case of any error */}
-          {/* Add the 'hidden' class to hide the message smoothly */}
+                {/* Hide the footer if there are no todos */}
+                <Filter />
 
-          <Errors />
+              </div>
 
-        </div>
-      </TodosProvider>
-    </ErrorsProvider>
+              {/* Notification is shown in case of any error */}
+              {/* Add the 'hidden' class to hide the message smoothly */}
+
+              <Errors />
+
+            </div>
+
+          </TodosProvider>
+        </NewTodoProvider>
+      </ErrorsProvider>
+    </TransitionGroup>
   );
 };

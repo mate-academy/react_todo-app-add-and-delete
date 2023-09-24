@@ -1,13 +1,14 @@
 import cn from 'classnames';
-import { useState } from 'react';
+// import { useState } from 'react';
 import { TodoType } from '../../types/Todo';
 
 type TodoProps = {
   todo: TodoType,
+  handleDel: (t: TodoType) => void,
 };
 
-export const Todo = ({ todo }: TodoProps) => {
-  const [isChecked, setIsChecked] = useState<boolean>(false);
+export const Todo = ({ todo, handleDel }: TodoProps) => {
+  // const [isChecked, setIsChecked] = useState<boolean>(false);
 
   // const todosContext = useContext(TodosContext);
 
@@ -26,7 +27,7 @@ export const Todo = ({ todo }: TodoProps) => {
           type="checkbox"
           className="todo__status"
           checked={todo.completed}
-          onChange={() => setIsChecked(!todo.completed)}
+          // onChange={() => setIsChecked(!todo.completed)}
         />
       </label>
 
@@ -35,7 +36,12 @@ export const Todo = ({ todo }: TodoProps) => {
       </span>
 
       {/* Remove button appears only on hover */}
-      <button type="button" className="todo__remove" data-cy="TodoDelete">
+      <button
+        type="button"
+        className="todo__remove"
+        data-cy="TodoDelete"
+        onClick={() => handleDel(todo)}
+      >
         ×
       </button>
 

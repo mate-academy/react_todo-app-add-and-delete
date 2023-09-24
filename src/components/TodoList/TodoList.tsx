@@ -1,11 +1,16 @@
 import { useContext } from 'react';
+import { CSSTransition } from 'react-transition-group';
 import { Todo } from '../Todo';
 import { TodosContext } from '../../providers/TodosProvider/TodosProvider';
 
 export const TodoList = () => {
   const todosContext = useContext(TodosContext);
 
-  const { filteredTodos, loadingTodos } = todosContext;
+  if (!todosContext) {
+    return null;
+  }
+
+  const { filteredTodos, loadingTodos, handleTodoDel } = todosContext;
 
   if (loadingTodos) {
     return <div>Loading todos...</div>;
@@ -15,7 +20,13 @@ export const TodoList = () => {
     <section className="todoapp__main" data-cy="TodoList">
       {filteredTodos.map(todo => {
         return (
-          <Todo key={todo.id} todo={todo} />
+          <CSSTransition
+            key={todo.id}
+            timeout={300}
+            classNames="item"
+          >
+            <Todo key={todo.id} todo={todo} handleDel={handleTodoDel} />
+          </CSSTransition>
         );
       })}
 
