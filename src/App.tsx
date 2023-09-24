@@ -20,6 +20,7 @@ export const App: React.FC = () => {
   const [tempTodo, setTempTodo] = useState<Todo | null>(null);
   const [loadingId, setLoadingId] = useState<number[]>([]);
   const [isFormActive, setIsFormActive] = useState(true);
+  const [isLoaderActive, setIsLoaderActive] = useState(false);
 
   const filteredTodos = getFilteredTodos(todoList, filterBy);
 
@@ -46,6 +47,7 @@ export const App: React.FC = () => {
 
   const handleDeleteTodo = (todoId: number) => {
     setLoadingId([todoId]);
+    setIsLoaderActive(true);
 
     return postService.deleteTodo(todoId)
       .then(() => {
@@ -57,6 +59,7 @@ export const App: React.FC = () => {
       })
       .finally(() => {
         setLoadingId([]);
+        setIsLoaderActive(false);
       });
   };
 
@@ -68,8 +71,6 @@ export const App: React.FC = () => {
           .then(() => {
             postService.getTodos(USER_ID)
               .then(setTodoList);
-            // setTodoList(currentList => currentList
-            //   .filter(todo => todo.id !== id));
           })
           .catch(() => {
             hasCompletedTodosCount = false;
@@ -88,6 +89,7 @@ export const App: React.FC = () => {
 
     setErrorMessage('');
     setLoadingId([0]);
+    setIsLoaderActive(true);
     setIsFormActive(false);
 
     postService.createTodo(todo)
@@ -96,10 +98,12 @@ export const App: React.FC = () => {
         setTitle('');
         setIsFormActive(true);
         setTimeout(() => {
+          setIsLoaderActive(false);
           setLoadingId([]);
         }, 3000);
       })
       .catch(() => {
+        setIsLoaderActive(false);
         setIsFormActive(true);
         setLoadingId([0]);
         setErrorMessage('Unable to add a todo');
@@ -107,6 +111,8 @@ export const App: React.FC = () => {
       .finally(() => {
         setTempTodo(null);
         setLoadingId([]);
+        setIsLoaderActive(false);
+        setIsFormActive(true);
       });
   };
 
@@ -125,8 +131,6 @@ export const App: React.FC = () => {
       title: title.trim(),
       completed: false,
     });
-
-    setLoadingId([]);
   };
 
   if (!USER_ID) {
@@ -155,6 +159,7 @@ export const App: React.FC = () => {
                 todo={todo}
                 deleteTodo={handleDeleteTodo}
                 loadingId={loadingId}
+                isLoaderActive={isLoaderActive}
               />
             ))
           )}
