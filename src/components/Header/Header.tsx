@@ -9,8 +9,8 @@ type Props = {
   setErrorMessage: (message: string) => void;
   userId: number;
   isLoading: boolean;
-  title: string;
-  setTitle: (title: string) => void;
+  newTitle: string;
+  setNewTitle: (title: string) => void;
 };
 
 export const Header: React.FC<Props> = ({
@@ -19,8 +19,8 @@ export const Header: React.FC<Props> = ({
   setErrorMessage = () => { },
   userId,
   isLoading,
-  title,
-  setTitle = () => { },
+  newTitle,
+  setNewTitle = () => { },
 }) => {
   // #region state
   const inputReference = useRef<HTMLInputElement | null>(null);
@@ -34,22 +34,20 @@ export const Header: React.FC<Props> = ({
 
   // #region handlers
   const handleTitleChange = (event: React.ChangeEvent<HTMLInputElement>) => {
-    setTitle(event.target.value);
+    setNewTitle(event.target.value);
   };
 
   const handleSubmit = (event: React.FormEvent) => {
     event.preventDefault();
 
-    if (!title.trim()) {
+    if (!newTitle.trim()) {
       setErrorMessage('Title can\'t be empty');
 
       return;
     }
 
-    const completed = false;
-
     onSubmit({
-      id: 0, userId, title, completed,
+      id: 0, userId, title: newTitle.trim(), completed: false,
     });
   };
   // #endregion
@@ -71,7 +69,7 @@ export const Header: React.FC<Props> = ({
           disabled={isLoading}
           ref={inputReference}
           onChange={handleTitleChange}
-          value={title}
+          value={newTitle}
           data-cy="NewTodoField"
           type="text"
           className="todoapp__new-todo"

@@ -68,7 +68,6 @@ export const App: React.FC = () => {
     const promise = todoService.createTodo({
       userId, title: title.trim(), completed,
     })
-
       .then(newTodo => {
         setTodos(currentTodos => [...currentTodos, newTodo]);
         setNewTitle('');
@@ -80,7 +79,7 @@ export const App: React.FC = () => {
       });
 
     setTempTodo({
-      id: 0, userId: USER_ID, title, completed: false,
+      id: 0, userId: USER_ID, title, completed,
     });
 
     return promise;
@@ -137,8 +136,8 @@ export const App: React.FC = () => {
       <div className="todoapp__content">
 
         <Header
-          title={newTitle}
-          setTitle={setNewTitle}
+          newTitle={newTitle}
+          setNewTitle={setNewTitle}
           isLoading={isLoading}
           userId={USER_ID}
           todos={todos}
