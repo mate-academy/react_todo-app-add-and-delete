@@ -15,7 +15,7 @@ export const TodoItem: React.FC<Props> = ({ todo }) => {
     // todos,
     setTodos,
     handleError,
-    // tempTodos,
+    tempTodos,
     // idTemp,
   } = useTodoContext() as TContext;
 
@@ -48,7 +48,7 @@ export const TodoItem: React.FC<Props> = ({ todo }) => {
   // }
 
   return (
-    <div data-cy="Todo" className={`${todo?.completed ? 'todo completed' : 'todo'}`} key={todo.id}>
+    <div data-cy="Todo" className={`${todo?.completed ? 'todo completed' : 'todo'}`} key={todo?.id}>
       <label className="todo__status-label">
         <input
           data-cy="TodoStatus"
@@ -74,7 +74,7 @@ export const TodoItem: React.FC<Props> = ({ todo }) => {
       <div
         data-cy="TodoLoader"
         className={cn('modal overlay',
-          { 'is-active': isDeleting === true })}
+          { 'is-active': (isDeleting === true) || (todo.id === 0) })}
       >
         <div className="modal-background has-background-white-ter" />
         <div className="loader" />

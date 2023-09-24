@@ -1,5 +1,5 @@
 import React from 'react';
-import cn from 'classnames';
+// import cn from 'classnames';
 import { Todo } from '../types/Todo';
 import { TContext, useTodoContext } from './TodoContext';
 import { TodoItem } from './TodoItem';
@@ -17,15 +17,27 @@ export const TodoList: React.FC<Props> = ({ todos }) => {
     // idTemp,
   } = useTodoContext() as TContext;
 
+  if (tempTodos !== null) {
+    return (
+      <section className="todoapp__main" data-cy="TodoList">
+        {[...todos, tempTodos].map((todo: Todo) => {
+          return (
+            <TodoItem todo={todo} key={todo?.id} />
+          );
+        })}
+      </section>
+    );
+  }
+
   return (
     <section className="todoapp__main" data-cy="TodoList">
-      {todos.map((todo) => {
+      {todos.map((todo: Todo) => {
         return (
-          <TodoItem todo={todo} key={todo.id} />
+          <TodoItem todo={todo} key={todo?.id} />
         );
       })}
 
-      {(tempTodos !== null) && (
+      {/* {(tempTodos !== null) && (
         <div data-cy="Todo" className={`${tempTodos?.completed ? 'todo completed' : 'todo'}`} key={tempTodos?.id}>
           <label className="todo__status-label">
             <input
@@ -49,15 +61,15 @@ export const TodoList: React.FC<Props> = ({ todos }) => {
 
           <div
             data-cy="TodoLoader"
-            className={cn('modal overlay',
-              // { 'is-active': tempTodos.id === 0 }
-            )}
+            className={cn('modal overlay')}
+            // { 'is-active': tempTodos.id === 0 }
+
           >
             <div className="modal-background has-background-white-ter" />
             <div className="loader" />
           </div>
         </div>
-      )}
+      )} */}
     </section>
   );
 };
