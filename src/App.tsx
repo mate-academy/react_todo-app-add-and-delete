@@ -1,6 +1,9 @@
 /* eslint-disable max-len */
 /* eslint-disable jsx-a11y/control-has-associated-label */
-import React, { useEffect, useMemo, useState } from 'react';
+import React, {
+  useEffect, useMemo, useRef, useState,
+} from 'react';
+
 import classNames from 'classnames';
 import { Todo } from './types/Todo';
 import { TodoList } from './components/TodoList/TodoList';
@@ -27,6 +30,8 @@ export const App: React.FC = () => {
   ), [todos]);
 
   const activeTodosCount = todos.length - completedTodosCount;
+
+  const inputRef = useRef<HTMLInputElement | null>(null);
 
   const visibleTodos = todos.filter(todo => {
     switch (status) {
@@ -59,24 +64,28 @@ export const App: React.FC = () => {
     event.preventDefault();
 
     const trimmedTitle = title.trim();
+
+    if (trimmedTitle === '') {
+      setErrorMessage('Title should not be empty');
+
+      return;
+    }
+
     const tempTodo = createTempTodo();
 
     setTempoTodo(tempTodo);
 
     setDisableInput(true);
 
-    if (!trimmedTitle) {
-      setErrorMessage("Title can't be empty");
-
-      return;
-    }
-
     setTimeout(() => {
       todoService
         .addTodos(tempTodo)
         .then((newTodo) => setTodos([...todos, newTodo]))
         .catch(() => setErrorMessage('Unable to add a todo'))
-        .finally(() => resetAddTodoState());
+        .finally(() => {
+          resetAddTodoState();
+          setDisableInput(false);
+        });
     }, 500);
   };
 
@@ -111,23 +120,29 @@ export const App: React.FC = () => {
   };
 
   useEffect(() => {
+    if (!disableInput && inputRef.current) {
+      inputRef.current.focus();
+    }
+  }, [disableInput]);
+
+  useEffect(() => {
     todoService.getTodos()
       .then(setTodos)
-      .catch(() => setErrorMessage('Unable to load a todo'));
+      .catch(() => setErrorMessage('Unable to load todos'));
   }, []);
 
   useEffect(() => {
     if (errorMessage) {
       setTimeout(() => {
         setErrorMessage('');
-      }, 3000);
+      }, 2500);
     }
   }, [errorMessage]);
 
   useEffect(() => {
     setTimeout(() => {
       setVisible(true);
-    }, 1000);
+    }, 500);
   }, []);
 
   return (
@@ -158,6 +173,7 @@ export const App: React.FC = () => {
               data-cy="NewTodoField"
               value={title}
               onChange={event => setTitle(event.target.value)}
+              ref={inputRef}
               disabled={disableInput}
             />
           </form>
