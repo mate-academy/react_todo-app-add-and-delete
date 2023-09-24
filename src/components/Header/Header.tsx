@@ -1,6 +1,6 @@
 /* eslint-disable jsx-a11y/control-has-associated-label */
 
-import { useEffect, useRef, useState } from 'react';
+import { useEffect, useRef } from 'react';
 import { Todo } from '../../types/Todo';
 
 type Props = {
@@ -8,6 +8,9 @@ type Props = {
   todos: Todo[];
   setErrorMessage: (message: string) => void;
   userId: number;
+  isLoading: boolean;
+  title: string;
+  setTitle: (title: string) => void;
 };
 
 export const Header: React.FC<Props> = ({
@@ -15,29 +18,24 @@ export const Header: React.FC<Props> = ({
   onSubmit,
   setErrorMessage = () => { },
   userId,
+  isLoading,
+  title,
+  setTitle = () => {},
 }) => {
   // #region state
-  const [title, setTitle] = useState('');
-  // const [isFocused, setIsFocused] = useState(true);
   const inputReference = useRef<HTMLInputElement | null>(null);
 
   useEffect(() => {
-    if (inputReference.current) {
+    if (inputReference.current && !isLoading) {
       inputReference.current.focus();
     }
-  }, []);
+  }, [isLoading]);
   // #endregion
 
   // #region handlers
   const handleTitleChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     setTitle(event.target.value.trim());
   };
-
-  // #region reset
-  const reset = () => {
-    setTitle('');
-  };
-  // #endregion
 
   const handleSubmit = (event: React.FormEvent) => {
     event.preventDefault();
@@ -52,8 +50,7 @@ export const Header: React.FC<Props> = ({
 
     onSubmit({
       id: 0, userId, title, completed,
-    })
-      .then(reset);
+    });
   };
   // #endregion
 
@@ -71,6 +68,7 @@ export const Header: React.FC<Props> = ({
         onSubmit={handleSubmit}
       >
         <input
+          disabled={isLoading}
           ref={inputReference}
           onChange={handleTitleChange}
           value={title}

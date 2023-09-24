@@ -31,6 +31,8 @@ export const App: React.FC = () => {
   const [status, setStatus] = useState(Status.ALL);
   const [isLoading, setIsLoading] = useState(false);
   const [selectedId, setSelectedId] = useState<number | null>(null);
+  const [tempTodo, setTempTodo] = useState<Todo | null>(null);
+  const [newTitle, setNewTitle] = useState('');
   const visibleTodos = getVisibleTodos(todos, status);
 
   const completedTodos = todos.filter(todo => todo.completed);
@@ -61,11 +63,24 @@ export const App: React.FC = () => {
 
   // #region add, delete, update
   const addTodo = ({ userId, title, completed }: Todo) => {
-    return todoService.createTodo({ userId, title, completed })
+    setIsLoading(true);
+
+    const promise = todoService.createTodo({ userId, title, completed })
       .then(newTodo => {
         setTodos(currentTodos => [...currentTodos, newTodo]);
+        setNewTitle('');
       })
-      .catch(() => setErrorMessage('Can\'t create a todo'));
+      .catch(() => setErrorMessage('Unable to add a todo'))
+      .finally(() => {
+        setIsLoading(false);
+        setTempTodo(null);
+      });
+
+    setTempTodo({
+      id: 0, userId: USER_ID, title, completed: false,
+    });
+
+    return promise;
   };
 
   const deleteTodo = (id: number) => {
@@ -119,6 +134,9 @@ export const App: React.FC = () => {
       <div className="todoapp__content">
 
         <Header
+          title={newTitle}
+          setTitle={setNewTitle}
+          isLoading={isLoading}
           userId={USER_ID}
           todos={todos}
           onSubmit={addTodo}
@@ -127,6 +145,7 @@ export const App: React.FC = () => {
 
         {visibleTodos && (
           <Section
+            tempTodo={tempTodo}
             visibleTodos={visibleTodos}
             onDelete={deleteTodo}
             selectedId={selectedId}
@@ -134,7 +153,7 @@ export const App: React.FC = () => {
           />
         )}
 
-        {todos.length > 0 && (
+        {(todos.length > 0 || tempTodo) && (
           <Footer
             todos={todos}
             setStatus={setStatus}

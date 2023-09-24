@@ -6,6 +6,7 @@ type Props = {
   onDelete?: (id: number) => void;
   selectedId: number | null;
   isLoading: boolean;
+  tempTodo: Todo | null;
 };
 
 export const Section: React.FC<Props> = ({
@@ -13,6 +14,7 @@ export const Section: React.FC<Props> = ({
   onDelete = () => { },
   selectedId,
   isLoading,
+  tempTodo,
 }) => {
   return (
     <section className="todoapp__main" data-cy="TodoList">
@@ -30,7 +32,7 @@ export const Section: React.FC<Props> = ({
               data-cy="TodoStatus"
               type="checkbox"
               className="todo__status"
-            // checked={todo.completed}
+              checked={todo.completed}
             />
           </label>
 
@@ -48,7 +50,7 @@ export const Section: React.FC<Props> = ({
             data-cy="TodoLoader"
             className={classNames('modal overlay', {
               'is-active': (selectedId === todo.id && isLoading)
-              || (todo.completed && isLoading),
+                || (todo.completed && isLoading),
             })}
           >
             <div className="modal-background has-background-white-ter" />
@@ -56,6 +58,50 @@ export const Section: React.FC<Props> = ({
           </div>
         </div>
       ))}
+      {tempTodo && (
+        <div
+          data-cy="Todo"
+          className={classNames('todo', {
+            completed: tempTodo.completed,
+            active: !tempTodo.completed,
+          })}
+          key={tempTodo.id}
+        >
+          <label className="todo__status-label">
+            <input
+              data-cy="TodoStatus"
+              type="checkbox"
+              className="todo__status"
+              checked={tempTodo.completed}
+            />
+          </label>
+
+          <span
+            data-cy="TodoTitle"
+            className="todo__title"
+          >
+            {tempTodo.title}
+          </span>
+          <button
+            type="button"
+            className="todo__remove"
+            data-cy="TodoDelete"
+            onClick={() => onDelete(tempTodo.id)}
+          >
+            ×
+          </button>
+
+          <div
+            data-cy="TodoLoader"
+            className={classNames('modal overlay', {
+              'is-active': isLoading,
+            })}
+          >
+            <div className="modal-background has-background-white-ter" />
+            <div className="loader" />
+          </div>
+        </div>
+      )}
     </section>
   );
 };
