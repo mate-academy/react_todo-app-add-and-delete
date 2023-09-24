@@ -50,7 +50,7 @@ export const Section: React.FC<Props> = ({
             data-cy="TodoLoader"
             className={classNames('modal overlay', {
               'is-active': (selectedId === todo.id && isLoading)
-                || (todo.completed && isLoading && !tempTodo),
+                || (todo.completed && isLoading && !tempTodo && !selectedId),
             })}
           >
             <div className="modal-background has-background-white-ter" />
