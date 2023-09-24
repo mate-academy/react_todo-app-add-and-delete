@@ -12,9 +12,7 @@ export const TodoForm: React.FC = () => {
   const {
     todos,
     setTodos,
-    // hasError,
-    setHasError,
-    // tempTodos,
+    handleError,
     setTempTodos,
   } = useTodoContext() as TContext;
 
@@ -39,8 +37,7 @@ export const TodoForm: React.FC = () => {
     };
 
     if (title.trim().length === 0) {
-      setHasError('Title should not be empty');
-      setTimeout(() => setHasError(null), 3000);
+      handleError('Title should not be empty');
     } else {
       setTempTodos({ ...newTodo, id: 0 });
       setIsSubmitting(true);
@@ -49,16 +46,15 @@ export const TodoForm: React.FC = () => {
         .then((res) => {
           setTodos([...todos, res]);
           setTitle('');
-          setTempTodos(null);
         })
         .catch((error) => {
-          setHasError('Unable to add a todo');
+          handleError('Unable to add a todo');
           // eslint-disable-next-line no-console
           console.log(error);
-          setTimeout(() => setHasError(null), 3000);
         })
         .finally(() => {
           setIsSubmitting(false);
+          setTempTodos(null);
         });
     }
   };

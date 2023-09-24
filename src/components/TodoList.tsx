@@ -12,8 +12,7 @@ export const TodoList: React.FC<Props> = ({ todos }) => {
   const {
     // todos,
     setTodos,
-    // hasError,
-    // setHasError,
+    handleError,
     tempTodos,
     // idTemp,
   } = useTodoContext() as TContext;
@@ -27,7 +26,7 @@ export const TodoList: React.FC<Props> = ({ todos }) => {
         setTodos(res);
       })
       .catch(() => {
-        // console.error('Wystąpił błąd podczas dodawania zadania:', error);
+        handleError('Unable to delete a todo');
       });
   };
 
@@ -96,7 +95,7 @@ export const TodoList: React.FC<Props> = ({ todos }) => {
           <div
             data-cy="TodoLoader"
             className={cn('modal overlay',
-              { 'is-active': tempTodos !== null })}
+              { 'is-active': tempTodos.id === 0 })}
           >
             <div className="modal-background has-background-white-ter" />
             <div className="loader" />
