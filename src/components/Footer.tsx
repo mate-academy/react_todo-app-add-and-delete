@@ -1,3 +1,5 @@
+/* eslint-disable max-len */
+/* eslint-disable jsx-a11y/control-has-associated-label */
 import React from 'react';
 import { Todo } from '../types/Todo';
 import { Filter } from './Filter';
@@ -20,13 +22,16 @@ export const Footer: React.FC<Props> = ({
     let counterCompletedTodos = 0;
 
     todos.forEach((todo) => {
-      if (!todo.completed) {
+      if (!todo.completed && todo.id) {
         counterCompletedTodos += 1;
       }
     }, 0);
 
-    return counterCompletedTodos !== 0 ? counterCompletedTodos : todos.length;
+    return counterCompletedTodos;
   }
+
+  const counterNotCompletedTodos = countCompletedTodos();
+  const existsCompleted = !(todos.length === counterNotCompletedTodos);
 
   return (
     <footer
@@ -37,7 +42,7 @@ export const Footer: React.FC<Props> = ({
         className="todo-count"
         data-cy="TodosCounter"
       >
-        {`${countCompletedTodos()} items left`}
+        {`${counterNotCompletedTodos} items left`}
       </span>
 
       {/* Active filter should have a 'selected' class */}
@@ -49,6 +54,7 @@ export const Footer: React.FC<Props> = ({
       {/* don't show this button if there are no completed todos */}
       <button
         type="button"
+        disabled={!existsCompleted}
         className="todoapp__clear-completed"
         data-cy="ClearCompletedButton"
         onClick={onHandleDeleteAll}

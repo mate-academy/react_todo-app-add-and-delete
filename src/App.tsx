@@ -40,10 +40,23 @@ function filterTodos(todos: Todo[], selectedOption: string) {
 }
 
 export const App: React.FC = () => {
-  const [loading, setLoading] = useState(false);
+  const [loadingTodos, setLoadingTodos] = useState(false);
+  const [loadingTodosIds, setLoadingTodosIds] = useState<number[]>([]);
   const [todos, setTodos] = useState<Todo[]>([]);
   const [errorMessage, setErrorMessage] = useState('');
   const [selectedOption, setSelectedOption] = useState(TodoStatus.All);
+  const [tempTodo, setTempTodo] = useState<Todo | null>(null);
+  const [inputValue, setInputValue] = useState('');
+  const [isInputFieldDisabled, setIsInputFieldDisabled] = useState(false);
+
+  function showError(message: string) {
+    setErrorMessage(message);
+
+    setTimeout(() => {
+      setErrorMessage('');
+    }, 3000);
+  }
+
   const handleCompletedChange = (todoId: number) => {
     const foundTodo = todos.find(todo => todo.id === todoId);
 
@@ -55,20 +68,17 @@ export const App: React.FC = () => {
   };
 
   useEffect(() => {
-    setLoading(true);
+    setLoadingTodos(true);
 
     client.get<Todo[]>(`/todos?userId=${USER_ID}`)
       .then((todosFromSrever) => {
         setTodos(todosFromSrever);
+        setLoadingTodos(false);
       })
       .catch(() => {
-        setErrorMessage('Unable to load todos');
-
-        setTimeout(() => {
-          setErrorMessage('');
-        }, 3000);
-      })
-      .finally(() => setLoading(false));
+        showError('Unable to load todos');
+        setLoadingTodos(false);
+      });
   }, []);
 
   if (!USER_ID) {
@@ -76,45 +86,94 @@ export const App: React.FC = () => {
   }
 
   const visibleTodos = filterTodos(todos, selectedOption);
-
   const handleChangeSelect = (newOption: TodoStatus) => {
     setSelectedOption(newOption);
   };
 
-  if (!USER_ID) {
-    return <UserWarning />;
-  }
-
   const handleDeleteTodo = (todoId: number) => {
+    setLoadingTodosIds([todoId]);
+
     client.delete(`/todos/${todoId}`)
       .then(() => {
         setTodos(currentTodos => currentTodos.filter(todo => todo.id !== todoId));
+        setLoadingTodosIds([]);
       })
       .catch(() => {
-        setErrorMessage('Unable to delete a todo');
-
-        setTimeout(() => {
-          setErrorMessage('');
-        }, 3000);
+        showError('Unable to delete a todo');
+        setLoadingTodosIds([]);
       })
-      .finally(() => setLoading(false));
+      .finally(() => setLoadingTodosIds([todoId]));
   };
 
   const handleDeleteAll = () => {
-    Promise.all(todos
-      .filter((current) => current.completed)
-      .map(todo => client.delete(`/todos/${todo.id}`)))
-      .then(() => {
-        setTodos(currentTodos => currentTodos.filter(current => !current.completed));
-      })
-      .catch(() => {
-        setErrorMessage('Unable to delete a todo');
+    const filteredTodos = todos.filter((current) => current.completed);
 
-        setTimeout(() => {
-          setErrorMessage('');
-        }, 3000);
-      })
-      .finally(() => setLoading(false));
+    setLoadingTodosIds(filteredTodos.map((current) => current.id));
+    Promise.allSettled(filteredTodos
+      .map(todo => client.delete(`/todos/${todo.id}`)))
+      .then((rezult) => {
+        // rezult: {status: 'fulfilled'|'rejected'}[];
+        const fulfilledTodoIds: number[] = [];
+        let wasFailed = false;
+
+        rezult.forEach((response, i) => {
+          if (response.status === 'fulfilled') {
+            fulfilledTodoIds.push(filteredTodos[i].id);
+          } else {
+            wasFailed = true;
+          }
+        });
+
+        if (wasFailed) {
+          showError('Unable to delete a todo');
+        }
+
+        setLoadingTodosIds([]);
+        setTodos(currentTodos => currentTodos
+          .filter(current => !fulfilledTodoIds.includes(current.id)));
+      });
+  };
+
+  const handleAddTodo = (newTitle: string) => {
+    const todoIds = todos.map(({ id }) => id);
+    const maxTodoId = Math.max(...todoIds);
+
+    if (!newTitle?.trim()?.length) {
+      showError('Title should not be empty');
+    } else {
+      setInputValue(newTitle);
+      const newTodo = {
+        id: maxTodoId + 1,
+        userId: USER_ID,
+        title: newTitle,
+        completed: false,
+      };
+
+      setIsInputFieldDisabled(true);
+      client.post<Todo>('/todos', newTodo)
+        .then((createdTodo) => {
+          setLoadingTodosIds([]);
+          setTempTodo(null);
+          setTodos([...todos.filter((current) => current.id !== 0), createdTodo]);
+          setInputValue('');
+          setIsInputFieldDisabled(false);
+        })
+        .catch(() => {
+          setIsInputFieldDisabled(false);
+          setLoadingTodosIds([]);
+          setTodos([...todos
+            .filter((current) => current.id !== 0)]);
+          showError('Unable to add a todo');
+        });
+
+      if (tempTodo === null) {
+        const fakeTodo = { ...newTodo, id: 0 };
+
+        setTempTodo(fakeTodo);
+        setLoadingTodosIds([fakeTodo.id]);
+        setTodos([...todos, fakeTodo]);
+      }
+    }
   };
 
   return (
@@ -127,13 +186,18 @@ export const App: React.FC = () => {
 
             <Header
               todos={visibleTodos}
+              onInputChange={handleAddTodo}
+              inputValue={inputValue}
+              setInputValue={setInputValue}
+              isInputFieldDisabled={isInputFieldDisabled}
             />
 
-            {!loading && !errorMessage && (
+            {!loadingTodos && (
               <TodoList
                 todos={visibleTodos}
                 onCompletedChange={handleCompletedChange}
                 onDeleteTodo={handleDeleteTodo}
+                loadingTodosIds={loadingTodosIds}
               />
             )}
 
@@ -163,17 +227,7 @@ export const App: React.FC = () => {
             />
             {errorMessage}
 
-            {/* show only one message at a time */}
-
-            {/* Unable to load todos
-
-            Title should not be empty
-            <br />
-            Unable to add a todo
-            <br />
-            Unable to delete a todo
-            <br />
-            Unable to update a todo */}
+            {/* Unable to update a todo */}
           </div>
         </div>
       </p>

@@ -1,5 +1,22 @@
-  Delele Alll!!!!!!!!!!!!!
-  1. 
+  Addl!!!!!!!!!!!!!
+  1. set focused title field
+  2. if the title is empty show the Title should not be empty notification at the bottom;
+  3. при настисканні на ентер (знаходиться в SubmitForm) викликається спрацьовує лістенер в input,
+    викликаючи функцію-обробник (лежить в App) де реалізованоБ вона на вхід приймає зн з input:
+    1. запит на сервер (з типом запиту POST)
+    3. якщо tempTodo !== null
+      3.1 створюється тимчасова TodoItem з новою
+       todo ({id = 0, title = input.value, completed: false}) в
+        const [tempTodo, setTempTodo] = useState()
+    ' 3.2. тоді покласти в кінець списку
+    4. після вдалої відповіді з сервуру setTempTodo(null) та приховати
+      тимчасову TodoItem, а нову покласти в кінець списку
+
+      очистити поле вводу
+
+      <!-- ref={(inp: HTMLInputElement) => {
+        inp.focus();
+      }} -->
 
 
   return (

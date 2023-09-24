@@ -1,3 +1,5 @@
+/* eslint-disable max-len */
+/* eslint-disable jsx-a11y/control-has-associated-label */
 import React from 'react';
 import classNames from 'classnames';
 import { Todo } from '../types/Todo';
@@ -6,12 +8,14 @@ type Props = {
   todo: Todo,
   onCompletedChange?: (todoId: number) => void,
   onDeleteTodo: (todoId: number) => void,
+  isLoading: boolean,
 };
 
 export const TodoItem: React.FC<Props> = ({
   todo,
   onCompletedChange = () => {},
   onDeleteTodo,
+  isLoading,
 }) => {
   const checkHandler = (event: React.FormEvent<HTMLInputElement>) => {
     event.stopPropagation();
@@ -57,7 +61,8 @@ export const TodoItem: React.FC<Props> = ({
       {/* overlay will cover the todo while it is being updated */}
       <div
         data-cy="TodoLoader"
-        className="modal overlay"
+        className={classNames('modal overlay',
+          { 'is-active': isLoading })}
       >
         <div
           className="modal-background
