@@ -10,6 +10,7 @@ import { SortTypes, Todo } from './types/Todo';
 const USER_ID = 11550;
 
 export const App: React.FC = () => {
+  // const [isDeleting, setIsDeleting] = useState<boolean>(false);
   const {
     todos,
     // addTodo,
@@ -34,6 +35,21 @@ export const App: React.FC = () => {
   if (!USER_ID) {
     return <UserWarning />;
   }
+
+  // const deleteCompleted = (todoIds: number[]) => {
+  //   setIsDeleting(true);
+
+  //   return todoIds.map((todoId) => deleteTodo(todoId)
+  //     .then(() => getTodos(USER_ID))
+  //     .then((res) => {
+  //       setTodos(res);
+  //       setIsDeleting(false);
+  //     })
+  //     .catch(() => {
+  //       handleError('Unable to delete a todo');
+  //     });
+  //   )
+  // };
 
   return (
     <div className="todoapp">
@@ -66,13 +82,16 @@ export const App: React.FC = () => {
             <TodoFilter sortType={sortType} handleSort={handleSorting} />
 
             {/* don't show this button if there are no completed todos */}
-            <button
-              type="button"
-              className="todoapp__clear-completed"
-              data-cy="ClearCompletedButton"
-            >
-              Clear completed
-            </button>
+            {(todos.some(todo => todo.completed === true)) && (
+              <button
+                type="button"
+                className="todoapp__clear-completed"
+                data-cy="ClearCompletedButton"
+                // onClick={deleteCompleted((todos.filter(todo.id => todo.completed === true))}
+              >
+                Clear completed
+              </button>
+            )}
           </footer>
         )}
       </div>

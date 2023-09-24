@@ -19,10 +19,10 @@ export const TodoItem: React.FC<Props> = ({ todo }) => {
     // idTemp,
   } = useTodoContext() as TContext;
 
+  const USER_ID = 11550;
+
   const handleDelete = (todoId: number) => {
     setIsDeleting(true);
-
-    const USER_ID = 11550;
 
     return deleteTodo(todoId)
       .then(() => getTodos(USER_ID))
@@ -35,6 +35,18 @@ export const TodoItem: React.FC<Props> = ({ todo }) => {
       });
   };
 
+  // const handleCompleted(todoId: number) => {
+
+  //   return patchTodo(todoId)
+  //     .then(() => getTodos(USER_ID))
+  //     .then((res) => {
+  //       setTodos(res);
+  //     })
+  //     .catch(() => {
+  //       handleError('Unable to update a todo');
+  //     });
+  // }
+
   return (
     <div data-cy="Todo" className={`${todo?.completed ? 'todo completed' : 'todo'}`} key={todo.id}>
       <label className="todo__status-label">
@@ -43,6 +55,7 @@ export const TodoItem: React.FC<Props> = ({ todo }) => {
           type="checkbox"
           className="todo__status"
           checked={todo?.completed}
+          // onClick={handleCompleted}
         />
       </label>
 
