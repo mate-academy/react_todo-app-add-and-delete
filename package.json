@@ -15,6 +15,7 @@
     "react-scripts": "5.0.1",
     "sass": "^1.67.0",
     "react-transition-group": "^4.4.5"
+
   },
   "devDependencies": {
     "@cypress/react": "^5.12.4",

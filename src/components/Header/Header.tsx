@@ -20,7 +20,7 @@ export const Header: React.FC<Props> = ({
   userId,
   isLoading,
   title,
-  setTitle = () => {},
+  setTitle = () => { },
 }) => {
   // #region state
   const inputReference = useRef<HTMLInputElement | null>(null);

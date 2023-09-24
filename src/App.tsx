@@ -68,6 +68,7 @@ export const App: React.FC = () => {
     const promise = todoService.createTodo({
       userId, title: title.trim(), completed,
     })
+
       .then(newTodo => {
         setTodos(currentTodos => [...currentTodos, newTodo]);
         setNewTitle('');
