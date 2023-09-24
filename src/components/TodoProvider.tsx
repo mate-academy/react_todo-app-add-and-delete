@@ -1,8 +1,7 @@
 import React, { createContext, useEffect, useState } from 'react';
 
 import { Todo } from '../types/Todo';
-import { getTodos } from '../api/todos';
-import { client } from '../utils/fetchClient';
+import { addTodo, deleteTodo, getTodos } from '../api/todos';
 
 const USER_ID = 11503;
 
@@ -35,8 +34,7 @@ export const TodoProvider: React.FC<TodoProviderProps> = ({ children }) => {
     = useState<{ [key: number]: boolean } | {}>({});
 
   const addTodoHandler = (newTodo: Todo, onSuccess: () => void) => {
-    client
-      .post<Todo>('/todos', newTodo)
+    return addTodo(newTodo)
       .then((createdTodo: Todo) => {
         setTodos((currentTodos) => [...currentTodos, createdTodo]);
         onSuccess();
@@ -51,7 +49,7 @@ export const TodoProvider: React.FC<TodoProviderProps> = ({ children }) => {
     }));
 
     try {
-      await client.delete(`/todos/${todoId}`);
+      await deleteTodo(todoId);
       setTodos(currentTodos => currentTodos.filter(({ id }) => id !== todoId));
     } catch {
       setErrorMessage('Unable to delete a todo');
