@@ -41,7 +41,7 @@ export const Header: React.FC<Props> = ({
     event.preventDefault();
 
     if (!newTitle.trim()) {
-      setErrorMessage('Title can\'t be empty');
+      setErrorMessage('Title should not be empty');
 
       return;
     }

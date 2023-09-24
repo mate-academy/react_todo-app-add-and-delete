@@ -50,7 +50,7 @@ export const Section: React.FC<Props> = ({
             data-cy="TodoLoader"
             className={classNames('modal overlay', {
               'is-active': (selectedId === todo.id && isLoading)
-                || (todo.completed && isLoading),
+                || (todo.completed && isLoading && !tempTodo),
             })}
           >
             <div className="modal-background has-background-white-ter" />
@@ -91,11 +91,15 @@ export const Section: React.FC<Props> = ({
             ×
           </button>
 
-          <div
+          {/* <div
             data-cy="TodoLoader"
             className={classNames('modal overlay', {
               'is-active': isLoading,
             })}
+          > */}
+          <div
+            data-cy="TodoLoader"
+            className="modal overlay is-active"
           >
             <div className="modal-background has-background-white-ter" />
             <div className="loader" />
