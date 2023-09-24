@@ -60,13 +60,17 @@ export const App: React.FC = () => {
 
   function addTodo({ title, userId, completed }: Todo) {
     setErrorMessage(Error.None);
+    const todoTitle = value.trim();
 
     return todoService.createTodos({ title, userId, completed })
       .then(newTodo => {
         setTodos(currentTodos => [...currentTodos, newTodo]);
+        setValue('');
       })
       .catch(() => {
         setErrorMessage(Error.Add);
+        setValue(todoTitle);
+        console.log('hello');
       });
   }
 
@@ -92,7 +96,6 @@ export const App: React.FC = () => {
       setTempTodo(tempTodoProto);
 
       addTodo(newTodo)
-        .then(() => setValue(''))
         .finally(() => {
           setTempTodo(null);
           setIsSubmitting(false);
