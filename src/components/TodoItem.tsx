@@ -15,7 +15,7 @@ export const TodoItem: React.FC<Props> = ({ todo }) => {
     // todos,
     setTodos,
     handleError,
-    tempTodos,
+    // tempTodos,
     // idTemp,
   } = useTodoContext() as TContext;
 
