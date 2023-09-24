@@ -3,6 +3,7 @@ import React, {
 } from 'react';
 import { TodoContext } from './TodoProvider';
 import { Todo } from '../types/Todo';
+import { USER_ID } from '../utils/constants';
 
 type Props = {
   setTempTodo: (todo: Todo | null) => void;
@@ -32,7 +33,8 @@ export const Form: React.FC<Props> = ({ setTempTodo }) => {
     }
   };
 
-  const handleSubmit = async () => {
+  const handleSubmit = (event: React.FormEvent<HTMLFormElement>) => {
+    event.preventDefault();
     setIsSubmiting(true);
     const newTitle = title.trim();
 
@@ -44,13 +46,12 @@ export const Form: React.FC<Props> = ({ setTempTodo }) => {
     }
 
     const newTodo = {
-      id: 0,
       title: newTitle,
-      userId: 11503,
+      userId: USER_ID,
       completed: false,
     };
 
-    setTempTodo(newTodo);
+    setTempTodo({ id: 0, ...newTodo });
 
     addTodoHandler(newTodo, () => {
       setTitle('');

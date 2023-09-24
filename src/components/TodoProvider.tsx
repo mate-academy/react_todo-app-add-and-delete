@@ -2,12 +2,11 @@ import React, { createContext, useEffect, useState } from 'react';
 
 import { Todo } from '../types/Todo';
 import { addTodo, deleteTodo, getTodos } from '../api/todos';
-
-const USER_ID = 11503;
+import { USER_ID } from '../utils/constants';
 
 interface TodoContextProps {
   todos: Todo[];
-  addTodoHandler: (todo: Todo, onSuccess: () => void) => void;
+  addTodoHandler: (todo: Omit<Todo, 'id'>, onSuccess: () => void) => void;
   deleteTodoHandler: (todoId: number) => void;
   errorMessage: string;
   setErrorMessage: (str: string) => void;
@@ -33,13 +32,17 @@ export const TodoProvider: React.FC<TodoProviderProps> = ({ children }) => {
   const [isLoadingMap, setIsLoadingMap]
     = useState<{ [key: number]: boolean } | {}>({});
 
-  const addTodoHandler = (newTodo: Todo, onSuccess: () => void) => {
-    return addTodo(newTodo)
-      .then((createdTodo: Todo) => {
-        setTodos((currentTodos) => [...currentTodos, createdTodo]);
-        onSuccess();
-      })
-      .catch(() => setErrorMessage('Unable to add todo'));
+  const addTodoHandler = async (
+    newTodo: Omit<Todo, 'id'>, onSuccess: () => void,
+  ) => {
+    try {
+      const createdTodo = await addTodo(newTodo);
+
+      setTodos((currentTodos) => [...currentTodos, createdTodo]);
+      onSuccess();
+    } catch (error) {
+      setErrorMessage('Unable to add todo');
+    }
   };
 
   const deleteTodoHandler = async (todoId: number) => {
