@@ -1,5 +1,5 @@
 import React from 'react';
-import cn from 'classnames';
+// import cn from 'classnames';
 import { Todo } from '../types/Todo';
 import { deleteTodo, getTodos } from '../api/todos';
 import { TContext, useTodoContext } from './TodoContext';
@@ -95,9 +95,7 @@ export const TodoList: React.FC<Props> = ({ todos }) => {
 
           <div
             data-cy="TodoLoader"
-            className={cn('modal overlay', {
-              'is-active': (tempTodos),
-            })}
+            className="modal overlay is-active"
           >
             <div className="modal-background has-background-white-ter" />
             <div className="loader" />
