@@ -14,6 +14,8 @@ export interface TContext {
   setHasError: React.Dispatch<SetStateAction<string | null>>;
   tempTodos: Todo | null;
   setTempTodos: React.Dispatch<SetStateAction<Todo | null>>;
+  idNew: number | null;
+  setIdNew: React.Dispatch<SetStateAction<number | null>>;
 }
 
 // Tworzymy kontekst
@@ -31,6 +33,7 @@ export function TodoProvider({ children }: { children: ReactNode }) {
   const [hasError, setHasError] = useState<string | null>(null);
   const [sortType, setSortType] = useState<SortTypes>('all');
   const [tempTodos, setTempTodos] = useState<Todo | null>(null);
+  const [idNew, setIdNew] = useState<number | null>(null);
 
   const handleError = (error: string) => {
     setHasError(error);
@@ -63,6 +66,8 @@ export function TodoProvider({ children }: { children: ReactNode }) {
     setSortType,
     tempTodos,
     setTempTodos,
+    idNew,
+    setIdNew,
   };
 
   return (

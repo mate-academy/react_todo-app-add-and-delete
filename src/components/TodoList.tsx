@@ -15,6 +15,7 @@ export const TodoList: React.FC<Props> = ({ todos }) => {
     // hasError,
     // setHasError,
     tempTodos,
+    // idTemp,
   } = useTodoContext() as TContext;
 
   const USER_ID = 11550;
@@ -32,28 +33,28 @@ export const TodoList: React.FC<Props> = ({ todos }) => {
 
   return (
     <section className="todoapp__main" data-cy="TodoList">
-      {todos?.map((todo, index) => {
-        const isLastItem = index === todos.length - 1;
+      {todos.map((todo) => {
+        // const isLastItem = index === todos.length;
 
         return (
-          <div data-cy="Todo" className={`${todo.completed ? 'todo completed' : 'todo'}`} key={todo.id}>
+          <div data-cy="Todo" className={`${todo?.completed ? 'todo completed' : 'todo'}`} key={todo?.id}>
             <label className="todo__status-label">
               <input
                 data-cy="TodoStatus"
                 type="checkbox"
                 className="todo__status"
-                checked={todo.completed}
+                checked={todo?.completed}
               />
             </label>
 
             <span data-cy="TodoTitle" className="todo__title">
-              {todo.title}
+              {todo?.title}
             </span>
             <button
               type="button"
               className="todo__remove"
               data-cy="TodoDelete"
-              onClick={() => handleDelete(todo.id)}
+              onClick={() => handleDelete(todo?.id)}
             >
               ×
             </button>
@@ -61,8 +62,7 @@ export const TodoList: React.FC<Props> = ({ todos }) => {
             <div
               data-cy="TodoLoader"
               className={cn('modal overlay', {
-                'is-active': ((tempTodos !== null)
-                && isLastItem),
+                // 'is-active': ((todo.id === 0)),
               })}
             >
               <div className="modal-background has-background-white-ter" />
@@ -71,6 +71,41 @@ export const TodoList: React.FC<Props> = ({ todos }) => {
           </div>
         );
       })}
+
+      {(tempTodos !== null) && (
+        <div data-cy="Todo" className={`${tempTodos?.completed ? 'todo completed' : 'todo'}`} key={tempTodos?.id}>
+          <label className="todo__status-label">
+            <input
+              data-cy="TodoStatus"
+              type="checkbox"
+              className="todo__status"
+              checked={tempTodos?.completed}
+            />
+          </label>
+
+          <span data-cy="TodoTitle" className="todo__title">
+            {tempTodos?.title}
+          </span>
+          <button
+            type="button"
+            className="todo__remove"
+            data-cy="TodoDelete"
+          // onClick={() => handleDelete(tempTodo?.id)}
+          >
+            ×
+          </button>
+
+          <div
+            data-cy="TodoLoader"
+            className={cn('modal overlay', {
+              'is-active': (tempTodos),
+            })}
+          >
+            <div className="modal-background has-background-white-ter" />
+            <div className="loader" />
+          </div>
+        </div>
+      )}
     </section>
   );
 };

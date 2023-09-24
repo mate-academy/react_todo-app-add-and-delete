@@ -28,7 +28,8 @@ export const TodoForm: React.FC = () => {
     event.preventDefault();
 
     if (title.trim().length === 0) {
-      return setHasError('Title should not be empty');
+      setHasError('Title should not be empty');
+      setTimeout(() => setHasError(null), 3000);
     }
 
     const newTodo: Todo = {
@@ -41,20 +42,25 @@ export const TodoForm: React.FC = () => {
     setTempTodos({ ...newTodo, id: 0 });
     setIsSubmitting(true);
 
-    return (addTodo(newTodo)
-      .then(res => {
-        setTodos([...todos, res]);
-        setTitle('');
-      })
-      .catch(() => {
-        setHasError('Unable to delete a todo');
-      })
-      .finally(() => {
-        setIsSubmitting(false);
-        setTempTodos(null);
+    if (!(title.trim().length === 0)) {
+      addTodo(newTodo)
+        .then(res => {
+          // setIdTemp(newTodo.id);
+          setTodos([...todos, res]);
+          setTitle('');
+        })
+        .catch(() => {
+          setHasError('Unable to add a todo');
+          setTimeout(() => setHasError(null), 3000);
+        })
+        .finally(() => {
+          setIsSubmitting(false);
+          setTempTodos(null);
+          setTodos([...todos, newTodo]);
+          // setIdTemp(null);
         // titleInputRef.current?.focus(); // Ustaw fokus
-      })
-    );
+        });
+    }
   };
 
   return (
