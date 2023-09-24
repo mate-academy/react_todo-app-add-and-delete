@@ -52,8 +52,8 @@ export const Header = () => {
       userId: USER_ID,
     };
 
-    setTempTodo(newTodo);
     setDisabledInput(true);
+    setTempTodo(newTodo);
   };
 
   useEffect(() => {

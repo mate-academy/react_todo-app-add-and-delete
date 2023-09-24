@@ -19,20 +19,18 @@ export const TodoItem: React.FC<Props> = ({ todo }) => {
   } = useContext(TodosContext);
 
   useEffect(() => {
-    if (tempTodo) {
+    if (tempTodo && tempTodo.id === todo.id) {
       setLoading(tempTodo.id);
     }
-  }, [tempTodo]);
+  }, [tempTodo, todo.id]);
 
   const hangleDeleteTodo = async (userId: number) => {
     try {
       setLoading(userId);
-
       await deleteTodo(userId);
       setTodos((prevTodos) => prevTodos.filter(item => item.id !== userId));
     } catch (error) {
       setHasErrorMessage('Unable to delete a todo');
-
       setIsHiddenError(true);
       setTimeout(() => {
         setIsHiddenError(true);
