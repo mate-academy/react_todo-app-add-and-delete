@@ -12,16 +12,15 @@ export const TodoElement: React.FC<Props> = ({ todo }) => {
   const {
     deleteTodoHandler,
     isLoading,
-    setIsLoading,
   } = useContext(TodoContext);
-  const [isCompleted, setIsCompleted] = useState(completed);
+  const [isChecked, setIsChecked] = useState(completed);
 
   return (
     <div
       data-cy="Todo"
       className={classNames(
         'todo',
-        { completed: isCompleted },
+        { completed: isChecked },
       )}
     >
       <label className="todo__status-label">
@@ -29,9 +28,9 @@ export const TodoElement: React.FC<Props> = ({ todo }) => {
           data-cy="TodoStatus"
           type="checkbox"
           className="todo__status"
-          checked={isCompleted}
+          checked={isChecked}
           onChange={(event) => {
-            setIsCompleted(event.target.checked);
+            setIsChecked(event.target.checked);
           }}
         />
       </label>
@@ -45,20 +44,23 @@ export const TodoElement: React.FC<Props> = ({ todo }) => {
         className="todo__remove"
         data-cy="TodoDelete"
         onClick={() => {
-          setIsLoading(true);
           deleteTodoHandler(id);
-          setIsLoading(false);
         }}
       >
         ×
       </button>
 
-      {isLoading && (
-        <div data-cy="TodoLoader" className="modal overlay">
-          <div className="modal-background has-background-white-ter" />
-          <div className="loader" />
-        </div>
-      )}
+      <div
+        data-cy="TodoLoader"
+        className={classNames(
+          'modal',
+          'overlay',
+          { 'is-active': isLoading },
+        )}
+      >
+        <div className="modal-background has-background-white-ter" />
+        <div className="loader" />
+      </div>
     </div>
   );
 };

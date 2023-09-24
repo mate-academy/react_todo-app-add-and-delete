@@ -1,6 +1,12 @@
 /* eslint-disable jsx-a11y/control-has-associated-label */
-import { useEffect, useRef, useState } from 'react';
+import {
+  useContext,
+  useEffect,
+  useRef,
+  useState,
+} from 'react';
 import { CurrentError } from '../types/CurrentError';
+import { TodoContext } from '../Context/TodoContext';
 
 type Props = {
   activeTodosCount: number,
@@ -9,6 +15,7 @@ type Props = {
 export const TodoHeader: React.FC<Props> = ({
   activeTodosCount,
 }) => {
+  const { setError } = useContext(TodoContext);
   const [title, setTitle] = useState('');
 
   const handleTitleChange = (event: React.ChangeEvent<HTMLInputElement>) => {

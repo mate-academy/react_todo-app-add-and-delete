@@ -16,8 +16,9 @@ import { CurrentError } from './types/CurrentError';
 import { TodoContext } from './Context/TodoContext';
 
 export const App: React.FC = () => {
-  const { todos, error, setError } = useContext(TodoContext);
   const [todoFilter, setTodoFilter] = useState<TodoFilter>(TodoFilter.All);
+
+  const { todos, error, setError } = useContext(TodoContext);
 
   useEffect(() => {
     if (error) {
