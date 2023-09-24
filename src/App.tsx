@@ -1,38 +1,31 @@
 /* eslint-disable jsx-a11y/control-has-associated-label */
-import React, { useEffect, useState, useMemo } from 'react';
+import React, {
+  useEffect,
+  useState,
+  useMemo,
+  useContext,
+} from 'react';
 import classNames from 'classnames';
 
-import { Todo } from './types/Todo';
 import { TodoFilter } from './types/TodoFilter';
-import { getTodos } from './api/todos';
 import { TodoList } from './components/TodoList';
 import { TodoHeader } from './components/TodoHeader';
 import { TodoFooter } from './components/TodoFooter';
 import { getFilteredTodos } from './utils/getFilteredTodos';
 import { CurrentError } from './types/CurrentError';
-
-const USER_ID = 11522;
+import { TodoContext } from './Context/TodoContext';
 
 export const App: React.FC = () => {
-  const [todos, setTodos] = useState<Todo[]>([]);
+  const { todos, error, setError } = useContext(TodoContext);
   const [todoFilter, setTodoFilter] = useState<TodoFilter>(TodoFilter.All);
-  const [errorMessage, setErrorMessage] = useState(CurrentError.Default);
 
   useEffect(() => {
-    getTodos(USER_ID)
-      .then(setTodos)
-      .catch(() => {
-        setErrorMessage(CurrentError.LoadingError);
-      });
-  }, []);
-
-  useEffect(() => {
-    if (errorMessage) {
+    if (error) {
       setTimeout(() => {
-        setErrorMessage(CurrentError.Default);
+        setError(CurrentError.Default);
       }, 3000);
     }
-  }, [errorMessage]);
+  }, [error]);
 
   const filteredTodos = useMemo(() => {
     return getFilteredTodos(todos, todoFilter);
@@ -54,7 +47,9 @@ export const App: React.FC = () => {
           activeTodosCount={activeTodosCount}
         />
 
-        <TodoList todos={filteredTodos} />
+        <TodoList
+          todos={filteredTodos}
+        />
 
         {!!todos.length && (
           <TodoFooter
@@ -73,16 +68,16 @@ export const App: React.FC = () => {
           'is-danger',
           'is-light',
           'has-text-weight-normal',
-          { hidden: !errorMessage },
+          { hidden: !error },
         )}
       >
         <button
           data-cy="HideErrorButton"
           type="button"
           className="delete"
-          onClick={() => setErrorMessage(CurrentError.Default)}
+          onClick={() => setError(CurrentError.Default)}
         />
-        {errorMessage}
+        {error}
       </div>
     </div>
   );

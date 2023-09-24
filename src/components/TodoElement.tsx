@@ -1,13 +1,19 @@
-import React, { useState } from 'react';
+import React, { useContext, useState } from 'react';
 import classNames from 'classnames';
 import { Todo } from '../types/Todo';
+import { TodoContext } from '../Context/TodoContext';
 
 type Props = {
   todo: Todo,
 };
 
 export const TodoElement: React.FC<Props> = ({ todo }) => {
-  const { completed, title } = todo;
+  const { completed, title, id } = todo;
+  const {
+    deleteTodoHandler,
+    isLoading,
+    setIsLoading,
+  } = useContext(TodoContext);
   const [isCompleted, setIsCompleted] = useState(completed);
 
   return (
@@ -34,14 +40,25 @@ export const TodoElement: React.FC<Props> = ({ todo }) => {
         {title}
       </span>
 
-      <button type="button" className="todo__remove" data-cy="TodoDelete">
+      <button
+        type="button"
+        className="todo__remove"
+        data-cy="TodoDelete"
+        onClick={() => {
+          setIsLoading(true);
+          deleteTodoHandler(id);
+          setIsLoading(false);
+        }}
+      >
         ×
       </button>
 
-      <div data-cy="TodoLoader" className="modal overlay">
-        <div className="modal-background has-background-white-ter" />
-        <div className="loader" />
-      </div>
+      {isLoading && (
+        <div data-cy="TodoLoader" className="modal overlay">
+          <div className="modal-background has-background-white-ter" />
+          <div className="loader" />
+        </div>
+      )}
     </div>
   );
 };

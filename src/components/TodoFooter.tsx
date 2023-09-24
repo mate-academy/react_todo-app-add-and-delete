@@ -24,6 +24,7 @@ export const TodoFooter: React.FC<Props> = ({
       <nav className="filter" data-cy="Filter">
         {Object.keys(TodoFilter).map((filterName) => (
           <a
+            key={filterName}
             href={`#/${filterName}`}
             className={classNames('filter__link', {
               selected: filterName === filter,
