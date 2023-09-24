@@ -48,16 +48,17 @@ export const TodoForm: React.FC = () => {
       addTodo(newTodo)
         .then((res) => {
           setTodos([...todos, res]);
+          setTitle('');
         })
         .catch((error) => {
           setHasError('Unable to add a todo');
+          // eslint-disable-next-line no-console
           console.log(error);
           setTimeout(() => setHasError(null), 3000);
         })
         .finally(() => {
           setIsSubmitting(false);
           setTempTodos(null);
-          setTitle('');
         });
     }
   };
