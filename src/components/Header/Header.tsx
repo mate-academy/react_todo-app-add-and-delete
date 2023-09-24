@@ -1,10 +1,9 @@
 /* eslint-disable jsx-a11y/control-has-associated-label */
 
-import { useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { Todo } from '../../types/Todo';
 
 type Props = {
-  // onSubmit: (todo: Omit<Todo, 'id'>) => Promise<void>;
   onSubmit: (todo: Todo) => Promise<void>;
   todos: Todo[];
   setErrorMessage: (message: string) => void;
@@ -19,17 +18,24 @@ export const Header: React.FC<Props> = ({
 }) => {
   // #region state
   const [title, setTitle] = useState('');
+  // const [isFocused, setIsFocused] = useState(true);
+  const inputReference = useRef<HTMLInputElement | null>(null);
+
+  useEffect(() => {
+    if (inputReference.current) {
+      inputReference.current.focus();
+    }
+  }, []);
   // #endregion
 
   // #region handlers
   const handleTitleChange = (event: React.ChangeEvent<HTMLInputElement>) => {
-    setTitle(event.target.value);
+    setTitle(event.target.value.trim());
   };
 
   // #region reset
   const reset = () => {
     setTitle('');
-    // setErrorMessage('');
   };
   // #endregion
 
@@ -42,7 +48,6 @@ export const Header: React.FC<Props> = ({
       return;
     }
 
-    // const id = Math.max(...todos.map(todo => todo.id)) + 1;
     const completed = false;
 
     onSubmit({
@@ -51,8 +56,6 @@ export const Header: React.FC<Props> = ({
       .then(reset);
   };
   // #endregion
-
-  // console.log(title);
 
   return (
     <header className="todoapp__header">
@@ -68,6 +71,7 @@ export const Header: React.FC<Props> = ({
         onSubmit={handleSubmit}
       >
         <input
+          ref={inputReference}
           onChange={handleTitleChange}
           value={title}
           data-cy="NewTodoField"

@@ -33,6 +33,9 @@ export const App: React.FC = () => {
   const [selectedId, setSelectedId] = useState<number | null>(null);
   const visibleTodos = getVisibleTodos(todos, status);
 
+  const completedTodos = todos.filter(todo => todo.completed);
+  const idsOfCompletedTodos = completedTodos.map(todo => todo.id);
+
   const clearError = () => {
     if (errorMessage) {
       setTimeout(() => {
@@ -82,6 +85,28 @@ export const App: React.FC = () => {
       });
   };
 
+  const deleteCompleted = () => {
+    setIsLoading(true);
+
+    return Promise.all(
+      idsOfCompletedTodos.map(id => todoService.deleteTodo(id)),
+    )
+      .then(() => {
+        setTodos(
+          currentTodos => currentTodos.filter(
+            todo => !idsOfCompletedTodos.includes(todo.id),
+          ),
+        );
+      })
+      .catch(() => {
+        setErrorMessage('Unable to delete a todo');
+      })
+      .finally(() => {
+        setIsLoading(false);
+        setSelectedId(null);
+      });
+  };
+
   // #endregion
   if (!USER_ID) {
     return <UserWarning />;
@@ -114,6 +139,7 @@ export const App: React.FC = () => {
             todos={todos}
             setStatus={setStatus}
             currentStatus={status}
+            onClearCompleted={deleteCompleted}
           />
         )}
 
