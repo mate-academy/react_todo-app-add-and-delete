@@ -31,7 +31,7 @@ export const Footer: React.FC<Props> = ({
   }
 
   const counterNotCompletedTodos = countCompletedTodos();
-  const existsCompleted = !(todos.length === counterNotCompletedTodos);
+  const existsCompleted = !!todos.find((todo) => todo.completed);
 
   return (
     <footer
