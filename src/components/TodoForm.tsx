@@ -49,6 +49,7 @@ export const TodoForm: React.FC = () => {
         .then((res) => {
           setTodos([...todos, res]);
           setTitle('');
+          setTempTodos(null);
         })
         .catch((error) => {
           setHasError('Unable to add a todo');
@@ -58,7 +59,6 @@ export const TodoForm: React.FC = () => {
         })
         .finally(() => {
           setIsSubmitting(false);
-          setTempTodos(null);
         });
     }
   };
