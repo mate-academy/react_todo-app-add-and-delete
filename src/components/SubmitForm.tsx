@@ -32,23 +32,12 @@ export const SubmitForm: React.FC<Props> = ({
     }
   };
 
-  // useEffect(() => {
-  //   if (isDisabled && !inputValue) {
-  //     setIsdisabled(false);
-  //   }
-
-  //   setInputFocus();
-  // }, [inputValue]);
-
   useEffect(() => {
     setInputFocus();
   }, [inputValue, isInputFieldDisabled, todos]);
 
   const handleEnterKeyPress = (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
-    // if (inputValue.trim().length) {
-    //   setIsdisabled(true);
-    // }
 
     onInputChange(inputValue);
   };

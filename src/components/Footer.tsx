@@ -45,13 +45,11 @@ export const Footer: React.FC<Props> = ({
         {`${counterNotCompletedTodos} items left`}
       </span>
 
-      {/* Active filter should have a 'selected' class */}
       <Filter
         onChangeSelect={onChangeSelect}
         selectedOption={selectedOption}
       />
 
-      {/* don't show this button if there are no completed todos */}
       <button
         type="button"
         disabled={!existsCompleted}
