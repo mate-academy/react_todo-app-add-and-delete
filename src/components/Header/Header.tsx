@@ -34,7 +34,7 @@ export const Header: React.FC<Props> = ({
 
   // #region handlers
   const handleTitleChange = (event: React.ChangeEvent<HTMLInputElement>) => {
-    setTitle(event.target.value.trim());
+    setTitle(event.target.value);
   };
 
   const handleSubmit = (event: React.FormEvent) => {

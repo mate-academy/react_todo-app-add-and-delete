@@ -65,7 +65,9 @@ export const App: React.FC = () => {
   const addTodo = ({ userId, title, completed }: Todo) => {
     setIsLoading(true);
 
-    const promise = todoService.createTodo({ userId, title, completed })
+    const promise = todoService.createTodo({
+      userId, title: title.trim(), completed,
+    })
       .then(newTodo => {
         setTodos(currentTodos => [...currentTodos, newTodo]);
         setNewTitle('');
