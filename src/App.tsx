@@ -41,7 +41,7 @@ export const App: React.FC = () => {
     filterByStatus, todoItems,
   ), [filterByStatus, todoItems]);
 
-  const handleAddNewTitle = (event: React.ChangeEvent<HTMLInputElement>) => {
+  const onTitleChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     setNewTodoTitle(event.target.value);
   };
 
@@ -61,10 +61,8 @@ export const App: React.FC = () => {
     }
   };
 
-  const handleSubmit = (event: React.FormEvent<HTMLFormElement>) => {
+  const onFormSubmit = (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
-
-    setErrorMessage('');
 
     if (!newTodoTitle.trim()) {
       setErrorMessage(TITLE_ERROR);
@@ -115,14 +113,14 @@ export const App: React.FC = () => {
           />
 
           {/* Add a todo on form submit */}
-          <form onSubmit={handleSubmit}>
+          <form onSubmit={onFormSubmit}>
             <input
               data-cy="NewTodoField"
               type="text"
               className="todoapp__new-todo"
               placeholder="What needs to be done?"
               value={newTodoTitle}
-              onChange={handleAddNewTitle}
+              onChange={onTitleChange}
               disabled={isLoading}
               ref={inputLine}
             />
