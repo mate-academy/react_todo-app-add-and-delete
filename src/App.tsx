@@ -69,6 +69,8 @@ export const App: React.FC = () => {
         {/* This is a completed todo */}
         <TodoList
           todos={filteredTodos}
+          setTodos={setTodos}
+          setError={setError}
         />
 
         {/* This todo is not completed */}

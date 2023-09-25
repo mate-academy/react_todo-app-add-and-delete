@@ -57,16 +57,13 @@ export const TodoHeader: React.FC<Props> = ({
 
     setTempTodo(newTodo);
 
-    addTodo(userId, newTodo)
+    addTodo(newTodo)
       .then((response) => {
         if (response) {
-          // Add the new todo to the todos array
           setTodos((prevTodos) => [...prevTodos, response]);
 
-          // Reset the title input
           setTitle('');
 
-          // Focus on the newTodoField input
           newTodoField.current?.focus();
         } else {
           setError('Unable to add a todo');
