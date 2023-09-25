@@ -8,7 +8,7 @@ import { Footer } from './components/Footer/Footer';
 import { TodosContext } from './components/TodosContext/TodosContext';
 
 export const App: React.FC = () => {
-  const { visibleTodos, todos } = useContext(TodosContext);
+  const { todos, visibleTodos } = useContext(TodosContext);
 
   return (
     <div className="todoapp">
