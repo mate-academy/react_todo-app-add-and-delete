@@ -14,6 +14,7 @@ export const ClearCompletedButton: React.FC<Props> = ({ active, onClear }) => {
 
   const handleClick = () => {
     onClear(true);
+    setError(ERRORS.NONE);
 
     const completedTodos = todos.filter(({ completed }) => completed);
 
