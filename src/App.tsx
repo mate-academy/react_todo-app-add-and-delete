@@ -2,16 +2,15 @@
 /* eslint-disable jsx-a11y/control-has-associated-label */
 import React, { useEffect, useState } from 'react';
 import classNames from 'classnames';
-import { UserWarning } from './UserWarning';
 import 'bulma/css/bulma.css';
 import '@fortawesome/fontawesome-free/css/all.css';
 
 import { TodoList } from './components/TodoList';
 import { Footer } from './components/Footer';
 import { Todo } from './types/Todo';
-import { client } from './utils/fetchClient';
 import { TodoStatus } from './types/TodoStatus';
 import { Header } from './components/Header';
+import * as todosService from './api/todos';
 
 const USER_ID = 11468;
 
@@ -70,7 +69,8 @@ export const App: React.FC = () => {
   useEffect(() => {
     setLoadingTodos(true);
 
-    client.get<Todo[]>(`/todos?userId=${USER_ID}`)
+    todosService
+      .getTodos()
       .then((todosFromSrever) => {
         setTodos(todosFromSrever);
         setLoadingTodos(false);
@@ -81,10 +81,6 @@ export const App: React.FC = () => {
       });
   }, []);
 
-  if (!USER_ID) {
-    return <UserWarning />;
-  }
-
   const visibleTodos = filterTodos(todos, selectedOption);
   const handleChangeSelect = (newOption: TodoStatus) => {
     setSelectedOption(newOption);
@@ -93,7 +89,7 @@ export const App: React.FC = () => {
   const handleDeleteTodo = (todoId: number) => {
     setLoadingTodosIds([todoId]);
 
-    client.delete(`/todos/${todoId}`)
+    todosService.deleteTodo(todoId)
       .then(() => {
         setTodos(currentTodos => currentTodos.filter(todo => todo.id !== todoId));
         setLoadingTodosIds([]);
@@ -110,7 +106,7 @@ export const App: React.FC = () => {
 
     setLoadingTodosIds(filteredTodos.map((current) => current.id));
     Promise.allSettled(filteredTodos
-      .map(todo => client.delete(`/todos/${todo.id}`)))
+      .map(todo => todosService.deleteTodo(todo.id)))
       .then((rezult) => {
         // rezult: {status: 'fulfilled'|'rejected'}[];
         const fulfilledTodoIds: number[] = [];
@@ -150,7 +146,8 @@ export const App: React.FC = () => {
       };
 
       setIsInputFieldDisabled(true);
-      client.post<Todo>('/todos', newTodo)
+      todosService
+        .addTodo(newTodo)
         .then((createdTodo) => {
           setLoadingTodosIds([]);
           setTempTodo(null);
@@ -171,8 +168,18 @@ export const App: React.FC = () => {
 
         setTempTodo(fakeTodo);
         setLoadingTodosIds([fakeTodo.id]);
-        setTodos([...todos, fakeTodo]);
+        setTodos((prevTodos) => [...prevTodos, fakeTodo]);
       }
+    }
+  };
+
+  const handleChangellCompleted = () => {
+    const isNoCompleted = todos.find(todo => todo.completed === false);
+
+    if (isNoCompleted) {
+      setTodos(todos.map(currentTodo => ({ ...currentTodo, completed: true })));
+    } else {
+      setTodos(todos.map(currentTodo => ({ ...currentTodo, completed: false })));
     }
   };
 
@@ -190,6 +197,7 @@ export const App: React.FC = () => {
               inputValue={inputValue}
               setInputValue={setInputValue}
               isInputFieldDisabled={isInputFieldDisabled}
+              onHandleChangellCompleted={handleChangellCompleted}
             />
 
             {!loadingTodos && (

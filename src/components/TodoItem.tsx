@@ -17,13 +17,15 @@ export const TodoItem: React.FC<Props> = ({
   onDeleteTodo,
   isLoading,
 }) => {
+  const { title, id } = todo;
+
   const checkHandler = (event: React.FormEvent<HTMLInputElement>) => {
     event.stopPropagation();
     onCompletedChange(todo.id);
   };
 
   const onDeleteClick = () => {
-    onDeleteTodo(todo.id);
+    onDeleteTodo(id);
   };
 
   return (
@@ -32,7 +34,9 @@ export const TodoItem: React.FC<Props> = ({
         { completed: todo.completed })}
       data-cy="Todo"
     >
-      <label className="todo__status-label">
+      <label
+        className="todo__status-label"
+      >
         <input
           data-cy="TodoStatus"
           type="checkbox"
@@ -46,7 +50,7 @@ export const TodoItem: React.FC<Props> = ({
         data-cy="TodoTitle"
         className="todo__title"
       >
-        {todo.title}
+        {title}
       </span>
       <button
         type="button"
