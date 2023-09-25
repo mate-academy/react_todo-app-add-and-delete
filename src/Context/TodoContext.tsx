@@ -16,6 +16,8 @@ type Props = {
 interface TodoContextInterface {
   todos: Todo[],
   setTodos: React.Dispatch<React.SetStateAction<Todo[]>>,
+  tempTodo: Todo | null;
+  setTempTodo: React.Dispatch<React.SetStateAction<Todo | null>>;
   isLoading: boolean;
   setIsLoading: (isLoading: boolean) => void;
   error: CurrentError,
@@ -32,6 +34,8 @@ interface TodoContextInterface {
 const initalContext: TodoContextInterface = {
   todos: [],
   setTodos: () => {},
+  tempTodo: null,
+  setTempTodo: () => {},
   isLoading: false,
   setIsLoading: () => {},
   error: CurrentError.Default,
@@ -49,16 +53,13 @@ export const TodoContext = createContext(initalContext);
 
 export const TodoProvider: React.FC<Props> = ({ children }) => {
   const [todos, setTodos] = useState<Todo[]>([]);
+  const [tempTodo, setTempTodo] = useState<Todo | null>(null);
   const [error, setError] = useState(CurrentError.Default);
   const [isLoading, setIsLoading] = useState(false);
   const [todosIdToDelete, setTodosIdToDelete] = useState<number[]>([]);
 
   const completedTodos = getCompletedTodos(todos);
   const activeTodos = getActiveTodos(todos);
-
-  const clearCompleted = () => {
-    completedTodos.forEach(({ id }) => todoService.deleteTodo(id));
-  };
 
   const deleteTodoHandler = (todoId: number) => {
     setIsLoading(true);
@@ -84,12 +85,19 @@ export const TodoProvider: React.FC<Props> = ({ children }) => {
       })
       .finally(() => {
         setIsLoading(false);
+        setTempTodo(null);
       });
+  };
+
+  const clearCompleted = () => {
+    completedTodos.forEach(({ id }) => deleteTodoHandler(id));
   };
 
   const value = useMemo(() => ({
     todos,
     setTodos,
+    tempTodo,
+    setTempTodo,
     isLoading,
     setIsLoading,
     error,
@@ -101,7 +109,7 @@ export const TodoProvider: React.FC<Props> = ({ children }) => {
     clearCompleted,
     todosIdToDelete,
     setTodosIdToDelete,
-  }), [todos, error, isLoading]);
+  }), [todos, error, isLoading, tempTodo]);
 
   return (
     <TodoContext.Provider

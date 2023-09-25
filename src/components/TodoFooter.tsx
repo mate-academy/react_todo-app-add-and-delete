@@ -1,20 +1,26 @@
-import React from 'react';
+import React, { useContext } from 'react';
 import classNames from 'classnames';
 import { TodoFilter } from '../types/TodoFilter';
+import { TodoContext } from '../Context/TodoContext';
 
 type Props = {
   filter: TodoFilter;
   setFilter: (newFilter: TodoFilter) => void;
-  activeTodosCount: number;
-  completedTodosCount: number;
 };
 
 export const TodoFooter: React.FC<Props> = ({
   filter,
   setFilter,
-  activeTodosCount,
-  completedTodosCount,
 }) => {
+  const {
+    activeTodos,
+    completedTodos,
+    clearCompleted,
+  } = useContext(TodoContext);
+
+  const activeTodosCount = activeTodos.length;
+  const completedTodosCount = completedTodos.length;
+
   return (
     <footer className="todoapp__footer" data-cy="Footer">
       <span className="todo-count" data-cy="TodosCounter">
@@ -42,6 +48,8 @@ export const TodoFooter: React.FC<Props> = ({
         className="todoapp__clear-completed"
         data-cy="ClearCompletedButton"
         disabled={completedTodosCount === 0}
+        style={{ visibility: completedTodos.length ? 'visible' : 'hidden' }}
+        onClick={clearCompleted}
       >
         Clear completed
       </button>

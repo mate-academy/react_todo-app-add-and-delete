@@ -11,7 +11,7 @@ export const TodoElement: React.FC<Props> = ({ todo }) => {
   const { completed, title, id } = todo;
   const {
     deleteTodoHandler,
-    isLoading,
+    todosIdToDelete,
   } = useContext(TodoContext);
   const [isChecked, setIsChecked] = useState(completed);
 
@@ -55,7 +55,9 @@ export const TodoElement: React.FC<Props> = ({ todo }) => {
         className={classNames(
           'modal',
           'overlay',
-          { 'is-active': isLoading },
+          {
+            'is-active': id === 0 || todosIdToDelete.includes(id),
+          },
         )}
       >
         <div className="modal-background has-background-white-ter" />

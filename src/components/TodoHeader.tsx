@@ -16,17 +16,19 @@ export const TodoHeader: React.FC<Props> = () => {
   const {
     setError,
     addTodoHandler,
+    setTempTodo,
     activeTodos,
     completedTodos,
+    isLoading,
   } = useContext(TodoContext);
   const [title, setTitle] = useState('');
   const inputField = useRef<HTMLInputElement>(null);
 
   useEffect(() => {
-    if (inputField.current) {
-      inputField.current.focus();
+    if (!isLoading) {
+      inputField.current?.focus();
     }
-  }, []);
+  }, [isLoading]);
 
   const handleTitleChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     const newTitle = event.target.value;
@@ -49,8 +51,8 @@ export const TodoHeader: React.FC<Props> = () => {
       completed: false,
     };
 
+    setTempTodo({ id: 0, ...newTodo });
     addTodoHandler(newTodo);
-    setTitle('');
   };
 
   const activeTodosCount = activeTodos.length;
@@ -80,6 +82,7 @@ export const TodoHeader: React.FC<Props> = () => {
           onChange={(event) => {
             handleTitleChange(event);
           }}
+          disabled={isLoading}
         />
       </form>
     </header>
