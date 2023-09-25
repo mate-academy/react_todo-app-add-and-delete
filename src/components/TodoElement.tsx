@@ -9,11 +9,8 @@ type Props = {
 
 export const TodoElement: React.FC<Props> = ({ todo }) => {
   const { completed, title, id } = todo;
-  const {
-    deleteTodoHandler,
+  const { deleteTodoHandler, todosIdToDelete } = useContext(TodoContext);
 
-    todosIdToDelete,
-  } = useContext(TodoContext);
   const [isChecked, setIsChecked] = useState(completed);
   const shouldDisplayLoader = id === 0 || todosIdToDelete.includes(id);
 
