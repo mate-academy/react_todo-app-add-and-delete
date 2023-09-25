@@ -60,7 +60,7 @@ export const TodoList: React.FC<TodoListProps>
           </div>
         ))}
 
-        {tempTodo !== null
+        {tempTodo
         && (
           <div data-cy="Todo" className="todo">
             <label className="todo__status-label">
