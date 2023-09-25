@@ -1,32 +1,20 @@
 /* eslint-disable jsx-a11y/control-has-associated-label */
-import React, { useState, useRef, useEffect } from 'react';
+import React, { useRef, useEffect } from 'react';
 import { Todo } from '../types/Todo';
 
 type Props = {
   todos: Todo[];
-  onAddTodo: (todoTitle: string) => Promise<void>;
+  todoTitle: string;
+  onTodoTitleChange: (title: string) => void;
+  onFormSubmit: (event: React.FormEvent<HTMLFormElement>) => void;
 };
 
-export const Header: React.FC<Props> = ({ todos, onAddTodo }) => {
-  const [todoTitle, setTodoTitle] = useState('');
-
-  const onTitleChange = (event: React.ChangeEvent<HTMLInputElement>) => {
-    setTodoTitle(event.target.value);
-  };
-
-  const onFormSubmit = (event: React.FormEvent<HTMLFormElement>) => {
-    event.preventDefault();
-
-    if (!todoTitle) {
-      return;
-    }
-
-    onAddTodo(todoTitle)
-      .then(() => {
-        setTodoTitle('');
-      });
-  };
-
+export const Header: React.FC<Props> = ({
+  todos,
+  todoTitle,
+  onTodoTitleChange,
+  onFormSubmit,
+}) => {
   const titleInput = useRef<HTMLInputElement | null>(null);
 
   useEffect(() => {
@@ -55,7 +43,7 @@ export const Header: React.FC<Props> = ({ todos, onAddTodo }) => {
           className="todoapp__new-todo"
           placeholder="What needs to be done?"
           value={todoTitle}
-          onChange={onTitleChange}
+          onChange={(event) => onTodoTitleChange(event.target.value)}
         />
       </form>
     </header>

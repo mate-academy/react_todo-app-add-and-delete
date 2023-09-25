@@ -3,7 +3,9 @@ import React, {
   useState, useEffect, useMemo, useCallback, useRef,
 } from 'react';
 import classNames from 'classnames';
-import { getTodos, deleteTodo, addTodo, updateTodo } from './api/todos';
+import {
+  getTodos, deleteTodo, addTodo, updateTodo,
+} from './api/todos';
 import { Todo } from './types/Todo';
 import { FilterType } from './types/FilterType';
 import { TodoItem } from './components/TodoItem';
@@ -36,9 +38,14 @@ export const App: React.FC = () => {
   const [todos, setTodos] = useState<Todo[]>([]);
   const [filterField, setFilterField] = useState(FilterType.All);
   const [errorMessage, setErrorMessage] = useState('');
+  const [todoTitle, setTodoTitle] = useState('');
 
   const activeTodosCounter = todos.filter(
     todo => todo.completed !== true,
+  ).length;
+
+  const completedTodosCounter = todos.filter(
+    todo => todo.completed === true,
   ).length;
 
   useEffect(() => {
@@ -77,8 +84,8 @@ export const App: React.FC = () => {
       });
   }, []);
 
-  const handleAddTodo = useCallback((todoTitle: string) => {
-    return addTodo(todoTitle)
+  const handleAddTodo = useCallback((newTodoTitle: string) => {
+    return addTodo(newTodoTitle.trim())
       .then((newTodo) => {
         setTodos((prevTodos) => [...prevTodos, newTodo]);
       })
@@ -87,7 +94,7 @@ export const App: React.FC = () => {
       });
   }, []);
 
-  const handleDeleteUpdate = (todo: Todo, newTodoTitle: string) => {
+  const handleUpdateTodo = (todo: Todo, newTodoTitle: string) => {
     updateTodo({
       id: todo.id,
       title: newTodoTitle,
@@ -103,14 +110,39 @@ export const App: React.FC = () => {
       });
   };
 
+  const handleClearCompleted = () => {
+    const compeletedTodos = todos.filter(todo => todo.completed === true);
+
+    compeletedTodos.forEach(todo => {
+      handleDeleteTodo(todo.id);
+    });
+  };
+
+  const handleSubmit = (event: React.FormEvent<HTMLFormElement>) => {
+    event.preventDefault();
+
+    if (!todoTitle.trim()) {
+      setErrorMessage('Title should not be empty');
+
+      return;
+    }
+
+    handleAddTodo(todoTitle)
+      .then(() => {
+        setTodoTitle('');
+      });
+  };
+
   return (
     <div className="todoapp">
       <h1 className="todoapp__title">todos</h1>
 
       <div className="todoapp__content">
         <Header
-          onAddTodo={handleAddTodo}
           todos={filteredTodos}
+          todoTitle={todoTitle}
+          onTodoTitleChange={setTodoTitle}
+          onFormSubmit={handleSubmit}
         />
 
         <section className="todoapp__main" data-cy="TodoList">
@@ -119,7 +151,9 @@ export const App: React.FC = () => {
               todo={todo}
               key={todo.id}
               onDeleteTodo={handleDeleteTodo}
-              onTodoUpdate={(todoTitle) => handleDeleteUpdate(todo, todoTitle)}
+              onTodoUpdate={
+                (newTodoTitle) => handleUpdateTodo(todo, newTodoTitle)
+              }
             />
           ))}
         </section>
@@ -168,17 +202,16 @@ export const App: React.FC = () => {
             </nav>
 
             {/* don't show this button if there are no completed todos */}
-            {todos.some(todo => todo.completed === true)
-            && (
-              <button
-                type="button"
-                className="todoapp__clear-completed"
-                data-cy="ClearCompletedButton"
-              >
-                Clear completed
-              </button>
-            )}
 
+            <button
+              type="button"
+              className="todoapp__clear-completed"
+              data-cy="ClearCompletedButton"
+              disabled={!completedTodosCounter}
+              onClick={handleClearCompleted}
+            >
+              Clear completed
+            </button>
           </footer>
         )}
       </div>
