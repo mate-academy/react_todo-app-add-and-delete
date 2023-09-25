@@ -23,6 +23,8 @@ const page = {
       clock.tick(delay);
       clock.restore();
     });
+
+    cy.wait(50);
   },
 
   /**
@@ -525,7 +527,9 @@ describe('', () => {
 
           page.newTodoField().type('Hello world{enter}');
           cy.wait('@createRequest2');
-          cy.wait(500)
+        
+         page.flushJSTimers();
+
 
           todos.assertCount(7);
           todos.assertNotLoading(6);
