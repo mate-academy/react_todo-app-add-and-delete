@@ -135,4 +135,9 @@
       visibility: hidden;
     }
   }
+
+  &__hidden_completed_button {
+    pointer-events: none;
+    opacity: 0;
+  }
 }
