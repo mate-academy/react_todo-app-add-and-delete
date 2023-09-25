@@ -1,6 +1,11 @@
 /* eslint-disable max-len */
 /* eslint-disable jsx-a11y/control-has-associated-label */
-import React, { useEffect, useMemo, useState } from 'react';
+import React, {
+  useEffect,
+  useMemo,
+  useRef,
+  useState,
+} from 'react';
 import { UserWarning } from './UserWarning';
 import { Todo } from './types/Todo';
 import { getpreparedTodos } from './utils/PreparedTodos';
@@ -10,6 +15,7 @@ import { TodoApp } from './components/TodoFilter/TodoApp';
 import { TodoFilter } from './components/TodoApp/TodoFilter';
 import { TodoHeader } from './components/TodoHeader/TodoHeader';
 import { ErrorMessage } from './components/ErrorMessage/ErrorMessage';
+import { TempTodo } from './components/TempTodo/TempTodo';
 
 const USER_ID = 11528;
 
@@ -20,71 +26,101 @@ export const App: React.FC = () => {
   const [tempTodo, setTempTodo] = useState<Todo | null>(null);
   const [isLoading, setIsLoading] = useState(false);
   const [isModalVisible, setIsModalVisible] = useState(false);
+  const [request, setRequest] = useState(true);
+  const [loadingId, setLoadingId] = useState<number[]>([]);
+  const [isLoaderActive, setIsLoaderActive] = useState(false);
+  const [todoTitle, setTitle] = useState('');
 
   const activeTodosCount = todos
     .filter(({ completed }) => completed === false).length;
 
-  const completedTodosCount = todos
-    .filter(({ completed }) => completed === true).length;
+  let completedTodosCount = todos
+    .some(({ completed }) => completed === true);
 
   useEffect(() => {
     getTodos(USER_ID)
-      .then(setTodo)
-      .catch((error) => {
+      .then(createdTodo => {
+        setTodo(createdTodo);
+        setRequest(false);
+      })
+      .catch(() => {
         setErrorMessage('Unable to load todos');
-        // eslint-disable-next-line no-console
-        console.warn(error);
+        setRequest(false);
       });
-    const timerId = setTimeout(() => {
-      setErrorMessage('');
-    }, 4000);
-
-    return () => {
-      clearInterval(timerId);
-    };
   }, []);
 
-  function handleAddTodos({ title, completed, userId }: Todo) {
-    setIsLoading(true);
-    const addNewTodo = {
-      id: 0,
-      userId,
-      title: title.trim(),
-      completed: false,
-    };
+  const idTimer = useRef<number>(0);
 
-    setTempTodo(addNewTodo);
-    if (title.trim() !== '') {
-      addTodos({ title, completed, userId })
-        .then((newTodo) => {
-          setTodo((currentTodo) => [...currentTodo, newTodo]);
-          setTempTodo(null);
-          setIsLoading(false);
-        })
-        .catch(() => {
-          setErrorMessage('Unable to add a todo');
-        })
-        .finally(() => {
-          setTempTodo(null);
-          setIsLoading(false);
-        });
-    } else {
-      setErrorMessage('Title should not be empty');
-      setTimeout(() => setErrorMessage(''), 3000);
+  useEffect(() => {
+    if (idTimer.current) {
+      window.clearTimeout(idTimer.current);
     }
+
+    idTimer.current = window.setTimeout(() => {
+      setErrorMessage('');
+    }, 3000);
+  }, [setErrorMessage]);
+
+  function handleAddTodos(newTodo: Omit<Todo, 'id'>) {
+    setLoadingId([0]);
+    setIsLoading(true);
+    setRequest(true);
+    addTodos(newTodo)
+      .then((createdTodo) => {
+        setTodo((currentTodo) => [...currentTodo, createdTodo]);
+        setTitle('');
+        setIsLoading(false);
+      })
+      .catch(() => {
+        setErrorMessage('Unable to add a todo');
+        setTimeout(() => setErrorMessage(''), 3000);
+      })
+      .finally(() => {
+        setTempTodo(null);
+        setIsLoading(false);
+        setRequest(false);
+      });
+    const temp: Todo = Object.assign(newTodo, { id: 0 });
+
+    setTempTodo(temp);
   }
 
   function handleDelete(todoId: number) {
+    setLoadingId([todoId]);
+    setIsLoaderActive(true);
     setIsModalVisible(true);
     deleteTodos(todoId)
       .then(() => {
         setTodo(prevTodos => prevTodos.filter(todo => todo.id !== todoId));
+        setErrorMessage('');
       })
-      .catch((error) => {
+      .catch(() => {
         setErrorMessage('Unable to delete todo');
-        console.warn(error);
+      })
+      .finally(() => {
+        setLoadingId([]);
+        setIsLoading(false);
+        setIsLoaderActive(false);
       });
   }
+
+  const handleClearCompleted = () => {
+    const deletePromises = todos
+      .filter(({ completed }) => completed)
+      .map(({ id }) => deleteTodos(id));
+
+    Promise.all(deletePromises)
+      .then(() => {
+        return getTodos(USER_ID);
+      })
+      .then((updatedTodos) => {
+        setTodo(updatedTodos);
+      })
+      .catch(() => {
+        completedTodosCount = false;
+        setErrorMessage('Unable to delete a todo');
+      });
+  };
 
   const filteredTodos = useMemo((
   ) => getpreparedTodos(todos, filter), [todos, filter]);
@@ -104,9 +140,13 @@ export const App: React.FC = () => {
           onSubmit={handleAddTodos}
           todo={filteredTodos.length > 0 ? filteredTodos[0] : null}
           userId={USER_ID}
-          tempTodo={tempTodo}
+          // tempTodo={tempTodo}
           isLoading={isLoading}
           errorMessage={errorMessage}
+          setErrorMessage={setErrorMessage}
+          request={request}
+          title={todoTitle}
+          setTitle={setTitle}
         />
 
         <section className="todoapp__main" data-cy="TodoList">
@@ -119,6 +159,8 @@ export const App: React.FC = () => {
                 // eslint-disable-next-line react/jsx-no-bind
                 onDelete={handleDelete}
                 isModalVisible={isModalVisible}
+                loadingId={loadingId}
+                isLoaderActive={isLoaderActive}
               />
             ))
           ) : (
@@ -126,12 +168,17 @@ export const App: React.FC = () => {
           )}
         </section>
 
+        {tempTodo && (
+          <TempTodo tempTodo={tempTodo} />
+        )}
+
         {todos.length !== 0 && (
           <TodoFilter
             filter={filter}
             setFilter={setFilter}
             activeTodosCount={activeTodosCount}
             completedTodosCount={completedTodosCount}
+            handleClearCompleted={handleClearCompleted}
           />
         )}
       </div>

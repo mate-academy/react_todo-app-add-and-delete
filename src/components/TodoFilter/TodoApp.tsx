@@ -6,18 +6,19 @@ type Props = {
   todo: Todo;
   onDelete: (id: number) => void;
   isModalVisible: boolean;
+  loadingId: number[],
+  isLoaderActive: boolean,
 };
 
 export const TodoApp: React.FC<Props> = ({
   todo,
-  onDelete = () => {},
+  onDelete = () => { },
+  loadingId,
+  isLoaderActive,
 }) => {
-  const { completed, title } = todo;
-  // const [completedTodo, setCompletedTodo] = useState(completed);
-
-  // const handleToggleCompleted = () => {
-  //   setCompletedTodo(!completed);
-  // };
+  const { id, completed, title } = todo;
+  // const [isEditing, setIsEditing] = useState(false);
+  // const [todoTitle, setTodoTitle] = useState(todo.title);
 
   return (
     <div
@@ -36,7 +37,10 @@ export const TodoApp: React.FC<Props> = ({
         />
       </label>
 
-      <span data-cy="TodoTitle" className="todo__title">
+      <span
+        data-cy="TodoTitle"
+        className="todo__title"
+      >
         {title}
       </span>
 
@@ -49,10 +53,27 @@ export const TodoApp: React.FC<Props> = ({
         ×
       </button>
 
-      <div data-cy="TodoLoader" className="modal overlay">
+      <div
+        data-cy="TodoLoader"
+        className={classNames('modal overlay', {
+          'is-active': loadingId.includes(id) && isLoaderActive,
+        })}
+      >
         <div className="modal-background has-background-white-ter" />
         <div className="loader" />
       </div>
+
+      {false && (
+        <form>
+          <input
+            data-cy="TodoTitleField"
+            type="text"
+            className="todo__title-field"
+            placeholder="Empty todo will be deleted"
+            value="Todo is being edited now."
+          />
+        </form>
+      )}
     </div>
   );
 };

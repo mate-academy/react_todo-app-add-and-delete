@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState } from 'react';
+import { useEffect, useRef } from 'react';
 import classNames from 'classnames';
 import { Todo } from '../../types/Todo';
 
@@ -7,9 +7,13 @@ type Props = {
   onSubmit: (todo: Todo) => void,
   todo?: Todo | null,
   userId: number,
-  tempTodo: Todo | null,
+  // tempTodo: Todo | null,
   isLoading: boolean,
   errorMessage: string,
+  request: boolean;
+  setErrorMessage: (errorMessage: string) => void,
+  title: string;
+  setTitle: (title: string) => void,
 };
 
 export const TodoHeader: React.FC<Props> = ({
@@ -17,10 +21,20 @@ export const TodoHeader: React.FC<Props> = ({
   onSubmit,
   todo,
   userId,
-  tempTodo,
+  // tempTodo,
   errorMessage,
+  setErrorMessage,
+  request,
+  title,
+  setTitle,
 }) => {
-  const [title, setTitle] = useState(tempTodo?.title || '');
+  const inputRef = useRef<HTMLInputElement | null>(null);
+
+  useEffect(() => {
+    if (inputRef.current) {
+      inputRef.current.focus();
+    }
+  }, [activeTodosCount, request]);
 
   const handleTitleChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     const newTitle = event.target.value;
@@ -31,29 +45,27 @@ export const TodoHeader: React.FC<Props> = ({
   const handleSubmit = (event: React.FormEvent) => {
     event.preventDefault();
 
-    const id = todo?.id || 0;
+    setErrorMessage('');
 
-    onSubmit({
-      id,
-      title,
+    if (!title.trimStart()) {
+      setErrorMessage('Title should not be empty');
+
+      return;
+    }
+
+    const id = todo?.id || 0;
+    const tempTodo: Omit<Todo, 'id'> = {
+      title: title.trim(),
       completed: false,
       userId,
-    });
+    };
 
-    setTitle('');
+    onSubmit({ id, ...tempTodo });
   };
-
-  const inputRef = useRef<HTMLInputElement | null>(null);
-
-  useEffect(() => {
-    if (inputRef.current) {
-      inputRef.current.focus();
-    }
-  }, []);
 
   return (
     <header className="todoapp__header">
-      {activeTodosCount && (
+      {activeTodosCount > 0 && (
         // eslint-disable-next-line jsx-a11y/control-has-associated-label
         <button
           type="button"
@@ -62,17 +74,8 @@ export const TodoHeader: React.FC<Props> = ({
         />
       )}
 
-      {/* {tempTodo && isLoading && (
-        <div data-cy="TodoLoader" className="modal overlay is-active">
-          <div className="modal-background has-background-white-ter" />
-          <div className="loader" />
-        </div>
-      )} */}
-
       <form
         onSubmit={handleSubmit}
-        method="Post"
-        action="/api/posts"
       >
         <input
           ref={inputRef}
@@ -82,17 +85,13 @@ export const TodoHeader: React.FC<Props> = ({
             'is-danger': errorMessage,
           })}
           placeholder="What needs to be done?"
-          onChange={handleTitleChange}
+          onChange={(event) => {
+            handleTitleChange(event);
+          }}
           value={title}
-          // disabled={isLoading}
+          disabled={request}
         />
-        {/* {hasTitleError && (
-          <p
-            className="error-message"
-          >
-            Title cannot be empty or contain only whitespace
-          </p>
-        )} */}
+
       </form>
     </header>
   );
