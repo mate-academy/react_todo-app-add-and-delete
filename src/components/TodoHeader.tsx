@@ -20,14 +20,13 @@ export const TodoHeader: React.FC<Props> = ({
     setError,
     setTempTodo,
     addTodoHandler,
-    tempTodo,
   } = useContext(TodoContext);
   const [title, setTitle] = useState('');
 
   const handleTitleChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     const newTitle = event.target.value;
 
-    setTitle(newTitle.trim());
+    setTitle(newTitle.trimStart());
   };
 
   const handleSubmit = (event: React.FormEvent<HTMLFormElement>) => {
