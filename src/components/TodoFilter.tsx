@@ -52,9 +52,7 @@ export const TodoFilter: React.FC<Props> = ({
     <footer className="todoapp__footer" data-cy="Footer">
       {/* Hide the footer if there are no todos */}
       <span className="todo-count" data-cy="TodosCounter">
-        {uncompletedTodos === 1
-          ? `${uncompletedTodos} item left`
-          : `${uncompletedTodos} items left`}
+        {`${uncompletedTodos} items left`}
       </span>
 
       {/* Active filter should have a 'selected' class */}

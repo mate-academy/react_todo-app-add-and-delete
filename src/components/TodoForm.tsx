@@ -5,12 +5,14 @@ type Props = {
   todos: Todo[];
   onTodoAdd: (todoTitle: string) => Promise<void>;
   onTodoError: (value: string) => void;
+  isLoading: boolean;
 };
 
 export const TodoForm: React.FC<Props> = ({
   todos,
   onTodoAdd,
   onTodoError,
+  isLoading,
 }) => {
   const isTodosToShow = !!todos.length;
   const titleField = useRef<HTMLInputElement>(null);
@@ -31,14 +33,16 @@ export const TodoForm: React.FC<Props> = ({
     }
 
     onTodoAdd(preparedTitle)
-      .then(() => setTitle(''));
+      .then(() => {
+        setTitle('');
+      });
   };
 
   useEffect(() => {
     if (titleField.current) {
       titleField.current.focus();
     }
-  }, []);
+  }, [todos]);
 
   return (
     <header className="todoapp__header">
@@ -65,6 +69,7 @@ export const TodoForm: React.FC<Props> = ({
           ref={titleField}
           value={title}
           onChange={handleTitleChange}
+          disabled={isLoading}
         />
       </form>
     </header>
