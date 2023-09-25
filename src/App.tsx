@@ -1,35 +1,41 @@
 /* eslint-disable jsx-a11y/control-has-associated-label */
 import React, {
+  FormEvent,
   useEffect, useMemo, useRef, useState,
 } from 'react';
 import { UserWarning } from './UserWarning';
-import { addTodo, getTodos } from './api/todos';
+import { addTodo, deleteTodo, getTodos } from './api/todos';
 
 import { TodoList } from './components/TodoList/TodoList';
+import { Todo } from './types/Todo';
 
 // const USER_ID = 11569;
-const USER_ID = 11516;
+const USER_ID = 11569;
 
 export const App: React.FC = () => {
-  const [todos, setTodos] = useState([]);
+  const [todos, setTodos] = useState<Todo[] >([]);
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   const [isLoading, setIsLoading] = useState(true);
 
   const [statusFilter, setStatusFilter] = useState('all');
 
-  const [tempTodo, setTempTodo] = useState(null);
+  const [tempTodo, setTempTodo] = useState<Todo | null>(null);
 
   const [error, setError] = useState('');
 
   const [addTodoForm, setAddTodoForm] = useState('');
   const [isSubmitting, setIsSubmitting] = useState(false);
-  const inputRef = useRef();
-  const todoCounter = todos.filter(todo => !todo.completed).length;
+  const inputRef = useRef<HTMLInputElement>();
 
-  const [isDeletedTodo, setIsDeletedTodo] = useState([]);
+  const todoCounter: number = todos
+    .filter(todo => todo.completed === false).length;
 
   useEffect(() => {
     getTodos(USER_ID)
       .then((data) => {
+        const todosData = data as Todo[];
+
+        setTodos(todosData);
         setTodos(data);
         setIsLoading(false);
       })
@@ -46,6 +52,7 @@ export const App: React.FC = () => {
     return <UserWarning />;
   }
 
+  // eslint-disable-next-line react-hooks/rules-of-hooks
   const displayTodos = useMemo(() => {
     return todos.filter(todo => {
       if (statusFilter === 'active' && todo.completed) {
@@ -58,13 +65,13 @@ export const App: React.FC = () => {
 
       return true;
     });
-  }, [statusFilter, todos]);
+  }, [statusFilter, todos, todoCounter]);
 
   const focusInput = () => {
     inputRef.current.focus();
   };
 
-  const addTodoSubmitHandler = (event) => {
+  const addTodoSubmitHandler = (event: FormEvent) => {
     event.preventDefault();
     const title = addTodoForm.trim();
 
@@ -91,7 +98,7 @@ export const App: React.FC = () => {
 
     addTodo(newTodo)
       .then(response => {
-        setTodos([...todos, response]);
+        setTodos([...todos, response] as Todo[]);
         setAddTodoForm('');
         setIsSubmitting(false);
       })
@@ -110,7 +117,16 @@ export const App: React.FC = () => {
       });
   };
 
-  const handleKeyDown = (event) => {
+  const deleteTodoHandler = (todoId: number) => {
+    deleteTodo(todoId);
+    const newTodos = todos.filter(todo => todoId !== todo.id);
+
+    setTimeout(() => {
+      setTodos(newTodos);
+    }, 0);
+  };
+
+  const handleKeyDown = (event: React.KeyboardEvent<HTMLInputElement>) => {
     if (event.key === 'Enter') {
       addTodoSubmitHandler(event);
     }
@@ -137,6 +153,7 @@ export const App: React.FC = () => {
               type="text"
               className="todoapp__new-todo"
               placeholder="What needs to be done?"
+              // eslint-disable-next-line jsx-a11y/no-autofocus
               autoFocus
               value={addTodoForm}
               onChange={(e) => setAddTodoForm(e.target.value)}
@@ -148,7 +165,11 @@ export const App: React.FC = () => {
 
         </header>
 
-        <TodoList todos={displayTodos} tempTodo={tempTodo} isDeletedTodo={isDeletedTodo} />
+        <TodoList
+          todos={displayTodos}
+          tempTodo={tempTodo}
+          deleteTodoHandler={deleteTodoHandler}
+        />
 
         {/* Hide the footer if there are no todos */}
         {todos.length > 0
@@ -227,7 +248,7 @@ export const App: React.FC = () => {
         {errorUnableToLoad && <p>Unable to add a todo</p>}
         {errorUnableToLoad && <p>Unable to delete a todo</p>}
         {errorUnableToLoad && <p>Unable to update a todo</p>} */}
-
+      {isLoading && <p>{' '}</p>}
     </div>
   );
 };

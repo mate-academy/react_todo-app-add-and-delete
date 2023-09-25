@@ -1,13 +1,21 @@
 import classNames from 'classnames';
 import '../../styles/todo.scss';
+// import { Todo } from '../../types/Todo';
 import { Todo } from '../../types/Todo';
-import { deleteTodo } from '../../api/todos';
 
-type Props = {
-  todos: Todo[],
-};
+ type Props = {
+   todos: Todo[],
+   tempTodo: Todo | null,
+   deleteTodoHandler: (userId: number) => void
+ };
 
-export const TodoList: React.FC<Props> = ({ todos, tempTodo, isDeletedTodo }) => (
+export const TodoList: React.FC<Props> = (
+  {
+    todos,
+    tempTodo,
+    deleteTodoHandler,
+  },
+) => (
 
   <section className="todoapp__main" data-cy="TodoList">
 
@@ -31,7 +39,12 @@ export const TodoList: React.FC<Props> = ({ todos, tempTodo, isDeletedTodo }) =>
         </span>
 
         {/* Remove button appears only on hover */}
-        <button type="button" className="todo__remove" data-cy="TodoDelete" onClick={() => deleteTodo(todo.id)}>
+        <button
+          type="button"
+          className="todo__remove"
+          data-cy="TodoDelete"
+          onClick={() => deleteTodoHandler(todo.id)}
+        >
           ×
         </button>
 
@@ -41,7 +54,7 @@ export const TodoList: React.FC<Props> = ({ todos, tempTodo, isDeletedTodo }) =>
           className={classNames(
             'modal',
             'overlay',
-            { 'is-active': (isDeletedTodo.includes(todo.id) || todo.id === 0) },
+
           )}
         >
           <div className="modal-background has-background-white-ter" />

@@ -525,6 +525,7 @@ describe('', () => {
 
           page.newTodoField().type('Hello world{enter}');
           cy.wait('@createRequest2');
+          cy.wait(500)
 
           todos.assertCount(7);
           todos.assertNotLoading(6);
