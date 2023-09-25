@@ -3,12 +3,13 @@ import React, { useEffect, useRef, useState } from 'react';
 import classNames from 'classnames';
 import { UserWarning } from './UserWarning';
 import { Todo } from './types/Todo';
-import { addTodo, getTodos } from './api/todos';
+// import { addTodo, deleteTodo, getTodos } from './api/todos';
 import { ErrorType } from './types/ErrorType';
 import { StatusFilter } from './types/StatusFilter';
 import { TodoList } from './components/TodoList';
 import { TodoFilter } from './components/TodoFilter';
 import { TodoItem } from './components/TodoItem';
+import * as todoService from './api/todos';
 
 const USER_ID = 11465;
 
@@ -50,13 +51,14 @@ export const App: React.FC = () => {
   const [newTodoTitle, setNewTodoTitle] = useState('');
   const [tempTodo, setTempTodo] = useState<Todo | null>(null);
   const [isRequesting, setIsRequesting] = useState(false);
-  // const formRef = useRef<HTMLFormElement | null>(null);
+  const [todoIdToDelete, setTodoIdToDelete] = useState(0);
+
   const inputRef = useRef<HTMLInputElement | null>(null);
 
   useEffect(() => {
     setIsLoading(true);
 
-    getTodos(USER_ID)
+    todoService.getTodos(USER_ID)
       .then(todoFromServer => {
         setTodos(todoFromServer);
         setIsLoading(false);
@@ -67,17 +69,21 @@ export const App: React.FC = () => {
         setTodoError(ErrorType.GetData);
         setIsLoading(false);
       });
+  }, []);
 
+  useEffect(() => {
     const timeoutId = setTimeout(() => {
       setTodoError(null);
     }, 3000);
 
+    return () => clearTimeout(timeoutId);
+  });
+
+  useEffect(() => {
     if (inputRef.current) {
       inputRef.current.focus();
     }
-
-    return () => clearTimeout(timeoutId);
-  }, []);
+  }, [todos]);
 
   if (!USER_ID) {
     return <UserWarning />;
@@ -114,13 +120,10 @@ export const App: React.FC = () => {
         completed: false,
       };
 
-      addTodo(newTodo)
+      todoService.addTodo(newTodo)
         .then((createdTodo) => {
           setTodos((prevState) => [...prevState, createdTodo]);
           setNewTodoTitle('');
-          if (inputRef.current) {
-            inputRef.current.focus();
-          }
         })
         .catch(() => {
           showError(ErrorType.Add);
@@ -129,11 +132,26 @@ export const App: React.FC = () => {
           setIsRequesting(false);
           setTempTodo(null);
         });
+
       setIsRequesting(true);
       const temp: Todo = Object.assign(newTodo, { id: 0 });
 
       setTempTodo(temp);
     }
+  };
+
+  const handleDelete = (todoId: number) => {
+    todoService.deleteTodo(todoId)
+      .then(() => {
+        setTodos((prevState) => {
+          return prevState.filter(todo => todo.id !== todoId);
+        });
+      })
+      .catch(() => {
+        showError(ErrorType.Delete);
+        setTodoIdToDelete(0);
+      });
+    setTodoIdToDelete(todoId);
   };
 
   const handleChangeTodoTitle = (
@@ -174,9 +192,17 @@ export const App: React.FC = () => {
         </header>
         {!isLoadig && (
           <>
-            <TodoList todos={visibleTodos} />
+            <TodoList
+              todos={visibleTodos}
+              handleDelete={handleDelete}
+              todoIdToDelete={todoIdToDelete}
+            />
             {tempTodo && (
-              <TodoItem todo={tempTodo} isRequesting={isRequesting} />
+              <TodoItem
+                todo={tempTodo}
+                isActive={isRequesting}
+                handleDelete={handleDelete}
+              />
             )}
             {!!todos.length && (
               <TodoFilter
