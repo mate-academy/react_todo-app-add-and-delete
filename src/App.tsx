@@ -1,24 +1,62 @@
-/* eslint-disable max-len */
 /* eslint-disable jsx-a11y/control-has-associated-label */
-import React from 'react';
-import { UserWarning } from './UserWarning';
+import React, { useContext, useEffect } from 'react';
 
-const USER_ID = 0;
+import { UserWarning } from './UserWarning';
+import { Footer } from './components/Footer';
+import { Header } from './components/Header';
+import { ErrorNotification } from './components/ErrorNotification';
+
+import { getTodos } from './api/todos';
+import { USER_ID } from './utils/variables';
+import { TodoList } from './components/TodoList';
+import { ErrorMessage, TodosContext } from './components/TodosContext';
 
 export const App: React.FC = () => {
+  const {
+    todos,
+    setTodos,
+    setFilteredTodos,
+    setAlarm,
+  } = useContext(TodosContext);
+
+  useEffect(() => {
+    if (USER_ID) {
+      getTodos(USER_ID)
+        .then(todosFromServer => {
+          setTodos(todosFromServer);
+          setFilteredTodos(todosFromServer);
+          setAlarm(ErrorMessage.Default);
+        })
+        .catch(errorMessage => {
+          // eslint-disable-next-line no-console
+          console.log(errorMessage);
+          setAlarm(ErrorMessage.isLoadTodoError);
+          setTodos([]);
+        });
+    }
+  }, [USER_ID]);
+
   if (!USER_ID) {
     return <UserWarning />;
   }
 
   return (
-    <section className="section container">
-      <p className="title is-4">
-        Copy all you need from the prev task:
-        <br />
-        <a href="https://github.com/mate-academy/react_todo-app-loading-todos#react-todo-app-load-todos">React Todo App - Load Todos</a>
-      </p>
+    <div className="todoapp">
+      <h1 className="todoapp__title">todos</h1>
 
-      <p className="subtitle">Styles are already copied</p>
-    </section>
+      <div className="todoapp__content">
+        <Header />
+
+        {!!todos.length && (
+          <>
+            <TodoList />
+
+            <Footer />
+          </>
+        )}
+      </div>
+
+      <ErrorNotification />
+    </div>
   );
 };
