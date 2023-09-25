@@ -10,7 +10,6 @@ import classNames from 'classnames';
 // import { UserWarning } from './UserWarning';
 import * as todoService from './api/todos';
 import { Todo } from './types/Todo';
-import { getTodos } from './api/todos';
 import { FilterParam } from './types/FilterParam';
 import { TodoHeader } from './components/TodoHeader';
 import { TodoList } from './components/TodoList';
@@ -30,7 +29,7 @@ export const App: React.FC = () => {
   // }
 
   useEffect(() => {
-    getTodos(USER_ID)
+    todoService.getTodos(USER_ID)
       .then(createdTodo => {
         setTodos(createdTodo);
         setRequest(false);
