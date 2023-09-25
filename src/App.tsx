@@ -21,8 +21,15 @@ export const App: React.FC = () => {
   const [title, setTitle] = useState<string>('');
   const [temporaryTodo, setTemporaryTodo] = useState<Todo | null>(null);
   const [isInputDisabled, setIsInputDisabled] = useState<boolean>(false);
+  const [isSubmiting, setIsSubmiting] = useState<boolean>(false);
 
   const inputRef = useRef<HTMLInputElement | null>(null);
+
+  useEffect(() => {
+    if (!isSubmiting) {
+      inputRef.current?.focus();
+    }
+  }, [isSubmiting]);
 
   const fetchData = async () => {
     try {
@@ -47,7 +54,7 @@ export const App: React.FC = () => {
 
   const handleAdd = () => {
     setIsInputDisabled(true);
-
+    setIsSubmiting(true);
     addTodo({
       id: 0,
       userId: USER_ID,
@@ -55,7 +62,7 @@ export const App: React.FC = () => {
       completed: false,
     }).then((response) => {
       setTitle('');
-      inputRef.current?.focus();
+
       setTodos((prevTodos) => [...prevTodos, response] as Todo[]);
     }).catch(() => {
       setError('Unable to add a todo');
@@ -63,6 +70,7 @@ export const App: React.FC = () => {
     }).finally(() => {
       setTemporaryTodo(null);
       setIsInputDisabled(false);
+      setIsSubmiting(false);
     });
   };
 
