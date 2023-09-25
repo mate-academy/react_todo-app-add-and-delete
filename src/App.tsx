@@ -90,6 +90,7 @@ export const App: React.FC = () => {
         setTodos((prevTodos) => [...prevTodos, newTodo]);
       })
       .catch(() => {
+        setTodoTitle(todoTitle);
         setErrorMessage('Unable to add a todo');
       });
   }, []);
