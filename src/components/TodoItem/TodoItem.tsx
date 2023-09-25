@@ -75,7 +75,7 @@ export const TodoItem: React.FC<Props> = ({ todo }) => {
       {!isEdite && (
         <>
           <span data-cy="TodoTitle" className="todo__title">{title}</span>
-          {/* Remove button appears only on hover */}
+
           <button
             type="button"
             className="todo__remove"

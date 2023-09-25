@@ -33,7 +33,6 @@ export const ErrorNotification: React.FC<Props> = () => {
         onClick={() => setAlarm(ErrorMessage.Default)}
       />
 
-      {/* show only one message at a time */}
       {alarm}
     </div>
   );

@@ -66,25 +66,6 @@ export const TodosProvider: React.FC<Props> = ({ children }) => {
 
   const [changingItems, setChangingItems] = useState<number[]>([]);
 
-  // const handleRemoveTodo = (todoId: number) => {
-  //   setIsTodoChange(true);
-  //   setChangingItems(current => [...current, todoId]);
-  //   removeTodo(todoId)
-  //     .then(() => {
-  //       setTodos(currentTodos => currentTodos
-  //         .filter(({ id }) => id !== todoId));
-  //         console.log(todos);
-  //       setIsTodoChange(false);
-  //     })
-  //     .catch(() => setAlarm(ErrorMessage.isUnableDeleteTodo))
-  //     .finally(() => {
-  //       setFilteredTodos(todos);
-  //       setIsTodoChange(false);
-  //       setChangingItems([]);
-  //       setDeletingTodosId([]);
-  //     });
-  // };
-
   const handleRemoveTodo = (todo: Todo) => {
     setIsTodoChange(true);
     setChangingItems(current => [...current, todo.id]);
