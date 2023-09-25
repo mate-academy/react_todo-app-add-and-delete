@@ -22,5 +22,5 @@ export function updateTodo(
     userId,
   }: Todo,
 ) {
-  return client.post<Todo>(`/todos/${id}`, { title, completed, userId });
+  return client.patch<Todo>(`/todos/${id}`, { title, completed, userId });
 }

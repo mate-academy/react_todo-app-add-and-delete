@@ -12,6 +12,7 @@ type Props = {
   setError: (errorMessage: string) => void
   setTitle: (title: string) => void
   title: string
+  setLoadingTodosIds: (tempTodoIds: number[]) => void
 };
 
 export const TodoHeader: React.FC<Props> = ({
@@ -24,6 +25,7 @@ export const TodoHeader: React.FC<Props> = ({
   title,
   setError,
   setTitle,
+  setLoadingTodosIds,
 }) => {
   const handleTitleChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     setTitle(event.target.value);
@@ -42,12 +44,13 @@ export const TodoHeader: React.FC<Props> = ({
 
     const id = todo?.id || 0;
     const tempTodo: Omit<Todo, 'id'> = {
-      title: title.trim(),
+      title: title.trimStart(),
       completed: false,
       userId,
     };
 
     onSubmit({ id, ...tempTodo });
+    setLoadingTodosIds([id]);
   };
 
   const inputRef = useRef<HTMLInputElement | null>(null);
@@ -85,9 +88,7 @@ export const TodoHeader: React.FC<Props> = ({
           })}
           placeholder="What needs to be done?"
           value={title}
-          onChange={(event) => {
-            handleTitleChange(event);
-          }}
+          onChange={handleTitleChange}
           ref={inputRef}
         />
       </form>

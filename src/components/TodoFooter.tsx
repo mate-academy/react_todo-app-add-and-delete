@@ -9,6 +9,7 @@ type Props = {
   isOneTodoCompleted: boolean;
   filterParam: FilterParam;
   setFilterParam: (newValue: FilterParam) => void;
+  deleteCompletedTodos: () => void;
 };
 
 export const TodoFooter: React.FC<Props> = ({
@@ -16,6 +17,7 @@ export const TodoFooter: React.FC<Props> = ({
   isOneTodoCompleted,
   filterParam,
   setFilterParam,
+  deleteCompletedTodos,
 }) => {
   return (
     <footer className="todoapp__footer" data-cy="Footer">
@@ -56,17 +58,15 @@ export const TodoFooter: React.FC<Props> = ({
           Active
         </a>
       </nav>
-      {isOneTodoCompleted && (
-        <button
-          data-cy="ClearCompletedButton"
-          type="button"
-          className="todoapp__clear-completed"
-          disabled={!isOneTodoCompleted}
-        >
-          Clear completed
-        </button>
-
-      )}
+      <button
+        data-cy="ClearCompletedButton"
+        type="button"
+        className="todoapp__clear-completed"
+        disabled={!isOneTodoCompleted}
+        onClick={deleteCompletedTodos}
+      >
+        Clear completed
+      </button>
     </footer>
   );
 };

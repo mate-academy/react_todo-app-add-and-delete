@@ -14,19 +14,19 @@ import { FilterParam } from './types/FilterParam';
 import { TodoHeader } from './components/TodoHeader';
 import { TodoList } from './components/TodoList';
 import { TodoFooter } from './components/TodoFooter';
+import { TodoItem } from './components/TodoItem';
 
 const USER_ID = 11467;
 
 export const App: React.FC = () => {
   const [filterParam, setFilterParam] = useState(FilterParam.All);
   const [todos, setTodos] = useState<Todo[]>([]);
+  const [tempTodo, setTempTodo] = useState<Todo | null>(null);
   const [error, setError] = useState('');
   const [request, setRequest] = useState(true);
   const [title, setTitle] = useState('');
-
-  // if (!USER_ID) {
-  //   return <UserWarning />;
-  // }
+  const [loadingTodosIds, setLoadingTodosIds] = useState<number[]>([]);
+  const [isLoaderActive, setIsLoaderActive] = useState(false);
 
   useEffect(() => {
     todoService.getTodos(USER_ID)
@@ -55,23 +55,39 @@ export const App: React.FC = () => {
       .then((createdTodo) => {
         setTodos((prevTodos) => [...prevTodos, createdTodo]);
         setTitle('');
+        setLoadingTodosIds([]);
       })
       .catch(() => {
         setError('Unable to add a todo');
         setTimeout(() => setError(''), 3000);
+        setLoadingTodosIds([]);
       })
       .finally(() => {
         setRequest(false);
+        setTempTodo(null);
       });
+    const temp: Todo = Object.assign(newTodo, { id: 0 });
+
+    setTempTodo(temp);
   };
 
   const deleteTodo = useCallback((id: number) => {
-    todoService
-      .deleteUserTodo(id)
+    setLoadingTodosIds([id]);
+    setIsLoaderActive(true);
+
+    todoService.deleteUserTodo(id)
       .then(() => {
-        setTodos((prevState) => (
-          prevState.filter(todo => todo.id !== id)
-        ));
+        setTodos(currentTodos => currentTodos
+          .filter(todo => todo.id !== id));
+        setLoadingTodosIds([]);
+      })
+      .catch(() => {
+        setError('Unable to delete a todo');
+        setLoadingTodosIds([]);
+      })
+      .finally(() => {
+        setLoadingTodosIds([id]);
+        setIsLoaderActive(false);
       });
   }, []);
 
@@ -86,7 +102,7 @@ export const App: React.FC = () => {
   //   });
   // }
 
-  const isOneTodoCompleted = useMemo(() => todos
+  let isOneTodoCompleted = useMemo(() => todos
     .some(({ completed }) => completed), [todos]);
 
   const filterTodos = useMemo(() => todos
@@ -100,6 +116,24 @@ export const App: React.FC = () => {
           return true;
       }
     }), [todos, filterParam]);
+
+  const handleClearCompleted = () => {
+    const deletePromises = todos
+      .filter(({ completed }) => completed)
+      .map(({ id }) => deleteTodo(id));
+
+    Promise.all(deletePromises)
+      .then(() => {
+        return todoService.getTodos(USER_ID);
+      })
+      .then((updatedTodos) => {
+        setTodos(updatedTodos);
+      })
+      .catch(() => {
+        isOneTodoCompleted = false;
+        setError('Unable to delete a todo');
+      });
+  };
 
   return (
     <div className="todoapp">
@@ -116,12 +150,23 @@ export const App: React.FC = () => {
           setError={setError}
           setTitle={setTitle}
           title={title}
+          setLoadingTodosIds={setLoadingTodosIds}
         />
 
         <TodoList
           todos={filterTodos}
           onDelete={deleteTodo}
+          loadingTodosIds={loadingTodosIds}
+          isLoaderActive={isLoaderActive}
         />
+        {tempTodo && (
+          <TodoItem
+            todo={tempTodo}
+            loadingTodosIds={loadingTodosIds}
+            onDelete={deleteTodo}
+            isLoaderActive={isLoaderActive}
+          />
+        )}
 
         {/* Hide the footer if there are no todos */}
         {todos.length && (
@@ -130,6 +175,7 @@ export const App: React.FC = () => {
             isOneTodoCompleted={isOneTodoCompleted}
             filterParam={filterParam}
             setFilterParam={setFilterParam}
+            deleteCompletedTodos={handleClearCompleted}
           />
         )}
       </div>
