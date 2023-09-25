@@ -37,7 +37,7 @@ export const ErrorProvider: React.FC<Props> = ({ children }) => {
     return () => {
       window.clearTimeout(timerId);
     };
-  }, []);
+  }, [error]);
 
   const contextValue = useMemo(() => ({
     error,

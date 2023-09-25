@@ -1,12 +1,39 @@
 import classNames from 'classnames';
 
-import { Todo } from '../types';
+import { useState } from 'react';
+import { Action, Todo } from '../types';
+import { deleteTodo } from '../api';
+import { useError, useTodos } from '../providers';
+import { ERRORS } from '../utils';
 
 type Props = {
   todo: Todo;
+  loading?: boolean;
 };
 
-export const TodoItem:React.FC<Props> = ({ todo }) => {
+export const TodoItem:React.FC<Props> = ({ todo, loading = false }) => {
+  const [isLoading, setIsLoading] = useState(false);
+  const { dispatch } = useTodos();
+  const { setError } = useError();
+
+  const handleDeleteClick = () => {
+    setIsLoading(true);
+
+    deleteTodo(todo.id)
+      .then(() => {
+        dispatch({
+          type: Action.Remove,
+          payload: todo.id,
+        });
+      })
+      .catch(() => {
+        setError(ERRORS.DELETE_TODO);
+      })
+      .finally(() => {
+        setIsLoading(false);
+      });
+  };
+
   return (
     <div
       data-cy="Todo"
@@ -31,8 +58,9 @@ export const TodoItem:React.FC<Props> = ({ todo }) => {
 
           <button
             type="button"
-            className="todo__remove"
             data-cy="TodoDelete"
+            className="todo__remove"
+            onClick={handleDeleteClick}
           >
             ×
           </button>
@@ -52,7 +80,7 @@ export const TodoItem:React.FC<Props> = ({ todo }) => {
       <div
         data-cy="TodoLoader"
         className={classNames('modal', 'overlay', {
-          'is-active': false,
+          'is-active': isLoading || loading,
         })}
       >
         <div className="modal-background has-background-white-ter" />

@@ -1,6 +1,6 @@
 import { useMemo, useState } from 'react';
 
-import { Status } from '../types';
+import { Status, Todo } from '../types';
 import { useTodos } from '../providers';
 import { Header } from './Header';
 import { NewTodo } from './NewTodo';
@@ -14,11 +14,14 @@ import { ErrorNotification } from './ErrorNotification';
 
 export const TodoApp: React.FC = () => {
   const { todos } = useTodos();
+  const [tempTodo, setTempTodo] = useState<Todo | null>(null);
+  const [isLoading, setIsLoading] = useState(false);
   const [filterValue, setFilterValue] = useState(Status.All);
 
-  const hasTodos = todos.length > 0;
-  const activeCount = todos.filter(({ completed }) => !completed).length;
+  const hasTodos = todos.length > 0 || tempTodo;
+  const hasCompleted = todos.some(({ completed }) => completed);
   const isAllCompleted = todos.every(({ completed }) => completed);
+  const activeCount = todos.filter(({ completed }) => !completed).length;
 
   const filteredTodos = useMemo(() => todos.filter(({ completed }) => {
     switch (filterValue) {
@@ -44,12 +47,16 @@ export const TodoApp: React.FC = () => {
             <ToggleAllButton active={isAllCompleted} />
           )}
 
-          <NewTodo />
+          <NewTodo onCreate={setTempTodo} />
         </Header>
 
         {hasTodos && (
           <>
-            <TodoList todos={filteredTodos} />
+            <TodoList
+              todos={filteredTodos}
+              tempTodo={tempTodo}
+              loading={isLoading}
+            />
 
             <Footer>
               <TodoCounter value={activeCount} />
@@ -59,7 +66,10 @@ export const TodoApp: React.FC = () => {
                 onValueChange={setFilterValue}
               />
 
-              <ClearCompletedButton />
+              <ClearCompletedButton
+                active={hasCompleted}
+                onClear={setIsLoading}
+              />
             </Footer>
           </>
         )}

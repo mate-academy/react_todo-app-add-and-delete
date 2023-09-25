@@ -31,7 +31,7 @@ type TodosDispatchAction = { type: Action.Set, payload: Todo[] }
 | { type: Action.Edit, payload: { id: number, title: string } }
 | { type: Action.Toggle, payload: number }
 | { type: Action.ToggleAll }
-| { type: Action.ClearCompleted };
+| { type: Action.ClearCompleted, payload: number[] };
 
 function todosReducer(state: Todo[], action: TodosDispatchAction): Todo[] {
   switch (action.type) {
@@ -98,7 +98,7 @@ function todosReducer(state: Todo[], action: TodosDispatchAction): Todo[] {
     }
 
     case Action.ClearCompleted: {
-      return state.filter(({ completed }) => !completed);
+      return state.filter(({ id }) => !action.payload.includes(id));
     }
 
     default:
