@@ -1,4 +1,4 @@
-// add the string only for tests and new pr
+// the string only for tests and new pr
 /* eslint-disable jsx-a11y/control-has-associated-label */
 import React from 'react';
 
