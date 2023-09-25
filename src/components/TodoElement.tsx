@@ -11,9 +11,11 @@ export const TodoElement: React.FC<Props> = ({ todo }) => {
   const { completed, title, id } = todo;
   const {
     deleteTodoHandler,
+
     todosIdToDelete,
   } = useContext(TodoContext);
   const [isChecked, setIsChecked] = useState(completed);
+  const shouldDisplayLoader = id === 0 || todosIdToDelete.includes(id);
 
   return (
     <div
@@ -56,7 +58,7 @@ export const TodoElement: React.FC<Props> = ({ todo }) => {
           'modal',
           'overlay',
           {
-            'is-active': id === 0 || todosIdToDelete.includes(id),
+            'is-active': shouldDisplayLoader,
           },
         )}
       >
