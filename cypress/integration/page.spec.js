@@ -521,6 +521,7 @@ describe('', () => {
 
           page.submitTitle('Hello world');
           cy.wait('@createRequest2');
+          cy.wait(500);
 
           todos.assertCount(7);
           todos.assertNotLoading(6);
@@ -535,6 +536,7 @@ describe('', () => {
 
         page.submitTitle('  Other Title    ');
         cy.wait('@createRequest');
+        cy.wait(500);
 
         todos.assertTitle(5, 'Other Title');
       });
