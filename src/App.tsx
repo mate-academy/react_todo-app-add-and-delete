@@ -20,7 +20,6 @@ export const App: React.FC = () => {
   const [filter, setFilter] = useState<Filter>('All');
   const [title, setTitle] = useState<string>('');
   const [temporaryTodo, setTemporaryTodo] = useState<Todo | null>(null);
-  const [isInputDisabled, setIsInputDisabled] = useState<boolean>(false);
   const [isSubmiting, setIsSubmiting] = useState<boolean>(false);
 
   const inputRef = useRef<HTMLInputElement | null>(null);
@@ -42,18 +41,16 @@ export const App: React.FC = () => {
     }
   };
 
-  const handleDelete = (todo: Todo, callback: () => void) => {
+  const handleDelete = (todo: Todo) => {
     deleteTodo(todo.id).catch(() => {
       setError('Unable to delete todo');
       setTimeout(() => setError(null), 3000);
     }).then(() => {
       fetchData();
-      callback();
     });
   };
 
   const handleAdd = () => {
-    setIsInputDisabled(true);
     setIsSubmiting(true);
     addTodo({
       id: 0,
@@ -69,7 +66,6 @@ export const App: React.FC = () => {
       setTimeout(() => setError(null), 3000);
     }).finally(() => {
       setTemporaryTodo(null);
-      setIsInputDisabled(false);
       setIsSubmiting(false);
     });
   };
@@ -134,7 +130,7 @@ export const App: React.FC = () => {
               value={title}
               onChange={(e) => setTitle(e.target.value)}
               autoFocus
-              disabled={isInputDisabled}
+              disabled={isSubmiting}
               ref={inputRef}
             />
           </form>
