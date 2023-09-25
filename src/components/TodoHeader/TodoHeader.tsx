@@ -1,14 +1,15 @@
 import React, { useState } from 'react';
+// import classNames from 'classnames';
 import { Todo } from '../../types/Todo';
-import { addTodo } from '../../api/todos';
+// import { addTodo } from '../../api/todos';
 
 interface Props {
   activeTodos: Todo[];
   newTodoField: React.RefObject<HTMLInputElement>;
   error: string;
+  onTodoAdd: (title: string) => Promise<void>;
   setError: React.Dispatch<React.SetStateAction<string>>;
-  userId: number;
-  setTodos: React.Dispatch<React.SetStateAction<Todo[]>>;
+  isLoading: boolean;
 }
 
 export const TodoHeader: React.FC<Props> = ({
@@ -16,67 +17,86 @@ export const TodoHeader: React.FC<Props> = ({
   newTodoField,
   error,
   setError,
-  userId,
-  setTodos,
+  onTodoAdd,
+  isLoading,
 }) => {
   const [title, setTitle] = useState('');
-  const [isLoading, setIsLoading] = useState(false);
-  const [tempTodo, setTempTodo] = useState<Todo | null>(null);
+  // const [isLoading, setIsLoading] = useState(false);
+  // const [tempTodo, setTempTodo] = useState<Todo | null>(null);
 
-  function handleChange(event: React.ChangeEvent<HTMLInputElement>) {
+  const handleChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     setTitle(event.target.value);
 
     if (error) {
       setError('');
     }
-  }
+  };
 
-  const handleOnSubmit = (event: React.FormEvent<HTMLFormElement>) => {
+  const onFormSubmit = (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
-
-    setError('');
 
     if (!title.trim()) {
       setError('Title should not be empty');
 
-      setTimeout(() => {
-        setError('');
-      }, 3000);
-
       return;
     }
 
-    setIsLoading(true);
-
-    const newTodo = {
-      id: 0,
-      title: title.trim(),
-      userId,
-      completed: false,
-    };
-
-    setTempTodo(newTodo);
-
-    addTodo(newTodo)
-      .then((response) => {
-        if (response) {
-          setTodos((prevTodos) => [...prevTodos, response]);
-
-          setTitle('');
-
-          newTodoField.current?.focus();
-        } else {
-          setError('Unable to add a todo');
-        }
-      })
-      .catch(() => {
-        setError('Unable to add a todo');
-      })
-      .finally(() => {
-        setIsLoading(false);
-        setTempTodo(null);
+    onTodoAdd(title)
+      .then(() => {
+        setTitle('');
       });
   };
+
+  // const handleOnSubmit = (event: React.FormEvent<HTMLFormElement>) => {
+  //   event.preventDefault();
+
+  //   setError('');
+
+  //   if (!title.trim()) {
+  //     setError('Title should not be empty');
+
+  //     setTimeout(() => {
+  //       setError('');
+  //     }, 3000);
+
+  //     return;
+  //   }
+
+  //   setIsLoading(true);
+
+  //   const newTodo = {
+  //     id: 0,
+  //     title: title.trim(),
+  //     userId,
+  //     completed: false,
+  //   };
+
+  //   setTempTodo(newTodo);
+
+  //   addTodo(newTodo)
+  //     .then((response) => {
+  //       if (response) {
+  //         setTodos((prevTodos) => [...prevTodos, response]);
+
+  //         setTitle('');
+
+  //         newTodoField.current?.focus();
+  //       } else {
+  //         setError('Unable to add a todo');
+  //       }
+  //     })
+  //     .catch(() => {
+  //       setError('Unable to add a todo');
+
+  //       setTimeout(() => {
+  //         setError('');
+  //       }, 3000);
+  //     })
+  //     .finally(() => {
+  //       setIsLoading(false);
+  //       setTempTodo(null);
+  //     });
+  // };
 
   return (
     <header className="todoapp__header">
@@ -91,13 +111,17 @@ export const TodoHeader: React.FC<Props> = ({
       )}
 
       {/* Add a todo on form submit */}
-      {tempTodo && isLoading && (
-        <div data-cy="TodoLoader" className="modal overlay is-active">
-          <div className="modal-background has-background-white-ter" />
-          <div className="loader" />
-        </div>
-      )}
-      <form onSubmit={handleOnSubmit}>
+      {/* <div
+        data-cy="TodoLoader"
+        className={classNames('modal', 'overlay', {
+          'is-active': tempTodo && isLoading,
+        })}
+      >
+        <div className="modal-background has-background-white-ter" />
+        <div className="loader" />
+      </div> */}
+
+      <form onSubmit={onFormSubmit}>
         <input
           data-cy="NewTodoField"
           type="text"

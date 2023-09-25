@@ -1,31 +1,33 @@
 /* eslint-disable jsx-a11y/control-has-associated-label */
 import React, { useEffect, useRef, useState } from 'react';
 import classNames from 'classnames';
-import { UserWarning } from './UserWarning';
-import { getTodos } from './api/todos';
+// import { UserWarning } from './UserWarning';
+import { addTodo, deleteTodo, getTodos } from './api/todos';
 import { Todo } from './types/Todo';
 import { Footer } from './components/Footer/Footer';
 import { FilterCase } from './types/FilterCase';
 import { TodoList } from './components/TodoList/TodoList';
 import { TodoHeader } from './components/TodoHeader/TodoHeader';
 
-const USER_ID = 11529;
-
 export const App: React.FC = () => {
   const [todos, setTodos] = useState<Todo[]>([]);
   const [filterCase, setFilterCase] = useState(FilterCase.all);
   const [error, setError] = useState('');
+  const [isLoading, setIsLoading] = useState(false);
+  const [loadingTodoIds, setLoadingTodoIds] = useState<number[]>([]);
 
   const newTodoField = useRef<HTMLInputElement>(null);
 
   useEffect(() => {
-    setError('');
-
     if (newTodoField.current) {
       newTodoField.current.focus();
     }
+  }, [isLoading]);
 
-    getTodos(USER_ID)
+  useEffect(() => {
+    setError('');
+
+    getTodos()
       .then(setTodos)
       .catch(() => {
         setError('Unable to load todos');
@@ -35,6 +37,62 @@ export const App: React.FC = () => {
         }, 3000);
       });
   }, []);
+
+  const timerId = useRef<number>(0);
+
+  useEffect(() => {
+    if (timerId.current) {
+      window.clearTimeout(timerId.current);
+    }
+
+    timerId.current = window.setTimeout(() => {
+      setError('');
+    }, 3000);
+  }, [error]);
+
+  const handleAddTodo = (todoTitle: string) => {
+    setIsLoading(true);
+
+    return addTodo(todoTitle)
+      .then((newTodo) => {
+        setTodos((prevTodos) => [...prevTodos, newTodo]);
+
+        newTodoField.current?.focus();
+      })
+      .catch(() => {
+        setError('Unable to add a todo');
+        throw new Error();
+      })
+      .finally(() => {
+        setIsLoading(false);
+      });
+  };
+
+  const handleDeleteTodo = (todoId: number) => {
+    setIsLoading(true);
+
+    deleteTodo(todoId)
+      .then(() => {
+        setTodos((prevTodos) => prevTodos.filter(todo => todo.id !== todoId));
+
+        newTodoField.current?.focus();
+      })
+      .catch(() => {
+        setError('Unable to delete a todo');
+      })
+      .finally(() => {
+        setIsLoading(false);
+      });
+  };
+
+  const handleClearCompleted = () => {
+    const completedTodos = todos.filter(todo => todo.completed);
+
+    completedTodos.forEach(todo => {
+      setLoadingTodoIds((prevTodoIds) => [...prevTodoIds, todo.id]);
+      handleDeleteTodo(todo.id);
+    });
+  };
 
   const filteredTodos = todos.filter((todo) => {
     switch (filterCase) {
@@ -49,9 +107,9 @@ export const App: React.FC = () => {
 
   const activeTodos = todos.filter((todo) => !todo.completed);
 
-  if (!USER_ID) {
-    return <UserWarning />;
-  }
+  // if (!USER_ID) {
+  //   return <UserWarning />;
+  // }
 
   return (
     <div className="todoapp">
@@ -63,14 +121,18 @@ export const App: React.FC = () => {
           newTodoField={newTodoField}
           error={error}
           setError={setError}
-          userId={USER_ID}
-          setTodos={setTodos}
+          onTodoAdd={handleAddTodo}
+          isLoading={isLoading}
         />
         {/* This is a completed todo */}
         <TodoList
           todos={filteredTodos}
-          setTodos={setTodos}
-          setError={setError}
+          // setTodos={setTodos}
+          // setError={setError}
+          // newTodoField={newTodoField}
+          onTodoDelete={handleDeleteTodo}
+          // isLoading={isLoading}
+          loadingTodoIds={loadingTodoIds}
         />
 
         {/* This todo is not completed */}
@@ -155,6 +217,7 @@ export const App: React.FC = () => {
             filterCase={filterCase}
             setFilterCase={setFilterCase}
             activeTodos={activeTodos}
+            handleClearCompleted={handleClearCompleted}
           />
         )}
       </div>

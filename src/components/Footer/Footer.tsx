@@ -6,7 +6,8 @@ interface Props {
   todos: Todo[];
   filterCase: FilterCase;
   setFilterCase: (filterCase: FilterCase) => void;
-  activeTodos: Todo[],
+  activeTodos: Todo[];
+  handleClearCompleted: () => void;
 }
 
 export const Footer: React.FC<Props> = ({
@@ -14,6 +15,7 @@ export const Footer: React.FC<Props> = ({
   filterCase,
   setFilterCase,
   activeTodos,
+  handleClearCompleted,
 }) => {
   const completedTodos = todos.filter(({ completed }) => completed);
 
@@ -60,15 +62,16 @@ export const Footer: React.FC<Props> = ({
       </nav>
 
       {/* don't show this button if there are no completed todos */}
-      {completedTodos && (
-        <button
-          type="button"
-          className="todoapp__clear-completed"
-          data-cy="ClearCompletedButton"
-        >
-          Clear completed
-        </button>
-      )}
+
+      <button
+        type="button"
+        className="todoapp__clear-completed"
+        data-cy="ClearCompletedButton"
+        disabled={!completedTodos.length}
+        onClick={handleClearCompleted}
+      >
+        Clear completed
+      </button>
     </footer>
   );
 };
