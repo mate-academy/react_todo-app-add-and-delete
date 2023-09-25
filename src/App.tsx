@@ -84,7 +84,7 @@ export const App: React.FC = () => {
     setTemporaryTodo({
       id: 0,
       userId: USER_ID,
-      title,
+      title: title.trim(),
       completed: false,
     });
   };

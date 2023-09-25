@@ -36,7 +36,6 @@ export const TodoItem = ({ todo, handleDelete }: Props) => {
         className="todo__remove"
         data-cy="TodoDelete"
         onClick={() => {
-          setIsLoading(true);
           handleDelete(todo, () => setIsLoading(false));
         }}
       >
