@@ -25,7 +25,7 @@ export const App: React.FC = () => {
 
   const [addTodoForm, setAddTodoForm] = useState('');
   const [isSubmitting, setIsSubmitting] = useState(false);
-  const inputRef = useRef<HTMLInputElement>();
+  const inputRef = useRef<HTMLInputElement>(null);
 
   const todoCounter: number = todos
     .filter(todo => todo.completed === false).length;
@@ -48,6 +48,12 @@ export const App: React.FC = () => {
       });
   }, []);
 
+  useEffect(() => {
+    if (inputRef.current) {
+      inputRef.current.focus();
+    }
+  }, [isSubmitting]);
+
   if (!USER_ID) {
     return <UserWarning />;
   }
@@ -67,9 +73,9 @@ export const App: React.FC = () => {
     });
   }, [statusFilter, todos, todoCounter]);
 
-  const focusInput = () => {
-    inputRef.current.focus();
-  };
+  // const focusInput = () => {
+  //   inputRef.current.focus();
+  // };
 
   const addTodoSubmitHandler = (event: FormEvent) => {
     event.preventDefault();
@@ -77,9 +83,6 @@ export const App: React.FC = () => {
 
     if (!title) {
       setError('Title should not be empty');
-      setTimeout(() => {
-        focusInput();
-      }, 0);
       setTimeout(() => {
         setError('');
       }, 3000);
@@ -111,9 +114,6 @@ export const App: React.FC = () => {
       .finally(() => {
         setIsSubmitting(false);
         setTempTodo(null);
-        setTimeout(() => {
-          focusInput();
-        }, 0);
       });
   };
 
