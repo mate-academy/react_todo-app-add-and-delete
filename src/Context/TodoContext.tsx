@@ -23,7 +23,7 @@ interface TodoContextInterface {
   error: CurrentError,
   setError: (error: CurrentError) => void;
   deleteTodoHandler: (id: number) => void;
-  addTodoHandler: (newTodo: Omit<Todo, 'id'>) => void
+  addTodoHandler: (newTodo: Omit<Todo, 'id'>) => Promise<void>
   completedTodos: Todo[];
   activeTodos: Todo[];
   clearCompleted: () => void;
@@ -41,7 +41,7 @@ const initalContext: TodoContextInterface = {
   error: CurrentError.Default,
   setError: () => {},
   deleteTodoHandler: () => {},
-  addTodoHandler: () => {},
+  addTodoHandler: async () => {},
   completedTodos: [],
   activeTodos: [],
   clearCompleted: () => {},
@@ -76,7 +76,8 @@ export const TodoProvider: React.FC<Props> = ({ children }) => {
 
   const addTodoHandler = (newTodo: Omit<Todo, 'id'>) => {
     setIsLoading(true);
-    todoService.addTodo(newTodo)
+
+    return todoService.addTodo(newTodo)
       .then(createdTodo => {
         setTodos((prevTodos) => [...prevTodos, createdTodo]);
       })

@@ -37,7 +37,7 @@ export const TodoHeader: React.FC<Props> = () => {
   const handleSubmit = (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
 
-    if (!title) {
+    if (!title.trim()) {
       setError(CurrentError.EmptyTitleError);
 
       return;
@@ -50,7 +50,13 @@ export const TodoHeader: React.FC<Props> = () => {
     };
 
     setTempTodo({ id: 0, ...newTodo });
-    addTodoHandler(newTodo);
+    addTodoHandler(newTodo)
+      .then(() => {
+        setTitle('');
+      })
+      .catch(() => {
+        setError(CurrentError.AddError);
+      });
   };
 
   const activeTodosCount = activeTodos.length;
