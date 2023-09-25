@@ -83,7 +83,7 @@ export const App: React.FC = () => {
     if (inputRef.current) {
       inputRef.current.focus();
     }
-  }, [todos]);
+  }, [todos, tempTodo]);
 
   if (!USER_ID) {
     return <UserWarning />;
