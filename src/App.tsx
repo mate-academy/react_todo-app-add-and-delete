@@ -72,7 +72,10 @@ export const App: React.FC = () => {
         setTodos(currentTodos => [...currentTodos, newTodo]);
         setNewTitle('');
       })
-      .catch(() => setErrorMessage('Unable to add a todo'))
+      .catch(() => {
+        setErrorMessage('Unable to add a todo');
+        clearError();
+      })
       .finally(() => {
         setIsLoading(false);
         setTempTodo(null);
