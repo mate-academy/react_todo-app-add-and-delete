@@ -1,12 +1,10 @@
 import React, {
   createContext,
-  useEffect,
   useMemo,
   useState,
 } from 'react';
 import { CurrentError } from '../types/CurrentError';
 import * as todoService from '../api/todos';
-import { USER_ID } from '../utils/constants';
 import { Todo } from '../types/Todo';
 import { getCompletedTodos } from '../utils/getCompletedTodos';
 import { getActiveTodos } from '../utils/getActiveTodos';
@@ -59,14 +57,6 @@ export const TodoProvider: React.FC<Props> = ({ children }) => {
   const [error, setError] = useState(CurrentError.Default);
   const [isLoading, setIsLoading] = useState(false);
   const [todosIdToDelete, setTodosIdToDelete] = useState<number[]>([]);
-
-  useEffect(() => {
-    todoService.getTodos(USER_ID)
-      .then(setTodos)
-      .catch(() => {
-        setError(CurrentError.LoadingError);
-      });
-  }, []);
 
   const completedTodos = getCompletedTodos(todos);
   const activeTodos = getActiveTodos(todos);

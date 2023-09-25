@@ -7,6 +7,7 @@ import {
 } from 'react';
 import { CurrentError } from '../types/CurrentError';
 import { TodoContext } from '../Context/TodoContext';
+import { USER_ID } from '../utils/constants';
 
 type Props = {
   activeTodosCount: number,
@@ -15,13 +16,18 @@ type Props = {
 export const TodoHeader: React.FC<Props> = ({
   activeTodosCount,
 }) => {
-  const { setError } = useContext(TodoContext);
+  const {
+    setError,
+    setTempTodo,
+    addTodoHandler,
+    tempTodo,
+  } = useContext(TodoContext);
   const [title, setTitle] = useState('');
 
   const handleTitleChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     const newTitle = event.target.value;
 
-    setTitle(newTitle.trimStart());
+    setTitle(newTitle.trim());
   };
 
   const handleSubmit = (event: React.FormEvent<HTMLFormElement>) => {
@@ -29,8 +35,18 @@ export const TodoHeader: React.FC<Props> = ({
 
     if (!title) {
       setError(CurrentError.EmptyTitleError);
+
+      return;
     }
 
+    const newTodo = {
+      userId: USER_ID,
+      title,
+      completed: false,
+    };
+
+    setTempTodo({ id: 0, ...newTodo });
+    addTodoHandler(newTodo);
     setTitle('');
   };
 

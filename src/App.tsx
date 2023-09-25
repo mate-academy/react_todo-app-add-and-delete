@@ -14,11 +14,26 @@ import { TodoFooter } from './components/TodoFooter';
 import { getFilteredTodos } from './utils/getFilteredTodos';
 import { CurrentError } from './types/CurrentError';
 import { TodoContext } from './Context/TodoContext';
+import { USER_ID } from './utils/constants';
+import * as todoService from './api/todos';
 
 export const App: React.FC = () => {
   const [todoFilter, setTodoFilter] = useState<TodoFilter>(TodoFilter.All);
 
-  const { todos, error, setError } = useContext(TodoContext);
+  const {
+    todos,
+    setTodos,
+    error,
+    setError,
+  } = useContext(TodoContext);
+
+  useEffect(() => {
+    todoService.getTodos(USER_ID)
+      .then(setTodos)
+      .catch(() => {
+        setError(CurrentError.LoadingError);
+      });
+  }, []);
 
   useEffect(() => {
     if (error) {
