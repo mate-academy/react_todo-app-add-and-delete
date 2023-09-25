@@ -5,23 +5,28 @@ import {
   useRef,
   useState,
 } from 'react';
+import classNames from 'classnames';
 import { CurrentError } from '../types/CurrentError';
 import { TodoContext } from '../Context/TodoContext';
 import { USER_ID } from '../utils/constants';
 
-type Props = {
-  activeTodosCount: number,
-};
+type Props = {};
 
-export const TodoHeader: React.FC<Props> = ({
-  activeTodosCount,
-}) => {
+export const TodoHeader: React.FC<Props> = () => {
   const {
     setError,
-    setTempTodo,
     addTodoHandler,
+    activeTodos,
+    completedTodos,
   } = useContext(TodoContext);
   const [title, setTitle] = useState('');
+  const inputField = useRef<HTMLInputElement>(null);
+
+  useEffect(() => {
+    if (inputField.current) {
+      inputField.current.focus();
+    }
+  }, []);
 
   const handleTitleChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     const newTitle = event.target.value;
@@ -40,29 +45,26 @@ export const TodoHeader: React.FC<Props> = ({
 
     const newTodo = {
       userId: USER_ID,
-      title,
+      title: title.trim(),
       completed: false,
     };
 
-    setTempTodo({ id: 0, ...newTodo });
     addTodoHandler(newTodo);
     setTitle('');
   };
 
-  const inputField = useRef<HTMLInputElement>(null);
-
-  useEffect(() => {
-    if (inputField.current) {
-      inputField.current.focus();
-    }
-  }, []);
+  const activeTodosCount = activeTodos.length;
+  const completedTodosCount = completedTodos.length;
 
   return (
     <header className="todoapp__header">
       {!!activeTodosCount && (
         <button
           type="button"
-          className="todoapp__toggle-all active"
+          className={classNames(
+            'todoapp__toggle-all',
+            { active: completedTodosCount },
+          )}
           data-cy="ToggleAllButton"
         />
       )}

@@ -59,9 +59,7 @@ export const App: React.FC = () => {
       <h1 className="todoapp__title">todos</h1>
 
       <div className="todoapp__content">
-        <TodoHeader
-          activeTodosCount={activeTodosCount}
-        />
+        <TodoHeader />
 
         <TodoList
           todos={filteredTodos}
