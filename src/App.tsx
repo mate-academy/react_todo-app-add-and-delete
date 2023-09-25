@@ -154,6 +154,14 @@ export const App: React.FC = () => {
     setTodoIdToDelete(todoId);
   };
 
+  const handleClearCompleted = () => {
+    const allCompletedTodos = todos.filter(todo => todo.completed);
+
+    allCompletedTodos.forEach(todo => {
+      handleDelete(todo.id);
+    });
+  };
+
   const handleChangeTodoTitle = (
     event: React.ChangeEvent<HTMLInputElement>,
   ) => {
@@ -210,6 +218,7 @@ export const App: React.FC = () => {
                 handleStatusChange={handleStatusChange}
                 countActiveTodos={countActiveTodos}
                 countCompletedTodos={countCompletedTodos}
+                handleClearCompleted={handleClearCompleted}
               />
             )}
 
