@@ -527,6 +527,7 @@ describe('', () => {
 
           page.newTodoField().type('Hello world{enter}');
           cy.wait('@createRequest2');
+
           page.flushJSTimers();
 
           todos.assertCount(7);
@@ -542,6 +543,7 @@ describe('', () => {
 
         page.newTodoField().type('  Other Title    {enter}');
         cy.wait('@createRequest');
+        cy.wait(500);
 
         todos.assertTitle(5, 'Other Title');
       });
