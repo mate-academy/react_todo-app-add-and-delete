@@ -96,8 +96,8 @@ export const App: React.FC = () => {
       .then(newTodo => {
         setTodoList(currentTodos => [...currentTodos, newTodo]);
         setTitle('');
-        setIsFormActive(true);
         setTimeout(() => {
+          setIsFormActive(true);
           setIsLoaderActive(false);
           setLoadingId([]);
         }, 3000);
