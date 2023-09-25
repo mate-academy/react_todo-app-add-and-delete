@@ -31,9 +31,7 @@ export const TodoHeader: React.FC<Props> = () => {
   }, [isLoading]);
 
   const handleTitleChange = (event: React.ChangeEvent<HTMLInputElement>) => {
-    const newTitle = event.target.value;
-
-    setTitle(newTitle.trimStart());
+    setTitle(event.target.value);
   };
 
   const handleSubmit = (event: React.FormEvent<HTMLFormElement>) => {
