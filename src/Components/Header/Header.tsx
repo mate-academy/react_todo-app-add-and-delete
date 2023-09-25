@@ -50,7 +50,7 @@ export const Header: React.FC = () => {
       completed: false,
     };
 
-    setTempTodo({ ...data, id: 0 });
+    setTempTodo({ ...data, isDeleting: true, id: 0 });
 
     if (ref.current) {
       ref.current.blur();

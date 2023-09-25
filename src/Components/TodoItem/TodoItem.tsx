@@ -24,7 +24,7 @@ export const TodoItem: React.FC<Props> = ({ todo }) => {
 
   useEffect(() => {
     setIsDeleting(isTodoEdited || false);
-  }, [isTodoEdited]);
+  }, [isTodoEdited, todo]);
 
   const handleDeleteClick = () => {
     setIsDeleting(true);
