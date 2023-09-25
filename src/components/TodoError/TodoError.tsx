@@ -9,22 +9,6 @@ type Props = {
 };
 
 export const TodoError: React.FC<Props> = ({ errorMessage, onErrorChange }) => {
-  // useEffect(() => {
-  //   let timeoutId: NodeJS.Timeout;
-
-  //   if (errorMessage) {
-  //     timeoutId = setTimeout(() => {
-  //       onErrorChange(Error.None);
-  //     }, 3000);
-  //   }
-
-  //   return () => {
-  //     if (timeoutId) {
-  //       clearTimeout(timeoutId);
-  //     }
-  //   };
-  // }, [errorMessage, onErrorChange]);
-
   return (
     <div
       data-cy="ErrorNotification"

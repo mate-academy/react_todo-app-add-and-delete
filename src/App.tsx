@@ -1,5 +1,5 @@
 /* eslint-disable jsx-a11y/control-has-associated-label */
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import classNames from 'classnames';
 import { Todo } from './types/Todo';
 import { Status } from './types/Status';
@@ -36,6 +36,8 @@ export const App: React.FC = () => {
   const [tempTodo, setTempTodo] = useState<Todo | null>(null);
   const [processingIds, setProcessingIds] = useState<number[]>([]);
 
+  const inputRef = useRef<HTMLInputElement | null>(null);
+
   useEffect(() => {
     getTodos(USER_ID)
       .then(setTodos)
@@ -49,6 +51,12 @@ export const App: React.FC = () => {
       }, 3000);
     }
   }, [errorMessage]);
+
+  useEffect(() => {
+    if (inputRef.current) {
+      inputRef.current.focus();
+    }
+  }, [todos, isSubmitted]);
 
   if (!USER_ID) {
     return <UserWarning />;
@@ -80,7 +88,8 @@ export const App: React.FC = () => {
     const todoTitle = value.trim();
 
     const newTodo: Todo = {
-      id: todos.length + 1,
+      // id: todos.length + 1,
+      id: 0,
       title: todoTitle,
       completed: false,
       userId: USER_ID,
@@ -95,6 +104,7 @@ export const App: React.FC = () => {
         .finally(() => {
           setTempTodo(null);
           setIsSubmitted(false);
+          inputRef.current?.focus();
         });
     }
   };
@@ -142,6 +152,7 @@ export const App: React.FC = () => {
               className="todoapp__new-todo"
               placeholder="What needs to be done?"
               value={value}
+              ref={inputRef}
               onChange={(event) => setValue(event.target.value)}
               disabled={isSubmitted}
               // eslint-disable-next-line jsx-a11y/no-autofocus
@@ -177,7 +188,7 @@ export const App: React.FC = () => {
               data-cy="ClearCompletedButton"
               type="button"
               className="todoapp__clear-completed"
-              disabled={completedTodosCount === 0}
+              disabled={!completedTodosCount}
               onClick={onDeleteCompleted}
             >
               Clear completed
