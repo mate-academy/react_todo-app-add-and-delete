@@ -12,10 +12,3 @@ export const deleteTodo = (todoId: number) => {
 export const addTodo = (todo: Omit<Todo, 'id'>) => {
   return client.post<Todo>('/todos', todo);
 };
-
-// export const client = {
-//   get: (url) => request(url),
-//   post: (url, data) => request(url, 'POST', data),
-//   patch: (url, data) => request(url, 'PATCH', data),
-//   delete: (url) => request(url, 'DELETE'),
-// };
