@@ -1,11 +1,13 @@
 type TodoAddFormProps = {
   title: string;
+  isLoading: boolean;
   setTitle: (string: string) => void;
   onSubmit: (event: { preventDefault: () => void }) => void;
 };
 
 export const TodoAddForm: React.FC<TodoAddFormProps> = ({
   title,
+  isLoading,
   setTitle,
   onSubmit,
 }) => (
@@ -19,6 +21,8 @@ export const TodoAddForm: React.FC<TodoAddFormProps> = ({
       onChange={(event) => {
         setTitle(event.target.value);
       }}
+      disabled={isLoading}
+      ref={input => input && input.focus()}
     />
   </form>
 );

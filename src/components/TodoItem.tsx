@@ -1,12 +1,13 @@
 import cn from 'classnames';
 import { Todo } from '../types/Todo';
-import { TodoLoader } from './TodoLoader';
+// import { TodoLoader } from './TodoLoader';
 
 type Props = {
   todo: Todo;
+  handleDelete: (todoId: number) => void;
 };
 
-export const TodoItem: React.FC<Props> = ({ todo }) => (
+export const TodoItem: React.FC<Props> = ({ todo, handleDelete }) => (
   <>
     <div
       data-cy="Todo"
@@ -21,6 +22,8 @@ export const TodoItem: React.FC<Props> = ({ todo }) => (
           className="todo__status"
           checked={todo.completed}
           onChange={() => {}}
+          // eslint-disable-next-line jsx-a11y/no-autofocus
+          autoFocus
         />
       </label>
 
@@ -29,12 +32,17 @@ export const TodoItem: React.FC<Props> = ({ todo }) => (
       </span>
 
       {/* Remove button appears only on hover */}
-      <button type="button" className="todo__remove" data-cy="TodoDelete">
+      <button
+        type="button"
+        className="todo__remove"
+        data-cy="TodoDelete"
+        onClick={() => handleDelete(todo.id)}
+      >
         ×
       </button>
 
       {/* overlay will cover the todo while it is being updated */}
-      <TodoLoader />
+      {/* <TodoLoader /> */}
     </div>
 
     {/* This todo is being edited
