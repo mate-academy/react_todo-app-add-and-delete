@@ -101,7 +101,7 @@ export const App: React.FC = () => {
   };
 
   const onDelete = (todoId: number) => {
-    setProcessingIds((ids) => [...ids, todoId]);
+    setProcessingIds((prevTodoId) => [...prevTodoId, todoId]);
     deleteTodo(todoId)
       .then(() => setTodos(
         currentTodos => currentTodos.filter(
