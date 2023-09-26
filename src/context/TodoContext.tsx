@@ -6,6 +6,7 @@ type SelectedFilter = 'all' | 'active' | 'completed';
 
 type TodoContext = {
   todos: Todo[],
+  setTodos: React.Dispatch<React.SetStateAction<Todo[]>>;
   error: string | null,
   handleCloseError: () => void;
   setNewTodoTitle: (newTodoTitle: string) => void;
@@ -14,7 +15,7 @@ type TodoContext = {
   handleSelectFilter: (filterType: SelectedFilter) => void;
   selectedFilter: SelectedFilter;
   handleError: (errorName: string) => void;
-  addTodo: (todo: Todo) => void;
+  addTodo: (todo: Omit<Todo, 'id'>) => void;
   USER_ID: number;
   deleteTodo: (todoId: number) => void;
   tempTodo: Todo | null;
@@ -25,6 +26,7 @@ type TodoContext = {
 
 export const TodosContext = React.createContext<TodoContext>({
   todos: [],
+  setTodos: () => { },
   error: null,
   handleCloseError: () => { },
   setNewTodoTitle: () => '',
@@ -66,13 +68,13 @@ export const TodoProvider: React.FC<{ children: React.ReactNode }> = ({
     setError(null);
   };
 
-  const addTodo = (todo: Todo) => {
-    const { id, ...rest } = todo;
+  const addTodo = (todo: Omit<Todo, 'id'>) => {
+    // const { id, ...rest } = todo;
 
-    setTempTodo(todo);
-    postTodo(USER_ID, rest)
-      .then(() => {
-        setTodos(currentTodos => [todo, ...currentTodos]);
+    setTempTodo({ ...todo, id: 0 });
+    postTodo(USER_ID, todo)
+      .then((resp) => {
+        setTodos(currentTodos => [resp, ...currentTodos]);
         setNewTodoTitle('');
       })
       .catch(() => {
@@ -122,6 +124,7 @@ export const TodoProvider: React.FC<{ children: React.ReactNode }> = ({
       setTempTodo,
       disabledInput,
       setDisabledInput,
+      setTodos,
     }}
     >
       {children}

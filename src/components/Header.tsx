@@ -41,7 +41,8 @@ export const Header = () => {
       title: newTodoTitle.trim(),
       completed: false,
       userId: USER_ID,
-      id: Math.ceil(Math.random() * 10000),
+      // id: Math.ceil(Math.random() * 10000),
+      // id: 0,
     };
 
     addTodo(todo);

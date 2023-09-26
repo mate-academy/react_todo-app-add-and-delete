@@ -1,9 +1,15 @@
 import cn from 'classnames';
 import { useContext } from 'react';
 import { TodosContext } from '../context/TodoContext';
+import { deleteTodo } from '../api/todos';
 
 export const Footer = () => {
-  const { todos, handleSelectFilter, selectedFilter }
+  const {
+    todos,
+    handleSelectFilter,
+    selectedFilter,
+    setTodos,
+  }
     = useContext(TodosContext);
   const todosLeft = todos.filter(todo => !todo.completed);
   const todosDone = todos.filter(todo => todo.completed);
@@ -61,6 +67,14 @@ export const Footer = () => {
               })}
               data-cy="ClearCompletedButton"
               disabled={todosDone.length === 0}
+              onClick={() => setTodos(todos.filter(
+                // eslint-disable-next-line array-callback-return
+                (todo) => {
+                  if (todo.completed === false) {
+                    deleteTodo(todo.id);
+                  }
+                },
+              ))}
             >
               Clear completed
             </button>
