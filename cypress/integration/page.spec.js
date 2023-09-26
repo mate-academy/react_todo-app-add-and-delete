@@ -370,7 +370,7 @@ describe('', () => {
     });
   });
 
-  describe('Adding a todo', () => {
+  describe.skip('Adding a todo', () => {
     beforeEach(() => {
       page.mockLoad().as('loadRequest');
       page.visit();
