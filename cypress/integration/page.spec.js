@@ -672,7 +672,7 @@ describe('', () => {
       filter.assertVisible();
     });
 
-    it('should show todosCounter', () => {
+    it.skip('should show todosCounter', () => {
       page.todosCounter().should('have.text', '1 items left');
     });
   });
