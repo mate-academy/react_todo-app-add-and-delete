@@ -7,15 +7,28 @@ import { TodoList } from './components/TodoList';
 import { Filters } from './types/Filters';
 import { Footer } from './components/Footer';
 import { ErrorMessage } from './components/ErrorMessage';
+import { Header } from './components/Header';
 
 const USER_ID = 11564;
 
 export const App: React.FC = () => {
   const [todos, setTodos] = useState<Todo[]>([]);
   const [errorMessage, setErrorMessage] = useState<string>('');
-  const [isVisibleErrorMessage, setIsVisibleErrorMessage]
-  = useState<boolean>(false);
   const [filterTodos, setFilterTodos] = useState<Filters>('All');
+  const [tempTodo, setTempTodo] = useState<Todo | null>(null);
+  const [loadingItems, setLoadingItems] = useState<number[]>([]);
+
+  const completedTodoCount = todos.some(todo => todo.completed);
+
+  const updateTodos = (newTodo: Todo) => {
+    setTodos((prevState) => {
+      if (newTodo === null) {
+        return prevState;
+      }
+
+      return [...prevState, newTodo];
+    });
+  };
 
   const handleFilterTodos
   = (todosArray: Todo[], option: Filters): Todo[] => {
@@ -37,12 +50,12 @@ export const App: React.FC = () => {
   };
 
   useEffect(() => {
-    setIsVisibleErrorMessage(false);
+    setErrorMessage('');
     client.get<Todo[]>(`/todos?userId=${USER_ID}`)
       .then((data) => setTodos(data))
+      .then(() => setTempTodo(null))
       .catch(() => {
         setErrorMessage('Unable to load todos');
-        setIsVisibleErrorMessage(true);
       });
   }, []);
 
@@ -55,38 +68,34 @@ export const App: React.FC = () => {
       <h1 className="todoapp__title">todos</h1>
 
       <div className="todoapp__content">
-        <header className="todoapp__header">
-          {/* this buttons is active only if there are some active todos */}
-          {todos.some((todo) => !todo.completed) && (
-            <button
-              type="button"
-              className="todoapp__toggle-all active"
-              data-cy="ToggleAllButton"
-            />
-          )}
-
-          {/* Add a todo on form submit */}
-          <form>
-            <input
-              data-cy="NewTodoField"
-              type="text"
-              className="todoapp__new-todo"
-              placeholder="What needs to be done?"
-            />
-          </form>
-        </header>
+        <Header
+          USER_ID={USER_ID}
+          todos={todos}
+          setErrorMessage={setErrorMessage}
+          setTempTodo={setTempTodo}
+          updateTodos={updateTodos}
+          setLoadingItems={setLoadingItems}
+        />
 
         <TodoList
           todos={MadeTodoList()}
           setTodos={setTodos}
+          tempTodo={tempTodo}
+          setErrorMessage={setErrorMessage}
+          setLoadingItems={setLoadingItems}
+          loadingItems={loadingItems}
         />
 
         {/* Hide the footer if there are no todos */}
         {todos.length !== 0 && (
           <Footer
             todos={todos}
+            setTodos={setTodos}
             filterTodos={filterTodos}
             setFilterTodos={setFilterTodos}
+            setErrorMessage={setErrorMessage}
+            completedTodoCount={completedTodoCount}
+            setLoadingItems={setLoadingItems}
           />
         )}
       </div>
@@ -94,8 +103,7 @@ export const App: React.FC = () => {
       {/* Notification is shown in case of any error */}
       <ErrorMessage
         errorMessage={errorMessage}
-        isVisibleErrorMessage={isVisibleErrorMessage}
-        setIsVisibleErrorMessage={setIsVisibleErrorMessage}
+        setErrorMessage={setErrorMessage}
       />
     </div>
   );
