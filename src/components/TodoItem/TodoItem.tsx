@@ -1,26 +1,26 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState, useRef } from 'react';
 import classNames from 'classnames';
 import { Todo } from '../../types/Todo';
 
 type Props = {
   todo: Todo;
-  onTodoDelete: () => void;
-  isLoading: boolean;
+  onTodoDelete?: () => void;
+  isProcessing: boolean;
 };
 
 export const TodoItem: React.FC<Props> = ({
   todo,
-  onTodoDelete,
-  isLoading,
+  onTodoDelete = () => {},
+  isProcessing,
+  // onTodoUpdate,
 }) => {
   const [isEditing, setIsEditing] = useState(false);
   const [todoTitle, setTodoTitle] = useState(todo.title);
-
   const handleTodoDoubleClick = () => {
-    setIsEditing(true);
+    setIsEditing(false);
   };
 
-  const handleTodoSave = async (event: React.FormEvent<HTMLFormElement>) => {
+  const handleTodoSave = async (event:React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
 
     if (todoTitle) {
@@ -32,10 +32,18 @@ export const TodoItem: React.FC<Props> = ({
     setIsEditing(false);
   };
 
-  const handleTodoTitleChange = (event:
-  React.ChangeEvent<HTMLInputElement>) => {
+  const handleTodoTitleChange = (event:React.ChangeEvent<HTMLInputElement>) => {
     setTodoTitle(event.target.value);
   };
+
+  const titleInput = useRef<HTMLInputElement | null>(null);
+
+  useEffect(() => {
+    if (isEditing && titleInput.current) {
+      titleInput.current.focus();
+    }
+  },
+  [isEditing]);
 
   const { title, completed } = todo;
 
@@ -48,6 +56,7 @@ export const TodoItem: React.FC<Props> = ({
     >
       <label className="todo__status-label">
         <input
+          ref={titleInput}
           data-cy="TodoStatus"
           type="checkbox"
           className="todo__status"
@@ -78,7 +87,7 @@ export const TodoItem: React.FC<Props> = ({
               className="todo__title"
               onDoubleClick={handleTodoDoubleClick}
             >
-              {title}
+              {title.trim()}
             </span>
 
             <button
@@ -95,7 +104,7 @@ export const TodoItem: React.FC<Props> = ({
       <div
         data-cy="TodoLoader"
         className={classNames('modal overlay', {
-          'is-active': isLoading,
+          'is-active': isProcessing,
         })}
       >
         <div className="modal-background has-background-white-ter" />
