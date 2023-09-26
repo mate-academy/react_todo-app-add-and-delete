@@ -150,7 +150,7 @@ describe('', () => {
         page.todosCounter().should('not.exist');
       });
 
-      it.skip('should not show error message', () => {
+      it('should not show error message', () => {
         errorMessage.assertHidden();
       });
     });
@@ -170,7 +170,7 @@ describe('', () => {
         errorMessage.assertText('Unable to load todos');
       });
 
-      it.skip('should hide error after 3 seconds', () => {
+      it('should hide error after 3 seconds', () => {
         cy.clock();
         cy.tick(2500);
         errorMessage.assertVisible();
@@ -179,7 +179,7 @@ describe('', () => {
         errorMessage.assertHidden();
       });
 
-      it.skip('should hide error on close button click', () => {
+      it('should hide error on close button click', () => {
         errorMessage.closeButton().click();
         errorMessage.assertHidden();
       });
@@ -256,7 +256,7 @@ describe('', () => {
       filter.assertVisible();
     });
 
-    it.skip('should not show error message', () => {
+    it('should not show error message', () => {
       errorMessage.assertHidden();
     });
   });
@@ -398,7 +398,7 @@ describe('', () => {
         errorMessage.assertText('Title should not be empty');
       });
 
-      it.skip('should hide an error message after 3 seconds', () => {
+      it('should hide an error message after 3 seconds', () => {
         cy.clock();
         cy.tick(3000);
         errorMessage.assertHidden();
@@ -424,7 +424,7 @@ describe('', () => {
         errorMessage.assertText('Title should not be empty');
       });
 
-      it.skip('should hide an error message after 3 seconds', () => {
+      it('should hide an error message after 3 seconds', () => {
         cy.clock();
         cy.tick(3000);
         errorMessage.assertHidden();
@@ -438,7 +438,7 @@ describe('', () => {
         page.newTodoField().type('Test Todo{enter}');
       });
 
-      it.skip('should send a create request', () => {
+      it('should send a create request', () => {
         cy.tick(1000);
         cy.get('@createCallback').should('have.callCount', 1);
       });
@@ -486,13 +486,13 @@ describe('', () => {
           cy.wait('@createRequest');
         });
 
-        it.skip('should replace loader with a created todo', () => {
+        it('should replace loader with a created todo', () => {
           page.flushJSTimers();
           todos.assertCount(6);
           todos.assertNotLoading(5);
         });
 
-        it.skip('should add a todo with a correct title', () => {
+        it('should add a todo with a correct title', () => {
           todos.assertTitle(5, 'Test Todo');
         });
 
@@ -534,7 +534,7 @@ describe('', () => {
         });
       });
 
-      it.skip('should add trimmed title', () => {
+      it('should add trimmed title', () => {
         page.mockCreate().as('createRequest');
 
         page.newTodoField().type('  Other Title    {enter}');
@@ -543,7 +543,7 @@ describe('', () => {
         todos.assertTitle(5, 'Other Title');
       });
 
-      it.skip('should keep current filter', () => {
+      it('should keep current filter', () => {
         page.mockCreate().as('createRequest');
 
         filter.link('active').click();
@@ -564,12 +564,12 @@ describe('', () => {
         cy.wait('@createRequest');
       });
 
-      it.skip('should show an error message', () => {
+      it('should show an error message', () => {
         errorMessage.assertVisible();
         errorMessage.assertText('Unable to add a todo');
       });
 
-      it.skip('should hide an error message in 3 seconds', () => {
+      it('should hide an error message in 3 seconds', () => {
         cy.clock();
         cy.tick(2500);
 
@@ -659,13 +659,13 @@ describe('', () => {
       cy.wait('@createRequest');
     });
 
-    it.skip('should show a new todos', () => {
+    it('should show a new todos', () => {
       todos.assertCount(1);
       todos.assertTitle(0, 'First todo');
       todos.assertNotCompleted(0);
     });
 
-    it.skip('should show Filter', () => {
+    it('should show Filter', () => {
       filter.assertVisible();
     });
 

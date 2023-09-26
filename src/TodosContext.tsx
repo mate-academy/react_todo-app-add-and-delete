@@ -74,7 +74,7 @@ export const ContextProvider: React.FC<Props> = ({ children }) => {
     setTodos(todos.filter(todo => !deletedIds.includes(todo.id)));
 
     if (deletedIds.includes(null)) {
-      setErrorMessage(ErrorMessage.DELETE);
+      errorNotificationHandler(ErrorMessage.DELETE);
     }
 
     setTodosIdsUpdating([]);

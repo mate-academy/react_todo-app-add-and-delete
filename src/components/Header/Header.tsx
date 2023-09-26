@@ -40,7 +40,7 @@ export const Header: React.FC<Props> = () => {
           {
             ...response as Todo,
           }]);
-
+        setTempTodo(null);
         setTitle('');
       })
       .catch(() => errorNotificationHandler(ErrorMessage.ADD))
