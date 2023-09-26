@@ -6,16 +6,19 @@ type Props = {
   todo: Todo;
   onTodoDelete: (todoId: number) => void;
   onTodoUpdate: (todo: Todo, newTodoTitle: string) => void;
+  todosIdToDelete: number[];
 };
 
 export const TodoItem: React.FC<Props> = ({
   todo,
   onTodoDelete,
   onTodoUpdate,
+  todosIdToDelete,
 }) => {
   const { completed, title, id } = todo;
   const [isEditing, setIsEditing] = useState(false);
   const [todoTitle, setTodoTitle] = useState(title);
+  // const [isCompleted, setIsCompleted] = useState(completed);
 
   const titleInput = useRef<HTMLInputElement | null>(null);
 
@@ -107,7 +110,7 @@ export const TodoItem: React.FC<Props> = ({
       <div
         data-cy="TodoLoader"
         className={cn('modal overlay', {
-          'is-active': false,
+          'is-active': todosIdToDelete.includes(id),
         })}
       >
         <div className="modal-background has-background-white-ter" />

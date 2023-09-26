@@ -19,6 +19,7 @@ export const App: React.FC = () => {
   const [filter, setFilter] = useState(TodosFilter.All);
   const [errorMessage, setErrorMessage] = useState('');
   const [isLoading, setIsLoading] = useState(false);
+  const [todosIdToDelete, setTodosIdToDelete] = useState<number[]>([]);
   const [tempTodo, setTempTodo] = useState<Todo | null>(null);
 
   const completedTodos = getCompletedTodos(todos);
@@ -70,6 +71,7 @@ export const App: React.FC = () => {
 
   const handleDeleteTodo = (todoId: number) => {
     setIsLoading(true);
+    setTodosIdToDelete(prevState => [...prevState, todoId]);
 
     todoService
       .deleteTodo(todoId)
@@ -81,6 +83,7 @@ export const App: React.FC = () => {
       })
       .finally(() => {
         setIsLoading(false);
+        setTodosIdToDelete([]);
       });
   };
 
@@ -101,14 +104,6 @@ export const App: React.FC = () => {
       });
   };
 
-  const handleFilterTodo = (value: TodosFilter) => {
-    setFilter(value);
-  };
-
-  const handleErrorTodo = (value: string) => {
-    setErrorMessage(value);
-  };
-
   const handleClearCompletedTodos = () => {
     completedTodos.forEach(todo => (
       handleDeleteTodo(todo.id)));
@@ -125,14 +120,16 @@ export const App: React.FC = () => {
       <div className="todoapp__content">
         <TodoForm
           todos={todos}
-          onTodoError={handleErrorTodo}
+          onTodoAddError={setErrorMessage}
           onTodoAdd={handleAddTodo}
           isLoading={isLoading}
+          errorMessage={errorMessage}
         />
         <TodoList
           todos={filteredTodos}
           onTodoDelete={handleDeleteTodo}
           onTodoUpdate={handleUpdateTodo}
+          todosIdToDelete={todosIdToDelete}
         />
         {tempTodo && (
           <TempTodo tempTodo={tempTodo} />
@@ -142,7 +139,7 @@ export const App: React.FC = () => {
             todos={todos}
             filter={filter}
             completedTodos={completedTodos}
-            onFilterChange={handleFilterTodo}
+            onFilterChange={setFilter}
             onClearCompletedTodos={handleClearCompletedTodos}
           />
         )}
@@ -155,8 +152,8 @@ export const App: React.FC = () => {
         data-cy="ErrorNotification"
         className={cn(
           'notification is-danger is-light has-text-weight-normal', {
-          hidden: !errorMessage,
-        },
+            hidden: !errorMessage,
+          },
         )}
       >
         <button

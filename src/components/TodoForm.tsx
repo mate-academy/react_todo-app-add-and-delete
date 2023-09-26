@@ -4,15 +4,17 @@ import { Todo } from '../types/Todo';
 type Props = {
   todos: Todo[];
   onTodoAdd: (todoTitle: string) => Promise<void>;
-  onTodoError: (value: string) => void;
+  onTodoAddError: (value: string) => void;
   isLoading: boolean;
+  errorMessage: string;
 };
 
 export const TodoForm: React.FC<Props> = ({
   todos,
   onTodoAdd,
-  onTodoError,
+  onTodoAddError,
   isLoading,
+  errorMessage,
 }) => {
   const isTodosToShow = !!todos.length;
   const titleField = useRef<HTMLInputElement>(null);
@@ -27,14 +29,16 @@ export const TodoForm: React.FC<Props> = ({
     const preparedTitle = title.trim();
 
     if (!preparedTitle) {
-      onTodoError('Title should not be empty');
+      onTodoAddError('Title should not be empty');
 
       return;
     }
 
     onTodoAdd(preparedTitle)
       .then(() => {
-        setTitle('');
+        if (!errorMessage) {
+          setTitle('');
+        }
       });
   };
 
@@ -42,7 +46,7 @@ export const TodoForm: React.FC<Props> = ({
     if (titleField.current) {
       titleField.current.focus();
     }
-  }, [todos]);
+  });
 
   return (
     <header className="todoapp__header">
