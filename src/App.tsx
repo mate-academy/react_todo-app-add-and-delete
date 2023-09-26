@@ -30,7 +30,7 @@ export const App: React.FC = () => {
       .then(setTodos)
       .catch(() => {
         setErrorMessage(ERROR_MESSAGES.unableToLoadTodos);
-        throw new Error(ERROR_MESSAGES.unableToLoadTodos);
+        // throw new Error(ERROR_MESSAGES.unableToLoadTodos);
       })
       .finally(() => {
         setLoadingTodos(false);
@@ -84,7 +84,6 @@ export const App: React.FC = () => {
       })
       .catch(() => {
         setErrorMessage(ERROR_MESSAGES.unableToAddTodo);
-        throw new Error(ERROR_MESSAGES.unableToAddTodo);
       })
       .finally(() => {
         setTempTodo(null);
@@ -103,7 +102,7 @@ export const App: React.FC = () => {
       })
       .catch(() => {
         setErrorMessage(ERROR_MESSAGES.unableToDeleteTodo);
-        throw new Error(ERROR_MESSAGES.unableToDeleteTodo);
+        // throw new Error(ERROR_MESSAGES.unableToDeleteTodo);
       })
       .finally(() => {
         setIsProsessingTodoIds((prevState) => {
