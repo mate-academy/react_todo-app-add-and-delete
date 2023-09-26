@@ -1,24 +1,129 @@
-/* eslint-disable max-len */
 /* eslint-disable jsx-a11y/control-has-associated-label */
-import React from 'react';
-import { UserWarning } from './UserWarning';
+import React, {
+  useContext, useEffect, useMemo, useState,
+} from 'react';
+import classNames from 'classnames';
 
-const USER_ID = 0;
+import { TodoList } from './components/TodoList';
+import { TodoContext } from './components/TodoProvider';
+import { Form } from './components/Form';
+import { Todo } from './types/Todo';
+import { Footer } from './components/Footer';
+
+enum FilterOption {
+  All = 'All',
+  Active = 'Active',
+  Completed = 'Completed',
+}
 
 export const App: React.FC = () => {
-  if (!USER_ID) {
-    return <UserWarning />;
-  }
+  const [filter, setFilter] = useState<string>(FilterOption.All);
+  const [tempTodo, setTempTodo] = useState<Todo | null>(null);
+
+  const {
+    todos,
+    setErrorMessage,
+    errorMessage,
+    updateTodoHandler,
+  } = useContext(TodoContext);
+
+  const filteredTodos = useMemo(() => {
+    return todos.filter(({ completed }) => {
+      switch (filter) {
+        case FilterOption.Active:
+          return !completed;
+        case FilterOption.Completed:
+          return completed;
+        case FilterOption.All:
+        default:
+          return true;
+      }
+    });
+  }, [filter, todos]);
+
+  const activeTodos = useMemo(() => {
+    return todos.filter(({ completed }) => !completed);
+  }, [todos]);
+
+  useEffect(() => {
+    let timer: NodeJS.Timeout | undefined;
+
+    if (errorMessage) {
+      timer = setTimeout(() => {
+        setErrorMessage('');
+      }, 3000);
+    }
+
+    return () => {
+      if (timer) {
+        clearTimeout(timer);
+      }
+    };
+  }, [errorMessage]);
+
+  const onToggleAll = async () => {
+    if (activeTodos.length) {
+      activeTodos.forEach(
+        currentTodo => updateTodoHandler(currentTodo, { completed: true }),
+      );
+    } else {
+      todos.forEach(
+        currentTodo => updateTodoHandler(currentTodo, { completed: false }),
+      );
+    }
+  };
 
   return (
-    <section className="section container">
-      <p className="title is-4">
-        Copy all you need from the prev task:
-        <br />
-        <a href="https://github.com/mate-academy/react_todo-app-loading-todos#react-todo-app-load-todos">React Todo App - Load Todos</a>
-      </p>
+    <div className="todoapp">
+      <h1 className="todoapp__title">todos</h1>
 
-      <p className="subtitle">Styles are already copied</p>
-    </section>
+      <div className="todoapp__content">
+        <header className="todoapp__header">
+          {!!todos.length
+            && (
+              <button
+                type="button"
+                className={classNames(
+                  'todoapp__toggle-all',
+                  { active: !activeTodos.length },
+                )}
+                data-cy="ToggleAllButton"
+                onClick={onToggleAll}
+              />
+            )}
+
+          <Form setTempTodo={setTempTodo} />
+        </header>
+
+        {!!filteredTodos.length
+          && <TodoList todos={filteredTodos} tempTodo={tempTodo} />}
+
+        {!!todos.length
+          && (
+            <Footer
+              activeTodos={activeTodos}
+              filter={filter}
+              FilterOption={FilterOption}
+              setFilter={setFilter}
+            />
+          )}
+      </div>
+
+      <div
+        data-cy="ErrorNotification"
+        className={classNames(
+          'notification is-danger is-light has-text-weight-normal',
+          { hidden: !errorMessage },
+        )}
+      >
+        <button
+          data-cy="HideErrorButton"
+          type="button"
+          className="delete"
+          onClick={() => setErrorMessage('')}
+        />
+        {errorMessage}
+      </div>
+    </div>
   );
 };
