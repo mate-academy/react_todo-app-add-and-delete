@@ -110,6 +110,11 @@ export const App: React.FC = () => {
         setIsProsessingTodoIds((prevState) => {
           return prevState.filter(id => id !== todoId);
         });
+
+        textInputRef.current?.removeAttribute('disabled');
+        if (textInputRef.current) {
+          textInputRef.current.focus();
+        }
       });
   };
 
