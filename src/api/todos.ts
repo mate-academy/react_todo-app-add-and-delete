@@ -1,3 +1,5 @@
+/* eslint import/extensions: "off" */
+
 import { Todo } from '../types/Todo';
 import { client } from '../utils/fetchClient';
 
