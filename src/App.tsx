@@ -25,6 +25,9 @@ export const App: React.FC = () => {
   const [isProsessingTodoIds, setIsProsessingTodoIds] = useState<number[]>([]);
   const [tempTodo, setTempTodo] = useState<Todo | null>(null);
 
+  // eslint-disable-next-line no-console
+  console.log(isProsessingTodoIds);
+
   useEffect(() => {
     todoService.getTodos()
       .then(setTodos)
@@ -72,10 +75,6 @@ export const App: React.FC = () => {
       completed: false,
     });
 
-    setIsProsessingTodoIds((prevState) => {
-      return [...prevState, 0];
-    });
-
     return todoService.addTodo(todoTitle)
       .then(todo => {
         setTodos((prevState) => {
@@ -88,10 +87,6 @@ export const App: React.FC = () => {
       })
       .finally(() => {
         setTempTodo(null);
-
-        setIsProsessingTodoIds((prevState) => {
-          return prevState.filter(id => id !== tempTodo?.id);
-        });
 
         textInputRef.current?.removeAttribute('disabled');
         if (textInputRef.current) {
