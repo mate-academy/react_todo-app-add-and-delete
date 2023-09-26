@@ -31,7 +31,7 @@ export const TodosList: React.FC<Props> = ({
       {tempTodo && (
         <TodoItem
           todo={tempTodo}
-          isProcessing
+          isProcessing={isProcessing.includes(tempTodo.id)}
         />
       )}
     </section>

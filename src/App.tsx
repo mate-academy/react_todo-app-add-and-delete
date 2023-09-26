@@ -72,13 +72,16 @@ export const App: React.FC = () => {
       completed: false,
     });
 
+    setIsProsessingTodoIds((prevState) => {
+      return [...prevState, 0];
+    });
+
     return todoService.addTodo(todoTitle)
       .then(todo => {
         setTodos((prevState) => {
-          return [
-            ...prevState,
-            todo,
-          ];
+          const copyTodos = [...prevState, todo];
+
+          return copyTodos.filter(oneTodo => oneTodo.id !== tempTodo?.id);
         });
       })
       .catch(() => {
