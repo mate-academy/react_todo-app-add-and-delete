@@ -34,9 +34,6 @@ export const App: React.FC = () => {
     }
   });
 
-  // console.log();
-
-
   const timerId = useRef<number>(0);
 
   useEffect(() => {
