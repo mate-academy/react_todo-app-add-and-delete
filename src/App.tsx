@@ -3,12 +3,13 @@
 import React, { useEffect, useState } from 'react';
 import { UserWarning } from './UserWarning';
 import { Filter, Todo, ErrorMessageEnum } from './types/Todo';
-import { client } from './utils/fetchClient';
 import { Header } from './components/Header/Header';
 import { TodoList } from './components/TodoList/TodoList';
 import { Footer } from './components/Footer/Footer';
 import { ErrorBin } from './components/ErrorBin/ErrorBin';
-import { getTodos } from './api/todos';
+import {
+  addTodo, deleteTodo, getTodos, patchTodo,
+} from './api/todos';
 
 const USER_ID = 11572;
 
@@ -71,7 +72,7 @@ export const App: React.FC = () => {
 
     setEditIsLoading(true);
 
-    client.patch(url, updatedData)
+    patchTodo(url, updatedData)
       .then(() => {
 
       })
@@ -95,7 +96,7 @@ export const App: React.FC = () => {
         (todo) => {
           const url = `/todos/${todo.id}`;
 
-          client.patch(url, { completed: true })
+          patchTodo(url, { completed: true })
             .then(() => {
               setEditIsLoading(true);
             })
@@ -121,7 +122,7 @@ export const App: React.FC = () => {
   const handleDelete = (todo: Todo) => {
     const url = `/todos/${todo.id}`;
 
-    client.delete(url).then(() => {
+    deleteTodo(url).then(() => {
     })
       .catch(() => {
         setErrorMessage('');
@@ -150,7 +151,7 @@ export const App: React.FC = () => {
       handleDelete(todo);
     }
 
-    client.patch(url, updatedData)
+    patchTodo(url, updatedData)
       .then(() => {
       })
       .catch(() => {
@@ -189,9 +190,10 @@ export const App: React.FC = () => {
       completed: false,
     };
 
-    client.post('/todos', newTodo).then(() => {
-      setNewTodoTitle('');
-    })
+    addTodo(newTodo)
+      .then(() => {
+        setNewTodoTitle('');
+      })
       .catch(() => {
         setErrorMessage('');
         setErrorMessage(ErrorMessageEnum.noPostTodo);
@@ -206,15 +208,16 @@ export const App: React.FC = () => {
     todos.filter(todo => todo.completed === true).forEach(todo => {
       const url = `/todos/${todo.id}`;
 
-      return (client.delete(url).then(() => {
-      }).catch(() => {
-        setErrorMessage('');
-        setErrorMessage(ErrorMessageEnum.noDeleteTodo);
-
-        setTimeout(() => {
+      return (
+        deleteTodo(url).then(() => {
+        }).catch(() => {
           setErrorMessage('');
-        }, 3000);
-      })
+          setErrorMessage(ErrorMessageEnum.noDeleteTodo);
+
+          setTimeout(() => {
+            setErrorMessage('');
+          }, 3000);
+        })
       ).finally(() => setRefreshTodos(prev => !prev));
     });
   };
