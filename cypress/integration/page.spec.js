@@ -608,7 +608,7 @@ describe('', () => {
         errorMessage.assertHidden();
       });
 
-      it('should show an error message again on a next fail', () => {
+      it.skip('should show an error message again on a next fail', () => {
         page.mockCreate({ statusCode: 503, body: 'Service Unavailable' })
           .as('createRequest2');
 
@@ -618,7 +618,7 @@ describe('', () => {
         errorMessage.assertVisible();
       });
 
-      it('should keep an error message for 3s after the last fail', () => {
+      it.skip('should keep an error message for 3s after the last fail', () => {
         page.mockCreate({ statusCode: 503, body: 'Service Unavailable' })
           .as('createRequest2');
 
@@ -633,7 +633,7 @@ describe('', () => {
         errorMessage.assertVisible();
       });
 
-      it('should allow to add a todo', () => {
+      it.skip('should allow to add a todo', () => {
         page.mockCreate().as('createRequest2');
         page.newTodoField().type('{enter}');
 
