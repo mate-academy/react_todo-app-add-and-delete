@@ -29,10 +29,8 @@ export const App: React.FC = () => {
     todoService.getTodos()
       .then(setTodos)
       .catch(() => {
-        // eslint-disable-next-line no-console
-        console.error('error: ERROR_MESSAGES.unableToLoadTodos');
         setErrorMessage(ERROR_MESSAGES.unableToLoadTodos);
-        // throw new Error(ERROR_MESSAGES.unableToLoadTodos)
+        throw new Error(ERROR_MESSAGES.unableToLoadTodos);
       })
       .finally(() => {
         setLoadingTodos(false);
@@ -105,6 +103,7 @@ export const App: React.FC = () => {
       })
       .catch(() => {
         setErrorMessage(ERROR_MESSAGES.unableToDeleteTodo);
+        throw new Error(ERROR_MESSAGES.unableToDeleteTodo);
       })
       .finally(() => {
         setIsProsessingTodoIds((prevState) => {
