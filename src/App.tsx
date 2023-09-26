@@ -122,6 +122,14 @@ export const App: React.FC = () => {
     }
   }), [condition, todos]);
 
+  const handleClearCompletedTodos = () => {
+    todos
+      .filter(todo => todo.completed)
+      .forEach(todo => {
+        handleDeleteTodo(todo.id);
+      });
+  };
+
   return (
     <div className="todoapp">
       <h1 className="todoapp__title">todos</h1>
@@ -154,12 +162,12 @@ export const App: React.FC = () => {
           />
         )}
 
-        {/* Hide the footer if there are no todos */}
         {hasTodos && (
           <Footer
             todos={todos}
             condition={condition}
             setCondition={setCondition}
+            handleClearCompletedTodos={handleClearCompletedTodos}
           />
         )}
       </div>

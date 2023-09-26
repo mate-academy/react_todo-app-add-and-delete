@@ -18,7 +18,6 @@ export const Header: React.FC<Props> = ({
   inputDisabled,
 }) => {
   const [title, setTitle] = useState('');
-  // const [isAdding, setisAdding] = useState(false);
 
   const handleTitleChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     setTitle(event.target.value);

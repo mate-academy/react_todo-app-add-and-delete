@@ -7,9 +7,15 @@ type Props = {
   todos: Todo[];
   condition: ForComletedTodo;
   setCondition: (condition: ForComletedTodo) => void;
+  handleClearCompletedTodos: () => void;
 };
 
-export const Footer: React.FC<Props> = ({ todos, condition, setCondition }) => {
+export const Footer: React.FC<Props> = ({
+  todos,
+  condition,
+  setCondition,
+  handleClearCompletedTodos,
+}) => {
   const todosNoComleted = todos.filter(todo => !todo.completed).length;
 
   return (
@@ -23,6 +29,7 @@ export const Footer: React.FC<Props> = ({ todos, condition, setCondition }) => {
         className="todoapp__clear-completed"
         data-cy="ClearCompletedButton"
         disabled={todos.every(todo => !todo.completed)}
+        onClick={handleClearCompletedTodos}
       >
         Clear completed
       </button>
