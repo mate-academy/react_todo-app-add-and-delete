@@ -6,30 +6,37 @@ type Props = {
   onTodoAdd: (title: string) => Promise<void>;
   isAllCopleted: boolean;
   hasTodos: boolean,
-  setErrorMessage: (error: string | null) => void;
+  onTodoAddError: (error: string | null) => void;
+  inputDisabled: boolean;
 };
 
 export const Header: React.FC<Props> = ({
   onTodoAdd,
   isAllCopleted,
   hasTodos,
-  setErrorMessage,
+  onTodoAddError,
+  inputDisabled,
 }) => {
   const [title, setTitle] = useState('');
+  // const [isAdding, setisAdding] = useState(false);
 
   const handleTitleChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     setTitle(event.target.value);
-    setErrorMessage(null);
+    onTodoAddError(null);
   };
 
   const onFormSubmit = (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
 
-    if (!title.trim()) {
-      setErrorMessage('Title should not be empty');
+    const trimmedTitle = title.trim();
+
+    if (!trimmedTitle) {
+      onTodoAddError('Title should not be empty');
+
+      return;
     }
 
-    onTodoAdd(title)
+    onTodoAdd(trimmedTitle)
       .then(() => {
         setTitle('');
       });
@@ -38,10 +45,10 @@ export const Header: React.FC<Props> = ({
   const inputRef = useRef<HTMLInputElement>(null);
 
   useEffect(() => {
-    if (inputRef.current) {
+    if (!inputDisabled && inputRef.current) {
       inputRef.current.focus();
     }
-  }, []);
+  }, [inputDisabled]);
 
   return (
     <header className="todoapp__header">
@@ -66,6 +73,7 @@ export const Header: React.FC<Props> = ({
           value={title}
           onChange={handleTitleChange}
           ref={inputRef}
+          disabled={inputDisabled}
         />
       </form>
     </header>

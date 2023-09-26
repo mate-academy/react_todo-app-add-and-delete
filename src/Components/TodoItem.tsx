@@ -4,14 +4,16 @@ import { Todo } from '../types/Todo';
 
 type Props = {
   todo: Todo;
-  onTodoDelete: () => void;
-  onTodoUpdate: (todoTitle: string) => void;
+  onTodoDelete?: () => void;
+  onRenameTodo?: (todoTitle: string) => void;
+  isProcessing: boolean;
 };
 
 export const TodoItem: React.FC<Props> = ({
   todo,
-  onTodoDelete,
-  onTodoUpdate,
+  onTodoDelete = () => {},
+  onRenameTodo = () => {},
+  isProcessing,
 }) => {
   const { title, completed, id } = todo;
   const [isEditing, setIsEditing] = useState(false);
@@ -24,7 +26,7 @@ export const TodoItem: React.FC<Props> = ({
   const handleTodoSave = async (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
     if (todoTitle) {
-      await onTodoUpdate(todoTitle);
+      await onRenameTodo(todoTitle);
     } else {
       await onTodoDelete();
     }
@@ -103,7 +105,7 @@ export const TodoItem: React.FC<Props> = ({
       <div
         data-cy="TodoLoader"
         className={cn('modal overlay', {
-          'is-active': false,
+          'is-active': isProcessing,
         })}
       >
         <div className="modal-background has-background-white-ter" />

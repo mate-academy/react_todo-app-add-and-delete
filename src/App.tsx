@@ -2,10 +2,8 @@
 import React, {
   useEffect,
   useMemo,
-  useRef,
   useState,
 } from 'react';
-import cn from 'classnames';
 
 import { Todo } from './types/Todo';
 import * as todoService from './api/todos';
@@ -13,11 +11,15 @@ import { ForComletedTodo } from './types/enumFilter';
 import { TodoItem } from './Components/TodoItem';
 import { Footer } from './Components/Footer';
 import { Header } from './Components/Header';
+import { ErrorNotification } from './Components/ErrorNotification';
 
 export const App: React.FC = () => {
   const [todos, setTodos] = useState<Todo[]>([]);
   const [condition, setCondition] = useState(ForComletedTodo.All);
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
+  const [inputDisabled, setInputDisabled] = useState(false);
+  const [processingTodoIds, setProcessingTodoIds] = useState<number[]>([]);
+  const [tempTodo, setTempTodo] = useState<Todo | null>(null);
 
   const hasTodos = todos.length > 0;
 
@@ -38,31 +40,35 @@ export const App: React.FC = () => {
     fetchData();
   }, []);
 
-  const timerId = useRef<number>(0);
-
-  useEffect(() => {
-    if (timerId.current) {
-      window.clearInterval(timerId.current);
-    }
-
-    timerId.current = window.setTimeout(() => {
-      setErrorMessage('');
-    }, 3000);
-  }, [errorMessage]);
-
   const hadleAddTodo = (title: string) => {
+    setInputDisabled(true);
+
+    setTempTodo({
+      id: 0,
+      userId: 0,
+      title: title.trim(),
+      completed: false,
+    });
+
     return todoService
       .addTodo(title)
       .then((newTodo) => {
         setTodos((prevTodos) => [...prevTodos, newTodo]);
       })
-      .catch(() => {
+      .catch((error) => {
         setErrorMessage('Unable to add a todo');
-        throw new Error();
+        throw error;
+      })
+      .finally(() => {
+        setInputDisabled(false);
+        setTempTodo(null);
       });
   };
 
   const handleDeleteTodo = (todoId: number) => {
+    setInputDisabled(true);
+    setProcessingTodoIds((prevTodoIds) => [...prevTodoIds, todoId]);
+
     todoService
       .deleteTodo(todoId)
       .then((() => {
@@ -70,10 +76,18 @@ export const App: React.FC = () => {
       }))
       .catch(() => {
         setErrorMessage('Unable to delete a todo');
+      })
+      .finally(() => {
+        setInputDisabled(false);
+        setProcessingTodoIds(
+          (prevTodoIds) => prevTodoIds.filter(id => id !== todoId),
+        );
       });
   };
 
-  const handleUpdateTodo = (todo: Todo, newTodoTitle: string) => {
+  const handleRenameTodo = (todo: Todo, newTodoTitle: string) => {
+    setProcessingTodoIds((prevTodoIds) => [...prevTodoIds, todo.id]);
+
     todoService.updateTodo({
       id: todo.id,
       title: newTodoTitle,
@@ -86,6 +100,14 @@ export const App: React.FC = () => {
             ? currentTodo
             : updatedTodo
         )));
+      })
+      .catch(() => {
+        setErrorMessage('Unable to ubdate a todo');
+      })
+      .finally(() => {
+        setProcessingTodoIds(
+          (prevTodoIds) => prevTodoIds.filter(id => id !== todo.id),
+        );
       });
   };
 
@@ -106,23 +128,31 @@ export const App: React.FC = () => {
 
       <div className="todoapp__content">
         <Header
-          setErrorMessage={setErrorMessage}
+          onTodoAddError={setErrorMessage}
           isAllCopleted={isAllCopleted}
           hasTodos={hasTodos}
           onTodoAdd={hadleAddTodo}
+          inputDisabled={inputDisabled}
         />
 
         <section className="todoapp__main" data-cy="TodoList">
-          {/* This is a completed todo */}
           {filteredTodos.map(todo => (
             <TodoItem
               key={todo.id}
               todo={todo}
               onTodoDelete={() => handleDeleteTodo(todo.id)}
-              onTodoUpdate={(todoTitle) => handleUpdateTodo(todo, todoTitle)}
+              onRenameTodo={(todoTitle) => handleRenameTodo(todo, todoTitle)}
+              isProcessing={processingTodoIds.includes(todo.id)}
             />
           ))}
         </section>
+
+        {tempTodo && (
+          <TodoItem
+            todo={tempTodo}
+            isProcessing
+          />
+        )}
 
         {/* Hide the footer if there are no todos */}
         {hasTodos && (
@@ -134,33 +164,10 @@ export const App: React.FC = () => {
         )}
       </div>
 
-      <div
-        data-cy="ErrorNotification"
-        className={cn(
-          'notification',
-          'is-danger',
-          'is-light',
-          'has-text-weight-normal',
-          {
-            hidden: !errorMessage,
-          },
-        )}
-      >
-
-        <button
-          data-cy="HideErrorButton"
-          type="button"
-          className="delete"
-          onClick={() => setErrorMessage(null)}
-        />
-
-        {errorMessage}
-
-        {/*
-        Unable to delete a todo
-        <br />
-        Unable to update a todo */}
-      </div>
+      <ErrorNotification
+        setErrorMessage={setErrorMessage}
+        errorMessage={errorMessage}
+      />
     </div>
   );
 };
