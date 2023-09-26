@@ -36,7 +36,7 @@ export const Header: React.FC<Props> = ({
       currentTextInputRef.disabled = true;
     }
 
-    onTodoAdd(todoTitle)
+    onTodoAdd(trimmedTodoTitle)
       .then(() => {
         setTodoTitle('');
       })
@@ -45,7 +45,7 @@ export const Header: React.FC<Props> = ({
       })
       .finally(() => {
         if (currentTextInputRef) {
-          currentTextInputRef.disabled = true;
+          currentTextInputRef.disabled = false;
           textInputRef.current.focus();
         }
       });

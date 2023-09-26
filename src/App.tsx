@@ -64,6 +64,7 @@ export const App: React.FC = () => {
   }, [todos]);
 
   const handleAddTodo = (todoTitle: string) => {
+    setErrorMessage('');
     setTempTodo({
       id: 0,
       title: todoTitle,
@@ -71,9 +72,7 @@ export const App: React.FC = () => {
       completed: false,
     });
 
-    const trimmedTitle = todoTitle.trim();
-
-    return todoService.addTodo(trimmedTitle)
+    return todoService.addTodo(todoTitle)
       .then(todo => {
         setTodos((prevState) => {
           return [
@@ -84,13 +83,20 @@ export const App: React.FC = () => {
       })
       .catch(() => {
         setErrorMessage(ERROR_MESSAGES.unableToAddTodo);
+        throw new Error(ERROR_MESSAGES.unableToAddTodo);
       })
       .finally(() => {
         setTempTodo(null);
+
+        textInputRef.current?.removeAttribute('disabled');
+        if (textInputRef.current) {
+          textInputRef.current.focus();
+        }
       });
   };
 
   const handleDeleteTodo = (todoId: number) => {
+    setErrorMessage('');
     setIsProsessingTodoIds((prevState) => {
       return [...prevState, todoId];
     });
@@ -117,6 +123,7 @@ export const App: React.FC = () => {
   };
 
   const handleUpdateTodo = (todo: Todo, newTodoTitle: string) => {
+    setErrorMessage('');
     setIsProsessingTodoIds((prevState) => {
       return [...prevState, todo.id];
     });
@@ -151,11 +158,11 @@ export const App: React.FC = () => {
   }, [todos, selectFilter]);
 
   const handleClearCopmpletedTodo = () => {
-    const completedTodos = todos.filter(todo => todo.completed);
-
-    completedTodos.forEach(todo => {
-      handleDeleteTodo(todo.id);
-    });
+    todos
+      .filter(todo => todo.completed)
+      .forEach(todo => {
+        handleDeleteTodo(todo.id);
+      });
   };
 
   return (

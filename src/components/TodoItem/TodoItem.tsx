@@ -85,14 +85,6 @@ export const TodoItem: React.FC<Props> = ({
             className="todo__title"
           >
             {todo.title}
-            <div
-              data-cy="TodoLoader"
-              className={cn('modal overlay',
-                { 'is-active': isProcessing })}
-            >
-              <div className="modal-background has-background-white-ter" />
-              <div className="loader" />
-            </div>
           </span>
 
           <button
@@ -107,6 +99,17 @@ export const TodoItem: React.FC<Props> = ({
           </button>
         </>
       )}
+
+      <div
+        data-cy="TodoLoader"
+        className={cn(
+          'modal overlay',
+          { 'is-active': isProcessing },
+        )}
+      >
+        <div className="modal-background has-background-white-ter" />
+        <div className="loader" />
+      </div>
 
     </div>
   );
