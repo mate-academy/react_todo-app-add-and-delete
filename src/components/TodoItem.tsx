@@ -48,7 +48,7 @@ export const TodoItem: React.FC<Props> = React.memo((({
       <div
         data-cy="TodoLoader"
         className={classNames('modal overlay',
-          { 'is-active': loadingTodosIds.includes(todo.id) && isLoaderActive })}
+          { 'is-active': loadingTodosIds.includes(todo.id) || isLoaderActive })}
       >
         <div className="modal-background has-background-white-ter" />
         <div className="loader" />
