@@ -3,8 +3,8 @@ const BASE_URL = 'https://mate.academy/students-api';
 
 // returns a promise resolved after a given delay
 function wait(delay: number) {
-  return new Promise(resolve => {
-    setTimeout(resolve, delay);
+  return new Promise(res => {
+    setTimeout(res, delay);
   });
 }
 
@@ -27,7 +27,7 @@ function request<T>(
   }
 
   // we wait for testing purpose to see loaders
-  return wait(250)
+  return wait(100)
     .then(() => fetch(BASE_URL + url, options))
     .then(response => {
       if (!response.ok) {
