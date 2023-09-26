@@ -39,6 +39,9 @@ export const App: React.FC = () => {
   const [filterField, setFilterField] = useState(FilterType.All);
   const [errorMessage, setErrorMessage] = useState('');
   const [todoTitle, setTodoTitle] = useState('');
+  const [processingTodoIds, setProcessingTodoIds] = useState<number[]>([]);
+  const [tempTodo, setTempTodo] = useState<Todo | null>(null);
+  const [isTodoAdding, setIsTodoAdding] = useState(false);
 
   const activeTodosCounter = todos.filter(
     todo => todo.completed !== true,
@@ -73,6 +76,8 @@ export const App: React.FC = () => {
   }, [todos, filterField]);
 
   const handleDeleteTodo = useCallback((todoId: number) => {
+    setProcessingTodoIds((prevTodoIds) => [...prevTodoIds, todoId]);
+
     return deleteTodo(todoId)
       .then(() => {
         setTodos((prevState) => (
@@ -81,21 +86,38 @@ export const App: React.FC = () => {
       })
       .catch(() => {
         setErrorMessage('Unable to delete a todo');
+      })
+      .finally(() => {
+        setProcessingTodoIds(
+          (prevTodoIds) => prevTodoIds.filter(id => id !== todoId),
+        );
       });
   }, []);
 
   const handleAddTodo = useCallback((newTodoTitle: string) => {
+    setTempTodo({
+      id: 0,
+      title: newTodoTitle,
+      userId: 0,
+      completed: false,
+    });
+
     return addTodo(newTodoTitle.trim())
       .then((newTodo) => {
         setTodos((prevTodos) => [...prevTodos, newTodo]);
       })
-      .catch(() => {
-        setTodoTitle(todoTitle);
+      .catch((error) => {
         setErrorMessage('Unable to add a todo');
+        throw error;
+      })
+      .finally(() => {
+        setTempTodo(null);
       });
   }, []);
 
   const handleUpdateTodo = (todo: Todo, newTodoTitle: string) => {
+    setProcessingTodoIds((prevTodoIds) => [...prevTodoIds, todo.id]);
+
     updateTodo({
       id: todo.id,
       title: newTodoTitle,
@@ -108,6 +130,14 @@ export const App: React.FC = () => {
             ? currentTodo
             : updatedTodo
         )));
+      })
+      .catch(() => {
+        setErrorMessage('Unable to update a todo');
+      })
+      .finally(() => {
+        setProcessingTodoIds(
+          (prevTodoIds) => prevTodoIds.filter(id => id !== todo.id),
+        );
       });
   };
 
@@ -128,9 +158,13 @@ export const App: React.FC = () => {
       return;
     }
 
+    setIsTodoAdding(true);
     handleAddTodo(todoTitle)
       .then(() => {
         setTodoTitle('');
+      })
+      .finally(() => {
+        setIsTodoAdding(false);
       });
   };
 
@@ -144,6 +178,7 @@ export const App: React.FC = () => {
           todoTitle={todoTitle}
           onTodoTitleChange={setTodoTitle}
           onFormSubmit={handleSubmit}
+          isTodoAdding={isTodoAdding}
         />
 
         <section className="todoapp__main" data-cy="TodoList">
@@ -155,8 +190,16 @@ export const App: React.FC = () => {
               onTodoUpdate={
                 (newTodoTitle) => handleUpdateTodo(todo, newTodoTitle)
               }
+              isProcessing={processingTodoIds.includes(todo.id)}
             />
           ))}
+
+          {tempTodo && (
+            <TodoItem
+              todo={tempTodo}
+              isProcessing
+            />
+          )}
         </section>
 
         {/* Hide the footer if there are no todos */}

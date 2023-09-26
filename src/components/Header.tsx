@@ -7,6 +7,7 @@ type Props = {
   todoTitle: string;
   onTodoTitleChange: (title: string) => void;
   onFormSubmit: (event: React.FormEvent<HTMLFormElement>) => void;
+  isTodoAdding: boolean;
 };
 
 export const Header: React.FC<Props> = ({
@@ -14,6 +15,7 @@ export const Header: React.FC<Props> = ({
   todoTitle,
   onTodoTitleChange,
   onFormSubmit,
+  isTodoAdding,
 }) => {
   const titleInput = useRef<HTMLInputElement | null>(null);
 
@@ -21,7 +23,7 @@ export const Header: React.FC<Props> = ({
     if (titleInput.current) {
       titleInput.current?.focus();
     }
-  }, []);
+  }, [todos]);
 
   return (
     <header className="todoapp__header">
@@ -44,6 +46,7 @@ export const Header: React.FC<Props> = ({
           placeholder="What needs to be done?"
           value={todoTitle}
           onChange={(event) => onTodoTitleChange(event.target.value)}
+          disabled={isTodoAdding}
         />
       </form>
     </header>

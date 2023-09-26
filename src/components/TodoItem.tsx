@@ -4,14 +4,16 @@ import { Todo } from '../types/Todo';
 
 type Props = {
   todo: Todo;
-  onDeleteTodo: (todoId: number) => void;
-  onTodoUpdate: (todoTitle: string) => void;
+  onDeleteTodo?: (todoId: number) => void;
+  onTodoUpdate?: (todoTitle: string) => void;
+  isProcessing: boolean;
 };
 
 export const TodoItem: React.FC<Props> = ({
   todo,
-  onDeleteTodo,
-  onTodoUpdate,
+  onDeleteTodo = () => {},
+  onTodoUpdate = () => {},
+  isProcessing,
 }) => {
   const { title, id, completed } = todo;
 
@@ -101,7 +103,12 @@ export const TodoItem: React.FC<Props> = ({
       )}
 
       {/* overlay will cover the todo while it is being updated */}
-      <div data-cy="TodoLoader" className="modal overlay">
+      <div
+        data-cy="TodoLoader"
+        className={classNames('modal overlay', {
+          'is-active': isProcessing,
+        })}
+      >
         <div className="modal-background has-background-white-ter" />
         <div className="loader" />
       </div>
