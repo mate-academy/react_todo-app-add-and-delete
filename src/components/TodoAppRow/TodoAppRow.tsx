@@ -7,8 +7,6 @@ type Props = {
   onTodoDelete: (todoId: number) => void,
   onTodoUpdate: (todoTitle: string) => void,
   isLoading: boolean,
-  selectedTodo: Todo | null,
-  setSelectedTodo: (todo: Todo) => void
   onChangeBox: (todoId: number) => void,
 };
 
@@ -16,8 +14,6 @@ export const TodoAppRow: React.FC<Props> = ({
   todo,
   onTodoDelete,
   onTodoUpdate,
-  selectedTodo,
-  setSelectedTodo,
   isLoading,
   onChangeBox,
 }) => {
@@ -105,7 +101,6 @@ export const TodoAppRow: React.FC<Props> = ({
             data-cy="TodoDelete"
             onClick={() => {
               onTodoDelete(todo.id);
-              setSelectedTodo(todo);
             }}
 
           >
@@ -118,7 +113,7 @@ export const TodoAppRow: React.FC<Props> = ({
       <div
         data-cy="TodoLoader"
         className={cn('modal', 'overlay', {
-          'is-active': isLoading && todo.id === selectedTodo?.id,
+          'is-active': isLoading,
         })}
       >
         <div className="modal-background has-background-white-ter" />

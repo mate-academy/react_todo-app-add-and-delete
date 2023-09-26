@@ -24,7 +24,6 @@ export const App: React.FC = () => {
   const [isRequesting, setIsRequesting] = useState(false);
   const [tempTodo, setTempTodo] = useState<Todo | null>(null);
   const [loading, setLoading] = useState(false);
-  const [selectedTodo, setSelectedTodo] = useState<Todo | null>(null);
 
   useEffect(() => {
     todoService.getTodos(todoService.USER_ID)
@@ -61,8 +60,9 @@ export const App: React.FC = () => {
       .then((newTodo) => {
         setTodos((prevTodos) => [...prevTodos, newTodo]);
       })
-      .catch(() => {
+      .catch((error) => {
         setErrorMessage(ErrorMessage.Add);
+        throw error;
       })
       .finally(() => {
         setIsRequesting(false);
@@ -153,8 +153,6 @@ export const App: React.FC = () => {
                   todo={todo}
                   key={todo.id}
                   isLoading={loading}
-                  selectedTodo={selectedTodo}
-                  setSelectedTodo={setSelectedTodo}
                   onChangeBox={handleCompletedChange}
                   onTodoDelete={handleDeleteTodo}
                   onTodoUpdate={(todoTitle) => (
