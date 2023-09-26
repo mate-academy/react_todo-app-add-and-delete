@@ -79,9 +79,7 @@ export const App: React.FC = () => {
     return todoService.addTodo(todoTitle)
       .then(todo => {
         setTodos((prevState) => {
-          const copyTodos = [...prevState, todo];
-
-          return copyTodos.filter(oneTodo => oneTodo.id !== tempTodo?.id);
+          return [...prevState, todo];
         });
       })
       .catch(() => {
@@ -90,6 +88,10 @@ export const App: React.FC = () => {
       })
       .finally(() => {
         setTempTodo(null);
+
+        setIsProsessingTodoIds((prevState) => {
+          return prevState.filter(id => id !== tempTodo?.id);
+        });
 
         textInputRef.current?.removeAttribute('disabled');
         if (textInputRef.current) {
