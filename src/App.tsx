@@ -59,9 +59,9 @@ export const App: React.FC = () => {
       .then((newTodo) => {
         setTodos((prevTodos) => [...prevTodos, newTodo]);
       })
-      .catch(() => {
+      .catch((error) => {
         setErrorMessage('Unable to add a todo');
-        // throw new Error();
+        throw error;
       })
       .finally(() => {
         setIsLoading(false);
@@ -123,7 +123,6 @@ export const App: React.FC = () => {
           onTodoAddError={setErrorMessage}
           onTodoAdd={handleAddTodo}
           isLoading={isLoading}
-          errorMessage={errorMessage}
         />
         <TodoList
           todos={filteredTodos}

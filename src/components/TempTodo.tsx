@@ -1,5 +1,4 @@
 import React from 'react';
-import cn from 'classnames';
 import { Todo } from '../types/Todo';
 
 type Props = {
@@ -19,8 +18,7 @@ export const TempTodo: React.FC<Props> = ({
       <label className="todo__status-label">
         <input
           data-cy="TodoStatus"
-          type="checkbox"
-          className="todo__statu"
+          className="todo__status"
         />
       </label>
 
@@ -35,9 +33,7 @@ export const TempTodo: React.FC<Props> = ({
 
       <div
         data-cy="TodoLoader"
-        className={cn('modal overlay', {
-          'is-active': true,
-        })}
+        className="modal overlay is-active"
       >
         <div className="modal-background has-background-white-ter" />
         <div className="loader" />

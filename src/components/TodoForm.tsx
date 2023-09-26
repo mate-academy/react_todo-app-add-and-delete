@@ -6,7 +6,6 @@ type Props = {
   onTodoAdd: (todoTitle: string) => Promise<void>;
   onTodoAddError: (value: string) => void;
   isLoading: boolean;
-  errorMessage: string;
 };
 
 export const TodoForm: React.FC<Props> = ({
@@ -14,7 +13,6 @@ export const TodoForm: React.FC<Props> = ({
   onTodoAdd,
   onTodoAddError,
   isLoading,
-  errorMessage,
 }) => {
   const isTodosToShow = !!todos.length;
   const titleField = useRef<HTMLInputElement>(null);
@@ -36,9 +34,10 @@ export const TodoForm: React.FC<Props> = ({
 
     onTodoAdd(preparedTitle)
       .then(() => {
-        if (!errorMessage) {
-          setTitle('');
-        }
+        setTitle('');
+      })
+      .catch(() => {
+
       });
   };
 
