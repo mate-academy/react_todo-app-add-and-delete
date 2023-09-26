@@ -16,7 +16,7 @@ type Props = {
 
 export const TodoApp: React.FC<Props> = ({ userID }) => {
   const {
-    todos, setTodos, errorMessage, errorNotificationHandler,
+    todos, setTodos, errorNotificationHandler,
   } = useContext(TodosContext);
   const [filter, setFilter] = useState(Filter.ALL);
 
@@ -55,9 +55,7 @@ export const TodoApp: React.FC<Props> = ({ userID }) => {
 
       {/* Notification is shown in case of any error */}
       {/* Add the 'hidden' class to hide the message smoothly */}
-      {errorMessage !== ErrorMessage.NO && (
-        <Error data-cy="ErrorNotification" />
-      ) }
+      <Error />
     </div>
   );
 };

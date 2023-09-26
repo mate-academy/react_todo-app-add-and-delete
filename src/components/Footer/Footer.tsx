@@ -2,7 +2,6 @@ import classNames from 'classnames';
 import React, { useContext, useMemo } from 'react';
 // import { deleteTodo } from '../../api/todos';
 import { TodosContext } from '../../TodosContext';
-// import { ErrorMessage } from '../../types/errorMessage';
 import { Filter } from '../../types/filter';
 import { Todo } from '../../types/Todo';
 
@@ -14,7 +13,6 @@ type Props = {
 export const Footer: React.FC<Props> = ({ filter, setFilter }) => {
   const {
     todos,
-    // setTodos, errorNotificationHandler,
     deletingTodoHandler,
   } = useContext(TodosContext);
   const notCompletedTodos: Todo[] = useMemo(() => {
@@ -24,16 +22,6 @@ export const Footer: React.FC<Props> = ({ filter, setFilter }) => {
   const completedTodos: Todo[] = useMemo(() => {
     return todos.filter(todo => todo.completed === true);
   }, [todos]);
-
-  // const clearCompletedHandler = () => {
-  //   completedTodos.forEach((currTodo) => {
-  //     deleteTodo(currTodo.id)
-  //       .then(
-  //         () => setTodos(todos.filter(todo => todo.id !== currTodo.id)),
-  //       )
-  //       .catch(() => errorNotificationHandler(ErrorMessage.DELETE));
-  //   });
-  // };
 
   return (
     <footer className="todoapp__footer" data-cy="Footer">

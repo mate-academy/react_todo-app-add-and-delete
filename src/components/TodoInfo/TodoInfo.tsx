@@ -1,9 +1,7 @@
 import React, { useContext, useState } from 'react';
 import classNames from 'classnames';
 import { Todo } from '../../types/Todo';
-// import { deleteTodo } from '../../api/todos';
 import { TodosContext } from '../../TodosContext';
-// import { ErrorMessage } from '../../types/errorMessage';
 
 type Props = {
   todo: Todo;
@@ -11,21 +9,11 @@ type Props = {
 
 export const TodoInfo: React.FC<Props> = ({ todo }) => {
   const {
-    // setTodos, todos, errorNotificationHandler,
     isLoading, todosIdsUpdating, deletingTodoHandler,
   } = useContext(TodosContext);
   const [isEditing] = useState(false);
-  // const [isLoading, setIsLoading] = useState(false);
-  const [isSaving] = useState(false);
-  const [isCompleted, setIsCompleted] = useState(todo.completed);
 
-  // const onDeleteHandler = () => {
-  //   setIsLoading(true);
-  //   deleteTodo(todo.id)
-  //     .then(() => setTodos(todos.filter(currTodo => currTodo.id !== todo.id)))
-  //     .catch(() => errorNotificationHandler(ErrorMessage.DELETE))
-  //     .finally(() => setIsLoading(false));
-  // };
+  const [isSaving] = useState(false);
 
   return (
     <div
@@ -41,8 +29,7 @@ export const TodoInfo: React.FC<Props> = ({ todo }) => {
           data-cy="TodoStatus"
           type="checkbox"
           className="todo__status"
-          checked={isCompleted}
-          onChange={() => setIsCompleted(!isCompleted)}
+          checked={todo.completed}
         />
       </label>
 

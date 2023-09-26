@@ -23,12 +23,13 @@ export const Header: React.FC<Props> = () => {
 
   const inputField = useRef<HTMLInputElement>(null);
 
-  const addingTodo = (newTodo: Omit<Todo, 'id'>) => {
+  const addingTodo = (newTodo: Omit<Todo, 'id' | 'completed'>) => {
     setIsDisabled(true);
 
     const tempTodoData = {
       id: 0,
       ...newTodo,
+      completed: false,
     };
 
     setTempTodo(tempTodoData);
@@ -68,10 +69,9 @@ export const Header: React.FC<Props> = () => {
       return;
     }
 
-    const newTodo: Omit<Todo, 'id'> = {
+    const newTodo: Omit<Todo, 'id' | 'completed'> = {
       userId: userID,
       title: trimmedTitle,
-      completed: false,
     };
 
     addingTodo(newTodo);
