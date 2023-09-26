@@ -19,6 +19,8 @@ export const TodoItem: React.FC<Props> = ({
   const [isEditing, setIsEditing] = useState(false);
   const [todoTitle, setTodoTitle] = useState(todo.title);
 
+console.log(isProcessing);
+
   const handleTodoDoubleClick = () => {
     setIsEditing(true);
   };
