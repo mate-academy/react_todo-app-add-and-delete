@@ -13,6 +13,7 @@ type TodoListProps = {
   handleDoubleClick: (todo: Todo) => void;
   handleDelete: (todo: Todo) => void;
   editIsLoading: boolean;
+  isLoadingCompleteStatus: boolean;
 };
 
 export const TodoList : React.FC<TodoListProps> = ({
@@ -25,6 +26,7 @@ export const TodoList : React.FC<TodoListProps> = ({
   handleDoubleClick,
   handleDelete,
   editIsLoading,
+  isLoadingCompleteStatus,
 }) => {
   return (
     <section className="todoapp__main" data-cy="TodoList">

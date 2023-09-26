@@ -14,13 +14,14 @@ const USER_ID = 11572;
 
 export const App: React.FC = () => {
   const [todos, setTodos] = useState<Todo[]>([]);
+  const [refreshTodos, setRefreshTodos] = useState<boolean>(false);
   const [newTodoTitle, setNewTodoTitle] = useState<string>('');
   const [filter, setFilter] = useState<Filter>('All');
   const [editTodo, setEditTodo] = useState<Todo | null>(null);
   const [editTitle, setEditTitle] = useState<string>('');
   const [editIsLoading, setEditIsLoading] = useState<boolean>(false);
   const [errorMessage, setErrorMessage] = useState<string>('');
-  const [refreshTodos, setRefreshTodos] = useState<boolean>(false);
+  // const [isLoading, setIsLoading] = useState<boolean>(false);
 
   useEffect(() => {
     getTodos(USER_ID)
@@ -170,6 +171,7 @@ export const App: React.FC = () => {
 
   const handleNewTodoSubmit = (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
+
     if (!newTodoTitle.trim()) {
       setErrorMessage('');
       setErrorMessage(ErrorMessageEnum.emptyTitle);
@@ -181,10 +183,7 @@ export const App: React.FC = () => {
       return;
     }
 
-    const newTodoId: number = Date.now();
-
     const newTodo = {
-      id: newTodoId,
       userId: USER_ID,
       title: newTodoTitle.trim(),
       completed: false,

@@ -20,7 +20,7 @@ export const Header: React.FC<HeaderProps> = ({
   return (
     <header className="todoapp__header">
       {/* this buttons is active only if there are some active todos */}
-      { todos.length && (
+      { todos.length > 0 && (
         <button
           type="button"
           className={cn('todoapp__toggle-all',
