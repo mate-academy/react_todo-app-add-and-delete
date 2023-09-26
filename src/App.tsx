@@ -1,96 +1,150 @@
 /* eslint-disable jsx-a11y/control-has-associated-label */
 import React, {
-  useCallback,
-  useEffect, useMemo, useRef, useState,
+  useEffect, useState, useMemo, useRef,
 } from 'react';
 import { Todo } from './types/Todo';
-import { createTodo, deleteTodos, getTodos } from './api/todos';
 import { TodosList } from './components/TodosList/TodosList';
 import { Header } from './components/Header/Header';
 import { Footer } from './components/Footer/Footer';
-import { filteredTodos } from './helpers/filteredTodos';
-import { SortType } from './types/SortType';
 import {
   ErrorNotification,
 } from './components/ErrorNotification/ErrorNotification';
-import { ERROR_MESSAGES } from './utils/constants/ERROR_MESSAGES';
 import { Loader } from './components/Loader';
 
-const USER_ID = 11542;
-
-const TODO_BLANK = {
-  id: 0,
-  userId: USER_ID,
-  title: '',
-  completed: false,
-};
+import * as todoService from './api/todos';
+import { ERROR_MESSAGES } from './utils/constants/ERROR_MESSAGES';
+import { getFilteredTodos } from './utils/helpers/getFilteredTodos';
+import { SortType } from './types/SortType';
 
 export const App: React.FC = () => {
   const [todos, setTodos] = useState<Todo[]>([]);
+  const [loadingTodos, setLoadingTodos] = useState(true);
   const [errorMessage, setErrorMessage] = useState('');
   const [selectFilter, setSelectFilter] = useState(SortType.All);
-  const [newTodoTitle, setNewTodoTitle] = useState('');
-  const [tempTodo, setTempTodo] = useState<Todo>(TODO_BLANK);
   const textInputRef = useRef<HTMLInputElement | null>(null);
-  const [isLoadingTodos, setIsLoadingTodos] = useState(true);
-  // const [isLoadingTodo, setIsLoadingTodo] = useState(false);
+  const [isProsessingTodoIds, setIsProsessingTodoIds] = useState<number[]>([]);
+  const [tempTodo, setTempTodo] = useState<Todo | null>(null);
 
-  const deleteOneTodo = (todoId: number) => {
-    deleteTodos(todoId)
-      // eslint-disable-next-line no-console
-      .then(r => console.log(r));
-    setTodos((prevState) => prevState.filter(({ id }) => id !== todoId));
-  };
+  useEffect(() => {
+    todoService.getTodos()
+      .then(setTodos)
+      .catch(() => {
+        // eslint-disable-next-line no-console
+        console.error('error: ERROR_MESSAGES.unableToLoadTodos');
+        setErrorMessage(ERROR_MESSAGES.unableToLoadTodos);
+        // throw new Error(ERROR_MESSAGES.unableToLoadTodos)
+      })
+      .finally(() => {
+        setLoadingTodos(false);
 
-  let timerError: NodeJS.Timeout | undefined;
+        textInputRef.current?.removeAttribute('disabled');
+        if (textInputRef.current) {
+          textInputRef.current.focus();
+        }
+      });
+  }, []);
 
-  if (errorMessage) {
-    timerError = setTimeout(() => {
-      setErrorMessage('');
-    }, 3000);
-  }
+  useEffect(() => {
+    let timerError: NodeJS.Timeout | undefined;
 
-  const addTodo = useCallback((todo: Todo) => {
-    if (newTodoTitle.trim()) {
-      createTodo(todo)
-        .then(newTodo => {
-          setTodos((prevState) => {
-            return [...prevState, newTodo];
-          });
-        });
+    if (errorMessage) {
+      timerError = setTimeout(() => {
+        setErrorMessage('');
+      }, 3000);
     }
 
     return () => {
       clearTimeout(timerError);
     };
-  }, [newTodoTitle, setTodos]);
+  }, [errorMessage]);
 
   useEffect(() => {
-    getTodos(USER_ID)
-      .then((allTodos) => {
-        setTodos(allTodos);
-        if (textInputRef.current) {
-          textInputRef.current.focus();
-        }
+    textInputRef.current?.removeAttribute('disabled');
+    if (textInputRef.current) {
+      textInputRef.current.focus();
+    }
+  }, [todos]);
+
+  const handleAddTodo = (todoTitle: string) => {
+    setTempTodo({
+      id: 0,
+      title: todoTitle,
+      userId: 0,
+      completed: false,
+    });
+
+    const trimmedTitle = todoTitle.trim();
+
+    return todoService.addTodo(trimmedTitle)
+      .then(todo => {
+        setTodos((prevState) => {
+          return [
+            ...prevState,
+            todo,
+          ];
+        });
       })
-      .catch(() => setErrorMessage(ERROR_MESSAGES.unableToLoadTodos))
+      .catch(() => {
+        setErrorMessage(ERROR_MESSAGES.unableToAddTodo);
+        throw new Error(ERROR_MESSAGES.unableToAddTodo);
+      })
       .finally(() => {
-        setIsLoadingTodos(false);
-        setTempTodo(TODO_BLANK);
+        setTempTodo(null);
       });
+  };
 
-    setIsLoadingTodos(true);
-  }, []);
+  const handleDeleteTodo = (todoId: number) => {
+    setIsProsessingTodoIds((prevState) => {
+      return [...prevState, todoId];
+    });
+    todoService.deleteTodos(todoId)
+      .then(() => {
+        setTodos(prevState => {
+          return prevState.filter(({ id }) => id !== todoId);
+        });
+      })
+      .catch(() => {
+        setErrorMessage(ERROR_MESSAGES.unableToDeleteTodo);
+      })
+      .finally(() => {
+        setIsProsessingTodoIds((prevState) => {
+          return prevState.filter(id => id !== todoId);
+        });
+      });
+  };
 
-  useEffect(() => {
-    setTempTodo(prevState => ({
-      ...prevState,
+  const handleUpdateTodo = (todo: Todo, newTodoTitle: string) => {
+    setIsProsessingTodoIds((prevState) => {
+      return [...prevState, todo.id];
+    });
+
+    todoService.updateTodo({
+      id: todo.id,
       title: newTodoTitle,
-    }));
-  }, [newTodoTitle]);
+      userId: todo.userId,
+      completed: todo.completed,
+    })
+      .then(updatedTodo => {
+        setTodos(prevState => prevState.map(oneTodo => {
+          if (oneTodo.id !== updatedTodo.id) {
+            return oneTodo;
+          }
+
+          return updatedTodo;
+        }));
+      })
+      .catch(() => {
+        setErrorMessage(ERROR_MESSAGES.unableToUpdateTodo);
+      })
+      .finally(() => {
+        setIsProsessingTodoIds((prevState) => {
+          return prevState.filter(id => id !== todo.id);
+        });
+      });
+  };
 
   const preparedTodos = useMemo(() => {
-    return filteredTodos(todos, selectFilter);
+    return getFilteredTodos(todos, selectFilter);
   }, [todos, selectFilter]);
 
   return (
@@ -99,28 +153,27 @@ export const App: React.FC = () => {
 
       <div className="todoapp__content">
         <Header
-          tempTodo={tempTodo}
-          addTodo={addTodo}
-          setNewTodoTitle={setNewTodoTitle}
-          setErrorMessage={setErrorMessage}
-          newTodoTitle={newTodoTitle}
-          todos={todos}
           textInputRef={textInputRef}
+          setErrorMessage={setErrorMessage}
+          onTodoAdd={handleAddTodo}
         />
-        {isLoadingTodos ? (
-          <Loader />
-        ) : (
-          <TodosList
-            deletePost={deleteOneTodo}
-            todos={preparedTodos}
-          />
-        )}
+        {loadingTodos
+          ? (<Loader />)
+          : (
+            <TodosList
+              onTodoDelete={handleDeleteTodo}
+              todos={preparedTodos}
+              onTodoUpdate={handleUpdateTodo}
+              isProcessing={isProsessingTodoIds}
+              tempTodo={tempTodo}
+            />
+          )}
 
-        {todos.length > 0 && (
+        {!!todos.length && (
           <Footer
-            selectFilter={selectFilter}
-            setSelectFilter={setSelectFilter}
             todos={todos}
+            selectFilter={selectFilter}
+            changeSelectFilter={setSelectFilter}
           />
         )}
       </div>

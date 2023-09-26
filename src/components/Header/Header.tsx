@@ -1,70 +1,74 @@
-import cn from 'classnames';
 import React, { useState } from 'react';
-import { Todo } from '../../types/Todo';
+import cn from 'classnames';
 import { ERROR_MESSAGES } from '../../utils/constants/ERROR_MESSAGES';
 
 type Props = {
-  todos: Todo[],
-  textInputRef: React.Ref<HTMLInputElement>,
-  newTodoTitle: string,
-  setErrorMessage: (error: string) => void,
-  setNewTodoTitle: (value: string) => void,
-  addTodo: (todo: Todo) => void,
-  tempTodo: Todo,
+  onTodoAdd: (todoTitle: string) => Promise<void>,
+  setErrorMessage: (title: string) => void,
+  textInputRef: React.RefObject<HTMLInputElement>,
 };
 
 export const Header: React.FC<Props> = ({
-  addTodo,
+  onTodoAdd,
   setErrorMessage,
-  newTodoTitle,
   textInputRef,
-  todos,
-  setNewTodoTitle,
-  tempTodo,
 }) => {
-  const [isInputDisabled, setInputDisabled] = useState(false);
+  const [todoTitle, setTodoTitle] = useState('');
 
-  const visibleToogleAllButton = !!todos.length;
-  // eslint-disable-next-line no-console
-  console.log(setInputDisabled, isInputDisabled);
+  const onTitleChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+    setTodoTitle(event.target.value);
+  };
 
-  const handleInputChange = (event: React.ChangeEvent<HTMLInputElement>) => {
-    setNewTodoTitle(event.target.value);
+  const onFormSubmit = (event: React.FormEvent<HTMLFormElement>) => {
+    event.preventDefault();
+
+    const trimmedTodoTitle = todoTitle.trim();
+
+    if (!trimmedTodoTitle) {
+      setErrorMessage(ERROR_MESSAGES.titleShouldNotBeEmpty);
+
+      return;
+    }
+
+    const currentTextInputRef = textInputRef.current;
+
+    if (currentTextInputRef) {
+      currentTextInputRef.disabled = true;
+    }
+
+    onTodoAdd(todoTitle)
+      .then(() => {
+        setTodoTitle('');
+      })
+      .catch(() => {
+        setErrorMessage(ERROR_MESSAGES.unableToAddTodo);
+      })
+      .finally(() => {
+        if (currentTextInputRef) {
+          currentTextInputRef.disabled = true;
+          textInputRef.current.focus();
+        }
+      });
   };
 
   return (
     <header className="todoapp__header">
-      {/* this buttons is active only if there are some active todos */}
-      {visibleToogleAllButton && (
-        // eslint-disable-next-line jsx-a11y/control-has-associated-label
-        <button
-          type="button"
-          className={cn('todoapp__toggle-all', { active: false })}
-          data-cy="ToggleAllButton"
-        />
-      )}
+      {/* eslint-disable-next-line jsx-a11y/control-has-associated-label */}
+      <button
+        type="button"
+        className={cn('todoapp__toggle-all')}
+        data-cy="ToggleAllButton"
+      />
 
       {/* Add a todo on form submit */}
       <form
-        onSubmit={(event) => {
-          event.preventDefault();
-
-          if (newTodoTitle.trim()) {
-            const trimmedTitle = tempTodo.title.trim();
-            const preparedTodo = { ...tempTodo, title: trimmedTitle };
-
-            addTodo(preparedTodo);
-            setNewTodoTitle('');
-          } else {
-            setErrorMessage(ERROR_MESSAGES.titleShouldNotBeEmpty);
-          }
-        }}
+        onSubmit={onFormSubmit}
       >
         <input
-          // disabled={isInputDisabled}
-          value={newTodoTitle}
-          onChange={handleInputChange}
+          disabled
           ref={textInputRef}
+          value={todoTitle}
+          onChange={onTitleChange}
           data-cy="NewTodoField"
           type="text"
           className="todoapp__new-todo"

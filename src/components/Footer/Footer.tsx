@@ -5,14 +5,14 @@ import { SortType } from '../../types/SortType';
 
 type Props = {
   todos: Todo[],
-  setSelectFilter: (value: SortType) => void,
-  selectFilter: SortType,
+  changeSelectFilter: (sortType: SortType) => void,
+  selectFilter: string,
 };
 
 export const Footer: React.FC<Props> = (
   {
     todos,
-    setSelectFilter,
+    changeSelectFilter,
     selectFilter,
   },
 ) => {
@@ -37,7 +37,7 @@ export const Footer: React.FC<Props> = (
       {/* Active filter should have a 'selected' class */}
       <nav className="filter" data-cy="Filter">
         <a
-          onClick={() => setSelectFilter(SortType.All)}
+          onClick={() => changeSelectFilter(SortType.All)}
           href="#/"
           className={cn('filter__link',
             { selected: selectFilter === SortType.All })}
@@ -47,7 +47,7 @@ export const Footer: React.FC<Props> = (
         </a>
 
         <a
-          onClick={() => setSelectFilter(SortType.Active)}
+          onClick={() => changeSelectFilter(SortType.Active)}
           href="#/active"
           className={cn('filter__link',
             { selected: selectFilter === SortType.Active })}
@@ -57,7 +57,7 @@ export const Footer: React.FC<Props> = (
         </a>
 
         <a
-          onClick={() => setSelectFilter(SortType.Completed)}
+          onClick={() => changeSelectFilter(SortType.Completed)}
           href="#/completed"
           className={cn('filter__link',
             { selected: selectFilter === SortType.Completed })}
@@ -67,17 +67,14 @@ export const Footer: React.FC<Props> = (
         </a>
       </nav>
 
-      <div>
-        {clearCompleteStatusButton && (
-          <button
-            type="button"
-            className="todoapp__clear-completed"
-            data-cy="ClearCompletedButton"
-          >
-            Clear completed
-          </button>
-        )}
-      </div>
+      <button
+        disabled={!clearCompleteStatusButton}
+        type="button"
+        className={cn('todoapp__clear-completed', {})}
+        data-cy="ClearCompletedButton"
+      >
+        Clear completed
+      </button>
     </footer>
   );
 };

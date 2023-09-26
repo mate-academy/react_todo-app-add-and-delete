@@ -4,26 +4,36 @@ import { TodoItem } from '../TodoItem/TodoItem';
 
 type Props = {
   todos: Todo[],
-  deletePost: (id: number) => void,
+  onTodoDelete: (todoId: number) => void,
+  onTodoUpdate: (todo: Todo, newTodoTitle: string) => void,
+  isProcessing: number[],
+  tempTodo: Todo | null,
 };
 
 export const TodosList: React.FC<Props> = ({
   todos,
-  deletePost,
+  onTodoDelete,
+  onTodoUpdate,
+  isProcessing,
+  tempTodo,
 }) => {
   return (
     <section className="todoapp__main" data-cy="TodoList">
-      {todos.map(todo => {
-        return (
-          <React.Fragment key={todo.id}>
-            <TodoItem
-              deletePost={deletePost}
-              todo={todo}
-              key={todo.id}
-            />
-          </React.Fragment>
-        );
-      })}
+      {todos.map(todo => (
+        <TodoItem
+          key={todo.id}
+          onTodoUpdate={onTodoUpdate}
+          todo={todo}
+          onTodoDelete={onTodoDelete}
+          isProcessing={isProcessing.includes(todo.id)}
+        />
+      ))}
+      {tempTodo && (
+        <TodoItem
+          todo={tempTodo}
+          isProcessing
+        />
+      )}
     </section>
   );
 };
