@@ -8,7 +8,7 @@ import { TodoList } from './components/TodoList';
 import { getTodos, addTodo, deleteTodo } from './api/todos';
 import { ErrorMessage, Filter, Todo } from './types/Todo';
 import { TodoError } from './components/TodoError';
-import { TodoLoader } from './components/TodoLoader';
+// import { TodoLoader } from './components/TodoLoader';
 
 export const USER_ID = 11579;
 
@@ -19,6 +19,7 @@ export const App: React.FC = () => {
   const [title, setTitle] = useState('');
   const [counter, setCounter] = useState(0);
   const [isLoading, setIsLoading] = useState(true);
+  const [isTempTodoLoading, setIsTempTodoLoading] = useState(false);
   const [tempTodo, setTempTodo] = useState<Todo | null>(null);
 
   const handleError = (errorMsg: ErrorMessage) => {
@@ -84,7 +85,7 @@ export const App: React.FC = () => {
       completed: false,
     };
 
-    setIsLoading(true);
+    setIsTempTodoLoading(true);
     setTempTodo({ ...newTodo, id: 0 });
     addTodo(newTodo)
       .then(response => {
@@ -95,7 +96,7 @@ export const App: React.FC = () => {
         handleError(ErrorMessage.noAddTodo);
       })
       .finally(() => {
-        setIsLoading(false);
+        setIsTempTodoLoading(false);
         setTempTodo(null);
       });
   };
@@ -137,19 +138,19 @@ export const App: React.FC = () => {
             title={title}
             setTitle={setTitle}
             onSubmit={handleSubmit}
-            isLoading={isLoading}
+            isLoading={isTempTodoLoading}
           />
         </header>
 
-        {isLoading
-          ? <TodoLoader isActive={isLoading} />
-          : (
-            <TodoList
-              visibleTodos={visibleTodos}
-              tempTodo={tempTodo}
-              handleDelete={handleDelete}
-            />
-          )}
+        {todos.length > 0 && (
+          <TodoList
+            visibleTodos={visibleTodos}
+            tempTodo={tempTodo}
+            handleDelete={handleDelete}
+            isLoading={isLoading}
+            isTempTodoLoading={isTempTodoLoading}
+          />
+        )}
 
         {/* Hide the footer if there are no todos */}
         {todos.length > 0 && (
