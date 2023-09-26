@@ -1,3 +1,4 @@
+/* eslint-disable max-len */
 import cn from 'classnames';
 import { Todo } from '../../types/Todo';
 
@@ -7,6 +8,8 @@ type TodoItemProps = {
 };
 
 export const TodoItem: React.FC<TodoItemProps> = ({ todo, handleDelete }) => {
+  const isLoading = todo.id === 0;
+
   return (
     <div data-cy="Todo" className={cn('todo', { completed: todo.completed })}>
       <label className="todo__status-label">
@@ -32,7 +35,7 @@ export const TodoItem: React.FC<TodoItemProps> = ({ todo, handleDelete }) => {
         ×
       </button>
       {/* overlay will cover the todo while it is being updated */}
-      <div data-cy="TodoLoader" className="modal overlay">
+      <div data-cy="TodoLoader" className={cn('modal', 'overlay', { 'is-active': isLoading })}>
         <div className="modal-background has-background-white-ter" />
         <div className="loader" />
       </div>
