@@ -1,3 +1,4 @@
+/* eslint-disable jsx-a11y/no-autofocus */
 /* eslint-disable jsx-a11y/control-has-associated-label */
 import cn from 'classnames';
 import { Todo } from '../../types/Todo';
@@ -42,7 +43,7 @@ export const Header: React.FC<HeaderProps> = ({
           placeholder="What needs to be done?"
           value={newTodoTitle}
           onChange={(event) => setNewTodoTitle(event.target.value)}
-
+          autoFocus
         />
       </form>
     </header>

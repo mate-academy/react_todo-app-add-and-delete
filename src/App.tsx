@@ -10,17 +10,20 @@ import { ErrorBin } from './components/ErrorBin/ErrorBin';
 import {
   addTodo, deleteTodo, getTodos, patchTodo,
 } from './api/todos';
+import { handleError } from './handleError';
 
 const USER_ID = 11572;
 
 export const App: React.FC = () => {
   const [todos, setTodos] = useState<Todo[]>([]);
+  const [tempTodo, setTempTodo] = useState<Todo | null>(null);
+  const [isTempTodo, setIsTempTodo] = useState<boolean>(false);
   const [refreshTodos, setRefreshTodos] = useState<boolean>(false);
   const [newTodoTitle, setNewTodoTitle] = useState<string>('');
   const [filter, setFilter] = useState<Filter>('All');
   const [editTodo, setEditTodo] = useState<Todo | null>(null);
   const [editTitle, setEditTitle] = useState<string>('');
-  const [editIsLoading, setEditIsLoading] = useState<boolean>(false);
+  // const [editIsLoading, setEditIsLoading] = useState<boolean>(false);
   const [errorMessage, setErrorMessage] = useState<string>('');
   // const [isLoading, setIsLoading] = useState<boolean>(false);
 
@@ -30,12 +33,7 @@ export const App: React.FC = () => {
         setTodos(data);
       })
       .catch(() => {
-        setErrorMessage('');
-        setErrorMessage(ErrorMessageEnum.noTodos);
-
-        setTimeout(() => {
-          setErrorMessage('');
-        }, 3000);
+        handleError(setErrorMessage, ErrorMessageEnum.noTodos);
       });
   }, [refreshTodos]);
 
@@ -70,22 +68,17 @@ export const App: React.FC = () => {
     const url = `/todos/${todo.id}`;
     const updatedData = { completed: !todo.completed };
 
-    setEditIsLoading(true);
+    // setEditIsLoading(true);
 
     patchTodo(url, updatedData)
       .then(() => {
 
       })
       .catch(() => {
-        setErrorMessage('');
-        setErrorMessage(ErrorMessageEnum.noUpdateTodo);
-
-        setTimeout(() => {
-          setErrorMessage('');
-        }, 3000);
+        handleError(setErrorMessage, ErrorMessageEnum.noUpdateTodo);
       })
       .finally(() => {
-        setEditIsLoading(false);
+        // setEditIsLoading(false);
         setRefreshTodos(prev => !prev);
       });
   };
@@ -98,18 +91,13 @@ export const App: React.FC = () => {
 
           patchTodo(url, { completed: true })
             .then(() => {
-              setEditIsLoading(true);
+              // setEditIsLoading(true);
             })
             .catch(() => {
-              setErrorMessage('');
-              setErrorMessage(ErrorMessageEnum.noUpdateTodo);
-
-              setTimeout(() => {
-                setErrorMessage('');
-              }, 3000);
+              handleError(setErrorMessage, ErrorMessageEnum.noUpdateTodo);
             })
             .finally(() => {
-              setEditIsLoading(false);
+              // setEditIsLoading(false);
               setRefreshTodos(prev => !prev);
             });
         },
@@ -125,12 +113,7 @@ export const App: React.FC = () => {
     deleteTodo(url).then(() => {
     })
       .catch(() => {
-        setErrorMessage('');
-        setErrorMessage(ErrorMessageEnum.noDeleteTodo);
-
-        setTimeout(() => {
-          setErrorMessage('');
-        }, 3000);
+        handleError(setErrorMessage, ErrorMessageEnum.noDeleteTodo);
       }).finally(() => setRefreshTodos(prev => !prev));
   };
 
@@ -145,7 +128,7 @@ export const App: React.FC = () => {
     const url = `/todos/${todo.id}`;
     const updatedData = { title: editTitle.trim() };
 
-    setEditIsLoading(true);
+    // setEditIsLoading(true);
 
     if (!editTitle.trim()) {
       handleDelete(todo);
@@ -155,16 +138,11 @@ export const App: React.FC = () => {
       .then(() => {
       })
       .catch(() => {
-        setErrorMessage('');
-        setErrorMessage(ErrorMessageEnum.noUpdateTodo);
-
-        setTimeout(() => {
-          setErrorMessage('');
-        }, 3000);
+        handleError(setErrorMessage, ErrorMessageEnum.noUpdateTodo);
       })
       .finally(() => {
         setRefreshTodos(prev => !prev);
-        setEditIsLoading(false);
+        // setEditIsLoading(false);
       });
 
     setEditTodo(null);
@@ -174,12 +152,7 @@ export const App: React.FC = () => {
     event.preventDefault();
 
     if (!newTodoTitle.trim()) {
-      setErrorMessage('');
-      setErrorMessage(ErrorMessageEnum.emptyTitle);
-
-      setTimeout(() => {
-        setErrorMessage('');
-      }, 3000);
+      handleError(setErrorMessage, ErrorMessageEnum.emptyTitle);
 
       return;
     }
@@ -190,18 +163,34 @@ export const App: React.FC = () => {
       completed: false,
     };
 
+    // state setTempTodo{
+    // id === 0,
+    // ...newTodo
+    // }
+
+    const tTodo = {
+      id: 0,
+      userId: USER_ID,
+      title: newTodoTitle.trim(),
+      completed: false,
+
+    };
+
+    setTempTodo(tTodo);
+    setIsTempTodo(true);
+
     addTodo(newTodo)
       .then(() => {
         setNewTodoTitle('');
       })
       .catch(() => {
-        setErrorMessage('');
-        setErrorMessage(ErrorMessageEnum.noPostTodo);
-
-        setTimeout(() => {
-          setErrorMessage('');
-        }, 3000);
-      }).finally(() => setRefreshTodos(prev => !prev));
+        handleError(setErrorMessage, ErrorMessageEnum.noPostTodo);
+      })
+      .finally(() => {
+        setRefreshTodos(prev => !prev);
+        setTempTodo(null);
+        setIsTempTodo(false);
+      });
   };
 
   const handleClearCompleted = () => {
@@ -211,12 +200,7 @@ export const App: React.FC = () => {
       return (
         deleteTodo(url).then(() => {
         }).catch(() => {
-          setErrorMessage('');
-          setErrorMessage(ErrorMessageEnum.noDeleteTodo);
-
-          setTimeout(() => {
-            setErrorMessage('');
-          }, 3000);
+          handleError(setErrorMessage, ErrorMessageEnum.noUpdateTodo);
         })
       ).finally(() => setRefreshTodos(prev => !prev));
     });
@@ -239,13 +223,14 @@ export const App: React.FC = () => {
           <TodoList
             displayedTodos={displayedTodos}
             editTodo={editTodo}
-            editIsLoading={editIsLoading}
             editTitle={editTitle}
             handleDoubleClick={handleDoubleClick}
             handleDelete={handleDelete}
             handleCompletedStatus={handleCompletedStatus}
             handleFormSubmitEdited={handleFormSubmitEdited}
             handleEditTodo={handleEditTodo}
+            tempTodo={tempTodo}
+            isTempTodo={isTempTodo}
           />
         )}
 

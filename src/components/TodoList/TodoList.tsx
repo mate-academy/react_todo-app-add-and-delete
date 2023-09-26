@@ -1,5 +1,5 @@
-import cn from 'classnames';
 import { Todo } from '../../types/Todo';
+import { TodoItem } from '../TodoItem/TodoItem';
 
 type TodoListProps = {
   displayedTodos: () => Todo[];
@@ -12,7 +12,8 @@ type TodoListProps = {
   editTitle: string;
   handleDoubleClick: (todo: Todo) => void;
   handleDelete: (todo: Todo) => void;
-  editIsLoading: boolean;
+  tempTodo: Todo | null;
+  isTempTodo: boolean;
 };
 
 export const TodoList : React.FC<TodoListProps> = ({
@@ -24,88 +25,44 @@ export const TodoList : React.FC<TodoListProps> = ({
   editTitle,
   handleDoubleClick,
   handleDelete,
-  editIsLoading,
+  tempTodo,
+  isTempTodo,
 }) => {
   return (
     <section className="todoapp__main" data-cy="TodoList">
 
       {displayedTodos().map((todo) => {
         return (
-          <div
-            data-cy="Todo"
-            className={cn('todo', {
-              completed: todo.completed,
-            })}
+          <TodoItem
             key={todo.id}
-          >
-            <label className="todo__status-label">
-              <input
-                data-cy="TodoStatus"
-                type="checkbox"
-                className="todo__status"
-                checked={todo.completed}
-                onChange={() => handleCompletedStatus(todo)}
-              />
-            </label>
-
-            {editTodo?.id === todo.id
-              ? (
-                <form
-                  onSubmit={(event) => handleFormSubmitEdited(
-                    event, editTodo,
-                  )}
-                >
-                  <input
-                    data-cy="TodoTitleField"
-                    type="text"
-                    className="todo__title-field"
-                    placeholder="Empty todo will be deleted"
-                    value={editTitle}
-                    onChange={
-                      (event) => handleEditTodo(event)
-                    }
-                  />
-                </form>
-              )
-              : (
-                <>
-                  <span
-                    data-cy="TodoTitle"
-                    className="todo__title"
-                    onDoubleClick={() => handleDoubleClick(todo)}
-                  >
-                    {todo.title}
-                  </span>
-
-                  <button
-                    type="button"
-                    className="todo__remove"
-                    data-cy="TodoDelete"
-                    onClick={() => handleDelete(todo)}
-                  >
-                    ×
-                  </button>
-
-                  <div
-                    data-cy="TodoLoader"
-                    className={cn('modal', 'overlay', {
-                      'is-active': editIsLoading,
-                    })}
-                  >
-                    <div
-                      className="modal-background has-background-white-ter"
-                    />
-                    <div className="loader" />
-                  </div>
-                </>
-
-              )}
-
-            {/* overlay will cover the todo while it is being updated */}
-
-          </div>
+            todo={todo}
+            editTodo={editTodo}
+            editTitle={editTitle}
+            handleDoubleClick={handleDoubleClick}
+            handleDelete={handleDelete}
+            handleCompletedStatus={handleCompletedStatus}
+            handleFormSubmitEdited={handleFormSubmitEdited}
+            handleEditTodo={handleEditTodo}
+            isTempTodo={isTempTodo}
+          />
         );
       })}
+
+      {tempTodo && (
+        <TodoItem
+          todo={tempTodo}
+          editTodo={editTodo}
+          editTitle={editTitle}
+          handleDoubleClick={handleDoubleClick}
+          handleDelete={handleDelete}
+          handleCompletedStatus={handleCompletedStatus}
+          handleFormSubmitEdited={handleFormSubmitEdited}
+          handleEditTodo={handleEditTodo}
+          isTempTodo={isTempTodo}
+        />
+      )}
+
+      {/* temptodow propsach i todoitem -> map */}
     </section>
   );
 };
