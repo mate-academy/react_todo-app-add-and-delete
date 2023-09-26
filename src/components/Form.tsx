@@ -33,7 +33,7 @@ export const Form: React.FC<Props> = ({ setTempTodo }) => {
     }
   };
 
-  const handleSubmit = (event: React.FormEvent<HTMLFormElement>) => {
+  const handleSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
     setIsSubmiting(true);
     const newTitle = title.trim();
@@ -53,11 +53,17 @@ export const Form: React.FC<Props> = ({ setTempTodo }) => {
 
     setTempTodo({ id: 0, ...newTodo });
 
-    addTodoHandler(newTodo, () => {
+    try {
+      await addTodoHandler(newTodo);
+
+      setIsSubmiting(false);
+
       setTitle('');
       setTempTodo(null);
-    });
-    setIsSubmiting(false);
+    } catch (error) {
+      setIsSubmiting(false);
+      setTempTodo(null);
+    }
   };
 
   return (

@@ -8,6 +8,7 @@ import { TodoList } from './components/TodoList';
 import { TodoContext } from './components/TodoProvider';
 import { Form } from './components/Form';
 import { Todo } from './types/Todo';
+import { Footer } from './components/Footer';
 
 enum FilterOption {
   All = 'All',
@@ -16,14 +17,14 @@ enum FilterOption {
 }
 
 export const App: React.FC = () => {
-  const [filter, setFilter] = useState(FilterOption.All);
+  const [filter, setFilter] = useState<string>(FilterOption.All);
   const [tempTodo, setTempTodo] = useState<Todo | null>(null);
 
   const {
     todos,
     setErrorMessage,
     errorMessage,
-    deleteTodoHandler,
+    updateTodoHandler,
   } = useContext(TodoContext);
 
   const filteredTodos = useMemo(() => {
@@ -44,16 +45,6 @@ export const App: React.FC = () => {
     return todos.filter(({ completed }) => !completed);
   }, [todos]);
 
-  const completedTodos = useMemo(() => {
-    return todos.filter(({ completed }) => completed);
-  }, [todos]);
-
-  const handleDeleteCompletedTodos = () => {
-    completedTodos.forEach(({ id }) => {
-      deleteTodoHandler(id);
-    });
-  };
-
   useEffect(() => {
     let timer: NodeJS.Timeout | undefined;
 
@@ -70,18 +61,34 @@ export const App: React.FC = () => {
     };
   }, [errorMessage]);
 
+  const onToggleAll = async () => {
+    if (activeTodos.length) {
+      activeTodos.forEach(
+        currentTodo => updateTodoHandler(currentTodo, { completed: true }),
+      );
+    } else {
+      todos.forEach(
+        currentTodo => updateTodoHandler(currentTodo, { completed: false }),
+      );
+    }
+  };
+
   return (
     <div className="todoapp">
       <h1 className="todoapp__title">todos</h1>
 
       <div className="todoapp__content">
         <header className="todoapp__header">
-          {!!activeTodos.length
+          {!!todos.length
             && (
               <button
                 type="button"
-                className="todoapp__toggle-all active"
+                className={classNames(
+                  'todoapp__toggle-all',
+                  { active: !activeTodos.length },
+                )}
                 data-cy="ToggleAllButton"
+                onClick={onToggleAll}
               />
             )}
 
@@ -93,40 +100,12 @@ export const App: React.FC = () => {
 
         {!!todos.length
           && (
-            <footer className="todoapp__footer" data-cy="Footer">
-              <span className="todo-count" data-cy="TodosCounter">
-                {`${activeTodos.length} items left`}
-              </span>
-
-              <nav className="filter" data-cy="Filter">
-                {Object.values(FilterOption).map((option) => (
-                  <a
-                    key={option}
-                    data-cy={`FilterLink${option}`}
-                    href={`#/${option.toLowerCase()}`}
-                    className={classNames(
-                      'filter__link',
-                      { selected: option === filter },
-                    )}
-                    onClick={() => setFilter(option)}
-                  >
-                    {option}
-                  </a>
-                ))}
-              </nav>
-
-              {!!completedTodos.length
-                && (
-                  <button
-                    type="button"
-                    className="todoapp__clear-completed"
-                    data-cy="ClearCompletedButton"
-                    onClick={handleDeleteCompletedTodos}
-                  >
-                    Clear completed
-                  </button>
-                )}
-            </footer>
+            <Footer
+              activeTodos={activeTodos}
+              filter={filter}
+              FilterOption={FilterOption}
+              setFilter={setFilter}
+            />
           )}
       </div>
 
@@ -144,7 +123,6 @@ export const App: React.FC = () => {
           onClick={() => setErrorMessage('')}
         />
         {errorMessage}
-        {/* Unable to update a todo */}
       </div>
     </div>
   );
