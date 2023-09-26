@@ -7,6 +7,7 @@ type Props = {
   todos: Todo[],
   changeSelectFilter: (sortType: SortType) => void,
   selectFilter: string,
+  handleClearCopmpletedTodo: () => void,
 };
 
 export const Footer: React.FC<Props> = (
@@ -14,6 +15,7 @@ export const Footer: React.FC<Props> = (
     todos,
     changeSelectFilter,
     selectFilter,
+    handleClearCopmpletedTodo,
   },
 ) => {
   const clearCompleteStatusButton = todos.some((todo) => todo.completed);
@@ -68,6 +70,7 @@ export const Footer: React.FC<Props> = (
       </nav>
 
       <button
+        onClick={handleClearCopmpletedTodo}
         disabled={!clearCompleteStatusButton}
         type="button"
         className={cn('todoapp__clear-completed', {})}
