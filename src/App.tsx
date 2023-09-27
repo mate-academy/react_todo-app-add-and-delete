@@ -49,7 +49,6 @@ export const App: React.FC = () => {
 
   const resetAddTodoState = () => {
     setTempoTodo(null);
-    setTitle('');
     setDisableInput(false);
   };
 
@@ -74,19 +73,19 @@ export const App: React.FC = () => {
     const tempTodo = createTempTodo();
 
     setTempoTodo(tempTodo);
-
     setDisableInput(true);
 
-    setTimeout(() => {
-      todoService
-        .addTodos(tempTodo)
-        .then((newTodo) => setTodos([...todos, newTodo]))
-        .catch(() => setErrorMessage('Unable to add a todo'))
-        .finally(() => {
-          resetAddTodoState();
-          setDisableInput(false);
-        });
-    }, 500);
+    todoService
+      .addTodos(tempTodo)
+      .then((newTodo) => {
+        setTodos([...todos, newTodo]);
+        setTitle('');
+      })
+      .catch(() => setErrorMessage('Unable to add a todo'))
+      .finally(() => {
+        resetAddTodoState();
+        setDisableInput(false);
+      });
   };
 
   const deleteTodo = (todoId: number) => {
@@ -135,7 +134,7 @@ export const App: React.FC = () => {
     if (errorMessage) {
       setTimeout(() => {
         setErrorMessage('');
-      }, 2500);
+      }, 3000);
     }
   }, [errorMessage]);
 
