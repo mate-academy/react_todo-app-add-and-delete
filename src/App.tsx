@@ -70,7 +70,6 @@ export const App: React.FC = () => {
       .catch(() => {
         setErrorMessage(Error.Add);
         setValue(todoTitle);
-        console.log('hello');
       });
   }
 
