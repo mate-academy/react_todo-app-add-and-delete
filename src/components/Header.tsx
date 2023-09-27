@@ -1,6 +1,5 @@
-import {
-  useContext, useEffect, useRef,
-} from 'react';
+import { useContext, useEffect, useRef } from 'react';
+import cn from 'classnames';
 import { TodosContext } from '../context/TodoContext';
 import { ErrorType } from '../types/Errors';
 
@@ -14,12 +13,10 @@ export const Header = () => {
     USER_ID,
     disabledInput,
     setDisabledInput,
-    // setTempTodo,
-    // tempTodo,
-    // setError,
   } = useContext(TodosContext);
 
   const inputRef = useRef<HTMLInputElement | null>(null);
+  const activeTodos = todos.filter(todo => !todo.completed);
 
   useEffect(() => {
     if (inputRef.current) {
@@ -51,17 +48,16 @@ export const Header = () => {
 
   return (
     <header className="todoapp__header">
-      {/* this buttons is active only if there are some active todos */}
-      {todos.length > 0
-        && (
-          <button
-            type="button"
-            className="todoapp__toggle-all active"
-            data-cy="ToggleAllButton"
-            title="showTodos"
-            aria-label="ToggleAllButton"
-          />
-        )}
+      <button
+        type="button"
+        className={cn({
+          'todoapp__toggle-all': true,
+          active: activeTodos.length === 0,
+        })}
+        data-cy="ToggleAllButton"
+        title="showTodos"
+        aria-label="ToggleAllButton"
+      />
 
       <form onSubmit={handleFormSubmit}>
         <input

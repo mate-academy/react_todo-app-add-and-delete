@@ -7,7 +7,6 @@ type SelectedFilter = 'all' | 'active' | 'completed';
 
 type TodoContext = {
   todos: Todo[],
-  // setTodos: React.Dispatch<React.SetStateAction<Todo[]>>;
   setTodos: (todos: Todo[]) => void;
   error: string | null,
   handleCloseError: () => void;

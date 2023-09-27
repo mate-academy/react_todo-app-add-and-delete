@@ -11,8 +11,8 @@ export const Footer = () => {
     setTodos,
   }
     = useContext(TodosContext);
-  const todosLeft = todos.filter(todo => !todo.completed);
-  const todosDone = todos.filter(todo => todo.completed);
+  const todosActive = todos.filter(todo => !todo.completed);
+  const todosCompleted = todos.filter(todo => todo.completed);
 
   return (
     <div>
@@ -20,7 +20,7 @@ export const Footer = () => {
         && (
           <footer className="todoapp__footer" data-cy="Footer">
             <span className="todo-count" data-cy="TodosCounter">
-              {`${todosLeft.length} items left`}
+              {`${todosActive.length} items left`}
             </span>
             <nav className="filter" data-cy="Filter">
               <a
@@ -63,16 +63,21 @@ export const Footer = () => {
               type="button"
               className={cn({
                 'todoapp__clear-completed': true,
-                'todoapp__clear-completed--disabled': todosDone.length === 0,
+                'todoapp__clear-completed--disabled':
+                  todosCompleted.length === 0,
               })}
               data-cy="ClearCompletedButton"
-              disabled={todosDone.length === 0}
+              disabled={todosCompleted.length === 0}
               onClick={() => setTodos(todos.filter(
-                // eslint-disable-next-line array-callback-return
+
                 (todo) => {
-                  if (todo.completed === false) {
+                  if (todo.completed === true) {
                     deleteTodo(todo.id);
+
+                    return false;
                   }
+
+                  return true;
                 },
               ))}
             >

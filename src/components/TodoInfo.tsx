@@ -1,19 +1,27 @@
-import { useContext } from 'react';
+import { useContext, useState } from 'react';
 import cn from 'classnames';
 import { TodosContext } from '../context/TodoContext';
 import { Todo } from '../types/Todo';
 import { deleteTodo } from '../api/todos';
+import { ErrorType } from '../types/Errors';
 
 type TodoInfoProps = {
   todo: Todo;
 };
 
 export const TodoInfo = ({ todo }: TodoInfoProps) => {
-  const { deleteTodo: deleteTodoLocaly } = useContext(TodosContext);
+  const {
+    deleteTodo: deleteTodoLocaly,
+    handleError,
+  } = useContext(TodosContext);
+  const [isLoading, setIsLoading] = useState(false);
 
   const handleDelete = () => {
-    deleteTodo(todo.id);
-    deleteTodoLocaly(todo.id);
+    setIsLoading(true);
+    deleteTodo(todo.id)
+      .then(() => deleteTodoLocaly(todo.id))
+      .catch(() => handleError(ErrorType.Delete))
+      .finally(() => setIsLoading(false));
   };
 
   return (
@@ -36,7 +44,6 @@ export const TodoInfo = ({ todo }: TodoInfoProps) => {
 
       <span data-cy="TodoTitle" className="todo__title">
         {todo.title}
-        {/* {console.log(todo.title)} */}
       </span>
 
       <button
@@ -48,11 +55,12 @@ export const TodoInfo = ({ todo }: TodoInfoProps) => {
         ×
       </button>
 
-      {/* overlay will cover the todo while it is being updated */}
       <div
         data-cy="TodoLoader"
-        className="modal overlay"
-        // className="modal overlay is-active"
+        className={cn({
+          'modal overlay': true,
+          'is-active': isLoading,
+        })}
       >
         <div className="modal-background has-background-white-ter" />
         <div className="loader" />

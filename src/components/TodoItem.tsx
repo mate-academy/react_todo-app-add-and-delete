@@ -1,7 +1,6 @@
 import cn from 'classnames';
 import { useContext } from 'react';
 import { TodosContext } from '../context/TodoContext';
-// import { Todo } from '../types/Todo';
 
 export const TodoItem = () => {
   const { newTodoTitle } = useContext(TodosContext);
@@ -19,7 +18,6 @@ export const TodoItem = () => {
           type="checkbox"
           className="todo__status"
           title="todoInput"
-          // checked={false}
         />
       </label>
 
@@ -27,12 +25,10 @@ export const TodoItem = () => {
         {newTodoTitle}
       </span>
 
-      {/* Remove button appears only on hover */}
       <button
         type="button"
         className="todo__remove"
         data-cy="TodoDelete"
-        // onClick={handleDelete}
       >
         ×
       </button>

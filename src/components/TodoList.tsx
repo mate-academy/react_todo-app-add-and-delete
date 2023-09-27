@@ -25,7 +25,6 @@ export const TodoList = () => {
       {visibleTodos.map(todo => {
         return <TodoInfo todo={todo} key={todo.id} />;
       })}
-      {/* {console.log(tempTodo)} */}
       {tempTodo !== null && <TodoItem />}
     </section>
   );
