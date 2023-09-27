@@ -7,10 +7,8 @@ export const getTodos = (userId: number) => {
 
 type PostTodoResponse = TodoType;
 
-export const postTodo = (
-  userId: number, data: Omit<TodoType, 'id'>,
-) => {
-  return client.post<PostTodoResponse>(`/todos?userId=${userId}`, data);
+export const postTodo = (data: Omit<TodoType, 'id'>) => {
+  return client.post<PostTodoResponse>('/todos/', data);
 };
 
 export const deleteTodo = (data: TodoType) => {

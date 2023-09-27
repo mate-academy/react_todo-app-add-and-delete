@@ -38,7 +38,7 @@ export const useTodos = (userId: number) => {
       title: todo.title,
     });
 
-    postTodo(userId, {
+    postTodo({
       completed: todo.completed,
       title: todo.title,
       userId,

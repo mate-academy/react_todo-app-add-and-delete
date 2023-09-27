@@ -21,7 +21,7 @@ export const NewTodo = () => {
   }, [clearInput]);
 
   useEffect(() => {
-    if (uploading.length === 0 && todoTitle === '' && inputRef.current) {
+    if (uploading.length === 0 && inputRef.current) {
       inputRef.current.focus();
     }
   }, [uploading, todoTitle]);
