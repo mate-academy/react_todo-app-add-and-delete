@@ -1,4 +1,4 @@
-import { NewTodo, Todo } from '../types/Todo';
+import { Todo } from '../types/Todo';
 import { client } from '../utils/fetchClient';
 
 export const getTodos = (userId: number) => {
@@ -6,15 +6,15 @@ export const getTodos = (userId: number) => {
 };
 
 // Add more methods here
-export const addTodo = (newTodo: NewTodo) => {
+export const addTodo = (newTodo: Omit<Todo, 'id'>) => {
   return client.post('/todos', newTodo);
 };
 
-export const deleteTodo = (url: string) => {
-  return client.delete(url);
+export const deleteTodo = (todoId: number) => {
+  return client.delete(`/todos/${todoId}`);
 };
 
-export const patchTodo = (url: string,
-  updatedData: { title: string } | { completed: boolean }) => {
-  return client.patch(url, updatedData);
+export const patchTodo = (todoId: number,
+  updatedData: Partial<Todo>) => {
+  return client.patch(`/todos/${todoId}`, updatedData);
 };

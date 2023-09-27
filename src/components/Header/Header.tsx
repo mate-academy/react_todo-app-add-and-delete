@@ -9,6 +9,7 @@ type HeaderProps = {
   handleNewTodoSubmit: (event: React.FormEvent<HTMLFormElement>) => void;
   newTodoTitle: string;
   setNewTodoTitle: (event: string) => void;
+  tempTodo: Todo | null;
 };
 
 export const Header: React.FC<HeaderProps> = ({
@@ -17,6 +18,7 @@ export const Header: React.FC<HeaderProps> = ({
   handleNewTodoSubmit,
   newTodoTitle,
   setNewTodoTitle,
+  tempTodo,
 }) => {
   return (
     <header className="todoapp__header">
@@ -43,7 +45,9 @@ export const Header: React.FC<HeaderProps> = ({
           placeholder="What needs to be done?"
           value={newTodoTitle}
           onChange={(event) => setNewTodoTitle(event.target.value)}
+          ref={(input) => input && input.focus()}
           autoFocus
+          disabled={!!tempTodo}
         />
       </form>
     </header>

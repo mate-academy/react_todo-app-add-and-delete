@@ -3,30 +3,19 @@ import { TodoItem } from '../TodoItem/TodoItem';
 
 type TodoListProps = {
   displayedTodos: () => Todo[];
+  tempTodo: Todo | null;
   handleCompletedStatus: (todo: Todo) => void;
-  editTodo: Todo | null;
+  handleDelete: (todo: Todo) => void;
   handleFormSubmitEdited: (
     event: React.FormEvent<HTMLFormElement>,
-    editTodo: Todo) => void;
-  handleEditTodo: (event: React.ChangeEvent<HTMLInputElement>) => void;
-  editTitle: string;
-  handleDoubleClick: (todo: Todo) => void;
-  handleDelete: (todo: Todo) => void;
-  tempTodo: Todo | null;
-  isTempTodo: boolean;
-};
+    editTodo: Todo) => void; };
 
 export const TodoList : React.FC<TodoListProps> = ({
   displayedTodos,
-  handleCompletedStatus,
-  editTodo,
-  handleFormSubmitEdited,
-  handleEditTodo,
-  editTitle,
-  handleDoubleClick,
-  handleDelete,
   tempTodo,
-  isTempTodo,
+  handleCompletedStatus,
+  handleDelete,
+  handleFormSubmitEdited,
 }) => {
   return (
     <section className="todoapp__main" data-cy="TodoList">
@@ -36,14 +25,9 @@ export const TodoList : React.FC<TodoListProps> = ({
           <TodoItem
             key={todo.id}
             todo={todo}
-            editTodo={editTodo}
-            editTitle={editTitle}
-            handleDoubleClick={handleDoubleClick}
-            handleDelete={handleDelete}
             handleCompletedStatus={handleCompletedStatus}
+            handleDelete={handleDelete}
             handleFormSubmitEdited={handleFormSubmitEdited}
-            handleEditTodo={handleEditTodo}
-            isTempTodo={isTempTodo}
           />
         );
       })}
@@ -51,14 +35,9 @@ export const TodoList : React.FC<TodoListProps> = ({
       {tempTodo && (
         <TodoItem
           todo={tempTodo}
-          editTodo={editTodo}
-          editTitle={editTitle}
-          handleDoubleClick={handleDoubleClick}
-          handleDelete={handleDelete}
           handleCompletedStatus={handleCompletedStatus}
+          handleDelete={handleDelete}
           handleFormSubmitEdited={handleFormSubmitEdited}
-          handleEditTodo={handleEditTodo}
-          isTempTodo={isTempTodo}
         />
       )}
 

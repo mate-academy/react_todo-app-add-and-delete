@@ -1,31 +1,36 @@
 import cn from 'classnames';
+import { useState } from 'react';
 import { Todo } from '../../types/Todo';
 
 type TodoItemProps = {
   todo: Todo;
   handleCompletedStatus: (todo: Todo) => void;
-  editTodo: Todo | null;
+  handleDelete: (todo: Todo) => void;
   handleFormSubmitEdited: (
     event: React.FormEvent<HTMLFormElement>,
     editTodo: Todo) => void;
-  handleEditTodo: (event: React.ChangeEvent<HTMLInputElement>) => void;
-  editTitle: string;
-  handleDoubleClick: (todo: Todo) => void;
-  handleDelete: (todo: Todo) => void;
-  isTempTodo: boolean;
+
 };
 
 export const TodoItem: React.FC<TodoItemProps> = ({
   todo,
   handleCompletedStatus,
-  editTodo,
-  handleFormSubmitEdited,
-  handleEditTodo,
-  editTitle,
-  handleDoubleClick,
   handleDelete,
-  isTempTodo,
+  handleFormSubmitEdited,
 }) => {
+  const [editTodo, setEditTodo] = useState<Todo | null>(null);
+  const [editTitle, setEditTitle] = useState<string>('');
+
+  const handleDoubleClick = (chosenTodo: Todo) => {
+    setEditTodo(chosenTodo);
+    setEditTitle(chosenTodo.title);
+  };
+
+  const handleEditTodo: React.ChangeEventHandler<HTMLInputElement>
+  = (event) => {
+    setEditTitle(event.target.value);
+  };
+
   return (
     <div
       data-cy="Todo"
@@ -47,9 +52,12 @@ export const TodoItem: React.FC<TodoItemProps> = ({
       {editTodo?.id === todo.id
         ? (
           <form
-            onSubmit={(event) => handleFormSubmitEdited(
-              event, editTodo,
-            )}
+            onSubmit={(event) => {
+              handleFormSubmitEdited(
+                event, { ...editTodo, title: editTitle },
+              );
+              setEditTodo(null);
+            }}
           >
             <input
               data-cy="TodoTitleField"
@@ -70,22 +78,24 @@ export const TodoItem: React.FC<TodoItemProps> = ({
               className="todo__title"
               onDoubleClick={() => handleDoubleClick(todo)}
             >
-              {todo.title}
+              {editTitle || todo.title}
             </span>
 
-            <button
-              type="button"
-              className="todo__remove"
-              data-cy="TodoDelete"
-              onClick={() => handleDelete(todo)}
-            >
-              ×
-            </button>
+            {!editTodo && (
+              <button
+                type="button"
+                className="todo__remove"
+                data-cy="TodoDelete"
+                onClick={() => handleDelete(todo)}
+              >
+                ×
+              </button>
+            )}
 
             <div
               data-cy="TodoLoader"
               className={cn('modal', 'overlay', {
-                'is-active': isTempTodo && todo.id === 0,
+                'is-active': todo.id === 0,
               })}
             >
               <div

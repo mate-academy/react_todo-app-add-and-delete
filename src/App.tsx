@@ -10,22 +10,17 @@ import { ErrorBin } from './components/ErrorBin/ErrorBin';
 import {
   addTodo, deleteTodo, getTodos, patchTodo,
 } from './api/todos';
-import { handleError } from './handleError';
+import { handleError } from './components/ErrorBin/handleError';
 
 const USER_ID = 11572;
 
 export const App: React.FC = () => {
   const [todos, setTodos] = useState<Todo[]>([]);
   const [tempTodo, setTempTodo] = useState<Todo | null>(null);
-  const [isTempTodo, setIsTempTodo] = useState<boolean>(false);
   const [refreshTodos, setRefreshTodos] = useState<boolean>(false);
   const [newTodoTitle, setNewTodoTitle] = useState<string>('');
   const [filter, setFilter] = useState<Filter>('All');
-  const [editTodo, setEditTodo] = useState<Todo | null>(null);
-  const [editTitle, setEditTitle] = useState<string>('');
-  // const [editIsLoading, setEditIsLoading] = useState<boolean>(false);
   const [errorMessage, setErrorMessage] = useState<string>('');
-  // const [isLoading, setIsLoading] = useState<boolean>(false);
 
   useEffect(() => {
     getTodos(USER_ID)
@@ -35,7 +30,7 @@ export const App: React.FC = () => {
       .catch(() => {
         handleError(setErrorMessage, ErrorMessageEnum.noTodos);
       });
-  }, [refreshTodos]);
+  }, [USER_ID, refreshTodos]);
 
   if (!USER_ID) {
     return <UserWarning />;
@@ -59,20 +54,14 @@ export const App: React.FC = () => {
     return filteredTodos;
   };
 
-  const handleDoubleClick = (todo: Todo) => {
-    setEditTodo(todo);
-    setEditTitle(todo.title);
-  };
-
-  const handleCompletedStatus = (todo: Todo) => {
-    const url = `/todos/${todo.id}`;
-    const updatedData = { completed: !todo.completed };
+  const handleCompletedStatus = (chosenTodo: Todo) => {
+    const updatedData = { ...chosenTodo, completed: !chosenTodo.completed };
 
     // setEditIsLoading(true);
 
-    patchTodo(url, updatedData)
+    patchTodo(chosenTodo.id, updatedData)
       .then(() => {
-
+        // setTodos((current) => current.map((todo) => (todo.id === chosenTodo.id ? chosenTodo : todo)));
       })
       .catch(() => {
         handleError(setErrorMessage, ErrorMessageEnum.noUpdateTodo);
@@ -87,10 +76,9 @@ export const App: React.FC = () => {
     if (todos.some(todo => !todo.completed)) {
       todos.forEach(
         (todo) => {
-          const url = `/todos/${todo.id}`;
-
-          patchTodo(url, { completed: true })
+          patchTodo(todo.id, { completed: true })
             .then(() => {
+              // setTodos((current) => current.map((ctodo) => ({ ...ctodo, completed: true })));
               // setEditIsLoading(true);
             })
             .catch(() => {
@@ -107,45 +95,14 @@ export const App: React.FC = () => {
     }
   };
 
-  const handleDelete = (todo: Todo) => {
-    const url = `/todos/${todo.id}`;
-
-    deleteTodo(url).then(() => {
+  const handleDelete = (chosenTodo: Todo) => {
+    deleteTodo(chosenTodo.id).then(() => {
+      // setTodos((current) => current.map((ctodo) => (ctodo.id === chosenTodo.id ? chosenTodo : ctodo)));
     })
       .catch(() => {
         handleError(setErrorMessage, ErrorMessageEnum.noDeleteTodo);
-      }).finally(() => setRefreshTodos(prev => !prev));
-  };
-
-  const handleEditTodo: React.ChangeEventHandler<HTMLInputElement>
-  = (event) => {
-    setEditTitle(event.target.value);
-  };
-
-  const handleFormSubmitEdited
-  = (event: React.FormEvent<HTMLFormElement>, todo: Todo) => {
-    event.preventDefault();
-    const url = `/todos/${todo.id}`;
-    const updatedData = { title: editTitle.trim() };
-
-    // setEditIsLoading(true);
-
-    if (!editTitle.trim()) {
-      handleDelete(todo);
-    }
-
-    patchTodo(url, updatedData)
-      .then(() => {
       })
-      .catch(() => {
-        handleError(setErrorMessage, ErrorMessageEnum.noUpdateTodo);
-      })
-      .finally(() => {
-        setRefreshTodos(prev => !prev);
-        // setEditIsLoading(false);
-      });
-
-    setEditTodo(null);
+      .finally(() => setRefreshTodos(prev => !prev));
   };
 
   const handleNewTodoSubmit = (event: React.FormEvent<HTMLFormElement>) => {
@@ -163,11 +120,6 @@ export const App: React.FC = () => {
       completed: false,
     };
 
-    // state setTempTodo{
-    // id === 0,
-    // ...newTodo
-    // }
-
     const tTodo = {
       id: 0,
       userId: USER_ID,
@@ -177,33 +129,50 @@ export const App: React.FC = () => {
     };
 
     setTempTodo(tTodo);
-    setIsTempTodo(true);
 
     addTodo(newTodo)
       .then(() => {
         setNewTodoTitle('');
+        // setTodos((current) => [...current, tTodo]);
       })
       .catch(() => {
         handleError(setErrorMessage, ErrorMessageEnum.noPostTodo);
       })
+      .then(() => {
+        setRefreshTodos(prev => !prev);
+      })
+      .finally(() => {
+        setTempTodo(null);
+      });
+  };
+
+  const handleFormSubmitEdited
+  = (event: React.FormEvent<HTMLFormElement>, chosenTodo: Todo) => {
+    event.preventDefault();
+    const updatedData = { title: chosenTodo.title.trim() };
+
+    // setEditIsLoading(true);
+
+    if (!chosenTodo.title.trim()) {
+      handleDelete(chosenTodo);
+    }
+
+    patchTodo(chosenTodo.id, updatedData)
+      .then(() => {
+        setTodos((current) => current.map((ctodo) => (ctodo.id === chosenTodo.id ? chosenTodo : ctodo)));
+      })
+      .catch(() => {
+        handleError(setErrorMessage, ErrorMessageEnum.noUpdateTodo);
+      })
       .finally(() => {
         setRefreshTodos(prev => !prev);
-        setTempTodo(null);
-        setIsTempTodo(false);
+        // setEditIsLoading(false);
       });
   };
 
   const handleClearCompleted = () => {
-    todos.filter(todo => todo.completed === true).forEach(todo => {
-      const url = `/todos/${todo.id}`;
-
-      return (
-        deleteTodo(url).then(() => {
-        }).catch(() => {
-          handleError(setErrorMessage, ErrorMessageEnum.noUpdateTodo);
-        })
-      ).finally(() => setRefreshTodos(prev => !prev));
-    });
+    todos.filter(todo => todo.completed === true).forEach(todo => handleDelete(todo));
+    setRefreshTodos(prev => !prev);
   };
 
   return (
@@ -217,20 +186,16 @@ export const App: React.FC = () => {
           handleNewTodoSubmit={handleNewTodoSubmit}
           newTodoTitle={newTodoTitle}
           setNewTodoTitle={setNewTodoTitle}
+          tempTodo={tempTodo}
         />
 
         {todos.length > 0 && (
           <TodoList
             displayedTodos={displayedTodos}
-            editTodo={editTodo}
-            editTitle={editTitle}
-            handleDoubleClick={handleDoubleClick}
-            handleDelete={handleDelete}
+            tempTodo={tempTodo}
             handleCompletedStatus={handleCompletedStatus}
             handleFormSubmitEdited={handleFormSubmitEdited}
-            handleEditTodo={handleEditTodo}
-            tempTodo={tempTodo}
-            isTempTodo={isTempTodo}
+            handleDelete={handleDelete}
           />
         )}
 
@@ -241,6 +206,7 @@ export const App: React.FC = () => {
             filter={filter}
             setFilter={setFilter}
             handleClearCompleted={handleClearCompleted}
+
           />
         )}
       </div>
