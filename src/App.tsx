@@ -114,16 +114,18 @@ export const App: React.FC = () => {
       return;
     }
 
+    const trimmedTitle = newTodoTitle.trim();
+
     const newTodo = {
       userId: USER_ID,
-      title: newTodoTitle.trim(),
+      title: trimmedTitle,
       completed: false,
     };
 
     const tTodo = {
       id: 0,
       userId: USER_ID,
-      title: newTodoTitle.trim(),
+      title: trimmedTitle,
       completed: false,
 
     };
@@ -149,17 +151,17 @@ export const App: React.FC = () => {
   const handleFormSubmitEdited
   = (event: React.FormEvent<HTMLFormElement>, chosenTodo: Todo) => {
     event.preventDefault();
-    const updatedData = { title: chosenTodo.title.trim() };
+    const trimmedTitle = chosenTodo.title.trim();
+    const updatedData = { title: trimmedTitle };
 
     // setEditIsLoading(true);
 
-    if (!chosenTodo.title.trim()) {
+    if (!trimmedTitle) {
       handleDelete(chosenTodo);
     }
 
     patchTodo(chosenTodo.id, updatedData)
       .then(() => {
-        setTodos((current) => current.map((ctodo) => (ctodo.id === chosenTodo.id ? chosenTodo : ctodo)));
       })
       .catch(() => {
         handleError(setErrorMessage, ErrorMessageEnum.noUpdateTodo);
@@ -189,7 +191,7 @@ export const App: React.FC = () => {
           tempTodo={tempTodo}
         />
 
-        {todos.length > 0 && (
+        {todos && (
           <TodoList
             displayedTodos={displayedTodos}
             tempTodo={tempTodo}
@@ -200,7 +202,7 @@ export const App: React.FC = () => {
         )}
 
         {/* Hide the footer if there are no todos */}
-        {todos.length > 0 && (
+        {todos && (
           <Footer
             todos={todos}
             filter={filter}
