@@ -8,17 +8,7 @@ import { InputOfTodos } from './components/inputOfTodos';
 import { Footer } from './components/footer';
 
 export const App: React.FC = () => {
-  const [todos, setTodos] = useState<Todo[]>([
-    // Initialize with some example todos
-
-    {
-      id: 1, title: 'Example Todo 1', completed: false, removed: false,
-    },
-
-    {
-      id: 2, title: 'Example Todo 2', completed: true, removed: false,
-    },
-  ]);
+  const [todos, setTodos] = useState<Todo[]>([]);
   const [error, setError] = useState<Errors | null>(null);
   const [filterTodos, setFilterTodos] = useState<FilterOption>('All');
   const [newTodo, setNewTodo] = useState<string>(''); // State for new todo input
