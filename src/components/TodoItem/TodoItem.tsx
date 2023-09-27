@@ -9,7 +9,7 @@ type TodoItemProps = {
   handleFormSubmitEdited: (
     event: React.FormEvent<HTMLFormElement>,
     editTodo: Todo) => void;
-
+  idCompleatedArr: number[];
 };
 
 export const TodoItem: React.FC<TodoItemProps> = ({
@@ -17,6 +17,7 @@ export const TodoItem: React.FC<TodoItemProps> = ({
   handleCompletedStatus,
   handleDelete,
   handleFormSubmitEdited,
+  idCompleatedArr,
 }) => {
   const [editTodo, setEditTodo] = useState<Todo | null>(null);
   const [editTitle, setEditTitle] = useState<string>('');
@@ -95,7 +96,8 @@ export const TodoItem: React.FC<TodoItemProps> = ({
             <div
               data-cy="TodoLoader"
               className={cn('modal', 'overlay', {
-                'is-active': todo.id === 0,
+                'is-active': idCompleatedArr.includes(todo.id)
+                || (todo.id === editTodo?.id && !!editTodo),
               })}
             >
               <div

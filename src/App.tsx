@@ -21,6 +21,7 @@ export const App: React.FC = () => {
   const [newTodoTitle, setNewTodoTitle] = useState<string>('');
   const [filter, setFilter] = useState<Filter>('All');
   const [errorMessage, setErrorMessage] = useState<string>('');
+  const [idCompleatedArr, setIdCompleatedArr] = useState<number[]>([0]);
 
   useEffect(() => {
     getTodos(USER_ID)
@@ -29,7 +30,8 @@ export const App: React.FC = () => {
       })
       .catch(() => {
         handleError(setErrorMessage, ErrorMessageEnum.noTodos);
-      });
+      })
+      .finally(() => setTempTodo(null));
   }, [USER_ID, refreshTodos]);
 
   if (!USER_ID) {
@@ -58,7 +60,7 @@ export const App: React.FC = () => {
     const updatedData = { ...chosenTodo, completed: !chosenTodo.completed };
 
     // setEditIsLoading(true);
-
+    setIdCompleatedArr((prev) => [...prev, chosenTodo.id]);
     patchTodo(chosenTodo.id, updatedData)
       .then(() => {
         // setTodos((current) => current.map((todo) => (todo.id === chosenTodo.id ? chosenTodo : todo)));
@@ -68,6 +70,7 @@ export const App: React.FC = () => {
       })
       .finally(() => {
         // setEditIsLoading(false);
+        setIdCompleatedArr(idCompleatedArr.filter((todoId) => todoId !== chosenTodo.id));
         setRefreshTodos(prev => !prev);
       });
   };
@@ -136,15 +139,15 @@ export const App: React.FC = () => {
       .then(() => {
         setNewTodoTitle('');
         // setTodos((current) => [...current, tTodo]);
+        setRefreshTodos(prev => !prev);
       })
       .catch(() => {
         handleError(setErrorMessage, ErrorMessageEnum.noPostTodo);
       })
       .then(() => {
-        setRefreshTodos(prev => !prev);
       })
       .finally(() => {
-        setTempTodo(null);
+        // setTempTodo(null);
       });
   };
 
@@ -191,18 +194,19 @@ export const App: React.FC = () => {
           tempTodo={tempTodo}
         />
 
-        {todos && (
+        {todos.length > 0 && (
           <TodoList
             displayedTodos={displayedTodos}
             tempTodo={tempTodo}
             handleCompletedStatus={handleCompletedStatus}
             handleFormSubmitEdited={handleFormSubmitEdited}
             handleDelete={handleDelete}
+            idCompleatedArr={idCompleatedArr}
           />
         )}
 
         {/* Hide the footer if there are no todos */}
-        {todos && (
+        {todos.length > 0 && (
           <Footer
             todos={todos}
             filter={filter}
