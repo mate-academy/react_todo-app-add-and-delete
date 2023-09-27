@@ -65,6 +65,7 @@ export const useTodos = (userId: number) => {
       return t;
     }));
     patchTodo(todo)
+      .catch(() => addError('errorUpdateTodo'))
       .finally(() => setUploading([]));
   };
 
