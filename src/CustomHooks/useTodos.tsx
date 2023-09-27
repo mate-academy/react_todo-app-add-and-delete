@@ -1,5 +1,7 @@
 import { useEffect, useState } from 'react';
-import { deleteTodo, getTodos, postTodo } from '../api/todos';
+import {
+  deleteTodo, getTodos, patchTodo, postTodo,
+} from '../api/todos';
 import { TodoType } from '../types/Todo';
 import { useErrorsContext }
   from '../providers/ErrorsProvider/ErrorsProvider';
@@ -26,39 +28,31 @@ export const useTodos = (userId: number) => {
   };
 
   const addTodo = (todo: TodoType) => {
-    setUploading(prev => prev.concat(todo.id));
+    setUploading(prev => prev.concat(0));
     setClearInput(null);
-    setTodos(prev => [...prev, todo]);
+
+    setTempTodo({
+      id: 0,
+      userId,
+      completed: false,
+      title: todo.title,
+    });
+
     postTodo(userId, {
       completed: todo.completed,
       title: todo.title,
       userId,
     })
-      .then(response => setTodos(prev => prev.map(t => {
-        if (t.id === todo.id) {
-          return {
-            ...response,
-          };
-        }
-
-        return t;
-      })))
-      .then(() => {
-        setTempTodo({
-          id: 0,
-          userId,
-          completed: false,
-          title: 'tempTodo',
-        });
-      })
+      .then((response) => setTodos(prev => [...prev, response]))
       .then(() => setClearInput(true))
       .catch(() => {
         addError('errorUnableToAddTodo');
-        setTodos(prev => prev.filter(t => t.id !== todo.id));
-        setTempTodo(null);
         setClearInput(false);
       })
-      .finally(() => setUploading([]));
+      .finally(() => {
+        setUploading([]);
+        setTempTodo(null);
+      });
   };
 
   const editTodo = (todo: TodoType) => {
@@ -70,7 +64,8 @@ export const useTodos = (userId: number) => {
 
       return t;
     }));
-    setUploading([]);
+    patchTodo(todo)
+      .finally(() => setUploading([]));
   };
 
   const delTodo = (todo: TodoType) => {

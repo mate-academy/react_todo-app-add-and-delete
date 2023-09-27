@@ -40,6 +40,7 @@ export const Todo = ({ todo }: TodoProps) => {
         className="todo__remove"
         data-cy="TodoDelete"
         onClick={() => delTodo(todo)}
+        hidden={uploading.includes(todo.id)}
       >
         ×
       </button>
