@@ -10,6 +10,9 @@ type TodoItemProps = {
     event: React.FormEvent<HTMLFormElement>,
     editTodo: Todo) => void;
   idCompleatedArr: number[];
+  setEditTodo: (todo: Todo | null) => void;
+  editTodo: Todo | null;
+
 };
 
 export const TodoItem: React.FC<TodoItemProps> = ({
@@ -18,8 +21,9 @@ export const TodoItem: React.FC<TodoItemProps> = ({
   handleDelete,
   handleFormSubmitEdited,
   idCompleatedArr,
+  setEditTodo,
+  editTodo,
 }) => {
-  const [editTodo, setEditTodo] = useState<Todo | null>(null);
   const [editTitle, setEditTitle] = useState<string>('');
 
   const handleDoubleClick = (chosenTodo: Todo) => {
@@ -57,8 +61,8 @@ export const TodoItem: React.FC<TodoItemProps> = ({
               handleFormSubmitEdited(
                 event, { ...editTodo, title: editTitle },
               );
-              setEditTodo(null);
             }}
+
           >
             <input
               data-cy="TodoTitleField"
@@ -69,6 +73,7 @@ export const TodoItem: React.FC<TodoItemProps> = ({
               onChange={
                 (event) => handleEditTodo(event)
               }
+              ref={(input) => input && input.focus()}
             />
           </form>
         )
@@ -96,8 +101,7 @@ export const TodoItem: React.FC<TodoItemProps> = ({
             <div
               data-cy="TodoLoader"
               className={cn('modal', 'overlay', {
-                'is-active': idCompleatedArr.includes(todo.id)
-                || (todo.id === editTodo?.id && !!editTodo),
+                'is-active': idCompleatedArr.includes(todo.id),
               })}
             >
               <div

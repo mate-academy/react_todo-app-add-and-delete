@@ -10,6 +10,8 @@ type TodoListProps = {
     event: React.FormEvent<HTMLFormElement>,
     editTodo: Todo) => void;
   idCompleatedArr: number[];
+  setEditTodo: (todo: Todo | null) => void;
+  editTodo: Todo | null;
 };
 
 export const TodoList : React.FC<TodoListProps> = ({
@@ -19,6 +21,8 @@ export const TodoList : React.FC<TodoListProps> = ({
   handleDelete,
   handleFormSubmitEdited,
   idCompleatedArr,
+  setEditTodo,
+  editTodo,
 }) => {
   return (
     <section className="todoapp__main" data-cy="TodoList">
@@ -32,6 +36,8 @@ export const TodoList : React.FC<TodoListProps> = ({
             handleDelete={handleDelete}
             handleFormSubmitEdited={handleFormSubmitEdited}
             idCompleatedArr={idCompleatedArr}
+            setEditTodo={setEditTodo}
+            editTodo={editTodo}
           />
         );
       })}
@@ -43,6 +49,8 @@ export const TodoList : React.FC<TodoListProps> = ({
           handleDelete={handleDelete}
           handleFormSubmitEdited={handleFormSubmitEdited}
           idCompleatedArr={idCompleatedArr}
+          setEditTodo={setEditTodo}
+          editTodo={editTodo}
         />
       )}
 

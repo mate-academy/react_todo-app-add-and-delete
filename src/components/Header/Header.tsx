@@ -1,6 +1,7 @@
 /* eslint-disable jsx-a11y/no-autofocus */
 /* eslint-disable jsx-a11y/control-has-associated-label */
 import cn from 'classnames';
+import { useEffect, useRef } from 'react';
 import { Todo } from '../../types/Todo';
 
 type HeaderProps = {
@@ -20,6 +21,14 @@ export const Header: React.FC<HeaderProps> = ({
   setNewTodoTitle,
   tempTodo,
 }) => {
+  const inputRef = useRef<HTMLInputElement | null>(null);
+
+  useEffect(() => {
+    if (inputRef.current) {
+      inputRef.current.focus();
+    }
+  }, [tempTodo]);
+
   return (
     <header className="todoapp__header">
       {/* this buttons is active only if there are some active todos */}
@@ -45,7 +54,7 @@ export const Header: React.FC<HeaderProps> = ({
           placeholder="What needs to be done?"
           value={newTodoTitle}
           onChange={(event) => setNewTodoTitle(event.target.value)}
-          ref={(input) => input && input.focus()}
+          ref={inputRef}
           autoFocus
           disabled={!!tempTodo}
         />

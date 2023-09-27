@@ -22,6 +22,7 @@ export const App: React.FC = () => {
   const [filter, setFilter] = useState<Filter>('All');
   const [errorMessage, setErrorMessage] = useState<string>('');
   const [idCompleatedArr, setIdCompleatedArr] = useState<number[]>([0]);
+  const [editTodo, setEditTodo] = useState<Todo | null>(null);
 
   useEffect(() => {
     getTodos(USER_ID)
@@ -31,7 +32,10 @@ export const App: React.FC = () => {
       .catch(() => {
         handleError(setErrorMessage, ErrorMessageEnum.noTodos);
       })
-      .finally(() => setTempTodo(null));
+      .finally(() => {
+        setTempTodo(null);
+        setEditTodo(null);
+      });
   }, [USER_ID, refreshTodos]);
 
   if (!USER_ID) {
@@ -99,13 +103,18 @@ export const App: React.FC = () => {
   };
 
   const handleDelete = (chosenTodo: Todo) => {
+    setIdCompleatedArr((prev) => [...prev, chosenTodo.id]);
+
     deleteTodo(chosenTodo.id).then(() => {
       // setTodos((current) => current.map((ctodo) => (ctodo.id === chosenTodo.id ? chosenTodo : ctodo)));
     })
       .catch(() => {
         handleError(setErrorMessage, ErrorMessageEnum.noDeleteTodo);
       })
-      .finally(() => setRefreshTodos(prev => !prev));
+      .finally(() => {
+        setRefreshTodos(prev => !prev);
+        setIdCompleatedArr(idCompleatedArr.filter((todoId) => todoId !== chosenTodo.id));
+      });
   };
 
   const handleNewTodoSubmit = (event: React.FormEvent<HTMLFormElement>) => {
@@ -139,7 +148,6 @@ export const App: React.FC = () => {
       .then(() => {
         setNewTodoTitle('');
         // setTodos((current) => [...current, tTodo]);
-        setRefreshTodos(prev => !prev);
       })
       .catch(() => {
         handleError(setErrorMessage, ErrorMessageEnum.noPostTodo);
@@ -147,6 +155,7 @@ export const App: React.FC = () => {
       .then(() => {
       })
       .finally(() => {
+        setRefreshTodos(prev => !prev);
         // setTempTodo(null);
       });
   };
@@ -158,6 +167,7 @@ export const App: React.FC = () => {
     const updatedData = { title: trimmedTitle };
 
     // setEditIsLoading(true);
+    setIdCompleatedArr((prev) => [...prev, chosenTodo.id]);
 
     if (!trimmedTitle) {
       handleDelete(chosenTodo);
@@ -172,6 +182,7 @@ export const App: React.FC = () => {
       .finally(() => {
         setRefreshTodos(prev => !prev);
         // setEditIsLoading(false);
+        setIdCompleatedArr(idCompleatedArr.filter((todoId) => todoId !== chosenTodo.id));
       });
   };
 
@@ -202,6 +213,8 @@ export const App: React.FC = () => {
             handleFormSubmitEdited={handleFormSubmitEdited}
             handleDelete={handleDelete}
             idCompleatedArr={idCompleatedArr}
+            setEditTodo={setEditTodo}
+            editTodo={editTodo}
           />
         )}
 
