@@ -30,12 +30,13 @@ export const TodoInfo = ({ todo }: TodoInfoProps) => {
           type="checkbox"
           className="todo__status"
           title="todoInput"
-          checked={!!todo.completed}
+          checked={todo.completed}
         />
       </label>
 
       <span data-cy="TodoTitle" className="todo__title">
         {todo.title}
+        {/* {console.log(todo.title)} */}
       </span>
 
       <button

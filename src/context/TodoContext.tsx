@@ -1,12 +1,14 @@
 import React, { useEffect, useState } from 'react';
 import { Todo } from '../types/Todo';
 import { getTodos, postTodo } from '../api/todos';
+import { ErrorType } from '../types/Errors';
 
 type SelectedFilter = 'all' | 'active' | 'completed';
 
 type TodoContext = {
   todos: Todo[],
-  setTodos: React.Dispatch<React.SetStateAction<Todo[]>>;
+  // setTodos: React.Dispatch<React.SetStateAction<Todo[]>>;
+  setTodos: (todos: Todo[]) => void;
   error: string | null,
   handleCloseError: () => void;
   setNewTodoTitle: (newTodoTitle: string) => void;
@@ -14,7 +16,7 @@ type TodoContext = {
   setError: (errorName: string) => void;
   handleSelectFilter: (filterType: SelectedFilter) => void;
   selectedFilter: SelectedFilter;
-  handleError: (errorName: string) => void;
+  handleError: (errorName: ErrorType) => void;
   addTodo: (todo: Omit<Todo, 'id'>) => void;
   USER_ID: number;
   deleteTodo: (todoId: number) => void;
@@ -57,39 +59,34 @@ export const TodoProvider: React.FC<{ children: React.ReactNode }> = ({
   const [disabledInput, setDisabledInput] = useState(false);
   const USER_ID = 11526;
 
-  const handleError = (errorName: string) => {
+  const handleError = (errorName: ErrorType) => {
     setError(errorName);
-    setTimeout(() => {
-      setError(null);
-    }, 3000);
   };
 
   const handleCloseError = () => {
     setError(null);
   };
 
-  const addTodo = (todo: Omit<Todo, 'id'>) => {
-    // const { id, ...rest } = todo;
+  useEffect(() => {
+    getTodos(USER_ID)
+      .then(setTodos)
+      .catch(() => handleError(ErrorType.Load));
+  }, []);
 
+  const addTodo = (todo: Omit<Todo, 'id'>) => {
     setTempTodo({ ...todo, id: 0 });
-    postTodo(USER_ID, todo)
-      .then((resp) => {
-        setTodos(currentTodos => [resp, ...currentTodos]);
+    postTodo(todo)
+      .then((response) => {
+        setTodos(currentTodos => [response, ...currentTodos]);
         setNewTodoTitle('');
       })
       .catch(() => {
-        handleError('Unable to add a todo');
+        handleError(ErrorType.Add);
       })
       .finally(() => {
         setTempTodo(null);
         setDisabledInput(false);
       });
-    // postTodo(USER_ID, rest);
-    // setTodos(currentTodos => [todo, ...currentTodos]);
-    // handleError('Unable to add a todo');
-    // setTempTodo(null);
-    // setNewTodoTitle('');
-    // setDisabledInput(false);
   };
 
   const deleteTodo = (todoId: number) => {
@@ -99,12 +96,6 @@ export const TodoProvider: React.FC<{ children: React.ReactNode }> = ({
   const handleSelectFilter = (filterType: SelectedFilter) => {
     setSelectedFilter(filterType);
   };
-
-  useEffect(() => {
-    getTodos(USER_ID)
-      .then(setTodos)
-      .catch(() => handleError('Unable to load todos'));
-  }, []);
 
   return (
     <TodosContext.Provider value={{

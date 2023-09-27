@@ -2,6 +2,7 @@ import {
   useContext, useEffect, useRef,
 } from 'react';
 import { TodosContext } from '../context/TodoContext';
+import { ErrorType } from '../types/Errors';
 
 export const Header = () => {
   const {
@@ -24,46 +25,28 @@ export const Header = () => {
     if (inputRef.current) {
       inputRef.current.focus();
     }
-  }, []);
+  }, [todos, disabledInput]);
 
   const handleFormSubmit = (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
     setDisabledInput(true);
 
     if (newTodoTitle.trim() === '') {
-      handleError('Title should not be empty');
+      handleError(ErrorType.Empty);
       setDisabledInput(false);
 
       return;
     }
 
-    const todo = {
-      title: newTodoTitle.trim(),
+    setNewTodoTitle(newTodoTitle.trim());
+
+    const newTodo = {
+      title: newTodoTitle,
       completed: false,
       userId: USER_ID,
-      // id: Math.ceil(Math.random() * 10000),
-      // id: 0,
     };
 
-    addTodo(todo);
-
-    // setTempTodo(todo);
-    // console.log(todo);
-
-    // Promise.resolve(addTodo(todo))
-    //   .then(() => {
-    //     setNewTodoTitle('');
-    //   })
-    //   .catch(() => {
-    //     setError('Unable to add a todo');
-    //   })
-    //   .finally(() => {
-    //     setDisabledInput(false);
-    //     setTempTodo(null);
-    //   });
-    // setNewTodoTitle('');
-    // setDisabledInput(false);
-    // setTempTodo(null);
+    addTodo(newTodo);
   };
 
   return (
@@ -80,7 +63,6 @@ export const Header = () => {
           />
         )}
 
-      {/* Add a todo on form submit */}
       <form onSubmit={handleFormSubmit}>
         <input
           ref={inputRef}

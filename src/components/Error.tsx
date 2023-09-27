@@ -1,21 +1,20 @@
-import { useContext } from 'react';
+import { useContext, useEffect } from 'react';
 import cn from 'classnames';
 import { TodosContext } from '../context/TodoContext';
-
-// enum ErrorMessages {
-//   'Unable to load todos',
-//   'Title should not be empty',
-//   'Unable to add a todo',
-//   'Unable to delete a todo',
-//   'Unable to update a todo',
-// }
+import { ErrorType } from '../types/Errors';
 
 export const Error = () => {
-  const { handleCloseError, error } = useContext(TodosContext);
+  const { handleCloseError, error, setError } = useContext(TodosContext);
 
   const handleButtonClick = () => {
     handleCloseError();
   };
+
+  useEffect(() => {
+    setTimeout(() => {
+      setError(ErrorType.None);
+    }, 3000);
+  }, [error, setError]);
 
   return (
     <div

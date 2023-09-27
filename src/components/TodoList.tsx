@@ -1,4 +1,4 @@
-import { useContext } from 'react';
+import { useContext, useMemo } from 'react';
 import { TodoInfo } from './TodoInfo';
 import { TodosContext } from '../context/TodoContext';
 import { TodoItem } from './TodoItem';
@@ -6,17 +6,19 @@ import { TodoItem } from './TodoItem';
 export const TodoList = () => {
   const { todos, selectedFilter, tempTodo } = useContext(TodosContext);
 
-  const visibleTodos = todos.filter((todo) => {
-    if (selectedFilter === 'completed') {
-      return todo.completed;
-    }
+  const visibleTodos = useMemo(() => {
+    return todos.filter((todo) => {
+      if (selectedFilter === 'completed') {
+        return todo.completed;
+      }
 
-    if (selectedFilter === 'active') {
-      return !todo.completed;
-    }
+      if (selectedFilter === 'active') {
+        return !todo.completed;
+      }
 
-    return true;
-  });
+      return true;
+    });
+  }, [todos, selectedFilter]);
 
   return (
     <section className="todoapp__main" data-cy="TodoList">
