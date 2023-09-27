@@ -1,12 +1,10 @@
-import { useContext } from 'react';
-import { ErrorsContext } from '../../providers/ErrorsProvider/ErrorsProvider';
+import cn from 'classnames';
+import { useErrorsContext }
+  from '../../providers/ErrorsProvider/ErrorsProvider';
 
 /* eslint-disable jsx-a11y/control-has-associated-label */
 export const Errors = () => {
-  const contextErrors = useContext(ErrorsContext);
-
-  const { errors, clearErrors } = contextErrors;
-
+  const { errors, clearErrors } = useErrorsContext();
   const {
     errorEmptyTitle,
     errorLoadingTodos,
@@ -15,14 +13,12 @@ export const Errors = () => {
     errorUpdateTodo,
   } = errors;
 
-  if (Object.values(errors).every(error => error === false)) {
-    return null;
-  }
-
   return (
     <div
       data-cy="ErrorNotification"
-      className="notification is-danger is-light has-text-weight-normal"
+      className={cn('notification is-danger is-light has-text-weight-normal', {
+        hidden: Object.values(errors).every(error => error === false),
+      })}
     >
       <button
         data-cy="HideErrorButton"
@@ -31,6 +27,7 @@ export const Errors = () => {
         onClick={clearErrors}
       />
       {/* show only one message at a time */}
+
       {errorLoadingTodos && (
         <>
           Unable to load todos
@@ -58,8 +55,7 @@ export const Errors = () => {
           <br />
         </>
       )}
-
-      {errorUpdateTodo && 'Unable to update a todo'}
+      {errorUpdateTodo && <>Unable to update a todo</>}
     </div>
   );
 };

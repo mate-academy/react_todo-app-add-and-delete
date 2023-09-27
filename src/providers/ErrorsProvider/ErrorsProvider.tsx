@@ -1,61 +1,33 @@
 import {
-  PropsWithChildren, createContext, useState,
+  createContext, useContext,
 } from 'react';
-import { Errors } from '../../types/Errors';
+import { useErrors } from '../../CustomHooks/useErrors';
 
-export type AddError = (err: keyof Errors) => void;
-
-export type ErrorsContextType = {
-  addError: AddError,
-  errors: Errors,
-  clearErrors: () => void,
-};
+type ErrorsContextType = ReturnType<typeof useErrors>;
 
 export const ErrorsContext
 = createContext<ErrorsContextType | undefined>(undefined);
 
-export const ErrorsProvider = ({ children }: PropsWithChildren) => {
-  const [errors, setErrors] = useState<Errors>({
-    errorLoadingTodos: false,
-    errorEmptyTitle: false,
-    errorUnableToAddTodo: false,
-    errorUnableToDeleteTodo: false,
-    errorUpdateTodo: false,
-  });
+type ErrorsProviderProps = {
+  children: React.ReactNode
+};
 
-  const addError: AddError = (err: keyof Errors) => {
-    setErrors(prevErrors => ({
-      ...prevErrors,
-      [err]: true,
-    }));
-    setTimeout(() => {
-      setErrors({
-        errorLoadingTodos: false,
-        errorEmptyTitle: false,
-        errorUnableToAddTodo: false,
-        errorUnableToDeleteTodo: false,
-        errorUpdateTodo: false,
-      });
-    }, 3000);
-  };
+export const ErrorsProvider = ({ children }: ErrorsProviderProps) => {
+  const { ...args } = useErrors();
 
-  const clearErrors = () => {
-    setErrors({
-      errorLoadingTodos: false,
-      errorEmptyTitle: false,
-      errorUnableToAddTodo: false,
-      errorUnableToDeleteTodo: false,
-      errorUpdateTodo: false,
-    });
-  };
+  return (
+    <ErrorsContext.Provider value={{ ...args }}>
+      {children}
+    </ErrorsContext.Provider>
+  );
+};
 
-  if (ErrorsContext) {
-    return (
-      <ErrorsContext.Provider value={{ addError, errors, clearErrors }}>
-        {children}
-      </ErrorsContext.Provider>
-    );
+export const useErrorsContext = () => {
+  const contextValues = useContext(ErrorsContext);
+
+  if (!contextValues) {
+    throw new Error('ErrorsContext must be in ErrorsProvider');
   }
 
-  return null;
+  return contextValues;
 };

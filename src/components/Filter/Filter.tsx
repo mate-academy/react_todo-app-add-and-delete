@@ -1,15 +1,21 @@
-import { useContext } from 'react';
 import cn from 'classnames';
-import { TodosContext } from '../../providers/TodosProvider/TodosProvider';
+import { useEffect, useState } from 'react';
+import { useTodosContext } from '../../providers/TodosProvider/TodosProvider';
 
 export const Filter = () => {
-  const todosContext = useContext(TodosContext);
+  const {
+    todos, handleFilter, filter, delTodo, uploading,
+  } = useTodosContext();
+  const [counter, setCounter]
 
-  if (!todosContext) {
-    return null;
-  }
+  = useState<number>(todos.filter(todo => todo.completed === false).length);
 
-  const { todos, handleFilter, filter } = todosContext;
+  useEffect(() => {
+    // Only update the counter when there's no ongoing upload operation.
+    if (uploading.length === 0) {
+      setCounter(todos.filter(todo => !todo.completed).length);
+    }
+  }, [todos, uploading]);
 
   if (todos.length === 0) {
     return null;
@@ -18,7 +24,7 @@ export const Filter = () => {
   return (
     <footer className="todoapp__footer" data-cy="Footer">
       <span className="todo-count" data-cy="TodosCounter">
-        {`${todos.filter(todo => todo.completed === false).length} items left`}
+        {`${counter} items left`}
       </span>
 
       {/* Active filter should have a 'selected' class */}
@@ -63,10 +69,13 @@ export const Filter = () => {
         type="button"
         className="todoapp__clear-completed"
         data-cy="ClearCompletedButton"
-        disabled={!todos.every(todo => todo.completed === false)}
         style={todos.every(todo => todo.completed === false)
           ? { visibility: 'hidden' }
           : {}}
+        onClick={() => {
+          todos.filter(todo => todo.completed === true)
+            .forEach(completed => delTodo(completed));
+        }}
       >
         Clear completed
       </button>

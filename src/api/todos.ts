@@ -5,13 +5,20 @@ export const getTodos = (userId: number) => {
   return client.get<TodoType[]>(`/todos?userId=${userId}`);
 };
 
-export const addTodo = (userId: number, data: Partial<TodoType>) => {
-  return client.post(`/todos?userId=${userId}`, data);
+type PostTodoResponse = TodoType;
+
+export const postTodo = (
+  userId: number, data: Omit<TodoType, 'id'>,
+) => {
+  return client.post<PostTodoResponse>(`/todos?userId=${userId}`, data);
 };
 
-export const delTodo = (data: TodoType) => {
+export const deleteTodo = (data: TodoType) => {
   return client.delete(`/todos/${data.id}/`);
 };
 
-// Add more methods here
-// https://mate.academy/students-api/todos?userId=11524
+export const patchTodo = (data: TodoType, value: Partial<TodoType>) => {
+  return client.patch(`/todos/${data.id}/`, {
+    ...value,
+  });
+};
