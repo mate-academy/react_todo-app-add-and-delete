@@ -39,6 +39,7 @@ export const TempoTodoItem: React.FC<Props> = ({ tempoTodo }) => (
       className="modal overlay is-active"
     >
       <div className="modal-background has-background-white-ter" />
+
       <div className="loader" />
     </div>
   </div>
