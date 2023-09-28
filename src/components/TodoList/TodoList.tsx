@@ -1,12 +1,14 @@
 import React from 'react';
 import classNames from 'classnames';
 import { Todo } from '../../types/Todo';
+import { TodoStatus } from '../../types/TodoStatus';
 
 type TodoListProps = {
   todos: Todo[];
   onDeleteTodo: (todoId: number) => void;
   onToggleCompleted: (todoId: number, completed: boolean) => void;
   isLoading: boolean;
+  todoStatus: TodoStatus;
 };
 
 export const TodoList: React.FC<TodoListProps> = ({
@@ -14,6 +16,7 @@ export const TodoList: React.FC<TodoListProps> = ({
   onDeleteTodo,
   onToggleCompleted,
   isLoading,
+  todoStatus,
 }) => {
   return (
     <section className="todoapp__main" data-cy="TodoList">
@@ -22,6 +25,7 @@ export const TodoList: React.FC<TodoListProps> = ({
           data-cy="Todo"
           className={classNames('todo', {
             completed: todo.completed,
+            active: !todo.completed && todoStatus === TodoStatus.Active,
           })}
           key={todo.id}
         >

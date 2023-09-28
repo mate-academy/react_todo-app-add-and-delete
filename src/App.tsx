@@ -146,18 +146,32 @@ export const App: React.FC = () => {
       });
   };
 
+  const handleToggleAll = () => {
+    const allCompleted = todos.every((todo) => todo.completed);
+
+    const updatedTodos = todos.map((todo) => ({
+      ...todo,
+      completed: !allCompleted,
+    }));
+
+    setTodos(updatedTodos);
+  };
+
   return (
     <div className="todoapp">
       <h1 className="todoapp__title">todos</h1>
 
       <div className="todoapp__content">
         <header className="todoapp__header">
-          {activeTodos.length > 0 && (
+          {todos.length > 0 && (
             // eslint-disable-next-line jsx-a11y/control-has-associated-label
             <button
               type="button"
               data-cy="ToggleAllButton"
-              className="todoapp__toggle-all active"
+              className={classNames('todoapp__toggle-all', {
+                active: activeTodos.length === 0,
+              })}
+              onClick={handleToggleAll}
             />
           )}
 
@@ -189,6 +203,7 @@ export const App: React.FC = () => {
           onDeleteTodo={handleDeleteTodo}
           onToggleCompleted={handleToggleCompleted}
           isLoading={isLoading}
+          todoStatus={todoStatus}
         />
         {todos.length > 0 && (
           <footer className="todoapp__footer" data-cy="Footer">
