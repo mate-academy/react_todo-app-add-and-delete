@@ -6,11 +6,7 @@ import { TodosContext } from '../../TodosContext';
 import { ErrorMessage } from '../../types/errorMessage';
 import { Todo } from '../../types/Todo';
 
-type Props = {
-
-};
-
-export const Header: React.FC<Props> = () => {
+export const Header: React.FC = () => {
   const {
     todos, setTodos, errorNotificationHandler, userID, setTempTodo,
     setTodosIdsUpdating,
