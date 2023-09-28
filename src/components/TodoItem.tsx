@@ -8,8 +8,8 @@ type TodoItemProps = {
 };
 
 export const TodoItem: React.FC<TodoItemProps> = (
-  { todo, handleDeleteTodo, isLoading  }
-  ) => {
+  { todo, handleDeleteTodo, isLoading },
+) => {
   return (
     <div
       data-cy="Todo"
@@ -33,16 +33,17 @@ export const TodoItem: React.FC<TodoItemProps> = (
       </span>
 
       <button
-      type="button"
-      className="todo__remove"
-      data-cy="TodoDelete"
-      onClick={() => !isLoading  && handleDeleteTodo(todo.id)}
+        type="button"
+        className="todo__remove"
+        data-cy="TodoDelete"
+        onClick={() => !isLoading && handleDeleteTodo(todo.id)}
       >
         ×
       </button>
 
-      <div data-cy="TodoLoader"
-       className={cn('modal overlay', { 'is-active': isLoading })}
+      <div
+        data-cy="TodoLoader"
+        className={cn('modal overlay', { 'is-active': isLoading })}
       >
         <div className="modal-background has-background-white-ter" />
         <div className="loader" />

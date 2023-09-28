@@ -1,6 +1,6 @@
-import React from "react";
-import { Todo } from "../types/Todo";
-import { TodoItem } from "./TodoItem";
+import React from 'react';
+import { Todo } from '../types/Todo';
+import { TodoItem } from './TodoItem';
 
 type TodoListProps = {
   visibleTodos: Todo[];
@@ -18,7 +18,6 @@ export const TodoList: React.FC<TodoListProps> = ({
   isCurrentLoading,
 
 }) => {
-
   return (
     <section className="todoapp__main" data-cy="TodoList">
       {visibleTodos.map((todo) => (

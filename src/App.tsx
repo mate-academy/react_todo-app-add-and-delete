@@ -1,3 +1,5 @@
+/* eslint-disable jsx-a11y/control-has-associated-label */
+
 import React, { useEffect, useState } from 'react';
 import cn from 'classnames';
 import { UserWarning } from './UserWarning';
@@ -44,6 +46,7 @@ export const App: React.FC = () => {
 
   useEffect(() => {
     const activeTodos = todos.filter((todo) => !todo.completed);
+
     setCounter(activeTodos.length);
   }, [todos]);
 
@@ -52,9 +55,11 @@ export const App: React.FC = () => {
       if (filter === 'active' && todo.completed) {
         return false;
       }
+
       if (filter === 'completed' && !todo.completed) {
         return false;
       }
+
       return true;
     });
   };
@@ -65,6 +70,7 @@ export const App: React.FC = () => {
     event.preventDefault();
     if (title.trim() === '') {
       handleError(Errors.requiredTitle);
+
       return;
     }
 
@@ -79,9 +85,10 @@ export const App: React.FC = () => {
 
     try {
       const response = await addTodo(newTodo);
+
       setTitle('');
       setTodos((oldTodos) => [...oldTodos, response]);
-    } catch (error) {
+    } catch (errorMessage) {
       handleError(Errors.adding);
     } finally {
       setIsCurrentLoading(false);
@@ -122,7 +129,6 @@ export const App: React.FC = () => {
             />
           )}
 
-          {/* Add a todo on form submit */}
           <TodoForm
             title={title}
             setTitle={setTitle}
@@ -154,6 +160,7 @@ export const App: React.FC = () => {
                 type="button"
                 className="todoapp__clear-completed"
                 data-cy="ClearCompletedButton"
+                aria-label="Clear completed"
               >
                 Clear completed
               </button>
@@ -164,9 +171,11 @@ export const App: React.FC = () => {
 
       <div
         data-cy="ErrorNotification"
-        className={cn('notification is-danger is-light has-text-weight-normal', {
-          hidden: !error,
-        })}
+        className={cn(
+          'notification is-danger is-light has-text-weight-normal', {
+            hidden: !error,
+          },
+        )}
       >
         <button
           data-cy="HideErrorButton"
