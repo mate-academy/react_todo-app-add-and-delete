@@ -1,50 +1,44 @@
-import { FilterTypes } from '../types/FilterTypes';
-import { Todo } from '../types/Todo';
+import cn from 'classnames';
+import { Filter } from '../types/Filter';
 
-type Props = {
-  todos: Todo[],
-  clearCompletedTodos: () => void,
-  selectedFilter: string,
-  onSelectedFilter: (val: FilterTypes) => void,
+type TodoFilterProps = {
+  filter: Filter;
+  setFilter: (newFilter: Filter) => void;
 };
 
-export const TodoFilter: React.FC<Props> = ({
-  todos,
-  clearCompletedTodos,
-  selectedFilter,
-  onSelectedFilter,
-}) => {
+export const TodoFilter: React.FC<TodoFilterProps> = (
+  { filter, setFilter },
+) => {
   return (
-    <footer className="todoapp__footer" data-cy="Footer">
-      <span className="todo-count" data-cy="TodosCounter">
-        {`${todos.filter(({ completed }) => !completed).length} items left`}
-      </span>
-
-      <nav className="filter" data-cy="Filter">
-
-        {Object.values(FilterTypes).map((filterType:FilterTypes) => (
-          <a
-            key={`filter_${filterType}`}
-            data-cy={`FilterLink${filterType}`}
-            href="#/"
-            className={`filter__link ${selectedFilter === filterType ? 'selected' : ''}`}
-            onClick={() => onSelectedFilter(filterType)}
-          >
-            {filterType}
-          </a>
-        ))}
-      </nav>
-
-      <button
-        type="button"
-        className="todoapp__clear-completed"
-        data-cy="ClearCompletedButton"
-        onClick={clearCompletedTodos}
-        disabled={!todos.some(({ completed }) => completed)}
+    <nav className="filter" data-cy="Filter">
+      <a
+        href="#/"
+        className={cn('filter__link', { selected: filter === 'all' })}
+        data-cy="FilterLinkAll"
+        onClick={() => setFilter('all')}
       >
-        Clear completed
-      </button>
+        All
+      </a>
 
-    </footer>
+      <a
+        href="#/active"
+        className={cn('filter__link',
+          { selected: filter === 'active' })}
+        data-cy="FilterLinkActive"
+        onClick={() => setFilter('active')}
+      >
+        Active
+      </a>
+
+      <a
+        href="#/completed"
+        className={cn('filter__link',
+          { selected: filter === 'completed' })}
+        data-cy="FilterLinkCompleted"
+        onClick={() => setFilter('completed')}
+      >
+        Completed
+      </a>
+    </nav>
   );
 };

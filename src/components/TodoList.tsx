@@ -1,35 +1,38 @@
+import React from 'react';
 import { Todo } from '../types/Todo';
 import { TodoItem } from './TodoItem';
 
-type Props = {
-  todos: Todo[],
-  tempTodo: Todo | null,
-  removeTodo: (id: number) => void,
-  loadingItems: number[],
+type TodoListProps = {
+  visibleTodos: Todo[];
+  tempTodo: Todo | null;
+  isLoading: boolean;
+  handleDeleteTodo: (todoId: number) => void;
+  isCurrentLoading: boolean;
 };
 
-export const TodoList: React.FC<Props> = ({
-  todos,
+export const TodoList: React.FC<TodoListProps> = ({
+  visibleTodos,
   tempTodo,
-  removeTodo,
-  loadingItems,
+  isLoading,
+  handleDeleteTodo,
+  isCurrentLoading,
+
 }) => {
   return (
     <section className="todoapp__main" data-cy="TodoList">
-      {todos.map((todo:Todo) => (
+      {visibleTodos.map((todo) => (
         <TodoItem
-          key={todo.id}
           todo={todo}
-          removeTodo={removeTodo}
-          isLoading={loadingItems.includes(todo.id)}
+          key={todo.id}
+          handleDeleteTodo={handleDeleteTodo}
+          isLoading={isLoading}
         />
       ))}
-
       {tempTodo && (
         <TodoItem
           todo={tempTodo}
-          removeTodo={removeTodo}
-          isLoading
+          handleDeleteTodo={handleDeleteTodo}
+          isLoading={isCurrentLoading}
         />
       )}
     </section>
