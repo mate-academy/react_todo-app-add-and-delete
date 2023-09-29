@@ -122,6 +122,7 @@ export const App: React.FC = () => {
           {todos.filter((todo) => !todo.completed).length !== 0 && (
             <button
               type="button"
+              aria-label="Save"
               className="todoapp__toggle-all active"
               data-cy="ToggleAllButton"
             />
@@ -166,7 +167,7 @@ export const App: React.FC = () => {
           </footer>
         )}
       </div>
-
+      gut
       <div
         data-cy="ErrorNotification"
         className={cn(
@@ -178,6 +179,7 @@ export const App: React.FC = () => {
         <button
           data-cy="HideErrorButton"
           type="button"
+          aria-label="Save"
           className="delete"
           onClick={() => setError(null)}
         />
