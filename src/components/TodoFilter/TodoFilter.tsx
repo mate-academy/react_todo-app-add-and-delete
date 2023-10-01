@@ -3,12 +3,12 @@ import { TodoStatus } from '../../types/TodoStatus';
 
 type TodoFilterProps = {
   handleFilterStatus: (status: TodoStatus) => void,
-  todosFilterStatus: TodoStatus
+  todoStatus: TodoStatus
 };
 
 export const TodoFilter: React.FC<TodoFilterProps> = ({
   handleFilterStatus,
-  todosFilterStatus,
+  todoStatus,
 }) => {
   return (
     <nav className="filter" data-cy="Filter">
@@ -16,7 +16,7 @@ export const TodoFilter: React.FC<TodoFilterProps> = ({
         href="#/"
         data-cy="FilterLinkAll"
         className={classNames('filter__link', {
-          selected: todosFilterStatus === TodoStatus.All,
+          selected: todoStatus === TodoStatus.All,
         })}
         onClick={(event) => {
           event.preventDefault();
@@ -30,7 +30,7 @@ export const TodoFilter: React.FC<TodoFilterProps> = ({
         href="#/active"
         data-cy="FilterLinkActive"
         className={classNames('filter__link', {
-          selected: todosFilterStatus === TodoStatus.Active,
+          selected: todoStatus === TodoStatus.Active,
         })}
         onClick={(event) => {
           event.preventDefault();
@@ -44,7 +44,7 @@ export const TodoFilter: React.FC<TodoFilterProps> = ({
         href="#/completed"
         data-cy="FilterLinkCompleted"
         className={classNames('filter__link', {
-          selected: todosFilterStatus === TodoStatus.Completed,
+          selected: todoStatus === TodoStatus.Completed,
         })}
         onClick={(event) => {
           event.preventDefault();
