@@ -1,0 +1,47 @@
+export {};
+// import React, { useEffect, useReducer, useState } from 'react';
+// import { Todo } from '../../types/Todo';
+// import { client } from '../../utils/fetchClient';
+
+// interface Props {
+//   children: React.ReactNode;
+// }
+
+// type Action = { type: 'GET' };
+
+// const initialTodos: Todo[] = [];
+
+// const USER_ID = 11619;
+// const URL = `/todos?userId=${USER_ID}`;
+
+// const reducer = (todos: Todo[], action: Action): Todo[] => {
+//   switch (action.type) {
+//     case 'GET': {
+//       client.get<Todo[]>(URL)
+//         .then(resolve => resolve);
+//     }
+
+//     default:
+//       return [];
+//   }
+// };
+
+// export const DispatchTodos
+//   = React.createContext<React.Dispatch<Action>>(() => { });
+// export const StateTodos = React.createContext(initialTodos);
+
+// export const TodosContext: React.FC<Props> = ({ children }) => {
+//   const [todos, dispatch] = useReducer(reducer, initialTodos);
+
+//   useEffect(() => {
+
+//   }, []);
+
+//   return (
+//     <DispatchTodos.Provider value={dispatch}>
+//       <StateTodos.Provider value={todos}>
+//         {children}
+//       </StateTodos.Provider>
+//     </DispatchTodos.Provider>
+//   );
+// };
