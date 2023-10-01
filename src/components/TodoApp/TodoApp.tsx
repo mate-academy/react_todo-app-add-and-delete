@@ -31,7 +31,7 @@ export const TodoApp: React.FC<Props> = ({
     if (inputRef.current) {
       inputRef.current.focus();
     }
-  }, [disabledInput]); // !!
+  }, [disabledInput]);
 
   const addNewTodo = async () => {
     const trimmedValue = value.trim();
