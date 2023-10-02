@@ -618,7 +618,7 @@ describe('', () => {
         errorMessage.assertVisible();
       });
 
-      it.skip('should keep an error message for 3s after the last fail', () => {
+      it('should keep an error message for 3s after the last fail', () => {
         page.mockCreate({ statusCode: 503, body: 'Service Unavailable' })
           .as('createRequest2');
 
