@@ -1,120 +1,44 @@
+/* eslint-disable max-len */
 import cn from 'classnames';
-import { useState } from 'react';
 import { Todo } from '../../types/Todo';
 
 type TodoItemProps = {
   todo: Todo;
-  handleCompletedStatus: (todo: Todo) => void;
-  handleDelete: (todo: Todo) => void;
-  handleFormSubmitEdited: (
-    event: React.FormEvent<HTMLFormElement>,
-    editTodo: Todo) => void;
-  idCompleatedArr: number[];
-  setEditTodo: (todo: Todo | null) => void;
-  editTodo: Todo | null;
-
+  handleDelete: (todoId: number) => void;
 };
 
-export const TodoItem: React.FC<TodoItemProps> = ({
-  todo,
-  handleCompletedStatus,
-  handleDelete,
-  handleFormSubmitEdited,
-  idCompleatedArr,
-  setEditTodo,
-  editTodo,
-}) => {
-  const [editTitle, setEditTitle] = useState<string>('');
-
-  const handleDoubleClick = (chosenTodo: Todo) => {
-    setEditTodo(chosenTodo);
-    setEditTitle(chosenTodo.title);
-  };
-
-  const handleEditTodo: React.ChangeEventHandler<HTMLInputElement>
-  = (event) => {
-    setEditTitle(event.target.value);
-  };
+export const TodoItem: React.FC<TodoItemProps> = ({ todo, handleDelete }) => {
+  const isLoading = todo.id === 0;
 
   return (
-    <div
-      data-cy="Todo"
-      className={cn('todo', {
-        completed: todo.completed,
-      })}
-      key={todo.id}
-    >
+    <div data-cy="Todo" className={cn('todo', { completed: todo.completed })}>
       <label className="todo__status-label">
         <input
           data-cy="TodoStatus"
           type="checkbox"
           className="todo__status"
           checked={todo.completed}
-          onChange={() => handleCompletedStatus(todo)}
         />
       </label>
 
-      {editTodo?.id === todo.id
-        ? (
-          <form
-            onSubmit={(event) => {
-              handleFormSubmitEdited(
-                event, { ...editTodo, title: editTitle },
-              );
-            }}
+      <span data-cy="TodoTitle" className="todo__title">
+        {todo.title}
+      </span>
 
-          >
-            <input
-              data-cy="TodoTitleField"
-              type="text"
-              className="todo__title-field"
-              placeholder="Empty todo will be deleted"
-              value={editTitle}
-              onChange={
-                (event) => handleEditTodo(event)
-              }
-              ref={(input) => input && input.focus()}
-            />
-          </form>
-        )
-        : (
-          <>
-            <span
-              data-cy="TodoTitle"
-              className="todo__title"
-              onDoubleClick={() => handleDoubleClick(todo)}
-            >
-              {editTitle || todo.title}
-            </span>
-
-            {!editTodo && (
-              <button
-                type="button"
-                className="todo__remove"
-                data-cy="TodoDelete"
-                onClick={() => handleDelete(todo)}
-              >
-                ×
-              </button>
-            )}
-
-            <div
-              data-cy="TodoLoader"
-              className={cn('modal', 'overlay', {
-                'is-active': idCompleatedArr.includes(todo.id),
-              })}
-            >
-              <div
-                className="modal-background has-background-white-ter"
-              />
-              <div className="loader" />
-            </div>
-          </>
-
-        )}
-
+      {/* Remove button appears only on hover */}
+      <button
+        type="button"
+        className="todo__remove"
+        data-cy="TodoDelete"
+        onClick={() => handleDelete(todo.id)}
+      >
+        ×
+      </button>
       {/* overlay will cover the todo while it is being updated */}
-
+      <div data-cy="TodoLoader" className={cn('modal', 'overlay', { 'is-active': isLoading })}>
+        <div className="modal-background has-background-white-ter" />
+        <div className="loader" />
+      </div>
     </div>
   );
 };

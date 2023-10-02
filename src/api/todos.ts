@@ -6,15 +6,13 @@ export const getTodos = (userId: number) => {
 };
 
 // Add more methods here
-export const addTodo = (newTodo: Omit<Todo, 'id'>) => {
-  return client.post('/todos', newTodo);
+export const API_URL = 'https://mate.academy/students-api/todos?userId=11593';
+export const USER_ID = 11593;
+
+export const addTodo = (data: Todo) => {
+  return client.post<Todo>('/todos', data);
 };
 
 export const deleteTodo = (todoId: number) => {
   return client.delete(`/todos/${todoId}`);
-};
-
-export const patchTodo = (todoId: number,
-  updatedData: Partial<Todo>) => {
-  return client.patch(`/todos/${todoId}`, updatedData);
 };

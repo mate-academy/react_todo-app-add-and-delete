@@ -1,60 +1,60 @@
 import { Todo } from '../../types/Todo';
 import { TodoItem } from '../TodoItem/TodoItem';
 
-type TodoListProps = {
-  displayedTodos: () => Todo[];
+type ListProps = {
+  todos: Todo[];
   tempTodo: Todo | null;
-  handleCompletedStatus: (todo: Todo) => void;
-  handleDelete: (todo: Todo) => void;
-  handleFormSubmitEdited: (
-    event: React.FormEvent<HTMLFormElement>,
-    editTodo: Todo) => void;
-  idCompleatedArr: number[];
-  setEditTodo: (todo: Todo | null) => void;
-  editTodo: Todo | null;
+  handleDelete: (todoId: number) => void;
 };
 
-export const TodoList : React.FC<TodoListProps> = ({
-  displayedTodos,
-  tempTodo,
-  handleCompletedStatus,
-  handleDelete,
-  handleFormSubmitEdited,
-  idCompleatedArr,
-  setEditTodo,
-  editTodo,
-}) => {
+export const List: React.FC<ListProps> = (
+  { todos, tempTodo, handleDelete },
+) => {
   return (
     <section className="todoapp__main" data-cy="TodoList">
-
-      {displayedTodos().map((todo) => {
+      {/* This is a completed todo */}
+      {todos.map((todo) => {
         return (
-          <TodoItem
-            key={todo.id}
-            todo={todo}
-            handleCompletedStatus={handleCompletedStatus}
-            handleDelete={handleDelete}
-            handleFormSubmitEdited={handleFormSubmitEdited}
-            idCompleatedArr={idCompleatedArr}
-            setEditTodo={setEditTodo}
-            editTodo={editTodo}
-          />
+          <TodoItem todo={todo} handleDelete={handleDelete} />
         );
       })}
-
-      {tempTodo && (
-        <TodoItem
-          todo={tempTodo}
-          handleCompletedStatus={handleCompletedStatus}
-          handleDelete={handleDelete}
-          handleFormSubmitEdited={handleFormSubmitEdited}
-          idCompleatedArr={idCompleatedArr}
-          setEditTodo={setEditTodo}
-          editTodo={editTodo}
-        />
-      )}
-
-      {/* temptodow propsach i todoitem -> map */}
+      {tempTodo && <TodoItem todo={tempTodo} handleDelete={handleDelete} />}
+      {/* This form is shown instead of the title and remove button /}
+      {/ <form>
+          <input
+            data-cy="TodoTitleField"
+            type="text"
+            className="todotitle-field"
+            placeholder="Empty todo will be deleted"
+            value="Todo is being edited now"
+          />
+        </form>
+        <div data-cy="TodoLoader" className="modal overlay">
+          <div className="modal-background has-background-white-ter" />
+          <div className="loader" />
+        </div>
+      </div> /}
+      {/ This todo is in loadind state /}
+      {/ <div data-cy="Todo" className="todo">
+        <label className="todostatus-label">
+          <input
+            data-cy="TodoStatus"
+            type="checkbox"
+            className="todostatus"
+          />
+        </label>
+        <span data-cy="TodoTitle" className="todotitle">
+          Todo is being saved now
+        </span>
+        <button type="button" className="todo__remove" data-cy="TodoDelete">
+          ×
+        </button> /}
+      {/ 'is-active' class puts this modal on top of the todo /}
+      {/ <div data-cy="TodoLoader" className="modal overlay is-active">
+          <div className="modal-background has-background-white-ter" />
+          <div className="loader" />
+        </div>
+      </div> */}
     </section>
   );
 };
