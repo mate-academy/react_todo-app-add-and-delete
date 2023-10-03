@@ -28,7 +28,7 @@ export const Header: React.FC<Props> = (
       <form
         onSubmit={(event) => {
           event.preventDefault();
-          if (!textTodo) {
+          if (!textTodo.trim()) {
             setErrorMessege('Title should not be empty');
 
             return;
