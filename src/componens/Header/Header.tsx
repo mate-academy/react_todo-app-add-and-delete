@@ -6,7 +6,6 @@ interface Props {
   createTodo: (
     title: string,
   ) => void,
-  setErrorMessege: React.Dispatch<React.SetStateAction<string>>,
   statusResponse: boolean,
 }
 
@@ -15,7 +14,6 @@ export const Header: React.FC<Props> = (
     setTextTodo,
     textTodo,
     createTodo,
-    setErrorMessege,
     statusResponse,
   },
 ) => {
@@ -28,11 +26,6 @@ export const Header: React.FC<Props> = (
       <form
         onSubmit={(event) => {
           event.preventDefault();
-          if (!textTodo.trim()) {
-            setErrorMessege('Title should not be empty');
-
-            return;
-          }
 
           createTodo(textTodo.trim());
         }}

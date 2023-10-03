@@ -84,6 +84,12 @@ export const App: React.FC = () => {
   const createTodo = (
     title: string,
   ) => {
+    if (!title.trim()) {
+      setErrorMessege('Title should not be empty');
+
+      return;
+    }
+
     setStatusResponse(true);
     setTemporaryTodo(
       {
@@ -116,7 +122,6 @@ export const App: React.FC = () => {
           setTextTodo={setTextTodo}
           textTodo={textTodo}
           createTodo={createTodo}
-          setErrorMessege={setErrorMessege}
           statusResponse={statusResponse}
         />
 
