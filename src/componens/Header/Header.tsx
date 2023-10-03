@@ -45,6 +45,9 @@ export const Header: React.FC<Props> = (
           placeholder="What needs to be done?"
           value={textTodo}
           onChange={(event) => setTextTodo(event.target.value)}
+          ref={(input) => input && input.focus()}
+          // eslint-disable-next-line jsx-a11y/no-autofocus
+          autoFocus
         />
       </form>
     </header>
