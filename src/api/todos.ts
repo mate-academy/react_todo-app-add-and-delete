@@ -9,7 +9,7 @@ export const deleteTodo = (todoId: number) => {
   return client.delete(`/todos/${todoId}`);
 };
 
-export const addTodo = (todoData: Todo) => {
+export const addTodo = (todoData: Omit<Todo, 'id'>) => {
   return client.post<Todo>('/todos', todoData);
 };
 

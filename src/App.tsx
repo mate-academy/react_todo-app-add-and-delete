@@ -92,38 +92,45 @@ export const App: React.FC = () => {
     fetchTodos();
   }, []);
 
-  const handleNewTodoSubmit = async (event: React.FormEvent) => {
-    event.preventDefault();
+  const addNewTodo = (currentTitle: string) => {
     setIsInputDisabled(true);
-    const trimmedTitle = newTodoTitle.trim();
+    setErrorMessage('');
 
-    if (!trimmedTitle) {
-      handleErrorMessage(setErrorMessage, 'Title should not be empty');
-      setIsInputDisabled(false);
-
-      return;
-    }
-
-    const newTodo: Todo = {
+    const newTodo: Omit<Todo, 'id'> = {
       userId: USER_ID,
-      id: 0,
-      title: newTodoTitle.trim(),
+      title: currentTitle,
       completed: false,
     };
 
-    setTempTodo(newTodo);
-    try {
-      const addedTodo: Todo = await addTodo(newTodo);
+    setTempTodo({
+      ...newTodo,
+      id: 0,
+    });
 
-      setTodos((currentTodos: Todo[]) => [...currentTodos, addedTodo]);
-      setNewTodoTitle('');
-    } catch (error) {
-      handleErrorMessage(setErrorMessage, 'Unable to add a todo');
-      setTempTodo(null);
-    } finally {
-      setIsInputDisabled(false);
-      setIsInputFocused(true);
+    addTodo(newTodo)  // This is your API call
+      .then(createdTodo => {
+        setTempTodo(null);
+        setTodos(currentTodos => [...currentTodos, createdTodo]);
+        setNewTodoTitle('');
+      })
+      .catch(() => {
+        setTempTodo(null);
+        handleErrorMessage(setErrorMessage, 'Unable to add a todo');
+      })
+      .finally(() => {
+        setIsInputDisabled(false);
+        setIsInputFocused(true);
+      });
+  };
+
+  const handleNewTodoSubmit = async (event: React.FormEvent) => {
+    event.preventDefault();
+    const trimmedTitle = newTodoTitle.trim();
+    if (!trimmedTitle) {
+      handleErrorMessage(setErrorMessage, 'Title should not be empty');
+      return;
     }
+    addNewTodo(trimmedTitle);
   };
 
   const handleTodoToggle = async (todoId: number, completed: boolean) => {
