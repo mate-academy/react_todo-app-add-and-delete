@@ -66,12 +66,14 @@ export const AppProvider = ({ children }: Props) => {
     }
 
     setIsDisabled(true);
+    setTodoItem(todo);
     addTodos(todo).then(() => {
-      setTodos((prev) => [...prev, todo]);
+      setTodos((prev) => [...prev, {...todo, id: Number(new Date())}]);
     })
       .catch(() => setError(getError('addError')))
       .finally(() => {
         setIsDisabled(false);
+        setTodoItem(null);
       });
   }, []);
 
