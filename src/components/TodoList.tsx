@@ -1,9 +1,11 @@
 import React from 'react';
+import cn from 'classnames';
+
 import { TodoItem } from './TodoItem';
 import { useTodos } from '../hooks/useTodos';
 
 export const TodoList: React.FC = () => {
-  const { preparedTodos } = useTodos();
+  const { preparedTodos, tempTodo } = useTodos();
 
   return (
     <section className="todoapp__main" data-cy="TodoList">
@@ -38,7 +40,52 @@ export const TodoList: React.FC = () => {
           todo={todo}
         />
       ))}
+      {tempTodo && (
+        <>
+          {tempTodo && (
+            <div
+              data-cy="Todo"
+              className={cn(
+                'todo',
+                {
+                  completed: tempTodo.completed,
+                },
+              )}
+            >
+              <label className="todo__status-label">
+                <input
+                  data-cy="TodoStatus"
+                  type="checkbox"
+                  className="todo__status"
+                  checked={tempTodo.completed}
+                />
+              </label>
 
+              <span data-cy="TodoTitle" className="todo__title">
+                {tempTodo.title}
+              </span>
+              <button
+                type="button"
+                className="todo__remove"
+                data-cy="TodoDelete"
+
+              >
+                ×
+              </button>
+
+              <div data-cy="TodoLoader" className="modal overlay is-active">
+                <div
+                  className="
+                    modal-background
+                    has-background-white-ter
+                  "
+                />
+                <div className="loader" />
+              </div>
+            </div>
+          )}
+        </>
+      )}
       {/* <div data-cy="Todo" className="todo">
         <label className="todo__status-label">
           <input

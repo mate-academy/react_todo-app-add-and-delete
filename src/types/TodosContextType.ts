@@ -10,4 +10,6 @@ export interface TodosContextType {
   preparedTodos: Todo[] | null,
   sortQuery: string,
   setSortQuery: Dispatch<SetStateAction<SortType>>
+  tempTodo: Todo | null,
+  setTempTodo: Dispatch<SetStateAction<Todo | null>>
 }

@@ -20,6 +20,7 @@ export const Header: React.FC = () => {
     todos,
     setTodos,
     setErrorMessage,
+    setTempTodo,
   } = useTodos();
 
   const handletTitleChange = (event: React.ChangeEvent<HTMLInputElement>) => {
@@ -40,8 +41,17 @@ export const Header: React.FC = () => {
     setIsInputDisabled(true);
     setErrorMessage('');
 
+    const trimedTitile = title.trim();
+
+    setTempTodo({
+      id: 0,
+      userId: 0,
+      title: trimedTitile,
+      completed: false,
+    });
+
     postService.addTodo(
-      { title, completed: false, userId: USER_ID },
+      { title: trimedTitile, completed: false, userId: USER_ID },
     ).then((newTodo) => {
       setTitle('');
 
@@ -54,7 +64,10 @@ export const Header: React.FC = () => {
       });
     }).catch(() => {
       setErrorMessage('Unable to add a todo');
-    }).finally(() => setIsInputDisabled(false));
+    }).finally(() => {
+      setIsInputDisabled(false);
+      setTempTodo(null);
+    });
   };
 
   return (

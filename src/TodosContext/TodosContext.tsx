@@ -13,6 +13,13 @@ export const TodosContext = React.createContext<TodosContextType>({
   preparedTodos: [],
   sortQuery: '',
   setSortQuery: () => {},
+  tempTodo: {
+    id: 0,
+    userId: 0,
+    title: '',
+    completed: false,
+  },
+  setTempTodo: () => {},
 });
 
 type Props = {
@@ -23,12 +30,13 @@ export const TodosProvider: React.FC<Props> = ({ children }) => {
   const [todos, setTodos] = useState<Todo[] | null>(null);
   const [errorMessage, setErrorMessage] = useState('');
   const [sortQuery, setSortQuery] = useState(SortType.All);
+  const [tempTodo, setTempTodo] = useState<Todo | null>(null);
 
   useEffect(() => {
     getTodos(USER_ID)
       .then(todosFromServer => {
         setTodos(() => {
-          if (todosFromServer.length) {
+          if (todosFromServer) {
             return todosFromServer;
           }
 
@@ -63,6 +71,8 @@ export const TodosProvider: React.FC<Props> = ({ children }) => {
         preparedTodos,
         sortQuery,
         setSortQuery,
+        tempTodo,
+        setTempTodo,
       }}
     >
       {children}
