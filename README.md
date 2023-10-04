@@ -9,7 +9,6 @@ and implement the ability to add and remove todos.
 # ❗️❗️❗️</br>Please implement only adding and deleting todos in addition to what was already implemented.<br><br>All the other features from the working version will be implemented in the next task.</br>❗️❗️❗️
 
 > Check the [API Documentation](https://mate-academy.github.io/fe-students-api/)
-
 ## Adding a todo
 
 Add a todo with the entered title on the form submit:
@@ -131,7 +130,7 @@ Remove all the completed todos after the `Clear completed` button click:
     transition: max-height 0.3s ease-in-out;
   }
 
-  .temp-item-exit {
+  .temp-item-exit {ddd
     max-height: 58px;
   }
 
@@ -142,10 +141,8 @@ Remove all the completed todos after the `Clear completed` button click:
     transition: 0.3s ease-in-out;
     transition-property: opacity, max-height, transform;
   }
-
   .has-error .temp-item-exit-active {
     transform: translateY(0);
     overflow: hidden;
   }
-  ```
 </details>
