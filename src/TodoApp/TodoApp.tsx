@@ -61,20 +61,19 @@ export const TodoApp: React.FC = () => {
         inputTitle.current.disabled = true;
       }
 
+      setTempTodo({
+        ...newTask,
+        id: 0,
+      });
+
       addTodos(newTask)
         .then(newTodo => {
-          setTempTodo({
-            ...newTask,
-            id: 0,
-          });
-          setTimeout(() => {
-            setTitle('');
-            setTodos((prevTodos) => [...prevTodos, newTodo]);
-            setTempTodo(null);
-          }, 300);
+          setTitle('');
+          setTodos((prevTodos) => [...prevTodos, newTodo]);
         })
         .catch(() => {
           setErrorMessage('Unable to add a todo');
+          setTempTodo(null);
           if (errorDiv.current !== null) {
             errorDiv.current.classList.remove('hidden');
             setTimeout(() => {
@@ -90,6 +89,8 @@ export const TodoApp: React.FC = () => {
             inputTitle.current.disabled = false;
             inputTitle.current.focus();
           }
+
+          setTempTodo(null);
         });
     } else {
       setErrorMessage('Title should not be empty');
