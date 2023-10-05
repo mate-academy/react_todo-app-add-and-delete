@@ -25,8 +25,10 @@ type TodoContextType = {
   removeTodoContext: (todoId: number) => void;
   isDisabled: boolean;
   setIsDisabled: (bool: boolean) => void;
-  todoItem: Todo | null;
-  setTodoItem: (todo: Todo) => void;
+  tempTodo: Todo | null;
+  setTempTodo: (todo: Todo) => void;
+  editedTodo: Todo | null;
+  setEditedTodo: (todo: Todo) => void;
 };
 
 const TodoContext = createContext<TodoContextType | undefined>(undefined);
@@ -36,9 +38,10 @@ export const AppProvider = ({ children }: Props) => {
   const [filterBy, setFilterBy] = useState<Filter>('all');
   const [errorTitle, setErrorTitle] = useState<string>('');
   const [title, setTitle] = useState<string>('');
-  const [isLoading, setIsLoading] = useState<boolean>(true);
+  const [isLoading, setIsLoading] = useState<boolean>(false);
   const [isDisabled, setIsDisabled] = useState(false);
-  const [todoItem, setTodoItem] = useState<Todo | null>(null);
+  const [tempTodo, setTempTodo] = useState<Todo | null>(null);
+  const [editedTodo, setEditedTodo] = useState<Todo | null>(null);
 
   const setTodosContext = useCallback((todosArray: Todo[], filter: Filter) => {
     setTodos(filterTodos(todosArray, filter));
@@ -48,6 +51,9 @@ export const AppProvider = ({ children }: Props) => {
 
   const setError = useCallback((error: string) => {
     setErrorTitle(error);
+    setTimeout(() => {
+      setError('');
+    }, 3000);
   }, []);
 
   const setTitleContext = useCallback((titleInput: string) => {
@@ -65,15 +71,19 @@ export const AppProvider = ({ children }: Props) => {
       return;
     }
 
+    setEditedTodo(todo);
+    setIsLoading(true);
     setIsDisabled(true);
-    setTodoItem(todo);
-    addTodos(todo).then(() => {
-      setTodos((prev) => [...prev, {...todo, id: Number(new Date())}]);
+    setTempTodo(todo);
+    addTodos(todo).then((todoFromServerWithId) => {
+      setTodos((prev) => [...prev, todoFromServerWithId]);
     })
       .catch(() => setError(getError('addError')))
       .finally(() => {
         setIsDisabled(false);
-        setTodoItem(null);
+        setTempTodo(null);
+        setIsLoading(false);
+        setEditedTodo(null);
       });
   }, []);
 
@@ -84,14 +94,15 @@ export const AppProvider = ({ children }: Props) => {
       return;
     }
 
+    setIsLoading(true);
     removeTodos(todoId)
       .then(() => setTodos(prev => prev.filter(todo => todo.id !== todoId)))
-      .catch(() => setError(getError('deleteError')));
+      .catch(() => setError(getError('deleteError')))
+      .finally(() => {
+        setIsLoading(false);
+        setEditedTodo(null);
+      });
   }, []);
-
-  // const editedTodoContext = useCallback((todo: Todo) => {
-  //   setTodos((prev) => prev.map((v) => (v.id === todo.id ? todo : v)));
-  // }, [])
 
   return (
     <TodoContext.Provider value={{
@@ -111,8 +122,10 @@ export const AppProvider = ({ children }: Props) => {
       removeTodoContext,
       isDisabled,
       setIsDisabled,
-      todoItem,
-      setTodoItem,
+      tempTodo,
+      setTempTodo,
+      editedTodo,
+      setEditedTodo,
     }}
     >
       {children}

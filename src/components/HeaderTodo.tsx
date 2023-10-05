@@ -6,8 +6,14 @@ import { USER_ID } from '../utils/fetchClient';
 
 export const HeaderTodo = () => {
   const {
-    todos, setTodos, title, setTitleContext, addTodoContext, setError,
+    todos,
+    setTodos,
+    title,
+    setTitleContext,
+    addTodoContext,
+    setError,
     isDisabled,
+    setEditedTodo,
   } = useTodo();
 
   const completeAllTodos = () => {
@@ -39,6 +45,7 @@ export const HeaderTodo = () => {
         return;
       }
 
+      setEditedTodo(newTodo);
       setTitleContext('');
       addTodoContext(newTodo);
     }
@@ -48,7 +55,7 @@ export const HeaderTodo = () => {
     <header className="todoapp__header">
       {/* this buttons is active only if there are some active todos */}
 
-      {todos.length === 0 || (
+      {todos.length !== 0 && (
         /* eslint-disable-next-line */
         <button
           type="button"

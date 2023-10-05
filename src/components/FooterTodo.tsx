@@ -3,10 +3,26 @@ import { useMemo } from 'react';
 import { useTodo } from '../providers/AppProvider';
 
 export const FooterTodo = () => {
-  const { todos, filterBy, setFilterBy } = useTodo();
+  const {
+    todos,
+    filterBy,
+    setFilterBy,
+    removeTodoContext,
+    setEditedTodo,
+  } = useTodo();
+
   const counter = useMemo(() => {
     return todos.filter(todo => todo.completed === false).length;
   }, [todos, todos.length]);
+
+  const handleClearAll = () => {
+    const todosToDeleted = todos.filter(todo => todo.completed);
+
+    todosToDeleted.forEach(todo => {
+      setEditedTodo(todo);
+      removeTodoContext(todo.id);
+    });
+  };
 
   return (
     <footer className="todoapp__footer" data-cy="Footer">
@@ -53,11 +69,10 @@ export const FooterTodo = () => {
       {/* don't show this button if there are no completed todos */}
       <button
         type="button"
-        className={cn('todoapp__clear-completed', {
-        })}
+        className="todoapp__clear-completed"
         disabled={!todos.some(todo => todo.completed === true)}
         data-cy="ClearCompletedButton"
-
+        onClick={handleClearAll}
       >
         Clear completed
       </button>

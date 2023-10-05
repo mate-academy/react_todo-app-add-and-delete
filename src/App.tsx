@@ -14,8 +14,8 @@ import { TodoItem } from './components/TodoItem';
 
 export const App: React.FC = () => {
   const {
-    todos, setTodosContext, filterBy, errorTitle, setError, setIsLoadingContext,
-    todoItem,
+    todos, setTodosContext, filterBy, setError, setIsLoadingContext,
+    tempTodo,
   } = useTodo();
 
   useEffect(() => {
@@ -43,7 +43,7 @@ export const App: React.FC = () => {
       <div className="todoapp__content">
         <HeaderTodo />
         <TodoList />
-        {todoItem && <TodoItem todo={todoItem} />}
+        {tempTodo && <TodoItem todo={tempTodo} />}
         {/* Hide the footer if there are no todos */}
         {todos.length > 0 && (
           <FooterTodo />
@@ -52,16 +52,7 @@ export const App: React.FC = () => {
 
       {/* Notification is shown in case of any error */}
       {/* Add the 'hidden' class to hide the message smoothly */}
-      {errorTitle && <TodosError />}
+      <TodosError />
     </div>
-    // <section className="section container">
-    //   <p className="title is-4">
-    //     Copy all you need from the prev task:
-    //     <br />
-    //     <a href="https://github.com/mate-academy/react_todo-app-loading-todos#react-todo-app-load-todos">React Todo App - Load Todos</a>
-    //   </p>
-
-  //   <p className="subtitle">Styles are already copied</p>
-  // </section>
   );
 };
