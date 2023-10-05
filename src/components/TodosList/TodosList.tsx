@@ -6,10 +6,12 @@ import { TodosContext } from '../../TodosContext';
 
 type Props = {
   todos: Todo[],
+  isDeleting: boolean,
 };
 
 export const TodosList: React.FC<Props> = ({
   todos,
+  isDeleting,
 }) => {
   const { tempTodo } = useContext(TodosContext);
 
@@ -24,7 +26,10 @@ export const TodosList: React.FC<Props> = ({
             timeout={300}
             classNames="item"
           >
-            <TodoItem todo={todo} />
+            <TodoItem
+              todo={todo}
+              isProcessed={todo.completed && isDeleting}
+            />
           </CSSTransition>
         ))}
 

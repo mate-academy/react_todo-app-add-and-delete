@@ -25,6 +25,7 @@ export const TodoApp: React.FC = () => {
   } = useContext(TodosContext);
   const [title, setTitle] = useState('');
   const [filter, setFilter] = useState(Filter.ALL);
+  const [isDeleteCompleted, setIsDeleteCompleted] = useState(false);
 
   const noCompleteTodos = todos.filter(elem => !elem.completed);
   const completeTodos = todos.filter(elem => elem.completed);
@@ -106,6 +107,8 @@ export const TodoApp: React.FC = () => {
 
   const handlerClearCompletes = () => {
     completeTodos.forEach((eachTodo) => {
+      setIsDeleteCompleted(true);
+
       deleteTodo(eachTodo.id)
         .then(() => {
           setTodos((currentTodos: Todo[]) => currentTodos
@@ -122,7 +125,8 @@ export const TodoApp: React.FC = () => {
               }
             }, 3000);
           }
-        });
+        })
+        .finally(() => setIsDeleteCompleted(false));
     });
   };
 
@@ -176,7 +180,10 @@ export const TodoApp: React.FC = () => {
         </header>
 
         {(todos.length !== 0 || tempTodo !== null) && (
-          <TodosList todos={filteredTodos} />
+          <TodosList
+            todos={filteredTodos}
+            isDeleting={isDeleteCompleted}
+          />
         )}
 
         {(todos.length !== 0 || tempTodo !== null) && (
