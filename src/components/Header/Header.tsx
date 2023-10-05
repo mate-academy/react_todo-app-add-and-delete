@@ -8,7 +8,7 @@ import { Todo } from '../../types/Todo';
 
 export const Header: React.FC = () => {
   const {
-    todos, setTodos, errorNotificationHandler, userID, setTempTodo,
+    todos, setTodos, errorNotificationHandler, USER_ID, setTempTodo,
     setTodosIdsUpdating,
   } = useContext(TodosContext);
   const [title, setTitle] = useState('');
@@ -30,7 +30,7 @@ export const Header: React.FC = () => {
     setTempTodo(tempTodoData);
     setTodosIdsUpdating([tempTodoData.id]);
 
-    addTodo(userID, newTodo)
+    addTodo(USER_ID, newTodo)
       .then((response) => {
         setTodos([...todos,
           {
@@ -66,7 +66,7 @@ export const Header: React.FC = () => {
     }
 
     const newTodo: Omit<Todo, 'id'> = {
-      userId: userID,
+      userId: USER_ID,
       title: trimmedTitle,
       completed: false,
     };

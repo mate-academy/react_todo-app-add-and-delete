@@ -4,8 +4,7 @@ import React from 'react';
 import { TodoApp } from './components/TodoApp';
 import { ContextProvider } from './TodosContext';
 import { UserWarning } from './UserWarning';
-
-const USER_ID = 11443;
+import { USER_ID } from './constans';
 
 export const App: React.FC = () => {
   if (!USER_ID) {

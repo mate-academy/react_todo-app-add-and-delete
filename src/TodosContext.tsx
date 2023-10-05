@@ -4,13 +4,14 @@ import React, {
 import { deleteTodo } from './api/todos';
 import { ErrorMessage } from './types/errorMessage';
 import { Todo } from './types/Todo';
+import { USER_ID } from './constans';
 
 type Props = {
   children: ReactNode,
 };
 
 const deafultValue = {
-  userID: 11443,
+  USER_ID: 11443,
   todos: [],
   setTodos: () => { },
   errorMessage: ErrorMessage.NO,
@@ -26,7 +27,7 @@ const deafultValue = {
 };
 
 interface ITodosContext {
-  userID: number,
+  USER_ID: number,
   todos: Todo[],
   setTodos: (t: Todo[]) => void,
   errorMessage: ErrorMessage,
@@ -80,10 +81,10 @@ export const ContextProvider: React.FC<Props> = ({ children }) => {
     setTodosIdsUpdating([]);
   };
 
-  const userID = 11443;
+  // const userID = 11443;
 
   const value = useMemo(() => ({
-    userID,
+    USER_ID,
     todos,
     setTodos,
     errorMessage,
