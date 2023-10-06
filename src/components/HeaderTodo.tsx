@@ -14,6 +14,7 @@ export const HeaderTodo = () => {
     setError,
     isDisabled,
     setEditedTodo,
+  
   } = useTodo();
 
   const completeAllTodos = () => {
@@ -46,7 +47,6 @@ export const HeaderTodo = () => {
       }
 
       setEditedTodo(newTodo);
-      setTitleContext('');
       addTodoContext(newTodo);
     }
   };

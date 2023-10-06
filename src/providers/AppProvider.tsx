@@ -77,6 +77,7 @@ export const AppProvider = ({ children }: Props) => {
     setTempTodo(todo);
     addTodos(todo).then((todoFromServerWithId) => {
       setTodos((prev) => [...prev, todoFromServerWithId]);
+      setTitleContext('');
     })
       .catch(() => setError(getError('addError')))
       .finally(() => {

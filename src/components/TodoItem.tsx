@@ -9,7 +9,7 @@ type Props = {
 
 export const TodoItem = ({ todo }: Props) => {
   const {
-    setTodos, removeTodoContext, editedTodo, setEditedTodo,
+    setTodos, removeTodoContext, setEditedTodo,
   } = useTodo();
 
   const handleClick = () => {
@@ -63,7 +63,8 @@ export const TodoItem = ({ todo }: Props) => {
         </button>
 
         {/* overlay will cover the todo while it is being updated */}
-        {editedTodo?.id === todo.id && <Loader />}
+        {/* {editedTodo?.id === todo.id && <Loader />} */}
+        <Loader />
       </div>
     </>
   );

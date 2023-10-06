@@ -30,6 +30,24 @@ Add a todo with the entered title on the form submit:
 - clear the text in case of success;
 - keep the text in case of error;
 
+Dodaj zadanie z wprowadzonym tytułem w formularzu:
+
+- pole tekstowe powinno być domyślnie aktywne;
+- jeśli tytuł jest pusty, pokaż na dole powiadomienie `Tytuł nie powinien być pusty`;
+- przytnij tytuł po zaznaczeniu lub zapisaniu;
+- użyj swojego `userId` dla nowego zadania;
+- wyślij żądanie POST do API (sprawdź [Dokumentację API](https://mate-academy.github.io/fe-students-api/))
+- wyłącz wprowadzanie danych do czasu otrzymania odpowiedzi z API;
+- od razu po wysłaniu żądania utwórz todo o `id: 0` i zapisz je do zmiennej `tempTodo` w stanie (NIE do tablicy `todos`);
+- pokaż niezależny element `TodoItem` **po** liście, jeśli `tempTodo` nie ma wartości `null`;
+- temp TodoItem powinien mieć moduł ładujący (sprawdź oryginalne znaczniki);
+- w przypadku powodzenia dodaj do tablicy zadanie utworzone przez API (pobierz je z odpowiedzi POST);
+- w przypadku błędu API pokazującego na dole powiadomienie `Nie można dodać rzeczy do zrobienia`;
+- ustaw `tempTodo` na `null`, aby ukryć dodatkowy `TodoItem`;
+- zaznacz pole tekstowe po otrzymaniu odpowiedzi;
+- wyczyść tekst w przypadku powodzenia;
+- zachowaj tekst na wypadek błędu;
+
 > Don't try to implement animations for adding or removing Todos (at least until you finish everything else).
 > If you really feel confident to try, there is a hint at the end of the description.
 
@@ -51,7 +69,7 @@ Remove all the completed todos after the `Clear completed` button click:
 
 - Implement a solution following the [React task guideline](https://github.com/mate-academy/react_task-guideline#react-tasks-guideline).
 - Use the [React TypeScript cheat sheet](https://mate-academy.github.io/fe-program/js/extra/react-typescript).
-- Replace `<your_account>` with your Github username in the [DEMO LINK](https://<your_account>.github.io/react_todo-app-add-and-delete/) and add it to the PR description.
+- Replace `<your_account>` with your Github username in the [DEMO LINK](https://patryk177m.github.io/react_todo-app-add-and-delete/) and add it to the PR description.
 
 ## IF you want to implement smooth animations
 
