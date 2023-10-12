@@ -1,43 +1,28 @@
-/* eslint-disable jsx-a11y/control-has-associated-label */
-import React, {
-  useEffect,
-  useMemo,
-  useRef,
-  useState,
-} from 'react';
+import React, { useEffect, useMemo, useState } from 'react';
 import cn from 'classnames';
 
-import { Todo } from './types/Todo';
-import { addTodo, deleteTodo, getTodos } from './api/todos';
 import { SelectFilter } from './utils/SelectFilter';
-import { TodoHeader } from './components/TodoHeader';
+import { Todo } from './types/Todo';
 import { ErrorMessage } from './utils/ErrorMessages';
-
-const USER_ID = 11539;
+import * as ApiServices from './api/todos';
+import { TodoHeader } from './components/TodoHeader';
+import { TodoRow } from './components/TodoRow';
 
 export const App: React.FC = () => {
   const [todos, setTodos] = useState<Todo[]>([]);
   const [errorMessage, setErrorMessage] = useState('');
   const [filterOption, setFilterOption] = useState(SelectFilter.All);
   const [tempTodo, setTempTodo] = useState<Todo | null>(null);
-  const [isLoaderActive, setIsLoaderActive] = useState(false);
-  const isToggleActive = useMemo(() => todos.some(todo => !todo.completed),
+  const [processingTodoIds, setProcessingTodoIds] = useState<number[]>([]);
+  const isEveryCompleted = useMemo(() => todos.every(todo => todo.completed),
     [todos]);
-  const titleInput = useRef<HTMLInputElement>(null);
-
-  const setError = (message: string) => {
-    setErrorMessage(message);
-    setTimeout(() => {
-      setErrorMessage('');
-    }, 3000);
-  };
-
+  const isAnyCompleted = useMemo(() => todos.some(todo => todo.completed),
+    [todos]);
   const activeTodosCounter = useMemo(() => {
     const activeTodos = todos.filter(todo => !todo.completed).length;
 
     return activeTodos;
   }, [todos]);
-
   const filteredTodos = useMemo(() => {
     return todos.filter(todo => {
       switch (filterOption) {
@@ -50,16 +35,18 @@ export const App: React.FC = () => {
   }, [todos, filterOption]);
 
   useEffect(() => {
-    if (titleInput.current) {
-      titleInput.current.focus();
-    }
-  });
+    const timerId = window.setTimeout(() => {
+      setErrorMessage('');
+    }, 3000);
+
+    return () => window.clearTimeout(timerId);
+  }, [errorMessage]);
 
   useEffect(() => {
-    getTodos()
+    ApiServices.getTodos()
       .then(setTodos)
       .catch((error: Error) => {
-        setError(ErrorMessage.UnableLoad);
+        setErrorMessage(ErrorMessage.UnableLoad);
         // eslint-disable-next-line no-console
         console.log(error.message);
       });
@@ -67,44 +54,119 @@ export const App: React.FC = () => {
 
   const handleTodoAdd = (newTodoTitle: string) => {
     if (!newTodoTitle.trim()) {
-      setError(ErrorMessage.EmptyTitle);
+      setErrorMessage(ErrorMessage.EmptyTitle);
 
-      return;
+      return null;
     }
 
     setTempTodo({
       id: 0,
       title: newTodoTitle,
+      userId: 0,
       completed: false,
-      userId: USER_ID,
     });
 
-    addTodo(newTodoTitle.trim())
+    const response = ApiServices
+      .addTodo(newTodoTitle.trim())
       .then((newTodo: Todo) => {
         setTodos(prevTodos => [...prevTodos, newTodo]);
-        setIsLoaderActive(true);
-      }).catch(() => {
-        setError(ErrorMessage.UnableAdd);
+      }).catch(error => {
+        setErrorMessage(ErrorMessage.UnableAdd);
+        throw error;
       }).finally(() => {
         setTempTodo(null);
-        setIsLoaderActive(false);
       });
+
+    return response;
   };
 
-  const handleTodoDelete = (todoId: number): void => {
-    deleteTodo(todoId)
+  const handleTodoDelete = (todoId: number) => {
+    setProcessingTodoIds(prevState => [...prevState, todoId]);
+
+    return ApiServices
+      .deleteTodo(todoId)
       .then(() => {
+        setErrorMessage('');
         setTodos((prevTodos: Todo[]) => (
           prevTodos.filter(todo => todo.id !== todoId)
         ));
-        setIsLoaderActive(true);
       })
       .catch(() => {
-        setError(ErrorMessage.UnableDelete);
+        setErrorMessage(ErrorMessage.UnableDelete);
       })
       .finally(() => {
-        setIsLoaderActive(false);
+        setProcessingTodoIds(prevState => (
+          prevState.filter(id => id !== todoId)
+        ));
       });
+  };
+
+  const handleTodoRename = (todo: Todo, newTodoTitle: string) => {
+    setProcessingTodoIds(prevState => [...prevState, todo.id]);
+
+    ApiServices
+      .updateTodo({
+        id: todo.id,
+        title: newTodoTitle,
+        userId: todo.userId,
+        completed: todo.completed,
+      })
+      .then(updatedTodo => {
+        setTodos(prevState => prevState.map((currentTodo: Todo) => (
+          currentTodo.id !== updatedTodo.id
+            ? currentTodo
+            : updatedTodo
+        )));
+      })
+      .catch(error => {
+        setErrorMessage(ErrorMessage.UnableUpdate);
+        throw error;
+      })
+      .finally(() => {
+        setProcessingTodoIds(prevState => (
+          prevState.filter(id => id !== todo.id)
+        ));
+      });
+  };
+
+  const handleTodoToggle = (todo: Todo) => {
+    setProcessingTodoIds(prevState => [...prevState, todo.id]);
+
+    ApiServices
+      .updateTodo({
+        ...todo,
+        completed: !todo.completed,
+      })
+      .then(updatedTodo => {
+        setTodos(prevState => prevState.map((currentTodo: Todo) => (
+          currentTodo.id !== updatedTodo.id
+            ? currentTodo
+            : updatedTodo
+        )));
+      })
+      .catch(error => {
+        setErrorMessage(ErrorMessage.UnableUpdate);
+        throw error;
+      })
+      .finally(() => {
+        setProcessingTodoIds(prevState => (
+          prevState.filter(id => id !== todo.id)
+        ));
+      });
+  };
+
+  const handleClearCompletedTodos = () => {
+    todos
+      .forEach(todo => todo.completed && handleTodoDelete(todo.id));
+  };
+
+  const handleToggleAll = () => {
+    if (isEveryCompleted) {
+      return todos.forEach(handleTodoToggle);
+    }
+
+    return todos
+      .forEach(todo => !todo.completed && handleTodoToggle(todo));
   };
 
   return (
@@ -114,133 +176,38 @@ export const App: React.FC = () => {
       <div className="todoapp__content">
         <TodoHeader
           onTodoAdd={handleTodoAdd}
-          isToggleActive={isToggleActive}
+          isToggleActive={isEveryCompleted}
+          isAnyTodos={Boolean(todos.length)}
+          onToggleAllClick={handleToggleAll}
         />
 
         <section className="todoapp__main" data-cy="TodoList">
           {filteredTodos.map(todo => (
-            <div
+            <TodoRow
               key={todo.id}
-              data-cy="Todo"
-              className={cn(
-                'todo',
-                { completed: todo.completed },
+              todo={todo}
+              onTodoDelete={() => handleTodoDelete(todo.id)}
+              onTodoRename={(todoTitle: string) => (
+                handleTodoRename(todo, todoTitle)
               )}
-            >
-              <label className="todo__status-label">
-                <input
-                  data-cy="TodoStatus"
-                  type="checkbox"
-                  className="todo__status"
-                  defaultChecked={todo.completed}
-                />
-              </label>
-
-              <span data-cy="TodoTitle" className="todo__title">
-                {todo.title}
-              </span>
-
-              <button
-                type="button"
-                className="todo__remove"
-                data-cy="TodoDelete"
-                onClick={() => {
-                  setErrorMessage('');
-                  handleTodoDelete(todo.id);
-                }}
-              >
-                ×
-              </button>
-              {/* overlay will cover the todo while it is being updated */}
-              <div
-                data-cy="TodoLoader"
-                className={cn(
-                  'modal',
-                  'overlay',
-                  { 'is-active': isLoaderActive },
-                )}
-              >
-                <div className="modal-background has-background-white-ter" />
-                <div className="loader" />
-              </div>
-            </div>
+              onTodoToggle={() => handleTodoToggle(todo)}
+              isProcessing={processingTodoIds.includes(todo.id)}
+            />
           ))}
-
-          {/* This todo is being edited
-          <div data-cy="Todo" className="todo">
-            <label className="todo__status-label">
-              <input
-                data-cy="TodoStatus"
-                type="checkbox"
-                className="todo__status"
-              />
-            </label>
-
-            {/* This form is shown instead of the title and remove button }
-            <form>
-              <input
-                data-cy="TodoTitleField"
-                type="text"
-                className="todo__title-field"
-                placeholder="Empty todo will be deleted"
-                value="Todo is being edited now"
-              />
-            </form>
-
-            <div data-cy="TodoLoader" className="modal overlay">
-              <div className="modal-background has-background-white-ter" />
-              <div className="loader" />
-            </div>
-          </div>
-          */ }
-
-          {/* This todo is in loadind state */}
-          {!!tempTodo && (
-            <div data-cy="Todo" className="todo">
-              <label className="todo__status-label">
-                <input
-                  data-cy="TodoStatus"
-                  type="checkbox"
-                  className="todo__status"
-                />
-              </label>
-
-              <span data-cy="TodoTitle" className="todo__title">
-                {tempTodo.title}
-              </span>
-
-              <button
-                type="button"
-                className="todo__remove"
-                data-cy="TodoDelete"
-              >
-                ×
-              </button>
-
-              {/* 'is-active' class puts this modal on top of the todo */}
-              <div
-                data-cy="TodoLoader"
-                className={cn(
-                  'modal',
-                  'overlay',
-                  { 'is-active': isLoaderActive },
-                )}
-              >
-                <div className="modal-background has-background-white-ter" />
-                <div className="loader" />
-              </div>
-            </div>
+          {tempTodo && (
+            <TodoRow
+              todo={tempTodo}
+              isProcessing
+            />
           )}
         </section>
 
-        {/* Hide the footer if there are no todos */}
-        {todos.length > 0 && (
+        {!!todos.length && (
           <footer className="todoapp__footer" data-cy="Footer">
             <span className="todo-count" data-cy="TodosCounter">
               {`${activeTodosCounter} items left`}
             </span>
 
-            {/* Active filter should have a 'selected' class */}
             <nav className="filter" data-cy="Filter">
               <a
                 href="#/"
@@ -281,15 +248,15 @@ export const App: React.FC = () => {
               </a>
             </nav>
 
-            {/* don't show this button if there are no completed todos */}
             <button
-              data-cy="ClearCompletedButton"
               type="button"
               className="todoapp__clear-completed"
+              data-cy="ClearCompletedButton"
+              onClick={handleClearCompletedTodos}
+              disabled={!isAnyCompleted}
             >
               Clear completed
             </button>
-
           </footer>
         )}
       </div>
@@ -306,9 +273,10 @@ export const App: React.FC = () => {
       >
         <button
           data-cy="HideErrorButton"
+          aria-label="delete"
           type="button"
-          onClick={() => setErrorMessage('')}
           className="delete"
+          onClick={() => setErrorMessage('')}
         />
         {errorMessage}
       </div>

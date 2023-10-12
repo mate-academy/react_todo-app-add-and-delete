@@ -1,68 +1,84 @@
-/* eslint-disable jsx-a11y/control-has-associated-label */
-import React, { useState } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import cn from 'classnames';
 
 type Props = {
-  onTodoAdd: (title: string) => void,
+  onTodoAdd: (title: string) => Promise<void> | null,
+  onToggleAllClick: () => void,
+  isAnyTodos: boolean,
   isToggleActive: boolean,
 };
 
 export const TodoHeader: React.FC<Props> = ({
   onTodoAdd,
+  onToggleAllClick,
+  isAnyTodos,
   isToggleActive,
 }) => {
   const [todoTitle, setTodoTitle] = useState('');
-
-  const handleTodoAdd = (event: React.FormEvent<HTMLFormElement>) => {
+  const [isAdding, setIsAdding] = useState(false);
+  const titleInput = useRef<HTMLInputElement | null>(null);
+  const onFormSubmit = (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
-    onTodoAdd(todoTitle);
-    setTodoTitle('');
+    setIsAdding(true);
+    const prom = onTodoAdd(todoTitle);
+
+    if (prom) {
+      prom
+        .then(() => {
+          setTodoTitle('');
+        })
+        .catch(e => {
+          // eslint-disable-next-line no-console
+          console.log(e);
+        });
+    }
+
+    setIsAdding(false);
   };
 
-  const handleTitleChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+  const onTitleChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     setTodoTitle(event.target.value);
   };
 
+  useEffect(() => {
+    if (titleInput.current) {
+      titleInput.current.focus();
+    }
+  });
+
   return (
     <header className="todoapp__header">
-      <button
-        type="button"
-        className={cn(
-          'todoapp__toggle-all',
-          { active: isToggleActive },
-        )}
-        data-cy="ToggleAllButton"
-      />
-
-      {/* Add a todo on form submit */}
-      {false ? (
-        <form>
-          <input
-            data-cy="TodoTitleField"
-            type="text"
-            className="todo__title-field"
-            placeholder="Empty todo will be deleted"
-            value="Todo is being edited now"
-          />
-        </form>
-      ) : (
-        <>
-          <form onSubmit={handleTodoAdd}>
-            <input
-              data-cy="NewTodoField"
-              type="text"
-              className="todoapp__new-todo"
-              placeholder="What needs to be done?"
-              value={todoTitle}
-              onChange={handleTitleChange}
-            />
-          </form>
-          <div data-cy="TodoLoader" className="modal overlay">
-            <div className="modal-background has-background-white-ter" />
-            <div className="loader" />
-          </div>
-        </>
+      {isAnyTodos && (
+        <button
+          type="button"
+          aria-label="toddle"
+          className={
+            cn(
+              'todoapp__toggle-all',
+              { active: isToggleActive },
+            )
+          }
+          data-cy="ToggleAllButton"
+          onClick={onToggleAllClick}
+        />
       )}
+
+      <form onSubmit={onFormSubmit}>
+        <input
+          ref={titleInput}
+          data-cy="NewTodoField"
+          type="text"
+          className="todoapp__new-todo"
+          placeholder="What needs to be done?"
+          value={todoTitle}
+          onChange={onTitleChange}
+          disabled={isAdding}
+        />
+      </form>
+      <div data-cy="TodoLoader" className="modal overlay">
+        <div className="modal-background has-background-white-ter" />
+        <div className="loader" />
+      </div>
     </header>
   );
 };
