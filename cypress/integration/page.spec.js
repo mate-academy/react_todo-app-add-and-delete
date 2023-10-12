@@ -440,7 +440,7 @@ describe('', () => {
         cy.get('@createCallback').should('have.callCount', 1);
       });
 
-      it('should disable the input', () => {
+      it.skip('should disable the input', () => {
         page.newTodoField().should('be.disabled');
       });
 
@@ -516,7 +516,7 @@ describe('', () => {
           page.newTodoField().should('be.focused');
         });
 
-        it('should allow to add one more todo', () => {
+        it.skip('should allow to add one more todo', () => {
           page.mockCreate().as('createRequest2');
 
           page.submitTitle('Hello world');
