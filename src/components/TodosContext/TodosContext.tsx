@@ -11,6 +11,12 @@ type Context = {
   dispatch: React.Dispatch<Action>,
   currentFilter: Status,
   setCurrentFilter: React.Dispatch<Status>,
+  errorMessage: string,
+  setErrorMessage: React.Dispatch<string>,
+  tempTodo: Todo | null,
+  setTempTodo: React.Dispatch<Todo | null>,
+  clearAllIds: number[],
+  setClearAllIds: React.Dispatch<number[]>,
 };
 
 const initialContext: Context = {
@@ -18,6 +24,12 @@ const initialContext: Context = {
   dispatch: () => {},
   currentFilter: Status.All,
   setCurrentFilter: () => {},
+  errorMessage: '',
+  setErrorMessage: () => {},
+  tempTodo: null,
+  setTempTodo: () => {},
+  clearAllIds: [],
+  setClearAllIds: () => {},
 };
 
 export const TodosContext = React.createContext<Context>(initialContext);
@@ -29,6 +41,9 @@ type Props = {
 export const GlobalStateProvider: React.FC<Props> = ({ children }) => {
   const [todos, dispatch] = useReducer(todosReducer, []);
   const [currentFilter, setCurrentFilter] = useState(Status.All);
+  const [errorMessage, setErrorMessage] = useState('');
+  const [tempTodo, setTempTodo] = useState<Todo | null>(null);
+  const [clearAllIds, setClearAllIds] = useState<number[]>([]);
 
   return (
     <TodosContext.Provider value={{
@@ -36,6 +51,12 @@ export const GlobalStateProvider: React.FC<Props> = ({ children }) => {
       dispatch,
       currentFilter,
       setCurrentFilter,
+      errorMessage,
+      setErrorMessage,
+      tempTodo,
+      setTempTodo,
+      clearAllIds,
+      setClearAllIds,
     }}
     >
       {children}

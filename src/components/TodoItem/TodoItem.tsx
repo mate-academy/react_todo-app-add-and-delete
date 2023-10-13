@@ -11,17 +11,28 @@ import classNames from 'classnames';
 import './TodoItem.scss';
 import { Todo } from '../../types/Todo';
 import { TodosContext } from '../TodosContext';
+import { removeTodo } from '../../api/todos';
 
 type Props = {
   item: Todo,
 };
 
 export const TodoItem: React.FC<Props> = ({ item }) => {
-  const { dispatch } = useContext(TodosContext);
+  const {
+    dispatch,
+    tempTodo,
+    setErrorMessage,
+    clearAllIds,
+  } = useContext(TodosContext);
   const editRef = useRef<HTMLInputElement | null>(null);
 
   const [isEditing, setIsEditing] = useState(false);
   const [editedTodoTitle, setEditedTodoTitle] = useState(item.title);
+  const [isDeleting, setIsDeleteing] = useState(false);
+
+  const isLoaderActive = (
+    tempTodo?.id === item.id || isDeleting || clearAllIds.includes(item.id)
+  );
 
   useEffect(() => {
     if (isEditing) {
@@ -29,7 +40,7 @@ export const TodoItem: React.FC<Props> = ({ item }) => {
     }
   }, [isEditing]);
 
-  const handleCompletedClick = () => dispatch({
+  const handleCompletedChange = () => dispatch({
     type: 'toggle',
     payload: item,
   });
@@ -38,10 +49,17 @@ export const TodoItem: React.FC<Props> = ({ item }) => {
     setIsEditing(true);
   };
 
-  const handleRemoveItem = () => dispatch({
-    type: 'remove',
-    payload: item.id,
-  });
+  const handleRemoveItem = () => {
+    setIsDeleteing(true);
+
+    removeTodo(item.id)
+      .then(() => dispatch({
+        type: 'remove',
+        payload: item.id,
+      }))
+      .catch(() => setErrorMessage('Unable to delete a todo'))
+      .finally(() => setIsDeleteing(false));
+  };
 
   const handleTitleChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     setEditedTodoTitle(event.target.value);
@@ -87,7 +105,7 @@ export const TodoItem: React.FC<Props> = ({ item }) => {
           type="checkbox"
           className="todo__status"
           checked={item.completed}
-          onClick={handleCompletedClick}
+          onChange={handleCompletedChange}
         />
       </label>
 
@@ -121,8 +139,12 @@ export const TodoItem: React.FC<Props> = ({ item }) => {
         />
       )}
 
-      {/* 'is-active' */}
-      <div data-cy="TodoLoader" className="modal overlay">
+      <div
+        data-cy="TodoLoader"
+        className={classNames('modal overlay', {
+          'is-active': isLoaderActive,
+        })}
+      >
         <div className="modal-background has-background-white-ter" />
         <div className="loader" />
       </div>

@@ -20,10 +20,6 @@ export function todosReducer(state: Todo[], action: Action): Todo[] {
       currentState = state.filter(todo => todo.id !== action.payload);
       break;
 
-    case 'clearAllCompleted':
-      currentState = [...action.payload];
-      break;
-
     case 'toggle':
       currentState = state.map(todo => {
         if (todo.id === action.payload.id) {

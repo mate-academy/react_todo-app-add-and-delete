@@ -1,20 +1,25 @@
 /* eslint-disable jsx-a11y/control-has-associated-label */
-import React, { useState } from 'react';
+import React, { useContext, useEffect } from 'react';
 import classNames from 'classnames';
 
 import './ErrorNotification.scss';
+import { TodosContext } from '../TodosContext';
 
-type Props = {
-  errorMessage: string,
-};
+export const ErrorNotification: React.FC = () => {
+  const {
+    errorMessage,
+    setErrorMessage,
+  } = useContext(TodosContext);
 
-export const ErrorNotification: React.FC<Props> = ({ errorMessage }) => {
-  const [isErrorShown, setIsErrorShown] = useState(!errorMessage);
+  useEffect(() => {
+    const timer = setTimeout(() => {
+    }, 3000);
 
-  setTimeout(() => setIsErrorShown(false), 3000);
+    return () => clearTimeout(timer);
+  }, []);
 
   const handleErrorClosing = () => {
-    setIsErrorShown(false);
+    setErrorMessage('');
   };
 
   return (
@@ -22,7 +27,7 @@ export const ErrorNotification: React.FC<Props> = ({ errorMessage }) => {
       data-cy="ErrorNotification"
       className={
         classNames('notification is-danger is-light has-text-weight-normal', {
-          hidden: !isErrorShown,
+          hidden: !errorMessage,
         })
       }
     >

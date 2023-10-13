@@ -3,33 +3,44 @@ import React, { useContext } from 'react';
 import './Footer.scss';
 import { TodosContext } from '../TodosContext';
 import { TodosFilter } from '../TodosFilter';
+import { removeTodo } from '../../api/todos';
 
 export const Footer: React.FC = () => {
-  const { todos, dispatch } = useContext(TodosContext);
+  const {
+    todos,
+    dispatch,
+    tempTodo,
+    setErrorMessage,
+    setClearAllIds,
+  } = useContext(TodosContext);
 
-  const notCompletedTodos = todos.filter(todo => !todo.completed);
-  const notCompletedLength = notCompletedTodos.length;
-  const completedLength = todos.length - notCompletedLength;
+  const completedTodos = todos.filter(todo => todo.completed);
+  const completedTodosIds = completedTodos.map(completed => completed.id);
+  const completedLength = completedTodos.length;
+  let notCompletedLength = todos.length - completedLength;
 
-  const getItemsLeft = () => {
-    return notCompletedLength === 1 ? (
-      '1 item left'
-    ) : (
-      `${notCompletedLength} items left`
-    );
-  };
+  if (tempTodo) {
+    notCompletedLength -= 1;
+  }
 
   const handleClearClick = () => {
-    dispatch({
-      type: 'clearAllCompleted',
-      payload: notCompletedTodos,
+    setClearAllIds(completedTodosIds);
+    completedTodos.map(completedTodo => {
+      return removeTodo(completedTodo.id)
+        .then(() => dispatch({
+          type: 'remove',
+          payload: completedTodo.id,
+        }))
+        .catch(() => {
+          setErrorMessage('Unable to delete a todo');
+        });
     });
   };
 
   return (
     <footer className="todoapp__footer" data-cy="Footer">
       <span data-cy="TodosCounter">
-        {getItemsLeft()}
+        {`${notCompletedLength} items left`}
       </span>
 
       <TodosFilter />

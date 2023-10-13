@@ -1,19 +1,33 @@
 /* eslint-disable jsx-a11y/control-has-associated-label */
-import React, { useContext, useRef, useState } from 'react';
+import React, {
+  FormEvent,
+  useContext,
+  useEffect,
+  useRef,
+  useState,
+} from 'react';
+
 import classNames from 'classnames';
 
 import './Header.scss';
 import { TodosContext } from '../TodosContext';
+import { createTodo } from '../../api/todos';
+
+const USER_ID = 11677;
 
 export const Header: React.FC = () => {
-  const { dispatch } = useContext(TodosContext);
+  const {
+    dispatch,
+    setErrorMessage,
+    tempTodo,
+    setTempTodo,
+  } = useContext(TodosContext);
+
   const [newTodoTitle, setNewTodoTitle] = useState('');
   const [isToggleAllActive, setIsToggleAllActive] = useState(false);
-  const formRef = useRef<HTMLFormElement | null>(null);
+  const inputRef = useRef<HTMLInputElement>(null);
 
-  const handleTitleChange = (event: React.ChangeEvent<HTMLInputElement>) => {
-    setNewTodoTitle(event.target.value);
-  };
+  useEffect(() => inputRef.current?.focus());
 
   const handleToggleAllClick = () => {
     setIsToggleAllActive(!isToggleAllActive);
@@ -23,41 +37,53 @@ export const Header: React.FC = () => {
     });
   };
 
-  const handleKeyUp = (event: React.KeyboardEvent<HTMLInputElement>) => {
-    event.preventDefault();
-
-    if (event.key === 'Escape') {
-      if (formRef.current) {
-        formRef.current.reset();
-      }
-    }
-
-    if (event.key === 'Enter') {
-      if (formRef.current) {
-        formRef.current.submit();
-      }
-    }
+  const handleTitleChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+    setNewTodoTitle(event.target.value);
   };
 
-  const handleTodoSubmit = (event: React.FormEvent) => {
+  const handleTodoSubmit = (event: FormEvent) => {
     event.preventDefault();
 
-    if (newTodoTitle.trim().length) {
+    const trimmedTitle = newTodoTitle.trim();
+
+    if (trimmedTitle.length) {
+      const newTodo = {
+        id: +new Date(),
+        userId: USER_ID,
+        title: trimmedTitle,
+        completed: false,
+      };
+
+      setTempTodo(newTodo);
+
       dispatch({
         type: 'add',
-        payload: {
-          id: +new Date(),
-          title: newTodoTitle,
-          completed: false,
-        },
+        payload: newTodo,
       });
-    }
 
-    setNewTodoTitle('');
+      createTodo(newTodo)
+        .then(() => {
+          setNewTodoTitle('');
+        })
+        .catch(() => {
+          setErrorMessage('Unable to add a todo');
+          dispatch({
+            type: 'remove',
+            payload: newTodo.id,
+          });
+        })
+        .finally(() => {
+          setTempTodo(null);
+        });
+    } else {
+      setErrorMessage('Title should not be empty');
+    }
   };
 
-  const handleTodoReset = () => {
-    setNewTodoTitle('');
+  const handleTitleReset = (event: React.KeyboardEvent<HTMLInputElement>) => {
+    if (event.key === 'Escape') {
+      setNewTodoTitle('');
+    }
   };
 
   return (
@@ -73,18 +99,18 @@ export const Header: React.FC = () => {
       />
 
       <form
-        ref={formRef}
         onSubmit={handleTodoSubmit}
-        onReset={handleTodoReset}
       >
         <input
+          ref={inputRef}
           data-cy="NewTodoField"
           type="text"
           className="todoapp__new-todo"
           placeholder="What needs to be done?"
+          disabled={!!tempTodo}
           value={newTodoTitle}
           onChange={handleTitleChange}
-          onKeyUp={handleKeyUp}
+          onKeyUp={handleTitleReset}
         />
       </form>
     </header>
