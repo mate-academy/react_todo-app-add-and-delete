@@ -1,3 +1,5 @@
+@import "../../styles/variables.scss";
+
 .todo {
   position: relative;
 
@@ -7,7 +9,7 @@
 
   font-size: 24px;
   line-height: 1.4em;
-  border-bottom: 1px solid #ededed;
+  border-bottom: 1px solid $todo-bottom-border-color;
 
   &:last-child {
     border-bottom: 0;
@@ -36,7 +38,7 @@
   }
 
   &.completed &__title {
-    color: #d9d9d9;
+    color: $todo-completed-label-color;
     text-decoration: line-through;
   }
 
@@ -50,7 +52,7 @@
     line-height: 1;
     font-family: inherit;
     font-weight: inherit;
-    color: #cc9a9a;
+    color: $todo-destroy-color;
 
     float: right;
     border: 0;
@@ -62,7 +64,7 @@
     transition: color 0.2s ease-out;
 
     &:hover {
-      color: #af5b5e;
+      color: $todo-destroy-hover-color;
     }
   }
 
@@ -80,13 +82,13 @@
     font-weight: inherit;
     color: inherit;
 
-    border: 1px solid #999;
-    box-shadow: inset 0 -1px 5px 0 rgba(0, 0, 0, 0.2);
+    border: 1px solid $todo-border-color;
+    box-shadow: inset 0 -1px 5px 0 $app-main-shadow-color;
 
     &::placeholder {
       font-style: italic;
       font-weight: 300;
-      color: #e6e6e6;
+      color: $title-edit-placeholder-color;
     }
   }
 
