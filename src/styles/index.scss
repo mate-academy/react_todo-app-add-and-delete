@@ -3,9 +3,14 @@ iframe {
 }
 
 body {
+  font: 14px "Helvetica Neue", Helvetica, Arial, sans-serif;
+  color: #4d4d4d;
   min-width: 230px;
   max-width: 550px;
   margin: 0 auto;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  font-weight: 300;
 }
 
 .notification {
@@ -20,6 +25,23 @@ body {
   pointer-events: none;
 }
 
-@import "./todoapp";
-@import "./todo";
-@import "./filter";
+button {
+  margin: 0;
+  padding: 0;
+  border: 0;
+  background: none;
+  font-size: 100%;
+  vertical-align: baseline;
+  font-family: inherit;
+  font-weight: inherit;
+  color: inherit;
+  -webkit-appearance: none;
+  appearance: none;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  all: unset;
+}
+
+.hidden {
+  display: none;
+}
