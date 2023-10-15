@@ -8,25 +8,23 @@ function wait(delay: number) {
   });
 }
 
-// To have autocompletion and avoid mistypes
+
 type RequestMethod = 'GET' | 'POST' | 'PATCH' | 'DELETE';
 
 function request<T>(
   url: string,
   method: RequestMethod = 'GET',
-  data: any = null, // we can send any data to the server
+  data: any = null,
 ): Promise<T> {
   const options: RequestInit = { method };
 
   if (data) {
-    // We add body and Content-Type only for the requests with data
     options.body = JSON.stringify(data);
     options.headers = {
       'Content-Type': 'application/json; charset=UTF-8',
     };
   }
 
-  // we wait for testing purpose to see loaders
   return wait(300)
     .then(() => fetch(BASE_URL + url, options))
     .then(response => {
