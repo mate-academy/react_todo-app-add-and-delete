@@ -5,14 +5,10 @@ export const getTodos = (userId: number) => {
   return client.get<Todo[]>(`/todos?userId=${userId}`);
 };
 
-export const createTodo = (todo: Todo) => {
-  return client.post('/todos', todo);
+export const deleteTodos = (todoId: number) => {
+  return client.delete(`/todos/${todoId}`) as Promise<void>;
 };
 
-export const editTodo = (todo: Todo) => {
-  return client.patch(`/todos/${todo.id}`, todo);
-};
-
-export const deleteTodo = (todoId: number) => {
-  return client.delete(`/todos/${todoId}`);
+export const createTodo = ({ userId, title, completed }: Omit<Todo, 'id'>) => {
+  return client.post<Todo>('/todos', { userId, title, completed });
 };

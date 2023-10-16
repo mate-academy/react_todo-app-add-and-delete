@@ -1,50 +1,73 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
+import classNames from 'classnames';
 import { UserWarning } from './UserWarning';
-import { Header } from './components/Header/Header';
-import { Main } from './components/Main/Main';
-import { Footer } from './components/Footer/Footer';
-import { Notification } from './components/Notification/Notification';
-import { Todo } from './types/Todo';
 import { createTodo, getTodos } from './api/todos';
-import { Status } from './enums/Status';
+import { Todo } from './types/Todo';
+import { TodoList } from './TodoList';
+import { Status } from './types/Status';
+import { TodosFilter } from './TodosFilter';
 
 const USER_ID = 11444;
 
 export const App: React.FC = () => {
-  const [isLoading, setIsLoading] = useState(false);
-  const [tempTodo, setTempTodo] = useState<Todo | null>(null);
   const [todos, setTodos] = useState<Todo[]>([]);
-  const [error, setError] = useState('');
-  // also hide the notification before any next request;
-  const [filter, setFilter] = useState(Status.All);
+  const [status, setStatus] = useState(Status.all);
+  const [errorMessage, setErrorMessage] = useState('');
+  const [value, setValue] = useState('');
+  const [tempTodo, setTempTodo] = useState<Todo | null>(null);
+
+  const inputRef = useRef<HTMLInputElement | null>(null);
+
+  useEffect(() => {
+    inputRef.current?.focus();
+  }, [todos.length, errorMessage]);
+
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      setErrorMessage(
+        '',
+      );
+    }, 3000);
+
+    return () => clearTimeout(timer);
+  }, [errorMessage]);
 
   useEffect(() => {
     getTodos(USER_ID)
-      .then(data => setTodos(data))
-      .catch(() => setError('Unable to load todos'));
-  }, [isLoading]);
+      .then(setTodos)
+      .catch(() => {
+        setErrorMessage('Unable to load todos');
+      });
+  }, []);
 
   if (!USER_ID) {
     return <UserWarning />;
   }
 
-  const addTodo = (title: string) => {
-    const todo = {
-      id: todos.length ? todos[todos.length - 1].id + 1 : 1,
-      userId: USER_ID,
-      title,
-      completed: false,
-    };
+  const handleSubmit = (event: React.FormEvent) => {
+    event.preventDefault();
 
-    setIsLoading(true);
-    setTempTodo(todo);
+    setErrorMessage('');
 
-    createTodo(todo)
-      .catch(() => setError('Unable to add todo'))
-      .finally(() => {
-        setIsLoading(false);
-        setTempTodo(null);
+    if (!value.trim()) {
+      setErrorMessage('Title should not be empty');
+    } else {
+      setTempTodo({
+        userId: USER_ID, title: value.trim(), completed: false, id: 0,
       });
+
+      createTodo({ userId: USER_ID, title: value.trim(), completed: false })
+        .then(newItem => {
+          setTodos(currentTodos => [...currentTodos, newItem]);
+          setValue('');
+        })
+        .catch(() => {
+          setErrorMessage('Unable to add a todo');
+        })
+        .finally(() => {
+          setTempTodo(null);
+        });
+    }
   };
 
   return (
@@ -52,35 +75,110 @@ export const App: React.FC = () => {
       <h1 className="todoapp__title">todos</h1>
 
       <div className="todoapp__content">
-        <Header
-          addTodo={addTodo}
-          updateError={setError}
-          isLoading={isLoading}
-        />
+        <header className="todoapp__header">
+          <button
+            type="button"
+            className="todoapp__toggle-all active"
+            data-cy="ToggleAllButton"
+            aria-label="toggle all"
+          />
+
+          <form onSubmit={handleSubmit}>
+            <input
+              data-cy="NewTodoField"
+              type="text"
+              className="todoapp__new-todo"
+              placeholder="What needs to be done?"
+              value={value}
+              onChange={(event) => setValue(event.target.value)}
+              ref={inputRef}
+              disabled={tempTodo !== null}
+            />
+          </form>
+        </header>
+
+        <section className="todoapp__main" data-cy="TodoList">
+          <TodoList
+            todos={todos}
+            status={status}
+            setTodos={setTodos}
+            setErrorMessage={setErrorMessage}
+          />
+          {tempTodo && (
+            <div
+              data-cy="Todo"
+              className="todo"
+            >
+              <label
+                className="todo__status-label"
+              >
+                <input
+                  data-cy="TodoStatus"
+                  type="checkbox"
+                  className="todo__status"
+                />
+              </label>
+
+              <span
+                data-cy="TodoTitle"
+                className="todo__title"
+              >
+                {tempTodo.title}
+              </span>
+
+              <button
+                type="button"
+                className="todo__remove"
+                data-cy="TodoDelete"
+                aria-label="Delete"
+              >
+                ×
+              </button>
+
+              <div
+                data-cy="TodoLoader"
+                className="modal overlay is-active"
+              >
+                <div className="modal-background has-background-white-ter" />
+                <div className="loader" />
+              </div>
+
+            </div>
+          )}
+        </section>
 
         {!!todos.length && (
-          <>
-            <Main
-              todos={todos}
-              filter={filter}
-              temp={tempTodo}
-              updateLoading={setIsLoading}
-              updateError={setError}
-            />
-            <Footer
-              todos={todos}
-              filter={filter}
-              updateFilter={(newFilter: Status) => setFilter(newFilter)}
-              updateLoading={setIsLoading}
-              updateError={setError}
-            />
-          </>
+          <TodosFilter
+            todos={todos}
+            setTodos={setTodos}
+            status={status}
+            setStatus={setStatus}
+            setErrorMessage={setErrorMessage}
+          />
         )}
 
       </div>
 
-      {error && (<Notification message={error} />)}
-
+      <div
+        data-cy="ErrorNotification"
+        className={classNames(
+          'notification is-danger is-light has-text-weight-normal',
+          {
+            hidden: !errorMessage,
+          },
+        )}
+      >
+        <button
+          data-cy="HideErrorButton"
+          type="button"
+          className="delete"
+          aria-label="Hide Error"
+          onClick={() => setErrorMessage(
+            '',
+          )}
+        />
+        {errorMessage}
+      </div>
     </div>
   );
 };
