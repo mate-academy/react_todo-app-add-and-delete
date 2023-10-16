@@ -2,7 +2,7 @@ import React from 'react';
 
 export const UserWarning: React.FC = () => (
   <section className="section">
-    <p className="box is-size-3">
+    <div className="box is-size-3">
       Please get your
       {' '}
       <b> userId </b>
@@ -17,6 +17,6 @@ export const UserWarning: React.FC = () => (
 
       All requests to the API must be sent with this
       <b> userId.</b>
-    </p>
+    </div>
   </section>
 );
