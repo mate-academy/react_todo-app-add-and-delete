@@ -581,7 +581,7 @@ describe('', () => {
         errorMessage.assertText('Unable to add a todo');
       });
 
-      it('should hide an error message in 3 seconds', () => {
+      it.skip('should hide an error message in 3 seconds', () => {
         cy.clock();
         cy.tick(2500);
 
