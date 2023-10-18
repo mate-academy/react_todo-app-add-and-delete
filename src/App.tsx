@@ -85,9 +85,6 @@ export const App: React.FC = () => {
           ...currentTodos,
           newTodo,
         ]);
-        if (inputRef.current) {
-          inputRef.current.focus();
-        }
       })
       .catch(() => {
         setError('Unable to add a todo');
@@ -98,6 +95,16 @@ export const App: React.FC = () => {
         setStatusResponse(false);
       });
   }
+
+  const deleteTodo = (todoId: number) => {
+    setIsLoading(true);
+
+    todosServices.deleteTodo(todoId)
+      .then(() => setTodos(currentTodo => currentTodo
+        .filter(todo => todo.id !== todoId)))
+      .catch(() => setError(''))
+      .finally(() => setIsLoading(false));
+  };
 
   // eslint-disable-next-line no-console
   console.log(inputValue);
@@ -161,11 +168,15 @@ export const App: React.FC = () => {
           </form>
         </header>
 
-        <TodoList todos={filteredTodos} />
+        <TodoList
+          todos={filteredTodos}
+          deleteTodo={deleteTodo}
+        />
 
         {tempTodo && (
           <TodoItem
             todo={tempTodo}
+            deleteTodo={deleteTodo}
           />
         )}
 
