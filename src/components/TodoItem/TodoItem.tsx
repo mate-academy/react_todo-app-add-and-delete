@@ -6,7 +6,7 @@ type Props = {
   todo: Todo;
 };
 
-export const TodoItems: React.FC<Props> = ({ todo }) => {
+export const TodoItem: React.FC<Props> = ({ todo }) => {
   const { title, completed } = todo;
 
   return (

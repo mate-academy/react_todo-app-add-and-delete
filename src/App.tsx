@@ -4,9 +4,11 @@ import classNames from 'classnames';
 import { UserWarning } from './UserWarning';
 import { Todo } from './types/Todo';
 import { StatusFilter } from './types/Filter';
-import { getTodos } from './api/todos';
+import * as todosServices from './api/todos';
 import { TodoList } from './components/TodoList/TodoList';
 import { TodoFilter } from './components/TodoFilter/TodoFilter';
+import { TodoForm } from './components/TodoForm/TodoForm';
+import { TodoItem } from './components/TodoItem/TodoItem';
 
 const USER_ID = 11587;
 
@@ -15,11 +17,14 @@ export const App: React.FC = () => {
   const [loading, setLoading] = useState(false);
   const [errorMessage, setErrorMessage] = useState('');
   const [statusFilter, setStatusFilter] = useState(StatusFilter.ALL);
+  const [title, setTitle] = useState('');
+  const [statusResponce, setStatusResponce] = useState(false);
+  const [tempTodo, setTempTodo] = useState<Todo | null>(null);
 
   useEffect(() => {
     setLoading(true);
 
-    getTodos(USER_ID)
+    todosServices.getTodos(USER_ID)
       .then(setTodos)
       .catch(() => {
         setErrorMessage('Unable to load todos');
@@ -49,6 +54,45 @@ export const App: React.FC = () => {
     return filtered;
   }, [todos, statusFilter]);
 
+  function addTodo() {
+    const trimmedTitle = title.trim();
+
+    if (!trimmedTitle) {
+      setErrorMessage('Title should not be empty');
+
+      return;
+    }
+
+    const data = {
+      userId: USER_ID,
+      title: trimmedTitle,
+      completed: false,
+    };
+
+    setTempTodo({
+      id: 0,
+      ...data,
+    });
+
+    setStatusResponce(true);
+
+    todosServices.createTodo(data)
+      .then(newTodo => {
+        setTitle('');
+        setTodos(currentTodos => [
+          ...currentTodos,
+          newTodo,
+        ]);
+      })
+      .catch(() => {
+        setErrorMessage('Unable to add a todo');
+      })
+      .finally(() => {
+        setTempTodo(null);
+        setStatusResponce(false);
+      });
+  }
+
   const countActiveTodos = todos.filter(todo => !todo.completed).length;
 
   if (!USER_ID) {
@@ -69,15 +113,13 @@ export const App: React.FC = () => {
             />
           )}
 
-          {/* Add a todo on form submit */}
-          <form>
-            <input
-              data-cy="NewTodoField"
-              type="text"
-              className="todoapp__new-todo"
-              placeholder="What needs to be done?"
-            />
-          </form>
+          <TodoForm
+            title={title}
+            setTitle={setTitle}
+            addTodo={() => addTodo()}
+            statusResponce={statusResponce}
+          />
+
         </header>
 
         {!loading && (
@@ -85,6 +127,12 @@ export const App: React.FC = () => {
             <TodoList
               todos={filtredTodos}
             />
+
+            {tempTodo && (
+              <TodoItem
+                todo={tempTodo}
+              />
+            )}
 
             {todos.length > 0 && (
               <footer className="todoapp__footer" data-cy="Footer">
