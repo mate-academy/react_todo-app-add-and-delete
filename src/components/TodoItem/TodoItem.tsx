@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState } from 'react';
 import classNames from 'classnames';
 import { Todo } from '../../types/Todo';
 
@@ -8,7 +8,8 @@ type Props = {
 };
 
 export const TodoItem: React.FC<Props> = ({ todo, deleteId }) => {
-  const { title, completed } = todo;
+  const { title } = todo;
+  const [isCompleted, setIsCompleted] = useState(todo.completed);
 
   return (
     <div
@@ -16,7 +17,7 @@ export const TodoItem: React.FC<Props> = ({ todo, deleteId }) => {
       key={todo.id}
       className={classNames(
         'todo',
-        { completed },
+        { completed: isCompleted },
       )}
     >
       <label className="todo__status-label">
@@ -24,7 +25,10 @@ export const TodoItem: React.FC<Props> = ({ todo, deleteId }) => {
           data-cy="TodoStatus"
           type="checkbox"
           className="todo__status"
-          checked={completed}
+          checked={isCompleted}
+          onChange={(event) => {
+            setIsCompleted(event.target.checked);
+          }}
         />
       </label>
 
@@ -33,7 +37,7 @@ export const TodoItem: React.FC<Props> = ({ todo, deleteId }) => {
       </span>
 
       {/* Remove button appears only on hover */}
-      <button 
+      <button
         type="button"
         className="todo__remove"
         data-cy="TodoDelete"
