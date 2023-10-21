@@ -97,6 +97,16 @@ export const App: React.FC = () => {
       });
   }
 
+  const deleteTodo = (todoId: number) => {
+    setLoading(true);
+
+    todosServices.removeTodo(todoId)
+      .then(() => setTodos(currentTodo => currentTodo
+        .filter(todo => todo.id !== todoId)))
+      .catch(() => changeErrorMessage('Unable to delete a todo'))
+      .finally(() => setLoading(false));
+  };
+
   const countActiveTodos = todos.filter(todo => !todo.completed).length;
 
   if (!USER_ID) {
@@ -130,11 +140,13 @@ export const App: React.FC = () => {
           <>
             <TodoList
               todos={filtredTodos}
+              deleteTodo={deleteTodo}
             />
 
             {tempTodo && (
               <TodoItem
                 todo={tempTodo}
+                deleteId={deleteTodo}
               />
             )}
 
