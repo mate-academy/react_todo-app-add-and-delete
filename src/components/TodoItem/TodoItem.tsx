@@ -37,7 +37,7 @@ export const TodoItem: React.FC<Props> = ({ todo }) => {
       </button>
 
       {/* overlay will cover the todo while it is being updated */}
-      <div 
+      <div
         data-cy="TodoLoader"
         className={classNames(
           'modal overlay',
