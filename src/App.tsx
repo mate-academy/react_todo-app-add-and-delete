@@ -21,6 +21,24 @@ export const App: React.FC = () => {
   const [statusResponce, setStatusResponce] = useState(false);
   const [tempTodo, setTempTodo] = useState<Todo | null>(null);
 
+  function errorCleaner (message: string) {
+    setErrorMessage(message);
+    setTimeout(() => {
+      setErrorMessage('');
+    }, 3000);
+  }
+
+  useEffect(() => {
+    setLoading(true);
+
+    todosServices.getTodos(USER_ID)
+      .then(setTodos)
+      .catch(() => {
+        errorCleaner('Unable to load todos');
+      })
+      .finally(() => setLoading(false));
+  }, []);
+
   useEffect(() => {
     setLoading(true);
 
