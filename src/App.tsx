@@ -21,7 +21,7 @@ export const App: React.FC = () => {
   const [statusResponce, setStatusResponce] = useState(false);
   const [tempTodo, setTempTodo] = useState<Todo | null>(null);
 
-  function errorCleaner (message: string) {
+  function changeErrorMessage(message: string) {
     setErrorMessage(message);
     setTimeout(() => {
       setErrorMessage('');
@@ -34,7 +34,7 @@ export const App: React.FC = () => {
     todosServices.getTodos(USER_ID)
       .then(setTodos)
       .catch(() => {
-        errorCleaner('Unable to load todos');
+        changeErrorMessage('Unable to load todos');
       })
       .finally(() => setLoading(false));
   }, []);
@@ -76,7 +76,7 @@ export const App: React.FC = () => {
     const trimmedTitle = title.trim();
 
     if (!trimmedTitle) {
-      setErrorMessage('Title should not be empty');
+      changeErrorMessage('Title should not be empty');
 
       return;
     }
