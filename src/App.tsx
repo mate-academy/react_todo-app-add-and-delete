@@ -39,20 +39,6 @@ export const App: React.FC = () => {
       .finally(() => setLoading(false));
   }, []);
 
-  useEffect(() => {
-    setLoading(true);
-
-    todosServices.getTodos(USER_ID)
-      .then(setTodos)
-      .catch(() => {
-        setErrorMessage('Unable to load todos');
-        setTimeout(() => {
-          setErrorMessage('');
-        }, 3000);
-      })
-      .finally(() => setLoading(false));
-  }, []);
-
   const filtredTodos: Todo[] = useMemo(() => {
     let filtered = todos;
 
@@ -103,7 +89,7 @@ export const App: React.FC = () => {
         ]);
       })
       .catch(() => {
-        setErrorMessage('Unable to add a todo');
+        changeErrorMessage('Unable to add a todo');
       })
       .finally(() => {
         setTempTodo(null);
