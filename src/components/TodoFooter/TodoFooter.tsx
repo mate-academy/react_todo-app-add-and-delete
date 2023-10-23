@@ -6,7 +6,7 @@ import { StatusFilter } from '../../types/Filter';
 type Props = {
   todos: Todo[],
   setTodos: (todos: Todo[]) => void,
-  filter: StatusFilter
+  filter: StatusFilter,
   setFilter: (item: StatusFilter) => void
 };
 
