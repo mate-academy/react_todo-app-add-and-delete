@@ -5,18 +5,21 @@ import { Todo } from '../../types/Todo';
 type Props = {
   todo: Todo;
   deleteId: (id: number) => void,
+  updateTodo: (updatedTodo: Todo) => void;
   isLoading: boolean;
 };
 
-export const TodoItem: React.FC<Props> = ({ todo, deleteId, isLoading }) => {
+export const TodoItem: React.FC<Props> = ({
+  todo, deleteId, updateTodo, isLoading,
+}) => {
   const { title } = todo;
   const [isCompleted, setIsCompleted] = useState(todo.completed);
 
   const handleCheckboxChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     const updatedTodo = { ...todo, completed: event.target.checked };
+
     setIsCompleted(updatedTodo.completed);
-    // Передаем обновленный объект в функцию deleteId.
-    deleteId(updatedTodo.id);
+    updateTodo(updatedTodo);
   };
 
   return (

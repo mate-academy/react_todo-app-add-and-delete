@@ -21,7 +21,10 @@ export const TodoFooter: React.FC<Props> = ({
   }, [todos]);
 
   const handleClearCompleted = () => {
-    setTodos(todos.filter(todo => !todo.completed));
+    // Фильтруем задачи, оставляем только активные
+    const activeTodos = todos.filter(todo => !todo.completed);
+
+    setTodos(activeTodos);
   };
 
   return (
