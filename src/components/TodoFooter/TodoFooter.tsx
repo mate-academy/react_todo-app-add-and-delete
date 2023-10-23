@@ -1,7 +1,7 @@
 import React, { useMemo } from 'react';
 import classNames from 'classnames';
 import { Todo } from '../../types/Todo';
-import { StatusFilter} from '../../types/Filter';
+import { StatusFilter } from '../../types/Filter';
 
 type Props = {
   todos: Todo[],

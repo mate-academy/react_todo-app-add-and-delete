@@ -6,12 +6,14 @@ type Props = {
   todos: Todo[];
   deleteTodo: (id: number) => void;
   isLoadingTodo: number[],
+  tempTodo: Todo | null,
 };
 
 export const TodoList: React.FC<Props> = ({
   todos,
   deleteTodo,
   isLoadingTodo,
+  tempTodo,
 }) => {
   return (
     <section className="todoapp__main" data-cy="TodoList">
@@ -28,6 +30,14 @@ export const TodoList: React.FC<Props> = ({
           // TodoItem будет равно true, и индикатор загрузки будет активирован.
         />
       ))}
+      {tempTodo && (
+        <TodoItem
+          key={tempTodo.id}
+          todo={tempTodo}
+          deleteId={deleteTodo}
+          isLoading={isLoadingTodo.includes(tempTodo.id)}
+        />
+      )}
     </section>
   );
 };

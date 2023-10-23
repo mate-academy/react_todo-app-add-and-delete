@@ -7,8 +7,7 @@ import { StatusFilter } from './types/Filter';
 import * as todosServices from './api/todos';
 import { TodoList } from './components/TodoList/TodoList';
 import { TodoFooter } from './components/TodoFooter/TodoFooter';
-import { TodoForm } from './components/TodoForm/TodoForm';
-import { TodoItem } from './components/TodoItem/TodoItem';
+import { Header } from './components/Header/Header';
 
 const USER_ID = 11587;
 
@@ -41,7 +40,7 @@ export const App: React.FC = () => {
   }, []);
 
   const filtredTodos: Todo[] = useMemo(() => {
-    let filtered = todos;
+    let filtered = [...todos];
 
     switch (statusFilter) {
       case StatusFilter.ACTIVE:
@@ -59,7 +58,8 @@ export const App: React.FC = () => {
     return filtered;
   }, [todos, statusFilter]);
 
-  function addTodo() {
+  const addTodo = (event: React.FormEvent<HTMLFormElement>) => {
+    event.preventDefault();
     const trimmedTitle = title.trim();
 
     if (!trimmedTitle) {
@@ -122,22 +122,13 @@ export const App: React.FC = () => {
       <h1 className="todoapp__title">todos</h1>
 
       <div className="todoapp__content">
-        <header className="todoapp__header">
-          {!todos.length && (
-            <button
-              type="button"
-              className="todoapp__toggle-all active"
-              data-cy="ToggleAllButton"
-            />
-          )}
-
-          <TodoForm
-            title={title}
-            setTitle={setTitle}
-            addTodo={() => addTodo()}
-            statusResponce={statusResponse}
-          />
-        </header>
+        <Header
+          todos={todos}
+          statusResponce={statusResponse}
+          title={title}
+          setTitle={setTitle}
+          onHandleSumbit={addTodo}
+        />
 
         {filtredTodos.length > 0 && (
           <>
@@ -145,11 +136,8 @@ export const App: React.FC = () => {
               todos={filtredTodos}
               deleteTodo={deleteTodo}
               isLoadingTodo={isloadingTodo}
+              tempTodo={tempTodo}
             />
-
-            {tempTodo && (
-              <TodoItem todo={tempTodo} deleteId={deleteTodo} isLoading />
-            )}
 
             {todos.length > 0 && (
               <TodoFooter
