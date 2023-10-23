@@ -9,7 +9,6 @@ and implement the ability to add and remove todos.
 # ❗️❗️❗️</br>Please implement only adding and deleting todos in addition to what was already implemented.<br><br>All the other features from the working version will be implemented in the next task.</br>❗️❗️❗️
 
 > Check the [API Documentation](https://mate-academy.github.io/fe-students-api/)
-
 ## Adding a todo
 
 Add a todo with the entered title on the form submit:
@@ -51,7 +50,7 @@ Remove all the completed todos after the `Clear completed` button click:
 
 - Implement a solution following the [React task guideline](https://github.com/mate-academy/react_task-guideline#react-tasks-guideline).
 - Use the [React TypeScript cheat sheet](https://mate-academy.github.io/fe-program/js/extra/react-typescript).
-- Replace `<your_account>` with your Github username in the [DEMO LINK](https://<your_account>.github.io/react_todo-app-add-and-delete/) and add it to the PR description.
+- Replace `<your_account>` with your Github username in the [DEMO LINK](https://AndrzejPec.github.io/react_todo-app-add-and-delete/) and add it to the PR description.
 
 ## IF you want to implement smooth animations
 
@@ -131,7 +130,7 @@ Remove all the completed todos after the `Clear completed` button click:
     transition: max-height 0.3s ease-in-out;
   }
 
-  .temp-item-exit {
+  .temp-item-exit {ddd
     max-height: 58px;
   }
 
@@ -142,10 +141,8 @@ Remove all the completed todos after the `Clear completed` button click:
     transition: 0.3s ease-in-out;
     transition-property: opacity, max-height, transform;
   }
-
   .has-error .temp-item-exit-active {
     transform: translateY(0);
     overflow: hidden;
   }
-  ```
 </details>
