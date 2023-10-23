@@ -1,24 +1,93 @@
-/* eslint-disable max-len */
 /* eslint-disable jsx-a11y/control-has-associated-label */
-import React from 'react';
-import { UserWarning } from './UserWarning';
+import React, {
+  useEffect,
+  useState,
+  useMemo,
+  useContext,
+} from 'react';
+import classNames from 'classnames';
 
-const USER_ID = 0;
+import { TodoFilter } from './types/TodoFilter';
+import { TodoList } from './components/TodoList';
+import { TodoHeader } from './components/TodoHeader';
+import { TodoFooter } from './components/TodoFooter';
+import { getFilteredTodos } from './utils/getFilteredTodos';
+import { CurrentError } from './types/CurrentError';
+import { TodoContext } from './Context/TodoContext';
+import { USER_ID } from './utils/constants';
+import * as todoService from './api/todos';
 
 export const App: React.FC = () => {
-  if (!USER_ID) {
-    return <UserWarning />;
-  }
+  const [todoFilter, setTodoFilter] = useState<TodoFilter>(TodoFilter.All);
+
+  const {
+    todos,
+    setTodos,
+    error,
+    setError,
+  } = useContext(TodoContext);
+
+  useEffect(() => {
+    todoService.getTodos(USER_ID)
+      .then(setTodos)
+      .catch(() => {
+        setError(CurrentError.LoadingError);
+      });
+  }, []);
+
+  useEffect(() => {
+    if (error) {
+      setTimeout(() => {
+        setError(CurrentError.Default);
+      }, 3000);
+    }
+  }, [error]);
+
+  const filteredTodos = useMemo(() => {
+    return getFilteredTodos(todos, todoFilter);
+  }, [todos, todoFilter]);
+
+  const handleSetTodoFilter = (filter: TodoFilter) => (
+    setTodoFilter(filter)
+  );
 
   return (
-    <section className="section container">
-      <p className="title is-4">
-        Copy all you need from the prev task:
-        <br />
-        <a href="https://github.com/mate-academy/react_todo-app-loading-todos#react-todo-app-load-todos">React Todo App - Load Todos</a>
-      </p>
+    <div className="todoapp">
+      <h1 className="todoapp__title">todos</h1>
 
-      <p className="subtitle">Styles are already copied</p>
-    </section>
+      <div className="todoapp__content">
+        <TodoHeader />
+
+        <TodoList
+          todos={filteredTodos}
+        />
+
+        {!!todos.length && (
+          <TodoFooter
+            filter={todoFilter}
+            setFilter={handleSetTodoFilter}
+          />
+        )}
+      </div>
+
+      <div
+        data-cy="ErrorNotification"
+        className={classNames(
+          'notification',
+          'is-danger',
+          'is-light',
+          'has-text-weight-normal',
+          { hidden: !error },
+        )}
+      >
+        <button
+          data-cy="HideErrorButton"
+          type="button"
+          className="delete"
+          onClick={() => setError(CurrentError.Default)}
+        />
+        {error}
+      </div>
+    </div>
   );
 };
