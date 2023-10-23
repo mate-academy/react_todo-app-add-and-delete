@@ -40,15 +40,16 @@ export const App: React.FC = () => {
   }, []);
 
   const filtredTodos: Todo[] = useMemo(() => {
-    let filtered = [...todos];
+    let filtered = todos;
 
     switch (statusFilter) {
       case StatusFilter.ACTIVE:
-        filtered = filtered.filter((todo) => !todo.completed);
+        filtered = filtered.filter(todo => !todo.completed);
         break;
 
       case StatusFilter.COMPLETED:
-        filtered = filtered.filter((todo) => todo.completed);
+        filtered = filtered.filter(todo => todo.completed);
+
         break;
 
       default:
@@ -131,23 +132,21 @@ export const App: React.FC = () => {
         />
 
         {filtredTodos.length > 0 && (
-          <>
-            <TodoList
-              todos={filtredTodos}
-              deleteTodo={deleteTodo}
-              isLoadingTodo={isloadingTodo}
-              tempTodo={tempTodo}
-            />
+          <TodoList
+            todos={filtredTodos}
+            deleteTodo={deleteTodo}
+            isLoadingTodo={isloadingTodo}
+            tempTodo={tempTodo}
+          />
+        )}
 
-            {todos.length > 0 && (
-              <TodoFooter
-                todos={filtredTodos}
-                setTodos={setTodos}
-                filter={statusFilter}
-                setFilter={setStatusFilter}
-              />
-            )}
-          </>
+        {todos.length > 0 && (
+          <TodoFooter
+            todos={filtredTodos}
+            setTodos={setTodos}
+            filter={statusFilter}
+            setStatusFilter={setStatusFilter}
+          />
         )}
       </div>
 

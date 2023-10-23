@@ -12,6 +12,13 @@ export const TodoItem: React.FC<Props> = ({ todo, deleteId, isLoading }) => {
   const { title } = todo;
   const [isCompleted, setIsCompleted] = useState(todo.completed);
 
+  const handleCheckboxChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+    const updatedTodo = { ...todo, completed: event.target.checked };
+    setIsCompleted(updatedTodo.completed);
+    // Передаем обновленный объект в функцию deleteId.
+    deleteId(updatedTodo.id);
+  };
+
   return (
     <div
       data-cy="Todo"
@@ -27,9 +34,7 @@ export const TodoItem: React.FC<Props> = ({ todo, deleteId, isLoading }) => {
           type="checkbox"
           className="todo__status"
           checked={isCompleted}
-          onChange={(event) => {
-            setIsCompleted(event.target.checked);
-          }}
+          onChange={handleCheckboxChange}
         />
       </label>
 

@@ -7,14 +7,14 @@ type Props = {
   todos: Todo[],
   setTodos: (todos: Todo[]) => void,
   filter: StatusFilter,
-  setFilter: (item: StatusFilter) => void
+  setStatusFilter: (item: StatusFilter) => void,
 };
 
 export const TodoFooter: React.FC<Props> = ({
   todos,
   setTodos,
   filter,
-  setFilter,
+  setStatusFilter,
 }) => {
   const activeTodosCount = useMemo(() => {
     return todos.filter(todo => !todo.completed).length;
@@ -38,7 +38,7 @@ export const TodoFooter: React.FC<Props> = ({
             selected: filter === StatusFilter.ALL,
           })}
           data-cy="FilterLinkAll"
-          onClick={() => setFilter(StatusFilter.ALL)}
+          onClick={() => setStatusFilter(StatusFilter.ALL)}
         >
           All
         </a>
@@ -49,7 +49,7 @@ export const TodoFooter: React.FC<Props> = ({
             selected: filter === StatusFilter.ACTIVE,
           })}
           data-cy="FilterLinkActive"
-          onClick={() => setFilter(StatusFilter.ACTIVE)}
+          onClick={() => setStatusFilter(StatusFilter.ACTIVE)}
         >
           Active
         </a>
@@ -60,14 +60,14 @@ export const TodoFooter: React.FC<Props> = ({
             selected: filter === StatusFilter.COMPLETED,
           })}
           data-cy="FilterLinkCompleted"
-          onClick={() => setFilter(StatusFilter.COMPLETED)}
+          onClick={() => setStatusFilter(StatusFilter.COMPLETED)}
         >
           Completed
         </a>
       </nav>
 
       {/* don't show this button if there are no completed todos */}
-      {activeTodosCount && (
+      {activeTodosCount > 0 && (
         <button
           type="button"
           className="todoapp__clear-completed"
