@@ -103,12 +103,13 @@ export const App: React.FC = () => {
     todosServices
       .removeTodo(todoId)
       .then(() => setTodos(
-        (currentTodo) => currentTodo.filter((todo) => todo.id !== todoId)
-        ))
+        (currentTodo) => currentTodo.filter((todo) => todo.id !== todoId),
+      ))
       .catch(() => changeErrorMessage('Unable to delete a todo'))
       .finally(() => setIsLoadingTodo(
         (currentTodo) => currentTodo.filter(
-          (id: number) => id !== todoId)
+          (id: number) => id !== todoId,
+        ),
       ));
     // убираем todoId из массива isLoadingTodo.
   };
@@ -161,7 +162,12 @@ export const App: React.FC = () => {
 
                 {/* Active filter should have a 'selected' class */}
 
-                <TodoFilter filter={statusFilter} setFilter={setStatusFilter} />
+                <TodoFilter
+                  todos={todos}
+                  setTodos={setTodos}
+                  filter={statusFilter}
+                  setFilter={setStatusFilter} 
+                />
 
                 {/* don't show this button if there are no completed todos */}
                 <button
