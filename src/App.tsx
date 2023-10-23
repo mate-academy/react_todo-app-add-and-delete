@@ -17,8 +17,7 @@ export const App: React.FC = () => {
   const [isloadingTodo, setIsLoadingTodo] = useState<number[]>([]);
   //  Этот массив отслеживает состояние загрузки для каждой
   //  задачи (TODO) в виде идентификаторов (id). По сути,
-  //  это массив идентификаторов задач, для которых
-  //  требуется отображать индикатор загрузки [1,2,3,4 итд].
+  //  это массив идентификаторов задач [1,2,3,4 итд].
   const [errorMessage, setErrorMessage] = useState('');
   const [statusFilter, setStatusFilter] = useState(StatusFilter.ALL);
   const [title, setTitle] = useState('');
