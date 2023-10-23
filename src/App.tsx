@@ -134,7 +134,7 @@ export const App: React.FC = () => {
         ),
       ));
     // убираем todoId из массива isLoadingTodo.
-  }
+  };
 
   if (!USER_ID) {
     return <UserWarning />;

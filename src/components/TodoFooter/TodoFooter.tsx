@@ -25,6 +25,7 @@ export const TodoFooter: React.FC<Props> = ({
   const handleClearCompleted = () => {
     // Фильтруем задачи, оставляем только активные
     const activeTodos = todos.filter(todo => !todo.completed);
+
     setTodos(activeTodos);
   };
 
@@ -71,15 +72,15 @@ export const TodoFooter: React.FC<Props> = ({
       </nav>
 
       {/* don't show this button if there are no completed todos */}
-        <button
-          type="button"
-          className="todoapp__clear-completed"
-          data-cy="ClearCompletedButton"
-          onClick={handleClearCompleted}
-          disabled={!hasSomeCompletedTodos}
-        >
-          Clear completed
-        </button>
+      <button
+        type="button"
+        className="todoapp__clear-completed"
+        data-cy="ClearCompletedButton"
+        onClick={handleClearCompleted}
+        disabled={!hasSomeCompletedTodos}
+      >
+        Clear completed
+      </button>
     </footer>
   );
 };

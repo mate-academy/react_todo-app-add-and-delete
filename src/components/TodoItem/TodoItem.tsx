@@ -17,6 +17,7 @@ export const TodoItem: React.FC<Props> = ({
 
   const handleCheckboxChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     const updatedTodo = { ...todo, completed: event.target.checked };
+
     setIsCompleted(updatedTodo.completed);
     updateTodo(updatedTodo);
   };
