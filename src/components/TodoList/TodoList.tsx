@@ -5,6 +5,7 @@ import { TodoItem } from '../TodoItem/TodoItem';
 type Props = {
   todos: Todo[];
   deleteTodo: (id: number) => void;
+  updateTodo: (todo: Todo) => void;
   isLoadingTodo: number[],
   tempTodo: Todo | null,
 };
@@ -12,6 +13,7 @@ type Props = {
 export const TodoList: React.FC<Props> = ({
   todos,
   deleteTodo,
+  updateTodo,
   isLoadingTodo,
   tempTodo,
 }) => {
@@ -22,6 +24,7 @@ export const TodoList: React.FC<Props> = ({
           key={todo.id}
           todo={todo}
           deleteId={deleteTodo}
+          updateTodo={updateTodo}
           isLoading={isLoadingTodo.includes(todo.id)}
           // значение isLoading вычисляется как булевое,
           // используя .includes(todo.id)
@@ -35,6 +38,7 @@ export const TodoList: React.FC<Props> = ({
           key={tempTodo.id}
           todo={tempTodo}
           deleteId={deleteTodo}
+          updateTodo={updateTodo}
           isLoading={isLoadingTodo.includes(tempTodo.id)}
         />
       )}

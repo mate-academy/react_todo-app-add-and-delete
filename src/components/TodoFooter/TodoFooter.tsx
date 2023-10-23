@@ -20,10 +20,11 @@ export const TodoFooter: React.FC<Props> = ({
     return todos.filter(todo => !todo.completed).length;
   }, [todos]);
 
+  const hasSomeCompletedTodos = todos.some(todo => todo.completed);
+
   const handleClearCompleted = () => {
     // Фильтруем задачи, оставляем только активные
     const activeTodos = todos.filter(todo => !todo.completed);
-
     setTodos(activeTodos);
   };
 
@@ -70,16 +71,15 @@ export const TodoFooter: React.FC<Props> = ({
       </nav>
 
       {/* don't show this button if there are no completed todos */}
-      {activeTodosCount > 0 && (
         <button
           type="button"
           className="todoapp__clear-completed"
           data-cy="ClearCompletedButton"
           onClick={handleClearCompleted}
+          disabled={!hasSomeCompletedTodos}
         >
           Clear completed
         </button>
-      )}
     </footer>
   );
 };

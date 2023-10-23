@@ -5,20 +5,20 @@ import { Todo } from '../../types/Todo';
 type Props = {
   todo: Todo;
   deleteId: (id: number) => void,
+  updateTodo: (todo: Todo) => void,
   isLoading: boolean;
 };
 
 export const TodoItem: React.FC<Props> = ({
-  todo, deleteId, isLoading,
+  todo, deleteId, updateTodo, isLoading,
 }) => {
   const { title } = todo;
   const [isCompleted, setIsCompleted] = useState(todo.completed);
 
   const handleCheckboxChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     const updatedTodo = { ...todo, completed: event.target.checked };
-
     setIsCompleted(updatedTodo.completed);
-    deleteId(updatedTodo.id);
+    updateTodo(updatedTodo);
   };
 
   return (

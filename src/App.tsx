@@ -114,6 +114,28 @@ export const App: React.FC = () => {
     // убираем todoId из массива isLoadingTodo.
   };
 
+  const updateTodo = (todo: Todo) => {
+    setIsLoadingTodo((currentTodo) => [...currentTodo, todo.id]);
+
+    todosServices
+      .updateTodo({
+        ...todo,
+        completed: todo.completed,
+      })
+      .then((updatedTodo) => setTodos(
+        (currentTodo) => currentTodo.map((item) => (
+          item.id === todo.id ? updatedTodo : item
+        )),
+      ))
+      .catch(() => changeErrorMessage('Unable to update a todo'))
+      .finally(() => setIsLoadingTodo(
+        (currentTodo) => currentTodo.filter(
+          (id: number) => id !== todo.id,
+        ),
+      ));
+    // убираем todoId из массива isLoadingTodo.
+  }
+
   if (!USER_ID) {
     return <UserWarning />;
   }
@@ -135,6 +157,7 @@ export const App: React.FC = () => {
           <TodoList
             todos={filtredTodos}
             deleteTodo={deleteTodo}
+            updateTodo={updateTodo}
             isLoadingTodo={isloadingTodo}
             tempTodo={tempTodo}
           />
