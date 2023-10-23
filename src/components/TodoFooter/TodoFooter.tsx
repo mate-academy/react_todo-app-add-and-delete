@@ -1,4 +1,4 @@
-import React, { useMemo } from 'react';
+import React from 'react';
 import classNames from 'classnames';
 import { Todo } from '../../types/Todo';
 import { StatusFilter } from '../../types/Filter';
@@ -16,23 +16,17 @@ export const TodoFooter: React.FC<Props> = ({
   filter,
   setStatusFilter,
 }) => {
-  const activeTodosCount = useMemo(() => {
-    return todos.filter(todo => !todo.completed).length;
-  }, [todos]);
-
+  const activeTodos = todos.filter(todo => !todo.completed).length;
   const hasSomeCompletedTodos = todos.some(todo => todo.completed);
 
   const handleClearCompleted = () => {
-    // Фильтруем задачи, оставляем только активные
-    const activeTodos = todos.filter(todo => !todo.completed);
-
-    setTodos(activeTodos);
+    setTodos(todos.filter(todo => !todo.completed));
   };
 
   return (
     <footer className="todoapp__footer" data-cy="Footer">
       <span className="todo-count" data-cy="TodosCounter">
-        {`${activeTodosCount} items left`}
+        {`${activeTodos} items left`}
       </span>
 
       {/* Active filter should have a 'selected' class */}
