@@ -5,12 +5,11 @@ import { Todo } from '../../types/Todo';
 type Props = {
   todo: Todo;
   deleteId: (id: number) => void,
-  updateTodo: (updatedTodo: Todo) => void;
   isLoading: boolean;
 };
 
 export const TodoItem: React.FC<Props> = ({
-  todo, deleteId, updateTodo, isLoading,
+  todo, deleteId, isLoading,
 }) => {
   const { title } = todo;
   const [isCompleted, setIsCompleted] = useState(todo.completed);
@@ -19,7 +18,7 @@ export const TodoItem: React.FC<Props> = ({
     const updatedTodo = { ...todo, completed: event.target.checked };
 
     setIsCompleted(updatedTodo.completed);
-    updateTodo(updatedTodo);
+    deleteId(updatedTodo.id);
   };
 
   return (
