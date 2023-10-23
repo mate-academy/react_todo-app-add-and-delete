@@ -13,7 +13,7 @@ export const UserWarning: React.FC = () => (
       {' '}
       and save it in the app
       {' '}
-      <pre>const USER_ID = ...</pre>
+      <pre>const USER_ID = 11521</pre>
 
       All requests to the API must be sent with this
       <b> userId.</b>
