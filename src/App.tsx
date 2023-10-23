@@ -6,7 +6,7 @@ import { Todo } from './types/Todo';
 import { StatusFilter } from './types/Filter';
 import * as todosServices from './api/todos';
 import { TodoList } from './components/TodoList/TodoList';
-import { TodoFilter } from './components/TodoFilter/TodoFilter';
+import { TodoFooter } from './components/TodoFooter/TodoFooter';
 import { TodoForm } from './components/TodoForm/TodoForm';
 import { TodoItem } from './components/TodoItem/TodoItem';
 
@@ -41,22 +41,22 @@ export const App: React.FC = () => {
   }, []);
 
   const filtredTodos: Todo[] = useMemo(() => {
-    let filteredTodos = todos;
+    let filtered = todos;
 
     switch (statusFilter) {
       case StatusFilter.ACTIVE:
-        filteredTodos = filteredTodos.filter((todo) => !todo.completed);
+        filtered = filtered.filter((todo) => !todo.completed);
         break;
 
       case StatusFilter.COMPLETED:
-        filteredTodos = filteredTodos.filter((todo) => todo.completed);
+        filtered = filtered.filter((todo) => todo.completed);
         break;
 
       default:
         break;
     }
 
-    return filteredTodos;
+    return filtered;
   }, [todos, statusFilter]);
 
   function addTodo() {
@@ -152,7 +152,7 @@ export const App: React.FC = () => {
             )}
 
             {todos.length > 0 && (
-              <TodoFilter
+              <TodoFooter
                 todos={todos}
                 setTodos={setTodos}
                 filter={statusFilter}
