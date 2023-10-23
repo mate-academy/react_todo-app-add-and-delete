@@ -94,7 +94,7 @@ export const App: React.FC = () => {
         setTempTodo(null);
         setStatusResponse(false);
       });
-  }
+  };
 
   const deleteTodo = (todoId: number) => {
     setIsLoadingTodo((currentTodo) => [...currentTodo, todoId]);
@@ -127,7 +127,7 @@ export const App: React.FC = () => {
           statusResponce={statusResponse}
           title={title}
           setTitle={setTitle}
-          onHandleSumbit={addTodo}
+          onHandleSubmit={addTodo}
         />
 
         {filtredTodos.length > 0 && (

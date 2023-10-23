@@ -27,7 +27,7 @@ export const Header: React.FC<Props> = ({
   return (
     <header className="todoapp__header">
       {/* this buttons is active only if there are some active todos */}
-      {todos.length > 0  && (
+      {todos.length > 0 && (
         <button
           type="button"
           className="todoapp__toggle-all active"
@@ -37,7 +37,7 @@ export const Header: React.FC<Props> = ({
         />
       )}
 
-      <form 
+      <form
         method="post"
         onSubmit={onHandleSubmit}
       >
