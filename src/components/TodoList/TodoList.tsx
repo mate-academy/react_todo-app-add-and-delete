@@ -5,11 +5,13 @@ import { TodoItem } from '../TodoItem/TodoItem';
 type Props = {
   todos: Todo[];
   deleteTodo: (id: number) => void;
+  isLoadingTodo: number[],
 };
 
 export const TodoList: React.FC<Props> = ({
   todos,
   deleteTodo,
+  isLoadingTodo,
 }) => {
   return (
     <section className="todoapp__main" data-cy="TodoList">
@@ -18,6 +20,12 @@ export const TodoList: React.FC<Props> = ({
           key={todo.id}
           todo={todo}
           deleteId={deleteTodo}
+          isLoading={isLoadingTodo.includes(todo.id)}
+          // значение isLoading вычисляется как булевое,
+          // используя .includes(todo.id)
+          // для проверки, содержит ли массив isLoading конкретный todo.id.
+          // Если isLoading содержит todo.id, то условие в компоненте
+          // TodoItem будет равно true, и индикатор загрузки будет активирован.
         />
       ))}
     </section>

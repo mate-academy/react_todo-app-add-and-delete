@@ -5,9 +5,10 @@ import { Todo } from '../../types/Todo';
 type Props = {
   todo: Todo;
   deleteId: (id: number) => void,
+  isLoading: boolean;
 };
 
-export const TodoItem: React.FC<Props> = ({ todo, deleteId }) => {
+export const TodoItem: React.FC<Props> = ({ todo, deleteId, isLoading }) => {
   const { title } = todo;
   const [isCompleted, setIsCompleted] = useState(todo.completed);
 
@@ -41,7 +42,9 @@ export const TodoItem: React.FC<Props> = ({ todo, deleteId }) => {
         type="button"
         className="todo__remove"
         data-cy="TodoDelete"
-        onClick={() => deleteId(todo.id)}
+        onClick={() => !isLoading && deleteId(todo.id)}
+        // Если индикатор загрузки не активен, переходит к следующей части.
+        // Вызывается функция deleteId(todo.id)
       >
         ×
       </button>

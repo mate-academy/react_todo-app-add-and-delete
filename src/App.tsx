@@ -14,11 +14,15 @@ const USER_ID = 11587;
 
 export const App: React.FC = () => {
   const [todos, setTodos] = useState<Todo[]>([]);
-  const [loading, setLoading] = useState(false);
+  const [isloadingTodo, setIsLoadingTodo] = useState<number[]>([]);
+  //  Этот массив отслеживает состояние загрузки для каждой
+  //  задачи (TODO) в виде идентификаторов (id). По сути,
+  //  это массив идентификаторов задач, для которых
+  //  требуется отображать индикатор загрузки [1,2,3,4 итд].
   const [errorMessage, setErrorMessage] = useState('');
   const [statusFilter, setStatusFilter] = useState(StatusFilter.ALL);
   const [title, setTitle] = useState('');
-  const [statusResponce, setStatusResponce] = useState(false);
+  const [statusResponse, setStatusResponse] = useState(false);
   const [tempTodo, setTempTodo] = useState<Todo | null>(null);
 
   function changeErrorMessage(message: string) {
@@ -29,33 +33,31 @@ export const App: React.FC = () => {
   }
 
   useEffect(() => {
-    setLoading(true);
-
-    todosServices.getTodos(USER_ID)
+    todosServices
+      .getTodos(USER_ID)
       .then(setTodos)
       .catch(() => {
         changeErrorMessage('Unable to load todos');
-      })
-      .finally(() => setLoading(false));
+      });
   }, []);
 
   const filtredTodos: Todo[] = useMemo(() => {
-    let filtered = todos;
+    let filteredTodos = todos;
 
     switch (statusFilter) {
       case StatusFilter.ACTIVE:
-        filtered = filtered.filter(todo => !todo.completed);
+        filteredTodos = filteredTodos.filter((todo) => !todo.completed);
         break;
 
       case StatusFilter.COMPLETED:
-        filtered = filtered.filter(todo => todo.completed);
+        filteredTodos = filteredTodos.filter((todo) => todo.completed);
         break;
 
       default:
         break;
     }
 
-    return filtered;
+    return filteredTodos;
   }, [todos, statusFilter]);
 
   function addTodo() {
@@ -78,36 +80,40 @@ export const App: React.FC = () => {
       ...data,
     });
 
-    setStatusResponce(true);
+    setStatusResponse(true);
 
-    todosServices.createTodo(data)
-      .then(newTodo => {
+    todosServices
+      .createTodo(data)
+      .then((newTodo) => {
         setTitle('');
-        setTodos(currentTodos => [
-          ...currentTodos,
-          newTodo,
-        ]);
+        setTodos((currentTodos) => [...currentTodos, newTodo]);
       })
       .catch(() => {
         changeErrorMessage('Unable to add a todo');
       })
       .finally(() => {
         setTempTodo(null);
-        setStatusResponce(false);
+        setStatusResponse(false);
       });
   }
 
   const deleteTodo = (todoId: number) => {
-    setLoading(true);
+    setIsLoadingTodo((currentTodo) => [...currentTodo, todoId]);
 
-    todosServices.removeTodo(todoId)
-      .then(() => setTodos(currentTodo => currentTodo
-        .filter(todo => todo.id !== todoId)))
+    todosServices
+      .removeTodo(todoId)
+      .then(() => setTodos(
+        (currentTodo) => currentTodo.filter((todo) => todo.id !== todoId)
+        ))
       .catch(() => changeErrorMessage('Unable to delete a todo'))
-      .finally(() => setLoading(false));
+      .finally(() => setIsLoadingTodo(
+        (currentTodo) => currentTodo.filter(
+          (id: number) => id !== todoId)
+      ));
+    // убираем todoId из массива isLoadingTodo.
   };
 
-  const countActiveTodos = todos.filter(todo => !todo.completed).length;
+  const countActiveTodos = todos.filter((todo) => !todo.completed).length;
 
   if (!USER_ID) {
     return <UserWarning />;
@@ -131,23 +137,20 @@ export const App: React.FC = () => {
             title={title}
             setTitle={setTitle}
             addTodo={() => addTodo()}
-            statusResponce={statusResponce}
+            statusResponce={statusResponse}
           />
-
         </header>
 
-        {!loading && (
+        {filtredTodos.length > 0 && (
           <>
             <TodoList
               todos={filtredTodos}
               deleteTodo={deleteTodo}
+              isLoadingTodo={isloadingTodo}
             />
 
             {tempTodo && (
-              <TodoItem
-                todo={tempTodo}
-                deleteId={deleteTodo}
-              />
+              <TodoItem todo={tempTodo} deleteId={deleteTodo} isLoading />
             )}
 
             {todos.length > 0 && (
@@ -158,10 +161,7 @@ export const App: React.FC = () => {
 
                 {/* Active filter should have a 'selected' class */}
 
-                <TodoFilter
-                  filter={statusFilter}
-                  setFilter={setStatusFilter}
-                />
+                <TodoFilter filter={statusFilter} setFilter={setStatusFilter} />
 
                 {/* don't show this button if there are no completed todos */}
                 <button
