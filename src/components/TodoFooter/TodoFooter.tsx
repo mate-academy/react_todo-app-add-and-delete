@@ -2,31 +2,20 @@ import React, { useContext } from 'react';
 import cn from 'classnames';
 import { StateFilter } from '../../types/StateFilter';
 import { TodoContext } from '../TodoContext';
-import * as todosService from '../../services/todos';
-import { ErrorMessage } from '../../types/ErrorMessage';
 
 type Props = {
-  setErrorMessage: (message: string) => void,
+  deleteAllCompleted: () => void,
 };
 
-export const TodoFooter: React.FC<Props> = ({ setErrorMessage }) => {
+export const TodoFooter: React.FC<Props> = ({
+  deleteAllCompleted,
+}) => {
   const {
-    todos, selectedState, setSelectedState, setTodos,
+    todos, selectedState, setSelectedState,
   } = useContext(TodoContext);
 
   const notActiveTodos = todos.filter(todo => !todo.completed);
   const someCompletedTodo = todos.some(todo => todo.completed);
-
-  const deleteAllCompleted = () => {
-    setTodos(notActiveTodos);
-
-    [...todos].filter(({ completed }) => completed)
-      .map(({ id }) => id)
-      .forEach((id) => todosService.deleteTodo(id).catch(() => {
-        setTodos(todos);
-        setErrorMessage(ErrorMessage.UnableDelete);
-      }));
-  };
 
   return (
     <footer className="todoapp__footer" data-cy="Footer">

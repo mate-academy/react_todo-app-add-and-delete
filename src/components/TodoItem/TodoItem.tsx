@@ -36,7 +36,7 @@ export const TodoItem: React.FC<Props> = React.memo(({
           data-cy="TodoStatus"
           type="checkbox"
           className="todo__status"
-          checked
+          checked={todo.completed}
         />
       </label>
 
@@ -72,10 +72,9 @@ export const TodoItem: React.FC<Props> = React.memo(({
         </>
       )}
 
-      {/* overlay will cover the todo while it is being updated */ /* 'is-active' class puts this modal on top of the todo */}
       <div
         data-cy="TodoLoader"
-        className="modal overlay"
+        className={cn('modal overlay', { 'is-active': todo.id === 0 })}
       >
         <div
           className="

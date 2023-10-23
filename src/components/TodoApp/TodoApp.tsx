@@ -51,7 +51,9 @@ export const TodoApp: React.FC = () => {
   const addTodo = (e: React.FormEvent) => {
     e.preventDefault();
 
-    if (!query) {
+    const trimmedQuery = query.trim();
+
+    if (!trimmedQuery.trim()) {
       setErrorMessage(ErrorMessage.EmptyTitle);
 
       setTimeout(() => {
@@ -63,7 +65,7 @@ export const TodoApp: React.FC = () => {
 
     const newTodoData = {
       userId: USER_ID,
-      title: query,
+      title: trimmedQuery,
       completed: false,
     };
 
@@ -101,6 +103,21 @@ export const TodoApp: React.FC = () => {
     });
   };
 
+  const deleteAllCompleted = () => {
+    const copyTodo = [...todos];
+
+    setTodos(copyTodo.filter(todo => !todo.completed));
+
+    copyTodo.filter(({ completed }) => completed)
+      .map(({ id }) => id)
+      .forEach((id) => {
+        todosService.deleteTodo(id).catch(() => {
+          setTodos(todos);
+          setErrorMessage(ErrorMessage.UnableDelete);
+        });
+      });
+  };
+
   const allTodosActive = todos.every(todo => todo.completed);
 
   if (!USER_ID) {
@@ -134,7 +151,7 @@ export const TodoApp: React.FC = () => {
               className="todoapp__new-todo"
               placeholder="What needs to be done?"
               value={query}
-              onChange={e => setQuery(e.target.value.trim())}
+              onChange={e => setQuery(e.target.value)}
               disabled={loading}
             />
           </form>
@@ -149,7 +166,7 @@ export const TodoApp: React.FC = () => {
         )}
 
         {!!todos.length && (
-          <TodoFooter setErrorMessage={setErrorMessage} />
+          <TodoFooter deleteAllCompleted={deleteAllCompleted} />
         )}
       </div>
 
