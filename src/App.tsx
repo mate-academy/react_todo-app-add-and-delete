@@ -114,8 +114,6 @@ export const App: React.FC = () => {
     // убираем todoId из массива isLoadingTodo.
   };
 
-  const countActiveTodos = todos.filter((todo) => !todo.completed).length;
-
   if (!USER_ID) {
     return <UserWarning />;
   }
@@ -155,29 +153,12 @@ export const App: React.FC = () => {
             )}
 
             {todos.length > 0 && (
-              <footer className="todoapp__footer" data-cy="Footer">
-                <span className="todo-count" data-cy="TodosCounter">
-                  {`${countActiveTodos} items left`}
-                </span>
-
-                {/* Active filter should have a 'selected' class */}
-
-                <TodoFilter
-                  todos={todos}
-                  setTodos={setTodos}
-                  filter={statusFilter}
-                  setFilter={setStatusFilter} 
-                />
-
-                {/* don't show this button if there are no completed todos */}
-                <button
-                  type="button"
-                  className="todoapp__clear-completed"
-                  data-cy="ClearCompletedButton"
-                >
-                  Clear completed
-                </button>
-              </footer>
+              <TodoFilter
+                todos={todos}
+                setTodos={setTodos}
+                filter={statusFilter}
+                setFilter={setStatusFilter}
+              />
             )}
           </>
         )}
