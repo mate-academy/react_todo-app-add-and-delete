@@ -28,10 +28,10 @@ export const TodoApp: React.FC = () => {
   const titleField = useRef<HTMLInputElement>(null);
 
   useEffect(() => {
-    if (titleField.current) {
+    if (titleField.current !== null) {
       titleField.current.focus();
     }
-  }, [setTodos, query, todos]);
+  }, [setTodos, query, todos, setTempTodo]);
 
   function setError(message: string) {
     setErrorMessage(message);
@@ -63,6 +63,10 @@ export const TodoApp: React.FC = () => {
       return;
     }
 
+    if (titleField.current !== null) {
+      titleField.current.disabled = true;
+    }
+
     const newTodoData = {
       userId: USER_ID,
       title: trimmedQuery,
@@ -80,13 +84,18 @@ export const TodoApp: React.FC = () => {
 
     createNewTodo
       .then(newTodo => {
-        setTodos(currentTodos => [...currentTodos, newTodo]);
         setQuery('');
+        setTodos(currentTodos => [...currentTodos, newTodo]);
       })
       .catch(() => {
         setError(ErrorMessage.UnableTodo);
       })
       .finally(() => {
+        if (titleField.current !== null) {
+          titleField.current.disabled = false;
+          titleField.current.focus();
+        }
+
         setLoading(false);
         setTempTodo(null);
       });
@@ -170,13 +179,10 @@ export const TodoApp: React.FC = () => {
         )}
       </div>
 
-      {!!errorMessage.length && (
-        <TodoErrorNotification
-          errorMessage={errorMessage}
-          closeWindow={() => setErrorMessage('')}
-        />
-      )}
+      <TodoErrorNotification
+        errorMessage={errorMessage}
+        closeWindow={() => setErrorMessage('')}
+      />
     </div>
-
   );
 };
