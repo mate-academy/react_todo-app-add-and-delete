@@ -33,7 +33,8 @@ function request<T>(
         throw new Error();
       }
 
-      return response.json() as unknown as T;
+      return response.json() as T;
+      // return response.json() as unknown as T;
     });
 }
 

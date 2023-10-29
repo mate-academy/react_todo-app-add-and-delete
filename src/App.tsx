@@ -1,61 +1,76 @@
 /* eslint-disable no-console */
 /* eslint-disable jsx-a11y/control-has-associated-label */
-import React, { useEffect, useMemo, useState } from 'react';
+import React, { useEffect } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
-import { getTodos } from './api/todos';
 import { ErrorNotification } from './components/ErrorNotification';
 import { TodoFooter } from './components/TodoFooter';
 import { TodoHeader } from './components/TodoHeader';
 import { TodoList } from './components/TodoList';
 import { UserWarning } from './components/UserWarning/UserWarning';
-import { Todo } from './types/Todo';
+import { AppDispatch, RootState } from './redux/store';
 import { TodoFilter } from './types/TodoFilter';
+import {
+  clearTempTodo,
+  setErrorType,
+  setFilter,
+  setTempTodo,
+} from './redux/todoSlice';
 import { ErrorType } from './types/errorType';
+import { selectFilteredTodos } from './store/selectors';
+import { fetchTodos, addTodo } from './redux/todoThunks';
+// import { AddTodoResponse } from './api/todos';
+// import { Todo } from './types/Todo';
 
 const USER_ID = 11725;
 
 export const App: React.FC = () => {
-  // const [todos, setTodos] = useState<Todo[]>([]);
-  const [errorType, setErrorType] = useState<ErrorType | null>(null);
-  const [currentFilter, setCurrentFilter]
-    = useState<TodoFilter>(TodoFilter.All);
+  const dispatch = useDispatch<AppDispatch>();
 
-  const dispatch = useDispatch();
-
-  const todos = useSelector((state) => state.todos.todos);
-  const status = useSelector((state) => state.todos.status);
-  const error = useSelector((state) => state.todos.error);
+  const todos = useSelector((state: RootState) => state.todos.todos);
+  const status = useSelector((state: RootState) => state.todos.status);
+  const error = useSelector((state: RootState) => state.todos.error);
+  const errorType = useSelector((state: RootState) => state.todos.errorType);
+  const tempTodo = useSelector((state: RootState) => state.todos.tempTodo);
 
   useEffect(() => {
-    getTodos(11725)
-      .then(fetchedTodos => setTodos(fetchedTodos))
-      .catch(error => {
-        console.error('Error fetching todos:', error);
-        setErrorType(ErrorType.LoadError);
-      });
-  }, []);
+    dispatch(fetchTodos(11725));
+  }, [dispatch]);
 
+  // load error
   useEffect(() => {
-    console.log(todos);
-  }, [todos]);
-
-  const filteredTodos = useMemo(() => {
-    switch (currentFilter) {
-      case TodoFilter.Active:
-        return todos.filter(todo => !todo.completed);
-      case TodoFilter.Completed:
-        return todos.filter(todo => todo.completed);
-      default:
-        return todos;
+    if (status === 'failed') {
+      console.error('Error fetching todos:', error);
     }
-  }, [todos, currentFilter]);
+  }, [status, error]);
 
-  // useEffect(() => {
-  //   console.log(filteredTodos);
-  // }, [filteredTodos]);
+  const filteredTodos = useSelector(selectFilteredTodos);
+
+  useEffect(() => {
+    console.log(filteredTodos);
+  }, [filteredTodos]);
+
+  const handleAddTodo = (title: string) => {
+    const newTempTodo = {
+      id: 0,
+      title,
+      completed: false,
+    };
+
+    dispatch(setTempTodo(newTempTodo));
+
+    dispatch(addTodo({ title }))
+      .then(() => {
+        dispatch(clearTempTodo());
+      })
+      .catch((err: string) => {
+        console.error('Unable to add todo:', err);
+        dispatch(clearTempTodo());
+        dispatch(setErrorType(ErrorType.AddTodoError));
+      });
+  };
 
   const handleFilterChange = (filter: TodoFilter) => {
-    setCurrentFilter(filter);
+    dispatch(setFilter(filter));
   };
 
   if (!USER_ID) {
@@ -72,11 +87,9 @@ export const App: React.FC = () => {
 
         <TodoList todos={filteredTodos} />
 
-        {/* Hide the footer if there are no todos */}
         {todos && todos.length > 0 && (
           <TodoFooter
             todos={filteredTodos}
-            currentFilter={currentFilter}
             filterChange={handleFilterChange}
           />
         )}

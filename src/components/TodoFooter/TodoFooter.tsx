@@ -1,16 +1,19 @@
 import cn from 'classnames';
+import { useSelector } from 'react-redux';
+import { selectFilter } from '../../store/selectors';
 import { Todo } from '../../types/Todo';
 import { TodoFilter } from '../../types/TodoFilter';
 
 interface TodoFooterProps {
   todos: Todo[];
   filterChange: (filter: TodoFilter) => void;
-  currentFilter: TodoFilter;
 }
 
 export const TodoFooter: React.FC<TodoFooterProps> = (
-  { todos, filterChange, currentFilter },
+  { todos, filterChange },
 ) => {
+  const currentFilter = useSelector(selectFilter);
+
   return (
     <footer className="todoapp__footer" data-cy="Footer">
       <span className="todo-count" data-cy="TodosCounter">
