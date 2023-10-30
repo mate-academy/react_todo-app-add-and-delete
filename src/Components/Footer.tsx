@@ -5,19 +5,21 @@ import { Filter } from '../types/FilterBy';
 
 interface Props {
   todos: Todo[],
+  setTodos: (todo: Todo[]) => void,
   filterBy: Filter,
   setFilterBy: (filter: Filter) => void,
 }
 
 export const Footer: React.FC<Props> = ({
   todos,
+  setTodos,
   filterBy,
   setFilterBy,
 }) => {
   const itemsLeft = todos.filter(todo => todo.completed === false).length;
 
   const handleClearCompleted = () => {
-    setFilterBy(Filter.Active);
+    setTodos(todos.filter(todo => !todo.completed));
   };
 
   return (

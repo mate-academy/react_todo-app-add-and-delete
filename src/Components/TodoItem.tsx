@@ -6,14 +6,23 @@ interface Props {
   todo: Todo,
   deleteTodo: (id: number) => void,
   isLoading: boolean,
+  updateTodo: (todo: Todo) => void,
 }
 
 export const TodoItem: React.FC<Props> = ({
   todo,
   deleteTodo,
   isLoading,
+  updateTodo,
 }) => {
   const [isCompleted, setIsCompleted] = useState(todo.completed);
+
+  const handleChangeComleted = (event: React.ChangeEvent<HTMLInputElement>) => {
+    const updatedTodo = { ...todo, completed: event.target.checked };
+
+    setIsCompleted(updatedTodo.completed);
+    updateTodo(updatedTodo);
+  };
 
   return (
     <div
@@ -26,7 +35,7 @@ export const TodoItem: React.FC<Props> = ({
           type="checkbox"
           className="todo__status"
           checked={isCompleted}
-          onChange={(event) => setIsCompleted(event.target.checked)}
+          onChange={handleChangeComleted}
         />
       </label>
 

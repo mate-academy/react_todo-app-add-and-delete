@@ -40,7 +40,7 @@ export const App: React.FC = () => {
   }, []);
 
   const filtered: Todo[] = useMemo(() => {
-    let filteredTodos = todos;
+    let filteredTodos = [...todos];
 
     switch (filterBy) {
       case Filter.Active:
@@ -113,6 +113,28 @@ export const App: React.FC = () => {
       });
   };
 
+  const updateTodo = (todo: Todo) => {
+    setLoading((currentTodo) => [...currentTodo, todo.id]);
+
+    todosServise
+      .updateTodo({
+        ...todo,
+        completed: todo.completed,
+      })
+      .then((updatedTodo) => setTodos(
+        (currentTodo) => currentTodo.map((item) => (
+          item.id === todo.id ? updatedTodo : item
+        )),
+      ))
+      .catch(() => changeErrorMessage(Error.Update))
+      .finally(() => setLoading(
+        (currentTodo) => currentTodo.filter(
+          (id: number) => id !== todo.id,
+        ),
+      ));
+    // убираем todoId из массива isLoadingTodo.
+  };
+
   if (!USER_ID) {
     return <UserWarning />;
   }
@@ -136,12 +158,14 @@ export const App: React.FC = () => {
             deleteTodo={deleteTodo}
             loading={loading}
             tempTodo={temoTodo}
+            updateTodo={updateTodo}
           />
         )}
 
         {todos.length > 0 && (
           <Footer
-            todos={filtered}
+            todos={todos}
+            setTodos={setTodos}
             filterBy={filterBy}
             setFilterBy={setFilterBy}
           />
