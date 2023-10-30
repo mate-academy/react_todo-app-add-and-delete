@@ -2,26 +2,24 @@
 /* eslint-disable jsx-a11y/control-has-associated-label */
 import React, { useEffect } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
+import { AppDispatch, RootState } from './redux/store';
+import { USER_ID } from './_utils/constants';
 import { ErrorNotification } from './components/ErrorNotification';
 import { TodoFooter } from './components/TodoFooter';
 import { TodoHeader } from './components/TodoHeader';
 import { TodoList } from './components/TodoList';
 import { UserWarning } from './components/UserWarning/UserWarning';
-import { AppDispatch, RootState } from './redux/store';
 import { TodoFilter } from './types/TodoFilter';
 import {
   clearTempTodo,
   setErrorType,
   setFilter,
+  setInputValue,
   setTempTodo,
 } from './redux/todoSlice';
 import { ErrorType } from './types/errorType';
 import { selectFilteredTodos } from './store/selectors';
 import { fetchTodos, addTodo } from './redux/todoThunks';
-// import { AddTodoResponse } from './api/todos';
-// import { Todo } from './types/Todo';
-
-const USER_ID = 11725;
 
 export const App: React.FC = () => {
   const dispatch = useDispatch<AppDispatch>();
@@ -30,7 +28,7 @@ export const App: React.FC = () => {
   const status = useSelector((state: RootState) => state.todos.status);
   const error = useSelector((state: RootState) => state.todos.error);
   const errorType = useSelector((state: RootState) => state.todos.errorType);
-  const tempTodo = useSelector((state: RootState) => state.todos.tempTodo);
+  // const tempTodo = useSelector((state: RootState) => state.todos.tempTodo);
 
   useEffect(() => {
     dispatch(fetchTodos(11725));
@@ -50,6 +48,12 @@ export const App: React.FC = () => {
   }, [filteredTodos]);
 
   const handleAddTodo = (title: string) => {
+    if (!title) {
+      dispatch(setErrorType(ErrorType.EmptyTitle));
+
+      return;
+    }
+
     const newTempTodo = {
       id: 0,
       title,
@@ -61,6 +65,7 @@ export const App: React.FC = () => {
     dispatch(addTodo({ title }))
       .then(() => {
         dispatch(clearTempTodo());
+        dispatch(setInputValue(''));
       })
       .catch((err: string) => {
         console.error('Unable to add todo:', err);
@@ -83,7 +88,9 @@ export const App: React.FC = () => {
 
       <div className="todoapp__content">
 
-        <TodoHeader />
+        <TodoHeader
+          handleAddTodo={handleAddTodo}
+        />
 
         <TodoList todos={filteredTodos} />
 
@@ -104,3 +111,17 @@ export const App: React.FC = () => {
     </div>
   );
 };
+
+// Focus the text field after receiving a response:
+
+// const inputRef = React.useRef(null);
+
+// useEffect(() => {
+//   if (responseReceived) {
+//     // Assume responseReceived is a piece of state updated when a response is received
+//     inputRef.current.focus();
+//   }
+// }, [responseReceived]);
+
+// // In your JSX
+// <input ref={inputRef} /* other props */ />

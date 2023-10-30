@@ -1,4 +1,25 @@
-export const TodoHeader: React.FC = () => {
+import { useDispatch, useSelector } from 'react-redux';
+import { AppDispatch, RootState } from '../../redux/store';
+import { setInputValue } from '../../redux/todoSlice';
+
+interface TodoHeaderProps {
+  handleAddTodo: (title: string) => void;
+}
+
+export const TodoHeader: React.FC<TodoHeaderProps> = ({ handleAddTodo }) => {
+  const dispatch = useDispatch<AppDispatch>();
+
+  const inputValue = useSelector((state: RootState) => state.todos.inputValue);
+
+  const handleInputChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+    dispatch(setInputValue(event.target.value));
+  };
+
+  const handleFormSubmit = (event: React.FormEvent<HTMLFormElement>) => {
+    event.preventDefault(); // Prevent the default form submission behavior
+    handleAddTodo(inputValue); // Call handleAddTodo with the current inputValue
+  };
+
   return (
     <header className="todoapp__header">
       {/* this buttons is active only if there are some active todos */}
@@ -10,12 +31,15 @@ export const TodoHeader: React.FC = () => {
       />
 
       {/* Add a todo on form submit */}
-      <form>
+      <form onSubmit={handleFormSubmit}>
         <input
+          // eslint-disable-next-line jsx-a11y/no-autofocus
+          autoFocus
           data-cy="NewTodoField"
           type="text"
           className="todoapp__new-todo"
           placeholder="What needs to be done?"
+          onChange={handleInputChange}
         />
       </form>
     </header>

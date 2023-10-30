@@ -1,3 +1,4 @@
+/* eslint-disable no-console */
 import { createAsyncThunk } from '@reduxjs/toolkit';
 import { Todo } from '../types/Todo';
 import {
@@ -23,8 +24,12 @@ export const fetchTodos
 
 export const addTodo = createAsyncThunk(
   'todos/addTodo',
-  async ({ title }: { title: string }): Promise<Todo> => {
+  async (
+    { title }: { title: string },
+  ): Promise<Todo> => {
     const response: AddTodoResponse = await addTodoApi(title);
+
+    console.log(response.data, 'in thunk');
 
     return response.data;
   },

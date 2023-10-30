@@ -1,3 +1,4 @@
+/* eslint-disable no-console */
 /* eslint-disable no-param-reassign */
 import { createSlice, PayloadAction } from '@reduxjs/toolkit';
 import { Todo } from '../types/Todo';
@@ -70,6 +71,7 @@ const todoSlice = createSlice({
         state.errorType = ErrorType.LoadError;
       })
       .addCase(addTodo.fulfilled, (state, action: PayloadAction<Todo>) => {
+        console.log(action.payload);
         state.todos.push(action.payload);
       })
       .addCase(addTodo.rejected, (state) => {
