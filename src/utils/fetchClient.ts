@@ -1,6 +1,7 @@
-const BASE_URL = 'https://mate.academy/students-api';
+/* eslint-disable @typescript-eslint/no-explicit-any */
+export const BASE_URL = 'https://mate.academy/students-api';
 
-// a promise resolved after a given delay
+// returns a promise resolved after a given delay
 function wait(delay: number) {
   return new Promise(resolve => {
     setTimeout(resolve, delay);
@@ -25,8 +26,8 @@ function request<T>(
     };
   }
 
-  // we wait for testing purpose to see loaders
-  return wait(300)
+  // DON'T change the delay it is required for tests
+  return wait(100)
     .then(() => fetch(BASE_URL + url, options))
     .then(response => {
       if (!response.ok) {
