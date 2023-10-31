@@ -3,22 +3,26 @@ import { addTodo, getTodos } from '../../api/todos';
 import { Todo } from '../../types/Todo';
 
 type Props = {
+  setTempTodo: React.Dispatch<React.SetStateAction<Todo | null>>
+  nowLoading: boolean,
+  setNowLoading: React.Dispatch<React.SetStateAction<boolean>>,
   setTodos: React.Dispatch<React.SetStateAction<Todo[]>>
-  setLoading: React.Dispatch<React.SetStateAction<boolean>>
+  setLoaded: React.Dispatch<React.SetStateAction<boolean>>
   showErrorWithDelay:(errorMessage: string) => void
   inputText: string;
   setInputText: React.Dispatch<React.SetStateAction<string>>;
-  generateId: () => number;
   USER_ID: 11719;
 };
 
 export const Header: React.FC<Props> = ({
+  setTempTodo,
+  nowLoading,
+  setNowLoading,
   setTodos,
-  setLoading,
+  setLoaded,
   showErrorWithDelay,
   inputText,
   setInputText,
-  generateId,
   USER_ID,
 }) => {
   const inputRef = useRef<HTMLInputElement | null>(null);
@@ -35,26 +39,36 @@ export const Header: React.FC<Props> = ({
 
   const handleSubmit = (event: React.FormEvent) => {
     event.preventDefault();
+    const trimmedTitle = inputText.trim();
+
     if (!inputText.trim()) {
       showErrorWithDelay('Title should not be empty');
+
+      return;
     }
 
-    const newTodo:Todo = {
-      id: generateId(),
+    const newTodo: Todo = {
+      id: 0,
       userId: USER_ID,
-      title: inputText,
+      title: trimmedTitle,
       completed: false,
     };
+
+    setNowLoading(false);
 
     addTodo(newTodo)
       .then(() => {
         getTodos(USER_ID)
           .then((todo) => {
             setTodos(todo);
-            setLoading(true);
+            setLoaded(true);
+            setNowLoading(false);
+            setInputText('');
+            setTempTodo(newTodo as Todo);
           })
           .catch((fetchError) => {
-            setLoading(false);
+            setLoaded(false);
+            setNowLoading(false);
             showErrorWithDelay('Unable to add a todo');
             throw fetchError;
           });
@@ -83,7 +97,7 @@ export const Header: React.FC<Props> = ({
           value={inputText}
           onChange={handleInputChange}
           ref={inputRef}
-          // autoFocus
+          disabled={nowLoading}
         />
       </form>
     </header>

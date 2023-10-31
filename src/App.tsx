@@ -17,12 +17,13 @@ export enum FilterStatus {
 }
 
 export const App: React.FC = () => {
-  const [loading, setLoading] = useState(true);
+  const [loaded, setLoaded] = useState(true);
+  const [nowLoading, setNowLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [todos, setTodos] = useState<Todo[]>([]);
   const [inputText, setInputText] = useState('');
   const [filterStatus, setFilterStatus] = useState(FilterStatus.All);
-
+  const [tempTodo, setTempTodo] = useState<Todo | null>(null);
   const showErrorWithDelay = (errorMessage: string) => {
     setError(errorMessage);
     setTimeout(() => {
@@ -44,22 +45,18 @@ export const App: React.FC = () => {
       break;
   }
 
-  const generateId = (): number => {
-    return +new Date();
-  };
-
   useEffect(() => {
     getTodos(USER_ID)
       .then((todo) => {
         setTodos(todo);
-        setLoading(true);
+        setLoaded(true);
       })
       .catch((fetchError) => {
-        setLoading(false);
+        setLoaded(false);
         showErrorWithDelay('Unable to load todos');
         throw fetchError;
       });
-  }, [loading]);
+  }, [loaded, nowLoading]);
 
   const handleCompleted = (elem: number, completed: boolean) => {
     updateTodoStatus(elem, !completed)
@@ -67,10 +64,10 @@ export const App: React.FC = () => {
         getTodos(USER_ID)
           .then((todo) => {
             setTodos(todo);
-            setLoading(true);
+            setLoaded(true);
           })
           .catch((fetchError) => {
-            setLoading(false);
+            setLoaded(false);
             showErrorWithDelay('Unable to update a todo');
             throw fetchError;
           });
@@ -87,24 +84,27 @@ export const App: React.FC = () => {
 
       <div className="todoapp__content">
         <Header
+          setTempTodo={setTempTodo}
+          nowLoading={nowLoading}
+          setNowLoading={setNowLoading}
           setTodos={setTodos}
-          setLoading={setLoading}
+          setLoaded={setLoaded}
           showErrorWithDelay={showErrorWithDelay}
-          generateId={generateId}
           inputText={inputText}
           setInputText={setInputText}
           USER_ID={USER_ID}
         />
 
         <TodoList
+          tempTodo={tempTodo}
           setTodos={setTodos}
-          setLoading={setLoading}
+          setLoaded={setLoaded}
           filteredTodos={filteredTodos}
           todos={todos}
-          loading={loading}
+          nowLoading={nowLoading}
           showErrorWithDelay={showErrorWithDelay}
           handleCompleted={handleCompleted}
-          USER_ID={USER_ID}
+          // USER_ID={USER_ID}
         />
 
         <Footer
