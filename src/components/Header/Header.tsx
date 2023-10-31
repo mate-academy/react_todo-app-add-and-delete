@@ -3,18 +3,20 @@ import { addTodo, getTodos } from '../../api/todos';
 import { Todo } from '../../types/Todo';
 
 type Props = {
-  setTempTodo: React.Dispatch<React.SetStateAction<Todo | null>>
-  nowLoading: boolean,
-  setNowLoading: React.Dispatch<React.SetStateAction<boolean>>,
-  setTodos: React.Dispatch<React.SetStateAction<Todo[]>>
-  setLoaded: React.Dispatch<React.SetStateAction<boolean>>
-  showErrorWithDelay:(errorMessage: string) => void
+  tempTodo: Todo | null;
+  setTempTodo: React.Dispatch<React.SetStateAction<Todo | null>>;
+  nowLoading: boolean;
+  setNowLoading: React.Dispatch<React.SetStateAction<boolean>>;
+  setTodos: React.Dispatch<React.SetStateAction<Todo[]>>;
+  setLoaded: React.Dispatch<React.SetStateAction<boolean>>;
+  showErrorWithDelay:(errorMessage: string) => void;
   inputText: string;
   setInputText: React.Dispatch<React.SetStateAction<string>>;
   USER_ID: 11719;
 };
 
 export const Header: React.FC<Props> = ({
+  tempTodo,
   setTempTodo,
   nowLoading,
   setNowLoading,
@@ -54,25 +56,28 @@ export const Header: React.FC<Props> = ({
       completed: false,
     };
 
-    setNowLoading(false);
+    setNowLoading(true);
+    setTempTodo(newTodo as Todo);
+    if (tempTodo) {
+      addTodo(newTodo)
 
-    addTodo(newTodo)
-      .then(() => {
-        getTodos(USER_ID)
-          .then((todo) => {
-            setTodos(todo);
-            setLoaded(true);
-            setNowLoading(false);
-            setInputText('');
-            setTempTodo(newTodo as Todo);
-          })
-          .catch((fetchError) => {
-            setLoaded(false);
-            setNowLoading(false);
-            showErrorWithDelay('Unable to add a todo');
-            throw fetchError;
-          });
-      });
+        .then(() => {
+          getTodos(USER_ID)
+            .then((todo) => {
+              setTodos(todo);
+              setLoaded(true);
+              setNowLoading(false);
+              setInputText('');
+              setTempTodo(null);
+            })
+            .catch((fetchError) => {
+              setLoaded(false);
+              setNowLoading(false);
+              showErrorWithDelay('Unable to add a todo');
+              throw fetchError;
+            });
+        });
+    }
   };
 
   return (

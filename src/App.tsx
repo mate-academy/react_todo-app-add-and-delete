@@ -84,6 +84,7 @@ export const App: React.FC = () => {
 
       <div className="todoapp__content">
         <Header
+          tempTodo={tempTodo}
           setTempTodo={setTempTodo}
           nowLoading={nowLoading}
           setNowLoading={setNowLoading}
