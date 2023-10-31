@@ -35,8 +35,8 @@ export const addTodo = createAsyncThunk(
   },
 );
 
-export const removeTodo = createAsyncThunk(
-  'todos/removeTodo',
+export const deleteTodo = createAsyncThunk(
+  'todos/deleteTodo',
   async (todoId: number) => {
     await removeTodoApi(todoId);
 

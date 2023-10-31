@@ -11,6 +11,7 @@ import { TodoList } from './components/TodoList';
 import { UserWarning } from './components/UserWarning/UserWarning';
 import { TodoFilter } from './types/TodoFilter';
 import {
+  clearErrorType,
   clearTempTodo,
   setErrorType,
   setFilter,
@@ -28,7 +29,6 @@ export const App: React.FC = () => {
   const status = useSelector((state: RootState) => state.todos.status);
   const error = useSelector((state: RootState) => state.todos.error);
   const errorType = useSelector((state: RootState) => state.todos.errorType);
-  // const tempTodo = useSelector((state: RootState) => state.todos.tempTodo);
 
   useEffect(() => {
     dispatch(fetchTodos(11725));
@@ -78,6 +78,22 @@ export const App: React.FC = () => {
     dispatch(setFilter(filter));
   };
 
+  const handleDeleteTodo = () => {
+
+  };
+
+  useEffect(() => {
+    if (errorType) {
+      const timer = setTimeout(() => {
+        dispatch(clearErrorType());
+      }, 3000);
+
+      return () => clearTimeout(timer);
+    }
+
+    return undefined;
+  }, [errorType, dispatch]);
+
   if (!USER_ID) {
     return <UserWarning />;
   }
@@ -101,9 +117,6 @@ export const App: React.FC = () => {
           />
         )}
       </div>
-
-      {/* Notification is shown in case of any error */}
-      {/* Add the 'hidden' class to hide the message smoothly */}
 
       <ErrorNotification
         errorType={errorType}

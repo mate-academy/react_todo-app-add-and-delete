@@ -16,8 +16,9 @@ export const TodoHeader: React.FC<TodoHeaderProps> = ({ handleAddTodo }) => {
   };
 
   const handleFormSubmit = (event: React.FormEvent<HTMLFormElement>) => {
-    event.preventDefault(); // Prevent the default form submission behavior
-    handleAddTodo(inputValue); // Call handleAddTodo with the current inputValue
+    event.preventDefault();
+    handleAddTodo(inputValue);
+    dispatch(setInputValue(''));
   };
 
   return (
@@ -39,6 +40,7 @@ export const TodoHeader: React.FC<TodoHeaderProps> = ({ handleAddTodo }) => {
           type="text"
           className="todoapp__new-todo"
           placeholder="What needs to be done?"
+          value={inputValue}
           onChange={handleInputChange}
         />
       </form>

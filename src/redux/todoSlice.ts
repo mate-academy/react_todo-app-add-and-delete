@@ -4,7 +4,7 @@ import { createSlice, PayloadAction } from '@reduxjs/toolkit';
 import { Todo } from '../types/Todo';
 import { TodoFilter } from '../types/TodoFilter';
 import { ErrorType } from '../types/errorType';
-import { fetchTodos, addTodo, removeTodo } from './todoThunks';
+import { fetchTodos, addTodo, deleteTodo } from './todoThunks';
 
 export interface TodoState {
   todos: Todo[];
@@ -71,14 +71,19 @@ const todoSlice = createSlice({
         state.errorType = ErrorType.LoadError;
       })
       .addCase(addTodo.fulfilled, (state, action: PayloadAction<Todo>) => {
-        console.log(action.payload);
+        console.log(action.payload, 'action in redux');
         state.todos.push(action.payload);
       })
       .addCase(addTodo.rejected, (state) => {
         state.errorType = ErrorType.AddTodoError;
       })
-      .addCase(removeTodo.fulfilled, (state, action) => {
+      .addCase(deleteTodo.fulfilled, (state, action) => {
+        console.log(action.payload, 'action in redux');
         state.todos = state.todos.filter(todo => todo.id !== action.payload);
+      })
+      .addCase(deleteTodo.rejected, (state, action) => {
+        console.log(action.payload, 'action in redux');
+        state.errorType = ErrorType.DeleteTodoError;
       });
   },
 });

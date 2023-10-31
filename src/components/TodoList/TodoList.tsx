@@ -21,5 +21,5 @@ export const TodoList: React.FC<TodoListProps> = ({ todos }) => {
   );
 };
 
-// { status, title, isEditing, isLoading }
-// properties of Todos
+// temp-item-enter-active
+// this temp todo has to havestyling

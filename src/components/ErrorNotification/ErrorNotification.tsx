@@ -11,6 +11,8 @@ export const ErrorNotification: React.FC<ErrorNotificationProps> = (
   const [visible, setVisible] = useState(true);
 
   useEffect(() => {
+    setVisible(true);
+
     if (errorType) {
       const timerId = setTimeout(() => {
         setVisible(false);
