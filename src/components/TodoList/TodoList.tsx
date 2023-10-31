@@ -10,7 +10,7 @@ type Props = {
   nowLoading: boolean;
   showErrorWithDelay: (errorMessage: string) => void;
   handleCompleted: (elem: number, completed: boolean) => void;
-  USER_ID: 11719;
+  // USER_ID: 11719;
 };
 
 export const TodoList: React.FC<Props> = ({
@@ -22,7 +22,7 @@ export const TodoList: React.FC<Props> = ({
   nowLoading,
   showErrorWithDelay,
   handleCompleted,
-  USER_ID,
+  // USER_ID,
 }) => {
   return (
     <section className="todoapp__main" data-cy="TodoList">
@@ -35,7 +35,7 @@ export const TodoList: React.FC<Props> = ({
           nowLoading={nowLoading}
           showErrorWithDelay={showErrorWithDelay}
           handleCompleted={handleCompleted}
-          USER_ID={USER_ID}
+          // USER_ID={USER_ID}
         />
       ))}
       {tempTodo && (
@@ -47,7 +47,7 @@ export const TodoList: React.FC<Props> = ({
           nowLoading={nowLoading}
           showErrorWithDelay={showErrorWithDelay}
           handleCompleted={handleCompleted}
-          USER_ID={USER_ID}
+          // USER_ID={USER_ID}
         />
       )}
     </section>
