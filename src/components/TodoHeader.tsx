@@ -24,12 +24,14 @@ export const TodoHeader: React.FC = React.memo(() => {
   useEffect(() => inputRef.current?.focus(), []);
 
   const createTodo = (preparedTitle: string) => {
-    postTodo(userId, {
+    postTodo({
       userId,
       title: preparedTitle,
       completed: false,
     })
       .then(response => {
+        setTitle('');
+
         dispatch({
           type: ActionType.CreateTodo,
           payload: {
@@ -38,13 +40,14 @@ export const TodoHeader: React.FC = React.memo(() => {
         });
       })
       .catch(() => {
+        setTitle(preparedTitle);
+
         dispatch({
           type: ActionType.ToggleError,
           payload: { errorType: ErrorType.CreateError },
         });
       })
       .finally(() => {
-        setTitle('');
         setIsLoading(false);
 
         dispatch({

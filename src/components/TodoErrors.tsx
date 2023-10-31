@@ -3,14 +3,32 @@ import React, { useContext, useMemo } from 'react';
 import classNames from 'classnames';
 import { DispatchContext, StateContext } from '../states/Global';
 import { ActionType } from '../states/Reducer';
+import { ErrorType } from '../types/ErrorType';
 
 export const TodoErrors: React.FC = () => {
-  const { errors } = useContext(StateContext);
+  const { error } = useContext(StateContext);
   const dispatch = useContext(DispatchContext);
 
   const isError = useMemo(() => {
-    return Object.values(errors).some(error => error);
-  }, [errors]);
+    return error !== null;
+  }, [error]);
+
+  const getErrorText = () => {
+    switch (error) {
+      case ErrorType.LoadError:
+        return 'Unable to load todos';
+      case ErrorType.TitleError:
+        return 'Title should not be empty';
+      case ErrorType.CreateError:
+        return 'Unable to add a todo';
+      case ErrorType.UpdateError:
+        return 'Unable to update a todo';
+      case ErrorType.DeleteError:
+        return 'Unable to delete a todo';
+      default:
+        return '';
+    }
+  };
 
   const resetErrors = () => dispatch(
     {
@@ -40,15 +58,7 @@ export const TodoErrors: React.FC = () => {
         onClick={resetErrors}
       />
 
-      {errors.loadError && 'Unable to load todos'}
-
-      {errors.titleError && 'Title should not be empty'}
-
-      {errors.createError && 'Unable to add a todo'}
-
-      {errors.deleteError && 'Unable to delete a todo'}
-
-      {errors.updateError && 'Unable to update a todo'}
+      {getErrorText()}
     </div>
   );
 };

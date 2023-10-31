@@ -13,13 +13,7 @@ const initialState: GlobalState = {
   userId: 11707,
   todos: [],
   tempTodo: null,
-  errors: {
-    titleError: false,
-    loadError: false,
-    createError: false,
-    deleteError: false,
-    updateError: false,
-  },
+  error: null,
 };
 
 export const DispatchContext = React.createContext(
@@ -51,13 +45,13 @@ export const GlobalStateProvider: React.FC<Props> = ({ children }) => {
   useEffect(() => {
     const errorTimeout = setTimeout(() => {
       dispatch({
-        type: ActionType.ResetErrors,
-        payload: { },
+        type: ActionType.ToggleError,
+        payload: { errorType: null },
       });
     }, 3000);
 
     return () => clearTimeout(errorTimeout);
-  }, [state.errors]);
+  }, [state.error]);
 
   return (
     <DispatchContext.Provider value={dispatch}>

@@ -20,7 +20,7 @@ export type Action = { type: ActionType.CreateTodo, payload: { todo: Todo } }
 }
 | { type: ActionType.DeleteTodo, payload: { id: number } }
 | { type: ActionType.SetTempTodo, payload: { tempTodo: Todo | null } }
-| { type: ActionType.ToggleError, payload: { errorType: ErrorType } }
+| { type: ActionType.ToggleError, payload: { errorType: ErrorType | null } }
 | { type: ActionType.ResetErrors, payload: { } };
 
 export const reducer = (
@@ -80,22 +80,7 @@ export const reducer = (
     case ActionType.ToggleError:
       return {
         ...state,
-        errors: {
-          ...state.errors,
-          [payload.errorType]: !state.errors[payload.errorType],
-        },
-      };
-
-    case ActionType.ResetErrors:
-      return {
-        ...state,
-        errors: {
-          titleError: false,
-          loadError: false,
-          createError: false,
-          deleteError: false,
-          updateError: false,
-        },
+        error: payload.errorType,
       };
 
     default:
