@@ -35,8 +35,8 @@ function request<T>(
         });
       }
 
-      return response.json() as T;
-      // return response.json() as unknown as T;
+      // return response.json() as T;
+      return response.json() as unknown as T;
     });
 }
 
