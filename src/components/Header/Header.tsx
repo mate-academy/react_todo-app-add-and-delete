@@ -1,13 +1,13 @@
 import React, { useRef, useEffect } from 'react';
-import { addTodo, getTodos } from '../../api/todos';
+import { addTodo } from '../../api/todos';
 import { Todo } from '../../types/Todo';
 
 type Props = {
-  tempTodo: Todo | null;
+  // tempTodo: Todo | null;
   setTempTodo: React.Dispatch<React.SetStateAction<Todo | null>>;
   nowLoading: boolean;
   setNowLoading: React.Dispatch<React.SetStateAction<boolean>>;
-  setTodos: React.Dispatch<React.SetStateAction<Todo[]>>;
+  // setTodos: React.Dispatch<React.SetStateAction<Todo[]>>;
   setLoaded: React.Dispatch<React.SetStateAction<boolean>>;
   showErrorWithDelay:(errorMessage: string) => void;
   inputText: string;
@@ -16,11 +16,11 @@ type Props = {
 };
 
 export const Header: React.FC<Props> = ({
-  tempTodo,
+  // tempTodo,
   setTempTodo,
   nowLoading,
   setNowLoading,
-  setTodos,
+  // setTodos,
   setLoaded,
   showErrorWithDelay,
   inputText,
@@ -43,7 +43,7 @@ export const Header: React.FC<Props> = ({
     event.preventDefault();
     const trimmedTitle = inputText.trim();
 
-    if (!inputText.trim()) {
+    if (!trimmedTitle) {
       showErrorWithDelay('Title should not be empty');
 
       return;
@@ -58,26 +58,21 @@ export const Header: React.FC<Props> = ({
 
     setNowLoading(true);
     setTempTodo(newTodo as Todo);
-    if (tempTodo) {
-      addTodo(newTodo)
 
-        .then(() => {
-          getTodos(USER_ID)
-            .then((todo) => {
-              setTodos(todo);
-              setLoaded(true);
-              setNowLoading(false);
-              setInputText('');
-              setTempTodo(null);
-            })
-            .catch((fetchError) => {
-              setLoaded(false);
-              setNowLoading(false);
-              showErrorWithDelay('Unable to add a todo');
-              throw fetchError;
-            });
-        });
-    }
+    addTodo(newTodo)
+      .then(() => {
+        setLoaded(true);
+        setNowLoading(false);
+        setInputText('');
+        setTempTodo(null);
+      })
+      .catch((fetchError) => {
+        setTempTodo(null);
+        setLoaded(false);
+        setNowLoading(false);
+        showErrorWithDelay('Unable to add a todo');
+        throw fetchError;
+      });
   };
 
   return (

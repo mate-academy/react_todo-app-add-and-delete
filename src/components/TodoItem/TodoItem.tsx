@@ -37,6 +37,7 @@ export const TodoItem: React.FC<Props> = ({
   const [isEditing, setIsEditing] = useState(false);
   const [focus, setFocus] = useState(false);
   const inputRef = useRef<HTMLInputElement | null>(null);
+  const [deleteId, setDeleteId] = useState(0);
   const handleTodoChange = () => {
     showErrorWithDelay('Unable to update a todo');
   };
@@ -87,7 +88,8 @@ export const TodoItem: React.FC<Props> = ({
     setEditId(null);
   };
 
-  const handleDeleteTodo = (id: number) => {
+  const TodoDeleteButton = (id: number) => {
+    setDeleteId(id);
     deleteTodo(id)
       .then(() => {
         setLoaded(true);
@@ -97,6 +99,7 @@ export const TodoItem: React.FC<Props> = ({
       })
       .catch((fetchError) => {
         setLoaded(false);
+        setDeleteId(0);
         showErrorWithDelay('Unable to delete a todo');
         throw fetchError;
       });
@@ -148,7 +151,7 @@ export const TodoItem: React.FC<Props> = ({
             type="button"
             className="todo__remove"
             data-cy="TodoDelete"
-            onClick={() => handleDeleteTodo(todo.id)}
+            onClick={() => TodoDeleteButton(todo.id)}
           >
             ×
           </button>
@@ -159,7 +162,10 @@ export const TodoItem: React.FC<Props> = ({
         className={classNames(
           'modal',
           'overlay',
-          { 'is-active': nowLoading },
+          {
+            'is-active': (todo.id === 0 && nowLoading)
+          || (deleteId === todo.id),
+          },
         )}
       >
         <div className="modal-background has-background-white-ter" />

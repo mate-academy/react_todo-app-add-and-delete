@@ -84,11 +84,11 @@ export const App: React.FC = () => {
 
       <div className="todoapp__content">
         <Header
-          tempTodo={tempTodo}
+          // tempTodo={tempTodo}
           setTempTodo={setTempTodo}
           nowLoading={nowLoading}
           setNowLoading={setNowLoading}
-          setTodos={setTodos}
+          // setTodos={setTodos}
           setLoaded={setLoaded}
           showErrorWithDelay={showErrorWithDelay}
           inputText={inputText}
