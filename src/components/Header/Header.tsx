@@ -7,7 +7,6 @@ import { Dispatchers } from '../../types/enums/Dispatchers';
 const USER_ID = 11806;
 
 export const Header: React.FC = () => {
-  // const [value, setValue] = useState('');
   const { todos, dispatcher } = useContext(TodosContext);
   const {
     formValue,
@@ -30,12 +29,7 @@ export const Header: React.FC = () => {
       userId: USER_ID,
     };
 
-    // if (!value.trim()) {
-    //   return;
-    // }
-
     dispatcher({ type: Dispatchers.Add, payload: newTodo });
-    // setValue('');
   };
 
   const handleSubmit = (event: React.FormEvent) => {

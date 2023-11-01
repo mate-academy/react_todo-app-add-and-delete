@@ -74,14 +74,6 @@ export const App: React.FC = () => {
           && 'Title should not be empty'}
         {errorType === Errors.DELETE
           && 'Unable to delete a todo'}
-        {/* <br />
-        Title should not be empty
-        <br />
-        Unable to add a todo
-        <br />
-        Unable to delete a todo
-        <br />
-        Unable to update a todo */}
       </div>
     </div>
   );

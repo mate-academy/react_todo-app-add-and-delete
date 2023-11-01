@@ -136,7 +136,6 @@ export const GlobalProvider: React.FC<Props> = ({ children }) => {
           setTempTodo(null);
           setFormValue('');
         } catch (error) {
-          // setErrorType(Errors.POST);
           setTempTodo(null);
           newErrorTimeout(Errors.POST);
         } finally {
@@ -163,8 +162,6 @@ export const GlobalProvider: React.FC<Props> = ({ children }) => {
             .all(todosIds.map(id => deleteTodo(id)));
 
           setTodos(prev => [...prev].filter(todo => !todo.completed));
-
-          // console.log(resJson)
         } catch (err) {
           newErrorTimeout(Errors.DELETE);
         } finally {
@@ -173,7 +170,6 @@ export const GlobalProvider: React.FC<Props> = ({ children }) => {
             inputRef.current.focus();
           }
         }
-        // setTodos([...state].filter(todo => !todo.completed));
       }
 
         break;
