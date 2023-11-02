@@ -2,6 +2,8 @@ import React, { Dispatch, SetStateAction, useContext } from 'react';
 import cn from 'classnames';
 import { Status } from '../../types/FilterOptions';
 import { TodosContext } from '../TodosContext/TodosContext';
+import { deleteTodo } from '../../api/todos';
+import { ErrorMessage } from '../../types/ErrorMessages';
 
 type Props = {
   currentFilter: Status;
@@ -12,9 +14,31 @@ export const TodoFooter: React.FC<Props> = ({
   currentFilter,
   onFilterChange,
 }) => {
-  const { todos } = useContext(TodosContext);
+  const {
+    todos,
+    setTodos,
+    setErrorMessage,
+    setErrorWithTimeout,
+  } = useContext(TodosContext);
+
   const completedTodos = todos?.filter(todo => todo.completed);
   const notCompletedTodos = todos?.filter(todo => !todo.completed).length;
+
+  const handleClearCompleted = () => {
+    const completedIds = todos
+      .filter(todo => todo.completed)
+      .map(todo => todo.id);
+
+    completedIds.forEach(todoId => {
+      deleteTodo(todoId.toString())
+        .then(() => {
+          setTodos(prevTodos => prevTodos.filter(todo => todo.id !== todoId));
+        })
+        .catch(() => {
+          setErrorWithTimeout(ErrorMessage.Deleting, setErrorMessage);
+        });
+    });
+  };
 
   return (
     <footer className="todoapp__footer" data-cy="Footer">
@@ -60,6 +84,7 @@ export const TodoFooter: React.FC<Props> = ({
             type="button"
             className="todoapp__clear-completed"
             data-cy="ClearCompletedButton"
+            onClick={handleClearCompleted}
           >
             Clear completed
           </button>

@@ -1,15 +1,18 @@
 /* eslint-disable jsx-a11y/control-has-associated-label */
 import React, { useContext, useState } from 'react';
-import { TodoHeader } from '../TodoHeader/TodoHeader';
-import { TodoList } from '../TodoList/TodoList';
-import { TodoFooter } from '../TodoFooter/TodoFooter';
 import { Status } from '../../types/FilterOptions';
-import { TodosContext } from '../TodosContext/TodosContext';
 import { Todo } from '../../types/Todo';
-import { ErrorNotification } from '../ErrorNotification/ErrorNotification';
+
+import { TodosContext } from '../TodosContext';
+import { TodoHeader } from '../TodoHeader';
+import { TodoList } from '../TodoList';
+import { TodoFooter } from '../TodoFooter';
+import { TempTodoItem } from '../TempTodoItem';
+import { ErrorNotification } from '../ErrorNotification';
 
 export const TodoApp: React.FC = () => {
   const { todos } = useContext(TodosContext);
+  const [tempTodo, setTempTodo] = useState<Todo | null>(null);
   const [filter, setFilter] = useState(Status.All);
 
   const filterTodos = (currentTodos: Todo[], filterType: Status) => {
@@ -33,9 +36,11 @@ export const TodoApp: React.FC = () => {
       <h1 className="todoapp__title">todos</h1>
 
       <div className="todoapp__content">
-        <TodoHeader />
+        <TodoHeader onTodoAdd={setTempTodo} />
 
         <TodoList items={filteredTodos} />
+
+        {tempTodo && <TempTodoItem tempItem={tempTodo} />}
 
         {todos.length ? (
           <TodoFooter

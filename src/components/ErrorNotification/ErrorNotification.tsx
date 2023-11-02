@@ -5,26 +5,15 @@ import { TodosContext } from '../TodosContext/TodosContext';
 
 export const ErrorNotification: React.FC = () => {
   const { errorMessage } = useContext(TodosContext);
-
   const [isHidden, setIsHidden] = useState(true);
-  /* <br />
-  Title should not be empty
-  <br />
-  Unable to add a todo
-  <br />
-  Unable to delete a todo
-  <br />
-  Unable to update a todo */
 
   useEffect(() => {
     if (errorMessage) {
       setIsHidden(false);
+    } else {
+      setIsHidden(true);
     }
   }, [errorMessage]);
-
-  setTimeout(() => {
-    setIsHidden(true);
-  }, 3000);
 
   return (
     <div

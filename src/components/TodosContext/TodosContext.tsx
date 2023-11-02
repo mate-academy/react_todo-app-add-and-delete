@@ -1,27 +1,16 @@
 import React, { useEffect, useState } from 'react';
 import { Todo } from '../../types/Todo';
-import { client } from '../../utils/fetchClient';
-
-const userTodos = '/todos?userId=11813';
-
-type Context = {
-  todos: Todo[];
-  setTodos: React.Dispatch<React.SetStateAction<Todo[]>>;
-  errorMessage: string | null;
-  setErrorMessage: React.Dispatch<React.SetStateAction<string | null>>;
-  // getTodos: () => void;
-  // addTodo: () => void;
-  // deleteTodo: () => void;
-};
+import { Context } from '../../types/Context';
+import { ErrorMessage } from '../../types/ErrorMessages';
+import { getTodos } from '../../api/todos';
 
 export const TodosContext = React.createContext<Context>({
+  USER_ID: 11813,
   todos: [],
   setTodos: () => { },
-  errorMessage: '',
-  setErrorMessage: () => {},
-  // getTodos: () => {},
-  // addTodo: () => {},
-  // deleteTodo: () => {},
+  errorMessage: null,
+  setErrorMessage: () => { },
+  setErrorWithTimeout: () => {},
 });
 
 type Props = {
@@ -29,24 +18,38 @@ type Props = {
 };
 
 export const TodosProvider: React.FC<Props> = ({ children }) => {
+  const USER_ID = 11813;
   const [todos, setTodos] = useState<Todo[]>([]);
-  const [errorMessage, setErrorMessage] = useState<string | null>(null);
+  const [errorMessage, setErrorMessage] = useState<ErrorMessage | null>(null);
+
+  const setErrorWithTimeout = (
+    error: ErrorMessage,
+    setError: React.Dispatch<React.SetStateAction<ErrorMessage | null>>,
+  ) => {
+    setError(error);
+
+    setTimeout(() => {
+      setError(null);
+    }, 3000);
+  };
 
   useEffect(() => {
-    client.get(userTodos)
+    getTodos(USER_ID)
       .then(allTodos => {
         setTodos(allTodos as Todo[]);
       })
       .catch(() => {
-        setErrorMessage('Unable to load todos');
+        setErrorWithTimeout(ErrorMessage.Loading, setErrorMessage);
       });
   }, []);
 
   const value = {
+    USER_ID,
     todos,
     setTodos,
     errorMessage,
     setErrorMessage,
+    setErrorWithTimeout,
   };
 
   return (

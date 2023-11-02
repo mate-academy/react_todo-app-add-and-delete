@@ -1,11 +1,11 @@
-import React from 'react';
+import React, { useContext } from 'react';
 import { UserWarning } from './UserWarning';
-import { TodoApp } from './components/TodoApp/TodoApp';
-import { TodosProvider } from './components/TodosContext/TodosContext';
-
-const USER_ID = 11813;
+import { TodosContext, TodosProvider } from './components/TodosContext';
+import { TodoApp } from './components/TodoApp';
 
 export const App: React.FC = () => {
+  const { USER_ID } = useContext(TodosContext);
+
   if (!USER_ID) {
     return <UserWarning />;
   }
