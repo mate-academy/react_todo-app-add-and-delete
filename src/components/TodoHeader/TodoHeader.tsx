@@ -34,41 +34,39 @@ export const TodoHeader: React.FC<Props> = ({ onTodoAdd }) => {
   const handleFormSubmit = (event: React.FormEvent) => {
     event?.preventDefault();
 
-    if (newTodo.trim() === '') {
-      setErrorWithTimeout(ErrorMessage.Title, setErrorMessage);
-
-      return;
-    }
-
-    setErrorMessage(null);
-    setIsLoading(true);
-    onTodoAdd({
-      title: newTodo.trim(),
-      completed: false,
-      userId: 11813,
-      id: 0,
-    });
-
-    addTodo({
-      title: newTodo.trim(),
-      completed: false,
-      userId: 11813,
-    })
-      .then(createdTodo => {
-        setTodos(currTodos => {
-          return [...currTodos, createdTodo] as Todo[];
-        });
-
-        setNewTodo('');
-      })
-      .catch((err) => {
-        setErrorWithTimeout(ErrorMessage.Adding, setErrorMessage);
-        throw err;
-      })
-      .finally(() => {
-        setIsLoading(false);
-        onTodoAdd(null);
+    if (newTodo.trim() !== '') {
+      setErrorMessage(null);
+      setIsLoading(true);
+      onTodoAdd({
+        title: newTodo.trim(),
+        completed: false,
+        userId: 11813,
+        id: 0,
       });
+
+      addTodo({
+        title: newTodo.trim(),
+        completed: false,
+        userId: 11813,
+      })
+        .then(createdTodo => {
+          setTodos(currTodos => {
+            return [...currTodos, createdTodo] as Todo[];
+          });
+
+          setNewTodo('');
+        })
+        .catch((err) => {
+          setErrorWithTimeout(ErrorMessage.Adding, setErrorMessage);
+          throw err;
+        })
+        .finally(() => {
+          setIsLoading(false);
+          onTodoAdd(null);
+        });
+    } else {
+      setErrorWithTimeout(ErrorMessage.Title, setErrorMessage);
+    }
   };
 
   return (
