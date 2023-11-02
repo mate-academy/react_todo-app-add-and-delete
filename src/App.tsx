@@ -8,6 +8,7 @@ import { Footer } from './components/Footer/Footer';
 import { Todo } from './types/Todo';
 import * as todoServise from './api/todos';
 import { TodoFilter } from './types/TodoFilter';
+import { TodoItem } from './components/TodoItem/TodoItem';
 
 const USER_ID = 11732;
 
@@ -15,6 +16,10 @@ export const App: React.FC = () => {
   const [todos, setTodos] = useState<Todo[]>([]);
   const [typeTodo, setTypeTodo] = useState<TodoFilter>(TodoFilter.All);
   const [errorMessage, setErrorMessage] = useState('');
+  const [tempTodo, setTempTodo] = useState<Todo | null>(null);
+  // const [isDisable, setIsDisable] = useState<boolean>(false);
+  const [isLoading, setIsLoading] = useState<boolean>(false);
+  // const [isAddingTodo, setIsAddingTodo] = useState(false);
 
   const filterTodos = () => {
     switch (typeTodo) {
@@ -41,15 +46,44 @@ export const App: React.FC = () => {
   }, []);
 
   const createTodo = ({ title, userId, completed }: Todo) => {
-    todoServise.createTodo({ title, userId, completed })
+    setIsLoading(true);
+
+    const temporaryTodo: Todo = {
+      id: 0,
+      title,
+      userId,
+      completed,
+    };
+
+    setTempTodo(temporaryTodo);
+
+    return todoServise.createTodo({ title, userId, completed })
       .then(newTodo => {
         setTodos(currentTodos => [...currentTodos, newTodo]);
+        setIsLoading(false);
+        setTempTodo(null);
+      })
+      .catch(() => {
+        setIsLoading(false);
+        setTempTodo(null);
+        setErrorMessage('Unable to add a todo');
+        setTimeout(() => {
+          setErrorMessage('');
+        }, 3000);
       });
   };
 
   const deleteTodo = (todoId: number) => {
-    todoServise.deleteTodo(todoId);
     setTodos(currentTodos => currentTodos.filter(todo => todo.id !== todoId));
+
+    return todoServise.deleteTodo(todoId)
+      .catch(() => {
+        setTodos(todos);
+        setErrorMessage('Unable to delete a todo');
+        setTimeout(() => {
+          setErrorMessage('');
+        }, 3000);
+      });
   };
 
   const clearCompletedTodos = () => todos.filter(({ completed }) => completed)
@@ -72,12 +106,24 @@ export const App: React.FC = () => {
           error={setErrorMessage}
         />
 
-        <TodoList
-          todos={filterTodos()}
-          // selectedTodoId={selectedTodo?.id}
-          // onSelect={setSelectedTodo}
-          onDelete={deleteTodo}
-        />
+        {tempTodo && isLoading && (
+          // Render the temporary todo with a loader
+          <TodoItem
+            key={tempTodo.id}
+            todo={tempTodo}
+            // onDelete={deleteTodo}
+            isLoading={isLoading} // Use a loading flag to display a loader
+          />
+        )}
+
+        {filterTodos && (
+          <TodoList
+            todos={filterTodos()}
+            // selectedTodoId={selectedTodo?.id}
+            // onSelect={setSelectedTodo}
+            onDelete={deleteTodo}
+          />
+        )}
 
         {todos.length && (
           <Footer

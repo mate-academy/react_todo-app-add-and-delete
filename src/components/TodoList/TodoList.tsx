@@ -10,7 +10,9 @@ type Props = {
 
 export const TodoList: React.FC<Props> = React.memo((({
   todos,
+  // selectedPostId,
   onDelete = () => {},
+  // onSelect = () => {},
 }) => {
   return (
     <section className="todoapp__main" data-cy="TodoList">

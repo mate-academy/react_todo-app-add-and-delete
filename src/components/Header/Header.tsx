@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import classNames from 'classnames';
 import { Todo } from '../../types/Todo';
 
@@ -19,7 +19,15 @@ export const Header: React.FC<Props> = ({
 }) => {
   const [title, setTitle] = useState('');
   // const [userId, setUserId] = useState(fixedUserId || 0);
-  const [completed] = useState(false);
+  // const [completed] = useState(false);
+  const inputRef = useRef<HTMLInputElement>(null);
+  // const [isLo]
+
+  useEffect(() => {
+    if (inputRef.current) {
+      inputRef.current.focus();
+    }
+  }, []);
 
   const handleTitleChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     setTitle(event.target.value);
@@ -28,16 +36,19 @@ export const Header: React.FC<Props> = ({
   const handleSubmit = (event: React.FormEvent) => {
     event.preventDefault();
 
-    if (!title || !fixedUserId) {
+    if (!title.trim() || !fixedUserId) {
       error('Title should not be empty');
+      setTimeout(() => {
+        error('');
+      }, 3000);
 
       return;
     }
 
     onSubmit({
       id: todo?.id || 0,
-      title,
-      completed,
+      title: title.trim(),
+      completed: false,
       userId: fixedUserId,
     });
 
@@ -62,12 +73,14 @@ export const Header: React.FC<Props> = ({
         onSubmit={handleSubmit}
       >
         <input
+          ref={inputRef}
           data-cy="NewTodoField"
           type="text"
           className="todoapp__new-todo"
           placeholder="What needs to be done?"
           value={title}
           onChange={handleTitleChange}
+          // disabled={isLoading}
         />
       </form>
     </header>
