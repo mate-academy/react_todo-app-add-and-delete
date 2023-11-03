@@ -3,36 +3,26 @@ import { Todo } from '../../types/Todo';
 import { TodoItem } from '../TodoItem/TodoItem';
 
 type Props = {
-  todos: Todo[],
-  tempTodo: Todo | null,
-  removeTodo: (id: number) => void,
-  loadingItems: number[],
+  todos: Todo[];
+  onDelete: (id: number) => void,
+  isLoading?: boolean,
 };
 
-export const TodoList: React.FC<Props> = ({
+export const TodoList: React.FC<Props> = React.memo((({
   todos,
-  tempTodo,
-  removeTodo,
-  loadingItems,
+  onDelete,
+  isLoading,
 }) => {
   return (
     <section className="todoapp__main" data-cy="TodoList">
-      {todos.map((todo:Todo) => (
+      {todos.map((todo) => (
         <TodoItem
           key={todo.id}
           todo={todo}
-          removeTodo={removeTodo}
-          isLoading={loadingItems.includes(todo.id)}
+          onDelete={onDelete}
+          isLoading={isLoading}
         />
       ))}
-
-      {tempTodo && (
-        <TodoItem
-          todo={tempTodo}
-          removeTodo={removeTodo}
-          isLoading
-        />
-      )}
     </section>
   );
-};
+}));

@@ -1,51 +1,86 @@
-import React, { useEffect, useRef } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
+import classNames from 'classnames';
 import { Todo } from '../../types/Todo';
 
 type Props = {
-  isDisable: boolean,
-  onHandleSubmit: (event: React.FormEvent<HTMLFormElement>) => void,
-  title: string,
-  setTitle: (title: string) => void,
-  todos: Todo[]
+  todos: Todo[];
+  onSubmit: (post: Todo) => void
+  fixedUserId: number,
+  error: (massege: string) => void,
+  todo?: Todo,
 };
 
-export const TodoHeader: React.FC<Props> = ({
-  isDisable,
-  onHandleSubmit,
-  title,
-  setTitle,
+export const Header: React.FC<Props> = ({
   todos,
+  onSubmit,
+  fixedUserId,
+  error,
+  todo,
 }) => {
+  const [title, setTitle] = useState('');
+  // const [userId, setUserId] = useState(fixedUserId || 0);
+  // const [completed] = useState(false);
   const inputRef = useRef<HTMLInputElement>(null);
+  // const [isLo]
 
   useEffect(() => {
     if (inputRef.current) {
       inputRef.current.focus();
     }
-  }, [isDisable, todos.length]);
+  }, []);
+
+  const handleTitleChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+    setTitle(event.target.value);
+  };
+
+  const handleSubmit = (event: React.FormEvent) => {
+    event.preventDefault();
+
+    if (!title.trim() || !fixedUserId) {
+      error('Title should not be empty');
+      setTimeout(() => {
+        error('');
+      }, 3000);
+
+      return;
+    }
+
+    onSubmit({
+      id: todo?.id || 0,
+      title: title.trim(),
+      completed: false,
+      userId: fixedUserId,
+    });
+
+    setTitle('');
+  };
 
   return (
     <header className="todoapp__header">
-      {todos.length > 0 && (
-        <button
-          type="button"
-          className="todoapp__toggle-all active"
-          aria-label="toggle all active"
-          data-cy="ToggleAllButton"
-          disabled={isDisable}
-        />
-      )}
+      {/* this buttons is active only if there are some active todos */}
+      <button
+        type="button"
+        className={classNames('todoapp__toggle-all', {
+          active: todos.some(todo1 => todo1.completed),
+        })}
+        data-cy="ToggleAllButton"
+        aria-label="Toggle All"
+      />
 
-      <form onSubmit={onHandleSubmit}>
+      {/* Add a todo on form submit */}
+      <form
+        method="POST"
+        onSubmit={handleSubmit}
+      >
         <input
-          disabled={isDisable}
           ref={inputRef}
           data-cy="NewTodoField"
           type="text"
           className="todoapp__new-todo"
           placeholder="What needs to be done?"
           value={title}
-          onChange={event => setTitle(event.target.value)}
+          onChange={handleTitleChange}
+          // disabled={isLoading}
         />
       </form>
     </header>
