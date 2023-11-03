@@ -8,6 +8,7 @@ type Props = {
   fixedUserId: number,
   error: (massege: string) => void,
   todo?: Todo,
+  isLoading: boolean,
 };
 
 export const Header: React.FC<Props> = ({
@@ -16,6 +17,7 @@ export const Header: React.FC<Props> = ({
   fixedUserId,
   error,
   todo,
+  isLoading,
 }) => {
   const [title, setTitle] = useState('');
   // const [userId, setUserId] = useState(fixedUserId || 0);
@@ -27,7 +29,7 @@ export const Header: React.FC<Props> = ({
     if (inputRef.current) {
       inputRef.current.focus();
     }
-  }, []);
+  }, [isLoading]);
 
   const handleTitleChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     setTitle(event.target.value);
@@ -61,10 +63,11 @@ export const Header: React.FC<Props> = ({
       <button
         type="button"
         className={classNames('todoapp__toggle-all', {
-          active: todos.some(todo1 => todo1.completed),
+          active: todos.some(todo1 => !todo1.completed),
         })}
         data-cy="ToggleAllButton"
         aria-label="Toggle All"
+        disabled={isLoading}
       />
 
       {/* Add a todo on form submit */}
@@ -73,6 +76,7 @@ export const Header: React.FC<Props> = ({
         onSubmit={handleSubmit}
       >
         <input
+          disabled={isLoading}
           ref={inputRef}
           data-cy="NewTodoField"
           type="text"
@@ -80,7 +84,6 @@ export const Header: React.FC<Props> = ({
           placeholder="What needs to be done?"
           value={title}
           onChange={handleTitleChange}
-          // disabled={isLoading}
         />
       </form>
     </header>

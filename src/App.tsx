@@ -50,7 +50,7 @@ export const App: React.FC = () => {
 
     const temporaryTodo: Todo = {
       id: 0,
-      title,
+      title: title.trim(),
       userId,
       completed,
     };
@@ -104,17 +104,17 @@ export const App: React.FC = () => {
           onSubmit={createTodo}
           fixedUserId={USER_ID}
           error={setErrorMessage}
+          isLoading={isLoading}
         />
 
-        {tempTodo && isLoading && (
+        {tempTodo && isLoading ? (
           // Render the temporary todo with a loader
           <TodoItem
             key={tempTodo.id}
             todo={tempTodo}
-            // onDelete={deleteTodo}
-            isLoading={isLoading} // Use a loading flag to display a loader
+            isLoading={isLoading}
           />
-        )}
+        ) : (null)}
 
         {filterTodos && (
           <TodoList
