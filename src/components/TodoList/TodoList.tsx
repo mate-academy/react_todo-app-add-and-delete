@@ -1,60 +1,38 @@
 import React from 'react';
-import classNames from 'classnames';
-// import { TodoItem } from "../TodoItem/TodoItem";
 import { Todo } from '../../types/Todo';
+import { TodoItem } from '../TodoItem/TodoItem';
 
 type Props = {
-  todos: Todo[];
-  onDelete?: (id: number) => void,
+  todos: Todo[],
+  tempTodo: Todo | null,
+  removeTodo: (id: number) => void,
+  loadingItems: number[],
 };
 
-export const TodoList: React.FC<Props> = React.memo((({
+export const TodoList: React.FC<Props> = ({
   todos,
-  // selectedPostId,
-  onDelete = () => {},
-  // onSelect = () => {},
+  tempTodo,
+  removeTodo,
+  loadingItems,
 }) => {
   return (
     <section className="todoapp__main" data-cy="TodoList">
-      {todos.map((todo) => (
-        // <TodoItem
-        //   key={todo.id}
-        //   todo={todo}
-        // />
-        <div
+      {todos.map((todo:Todo) => (
+        <TodoItem
           key={todo.id}
-          data-cy="Todo"
-          className={classNames('todo', { completed: todo.completed === true })}
-        >
-          <label className="todo__status-label">
-            <input
-              data-cy="TodoStatus"
-              type="checkbox"
-              className="todo__status"
-              checked={todo.completed}
-            />
-          </label>
-
-          <span data-cy="TodoTitle" className="todo__title">
-            {todo.title}
-          </span>
-
-          <button
-            type="button"
-            className="todo__remove"
-            data-cy="TodoDelete"
-            onClick={() => onDelete(todo.id)}
-          >
-            ×
-          </button>
-
-          {/* overlay will cover the todo while it is being updated */}
-          <div data-cy="TodoLoader" className="modal overlay">
-            <div className="modal-background has-background-white-ter" />
-            <div className="loader" />
-          </div>
-        </div>
+          todo={todo}
+          removeTodo={removeTodo}
+          isLoading={loadingItems.includes(todo.id)}
+        />
       ))}
+
+      {tempTodo && (
+        <TodoItem
+          todo={tempTodo}
+          removeTodo={removeTodo}
+          isLoading
+        />
+      )}
     </section>
   );
-}));
+};

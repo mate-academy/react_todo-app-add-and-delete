@@ -1,93 +1,84 @@
 /* eslint-disable jsx-a11y/control-has-associated-label */
-import React, { useEffect, useState } from 'react';
-import classNames from 'classnames';
+import React, { useEffect, useMemo, useState } from 'react';
 import { UserWarning } from './UserWarning';
-import { Header } from './components/Header/Header';
 import { TodoList } from './components/TodoList/TodoList';
-import { Footer } from './components/Footer/Footer';
 import { Todo } from './types/Todo';
-import * as todoServise from './api/todos';
-import { TodoFilter } from './types/TodoFilter';
-import { TodoItem } from './components/TodoItem/TodoItem';
+import { FilterTypes } from './types/TodoFilter';
+import { addTodo, deleteTodo, getTodos } from './api/todos';
+import { ErrorMessage } from './types/ErrorMessage';
+import { TodoHeader } from './components/Header/Header';
+import { TodoFilter } from './components/Footer/Footer';
+import { ErrorNotification } from './components/Notiffication/ErrorMessage';
 
 const USER_ID = 11732;
 
 export const App: React.FC = () => {
   const [todos, setTodos] = useState<Todo[]>([]);
-  const [typeTodo, setTypeTodo] = useState<TodoFilter>(TodoFilter.All);
-  const [errorMessage, setErrorMessage] = useState('');
+  const [errorMesssage, setErrorMesssage] = useState<string>('');
+  const [filter, setFilter] = useState<FilterTypes>(FilterTypes.All);
+  const [title, setTitle] = useState<string>('');
   const [tempTodo, setTempTodo] = useState<Todo | null>(null);
-  // const [isDisable, setIsDisable] = useState<boolean>(false);
-  const [isLoading, setIsLoading] = useState<boolean>(false);
-  // const [isAddingTodo, setIsAddingTodo] = useState(false);
-
-  const filterTodos = () => {
-    switch (typeTodo) {
-      case TodoFilter.Active:
-        return todos.filter(todo => !todo.completed);
-      case TodoFilter.Completed:
-        return todos.filter(todo => todo.completed);
-      case TodoFilter.All:
-        return todos;
-      default:
-        return todos;
-    }
-  };
+  const [isDisable, setIsDisable] = useState<boolean>(false);
+  const [loadingItems, setLoadingItems] = useState<number[]>([]);
 
   useEffect(() => {
-    todoServise.getTodos(USER_ID)
-      .then(setTodos)
-      .catch(() => {
-        setErrorMessage('Unable to load todos');
-        setTimeout(() => {
-          setErrorMessage('');
-        }, 3000);
-      });
+    getTodos(USER_ID).then(setTodos)
+      .catch(() => setErrorMesssage(ErrorMessage.load));
   }, []);
 
-  const createTodo = ({ title, userId, completed }: Todo) => {
-    setIsLoading(true);
+  const filteredTodos = useMemo(() => [...todos].filter(({ completed }) => {
+    if (filter === FilterTypes.All) {
+      return true;
+    }
 
-    const temporaryTodo: Todo = {
-      id: 0,
-      title: title.trim(),
-      userId,
-      completed,
-    };
+    return (filter === FilterTypes.Active)
+      ? !completed
+      : completed;
+  }), [todos, filter]);
 
-    setTempTodo(temporaryTodo);
+  const removeTodo = (todoId: number) => {
+    setLoadingItems(current => [...current, todoId]);
 
-    return todoServise.createTodo({ title, userId, completed })
-      .then(newTodo => {
-        setTodos(currentTodos => [...currentTodos, newTodo]);
-        setIsLoading(false);
-        setTempTodo(null);
-      })
-      .catch(() => {
-        setIsLoading(false);
-        setTempTodo(null);
-        setErrorMessage('Unable to add a todo');
-        setTimeout(() => {
-          setErrorMessage('');
-        }, 3000);
-      });
+    deleteTodo(todoId)
+      .then(() => setTodos(current => current
+        .filter(todo => todo.id !== todoId)))
+      .catch(() => setErrorMesssage(ErrorMessage.delete))
+      .finally(() => setLoadingItems(current => current
+        .filter((id:number) => id !== todoId)));
   };
 
-  const deleteTodo = (todoId: number) => {
-    setTodos(currentTodos => currentTodos.filter(todo => todo.id !== todoId));
+  const handleSubmit = (event: React.FormEvent<HTMLFormElement>) => {
+    event.preventDefault();
 
-    return todoServise.deleteTodo(todoId)
-      .catch(() => {
-        setTodos(todos);
-        setErrorMessage('Unable to delete a todo');
-        setTimeout(() => {
-          setErrorMessage('');
-        }, 3000);
+    if (!title.trim()) {
+      return setErrorMesssage(ErrorMessage.title);
+    }
+
+    const newTodo = {
+      id: 0,
+      userId: USER_ID,
+      title: title.trim(),
+      completed: false,
+    };
+
+    setTempTodo(newTodo);
+
+    setIsDisable(true);
+
+    return addTodo(newTodo)
+      .then((resultTodo:Todo) => {
+        setTodos(current => [...current, resultTodo]);
+        setTitle('');
+      })
+      .catch(() => setErrorMesssage(ErrorMessage.add))
+      .finally(() => {
+        setIsDisable(false);
+        setTempTodo(null);
       });
   };
 
   const clearCompletedTodos = () => todos.filter(({ completed }) => completed)
-    .forEach(todo => deleteTodo(todo.id));
+    .forEach(todo => removeTodo(todo.id));
 
   if (!USER_ID) {
     return <UserWarning />;
@@ -98,58 +89,38 @@ export const App: React.FC = () => {
       <h1 className="todoapp__title">todos</h1>
 
       <div className="todoapp__content">
-        <Header
-          // key={selectedTodo?.id}
+        <TodoHeader
+          isDisable={isDisable}
+          onHandleSubmit={handleSubmit}
+          title={title}
+          setTitle={setTitle}
           todos={todos}
-          onSubmit={createTodo}
-          fixedUserId={USER_ID}
-          error={setErrorMessage}
-          isLoading={isLoading}
         />
 
-        {tempTodo && isLoading ? (
-          // Render the temporary todo with a loader
-          <TodoItem
-            key={tempTodo.id}
-            todo={tempTodo}
-            isLoading={isLoading}
-          />
-        ) : (null)}
-
-        {filterTodos && (
+        {filteredTodos.length > 0 && (
           <TodoList
-            todos={filterTodos()}
-            // selectedTodoId={selectedTodo?.id}
-            // onSelect={setSelectedTodo}
-            onDelete={deleteTodo}
+            todos={filteredTodos}
+            tempTodo={tempTodo}
+            removeTodo={removeTodo}
+            loadingItems={loadingItems}
           />
         )}
 
-        {todos.length && (
-          <Footer
+        {todos.length > 0 && (
+          <TodoFilter
             todos={todos}
-            filter={typeTodo}
-            onFilter={setTypeTodo}
             clearCompletedTodos={clearCompletedTodos}
+            selectedFilter={filter}
+            onSelectedFilter={setFilter}
           />
         )}
+
       </div>
 
-      <div
-        data-cy="ErrorNotification"
-        className={classNames(
-          'notification is-danger is-light has-text-weight-normal',
-          { hidden: !errorMessage },
-        )}
-      >
-        <button
-          data-cy="HideErrorButton"
-          type="button"
-          className="delete"
-          onClick={() => setErrorMessage('')}
-        />
-        {errorMessage}
-      </div>
+      <ErrorNotification
+        errorMesssage={errorMesssage}
+        setErrorMesssage={setErrorMesssage}
+      />
     </div>
   );
 };

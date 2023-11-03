@@ -1,22 +1,17 @@
 import React from 'react';
-import classNames from 'classnames';
 import { Todo } from '../../types/Todo';
 
-export type Props = {
-  todo: Todo;
-  // onDelete?: () => {},
-  isLoading?: boolean,
+type Props = {
+  todo: Todo
+  removeTodo: (id: number) => void,
+  isLoading: boolean,
 };
 
-export const TodoItem: React.FC<Props> = ({
-  todo,
-  // onDelete,
-  isLoading,
-}) => {
+export const TodoItem: React.FC<Props> = ({ todo, removeTodo, isLoading }) => {
   return (
     <div
       data-cy="Todo"
-      className={classNames('todo', { completed: todo.completed === true })}
+      className={`todo ${todo.completed ? 'completed' : ''}`}
     >
       <label className="todo__status-label">
         <input
@@ -24,21 +19,24 @@ export const TodoItem: React.FC<Props> = ({
           type="checkbox"
           className="todo__status"
           checked={todo.completed}
+          onChange={() => {}}
         />
       </label>
 
-      <span data-cy="TodoTitle" className="todo__title">
-        {todo.title}
-      </span>
+      <span data-cy="TodoTitle" className="todo__title">{todo.title}</span>
 
-      <button type="button" className="todo__remove" data-cy="TodoDelete">
+      <button
+        type="button"
+        className="todo__remove"
+        data-cy="TodoDelete"
+        onClick={() => !isLoading && removeTodo(todo.id)}
+      >
         ×
       </button>
 
-      {/* overlay will cover the todo while it is being updated */}
       <div
         data-cy="TodoLoader"
-        className={classNames('modal overlay', { active: isLoading })}
+        className={`modal overlay ${isLoading ? 'is-active' : ''}`}
       >
         <div className="modal-background has-background-white-ter" />
         <div className="loader" />
