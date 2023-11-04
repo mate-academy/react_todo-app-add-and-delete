@@ -7,11 +7,11 @@ type Props = {
 };
 
 export const Errors: React.FC<Props> = ({ error, setError }) => {
-  const unableToLoad = 'Unable to load todos';
-  const shouldNotBeEmpty = 'Title should not be empty';
-  const unableToAdd = 'Unable to add a todo';
-  const unableToDelete = 'Unable to delete a todo';
-  const unableToUpdate = 'Unable to update a todo';
+  // const unableToLoad = 'Unable to load todos';
+  // const shouldNotBeEmpty = 'Title should not be empty';
+  // const unableToAdd = 'Unable to add a todo';
+  // const unableToDelete = 'Unable to delete a todo';
+  // const unableToUpdate = 'Unable to update a todo';
 
   const handelClearError = () => {
     setError(null);
@@ -24,7 +24,7 @@ export const Errors: React.FC<Props> = ({ error, setError }) => {
       data-cy="ErrorNotification"
       className={classNames(
         'notification is-danger is-light has-text-weight-normal',
-        { hidden: error === null },
+        {hidden: !error},
       )}
     >
       <button
@@ -35,12 +35,7 @@ export const Errors: React.FC<Props> = ({ error, setError }) => {
       >
         .
       </button>
-      {/* show only one message at a time */}
-      {error === unableToLoad && 'Unable to load todos'}
-      {error === shouldNotBeEmpty && 'Title should not be empty'}
-      {error === unableToAdd && 'Unable to add a todo'}
-      {error === unableToDelete && 'Unable to delete a todo'}
-      {error === unableToUpdate && 'Unable to update a todo'}
+      {error}
     </div>
   );
 };

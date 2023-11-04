@@ -51,10 +51,9 @@ export const App: React.FC = () => {
         setTodos(todo);
         setLoaded(true);
       })
-      .catch((fetchError) => {
+      .catch(() => {
         setLoaded(false);
         showErrorWithDelay('Unable to load todos');
-        throw fetchError;
       });
   }, [loaded, nowLoading]);
 
@@ -66,10 +65,9 @@ export const App: React.FC = () => {
             setTodos(todo);
             setLoaded(true);
           })
-          .catch((fetchError) => {
+          .catch(() => {
             setLoaded(false);
             showErrorWithDelay('Unable to update a todo');
-            throw fetchError;
           });
       });
   };
