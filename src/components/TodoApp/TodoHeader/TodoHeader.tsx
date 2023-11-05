@@ -63,7 +63,7 @@ export const TodoHeader: React.FC = () => {
         dispatch(actionCreator.addTempTodo(null));
         dispatch(actionCreator.toggleSubmitting());
       });
-  }, [title]);
+  }, [selectedFilter, title]);
 
   return (
     <header className="todoapp__header">

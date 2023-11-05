@@ -34,7 +34,7 @@ export const TodoFooter: React.FC = () => {
         throw error;
       })
       .finally(() => dispatch(actionCreator.toggleClearing()));
-  }, [initialTodos]);
+  }, [initialTodos, selectedFilter]);
 
   return (
     <footer className="todoapp__footer" data-cy="Footer">

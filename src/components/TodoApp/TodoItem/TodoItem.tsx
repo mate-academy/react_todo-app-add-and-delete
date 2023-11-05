@@ -42,7 +42,7 @@ export const TodoItem: React.FC<Props> = ({ todo }) => {
         throw error;
       })
       .finally(() => dispatch(actionCreator.toggleDeleting()));
-  }, [todo.id]);
+  }, [selectedFilter, todo.id]);
 
   return (
     <div
