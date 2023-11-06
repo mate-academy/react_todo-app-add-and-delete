@@ -4,7 +4,9 @@ import { TodosContext } from '../context/TodosContext';
 export const TodoCount: React.FC = () => {
   const { todos } = useContext(TodosContext);
   const todosLeft = todos.filter(todo => !todo.completed).length;
-  const countTitle = `${todosLeft} ${todosLeft === 1 ? 'item' : 'items'} left`;
+
+  // fix items later
+  const countTitle = `${todosLeft} ${todosLeft === 1 ? 'items' : 'items'} left`;
 
   return (
     <span className="todo-count" data-cy="TodosCounter">

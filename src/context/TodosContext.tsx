@@ -1,8 +1,8 @@
 import { createContext, useEffect, useState } from 'react';
 import { Todo } from '../types/Todo';
 import { Tabs } from '../types/Tabs';
-import { client } from '../utils/fetchClient';
 import { ErrorType } from '../types/ErrorType';
+import { getTodos } from '../api/todos';
 
 const USER_ID = 11826;
 
@@ -14,6 +14,9 @@ type DefaultValueType = {
   todosToDisplay: Todo[]
   error: ErrorType
   setError: (errro: ErrorType) => void;
+  tempTodo: Todo | null,
+  setTempTodo: (todo: Todo | null) => void,
+  USER_ID: number,
 };
 
 export const TodosContext = createContext<DefaultValueType>({
@@ -24,21 +27,34 @@ export const TodosContext = createContext<DefaultValueType>({
   todosToDisplay: [],
   error: ErrorType.Success,
   setError: () => {},
+  tempTodo: null,
+  setTempTodo: () => {},
+  USER_ID: 11826,
 });
 
 export const TodoProvider = ({ children }: { children: React.ReactNode }) => {
   const [todos, setTodos] = useState<Todo[]>([]);
   const [selectedFilter, setSelectedFilter] = useState<Tabs>(Tabs.All);
+  const [tempTodo, setTempTodo] = useState<Todo | null>(null);
   const [error, setError] = useState(ErrorType.Success);
 
   useEffect(() => {
-    client.get(`/todos?userId=${USER_ID}`)
+    getTodos(USER_ID)
       .then(data => setTodos(data as Todo[]))
-      .catch(() => setError(ErrorType.Loading))
-      .finally(() => setTimeout(() => {
-        setError(ErrorType.Success);
-      }, 3000));
+      .catch(() => {
+        setError(ErrorType.Loading);
+      });
   }, []);
+
+  useEffect(() => {
+    const errorTimeout = setTimeout(() => {
+      setError(ErrorType.Success);
+    }, 3000);
+
+    return () => {
+      clearTimeout(errorTimeout);
+    };
+  }, [error]);
 
   const todosToDisplay = todos.filter(todo => {
     switch (selectedFilter) {
@@ -63,6 +79,9 @@ export const TodoProvider = ({ children }: { children: React.ReactNode }) => {
         todosToDisplay,
         error,
         setError,
+        tempTodo,
+        setTempTodo,
+        USER_ID,
       }}
     >
       {children}
