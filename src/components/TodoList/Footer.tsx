@@ -6,6 +6,7 @@ type Props = {
   filterTodo: (value: FilterType) => void,
   selectedTodoFilter: FilterType,
   handleClearCompleted: () => void,
+  hasCompletedTodos: boolean,
 };
 
 export const Footer: React.FC<Props> = ({
@@ -13,6 +14,7 @@ export const Footer: React.FC<Props> = ({
   filterTodo,
   selectedTodoFilter,
   handleClearCompleted,
+  hasCompletedTodos,
 }) => {
   return (
     <footer className="todoapp__footer" data-cy="Footer">
@@ -27,14 +29,17 @@ export const Footer: React.FC<Props> = ({
         selectedTodoFilter={selectedTodoFilter}
       />
       {/* don't show this button if there are no completed todos */}
+
       <button
         type="button"
         className="todoapp__clear-completed"
         data-cy="ClearCompletedButton"
+        disabled={!hasCompletedTodos}
         onClick={handleClearCompleted}
       >
         Clear completed
       </button>
+
     </footer>
   );
 };

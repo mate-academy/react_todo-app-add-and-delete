@@ -127,6 +127,9 @@ export const TodoList: React.FC<Props> = ({ userId }) => {
               filterTodo={setFilteredTodo}
               selectedTodoFilter={filteredTodo}
               handleClearCompleted={handleClearCompleted}
+              hasCompletedTodos={
+                todos.filter(todo => todo.completed).length > 0
+              }
             />
           )}
 
