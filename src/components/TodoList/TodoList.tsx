@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react';
-import { deleteTodo, getTodos } from '../../api/todos';
+import { deleteTodo, getTodos, postTodo } from '../../api/todos';
 import { Todo } from '../../types/Todo';
 import { Header } from './Header';
 import { Footer } from './Footer';
@@ -49,6 +49,42 @@ export const TodoList: React.FC<Props> = ({ userId }) => {
 
   const todosQty = todos.filter(todo => todo.completed !== true).length;
 
+  const handleCreateTodoSubmit = (
+    todoTitle: string,
+    setIsInputDisabled: (value: boolean) => void,
+    setTodoTitle: (value: string) => void,
+  ) => {
+    if (!todoTitle.trim()) {
+      setErrorMessage('Title should not be empty');
+      setTimeout(() => {
+        setErrorMessage('');
+      }, 3000);
+
+      return;
+    }
+
+    setIsInputDisabled(true);
+
+    postTodo({
+      title: todoTitle.trim(),
+      userId,
+      completed: false,
+    })
+      .then(newTodo => {
+        setTodos([...todos, newTodo]);
+        setTodoTitle('');
+      })
+      .catch(() => {
+        setErrorMessage('Unable to add a todo');
+        setTimeout(() => {
+          setErrorMessage('');
+        }, 3000);
+      })
+      .finally(() => {
+        setIsInputDisabled(false);
+      });
+  };
+
   const handleDeleteTodo = (id: number) => {
     deleteTodo(id)
       .then(() => {
@@ -67,10 +103,7 @@ export const TodoList: React.FC<Props> = ({ userId }) => {
       <div className="todoapp__content">
         <section className="todoapp__main" data-cy="TodoList">
           <Header
-            userId={userId}
-            setTodos={setTodos}
-            currentTodos={todos}
-            setErrorMessage={setErrorMessage}
+            handleCreateTodoSubmit={handleCreateTodoSubmit}
           />
 
           { updatedTodos.map(todo => (

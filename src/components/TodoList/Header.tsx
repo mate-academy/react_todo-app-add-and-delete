@@ -1,28 +1,18 @@
 import { useEffect, useRef, useState } from 'react';
-import { postTodo } from '../../api/todos';
-import { Todo } from '../../types/Todo';
 
 type Props = {
-  userId: number;
-  setTodos: (value: Todo[]) => void;
-  currentTodos: Todo[];
-  setErrorMessage: (value: string) => void;
+  handleCreateTodoSubmit: (
+    title: string,
+    setDisabled: (value: boolean) => void,
+    setTitle: (value: string) => void
+  ) => void;
 };
 
 export const Header: React.FC<Props> = ({
-  userId,
-  setTodos,
-  currentTodos,
-  setErrorMessage,
+  handleCreateTodoSubmit,
 }) => {
-  const [query, setQuery] = useState('');
+  const [todoTitle, setTodoTitle] = useState('');
   const [isInputDisabled, setIsInputDisabled] = useState(false);
-  // const nullTodo: Todo = {
-  //   id: 0,
-  //   title: '',
-  //   userId,
-  //   completed: false,
-  // };
 
   const createTodo = useRef<HTMLInputElement>(null);
 
@@ -32,37 +22,14 @@ export const Header: React.FC<Props> = ({
     }
   }, [isInputDisabled]);
 
-  const handleCreateTodoSubmit = (event: React.FormEvent) => {
+  const handleCreateTodo = (event: React.FormEvent) => {
     event.preventDefault();
-    if (!query.trim()) {
-      setErrorMessage('Title should not be empty');
-      setTimeout(() => {
-        setErrorMessage('');
-      }, 3000);
 
-      return;
-    }
-
-    setIsInputDisabled(true);
-
-    postTodo({
-      title: query.trim(),
-      userId,
-      completed: false,
-    })
-      .then(newTodo => {
-        setTodos([...currentTodos, newTodo]);
-        setQuery('');
-      })
-      .catch(() => {
-        setErrorMessage('Unable to add a todo');
-        setTimeout(() => {
-          setErrorMessage('');
-        }, 3000);
-      })
-      .finally(() => {
-        setIsInputDisabled(false);
-      });
+    handleCreateTodoSubmit(
+      todoTitle,
+      setIsInputDisabled,
+      setTodoTitle,
+    );
   };
 
   return (
@@ -75,16 +42,16 @@ export const Header: React.FC<Props> = ({
         className="todoapp__toggle-all active"
       />
 
-      <form onSubmit={handleCreateTodoSubmit}>
+      <form onSubmit={handleCreateTodo}>
         <input
           data-cy="NewTodoField"
           type="text"
           className="todoapp__new-todo"
           placeholder="What needs to be done?"
-          value={query}
+          value={todoTitle}
           disabled={isInputDisabled}
           ref={createTodo}
-          onChange={event => setQuery(event.target.value)}
+          onChange={event => setTodoTitle(event.target.value)}
         />
       </form>
     </header>
