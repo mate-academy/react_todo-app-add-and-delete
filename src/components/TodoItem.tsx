@@ -1,17 +1,39 @@
-import React, { useState } from 'react';
+import React, { useContext, useState } from 'react';
 import cn from 'classnames';
 import { Todo } from '../types/Todo';
 import { TodoStatus } from '../types/TodoStatus';
 import { EditingForm } from './EditingForm';
+import { removeTodo } from '../api/todos';
+import { TodosContext } from '../context/TodosContext';
+import { ErrorType } from '../types/ErrorType';
 
 type Props = {
   todo: Todo
 };
 
 export const TodoItem: React.FC<Props> = ({ todo }) => {
+  const {
+    todos, setTodos, setError, USER_ID,
+  } = useContext(TodosContext);
+
   const { title, completed } = todo;
   const [isEditing] = useState(false);
-  const [isLoading] = useState(false);
+  const [isLoading, setIsLoading] = useState(false);
+
+  const handleTodoDelete = () => {
+    setIsLoading(true);
+
+    removeTodo(USER_ID, todo.id)
+      .then(() => {
+        setTodos(todos.filter(t => t.id !== todo.id));
+      })
+      .catch(() => {
+        setError(ErrorType.Delete);
+      })
+      .finally(() => {
+        setIsLoading(false);
+      });
+  };
 
   return (
     <div
@@ -42,6 +64,7 @@ export const TodoItem: React.FC<Props> = ({ todo }) => {
               type="button"
               className="todo__remove"
               data-cy="TodoDelete"
+              onClick={handleTodoDelete}
             >
               ×
             </button>
