@@ -98,6 +98,10 @@ export const TodoList: React.FC<Props> = ({ userId }) => {
       });
   };
 
+  const handleClearCompleted = () => {
+    todos.filter(todo => todo.completed).map(todo => handleDeleteTodo(todo.id));
+  };
+
   return (
     <>
       <div className="todoapp__content">
@@ -122,6 +126,7 @@ export const TodoList: React.FC<Props> = ({ userId }) => {
               todosQty={todosQty}
               filterTodo={setFilteredTodo}
               selectedTodoFilter={filteredTodo}
+              handleClearCompleted={handleClearCompleted}
             />
           )}
 

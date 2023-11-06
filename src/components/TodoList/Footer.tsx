@@ -5,12 +5,14 @@ type Props = {
   todosQty: number,
   filterTodo: (value: FilterType) => void,
   selectedTodoFilter: FilterType,
+  handleClearCompleted: () => void,
 };
 
 export const Footer: React.FC<Props> = ({
   todosQty,
   filterTodo,
   selectedTodoFilter,
+  handleClearCompleted,
 }) => {
   return (
     <footer className="todoapp__footer" data-cy="Footer">
@@ -29,6 +31,7 @@ export const Footer: React.FC<Props> = ({
         type="button"
         className="todoapp__clear-completed"
         data-cy="ClearCompletedButton"
+        onClick={handleClearCompleted}
       >
         Clear completed
       </button>
