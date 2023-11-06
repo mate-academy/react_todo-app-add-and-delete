@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { postTodo } from '../../api/todos';
 import { Todo } from '../../types/Todo';
 
@@ -17,15 +17,21 @@ export const Header: React.FC<Props> = ({
 }) => {
   const [query, setQuery] = useState('');
 
-  const createTodo = (event: React.KeyboardEvent<object>) => {
+  const createTodo = useRef<HTMLInputElement>(null);
+
+  useEffect(() => {
+    if (createTodo.current) {
+      createTodo.current.focus();
+    }
+  }, []);
+
+  const handleCreateTodoSubmit = (event: React.FormEvent) => {
     event.preventDefault();
     if (!query.trim()) {
       setErrorMessage('Title should not be empty');
       setTimeout(() => {
         setErrorMessage('');
       }, 3000);
-
-      return;
     }
 
     setQuery('');
@@ -55,20 +61,15 @@ export const Header: React.FC<Props> = ({
         className="todoapp__toggle-all active"
       />
 
-      <form>
+      <form onSubmit={handleCreateTodoSubmit}>
         <input
           data-cy="NewTodoField"
           type="text"
           className="todoapp__new-todo"
           placeholder="What needs to be done?"
           value={query}
-          // ref={createTodo}
+          ref={createTodo}
           onChange={event => setQuery(event.target.value)}
-          onKeyDown={event => {
-            if (event.key === 'Enter') {
-              createTodo(event);
-            }
-          }}
         />
       </form>
     </header>
