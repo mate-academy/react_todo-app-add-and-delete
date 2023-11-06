@@ -16,6 +16,7 @@ export const Header: React.FC<Props> = ({
   setErrorMessage,
 }) => {
   const [query, setQuery] = useState('');
+  const [isInputDisabled, setIsInputDisabled] = useState(false);
 
   const createTodo = useRef<HTMLInputElement>(null);
 
@@ -23,7 +24,7 @@ export const Header: React.FC<Props> = ({
     if (createTodo.current) {
       createTodo.current.focus();
     }
-  }, []);
+  }, [isInputDisabled]);
 
   const handleCreateTodoSubmit = (event: React.FormEvent) => {
     event.preventDefault();
@@ -35,6 +36,8 @@ export const Header: React.FC<Props> = ({
     }
 
     setQuery('');
+    setIsInputDisabled(true);
+
     postTodo({
       title: query,
       userId,
@@ -48,6 +51,9 @@ export const Header: React.FC<Props> = ({
         setTimeout(() => {
           setErrorMessage('');
         }, 3000);
+      })
+      .finally(() => {
+        setIsInputDisabled(false);
       });
   };
 
@@ -68,6 +74,7 @@ export const Header: React.FC<Props> = ({
           className="todoapp__new-todo"
           placeholder="What needs to be done?"
           value={query}
+          disabled={isInputDisabled}
           ref={createTodo}
           onChange={event => setQuery(event.target.value)}
         />
