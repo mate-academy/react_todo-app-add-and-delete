@@ -7,10 +7,16 @@ import { ErrorType } from '../types/ErrorType';
 import { addTodo } from '../api/todos';
 import { Todo } from '../types/Todo';
 
+const USER_ID = 11826;
+
 export const Header: React.FC = () => {
   const [title, setTitle] = useState('');
   const {
-    setError, setTempTodo, USER_ID, setTodos, todos, tempTodo,
+    setError,
+    setTempTodo,
+    setTodos,
+    todos,
+    tempTodo,
   } = useContext(TodosContext);
 
   const inputRef = useRef<HTMLInputElement>(null);

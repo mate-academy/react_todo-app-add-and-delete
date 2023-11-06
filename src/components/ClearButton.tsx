@@ -1,14 +1,36 @@
-import React, { useContext } from 'react';
+import React, { useContext, useMemo } from 'react';
 import { TodosContext } from '../context/TodosContext';
+import { removeTodo } from '../api/todos';
+import { ErrorType } from '../types/ErrorType';
 
 export const ClearButton: React.FC = () => {
-  const { todos, setTodos } = useContext(TodosContext);
+  const {
+    todos,
+    setTodos,
+    setDeletingTodos,
+    setError,
+  } = useContext(TodosContext);
   const areCompletedExist = todos.filter(todo => todo.completed).length > 0;
 
-  const handleClearCompleted = () => {
-    const modifiedTodos = todos.filter(todo => !todo.completed);
+  const completedTodos = useMemo(() => {
+    return todos.filter(todo => todo.completed);
+  }, [todos]);
 
-    setTodos(modifiedTodos);
+  const handleClearCompleted = () => {
+    completedTodos.forEach(({ id }) => {
+      setDeletingTodos(prevDeleting => [...prevDeleting, id]);
+      removeTodo(id)
+        .then(() => {
+          setTodos(prevTodos => prevTodos.filter(todo => todo.id !== id));
+        })
+        .catch(() => {
+          setError(ErrorType.Delete);
+        })
+        .finally(() => {
+          setDeletingTodos(prevDeleting => (
+            prevDeleting.filter(todo_id => todo_id !== id)));
+        });
+    });
   };
 
   return (

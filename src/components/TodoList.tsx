@@ -1,7 +1,6 @@
 import React, { useContext } from 'react';
 import { TodoItem } from './TodoItem';
 import { TodosContext } from '../context/TodosContext';
-import { TempTodo } from './TempTodo';
 
 export const TodoList: React.FC = () => {
   const { todosToDisplay, tempTodo } = useContext(TodosContext);
@@ -12,7 +11,7 @@ export const TodoList: React.FC = () => {
         <TodoItem key={todo.id} todo={todo} />
       ))}
 
-      {tempTodo && <TempTodo todo={tempTodo} />}
+      {tempTodo && <TodoItem todo={tempTodo} />}
     </section>
   );
 };

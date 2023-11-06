@@ -13,17 +13,20 @@ type Props = {
 
 export const TodoItem: React.FC<Props> = ({ todo }) => {
   const {
-    todos, setTodos, setError, USER_ID,
+    todos,
+    setTodos,
+    setError,
+    deletingTodos,
+    setDeletingTodos,
   } = useContext(TodosContext);
 
   const { title, completed } = todo;
   const [isEditing] = useState(false);
-  const [isLoading, setIsLoading] = useState(false);
 
   const handleTodoDelete = () => {
-    setIsLoading(true);
+    setDeletingTodos([...deletingTodos, todo.id]);
 
-    removeTodo(USER_ID, todo.id)
+    removeTodo(todo.id)
       .then(() => {
         setTodos(todos.filter(t => t.id !== todo.id));
       })
@@ -31,7 +34,7 @@ export const TodoItem: React.FC<Props> = ({ todo }) => {
         setError(ErrorType.Delete);
       })
       .finally(() => {
-        setIsLoading(false);
+        setDeletingTodos(deletingTodos.filter(id => id !== todo.id));
       });
   };
 
@@ -78,7 +81,7 @@ export const TodoItem: React.FC<Props> = ({ todo }) => {
         className={cn(
           'modal',
           'overlay',
-          { 'is-active': isLoading },
+          { 'is-active': todo.id === 0 || deletingTodos.includes(todo.id) },
         )}
       >
         <div className="modal-background has-background-white-ter" />

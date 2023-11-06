@@ -8,7 +8,7 @@ const USER_ID = 11826;
 
 type DefaultValueType = {
   todos: Todo[];
-  setTodos: (todosToSet: Todo[]) => void;
+  setTodos: React.Dispatch<React.SetStateAction<Todo[]>>
   selectedFilter: Tabs;
   setSelectedFilter: (tab: Tabs) => void;
   todosToDisplay: Todo[]
@@ -16,7 +16,8 @@ type DefaultValueType = {
   setError: (errro: ErrorType) => void;
   tempTodo: Todo | null,
   setTempTodo: (todo: Todo | null) => void,
-  USER_ID: number,
+  deletingTodos: number[],
+  setDeletingTodos: React.Dispatch<React.SetStateAction<number[]>>
 };
 
 export const TodosContext = createContext<DefaultValueType>({
@@ -29,7 +30,8 @@ export const TodosContext = createContext<DefaultValueType>({
   setError: () => {},
   tempTodo: null,
   setTempTodo: () => {},
-  USER_ID: 11826,
+  deletingTodos: [],
+  setDeletingTodos: () => {},
 });
 
 export const TodoProvider = ({ children }: { children: React.ReactNode }) => {
@@ -37,6 +39,7 @@ export const TodoProvider = ({ children }: { children: React.ReactNode }) => {
   const [selectedFilter, setSelectedFilter] = useState<Tabs>(Tabs.All);
   const [tempTodo, setTempTodo] = useState<Todo | null>(null);
   const [error, setError] = useState(ErrorType.Success);
+  const [deletingTodos, setDeletingTodos] = useState<number[]>([]);
 
   useEffect(() => {
     getTodos(USER_ID)
@@ -81,7 +84,8 @@ export const TodoProvider = ({ children }: { children: React.ReactNode }) => {
         setError,
         tempTodo,
         setTempTodo,
-        USER_ID,
+        deletingTodos,
+        setDeletingTodos,
       }}
     >
       {children}
