@@ -13,7 +13,9 @@
     "react": "^18.2.0",
     "react-dom": "^18.2.0",
     "react-scripts": "5.0.1",
-    "react-transition-group": "^4.4.5"
+    "react-transition-group": "^4.4.5",
+    "react-window": "^1.8.9",
+    "react-window-infinite-loader": "^1.0.9"
   },
   "devDependencies": {
     "@cypress/react": "^5.12.4",
