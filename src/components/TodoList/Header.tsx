@@ -17,6 +17,12 @@ export const Header: React.FC<Props> = ({
 }) => {
   const [query, setQuery] = useState('');
   const [isInputDisabled, setIsInputDisabled] = useState(false);
+  // const nullTodo: Todo = {
+  //   id: 0,
+  //   title: '',
+  //   userId,
+  //   completed: false,
+  // };
 
   const createTodo = useRef<HTMLInputElement>(null);
 
@@ -33,18 +39,20 @@ export const Header: React.FC<Props> = ({
       setTimeout(() => {
         setErrorMessage('');
       }, 3000);
+
+      return;
     }
 
-    setQuery('');
     setIsInputDisabled(true);
 
     postTodo({
-      title: query,
+      title: query.trim(),
       userId,
       completed: false,
     })
       .then(newTodo => {
         setTodos([...currentTodos, newTodo]);
+        setQuery('');
       })
       .catch(() => {
         setErrorMessage('Unable to add a todo');
