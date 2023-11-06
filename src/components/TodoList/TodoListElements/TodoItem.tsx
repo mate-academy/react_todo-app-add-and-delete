@@ -4,9 +4,17 @@ type Props = {
   title: string,
   completed: boolean,
   isLoading: boolean,
+  id: number
+  handleDeleteTodo: (value: number) => void,
 };
 
-export const TodoItem: React.FC<Props> = ({ title, completed, isLoading }) => {
+export const TodoItem: React.FC<Props> = ({
+  title,
+  completed,
+  isLoading,
+  id,
+  handleDeleteTodo,
+}) => {
   return (
     <>
       <div
@@ -30,7 +38,12 @@ export const TodoItem: React.FC<Props> = ({ title, completed, isLoading }) => {
         </span>
 
         {/* Remove button appears only on hover */}
-        <button type="button" className="todo__remove" data-cy="TodoDelete">
+        <button
+          type="button"
+          className="todo__remove"
+          data-cy="TodoDelete"
+          onClick={() => handleDeleteTodo(id)}
+        >
           ×
         </button>
 

@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react';
-import { getTodos } from '../../api/todos';
+import { deleteTodo, getTodos } from '../../api/todos';
 import { Todo } from '../../types/Todo';
 import { Header } from './Header';
 import { Footer } from './Footer';
@@ -49,6 +49,19 @@ export const TodoList: React.FC<Props> = ({ userId }) => {
 
   const todosQty = todos.filter(todo => todo.completed !== true).length;
 
+  const handleDeleteTodo = (id: number) => {
+    deleteTodo(id)
+      .then(() => {
+        setTodos(todos.filter(todo => todo.id !== id));
+      })
+      .catch(() => {
+        setErrorMessage('Unable to delete a todo');
+        setTimeout(() => {
+          setErrorMessage('');
+        }, 3000);
+      });
+  };
+
   return (
     <>
       <div className="todoapp__content">
@@ -66,6 +79,8 @@ export const TodoList: React.FC<Props> = ({ userId }) => {
               key={todo.id}
               completed={todo.completed}
               isLoading={loading}
+              id={todo.id}
+              handleDeleteTodo={handleDeleteTodo}
             />
           ))}
 
