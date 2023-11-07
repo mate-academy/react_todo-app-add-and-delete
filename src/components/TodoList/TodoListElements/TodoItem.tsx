@@ -6,6 +6,7 @@ type Props = {
   isLoading: boolean,
   id: number
   handleDeleteTodo: (value: number) => void,
+  handleCompleteTodo: (id: number, value: boolean) => void,
 };
 
 export const TodoItem: React.FC<Props> = ({
@@ -14,6 +15,7 @@ export const TodoItem: React.FC<Props> = ({
   isLoading,
   id,
   handleDeleteTodo,
+  handleCompleteTodo,
 }) => {
   return (
     <>
@@ -30,6 +32,7 @@ export const TodoItem: React.FC<Props> = ({
             type="checkbox"
             className="todo__status"
             defaultChecked={completed}
+            onClick={() => handleCompleteTodo(id, !completed)}
           />
         </label>
 

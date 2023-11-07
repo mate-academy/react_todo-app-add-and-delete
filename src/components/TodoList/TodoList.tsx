@@ -3,7 +3,12 @@ import {
   CSSTransition,
   TransitionGroup,
 } from 'react-transition-group';
-import { deleteTodo, getTodos, postTodo } from '../../api/todos';
+import {
+  deleteTodo,
+  getTodos,
+  postTodo,
+  toggleCompleteTodo,
+} from '../../api/todos';
 import { Todo } from '../../types/Todo';
 import { Header } from './Header';
 import { Footer } from './Footer';
@@ -115,6 +120,26 @@ export const TodoList: React.FC<Props> = ({ userId }) => {
       });
   };
 
+  const handleCompleteTodo = (todoId: number, completed: boolean) => {
+    toggleCompleteTodo(todoId, completed)
+      .then(() => {
+        setTodos(todos.map(todo => (todo.id === todoId
+          ? { ...todo, completed }
+          : todo
+        )));
+        setLoading(true);
+      })
+      .catch(() => {
+        setErrorMessage('Unable to complete a todo');
+        setTimeout(() => {
+          setErrorMessage('');
+        }, 3000);
+      })
+      .finally(() => {
+        setLoading(false);
+      });
+  };
+
   const handleClearCompleted = () => {
     todos.filter(todo => todo.completed).map(todo => handleDeleteTodo(todo.id));
   };
@@ -140,6 +165,7 @@ export const TodoList: React.FC<Props> = ({ userId }) => {
                   isLoading={loading}
                   id={todo.id}
                   handleDeleteTodo={handleDeleteTodo}
+                  handleCompleteTodo={handleCompleteTodo}
                 />
               </CSSTransition>
             ))}
@@ -157,6 +183,7 @@ export const TodoList: React.FC<Props> = ({ userId }) => {
                   isLoading
                   id={tempTodo.id}
                   handleDeleteTodo={handleDeleteTodo}
+                  handleCompleteTodo={handleCompleteTodo}
                 />
               </CSSTransition>
             )}
