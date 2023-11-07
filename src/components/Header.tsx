@@ -52,7 +52,10 @@ export const Header: React.FC<Props> = ({
       setTodos([...todos, todo]);
       setTitle('');
     })
-      .catch(() => setErrorMessage(Errors.UnableAdd))
+      .catch(() => {
+        setErrorMessage(Errors.UnableAdd);
+        setTimeout(() => setErrorMessage(Errors.Empty), 3000);
+      })
       .finally(() => {
         setTempTodo(null);
       });

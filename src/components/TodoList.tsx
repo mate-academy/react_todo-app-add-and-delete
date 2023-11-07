@@ -27,7 +27,10 @@ export const TodoList: React.FC<Props> = ({
       .then(() => {
         setTodos(todos.filter(todo => todo.id !== todoId));
       })
-      .catch(() => setErrorMessage(Errors.UnableDelete))
+      .catch(() => {
+        setErrorMessage(Errors.UnableDelete);
+        setTimeout(() => setErrorMessage(Errors.Empty), 3000);
+      })
       .finally(() => setDeletedTodoId(null));
   };
 

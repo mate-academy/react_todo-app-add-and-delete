@@ -33,7 +33,10 @@ export const Footer: React.FC<Props> = ({
     clearCompleted.forEach(todo => (
       deleteTodos(todo.id)
         .then(() => setTodos(todos.filter(item => !item.completed)))
-        .catch(() => setErrorMessage(Errors.UnableDelete))
+        .catch(() => {
+          setErrorMessage(Errors.UnableDelete);
+          setTimeout(() => setErrorMessage(Errors.Empty), 3000);
+        })
         .finally(() => setLoading(false))
     ));
   };
