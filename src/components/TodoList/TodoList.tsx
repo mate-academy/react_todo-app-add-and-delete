@@ -15,6 +15,7 @@ export const TodoList: React.FC<Props> = ({ userId }) => {
   const [loading, setLoading] = useState(false);
   const [errorMessage, setErrorMessage] = useState('');
   const [todos, setTodos] = useState<Todo[]>([]);
+  const [tempTodo, setTempTodo] = useState<Todo | null>(null);
 
   const [filteredTodo, setFilteredTodo] = useState<FilterType>(FilterType.ALL);
 
@@ -63,6 +64,13 @@ export const TodoList: React.FC<Props> = ({ userId }) => {
       return;
     }
 
+    setTempTodo({
+      id: 0,
+      title: todoTitle.trim(),
+      userId,
+      completed: false,
+    });
+
     setIsInputDisabled(true);
 
     postTodo({
@@ -82,6 +90,7 @@ export const TodoList: React.FC<Props> = ({ userId }) => {
       })
       .finally(() => {
         setIsInputDisabled(false);
+        setTempTodo(null);
       });
   };
 
@@ -89,12 +98,16 @@ export const TodoList: React.FC<Props> = ({ userId }) => {
     deleteTodo(id)
       .then(() => {
         setTodos(todos.filter(todo => todo.id !== id));
+        setLoading(true);
       })
       .catch(() => {
         setErrorMessage('Unable to delete a todo');
         setTimeout(() => {
           setErrorMessage('');
         }, 3000);
+      })
+      .finally(() => {
+        setLoading(false);
       });
   };
 
@@ -120,6 +133,17 @@ export const TodoList: React.FC<Props> = ({ userId }) => {
               handleDeleteTodo={handleDeleteTodo}
             />
           ))}
+
+          { tempTodo && (
+            <TodoItem
+              title={tempTodo.title}
+              key={tempTodo.id}
+              completed={tempTodo.completed}
+              isLoading
+              id={tempTodo.id}
+              handleDeleteTodo={handleDeleteTodo}
+            />
+          )}
 
           { todos.length > 0 && (
             <Footer
