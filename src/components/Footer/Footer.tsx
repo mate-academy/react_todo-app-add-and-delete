@@ -46,19 +46,20 @@ export const Footer = () => {
   return (
     <>
       {isHidden() && (
-        <footer className="todoapp__footer">
-          <span className="todo-count">
+        <footer className="todoapp__footer" data-cy="Footer">
+          <span className="todo-count" data-cy="TodosCounter">
             {`${activeTodos.length} items left`}
           </span>
 
           {/* Active filter should have a 'selected' class */}
-          <nav className="filter">
+          <nav className="filter" data-cy="Filter">
             <a
               href="#/"
               className={cn('filter__link', {
                 selected: filterTodo === Filter.All,
               })}
               onClick={() => getFilteredTodo(Filter.All)}
+              data-cy="FilterLinkAll"
             >
               All
             </a>
@@ -69,6 +70,7 @@ export const Footer = () => {
                 selected: filterTodo === Filter.Active,
               })}
               onClick={() => getFilteredTodo(Filter.Active)}
+              data-cy="FilterLinkActive"
             >
               Active
             </a>
@@ -79,6 +81,7 @@ export const Footer = () => {
                 selected: filterTodo === Filter.Completed,
               })}
               onClick={() => getFilteredTodo(Filter.Completed)}
+              data-cy="FilterLinkCompleted"
             >
               Completed
             </a>
@@ -90,6 +93,7 @@ export const Footer = () => {
               hidden: !isCompleted,
             })}
             onClick={handleSelectedDelete}
+            data-cy="ClearCompletedButton"
           >
             Clear completed
           </button>

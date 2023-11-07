@@ -80,12 +80,14 @@ export const Header = () => {
           active: isCompleted,
           hidden: !todos.length,
         })}
+        data-cy="ToggleAllButton"
       />
 
       <form onSubmit={handleSubmit}>
         <input
           type="text"
           className="todoapp__new-todo"
+          data-cy="NewTodoField"
           placeholder="What needs to be done?"
           value={title}
           onChange={event => setTitle(event.currentTarget.value)}

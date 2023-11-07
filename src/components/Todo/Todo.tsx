@@ -37,28 +37,32 @@ export const Todo: React.FC<Props> = ({ todo }) => {
   };
 
   return (
-    <div className={cn('todo', { completed })}>
+    <div data-cy="Todo" className={cn('todo', { completed })}>
       <label className="todo__status-label">
         <input
           type="checkbox"
           className="todo__status"
+          data-cy="TodoStatus"
           onChange={() => { }}
           checked
         />
       </label>
 
-      <span className="todo__title">{title}</span>
+      <span data-cy="TodoTitle" className="todo__title">{title}</span>
       <button
         type="button"
         className="todo__remove"
+        data-cy="TodoDelete"
         onClick={handleSingleDelete}
       >
         ×
       </button>
 
-      <div className={cn('modal overlay', {
-        'is-active': isDeleting || selectedAreDeleting(),
-      })}
+      <div
+        data-cy="TodoLoader"
+        className={cn('modal overlay', {
+          'is-active': isDeleting || selectedAreDeleting(),
+        })}
       >
         <div className="modal-background has-background-white-ter" />
         <div className="loader" />
