@@ -1,4 +1,8 @@
 import { useEffect, useState } from 'react';
+import {
+  CSSTransition,
+  TransitionGroup,
+} from 'react-transition-group';
 import { deleteTodo, getTodos, postTodo } from '../../api/todos';
 import { Todo } from '../../types/Todo';
 import { Header } from './Header';
@@ -122,41 +126,53 @@ export const TodoList: React.FC<Props> = ({ userId }) => {
           <Header
             handleCreateTodoSubmit={handleCreateTodoSubmit}
           />
+          <TransitionGroup>
+            { updatedTodos.map(todo => (
+              <CSSTransition
+                key={todo.id}
+                timeout={300}
+                classNames="item"
+              >
+                <TodoItem
+                  title={todo.title}
+                  key={todo.id}
+                  completed={todo.completed}
+                  isLoading={loading}
+                  id={todo.id}
+                  handleDeleteTodo={handleDeleteTodo}
+                />
+              </CSSTransition>
+            ))}
 
-          { updatedTodos.map(todo => (
-            <TodoItem
-              title={todo.title}
-              key={todo.id}
-              completed={todo.completed}
-              isLoading={loading}
-              id={todo.id}
-              handleDeleteTodo={handleDeleteTodo}
-            />
-          ))}
+            { tempTodo && (
+              <CSSTransition
+                key={0}
+                timeout={300}
+                classNames="temp-item"
+              >
+                <TodoItem
+                  title={tempTodo.title}
+                  key={tempTodo.id}
+                  completed={tempTodo.completed}
+                  isLoading
+                  id={tempTodo.id}
+                  handleDeleteTodo={handleDeleteTodo}
+                />
+              </CSSTransition>
+            )}
 
-          { tempTodo && (
-            <TodoItem
-              title={tempTodo.title}
-              key={tempTodo.id}
-              completed={tempTodo.completed}
-              isLoading
-              id={tempTodo.id}
-              handleDeleteTodo={handleDeleteTodo}
-            />
-          )}
-
-          { todos.length > 0 && (
-            <Footer
-              todosQty={todosQty}
-              filterTodo={setFilteredTodo}
-              selectedTodoFilter={filteredTodo}
-              handleClearCompleted={handleClearCompleted}
-              hasCompletedTodos={
-                todos.filter(todo => todo.completed).length > 0
-              }
-            />
-          )}
-
+            { todos.length > 0 && (
+              <Footer
+                todosQty={todosQty}
+                filterTodo={setFilteredTodo}
+                selectedTodoFilter={filteredTodo}
+                handleClearCompleted={handleClearCompleted}
+                hasCompletedTodos={
+                  todos.filter(todo => todo.completed).length > 0
+                }
+              />
+            )}
+          </TransitionGroup>
         </section>
       </div>
 
