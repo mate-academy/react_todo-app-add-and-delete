@@ -5,6 +5,8 @@ import { Todo } from './types/Todo';
 import * as TodoService from './api/todos';
 import { FilterBy } from './types/FilterBy';
 import { ErrorMessage } from './types/ErrorMessage';
+import { TodoAppContent } from './TodoAppContent';
+import { ErrorNotification } from './ErrorNotification';
 
 const USER_ID = 11836;
 
@@ -147,152 +149,24 @@ export const App: React.FC = () => {
   return (
     <div className="todoapp">
       <h1 className="todoapp__title">todos</h1>
-
-      <div className="todoapp__content">
-        <header className="todoapp__header">
-          <button
-            type="button"
-            className="todoapp__toggle-all active"
-            data-cy="ToggleAllButton"
-          />
-          <form onSubmit={handleAddTodo}>
-            <input
-              disabled={isSubmitting}
-              ref={focusRef}
-              data-cy="NewTodoField"
-              type="text"
-              className="todoapp__new-todo"
-              placeholder="What needs to be done?"
-              value={todoInput}
-              onChange={(e) => setTodoInput(e.target.value)}
-            />
-          </form>
-        </header>
-
-        <section className="todoapp__main" data-cy="TodoList">
-          {filteredTodos.map((todo) => (
-            <div key={todo.id} data-cy="Todo" className={`todo ${todo.completed ? 'completed' : ''}`}>
-              <label className="todo__status-label">
-                <input
-                  data-cy="TodoStatus"
-                  type="checkbox"
-                  className="todo__status"
-                  defaultChecked={todo.completed}
-                />
-              </label>
-              <span
-                data-cy="TodoTitle"
-                className="todo__title"
-              >
-                {todo.title}
-              </span>
-              <button
-                type="button"
-                className="todo__remove"
-                data-cy="TodoDelete"
-                onClick={() => deleteTodo(todo.id)}
-              >
-                ×
-              </button>
-              <div data-cy="TodoLoader" className="modal overlay">
-                <div className="modal-background has-background-white-ter" />
-                <div className="loader" />
-              </div>
-            </div>
-          ))}
-          {tempTodo && (
-            <div
-              key={tempTodo.id}
-              data-cy="Todo"
-              className={`todo ${tempTodo.completed ? 'completed' : ''}`}
-            >
-              <label className="todo__status-label">
-                <input
-                  data-cy="TodoStatus"
-                  type="checkbox"
-                  className="todo__status"
-                  defaultChecked={tempTodo.completed}
-                />
-              </label>
-              <span
-                data-cy="TodoTitle"
-                className="todo__title"
-              >
-                {tempTodo.title}
-              </span>
-              <button
-                type="button"
-                className="todo__remove"
-                data-cy="TodoDelete"
-                onClick={() => deleteTodo(tempTodo.id)}
-              >
-                ×
-              </button>
-              <div data-cy="TodoLoader" className={`modal overlay ${tempTodo ? 'is-active' : ''}`}>
-                <div className="modal-background has-background-white-ter" />
-                <div className="loader" />
-              </div>
-            </div>
-          )}
-        </section>
-
-        {todos.length > 0 && (
-          <footer className="todoapp__footer" data-cy="Footer">
-            <span className="todo-count" data-cy="TodosCounter">
-              {`${todos.filter(todo => !todo.completed).length} items left`}
-            </span>
-            <nav className="filter" data-cy="Filter">
-              <a
-                href="#/"
-                onClick={handleFilterClick(FilterBy.All)}
-                className={`filter__link ${filterBy === FilterBy.All ? 'selected' : ''}`}
-                data-cy="FilterLinkAll"
-              >
-                All
-              </a>
-              <a
-                href="#/active"
-                onClick={handleFilterClick(FilterBy.Active)}
-                className={`filter__link ${filterBy === FilterBy.Active ? 'selected' : ''}`}
-                data-cy="FilterLinkActive"
-              >
-                Active
-              </a>
-              <a
-                href="#/completed"
-                onClick={handleFilterClick(FilterBy.Completed)}
-                className={`filter__link ${filterBy === FilterBy.Completed ? 'selected' : ''}`}
-                data-cy="FilterLinkCompleted"
-              >
-                Completed
-              </a>
-            </nav>
-            {todos.some(todo => todo.completed) && (
-              <button
-                type="button"
-                className="todoapp__clear-completed"
-                data-cy="ClearCompletedButton"
-                onClick={clearCompletedTodos}
-              >
-                Clear completed
-              </button>
-            )}
-          </footer>
-        )}
-      </div>
-
-      <div
-        data-cy="ErrorNotification"
-        className={`notification is-danger is-light has-text-weight-normal ${errorMessage === ErrorMessage.None ? 'hidden' : ''}`}
-      >
-        <button
-          data-cy="HideErrorButton"
-          type="button"
-          className="delete"
-          onClick={handleErrorNotificationClick}
-        />
-        {errorMessage}
-      </div>
+      <TodoAppContent
+        filteredTodos={filteredTodos}
+        tempTodo={tempTodo}
+        todos={todos}
+        filterBy={filterBy}
+        todoInput={todoInput}
+        isSubmitting={isSubmitting}
+        handleAddTodo={handleAddTodo}
+        setTodoInput={setTodoInput}
+        deleteTodo={deleteTodo}
+        handleFilterClick={handleFilterClick}
+        clearCompletedTodos={clearCompletedTodos}
+        focusRef={focusRef}
+      />
+      <ErrorNotification
+        errorMessage={errorMessage}
+        handleErrorNotificationClick={handleErrorNotificationClick}
+      />
     </div>
   );
 };
