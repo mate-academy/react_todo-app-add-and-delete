@@ -18,14 +18,14 @@ export const TodoFooter: React.FC<Props> = ({
   countLeft,
   haveCompleted,
 }) => {
-  const { todos, userId } = useContext(StateContext);
+  const { todos } = useContext(StateContext);
   const dispatch = useContext(DispatchContext);
 
   const handleClearCompleted = () => {
     const completedTodos = todos.filter(todo => todo.completed);
 
     const deletedPromises = completedTodos
-      .map(todo => deleteTodo(todo.id, userId));
+      .map(todo => deleteTodo(todo.id));
 
     Promise.all(deletedPromises)
       .then(() => {

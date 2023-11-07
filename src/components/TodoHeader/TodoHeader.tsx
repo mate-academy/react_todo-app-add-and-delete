@@ -13,7 +13,7 @@ export const TodoHeader: React.FC = () => {
   const [title, setTitle] = useState('');
   const [isSending, setIsSending] = useState(false);
   const dispatch = useContext(DispatchContext);
-  const { userId, todos } = useContext(StateContext);
+  const { error, todos, userId } = useContext(StateContext);
 
   const refInput = useRef<HTMLInputElement>(null);
 
@@ -22,6 +22,12 @@ export const TodoHeader: React.FC = () => {
   useEffect(() => {
     refInput.current?.focus();
   }, [todos.length]);
+
+  useEffect(() => {
+    if (error === Error.UnableAddTodo) {
+      refInput.current?.focus();
+    }
+  }, [error]);
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
@@ -51,7 +57,7 @@ export const TodoHeader: React.FC = () => {
       },
     });
 
-    addTodo(newTodo, userId)
+    addTodo(newTodo)
       .then((response) => {
         dispatch({
           type: 'addTodo',

@@ -3,7 +3,7 @@ import cn from 'classnames';
 import { Todo } from '../../types/Todo';
 import { Error } from '../../types/Error';
 import { deleteTodo } from '../../api/todos';
-import { DispatchContext, StateContext } from '../../Context/Store';
+import { DispatchContext } from '../../Context/Store';
 
 type Props = {
   todo: Todo;
@@ -12,12 +12,11 @@ type Props = {
 export const TodoItem: React.FC<Props> = ({ todo }) => {
   const [isSending, setIsSending] = useState(false);
   const dispatch = useContext(DispatchContext);
-  const { userId } = useContext(StateContext);
 
   const TodoDeleteButton = () => {
     setIsSending(true);
 
-    deleteTodo(todo.id, userId)
+    deleteTodo(todo.id)
       .then(() => dispatch({
         type: 'deleteTodo',
         payload: todo,

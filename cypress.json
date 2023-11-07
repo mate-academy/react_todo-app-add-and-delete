@@ -1,9 +1,9 @@
 {
   "baseUrl": "http://localhost:3000",
-  "video": true,
+  "video": false,
   "viewportHeight": 1920,
   "viewportWidth": 1080,
-  "screenshotOnRunFailure": true,
+  "screenshotOnRunFailure": false,
   "reporter": "mochawesome",
   "reporterOptions": {
     "reportDir": "raw_reports",
