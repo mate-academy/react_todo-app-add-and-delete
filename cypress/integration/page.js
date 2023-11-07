@@ -1,6 +1,5 @@
 /// <reference types='cypress' />
 /// <reference types='../support' />
-
 //#region Page Objects
 const page = {
   toggleAllButton: () => cy.byDataCy('ToggleAllButton'),
@@ -38,7 +37,7 @@ const page = {
     return cy.intercept('**/todos?userId=*', response);
   },
   mockCreate: (response) => {
-    const options = { method: 'POST', url: '**/todos' };
+    const options = { method: 'POST', url: '**/todos?userId=*' };
 
     const spy = cy.stub()
       .callsFake(req => req.reply({
@@ -64,7 +63,6 @@ const page = {
     return cy.intercept(options, response || spy);
   },
 };
-
 const todos = {
   el: index => cy.byDataCy('Todo').eq(index),
   deleteButton: index => todos.el(index).byDataCy('TodoDelete'),
@@ -79,7 +77,6 @@ const todos = {
   assertCompleted: index => todos.el(index).should('have.class', 'completed'),
   assertNotCompleted: index => todos.el(index).should('not.have.class', 'completed'),
 };
-
 const errorMessage = {
   el: () => cy.byDataCy('ErrorNotification'),
   closeButton: () => errorMessage.el().byDataCy('HideErrorButton'),
@@ -87,13 +84,11 @@ const errorMessage = {
   assertHidden: () => errorMessage.el().should('have.class', 'hidden'),
   assertText: text => errorMessage.el().should('have.text', text),
 };
-
 const FilterLinkKeys = {
   all: 'FilterLinkAll',
   active: 'FilterLinkActive',
   completed: 'FilterLinkCompleted',
 };
-
 const filter = {
   el: () => cy.byDataCy('Filter'),
   link: type => cy.byDataCy(FilterLinkKeys[type]),
@@ -103,14 +98,11 @@ const filter = {
   assertNotSelected: type => filter.link(type).should('not.have.class', 'selected'),
 };
 //#endregion
-
 let failed = false;
-
 Cypress.on('fail', (e) => {
   failed = true;
   throw e;
 });
-
 describe('', () => {
   beforeEach(() => {
     // if (failed) Cypress.runner.stop();
@@ -120,7 +112,7 @@ describe('', () => {
     it('should send 1 todos request', () => {
       const spy = cy.stub()
         .callsFake(req => req.reply({ body: [] }))
-        .as('loadCallback')
+        .as('loadCallback');
 
       page.mockLoad(spy).as('loadRequest');
       page.visit();
@@ -217,7 +209,6 @@ describe('', () => {
       todos.assertNotLoading(3);
       todos.assertNotLoading(4);
     })
-
     it('should have correct todo titles', () => {
       todos.assertTitle(0, 'HTML');
       todos.assertTitle(1, 'CSS');
