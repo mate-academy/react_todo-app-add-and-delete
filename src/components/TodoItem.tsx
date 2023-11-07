@@ -6,16 +6,37 @@ type Props = {
   todo: Todo;
   togleCheck: (id: number) => void;
   toDelete: (id: number) => void;
+  showErrorNotification: (value: string) => void;
 };
 
-export const TodoItem: React.FC<Props> = ({ todo, togleCheck, toDelete }) => {
+export const TodoItem: React.FC<Props> = ({
+  todo,
+  togleCheck,
+  toDelete,
+  showErrorNotification,
+}) => {
   const [isEditing, setIsEditing] = useState(false);
   const [editValue, setEditValue] = useState(todo.title);
+
   const inputRef = useRef<HTMLInputElement | null>(null);
+
+  const [loading, setLoading] = useState(false);
   //
+  // const handleDeletedTodo = (id: number) => {
+  //   deleteTodo(id);
+  //   toDelete(id);
+  // };
   const handleDeletedTodo = (id: number) => {
-    deleteTodo(id);
-    toDelete(id);
+    setLoading(true);
+
+    deleteTodo(id)
+      .then(() => {
+        toDelete(id);
+      })
+      .catch(() => {
+        setLoading(false);
+        showErrorNotification('Unable to delete a todo');
+      });
   };
 
   const handleDoubleClick = () => {
@@ -83,10 +104,12 @@ export const TodoItem: React.FC<Props> = ({ todo, togleCheck, toDelete }) => {
       )}
 
       {/* overlay will cover the todo while it is being updated */}
-      <div data-cy="TodoLoader" className="modal overlay">
-        <div className="modal-background has-background-white-ter" />
-        <div className="loader" />
-      </div>
+      {loading && (
+        <div data-cy="TodoLoader" className="modal overlay is-active">
+          <div className="modal-background has-background-white-ter" />
+          <div className="loader" />
+        </div>
+      )}
     </div>
   );
 };

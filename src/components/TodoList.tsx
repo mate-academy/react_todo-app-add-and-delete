@@ -5,27 +5,31 @@ type Props = {
   todos: Todo[];
   togleCheck: (id: number) => void;
   toDelete: (id: number) => void;
+  showErrorNotification: (value: string) => void;
 };
 
-export const TodoList: React.FC<Props> = ({ todos, togleCheck, toDelete }) => {
+export const TodoList: React.FC<Props> = ({
+  todos,
+  togleCheck,
+  toDelete,
+  showErrorNotification,
+}) => {
   return (
     <section className="todoapp__main" data-cy="TodoList">
       {todos.map((todo) => (
         //
         <TodoItem
+          showErrorNotification={showErrorNotification}
           toDelete={toDelete}
           todo={todo}
           key={todo.id}
           togleCheck={togleCheck}
-          // toDelete={toDelete}
         />
       ))}
     </section>
   );
 };
 
-//
-//
 //
 // {/* <section className="todoapp__main" data-cy="TodoList"> */}
 //     {/* This is a completed todo */}

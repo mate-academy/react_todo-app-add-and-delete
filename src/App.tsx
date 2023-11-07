@@ -104,13 +104,15 @@ export const App: React.FC = () => {
               toDelete={toDelete}
               todos={filtredTodo}
               togleCheck={togleCheck}
-              // toDelete={toDelete}
+              showErrorNotification={showErrorNotification}
             />
             {/* Hide the footer if there are no todos */}
             <Footer
+              setTodos={setTodos}
               todos={todos}
               setFiltredByStatus={setFiltredByStatus}
               filtredByStatus={filtredByStatus}
+              showErrorNotification={showErrorNotification}
             />
           </>
         )}

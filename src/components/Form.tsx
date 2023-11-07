@@ -19,8 +19,6 @@ export const Form: React.FC<Props> = ({
   const [title, setTitle] = useState('');
   const [isLoading, setIsLoading] = useState(false);
 
-  // const [tempTodo, setTempTodo] = useState(null);
-
   useEffect(() => {
     inputRef.current?.focus();
   }, []);
@@ -34,9 +32,9 @@ export const Form: React.FC<Props> = ({
 
     setIsLoading(true);
 
-    const newTodo = {
-      // id: +new Date(),
+    const newTodo: Todo = {
       userId: USER_ID,
+      id: 0,
       title: title.trim(),
       completed: false,
     };
@@ -46,7 +44,9 @@ export const Form: React.FC<Props> = ({
         addNewTodo(todo);
         setTitle('');
       })
-      .catch(() => showErrorNotification('Unable to add a todo'))
+      .catch(() => {
+        showErrorNotification('Unable to add a todo');
+      })
       .finally(() => {
         setIsLoading(false);
       });
@@ -55,7 +55,6 @@ export const Form: React.FC<Props> = ({
   const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     handleBlur();
-    // setTitle('');
   };
 
   return (
@@ -63,7 +62,6 @@ export const Form: React.FC<Props> = ({
       <input
         type="text"
         data-cy="NewTodoField"
-        // className={`todoapp__new-todo ${isLoading ? 'loading' : ''}`}
         className="todoapp__new-todo"
         placeholder="What needs to be done?"
         value={title}
@@ -72,7 +70,6 @@ export const Form: React.FC<Props> = ({
         onBlur={handleBlur}
         disabled={isLoading}
       />
-      {/* {isLoading ? <div className="loading-message">Loading...</div> : null} */}
     </form>
   );
 };

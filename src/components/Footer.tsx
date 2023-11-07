@@ -1,25 +1,60 @@
 import { Todo } from '../types/Todo';
 import { Status } from '../types/Status';
+import { deleteTodo } from '../api/todos';
 
 type Props = {
   todos: Todo[];
   setFiltredByStatus: (value: Status) => void;
   filtredByStatus: Status;
+  setTodos: (value: Todo[]) => void;
+  showErrorNotification: (value: string) => void;
 };
 
 export const Footer: React.FC<Props> = ({
   todos,
   setFiltredByStatus,
   filtredByStatus,
+  setTodos,
+  showErrorNotification,
 }) => {
-  const itemsLeft = todos
-    .filter((todo) => todo.completed === false)
-    .length;
+  const itemsLeft = todos.filter((todo) => todo.completed === false).length;
+
+  //
+  const handleClearCompleted = () => {
+    const completedTodos = todos.filter((todo) => todo.completed);
+
+    if (completedTodos.length === 0) {
+      return;
+    }
+
+    const deletePromises = completedTodos.map((todo) => {
+      return new Promise((resolve) => {
+        deleteTodo(todo.id)
+          .then(() => resolve(todo.id))
+          .catch(() => resolve(null));
+      });
+    });
+
+    Promise.all(deletePromises)
+      .then((completedIds) => {
+        const successfulDeletions = completedIds.filter((id) => id !== null);
+        const updatedTodos = todos.filter(
+          (todo) => !completedTodos.find((ct) => ct.id === todo.id),
+        );
+
+        setTodos(updatedTodos);
+
+        if (successfulDeletions.length < completedTodos.length) {
+          showErrorNotification('Unable to delete a todo');
+        }
+      });
+  };
+  //
 
   return (
     <footer className="todoapp__footer" data-cy="Footer">
       <span className="todo-count" data-cy="TodosCounter">
-        { `${itemsLeft} items left` }
+        {`${itemsLeft} items left`}
       </span>
 
       {/* Active filter should have a 'selected' class */}
@@ -69,6 +104,7 @@ export const Footer: React.FC<Props> = ({
         type="button"
         className="todoapp__clear-completed"
         data-cy="ClearCompletedButton"
+        onClick={handleClearCompleted}
       >
         Clear completed
       </button>
