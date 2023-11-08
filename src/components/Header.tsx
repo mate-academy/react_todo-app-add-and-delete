@@ -35,6 +35,9 @@ export const Header: React.FC<Props> = ({
 
     if (!trimTitle) {
       setErrorMessage(Errors.EmptyTitle);
+      setTimeout(() => setErrorMessage(Errors.Empty), 3000);
+
+      return;
     }
 
     setTempTodo({
