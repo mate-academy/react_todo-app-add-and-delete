@@ -16,7 +16,6 @@ const todoData: TodoFromServer = {
   completed: false,
   title: '',
 };
-const regex = /\s/g;
 
 export const Header: React.FC<Props> = ({
   setTodos,
@@ -28,6 +27,8 @@ export const Header: React.FC<Props> = ({
   const [titleTodo, setTitleTodo] = useState('');
   const textInput = useRef<HTMLInputElement | null>(null);
 
+  const isUnableAddTodo = useRef(true);
+
   useEffect(() => {
     textInput.current?.focus();
   }, [isDisableInput]);
@@ -35,36 +36,46 @@ export const Header: React.FC<Props> = ({
   const onSubmit = (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
     todoData.title = titleTodo.trim();
+    setErrorMessage('');
+    isUnableAddTodo.current = true;
 
-    if (!titleTodo || regex.test(titleTodo)) {
+    if (titleTodo.trim()) {
+      setIsDisableInput(true);
+      setTempTodo({
+        userId: 11853,
+        completed: false,
+        title: titleTodo,
+        id: 0,
+      });
+
+      addTodos(todoData)
+        .then(data => {
+          setTodos((currentTodos) => [...currentTodos, data]);
+          setTempTodo(null);
+        })
+        .catch((error) => {
+          setTempTodo(null);
+          isUnableAddTodo.current = false;
+          setErrorMessage('Unable to add a todo');
+          setTimeout(() => {
+            setErrorMessage('');
+          }, 3000);
+          throw error;
+        })
+        .finally(() => {
+          if (isUnableAddTodo.current) {
+            setTitleTodo('');
+          }
+
+          setIsDisableInput(false);
+        });
+    } else {
       setErrorMessage('Title should not be empty');
 
       setTimeout(() => {
         setErrorMessage('');
       }, 3000);
-
-      return;
     }
-
-    setTempTodo({
-      userId: 11853,
-      completed: false,
-      title: titleTodo,
-      id: 0,
-    });
-
-    setIsDisableInput(true);
-
-    addTodos(todoData)
-      .then(data => {
-        return setTodos((currentTodos) => [...currentTodos, data]);
-      })
-      .catch()
-      .finally(() => {
-        setTitleTodo('');
-        setIsDisableInput(false);
-        setTempTodo(null);
-      });
   };
 
   return (

@@ -61,7 +61,6 @@ export const App: React.FC = () => {
           setErrorMessage={setErrorMessage}
           isDisableInput={isDisableInput}
           setIsDisableInput={setIsDisableInput}
-          // tempTodo={tempTodo}
           setTempTodo={setTempTodo}
         />
 
@@ -71,7 +70,6 @@ export const App: React.FC = () => {
           isDisableInput={isDisableInput}
           setIsDisableInput={setIsDisableInput}
           tempTodo={tempTodo}
-          // setTempTodo={setTempTodo}
         />
         {todos.length > 0 && (
           <Footer
@@ -84,6 +82,7 @@ export const App: React.FC = () => {
 
       <ErrorNotification
         errorMessage={errorMessage}
+        setErrorMessage={setErrorMessage}
       />
     </div>
   );

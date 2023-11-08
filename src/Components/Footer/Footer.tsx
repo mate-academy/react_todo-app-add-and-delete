@@ -17,11 +17,7 @@ export const Footer: React.FC<Props> = ({
   return (
     <footer className="todoapp__footer" data-cy="Footer">
       <span className="todo-count" data-cy="TodosCounter">
-        {activeItems.length ? (
-          `${activeItems.length} items left`
-        ) : (
-          '0 items left'
-        )}
+        {`${activeItems.length} items left`}
       </span>
 
       {/* Active filter should have a 'selected' class */}

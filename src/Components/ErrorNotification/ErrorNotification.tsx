@@ -3,9 +3,12 @@ import cn from 'classnames';
 
 type Props = {
   errorMessage: string;
+  setErrorMessage: (error: string) => void;
 };
 
-export const ErrorNotification: React.FC<Props> = ({ errorMessage }) => {
+export const ErrorNotification: React.FC<Props> = ({
+  errorMessage, setErrorMessage,
+}) => {
   return (
     <div
       data-cy="ErrorNotification"
@@ -20,6 +23,7 @@ export const ErrorNotification: React.FC<Props> = ({ errorMessage }) => {
         data-cy="HideErrorButton"
         type="button"
         className="delete"
+        onClick={() => setErrorMessage('')}
       />
       {errorMessage}
       {/* show only one message at a time
