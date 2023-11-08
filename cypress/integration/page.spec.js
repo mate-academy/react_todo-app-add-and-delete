@@ -403,7 +403,7 @@ describe('', () => {
         errorMessage.assertText('Title should not be empty');
       });
 
-      it.skip('should hide an error message after 3 seconds', () => {
+      it('should hide an error message after 3 seconds', () => {
         cy.clock();
         cy.tick(3000);
         errorMessage.assertHidden();
@@ -429,7 +429,7 @@ describe('', () => {
         errorMessage.assertText('Title should not be empty');
       });
 
-      it.skip('should hide an error message after 3 seconds', () => {
+      it('should hide an error message after 3 seconds', () => {
         cy.clock();
         cy.tick(3000);
         errorMessage.assertHidden();
