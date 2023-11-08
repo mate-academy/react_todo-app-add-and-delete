@@ -25,9 +25,11 @@ export const Header = () => {
 
   const handleSubmit = async (event: React.FormEvent) => {
     event.preventDefault();
+    const emptyTitle = title.replaceAll(' ', '');
 
-    if (!title) {
+    if (emptyTitle.length === 0) {
       setErrorMessage(ErrorsType.Title);
+      setTitle('');
       setTimeout(() => {
         setErrorMessage('');
       }, 3000);
@@ -48,7 +50,7 @@ export const Header = () => {
     try {
       const newTodo = await postTodos({
         userId: USER_ID,
-        title,
+        title: title.trim(),
         completed: false,
       });
 

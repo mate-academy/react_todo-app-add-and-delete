@@ -10,7 +10,7 @@ export const Errors = () => {
 
   switch (errorMessage) {
     case ErrorsType.Load:
-      message = 'Unable to load a todo';
+      message = 'Unable to load todos';
       break;
     case ErrorsType.Add:
       message = 'Unable to add a todo';
@@ -22,7 +22,7 @@ export const Errors = () => {
       message = 'Unable to update a todo';
       break;
     case ErrorsType.Title:
-      message = 'Title can\'t be empty';
+      message = 'Title should not be empty';
       break;
     default:
   }
