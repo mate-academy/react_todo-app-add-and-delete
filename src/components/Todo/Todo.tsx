@@ -44,7 +44,7 @@ export const Todo: React.FC<Props> = ({ todo }) => {
           className="todo__status"
           data-cy="TodoStatus"
           onChange={() => { }}
-          checked
+          checked={todo.completed}
         />
       </label>
 

@@ -71,7 +71,7 @@ export const Header = () => {
     if (inputRef.current) {
       inputRef.current.focus();
     }
-  }, [todos]);
+  }, [isSubmitting]);
 
   return (
     <header className="todoapp__header">
