@@ -91,12 +91,14 @@ export const App: React.FC = () => {
           )
         }
       >
-        <button
-          data-cy="HideErrorButton"
-          type="button"
-          className="delete"
-          onClick={() => setErrorMessage(Errors.Empty)}
-        />
+        {errorMessage && (
+          <button
+            data-cy="HideErrorButton"
+            type="button"
+            className="delete"
+            onClick={() => setErrorMessage(Errors.Empty)}
+          />
+        )}
         {/* show only one message at a time */}
         {errorMessage}
         {/* <br />
