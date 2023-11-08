@@ -8,8 +8,7 @@ import { ErrorNotification } from './components/errorNotification';
 import { Todo } from './types/Todo';
 import * as todoApi from './api/todos';
 import { FilteringType } from './types/filteringType';
-
-export const USER_ID = 11841;
+import { USER_ID } from './utils/User_Id';
 
 export const App: React.FC = () => {
   const [todos, setTodos] = useState<Todo[]>([]);
@@ -44,6 +43,10 @@ export const App: React.FC = () => {
       setTodos(todosData);
     } catch (error) {
       setErrorMessage('Unable to load todos');
+    } finally {
+      setTimeout(() => {
+        setErrorMessage('');
+      }, 3000);
     }
   };
 
@@ -81,6 +84,9 @@ export const App: React.FC = () => {
     } finally {
       setIsDisabledInput(false);
       setTempTodo(null);
+      setTimeout(() => {
+        setErrorMessage('');
+      }, 3000);
     }
 
     if (isError) {
@@ -119,6 +125,10 @@ export const App: React.FC = () => {
       }
     } catch {
       setErrorMessage('Unable to delete a todo');
+    } finally {
+      setTimeout(() => {
+        setErrorMessage('');
+      }, 3000);
     }
   }
 

@@ -1,6 +1,6 @@
 import { useEffect, useRef, useState } from 'react';
 import { Todo } from '../types/Todo';
-import { USER_ID } from '../App';
+import { USER_ID } from '../utils/User_Id';
 
 type Props = {
   todos: Todo[],
@@ -8,7 +8,6 @@ type Props = {
   onSubmit: (todo: Todo) => Promise<{ isError: boolean } | undefined>,
   setIsDisabledInput: (isDisable: boolean) => void,
   isDisabledInput: boolean,
-  // errorMessage: string,
 };
 
 export const Header: React.FC<Props> = ({
@@ -17,17 +16,16 @@ export const Header: React.FC<Props> = ({
   onSubmit,
   setIsDisabledInput,
   isDisabledInput,
-  // errorMessage,
 }) => {
   const [title, setTitle] = useState('');
-  // const [errortitle, setErrortitle] = useState('');
+
   const titleField = useRef<HTMLInputElement>(null);
 
   useEffect(() => {
     if (titleField.current) {
       titleField.current?.focus();
     }
-  }, [todos]);
+  }, [todos, onSubmit]);
 
   const handleTitleChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     setTitle(event.target.value);
@@ -39,6 +37,10 @@ export const Header: React.FC<Props> = ({
 
     if (!title.trim()) {
       setErrorMessage('Title should not be empty');
+
+      setTimeout(() => {
+        setErrorMessage('');
+      }, 3000);
 
       return;
     }

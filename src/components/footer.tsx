@@ -2,7 +2,6 @@ import cn from 'classnames';
 import React from 'react';
 import { FilteringType } from '../types/filteringType';
 import { Todo } from '../types/Todo';
-// import { Todo } from '../types/Todo';
 
 // {/* Hide the footer if there are no todos */}
 type Props = {

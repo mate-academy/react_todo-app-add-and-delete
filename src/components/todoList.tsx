@@ -1,7 +1,4 @@
-// import React, { useEffect } from 'react';
-// import { getTodos } from '../services/todos';
 import cn from 'classnames';
-// import { useState } from 'react';
 import { Todo } from '../types/Todo';
 
 type Props = {
@@ -9,7 +6,6 @@ type Props = {
   onDeleteTodo: (id: number) => void,
   tempTodo: Todo | null,
   todoDeletingId: number | number[],
-  // isTodoDeleting: boolean;
 };
 
 export const TodoList: React.FC<Props> = ({
@@ -17,7 +13,6 @@ export const TodoList: React.FC<Props> = ({
   onDeleteTodo,
   tempTodo,
   todoDeletingId,
-  // isTodoDeleting,
 }) => {
   return (
     <section className="todoapp__main" data-cy="TodoList">
