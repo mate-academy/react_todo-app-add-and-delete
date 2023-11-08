@@ -1,46 +1,58 @@
-import { FC } from 'react';
+import React from 'react';
+import { TransitionGroup, CSSTransition } from 'react-transition-group';
 import { Todo } from '../../types/Todo';
+import { TodoItem } from '../TodoItem/TodoItem';
 
 type Props = {
-  preparedTodos: Todo[];
+  todos: Todo[];
+  deleteTodo: (id: number) => void;
+  updateTodo: (todo: Todo) => void;
+  isLoading: number[],
+  tempTodo: Todo | null,
 };
 
-export const TodoList: FC<Props> = ({ preparedTodos }) => {
+export const TodoList: React.FC<Props> = ({
+  todos,
+  deleteTodo,
+  updateTodo,
+  isLoading,
+  tempTodo,
+}) => {
   return (
     <section className="todoapp__main" data-cy="TodoList">
-      {preparedTodos.map((todo) => {
-        return (
-          <div
-            data-cy="Todo"
+      <TransitionGroup>
+        {todos.map(todo => (
+          <CSSTransition
             key={todo.id}
-            className={`todo ${todo.completed && ' completed'}`}
+            timeout={300}
+            classNames="item"
           >
-            <label className="todo__status-label">
-              <input
-                data-cy="TodoStatus"
-                type="checkbox"
-                className="todo__status"
-                checked={todo.completed}
-              />
-            </label>
+            <TodoItem
+              key={todo.id}
+              todo={todo}
+              deleteId={deleteTodo}
+              updateTodo={updateTodo}
+              isLoading={isLoading.includes(todo.id)}
+            />
+          </CSSTransition>
+        ))}
 
-            <span data-cy="TodoTitle" className="todo__title">
-              {todo.title}
-            </span>
-
-            {/* Remove button appears only on hover */}
-            <button type="button" className="todo__remove" data-cy="TodoDelete">
-              ×
-            </button>
-
-            {/* overlay will cover the todo while it is being updated */}
-            <div data-cy="TodoLoader" className="modal overlay">
-              <div className="modal-background has-background-white-ter" />
-              <div className="loader" />
-            </div>
-          </div>
-        );
-      })}
+        {tempTodo && (
+          <CSSTransition
+            key={0}
+            timeout={300}
+            classNames="temp-item"
+          >
+            <TodoItem
+              key={tempTodo.id}
+              todo={tempTodo}
+              deleteId={deleteTodo}
+              updateTodo={updateTodo}
+              isLoading={isLoading.includes(tempTodo.id)}
+            />
+          </CSSTransition>
+        )}
+      </TransitionGroup>
     </section>
   );
 };
