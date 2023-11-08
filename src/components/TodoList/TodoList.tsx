@@ -36,16 +36,28 @@ export const TodoList = () => {
 
       {tempTodo && (
         <CSSTransition key={0} timeout={300} classNames="temp-item">
-          <div className="todo">
+          <div className="todo" data-cy="Todo">
             <label className="todo__status-label">
-              <input type="checkbox" className="todo__status" />
+              <input
+                type="checkbox"
+                className="todo__status"
+                data-cy="TodoStatus"
+              />
             </label>
 
-            <span className="todo__title">{tempTodo.title}</span>
-            <button type="button" className="todo__remove">×</button>
+            <span className="todo__title" data-cy="TodoTitle">
+              {tempTodo.title}
+            </span>
+            <button
+              type="button"
+              className="todo__remove"
+              data-cy="TodoDelete"
+            >
+              ×
+            </button>
 
             {/* 'is-active' class puts this modal on top of the todo */}
-            <div className="modal overlay is-active">
+            <div data-cy="TodoLoader" className="modal overlay is-active">
               <div className="modal-background has-background-white-ter" />
               <div className="loader" />
             </div>
