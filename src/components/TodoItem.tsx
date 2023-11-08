@@ -21,11 +21,13 @@ export const TodoItem: React.FC<Props> = ({
   const inputRef = useRef<HTMLInputElement | null>(null);
 
   const [loading, setLoading] = useState(false);
+
   //
   // const handleDeletedTodo = (id: number) => {
   //   deleteTodo(id);
   //   toDelete(id);
   // };
+
   const handleDeletedTodo = (id: number) => {
     setLoading(true);
 

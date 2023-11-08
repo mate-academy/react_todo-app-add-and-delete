@@ -18,6 +18,8 @@ export const App: React.FC = () => {
   );
   const [errorVisible, setErrorVisible] = useState(false);
 
+  const [tempTodo, setTempTodo] = useState<Todo | null>(null);
+
   const showErrorNotification = (message: string) => {
     setErrorNotification(message);
     setErrorVisible(true);
@@ -95,6 +97,7 @@ export const App: React.FC = () => {
             USER_ID={USER_ID}
             addNewTodo={addNewTodo}
             showErrorNotification={showErrorNotification}
+            setTempTodo={setTempTodo}
           />
         </header>
 
@@ -105,6 +108,7 @@ export const App: React.FC = () => {
               todos={filtredTodo}
               togleCheck={togleCheck}
               showErrorNotification={showErrorNotification}
+              tempTodo={tempTodo}
             />
             {/* Hide the footer if there are no todos */}
             <Footer

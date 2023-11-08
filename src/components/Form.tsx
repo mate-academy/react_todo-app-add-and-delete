@@ -8,22 +8,25 @@ type Props = {
   USER_ID: number;
   addNewTodo: (item: Todo) => void;
   showErrorNotification: (value: string) => void;
+  setTempTodo:(item: Todo | null) => void;
 };
 
 export const Form: React.FC<Props> = ({
   USER_ID,
   addNewTodo,
   showErrorNotification,
+  setTempTodo,
 }) => {
-  const inputRef: RefObject<HTMLInputElement> = useRef(null);
+  const formRef: RefObject<HTMLInputElement> = useRef(null);
   const [title, setTitle] = useState('');
   const [isLoading, setIsLoading] = useState(false);
 
   useEffect(() => {
-    inputRef.current?.focus();
+    formRef.current?.focus();
   }, []);
 
-  const handleBlur = () => {
+  const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
+    e.preventDefault();
     if (title.trim().length < 1) {
       showErrorNotification('Title should not be empty');
 
@@ -39,6 +42,8 @@ export const Form: React.FC<Props> = ({
       completed: false,
     };
 
+    setTempTodo(newTodo);
+
     createTodo(newTodo)
       .then((todo) => {
         addNewTodo(todo);
@@ -46,15 +51,16 @@ export const Form: React.FC<Props> = ({
       })
       .catch(() => {
         showErrorNotification('Unable to add a todo');
+        formRef.current?.focus();
       })
       .finally(() => {
         setIsLoading(false);
-      });
-  };
+        setTimeout(() => {
+          formRef.current?.focus();
+        }, 0);
 
-  const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
-    e.preventDefault();
-    handleBlur();
+        setTempTodo(null);
+      });
   };
 
   return (
@@ -65,9 +71,8 @@ export const Form: React.FC<Props> = ({
         className="todoapp__new-todo"
         placeholder="What needs to be done?"
         value={title}
-        ref={inputRef}
+        ref={formRef}
         onChange={(e) => setTitle(e.target.value)}
-        onBlur={handleBlur}
         disabled={isLoading}
       />
     </form>

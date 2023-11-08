@@ -1,4 +1,5 @@
 import { Todo } from '../types/Todo';
+import { TemporalTodo } from './TemporalTodo';
 import { TodoItem } from './TodoItem';
 
 type Props = {
@@ -6,6 +7,7 @@ type Props = {
   togleCheck: (id: number) => void;
   toDelete: (id: number) => void;
   showErrorNotification: (value: string) => void;
+  tempTodo: Todo | null;
 };
 
 export const TodoList: React.FC<Props> = ({
@@ -13,6 +15,7 @@ export const TodoList: React.FC<Props> = ({
   togleCheck,
   toDelete,
   showErrorNotification,
+  tempTodo,
 }) => {
   return (
     <section className="todoapp__main" data-cy="TodoList">
@@ -26,6 +29,7 @@ export const TodoList: React.FC<Props> = ({
           togleCheck={togleCheck}
         />
       ))}
+      {tempTodo && <TemporalTodo tempTodo={tempTodo} />}
     </section>
   );
 };
