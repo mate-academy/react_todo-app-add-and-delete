@@ -31,7 +31,7 @@ export const App: React.FC = () => {
   const errorType = useSelector((state: RootState) => state.todos.errorType);
 
   useEffect(() => {
-    dispatch(fetchTodos(11725));
+    dispatch(fetchTodos(USER_ID));
   }, [dispatch]);
 
   // load error
@@ -46,6 +46,10 @@ export const App: React.FC = () => {
   useEffect(() => {
     console.log(filteredTodos);
   }, [filteredTodos]);
+
+  // consider moving handleAddTodo to todoHeader
+  // its only used in that component
+  // but also consider that it is setting error types aswell
 
   const handleAddTodo = (title: string) => {
     if (!title) {
@@ -76,10 +80,6 @@ export const App: React.FC = () => {
 
   const handleFilterChange = (filter: TodoFilter) => {
     dispatch(setFilter(filter));
-  };
-
-  const handleDeleteTodo = () => {
-
   };
 
   useEffect(() => {
@@ -124,17 +124,3 @@ export const App: React.FC = () => {
     </div>
   );
 };
-
-// Focus the text field after receiving a response:
-
-// const inputRef = React.useRef(null);
-
-// useEffect(() => {
-//   if (responseReceived) {
-//     // Assume responseReceived is a piece of state updated when a response is received
-//     inputRef.current.focus();
-//   }
-// }, [responseReceived]);
-
-// // In your JSX
-// <input ref={inputRef} /* other props */ />
