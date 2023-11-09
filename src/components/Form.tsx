@@ -21,6 +21,8 @@ export const Form: React.FC<Props> = ({
   const [title, setTitle] = useState('');
   const [isLoading, setIsLoading] = useState(false);
 
+  // console.log(formRef.current);
+
   useEffect(() => {
     formRef.current?.focus();
   }, []);

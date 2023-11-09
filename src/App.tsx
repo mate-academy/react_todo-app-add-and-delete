@@ -36,8 +36,6 @@ export const App: React.FC = () => {
         setTodos(data);
       })
       .catch(() => {
-        // Обработка ошибки при загрузке данных
-        // console.error('Unable to load todos:', error);
         showErrorNotification('Unable to load todos');
       });
   }, []);

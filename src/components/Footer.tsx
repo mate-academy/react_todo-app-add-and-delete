@@ -102,9 +102,10 @@ export const Footer: React.FC<Props> = ({
       {/* don't show this button if there are no completed todos */}
       <button
         type="button"
-        className="todoapp__clear-completed"
+        className="todoapp__clear-completed hidden"
         data-cy="ClearCompletedButton"
         onClick={handleClearCompleted}
+        disabled={!todos.some((tod) => tod.completed)}
       >
         Clear completed
       </button>
