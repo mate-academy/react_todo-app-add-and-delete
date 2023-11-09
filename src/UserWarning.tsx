@@ -5,7 +5,7 @@ export const UserWarning: React.FC = () => (
     <p className="box is-size-3">
       Please get your
       {' '}
-      <b> userId </b>
+      <b> USER_ID </b>
       {' '}
       <a href="https://mate-academy.github.io/react_student-registration">
         here
@@ -16,7 +16,7 @@ export const UserWarning: React.FC = () => (
       <pre>const USER_ID = ...</pre>
 
       All requests to the API must be sent with this
-      <b> userId.</b>
+      <b> USER_ID.</b>
     </p>
   </section>
 );
