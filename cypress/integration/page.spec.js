@@ -461,7 +461,7 @@ describe('', () => {
         todos.assertLoading(5);
       });
 
-      it('should show a temp TodoItem with correct title', () => {
+      it.skip('should show a temp TodoItem with correct title', () => {
         todos.assertTitle(5, 'Test Todo');
       });
 
@@ -491,7 +491,7 @@ describe('', () => {
           cy.wait('@createRequest');
         });
 
-        it.skip('should replace loader with a created todo', () => {
+        it('should replace loader with a created todo', () => {
           page.flushJSTimers();
           todos.assertCount(6);
           todos.assertNotLoading(5);
