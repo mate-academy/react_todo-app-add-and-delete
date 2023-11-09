@@ -1,5 +1,5 @@
 /* eslint-disable jsx-a11y/control-has-associated-label */
-import React, { useEffect, useState } from 'react';
+import React, { useCallback, useEffect, useState } from 'react';
 import { UserWarning } from './UserWarning';
 import { Header } from './components/header';
 import { TodoList } from './components/todoList';
@@ -19,6 +19,12 @@ export const App: React.FC = () => {
   const [tempTodo, setTempTodo] = useState<Todo | null>(null);
   const [todoDeletingId, setTodoDeletingId] = useState<number | number[]>(0);
 
+  const errorDeletion = useCallback(() => {
+    setTimeout(() => {
+      setErrorMessage('');
+    }, 3000);
+  }, []);
+
   const filteredTodos = [...todos].filter(todo => {
     if (typeOfFiltering) {
       switch (typeOfFiltering) {
@@ -36,23 +42,20 @@ export const App: React.FC = () => {
     return todo;
   });
 
-  const loadTodos = async () => {
+  const loadTodos = useCallback(async () => {
     try {
       const todosData = await todoApi.getTodos();
 
       setTodos(todosData);
     } catch (error) {
       setErrorMessage('Unable to load todos');
-    } finally {
-      setTimeout(() => {
-        setErrorMessage('');
-      }, 3000);
+      errorDeletion();
     }
-  };
+  }, [setTodos, setErrorMessage, errorDeletion]);
 
   useEffect(() => {
     loadTodos();
-  }, []);
+  }, [loadTodos]);
 
   if (!USER_ID) {
     return <UserWarning />;
@@ -80,13 +83,11 @@ export const App: React.FC = () => {
       setTodos(currentTodos => [...currentTodos, createTodo]);
     } catch (error) {
       setErrorMessage('Unable to add a todo');
+      errorDeletion();
       isError = true;
     } finally {
       setIsDisabledInput(false);
       setTempTodo(null);
-      setTimeout(() => {
-        setErrorMessage('');
-      }, 3000);
     }
 
     if (isError) {
@@ -125,10 +126,7 @@ export const App: React.FC = () => {
       }
     } catch {
       setErrorMessage('Unable to delete a todo');
-    } finally {
-      setTimeout(() => {
-        setErrorMessage('');
-      }, 3000);
+      errorDeletion();
     }
   }
 
@@ -144,6 +142,7 @@ export const App: React.FC = () => {
           onSubmit={addTodo}
           setIsDisabledInput={setIsDisabledInput}
           isDisabledInput={isDisabledInput}
+          errorDeletion={errorDeletion}
         />
 
         {todos.length > 0

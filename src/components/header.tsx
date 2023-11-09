@@ -8,6 +8,7 @@ type Props = {
   onSubmit: (todo: Todo) => Promise<{ isError: boolean } | undefined>,
   setIsDisabledInput: (isDisable: boolean) => void,
   isDisabledInput: boolean,
+  errorDeletion: () => void,
 };
 
 export const Header: React.FC<Props> = ({
@@ -16,6 +17,7 @@ export const Header: React.FC<Props> = ({
   onSubmit,
   setIsDisabledInput,
   isDisabledInput,
+  errorDeletion,
 }) => {
   const [title, setTitle] = useState('');
 
@@ -38,9 +40,7 @@ export const Header: React.FC<Props> = ({
     if (!title.trim()) {
       setErrorMessage('Title should not be empty');
 
-      setTimeout(() => {
-        setErrorMessage('');
-      }, 3000);
+      errorDeletion();
 
       return;
     }
