@@ -19,7 +19,10 @@ export const TemporalTodo: React.FC<Props> = ({ tempTodo }) => {
         ×
       </button>
 
-      <div data-cy="TodoLoader" className="modal overlay is-active">
+      <div
+        data-cy="TodoLoader"
+        className="modal overlay is-active"
+      >
         <div className="modal-background has-background-white-ter" />
         <div className="loader" />
       </div>

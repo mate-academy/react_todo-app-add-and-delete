@@ -90,7 +90,6 @@ export const App: React.FC = () => {
             className="todoapp__toggle-all active"
             data-cy="ToggleAllButton"
           />
-          {/* Add a todo on form submit */}
           <Form
             USER_ID={USER_ID}
             addNewTodo={addNewTodo}
@@ -108,7 +107,7 @@ export const App: React.FC = () => {
               showErrorNotification={showErrorNotification}
               tempTodo={tempTodo}
             />
-            {/* Hide the footer if there are no todos */}
+
             <Footer
               setTodos={setTodos}
               todos={todos}
