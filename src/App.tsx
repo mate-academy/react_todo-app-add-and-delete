@@ -68,8 +68,8 @@ export const App: React.FC = () => {
 
     dispatch(addTodo({ title }))
       .then(() => {
-        dispatch(clearTempTodo());
         dispatch(setInputValue(''));
+        dispatch(clearTempTodo());
       })
       .catch((err: string) => {
         console.error('Unable to add todo:', err);

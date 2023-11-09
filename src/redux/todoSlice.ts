@@ -5,6 +5,7 @@ import { Todo } from '../types/Todo';
 import { TodoFilter } from '../types/TodoFilter';
 import { ErrorType } from '../types/errorType';
 import { fetchTodos, addTodo, deleteTodo } from './todoThunks';
+import { USER_ID } from '../_utils/constants';
 
 export interface TodoState {
   todos: Todo[];
@@ -72,8 +73,17 @@ const todoSlice = createSlice({
         state.error = action.payload ?? 'Unknown error';
         state.errorType = ErrorType.LoadError;
       })
+      .addCase(addTodo.pending, (state, action) => {
+        state.tempTodo = {
+          ...action.meta.arg,
+          id: 0,
+          completed: false,
+          userId: USER_ID,
+        };
+        state.status = 'loading';
+      })
       .addCase(addTodo.fulfilled, (state, action: PayloadAction<Todo>) => {
-        console.log(action.payload, 'action in redux');
+        console.log(action.payload, 'api request to add todo fullfiled');
         state.todos.push(action.payload);
       })
       .addCase(addTodo.rejected, (state) => {

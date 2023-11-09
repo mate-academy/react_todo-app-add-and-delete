@@ -1,3 +1,5 @@
+/* eslint-disable no-console */
+import React from 'react';
 import { Todo } from '../../types/Todo';
 
 type TodoItemProps = {
@@ -7,48 +9,55 @@ type TodoItemProps = {
   isDeleting: boolean;
 };
 
-export const TodoItem: React.FC<TodoItemProps> = ({
-  todo,
-  isTemporary,
-  onDelete,
-  isDeleting,
-}) => {
-  // console.log(isDeleting);
-  console.log(isTemporary);
-  console.log('Rendering TodoItem');
+export const TodoItem = React.memo<TodoItemProps>(
+  ({
+    todo, isTemporary, onDelete, isDeleting,
+  }) => {
+    console.log('item is temporary now', isTemporary);
+    console.log('Rendering TodoItem');
 
-  return (
-    <div data-cy="Todo" className="todo">
-      <label className="todo__status-label">
-        <input
-          data-cy="TodoStatus"
-          type="checkbox"
-          className="todo__status"
-          checked={todo.completed}
-          readOnly // no change handler yet
-        />
-      </label>
+    const itemClasses = `todo ${isTemporary ? 'temp-item' : ''}`;
 
-      <span data-cy="TodoTitle" className="todo__title">
-        {todo.title}
-      </span>
-      <button
-        type="button"
-        className="todo__remove"
-        data-cy="TodoDelete"
-        onClick={() => onDelete(todo.id)}
-      >
-        ×
-      </button>
+    return (
+      <div data-cy="Todo" className={itemClasses}>
+        <label className="todo__status-label">
+          <input
+            data-cy="TodoStatus"
+            type="checkbox"
+            className="todo__status"
+            checked={todo.completed}
+            readOnly // no change handler yet
+          />
+        </label>
 
-      {(isTemporary || isDeleting) && (
-        <div data-cy="TodoLoader" className="modal overlay">
-          <div className="modal-background has-background-white-ter" />
-          <div className="loader" />
-        </div>
-      )}
-    </div>
-  );
-};
+        <span data-cy="TodoTitle" className="todo__title">
+          {todo.title}
+        </span>
+        <button
+          type="button"
+          className="todo__remove"
+          data-cy="TodoDelete"
+          onClick={() => onDelete(todo.id)}
+        >
+          ×
+        </button>
 
-// issue with how todo item animations are being handled.
+        {(isTemporary || isDeleting) && (
+          <div data-cy="TodoLoader" className="modal overlay">
+            <div className="modal-background has-background-white-ter" />
+            <div className="loader" />
+          </div>
+        )}
+      </div>
+    );
+  },
+  (prevProps, nextProps) => {
+    return (
+      prevProps.todo.id === nextProps.todo.id
+      && prevProps.todo.completed === nextProps.todo.completed
+      && prevProps.todo.title === nextProps.todo.title
+      && prevProps.isTemporary === nextProps.isTemporary
+      && prevProps.isDeleting === nextProps.isDeleting
+    );
+  },
+);
