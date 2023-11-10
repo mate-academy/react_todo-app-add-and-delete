@@ -1,7 +1,10 @@
-import { FilterType } from "../types/FilterType";
-import { Todo } from "../types/Todo";
+import { FilterType } from '../types/FilterType';
+import { Todo } from '../types/Todo';
 
-export const getFilteredTodos = (newFilter: FilterType , todosFromServer:Todo[]) => {
+export const getFilteredTodos = (
+  newFilter: FilterType,
+  todosFromServer:Todo[],
+) => {
   let todoCopy: Todo[] = [...todosFromServer];
 
   if (newFilter === FilterType.active) {

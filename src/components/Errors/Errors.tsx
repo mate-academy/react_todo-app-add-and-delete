@@ -1,31 +1,33 @@
 import cn from 'classnames';
-import { TodosContext } from "../../components/TodosProvider";
-import { useContext } from "react";
-
+import { useContext, useEffect } from 'react';
+import { TodosContext } from '../TodosProvider';
 
 export const Errors: React.FC = () => {
-  const {
-    todosError,
-    isShowErrors,
-    setIsShowErrors,
-  } = useContext(TodosContext);
-  setTimeout(() => {
-    setIsShowErrors(false);
-    console.log("hide errors")
+  const { todosError, setTodosError }
+    = useContext(TodosContext);
+
+  const timeoutId = setTimeout(() => {
+    setTodosError('');
   }, 3000);
+
+  useEffect(() => {
+    return () => {
+      clearTimeout(timeoutId);
+    };
+  });
 
   return (
     <div
       data-cy="ErrorNotification"
       className={cn('notification is-danger is-light has-text-weight-normal', {
-        hidden: !isShowErrors,
+        hidden: !todosError,
       })}
     >
       <button
         data-cy="HideErrorButton"
         type="button"
         className="delete"
-        onClick={() => setIsShowErrors(false)}
+        onClick={() => setTodosError('')}
         aria-label="HideErrorButton"
       />
       {/* show only one message at a time */}

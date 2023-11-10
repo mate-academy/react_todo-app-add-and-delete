@@ -4,173 +4,157 @@ import React, {
   useEffect,
   ReactNode,
   useCallback,
-} from "react";
-import { Todo } from "../../types/Todo";
-import { getTodos } from "../../api/todos";
-import { postTodo } from "../../api/todos";
-import { updateTodo } from "../../api/todos";
-import { deleteTodo } from "../../api/todos";
-import { USER_ID } from "../../utils/constants";
-import { NoIdTodo } from "../../types/NoIdTodo";
-import { getFilteredTodos } from "../../utils/getFilteredTodos";
-import { FilterType } from "../../types/FilterType";
+} from 'react';
+import { Todo } from '../../types/Todo';
+import {
+  getTodos, postTodo, deleteTodo,
+} from '../../api/todos';
+
+import { USER_ID } from '../../utils/constants';
+import { NoIdTodo } from '../../types/NoIdTodo';
+import { getFilteredTodos } from '../../utils/getFilteredTodos';
+import { FilterType } from '../../types/FilterType';
 
 interface TodosContextType {
   todosFromServer: Todo[];
   todosError: string;
-  isShowErrors: boolean;
-  isLoaded: boolean;
+  isEditing: boolean;
   filteredTodos: Todo[];
   filter: FilterType;
+  responceTodo: Todo | string;
+  tempTodo: Todo | null;
+  processingTodoIds: number[];
   setTodosError: (error: string) => void;
-  setIsShowErrors: React.Dispatch<React.SetStateAction<boolean>>;
   addTodoHandler: (newTodo: NoIdTodo) => void;
-  updateTodoHandler: (updatedTodo: Todo) => void;
-  deleteTodoHandler: (updatedTodo: Todo) => void;
+  deleteTodoHandler: (updatedTodoId: number) => void;
   onFilterChange: (newFilter: FilterType) => void;
+  setProcessingTodoIds: (updatedTodoArr: number[]) => void;
 }
 
 export const TodosContext = React.createContext<TodosContextType>({
   todosFromServer: [],
-  todosError: "",
-  isShowErrors: false,
-  isLoaded: false,
+  todosError: '',
+  isEditing: false,
   filteredTodos: [],
   filter: FilterType.all,
-  setTodosError:() => {},
-  setIsShowErrors: () => {},
+  responceTodo: 'default',
+  tempTodo: null,
+  processingTodoIds: [0],
+  setTodosError: () => {},
   addTodoHandler: () => {},
-  updateTodoHandler: () => {},
   deleteTodoHandler: () => {},
   onFilterChange: () => {},
+  setProcessingTodoIds: () => {},
 });
 
 export const TodosProvider = ({ children }: { children: ReactNode }) => {
+  const [processingTodoIds, setProcessingTodoIds] = useState<number[]>([0]);
   const [todosFromServer, setTodosFromServer] = useState<Todo[]>([]);
-  const [todosError, setTodosError] = useState("");
-  const [isShowErrors, setIsShowErrors] = useState<boolean>(false);
-  const [isLoaded, setIsLoaded] = useState(false);
+  const [responceTodo, setResponceTodo] = useState<Todo | string>('default');
+  const [tempTodo, setTempTodo] = useState<Todo | null>(null);
+  const [todosError, setTodosError] = useState('');
+  const [isEditing, setIsEditing] = useState(false);
   const [filter, setFilter] = useState(FilterType.all);
 
-  const onFilterChange = (newFilter: FilterType) => {
-    console.log("newFilter", newFilter);
+  const onFilterChange = useCallback((newFilter: FilterType) => {
     setFilter(newFilter);
-  };
+  }, []);
 
   const filteredTodos = useMemo(
     () => getFilteredTodos(filter, todosFromServer),
-    [filter, todosFromServer]
+    [filter, todosFromServer],
   );
 
-  const gettingData = useCallback(() => {
+  useEffect(() => {
+    setIsEditing(true);
     getTodos(USER_ID)
       .then((data) => {
         setTodosFromServer(data);
       })
       .catch(() => {
         setTodosError('Unable to load todos');
-        setIsShowErrors(true);
       })
-      .finally(() => setIsLoaded(true));
-  },[]);
-  useEffect(() => {
-    console.info("START");
-    gettingData();
+      .finally(() => setIsEditing(false));
   }, []);
 
-  const addTodoHandler = useCallback((newTodo: NoIdTodo) => {
-    const temporaryTodo = {
+  const addTodoHandler = useCallback(async (newTodo: NoIdTodo) => {
+    setTodosError('');
+    setIsEditing(true);
+    setTempTodo({
       ...newTodo,
-      id: Date.now(),
-    };
-    console.log("POST", newTodo);
-
-    postTodo(USER_ID, newTodo)
-      .then((todo) => {
-        setTodosFromServer((prev) =>
-          prev.map((prevTodo) =>
-            prevTodo.id === temporaryTodo.id ? todo : prevTodo
-          )
-        );
-      })
-      .catch(() =>
-        setTodosFromServer((prev) =>
-          prev.filter((prevTodo) => prevTodo.id !== temporaryTodo.id)
-        )
-      );
-
-    setTodosFromServer((prev) => [temporaryTodo, ...prev]);
-  }, []);
-
-  const updateTodoHandler = useCallback((updatedTodo: Todo) => {
-    let prevTodo: Todo | null = null;
-
-    updateTodo(updatedTodo).catch(() => {
-      setTodosFromServer((prev) =>
-        prev.map((todo) =>
-          todo.id === updatedTodo.id && prevTodo ? prevTodo : todo
-        )
-      );
+      id: 0,
     });
 
-    setTodosFromServer((currentTodos) =>
-      currentTodos.map((todo) => {
-        if (todo.id === updatedTodo.id) {
-          prevTodo = todo;
-        }
+    try {
+      const createdTodo = await postTodo(newTodo);
 
-        return todo.id === updatedTodo.id ? updatedTodo : todo;
-      })
-    );
+      setTempTodo(null);
+      setResponceTodo(createdTodo);
+      setTodosFromServer(prevTodos => [...prevTodos, createdTodo]);
+    } catch (error) {
+      setTempTodo(null);
+      setTodosError('Unable to add a todo');
+
+      throw new Error('Some error');
+    } finally {
+      setIsEditing(false);
+    }
   }, []);
 
-  const deleteTodoHandler = useCallback((updatedTodo: Todo) => {
-    let prevTodo: Todo | null = null;
+  const deleteTodoHandler = useCallback(async (id: number) => {
+    setIsEditing(true);
+    setTodosError('');
+    setProcessingTodoIds(prev => [...prev, id]);
 
-    deleteTodo(updatedTodo).catch(() => {
-      setTodosFromServer((prev) =>
-        prev.filter((todo) => todo.id !== updatedTodo.id)
-      );
-    });
+    try {
+      const isTodoDelete = await deleteTodo(id);
 
-    setTodosFromServer((currentTodos) =>
-      currentTodos.filter((todo) => {
-        if (todo.id === updatedTodo.id) {
-          prevTodo = todo;
-          console.log(prevTodo);
-          return false;
-        } else {
-          return true;
-        }
-      })
-    );
+      if (isTodoDelete) {
+        setTodosFromServer(prev => prev.filter(todo => todo.id !== id));
+      } else {
+        setTodosError('Unable to delete a todo');
+      }
+    } catch (e) {
+      setTodosError('Unable to delete a todo');
+    } finally {
+      setProcessingTodoIds(prev => prev.filter(todoId => todoId !== id));
+      setIsEditing(false);
+    }
   }, []);
 
   const value = useMemo(
     () => ({
       todosFromServer,
       todosError,
-      isShowErrors,
-      isLoaded,
+      isEditing,
       filteredTodos,
       filter,
+      responceTodo,
+      tempTodo,
+      processingTodoIds,
       setTodosError,
-      setIsShowErrors,
       addTodoHandler,
-      updateTodoHandler,
       deleteTodoHandler,
       onFilterChange,
+      setProcessingTodoIds,
     }),
     [
       todosFromServer,
-      isLoaded,
       todosError,
+      isEditing,
       filteredTodos,
       filter,
-      isShowErrors,
-      todosError,
-    ]
+      responceTodo,
+      tempTodo,
+      processingTodoIds,
+      setTodosError,
+      addTodoHandler,
+      deleteTodoHandler,
+      onFilterChange,
+      setProcessingTodoIds,
+    ],
   );
+
   return (
     <TodosContext.Provider value={value}>{children}</TodosContext.Provider>
   );

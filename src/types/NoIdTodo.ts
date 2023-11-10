@@ -1,2 +1,3 @@
-import { Todo } from "./Todo"
+import { Todo } from './Todo';
+
 export type NoIdTodo = Omit<Todo, 'id'>;

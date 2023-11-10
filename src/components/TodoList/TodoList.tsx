@@ -1,53 +1,61 @@
-import cn from "classnames";
-import { TodosContext } from "../../components/TodosProvider";
-import { useContext, useState } from "react";
-import { Todo } from "../../types/Todo";
+import cn from 'classnames';
+import {
+  useContext, useState, useRef, useEffect,
+} from 'react';
+import { TodosContext } from '../TodosProvider';
+import { Todo } from '../../types/Todo';
 
 export const TodoList: React.FC = () => {
-  const [editTodo, setEditTodo] = useState<Todo>();
-  const [newTodo, setNewTodo] = useState("");
+  const [editTodo, setEditTodo] = useState<Todo | null>(null);
+  const [newTodo, setNewTodo] = useState('');
 
-  const { filteredTodos, deleteTodoHandler, updateTodoHandler } =
-    useContext(TodosContext);
+  const {
+    filteredTodos,
+    deleteTodoHandler,
+    tempTodo,
+    processingTodoIds,
+    isEditing,
+  } = useContext(TodosContext);
+
+  const focusTodo = useRef<HTMLInputElement>(null);
+
+  useEffect(() => {
+    if (focusTodo.current) {
+      focusTodo.current.focus();
+    }
+  });
 
   const handleDoubleClick = (
-    event: React.MouseEvent<HTMLSpanElement>,
-    todo: Todo
+    event:
+    | React.MouseEvent<HTMLSpanElement>
+    | React.KeyboardEvent<HTMLSpanElement>,
+    todo: Todo,
   ) => {
-    console.log(event.detail);
     switch (event.detail) {
       case 2: {
-        console.log("double click");
         setEditTodo(todo);
         setNewTodo(todo.title);
         break;
       }
+
       default: {
         break;
       }
     }
   };
 
-  const handleKeyDown = (event:React.KeyboardEvent<HTMLInputElement>) => {
-    if (event.code === 'Enter' && editTodo?.id) {
-      updateTodoHandler({
-        id: editTodo.id,
-        userId: editTodo.userId,
-        title: newTodo,
-        completed: editTodo.completed,
-      })
-      setNewTodo('');
+  const handleKeyDown = (event: React.KeyboardEvent<HTMLInputElement>) => {
+    if (event.code === 'Escape' && editTodo?.id) {
+      setEditTodo(null);
     }
-  }
-
-  console.log("TODO LIST", filteredTodos);
+  };
 
   return (
     <section className="todoapp__main" data-cy="TodoList">
       {filteredTodos.map((todo) => (
         <div
           data-cy="Todo"
-          className={cn("todo", {
+          className={cn('todo', {
             completed: todo.completed,
           })}
           key={todo.id}
@@ -58,16 +66,17 @@ export const TodoList: React.FC = () => {
               type="checkbox"
               className="todo__status"
               checked={todo.completed}
-              onChange={() =>
-                updateTodoHandler({
-                  id: todo.id,
-                  userId: todo.userId,
-                  title: todo.title,
-                  completed: !todo.completed,
-                })
-              }
             />
           </label>
+          <div
+            data-cy="TodoLoader"
+            className={cn('modal overlay', {
+              'is-active': processingTodoIds.find((el) => el === todo.id),
+            })}
+          >
+            <div className="modal-background has-background-white-ter" />
+            <div className="loader" />
+          </div>
 
           {todo === editTodo ? (
             <form>
@@ -78,15 +87,20 @@ export const TodoList: React.FC = () => {
                 placeholder="Empty todo will be deleted"
                 value={newTodo}
                 onChange={(event) => setNewTodo(event.target.value)}
+                ref={focusTodo}
                 onKeyDown={handleKeyDown}
+                disabled={isEditing}
               />
             </form>
           ) : (
             <>
               <span
+                role="button"
                 data-cy="TodoTitle"
                 className="todo__title"
                 onClick={(event) => handleDoubleClick(event, todo)}
+                onKeyDown={(event) => handleDoubleClick(event, todo)}
+                tabIndex={0}
               >
                 {todo.title}
               </span>
@@ -95,20 +109,45 @@ export const TodoList: React.FC = () => {
                 type="button"
                 className="todo__remove"
                 data-cy="TodoDelete"
-                onClick={() => deleteTodoHandler(todo)}
+                onClick={() => deleteTodoHandler(todo.id)}
               >
                 ×
-              </button>{" "}
+              </button>
             </>
           )}
-
-          {/* overlay will cover the todo while it is being updated */}
-          <div data-cy="TodoLoader" className="modal overlay">
-            <div className="modal-background has-background-white-ter" />
-            <div className="loader" />
-          </div>
         </div>
       ))}
+      {tempTodo && (
+        <>
+          <div data-cy="Todo" className="todo">
+            <label className="todo__status-label">
+              <input
+                data-cy="TodoStatus"
+                type="checkbox"
+                className="todo__status"
+              />
+            </label>
+
+            <span data-cy="TodoTitle" className="todo__title">
+              {tempTodo.title}
+            </span>
+
+            <button type="button" className="todo__remove" data-cy="TodoDelete">
+              ×
+            </button>
+
+            <div
+              data-cy="TodoLoader"
+              className={cn('modal overlay', {
+                'is-active': tempTodo,
+              })}
+            >
+              <div className="modal-background has-background-white-ter" />
+              <div className="loader" />
+            </div>
+          </div>
+        </>
+      )}
     </section>
   );
 };

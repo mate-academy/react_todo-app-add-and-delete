@@ -1,10 +1,10 @@
 import cn from 'classnames';
+import React, { useContext } from 'react';
 import { FilterType } from '../../types/FilterType';
-import React, { useContext } from "react";
-import { TodosContext } from "../../components/TodosProvider";
+import { TodosContext } from '../TodosProvider';
 
 export const TodoFilter: React.FC = () => {
-  const {filter, onFilterChange} = useContext(TodosContext);
+  const { filter, onFilterChange } = useContext(TodosContext);
 
   return (
     <nav className="filter" data-cy="Filter">
@@ -43,4 +43,3 @@ export const TodoFilter: React.FC = () => {
     </nav>
   );
 };
-

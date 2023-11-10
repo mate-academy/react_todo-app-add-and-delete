@@ -1,48 +1,72 @@
-import { Todo } from "../../types/Todo";
-import { NoIdTodo } from "../../types/NoIdTodo";
-import { TodosContext } from "../../components/TodosProvider";
-import { useContext, useState } from "react";
-import { USER_ID } from "../../utils/constants";
-
-
+import {
+  useContext, useState, useRef, useEffect,
+} from 'react';
+import cn from 'classnames';
+import { NoIdTodo } from '../../types/NoIdTodo';
+import { TodosContext } from '../TodosProvider';
+import { USER_ID } from '../../utils/constants';
 
 export const Header: React.FC = () => {
-  const {addTodoHandler, todosFromServer, setTodosError, setIsShowErrors} = useContext(TodosContext);
-  const isActiveTodos = todosFromServer.some((todo) => !todo.completed);
-  const [newTodo, setNewTodo] = useState("");
-  
+  const {
+    addTodoHandler,
+    todosFromServer,
+    setTodosError,
+    responceTodo,
+    isEditing,
+  } = useContext(TodosContext);
+  const isAllActiveTodos = todosFromServer.every((todo) => !todo.completed);
+  const [newTodo, setNewTodo] = useState('');
 
-  const handleKeyDown = (event:React.KeyboardEvent<HTMLInputElement>) => {
-    if (event.code === 'Enter') {
-      if(!newTodo || !newTodo.trim()) {
-        setTodosError('Title should not be empty');
-        setIsShowErrors(true);
-        return;
-      }
+  const inputFocus = useRef<HTMLInputElement | null>(null);
 
-      const post:NoIdTodo = {
-        userId: USER_ID,
-        title: newTodo.trim(),
-        completed: false,
-      }
-      addTodoHandler(post);
-      setNewTodo('');
+  useEffect(() => {
+    if (inputFocus.current) {
+      inputFocus.current.focus();
     }
+  });
+
+  useEffect(() => {
+    if (typeof responceTodo !== 'string') {
+      if (responceTodo?.title === newTodo.trim()) {
+        setNewTodo('');
+      }
+    }
+  }, [newTodo, responceTodo]);
+
+  const handleSubmit = (event: React.FormEvent<HTMLFormElement>) => {
+    event.preventDefault();
+    if (!newTodo || !newTodo.trim()) {
+      setTodosError('Title should not be empty');
+
+      return;
+    }
+
+    const post: NoIdTodo = {
+      userId: USER_ID,
+      title: newTodo.trim(),
+      completed: false,
+    };
+
+    addTodoHandler(post);
   };
 
   return (
     <header className="todoapp__header">
       {/* this buttons is active only if there are some active todos */}
-      {!isActiveTodos && (
+
+      {todosFromServer.length !== 0 && (
         <button
           type="button"
-          className="todoapp__toggle-all active"
+          className={cn('todoapp__toggle-all', {
+            active: !isAllActiveTodos,
+          })}
           data-cy="ToggleAllButton"
           aria-label="ToggleAllButton"
         />
       )}
+
       {/* Add a todo on form submit */}
-      <form>
+      <form onSubmit={handleSubmit}>
         <input
           data-cy="NewTodoField"
           type="text"
@@ -51,8 +75,8 @@ export const Header: React.FC = () => {
           aria-label="NewTodoField"
           value={newTodo}
           onChange={(event) => setNewTodo(event.target.value)}
-          onKeyDown={handleKeyDown}
-          autoFocus
+          ref={inputFocus}
+          disabled={isEditing}
         />
       </form>
     </header>
