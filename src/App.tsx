@@ -12,15 +12,15 @@ import { UserWarning } from './components/UserWarning/UserWarning';
 import { TodoFilter } from './types/TodoFilter';
 import {
   clearErrorType,
-  clearTempTodo,
-  setErrorType,
+  // clearTempTodo,
+  // setErrorType,
   setFilter,
-  setInputValue,
-  setTempTodo,
+  // setInputValue,
+  // setTempTodo,
 } from './redux/todoSlice';
-import { ErrorType } from './types/errorType';
+// import { ErrorType } from './types/errorType';
 import { selectFilteredTodos } from './store/selectors';
-import { fetchTodos, addTodo } from './redux/todoThunks';
+import { fetchTodos } from './redux/todoThunks';
 
 export const App: React.FC = () => {
   const dispatch = useDispatch<AppDispatch>();
@@ -51,32 +51,32 @@ export const App: React.FC = () => {
   // its only used in that component
   // but also consider that it is setting error types aswell
 
-  const handleAddTodo = (title: string) => {
-    if (!title) {
-      dispatch(setErrorType(ErrorType.EmptyTitle));
+  // const handleAddTodo = (title: string) => {
+  //   if (!title) {
+  //     dispatch(setErrorType(ErrorType.EmptyTitle));
 
-      return;
-    }
+  //     return;
+  //   }
 
-    const newTempTodo = {
-      id: 0,
-      title,
-      completed: false,
-    };
+  //   const newTempTodo = {
+  //     id: 0,
+  //     title,
+  //     completed: false,
+  //   };
 
-    dispatch(setTempTodo(newTempTodo));
+  //   dispatch(setTempTodo(newTempTodo));
 
-    dispatch(addTodo({ title }))
-      .then(() => {
-        dispatch(setInputValue(''));
-        dispatch(clearTempTodo());
-      })
-      .catch((err: string) => {
-        console.error('Unable to add todo:', err);
-        dispatch(clearTempTodo());
-        dispatch(setErrorType(ErrorType.AddTodoError));
-      });
-  };
+  //   dispatch(addTodo({ title }))
+  //     .then(() => {
+  //       dispatch(setInputValue(''));
+  //       dispatch(clearTempTodo());
+  //     })
+  //     .catch((err: string) => {
+  //       console.error('Unable to add todo:', err);
+  //       dispatch(clearTempTodo());
+  //       dispatch(setErrorType(ErrorType.AddTodoError));
+  //     });
+  // };
 
   const handleFilterChange = (filter: TodoFilter) => {
     dispatch(setFilter(filter));
@@ -104,9 +104,7 @@ export const App: React.FC = () => {
 
       <div className="todoapp__content">
 
-        <TodoHeader
-          handleAddTodo={handleAddTodo}
-        />
+        <TodoHeader />
 
         <TodoList todos={filteredTodos} />
 

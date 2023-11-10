@@ -15,7 +15,7 @@ export interface TodoState {
   error: string | null;
   filter: TodoFilter;
   errorType: ErrorType | null;
-  deletingTodoId: number | null;
+  deletingTodoIds: number[]
 }
 
 const initialState: TodoState = {
@@ -26,7 +26,7 @@ const initialState: TodoState = {
   error: null,
   filter: TodoFilter.All,
   errorType: null,
-  deletingTodoId: null,
+  deletingTodoIds: [],
 };
 
 const todoSlice = createSlice({
@@ -90,14 +90,17 @@ const todoSlice = createSlice({
         state.errorType = ErrorType.AddTodoError;
       })
       .addCase(deleteTodo.pending, (state, action) => {
-        state.deletingTodoId = action.meta.arg;
+        state.deletingTodoIds.push(action.meta.arg);
       })
       .addCase(deleteTodo.fulfilled, (state, action) => {
-        state.deletingTodoId = null;
-        state.todos = state.todos.filter(todo => todo.id !== action.payload);
+        state.deletingTodoIds = state.deletingTodoIds
+          .filter(id => id !== action.meta.arg);
+        state.todos = state.todos
+          .filter(todo => todo.id !== action.payload);
       })
-      .addCase(deleteTodo.rejected, (state) => {
-        state.deletingTodoId = null;
+      .addCase(deleteTodo.rejected, (state, action) => {
+        state.deletingTodoIds = state.deletingTodoIds
+          .filter(id => id !== action.meta.arg);
       });
   },
 });

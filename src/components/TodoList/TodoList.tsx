@@ -20,15 +20,12 @@ export const TodoList: React.FC<TodoListProps> = React.memo(
     const dispatch = useDispatch<AppDispatch>();
     const tempTodo = useSelector((state: RootState) => state.todos.tempTodo);
     const combinedTodos = tempTodo ? [...todos, tempTodo] : todos;
-    const deletingTodoId = useSelector(
-      (state: RootState) => state.todos.deletingTodoId,
+    const deletingTodoIds = useSelector(
+      (state: RootState) => state.todos.deletingTodoIds,
     );
 
     const handleDeleteTodo = (todoId: number) => {
       dispatch(deleteTodo(todoId))
-        .then(() => {
-          // handle success if necessary
-        })
         .catch((err: string) => {
           console.error('Unable to delete todo:', err);
           dispatch(setErrorType(ErrorType.DeleteTodoError));
@@ -49,7 +46,7 @@ export const TodoList: React.FC<TodoListProps> = React.memo(
                 todo={todo}
                 isTemporary={todo === tempTodo}
                 onDelete={handleDeleteTodo}
-                isDeleting={todo.id === deletingTodoId}
+                isDeleting={deletingTodoIds.includes(todo.id)}
               />
             </CSSTransition>
           ))}

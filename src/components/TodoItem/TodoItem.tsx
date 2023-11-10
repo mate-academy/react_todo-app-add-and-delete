@@ -43,7 +43,7 @@ export const TodoItem = React.memo<TodoItemProps>(
         </button>
 
         {(isTemporary || isDeleting) && (
-          <div data-cy="TodoLoader" className="modal overlay">
+          <div data-cy="TodoLoader" className="overlay">
             <div className="modal-background has-background-white-ter" />
             <div className="loader" />
           </div>
