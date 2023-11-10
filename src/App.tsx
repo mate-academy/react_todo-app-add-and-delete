@@ -1,24 +1,89 @@
-/* eslint-disable max-len */
-/* eslint-disable jsx-a11y/control-has-associated-label */
-import React from 'react';
-import { UserWarning } from './UserWarning';
+import React, { useEffect, useState } from 'react';
 
-const USER_ID = 0;
+import { Todo } from './types/Todo';
+import { getTodos } from './api/todos';
+import { Header } from './Components/Header/Header';
+import { TodoList } from './Components/TodoList/TodoList';
+import { Footer } from './Components/Footer/Footer';
+import { FilterParams } from './types/FilteredParams';
+import { ErrorNotification } from './Components/ErrorNotification';
 
-export const App: React.FC = () => {
-  if (!USER_ID) {
-    return <UserWarning />;
+const USER_ID = 11853;
+
+function filterBy(todos: Todo[], filterValue: string) {
+  let filteredTodos = todos;
+
+  switch (filterValue) {
+    case FilterParams.ACTIVE:
+      filteredTodos = filteredTodos.filter(todo => !todo.completed);
+      break;
+
+    case FilterParams.COMPLETED:
+      filteredTodos = filteredTodos.filter(todo => todo.completed);
+      break;
+
+    case FilterParams.All:
+    default:
+      return filteredTodos;
   }
 
-  return (
-    <section className="section container">
-      <p className="title is-4">
-        Copy all you need from the prev task:
-        <br />
-        <a href="https://github.com/mate-academy/react_todo-app-loading-todos#react-todo-app-load-todos">React Todo App - Load Todos</a>
-      </p>
+  return filteredTodos;
+}
 
-      <p className="subtitle">Styles are already copied</p>
-    </section>
+export const App: React.FC = () => {
+  const [todos, setTodos] = useState<Todo[]>([]);
+  const [errorMessage, setErrorMessage] = useState('');
+  const [filterValue, setFilterValue] = useState(FilterParams.All);
+  const [isDisableInput, setIsDisableInput] = useState(false);
+  const [tempTodo, setTempTodo] = useState<Todo | null>(null);
+
+  useEffect(() => {
+    getTodos(USER_ID)
+      .then(todo => setTodos(todo))
+      .catch(() => {
+        setErrorMessage('Unable to load todos');
+        setTimeout(() => {
+          setErrorMessage('');
+        }, 3000);
+      });
+  }, []);
+
+  const visibleTodos = filterBy([...todos], filterValue);
+  const activeItems = todos.filter(todo => !todo.completed);
+
+  return (
+    <div className="todoapp">
+      <h1 className="todoapp__title">todos</h1>
+
+      <div className="todoapp__content">
+        <Header
+          setTodos={setTodos}
+          setErrorMessage={setErrorMessage}
+          isDisableInput={isDisableInput}
+          setIsDisableInput={setIsDisableInput}
+          setTempTodo={setTempTodo}
+        />
+
+        <TodoList
+          todos={visibleTodos}
+          setTodos={setTodos}
+          isDisableInput={isDisableInput}
+          setIsDisableInput={setIsDisableInput}
+          tempTodo={tempTodo}
+        />
+        {todos.length > 0 && (
+          <Footer
+            activeItems={activeItems}
+            filterValue={filterValue}
+            setFilterValue={setFilterValue}
+          />
+        )}
+      </div>
+
+      <ErrorNotification
+        errorMessage={errorMessage}
+        setErrorMessage={setErrorMessage}
+      />
+    </div>
   );
 };
