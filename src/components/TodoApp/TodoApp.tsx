@@ -1,6 +1,4 @@
-import React, {
-  useCallback, useContext, useEffect,
-} from 'react';
+import React, { useCallback, useContext, useEffect } from 'react';
 import cn from 'classnames';
 import { TodosContext } from '../../store/TodoProvider';
 import { TodosFilter } from '../TodosFilter/TodosFilter';
@@ -14,7 +12,9 @@ import { removeTodo } from '../../api/todos';
 export const TodoApp: React.FC = () => {
   const { state, dispatch } = useContext(TodosContext);
 
-  const { todos, tempTodo, error } = state;
+  const {
+    todos, tempTodo, error, filterBy,
+  } = state;
 
   const toggleAllTodoItems = () => {
     dispatch({ type: ActionType.TOGGLE_ALL });
@@ -43,16 +43,16 @@ export const TodoApp: React.FC = () => {
     });
   };
 
-  const setFilterType = (filterBy: FilterType) => {
-    dispatch({ type: ActionType.FILTER, payload: filterBy });
+  const setFilterType = (filter: FilterType) => {
+    dispatch({ type: ActionType.FILTER, payload: filter });
   };
 
   const clearError = useCallback(() => {
     dispatch({ type: ActionType.ERROR, payload: '' });
   }, [dispatch]);
 
-  const filteredTodos = () => {
-    switch (state.filterBy) {
+  const getFilteredTodos = () => {
+    switch (filterBy) {
       case FilterType.ACTIVE:
         return todos.filter(item => !item.completed);
       case FilterType.COMPLETED:
@@ -97,7 +97,7 @@ export const TodoApp: React.FC = () => {
           <TodoForm />
         </header>
 
-        <TodoList items={filteredTodos()} tempItem={tempTodo} />
+        <TodoList items={getFilteredTodos()} tempItem={tempTodo} />
 
         {todos.length > 0 && (
           <footer className="todoapp__footer" data-cy="Footer">

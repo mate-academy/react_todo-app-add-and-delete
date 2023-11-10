@@ -10,6 +10,8 @@ type Props = {
 export const TodosFilter: React.FC<Props> = ({ onChange = () => {} }) => {
   const { state } = useContext(TodosContext);
 
+  const handleFilter = (filter: FilterType) => () => onChange(filter);
+
   return (
     <nav className="filter" data-cy="Filter">
       <a
@@ -17,7 +19,7 @@ export const TodosFilter: React.FC<Props> = ({ onChange = () => {} }) => {
         className={cn('filter__link', {
           selected: state.filterBy === FilterType.ALL,
         })}
-        onClick={() => onChange(FilterType.ALL)}
+        onClick={handleFilter(FilterType.ALL)}
         data-cy="FilterLinkAll"
       >
         All
@@ -28,7 +30,7 @@ export const TodosFilter: React.FC<Props> = ({ onChange = () => {} }) => {
         className={cn('filter__link', {
           selected: state.filterBy === FilterType.ACTIVE,
         })}
-        onClick={() => onChange(FilterType.ACTIVE)}
+        onClick={handleFilter(FilterType.ACTIVE)}
         data-cy="FilterLinkActive"
       >
         Active
@@ -39,7 +41,7 @@ export const TodosFilter: React.FC<Props> = ({ onChange = () => {} }) => {
         className={cn('filter__link', {
           selected: state.filterBy === FilterType.COMPLETED,
         })}
-        onClick={() => onChange(FilterType.COMPLETED)}
+        onClick={handleFilter(FilterType.COMPLETED)}
         data-cy="FilterLinkCompleted"
       >
         Completed
