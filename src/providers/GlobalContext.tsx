@@ -2,7 +2,6 @@ import React, {
   useState,
   useRef,
   useEffect,
-  useCallback,
 } from 'react';
 
 import { Error } from '../types/Error';
@@ -25,48 +24,46 @@ interface GlobalContextType {
   filteredTodos: Todo[],
   setFilteredTodos: (value: Todo[]) => void,
 
-  isLoading: boolean,
-  setIsLoading: (value: boolean) => void,
-
-  error: Error,
-  setError: (value: Error) => void,
-  inputRef: React.MutableRefObject<HTMLInputElement | null>;
+  loadingTodos: Todo[],
+  setLoadingTodos: (value: Todo[]) => void,
 
   tempTodo: Todo | null,
   setTempTodo: (value: Todo | null) => void,
 
-  handleClearCompleted: () => void,
-  completedDeliting: boolean,
-  setCompletedDeliting: (value: boolean) => void,
+  error: Error,
+  setError: (value: Error) => void,
+
+  inputRef: React.MutableRefObject<HTMLInputElement | null>;
+
+  handleDelete: (value: Todo) => void,
 }
 
 export const GlobalContext = React.createContext<GlobalContextType>({
   USER_ID: 11902,
 
+  // All todos
   todos: [],
   setTodos: () => { },
-
+  // Filter todos by status
   filter: Filter.All,
   setFilter: () => { },
-
+  // Filtered todos
   filteredTodos: [],
   setFilteredTodos: () => { },
-
-  isLoading: false,
-  setIsLoading: () => { },
-
-  error: Error.Default,
-  setError: () => { },
-
-  inputRef: { current: null },
-
+  // Array with todos, wich have to be loaded
+  loadingTodos: [],
+  setLoadingTodos: () => { },
+  // Temporary todo - show bebore create
   tempTodo: null,
   setTempTodo: () => { },
+  // Error status
+  error: Error.Default,
+  setError: () => { },
+  // focus method
+  inputRef: { current: null },
 
-  handleClearCompleted: () => { },
-
-  completedDeliting: false,
-  setCompletedDeliting: () => { },
+  // detele func
+  handleDelete: () => { },
 
 });
 
@@ -78,49 +75,46 @@ export const GlobalProvider = (
   const [todos, setTodos] = useState<Todo[]>([]);
   const [filter, setFilter] = useState<Filter>(Filter.All);
   const [filteredTodos, setFilteredTodos] = useState<Todo[]>([]);
-
-  const [isLoading, setIsLoading] = useState(false);
-  const [error, setError] = useState(Error.Default);
-  const inputRef = useRef<HTMLInputElement | null>(null);
+  const [loadingTodos, setLoadingTodos] = useState<Todo[]>([]);
   const [tempTodo, setTempTodo] = useState<Todo | null>(null);
-  const [completedDeliting, setCompletedDeliting] = useState(false);
 
-  const initial = useCallback(
-    async () => {
-      try {
-        const response = await getTodos(USER_ID);
+  const inputRef = useRef<HTMLInputElement | null>(null);
+  const [error, setError] = useState(Error.Default);
 
-        setTodos(response);
-      } catch {
-        setError(Error.Load);
-      }
-    }, [setTodos, setError],
-  );
+  // #region initioal_loadong
+  const initial = async () => {
+    try {
+      const response = await getTodos(USER_ID);
 
-  const clearByOne = async (todo: Todo) => {
-    if (todo.completed) {
-      try {
-        setCompletedDeliting(true);
-        await deleteTodo(todo.id);
-        setTodos((prev) => prev.filter((el) => el.id !== todo.id));
-      } catch (e) {
-        setError(Error.Delete);
-        setTodos(todos);
-      } finally {
-        setCompletedDeliting(false);
-      }
+      setTodos(response);
+    } catch {
+      setError(Error.Load);
     }
-  };
-
-  const handleClearCompleted = () => {
-    todos.map(todo => clearByOne(todo));
   };
 
   useEffect(() => {
     initial();
     inputRef.current?.focus();
   }, []);
+  // #endregion initioal_loadong
 
+  const handleDelete = async (target: Todo) => {
+    try {
+      setLoadingTodos((prev) => [...prev, target]);
+      const response = await deleteTodo(target.id);
+
+      if (response) {
+        setTodos((prev) => prev.filter((todo) => todo.id !== target.id));
+      }
+    } catch (e) {
+      setError(Error.Delete);
+      setTodos(todos);
+    } finally {
+      setLoadingTodos(loadingTodos.filter(todo => todo.id === target.id));
+    }
+  };
+
+  // #region Filter
   useEffect(() => {
     switch (filter) {
       case Filter.Active:
@@ -134,7 +128,9 @@ export const GlobalProvider = (
         setFilteredTodos(todos);
     }
   }, [filter, todos, filteredTodos]);
+  // #endregion Filter
 
+  // #region Error
   useEffect(() => {
     if (error) {
       window.setTimeout(() => {
@@ -142,27 +138,34 @@ export const GlobalProvider = (
       }, 3000);
     }
   }, [error, setError]);
+  // #endregion Error
 
   return (
     <GlobalContext.Provider
       value={{
         USER_ID,
+
         todos,
         setTodos,
+
         filter,
         setFilter,
-        isLoading,
-        setIsLoading,
+
         filteredTodos,
         setFilteredTodos,
-        error,
-        setError,
-        inputRef,
+
+        loadingTodos,
+        setLoadingTodos,
+
         tempTodo,
         setTempTodo,
-        handleClearCompleted,
-        completedDeliting,
-        setCompletedDeliting,
+
+        error,
+        setError,
+
+        inputRef,
+
+        handleDelete,
       }}
     >
       {children}

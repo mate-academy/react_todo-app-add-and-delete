@@ -9,10 +9,14 @@ export const TodoFooter: React.FC = () => {
     todos,
     filter,
     setFilter,
-    handleClearCompleted,
+    handleDelete,
   } = useContext(GlobalContext);
 
   const counter: number = todos.filter(todo => !todo.completed).length;
+
+  const ClearCompleted = () => {
+    todos.map(todo => todo.completed && handleDelete(todo));
+  };
 
   return (
     <footer className="todoapp__footer" data-cy="Footer">
@@ -59,7 +63,8 @@ export const TodoFooter: React.FC = () => {
         type="button"
         className="todoapp__clear-completed"
         data-cy="ClearCompletedButton"
-        onClick={handleClearCompleted}
+        onClick={ClearCompleted}
+        disabled={!todos.some(todo => todo.completed)}
       >
         Clear completed
       </button>

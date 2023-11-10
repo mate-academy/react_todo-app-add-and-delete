@@ -12,7 +12,7 @@ import { Error } from '../../types/Error';
 export const TodoApp: React.FC = () => {
   const {
     USER_ID,
-    filteredTodos,
+    todos,
     tempTodo,
     error,
     setError,
@@ -30,7 +30,7 @@ export const TodoApp: React.FC = () => {
 
         <TodoList />
 
-        {(filteredTodos.length > 0 || tempTodo) && (
+        {(todos.length > 0 || tempTodo) && (
           <TodoFooter />
         )}
       </div>

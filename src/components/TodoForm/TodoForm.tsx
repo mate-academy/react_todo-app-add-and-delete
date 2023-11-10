@@ -17,16 +17,10 @@ export const TodoForm: React.FC = () => {
 
   const {
     USER_ID,
+    inputRef,
     todos,
     setTodos,
-    // filter,
-    // setFilter,
-    // filteredTodos,
-    // setFilteredTodos,
-    // error,
     setError,
-    inputRef,
-    // tempTodo,
     setTempTodo,
   } = useContext(GlobalContext);
 
@@ -53,11 +47,11 @@ export const TodoForm: React.FC = () => {
         const response = await addTodo(newTodo);
 
         setTodos((prev) => [...prev, response] as Todo[]);
+        setTitle('');
       } catch (err) {
         setError(Error.Add);
         setTodos(todos);
       } finally {
-        setTitle('');
         setTempTodo(null);
         setIsDisabled(false);
       }

@@ -1,10 +1,8 @@
-import React, { useContext, useState } from 'react';
+import React, { useContext, useEffect, useState } from 'react';
 import classNames from 'classnames';
 
 import { Todo } from '../../types/Todo';
 import { GlobalContext } from '../../providers';
-import { deleteTodo } from '../../api/todos';
-import { Error } from '../../types/Error';
 
 interface Props {
   todo: Todo,
@@ -12,28 +10,23 @@ interface Props {
 
 export const TodoItem: React.FC<Props> = ({ todo }) => {
   const {
-    isLoading,
-    todos,
-    setTodos,
-    setError,
+    loadingTodos,
+    handleDelete,
   } = useContext(GlobalContext);
 
-  const [isDeleting, setIsDeleting] = useState(false);
+  const [isLoading, setIsLoading] = useState(false);
 
-  const isTempTodo = todo.id === 0;
-
-  const handleDelete = async () => {
-    try {
-      setIsDeleting(true);
-      await deleteTodo(todo.id);
-      setTodos((prev) => prev.filter((el) => el.id !== todo.id));
-    } catch (e) {
-      setError(Error.Delete);
-      setTodos(todos);
-    } finally {
-      setIsDeleting(false);
-    }
+  const deleteButton = () => {
+    handleDelete(todo);
   };
+
+  useEffect(() => {
+    if (loadingTodos.find(todoL => todoL.id === todo.id)) {
+      setIsLoading(true);
+    } else {
+      setIsLoading(false);
+    }
+  }, [loadingTodos, todo.id]);
 
   return (
     <div
@@ -58,7 +51,7 @@ export const TodoItem: React.FC<Props> = ({ todo }) => {
         type="button"
         className="todo__remove"
         data-cy="TodoDelete"
-        onClick={handleDelete}
+        onClick={deleteButton}
       >
         ×
       </button>
@@ -68,9 +61,7 @@ export const TodoItem: React.FC<Props> = ({ todo }) => {
         className={classNames(
           'modal overlay',
           {
-            'is-active': isTempTodo
-              || isLoading
-              || isDeleting,
+            'is-active': isLoading || todo.id === 0,
           },
         )}
       >
