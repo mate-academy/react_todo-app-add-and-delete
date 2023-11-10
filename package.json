@@ -9,11 +9,13 @@
     "@fortawesome/fontawesome-free": "^6.1.2",
     "@types/react-transition-group": "^4.4.5",
     "bulma": "^0.9.4",
-    "classnames": "^2.3.1",
+    "classnames": "^2.3.2",
     "react": "^18.2.0",
     "react-dom": "^18.2.0",
     "react-scripts": "5.0.1",
+    "sass": "^1.67.0",
     "react-transition-group": "^4.4.5"
+
   },
   "devDependencies": {
     "@cypress/react": "^5.12.4",
