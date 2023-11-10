@@ -5,12 +5,14 @@ import { Todo } from '../../types/Todo';
 
 type Props = {
   todos: Todo[];
+  onClearButtonDelete: () => Promise<void>;
   filterBy: Filter;
   onFilterClick: (value: Filter) => void;
 };
 
 export const TodoFilter: React.FC<Props> = ({
   todos,
+  onClearButtonDelete,
   filterBy,
   onFilterClick,
 }) => {
@@ -27,28 +29,33 @@ export const TodoFilter: React.FC<Props> = ({
   ));
 
   const activeTodosCount = todos.filter((todo) => !todo.completed).length;
-  const completedTodosCount = todos.filter((todo) => todo.completed).length;
+  const isCompletedTodos = todos.some((todo) => todo.completed);
 
   return (
     <footer className="todoapp__footer" data-cy="Footer">
       <span className="todo-count" data-cy="TodosCounter">
-        {`${activeTodosCount} items left`}
+        {activeTodosCount === 1 ? (
+          `${activeTodosCount} item left`
+        ) : (
+          `${activeTodosCount} items left`
+        )}
       </span>
 
       <nav className="filter" data-cy="Filter">
         {filterLinks}
       </nav>
 
-      {/* don't show this button if there are no completed todos */}
-      {completedTodosCount !== 0 && (
-        <button
-          type="button"
-          className="todoapp__clear-completed"
-          data-cy="ClearCompletedButton"
-        >
-          Clear completed
-        </button>
-      )}
+      <button
+        type="button"
+        className={cn('todoapp__clear-completed', {
+          hidden: !isCompletedTodos,
+        })}
+        data-cy="ClearCompletedButton"
+        onClick={onClearButtonDelete}
+        disabled={!isCompletedTodos}
+      >
+        Clear completed
+      </button>
     </footer>
   );
 };

@@ -4,33 +4,30 @@ import { TodoItem } from '../TodoItem';
 
 type Props = {
   todos: Todo[];
-  deleteTodoHandler: (id: number) => void;
+  deleteTodoHandler: (id: number) => Promise<void>;
+  modifyingTodoIds: number[];
   tempTodo: Todo | null;
-  deletedTodoId: Todo | undefined;
 };
 
 export const TodoList: React.FC<Props> = ({
   todos,
+  modifyingTodoIds,
   deleteTodoHandler,
   tempTodo,
-  deletedTodoId,
 }) => (
   <section className="todoapp__main" data-cy="TodoList">
     {todos.map((todo) => (
       <TodoItem
         todo={todo}
         key={todo.id}
-        deleteTodoHandler={deleteTodoHandler}
-        tempTodo={tempTodo}
-        deletedTodoId={deletedTodoId}
+        isLoading={modifyingTodoIds.includes(todo.id)}
+        onTodoDelete={() => deleteTodoHandler(todo.id)}
       />
     ))}
     {tempTodo && (
       <TodoItem
         todo={tempTodo}
-        deleteTodoHandler={deleteTodoHandler}
-        tempTodo={tempTodo}
-        deletedTodoId={deletedTodoId}
+        isLoading
       />
     )}
   </section>

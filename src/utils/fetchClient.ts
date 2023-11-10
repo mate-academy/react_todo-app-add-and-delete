@@ -11,7 +11,7 @@ function wait(delay: number) {
 // To have autocompletion and avoid mistypes
 type RequestMethod = 'GET' | 'POST' | 'PATCH' | 'DELETE';
 
-function request<T>(
+async function request<T>(
   url: string,
   method: RequestMethod = 'GET',
   data: any = null, // we can send any data to the server
@@ -27,15 +27,14 @@ function request<T>(
   }
 
   // DON'T change the delay it is required for tests
-  return wait(100)
-    .then(() => fetch(BASE_URL + url, options))
-    .then(response => {
-      if (!response.ok) {
-        throw new Error();
-      }
+  const [response] = await Promise.all([
+    fetch(BASE_URL + url, options),
+    wait(100),
+  ]);
 
-      return response.json();
-    });
+  return response.ok
+    ? response.json()
+    : Promise.reject();
 }
 
 export const client = {

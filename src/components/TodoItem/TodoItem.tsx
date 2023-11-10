@@ -1,22 +1,20 @@
-import React from 'react';
+import React, { useState } from 'react';
 import cn from 'classnames';
 import { Todo } from '../../types/Todo';
 
 type Props = {
   todo: Todo;
-  deleteTodoHandler: (id: number) => void;
-  tempTodo: Todo | null;
-  deletedTodoId: Todo | undefined;
+  isLoading: boolean;
+  onTodoDelete?: () => Promise<void>;
 };
 
 export const TodoItem: React.FC<Props> = ({
   todo,
-  deleteTodoHandler,
-  tempTodo,
-  deletedTodoId,
+  isLoading,
+  onTodoDelete,
 }) => {
-// console.log('todo.id', todo.id);
-// console.log('deletedTodoId.id', deletedTodoId.id);
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
+  const [isEditing, setIsEditing] = useState(false);
 
   return (
     <div data-cy="Todo" className={cn('todo', { completed: todo.completed })}>
@@ -30,28 +28,37 @@ export const TodoItem: React.FC<Props> = ({
         />
       </label>
 
-      <span data-cy="TodoTitle" className="todo__title">
-        {todo.title}
-      </span>
+      {!isEditing ? (
+        <>
+          <span data-cy="TodoTitle" className="todo__title">
+            {todo.title}
+          </span>
 
-      {/* Remove button appears only on hover */}
-      <button
-        type="button"
-        className="todo__remove"
-        data-cy="TodoDelete"
-        onClick={() => {
-          deleteTodoHandler(todo.id);
-        }}
-      >
-        ×
-      </button>
+          <button
+            type="button"
+            className="todo__remove"
+            data-cy="TodoDelete"
+            onClick={onTodoDelete}
+          >
+            ×
+          </button>
+        </>
+      ) : (
+        <form>
+          <input
+            data-cy="TodoTitleField"
+            type="text"
+            className="todo__title-field"
+            placeholder="Empty todo will be deleted"
+            value="Todo is being edited now"
+          />
+        </form>
+      )}
 
-      {/* overlay will cover the todo while it is being updated */}
       <div
         data-cy="TodoLoader"
         className={cn('modal overlay', {
-          'is-active': todo.id === tempTodo?.id
-          || deletedTodoId?.id === todo.id,
+          'is-active': isLoading,
         })}
       >
         <div className="modal-background has-background-white-ter" />

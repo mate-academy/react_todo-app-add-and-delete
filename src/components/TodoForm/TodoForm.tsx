@@ -1,78 +1,49 @@
 import React, { useEffect, useRef, useState } from 'react';
-import { Todo } from '../../types/Todo';
-import { addTodo } from '../../api/todos';
-// import { USER_ID } from '../../App';
+// import { Todo } from '../../types/Todo';
 
 type Props = {
-  todos: Todo[];
-  setTempTodo: (value: Todo | null) => void;
-  setTodos: (value: Todo[]) => void;
-  setErrorMessage: (messgae: string) => void;
-  setIsShowError: (value: boolean) => void;
+  // todos: Todo[];
+  onError: (message: string) => void;
+  onTodoAdd: (title: string) => Promise<void>;
 };
 
 export const TodoForm: React.FC<Props> = ({
-  todos,
-  setTempTodo,
-  setTodos,
-  setErrorMessage,
-  setIsShowError,
+  // todos,
+  onError,
+  onTodoAdd,
 }) => {
-  const [inputValue, setInputValue] = useState('');
-  const [isInputDisabled, setIsInputDisabled] = useState(false);
-  const titleField = useRef<HTMLInputElement>(null);
+  const [todoTitle, setTodoTitle] = useState('');
+  const [isSubmitting, setIsSubmitting] = useState(false);
+
+  const titleField = useRef<HTMLInputElement | null>(null);
 
   useEffect(() => {
     if (titleField.current) {
       titleField.current.focus();
     }
-  }, [titleField]);
+  }, [isSubmitting]);
 
-  const handleSubmit = (event: React.FormEvent) => {
+  const trimedTitle = todoTitle.trim();
+
+  const handleSubmit = async (event: React.FormEvent) => {
+    setIsSubmitting(true);
     event.preventDefault();
 
-    if (inputValue.trim()) {
-      const newTodo = {
-        id: 0,
-        userId: 11827,
-        title: inputValue.trim(),
-        completed: false,
-      };
+    if (!trimedTitle) {
+      setTodoTitle('');
+      onError('Title should not be empty');
+      setIsSubmitting(false);
 
-      setIsInputDisabled(true);
-      setTempTodo(newTodo);
-
-      addTodo(newTodo)
-        .then((todo) => {
-          setTodos([...todos, todo]);
-          setInputValue('');
-        })
-        .catch((error) => {
-          setErrorMessage('Unable to add a todo');
-          setIsShowError(true);
-          throw error;
-        })
-        .finally(() => {
-          setTempTodo(null);
-          setIsInputDisabled(false);
-        });
-    } else {
-      setErrorMessage('Title should not be empty');
-      setIsShowError(true);
+      return;
     }
 
-    // if (inputValue.trim()) {
-    //   addTodoHandler({
-    //     id: todos?.id || 0,
-    //     title: inputValue,
-    //     completed: false,
-    //     userId: 11827,
-    //   });
-    //   setInputValue('');
-    // } else {
-    //   setErrorMessage('Title should not be empty');
-    //   setIsShowError(true);
-    // }
+    try {
+      await onTodoAdd(trimedTitle);
+      setTodoTitle('');
+      setIsSubmitting(false);
+    } catch (error) {
+      setIsSubmitting(false);
+    }
   };
 
   return (
@@ -85,7 +56,6 @@ export const TodoForm: React.FC<Props> = ({
         data-cy="ToggleAllButton"
       />
 
-      {/* Add a todo on form submit */}
       <form onSubmit={handleSubmit}>
         <input
           data-cy="NewTodoField"
@@ -93,10 +63,10 @@ export const TodoForm: React.FC<Props> = ({
           className="todoapp__new-todo"
           placeholder="What needs to be done?"
           ref={titleField}
-          disabled={isInputDisabled}
-          value={inputValue}
+          disabled={isSubmitting}
+          value={todoTitle}
           onChange={(event) => {
-            setInputValue(event.target.value);
+            setTodoTitle(event.target.value);
           }}
         />
       </form>

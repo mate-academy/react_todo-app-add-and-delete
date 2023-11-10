@@ -1,6 +1,5 @@
 /* eslint-disable jsx-a11y/control-has-associated-label */
 import React, { useEffect, useState } from 'react';
-import { UserWarning } from './UserWarning';
 import { Todo } from './types/Todo';
 
 import { TodoForm } from './components/TodoForm';
@@ -8,32 +7,30 @@ import { TodoList } from './components/TodoList';
 import { TodoFilter } from './components/TodoFilter';
 import { Filter } from './types/Filter';
 import { ErrorMessage } from './components/ErrorMessage';
-import { deleteTodo, getTodos } from './api/todos';
-
-const USER_ID = 11827;
+import {
+  USER_ID, createTodo, deleteTodo, getTodos,
+} from './api/todos';
 
 export const App: React.FC = () => {
   const [todos, setTodos] = useState<Todo[]>([]);
-  const [filterBy, setFilterBy] = useState<Filter>(Filter.All);
   const [errorMessage, setErrorMessage] = useState('');
-  const [isShowError, setIsShowError] = useState(false);
   const [tempTodo, setTempTodo] = useState<Todo | null>(null);
-  const [deletedTodoId, setDeletedTodoId] = useState<Todo | undefined>(
-    undefined,
-  );
+  const [modifyingTodoIds, setModifyingTodoIds] = useState<Array<number>>([]);
+  const [filterBy, setFilterBy] = useState<Filter>(Filter.All);
+
+  const loadTodos = async () => {
+    try {
+      const todosData = await getTodos();
+
+      setTodos(todosData);
+    } catch (error) {
+      setErrorMessage('Unable to load todos');
+    }
+  };
 
   useEffect(() => {
-    getTodos(USER_ID)
-      .then((allTodos) => setTodos(allTodos as Todo[]))
-      .catch(() => {
-        setErrorMessage('Unable to load todos');
-        setIsShowError(true);
-      });
+    loadTodos();
   }, []);
-
-  if (!USER_ID) {
-    return <UserWarning />;
-  }
 
   const filteredTodos = todos.filter((todo) => {
     switch (filterBy) {
@@ -48,57 +45,90 @@ export const App: React.FC = () => {
     }
   });
 
-  const deleteTodoHandler = (id: number) => {
-    setTodos((currentTodos) => currentTodos.filter((todo) => todo.id !== id));
+  const addTodoHandler = async (title: string) => {
+    setErrorMessage('');
 
-    return deleteTodo(id)
-      .catch((error) => {
-        setTodos(todos);
+    setTempTodo({
+      id: 0,
+      userId: USER_ID,
+      title,
+      completed: false,
+    });
+
+    try {
+      const newTodo = await createTodo(title);
+
+      setTodos((prevTodo) => [...prevTodo, newTodo]);
+    } catch (error) {
+      setErrorMessage('Unable to add a todo');
+      throw error;
+    } finally {
+      setTempTodo(null);
+    }
+  };
+
+  const deleteTodoHandler = async (id: number) => {
+    setErrorMessage('');
+
+    setModifyingTodoIds((prev) => [...prev, id]);
+
+    try {
+      const isTodoDelete = await deleteTodo(id);
+
+      if (isTodoDelete) {
+        setTodos((prev) => prev.filter((todo) => todo.id !== id));
+      } else {
         setErrorMessage('Unable to delete a todo');
-        setIsShowError(true);
-        throw error;
-      })
-      .finally(() => {
-        setDeletedTodoId(todos.find((todo) => todo.id === id));
-        setDeletedTodoId(undefined);
-      });
+      }
+    } catch (error) {
+      setErrorMessage('Unable to delete a todo');
+    } finally {
+      setModifyingTodoIds((prev) => prev.filter((todoId) => todoId !== id));
+    }
+  };
+
+  const deleteCompletedTodos = async () => {
+    const allCompleted = todos.filter((todo) => todo.completed);
+
+    await Promise.allSettled(
+      allCompleted.map((todo) => deleteTodoHandler(todo.id)),
+    );
   };
 
   return (
     <div className="todoapp">
       <h1 className="todoapp__title">todos</h1>
-
       <div className="todoapp__content">
         <TodoForm
-          todos={todos}
-          setTodos={setTodos}
-          setTempTodo={setTempTodo}
-          setErrorMessage={setErrorMessage}
-          setIsShowError={setIsShowError}
+          // todos={todos}
+          onError={setErrorMessage}
+          onTodoAdd={addTodoHandler}
         />
 
         {todos.length > 0 && (
           <>
             <TodoList
               todos={filteredTodos}
-              tempTodo={tempTodo}
-              deletedTodoId={deletedTodoId}
               deleteTodoHandler={deleteTodoHandler}
+              tempTodo={tempTodo}
+              modifyingTodoIds={modifyingTodoIds}
             />
 
             <TodoFilter
               todos={todos}
+              onClearButtonDelete={deleteCompletedTodos}
               filterBy={filterBy}
               onFilterClick={setFilterBy}
             />
           </>
         )}
       </div>
-      <ErrorMessage
-        errorMessage={errorMessage}
-        isShowError={isShowError}
-        setIsShowError={setIsShowError}
-      />
+      {errorMessage && (
+        <ErrorMessage
+          errorMessage={errorMessage}
+          setErrorMessage={setErrorMessage}
+        />
+      )}
     </div>
   );
 };
