@@ -1,7 +1,7 @@
 /* eslint-disable no-console */
 
 import { useDispatch, useSelector } from 'react-redux';
-import React from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import { AppDispatch, RootState } from '../../redux/store';
 import {
   clearTempTodo,
@@ -15,8 +15,16 @@ import { addTodo } from '../../redux/todoThunks';
 export const TodoHeader: React.FC = () => {
   const dispatch = useDispatch<AppDispatch>();
 
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  const inputRef = useRef<HTMLInputElement>(null);
   const inputValue = useSelector((state: RootState) => state.todos.inputValue);
   const errorType = useSelector((state: RootState) => state.todos.errorType);
+
+  useEffect(() => {
+    if (inputValue === '' && !isSubmitting) {
+      inputRef.current?.focus();
+    }
+  }, [inputValue, isSubmitting]);
 
   const handleInputChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     dispatch(setInputValue(event.target.value));
@@ -28,6 +36,8 @@ export const TodoHeader: React.FC = () => {
 
       return Promise.resolve();
     }
+
+    setIsSubmitting(true);
 
     const newTempTodo = {
       id: 0,
@@ -46,6 +56,9 @@ export const TodoHeader: React.FC = () => {
         dispatch(clearTempTodo());
         dispatch(setErrorType(ErrorType.AddTodoError));
         throw new Error(err.message);
+      })
+      .finally(() => {
+        setIsSubmitting(false);
       });
   };
 
@@ -73,14 +86,14 @@ export const TodoHeader: React.FC = () => {
 
       <form onSubmit={handleFormSubmit}>
         <input
-          // eslint-disable-next-line jsx-a11y/no-autofocus
-          autoFocus
+          ref={inputRef}
           data-cy="NewTodoField"
           type="text"
           className="todoapp__new-todo"
           placeholder="What needs to be done?"
           value={inputValue}
           onChange={handleInputChange}
+          disabled={isSubmitting}
         />
       </form>
     </header>
