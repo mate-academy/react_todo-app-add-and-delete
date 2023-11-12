@@ -6,6 +6,7 @@ import {
   addTodoApi,
   getTodos,
   removeTodoApi,
+  setTodoCompletionApi,
 } from '../api/todos';
 
 export const fetchTodos
@@ -24,9 +25,7 @@ export const fetchTodos
 
 export const addTodo = createAsyncThunk(
   'todos/addTodo',
-  async (
-    { title }: { title: string },
-  ): Promise<Todo> => {
+  async ({ title }: { title: string }): Promise<Todo> => {
     const response: AddTodoResponse = await addTodoApi(title);
 
     console.log(response.data, 'in thunk');
@@ -41,5 +40,21 @@ export const deleteTodo = createAsyncThunk(
     await removeTodoApi(todoId);
 
     return todoId;
+  },
+);
+
+export const setCompletion = createAsyncThunk(
+  'todos/setCompletion',
+  async (
+    { todoId, completed }: { todoId: number; completed: boolean },
+    { rejectWithValue },
+  ) => {
+    try {
+      const response = await setTodoCompletionApi(todoId, completed);
+
+      return response;
+    } catch (error) {
+      return rejectWithValue('Failed to update todo completion status');
+    }
   },
 );

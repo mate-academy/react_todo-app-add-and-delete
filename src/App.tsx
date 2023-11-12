@@ -19,7 +19,7 @@ import {
   // setTempTodo,
 } from './redux/todoSlice';
 // import { ErrorType } from './types/errorType';
-import { selectFilteredTodos } from './store/selectors';
+import { selectFilteredTodos } from './redux/selectors';
 import { fetchTodos } from './redux/todoThunks';
 
 export const App: React.FC = () => {
@@ -46,37 +46,6 @@ export const App: React.FC = () => {
   useEffect(() => {
     console.log(filteredTodos);
   }, [filteredTodos]);
-
-  // consider moving handleAddTodo to todoHeader
-  // its only used in that component
-  // but also consider that it is setting error types aswell
-
-  // const handleAddTodo = (title: string) => {
-  //   if (!title) {
-  //     dispatch(setErrorType(ErrorType.EmptyTitle));
-
-  //     return;
-  //   }
-
-  //   const newTempTodo = {
-  //     id: 0,
-  //     title,
-  //     completed: false,
-  //   };
-
-  //   dispatch(setTempTodo(newTempTodo));
-
-  //   dispatch(addTodo({ title }))
-  //     .then(() => {
-  //       dispatch(setInputValue(''));
-  //       dispatch(clearTempTodo());
-  //     })
-  //     .catch((err: string) => {
-  //       console.error('Unable to add todo:', err);
-  //       dispatch(clearTempTodo());
-  //       dispatch(setErrorType(ErrorType.AddTodoError));
-  //     });
-  // };
 
   const handleFilterChange = (filter: TodoFilter) => {
     dispatch(setFilter(filter));

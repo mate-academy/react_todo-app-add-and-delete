@@ -18,6 +18,10 @@ export const TodoItem = React.memo<TodoItemProps>(
 
     const itemClasses = `todo ${isTemporary ? 'temp-item' : ''}`;
 
+    // const handleCompleted = () => {
+
+    // };
+
     return (
       <div data-cy="Todo" className={itemClasses}>
         <label className="todo__status-label">

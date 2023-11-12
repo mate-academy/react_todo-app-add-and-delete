@@ -4,7 +4,12 @@ import { createSlice, PayloadAction } from '@reduxjs/toolkit';
 import { Todo } from '../types/Todo';
 import { TodoFilter } from '../types/TodoFilter';
 import { ErrorType } from '../types/errorType';
-import { fetchTodos, addTodo, deleteTodo } from './todoThunks';
+import {
+  fetchTodos,
+  addTodo,
+  deleteTodo,
+  setCompletion,
+} from './todoThunks';
 import { USER_ID } from '../_utils/constants';
 
 export interface TodoState {
@@ -15,7 +20,8 @@ export interface TodoState {
   error: string | null;
   filter: TodoFilter;
   errorType: ErrorType | null;
-  deletingTodoIds: number[]
+  deletingTodoIds: number[];
+  updatingTodoIds: number[];
 }
 
 const initialState: TodoState = {
@@ -27,6 +33,7 @@ const initialState: TodoState = {
   filter: TodoFilter.All,
   errorType: null,
   deletingTodoIds: [],
+  updatingTodoIds: [],
 };
 
 const todoSlice = createSlice({
@@ -101,6 +108,9 @@ const todoSlice = createSlice({
       .addCase(deleteTodo.rejected, (state, action) => {
         state.deletingTodoIds = state.deletingTodoIds
           .filter(id => id !== action.meta.arg);
+      })
+      .addCase(setCompletion.pending, (state, action) => {
+        state.updatingTodoIds.push(action.meta.arg.todoId);
       });
   },
 });

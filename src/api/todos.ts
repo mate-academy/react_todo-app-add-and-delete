@@ -23,3 +23,15 @@ export const addTodoApi = async (
 export const removeTodoApi = (todoId: number) => {
   return client.delete(`/todos/${todoId}`);
 };
+
+export const setTodoCompletionApi = async (
+  todoId: number,
+  completed: boolean,
+): Promise<Todo> => {
+  const response = await client.patch<Todo>(
+    `/todos/${todoId}`,
+    { completed },
+  );
+
+  return response;
+};

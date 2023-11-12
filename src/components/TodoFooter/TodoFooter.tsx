@@ -1,6 +1,6 @@
 import cn from 'classnames';
 import { useSelector } from 'react-redux';
-import { selectFilter } from '../../store/selectors';
+import { selectFilter } from '../../redux/selectors';
 import { Todo } from '../../types/Todo';
 import { TodoFilter } from '../../types/TodoFilter';
 

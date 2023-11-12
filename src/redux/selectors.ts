@@ -1,5 +1,5 @@
 import { createSelector } from '@reduxjs/toolkit';
-import { RootState } from '../redux/store';
+import { RootState } from './store';
 import { TodoFilter } from '../types/TodoFilter';
 
 export const selectTodos = (state: RootState) => state.todos.todos;
