@@ -157,15 +157,14 @@ export const TodoApp: React.FC = () => {
               setStatus={setStatus}
             />
 
-            {completedTodo && (
-              <button
-                type="button"
-                className="todoapp__clear-completed"
-                data-cy="ClearCompletedButton"
-              >
-                Clear completed
-              </button>
-            )}
+            <button
+              type="button"
+              className="todoapp__clear-completed"
+              data-cy="ClearCompletedButton"
+              disabled={!completedTodo}
+            >
+              Clear completed
+            </button>
           </footer>
         )}
       </div>
