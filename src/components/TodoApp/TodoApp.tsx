@@ -56,8 +56,8 @@ export const TodoApp: React.FC = () => {
 
   const handleOnBlur = () => {
     if (!todoTitle.trim()) {
-      setIsHidden(false);
       setErrorMessage('Title should not be empty');
+      setIsHidden(false);
       setTempTodo(null);
 
       setTimeout(() => {
