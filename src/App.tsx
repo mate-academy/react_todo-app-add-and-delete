@@ -7,17 +7,32 @@ import { Todo } from './types/Todo';
 import { TodoList } from './TodoList';
 import { Footer } from './Footer';
 import * as postService from './api/todos';
+import { Status } from './types/Status';
 
 export const USER_ID = 11894;
 
+function getVisibleTodos(todos: Todo[], newStatus: Status) {
+  switch (newStatus) {
+    case Status.ACTIVE:
+      return todos.filter(todo => !todo.completed);
+
+    case Status.COMPLETED:
+      return todos.filter(todo => todo.completed);
+
+    default:
+      return todos;
+  }
+}
+
 export const App: React.FC = () => {
   const [todos, setTodos] = useState<Todo[]>([]);
-  const [visibleTodos, setVisibleTodos] = useState<Todo[]>([]);
   const [errorMessage, setErrorMessage] = useState('');
   const [todoTitle, setTodoTitle] = useState('');
   const [deletingTodoId, setDeletingTodoId] = useState<number | null>(null);
   const [tempTodo, setTempTodo] = useState<Todo | null>(null);
   const [isLoading, setIsLoading] = useState(false);
+  const [filter, setFilter] = useState<Status>(Status.ALL);
+  const visibleTodos = getVisibleTodos(todos, filter);
 
   const clearCompletedTodos = () => {
     const updatedTodos = todos.filter(todo => !todo.completed);
@@ -38,7 +53,6 @@ export const App: React.FC = () => {
     postService.getTodos(USER_ID)
       .then(fetchedTodos => {
         setTodos(fetchedTodos);
-        setVisibleTodos(fetchedTodos);
       })
       .catch(() => {
         setErrorMessage('Unable to load todos');
@@ -63,9 +77,6 @@ export const App: React.FC = () => {
       .then(newTodo => {
         setTodos(currentTodos => [...currentTodos, newTodo]);
         setTodoTitle('');
-        setVisibleTodos(
-          currentVisibleTodos => [...currentVisibleTodos, newTodo],
-        );
         setTempTodo(null);
       })
       .catch(() => {
@@ -89,12 +100,11 @@ export const App: React.FC = () => {
     postService.deleteTodo(todoId)
       .then(() => {
         setTodos(currentTodos => filterById(currentTodos, todoId));
-        setVisibleTodos(visTodos => filterById(visTodos, todoId));
         setDeletingTodoId(null);
       })
       .catch(() => {
         setErrorMessage('Unable to delete a todo');
-        clearError(); // Clear the error message after 3 seconds
+        clearError();
         setDeletingTodoId(null);
       });
   }, [setTodos, clearError]);
@@ -132,7 +142,8 @@ export const App: React.FC = () => {
         {(todos.length > 0 || tempTodo) && (
           <Footer
             todos={todos}
-            setVisibleTodos={setVisibleTodos}
+            setFilter={setFilter}
+            currentFilter={filter}
             clearCompletedTodos={clearCompletedTodos}
           />
         )}

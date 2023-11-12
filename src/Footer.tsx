@@ -1,42 +1,24 @@
-import { useState } from 'react';
+import classNames from 'classnames';
 import { Todo } from './types/Todo';
+import { Status } from './types/Status';
 
 type Props = {
   todos: Todo[];
-  setVisibleTodos: (todos: Todo[]) => void;
   clearCompletedTodos: () => void;
+  setFilter: (newStatus: Status) => void,
+  currentFilter: Status;
 };
-
-enum Status {
-  ALL = 'All',
-  ACTIVE = 'Active',
-  COMPLETED = 'Completed',
-}
 
 export const Footer: React.FC<Props> = ({
   todos,
-  setVisibleTodos = () => {},
+  currentFilter,
+  setFilter = () => {},
   clearCompletedTodos = () => {},
 }) => {
-  const [filter, setFilter] = useState<Status>(Status.ALL);
   const completedTodos = todos.filter((todo) => todo.completed);
   const activeTodos = todos.filter((todo) => !todo.completed);
 
-  const handleFilterChange = (status: Status) => {
-    setFilter(status);
-    switch (status) {
-      case Status.ACTIVE:
-        setVisibleTodos(activeTodos);
-        break;
-      case Status.COMPLETED:
-        setVisibleTodos(completedTodos);
-        break;
-      default:
-        setVisibleTodos(todos);
-    }
-  };
-
-  const itemsLeft = todos.filter((todo) => !todo.completed).length;
+  const itemsLeft = activeTodos.length;
 
   return (
     <footer className="todoapp__footer" data-cy="Footer">
@@ -47,27 +29,30 @@ export const Footer: React.FC<Props> = ({
       <nav className="filter" data-cy="Filter">
         <a
           href="#/"
-          className={`filter__link ${filter === Status.ALL ? 'selected' : ''}`}
+          className={classNames('filter__link',
+            { selected: currentFilter === Status.ALL })}
           data-cy="FilterLinkAll"
-          onClick={() => handleFilterChange(Status.ALL)}
+          onClick={() => setFilter(Status.ALL)}
         >
           All
         </a>
 
         <a
           href="#/active"
-          className={`filter__link ${filter === Status.ACTIVE ? 'selected' : ''}`}
+          className={classNames('filter__link',
+            { selected: currentFilter === Status.ACTIVE })}
           data-cy="FilterLinkActive"
-          onClick={() => handleFilterChange(Status.ACTIVE)}
+          onClick={() => setFilter(Status.ACTIVE)}
         >
           Active
         </a>
 
         <a
           href="#/completed"
-          className={`filter__link ${filter === Status.COMPLETED ? 'selected' : ''}`}
+          className={classNames('filter__link',
+            { selected: currentFilter === Status.COMPLETED })}
           data-cy="FilterLinkCompleted"
-          onClick={() => handleFilterChange(Status.COMPLETED)}
+          onClick={() => setFilter(Status.COMPLETED)}
         >
           Completed
         </a>

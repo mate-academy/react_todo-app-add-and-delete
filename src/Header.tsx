@@ -25,8 +25,6 @@ export const Header: React.FC<Props> = ({
     }
   }, [isLoading]);
 
-  // const hasActiveTodos = todos.some(todo => !todo.completed);
-
   const handleTitleChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     setTodoTitle(event.target.value);
   };
@@ -51,7 +49,6 @@ export const Header: React.FC<Props> = ({
       { todos.length > 0 && (
         <button
           type="button"
-          // className={`todoapp__toggle-all ${hasActiveTodos ? 'active' : ''}`}
           className="todoapp__toggle-all"
           data-cy="ToggleAllButton"
           aria-label="Toggle button message"
