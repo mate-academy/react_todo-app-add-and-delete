@@ -530,7 +530,9 @@ describe.skip('', () => {
 
           page.newTodoField().type('Hello world{enter}');
           cy.wait('@createRequest2');
-          page.flushJSTimers();
+        
+         page.flushJSTimers();
+
 
           todos.assertCount(7);
           // todos.assertNotLoading(6);
