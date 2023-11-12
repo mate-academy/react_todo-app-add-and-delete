@@ -1,13 +1,13 @@
 /* eslint-disable jsx-a11y/control-has-associated-label */
 import React, { useEffect, useRef, useState } from 'react';
-import cn from 'classnames';
 import { Todo } from './types/Todo';
 import { TodosContext } from './components/TodosContext';
 import { TodosFilter } from './types/TodosFilter';
 import { TodosHeader } from './components/TodosHeader';
 import { TodosList } from './components/TodosList';
-import { TodoFilter } from './components/TodoFilter';
-import { deleteTodos, getTodos } from './api/todos';
+import { getTodos } from './api/todos';
+import { TodosError } from './components/TodosError';
+import { TodosFooter } from './components/TodosFooter';
 
 const USER_ID = 11891;
 
@@ -56,20 +56,6 @@ export const App: React.FC = () => {
 
   const todosAfterFiltering = useFilter([...todos], todosFilter);
 
-  const todosLeft = todos.filter(todo => !todo.completed).length;
-
-  const clearComplete = () => {
-    todos.forEach(todo => {
-      if (todo.completed) {
-        deleteTodos(todo.id)
-          .catch(() => {
-            setErrorMessage('Unable to load todos');
-          });
-      }
-    });
-    setTodos(todos.filter(todo => !todo.completed));
-  };
-
   return (
     <TodosContext.Provider
       value={{
@@ -101,39 +87,10 @@ export const App: React.FC = () => {
 
           <TodosList />
 
-          {/* Hide the footer if there are no todos */}
-          {todos.length > 0 && (
-            <footer className="todoapp__footer" data-cy="Footer">
-              <span className="todo-count" data-cy="TodosCounter">
-                {`${todosLeft} items left`}
-              </span>
-
-              <TodoFilter />
-
-              <button
-                type="button"
-                className="todoapp__clear-completed"
-                data-cy="ClearCompletedButton"
-                onClick={clearComplete}
-              >
-                Clear completed
-              </button>
-            </footer>
-          )}
+          <TodosFooter />
         </div>
 
-        <div
-          data-cy="ErrorNotification"
-          className={cn(
-            'notification is-danger is-light has-text-weight-normal', {
-              hidden: !errorMessage,
-            },
-          )}
-        >
-          {/* eslint-disable-next-line jsx-a11y/control-has-associated-label */}
-          <button data-cy="HideErrorButton" type="button" className="delete" />
-          {errorMessage}
-        </div>
+        <TodosError />
       </div>
     </TodosContext.Provider>
   );

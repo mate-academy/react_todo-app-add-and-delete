@@ -19,27 +19,26 @@ export const TodosHeader: React.FC = () => {
   const [newTodo, setNewTodo] = useState('');
   const isCompleted = todosAfterFiltering.every(todo => todo.completed);
   const [inputDisabled, setInputDisabled] = useState(false);
-  const [lastId, setLastId] = useState(-1);
 
   const handleSubmit = (event: React.FormEvent) => {
     event.preventDefault();
 
     if (!newTodo.trim() || inputDisabled) {
       setErrorMessage('Title should not be empty');
+
+      return;
     }
 
     setInputDisabled(true);
     DEFAULT_DATA.title = newTodo.trim();
     const newId = todos.length ? todos[todos.length - 1].id + 1 : 1;
 
-    setLastId(newId);
     setTodoIsLoading(newId);
     setTodoEditIsLoading({ id: newId, ...DEFAULT_DATA });
 
     addTodos(DEFAULT_DATA)
       .then((data: Todo) => {
-        setTodos((prev: Todo[]) => [...prev
-          .filter(todo => todo.id !== lastId), data]);
+        setTodos((prev: Todo[]) => [...prev, data]);
         setNewTodo('');
         setTodoEditIsLoading(null);
       })

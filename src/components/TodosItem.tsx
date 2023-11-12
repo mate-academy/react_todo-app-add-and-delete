@@ -1,4 +1,4 @@
-import React, { useContext, useEffect, useRef } from 'react';
+import React, { useContext } from 'react';
 import cn from 'classnames';
 import { Todo } from '../types/Todo';
 import { deleteTodos, updateTodos } from '../api/todos';
@@ -15,6 +15,7 @@ export const TodosItem: React.FC<Props> = ({ todo }) => {
     todoEditTitle,
     todoEditId,
     todoIsLoading,
+    inputRef,
     setTodos,
     setTodoEditTitle,
     setErrorMessage,
@@ -22,13 +23,7 @@ export const TodosItem: React.FC<Props> = ({ todo }) => {
     setTodoIsLoading,
   } = useContext(TodosContext);
 
-  const editRef = useRef<HTMLInputElement>(null);
-
   const isEditing = todoEditId === id;
-
-  useEffect(() => {
-    editRef.current?.focus();
-  }, [todoEditId]);
 
   const handleDoubleClick = (todoId: number, todoTitle: string) => {
     setTodoEditId(todoId);
@@ -41,23 +36,33 @@ export const TodosItem: React.FC<Props> = ({ todo }) => {
   };
 
   const saveChange = () => {
-    const updatedTodo = { ...todo, title: todoEditTitle.trim() };
+    const preUpdateTitle = todo.title;
+    const todoUpdated = { ...todo, title: todoEditTitle.trim() };
 
-    updateTodos(todo)
-      .then(() => {
+    setTodoIsLoading(todo.id);
+
+    setTodos(prev => prev.map(todoItem => {
+      if (todoItem.id === id) {
+        return todoUpdated;
+      }
+
+      return todoItem;
+    }));
+
+    updateTodos(todoUpdated)
+      .catch(() => {
+        setErrorMessage('Unable to update a todo');
         setTodos(prev => prev.map(todoItem => {
           if (todoItem.id === id) {
-            return updatedTodo;
+            return { ...todo, title: preUpdateTitle };
           }
 
           return todoItem;
         }));
       })
-      .catch(() => {
-        setErrorMessage('Unable to update a todo');
-      })
       .finally(() => {
         resetChange();
+        setTodoIsLoading(null);
       });
 
     resetChange();
@@ -155,7 +160,7 @@ export const TodosItem: React.FC<Props> = ({ todo }) => {
             onChange={(event) => setTodoEditTitle(event.target.value)}
             onKeyUp={handleChange}
             onBlur={saveChange}
-            ref={editRef}
+            ref={inputRef}
           />
         </form>
       ) : (
