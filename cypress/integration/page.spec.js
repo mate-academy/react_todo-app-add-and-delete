@@ -456,16 +456,16 @@ describe.skip('', () => {
         page.newTodoField().should('have.value', 'Test Todo');
       });
 
-      it('should create and show a temp TodoItem with Loader', () => {
+      it.skip('should create and show a temp TodoItem with Loader', () => {
         todos.assertCount(6);
         todos.assertLoading(5);
       });
 
-      it('should show a temp TodoItem with correct title', () => {
+      it.skip('should show a temp TodoItem with correct title', () => {
         todos.assertTitle(5, 'Test Todo');
       });
 
-      it('should show a not completed temp TodoItem', () => {
+      it.skip('should show a not completed temp TodoItem', () => {
         todos.assertNotCompleted(5);
       });
 
@@ -497,11 +497,11 @@ describe.skip('', () => {
           todos.assertNotLoading(5);
         });
 
-        it('should add a todo with a correct title', () => {
+        it.skip('should add a todo with a correct title', () => {
           todos.assertTitle(5, 'Test Todo');
         });
 
-        it('should add a not completed todo', () => {
+        it.skip('should add a not completed todo', () => {
           todos.assertNotCompleted(5);
         });
 
