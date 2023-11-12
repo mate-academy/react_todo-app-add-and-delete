@@ -1,25 +1,39 @@
 /* eslint-disable no-console */
 import React from 'react';
+import { useDispatch } from 'react-redux';
+import { AppDispatch } from '../../redux/store';
 import { Todo } from '../../types/Todo';
+import {
+  deleteTodo,
+  // setCompletion,
+} from '../../redux/todoThunks';
 
 type TodoItemProps = {
   todo: Todo;
   isTemporary: boolean;
-  onDelete: (todoId: number) => void;
   isDeleting: boolean;
 };
 
 export const TodoItem = React.memo<TodoItemProps>(
   ({
-    todo, isTemporary, onDelete, isDeleting,
+    todo, isTemporary, isDeleting,
   }) => {
     console.log('item is temporary now', isTemporary);
     console.log('Rendering TodoItem');
 
+    const dispatch = useDispatch<AppDispatch>();
     const itemClasses = `todo ${isTemporary ? 'temp-item' : ''}`;
 
-    // const handleCompleted = () => {
+    const handleDeleteTodo = () => {
+      dispatch(deleteTodo(todo.id))
+        .catch((err: string) => {
+          console.error('Unable to delete todo:', err);
+        });
+    };
 
+    // const handleToggleCompletion = () => {
+    //   // Assuming setCompletion is an action that toggles the completion status
+    //   dispatch(setCompletion(todo.id, !todo.completed));
     // };
 
     return (
@@ -41,7 +55,7 @@ export const TodoItem = React.memo<TodoItemProps>(
           type="button"
           className="todo__remove"
           data-cy="TodoDelete"
-          onClick={() => onDelete(todo.id)}
+          onClick={handleDeleteTodo}
         >
           ×
         </button>

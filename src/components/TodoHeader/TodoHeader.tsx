@@ -54,7 +54,6 @@ export const TodoHeader: React.FC = () => {
       .catch((err: Error) => {
         console.error('Unable to add todo:', err);
         dispatch(clearTempTodo());
-        dispatch(setErrorType(ErrorType.AddTodoError));
         throw new Error(err.message);
       })
       .finally(() => {

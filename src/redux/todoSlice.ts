@@ -108,9 +108,28 @@ const todoSlice = createSlice({
       .addCase(deleteTodo.rejected, (state, action) => {
         state.deletingTodoIds = state.deletingTodoIds
           .filter(id => id !== action.meta.arg);
+
+        state.errorType = ErrorType.DeleteTodoError;
       })
       .addCase(setCompletion.pending, (state, action) => {
         state.updatingTodoIds.push(action.meta.arg.todoId);
+      })
+      .addCase(setCompletion.fulfilled, (state, action) => {
+        const { id, completed } = action.payload;
+        const existingTodo = state.todos.find(todo => todo.id === id);
+
+        if (existingTodo) {
+          existingTodo.completed = completed;
+        }
+
+        state.updatingTodoIds = state.updatingTodoIds
+          .filter(todoId => todoId !== id);
+      })
+      .addCase(setCompletion.rejected, (state, action) => {
+        state.updatingTodoIds = state.updatingTodoIds
+          .filter(todoId => todoId !== action.meta.arg.todoId);
+
+        state.errorType = ErrorType.UpdateTodoError;
       });
   },
 });
