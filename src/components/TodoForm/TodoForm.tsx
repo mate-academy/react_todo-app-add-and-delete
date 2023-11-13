@@ -4,34 +4,40 @@ import { Todo } from '../../types/Todo';
 interface Props {
   onSubmit: (todo: Todo) => Promise<void> | null;
   userId: number;
+  todos: Todo[];
 }
 
-export const TodoForm: React.FC<Props> = ({ onSubmit, userId }) => {
+export const TodoForm: React.FC<Props> = ({ onSubmit, userId, todos }) => {
   const [newTodo, setNewTodo] = useState('');
+  const [isSubmitting, setIsSubmitting] = useState(false);
   const titleField = useRef<HTMLInputElement>(null);
 
   useEffect(() => {
     if (titleField.current) {
       titleField.current.focus();
     }
-  }, []);
+  }, [todos.length]);
 
   const handleSubmit = (event: React.FormEvent) => {
     event.preventDefault();
 
-    const submitResult = onSubmit({
+    const todo: Todo = {
       id: 0,
       userId,
       title: newTodo,
       completed: false,
-    });
+    };
+
+    setIsSubmitting(true);
+    const submitResult = onSubmit(todo);
 
     if (submitResult instanceof Promise) {
       submitResult
         .then(() => setNewTodo(''))
         .catch((error) => {
           throw error;
-        });
+        })
+        .finally(() => setIsSubmitting(false));
     }
   };
 
@@ -45,6 +51,7 @@ export const TodoForm: React.FC<Props> = ({ onSubmit, userId }) => {
         placeholder="What needs to be done?"
         value={newTodo}
         onChange={(e) => setNewTodo(e.target.value)}
+        disabled={isSubmitting}
       />
     </form>
   );

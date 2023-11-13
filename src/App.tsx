@@ -19,6 +19,7 @@ enum FilterStatus {
 
 export const App: React.FC = () => {
   const [todos, setTodos] = useState<Todo[]>([]);
+  const [tempTodo, setTempTodo] = useState<Todo | null>(null);
   const [errorMessage, setErrorMessage] = useState('');
   const [status, setStatus] = useState<string>(FilterStatus.All);
 
@@ -33,7 +34,7 @@ export const App: React.FC = () => {
       .then(setTodos)
       .catch(() => {
         setErrorMessage('Unable to load todos');
-      });
+      })
   };
 
   useEffect(() => {
@@ -49,29 +50,37 @@ export const App: React.FC = () => {
   const addTodo = ({ userId, title, completed }: Todo) => {
     if (!title.trim()) {
       setErrorMessage('Title should not be empty');
-
       return null;
     }
 
-    return todoServices.createTodo({ userId, title, completed })
-      .then((newTodo) => {
-        setTodos(currentTodos => [...currentTodos, newTodo]);
-      })
+    const todo = {
+      id: 0,
+      userId,
+      title,
+      completed,
+    }
+
+    setTempTodo(todo);
+
+    return todoServices.createTodo(todo).then(() => {
+      setTodos(currentTodos => [...currentTodos, todo])
+    })
       .catch((error) => {
         setErrorMessage('Unable to add a todo');
         throw error;
+      })
+      .finally(() => {
+        setTempTodo(null);
       });
   };
 
   const deleteTodo = (todoId: number) => {
-    todoServices.deleteTodo(todoId)
-      .then(() => {
-        setTodos(currentTodos => (
-          currentTodos.filter(todo => todo.id !== todoId)
-        ));
-      })
-      .catch(() => {
+    setTodos(currentTodos => currentTodos.filter(todo => todo.id !== todoId));
+    return todoServices.deleteTodo(todoId)
+      .catch((error) => {
+        setTodos(todos);
         setErrorMessage('Unable to delete a todo');
+        throw error;
       });
   };
 
@@ -95,9 +104,11 @@ export const App: React.FC = () => {
 
   const someoneCompletedTodo = todos.some(todo => !todo.completed);
   const toggleAllTodos = () => {
+    const allCompleted = todos.every(todo => todo.completed);
+
     const updatedTodos = todos.map(todo => ({
       ...todo,
-      completed: !todo.completed,
+      completed: !allCompleted,
     }));
 
     Promise.all(updatedTodos.map(updatedTodo => {
@@ -133,15 +144,16 @@ export const App: React.FC = () => {
           <TodoForm
             onSubmit={addTodo}
             userId={USER_ID}
+            todos={todos}
           />
         </header>
 
         {todos.length > 0 && (
           <>
             <TodoList
-              todos={filteredTodos}
+              filteredTodos={filteredTodos}
+              tempTodo={tempTodo}
               onDelete={deleteTodo}
-              onUpdate={updateTodo}
             />
             <Footer
               todos={todos}
@@ -153,13 +165,10 @@ export const App: React.FC = () => {
         )}
       </div>
 
-      {errorMessage
-        && (
-          <ErrorMessage
-            error={errorMessage}
-            onCloseError={() => setErrorMessage('')}
-          />
-        )}
+      <ErrorMessage
+        error={errorMessage}
+        onCloseError={() => setErrorMessage('')}
+      />
     </div>
   );
 };
