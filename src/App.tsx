@@ -43,7 +43,7 @@ export const App: React.FC = () => {
   const deleteTodo = (id: number) => {
     deleteTodos(id)
       .then(() => setTodos(
-        (currentTodos) => currentTodos.filter(todo => todo.id !== id)
+        (currentTodos) => currentTodos.filter(todo => todo.id !== id),
       ))
       .catch(() => displayError('Unable to delete a todo'));
   };
