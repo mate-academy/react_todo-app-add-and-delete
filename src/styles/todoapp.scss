@@ -135,4 +135,8 @@
       visibility: hidden;
     }
   }
+
+  &__hidden-button {
+    opacity: 0;
+  }
 }
