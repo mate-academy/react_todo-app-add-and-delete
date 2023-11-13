@@ -46,6 +46,8 @@ export const App: React.FC = () => {
           setNewTodo={setNewTodo}
           setCurrentTodos={setCurrentTodos}
           setUpdatingTodo={setUpdatingTodo}
+          setErrorNotification={setErrorNotification}
+          updatingTodo={updatingTodo}
         />
         {currentTodos.length > 0 && (
           <TodoList

@@ -1,6 +1,6 @@
+import { useState } from 'react';
 import { Todo } from '../types/Todo';
 import { TodosFilter } from '../types/TodosFilter';
-import { useState } from 'react';
 
 type Props = {
   currentTodos: Todo[];
@@ -37,6 +37,7 @@ export const TodoList: React.FC<Props> = ({
 
     setTimeout(() => {
       const updatedTodos = currentTodos.filter((todo) => todo.id !== todoId);
+
       setCurrentTodos(updatedTodos);
       setDeletingTodoId(null);
     }, 300);

@@ -38,8 +38,9 @@ export const Hidden: React.FC<Props> = ({ errorNotification }) => {
           className="delete"
           onClick={hideError}
         >
-          {errorNotification}
+          { /* button */ }
         </button>
+        {errorNotification}
         {/* show only one message at a time
         Unable to load todos
         <br />

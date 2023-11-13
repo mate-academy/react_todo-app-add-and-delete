@@ -1,3 +1,4 @@
+import { useEffect, useRef } from 'react';
 import { Todo } from '../types/Todo';
 
 type Props = {
@@ -5,6 +6,8 @@ type Props = {
   newTodo: string;
   setCurrentTodos: (value: React.SetStateAction<Todo[]>) => void;
   setUpdatingTodo: (value: boolean) => void;
+  setErrorNotification: (value: string) => void;
+  updatingTodo: boolean;
 };
 
 export const Header: React.FC<Props> = ({
@@ -12,7 +15,17 @@ export const Header: React.FC<Props> = ({
   setNewTodo,
   setCurrentTodos,
   setUpdatingTodo,
+  setErrorNotification,
+  updatingTodo,
 }) => {
+  const inputRef = useRef<HTMLInputElement | null>(null);
+
+  useEffect(() => {
+    if (inputRef.current && !updatingTodo) {
+      inputRef.current.focus();
+    }
+  }, [updatingTodo]);
+
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setNewTodo(e.target.value);
   };
@@ -30,12 +43,17 @@ export const Header: React.FC<Props> = ({
             completed: false,
             userId: 0,
           },
-      ]);
-      setNewTodo('');
-      setUpdatingTodo(false);
-    }, 300);
+        ]);
+        setNewTodo('');
+        setUpdatingTodo(false);
+      }, 300);
+    } else {
+      setErrorNotification('Title should not be empty');
+      setTimeout(() => {
+        setErrorNotification('');
+      }, 3000);
+    }
   };
-}
 
   return (
     <header className="todoapp__header">
@@ -54,6 +72,7 @@ export const Header: React.FC<Props> = ({
           New Todo
         </label>
         <input
+          ref={inputRef}
           id="newTodo"
           data-cy="NewTodoField"
           type="text"
@@ -61,6 +80,7 @@ export const Header: React.FC<Props> = ({
           placeholder="What needs to be done?"
           onChange={handleInputChange}
           value={newTodo}
+          disabled={updatingTodo}
         />
       </form>
     </header>
