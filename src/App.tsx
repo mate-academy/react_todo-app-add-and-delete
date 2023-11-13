@@ -1,7 +1,7 @@
 /* eslint-disable jsx-a11y/control-has-associated-label */
 import React, { useEffect, useMemo, useState } from 'react';
 import { TodoappHeader } from './Components/TodoappHeader';
-import { TodoappList } from './Components/TodoappList';
+import { TodoappList } from './Components/TodoappList/TodoappList';
 import { TodoappFooter } from './Components/TodoappFooter';
 import { Todo } from './types/Todo';
 import { TodoappError } from './Components/TodoappError';
