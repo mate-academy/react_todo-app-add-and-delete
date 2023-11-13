@@ -34,7 +34,7 @@ export const App: React.FC = () => {
       .then(setTodos)
       .catch(() => {
         setErrorMessage('Unable to load todos');
-      })
+      });
   };
 
   useEffect(() => {
@@ -50,6 +50,7 @@ export const App: React.FC = () => {
   const addTodo = ({ userId, title, completed }: Todo) => {
     if (!title.trim()) {
       setErrorMessage('Title should not be empty');
+
       return null;
     }
 
@@ -58,12 +59,12 @@ export const App: React.FC = () => {
       userId,
       title,
       completed,
-    }
+    };
 
     setTempTodo(todo);
 
     return todoServices.createTodo(todo).then(() => {
-      setTodos(currentTodos => [...currentTodos, todo])
+      setTodos(currentTodos => [...currentTodos, todo]);
     })
       .catch((error) => {
         setErrorMessage('Unable to add a todo');
@@ -76,28 +77,11 @@ export const App: React.FC = () => {
 
   const deleteTodo = (todoId: number) => {
     setTodos(currentTodos => currentTodos.filter(todo => todo.id !== todoId));
+
     return todoServices.deleteTodo(todoId)
       .catch((error) => {
         setTodos(todos);
         setErrorMessage('Unable to delete a todo');
-        throw error;
-      });
-  };
-
-  const updateTodo = (updatedTodo: Todo) => {
-    return todoServices.updateTodo(updatedTodo)
-      .then((todo) => {
-        setTodos(currentTodos => {
-          const newTodos = [...currentTodos];
-          const index = newTodos.findIndex(post => post.id === updatedTodo.id);
-
-          newTodos.splice(index, 1, todo);
-
-          return newTodos;
-        });
-      })
-      .catch((error) => {
-        setErrorMessage('Unable to update a todo');
         throw error;
       });
   };

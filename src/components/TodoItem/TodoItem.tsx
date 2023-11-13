@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import cn from 'classnames';
-import { Todo } from "../../types/Todo";
+import { Todo } from '../../types/Todo';
 
 interface Props {
   todo: Todo;
@@ -12,7 +12,6 @@ export const TodoItem: React.FC<Props> = ({
   onDelete,
 }) => {
   const [isLoading, setIsLoading] = useState(false);
-
 
   // const handleStatusChange = (todoId: number, completed: boolean) => {
   //   const updatedTodo = todos.find((todo) => todo.id === todoId);
@@ -63,5 +62,5 @@ export const TodoItem: React.FC<Props> = ({
         </div>
       )}
     </div>
-  )
-}
+  );
+};

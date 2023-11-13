@@ -13,8 +13,6 @@ export const TodoList: React.FC<Props> = ({
   tempTodo,
   onDelete,
 }) => {
-
-
   return (
     <section className="todoapp__main" data-cy="TodoList">
       {filteredTodos.map((todo) => (
@@ -24,11 +22,13 @@ export const TodoList: React.FC<Props> = ({
         />
       ))}
 
-      {tempTodo &&
-        <TodoItem
-          todo={tempTodo}
-          onDelete={onDelete}
-        />}
+      {tempTodo
+        && (
+          <TodoItem
+            todo={tempTodo}
+            onDelete={onDelete}
+          />
+        )}
     </section>
   );
 };

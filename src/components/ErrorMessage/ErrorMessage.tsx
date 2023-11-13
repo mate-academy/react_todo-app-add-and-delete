@@ -10,7 +10,6 @@ export const ErrorMessage: React.FC<Props> = ({
   error,
   onCloseError = () => { },
 }) => {
-
   useEffect(() => {
     const timerId = setTimeout(() => {
       onCloseError();
@@ -24,7 +23,7 @@ export const ErrorMessage: React.FC<Props> = ({
       data-cy="ErrorNotification"
       className={cn(
         'notification is-danger is-light has-text-weight-normal',
-        { "hidden": (!error || error.trim() === '') },
+        { hidden: (!error || error.trim() === '') },
       )}
     >
       {/* eslint-disable jsx-a11y/control-has-associated-label */}
