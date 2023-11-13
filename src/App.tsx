@@ -54,16 +54,16 @@ export const App: React.FC = () => {
       return null;
     }
 
-    const todo = {
+    const newTodo = {
       id: 0,
       userId,
       title,
       completed,
     };
 
-    setTempTodo(todo);
+    setTempTodo(newTodo);
 
-    return todoServices.createTodo(todo).then(() => {
+    return todoServices.createTodo(newTodo).then((todo) => {
       setTodos(currentTodos => [...currentTodos, todo]);
     })
       .catch((error) => {
@@ -76,9 +76,11 @@ export const App: React.FC = () => {
   };
 
   const deleteTodo = (todoId: number) => {
-    setTodos(currentTodos => currentTodos.filter(todo => todo.id !== todoId));
-
-    return todoServices.deleteTodo(todoId)
+    return todoServices
+      .deleteTodo(todoId)
+      .then(() => setTodos((currentTodos) => currentTodos.filter(
+        (todo) => todo.id !== todoId
+      )))
       .catch((error) => {
         setTodos(todos);
         setErrorMessage('Unable to delete a todo');
