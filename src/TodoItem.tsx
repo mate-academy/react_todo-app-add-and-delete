@@ -24,12 +24,12 @@ export const TodoItem: React.FC<TodoItemProps> = ({
       className={`todo ${todo.completed ? 'completed' : 'active'}`}
       key={todo.id}
     >
-      <label htmlFor="yourInputId" className="todo__status-label">
+      <label htmlFor={`todoStatus-${todo.id}`} className="todo__status-label">
         <input
           data-cy="TodoStatus"
           type="checkbox"
           className="todo__status"
-          id="yourInputId"
+          id={`todoStatus-${todo.id}`}
           checked={todo.completed}
         />
       </label>
