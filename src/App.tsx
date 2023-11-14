@@ -56,6 +56,7 @@ export const App: React.FC = () => {
             setCurrentTodos={setCurrentTodos}
             updatingTodo={updatingTodo}
             newTodo={newTodo}
+            setErrorNotification={setErrorNotification}
           />
         )}
         {/* Hide the footer if there are no todos */}

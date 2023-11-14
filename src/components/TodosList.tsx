@@ -1,6 +1,8 @@
 import { useState } from 'react';
 import { Todo } from '../types/Todo';
 import { TodosFilter } from '../types/TodosFilter';
+import * as todosApi from '../api/todos';
+import { TodoItem } from './TodoItem';
 
 type Props = {
   currentTodos: Todo[];
@@ -8,6 +10,7 @@ type Props = {
   setCurrentTodos: (updatedTodos: Todo[]) => void;
   updatingTodo: boolean;
   newTodo: string;
+  setErrorNotification: (errorNotification: string) => void;
 };
 
 export const TodoList: React.FC<Props> = ({
@@ -16,6 +19,7 @@ export const TodoList: React.FC<Props> = ({
   setCurrentTodos,
   updatingTodo,
   newTodo,
+  setErrorNotification,
 }) => {
   const [deletingTodoId, setDeletingTodoId] = useState<number | null>(null);
 
@@ -32,52 +36,32 @@ export const TodoList: React.FC<Props> = ({
     }
   };
 
-  const handleDeleteCurrentTodo = (todoId: number) => {
+  const handleDeleteCurrentTodo = async (todoId: number) => {
     setDeletingTodoId(todoId);
 
-    setTimeout(() => {
+    try {
+      await todosApi.deleteTodos(todoId);
+
       const updatedTodos = currentTodos.filter((todo) => todo.id !== todoId);
 
       setCurrentTodos(updatedTodos);
-      setDeletingTodoId(null);
-    }, 300);
+    } catch (error) {
+      setErrorNotification('Unable to delete a todo');
+    } finally {
+      setTimeout(() => {
+        setDeletingTodoId(null);
+      }, 300);
+    }
   };
 
   return (
     <section className="todoapp__main" data-cy="TodoList">
       {filteredTodos().map((todo) => (
-        <div
-          key={todo.id}
-          data-cy="Todo"
-          className={`todo ${todo.completed ? 'completed' : ''}`}
-        >
-          <label className="todo__status-label">
-            <input
-              data-cy="TodoStatus"
-              type="checkbox"
-              className="todo__status"
-              checked={todo.completed}
-            />
-          </label>
-          <span data-cy="TodoTitle" className="todo__title">
-            {todo.title}
-          </span>
-          {/* Remove button appears only on hover */}
-          <button
-            type="button"
-            className="todo__remove"
-            data-cy="TodoDelete"
-            onClick={() => handleDeleteCurrentTodo(todo.id)}
-          >
-            ×
-          </button>
-          {deletingTodoId === todo.id && (
-            <div data-cy="TodoLoader" className="modal overlay is-active">
-              <div className="modal-background has-background-white-ter" />
-              <div className="loader" />
-            </div>
-          )}
-        </div>
+        <TodoItem
+          todo={todo}
+          handleDeleteCurrentTodo={handleDeleteCurrentTodo}
+          deletingTodoId={deletingTodoId}
+        />
       ))}
       {updatingTodo && (
         <div data-cy="Todo" className="todo">

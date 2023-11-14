@@ -23,5 +23,5 @@ export const updateTodo = (todo: Todo) => {
 };
 
 export const deleteTodos = (id: number) => {
-  return client.delete(`todos/${id}`);
+  return client.delete(`/todos/${id}`);
 };

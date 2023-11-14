@@ -1,4 +1,4 @@
-import { useEffect, useRef } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { Todo } from '../types/Todo';
 
 type Props = {
@@ -19,6 +19,7 @@ export const Header: React.FC<Props> = ({
   updatingTodo,
 }) => {
   const inputRef = useRef<HTMLInputElement | null>(null);
+  const [tempTodo, setTempTodo] = useState<Todo | null>(null);
 
   useEffect(() => {
     if (inputRef.current && !updatingTodo) {
@@ -32,27 +33,53 @@ export const Header: React.FC<Props> = ({
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    if (newTodo.trim().length > 0) {
-      setUpdatingTodo(true);
-      setTimeout(() => {
-        setCurrentTodos((prevTodos: Todo[]) => [
-          ...prevTodos,
-          {
-            id: new Date().getTime(),
-            title: newTodo,
-            completed: false,
-            userId: 0,
-          },
-        ]);
-        setNewTodo('');
-        setUpdatingTodo(false);
-      }, 300);
-    } else {
+
+    if (newTodo.trim().length === 0) {
       setErrorNotification('Title should not be empty');
       setTimeout(() => {
         setErrorNotification('');
       }, 3000);
+
+      return;
     }
+
+    setUpdatingTodo(true);
+
+    if (inputRef.current && tempTodo) {
+      inputRef.current.disabled = true;
+    }
+
+    const todoPush: Todo = {
+      id: 0,
+      userId: 0,
+      title: newTodo,
+      completed: false,
+    };
+
+    setTempTodo(todoPush);
+
+    setTimeout(() => {
+      setCurrentTodos((prevTodos: Todo[]) => [
+        ...prevTodos,
+        {
+          id: new Date().getTime(),
+          title: newTodo,
+          completed: false,
+          userId: 0,
+        },
+      ]);
+
+      setNewTodo('');
+
+      setUpdatingTodo(false);
+
+      setTempTodo(null);
+
+      if (inputRef.current) {
+        inputRef.current.disabled = false;
+        inputRef.current.focus();
+      }
+    }, 300);
   };
 
   return (
