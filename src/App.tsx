@@ -15,6 +15,19 @@ enum FilterBy {
   Completed = 'completed',
 }
 
+const filterTodos = (todos: Todo[], filter: FilterBy): Todo[] => {
+  switch (filter) {
+    case FilterBy.All:
+      return todos;
+    case FilterBy.Active:
+      return todos.filter(todo => !todo.completed);
+    case FilterBy.Completed:
+      return todos.filter(todo => todo.completed);
+    default:
+      return todos;
+  }
+};
+
 export const App: React.FC = () => {
   const [allTodos, setAllTodos] = useState<Todo[]>([]);
   const [filteredTodos, setFilteredTodos] = useState<Todo[]>([]);
@@ -32,7 +45,7 @@ export const App: React.FC = () => {
     if (inputRef.current) {
       inputRef.current.focus();
     }
-  }, []);
+  }, [tempTodo]);
 
   const handleTitleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setNewTodoTitle(e.target.value);
@@ -41,20 +54,14 @@ export const App: React.FC = () => {
   useEffect(() => {
     getTodos(USER_ID)
       .then((usersFromServer) => {
-        setFilteredTodos((prevFilteredTodos) => [...prevFilteredTodos,
-          ...usersFromServer]);
         setAllTodos((prevAllTodos) => [...prevAllTodos, ...usersFromServer]);
       })
       .catch(() => {
         setError('Unable to load todos');
 
-        const timeoutId = setTimeout(() => {
+        setTimeout(() => {
           setError('');
         }, newTimeout);
-
-        if (error === '') {
-          clearTimeout(timeoutId);
-        }
       });
   }, []);
 
@@ -66,6 +73,7 @@ export const App: React.FC = () => {
 
   const onSubmit = (e: React.FormEvent) => {
     setError('');
+    setIsDisabled(true);
     e.preventDefault();
     todoData.title = newTodoTitle;
 
@@ -73,14 +81,11 @@ export const App: React.FC = () => {
       setError('Title should not be empty');
 
       todoData.title = '';
-
-      const timeoutId = setTimeout(() => {
+      setTimeout(() => {
         setError('');
-      }, newTimeout);
+      }, 3000);
 
-      if (error === '') {
-        clearTimeout(timeoutId);
-      }
+      setIsDisabled(false);
 
       return;
     }
@@ -92,39 +97,27 @@ export const App: React.FC = () => {
       userId: USER_ID,
     });
 
-    setIsDisabled(true);
-
     addTodo({
       userId: USER_ID,
       completed: false,
       title: newTodoTitle.trim(),
     })
       .then((data) => {
-        setTempTodo(null);
-
+        setNewTodoTitle('');
         setAllTodos([...allTodos, data]);
-        setFilteredTodos([...filteredTodos, data]);
       })
       .catch(() => {
         setError('Unable to add a todo');
 
-        const timeoutId = setTimeout(() => {
+        setTimeout(() => {
           setError('');
         }, newTimeout);
-
-        if (error === '') {
-          clearTimeout(timeoutId);
-        }
 
         setTempTodo(null);
       })
       .finally(() => {
+        setTempTodo(null);
         setIsDisabled(false);
-        if (inputRef.current) {
-          inputRef.current.focus();
-        }
-
-        setNewTodoTitle('');
       });
   };
 
@@ -133,7 +126,6 @@ export const App: React.FC = () => {
 
     deleteTodo(postId)
       .then(() => {
-        setFilteredTodos(filteredTodos.filter(todo => todo.id !== postId));
         setAllTodos(allTodos.filter(todo => todo.id !== postId));
       })
       .finally(() => {
@@ -142,21 +134,7 @@ export const App: React.FC = () => {
   };
 
   useEffect(() => {
-    switch (filterBy) {
-      case FilterBy.All:
-        setFilteredTodos(allTodos.filter(todo => todo.completed
-          || !todo.completed));
-        break;
-      case FilterBy.Active:
-        setFilteredTodos(allTodos.filter(todo => !todo.completed));
-        break;
-      case FilterBy.Completed:
-        setFilteredTodos(allTodos.filter(todo => todo.completed));
-        break;
-      default:
-        setFilteredTodos(allTodos);
-        break;
-    }
+    setFilteredTodos(filterTodos(allTodos, filterBy));
   }, [filterBy, allTodos]);
 
   const handleFilterClick = (filterType: FilterBy) => (
