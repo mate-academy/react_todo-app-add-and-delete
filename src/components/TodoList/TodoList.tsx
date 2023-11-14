@@ -1,6 +1,6 @@
+import { TransitionGroup, CSSTransition } from 'react-transition-group';
 import TodoItem from './TodoItem';
 import { Todo } from '../../types/Todo';
-import { TransitionGroup, CSSTransition } from 'react-transition-group';
 
 type TodoListProps = {
   todos: Todo[];
@@ -18,33 +18,33 @@ export const TodoList = ({
 
       {todos.map(todo => (
         <CSSTransition
-        key={todo.id}
-        timeout={300}
-        classNames="item"
-      >
-        <TodoItem
           key={todo.id}
-          todo={todo}
-          removeTodo={removeTodo}
-          isLoading={loadingTodoId.includes(todo.id)}
-          updateTodo={updateTodo}
-        />
+          timeout={300}
+          classNames="item"
+        >
+          <TodoItem
+            key={todo.id}
+            todo={todo}
+            removeTodo={removeTodo}
+            isLoading={loadingTodoId.includes(todo.id)}
+            updateTodo={updateTodo}
+          />
         </CSSTransition>
       ))}
 
       {tempTodo && (
         <CSSTransition
-        key={0}
-        timeout={300}
-        classNames="temp-item"
-      >
-        <TodoItem
-          key={tempTodo.id}
-          todo={tempTodo}
-          removeTodo={removeTodo}
-          updateTodo={updateTodo}
-          isLoading
-        />
+          key={0}
+          timeout={300}
+          classNames="temp-item"
+        >
+          <TodoItem
+            key={tempTodo.id}
+            todo={tempTodo}
+            removeTodo={removeTodo}
+            updateTodo={updateTodo}
+            isLoading
+          />
         </CSSTransition>
       )}
 
