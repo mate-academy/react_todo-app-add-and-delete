@@ -129,7 +129,6 @@ export const App: React.FC = () => {
             />
           )}
 
-          {/* Add a todo on form submit */}
           <TodoForm
             title={title}
             setTitle={(value) => setTitle(value)}
