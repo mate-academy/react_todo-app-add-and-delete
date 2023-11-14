@@ -17,12 +17,15 @@ export const App: React.FC = () => {
   const filterTodos = () => {
     let filteredList = todos;
 
-    if (filter === 'Active') {
-      filteredList = todos.filter(todo => !todo.completed);
-    }
-
-    if (filter === 'Completed') {
-      filteredList = todos.filter(todo => todo.completed);
+    switch (filter) {
+      case 'Active':
+        filteredList = todos.filter(todo => !todo.completed);
+        break;
+      case 'Completed':
+        filteredList = todos.filter(todo => todo.completed);
+        break;
+      default:
+        filteredList = todos;
     }
 
     return filteredList;
@@ -32,7 +35,7 @@ export const App: React.FC = () => {
 
   const activeChecker = todos.some(todo => !todo.completed);
 
-  const displayError = async (errorMessage: string) => {
+  const displayError = (errorMessage: string) => {
     setError(errorMessage);
 
     setTimeout(() => setError(''), 3000);
