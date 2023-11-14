@@ -4,6 +4,7 @@ import { Todo } from '../../types/Todo';
 
 interface Props {
   todos: Todo[];
+  filteredTodos: Todo[];
   filter: string;
   changeFilter: (string: string) => void;
   tempTodo: Todo | null;
@@ -12,7 +13,13 @@ interface Props {
 }
 
 export const TodoList: React.FC<Props> = ({
-  todos, filter, changeFilter, tempTodo, deleteTodo, deleteCompleted,
+  todos,
+  filteredTodos,
+  filter,
+  changeFilter,
+  tempTodo,
+  deleteTodo,
+  deleteCompleted,
 }) => {
   const todosRemaining = todos.reduce((acc, val) => {
     if (!val.completed) {
@@ -27,7 +34,7 @@ export const TodoList: React.FC<Props> = ({
   return (
     <>
       <section className="todoapp__main" data-cy="TodoList">
-        {todos.map(todo => (
+        {filteredTodos.map(todo => (
           <div
             data-cy="Todo"
             className={cn('todo', { completed: todo.completed })}

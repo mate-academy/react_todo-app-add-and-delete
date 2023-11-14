@@ -14,6 +14,22 @@ export const App: React.FC = () => {
   const [error, setError] = useState('');
   const [tempTodo, setTempTodo] = useState<Todo | null>(null);
 
+  const filterTodos = () => {
+    let filteredList = todos;
+
+    if (filter === 'Active') {
+      filteredList = todos.filter(todo => !todo.completed);
+    }
+
+    if (filter === 'Completed') {
+      filteredList = todos.filter(todo => todo.completed);
+    }
+
+    return filteredList;
+  };
+
+  const filteredTodos = filterTodos();
+
   const activeChecker = todos.some(todo => !todo.completed);
 
   const displayError = async (errorMessage: string) => {
@@ -56,19 +72,7 @@ export const App: React.FC = () => {
 
   useEffect(() => {
     getTodos(USER_ID)
-      .then(listOfTodos => {
-        let filteredList = listOfTodos;
-
-        if (filter === 'Active') {
-          filteredList = listOfTodos.filter(todo => !todo.completed);
-        }
-
-        if (filter === 'Completed') {
-          filteredList = listOfTodos.filter(todo => todo.completed);
-        }
-
-        setTodos(filteredList);
-      })
+      .then(listOfTodos => setTodos(listOfTodos))
       .catch(() => displayError('Unable to load todos'));
   }, [filter]);
 
@@ -85,6 +89,7 @@ export const App: React.FC = () => {
 
         <TodoList
           todos={todos}
+          filteredTodos={filteredTodos}
           filter={filter}
           changeFilter={setFilter}
           tempTodo={tempTodo}
