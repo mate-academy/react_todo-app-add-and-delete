@@ -1,4 +1,4 @@
-import {
+import React, {
   useEffect, useRef, useState,
 } from 'react';
 import { ErrorMessages } from '../../types/ErrorMessages';
@@ -9,7 +9,7 @@ type Props = {
 
 };
 
-export const TodoForm = ({ addTodo, changeErrorMessage }: Props) => {
+export const TodoForm = React.memo(({ addTodo, changeErrorMessage }: Props) => {
   const [todo, setTodo] = useState('');
   const inputRef = useRef<HTMLInputElement | null>(null);
 
@@ -42,4 +42,4 @@ export const TodoForm = ({ addTodo, changeErrorMessage }: Props) => {
       />
     </form>
   );
-};
+});

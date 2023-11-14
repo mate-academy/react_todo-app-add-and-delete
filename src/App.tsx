@@ -1,30 +1,34 @@
 import React, {
-  useCallback, useEffect, useMemo, useState,
+  useMemo, useState,
 } from 'react';
 import './styles/transitions.scss';
 import { UserWarning } from './components/UserWarning.tsx/UserWarning';
-import {
-  createTodo, deleteTodo,
-  getTodos, patchTodo,
-} from './api/todos';
+
 // types
-import { Todo } from './types/Todo';
 import { Filters } from './types/Filters';
-import { ErrorMessages } from './types/ErrorMessages';
 // components
-import { TodosHeader } from './components/TodosHeader/TodosHeader';
 import { TodoFooter } from './components/TodoFooter/TodoFooter';
 import { TodoList } from './components/TodoList/TodoList';
 import { NotificationModal } from './components/Notification/Notification';
+import { TodoForm } from './components/TodoForm/TodoForm';
+import useTodos from './hooks/useTodos';
 
 const USER_ID = 11208;
 
 export const App: React.FC = () => {
-  const [todos, setTodos] = useState<Todo[]>([]);
-  const [loadingTodoId, setLoadingTodoId] = useState<number[]>([]);
-  const [tempTodo, setTempTodo] = useState<Todo | null>(null);
   const [filter, setFilter] = useState<Filters>('all');
-  const [error, setError] = useState<string | null>(null);
+  const {
+    todos,
+    loadingTodoId,
+    tempTodo,
+    error,
+    addTodo,
+    removeTodo,
+    updateTodo,
+    removeAllCompleted,
+    changeErrorMessage,
+    setError,
+  } = useTodos(USER_ID);
 
   const filteredTodos = useMemo(() => {
     switch (filter) {
@@ -52,76 +56,6 @@ export const App: React.FC = () => {
     }, []);
   }, [todos]);
 
-  const changeErrorMessage = (message: string) => {
-    setError(message);
-    setTimeout(() => {
-      setError('');
-    }, 3000);
-  };
-
-  const addTodo = (todo: string) => {
-    const newTodo = {
-      id: 0,
-      title: todo,
-      userId: USER_ID,
-      completed: false,
-    };
-
-    setTempTodo(newTodo);
-
-    createTodo(newTodo)
-      .then(data => {
-        setTodos(old => old.concat(data));
-      })
-      .catch(() => changeErrorMessage(ErrorMessages.ADD))
-      .finally(() => {
-        setTempTodo(null);
-      });
-  };
-
-  const removeTodo = useCallback((itemId: number) => {
-    setLoadingTodoId(prev => [...prev, itemId]);
-    deleteTodo(itemId)
-      .then(() => setTodos(old => old.filter(todo => todo.id !== itemId)))
-      .catch(() => changeErrorMessage(ErrorMessages.DELETE))
-      .finally(
-        () => setLoadingTodoId(prev => prev.filter(id => id !== itemId)),
-      );
-  }, []);
-
-  const updateTodo = (itemId: number, completed: boolean) => {
-    setLoadingTodoId(prev => [...prev, itemId]);
-    patchTodo(itemId, !completed)
-      .then(() => setTodos(old => old.map(todo => {
-        if (todo.id === itemId) {
-          return {
-            ...todo,
-            completed: !completed,
-          };
-        }
-
-        return todo;
-      })))
-      .catch(() => changeErrorMessage(ErrorMessages.UPDATE))
-      .finally(
-        () => setLoadingTodoId(prev => prev.filter(id => id !== itemId)),
-      );
-  };
-
-  const removeAllCompleted = useCallback(() => {
-    todos.forEach(todo => {
-      if (todo.completed) {
-        removeTodo(todo.id);
-      }
-    });
-  }, [todos, removeTodo]);
-
-  useEffect(() => {
-    getTodos(USER_ID)
-      .then(data => setTodos(data))
-      .catch(() => changeErrorMessage(ErrorMessages.DOWNLOAD));
-  }, []);
-
   if (!USER_ID) {
     return <UserWarning />;
   }
@@ -131,11 +65,19 @@ export const App: React.FC = () => {
       <h1 className="todoapp__title">todos</h1>
 
       <div className="todoapp__content">
-        <TodosHeader
-          todos={todos}
-          addTodo={addTodo}
-          changeErrorMessage={changeErrorMessage}
-        />
+        <header className="todoapp__header">
+          {/* this buttons is active only if there are some active todos */}
+          {(todos.length > 0) && (
+            <button
+              type="button"
+              className="todoapp__toggle-all active"
+              aria-label="Toggle between active and not active"
+            />
+          )}
+
+          {/* Add a todo on form submit */}
+          <TodoForm addTodo={addTodo} changeErrorMessage={changeErrorMessage} />
+        </header>
 
         <section className="todoapp__main">
           <TodoList
