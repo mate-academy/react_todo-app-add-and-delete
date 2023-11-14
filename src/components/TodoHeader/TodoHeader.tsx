@@ -1,20 +1,17 @@
 import {
   useEffect, useRef, useState,
 } from 'react';
-import { Todo } from '../../types/Todo';
 
 type Props = {
   setErrorMessage: (m: string) => void,
   isDisable: boolean,
   addTodo: (t: string, st: (t: string) => void) => void,
-  tempTodo: Todo | null
 };
 
 export const TodoHeader:React.FC<Props> = ({
   setErrorMessage,
   isDisable,
   addTodo,
-  tempTodo,
 }) => {
   const [todoTitle, setTodoTitle] = useState('');
   const todoField = useRef<HTMLInputElement>(null);
@@ -57,7 +54,7 @@ export const TodoHeader:React.FC<Props> = ({
           type="text"
           className="todoapp__new-todo"
           placeholder="What needs to be done?"
-          disabled={isDisable && tempTodo !== null}
+          disabled={isDisable}
           value={todoTitle}
           onChange={(ev) => setTodoTitle(ev.target.value)}
         />

@@ -109,7 +109,6 @@ export const App: React.FC = () => {
           setErrorMessage={setErrorMessage}
           isDisable={isDisable}
           addTodo={addTodo}
-          tempTodo={tempTodo}
         />
 
         <TodoList
