@@ -138,25 +138,25 @@ export const TodoItem: React.FC<Props> = ({
       </label>
 
       {!isEdit && (
-        <span
-          data-cy="TodoTitle"
-          className="todo__title"
-          onDoubleClick={handleDoubleClick}
-        >
-          {todo.title}
-        </span>
-      )}
+        <>
+          <span
+            data-cy="TodoTitle"
+            className="todo__title"
+            onDoubleClick={handleDoubleClick}
+          >
+            {todo.title}
+          </span>
 
-      {!isEdit && (
-        <button
-          type="button"
-          className="todo__remove"
-          data-cy="TodoDelete"
-          onClick={() => removeTodo(todo.id)}
-          aria-label="Delete"
-        >
-          ×
-        </button>
+          <button
+            type="button"
+            className="todo__remove"
+            data-cy="TodoDelete"
+            onClick={() => removeTodo(todo.id)}
+            aria-label="Delete"
+          >
+            ×
+          </button>
+        </>
       )}
 
       {isEdit && (

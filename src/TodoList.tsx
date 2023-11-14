@@ -1,6 +1,4 @@
-import {
-  Dispatch, SetStateAction, useEffect, useState,
-} from 'react';
+import React, { Dispatch, SetStateAction, useEffect } from 'react';
 import { Status } from './types/Status';
 import { Todo } from './types/Todo';
 import { TodoItem } from './TodoItem';
@@ -15,31 +13,40 @@ type Props = {
 export const TodoList: React.FC<Props> = ({
   todos, status, setTodos, setErrorMessage,
 }) => {
-  const [visibleTodos, setVisibleTodos] = useState<Todo[]>([]);
-
   useEffect(() => {
     switch (status) {
       case Status.all:
-        setVisibleTodos(todos);
         break;
 
       case Status.active:
-        setVisibleTodos(todos.filter(todo => !todo.completed));
         break;
 
       case Status.completed:
-        setVisibleTodos(todos.filter(todo => todo.completed));
         break;
 
       default:
-        setVisibleTodos(todos);
         break;
     }
   }, [todos, status]);
 
+  // Filter todos based on status
+  const filteredTodos = (() => {
+    switch (status) {
+      case Status.active:
+        return todos.filter(todo => !todo.completed);
+
+      case Status.completed:
+        return todos.filter(todo => todo.completed);
+
+      case Status.all:
+      default:
+        return todos;
+    }
+  })();
+
   return (
     <div>
-      {visibleTodos.map(todo => (
+      {filteredTodos.map(todo => (
         <TodoItem
           todo={todo}
           key={todo.id}
