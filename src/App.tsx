@@ -13,13 +13,13 @@ const USER_ID = 11775;
 
 export const App: React.FC = () => {
   const [todos, setTodos] = useState<Todo[]>([]);
-  const [visibleTodos, setVisibleTodos] = useState(todos);
   const [errorMessage, setErrorMessage] = useState('');
   const [filter, setFilter] = useState(Filter.All);
   const [tempTodo, setTempTodo] = useState<Todo | null>(null);
   const [clearingCompleted, setClearingCompleted] = useState(false);
   const [isDisable, setIsDisable] = useState(false);
   const [deletingTodo, setDeletingTodo] = useState<Todo | undefined>(undefined);
+  // let visibleTodos = todos;
 
   useEffect(() => {
     TodoService.getTodos(USER_ID)
@@ -32,10 +32,8 @@ export const App: React.FC = () => {
       });
   }, []);
 
-  useMemo(() => {
-    let t = todos;
-
-    t = t.filter(todo => {
+  const visibleTodos = useMemo(() => {
+    return todos.filter(todo => {
       switch (filter) {
         case Filter.Active:
           return !todo.completed;
@@ -47,8 +45,6 @@ export const App: React.FC = () => {
           return true;
       }
     });
-
-    setVisibleTodos(t);
   }, [filter, todos]);
 
   const addTodo = (todoTitle: string, setTodoTitle: (t: string) => void) => {
@@ -113,6 +109,7 @@ export const App: React.FC = () => {
           setErrorMessage={setErrorMessage}
           isDisable={isDisable}
           addTodo={addTodo}
+          tempTodo={tempTodo}
         />
 
         <TodoList

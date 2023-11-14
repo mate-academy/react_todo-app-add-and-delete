@@ -48,8 +48,8 @@ export const TodoItem: React.FC<Props> = ({
         data-cy="TodoLoader"
         className={cn('modal overlay',
           {
-            'is-active': deletingTodo?.id === id
-              || id === 0
+            'is-active': id === 0
+              || deletingTodo?.id === id
               || (clearingCompleted && completed),
           })}
       >

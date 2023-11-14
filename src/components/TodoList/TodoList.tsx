@@ -51,6 +51,7 @@ export const TodoList: React.FC<Props> = ({
           </CSSTransition>
         )}
       </TransitionGroup>
+
     </section>
   );
 };
