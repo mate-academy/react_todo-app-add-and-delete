@@ -24,10 +24,6 @@ export const TodosFooter: React.FC = () => {
     setTodos(prev => prev.filter(todo => !todo.completed));
   };
 
-  if (!todos.length) {
-    return (<></>);
-  }
-
   return (
     <footer className="todoapp__footer" data-cy="Footer">
       <span className="todo-count" data-cy="TodosCounter">
@@ -41,6 +37,7 @@ export const TodosFooter: React.FC = () => {
         className="todoapp__clear-completed"
         data-cy="ClearCompletedButton"
         onClick={clearComplete}
+        disabled={todosLeft === todos.length}
       >
         Clear completed
       </button>

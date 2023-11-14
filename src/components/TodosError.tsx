@@ -5,6 +5,7 @@ import { TodosContext } from './TodosContext';
 export const TodosError: React.FC = () => {
   const {
     errorMessage,
+    setErrorMessage,
   } = useContext(TodosContext);
 
   return (
@@ -17,7 +18,12 @@ export const TodosError: React.FC = () => {
       )}
     >
       {/* eslint-disable-next-line jsx-a11y/control-has-associated-label */}
-      <button data-cy="HideErrorButton" type="button" className="delete" />
+      <button
+        data-cy="HideErrorButton"
+        type="button"
+        className="delete"
+        onClick={() => setErrorMessage('')}
+      />
       {errorMessage}
     </div>
   );

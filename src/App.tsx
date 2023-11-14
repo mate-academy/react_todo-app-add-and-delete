@@ -87,7 +87,9 @@ export const App: React.FC = () => {
 
           <TodosList />
 
-          <TodosFooter />
+          {todos.length > 0 && (
+            <TodosFooter />
+          )}
         </div>
 
         <TodosError />

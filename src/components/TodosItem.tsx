@@ -25,9 +25,9 @@ export const TodosItem: React.FC<Props> = ({ todo }) => {
 
   const isEditing = todoEditId === id;
 
-  const handleDoubleClick = (todoId: number, todoTitle: string) => {
-    setTodoEditId(todoId);
-    setTodoEditTitle(todoTitle);
+  const handleDoubleClick = () => {
+    setTodoEditId(id);
+    setTodoEditTitle(title);
   };
 
   const resetChange = () => {
@@ -68,12 +68,12 @@ export const TodosItem: React.FC<Props> = ({ todo }) => {
     resetChange();
   };
 
-  const handleDelete = (todoId: number) => {
-    setTodoIsLoading(todoId);
-    deleteTodos(todoId)
+  const handleDelete = () => {
+    setTodoIsLoading(id);
+    deleteTodos(id)
       .then(() => {
         setTodos((prev) => prev
-          .filter(todoItem => todoItem.id !== todoId));
+          .filter(todoItem => todoItem.id !== id));
       })
       .catch(() => {
         setErrorMessage('Unable to delete a todo');
@@ -93,8 +93,8 @@ export const TodosItem: React.FC<Props> = ({ todo }) => {
 
         break;
       case 'Enter':
-        if (!setTodoEditTitle) {
-          handleDelete(todoEditId);
+        if (!todoEditTitle.trim()) {
+          handleDelete();
 
           return;
         }
@@ -107,12 +107,12 @@ export const TodosItem: React.FC<Props> = ({ todo }) => {
     }
   };
 
-  const handleChangeComplete = (todoItem: Todo) => {
+  const handleChangeComplete = () => {
     // eslint-disable-next-line no-param-reassign
-    todoItem.completed = !todoItem.completed;
-    setTodoIsLoading(todoItem.id);
+    todo.completed = !todo.completed;
+    setTodoIsLoading(todo.id);
 
-    updateTodos(todoItem)
+    updateTodos(todo)
       .then(data => setTodos((prev) => {
         return [
           ...prev
@@ -145,7 +145,7 @@ export const TodosItem: React.FC<Props> = ({ todo }) => {
           type="checkbox"
           className="todo__status"
           checked={todo.completed}
-          onChange={() => handleChangeComplete(todo)}
+          onChange={handleChangeComplete}
         />
       </label>
 
@@ -168,7 +168,7 @@ export const TodosItem: React.FC<Props> = ({ todo }) => {
           <span
             data-cy="TodoTitle"
             className="todo__title"
-            onDoubleClick={() => handleDoubleClick(id, title)}
+            onDoubleClick={handleDoubleClick}
           >
             {title}
           </span>
@@ -177,7 +177,7 @@ export const TodosItem: React.FC<Props> = ({ todo }) => {
             type="button"
             className="todo__remove"
             data-cy="TodoDelete"
-            onClick={() => handleDelete(id)}
+            onClick={handleDelete}
           >
             ×
           </button>

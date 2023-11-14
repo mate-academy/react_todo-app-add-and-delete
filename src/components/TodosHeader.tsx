@@ -73,16 +73,18 @@ export const TodosHeader: React.FC = () => {
 
   return (
     <header className="todoapp__header">
-      {/* eslint-disable-next-line jsx-a11y/control-has-associated-label */}
-      <button
-        type="button"
-        className={cn(
-          'todoapp__toggle-all',
-          { active: isCompleted },
-        )}
-        data-cy="ToggleAllButton"
-        onClick={toggleAll}
-      />
+      {todos.length > 0 && (
+        /* eslint-disable-next-line jsx-a11y/control-has-associated-label */
+        <button
+          type="button"
+          className={cn(
+            'todoapp__toggle-all',
+            { active: isCompleted },
+          )}
+          data-cy="ToggleAllButton"
+          onClick={toggleAll}
+        />
+      )}
 
       <form onSubmit={handleSubmit}>
         <input
