@@ -5,15 +5,15 @@ import { TodosItem } from './TodosItem';
 export const TodosList: React.FC = () => {
   const {
     todosAfterFiltering,
-    todoEditIsLoading,
+    todoEditLoading,
   } = useContext(TodosContext);
 
   return (
     <section className="todoapp__main" data-cy="TodoList">
       {todosAfterFiltering
         .map((todo) => <TodosItem todo={todo} key={todo.id} />)}
-      {todoEditIsLoading
-        && <TodosItem todo={todoEditIsLoading} key={todoEditIsLoading.id} />}
+      {todoEditLoading
+        && <TodosItem todo={todoEditLoading} key={todoEditLoading.id} />}
     </section>
   );
 };

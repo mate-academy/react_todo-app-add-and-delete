@@ -12,8 +12,8 @@ export const TodosHeader: React.FC = () => {
     todos,
     setTodos,
     setErrorMessage,
-    setTodoIsLoading,
-    setTodoEditIsLoading,
+    setTodoIdLoading,
+    setTodoEditLoading,
   } = useContext(TodosContext);
 
   const [newTodo, setNewTodo] = useState('');
@@ -33,22 +33,22 @@ export const TodosHeader: React.FC = () => {
     DEFAULT_DATA.title = newTodo.trim();
     const newId = todos.length ? todos[todos.length - 1].id + 1 : 1;
 
-    setTodoIsLoading(newId);
-    setTodoEditIsLoading({ id: newId, ...DEFAULT_DATA });
+    setTodoIdLoading(newId);
+    setTodoEditLoading({ id: newId, ...DEFAULT_DATA });
 
     addTodos(DEFAULT_DATA)
       .then((data: Todo) => {
         setTodos((prev: Todo[]) => [...prev, data]);
         setNewTodo('');
-        setTodoEditIsLoading(null);
+        setTodoEditLoading(null);
       })
       .catch(() => {
         setErrorMessage('Unable to add a todo');
-        setTodoEditIsLoading(null);
+        setTodoEditLoading(null);
       })
       .finally(() => {
         setInputDisabled(false);
-        setTodoIsLoading(null);
+        setTodoIdLoading(null);
       });
   };
 

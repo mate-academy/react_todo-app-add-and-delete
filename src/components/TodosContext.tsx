@@ -7,11 +7,11 @@ type Props = {
   DEFAULT_DATA: TodoFromServer,
   todosAfterFiltering: Todo[],
   todos: Todo[],
-  todoEditIsLoading: Todo | null,
+  todoEditLoading: Todo | null,
   todosFilter: TodosFilter,
   todoEditTitle: string,
   todoEditId: number,
-  todoIsLoading: number | null,
+  todoIdLoading: number | null,
   errorMessage: string,
   inputRef: React.MutableRefObject<HTMLInputElement | null>;
   setTodos: (todos: (prev: Todo[]) => Todo[]) => void,
@@ -19,8 +19,8 @@ type Props = {
   setTodoEditTitle: (id: string) => void,
   setErrorMessage: (id: string) => void,
   setTodoEditId: (id: number) => void,
-  setTodoIsLoading: (id: (number | null)) => void,
-  setTodoEditIsLoading: (todo: Todo | null) => void,
+  setTodoIdLoading: (id: (number | null)) => void,
+  setTodoEditLoading: (todo: Todo | null) => void,
 };
 export const TodosContext = React.createContext<Props>({
   DEFAULT_DATA: {
@@ -30,11 +30,11 @@ export const TodosContext = React.createContext<Props>({
   },
   todosAfterFiltering: [],
   todos: [],
-  todoEditIsLoading: null,
+  todoEditLoading: null,
   todosFilter: TodosFilter.all,
   todoEditTitle: '',
   todoEditId: 0,
-  todoIsLoading: null,
+  todoIdLoading: null,
   errorMessage: '',
   inputRef: { current: null },
   setTodos: () => {},
@@ -42,6 +42,6 @@ export const TodosContext = React.createContext<Props>({
   setTodosFilter: () => {},
   setTodoEditTitle: () => {},
   setTodoEditId: () => {},
-  setTodoIsLoading: () => {},
-  setTodoEditIsLoading: () => {},
+  setTodoIdLoading: () => {},
+  setTodoEditLoading: () => {},
 });

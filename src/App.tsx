@@ -36,8 +36,8 @@ export const App: React.FC = () => {
   const [errorMessage, setErrorMessage] = useState('');
   const [todoEditId, setTodoEditId] = useState(0);
   const [todoEditTitle, setTodoEditTitle] = useState('');
-  const [todoIsLoading, setTodoIsLoading] = useState<number | null>(null);
-  const [todoEditIsLoading, setTodoEditIsLoading] = useState<Todo | null>(null);
+  const [todoIdLoading, setTodoIdLoading] = useState<number | null>(null);
+  const [todoEditLoading, setTodoEditLoading] = useState<Todo | null>(null);
   const inputRef = useRef<HTMLInputElement>(null);
 
   useEffect(() => {
@@ -67,10 +67,10 @@ export const App: React.FC = () => {
         todoEditTitle,
         todoEditId,
         inputRef,
-        todoIsLoading,
-        todoEditIsLoading,
-        setTodoEditIsLoading,
-        setTodoIsLoading,
+        todoIdLoading,
+        todoEditLoading,
+        setTodoEditLoading,
+        setTodoIdLoading,
         setTodos,
         setTodosFilter,
         setErrorMessage,

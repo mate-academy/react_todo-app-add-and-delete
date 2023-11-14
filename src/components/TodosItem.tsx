@@ -14,13 +14,13 @@ export const TodosItem: React.FC<Props> = ({ todo }) => {
   const {
     todoEditTitle,
     todoEditId,
-    todoIsLoading,
+    todoIdLoading,
     inputRef,
     setTodos,
     setTodoEditTitle,
     setErrorMessage,
     setTodoEditId,
-    setTodoIsLoading,
+    setTodoIdLoading,
   } = useContext(TodosContext);
 
   const isEditing = todoEditId === id;
@@ -39,7 +39,7 @@ export const TodosItem: React.FC<Props> = ({ todo }) => {
     const preUpdateTitle = todo.title;
     const todoUpdated = { ...todo, title: todoEditTitle.trim() };
 
-    setTodoIsLoading(todo.id);
+    setTodoIdLoading(todo.id);
 
     setTodos(prev => prev.map(todoItem => {
       if (todoItem.id === id) {
@@ -62,14 +62,14 @@ export const TodosItem: React.FC<Props> = ({ todo }) => {
       })
       .finally(() => {
         resetChange();
-        setTodoIsLoading(null);
+        setTodoIdLoading(null);
       });
 
     resetChange();
   };
 
   const handleDelete = () => {
-    setTodoIsLoading(id);
+    setTodoIdLoading(id);
     deleteTodos(id)
       .then(() => {
         setTodos((prev) => prev
@@ -80,7 +80,7 @@ export const TodosItem: React.FC<Props> = ({ todo }) => {
       })
       .finally(() => {
         resetChange();
-        setTodoIsLoading(null);
+        setTodoIdLoading(null);
       });
   };
 
@@ -109,10 +109,10 @@ export const TodosItem: React.FC<Props> = ({ todo }) => {
 
   const handleChangeComplete = () => {
     // eslint-disable-next-line no-param-reassign
-    todo.completed = !todo.completed;
-    setTodoIsLoading(todo.id);
+    const updatedTodo = { ...todo, completed: !todo.completed };
+    setTodoIdLoading(updatedTodo.id);
 
-    updateTodos(todo)
+    updateTodos(updatedTodo)
       .then(data => setTodos((prev) => {
         return [
           ...prev
@@ -123,7 +123,7 @@ export const TodosItem: React.FC<Props> = ({ todo }) => {
         setErrorMessage('Unable to update a todo');
       })
       .finally(() => {
-        setTodoIsLoading(null);
+        setTodoIdLoading(null);
       });
   };
 
@@ -186,7 +186,7 @@ export const TodosItem: React.FC<Props> = ({ todo }) => {
             data-cy="TodoLoader"
             className={cn(
               'modal overlay',
-              { 'is-active': todoIsLoading === id },
+              { 'is-active': todoIdLoading === id },
             )}
           >
             <div className="modal-background has-background-white-ter" />
