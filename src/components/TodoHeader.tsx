@@ -40,6 +40,9 @@ export const TodoHeader: React.FC<Props> = ({
 
     await onTodoAdd(title.trim())
       .then(() => setTitle(''))
+      .catch(() => {
+        onError('Unable to add a todo');
+      })
       .finally(() => {
         setIsSubmiting(false);
         setTimeout(() => {

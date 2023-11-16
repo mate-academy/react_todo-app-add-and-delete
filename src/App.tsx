@@ -34,6 +34,8 @@ export const App: React.FC = () => {
   };
 
   const handleTodoAdd = async (title: string) => {
+    setErrorMessage('');
+
     setTemporaryTodo({
       id: 0,
       title,
@@ -43,9 +45,6 @@ export const App: React.FC = () => {
 
     await createTodo(title)
       .then(createdTodo => setTodos(prevTodos => [...prevTodos, createdTodo]))
-      .catch(() => {
-        setErrorMessage('Unable to add a todo');
-      })
       .finally(() => {
         setTemporaryTodo(null);
       });
@@ -53,15 +52,17 @@ export const App: React.FC = () => {
 
   const handleDelete = async (id: number) => {
     setProcessingTodoIds(prev => [...prev, id]);
+    setErrorMessage('');
 
     try {
-      const isTodoDelete = await deleteTodos(id);
+      await deleteTodos(id);
 
-      if (isTodoDelete) {
-        setTodos(prev => prev.filter(todo => todo.id !== id));
-      } else {
-        setErrorMessage('Unable to delete a todo');
-      }
+      setTodos(prev => prev.filter(todo => todo.id !== id));
+      // if (isTodoDelete) {
+
+      // } else {
+      //   setErrorMessage('Unable to delete a todo');
+      // }
     } catch (e) {
       setErrorMessage('Unable to delete a todo');
     } finally {
