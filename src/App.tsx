@@ -13,25 +13,24 @@ const USER_ID = 11828;
 export const App: React.FC = () => {
   const [todos, setTodos] = useState<Todo[]>([]);
   const [filterBy, setFilterBy] = useState(Filter.ALL);
-  const [isHidden, setIsHidden] = useState(false);
   const [isLoading, setIsLoading] = useState(true);
   const [todosError, setTodosError] = useState('');
   const [processingTodoIds, setProcessingTodoIds] = useState<number[]>([]);
   const [temporaryTodo, setTemporaryTodo] = useState<Todo | null>(null);
 
-  const loadTodos = async () => {
-    try {
-      const todosData = await getTodos(USER_ID);
-
-      setTodos(todosData);
-    } catch (error) {
-      setTodosError('Unable to load todos');
-    } finally {
-      setIsLoading(false);
-    }
-  };
-
   useEffect(() => {
+    const loadTodos = async () => {
+      try {
+        const todosData = await getTodos(USER_ID);
+
+        setTodos(todosData);
+      } catch (error) {
+        setTodosError('Unable to load todos');
+      } finally {
+        setIsLoading(false);
+      }
+    };
+
     loadTodos();
   }, []);
 
@@ -72,10 +71,10 @@ export const App: React.FC = () => {
       userId: USER_ID,
     });
 
+    setProcessingTodoIds(prev => [...prev, 0]);
+
     try {
       const createdTodo = await createTodo(title);
-
-      setTemporaryTodo(null);
 
       setTodos(prevTodos => [...prevTodos, createdTodo]);
     } catch (error) {
@@ -83,6 +82,9 @@ export const App: React.FC = () => {
       setTodosError('Unable to add a todo');
 
       throw new Error('Some error');
+    } finally {
+      setTemporaryTodo(null);
+      setProcessingTodoIds(prev => prev.filter(todoId => todoId !== 0));
     }
   };
 
@@ -96,22 +98,25 @@ export const App: React.FC = () => {
           onError={setTodosError}
         />
 
-        <TodoappList
-          todos={visibleTodos}
-          processingTodoIds={processingTodoIds}
-          handleDelete={handleDelete}
-          temporaryTodo={temporaryTodo}
-          setTodosError={setTodosError}
-        />
-
         {/* Hide the footer if there are no todos */}
-        {visibleTodos.length > 0 && (
-          <TodoappFooter
-            todos={visibleTodos}
-            filterBy={filterBy}
-            onFilterChange={setFilterBy}
-            handleDelete={handleDelete}
-          />
+        {todos.length > 0 && (
+          <>
+            <TodoappList
+              todos={visibleTodos}
+              processingTodoIds={processingTodoIds}
+              handleDelete={handleDelete}
+              temporaryTodo={temporaryTodo}
+              setTodosError={setTodosError}
+            />
+
+            <TodoappFooter
+              todos={todos}
+              filterBy={filterBy}
+              onFilterChange={setFilterBy}
+              handleDelete={handleDelete}
+            />
+          </>
+
         )}
       </div>
 
@@ -119,8 +124,6 @@ export const App: React.FC = () => {
       {!isLoading && (
         <TodoappError
           todosError={todosError}
-          onSetIsHidden={setIsHidden}
-          isHidden={isHidden}
         />
       )}
     </div>

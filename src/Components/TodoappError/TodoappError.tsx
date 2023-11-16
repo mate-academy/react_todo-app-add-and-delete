@@ -1,27 +1,25 @@
 /* eslint-disable jsx-a11y/control-has-associated-label */
-import React, { useEffect } from 'react';
+import React, { useEffect, useState } from 'react';
 import cn from 'classnames';
 
 type Props = {
   todosError: string,
-  onSetIsHidden: (value: boolean) => void,
-  isHidden: boolean,
 };
 
 export const TodoappError: React.FC<Props> = ({
   todosError,
-  onSetIsHidden,
-  isHidden,
 }) => {
+  const [isHidden, setIsHidden] = useState(false);
+
   useEffect(() => {
     const timer = setTimeout(() => {
-      onSetIsHidden(true);
+      setIsHidden(true);
     }, 3000);
 
     return () => {
       clearTimeout(timer);
     };
-  }, [onSetIsHidden]);
+  }, []);
 
   return (
     <div
@@ -33,7 +31,7 @@ export const TodoappError: React.FC<Props> = ({
         type="button"
         className="delete"
         onClick={() => {
-          onSetIsHidden(true);
+          setIsHidden(true);
         }}
       />
       {todosError}
