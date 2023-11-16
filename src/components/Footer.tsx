@@ -65,16 +65,15 @@ export const Footer: React.FC<Props> = ({
       </nav>
 
       {/* don't show this button if there are no completed todos */}
-      {activeTodos !== todos.length && (
-        <button
-          type="button"
-          className="todoapp__clear-completed"
-          data-cy="ClearCompletedButton"
-          onClick={handleClearTodo}
-        >
-          Clear completed
-        </button>
-      )}
+      <button
+        type="button"
+        className="todoapp__clear-completed"
+        data-cy="ClearCompletedButton"
+        onClick={handleClearTodo}
+        disabled={!!activeTodos}
+      >
+        Clear completed
+      </button>
     </footer>
   );
 };
