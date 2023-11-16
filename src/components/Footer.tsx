@@ -17,6 +17,7 @@ export const Footer: React.FC<Props> = ({
   setTodos,
 }) => {
   const activeTodos = todos.filter(todo => !todo.completed).length;
+  const completedTodos = todos.filter(todo => todo.completed).length;
 
   const handleClearTodo = () => {
     setTodos(todos.filter(todo => !todo.completed));
@@ -70,7 +71,7 @@ export const Footer: React.FC<Props> = ({
         className="todoapp__clear-completed"
         data-cy="ClearCompletedButton"
         onClick={handleClearTodo}
-        disabled={!!activeTodos}
+        disabled={!completedTodos}
       >
         Clear completed
       </button>

@@ -71,6 +71,7 @@ export const App: React.FC = () => {
 
         <List
           todos={filteredTodos}
+          setTodos={setTodos}
           handleDeleteTodo={handleDeleteTodo}
           tempTodo={tempTodo}
         />

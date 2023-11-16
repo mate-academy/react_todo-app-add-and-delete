@@ -3,15 +3,30 @@ import classNames from 'classnames';
 import { Todo } from '../types/Todo';
 
 type Props = {
+  todos: Todo[];
+  setTodos: (value: Todo[]) => void;
   todo: Todo;
   handleDeleteTodo: (value: number) => void;
 };
 
-export const TodoItem: React.FC<Props> = ({ todo, handleDeleteTodo }) => {
+export const TodoItem: React.FC<Props> = ({
+  todo,
+  handleDeleteTodo,
+  todos,
+  setTodos,
+}) => {
   const { id, completed, title } = todo;
   const [isCompleted, setIsCompleted] = useState(completed);
 
-  const inputChangeHandler = () => {
+  const handleCompletedTodo = (todoID: number) => {
+    const newTodo = todos.map(el => (
+      el.id === todoID
+        ? { ...el, completed: !el.completed }
+        : el
+    ));
+
+    setTodos(newTodo);
+
     setIsCompleted((complete) => !complete);
   };
 
@@ -28,7 +43,7 @@ export const TodoItem: React.FC<Props> = ({ todo, handleDeleteTodo }) => {
           type="checkbox"
           className="todo__status"
           checked={completed}
-          onChange={inputChangeHandler}
+          onChange={() => handleCompletedTodo(id)}
         />
       </label>
 
