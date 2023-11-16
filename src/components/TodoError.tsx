@@ -10,7 +10,11 @@ export const TodoError: React.FC<Props> = ({
   setErrorMessage,
 }) => {
   useEffect(() => {
-    const timer = setTimeout(() => setErrorMessage(''), 3000);
+    let timer: NodeJS.Timeout;
+
+    if (errorMessage) {
+      timer = setTimeout(() => setErrorMessage(''), 3000);
+    }
 
     return () => clearTimeout(timer);
   }, [setErrorMessage, errorMessage]);

@@ -11,6 +11,7 @@ type Props = {
 
 export const TodoRow: React.FC<Props> = ({ todo, isLoading, onTodoDelete }) => {
   // const [isEditing, setIsEditing] = useState(false);
+  // console.log(isLoading, todo.id);
 
   return (
     <div
@@ -28,22 +29,21 @@ export const TodoRow: React.FC<Props> = ({ todo, isLoading, onTodoDelete }) => {
         />
       </label>
 
-      {true ? (
-        <>
-          <span data-cy="TodoTitle" className="todo__title">
-            {todo.title}
-          </span>
-          <button
-            type="button"
-            className="todo__remove"
-            data-cy="TodoDelete"
-            onClick={onTodoDelete}
-          >
-            ×
-          </button>
-        </>
-      ) : (
-        <form>
+      <>
+        <span data-cy="TodoTitle" className="todo__title">
+          {todo.title}
+        </span>
+        <button
+          type="button"
+          className="todo__remove"
+          data-cy="TodoDelete"
+          onClick={onTodoDelete}
+        >
+          ×
+        </button>
+      </>
+
+      {/* <form>
           <input
             data-cy="TodoTitleField"
             type="text"
@@ -51,14 +51,13 @@ export const TodoRow: React.FC<Props> = ({ todo, isLoading, onTodoDelete }) => {
             placeholder="Empty todo will be deleted"
             value="Todo is being edited now"
           />
-        </form>
-      )}
+        </form> */}
 
       {/* overlay will cover the todo while it is being updated */}
       <div
         data-cy="TodoLoader"
         className={cn('modal', 'overlay', {
-          'is-active:': isLoading,
+          'is-active': isLoading,
         })}
       >
         <div className="modal-background has-background-white-ter" />

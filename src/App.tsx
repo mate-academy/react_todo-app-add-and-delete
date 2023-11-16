@@ -2,7 +2,7 @@
 import React, {
   useEffect,
   useMemo,
-  useRef,
+  // useRef,
   useState,
 } from 'react';
 
@@ -41,18 +41,14 @@ export const App: React.FC = () => {
       userId: USER_ID,
     });
 
-    try {
-      const createdTodo = await createTodo(title);
-
-      setTemporaryTodo(null);
-
-      setTodos(prevTodos => [...prevTodos, createdTodo]);
-    } catch (error) {
-      setTemporaryTodo(null);
-      setErrorMessage('Unable to add a todo');
-
-      throw new Error('Some error');
-    }
+    await createTodo(title)
+      .then(createdTodo => setTodos(prevTodos => [...prevTodos, createdTodo]))
+      .catch(() => {
+        setErrorMessage('Unable to add a todo');
+      })
+      .finally(() => {
+        setTemporaryTodo(null);
+      });
   };
 
   const handleDelete = async (id: number) => {
@@ -96,22 +92,6 @@ export const App: React.FC = () => {
       }
     })
   ), [filter, todos]);
-
-  const errorTimerId = useRef(0);
-
-  const showErrorMessage = () => {
-    if (errorTimerId.current) {
-      clearTimeout(errorTimerId.current);
-    }
-
-    errorTimerId.current = window.setTimeout(() => {
-      setErrorMessage('');
-    }, 3000);
-  };
-
-  useEffect(() => {
-    showErrorMessage();
-  }, [errorMessage]);
 
   useEffect(() => {
     loadTodos();

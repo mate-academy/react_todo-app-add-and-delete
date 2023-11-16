@@ -6,7 +6,7 @@ import { Todo } from '../types/Todo';
 type Props = {
   todos: Todo[],
   onError: (error: string) => void
-  onTodoAdd: (title: string) => void
+  onTodoAdd: (title: string) => Promise<void>
 };
 
 export const TodoHeader: React.FC<Props> = ({
@@ -27,21 +27,35 @@ export const TodoHeader: React.FC<Props> = ({
   }, [isSubmiting]);
 
   const handleSubmit = async (event: React.FormEvent) => {
-    setIsSubmiting(true);
     event.preventDefault();
+    setIsSubmiting(true);
+    onError('');
 
     if (!title.trim()) {
       onError('Title should not be empty');
       setIsSubmiting(false);
-      setTitle('');
 
       return;
     }
 
-    await onTodoAdd(title.trim());
+    await onTodoAdd(title.trim())
+      .then(() => setTitle(''))
+      .finally(() => {
+        setIsSubmiting(false);
+        setTimeout(() => {
+          inputRef.current?.focus();
+        }, 0);
+      });
 
-    setIsSubmiting(false);
-    setTitle('');
+    // try {
+    //   await onTodoAdd(title.trim());
+    //   setTitle('');
+    // } finally {
+    //   setIsSubmiting(false);
+    //   setTimeout(() => {
+    //     inputRef.current?.focus();
+    //   }, 0);
+    // }
   };
 
   return (
