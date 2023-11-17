@@ -15,7 +15,7 @@ type Props = {
 // eslint-disable-next-line @typescript-eslint/no-unused-vars, no-empty-pattern
 export const Header: React.FC<Props> = ({
   todos, onSubmit, userId, setErrorMessage, clearError, isLoading, todoTitle,
-  setTodoTitle = () => { },
+  setTodoTitle,
 }) => {
   const inputRef = useRef<HTMLInputElement | null>(null);
 
@@ -31,7 +31,7 @@ export const Header: React.FC<Props> = ({
 
   const handleSubmit = (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
-    if (todoTitle.trim() === '') {
+    if (!todoTitle.trim()) {
       setErrorMessage('Title should not be empty');
       clearError();
 
@@ -46,7 +46,7 @@ export const Header: React.FC<Props> = ({
   return (
     <header className="todoapp__header">
       {/* this buttons is active only if there are some active todos */}
-      { todos.length > 0 && (
+      { !!todos.length && (
         <button
           type="button"
           className="todoapp__toggle-all"

@@ -10,26 +10,26 @@ type TodoItemProps = {
 };
 
 export const TodoItem: React.FC<TodoItemProps> = ({
-  todo,
+  todo: { id, completed, title },
   deleteTodo,
   isDeleting,
   isLoading,
   onDoubleClick,
 }) => {
-  const showLoader = (todo.id === 0 && isLoading) || (isDeleting && isLoading);
+  const showLoader = (id === 0 && isLoading) || (isDeleting && isLoading);
 
   return (
     <div
       data-cy="Todo"
-      className={`todo ${todo.completed ? 'completed' : 'active'}`}
-      key={todo.id}
+      className={`todo ${completed ? 'completed' : 'active'}`}
+      key={id}
     >
       <label className="todo__status-label">
         <input
           data-cy="TodoStatus"
           type="checkbox"
           className="todo__status"
-          checked={todo.completed}
+          checked={completed}
         />
       </label>
 
@@ -38,14 +38,14 @@ export const TodoItem: React.FC<TodoItemProps> = ({
         className="todo__title"
         onDoubleClick={onDoubleClick}
       >
-        {todo.title}
+        {title}
       </span>
 
       <button
         type="button"
         className="todo__remove"
         data-cy="TodoDelete"
-        onClick={() => deleteTodo(todo.id)}
+        onClick={() => deleteTodo(id)}
       >
         ×
       </button>

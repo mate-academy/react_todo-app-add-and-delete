@@ -12,16 +12,16 @@ import { Status } from './types/Status';
 export const USER_ID = 11894;
 
 function getVisibleTodos(todos: Todo[], newStatus: Status) {
-  switch (newStatus) {
-    case Status.ACTIVE:
-      return todos.filter(todo => !todo.completed);
-
-    case Status.COMPLETED:
-      return todos.filter(todo => todo.completed);
-
-    default:
-      return todos;
-  }
+  return todos.filter(({ completed }) => {
+    switch (newStatus) {
+      case Status.ACTIVE:
+        return !completed;
+      case Status.COMPLETED:
+        return completed;
+      default:
+        return true;
+    }
+  });
 }
 
 export const App: React.FC = () => {
@@ -96,6 +96,7 @@ export const App: React.FC = () => {
   };
 
   const deleteTodo = useCallback((todoId: number) => {
+    setIsLoading(true);
     setDeletingTodoId(todoId);
     postService.deleteTodo(todoId)
       .then(() => {
@@ -106,6 +107,9 @@ export const App: React.FC = () => {
         setErrorMessage('Unable to delete a todo');
         clearError();
         setDeletingTodoId(null);
+      })
+      .finally(() => {
+        setIsLoading(false);
       });
   }, [setTodos, clearError]);
 
