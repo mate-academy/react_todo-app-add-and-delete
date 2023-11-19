@@ -1,5 +1,7 @@
 /* eslint-disable jsx-a11y/control-has-associated-label */
-import React, { useEffect, useMemo, useState } from 'react';
+import React, {
+  useEffect, useMemo, useState,
+} from 'react';
 import { UserWarning } from './UserWarning';
 import { Todo } from './types/Todo';
 import * as TodoServices from './api/todos';
@@ -21,6 +23,8 @@ export const App: React.FC = () => {
   const [todos, setTodos] = useState<Todo[]>([]);
   const [error, setError] = useState<ErrorType | null>(null);
   const [filterValue, setFilterValue] = useState<FilterValue>(FilterValue.All);
+  const [query, setQuery] = useState('');
+  const [tempTodo, setTempTodo] = useState<Todo | null>(null);
 
   useEffect(() => {
     TodoServices.getTodos(USER_ID)
@@ -30,10 +34,23 @@ export const App: React.FC = () => {
       });
   }, []);
 
-  const addTodo = ({ title, userId, completed }: Todo) => {
-    TodoServices.postTodos({ title, userId, completed })
-      .then(newTodo => {
-        setTodos(currentTodos => [...currentTodos, newTodo]);
+  const addTodo = () => {
+    setTempTodo({
+      userId: USER_ID, title: query.trim(), completed: false, id: 0,
+    });
+
+    TodoServices.postTodos(
+      { userId: USER_ID, title: query.trim(), completed: false },
+    )
+      .then(newItem => {
+        setTodos(currentTodos => [...currentTodos, newItem]);
+        setQuery('');
+      })
+      .catch(() => {
+        setError(ErrorType.AddTodoError);
+      })
+      .finally(() => {
+        setTempTodo(null);
       });
   };
 
@@ -45,9 +62,9 @@ export const App: React.FC = () => {
   const filteredTodos = useMemo(() => {
     switch (filterValue) {
       case FilterValue.Active:
-        return todos.filter(todo => todo.completed);
-      case FilterValue.Completed:
         return todos.filter(todo => !todo.completed);
+      case FilterValue.Completed:
+        return todos.filter(todo => todo.completed);
       default:
         return todos;
     }
@@ -62,8 +79,38 @@ export const App: React.FC = () => {
   }
 
   const clearCompleted = () => {
-    TodoServices.deleteTodos(USER_ID);
-    setTodos((currentTodos) => currentTodos.filter((todo) => todo.completed));
+    const todosCompleted = todos.filter(todo => todo.completed);
+
+    const todosIdCompleted = todosCompleted.map(todo => todo.id);
+
+    todosIdCompleted.forEach(item => {
+      TodoServices.deleteTodos(item)
+        .catch(() => {
+          setError(ErrorType.DeleteTodoError);
+        });
+    });
+
+    const newTodos = todos.filter(todo => !todo.completed);
+
+    setTodos(newTodos);
+  };
+
+  const handleToggleAll = async () => {
+    try {
+      const updatePromises = todos.map(async (todo) => {
+        const updatedTodo = { ...todo, completed: !todo.completed };
+
+        await TodoServices.updateTodos(updatedTodo);
+
+        return updatedTodo;
+      });
+
+      const updatedTodos = await Promise.all(updatePromises);
+
+      setTodos(updatedTodos);
+    } catch (errorR) {
+      setError(ErrorType.UpdateTodoError);
+    }
   };
 
   return (
@@ -75,9 +122,17 @@ export const App: React.FC = () => {
           onSubmit={addTodo}
           USER_ID={USER_ID}
           setError={setError}
+          tempTodo={tempTodo}
+          query={query}
+          setQuery={setQuery}
+          handleToogleAll={handleToggleAll}
         />
 
-        <TodoList todos={filteredTodos} deletePost={deletePost} />
+        <TodoList
+          todos={filteredTodos}
+          deletePost={deletePost}
+          setTodos={setTodos}
+        />
 
         {/* Hide the footer if there are no todos */}
         <TodoFooter

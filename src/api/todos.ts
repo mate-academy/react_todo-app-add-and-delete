@@ -5,9 +5,6 @@ export const getTodos = (userId: number) => {
   return client.get<Todo[]>(`/todos?userId=${userId}`);
 };
 
-// export const deleteTodos = (todoId: number) => {
-//   return client.delete(`/todos/${todoId}`);
-// };
 export const deleteTodos = async (todoId: number) => {
   await client.delete(`/todos/${todoId}`);
 
@@ -18,4 +15,13 @@ export const postTodos = ({ title, userId, completed }: Omit<Todo, 'id'>) => {
   return client.post<Todo>('/todos', { title, userId, completed });
 };
 
-// Add more methods here
+export const updateTodos = (
+  {
+    id,
+    title,
+    userId,
+    completed,
+  }: Todo,
+) => {
+  return client.patch<Todo>(`/todos/${id}`, { title, userId, completed });
+};

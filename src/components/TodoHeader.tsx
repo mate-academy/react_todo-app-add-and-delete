@@ -1,19 +1,31 @@
 import React, {
-  FormEvent, useEffect, useRef, useState,
+  FormEvent, useEffect, useRef,
 } from 'react';
 import { Todo } from '../types/Todo';
 import { ErrorType } from '../types/ErrorType';
+// import * as TodoServices from '../api/todos';
 
 type Props = {
   onSubmit: (todo: Todo) => void;
   USER_ID: number;
   setError: React.Dispatch<React.SetStateAction<ErrorType | null>>;
+  tempTodo: Todo | null;
+  query: string;
+  setQuery: (query: string) => void;
+  handleToogleAll: () => void;
 };
 
 export const TodoHeader: React.FC<Props> = (
-  { onSubmit, USER_ID, setError },
+  {
+    onSubmit,
+    USER_ID,
+    setError,
+    tempTodo,
+    query,
+    setQuery,
+    handleToogleAll,
+  },
 ) => {
-  const [query, setQuery] = useState('');
   const inputRef = useRef<HTMLInputElement | null>(null);
 
   useEffect(() => {
@@ -29,16 +41,17 @@ export const TodoHeader: React.FC<Props> = (
   const handleFormSubmit = (event: FormEvent<HTMLFormElement>) => {
     event.preventDefault();
 
-    const newTodo: Todo = {
-      id: 0,
-      userId: USER_ID,
-      title: query,
-      completed: false,
-    };
-
     if (query.trim()) {
-      onSubmit(newTodo);
+      event.preventDefault();
 
+      onSubmit(
+        {
+          userId: USER_ID,
+          title: query.trim(),
+          completed: false,
+          id: 0,
+        },
+      );
       setQuery('');
     } else {
       setError(ErrorType.EmptyTitle);
@@ -53,6 +66,7 @@ export const TodoHeader: React.FC<Props> = (
         className="todoapp__toggle-all active"
         data-cy="ToggleAllButton"
         aria-label="Toggle All"
+        onClick={handleToogleAll}
       />
 
       {/* Add a todo on form submit */}
@@ -65,6 +79,7 @@ export const TodoHeader: React.FC<Props> = (
           value={query}
           onChange={handleQueryChange}
           ref={inputRef}
+          disabled={tempTodo !== null}
         />
       </form>
     </header>

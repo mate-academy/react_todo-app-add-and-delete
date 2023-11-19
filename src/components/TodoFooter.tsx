@@ -21,7 +21,7 @@ export const TodoFooter: React.FC<Props> = ({
   setTodos,
   setError,
 }) => {
-  const completedTodos = todos.filter((todo) => !todo.completed);
+  const completedTodos = todos.filter((todo) => todo.completed);
   const [clearingCompleted, setClearingCompleted] = useState(false);
 
   const handleClearCompleted = async () => {
@@ -31,7 +31,7 @@ export const TodoFooter: React.FC<Props> = ({
 
       if (deletedTodoId !== undefined) {
         setTodos((currentTodos: Todo[]) => currentTodos
-          .filter((todo) => todo.id !== deletedTodoId));
+          .filter((todo) => todo.id === deletedTodoId));
       }
     } catch (error) {
       setError(ErrorType.DeleteTodoError);
