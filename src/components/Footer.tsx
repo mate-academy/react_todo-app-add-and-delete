@@ -1,18 +1,37 @@
 import React from 'react';
 import cn from 'classnames';
 import { Filter } from '../types/Filter';
+import { Todo } from '../types/Todo';
 
 interface Props {
+  todos: Todo[],
+  setTodos: (todos: Todo[]) => void,
   filter: Filter,
   setFilter: (value: Filter) => void,
   todoCount: number,
+  deleteTodo: (todoId: number) => void,
 }
 
 export const Footer: React.FC<Props> = ({
+  todos,
   filter,
+  setTodos,
   setFilter,
   todoCount,
+  deleteTodo,
 }) => {
+  const hasCompleted = todos.some(todo => todo.completed === true);
+
+  const handleClearCompleted = () => {
+    setTodos(todos.filter(todo => {
+      if (todo.completed) {
+        deleteTodo(todo.id)
+      };
+
+      return;
+    }));
+  }
+
   return (
     <footer className="todoapp__footer" data-cy="Footer">
       <span className="todo-count" data-cy="TodosCounter">
@@ -58,9 +77,12 @@ export const Footer: React.FC<Props> = ({
         type="button"
         className="todoapp__clear-completed"
         data-cy="ClearCompletedButton"
+        disabled={!hasCompleted}
+        onClick={handleClearCompleted}
       >
         Clear completed
       </button>
+
     </footer>
   );
 };

@@ -1,25 +1,30 @@
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useRef } from "react";
 import { Error } from "../types/Error";
-import { Todo } from "../types/Todo";
 
 /* eslint-disable jsx-a11y/control-has-associated-label */
 interface Props {
+  title: string,
+  isDisable: boolean,
+  setTitle: (value: string) => void,
+  setErrorMessage: (message: Error | '') => void,
   addTodo: (v: string) => void,
-  setErrorMessage: (message: Error | '') => void
 }
 
 export const Header: React.FC<Props> = ({
-  addTodo,
+  title,
+  isDisable,
+  setTitle,
   setErrorMessage,
+  addTodo,
 }) => {
-  const [title, setTitle] = useState('');
+
   const field = useRef<HTMLInputElement>(null);
 
   useEffect(() => {
     if (field.current) {
       field.current.focus();
     }
-  }, [])
+  }, [isDisable]);
 
   const handleSubmitTodo = (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
@@ -35,7 +40,6 @@ export const Header: React.FC<Props> = ({
     }
 
     addTodo(title);
-    setTitle('')
   }
 
   return (
@@ -57,6 +61,7 @@ export const Header: React.FC<Props> = ({
           ref={field}
           value={title}
           onChange={(e) => setTitle(e.target.value)}
+          disabled={isDisable}
         />
       </form>
     </header>

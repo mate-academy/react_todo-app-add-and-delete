@@ -4,11 +4,13 @@ import { TodoItem } from './TodoItem';
 
 interface Props {
   todos: Todo[],
+  tempTodo: Todo | null,
   onDelete: (id: number) => void,
 }
 
 export const TodoList: React.FC<Props> = React.memo(({
   todos,
+  tempTodo,
   onDelete,
 }) => {
   return (
@@ -21,6 +23,14 @@ export const TodoList: React.FC<Props> = React.memo(({
           onDelete={onDelete}
         />
       ))}
+
+      {tempTodo && (
+        <TodoItem
+          key={tempTodo.id}
+          todo={tempTodo}
+          onDelete={onDelete}
+        />
+      )}
     </section>
   );
 });

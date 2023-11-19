@@ -11,16 +11,63 @@ import { Error } from './types/Error';
 const USER_ID = 11909;
 
 export const App: React.FC = () => {
+  const [title, setTitle] = useState('');
   const [todos, setTodos] = useState<Todo[]>([]);
   const [tempTodo, setTempTodo] = useState<Todo | null>(null);
   const [errorMessage, setErrorMessage] = useState('');
   const [filter, setFilter] = useState<Filter>(Filter.All);
+  const [isDisable, setIsDisable] = useState(false);
 
   useEffect(() => {
     todoService.getTodos(USER_ID)
       .then(setTodos)
       .catch(() => setErrorMessage(Error.LoadTodos));
   }, []);
+
+  const addTodo = (title: string) => {
+    const newTodo = {
+      userId: USER_ID,
+      title: title.trim(),
+      completed: false,
+    };
+
+    setErrorMessage('');
+    setIsDisable(true);
+    setTempTodo({ id: 0, ...newTodo });
+
+    todoService.createTodo(newTodo)
+      .then(newPost => {
+        setTodos(currentPosts => [...currentPosts, newPost]);
+        setTitle('');
+      })
+      .catch((error) => {
+        setErrorMessage(Error.Add);
+        setTimeout(() => {
+          setErrorMessage('');
+        }, 3000);
+        throw error;
+      })
+      .finally(() => {
+        setTempTodo(null);
+        setIsDisable(false);
+      })
+  }
+
+  const deleteTodo = (todoId: number) => {
+    setTodos(currentTodos => currentTodos.filter(todo => todo.id !== todoId));
+
+    todoService.deleteTodo(todoId)
+      .then(() => {
+
+      })
+      .catch(() => {
+        setTodos(todos)
+        setErrorMessage(Error.Delete);
+        setTimeout(() => {
+          setErrorMessage('')
+        }, 3000);
+      })
+  }
 
   const filterTodos = (query: string) => {
     switch (query) {
@@ -36,43 +83,6 @@ export const App: React.FC = () => {
     }
   };
 
-  const addTodo = (title: string) => {
-    const newTodo = {
-      userId: USER_ID,
-      title: title.trim(),
-      completed: false,
-    }
-
-    setTempTodo({ id: 0, ...newTodo })
-
-    todoService.createTodo(newTodo)
-      .then(newPost => {
-        setTodos(currentPosts => [...currentPosts, newPost])
-      })
-      .catch(() => {
-        setErrorMessage(Error.Add);
-        setTimeout(() => {
-          setErrorMessage('');
-        }, 3000);
-      })
-      .finally(() => {
-        setTempTodo(null);
-      })
-  }
-
-  const deleteTodo = (todoId: number) => {
-    setTodos(currentTodos => currentTodos.filter(todo => todo.id !== todoId));
-
-    todoService.deleteTodo(todoId)
-      .catch(() => {
-        setTodos(todos)
-        setErrorMessage(Error.Delete);
-        setTimeout(() => {
-          setErrorMessage('')
-        }, 3000);
-      })
-  }
-
   const todoCount = todos.filter(todo => todo.completed === false).length;
   const visibleTodos = filterTodos(filter);
 
@@ -82,20 +92,27 @@ export const App: React.FC = () => {
 
       <div className="todoapp__content">
         <Header
+          title={title}
+          setTitle={setTitle}
           addTodo={addTodo}
+          isDisable={isDisable}
           setErrorMessage={setErrorMessage}
         />
 
         <TodoList
           todos={visibleTodos}
+          tempTodo={tempTodo}
           onDelete={deleteTodo}
         />
 
         {todos.length > 0 && (
           <Footer
+            todos={todos}
+            setTodos={setTodos}
             filter={filter}
             setFilter={setFilter}
             todoCount={todoCount}
+            deleteTodo={deleteTodo}
           />
         )}
       </div>
