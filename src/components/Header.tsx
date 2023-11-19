@@ -1,6 +1,8 @@
 /* eslint-disable jsx-a11y/control-has-associated-label */
 import cn from 'classnames';
-import { useContext, useState } from 'react';
+import {
+  useContext, useEffect, useRef, useState,
+} from 'react';
 import { TodosContext } from './TodosContext';
 import * as todoService from '../api/todos';
 
@@ -48,6 +50,12 @@ export const Header: React.FC = () => {
     setTodos(updatedTodos);
   };
 
+  const inputRef = useRef<HTMLInputElement>(null);
+
+  useEffect(() => {
+    inputRef.current?.focus();
+  }, []);
+
   return (
     <header className="todoapp__header">
       <form onSubmit={(event) => event.preventDefault()}>
@@ -71,6 +79,7 @@ export const Header: React.FC = () => {
           placeholder="What needs to be done?"
           onChange={handleChange}
           onKeyPress={handlePressEnter}
+          ref={inputRef}
         />
       </form>
     </header>

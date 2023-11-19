@@ -34,8 +34,13 @@ export const TodoItem: React.FC<Props> = ({
 
   const updateTitle = (newTitle: string) => {
     if (!newTitle) {
-      deleteTodo(todo.id);
-      setEditTodosId(0);
+      const newTodos = todos.filter(currentTodo => todo.id !== currentTodo.id);
+
+      deleteTodo(todo.id)
+        .then(() => {
+          setTodos(newTodos);
+          setEditTodosId(0);
+        });
     } else {
       const newTodo: Todo = {
         id: todo.id,
@@ -80,11 +85,13 @@ export const TodoItem: React.FC<Props> = ({
     = (event: React.KeyboardEvent<HTMLInputElement>) => {
       if (event.key === 'Enter') {
         updateTitle(editValue.trim());
+        setEditValue(editValue.trim());
       }
     };
 
   const handleOnblurEdit = () => {
     updateTitle(editValue.trim());
+    setEditValue(editValue.trim());
   };
 
   const handleChangeEditValue
