@@ -1,9 +1,9 @@
 import cn from 'classnames';
+import React from 'react';
 import { FilterBy } from '../types/FilterBy';
 import { deleteTodos } from '../api/todos';
 import { Errors } from '../types/Errors';
 import { Props } from '../types/Props';
-import React from 'react';
 
 export const Footer: React.FC<Props> = ({
   todosCounter,
