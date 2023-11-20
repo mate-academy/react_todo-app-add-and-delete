@@ -27,7 +27,6 @@ export const TodoFooter: React.FC = () => {
         {activeTodoCountMsg}
       </span>
 
-      {/* Active filter should have a 'selected' class */}
       <nav className="filter" data-cy="Filter">
         <a
           href="#/"
