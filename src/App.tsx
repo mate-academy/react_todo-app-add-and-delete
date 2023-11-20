@@ -9,8 +9,6 @@ import { TodoList } from './components/TodoList';
 import { ErrorNotification } from './components/ErrorNotification';
 
 export const App: React.FC = () => {
-  // const { todos } = useContext(TodoContext);
-
   if (!USER_ID) {
     return <UserWarning />;
   }

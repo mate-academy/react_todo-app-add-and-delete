@@ -75,10 +75,12 @@ export const TodoProvider: React.FC<Props> = ({ children }) => {
         setError(ErrorType.AddTodoError);
         throw err;
       })
-      .finally(() => setTimeout(() => {
+      .finally(() => {
         setTempTodo(null);
-        setError(ErrorType.None);
-      }, 3000));
+        setTimeout(() => {
+          setError(ErrorType.None);
+        }, 3000);
+      });
   };
 
   const value = {
