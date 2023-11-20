@@ -9,9 +9,7 @@ export const TodoFooter: React.FC = () => {
   } = useContext(TodoContext);
 
   const activeTodoCount = todos.filter(todo => !todo.completed).length;
-  const activeTodoCountMsg = activeTodoCount === 1
-    ? ('1 item left')
-    : (`${activeTodoCount} items left`);
+  const activeTodoCountMsg = `${activeTodoCount} items left`;
 
   const hasCompletedTodos = todos.some(todo => todo.completed);
 
