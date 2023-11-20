@@ -39,13 +39,9 @@ export const TodoProvider: React.FC<Props> = ({ children }) => {
     todosService.getTodos(USER_ID)
       .then(setTodos)
       .catch(() => setError(ErrorType.LoadError))
-      .finally(() => {
-        const timer = setTimeout(() => {
-          setError(ErrorType.None);
-        }, 3000);
-
-        return () => clearTimeout(timer);
-      });
+      .finally(() => setTimeout(() => {
+        setError(ErrorType.None);
+      }, 3000));
   }, []);
 
   const deleteTodo = (todoId: number) => {
@@ -57,13 +53,9 @@ export const TodoProvider: React.FC<Props> = ({ children }) => {
         setTodos(todos);
         setError(ErrorType.DeleteTodoError);
       })
-      .finally(() => {
-        const timer = setTimeout(() => {
-          setError(ErrorType.None);
-        }, 3000);
-
-        return () => clearTimeout(timer);
-      });
+      .finally(() => setTimeout(() => {
+        setError(ErrorType.None);
+      }, 3000));
   };
 
   const addTodo = ({ userId, title, completed }: Omit<Todo, 'id'>) => {
@@ -83,14 +75,10 @@ export const TodoProvider: React.FC<Props> = ({ children }) => {
         setError(ErrorType.AddTodoError);
         throw err;
       })
-      .finally(() => {
+      .finally(() => setTimeout(() => {
         setTempTodo(null);
-        const timer = setTimeout(() => {
-          setError(ErrorType.None);
-        }, 3000);
-
-        return () => clearTimeout(timer);
-      });
+        setError(ErrorType.None);
+      }, 3000));
   };
 
   const value = {
