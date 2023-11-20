@@ -1,5 +1,5 @@
-import { useEffect, useRef } from "react";
-import { Error } from "../types/Error";
+import { useEffect, useRef } from 'react';
+import { Error } from '../types/Error';
 
 /* eslint-disable jsx-a11y/control-has-associated-label */
 interface Props {
@@ -17,7 +17,6 @@ export const Header: React.FC<Props> = ({
   setErrorMessage,
   addTodo,
 }) => {
-
   const field = useRef<HTMLInputElement>(null);
 
   useEffect(() => {
@@ -33,14 +32,14 @@ export const Header: React.FC<Props> = ({
       setErrorMessage(Error.TitleEmpty);
 
       setTimeout(() => {
-        setErrorMessage('')
+        setErrorMessage('');
       }, 3000);
 
       return;
     }
 
     addTodo(title);
-  }
+  };
 
   return (
     <header className="todoapp__header">

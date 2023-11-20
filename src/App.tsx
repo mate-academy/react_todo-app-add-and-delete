@@ -24,6 +24,7 @@ export const App: React.FC = () => {
       .catch(() => setErrorMessage(Error.LoadTodos));
   }, []);
 
+  // eslint-disable-next-line @typescript-eslint/no-shadow
   const addTodo = (title: string) => {
     const newTodo = {
       userId: USER_ID,
@@ -50,8 +51,8 @@ export const App: React.FC = () => {
       .finally(() => {
         setTempTodo(null);
         setIsDisable(false);
-      })
-  }
+      });
+  };
 
   const deleteTodo = (todoId: number) => {
     setTodos(currentTodos => currentTodos.filter(todo => todo.id !== todoId));
@@ -61,13 +62,13 @@ export const App: React.FC = () => {
 
       })
       .catch(() => {
-        setTodos(todos)
+        setTodos(todos);
         setErrorMessage(Error.Delete);
         setTimeout(() => {
-          setErrorMessage('')
+          setErrorMessage('');
         }, 3000);
-      })
-  }
+      });
+  };
 
   const filterTodos = (query: string) => {
     switch (query) {
@@ -83,7 +84,6 @@ export const App: React.FC = () => {
     }
   };
 
-  const todoCount = todos.filter(todo => todo.completed === false).length;
   const visibleTodos = filterTodos(filter);
 
   return (
@@ -111,7 +111,6 @@ export const App: React.FC = () => {
             setTodos={setTodos}
             filter={filter}
             setFilter={setFilter}
-            todoCount={todoCount}
             deleteTodo={deleteTodo}
           />
         )}
