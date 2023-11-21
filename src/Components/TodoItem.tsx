@@ -157,7 +157,10 @@ export const TodoItem: React.FC<T> = ({
           className={classNames('modal overlay',
             {
               'is-active':
-                isLoading || isThisLoading || tempTodo?.id === myTodo.id,
+                isLoading
+                || isThisLoading
+                || tempTodo?.id === myTodo.id
+                || myTodo.isLoading,
             })}
         >
           <div className="modal-background has-background-white-ter" />

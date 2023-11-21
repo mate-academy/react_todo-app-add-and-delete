@@ -30,18 +30,26 @@ export const TodosFooter: React.FC<T> = (
   };
 
   const handleAllDelete = async () => {
-    todos.filter(todo => !todo.completed).forEach(todo => {
-      setTempTodo(todo);
-    }); // - Нерозумію чому це не працює
+    const newTodos = todos.map(todo => {
+      if (todo.completed) {
+        return { ...todo, isLoading: true };
+      }
+
+      return todo;
+    });
+
+    setTodos(newTodos);
 
     try {
-      setTodos(todos.filter(todo => !todo.completed));
+      setTimeout(() => {
+        todos
+          .filter(todo => todo.completed)
+          .forEach(todo => {
+            deleted(todo);
+          });
 
-      todos
-        .filter(todo => !todo.completed)
-        .forEach(todo => {
-          deleted(todo);
-        });
+        setTodos(todos.filter(todo => !todo.completed));
+      }, 1000);
     } catch (error) {
       setIsError(true);
       setTimeout(() => {
@@ -50,7 +58,7 @@ export const TodosFooter: React.FC<T> = (
     } finally {
       setTimeout(() => {
         setTempTodo(null);
-      }, 1000);
+      }, 3000);
     }
   };
 
@@ -97,7 +105,6 @@ export const TodosFooter: React.FC<T> = (
           { hidden: filterTodos(todos, 'completed').length === 0 })}
         data-cy="ClearCompletedButton"
         onClick={handleAllDelete}
-      // onClick={() => setTodos(todos.filter(todo => !todo.completed))}
       >
         Clear completed
       </button>

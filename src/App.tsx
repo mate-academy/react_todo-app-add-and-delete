@@ -20,7 +20,7 @@ export const App: React.FC = () => {
 
   const LOADING = 'loading';
   const ADD = 'add';
-  // const DELETE = 'delete';
+  // const DELETE = 'delete'; це знадобиться у слідуючій частині цього завдання
   // const CHANGE = 'change';
   const EMPTY = 'empty';
 
@@ -36,7 +36,6 @@ export const App: React.FC = () => {
       } catch (error) {
         setIsError(true);
         setTypeError(LOADING);
-        // console.log('Error fetching todos:', error);
 
         setTimeout(() => {
           setIsError(false);
@@ -74,7 +73,7 @@ export const App: React.FC = () => {
         throw new Error('empty');
       }
 
-      const response = await client.post<Todo>('/todos?userId=11910', obj); // tempTodo
+      const response = await client.post<Todo>('/todos?userId=11910', obj);
 
       setTodos((prevTodos) => [
         ...prevTodos,
@@ -95,7 +94,6 @@ export const App: React.FC = () => {
     } finally {
       setTimeout(() => {
         setTempTodo(null);
-        // setIsLoading(false)
       }, 1000);
     }
 
