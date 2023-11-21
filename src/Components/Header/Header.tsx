@@ -1,21 +1,65 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { Todo } from '../../types/Todo';
-import { getTodosByStatus } from '../../api/todos';
+import { postTodo } from '../../api/todos';
 import { Errors } from '../../types/Errors';
 import { USER_ID } from '../../utils/userId';
 
 type Props = {
   setError: React.Dispatch<React.SetStateAction<Errors | null>>,
+  setTodos: React.Dispatch<React.SetStateAction<Todo[]>>,
+  setTempTodo: React.Dispatch<React.SetStateAction<Todo | null>>,
+  todos: Todo[],
 };
 
-export const Header: React.FC<Props> = ({ setError }) => {
-  const [active, setActive] = useState<Todo[]>([]);
+export const Header: React.FC<Props> = ({
+  setError,
+  setTodos,
+  setTempTodo,
+  todos,
+}) => {
+  const newTodoInput = useRef<HTMLInputElement>(null);
+  const [newTodoTitle, setNewTodoTitle] = useState('');
+  const [inputDisabled, setInputDisabled] = useState(false);
+  const active = todos.filter(todo => !todo.completed);
 
   useEffect(() => {
-    getTodosByStatus(USER_ID, false)
-      .then(setActive)
-      .catch(() => setError(Errors.LoadError));
-  }, [setError]);
+    if (newTodoInput.current) {
+      newTodoInput.current.focus();
+    }
+  });
+
+  // eslint-disable-next-line consistent-return
+  const handleSubmit = (event: React.FormEvent) => {
+    event.preventDefault();
+    setInputDisabled(true);
+
+    if (!newTodoTitle.trim()) {
+      setNewTodoTitle('');
+      setInputDisabled(false);
+
+      return setError(Errors.TitleError);
+    }
+
+    const newTempTodo: Todo = {
+      id: 0,
+      userId: USER_ID,
+      title: newTodoTitle,
+      completed: false,
+    };
+
+    setTempTodo(newTempTodo);
+
+    postTodo(USER_ID, newTempTodo)
+      .then(response => {
+        setTodos((prevTodos: Todo[]) => [...prevTodos, response] as Todo[]);
+        setNewTodoTitle('');
+      })
+      .catch(() => setError(Errors.AddError))
+      .finally(() => {
+        setTempTodo(null);
+        setInputDisabled(false);
+      });
+  };
 
   return (
     <header className="todoapp__header">
@@ -28,13 +72,16 @@ export const Header: React.FC<Props> = ({ setError }) => {
         />
       )}
 
-      {/* Add a todo on form submit */}
-      <form>
+      <form onSubmit={handleSubmit}>
         <input
           data-cy="NewTodoField"
           type="text"
           className="todoapp__new-todo"
           placeholder="What needs to be done?"
+          ref={newTodoInput}
+          value={newTodoTitle}
+          onChange={(event) => setNewTodoTitle(event.target.value)}
+          disabled={inputDisabled}
         />
       </form>
     </header>

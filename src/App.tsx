@@ -1,5 +1,5 @@
 /* eslint-disable jsx-a11y/control-has-associated-label */
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useMemo, useState } from 'react';
 import { UserWarning } from './Components/UserWarning/UserWarning';
 import { TodoList } from './Components/TodoList';
 import { Footer } from './Components/Footer';
@@ -10,13 +10,15 @@ import { Errors } from './types/Errors';
 import { Status } from './types/Status';
 import { Header } from './Components/Header';
 import { USER_ID } from './utils/userId';
+import { TodoItem } from './Components/TodoItem';
 
 export const App: React.FC = () => {
   const [todos, setTodos] = useState<Todo[]>([]);
   const [editedTodo] = useState<Todo | null>(null);
-  const [updateProcessing] = useState(false);
   const [error, setError] = useState<Errors | null>(null);
   const [filterStatus, setFilterStatus] = useState<Status>(Status.All);
+  const [tempTodo, setTempTodo] = useState<Todo | null>(null);
+  const [deletionId, setDeletionId] = useState<number | null>(null);
 
   useEffect(() => {
     getTodos(USER_ID)
@@ -24,43 +26,60 @@ export const App: React.FC = () => {
       .catch(() => setError(Errors.LoadError));
   }, []);
 
-  const getVisibleTodos = () => {
+  const visibleTodos = useMemo(() => todos.filter(({ completed }) => {
     switch (filterStatus) {
-      case Status.All:
-        return [...todos];
-
       case Status.Active:
-        return [...todos.filter(todo => !todo.completed)];
+        return !completed;
 
       case Status.Completed:
-        return [...todos.filter(todo => todo.completed)];
+        return completed;
 
       default:
-        return [];
+        return true;
     }
-  };
-
-  const visibleTodos = getVisibleTodos();
+  }), [filterStatus, todos]);
 
   return USER_ID ? (
     <div className="todoapp">
       <h1 className="todoapp__title">todos</h1>
 
       <div className="todoapp__content">
-        <Header setError={setError} />
+        <Header
+          setError={setError}
+          setTodos={setTodos}
+          setTempTodo={setTempTodo}
+          todos={todos}
+        />
 
         {todos.length > 0 && (
           <>
             <TodoList
               todos={visibleTodos}
               edited={editedTodo}
-              updateProcessing={updateProcessing}
+              setTodos={setTodos}
+              setError={setError}
+              deletionId={deletionId}
+              setDeletionId={setDeletionId}
             />
+
+            {tempTodo && (
+              <TodoItem
+                key={tempTodo.id}
+                todo={tempTodo}
+                edited={editedTodo}
+                isTemp
+                todos={todos}
+                setError={setError}
+              />
+            )}
 
             <Footer
               filterStatus={filterStatus}
               setFilterStatus={setFilterStatus}
               setError={setError}
+              todos={todos}
+              setTodos={setTodos}
+              setDeletionId={setDeletionId}
             />
           </>
         )}

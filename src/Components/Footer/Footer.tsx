@@ -1,34 +1,56 @@
-import { useEffect, useState } from 'react';
-import { getTodosByStatus } from '../../api/todos';
+import { deleteTodo } from '../../api/todos';
 import { Errors } from '../../types/Errors';
 import { Status } from '../../types/Status';
 import { Todo } from '../../types/Todo';
 import { TodosFilter } from '../TodosFilter';
-import { USER_ID } from '../../utils/userId';
 
 type Props = {
   filterStatus: Status,
   setFilterStatus: React.Dispatch<React.SetStateAction<Status>>,
-  setError: React.Dispatch<React.SetStateAction<Errors | null>>
+  setError: React.Dispatch<React.SetStateAction<Errors | null>>,
+  todos: Todo[],
+  setTodos: React.Dispatch<React.SetStateAction<Todo[]>>,
+  setDeletionId: React.Dispatch<React.SetStateAction<number | null>>,
 };
 
 export const Footer: React.FC<Props> = ({
   filterStatus,
   setFilterStatus,
   setError,
+  todos,
+  setTodos,
+  setDeletionId,
 }) => {
-  const [completed, setCompleted] = useState<Todo[]>([]);
-  const [active, setActive] = useState<Todo[]>([]);
+  const completed = todos.filter(todo => todo.completed);
+  const active = todos.filter(todo => !todo.completed);
 
-  useEffect(() => {
-    getTodosByStatus(USER_ID, false)
-      .then(setActive)
-      .catch(() => setError(Errors.LoadError));
+  const handleDelete = () => {
+    const completedTodoIds = todos.filter(todo => todo.completed)
+      .map(todo => todo.id);
 
-    getTodosByStatus(USER_ID, true)
-      .then(setCompleted)
-      .catch(() => setError(Errors.LoadError));
-  }, [setError]);
+    Promise.all(
+      completedTodoIds.map(id => deleteTodo(id)
+        .then(() => {
+          setDeletionId(id);
+
+          return id;
+        })
+        .catch(() => {
+          setError(Errors.DeleteError);
+
+          return null;
+        })),
+    )
+      .then(deletedIds => {
+        const remainingTodos = todos.filter(
+          todo => !deletedIds.includes(todo.id),
+        );
+
+        setTodos(remainingTodos);
+      })
+      .catch(() => setError(Errors.DeleteError))
+      .finally(() => setDeletionId(null));
+  };
 
   return (
     <footer className="todoapp__footer" data-cy="Footer">
@@ -49,6 +71,7 @@ export const Footer: React.FC<Props> = ({
           type="button"
           className="todoapp__clear-completed"
           data-cy="ClearCompletedButton"
+          onClick={handleDelete}
         >
           Clear completed
         </button>
