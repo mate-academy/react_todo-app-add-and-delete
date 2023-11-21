@@ -1,14 +1,11 @@
 import cn from 'classnames';
-import { useState } from 'react';
-import { Errors } from '../../types/Errors';
+import { useContext, useState } from 'react';
+import { TodosContext } from '../GlobalStateProvier';
 
-type Props = {
-  error: Errors | null,
-  setError: React.Dispatch<React.SetStateAction<Errors | null>>,
-};
-
-export const ErrorMessage: React.FC<Props> = ({ error, setError }) => {
+export const ErrorMessage: React.FC = () => {
+  const { error, setError } = useContext(TodosContext);
   const [hidden, setHidden] = useState(false);
+
   const handleClose = () => {
     setHidden(true);
     setError(null);

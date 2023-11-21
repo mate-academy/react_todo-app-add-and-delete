@@ -1,26 +1,13 @@
+import { useContext } from 'react';
 import { deleteTodo } from '../../api/todos';
 import { Errors } from '../../types/Errors';
-import { Status } from '../../types/Status';
-import { Todo } from '../../types/Todo';
 import { TodosFilter } from '../TodosFilter';
+import { TodosContext } from '../GlobalStateProvier';
 
-type Props = {
-  filterStatus: Status,
-  setFilterStatus: React.Dispatch<React.SetStateAction<Status>>,
-  setError: React.Dispatch<React.SetStateAction<Errors | null>>,
-  todos: Todo[],
-  setTodos: React.Dispatch<React.SetStateAction<Todo[]>>,
-  setDeletionId: React.Dispatch<React.SetStateAction<number | null>>,
-};
-
-export const Footer: React.FC<Props> = ({
-  filterStatus,
-  setFilterStatus,
-  setError,
-  todos,
-  setTodos,
-  setDeletionId,
-}) => {
+export const Footer: React.FC = () => {
+  const {
+    setError, todos, setTodos, setDeletionId,
+  } = useContext(TodosContext);
   const completed = todos.filter(todo => todo.completed);
   const active = todos.filter(todo => !todo.completed);
 
@@ -60,11 +47,7 @@ export const Footer: React.FC<Props> = ({
         items left
       </span>
 
-      <TodosFilter
-        setFilterStatus={setFilterStatus}
-        filterStatus={filterStatus}
-        setError={setError}
-      />
+      <TodosFilter />
 
       {completed.length > 0 && (
         <button

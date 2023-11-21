@@ -1,31 +1,24 @@
 import './style.scss';
 import cn from 'classnames';
+import { useContext } from 'react';
 import { Todo } from '../../types/Todo';
 import { deleteTodo } from '../../api/todos';
 import { Errors } from '../../types/Errors';
+import { TodosContext } from '../GlobalStateProvier';
 
 type Props = {
   todo: Todo,
-  edited: Todo | null,
   isTemp: boolean,
-  setTodos?: React.Dispatch<React.SetStateAction<Todo[]>>,
-  todos: Todo[],
-  setError: React.Dispatch<React.SetStateAction<Errors | null>>,
-  deletionId?: number | null,
-  setDeletionId?: React.Dispatch<React.SetStateAction<number | null>>,
 };
 
 export const TodoItem: React.FC<Props> = ({
   todo,
-  edited,
   isTemp,
-  setTodos = () => {},
-  todos,
-  setError,
-  deletionId,
-  setDeletionId = () => {},
 }) => {
-  const isCurrentEdited = edited?.id === todo.id;
+  const {
+    editedTodo, setTodos, todos, setError, deletionId, setDeletionId,
+  } = useContext(TodosContext);
+  const isCurrentEdited = editedTodo?.id === todo.id;
 
   const handleDelete = (id: number) => {
     deleteTodo(id)

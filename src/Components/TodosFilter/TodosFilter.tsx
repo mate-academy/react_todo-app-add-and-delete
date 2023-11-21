@@ -1,19 +1,12 @@
 import './style.scss';
+import { useContext } from 'react';
 import cn from 'classnames';
 import { Status } from '../../types/Status';
-import { Errors } from '../../types/Errors';
+import { TodosContext } from '../GlobalStateProvier';
 
-type Props = {
-  filterStatus: Status,
-  setFilterStatus: React.Dispatch<React.SetStateAction<Status>>,
-  setError: React.Dispatch<React.SetStateAction<Errors | null>>
-};
+export const TodosFilter: React.FC = () => {
+  const { filterStatus, setFilterStatus, setError } = useContext(TodosContext);
 
-export const TodosFilter: React.FC<Props> = ({
-  filterStatus,
-  setFilterStatus,
-  setError,
-}) => {
   const handleClick = (status: Status) => {
     setFilterStatus(status);
     setError(null);

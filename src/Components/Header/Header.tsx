@@ -1,22 +1,17 @@
-import { useEffect, useRef, useState } from 'react';
+import {
+  useContext, useEffect, useRef, useState,
+} from 'react';
 import { Todo } from '../../types/Todo';
 import { postTodo } from '../../api/todos';
 import { Errors } from '../../types/Errors';
 import { USER_ID } from '../../utils/userId';
+import { TodosContext } from '../GlobalStateProvier';
 
-type Props = {
-  setError: React.Dispatch<React.SetStateAction<Errors | null>>,
-  setTodos: React.Dispatch<React.SetStateAction<Todo[]>>,
-  setTempTodo: React.Dispatch<React.SetStateAction<Todo | null>>,
-  todos: Todo[],
-};
+export const Header: React.FC = () => {
+  const {
+    setError, setTodos, setTempTodo, todos,
+  } = useContext(TodosContext);
 
-export const Header: React.FC<Props> = ({
-  setError,
-  setTodos,
-  setTempTodo,
-  todos,
-}) => {
   const newTodoInput = useRef<HTMLInputElement>(null);
   const [newTodoTitle, setNewTodoTitle] = useState('');
   const [inputDisabled, setInputDisabled] = useState(false);
