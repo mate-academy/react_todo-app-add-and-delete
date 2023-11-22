@@ -19,11 +19,12 @@ export const TodoItem: React.FC<Props> = ({
     editedTodo, setTodos, todos, setError, deletionId, setDeletionId,
   } = useContext(TodosContext);
   const isCurrentEdited = editedTodo?.id === todo.id;
+  const { id, title, completed } = todo;
 
-  const handleDelete = (id: number) => {
-    deleteTodo(id)
+  const handleDelete = (todoId: number) => {
+    deleteTodo(todoId)
       .then(() => {
-        const index = todos.findIndex(item => item.id === id);
+        const index = todos.findIndex(item => item.id === todoId);
 
         setDeletionId(todos[index].id);
 
@@ -44,7 +45,7 @@ export const TodoItem: React.FC<Props> = ({
       data-cy="Todo"
       className={cn({
         todo: true,
-        completed: todo.completed,
+        completed,
       })}
     >
       <label className="todo__status-label">
@@ -52,7 +53,7 @@ export const TodoItem: React.FC<Props> = ({
           data-cy="TodoStatus"
           type="checkbox"
           className="todo__status"
-          checked={todo.completed}
+          checked={completed}
         />
       </label>
 
@@ -70,7 +71,7 @@ export const TodoItem: React.FC<Props> = ({
         : (
           <>
             <span data-cy="TodoTitle" className="todo__title">
-              {todo.title}
+              {title}
             </span>
             <button
               type="button"
@@ -88,7 +89,7 @@ export const TodoItem: React.FC<Props> = ({
         className={cn({
           modal: true,
           overlay: true,
-          isActive: isTemp || deletionId === todo.id,
+          isActive: isTemp || deletionId === id,
         })}
       >
         <div className="modal-background has-background-white-ter" />

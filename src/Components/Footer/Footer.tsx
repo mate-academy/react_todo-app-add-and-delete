@@ -42,9 +42,7 @@ export const Footer: React.FC = () => {
   return (
     <footer className="todoapp__footer" data-cy="Footer">
       <span className="todo-count" data-cy="TodosCounter">
-        {active.length}
-        {' '}
-        items left
+        {`${active.length} items left`}
       </span>
 
       <TodosFilter />
