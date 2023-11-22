@@ -13,6 +13,12 @@ interface T {
   tempTodo: Todo | null,
 }
 
+enum TypeChan {
+  DELETE = 'delete',
+  CHANGE = 'change',
+  CHANGE_NAME = 'changeName',
+}
+
 export const TodoItem: React.FC<T> = ({
   myTodo,
   setTodos,
@@ -25,10 +31,6 @@ export const TodoItem: React.FC<T> = ({
   const [editedText, setEditedText] = useState(myTodo.title);
   const [isThisLoading, setIsThisLoading] = useState(false);
 
-  const DELETE = 'delete';
-  const CHANGE = 'change';
-  const CHANGE_NAME = 'changeName';
-
   const onChange = async (
     todoEdit: Todo,
     value: string,
@@ -37,7 +39,7 @@ export const TodoItem: React.FC<T> = ({
     let updatedTodos;
 
     switch (value) {
-      case 'delete':
+      case TypeChan.DELETE:
         try {
           setIsThisLoading(true);
           await client.delete(`/todos/${todoEdit.id}`);
@@ -51,7 +53,7 @@ export const TodoItem: React.FC<T> = ({
         }
 
         break;
-      case 'change':
+      case TypeChan.CHANGE:
         updatedTodos = todos.map(todo => {
           if (todo.id === todoEdit.id) {
             return { ...todo, completed: !todo.completed };
@@ -63,7 +65,7 @@ export const TodoItem: React.FC<T> = ({
         setTodos(updatedTodos);
         break;
 
-      case 'changeName':
+      case TypeChan.CHANGE_NAME:
         updatedTodos = todos.map(todo => {
           if (todo.id === todoEdit.id) {
             return { ...todo, title: string };
@@ -80,9 +82,9 @@ export const TodoItem: React.FC<T> = ({
 
   const handleBlur = (todoEdit: Todo) => {
     if (!editedText.trim()) {
-      onChange(todoEdit, DELETE);
+      onChange(todoEdit, TypeChan.DELETE);
     } else {
-      onChange(todoEdit, CHANGE_NAME, editedText);
+      onChange(todoEdit, TypeChan.CHANGE_NAME, editedText);
     }
 
     setIsEditing(false);
@@ -115,7 +117,7 @@ export const TodoItem: React.FC<T> = ({
             data-cy="TodoStatus"
             type="checkbox"
             className="todo__status"
-            onChange={() => onChange(myTodo, CHANGE)}
+            onChange={() => onChange(myTodo, TypeChan.CHANGE)}
             checked={myTodo.completed}
           />
         </label>
@@ -146,7 +148,7 @@ export const TodoItem: React.FC<T> = ({
             className="todo__remove"
             data-cy="TodoDelete"
             type="button"
-            onClick={() => onChange(myTodo, DELETE)}
+            onClick={() => onChange(myTodo, TypeChan.DELETE)}
           >
             x
           </button>

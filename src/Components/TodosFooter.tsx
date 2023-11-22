@@ -1,6 +1,6 @@
 import classNames from 'classnames';
 import React, { Dispatch, SetStateAction } from 'react';
-import { filterTodos } from './Todolist';
+import { filterTodos, EnumFilterTypes } from './Todolist';
 import { Todo } from '../types/Todo';
 import { client } from '../utils/fetchClient';
 
@@ -73,8 +73,8 @@ export const TodosFooter: React.FC<T> = (
           href="#/"
           data-cy="FilterLinkAll"
           className={classNames('filter__link',
-            { selected: filterType === 'all' })}
-          onClick={() => setFilterType('all')}
+            { selected: filterType === EnumFilterTypes.ALL })}
+          onClick={() => setFilterType(EnumFilterTypes.ALL)}
         >
           All
         </a>
@@ -83,8 +83,8 @@ export const TodosFooter: React.FC<T> = (
           href="#/active"
           data-cy="FilterLinkActive"
           className={classNames('filter__link',
-            { selected: filterType === 'active' })}
-          onClick={() => setFilterType('active')}
+            { selected: filterType === EnumFilterTypes.ACTIVE })}
+          onClick={() => setFilterType(EnumFilterTypes.ACTIVE)}
         >
           Active
         </a>
@@ -92,8 +92,8 @@ export const TodosFooter: React.FC<T> = (
           href="#/completed"
           data-cy="FilterLinkCompleted"
           className={classNames('filter__link',
-            { selected: filterType === 'completed' })}
-          onClick={() => setFilterType('completed')}
+            { selected: filterType === EnumFilterTypes.COMPLETED })}
+          onClick={() => setFilterType(EnumFilterTypes.COMPLETED)}
         >
           Completed
         </a>
@@ -102,7 +102,9 @@ export const TodosFooter: React.FC<T> = (
       <button
         type="button"
         className={classNames('todoapp__clear-completed',
-          { hidden: filterTodos(todos, 'completed').length === 0 })}
+          {
+            hidden: filterTodos(todos, EnumFilterTypes.COMPLETED).length === 0,
+          })}
         data-cy="ClearCompletedButton"
         onClick={handleAllDelete}
       >

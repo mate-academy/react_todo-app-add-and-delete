@@ -11,12 +11,18 @@ interface T {
   tempTodo: Todo | null,
 }
 
+export enum EnumFilterTypes {
+  ACTIVE = 'active',
+  COMPLETED = 'completed',
+  ALL = 'all',
+}
+
 export const filterTodos = (array: Todo[], type: string) => {
   switch (type) {
-    case 'active':
+    case EnumFilterTypes.ACTIVE:
       return array.filter(todo => !todo.completed);
 
-    case 'completed':
+    case EnumFilterTypes.COMPLETED:
       return array.filter(todo => todo.completed);
 
     default:
@@ -34,11 +40,13 @@ export const Section: React.FC<T> = (
     tempTodo,
   },
 ) => {
+  const filteredTodos = filterTodos(todos, filterType);
+
   return (
     <section className="todoapp__main" data-cy="TodoList">
 
       <ul className="todo-list" data-cy="todoList">
-        {filterTodos(todos, filterType).map(todo => (
+        {filteredTodos.map(todo => (
           <TodoItem
             setTodos={setTodos}
             todos={todos}

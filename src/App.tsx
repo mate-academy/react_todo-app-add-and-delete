@@ -9,6 +9,14 @@ import { client } from './utils/fetchClient';
 
 const USER_ID = 'https://mate.academy/students-api/todos?userId=11910';
 
+enum EnumErrors {
+  LOADING = 'loading',
+  ADD = 'add',
+  DELETE = 'delete',
+  CHANGE = 'change',
+  EMPTY = 'empty',
+}
+
 export const App: React.FC = () => {
   const [inputValue, setInputValue] = useState('');
   const [todos, setTodos] = useState<Todo[]>([]);
@@ -17,12 +25,6 @@ export const App: React.FC = () => {
   const [isLoading, setIsLoading] = useState(false);
   const [isError, setIsError] = useState(false);
   const [tempTodo, setTempTodo] = useState<Todo | null>(null);
-
-  const LOADING = 'loading';
-  const ADD = 'add';
-  // const DELETE = 'delete'; це знадобиться у слідуючій частині цього завдання
-  // const CHANGE = 'change';
-  const EMPTY = 'empty';
 
   useEffect(() => {
     // Функция для загрузки данных с сервера
@@ -35,7 +37,7 @@ export const App: React.FC = () => {
         setTodos(response);
       } catch (error) {
         setIsError(true);
-        setTypeError(LOADING);
+        setTypeError(EnumErrors.LOADING);
 
         setTimeout(() => {
           setIsError(false);
@@ -70,7 +72,7 @@ export const App: React.FC = () => {
 
     try {
       if (inputValue.trim().length === 0) {
-        throw new Error('empty');
+        throw new Error(EnumErrors.EMPTY);
       }
 
       const response = await client.post<Todo>('/todos?userId=11910', obj);
@@ -81,10 +83,10 @@ export const App: React.FC = () => {
     } catch (error: any) {
       setIsError(true);
 
-      if (error.message === 'empty') {
-        setTypeError(EMPTY);
+      if (error.message === EnumErrors.EMPTY) {
+        setTypeError(EnumErrors.EMPTY);
       } else {
-        setTypeError(ADD);
+        setTypeError(EnumErrors.ADD);
       }
 
       setTimeout(() => {
@@ -102,15 +104,15 @@ export const App: React.FC = () => {
 
   const handleError = (Error: string) => {
     switch (Error) {
-      case 'loading':
+      case EnumErrors.LOADING:
         return 'Unable to load todos';
-      case 'add':
+      case EnumErrors.ADD:
         return 'Unable to add a todo';
-      case 'delete':
+      case EnumErrors.DELETE:
         return 'Unable to delete a todo';
-      case 'change':
+      case EnumErrors.CHANGE:
         return 'Unable to update a todo';
-      case 'empty':
+      case EnumErrors.EMPTY:
         return 'Title should not be empty';
       default:
         return 'null';
