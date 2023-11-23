@@ -1,7 +1,7 @@
 import classNames from 'classnames';
-import { Todo } from "./types/Todo"
-import { Sort } from './types/Sort';
 import { Dispatch, SetStateAction } from 'react';
+import { Todo } from './types/Todo';
+import { Sort } from './types/Sort';
 import { deleteTodos } from './api/todos';
 
 type Props = {
@@ -10,7 +10,7 @@ type Props = {
   selectedFilter: Sort,
   setSelectedFilter: Dispatch<SetStateAction<Sort>>,
   setErrorMessage: Dispatch<SetStateAction<string>>
-}
+};
 
 export const TodosFilter: React.FC<Props> = ({
   todos,
@@ -21,7 +21,6 @@ export const TodosFilter: React.FC<Props> = ({
 }) => {
   const unComletedTodo = todos.filter(todo => !todo.completed).length;
   const hasCompletedTodo = todos.some(todo => todo.completed);
-
 
   const clearCompletedTodo = () => {
     const completedTodo = todos.filter(todo => todo.completed);
@@ -38,18 +37,15 @@ export const TodosFilter: React.FC<Props> = ({
     const newTodos = todos.filter(todo => !todo.completed);
 
     setTodos(newTodos);
-  }
+  };
 
   return (
     <footer className="todoapp__footer" data-cy="Footer">
       <span className="todo-count" data-cy="TodosCounter">
-        {unComletedTodo}
-        {' '}
-        {unComletedTodo === 1 ? 'item' : 'items'}
-        {' '}
+        {`${unComletedTodo} ${unComletedTodo === 1 ? 'item' : 'items'} `}
         left
       </span>
-      
+
       <nav className="filter" data-cy="Filter">
         <a
           href="#/"
@@ -85,15 +81,15 @@ export const TodosFilter: React.FC<Props> = ({
         </a>
       </nav>
 
-        <button
-          type="button"
-          className="todoapp__clear-completed"
+      <button
+        type="button"
+        className="todoapp__clear-completed"
         data-cy="ClearCompletedButton"
         onClick={clearCompletedTodo}
         disabled={!hasCompletedTodo}
-        >
-          Clear completed
-        </button>
+      >
+        Clear completed
+      </button>
     </footer>
   );
-}
+};

@@ -17,7 +17,7 @@ export const App: React.FC = () => {
   const [selectedFilter, setSelectedFilter] = useState(Sort.All);
   const [value, setValue] = useState('');
   const [tempTodo, setTempTodo] = useState<Todo | null>(null);
-  const [inputDisabled, setInputDisabled] = useState(false);
+  const [isInputDisabled, setIsInputDisabled] = useState(false);
 
   const inputRef = useRef<HTMLInputElement>(null);
   const activeTodos = todos.filter(todo => !todo.completed);
@@ -53,11 +53,11 @@ export const App: React.FC = () => {
 
     setErrorMessage('');
 
-    setInputDisabled(true);
+    setIsInputDisabled(true);
 
     if (!value.trim()) {
       setErrorMessage('Title should not be empty');
-      setInputDisabled(false);
+      setIsInputDisabled(false);
     } else {
       setTempTodo({
         userId: USER_ID, title: value.trim(), completed: false, id: 0,
@@ -73,11 +73,10 @@ export const App: React.FC = () => {
         })
         .finally(() => {
           setTempTodo(null);
-          setInputDisabled(false);
+          setIsInputDisabled(false);
         });
     }
   };
-
 
   return (
     <div className="todoapp">
@@ -102,7 +101,7 @@ export const App: React.FC = () => {
               value={value}
               onChange={(event) => setValue(event.target.value)}
               ref={inputRef}
-              disabled={inputDisabled}
+              disabled={isInputDisabled}
             />
           </form>
         </header>

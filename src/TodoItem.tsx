@@ -1,14 +1,16 @@
-import classNames from "classnames";
-import { Todo } from "./types/Todo"
-import { Dispatch, SetStateAction, useEffect, useRef, useState } from 'react';
-import { deleteTodos } from "./api/todos";
+import classNames from 'classnames';
+import {
+  Dispatch, SetStateAction, useEffect, useRef, useState,
+} from 'react';
+import { Todo } from './types/Todo';
+import { deleteTodos } from './api/todos';
 
 type Props = {
   todo: Todo,
   todos: Todo[],
   setTodos: Dispatch<SetStateAction<Todo[]>>,
   setErrorMessage: Dispatch<SetStateAction<string>>
-}
+};
 
 export const TodoItem: React.FC<Props> = ({
   todo,
@@ -42,7 +44,7 @@ export const TodoItem: React.FC<Props> = ({
         setErrorMessage('Unable to delete a todo');
       });
 
-    const index = todos.findIndex(todo => todo.id === id);
+    const index = todos.findIndex(elem => elem.id === id);
 
     if (index !== -1) {
       const newTodos = [...todos];
@@ -50,7 +52,7 @@ export const TodoItem: React.FC<Props> = ({
       newTodos.splice(index, 1);
       setTodos(newTodos);
     }
-  };
+  }
 
   useEffect(() => {
     if (isEditing && inputRef.current) {
@@ -68,7 +70,10 @@ export const TodoItem: React.FC<Props> = ({
 
   const handleLabelChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     const newValue = event.target.value.trim();
-    setValue(!newValue ? '' : event.target.value);
+
+    if (newValue) {
+      setValue(newValue);
+    }
   };
 
   function updateTodo() {
@@ -81,6 +86,7 @@ export const TodoItem: React.FC<Props> = ({
 
       return currentTodo;
     });
+
     setTodos(updatedTodos);
     setIsEditing(false);
   }
@@ -113,8 +119,6 @@ export const TodoItem: React.FC<Props> = ({
       }
     }
   };
-
-
 
   return (
     <div
@@ -183,4 +187,4 @@ export const TodoItem: React.FC<Props> = ({
       </div>
     </div>
   );
-}
+};

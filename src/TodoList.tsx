@@ -1,14 +1,14 @@
-import { Todo } from "./types/Todo";
-import { Sort } from './types/Sort';
 import { Dispatch, SetStateAction } from 'react';
-import { TodoItem } from "./TodoItem";
+import { Todo } from './types/Todo';
+import { Sort } from './types/Sort';
+import { TodoItem } from './TodoItem';
 
 type Props = {
   todos: Todo[],
   setTodos: Dispatch<SetStateAction<Todo[]>>,
   selectedFilter: Sort,
   setErrorMessage: Dispatch<SetStateAction<string>>,
-}
+};
 
 export const TodoList: React.FC<Props> = ({
   todos,
@@ -16,7 +16,6 @@ export const TodoList: React.FC<Props> = ({
   selectedFilter,
   setErrorMessage,
 }) => {
-
   const filterTodos = (() => {
     switch (selectedFilter) {
       case Sort.Active:
@@ -29,7 +28,7 @@ export const TodoList: React.FC<Props> = ({
       default:
         return todos;
     }
-  }) ();
+  })();
 
   return (
     <div>
@@ -44,5 +43,4 @@ export const TodoList: React.FC<Props> = ({
       ))}
     </div>
   );
-}
-
+};
