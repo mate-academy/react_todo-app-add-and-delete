@@ -89,7 +89,7 @@ export const TodoItem: React.FC<Props> = ({ todo, loading = false }) => {
   };
 
   const editBlurHandler = () => {
-    if (newTodoTitle === '') {
+    if (newTodoTitle.trim() === '') {
       deleteButtonClickHandler();
 
       return;

@@ -70,7 +70,7 @@ export const Header: React.FC = () => {
     if (event.key === 'Enter') {
       event.preventDefault();
 
-      if (inputValue === '') {
+      if (inputValue.trim() === '') {
         setError({ message: 'Todo title cannot be empty', isError: true });
         setErrorTimeout();
 
