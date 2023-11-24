@@ -8,11 +8,14 @@ import { TodoFilter } from './components/TodoFilter';
 import { Filter } from './types/Filter';
 
 const USER_ID = 11959;
+const ALL = 'all';
+const ACTIVE = 'active';
+const COMPLETED = 'completed';
 
 export const App: React.FC = () => {
   const [tempTodo, setTempTodo] = useState<Todo | null>(null);
   const [todos, setTodos] = useState<Todo[]>([]);
-  const [filter, setFilter] = useState<Filter>('all');
+  const [filter, setFilter] = useState<Filter>(ALL);
   const [error, setError] = useState('');
   const [title, setTitle] = useState('');
   const [isInputDisabled, setIsInputDisabled] = useState(false);
@@ -38,10 +41,10 @@ export const App: React.FC = () => {
     todoService.getTodos(USER_ID)
       .then(todosList => todosList.filter(todo => {
         switch (filter) {
-          case 'active':
+          case ACTIVE:
             return !todo.completed;
 
-          case 'completed':
+          case COMPLETED:
             return todo.completed;
 
           default:
