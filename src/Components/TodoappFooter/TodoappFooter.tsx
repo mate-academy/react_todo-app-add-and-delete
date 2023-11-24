@@ -20,11 +20,28 @@ export const TodoappFooter: React.FC<Props> = ({
   const activeTodosCount = todos.filter(todo => !todo.completed).length;
 
   const deleteAllCompleted = async () => {
-    const allCompleted = todos.filter(t => t.completed);
+    const allCompleted = todos.filter(todo => todo.completed);
 
     await Promise.allSettled(allCompleted.map(todo => (
       handleDelete(todo.id)
     )));
+  };
+
+  const showClearCompletedButton = (completedCount: number) => {
+    if (completedCount) {
+      return (
+        <button
+          type="button"
+          className="todoapp__clear-completed"
+          data-cy="ClearCompletedButton"
+          onClick={deleteAllCompleted}
+        >
+          Clear completed
+        </button>
+      );
+    }
+
+    return false;
   };
 
   return (
@@ -39,16 +56,7 @@ export const TodoappFooter: React.FC<Props> = ({
       />
 
       {/* don't show this button if there are no completed todos */}
-      {completedTodosCount !== 0 && (
-        <button
-          type="button"
-          className="todoapp__clear-completed"
-          data-cy="ClearCompletedButton"
-          onClick={deleteAllCompleted}
-        >
-          Clear completed
-        </button>
-      )}
+      {showClearCompletedButton(completedTodosCount)}
     </footer>
   );
 };

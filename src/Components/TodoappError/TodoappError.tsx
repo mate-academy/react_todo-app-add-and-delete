@@ -1,19 +1,20 @@
+/* eslint-disable react-hooks/exhaustive-deps */
 /* eslint-disable jsx-a11y/control-has-associated-label */
-import React, { useEffect, useState } from 'react';
+import React, { useEffect } from 'react';
 import cn from 'classnames';
 
 type Props = {
   todosError: string,
+  setTodosError: (string: string) => void;
 };
 
 export const TodoappError: React.FC<Props> = ({
   todosError,
+  setTodosError,
 }) => {
-  const [isHidden, setIsHidden] = useState(false);
-
   useEffect(() => {
     const timer = setTimeout(() => {
-      setIsHidden(true);
+      setTodosError('');
     }, 3000);
 
     return () => {
@@ -24,14 +25,18 @@ export const TodoappError: React.FC<Props> = ({
   return (
     <div
       data-cy="ErrorNotification"
-      className={cn(`notification is-danger is-light has-text-weight-normal ${isHidden && 'hidden'}`)}
+      className={cn('notification is-danger is-light has-text-weight-normal',
+        {
+          hidden: !todosError,
+        },
+      )}
     >
       <button
         data-cy="HideErrorButton"
         type="button"
         className="delete"
         onClick={() => {
-          setIsHidden(true);
+          setTodosError('');
         }}
       />
       {todosError}

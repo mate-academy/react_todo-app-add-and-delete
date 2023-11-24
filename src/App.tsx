@@ -13,7 +13,6 @@ const USER_ID = 11828;
 export const App: React.FC = () => {
   const [todos, setTodos] = useState<Todo[]>([]);
   const [filterBy, setFilterBy] = useState(Filter.ALL);
-  const [isLoading, setIsLoading] = useState(true);
   const [todosError, setTodosError] = useState('');
   const [processingTodoIds, setProcessingTodoIds] = useState<number[]>([]);
   const [temporaryTodo, setTemporaryTodo] = useState<Todo | null>(null);
@@ -26,8 +25,6 @@ export const App: React.FC = () => {
         setTodos(todosData);
       } catch (error) {
         setTodosError('Unable to load todos');
-      } finally {
-        setIsLoading(false);
       }
     };
 
@@ -78,7 +75,6 @@ export const App: React.FC = () => {
 
       setTodos(prevTodos => [...prevTodos, createdTodo]);
     } catch (error) {
-      setTemporaryTodo(null);
       setTodosError('Unable to add a todo');
 
       throw new Error('Some error');
@@ -120,12 +116,10 @@ export const App: React.FC = () => {
         )}
       </div>
 
-      {/* Add the 'hidden' class to hide the message smoothly */}
-      {!isLoading && (
-        <TodoappError
-          todosError={todosError}
-        />
-      )}
+      <TodoappError
+        todosError={todosError}
+        setTodosError={setTodosError}
+      />
     </div>
   );
 };
