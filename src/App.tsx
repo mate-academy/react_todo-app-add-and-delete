@@ -31,6 +31,7 @@ export const App: React.FC = () => {
   const [newTodoTitle, setNewTodoTitle] = useState('');
   const [tempTodo, setTempTodo] = useState<Todo | null>(null);
 
+
   const inputRef = useRef<HTMLInputElement>(null);
 
   useEffect(() => {
@@ -136,6 +137,8 @@ export const App: React.FC = () => {
     return todos.filter(todo => todo.completed).length;
   }, [todos]);
 
+  const itemCountText = `${activeTodosCounter} item${activeTodosCounter === 1 ? '' : 's'} left`;
+
   const clearCompletedTodos = () => {
     todos.forEach(todo => todo.completed && deleteSelectedTodo(todo.id));
   };
@@ -177,9 +180,7 @@ export const App: React.FC = () => {
 
             <footer className="todoapp__footer">
               <span className="todo-count">
-                {activeTodosCounter === 1
-                  ? `${activeTodosCounter} item left`
-                  : `${activeTodosCounter} items left`}
+                {itemCountText}
               </span>
 
               <TodoFilter />
