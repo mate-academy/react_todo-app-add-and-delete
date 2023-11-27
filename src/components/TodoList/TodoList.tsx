@@ -14,30 +14,33 @@ export const TodoList: React.FC<Props> = ({ tempTodo }) => {
 
   return (
     <section className="todoapp__main" data-cy="TodoList">
-      <TransitionGroup>
-        {visibleTodos.map(todo => (
-          <CSSTransition
-            key={todo.id}
-            timeout={300}
-            classNames="item"
-          >
-            <TodoItem todo={todo} />
-          </CSSTransition>
-        ))}
+      <ul className="todo-list">
+        <TransitionGroup component={null}>
+          {visibleTodos.map(todo => (
+            <CSSTransition
+              key={todo.id}
+              timeout={300}
+              classNames="item"
+            >
+              <li>
+                <TodoItem todo={todo} />
+              </li>
+            </CSSTransition>
+          ))}
 
-        {tempTodo && (
-          <CSSTransition
-            key={tempTodo.id}
-            timeout={300}
-            classNames="temp-item"
-          >
-            <TodoItem
-              todo={tempTodo}
-              loading
-            />
-          </CSSTransition>
-        )}
-      </TransitionGroup>
+          {tempTodo && (
+            <CSSTransition
+              key={tempTodo.id}
+              timeout={300}
+              classNames="temp-item"
+            >
+              <li>
+                <TodoItem todo={tempTodo} loading />
+              </li>
+            </CSSTransition>
+          )}
+        </TransitionGroup>
+      </ul>
     </section>
   );
 };

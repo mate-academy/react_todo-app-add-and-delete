@@ -30,15 +30,14 @@ export const TodoProvider: React.FC<Props> = ({ children }) => {
   const [isProcessing, setIsProcessing] = useState<number[]>([]);
 
   const visibleTodos = useMemo(() => {
-    if (filter === Status.ACTIVE) {
-      return todos.filter(todo => !todo.completed);
+    switch (filter) {
+      case Status.ACTIVE:
+        return todos.filter(todo => !todo.completed);
+      case Status.COMPLETED:
+        return todos.filter(todo => todo.completed);
+      default:
+        return todos;
     }
-
-    if (filter === Status.COMPLETED) {
-      return todos.filter(todo => todo.completed);
-    }
-
-    return todos;
   }, [filter, todos]);
 
   const value = {

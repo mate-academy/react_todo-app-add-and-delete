@@ -24,15 +24,15 @@ export const TodoItem: React.FC<Props> = ({ todo, loading }) => {
   } = useTodo();
   const [title, setTitle] = useState(todo.title);
   const [isEditing, setIsEditing] = useState(false);
-  const [focus, setFocus] = useState(false);
+  const [isFocus, setIsFocus] = useState(false);
 
   const inputRef = useRef<HTMLInputElement>(null);
 
   useEffect(() => {
-    if (focus && inputRef.current) {
+    if (isFocus && inputRef.current) {
       inputRef.current.focus();
     }
-  }, [focus]);
+  }, [isFocus]);
 
   const checkTodo = (todoId: number): void => {
     const updatedTodos = todos.map(item => (
@@ -46,7 +46,7 @@ export const TodoItem: React.FC<Props> = ({ todo, loading }) => {
 
   const handleDoubleClick = useCallback(() => {
     setIsEditing(true);
-    setFocus(true);
+    setIsFocus(true);
   }, [isEditing]);
 
   const deleteSelectedTodo = (todoId: number): void => {
@@ -83,14 +83,14 @@ export const TodoItem: React.FC<Props> = ({ todo, loading }) => {
 
     setTitle(newTitle);
     setIsEditing(false);
-    setFocus(false);
+    setIsFocus(false);
   };
 
   const handleKeyp = (event: React.KeyboardEvent<HTMLInputElement>) => {
     if (event.key === 'Escape') {
       setTitle(todo.title);
       setIsEditing(false);
-      setFocus(false);
+      setIsFocus(false);
     }
 
     if (event.key === 'Enter') {
@@ -119,7 +119,7 @@ export const TodoItem: React.FC<Props> = ({ todo, loading }) => {
             className="todo__title"
             onDoubleClick={handleDoubleClick}
           >
-            {todo.title}
+            {title}
           </span>
           <button
             type="button"

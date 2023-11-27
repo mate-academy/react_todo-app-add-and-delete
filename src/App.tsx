@@ -1,7 +1,10 @@
 /* eslint-disable max-len */
 /* eslint-disable jsx-a11y/control-has-associated-label */
 import React, {
-  useEffect, useMemo, useRef, useState,
+  useEffect,
+  useMemo,
+  useRef,
+  useState,
 } from 'react';
 
 import classNames from 'classnames';
@@ -42,10 +45,12 @@ export const App: React.FC = () => {
       .catch(() => setErrorMessage(ErrorMessage.LOAD_ERROR));
   }, [setErrorMessage, setTodos]);
 
+  const errorDisplayDuration = 3000;
+
   useEffect(() => {
     const timer = setTimeout(() => {
       setErrorMessage(ErrorMessage.DEFAULT);
-    }, 3000);
+    }, errorDisplayDuration);
 
     return () => clearTimeout(timer);
   }, [errorMessage, setErrorMessage]);
@@ -122,7 +127,9 @@ export const App: React.FC = () => {
   };
 
   const activeTodosCounter = useMemo(() => {
-    return todos.filter(todo => todo.completed).length;
+    const activeTodos = todos.filter(todo => !todo.completed);
+
+    return activeTodos.length;
   }, [todos]);
 
   const completedTodosCounter = useMemo(() => {
@@ -164,13 +171,15 @@ export const App: React.FC = () => {
           </form>
         </header>
 
-        {(todos.length > 0 || tempTodo !== null) && (
+        {(todos.length > 0 || !!tempTodo) && (
           <>
             <TodoList tempTodo={tempTodo} />
 
             <footer className="todoapp__footer">
               <span className="todo-count">
-                {`${activeTodosCounter} item${activeTodosCounter === 1 ? '' : 's'} left`}
+                {activeTodosCounter === 1
+                  ? `${activeTodosCounter} item left`
+                  : `${activeTodosCounter} items left`}
               </span>
 
               <TodoFilter />
