@@ -29,8 +29,9 @@
   }
 
   &__title {
-    padding: 12px 15px;
+    display: block;
 
+    padding: 12px 15px;
     word-break: break-all;
     transition: color 0.4s;
   }
