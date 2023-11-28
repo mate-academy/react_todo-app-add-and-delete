@@ -9,16 +9,22 @@ const TodoError: React.FC = () => {
   const [isErrorHidden, setIsErrorHidden] = useState(true);
 
   useEffect(() => {
+    let timeoutId: NodeJS.Timeout | undefined;
+
     if (errorMessage !== '') {
       setIsErrorHidden(false);
 
-      const timeoutId = setTimeout(() => {
+      timeoutId = setTimeout(() => {
         setErrorMessage('');
         setIsErrorHidden(true);
       }, 2000);
-
-      return () => clearTimeout(timeoutId);
     }
+
+    return () => {
+      if (timeoutId) {
+        clearTimeout(timeoutId);
+      }
+    };
   }, [errorMessage, setErrorMessage]);
 
   const clearButton = () => {

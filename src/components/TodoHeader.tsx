@@ -26,25 +26,29 @@ const TodoHeader: React.FC = () => {
   const handlePressEnter = async (
     event: React.KeyboardEvent<HTMLInputElement>,
   ) => {
-    if (event.key === 'Enter') {
-      const trimmedValue = inputValue.trim();
+    if (event.key !== 'Enter') {
+      return;
+    }
 
-      if (!trimmedValue) {
-        setErrorMessage('Title should not be empty');
-      } else {
-        try {
-          const newTodo = await addTodo({
-            title: trimmedValue,
-            completed: false,
-            userId: USER_ID,
-          });
+    const trimmedValue = inputValue.trim();
 
-          setTodos([...todos, newTodo]);
-          setInputValue('');
-        } catch (error) {
-          setErrorMessage('Unable to add a todo');
-        }
-      }
+    if (!trimmedValue) {
+      setErrorMessage('Title should not be empty');
+
+      return;
+    }
+
+    try {
+      const newTodo = await addTodo({
+        title: trimmedValue,
+        completed: false,
+        userId: USER_ID,
+      });
+
+      setTodos([...todos, newTodo]);
+      setInputValue('');
+    } catch (error) {
+      setErrorMessage('Unable to add a todo');
     }
   };
 
@@ -63,6 +67,8 @@ const TodoHeader: React.FC = () => {
     inputRef?.current?.focus();
   }, []);
 
+  const isEveryTodoActive = todos.every(todo => todo.completed);
+
   return (
     <header className="todoapp__header">
       <form onSubmit={(event) => event.preventDefault()}>
@@ -70,7 +76,7 @@ const TodoHeader: React.FC = () => {
           type="button"
           className={
             cn('todoapp__toggle-all',
-              { active: todos.every(todo => todo.completed) })
+              { active: isEveryTodoActive })
           }
           data-cy="ToggleAllButton"
           onClick={handleChangeToggle}

@@ -14,15 +14,13 @@ const TodoList: React.FC = () => {
 
   const currentTodos = todos.filter(todo => {
     switch (filter) {
-      case Filter.All:
-        return true;
-
       case Filter.Active:
         return !todo.completed;
 
       case Filter.Completed:
         return todo.completed;
 
+      case Filter.All:
       default:
         return true;
     }
