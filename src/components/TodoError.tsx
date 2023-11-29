@@ -10,6 +10,10 @@ export const TodoError: React.FC<Props> = ({
   onErrorMessage,
   errorMessage,
 }) => {
+  const resetError = () => {
+    onErrorMessage('');
+  };
+
   return (
     <div
       data-cy="ErrorNotification"
@@ -20,12 +24,12 @@ export const TodoError: React.FC<Props> = ({
         )
       }
     >
-      {/* eslint-disable-next-line jsx-a11y/control-has-associated-label */}
       <button
         data-cy="HideErrorButton"
+        aria-label="Hide Error Button"
         type="button"
         className="delete"
-        onClick={() => onErrorMessage('')}
+        onClick={resetError}
       />
 
       {errorMessage}

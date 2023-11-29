@@ -50,6 +50,10 @@ export const TodoForm: React.FC<Props> = ({
     }).then(reset);
   };
 
+  const queryChangeHandler = (event: React.ChangeEvent<HTMLInputElement>) => {
+    onQuery(event.target.value);
+  };
+
   return (
     <form onSubmit={handleSubmit}>
       <input
@@ -58,7 +62,7 @@ export const TodoForm: React.FC<Props> = ({
         className="todoapp__new-todo"
         placeholder="What needs to be done?"
         value={query}
-        onChange={(event) => onQuery(event.target.value)}
+        onChange={queryChangeHandler}
         disabled={isInputDisabled}
         ref={textField}
       />

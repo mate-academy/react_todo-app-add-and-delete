@@ -21,7 +21,7 @@ export const TodoFooter: React.FC<Props> = ({
   setTodos,
   onErrorMessage,
 }) => {
-  const completedTodos = todos.filter((todo) => todo.completed === true);
+  const completedTodos = todos.filter((todo) => todo.completed);
 
   const deleteCompletedTodos = (todoArray: Todo[]) => {
     setTodos((currentTodo) => {
