@@ -1,7 +1,7 @@
 /* eslint-disable max-len */
 /* eslint-disable jsx-a11y/control-has-associated-label */
 import React, {
-  useEffect, useMemo, useState, useRef,
+  useEffect, useMemo, useState, useRef, useCallback,
 } from 'react';
 import { UserWarning } from './UserWarning';
 import { USER_ID } from './helpers/userId';
@@ -11,15 +11,15 @@ import { TodoList } from './components/TodoList';
 import { TodoError } from './components/TodoError';
 import { TodoFooter } from './components/TodoFooter';
 import * as dataOperations from './api/todos';
-import { Filter } from './types/Filter';
+import { FilterTodos } from './types/FilterTodos';
 
-const filterTodos = (todos: Todo[], filter: Filter | ''): Todo[] => {
+const filterTodos = (todos: Todo[], filter: FilterTodos | ''): Todo[] => {
   switch (filter) {
-    case Filter.all:
+    case FilterTodos.all:
       return todos;
-    case Filter.active:
+    case FilterTodos.active:
       return todos.filter((todo) => !todo.completed);
-    case Filter.completed:
+    case FilterTodos.completed:
       return todos.filter((todo) => todo.completed);
     default:
       return todos;
@@ -30,7 +30,7 @@ export const App: React.FC = () => {
   const [todos, setTodos] = useState<Todo[]>([]);
   const [query, setQuery] = useState('');
   const [errorMessage, setErrorMessage] = useState('');
-  const [filter, setFilter] = useState<Filter | ''>('');
+  const [filter, setFilter] = useState<FilterTodos | ''>('');
   const [tempTodo, setTempTodo] = useState<Todo | null>(null);
   const [isTodoLoading, setIsTodoLoading] = useState<Todo | null>(null);
   const [isInputDisabled, setIsInputDisabled] = useState(false);
@@ -70,6 +70,12 @@ export const App: React.FC = () => {
     return filterTodos(todos, filter);
   }, [todos, filter]);
 
+  const handleFilter = useCallback((newFilter: FilterTodos) => {
+    setFilter(newFilter);
+  }, [setFilter]);
+
+  const count = todos.reduce((acc, todo) => (todo.completed ? acc : acc + 1), 0);
+
   if (!USER_ID) {
     return <UserWarning />;
   }
@@ -94,7 +100,7 @@ export const App: React.FC = () => {
         setTodos((currentTodos) => [...currentTodos, newTodo]);
       })
       .catch((error) => {
-        setTodos(prev => prev.filter(todo => todo.id !== temporaryTodo.id));
+        setTodos((prev) => prev.filter((todo) => todo.id !== temporaryTodo.id));
         setErrorMessage('Unable to add a todo');
         setTimeout(() => {
           setErrorMessage('');
@@ -111,7 +117,8 @@ export const App: React.FC = () => {
   const deleteTodo = (todoId: number) => {
     setErrorMessage('');
 
-    return dataOperations.deleteTodoOnServer(todoId)
+    return dataOperations
+      .deleteTodoOnServer(todoId)
       .then(() => {
         setTodos((currentTodo) => currentTodo.filter((todo) => todo.id !== todoId));
       })
@@ -140,19 +147,13 @@ export const App: React.FC = () => {
     });
   };
 
-  const handleFilter = (newFilter: Filter) => {
-    setFilter(newFilter);
-  };
-
-  const count = todos.filter((todo) => todo.completed !== true).length;
-
   return (
     <div className="todoapp">
       <h1 className="todoapp__title">todos</h1>
 
       <div className="todoapp__content">
         <header className="todoapp__header">
-          {todos.length !== 0 && (
+          {!!todos.length && (
             <button
               type="button"
               className="todoapp__toggle-all active"
@@ -179,7 +180,7 @@ export const App: React.FC = () => {
           />
         </section>
 
-        {todos.length !== 0 && (
+        {!!todos.length && (
           <TodoFooter
             onTodoSelected={handleFilter}
             filter={filter}

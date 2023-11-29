@@ -1,16 +1,16 @@
 import React from 'react';
-import { Filter } from '../types/Filter';
+import { FilterTodos } from '../types/FilterTodos';
 import { TodoSelecet } from './TodoSelected';
 import * as dataOperations from '../api/todos';
 import { Todo } from '../types/Todo';
 
 type Props = {
-  onTodoSelected: (value: Filter) => void,
-  filter: string,
-  count: number,
-  setTodos: (value: React.SetStateAction<Todo[]>) => void,
-  onErrorMessage: (value: string) => void,
-  todos: Todo[],
+  onTodoSelected: (value: FilterTodos) => void;
+  filter: string;
+  count: number;
+  setTodos: (value: React.SetStateAction<Todo[]>) => void;
+  onErrorMessage: (value: string) => void;
+  todos: Todo[];
 };
 
 export const TodoFooter: React.FC<Props> = ({
@@ -21,20 +21,19 @@ export const TodoFooter: React.FC<Props> = ({
   setTodos,
   onErrorMessage,
 }) => {
-  const completedTodos = todos.filter(todo => todo.completed === true);
+  const completedTodos = todos.filter((todo) => todo.completed === true);
 
   const deleteCompletedTodos = (todoArray: Todo[]) => {
-    setTodos(currentTodo => currentTodo.filter(
-      todo => !completedTodos.includes(todo),
-    ));
+    setTodos((currentTodo) => {
+      return currentTodo.filter((todo) => !completedTodos.includes(todo));
+    });
 
     onErrorMessage('');
 
-    return dataOperations.deleteCompletedTodos(todoArray)
-      .catch(() => {
-        setTodos(todos);
-        onErrorMessage('Unable to delete a todo');
-      });
+    return dataOperations.deleteCompletedTodos(todoArray).catch(() => {
+      setTodos(todos);
+      onErrorMessage('Unable to delete a todo');
+    });
   };
 
   return (
@@ -43,12 +42,9 @@ export const TodoFooter: React.FC<Props> = ({
         {`${count} items left`}
       </span>
 
-      <TodoSelecet
-        onTodoSelected={onTodoSelected}
-        filter={filter}
-      />
+      <TodoSelecet onTodoSelected={onTodoSelected} filter={filter} />
 
-      {completedTodos.length !== 0 && (
+      {!!completedTodos.length && (
         <button
           type="button"
           className="todoapp__clear-completed"

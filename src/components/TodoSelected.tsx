@@ -1,17 +1,29 @@
 import React, { useState } from 'react';
 import cn from 'classnames';
-import { Filter } from '../types/Filter';
+import { FilterTodos } from '../types/FilterTodos';
 
 type Props = {
-  onTodoSelected: (value: Filter) => void;
+  onTodoSelected: (value: FilterTodos) => void;
   filter: string;
 };
 
-export const TodoSelecet: React.FC<Props> = ({
-  onTodoSelected,
-  filter,
-}) => {
+export const TodoSelecet: React.FC<Props> = ({ onTodoSelected, filter }) => {
   const [defaultActiveSelect, setDefaultActiveSelect] = useState(true);
+
+  const handleFilterAll = () => {
+    onTodoSelected(FilterTodos.all);
+    setDefaultActiveSelect(true);
+  };
+
+  const handleFilterActive = () => {
+    onTodoSelected(FilterTodos.active);
+    setDefaultActiveSelect(false);
+  };
+
+  const handleFilterCompleted = () => {
+    onTodoSelected(FilterTodos.completed);
+    setDefaultActiveSelect(false);
+  };
 
   return (
     <nav className="filter" data-cy="Filter">
@@ -21,10 +33,7 @@ export const TodoSelecet: React.FC<Props> = ({
           'filter__link selected': defaultActiveSelect,
         })}
         data-cy="FilterLinkAll"
-        onClick={() => {
-          onTodoSelected(Filter.all);
-          setDefaultActiveSelect(true);
-        }}
+        onClick={handleFilterAll}
       >
         All
       </a>
@@ -32,13 +41,10 @@ export const TodoSelecet: React.FC<Props> = ({
       <a
         href="#/active"
         className={cn('filter__link', {
-          'filter__link selected': Filter.active === filter,
+          'filter__link selected': FilterTodos.active === filter,
         })}
         data-cy="FilterLinkActive"
-        onClick={() => {
-          onTodoSelected(Filter.active);
-          setDefaultActiveSelect(false);
-        }}
+        onClick={handleFilterActive}
       >
         Active
       </a>
@@ -46,13 +52,10 @@ export const TodoSelecet: React.FC<Props> = ({
       <a
         href="#/completed"
         className={cn('filter__link', {
-          'filter__link selected': Filter.completed === filter,
+          'filter__link selected': FilterTodos.completed === filter,
         })}
         data-cy="FilterLinkCompleted"
-        onClick={() => {
-          onTodoSelected(Filter.completed);
-          setDefaultActiveSelect(false);
-        }}
+        onClick={handleFilterCompleted}
       >
         Completed
       </a>
