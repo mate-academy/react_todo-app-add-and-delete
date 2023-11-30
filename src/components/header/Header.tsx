@@ -24,18 +24,18 @@ export const Header: React.FC<Props> = ({
   const [inputValue, setInputValue] = useState('');
   const inputField = useRef<HTMLInputElement>(null);
 
-  const hendleFocus = useCallback(() => {
+  const handleFocus = useCallback(() => {
     if (inputField) {
       inputField.current?.focus();
     }
   }, []);
 
-  useEffect(() => hendleFocus, [hendleFocus]);
+  useEffect(() => handleFocus, [handleFocus]);
 
   const handleSubmit = (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
 
-    if (inputValue.trim() === '') {
+    if (!inputValue.trim()) {
       setErrorMessege(Error.EmptyTitle);
 
       return;
@@ -61,7 +61,7 @@ export const Header: React.FC<Props> = ({
       })
       .finally(() => setTempTodo(null));
 
-    hendleFocus();
+      handleFocus();
   };
 
   const handleInputvalueChange = (

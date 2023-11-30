@@ -52,7 +52,7 @@ export const App: React.FC = () => {
       });
   };
 
-  const CompletedDelete = async (todosId: number[]) => {
+  const handleDeleteCompleted = async (todosId: number[]) => {
     try {
       for (let i = 0; i < todosId.length; i += 1) {
         deleteTodo(todosId[i]);
@@ -76,7 +76,7 @@ export const App: React.FC = () => {
           setErrorMessege={setErrorText}
         />
 
-        {todos.length !== 0 && (
+        {todos.length > 0 && (
           <>
             <TodoList
               todos={filteredTodos}
@@ -87,7 +87,7 @@ export const App: React.FC = () => {
               todos={filteredTodos}
               setFilter={setCurrentFilter}
               filterType={currentFilter}
-              cleanComplitedTodo={CompletedDelete}
+              cleanComplitedTodo={handleDeleteCompleted}
             />
           </>
         )}

@@ -83,7 +83,7 @@ export const Footer: React.FC<Props> = ({
         data-cy="ClearCompletedButton"
         onClick={() => handleCleanComplited()}
       >
-        {complitedTodo !== 0 && 'Clear completed'}
+        {complitedTodo > 0 && 'Clear completed'}
       </button>
     </footer>
   );
