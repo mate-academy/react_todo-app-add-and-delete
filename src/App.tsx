@@ -1,24 +1,38 @@
-/* eslint-disable max-len */
 /* eslint-disable jsx-a11y/control-has-associated-label */
 import React from 'react';
-import { UserWarning } from './UserWarning';
+import { TodoList } from './components/TodoList/TodoList';
+import {
+  ErrorNotification,
+} from './components/ErrorNotification/ErrorNotification';
+import { Footer } from './components/Footer/Footer';
 
-const USER_ID = 0;
+export const App: React.FC = () => (
+  <div className="todoapp">
+    <h1 className="todoapp__title">todos</h1>
 
-export const App: React.FC = () => {
-  if (!USER_ID) {
-    return <UserWarning />;
-  }
+    <div className="todoapp__content">
+      <header className="todoapp__header">
+        <button
+          type="button"
+          className="todoapp__toggle-all active"
+          data-cy="ToggleAllButton"
+        />
 
-  return (
-    <section className="section container">
-      <p className="title is-4">
-        Copy all you need from the prev task:
-        <br />
-        <a href="https://github.com/mate-academy/react_todo-app-loading-todos#react-todo-app-load-todos">React Todo App - Load Todos</a>
-      </p>
+        <form>
+          <input
+            data-cy="NewTodoField"
+            type="text"
+            className="todoapp__new-todo"
+            placeholder="What needs to be done?"
+          />
+        </form>
+      </header>
 
-      <p className="subtitle">Styles are already copied</p>
-    </section>
-  );
-};
+      <TodoList />
+
+      <Footer />
+    </div>
+
+    <ErrorNotification />
+  </div>
+);
