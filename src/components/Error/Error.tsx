@@ -5,9 +5,10 @@ import { ErrorNotification } from '../../types/ErrorNotification';
 
 interface Props {
   errorMessage: ErrorNotification;
+  setErrorMessage: (q: ErrorNotification) => void;
 }
 
-export const Error: React.FC<Props> = ({ errorMessage }) => {
+export const Error: React.FC<Props> = ({ errorMessage, setErrorMessage }) => {
   const [isHidden, setIsHidden] = useState(true);
 
   useEffect(() => {
@@ -20,7 +21,7 @@ export const Error: React.FC<Props> = ({ errorMessage }) => {
     }, 3000);
 
     return () => clearTimeout(timer);
-  }, [errorMessage]);
+  }, [errorMessage, setErrorMessage]);
 
   return (
     !isHidden ? (

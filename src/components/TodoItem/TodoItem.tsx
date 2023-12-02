@@ -3,9 +3,14 @@ import { Todo } from '../../types/Todo';
 
 interface Props {
   todo: Todo;
+  removeTodo: (todo: Todo) => void;
+  isTempTodo: boolean;
+  isLoader: number | null;
 }
 
-export const TodoItem: React.FC<Props> = ({ todo }) => {
+export const TodoItem: React.FC<Props> = ({
+  todo, isTempTodo, removeTodo, isLoader,
+}) => {
   const { title, completed } = todo;
 
   return (
@@ -20,7 +25,7 @@ export const TodoItem: React.FC<Props> = ({ todo }) => {
           data-cy="TodoStatus"
           type="checkbox"
           className="todo__status"
-          checked={todo.completed}
+          checked={completed}
         />
       </label>
 
@@ -28,11 +33,24 @@ export const TodoItem: React.FC<Props> = ({ todo }) => {
         {title}
       </span>
 
-      <button type="button" className="todo__remove" data-cy="TodoDelete">
+      <button
+        type="button"
+        className="todo__remove"
+        data-cy="TodoDelete"
+        onClick={() => removeTodo(todo)}
+      >
         ×
       </button>
 
-      <div data-cy="TodoLoader" className="modal overlay">
+      <div
+        data-cy="TodoLoader"
+        className={cn(
+          'modal overlay',
+          {
+            'is-active': isTempTodo || isLoader === todo.id,
+          },
+        )}
+      >
         <div className="modal-background has-background-white-ter" />
         <div className="loader" />
       </div>

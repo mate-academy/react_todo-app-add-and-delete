@@ -8,9 +8,12 @@ interface Props {
   setFilter: (q: Filter) => void;
   filterOption: Filter;
   todos: Todo[];
+  deleteCompleted: () => void;
 }
 
-export const Footer: React.FC<Props> = ({ setFilter, filterOption, todos }) => {
+export const Footer: React.FC<Props> = ({
+  setFilter, filterOption, todos, deleteCompleted,
+}) => {
   const completedTodo = todos.some(todo => todo.completed);
   const todosLeft = todos.filter(todo => !todo.completed).length;
 
@@ -67,8 +70,9 @@ export const Footer: React.FC<Props> = ({ setFilter, filterOption, todos }) => {
           type="button"
           className="todoapp__clear-completed"
           data-cy="ClearCompletedButton"
+          onClick={deleteCompleted}
         >
-          Clear completed
+          {completedTodo && 'Clear completed'}
         </button>
       )}
     </footer>
