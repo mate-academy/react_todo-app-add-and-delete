@@ -1,8 +1,6 @@
 import classNames from 'classnames';
 import { useContext, useRef, useState } from 'react';
 
-import * as todoService from '../../api/todos';
-import { Error } from '../../types/Error';
 import { Todo } from '../../types/Todo';
 import { TodosContext } from '../TodosContext';
 
@@ -16,9 +14,8 @@ export const TodoItem: React.FC<Props> = ({ todo }) => {
   } = todo;
 
   const {
-    todos,
-    setTodos,
-    setErrorMessage,
+    isSubmiting,
+    deleteTodo,
   } = useContext(TodosContext);
 
   // const [isEdit, setIsEdit] = useState(false);
@@ -28,27 +25,13 @@ export const TodoItem: React.FC<Props> = ({ todo }) => {
   const titleField = useRef<HTMLInputElement>(null);
 
   const handleTodoDelete = (todoId : number) => {
-    setErrorMessage(Error.Default);
-
-    const filteredTodos = todos
-      .filter(currentTodo => currentTodo.id !== todoId);
-
-    setTodos(filteredTodos);
-
-    return todoService.deleteTodo(todoId)
-      .catch((error) => {
-        setTodos(todos);
-        setErrorMessage(Error.Delete);
-        throw error;
-      });
+    deleteTodo(todoId);
   };
 
   return (
     <div
       data-cy="Todo"
-      className={classNames('todo', {
-        completed,
-      })}
+      className={classNames('todo', { completed })}
     >
       <label className="todo__status-label">
         <input
@@ -91,7 +74,11 @@ export const TodoItem: React.FC<Props> = ({ todo }) => {
       )}
 
       {/* overlay will cover the todo while it is being updated */}
-      <div data-cy="TodoLoader" className="modal overlay">
+      <div
+        data-cy="TodoLoader"
+        className={classNames('modal overlay',
+          { 'is-active': isSubmiting && !todo.id })}
+      >
         <div className="modal-background has-background-white-ter" />
         <div className="loader" />
       </div>

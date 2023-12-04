@@ -2,7 +2,6 @@ import classNames from 'classnames';
 import React, {
   useContext, useEffect, useRef, useState,
 } from 'react';
-import * as todoService from '../../api/todos';
 import { Error } from '../../types/Error';
 import { TodosContext } from '../TodosContext';
 
@@ -12,13 +11,14 @@ import { TodosContext } from '../TodosContext';
 type Props = {};
 
 export const Header: React.FC<Props> = () => {
-  const [isSubmiting, setIsSubmiting] = useState(false);
-
+  const { isSubmiting, setIsSubmiting } = useContext(TodosContext);
   const [value, setValue] = useState('');
+
   const {
     todos,
     setTodos,
     setErrorMessage,
+    addTodo,
     USER_ID,
   } = useContext(TodosContext);
 
@@ -47,25 +47,23 @@ export const Header: React.FC<Props> = () => {
 
     setErrorMessage(Error.Default);
 
-    if (!value.trim()) {
+    const trimmedTitle = value.trim();
+
+    if (!trimmedTitle) {
       setErrorMessage(Error.EmptyTitle);
-    } else {
-      setIsSubmiting(true);
-      todoService.createTodo({
-        title: value.trim(),
-        completed: false,
-        userId: USER_ID,
-      })
-        .then(newTodo => {
-          setTodos([...todos, newTodo]);
-        })
-        .catch((error) => {
-          setErrorMessage(Error.Add);
-          throw error;
-        });
-      setIsSubmiting(false);
-      setValue('');
+
+      return;
     }
+
+    const todo = {
+      title: value.trim(),
+      completed: false,
+      userId: USER_ID,
+    };
+
+    addTodo(todo)
+      .then(() => setValue(''))
+      .finally(() => setIsSubmiting(false));
   };
 
   return (
