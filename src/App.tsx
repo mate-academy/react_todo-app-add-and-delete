@@ -5,34 +5,22 @@ import {
   ErrorNotification,
 } from './components/ErrorNotification/ErrorNotification';
 import { Footer } from './components/Footer/Footer';
+import { HeaderInput } from './components/HeaderInput/HeaderInput';
 
-export const App: React.FC = () => (
-  <div className="todoapp">
-    <h1 className="todoapp__title">todos</h1>
+export const App: React.FC = () => {
+  return (
+    <div className="todoapp">
+      <h1 className="todoapp__title">todos</h1>
 
-    <div className="todoapp__content">
-      <header className="todoapp__header">
-        <button
-          type="button"
-          className="todoapp__toggle-all active"
-          data-cy="ToggleAllButton"
-        />
+      <div className="todoapp__content">
+        <HeaderInput />
 
-        <form>
-          <input
-            data-cy="NewTodoField"
-            type="text"
-            className="todoapp__new-todo"
-            placeholder="What needs to be done?"
-          />
-        </form>
-      </header>
+        <TodoList />
 
-      <TodoList />
+        <Footer />
+      </div>
 
-      <Footer />
+      <ErrorNotification />
     </div>
-
-    <ErrorNotification />
-  </div>
-);
+  );
+};

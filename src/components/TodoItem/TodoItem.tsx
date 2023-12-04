@@ -3,7 +3,17 @@ import classNames from 'classnames';
 import { Todo } from '../../types/Todo';
 import { TodoLoader } from '../TodoLoader/TodoLoader';
 
-export const TodoItem: React.FC<{ todo: Todo }> = ({ todo }) => {
+interface TodoItemProps {
+  todo: Todo;
+  onDeleteClick?: () => void;
+  loading?: boolean;
+}
+
+export const TodoItem: React.FC<TodoItemProps> = ({
+  todo,
+  loading,
+  onDeleteClick,
+}) => {
   const { id, title, completed } = todo;
 
   return (
@@ -33,11 +43,12 @@ export const TodoItem: React.FC<{ todo: Todo }> = ({ todo }) => {
         type="button"
         className="todo__remove"
         data-cy="TodoDelete"
+        onClick={onDeleteClick}
       >
         ×
       </button>
 
-      <TodoLoader />
+      <TodoLoader loading={loading} />
     </div>
   );
 };

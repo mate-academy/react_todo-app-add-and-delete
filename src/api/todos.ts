@@ -6,10 +6,13 @@ export const getTodos = (userId: number) => {
 };
 
 export const newPost = async (userId: number, title: string): Promise<Todo> => {
-  // Send a POST request using client.post
   return client.post<Todo>('/todos', {
     userId,
     title,
     completed: false,
   });
+};
+
+export const deleteTodo = (id: number) => {
+  return client.delete(`/todos/${id}`);
 };
