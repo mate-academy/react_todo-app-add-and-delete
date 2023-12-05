@@ -34,6 +34,7 @@ export const App: React.FC = () => {
   const [todos, setTodos] = useState<Todo[]>([]);
   const [filterStatus, setFilterStatus] = useState<Filter>(Filter.All);
   const [errorType, setErrorType] = useState<Errors | null>(null);
+  const [isLoading, setIsLoading] = useState(false);
 
   useEffect(() => {
     todoService.getTodos(USER_ID)
@@ -55,18 +56,20 @@ export const App: React.FC = () => {
   };
 
   const addTodo = (title: string) => {
-    const newTodo = {
+    todoService.addTodo({
       title,
       completed: false,
       userId: USER_ID,
-    };
-
-    setTodos(currentTodos => {
-      const maxId = Math.max(0, ...currentTodos.map(post => post.id));
-      const id = maxId + 1;
-
-      return [...currentTodos, { ...newTodo, id }];
-    });
+    })
+      .then(newTodo => {
+        setTimeout(() => {
+          setIsLoading(false);
+          setTodos(currentTodos => {
+            return [...currentTodos, newTodo];
+          });
+        }, 1000);
+      })
+      .finally(() => setIsLoading(true));
   };
 
   const isThereCompleted = todos.some(todo => todo.completed);
@@ -79,7 +82,10 @@ export const App: React.FC = () => {
 
       <div className="todoapp__content">
         <TodoHeader
+          isLoading={isLoading}
+          setLoading={setIsLoading}
           onAddTodo={addTodo}
+          setError={setErrorType}
         />
 
         <TodoList
