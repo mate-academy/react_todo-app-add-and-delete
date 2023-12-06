@@ -35,6 +35,8 @@ export const App: React.FC = () => {
   const [filterStatus, setFilterStatus] = useState<Filter>(Filter.All);
   const [errorType, setErrorType] = useState<Errors | null>(null);
   const [isLoading, setIsLoading] = useState(false);
+  const [tempTodo, setTempTodo] = useState<Todo | null>(null);
+  const [isAdding, setIsAdding] = useState(false);
 
   useEffect(() => {
     todoService.getTodos(USER_ID)
@@ -51,11 +53,27 @@ export const App: React.FC = () => {
   }
 
   const handleDelete = (id: number) => {
-    todoService.deleteTodo(id);
-    setTodos(currentTodos => currentTodos.filter(post => post.id !== id));
+    setIsLoading(true);
+    todoService.deleteTodo(id)
+      .then(() => {
+        setTimeout(() => {
+          setTodos(currentTodos => currentTodos.filter(post => post.id !== id));
+        }, 500);
+      })
+      .catch(() => setErrorType(Errors.Delete))
+      .finally(() => setTimeout(() => {
+        setIsLoading(false);
+      }, 1000));
   };
 
   const addTodo = (title: string) => {
+    setTempTodo({
+      id: 0,
+      title,
+      completed: false,
+      userId: USER_ID,
+    });
+    setIsAdding(true);
     todoService.addTodo({
       title,
       completed: false,
@@ -67,9 +85,14 @@ export const App: React.FC = () => {
           setTodos(currentTodos => {
             return [...currentTodos, newTodo];
           });
-        }, 1000);
+          setTempTodo(null);
+          setIsAdding(false);
+        }, 500);
       })
-      .finally(() => setIsLoading(true));
+      .catch(() => setErrorType(Errors.Add))
+      .finally(() => {
+        setIsLoading(true);
+      });
   };
 
   const isThereCompleted = todos.some(todo => todo.completed);
@@ -90,7 +113,9 @@ export const App: React.FC = () => {
 
         <TodoList
           todos={filteredTodos}
+          tempTodo={tempTodo}
           deleteTodo={handleDelete}
+          isAdding={isAdding}
         />
 
         {/* Hide the footer if there are no todos */}

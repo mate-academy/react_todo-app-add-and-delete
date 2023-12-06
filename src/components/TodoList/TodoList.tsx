@@ -1,54 +1,34 @@
-import React from 'react';
-import cn from 'classnames';
 import { Todo } from '../../types/Todo';
+import { TodoItem } from '../TodoItem/TodoItem';
 
 type Props = {
-  todos: Todo[],
-  deleteTodo: (id: number) => void,
+  todos: Todo[];
+  tempTodo?: Todo | null;
+  deleteTodo?: (todoId: number) => void;
+  isAdding?: boolean;
 };
 
-export const TodoList: React.FC<Props> = ({ todos, deleteTodo }) => {
-  return (
-    <section className="todoapp__main" data-cy="TodoList">
-      {todos.map(todo => {
-        const { title, id, completed } = todo;
+export const TodoList: React.FC<Props> = ({
+  todos,
+  tempTodo = null,
+  deleteTodo,
+  isAdding,
+}) => (
+  <section className="todoapp__main" data-cy="TodoList">
+    {todos.map(todo => (
+      <TodoItem
+        key={todo.id}
+        todo={todo}
+        deleteTodo={deleteTodo}
+      />
+    ))}
 
-        return (
-          <div
-            data-cy="Todo"
-            className={cn('todo', { completed })}
-            key={id}
-          >
-            <label className="todo__status-label">
-              <input
-                data-cy="TodoStatus"
-                type="checkbox"
-                className="todo__status"
-              />
-            </label>
-
-            <span data-cy="TodoTitle" className="todo__title">
-              {title}
-            </span>
-
-            {/* Remove button appears only on hover */}
-            <button
-              type="button"
-              className="todo__remove"
-              data-cy="TodoDelete"
-              onClick={() => deleteTodo(id)}
-            >
-              ×
-            </button>
-
-            {/* overlay will cover the todo while it is being updated */}
-            <div data-cy="TodoLoader" className="modal overlay">
-              <div className="modal-background has-background-white-ter" />
-              <div className="loader" />
-            </div>
-          </div>
-        );
-      })}
-    </section>
-  );
-};
+    {tempTodo && (
+      <TodoItem
+        key={tempTodo.id}
+        todo={tempTodo}
+        isAdding={isAdding}
+      />
+    )}
+  </section>
+);

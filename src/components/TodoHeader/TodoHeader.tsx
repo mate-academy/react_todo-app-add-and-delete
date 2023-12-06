@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useRef } from 'react';
 import { Errors } from '../../types/Errors';
 
 type Props = {
@@ -15,6 +15,7 @@ export const TodoHeader: React.FC<Props> = ({
 
 }) => {
   const [todoTitle, setTodoTitle] = useState('');
+  const inputRef = useRef<HTMLInputElement>(null);
 
   const handleSubmit = (event: React.FormEvent<HTMLFormElement>) => {
     event?.preventDefault();
@@ -27,6 +28,10 @@ export const TodoHeader: React.FC<Props> = ({
     onAddTodo(todoTitle.trim());
 
     setTodoTitle('');
+
+    if (inputRef.current && !inputRef.current.disabled) {
+      inputRef.current.focus();
+    }
   };
 
   return (
@@ -45,7 +50,6 @@ export const TodoHeader: React.FC<Props> = ({
       >
         <input
           // eslint-disable-next-line jsx-a11y/no-autofocus
-          autoFocus
           data-cy="NewTodoField"
           type="text"
           className="todoapp__new-todo"
@@ -53,6 +57,7 @@ export const TodoHeader: React.FC<Props> = ({
           value={todoTitle}
           onChange={(event) => setTodoTitle(event.target.value)}
           disabled={isLoading}
+          ref={inputRef}
         />
       </form>
     </header>
