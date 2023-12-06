@@ -2,14 +2,13 @@ import React from 'react';
 import cn from 'classnames';
 import { Todo } from '../../types/Todo';
 import { Filter } from '../../types/Filter';
-import { deleteTodo } from '../../api/todos';
 
 type Props = {
   todos: Todo[],
   setFilterStatus: (filter: Filter) => void,
   isCompleted: boolean,
   filterStatus: Filter,
-  setTodos: (todos: Todo[]) => void
+  handleDelete: (id: number) => void,
 };
 
 export const TodoFooter: React.FC<Props> = ({
@@ -17,10 +16,9 @@ export const TodoFooter: React.FC<Props> = ({
   setFilterStatus,
   isCompleted,
   filterStatus,
-  setTodos,
+  handleDelete,
 }) => {
   const activeTodos = [...todos].filter(todo => !todo.completed);
-
   const handleOnClick = (status: Filter) => {
     switch (status) {
       case 'Active':
@@ -39,9 +37,11 @@ export const TodoFooter: React.FC<Props> = ({
   const handleClearCompleted = () => {
     const completedTodos = [...todos].filter(todo => todo.completed);
 
-    setTodos(activeTodos);
+    completedTodos.forEach(todo => {
+      handleDelete(todo.id);
+    });
 
-    completedTodos.map(todo => deleteTodo(todo.id));
+    // setTodos(activeTodos);
   };
 
   return (

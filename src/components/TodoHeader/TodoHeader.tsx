@@ -1,20 +1,24 @@
-import { useState, useRef } from 'react';
+import { useRef, useEffect } from 'react';
 import { Errors } from '../../types/Errors';
+import { Todo } from '../../types/Todo';
 
 type Props = {
+  todos: Todo[],
   onAddTodo: (title: string) => void,
   setError: (error: Errors) => void,
   isLoading: boolean,
-  setLoading(bool: boolean): void,
+  todoTitle: string,
+  setTodoTitle: (title: string) => void,
 };
 
 export const TodoHeader: React.FC<Props> = ({
   onAddTodo,
   setError,
   isLoading,
-
+  todos,
+  todoTitle,
+  setTodoTitle,
 }) => {
-  const [todoTitle, setTodoTitle] = useState('');
   const inputRef = useRef<HTMLInputElement>(null);
 
   const handleSubmit = (event: React.FormEvent<HTMLFormElement>) => {
@@ -26,13 +30,13 @@ export const TodoHeader: React.FC<Props> = ({
     }
 
     onAddTodo(todoTitle.trim());
+  };
 
-    setTodoTitle('');
-
+  useEffect(() => {
     if (inputRef.current && !inputRef.current.disabled) {
       inputRef.current.focus();
     }
-  };
+  }, [todos]);
 
   return (
     <header className="todoapp__header">

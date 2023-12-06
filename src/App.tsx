@@ -36,7 +36,9 @@ export const App: React.FC = () => {
   const [errorType, setErrorType] = useState<Errors | null>(null);
   const [isLoading, setIsLoading] = useState(false);
   const [tempTodo, setTempTodo] = useState<Todo | null>(null);
+  const [processingTodoIds, setProcessingTodoIds] = useState<number[]>([]);
   const [isAdding, setIsAdding] = useState(false);
+  const [todoTitle, setTodoTitle] = useState('');
 
   useEffect(() => {
     todoService.getTodos(USER_ID)
@@ -53,7 +55,7 @@ export const App: React.FC = () => {
   }
 
   const handleDelete = (id: number) => {
-    setIsLoading(true);
+    setProcessingTodoIds(prevIds => [...prevIds, id]);
     todoService.deleteTodo(id)
       .then(() => {
         setTimeout(() => {
@@ -62,14 +64,16 @@ export const App: React.FC = () => {
       })
       .catch(() => setErrorType(Errors.Delete))
       .finally(() => setTimeout(() => {
-        setIsLoading(false);
-      }, 1000));
+        setProcessingTodoIds(prevIds => [...prevIds]
+          .filter(prevId => prevId !== id));
+      }, 500));
   };
 
   const addTodo = (title: string) => {
+    setProcessingTodoIds(prevIds => [...prevIds, 0]);
     setTempTodo({
       id: 0,
-      title,
+      title: 'fake',
       completed: false,
       userId: USER_ID,
     });
@@ -80,18 +84,20 @@ export const App: React.FC = () => {
       userId: USER_ID,
     })
       .then(newTodo => {
+        setTodoTitle('');
+        setIsLoading(true);
         setTimeout(() => {
-          setIsLoading(false);
           setTodos(currentTodos => {
             return [...currentTodos, newTodo];
           });
-          setTempTodo(null);
-          setIsAdding(false);
         }, 500);
       })
       .catch(() => setErrorType(Errors.Add))
       .finally(() => {
-        setIsLoading(true);
+        setTempTodo(null);
+        setIsLoading(false);
+        setProcessingTodoIds(prevIds => [...prevIds]
+          .filter(prevId => prevId !== 0));
       });
   };
 
@@ -105,8 +111,10 @@ export const App: React.FC = () => {
 
       <div className="todoapp__content">
         <TodoHeader
+          todoTitle={todoTitle}
+          setTodoTitle={setTodoTitle}
+          todos={todos}
           isLoading={isLoading}
-          setLoading={setIsLoading}
           onAddTodo={addTodo}
           setError={setErrorType}
         />
@@ -116,6 +124,7 @@ export const App: React.FC = () => {
           tempTodo={tempTodo}
           deleteTodo={handleDelete}
           isAdding={isAdding}
+          processingTodoIds={processingTodoIds}
         />
 
         {/* Hide the footer if there are no todos */}
@@ -125,10 +134,9 @@ export const App: React.FC = () => {
             filterStatus={filterStatus}
             setFilterStatus={setFilterStatus}
             isCompleted={isThereCompleted}
-            setTodos={setTodos}
+            handleDelete={handleDelete}
           />
         )}
-
       </div>
 
       {/* Notification is shown in case of any error */}

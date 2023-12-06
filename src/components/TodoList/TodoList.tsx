@@ -6,6 +6,7 @@ type Props = {
   tempTodo?: Todo | null;
   deleteTodo?: (todoId: number) => void;
   isAdding?: boolean;
+  processingTodoIds: number[],
 };
 
 export const TodoList: React.FC<Props> = ({
@@ -13,6 +14,7 @@ export const TodoList: React.FC<Props> = ({
   tempTodo = null,
   deleteTodo,
   isAdding,
+  processingTodoIds,
 }) => (
   <section className="todoapp__main" data-cy="TodoList">
     {todos.map(todo => (
@@ -20,6 +22,7 @@ export const TodoList: React.FC<Props> = ({
         key={todo.id}
         todo={todo}
         deleteTodo={deleteTodo}
+        processingTodoIds={processingTodoIds}
       />
     ))}
 
@@ -28,6 +31,7 @@ export const TodoList: React.FC<Props> = ({
         key={tempTodo.id}
         todo={tempTodo}
         isAdding={isAdding}
+        processingTodoIds={processingTodoIds}
       />
     )}
   </section>

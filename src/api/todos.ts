@@ -10,6 +10,7 @@ export const deleteTodo = (id: number) => {
 };
 
 export const addTodo = ({ title, userId, completed }: Omit<Todo, 'id'>) => {
+  // return Promise.reject();
   return client.post<Todo>('/todos/', { title, userId, completed });
 };
 
