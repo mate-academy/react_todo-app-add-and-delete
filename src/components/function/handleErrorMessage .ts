@@ -1,7 +1,7 @@
 import { isErrorWithMessage } from './isErrorWithMessage';
 
 export const handleErrorMessage = (
-  error: any,
+  error: Error,
   setErrorNotification: React.Dispatch<React.SetStateAction<string | null>>,
 ) => {
   if (isErrorWithMessage(error)) {

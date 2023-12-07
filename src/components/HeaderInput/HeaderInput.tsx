@@ -25,40 +25,6 @@ export const HeaderInput: React.FC = () => {
     }
   }, [todos]);
 
-  // const handleSaveTodo = async () => {
-  //   if (!newTodo.trim()) {
-  //     setErrorNotification('Title should not be empty');
-
-  //     return;
-  //   }
-
-  //   setLoading(true);
-  //   const title = newTodo.trim();
-  //   let response;
-
-  //   try {
-  //     response = await newPost(
-  //       USER_ID,
-  //       title,
-  //     );
-  //     console.log(response);
-
-  //     setTempTodo(response);
-  //     setNewTodo('');
-  //   } catch (error) {
-  //     handleErrorMessage(error, setErrorNotification);
-  //     const errorNotificationTimeout = setTimeout(() => {
-  //       setErrorNotification(null);
-  //     }, 3000);
-
-  //     clearTimeout(errorNotificationTimeout);
-  //     throw error;
-  //   } finally {
-  //     setLoading(false);
-  //     setTempTodo(null);
-  //   }
-  // };
-
   const handleSaveTodo = async () => {
     if (!newTodo.trim()) {
       setErrorNotification('Title should not be empty');
@@ -79,23 +45,18 @@ export const HeaderInput: React.FC = () => {
 
     try {
       const response = await newPost(USER_ID, title);
-      console.log(response);
 
-      // Update the todos state with the new todo
       setTodos(
         (prevTodos) => (prevTodos ? [...prevTodos, response] : [response]),
-      )
+      );
 
       setTodosFilter(
         (prevTodos) => (prevTodos ? [...prevTodos, response] : [response]),
       );
 
-      // Set the newly added todo to tempTodo
-
-      // Clear the newTodo input field
       setNewTodo('');
     } catch (error) {
-      handleErrorMessage(error, setErrorNotification);
+      handleErrorMessage(error as Error, setErrorNotification);
       const errorNotificationTimeout = setTimeout(() => {
         setErrorNotification(null);
       }, 3000);
@@ -107,7 +68,6 @@ export const HeaderInput: React.FC = () => {
       setLoading(false);
     }
   };
-
 
   return (
     <header className="todoapp__header">

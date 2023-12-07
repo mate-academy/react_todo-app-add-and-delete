@@ -6,6 +6,7 @@ import { handleErrorMessage } from '../function/handleErrorMessage ';
 
 export const TodoList: React.FC = () => {
   const {
+    setTodos,
     todosFilter,
     tempTodo,
     loading,
@@ -30,7 +31,7 @@ export const TodoList: React.FC = () => {
     try {
       await deleteTodo(id);
     } catch (error) {
-      handleErrorMessage(error, setErrorNotification);
+      handleErrorMessage(error as Error, setErrorNotification);
       const errorNotificationTimeout = setTimeout(() => {
         setErrorNotification(null);
       }, 3000);
@@ -40,6 +41,7 @@ export const TodoList: React.FC = () => {
       const remainder = todosFilter.filter((e) => e.id !== id);
 
       setTodosFilter(remainder);
+      setTodos(remainder);
 
       setDeleteLoadingMap(
         (prevLoadingMap) => ({ ...prevLoadingMap, [id]: false }),

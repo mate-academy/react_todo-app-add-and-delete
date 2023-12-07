@@ -58,18 +58,22 @@ export const Footer: React.FC = () => {
     setTodos(updatedTodos);
   };
 
+  if (!todos) {
+    return null;
+  }
+
   return (
-    <footer
-      className={classNames(
-        'todoapp__footer',
-        {
-          hidden: incompleteTodosCount === 0,
-        },
-      )}
-      data-cy="Footer"
-    >
-      {incompleteTodosCount > 0 && (
-        <>
+    <>
+      {todos && todos.length > 0 && (
+        <footer
+          className={classNames(
+            'todoapp__footer',
+            {
+              hidden: incompleteTodosCount === 0,
+            },
+          )}
+          data-cy="Footer"
+        >
           <span className="todo-count" data-cy="TodosCounter">
             {`${incompleteTodosCount} ${incompleteTodosCount === 1 ? 'item' : 'items'} left`}
           </span>
@@ -94,8 +98,8 @@ export const Footer: React.FC = () => {
               Clear completed
             </button>
           )}
-        </>
+        </footer>
       )}
-    </footer>
+    </>
   );
 };

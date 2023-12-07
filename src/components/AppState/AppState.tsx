@@ -75,7 +75,7 @@ export const AppStateProvider: React.FC<AppStateProviderProps>
           setTodos(todoList);
           setTodosFilter(todoList);
         } catch (error) {
-          handleErrorMessage(error, setErrorNotification);
+          handleErrorMessage(error as Error, setErrorNotification);
           const errorNotificationTimeout = setTimeout(() => {
             setErrorNotification(null);
           }, 3000);

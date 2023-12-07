@@ -1,4 +1,5 @@
 import React from 'react';
+import classNames from 'classnames';
 import { useAppState } from '../AppState/AppState';
 
 export const ErrorNotification: React.FC = () => {
@@ -10,7 +11,12 @@ export const ErrorNotification: React.FC = () => {
   return (
     <div
       data-cy="ErrorNotification"
-      className={`notification is-danger is-light has-text-weight-normal ${errorNotification ? '' : 'hidden'}`}
+      className={classNames(
+        'notification is-danger is-light has-text-weight-normal',
+        {
+          hidden: !errorNotification,
+        },
+      )}
     >
       <button
         data-cy="HideErrorButton"
