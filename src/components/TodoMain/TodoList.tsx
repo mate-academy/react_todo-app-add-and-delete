@@ -1,48 +1,14 @@
-import React, { useContext, useMemo } from 'react';
+import React, { useContext } from 'react';
 
 import { TodosContext } from '../TodosContext';
 
-import * as todoService from '../../api/todos';
-
 import { TodoItem } from './TodoItem';
-import { Status } from '../../types/Status';
-import { Error } from '../../types/Error';
-// import { Todo } from '../../types/Todo';
 
 export const TodoList: React.FC = () => {
   const {
-    todos,
-    setTodos,
-    todoFilter,
-    setTodoError,
+    filteredTodos,
+    tempTodo,
   } = useContext(TodosContext);
-
-  const filteredTodos = useMemo(() => {
-    switch (todoFilter) {
-      case Status.Active:
-        return todos.filter(todo => !todo.completed);
-
-      case Status.Completed:
-        return todos.filter(todo => todo.completed);
-
-      default:
-        return todos;
-    }
-  }, [todoFilter, todos]);
-
-  const deleteTodo = (id: number) => {
-    return todoService.deleteTodo(id)
-      .catch(() => {
-        setTodoError(Error.DeleteTodoError);
-      });
-  };
-
-  // const updateTodo = (newTodo: Todo) => {
-  //   return todoService.updateTodo(newTodo)
-  //     .catch(() => {
-  //       setTodoError(Error.UpdateTodoError);
-  //     });
-  // };
 
   return (
     <section
@@ -53,11 +19,15 @@ export const TodoList: React.FC = () => {
         <TodoItem
           key={todo.id}
           todo={todo}
-          setTodos={setTodos}
-          deleteTodo={deleteTodo}
-          // updateTodo={updateTodo}
         />
       ))}
+
+      {tempTodo && (
+        <TodoItem
+          key={tempTodo.id}
+          todo={tempTodo}
+        />
+      )}
     </section>
   );
 };

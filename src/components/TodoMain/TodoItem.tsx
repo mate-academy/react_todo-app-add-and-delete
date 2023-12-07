@@ -1,29 +1,20 @@
-import React from 'react';
+import React, { useContext } from 'react';
 import cn from 'classnames';
 
 import { Todo } from '../../types/Todo';
+import { TodosContext } from '../TodosContext';
 
 type Props = {
   todo: Todo,
-  setTodos: React.Dispatch<React.SetStateAction<Todo[]>>,
-  deleteTodo: (id: number) => Promise<unknown>,
-  // updateTodo: (newTodo: Todo) => Promise<unknown>,
 };
 
-export const TodoItem: React.FC<Props> = ({
-  todo,
-  setTodos,
-  deleteTodo,
-  // updateTodo,
-}) => {
+export const TodoItem: React.FC<Props> = ({ todo }) => {
   const { id, title, completed } = todo;
-
-  const handleDelete = (currentId: number) => {
-    deleteTodo(currentId);
-    setTodos((currentTodos) => (
-      currentTodos.filter(currentTodo => currentTodo.id !== currentId)
-    ));
-  };
+  const {
+    deleteTodo,
+    isAdding,
+    idToDelete,
+  } = useContext(TodosContext);
 
   return (
     <div
@@ -50,14 +41,15 @@ export const TodoItem: React.FC<Props> = ({
         type="button"
         className="todo__remove"
         data-cy="TodoDelete"
-        onClick={() => handleDelete(id)}
+        onClick={() => deleteTodo(id)}
       >
         ×
       </button>
 
       <div
         data-cy="TodoLoader"
-        className="modal overlay"
+        className={cn('modal overlay',
+          { 'is-active': (isAdding && !todo.id) || (idToDelete === id) })}
       >
         <div className="modal-background has-background-white-ter" />
         <div className="loader" />

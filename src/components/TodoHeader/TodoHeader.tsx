@@ -7,22 +7,21 @@ import React, {
 } from 'react';
 import cn from 'classnames';
 
-import * as todoService from '../../api/todos';
-
 import { TodosContext } from '../TodosContext';
 
 import { Error } from '../../types/Error';
-import { Todo } from '../../types/Todo';
 
 export const TodoHeader: React.FC = () => {
   const {
     USER_ID,
     todos,
-    setTodos,
+    addTodo,
     setTodoError,
+    isAdding,
+    setIsAdding,
   } = useContext(TodosContext);
   const [inputQuery, setInputQuery] = useState('');
-  const inputRef = useRef<HTMLInputElement>(null);
+  const inputRef = useRef<null | HTMLInputElement>(null);
 
   useEffect(() => {
     inputRef.current?.focus();
@@ -37,28 +36,16 @@ export const TodoHeader: React.FC = () => {
       return;
     }
 
-    todoService.createTodo({
-      title: inputQuery,
+    addTodo({
+      title: inputQuery.trim(),
       completed: false,
       userId: USER_ID,
-    }).then((newTodo: Todo) => {
-      setTodos(prevTodos => [...prevTodos, newTodo]);
-    }).catch(() => setTodoError(Error.AddTodoError));
-
-    setInputQuery('');
-  };
-
-  const handleCompleateSwitcher = () => {
-    const hasCompleated = todos.some(todo => !todo.completed);
-
-    const switchedTodos = todos.map(todo => {
-      return ({
-        ...todo,
-        completed: hasCompleated,
-      });
+    }).finally(() => {
+      setIsAdding(false);
+      setInputQuery('');
+    }).catch(() => {
+      setInputQuery(inputQuery);
     });
-
-    setTodos(switchedTodos);
   };
 
   return (
@@ -69,7 +56,7 @@ export const TodoHeader: React.FC = () => {
           active: todos.every(todo => todo.completed),
         })}
         data-cy="ToggleAllButton"
-        onClick={handleCompleateSwitcher}
+      // onClick={handleCompleateSwitcher}
       />
 
       <form
@@ -83,8 +70,24 @@ export const TodoHeader: React.FC = () => {
           ref={inputRef}
           value={inputQuery}
           onChange={(e) => setInputQuery(e.target.value)}
+          disabled={isAdding}
         />
       </form>
     </header>
   );
 };
+
+// I will need this in the next tasks
+
+// const handleCompleateSwitcher = () => {
+//   const hasCompleated = todos.some(todo => !todo.completed);
+
+//   const switchedTodos = todos.map(todo => {
+//     return ({
+//       ...todo,
+//       completed: hasCompleated,
+//     });
+//   });
+
+//   setTodos(switchedTodos);
+// };
