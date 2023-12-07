@@ -14,7 +14,7 @@ export const TodoItem: React.FC<TodoItemProps> = ({
   loading,
   onDeleteClick,
 }) => {
-  const { id, title, completed } = todo;
+  const { id, title, completed} = todo;
 
   return (
     <div

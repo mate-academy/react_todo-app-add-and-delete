@@ -1,8 +1,8 @@
 export interface Todo {
-  id: number;
-  userId: number;
+  id?: number;
+  userId?: number;
   title: string;
-  completed: boolean;
+  completed?: boolean;
 }
 
 export enum StatusFilter {

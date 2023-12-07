@@ -1,22 +1,20 @@
-import { useState } from 'react';
 import { Todo } from '../../types/Todo';
 import { TodoItem } from '../TodoItem/TodoItem';
 import { useAppState } from '../AppState/AppState';
 import { deleteTodo } from '../../api/todos';
+import { handleErrorMessage } from '../function/handleErrorMessage ';
 
 export const TodoList: React.FC = () => {
   const {
     todosFilter,
     tempTodo,
     loading,
+    setTodosFilter,
     setLoading,
     setErrorNotification,
-  } = useAppState();
-
-  const [
     deleteLoadingMap,
     setDeleteLoadingMap,
-  ] = useState<Record<number, boolean>>({});
+  } = useAppState();
 
   const handleDeleteClick = async (id: number) => {
     if (!todosFilter) {
@@ -29,12 +27,20 @@ export const TodoList: React.FC = () => {
       (prevLoadingMap) => ({ ...prevLoadingMap, [id]: true }),
     );
 
-    setLoading(true);
     try {
       await deleteTodo(id);
     } catch (error) {
-      setErrorNotification('Failed to delete todo');
+      handleErrorMessage(error, setErrorNotification);
+      const errorNotificationTimeout = setTimeout(() => {
+        setErrorNotification(null);
+      }, 3000);
+
+      clearTimeout(errorNotificationTimeout);
     } finally {
+      const remainder = todosFilter.filter((e) => e.id !== id);
+
+      setTodosFilter(remainder);
+
       setDeleteLoadingMap(
         (prevLoadingMap) => ({ ...prevLoadingMap, [id]: false }),
       );
@@ -45,14 +51,22 @@ export const TodoList: React.FC = () => {
   return (
     <section className="todoapp__main" data-cy="TodoList">
       {todosFilter && todosFilter.map(
-        (todo: Todo) => (
-          <TodoItem
-            key={todo.id}
-            todo={todo}
-            loading={deleteLoadingMap[todo.id] || false}
-            onDeleteClick={() => handleDeleteClick(todo.id)}
-          />
-        ),
+        (todo: Todo) => {
+          const { id } = todo;
+
+          if (id) {
+            return (
+              <TodoItem
+                key={todo.id}
+                todo={todo}
+                loading={deleteLoadingMap[id] || false}
+                onDeleteClick={() => handleDeleteClick(id)}
+              />
+            );
+          }
+
+          return null;
+        },
       )}
       {tempTodo && (
         <>

@@ -2,16 +2,17 @@ import React, { useEffect, useRef, useState } from 'react';
 import { USER_ID, useAppState } from '../AppState/AppState';
 import { handleErrorMessage } from '../function/handleErrorMessage ';
 import { newPost } from '../../api/todos';
+import { Todo } from '../../types/Todo';
 
 export const HeaderInput: React.FC = () => {
   const {
     todos,
     loading,
+    setTodos,
+    setTodosFilter,
     setErrorNotification,
     setLoading,
-    // setTodos,
     setTempTodo,
-    // setFilter,
   } = useAppState();
 
   const [newTodo, setNewTodo] = useState<string>('');
@@ -22,13 +23,41 @@ export const HeaderInput: React.FC = () => {
     if (newTodoFieldRef.current) {
       newTodoFieldRef.current.focus();
     }
-  }, []);
-
-  useEffect(() => {
-    if (newTodoFieldRef.current) {
-      newTodoFieldRef.current.focus();
-    }
   }, [todos]);
+
+  // const handleSaveTodo = async () => {
+  //   if (!newTodo.trim()) {
+  //     setErrorNotification('Title should not be empty');
+
+  //     return;
+  //   }
+
+  //   setLoading(true);
+  //   const title = newTodo.trim();
+  //   let response;
+
+  //   try {
+  //     response = await newPost(
+  //       USER_ID,
+  //       title,
+  //     );
+  //     console.log(response);
+
+  //     setTempTodo(response);
+  //     setNewTodo('');
+  //   } catch (error) {
+  //     handleErrorMessage(error, setErrorNotification);
+  //     const errorNotificationTimeout = setTimeout(() => {
+  //       setErrorNotification(null);
+  //     }, 3000);
+
+  //     clearTimeout(errorNotificationTimeout);
+  //     throw error;
+  //   } finally {
+  //     setLoading(false);
+  //     setTempTodo(null);
+  //   }
+  // };
 
   const handleSaveTodo = async () => {
     if (!newTodo.trim()) {
@@ -39,15 +68,31 @@ export const HeaderInput: React.FC = () => {
 
     setLoading(true);
     const title = newTodo.trim();
-    let response;
+
+    const tempTodo: Todo = {
+      id: 0,
+      title,
+      completed: false,
+    };
+
+    setTempTodo(tempTodo);
 
     try {
-      response = await newPost(
-        USER_ID,
-        title,
+      const response = await newPost(USER_ID, title);
+      console.log(response);
+
+      // Update the todos state with the new todo
+      setTodos(
+        (prevTodos) => (prevTodos ? [...prevTodos, response] : [response]),
+      )
+
+      setTodosFilter(
+        (prevTodos) => (prevTodos ? [...prevTodos, response] : [response]),
       );
 
-      setTempTodo(response);
+      // Set the newly added todo to tempTodo
+
+      // Clear the newTodo input field
       setNewTodo('');
     } catch (error) {
       handleErrorMessage(error, setErrorNotification);
@@ -57,8 +102,12 @@ export const HeaderInput: React.FC = () => {
 
       clearTimeout(errorNotificationTimeout);
       throw error;
+    } finally {
+      setTempTodo(null);
+      setLoading(false);
     }
   };
+
 
   return (
     <header className="todoapp__header">

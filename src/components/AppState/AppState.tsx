@@ -24,10 +24,13 @@ export type AppStateContextType = {
   setFilter: React.Dispatch<React.SetStateAction<StatusFilter>>;
   loading: boolean;
   setLoading: React.Dispatch<React.SetStateAction<boolean>>;
+  deleteLoadingMap: Record<number, boolean>;
+  setDeleteLoadingMap:
+  React.Dispatch<React.SetStateAction<Record<number, boolean>>>;
 };
 
-const AppStateContext = createContext<AppStateContextType | undefined>(
-  undefined,
+const AppStateContext = createContext<AppStateContextType | null>(
+  null,
 );
 
 type AppStateProviderProps = {
@@ -45,94 +48,72 @@ export const useAppState = (): AppStateContextType => {
 };
 
 export const AppStateProvider: React.FC<AppStateProviderProps>
-= ({ children }) => {
-  const [todos, setTodos] = useState<Todo[] | null>(null);
-  const [
-    errorNotification,
-    setErrorNotification,
-  ] = useState<string | null>(null);
-  const [filter, setFilter] = useState<StatusFilter>(StatusFilter.All);
-  const [todosFilter, setTodosFilter] = useState<Todo[] | null>(null);
-  const [loading, setLoading] = useState<boolean>(false);
-  const [tempTodo, setTempTodo] = useState<Todo | null>(null);
+  = ({ children }) => {
+    const [todos, setTodos] = useState<Todo[] | null>(null);
+    const [
+      errorNotification,
+      setErrorNotification,
+    ] = useState<string | null>(null);
+    const [filter, setFilter] = useState<StatusFilter>(StatusFilter.All);
+    const [todosFilter, setTodosFilter] = useState<Todo[] | null>(null);
+    const [loading, setLoading] = useState<boolean>(false);
+    const [tempTodo, setTempTodo] = useState<Todo | null>(null);
+    const [
+      deleteLoadingMap,
+      setDeleteLoadingMap,
+    ] = useState<Record<number, boolean>>({});
 
-  useEffect(() => {
-    const fetchTodos = async () => {
-      let todoList;
+    useEffect(() => {
+      const fetchTodos = async () => {
+        let todoList;
 
-      try {
-        setErrorNotification(null);
-
-        todoList = await getTodos(USER_ID);
-
-        setTodos(todoList);
-        setTodosFilter(todoList);
-      } catch (error) {
-        handleErrorMessage(error, setErrorNotification);
-        const errorNotificationTimeout = setTimeout(() => {
+        try {
           setErrorNotification(null);
-        }, 3000);
 
-        return () => {
-          clearTimeout(errorNotificationTimeout);
-        };
-      }
+          todoList = await getTodos(USER_ID);
 
-      return undefined;
-    };
+          setTodos(todoList);
+          setTodosFilter(todoList);
+        } catch (error) {
+          handleErrorMessage(error, setErrorNotification);
+          const errorNotificationTimeout = setTimeout(() => {
+            setErrorNotification(null);
+          }, 3000);
 
-    fetchTodos();
-  }, []);
+          return () => {
+            clearTimeout(errorNotificationTimeout);
+          };
+        } finally {
+          setTempTodo(null);
+          setLoading(false);
+        }
 
-  useEffect(() => {
-    const fetchTodos = async () => {
-      let todoList;
+        return undefined;
+      };
 
-      try {
-        setErrorNotification(null);
+      fetchTodos();
+    }, []);
 
-        todoList = await getTodos(USER_ID);
-
-        setTodos(todoList);
-        setTodosFilter(todoList);
-      } catch (error) {
-        handleErrorMessage(error, setErrorNotification);
-        const errorNotificationTimeout = setTimeout(() => {
-          setErrorNotification(null);
-        }, 3000);
-
-        return () => {
-          clearTimeout(errorNotificationTimeout);
-        };
-      } finally {
-        setTempTodo(null);
-        setLoading(false);
-      }
-
-      return undefined;
-    };
-
-    fetchTodos();
-  }, [tempTodo, loading]);
-
-  return (
-    <AppStateContext.Provider
-      value={{
-        todos,
-        setTodos,
-        errorNotification,
-        setErrorNotification,
-        filter,
-        setFilter,
-        todosFilter,
-        setTodosFilter,
-        loading,
-        setLoading,
-        tempTodo,
-        setTempTodo,
-      }}
-    >
-      {children}
-    </AppStateContext.Provider>
-  );
-};
+    return (
+      <AppStateContext.Provider
+        value={{
+          todos,
+          setTodos,
+          errorNotification,
+          setErrorNotification,
+          filter,
+          setFilter,
+          todosFilter,
+          setTodosFilter,
+          loading,
+          setLoading,
+          tempTodo,
+          setTempTodo,
+          deleteLoadingMap,
+          setDeleteLoadingMap,
+        }}
+      >
+        {children}
+      </AppStateContext.Provider>
+    );
+  };

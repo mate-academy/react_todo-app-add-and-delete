@@ -1,7 +1,7 @@
 import React from 'react';
 import classNames from 'classnames';
 import { Filters } from '../Filters/Filters';
-import { AppStateContextType, useAppState } from '../AppState/AppState';
+import { useAppState } from '../AppState/AppState';
 import { getIncompleteTodosCount } from '../function/getIncompleteTodosCount';
 import { deleteTodo } from '../../api/todos';
 
@@ -9,9 +9,10 @@ export const Footer: React.FC = () => {
   const {
     todos,
     setTodos,
-    setLoading,
     setErrorNotification,
-  } = useAppState() as AppStateContextType;
+    setDeleteLoadingMap,
+    setTodosFilter,
+  } = useAppState();
 
   const incompleteTodosCount = getIncompleteTodosCount(todos);
 
@@ -31,14 +32,30 @@ export const Footer: React.FC = () => {
     )
       .map(todo => todo.id);
 
-    await Promise.all(completedTodoIds.map(id => deleteTodo(id)));
+    completedTodoIds.forEach(
+      (id) => {
+        if (id) {
+          setDeleteLoadingMap(
+            (prevLoadingMap) => ({ ...prevLoadingMap, [id]: true }),
+          );
+        }
+      },
+    );
+
+    await Promise.all(completedTodoIds.map(id => {
+      if (id) {
+        return deleteTodo(id);
+      }
+
+      return null;
+    }));
 
     const updatedTodos = todos.filter(
       todo => !completedTodoIds.includes(todo.id),
     );
 
+    setTodosFilter(updatedTodos);
     setTodos(updatedTodos);
-    setLoading(true);
   };
 
   return (
