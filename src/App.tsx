@@ -1,24 +1,146 @@
-/* eslint-disable max-len */
 /* eslint-disable jsx-a11y/control-has-associated-label */
-import React from 'react';
-import { UserWarning } from './UserWarning';
+import React, { useState, useEffect } from 'react';
+import { Header } from './components/Header';
+import { TodoList } from './components/TodoList';
+import { FilterType, Footer } from './components/Footer';
+import { ErrorMessage } from './components/ErrorMessage';
+import { Todo } from './types/Todo';
+import { getTodos, removeTodo } from './api/todos';
+import { TodoItem } from './components/TodoItem';
 
-const USER_ID = 0;
+const USER_ID = 12004;
 
 export const App: React.FC = () => {
-  if (!USER_ID) {
-    return <UserWarning />;
-  }
+  const [todos, setTodos] = useState<Todo[] | null>(null);
+  const [filteredTodos, setFilteredTodos] = useState<Todo[] | null>(null);
+  const [query, setQuery] = useState<FilterType>('all');
+  const [errorText, setErrorText] = useState<string>('');
+  const [tempTodo, setTempTodo] = useState<Todo | null>(null);
+  const [listToRemove, setListToRemove] = useState<number[]>([]);
+
+  const getTodosList = async () => {
+    try {
+      const tmp = await getTodos(USER_ID);
+
+      setTodos(tmp);
+      setFilteredTodos(tmp);
+    } catch (error) {
+      setErrorText('Unable to load todos');
+    }
+  };
+
+  useEffect(() => {
+    getTodosList();
+  }, []);
+
+  useEffect(() => {
+    setTimeout(() => {
+      setErrorText('');
+    }, 3000);
+  }, [errorText]);
+
+  useEffect(() => {
+    if (todos) {
+      switch (query) {
+        case 'active':
+          setFilteredTodos(todos.filter((el) => !el.completed));
+          break;
+        case 'completed':
+          setFilteredTodos(todos.filter((el) => el.completed));
+          break;
+        default:
+          setFilteredTodos(todos);
+          break;
+      }
+    }
+  }, [query, todos]);
+
+  const leftItems = (): number => {
+    if (todos) {
+      const tmp = todos.filter((el) => !el.completed);
+
+      return tmp.length;
+    }
+
+    return 0;
+  };
+
+  const items = (): number => {
+    return todos?.length ?? 0;
+  };
+
+  const saveResponse = (response: Todo) => {
+    setTodos((prev) => [...prev ?? [], response]);
+  };
+
+  const removeOnResponse = (id: number) => {
+    const tmp = todos?.filter((el) => el.id !== id);
+
+    if (tmp) {
+      setTodos(() => tmp);
+    }
+  };
+
+  const clearCompleted = () => {
+    if (todos) {
+      const list = todos.filter((el) => el.completed).map((el) => el.id);
+
+      setListToRemove(() => list);
+
+      const todosToRemove = list
+        .map((el) => removeTodo(el)
+          .then(() => el)
+          .catch(() => {
+            setErrorText('Unable to delete a todo');
+
+            return null;
+          }));
+
+      Promise.all(todosToRemove).then((ids) => {
+        const tmp = todos.filter((el) => !ids.includes(el.id));
+
+        setListToRemove((prev) => prev.filter((el) => !ids.includes(el)));
+
+        setTodos(() => tmp);
+      });
+    }
+  };
 
   return (
-    <section className="section container">
-      <p className="title is-4">
-        Copy all you need from the prev task:
-        <br />
-        <a href="https://github.com/mate-academy/react_todo-app-loading-todos#react-todo-app-load-todos">React Todo App - Load Todos</a>
-      </p>
 
-      <p className="subtitle">Styles are already copied</p>
-    </section>
+    <div className="todoapp">
+      <h1 className="todoapp__title">todos</h1>
+
+      <div className="todoapp__content">
+        <Header
+          setErrorText={setErrorText}
+          saveResponse={saveResponse}
+          setTempTodo={setTempTodo}
+          leftItems={leftItems}
+        />
+        {filteredTodos && (
+          <TodoList
+            todos={filteredTodos}
+            setErrorText={setErrorText}
+            removeOnResponse={removeOnResponse}
+            listToRemove={listToRemove}
+          />
+        )}
+
+        {tempTodo && (<TodoItem todo={tempTodo} />)}
+
+        {todos && todos?.length > 0 && (
+          <Footer
+            setQuery={setQuery}
+            items={items}
+            leftItems={leftItems}
+            query={query}
+            clearCompleted={clearCompleted}
+          />
+        )}
+        <ErrorMessage errorText={errorText} setErrorText={setErrorText} />
+
+      </div>
+    </div>
   );
 };
