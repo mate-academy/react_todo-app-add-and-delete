@@ -65,14 +65,16 @@ export const Footer: React.FC<Props> = ({ onSetFilter, filter, todos }) => {
         </a>
       </nav>
 
-      {/* don't show this button if there are no completed todos */}
-      <button
-        type="button"
-        className="todoapp__clear-completed"
-        data-cy="ClearCompletedButton"
-      >
-        Clear completed
-      </button>
+      {completedTodosCount > 0 && (
+        <button
+          type="button"
+          className="todoapp__clear-completed"
+          data-cy="ClearCompletedButton"
+          onClick={onClearCompleted}  {/* Add the onClick handler here */}
+        >
+          Clear completed
+        </button>
+      )}
     </footer>
   );
 };
