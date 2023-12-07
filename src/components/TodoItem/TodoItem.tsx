@@ -4,25 +4,25 @@ import { Todo } from '../../types/Todo';
 type Props = {
   todo: Todo;
   tempTodo?: Todo | null;
-  deleteTodo?: (todoId: number) => void;
+  onDeleteTodo?: (todoId: number) => void;
   isAdding?: boolean,
   processingTodoIds: number[],
 };
 
 export const TodoItem: React.FC<Props> = ({
   todo,
-  deleteTodo,
+  onDeleteTodo,
   processingTodoIds,
   isAdding,
 }) => {
   const { title, id, completed } = todo;
 
-  const handleDeleteTodo = () => {
-    if (!deleteTodo) {
+  const handleDelete = () => {
+    if (!onDeleteTodo) {
       return;
     }
 
-    deleteTodo(id);
+    onDeleteTodo(id);
   };
 
   return (
@@ -48,7 +48,7 @@ export const TodoItem: React.FC<Props> = ({
         type="button"
         className="todo__remove"
         data-cy="TodoDelete"
-        onClick={() => handleDeleteTodo()}
+        onClick={() => handleDelete()}
       >
         ×
       </button>

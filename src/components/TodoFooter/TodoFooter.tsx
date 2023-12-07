@@ -5,43 +5,41 @@ import { Filter } from '../../types/Filter';
 
 type Props = {
   todos: Todo[],
-  setFilterStatus: (filter: Filter) => void,
+  onSetFilter: (filter: Filter) => void,
   isCompleted: boolean,
   filterStatus: Filter,
-  handleDelete: (id: number) => void,
+  onDeleteTodo: (id: number) => void,
 };
 
 export const TodoFooter: React.FC<Props> = ({
   todos,
-  setFilterStatus,
+  onSetFilter,
   isCompleted,
   filterStatus,
-  handleDelete,
+  onDeleteTodo,
 }) => {
-  const activeTodos = [...todos].filter(todo => !todo.completed);
-  const handleOnClick = (status: Filter) => {
+  const activeTodos = todos.filter(todo => !todo.completed);
+
+  const chooseFilter = (status: Filter) => {
     switch (status) {
       case 'Active':
-        setFilterStatus(Filter.Active);
+        onSetFilter(Filter.Active);
         break;
-
       case 'Completed':
-        setFilterStatus(Filter.Completed);
+        onSetFilter(Filter.Completed);
         break;
       default:
-        setFilterStatus(Filter.All);
+        onSetFilter(Filter.All);
         break;
     }
   };
 
   const handleClearCompleted = () => {
-    const completedTodos = [...todos].filter(todo => todo.completed);
+    const completedTodos = todos.filter(todo => todo.completed);
 
     completedTodos.forEach(todo => {
-      handleDelete(todo.id);
+      onDeleteTodo(todo.id);
     });
-
-    // setTodos(activeTodos);
   };
 
   return (
@@ -50,7 +48,6 @@ export const TodoFooter: React.FC<Props> = ({
         {`${activeTodos.length} items left`}
       </span>
 
-      {/* Active filter should have a 'selected' class */}
       <nav className="filter" data-cy="Filter">
         <a
           href="#/"
@@ -58,7 +55,7 @@ export const TodoFooter: React.FC<Props> = ({
             selected: filterStatus === 'All',
           })}
           data-cy="FilterLinkAll"
-          onClick={() => handleOnClick(Filter.All)}
+          onClick={() => chooseFilter(Filter.All)}
         >
           All
         </a>
@@ -69,7 +66,7 @@ export const TodoFooter: React.FC<Props> = ({
             selected: filterStatus === 'Active',
           })}
           data-cy="FilterLinkActive"
-          onClick={() => handleOnClick(Filter.Active)}
+          onClick={() => chooseFilter(Filter.Active)}
         >
           Active
         </a>
@@ -80,7 +77,7 @@ export const TodoFooter: React.FC<Props> = ({
             selected: filterStatus === 'Completed',
           })}
           data-cy="FilterLinkCompleted"
-          onClick={() => handleOnClick(Filter.Completed)}
+          onClick={() => chooseFilter(Filter.Completed)}
         >
           Completed
         </a>

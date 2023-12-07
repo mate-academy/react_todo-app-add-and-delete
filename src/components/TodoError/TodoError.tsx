@@ -30,7 +30,6 @@ export const TodoError: React.FC<Props> = ({
         className="delete"
         onClick={() => setErrorType(null)}
       />
-      {/* show only one message at a time */}
       {`${errorType}`}
     </div>
   );

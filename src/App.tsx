@@ -50,10 +50,6 @@ export const App: React.FC = () => {
       });
   }, []);
 
-  if (!USER_ID) {
-    return <UserWarning />;
-  }
-
   const handleDelete = (id: number) => {
     setProcessingTodoIds(prevIds => [...prevIds, id]);
     todoService.deleteTodo(id)
@@ -62,7 +58,6 @@ export const App: React.FC = () => {
           setTodos(currentTodos => currentTodos.filter(post => post.id !== id));
         }, 500);
       })
-      .catch(() => setErrorType(Errors.Delete))
       .finally(() => setTimeout(() => {
         setProcessingTodoIds(prevIds => [...prevIds]
           .filter(prevId => prevId !== id));
@@ -90,16 +85,20 @@ export const App: React.FC = () => {
           setTodos(currentTodos => {
             return [...currentTodos, newTodo];
           });
+          setTempTodo(null);
         }, 500);
       })
       .catch(() => setErrorType(Errors.Add))
       .finally(() => {
-        setTempTodo(null);
         setIsLoading(false);
         setProcessingTodoIds(prevIds => [...prevIds]
           .filter(prevId => prevId !== 0));
       });
   };
+
+  if (!USER_ID) {
+    return <UserWarning />;
+  }
 
   const isThereCompleted = todos.some(todo => todo.completed);
 
@@ -122,7 +121,7 @@ export const App: React.FC = () => {
         <TodoList
           todos={filteredTodos}
           tempTodo={tempTodo}
-          deleteTodo={handleDelete}
+          onDeleteTodo={handleDelete}
           isAdding={isAdding}
           processingTodoIds={processingTodoIds}
         />
@@ -132,9 +131,9 @@ export const App: React.FC = () => {
           <TodoFooter
             todos={todos}
             filterStatus={filterStatus}
-            setFilterStatus={setFilterStatus}
+            onSetFilter={setFilterStatus}
             isCompleted={isThereCompleted}
-            handleDelete={handleDelete}
+            onDeleteTodo={handleDelete}
           />
         )}
       </div>
@@ -146,8 +145,6 @@ export const App: React.FC = () => {
           setErrorType={setErrorType}
         />
       )}
-
-      {/* Add the 'hidden' class to hide the message smoothly */}
     </div>
   );
 };

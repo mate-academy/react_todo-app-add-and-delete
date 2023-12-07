@@ -26,7 +26,6 @@ export const TodoHeader: React.FC<Props> = ({
     if (!todoTitle
       || todoTitle.split(' ').filter(char => char.length !== 0).length === 0) {
       setError(Errors.EmptyTitle);
-      throw new Error(Errors.EmptyTitle);
     }
 
     onAddTodo(todoTitle.trim());
