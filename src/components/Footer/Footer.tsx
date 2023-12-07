@@ -58,10 +58,6 @@ export const Footer: React.FC = () => {
     setTodos(updatedTodos);
   };
 
-  if (!todos) {
-    return null;
-  }
-
   return (
     <>
       {todos && todos.length > 0 && (
@@ -69,7 +65,7 @@ export const Footer: React.FC = () => {
           className={classNames(
             'todoapp__footer',
             {
-              hidden: incompleteTodosCount === 0,
+              hidden: !incompleteTodosCount,
             },
           )}
           data-cy="Footer"
