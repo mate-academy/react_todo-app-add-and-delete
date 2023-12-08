@@ -52,7 +52,7 @@ export const TodoFooter: React.FC<Props> = ({
         <a
           href="#/"
           className={cn('filter__link', {
-            selected: filterStatus === 'All',
+            selected: filterStatus === Filter.All,
           })}
           data-cy="FilterLinkAll"
           onClick={() => chooseFilter(Filter.All)}
@@ -63,7 +63,7 @@ export const TodoFooter: React.FC<Props> = ({
         <a
           href="#/active"
           className={cn('filter__link', {
-            selected: filterStatus === 'Active',
+            selected: filterStatus === Filter.Active,
           })}
           data-cy="FilterLinkActive"
           onClick={() => chooseFilter(Filter.Active)}
@@ -74,7 +74,7 @@ export const TodoFooter: React.FC<Props> = ({
         <a
           href="#/completed"
           className={cn('filter__link', {
-            selected: filterStatus === 'Completed',
+            selected: filterStatus === Filter.Completed,
           })}
           data-cy="FilterLinkCompleted"
           onClick={() => chooseFilter(Filter.Completed)}
@@ -83,7 +83,6 @@ export const TodoFooter: React.FC<Props> = ({
         </a>
       </nav>
 
-      {/* don't show this button if there are no completed todos */}
       {isCompleted && (
         <button
           type="button"

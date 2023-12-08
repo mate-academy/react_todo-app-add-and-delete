@@ -83,7 +83,6 @@ export const App: React.FC = () => {
           setTempTodo(null);
         }, 500);
       })
-      .catch(() => setErrorType(Errors.Add))
       .finally(() => {
         setIsLoading(false);
         setProcessingTodoIds(prevIds => [...prevIds]

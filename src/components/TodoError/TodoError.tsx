@@ -21,7 +21,7 @@ export const TodoError: React.FC<Props> = ({
     <div
       data-cy="ErrorNotification"
       className={cn('notification is-danger is-light has-text-weight-normal',
-        { hidden: errorType === null })}
+        { hidden: !errorType })}
     >
       {/* eslint-disable-next-line jsx-a11y/control-has-associated-label */}
       <button

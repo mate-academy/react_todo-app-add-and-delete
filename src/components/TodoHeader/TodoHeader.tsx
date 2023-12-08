@@ -28,7 +28,8 @@ export const TodoHeader: React.FC<Props> = ({
     event?.preventDefault();
     if (!todoTitle || todoTitle.trim().length === 0) {
       setError(Errors.EmptyTitle);
-      throw new Error(Errors.EmptyTitle);
+
+      return;
     }
 
     onAddTodo(todoTitle.trim());
