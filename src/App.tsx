@@ -17,6 +17,7 @@ export const App: React.FC = () => {
   const [errorText, setErrorText] = useState<string>('');
   const [tempTodo, setTempTodo] = useState<Todo | null>(null);
   const [listToRemove, setListToRemove] = useState<number[]>([]);
+  const [delited, setDelited] = useState<number>(0);
 
   const getTodosList = async () => {
     try {
@@ -102,6 +103,7 @@ export const App: React.FC = () => {
         setListToRemove((prev) => prev.filter((el) => !ids.includes(el)));
 
         setTodos(() => tmp);
+        setDelited(prev => prev + 1);
       });
     }
   };
@@ -117,6 +119,7 @@ export const App: React.FC = () => {
           saveResponse={saveResponse}
           setTempTodo={setTempTodo}
           leftItems={leftItems}
+          delited={delited}
         />
         {filteredTodos && (
           <TodoList
@@ -124,6 +127,7 @@ export const App: React.FC = () => {
             setErrorText={setErrorText}
             removeOnResponse={removeOnResponse}
             listToRemove={listToRemove}
+            setDelited={setDelited}
           />
         )}
 

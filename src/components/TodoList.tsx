@@ -8,10 +8,11 @@ export type TodoListProps = {
   setErrorText: (error: string) => void
   removeOnResponse:(id:number) => void
   listToRemove: number[]
+  setDelited: React.Dispatch<React.SetStateAction<number>>;
 };
 
 export const TodoList = ({
-  todos, setErrorText, removeOnResponse, listToRemove,
+  todos, setErrorText, removeOnResponse, listToRemove, setDelited,
 }: TodoListProps) => {
   const [removeId, setRemoveId] = useState<number>(-1);
 
@@ -22,7 +23,10 @@ export const TodoList = ({
       .catch(() => {
         setErrorText('Unable to delete a todo');
       })
-      .finally(() => setRemoveId(-1));
+      .finally(() => {
+        setRemoveId(-1);
+        setDelited((prev) => prev + 1);
+      });
   };
 
   return (

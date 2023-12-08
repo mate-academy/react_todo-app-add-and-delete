@@ -10,18 +10,19 @@ export type HeaderProps = {
   saveResponse: (response: Todo) => void
   setTempTodo: (todo: Todo | null) => void
   leftItems: () => number
+  delited: number
 };
 
 const USER_ID = 12004;
 
 export const Header = ({
-  setErrorText, saveResponse, setTempTodo, leftItems,
+  setErrorText, saveResponse, setTempTodo, leftItems, delited,
 }: HeaderProps) => {
   const inputRef = useRef<HTMLInputElement>(null);
 
   useEffect(() => {
     inputRef.current?.focus();
-  }, []);
+  }, [delited]);
 
   const submit = (event: React.FormEvent) => {
     event.preventDefault();
