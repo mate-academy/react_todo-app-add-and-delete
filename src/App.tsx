@@ -16,15 +16,15 @@ const preparedTodos = (todosList: Todo[], selectedFilter: Filter): Todo[] => {
   let filteredTodos = [...todosList];
 
   switch (selectedFilter) {
-    case 'Active':
+    case Filter.Active:
       filteredTodos = todosList.filter(todo => !todo.completed);
       break;
 
-    case 'Completed':
+    case Filter.Completed:
       filteredTodos = todosList.filter(todo => todo.completed);
       break;
     default:
-      break;
+      return filteredTodos;
   }
 
   return filteredTodos;
@@ -43,9 +43,6 @@ export const App: React.FC = () => {
     todoService.getTodos(USER_ID)
       .then(response => {
         setTodos(response);
-      })
-      .catch((error) => {
-        throw error;
       });
   }, []);
 
@@ -159,7 +156,6 @@ export const App: React.FC = () => {
           onUpdateTodo={updateTodo}
         />
 
-        {/* Hide the footer if there are no todos */}
         {todos.length !== 0 && (
           <TodoFooter
             todos={todos}
@@ -171,7 +167,6 @@ export const App: React.FC = () => {
         )}
       </div>
 
-      {/* Notification is shown in case of any error */}
       {errorType && (
         <TodoError
           errorType={errorType}
