@@ -37,7 +37,6 @@ export const App: React.FC = () => {
   const [isLoading, setIsLoading] = useState(false);
   const [tempTodo, setTempTodo] = useState<Todo | null>(null);
   const [processingTodoIds, setProcessingTodoIds] = useState<number[]>([]);
-  const [isAdding, setIsAdding] = useState(false);
   const [todoTitle, setTodoTitle] = useState('');
 
   useEffect(() => {
@@ -65,14 +64,14 @@ export const App: React.FC = () => {
   };
 
   const addTodo = (title: string) => {
+    setIsLoading(true);
     setProcessingTodoIds(prevIds => [...prevIds, 0]);
     setTempTodo({
       id: 0,
-      title: 'fake',
+      title,
       completed: false,
       userId: USER_ID,
     });
-    setIsAdding(true);
     todoService.addTodo({
       title,
       completed: false,
@@ -80,7 +79,6 @@ export const App: React.FC = () => {
     })
       .then(newTodo => {
         setTodoTitle('');
-        setIsLoading(true);
         setTimeout(() => {
           setTodos(currentTodos => {
             return [...currentTodos, newTodo];
@@ -94,6 +92,40 @@ export const App: React.FC = () => {
         setProcessingTodoIds(prevIds => [...prevIds]
           .filter(prevId => prevId !== 0));
       });
+  };
+
+  const updateTodo = (updatedTodo: Todo) => {
+    setProcessingTodoIds(currentTodos => [...currentTodos, updatedTodo.id]);
+
+    todoService.updateTodo(updatedTodo)
+      .then(() => setTodos(prev => (
+        prev.map(prevTodo => (
+          prevTodo.id === updatedTodo.id
+            ? updatedTodo
+            : prevTodo
+        ))
+      )))
+      .catch(() => setErrorType(Errors.Update))
+      .finally(() => {
+        setProcessingTodoIds(currentTodos => currentTodos
+          .filter(todoId => updatedTodo.id !== todoId));
+      });
+  };
+
+  const toggleAll = async () => {
+    const isAllCompleted = todos.every(todo => todo.completed);
+
+    const todosToUpdate = todos.filter(todo => (isAllCompleted
+      ? todo.completed
+      : !todo.completed
+    ));
+
+    await Promise.all(todosToUpdate.map(todo => (
+      updateTodo({
+        ...todo,
+        completed: !isAllCompleted,
+      })
+    )));
   };
 
   if (!USER_ID) {
@@ -116,14 +148,15 @@ export const App: React.FC = () => {
           isLoading={isLoading}
           onAddTodo={addTodo}
           setError={setErrorType}
+          onToggleAll={toggleAll}
         />
 
         <TodoList
           todos={filteredTodos}
           tempTodo={tempTodo}
           onDeleteTodo={handleDelete}
-          isAdding={isAdding}
           processingTodoIds={processingTodoIds}
+          onUpdateTodo={updateTodo}
         />
 
         {/* Hide the footer if there are no todos */}
