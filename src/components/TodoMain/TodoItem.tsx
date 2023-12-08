@@ -13,8 +13,12 @@ export const TodoItem: React.FC<Props> = ({ todo }) => {
   const {
     deleteTodo,
     isAdding,
-    idToDelete,
+    idsToDelete,
   } = useContext(TodosContext);
+
+  const handleLoaderIsActive = () => {
+    return (isAdding && !todo.id) || idsToDelete.includes(id);
+  };
 
   return (
     <div
@@ -49,7 +53,7 @@ export const TodoItem: React.FC<Props> = ({ todo }) => {
       <div
         data-cy="TodoLoader"
         className={cn('modal overlay',
-          { 'is-active': (isAdding && !todo.id) || (idToDelete === id) })}
+          { 'is-active': handleLoaderIsActive() })}
       >
         <div className="modal-background has-background-white-ter" />
         <div className="loader" />

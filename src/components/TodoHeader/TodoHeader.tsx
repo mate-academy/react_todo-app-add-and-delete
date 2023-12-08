@@ -1,4 +1,3 @@
-/* eslint-disable jsx-a11y/control-has-associated-label */
 import React, {
   useContext,
   useEffect,
@@ -31,7 +30,7 @@ export const TodoHeader: React.FC = () => {
     event?.preventDefault();
 
     if (inputQuery.trim() === '') {
-      setTodoError(Error.EmptyTitleError);
+      setTodoError(Error.EmptyTitle);
 
       return;
     }
@@ -51,12 +50,12 @@ export const TodoHeader: React.FC = () => {
   return (
     <header className="todoapp__header">
       <button
+        aria-label="none"
         type="button"
         className={cn('todoapp__toggle-all', {
           active: todos.every(todo => todo.completed),
         })}
         data-cy="ToggleAllButton"
-      // onClick={handleCompleateSwitcher}
       />
 
       <form
@@ -76,18 +75,3 @@ export const TodoHeader: React.FC = () => {
     </header>
   );
 };
-
-// I will need this in the next tasks
-
-// const handleCompleateSwitcher = () => {
-//   const hasCompleated = todos.some(todo => !todo.completed);
-
-//   const switchedTodos = todos.map(todo => {
-//     return ({
-//       ...todo,
-//       completed: hasCompleated,
-//     });
-//   });
-
-//   setTodos(switchedTodos);
-// };

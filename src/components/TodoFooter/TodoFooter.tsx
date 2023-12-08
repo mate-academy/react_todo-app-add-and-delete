@@ -9,10 +9,17 @@ export const TodoFooter: React.FC = () => {
     todos,
     todoFilter,
     setTodoFilter,
+    deleteTodo,
   } = useContext(TodosContext);
 
-  const activeTodosCount = (
-    `${todos.filter(todo => !todo.completed).length} items left`
+  const handleClearCompletedTodos = () => {
+    const completedTodos = todos.filter(todo => todo.completed);
+
+    completedTodos.forEach(todo => deleteTodo(todo.id));
+  };
+
+  const activeTodos = (
+    todos.filter(todo => !todo.completed)
   );
 
   const hasCompletedTodos = todos.some(todo => todo.completed);
@@ -26,10 +33,9 @@ export const TodoFooter: React.FC = () => {
         className="todo-count"
         data-cy="TodosCounter"
       >
-        {activeTodosCount}
+        {`${activeTodos.length} items left`}
       </span>
 
-      {/* Active filter should have a 'selected' class */}
       <nav
         className="filter"
         data-cy="Filter"
@@ -73,6 +79,7 @@ export const TodoFooter: React.FC = () => {
           type="button"
           className="todoapp__clear-completed"
           data-cy="ClearCompletedButton"
+          onClick={handleClearCompletedTodos}
         >
           Clear completed
         </button>

@@ -1,4 +1,3 @@
-/* eslint-disable jsx-a11y/control-has-associated-label */
 import React, { useEffect, useContext } from 'react';
 import cn from 'classnames';
 
@@ -25,6 +24,7 @@ export const TodoError: React.FC = () => {
       )}
     >
       <button
+        aria-label="none"
         data-cy="HideErrorButton"
         type="button"
         className="delete"

@@ -21,8 +21,8 @@ interface TodosContextType {
   deleteTodo: (todoId: number) => void,
   isAdding: boolean,
   setIsAdding: (value: boolean) => void,
-  idToDelete: number,
-  setIdToDelete: (value: number) => void,
+  idsToDelete: number[],
+  setIdsToDelete: (value: number[]) => void,
   todoFilter: Status,
   setTodoFilter: (todoFilter: Status) => void,
   filteredTodos: Todo[],
@@ -40,8 +40,8 @@ const initialTodosContext: TodosContextType = {
   deleteTodo: async () => { },
   isAdding: false,
   setIsAdding: () => { },
-  idToDelete: 0,
-  setIdToDelete: () => { },
+  idsToDelete: [],
+  setIdsToDelete: () => { },
   todoFilter: Status.All,
   setTodoFilter: () => { },
   filteredTodos: [],
@@ -65,7 +65,7 @@ export const TodosProvider: React.FC<Props> = ({ children }) => {
   const [todoFilter, setTodoFilter] = useState<Status>(Status.All);
   const [todoError, setTodoError] = useState<Error | null>(null);
   const [isAdding, setIsAdding] = useState(false);
-  const [idToDelete, setIdToDelete] = useState(0);
+  const [idsToDelete, setIdsToDelete] = useState<number[]>([]);
 
   const addTodo = useCallback(
     ({ title, userId, completed }: Omit<Todo, 'id'>) => {
@@ -85,7 +85,7 @@ export const TodosProvider: React.FC<Props> = ({ children }) => {
           setTodos(currentTodos => [...currentTodos, newTodo]);
         })
         .catch((error) => {
-          setTodoError(Error.AddTodoError);
+          setTodoError(Error.AddTodo);
           throw error;
         })
         .finally(() => {
@@ -96,7 +96,7 @@ export const TodosProvider: React.FC<Props> = ({ children }) => {
 
   const deleteTodo = useCallback((todoId: number) => {
     setTodoError(null);
-    setIdToDelete(todoId);
+    setIdsToDelete(prevIds => [...prevIds, todoId]);
 
     setTimeout(() => {
       setTodos(currentTodos => (
@@ -106,16 +106,17 @@ export const TodosProvider: React.FC<Props> = ({ children }) => {
       return (
         todoService.deleteTodo(todoId))
         .then(() => {
-          setIdToDelete(0);
+          setIdsToDelete([]);
         })
         .catch((error) => {
           setTodos(todos);
-          setTodoError(Error.DeleteTodoError);
-          setIdToDelete(0);
+          setTodoError(Error.DeleteTodo);
+          setIdsToDelete(prevIds => [...prevIds]
+            .filter(prevId => prevId !== todoId));
 
           throw error;
         });
-    }, 200);
+    }, 300);
   }, [todos]);
 
   const filteredTodos = useMemo(() => {
@@ -136,7 +137,7 @@ export const TodosProvider: React.FC<Props> = ({ children }) => {
 
     todoService.getTodos(USER_ID)
       .then(setTodos)
-      .catch(() => setTodoError(Error.LoadTodosError));
+      .catch(() => setTodoError(Error.LoadTodos));
   }, []);
 
   const value = useMemo(() => ({
@@ -149,8 +150,8 @@ export const TodosProvider: React.FC<Props> = ({ children }) => {
     deleteTodo,
     isAdding,
     setIsAdding,
-    idToDelete,
-    setIdToDelete,
+    idsToDelete,
+    setIdsToDelete,
     todoFilter,
     setTodoFilter,
     filteredTodos,
@@ -158,7 +159,7 @@ export const TodosProvider: React.FC<Props> = ({ children }) => {
     setTodoError,
   }), [
     addTodo, deleteTodo, filteredTodos, isAdding,
-    tempTodo, todoError, todoFilter, todos, idToDelete,
+    tempTodo, todoError, todoFilter, todos, idsToDelete,
   ]);
 
   return (
