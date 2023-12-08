@@ -1,6 +1,5 @@
 import classNames from 'classnames';
-
-export type FilterType = 'all' | 'active' | 'completed';
+import { FilterType } from '../types/FilterType';
 
 export type FooterProps = {
   setQuery: (queru: FilterType) => void
@@ -24,7 +23,7 @@ export const Footer = ({
           href="#/"
           className={classNames('filter__link', { selected: query === 'all' })}
           data-cy="FilterLinkAll"
-          onClick={() => setQuery('all')}
+          onClick={() => setQuery(FilterType.All)}
         >
           All
         </a>
@@ -34,7 +33,7 @@ export const Footer = ({
           className={classNames('filter__link',
             { selected: query === 'active' })}
           data-cy="FilterLinkActive"
-          onClick={() => setQuery('active')}
+          onClick={() => setQuery(FilterType.Active)}
         >
           Active
         </a>
@@ -44,7 +43,7 @@ export const Footer = ({
           className={classNames('filter__link',
             { selected: query === 'completed' })}
           data-cy="FilterLinkCompleted"
-          onClick={() => setQuery('completed')}
+          onClick={() => setQuery(FilterType.Completed)}
         >
           Completed
         </a>

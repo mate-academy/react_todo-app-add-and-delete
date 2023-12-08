@@ -2,18 +2,19 @@
 import React, { useState, useEffect } from 'react';
 import { Header } from './components/Header';
 import { TodoList } from './components/TodoList';
-import { FilterType, Footer } from './components/Footer';
+import { Footer } from './components/Footer';
 import { ErrorMessage } from './components/ErrorMessage';
 import { Todo } from './types/Todo';
 import { getTodos, removeTodo } from './api/todos';
 import { TodoItem } from './components/TodoItem';
+import { FilterType } from './types/FilterType';
 
 const USER_ID = 12004;
 
 export const App: React.FC = () => {
   const [todos, setTodos] = useState<Todo[] | null>(null);
   const [filteredTodos, setFilteredTodos] = useState<Todo[] | null>(null);
-  const [query, setQuery] = useState<FilterType>('all');
+  const [query, setQuery] = useState<FilterType>(FilterType.All);
   const [errorText, setErrorText] = useState<string>('');
   const [tempTodo, setTempTodo] = useState<Todo | null>(null);
   const [listToRemove, setListToRemove] = useState<number[]>([]);
@@ -43,10 +44,10 @@ export const App: React.FC = () => {
   useEffect(() => {
     if (todos) {
       switch (query) {
-        case 'active':
+        case FilterType.Active:
           setFilteredTodos(todos.filter((el) => !el.completed));
           break;
-        case 'completed':
+        case FilterType.Completed:
           setFilteredTodos(todos.filter((el) => el.completed));
           break;
         default:
