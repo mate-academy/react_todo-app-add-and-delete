@@ -8,7 +8,9 @@ type Props = {
   handleToggleTodo: (id: number) => void
 };
 
-export const TodoList: React.FC<Props> = ({ todos, handleDeleteTodo, handleToggleTodo }) => {
+export const TodoList: React.FC<Props> = ({
+  todos, handleDeleteTodo, handleToggleTodo,
+}) => {
   return (
     <section className="todoapp__main" data-cy="TodoList">
       {todos.map(todo => (

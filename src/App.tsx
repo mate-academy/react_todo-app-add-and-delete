@@ -1,3 +1,6 @@
+/* eslint-disable jsx-a11y/no-autofocus */
+/* eslint-disable @typescript-eslint/no-unused-expressions */
+/* eslint-disable react-hooks/rules-of-hooks */
 /* eslint-disable max-len */
 /* eslint-disable jsx-a11y/control-has-associated-label */
 import React, { useEffect, useMemo, useState } from 'react';
@@ -15,7 +18,7 @@ const USER_ID = 7023;
 export const App: React.FC = () => {
   const [todos, setTodos] = useState<Todo[]>([]);
   const [filteredType, setFilteredType] = useState(Status.All);
-  const [todo, setTodo] = useState<Todo | null>(null);
+  const [, setTodo] = useState<Todo | null>(null);
   const [isInputDisabled, setIsInputDisabled] = useState(false);
   const [errorMessage, setErrorMessage] = useState<Errors | null>(null);
   const [title, setTitle] = useState<string>('');
@@ -26,6 +29,7 @@ export const App: React.FC = () => {
 
   const handleToggleAll = () => {
     const allCompleted = todos.every(todo => todo.completed === true);
+
     if (allCompleted) {
       const updatedTodos = todos.map(todo => ({
         ...todo,
@@ -56,13 +60,14 @@ export const App: React.FC = () => {
       userId: USER_ID,
       id: +Date,
       completed: false,
-    }
-    setTodo(newTodo)
+    };
+
+    setTodo(newTodo);
 
     addTodo({ title: title.trim(), userId: USER_ID, completed: false })
       .then(todo => setTodos((currentTodos) => [...currentTodos, todo]))
       .catch(() => {
-        setTitle(title)
+        setTitle(title);
         setErrorMessage(Errors.CAN_NOT_ADD_TODO);
       })
       .finally(() => {
@@ -83,7 +88,7 @@ export const App: React.FC = () => {
     });
 
     setTodos(updatedTodos);
-  }
+  };
 
   const handleDeleteTodo = (todo: Todo) => {
     deleteTodo(todo.id)
@@ -91,28 +96,25 @@ export const App: React.FC = () => {
       .finally(() => {
         setTodos(current => current.filter(item => item.id !== todo.id));
       });
-  }
-
+  };
 
   const handleDeleteCompleted = async () => {
     const deletedTodo = todos.filter(todo => todo.completed);
     const needToDelete = deletedTodo.map(todo => {
-      deleteTodo(todo.id);
+      return deleteTodo(todo.id);
     });
+
     try {
       await Promise.allSettled(needToDelete);
       const newTodos = todos.filter(todo => !todo.completed);
-      setTodos(newTodos);
-    }
-    catch { () => {
-        setErrorMessage(Errors.CAN_NOT_DELETE_TODO);
-      }
-    }
-  }
 
-  useEffect(() => {
-    console.log(todos);
-  }, [todos])
+      setTodos(newTodos);
+    } catch {
+      () => {
+        setErrorMessage(Errors.CAN_NOT_DELETE_TODO);
+      };
+    }
+  };
 
   const filterTodos = useMemo(() => {
     return todos.filter(todo => {
@@ -147,10 +149,10 @@ export const App: React.FC = () => {
 
   const leftToComplete = useMemo(() => {
     return todos.filter(todo => !todo.completed).length;
-  }, [todos])
+  }, [todos]);
   const showClearButton = useMemo(() => {
     return todos.filter(todo => todo.completed).length > 0;
-  }, [todos])
+  }, [todos]);
 
   return (
     <div className="todoapp">

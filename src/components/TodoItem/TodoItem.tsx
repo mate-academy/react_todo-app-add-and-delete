@@ -8,8 +8,11 @@ type Props = {
   handleToggleTodo: (id: number) => void
 };
 
-export const TodoItem: React.FC<Props> = ({ todo, handleDeleteTodo, handleToggleTodo }) => {
-  const {title, completed} = todo;
+export const TodoItem: React.FC<Props> = ({
+  todo, handleDeleteTodo, handleToggleTodo,
+}) => {
+  const { title, completed } = todo;
+
   return (
     <div
       data-cy="Todo"
