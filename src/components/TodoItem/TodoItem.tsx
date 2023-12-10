@@ -3,59 +3,65 @@ import { useState } from 'react';
 import { Todo } from '../../types/Todo';
 
 type Props = {
-  todo: Todo,
-  onDelete: (v: number) => void,
+  todo: Todo;
+  todos: Todo[];
+  deleteTodo: (todoId: number) => void;
+  setTodos: React.Dispatch<React.SetStateAction<Todo[]>>;
+  USER_ID: number;
 };
 
-export const TodoItem: React.FC<Props> = ({ todo, onDelete }) => {
-  const { id, completed, title } = todo;
-  const [isCompleted, setIsCompleted] = useState(completed);
+export const TodoCard: React.FC<Props> = ({
+  todo,
+  todos,
+  deleteTodo,
+  setTodos,
+  USER_ID,
+}) => {
+  const handleCheckbox = () => {
+    const newTodo: Todo = {
+      id: todo.id,
+      title: todo.title,
+      userId: USER_ID,
+      completed: !todo.completed,
+    };
+    const newTodos = [...todos];
+    const index = newTodos.findIndex(currentTodo => (
+      currentTodo.id === newTodo.id));
 
-  const inputChangeHandler = () => {
-    setIsCompleted((completedTodo) => !completedTodo);
+    newTodos.splice(index, 1, newTodo);
+
+    updateTodoItems(newTodo)
+      .then(() => setTodos(newTodos));
   };
 
   return (
     <div
       data-cy="Todo"
-      className={cn('todo', {
-        completed: isCompleted,
-      })}
+      className={cn('todo', { completed: todo.completed })}
     >
-      <label
-        className="todo__status-label"
-      >
+      <label className="todo__status-label">
         <input
           data-cy="TodoStatus"
           type="checkbox"
           className="todo__status"
-          checked={completed}
-          name="inputTodo"
-          onChange={inputChangeHandler}
+          checked={todo.completed}
+          onChange={handleCheckbox}
         />
       </label>
 
       <span data-cy="TodoTitle" className="todo__title">
-        {title}
+        {todo.title}
       </span>
-
-      {/* Remove button appears only on hover */}
       <button
         type="button"
         className="todo__remove"
         data-cy="TodoDelete"
-        onClick={() => onDelete(id)}
+        onClick={() => deleteTodo(todo.id)}
       >
         ×
       </button>
 
-      {/* overlay will cover the todo while it is being updated */}
-      <div
-        data-cy="TodoLoader"
-        className={cn('modal overlay', {
-          'is-active': id === 0,
-        })}
-      >
+      <div data-cy="TodoLoader" className="modal overlay">
         <div className="modal-background has-background-white-ter" />
         <div className="loader" />
       </div>
