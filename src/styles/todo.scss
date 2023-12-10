@@ -147,3 +147,29 @@
   transform: translateY(0);
   overflow: hidden;
 }
+
+.modal {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  position: relative;
+}
+
+.loader,
+.select.is-loading::after {
+  -webkit-animation: spinAround 0.5s linear infinite;
+  animation: spinAround 0.5s linear infinite;
+  border-color: transparent transparent #dbdbdb #dbdbdb;
+  border-radius: 9999px;
+  border-style: solid;
+  border-width: 2px;
+  content: "";
+  display: block;
+  height: 1em;
+  position: relative;
+  width: 1em;
+}
+
+.has-background-white-ter {
+  background-color: #f5f5f5 !important;
+}
