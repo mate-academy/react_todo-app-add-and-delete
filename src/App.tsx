@@ -50,8 +50,11 @@ export const App: React.FC = () => {
   const handleSubmit = (event: React.FormEvent) => {
     event.preventDefault();
 
-    if (!title) {
+    if (!title.trim()) {
       setErrorMessage(Errors.EMPTY_TITLE);
+      setTitle('');
+
+      return;
     }
 
     setIsInputDisabled(true);
@@ -116,7 +119,7 @@ export const App: React.FC = () => {
     }
   };
 
-  const filterTodos = useMemo(() => {
+  const filteredTodos = useMemo(() => {
     return todos.filter(todo => {
       switch (filteredType) {
         case Status.All:
@@ -184,7 +187,7 @@ export const App: React.FC = () => {
         </header>
 
         <TodoList
-          todos={filterTodos}
+          todos={filteredTodos}
           handleDeleteTodo={handleDeleteTodo}
           handleToggleTodo={handleToggleTodo}
         />
