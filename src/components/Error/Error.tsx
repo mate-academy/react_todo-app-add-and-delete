@@ -2,52 +2,57 @@ import cn from 'classnames';
 import { useEffect } from 'react';
 
 type Props = {
-  error: string,
-  hiddenClass: boolean,
-  onSetHiddenClass: (v: boolean) => void,
+  error: ErrorType | null;
 };
 
-export const Error: React.FC<Props> = ({
-  error,
-  hiddenClass,
-  onSetHiddenClass,
-}) => {
-  useEffect(() => {
-    const timer = setTimeout(() => {
-      onSetHiddenClass(true);
-    }, 3000);
+export const Error: React.FC<Props> = ({ error }) => {
+  const [isErrorMessage, setIsErrorMessage] = useState(true);
 
-    return () => {
-      clearTimeout(timer);
-    };
-  }, [onSetHiddenClass]);
+  const getErrorMessage = () => {
+    switch (error) {
+      case ErrorType.LoadError:
+        return 'Unable to load todos';
+
+      case ErrorType.TitleError:
+        return 'Title should not be empty';
+
+      case ErrorType.AddError:
+        return 'Unable to add a todo';
+
+      case ErrorType.DeleteError:
+        return 'Unable to delete a todo';
+
+      case ErrorType.UpdateError:
+        return 'Unable to update a todo';
+
+      default:
+        return null;
+    }
+  };
+
+  const handleHideMessage = () => {
+    setIsErrorMessage(false);
+  };
 
   return (
-    <div
-      data-cy="ErrorNotification"
-      className={cn('notification is-danger is-light has-text-weight-normal', {
-        hidden: hiddenClass,
-      })}
-    >
-      {/* eslint-disable jsx-a11y/control-has-associated-label */}
-      <button
-        data-cy="HideErrorButton"
-        type="button"
-        className="delete"
-        onClick={() => {
-          onSetHiddenClass(true);
-        }}
-      />
-      {/* show only one message at a time */}
-      {error}
-      {/* Unable to load todos
-      <br />
-      Title should not be empty
-      <br />
-      Unable to add a todo
-      <br />
-      Unable to delete a todo
-      <br />
+    isErrorMessage && error ? (
+      <div
+        data-cy="ErrorNotification"
+        className="notification is-danger is-light has-text-weight-normal"
+
+      >
+        <button
+          data-cy="HideErrorButton"
+          type="button"
+          className="delete"
+          onClick={handleHideMessage}
+          aria-label="Close message"
+        />
+        {getErrorMessage()}
+      </div>
+    ) : null
+  );
+};
       Unable to update a todo */}
     </div>
   );
