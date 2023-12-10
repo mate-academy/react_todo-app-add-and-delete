@@ -3,98 +3,92 @@ import { Filter } from '../../types/Filter';
 import { Todo } from '../../types/Todo';
 
 type Props = {
-  todos: Todo[],
-  onSetFilter: (v: Filter) => void,
-  filter: Filter,
+  todos: Todo[];
+  filter: Status;
+  filterChange: (filter: Status) => void;
+  setTodos: React.Dispatch<React.SetStateAction<Todo[]>>;
+  clearCompletedTodos: () => void;
+  setError: React.Dispatch<React.SetStateAction<ErrorType | null>>;
 };
 
 export const Footer: React.FC<Props> = ({
-  setFilter, filterOption, todos, deleteCompleted,
+  todos,
+  filter,
+  filterChange,
+  setTodos = () => { },
+  clearCompletedTodos = () => { },
+  setError,
 }) => {
-  const completedTodo = todos.some(todo => todo.completed);
-  const todosLeft = todos.filter(todo => !todo.completed).length;
+  const completedTodos = todos.filter(todo => todo.completed);
+  const [isClearCompleted, setIsClearCompleted] = useState(false);
+
+  const leftTodos = todos.filter(todo => !todo.completed).length;
+
+  const handleClearCompleted = async () => {
+    try {
+      setIsClearCompleted(true);
+      const deletedTodoId = await clearCompletedTodos();
+
+      if (deletedTodoId !== undefined) {
+        setTodos((currentTodos: Todo[]) => currentTodos
+          .filter((todo) => todo.id === deletedTodoId));
+      }
+    } catch (error) {
+      setError(ErrorType.DeleteError);
+    } finally {
+      setIsClearCompleted(false);
+    }
+  };
 
   return (
     <footer className="todoapp__footer" data-cy="Footer">
       <span className="todo-count" data-cy="TodosCounter">
-        {`${pluralize(todosLeft, 'item')} left`}
+        {leftTodos === 1 ? (
+          '1 item left'
+        ) : (
+          `${leftTodos} items left`
+        )}
       </span>
 
       <nav className="filter" data-cy="Filter">
         <a
           href="#/"
-          className={cn(
-            'filter__link',
-            { selected: filterOption === Filter.All },
-          )}
+          className={cn('filter__link', { selected: filter === Status.All })}
           data-cy="FilterLinkAll"
-          onClick={() => setFilter(Filter.All)}
+          onClick={() => filterChange(Status.All)}
         >
           All
         </a>
 
         <a
           href="#/active"
-          className={
-            cn(
-              'filter__link',
-              { selected: filterOption === Filter.Active },
-            )
-          }
+          className={cn('filter__link', { selected: filter === Status.Active })}
           data-cy="FilterLinkActive"
-          onClick={() => setFilter(Filter.Active)}
+          onClick={() => filterChange(Status.Active)}
         >
           Active
         </a>
 
         <a
           href="#/completed"
-          className={
-            cn(
-              'filter__link',
-              { selected: filterOption === Filter.Completed },
-            )
-          }
-          data-cy="FilterLinkCompleted"
-          onClick={() => setFilter(Filter.Completed)}
-        >
-          Completed
-        </a>
-      </nav>
-
-      {completedTodo && (
-        <button
-          type="button"
-          className="todoapp__clear-completed"
-          data-cy="ClearCompletedButton"
-          onClick={deleteCompleted}
-        >
-          {completedTodo && 'Clear completed'}
-        </button>
-      )}
-    </footer>
-  );
-};
-        </a>
-
-        <a
-          href="#/completed"
           className={cn('filter__link', {
-            selected: getSelectedClass(Filter.Completed),
+            selected: filter === Status.Completed,
           })}
           data-cy="FilterLinkCompleted"
-          onClick={(event) => changeFilterHandler(event, Filter.Completed)}
+          onClick={() => filterChange(Status.Completed)}
         >
           Completed
         </a>
       </nav>
 
-      {completedTodosCount > 0 && (
+      {completedTodos.length > 0 && (
         <button
           type="button"
-          className="todoapp__clear-completed"
+          className={cn('todoapp__clear-completed', {
+            'clearing-completed': isClearCompleted,
+          })}
           data-cy="ClearCompletedButton"
-          onClick={onClearCompleted}  {/* Add the onClick handler here */}
+          onClick={handleClearCompleted}
         >
           Clear completed
         </button>
