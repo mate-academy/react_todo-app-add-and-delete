@@ -11,7 +11,7 @@ import { Filter } from './types/Filter';
 
 const USER_ID = 12007;
 
-const preparedTodos = (todosList: Todo[], selectedFilter: Filter): Todo[] => {
+const prepareTodos = (todosList: Todo[], selectedFilter: Filter): Todo[] => {
   let filteredTodos = [...todosList];
 
   switch (selectedFilter) {
@@ -40,9 +40,7 @@ export const App: React.FC = () => {
 
   useEffect(() => {
     todoService.getTodos(USER_ID)
-      .then(response => {
-        setTodos(response);
-      });
+      .then(setTodos);
   }, []);
 
   const handleDelete = (id: number) => {
@@ -89,47 +87,11 @@ export const App: React.FC = () => {
       });
   };
 
-  const updateTodo = (updatedTodo: Todo) => {
-    setProcessingTodoIds(currentTodos => [...currentTodos, updatedTodo.id]);
-
-    todoService.updateTodo(updatedTodo)
-      .then(() => setTodos(prev => (
-        prev.map(prevTodo => (
-          prevTodo.id === updatedTodo.id
-            ? updatedTodo
-            : prevTodo
-        ))
-      )))
-      .catch(() => setErrorType(Error.Update))
-      .finally(() => {
-        setProcessingTodoIds(currentTodos => currentTodos
-          .filter(todoId => updatedTodo.id !== todoId));
-      });
-  };
-
-  const toggleAll = async () => {
-    const isAllCompleted = todos.every(todo => todo.completed);
-
-    const todosToUpdate = todos.filter(todo => (isAllCompleted
-      ? todo.completed
-      : !todo.completed
-    ));
-
-    await Promise.all(todosToUpdate.map(todo => (
-      updateTodo({
-        ...todo,
-        completed: !isAllCompleted,
-      })
-    )));
-  };
-
   if (!USER_ID) {
     return <UserWarning />;
   }
 
-  const isThereCompleted = todos.some(todo => todo.completed);
-
-  const filteredTodos = preparedTodos(todos, filterStatus);
+  const filteredTodos = prepareTodos(todos, filterStatus);
 
   return (
     <div className="todoapp">
@@ -143,25 +105,24 @@ export const App: React.FC = () => {
           isLoading={isLoading}
           onAddTodo={addTodo}
           setError={setErrorType}
-          onToggleAll={toggleAll}
         />
 
-        <TodoList
-          todos={filteredTodos}
-          tempTodo={tempTodo}
-          onDeleteTodo={handleDelete}
-          processingTodoIds={processingTodoIds}
-          onUpdateTodo={updateTodo}
-        />
+        {!todos.length && (
+          <>
+            <TodoList
+              todos={filteredTodos}
+              tempTodo={tempTodo}
+              onDeleteTodo={handleDelete}
+              processingTodoIds={processingTodoIds}
+            />
 
-        {todos.length !== 0 && (
-          <TodoFooter
-            todos={todos}
-            filterStatus={filterStatus}
-            onSetFilter={setFilterStatus}
-            isCompleted={isThereCompleted}
-            onDeleteTodo={handleDelete}
-          />
+            <TodoFooter
+              todos={todos}
+              filterStatus={filterStatus}
+              onSetFilter={setFilterStatus}
+              onDeleteTodo={handleDelete}
+            />
+          </>
         )}
       </div>
 

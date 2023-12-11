@@ -6,7 +6,6 @@ import { Filter } from '../../types/Filter';
 type Props = {
   todos: Todo[],
   onSetFilter: (filter: Filter) => void,
-  isCompleted: boolean,
   filterStatus: Filter,
   onDeleteTodo: (id: number) => void,
 };
@@ -14,18 +13,18 @@ type Props = {
 export const TodoFooter: React.FC<Props> = ({
   todos,
   onSetFilter,
-  isCompleted,
   filterStatus,
   onDeleteTodo,
 }) => {
+  const isThereCompleted = todos.some(todo => todo.completed);
   const activeTodos = todos.filter(todo => !todo.completed);
 
   const chooseFilter = (status: Filter) => {
     switch (status) {
-      case 'Active':
+      case Filter.Active:
         onSetFilter(Filter.Active);
         break;
-      case 'Completed':
+      case Filter.Completed:
         onSetFilter(Filter.Completed);
         break;
       default:
@@ -83,7 +82,7 @@ export const TodoFooter: React.FC<Props> = ({
         </a>
       </nav>
 
-      {isCompleted && (
+      {isThereCompleted && (
         <button
           type="button"
           className="todoapp__clear-completed"

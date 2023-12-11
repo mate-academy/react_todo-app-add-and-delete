@@ -10,7 +10,6 @@ type Props = {
   isLoading: boolean,
   todoTitle: string,
   setTodoTitle: (title: string) => void,
-  onToggleAll: () => void,
 };
 
 export const TodoHeader: React.FC<Props> = ({
@@ -20,7 +19,6 @@ export const TodoHeader: React.FC<Props> = ({
   todos,
   todoTitle,
   setTodoTitle,
-  onToggleAll,
 }) => {
   const inputRef = useRef<HTMLInputElement>(null);
 
@@ -43,13 +41,12 @@ export const TodoHeader: React.FC<Props> = ({
 
   return (
     <header className="todoapp__header">
-      {/* eslint-disable-next-line jsx-a11y/control-has-associated-label */}
       <button
+        aria-label="none"
         type="button"
         className={cn('todoapp__toggle-all',
           { active: todos.every(todo => todo.completed) })}
         data-cy="ToggleAllButton"
-        onClick={onToggleAll}
       />
       <form
         onSubmit={handleSubmit}
@@ -66,6 +63,5 @@ export const TodoHeader: React.FC<Props> = ({
         />
       </form>
     </header>
-
   );
 };

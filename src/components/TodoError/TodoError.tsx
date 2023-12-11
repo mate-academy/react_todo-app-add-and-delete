@@ -30,7 +30,7 @@ export const TodoError: React.FC<Props> = ({
         className="delete"
         onClick={() => setErrorType(null)}
       />
-      {`${errorType}`}
+      {errorType}
     </div>
   );
 };

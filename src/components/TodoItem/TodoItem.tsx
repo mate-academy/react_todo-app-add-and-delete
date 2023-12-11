@@ -53,12 +53,10 @@ export const TodoItem: React.FC<Props> = ({
   };
 
   const onSubmit = async () => {
-    if (!newTitle) {
-      if (onDeleteTodo) {
-        onDeleteTodo(id);
+    if (!newTitle && onDeleteTodo) {
+      onDeleteTodo(id);
 
-        return;
-      }
+      return;
     }
 
     if (todo.title === newTitle) {
@@ -108,7 +106,7 @@ export const TodoItem: React.FC<Props> = ({
             onChange={event => setNewTitle(event.target.value)}
             onKeyUp={event => {
               if (event.key === 'Escape') {
-                setNewTitle(todo.title);
+                setNewTitle(title);
                 setIsEditing(false);
               }
             }}
@@ -123,7 +121,7 @@ export const TodoItem: React.FC<Props> = ({
             type="button"
             className="todo__remove"
             data-cy="TodoDelete"
-            onClick={() => handleDelete()}
+            onClick={handleDelete}
           >
             ×
           </button>
