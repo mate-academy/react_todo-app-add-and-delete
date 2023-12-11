@@ -3,7 +3,7 @@
 /* eslint-disable react-hooks/rules-of-hooks */
 /* eslint-disable max-len */
 /* eslint-disable jsx-a11y/control-has-associated-label */
-import React, { useEffect, useMemo, useState } from 'react';
+import React, { useEffect, useMemo, useRef, useState } from 'react';
 import cn from 'classnames';
 import { UserWarning } from './UserWarning';
 import { Todo } from './types/Todo';
@@ -22,6 +22,8 @@ export const App: React.FC = () => {
   const [isInputDisabled, setIsInputDisabled] = useState(false);
   const [errorMessage, setErrorMessage] = useState<Errors | null>(null);
   const [title, setTitle] = useState<string>('');
+
+  const titleRef = useRef<HTMLInputElement | null>(null);
 
   const handleTitleChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     setTitle(event.target.value);
@@ -153,9 +155,14 @@ export const App: React.FC = () => {
   const leftToComplete = useMemo(() => {
     return todos.filter(todo => !todo.completed).length;
   }, [todos]);
+
   const showClearButton = useMemo(() => {
     return todos.filter(todo => todo.completed).length > 0;
   }, [todos]);
+
+  useEffect(() => {
+    titleRef.current?.focus();
+  });
 
   return (
     <div className="todoapp">
@@ -179,7 +186,7 @@ export const App: React.FC = () => {
               value={title}
               className="todoapp__new-todo"
               placeholder="What needs to be done?"
-              autoFocus
+              ref={titleRef}
               disabled={isInputDisabled}
               onChange={handleTitleChange}
             />
@@ -192,27 +199,25 @@ export const App: React.FC = () => {
           handleToggleTodo={handleToggleTodo}
         />
 
-        {!!todos.length && (
-          <footer className="todoapp__footer" data-cy="Footer">
-            <span className="todo-count" data-cy="TodosCounter">
-              {`${leftToComplete} items left`}
-            </span>
+        <footer className="todoapp__footer" data-cy="Footer">
+          <span className="todo-count" data-cy="TodosCounter">
+            {`${leftToComplete} items left`}
+          </span>
 
-            <TodosFilter
-              filteredType={filteredType}
-              setFilteredType={setFilteredType}
-            />
-            <button
-              type="button"
-              className="todoapp__clear-completed"
-              data-cy="ClearCompletedButton"
-              hidden={!showClearButton}
-              onClick={handleDeleteCompleted}
-            >
-              Clear completed
-            </button>
-          </footer>
-        )}
+          <TodosFilter
+            filteredType={filteredType}
+            setFilteredType={setFilteredType}
+          />
+          <button
+            type="button"
+            className="todoapp__clear-completed"
+            data-cy="ClearCompletedButton"
+            disabled={!showClearButton}
+            onClick={handleDeleteCompleted}
+          >
+            Clear completed
+          </button>
+        </footer>
       </div>
 
       {errorMessage && (
