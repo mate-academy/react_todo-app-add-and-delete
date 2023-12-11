@@ -5,7 +5,7 @@ import { Header } from './Header';
 import { Filter } from './types/Filter';
 import { Todo } from './types/Todo';
 import { TodoList } from './TodoList';
-import { getTodos } from './api/todos';
+import { deleteTodo, getTodos } from './api/todos';
 
 type Props = {
   userId: number;
@@ -17,6 +17,7 @@ export const TodoApp: React.FC<Props> = ({ userId }) => {
   const [errorMessage, setErrorMessage] = useState('');
   const [tempTodo, setTempTodo] = useState<Todo | null>(null);
   const [clearCompleted, setClearCompleted] = useState(false);
+  const [loading, setLoading] = useState(false);
 
   useEffect(() => {
     setErrorMessage('');
@@ -38,6 +39,25 @@ export const TodoApp: React.FC<Props> = ({ userId }) => {
     }
   };
 
+  const handleDelete = (todoId: number) => {
+    setLoading(true);
+    deleteTodo(userId, todoId)
+      .then(() => {
+        const updatedTodos = todos.filter((item) => item.id !== todoId);
+
+        setTodos(updatedTodos);
+      })
+      .catch(() => setErrorMessage('Unable to delete a todo'))
+      .finally(() => setLoading(false));
+  };
+
+  const handleCheckboxChange = (todoId: number) => {
+    // eslint-disable-next-line max-len
+    const updatedTodos = todos.map((item) => (item.id === todoId ? { ...item, completed: !item.completed } : item));
+
+    setTodos(updatedTodos);
+  };
+
   return (
     <div className="todoapp">
       <h1 className="todoapp__title">todos</h1>
@@ -51,13 +71,12 @@ export const TodoApp: React.FC<Props> = ({ userId }) => {
           temp={tempTodo}
         />
         <TodoList
-          filteredTodos={getFilteredTodos}
-          todos={todos}
-          setTodos={setTodos}
+          filteredTodos={getFilteredTodos()}
           tempTodo={tempTodo}
-          userId={userId}
-          setErrorMessage={setErrorMessage}
           clearCompleted={clearCompleted}
+          handleCheckboxChange={handleCheckboxChange}
+          handleDelete={handleDelete}
+          loading={loading}
         />
         {!!todos.length && (
           <Footer

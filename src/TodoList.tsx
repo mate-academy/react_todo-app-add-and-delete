@@ -3,45 +3,41 @@ import { TodoItem } from './TodoItem';
 import { Todo } from './types/Todo';
 
 type Props = {
-  filteredTodos: () => Todo[];
-  todos: Todo[];
-  setTodos: (todo: Todo[]) => void;
+  filteredTodos: Todo[];
   tempTodo: Todo | null;
-  userId: number;
-  setErrorMessage: (err: string) => void;
   clearCompleted: boolean;
+  handleCheckboxChange: (todoId: number) => void;
+  handleDelete: (todoId: number) => void;
+  loading: boolean;
 };
 
 export const TodoList: React.FC<Props> = ({
   filteredTodos,
-  todos,
-  setTodos,
   tempTodo,
-  userId,
-  setErrorMessage,
   clearCompleted,
+  handleCheckboxChange,
+  handleDelete,
+  loading,
 }) => {
   return (
     <section className="todoapp__main" data-cy="TodoList">
-      {filteredTodos().map((todo: Todo) => (
+      {filteredTodos.map((todo: Todo) => (
         <TodoItem
           todo={todo}
           key={todo.id}
-          todos={todos}
-          setTodos={setTodos}
-          setErrorMessage={setErrorMessage}
-          userId={userId}
           clearCompleted={clearCompleted}
+          handleCheckboxChange={handleCheckboxChange}
+          handleDelete={handleDelete}
+          loading={loading}
         />
       ))}
       {tempTodo && (
         <TodoItem
           todo={tempTodo}
-          todos={todos}
-          setTodos={setTodos}
-          setErrorMessage={setErrorMessage}
-          userId={userId}
           clearCompleted={clearCompleted}
+          handleCheckboxChange={handleCheckboxChange}
+          handleDelete={handleDelete}
+          loading={loading}
         />
       )}
     </section>
