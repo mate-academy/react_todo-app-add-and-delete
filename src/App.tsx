@@ -1,24 +1,55 @@
-/* eslint-disable max-len */
-/* eslint-disable jsx-a11y/control-has-associated-label */
-import React from 'react';
+import React, { useContext } from 'react';
+import cn from 'classnames';
 import { UserWarning } from './UserWarning';
-
-const USER_ID = 0;
+import { TodoList } from './components/TodoList';
+import { TodosContext, USER_ID } from './components/TodosContext/TodosContext';
+import { ErrorMessage } from './types/ErrorMessages';
+import { Header } from './components/Header';
+import { Footer } from './components/Footer';
 
 export const App: React.FC = () => {
+  const { todos, isError, handleSetError } = useContext(TodosContext);
+
   if (!USER_ID) {
     return <UserWarning />;
   }
 
   return (
-    <section className="section container">
-      <p className="title is-4">
-        Copy all you need from the prev task:
-        <br />
-        <a href="https://github.com/mate-academy/react_todo-app-loading-todos#react-todo-app-load-todos">React Todo App - Load Todos</a>
-      </p>
+    <div className="todoapp">
+      <h1 className="todoapp__title">todos</h1>
 
-      <p className="subtitle">Styles are already copied</p>
-    </section>
+      <div className="todoapp__content">
+        <Header />
+
+        {todos.length > 0 && (
+          <>
+            <TodoList />
+
+            <Footer />
+          </>
+        )}
+      </div>
+
+      {isError && (
+        <div
+          data-cy="ErrorNotification"
+          className={cn('notification',
+            'is-danger',
+            'is-light',
+            'has-text-weight-normal', {
+              hidden: !isError,
+            })}
+        >
+          <button
+            aria-label="hide-error"
+            data-cy="HideErrorButton"
+            type="button"
+            className="delete"
+            onClick={() => handleSetError(ErrorMessage.NOT_ERROR)}
+          />
+          {isError}
+        </div>
+      )}
+    </div>
   );
 };
