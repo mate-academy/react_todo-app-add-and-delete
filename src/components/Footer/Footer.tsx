@@ -1,11 +1,12 @@
+import React, { useState } from 'react';
 import cn from 'classnames';
 import { Filter } from '../../types/Filter';
 import { Todo } from '../../types/Todo';
 
 type Props = {
   todos: Todo[];
-  filter: Filter; // Change 'Status' to 'Filter'
-  filterChange: (filter: Filter) => void; // Change 'Status' to 'Filter'
+  filter: Filter;
+  filterChange: (filter: Filter) => void;
   setTodos: React.Dispatch<React.SetStateAction<Todo[]>>;
   clearCompletedTodos: () => Promise<number | undefined>;
   setError: React.Dispatch<React.SetStateAction<ErrorType | null>>;
@@ -30,8 +31,9 @@ export const Footer: React.FC<Props> = ({
       const deletedTodoId = await clearCompletedTodos();
 
       if (deletedTodoId !== undefined) {
-        setTodos((currentTodos: Todo[]) => currentTodos
-          .filter((todo) => todo.id === deletedTodoId));
+        setTodos((currentTodos: Todo[]) =>
+          currentTodos.filter((todo) => todo.id !== deletedTodoId)
+        );
       }
     } catch (error) {
       setError(ErrorType.DeleteError);
@@ -53,18 +55,18 @@ export const Footer: React.FC<Props> = ({
       <nav className="filter" data-cy="Filter">
         <a
           href="#/"
-          className={cn('filter__link', { selected: filter === Status.All })}
+          className={cn('filter__link', { selected: filter === Filter.All })}
           data-cy="FilterLinkAll"
-          onClick={() => filterChange(Status.All)}
+          onClick={() => filterChange(Filter.All)}
         >
           All
         </a>
 
         <a
           href="#/active"
-          className={cn('filter__link', { selected: filter === Status.Active })}
+          className={cn('filter__link', { selected: filter === Filter.Active })}
           data-cy="FilterLinkActive"
-          onClick={() => filterChange(Status.Active)}
+          onClick={() => filterChange(Filter.Active)}
         >
           Active
         </a>
@@ -72,10 +74,10 @@ export const Footer: React.FC<Props> = ({
         <a
           href="#/completed"
           className={cn('filter__link', {
-            selected: filter === Status.Completed,
+            selected: filter === Filter.Completed,
           })}
           data-cy="FilterLinkCompleted"
-          onClick={() => filterChange(Status.Completed)}
+          onClick={() => filterChange(Filter.Completed)}
         >
           Completed
         </a>
