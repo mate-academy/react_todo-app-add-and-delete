@@ -28,11 +28,11 @@ export const Footer: React.FC<Props> = ({
   const handleClearCompleted = async () => {
     try {
       setIsClearCompleted(true);
-      const deletedTodoId = await clearCompletedTodos();
+      const deletedTodoIds = await clearCompletedTodos();
 
-      if (deletedTodoId !== undefined) {
+      if (deletedTodoIds && deletedTodoIds.length > 0) {
         setTodos((currentTodos: Todo[]) =>
-          currentTodos.filter((todo) => todo.id !== deletedTodoId)
+          currentTodos.filter((todo) => !deletedTodoIds.includes(todo.id))
         );
       }
     } catch (error) {
@@ -41,6 +41,7 @@ export const Footer: React.FC<Props> = ({
       setIsClearCompleted(false);
     }
   };
+
 
   return (
     <footer className="todoapp__footer" data-cy="Footer">
