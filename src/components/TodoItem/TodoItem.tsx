@@ -1,5 +1,4 @@
 import cn from 'classnames';
-import { useState } from 'react';
 import { Todo } from '../../types/Todo';
 
 type Props = {
