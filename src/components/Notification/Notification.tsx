@@ -12,26 +12,22 @@ export const Notification: React.FC = () => {
   }, 3000);
 
   return (
-    <>
-      {errorMessage && (
-        <div
-          data-cy="ErrorNotification"
-          className={classNames('notification '
+    <div
+      data-cy="ErrorNotification"
+      className={classNames('notification '
             + 'is-danger '
             + 'is-light '
             + 'has-text-weight-normal',
-          { hidden: isHidden })}
-        >
-          <button
-            data-cy="HideErrorButton"
-            type="button"
-            className="delete"
-            onClick={() => setIsHidden(true)}
-            aria-label="Close error notification"
-          />
-          {errorMessage}
-        </div>
-      )}
-    </>
+      { hidden: isHidden })}
+    >
+      <button
+        data-cy="HideErrorButton"
+        type="button"
+        className="delete"
+        onClick={() => setIsHidden(true)}
+        aria-label="Close error notification"
+      />
+      {errorMessage}
+    </div>
   );
 };

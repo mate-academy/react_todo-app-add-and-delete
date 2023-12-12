@@ -9,7 +9,7 @@ type Props = {
 };
 
 export const TodoItem: React.FC<Props> = ({ todo }) => {
-  const { deleteTodo, isLoading } = useContext(TodoContext);
+  const { deleteTodo, loading } = useContext(TodoContext);
 
   return (
     <div
@@ -38,19 +38,7 @@ export const TodoItem: React.FC<Props> = ({ todo }) => {
       >
         ×
       </button>
-
-      {(isLoading === todo.id) && <Loading />}
-
-      {/* /!* This form is shown instead of the title and remove button *!/ */}
-      {/* <form> */}
-      {/*  <input */}
-      {/*    data-cy="TodoTitleField" */}
-      {/*    type="text" */}
-      {/*    className="todo__title-field" */}
-      {/*    placeholder="Empty todo will be deleted" */}
-      {/*    value="Todo is being edited now" */}
-      {/*  /> */}
-      {/* </form> */}
+      {(loading === todo.id) && <Loading />}
     </div>
   );
 };

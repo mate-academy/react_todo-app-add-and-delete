@@ -19,7 +19,6 @@ export const App: React.FC = () => {
       <h1 className="todoapp__title">todos</h1>
       <div className="todoapp__content">
         <header className="todoapp__header">
-          {/* this buttons is active only if there are some active todos */}
           <button
             type="button"
             className="todoapp__toggle-all active"
@@ -29,7 +28,7 @@ export const App: React.FC = () => {
           <TodoForm />
         </header>
         <TodoList />
-        {todos.length > 0
+        {!!todos.length
           && (
             <Footer />
           )}

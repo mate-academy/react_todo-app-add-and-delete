@@ -1,26 +1,32 @@
 import React, { useContext, useState } from 'react';
 import { TodoContext } from '../TodoContext';
+import { ErrorMessage } from '../../types/ErrorMessage';
 
 export const TodoForm = () => {
   const {
     addTodo,
-    isLoading,
+    loading,
     USER_ID,
+    setErrorMessage,
   } = useContext(TodoContext);
 
   const [inputValue, setInputValue] = useState('');
+  const isDisabled = loading !== null;
 
   const handleFormSubmit = (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
 
-    const newTodo = {
-      id: Math.random(),
-      title: inputValue.trim(),
-      completed: false,
-      userId: USER_ID,
-    };
+    if (inputValue.trim().length) {
+      addTodo({
+        id: Math.random(),
+        title: inputValue,
+        completed: false,
+        userId: USER_ID,
+      });
+    } else {
+      setErrorMessage(ErrorMessage.EmptyTitle);
+    }
 
-    addTodo(newTodo);
     setInputValue('');
   };
 
@@ -39,7 +45,7 @@ export const TodoForm = () => {
         placeholder="What needs to be done?"
         value={inputValue}
         onChange={handleInputChange}
-        disabled={!!isLoading}
+        disabled={isDisabled}
       />
     </form>
   );

@@ -15,57 +15,34 @@ interface TodoContextType {
   tempTodo: Todo | null,
   filteredTodos: Todo[],
   errorMessage: string,
-  isSelected: string,
-  isLoading: null | number,
+  option: Filter,
+  loading: null | number,
   addTodo: (newTodo: Todo) => void,
-  filterTodo: (filter: string) => void,
   deleteTodo: (todoId: number) => void
   setTodos: React.Dispatch<React.SetStateAction<Todo[]>>,
   setTempTodo: React.Dispatch<React.SetStateAction<Todo | null>>,
-  setFilteredTodos: React.Dispatch<React.SetStateAction<Todo[]>>,
   setErrorMessage: React.Dispatch<React.SetStateAction<string>>,
-  setIsSelected: React.Dispatch<React.SetStateAction<string>>,
-  setIsLoading: React.Dispatch<React.SetStateAction<number | null>>
+  setLoading: React.Dispatch<React.SetStateAction<number | null>>,
+  setOption: React.Dispatch<React.SetStateAction<Filter>>,
 }
-
-const initialTodoContext = {
-  USER_ID: 11906,
-  todos: [],
-  setTodos: () => {},
-  tempTodo: null,
-  setTempTodo: () => {},
-  filteredTodos: [],
-  setFilteredTodos: () => {},
-  errorMessage: '',
-  setErrorMessage: () => {},
-  isSelected: 'All',
-  setIsSelected: () => {},
-  isLoading: null,
-  setIsLoading: () => {},
-  addTodo: () => {},
-  filterTodo: () => {},
-  deleteTodo: () => {},
-};
 
 const USER_ID = 11906;
 
 export const TodoContext = React.createContext<
 TodoContextType
->(initialTodoContext);
+>({} as TodoContextType);
 
 export const TodoProvider:React.FC<Props> = ({ children }) => {
   const [todos, setTodos] = useState<Todo[]>([]);
   const [errorMessage, setErrorMessage] = useState('');
-  const [filteredTodos, setFilteredTodos] = useState<Todo[]>([]);
-  const [isSelected, setIsSelected] = useState('All');
-  const [isLoading, setIsLoading] = useState<number | null>(null);
+  const [option, setOption] = useState(Filter.All);
+  const [loading, setLoading] = useState<number | null>(null);
   const [tempTodo, setTempTodo] = useState<Todo | null>(null);
 
   useEffect(() => {
     postService.getTodos(USER_ID)
       .then(allTodos => {
         setTodos(allTodos);
-        setFilteredTodos(allTodos);
       })
       .catch(() => {
         setErrorMessage(ErrorMessage.UnableToLoad);
@@ -73,47 +50,39 @@ export const TodoProvider:React.FC<Props> = ({ children }) => {
       });
   }, []);
 
-  const filterTodo = (filter: string) => {
-    switch (filter) {
-      case (Filter.Active):
-        setFilteredTodos(todos.filter(todo => !todo.completed));
-        setIsSelected(Filter.Active);
-        break;
-      case (Filter.Completed):
-        setFilteredTodos(todos.filter(todo => todo.completed));
-        setIsSelected(Filter.Completed);
-        break;
+  const filteredTodos = useMemo(() => {
+    switch (option) {
+      case Filter.Active:
+        return todos.filter(todo => !todo.completed);
+      case Filter.Completed:
+        return todos.filter(todo => todo.completed);
       default:
-        setFilteredTodos(todos);
-        setIsSelected(Filter.All);
+        return todos;
     }
-  };
+  }, [todos, option]);
 
   const addTodo = (newTodo: Todo) => {
     setTempTodo({ ...newTodo, id: 0 });
-    setIsLoading(0);
+    setLoading(0);
     postService.createTodo(newTodo)
       .then((createdTodo) => {
         setTodos((prevTodos) => [...prevTodos, createdTodo]);
-        setFilteredTodos((prevTodos) => [...prevTodos, createdTodo]);
       })
       .catch(() => setErrorMessage(ErrorMessage.UnableToAdd))
       .finally(() => {
-        setIsLoading(null);
+        setLoading(null);
         setTempTodo(null);
       });
   };
 
   const deleteTodo = (todoId: number) => {
-    setIsLoading(todoId);
+    setLoading(todoId);
     postService.deleteTodo(todoId)
       .then(() => {
         setTodos(prevTodos => prevTodos.filter(todo => todo.id !== todoId));
-        setFilteredTodos(prevTodos => prevTodos.filter(todo => (
-          todo.id !== todoId)));
       })
       .catch(() => setErrorMessage(ErrorMessage.UnableToDelete))
-      .finally(() => setIsLoading(null));
+      .finally(() => setLoading(null));
   };
 
   const value = useMemo(() => ({
@@ -123,24 +92,22 @@ export const TodoProvider:React.FC<Props> = ({ children }) => {
     tempTodo,
     setTempTodo,
     filteredTodos,
-    setFilteredTodos,
     errorMessage,
     setErrorMessage,
-    isSelected,
-    setIsSelected,
-    isLoading,
-    setIsLoading,
+    option,
+    setOption,
+    loading,
+    setLoading,
     deleteTodo,
     addTodo,
-    filterTodo,
   }), [
     todos,
     tempTodo,
     filteredTodos,
     errorMessage,
-    isSelected,
-    isLoading,
-    filterTodo]);
+    option,
+    loading,
+  ]);
 
   return (
     <TodoContext.Provider value={value}>

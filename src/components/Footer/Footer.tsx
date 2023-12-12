@@ -7,9 +7,9 @@ import { Filter } from '../../types/Filter';
 export const Footer: React.FC = () => {
   const {
     todos,
-    filterTodo,
-    isSelected,
+    option,
     deleteTodo,
+    setOption,
   } = useContext(TodoContext);
 
   const todoCounter = todos.filter(todo => !todo.completed).length;
@@ -25,16 +25,18 @@ export const Footer: React.FC = () => {
   return (
     <footer className="todoapp__footer" data-cy="Footer">
       <span className="todo-count" data-cy="TodosCounter">
-        {`${todoCounter} items left`}
+        {todoCounter === 1
+          ? `${todoCounter} item left`
+          : `${todoCounter} items left`}
       </span>
 
       <nav className="filter" data-cy="Filter">
         <a
           href="#/"
           className={classNames('filter__link',
-            { selected: isSelected === 'All' })}
+            { selected: option === Filter.All })}
           data-cy="FilterLinkAll"
-          onClick={() => filterTodo(Filter.All)}
+          onClick={() => setOption(Filter.All)}
         >
           All
         </a>
@@ -42,9 +44,9 @@ export const Footer: React.FC = () => {
         <a
           href="#/active"
           className={classNames('filter__link',
-            { selected: isSelected === 'Active' })}
+            { selected: option === Filter.Active })}
           data-cy="FilterLinkActive"
-          onClick={() => filterTodo(Filter.Active)}
+          onClick={() => setOption(Filter.Active)}
         >
           Active
         </a>
@@ -52,9 +54,9 @@ export const Footer: React.FC = () => {
         <a
           href="#/completed"
           className={classNames('filter__link',
-            { selected: isSelected === 'Completed' })}
+            { selected: option === Filter.Completed })}
           data-cy="FilterLinkCompleted"
-          onClick={() => filterTodo(Filter.Completed)}
+          onClick={() => setOption(Filter.Completed)}
         >
           Completed
         </a>
