@@ -4,10 +4,10 @@ import { Todo } from '../../types/Todo';
 
 type Props = {
   todos: Todo[];
-  filter: Status;
-  filterChange: (filter: Status) => void;
+  filter: Filter; // Change 'Status' to 'Filter'
+  filterChange: (filter: Filter) => void; // Change 'Status' to 'Filter'
   setTodos: React.Dispatch<React.SetStateAction<Todo[]>>;
-  clearCompletedTodos: () => void;
+  clearCompletedTodos: () => Promise<number | undefined>;
   setError: React.Dispatch<React.SetStateAction<ErrorType | null>>;
 };
 
@@ -15,8 +15,8 @@ export const Footer: React.FC<Props> = ({
   todos,
   filter,
   filterChange,
-  setTodos = () => { },
-  clearCompletedTodos = () => { },
+  setTodos = () => {},
+  clearCompletedTodos = async () => {},
   setError,
 }) => {
   const completedTodos = todos.filter(todo => todo.completed);
