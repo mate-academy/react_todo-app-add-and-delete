@@ -11,9 +11,10 @@ export const TodoList = ({ todosToView, deleteTodo, tempTodo }: Props) => {
   return (
     <section className="todoapp__main" data-cy="TodoList">
       {todosToView.map(todo => (
-        <TodoItem todo={todo} removeTodo={deleteTodo} />
+        <TodoItem todo={todo} removeTodo={deleteTodo} key={todo.id} />
       ))}
-      {tempTodo && <TodoItem todo={tempTodo} removeTodo={deleteTodo} />}
+      {tempTodo
+        && <TodoItem todo={tempTodo} removeTodo={deleteTodo} isLoading />}
     </section>
   );
 };

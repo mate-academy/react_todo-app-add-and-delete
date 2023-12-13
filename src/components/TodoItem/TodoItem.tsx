@@ -4,9 +4,10 @@ import { Todo } from '../../types/Todo';
 interface Props {
   todo: Todo;
   removeTodo: (todo: Todo) => void;
+  isLoading?: boolean;
 }
 
-export const TodoItem = ({ todo, removeTodo }: Props) => {
+export const TodoItem = ({ todo, removeTodo, isLoading }: Props) => {
   return (
     <div
       data-cy="Todo"
@@ -35,7 +36,13 @@ export const TodoItem = ({ todo, removeTodo }: Props) => {
         ×
       </button>
 
-      <div data-cy="TodoLoader" className="modal overlay">
+      <div
+        data-cy="TodoLoader"
+        className={cn(
+          'modal overlay',
+          { 'is-active': isLoading },
+        )}
+      >
         <div className="modal-background has-background-white-ter" />
         <div className="loader" />
       </div>

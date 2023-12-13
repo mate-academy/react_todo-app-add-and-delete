@@ -36,13 +36,7 @@ export const App: React.FC = () => {
       .catch(() => errorFound(ErrorType.TodosNotLoaded));
   }, []);
 
-  const createNewTodo = (title: string) => {
-    if (!title) {
-      errorFound(ErrorType.TitleEmpty);
-
-      return;
-    }
-
+  const createNewTodo = (title: string): Promise<void> => {
     const newTodo: NoIdTodo = {
       userId: USER_ID,
       title,
@@ -54,13 +48,17 @@ export const App: React.FC = () => {
       ...newTodo,
     });
 
-    postTodo(newTodo)
+    return postTodo(newTodo)
       .then(
         (response) => setTodosFromServer(
           currentTodos => [...currentTodos, response],
         ),
       )
-      .catch(() => errorFound(ErrorType.NotAddable))
+      .catch(() => {
+        errorFound(ErrorType.NotAddable);
+
+        throw new Error(ErrorType.NotAddable);
+      })
       .finally(() => setTempTodo(null));
   };
 
@@ -120,6 +118,7 @@ export const App: React.FC = () => {
         <Header
           todosFromServer={todosFromServer}
           createNewTodo={createNewTodo}
+          errorFound={errorFound}
         />
 
         <TodoList
