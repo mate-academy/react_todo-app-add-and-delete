@@ -4,15 +4,18 @@ import cn from 'classnames';
 import { Todo } from '../../types/Todo';
 
 import { deleteTodo } from '../../api/todos';
+import { Errors } from '../../types/Errors';
 
 interface TodoItemProps {
   todo: Todo;
   filterTodoList: (todoId: number) => void;
+  setErrorMessage: (setErrorMessage: Errors | null) => void;
 }
 
 export const TodoItem: React.FC<TodoItemProps> = ({
   todo,
   filterTodoList,
+  setErrorMessage,
 }) => {
   const [loading, setLoading] = useState(false);
 
@@ -20,9 +23,12 @@ export const TodoItem: React.FC<TodoItemProps> = ({
     setLoading(true);
     deleteTodo(todoId)
       .then(() => {
-        setLoading(false);
         filterTodoList(todoId);
-      });
+      })
+      .catch(() => {
+        setErrorMessage(Errors.Delete);
+      })
+      .finally(() => setLoading(false));
   };
 
   return (
@@ -56,7 +62,7 @@ export const TodoItem: React.FC<TodoItemProps> = ({
       <div
         data-cy="TodoLoader"
         className={cn('modal overlay', {
-          'is-active': loading,
+          'is-active': loading || todo.id === 0,
         })}
       >
         <div className="modal-background has-background-white-ter" />

@@ -2,8 +2,10 @@ import React from 'react';
 
 import cn from 'classnames';
 
+import { Errors } from '../../types/Errors';
+
 interface Props {
-  errorMessage: string;
+  errorMessage: Errors | null;
   clearErrorMessage: () => void;
 }
 

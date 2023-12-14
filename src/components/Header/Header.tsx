@@ -1,23 +1,25 @@
 import React, { useRef, useEffect, useState } from 'react';
 import cn from 'classnames';
-import { Errors } from '../../../types/Errors';
-import { Todo } from '../../../types/Todo';
-import { postTodo } from '../../../api/todos';
+import { Errors } from '../../types/Errors';
+import { Todo } from '../../types/Todo';
+import { postTodo } from '../../api/todos';
 
 interface HeaderProps {
   activeTodos: number;
-  setErrorMessage: (newMessage: Errors) => void;
-  setTempTodo: (loadingTodo: Todo | null) => void;
+  setErrorMessage: (newMessage: Errors | null) => void;
   userId: number;
   handleTodoAdded: (todo: Todo) => void;
+  handleAddTempTodo: (todo: Todo) => void;
+  handleRemoveTempTodo: () => void;
 }
 
 export const Header: React.FC<HeaderProps> = ({
   activeTodos,
   setErrorMessage,
-  setTempTodo,
   userId,
   handleTodoAdded,
+  handleAddTempTodo,
+  handleRemoveTempTodo,
 }) => {
   const inputRef = useRef<HTMLInputElement>(null);
   const [inputTitle, setInputTitle] = useState('');
@@ -28,7 +30,7 @@ export const Header: React.FC<HeaderProps> = ({
   }, [disabled]);
 
   const handleInputChange = (event: React.ChangeEvent<HTMLInputElement>) => {
-    setErrorMessage(Errors.NoError);
+    setErrorMessage(null);
     setInputTitle(event.target.value);
   };
 
@@ -42,7 +44,7 @@ export const Header: React.FC<HeaderProps> = ({
     } else {
       setDisabled(true);
 
-      setTempTodo({
+      handleAddTempTodo({
         id: 0,
         userId,
         title: inputTitle,
@@ -62,7 +64,7 @@ export const Header: React.FC<HeaderProps> = ({
         .finally(() => {
           setDisabled(false);
           setInputTitle('');
-          setTempTodo(null);
+          handleRemoveTempTodo();
         });
     }
   };

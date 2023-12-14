@@ -5,9 +5,9 @@ import { Todo } from './types/Todo';
 
 import { getTodos, deleteTodo } from './api/todos';
 
-import { Header } from './components/ErrorMessage/Header/Header';
-import { TodoList } from './components/ErrorMessage/TodoList/TodoList';
-import { Footer } from './components/ErrorMessage/Footer/Footer';
+import { Header } from './components/Header/Header';
+import { TodoList } from './components/TodoList/TodoList';
+import { Footer } from './components/Footer/Footer';
 import { ErrorMessage } from './components/ErrorMessage/ErrorMessage';
 import { TodoListState } from './types/TodoListState';
 import { Errors } from './types/Errors';
@@ -16,9 +16,8 @@ const USER_ID = 12018;
 
 export const App: React.FC = () => {
   const [todoList, setTodoList] = useState<Todo[]>([]);
-  const [errorMessage, setErrorMessage] = useState('');
+  const [errorMessage, setErrorMessage] = useState<Errors | null>(null);
   const [filter, setFilter] = useState<TodoListState>(TodoListState.All);
-  const [tempTodo, setTempTodo] = useState<Todo | null>(null);
 
   useEffect(() => {
     getTodos(USER_ID)
@@ -28,6 +27,14 @@ export const App: React.FC = () => {
 
   const filterTodoList = (todoId: number) => {
     setTodoList(prevTodos => prevTodos.filter(todo => todo.id !== todoId));
+  };
+
+  const handleAddTempTodo = (todo: Todo) => {
+    setTodoList(prevState => [...prevState, todo]);
+  };
+
+  const handleRemoveTempTodo = () => {
+    setTodoList(prevState => prevState.filter(todo => todo.id !== 0));
   };
 
   const [activeTodos, completedTodos] = useMemo(() => {
@@ -61,10 +68,22 @@ export const App: React.FC = () => {
 
   const clearCompleted = () => {
     const todoToClear = todoList.filter(todo => todo.completed);
+    const deletePromise: Promise<unknown>[] = [];
 
-    todoToClear.forEach(item => deleteTodo(item.id));
+    todoToClear.forEach(item => {
+      const promise = deleteTodo(item.id)
+        .catch(() => {
+          setErrorMessage(Errors.Delete);
+          throw new Error();
+        });
 
-    setTodoList(prevState => prevState.filter(todo => !todo.completed));
+      deletePromise.push(promise);
+    });
+
+    Promise.all(deletePromise)
+      .then(() => {
+        setTodoList(prevState => prevState.filter(todo => !todo.completed));
+      });
   };
 
   if (!USER_ID) {
@@ -79,16 +98,17 @@ export const App: React.FC = () => {
         <Header
           activeTodos={activeTodos}
           setErrorMessage={setErrorMessage}
-          setTempTodo={setTempTodo}
           userId={USER_ID}
           handleTodoAdded={handleTodoAdded}
+          handleAddTempTodo={handleAddTempTodo}
+          handleRemoveTempTodo={handleRemoveTempTodo}
         />
 
         {todoListToShow && (
           <TodoList
             todoList={todoListToShow}
-            tempTodo={tempTodo}
             filterTodoList={filterTodoList}
+            setErrorMessage={setErrorMessage}
           />
         )}
 
@@ -105,7 +125,7 @@ export const App: React.FC = () => {
 
       <ErrorMessage
         errorMessage={errorMessage}
-        clearErrorMessage={() => setErrorMessage('')}
+        clearErrorMessage={() => setErrorMessage(null)}
       />
     </div>
   );

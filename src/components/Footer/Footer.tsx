@@ -1,7 +1,7 @@
 import React from 'react';
 import cn from 'classnames';
 
-import { TodoListState } from '../../../types/TodoListState';
+import { TodoListState } from '../../types/TodoListState';
 
 interface FooterProps {
   activeTodos: number;
@@ -29,7 +29,11 @@ export const Footer: React.FC<FooterProps> = ({
   return (
     <footer className="todoapp__footer" data-cy="Footer">
       <span className="todo-count" data-cy="TodosCounter">
-        {`${activeTodos} items left`}
+        {activeTodos === 1 ? (
+          `${activeTodos} item left`
+        ) : (
+          `${activeTodos} items left`
+        )}
       </span>
 
       <nav className="filter" data-cy="Filter">
