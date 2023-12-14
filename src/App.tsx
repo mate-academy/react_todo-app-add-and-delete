@@ -1,5 +1,9 @@
 /* eslint-disable jsx-a11y/control-has-associated-label */
 import React, { useState, useEffect, useRef } from 'react';
+import {
+  CSSTransition,
+  TransitionGroup,
+} from 'react-transition-group';
 import { UserWarning } from './UserWarning';
 import { Todo } from './types/Todo';
 import * as postServices from './api/todos';
@@ -27,22 +31,6 @@ function getPreparedTodos(todos: Todo[], filter: string): Todo[] {
   return preparedTodos;
 }
 
-// function error(er: string) {
-//   switch (er) {
-//     case 'load':
-//       return 'Unable to load todos';
-//     case 'empty':
-//       return 'Title should not be empty';
-//     case 'add':
-//       return 'Unable to add a todo';
-//     case 'delete':
-//       return 'Unable to delete a todo';
-//     case 'update':
-//       return 'Unable to update a todo';
-//     default: return '';
-//   }
-// }
-
 function todosCounter(todos: Todo[]) {
   return todos.filter(todo => !todo.completed).length;
 }
@@ -55,7 +43,7 @@ export const App: React.FC = () => {
   const [filter, setFilter] = useState('all');
   const [inputDisabled, setInputDisabled] = useState(false);
   const [tempTodo, setTempTodo] = useState<Todo | null>(null);
-  const [deletedPostsIds, setdeletedPostsIds] = useState<number []>([]);
+  const [deletedPostsIds, setdeletedPostsIds] = useState<number[]>([]);
 
   function loadTodos() {
     setLoading(true);
@@ -192,38 +180,50 @@ export const App: React.FC = () => {
           data-cy="TodoList"
           hidden={loading}
         >
-          {visibleTodos.map(todo => (
-            <Todos
-              todo={todo}
-              key={todo.id}
-              onDelete={deleteTodo}
-              deletedPostsIds={deletedPostsIds}
-            />
-          ))}
-
-          {tempTodo && (
-
-            <div
-              data-cy="Todo"
-              className={tempTodo.completed
-                ? 'todo completed'
-                : 'todo'}
-            >
-              <label className="todo__status-label">
-                <input
-                  data-cy="TodoStatus"
-                  type="checkbox"
-                  className="todo__status"
+          <TransitionGroup>
+            {visibleTodos.map(todo => (
+              <CSSTransition
+                key={todo.id}
+                timeout={300}
+                classNames="item"
+              >
+                <Todos
+                  todo={todo}
+                  key={todo.id}
+                  onDelete={deleteTodo}
+                  deletedPostsIds={deletedPostsIds}
                 />
-              </label>
+              </CSSTransition>
+            ))}
 
-              <span data-cy="TodoTitle" className="todo__title">
-                {tempTodo.title}
-              </span>
-              <Loader />
-            </div>
-          )}
+            {tempTodo && (
+              <CSSTransition
+                key={tempTodo.id}
+                timeout={300}
+                classNames="item"
+              >
+                <div
+                  data-cy="Todo"
+                  className={tempTodo.completed
+                    ? 'todo completed'
+                    : 'todo'}
+                >
+                  <label className="todo__status-label">
+                    <input
+                      data-cy="TodoStatus"
+                      type="checkbox"
+                      className="todo__status"
+                    />
+                  </label>
 
+                  <span data-cy="TodoTitle" className="todo__title">
+                    {tempTodo.title}
+                  </span>
+                  <Loader />
+                </div>
+              </CSSTransition>
+            )}
+          </TransitionGroup>
         </section>
 
         {/* Hide the footer if there are no todos */}
