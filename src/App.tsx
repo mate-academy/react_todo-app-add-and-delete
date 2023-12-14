@@ -1,5 +1,6 @@
 /* eslint-disable jsx-a11y/control-has-associated-label */
 import React, { useState, useEffect, useRef } from 'react';
+import cn from 'classnames';
 import {
   CSSTransition,
   TransitionGroup,
@@ -36,17 +37,17 @@ function todosCounter(todos: Todo[]) {
 }
 
 export const App: React.FC = () => {
-  const [loading, setLoading] = useState(false);
+  const [isloading, setIsloading] = useState(false);
   const [todos, setTodos] = useState<Todo[]>([]);
   const [errorMessage, setErrorMessage] = useState('');
-  const [newTodo, setNewTodo] = useState('');
+  const [newTodoodoTitle, setNewTodoTitle] = useState('');
   const [filter, setFilter] = useState('all');
   const [inputDisabled, setInputDisabled] = useState(false);
   const [tempTodo, setTempTodo] = useState<Todo | null>(null);
   const [deletedPostsIds, setdeletedPostsIds] = useState<number[]>([]);
 
   function loadTodos() {
-    setLoading(true);
+    setIsloading(true);
 
     return postServices.getTodos(USER_ID)
       .then(setTodos)
@@ -54,7 +55,7 @@ export const App: React.FC = () => {
         setErrorMessage('Unable to load todos');
         setTimeout(() => setErrorMessage(''), 3000);
       })
-      .finally(() => setLoading(false));
+      .finally(() => setIsloading(false));
   }
 
   const inputField = useRef<HTMLInputElement>(null);
@@ -93,7 +94,7 @@ export const App: React.FC = () => {
   };
 
   function addTodos({ userId, title, completed }: Todo) {
-    if (title.length === 0) {
+    if (!title.length) {
       setErrorMessage('Title should not be empty');
       setTimeout(() => setErrorMessage(''), 3000);
 
@@ -101,36 +102,34 @@ export const App: React.FC = () => {
     }
 
     setInputDisabled(true);
-    setLoading(true);
 
     postServices.addTodo({ userId, title, completed })
       .then(nTodo => {
         setTodos((curTodos) => [...curTodos, nTodo]);
-        setNewTodo('');
+        setNewTodoTitle('');
       })
       .catch(() => {
         setErrorMessage('Unable to add a todo');
         setTimeout(() => setErrorMessage(''), 3000);
       })
       .finally(() => {
-        setLoading(false);
         setInputDisabled(false);
         setTempTodo(null);
       });
   }
 
-  const handleSabmit = (event: React.FormEvent) => {
+  const handleSubmit = (event: React.FormEvent) => {
     event.preventDefault();
 
-    const newT = {
+    const newTodo = {
       id: 0,
       userId: USER_ID,
-      title: newTodo.trim(),
+      title: newTodoodoTitle.trim(),
       completed: false,
     };
 
-    setTempTodo(newT);
-    addTodos(newT);
+    setTempTodo(newTodo);
+    addTodos(newTodo);
   };
 
   const visibleTodos = getPreparedTodos(todos, filter);
@@ -149,26 +148,24 @@ export const App: React.FC = () => {
         className="todoapp__content"
       >
         <header className="todoapp__header">
-          {/* this buttons is active only if there are some active todos */}
           <button
             type="button"
-            className={visibleTodos.some(t => !t.completed)
-              ? 'todoapp__toggle-all active'
-              : 'todoapp__toggle-all'}
+            className={cn({
+              active: visibleTodos.some(t => !t.completed),
+            }, 'todoapp__toggle-all')}
             data-cy="ToggleAllButton"
           />
 
-          {/* Add a todo on form submit */}
           <form
-            onSubmit={handleSabmit}
+            onSubmit={handleSubmit}
           >
             <input
-              data-cy="NewTodoField"
+              data-cy="newTodoodoTitleField"
               type="text"
               className="todoapp__new-todo"
               placeholder="What needs to be done?"
-              value={newTodo}
-              onChange={(event) => setNewTodo(event.target.value)}
+              value={newTodoodoTitle}
+              onChange={(event) => setNewTodoTitle(event.target.value)}
               ref={inputField}
               disabled={inputDisabled}
             />
@@ -178,7 +175,7 @@ export const App: React.FC = () => {
         <section
           className="todoapp__main"
           data-cy="TodoList"
-          hidden={loading}
+          hidden={isloading}
         >
           <TransitionGroup>
             {visibleTodos.map(todo => (
@@ -204,9 +201,9 @@ export const App: React.FC = () => {
               >
                 <div
                   data-cy="Todo"
-                  className={tempTodo.completed
-                    ? 'todo completed'
-                    : 'todo'}
+                  className={cn({
+                    completed: tempTodo.completed,
+                  }, 'todo')}
                 >
                   <label className="todo__status-label">
                     <input
@@ -226,7 +223,6 @@ export const App: React.FC = () => {
           </TransitionGroup>
         </section>
 
-        {/* Hide the footer if there are no todos */}
         {todos.length !== 0 && (
           <Footer
             filter={filter}

@@ -1,3 +1,4 @@
+import cn from 'classnames';
 import { Todo } from '../../types/Todo';
 import { Loader } from './loader';
 
@@ -15,16 +16,15 @@ export const Todos: React.FC<Props> = ({
   return (
     <div
       data-cy="Todo"
-      className={todo.completed
-        ? 'todo completed'
-        : 'todo'}
+      className={cn({
+        completed: todo.completed,
+      }, 'todo')}
     >
       <label className="todo__status-label">
         <input
           data-cy="TodoStatus"
           type="checkbox"
           className="todo__status"
-        // checked={todo.completed}
         />
       </label>
 
@@ -36,9 +36,7 @@ export const Todos: React.FC<Props> = ({
         type="button"
         className="todo__remove"
         data-cy="TodoDelete"
-        onClick={() => {
-          onDelete(todo.id);
-        }}
+        onClick={() => onDelete(todo.id)}
       >
         ×
       </button>

@@ -1,3 +1,5 @@
+import cn from 'classnames';
+
 type Props = {
   filter: string;
   onFilter: (f: string) => void;
@@ -17,13 +19,10 @@ export const Footer: React.FC<Props> = ({
       {`${count} items left`}
     </span>
 
-    {/* Active filter should have a 'selected' class */}
     <nav className="filter" data-cy="Filter">
       <a
         href="#/"
-        className={filter === 'all'
-          ? 'filter__link selected'
-          : 'filter__link'}
+        className={cn({ selected: filter === 'all' }, 'filter__link')}
         data-cy="FilterLinkAll"
         onClick={() => onFilter('all')}
       >
@@ -32,9 +31,7 @@ export const Footer: React.FC<Props> = ({
 
       <a
         href="#/active"
-        className={filter === 'active'
-          ? 'filter__link selected'
-          : 'filter__link'}
+        className={cn({ selected: filter === 'active' }, 'filter__link')}
         data-cy="FilterLinkActive"
         onClick={() => onFilter('active')}
       >
@@ -43,9 +40,7 @@ export const Footer: React.FC<Props> = ({
 
       <a
         href="#/completed"
-        className={filter === 'completed'
-          ? 'filter__link selected'
-          : 'filter__link'}
+        className={cn({ selected: filter === 'completed' }, 'filter__link')}
         data-cy="FilterLinkCompleted"
         onClick={() => onFilter('completed')}
       >
@@ -53,7 +48,6 @@ export const Footer: React.FC<Props> = ({
       </a>
     </nav>
 
-    {/* don't show this button if there are no completed todos */}
     <button
       type="button"
       className="todoapp__clear-completed"
