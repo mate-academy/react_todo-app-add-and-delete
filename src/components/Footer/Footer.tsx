@@ -14,7 +14,7 @@ export const Footer: React.FC = () => {
 
   const todoCounter = todos.filter(todo => !todo.completed).length;
   const completedTodo = todos.filter(todo => todo.completed);
-  const isDisabled = completedTodo.length === 0;
+  const isDisabled = !completedTodo.length;
 
   const handleDeleteCompleted = () => {
     completedTodo.forEach(todo => {
