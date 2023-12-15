@@ -1,7 +1,7 @@
 import { Status } from './types/Status';
 import { Todo } from './types/Todo';
 
-type Arguments = {
+type TodoList = {
   status: Status,
   todos: Todo[],
 };
@@ -9,7 +9,7 @@ type Arguments = {
 export const prepareTodos = ({
   todos,
   status,
-}: Arguments) => {
+}: TodoList) => {
   switch (status) {
     case Status.active:
       return todos.filter(todo => (

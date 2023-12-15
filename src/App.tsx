@@ -41,15 +41,15 @@ export const App: React.FC = () => {
   const todosOnPage = useMemo(() => filterTodos(),
     [filterTodos]);
 
-  const itemsLeft = todos.filter(todo => (
+  const uncompletedTodosCount = todos.filter(todo => (
     !todo.completed
   )).length;
 
-  const isSomeCompleted = todos.some(
+  const isSomeTodosCompleted = todos.some(
     todo => todo.completed,
   );
 
-  const isEveryCompleted = todosOnPage.every(
+  const isEveryTodosCompleted = todosOnPage.every(
     todo => todo.completed,
   );
 
@@ -63,7 +63,7 @@ export const App: React.FC = () => {
 
       <div className="todoapp__content">
         <Header
-          isEveryCompleted={isEveryCompleted}
+          isEveryTodosCompleted={isEveryTodosCompleted}
         />
 
         <TodoList
@@ -72,10 +72,10 @@ export const App: React.FC = () => {
 
         {todos.length > 0 && (
           <Footer
-            itemsLeft={itemsLeft}
+            uncompletedTodosCount={uncompletedTodosCount}
             status={status}
             setStatus={setStatus}
-            isSomeCompleted={isSomeCompleted}
+            isSomeTodosCompleted={isSomeTodosCompleted}
           />
         )}
 

@@ -4,10 +4,10 @@ import { AppContext } from '../../AppContext';
 import { ErrorType } from '../../types/ErrorType';
 
 type Props = {
-  isEveryCompleted: boolean
+  isEveryTodosCompleted: boolean
 };
 
-export const Header: React.FC<Props> = ({ isEveryCompleted }) => {
+export const Header: React.FC<Props> = ({ isEveryTodosCompleted }) => {
   const {
     todoTitle,
     setTodoTitle,
@@ -43,7 +43,7 @@ export const Header: React.FC<Props> = ({ isEveryCompleted }) => {
         type="button"
         className={cn(
           'todoapp__toggle-all text-invisible',
-          { active: isEveryCompleted },
+          { active: isEveryTodosCompleted },
         )}
         data-cy="ToggleAllButton"
       >

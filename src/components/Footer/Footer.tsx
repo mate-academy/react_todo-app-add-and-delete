@@ -4,24 +4,24 @@ import { Status } from '../../types/Status';
 import { AppContext } from '../../AppContext';
 
 type Props = {
-  itemsLeft: number
+  uncompletedTodosCount: number
   status: Status
   setStatus: (arg: Status) => void
-  isSomeCompleted: boolean
+  isSomeTodosCompleted: boolean
 };
 
 export const Footer: React.FC<Props> = ({
-  itemsLeft,
+  uncompletedTodosCount,
   status,
   setStatus,
-  isSomeCompleted,
+  isSomeTodosCompleted,
 }) => {
   const { clearCompleted } = useContext(AppContext);
 
   return (
     <footer className="todoapp__footer" data-cy="Footer">
       <span className="todo-count" data-cy="TodosCounter">
-        {`${itemsLeft} items left`}
+        {`${uncompletedTodosCount} items left`}
       </span>
 
       <nav className="filter" data-cy="Filter">
@@ -62,11 +62,11 @@ export const Footer: React.FC<Props> = ({
       <button
         type="button"
         className={cn('todoapp__clear-completed', {
-          disabled: !isSomeCompleted,
+          disabled: !isSomeTodosCompleted,
         })}
         data-cy="ClearCompletedButton"
-        disabled={!isSomeCompleted}
-        onClick={() => clearCompleted()}
+        disabled={!isSomeTodosCompleted}
+        onClick={clearCompleted}
       >
         Clear completed
       </button>
