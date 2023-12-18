@@ -14,6 +14,7 @@ import { TodoList } from './components/TodoList';
 import { ErrorType } from './types/ErrorType';
 import { FilterType } from './types/FilterType';
 import { NoIdTodo, Todo } from './types/Todo';
+import { filterTodos } from './helper';
 
 const USER_ID = 12017;
 
@@ -25,7 +26,7 @@ export const App: React.FC = () => {
   const [tempTodo, setTempTodo] = useState<Todo | null>(null);
   const [errorMsg, setErrorMsg] = useState<ErrorType | null>(null);
 
-  const errorFound = (error: ErrorType) => {
+  const showError = (error: ErrorType) => {
     setErrorMsg(error);
     setTimeout(() => setErrorMsg(null), 3000);
   };
@@ -33,7 +34,7 @@ export const App: React.FC = () => {
   useEffect(() => {
     getTodos(USER_ID)
       .then(setTodosFromServer)
-      .catch(() => errorFound(ErrorType.TodosNotLoaded));
+      .catch(() => showError(ErrorType.TodosNotLoaded));
   }, []);
 
   const createNewTodo = (title: string): Promise<void> => {
@@ -55,7 +56,7 @@ export const App: React.FC = () => {
         ),
       )
       .catch(() => {
-        errorFound(ErrorType.NotAddable);
+        showError(ErrorType.NotAddable);
 
         throw new Error(ErrorType.NotAddable);
       })
@@ -63,11 +64,11 @@ export const App: React.FC = () => {
   };
 
   const removeTodo = (todoToDelete: Todo) => {
-    deleteTodo(todoToDelete.id)
+    return deleteTodo(todoToDelete.id)
       .then(() => setTodosFromServer(
         currentTodos => currentTodos.filter(todo => todo !== todoToDelete),
       ))
-      .catch(() => errorFound(ErrorType.NotDeletable));
+      .catch(() => showError(ErrorType.NotDeletable));
   };
 
   const clearCompleted = () => {
@@ -78,32 +79,18 @@ export const App: React.FC = () => {
         .then(() => setTodosFromServer(
           currentTodos => currentTodos.filter(todo => todo !== completedTodo),
         ))
-        .catch(() => errorFound(ErrorType.NotDeletable));
+        .catch(() => showError(ErrorType.NotDeletable));
     });
   };
 
-  const filterTodos = useCallback(
-    (todos: Todo[]) => {
-      switch (selectedFilter) {
-        case FilterType.All:
-          return todos;
-
-        case FilterType.Active:
-          return todos.filter(todo => !todo.completed);
-
-        case FilterType.Completed:
-          return todos.filter(todo => todo.completed);
-
-        default:
-          return todos;
-      }
-    },
+  const filteredTodos = useCallback(
+    filterTodos,
     [selectedFilter],
   );
 
   const todosToView = useMemo(
-    () => filterTodos(todosFromServer),
-    [filterTodos, todosFromServer],
+    () => filteredTodos(todosFromServer, selectedFilter),
+    [filteredTodos, todosFromServer, selectedFilter],
   );
 
   if (!USER_ID) {
@@ -118,7 +105,7 @@ export const App: React.FC = () => {
         <Header
           todosFromServer={todosFromServer}
           createNewTodo={createNewTodo}
-          errorFound={errorFound}
+          errorFound={showError}
         />
 
         <TodoList

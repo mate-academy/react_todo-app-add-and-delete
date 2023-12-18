@@ -3,7 +3,7 @@ import { TodoItem } from '../TodoItem';
 
 interface Props {
   todosToView: Todo[];
-  deleteTodo: (todoToDelete: Todo) => void;
+  deleteTodo: (todoToDelete: Todo) => Promise<void>;
   tempTodo: Todo | null;
 }
 

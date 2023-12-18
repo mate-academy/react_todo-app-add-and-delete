@@ -1,13 +1,24 @@
+import { useState } from 'react';
 import cn from 'classnames';
 import { Todo } from '../../types/Todo';
 
 interface Props {
   todo: Todo;
-  removeTodo: (todo: Todo) => void;
+  removeTodo: (todo: Todo) => Promise<void>;
   isLoading?: boolean;
 }
 
 export const TodoItem = ({ todo, removeTodo, isLoading }: Props) => {
+  const [loaderStatus, setLoaderStatus] = useState(isLoading);
+
+  const handleDeleteTodo = () => {
+    setLoaderStatus(true);
+    removeTodo(todo)
+      .then(() => {
+        setLoaderStatus(false);
+      });
+  };
+
   return (
     <div
       data-cy="Todo"
@@ -31,7 +42,7 @@ export const TodoItem = ({ todo, removeTodo, isLoading }: Props) => {
         type="button"
         className="todo__remove"
         data-cy="TodoDelete"
-        onClick={() => removeTodo(todo)}
+        onClick={() => handleDeleteTodo()}
       >
         ×
       </button>
@@ -40,7 +51,7 @@ export const TodoItem = ({ todo, removeTodo, isLoading }: Props) => {
         data-cy="TodoLoader"
         className={cn(
           'modal overlay',
-          { 'is-active': isLoading },
+          { 'is-active': loaderStatus },
         )}
       >
         <div className="modal-background has-background-white-ter" />
