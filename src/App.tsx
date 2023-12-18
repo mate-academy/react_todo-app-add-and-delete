@@ -1,24 +1,71 @@
-/* eslint-disable max-len */
-/* eslint-disable jsx-a11y/control-has-associated-label */
-import React from 'react';
+import React,
+{
+  useCallback, useContext, useEffect, useMemo,
+} from 'react';
 import { UserWarning } from './UserWarning';
-
-const USER_ID = 0;
+import * as todoService from './api/todos';
+import { Todo } from './types/Todo';
+import { FilterBy } from './types/FilterBy';
+import { Header } from './components/Header/Header';
+import { TodoList } from './components/TodoList/TodoList';
+import { Footer } from './components/Footer/Footer';
+import { ErrorType } from './types/ErrorType';
+import { ErrorInfo } from './components/ErrorInfo/ErrorInfo';
+import { filterTodos } from './helpers/filterTodos';
+import { USER_ID } from './utils/userId';
+import { AppContext } from './contexts/appContext';
 
 export const App: React.FC = () => {
+  const {
+    todosFromServer,
+    filterBy,
+    setTodosFromServer,
+    setErrorMessage,
+  } = useContext(AppContext);
+
+  useEffect(() => {
+    todoService.getTodos(USER_ID)
+      .then(setTodosFromServer)
+      .catch(() => setErrorMessage(ErrorType.UnableToLoad));
+  }, [setTodosFromServer, setErrorMessage]);
+
+  const memoizedFilterTodos = useCallback(
+    (
+      todos: Todo[],
+      filterByOption: FilterBy,
+    ) => filterTodos(todos, filterByOption),
+    [],
+  );
+
+  const todosToView = useMemo(
+    () => memoizedFilterTodos(todosFromServer, filterBy),
+    [memoizedFilterTodos, todosFromServer, filterBy],
+  );
+
+  const isEveryTodosCompleted = todosToView.every(
+    todo => todo.completed,
+  );
+
   if (!USER_ID) {
     return <UserWarning />;
   }
 
   return (
-    <section className="section container">
-      <p className="title is-4">
-        Copy all you need from the prev task:
-        <br />
-        <a href="https://github.com/mate-academy/react_todo-app-loading-todos#react-todo-app-load-todos">React Todo App - Load Todos</a>
-      </p>
+    <div className="todoapp">
+      <h1 className="todoapp__title">todos</h1>
 
-      <p className="subtitle">Styles are already copied</p>
-    </section>
+      <div className="todoapp__content">
+
+        <Header isEveryTodosCompleted={isEveryTodosCompleted} />
+
+        <TodoList todosToView={todosToView} />
+
+        {todosFromServer.length > 0 && (
+          <Footer />
+        )}
+      </div>
+
+      <ErrorInfo />
+    </div>
   );
 };
