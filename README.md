@@ -26,7 +26,7 @@ Add a todo with the entered title on the form submit:
 - in case of success add the todo created by the API to the array (take it from the POST response);
 - in case of an API error showing `Unable to add a todo` notification at the bottom;
 - set `tempTodo` to `null` to hide the extra `TodoItem`;
-- focus the text field after receiving a response;
+- focus the text field after receiving a response; // useRef, ref, after response input ref.onFocus()
 - clear the text in case of success;
 - keep the text in case of error;
 
