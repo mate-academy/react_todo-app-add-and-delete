@@ -43,7 +43,7 @@ export const Footer: React.FC<Props> = React.memo((props) => {
           data-cy="FilterLinkAll"
           onClick={() => setStatusFilter(StatusFilter.ALL)}
         >
-          All
+          {StatusFilter.ALL}
         </a>
 
         <a
@@ -55,7 +55,7 @@ export const Footer: React.FC<Props> = React.memo((props) => {
           data-cy="FilterLinkActive"
           onClick={() => setStatusFilter(StatusFilter.ACTIVE)}
         >
-          Active
+          {StatusFilter.ACTIVE}
         </a>
 
         <a
@@ -67,7 +67,7 @@ export const Footer: React.FC<Props> = React.memo((props) => {
           data-cy="FilterLinkCompleted"
           onClick={() => setStatusFilter(StatusFilter.COMPLETED)}
         >
-          Completed
+          {StatusFilter.COMPLETED}
         </a>
       </nav>
 
