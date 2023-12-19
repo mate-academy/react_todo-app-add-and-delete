@@ -80,40 +80,6 @@ export const App: React.FC = () => {
       });
   };
 
-  const updateTodo = (updatedTodo: Todo) => {
-    setProcessingTodoIds(currentTodos => [...currentTodos, updatedTodo.id]);
-
-    todoService.updateTodo(updatedTodo)
-      .then(() => setTodos(prev => (
-        prev.map(prevTodo => (
-          prevTodo.id === updatedTodo.id
-            ? updatedTodo
-            : prevTodo
-        ))
-      )))
-      .catch(() => setErrorType(Errors.Update))
-      .finally(() => {
-        setProcessingTodoIds(currentTodos => currentTodos
-          .filter(todoId => updatedTodo.id !== todoId));
-      });
-  };
-
-  const toggleAll = async () => {
-    const isAllCompleted = todos.every(todo => todo.completed);
-
-    const todosToUpdate = todos.filter(todo => (isAllCompleted
-      ? todo.completed
-      : !todo.completed
-    ));
-
-    await Promise.all(todosToUpdate.map(todo => (
-      updateTodo({
-        ...todo,
-        completed: !isAllCompleted,
-      })
-    )));
-  };
-
   const isThereCompleted = todos.some(todo => todo.completed);
 
   const filteredTodos = prepareTodos(todos, filterStatus);
@@ -130,7 +96,6 @@ export const App: React.FC = () => {
           isLoading={isLoading}
           onAddTodo={addTodo}
           setError={setErrorType}
-          onToggleAll={toggleAll}
         />
 
         <TodoList
@@ -138,7 +103,6 @@ export const App: React.FC = () => {
           tempTodo={tempTodo}
           onDeleteTodo={handleDelete}
           processingTodoIds={processingTodoIds}
-          onUpdateTodo={updateTodo}
         />
 
         {todos.length !== 0 && (
