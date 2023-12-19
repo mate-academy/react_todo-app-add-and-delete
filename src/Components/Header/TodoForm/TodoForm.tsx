@@ -5,13 +5,13 @@ export const TodoForm = () => {
   const {
     todoTitle,
     handleInput,
-    handleSubmit,
+    handleSubmitForm,
     isDisabled,
   } = useTodoContext();
   const titleField = useRef<HTMLInputElement>(null);
 
   return (
-    <form onSubmit={handleSubmit}>
+    <form onSubmit={handleSubmitForm}>
       <input
         value={todoTitle}
         ref={titleField}
