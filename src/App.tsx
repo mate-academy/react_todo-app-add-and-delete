@@ -26,7 +26,6 @@ export const App: React.FC = () => {
   const [selectedFilter, setSelectedFilter] = useState<Status>(Status.ALL);
   const [errorMessage, setErrorMessage] = useState<ErrorType | null>(null);
   const [tempTodo, setTempTodo] = useState<Todo | null>(null);
-  const [isTitleDisabled, setIsTitleDisabled] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
 
   const titleRef = useRef<HTMLInputElement>(null);
@@ -47,7 +46,7 @@ export const App: React.FC = () => {
 
   useEffect(() => {
     titleRef.current?.focus();
-  }, [isTitleDisabled]);
+  }, [isLoading]);
 
   const visibleTodos = useMemo(() => {
     return preperedTodos(todos, selectedFilter);
@@ -96,20 +95,17 @@ export const App: React.FC = () => {
 
     setErrorMessage(null);
 
-    setIsLoading(true);
-
     if (!todoTitle.trim().length) {
       showError(ErrorType.EMPTY_TITLE);
 
       return;
     }
 
-    setIsTitleDisabled(true);
+    setIsLoading(true);
 
     createTodo(todoTitle.trim())
       .then(() => setTodoTitle(''))
       .finally(() => {
-        setIsTitleDisabled(false);
         setIsLoading(false);
       });
   };
@@ -151,7 +147,7 @@ export const App: React.FC = () => {
               className="todoapp__new-todo"
               placeholder="What needs to be done?"
               ref={titleRef}
-              disabled={isTitleDisabled}
+              disabled={isLoading}
             />
           </form>
         </header>
