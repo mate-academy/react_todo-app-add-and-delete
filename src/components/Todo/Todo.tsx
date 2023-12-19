@@ -33,7 +33,7 @@ export const Todo: React.FC<Props> = ({ todo, onDelete }) => {
           data-cy="TodoStatus"
           type="checkbox"
           className="todo__status"
-          checked
+          checked={todo.completed}
         />
       </label>
 
@@ -50,16 +50,16 @@ export const Todo: React.FC<Props> = ({ todo, onDelete }) => {
         ×
       </button>
 
-      { isLoading
-      && (
-        <div
-          data-cy="TodoLoader"
-          className={cn('modal overlay', { 'is-active': isLoading })}
-        >
-          <div className="modal-background has-background-white-ter" />
-          <div className="loader" />
-        </div>
-      )}
+      <div
+        data-cy="TodoLoader"
+        className={cn(
+          'modal overlay',
+          { 'is-active': isLoading || todo.id === 0 },
+        )}
+      >
+        <div className="modal-background has-background-white-ter" />
+        <div className="loader" />
+      </div>
     </div>
   );
 };

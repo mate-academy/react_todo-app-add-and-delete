@@ -74,7 +74,6 @@ export const App: React.FC = () => {
           ...currentTodos,
           newTodo,
         ]);
-
         setTempTodo(null);
       } catch (error) {
         setErrorMessage(ErrorType.Todo);
