@@ -8,9 +8,9 @@ export const getTodos = (userId: number) => {
 export const createTodo = (title: string, userId: number) => {
   const data = { title, userId, completed: false };
 
-  return client.post<Todo>(`/todos?userId=${userId}`, data);
+  return client.post<Todo>('/todos', data);
 };
 
-export const deleteTodo = (todoId: number, userId: number) => {
-  return client.delete(`/todos/${todoId}?userId=${userId}`);
+export const deleteTodo = (todoId: number) => {
+  return client.delete(`/todos/${todoId}`);
 };

@@ -77,7 +77,7 @@ export const App: React.FC = () => {
   const deleteTodo = useCallback((id: number): Promise<number | void> => {
     setProcessingTodoIds(currentIds => [...currentIds, id]);
 
-    return todosService.deleteTodo(id, USER_ID)
+    return todosService.deleteTodo(id)
       .then(() => {
         setTodos(currentTodos => currentTodos.filter(todo => todo.id !== id));
       })
