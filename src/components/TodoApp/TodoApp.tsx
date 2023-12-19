@@ -36,7 +36,7 @@ export const TodoApp: React.FC = () => {
     if (inputRef.current) {
       inputRef.current.focus();
     }
-  }, [todos]);
+  }, []);
 
   useEffect(() => {
     resetHasError();
@@ -78,6 +78,10 @@ export const TodoApp: React.FC = () => {
         addTodo(newTodoFS);
         setTempTodo(null);
         setInputValue('');
+
+        if (inputRef.current) {
+          inputRef.current.focus();
+        }
       })
       .catch(() => {
         setError(ErrorOption.AddTodoError);
