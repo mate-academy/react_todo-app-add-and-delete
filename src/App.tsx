@@ -1,4 +1,3 @@
-/* eslint-disable jsx-a11y/control-has-associated-label */
 import React, {
   useCallback,
   useEffect,
@@ -7,7 +6,7 @@ import React, {
   useState,
 } from 'react';
 
-import { getTodos, createTodo } from './api/todos';
+import * as todosService from './api/todos';
 
 import { UserWarning } from './components/UserWarning/UserWarning';
 import { Header } from './components/Header/Header';
@@ -26,10 +25,11 @@ export const App: React.FC = () => {
   const [errorMessage, setErrorMessage] = useState<ErrorMessage | null>(null);
   const [statusFilter, setStatusFilter] = useState(StatusFilter.ALL);
   const [tempTodo, setTempTodo] = useState<Todo | null>(null);
+  const [processingTodoIds, setProcessingTodoIds] = useState<number[]>([]);
 
   const timerId = useRef<NodeJS.Timeout>();
 
-  const showErrorNotification = useCallback((error: ErrorMessage) => {
+  const showErrorNotification = useCallback((error: ErrorMessage): void => {
     if (timerId.current) {
       clearTimeout(timerId.current);
     }
@@ -38,15 +38,18 @@ export const App: React.FC = () => {
     timerId.current = setTimeout(() => setErrorMessage(null), 3000);
   }, []);
 
-  const hideErrorNotification = useCallback(() => setErrorMessage(null), []);
+  const hideErrorNotification = useCallback(
+    (): void => setErrorMessage(null),
+    [],
+  );
 
   useEffect(() => {
-    getTodos(USER_ID)
+    todosService.getTodos(USER_ID)
       .then(setTodos)
       .catch(() => showErrorNotification(ErrorMessage.LOAD_ERROR));
   }, []);
 
-  const todosToRender = useMemo(() => todos.filter(todo => {
+  const todosToRender = useMemo((): Todo[] => todos.filter(todo => {
     switch (statusFilter) {
       case StatusFilter.ACTIVE:
         return !todo.completed;
@@ -67,8 +70,23 @@ export const App: React.FC = () => {
       completed: false,
     });
 
-    return createTodo(title, USER_ID)
+    return todosService.createTodo(title, USER_ID)
       .then(newTodo => setTodos(currentTodos => [...currentTodos, newTodo]));
+  }, []);
+
+  const deleteTodo = useCallback((id: number): Promise<number | void> => {
+    setProcessingTodoIds(currentIds => [...currentIds, id]);
+
+    return todosService.deleteTodo(id, USER_ID)
+      .then(() => {
+        setTodos(currentTodos => currentTodos.filter(todo => todo.id !== id));
+      })
+      .catch(() => showErrorNotification(ErrorMessage.DELETE_ERROR))
+      .finally(() => {
+        setProcessingTodoIds(
+          currentIds => currentIds.filter(proccesingId => proccesingId !== id),
+        );
+      });
   }, []);
 
   if (!USER_ID) {
@@ -88,12 +106,18 @@ export const App: React.FC = () => {
 
         {todos.length !== 0 && (
           <>
-            <TodoList todos={todosToRender} tempTodo={tempTodo} />
+            <TodoList
+              todos={todosToRender}
+              tempTodo={tempTodo}
+              onDelete={deleteTodo}
+              processingTodoIds={processingTodoIds}
+            />
 
             <Footer
               todos={todos}
               statusFilter={statusFilter}
               setStatusFilter={setStatusFilter}
+              deleteTodo={deleteTodo}
             />
           </>
         )}

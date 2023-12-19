@@ -4,14 +4,28 @@ import cn from 'classnames';
 import type { Todo } from '../../types/Todo';
 import { StatusFilter } from '../../types/StatusFilter';
 
-type Props = {
-  todos: Todo[],
-  statusFilter: StatusFilter,
-  setStatusFilter: (status: StatusFilter) => void,
-};
+interface Props {
+  todos: Todo[];
+  statusFilter: StatusFilter;
+  setStatusFilter: (status: StatusFilter) => void;
+  deleteTodo: (id: number) => void;
+}
 
 export const Footer: React.FC<Props> = React.memo((props) => {
-  const { todos, statusFilter, setStatusFilter } = props;
+  const {
+    todos,
+    statusFilter,
+    setStatusFilter,
+    deleteTodo,
+  } = props;
+
+  const handleClearAllCompleted = () => {
+    todos.forEach(todo => {
+      if (todo.completed) {
+        deleteTodo(todo.id);
+      }
+    });
+  };
 
   return (
     <footer className="todoapp__footer" data-cy="Footer">
@@ -19,7 +33,6 @@ export const Footer: React.FC<Props> = React.memo((props) => {
         {`${todos.filter(todo => !todo.completed).length} items left`}
       </span>
 
-      {/* Active filter should have a 'selected' class */}
       <nav className="filter" data-cy="Filter">
         <a
           href="#/"
@@ -58,11 +71,12 @@ export const Footer: React.FC<Props> = React.memo((props) => {
         </a>
       </nav>
 
-      {/* don't show this button if there are no completed todos */}
       <button
         type="button"
         className="todoapp__clear-completed"
         data-cy="ClearCompletedButton"
+        onClick={handleClearAllCompleted}
+        disabled={todos.every(todo => !todo.completed)}
       >
         Clear completed
       </button>

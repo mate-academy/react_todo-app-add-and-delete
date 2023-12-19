@@ -1,7 +1,7 @@
 import React, { useEffect, useRef, useState } from 'react';
 
 import { ErrorMessage } from '../../types/ErrorMessage';
-import { Todo } from '../../types/Todo';
+import type { Todo } from '../../types/Todo';
 
 interface Props {
   onAdd: (title: string) => Promise<void>;
@@ -32,19 +32,21 @@ export const Header: React.FC<Props> = React.memo((props) => {
 
     if (!preparedTitle) {
       showErrorNotification(ErrorMessage.INPUT_ERROR);
-    } else {
-      setIsLoading(true);
 
-      onAdd(preparedTitle)
-        .then(() => setTitle(''))
-        .catch(() => {
-          showErrorNotification(ErrorMessage.ADD_ERROR);
-        })
-        .finally(() => {
-          setIsLoading(false);
-          setTempTodo(null);
-        });
+      return;
     }
+
+    setIsLoading(true);
+
+    onAdd(preparedTitle)
+      .then(() => setTitle(''))
+      .catch(() => {
+        showErrorNotification(ErrorMessage.ADD_ERROR);
+      })
+      .finally(() => {
+        setIsLoading(false);
+        setTempTodo(null);
+      });
   };
 
   return (

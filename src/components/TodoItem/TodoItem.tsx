@@ -5,9 +5,13 @@ import type { Todo } from '../../types/Todo';
 
 interface Props {
   todo: Todo;
+  onDelete: (id: number) => Promise<number | void>;
+  hasLoader: boolean;
 }
 
-export const TodoItem: React.FC<Props> = React.memo(({ todo }) => {
+export const TodoItem: React.FC<Props> = React.memo((props) => {
+  const { todo, onDelete, hasLoader } = props;
+
   return (
     <div
       data-cy="Todo"
@@ -31,13 +35,17 @@ export const TodoItem: React.FC<Props> = React.memo(({ todo }) => {
         type="button"
         className="todo__remove"
         data-cy="TodoDelete"
+        onClick={() => onDelete(todo.id)}
       >
         x
       </button>
 
       <div
         data-cy="TodoLoader"
-        className={cn('modal overlay', { 'is-active': !todo.id })}
+        className={cn(
+          'modal overlay',
+          { 'is-active': hasLoader },
+        )}
       >
         <div
           className="modal-background has-background-white-ter"
