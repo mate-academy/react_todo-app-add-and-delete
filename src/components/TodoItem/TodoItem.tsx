@@ -14,7 +14,7 @@ export const TodoItem = ({ todo, removeTodo, isLoading }: Props) => {
   const handleDeleteTodo = () => {
     setLoaderStatus(true);
     removeTodo(todo)
-      .then(() => {
+      .finally(() => {
         setLoaderStatus(false);
       });
   };

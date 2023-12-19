@@ -11,7 +11,7 @@ export const ErrorInfo = ({ errorMsg, setErrorMsg }: Props) => {
     <div
       data-cy="ErrorNotification"
       className={cn('notification is-danger is-light has-text-weight-normal', {
-        hidden: errorMsg === null,
+        hidden: !errorMsg,
       })}
     >
       <button

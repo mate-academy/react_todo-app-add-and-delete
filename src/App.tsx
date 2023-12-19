@@ -1,5 +1,4 @@
 import React, {
-  useCallback,
   useEffect,
   useMemo,
   useState,
@@ -83,14 +82,9 @@ export const App: React.FC = () => {
     });
   };
 
-  const filteredTodos = useCallback(
-    filterTodos,
-    [selectedFilter],
-  );
-
   const todosToView = useMemo(
-    () => filteredTodos(todosFromServer, selectedFilter),
-    [filteredTodos, todosFromServer, selectedFilter],
+    () => filterTodos(todosFromServer, selectedFilter),
+    [todosFromServer, selectedFilter],
   );
 
   if (!USER_ID) {

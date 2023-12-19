@@ -36,7 +36,6 @@ export const Header = ({
     setTodoTitleDisabled(true);
     createNewTodo(title)
       .then(() => setTodoTitle(''))
-      .catch(() => {})
       .finally(() => {
         setTodoTitleDisabled(false);
       });
