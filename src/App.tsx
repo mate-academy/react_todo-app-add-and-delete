@@ -27,6 +27,7 @@ export const App: React.FC = () => {
   const [errorMessage, setErrorMessage] = useState<ErrorType | null>(null);
   const [tempTodo, setTempTodo] = useState<Todo | null>(null);
   const [isTitleDisabled, setIsTitleDisabled] = useState(false);
+  const [isLoading, setIsLoading] = useState(false);
 
   const titleRef = useRef<HTMLInputElement>(null);
 
@@ -95,6 +96,8 @@ export const App: React.FC = () => {
 
     setErrorMessage(null);
 
+    setIsLoading(true);
+
     if (!todoTitle.trim().length) {
       showError(ErrorType.EMPTY_TITLE);
 
@@ -107,6 +110,7 @@ export const App: React.FC = () => {
       .then(() => setTodoTitle(''))
       .finally(() => {
         setIsTitleDisabled(false);
+        setIsLoading(false);
       });
   };
 
@@ -156,6 +160,7 @@ export const App: React.FC = () => {
           todos={visibleTodos}
           removeTodo={removeTodo}
           tempTodo={tempTodo}
+          isLoading={isLoading}
         />
 
         {todos.length > 0 && (

@@ -5,13 +5,15 @@ import { Todo } from '../../types/Todo';
 type Props = {
   todo: Todo;
   removeTodo: (id: number) => Promise<void>,
+  isLoading?: boolean,
 };
 
 export const TodoItem: FC<Props> = ({
   todo,
   removeTodo,
+  isLoading,
 }) => {
-  const [loadingStatus, setLoadingStatus] = useState(false);
+  const [loadingStatus, setLoadingStatus] = useState(isLoading);
 
   const handleRemoveTodo = () => {
     setLoadingStatus(true);
