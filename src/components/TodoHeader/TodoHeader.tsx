@@ -64,6 +64,5 @@ export const TodoHeader: React.FC<Props> = ({
         />
       </form>
     </header>
-
   );
 };

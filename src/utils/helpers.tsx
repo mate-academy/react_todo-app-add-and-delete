@@ -5,7 +5,7 @@ export const prepareTodos = (
   todosList: Todo[],
   selectedFilter: Filter,
 ): Todo[] => {
-  let filteredTodos = [...todosList];
+  let filteredTodos;
 
   switch (selectedFilter) {
     case Filter.Active:
@@ -16,6 +16,7 @@ export const prepareTodos = (
       filteredTodos = todosList.filter(todo => todo.completed);
       break;
     default:
+      filteredTodos = [...todosList];
       break;
   }
 
