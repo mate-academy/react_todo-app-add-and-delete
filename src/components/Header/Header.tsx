@@ -1,45 +1,42 @@
 import cn from 'classnames';
-import React, { useRef, useState } from 'react';
+import React, { useEffect, useRef } from 'react';
 
-import { Todo } from '../../types/Todo';
-import { addTodo } from '../../api/todos';
+import { ErrorType } from '../../types/ErorTypes';
 
 type Props = {
   isAllCompleted: boolean;
-  onAdd: (todo: Todo) => void;
+  onAdd: (todoTitle: string) => void;
+  onError: (error: ErrorType) => void;
+  onNewTodoTitle: (title: string) => void,
+  newTodoTitle: string
+  isLoading: boolean,
 };
 
-export const Header: React.FC<Props> = ({ isAllCompleted, onAdd }) => {
-  const [newTodoTitle, setNewTodoTitle] = useState('');
+export const Header: React.FC<Props> = ({
+  isAllCompleted,
+  onAdd,
+  onError,
+  onNewTodoTitle,
+  newTodoTitle,
+  isLoading,
+}) => {
   const inputRef = useRef<HTMLInputElement | null>(null);
 
-  const handleInputChange = (event: React.ChangeEvent<HTMLInputElement>) => {
-    setNewTodoTitle(event.target.value);
-  };
-
-  const handleAddTodo = async (
-    event: React.FormEvent<HTMLFormElement>,
-  ) => {
+  const handleSubmitForm = (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
 
-    if (newTodoTitle.trim() !== '') {
-      const newUserTodo: Omit<Todo, 'id'> = {
-        userId: 12036,
-        title: newTodoTitle,
-        completed: false,
-      };
-
-      const addedTodo = await addTodo(newUserTodo);
-
-      onAdd(addedTodo);
-
-      setNewTodoTitle('');
-
-      if (inputRef.current) {
-        inputRef.current.focus();
-      }
+    if (newTodoTitle.trim()) {
+      onAdd(newTodoTitle);
+    } else {
+      onError(ErrorType.TitleError);
     }
   };
+
+  useEffect(() => {
+    if (inputRef.current) {
+      inputRef.current.focus();
+    }
+  }, [newTodoTitle]);
 
   return (
     <header className="todoapp__header">
@@ -50,7 +47,7 @@ export const Header: React.FC<Props> = ({ isAllCompleted, onAdd }) => {
         aria-labelledby="button-label"
       />
 
-      <form onSubmit={handleAddTodo}>
+      <form onSubmit={handleSubmitForm}>
         <input
           ref={inputRef}
           data-cy="NewTodoField"
@@ -58,7 +55,8 @@ export const Header: React.FC<Props> = ({ isAllCompleted, onAdd }) => {
           className="todoapp__new-todo"
           placeholder="What needs to be done?"
           value={newTodoTitle}
-          onChange={handleInputChange}
+          onChange={(event) => onNewTodoTitle(event.target.value)}
+          disabled={isLoading}
         />
       </form>
     </header>

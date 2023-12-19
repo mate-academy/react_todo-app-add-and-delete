@@ -1,4 +1,5 @@
 import cn from 'classnames';
+import { useState } from 'react';
 
 import { Todo } from '../../types/Todo';
 
@@ -8,14 +9,20 @@ type Props = {
 };
 
 export const TodoItem: React.FC<Props> = ({ todo, onDelete }) => {
+  const [todoIsCompleted, setTodoIsCompleted] = useState(false);
+
   const handleTodoDelete = (todoId: number) => {
     onDelete(todoId);
+  };
+
+  const handleToggleStatusChange = () => {
+    setTodoIsCompleted((prevStatus) => !prevStatus);
   };
 
   return (
     <div
       data-cy="Todo"
-      className={cn('todo', { completed: todo.completed })}
+      className={cn('todo', { completed: todoIsCompleted })}
       key={todo.id}
     >
       <label className="todo__status-label">
@@ -23,6 +30,8 @@ export const TodoItem: React.FC<Props> = ({ todo, onDelete }) => {
           data-cy="TodoStatus"
           type="checkbox"
           className="todo__status"
+          checked={todoIsCompleted}
+          onChange={handleToggleStatusChange}
         />
       </label>
 
