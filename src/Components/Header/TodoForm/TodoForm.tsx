@@ -1,4 +1,4 @@
-import { useEffect, useRef } from 'react';
+import { useRef } from 'react';
 import { useTodoContext } from '../../../Context/Context';
 
 export const TodoForm = () => {
@@ -9,12 +9,6 @@ export const TodoForm = () => {
     isDisabled,
   } = useTodoContext();
   const titleField = useRef<HTMLInputElement>(null);
-
-  useEffect(() => {
-    if (titleField.current) {
-      titleField.current.focus();
-    }
-  }, [isDisabled]);
 
   return (
     <form onSubmit={handleSubmit}>

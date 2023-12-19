@@ -10,6 +10,9 @@ import { TodoForRender } from './Components/Main/TodoForRender/TodoForRender';
 export const App: React.FC = () => {
   const { renderedTodos } = useTodoContext();
 
+  const numberOfActiveTodos = renderedTodos
+    .filter(({ completed }) => !completed).length;
+
   return (
     <div className="todoapp">
       <h1 className="todoapp__title">todos</h1>
@@ -18,7 +21,7 @@ export const App: React.FC = () => {
       <div className="todoapp__content">
         <TodoForRender />
 
-        {renderedTodos.length !== 0 && <TodoFooter />}
+        {renderedTodos.length !== 0 && <TodoFooter activeTodos={numberOfActiveTodos} />}
       </div>
       <ErrorNotification />
     </div>

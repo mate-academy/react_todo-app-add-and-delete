@@ -1,25 +1,30 @@
 import { FooterNav } from '../FooterNav/FooterNav';
 import { useTodoContext } from '../../../Context/Context';
 
-export const TodoFooter = () => {
-  const { renderedTodos, multiplyDelite } = useTodoContext();
-  const activeTodos = renderedTodos.filter(({ completed }) => !completed);
-  const completedTodos = renderedTodos.length - activeTodos.length;
-  const todosForDelete = renderedTodos.filter(({ completed }) => completed)
-    .map(todo => todo.id);
+interface Props {
+  activeTodos:number;
+}
+export const TodoFooter:React.FC<Props> = ({ activeTodos }) => {
+  const {
+    multiplyDelite,
+    todosForDelete,
+  } = useTodoContext();
 
   return (
     <footer className="todoapp__footer" data-cy="Footer">
-      <span className="todo-count" data-cy="TodosCounter">
-        {`${activeTodos.length} items left`}
+      <span
+        className="todo-count"
+        data-cy="TodosCounter"
+      >
+        {`${activeTodos} items left`}
       </span>
       <FooterNav />
       <button
         type="button"
         className="todoapp__clear-completed"
         data-cy="ClearCompletedButton"
-        onClick={() => multiplyDelite(todosForDelete)}
-        disabled={completedTodos === 0}
+        onClick={multiplyDelite}
+        disabled={!todosForDelete.length}
       >
         Clear completed
       </button>

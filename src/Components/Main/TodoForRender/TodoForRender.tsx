@@ -1,8 +1,14 @@
 import cn from 'classnames';
 import { useTodoContext } from '../../../Context/Context';
+import { TodoItem } from '../TodoItem/TodoItem';
 
 export const TodoForRender = () => {
-  const { filteredList, tempTodo, handleDelite } = useTodoContext();
+  const {
+    filteredList,
+    tempTodo,
+    handleDelite,
+    onDelete,
+  } = useTodoContext();
 
   return (
     <section className="todoapp__main" data-cy="TodoList">
@@ -35,13 +41,14 @@ export const TodoForRender = () => {
           <div
             data-cy="TodoLoader"
             className={cn('modal overlay',
-              { 'is-active': tempTodo?.id === id })}
+              { 'is-active': tempTodo?.id === id || onDelete.includes(id) })}
           >
             <div className="modal-background has-background-white-ter" />
             <div className="loader" />
           </div>
         </div>
       ))}
+      {tempTodo && <TodoItem />}
     </section>
   );
 };

@@ -19,11 +19,13 @@ interface TodoContextType {
   setErrorMessage: (value: string) => void;
   handleInput:(value:React.ChangeEvent<HTMLInputElement>) => void;
   todoTitle: string;
-  handleSubmit: (event:React.FormEvent) => void;
+  handleSubmitForm: (event:React.FormEvent) => void;
   tempTodo: Todo | null;
   isDisabled: boolean;
   handleDelite: (value: number) => void;
-  multiplyDelite: (value: number[]) => void;
+  multiplyDelite: () => void;
+  todosForDelete: number[];
+  onDelete: number[];
 }
 
 const TodoContext = createContext<TodoContextType>(
@@ -37,11 +39,13 @@ const TodoContext = createContext<TodoContextType>(
     setErrorMessage: () => {},
     handleInput: () => {},
     todoTitle: '',
-    handleSubmit: () => {},
+    handleSubmitForm: () => {},
     tempTodo: null,
     isDisabled: false,
     handleDelite: () => {},
     multiplyDelite: () => {},
+    todosForDelete: [],
+    onDelete: [],
   },
 );
 
@@ -60,12 +64,15 @@ export const TodoContextProvider: FC<Props> = ({ children }) => {
   const [todoTitle, setTodoTitle] = useState<string>('');
   const [tempTodo, setTempTodo] = useState<Todo | null>(null);
   const [isDisabled, setIsDisabled] = useState(false);
+  const [onDelete, setOnDelete] = useState<number[]>([]);
+
+  const todosForDelete = renderedTodos.filter(({ completed }) => completed)
+    .map(todo => todo.id);
 
   const handleInput = (event: React.ChangeEvent<HTMLInputElement>) => {
     const { value } = event.target;
 
     setTodoTitle(value);
-    setErrorMessage('');
   };
 
   const createTodo = (title: string, userId: number) => {
@@ -77,56 +84,46 @@ export const TodoContextProvider: FC<Props> = ({ children }) => {
     };
 
     setTempTodo(temporaryValue);
-    setRenderedTodos(currentTodos => [...currentTodos, temporaryValue]);
 
     return addTodo({ title, completed: false, userId })
       .then(newTodo => {
-        setRenderedTodos(
-          currentRenderedTodos => currentRenderedTodos.map(todo => {
-            if (todo.id === 0) {
-              return newTodo;
-            }
-
-            return todo;
-          }),
-        );
+        setRenderedTodos(currentRenderedTodos => [...currentRenderedTodos,
+          newTodo]);
       })
       .catch((error) => {
         setErrorMessage(Error.Load);
-        setRenderedTodos(currentTodos => currentTodos
-          .filter(todo => todo.id !== 0));
         throw error;
       });
   };
 
   const handleDelite = (todoId:number) => {
-    const currentTodo = renderedTodos.find(todo => todo.id === todoId);
+    setOnDelete(curentTodoIds => [...curentTodoIds, todoId]);
+    setTimeout(() => {
+      setRenderedTodos(currenTodos => currenTodos
+        .filter(todo => todo.id !== todoId));
+    }, 500);
 
-    if (currentTodo) {
-      setTempTodo(currentTodo);
-    }
-
-    setRenderedTodos(currenTodos => currenTodos
-      .filter(todo => todo.id !== todoId));
-
-    return removeTodo(todoId)
+    removeTodo(todoId)
       .catch(() => {
         setRenderedTodos(renderedTodos);
         setErrorMessage(Error.Remove);
       })
       .finally(() => {
-        setErrorMessage('');
-        setTempTodo(null);
+        setOnDelete([]);
       });
   };
 
-  const multiplyDelite = (ids:number[]) => {
-    setRenderedTodos(currentTodos => currentTodos
-      .filter(({ completed }) => !completed));
-    ids.forEach(id => removeTodo(id));
+  const multiplyDelite = () => {
+    setOnDelete(todosForDelete);
+    setTimeout(() => {
+      setRenderedTodos(currentTodos => currentTodos
+        .filter(({ completed }) => !completed));
+    }, 500);
+    todosForDelete.forEach(id => handleDelite(id));
   };
 
-  const handleSubmit = (event:React.FormEvent) => {
+  const handleSubmitForm = (event:React.FormEvent) => {
+    setErrorMessage('');
     event.preventDefault();
     const preaperedTitle = todoTitle.trim();
 
@@ -138,8 +135,9 @@ export const TodoContextProvider: FC<Props> = ({ children }) => {
 
     setIsDisabled(true);
 
-    createTodo(todoTitle, USER_ID)
+    createTodo(todoTitle.trim(), USER_ID)
       .then(() => setTodoTitle(''))
+      .catch(() => setErrorMessage(Error.Load))
       .finally(() => {
         setIsDisabled(false);
         setTempTodo(null);
@@ -164,11 +162,13 @@ export const TodoContextProvider: FC<Props> = ({ children }) => {
     setErrorMessage,
     handleInput,
     todoTitle,
-    handleSubmit,
+    handleSubmitForm,
     tempTodo,
     isDisabled,
     handleDelite,
     multiplyDelite,
+    todosForDelete,
+    onDelete,
   };
 
   return (
