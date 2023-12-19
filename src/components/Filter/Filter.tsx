@@ -23,7 +23,7 @@ const mapGetFilterBy = (filterBy: string): FilterBy => {
 };
 
 export const Filter: React.FC<Props> = ({ getFilter }) => {
-  const [selectedFilter, setSelectedFilter] = useState<FilterBy>(FilterBy.All)
+  const [selectedFilter, setSelectedFilter] = useState<FilterBy>(FilterBy.All);
 
   const handleOnClick = (e: React.MouseEvent<HTMLAnchorElement>) => {
     e.preventDefault();
