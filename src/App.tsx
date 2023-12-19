@@ -20,9 +20,9 @@ export const App: React.FC = () => {
   const [error, setError] = useState<ErrorSpec | null>(null);
   const [status, setStatus] = useState<Status>(Status.ALL);
   const [uncompletedTodosCount, setUncompletedTodosCount] = useState<number>(0);
-  const [inputDisabled, setInputDisabled] = useState(false);
+  const [isInputDisabled, setIsInputDisabled] = useState(false);
   const [tempTodo, setTempTodo] = useState<Todo | null>(null);
-  const [isLoading, setIsLoading] = useState<Todo | null>(null);
+  const [loadingTodo, setLoadingTodo] = useState<Todo | null>(null);
 
   const filteredTodos = useMemo(
     () => filterTodos(todosFromServer, status),
@@ -59,13 +59,13 @@ export const App: React.FC = () => {
   };
 
   const addTodo = (title: string) => {
-    setInputDisabled(true);
+    setIsInputDisabled(true);
     const preparedTitle = title.trim();
 
     if (!preparedTitle) {
       setError(ErrorSpec.EMPTY_TITLE);
       setHasErrors(true);
-      setInputDisabled(false);
+      setIsInputDisabled(false);
 
       return;
     }
@@ -84,29 +84,27 @@ export const App: React.FC = () => {
       })
       .catch(() => {
         setError(ErrorSpec.NOT_ADDED);
-        setInputDisabled(false);
-        throw new Error();
+        setIsInputDisabled(false);
       })
       .finally(() => {
-        setInputDisabled(false);
+        setIsInputDisabled(false);
         setTempTodo(null);
       });
   };
 
   const removeTodo = (id: number) => {
-    setInputDisabled(true);
-    setIsLoading(filteredTodos.find((todo) => todo.id === id) || null);
+    setIsInputDisabled(true);
+    setLoadingTodo(filteredTodos.find((todo) => todo.id === id) || null);
 
     TodoService.deleteTodo(id)
-      .then(() => setIsLoading(null))
+      .then(() => setLoadingTodo(null))
       .catch(() => {
         setError(ErrorSpec.NOT_DELETED);
-        setInputDisabled(false);
-        throw new Error();
+        setIsInputDisabled(false);
       })
       .finally(() => {
         setTodosFromServer((prev) => prev.filter((todo) => todo.id !== id));
-        setInputDisabled(false);
+        setIsInputDisabled(false);
       });
   };
 
@@ -121,10 +119,10 @@ export const App: React.FC = () => {
   };
 
   useEffect(() => {
-    setIsLoading(
-      filteredTodos.find((todo) => todo.id === isLoading?.id) || null,
+    setLoadingTodo(
+      filteredTodos.find((todo) => todo.id === loadingTodo?.id) || null,
     );
-  }, [filteredTodos, isLoading]);
+  }, [filteredTodos, loadingTodo]);
 
   if (!USER_ID) {
     setHasErrors(true);
@@ -140,26 +138,27 @@ export const App: React.FC = () => {
         <Header
           onSubmit={addTodo}
           onInput={cleanErrors}
-          inputDisabled={inputDisabled}
+          inputDisabled={isInputDisabled}
           hasErrors={hasErrors}
         />
 
         {todosFromServer.length > 0 && (
-          <TodoList
-            todos={filteredTodos}
-            tempTodo={tempTodo}
-            deleteTodo={removeTodo}
-            isProcessing={isLoading}
-          />
-        )}
-        {todosFromServer.length > 0 && (
-          <Footer
-            onStatus={handleStatus}
-            status={status}
-            completedCount={uncompletedTodosCount}
-            handleClear={clearCompleted}
-            isClearNeeded={uncompletedTodosCount === filteredTodos.length}
-          />
+          <>
+            <TodoList
+              todos={filteredTodos}
+              tempTodo={tempTodo}
+              deleteTodo={removeTodo}
+              isProcessing={loadingTodo}
+            />
+            <Footer
+              onStatus={handleStatus}
+              status={status}
+              completedCount={uncompletedTodosCount}
+              handleClear={clearCompleted}
+              isClearNeeded={uncompletedTodosCount === filteredTodos.length}
+            />
+
+          </>
         )}
       </div>
 

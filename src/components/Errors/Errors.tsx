@@ -20,7 +20,7 @@ export const Errors: React.FC<Props> = ({ error, closeError }) => {
         onClick={closeError}
       />
 
-      <ErrorMessage error={error} />
+      {error && (<ErrorMessage error={error} />)}
     </div>
   );
 };
