@@ -1,24 +1,29 @@
 /* eslint-disable max-len */
 /* eslint-disable jsx-a11y/control-has-associated-label */
 import React from 'react';
-import { UserWarning } from './UserWarning';
-
-const USER_ID = 0;
+import { useTodoContext } from './Context/Context';
+import { TodoHeader } from './Components/Header/TodoHeader/TodoHeader';
+import { ErrorNotification } from './Components/ErrorNotification/ErrorNotification';
+import { TodoFooter } from './Components/Footer/TodoFooter/TodoFooter';
+import { TodoForRender } from './Components/Main/TodoForRender/TodoForRender';
 
 export const App: React.FC = () => {
-  if (!USER_ID) {
-    return <UserWarning />;
-  }
+  const { renderedTodos } = useTodoContext();
+
+  const numberOfActiveTodos = renderedTodos
+    .filter(({ completed }) => !completed).length;
 
   return (
-    <section className="section container">
-      <p className="title is-4">
-        Copy all you need from the prev task:
-        <br />
-        <a href="https://github.com/mate-academy/react_todo-app-loading-todos#react-todo-app-load-todos">React Todo App - Load Todos</a>
-      </p>
+    <div className="todoapp">
+      <h1 className="todoapp__title">todos</h1>
 
-      <p className="subtitle">Styles are already copied</p>
-    </section>
+      <TodoHeader />
+      <div className="todoapp__content">
+        <TodoForRender />
+
+        {renderedTodos.length !== 0 && <TodoFooter activeTodos={numberOfActiveTodos} />}
+      </div>
+      <ErrorNotification />
+    </div>
   );
 };
