@@ -6,7 +6,11 @@ import React, {
   useState,
 } from 'react';
 import { TodoList } from './components/TodoList/TodoList';
-import { deleteTodo, getTodos, postTodo } from './api/todos';
+import {
+  // deleteTodo,
+  getTodos,
+  postTodo,
+} from './api/todos';
 import { Todo } from './types/Todo';
 import { Errors } from './types/Errors';
 import { Filter } from './components/Filter/Filter';
@@ -23,19 +27,19 @@ export const App: React.FC = () => {
   const [tempTodo, setTempTodo] = useState<Todo | null>(null);
 
   const titleField = useRef<HTMLInputElement>(null);
-  //#region "useEffects"
+  // #region "useEffects"
 
-  const handleDelete = (todoId: number) => {
-    const deletingTodo = async () => {
-      try {
-        await deleteTodo(todoId);
-      } catch (e) {
-        console.log(e);
-      }
-    };
+  // const handleDelete = (todoId: number) => {
+  //   const deletingTodo = async () => {
+  //     try {
+  //       await deleteTodo(todoId);
+  //     } catch (e) {
+  //       console.log(e);
+  //     }
+  //   };
 
-    deletingTodo();
-  };
+  //   deletingTodo();
+  // };
 
   const onErrorNotifyClose = () => {
     setError(null);
@@ -68,7 +72,7 @@ export const App: React.FC = () => {
 
     renderTodos();
   }, []);
-  //#endregion "useEffects"
+  // #endregion "useEffects"
   const handleSubmit = (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
 
@@ -104,7 +108,8 @@ export const App: React.FC = () => {
 
         setTodos(prevTodos => [...prevTodos, response]);
       } catch (err) {
-        console.log(err);
+        // console.log(err);
+        setTempTodo(null);
 
         throw err;
       }
