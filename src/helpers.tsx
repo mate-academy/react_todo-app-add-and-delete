@@ -8,11 +8,9 @@ export enum FilteredBy {
   Completed = 'completed',
 }
 
-type FilterType = string;
-
 export function filteredTodoList(
   todos: Todo[],
-  filterBy: FilterType,
+  filterBy: FilteredBy,
 ) {
   const filteredTodos = [...todos];
 
@@ -27,7 +25,7 @@ export function filteredTodoList(
   }
 }
 
-export const getErrorMessage = (error: string | null) => {
+export const getErrorMessage = (error: ErrorType | null) => {
   switch (error) {
     case ErrorType.LoadError:
       return 'Unable to load todos';

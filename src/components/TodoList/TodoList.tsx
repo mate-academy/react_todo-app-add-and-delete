@@ -5,12 +5,14 @@ type Props = {
   todos: Todo[];
   onDelete: (todoId: number) => void;
   todoTemp: Todo | null;
+  isProcessing: Todo | null;
 };
 
 export const TodoList: React.FC<Props> = ({
   todos,
   onDelete,
   todoTemp,
+  isProcessing,
 }) => (
   <section className="todoapp__main" data-cy="TodoList">
     {todos.map(todo => (
@@ -18,6 +20,7 @@ export const TodoList: React.FC<Props> = ({
         todo={todo}
         key={todo.id}
         onDelete={onDelete}
+        isProcessing={isProcessing}
       />
     ))}
 
@@ -26,6 +29,7 @@ export const TodoList: React.FC<Props> = ({
         todo={todoTemp}
         key={todoTemp.id}
         onDelete={onDelete}
+        isProcessing={isProcessing}
       />
     )}
   </section>

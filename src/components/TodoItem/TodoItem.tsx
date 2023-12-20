@@ -6,9 +6,14 @@ import { Todo } from '../../types/Todo';
 type Props = {
   todo: Todo;
   onDelete: (todoID: number) => void;
+  isProcessing: Todo | null,
 };
 
-export const TodoItem: React.FC<Props> = ({ todo, onDelete }) => {
+export const TodoItem: React.FC<Props> = ({
+  todo,
+  onDelete,
+  isProcessing,
+}) => {
   const [todoIsCompleted, setTodoIsCompleted] = useState(false);
 
   const handleTodoDelete = (todoId: number) => {
@@ -47,10 +52,17 @@ export const TodoItem: React.FC<Props> = ({ todo, onDelete }) => {
         ×
       </button>
 
-      <div data-cy="TodoLoader" className="modal overlay">
-        <div className="modal-background has-background-white-ter" />
-        <div className="loader" />
-      </div>
+      {isProcessing && (
+        <div
+          data-cy="TodoLoader"
+          className={cn('modal overlay', {
+            'is-active': isProcessing.id === todo.id,
+          })}
+        >
+          <div className="modal-background has-background-white-ter" />
+          <div className="loader" />
+        </div>
+      )}
     </div>
   );
 };

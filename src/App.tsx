@@ -23,9 +23,17 @@ export const App: React.FC = () => {
   const [tempTodo, setTempTodo] = useState<Todo | null>(null);
   const [newTodoTitle, setNewTodoTitle] = useState('');
   const [isLoading, setIsLoading] = useState(false);
+  const [isLoadingTodo, setIsLoadingTodo] = useState<Todo | null>(null);
+
+  const todosToView = useMemo(
+    () => filteredTodoList(todos, filterBy),
+    [todos, filterBy],
+  );
 
   const todoToRemove = async (todoId: number) => {
     try {
+      setIsLoadingTodo(todos.find(todo => todo.id === todoId) || null);
+
       await todoService.removeTodo(todoId);
 
       setTodos(currentTodos => currentTodos.filter(todo => todo.id !== todoId));
@@ -44,31 +52,34 @@ export const App: React.FC = () => {
         completed: false,
       };
 
-      setTempTodo(newTempTodo);
-
       const addedTodo = await todoService.addTodo({
         title: todoTitle,
         completed: false,
         userId: USER_ID,
       });
 
-      if (addedTodo.id !== 0) {
-        setTempTodo({
-          ...newTempTodo,
-          id: addedTodo.id,
-        });
-      }
+      setTempTodo(newTempTodo);
 
       setTodos((currentTodos) => [...currentTodos, addedTodo]);
-
-      setTempTodo(null);
-
-      setNewTodoTitle('');
 
       setIsLoading(false);
     } catch (error) {
       setErorType(ErrorType.AddError);
+    } finally {
+      setTempTodo(null);
+      setNewTodoTitle('');
+      setIsLoading(false);
     }
+  };
+
+  const clearCompleted = () => {
+    todosToView.forEach(todo => {
+      if (todo.completed) {
+        todoToRemove(todo.id);
+      }
+    });
+
+    setErorType(null);
   };
 
   useEffect(() => {
@@ -85,11 +96,6 @@ export const App: React.FC = () => {
 
     fetchData();
   }, []);
-
-  const todosToView = useMemo(
-    () => filteredTodoList(todos, filterBy),
-    [todos, filterBy],
-  );
 
   const closeError = useCallback(() => setErorType(null), []);
   const isAllTodosCompleted = todos.every(todo => todo.completed);
@@ -117,16 +123,17 @@ export const App: React.FC = () => {
             todos={todosToView}
             onDelete={todoToRemove}
             todoTemp={tempTodo}
+            isProcessing={isLoadingTodo}
           />
         )}
-        {todos.length
-          ? (
-            <Footer
-              onFilter={setFilterBy}
-              todos={todosToView}
-              filterBy={filterBy}
-            />
-          ) : null}
+        {todos.length > 0 && (
+          <Footer
+            onFilter={setFilterBy}
+            todos={todosToView}
+            filterBy={filterBy}
+            onClear={clearCompleted}
+          />
+        )}
       </div>
       {errorType
         && (

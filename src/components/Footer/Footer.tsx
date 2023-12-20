@@ -6,12 +6,14 @@ type Props = {
   onFilter: (filterType: FilteredBy) => void;
   todos: Todo[];
   filterBy: FilteredBy;
+  onClear: () => void;
 };
 
 export const Footer: React.FC<Props> = ({
   onFilter,
   todos,
   filterBy,
+  onClear,
 }) => {
   const handleFilterChange = (filterType: FilteredBy) => {
     const updatedFilter: FilteredBy
@@ -68,7 +70,7 @@ export const Footer: React.FC<Props> = ({
         className="todoapp__clear-completed"
         data-cy="ClearCompletedButton"
         disabled={todos.every(todo => !todo.completed)}
-        onClick={() => handleFilterChange(FilteredBy.Active)}
+        onClick={onClear}
       >
         Clear completed
       </button>
