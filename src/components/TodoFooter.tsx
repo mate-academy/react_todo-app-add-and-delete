@@ -22,7 +22,6 @@ export const TodoFooter: React.FC<Props> = ({
         {`${filteredTodo.length} items left`}
       </span>
 
-      {/* Active filter should have a 'selected' class */}
       <nav className="filter" data-cy="Filter">
         <a
           href="#/"
