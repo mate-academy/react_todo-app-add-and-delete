@@ -13,7 +13,7 @@ export const TodoFooter: React.FC<Props> = ({
   todos, status, onStatus, onClear,
 }) => {
   return (
-    <>
+    <footer className="todoapp__footer" data-cy="Footer">
       <span className="todo-count" data-cy="TodosCounter">
         {`${todos.length} items left`}
       </span>
@@ -62,6 +62,6 @@ export const TodoFooter: React.FC<Props> = ({
       >
         Clear completed
       </button>
-    </>
+    </footer>
   );
 };

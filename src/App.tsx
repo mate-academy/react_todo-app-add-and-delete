@@ -1,4 +1,3 @@
-/* eslint-disable jsx-a11y/control-has-associated-label */
 import React, {
   useEffect, useMemo, useRef, useState,
 } from 'react';
@@ -8,6 +7,7 @@ import { Todo } from './types/Todo';
 import { TodoList } from './components/TodoList/TodoList';
 import { TodoFooter } from './components/TodoFooter/TodoFooter';
 import { Status } from './types/Status';
+import { ErrorNotification } from './components/ErrorNotification';
 
 const USER_ID = 12042;
 
@@ -17,7 +17,6 @@ export const App: React.FC = () => {
   const [status, setStatus] = useState<Status>(Status.all);
   const [todoTitle, setTodoTitle] = useState<string>('');
   const [loadingTodoIds, setLoadingTodoIds] = useState<number[]>([]);
-  // const [isLoading, setIsLoading] = useState<boolean>(false);
   const [tempTodo, setTempTodo] = useState<Todo | null>(null);
 
   const titleField = useRef<HTMLInputElement>(null);
@@ -59,10 +58,6 @@ export const App: React.FC = () => {
     }
   }, [todos, status]);
 
-  if (!USER_ID) {
-    return <UserWarning />;
-  }
-
   const createTodo = (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
     if (!todoTitle) {
@@ -70,12 +65,16 @@ export const App: React.FC = () => {
     }
 
     if (todoTitle) {
+      const tempTodoId = 0;
+
       setTempTodo({
-        id: 0,
+        id: tempTodoId,
         userId: USER_ID,
         title: todoTitle,
         completed: false,
       });
+
+      setLoadingTodoIds(curr => [...curr, tempTodoId]);
 
       todosService.addTodo({
         userId: USER_ID, title: todoTitle, completed: false,
@@ -87,10 +86,13 @@ export const App: React.FC = () => {
 
             return [...currentTodos, { ...newTodo, id }];
           });
+          setTodoTitle('');
         })
-        .then(() => setTodoTitle(''))
         .catch(() => handleError('Unable to add a todo'))
-        .finally(() => setTempTodo(null));
+        .finally(() => {
+          setTempTodo(null);
+          setLoadingTodoIds(curr => curr.filter(id => id !== tempTodoId));
+        });
     }
   };
 
@@ -121,6 +123,10 @@ export const App: React.FC = () => {
     );
   };
 
+  if (!USER_ID) {
+    return <UserWarning />;
+  }
+
   return (
     <div className="todoapp">
       <h1 className="todoapp__title">todos</h1>
@@ -128,14 +134,13 @@ export const App: React.FC = () => {
       <div className="todoapp__content">
         <header className="todoapp__header">
           <button
+            aria-label="Toggle Button"
             type="button"
             className="todoapp__toggle-all active"
             data-cy="ToggleAllButton"
           />
 
-          <form
-            onSubmit={createTodo}
-          >
+          <form onSubmit={createTodo}>
             <input
               ref={titleField}
               data-cy="NewTodoField"
@@ -143,57 +148,37 @@ export const App: React.FC = () => {
               className="todoapp__new-todo"
               placeholder="What needs to be done?"
               value={todoTitle}
-              onChange={event => setTodoTitle(event.target.value)}
-              // disabled={!todos}
-
+              onChange={(event) => setTodoTitle(event.target.value)}
             />
           </form>
         </header>
 
         {todos.length > 0 && (
           <>
-            <section className="todoapp__main" data-cy="TodoList">
-              <TodoList
-                todos={filteredTodos}
-                tempTodo={tempTodo}
-                title={todoTitle}
-                onTitle={setTodoTitle}
-                onDelete={deleteTodo}
-                loadingTodos={loadingTodoIds}
-              />
-            </section>
+            <TodoList
+              todos={filteredTodos}
+              tempTodo={tempTodo}
+              title={todoTitle}
+              onTitle={setTodoTitle}
+              onDelete={deleteTodo}
+              loadingTodos={loadingTodoIds}
+            />
 
-            <footer className="todoapp__footer" data-cy="Footer">
-              <TodoFooter
-                todos={filteredTodos}
-                status={status}
-                onStatus={setStatus}
-                onClear={clearTodos}
-              />
-            </footer>
+            <TodoFooter
+              todos={filteredTodos}
+              status={status}
+              onStatus={setStatus}
+              onClear={clearTodos}
+            />
           </>
         )}
+
       </div>
 
-      {error && (
-        <div
-          data-cy="ErrorNotification"
-          className="notification is-danger is-light has-text-weight-normal"
-        >
-          <button
-            data-cy="HideErrorButton"
-            type="button"
-            className="delete"
-            onClick={() => (setError(null))}
-          />
-
-          <p>{error}</p>
-
-          {/*
-          Unable to update a todo */}
-        </div>
-      )}
-
+      <ErrorNotification
+        error={error}
+        onHideError={() => setError(null)}
+      />
     </div>
   );
 };
