@@ -9,7 +9,6 @@ import React, {
 import { TodoList } from './components/TodoList/TodoList';
 import {
   deleteTodo,
-  // deleteTodo,
   getTodos,
   postTodo,
 } from './api/todos';
@@ -17,7 +16,7 @@ import { Todo } from './types/Todo';
 import { Errors } from './types/Errors';
 import { Footer } from './components/Footer/Footer';
 import { FilterType } from './types/FilterType';
-import { filterTodos, unsetError } from './utils/helpers';
+import { filterTodos } from './utils/helpers';
 import { ErrorNotify } from './components/ErrorNotify/ErrorNotify';
 
 const USER_ID = 12041;
@@ -28,30 +27,35 @@ export const App: React.FC = () => {
   const [filterType, setFilterType] = useState(FilterType.All);
   const [tempTodo, setTempTodo] = useState<Todo | null>(null);
   const [selectedTodos, setSelectedTodos] = useState<number[]>([0]);
+  const [isSubmitting, setIsSubmitting] = useState(false);
 
   const titleField = useRef<HTMLInputElement>(null);
   const form = useRef<HTMLFormElement>(null);
   // #region "useEffects"
 
+  const handleError = (err: Errors) => {
+    setError(err);
+
+    setTimeout(() => {
+      setError(null);
+    }, 3000);
+  };
+
   const handleDelete = async (todoId: number) => {
-    // const deletingTodo = async () => {
     try {
+      if (error) {
+        setError(null);
+      }
+
       setSelectedTodos(prev => [...prev, todoId]);
 
       await deleteTodo(todoId);
 
       setTodos(prevTodos => prevTodos.filter(todo => todo.id !== todoId));
     } catch (e) {
-      setError(Errors.UnableToDelete);
       setSelectedTodos(prev => [...prev, 0]);
-
-      setTimeout(() => {
-        setError(null);
-      }, 3000);
+      handleError(Errors.UnableToDelete);
     }
-    // };
-
-    // deletingTodo();
   };
 
   const onErrorNotifyClose = () => {
@@ -75,9 +79,7 @@ export const App: React.FC = () => {
 
         setTodos(todosFromServer);
       } catch (e) {
-        setError(Errors.UnableToLoad);
-
-        unsetError(setError, null, 3000);
+        handleError(Errors.UnableToLoad);
 
         throw e;
       }
@@ -85,19 +87,14 @@ export const App: React.FC = () => {
 
     renderTodos();
   }, []);
-  // #endregion "useEffects"
+
   const handleSubmit = (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
-    // console.log(form.current?.titleInput.value, event.currentTarget);
 
     const title = event.currentTarget.titleInput.value.trim();
 
     if (!title) {
-      setError(Errors.EmptyTitle);
-
-      setTimeout(() => {
-        setError(null);
-      }, 3000);
+      handleError(Errors.EmptyTitle);
 
       return;
     }
@@ -111,6 +108,12 @@ export const App: React.FC = () => {
 
     const postingTodo = async () => {
       try {
+        if (error) {
+          setError(null);
+        }
+
+        setIsSubmitting(true);
+
         const response = await postTodo({
           title,
           userId: USER_ID,
@@ -120,22 +123,19 @@ export const App: React.FC = () => {
         setTempTodo(null);
 
         setTodos(prevTodos => [...prevTodos, response]);
-        // console.log(event.target)
         form.current?.reset();
       } catch (err) {
-        // console.log(err);
-        setTempTodo(null);
+        handleError(Errors.UnableToAdd);
 
+        setTempTodo(null);
         throw err;
+      } finally {
+        setIsSubmitting(false);
       }
     };
 
     postingTodo();
   };
-
-  // const clearCompletedTodos = () => {
-  //   setTodoIdToDelete(todos.filter(todo => todo.completed));
-  // }
 
   const clearCompleted = useCallback(() => {
     const completedTodos = todos
@@ -181,6 +181,7 @@ export const App: React.FC = () => {
               className="todoapp__new-todo"
               placeholder="What needs to be done?"
               name="titleInput"
+              disabled={isSubmitting}
             />
           </form>
         </header>
@@ -192,7 +193,6 @@ export const App: React.FC = () => {
           selectedTodos={selectedTodos}
         />
 
-        {/* Hide the footer if there are no todos */}
         {!!todos.length && (
           <Footer
             filterType={filterType}
