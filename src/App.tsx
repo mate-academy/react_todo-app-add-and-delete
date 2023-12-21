@@ -1,37 +1,39 @@
-/* eslint-disable jsx-a11y/control-has-associated-label */
 import React, { useEffect, useMemo, useState } from 'react';
-import cn from 'classnames';
 import { UserWarning } from './UserWarning';
 import { Todo } from './types/Todo';
 import * as todosService from './api/todos';
 import { TodoList } from './components/TodoList';
 import { Footer } from './components/Footer';
 import { Header } from './components/Header';
-// import { ErrorNotification } from './components/ErrorNotification';
 import { Errors } from './types/Errors';
+import { FilterValue } from './types/FilterValue';
+import { ErrorNotification } from './components/ErrorNotification';
+// import {handleError, setErrorMessage} from "./helpers";
 
 const USER_ID = 12037;
 
 export const App: React.FC = () => {
   const [todos, setTodos] = useState<Todo[]>([]);
-  const [filterValue, setFilterValue] = useState('all');
-  const [errorMessage, setErrorMessage] = useState<Errors>(Errors.NULL);
+  const [filterValue, setFilterValue] = useState(FilterValue.All);
   const [tempTodo, setTempTodo] = useState<Omit<Todo, 'id'> | null>(null);
+  const [errorMessage, setErrorMessage] = useState<Errors>(Errors.Null);
+  const [showLoader, setShowLoader] = useState(false);
 
   useEffect(
     () => {
       todosService.getTodos(USER_ID)
         .then(setTodos)
-        .catch(() => setErrorMessage(Errors.LOAD))
-        .finally(() => setTimeout(() => setErrorMessage(Errors.NULL), 3000));
+        .catch(() => setErrorMessage(Errors.LoadTodos))
+        .finally(() => setTimeout(() => setErrorMessage(Errors.Null), 3000));
     }, [],
   );
 
   const todosToRender = useMemo(
     () => {
       return todos.filter(todo => {
-        return filterValue === 'all'
-          || (filterValue === 'completed' ? todo.completed : !todo.completed);
+        return filterValue === FilterValue.All
+          || (filterValue === FilterValue.Completed
+            ? todo.completed : !todo.completed);
       });
     },
     [todos, filterValue],
@@ -53,46 +55,45 @@ export const App: React.FC = () => {
       return (
         setTodos(currentTodos => [...currentTodos, createdTodo]));
     } catch (error) {
-      setErrorMessage(Errors.ADD);
+      setErrorMessage(Errors.AddTodo);
       throw error;
     } finally {
-      setTimeout(() => setErrorMessage(Errors.NULL), 3000);
+      setTimeout(() => setErrorMessage(Errors.Null), 3000);
       setTempTodo(null);
     }
   };
 
   const updateTodo = async (todoToUpdate: Todo) => {
     try {
-      const updatedTodo = await todosService
-        .updateTodo(todoToUpdate.id, todoToUpdate);
+      setShowLoader(true);
+      const updatedTodo = await todosService.updateTodo(
+        todoToUpdate.id,
+        todoToUpdate,
+      );
 
-      setTodos(currentTodos => {
-        const newTodos = [...currentTodos];
-
-        const findIndexTodo = [...todos].findIndex(
-          todo => todo.id === todoToUpdate.id,
-        );
-
-        newTodos.splice(findIndexTodo, 1, updatedTodo);
-
-        return newTodos;
+      setTodos((currentTodos) => {
+        return currentTodos
+          .map((todo) => (todo.id === todoToUpdate.id ? updatedTodo : todo));
       });
     } catch (error) {
-      setErrorMessage(Errors.UPDATE);
+      setErrorMessage(Errors.UpdateTodo);
       throw error;
     } finally {
-      setTimeout(() => setErrorMessage(Errors.NULL), 3000);
+      setShowLoader(false);
+      setTimeout(() => setErrorMessage(Errors.Null), 3000);
     }
   };
 
   const deleteTodo = (todoId: number) => {
+    setShowLoader(true);
     todosService.deleteTodo(todoId)
       .then(() => setTodos(
         currentTodos => currentTodos.filter(todo => todo.id !== todoId),
       ))
-      .catch(() => setErrorMessage(Errors.DELETE))
+      .catch(() => setErrorMessage(Errors.DeleteTodo))
       .finally(() => {
-        setTimeout(() => setErrorMessage(Errors.NULL), 3000);
+        setShowLoader(false);
+        setTimeout(() => setErrorMessage(Errors.Null), 3000);
       });
   };
 
@@ -116,6 +117,7 @@ export const App: React.FC = () => {
           todos={todosToRender}
           tempTodo={tempTodo}
           deleteTodo={deleteTodo}
+          showLoader={showLoader}
         />
 
         {todos.length > 0 && (
@@ -128,21 +130,10 @@ export const App: React.FC = () => {
       </div>
 
       {errorMessage && (
-        <div
-          className="notification is-danger is-light has-text-weight-normal"
-        >
-          <button
-            type="button"
-            className={cn('delete', {
-              hidden: !errorMessage,
-            })}
-            onClick={() => {
-              setErrorMessage(Errors.NULL);
-            }}
-          />
-          {errorMessage}
-        </div>
-
+        <ErrorNotification
+          errorMessage={errorMessage}
+          setErrorMessage={setErrorMessage}
+        />
       )}
     </div>
   );

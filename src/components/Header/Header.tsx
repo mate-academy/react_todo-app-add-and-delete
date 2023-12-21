@@ -29,21 +29,20 @@ export const Header: FC<Props> = (props) => {
     event.preventDefault();
 
     if (!inputValue.trim()) {
-      setErrorMessage(Errors.NO_TITLE);
-      setTimeout(() => setErrorMessage(Errors.NULL), 3000);
+      setErrorMessage(Errors.EmptyTitle);
+      setTimeout(() => setErrorMessage(Errors.Null), 3000);
 
       return;
     }
 
-    setErrorMessage(Errors.NULL);
+    setErrorMessage(Errors.Null);
     setIsDisabledInput(true);
 
     addTodo(inputValue)
       .then(() => {
-        setIsDisabledInput(false);
         setInputValue('');
       })
-      .catch(() => setIsDisabledInput(false));
+      .finally(() => setIsDisabledInput(false));
   };
 
   const completeAllTodos = async () => {

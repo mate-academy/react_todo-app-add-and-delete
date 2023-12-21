@@ -5,7 +5,7 @@ import { FilterValue } from '../../types/FilterValue';
 
 interface Props {
   todos: Todo[],
-  setFilterValue: (value: string) => void,
+  setFilterValue: (value: FilterValue) => void,
   filterValue: string,
 }
 
@@ -30,7 +30,7 @@ export const Footer: FC<Props> = (props) => {
           href="#/"
           className={cn('filter__link', { selected: filterValue === 'all' })}
           data-cy="FilterLinkAll"
-          onClick={() => setFilterValue(FilterValue.ALL)}
+          onClick={() => setFilterValue(FilterValue.All)}
         >
           All
         </a>
@@ -39,7 +39,7 @@ export const Footer: FC<Props> = (props) => {
           href="#/active"
           className={cn('filter__link', { selected: filterValue === 'active' })}
           data-cy="FilterLinkActive"
-          onClick={() => setFilterValue(FilterValue.ACTIVE)}
+          onClick={() => setFilterValue(FilterValue.Active)}
         >
           Active
         </a>
@@ -49,7 +49,7 @@ export const Footer: FC<Props> = (props) => {
           className={cn('filter__link',
             { selected: filterValue === 'completed' })}
           data-cy="FilterLinkCompleted"
-          onClick={() => setFilterValue(FilterValue.COMPLETED)}
+          onClick={() => setFilterValue(FilterValue.Completed)}
         >
           Completed
         </a>

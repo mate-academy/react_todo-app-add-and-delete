@@ -1,14 +1,16 @@
 import { FC } from 'react';
+import cn from 'classnames';
+import { Errors } from '../../types/Errors';
 
 interface Props {
-  hideErrorMessage: () => void,
-  errorMessage: string | null,
+  setErrorMessage: (error: Errors) => void,
+  errorMessage : string | null,
 }
 
 export const ErrorNotification: FC<Props> = (props) => {
   const {
-    hideErrorMessage,
     errorMessage,
+    setErrorMessage,
   } = props;
 
   return (
@@ -16,14 +18,17 @@ export const ErrorNotification: FC<Props> = (props) => {
       data-cy="ErrorNotification"
       className="notification is-danger is-light has-text-weight-normal"
     >
-      {errorMessage}
       <button
-        data-cy="HideErrorButton"
         type="button"
-        className="delete"
-        onClick={hideErrorMessage}
-        aria-label="Hide Error Message"
+        aria-label="delete button"
+        className={cn('delete', {
+          hidden: !errorMessage,
+        })}
+        onClick={() => {
+          setErrorMessage(Errors.Null);
+        }}
       />
+      {errorMessage}
     </div>
   );
 };

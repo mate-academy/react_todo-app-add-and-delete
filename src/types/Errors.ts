@@ -1,8 +1,8 @@
 export enum Errors {
-  NO_TITLE = 'Title can\'t be empty',
-  ADD = 'Unable to add a todo',
-  DELETE = 'Unable to delete a todo',
-  UPDATE = 'Unable to update a todo',
-  LOAD = 'Unable to load todos',
-  NULL = '',
+  LoadTodos = 'Unable to load todos',
+  EmptyTitle = 'Title should not be empty',
+  AddTodo = 'Unable to add a todo',
+  DeleteTodo = 'Unable to delete a todo',
+  UpdateTodo = 'Unable to update a todo',
+  Null = '',
 }
