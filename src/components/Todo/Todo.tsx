@@ -55,5 +55,5 @@ export const Todo: React.FC<Props> = ({
         <div className="loader" />
       </div>
     </div>
-  )
+  );
 };
