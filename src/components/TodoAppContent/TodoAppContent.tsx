@@ -1,8 +1,12 @@
-import React, { useState, useEffect, useMemo } from 'react';
+import React, {
+  useState,
+  useEffect,
+  useMemo,
+  useRef,
+} from 'react';
 import { Todo } from '../../types/Todo';
 import { getTodos, addTodo, deleteTodo } from '../../api/todos';
 import { useAuth } from '../../Context/Context';
-import { Input } from '../Input';
 import { TodoItem } from '../TodoItem';
 import { Filter } from '../Filter';
 import { filteredData } from '../../helpers/filteredData';
@@ -12,12 +16,16 @@ import { Error } from '../Error';
 export const TodoAppContent: React.FC = () => {
   const userId = useAuth();
   const [todos, setTodos] = useState<Todo[]>([]);
+  const [newTodoField, setNewTodoField] = useState('');
+  const [isDisabledInput, setIsDisabledInput] = useState(false);
   const [todosCount, setTodosCount] = useState(0);
   const [tempTodo, setTempTodo] = useState<Todo | null>(null);
   const [filterBy, setFilterBy] = useState<FilterBy>(FilterBy.All);
   const [disabledClear, setDisabledClear] = useState(true);
   const [errorMessage, setErrorMessage] = useState<ErrorMessage | null>(null);
   const currentTodos = filteredData<Todo>(todos, filterBy);
+
+  const inputRef = useRef<HTMLInputElement>(null);
 
   const countOfNotCompleted = (arr: Todo[]): number => {
     return arr.filter(({ completed }) => !completed).length;
@@ -34,47 +42,51 @@ export const TodoAppContent: React.FC = () => {
     }
   }, [userId]);
 
+  if (!isDisabledInput) {
+    inputRef.current?.focus();
+  }
+
+  useEffect(() => {
+
+  }, [isDisabledInput]);
+
   useMemo(() => {
     setDisabledClear(!todos.some(({ completed }) => completed));
   }, [todos]);
 
-  const handleAddTodo = async (newTodo: string): Promise<string> => {
-    let fetchStatus = '';
+  const handleAddTodo = (e: React.FormEvent<HTMLFormElement>) => {
+    e.preventDefault();
 
     if (userId) {
-      if (newTodo.trim().length) {
-        const body = {
-          id: 0,
-          title: newTodo,
-          userId,
-          completed: false,
-        };
-
-        setTempTodo(body);
-
-        await addTodo(body)
-          .then(resp => {
-            setTodos(prev => [...prev, resp]);
-            setTodosCount(prev => prev + 1);
-            fetchStatus = 'fullfield';
-          })
-          .catch(() => {
-            setErrorMessage(ErrorMessage.Add);
-            fetchStatus = 'error';
-          })
-          .finally(() => {
-            setTempTodo(null);
-          });
-      } else {
+      if (!newTodoField.trim()) {
         setErrorMessage(ErrorMessage.NotBeEmpty);
-      }
-    }
 
-    return new Promise((resolve) => {
-      setTimeout(() => {
-        resolve(fetchStatus);
-      }, 250);
-    });
+        return;
+      }
+
+      const body = {
+        id: 0,
+        title: newTodoField,
+        userId,
+        completed: false,
+      };
+
+      setTempTodo(body);
+      setIsDisabledInput(true);
+
+      addTodo(body)
+        .then(resp => {
+          setTodos(prev => [...prev, resp]);
+          setTodosCount(prev => prev + 1);
+        })
+        .catch(() => {
+          setErrorMessage(ErrorMessage.Add);
+        })
+        .finally(() => {
+          setTempTodo(null);
+          setIsDisabledInput(false);
+        });
+    }
   };
 
   const handleDeleteTodo = (idToDel: number, doNotCount = false) => {
@@ -102,9 +114,25 @@ export const TodoAppContent: React.FC = () => {
     <>
       <div className="todoapp__content">
         <header className="todoapp__header">
-          <Input
-            onSubmit={handleAddTodo}
+          <button
+            type="button"
+            className="todoapp__toggle-all"
+            data-cy="ToggleAllButton"
+            aria-label="toggle all button"
           />
+
+          <form onSubmit={handleAddTodo}>
+            <input
+              data-cy="NewTodoField"
+              type="text"
+              className="todoapp__new-todo"
+              placeholder="What needs to be done?"
+              onChange={e => setNewTodoField(e.target.value)}
+              value={newTodoField}
+              disabled={isDisabledInput}
+              ref={inputRef}
+            />
+          </form>
         </header>
 
         {currentTodos.length > 0 && (
