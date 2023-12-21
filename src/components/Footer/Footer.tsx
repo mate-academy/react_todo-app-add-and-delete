@@ -8,14 +8,17 @@ interface Props {
   filterType: FilterType,
   onFilterSelect: (filterT: FilterType) => void,
   todos: Todo[],
+  clearCompleted: () => void
 }
 
-export const Filter: React.FC<Props> = ({
+export const Footer: React.FC<Props> = ({
   filterType,
   onFilterSelect,
   todos,
+  clearCompleted,
 }) => {
   const todosToComplete = filterTodos(todos, FilterType.Active).length;
+  const isClearButtonShown = todos.some(todo => todo.completed);
 
   return (
     <footer className="todoapp__footer" data-cy="Footer">
@@ -60,13 +63,21 @@ export const Filter: React.FC<Props> = ({
       </nav>
 
       {/* don't show this button if there are no completed todos */}
-      <button
-        type="button"
-        className="todoapp__clear-completed"
-        data-cy="ClearCompletedButton"
-      >
-        Clear completed
-      </button>
+      {
+        isClearButtonShown
+        && (
+          <button
+            type="button"
+            className="todoapp__clear-completed"
+            data-cy="ClearCompletedButton"
+            onClick={() => clearCompleted()}
+          >
+            Clear completed
+          </button>
+        )
+
+      }
+
     </footer>
   );
 };
