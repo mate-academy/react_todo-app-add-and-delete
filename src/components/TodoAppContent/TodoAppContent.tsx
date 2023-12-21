@@ -42,12 +42,10 @@ export const TodoAppContent: React.FC = () => {
     }
   }, [userId]);
 
-  if (!isDisabledInput) {
-    inputRef.current?.focus();
-  }
-
   useEffect(() => {
-
+    if (!isDisabledInput) {
+      inputRef.current?.focus();
+    }
   }, [isDisabledInput]);
 
   useMemo(() => {
@@ -78,6 +76,7 @@ export const TodoAppContent: React.FC = () => {
         .then(resp => {
           setTodos(prev => [...prev, resp]);
           setTodosCount(prev => prev + 1);
+          setNewTodoField('');
         })
         .catch(() => {
           setErrorMessage(ErrorMessage.Add);
