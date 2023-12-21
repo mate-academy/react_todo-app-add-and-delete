@@ -6,11 +6,17 @@ import { Todo } from '../Todo/Todo';
 interface Props {
   todos: TodoInterface[],
   tempTodo: Omit<TodoInterface, 'userId'> | null,
+  handleDelete: (todoId: number) => void,
+  selectedTodos: number[],
+  // clearCompleted: () => void,
 }
 
 export const TodoList: React.FC<Props> = ({
   todos,
   tempTodo,
+  handleDelete = () => { },
+  selectedTodos,
+  // clearCompleted,
 }) => {
   return (
     <section className="todoapp__main" data-cy="TodoList">
@@ -24,6 +30,9 @@ export const TodoList: React.FC<Props> = ({
           title={title}
           completed={completed}
           key={id}
+          handleDelete={handleDelete}
+          selectedTodos={selectedTodos}
+          // clearCompleted={clearCompleted}
         />
         // <div
         //   data-cy="Todo"
@@ -52,34 +61,34 @@ export const TodoList: React.FC<Props> = ({
       ))}
       {tempTodo
         && (
-      // <>
-      //   <div
-      //     data-cy="Todo"
-      //     className={classNames('todo')}
-      //   >
-      //     <div data-cy="TodoLoader" className="modal overlay is-active">
-      //       <div className="modal-background has-background-white-ter" />
-      //       <div className="loader" />
-      //     </div>
+          // <>
+          //   <div
+          //     data-cy="Todo"
+          //     className={classNames('todo')}
+          //   >
+          //     <div data-cy="TodoLoader" className="modal overlay is-active">
+          //       <div className="modal-background has-background-white-ter" />
+          //       <div className="loader" />
+          //     </div>
 
-      //     <label className="todo__status-label">
-      //       <input
-      //         data-cy="TodoStatus"
-      //         type="checkbox"
-      //         className="todo__status"
-      //       />
-      //     </label>
+          //     <label className="todo__status-label">
+          //       <input
+          //         data-cy="TodoStatus"
+          //         type="checkbox"
+          //         className="todo__status"
+          //       />
+          //     </label>
 
-      //     <span data-cy="TodoTitle" className="todo__title">
-      //       {tempTodo?.title}
-      //     </span>
-      //     <button
-      //       type="button"
-      //       className="todo__remove"
-      //       data-cy="TodoDelete"
-      //     >
-      //       ×
-      //     </button>
+          //     <span data-cy="TodoTitle" className="todo__title">
+          //       {tempTodo?.title}
+          //     </span>
+          //     <button
+          //       type="button"
+          //       className="todo__remove"
+          //       data-cy="TodoDelete"
+          //     >
+          //       ×
+          //     </button>
 
           //   </div>
           // </>
@@ -88,6 +97,7 @@ export const TodoList: React.FC<Props> = ({
               id={tempTodo.id}
               title={tempTodo.title}
               completed={tempTodo.completed}
+              handleDelete={() => { }}
             />
           </>
         )}

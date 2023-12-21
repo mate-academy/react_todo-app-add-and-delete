@@ -1,5 +1,6 @@
 /* eslint-disable jsx-a11y/control-has-associated-label */
 import React, {
+  useCallback,
   useEffect,
   useMemo,
   useRef,
@@ -7,13 +8,14 @@ import React, {
 } from 'react';
 import { TodoList } from './components/TodoList/TodoList';
 import {
+  deleteTodo,
   // deleteTodo,
   getTodos,
   postTodo,
 } from './api/todos';
 import { Todo } from './types/Todo';
 import { Errors } from './types/Errors';
-import { Filter } from './components/Filter/Filter';
+import { Footer } from './components/Footer/Footer';
 import { FilterType } from './types/FilterType';
 import { filterTodos, unsetError } from './utils/helpers';
 import { ErrorNotify } from './components/ErrorNotify/ErrorNotify';
@@ -25,21 +27,32 @@ export const App: React.FC = () => {
   const [error, setError] = useState<Errors | null>(null);
   const [filterType, setFilterType] = useState(FilterType.All);
   const [tempTodo, setTempTodo] = useState<Todo | null>(null);
+  const [selectedTodos, setSelectedTodos] = useState<number[]>([0]);
 
   const titleField = useRef<HTMLInputElement>(null);
+  const form = useRef<HTMLFormElement>(null);
   // #region "useEffects"
 
-  // const handleDelete = (todoId: number) => {
-  //   const deletingTodo = async () => {
-  //     try {
-  //       await deleteTodo(todoId);
-  //     } catch (e) {
-  //       console.log(e);
-  //     }
-  //   };
+  const handleDelete = async (todoId: number) => {
+    // const deletingTodo = async () => {
+    try {
+      setSelectedTodos(prev => [...prev, todoId]);
 
-  //   deletingTodo();
-  // };
+      await deleteTodo(todoId);
+
+      setTodos(prevTodos => prevTodos.filter(todo => todo.id !== todoId));
+    } catch (e) {
+      setError(Errors.UnableToDelete);
+      setSelectedTodos(prev => [...prev, 0]);
+
+      setTimeout(() => {
+        setError(null);
+      }, 3000);
+    }
+    // };
+
+    // deletingTodo();
+  };
 
   const onErrorNotifyClose = () => {
     setError(null);
@@ -75,9 +88,9 @@ export const App: React.FC = () => {
   // #endregion "useEffects"
   const handleSubmit = (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
+    // console.log(form.current?.titleInput.value, event.currentTarget);
 
     const title = event.currentTarget.titleInput.value.trim();
-    // console.log(title);
 
     if (!title) {
       setError(Errors.EmptyTitle);
@@ -107,6 +120,8 @@ export const App: React.FC = () => {
         setTempTodo(null);
 
         setTodos(prevTodos => [...prevTodos, response]);
+        // console.log(event.target)
+        form.current?.reset();
       } catch (err) {
         // console.log(err);
         setTempTodo(null);
@@ -117,6 +132,27 @@ export const App: React.FC = () => {
 
     postingTodo();
   };
+
+  // const clearCompletedTodos = () => {
+  //   setTodoIdToDelete(todos.filter(todo => todo.completed));
+  // }
+
+  const clearCompleted = useCallback(() => {
+    const completedTodos = todos
+      .filter((todo) => todo.completed);
+
+    setSelectedTodos((currentIds) => [
+      ...currentIds,
+      ...completedTodos.map((completedTodo) => completedTodo.id),
+    ]);
+
+    completedTodos.map((completedTodo) => deleteTodo(completedTodo.id));
+
+    setTimeout(() => {
+      setTodos((currentTodos) => currentTodos
+        .filter((todo) => !todo.completed));
+    }, 500);
+  }, [todos]);
 
   const visibleTodos = useMemo(() => {
     return filterTodos(todos, filterType);
@@ -134,7 +170,10 @@ export const App: React.FC = () => {
             data-cy="ToggleAllButton"
           />
 
-          <form onSubmit={handleSubmit}>
+          <form
+            ref={form}
+            onSubmit={handleSubmit}
+          >
             <input
               ref={titleField}
               data-cy="NewTodoField"
@@ -149,14 +188,17 @@ export const App: React.FC = () => {
         <TodoList
           todos={visibleTodos}
           tempTodo={tempTodo}
+          handleDelete={handleDelete}
+          selectedTodos={selectedTodos}
         />
 
         {/* Hide the footer if there are no todos */}
         {!!todos.length && (
-          <Filter
+          <Footer
             filterType={filterType}
             onFilterSelect={onFilterSelect}
             todos={todos}
+            clearCompleted={clearCompleted}
           />
         )}
       </div>
