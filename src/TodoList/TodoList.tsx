@@ -6,18 +6,24 @@ import { TodoInfo } from '../TodoInfo/TodoInfo';
 interface Props {
   todos: Todo [],
   tempTodo: Todo | null,
+  onDeleteTodo: (id: number) => void
 }
 
 export const TodoList: React.FC<Props> = memo(({
   todos,
   tempTodo,
+  onDeleteTodo,
 }) => (
   <section
     className="todoapp__main"
     data-cy="TodoList"
   >
     {todos.map((todo) => (
-      <TodoInfo todo={todo} key={todo.id} />
+      <TodoInfo
+        todo={todo}
+        key={todo.id}
+        onDeleteTodo={onDeleteTodo}
+      />
     ))}
     {tempTodo
       && (

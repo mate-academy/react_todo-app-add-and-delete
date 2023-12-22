@@ -4,10 +4,11 @@ import { Todo } from '../types/Todo';
 
 interface Props {
   todo: Todo,
+  onDeleteTodo: (id: number) => void,
 }
 
-export const TodoInfo: React.FC<Props> = memo(({ todo }) => {
-  const { title, completed } = todo;
+export const TodoInfo: React.FC<Props> = memo(({ todo, onDeleteTodo }) => {
+  const { title, completed, id } = todo;
 
   return (
     <div
@@ -29,7 +30,13 @@ export const TodoInfo: React.FC<Props> = memo(({ todo }) => {
         {title}
       </span>
 
-      <button type="button" className="todo__remove" data-cy="TodoDelete">
+      <button
+        type="button"
+        className="todo__remove"
+        data-cy="TodoDelete"
+        value={id}
+        onClick={(e) => onDeleteTodo(+e.currentTarget.value)}
+      >
         ×
       </button>
 

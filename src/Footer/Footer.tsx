@@ -6,12 +6,16 @@ interface Props {
   filterType: Filter,
   onHandleFilterType: (type: Filter) => void,
   uncompletedCount: number,
+  onClearCompleted: () => void,
+  hasCompleted: boolean,
 }
 
 export const Footer: React.FC<Props> = memo(({
   filterType,
   onHandleFilterType,
   uncompletedCount,
+  onClearCompleted,
+  hasCompleted,
 }) => (
   <footer className="todoapp__footer" data-cy="Footer">
     <span className="todo-count" data-cy="TodosCounter">
@@ -53,12 +57,16 @@ export const Footer: React.FC<Props> = memo(({
       </button>
     </nav>
 
-    <button
-      type="button"
-      className="todoapp__clear-completed"
-      data-cy="ClearCompletedButton"
-    >
-      Clear completed
-    </button>
+    {hasCompleted
+      && (
+        <button
+          type="button"
+          className="todoapp__clear-completed"
+          data-cy="ClearCompletedButton"
+          onClick={onClearCompleted}
+        >
+          Clear completed
+        </button>
+      )}
   </footer>
 ));

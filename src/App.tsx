@@ -1,11 +1,13 @@
 import React, { useEffect, useState } from 'react';
 import { UserWarning } from './UserWarning';
 import { Todo } from './types/Todo';
-import { createTodo, getTodos } from './api/todos';
+import { createTodo, deleteTodo, getTodos } from './api/todos';
 import { TodoList } from './TodoList/TodoList';
 import {
   applyUncompleted,
+  applyHasCompleted,
   applySelectedTodos,
+  removeTodo,
 } from './helpers/helpers';
 import { Filter } from './types/Selected-filter-enum';
 import { ErrorType } from './types/errors-enum';
@@ -67,13 +69,9 @@ export const App: React.FC = () => {
       .then((todoFromServer) => {
         setNewTitle('');
         setTodos((currentTodos) => [...currentTodos, todoFromServer]);
-        // setIsLoading(false);
-        // setTempTodo(null);
       })
       .catch(() => {
         handleError(ErrorType.cantUploadTodo);
-        // setTempTodo(null);
-        // setIsLoading(false);
       })
       .finally(() => {
         setIsLoading(false);
@@ -81,8 +79,27 @@ export const App: React.FC = () => {
       });
   };
 
+  const onDeleteTodo = (id: number) => {
+    deleteTodo(id)
+      .then(() => {
+        setTodos((currentTodos) => removeTodo(id, currentTodos));
+      })
+      .catch(() => {
+        handleError(ErrorType.cantDeleteTodo);
+      });
+  };
+
+  const clearCompleted = () => {
+    const completedTodos = todos.filter(({ completed }) => completed);
+
+    completedTodos.map(({ id }) => {
+      return onDeleteTodo(id);
+    });
+  };
+
   const todosForMap = applySelectedTodos(filterType, todos);
   const uncompletedCount = applyUncompleted(todos);
+  const hasCompleted = applyHasCompleted(todos);
 
   if (!USER_ID) {
     return <UserWarning />;
@@ -103,19 +120,21 @@ export const App: React.FC = () => {
 
         {hasTodosFromServer
           && (
-            <TodoList
-              todos={todosForMap}
-              tempTodo={tempTodo}
-            />
-          )}
+            <>
+              <TodoList
+                todos={todosForMap}
+                tempTodo={tempTodo}
+                onDeleteTodo={onDeleteTodo}
+              />
 
-        {hasTodosFromServer
-          && (
-            <Footer
-              filterType={filterType}
-              onHandleFilterType={handleFilterType}
-              uncompletedCount={uncompletedCount}
-            />
+              <Footer
+                filterType={filterType}
+                onHandleFilterType={handleFilterType}
+                uncompletedCount={uncompletedCount}
+                onClearCompleted={clearCompleted}
+                hasCompleted={hasCompleted}
+              />
+            </>
           )}
       </div>
 
