@@ -8,7 +8,7 @@ import { Todo } from '../../types/Todo';
 type Props = {
   todos: Todo[],
   handleError: (error: Errors) => void,
-  addTodo: (inputValue: string) => Promise<void>,
+  addTodo: (inputValue: string) =>void,
   updateTodo: (updatedTodo: Todo) =>void,
 };
 export const Header: FC<Props> = (props) => {
@@ -25,7 +25,7 @@ export const Header: FC<Props> = (props) => {
     input?.focus();
   }, []);
 
-  const handleSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
+  const handleSubmit = (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
 
     if (!inputValue.trim()) {
@@ -34,17 +34,18 @@ export const Header: FC<Props> = (props) => {
       return;
     }
 
-    handleError(Errors.Null);
     setIsDisabledInput(true);
 
-    addTodo(inputValue)
-      .then(() => {
-        setInputValue('');
-      })
-      .finally(() => setIsDisabledInput(false));
+    try {
+      addTodo(inputValue);
+
+      setInputValue('');
+    } finally {
+      setIsDisabledInput(false);
+    }
   };
 
-  const completeAllTodos = async () => {
+  const completeAllTodos = () => {
     const statusOfTodos = todos.every(todo => todo.completed);
 
     const updateTodos = todos

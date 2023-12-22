@@ -20,15 +20,14 @@ export const App: React.FC = () => {
 
   const handleError = (error: Errors) => {
     setErrorMessage(error);
-    setTimeout(() => setErrorMessage(error), 3000);
+    setTimeout(() => setErrorMessage(Errors.Null), 3000);
   };
 
   useEffect(
     () => {
       todosService.getTodos(USER_ID)
         .then(setTodos)
-        .catch(() => handleError(Errors.LoadTodos))
-        .finally(() => handleError(Errors.Null));
+        .catch(() => handleError(Errors.LoadTodos));
     }, [],
   );
 
@@ -43,7 +42,7 @@ export const App: React.FC = () => {
     [todos, filterValue],
   );
 
-  const addTodo = async (inputValue: string) => {
+  const addTodo = (inputValue: string) => {
     const data = {
       id: 0,
       title: inputValue,
@@ -53,15 +52,16 @@ export const App: React.FC = () => {
 
     setTempTodo(data);
 
-    try {
-      const createdTodo = await todosService.createTodo(data);
-      setTodos(currentTodos => [...currentTodos, createdTodo]);
-    } catch (e) {
-      handleError(Errors.AddTodo);
-    } finally {
-      handleError(Errors.Null);
-      setTempTodo(null);
-    }
+    todosService.createTodo(data)
+      .then((createdTodo) => {
+        setTodos((currentTodos) => [...currentTodos, createdTodo]);
+      })
+      .catch(() => {
+        handleError(Errors.AddTodo);
+      })
+      .finally(() => {
+        setTempTodo(null);
+      });
   };
 
   const updateTodo = (todoToUpdate: Todo) => {
@@ -75,9 +75,6 @@ export const App: React.FC = () => {
       })
       .catch(() => {
         handleError(Errors.UpdateTodo);
-      })
-      .finally(() => {
-        handleError(Errors.Null);
       });
   };
 
@@ -87,10 +84,7 @@ export const App: React.FC = () => {
       .then(() => setTodos(
         currentTodos => currentTodos.filter(todo => todo.id !== todoId),
       ))
-      .catch(() => handleError(Errors.DeleteTodo))
-      .finally(() => {
-        handleError(Errors.Null);
-      });
+      .catch(() => handleError(Errors.DeleteTodo));
   };
 
   if (!USER_ID) {

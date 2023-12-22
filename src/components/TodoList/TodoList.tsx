@@ -2,7 +2,6 @@ import { FC } from 'react';
 import { TransitionGroup, CSSTransition } from 'react-transition-group';
 import { Todo } from '../Todo';
 import { Todo as TodoType } from '../../types/Todo';
-import { TempTodo } from '../TempTodo';
 
 interface Props {
   todos: TodoType[],
@@ -43,7 +42,12 @@ export const TodoList: FC<Props> = (props) => {
             timeout={300}
             classNames="temp-item"
           >
-            <TempTodo tempTodo={tempTodo} />
+            <Todo
+              todo={tempTodo}
+              loading={loadingTodoId.includes(tempTodo.id)}
+              deleteTodo={deleteTodo}
+              isTemporary
+            />
           </CSSTransition>
         )}
       </TransitionGroup>

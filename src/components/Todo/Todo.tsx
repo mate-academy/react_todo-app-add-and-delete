@@ -3,12 +3,15 @@ import cn from 'classnames';
 import { Todo as TodoType } from '../../types/Todo';
 
 interface Props {
-  todo: TodoType;
-  deleteTodo: (todoId: number) => void;
+  todo: TodoType,
+  deleteTodo: (todoId: number) => void,
   loading: boolean,
+  isTemporary?: boolean,
 }
 
-export const Todo: FC<Props> = ({ todo, deleteTodo, loading }) => {
+export const Todo: FC<Props> = ({
+  todo, deleteTodo, loading, isTemporary,
+}) => {
   return (
     <div
       data-cy="Todo"
@@ -37,13 +40,11 @@ export const Todo: FC<Props> = ({ todo, deleteTodo, loading }) => {
       </button>
 
       <div className={cn('modal overlay', {
-        'is-active': loading,
+        'is-active': loading || isTemporary,
       })}
       >
-        <div className="modal overlay is-active">
-          <div className="modal-background has-background-white-ter" />
-          <div className="loader" />
-        </div>
+        <div className="modal-background has-background-white-ter" />
+        <div className="loader" />
       </div>
     </div>
   );
