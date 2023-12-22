@@ -3,7 +3,6 @@ import React, {
   useCallback,
   useEffect,
   useMemo,
-  useRef,
   useState,
 } from 'react';
 import { TodoList } from './components/TodoList/TodoList';
@@ -18,6 +17,7 @@ import { Footer } from './components/Footer/Footer';
 import { FilterType } from './types/FilterType';
 import { filterTodos } from './utils/helpers';
 import { ErrorNotify } from './components/ErrorNotify/ErrorNotify';
+import { Header } from './components/Header/Header';
 
 const USER_ID = 12041;
 
@@ -28,10 +28,11 @@ export const App: React.FC = () => {
   const [tempTodo, setTempTodo] = useState<Todo | null>(null);
   const [selectedTodos, setSelectedTodos] = useState<number[]>([0]);
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [newTodoTitle, setNewTodoTitle] = useState('');
 
-  const titleField = useRef<HTMLInputElement>(null);
-  const form = useRef<HTMLFormElement>(null);
-  // #region "useEffects"
+  const handleInputChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+    setNewTodoTitle(event.target.value);
+  };
 
   const handleError = (err: Errors) => {
     setError(err);
@@ -53,8 +54,9 @@ export const App: React.FC = () => {
 
       setTodos(prevTodos => prevTodos.filter(todo => todo.id !== todoId));
     } catch (e) {
-      setSelectedTodos(prev => [...prev, 0]);
       handleError(Errors.UnableToDelete);
+    } finally {
+      setSelectedTodos([]);
     }
   };
 
@@ -65,12 +67,6 @@ export const App: React.FC = () => {
   const onFilterSelect = (filterT: FilterType) => {
     setFilterType(filterT);
   };
-
-  useEffect(() => {
-    if (titleField.current) {
-      titleField.current.focus();
-    }
-  });
 
   useEffect(() => {
     const renderTodos = async () => {
@@ -91,7 +87,7 @@ export const App: React.FC = () => {
   const handleSubmit = (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
 
-    const title = event.currentTarget.titleInput.value.trim();
+    const title = newTodoTitle.trim();
 
     if (!title) {
       handleError(Errors.EmptyTitle);
@@ -123,7 +119,7 @@ export const App: React.FC = () => {
         setTempTodo(null);
 
         setTodos(prevTodos => [...prevTodos, response]);
-        form.current?.reset();
+        setNewTodoTitle('');
       } catch (err) {
         handleError(Errors.UnableToAdd);
 
@@ -163,28 +159,12 @@ export const App: React.FC = () => {
       <h1 className="todoapp__title">todos</h1>
 
       <div className="todoapp__content">
-        <header className="todoapp__header">
-          <button
-            type="button"
-            className="todoapp__toggle-all active"
-            data-cy="ToggleAllButton"
-          />
-
-          <form
-            ref={form}
-            onSubmit={handleSubmit}
-          >
-            <input
-              ref={titleField}
-              data-cy="NewTodoField"
-              type="text"
-              className="todoapp__new-todo"
-              placeholder="What needs to be done?"
-              name="titleInput"
-              disabled={isSubmitting}
-            />
-          </form>
-        </header>
+        <Header
+          handleInputChange={handleInputChange}
+          handleSubmit={handleSubmit}
+          newTodoTitle={newTodoTitle}
+          isSubmitting={isSubmitting}
+        />
 
         <TodoList
           todos={visibleTodos}
