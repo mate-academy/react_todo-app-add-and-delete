@@ -25,7 +25,7 @@ export const App: React.FC = () => {
   const [error, setError] = useState<Errors | null>(null);
   const [filterType, setFilterType] = useState(FilterType.All);
   const [tempTodo, setTempTodo] = useState<Todo | null>(null);
-  const [selectedTodos, setSelectedTodos] = useState<number[]>([0]);
+  const [selectedTodos, setSelectedTodos] = useState<number[]>([]);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [newTodoTitle, setNewTodoTitle] = useState('');
 
@@ -54,8 +54,6 @@ export const App: React.FC = () => {
       setTodos(prevTodos => prevTodos.filter(todo => todo.id !== todoId));
     } catch (e) {
       handleError(Errors.UnableToDelete);
-    } finally {
-      setSelectedTodos([]);
     }
   };
 
@@ -141,12 +139,27 @@ export const App: React.FC = () => {
       ...completedTodos.map((completedTodo) => completedTodo.id),
     ]);
 
-    completedTodos.map((completedTodo) => deleteTodo(completedTodo.id));
+    completedTodos.forEach(async (completedTodo) => {
+      try {
+        await deleteTodo(completedTodo.id);
 
-    setTimeout(() => {
-      setTodos((currentTodos) => currentTodos
-        .filter((todo) => !todo.completed));
-    }, 500);
+        setTimeout(() => {
+          setSelectedTodos(currentIds => [
+            ...currentIds.filter(todoId => todoId !== completedTodo.id),
+          ]);
+          setTodos((currentTodos) => currentTodos
+            .filter((todo) => !todo.completed));
+        }, 500);
+      } catch (err) {
+        handleError(Errors.UnableToDelete);
+
+        setSelectedTodos(currentIds => [
+          ...currentIds.filter(todoId => todoId !== completedTodo.id),
+        ]);
+
+        throw err;
+      }
+    });
   }, [todos]);
 
   const visibleTodos = useMemo(() => {
