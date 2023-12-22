@@ -33,15 +33,13 @@ export const TodoList: React.FC<Props> = ({
       ))}
       {tempTodo
         && (
-          <>
-            <Todo
-              id={tempTodo.id}
-              title={tempTodo.title}
-              completed={tempTodo.completed}
-              handleDelete={() => { }}
-              selectedTodos={selectedTodos}
-            />
-          </>
+          <Todo
+            id={tempTodo.id}
+            title={tempTodo.title}
+            completed={tempTodo.completed}
+            handleDelete={() => { }}
+            selectedTodos={selectedTodos}
+          />
         )}
     </section>
   );
