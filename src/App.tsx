@@ -55,7 +55,6 @@ export const App: React.FC = () => {
 
     try {
       const createdTodo = await todosService.createTodo(data);
-
       setTodos(currentTodos => [...currentTodos, createdTodo]);
     } catch (e) {
       handleError(Errors.AddTodo);
