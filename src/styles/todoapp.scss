@@ -48,7 +48,7 @@
       color: #737373;
     }
 
-    &::before {
+    &:before {
       content: "❯";
       transform: translateY(2px) rotate(90deg);
       line-height: 0;
