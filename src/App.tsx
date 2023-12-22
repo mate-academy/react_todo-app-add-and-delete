@@ -8,23 +8,27 @@ import { Header } from './components/Header';
 import { Errors } from './types/Errors';
 import { FilterValue } from './types/FilterValue';
 import { ErrorNotification } from './components/ErrorNotification';
-// import {handleError, setErrorMessage} from "./helpers";
 
 const USER_ID = 12037;
 
 export const App: React.FC = () => {
   const [todos, setTodos] = useState<Todo[]>([]);
   const [filterValue, setFilterValue] = useState(FilterValue.All);
-  const [tempTodo, setTempTodo] = useState<Omit<Todo, 'id'> | null>(null);
+  const [tempTodo, setTempTodo] = useState<Todo | null>(null);
   const [errorMessage, setErrorMessage] = useState<Errors>(Errors.Null);
-  const [showLoader, setShowLoader] = useState(false);
+  const [loadingTodoId, setLoadingTodoId] = useState<number[]>([]);
+
+  const handleError = (error: Errors) => {
+    setErrorMessage(error);
+    setTimeout(() => setErrorMessage(error), 3000);
+  };
 
   useEffect(
     () => {
       todosService.getTodos(USER_ID)
         .then(setTodos)
-        .catch(() => setErrorMessage(Errors.LoadTodos))
-        .finally(() => setTimeout(() => setErrorMessage(Errors.Null), 3000));
+        .catch(() => handleError(Errors.LoadTodos))
+        .finally(() => handleError(Errors.Null));
     }, [],
   );
 
@@ -52,48 +56,41 @@ export const App: React.FC = () => {
     try {
       const createdTodo = await todosService.createTodo(data);
 
-      return (
-        setTodos(currentTodos => [...currentTodos, createdTodo]));
-    } catch (error) {
-      setErrorMessage(Errors.AddTodo);
-      throw error;
+      setTodos(currentTodos => [...currentTodos, createdTodo]);
+    } catch (e) {
+      handleError(Errors.AddTodo);
     } finally {
-      setTimeout(() => setErrorMessage(Errors.Null), 3000);
+      handleError(Errors.Null);
       setTempTodo(null);
     }
   };
 
-  const updateTodo = async (todoToUpdate: Todo) => {
-    try {
-      setShowLoader(true);
-      const updatedTodo = await todosService.updateTodo(
-        todoToUpdate.id,
-        todoToUpdate,
-      );
-
-      setTodos((currentTodos) => {
-        return currentTodos
-          .map((todo) => (todo.id === todoToUpdate.id ? updatedTodo : todo));
+  const updateTodo = (todoToUpdate: Todo) => {
+    todosService
+      .updateTodo(todoToUpdate.id, todoToUpdate)
+      .then(updatedTodo => {
+        setTodos(currentTodos => {
+          return currentTodos
+            .map(todo => (todo.id === todoToUpdate.id ? updatedTodo : todo));
+        });
+      })
+      .catch(() => {
+        handleError(Errors.UpdateTodo);
+      })
+      .finally(() => {
+        handleError(Errors.Null);
       });
-    } catch (error) {
-      setErrorMessage(Errors.UpdateTodo);
-      throw error;
-    } finally {
-      setShowLoader(false);
-      setTimeout(() => setErrorMessage(Errors.Null), 3000);
-    }
   };
 
   const deleteTodo = (todoId: number) => {
-    setShowLoader(true);
+    setLoadingTodoId([todoId]);
     todosService.deleteTodo(todoId)
       .then(() => setTodos(
         currentTodos => currentTodos.filter(todo => todo.id !== todoId),
       ))
-      .catch(() => setErrorMessage(Errors.DeleteTodo))
+      .catch(() => handleError(Errors.DeleteTodo))
       .finally(() => {
-        setShowLoader(false);
-        setTimeout(() => setErrorMessage(Errors.Null), 3000);
+        handleError(Errors.Null);
       });
   };
 
@@ -110,14 +107,14 @@ export const App: React.FC = () => {
           updateTodo={updateTodo}
           todos={todos}
           addTodo={addTodo}
-          setErrorMessage={setErrorMessage}
+          handleError={handleError}
         />
 
         <TodoList
           todos={todosToRender}
           tempTodo={tempTodo}
           deleteTodo={deleteTodo}
-          showLoader={showLoader}
+          loadingTodoId={loadingTodoId}
         />
 
         {todos.length > 0 && (

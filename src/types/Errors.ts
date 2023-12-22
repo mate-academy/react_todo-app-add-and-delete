@@ -5,4 +5,5 @@ export enum Errors {
   DeleteTodo = 'Unable to delete a todo',
   UpdateTodo = 'Unable to update a todo',
   Null = '',
+  Toggle = 'Unable to toggle todos',
 }

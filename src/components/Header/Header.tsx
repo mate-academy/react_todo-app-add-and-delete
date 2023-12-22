@@ -7,14 +7,14 @@ import { Todo } from '../../types/Todo';
 
 type Props = {
   todos: Todo[],
-  setErrorMessage: (error: Errors) => void,
+  handleError: (error: Errors) => void,
   addTodo: (inputValue: string) => Promise<void>,
-  updateTodo: (updatedTodo: Todo) => Promise<void>,
+  updateTodo: (updatedTodo: Todo) =>void,
 };
 export const Header: FC<Props> = (props) => {
   const {
     todos,
-    setErrorMessage,
+    handleError,
     addTodo,
     updateTodo,
   } = props;
@@ -29,13 +29,12 @@ export const Header: FC<Props> = (props) => {
     event.preventDefault();
 
     if (!inputValue.trim()) {
-      setErrorMessage(Errors.EmptyTitle);
-      setTimeout(() => setErrorMessage(Errors.Null), 3000);
+      handleError(Errors.EmptyTitle);
 
       return;
     }
 
-    setErrorMessage(Errors.Null);
+    handleError(Errors.Null);
     setIsDisabledInput(true);
 
     addTodo(inputValue)
@@ -46,11 +45,10 @@ export const Header: FC<Props> = (props) => {
   };
 
   const completeAllTodos = async () => {
-    const statusOfTodos = [...todos].every(todo => todo.completed);
+    const statusOfTodos = todos.every(todo => todo.completed);
 
-    const updateTodos = statusOfTodos
-      ? todos.filter(todo => todo.completed)
-      : todos.filter(todo => !todo.completed);
+    const updateTodos = todos
+      .filter(todo => (!statusOfTodos ? !todo.completed : todo.completed));
 
     return Promise.all(updateTodos.map(todo => {
       return updateTodo({ ...todo, completed: !todo.completed });

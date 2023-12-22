@@ -1,13 +1,14 @@
 import { FC } from 'react';
+import { TransitionGroup, CSSTransition } from 'react-transition-group';
 import { Todo } from '../Todo';
 import { Todo as TodoType } from '../../types/Todo';
-import {TransitionGroup, CSSTransition} from "react-transition-group";
+import { TempTodo } from '../TempTodo';
 
 interface Props {
   todos: TodoType[],
-  tempTodo: Omit<TodoType, 'id'> | null,
+  tempTodo: TodoType | null,
   deleteTodo: (todoId: number) => void,
-  showLoader: boolean,
+  loadingTodoId: number[],
 }
 
 export const TodoList: FC<Props> = (props) => {
@@ -15,55 +16,37 @@ export const TodoList: FC<Props> = (props) => {
     todos,
     tempTodo,
     deleteTodo,
-    showLoader,
+    loadingTodoId,
   } = props;
 
   return (
     <section className="todoapp__main" data-cy="TodoList">
-        <TransitionGroup>
+      <TransitionGroup>
         {todos.map(todo => (
-            <CSSTransition
-                key={todo.id}
-                timeout={300}
-                classNames="item"
-            >
-              <Todo
-          key={todo.id}
-          todo={todo}
-          deleteTodo={deleteTodo}
-          showLoader={showLoader}
-        />
-            </CSSTransition>
+          <CSSTransition
+            key={todo.id}
+            timeout={300}
+            classNames="item"
+          >
+            <Todo
+              key={todo.id}
+              todo={todo}
+              deleteTodo={deleteTodo}
+              loading={loadingTodoId.includes(todo.id)}
+            />
+          </CSSTransition>
         ))}
 
-      {tempTodo && (
+        {tempTodo && (
           <CSSTransition
-              key={0}
-              timeout={300}
-              classNames="temp-item"
+            key={0}
+            timeout={300}
+            classNames="temp-item"
           >
-        <div
-          className="todo"
-        >
-          <label className="todo__status-label">
-            <input
-              type="checkbox"
-              className="todo__status"
-            />
-          </label>
-
-          <span className="todo__title">
-            {tempTodo.title}
-          </span>
-
-          <div className="modal overlay is-active">
-            <div className="modal-background has-background-white-ter" />
-            <div className="loader" />
-          </div>
-        </div>
+            <TempTodo tempTodo={tempTodo} />
           </CSSTransition>
-          )}
-            </TransitionGroup >
+        )}
+      </TransitionGroup>
     </section>
   );
 };

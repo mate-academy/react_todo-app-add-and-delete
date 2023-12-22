@@ -5,9 +5,10 @@ import { Todo as TodoType } from '../../types/Todo';
 interface Props {
   todo: TodoType;
   deleteTodo: (todoId: number) => void;
-  showLoader: boolean;
+  loading: boolean,
 }
-export const Todo: FC<Props> = ({ todo, deleteTodo, showLoader }) => {
+
+export const Todo: FC<Props> = ({ todo, deleteTodo, loading }) => {
   return (
     <div
       data-cy="Todo"
@@ -35,12 +36,15 @@ export const Todo: FC<Props> = ({ todo, deleteTodo, showLoader }) => {
         ×
       </button>
 
-      {showLoader && (
-        <div data-cy="TodoLoader" className="modal overlay">
+      <div className={cn('modal overlay', {
+        'is-active': loading,
+      })}
+      >
+        <div className="modal overlay is-active">
           <div className="modal-background has-background-white-ter" />
           <div className="loader" />
         </div>
-      )}
+      </div>
     </div>
   );
 };
