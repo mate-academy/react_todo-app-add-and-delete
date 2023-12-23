@@ -47,19 +47,23 @@ export const TodoCard: React.FC<Props> = ({
           onChange={handleCheckbox}
         />
       </label>
-
+      
+    const TodoItem = ({ todo, deleteTodo }) => {
+    const { id, title } = todo;
+      
+      return (
+    <div>
       <span data-cy="TodoTitle" className="todo__title">
-        {todo.title}
+        {title}
       </span>
       <button
         type="button"
         className="todo__remove"
         data-cy="TodoDelete"
-        onClick={() => deleteTodo(todo.id)}
+        onClick={() => deleteTodo(id)}
       >
         ×
       </button>
-
       <div data-cy="TodoLoader" className="modal overlay">
         <div className="modal-background has-background-white-ter" />
         <div className="loader" />
@@ -67,3 +71,5 @@ export const TodoCard: React.FC<Props> = ({
     </div>
   );
 };
+
+export default TodoItem;
