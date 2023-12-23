@@ -112,7 +112,7 @@ export const App: React.FC = () => {
           tempTodo={tempTodo}
         />
 
-        {todos.length > 0 && (
+        {!!todos.length && (
           <Footer
             todos={todos}
             onSetFilter={setFilter}
