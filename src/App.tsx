@@ -1,23 +1,68 @@
-/* eslint-disable max-len */
-import React from 'react';
-import { UserWarning } from './UserWarning';
-
-const USER_ID = 0;
+/* eslint-disable jsx-a11y/control-has-associated-label */
+import React, { useEffect, useRef } from 'react';
+import { useTodoContext } from './context/TodosProvider';
+import { TodoList } from './components/TodoList/TodoList';
+import { Footer } from './components/Footer/Footer';
 
 export const App: React.FC = () => {
-  if (!USER_ID) {
-    return <UserWarning />;
-  }
+  const {
+    query,
+    setQuery,
+    messageError,
+    setMessageError,
+    handleSubmitSent,
+    pending,
+  } = useTodoContext();
+
+  const inputRef = useRef<HTMLInputElement | null>(null);
+
+  useEffect(() => {
+    inputRef.current?.focus();
+  }, []);
 
   return (
-    <section className="section container">
-      <p className="title is-4">
-        Copy all you need from the prev task:
-        <br />
-        <a href="https://github.com/mate-academy/react_todo-app-loading-todos#react-todo-app-load-todos">React Todo App - Load Todos</a>
-      </p>
+    <div className="todoapp">
+      <h1 className="todoapp__title">todos</h1>
 
-      <p className="subtitle">Styles are already copied</p>
-    </section>
+      <div className="todoapp__content">
+        <header className="todoapp__header">
+          <button
+            type="button"
+            className="todoapp__toggle-all active"
+            data-cy="ToggleAllButton"
+          />
+
+          <form onSubmit={(event) => handleSubmitSent(event)}>
+            <input
+              data-cy="NewTodoField"
+              type="text"
+              className="todoapp__new-todo"
+              placeholder="What needs to be done?"
+              value={query}
+              disabled={!!pending}
+              onChange={(event) => setQuery(event.target.value)}
+              ref={inputRef}
+            />
+          </form>
+        </header>
+
+        <TodoList />
+
+        <Footer />
+      </div>
+
+      <div
+        data-cy="ErrorNotification"
+        className={`notification is-danger is-light has-text-weight-normal ${messageError ? '' : 'hidden'}`}
+      >
+        <button
+          data-cy="HideErrorButton"
+          type="button"
+          className="delete"
+          onClick={() => setMessageError('')}
+        />
+        {messageError}
+      </div>
+    </div>
   );
 };
