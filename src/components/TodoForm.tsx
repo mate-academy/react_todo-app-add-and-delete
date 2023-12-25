@@ -1,28 +1,47 @@
-import React, { useEffect, useRef } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import { Todo } from '../types/Todo';
+import { Error } from '../types/Error';
+import { USER_ID } from '../utils/variables';
 
 type Props = {
-  todos: Todo[];
-  handleSubmit: (event: React.FormEvent) => void;
-  newTitle: string;
+  addTodo: ({ title, completed, userId }: Omit<Todo, 'id'>) => Promise<void>;
   pending: boolean;
-  setNewTitle: (title: string) => void;
+  setErrorType: (errorType: Error | null) => void;
 };
 
 export const TodoForm: React.FC<Props> = ({
-  todos,
-  handleSubmit,
-  newTitle,
+  addTodo,
   pending,
-  setNewTitle,
+  setErrorType,
 }) => {
+  const [newTitle, setNewTitle] = useState('');
+
   const textField = useRef<HTMLInputElement>(null);
+
+  const handleSubmit = (event: React.FormEvent) => {
+    event.preventDefault();
+
+    const trimmedTitle = newTitle.trim();
+
+    if (!trimmedTitle) {
+      setErrorType(Error.EmptyTitle);
+
+      return;
+    }
+
+    addTodo({
+      userId: USER_ID,
+      title: trimmedTitle,
+      completed: false,
+    })
+      .then(() => setNewTitle(''));
+  };
 
   useEffect(() => {
     if (textField) {
       textField.current?.focus();
     }
-  }, [todos.length]);
+  }, [addTodo]);
 
   return (
     <form onSubmit={handleSubmit}>

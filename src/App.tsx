@@ -19,21 +19,18 @@ export const App: React.FC = () => {
   const [errorType, setErrorType] = useState<Error | null>(null);
   const [tempTodo, setTempTodo] = useState<Todo | null>(null);
   const [pending, setPending] = useState(false);
-  const [newTitle, setNewTitle] = useState('');
   const [todoIds, setTodoIds] = useState<number[]>([]);
 
   useEffect(() => {
     todosServise.getTodos(USER_ID)
-      .then(response => {
-        setTodos(response);
-      })
+      .then(setTodos)
       .catch((error) => {
         setErrorType(Error.Load);
         throw error;
       });
   }, []);
 
-  function addTodo({ title, completed, userId }: Omit<Todo, 'id'>) {
+  const addTodo = ({ title, completed, userId }: Omit<Todo, 'id'>) => {
     setErrorType(null);
     setPending(true);
     setTodoIds([0]);
@@ -45,10 +42,9 @@ export const App: React.FC = () => {
       id: 0,
     });
 
-    todosServise.createTodo({ userId, title, completed })
+    return todosServise.createTodo({ userId, title, completed })
       .then(newTodo => {
         setTodos(currentTodos => [...currentTodos, newTodo]);
-        setNewTitle('');
       })
       .catch((error) => {
         setErrorType(Error.Add);
@@ -58,24 +54,6 @@ export const App: React.FC = () => {
         setTempTodo(null);
         setPending(false);
       });
-  }
-
-  const handleSubmit = (event: React.FormEvent) => {
-    event.preventDefault();
-
-    const trimmedTitle = newTitle.trim();
-
-    if (!trimmedTitle) {
-      setErrorType(Error.EmptyTitle);
-
-      return;
-    }
-
-    addTodo({
-      userId: USER_ID,
-      title: trimmedTitle,
-      completed: false,
-    });
   };
 
   const shownTodos = useMemo(() => {
@@ -94,6 +72,9 @@ export const App: React.FC = () => {
         setTodos(shownTodos);
         setErrorType(Error.Delete);
         throw error;
+      })
+      .finally(() => {
+        setTodoIds(currentTodosIds => currentTodosIds.filter(id => id !== todoId));
       });
   };
 
@@ -112,11 +93,9 @@ export const App: React.FC = () => {
           <ToogleButton areAllActiveTodos={areAllActiveTodos} />
 
           <TodoForm
-            todos={todos}
-            handleSubmit={handleSubmit}
-            newTitle={newTitle}
+            addTodo={addTodo}
             pending={pending}
-            setNewTitle={setNewTitle}
+            setErrorType={setErrorType}
           />
         </header>
 
