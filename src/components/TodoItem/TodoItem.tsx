@@ -1,19 +1,16 @@
 import React, { useState, useEffect, useRef } from 'react';
 import cn from 'classnames';
-import { EditField } from '../../types/types';
 import { Todo } from '../../types/Todo';
 
 type Props = {
   todo: Todo;
   onDelete?: (arg: number) => void;
-  onEdit?: (id: number, arg: EditField) => void;
   isLoading?: boolean;
 };
 
 export const TodoItem: React.FC<Props> = ({
   todo,
   onDelete,
-  onEdit,
   isLoading,
 }) => {
   const { id, title, completed } = todo;
@@ -29,26 +26,6 @@ export const TodoItem: React.FC<Props> = ({
 
   const handleClickOnTitle = () => {
     setIsEditable(true);
-  };
-
-  const handleOnSubmit = () => {
-    const arg = {
-      title: value,
-    };
-
-    if (onEdit) {
-      onEdit(id, arg);
-    }
-  };
-
-  const handleCheck = () => {
-    const arg = {
-      completed: !completed,
-    };
-
-    if (onEdit) {
-      onEdit(id, arg);
-    }
   };
 
   const handleOnClick = () => {
@@ -68,12 +45,11 @@ export const TodoItem: React.FC<Props> = ({
           type="checkbox"
           className="todo__status"
           defaultChecked={completed}
-          onChange={handleCheck}
         />
       </label>
 
       {isEditable ? (
-        <form onSubmit={handleOnSubmit}>
+        <form>
           <input
             data-cy="TodoTitleField"
             type="text"
