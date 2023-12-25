@@ -24,7 +24,9 @@ export const App: React.FC = () => {
   const [newTitle, setNewTitle] = useState('');
   const [tempTodo, setTempTodo] = useState<Todo | null>(null);
   const [isLoading, setIsLoading] = useState(false);
+  const [loadingTodosIds, setLoadingTodosIds] = useState<number[]>([]);
 
+  const hasLoadingStatus = loadingTodosIds.length > 0;
   const hasTodosFromServer = todos.length !== 0;
 
   const handleFilterType = (type: Filter) => {
@@ -47,7 +49,7 @@ export const App: React.FC = () => {
     setError(null);
     getTodos(USER_ID)
       .then((todosFS => setTodos(todosFS)))
-      .catch(() => handleError(ErrorType.didNotGetTodos));
+      .catch(() => handleError(ErrorType.DidNotGetTodos));
   }, []);
 
   const onCreateTodo = () => {
@@ -71,7 +73,7 @@ export const App: React.FC = () => {
         setTodos((currentTodos) => [...currentTodos, todoFromServer]);
       })
       .catch(() => {
-        handleError(ErrorType.cantUploadTodo);
+        handleError(ErrorType.CantUploadTodo);
       })
       .finally(() => {
         setIsLoading(false);
@@ -80,19 +82,23 @@ export const App: React.FC = () => {
   };
 
   const onDeleteTodo = (id: number) => {
+    setLoadingTodosIds(prev => [...prev, id]);
     deleteTodo(id)
       .then(() => {
         setTodos((currentTodos) => removeTodo(id, currentTodos));
       })
       .catch(() => {
-        handleError(ErrorType.cantDeleteTodo);
+        handleError(ErrorType.CantDeleteTodo);
+      })
+      .finally(() => {
+        setLoadingTodosIds(prev => prev.filter(todoId => todoId !== id));
       });
   };
 
   const clearCompleted = () => {
     const completedTodos = todos.filter(({ completed }) => completed);
 
-    completedTodos.map(({ id }) => {
+    completedTodos.forEach(({ id }) => {
       return onDeleteTodo(id);
     });
   };
@@ -125,6 +131,7 @@ export const App: React.FC = () => {
                 todos={todosForMap}
                 tempTodo={tempTodo}
                 onDeleteTodo={onDeleteTodo}
+                hasLoadingStatus={hasLoadingStatus}
               />
 
               <Footer

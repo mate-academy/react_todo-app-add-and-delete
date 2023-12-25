@@ -5,7 +5,7 @@ interface Props {
   onTitle: (e: React.ChangeEvent<HTMLInputElement>) => void,
   title: string,
   onCreateTodo: () => void,
-  onError: (error: ErrorType.emptyInput) => void,
+  onError: (error: ErrorType.EmptyInput) => void,
   isLoading: boolean,
 }
 
@@ -30,7 +30,7 @@ export const Header: React.FC<Props> = memo(({
     if (title.trim()) {
       onCreateTodo();
     } else {
-      onError(ErrorType.emptyInput);
+      onError(ErrorType.EmptyInput);
     }
   };
 

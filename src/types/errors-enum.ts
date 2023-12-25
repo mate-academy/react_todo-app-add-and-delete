@@ -1,6 +1,6 @@
 export enum ErrorType {
-  emptyInput = 'Title should not be empty', // писать с большой буквы
-  didNotGetTodos = 'Unable to load todos',
-  cantUploadTodo = 'Unable to add a todo',
-  cantDeleteTodo = 'Unable to delete a todo',
+  EmptyInput = 'Title should not be empty',
+  DidNotGetTodos = 'Unable to load todos',
+  CantUploadTodo = 'Unable to add a todo',
+  CantDeleteTodo = 'Unable to delete a todo',
 }

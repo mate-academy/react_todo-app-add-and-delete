@@ -1,19 +1,13 @@
+import React from 'react';
 import cn from 'classnames';
-import { memo } from 'react';
 import { Todo } from '../types/Todo';
 
 interface Props {
   todo: Todo,
-  onDeleteTodo: (id: number) => void,
-  hasLoadingStatus: boolean,
 }
 
-export const TodoInfo: React.FC<Props> = memo(({
-  todo,
-  onDeleteTodo,
-  hasLoadingStatus,
-}) => {
-  const { title, completed, id } = todo;
+export const TempTodo: React.FC<Props> = ({ todo }) => {
+  const { completed, title } = todo;
 
   return (
     <div
@@ -35,25 +29,16 @@ export const TodoInfo: React.FC<Props> = memo(({
         {title}
       </span>
 
-      <button
-        type="button"
-        className="todo__remove"
-        data-cy="TodoDelete"
-        value={id}
-        onClick={(e) => onDeleteTodo(+e.currentTarget.value)}
-      >
+      <button type="button" className="todo__remove" data-cy="TodoDelete">
         ×
       </button>
-
       <div
         data-cy="TodoLoader"
-        className={cn('modal overlay', {
-          'is-active': hasLoadingStatus === true,
-        })}
+        className="modal overlay is-active"
       >
         <div className="modal-background has-background-white-ter" />
         <div className="loader" />
       </div>
     </div>
   );
-});
+};
