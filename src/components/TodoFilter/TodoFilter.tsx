@@ -18,7 +18,6 @@ export const TodoFilter: FC<Props> = ({ filterStatus, setFilterStatus }) => {
 
   return (
     <>
-      {/* Active filter should have a 'selected' class */}
       <nav className="filter" data-cy="Filter">
         <a
           href="#/"

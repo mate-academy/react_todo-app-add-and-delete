@@ -4,11 +4,13 @@ import { UserWarning } from './UserWarning';
 import { Todo } from './types/Todo';
 import * as todoService from './api/todos';
 import { TodoList } from './components/TodoList';
-import { TodoFilter } from './components/TodoFilter';
 import { filterTodos } from './helper';
 import { Status } from './types/Status';
 import { Header } from './components/Header/Header';
 import { Error } from './types/Error';
+import { Footer } from './components/Footer/Footer';
+import { ErrorNotification }
+  from './components/ErrorNotification/ErrorNotification';
 
 const USER_ID = 12051;
 
@@ -17,6 +19,7 @@ export const App: React.FC = () => {
   const [todos, setTodos] = useState<Todo[]>([]);
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
   const [filterStatus, setFilterStatus] = useState<Status>(Status.All);
+  const [loadingTodosIds, setLoadingTodosIds] = useState<number[]>([]);
 
   const showError = (message: string) => {
     setErrorMessage(message);
@@ -24,12 +27,17 @@ export const App: React.FC = () => {
   };
 
   const deleteTodo = async (id: number) => {
-    try {
-      await todoService.deleteTodo(id);
-      setTodos(prev => prev.filter(todo => todo.id !== id));
-    } catch {
-      showError(Error.NotDelete);
-    }
+    setLoadingTodosIds(prev => [...prev, id]);
+    todoService.deleteTodo(id)
+      .then(() => {
+        setTodos(prev => prev.filter(todo => todo.id !== id));
+      })
+      .catch(() => showError(Error.NotDelete))
+      .finally(() => {
+        setLoadingTodosIds(
+          prev => prev.filter(loadingId => loadingId !== id),
+        );
+      });
   };
 
   const addTodo = (titleTodo: string): Promise<void> => {
@@ -70,38 +78,20 @@ export const App: React.FC = () => {
           deleteTodo={deleteTodo}
           todos={filteredTodos}
           tempTodo={tempTodo}
+          loadingTodosIds={loadingTodosIds}
         />
 
         {todos.length > 0 && (
-          <footer className="todoapp__footer" data-cy="Footer">
-            <span className="todo-count" data-cy="TodosCounter">
-              {`${filteredTodos.length} items left`}
-            </span>
-
-            <TodoFilter
-              filterStatus={filterStatus}
-              setFilterStatus={setFilterStatus}
-            />
-
-            <button
-              type="button"
-              className="todoapp__clear-completed"
-              data-cy="ClearCompletedButton"
-            >
-              Clear completed
-            </button>
-          </footer>
+          <Footer
+            filterStatus={filterStatus}
+            filteredTodos={filteredTodos}
+            setFilterStatus={setFilterStatus}
+          />
         )}
 
       </div>
       {errorMessage && (
-        <div
-          data-cy="ErrorNotification"
-          className="notification is-danger is-light has-text-weight-normal"
-        >
-          <button data-cy="HideErrorButton" type="button" className="delete" />
-          {errorMessage}
-        </div>
+        <ErrorNotification errorMessage={errorMessage} />
       )}
     </div>
   );
