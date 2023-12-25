@@ -4,8 +4,13 @@ import React, {
   useMemo,
   useRef,
 } from 'react';
+import cn from 'classnames';
 import { Todo } from '../../types/Todo';
-import { getTodos, addTodo, deleteTodo } from '../../api/todos';
+import {
+  getTodos,
+  addTodo,
+  deleteTodo,
+} from '../../api/todos';
 import { useAuth } from '../../Context/Context';
 import { TodoItem } from '../TodoItem';
 import { Filter } from '../Filter';
@@ -17,9 +22,10 @@ export const TodoAppContent: React.FC = () => {
   const userId = useAuth();
   const [todos, setTodos] = useState<Todo[]>([]);
   const [newTodoField, setNewTodoField] = useState('');
-  const [isDisabledInput, setIsDisabledInput] = useState(false);
+  const [isAdding, setIsAdding] = useState(false);
   const [todosCount, setTodosCount] = useState(0);
   const [tempTodo, setTempTodo] = useState<Todo | null>(null);
+  const [loadTodosIds, setLoadTodosIds] = useState<number[]>([]);
   const [filterBy, setFilterBy] = useState<FilterBy>(FilterBy.All);
   const [disabledClear, setDisabledClear] = useState(true);
   const [errorMessage, setErrorMessage] = useState<ErrorMessage | null>(null);
@@ -27,26 +33,28 @@ export const TodoAppContent: React.FC = () => {
 
   const inputRef = useRef<HTMLInputElement>(null);
 
-  const countOfNotCompleted = (arr: Todo[]): number => {
-    return arr.filter(({ completed }) => !completed).length;
-  };
+  const countOfNotCompleted = todos
+    .filter(({ completed }) => !completed);
 
   useEffect(() => {
     if (userId) {
       getTodos(userId)
         .then((resp) => {
           setTodos(resp);
-          setTodosCount(countOfNotCompleted(resp));
         })
         .catch(() => setErrorMessage(ErrorMessage.Load));
     }
   }, [userId]);
 
   useEffect(() => {
-    if (!isDisabledInput) {
+    setTodosCount(countOfNotCompleted.length);
+  }, [todos]);
+
+  useEffect(() => {
+    if (!isAdding) {
       inputRef.current?.focus();
     }
-  }, [isDisabledInput]);
+  }, [isAdding]);
 
   useMemo(() => {
     setDisabledClear(!todos.some(({ completed }) => completed));
@@ -64,18 +72,17 @@ export const TodoAppContent: React.FC = () => {
 
       const body = {
         id: 0,
-        title: newTodoField,
+        title: newTodoField.replace(/\s+/g, ' ').trim(),
         userId,
         completed: false,
       };
 
+      setIsAdding(true);
       setTempTodo(body);
-      setIsDisabledInput(true);
 
       addTodo(body)
         .then(resp => {
           setTodos(prev => [...prev, resp]);
-          setTodosCount(prev => prev + 1);
           setNewTodoField('');
         })
         .catch(() => {
@@ -83,28 +90,30 @@ export const TodoAppContent: React.FC = () => {
         })
         .finally(() => {
           setTempTodo(null);
-          setIsDisabledInput(false);
+          setIsAdding(false);
         });
     }
   };
 
-  const handleDeleteTodo = (idToDel: number, doNotCount = false) => {
+  const handleDeleteTodo = (idToDel: number) => {
+    setLoadTodosIds(prev => [...prev, idToDel]);
+
     deleteTodo(idToDel)
       .then(() => {
         setTodos(prev => prev.filter(({ id }) => id !== idToDel));
-        if (!doNotCount) {
-          setTodosCount(prev => prev - 1);
-        }
       })
       .catch(() => {
         setErrorMessage(ErrorMessage.Delete);
+      })
+      .finally(() => {
+        setLoadTodosIds(prev => prev.filter(i => i !== idToDel));
       });
   };
 
   const handleClearCompleted = () => {
     todos.forEach(({ id, completed }) => {
       if (completed) {
-        handleDeleteTodo(id, true);
+        handleDeleteTodo(id);
       }
     });
   };
@@ -115,7 +124,10 @@ export const TodoAppContent: React.FC = () => {
         <header className="todoapp__header">
           <button
             type="button"
-            className="todoapp__toggle-all"
+            className={cn(
+              'todoapp__toggle-all',
+              { active: todosCount === 0 },
+            )}
             data-cy="ToggleAllButton"
             aria-label="toggle all button"
           />
@@ -128,24 +140,30 @@ export const TodoAppContent: React.FC = () => {
               placeholder="What needs to be done?"
               onChange={e => setNewTodoField(e.target.value)}
               value={newTodoField}
-              disabled={isDisabledInput}
+              disabled={isAdding}
               ref={inputRef}
             />
           </form>
         </header>
 
-        {currentTodos.length > 0 && (
+        {((currentTodos.length > 0) || isAdding) && (
           <>
             <section className="todoapp__main" data-cy="TodoList">
               {currentTodos.map(todo => (
                 <TodoItem
                   todo={todo}
                   onDelete={handleDeleteTodo}
+                  isLoading={loadTodosIds.includes(todo.id)}
                   key={todo.id}
                 />
               ))}
 
-              {tempTodo && <TodoItem todo={tempTodo} isLoading />}
+              {tempTodo && (
+                <TodoItem
+                  todo={tempTodo}
+                  isLoading
+                />
+              )}
             </section>
 
             <footer className="todoapp__footer" data-cy="Footer">

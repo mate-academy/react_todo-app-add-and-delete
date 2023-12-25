@@ -6,22 +6,6 @@ type Props = {
   getFilter: (arg: FilterBy) => void;
 };
 
-const mapGetFilterBy = (filterBy: string): FilterBy => {
-  switch (filterBy) {
-    case 'completed':
-      return FilterBy.Completed;
-
-    case 'active':
-      return FilterBy.Active;
-
-    case '':
-      return FilterBy.All;
-
-    default:
-      return FilterBy.All;
-  }
-};
-
 export const Filter: React.FC<Props> = ({ getFilter }) => {
   const [selectedFilter, setSelectedFilter] = useState<FilterBy>(FilterBy.All);
 
@@ -29,8 +13,8 @@ export const Filter: React.FC<Props> = ({ getFilter }) => {
     e.preventDefault();
     const value = e.currentTarget.getAttribute('href')?.replace('#/', '') || '';
 
-    setSelectedFilter(mapGetFilterBy(value));
-    getFilter(mapGetFilterBy(value));
+    setSelectedFilter(value as FilterBy);
+    getFilter(value as FilterBy);
   };
 
   return (
@@ -44,7 +28,7 @@ export const Filter: React.FC<Props> = ({ getFilter }) => {
         data-cy="FilterLinkAll"
         onClick={handleOnClick}
       >
-        All
+        {FilterBy.All}
       </a>
 
       <a
@@ -56,7 +40,7 @@ export const Filter: React.FC<Props> = ({ getFilter }) => {
         data-cy="FilterLinkActive"
         onClick={handleOnClick}
       >
-        Active
+        {FilterBy.Active}
       </a>
 
       <a
@@ -68,7 +52,7 @@ export const Filter: React.FC<Props> = ({ getFilter }) => {
         data-cy="FilterLinkCompleted"
         onClick={handleOnClick}
       >
-        Completed
+        {FilterBy.Completed}
       </a>
     </nav>
   );
