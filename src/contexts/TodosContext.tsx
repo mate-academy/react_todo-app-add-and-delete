@@ -2,30 +2,38 @@ import React, { useEffect, useMemo, useState } from 'react';
 import { Todo, TodoID } from '../types/Todo';
 import { TodosFilterQuery } from '../constants';
 import getPreparedTodos from '../utils/getPreparedTodos';
-import { addNewTodo, getTodos } from '../api/todos';
+import {
+  getTodos,
+  addTodo as addTodoOnServer,
+  deleteTodo as deleteTodoOnServer,
+} from '../api/todos';
 
 interface TodosContextType {
   todos: Todo[];
+  activeTodos: Todo[];
+  completedTodos: Todo[],
   preparedTodos: Todo[];
   query: TodosFilterQuery,
   error: string,
   tempTodo: null | Todo,
   addTodo: ((newTodo: Todo) => Promise<void>) | null;
+  deleteTodo: ((todoID: TodoID) => Promise<void>) | null;
   editTodo: (todoToEdit: Todo) => void;
-  deleteTodo: (todoID: TodoID) => void;
   setQuery: React.Dispatch<React.SetStateAction<TodosFilterQuery>>,
   setError: React.Dispatch<React.SetStateAction<string>>,
 }
 
 export const TodosContext = React.createContext<TodosContextType>({
   todos: [],
+  activeTodos: [],
+  completedTodos: [],
   preparedTodos: [],
   query: TodosFilterQuery.all,
   error: '',
   tempTodo: null,
   addTodo: null,
+  deleteTodo: null,
   editTodo: () => { },
-  deleteTodo: () => { },
   setQuery: () => { },
   setError: () => { },
 });
@@ -51,10 +59,24 @@ export const TodosProvider: React.FC<{ children: React.ReactNode }> = ({
     [todos, query],
   );
 
+  const { active: activeTodos, completed: completedTodos } = useMemo(() => (
+    todos.reduce<{ active: Todo[]; completed: Todo[] }>(
+      (sortedTodos, todo) => {
+        if (todo.completed) {
+          sortedTodos.completed.push(todo);
+        } else {
+          sortedTodos.active.push(todo);
+        }
+
+        return sortedTodos;
+      }, { active: [], completed: [] },
+    )
+  ), [todos]);
+
   const addTodo = (newTodo: Todo) => {
     setTempTodo(newTodo);
 
-    return addNewTodo(newTodo)
+    return addTodoOnServer(newTodo)
       .then((newTodoFromServer) => {
         setTodos(prevTodos => [...prevTodos, newTodoFromServer]);
       })
@@ -72,13 +94,19 @@ export const TodosProvider: React.FC<{ children: React.ReactNode }> = ({
   };
 
   const deleteTodo = (todoID: TodoID) => {
-    setTodos(prevTodos => (
-      prevTodos.filter(todo => todo.id !== todoID)
-    ));
+    return deleteTodoOnServer(todoID)
+      .then(() => {
+        setTodos(prevTodos => (
+          prevTodos.filter(todo => todo.id !== todoID)
+        ));
+      })
+      .catch(() => setError('Unable to delete a todo'));
   };
 
   const value: TodosContextType = {
     todos,
+    activeTodos,
+    completedTodos,
     preparedTodos,
     query,
     error,

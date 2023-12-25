@@ -1,18 +1,35 @@
-import React, { useState } from 'react';
+import React, { useContext, useState } from 'react';
 import classNames from 'classnames';
 import { Todo } from '../../types/Todo';
+import { TodosContext } from '../../contexts/TodosContext';
 
 interface Props {
   todo: Todo,
-  isLoading?: boolean,
+  isTempTodo?: boolean,
 }
 
 export const TodoItem: React.FC<Props> = ({
-  todo,
-  isLoading = false,
+  todo: {
+    id,
+    title,
+    completed,
+  },
+  isTempTodo = false,
 }) => {
+  const { deleteTodo } = useContext(TodosContext);
+  const [isDeliting, setIsDeliting] = useState(false);
   const [isEditing] = useState(false);
-  const { title, completed } = todo;
+
+  const handleDeleteButton = () => {
+    setIsDeliting(true);
+
+    if (deleteTodo) {
+      deleteTodo(id)
+        .finally(() => {
+          setIsDeliting(false);
+        });
+    }
+  };
 
   return (
     <div data-cy="Todo" className={`todo ${completed && 'completed'}`}>
@@ -41,7 +58,12 @@ export const TodoItem: React.FC<Props> = ({
             <span data-cy="TodoTitle" className="todo__title">
               {title}
             </span>
-            <button type="button" className="todo__remove" data-cy="TodoDelete">
+            <button
+              type="button"
+              className="todo__remove"
+              data-cy="TodoDelete"
+              onClick={handleDeleteButton}
+            >
               ×
             </button>
           </>
@@ -49,7 +71,11 @@ export const TodoItem: React.FC<Props> = ({
 
       <div
         data-cy="TodoLoader"
-        className={classNames('modal', 'overlay', { 'is-active': isLoading })}
+        className={classNames(
+          'modal',
+          'overlay',
+          { 'is-active': isTempTodo || isDeliting },
+        )}
       >
         <div className="modal-background has-background-white-ter" />
         <div className="loader" />
