@@ -5,6 +5,7 @@ import {
   createContext,
   ReactNode,
   useEffect,
+  useContext,
 } from 'react';
 
 import * as TodoMethods from '../../api/todos';
@@ -29,6 +30,8 @@ interface AppContextTodoType {
   filteredTodos: Todo[],
   deleteTodoHandler: (value: number) => void,
   addTodoTitle: (todo: Omit<Todo, 'id'>) => Promise<void>,
+  deleteIds: number[],
+  setDeleteIds: (value: number[]) => void,
 }
 
 export const appContext = createContext<AppContextTodoType>({
@@ -42,11 +45,15 @@ export const appContext = createContext<AppContextTodoType>({
   tempTodo: null,
   setTempTodo: () => { },
   isLoading: false,
-  setIsLoading: () => {},
+  setIsLoading: () => { },
   filteredTodos: [],
-  deleteTodoHandler: () => {},
-  addTodoTitle: async () => {},
+  deleteTodoHandler: () => { },
+  addTodoTitle: async () => { },
+  deleteIds: [],
+  setDeleteIds: () => { },
 });
+
+export const useAppContext = () => useContext(appContext);
 
 type Props = {
   children: ReactNode;
@@ -60,6 +67,7 @@ export const AppContextProvider: React.FC<Props> = (props) => {
   const [errors, setErrors] = useState<Error | null>(null);
   const [tempTodo, setTempTodo] = useState<Todo | null>(null);
   const [isLoading, setIsLoading] = useState(false);
+  const [deleteIds, setDeleteIds] = useState<number[]>([]);
 
   const filteredTodos = useMemo(() => {
     if (filter === TypeOfFilter.Active) {
@@ -81,13 +89,23 @@ export const AppContextProvider: React.FC<Props> = (props) => {
 
   const deleteTodoHandler = useCallback(
     (todoId: number) => {
-      setTodos(currentTodos => currentTodos.filter(todo => todo.id !== todoId));
+      setDeleteIds((prevIds) => [...prevIds, todoId]);
 
-      return TodoMethods.deleteTodo(todoId)
-        .catch(() => {
-          setErrors(Error.DeleteTodo);
-          setTodos(todos);
-        });
+      setTimeout(() => {
+        setTodos(currentTodos => (
+          currentTodos.filter(todo => todo.id !== todoId)
+        ));
+
+        return TodoMethods.deleteTodo(todoId)
+          .then(() => setDeleteIds([]))
+          .catch(() => {
+            setErrors(Error.DeleteTodo);
+            setTodos(todos);
+            setDeleteIds(prevIds => (
+              prevIds.filter(prevId => prevId !== todoId)
+            ));
+          });
+      }, 500);
     }, [todos],
   );
 
@@ -128,6 +146,8 @@ export const AppContextProvider: React.FC<Props> = (props) => {
     filteredTodos,
     isLoading,
     setIsLoading,
+    deleteIds,
+    setDeleteIds,
   }), [
     todos,
     filter,
@@ -137,6 +157,7 @@ export const AppContextProvider: React.FC<Props> = (props) => {
     deleteTodoHandler,
     filteredTodos,
     isLoading,
+    deleteIds,
   ]);
 
   return (

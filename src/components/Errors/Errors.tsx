@@ -1,15 +1,15 @@
-import React, { useContext, useEffect } from 'react';
+import React, { useEffect } from 'react';
 import cn from 'classnames';
-import { appContext } from '../Context/Context';
+import { useAppContext } from '../Context/Context';
 
 export const Errors: React.FC = () => {
-  const { errors, setErrors } = useContext(appContext);
+  const { errors, setErrors } = useAppContext();
 
   useEffect(() => {
     setTimeout(() => {
       setErrors(null);
     }, 3000);
-  }, [errors]);
+  }, [errors, setErrors]);
 
   return (
     <div

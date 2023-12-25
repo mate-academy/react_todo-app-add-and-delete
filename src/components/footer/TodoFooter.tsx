@@ -1,7 +1,7 @@
-import React, { useContext } from 'react';
+import React from 'react';
 import cn from 'classnames';
 import { TypeOfFilter } from '../../types/TypeOfFilters';
-import { appContext } from '../Context/Context';
+import { useAppContext } from '../Context/Context';
 
 export const TodoFooter: React.FC = () => {
   const {
@@ -9,7 +9,7 @@ export const TodoFooter: React.FC = () => {
     setFilter,
     todos,
     deleteTodoHandler,
-  } = useContext(appContext);
+  } = useAppContext();
 
   const active = todos.filter(todo => !todo.completed);
   const completed = todos.filter(todo => todo.completed);

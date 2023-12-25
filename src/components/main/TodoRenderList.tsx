@@ -1,9 +1,9 @@
-import React, { useContext } from 'react';
+import React from 'react';
 import { TodoItem } from './TodoItem';
-import { appContext } from '../Context/Context';
+import { useAppContext } from '../Context/Context';
 
 export const TodoRenderList: React.FC = () => {
-  const { filteredTodos, tempTodo } = useContext(appContext);
+  const { filteredTodos, tempTodo } = useAppContext();
 
   return (
     <section className="todoapp__main" data-cy="TodoList">

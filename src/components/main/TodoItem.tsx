@@ -1,6 +1,6 @@
-import React, { useContext } from 'react';
+import React from 'react';
 import cn from 'classnames';
-import { appContext } from '../Context/Context';
+import { useAppContext } from '../Context/Context';
 import { Todo } from '../../types/Todo';
 
 type Props = {
@@ -9,9 +9,9 @@ type Props = {
 
 export const TodoItem: React.FC<Props> = ({ todo }) => {
   const { id, title, completed } = todo;
-  const { deleteTodoHandler, isLoading } = useContext(appContext);
+  const { deleteTodoHandler, isLoading, deleteIds } = useAppContext();
 
-  // const handlerLoader = () => isLoading;
+  const handlerLoader = () => (isLoading && !todo.id) || deleteIds.includes(id);
 
   return (
     <div data-cy="Todo" className={cn('todo', { completed })}>
@@ -40,8 +40,7 @@ export const TodoItem: React.FC<Props> = ({ todo }) => {
 
       <div
         data-cy="TodoLoader"
-        className={cn('modal overlay', { 'is-active': isLoading && !todo.id })}
-        // className="modal overlay"
+        className={cn('modal overlay', { 'is-active': handlerLoader() })}
       >
         <div className="modal-background has-background-white-ter" />
         <div className="loader" />

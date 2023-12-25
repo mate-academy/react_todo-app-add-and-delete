@@ -1,14 +1,13 @@
-/* eslint-disable react-hooks/rules-of-hooks */
-import React, { useContext } from 'react';
+import React from 'react';
 import { UserWarning } from './UserWarning';
 import { TodoFooter } from './components/footer/TodoFooter';
 import { Errors } from './components/Errors/Errors';
 import { TodoRenderList } from './components/main/TodoRenderList';
 import { TodoHeader } from './components/header/Header';
-import { appContext } from './components/Context/Context';
+import { useAppContext } from './components/Context/Context';
 
 export const App: React.FC = () => {
-  const { USER_ID, todos } = useContext(appContext);
+  const { USER_ID, todos } = useAppContext();
 
   if (!USER_ID) {
     return <UserWarning />;

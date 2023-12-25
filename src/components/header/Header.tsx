@@ -1,10 +1,9 @@
 import React, {
-  useContext,
   useEffect,
   useRef,
   useState,
 } from 'react';
-import { appContext } from '../Context/Context';
+import { useAppContext } from '../Context/Context';
 import { Error } from '../../types/TypeOfErrors';
 
 export const TodoHeader: React.FC = () => {
@@ -14,7 +13,7 @@ export const TodoHeader: React.FC = () => {
     USER_ID,
     setIsLoading,
     isLoading,
-  } = useContext(appContext);
+  } = useAppContext();
   const inputRef = useRef<null | HTMLInputElement>(null);
   const [query, setQuery] = useState('');
 
@@ -27,7 +26,7 @@ export const TodoHeader: React.FC = () => {
   const handleOnSubmit = (event: React.FormEvent<HTMLFormElement>) => {
     event?.preventDefault();
 
-    if (query.trim() === '') {
+    if (!query.trim()) {
       setErrors(Error.CorrectTitle);
 
       return;

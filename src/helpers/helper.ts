@@ -5,13 +5,13 @@ export const filterTodos = (
   todos: Todo[],
   filter: TypeOfFilter,
 ) => {
-  if (filter === TypeOfFilter.Active) {
-    return todos.filter(todo => !todo.completed);
-  }
+  switch (filter) {
+    case TypeOfFilter.Active:
+      return todos.filter(todo => !todo.completed);
+    case TypeOfFilter.Completed:
+      return todos.filter(todo => todo.completed);
 
-  if (filter === TypeOfFilter.Completed) {
-    return todos.filter(todo => todo.completed);
+    default:
+      return todos;
   }
-
-  return todos;
 };
