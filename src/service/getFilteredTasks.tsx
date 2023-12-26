@@ -7,10 +7,10 @@ export const getFilteredTasks = (todos: Todo[], filter: Statuses): Todo[] => {
       return todos;
 
     case Statuses.Active:
-      return todos.filter((todo) => todo.completed === false);
+      return todos.filter((todo) => !todo.completed);
 
     case Statuses.Completed:
-      return todos.filter((todo) => todo.completed === true);
+      return todos.filter((todo) => todo.completed);
 
     default:
       return todos;
