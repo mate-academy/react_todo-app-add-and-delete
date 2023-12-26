@@ -12,8 +12,6 @@ export const filteredData = <T>(
       return data.filter(({ completed }) => completed);
 
     case (FilterBy.All):
-      return data;
-
     default:
       return data;
   }

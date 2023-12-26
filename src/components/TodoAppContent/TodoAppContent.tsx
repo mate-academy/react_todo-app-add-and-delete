@@ -1,7 +1,6 @@
 import React, {
   useState,
   useEffect,
-  useMemo,
   useRef,
 } from 'react';
 import cn from 'classnames';
@@ -27,12 +26,12 @@ export const TodoAppContent: React.FC = () => {
   const [tempTodo, setTempTodo] = useState<Todo | null>(null);
   const [loadTodosIds, setLoadTodosIds] = useState<number[]>([]);
   const [filterBy, setFilterBy] = useState<FilterBy>(FilterBy.All);
-  const [disabledClear, setDisabledClear] = useState(true);
   const [errorMessage, setErrorMessage] = useState<ErrorMessage | null>(null);
   const currentTodos = filteredData<Todo>(todos, filterBy);
 
   const inputRef = useRef<HTMLInputElement>(null);
 
+  const isClearDisabled = !todos.some(({ completed }) => completed);
   const countOfNotCompleted = todos
     .filter(({ completed }) => !completed);
 
@@ -48,17 +47,13 @@ export const TodoAppContent: React.FC = () => {
 
   useEffect(() => {
     setTodosCount(countOfNotCompleted.length);
-  }, [todos]);
+  }, [countOfNotCompleted]);
 
   useEffect(() => {
     if (!isAdding) {
       inputRef.current?.focus();
     }
   }, [isAdding]);
-
-  useMemo(() => {
-    setDisabledClear(!todos.some(({ completed }) => completed));
-  }, [todos]);
 
   const handleAddTodo = (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
@@ -95,18 +90,18 @@ export const TodoAppContent: React.FC = () => {
     }
   };
 
-  const handleDeleteTodo = (idToDel: number) => {
-    setLoadTodosIds(prev => [...prev, idToDel]);
+  const handleDeleteTodo = (idToDelete: number) => {
+    setLoadTodosIds(prev => [...prev, idToDelete]);
 
-    deleteTodo(idToDel)
+    deleteTodo(idToDelete)
       .then(() => {
-        setTodos(prev => prev.filter(({ id }) => id !== idToDel));
+        setTodos(prev => prev.filter(({ id }) => id !== idToDelete));
       })
       .catch(() => {
         setErrorMessage(ErrorMessage.Delete);
       })
       .finally(() => {
-        setLoadTodosIds(prev => prev.filter(i => i !== idToDel));
+        setLoadTodosIds(prev => prev.filter(i => i !== idToDelete));
       });
   };
 
@@ -178,7 +173,7 @@ export const TodoAppContent: React.FC = () => {
                 className="todoapp__clear-completed"
                 data-cy="ClearCompletedButton"
                 onClick={handleClearCompleted}
-                disabled={disabledClear}
+                disabled={isClearDisabled}
               >
                 Clear completed
               </button>
