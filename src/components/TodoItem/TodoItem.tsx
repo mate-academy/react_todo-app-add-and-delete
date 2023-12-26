@@ -28,7 +28,7 @@ export const TodoItem: React.FC<Props> = ({
     setIsEditable(true);
   };
 
-  const handleOnClick = () => {
+  const handleDeleteTodo = () => {
     if (onDelete) {
       onDelete(id);
     }
@@ -74,7 +74,7 @@ export const TodoItem: React.FC<Props> = ({
             type="button"
             className="todo__remove"
             data-cy="TodoDelete"
-            onClick={handleOnClick}
+            onClick={handleDeleteTodo}
           >
             ×
           </button>

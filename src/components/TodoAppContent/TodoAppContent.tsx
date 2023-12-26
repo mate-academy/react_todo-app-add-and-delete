@@ -121,7 +121,7 @@ export const TodoAppContent: React.FC = () => {
             type="button"
             className={cn(
               'todoapp__toggle-all',
-              { active: todosCount === 0 },
+              { active: !todosCount },
             )}
             data-cy="ToggleAllButton"
             aria-label="toggle all button"
