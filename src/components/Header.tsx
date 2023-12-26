@@ -15,13 +15,12 @@ export const Header: React.FC<Props> = (props) => {
     isLoading,
     createNewTodo,
     setTodoTitle,
-
   } = useContext(AppContext);
 
-  const todoTitleRef = useRef<HTMLInputElement>(null);
+  const todoTitleRef = useRef<null | HTMLInputElement>(null);
 
   useEffect(() => {
-    if (todoTitleRef.current && !todoTitleRef.current.disabled) {
+    if (todoTitleRef.current) {
       todoTitleRef.current.focus();
     }
   });

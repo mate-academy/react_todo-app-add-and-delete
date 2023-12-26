@@ -1,7 +1,4 @@
-/* eslint-disable @typescript-eslint/no-redeclare */
-/* eslint-disable no-redeclare */
-/* eslint-disable react-hooks/exhaustive-deps */
-import {
+import React, {
   createContext,
   useCallback,
   useMemo,
@@ -13,7 +10,7 @@ import { ErrorType } from './types/Errors';
 import * as todoService from './api/todos';
 import { USER_ID } from './utils/userId';
 
-interface AppContext {
+interface IAppContext {
   todos: Todo[],
   setTodos: (todos: Todo[]) => void,
   filterBy: FilterBy,
@@ -32,7 +29,8 @@ interface AppContext {
   deleteTodo: (arg: number) => void,
 
 }
-export const AppContext = createContext<AppContext>({
+
+export const AppContext = createContext<IAppContext>({
   todos: [],
   setTodos: () => { },
   filterBy: FilterBy.All,
@@ -76,7 +74,7 @@ export const AppProvider: React.FC<Props> = ({ children }) => {
       ));
 
       completedTodos.map(completedTodo => todoService
-        .deletTodo(completedTodo.id));
+        .deleteTodo(completedTodo.id));
 
       setTimeout(() => {
         setTodos(currentTodos => currentTodos.filter(
@@ -86,21 +84,21 @@ export const AppProvider: React.FC<Props> = ({ children }) => {
     }, [todos],
   );
 
-  const createNewTodo = (title: string) => {
+  const createNewTodo = useCallback((title: string) => {
+    const newTodoData = {
+      userId: USER_ID,
+      title,
+      completed: false,
+    };
+
     setIsLoading(true);
     setSelectedTodoIds(ids => [...ids, 0]);
     setTempTodo({
       id: 0,
-      userId: USER_ID,
-      title,
-      completed: false,
+      ...newTodoData,
     });
 
-    todoService.createTodo({
-      userId: USER_ID,
-      title,
-      completed: false,
-    })
+    todoService.createTodo(newTodoData)
       .then(newTodo => {
         setTodoTitle('');
         setTimeout(() => {
@@ -121,12 +119,12 @@ export const AppProvider: React.FC<Props> = ({ children }) => {
         ));
         setTimeout(() => setTempTodo(null), 500);
       });
-  };
+  }, [setIsLoading, setSelectedTodoIds, setTempTodo, setTodoTitle, setTodos]);
 
   const deleteTodo = useCallback(
     (todoId: number) => {
       setSelectedTodoIds(currentIds => [...currentIds, todoId]);
-      todoService.deletTodo(todoId)
+      todoService.deleteTodo(todoId)
         .then(() => {
           setTimeout(() => {
             setTodos(currentTodos => currentTodos
@@ -134,18 +132,12 @@ export const AppProvider: React.FC<Props> = ({ children }) => {
           }, 500);
         })
         .catch(() => {
-          setSelectedTodoIds(ids => {
-            ids.splice(ids.indexOf(todoId), 1);
-
-            return ids;
-          });
+          setSelectedTodoIds(ids => ids.filter(id => id !== todoId));
           setErrorMessage(ErrorType.UnableToDeleteTodo);
           setTimeout(() => setErrorMessage(null), 2000);
         })
-        .finally(() => setTimeout(
-          () => setSelectedTodoIds(ids => ids.splice(ids.indexOf(todoId), 1)),
-          500,
-        ));
+        .finally(() => setTimeout(() => setSelectedTodoIds(ids => ids
+          .filter(id => id !== todoId)), 500));
     }, [],
   );
 

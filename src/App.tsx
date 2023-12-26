@@ -28,7 +28,7 @@ export const App: React.FC = () => {
       .catch(() => setErrorMessage(ErrorType.UnableToLoadTodo));
   }, [setErrorMessage, setTodos]);
 
-  const celectFilterTodo = useCallback(
+  const selectFilterTodo = useCallback(
     (
       todosFromServer: Todo[],
       optionByFilter: FilterBy,
@@ -37,8 +37,8 @@ export const App: React.FC = () => {
   );
 
   const preparedTodos = useMemo(
-    () => celectFilterTodo(todos, filterBy),
-    [celectFilterTodo, todos, filterBy],
+    () => selectFilterTodo(todos, filterBy),
+    [selectFilterTodo, todos, filterBy],
   );
 
   const isEveryTodosCompleted = preparedTodos.every(
