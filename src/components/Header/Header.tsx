@@ -55,6 +55,7 @@ export const Header: React.FC<Props> = ({ setTempTodo }) => {
 
       if (todoTitle.trim() === '') {
         setErrorMessage('Title should not be empty');
+        setTempTodo(null);
       } else {
         addTodo({
           title: todoTitle,
