@@ -26,7 +26,6 @@ export const App: React.FC = () => {
   const [isLoading, setIsLoading] = useState(false);
   const [loadingTodosIds, setLoadingTodosIds] = useState<number[]>([]);
 
-  const hasLoadingStatus = loadingTodosIds.length > 0;
   const hasTodosFromServer = todos.length !== 0;
 
   const handleFilterType = (type: Filter) => {
@@ -99,7 +98,7 @@ export const App: React.FC = () => {
     const completedTodos = todos.filter(({ completed }) => completed);
 
     completedTodos.forEach(({ id }) => {
-      return onDeleteTodo(id);
+      onDeleteTodo(id);
     });
   };
 
@@ -131,7 +130,7 @@ export const App: React.FC = () => {
                 todos={todosForMap}
                 tempTodo={tempTodo}
                 onDeleteTodo={onDeleteTodo}
-                hasLoadingStatus={hasLoadingStatus}
+                loadingTodosIds={loadingTodosIds}
               />
 
               <Footer

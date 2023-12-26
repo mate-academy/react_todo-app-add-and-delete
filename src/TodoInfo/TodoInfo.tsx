@@ -5,13 +5,13 @@ import { Todo } from '../types/Todo';
 interface Props {
   todo: Todo,
   onDeleteTodo: (id: number) => void,
-  hasLoadingStatus: boolean,
+  loadingTodosIds: number [],
 }
 
 export const TodoInfo: React.FC<Props> = memo(({
   todo,
   onDeleteTodo,
-  hasLoadingStatus,
+  loadingTodosIds,
 }) => {
   const { title, completed, id } = todo;
 
@@ -19,7 +19,7 @@ export const TodoInfo: React.FC<Props> = memo(({
     <div
       data-cy="Todo"
       className={cn('todo', {
-        completed: completed === true,
+        completed,
       })}
     >
       <label className="todo__status-label">
@@ -48,7 +48,7 @@ export const TodoInfo: React.FC<Props> = memo(({
       <div
         data-cy="TodoLoader"
         className={cn('modal overlay', {
-          'is-active': hasLoadingStatus === true,
+          'is-active': loadingTodosIds.includes(id),
         })}
       >
         <div className="modal-background has-background-white-ter" />
