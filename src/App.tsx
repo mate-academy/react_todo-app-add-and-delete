@@ -12,6 +12,7 @@ export const App: React.FC = () => {
     setMessageError,
     handleSubmitSent,
     pending,
+    todos,
   } = useTodoContext();
 
   const inputRef = useRef<HTMLInputElement | null>(null);
@@ -48,7 +49,7 @@ export const App: React.FC = () => {
 
         <TodoList />
 
-        <Footer />
+        {todos.length > 0 && <Footer />}
       </div>
 
       <div

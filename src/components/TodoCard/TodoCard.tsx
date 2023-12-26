@@ -6,7 +6,7 @@ interface TodoCardProps {
 }
 
 export const TodoCard: React.FC<TodoCardProps> = ({ todo }) => {
-  const { handleDeleteTodo } = useTodoContext();
+  const { handleDeleteTodo, tempTodo } = useTodoContext();
 
   return (
     <div data-cy="Todo" className={`todo ${todo.completed ? 'completed' : ''} `}>
@@ -31,7 +31,7 @@ export const TodoCard: React.FC<TodoCardProps> = ({ todo }) => {
         ×
       </button>
 
-      <div data-cy="TodoLoader" className="modal overlay">
+      <div data-cy="TodoLoader" className={`modal overlay ${todo.id === tempTodo?.id ? 'is-active' : ''}`}>
         <div className="modal-background has-background-white-ter" />
         <div className="loader" />
       </div>

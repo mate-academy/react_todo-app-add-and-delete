@@ -19,6 +19,7 @@ type TodoContextType = {
   pending: boolean;
   messageError: string;
   query: string;
+  isLoadingTodo: Todo;
   setTodos: React.Dispatch<React.SetStateAction<Todo[]>>;
   setFilteredTodos: React.Dispatch<React.SetStateAction<Todo[]>>;
   setTempTodo: React.Dispatch<React.SetStateAction<Todo>>;
@@ -28,6 +29,7 @@ type TodoContextType = {
   setQuery: React.Dispatch<React.SetStateAction<string>>;
   handleSubmitSent: (event: React.FormEvent<HTMLFormElement>) => void;
   handleDeleteTodo: (id: number) => void;
+  setIsLoadingTodo: React.Dispatch<React.SetStateAction<Todo>>
 };
 
 const TodoContext = createContext<TodoContextType | undefined>(undefined);
@@ -52,6 +54,7 @@ export const TodoProvider: React.FC<{ children: ReactNode }> = (
   const [pending, setPending] = useState<boolean>(false);
   const [messageError, setMessageError] = useState<string>('');
   const [query, setQuery] = useState<string>('');
+  const [isLoadingTodo, setIsLoadingTodo] = useState<Todo | null>(null);
 
   const fetchTodos = useCallback(
     async (messageId: number) => {
@@ -73,57 +76,57 @@ export const TodoProvider: React.FC<{ children: ReactNode }> = (
   const handleSubmitSent = useCallback(
     async (event: React.FormEvent<HTMLFormElement>) => {
       event.preventDefault();
-      setPending(true);
-      setTempTodo({
-        id: 0,
-        title: query,
-        completed: false,
-        userId: USER_ID,
-      });
-
-      if (!query) {
-        setMessageError(ERROR_MESSAGES[1]);
-        setPending(false);
-
-        return;
-      }
-
-      const newTodo = {
-        title: query,
-        completed: false,
-        userId: USER_ID,
-      };
 
       try {
-        await addTodo(newTodo);
-        fetchTodos(2);
+        setPending(true);
+        setTempTodo({
+          id: 0,
+          title: query,
+          completed: false,
+          userId: USER_ID,
+        });
+
+        if (!query) {
+          setMessageError(ERROR_MESSAGES[1]);
+          setPending(false);
+
+          return;
+        }
+
+        const newTodo = {
+          title: query,
+          completed: false,
+          userId: USER_ID,
+        };
+
+        const addedTodo = await addTodo(newTodo);
+
         setQuery('');
-        setMessageError('');
+        setTodos((currentTodo) => [...currentTodo, addedTodo]);
       } catch (error) {
         setMessageError(ERROR_MESSAGES[2]);
       } finally {
+        setMessageError('');
         setPending(false);
         setTempTodo(null);
       }
-
-      fetchTodos(2);
-      setQuery('');
-      setMessageError('');
-      setPending(false);
     },
-    [setQuery, setMessageError, query, fetchTodos],
+    [setQuery, setMessageError, query],
   );
 
   const handleDeleteTodo = useCallback(
     async (id: number) => {
       try {
+        setIsLoadingTodo(todos.find(todo => todo.id === id) || null);
+        setTodos(
+          currentTodos => currentTodos.filter(todo => todo.id !== id),
+        );
         await deleteTodo(id);
-        fetchTodos(3);
       } catch (error) {
         setMessageError(ERROR_MESSAGES[3]);
       }
     },
-    [fetchTodos],
+    [todos],
   );
 
   useEffect(() => {
@@ -157,6 +160,7 @@ export const TodoProvider: React.FC<{ children: ReactNode }> = (
       messageError,
       query,
       pending,
+      isLoadingTodo,
       setTodos,
       setFilteredTodos,
       setTempTodo,
@@ -166,6 +170,7 @@ export const TodoProvider: React.FC<{ children: ReactNode }> = (
       setQuery,
       handleSubmitSent,
       handleDeleteTodo,
+      setIsLoadingTodo,
     }),
     [
       todos,
@@ -175,6 +180,7 @@ export const TodoProvider: React.FC<{ children: ReactNode }> = (
       pending,
       messageError,
       query,
+      isLoadingTodo,
       handleSubmitSent,
       handleDeleteTodo,
     ],
