@@ -5,6 +5,14 @@ import '@fortawesome/fontawesome-free/css/all.css';
 import './styles/index.scss';
 
 import { App } from './App';
+import { ErrorContextProvider } from './components/ErrorsContext';
+import { TempTodoContextProvider } from './components/TempTodoContext';
 
 createRoot(document.getElementById('root') as HTMLDivElement)
-  .render(<App />);
+  .render(
+    <TempTodoContextProvider>
+      <ErrorContextProvider>
+        <App />
+      </ErrorContextProvider>
+    </TempTodoContextProvider>,
+  );

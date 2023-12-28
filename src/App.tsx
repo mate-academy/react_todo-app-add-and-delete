@@ -1,24 +1,76 @@
-/* eslint-disable max-len */
 /* eslint-disable jsx-a11y/control-has-associated-label */
-import React from 'react';
-import { UserWarning } from './UserWarning';
+import React, { useContext, useEffect, useState } from 'react';
+import cn from 'classnames';
+import { getTodos } from './api/todos';
+import { Todo } from './types/Todo';
+import { TodoList } from './components/TodoList';
+import { Header } from './components/Header';
+import { Footer } from './components/Footer';
+import { ErrorContext, ErrorsMessageContext } from './components/ErrorsContext';
+import { ShowErrorsMessage } from './utils/fetchClient';
+import { IsfinallyContext } from './components/TempTodoContext';
 
-const USER_ID = 0;
+const USER_ID = 11969;
 
+// 11969
 export const App: React.FC = () => {
-  if (!USER_ID) {
-    return <UserWarning />;
-  }
+  const [todos, setTodos] = useState<Todo[]>([]);
+  const { isError, setIsError } = useContext(ErrorContext);
+  const { errorsMesage, setErrorsMesage } = useContext(ErrorsMessageContext);
+  const [filter, setFilter] = useState('All');
+  const { isfinally } = useContext(IsfinallyContext);
+  const [clearedTodoId, setClearedTodoId] = useState<number[]>([]);
+
+  useEffect(() => {
+    getTodos(USER_ID)
+      .then((data) => {
+        setTodos(data);
+      })
+      .catch(() => {
+        setIsError(true);
+        setErrorsMesage('load');
+      });
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [isfinally]);
 
   return (
-    <section className="section container">
-      <p className="title is-4">
-        Copy all you need from the prev task:
-        <br />
-        <a href="https://github.com/mate-academy/react_todo-app-loading-todos#react-todo-app-load-todos">React Todo App - Load Todos</a>
-      </p>
+    <div className="todoapp">
 
-      <p className="subtitle">Styles are already copied</p>
-    </section>
+      <h1 className="todoapp__title">todos</h1>
+      <div className="todoapp__content">
+        <Header todos={todos} />
+        <TodoList
+          todos={todos}
+          filter={filter}
+          clearedTodoId={clearedTodoId}
+        />
+
+        {(todos.length > 0) && (
+          <Footer
+            todos={todos}
+            filter={filter}
+            setFilter={setFilter}
+            setClearedTodoId={setClearedTodoId}
+          />
+        )}
+
+      </div>
+
+      <div
+        data-cy="ErrorNotification"
+        className={cn('notification is-danger is-light has-text-weight-normal',
+          { hidden: !isError })}
+      >
+        <button
+          data-cy="HideErrorButton"
+          type="button"
+          className="delete"
+          onMouseDown={() => {
+            setIsError(false);
+          }}
+        />
+        {ShowErrorsMessage(errorsMesage)}
+      </div>
+    </div>
   );
 };
