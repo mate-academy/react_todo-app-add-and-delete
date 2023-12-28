@@ -1,19 +1,20 @@
-import React, { useContext } from 'react';
+import React, { useContext, useEffect, useState } from 'react';
 import classNames from 'classnames';
 import { TodosContext } from '../TododsContext/TodosContext';
 
 export const ErrorMessages: React.FC = () => {
   const { errorMessage, setErrorMessage } = useContext(TodosContext);
+  const [isErrorHidden, setIsErrorHidden] = useState(true);
 
-  let isErrorHidden = true;
-
-  if (errorMessage) {
-    isErrorHidden = false;
-    setTimeout(() => {
-      setErrorMessage('');
-      isErrorHidden = true;
-    }, 3000);
-  }
+  useEffect(() => {
+    if (errorMessage) {
+      setIsErrorHidden(false);
+      setTimeout(() => {
+        setErrorMessage('');
+        setIsErrorHidden(true);
+      }, 3000);
+    }
+  }, [setErrorMessage, errorMessage]);
 
   return (
     <div
@@ -31,7 +32,7 @@ export const ErrorMessages: React.FC = () => {
         type="button"
         className="delete"
         onClick={() => {
-          isErrorHidden = true;
+          setIsErrorHidden(true);
         }}
       />
       {errorMessage}

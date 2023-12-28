@@ -13,13 +13,16 @@ type Props = {
 export const Header: React.FC<Props> = ({ setTempTodo }) => {
   const [todoTitle, setTodoTitle] = useState('');
   const {
-    todos, setTodos, setErrorMessage, USER_ID, loading,
+    todos, setTodos, setErrorMessage, USER_ID,
   } = useContext(TodosContext);
   const titleRef = useRef<HTMLInputElement | null>(null);
+  const [isSubmiting, setIsSubmiting] = useState(false);
 
   useEffect(() => {
-    titleRef.current?.focus();
-  }, [loading]);
+    if (titleRef.current) {
+      titleRef.current.focus();
+    }
+  });
 
   const handleChangeTodoTitle = (
     event: React.ChangeEvent<HTMLInputElement>,
@@ -29,52 +32,44 @@ export const Header: React.FC<Props> = ({ setTempTodo }) => {
 
   const handleSubmit = (event: React.FormEvent) => {
     event.preventDefault();
+
+    if (todoTitle.trim() === '') {
+      setErrorMessage('Title should not be empty');
+    } else {
+      setIsSubmiting(true);
+
+      addTodo({
+        title: todoTitle,
+        completed: false,
+        userId: USER_ID,
+      })
+        .then((newTodo: Todo) => {
+          setTodos(currentTodos => [...currentTodos, newTodo]);
+          setTodoTitle('');
+        })
+        .catch((error) => {
+          setErrorMessage('Unable to add a todo');
+          throw error;
+        })
+        .finally(() => {
+          setTimeout(() => setErrorMessage(''), 3000);
+          setTempTodo(null);
+          setIsSubmiting(false);
+        });
+    }
   };
 
   const handleChangeToggle = () => {
-    const completedValue = todos.some(todo => !todo.completed);
+    const isAllCompleted = todos.every(todo => todo.completed);
 
     const updatedTodos = todos.map(todo => {
       return {
         ...todo,
-        completed: completedValue,
+        completed: !isAllCompleted,
       };
     });
 
     setTodos(updatedTodos);
-  };
-
-  const handlePressEnter = (event: React.KeyboardEvent<HTMLInputElement>) => {
-    if (event.key === 'Enter') {
-      setTempTodo({
-        title: todoTitle,
-        completed: false,
-        userId: USER_ID,
-        id: 0,
-      });
-
-      if (todoTitle.trim() === '') {
-        setErrorMessage('Title should not be empty');
-        setTempTodo(null);
-      } else {
-        addTodo({
-          title: todoTitle,
-          completed: false,
-          userId: USER_ID,
-        })
-          .then((newTodo: Todo) => {
-            setTodos(currentTodos => [...currentTodos, newTodo]);
-            // titleRef.current?.focus();
-          })
-          .catch(() => setErrorMessage('Unable to add a todo'))
-          .finally(() => {
-            setTimeout(() => setErrorMessage(''), 3000);
-            setTempTodo(null);
-          });
-
-        setTodoTitle('');
-      }
-    }
   };
 
   return (
@@ -100,8 +95,7 @@ export const Header: React.FC<Props> = ({ setTempTodo }) => {
           value={todoTitle}
           ref={titleRef}
           onChange={handleChangeTodoTitle}
-          onKeyUp={handlePressEnter}
-          disabled={loading}
+          disabled={isSubmiting}
         />
       </form>
     </header>

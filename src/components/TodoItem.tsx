@@ -10,11 +10,14 @@ type Props = {
 };
 
 export const TodoItem: React.FC<Props> = ({ todo }) => {
-  const { setErrorMessage, setTodos } = useContext(TodosContext);
+  const {
+    setErrorMessage, setTodos,
+  } = useContext(TodosContext);
   const [isDeliting, setIsDeliting] = useState(false);
 
   const handleDeleteTodo = (todoId: number) => {
     setIsDeliting(true);
+
     deleteTodo(todoId)
       .then(() => setTodos(
         curentTodos => curentTodos.filter(curtodo => curtodo.id !== todoId),
@@ -40,6 +43,7 @@ export const TodoItem: React.FC<Props> = ({ todo }) => {
           type="checkbox"
           className="todo__status"
           checked={todo.completed}
+          onChange={() => {}}
         />
       </label>
 
