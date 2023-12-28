@@ -1,20 +1,23 @@
 import { FC, useRef, useState } from 'react';
 import classNames from 'classnames';
 import { Todo } from '../types/Todo';
+import { deleteTodo } from '../api/todos';
+import { useSelector } from '../providers/TodosContext';
 
 type Props = {
   todo: Todo
 };
 
 export const TodoItem: FC<Props> = ({ todo }) => {
-  const { title, completed } = todo;
+  const { id, title, completed } = todo;
+
+  const { updateTodos } = useSelector();
 
   const inputRef = useRef<HTMLInputElement>(null);
 
   const [isEditMode, setIsEditMode] = useState(false);
   const [inputValue, setInputValue] = useState(title);
-
-  const loading = false;
+  const [isLoading, setIsLoading] = useState(false);
 
   const handleSubmit = () => {
     // TODO
@@ -27,6 +30,14 @@ export const TodoItem: FC<Props> = ({ todo }) => {
 
   const handleToggleCheckbox = () => {
     // TODO
+  };
+
+  const handleDelete = () => {
+    setIsLoading(true);
+
+    deleteTodo(id)
+      .then(updateTodos)
+      .finally(() => setIsLoading(false));
   };
 
   return (
@@ -69,7 +80,12 @@ export const TodoItem: FC<Props> = ({ todo }) => {
             {title}
           </span>
 
-          <button type="button" className="todo__remove" data-cy="TodoDelete">
+          <button
+            type="button"
+            className="todo__remove"
+            data-cy="TodoDelete"
+            onClick={handleDelete}
+          >
             ×
           </button>
         </>
@@ -79,7 +95,7 @@ export const TodoItem: FC<Props> = ({ todo }) => {
       <div
         data-cy="TodoLoader"
         className={classNames('modal overlay', {
-          'is-active': loading,
+          'is-active': isLoading,
         })}
       >
         <div className="modal-background has-background-white-ter" />

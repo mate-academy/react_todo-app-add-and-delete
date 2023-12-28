@@ -1,12 +1,10 @@
-import React, { useEffect, useMemo, useState } from 'react';
+import React, { useMemo, useState } from 'react';
 import { Todo } from './types/Todo';
 import { TodosList } from './components/TodosList';
-import { getTodos } from './api/todos';
 import { FilterBy, TodosFooter } from './components/TodosFooter';
 import { ErrorNotification } from './components/ErrorNotification';
 import { TodoHeader } from './components/TodoHeader';
-
-const USER_ID = 12110;
+import { useDispatch, useSelector } from './providers/TodosContext';
 
 const filterTodos = (todos: Todo[], filterBy: FilterBy) => {
   switch (filterBy) {
@@ -22,10 +20,14 @@ const filterTodos = (todos: Todo[], filterBy: FilterBy) => {
 };
 
 export const App: React.FC = () => {
-  const [todosFromServer, setTodosFromServer] = useState<Todo[]>([]);
+  const {
+    todos: todosFromServer,
+    isError,
+    errorMessage,
+  } = useSelector();
+  const dispatch = useDispatch();
+
   const [filterBy, setFilterBy] = useState<FilterBy>('all');
-  const [errorMessage, setErrorMessage] = useState('');
-  const [isError, setIsError] = useState(false);
 
   const todos = useMemo(() => {
     return filterTodos(todosFromServer, filterBy);
@@ -37,30 +39,7 @@ export const App: React.FC = () => {
     ).length;
   }, [todosFromServer]);
   const activeTodosLength = todosFromServer.length - completedTodosLength;
-  const isSomeActive = todosFromServer.some(({ completed }) => !completed);
-
-  useEffect(() => {
-    getTodos(USER_ID)
-      .then(setTodosFromServer)
-      .catch(() => {
-        setErrorMessage('Unable to load todos');
-        setIsError(true);
-      });
-  }, []);
-
-  useEffect(() => {
-    const timeoutId = 0;
-
-    if (errorMessage) {
-      setTimeout(() => {
-        setIsError(false);
-      }, 3000);
-    }
-
-    return () => {
-      clearTimeout(timeoutId);
-    };
-  }, [errorMessage]);
+  const isSomeActive = todos.some(({ completed }) => !completed);
 
   return (
     <div className="todoapp">
@@ -84,7 +63,9 @@ export const App: React.FC = () => {
       <ErrorNotification
         isHidden={!isError}
         message={errorMessage}
-        onClose={() => setIsError(false)}
+        onClose={
+          () => dispatch({ type: 'setError', payload: { isError: false } })
+        }
       />
     </div>
   );
