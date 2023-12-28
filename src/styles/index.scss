@@ -19,6 +19,7 @@ body {
   opacity: 0;
   pointer-events: none;
 }
+
 .item-enter {
   max-height: 0;
 }
@@ -65,6 +66,7 @@ body {
   transform: translateY(0);
   overflow: hidden;
 }
+
 @import "./todoapp";
 @import "./todo";
 @import "./filter";

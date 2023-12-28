@@ -9,23 +9,15 @@ import { IsfinallyContext } from './TempTodoContext';
 
 type Props = {
   todo: Todo ;
-  filter: string;
-  clearedTodoId:number[];
+  clearedTodoId:number[]
 };
-export const TodoItem : React.FC<Props> = ({ todo, filter, clearedTodoId }) => {
+export const TodoItem : React.FC<Props> = ({ todo, clearedTodoId }) => {
   const { setErrorsMesage } = useContext(ErrorsMessageContext);
   const { isError, setIsError } = useContext(ErrorContext);
   const [onEdit, setOnEdit] = useState(false);
   const [editedTitle, setEditedTitle] = useState(todo.title);
-  const { isfinally, setIsfinally } = useContext(IsfinallyContext);
+  const { setIsfinally } = useContext(IsfinallyContext);
   const [todoId, setTodoId] = useState<number[]>([]);
-
-  useEffect(() => {
-    if (clearedTodoId.length > 0 && filter === 'Clear') {
-      setTodoId(clearedTodoId);
-    }
-  // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [isfinally]);
 
   const deleteTodo = () => {
     setTodoId([todo.id]);
@@ -62,6 +54,10 @@ export const TodoItem : React.FC<Props> = ({ todo, filter, clearedTodoId }) => {
     setOnEdit(false);
     setEditedTitle(todo.title);
   };
+
+  useEffect(() => {
+    setTodoId(clearedTodoId);
+  }, [clearedTodoId]);
 
   return (
     <div

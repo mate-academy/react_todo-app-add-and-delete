@@ -1,33 +1,26 @@
 import React, {
-  useContext, useEffect, useState,
+  useContext,
 } from 'react';
 import {
   CSSTransition,
   TransitionGroup,
 } from 'react-transition-group';
-import { deleteTodoItem } from '../api/todos';
 import { Todo } from '../types/Todo';
-import { ErrorContext, ErrorsMessageContext } from './ErrorsContext';
-import { IsfinallyContext, TempTodoContext } from './TempTodoContext';
+import { TempTodoContext } from './TempTodoContext';
 import { TodoItem } from './TodoItem';
 
 type Props = {
   todos: Todo[];
-  filter: string
+  filter: string;
+  clearedTodoId: number[]
 };
-export const TodoList : React.FC<Props> = ({ todos, filter }) => {
+
+export const TodoList : React.FC<Props> = ({
+  todos,
+  filter,
+  clearedTodoId,
+}) => {
   const { tempTodo } = useContext(TempTodoContext);
-  const { setIsfinally } = useContext(IsfinallyContext);
-  const [clearedTodoId, setClearedTodoId] = useState<number[]>([]);
-  const { setIsError } = useContext(ErrorContext);
-  const { setErrorsMesage } = useContext(ErrorsMessageContext);
-
-  useEffect(() => {
-    const deletetodos = todos.filter(el => el.completed).map(el => el.id);
-
-    setClearedTodoId(deletetodos);
-  // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [filter]);
 
   const filteringTodo = () => {
     switch (filter) {
@@ -38,23 +31,7 @@ export const TodoList : React.FC<Props> = ({ todos, filter }) => {
       case 'Completed':
 
         return todos.filter(el => el.completed === true);
-      case 'Clear':
 
-        return todos.map(el => {
-          if (el.completed) {
-            setIsfinally(true);
-            deleteTodoItem(el.id)
-              .catch(() => {
-                setIsError(true);
-                setErrorsMesage('delete');
-              })
-              .finally(() => {
-                setIsfinally(false);
-              });
-          }
-
-          return el;
-        });
       default:
         return todos;
     }
@@ -71,7 +48,6 @@ export const TodoList : React.FC<Props> = ({ todos, filter }) => {
           >
             <TodoItem
               todo={todo}
-              filter={filter}
               clearedTodoId={clearedTodoId}
               key={todo.id}
             />

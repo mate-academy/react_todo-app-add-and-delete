@@ -19,6 +19,7 @@ export const App: React.FC = () => {
   const { errorsMesage, setErrorsMesage } = useContext(ErrorsMessageContext);
   const [filter, setFilter] = useState('All');
   const { isfinally } = useContext(IsfinallyContext);
+  const [clearedTodoId, setClearedTodoId] = useState<number[]>([]);
 
   useEffect(() => {
     getTodos(USER_ID)
@@ -41,6 +42,7 @@ export const App: React.FC = () => {
         <TodoList
           todos={todos}
           filter={filter}
+          clearedTodoId={clearedTodoId}
         />
 
         {(todos.length > 0) && (
@@ -48,6 +50,7 @@ export const App: React.FC = () => {
             todos={todos}
             filter={filter}
             setFilter={setFilter}
+            setClearedTodoId={setClearedTodoId}
           />
         )}
 

@@ -32,6 +32,7 @@ export const Header: React.FC<Props> = ({ todos }) => {
       setIsError(true);
       setErrorsMesage('empty');
       setValue('');
+      setIsfinally(false);
 
       return;
     }
