@@ -1,12 +1,12 @@
-import { FilterBy } from '../components/TodosFooter';
+import { FILTERS } from '../components/TodosFooter';
 import { Todo } from '../types/Todo';
 
-export const filterTodos = (todos: Todo[], filterBy: FilterBy) => {
+export const filterTodos = (todos: Todo[], filterBy: FILTERS) => {
   switch (filterBy) {
-    case 'active':
+    case FILTERS.Active:
       return todos.filter(({ completed }) => !completed);
 
-    case 'completed':
+    case FILTERS.Completed:
       return todos.filter(({ completed }) => completed);
 
     default:

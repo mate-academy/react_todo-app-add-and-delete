@@ -1,18 +1,17 @@
 import classNames from 'classnames';
 import { FC } from 'react';
 
-export type FilterBy = keyof typeof FILTERS;
-const FILTERS = {
-  all: 'All',
-  active: 'Active',
-  completed: 'Completed',
-};
+export enum FILTERS {
+  All = 'all',
+  Active = 'active',
+  Completed = 'completed',
+}
 
 type Props = {
-  filterBy: FilterBy,
+  filterBy: FILTERS,
   activeTodosLength: number,
   completedTodosLength: number,
-  onFilterChange: (filterBy: FilterBy) => void
+  onFilterChange: (filterBy: FILTERS) => void
   onDeleteCompleted: () => void
 };
 
@@ -23,6 +22,12 @@ export const TodosFooter: FC<Props> = ({
   onFilterChange,
   onDeleteCompleted,
 }) => {
+  const handleOnDelete = () => {
+    if (completedTodosLength) {
+      onDeleteCompleted();
+    }
+  };
+
   return (
     <footer className="todoapp__footer" data-cy="Footer">
       <span className="todo-count" data-cy="TodosCounter">
@@ -30,15 +35,15 @@ export const TodosFooter: FC<Props> = ({
       </span>
 
       <nav className="filter" data-cy="Filter">
-        {Object.entries(FILTERS).map(([key, value]) => (
+        {Object.values(FILTERS).map((value) => (
           <a
-            key={key}
-            href={`#/${key}`}
+            key={value}
+            href={`#/${value}`}
             className={classNames('filter__link', {
-              selected: filterBy === key,
+              selected: filterBy === value,
             })}
             data-cy={`FilterLink${value}`}
-            onClick={() => onFilterChange(key as FilterBy)}
+            onClick={() => onFilterChange(value as FILTERS)}
           >
             {value}
           </a>
@@ -49,7 +54,7 @@ export const TodosFooter: FC<Props> = ({
         type="button"
         className="todoapp__clear-completed"
         disabled={completedTodosLength <= 0}
-        onClick={() => completedTodosLength > 0 && onDeleteCompleted()}
+        onClick={handleOnDelete}
         data-cy="ClearCompletedButton"
       >
         Clear completed

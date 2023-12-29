@@ -5,7 +5,7 @@ import { Todo } from '../types/Todo';
 type Props = {
   todo: Todo
   inProcess: boolean
-  onDelete: (id: number) => void
+  onDelete?: (id: number) => void
   // onChange: (newTodo: Omit<Todo, 'id'>) => void
 };
 
@@ -76,7 +76,7 @@ export const TodoItem: FC<Props> = ({
             type="button"
             className="todo__remove"
             data-cy="TodoDelete"
-            onClick={() => onDelete(id)}
+            onClick={() => onDelete?.(id)}
           >
             ×
           </button>

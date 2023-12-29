@@ -1,6 +1,6 @@
 import React, { useMemo, useState } from 'react';
 import { TodosList } from './components/TodosList';
-import { FilterBy, TodosFooter } from './components/TodosFooter';
+import { FILTERS, TodosFooter } from './components/TodosFooter';
 import { ErrorNotification } from './components/ErrorNotification';
 import { TodoHeader } from './components/TodoHeader';
 import { useDispatch, useSelector } from './providers/TodosContext';
@@ -17,7 +17,7 @@ export const App: React.FC = () => {
   } = useSelector();
   const dispatch = useDispatch();
 
-  const [filterBy, setFilterBy] = useState<FilterBy>('all');
+  const [filterBy, setFilterBy] = useState<FILTERS>(FILTERS.All);
 
   const preparedTodos = useMemo(() => {
     return filterTodos(todos, filterBy);
@@ -56,6 +56,10 @@ export const App: React.FC = () => {
       });
   };
 
+  const handleCloseNotification = () => {
+    dispatch({ type: 'setError', payload: { isError: false } });
+  };
+
   return (
     <div className="todoapp">
       <h1 className="todoapp__title">todos</h1>
@@ -65,7 +69,7 @@ export const App: React.FC = () => {
 
         <TodosList todos={preparedTodos} />
 
-        {todos.length > 0 && (
+        {!!todos.length && (
           <TodosFooter
             filterBy={filterBy}
             activeTodosLength={activeTodosLength}
@@ -79,9 +83,7 @@ export const App: React.FC = () => {
       <ErrorNotification
         isHidden={!isError}
         message={errorMessage}
-        onClose={
-          () => dispatch({ type: 'setError', payload: { isError: false } })
-        }
+        onClose={handleCloseNotification}
       />
     </div>
   );
