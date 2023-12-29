@@ -6,8 +6,7 @@ import { TodoErr } from './components/todoerr/todoerr';
 import { TodoForm } from './components/todoform/todoform';
 import { TodoList } from './components/todolist/todolist';
 import { useTodos } from './context/todoProvider';
-
-export const USER_ID = 12075;
+import { USER_ID } from './utils/userID';
 
 export const App: React.FC = () => {
   const { todos } = useTodos();

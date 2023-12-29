@@ -5,7 +5,6 @@ export const TodoInfo = () => {
 
   return (
     <div data-cy="Todo" className="todo completed">
-
       <label className="todo__status-label">
         <input
           data-cy="TodoStatus"
@@ -20,7 +19,11 @@ export const TodoInfo = () => {
       </span>
 
       {/* Remove button appears only on hover */}
-      <button type="button" className="todo__remove" data-cy="TodoDelete">
+      <button
+        type="button"
+        className="todo__remove"
+        data-cy="TodoDelete"
+      >
         ×
       </button>
 

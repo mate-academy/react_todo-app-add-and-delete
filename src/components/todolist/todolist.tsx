@@ -1,9 +1,18 @@
 // import { TodoInfo } from '../todoinfo/todoinfo';
 import classNames from 'classnames';
 import { useTodos } from '../../context/todoProvider';
+import { deleteTodo } from '../../api/todos';
+import { ErrorType } from '../../types/Error';
 
 export const TodoList = () => {
-  const { todos } = useTodos();
+  const { todos, setError } = useTodos();
+
+  const handleDeleteClick = (id: number) => {
+    deleteTodo(id)
+      .catch(() => {
+        setError(ErrorType.Delete);
+      });
+  };
 
   return (
     <section className="todoapp__main" data-cy="TodoList">
@@ -21,7 +30,7 @@ export const TodoList = () => {
               data-cy="TodoStatus"
               type="checkbox"
               className="todo__status"
-              checked
+              checked={task.completed}
             />
           </label>
 
@@ -30,7 +39,12 @@ export const TodoList = () => {
           </span>
 
           {/* Remove button appears only on hover */}
-          <button type="button" className="todo__remove" data-cy="TodoDelete">
+          <button
+            type="button"
+            className="todo__remove"
+            data-cy="TodoDelete"
+            onClick={() => handleDeleteClick(task.id)}
+          >
             ×
           </button>
 
