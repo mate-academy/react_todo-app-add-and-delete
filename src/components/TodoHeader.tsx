@@ -10,6 +10,7 @@ export const TodoHeader: React.FC = () => {
     todoTitle,
     setTodoTitle,
     setErrorMessage,
+    errorMessage,
     setTodos,
     todos,
     loading,
@@ -25,7 +26,7 @@ export const TodoHeader: React.FC = () => {
     if (fieldRender.current && !fieldRender.current.disabled) {
       fieldRender.current.focus();
     }
-  }, [fieldRender]);
+  }, [fieldRender, todos, errorMessage]);
 
   const handleSubmit = ((event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
