@@ -4,7 +4,7 @@ import { useTodoContext } from '../../context/TodosProvider';
 
 export const Header:React.FC = () => {
   const {
-    query, handleSubmitSent, setQuery, pending,
+    query, handleSubmitSent, setQuery, pending, filteredTodos,
   } = useTodoContext();
 
   const inputRef = useRef<HTMLInputElement | null>(null);
@@ -15,11 +15,13 @@ export const Header:React.FC = () => {
 
   return (
     <header className="todoapp__header">
-      <button
-        type="button"
-        className="todoapp__toggle-all active"
-        data-cy="ToggleAllButton"
-      />
+      {filteredTodos.length > 0 && (
+        <button
+          type="button"
+          className="todoapp__toggle-all active"
+          data-cy="ToggleAllButton"
+        />
+      )}
 
       <form onSubmit={(event) => handleSubmitSent(event)}>
         <input
