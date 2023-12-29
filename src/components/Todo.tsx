@@ -80,7 +80,7 @@ export const SingleTodo: React.FC<Props> = ({ todo }) => {
               className="todo__title"
               onDoubleClick={handeleClickOnTodo}
             >
-              {title}
+              {title.trim()}
             </span>
             <button
               type="button"

@@ -45,7 +45,6 @@ export const TodoHeader: React.FC = () => {
         completed: false,
       });
 
-      setTodoTitle(todoTitle.trim());
       addTodos({ userId: USER_ID, title: todoTitle, completed: false })
         .then((newTodo: Todo) => {
           setTodoTitle('');
