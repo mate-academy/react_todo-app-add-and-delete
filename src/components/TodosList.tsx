@@ -13,6 +13,7 @@ export const TodoList: React.FC = () => {
     filteredTodos,
     setTodos,
     setErrorMessage,
+    tempTodo,
   } = useTodos();
 
   const USER_ID = useAuthorize();
@@ -31,6 +32,12 @@ export const TodoList: React.FC = () => {
         {filteredTodos.length > 0 && (
           filteredTodos.map((todo: Todo) => (
             <SingleTodo todo={todo} key={todo.id} />))
+        )}
+        {tempTodo && (
+          <SingleTodo
+            todo={tempTodo}
+            key={tempTodo?.id}
+          />
         )}
       </section>
       {todos.length > 0 && (<TodoFooter />)}

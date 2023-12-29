@@ -1,13 +1,22 @@
 import React, { useState, useRef } from 'react';
 import cn from 'classnames';
 import { Todo } from '../types/Todo';
+import { deleteTodos } from '../api/todos';
+import { useTodos } from '../context/TodosProvider';
+import { ErrorMessage } from '../types/Errors';
 
 type Props = {
   todo: Todo;
 };
 
 export const SingleTodo: React.FC<Props> = ({ todo }) => {
-  const { title, completed } = todo;
+  const { title, completed, id } = todo;
+  const {
+    todos,
+    setTodos,
+    setErrorMessage,
+    tempTodo,
+  } = useTodos();
   const [isEditable, setIsEditable] = useState(false);
   const [value, setValue] = useState(title);
   const inputEditRef = useRef<HTMLInputElement | null>(null);
@@ -18,6 +27,18 @@ export const SingleTodo: React.FC<Props> = ({ todo }) => {
     setTimeout(() => {
       inputEditRef.current?.focus();
     }, 0);
+  };
+
+  const handleDelete = () => {
+    deleteTodos(id)
+      .then(() => {
+        setTimeout(() => {
+          const filtered = todos.filter((post: Todo) => post.id !== id);
+
+          setTodos(filtered);
+        }, 500);
+      })
+      .catch(() => setErrorMessage(ErrorMessage.Delete));
   };
 
   return (
@@ -46,7 +67,7 @@ export const SingleTodo: React.FC<Props> = ({ todo }) => {
               type="text"
               className="todo__title-field"
               placeholder="Empty todo will be deleted"
-              value={value}
+              defaultValue={value}
               onChange={e => setValue(e.target.value)}
               onBlur={() => setIsEditable(false)}
               ref={inputEditRef}
@@ -61,13 +82,22 @@ export const SingleTodo: React.FC<Props> = ({ todo }) => {
             >
               {title}
             </span>
-            <button type="button" className="todo__remove" data-cy="TodoDelete">
+            <button
+              type="button"
+              className="todo__remove"
+              data-cy="TodoDelete"
+              onClick={handleDelete}
+            >
               ×
             </button>
           </>
         )}
-
-        <div data-cy="TodoLoader" className="modal overlay">
+        <div
+          data-cy="TodoLoader"
+          className={cn('modal overlay', id === tempTodo?.id
+            ? 'is-active'
+            : '')}
+        >
           <div className="modal-background has-background-white-ter" />
           <div className="loader" />
         </div>

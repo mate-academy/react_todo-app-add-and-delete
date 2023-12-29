@@ -22,6 +22,14 @@ type ContextType = {
   setFilteredTodos: (todo: Todo[]) => void;
   counter: number;
   setCounter: (counter: number) => void;
+  todoTitle: string;
+  setTodoTitle: (todoTitle: string) => void;
+  tempTodo: Todo | null;
+  setTempTodo: (arg: Todo | null) => void;
+  loading: boolean;
+  setLoading: (arg: boolean) => void;
+  selectedTodoIds: number[];
+  setSelectedTodoIds: (arg: number[]) => void;
 };
 
 export const TodosContext = createContext<ContextType>({
@@ -35,6 +43,14 @@ export const TodosContext = createContext<ContextType>({
   setFilteredTodos: () => undefined,
   counter: 0,
   setCounter: () => undefined,
+  todoTitle: '',
+  setTodoTitle: () => undefined,
+  tempTodo: null,
+  setTempTodo: () => {},
+  loading: false,
+  setLoading: () => {},
+  selectedTodoIds: [],
+  setSelectedTodoIds: () => {},
 });
 
 export const useTodos = () => {
@@ -60,6 +76,10 @@ export const TodosProvider: React.FC<Props> = ({ children }) => {
   const [filter, setFilter] = useState<FilterBy>(FilterBy.All);
   const [filteredTodos, setFilteredTodos] = useState<Todo[]>(todos);
   const [counter, setCounter] = useState<number>(0);
+  const [todoTitle, setTodoTitle] = useState<string>('');
+  const [tempTodo, setTempTodo] = useState<Todo | null>(null);
+  const [loading, setLoading] = useState(false);
+  const [selectedTodoIds, setSelectedTodoIds] = useState<number[]>([]);
 
   useEffect(() => {
     setFilteredTodos(filterer(todos, filter));
@@ -79,6 +99,14 @@ export const TodosProvider: React.FC<Props> = ({ children }) => {
     setFilteredTodos,
     counter,
     setCounter,
+    todoTitle,
+    setTodoTitle,
+    tempTodo,
+    setTempTodo,
+    loading,
+    setLoading,
+    selectedTodoIds,
+    setSelectedTodoIds,
   };
 
   return (

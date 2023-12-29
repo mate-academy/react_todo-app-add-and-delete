@@ -12,7 +12,7 @@ type Props = {
 };
 
 export const AutorizationProvider: React.FC<Props> = ({ children }) => {
-  const USER_ID = 12071;
+  const USER_ID: number | null = 12071;
 
   if (!USER_ID) {
     return <UserWarning />;

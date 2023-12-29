@@ -1,9 +1,34 @@
 import cn from 'classnames';
+import { useCallback } from 'react';
 import { useTodos } from '../context/TodosProvider';
 import { FilterBy } from '../types/filter';
+import { deleteTodos } from '../api/todos';
+import { ErrorMessage } from '../types/Errors';
 
 export const TodoFooter: React.FC = () => {
-  const { filter, setFilter, counter } = useTodos();
+  const {
+    filter,
+    setFilter,
+    counter,
+    todos,
+    setTodos,
+    setErrorMessage,
+  } = useTodos();
+
+  const isSomeTodosCompleted = todos.some((todo) => todo.completed);
+
+  const clearCompleted = useCallback(() => {
+    const completedTodos = todos.filter((todoToFind) => todoToFind.completed);
+
+    completedTodos.map((completedTodo) => deleteTodos(completedTodo.id)
+      .catch(() => setErrorMessage(ErrorMessage.Delete)));
+
+    setTimeout(() => {
+      const filtered = todos.filter((todoToFilter) => !todoToFilter.completed);
+
+      setTodos(filtered);
+    }, 500);
+  }, [todos, setTodos, setErrorMessage]);
 
   return (
     <footer className="todoapp__footer" data-cy="Footer">
@@ -52,8 +77,12 @@ export const TodoFooter: React.FC = () => {
       {/* don't show this button if there are no completed todos */}
       <button
         type="button"
-        className="todoapp__clear-completed"
+        className={cn('todoapp__clear-completed', {
+          disabled: !isSomeTodosCompleted,
+        })}
         data-cy="ClearCompletedButton"
+        onClick={clearCompleted}
+        disabled={!isSomeTodosCompleted}
       >
         Clear completed
       </button>

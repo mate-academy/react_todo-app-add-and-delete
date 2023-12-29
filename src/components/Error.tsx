@@ -6,9 +6,11 @@ export const Error: React.FC = () => {
   const { errorMessage, setErrorMessage } = useTodos();
 
   useEffect(() => {
-    setTimeout(() => {
-      setErrorMessage(null);
-    }, 3000);
+    if (errorMessage) {
+      setTimeout(() => {
+        setErrorMessage(null);
+      }, 3000);
+    }
   }, [errorMessage, setErrorMessage]);
 
   return (
