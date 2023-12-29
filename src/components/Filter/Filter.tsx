@@ -1,3 +1,4 @@
+import cn from 'classnames';
 import { useTodoContext } from '../../context/TodosProvider';
 
 interface FilterProps {
@@ -11,7 +12,7 @@ export const Filter: React.FC<FilterProps> = ({ filter }) => {
     <a
       key={filter}
       href="#/"
-      className={`filter__link ${filter === filterType ? 'selected' : ''}`}
+      className={cn('filter__link', { selected: filter === filterType })}
       data-cy={`FilterLink${filter}`}
       onClick={() => setFilterType(filter)}
     >

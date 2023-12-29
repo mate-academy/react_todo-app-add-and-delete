@@ -1,3 +1,4 @@
+import cn from 'classnames';
 import { useTodoContext } from '../../context/TodosProvider';
 import { Todo } from '../../types/Todo';
 
@@ -14,7 +15,10 @@ export const TodoCard: React.FC<TodoCardProps> = ({ todo }) => {
   } = useTodoContext();
 
   return (
-    <div data-cy="Todo" className={`todo ${todo.completed ? 'completed' : ''} `}>
+    <div
+      data-cy="Todo"
+      className={cn('todo', { completed: todo.completed })}
+    >
       <label className="todo__status-label">
         <input
           data-cy="TodoStatus"
@@ -38,8 +42,12 @@ export const TodoCard: React.FC<TodoCardProps> = ({ todo }) => {
 
       <div
         data-cy="TodoLoader"
-        className={`modal overlay ${
-          todo.id === tempTodo?.id || status === todo.id || isToggled ? 'is-active' : ''}`}
+        className={cn('modal overlay', {
+          'is-active':
+          todo.id === tempTodo?.id
+          || status === todo.id
+          || isToggled,
+        })}
       >
         <div className="modal-background has-background-white-ter" />
         <div className="loader" />

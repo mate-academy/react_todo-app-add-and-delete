@@ -10,6 +10,7 @@
     "@fortawesome/fontawesome-free": "^6.2.0",
     "@types/react-transition-group": "^4.4.5",
     "bulma": "^0.9.4",
+    "caniuse-lite": "^1.0.30001572",
     "classnames": "^2.3.2",
     "react": "^18.2.0",
     "react-dom": "^18.2.0",

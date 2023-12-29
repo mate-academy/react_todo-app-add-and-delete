@@ -104,6 +104,7 @@ export const TodoProvider: React.FC<{ children: ReactNode }> = (
         });
 
         const newTodo = {
+          id: 0,
           title: query,
           completed: false,
           userId: USER_ID,
@@ -168,7 +169,7 @@ export const TodoProvider: React.FC<{ children: ReactNode }> = (
     }, 500);
   }, [todos, setTodos, setIsToggled, handleDeleteTodo]);
 
-  useEffect(() => {
+  useMemo(() => {
     switch (filterType) {
       case 'All':
         setFilteredTodos(todos);
@@ -213,6 +214,8 @@ export const TodoProvider: React.FC<{ children: ReactNode }> = (
       handleDeleteTodo,
       setIsLoadingTodo,
       handleClearCompleted,
+      setStatus,
+      setIsToggled,
     }),
     [
       todos,
