@@ -49,17 +49,15 @@ export const TodoHeader: React.FC = () => {
       addTodos({ userId: USER_ID, title: todoTitle, completed: false })
         .then((newTodo: Todo) => {
           setTodoTitle('');
-          setTimeout(() => {
-            const currentTodos = [...todos, newTodo];
+          const currentTodos = [...todos, newTodo];
 
-            setTodos(currentTodos);
-          }, 500);
+          setTodos(currentTodos);
         })
         .catch(() => setErrorMessage(ErrorMessage.Add))
         .finally(() => {
           setLoading(false);
 
-          setTimeout(() => setTempTodo(null), 500);
+          setTempTodo(null);
         });
     }
   });
