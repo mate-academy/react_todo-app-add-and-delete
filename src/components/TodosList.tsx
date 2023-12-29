@@ -1,4 +1,8 @@
 import React, { useEffect } from 'react';
+import {
+  CSSTransition,
+  TransitionGroup,
+} from 'react-transition-group';
 import { useAuthorize } from '../context/AutorizationProvider';
 import { getTodos } from '../api/todos';
 import { useTodos } from '../context/TodosProvider';
@@ -29,16 +33,28 @@ export const TodoList: React.FC = () => {
   return (
     <>
       <section className="todoapp__main" data-cy="TodoList">
-        {filteredTodos.length > 0 && (
-          filteredTodos.map((todo: Todo) => (
-            <SingleTodo todo={todo} key={todo.id} />))
-        )}
-        {tempTodo && (
-          <SingleTodo
-            todo={tempTodo}
-            key={tempTodo?.id}
-          />
-        )}
+        <TransitionGroup>
+          {filteredTodos.length > 0 && (
+            filteredTodos.map((todo: Todo) => (
+              <CSSTransition
+                key={todo.id}
+                timeout={300}
+                classNames="item"
+              >
+                <SingleTodo todo={todo} />
+              </CSSTransition>
+            ))
+          )}
+          {tempTodo && (
+            <CSSTransition
+              key={0}
+              timeout={300}
+              classNames="temp-item"
+            >
+              <SingleTodo todo={tempTodo} />
+            </CSSTransition>
+          )}
+        </TransitionGroup>
       </section>
       {todos.length > 0 && (<TodoFooter />)}
       {/* Hide the footer if there are no todos */}
