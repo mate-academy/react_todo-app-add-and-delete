@@ -12,11 +12,11 @@ type Props = {
   filterBy: FilterBy,
   activeTodosLength: number,
   completedTodosLength: number,
-  onFilterChange: (sortBy: FilterBy) => void
+  onFilterChange: (filterBy: FilterBy) => void
 };
 
 export const TodosFooter: FC<Props> = ({
-  filterBy: sortBy,
+  filterBy,
   activeTodosLength,
   completedTodosLength,
   onFilterChange,
@@ -33,7 +33,7 @@ export const TodosFooter: FC<Props> = ({
             key={key}
             href={`#/${key}`}
             className={classNames('filter__link', {
-              selected: sortBy === key,
+              selected: filterBy === key,
             })}
             data-cy={`FilterLink${value}`}
             onClick={() => onFilterChange(key as FilterBy)}

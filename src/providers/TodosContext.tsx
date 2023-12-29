@@ -7,17 +7,12 @@ import { USER_ID } from '../constants/userId';
 
 type Action =
   { type: 'setTodos', payload: Todo[] }
+  | { type: 'setTempTodo', payload: Todo | null }
   | { type: 'setError', payload: { isError: boolean, errorMessage?: string } };
-
-export enum FilterBy {
-  ALL = 'All',
-  ACTIVE = 'Active',
-  COMPLETED = 'Completed',
-}
 
 type State = {
   todos: Todo[]
-  filter: FilterBy
+  tempTodo: Todo | null
   isError: boolean
   errorMessage: string
   fetchTodos: () => void
@@ -28,6 +23,9 @@ function reducer(state: State, action: Action): State {
   switch (action.type) {
     case 'setTodos':
       return { ...state, todos: action.payload };
+
+    case 'setTempTodo':
+      return { ...state, tempTodo: action.payload };
 
     case 'setError':
       return {
@@ -42,8 +40,8 @@ function reducer(state: State, action: Action): State {
 }
 
 const initialState: State = {
-  filter: FilterBy.ALL,
   todos: [],
+  tempTodo: null,
   isError: false,
   errorMessage: '',
   fetchTodos: () => { },
@@ -88,7 +86,7 @@ export const GlobalStateProvider: FC<Props> = ({ children }) => {
   useEffect(() => {
     const timeoutId = 0;
 
-    if (state.errorMessage) {
+    if (state.isError) {
       setTimeout(() => {
         dispatch({ type: 'setError', payload: { isError: false } });
       }, 3000);
@@ -97,7 +95,7 @@ export const GlobalStateProvider: FC<Props> = ({ children }) => {
     return () => {
       clearTimeout(timeoutId);
     };
-  }, [state.errorMessage]);
+  }, [state.isError]);
 
   useEffect(fetchTodos, []);
 

@@ -1,23 +1,23 @@
 import { FC, useRef, useState } from 'react';
 import classNames from 'classnames';
 import { Todo } from '../types/Todo';
-import { deleteTodo } from '../api/todos';
-import { useSelector } from '../providers/TodosContext';
 
 type Props = {
   todo: Todo
+  inProcess: boolean
+  onDelete: (id: number) => void
+  // onChange: (newTodo: Omit<Todo, 'id'>) => void
 };
 
-export const TodoItem: FC<Props> = ({ todo }) => {
+export const TodoItem: FC<Props> = ({
+  todo, inProcess, onDelete,
+}) => {
   const { id, title, completed } = todo;
-
-  const { updateTodos } = useSelector();
 
   const inputRef = useRef<HTMLInputElement>(null);
 
   const [isEditMode, setIsEditMode] = useState(false);
   const [inputValue, setInputValue] = useState(title);
-  const [isLoading, setIsLoading] = useState(false);
 
   const handleSubmit = () => {
     // TODO
@@ -30,14 +30,6 @@ export const TodoItem: FC<Props> = ({ todo }) => {
 
   const handleToggleCheckbox = () => {
     // TODO
-  };
-
-  const handleDelete = () => {
-    setIsLoading(true);
-
-    deleteTodo(id)
-      .then(updateTodos)
-      .finally(() => setIsLoading(false));
   };
 
   return (
@@ -84,7 +76,7 @@ export const TodoItem: FC<Props> = ({ todo }) => {
             type="button"
             className="todo__remove"
             data-cy="TodoDelete"
-            onClick={handleDelete}
+            onClick={() => onDelete(id)}
           >
             ×
           </button>
@@ -95,7 +87,7 @@ export const TodoItem: FC<Props> = ({ todo }) => {
       <div
         data-cy="TodoLoader"
         className={classNames('modal overlay', {
-          'is-active': isLoading,
+          'is-active': inProcess,
         })}
       >
         <div className="modal-background has-background-white-ter" />

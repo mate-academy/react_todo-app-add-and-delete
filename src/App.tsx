@@ -1,27 +1,14 @@
 import React, { useMemo, useState } from 'react';
-import { Todo } from './types/Todo';
 import { TodosList } from './components/TodosList';
 import { FilterBy, TodosFooter } from './components/TodosFooter';
 import { ErrorNotification } from './components/ErrorNotification';
 import { TodoHeader } from './components/TodoHeader';
 import { useDispatch, useSelector } from './providers/TodosContext';
-
-const filterTodos = (todos: Todo[], filterBy: FilterBy) => {
-  switch (filterBy) {
-    case 'active':
-      return todos.filter(({ completed }) => !completed);
-
-    case 'completed':
-      return todos.filter(({ completed }) => completed);
-
-    default:
-      return todos;
-  }
-};
+import { filterTodos } from './helpers/filterTodo';
 
 export const App: React.FC = () => {
   const {
-    todos: todosFromServer,
+    todos,
     isError,
     errorMessage,
   } = useSelector();
@@ -29,16 +16,16 @@ export const App: React.FC = () => {
 
   const [filterBy, setFilterBy] = useState<FilterBy>('all');
 
-  const todos = useMemo(() => {
-    return filterTodos(todosFromServer, filterBy);
-  }, [filterBy, todosFromServer]);
+  const preparedTodos = useMemo(() => {
+    return filterTodos(todos, filterBy);
+  }, [filterBy, todos]);
 
   const completedTodosLength = useMemo(() => {
-    return todosFromServer.filter(
+    return todos.filter(
       ({ completed }) => completed,
     ).length;
-  }, [todosFromServer]);
-  const activeTodosLength = todosFromServer.length - completedTodosLength;
+  }, [todos]);
+  const activeTodosLength = todos.length - completedTodosLength;
   const isSomeActive = todos.some(({ completed }) => !completed);
 
   return (
@@ -48,9 +35,9 @@ export const App: React.FC = () => {
       <div className="todoapp__content">
         <TodoHeader isSomeActive={isSomeActive} />
 
-        <TodosList todos={todos} />
+        <TodosList todos={preparedTodos} />
 
-        {todosFromServer.length > 0 && (
+        {todos.length > 0 && (
           <TodosFooter
             filterBy={filterBy}
             activeTodosLength={activeTodosLength}
