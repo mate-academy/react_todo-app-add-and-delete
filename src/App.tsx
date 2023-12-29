@@ -5,12 +5,15 @@ import { ErrorNotification } from './components/ErrorNotification';
 import { TodoHeader } from './components/TodoHeader';
 import { useDispatch, useSelector } from './providers/TodosContext';
 import { filterTodos } from './helpers/filterTodo';
+import { deleteTodo } from './api/todos';
 
 export const App: React.FC = () => {
   const {
     todos,
+    inProcess,
     isError,
     errorMessage,
+    updateTodos,
   } = useSelector();
   const dispatch = useDispatch();
 
@@ -20,13 +23,38 @@ export const App: React.FC = () => {
     return filterTodos(todos, filterBy);
   }, [filterBy, todos]);
 
-  const completedTodosLength = useMemo(() => {
+  const completedTodos = useMemo(() => {
     return todos.filter(
       ({ completed }) => completed,
-    ).length;
+    );
   }, [todos]);
-  const activeTodosLength = todos.length - completedTodosLength;
+  const activeTodosLength = todos.length - completedTodos.length;
   const isSomeActive = todos.some(({ completed }) => !completed);
+
+  const handleDeleteCompleted = () => {
+    const completedIds = completedTodos.map(({ id }) => (id));
+
+    dispatch({
+      type: 'setInProcess',
+      payload: [...inProcess, ...completedIds],
+    });
+    Promise.all(completedIds.map((id) => deleteTodo(id)))
+      .then(() => {
+        updateTodos();
+      })
+      .catch(() => {
+        dispatch({
+          type: 'setError',
+          payload: { isError: true, errorMessage: 'Unable to delete a todo' },
+        });
+      })
+      .finally(() => {
+        dispatch({
+          type: 'setInProcess',
+          payload: [],
+        });
+      });
+  };
 
   return (
     <div className="todoapp">
@@ -41,8 +69,9 @@ export const App: React.FC = () => {
           <TodosFooter
             filterBy={filterBy}
             activeTodosLength={activeTodosLength}
-            completedTodosLength={completedTodosLength}
+            completedTodosLength={completedTodos.length}
             onFilterChange={setFilterBy}
+            onDeleteCompleted={handleDeleteCompleted}
           />
         )}
       </div>

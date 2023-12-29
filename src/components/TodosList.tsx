@@ -1,4 +1,4 @@
-import { FC, useState } from 'react';
+import { FC } from 'react';
 import { Todo } from '../types/Todo';
 import { TodoItem } from './TodoItem';
 import { deleteTodo } from '../api/todos';
@@ -9,13 +9,11 @@ type Props = {
 };
 
 export const TodosList: FC<Props> = ({ todos }) => {
-  const { updateTodos, tempTodo } = useSelector();
+  const { updateTodos, tempTodo, inProcess } = useSelector();
   const dispatch = useDispatch();
 
-  const [inProcess, setInProcess] = useState<number[]>([]);
-
   const handleDelete = (id: number) => {
-    setInProcess(prev => [...prev, id]);
+    dispatch({ type: 'setInProcess', payload: [...inProcess, id] });
 
     deleteTodo(id)
       .then(updateTodos)
@@ -27,10 +25,11 @@ export const TodosList: FC<Props> = ({ todos }) => {
         },
       }))
       .finally(() => {
-        setInProcess(prev => {
-          const idx = prev.findIndex((todoId) => todoId === id);
+        const idx = inProcess.findIndex((todoId) => todoId === id);
 
-          return [...prev].splice(idx, 1);
+        dispatch({
+          type: 'setInProcess',
+          payload: [...inProcess].splice(idx, 1),
         });
       });
   };

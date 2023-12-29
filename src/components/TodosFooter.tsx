@@ -13,6 +13,7 @@ type Props = {
   activeTodosLength: number,
   completedTodosLength: number,
   onFilterChange: (filterBy: FilterBy) => void
+  onDeleteCompleted: () => void
 };
 
 export const TodosFooter: FC<Props> = ({
@@ -20,6 +21,7 @@ export const TodosFooter: FC<Props> = ({
   activeTodosLength,
   completedTodosLength,
   onFilterChange,
+  onDeleteCompleted,
 }) => {
   return (
     <footer className="todoapp__footer" data-cy="Footer">
@@ -47,6 +49,7 @@ export const TodosFooter: FC<Props> = ({
         type="button"
         className="todoapp__clear-completed"
         disabled={completedTodosLength <= 0}
+        onClick={() => completedTodosLength > 0 && onDeleteCompleted()}
         data-cy="ClearCompletedButton"
       >
         Clear completed

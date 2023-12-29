@@ -8,14 +8,15 @@ import { USER_ID } from '../constants/userId';
 type Action =
   { type: 'setTodos', payload: Todo[] }
   | { type: 'setTempTodo', payload: Todo | null }
+  | { type: 'setInProcess', payload: number[] }
   | { type: 'setError', payload: { isError: boolean, errorMessage?: string } };
 
 type State = {
   todos: Todo[]
   tempTodo: Todo | null
+  inProcess: number[]
   isError: boolean
   errorMessage: string
-  fetchTodos: () => void
   updateTodos: () => void
 };
 
@@ -26,6 +27,9 @@ function reducer(state: State, action: Action): State {
 
     case 'setTempTodo':
       return { ...state, tempTodo: action.payload };
+
+    case 'setInProcess':
+      return { ...state, inProcess: action.payload };
 
     case 'setError':
       return {
@@ -42,9 +46,9 @@ function reducer(state: State, action: Action): State {
 const initialState: State = {
   todos: [],
   tempTodo: null,
+  inProcess: [],
   isError: false,
   errorMessage: '',
-  fetchTodos: () => { },
   updateTodos: () => { },
 };
 
@@ -101,7 +105,7 @@ export const GlobalStateProvider: FC<Props> = ({ children }) => {
 
   return (
     <DispatchContext.Provider value={dispatch}>
-      <StateContext.Provider value={{ ...state, fetchTodos, updateTodos }}>
+      <StateContext.Provider value={{ ...state, updateTodos }}>
         {children}
       </StateContext.Provider>
     </DispatchContext.Provider>
