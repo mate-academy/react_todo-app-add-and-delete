@@ -64,16 +64,15 @@ export const App: React.FC = () => {
   const onRemoveTodo = (todoId: number) => {
     deleteTodo(todoId)
       .then(() => {
-        const newTodos = todos.filter(todo => todo.id !== todoId);
-
-        setTodos(newTodos);
-      });
+        setTodos(prevTodos => prevTodos.filter(todo => todo.id !== todoId));
+      })
+      .catch(() => setErrorMessage(Errors.delete));
   };
 
   const onClearCompleted = () => {
-    const newTodos = todos.filter(todo => !todo.completed);
-
-    setTodos(newTodos);
+    todos.filter(todo => todo.completed).forEach(todo => {
+      onRemoveTodo(todo.id);
+    });
   };
 
   const onTodoEdited = (id: number, newTitle: string) => {
