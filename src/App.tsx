@@ -1,7 +1,7 @@
 /* eslint-disable jsx-a11y/control-has-associated-label */
 import React, { useEffect, useState } from 'react';
 import { UserWarning } from './UserWarning';
-import { getTodos, postTodo } from './api/todos';
+import { deleteTodo, getTodos, postTodo } from './api/todos';
 import { Todo } from './types/Todo';
 import { TodoList } from './components/TodoList';
 import { NewTodo } from './components/NewTodo';
@@ -62,9 +62,12 @@ export const App: React.FC = () => {
   };
 
   const onRemoveTodo = (todoId: number) => {
-    const newTodos = todos.filter(todo => todo.id !== todoId);
+    deleteTodo(todoId)
+      .then(() => {
+        const newTodos = todos.filter(todo => todo.id !== todoId);
 
-    setTodos(newTodos);
+        setTodos(newTodos);
+      });
   };
 
   const onClearCompleted = () => {
