@@ -9,11 +9,13 @@ type Props = {
   onRemoveTodo: (todoId: number) => void,
   onTodoEdited: (id: number, newTitle: string) => void,
   setErrorMsg: (errorMsg: Errors | null) => void,
+  tempTodo: Todo | null,
 };
 
 export const TodoList: React.FC<Props> = (
   {
-    todos, onCompletionChange, onRemoveTodo, onTodoEdited, setErrorMsg,
+    todos, onCompletionChange, onRemoveTodo,
+    onTodoEdited, setErrorMsg, tempTodo,
   },
 ) => (
   <section className="todoapp__main" data-cy="TodoList">
@@ -28,5 +30,33 @@ export const TodoList: React.FC<Props> = (
           setErrorMsg={setErrorMsg}
         />
       ))}
+
+    {tempTodo !== null && (
+      <div
+        data-cy="Todo"
+        className={tempTodo.completed ? 'todo completed' : 'todo'}
+      >
+        <label className="todo__status-label">
+          <input
+            data-cy="TodoStatus"
+            type="checkbox"
+            className="todo__status"
+            readOnly
+            checked
+          />
+        </label>
+        <span
+          data-cy="TodoTitle"
+          className="todo__title"
+        >
+          { tempTodo.title }
+        </span>
+        {/* overlay will cover the todo while it is being updated */}
+        <div data-cy="TodoLoader" className="modal overlay is-active">
+          <div className="modal-background has-background-white-ter" />
+          <div className="loader" />
+        </div>
+      </div>
+    )}
   </section>
 );

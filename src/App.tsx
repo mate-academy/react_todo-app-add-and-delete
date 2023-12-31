@@ -32,6 +32,7 @@ export const App: React.FC = () => {
   const [loadingDone, setLoadingDone] = useState(false);
   const [todosActivityFilter, setTodosActivityFilter] = useState('All');
   const [errorMessage, setErrorMessage] = useState<Errors | null>(null);
+  const [tempTodo, setTempTodo] = useState<Todo | null>(null);
 
   useEffect(() => {
     getTodos(USER_ID)
@@ -40,11 +41,23 @@ export const App: React.FC = () => {
     setLoadingDone(true);
   }, []);
 
+  const initTempTodo = (todo: Todo) => {
+    setTempTodo(todo);
+  };
+
+  const clearTempTodo = () => {
+    setTempTodo(null);
+  };
+
   const onAdd = (todo: Todo) => {
+    initTempTodo(todo);
+
     postTodo(todo.title, todo.userId, todo.completed)
       .then((newTodo: Todo) => {
         setTodos(prev => [...prev, newTodo]);
-      });
+      })
+      .catch(() => setErrorMessage(Errors.add))
+      .finally(() => clearTempTodo());
   };
 
   const onCompletionChange = (todoId: number) => {
@@ -132,7 +145,6 @@ export const App: React.FC = () => {
           />
           <NewTodo
             onAdd={onAdd}
-            todos={todos}
             userId={USER_ID}
             setErrorMsg={setErrorMsg}
           />
@@ -146,6 +158,7 @@ export const App: React.FC = () => {
               onRemoveTodo={onRemoveTodo}
               onTodoEdited={onTodoEdited}
               setErrorMsg={setErrorMsg}
+              tempTodo={tempTodo}
             />
           )}
         </section>
