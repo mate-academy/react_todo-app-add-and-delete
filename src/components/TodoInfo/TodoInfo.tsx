@@ -21,6 +21,7 @@ export const TodoInfo: React.FC<Props> = (
 ) => {
   const [isEdited, setIsEdited] = useState(false);
   const [editedTitle, setEditedTitle] = useState(todo.title);
+  const [isLoading, setIsLoading] = useState(false);
   const { title, completed, id } = todo;
 
   function handleCheckboxChange() {
@@ -28,11 +29,8 @@ export const TodoInfo: React.FC<Props> = (
   }
 
   function handleRemoveButton() {
-    try {
-      onRemoveTodo(id);
-    } catch {
-      setErrorMsg(Errors.delete);
-    }
+    setIsLoading(true);
+    onRemoveTodo(id);
   }
 
   function handleClickOnTodo() {
@@ -108,7 +106,7 @@ export const TodoInfo: React.FC<Props> = (
       )}
 
       {/* overlay will cover the todo while it is being updated */}
-      <div data-cy="TodoLoader" className="modal overlay">
+      <div data-cy="TodoLoader" className={`modal overlay ${isLoading ? 'is-active' : ''}`}>
         <div className="modal-background has-background-white-ter" />
         <div className="loader" />
       </div>
