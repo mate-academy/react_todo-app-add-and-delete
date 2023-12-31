@@ -1,7 +1,7 @@
 /* eslint-disable jsx-a11y/control-has-associated-label */
 import React, { useEffect, useState } from 'react';
 import { UserWarning } from './UserWarning';
-import { getTodos } from './api/todos';
+import { getTodos, postTodo } from './api/todos';
 import { Todo } from './types/Todo';
 import { TodoList } from './components/TodoList';
 import { NewTodo } from './components/NewTodo';
@@ -41,7 +41,10 @@ export const App: React.FC = () => {
   }, []);
 
   const onAdd = (todo: Todo) => {
-    setTodos(prev => [...prev, todo]);
+    postTodo(todo.title, todo.userId, todo.completed)
+      .then((newTodo: Todo) => {
+        setTodos(prev => [...prev, newTodo]);
+      });
   };
 
   const onCompletionChange = (todoId: number) => {
