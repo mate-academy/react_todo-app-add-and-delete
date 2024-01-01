@@ -19,7 +19,6 @@ export const TodoErr = () => {
           hidden: !error,
         },
       )}
-      style={{ transition: 'hidden 1s linear' }}
     >
       <button
         data-cy="HideErrorButton"

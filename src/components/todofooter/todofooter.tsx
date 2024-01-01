@@ -1,12 +1,29 @@
 import classNames from 'classnames';
 import { useTodos } from '../../context/todoProvider';
+import { deleteTodo } from '../../api/todos';
+import { ErrorType } from '../../types/Error';
 
 export const TodoFooter = () => {
   const {
-    filterBy, setFilterBy, countIncompleteTask, todos,
+    filterBy, setFilterBy, countIncompleteTask, todos, setTodos, setError,
   } = useTodos();
 
   const hiddenBtn = todos.filter(el => el.completed).length === 0;
+
+  const DeleteCompletedTask = () => {
+    const incompletedTodos = todos.filter(task => !task.completed);
+
+    todos.map(task => {
+      if (task.completed) {
+        return deleteTodo(task.id)
+          .catch(() => setError(ErrorType.Delete));
+      }
+
+      return task;
+    });
+
+    setTodos(incompletedTodos);
+  };
 
   return (
     <>
@@ -57,6 +74,7 @@ export const TodoFooter = () => {
             type="button"
             className="todoapp__clear-completed"
             data-cy="ClearCompletedButton"
+            onClick={DeleteCompletedTask}
             disabled={hiddenBtn}
           >
             Clear completed

@@ -3,20 +3,22 @@ import { useTodos } from '../../context/todoProvider';
 import { AddTodo } from '../../api/todos';
 import { USER_ID } from '../../utils/userID';
 import { ErrorType } from '../../types/Error';
+import { Todo } from '../../types/Todo';
 
 export const TodoForm = () => {
   const {
-    taskName, setTaskName, setError,
-    isAddingTask, setIsAddingTask, countIncompleteTask,
+    taskName, setTaskName, setError, isAddingTask,
+    setIsAddingTask, countIncompleteTask, setTempTodo,
+    todos, setTodos,
   } = useTodos();
 
   const inputRef = useRef<HTMLInputElement | null>(null);
 
   useEffect(() => {
     inputRef.current?.focus();
-  }, []);
+  }, [todos, setError]);
 
-  const handleOnSubmit = (event: any) => {
+  const handleOnSubmit = (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
 
     if (taskName.trim().length === 0) {
@@ -26,16 +28,28 @@ export const TodoForm = () => {
     }
 
     setIsAddingTask(true);
+    setTempTodo({
+      id: 0,
+      userId: USER_ID,
+      title: taskName.trim(),
+      completed: false,
+    });
 
     AddTodo({
       userId: USER_ID,
       title: taskName.trim(),
       completed: false,
     })
-      .then(() => setTaskName(''))
+      .then((newTask: Todo) => {
+        setTaskName('');
+        const newTodo = [...todos, newTask];
+
+        setTodos(newTodo);
+      })
       .catch(() => setError(ErrorType.Add))
       .finally(() => {
         setIsAddingTask(false);
+        setTempTodo(null);
       });
   };
 

@@ -9,6 +9,7 @@ import { ErrorType } from '../types/Error';
 
 type TodosProps = {
   todos: Todo[];
+  setTodos: (todo: Todo[]) => void;
   visibleTodos: Todo[];
   taskName: string;
   setTaskName: (query: string) => void;
@@ -20,10 +21,13 @@ type TodosProps = {
   visibleTasks: Todo[];
   isAddingTask: boolean;
   setIsAddingTask: (TF: boolean) => void;
+  tempTodo: Todo | null;
+  setTempTodo: (todo: Todo | null) => void;
 };
 
 const TodosContext = createContext<TodosProps>({
   todos: [],
+  setTodos: () => undefined,
   visibleTodos: [],
   taskName: '',
   setTaskName: () => undefined,
@@ -35,6 +39,8 @@ const TodosContext = createContext<TodosProps>({
   visibleTasks: [],
   isAddingTask: false,
   setIsAddingTask: () => undefined,
+  tempTodo: null,
+  setTempTodo: () => undefined,
 });
 
 type Props = {
@@ -57,9 +63,9 @@ export const TodosProvider: React.FC<Props> = ({ children }) => {
   const [visibleTodos, setVisibleTodos] = useState<Todo[]>([]);
   const [taskName, setTaskName] = useState<string>('');
   const [filterBy, setFilterBy] = useState<Filter>('all');
-  // const [count, setCount] = useState<number>(0);
   const [error, setError] = useState<null | string>(null);
   const [isAddingTask, setIsAddingTask] = useState<boolean>(false);
+  const [tempTodo, setTempTodo] = useState<Todo | null>(null);
 
   const visibleTasks = useMemo(() => {
     return dataFilter(todos, filterBy);
@@ -83,6 +89,8 @@ export const TodosProvider: React.FC<Props> = ({ children }) => {
     visibleTasks,
     isAddingTask,
     setIsAddingTask,
+    tempTodo,
+    setTempTodo,
   };
 
   useEffect(() => {
