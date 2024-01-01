@@ -1,6 +1,7 @@
 /* eslint-disable jsx-a11y/no-autofocus */
 /* eslint-disable jsx-a11y/control-has-associated-label */
 import classNames from 'classnames';
+import { useEffect, useRef } from 'react';
 import { useTodo } from '../providers/TodoProvider';
 
 export const TodoForm = () => {
@@ -15,6 +16,16 @@ export const TodoForm = () => {
     setNewTodoTitle,
     tempTodo,
   } = useTodo();
+
+  const inputRef = useRef<HTMLInputElement>(null);
+
+  useEffect(() => {
+    inputRef.current?.focus();
+  }, []);
+
+  useEffect(() => {
+    inputRef.current?.focus();
+  }, [tempTodo]);
 
   const handleClick = () => {
     const toggle = !!todosLeft;
@@ -70,7 +81,7 @@ export const TodoForm = () => {
           placeholder="What needs to be done?"
           value={newTodoTitle}
           onChange={handleChange}
-          autoFocus
+          ref={inputRef}
           disabled={!!tempTodo}
         />
       </form>
