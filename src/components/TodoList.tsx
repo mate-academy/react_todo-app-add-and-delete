@@ -1,11 +1,28 @@
 import classNames from 'classnames';
-import { useEffect } from 'react';
+import { useEffect, useMemo } from 'react';
 import { useTodoContext } from '../context';
+import { Todo } from '../types/Todo';
 
-export const TodoList = () => {
+type Props = {
+  tempTodo: Todo | null
+};
+
+export const TodoList = ({ tempTodo }: Props) => {
   const {
     activeFilter, handleTodosFilter, visibleTodos, setVisibleTodos, allTodos,
   } = useTodoContext();
+
+  const activeTodos = useMemo(() => {
+    let counter = 0;
+
+    allTodos?.forEach(todo => {
+      if (!todo.completed) {
+        counter += 1;
+      }
+    });
+
+    return counter;
+  }, [allTodos]);
 
   useEffect(() => {
     setVisibleTodos(allTodos);
@@ -17,7 +34,7 @@ export const TodoList = () => {
         <div
           key={todo.id}
           data-cy="Todo"
-          className={classNames({ 'todo completed': todo.completed })}
+          className={classNames('todo', { 'todo completed': todo.completed })}
         >
           <label className="todo__status-label">
             <input
@@ -36,19 +53,43 @@ export const TodoList = () => {
           <button type="button" className="todo__remove" data-cy="TodoDelete">
             ×
           </button>
-
-          {/* overlay will cover the todo while it is being updated */}
-          <div data-cy="TodoLoader" className="modal overlay">
-            <div className="modal-background has-background-white-ter" />
-            <div className="loader" />
-          </div>
         </div>
       ))}
+      {tempTodo
+              && (
+                <div data-cy="Todo" className="todo">
+                  <label className="todo__status-label">
+                    <input
+                      data-cy="TodoStatus"
+                      type="checkbox"
+                      className="todo__status"
+                    />
+                  </label>
+
+                  <span data-cy="TodoTitle" className="todo__title">
+                    {tempTodo.title}
+                  </span>
+                  <button
+                    type="button"
+                    className="todo__remove"
+                    data-cy="TodoDelete"
+                  >
+                    ×
+                  </button>
+
+                  <div data-cy="TodoLoader" className="modal overlay is-active">
+                    <div
+                      className="modal-background has-background-white-ter"
+                    />
+                    <div className="loader" />
+                  </div>
+                </div>
+              )}
       {visibleTodos
               && (
                 <footer className="todoapp__footer" data-cy="Footer">
                   <span className="todo-count" data-cy="TodosCounter">
-                    {`${visibleTodos.length} items left`}
+                    {`${activeTodos} items left`}
                   </span>
 
                   {/* Active filter should have a 'selected' class */}
@@ -88,13 +129,16 @@ export const TodoList = () => {
                   </nav>
 
                   {/* don't show this button if there are no completed todos */}
-                  <button
-                    type="button"
-                    className="todoapp__clear-completed"
-                    data-cy="ClearCompletedButton"
-                  >
-                    Clear completed
-                  </button>
+                  {visibleTodos.some(todo => todo.completed)
+                  && (
+                    <button
+                      type="button"
+                      className="todoapp__clear-completed"
+                      data-cy="ClearCompletedButton"
+                    >
+                      Clear completed
+                    </button>
+                  )}
                 </footer>
               )}
     </>
