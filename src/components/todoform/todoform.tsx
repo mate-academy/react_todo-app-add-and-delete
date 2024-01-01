@@ -22,7 +22,7 @@ export const TodoForm = () => {
     event.preventDefault();
 
     if (taskName.trim().length === 0) {
-      setError('Title should not be empty');
+      setError(ErrorType.Title);
 
       return;
     }
@@ -41,10 +41,10 @@ export const TodoForm = () => {
       completed: false,
     })
       .then((newTask: Todo) => {
-        setTaskName('');
         const newTodo = [...todos, newTask];
 
         setTodos(newTodo);
+        setTaskName('');
       })
       .catch(() => setError(ErrorType.Add))
       .finally(() => {
