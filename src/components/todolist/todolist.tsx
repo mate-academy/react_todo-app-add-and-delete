@@ -5,7 +5,7 @@ import { deleteTodo } from '../../api/todos';
 import { ErrorType } from '../../types/Error';
 
 export const TodoList = () => {
-  const { todos, setError } = useTodos();
+  const { visibleTasks, setError } = useTodos();
 
   const handleDeleteClick = (id: number) => {
     deleteTodo(id)
@@ -17,7 +17,7 @@ export const TodoList = () => {
   return (
     <section className="todoapp__main" data-cy="TodoList">
       {/* <TodoInfo /> */}
-      {todos.map(task => (
+      {visibleTasks.map(task => (
         <div
           key={task.id}
           data-cy="Todo"

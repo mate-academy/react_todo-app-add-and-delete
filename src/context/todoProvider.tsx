@@ -1,5 +1,5 @@
 import {
-  ReactNode, createContext, useContext, useEffect, useState,
+  ReactNode, createContext, useContext, useEffect, useMemo, useState,
 } from 'react';
 import { Todo } from '../types/Todo';
 import { getTodos } from '../api/todos';
@@ -9,28 +9,30 @@ import { ErrorType } from '../types/Error';
 
 type TodosProps = {
   todos: Todo[];
-  setTodos: (tasks: Todo[]) => void;
+  visibleTodos: Todo[];
   taskName: string;
   setTaskName: (query: string) => void;
   filterBy: Filter;
   setFilterBy: (query: Filter) => void,
-  count: number;
+  countIncompleteTask: number;
   error: null | string;
   setError: (err: string | null) => void;
+  visibleTasks: Todo[];
   isAddingTask: boolean;
   setIsAddingTask: (TF: boolean) => void;
 };
 
 const TodosContext = createContext<TodosProps>({
   todos: [],
-  setTodos: () => undefined,
+  visibleTodos: [],
   taskName: '',
   setTaskName: () => undefined,
   filterBy: 'all',
   setFilterBy: () => undefined,
-  count: 0,
+  countIncompleteTask: 0,
   error: null,
   setError: () => undefined,
+  visibleTasks: [],
   isAddingTask: false,
   setIsAddingTask: () => undefined,
 });
@@ -52,11 +54,20 @@ const dataFilter = (data: Todo[], filtr: Filter) => {
 
 export const TodosProvider: React.FC<Props> = ({ children }) => {
   const [todos, setTodos] = useState<Todo[]>([]);
+  const [visibleTodos, setVisibleTodos] = useState<Todo[]>([]);
   const [taskName, setTaskName] = useState<string>('');
   const [filterBy, setFilterBy] = useState<Filter>('all');
-  const [count, setCount] = useState<number>(0);
+  // const [count, setCount] = useState<number>(0);
   const [error, setError] = useState<null | string>(null);
   const [isAddingTask, setIsAddingTask] = useState<boolean>(false);
+
+  const visibleTasks = useMemo(() => {
+    return dataFilter(todos, filterBy);
+  }, [todos, filterBy]);
+
+  const countIncompleteTask = useMemo(() => {
+    return dataFilter(todos, 'active').length;
+  }, [todos]);
 
   const value = {
     todos,
@@ -65,9 +76,11 @@ export const TodosProvider: React.FC<Props> = ({ children }) => {
     setTaskName,
     filterBy,
     setFilterBy,
-    count,
+    countIncompleteTask,
     error,
     setError,
+    visibleTodos,
+    visibleTasks,
     isAddingTask,
     setIsAddingTask,
   };
@@ -75,15 +88,14 @@ export const TodosProvider: React.FC<Props> = ({ children }) => {
   useEffect(() => {
     try {
       getTodos(USER_ID)
-        .then(data => setTodos(dataFilter(data, filterBy)));
+        .then(data => {
+          setTodos(data);
+          setVisibleTodos(data);
+        });
     } catch (err) {
       setError(ErrorType.Load);
     }
-
-    const counter = todos.filter(task => !task.completed).length;
-
-    setCount(counter);
-  }, [todos, filterBy]);
+  }, []);
 
   return (
     <TodosContext.Provider value={value}>

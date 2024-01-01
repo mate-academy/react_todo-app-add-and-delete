@@ -6,7 +6,8 @@ import { ErrorType } from '../../types/Error';
 
 export const TodoForm = () => {
   const {
-    taskName, setTaskName, setError, isAddingTask, setIsAddingTask, count,
+    taskName, setTaskName, setError,
+    isAddingTask, setIsAddingTask, countIncompleteTask,
   } = useTodos();
 
   const inputRef = useRef<HTMLInputElement | null>(null);
@@ -40,7 +41,7 @@ export const TodoForm = () => {
 
   return (
     <header className="todoapp__header">
-      {count > 0 && (
+      {countIncompleteTask > 0 && (
         // eslint-disable-next-line jsx-a11y/control-has-associated-label
         <button
           type="button"
