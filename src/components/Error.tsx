@@ -2,11 +2,18 @@ import { useEffect, useState } from 'react';
 // import { ErrorType } from '../types/ErrorType';
 import classNames from 'classnames';
 import { useTodo } from '../providers/TodoProvider';
-import { Errors } from '../types/ErrorType';
 
 export const Error = () => {
   const { error, setError } = useTodo();
   const [isHidden, setIsHidden] = useState<boolean>(true);
+
+  enum Errors {
+    load = 'Unable to load todos',
+    title = 'Title should not be empty',
+    add = 'Unable to add a todo',
+    delete = 'Unable to delete a todo',
+    update = 'Unable to update a todo',
+  }
 
   useEffect(() => {
     setIsHidden(!error);

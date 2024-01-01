@@ -11,6 +11,9 @@ export const TodoList = () => {
     setTodos,
     modifiedTodo,
     setModifiedTodo,
+    deleteTodoFromApi,
+    tempTodo,
+    isDeleting,
   } = useTodo();
 
   const handleDoubleClick = (todoId: number | null = null) => () => {
@@ -27,6 +30,10 @@ export const TodoList = () => {
         return todo;
       })
     ));
+  };
+
+  const handleDelete = (todoId: number) => () => {
+    deleteTodoFromApi(todoId);
   };
 
   return (
@@ -59,19 +66,59 @@ export const TodoList = () => {
               type="button"
               className="todo__remove"
               data-cy="TodoDelete"
-              disabled
+              onClick={handleDelete(todo.id)}
             >
               ×
             </button>
 
-            {/* 'is-active' class puts this modal on top of the todo */}
-            <div data-cy="TodoLoader" className="modal overlay">
+            <div
+              data-cy="TodoLoader"
+              className={classNames('modal overlay', {
+                'is-active': isDeleting.includes(todo.id),
+              })}
+            >
               <div className="modal-background has-background-white-ter" />
               <div className="loader" />
             </div>
           </div>
         );
       })}
+
+      {tempTodo && (
+        <div
+          key={tempTodo.id}
+          data-cy="Todo"
+          className="todo"
+          onDoubleClick={handleDoubleClick(tempTodo.id)}
+        >
+          <label className="todo__status-label">
+            <input
+              data-cy="TodoStatus"
+              type="checkbox"
+              className="todo__status"
+              checked={tempTodo.completed}
+              onChange={handleCheck(tempTodo.id)}
+            />
+          </label>
+
+          {tempTodo.id !== modifiedTodo
+            ? <TodoInfo todo={tempTodo} />
+            : <TodoEdit todoTitle={tempTodo.title} />}
+
+          <button
+            type="button"
+            className="todo__remove"
+            data-cy="TodoDelete"
+            onClick={handleDelete(tempTodo.id)}
+          >
+            ×
+          </button>
+          <div data-cy="TodoLoader" className="modal overlay is-active">
+            <div className="modal-background has-background-white-ter" />
+            <div className="loader" />
+          </div>
+        </div>
+      )}
     </section>
   );
 };

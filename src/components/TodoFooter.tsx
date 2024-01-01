@@ -6,8 +6,16 @@ const FILTER_VALUES: FilterType[] = ['All', 'Active', 'Completed'];
 
 export const TodoFooter = () => {
   const {
-    todos, todosLeft,
+    todos, todosLeft, deleteTodoFromApi,
   } = useTodo();
+
+  const handleClear = () => {
+    const completed = todos.filter(todo => todo.completed);
+
+    completed.forEach(todo => {
+      deleteTodoFromApi(todo.id);
+    });
+  };
 
   return (
     <footer className="todoapp__footer" data-cy="Footer">
@@ -17,7 +25,7 @@ export const TodoFooter = () => {
 
       <nav className="filter" data-cy="Filter">
         {FILTER_VALUES.map(filter => (
-          <Filter key={filter} filter={filter} />
+          <Filter filter={filter} />
         ))}
       </nav>
 
@@ -25,6 +33,7 @@ export const TodoFooter = () => {
         type="button"
         className="todoapp__clear-completed"
         data-cy="ClearCompletedButton"
+        onClick={handleClear}
         disabled={todosLeft === todos.length}
       >
         Clear completed

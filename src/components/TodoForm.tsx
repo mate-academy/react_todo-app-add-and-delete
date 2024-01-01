@@ -4,7 +4,17 @@ import classNames from 'classnames';
 import { useTodo } from '../providers/TodoProvider';
 
 export const TodoForm = () => {
-  const { todos, setTodos, todosLeft } = useTodo();
+  const {
+    todos,
+    setTodos,
+    todosLeft,
+    addTodo,
+    USER_ID,
+    setError,
+    newTodoTitle,
+    setNewTodoTitle,
+    tempTodo,
+  } = useTodo();
 
   const handleClick = () => {
     const toggle = !!todosLeft;
@@ -12,6 +22,28 @@ export const TodoForm = () => {
     setTodos((prev) => {
       return prev.map(todo => ({ ...todo, completed: toggle }));
     });
+  };
+
+  const handleChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+    setNewTodoTitle(event.target.value);
+  };
+
+  const handleSubmit = (event: React.FormEvent<HTMLFormElement>) => {
+    event.preventDefault();
+
+    if (!newTodoTitle.trim().length) {
+      setError('title');
+
+      return;
+    }
+
+    const newTodo = {
+      userId: USER_ID,
+      completed: false,
+      title: newTodoTitle.trim(),
+    };
+
+    addTodo(newTodo);
   };
 
   return (
@@ -28,13 +60,18 @@ export const TodoForm = () => {
         />
       )}
 
-      <form>
+      <form
+        onSubmit={handleSubmit}
+      >
         <input
           data-cy="NewTodoField"
           type="text"
           className="todoapp__new-todo"
           placeholder="What needs to be done?"
+          value={newTodoTitle}
+          onChange={handleChange}
           autoFocus
+          disabled={!!tempTodo}
         />
       </form>
 
