@@ -23,6 +23,8 @@ type TodosProps = {
   setIsAddingTask: (TF: boolean) => void;
   tempTodo: Todo | null;
   setTempTodo: (todo: Todo | null) => void;
+  deletingTask: number[];
+  setDeletingTask: (n: number[]) => void;
 };
 
 const TodosContext = createContext<TodosProps>({
@@ -41,6 +43,8 @@ const TodosContext = createContext<TodosProps>({
   setIsAddingTask: () => undefined,
   tempTodo: null,
   setTempTodo: () => undefined,
+  deletingTask: [],
+  setDeletingTask: () => undefined,
 });
 
 type Props = {
@@ -65,6 +69,7 @@ export const TodosProvider: React.FC<Props> = ({ children }) => {
   const [filterBy, setFilterBy] = useState<Filter>('all');
   const [error, setError] = useState<null | string>(null);
   const [isAddingTask, setIsAddingTask] = useState<boolean>(false);
+  const [deletingTask, setDeletingTask] = useState<number[]>([]);
   const [tempTodo, setTempTodo] = useState<Todo | null>(null);
 
   const visibleTasks = useMemo(() => {
@@ -91,6 +96,8 @@ export const TodosProvider: React.FC<Props> = ({ children }) => {
     setIsAddingTask,
     tempTodo,
     setTempTodo,
+    deletingTask,
+    setDeletingTask,
   };
 
   useEffect(() => {

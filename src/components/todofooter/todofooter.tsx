@@ -5,7 +5,8 @@ import { ErrorType } from '../../types/Error';
 
 export const TodoFooter = () => {
   const {
-    filterBy, setFilterBy, countIncompleteTask, todos, setTodos, setError,
+    filterBy, setFilterBy, countIncompleteTask, todos,
+    setTodos, setError,
   } = useTodos();
 
   const hiddenBtn = todos.filter(el => el.completed).length === 0;

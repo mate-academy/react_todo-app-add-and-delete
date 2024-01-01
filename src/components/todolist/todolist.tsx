@@ -6,10 +6,14 @@ import { ErrorType } from '../../types/Error';
 
 export const TodoList = () => {
   const {
-    visibleTasks, setError, tempTodo, todos, setTodos,
+    visibleTasks, setError, tempTodo, todos,
+    setTodos, deletingTask, setDeletingTask,
   } = useTodos();
 
   const handleDeleteClick = (id: number) => {
+    const deletingId = [...deletingTask, id];
+
+    setDeletingTask(deletingId);
     deleteTodo(id)
       .then(() => {
         const filteredTodo = todos.filter(task => task.id !== id);
@@ -18,7 +22,8 @@ export const TodoList = () => {
       })
       .catch(() => {
         setError(ErrorType.Delete);
-      });
+      })
+      .finally(() => setDeletingTask([]));
   };
 
   return (
@@ -56,7 +61,13 @@ export const TodoList = () => {
           </button>
 
           {/* overlay will cover the todo while it is being updated */}
-          <div data-cy="TodoLoader" className="modal overlay">
+          <div
+            data-cy="TodoLoader"
+            // className="modal overlay"
+            className={classNames('modal overlay', {
+              'is-active': deletingTask.includes(task.id),
+            })}
+          >
             <div className="modal-background has-background-white-ter" />
             <div className="loader" />
           </div>
