@@ -33,9 +33,6 @@ export const AppContextProvider: FC<Props> = ({ children }) => {
       } catch (error) {
         setErrorMessage('Unable to load todos');
         setShowError(true);
-        setTimeout(() => {
-          setShowError(false);
-        }, 3000);
       }
     };
 
@@ -46,6 +43,14 @@ export const AppContextProvider: FC<Props> = ({ children }) => {
       setErrorMessage('');
     };
   }, []);
+
+  useEffect(() => {
+    if (showError) {
+      setTimeout(() => {
+        setShowError(false);
+      }, 3000);
+    }
+  }, [showError]);
 
   let filteredTodos = [...todos];
 

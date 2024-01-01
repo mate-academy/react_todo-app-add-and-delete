@@ -1,22 +1,56 @@
-import { FC } from 'react';
+import {
+  FC, useEffect, useRef, useState, ChangeEvent, FormEvent, useContext,
+} from 'react';
+import { AppContext } from '../context/AppContext';
 
-export const Header: FC = () => (
-  <header className="todoapp__header">
-    {/* eslint-disable-next-line jsx-a11y/control-has-associated-label */}
-    <button
-      type="button"
-      className="todoapp__toggle-all active"
-      data-cy="ToggleAllButton"
-    />
+export const Header: FC = () => {
+  const [inputValue, setInputValue] = useState('');
+  const { setErrorMessage, setShowError } = useContext(AppContext);
 
-    {/* Add a todo on form submit */}
-    <form>
-      <input
-        data-cy="NewTodoField"
-        type="text"
-        className="todoapp__new-todo"
-        placeholder="What needs to be done?"
+  const handleInputChange = (event: ChangeEvent<HTMLInputElement>) => {
+    setInputValue(event.target.value);
+  };
+
+  const handlInputSubmit = (event: FormEvent<HTMLFormElement>) => {
+    event.preventDefault();
+
+    if (!inputValue.trim()) {
+      setErrorMessage('Title should not be empty');
+      setShowError(true);
+    }
+  };
+
+  const todoInputRef = useRef<HTMLInputElement | null>(null);
+
+  useEffect(() => {
+    if (todoInputRef.current) {
+      todoInputRef.current.focus();
+    }
+  }, []);
+
+  return (
+    <header className="todoapp__header">
+      {/* eslint-disable-next-line jsx-a11y/control-has-associated-label */}
+      <button
+        type="button"
+        className="todoapp__toggle-all active"
+        data-cy="ToggleAllButton"
       />
-    </form>
-  </header>
-);
+
+      {/* Add a todo on form submit */}
+      <form
+        onSubmit={handlInputSubmit}
+      >
+        <input
+          value={inputValue}
+          onChange={handleInputChange}
+          data-cy="NewTodoField"
+          type="text"
+          className="todoapp__new-todo"
+          placeholder="What needs to be done?"
+          ref={todoInputRef}
+        />
+      </form>
+    </header>
+  );
+};
