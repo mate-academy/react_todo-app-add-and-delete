@@ -1,5 +1,5 @@
 /* eslint-disable jsx-a11y/control-has-associated-label */
-import React, { useEffect, useRef, useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { UserWarning } from './UserWarning';
 import { getTodos, addTodo } from './api/todos';
 import { TodoList } from './components/TodoList';
@@ -9,22 +9,18 @@ import { Todo } from './types/Todo';
 const USER_ID = 12113;
 
 export const App: React.FC = () => {
-  const [errorMessage, setErrorMessage] = useState<string | null>(null);
   const [query, setQuery] = useState<string>('');
   const [tempTodo, setTempTodo] = useState<Todo | null>(null);
   const [isLoading, setIsLoading] = useState(false);
 
-  const { setAllTodos, visibleTodos } = useTodoContext();
-  const inputRef = useRef<HTMLInputElement>(null);
-
-  const errorHandler = (message: string) => {
-    setErrorMessage(null);
-    setErrorMessage(message);
-
-    setTimeout(() => {
-      setErrorMessage(null);
-    }, 3000);
-  };
+  const {
+    setAllTodos,
+    visibleTodos,
+    errorHandler,
+    errorMessage,
+    setErrorMessage,
+    inputRef,
+  } = useTodoContext();
 
   const handleSubmit = async (event: React.FormEvent) => {
     event.preventDefault();
@@ -86,7 +82,7 @@ export const App: React.FC = () => {
     if (inputRef.current) {
       inputRef.current.focus();
     }
-  }, [tempTodo]);
+  }, [tempTodo, inputRef]);
 
   if (!USER_ID) {
     return <UserWarning />;

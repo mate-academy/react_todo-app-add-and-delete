@@ -1,7 +1,8 @@
 import classNames from 'classnames';
-import { useEffect, useMemo } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import { useTodoContext } from '../context';
 import { Todo } from '../types/Todo';
+import { deleteTodo } from '../api/todos';
 
 type Props = {
   tempTodo: Todo | null
@@ -9,8 +10,51 @@ type Props = {
 
 export const TodoList = ({ tempTodo }: Props) => {
   const {
-    activeFilter, handleTodosFilter, visibleTodos, setVisibleTodos, allTodos,
+    activeFilter,
+    handleTodosFilter,
+    visibleTodos,
+    setVisibleTodos,
+    allTodos,
+    errorHandler,
+    setAllTodos,
+    inputRef,
   } = useTodoContext();
+
+  const [isLoading, setIsLoading] = useState<number | boolean>(false);
+
+  const handleTodoDelete = (id: number) => {
+    setIsLoading(id);
+
+    const deletingTodo = async () => {
+      try {
+        if (allTodos) {
+          await deleteTodo(id);
+          const updatedTodo = allTodos.filter(todo => todo.id !== id);
+
+          setAllTodos(updatedTodo);
+        }
+      } catch (error) {
+        errorHandler('Unable to delete todo');
+      } finally {
+        setIsLoading(false);
+      }
+    };
+
+    deletingTodo();
+  };
+
+  const handleClearCompleted = async () => {
+    if (allTodos) {
+      const completedTodos = allTodos.filter(todo => todo.completed);
+
+      try {
+        await Promise.all(completedTodos.map(todo => deleteTodo(todo.id)));
+        setAllTodos(allTodos.filter(todo => !todo.completed));
+      } catch (error) {
+        errorHandler('Unable to delete todo');
+      }
+    }
+  };
 
   const activeTodos = useMemo(() => {
     let counter = 0;
@@ -27,6 +71,12 @@ export const TodoList = ({ tempTodo }: Props) => {
   useEffect(() => {
     setVisibleTodos(allTodos);
   }, [allTodos, setVisibleTodos]);
+
+  useEffect(() => {
+    if (inputRef.current) {
+      inputRef.current.focus();
+    }
+  }, [allTodos, inputRef]);
 
   return (
     <>
@@ -50,9 +100,25 @@ export const TodoList = ({ tempTodo }: Props) => {
           </span>
 
           {/* Remove button appears only on hover */}
-          <button type="button" className="todo__remove" data-cy="TodoDelete">
+          <button
+            type="button"
+            className="todo__remove"
+            data-cy="TodoDelete"
+            onClick={() => handleTodoDelete(todo.id)}
+          >
             ×
           </button>
+          <div
+            data-cy="TodoLoader"
+            className={classNames('modal overlay', {
+              'is-active': todo.id === isLoading,
+            })}
+          >
+            <div
+              className="modal-background has-background-white-ter"
+            />
+            <div className="loader" />
+          </div>
         </div>
       ))}
       {tempTodo
@@ -135,6 +201,7 @@ export const TodoList = ({ tempTodo }: Props) => {
                       type="button"
                       className="todoapp__clear-completed"
                       data-cy="ClearCompletedButton"
+                      onClick={handleClearCompleted}
                     >
                       Clear completed
                     </button>
