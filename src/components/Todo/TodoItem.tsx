@@ -4,9 +4,18 @@ import { Todo } from '../../types/Todo';
 type Props = {
   todo: Todo;
   key: number;
+  onRemove: (todoId: number) => void;
+  removingTodoId: number | null;
 };
 
-export const TodoItem: React.FC<Props> = ({ todo, key }) => {
+export const TodoItem: React.FC<Props> = ({
+  todo,
+  key,
+  onRemove,
+  removingTodoId,
+}) => {
+  const removing = removingTodoId === todo.id;
+
   return (
     <div key={key}>
       <div
@@ -32,14 +41,17 @@ export const TodoItem: React.FC<Props> = ({ todo, key }) => {
           type="button"
           className="todo__remove"
           data-cy="TodoDelete"
+          onClick={() => onRemove(todo.id)}
         >
           ×
         </button>
 
-        <div data-cy="TodoLoader" className="modal overlay">
-          <div className="modal-background has-background-white-ter" />
-          <div className="loader" />
-        </div>
+        {removing && (
+          <div data-cy="TodoLoader" className="modal overlay is-active">
+            <div className="modal-background has-background-white-ter" />
+            <div className="loader" />
+          </div>
+        )}
       </div>
     </div>
   );
