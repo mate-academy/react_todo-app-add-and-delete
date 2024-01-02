@@ -5,13 +5,13 @@ import { ErrorType } from '../../types';
 
 export const AddTodoForm = () => {
   const {
-    addTodoToServer, loading, setErrors, setTitle, title,
+    addTodoToServer, errors, loading, setErrors, setTitle, title, todos,
   } = useTodos();
   const userId = useAuthContext();
 
   const autoFocus = useCallback((input: HTMLInputElement) => (
     input ? input.focus() : null
-  ), []);
+  ), [todos, errors]);
 
   const handleChange = (event : ChangeEvent<HTMLInputElement>) => {
     setErrors(null);

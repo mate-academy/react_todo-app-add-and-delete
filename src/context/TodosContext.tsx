@@ -145,7 +145,7 @@ export const TodosProvider: FC<Props> = ({ children }) => {
     return todos.filter(todo => !todo.completed).length;
   }, [todos]);
 
-  const value = () => ({
+  const value = {
     loading,
     setLoading,
     todos,
@@ -163,7 +163,7 @@ export const TodosProvider: FC<Props> = ({ children }) => {
     deleteTodoFromServer,
     deleteCompletedTodos,
     addTodoToServer,
-  });
+  };
 
   return (
     <TodoContext.Provider value={value}>
