@@ -23,7 +23,7 @@ Add a todo with the entered title on the form submit:
 - immediately after sending a request create a todo with `id: 0` and save it to the `tempTodo` variable in the state (NOT to the `todos` array);
 - show an independent `TodoItem` **after** the list if `tempTodo` is not `null`;
 - temp TodoItem should have the loader (check the original markup);
-- in case of success add the todo created by the API to the array (take it from the POST response);
+
 - in case of an API error showing `Unable to add a todo` notification at the bottom;
 - set `tempTodo` to `null` to hide the extra `TodoItem`;
 - focus the text field after receiving a response;

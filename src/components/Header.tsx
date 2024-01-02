@@ -9,7 +9,7 @@ export const Header: FC = () => {
   const [inputValue, setInputValue] = useState<string>('');
 
   const {
-    setErrorMessage, setShowError, setTempTodo, loadData, tempTodo,
+    setErrorMessage, setShowError, setTempTodo, setTodos, tempTodo,
   } = useContext(AppContext);
 
   const handleInputChange = (event: ChangeEvent<HTMLInputElement>) => {
@@ -26,22 +26,25 @@ export const Header: FC = () => {
       return;
     }
 
+    const newTodo = {
+      userId: USER_ID,
+      title: inputValue.trim(),
+      completed: false,
+    };
+
+    setTempTodo({
+      ...newTodo,
+      id: 0,
+    });
+
     try {
-      setTempTodo({
-        id: 0,
-        userId: USER_ID,
-        title: inputValue.trim(),
-        completed: false,
-      });
+      const response = await postTodo(USER_ID, newTodo);
 
-      await postTodo(USER_ID, {
-        userId: USER_ID,
-        title: inputValue.trim(),
-        completed: false,
-      });
-
-      await loadData();
       setInputValue('');
+      setTodos(prev => ([
+        ...prev,
+        response,
+      ]));
     } catch (error) {
       setErrorMessage('Unable to add a todo');
       setShowError(true);
