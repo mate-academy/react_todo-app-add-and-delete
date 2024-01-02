@@ -98,11 +98,10 @@ export const TodosProvider: FC<Props> = ({ children }) => {
     try {
       setLoading(0);
       setTempTodo({ id: 0, ...newTodo });
-      await addTodo(newTodo)
-        .then(data => {
-          setTitle('');
-          setTodos(currentTodos => [...currentTodos, data]);
-        });
+      const data = await addTodo(newTodo);
+
+      setTitle('');
+      setTodos(currentTodos => [...currentTodos, data]);
     } catch (error) {
       setErrors(ErrorType.Add);
     } finally {

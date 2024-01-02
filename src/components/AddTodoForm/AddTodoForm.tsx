@@ -1,5 +1,5 @@
 /* eslint-disable react/button-has-type */
-import { ChangeEvent, useCallback } from 'react';
+import { ChangeEvent, FormEvent, useCallback } from 'react';
 import { useAuthContext, useTodos } from '../../context';
 import { ErrorType } from '../../types';
 
@@ -27,7 +27,7 @@ export const AddTodoForm = () => {
     completed: false,
   };
 
-  const handleSubmit = (event: React.FormEvent) => {
+  const handleSubmit = (event: FormEvent<HTMLFormElement>) => {
     event.preventDefault();
 
     if (!title.trim()) {
