@@ -11,6 +11,6 @@ export interface AppContextType {
   setShowError: Dispatch<SetStateAction<boolean>>,
   errorMessage: string,
   setErrorMessage: Dispatch<SetStateAction<string>>,
-  filteredTodos: Todo[],
+  visibleTodos: Todo[],
   handleFilterChange: (event: MouseEvent<HTMLAnchorElement>) => void,
 }

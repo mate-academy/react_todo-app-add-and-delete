@@ -1,5 +1,5 @@
 import {
-  FC, useState, useEffect, MouseEvent,
+  FC, useState, useEffect, MouseEvent, useMemo,
 } from 'react';
 import { USER_ID } from '../USER_ID';
 import { getTodos } from '../api/todos';
@@ -10,7 +10,7 @@ type Props = React.PropsWithChildren;
 
 export const AppContextProvider: FC<Props> = ({ children }) => {
   const [todos, setTodos] = useState<Todo[]>([]);
-  const [selectedFilter, setSelectedFilter] = useState<Filter>('All');
+  const [selectedFilter, setSelectedFilter] = useState<Filter>(Filter.all);
   const [showError, setShowError] = useState<boolean>(false);
   const [errorMessage, setErrorMessage] = useState<string>('');
 
@@ -52,20 +52,24 @@ export const AppContextProvider: FC<Props> = ({ children }) => {
     }
   }, [showError]);
 
-  let filteredTodos = [...todos];
+  const visibleTodos = useMemo(() => {
+    let updatedTodos = [...todos];
 
-  if (todos.length) {
-    switch (selectedFilter) {
-      case 'Active':
-        filteredTodos = filteredTodos.filter(todo => !todo.completed) || [];
-        break;
-      case 'Completed':
-        filteredTodos = filteredTodos.filter(todo => todo.completed) || [];
-        break;
-      default:
-        break;
+    if (todos.length) {
+      switch (selectedFilter) {
+        case Filter.active:
+          updatedTodos = updatedTodos.filter(todo => !todo.completed) || [];
+          break;
+        case Filter.completed:
+          updatedTodos = updatedTodos.filter(todo => todo.completed) || [];
+          break;
+        default:
+          break;
+      }
     }
-  }
+
+    return updatedTodos;
+  }, [selectedFilter, todos]);
 
   const appContextValue = {
     todos,
@@ -76,7 +80,7 @@ export const AppContextProvider: FC<Props> = ({ children }) => {
     setShowError,
     errorMessage,
     setErrorMessage,
-    filteredTodos,
+    visibleTodos,
     handleFilterChange,
   };
 

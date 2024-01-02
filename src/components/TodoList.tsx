@@ -4,12 +4,12 @@ import { SingleTodo } from './SingleTodo';
 import { useAppContext } from '../context/AppContext';
 
 export const TodoList: FC = () => {
-  const { filteredTodos } = useAppContext();
+  const { visibleTodos } = useAppContext();
 
   return (
     <section className="todoapp__main" data-cy="TodoList">
       {
-        filteredTodos.map(todo => (
+        visibleTodos.map(todo => (
           <div
             key={todo.id}
             data-cy="Todo"

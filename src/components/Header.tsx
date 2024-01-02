@@ -2,6 +2,8 @@ import {
   FC, useEffect, useRef, useState, ChangeEvent, FormEvent, useContext,
 } from 'react';
 import { AppContext } from '../context/AppContext';
+import { USER_ID } from '../USER_ID';
+import { postTodo } from '../api/todos';
 
 export const Header: FC = () => {
   const [inputValue, setInputValue] = useState('');
@@ -17,7 +19,16 @@ export const Header: FC = () => {
     if (!inputValue.trim()) {
       setErrorMessage('Title should not be empty');
       setShowError(true);
+
+      return;
     }
+
+    postTodo(USER_ID, {
+      id: 99999999,
+      userId: USER_ID,
+      title: inputValue,
+      completed: false,
+    });
   };
 
   const todoInputRef = useRef<HTMLInputElement | null>(null);

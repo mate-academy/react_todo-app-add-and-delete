@@ -1,6 +1,7 @@
 import { FC } from 'react';
 import cn from 'classnames';
 import { useAppContext } from '../context/AppContext';
+import { Filter } from '../types';
 
 export const Footer: FC = () => {
   const {
@@ -23,39 +24,39 @@ export const Footer: FC = () => {
 
       <nav className="filter" data-cy="Filter">
         <a
-          id="All"
+          id={Filter.all}
           href="#/"
           className={cn('filter__link', {
-            selected: selectedFilter === 'All',
+            selected: selectedFilter === Filter.all,
           })}
           data-cy="FilterLinkAll"
           onClick={handleFilterChange}
         >
-          All
+          {Filter.all}
         </a>
 
         <a
-          id="Active"
+          id={Filter.active}
           href="#/active"
           className={cn('filter__link', {
-            selected: selectedFilter === 'Active',
+            selected: selectedFilter === Filter.active,
           })}
           data-cy="FilterLinkActive"
           onClick={handleFilterChange}
         >
-          Active
+          {Filter.active}
         </a>
 
         <a
-          id="Completed"
+          id={Filter.completed}
           href="#/completed"
           className={cn('filter__link', {
-            selected: selectedFilter === 'Completed',
+            selected: selectedFilter === Filter.completed,
           })}
           data-cy="FilterLinkCompleted"
           onClick={handleFilterChange}
         >
-          Completed
+          {Filter.completed}
         </a>
       </nav>
 
