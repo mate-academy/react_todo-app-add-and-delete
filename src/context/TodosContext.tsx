@@ -68,7 +68,7 @@ export const TodosProvider: FC<Props> = ({ children }) => {
         todo => todo.id !== todoId,
       ));
     } catch (error) {
-      setErrors(ErrorType.Delete);
+      setErrors(ErrorType.delete);
     } finally {
       setLoading(null);
     }
@@ -87,7 +87,7 @@ export const TodosProvider: FC<Props> = ({ children }) => {
 
       await Promise.allSettled(queueOfTodosForDelete);
     } catch (error) {
-      setErrors(ErrorType.Delete);
+      setErrors(ErrorType.delete);
     } finally {
       setLoading(null);
     }
@@ -103,7 +103,7 @@ export const TodosProvider: FC<Props> = ({ children }) => {
       setTitle('');
       setTodos(currentTodos => [...currentTodos, data]);
     } catch (error) {
-      setErrors(ErrorType.Add);
+      setErrors(ErrorType.add);
     } finally {
       setTempTodo(null);
       setLoading(null);
@@ -119,7 +119,7 @@ export const TodosProvider: FC<Props> = ({ children }) => {
 
           setTodos(data);
         } catch (er) {
-          setErrors(ErrorType.Load);
+          setErrors(ErrorType.load);
         }
       };
 
@@ -145,7 +145,7 @@ export const TodosProvider: FC<Props> = ({ children }) => {
     return todos.filter(todo => !todo.completed).length;
   }, [todos]);
 
-  const value = useMemo(() => ({
+  const value = () => ({
     loading,
     setLoading,
     todos,
@@ -163,15 +163,7 @@ export const TodosProvider: FC<Props> = ({ children }) => {
     deleteTodoFromServer,
     deleteCompletedTodos,
     addTodoToServer,
-  }), [errors,
-    todos,
-    filteredTodos,
-    filter,
-    loading,
-    inProgress,
-    title,
-    setTitle,
-    tempTodo]);
+  });
 
   return (
     <TodoContext.Provider value={value}>
