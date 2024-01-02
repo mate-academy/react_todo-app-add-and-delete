@@ -1,73 +1,57 @@
 // import { TodoInfo } from '../todoinfo/todoinfo';
 import classNames from 'classnames';
 import { useTodos } from '../../context/todoProvider';
-import { deleteTodo } from '../../api/todos';
-import { ErrorType } from '../../types/Error';
-import { TodoItem } from '../todoItem/todoItem';
+import { Todo } from '../../types/Todo';
 
-export const TodoList = () => {
-  const {
-    visibleTasks, setError, tempTodo, todos,
-    setTodos, deletingTask, setDeletingTask,
-    isAddingTask,
-  } = useTodos();
+type Props = {
+  task: Todo;
+  handleDeleteClick: (id: number) => void;
+};
 
-  const handleDeleteClick = (id: number) => {
-    setError(null);
-
-    setDeletingTask([...deletingTask, id]);
-
-    deleteTodo(id)
-      .then(() => {
-        const filteredTodo = todos.filter(task => task.id !== id);
-
-        setTodos(filteredTodo);
-      })
-      .catch(() => {
-        setError(ErrorType.delete);
-      })
-      .finally(() => setDeletingTask([]));
-  };
+export const TodoItem = ({ task, handleDeleteClick }: Props) => {
+  const { deletingTask } = useTodos();
 
   return (
-    <section className="todoapp__main" data-cy="TodoList">
-      {visibleTasks.map(task => (
-        <TodoItem
-          task={task}
-          handleDeleteClick={handleDeleteClick}
+    <div
+      key={task.id}
+      data-cy="Todo"
+      className={classNames('todo', {
+        completed: task.completed,
+      })}
+    >
+      <label className="todo__status-label">
+        <input
+          data-cy="TodoStatus"
+          type="checkbox"
+          className="todo__status"
+          checked={task.completed}
         />
-      ))}
-      {tempTodo !== null
-      && (
-        <div key={tempTodo.id} data-cy="Todo" className="todo">
-          <label className="todo__status-label">
-            <input
-              data-cy="TodoStatus"
-              type="checkbox"
-              className="todo__status"
-            />
-          </label>
+      </label>
 
-          <span data-cy="TodoTitle" className="todo__title">
-            {tempTodo.title}
-          </span>
+      <span data-cy="TodoTitle" className="todo__title">
+        {task.title}
+      </span>
 
-          <button type="button" className="todo__remove" data-cy="TodoDelete">
-            ×
-          </button>
+      <button
+        type="button"
+        className="todo__remove"
+        data-cy="TodoDelete"
+        onClick={() => handleDeleteClick(task.id)}
+      >
+        ×
+      </button>
 
-          <div
-            data-cy="TodoLoader"
-            className={classNames('modal overlay', {
-              'is-active': isAddingTask,
-            })}
-          >
-            <div className="modal-background has-background-white-ter" />
-            <div className="loader" />
-          </div>
-        </div>
-      ) }
-    </section>
+      {/* overlay will cover the todo while it is being updated */}
+      <div
+        data-cy="TodoLoader"
+        className={classNames('modal overlay', {
+          'is-active': deletingTask.includes(task.id),
+        })}
+      >
+        <div className="modal-background has-background-white-ter" />
+        <div className="loader" />
+      </div>
+    </div>
   );
 };
 // This todo is not completed
