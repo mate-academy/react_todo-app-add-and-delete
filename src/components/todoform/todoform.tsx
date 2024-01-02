@@ -20,6 +20,7 @@ export const TodoForm = () => {
 
   const handleOnSubmit = (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
+    setError(null);
 
     if (taskName.trim().length === 0) {
       setError(ErrorType.Title);

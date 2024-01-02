@@ -12,7 +12,8 @@ export const TodoFooter = () => {
   const hiddenBtn = todos.filter(el => el.completed).length === 0;
 
   const DeleteCompletedTask = () => {
-    const completedTodos = todos.filter(task => !task.completed);
+    setError(null);
+    const unCompletedTodos = todos.filter(task => !task.completed);
 
     const compeledTask = todos.filter(task => task.completed);
 
@@ -23,10 +24,11 @@ export const TodoFooter = () => {
 
       return setDeletingTask(currentDeleting);
     });
-    compeledTask.map(task => deleteTodo(task.id)
-      .catch(() => setError(ErrorType.Delete)));
 
-    setTodos(completedTodos);
+    Promise.allSettled(compeledTask.map(task => deleteTodo(task.id)
+      .catch(() => setError(ErrorType.Delete))));
+
+    setTodos(unCompletedTodos);
     setDeletingTask([]);
   };
 

@@ -12,6 +12,7 @@ export const TodoList = () => {
   } = useTodos();
 
   const handleDeleteClick = (id: number) => {
+    setError(null);
     const deletingId = [...deletingTask, id];
 
     setDeletingTask(deletingId);
