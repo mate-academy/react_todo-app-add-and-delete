@@ -1,12 +1,10 @@
 import { CSSTransition, TransitionGroup } from 'react-transition-group';
 import { Todo } from '../../types';
 import { TodoItem } from '../TodoItem';
-import { Footer } from '../Footer';
 import { useTodos } from '../../context';
 
 export const TodoList = () => {
   const {
-    todos,
     filteredTodos,
     tempTodo,
   } = useTodos();
@@ -40,8 +38,6 @@ export const TodoList = () => {
           </TransitionGroup>
         </section>
       )}
-
-      {todos.length > 0 && <Footer />}
     </>
   );
 };

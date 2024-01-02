@@ -18,15 +18,13 @@ type TodoProviderType = {
   setErrors: (error: ErrorType | null) => void;
   filter: FilterType;
   setFilter: (filter: FilterType) => void;
-  title: string;
-  setTitle: (title: string) => void;
   tempTodo: Todo | null;
   setTempTodo: (todo: Todo) => void;
   filteredTodos: Todo[];
   inProgress: number;
   deleteTodoFromServer: (todoId: number) => void;
   deleteCompletedTodos: () => void;
-  addTodoToServer: (todo: Omit<Todo, 'id'>) => void;
+  addTodoToServer: (todo: Omit<Todo, 'id'>) => Promise<boolean>;
 };
 
 const TodoContext = createContext<TodoProviderType>({
@@ -39,14 +37,12 @@ const TodoContext = createContext<TodoProviderType>({
   filter: FilterType.All,
   setFilter: () => {},
   filteredTodos: [],
-  title: '',
-  setTitle: () => {},
   tempTodo: null,
   setTempTodo: () => {},
   inProgress: 0,
   deleteTodoFromServer: () => {},
   deleteCompletedTodos: () => {},
-  addTodoToServer: () => {},
+  addTodoToServer: async () => false,
 });
 
 export const TodosProvider: FC<Props> = ({ children }) => {
@@ -54,7 +50,6 @@ export const TodosProvider: FC<Props> = ({ children }) => {
   const [todos, setTodos] = useState<Todo[]>([]);
   const [errors, setErrors] = useState<ErrorType | null>(null);
   const [filter, setFilter] = useState<FilterType>(FilterType.All);
-  const [title, setTitle] = useState<string>('');
   const [tempTodo, setTempTodo] = useState<Todo | null>(null);
 
   const userId = useAuthContext();
@@ -100,10 +95,13 @@ export const TodosProvider: FC<Props> = ({ children }) => {
       setTempTodo({ id: 0, ...newTodo });
       const data = await addTodo(newTodo);
 
-      setTitle('');
       setTodos(currentTodos => [...currentTodos, data]);
+
+      return true;
     } catch (error) {
       setErrors(ErrorType.add);
+
+      return false;
     } finally {
       setTempTodo(null);
       setLoading(null);
@@ -155,8 +153,6 @@ export const TodosProvider: FC<Props> = ({ children }) => {
     filter,
     setFilter,
     filteredTodos,
-    title,
-    setTitle,
     tempTodo,
     setTempTodo,
     inProgress,

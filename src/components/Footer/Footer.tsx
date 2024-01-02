@@ -1,9 +1,12 @@
+import { useMemo } from 'react';
 import { FilterType } from '../../types/FilterType';
 import { useTodos } from '../../context';
 import { Filter } from '../Filter';
 
 export const Footer = () => {
-  const { inProgress, deleteCompletedTodos } = useTodos();
+  const { inProgress, deleteCompletedTodos, todos } = useTodos();
+  const isCompleted = useMemo(() => (
+    todos.some(todo => todo.completed)), [todos]);
 
   const handleClear = () => {
     deleteCompletedTodos();
@@ -15,7 +18,6 @@ export const Footer = () => {
         {`${inProgress} items left`}
       </span>
 
-      {/* Active filter should have a 'selected' class */}
       <nav className="filter" data-cy="Filter">
         {(Object.keys(FilterType) as Array<keyof typeof FilterType>)
           .map((key) => (
@@ -23,7 +25,7 @@ export const Footer = () => {
           ))}
       </nav>
 
-      { inProgress > 0 && (
+      { isCompleted && (
         <button
           type="button"
           className="todoapp__clear-completed"
@@ -36,5 +38,3 @@ export const Footer = () => {
     </footer>
   );
 };
-
-export default Footer;
