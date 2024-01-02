@@ -7,7 +7,7 @@ import { Todo } from '../../types/Todo';
 
 export const TodoForm = () => {
   const {
-    taskName, setTaskName, setError, isAddingTask,
+    taskName, setTaskName, error, setError, isAddingTask,
     setIsAddingTask, countIncompleteTask, setTempTodo,
     todos, setTodos,
   } = useTodos();
@@ -16,7 +16,7 @@ export const TodoForm = () => {
 
   useEffect(() => {
     inputRef.current?.focus();
-  }, [todos, setError]);
+  }, [todos, error]);
 
   const handleOnSubmit = (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();

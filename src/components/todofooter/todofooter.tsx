@@ -6,24 +6,28 @@ import { ErrorType } from '../../types/Error';
 export const TodoFooter = () => {
   const {
     filterBy, setFilterBy, countIncompleteTask, todos,
-    setTodos, setError,
+    setTodos, setError, deletingTask, setDeletingTask,
   } = useTodos();
 
   const hiddenBtn = todos.filter(el => el.completed).length === 0;
 
   const DeleteCompletedTask = () => {
-    const incompletedTodos = todos.filter(task => !task.completed);
+    const completedTodos = todos.filter(task => !task.completed);
 
-    todos.map(task => {
-      if (task.completed) {
-        return deleteTodo(task.id)
-          .catch(() => setError(ErrorType.Delete));
-      }
+    const compeledTask = todos.filter(task => task.completed);
 
-      return task;
+    const currentDeleting = deletingTask;
+
+    compeledTask.forEach(task => {
+      currentDeleting.push(task.id);
+
+      return setDeletingTask(currentDeleting);
     });
+    compeledTask.map(task => deleteTodo(task.id)
+      .catch(() => setError(ErrorType.Delete)));
 
-    setTodos(incompletedTodos);
+    setTodos(completedTodos);
+    setDeletingTask([]);
   };
 
   return (

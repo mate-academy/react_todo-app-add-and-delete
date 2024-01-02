@@ -101,15 +101,12 @@ export const TodosProvider: React.FC<Props> = ({ children }) => {
   };
 
   useEffect(() => {
-    try {
-      getTodos(USER_ID)
-        .then(data => {
-          setTodos(data);
-          setVisibleTodos(data);
-        });
-    } catch (err) {
-      setError(ErrorType.Load);
-    }
+    getTodos(USER_ID)
+      .then(data => {
+        setTodos(data);
+        setVisibleTodos(data);
+      })
+      .catch(() => setError(ErrorType.Load));
   }, []);
 
   return (

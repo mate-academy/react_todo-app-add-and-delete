@@ -9,7 +9,7 @@ export const TodoErr = () => {
     setTimeout(() => {
       setError(null);
     }, 3000);
-  }, [error, setError]);
+  }, [setError]);
 
   return (
     <div
