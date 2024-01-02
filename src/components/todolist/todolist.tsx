@@ -8,6 +8,7 @@ export const TodoList = () => {
   const {
     visibleTasks, setError, tempTodo, todos,
     setTodos, deletingTask, setDeletingTask,
+    isAddingTask,
   } = useTodos();
 
   const handleDeleteClick = (id: number) => {
@@ -92,8 +93,12 @@ export const TodoList = () => {
             ×
           </button>
 
-          {/* 'is-active' class puts this modal on top of the todo */}
-          <div data-cy="TodoLoader" className="modal overlay is-active">
+          <div
+            data-cy="TodoLoader"
+            className={classNames('modal overlay', {
+              'is-active': isAddingTask,
+            })}
+          >
             <div className="modal-background has-background-white-ter" />
             <div className="loader" />
           </div>

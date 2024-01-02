@@ -6,10 +6,12 @@ export const TodoErr = () => {
   const { error, setError } = useTodos();
 
   useEffect(() => {
-    setTimeout(() => {
+    const timerId = setTimeout(() => {
       setError(null);
     }, 3000);
-  }, [setError]);
+
+    return () => clearTimeout(timerId);
+  }, [error, setError]);
 
   return (
     <div
