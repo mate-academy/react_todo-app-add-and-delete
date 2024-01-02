@@ -9,7 +9,7 @@ export const Header: FC = () => {
   const [inputValue, setInputValue] = useState<string>('');
 
   const {
-    setErrorMessage, setShowError, setTempTodo, loadData,
+    setErrorMessage, setShowError, setTempTodo, loadData, tempTodo,
   } = useContext(AppContext);
 
   const handleInputChange = (event: ChangeEvent<HTMLInputElement>) => {
@@ -30,13 +30,13 @@ export const Header: FC = () => {
       setTempTodo({
         id: 0,
         userId: USER_ID,
-        title: inputValue,
+        title: inputValue.trim(),
         completed: false,
       });
 
       await postTodo(USER_ID, {
         userId: USER_ID,
-        title: inputValue,
+        title: inputValue.trim(),
         completed: false,
       });
 
@@ -79,7 +79,7 @@ export const Header: FC = () => {
           className="todoapp__new-todo"
           placeholder="What needs to be done?"
           ref={todoInputRef}
-          // disabled={}
+          disabled={tempTodo !== null}
         />
       </form>
     </header>
