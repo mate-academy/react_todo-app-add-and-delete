@@ -6,7 +6,7 @@ import { Todo } from './types/Todo';
 
 export const TodoContext = createContext<{
   allTodos: Todo[] | null,
-  setAllTodos:(todo: Todo[]) => void,
+  setAllTodos: React.Dispatch<React.SetStateAction<Todo[] | null>>
   visibleTodos: Todo[] | null,
   setVisibleTodos:(todo: Todo[] | null) => void,
   activeFilter: string,

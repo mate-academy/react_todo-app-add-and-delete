@@ -48,7 +48,9 @@ export const App: React.FC = () => {
         completed: false,
       });
 
-      setAllTodos((prevTodos: Todo[]) => ([...prevTodos, addedTodo]));
+      setAllTodos((prevTodos: Todo[] | null) => {
+        return prevTodos ? [...prevTodos, addedTodo] : [addedTodo];
+      });
 
       setTempTodo(null);
       setQuery('');
