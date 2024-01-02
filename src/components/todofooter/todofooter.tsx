@@ -25,11 +25,12 @@ export const TodoFooter = () => {
       return setDeletingTask(currentDeleting);
     });
 
-    Promise.allSettled(compeledTask.map(task => deleteTodo(task.id)
-      .catch(() => setError(ErrorType.Delete))));
-
-    setTodos(unCompletedTodos);
-    setDeletingTask([]);
+    Promise.allSettled(compeledTask.map(task => deleteTodo(task.id)))
+      .catch(() => setError(ErrorType.delete))
+      .finally(() => {
+        setTodos(unCompletedTodos);
+        setDeletingTask([]);
+      });
   };
 
   return (

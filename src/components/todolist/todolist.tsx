@@ -13,9 +13,9 @@ export const TodoList = () => {
 
   const handleDeleteClick = (id: number) => {
     setError(null);
-    const deletingId = [...deletingTask, id];
 
-    setDeletingTask(deletingId);
+    setDeletingTask([...deletingTask, id]);
+
     deleteTodo(id)
       .then(() => {
         const filteredTodo = todos.filter(task => task.id !== id);
@@ -23,14 +23,13 @@ export const TodoList = () => {
         setTodos(filteredTodo);
       })
       .catch(() => {
-        setError(ErrorType.Delete);
+        setError(ErrorType.delete);
       })
       .finally(() => setDeletingTask([]));
   };
 
   return (
     <section className="todoapp__main" data-cy="TodoList">
-      {/* <TodoInfo /> */}
       {visibleTasks.map(task => (
         <div
           key={task.id}
@@ -52,7 +51,6 @@ export const TodoList = () => {
             {task.title}
           </span>
 
-          {/* Remove button appears only on hover */}
           <button
             type="button"
             className="todo__remove"
@@ -65,7 +63,6 @@ export const TodoList = () => {
           {/* overlay will cover the todo while it is being updated */}
           <div
             data-cy="TodoLoader"
-            // className="modal overlay"
             className={classNames('modal overlay', {
               'is-active': deletingTask.includes(task.id),
             })}

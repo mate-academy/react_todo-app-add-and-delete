@@ -1,6 +1,6 @@
 import { useEffect, useRef } from 'react';
 import { useTodos } from '../../context/todoProvider';
-import { AddTodo } from '../../api/todos';
+import { addTodo } from '../../api/todos';
 import { USER_ID } from '../../utils/userID';
 import { ErrorType } from '../../types/Error';
 import { Todo } from '../../types/Todo';
@@ -23,7 +23,7 @@ export const TodoForm = () => {
     setError(null);
 
     if (taskName.trim().length === 0) {
-      setError(ErrorType.Title);
+      setError(ErrorType.title);
 
       return;
     }
@@ -36,7 +36,7 @@ export const TodoForm = () => {
       completed: false,
     });
 
-    AddTodo({
+    addTodo({
       userId: USER_ID,
       title: taskName.trim(),
       completed: false,
@@ -47,7 +47,7 @@ export const TodoForm = () => {
         setTodos(newTodo);
         setTaskName('');
       })
-      .catch(() => setError(ErrorType.Add))
+      .catch(() => setError(ErrorType.add))
       .finally(() => {
         setIsAddingTask(false);
         setTempTodo(null);

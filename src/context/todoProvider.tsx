@@ -106,7 +106,7 @@ export const TodosProvider: React.FC<Props> = ({ children }) => {
         setTodos(data);
         setVisibleTodos(data);
       })
-      .catch(() => setError(ErrorType.Load));
+      .catch(() => setError(ErrorType.load));
   }, []);
 
   return (

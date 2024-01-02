@@ -30,7 +30,6 @@ export const TodoErr = () => {
         onClick={() => setError(null)}
       />
 
-      {/* show only one message at a time */}
       {error}
       <br />
     </div>
