@@ -1,5 +1,5 @@
 import {
-  FC, useContext, useEffect, useState,
+  FC, useContext, useEffect, useMemo,
 } from 'react';
 import cn from 'classnames';
 import { Todo } from '../types';
@@ -11,14 +11,20 @@ type Props = {
 };
 
 export const SingleTodo: FC<Props> = ({ todo }) => {
-  const [isLoading, setIsLoading] = useState<boolean>(false);
-
   const {
-    tempTodo, loadData, setErrorMessage, setShowError,
+    tempTodo,
+    loadData,
+    setErrorMessage,
+    setShowError,
+    todosBeingoLoaded,
+    setTodosBeingoLoaded,
   } = useContext(AppContext);
 
   const handleTodoRemove = async () => {
-    setIsLoading(true);
+    setTodosBeingoLoaded(prev => ([
+      ...prev,
+      todo.id,
+    ]));
 
     try {
       await removeTodo(todo.id);
@@ -27,15 +33,22 @@ export const SingleTodo: FC<Props> = ({ todo }) => {
       setErrorMessage('Unable to add a todo');
       setShowError(true);
     } finally {
-      setIsLoading(false);
+      setTodosBeingoLoaded(prev => prev.filter(id => id === todo.id));
     }
   };
 
   useEffect(() => {
     if (tempTodo?.id === todo.id) {
-      setIsLoading(true);
+      setTodosBeingoLoaded(prev => ([
+        ...prev,
+        todo.id,
+      ]));
     }
-  }, [tempTodo?.id]);
+  }, [setTodosBeingoLoaded, tempTodo?.id, todo.id]);
+
+  const isLoading = useMemo(() => {
+    return todosBeingoLoaded.includes(todo.id);
+  }, [todo.id, todosBeingoLoaded]);
 
   return (
     <>

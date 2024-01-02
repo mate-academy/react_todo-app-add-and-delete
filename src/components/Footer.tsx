@@ -2,11 +2,39 @@ import { FC } from 'react';
 import cn from 'classnames';
 import { useAppContext } from '../context/AppContext';
 import { Filter } from '../types';
+import { removeTodo } from '../api/todos';
 
 export const Footer: FC = () => {
   const {
-    todos, selectedFilter, handleFilterChange,
+    todos,
+    selectedFilter,
+    handleFilterChange,
+    loadData,
+    setErrorMessage,
+    setShowError,
+    setTodosBeingoLoaded,
   } = useAppContext();
+
+  const handleClearCompleted = async () => {
+    const completedTodosId = todos
+      .filter(todo => todo.completed)
+      .map(todo => todo.id);
+
+    setTodosBeingoLoaded(prev => ([
+      ...prev,
+      ...completedTodosId,
+    ]));
+
+    try {
+      await Promise.all(completedTodosId.map(id => removeTodo(id)));
+      await loadData();
+    } catch (error) {
+      setErrorMessage('Unable to remove completed todos');
+      setShowError(true);
+    } finally {
+      setTodosBeingoLoaded([]);
+    }
+  };
 
   const activeTodosNum = todos.reduce((acc, curr) => {
     return !curr.completed
@@ -61,6 +89,7 @@ export const Footer: FC = () => {
       </nav>
 
       <button
+        onClick={handleClearCompleted}
         type="button"
         className="todoapp__clear-completed"
         data-cy="ClearCompletedButton"

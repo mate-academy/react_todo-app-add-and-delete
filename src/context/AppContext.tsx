@@ -19,6 +19,8 @@ const AppContextDefault = {
   loadData: () => {},
   tempTodo: null,
   setTempTodo: () => {},
+  todosBeingoLoaded: [],
+  setTodosBeingoLoaded: () => {},
 };
 
 export const AppContext = createContext<AppContextType>(AppContextDefault);

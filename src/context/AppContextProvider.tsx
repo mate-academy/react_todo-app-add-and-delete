@@ -14,6 +14,7 @@ export const AppContextProvider: FC<Props> = ({ children }) => {
   const [showError, setShowError] = useState<boolean>(false);
   const [errorMessage, setErrorMessage] = useState<string>('');
   const [tempTodo, setTempTodo] = useState<Todo | null>(null);
+  const [todosBeingoLoaded, setTodosBeingoLoaded] = useState<number[]>([]);
 
   const handleFilterChange = (event: MouseEvent<HTMLAnchorElement>) => {
     const { id } = event.target as HTMLAnchorElement;
@@ -81,6 +82,8 @@ export const AppContextProvider: FC<Props> = ({ children }) => {
     loadData,
     tempTodo,
     setTempTodo,
+    todosBeingoLoaded,
+    setTodosBeingoLoaded,
   };
 
   return (
