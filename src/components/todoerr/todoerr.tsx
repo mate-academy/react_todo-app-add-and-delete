@@ -31,7 +31,6 @@ export const TodoErr = () => {
       />
 
       {error}
-      <br />
     </div>
   );
 };
