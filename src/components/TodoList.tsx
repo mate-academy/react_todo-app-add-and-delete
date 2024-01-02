@@ -4,7 +4,7 @@ import { SingleTodo } from './SingleTodo';
 import { useAppContext } from '../context/AppContext';
 
 export const TodoList: FC = () => {
-  const { visibleTodos } = useAppContext();
+  const { visibleTodos, tempTodo } = useAppContext();
 
   return (
     <section className="todoapp__main" data-cy="TodoList">
@@ -20,6 +20,17 @@ export const TodoList: FC = () => {
             <SingleTodo todo={todo} />
           </div>
         ))
+      }
+      {
+        tempTodo && (
+          <div
+            key={tempTodo.id}
+            data-cy="Todo"
+            className="todo"
+          >
+            <SingleTodo todo={tempTodo} />
+          </div>
+        )
       }
     </section>
   );

@@ -12,10 +12,13 @@ const AppContextDefault = {
   setShowError: () => {},
   errorMessage: '',
   setErrorMessage: () => {},
-  filteredTodos: [],
+  visibleTodos: [],
   activeTodosNum: 0,
   completedTodosNum: 0,
   handleFilterChange: () => {},
+  loadData: () => {},
+  tempTodo: null,
+  setTempTodo: () => {},
 };
 
 export const AppContext = createContext<AppContextType>(AppContextDefault);

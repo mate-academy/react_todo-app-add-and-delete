@@ -13,6 +13,7 @@ export const AppContextProvider: FC<Props> = ({ children }) => {
   const [selectedFilter, setSelectedFilter] = useState<Filter>(Filter.all);
   const [showError, setShowError] = useState<boolean>(false);
   const [errorMessage, setErrorMessage] = useState<string>('');
+  const [tempTodo, setTempTodo] = useState<Todo | null>(null);
 
   const handleFilterChange = (event: MouseEvent<HTMLAnchorElement>) => {
     const { id } = event.target as HTMLAnchorElement;
@@ -24,24 +25,19 @@ export const AppContextProvider: FC<Props> = ({ children }) => {
     setSelectedFilter(id as Filter);
   };
 
+  const loadData = async () => {
+    try {
+      const response = await getTodos(USER_ID);
+
+      setTodos(response);
+    } catch (error) {
+      setErrorMessage('Unable to load todos');
+      setShowError(true);
+    }
+  };
+
   useEffect(() => {
-    const loadData = async () => {
-      try {
-        const response = await getTodos(USER_ID);
-
-        setTodos(response);
-      } catch (error) {
-        setErrorMessage('Unable to load todos');
-        setShowError(true);
-      }
-    };
-
     loadData();
-
-    return () => {
-      setShowError(false);
-      setErrorMessage('');
-    };
   }, []);
 
   useEffect(() => {
@@ -82,6 +78,9 @@ export const AppContextProvider: FC<Props> = ({ children }) => {
     setErrorMessage,
     visibleTodos,
     handleFilterChange,
+    loadData,
+    tempTodo,
+    setTempTodo,
   };
 
   return (

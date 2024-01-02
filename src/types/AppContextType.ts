@@ -13,4 +13,7 @@ export interface AppContextType {
   setErrorMessage: Dispatch<SetStateAction<string>>,
   visibleTodos: Todo[],
   handleFilterChange: (event: MouseEvent<HTMLAnchorElement>) => void,
+  loadData: () => void,
+  tempTodo: Todo | null,
+  setTempTodo: Dispatch<SetStateAction<Todo | null>>,
 }

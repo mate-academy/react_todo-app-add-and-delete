@@ -5,6 +5,10 @@ export const getTodos = (userId: number) => {
   return client.get<Todo[]>(`/todos?userId=${userId}`);
 };
 
-export const postTodo = (userId: number, todo: Todo) => {
+export const postTodo = (userId: number, todo: Omit<Todo, 'id'>) => {
   return client.post<Todo>(`/todos?userId=${userId}`, todo);
+};
+
+export const removeTodo = (todoId: number) => {
+  return client.delete(`/todos/${todoId}`);
 };

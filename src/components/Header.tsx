@@ -6,14 +6,17 @@ import { USER_ID } from '../USER_ID';
 import { postTodo } from '../api/todos';
 
 export const Header: FC = () => {
-  const [inputValue, setInputValue] = useState('');
-  const { setErrorMessage, setShowError } = useContext(AppContext);
+  const [inputValue, setInputValue] = useState<string>('');
+
+  const {
+    setErrorMessage, setShowError, setTempTodo, loadData,
+  } = useContext(AppContext);
 
   const handleInputChange = (event: ChangeEvent<HTMLInputElement>) => {
     setInputValue(event.target.value);
   };
 
-  const handlInputSubmit = (event: FormEvent<HTMLFormElement>) => {
+  const handleInputSubmit = async (event: FormEvent<HTMLFormElement>) => {
     event.preventDefault();
 
     if (!inputValue.trim()) {
@@ -23,12 +26,28 @@ export const Header: FC = () => {
       return;
     }
 
-    postTodo(USER_ID, {
-      id: 99999999,
-      userId: USER_ID,
-      title: inputValue,
-      completed: false,
-    });
+    try {
+      setTempTodo({
+        id: 0,
+        userId: USER_ID,
+        title: inputValue,
+        completed: false,
+      });
+
+      await postTodo(USER_ID, {
+        userId: USER_ID,
+        title: inputValue,
+        completed: false,
+      });
+
+      await loadData();
+      setInputValue('');
+    } catch (error) {
+      setErrorMessage('Unable to add a todo');
+      setShowError(true);
+    } finally {
+      setTempTodo(null);
+    }
   };
 
   const todoInputRef = useRef<HTMLInputElement | null>(null);
@@ -50,7 +69,7 @@ export const Header: FC = () => {
 
       {/* Add a todo on form submit */}
       <form
-        onSubmit={handlInputSubmit}
+        onSubmit={handleInputSubmit}
       >
         <input
           value={inputValue}
@@ -60,6 +79,7 @@ export const Header: FC = () => {
           className="todoapp__new-todo"
           placeholder="What needs to be done?"
           ref={todoInputRef}
+          // disabled={}
         />
       </form>
     </header>
