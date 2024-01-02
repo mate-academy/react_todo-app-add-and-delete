@@ -25,12 +25,17 @@ React.FC<{ children: ReactNode }> = ({ children }) => {
   const [activeFilter, setActiveFilter] = useState<string>('All');
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
   const inputRef = useRef<HTMLInputElement>(null);
+  const timeoutId = useRef<NodeJS.Timeout>();
 
   const errorHandler = (message: string) => {
     setErrorMessage(null);
     setErrorMessage(message);
 
-    setTimeout(() => {
+    if (timeoutId.current) {
+      clearTimeout(timeoutId.current);
+    }
+
+    timeoutId.current = setTimeout(() => {
       setErrorMessage(null);
     }, 3000);
   };
