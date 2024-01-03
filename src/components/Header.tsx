@@ -9,7 +9,7 @@ export const Header: FC = () => {
   const [inputValue, setInputValue] = useState<string>('');
 
   const {
-    setErrorMessage, setShowError, setTempTodo, tempTodo, setTodos,
+    setErrorMessage, setShowError, setTempTodo, tempTodo, setTodos, todos,
   } = useContext(AppContext);
 
   const handleInputChange = (event: ChangeEvent<HTMLInputElement>) => {
@@ -32,25 +32,21 @@ export const Header: FC = () => {
       completed: false,
     };
 
-    try {
-      setTempTodo({
-        ...newTodo,
-        id: 0,
-      });
+    setTempTodo({
+      ...newTodo,
+      id: 0,
+    });
 
-      const response = await postTodo(newTodo);
-
-      setTodos(prev => ([
-        ...prev,
-        response,
-      ]));
-      setInputValue('');
-    } catch (error) {
-      setErrorMessage('Unable to add a todo');
-      setShowError(true);
-    } finally {
-      setTempTodo(null);
-    }
+    postTodo(newTodo)
+      .then(response => {
+        setTodos(prev => ([...prev, response]));
+        setInputValue('');
+      })
+      .catch(() => {
+        setErrorMessage('Unable to add a todo');
+        setShowError(true);
+      })
+      .finally(() => setTempTodo(null));
   };
 
   const todoInputRef = useRef<HTMLInputElement | null>(null);
@@ -59,7 +55,7 @@ export const Header: FC = () => {
     if (todoInputRef.current) {
       todoInputRef.current.focus();
     }
-  });
+  }, [todos]);
 
   return (
     <header className="todoapp__header">
