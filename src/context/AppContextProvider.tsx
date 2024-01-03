@@ -1,7 +1,6 @@
 import {
   FC, useState, useEffect, MouseEvent, useMemo,
 } from 'react';
-import { USER_ID } from '../USER_ID';
 import { getTodos } from '../api/todos';
 import { Todo, Filter } from '../types';
 import { AppContext } from './AppContext';
@@ -28,7 +27,7 @@ export const AppContextProvider: FC<Props> = ({ children }) => {
 
   const loadData = async () => {
     try {
-      const response = await getTodos(USER_ID);
+      const response = await getTodos();
 
       setTodos(response);
     } catch (error) {

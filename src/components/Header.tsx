@@ -38,7 +38,7 @@ export const Header: FC = () => {
     });
 
     try {
-      const response = await postTodo(USER_ID, newTodo);
+      const response = await postTodo(newTodo);
 
       setInputValue('');
       setTodos(prev => ([

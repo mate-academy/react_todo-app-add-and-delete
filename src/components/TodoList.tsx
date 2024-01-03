@@ -25,7 +25,6 @@ export const TodoList: FC = () => {
         tempTodo && (
           <div
             key={tempTodo.id}
-            data-cy="Todo"
             className="todo"
           >
             <SingleTodo todo={tempTodo} />
