@@ -9,7 +9,7 @@ import { ErrorType } from '../types/Error';
 
 type TodosProps = {
   todos: Todo[];
-  setTodos: (todo: Todo[]) => void;
+  setTodos: any;
   visibleTodos: Todo[];
   taskName: string;
   setTaskName: (query: string) => void;
@@ -24,7 +24,7 @@ type TodosProps = {
   tempTodo: Todo | null;
   setTempTodo: (todo: Todo | null) => void;
   deletingTask: number[];
-  setDeletingTask: (n: number[]) => void;
+  setDeletingTask: any;
 };
 
 const TodosContext = createContext<TodosProps>({

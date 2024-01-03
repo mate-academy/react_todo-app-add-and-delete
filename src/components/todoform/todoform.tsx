@@ -64,7 +64,6 @@ export const TodoForm = () => {
           data-cy="ToggleAllButton"
         />
       )}
-      {/* Add a todo on form submit */}
       <form onSubmit={handleOnSubmit}>
         <input
           data-cy="NewTodoField"
