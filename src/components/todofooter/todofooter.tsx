@@ -11,7 +11,7 @@ export const TodoFooter = () => {
 
   const hiddenBtn = todos.filter(el => el.completed).length === 0;
 
-  const DeleteCompletedTask = () => {
+  const deleteCompletedTask = () => {
     setError(null);
     const unCompletedTodos = todos.filter(task => !task.completed);
 
@@ -33,62 +33,62 @@ export const TodoFooter = () => {
       });
   };
 
+  if (todos.length <= 0) {
+    return null;
+  }
+
   return (
-    <>
-      {todos.length > 0 && (
-        <footer className="todoapp__footer" data-cy="Footer">
-          <span className="todo-count" data-cy="TodosCounter">
-            {countIncompleteTask}
-            {' '}
-            items left
-          </span>
+    <footer className="todoapp__footer" data-cy="Footer">
+      <span className="todo-count" data-cy="TodosCounter">
+        {countIncompleteTask}
+        {' '}
+        items left
+      </span>
 
-          <nav className="filter" data-cy="Filter">
-            <a
-              href="#/"
-              className={classNames('filter__link', {
-                selected: filterBy === 'all',
-              })}
-              data-cy="FilterLinkAll"
-              onClick={() => setFilterBy('all')}
-            >
-              All
-            </a>
+      <nav className="filter" data-cy="Filter">
+        <a
+          href="#/"
+          className={classNames('filter__link', {
+            selected: filterBy === 'all',
+          })}
+          data-cy="FilterLinkAll"
+          onClick={() => setFilterBy('all')}
+        >
+          All
+        </a>
 
-            <a
-              href="#/active"
-              className={classNames('filter__link', {
-                selected: filterBy === 'active',
-              })}
-              data-cy="FilterLinkActive"
-              onClick={() => setFilterBy('active')}
-            >
-              Active
-            </a>
+        <a
+          href="#/active"
+          className={classNames('filter__link', {
+            selected: filterBy === 'active',
+          })}
+          data-cy="FilterLinkActive"
+          onClick={() => setFilterBy('active')}
+        >
+          Active
+        </a>
 
-            <a
-              href="#/completed"
-              className={classNames('filter__link', {
-                selected: filterBy === 'completed',
-              })}
-              data-cy="FilterLinkCompleted"
-              onClick={() => setFilterBy('completed')}
-            >
-              Completed
-            </a>
-          </nav>
+        <a
+          href="#/completed"
+          className={classNames('filter__link', {
+            selected: filterBy === 'completed',
+          })}
+          data-cy="FilterLinkCompleted"
+          onClick={() => setFilterBy('completed')}
+        >
+          Completed
+        </a>
+      </nav>
 
-          <button
-            type="button"
-            className="todoapp__clear-completed"
-            data-cy="ClearCompletedButton"
-            onClick={DeleteCompletedTask}
-            disabled={hiddenBtn}
-          >
-            Clear completed
-          </button>
-        </footer>
-      )}
-    </>
+      <button
+        type="button"
+        className="todoapp__clear-completed"
+        data-cy="ClearCompletedButton"
+        onClick={deleteCompletedTask}
+        disabled={hiddenBtn}
+      >
+        Clear completed
+      </button>
+    </footer>
   );
 };

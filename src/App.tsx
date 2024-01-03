@@ -5,12 +5,9 @@ import { TodoFooter } from './components/todofooter/todofooter';
 import { TodoErr } from './components/todoerr/todoerr';
 import { TodoForm } from './components/todoform/todoform';
 import { TodoList } from './components/todolist/todolist';
-import { useTodos } from './context/todoProvider';
 import { USER_ID } from './utils/userID';
 
 export const App: React.FC = () => {
-  const { todos } = useTodos();
-
   if (!USER_ID) {
     return <UserWarning />;
   }
@@ -24,8 +21,7 @@ export const App: React.FC = () => {
 
         <TodoList />
 
-        {todos.length > 0
-          && <TodoFooter />}
+        <TodoFooter />
 
       </div>
 
