@@ -16,6 +16,9 @@ export const TodoContext = createContext<{
   errorHandler:(message: string) => void;
   setErrorMessage:(message: string | null) => void;
   inputRef: RefObject<HTMLInputElement>
+  tempTodo: Todo | null;
+  setTempTodo:(todo: Todo | null) => void;
+  USER_ID: number;
 } | null>(null);
 
 export const TodoProvider:
@@ -24,10 +27,11 @@ React.FC<{ children: ReactNode }> = ({ children }) => {
   const [visibleTodos, setVisibleTodos] = useState<Todo[] | null>(null);
   const [activeFilter, setActiveFilter] = useState<string>('All');
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
+  const [tempTodo, setTempTodo] = useState<Todo | null>(null);
   const inputRef = useRef<HTMLInputElement>(null);
   const timeoutId = useRef<NodeJS.Timeout>();
 
-  const errorHandler = (message: string) => {
+  const errorHandler = useCallback((message: string) => {
     setErrorMessage(null);
     setErrorMessage(message);
 
@@ -38,7 +42,7 @@ React.FC<{ children: ReactNode }> = ({ children }) => {
     timeoutId.current = setTimeout(() => {
       setErrorMessage(null);
     }, 3000);
-  };
+  }, []);
 
   const handleTodosFilter = useCallback((filter: string) => {
     setActiveFilter(filter);
@@ -76,8 +80,19 @@ React.FC<{ children: ReactNode }> = ({ children }) => {
       errorHandler,
       setErrorMessage,
       inputRef,
+      tempTodo,
+      setTempTodo,
+      USER_ID: 12113,
     };
-  }, [activeFilter, allTodos, handleTodosFilter, visibleTodos, errorMessage]);
+  }, [
+    activeFilter,
+    allTodos,
+    handleTodosFilter,
+    visibleTodos,
+    errorMessage,
+    errorHandler,
+    tempTodo,
+  ]);
 
   return (
     <TodoContext.Provider value={value}>
