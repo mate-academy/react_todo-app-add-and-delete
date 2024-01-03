@@ -55,7 +55,13 @@ export const Header: FC = () => {
     if (todoInputRef.current) {
       todoInputRef.current.focus();
     }
-  }, [todos]);
+  }, [todos, tempTodo]);
+
+  // useEffect(() => {
+  //   if (todoInputRef.current && tempTodo === null) {
+  //     todoInputRef.current.focus();
+  //   }
+  // }, [todos, tempTodo]);
 
   return (
     <header className="todoapp__header">
