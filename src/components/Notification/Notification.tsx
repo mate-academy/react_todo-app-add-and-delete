@@ -19,6 +19,11 @@ export const Notification: React.FC = () => {
     };
   }, [dispatch, error]);
 
+  const handleButtonDelete = () => dispatch({
+    type: ReducerType.SetError,
+    payload: null,
+  });
+
   return (
     <div
       data-cy="ErrorNotification"
@@ -34,10 +39,7 @@ export const Notification: React.FC = () => {
         data-cy="HideErrorButton"
         type="button"
         className="delete"
-        onClick={() => dispatch({
-          type: ReducerType.SetError,
-          payload: null,
-        })}
+        onClick={handleButtonDelete}
       />
       {error}
     </div>

@@ -30,6 +30,21 @@ export const Footer: React.FC<Props> = ({ updateTodos }) => {
     }
   };
 
+  const handleFilterAll = () => dispatch({
+    type: ReducerType.SetFilter,
+    payload: Filter.All,
+  });
+
+  const handleFilterActive = () => dispatch({
+    type: ReducerType.SetFilter,
+    payload: Filter.Active,
+  });
+
+  const handleFilterCompleted = () => dispatch({
+    type: ReducerType.SetFilter,
+    payload: Filter.Completed,
+  });
+
   return (
     <footer className="todoapp__footer" data-cy="Footer">
       <span className="todo-count" data-cy="TodosCounter">
@@ -42,10 +57,7 @@ export const Footer: React.FC<Props> = ({ updateTodos }) => {
           className={classNames('filter__link', {
             selected: Filter.All === filter,
           })}
-          onClick={() => dispatch({
-            type: ReducerType.SetFilter,
-            payload: Filter.All,
-          })}
+          onClick={handleFilterAll}
           data-cy="FilterLinkAll"
         >
           All
@@ -56,10 +68,7 @@ export const Footer: React.FC<Props> = ({ updateTodos }) => {
           className={classNames('filter__link', {
             selected: Filter.Active === filter,
           })}
-          onClick={() => dispatch({
-            type: ReducerType.SetFilter,
-            payload: Filter.Active,
-          })}
+          onClick={handleFilterActive}
           data-cy="FilterLinkActive"
         >
           Active
@@ -70,10 +79,7 @@ export const Footer: React.FC<Props> = ({ updateTodos }) => {
           className={classNames('filter__link', {
             selected: Filter.Completed === filter,
           })}
-          onClick={() => dispatch({
-            type: ReducerType.SetFilter,
-            payload: Filter.Completed,
-          })}
+          onClick={handleFilterCompleted}
           data-cy="FilterLinkCompleted"
         >
           Completed
@@ -81,7 +87,7 @@ export const Footer: React.FC<Props> = ({ updateTodos }) => {
       </nav>
 
       {
-        completedTodos?.length !== 0 && (
+        !!completedTodos?.length && (
           <button
             type="button"
             className="todoapp__clear-completed"

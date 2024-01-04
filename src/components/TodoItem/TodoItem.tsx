@@ -5,6 +5,7 @@ import { deleteTodo } from '../../api/todos';
 import { Error } from '../../types/enums/Error';
 import { DispatchContext } from '../../TodosContext';
 import { ReducerType } from '../../types/enums/ReducerType';
+import { TodoLoader } from '../TodoLoader/TodoLoader';
 
 interface Props {
   todo: Todo
@@ -22,6 +23,9 @@ export const TodoItem: React.FC<Props> = ({
   const [hover, setHover] = useState(false);
   const [editing] = useState(false);
   const [loading, setLoading] = useState(load);
+
+  const isEditing = editing && !loading;
+  const isHover = !editing && hover;
 
   const handleDeleteTodo = () => {
     setLoading(true);
@@ -60,7 +64,7 @@ export const TodoItem: React.FC<Props> = ({
       </label>
 
       {
-        editing && !loading
+        isEditing
           ? (
             <form>
               <input
@@ -79,7 +83,7 @@ export const TodoItem: React.FC<Props> = ({
       }
 
       {
-        !editing && hover && (
+        isHover && (
           <button
             type="button"
             className="todo__remove"
@@ -91,14 +95,7 @@ export const TodoItem: React.FC<Props> = ({
         )
       }
 
-      {
-        loading && (
-          <div data-cy="TodoLoader" className="modal overlay is-active">
-            <div className="modal-background has-background-white-ter" />
-            <div className="loader" />
-          </div>
-        )
-      }
+      {loading && <TodoLoader />}
     </div>
   );
 };

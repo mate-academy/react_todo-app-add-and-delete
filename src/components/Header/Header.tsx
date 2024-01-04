@@ -78,7 +78,7 @@ export const Header: React.FC<Props> = ({ updateTodos }) => {
   return (
     <header className="todoapp__header">
       {
-        activeTodos !== 0 && (
+        !!activeTodos && (
           <button
             type="button"
             className="todoapp__toggle-all active"

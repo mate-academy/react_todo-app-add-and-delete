@@ -37,7 +37,7 @@ export const App: React.FC = () => {
 
         <TodoList updateTodos={updateTodos} />
 
-        {todos.length !== 0 && (
+        {!!todos.length && (
           <Footer updateTodos={updateTodos} />
         )}
       </div>
