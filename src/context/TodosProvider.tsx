@@ -41,13 +41,19 @@ const TodoContext = createContext<TodoContextType | undefined>(undefined);
 
 const USER_ID = 12060;
 
-const ERROR_MESSAGES = [
-  'Unable to load todos',
-  'Title should not be empty',
-  'Unable to add a todo',
-  'Unable to delete a todo',
-  'Unable to update a todo',
-];
+enum ErrorMessages {
+  LOAD_TODOS = 'Unable to load todos',
+  EMPTY_TITLE = 'Title should not be empty',
+  ADD_TODO = 'Unable to add a todo',
+  DELETE_TODO = 'Unable to delete a todo',
+  UPDATE_TODO = 'Unable to update a todo',
+}
+
+enum SortType {
+  all = 'All',
+  active = 'Active',
+  completed = 'Completed',
+}
 
 export const TodoProvider: React.FC<{ children: ReactNode }> = (
   { children },
@@ -64,20 +70,20 @@ export const TodoProvider: React.FC<{ children: ReactNode }> = (
   const [isToggled, setIsToggled] = useState<boolean>(false);
 
   const fetchTodos = useCallback(
-    async (messageId: number) => {
+    async () => {
       try {
         const allTodos = await getTodos(USER_ID);
 
         setTodos(allTodos);
       } catch (error) {
-        setMessageError(ERROR_MESSAGES[messageId]);
+        setMessageError(ErrorMessages.LOAD_TODOS);
       }
     },
     [setTodos, setMessageError],
   );
 
   useEffect(() => {
-    fetchTodos(0);
+    fetchTodos();
   }, [fetchTodos]);
 
   const handleSubmitSent = useCallback(
@@ -88,7 +94,7 @@ export const TodoProvider: React.FC<{ children: ReactNode }> = (
       console.log(query);
 
       if (!query) {
-        setMessageError(ERROR_MESSAGES[1]);
+        setMessageError(ErrorMessages.EMPTY_TITLE);
         setPending(false);
 
         return;
@@ -115,7 +121,7 @@ export const TodoProvider: React.FC<{ children: ReactNode }> = (
         setQuery('');
         setTodos((currentTodo) => [...currentTodo, addedTodo]);
       } catch (error) {
-        setMessageError(ERROR_MESSAGES[2]);
+        setMessageError(ErrorMessages.EMPTY_TITLE);
       } finally {
         setMessageError('');
         setPending(false);
@@ -138,7 +144,7 @@ export const TodoProvider: React.FC<{ children: ReactNode }> = (
         }, 500);
         await deleteTodo(id);
       } catch (error) {
-        setMessageError(ERROR_MESSAGES[3]);
+        setMessageError(ErrorMessages.DELETE_TODO);
       }
     },
     [todos],
@@ -171,13 +177,13 @@ export const TodoProvider: React.FC<{ children: ReactNode }> = (
 
   useMemo(() => {
     switch (filterType) {
-      case 'All':
+      case SortType.all:
         setFilteredTodos(todos);
         break;
-      case 'Active':
+      case SortType.active:
         setFilteredTodos(todos.filter(todo => !todo.completed));
         break;
-      case 'Completed':
+      case SortType.completed:
         setFilteredTodos(todos.filter(todo => todo.completed));
         break;
       default:
@@ -191,51 +197,34 @@ export const TodoProvider: React.FC<{ children: ReactNode }> = (
     }, 3000);
   }
 
-  const memoizedValue = useMemo(
-    () => ({
-      todos,
-      filteredTodos,
-      tempTodo,
-      filterType,
-      messageError,
-      query,
-      pending,
-      status,
-      isLoadingTodo,
-      isToggled,
-      setTodos,
-      setFilteredTodos,
-      setTempTodo,
-      setFilterType,
-      setPending,
-      setMessageError,
-      setQuery,
-      handleSubmitSent,
-      handleDeleteTodo,
-      setIsLoadingTodo,
-      handleClearCompleted,
-      setStatus,
-      setIsToggled,
-    }),
-    [
-      todos,
-      filteredTodos,
-      tempTodo,
-      filterType,
-      pending,
-      messageError,
-      query,
-      status,
-      isLoadingTodo,
-      isToggled,
-      handleSubmitSent,
-      handleDeleteTodo,
-      handleClearCompleted,
-    ],
-  );
+  const value = {
+    todos,
+    filteredTodos,
+    tempTodo,
+    filterType,
+    pending,
+    messageError,
+    query,
+    isLoadingTodo,
+    status,
+    isToggled,
+    setTodos,
+    setFilteredTodos,
+    setTempTodo,
+    setFilterType,
+    setPending,
+    setMessageError,
+    setQuery,
+    handleSubmitSent,
+    handleDeleteTodo,
+    setStatus,
+    setIsLoadingTodo,
+    handleClearCompleted,
+    setIsToggled,
+  };
 
   return (
-    <TodoContext.Provider value={memoizedValue}>
+    <TodoContext.Provider value={value}>
       {children}
     </TodoContext.Provider>
   );
