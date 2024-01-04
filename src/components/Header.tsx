@@ -25,6 +25,8 @@ export const Header: React.FC<Props> = ({ addTodo }) => {
           title: inputRef.current.value.trim(),
           completed: false,
         }).then(addTodo);
+
+        inputRef.current.value = '';
       }
     });
   }, []);
