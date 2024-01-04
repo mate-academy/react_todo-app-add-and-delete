@@ -1,4 +1,4 @@
-import React, { createContext, useCallback, useState } from 'react';
+import React, { createContext, useState } from 'react';
 import { Todo } from '../types/Todo';
 import { FilterBy } from '../types/Filter';
 import { ErrorMessage, ErrorType } from '../types/Errors';
@@ -56,29 +56,26 @@ export const AppProvider: React.FC<Props> = ({ children }) => {
   const [isLoading, setIsLoading] = useState(false);
   const [tempTodo, setTempTodo] = useState<Todo | null>(null);
 
-  const clearCompleted = useCallback(
-    () => {
-      const completedTodos = todos
-        .filter(todoToFind => todoToFind.completed);
+  const clearCompleted = () => {
+    const completedTodos = todos.filter(todoToFind => todoToFind.completed);
 
-      setSelectedTodoIds(currentIds => (
-        [...currentIds, ...completedTodos
-          .map(completedTodo => completedTodo.id),
-        ]
+    setSelectedTodoIds(currentIds => ([
+      ...currentIds,
+      ...completedTodos.map(completedTodo => completedTodo.id),
+    ]));
+
+    completedTodos.forEach(completedTodo => (
+      todoService.deleteTodo(completedTodo.id)
+    ));
+
+    setTimeout(() => {
+      setTodos(currentTodos => (
+        currentTodos.filter(todoToFilter => !todoToFilter.completed)
       ));
+    }, 500);
+  };
 
-      completedTodos.map(completedTodo => todoService
-        .deleteTodo(completedTodo.id));
-
-      setTimeout(() => {
-        setTodos(currentTodos => currentTodos.filter(
-          todoToFilter => !todoToFilter.completed,
-        ));
-      }, 500);
-    }, [todos],
-  );
-
-  const createNewTodo = useCallback((title: string) => {
+  const createNewTodo = ((title: string) => {
     const newTodoData = {
       userId: USER_ID,
       title,
@@ -113,7 +110,7 @@ export const AppProvider: React.FC<Props> = ({ children }) => {
         ));
         setTimeout(() => setTempTodo(null), 500);
       });
-  }, [setIsLoading, setSelectedTodoIds, setTempTodo, setTodoTitle, setTodos]);
+  });
 
   const deleteTodo = (
     (todoId: number) => {

@@ -1,6 +1,4 @@
-import {
-  FC, useCallback, useContext, useEffect, useMemo,
-} from 'react';
+import { FC, useContext, useEffect } from 'react';
 import { Todo } from './types/Todo';
 import { getTodos } from './api/todos';
 import { Footer } from './components/Footer';
@@ -28,18 +26,13 @@ export const App: FC = () => {
       .catch(() => setErrorMessage(ErrorType.UnableToLoadTodo));
   }, [setErrorMessage, setTodos]);
 
-  const selectFilterTodo = useCallback(
-    (
-      todosFromServer: Todo[],
-      optionByFilter: FilterBy,
-    ) => filterTodo(todosFromServer, optionByFilter),
-    [],
-  );
+  const selectFilterTodo = (
+    todosFromServer: Todo[],
+    optionByFilter: FilterBy,
+  ) => (
+    filterTodo(todosFromServer, optionByFilter));
 
-  const preparedTodos = useMemo(
-    () => selectFilterTodo(todos, filterBy),
-    [selectFilterTodo, todos, filterBy],
-  );
+  const preparedTodos = selectFilterTodo(todos, filterBy);
 
   const isEveryTodosCompleted = preparedTodos.every(
     todo => todo.completed,
