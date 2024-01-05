@@ -46,7 +46,6 @@ export const TodoList: FC<Props> = (props) => {
               todo={tempTodo}
               loading={loadingTodoId.includes(tempTodo.id)}
               deleteTodo={deleteTodo}
-              isTemporary
             />
           </CSSTransition>
         )}

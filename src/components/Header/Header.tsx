@@ -10,6 +10,7 @@ type Props = {
   handleError: (error: Errors) => void,
   addTodo: (inputValue: string) =>void,
   updateTodo: (updatedTodo: Todo) =>void,
+  disabled: boolean,
 };
 export const Header: FC<Props> = (props) => {
   const {
@@ -17,10 +18,10 @@ export const Header: FC<Props> = (props) => {
     handleError,
     addTodo,
     updateTodo,
+    disabled,
   } = props;
 
   const [inputValue, setInputValue] = useState('');
-  const [isDisabledInput, setIsDisabledInput] = useState(false);
   const handleFocusOnInput = useCallback((input: HTMLInputElement) => {
     input?.focus();
   }, []);
@@ -34,14 +35,12 @@ export const Header: FC<Props> = (props) => {
       return;
     }
 
-    setIsDisabledInput(true);
-
     try {
       addTodo(inputValue);
 
       setInputValue('');
-    } finally {
-      setIsDisabledInput(false);
+    } catch (error) {
+      handleError(Errors.AddTodo);
     }
   };
 
@@ -78,12 +77,15 @@ export const Header: FC<Props> = (props) => {
         <input
           id="todoInput"
           type="text"
-          className="todoapp__new-todo"
+          className={cn(
+            'todoapp__new-todo',
+            { disabled },
+          )}
           placeholder="What needs to be done?"
           ref={handleFocusOnInput}
           value={inputValue}
           onChange={(event) => setInputValue(event.target.value)}
-          disabled={isDisabledInput}
+          disabled={disabled}
         />
       </form>
     </header>

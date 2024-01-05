@@ -6,11 +6,10 @@ interface Props {
   todo: TodoType,
   deleteTodo: (todoId: number) => void,
   loading: boolean,
-  isTemporary?: boolean,
 }
 
 export const Todo: FC<Props> = ({
-  todo, deleteTodo, loading, isTemporary,
+  todo, deleteTodo, loading,
 }) => {
   return (
     <div
@@ -40,7 +39,7 @@ export const Todo: FC<Props> = ({
       </button>
 
       <div className={cn('modal overlay', {
-        'is-active': loading || isTemporary,
+        'is-active': loading,
       })}
       >
         <div className="modal-background has-background-white-ter" />

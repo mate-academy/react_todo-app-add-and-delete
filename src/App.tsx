@@ -1,4 +1,6 @@
-import React, { useEffect, useMemo, useState } from 'react';
+import React, {
+  useEffect, useMemo, useState,
+} from 'react';
 import { UserWarning } from './UserWarning';
 import { Todo } from './types/Todo';
 import * as TodosApiCommands from './api/todos';
@@ -51,6 +53,7 @@ export const App: React.FC = () => {
     };
 
     setTempTodo(data);
+    setLoadingTodoId([0]);
 
     TodosApiCommands.createTodo(data)
       .then((createdTodo) => {
@@ -61,10 +64,32 @@ export const App: React.FC = () => {
       })
       .finally(() => {
         setTempTodo(null);
+        setLoadingTodoId([]);
       });
   };
 
+  // const updateTodo = (todoToUpdate: Todo) => {
+  //   setLoadingTodoId((prevLoadingIds) => [...prevLoadingIds, todoToUpdate.id]);
+
+  //   TodosApiCommands.updateTodo(todoToUpdate.id, todoToUpdate)
+  //     .then((updatedTodo) => {
+  //       setTodos((prevTodos) => prevTodos.map(
+  //         (todo) => (todo.id === updatedTodo.id ? updatedTodo : todo),
+  //       ));
+  //     })
+  //     .catch(() => {
+  //       handleError(Errors.UpdateTodo);
+  //     })
+  //     .finally(() => {
+  //       setLoadingTodoId(
+  //         (prevLoadingIds) => prevLoadingIds
+  //           .filter((id) => id !== todoToUpdate.id),
+  //       );
+  //     });
+  // };
+
   const updateTodo = (todoToUpdate: Todo) => {
+    setLoadingTodoId(loadingTodos => [...loadingTodos, todoToUpdate.id]);
     TodosApiCommands
       .updateTodo(todoToUpdate.id, todoToUpdate)
       .then(updatedTodo => {
@@ -75,16 +100,22 @@ export const App: React.FC = () => {
       })
       .catch(() => {
         handleError(Errors.UpdateTodo);
+      })
+      .finally(() => {
+        setLoadingTodoId([]);
       });
   };
 
   const deleteTodo = (todoId: number) => {
-    setLoadingTodoId([todoId]);
+    setLoadingTodoId(currentLoadingTodoId => [...currentLoadingTodoId, todoId]);
     TodosApiCommands.deleteTodo(todoId)
       .then(() => setTodos(
         currentTodos => currentTodos.filter(todo => todo.id !== todoId),
       ))
-      .catch(() => handleError(Errors.DeleteTodo));
+      .catch(() => handleError(Errors.DeleteTodo))
+      .finally(() => {
+        setLoadingTodoId([]);
+      });
   };
 
   if (!USER_ID) {
@@ -101,6 +132,7 @@ export const App: React.FC = () => {
           todos={todos}
           addTodo={addTodo}
           handleError={handleError}
+          disabled={loadingTodoId.length > 0}
         />
 
         <TodoList
