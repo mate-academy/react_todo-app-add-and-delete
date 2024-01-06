@@ -22,7 +22,7 @@ export const ErrorNotification: React.FC<Props> = ({ error, setError }) => {
       className={classNames(
         'notification is-danger is-light has-text-weight-normal',
         {
-          hidden: error === null,
+          hidden: !error,
         },
       )}
     >

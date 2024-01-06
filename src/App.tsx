@@ -136,7 +136,7 @@ export const App: React.FC = () => {
           )}
 
         {/* Hide the footer if there are no todos */}
-        {todos.length !== 0
+        {todos.length > 0
           && (
             <footer className="todoapp__footer" data-cy="Footer">
               <TodosCounter todos={todos} />

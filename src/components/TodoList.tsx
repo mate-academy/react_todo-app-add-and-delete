@@ -15,7 +15,7 @@ interface Props {
 export const TodoList: React.FC<Props> = React.memo(({
   todos,
   filter,
-  onDelete,
+  onDelete = () => { },
   loadingTodosPause,
   tempTodo,
 }) => {
@@ -42,7 +42,7 @@ export const TodoList: React.FC<Props> = React.memo(({
           <TodoItem
             key={todo.id}
             todoItem={todo}
-            onDelete={onDelete ? () => onDelete(todo.id) : undefined}
+            onDelete={() => onDelete(todo.id)}
             loader={loadingTodosPause.includes(todo.id)}
           />
         ))
