@@ -1,5 +1,5 @@
 import { FC } from 'react';
-import { Todo } from '../Todo/Todo';
+import { TodoItem } from '../TodoItem/TodoItem';
 import { Todo as TodoType } from '../../types/Todo';
 
 interface Props {
@@ -19,7 +19,7 @@ export const TodoList: FC<Props> = ({
     <section className="todoapp__main" data-cy="TodoList">
       {todos.map(todo => {
         return (
-          <Todo
+          <TodoItem
             todo={todo}
             deleteTodo={deleteTodo}
             Loader={loadingTodosIds.includes(todo.id)}
@@ -27,7 +27,7 @@ export const TodoList: FC<Props> = ({
         );
       })}
       {tempTodo && (
-        <Todo
+        <TodoItem
           todo={tempTodo}
           deleteTodo={deleteTodo}
           Loader

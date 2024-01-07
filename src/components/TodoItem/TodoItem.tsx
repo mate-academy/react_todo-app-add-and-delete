@@ -8,14 +8,14 @@ interface Props {
   Loader: boolean;
 }
 
-export const Todo: FC<Props> = ({
+export const TodoItem: FC<Props> = ({
   todo,
   deleteTodo,
   Loader,
 }) => {
   return (
     <div
-      data-cy="Todo"
+      data-cy="TodoItem"
       key={todo.id}
       className={cn('todo', { completed: todo.completed })}
     >
