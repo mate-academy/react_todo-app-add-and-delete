@@ -1,4 +1,3 @@
-/* eslint-disable jsx-a11y/control-has-associated-label */
 import cn from 'classnames';
 import { useTodoContext } from '../../context/TodosProvider';
 import { Todo } from '../../types/Todo';
@@ -20,12 +19,12 @@ export const TodoCard: React.FC<TodoCardProps> = ({ todo }) => {
       data-cy="Todo"
       className={cn('todo', { completed: todo.completed })}
     >
-      <label className="todo__status-label" htmlFor={`${todo.id}`}>
+      <label className="todo__status-label">
         <input
           data-cy="TodoStatus"
           type="checkbox"
-          id={`${todo.id}`}
           className="todo__status"
+          checked={todo.completed}
         />
       </label>
 
