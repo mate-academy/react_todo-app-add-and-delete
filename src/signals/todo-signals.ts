@@ -7,6 +7,7 @@ import { ErrorValues } from '../types/ErrorValues';
 type Error = keyof typeof ErrorValues;
 
 export const todos = signal<Todo[]>([]);
+export const tempTodo = signal<Todo | null>(null);
 export const isLoading = signal<boolean>(false);
 export const isError = signal<Error | null>(null);
 

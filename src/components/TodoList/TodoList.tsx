@@ -2,7 +2,7 @@ import React from 'react';
 import { effect } from '@preact/signals-react';
 import { useSignals } from '@preact/signals-react/runtime';
 import {
-  filteredTodos, isError, isLoading, todos,
+  filteredTodos, isError, isLoading, tempTodo, todos,
 } from '../../signals';
 import { getTodos } from '../../api/todos';
 import { TodoItem } from '../TodoItem/TodoItem';
@@ -31,6 +31,8 @@ export const TodoList: React.FC = () => {
       <section className="todoapp__main" data-cy="TodoList">
         {filteredTodos.value
           .map(todo => <TodoItem todo={todo} key={todo.id} />)}
+
+        {!!tempTodo.value && <TodoItem todo={tempTodo.value} />}
       </section>
 
       <Footer />

@@ -1,6 +1,6 @@
 import classNames from 'classnames';
 import { Todo } from '../../types/Todo';
-import { isLoading } from '../../signals';
+import { tempTodo } from '../../signals';
 
 type Props = {
   todo: Todo;
@@ -38,7 +38,7 @@ export const TodoItem = ({ todo }: Props) => {
         className={classNames(
           'modal',
           'overlay',
-          { 'is-active': isLoading.value },
+          { 'is-active': tempTodo.value?.id === todo.id },
         )}
       >
         <div className="modal-background has-background-white-ter" />
