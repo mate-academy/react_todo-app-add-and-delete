@@ -10,6 +10,7 @@ import React, {
 
 import { Todo } from '../types/Todo';
 import { getTodos, addTodo, deleteTodo } from '../api/todos';
+import { SortType, ErrorMessages } from './TodosProvider.types';
 
 type TodoContextType = {
   todos: Todo[];
@@ -40,20 +41,6 @@ type TodoContextType = {
 const TodoContext = createContext<TodoContextType | undefined>(undefined);
 
 const USER_ID = 12060;
-
-enum ErrorMessages {
-  LOAD_TODOS = 'Unable to load todos',
-  EMPTY_TITLE = 'Title should not be empty',
-  ADD_TODO = 'Unable to add a todo',
-  DELETE_TODO = 'Unable to delete a todo',
-  UPDATE_TODO = 'Unable to update a todo',
-}
-
-enum SortType {
-  all = 'All',
-  active = 'Active',
-  completed = 'Completed',
-}
 
 export const TodoProvider: React.FC<{ children: ReactNode }> = (
   { children },
@@ -90,9 +77,6 @@ export const TodoProvider: React.FC<{ children: ReactNode }> = (
     async (event: React.FormEvent<HTMLFormElement>) => {
       event.preventDefault();
 
-      // eslint-disable-next-line no-console
-      console.log(query);
-
       if (!query) {
         setMessageError(ErrorMessages.EMPTY_TITLE);
         setPending(false);
@@ -115,7 +99,6 @@ export const TodoProvider: React.FC<{ children: ReactNode }> = (
           completed: false,
           userId: USER_ID,
         };
-        // eslint-disable-next-line
         const addedTodo = await addTodo(newTodo);
 
         setQuery('');
@@ -167,8 +150,7 @@ export const TodoProvider: React.FC<{ children: ReactNode }> = (
           (currentTodos) => currentTodos.filter((todo) => !todo.completed),
         );
       } catch (error) {
-        // eslint-disable-next-line no-console
-        console.log(error);
+        throw new Error();
       } finally {
         setIsToggled(false);
       }
@@ -177,13 +159,13 @@ export const TodoProvider: React.FC<{ children: ReactNode }> = (
 
   useMemo(() => {
     switch (filterType) {
-      case SortType.all:
+      case SortType.ALL:
         setFilteredTodos(todos);
         break;
-      case SortType.active:
+      case SortType.ACTIVE:
         setFilteredTodos(todos.filter(todo => !todo.completed));
         break;
-      case SortType.completed:
+      case SortType.COMPLETED:
         setFilteredTodos(todos.filter(todo => todo.completed));
         break;
       default:
