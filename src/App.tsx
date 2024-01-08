@@ -45,21 +45,17 @@ export const App: React.FC = () => {
   };
 
   const togleCheck = (id: number) => {
-    const togledTodos = todos.map((todo) => {
+    setTodos(prevState => prevState.map((todo) => {
       if (todo.id === id) {
         return { ...todo, completed: !todo.completed };
       }
 
       return todo;
-    });
-
-    setTodos(togledTodos);
+    }));
   };
 
   const toDelete = (id: number) => {
-    const afterDeleteTodo = todos.filter((todo) => todo.id !== id);
-
-    setTodos(afterDeleteTodo);
+    setTodos(prevState => prevState.filter((todo) => todo.id !== id));
   };
 
   const filtredTodo = todos.filter((todo) => {
