@@ -2,7 +2,7 @@
 /* eslint-disable jsx-a11y/control-has-associated-label */
 import React, { useEffect, useMemo, useState } from 'react';
 import { UserWarning } from './UserWarning';
-import { Todo, FilterType } from './types';
+import { Todo, FilterType, ErrorType } from './types';
 import { getTodos } from './api/todos';
 import { TodoList } from './components/TodoList';
 import { Footer } from './components/Footer';
@@ -15,6 +15,12 @@ export const App: React.FC = () => {
   const [todos, setTodos] = useState<Todo[]>([]);
   const [filterType, setFilterType] = useState(FilterType.ALL);
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
+  const [tempTodo, setTempTodo] = useState<Todo | null>(null);
+
+  const handleError = (error: ErrorType) => {
+    setErrorMessage(error);
+  };
 
   useEffect(
     () => {
@@ -27,6 +33,7 @@ export const App: React.FC = () => {
   );
 
   const addTodo = (todo: Todo) => {
+    setTempTodo(todo);
     setTodos(prev => [...prev, todo]);
   };
 
@@ -53,7 +60,7 @@ export const App: React.FC = () => {
       <h1 className="todoapp__title">todos</h1>
 
       <div className="todoapp__content">
-        <Header addTodo={addTodo} />
+        <Header addTodo={addTodo} handleError={handleError} />
 
         <TodoList
           todos={todosToRender}

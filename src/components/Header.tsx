@@ -1,15 +1,16 @@
 /* eslint-disable no-console */
 import React, { useEffect, useRef } from 'react';
 import { postTodo } from '../api/todos';
-import { Todo } from '../types';
+import { Todo, ErrorType } from '../types';
 
 const USER_ID = 12139;
 
 type Props = {
   addTodo: (todo: Todo) => void
+  handleError: (error: ErrorType) => void
 };
 
-export const Header: React.FC<Props> = ({ addTodo }) => {
+export const Header: React.FC<Props> = ({ addTodo, handleError }) => {
   const inputRef = useRef<any>();
   const formRef = useRef<any>();
 
@@ -19,15 +20,24 @@ export const Header: React.FC<Props> = ({ addTodo }) => {
     });
 
     inputRef.current.addEventListener('keypress', (e: KeyboardEvent) => {
-      if (e.key === 'Enter') {
-        postTodo({
-          userId: USER_ID,
-          title: inputRef.current.value.trim(),
-          completed: false,
-        }).then(addTodo);
-
-        inputRef.current.value = '';
+      if (e.key !== 'Enter') {
+        return;
       }
+
+      if (inputRef.current.value.trim() === '') {
+        handleError(ErrorType.ADD);
+
+        return;
+      }
+
+      postTodo({
+        id: 0,
+        userId: USER_ID,
+        title: inputRef.current.value.trim(),
+        completed: false,
+      }).then(addTodo);
+
+      inputRef.current.value = '';
     });
   }, []);
 
