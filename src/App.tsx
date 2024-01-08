@@ -9,13 +9,14 @@ import * as postService from './api/todos';
 import { Todo } from './types/Todo';
 import { TasksFilter } from './types/tasksFilter';
 import { Errors } from './components/Errors';
+import { ErrorMesage } from './types/ErrorIMessage';
 
 const USER_ID = 12147;
 
 export const App: React.FC = () => {
   const [todos, setTodos] = useState<Todo[]>([]);
   const [tasksFilter, setTasksFilter] = useState<TasksFilter>(TasksFilter.all);
-  const [errorId, setErrorId] = useState(0);
+  const [errorMessage, setErrorMessage] = useState<ErrorMesage>(ErrorMesage.noErrors);
   const [todo, setTodo] = useState<Todo>({
     id: 0,
     userId: 0,
@@ -29,9 +30,9 @@ export const App: React.FC = () => {
         const result = await postService.getTodos(USER_ID);
 
         setTodos(result);
-        setErrorId(0);
+        setErrorMessage(ErrorMesage.noErrors);
       } catch (error) {
-        setErrorId(1);
+        setErrorMessage(ErrorMesage.loadingError);
       }
     }
 
@@ -52,7 +53,7 @@ export const App: React.FC = () => {
           setTodo={setTodo}
           todos={todos}
           setTodos={setTodos}
-          setErrorId={setErrorId}
+          setErrorMessage={setErrorMessage}
         />
 
         {todos.length > 0 && (
@@ -61,7 +62,7 @@ export const App: React.FC = () => {
               todos={todos}
               setTodos={setTodos}
               tasksFilter={tasksFilter}
-              setErrorId={setErrorId}
+              setErrorMessage={setErrorMessage}
             />
             <Footer
               setTasksFilter={setTasksFilter}
@@ -71,10 +72,10 @@ export const App: React.FC = () => {
           </>
         )}
       </div>
-      {errorId !== 0 && (
+      {errorMessage && (
         <Errors
-          errorId={errorId}
-          setErrorId={setErrorId}
+          errorMessage={errorMessage}
+          setErrorMessage={setErrorMessage}
         />
       )}
     </div>

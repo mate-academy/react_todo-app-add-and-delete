@@ -1,16 +1,17 @@
 import { Dispatch, SetStateAction } from 'react';
+import { ErrorMesage } from '../types/ErrorIMessage';
 
 interface Props {
-  errorId: number,
-  setErrorId: Dispatch<SetStateAction<number>>
+  errorMessage: ErrorMesage,
+  setErrorMessage: Dispatch<SetStateAction<ErrorMesage>>
 }
 
 export const Errors: React.FC<Props> = ({
-  errorId,
-  setErrorId,
+  errorMessage,
+  setErrorMessage,
 }) => {
   const handleCloseErrors = () => {
-    setErrorId(0);
+    setErrorMessage(ErrorMesage.noErrors);
   };
 
   return (
@@ -22,23 +23,12 @@ export const Errors: React.FC<Props> = ({
         data-cy="HideErrorButton"
         type="button"
         aria-label="hide error button"
-        className={`delete ${errorId === 0 && 'hidden'}`}
+        className={`delete ${!errorMessage && 'hidden'}`}
         onClick={handleCloseErrors}
       />
 
       {/* show only one message at a time */}
-      {errorId === 1 && (
-        <p>Unable to load todos</p>
-      )}
-      {errorId === 2 && (
-        <p>Unable to add todo</p>
-      )}
-      {errorId === 3 && (
-        <p>Unable to delete todo</p>
-      )}
-      {errorId === 4 && (
-        <p>Title shouldnt be empty</p>
-      )}
+      {errorMessage}
       <br />
     </div>
   );

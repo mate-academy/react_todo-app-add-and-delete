@@ -3,13 +3,14 @@ import {
 } from 'react';
 import * as postService from '../api/todos';
 import { Todo } from '../types/Todo';
+import { ErrorMesage } from '../types/ErrorIMessage';
 
 type Props = {
   todo: Todo,
   setTodo: Dispatch<SetStateAction<Todo>>
   todos: Todo[],
   setTodos: Dispatch<SetStateAction<Todo[]>>
-  setErrorId: Dispatch<SetStateAction<number>>
+  setErrorMessage: Dispatch<SetStateAction<ErrorMesage>>
 };
 
 export const Header: React.FC<Props> = ({
@@ -17,20 +18,20 @@ export const Header: React.FC<Props> = ({
   setTodo,
   todos,
   setTodos,
-  setErrorId,
+  setErrorMessage,
 }) => {
   const setEmptyTitleErrorWithTimeOut = () => {
-    setErrorId(4);
+    setErrorMessage(ErrorMesage.emptyTitleError);
     setTimeout(() => {
-      setErrorId(0);
+      setErrorMessage(ErrorMesage.noErrors);
     }, 2000);
   };
 
   useEffect(() => {
     const setPostErrorWithTimeOut = () => {
-      setErrorId(2);
+      setErrorMessage(ErrorMesage.addingError);
       setTimeout(() => {
-        setErrorId(0);
+        setErrorMessage(ErrorMesage.noErrors);
       }, 2000);
     };
 
@@ -43,7 +44,7 @@ export const Header: React.FC<Props> = ({
     }
 
     postData();
-  }, [todo, setErrorId]);
+  }, [todo, setErrorMessage]);
 
   const [text, setText] = useState('');
 

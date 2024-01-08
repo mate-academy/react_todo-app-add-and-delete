@@ -1,20 +1,21 @@
 import { SetStateAction, Dispatch } from 'react';
 import { TasksFilter } from '../types/tasksFilter';
 import { Todo } from '../types/Todo';
+import { ErrorMesage } from '../types/ErrorIMessage';
 import * as postService from '../api/todos';
 
 interface Props {
   todos: Todo[],
   setTodos: Dispatch<SetStateAction<Todo[]>>
   tasksFilter: TasksFilter
-  setErrorId: Dispatch<SetStateAction<number>>
+  setErrorMessage: Dispatch<SetStateAction<ErrorMesage>>
 }
 
 export const Section: React.FC<Props> = ({
   todos,
   setTodos,
   tasksFilter,
-  setErrorId,
+  setErrorMessage,
 }) => {
   async function deleteData(idToDelete: number) {
     try {
@@ -22,7 +23,7 @@ export const Section: React.FC<Props> = ({
         .filter((currentTodo) => currentTodo.id !== idToDelete));
       await postService.deleteTodo(idToDelete);
     } catch (error) {
-      setErrorId(3);
+      setErrorMessage(ErrorMesage.deletingError);
     }
   }
 
@@ -40,6 +41,18 @@ export const Section: React.FC<Props> = ({
       filteringTodos = todos;
   }
 
+  const toggleCompleted = (id: number, completed: boolean) => {
+    setTodos((currentTodos) => (
+      currentTodos.map((currentTodo) => (
+        currentTodo.id === id ? (
+          { ...currentTodo, completed: !completed }
+        ) : (
+          currentTodo
+        )
+      ))
+    ));
+  };
+
   return (
     <section className="todoapp__main" data-cy="TodoList">
       {filteringTodos.map(({ title, id, completed }) => (
@@ -54,13 +67,7 @@ export const Section: React.FC<Props> = ({
               type="checkbox"
               className="todo__status"
               checked={completed}
-              onChange={() => setTodos((currentTodos) => {
-                return currentTodos.map((currentTodo) => {
-                  return currentTodo.id === id
-                    ? { ...currentTodo, completed: !completed }
-                    : currentTodo;
-                });
-              })}
+              onChange={() => toggleCompleted(id, completed)}
             />
           </label>
 
