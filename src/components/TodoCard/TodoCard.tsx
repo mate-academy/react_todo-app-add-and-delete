@@ -19,11 +19,13 @@ export const TodoCard: React.FC<TodoCardProps> = ({ todo }) => {
       data-cy="Todo"
       className={cn('todo', { completed: todo.completed })}
     >
-      <label className="todo__status-label">
+      {/* eslint jsx-a11y/label-has-associated-control: ["error", { assert: "either" } ] */}
+      <label className="todo__status-label" htmlFor={`${todo.id}`}>
         <input
           data-cy="TodoStatus"
           type="checkbox"
           className="todo__status"
+          id={`${todo.id}`}
           checked={todo.completed}
         />
       </label>
