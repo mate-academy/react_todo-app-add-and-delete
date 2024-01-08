@@ -5,6 +5,12 @@ import '@fortawesome/fontawesome-free/css/all.css';
 import './styles/index.scss';
 
 import { App } from './App';
+import { GlobalStateProvider } from './components/TodosContext';
 
-createRoot(document.getElementById('root') as HTMLDivElement)
-  .render(<App />);
+const container = document.getElementById('root') as HTMLDivElement;
+
+createRoot(container).render(
+  <GlobalStateProvider>
+    <App />
+  </GlobalStateProvider>,
+);
