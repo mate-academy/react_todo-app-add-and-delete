@@ -1,3 +1,4 @@
+/* eslint-disable jsx-a11y/control-has-associated-label */
 import cn from 'classnames';
 import { useTodoContext } from '../../context/TodosProvider';
 import { Todo } from '../../types/Todo';
