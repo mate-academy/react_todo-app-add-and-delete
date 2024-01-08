@@ -1,5 +1,5 @@
 /* eslint-disable jsx-a11y/control-has-associated-label */
-import React, { useEffect, useRef } from 'react';
+import { useEffect, useRef } from 'react';
 import { useTodoContext } from './context/TodosProvider';
 import { Header } from './components/Header/Header';
 import { TodoList } from './components/TodoList/TodoList';

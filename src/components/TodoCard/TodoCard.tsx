@@ -19,10 +19,11 @@ export const TodoCard: React.FC<TodoCardProps> = ({ todo }) => {
       data-cy="Todo"
       className={cn('todo', { completed: todo.completed })}
     >
-      <label className="todo__status-label">
+      <label className="todo__status-label" htmlFor="TodoStatus">
         <input
           data-cy="TodoStatus"
           type="checkbox"
+          id="TodoStatus"
           className="todo__status"
         />
       </label>

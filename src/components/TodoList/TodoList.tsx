@@ -1,4 +1,3 @@
-import React from 'react';
 import { TransitionGroup, CSSTransition } from 'react-transition-group';
 import { useTodoContext } from '../../context/TodosProvider';
 import { Todo } from '../../types/Todo';
