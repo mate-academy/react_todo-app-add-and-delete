@@ -48,7 +48,7 @@ export const TodoCard: React.FC<TodoCardProps> = ({ todo }) => {
         className={cn('modal overlay', {
           'is-active':
           todo.id === tempTodo?.id
-          || status === todo.id
+          || status.includes(todo.id)
           || isToggled,
         })}
       >

@@ -21,7 +21,7 @@ type TodoContextType = {
   messageError: string;
   query: string;
   isLoadingTodo: Todo | null;
-  status: number;
+  status: number[];
   isToggled: boolean;
   setTodos: React.Dispatch<React.SetStateAction<Todo[]>>;
   setFilteredTodos: React.Dispatch<React.SetStateAction<Todo[]>>;
@@ -32,7 +32,7 @@ type TodoContextType = {
   setQuery: React.Dispatch<React.SetStateAction<string>>;
   handleSubmitSent: (event: React.FormEvent<HTMLFormElement>) => void;
   handleDeleteTodo: (id: number) => void;
-  setStatus: React.Dispatch<React.SetStateAction<number>>
+  setStatus: React.Dispatch<React.SetStateAction<number[]>>
   setIsLoadingTodo: React.Dispatch<React.SetStateAction<Todo | null>>
   handleClearCompleted: () => void;
   setIsToggled: React.Dispatch<React.SetStateAction<boolean>>
@@ -52,7 +52,7 @@ export const TodoProvider: React.FC<{ children: ReactNode }> = (
   const [pending, setPending] = useState<boolean>(false);
   const [messageError, setMessageError] = useState<string>('');
   const [query, setQuery] = useState<string>('');
-  const [status, setStatus] = useState<number>(-1);
+  const [status, setStatus] = useState<number[]>([]);
   const [isLoadingTodo, setIsLoadingTodo] = useState<Todo | null>(null);
   const [isToggled, setIsToggled] = useState<boolean>(false);
 
@@ -116,21 +116,22 @@ export const TodoProvider: React.FC<{ children: ReactNode }> = (
 
   const handleDeleteTodo = useCallback(
     async (id: number) => {
+      setStatus([...status, id]);
+
       try {
-        setStatus(id);
         setIsLoadingTodo(todos.find(todo => todo.id === id) || null);
-        setTimeout(() => {
-          setStatus(0);
-          setTodos(
-            currentTodos => currentTodos.filter(todo => todo.id !== id),
-          );
-        }, 500);
+
         await deleteTodo(id);
+        setTodos(
+          currentTodos => currentTodos.filter(todo => todo.id !== id),
+        );
       } catch (error) {
         setMessageError(ErrorMessages.DELETE_TODO);
+      } finally {
+        setStatus([]);
       }
     },
-    [todos],
+    [todos, status],
   );
 
   const handleClearCompleted = useCallback(() => {
