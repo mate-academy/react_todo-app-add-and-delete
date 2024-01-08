@@ -1,5 +1,4 @@
 /* eslint-disable max-len */
-/* eslint-disable jsx-a11y/control-has-associated-label */
 import React, { useEffect, useMemo, useState } from 'react';
 import { UserWarning } from './UserWarning';
 import { Todo, FilterType, ErrorType } from './types';
@@ -15,8 +14,6 @@ export const App: React.FC = () => {
   const [todos, setTodos] = useState<Todo[]>([]);
   const [filterType, setFilterType] = useState(FilterType.ALL);
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
-  const [tempTodo, setTempTodo] = useState<Todo | null>(null);
 
   const handleError = (error: ErrorType) => {
     setErrorMessage(error);
@@ -33,7 +30,6 @@ export const App: React.FC = () => {
   );
 
   const addTodo = (todo: Todo) => {
-    setTempTodo(todo);
     setTodos(prev => [...prev, todo]);
   };
 
