@@ -1,4 +1,5 @@
-import React, {
+import {
+  FC,
   useEffect, useMemo, useState,
 } from 'react';
 import { UserWarning } from './UserWarning';
@@ -13,7 +14,7 @@ import { ErrorNotification } from './components/ErrorNotification';
 
 const USER_ID = 12084;
 
-export const App: React.FC = () => {
+export const App: FC = () => {
   const [todos, setTodos] = useState<Todo[]>([]);
   const [filterValue, setFilterValue] = useState(FilterValue.All);
   const [tempTodo, setTempTodo] = useState<Todo | null>(null);
@@ -22,7 +23,6 @@ export const App: React.FC = () => {
 
   const handleError = (error: Errors) => {
     setErrorMessage(error);
-    setTimeout(() => setErrorMessage(Errors.Null), 3000);
   };
 
   useEffect(
@@ -67,26 +67,6 @@ export const App: React.FC = () => {
         setLoadingTodoId([]);
       });
   };
-
-  // const updateTodo = (todoToUpdate: Todo) => {
-  //   setLoadingTodoId((prevLoadingIds) => [...prevLoadingIds, todoToUpdate.id]);
-
-  //   TodosApiCommands.updateTodo(todoToUpdate.id, todoToUpdate)
-  //     .then((updatedTodo) => {
-  //       setTodos((prevTodos) => prevTodos.map(
-  //         (todo) => (todo.id === updatedTodo.id ? updatedTodo : todo),
-  //       ));
-  //     })
-  //     .catch(() => {
-  //       handleError(Errors.UpdateTodo);
-  //     })
-  //     .finally(() => {
-  //       setLoadingTodoId(
-  //         (prevLoadingIds) => prevLoadingIds
-  //           .filter((id) => id !== todoToUpdate.id),
-  //       );
-  //     });
-  // };
 
   const updateTodo = (todoToUpdate: Todo) => {
     setLoadingTodoId(loadingTodos => [...loadingTodos, todoToUpdate.id]);

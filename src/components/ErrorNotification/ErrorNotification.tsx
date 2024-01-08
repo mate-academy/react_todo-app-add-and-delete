@@ -1,4 +1,4 @@
-import { FC } from 'react';
+import { FC, useEffect } from 'react';
 import cn from 'classnames';
 import { Errors } from '../../types/Errors';
 
@@ -12,6 +12,14 @@ export const ErrorNotification: FC<Props> = (props) => {
     errorMessage,
     setErrorMessage,
   } = props;
+
+  useEffect(() => {
+    const timeoutId = setTimeout(() => {
+      setErrorMessage(Errors.Null);
+    }, 3000);
+
+    return () => clearTimeout(timeoutId);
+  }, [errorMessage, setErrorMessage]);
 
   return (
     <div
