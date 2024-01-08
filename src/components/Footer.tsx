@@ -1,6 +1,7 @@
 import { Todo } from '../types/Todo';
 import { Status } from '../types/Status';
 import { deleteTodo } from '../api/todos';
+import { Errors } from '../types/Errors';
 
 type Props = {
   todos: Todo[];
@@ -18,8 +19,6 @@ export const Footer: React.FC<Props> = ({
   showErrorNotification,
 }) => {
   const itemsLeft = todos.filter((todo) => todo.completed === false).length;
-
-  //
   const handleClearCompleted = () => {
     const completedTodos = todos.filter((todo) => todo.completed);
 
@@ -45,7 +44,7 @@ export const Footer: React.FC<Props> = ({
         setTodos(updatedTodos);
 
         if (successfulDeletions.length < completedTodos.length) {
-          showErrorNotification('Unable to delete a todo');
+          showErrorNotification(Errors.UNABLE);
         }
       });
   };

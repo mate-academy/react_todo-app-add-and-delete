@@ -20,7 +20,6 @@ export const TodoList: React.FC<Props> = ({
   return (
     <section className="todoapp__main" data-cy="TodoList">
       {todos.map((todo) => (
-        //
         <TodoItem
           showErrorNotification={showErrorNotification}
           toDelete={toDelete}

@@ -1,8 +1,9 @@
 import React, {
-  useState, useRef, useEffect, RefObject,
+  useState, useRef, useEffect,
 } from 'react';
 import { Todo } from '../types/Todo';
 import { createTodo } from '../api/todos';
+import { Errors } from '../types/Errors';
 
 type Props = {
   USER_ID: number;
@@ -17,11 +18,9 @@ export const Form: React.FC<Props> = ({
   showErrorNotification,
   setTempTodo,
 }) => {
-  const formRef: RefObject<HTMLInputElement> = useRef(null);
+  const formRef = useRef<HTMLInputElement>(null);
   const [title, setTitle] = useState('');
   const [isLoading, setIsLoading] = useState(false);
-
-  // console.log(formRef.current);
 
   useEffect(() => {
     formRef.current?.focus();
@@ -30,7 +29,7 @@ export const Form: React.FC<Props> = ({
   const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     if (title.trim().length < 1) {
-      showErrorNotification('Title should not be empty');
+      showErrorNotification(Errors.EMPTY);
 
       return;
     }
@@ -52,7 +51,7 @@ export const Form: React.FC<Props> = ({
         setTitle('');
       })
       .catch(() => {
-        showErrorNotification('Unable to add a todo');
+        showErrorNotification(Errors.UNABLE);
         formRef.current?.focus();
       })
       .finally(() => {

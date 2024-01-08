@@ -1,6 +1,7 @@
 import { useState, useRef, useEffect } from 'react';
 import { Todo } from '../types/Todo';
 import { deleteTodo } from '../api/todos';
+import { Errors } from '../types/Errors';
 
 type Props = {
   todo: Todo;
@@ -31,7 +32,7 @@ export const TodoItem: React.FC<Props> = ({
       })
       .catch(() => {
         setLoading(false);
-        showErrorNotification('Unable to delete a todo');
+        showErrorNotification(Errors.UNABLE);
       });
   };
 

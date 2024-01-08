@@ -7,6 +7,7 @@ import { TodoList } from './components/TodoList';
 import { Footer } from './components/Footer';
 import { Status } from './types/Status';
 import { getTodos } from './api/todos';
+import { Errors } from './types/Errors';
 
 const USER_ID = 12132;
 
@@ -36,7 +37,7 @@ export const App: React.FC = () => {
         setTodos(data);
       })
       .catch(() => {
-        showErrorNotification('Unable to load todos');
+        showErrorNotification(Errors.UNABLE);
       });
   }, []);
 
