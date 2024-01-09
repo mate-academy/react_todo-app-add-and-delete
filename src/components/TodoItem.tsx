@@ -23,7 +23,7 @@ export const TodoItem: React.FC<Props> = ({
           type="checkbox"
           className="todo__status"
           defaultChecked={todo.completed}
-          onClick={() => onTodoAction(`check:${todo.id}`)}
+          onClick={() => onTodoAction(`${todo.completed}:${todo.id}`)}
         />
       </label>
 

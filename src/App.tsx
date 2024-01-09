@@ -30,7 +30,8 @@ export const App: React.FC = () => {
     }
   }, [errorMessage]);
 
-  const complitedQty = todos.filter(todo => todo.completed).length;
+  const activeQty = todos.filter(todo => !todo.completed).length;
+  const isAnyComplited = todos.length - activeQty > 0;
 
   const handleClearCompleted = () => {
     todos.forEach(todo => {
@@ -69,7 +70,7 @@ export const App: React.FC = () => {
         {todos && (
           <footer className="todoapp__footer" data-cy="Footer">
             <span className="todo-count" data-cy="TodosCounter">
-              {`${complitedQty} items left`}
+              {`${activeQty} items left`}
             </span>
 
             <TodosFilters
@@ -82,7 +83,7 @@ export const App: React.FC = () => {
               className="todoapp__clear-completed"
               data-cy="ClearCompletedButton"
               onClick={handleClearCompleted}
-              disabled={!complitedQty}
+              disabled={!isAnyComplited}
             >
               Clear completed
             </button>

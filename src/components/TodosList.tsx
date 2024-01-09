@@ -27,30 +27,22 @@ export const TodosList: React.FC<Props> = ({
     return getFilteredTodos(todos, status);
   }, [todos, status]);
 
-  const checkCurrent = (todoId: string) => {
-    setTodos(todos.map(item => {
-      return item.id === +todoId
-        ? { ...item, completed: !item.completed }
-        : item;
-    }));
-  };
-
-  const deleteCurrent = (todoId: string) => {
-    deleteTodos(todoId.toString())
-      .then(() => setTodos(todos.filter(todo => todo.id !== +todoId)))
-      .catch(() => onError(Error.delete))
-      .finally(() => setTodoIdAction(''));
-  };
-
   useEffect(() => {
     if (todoIdAction) {
       onError('');
       const [action, todoId] = todoIdAction.split(':');
 
-      if (action === 'check') {
-        checkCurrent(todoId);
+      if (action === 'true' || action === 'false') {
+        setTodos(todos.map(item => {
+          return item.id === +todoId
+            ? { ...item, completed: !item.completed }
+            : item;
+        }));
       } else {
-        deleteCurrent(todoId);
+        deleteTodos(todoId.toString())
+          .then(() => setTodos(todos.filter(todo => todo.id !== +todoId)))
+          .catch(() => onError(Error.delete))
+          .finally(() => setTodoIdAction(''));
       }
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
