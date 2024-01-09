@@ -14,6 +14,8 @@ export const App: React.FC = () => {
   const [todos, setTodos] = useState<Todo[]>([]);
   const [filterType, setFilterType] = useState(FilterType.ALL);
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
+  const [tempTodo, setTempTodo] = useState<Todo | null>(null);
+  const [isLoading, setIsLoading] = useState<number | boolean>(false);
 
   const handleError = (error: ErrorType) => {
     setErrorMessage(error);
@@ -56,11 +58,15 @@ export const App: React.FC = () => {
       <h1 className="todoapp__title">todos</h1>
 
       <div className="todoapp__content">
-        <Header addTodo={addTodo} handleError={handleError} />
+        <Header addTodo={addTodo} setTempTodo={setTempTodo} handleError={handleError} setIsLoading={setIsLoading} />
 
         <TodoList
           todos={todosToRender}
+          tempTodo={tempTodo}
           setTodos={setTodos}
+          isLoading={isLoading}
+          setIsLoading={setIsLoading}
+          handleError={handleError}
         />
 
         {todos.length > 0 && (

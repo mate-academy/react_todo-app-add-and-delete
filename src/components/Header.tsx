@@ -1,16 +1,24 @@
+/* eslint-disable max-len */
 /* eslint-disable no-console */
-import React, { useEffect, useRef } from 'react';
+import React, {
+  Dispatch, SetStateAction, useEffect, useRef,
+} from 'react';
 import { postTodo } from '../api/todos';
 import { Todo, ErrorType } from '../types';
 
 const USER_ID = 12139;
 
 type Props = {
+  setTempTodo: Dispatch<SetStateAction<Todo | null>>
   addTodo: (todo: Todo) => void
   handleError: (error: ErrorType) => void
+  setIsLoading: Dispatch<SetStateAction<number | boolean>>
 };
 
-export const Header: React.FC<Props> = ({ addTodo, handleError }) => {
+export const Header: React.FC<Props> = ({
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
+  addTodo, handleError, setTempTodo, setIsLoading,
+}) => {
   const inputRef = useRef<any>();
   const formRef = useRef<any>();
 
@@ -19,23 +27,29 @@ export const Header: React.FC<Props> = ({ addTodo, handleError }) => {
       e.preventDefault();
     });
 
-    inputRef.current.addEventListener('keypress', (e: KeyboardEvent) => {
+    inputRef.current.addEventListener('keypress', async (e: KeyboardEvent) => {
       if (e.key !== 'Enter') {
         return;
       }
 
       if (inputRef.current.value.trim() === '') {
-        handleError(ErrorType.ADD);
+        handleError(ErrorType.TITLE);
 
         return;
       }
 
-      postTodo({
+      const newTodo: Todo = {
         id: 0,
         userId: USER_ID,
         title: inputRef.current.value.trim(),
         completed: false,
-      }).then(addTodo);
+      };
+
+      setIsLoading(newTodo.id);
+      setTempTodo(newTodo);
+      await postTodo(newTodo).then(addTodo);
+      setTempTodo(null);
+      setIsLoading(false);
 
       inputRef.current.value = '';
     });
