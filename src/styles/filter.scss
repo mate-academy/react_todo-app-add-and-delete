@@ -1,5 +1,6 @@
 .filter {
   display: flex;
+  position: relative;
 
   &__link {
     margin: 3px;
@@ -19,4 +20,11 @@
       border-color: rgba(175, 47, 47, 0.2);
     }
   }
+}
+
+nav.filter {
+  position: absolute;
+  left: 50%;
+  transform: translateX(-50%);
+
 }
