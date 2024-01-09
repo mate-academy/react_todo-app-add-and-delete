@@ -28,7 +28,7 @@ export const TodoItem: React.FC<Props> = ({
       </label>
 
       <span data-cy="TodoTitle" className="todo__title">
-        {todo.id ? todo.title : 'Todo is being saved now' }
+        {todo.title}
       </span>
 
       <button

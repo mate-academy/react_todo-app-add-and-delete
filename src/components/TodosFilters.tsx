@@ -13,6 +13,7 @@ export const TodosFilters: React.FC<Props> = ({ status, setStatus }) => {
         href="#/"
         className={classNames('filter__link',
           { selected: status === 'all' })}
+        data-cy="FilterLinkAll"
         onClick={(e) => {
           e.preventDefault();
           setStatus(Status.all);
