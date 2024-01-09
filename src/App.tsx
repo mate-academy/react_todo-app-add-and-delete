@@ -9,6 +9,7 @@ import { TodosList } from './components/TodosList';
 import { Error } from './types/Error';
 import { TodosHeader } from './components/TodosHeader';
 import { ErrorNotification } from './components/ErrorNotification';
+import { TodosContext } from './components/TodosContext';
 
 export const App: React.FC = () => {
   const [todos, setTodos] = useState<Todo[]>([]);
@@ -48,53 +49,50 @@ export const App: React.FC = () => {
   };
 
   return (
-    <div className="todoapp">
-      <h1 className="todoapp__title">todos</h1>
+    <TodosContext.Provider value={{
+      todos,
+      setTodos,
+      status,
+      setStatus,
+      errorMessage,
+      setErrorMessage,
+    }}
+    >
+      <div className="todoapp">
+        <h1 className="todoapp__title">todos</h1>
 
-      <div className="todoapp__content">
-        <TodosHeader
-          todos={todos}
-          setTodos={setTodos}
-          setTempTodo={setTempTodo}
-          onError={setErrorMessage}
-        />
+        <div className="todoapp__content">
+          <TodosHeader
+            setTempTodo={setTempTodo}
+          />
 
-        <TodosList
-          todos={todos}
-          setTodos={setTodos}
-          tempTodo={tempTodo}
-          status={status}
-          onError={setErrorMessage}
-        />
+          <TodosList
+            tempTodo={tempTodo}
+          />
 
-        {todos.length !== 0 && (
-          <footer className="todoapp__footer" data-cy="Footer">
-            <span className="todo-count" data-cy="TodosCounter">
-              {`${activeQty} items left`}
-            </span>
+          {todos.length !== 0 && (
+            <footer className="todoapp__footer" data-cy="Footer">
+              <span className="todo-count" data-cy="TodosCounter">
+                {`${activeQty} items left`}
+              </span>
 
-            <TodosFilters
-              status={status}
-              setStatus={setStatus}
-            />
+              <TodosFilters />
 
-            <button
-              type="button"
-              className="todoapp__clear-completed"
-              data-cy="ClearCompletedButton"
-              onClick={handleClearCompleted}
-              disabled={!isAnyComplited}
-            >
-              Clear completed
-            </button>
-          </footer>
-        )}
+              <button
+                type="button"
+                className="todoapp__clear-completed"
+                data-cy="ClearCompletedButton"
+                onClick={handleClearCompleted}
+                disabled={!isAnyComplited}
+              >
+                Clear completed
+              </button>
+            </footer>
+          )}
+        </div>
+
+        <ErrorNotification />
       </div>
-
-      <ErrorNotification
-        errorMessage={errorMessage}
-        setErrorMessage={setErrorMessage}
-      />
-    </div>
+    </TodosContext.Provider>
   );
 };

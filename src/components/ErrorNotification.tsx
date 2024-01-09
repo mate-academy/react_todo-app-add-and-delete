@@ -1,14 +1,10 @@
 import classNames from 'classnames';
+import { useContext } from 'react';
+import { TodosContext } from './TodosContext';
 
-type Props = {
-  errorMessage: string
-  setErrorMessage: (val: string) => void
-};
+export const ErrorNotification: React.FC = () => {
+  const { errorMessage, setErrorMessage } = useContext(TodosContext);
 
-export const ErrorNotification: React.FC<Props> = ({
-  errorMessage,
-  setErrorMessage,
-}) => {
   return (
     <div
       data-cy="ErrorNotification"

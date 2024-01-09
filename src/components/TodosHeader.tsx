@@ -1,23 +1,22 @@
-import { useEffect, useRef, useState } from 'react';
+import {
+  useContext,
+  useEffect,
+  useRef,
+  useState,
+} from 'react';
 import classNames from 'classnames';
 import { Todo } from '../types/Todo';
 import { addTodos } from '../api/todos';
 import { Error } from '../types/Error';
 import { createTodo } from '../utils/createTodo';
+import { TodosContext } from './TodosContext';
 
 type Props = {
-  todos: Todo[],
-  setTodos: (val: Todo[]) => void,
   setTempTodo: (val: Todo | null) => void,
-  onError: (val: string) => void,
 };
 
-export const TodosHeader: React.FC<Props> = ({
-  todos,
-  setTodos,
-  setTempTodo,
-  onError,
-}) => {
+export const TodosHeader: React.FC<Props> = ({ setTempTodo }) => {
+  const { todos, setTodos, setErrorMessage } = useContext(TodosContext);
   const [newTitle, setNewTitle] = useState('');
   const [isPosting, setIsPosting] = useState(false);
   const todoInput = useRef<HTMLInputElement>(null);
@@ -37,9 +36,10 @@ export const TodosHeader: React.FC<Props> = ({
       setTempTodo(newTodo);
 
       addTodos({ userId, title, completed })
-        .then(savedTodo => setTodos([...todos, savedTodo]))
-        .then(() => setNewTitle(''))
-        .catch(() => onError(Error.post))
+        .then((savedTodo) => {
+          setTodos([...todos, savedTodo]);
+          setNewTitle('');
+        }).catch(() => setErrorMessage(Error.post))
         .finally(() => {
           setIsPosting(false);
           setTempTodo(null);
@@ -48,7 +48,7 @@ export const TodosHeader: React.FC<Props> = ({
       return;
     }
 
-    onError(Error.submit);
+    setErrorMessage(Error.submit);
   };
 
   return (

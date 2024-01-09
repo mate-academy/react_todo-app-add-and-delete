@@ -1,15 +1,31 @@
+import { useContext } from 'react';
 import classNames from 'classnames';
 import { Todo } from '../types/Todo';
+import { TodosContext } from './TodosContext';
+import { deleteTodos } from '../api/todos';
+import { Error } from '../types/Error';
 
 type Props = {
   todo: Todo,
-  onTodoAction?: (val: string) => void,
 };
 
-export const TodoItem: React.FC<Props> = ({
-  todo,
-  onTodoAction = () => {},
-}) => {
+export const TodoItem: React.FC<Props> = ({ todo }) => {
+  const { todos, setTodos, setErrorMessage } = useContext(TodosContext);
+
+  const handleTodoDelete = () => {
+    deleteTodos(todo.id.toString())
+      .then(() => setTodos(todos.filter(item => item.id !== todo.id)))
+      .catch(() => setErrorMessage(Error.delete));
+  };
+
+  const handleTodoCheck = () => {
+    setTodos(todos.map(item => {
+      return item.id === todo.id
+        ? { ...item, completed: !item.completed }
+        : item;
+    }));
+  };
+
   return (
     <div
       data-cy="Todo"
@@ -23,7 +39,7 @@ export const TodoItem: React.FC<Props> = ({
           type="checkbox"
           className="todo__status"
           defaultChecked={todo.completed}
-          onClick={() => onTodoAction(`${todo.completed}:${todo.id}`)}
+          onClick={handleTodoCheck}
         />
       </label>
 
@@ -35,7 +51,7 @@ export const TodoItem: React.FC<Props> = ({
         type="button"
         className="todo__remove"
         data-cy="TodoDelete"
-        onClick={() => onTodoAction(`delete:${todo.id}`)}
+        onClick={handleTodoDelete}
       >
         ×
       </button>

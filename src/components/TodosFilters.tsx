@@ -1,12 +1,16 @@
+import { useContext } from 'react';
 import classNames from 'classnames';
 import { Status } from '../types/Status';
+import { TodosContext } from './TodosContext';
 
-type Props = {
-  status: Status
-  setStatus: (val: Status) => void
-};
+// type Props = {
+//   status: Status
+//   setStatus: (val: Status) => void
+// };
 
-export const TodosFilters: React.FC<Props> = ({ status, setStatus }) => {
+export const TodosFilters: React.FC = () => {
+  const { status, setStatus } = useContext(TodosContext);
+
   return (
     <nav className="filter" data-cy="Filter">
       <a
