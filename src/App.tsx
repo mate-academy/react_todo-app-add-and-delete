@@ -67,7 +67,7 @@ export const App: React.FC = () => {
           onError={setErrorMessage}
         />
 
-        {todos && (
+        {todos.length !== 0 && (
           <footer className="todoapp__footer" data-cy="Footer">
             <span className="todo-count" data-cy="TodosCounter">
               {`${activeQty} items left`}
@@ -87,7 +87,6 @@ export const App: React.FC = () => {
             >
               Clear completed
             </button>
-
           </footer>
         )}
       </div>
