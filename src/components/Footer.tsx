@@ -4,16 +4,22 @@ import { TasksFilter } from '../types/tasksFilter';
 import { Todo } from '../types/Todo';
 
 interface Props {
+  todos: Todo[],
   tasksFilter: TasksFilter,
   setTasksFilter: Dispatch<SetStateAction<TasksFilter>>
   setTodos: Dispatch<SetStateAction<Todo[]>>;
 }
 
 export const Footer: React.FC<Props> = ({
+  todos,
   tasksFilter,
   setTasksFilter,
   setTodos,
 }) => {
+
+   const itemsLeftCount = todos.filter((todo) => !todo.completed).length;
+   const itemsCompletedCount = todos.find((todo) => todo.completed);
+
   const handleAll = () => {
     setTasksFilter(TasksFilter.all);
   };
@@ -36,7 +42,8 @@ export const Footer: React.FC<Props> = ({
       data-cy="Footer"
     >
       <span className="todo-count" data-cy="TodosCounter">
-        3 items left
+        {itemsLeftCount}
+        <span> items left</span>
       </span>
 
       {/* Active filter should have a 'selected' class */}
@@ -44,7 +51,7 @@ export const Footer: React.FC<Props> = ({
         <a
           href="#/"
           className={cn('filter__link',
-            { selected: TasksFilter.all })}
+            { selected: tasksFilter === TasksFilter.all })}
           data-cy="FilterLinkAll"
           onClick={handleAll}
         >
@@ -79,7 +86,9 @@ export const Footer: React.FC<Props> = ({
         data-cy="ClearCompletedButton"
         onClick={handleClearCompleted}
       >
-        Clear completed
+        {itemsCompletedCount && (
+          <span>Clear Completed</span>
+        )}
       </button>
     </footer>
   );

@@ -65,6 +65,7 @@ export const App: React.FC = () => {
               setErrorMessage={setErrorMessage}
             />
             <Footer
+              todos={todos}
               setTasksFilter={setTasksFilter}
               tasksFilter={tasksFilter}
               setTodos={setTodos}
