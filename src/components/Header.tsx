@@ -22,36 +22,33 @@ export const Header: React.FC<Props> = ({
   const inputRef = useRef<any>();
   const formRef = useRef<any>();
 
+  const handleAddTodo = async () => {
+    if (inputRef.current.value.trim() === '') {
+      handleError(ErrorType.TITLE);
+
+      return;
+    }
+
+    const newTodo: Todo = {
+      id: 0,
+      userId: USER_ID,
+      title: inputRef.current.value.trim(),
+      completed: false,
+    };
+
+    setIsLoading(prev => [...prev, newTodo.id]);
+    setTempTodo(newTodo);
+    await postTodo(newTodo).then(addTodo);
+    setTempTodo(null);
+    setIsLoading(prev => prev.filter(id => id !== newTodo.id));
+
+    inputRef.current.value = '';
+  };
+
   useEffect(() => {
     formRef.current.addEventListener('submit', (e: SubmitEvent) => {
       e.preventDefault();
-    });
-
-    inputRef.current.addEventListener('keypress', async (e: KeyboardEvent) => {
-      if (e.key !== 'Enter') {
-        return;
-      }
-
-      if (inputRef.current.value.trim() === '') {
-        handleError(ErrorType.TITLE);
-
-        return;
-      }
-
-      const newTodo: Todo = {
-        id: 0,
-        userId: USER_ID,
-        title: inputRef.current.value.trim(),
-        completed: false,
-      };
-
-      setIsLoading(prev => [...prev, newTodo.id]);
-      setTempTodo(newTodo);
-      await postTodo(newTodo).then(addTodo);
-      setTempTodo(null);
-      setIsLoading(prev => prev.filter(id => id !== newTodo.id));
-
-      inputRef.current.value = '';
+      handleAddTodo();
     });
   }, []);
 
