@@ -8,8 +8,8 @@ interface Props {
   todos: Todo[],
   tempTodo: Todo | null,
   setTodos: Dispatch<SetStateAction<Todo[]>>
-  isLoading: number | boolean
-  setIsLoading: Dispatch<SetStateAction<number | boolean>>
+  isLoading: number[]
+  setIsLoading: Dispatch<SetStateAction<number[]>>
   handleError: (error: ErrorType) => void
 }
 
@@ -24,7 +24,7 @@ export const TodoList: React.FC<Props> = (props) => {
   } = props;
 
   const handleTodoDelete = (id: number) => {
-    setIsLoading(id);
+    setIsLoading(prev => [...prev, id]);
 
     const deletingTodo = async () => {
       try {
@@ -35,7 +35,7 @@ export const TodoList: React.FC<Props> = (props) => {
       } catch (error) {
         handleError(ErrorType.DELETE);
       } finally {
-        setIsLoading(false);
+        setIsLoading(prev => prev.filter(todoId => todoId !== id));
       }
     };
 

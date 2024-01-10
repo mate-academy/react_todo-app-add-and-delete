@@ -15,7 +15,7 @@ export const App: React.FC = () => {
   const [filterType, setFilterType] = useState(FilterType.ALL);
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
   const [tempTodo, setTempTodo] = useState<Todo | null>(null);
-  const [isLoading, setIsLoading] = useState<number | boolean>(false);
+  const [isLoading, setIsLoading] = useState<number[]>([]);
 
   const handleError = (error: ErrorType) => {
     setErrorMessage(error);

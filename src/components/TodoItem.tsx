@@ -5,7 +5,7 @@ import { Todo } from '../types';
 interface Props {
   todo: Todo
   handleTodoDelete: (id: number) => void
-  isLoading: number | boolean
+  isLoading: number[]
   tempTodo: Todo | null
 }
 
@@ -47,7 +47,7 @@ export const TodoItem: React.FC<Props> = (props) => {
       <div
         data-cy="TodoLoader"
         className={cn('modal overlay', {
-          'is-active': todo.id === isLoading || todo.id === tempTodo?.id,
+          'is-active': isLoading.includes(todo.id) || todo.id === tempTodo?.id,
         })}
       >
         <div

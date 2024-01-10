@@ -12,7 +12,7 @@ type Props = {
   setTempTodo: Dispatch<SetStateAction<Todo | null>>
   addTodo: (todo: Todo) => void
   handleError: (error: ErrorType) => void
-  setIsLoading: Dispatch<SetStateAction<number | boolean>>
+  setIsLoading: Dispatch<SetStateAction<number[]>>
 };
 
 export const Header: React.FC<Props> = ({
@@ -45,11 +45,11 @@ export const Header: React.FC<Props> = ({
         completed: false,
       };
 
-      setIsLoading(newTodo.id);
+      setIsLoading(prev => [...prev, newTodo.id]);
       setTempTodo(newTodo);
       await postTodo(newTodo).then(addTodo);
       setTempTodo(null);
-      setIsLoading(false);
+      setIsLoading(prev => prev.filter(id => id !== newTodo.id));
 
       inputRef.current.value = '';
     });
