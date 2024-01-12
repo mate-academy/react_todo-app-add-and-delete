@@ -5,21 +5,25 @@ interface Props {
   onStatus: (value: string) => void
   status: string,
   todos: Todo[],
+  handleClearCompleted: () => void
 }
 
 export const Footer: React.FC<Props> = ({
+  handleClearCompleted,
   onStatus,
   status,
   todos,
 }) => {
   const noComplitedTodos = todos.filter(
     todo => !todo.completed,
-  ).length;
+  );
+
+  const disable = todos.some(todo => todo.completed);
 
   return (
     <footer className="todoapp__footer" data-cy="Footer">
       <span className="todo-count" data-cy="TodosCounter">
-        {`${noComplitedTodos} items left`}
+        {`${noComplitedTodos.length} items left`}
       </span>
 
       {/* Active filter should have a 'selected' class */}
@@ -60,6 +64,8 @@ export const Footer: React.FC<Props> = ({
         type="button"
         className="todoapp__clear-completed"
         data-cy="ClearCompletedButton"
+        onClick={handleClearCompleted}
+        disabled={!disable}
       >
         Clear completed
       </button>

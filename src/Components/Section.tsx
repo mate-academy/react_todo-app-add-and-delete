@@ -5,20 +5,21 @@ type Props = {
   onSelect: (value: Todo) => void;
   filteredTodos: Todo[] | null;
   onDelete: (todoId: number) => void;
-  isTodoLoaded: boolean;
+  tempTodo: Todo | null,
+  tempTodos: Todo[] | null,
 };
 
 export const Section: React.FC<Props> = ({
   onSelect,
   onDelete,
   filteredTodos,
-  isTodoLoaded,
+  tempTodo,
+  tempTodos,
 }) => {
   return (
     <section className="todoapp__main" data-cy="TodoList">
       {/* This is a completed todo */}
       {filteredTodos?.map(todo => (
-
         <div
           key={todo.id}
           data-cy="Todo"
@@ -55,13 +56,14 @@ export const Section: React.FC<Props> = ({
           {/* overlay will cover the todo while it is being updated */}
           <div
             data-cy="TodoLoader"
-            className={cn('modal overlay', { 'is-active': isTodoLoaded })}
+            className="modal overlay"
           >
             <div className="modal-background has-background-white-ter" />
             <div className="loader" />
           </div>
         </div>
       ))}
+
       {/* This todo is not completed */}
       {/* <div data-cy="Todo" className="todo">
         <label className="todo__status-label">
@@ -114,30 +116,63 @@ export const Section: React.FC<Props> = ({
       {/* </div> */}
 
       {/* This todo is in loadind state */}
-      {/* <div data-cy="Todo" className="todo"> */}
-      {/* <label className="todo__status-label">
-        <input
-          data-cy="TodoStatus"
-          type="checkbox"
-          className="todo__status"
-        />
-      </label>
+      {(tempTodo) && (
+        <div data-cy="Todo" className="todo">
+          <label className="todo__status-label">
+            <input
+              data-cy="TodoStatus"
+              type="checkbox"
+              className="todo__status"
+            />
+          </label>
 
-      <span data-cy="TodoTitle" className="todo__title">
-        Todo is being saved now
-      </span> */}
+          <span data-cy="TodoTitle" className="todo__title">
+            {tempTodo.title}
+          </span>
 
-      {/* <button type="button" className="todo__remove" data-cy="TodoDelete">
-        ×
-      </button> */}
+          <button type="button" className="todo__remove" data-cy="TodoDelete">
+            ×
+          </button>
 
-      {/* 'is-active' class puts this modal on top of the todo */}
-      {/* <div data-cy="TodoLoader" className="modal overlay is-active">
-        <div className="modal-background has-background-white-ter" />
-        <div className="loader" />
-      </div> */}
-      {/* </div> */}
+          {/* 'is-active' class puts this modal on top of the todo */}
+          <div data-cy="TodoLoader" className="modal overlay is-active">
+            <div className="modal-background has-background-white-ter" />
+            <div className="loader" />
+          </div>
+        </div>
+      ) }
 
+      {tempTodos && (
+        tempTodos.map(todo => (
+          <div
+            data-cy="Todo"
+            className="todo"
+            key={todo?.id}
+          >
+            <label className="todo__status-label">
+              <input
+                data-cy="TodoStatus"
+                type="checkbox"
+                className="todo__status"
+              />
+            </label>
+
+            <span data-cy="TodoTitle" className="todo__title">
+              {todo.title}
+            </span>
+
+            <button type="button" className="todo__remove" data-cy="TodoDelete">
+              ×
+            </button>
+
+            {/* 'is-active' class puts this modal on top of the todo */}
+            <div data-cy="TodoLoader" className="modal overlay is-active">
+              <div className="modal-background has-background-white-ter" />
+              <div className="loader" />
+            </div>
+          </div>
+        ))
+      ) }
     </section>
   );
 };

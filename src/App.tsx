@@ -1,7 +1,7 @@
 /* eslint-disable max-len */
 /* eslint-disable jsx-a11y/control-has-associated-label */
 import cn from 'classnames';
-import { useEffect, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { UserWarning } from './UserWarning';
 import { Header } from './Components/Header';
 import { Section } from './Components/Section';
@@ -13,10 +13,41 @@ const USER_ID = 12083;
 
 export const App: React.FC = () => {
   const [todos, setTodos] = useState<Todo[]>([]);
+  const [tempTodo, setTempTodo] = useState<Todo | null>(null);
   const [selectedTodo, setSelectedTodo] = useState<Todo | null>(null);
   const [error, setErrorMessege] = useState('');
   const [statusTodo, setStatusTodo] = useState('');
-  const [isTodoLoaded, setIsTodoLoaded] = useState(false);
+  const [tempTodos, setTempTodos] = useState<Todo[] | null>(null);
+  // const [shouldBeFocused, setShuldBeFocused] = useState(false);
+
+  const myInputRef = useRef<HTMLInputElement>(null);
+
+  const handleClearCompleted = () => {
+    const completeTodos = todos.filter(todo => todo.completed);
+    const todosId = completeTodos.map(todo => todo.id);
+
+    setTodos(currenTodos => currenTodos.filter(todo => !todo.completed));
+
+    const newTempTodos = completeTodos.map((todo, index) => ({
+      ...todo,
+      id: index,
+    }));
+
+    setTempTodos(newTempTodos);
+
+    todosId.map((id) => {
+      return todoService.deleteTodos(id)
+        .catch((err) => {
+          setTodos(todos);
+          setErrorMessege('Unable to delete a todo');
+          throw err;
+        })
+        .finally(() => {
+          setInterval(() => setErrorMessege(''), 3000);
+          setTempTodos(null);
+        });
+    });
+  };
 
   function filterTodos() {
     switch (statusTodo) {
@@ -44,13 +75,22 @@ export const App: React.FC = () => {
     completed,
   }: Todo) {
     setErrorMessege('');
-    setIsTodoLoaded(true);
+
+    const newTamperTodo = {
+      title,
+      userId,
+      completed,
+      id: 0,
+    };
 
     if (!title) {
       setErrorMessege('Title should not be empty');
+      myInputRef.current?.focus();
 
       return Promise.resolve();
     }
+
+    setTempTodo(newTamperTodo);
 
     return todoService.addTodos({
       title,
@@ -59,7 +99,6 @@ export const App: React.FC = () => {
     })
       .then(
         newTodo => {
-          setIsTodoLoaded(false);
           setTodos(currentTodos => [...currentTodos, newTodo]);
         },
       )
@@ -69,6 +108,7 @@ export const App: React.FC = () => {
       })
       .finally(() => {
         setInterval(() => setErrorMessege(''), 3000);
+        setTempTodo(null);
       });
   }
 
@@ -88,6 +128,15 @@ export const App: React.FC = () => {
   }
 
   function deleteTodo(id: number) {
+    const newTamperTodo = todos.find(todo => todo.id === id);
+
+    if (newTamperTodo) {
+      setTempTodo({
+        ...newTamperTodo,
+        id: 0,
+      });
+    }
+
     setTodos(currentPosts => currentPosts.filter(todo => todo.id !== id));
 
     return todoService.deleteTodos(id)
@@ -97,6 +146,7 @@ export const App: React.FC = () => {
         throw err;
       })
       .finally(() => {
+        setTempTodo(null);
         setInterval(() => setErrorMessege(''), 3000);
       });
   }
@@ -116,6 +166,8 @@ export const App: React.FC = () => {
           onSubmit={addTodo}
           selectedTodo={selectedTodo}
           statusTodo={statusTodo}
+          // shouldBeFocused={shouldBeFocused}
+          myInputRef={myInputRef}
         />
 
         <Section
@@ -126,7 +178,8 @@ export const App: React.FC = () => {
           filteredTodos={filterTodos()}
           // eslint-disable-next-line react/jsx-no-bind
           onDelete={deleteTodo}
-          isTodoLoaded={isTodoLoaded}
+          tempTodo={tempTodo}
+          tempTodos={tempTodos}
         />
 
         {/* Hide the footer if there are no todos */}
@@ -135,6 +188,7 @@ export const App: React.FC = () => {
             onStatus={(newStatus: string) => setStatusTodo(newStatus)}
             status={statusTodo}
             todos={todos}
+            handleClearCompleted={handleClearCompleted}
           />
         )}
       </div>

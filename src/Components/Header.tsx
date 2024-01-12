@@ -1,13 +1,15 @@
 /* eslint-disable jsx-a11y/control-has-associated-label */
 import cn from 'classnames';
-import { useEffect, useRef, useState } from 'react';
+import { useEffect, useState } from 'react';
 import { Todo } from '../types/Todo';
 
 type Props = {
   userId: number;
   onSubmit: (todo: Todo) => Promise<void>,
   selectedTodo: Todo | null,
-  statusTodo: string
+  statusTodo: string,
+  // shouldBeFocused: boolean,
+  myInputRef:React.RefObject<HTMLInputElement>
 };
 
 export const Header: React.FC<Props> = ({
@@ -15,15 +17,15 @@ export const Header: React.FC<Props> = ({
   userId,
   selectedTodo,
   statusTodo,
+  // shouldBeFocused,
+  myInputRef,
 }) => {
   const [title, setTitle] = useState('');
   const [isSubmitted, setIsSabmitted] = useState(false);
 
-  const myInputRef = useRef<HTMLInputElement>(null);
-
   useEffect(() => {
     myInputRef.current?.focus();
-  }, []);
+  }, [title, myInputRef]);
 
   const reset = () => {
     setTitle('');

@@ -5,6 +5,10 @@ export const getTodos = (userId: number) => {
   return client.get<Todo[]>(`/todos?userId=${userId}`);
 };
 
+export const getTempTodo = (id: number) => {
+  return client.get<Todo>(`/todos/${id}`);
+};
+
 export const addTodos = ({
   title,
   userId,
