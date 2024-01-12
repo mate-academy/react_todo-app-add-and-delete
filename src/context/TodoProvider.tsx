@@ -19,6 +19,7 @@ import { getTodos } from '../api/todos';
     tempTodo: Todo | null,
     setTempTodo: React.Dispatch<React.SetStateAction<Todo | null>>,
     uncompletedCounter: number,
+    USER_ID: number | null,
   };
 
 const TodoContext = createContext<TodoProviderT>({
@@ -32,6 +33,7 @@ const TodoContext = createContext<TodoProviderT>({
   tempTodo: null,
   setTempTodo: () => {},
   uncompletedCounter: 0,
+  USER_ID: null,
 });
 
 const TodoProvider: FC<Props> = ({ children }) => {
@@ -40,13 +42,13 @@ const TodoProvider: FC<Props> = ({ children }) => {
   const [option, setOption] = useState<string>('all');
   const [tempTodo, setTempTodo] = useState<Todo | null>(null);
   const [uncompletedCounter, setUncompletedCounter] = useState<number>(0);
+  const USER_ID = 12121;
 
   useEffect(() => {
     setErrorMessage('');
     getTodos(12121)
       .then(data => setTodos(data))
       .catch(() => setErrorMessage('Unable to load todos'));
-    setTimeout(() => setErrorMessage(''), 3000);
   }, []);
 
   const visibleTodos = useMemo(() => {
@@ -67,7 +69,7 @@ const TodoProvider: FC<Props> = ({ children }) => {
       });
   }, [option, todos]);
 
-  const value = useMemo(() => ({
+  const value = {
     todos,
     setTodos,
     errorMessage,
@@ -78,8 +80,8 @@ const TodoProvider: FC<Props> = ({ children }) => {
     tempTodo,
     setTempTodo,
     uncompletedCounter,
-  }), [
-    todos, errorMessage, option, visibleTodos, tempTodo, uncompletedCounter]);
+    USER_ID,
+  };
 
   return (
     <TodoContext.Provider value={value}>

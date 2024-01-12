@@ -1,5 +1,5 @@
 /* eslint-disable jsx-a11y/control-has-associated-label */
-import React, { useEffect, useRef } from 'react';
+import { useEffect, useRef, FC } from 'react';
 import { UserWarning } from './UserWarning';
 import { TodoList } from './components/TodoList';
 import { Errors } from './components/Errors';
@@ -9,13 +9,16 @@ import { TodoForm } from './components/TodoForm';
 import { deleteTodo } from './api/todos';
 import { Todo } from './types/Todo';
 
-const USER_ID = 12121;
-
-export const App: React.FC = () => {
+export const App: FC = () => {
   const inputRef = useRef<HTMLInputElement>(null);
   const {
-    todos, uncompletedCounter, setTodos, setErrorMessage,
+    todos,
+    uncompletedCounter,
+    setTodos, setErrorMessage,
+    visibleTodos,
+    USER_ID,
   } = useTodos();
+  const someCompleted = visibleTodos.some(todo => todo.completed);
 
   const handleDeleteCompletedTodos = () => {
     const completedTodos = todos.filter(todo => todo.completed);
@@ -51,22 +54,17 @@ export const App: React.FC = () => {
 
       <div className="todoapp__content">
         <header className="todoapp__header">
-          {/* this buttons is active only if there are some active todos */}
           <button
             type="button"
             className="todoapp__toggle-all active"
             data-cy="ToggleAllButton"
           />
 
-          {/* Add a todo on form submit */}
           <TodoForm />
         </header>
 
         <section className="todoapp__main" data-cy="TodoList">
-          {todos.length !== 0 && (
-            <TodoList />
-          )}
-
+          <TodoList />
         </section>
 
         {todos.length !== 0 && (
@@ -75,15 +73,14 @@ export const App: React.FC = () => {
               {`${uncompletedCounter} items left`}
             </span>
 
-            {/* Active filter should have a 'selected' class */}
             <TodoFilter />
 
-            {/* don't show this button if there are no completed todos */}
             <button
               type="button"
               className="todoapp__clear-completed"
               data-cy="ClearCompletedButton"
               onClick={handleDeleteCompletedTodos}
+              disabled={!someCompleted}
             >
               Clear completed
             </button>
@@ -92,8 +89,6 @@ export const App: React.FC = () => {
 
       </div>
 
-      {/* Notification is shown in case of any error */}
-      {/* Add the 'hidden' class to hide the message smoothly */}
       <Errors />
     </div>
   );
