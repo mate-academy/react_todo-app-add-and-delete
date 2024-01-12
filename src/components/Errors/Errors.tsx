@@ -6,7 +6,7 @@ export const Errors = () => {
 
   useEffect(() => {
     setTimeout(() => setErrorMessage(''), 3000);
-  }, [setErrorMessage]);
+  }, [errorMessage]);
 
   return (
     <div
