@@ -12,8 +12,6 @@ import { FilterOptions } from './types/FilterOptions';
 const USER_ID = 12166;
 const getFilteredTodos = (todos: Todo[], filterBy: FilterOptions) => {
   switch (filterBy) {
-    case FilterOptions.All:
-      return todos;
     case FilterOptions.Active:
       return todos.filter(todo => !todo.completed);
     case FilterOptions.Completed:

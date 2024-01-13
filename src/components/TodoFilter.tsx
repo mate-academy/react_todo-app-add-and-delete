@@ -7,7 +7,6 @@ type Props = {
 };
 
 export const TodoFilter: React.FC<Props> = ({ changeFilter }) => {
-  /* Active filter should have a 'selected' class */
   const [filter, setFilter] = useState(FilterOptions.All);
   const handelFilterChange = (field: FilterOptions) => {
     setFilter(field);
