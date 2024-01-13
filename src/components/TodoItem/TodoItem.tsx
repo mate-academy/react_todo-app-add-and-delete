@@ -4,7 +4,7 @@ import { Todo } from '../../types/Todo';
 
 type Props = {
   todo: Todo,
-  deleteTodo?: (todoID: number) => void,
+  deleteTodo: (todoID: number) => void,
 };
 
 export const TodoItem:React.FC<Props> = ({
@@ -38,16 +38,15 @@ export const TodoItem:React.FC<Props> = ({
         type="button"
         className="todo__remove"
         data-cy="TodoDelete"
-        onClick={() => {
-          if (deleteTodo) {
-            deleteTodo(todo.id);
-          }
-        }}
+        onClick={() => deleteTodo(todo.id)}
       >
         ×
       </button>
 
-      <div data-cy="TodoLoader" className="modal overlay">
+      <div
+        data-cy="TodoLoader"
+        className="modal overlay"
+      >
         <div className="modal-background has-background-white-ter" />
         <div className="loader" />
       </div>

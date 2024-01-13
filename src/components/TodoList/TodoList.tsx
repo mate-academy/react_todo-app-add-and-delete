@@ -2,7 +2,6 @@ import React, { memo } from 'react';
 import { CSSTransition, TransitionGroup } from 'react-transition-group';
 import { Todo } from '../../types/Todo';
 import { TodoItem } from '../TodoItem';
-import { USER_ID } from '../../types/USER_ID';
 
 type Props = {
   title: string | null,
@@ -69,22 +68,7 @@ export const TodoList:React.FC<Props> = memo(({
             timeout={300}
             classNames="temp-item"
           >
-            <TodoItem
-              todo={{
-                id: Number(new Date()),
-                title: title ?? '',
-                completed: false,
-                userId: USER_ID,
-              }}
-            />
-          </CSSTransition>
-        )}
-      </TransitionGroup>
-    </section>
-  );
-});
-
-/* <div data-cy="Todo" className="todo">
+            <div data-cy="Todo" className="todo">
               <label className="todo__status-label" aria-label="status">
                 <input
                   data-cy="TodoStatus"
@@ -109,4 +93,10 @@ export const TodoList:React.FC<Props> = memo(({
                 <div className="modal-background has-background-white-ter" />
                 <div className="loader" />
               </div>
-            </div> */
+            </div>
+          </CSSTransition>
+        )}
+      </TransitionGroup>
+    </section>
+  );
+});
