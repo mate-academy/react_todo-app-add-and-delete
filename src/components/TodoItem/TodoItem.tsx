@@ -3,22 +3,26 @@ import cn from 'classnames';
 import { Todo } from '../../types/Todo';
 
 type Props = {
-  todo: Todo;
+  todo: Todo,
+  deleteTodo?: (todoID: number) => void,
 };
 
-export const TodoItem:React.FC<Props> = ({ todo }) => {
+export const TodoItem:React.FC<Props> = ({
+  todo,
+  deleteTodo,
+}) => {
   return (
-    <li
+    <div
       data-cy="Todo"
-      id={todo.id.toString(10)}
       className={cn(
         'todo',
         { completed: todo.completed },
       )}
     >
-      <label className="todo__status-label">
+      <label className="todo__status-label" id={todo.id.toString(10)}>
         <input
           className="todo__status"
+          id={todo.id.toString(10)}
           data-cy="TodoStatus"
           type="checkbox"
           aria-label="todo-status"
@@ -30,17 +34,23 @@ export const TodoItem:React.FC<Props> = ({ todo }) => {
         {todo.title}
       </span>
 
-      <button type="button" className="todo__remove" data-cy="TodoDelete">
+      <button
+        type="button"
+        className="todo__remove"
+        data-cy="TodoDelete"
+        onClick={() => {
+          if (deleteTodo) {
+            deleteTodo(todo.id);
+          }
+        }}
+      >
         ×
       </button>
 
-      {/* overlay will cover the todo while it is being updated */}
-      {false && (
-        <div data-cy="TodoLoader" className="modal overlay">
-          <div className="modal-background has-background-white-ter" />
-          <div className="loader" />
-        </div>
-      )}
-    </li>
+      <div data-cy="TodoLoader" className="modal overlay">
+        <div className="modal-background has-background-white-ter" />
+        <div className="loader" />
+      </div>
+    </div>
   );
 };

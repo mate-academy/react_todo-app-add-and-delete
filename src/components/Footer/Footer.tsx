@@ -7,11 +7,14 @@ type Props = {
   todos: Todo[],
   selectedTodos: ShowTodos,
   handleSelectedTodos: (event: React.MouseEvent<HTMLAnchorElement>) => void,
+  removeComplitedTodos: () => void,
 };
+
 export const Footer:React.FC<Props> = memo(({
   todos,
   selectedTodos,
   handleSelectedTodos,
+  removeComplitedTodos,
 }) => {
   const activeTodosCounter = useMemo(
     () => todos.filter(todo => !todo.completed).length,
@@ -26,9 +29,7 @@ export const Footer:React.FC<Props> = memo(({
   return (
     <footer className="todoapp__footer" data-cy="Footer">
       <span className="todo-count" data-cy="TodosCounter">
-        {activeTodosCounter === 1
-          ? `${activeTodosCounter} item left`
-          : `${activeTodosCounter} items left`}
+        {`${activeTodosCounter} items left`}
       </span>
 
       <TodosFilter
@@ -36,12 +37,12 @@ export const Footer:React.FC<Props> = memo(({
         handleSelectedTodos={handleSelectedTodos}
       />
 
-      {/* don't show this button if there are no completed todos */}
       {complitedTodosCounter > 0 && (
         <button
           type="button"
           className="todoapp__clear-completed"
           data-cy="ClearCompletedButton"
+          onClick={removeComplitedTodos}
         >
           Clear completed
         </button>

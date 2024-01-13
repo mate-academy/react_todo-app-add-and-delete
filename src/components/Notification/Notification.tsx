@@ -1,4 +1,5 @@
 import cn from 'classnames';
+import { memo, useMemo } from 'react';
 import { ShowError } from '../../types/ShowErrors';
 import { showErrors } from '../../utils/showError';
 
@@ -6,8 +7,11 @@ type Props = {
   error: ShowError | null,
   hideError: () => void,
 };
-export const Notification: React.FC<Props> = ({ error, hideError }) => {
-  const currentError = error && showErrors(error);
+export const Notification: React.FC<Props> = memo(({ error, hideError }) => {
+  const currentError = useMemo(
+    () => error && showErrors(error),
+    [error],
+  );
 
   return (
     <div
@@ -27,4 +31,4 @@ export const Notification: React.FC<Props> = ({ error, hideError }) => {
       {currentError}
     </div>
   );
-};
+});

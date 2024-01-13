@@ -1,74 +1,112 @@
-/* eslint-disable jsx-a11y/label-has-associated-control */
 import React, { memo } from 'react';
+import { CSSTransition, TransitionGroup } from 'react-transition-group';
 import { Todo } from '../../types/Todo';
 import { TodoItem } from '../TodoItem';
+import { USER_ID } from '../../types/USER_ID';
 
 type Props = {
-  todos: Todo[]
+  title: string | null,
+  tempTodo: Todo | null,
+  todos: Todo[],
+  deleteTodo: (todoID: number) => void,
 };
 
-export const TodoList:React.FC<Props> = memo(({ todos }) => {
+export const TodoList:React.FC<Props> = memo(({
+  title,
+  tempTodo,
+  todos,
+  deleteTodo,
+}) => {
   return (
-    <ul className="todoapp__main" data-cy="TodoList">
-      {todos.map(todo => (
-        <TodoItem todo={todo} key={todo.id} />
-      ))}
-
-      {/* This todo is being edited */}
-      {false && (
-        <div data-cy="Todo" className="todo">
-          <label className="todo__status-label">
-            <input
-              data-cy="TodoStatus"
-              type="checkbox"
-              className="todo__status"
+    <section className="todoapp__main" data-cy="TodoList">
+      <TransitionGroup>
+        {todos.map(todo => (
+          <CSSTransition
+            key={todo.id}
+            timeout={300}
+            classNames="item"
+          >
+            <TodoItem
+              key={todo.id}
+              todo={todo}
+              deleteTodo={deleteTodo}
             />
-          </label>
+          </CSSTransition>
+        ))}
 
-          {/* This form is shown instead of the title and remove button */}
-          <form>
-            <input
-              data-cy="TodoTitleField"
-              type="text"
-              className="todo__title-field"
-              placeholder="Empty todo will be deleted"
-              value="Todo is being edited now"
-            />
-          </form>
+        {/* This todo is being edited */}
+        {false && (
+          <div data-cy="Todo" className="todo">
+            <label className="todo__status-label" aria-label="status">
+              <input
+                data-cy="TodoStatus"
+                type="checkbox"
+                className="todo__status"
+              />
+            </label>
 
-          <div data-cy="TodoLoader" className="modal overlay">
-            <div className="modal-background has-background-white-ter" />
-            <div className="loader" />
+            {/* This form is shown instead of the title and remove button */}
+            <form>
+              <input
+                data-cy="TodoTitleField"
+                type="text"
+                className="todo__title-field"
+                placeholder="Empty todo will be deleted"
+                value="Todo is being edited now"
+              />
+            </form>
+
+            <div data-cy="TodoLoader" className="modal overlay">
+              <div className="modal-background has-background-white-ter" />
+              <div className="loader" />
+            </div>
           </div>
-        </div>
-      )}
+        )}
 
-      {/* This todo is in loadind state */}
-      {false && (
-        <div data-cy="Todo" className="todo">
-          <label className="todo__status-label">
-            <input
-              data-cy="TodoStatus"
-              type="checkbox"
-              className="todo__status"
+        {tempTodo && (
+          <CSSTransition
+            key={0}
+            timeout={300}
+            classNames="temp-item"
+          >
+            <TodoItem
+              todo={{
+                id: Number(new Date()),
+                title: title ?? '',
+                completed: false,
+                userId: USER_ID,
+              }}
             />
-          </label>
-
-          <span data-cy="TodoTitle" className="todo__title">
-            Todo is being saved now
-          </span>
-
-          <button type="button" className="todo__remove" data-cy="TodoDelete">
-            ×
-          </button>
-
-          {/* 'is-active' class puts this modal on top of the todo */}
-          <div data-cy="TodoLoader" className="modal overlay is-active">
-            <div className="modal-background has-background-white-ter" />
-            <div className="loader" />
-          </div>
-        </div>
-      )}
-    </ul>
+          </CSSTransition>
+        )}
+      </TransitionGroup>
+    </section>
   );
 });
+
+/* <div data-cy="Todo" className="todo">
+              <label className="todo__status-label" aria-label="status">
+                <input
+                  data-cy="TodoStatus"
+                  type="checkbox"
+                  className="todo__status"
+                />
+              </label>
+
+              <span data-cy="TodoTitle" className="todo__title">
+                {title}
+              </span>
+
+              <button
+                type="button"
+                className="todo__remove"
+                data-cy="TodoDelete"
+              >
+                ×
+              </button>
+
+              <div data-cy="TodoLoader" className="modal overlay is-active">
+                <div className="modal-background has-background-white-ter" />
+                <div className="loader" />
+              </div>
+            </div> */
