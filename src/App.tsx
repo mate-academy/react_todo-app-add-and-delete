@@ -28,8 +28,8 @@ export const App: React.FC = () => {
   const [filterBy, setFilterBy] = useState(FilterOptions.All);
   const filteredTodos = getFilteredTodos(todos, filterBy);
   const uncompletedTodos = todos.filter(todo => !todo.completed);
-  const [temporartTodo, setTemporaryTodo] = useState<Todo | null>(null);
-  const [TodoTitle, setTodoTitle] = useState('');
+  const [temporaryTodo, setTemporaryTodo] = useState<Todo | null>(null);
+  const [todoTitle, setTodoTitle] = useState('');
   const [errorMasage, setErrorMasage] = useState(Errors.allGood);
   const titleField = useRef<HTMLInputElement>(null);
   const [isDisabled, setIsDisabled] = useState(false);
@@ -94,8 +94,9 @@ export const App: React.FC = () => {
     ));
   };
 
-  // eslint-disable-next-line react-hooks/exhaustive-deps
-  useEffect(loadTodos, [USER_ID]);
+  // // eslint-disable-next-line react-hooks/exhaustive-deps
+  // useEffect(loadTodos, [USER_ID]);
+  useEffect(loadTodos);
   // Error will hide after 3s
   useEffect(() => {
     titleField.current?.focus();
@@ -118,14 +119,14 @@ export const App: React.FC = () => {
 
   const handelSubmit = (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
-    if (!TodoTitle.trim()) {
+    if (!todoTitle.trim()) {
       setErrorMasage(Errors.cantBeEmptyTitle);
 
       return;
     }
 
     setErrorMasage(Errors.allGood);
-    addTodo(TodoTitle.trim(), USER_ID, false);
+    addTodo(todoTitle.trim(), USER_ID, false);
   };
 
   if (!USER_ID) {
@@ -154,7 +155,7 @@ export const App: React.FC = () => {
               placeholder="What needs to be done?"
               disabled={isDisabled}
               ref={titleField}
-              value={TodoTitle}
+              value={todoTitle}
               onChange={handelTitelChange}
             />
           </form>
@@ -165,7 +166,7 @@ export const App: React.FC = () => {
             <TodoList
               todos={filteredTodos}
               deleteTodo={deleteTodo}
-              temporaryTodo={temporartTodo}
+              temporaryTodo={temporaryTodo}
             />
             <footer className="todoapp__footer" data-cy="Footer">
               <span className="todo-count" data-cy="TodosCounter">
