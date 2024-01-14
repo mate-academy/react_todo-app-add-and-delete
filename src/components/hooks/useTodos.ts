@@ -1,35 +1,14 @@
 import { useMemo } from 'react';
-import { ShowTodos } from '../../types/StatusTodo';
 import { Todo } from '../../types/Todo';
+import { TodosFilters } from '../../types/TodosFilters';
 
-// export const useActiveTodos = (todos: Todo[]) => {
-//   const activeTodos = useMemo(
-//     () => todos.filter(todo => !todo.completed),
-//     [todos],
-//   );
-
-//   return activeTodos;
-// };
-
-// export const useComplitedTodos = (todos: Todo[]) => {
-//   const complitedTodos = useMemo(
-//     () => todos.filter(todo => todo.completed),
-//     [todos],
-//   );
-
-//   return complitedTodos;
-// };
-
-export const useTodos = (todos: Todo[], selectedTodos: ShowTodos) => {
-  // const activeTodos = useActiveTodos(todos);
-  // const complitedTodos = useComplitedTodos(todos);
-
+export const useTodos = (todos: Todo[], selectedTodos: TodosFilters) => {
   const filteredTodos = useMemo(() => {
     switch (selectedTodos) {
-      case ShowTodos.Active:
+      case TodosFilters.Active:
         return todos.filter(todo => !todo.completed);
 
-      case ShowTodos.Completed:
+      case TodosFilters.Completed:
         return todos.filter(todo => todo.completed);
 
       default:

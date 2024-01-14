@@ -13,12 +13,14 @@ import { Notification } from '../Notification';
 
 import { Todo } from '../../types/Todo';
 import { ShowError } from '../../types/ShowErrors';
-import { ShowTodos } from '../../types/StatusTodo';
 import { USER_ID } from '../../types/USER_ID';
+import { TodosFilters } from '../../types/TodosFilters';
 
 export const TodoApp = () => {
   const [todos, setTodos] = useState<Todo[]>([]);
-  const [selectedTodos, setSelectedTodos] = useState<ShowTodos>(ShowTodos.All);
+  const [selectedTodos, setSelectedTodos] = useState<TodosFilters>(
+    TodosFilters.All,
+  );
   const [title, setTitle] = useState<string | null>(null);
   const [isDisabled, setIsDisabled] = useState(false);
   const [tempTodo, setTempTodo] = useState<Todo | null>(null);
@@ -48,16 +50,16 @@ export const TodoApp = () => {
   const handleSelectedTodos = useCallback(
     (event: React.MouseEvent<HTMLAnchorElement>) => {
       switch (event.currentTarget.textContent) {
-        case 'Active':
-          setSelectedTodos(ShowTodos.Active);
+        case TodosFilters.Active:
+          setSelectedTodos(TodosFilters.Active);
           break;
 
-        case 'Completed':
-          setSelectedTodos(ShowTodos.Completed);
+        case TodosFilters.Completed:
+          setSelectedTodos(TodosFilters.Completed);
           break;
 
         default:
-          setSelectedTodos(ShowTodos.All);
+          setSelectedTodos(TodosFilters.All);
           break;
       }
     }, [],

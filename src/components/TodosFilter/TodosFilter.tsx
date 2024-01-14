@@ -1,9 +1,9 @@
 import cn from 'classnames';
 import { memo } from 'react';
-import { ShowTodos } from '../../types/StatusTodo';
+import { TodosFilters } from '../../types/TodosFilters';
 
 type Props = {
-  selectedTodos: ShowTodos,
+  selectedTodos: TodosFilters,
   handleSelectedTodos: (event: React.MouseEvent<HTMLAnchorElement>) => void,
 };
 export const TodosFilter:React.FC<Props> = memo(({
@@ -17,7 +17,7 @@ export const TodosFilter:React.FC<Props> = memo(({
         data-cy="FilterLinkAll"
         className={cn(
           'filter__link',
-          { selected: selectedTodos === ShowTodos.All },
+          { selected: selectedTodos === TodosFilters.All },
         )}
         onClick={handleSelectedTodos}
       >
@@ -29,7 +29,7 @@ export const TodosFilter:React.FC<Props> = memo(({
         data-cy="FilterLinkActive"
         className={cn(
           'filter__link',
-          { selected: selectedTodos === ShowTodos.Active },
+          { selected: selectedTodos === TodosFilters.Active },
         )}
         onClick={handleSelectedTodos}
       >
@@ -41,7 +41,7 @@ export const TodosFilter:React.FC<Props> = memo(({
         data-cy="FilterLinkCompleted"
         className={cn(
           'filter__link',
-          { selected: selectedTodos === ShowTodos.Completed },
+          { selected: selectedTodos === TodosFilters.Completed },
         )}
         onClick={handleSelectedTodos}
       >

@@ -1,11 +1,11 @@
 import { memo, useMemo } from 'react';
 import { TodosFilter } from '../TodosFilter';
-import { ShowTodos } from '../../types/StatusTodo';
+import { TodosFilters } from '../../types/TodosFilters';
 import { Todo } from '../../types/Todo';
 
 type Props = {
   todos: Todo[],
-  selectedTodos: ShowTodos,
+  selectedTodos: TodosFilters,
   handleSelectedTodos: (event: React.MouseEvent<HTMLAnchorElement>) => void,
   removeComplitedTodos: () => void,
 };
