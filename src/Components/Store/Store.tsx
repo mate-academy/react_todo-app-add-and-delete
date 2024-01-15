@@ -76,42 +76,6 @@ function reducer(state: State, action: Action): State {
       return saveTodos(state, updatedTodos);
     }
 
-    // case Actions.destroyCompleted: {
-    //   let errorMessage = '';
-    //   const updatedTodos = [...state.allTodos];
-    //   const complitedTodos = state.allTodos.filter((todo) => todo.completed);
-
-    //   const promises = complitedTodos.map((todo) => {
-    //     return deleteData(todo.id)
-    //       .catch(() => {
-    //         errorMessage = 'Unable to delete a todo';
-    //       })
-    //       .then(() => {
-    //         const indexToDelete = updatedTodos.findIndex((t) => {
-    //           return t.id === todo.id;
-    //         });
-
-    //         if (indexToDelete !== -1) {
-    //           updatedTodos.splice(indexToDelete, 1);
-    //         }
-    //       });
-    //   });
-
-    //   Promise.all(promises).then(() => {
-    //     return {
-    //       ...state,
-    //       allTodos: updatedTodos,
-    //     };
-    //   }).catch(() => {
-    //     return {
-    //       ...state,
-    //       allTodos: updatedTodos,
-    //       error: errorMessage,
-    //     };
-    //   });
-    //   break;
-    // }
-
     case Actions.destroy: {
       const updatedTodos = state.allTodos.filter((todo) => {
         return (action.todo.id !== todo.id);

@@ -131,10 +131,6 @@ export const App: React.FC = () => {
     }
   };
 
-  // const handleBlur = () => {
-  //   handleNewTodo();
-  // };
-
   const handleKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
     if (e.key === Keys.Enter) {
       e.preventDefault();
@@ -187,7 +183,6 @@ export const App: React.FC = () => {
 
       <div className="todoapp__content">
         <header className="todoapp__header">
-          {/* this buttons is active only if there are some active todos */}
           {!!activeTodos.length && (
             <button
               type="button"
@@ -200,7 +195,6 @@ export const App: React.FC = () => {
             />
           )}
 
-          {/* Add a todo on form submit */}
           <form>
             <input
               data-cy="NewTodoField"
@@ -210,7 +204,6 @@ export const App: React.FC = () => {
               value={todoTitle}
               onChange={handleChange}
               onKeyDown={handleKeyDown}
-              // onBlur={handleBlur}
               ref={inputRef}
               disabled={inputDisabled}
             />
@@ -286,7 +279,6 @@ export const App: React.FC = () => {
           className="delete"
           onClick={handleErrorCanceling}
         />
-        {/* show only one message at a time */}
         <p>{errorMessage}</p>
         {/* Title should not be empty */}
         {/* Unable to add a todo */}
