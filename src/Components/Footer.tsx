@@ -27,7 +27,6 @@ export const Footer: React.FC<Props> = ({
         {`${noComplitedTodos.length} items left`}
       </span>
 
-      {/* Active filter should have a 'selected' class */}
       <nav className="filter" data-cy="Filter">
         <a
           href="#/"
@@ -36,7 +35,7 @@ export const Footer: React.FC<Props> = ({
           || status === '',
           })}
           data-cy="FilterLinkAll"
-          onClick={() => onStatus('All')}
+          onClick={() => onStatus(Status.All)}
         >
           All
         </a>
@@ -45,7 +44,7 @@ export const Footer: React.FC<Props> = ({
           href="#/active"
           className={cn('filter__link', { selected: status === Status.Active })}
           data-cy="FilterLinkActive"
-          onClick={() => onStatus('Active')}
+          onClick={() => onStatus(Status.Active)}
         >
           Active
         </a>
@@ -56,13 +55,12 @@ export const Footer: React.FC<Props> = ({
             selected: status === Status.Completed,
           })}
           data-cy="FilterLinkCompleted"
-          onClick={() => onStatus('Completed')}
+          onClick={() => onStatus(Status.Completed)}
         >
           Completed
         </a>
       </nav>
 
-      {/* don't show this button if there are no completed todos */}
       <button
         type="button"
         className="todoapp__clear-completed"

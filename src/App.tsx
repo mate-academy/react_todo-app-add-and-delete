@@ -188,7 +188,6 @@ export const App: React.FC = () => {
           tempTodos={tempTodos}
         />
 
-        {/* Hide the footer if there are no todos */}
         {todos.length !== 0 && (
           <Footer
             onStatus={(newStatus: string) => setStatusTodo(newStatus)}
@@ -199,8 +198,6 @@ export const App: React.FC = () => {
         )}
       </div>
 
-      {/* Notification is shown in case of any error */}
-      {/* Add the 'hidden' class to hide the message smoothly */}
       <div
         data-cy="ErrorNotification"
         className={cn(
@@ -214,7 +211,6 @@ export const App: React.FC = () => {
           className="delete"
           onClick={() => setErrorMessage('')}
         />
-        {/* show only one message at a time */}
         {erroMessage}
       </div>
     </div>
