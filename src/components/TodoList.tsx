@@ -14,9 +14,6 @@ export const TodoList: React.FC = () => {
 
   const visibleTodo = todos.filter(todo => {
     switch (filterOption) {
-      case FilterOption.All:
-        return true;
-
       case FilterOption.Active:
         return !todo.completed;
 

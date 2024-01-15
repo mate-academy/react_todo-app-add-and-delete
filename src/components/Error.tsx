@@ -7,12 +7,14 @@ export const Error: React.FC = () => {
   const { errorMessage, setErrorMessage } = useContext(TodosContext);
   let isErrorHidden = true;
 
-  if (errorMessage !== '') {
+  const hideError = () => {
+    setErrorMessage('');
+    isErrorHidden = true;
+  };
+
+  if (errorMessage) {
     isErrorHidden = false;
-    setTimeout(() => {
-      setErrorMessage('');
-      isErrorHidden = true;
-    }, 3000);
+    setTimeout(hideError, 3000);
   }
 
   return (
@@ -28,10 +30,7 @@ export const Error: React.FC = () => {
         data-cy="HideErrorButton"
         type="button"
         className="delete"
-        onClick={() => {
-          setErrorMessage('');
-          isErrorHidden = true;
-        }}
+        onClick={hideError}
       />
       {errorMessage}
     </div>
