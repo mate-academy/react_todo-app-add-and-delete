@@ -8,6 +8,7 @@ import { Section } from './Components/Section';
 import { Footer } from './Components/Footer';
 import { Todo } from './types/Todo';
 import * as todoService from './api/todos';
+import { Status } from './types/Status';
 
 const USER_ID = 12083;
 
@@ -15,7 +16,7 @@ export const App: React.FC = () => {
   const [todos, setTodos] = useState<Todo[]>([]);
   const [tempTodo, setTempTodo] = useState<Todo | null>(null);
   const [selectedTodo, setSelectedTodo] = useState<Todo | null>(null);
-  const [error, setErrorMessege] = useState('');
+  const [erroMessage, setErrorMessage] = useState('');
   const [statusTodo, setStatusTodo] = useState('');
   const [tempTodos, setTempTodos] = useState<Todo[] | null>(null);
 
@@ -38,11 +39,11 @@ export const App: React.FC = () => {
       return todoService.deleteTodos(id)
         .catch((err) => {
           setTodos(todos);
-          setErrorMessege('Unable to delete a todo');
+          setErrorMessage('Unable to delete a todo');
           throw err;
         })
         .finally(() => {
-          setInterval(() => setErrorMessege(''), 3000);
+          setInterval(() => setErrorMessage(''), 3000);
           setTempTodos(null);
         });
     });
@@ -50,22 +51,22 @@ export const App: React.FC = () => {
 
   function filterTodos() {
     switch (statusTodo) {
-      case 'Active':
+      case Status.Active:
         return todos.filter(todo => !todo.completed);
-      case 'Completed':
+      case Status.Completed:
         return todos.filter(todo => todo.completed);
-      case 'All':
+      case Status.All:
         return todos;
       default: return todos;
     }
   }
 
   useEffect(() => {
-    setErrorMessege('');
+    setErrorMessage('');
     todoService.getTodos(USER_ID)
       .then(response => setTodos(response))
-      .catch(() => setErrorMessege('Unable to load todos'))
-      .finally(() => setInterval(() => setErrorMessege(''), 3000));
+      .catch(() => setErrorMessage('Unable to load todos'))
+      .finally(() => setInterval(() => setErrorMessage(''), 3000));
   }, []);
 
   function addTodo({
@@ -73,7 +74,7 @@ export const App: React.FC = () => {
     userId,
     completed,
   }: Todo) {
-    setErrorMessege('');
+    setErrorMessage('');
 
     const newTamperTodo = {
       title,
@@ -83,7 +84,7 @@ export const App: React.FC = () => {
     };
 
     if (!title.trim()) {
-      setErrorMessege('Title should not be empty');
+      setErrorMessage('Title should not be empty');
       setTimeout(() => {
         myInputRef.current?.focus();
       }, 0);
@@ -106,20 +107,20 @@ export const App: React.FC = () => {
         },
       )
       .catch((err) => {
-        setErrorMessege('Unable to add a todo');
+        setErrorMessage('Unable to add a todo');
         setTimeout(() => {
           myInputRef.current?.focus();
         }, 0);
         throw err;
       })
       .finally(() => {
-        setInterval(() => setErrorMessege(''), 3000);
+        setInterval(() => setErrorMessage(''), 3000);
         setTempTodo(null);
       });
   }
 
   function updateCompliteTodos(updateTodo: Todo) {
-    setErrorMessege('');
+    setErrorMessage('');
 
     return todoService.updateTodos(updateTodo)
       .then(newTodo => {
@@ -129,8 +130,8 @@ export const App: React.FC = () => {
             : todo));
         });
       })
-      .catch(() => setErrorMessege('Unable to update a todo'))
-      .finally(() => setInterval(() => setErrorMessege(''), 3000));
+      .catch(() => setErrorMessage('Unable to update a todo'))
+      .finally(() => setInterval(() => setErrorMessage(''), 3000));
   }
 
   function deleteTodo(id: number) {
@@ -148,12 +149,12 @@ export const App: React.FC = () => {
     return todoService.deleteTodos(id)
       .catch((err) => {
         setTodos(todos);
-        setErrorMessege('Unable to delete a todo');
+        setErrorMessage('Unable to delete a todo');
         throw err;
       })
       .finally(() => {
         setTempTodo(null);
-        setInterval(() => setErrorMessege(''), 3000);
+        setInterval(() => setErrorMessage(''), 3000);
       });
   }
 
@@ -204,17 +205,17 @@ export const App: React.FC = () => {
         data-cy="ErrorNotification"
         className={cn(
           'notification is-dangers-light has-text-weight-normal',
-          { hidden: !error },
+          { hidden: !erroMessage },
         )}
       >
         <button
           data-cy="HideErrorButton"
           type="button"
           className="delete"
-          onClick={() => setErrorMessege('')}
+          onClick={() => setErrorMessage('')}
         />
         {/* show only one message at a time */}
-        {error}
+        {erroMessage}
       </div>
     </div>
   );

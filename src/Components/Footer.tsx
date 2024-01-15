@@ -1,5 +1,6 @@
 import cn from 'classnames';
 import { Todo } from '../types/Todo';
+import { Status } from '../types/Status';
 
 interface Props {
   onStatus: (value: string) => void
@@ -31,7 +32,7 @@ export const Footer: React.FC<Props> = ({
         <a
           href="#/"
           className={cn('filter__link', {
-            selected: status === 'All'
+            selected: status === Status.All
           || status === '',
           })}
           data-cy="FilterLinkAll"
@@ -42,7 +43,7 @@ export const Footer: React.FC<Props> = ({
 
         <a
           href="#/active"
-          className={cn('filter__link', { selected: status === 'Active' })}
+          className={cn('filter__link', { selected: status === Status.Active })}
           data-cy="FilterLinkActive"
           onClick={() => onStatus('Active')}
         >
@@ -51,7 +52,9 @@ export const Footer: React.FC<Props> = ({
 
         <a
           href="#/completed"
-          className={cn('filter__link', { selected: status === 'Completed' })}
+          className={cn('filter__link', {
+            selected: status === Status.Completed,
+          })}
           data-cy="FilterLinkCompleted"
           onClick={() => onStatus('Completed')}
         >
