@@ -79,9 +79,9 @@ export const App: React.FC = () => {
           ...prev,
           res,
         ]);
-        setTempTodo(null);
       })
-      .catch(() => setError(Error.UnableToAdd));
+      .catch(() => setError(Error.UnableToAdd))
+      .finally(() => setTempTodo(null));
   }, []);
 
   const deleteCurrentTodo = useCallback((id: number) => {
