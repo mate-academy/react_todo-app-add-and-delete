@@ -8,7 +8,6 @@ type Props = {
   onSubmit: (todo: Todo) => Promise<void>,
   selectedTodo: Todo | null,
   statusTodo: string,
-  // shouldBeFocused: boolean,
   myInputRef:React.RefObject<HTMLInputElement>
 };
 
@@ -17,7 +16,6 @@ export const Header: React.FC<Props> = ({
   userId,
   selectedTodo,
   statusTodo,
-  // shouldBeFocused,
   myInputRef,
 }) => {
   const [title, setTitle] = useState('');
@@ -43,6 +41,9 @@ export const Header: React.FC<Props> = ({
       id: selectedTodo?.id || 0,
     })
       .then(reset)
+      .catch(() => {
+        myInputRef.current?.focus();
+      })
       .finally(() => {
         setIsSabmitted(false);
       });

@@ -18,7 +18,6 @@ export const App: React.FC = () => {
   const [error, setErrorMessege] = useState('');
   const [statusTodo, setStatusTodo] = useState('');
   const [tempTodos, setTempTodos] = useState<Todo[] | null>(null);
-  // const [shouldBeFocused, setShuldBeFocused] = useState(false);
 
   const myInputRef = useRef<HTMLInputElement>(null);
 
@@ -83,9 +82,11 @@ export const App: React.FC = () => {
       id: 0,
     };
 
-    if (!title) {
+    if (!title.trim()) {
       setErrorMessege('Title should not be empty');
-      myInputRef.current?.focus();
+      setTimeout(() => {
+        myInputRef.current?.focus();
+      }, 0);
 
       return Promise.resolve();
     }
@@ -99,11 +100,16 @@ export const App: React.FC = () => {
     })
       .then(
         newTodo => {
-          setTodos(currentTodos => [...currentTodos, newTodo]);
+          if (newTodo.title) {
+            setTodos(currentTodos => [...currentTodos, newTodo]);
+          }
         },
       )
       .catch((err) => {
         setErrorMessege('Unable to add a todo');
+        setTimeout(() => {
+          myInputRef.current?.focus();
+        }, 0);
         throw err;
       })
       .finally(() => {
@@ -166,7 +172,6 @@ export const App: React.FC = () => {
           onSubmit={addTodo}
           selectedTodo={selectedTodo}
           statusTodo={statusTodo}
-          // shouldBeFocused={shouldBeFocused}
           myInputRef={myInputRef}
         />
 
