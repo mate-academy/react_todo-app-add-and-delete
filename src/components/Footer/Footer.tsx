@@ -3,34 +3,20 @@ import { FilterType } from '../../types/Filter';
 import { Todo } from '../../types/Todo';
 
 type Props = {
-  todos: Todo[];
-  onDelete: (id: number) => void;
   filterBy: string;
   changeFilter: (filter: FilterType) => void;
-  loadingClearCompleted: boolean;
-  setLoadingClearCompleted: (value: boolean) => void;
+  completedTodos: Todo[];
+  unComletedTodos: Todo[];
+  clearCompleted: () => void;
 };
 
 export const Footer: React.FC<Props> = ({
-  todos,
-  onDelete,
   filterBy,
   changeFilter,
-  loadingClearCompleted,
-  setLoadingClearCompleted,
+  completedTodos,
+  unComletedTodos,
+  clearCompleted,
 }) => {
-  const completedTodos = todos.filter(todo => todo.completed);
-  const unComletedTodos = todos.filter(todo => !todo.completed);
-
-  const handleDeleteCompleted = async () => {
-    try {
-      setLoadingClearCompleted(true);
-      await Promise.all(completedTodos.map(todo => onDelete(todo.id)));
-    } finally {
-      setLoadingClearCompleted(false);
-    }
-  };
-
   return (
     <footer className="todoapp__footer" data-cy="Footer">
       <span className="todo-count" data-cy="TodosCounter">
@@ -72,10 +58,9 @@ export const Footer: React.FC<Props> = ({
         type="button"
         className="todoapp__clear-completed"
         data-cy="ClearCompletedButton"
-        onClick={handleDeleteCompleted}
+        onClick={clearCompleted}
       >
-        {completedTodos.length > 0 || loadingClearCompleted
-          ? 'Clear completed' : ''}
+        {completedTodos.length > 0 ? 'Clear completed' : ''}
       </button>
     </footer>
   );

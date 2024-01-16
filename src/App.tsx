@@ -14,11 +14,14 @@ const USER_ID = 11984;
 export const App: React.FC = () => {
   const [todos, setTodos] = useState<Todo[]>([]);
   const [tempTodo, setTempTodo] = useState<Todo | null>(null);
-  const [selectedFilter, setSelectedFilter] = useState(FilterType.ALL);
-  const [errorMessage, setErrorMessage] = useState('');
   const [loading, setLoading] = useState(false);
   const [selectedId, setSelectedId] = useState(-1);
+  const [selectedFilter, setSelectedFilter] = useState(FilterType.ALL);
+  const [errorMessage, setErrorMessage] = useState('');
   const [loadingClearCompleted, setLoadingClearCompleted] = useState(false);
+
+  const completedTodos = todos.filter(todo => todo.completed);
+  const unComletedTodos = todos.filter(todo => !todo.completed);
 
   useEffect(() => {
     setErrorMessage('');
@@ -28,9 +31,7 @@ export const App: React.FC = () => {
         setTodos(tacks);
         setLoading(true);
       })
-      .catch(() => {
-        setErrorMessage(ErrorMessage.UnableToLoad);
-      })
+      .catch(() => setErrorMessage(ErrorMessage.UnableToLoad))
       .finally(() => setLoading(false));
   }, []);
 
@@ -38,9 +39,7 @@ export const App: React.FC = () => {
     return <UserWarning />;
   }
 
-  const handleFilterChange = (filter: FilterType) => {
-    setSelectedFilter(filter);
-  };
+  const handleFilterChange = (filter: FilterType) => setSelectedFilter(filter);
 
   const filterTodos = () => {
     switch (selectedFilter) {
@@ -108,6 +107,27 @@ export const App: React.FC = () => {
       });
   };
 
+  const clearCompleted = () => {
+    setErrorMessage('');
+    setLoadingClearCompleted(true);
+
+    const deletePromises = completedTodos
+      .map((todo) => todosService.deleteTodos(todo.id));
+
+    Promise.all(deletePromises)
+      .then(() => {
+        setTodos(currentTodo => currentTodo
+          .filter((todo) => !todo.completed));
+      })
+      .catch((error) => {
+        setErrorMessage(ErrorMessage.UnableToDelete);
+        throw error;
+      })
+      .finally(() => {
+        setLoadingClearCompleted(false);
+      });
+  };
+
   return (
     <div className="todoapp">
       <h1 className="todoapp__title">todos</h1>
@@ -124,19 +144,19 @@ export const App: React.FC = () => {
           todos={visibleTodos}
           tempTodo={tempTodo}
           selectedId={selectedId}
+          loading={loading}
           onDelete={deleteTodo}
+          completedTodos={completedTodos}
           loadingClearCompleted={loadingClearCompleted}
         />
 
         {todos.length > 0 && (
           <Footer
-            todos={todos}
-            onDelete={deleteTodo}
             filterBy={selectedFilter}
             changeFilter={handleFilterChange}
-            loadingClearCompleted={loadingClearCompleted}
-            setLoadingClearCompleted={setLoadingClearCompleted}
-
+            completedTodos={completedTodos}
+            unComletedTodos={unComletedTodos}
+            clearCompleted={clearCompleted}
           />
         )}
       </div>

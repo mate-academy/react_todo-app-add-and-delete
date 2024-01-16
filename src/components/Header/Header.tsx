@@ -61,12 +61,11 @@ export const Header: React.FC<Props> = ({
       {todos.length > 0 && (
         <button
           type="button"
-          className="todoapp__toggle-all active"
+          className="todoapp__toggle-all"
           data-cy="ToggleAllButton"
         />
       )}
 
-      {/* Add a todo on form submit */}
       <form
         onSubmit={handleSubmit}
       >
