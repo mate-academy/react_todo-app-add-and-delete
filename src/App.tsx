@@ -61,11 +61,11 @@ export const App: React.FC = () => {
     setTodos(todos.filter(todo => !todo.completed));
   };
 
-  function handleInputChange(event: React.ChangeEvent<HTMLInputElement>) {
+  const handleInputChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     const newTitle = event.target.value;
 
     setQuery(newTitle);
-  }
+  };
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
@@ -132,7 +132,7 @@ export const App: React.FC = () => {
           handleSubmit={handleSubmit}
           isDisabled={isDisabled}
           query={query}
-          handleInputChange={() => handleInputChange}
+          handleInputChange={handleInputChange}
         />
 
         {!!todos.length && (
