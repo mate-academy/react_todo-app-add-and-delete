@@ -55,7 +55,7 @@ export const App: React.FC = () => {
 
   const filteredTodos = filterTodos(todos, filter);
 
-  const isCompleted = !!todos.filter(todo => todo.completed === true).length;
+  const isCompleted = !!todos.filter(todo => todo.completed).length;
 
   const handleClearCompleted = () => {
     setTodos(todos.filter(todo => !todo.completed));
@@ -102,10 +102,9 @@ export const App: React.FC = () => {
 
   const deleteTodo = (id: number) => {
     setTemptTodo({
+      ...todos.find(todo => todo.id === id),
       id: 0,
-      title: '',
-      completed: false,
-    });
+    } as Todo);
 
     todosService.deleteTodo(id)
       .then(() => {
