@@ -40,8 +40,6 @@ export const TodoApp = () => {
   }, [error]);
 
   useEffect(() => {
-    setError(null);
-
     getTodosAPI()
       .then(newTodos => setTodos(newTodos))
       .catch(() => setError(ShowError.fetchTodos));
