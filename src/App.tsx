@@ -59,6 +59,13 @@ export const App: React.FC = () => {
     setLoading(true);
     setSelectedId(0);
 
+    setTempTodo({
+      id: 0,
+      userId: USER_ID,
+      title,
+      completed: false,
+    });
+
     const request = todosService.createTodo({
       userId: USER_ID,
       title,
@@ -76,13 +83,6 @@ export const App: React.FC = () => {
         setTempTodo(null);
         setSelectedId(-1);
       });
-
-    setTempTodo({
-      id: 0,
-      userId: USER_ID,
-      title,
-      completed: false,
-    });
 
     return request;
   };
