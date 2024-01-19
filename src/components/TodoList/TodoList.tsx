@@ -4,14 +4,12 @@ import { Todo } from '../../types/Todo';
 import { TodoItem } from '../TodoItem';
 
 type Props = {
-  title: string | null,
   tempTodo: Todo | null,
   todos: Todo[],
   deleteTodo: (todoID: number) => void,
 };
 
 export const TodoList:React.FC<Props> = memo(({
-  title,
   tempTodo,
   todos,
   deleteTodo,
@@ -78,7 +76,7 @@ export const TodoList:React.FC<Props> = memo(({
               </label>
 
               <span data-cy="TodoTitle" className="todo__title">
-                {title}
+                {tempTodo.title}
               </span>
 
               <button

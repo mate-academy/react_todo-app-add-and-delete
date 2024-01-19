@@ -7,16 +7,16 @@ import { Todo } from '../../types/Todo';
 type Props = {
   todos: Todo[],
   title: string | null,
-  isDisabled: boolean,
+  isLoading: boolean,
   handleChangeTitle: (event: React.ChangeEvent<HTMLInputElement>) => void,
-  handleCreateTodo: (event: React.FormEvent) => void,
+  handleSubmitCreateTodo: (event: React.FormEvent) => void,
 };
 export const Header:React.FC<Props> = memo(({
   todos,
   title,
-  isDisabled,
+  isLoading,
   handleChangeTitle,
-  handleCreateTodo,
+  handleSubmitCreateTodo,
 }) => {
   const inputNewTodoRef = useRef<HTMLInputElement>(null);
 
@@ -26,10 +26,10 @@ export const Header:React.FC<Props> = memo(({
   );
 
   useEffect(() => {
-    if (inputNewTodoRef.current && !isDisabled) {
+    if (inputNewTodoRef.current && !isLoading) {
       inputNewTodoRef.current.focus();
     }
-  }, [title, isDisabled]);
+  }, [title, isLoading]);
 
   return (
     <header className="todoapp__header">
@@ -43,14 +43,14 @@ export const Header:React.FC<Props> = memo(({
         aria-label="toggle-all"
       />
 
-      <form onSubmit={handleCreateTodo}>
+      <form onSubmit={handleSubmitCreateTodo}>
         <input
           data-cy="NewTodoField"
           type="text"
           className="todoapp__new-todo"
           placeholder="What needs to be done?"
           ref={inputNewTodoRef}
-          disabled={isDisabled}
+          disabled={isLoading}
           value={title ?? ''}
           onChange={handleChangeTitle}
         />

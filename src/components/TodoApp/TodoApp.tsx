@@ -1,10 +1,8 @@
 import {
   useCallback, useEffect, useMemo, useState,
 } from 'react';
-import {
-  createTodoAPI, deleteTodoAPI, getTodosAPI,
-} from '../../api/todos';
-import { useTodos } from '../hooks/useTodos';
+import * as todoService from '../../api/todos';
+import { useFilteredTodos } from '../hooks/useFilteredTodos';
 
 import { Header } from '../Header';
 import { TodoList } from '../TodoList';
@@ -13,7 +11,7 @@ import { Notification } from '../Notification';
 
 import { Todo } from '../../types/Todo';
 import { ShowError } from '../../types/ShowErrors';
-import { USER_ID } from '../../types/USER_ID';
+import { USER_ID } from '../../types/constants';
 import { TodosFilters } from '../../types/TodosFilters';
 
 export const TodoApp = () => {
@@ -22,7 +20,7 @@ export const TodoApp = () => {
     TodosFilters.All,
   );
   const [title, setTitle] = useState<string | null>(null);
-  const [isDisabled, setIsDisabled] = useState(false);
+  const [isLoading, setIsLoading] = useState(false);
   const [tempTodo, setTempTodo] = useState<Todo | null>(null);
 
   const [error, setError] = useState<ShowError | null>(null);
@@ -42,7 +40,7 @@ export const TodoApp = () => {
   useEffect(() => {
     setError(null);
 
-    getTodosAPI()
+    todoService.getTodos()
       .then(newTodos => setTodos(newTodos))
       .catch(() => setError(ShowError.fetchTodos));
   }, []);
@@ -66,38 +64,45 @@ export const TodoApp = () => {
   );
 
   const handleChangeTitle = (event: React.ChangeEvent<HTMLInputElement>) => {
-    const newTitle = event.target.value;
+    const addTodoTitle = event.target.value;
 
-    setTitle(newTitle);
+    setTitle(addTodoTitle);
   };
 
-  const handleSubmitTodo = (event: React.FormEvent) => {
+  const handleSubmitCreateTodo = (event: React.FormEvent) => {
     event.preventDefault();
 
-    if (!title || title?.trim() === '') {
+    if (!title) {
       setError(ShowError.createTodo);
 
       return;
     }
 
-    if (title) {
-      setIsDisabled(true);
+    const trimed = title.trim();
 
-      setTempTodo({
-        id: 0, title: '', userId: USER_ID, completed: false,
-      });
+    if (trimed === '') {
+      setError(ShowError.createTodo);
 
-      createTodoAPI(title.trim())
-        .then(newTodo => {
-          setTodos(currentTodos => [...currentTodos, newTodo]);
-          setTitle(null);
-        })
-        .catch(() => setError(ShowError.addTodo))
-        .finally(() => {
-          setTempTodo(null);
-          setIsDisabled(false);
-        });
+      return;
     }
+
+    setIsLoading(true);
+
+    setTempTodo({
+      id: 0, title: trimed, userId: USER_ID, completed: false,
+    });
+
+    todoService.createTodo({ title: trimed })
+      .then(newTodo => {
+        setTodos(currentTodos => [...currentTodos, newTodo]);
+        setTitle(null);
+      })
+      .catch(() => setError(ShowError.addTodo))
+      .finally(() => {
+        setTempTodo(null);
+        setIsLoading(false);
+      });
+    // }
   };
 
   const deleteTodo = (todoID: number) => {
@@ -105,7 +110,7 @@ export const TodoApp = () => {
       id: 0, title: '', userId: USER_ID, completed: false,
     });
 
-    deleteTodoAPI(todoID)
+    todoService.deleteTodo(todoID)
       .then(() => setTodos(currentTodos => currentTodos
         .filter(todo => todo.id !== todoID)))
       .catch(() => setError(ShowError.deleteTodo))
@@ -116,7 +121,7 @@ export const TodoApp = () => {
     Promise.all(
       todos
         .filter(todo => todo.completed)
-        .map(todo => deleteTodoAPI(todo.id)),
+        .map(todo => todoService.deleteTodo(todo.id)),
     )
       .then(() => setTodos(currentTodos => currentTodos
         .filter(todo => !todo.completed)));
@@ -126,7 +131,7 @@ export const TodoApp = () => {
     return todos.length === 0;
   }, [todos]);
 
-  const filteredTodos = useTodos(todos, selectedTodos);
+  const filteredTodos = useFilteredTodos(todos, selectedTodos);
 
   return (
     <div className="todoapp">
@@ -136,15 +141,15 @@ export const TodoApp = () => {
         <Header
           todos={todos}
           title={title}
-          isDisabled={isDisabled}
+          isLoading={isLoading}
           handleChangeTitle={handleChangeTitle}
-          handleCreateTodo={handleSubmitTodo}
+          handleSubmitCreateTodo={handleSubmitCreateTodo}
         />
 
         {!isEmptyTodos && (
           <>
             <TodoList
-              title={title}
+              // title={title}
               tempTodo={tempTodo}
               todos={filteredTodos}
               deleteTodo={deleteTodo}

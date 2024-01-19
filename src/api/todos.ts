@@ -1,12 +1,13 @@
 import { client } from '../utils/fetchClient';
 import { Todo } from '../types/Todo';
-import { USER_ID } from '../types/USER_ID';
+import { CreateTodo } from '../types/CreateTodo';
+import { USER_ID } from '../types/constants';
 
-export const getTodosAPI = () => {
+export const getTodos = () => {
   return client.get<Todo[]>(`/todos?userId=${USER_ID}`);
 };
 
-export const createTodoAPI = (title: string) => client
+export const createTodo = ({ title }:CreateTodo) => client
   .post<Todo>('/todos',
   {
     title,
@@ -14,13 +15,8 @@ export const createTodoAPI = (title: string) => client
     completed: false,
   });
 
-export const deleteTodoAPI = (todoId: number) => client
+export const deleteTodo = (todoId: number) => client
   .delete(`/todos/${todoId}`);
 
-export const toggleTodoAPI = (todoId: number, completed: boolean) => client
-  .patch<Todo>(`/todos/${todoId}`,
-  { completed: !completed });
-
-export const updateTodoAPI = (todoId: number, title: string) => client
-  .patch<Todo>(`/todos/${todoId}`,
-  { title });
+export const updateTodo = (todoId: number, todo: Todo) => client
+  .patch<Todo>(`/todos/${todoId}`, todo);
