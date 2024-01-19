@@ -19,6 +19,7 @@ export const Header: React.FC<Props> = ({
   loading,
 }) => {
   const [title, setTitle] = useState('');
+  const [isProcesing, setIsProcesing] = useState(false);
 
   const inputRef = useRef<HTMLInputElement>(null);
 
@@ -26,7 +27,7 @@ export const Header: React.FC<Props> = ({
     if (inputRef.current) {
       inputRef.current.focus();
     }
-  }, [title]);
+  }, [isProcesing]);
 
   const reset = () => {
     setTitle('');
@@ -35,6 +36,7 @@ export const Header: React.FC<Props> = ({
 
   const handleSubmit = (event: React.FormEvent) => {
     event.preventDefault();
+    setIsProcesing(true);
 
     if (!title.trim()) {
       setError(ErrorMessage.EmptyTitle);
@@ -48,7 +50,8 @@ export const Header: React.FC<Props> = ({
         if (!error) {
           reset();
         }
-      });
+      })
+      .finally(() => setIsProcesing(false));
   };
 
   const handleTitleChage = (event: React.ChangeEvent<HTMLInputElement>) => {
