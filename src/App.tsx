@@ -27,17 +27,13 @@ export const App: React.FC = () => {
     setErrorMessage('');
 
     todosService.getTodos(USER_ID)
-      .then((tacks) => {
-        setTodos(tacks);
+      .then((tasks) => {
+        setTodos(tasks);
         setLoading(true);
       })
       .catch(() => setErrorMessage(ErrorMessage.UnableToLoad))
       .finally(() => setLoading(false));
   }, []);
-
-  if (!USER_ID) {
-    return <UserWarning />;
-  }
 
   const handleFilterChange = (filter: FilterType) => setSelectedFilter(filter);
 
@@ -129,42 +125,50 @@ export const App: React.FC = () => {
   };
 
   return (
-    <div className="todoapp">
-      <h1 className="todoapp__title">todos</h1>
+    <>
+      {
+        USER_ID ? (
+          <div className="todoapp">
+            <h1 className="todoapp__title">todos</h1>
 
-      <div className="todoapp__content">
-        <Header
-          todos={todos}
-          onSubmit={addTodo}
-          error={errorMessage}
-          setError={setErrorMessage}
-          loading={loading}
-        />
-        <TodoList
-          todos={visibleTodos}
-          tempTodo={tempTodo}
-          selectedId={selectedId}
-          loading={loading}
-          onDelete={deleteTodo}
-          completedTodos={completedTodos}
-          loadingClearCompleted={loadingClearCompleted}
-        />
+            <div className="todoapp__content">
+              <Header
+                todos={todos}
+                onSubmit={addTodo}
+                error={errorMessage}
+                setError={setErrorMessage}
+                loading={loading}
+              />
+              <TodoList
+                todos={visibleTodos}
+                tempTodo={tempTodo}
+                selectedId={selectedId}
+                loading={loading}
+                onDelete={deleteTodo}
+                completedTodos={completedTodos}
+                loadingClearCompleted={loadingClearCompleted}
+              />
 
-        {todos.length > 0 && (
-          <Footer
-            filterBy={selectedFilter}
-            changeFilter={handleFilterChange}
-            completedTodos={completedTodos}
-            unComletedTodos={unComletedTodos}
-            clearCompleted={clearCompleted}
-          />
-        )}
-      </div>
+              {todos.length > 0 && (
+                <Footer
+                  filterBy={selectedFilter}
+                  changeFilter={handleFilterChange}
+                  completedTodos={completedTodos}
+                  unComletedTodos={unComletedTodos}
+                  clearCompleted={clearCompleted}
+                />
+              )}
+            </div>
 
-      <Error
-        error={errorMessage}
-        setError={setErrorMessage}
-      />
-    </div>
+            <Error
+              error={errorMessage}
+              setError={setErrorMessage}
+            />
+          </div>
+        ) : (
+          <UserWarning />
+        )
+      }
+    </>
   );
 };
