@@ -8,6 +8,7 @@ export const Footer: React.FC = () => {
     todos,
     handleStatus,
     status,
+    handleDeleteCompleted,
   } = useContext(TodosContext);
 
   const leftTodos = todos.filter(todo => !todo.completed);
@@ -59,6 +60,7 @@ export const Footer: React.FC = () => {
         type="button"
         className="todoapp__clear-completed"
         data-cy="ClearCompletedButton"
+        onClick={handleDeleteCompleted}
       >
         Clear completed
       </button>

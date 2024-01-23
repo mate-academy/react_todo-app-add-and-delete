@@ -10,7 +10,7 @@ type Props = {
 
 export const TodoItem: React.FC<Props> = ({ todo, isTempTodo }) => {
   const {
-    // handleCompleted,
+    // toggleTodoStatus,
     // handleUpdateTodo,
     handleDeleteTodo,
     loadingIds,

@@ -2,7 +2,6 @@
 /* eslint-disable jsx-a11y/control-has-associated-label */
 /* eslint-disable jsx-a11y/control-has-associated-label */
 import React, { useEffect, useContext } from 'react';
-import cn from 'classnames';
 import { Error } from './types/Error';
 import { UserWarning } from './UserWarning';
 import { Header } from './components/Header/Content/Header/Header';
@@ -10,25 +9,22 @@ import * as todoService from './service/todo';
 import { Footer } from './components/Header/Content/Footer/Footer';
 import { TodoList } from './components/Header/Content/Main/TodoList/TodoList';
 import { TodosContext } from './Context/TodosContext';
+import { Notifications } from './components/Notifications/Notifications';
 
 const USER_ID = '/todos?userId=12151';
 
 export const App: React.FC = () => {
   const {
-    todos, handleApiTodos, handleErrorMessage, errorMessage,
+    todos, setTodos, handleErrorMessage, errorMessage,
   } = useContext(TodosContext);
-
-  const handleCloseNotification = () => {
-    handleErrorMessage(Error.None);
-  };
 
   useEffect(() => {
     todoService.getTodos(USER_ID)
-      .then(handleApiTodos)
-      .catch(newError => {
+      .then(setTodos)
+      .catch(() => {
         handleErrorMessage(Error.Load);
-        throw newError;
       });
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   useEffect(() => {
@@ -53,28 +49,12 @@ export const App: React.FC = () => {
         {!!todos.length && (
           <Footer />
         )}
-
       </div>
 
       {/* Notification is shown in case of any error */}
       {/* Add the 'hidden' class to hide the message smoothly */}
-      {errorMessage && (
-        <div
-          data-cy="ErrorNotification"
-          className="notification is-danger is-light has-text-weight-normal"
-        >
-          <button
-            data-cy="HideErrorButton"
-            type="button"
-            className={cn('delete', {
-              hidden: errorMessage,
-            })}
-            onClick={handleCloseNotification}
-          />
-          {/* show only one message at a time */}
-          {errorMessage}
-        </div>
-      )}
+
+      {errorMessage && <Notifications />}
 
     </div>
   );

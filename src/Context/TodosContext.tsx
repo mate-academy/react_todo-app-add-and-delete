@@ -14,15 +14,17 @@ interface Context {
   errorMessage: Error,
   tempTodo: Todo | null,
   loadingIds: number[],
-  handleTodo: ({ title, userId, completed }: Omit<Todo, 'id'>) => void,
-  handleCompleted: (todoId: number) => void,
-  handleAllCompleted: () => void,
+  isFieldDisabled: boolean,
+  handleTodoAdd: ({ title, userId, completed }: Omit<Todo, 'id'>) => void,
+  toggleTodoStatus: (todoId: number) => void,
+  toggleAll: () => void,
   handleDeleteCompleted: () => void,
   handleStatus: (newStatus: Status) => void,
   handleUpdateTodo: (changeId: number, updateTitle: string) => void,
-  handleDeleteTodo: (deleteId: number) => void
-  handleApiTodos: (response: Todo[]) => void
-  handleErrorMessage: (error: Error) => void
+  handleDeleteTodo: (deleteId: number) => void,
+  handleErrorMessage: (error: Error) => void,
+  handleDisabled: (disable: boolean) => void,
+  setTodos: (response: Todo[]) => void,
 }
 
 export const TodosContext = React.createContext<Context>({
@@ -31,48 +33,68 @@ export const TodosContext = React.createContext<Context>({
   errorMessage: Error.None,
   tempTodo: null,
   loadingIds: [],
-  handleTodo: () => { },
-  handleCompleted: () => { },
+  isFieldDisabled: false,
+  handleTodoAdd: () => { },
+  toggleTodoStatus: () => { },
   handleDeleteCompleted: () => { },
   handleStatus: () => { },
-  handleAllCompleted: () => { },
+  toggleAll: () => { },
   handleUpdateTodo: () => { },
   handleDeleteTodo: () => { },
-  handleApiTodos: () => { },
   handleErrorMessage: () => { },
+  handleDisabled: () => { },
+  setTodos: () => { },
 });
 
 export const TodosProvider: React.FC<Props> = ({ children }) => {
   const [todos, setTodos] = useState<Todo[]>([]);
   const [status, setStatus] = useState(Status.All);
+  const [isFieldDisabled, setIsFieldDisabled] = useState(false);
   const [errorMessage, setErrorMessage] = useState(Error.None);
   const [tempTodo, setTempTodo] = useState<Todo | null>(null);
   const [loadingIds, setLoadingIds] = useState<number[]>([]);
+
+  const handleDisabled = (disable: boolean) => {
+    setIsFieldDisabled(disable);
+  };
 
   const handleErrorMessage = (error: Error) => {
     setErrorMessage(error);
   };
 
-  const handleApiTodos = (response: Todo[]) => {
-    setTodos(response);
+  const handleDeleteCompleted = async () => {
+    const allCompleted = todos.filter(todo => todo.completed);
+    const completedIds = allCompleted.map(todo => todo.id);
+
+    setLoadingIds(state => [
+      ...state,
+      ...completedIds,
+    ]);
+
+    try {
+      handleDisabled(true);
+      await Promise.all(completedIds.map(id => {
+        return todoService.deleteTodos(`/todos/${id}`);
+      }));
+      setTodos(prev => prev.filter(todo => !completedIds.includes(todo.id)));
+    } catch {
+      setErrorMessage(Error.Delete);
+    } finally {
+      setLoadingIds([]);
+      handleDisabled(false);
+    }
   };
 
-  const handleDeleteCompleted = () => {
-    const deleteAllCompleted = todos.filter(todo => !todo.completed);
-
-    setTodos(deleteAllCompleted);
-  };
-
-  const handleCompleted = (todoId: number) => {
+  const toggleTodoStatus = (todoId: number) => {
     setTodos(todos.map(todo => (todo.id === todoId
       ? { ...todo, completed: !todo.completed }
       : todo)));
   };
 
-  const handleAllCompleted = () => {
-    const statusCompleted = todos.some(todo => !todo.completed);
+  const toggleAll = () => {
+    const isSomeTodoCompleted = todos.some(todo => !todo.completed);
 
-    if (statusCompleted) {
+    if (isSomeTodoCompleted) {
       setTodos(todos.map(todo => (todo.completed === false
         ? { ...todo, completed: !todo.completed }
         : todo)));
@@ -83,7 +105,7 @@ export const TodosProvider: React.FC<Props> = ({ children }) => {
     }
   };
 
-  const handleTodo = ({ title, userId, completed }: Omit<Todo, 'id'>) => {
+  const handleTodoAdd = ({ title, userId, completed }: Omit<Todo, 'id'>) => {
     setTempTodo({
       id: 0,
       userId,
@@ -99,9 +121,15 @@ export const TodosProvider: React.FC<Props> = ({ children }) => {
             newTodo,
           ],
         );
+
+        setErrorMessage(Error.None);
+      })
+      .catch(() => {
+        setErrorMessage(Error.Add);
       })
       .finally(() => {
         setTempTodo(null);
+        setIsFieldDisabled(false);
       });
   };
 
@@ -112,19 +140,25 @@ export const TodosProvider: React.FC<Props> = ({ children }) => {
   };
 
   const handleDeleteTodo = (deleteId: number) => {
+    handleDisabled(true);
+
     setLoadingIds(state => [
       ...state,
       deleteId,
     ]);
 
-    todoService.deleteTodos(`/todos/${deleteId}`)
+    return todoService.deleteTodos(`/todos/${deleteId}`)
       .then(() => {
         const filteredTodos = todos.filter(todo => todo.id !== deleteId);
 
         setTodos(filteredTodos);
       })
+      .catch(() => {
+        setErrorMessage(Error.Delete);
+      })
       .finally(() => {
         setLoadingIds([]);
+        handleDisabled(false);
       });
   };
 
@@ -138,16 +172,19 @@ export const TodosProvider: React.FC<Props> = ({ children }) => {
     errorMessage,
     tempTodo,
     loadingIds,
-    handleTodo,
-    handleCompleted,
+    isFieldDisabled,
+    handleTodoAdd,
+    toggleTodoStatus,
     handleDeleteCompleted,
     handleStatus,
-    handleAllCompleted,
+    toggleAll,
     handleUpdateTodo,
     handleDeleteTodo,
-    handleApiTodos,
     handleErrorMessage,
-  }), [todos, status, errorMessage, tempTodo, loadingIds]);
+    handleDisabled,
+    setTodos,
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }), [todos, status, errorMessage, tempTodo, loadingIds, isFieldDisabled]);
 
   return (
     <TodosContext.Provider value={value}>

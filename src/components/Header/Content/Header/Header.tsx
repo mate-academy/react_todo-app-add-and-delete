@@ -6,53 +6,51 @@ import { Error } from '../../../../types/Error';
 
 export const Header: React.FC = () => {
   const [message, setMessage] = useState('');
-  const [hasFocus, setHasFocus] = useState(true);
-  const { handleErrorMessage, handleTodo, tempTodo } = useContext(TodosContext);
+  const {
+    handleErrorMessage,
+    handleTodoAdd,
+    isFieldDisabled,
+    handleDisabled,
+  } = useContext(TodosContext);
   const titleField = useRef<HTMLInputElement>(null);
-  let isDisabled = false;
-
-  if (tempTodo === null) {
-    isDisabled = false;
-  } else {
-    isDisabled = true;
-  }
 
   useEffect(() => {
-    if (hasFocus) {
+    if (!isFieldDisabled) {
       titleField.current?.focus();
     }
-
-    // eslint-disable-next-line no-console
-    console.log(hasFocus);
-  }, [hasFocus]);
+  }, [titleField, isFieldDisabled]);
 
   const handleChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     setMessage(event.target.value);
   };
 
   const handleFocus = () => {
-    setHasFocus(false);
+    handleDisabled(false);
   };
 
   const handleKeyDown = async (event: React.FormEvent) => {
     event.preventDefault();
 
+    handleDisabled(true);
+
     if (!message.trim()) {
       handleErrorMessage(Error.Empty);
+      handleDisabled(false);
     }
 
     if (message.trim()) {
-      await handleTodo({
+      await handleTodoAdd({
         title: message,
         userId: 12151,
         completed: false,
       });
 
-      setMessage('');
-    }
+      handleDisabled(false);
 
-    // eslint-disable-next-line no-console
-    console.log(titleField);
+      setMessage('');
+
+      titleField.current?.focus();
+    }
 
     titleField.current?.focus();
   };
@@ -67,7 +65,6 @@ export const Header: React.FC = () => {
         aria-label="Active"
       />
 
-      {/* Add a todo on form submit */}
       <form onSubmit={handleKeyDown}>
         <input
           ref={titleField}
@@ -78,7 +75,7 @@ export const Header: React.FC = () => {
           placeholder="What needs to be done?"
           onChange={handleChange}
           onBlur={handleFocus}
-          disabled={isDisabled}
+          disabled={isFieldDisabled}
         />
       </form>
     </header>
