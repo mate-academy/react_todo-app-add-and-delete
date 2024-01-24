@@ -2,6 +2,7 @@ import cn from 'classnames';
 import { useContext } from 'react';
 import { Status } from '../../../../types/Status';
 import { TodosContext } from '../../../../Context/TodosContext';
+import { Todo } from '../../../../types/Todo';
 
 export const Footer: React.FC = () => {
   const {
@@ -12,6 +13,9 @@ export const Footer: React.FC = () => {
   } = useContext(TodosContext);
 
   const leftTodos = todos.filter(todo => !todo.completed);
+  const completedTodos = todos.filter((todo: Todo) => todo.completed);
+
+  const clearButton = completedTodos.length > 0;
 
   return (
     <footer className="todoapp__footer" data-cy="Footer">
@@ -61,6 +65,7 @@ export const Footer: React.FC = () => {
         className="todoapp__clear-completed"
         data-cy="ClearCompletedButton"
         onClick={handleDeleteCompleted}
+        style={{ visibility: clearButton ? 'visible' : 'hidden' }}
       >
         Clear completed
       </button>

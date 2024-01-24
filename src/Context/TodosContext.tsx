@@ -86,7 +86,7 @@ export const TodosProvider: React.FC<Props> = ({ children }) => {
   };
 
   const toggleTodoStatus = (todoId: number) => {
-    setTodos(todos.map(todo => (todo.id === todoId
+    setTodos(state => state.map(todo => (todo.id === todoId
       ? { ...todo, completed: !todo.completed }
       : todo)));
   };
@@ -95,11 +95,11 @@ export const TodosProvider: React.FC<Props> = ({ children }) => {
     const isSomeTodoCompleted = todos.some(todo => !todo.completed);
 
     if (isSomeTodoCompleted) {
-      setTodos(todos.map(todo => (todo.completed === false
+      setTodos(state => state.map(todo => (todo.completed === false
         ? { ...todo, completed: !todo.completed }
         : todo)));
     } else {
-      setTodos(todos.map(
+      setTodos(state => state.map(
         todo => ({ ...todo, completed: !todo.completed }),
       ));
     }
@@ -134,7 +134,7 @@ export const TodosProvider: React.FC<Props> = ({ children }) => {
   };
 
   const handleUpdateTodo = (changeId: number, updateTitle: string) => {
-    setTodos(todos.map(todo => (todo.id === changeId
+    setTodos(state => state.map(todo => (todo.id === changeId
       ? { ...todo, title: updateTitle }
       : todo)));
   };
@@ -149,9 +149,7 @@ export const TodosProvider: React.FC<Props> = ({ children }) => {
 
     return todoService.deleteTodos(`/todos/${deleteId}`)
       .then(() => {
-        const filteredTodos = todos.filter(todo => todo.id !== deleteId);
-
-        setTodos(filteredTodos);
+        setTodos(state => state.filter(todo => todo.id !== deleteId));
       })
       .catch(() => {
         setErrorMessage(Error.Delete);
