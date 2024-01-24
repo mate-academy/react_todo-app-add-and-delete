@@ -7,7 +7,6 @@ type Props = {
   deleteTodo?: (todoId: number) => void;
   selectedId: number;
   isLoadingCompleted?: boolean;
-  isLoading?: boolean;
 };
 
 export const TodoItem: React.FC<Props> = ({
@@ -15,13 +14,11 @@ export const TodoItem: React.FC<Props> = ({
   deleteTodo,
   selectedId,
   isLoadingCompleted,
-  isLoading,
 }) => {
   const { id, title, completed } = todo;
 
   const isTodoLoading = (id === selectedId)
-    || (isLoadingCompleted && completed)
-    || (isLoading);
+    || (isLoadingCompleted && completed);
 
   return (
     <div

@@ -68,6 +68,8 @@ export const App: React.FC = () => {
       });
   };
 
+  // need to  update the state of the component and transfer to TodoItem
+
   const deleteAllCompleted = () => {
     setIsLoadingCompleted(true);
 
@@ -79,9 +81,8 @@ export const App: React.FC = () => {
       .then(() => {
         setTodos(currentTodo => currentTodo.filter((todo) => !todo.completed));
       })
-      .catch((error) => {
+      .catch(() => {
         setErrorMessege(ErrorMessage.UNABLE_TO_DELETE_A_TODO);
-        throw error;
       })
       .finally(() => {
         setIsLoadingCompleted(false);
