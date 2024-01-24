@@ -9,7 +9,6 @@ type Props = {
   selectedId: number;
   isLoadingCompleted: boolean;
   tempTodo: Todo | null;
-  isLoading: boolean;
 };
 
 export const TodoList: React.FC<Props> = ({
@@ -18,7 +17,6 @@ export const TodoList: React.FC<Props> = ({
   selectedId,
   isLoadingCompleted,
   tempTodo,
-  isLoading,
 }) => {
   return (
     <TransitionGroup>
@@ -40,7 +38,7 @@ export const TodoList: React.FC<Props> = ({
             key={tempTodo.id}
             todo={tempTodo}
             selectedId={selectedId}
-            isLoading={isLoading}
+            isLoading
           />
         </CSSTransition>
       )}

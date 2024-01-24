@@ -18,7 +18,6 @@ export const App: React.FC = () => {
   const [errorMessege, setErrorMessege] = useState(ErrorMessage.NONE);
   const [selectedId, setSelectedId] = useState(-1);
   const [isLoadingCompleted, setIsLoadingCompleted] = useState(false);
-  const [isLoading, setIsLoading] = useState(false);
   const [tempTodo, setTempTodo] = useState<Todo | null>(null);
 
   useEffect(() => {
@@ -30,7 +29,6 @@ export const App: React.FC = () => {
   }, []);
 
   const addTodo = (title: string) => {
-    setIsLoading(true);
     setErrorMessege(ErrorMessage.NONE);
     setTempTodo({
       id: 0,
@@ -52,7 +50,6 @@ export const App: React.FC = () => {
         throw error;
       })
       .finally(() => {
-        setIsLoading(false);
         setTempTodo(null);
       });
   };
@@ -122,7 +119,7 @@ export const App: React.FC = () => {
           todos={todos}
           addTodo={addTodo}
           setErrorMessege={setErrorMessege}
-          isLoading={isLoading}
+          isLoading={!!tempTodo}
         />
 
         <TodoList
@@ -131,7 +128,6 @@ export const App: React.FC = () => {
           selectedId={selectedId}
           isLoadingCompleted={isLoadingCompleted}
           tempTodo={tempTodo}
-          isLoading={isLoading}
         />
 
         {/* Hide the footer if there are no todos */}
