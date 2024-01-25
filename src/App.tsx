@@ -3,7 +3,7 @@ import React, { useEffect, useState } from 'react';
 import classNames from 'classnames';
 import { UserWarning } from './UserWarning';
 import { Todo } from './types/Todo';
-import { getTodos } from './api/todos';
+import * as todoService from './api/todos';
 import { TodoContext } from './todoContext';
 import { TodoList } from './todoList';
 
@@ -12,11 +12,13 @@ const USER_ID = 22;
 export const App: React.FC = () => {
   // #region UseStates
   const [todos, setTodos] = useState<Todo[]>([]);
-  const [title, setTitle] = useState('');
+  const [titleValue, setTitleValue] = useState('');
   const [count, setCount] = useState(0);
   const [selectedFilter, setSelectedFilter] = useState('All');
   const [error, setError] = useState(false);
   const [errorMessage, setErrorMessage] = useState('');
+  const [isSubmitting, setIsSubmiting] = useState(false);
+  const [isDeliting, setIsDeliting] = useState(false);
   // #endregion
 
   let errorTimerId: NodeJS.Timeout;
@@ -46,7 +48,7 @@ export const App: React.FC = () => {
   };
 
   useEffect(() => {
-    getTodos(USER_ID)
+    todoService.getTodos(USER_ID)
       .then(data => {
         setTodos(data);
         setCount(data.length);
@@ -56,12 +58,13 @@ export const App: React.FC = () => {
         errorHandler('add');
         throw e;
       });
+    // eslint-disable-next-line
   }, []);
 
   // #region Handlers
 
   const handleInput = (event: React.ChangeEvent<HTMLInputElement>) => {
-    setTitle(event.target.value);
+    setTitleValue(event.target.value);
   };
 
   const filteredTodo = todos.filter(todo => {
@@ -87,34 +90,46 @@ export const App: React.FC = () => {
 
   const handleSubmit = (event: React.FormEvent) => {
     event.preventDefault();
-
-    const trimedTitle = title.trim();
+    const trimedTitle = titleValue.trim();
 
     if (!trimedTitle.length) {
       setError(true);
       errorHandler('title');
+      setTitleValue('');
     }
 
-    const addTodo = (newTodo: Todo) => {
-      setTodos([...todos, newTodo]);
+    const addTodo = ({ userId, title, completed }: Todo) => {
+      return todoService.addTodo({ userId, title, completed })
+        .then(newTodo => {
+          setTodos([...todos, newTodo]);
+          setCount(count + 1);
+        })
+        .catch(e => {
+          setError(true);
+          errorHandler('add');
+          throw e;
+        });
     };
 
     if (trimedTitle.length) {
-      setCount(count + 1);
       const id = (+new Date());
 
       const newTodo: Todo = {
         id,
-        title,
+        title: titleValue,
         completed: false,
         userId: USER_ID,
       };
 
-      addTodo(newTodo);
-      setTitle('');
+      setIsSubmiting(true);
+      addTodo(newTodo)
+        .finally(() => {
+          setIsSubmiting(false);
+        });
+      setTitleValue('');
     }
 
-    return setTitle('');
+    return setTitleValue('');
   };
 
   const handleToggleAll = () => {
@@ -133,26 +148,47 @@ export const App: React.FC = () => {
     setTodos(updatedTodos);
   };
 
-  const handleClear = () => {
-    const updatingTodos = todos.filter(todo => !todo.completed);
-
-    setTodos(updatingTodos);
-    setCount(updatingTodos.length);
-  };
-
-  // #endregion
-
   const deleteTodo = (deleteId: number) => {
+    setIsDeliting(true);
     const todoForDeletion = todos.filter(todo => todo.id === deleteId);
 
     if (todoForDeletion[0].completed) {
-      return setTodos(todos.filter(todo => todo.id !== deleteId));
+      setTodos(todos.filter(todo => todo.id !== deleteId));
+    } else {
+      setCount(count - 1);
+
+      setTodos(todos.filter(todo => todo.id !== deleteId));
     }
 
-    setCount(count - 1);
-
-    return setTodos(todos.filter(todo => todo.id !== deleteId));
+    return todoService.deleteTodo(deleteId)
+      .catch(e => {
+        setError(true);
+        setTodos(todos);
+        setCount(count);
+        errorHandler('delete');
+        throw e;
+      })
+      .finally(() => {
+        setIsDeliting(false);
+      });
   };
+
+  const handleClear = () => {
+    const deletingTodos = todos.filter(todo => !todo.completed);
+
+    todos.map(todo => {
+      if (todo.completed) {
+        return deleteTodo(todo.id);
+      }
+
+      return todo;
+    });
+
+    setTodos(deletingTodos);
+    setCount(deletingTodos.length);
+  };
+
+  // #endregion
 
   const checkForCompleted = todos.filter(todo => todo.completed).length;
 
@@ -167,6 +203,10 @@ export const App: React.FC = () => {
     count,
     setTodos,
     todos,
+    isSubmitting,
+    setIsSubmiting,
+    isDeliting,
+    setIsDeliting,
   };
 
   return (
@@ -191,6 +231,9 @@ export const App: React.FC = () => {
                 className="todoapp__new-todo"
                 placeholder="What needs to be done?"
                 onChange={handleInput}
+                disabled={isSubmitting}
+                // eslint-disable-next-line
+                autoFocus
               />
             </form>
           </header>

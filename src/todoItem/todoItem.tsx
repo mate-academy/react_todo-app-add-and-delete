@@ -21,6 +21,7 @@ export const TodoItem: React.FC<Props> = ({ todo }) => {
     count,
     setTodos,
     todos,
+    isSubmitting,
   } = useContext(TodoContext);
   const [editing, setEditing] = useState(false);
   const [titleEdit, setTitleEdit] = useState(activeTodo.title);
@@ -97,7 +98,7 @@ export const TodoItem: React.FC<Props> = ({ todo }) => {
           completed: isChecked === true,
         })}
       >
-        <label className="todo__status-label">
+        <label className="todo__status-label ">
           <input
             data-cy="TodoStatus"
             type="checkbox"
@@ -141,7 +142,12 @@ export const TodoItem: React.FC<Props> = ({ todo }) => {
           </button>
         )}
 
-        <div data-cy="TodoLoader" className="modal overlay ">
+        <div
+          data-cy="TodoLoader"
+          className={classNames('modal overlay', {
+            'is-active': isSubmitting,
+          })}
+        >
           <div className="modal-background has-background-white-ter" />
           <div className="loader" />
         </div>

@@ -8,6 +8,10 @@ type TodoContextType = {
   count:number
   setTodos:(v: Todo[]) => void
   todos:Todo[]
+  isSubmitting: boolean,
+  setIsSubmiting:(v: boolean) => void,
+  isDeliting: boolean,
+  setIsDeliting:(v: boolean) => void,
 };
 
 export const TodoContext = React.createContext<TodoContextType>({
@@ -17,4 +21,8 @@ export const TodoContext = React.createContext<TodoContextType>({
   count: 0,
   setTodos: () => {},
   todos: [],
+  isSubmitting: false,
+  setIsSubmiting: () => {},
+  isDeliting: false,
+  setIsDeliting: () => {},
 });
