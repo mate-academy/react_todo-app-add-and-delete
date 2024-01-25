@@ -3,81 +3,33 @@ import {
   useEffect,
   useRef,
   useState,
-  ChangeEvent,
 } from 'react';
-
 import cn from 'classnames';
+
 import { Todo } from '../../types/Todo';
-import { DispatchContext, StateContext } from '../../State/State';
-import { deleteTodo, updateTodo } from '../../api/todos';
+import { TodoItem } from '../TodoItem';
+import { updateTodo } from '../../api/todos';
+import { DispatchContext } from '../../State/State';
+import { handleDeleteTodo } from '../../services/todoItemServices';
 
 type Props = {
   todo: Todo;
 };
 
-export const TodoItem: React.FC<Props> = ({ todo }) => {
-  const { title, completed, id } = todo;
-
+export const TodoField: React.FC<Props> = ({ todo }) => {
+  const { title, id } = todo;
   const [currentTitle, setCurrentTitle] = useState(title);
-  const [isEditing, setIsEditing] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
 
-  const dispatch = useContext(DispatchContext);
-  const { clearAll, isEscapeKeyup } = useContext(StateContext);
-
+  const [isEditing, setIsEditing] = useState(false);
   const edit = useRef<HTMLInputElement>(null);
-
-  useEffect(() => {
-    if (clearAll && completed) {
-      setIsLoading(true);
-    }
-  }, [clearAll, completed, dispatch]);
+  const dispatch = useContext(DispatchContext);
 
   useEffect(() => {
     if (edit.current) {
       edit.current.focus();
     }
   }, [isEditing]);
-
-  useEffect(() => {
-    if (isEscapeKeyup) {
-      setIsEditing(false);
-      setCurrentTitle(title);
-      dispatch({ type: 'setEscape', payload: false });
-    }
-  }, [isEscapeKeyup, dispatch, title]);
-
-  function toggleTodoStatus(event: ChangeEvent<HTMLInputElement>) {
-    const updatedTodo = {
-      completed: event.target.checked,
-      id,
-    };
-
-    // dispatch({ type: 'setIsSubmitting', payload: true });
-    setIsLoading(true);
-
-    updateTodo(updatedTodo)
-      .then(() => dispatch({ type: 'updatedAt' }))
-      .catch(() => dispatch(
-        { type: 'setError', payload: 'Unable to update a todo' },
-      ))
-      .finally(() => setIsLoading(false));
-  }
-
-  function handleDeleteTodo() {
-    setIsLoading(true);
-
-    deleteTodo(`/todos/${id}`)
-      .then(() => dispatch({ type: 'deleteTodo', payload: id }))
-      .catch(() => {
-        dispatch(
-          { type: 'setError', payload: 'Unable to delete a todo' },
-        );
-      })
-      .finally(() => {
-        setIsLoading(false);
-      });
-  }
 
   function editTodo(event: React.FormEvent) {
     event.preventDefault();
@@ -100,7 +52,7 @@ export const TodoItem: React.FC<Props> = ({ todo }) => {
         return;
       }
 
-      handleDeleteTodo();
+      handleDeleteTodo(setIsLoading, dispatch, id);
       resolve();
     });
 
@@ -114,51 +66,14 @@ export const TodoItem: React.FC<Props> = ({ todo }) => {
     <>
       {!isEditing
         ? (
-          <div
-            data-cy="Todo"
-            className={cn('todo item-enter-done', {
-              completed,
-            })}
-          >
-            <label className="todo__status-label">
-              <input
-                data-cy="TodoStatus"
-                type="checkbox"
-                className="todo__status"
-                onChange={toggleTodoStatus}
-                checked={completed}
-              />
-            </label>
-
-            <span
-              data-cy="TodoTitle"
-              className="todo__title"
-              onDoubleClick={() => setIsEditing(true)}
-            >
-              {currentTitle}
-            </span>
-
-            {/* Remove button appears only on hover */}
-            <button
-              type="button"
-              className="todo__remove"
-              data-cy="TodoDelete"
-              onClick={handleDeleteTodo}
-            >
-              ×
-            </button>
-
-            {/* overlay will cover the todo while it is being updated */}
-            <div
-              data-cy="TodoLoader"
-              className={cn('modal overlay', {
-                'is-active': isLoading,
-              })}
-            >
-              <div className="modal-background has-background-white-ter" />
-              <div className="loader" />
-            </div>
-          </div>
+          <TodoItem
+            todo={todo}
+            setIsEditing={setIsEditing}
+            isLoading={isLoading}
+            setIsLoading={setIsLoading}
+            currentTitle={currentTitle}
+            setCurrentTitle={setCurrentTitle}
+          />
         )
         : (
           <>
