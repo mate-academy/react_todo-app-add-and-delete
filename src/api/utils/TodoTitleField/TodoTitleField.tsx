@@ -45,7 +45,6 @@ export const TodoTitleField:React.FC<Props> = ({ todo }) => {
     event.preventDefault();
 
     if (changedTodo.trim() === '') {
-      TodoDeleteButton();
       setIsEditing(false);
     }
 
