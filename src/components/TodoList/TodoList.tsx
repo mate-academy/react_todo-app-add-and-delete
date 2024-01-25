@@ -2,8 +2,8 @@ import { useContext } from 'react';
 import { CSSTransition, TransitionGroup } from 'react-transition-group';
 import { Todo } from '../../types/Todo';
 import { TodoField } from '../TodoField';
+import { TodoItem } from '../TodoItem/TodoItem';
 import { StateContext } from '../../State/State';
-import { TodoItem } from '../TodoItem';
 
 type Props = {
   todos: Todo[];

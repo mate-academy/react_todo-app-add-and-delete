@@ -7,10 +7,10 @@ import {
 import cn from 'classnames';
 
 import { Todo } from '../../types/Todo';
-import { TodoItem } from '../TodoItem';
 import { updateTodo } from '../../api/todos';
 import { DispatchContext } from '../../State/State';
 import { handleDeleteTodo } from '../../services/todoItemServices';
+import { TodoItem } from '../TodoItem/TodoItem';
 
 type Props = {
   todo: Todo;
