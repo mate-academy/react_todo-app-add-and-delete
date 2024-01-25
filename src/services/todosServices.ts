@@ -49,13 +49,13 @@ export function isActiveTodo(todos: Todo[]): boolean {
 export function handleToggleAll(
   dispatch: React.Dispatch<Action>,
   todos: Todo[],
-  setAllCompleted: boolean,
+  activeTodos: number,
 ) {
   const promises = todos.reduce((prev, el) => {
-    if (el.completed === setAllCompleted) {
+    if (el.completed === !activeTodos) {
       return [
         ...prev,
-        updateTodo({ completed: !setAllCompleted, id: el.id }),
+        updateTodo({ completed: !!activeTodos, id: el.id }),
       ];
     }
 
@@ -67,8 +67,7 @@ export function handleToggleAll(
   Promise.all(promises)
     .then(() => {
       dispatch({
-        type: 'setTodosStatus',
-        payload: !setAllCompleted,
+        type: 'updatedAt',
       });
     })
     .catch(() => dispatch({

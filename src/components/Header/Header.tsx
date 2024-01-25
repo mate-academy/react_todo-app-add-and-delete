@@ -11,7 +11,7 @@ export const Header = () => {
   const [todo, setTodo] = useState('');
   const [isSubmitting, setIsSubmitting] = useState(false);
 
-  const { todos, setAllCompleted, activeTodos } = useContext(StateContext);
+  const { todos, activeTodos } = useContext(StateContext);
   const dispatch = useContext(DispatchContext);
 
   const inputTodo = useRef<HTMLInputElement>(null);
@@ -70,7 +70,7 @@ export const Header = () => {
           className={cn('todoapp__toggle-all', {
             active: !activeTodos,
           })}
-          onClick={() => handleToggleAll(dispatch, todos, setAllCompleted)}
+          onClick={() => handleToggleAll(dispatch, todos, activeTodos)}
           data-cy="ToggleAllButton"
           aria-label="Set all"
         />
