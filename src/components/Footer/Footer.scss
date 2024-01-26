@@ -1,0 +1,13 @@
+.todoapp__footer {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  align-content: center;
+}
+
+.todo-count {
+  justify-self: baseline;
+}
+
+.todoapp__clear-completed {
+  justify-self: end;
+}
