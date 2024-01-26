@@ -29,6 +29,8 @@ export const App: React.FC = () => {
     }
   }
 
+  const visibleTodos = getFilterTodos();
+
   return (
     <div className="todoapp">
       <h1 className="todoapp__title">todos</h1>
@@ -36,7 +38,7 @@ export const App: React.FC = () => {
       <div className="todoapp__content">
         <Header />
 
-        <TodoList todos={getFilterTodos()} />
+        <TodoList todos={visibleTodos} />
 
         {!!todos?.length && (
           <Footer

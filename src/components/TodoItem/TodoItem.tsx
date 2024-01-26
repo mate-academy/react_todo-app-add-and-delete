@@ -14,17 +14,21 @@ export const TodoItem: React.FC<Props> = ({ todo }) => {
     todos,
     setTodos,
     handleErrorMessage,
+    setTempTodo,
   } = useContext(TodosContext);
 
   const handleRemoveTodo = () => {
-    setTodos(todos.filter(value => value.id !== todo.id));
+    const deleteTodo = todos.find(value => value.id === todo.id) || null;
+
+    setTempTodo(deleteTodo);
 
     removeTodo(todo.id)
-      .then()
+      .then(() => setTodos(todos.filter(value => value.id !== todo.id)))
       .catch(() => {
         setTodos(todos);
         handleErrorMessage(ErrorMessage.UNABLE_DELETE);
-      });
+      })
+      .finally(() => setTempTodo(null));
   };
 
   return (
@@ -51,7 +55,7 @@ export const TodoItem: React.FC<Props> = ({ todo }) => {
         type="button"
         className="todo__remove"
         data-cy="TodoDelete"
-        onClick={() => handleRemoveTodo()}
+        onClick={handleRemoveTodo}
       >
         ×
       </button>

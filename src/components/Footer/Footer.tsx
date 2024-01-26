@@ -13,7 +13,11 @@ export const Footer: React.FC<Props> = ({
   completedTodos,
   activeTodos,
 }) => {
-  const { todos, setTodos, handleErrorMessage } = useContext(TodosContext);
+  const {
+    todos,
+    setTodos,
+    handleErrorMessage,
+  } = useContext(TodosContext);
 
   const handleRemoveAllCompleted = () => {
     setTodos(todos.filter(value => !value.completed));
@@ -44,7 +48,7 @@ export const Footer: React.FC<Props> = ({
         type="button"
         className="todoapp__clear-completed"
         data-cy="ClearCompletedButton"
-        onClick={() => handleRemoveAllCompleted()}
+        onClick={handleRemoveAllCompleted}
         disabled={!completedTodos}
       >
         Clear completed
