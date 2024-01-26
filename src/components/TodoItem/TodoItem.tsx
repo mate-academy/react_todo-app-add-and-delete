@@ -10,6 +10,8 @@ type Props = {
 };
 
 export const TodoItem: React.FC<Props> = ({ todo }) => {
+  const { id, title, completed } = todo;
+
   const {
     todos,
     setTodos,
@@ -22,8 +24,8 @@ export const TodoItem: React.FC<Props> = ({ todo }) => {
   const handleRemoveTodo = () => {
     setIsLoading(true);
 
-    removeTodo(todo.id)
-      .then(() => setTodos(todos.filter(value => value.id !== todo.id)))
+    removeTodo(id)
+      .then(() => setTodos(todos.filter(value => value.id !== id)))
       .catch(() => {
         setTodos(todos);
         handleErrorMessage(ErrorMessage.UNABLE_DELETE);
@@ -32,10 +34,10 @@ export const TodoItem: React.FC<Props> = ({ todo }) => {
   };
 
   return (
-    <div
+    <li
       data-cy="Todo"
       className={cn('todo', {
-        completed: todo.completed,
+        completed,
       })}
     >
       <label className="todo__status-label">
@@ -43,12 +45,12 @@ export const TodoItem: React.FC<Props> = ({ todo }) => {
           data-cy="TodoStatus"
           type="checkbox"
           className="todo__status"
-          checked={todo.completed}
+          checked={completed}
         />
       </label>
 
       <span data-cy="TodoTitle" className="todo__title">
-        {todo.title}
+        {title}
       </span>
 
       <button
@@ -63,12 +65,12 @@ export const TodoItem: React.FC<Props> = ({ todo }) => {
       <div
         data-cy="TodoLoader"
         className={cn('modal', 'overlay', {
-          'is-active': isLoading || (isLoadingAll && todo.completed),
+          'is-active': isLoading || (isLoadingAll && completed),
         })}
       >
         <div className="modal-background has-background-white-ter" />
         <div className="loader" />
       </div>
-    </div>
+    </li>
   );
 };

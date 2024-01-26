@@ -12,7 +12,7 @@ export const TodoList: React.FC<Props> = ({ todos }) => {
   const { tempTodo } = useContext(TodosContext);
 
   return (
-    <section className="todoapp__main" data-cy="TodoList">
+    <ul className="todoapp__main" data-cy="TodoList">
       {todos?.map(todo => (
         <TodoItem
           key={todo.id}
@@ -21,7 +21,7 @@ export const TodoList: React.FC<Props> = ({ todos }) => {
       ))}
 
       {tempTodo && (
-        <div
+        <li
           data-cy="Todo"
           className={cn('todo', {
             completed: tempTodo.completed,
@@ -55,8 +55,8 @@ export const TodoList: React.FC<Props> = ({ todos }) => {
             <div className="modal-background has-background-white-ter" />
             <div className="loader" />
           </div>
-        </div>
+        </li>
       )}
-    </section>
+    </ul>
   );
 };

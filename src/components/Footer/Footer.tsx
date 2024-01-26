@@ -22,7 +22,7 @@ export const Footer: React.FC<Props> = ({
 
   const handleRemoveAllCompleted = () => {
     todos.map((todo) => {
-      if (todo.completed === true) {
+      if (todo.completed) {
         setIsLoadingAll(true);
 
         removeTodo(todo.id)
