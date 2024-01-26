@@ -1,5 +1,5 @@
 import cn from 'classnames';
-import { useContext } from 'react';
+import { useContext, useState } from 'react';
 import { Todo } from '../../types/Todo';
 import { removeTodo } from '../../api/todos';
 import { TodosContext } from '../TodosContext/TodosContext';
@@ -14,13 +14,13 @@ export const TodoItem: React.FC<Props> = ({ todo }) => {
     todos,
     setTodos,
     handleErrorMessage,
-    setTempTodo,
+    isLoadingAll,
   } = useContext(TodosContext);
 
-  const handleRemoveTodo = () => {
-    const deleteTodo = todos.find(value => value.id === todo.id) || null;
+  const [isLoading, setIsLoading] = useState(false);
 
-    setTempTodo(deleteTodo);
+  const handleRemoveTodo = () => {
+    setIsLoading(true);
 
     removeTodo(todo.id)
       .then(() => setTodos(todos.filter(value => value.id !== todo.id)))
@@ -28,7 +28,7 @@ export const TodoItem: React.FC<Props> = ({ todo }) => {
         setTodos(todos);
         handleErrorMessage(ErrorMessage.UNABLE_DELETE);
       })
-      .finally(() => setTempTodo(null));
+      .finally(() => setIsLoading(false));
   };
 
   return (
@@ -60,10 +60,11 @@ export const TodoItem: React.FC<Props> = ({ todo }) => {
         ×
       </button>
 
-      {/* overlay will cover the todo while it is being updated */}
       <div
         data-cy="TodoLoader"
-        className="modal overlay"
+        className={cn('modal', 'overlay', {
+          'is-active': isLoading || (isLoadingAll && todo.completed),
+        })}
       >
         <div className="modal-background has-background-white-ter" />
         <div className="loader" />

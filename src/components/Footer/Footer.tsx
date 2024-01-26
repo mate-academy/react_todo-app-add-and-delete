@@ -17,19 +17,21 @@ export const Footer: React.FC<Props> = ({
     todos,
     setTodos,
     handleErrorMessage,
+    setIsLoadingAll,
   } = useContext(TodosContext);
 
   const handleRemoveAllCompleted = () => {
-    setTodos(todos.filter(value => !value.completed));
-
     todos.map((todo) => {
       if (todo.completed === true) {
+        setIsLoadingAll(true);
+
         removeTodo(todo.id)
-          .then()
+          .then(() => setTodos(todos.filter(value => !value.completed)))
           .catch(() => {
             setTodos(todos);
             handleErrorMessage(ErrorMessage.UNABLE_DELETE);
-          });
+          })
+          .finally(() => setIsLoadingAll(false));
       }
 
       return todo;

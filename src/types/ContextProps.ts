@@ -11,4 +11,6 @@ export type ContextProps = {
   handleErrorMessage: (value: ErrorMessage) => void,
   tempTodo: Todo | null,
   setTempTodo: React.Dispatch<React.SetStateAction<Todo | null>>,
+  isLoadingAll: boolean,
+  setIsLoadingAll: React.Dispatch<React.SetStateAction<boolean>>,
 };

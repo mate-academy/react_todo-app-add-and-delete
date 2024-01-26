@@ -13,7 +13,9 @@ export const TodosContext = React.createContext<ContextProps>({
   errorMessage: ErrorMessage.DEFAULT,
   handleErrorMessage: () => { },
   tempTodo: null,
-  setTempTodo: () => {},
+  setTempTodo: () => { },
+  isLoadingAll: false,
+  setIsLoadingAll: () => { },
 });
 
 type Props = {
@@ -27,6 +29,7 @@ export const TodosProvider: React.FC<Props> = ({ children }) => {
   const [filter, setFilter] = useState(FilterItem.All);
   const [errorMessage, setErrorMessage] = useState(ErrorMessage.DEFAULT);
   const [tempTodo, setTempTodo] = useState<Todo | null>(null);
+  const [isLoadingAll, setIsLoadingAll] = useState(false);
 
   const handleErrorMessage = (error: ErrorMessage) => {
     setErrorMessage(error);
@@ -51,6 +54,8 @@ export const TodosProvider: React.FC<Props> = ({ children }) => {
         handleErrorMessage,
         tempTodo,
         setTempTodo,
+        isLoadingAll,
+        setIsLoadingAll,
       }}
     >
       {children}
