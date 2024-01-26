@@ -13,8 +13,6 @@ export const Notification = () => {
   }, [errorMessage, dispatch]);
 
   return (
-    // {/* Notification is shown in case of any error */}
-    // {/* Add the 'hidden' class to hide the message smoothly */}
     <div
       data-cy="ErrorNotification"
       className={

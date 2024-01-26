@@ -1,5 +1,8 @@
 import {
-  useContext, useEffect, useRef, useState,
+  useContext,
+  useEffect,
+  useRef,
+  useState,
 } from 'react';
 import cn from 'classnames';
 import { createTodo, updateTodo } from '../../api/todos';
@@ -99,8 +102,6 @@ export const Header = () => {
 
   return (
     <header className="todoapp__header">
-      {/* this buttons is active only if there are some active todos */}
-
       {!!todos.length && (
         <button
           type="button"
@@ -113,7 +114,6 @@ export const Header = () => {
         />
       )}
 
-      {/* Add a todo on form submit */}
       <form onSubmit={handleOnSubmit}>
         <input
           data-cy="NewTodoField"

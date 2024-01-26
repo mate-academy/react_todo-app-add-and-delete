@@ -39,13 +39,11 @@ export const Footer = () => {
   }
 
   return (
-    // {/* Hide the footer if there are no todos */}
     <footer className="todoapp__footer" data-cy="Footer">
       <span className="todo-count" data-cy="TodosCounter">
         {`${activeTodos} items left`}
       </span>
 
-      {/* Active filter should have a 'selected' class */}
       {!!todos.length && (
         <nav className="filter" data-cy="Filter">
           <a
@@ -89,7 +87,6 @@ export const Footer = () => {
         </nav>
       )}
 
-      {/* don't show this button if there are no completed todos */}
       <button
         type="button"
         className="todoapp__clear-completed"
