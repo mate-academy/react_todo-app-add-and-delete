@@ -25,15 +25,3 @@ export const deleteTodo = (url: string) => {
       throw error;
     });
 };
-
-export const deleteAllCompleted = (todos: Todo[]): Promise<unknown[]> => {
-  const promises = todos.reduce((prev, todo) => {
-    if (todo.completed) {
-      return [...prev, deleteTodo(`/todos/${todo.id}`)];
-    }
-
-    return prev;
-  }, [] as Promise<unknown>[]);
-
-  return Promise.all(promises);
-};
