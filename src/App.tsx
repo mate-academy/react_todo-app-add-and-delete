@@ -20,7 +20,7 @@ export const App: React.FC = () => {
     setErrorMessage(ErrorMessage.NONE);
   };
 
-  const neError = (errorMes: ErrorMessage) => {
+  const newError = (errorMes: ErrorMessage) => {
     setErrorMessage(errorMes);
     setTimeout(() => {
       closeErrorMsg();
@@ -31,8 +31,9 @@ export const App: React.FC = () => {
     getTodos(USER_ID)
       .then(setTodos)
       .catch(() => {
-        neError(ErrorMessage.CANNOT_LOAD_TODOS);
+        newError(ErrorMessage.CANNOT_LOAD_TODOS);
       });
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   const filteredTodos = todos.filter((todo) => {
@@ -49,8 +50,10 @@ export const App: React.FC = () => {
 
   const addTodo = (title: string) => {
     createTodo({ title, userId: USER_ID, completed: false })
-      .then(newTodo => {
-        setTodos(currentTodos => [...currentTodos, newTodo]);
+      .then((newTodo) => {
+        const typedNewTodo = newTodo as Todo;
+
+        setTodos((currentTodos: Todo[]) => [...currentTodos, typedNewTodo]);
       });
   };
 
@@ -60,7 +63,7 @@ export const App: React.FC = () => {
         setTodos(prevTodos => prevTodos.filter(todo => todo.id !== todoId));
       })
       .catch(() => {
-        neError(ErrorMessage.UNABLE_TO_DELETE_A_TODO);
+        newError(ErrorMessage.UNABLE_TO_DELETE_A_TODO);
       });
   };
 
@@ -85,7 +88,7 @@ export const App: React.FC = () => {
       <h1 className="todoapp__title">todos</h1>
 
       <div className="todoapp__content">
-        <Header CreateTodo={addTodo} neError={neError} />
+        <Header CreateTodo={addTodo} neError={newError} />
         <TodoList
           todos={filteredTodos}
           deleteTodo={deleteTodos}
