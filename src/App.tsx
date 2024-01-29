@@ -78,10 +78,12 @@ export const App: React.FC = () => {
         completed: false,
       };
 
-      const newTodos = [...todos, newTodo];
+      if (inputRef.current) {
+        inputRef.current.disabled = true;
+      }
 
       try {
-        await postTodos(USER_ID, newTodos);
+        await postTodos(USER_ID, newTodo);
       } catch (err) {
         setError(ErrorTypes.ADD_TODO);
         setTimeout(() => {
@@ -89,7 +91,16 @@ export const App: React.FC = () => {
         }, 3000);
       }
 
+      if (inputRef.current) {
+        inputRef.current.disabled = false;
+      }
+
       setTodoTitle('');
+    } else {
+      setError(ErrorTypes.TITLE);
+      setTimeout(() => {
+        setError(null);
+      }, 3000);
     }
   };
 
