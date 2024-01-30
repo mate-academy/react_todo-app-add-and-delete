@@ -86,7 +86,7 @@ export const App: React.FC = () => {
       return todo.completed;
     }
 
-    if (selectedFilter === FilterOption.All) {
+    if (selectedFilter === FilterOption.Active) {
       return !todo.completed;
     }
 
