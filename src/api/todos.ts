@@ -6,13 +6,11 @@ export const getTodosAPI = () => {
   return client.get<Todo[]>(`/todos?userId=${USER_ID}`);
 };
 
-export const createTodoAPI = (title: string) => client
-  .post<Todo>('/todos',
-  {
-    title,
-    userId: USER_ID,
-    completed: false,
-  });
+export const createTodoAPI = (title: string) => client.post<Todo>('/todos', {
+  title,
+  userId: USER_ID,
+  completed: false,
+});
 
 export const deleteTodoAPI = (todoId: number) => client
   .delete(`/todos/${todoId}`);

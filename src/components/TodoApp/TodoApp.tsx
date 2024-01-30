@@ -1,6 +1,9 @@
 import {
-  useCallback, useEffect, useMemo, useState,
+  useCallback,
+  useEffect,
+  useState,
 } from 'react';
+
 import {
   createTodoAPI, deleteTodoAPI, getTodosAPI,
 } from '../../api/todos';
@@ -72,7 +75,7 @@ export const TodoApp = () => {
   const handleSubmitTodo = (event: React.FormEvent) => {
     event.preventDefault();
 
-    if (!title || title?.trim() === '') {
+    if (!title || !title?.trim()) {
       setError(ShowError.createTodo);
 
       return;
@@ -120,9 +123,7 @@ export const TodoApp = () => {
         .filter(todo => !todo.completed)));
   };
 
-  const isEmptyTodos = useMemo(() => {
-    return todos.length === 0;
-  }, [todos]);
+  const isEmptyTodos = todos.length === 0;
 
   const filteredTodos = useTodos(todos, selectedTodos);
 

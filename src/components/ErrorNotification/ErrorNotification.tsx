@@ -14,7 +14,7 @@ export const Notification: React.FC<Props> = memo(({ error, hideError }) => {
       data-cy="ErrorNotification"
       className={cn(
         'notification is-danger is-light has-text-weight-normal',
-        { hidden: error === null },
+        { hidden: !error },
       )}
     >
       <button
