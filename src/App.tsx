@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useCallback, useEffect, useState } from 'react';
 import { Todo } from './types/Todo';
 import { UserWarning } from './UserWarning';
 import { Footer } from './components/Footer';
@@ -16,16 +16,16 @@ export const App: React.FC = () => {
   const [filter, setFilter] = useState<FilterType>(FilterType.ALL);
   const [errorMessage, setErrorMessage] = useState(ErrorMessage.NONE);
 
-  const closeErrorMsg = () => {
+  const closeErrorMsg = useCallback(() => {
     setErrorMessage(ErrorMessage.NONE);
-  };
+  }, []);
 
-  const newError = (errorMes: ErrorMessage) => {
+  const newError = useCallback((errorMes: ErrorMessage) => {
     setErrorMessage(errorMes);
     setTimeout(() => {
       closeErrorMsg();
     }, 3000);
-  };
+  }, [closeErrorMsg]);
 
   useEffect(() => {
     getTodos(USER_ID)
@@ -33,15 +33,16 @@ export const App: React.FC = () => {
       .catch(() => {
         newError(ErrorMessage.CANNOT_LOAD_TODOS);
       });
-  // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
+  }, [newError]);
 
   const filteredTodos = todos.filter((todo) => {
     switch (filter) {
       case FilterType.ACTIVE:
         return !todo.completed;
+
       case FilterType.COMPLETED:
         return todo.completed;
+
       case FilterType.ALL:
       default:
         return true;
@@ -94,7 +95,7 @@ export const App: React.FC = () => {
           deleteTodo={deleteTodos}
         />
         {/* Hide the footer if there are no todos */}
-        {todos.length > 0 && (
+        {!!todos.length && (
           <Footer
             filter={filter}
             setFilter={setFilter}
