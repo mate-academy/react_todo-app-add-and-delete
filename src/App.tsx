@@ -4,7 +4,7 @@ import React, { useEffect, useMemo, useState } from 'react';
 import { UserWarning } from './UserWarning';
 import { Todo, USER_ID } from './types/Todo';
 import { ErrorTp } from './types/error';
-import { getTodos } from './api/todos';
+import { createTodo, getTodos } from './api/todos';
 import { Header } from './components/Header';
 import { TodoList } from './components/TodoList';
 import { Errors } from './components/Errors';
@@ -19,9 +19,7 @@ export const App: React.FC = () => {
   useEffect(() => {
     // Call getTodos with USER_ID
     getTodos(USER_ID)
-      .then((currentTodos) => {
-        setTodos(currentTodos);
-      })
+      .then(setTodos)
       .catch(() => setErrors(ErrorTp.load_error));
   }, []);
 
@@ -41,6 +39,18 @@ export const App: React.FC = () => {
     }
   }, [todos, filterType]);
 
+  const addTodo = (title: string) => {
+    createTodo({
+      title,
+      completed: false,
+      userId: USER_ID,
+    })
+      .then((newTodo) => {
+        setTodos((prevTodos: Todo[]) => [...prevTodos, newTodo]);
+      })
+      .catch(() => ErrorTp.load_error);
+  };
+
   const handelChangFilter = (filter: FilterType) => {
     setFilterType(filter);
   };
@@ -50,7 +60,7 @@ export const App: React.FC = () => {
       <h1 className="todoapp__title">todos</h1>
 
       <div className="todoapp__content">
-        <Header setTodos={setTodos} todos={todos} />
+        <Header createNewTodo={addTodo} />
 
         <TodoList setTodos={setTodos} todos={filterTodos} />
 
