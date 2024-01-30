@@ -17,11 +17,17 @@ enum ErrorMessage {
   'title',
 }
 
+enum FilterOption {
+  'Active',
+  'Completed',
+  'All',
+}
+
 export const App: React.FC = () => {
   const [todos, setTodos] = useState<Todo[]>([]);
   const [titleValue, setTitleValue] = useState('');
   const [count, setCount] = useState(0);
-  const [selectedFilter, setSelectedFilter] = useState('All');
+  const [selectedFilter, setSelectedFilter] = useState(FilterOption.All);
   const [errorMessage, setErrorMessage] = useState('');
   const [isSubmitting, setIsSubmiting] = useState(false);
   const [isDeliting, setIsDeliting] = useState(false);
@@ -76,11 +82,11 @@ export const App: React.FC = () => {
   };
 
   const filteredTodos = todos.filter(todo => {
-    if (selectedFilter === 'Completed') {
+    if (selectedFilter === FilterOption.Completed) {
       return todo.completed;
     }
 
-    if (selectedFilter === 'Active') {
+    if (selectedFilter === FilterOption.All) {
       return !todo.completed;
     }
 
@@ -279,10 +285,10 @@ export const App: React.FC = () => {
                 <a
                   href="#/"
                   className={classNames('filter__link', {
-                    selected: selectedFilter === 'All',
+                    selected: selectedFilter === FilterOption.All,
                   })}
                   onClick={() => {
-                    setSelectedFilter('All');
+                    setSelectedFilter(FilterOption.All);
                   }}
                   data-cy="FilterLinkAll"
                 >
@@ -292,10 +298,10 @@ export const App: React.FC = () => {
                 <a
                   href="#/active"
                   className={classNames('filter__link', {
-                    selected: selectedFilter === 'Active',
+                    selected: selectedFilter === FilterOption.Active,
                   })}
                   onClick={() => {
-                    setSelectedFilter('Active');
+                    setSelectedFilter(FilterOption.Active);
                   }}
                   data-cy="FilterLinkActive"
                 >
@@ -305,10 +311,10 @@ export const App: React.FC = () => {
                 <a
                   href="#/completed"
                   className={classNames('filter__link', {
-                    selected: selectedFilter === 'Completed',
+                    selected: selectedFilter === FilterOption.Completed,
                   })}
                   onClick={() => {
-                    setSelectedFilter('Completed');
+                    setSelectedFilter(FilterOption.Completed);
                   }}
                   data-cy="FilterLinkCompleted"
                 >
