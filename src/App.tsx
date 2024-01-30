@@ -4,9 +4,9 @@ import classNames from 'classnames';
 import { UserWarning } from './UserWarning';
 import { Todo } from './types/Todo';
 import * as todoService from './api/todos';
-import { TodoContext } from './todoContext';
-import { TodoList } from './todoList';
-import { TodoItem } from './todoItem';
+import { TodoContext } from './TodoContext';
+import { TodoList } from './TodoList';
+import { TodoItem } from './TodoItem';
 
 const USER_ID = 22;
 
@@ -38,6 +38,14 @@ export const App: React.FC = () => {
   let errorTimerId: NodeJS.Timeout;
 
   const inputFocus = useRef<HTMLInputElement>(null);
+
+  const todoCount = todos.filter(todo => !todo.completed).length;
+
+  useEffect(() => {
+    if (!titleValue.length && inputFocus.current) {
+      inputFocus.current.focus();
+    }
+  }, [titleValue]);
 
   const errorHandler = (errorPlace: ErrorMessage) => {
     clearTimeout(errorTimerId);
@@ -130,7 +138,6 @@ export const App: React.FC = () => {
         .finally(() => {
           setTempTodo(null);
           setIsSubmiting(false);
-          inputFocus.current?.focus();
         });
     };
 
@@ -258,14 +265,13 @@ export const App: React.FC = () => {
               <input
                 data-cy="NewTodoField"
                 type="text"
-                ref={inputFocus}
                 className="todoapp__new-todo"
                 placeholder="What needs to be done?"
                 value={titleValue}
+                ref={inputFocus}
                 onChange={handleInput}
                 disabled={isSubmitting}
-                // eslint-disable-next-line
-                autoFocus
+              // eslint-disable-next-line
               />
             </form>
           </header>
@@ -277,8 +283,8 @@ export const App: React.FC = () => {
           {todos.length > 0 && (
             <footer className="todoapp__footer" data-cy="Footer">
               <span className="todo-count" data-cy="TodosCounter">
-                {count === 1 ? `${count} item left`
-                  : `${count} items left`}
+                {todoCount === 1 ? `${todoCount} item left`
+                  : `${todoCount} items left`}
               </span>
 
               <nav className="filter" data-cy="Filter">
@@ -322,23 +328,19 @@ export const App: React.FC = () => {
                 </a>
               </nav>
 
-              {/* don't show this button if there are no completed todos */}
-              {checkForCompleted > 0 && (
-                <button
-                  type="button"
-                  className="todoapp__clear-completed"
-                  data-cy="ClearCompletedButton"
-                  onClick={handleClear}
-                >
-                  Clear completed
-                </button>
-              )}
+              <button
+                type="button"
+                className="todoapp__clear-completed"
+                data-cy="ClearCompletedButton"
+                onClick={handleClear}
+                disabled={checkForCompleted <= 0}
+              >
+                Clear completed
+              </button>
             </footer>
           )}
         </div>
 
-        {/* Notification is shown in case of any error */}
-        {/* Add the 'hidden' class to hide the message smoothly */}
         <div
           data-cy="ErrorNotification"
           className={classNames(

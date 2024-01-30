@@ -7,7 +7,7 @@ import React, {
 } from 'react';
 import classNames from 'classnames';
 import { Todo } from '../types/Todo';
-import { TodoContext } from '../todoContext';
+import { TodoContext } from '../TodoContext';
 
 type Props = {
   todo: Todo;
@@ -30,6 +30,10 @@ export const TodoItem: React.FC<Props> = ({ todo }) => {
   const [titleEdit, setTitleEdit] = useState(activeTodo.title);
 
   const inputFocus = useRef<HTMLInputElement>(null);
+
+  const activeLoader = (selectedTodo === activeTodo.id && isDeliting)
+    || (selectedTodo === activeTodo.id && isSubmitting)
+    || (clear && todo.completed);
 
   const handleCheckbox = () => {
     if (!activeTodo.completed) {
@@ -107,7 +111,7 @@ export const TodoItem: React.FC<Props> = ({ todo }) => {
             data-cy="TodoStatus"
             type="checkbox"
             className="todo__status"
-            onClick={handleCheckbox}
+            onChange={handleCheckbox}
             checked={isChecked}
           />
         </label>
@@ -149,9 +153,7 @@ export const TodoItem: React.FC<Props> = ({ todo }) => {
         <div
           data-cy="TodoLoader"
           className={classNames('modal overlay', {
-            'is-active': (selectedTodo === activeTodo.id && isDeliting)
-              || (selectedTodo === activeTodo.id && isSubmitting)
-              || (clear && todo.completed),
+            'is-active': activeLoader,
           })}
         >
           <div className="modal-background has-background-white-ter" />
