@@ -1,49 +1,60 @@
 /* eslint-disable jsx-a11y/control-has-associated-label */
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import classNames from 'classnames';
 import { UserWarning } from './UserWarning';
 import { Todo } from './types/Todo';
 import * as todoService from './api/todos';
 import { TodoContext } from './todoContext';
 import { TodoList } from './todoList';
+import { TodoItem } from './todoItem';
 
 const USER_ID = 22;
 
+enum ErrorMessage {
+  'add',
+  'update',
+  'delete',
+  'title',
+}
+
 export const App: React.FC = () => {
-  // #region UseStates
   const [todos, setTodos] = useState<Todo[]>([]);
   const [titleValue, setTitleValue] = useState('');
   const [count, setCount] = useState(0);
   const [selectedFilter, setSelectedFilter] = useState('All');
-  const [error, setError] = useState(false);
   const [errorMessage, setErrorMessage] = useState('');
   const [isSubmitting, setIsSubmiting] = useState(false);
   const [isDeliting, setIsDeliting] = useState(false);
-  // #endregion
+  const [tempTodo, setTempTodo] = useState<Todo | null>(null);
+  const [selectedTodoId, setSelectedTodoId] = useState<number>(0);
+  const [clear, setClear] = useState(false);
 
   let errorTimerId: NodeJS.Timeout;
 
-  const errorHandler = (errorPlace: string) => {
+  const inputFocus = useRef<HTMLInputElement>(null);
+
+  const errorHandler = (errorPlace: ErrorMessage) => {
     clearTimeout(errorTimerId);
 
     switch (errorPlace) {
-      case 'title':
+      case ErrorMessage.title:
         setErrorMessage('Title should not be empty');
         break;
-      case 'add':
+      case ErrorMessage.add:
         setErrorMessage('Unable to add a todo');
         break;
-      case 'update':
+      case ErrorMessage.update:
         setErrorMessage('Unable to update a todo');
         break;
-      case 'delete':
+      case ErrorMessage.delete:
         setErrorMessage('Unable to delete a todo');
         break;
       default:
+        break;
     }
 
     errorTimerId = setTimeout(() => {
-      setError(false);
+      setErrorMessage('');
     }, 3000);
   };
 
@@ -54,20 +65,17 @@ export const App: React.FC = () => {
         setCount(data.length);
       })
       .catch(e => {
-        setError(true);
-        errorHandler('add');
+        errorHandler(ErrorMessage.add);
         throw e;
       });
     // eslint-disable-next-line
   }, []);
 
-  // #region Handlers
-
   const handleInput = (event: React.ChangeEvent<HTMLInputElement>) => {
     setTitleValue(event.target.value);
   };
 
-  const filteredTodo = todos.filter(todo => {
+  const filteredTodos = todos.filter(todo => {
     if (selectedFilter === 'Completed') {
       return todo.completed;
     }
@@ -80,12 +88,7 @@ export const App: React.FC = () => {
   });
 
   const handleErrorButton = () => {
-    setError(false);
-    errorHandler('title');
-  };
-
-  const handleFilter = (query: string) => {
-    setSelectedFilter(query);
+    errorHandler(ErrorMessage.title);
   };
 
   const handleSubmit = (event: React.FormEvent) => {
@@ -93,21 +96,35 @@ export const App: React.FC = () => {
     const trimedTitle = titleValue.trim();
 
     if (!trimedTitle.length) {
-      setError(true);
-      errorHandler('title');
+      errorHandler(ErrorMessage.title);
       setTitleValue('');
     }
 
     const addTodo = ({ userId, title, completed }: Todo) => {
-      return todoService.addTodo({ userId, title, completed })
+      setIsSubmiting(true);
+      setTempTodo({
+        id: 0,
+        userId,
+        title,
+        completed,
+      });
+
+      if (tempTodo) {
+        setSelectedTodoId(tempTodo?.id);
+      }
+
+      todoService.addTodo({ userId, title, completed })
         .then(newTodo => {
           setTodos([...todos, newTodo]);
           setCount(count + 1);
         })
-        .catch(e => {
-          setError(true);
-          errorHandler('add');
-          throw e;
+        .catch(() => {
+          errorHandler(ErrorMessage.add);
+        })
+        .finally(() => {
+          setTempTodo(null);
+          setIsSubmiting(false);
+          inputFocus.current?.focus();
         });
     };
 
@@ -121,15 +138,10 @@ export const App: React.FC = () => {
         userId: USER_ID,
       };
 
-      setIsSubmiting(true);
-      addTodo(newTodo)
-        .finally(() => {
-          setIsSubmiting(false);
-        });
+      addTodo(newTodo);
+
       setTitleValue('');
     }
-
-    return setTitleValue('');
   };
 
   const handleToggleAll = () => {
@@ -150,45 +162,54 @@ export const App: React.FC = () => {
 
   const deleteTodo = (deleteId: number) => {
     setIsDeliting(true);
-    const todoForDeletion = todos.filter(todo => todo.id === deleteId);
-
-    if (todoForDeletion[0].completed) {
-      setTodos(todos.filter(todo => todo.id !== deleteId));
-    } else {
-      setCount(count - 1);
-
-      setTodos(todos.filter(todo => todo.id !== deleteId));
-    }
+    setSelectedTodoId(deleteId);
 
     return todoService.deleteTodo(deleteId)
-      .catch(e => {
-        setError(true);
+      .then(() => {
+        const todoForDeletion = todos.filter(todo => todo.id === deleteId);
+
+        if (todoForDeletion[0].completed) {
+          setTodos(todos.filter(todo => todo.id !== deleteId));
+        } else {
+          setCount(count - 1);
+
+          setTodos(todos.filter(todo => todo.id !== deleteId));
+        }
+      })
+      .catch(() => {
         setTodos(todos);
         setCount(count);
-        errorHandler('delete');
-        throw e;
+        errorHandler(ErrorMessage.delete);
       })
       .finally(() => {
         setIsDeliting(false);
+        setSelectedTodoId(0);
       });
   };
 
   const handleClear = () => {
-    const deletingTodos = todos.filter(todo => !todo.completed);
+    const deletingTodos = todos;
 
-    todos.map(todo => {
+    setClear(true);
+
+    deletingTodos.filter(todo => {
       if (todo.completed) {
-        return deleteTodo(todo.id);
+        todoService.deleteTodo(todo.id)
+          .then(() => {
+            setTodos(todos.filter(tod => !tod.completed));
+          })
+          .catch(() => {
+            setTodos(todos);
+            errorHandler(ErrorMessage.delete);
+          })
+          .finally(() => {
+            setClear(false);
+          });
       }
 
-      return todo;
+      return true;
     });
-
-    setTodos(deletingTodos);
-    setCount(deletingTodos.length);
   };
-
-  // #endregion
 
   const checkForCompleted = todos.filter(todo => todo.completed).length;
 
@@ -197,7 +218,7 @@ export const App: React.FC = () => {
   }
 
   const value = {
-    filteredTodo,
+    filteredTodo: filteredTodos,
     deleteTodo,
     setCount,
     count,
@@ -207,6 +228,9 @@ export const App: React.FC = () => {
     setIsSubmiting,
     isDeliting,
     setIsDeliting,
+    setSelectedTodo: setSelectedTodoId,
+    selectedTodo: selectedTodoId,
+    clear,
   };
 
   return (
@@ -228,8 +252,10 @@ export const App: React.FC = () => {
               <input
                 data-cy="NewTodoField"
                 type="text"
+                ref={inputFocus}
                 className="todoapp__new-todo"
                 placeholder="What needs to be done?"
+                value={titleValue}
                 onChange={handleInput}
                 disabled={isSubmitting}
                 // eslint-disable-next-line
@@ -238,9 +264,8 @@ export const App: React.FC = () => {
             </form>
           </header>
 
-          <section className="todoapp__main" data-cy="TodoList">
-            <TodoList />
-          </section>
+          <TodoList />
+          {tempTodo && <TodoItem todo={tempTodo} />}
 
           {/* Hide the footer if there are no todos */}
           {todos.length > 0 && (
@@ -257,7 +282,7 @@ export const App: React.FC = () => {
                     selected: selectedFilter === 'All',
                   })}
                   onClick={() => {
-                    handleFilter('All');
+                    setSelectedFilter('All');
                   }}
                   data-cy="FilterLinkAll"
                 >
@@ -270,7 +295,7 @@ export const App: React.FC = () => {
                     selected: selectedFilter === 'Active',
                   })}
                   onClick={() => {
-                    handleFilter('Active');
+                    setSelectedFilter('Active');
                   }}
                   data-cy="FilterLinkActive"
                 >
@@ -283,7 +308,7 @@ export const App: React.FC = () => {
                     selected: selectedFilter === 'Completed',
                   })}
                   onClick={() => {
-                    handleFilter('Completed');
+                    setSelectedFilter('Completed');
                   }}
                   data-cy="FilterLinkCompleted"
                 >
@@ -312,7 +337,7 @@ export const App: React.FC = () => {
           data-cy="ErrorNotification"
           className={classNames(
             'notification is-danger is-light has-text-weight-normal', {
-              hidden: error === false,
+              hidden: !errorMessage.length,
             },
           )}
         >

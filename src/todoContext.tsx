@@ -12,6 +12,9 @@ type TodoContextType = {
   setIsSubmiting:(v: boolean) => void,
   isDeliting: boolean,
   setIsDeliting:(v: boolean) => void,
+  setSelectedTodo:(v: number) => void,
+  selectedTodo: number,
+  clear: boolean,
 };
 
 export const TodoContext = React.createContext<TodoContextType>({
@@ -25,4 +28,7 @@ export const TodoContext = React.createContext<TodoContextType>({
   setIsSubmiting: () => {},
   isDeliting: false,
   setIsDeliting: () => {},
+  setSelectedTodo: () => {},
+  selectedTodo: 0,
+  clear: false,
 });

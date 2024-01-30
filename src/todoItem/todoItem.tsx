@@ -22,6 +22,9 @@ export const TodoItem: React.FC<Props> = ({ todo }) => {
     setTodos,
     todos,
     isSubmitting,
+    isDeliting,
+    selectedTodo,
+    clear,
   } = useContext(TodoContext);
   const [editing, setEditing] = useState(false);
   const [titleEdit, setTitleEdit] = useState(activeTodo.title);
@@ -86,12 +89,13 @@ export const TodoItem: React.FC<Props> = ({ todo }) => {
   };
 
   return (
-    <li className={classNames({
-      completed: activeTodo.completed,
-      editing,
-    })}
+    <li
+      style={{ listStyle: 'none' }}
+      className={classNames({
+        completed: activeTodo.completed,
+        editing,
+      })}
     >
-      {/* This todo is not completed */}
       <div
         data-cy="Todo"
         className={classNames('todo', {
@@ -145,7 +149,9 @@ export const TodoItem: React.FC<Props> = ({ todo }) => {
         <div
           data-cy="TodoLoader"
           className={classNames('modal overlay', {
-            'is-active': isSubmitting,
+            'is-active': (selectedTodo === activeTodo.id && isDeliting)
+              || (selectedTodo === activeTodo.id && isSubmitting)
+              || (clear && todo.completed),
           })}
         >
           <div className="modal-background has-background-white-ter" />
