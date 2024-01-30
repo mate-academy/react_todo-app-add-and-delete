@@ -9,9 +9,9 @@ type Props = {
 };
 
 export const TodoList: React.FC<Props> = ({ todos, setTodos }) => {
-  function removeTodo(todoId) {
+  function removeTodo(todoId: number) {
     deleteTodo(todoId);
-    setTodos(currentTodo => currentTodo.filter(todo => todo.id !== todoId));
+    setTodos(currentTodos => currentTodos.filter(todo => todo.id !== todoId));
   }
 
   return (
