@@ -6,11 +6,13 @@ export const getTodos = async (userId: number) => {
 };
 
 export const patchTodos = (userId: number, data: Todo[]) => {
-  return client.patch<Todo[]>(`/todos?userId=${userId}`, data);
+  return client.patch<Todo[]>(`/todos/${userId}`, data);
 };
 
-export const postTodos = (userId: number, data: Todo) => {
-  return client.post<Todo[]>(`/todos?userId=${userId}`, data);
+export const postTodos = (data: Todo) => {
+  return client.post<Todo[]>('/todos', data);
 };
 
-// Add more methods here
+export const deleteTodo = (userId: number, todoId: number) => {
+  return client.delete(`/todos/${todoId}?userId=${userId}`);
+};

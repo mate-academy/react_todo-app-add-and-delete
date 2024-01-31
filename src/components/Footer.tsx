@@ -2,12 +2,15 @@ import cn from 'classnames';
 import { Dispatch, SetStateAction } from 'react';
 import { Todo } from '../types/Todo';
 import { ShowState } from '../types/ShowState';
+import { deleteTodo } from '../api/todos';
+import { ErrorTypes } from '../types/ErrorTypes';
 
 type Props = {
   todos: Todo[],
   showState: ShowState,
   setShowState: Dispatch<SetStateAction<ShowState>>;
   setTodos: Dispatch<SetStateAction<Todo[]>>,
+  setError: Dispatch<SetStateAction<ErrorTypes | null>>,
 };
 
 const checkCompletedTodos = (todoss: Todo[]) => todoss
@@ -18,11 +21,25 @@ export const Footer: React.FC<Props> = ({
   showState,
   setShowState,
   setTodos,
+  setError,
 }) => {
-  const handleClear = () => {
-    const newTodos = todos.filter(todo => !todo.completed);
+  const handleClear = async () => {
+    const completedTodos = todos.filter(todo => todo.completed);
+    const notCompletedTodos = todos.filter(todo => !todo.completed);
 
-    setTodos(newTodos);
+    try {
+      const completeIds = completedTodos
+        .map(({ id }) => deleteTodo(12177, id));
+
+      await Promise.all(completeIds);
+
+      setTodos(notCompletedTodos);
+    } catch {
+      setError(ErrorTypes.UPDATE_TODO);
+      setTimeout(() => {
+        setError(null);
+      }, 3000);
+    }
   };
 
   return (

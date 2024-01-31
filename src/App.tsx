@@ -1,4 +1,5 @@
 /* eslint-disable jsx-a11y/control-has-associated-label */
+import cn from 'classnames';
 import React, {
   useState, useEffect, useMemo, useRef,
 } from 'react';
@@ -21,7 +22,10 @@ export const App: React.FC = () => {
   const [error, setError] = useState<ErrorTypes | null>(null);
   const [loading, setLoading] = useState(false);
   const [todoTitle, setTodoTitle] = useState<string>('');
+  const [tempTodo, setTempTodo] = useState<Todo | null>(null);
+  const [newTodoId, setNewTodoId] = useState(0);
   const inputRef = useRef<HTMLInputElement | null>(null);
+
   const filteredTodos = useMemo(() => {
     switch (showState) {
       case ShowState.All:
@@ -70,9 +74,9 @@ export const App: React.FC = () => {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
 
-    if (todoTitle) {
+    if (todoTitle.trim()) {
       const newTodo = {
-        id: +new Date(),
+        id: 0,
         userId: USER_ID,
         title: todoTitle,
         completed: false,
@@ -83,7 +87,14 @@ export const App: React.FC = () => {
       }
 
       try {
-        await postTodos(USER_ID, newTodo);
+        await postTodos(newTodo);
+        setTempTodo(newTodo);
+        setTodos(prevTodos => [...prevTodos, { ...newTodo, id: newTodoId }]);
+        setNewTodoId(prevId => prevId + 1);
+        setTimeout(() => {
+          inputRef.current?.focus();
+        }, 0);
+        setTempTodo(null);
       } catch (err) {
         setError(ErrorTypes.ADD_TODO);
         setTimeout(() => {
@@ -105,9 +116,7 @@ export const App: React.FC = () => {
   };
 
   const handleTodo = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const value = e.target.value.trim();
-
-    setTodoTitle(value);
+    setTodoTitle(e.target.value);
   };
 
   if (!USER_ID) {
@@ -122,7 +131,9 @@ export const App: React.FC = () => {
         <header className="todoapp__header">
           <button
             type="button"
-            className="todoapp__toggle-all active"
+            className={cn('todoapp__toggle-all', {
+              active: todos.every(toddd => toddd.completed),
+            })}
             data-cy="ToggleAllButton"
           />
           <form onSubmit={handleSubmit}>
@@ -138,7 +149,14 @@ export const App: React.FC = () => {
           </form>
         </header>
 
-        {filteredTodos.length > 0 && <TodoList todos={filteredTodos} />}
+        {filteredTodos.length > 0 && (
+          <TodoList
+            todos={filteredTodos}
+            setTodos={setTodos}
+            tempTodo={tempTodo}
+            setError={setError}
+          />
+        )}
         {loading && <Loader />}
         {todos.length > 0 && (
           <Footer
@@ -146,6 +164,7 @@ export const App: React.FC = () => {
             setTodos={setTodos}
             showState={showState}
             setShowState={setShowState}
+            setError={setError}
           />
         )}
         {error && <Error error={error} setError={setError} />}
