@@ -17,7 +17,6 @@ export const App: React.FC = () => {
   const [filterType, setFilterType] = useState<FilterType>(FilterType.all);
 
   useEffect(() => {
-    // Call getTodos with USER_ID
     getTodos(USER_ID)
       .then(setTodos)
       .catch(() => setErrors(ErrorTp.load_error));
@@ -32,8 +31,10 @@ export const App: React.FC = () => {
     switch (filterType) {
       case FilterType.completed:
         return todos.filter(todo => !todo.completed);
+
       case FilterType.active:
         return todos.filter(todo => todo.completed);
+
       default:
         return todos;
     }
@@ -48,7 +49,7 @@ export const App: React.FC = () => {
       .then((newTodo) => {
         setTodos((prevTodos: Todo[]) => [...prevTodos, newTodo]);
       })
-      .catch(() => ErrorTp.load_error);
+      .catch(() => ErrorTp.title_error);
   };
 
   const handelChangFilter = (filter: FilterType) => {
@@ -60,7 +61,7 @@ export const App: React.FC = () => {
       <h1 className="todoapp__title">todos</h1>
 
       <div className="todoapp__content">
-        <Header createNewTodo={addTodo} />
+        <Header createNewTodo={addTodo} setErrors={setErrors} />
 
         <TodoList setTodos={setTodos} todos={filterTodos} />
 

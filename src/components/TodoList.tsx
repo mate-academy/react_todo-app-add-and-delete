@@ -18,7 +18,7 @@ export const TodoList: React.FC<Props> = ({ todos, setTodos }) => {
     <section className="todoapp__main" data-cy="TodoList">
       {todos.map((todo: Todo) => (
         <TodoItem
-          onDelete={async () => removeTodo(todo.id)}
+          onDelete={() => removeTodo(todo.id)}
           key={todo.id}
           todo={todo}
         />
