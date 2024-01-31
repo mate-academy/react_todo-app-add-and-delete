@@ -8,12 +8,14 @@ import { Notification } from './components/Notification';
 import { deleteTodo, getTodos, createTodo } from './api/todos';
 import { FilterType } from './types/Filter';
 import { ErrorMessage } from './types/ErrorMessage';
+import { TodoItem } from './components/TodoItem';
 
 const USER_ID = 35;
 
 export const App: React.FC = () => {
   const [todos, setTodos] = useState<Todo[]>([]);
   const [filter, setFilter] = useState<FilterType>(FilterType.ALL);
+  const [tempTodo, setTempTodo] = useState<Todo | null>(null); // Add state for tempTodo
   const [errorMessage, setErrorMessage] = useState(ErrorMessage.NONE);
 
   const closeErrorMsg = useCallback(() => {
@@ -50,11 +52,28 @@ export const App: React.FC = () => {
   });
 
   const addTodo = (title: string) => {
+    const trimmedTitle = title.trim();
+
+    if (!trimmedTitle) {
+      newError(ErrorMessage.TITLE_SHOULD_NOT_BE_EMPTY);
+
+      return;
+    }
+
+    setTempTodo({
+      id: 0, title, userId: USER_ID, completed: false,
+    });
+
     createTodo({ title, userId: USER_ID, completed: false })
       .then((newTodo) => {
         const typedNewTodo = newTodo as Todo;
 
         setTodos((currentTodos: Todo[]) => [...currentTodos, typedNewTodo]);
+        setTempTodo(null);
+      })
+      .catch(() => {
+        newError(ErrorMessage.UNABLE_TO_ADD_A_TODO);
+        setTempTodo(null);
       });
   };
 
@@ -89,11 +108,29 @@ export const App: React.FC = () => {
       <h1 className="todoapp__title">todos</h1>
 
       <div className="todoapp__content">
-        <Header CreateTodo={addTodo} neError={newError} />
-        <TodoList
-          todos={filteredTodos}
-          deleteTodo={deleteTodos}
+        <Header
+          CreateTodo={addTodo}
+          neError={newError}
         />
+        <section className="todoapp__main" data-cy="TodoList">
+          <TodoList todos={filteredTodos} deleteTodo={deleteTodos} />
+          {tempTodo && (
+            <TodoItem
+              key={tempTodo?.id}
+              todo={tempTodo}
+              deleteTodo={deleteTodos}
+              isTemp={!tempTodo}
+            />
+          )}
+          {/* Display loader for tempTodo */}
+          {tempTodo && (
+            <div data-cy="TodoLoader" className="modal overlay">
+              <div className="modal-background has-background-white-ter" />
+              <div className="loader" />
+            </div>
+          )}
+        </section>
+
         {/* Hide the footer if there are no todos */}
         {!!todos.length && (
           <Footer

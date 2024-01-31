@@ -4,9 +4,10 @@ import { Todo } from '../../types/Todo';
 type Props = {
   todo: Todo;
   deleteTodo: (id: number) => void;
+  isTemp?: boolean;
 };
 
-export const TodoItem: React.FC<Props> = ({ todo, deleteTodo }) => {
+export const TodoItem: React.FC<Props> = ({ todo, deleteTodo, isTemp }) => {
   const { title, completed } = todo;
 
   return (
@@ -37,11 +38,12 @@ export const TodoItem: React.FC<Props> = ({ todo, deleteTodo }) => {
         ×
       </button>
 
-      {/* overlay will cover the todo while it is being updated */}
-      <div data-cy="TodoLoader" className="modal overlay">
-        <div className="modal-background has-background-white-ter" />
-        <div className="loader" />
-      </div>
+      {!isTemp && (
+        <div data-cy="TodoLoader" className="modal overlay">
+          <div className="modal-background has-background-white-ter" />
+          <div className="loader" />
+        </div>
+      )}
     </div>
   );
 };
