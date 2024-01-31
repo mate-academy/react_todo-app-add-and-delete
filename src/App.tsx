@@ -45,7 +45,7 @@ export const App: React.FC = () => {
 
   const addTodo = async () => {
     try {
-      if (inputValue.length === 0) {
+      if (inputValue.trim().length === 0) {
         throw new Error();
       }
 
