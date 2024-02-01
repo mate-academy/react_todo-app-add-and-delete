@@ -1,0 +1,15 @@
+import { Todo } from '../types/Todo';
+import { client } from '../utils/fetchClient';
+
+export const USER_ID = 89;
+
+export const getTodos = (userId: number) => {
+  return client.get<Todo[]>(`/todos?userId=${userId}`);
+};
+
+export const createTodo = (todo: Partial<Todo>) => {
+  return client.post<Todo>('/todos', todo);
+};
+
+// Add more methods here
+// https://mate.academy/students-api/todos?userId=89
