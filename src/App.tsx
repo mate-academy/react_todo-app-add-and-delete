@@ -10,6 +10,7 @@ import { TodoList } from './components/TodoList';
 import { Footer } from './components/Footer';
 import { Header } from './components/Header';
 import { USER_ID } from './constants/user';
+import { wait } from './utils/fetchClient';
 
 export const App: React.FC = () => {
   const [todos, setTodos] = useState<Todo[]>([]);
@@ -32,6 +33,8 @@ export const App: React.FC = () => {
   };
 
   useEffect(() => {
+    setErrorMessage('');
+
     getTodos(USER_ID)
       .then(setTodos)
       .catch(() => {
@@ -40,14 +43,11 @@ export const App: React.FC = () => {
   }, []);
 
   useEffect(() => {
-    const timeout = setTimeout(() => {
-      setErrorMessage('');
-      clearInterval(timeout);
-    }, 3000);
-
-    return () => {
-      clearInterval(timeout);
-    };
+    if (errorMessage) {
+      wait(3000).then(() => {
+        setErrorMessage('');
+      });
+    }
   }, [errorMessage]);
 
   const handleFilter = (status: Status) => {
@@ -120,8 +120,6 @@ export const App: React.FC = () => {
 
       </div>
 
-      {/* Notification is shown in case of any error */}
-      {/* Add the 'hidden' class to hide the message smoothly */}
       <div
         data-cy="ErrorNotification"
         className={cn(
@@ -135,16 +133,7 @@ export const App: React.FC = () => {
           className="delete"
           onClick={handleCloseError}
         />
-        {/* show only one message at a time */}
         {errorMessage}
-        {/* <br />
-        Title should not be empty
-        <br />
-        Unable to add a todo
-        <br />
-        Unable to delete a todo
-        <br />
-        Unable to update a todo */}
       </div>
     </div>
   );

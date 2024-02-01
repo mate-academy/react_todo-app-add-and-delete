@@ -28,6 +28,8 @@ export const Footer: React.FC<Props> = ({
     .map(({ id }) => id);
 
   const handleDeleteTodos = () => {
+    onError('');
+
     todosIds.forEach(id => {
       onAddDeletingPostId(id);
       deleteTodos(id)
@@ -45,7 +47,6 @@ export const Footer: React.FC<Props> = ({
         {`${activeTodosCount} items left`}
       </span>
 
-      {/* Active filter should have a 'selected' class */}
       <nav className="filter" data-cy="Filter">
         <a
           href="#/"
