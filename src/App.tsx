@@ -1,6 +1,5 @@
 /* eslint-disable jsx-a11y/control-has-associated-label */
 import React, { useEffect, useState } from 'react';
-import cn from 'classnames';
 import { UserWarning } from './UserWarning';
 import { getTodos } from './api/todos';
 import { Todo } from './types/Todo';
@@ -11,6 +10,7 @@ import { Footer } from './components/Footer';
 import { Header } from './components/Header';
 import { USER_ID } from './constants/user';
 import { wait } from './utils/fetchClient';
+import { Error } from './components/Error';
 
 export const App: React.FC = () => {
   const [todos, setTodos] = useState<Todo[]>([]);
@@ -120,21 +120,7 @@ export const App: React.FC = () => {
 
       </div>
 
-      <div
-        data-cy="ErrorNotification"
-        className={cn(
-          'notification is-danger is-light has-text-weight-normal',
-          { hidden: !errorMessage },
-        )}
-      >
-        <button
-          data-cy="HideErrorButton"
-          type="button"
-          className="delete"
-          onClick={handleCloseError}
-        />
-        {errorMessage}
-      </div>
+      <Error errorMessage={errorMessage} onCloseError={handleCloseError} />
     </div>
   );
 };
