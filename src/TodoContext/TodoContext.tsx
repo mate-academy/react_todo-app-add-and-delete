@@ -6,13 +6,14 @@ import { Todo } from '../types/Todo';
 import { TodoContext } from '../types/TodoContext.1';
 import { wait } from '../utils/fetchClient';
 import * as todosServices from '../api/todos';
+import { Status } from '../types/Status';
 
 export const TodosContext = React.createContext<TodoContext>({
   todos: [],
   addTodo: () => { },
   setCompleted: () => { },
   makeAllCompleted: () => { },
-  query: '',
+  query: Status.All,
   setQuery: () => { },
   filteredTodos: [],
   deleteCompletedTodos: () => { },
@@ -32,7 +33,7 @@ interface Props {
 
 export const TodosProvider: React.FC<Props> = ({ children }) => {
   const [todos, setTodos] = useState<Todo[]>([]);
-  const [query, setQuery] = useState('');
+  const [query, setQuery] = useState(Status.All);
   const [errorMessage, setErrorMessage] = useState('');
   const [tempTodo, setTempTodo] = useState<Todo | null>(null);
   const [deleteTodosId, setDeleteTodosId] = useState<number[]>([]);
@@ -41,7 +42,7 @@ export const TodosProvider: React.FC<Props> = ({ children }) => {
     getTodos(USER_ID)
       .then(setTodos)
       .catch(() => {
-        setErrorMessage('Error');
+        setErrorMessage('Unable to load todos');
 
         wait(3000).then(() => setErrorMessage(''));
       });
