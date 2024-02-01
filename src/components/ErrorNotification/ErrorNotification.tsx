@@ -31,10 +31,8 @@ export const ErrorNotification: React.FC<Props> = (props) => {
               <br />
               Title should not be empty
               <br />
-              Unable to add a todo
               <br />
-              Unable to delete a todo
-              <br /> */}
+                            <br /> */}
       {errorMessage}
     </div>
   );

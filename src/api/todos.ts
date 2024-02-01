@@ -11,5 +11,9 @@ export const createTodo = (todo: Partial<Todo>) => {
   return client.post<Todo>('/todos', todo);
 };
 
+export const deleteTodo = (todoId: number) => {
+  return client.delete(`/todos/${todoId}`);
+};
+
 // Add more methods here
 // https://mate.academy/students-api/todos?userId=89

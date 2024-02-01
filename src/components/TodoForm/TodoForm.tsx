@@ -15,7 +15,7 @@ export const TodoForm: React.FC<Props> = (props) => {
   const [disableInput, setDisableInput] = useState(false);
   const inputRef = useRef<HTMLInputElement>(null);
 
-  useEffect(() => inputRef.current?.focus(), []);
+  useEffect(() => inputRef.current?.focus(), [disableInput]);
 
   function approveTodoSave(todo: Todo): void {
     addTodo(todo);
@@ -49,7 +49,7 @@ export const TodoForm: React.FC<Props> = (props) => {
 
     createTodo(todo)
       .then(approveTodoSave)
-      .catch();
+      .catch(() => setError('Unable to add a todo'));
   }
 
   return (

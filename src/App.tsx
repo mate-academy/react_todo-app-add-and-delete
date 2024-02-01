@@ -37,6 +37,10 @@ export const App: React.FC = () => {
     setTodos((prevTodos) => ([...prevTodos, todo]));
   };
 
+  const removeTodo = (todoId: number): void => {
+    setTodos(prev => prev.filter(({ id }) => id !== todoId));
+  };
+
   const handleTempTodo = (value: null | Todo):void => {
     setTempTodo(value);
   };
@@ -94,10 +98,21 @@ export const App: React.FC = () => {
           <>
             <section className="todoapp__main" data-cy="TodoList">
               {preparedTodos?.map(todo => (
-                <TodoComponent todo={todo} key={todo.id} />
+                <TodoComponent
+                  todo={todo}
+                  key={todo.id}
+                  onDelete={removeTodo}
+                  onError={setErrorMessage}
+                />
               ))}
             </section>
-            {!!tempTodo && (<TodoComponent todo={tempTodo} />)}
+            {!!tempTodo && (
+              <TodoComponent
+                todo={tempTodo}
+                onDelete={removeTodo}
+                onError={setErrorMessage}
+              />
+            )}
             {/* Hide the footer if there are no todos */}
             {todos.length > 0 && (
               <footer className="todoapp__footer" data-cy="Footer">

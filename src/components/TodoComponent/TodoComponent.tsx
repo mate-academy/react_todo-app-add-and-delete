@@ -1,14 +1,30 @@
-import React from 'react';
+import React, { useState } from 'react';
 import cn from 'classnames';
 
 import { Todo } from '../../types/Todo';
+import { deleteTodo } from '../../api/todos';
 
 interface Props {
   todo: Todo;
+  onDelete: (id: number) => void;
+  onError: (err: string) => void;
 }
 
-export const TodoComponent: React.FC<Props> = ({ todo }) => {
+export const TodoComponent: React.FC<Props> = (props) => {
+  const { todo, onDelete, onError } = props;
+  const [deleting, setDeleting] = useState(false);
   const loading = todo.id === 0;
+
+  function removeTodo(): void {
+    setDeleting(true);
+
+    deleteTodo(todo.id)
+      .then(() => onDelete(todo.id))
+      .catch(() => {
+        onError('Unable to delete a todo');
+        setDeleting(false);
+      });
+  }
 
   return (
     <div data-cy="Todo" className={cn('todo', { completed: todo.completed })}>
@@ -29,6 +45,7 @@ export const TodoComponent: React.FC<Props> = ({ todo }) => {
         type="button"
         className="todo__remove"
         data-cy="TodoDelete"
+        onClick={() => removeTodo()}
       >
         ×
       </button>
@@ -38,7 +55,7 @@ export const TodoComponent: React.FC<Props> = ({ todo }) => {
       <div
         data-cy="TodoLoader"
         className={cn('modal', 'overlay', {
-          'is-active': loading,
+          'is-active': loading || deleting,
         })}
       >
         <div className="modal-background has-background-white-ter" />
