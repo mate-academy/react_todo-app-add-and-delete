@@ -1,0 +1,55 @@
+import React, { useContext } from 'react';
+import cn from 'classnames';
+import { TodosContext } from '../Store/Store';
+import { TodoItem } from '../TodoItem/TodoItem';
+import { getFilteredTodos } from '../../services/getFilteredTodos';
+
+type Props = {};
+
+export const Section: React.FC<Props> = React.memo(() => {
+  const {
+    todos, loading, filter, tempItem,
+  } = useContext(TodosContext);
+
+  const filteredTodos = getFilteredTodos(todos, filter);
+
+  return (
+    <section className="todoapp__main" data-cy="TodoList">
+      {filteredTodos.map(todo => (
+        <TodoItem
+          key={todo.id}
+          todo={todo}
+        />
+      ))}
+      {tempItem && (
+        <div
+          data-cy="Todo"
+          className="todo"
+        >
+          <label className="todo__status-label">
+            <input
+              data-cy="TodoStatus"
+              type="checkbox"
+              className="todo__status"
+            />
+          </label>
+
+          <span
+            data-cy="TodoTitle"
+            className="todo__title"
+          >
+            {tempItem.title}
+          </span>
+
+          <div
+            data-cy="TodoLoader"
+            className={cn('modal overlay', { 'is-active': loading })} // це не точно що тут повинен бути саме loading
+          >
+            <div className="modal-background has-background-white-ter" />
+            <div className="loader" />
+          </div>
+        </div>
+      )}
+    </section>
+  );
+});
