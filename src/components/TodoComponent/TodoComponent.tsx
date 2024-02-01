@@ -1,8 +1,9 @@
-import React, { useState } from 'react';
+import React, { useContext } from 'react';
 import cn from 'classnames';
 
 import { Todo } from '../../types/Todo';
 import { deleteTodo } from '../../api/todos';
+import { TodosContext } from '../../TodosContext/TodoProvider';
 
 interface Props {
   todo: Todo;
@@ -12,18 +13,23 @@ interface Props {
 
 export const TodoComponent: React.FC<Props> = (props) => {
   const { todo, onDelete, onError } = props;
-  const [deleting, setDeleting] = useState(false);
   const loading = todo.id === 0;
+  const { deletingTodos, addTodoForDelete, removeTodoForDelete }
+    = useContext(TodosContext);
+
+  const deleting = deletingTodos.includes(todo);
 
   function removeTodo(): void {
-    setDeleting(true);
+    // setDeleting(true);
+    addTodoForDelete(todo);
 
     deleteTodo(todo.id)
       .then(() => onDelete(todo.id))
       .catch(() => {
         onError('Unable to delete a todo');
-        setDeleting(false);
-      });
+        removeTodoForDelete(todo);
+      })
+      .finally(() => removeTodoForDelete(todo));
   }
 
   return (
