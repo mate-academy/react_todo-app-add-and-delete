@@ -15,6 +15,7 @@ export const App: React.FC = () => {
   const [todos, setTodos] = useState<Todo[]>([]);
   const [errors, setErrors] = useState<ErrorTp | null>(null);
   const [filterType, setFilterType] = useState<FilterType>(FilterType.all);
+  const [tempTodo, setTempTodo] = useState<Todo | null>(null);
 
   useEffect(() => {
     getTodos(USER_ID)
@@ -61,9 +62,17 @@ export const App: React.FC = () => {
       <h1 className="todoapp__title">todos</h1>
 
       <div className="todoapp__content">
-        <Header createNewTodo={addTodo} setErrors={setErrors} />
+        <Header
+          createNewTodo={addTodo}
+          setErrors={setErrors}
+          setTempTodo={setTempTodo}
+        />
 
-        <TodoList setTodos={setTodos} todos={filterTodos} />
+        <TodoList
+          setTodos={setTodos}
+          todos={filterTodos}
+          tempTodo={tempTodo}
+        />
 
         {/* Hide the footer if there are no todos */}
         {todos.length > 0 && (
