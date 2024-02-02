@@ -1,6 +1,7 @@
 import classNames from 'classnames';
 import React from 'react';
 import { Todo } from '../../types/Todo';
+import { TodoLoader } from '../TodoLoader';
 
 interface Props {
   todoItem: Todo,
@@ -14,7 +15,6 @@ export const TodoItem: React.FC<Props> = ({ todoItem }) => {
       {/* This todo is not completed */}
       <div
         data-cy="Todo"
-        // className="todo"
         className={classNames('todo', {
           completed,
         })}
@@ -35,10 +35,7 @@ export const TodoItem: React.FC<Props> = ({ todoItem }) => {
           ×
         </button>
 
-        <div data-cy="TodoLoader" className="modal overlay">
-          <div className="modal-background has-background-white-ter" />
-          <div className="loader" />
-        </div>
+        <TodoLoader />
       </div>
     </>
   );
