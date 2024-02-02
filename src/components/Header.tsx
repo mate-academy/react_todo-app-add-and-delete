@@ -13,7 +13,6 @@ import { Todo } from '../types/Todo';
 export const Header: React.FC = () => {
   const [query, setQuery] = useState('');
   const { setErrorMessage, setTodos, setTempTodo } = useContext(TodoContext);
-
   const inputRef = useRef<HTMLInputElement>(null);
 
   useEffect(() => {
@@ -53,7 +52,6 @@ export const Header: React.FC = () => {
       .then(todo => {
         setTodos(prevTodos => [...prevTodos, todo]);
         setQuery('');
-        // setTempTodo(tempTodo);
       })
       .catch(() => {
         setErrorMessage(ErrorMessage.failedAddTodo);

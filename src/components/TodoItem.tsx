@@ -1,5 +1,6 @@
 import { useContext } from 'react';
 import classNames from 'classnames';
+
 import { Todo } from '../types/Todo';
 import { deleteTodo } from '../api/todos';
 import { TodoContext } from '../contexts/TodoContext';

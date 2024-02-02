@@ -43,10 +43,6 @@ export const TodoProvider: React.FC<Props> = ({ children }) => {
     todos,
     tempTodo,
     errorMessage,
-    setTodos,
-    setTempTodo,
-    setErrorMessage,
-    setFilters,
     filteredTodos: todos.filter(todo => {
       switch (filters.status) {
         case 'uncompleted':
@@ -57,6 +53,10 @@ export const TodoProvider: React.FC<Props> = ({ children }) => {
           return true;
       }
     }),
+    setTodos,
+    setTempTodo,
+    setErrorMessage,
+    setFilters,
   }), [todos, tempTodo, errorMessage, filters.status]);
 
   return (
