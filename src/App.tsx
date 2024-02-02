@@ -49,6 +49,10 @@ export const App: React.FC = () => {
     })
       .then((newTodo) => {
         setTodos((prevTodos: Todo[]) => [...prevTodos, newTodo]);
+
+        if (tempTodo) {
+          setTempTodo(null);
+        }
       })
       .catch(() => ErrorTp.title_error);
   };
