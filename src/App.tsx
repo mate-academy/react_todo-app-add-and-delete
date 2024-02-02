@@ -204,16 +204,15 @@ export const App: React.FC = () => {
               selectedStatus={selectedStatus}
             />
 
-            {!!completedTodos && (
-              <button
-                type="button"
-                className="todoapp__clear-completed"
-                data-cy="ClearCompletedButton"
-                onClick={deleteCompletedTodos}
-              >
-                Clear completed
-              </button>
-            )}
+            <button
+              type="button"
+              className="todoapp__clear-completed"
+              data-cy="ClearCompletedButton"
+              onClick={deleteCompletedTodos}
+              style={{ visibility: completedTodos > 0 ? 'visible' : 'hidden' }}
+            >
+              Clear completed
+            </button>
 
           </footer>
         )}
