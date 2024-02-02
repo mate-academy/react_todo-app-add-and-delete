@@ -1,4 +1,9 @@
+/* eslint-disable react/jsx-no-undef */
 import { useContext } from 'react';
+import {
+  CSSTransition,
+  TransitionGroup,
+} from 'react-transition-group';
 import { TodoContext } from '../contexts/TodoContext';
 import { TodoItem } from './TodoItem';
 
@@ -10,12 +15,29 @@ export const TodoList: React.FC = () => {
 
   return (
     <section className="todoapp__main" data-cy="TodoList">
-      <ul className="todolist">
-        {filteredTodos.map(todo => (
-          <TodoItem todo={todo} />
-        ))}
-        {!!tempTodo && <TodoItem todo={tempTodo} isTemp /> }
-      </ul>
+      <TransitionGroup>
+        <ul className="todolist">
+          {filteredTodos.map(todo => (
+            <CSSTransition
+              key={todo.id}
+              timeout={300}
+              classNames="item"
+            >
+              <TodoItem todo={todo} />
+            </CSSTransition>
+          ))}
+
+          {!!tempTodo && (
+            <CSSTransition
+              key={0}
+              timeout={300}
+              classNames="temp-item"
+            >
+              <TodoItem todo={tempTodo} isTemp />
+            </CSSTransition>
+          )}
+        </ul>
+      </TransitionGroup>
     </section>
   );
 };
