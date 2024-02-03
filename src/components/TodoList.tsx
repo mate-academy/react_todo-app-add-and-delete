@@ -25,7 +25,7 @@ export const TodoList: React.FC<Props> = ({ todos, setTodos, tempTodo }) => {
             todo={todo}
           />
         ))}
-        {tempTodo && (
+        {tempTodo === null ? '' : (
           <li data-cy="Todo" className="todo">
             <label className="todo__status-label">
               <input
@@ -52,7 +52,8 @@ export const TodoList: React.FC<Props> = ({ todos, setTodos, tempTodo }) => {
               <div className="loader" />
             </div>
           </li>
-        )}
+
+        ) }
       </ul>
     </section>
   );
