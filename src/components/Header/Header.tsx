@@ -6,14 +6,12 @@ import React, {
   useState,
 } from 'react';
 import { TodoUpdateContext, TodosContext } from '../../context/TodosContext';
-// import { Todo } from '../../types/Todo';
-// import { ErrorNotification } from '../ErrorNotification';
 
 export const Header: React.FC = () => {
   const [titleField, setTitleField] = useState('');
-  // const [tempTodo, setTempTodo] = useState<Todo | null>(null);
+  const [isAddingTodo, setIsAddingTodo] = useState(false);
 
-  const { setErrorMessage } = useContext(TodosContext);
+  const { setErrorMessage, setTempTodo } = useContext(TodosContext);
   const { addTodo } = useContext(TodoUpdateContext);
   const inputRef = useRef<HTMLInputElement>(null);
 
@@ -25,19 +23,34 @@ export const Header: React.FC = () => {
     }
   }, []);
 
-  function handleSubmit(event: React.FormEvent) {
+  async function handleSubmit(event: React.FormEvent) {
     event.preventDefault();
 
     if (titleField.trim()) {
-      const newTodo = {
+      setTempTodo({
         id: 0,
+        title: titleField.trim(),
+        userId: USER_ID,
+        completed: false,
+      });
+
+      const newTodo = {
         title: titleField.trim(),
         userId: USER_ID,
         completed: false,
       };
 
-      addTodo(newTodo);
-      setTitleField('');
+      setIsAddingTodo(true);
+
+      try {
+        await addTodo(newTodo);
+      } catch (error) {
+        setErrorMessage('Unable to add a todo');
+      } finally {
+        setIsAddingTodo(false);
+        setTitleField('');
+        setTempTodo(null);
+      }
     } else {
       setErrorMessage('Title should not be empty');
     }
@@ -66,14 +79,9 @@ export const Header: React.FC = () => {
           ref={inputRef}
           value={titleField}
           onChange={handleChange}
-        // disabled={tempTodo !== null}
+          disabled={isAddingTodo}
         />
       </form>
-
-      {/* Display the 'Title should not be empty' notification */}
-      {/* {tempTodo === null && !tempTodo?.id && (
-        <ErrorNotification />
-      )} */}
     </header>
   );
 };

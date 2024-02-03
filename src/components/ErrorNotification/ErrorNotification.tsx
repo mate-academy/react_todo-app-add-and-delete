@@ -1,7 +1,7 @@
 /* eslint-disable jsx-a11y/control-has-associated-label */
 import classNames from 'classnames';
 
-import { useContext } from 'react';
+import { useContext, useEffect } from 'react';
 
 import { TodosContext } from '../../context/TodosContext';
 
@@ -14,6 +14,20 @@ export const ErrorNotification = () => {
   const handleCloseError = () => {
     setErrorMessage('');
   };
+
+  function loadError() {
+    const errorDelay = setTimeout(() => {
+      setErrorMessage('');
+    }, 3000);
+
+    return () => clearTimeout(errorDelay);
+  }
+
+  useEffect(() => {
+    const cleanup = loadError();
+
+    return cleanup;
+  }, [errorMessage]);
 
   return (
     <div

@@ -1,14 +1,27 @@
 import classNames from 'classnames';
-import React from 'react';
+import React, { useContext } from 'react';
 import { Todo } from '../../types/Todo';
 import { TodoLoader } from '../TodoLoader';
+import { TodoUpdateContext, TodosContext } from '../../context/TodosContext';
 
 interface Props {
   todoItem: Todo,
 }
 
 export const TodoItem: React.FC<Props> = ({ todoItem }) => {
-  const { title, completed } = todoItem;
+  const { id, title, completed } = todoItem;
+  const { setIsLoading } = useContext(TodosContext);
+  const { deleteTodo } = useContext(TodoUpdateContext);
+
+  async function handleDelete() {
+    setIsLoading(true);
+
+    try {
+      await deleteTodo(id);
+    } finally {
+      setIsLoading(false);
+    }
+  }
 
   return (
     <>
@@ -31,11 +44,16 @@ export const TodoItem: React.FC<Props> = ({ todoItem }) => {
         <span data-cy="TodoTitle" className="todo__title">
           {title}
         </span>
-        <button type="button" className="todo__remove" data-cy="TodoDelete">
+        <button
+          type="button"
+          className="todo__remove"
+          data-cy="TodoDelete"
+          onClick={handleDelete}
+        >
           ×
         </button>
 
-        <TodoLoader />
+        <TodoLoader id={id} />
       </div>
     </>
   );

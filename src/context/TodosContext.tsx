@@ -12,10 +12,12 @@ export const TodosContext = React.createContext<Context>({
   setErrorMessage: () => { },
   filterTodos: Status.all,
   setFilterTodos: () => { },
-  // titleField: '',
-  // setTitleField: () => { },
-  // tempTodo: null,
-  // setTempTodo: () => { },
+  tempTodo: null,
+  setTempTodo: () => { },
+  isLoading: false,
+  setIsLoading: () => { },
+  deleteIds: [],
+  setDeleteIds: () => { },
 });
 
 export const TodoUpdateContext = React.createContext<ContextUpdate>({
@@ -32,6 +34,9 @@ export const TodosProvider: React.FC<Props> = ({ children }) => {
   const [todos, setTodos] = useState<Todo[]>([]);
   const [errorMessage, setErrorMessage] = useState('');
   const [filterTodos, setFilterTodos] = useState<Status>(Status.all);
+  const [tempTodo, setTempTodo] = useState<Todo | null>(null);
+  const [isLoading, setIsLoading] = useState(false);
+  const [deleteIds, setDeleteIds] = useState<number[]>([]);
 
   const USER_ID = 91;
 
@@ -43,33 +48,22 @@ export const TodosProvider: React.FC<Props> = ({ children }) => {
       });
   }
 
-  function loadError() {
-    const errorDelay = setTimeout(() => {
-      setErrorMessage('');
-    }, 3000);
+  useEffect(loadTodos, []);
 
-    return () => clearTimeout(errorDelay);
-  }
-
-  function addTodo(todo: Todo) {
+  function addTodo(todo: Omit<Todo, 'id'>) {
     return api.createTodo(todo)
       .then(loadTodos);
   }
 
   function deleteTodo(todoId: number) {
+    setDeleteIds(prev => [...prev, todoId]);
+
     return api.deleteTodo(todoId)
       .then(() => loadTodos())
       .catch(() => {
         setErrorMessage('Unable to delete a todo');
       });
   }
-
-  useEffect(() => {
-    loadTodos();
-    const cleanup = loadError();
-
-    return cleanup;
-  }, [errorMessage]);
 
   // function updateTodo(todoToUpdate: Todo) {
   //   return api.updateTodo(todoToUpdate)
@@ -92,11 +86,13 @@ export const TodosProvider: React.FC<Props> = ({ children }) => {
     setErrorMessage,
     filterTodos,
     setFilterTodos,
-    // titleField,
-    // setTitleField,
-    // tempTodo,
-    // setTempTodo,
-  }), [todos, errorMessage, filterTodos]);
+    tempTodo,
+    setTempTodo,
+    isLoading,
+    setIsLoading,
+    deleteIds,
+    setDeleteIds,
+  }), [todos, errorMessage, filterTodos, tempTodo, isLoading, deleteIds]);
 
   return (
     <TodoUpdateContext.Provider value={methods}>
