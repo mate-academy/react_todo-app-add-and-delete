@@ -106,6 +106,7 @@ export const TodosProvider: React.FC<Props> = ({ children }) => {
       .then(newTodo => {
         setTodos(currentTodos => [...currentTodos, newTodo]);
         setAdded(true);
+        setIsCompletedAll(null);
       })
       .catch(() => setErrorMessage('Unable to add a todo'))
       .finally(() => {
@@ -127,8 +128,6 @@ export const TodosProvider: React.FC<Props> = ({ children }) => {
         setTodos(() => {
           if (pressClearAll) {
             const notCompletedTodos = todos.filter(todo => !todo.completed);
-
-            setIsCompletedAll(null);
 
             return notCompletedTodos;
           }
@@ -172,8 +171,8 @@ export const TodosProvider: React.FC<Props> = ({ children }) => {
     tempItem,
     errorMessage,
     added,
-    pressClearAll,
     disabled,
+    pressClearAll,
   ]);
 
   return (

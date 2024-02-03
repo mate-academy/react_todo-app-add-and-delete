@@ -61,7 +61,6 @@ export const Header: React.FC<Props> = React.memo(() => {
 
   useEffect(() => {
     if (added) {
-      setIsCompletedAll(null);
       setTitle('');
     }
   }, [added]);
