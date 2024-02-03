@@ -34,7 +34,7 @@ export const Section: React.FC<Props> = React.memo(() => {
           <CSSTransition
             key={0}
             timeout={300}
-            classNames="time-item"
+            classNames="temp-item"
           >
             <div
               data-cy="Todo"

@@ -41,7 +41,7 @@ export const TodoItem: React.FC<Props> = React.memo(({ todo }) => {
     ));
 
     setTodos(updatedTodos);
-  }, [setTodos, todos]);
+  }, [todos]);
 
   const handleCheckbox = () => {
     setIsCompleted(!isCompleted);
@@ -54,12 +54,6 @@ export const TodoItem: React.FC<Props> = React.memo(({ todo }) => {
     setIsDeleting(true);
     deleteTodo(todo.id);
   };
-
-  useEffect(() => {
-    if (!loading) {
-      setIsDeleting(false);
-    }
-  }, [loading]);
 
   const applyEditing = () => {
     if (editTitle.length === 0) {
@@ -79,11 +73,6 @@ export const TodoItem: React.FC<Props> = React.memo(({ todo }) => {
 
   const handleEdit = (event: React.FormEvent) => {
     event.preventDefault();
-
-    if (!editTitle) {
-      handleDeleteTodo();
-    }
-
     applyEditing();
   };
 
@@ -103,7 +92,7 @@ export const TodoItem: React.FC<Props> = React.memo(({ todo }) => {
   useEffect(() => {
     const completedAll = todos.every(completedTodo => completedTodo.completed);
 
-    if (completedAll) {
+    if (completedAll && todos.length !== 0) {
       setIsCompletedAll(true);
     }
 

@@ -106,6 +106,7 @@ export const TodosProvider: React.FC<Props> = ({ children }) => {
       .then(newTodo => {
         setTodos(currentTodos => [...currentTodos, newTodo]);
         setAdded(true);
+        setIsCompletedAll(null);
       })
       .catch(() => setErrorMessage('Unable to add a todo'))
       .finally(() => {
