@@ -20,6 +20,7 @@ export const TodoItem: React.FC<Props> = React.memo(({ todo }) => {
     setIsCompletedAll,
     deleteTodo,
     errorMessage,
+    pressClearAll,
   } = useContext(TodosContext);
 
   const [isCompleted, setIsCompleted] = useState(todo.completed);
@@ -187,7 +188,11 @@ export const TodoItem: React.FC<Props> = React.memo(({ todo }) => {
 
       <div
         data-cy="TodoLoader"
-        className={cn('modal overlay', { 'is-active': loading && isDeleting })}
+        className={cn('modal overlay',
+          {
+            'is-active': (loading && isDeleting)
+              || (pressClearAll && todo.completed),
+          })}
       >
         <div className="modal-background has-background-white-ter" />
         <div className="loader" />

@@ -19,6 +19,9 @@ export const Header: React.FC<Props> = React.memo(() => {
     errorMessage,
     setErrorMessage,
     setCount,
+    added,
+    disabled,
+    setDisabled,
   } = useContext(TodosContext);
 
   const [title, setTitle] = useState('');
@@ -32,7 +35,7 @@ export const Header: React.FC<Props> = React.memo(() => {
 
   const addTempItem = useCallback((newTodo: Todo) => {
     setTempItem(newTodo);
-  }, [todos]);
+  }, [setTempItem]);
 
   const handleSubmit = (event: React.FormEvent) => {
     event.preventDefault();
@@ -53,10 +56,15 @@ export const Header: React.FC<Props> = React.memo(() => {
 
     addTempItem(newTodo);
     addTodo(newTodo);
-
-    setIsCompletedAll(null);
-    setTitle('');
+    setDisabled(true);
   };
+
+  useEffect(() => {
+    if (added) {
+      setIsCompletedAll(null);
+      setTitle('');
+    }
+  }, [added]);
 
   const handleCompletedAll = () => {
     setIsCompletedAll(!isCompletedAll);
@@ -66,7 +74,7 @@ export const Header: React.FC<Props> = React.memo(() => {
     if (inputAutoFocus.current) {
       inputAutoFocus.current.focus();
     }
-  }, [errorMessage]);
+  }, [errorMessage, todos.length]);
 
   return (
     <header className="todoapp__header">
@@ -90,6 +98,7 @@ export const Header: React.FC<Props> = React.memo(() => {
           ref={inputAutoFocus}
           value={title}
           onChange={handleTitle}
+          disabled={disabled}
         />
       </form>
     </header>

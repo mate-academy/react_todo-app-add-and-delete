@@ -21,6 +21,7 @@ export const Section: React.FC<Props> = React.memo(() => {
           todo={todo}
         />
       ))}
+
       {tempItem && (
         <div
           data-cy="Todo"
@@ -43,7 +44,7 @@ export const Section: React.FC<Props> = React.memo(() => {
 
           <div
             data-cy="TodoLoader"
-            className={cn('modal overlay', { 'is-active': loading })} // це не точно що тут повинен бути саме loading
+            className={cn('modal overlay', { 'is-active': loading })}
           >
             <div className="modal-background has-background-white-ter" />
             <div className="loader" />

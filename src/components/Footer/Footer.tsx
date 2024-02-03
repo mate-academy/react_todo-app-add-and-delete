@@ -1,24 +1,33 @@
-import React, { useContext } from 'react';
+import React, { useContext, useEffect } from 'react';
 import cn from 'classnames';
 import { TodosContext } from '../Store/Store';
 import { FilterParams } from '../../types/FilterParams';
 
 export const Footer: React.FC = React.memo(() => {
   const {
-    todos, setTodos, filter, setFilter, deleteTodo,
+    todos,
+    filter,
+    setFilter,
+    deleteTodo,
+    pressClearAll,
+    setPressClearAll,
   } = useContext(TodosContext);
 
   const itemsLeft = todos.filter(todo => !todo.completed).length;
   const hasCompleted = todos.some(todo => todo.completed);
 
   const handleClearCompleted = () => {
-    const clearCompleted = todos.filter(todo => !todo.completed);
-
-    setTodos(clearCompleted);
-
-    todos.filter(todo => todo.completed)
-      .map(todo => deleteTodo(todo.id));
+    setPressClearAll(true);
   };
+
+  useEffect(() => {
+    if (pressClearAll) {
+      const completedTodos = todos.filter(todo => todo.completed);
+
+      Promise.all(completedTodos.map(todo => deleteTodo(todo.id)));
+    }
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [pressClearAll, todos]);
 
   return (
     <>

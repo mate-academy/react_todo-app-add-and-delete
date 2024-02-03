@@ -1,5 +1,7 @@
-/* eslint-disable react-hooks/exhaustive-deps */
-import React, { useEffect, useMemo, useState } from 'react';
+// /* eslint-disable react-hooks/exhaustive-deps */
+import React, {
+  useEffect, useMemo, useState,
+} from 'react';
 import { client } from '../../utils/fetchClient';
 import { Todo } from '../../types/Todo';
 import { CompletedAll } from '../../types/CompletedAll';
@@ -24,6 +26,11 @@ type TodosContextType = {
   errorMessage: string;
   setErrorMessage: React.Dispatch<string>;
   setCount: React.Dispatch<React.SetStateAction<number>>;
+  added: boolean;
+  disabled: boolean;
+  setDisabled: React.Dispatch<boolean>;
+  pressClearAll: boolean;
+  setPressClearAll: React.Dispatch<boolean>;
 };
 
 export const TodosContext = React.createContext<TodosContextType>({
@@ -41,6 +48,11 @@ export const TodosContext = React.createContext<TodosContextType>({
   errorMessage: '',
   setErrorMessage: () => { },
   setCount: () => {},
+  added: false,
+  disabled: false,
+  setDisabled: () => {},
+  pressClearAll: false,
+  setPressClearAll: () => {},
 });
 
 type Props = {
@@ -55,6 +67,9 @@ export const TodosProvider: React.FC<Props> = ({ children }) => {
   const [tempItem, setTempItem] = useState<Todo | null>(null);
   const [errorMessage, setErrorMessage] = useState('');
   const [count, setCount] = useState(0);
+  const [added, setAdded] = useState(false);
+  const [disabled, setDisabled] = useState(false);
+  const [pressClearAll, setPressClearAll] = useState(false);
 
   function loadTodos() {
     setLoading(true);
@@ -79,35 +94,51 @@ export const TodosProvider: React.FC<Props> = ({ children }) => {
     return () => {
       clearTimeout(timerId);
     };
-  }, [count]);
+  }, [count, errorMessage]);
 
   function addTodo({ userId, title, completed }: Todo) {
     setErrorMessage('');
     setLoading(true);
+    setCount((currentCount) => currentCount + 1);
+    setAdded(false);
 
     return client.post<Todo>(USERS_URL + USER_ID, { userId, title, completed })
       .then(newTodo => {
         setTodos(currentTodos => [...currentTodos, newTodo]);
+        setAdded(true);
       })
       .catch(() => setErrorMessage('Unable to add a todo'))
       .finally(() => {
         setTempItem(null);
         setLoading(false);
+        setDisabled(false);
       });
   }
 
   function deleteTodo(todoId: number) {
     setErrorMessage('');
     setLoading(true);
+    setCount((currentCount) => currentCount + 1);
 
     return client.delete(`/${todoId}`)
       .then(() => {
         const updatedTodos = todos.filter(upTodo => upTodo.id !== todoId);
 
-        setTodos(updatedTodos);
+        setTodos(() => {
+          if (pressClearAll) {
+            const notCompletedTodos = todos.filter(todo => !todo.completed);
+
+            return notCompletedTodos;
+          }
+
+          return updatedTodos;
+        });
       })
       .catch(() => setErrorMessage('Unable to delete a todo'))
-      .finally(() => setLoading(false));
+      .finally(() => {
+        setLoading(false);
+        setPressClearAll(false);
+      });
   }
 
   const value = useMemo(() => ({
@@ -125,6 +156,12 @@ export const TodosProvider: React.FC<Props> = ({ children }) => {
     errorMessage,
     setErrorMessage,
     setCount,
+    added,
+    disabled,
+    setDisabled,
+    pressClearAll,
+    setPressClearAll,
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   }), [
     todos,
     loading,
@@ -132,6 +169,9 @@ export const TodosProvider: React.FC<Props> = ({ children }) => {
     filter,
     tempItem,
     errorMessage,
+    added,
+    pressClearAll,
+    disabled,
   ]);
 
   return (
