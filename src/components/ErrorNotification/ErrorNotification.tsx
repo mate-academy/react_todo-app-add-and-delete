@@ -1,3 +1,4 @@
+/* eslint-disable react-hooks/exhaustive-deps */
 /* eslint-disable jsx-a11y/control-has-associated-label */
 import classNames from 'classnames';
 
@@ -11,23 +12,17 @@ export const ErrorNotification = () => {
     setErrorMessage,
   } = useContext(TodosContext);
 
-  const handleCloseError = () => {
-    setErrorMessage('');
-  };
-
-  function loadError() {
+  useEffect(() => {
     const errorDelay = setTimeout(() => {
       setErrorMessage('');
     }, 3000);
 
     return () => clearTimeout(errorDelay);
-  }
-
-  useEffect(() => {
-    const cleanup = loadError();
-
-    return cleanup;
   }, [errorMessage]);
+
+  const handleCloseError = () => {
+    setErrorMessage('');
+  };
 
   return (
     <div

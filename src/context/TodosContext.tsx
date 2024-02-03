@@ -48,21 +48,18 @@ export const TodosProvider: React.FC<Props> = ({ children }) => {
       });
   }
 
-  useEffect(loadTodos, []);
+  useEffect(loadTodos, [deleteIds]);
 
   function addTodo(todo: Omit<Todo, 'id'>) {
     return api.createTodo(todo)
-      .then(loadTodos);
+      .then((newTodo) => setTodos((prev) => [...prev, newTodo] as Todo[]));
   }
 
   function deleteTodo(todoId: number) {
     setDeleteIds(prev => [...prev, todoId]);
 
     return api.deleteTodo(todoId)
-      .then(() => loadTodos())
-      .catch(() => {
-        setErrorMessage('Unable to delete a todo');
-      });
+      .then(() => setDeleteIds((prev) => prev.filter(id => id !== todoId)));
   }
 
   // function updateTodo(todoToUpdate: Todo) {

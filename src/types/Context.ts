@@ -4,7 +4,7 @@ import { Todo } from './Todo';
 
 export interface Context {
   todos: Todo[],
-  setTodos: React.Dispatch<React.SetStateAction<Todo[]>>,
+  setTodos: (todos: Todo[] | ((prev: Todo[]) => Todo[])) => void,
   errorMessage: string,
   setErrorMessage: React.Dispatch<React.SetStateAction<string>>,
   filterTodos: Status,
@@ -20,7 +20,6 @@ export interface Context {
 export interface ContextUpdate {
   addTodo: (newTodo: Omit<Todo, 'id'>) => void,
   deleteTodo: (todoId: number) => void,
-  // simulateAsyncOperation: () => void,
   // editTodo: (titleId: number, editTitle: string) => void,
   // clearCompleted: () => void,
 }
