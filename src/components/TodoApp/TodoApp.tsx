@@ -20,7 +20,7 @@ export const TodoApp = () => {
       <h1 className="todoapp__title">todos</h1>
 
       <div className="todoapp__content">
-        <Header todos={filteredItems} />
+        <Header />
 
         {todos && (
           <Main items={filteredItems} />

@@ -1,37 +1,47 @@
 /* eslint-disable jsx-a11y/control-has-associated-label */
-import React, { useContext, useState } from 'react';
-import { Todo } from '../../types/Todo';
-import { TodoUpdateContext } from '../../context/TodosContext';
+import React, {
+  useContext,
+  useEffect,
+  useRef,
+  useState,
+} from 'react';
+import { TodoUpdateContext, TodosContext } from '../../context/TodosContext';
+// import { Todo } from '../../types/Todo';
+// import { ErrorNotification } from '../ErrorNotification';
 
-interface Props {
-  todos: Todo[],
-}
-
-export const Header: React.FC<Props> = ({ todos }) => {
+export const Header: React.FC = () => {
   const [titleField, setTitleField] = useState('');
+  // const [tempTodo, setTempTodo] = useState<Todo | null>(null);
+
+  const { setErrorMessage } = useContext(TodosContext);
   const { addTodo } = useContext(TodoUpdateContext);
+  const inputRef = useRef<HTMLInputElement>(null);
 
   const USER_ID = 91;
-  const todoIds = todos.map((todo) => (todo.id));
 
-  const clearField = () => {
-    setTitleField('');
-  };
+  useEffect(() => {
+    if (inputRef.current) {
+      inputRef.current.focus();
+    }
+  }, []);
 
-  const handleSubmit = () => {
-    if (titleField.trim() !== '') {
-      const newTodoItem: Todo = {
-        id: Math.max(...todoIds, 0) + 1,
+  function handleSubmit(event: React.FormEvent) {
+    event.preventDefault();
+
+    if (titleField.trim()) {
+      const newTodo = {
+        id: 0,
+        title: titleField.trim(),
         userId: USER_ID,
-        title: titleField,
         completed: false,
       };
 
-      addTodo(newTodoItem);
+      addTodo(newTodo);
+      setTitleField('');
+    } else {
+      setErrorMessage('Title should not be empty');
     }
-
-    clearField();
-  };
+  }
 
   const handleChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     setTitleField(event.target.value);
@@ -39,7 +49,7 @@ export const Header: React.FC<Props> = ({ todos }) => {
 
   return (
     <header className="todoapp__header">
-      {/* this buttons is active only if there are some active todos */}
+      {/* this buttons are active only if there are some active todos */}
       <button
         type="button"
         className="todoapp__toggle-all active"
@@ -53,9 +63,17 @@ export const Header: React.FC<Props> = ({ todos }) => {
           type="text"
           className="todoapp__new-todo"
           placeholder="What needs to be done?"
+          ref={inputRef}
+          value={titleField}
           onChange={handleChange}
+        // disabled={tempTodo !== null}
         />
       </form>
+
+      {/* Display the 'Title should not be empty' notification */}
+      {/* {tempTodo === null && !tempTodo?.id && (
+        <ErrorNotification />
+      )} */}
     </header>
   );
 };

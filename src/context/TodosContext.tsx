@@ -12,11 +12,15 @@ export const TodosContext = React.createContext<Context>({
   setErrorMessage: () => { },
   filterTodos: Status.all,
   setFilterTodos: () => { },
+  // titleField: '',
+  // setTitleField: () => { },
+  // tempTodo: null,
+  // setTempTodo: () => { },
 });
 
 export const TodoUpdateContext = React.createContext<ContextUpdate>({
-  addTodo: () => {},
-  deleteTodo: () => {},
+  addTodo: () => { },
+  deleteTodo: () => { },
   // updateTodo: () => {},
 });
 
@@ -47,13 +51,6 @@ export const TodosProvider: React.FC<Props> = ({ children }) => {
     return () => clearTimeout(errorDelay);
   }
 
-  useEffect(() => {
-    loadTodos();
-    const cleanup = loadError();
-
-    return cleanup;
-  }, [errorMessage]);
-
   function addTodo(todo: Todo) {
     return api.createTodo(todo)
       .then(loadTodos);
@@ -61,12 +58,25 @@ export const TodosProvider: React.FC<Props> = ({ children }) => {
 
   function deleteTodo(todoId: number) {
     return api.deleteTodo(todoId)
-      .then(loadTodos);
+      .then(() => loadTodos())
+      .catch(() => {
+        setErrorMessage('Unable to delete a todo');
+      });
   }
+
+  useEffect(() => {
+    loadTodos();
+    const cleanup = loadError();
+
+    return cleanup;
+  }, [errorMessage]);
 
   // function updateTodo(todoToUpdate: Todo) {
   //   return api.updateTodo(todoToUpdate)
-  //     .then(loadTodos);
+  //     .then(loadTodos)
+  //     .catch(() => {
+  //       setErrorMessage('Unable to update a todo');
+  //     });
   // }
 
   const methods = useMemo(() => ({
@@ -82,6 +92,10 @@ export const TodosProvider: React.FC<Props> = ({ children }) => {
     setErrorMessage,
     filterTodos,
     setFilterTodos,
+    // titleField,
+    // setTitleField,
+    // tempTodo,
+    // setTempTodo,
   }), [todos, errorMessage, filterTodos]);
 
   return (
