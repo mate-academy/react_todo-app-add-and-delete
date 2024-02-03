@@ -128,6 +128,8 @@ export const TodosProvider: React.FC<Props> = ({ children }) => {
           if (pressClearAll) {
             const notCompletedTodos = todos.filter(todo => !todo.completed);
 
+            setIsCompletedAll(null);
+
             return notCompletedTodos;
           }
 

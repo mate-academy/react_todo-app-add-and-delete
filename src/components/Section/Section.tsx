@@ -1,5 +1,6 @@
 import React, { useContext } from 'react';
 import cn from 'classnames';
+import { CSSTransition, TransitionGroup } from 'react-transition-group';
 import { TodosContext } from '../Store/Store';
 import { TodoItem } from '../TodoItem/TodoItem';
 import { getFilteredTodos } from '../../services/getFilteredTodos';
@@ -15,42 +16,56 @@ export const Section: React.FC<Props> = React.memo(() => {
 
   return (
     <section className="todoapp__main" data-cy="TodoList">
-      {filteredTodos.map(todo => (
-        <TodoItem
-          key={todo.id}
-          todo={todo}
-        />
-      ))}
-
-      {tempItem && (
-        <div
-          data-cy="Todo"
-          className="todo"
-        >
-          <label className="todo__status-label">
-            <input
-              data-cy="TodoStatus"
-              type="checkbox"
-              className="todo__status"
+      <TransitionGroup>
+        {filteredTodos.map(todo => (
+          <CSSTransition
+            key={todo.id}
+            timeout={300}
+            classNames="item"
+          >
+            <TodoItem
+              key={todo.id}
+              todo={todo}
             />
-          </label>
+          </CSSTransition>
+        ))}
 
-          <span
-            data-cy="TodoTitle"
-            className="todo__title"
+        {tempItem && (
+          <CSSTransition
+            key={0}
+            timeout={300}
+            classNames="time-item"
           >
-            {tempItem.title}
-          </span>
+            <div
+              data-cy="Todo"
+              className="todo"
+            >
+              <label className="todo__status-label">
+                <input
+                  data-cy="TodoStatus"
+                  type="checkbox"
+                  className="todo__status"
+                />
+              </label>
 
-          <div
-            data-cy="TodoLoader"
-            className={cn('modal overlay', { 'is-active': loading })}
-          >
-            <div className="modal-background has-background-white-ter" />
-            <div className="loader" />
-          </div>
-        </div>
-      )}
+              <span
+                data-cy="TodoTitle"
+                className="todo__title"
+              >
+                {tempItem.title}
+              </span>
+
+              <div
+                data-cy="TodoLoader"
+                className={cn('modal overlay', { 'is-active': loading })}
+              >
+                <div className="modal-background has-background-white-ter" />
+                <div className="loader" />
+              </div>
+            </div>
+          </CSSTransition>
+        )}
+      </TransitionGroup>
     </section>
   );
 });
