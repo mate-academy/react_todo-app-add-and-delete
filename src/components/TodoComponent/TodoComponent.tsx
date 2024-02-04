@@ -1,4 +1,8 @@
-import React, { useContext, useState } from 'react';
+/* eslint-disable jsx-a11y/no-static-element-interactions */
+/* eslint-disable jsx-a11y/click-events-have-key-events */
+import React, {
+  useContext, useEffect, useRef, useState,
+} from 'react';
 import cn from 'classnames';
 
 import { Todo } from '../../types/Todo';
@@ -19,6 +23,11 @@ export const TodoComponent: React.FC<Props> = (props) => {
 
   const loading = todo.id === 0;
   const [updating, setUpdating] = useState(false);
+  const [editing, setEditing] = useState(false);
+  const [newTitle, setNewTitle] = useState(todo.title);
+  const inputRef = useRef<HTMLInputElement>(null);
+
+  useEffect(() => inputRef.current?.focus(), [editing]);
 
   const { upatingTodos, addTodoForUpdate, removeTodoForUpdate }
     = useContext(TodosContext);
@@ -54,8 +63,51 @@ export const TodoComponent: React.FC<Props> = (props) => {
       .finally(() => setUpdating(false));
   };
 
+  function handleDoubleClick(
+    event: React.MouseEvent<HTMLInputElement, MouseEvent>,
+  ): void {
+    if (event.detail === 2) {
+      setEditing(true);
+    }
+  }
+
+  function cancelEditing():void {
+    setEditing(false);
+  }
+
+  function saveEditedTodo() {
+    const value = newTitle.trim();
+
+    setUpdating(true);
+
+    if (value !== todo.title && !!value) {
+      const updatedTodo: Partial<Todo> = {
+        id: todo.id,
+        title: value,
+      };
+
+      changeTodo(updatedTodo)
+        .then(onUpdate)
+        .catch(() => onError('Unable to update a todo'))
+        .finally(() => setUpdating(false));
+    }
+
+    setEditing(false);
+  }
+
+  function handleKey(event: React.KeyboardEvent<HTMLInputElement>) {
+    if (event.key === 'Enter') {
+      saveEditedTodo();
+    }
+
+    if (event.key === 'Escape') {
+      cancelEditing();
+    }
+  }
+
   return (
     <div data-cy="Todo" className={cn('todo', { completed: todo.completed })}>
+
       <label className="todo__status-label">
         <input
           data-cy="TodoStatus"
@@ -66,18 +118,42 @@ export const TodoComponent: React.FC<Props> = (props) => {
         />
       </label>
 
-      <span data-cy="TodoTitle" className="todo__title">
-        {todo.title}
-      </span>
+      {editing && (
+        <form>
+          <input
+            data-cy="TodoTitleField"
+            type="text"
+            className="todo__title-field"
+            placeholder="Empty todo will be deleted"
+            value={newTitle}
+            ref={inputRef}
+            onBlur={saveEditedTodo}
+            onKeyDown={handleKey}
+            onChange={(e) => setNewTitle(e.target.value)}
+          />
+        </form>
+      )}
 
-      <button
-        type="button"
-        className="todo__remove"
-        data-cy="TodoDelete"
-        onClick={() => removeTodo()}
-      >
-        ×
-      </button>
+      {!editing && (
+        <>
+          <span
+            data-cy="TodoTitle"
+            className="todo__title"
+            onClick={handleDoubleClick}
+          >
+            {todo.title}
+          </span>
+
+          <button
+            type="button"
+            className="todo__remove"
+            data-cy="TodoDelete"
+            onClick={() => removeTodo()}
+          >
+            ×
+          </button>
+        </>
+      )}
 
       {/* overlay will cover the todo while it is being updated */}
 
@@ -90,7 +166,6 @@ export const TodoComponent: React.FC<Props> = (props) => {
         <div className="modal-background has-background-white-ter" />
         <div className="loader" />
       </div>
-
     </div>
   );
 };

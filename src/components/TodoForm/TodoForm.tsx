@@ -49,7 +49,11 @@ export const TodoForm: React.FC<Props> = (props) => {
 
     createTodo(todo)
       .then(approveTodoSave)
-      .catch(() => setError('Unable to add a todo'));
+      .catch(() => setError('Unable to add a todo'))
+      .finally(() => {
+        setDisableInput(false);
+        handleTempTodo(null);
+      });
   }
 
   return (
