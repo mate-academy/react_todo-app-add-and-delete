@@ -1,4 +1,3 @@
-/* eslint-disable react-hooks/exhaustive-deps */
 import React, {
   useCallback,
   useContext, useEffect, useRef, useState,
@@ -16,14 +15,11 @@ export const TodoItem: React.FC<Props> = React.memo(({ todo }) => {
     todos,
     setTodos,
     loading,
-    isCompletedAll,
-    setIsCompletedAll,
     deleteTodo,
     errorMessage,
     pressClearAll,
   } = useContext(TodosContext);
 
-  const [isCompleted, setIsCompleted] = useState(todo.completed);
   const [isEditing, setIsEditing] = useState(false);
   const [editTitle, setEditTitle] = useState(todo.title);
   const todoField = useRef<HTMLInputElement>(null);
@@ -41,11 +37,10 @@ export const TodoItem: React.FC<Props> = React.memo(({ todo }) => {
     ));
 
     setTodos(updatedTodos);
-  }, [todos]);
+  }, [setTodos, todos]);
 
   const handleCheckbox = () => {
-    setIsCompleted(!isCompleted);
-    const updatedTodo = { ...todo, completed: !isCompleted };
+    const updatedTodo = { ...todo, completed: !todo.completed };
 
     updateTodo(updatedTodo);
   };
@@ -95,44 +90,10 @@ export const TodoItem: React.FC<Props> = React.memo(({ todo }) => {
     }
   }, [isEditing, errorMessage]);
 
-  useEffect(() => {
-    const completedAll = todos.every(completedTodo => completedTodo.completed);
-
-    if (completedAll && todos.length !== 0) {
-      setIsCompletedAll(true);
-    }
-
-    if (!completedAll) {
-      setIsCompletedAll(null);
-    }
-  }, [isCompleted, todos]);
-
-  useEffect(() => {
-    if (isCompletedAll) {
-      setIsCompleted(isCompletedAll);
-
-      const updatedTodos = todos.map(upTodo => (
-        { ...upTodo, completed: isCompletedAll }
-      ));
-
-      setTodos(updatedTodos);
-    }
-
-    if (isCompletedAll === false) {
-      setIsCompleted(isCompletedAll);
-
-      const updatedTodos = todos.map(upTodo => (
-        { ...upTodo, completed: isCompletedAll }
-      ));
-
-      setTodos(updatedTodos);
-    }
-  }, [isCompletedAll]);
-
   return (
     <div
       data-cy="Todo"
-      className={cn('todo', { completed: isCompleted })}
+      className={cn('todo', { completed: todo.completed })}
     >
       <label className="todo__status-label">
         <input

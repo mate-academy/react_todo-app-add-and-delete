@@ -1,4 +1,3 @@
-/* eslint-disable react-hooks/exhaustive-deps */
 /* eslint-disable jsx-a11y/control-has-associated-label */
 import React, {
   useCallback, useContext, useEffect, useRef, useState,
@@ -12,6 +11,7 @@ type Props = {};
 export const Header: React.FC<Props> = React.memo(() => {
   const {
     todos,
+    setTodos,
     isCompletedAll,
     setIsCompletedAll,
     setTempItem,
@@ -67,6 +67,12 @@ export const Header: React.FC<Props> = React.memo(() => {
 
   const handleCompletedAll = () => {
     setIsCompletedAll(!isCompletedAll);
+
+    const updatedTodos = todos.map(upTodo => (
+      { ...upTodo, completed: !isCompletedAll }
+    ));
+
+    setTodos(updatedTodos);
   };
 
   useEffect(() => {

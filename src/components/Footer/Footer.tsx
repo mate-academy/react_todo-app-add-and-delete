@@ -1,4 +1,4 @@
-import React, { useContext, useEffect } from 'react';
+import React, { useContext, useEffect, useMemo } from 'react';
 import cn from 'classnames';
 import { TodosContext } from '../Store/Store';
 import { FilterParams } from '../../types/FilterParams';
@@ -13,8 +13,13 @@ export const Footer: React.FC = React.memo(() => {
     setPressClearAll,
   } = useContext(TodosContext);
 
-  const itemsLeft = todos.filter(todo => !todo.completed).length;
-  const hasCompleted = todos.some(todo => todo.completed);
+  const itemsLeft = useMemo(() => {
+    return todos.filter(todo => !todo.completed).length;
+  }, [todos]);
+
+  const hasCompleted = useMemo(() => {
+    return todos.some(todo => todo.completed);
+  }, [todos]);
 
   const handleClearCompleted = () => {
     setPressClearAll(true);
@@ -26,8 +31,7 @@ export const Footer: React.FC = React.memo(() => {
 
       Promise.all(completedTodos.map(todo => deleteTodo(todo.id)));
     }
-  // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [pressClearAll, todos]);
+  }, [deleteTodo, pressClearAll, todos]);
 
   return (
     <>

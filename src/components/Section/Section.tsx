@@ -1,4 +1,4 @@
-import React, { useContext } from 'react';
+import React, { useContext, useMemo } from 'react';
 import cn from 'classnames';
 import { CSSTransition, TransitionGroup } from 'react-transition-group';
 import { TodosContext } from '../Store/Store';
@@ -12,7 +12,9 @@ export const Section: React.FC<Props> = React.memo(() => {
     todos, loading, filter, tempItem,
   } = useContext(TodosContext);
 
-  const filteredTodos = getFilteredTodos(todos, filter);
+  const filteredTodos = useMemo(() => {
+    return getFilteredTodos(todos, filter);
+  }, [filter, todos]);
 
   return (
     <section className="todoapp__main" data-cy="TodoList">

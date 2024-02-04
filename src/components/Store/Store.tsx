@@ -1,5 +1,5 @@
-// /* eslint-disable react-hooks/exhaustive-deps */
 import React, {
+  useCallback,
   useEffect, useMemo, useState,
 } from 'react';
 import { client } from '../../utils/fetchClient';
@@ -47,12 +47,12 @@ export const TodosContext = React.createContext<TodosContextType>({
   deleteTodo: () => { },
   errorMessage: '',
   setErrorMessage: () => { },
-  setCount: () => {},
+  setCount: () => { },
   added: false,
   disabled: false,
-  setDisabled: () => {},
+  setDisabled: () => { },
   pressClearAll: false,
-  setPressClearAll: () => {},
+  setPressClearAll: () => { },
 });
 
 type Props = {
@@ -96,6 +96,18 @@ export const TodosProvider: React.FC<Props> = ({ children }) => {
     };
   }, [count, errorMessage]);
 
+  useEffect(() => {
+    const completedAll = todos.every(completedTodo => completedTodo.completed);
+
+    if (completedAll && todos.length !== 0) {
+      setIsCompletedAll(true);
+    }
+
+    if (!completedAll) {
+      setIsCompletedAll(null);
+    }
+  }, [todos]);
+
   function addTodo({ userId, title, completed }: Todo) {
     setErrorMessage('');
     setLoading(true);
@@ -116,7 +128,7 @@ export const TodosProvider: React.FC<Props> = ({ children }) => {
       });
   }
 
-  function deleteTodo(todoId: number) {
+  const deleteTodo = useCallback((todoId: number) => {
     setErrorMessage('');
     setLoading(true);
     setCount((currentCount) => currentCount + 1);
@@ -140,7 +152,7 @@ export const TodosProvider: React.FC<Props> = ({ children }) => {
         setLoading(false);
         setPressClearAll(false);
       });
-  }
+  }, [pressClearAll, todos]);
 
   const value = useMemo(() => ({
     todos,
@@ -162,13 +174,13 @@ export const TodosProvider: React.FC<Props> = ({ children }) => {
     setDisabled,
     pressClearAll,
     setPressClearAll,
-  // eslint-disable-next-line react-hooks/exhaustive-deps
   }), [
     todos,
     loading,
     isCompletedAll,
     filter,
     tempItem,
+    deleteTodo,
     errorMessage,
     added,
     disabled,
