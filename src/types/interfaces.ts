@@ -17,8 +17,10 @@ export interface State {
 export interface TodoContextProps {
   state: State;
   setState: Dispatch<SetStateAction<State>>;
-  handleCheck: (todo: Todo, setLoading: Dispatch<SetStateAction<boolean>>) => void;
+  handleCheck: (todo: Todo) => void;
   tempTodo: Todo | null;
-  handleDeleteTodo: (todo: Todo, setLoading: Dispatch<SetStateAction<boolean>>) => void;
+  handleDeleteTodo: (todo: Todo) => void;
   deleteAllCompleted: () => void;
+  setIsLoading: Dispatch<SetStateAction<number[]>>
+  isLoading: number[]
 }

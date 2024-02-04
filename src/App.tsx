@@ -2,9 +2,7 @@
 /* eslint-disable max-len */
 /* eslint-disable no-console */
 /* eslint-disable jsx-a11y/control-has-associated-label */
-import React, {
-  Dispatch, SetStateAction, useEffect, useState,
-} from 'react';
+import React, { useEffect, useState } from 'react';
 import classNames from 'classnames';
 import { UserWarning } from './UserWarning';
 import {
@@ -27,6 +25,15 @@ export const App: React.FC = () => {
 
   const [error, setError] = useState<string | null>(null);
   const [tempTodo, setTempTodo] = useState<Todo | null>(null);
+  const [isLoading, setIsLoading] = useState<number[]>([]);
+
+  const removeLoading = (todoId: number) => {
+    setIsLoading((prev) => {
+      prev.splice(prev.indexOf(todoId), 1);
+
+      return prev;
+    });
+  };
 
   useEffect(() => {
     if (tempTodo) {
@@ -73,7 +80,7 @@ export const App: React.FC = () => {
     return <UserWarning />;
   }
 
-  function handleCheck(todo: Todo, setLoading: Dispatch<SetStateAction<boolean>>) {
+  function handleCheck(todo: Todo) {
     const checkTodo = { ...todo };
 
     checkTodo.completed = !todo.completed;
@@ -94,10 +101,12 @@ export const App: React.FC = () => {
       .catch(() => {
         setError('Unable to update a todo');
       })
-      .finally(() => setLoading(false));
+      .finally(() => {
+        removeLoading(checkTodo.id);
+      });
   }
 
-  function handleDeleteTodo(todo: Todo, setLoading?: Dispatch<SetStateAction<boolean>>) {
+  function handleDeleteTodo(todo: Todo) {
     deleteTodo(todo.id)
       .then(() => {
         setState((prev) => ({
@@ -109,14 +118,16 @@ export const App: React.FC = () => {
         setError('Unable to delete the todo');
       })
       .finally(() => {
-        if (setLoading) {
-          setLoading(false);
-        }
+        removeLoading(todo.id);
       });
   }
 
   function deleteAllCompleted() {
     const completedTodo = state.todos.filter(todo => todo.completed);
+
+    setIsLoading(prev => (
+      [...prev, ...completedTodo.map(todoId => todoId.id)]
+    ));
 
     for (const todo of completedTodo) {
       handleDeleteTodo(todo);
@@ -130,6 +141,8 @@ export const App: React.FC = () => {
     tempTodo,
     handleDeleteTodo,
     deleteAllCompleted,
+    setIsLoading,
+    isLoading,
   };
 
   return (

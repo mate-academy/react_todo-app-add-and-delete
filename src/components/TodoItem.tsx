@@ -3,7 +3,7 @@
 /* eslint-disable import/no-cycle */
 
 import classNames from 'classnames';
-import { useContext, useState } from 'react';
+import { useContext } from 'react';
 import { TodoContext } from '../TodoContext';
 import { Todo, TodoContextProps } from '../types/interfaces';
 
@@ -12,20 +12,28 @@ interface ItemProps {
 }
 
 export const TodoItem: React.FC<ItemProps> = ({ todo }) => {
-  const { handleCheck, handleDeleteTodo } = useContext(TodoContext) as TodoContextProps;
+  const {
+    handleCheck,
+    handleDeleteTodo,
+    setIsLoading,
+    isLoading,
+  } = useContext(TodoContext) as TodoContextProps;
 
-  const [loading, setLoading] = useState(false);
-
-  console.log(todo.id);
   const onClickHandler: React.MouseEventHandler<HTMLInputElement> = () => {
-    setLoading(true);
-    handleCheck(todo, setLoading);
+    setIsLoading(prev => (
+      [...prev, todo.id]
+    ));
+    handleCheck(todo);
   };
 
   const onDeleteTodo: React.MouseEventHandler<HTMLButtonElement> = () => {
-    setLoading(true);
-    handleDeleteTodo(todo, setLoading);
+    setIsLoading(prev => (
+      [...prev, todo.id]
+    ));
+    handleDeleteTodo(todo);
   };
+
+  const loading = isLoading.includes(todo.id);
 
   return (
     <div
