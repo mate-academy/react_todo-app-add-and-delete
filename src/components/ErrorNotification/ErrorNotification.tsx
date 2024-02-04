@@ -26,13 +26,7 @@ export const ErrorNotification: React.FC<Props> = (props) => {
         className="delete"
         onClick={setErrorHide}
       />
-      {/* show only one message at a time
-              Unable to load todos
-              <br />
-              Title should not be empty
-              <br />
-              <br />
-                            <br /> */}
+
       {errorMessage}
     </div>
   );

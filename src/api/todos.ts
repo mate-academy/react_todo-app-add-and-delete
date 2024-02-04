@@ -15,5 +15,9 @@ export const deleteTodo = (todoId: number) => {
   return client.delete(`/todos/${todoId}`);
 };
 
+export const changeTodo = (changedTodo: Partial<Todo>) => {
+  return client.patch<Partial<Todo>>(`/todos/${changedTodo.id}`, changedTodo);
+};
+
 // Add more methods here
 // https://mate.academy/students-api/todos?userId=89

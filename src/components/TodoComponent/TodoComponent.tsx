@@ -1,26 +1,33 @@
-import React, { useContext } from 'react';
+import React, { useContext, useState } from 'react';
 import cn from 'classnames';
 
 import { Todo } from '../../types/Todo';
-import { deleteTodo } from '../../api/todos';
+import { changeTodo, deleteTodo } from '../../api/todos';
 import { TodosContext } from '../../TodosContext/TodoProvider';
 
 interface Props {
   todo: Todo;
   onDelete: (id: number) => void;
   onError: (err: string) => void;
+  onUpdate: (todo: Partial<Todo>) => void;
 }
 
 export const TodoComponent: React.FC<Props> = (props) => {
-  const { todo, onDelete, onError } = props;
+  const {
+    todo, onDelete, onError, onUpdate,
+  } = props;
+
   const loading = todo.id === 0;
+  const [updating, setUpdating] = useState(false);
+
   const { deletingTodos, addTodoForDelete, removeTodoForDelete }
     = useContext(TodosContext);
 
   const deleting = deletingTodos.includes(todo);
 
+  const showUpdating = deleting || loading || updating;
+
   function removeTodo(): void {
-    // setDeleting(true);
     addTodoForDelete(todo);
 
     deleteTodo(todo.id)
@@ -32,6 +39,21 @@ export const TodoComponent: React.FC<Props> = (props) => {
       .finally(() => removeTodoForDelete(todo));
   }
 
+  const toogleCheck = (event: React.ChangeEvent<HTMLInputElement>): void => {
+    const changedTodo: Partial<Todo> = {
+      id: todo.id,
+      completed: event.target.checked,
+    };
+
+    setUpdating(true);
+    changeTodo(changedTodo)
+      .then(res => {
+        onUpdate(res);
+      })
+      .catch(() => onError('Unable to update a todo'))
+      .finally(() => setUpdating(false));
+  };
+
   return (
     <div data-cy="Todo" className={cn('todo', { completed: todo.completed })}>
       <label className="todo__status-label">
@@ -40,6 +62,7 @@ export const TodoComponent: React.FC<Props> = (props) => {
           type="checkbox"
           className="todo__status"
           checked={todo.completed}
+          onChange={toogleCheck}
         />
       </label>
 
@@ -61,7 +84,7 @@ export const TodoComponent: React.FC<Props> = (props) => {
       <div
         data-cy="TodoLoader"
         className={cn('modal', 'overlay', {
-          'is-active': loading || deleting,
+          'is-active': showUpdating,
         })}
       >
         <div className="modal-background has-background-white-ter" />

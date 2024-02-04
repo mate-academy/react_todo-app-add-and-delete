@@ -51,6 +51,18 @@ export const App: React.FC = () => {
     }
   }
 
+  function updateTodo(updatedTodo: Partial<Todo>): void {
+    setTodos(prevTodos => {
+      const copy = [...prevTodos];
+      const prevTodoIndex = copy.findIndex(todo => todo.id === updatedTodo.id);
+      const changedTodo: Todo = { ...copy[prevTodoIndex], ...updatedTodo };
+
+      copy[prevTodoIndex] = changedTodo;
+
+      return copy;
+    });
+  }
+
   const preparedTodos = prepareTodos(todos, filter);
 
   useEffect(() => {
@@ -104,6 +116,7 @@ export const App: React.FC = () => {
                     key={todo.id}
                     onDelete={removeTodo}
                     onError={setErrorMessage}
+                    onUpdate={updateTodo}
                   />
                 ))}
               </section>
@@ -112,6 +125,7 @@ export const App: React.FC = () => {
                   todo={tempTodo}
                   onDelete={removeTodo}
                   onError={setErrorMessage}
+                  onUpdate={updateTodo}
                 />
               )}
 
