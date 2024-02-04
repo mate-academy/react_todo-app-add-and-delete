@@ -48,7 +48,7 @@ export const TodosProvider: React.FC<Props> = ({ children }) => {
       });
   }
 
-  useEffect(loadTodos, [deleteIds]);
+  useEffect(loadTodos, []);
 
   function addTodo(todo: Omit<Todo, 'id'>) {
     return api.createTodo(todo)
@@ -63,18 +63,9 @@ export const TodosProvider: React.FC<Props> = ({ children }) => {
       .then(() => setDeleteIds((prev) => prev.filter(id => id !== todoId)));
   }
 
-  // function updateTodo(todoToUpdate: Todo) {
-  //   return api.updateTodo(todoToUpdate)
-  //     .then(loadTodos)
-  //     .catch(() => {
-  //       setErrorMessage('Unable to update a todo');
-  //     });
-  // }
-
   const methods = useMemo(() => ({
     addTodo,
     deleteTodo,
-    // updateTodo,
   }), []);
 
   const values = useMemo(() => ({

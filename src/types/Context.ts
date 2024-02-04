@@ -20,6 +20,4 @@ export interface Context {
 export interface ContextUpdate {
   addTodo: (newTodo: Omit<Todo, 'id'>) => void,
   deleteTodo: (todoId: number) => void,
-  // editTodo: (titleId: number, editTitle: string) => void,
-  // clearCompleted: () => void,
 }
