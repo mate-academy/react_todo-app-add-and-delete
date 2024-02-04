@@ -11,7 +11,12 @@ export const Header: React.FC = () => {
   const [titleField, setTitleField] = useState('');
   const [isAddingTodo, setIsAddingTodo] = useState(false);
 
-  const { todos, setErrorMessage, setTempTodo } = useContext(TodosContext);
+  const {
+    todos,
+    errorMessage,
+    setErrorMessage,
+    setTempTodo,
+  } = useContext(TodosContext);
   const { addTodo } = useContext(TodoUpdateContext);
   const inputRef = useRef<HTMLInputElement>(null);
 
@@ -21,7 +26,7 @@ export const Header: React.FC = () => {
     if (inputRef.current) {
       inputRef.current.focus();
     }
-  }, [todos]);
+  }, [todos, errorMessage]);
 
   async function handleSubmit(event: React.FormEvent) {
     event.preventDefault();
@@ -44,11 +49,11 @@ export const Header: React.FC = () => {
 
       try {
         await addTodo(newTodo);
+        setTitleField('');
       } catch (error) {
         setErrorMessage('Unable to add a todo');
       } finally {
         setIsAddingTodo(false);
-        setTitleField('');
         setTempTodo(null);
       }
     } else {

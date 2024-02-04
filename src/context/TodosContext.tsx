@@ -52,7 +52,8 @@ export const TodosProvider: React.FC<Props> = ({ children }) => {
 
   function addTodo(todo: Omit<Todo, 'id'>) {
     return api.createTodo(todo)
-      .then((newTodo) => setTodos((prev) => [...prev, newTodo] as Todo[]));
+      .then((newTodo) => setTodos((prev) => [...prev, newTodo] as Todo[]))
+      .catch();
   }
 
   function deleteTodo(todoId: number) {
