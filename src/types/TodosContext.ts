@@ -1,8 +1,8 @@
 import { Todo } from './Todo';
 
 export default interface TodoContext {
-  deletingTodos: Todo[];
-  addTodoForDelete: (todo: Todo) => void;
-  removeTodoForDelete: (todo: Todo) => void;
+  upatingTodos: Todo[];
+  addTodoForUpdate: (todo: Todo) => void;
+  removeTodoForUpdate: (todo: Todo) => void;
   resetDeletingTodos: () => void;
 }

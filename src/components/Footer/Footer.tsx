@@ -21,21 +21,21 @@ export const Footer: React.FC<Props> = (props) => {
   const isThereCompleted = todos.filter(todo => todo.completed).length > 0;
   const uncompletedCount = todos.filter(todo => !todo.completed).length;
 
-  const { addTodoForDelete, removeTodoForDelete } = useContext(TodosContext);
+  const { addTodoForUpdate, removeTodoForUpdate } = useContext(TodosContext);
   const todosForDelete = todos.filter(todo => todo.completed);
 
   const deleteAllCompleted = () => {
     todosForDelete.forEach(
       todo => {
-        addTodoForDelete(todo);
+        addTodoForUpdate(todo);
         deleteTodo(todo.id)
           .then(() => {
-            removeTodoForDelete(todo);
+            removeTodoForUpdate(todo);
             onRemove(todo.id);
           })
           .catch(() => {
             onError('Unable to delete a todo');
-            removeTodoForDelete(todo);
+            removeTodoForUpdate(todo);
           });
       },
     );

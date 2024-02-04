@@ -1,17 +1,17 @@
 /* eslint-disable react/jsx-no-bind */
 /* eslint-disable jsx-a11y/control-has-associated-label */
-import React, { useEffect, useState } from 'react';
+import React, { useContext, useEffect, useState } from 'react';
 
 import { UserWarning } from './UserWarning';
 import { Todo } from './types/Todo';
-import { USER_ID, getTodos } from './api/todos';
+import { USER_ID, changeTodo, getTodos } from './api/todos';
 import { TodoComponent } from './components/TodoComponent/TodoComponent';
 import { Filter } from './types/Filter';
 import { ErrorNotification } from
   './components/ErrorNotification/ErrorNotification';
 import { TodoForm } from './components/TodoForm/TodoForm';
-import { TodosProvider } from './TodosContext/TodoProvider';
 import { Footer } from './components/Footer/Footer';
+import { TodosContext } from './TodosContext/TodoProvider';
 
 function prepareTodos(todos: Todo[], filter: Filter): Todo[] {
   let todosCopy = [...todos];
@@ -32,6 +32,9 @@ export const App: React.FC = () => {
   const [filter, setFilter] = useState(Filter.All);
   const [tempTodo, setTempTodo] = useState<Todo | null>(null);
   const [errorMessage, setErrorMessage] = useState('');
+  const [allTodosCompleted, setAlltodosCompleted] = useState(true);
+
+  const { addTodoForUpdate, removeTodoForUpdate } = useContext(TodosContext);
 
   const addTodo = (todo: Todo): void => {
     setTodos((prevTodos) => ([...prevTodos, todo]));
@@ -62,6 +65,29 @@ export const App: React.FC = () => {
       return copy;
     });
   }
+
+  const setAllCompleted = () => {
+    const todosForUpdate = todos;
+
+    todosForUpdate.forEach(
+      todo => {
+        const updatedTodo: Todo = {
+          ...todo,
+          completed: !allTodosCompleted,
+        };
+
+        addTodoForUpdate(updatedTodo);
+
+        changeTodo(updatedTodo)
+          .then(updateTodo)
+          .catch(() => {
+            setErrorMessage('Unable to update a todo');
+          })
+          .finally(() => removeTodoForUpdate(updatedTodo));
+      },
+    );
+    setAlltodosCompleted(!allTodosCompleted);
+  };
 
   const preparedTodos = prepareTodos(todos, filter);
 
@@ -96,6 +122,7 @@ export const App: React.FC = () => {
             type="button"
             className="todoapp__toggle-all active"
             data-cy="ToggleAllButton"
+            onClick={() => setAllCompleted()}
           />
 
           {/* Add a todo on form submit */}
@@ -106,41 +133,39 @@ export const App: React.FC = () => {
           />
         </header>
 
-        <TodosProvider>
-          {todos && (
-            <>
-              <section className="todoapp__main" data-cy="TodoList">
-                {preparedTodos?.map(todo => (
-                  <TodoComponent
-                    todo={todo}
-                    key={todo.id}
-                    onDelete={removeTodo}
-                    onError={setErrorMessage}
-                    onUpdate={updateTodo}
-                  />
-                ))}
-              </section>
-              {!!tempTodo && (
+        {todos && (
+          <>
+            <section className="todoapp__main" data-cy="TodoList">
+              {preparedTodos?.map(todo => (
                 <TodoComponent
-                  todo={tempTodo}
+                  todo={todo}
+                  key={todo.id}
                   onDelete={removeTodo}
                   onError={setErrorMessage}
                   onUpdate={updateTodo}
                 />
-              )}
+              ))}
+            </section>
+            {!!tempTodo && (
+              <TodoComponent
+                todo={tempTodo}
+                onDelete={removeTodo}
+                onError={setErrorMessage}
+                onUpdate={updateTodo}
+              />
+            )}
 
-              {todos.length > 0 && (
-                <Footer
-                  filter={filter}
-                  todos={todos}
-                  onFilter={setFilter}
-                  onRemove={removeTodo}
-                  onError={setErrorMessage}
-                />
-              )}
-            </>
-          )}
-        </TodosProvider>
+            {todos.length > 0 && (
+              <Footer
+                filter={filter}
+                todos={todos}
+                onFilter={setFilter}
+                onRemove={removeTodo}
+                onError={setErrorMessage}
+              />
+            )}
+          </>
+        )}
       </div>
 
       <ErrorNotification

@@ -4,9 +4,9 @@ import TodoContext from '../types/TodosContext';
 import { Todo } from '../types/Todo';
 
 export const TodosContext = React.createContext<TodoContext>({
-  deletingTodos: [],
-  addTodoForDelete: (_todo: Todo) => {},
-  removeTodoForDelete: (_todo: Todo) => {},
+  upatingTodos: [],
+  addTodoForUpdate: (_todo: Todo) => {},
+  removeTodoForUpdate: (_todo: Todo) => {},
   resetDeletingTodos: () => {},
 });
 
@@ -15,26 +15,26 @@ interface Props {
 }
 
 export const TodosProvider: React.FC<Props> = ({ children }) => {
-  const [deletingTodos, setDelitingTodos] = useState<Todo[]>([]);
+  const [upatingTodos, setUpdatingTodos] = useState<Todo[]>([]);
 
-  const addTodoForDelete = (todo: Todo):void => {
-    setDelitingTodos(prev => ([...prev, todo]));
+  const addTodoForUpdate = (todo: Todo):void => {
+    setUpdatingTodos(prev => ([...prev, todo]));
   };
 
-  const removeTodoForDelete = (todo: Todo):void => {
-    setDelitingTodos(prev => prev.filter(current => current.id !== todo.id));
+  const removeTodoForUpdate = (todo: Todo):void => {
+    setUpdatingTodos(prev => prev.filter(current => current.id !== todo.id));
   };
 
   const resetDeletingTodos = () => {
-    setDelitingTodos([]);
+    setUpdatingTodos([]);
   };
 
   return (
     <TodosContext.Provider value={{
-      addTodoForDelete,
+      addTodoForUpdate,
       resetDeletingTodos,
-      deletingTodos,
-      removeTodoForDelete,
+      upatingTodos,
+      removeTodoForUpdate,
     }}
     >
       {children}

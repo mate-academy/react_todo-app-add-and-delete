@@ -20,23 +20,23 @@ export const TodoComponent: React.FC<Props> = (props) => {
   const loading = todo.id === 0;
   const [updating, setUpdating] = useState(false);
 
-  const { deletingTodos, addTodoForDelete, removeTodoForDelete }
+  const { upatingTodos, addTodoForUpdate, removeTodoForUpdate }
     = useContext(TodosContext);
 
-  const deleting = deletingTodos.includes(todo);
+  const deleting = upatingTodos.some(({ id }) => todo.id === id);
 
   const showUpdating = deleting || loading || updating;
 
   function removeTodo(): void {
-    addTodoForDelete(todo);
+    addTodoForUpdate(todo);
 
     deleteTodo(todo.id)
       .then(() => onDelete(todo.id))
       .catch(() => {
         onError('Unable to delete a todo');
-        removeTodoForDelete(todo);
+        removeTodoForUpdate(todo);
       })
-      .finally(() => removeTodoForDelete(todo));
+      .finally(() => removeTodoForUpdate(todo));
   }
 
   const toogleCheck = (event: React.ChangeEvent<HTMLInputElement>): void => {
