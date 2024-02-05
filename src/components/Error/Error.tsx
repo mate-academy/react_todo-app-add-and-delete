@@ -1,6 +1,9 @@
+/* eslint-disable quote-props */
+/* eslint-disable import/no-cycle */
 /* eslint-disable react-hooks/exhaustive-deps */
-import { useEffect, useState } from 'react';
-import { ErrorMessages } from '../../types/Error';
+import classNames from 'classnames';
+import { useContext, useEffect, useState } from 'react';
+import { ErrorsContext } from '../../TodosContext/TodosContext';
 
 /* eslint-disable jsx-a11y/control-has-associated-label */
 interface Props {
@@ -9,28 +12,34 @@ interface Props {
 
 export const Error: React.FC<Props> = ({ onIsClicked }) => {
   const [isClicked, setIsClicked] = useState(false);
+  const { newError, showError, setShowError } = useContext(ErrorsContext);
 
   useEffect(() => {
     let timer: NodeJS.Timeout | undefined;
 
-    if (!isClicked) {
+    if (showError) {
       timer = setTimeout(() => {
-        onIsClicked(true);
+        setShowError(false);
         setIsClicked(!isClicked);
       }, 3000);
     }
 
     return () => clearTimeout(timer);
-  }, [isClicked]);
+  }, [showError]);
 
   const handleButtonClick = () => {
     onIsClicked(true);
+    setShowError(false);
   };
 
   return (
     <div
       data-cy="ErrorNotification"
-      className="notification is-danger is-light has-text-weight-normal"
+      className={classNames(
+        'notification is-danger is-light has-text-weight-normal', {
+          'hidden': !showError,
+        },
+      )}
     >
       <button
         data-cy="HideErrorButton"
@@ -39,7 +48,7 @@ export const Error: React.FC<Props> = ({ onIsClicked }) => {
         onClick={handleButtonClick}
         disabled={isClicked}
       />
-      {`${ErrorMessages.unableToAddTodo}`}
+      {`${newError}`}
     </div>
   );
 };

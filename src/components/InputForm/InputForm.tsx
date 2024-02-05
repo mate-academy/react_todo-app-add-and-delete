@@ -8,12 +8,13 @@ import {
 } from 'react';
 import { Todo } from '../../types/Todo';
 import { USER_ID } from '../../App';
-import { TodosContext } from '../../TodosContext/TodosContext';
+import { ErrorsContext, TodosContext } from '../../TodosContext/TodosContext';
 import {
   checkAllStatuses,
   returnStatus,
 } from '../../services/checkAllStatuses';
 import { changeAllStatuses } from '../../services/changeAllStatuses';
+import { ErrorMessages } from '../../types/Error';
 
 /* eslint-disable jsx-a11y/control-has-associated-label */
 type Props = {
@@ -25,6 +26,7 @@ export const InputForm: React.FC<Props> = ({ onSubmit, onCompleted }) => {
   const [newTodoTitle, setNewTodoTitle] = useState('');
   const [completeAll, setCompleteAll] = useState(false);
   const { todos } = useContext(TodosContext);
+  const { setNewError, setShowError } = useContext(ErrorsContext);
 
   const handleChangeAll = () => {
     if (checkAllStatuses(todos)) {
@@ -48,23 +50,29 @@ export const InputForm: React.FC<Props> = ({ onSubmit, onCompleted }) => {
     }
   };
 
-  async function handleSubmit(event: React.FormEvent) {
+  function handleSubmit(event: React.FormEvent) {
     event.preventDefault();
 
     try {
       const newTodo: Todo = {
         id: 0,
-        title: newTodoTitle,
+        title: newTodoTitle.trim(),
         userId: USER_ID,
         completed: false,
       };
 
-      onSubmit(newTodo);
-      setNewTodoTitle('');
+      if (newTodoTitle.trim() !== '') {
+        onSubmit(newTodo);
+      }
     } catch (error) {
-      throw new Error();
+      throw new Error('error');
     } finally {
-      console.log('handle submit newTodo', newTodoTitle);
+      if (newTodoTitle.trim() === '') {
+        setNewError(ErrorMessages.emptyTitle);
+        setShowError(true);
+      }
+
+      setNewTodoTitle('');
     }
   }
 

@@ -6,6 +6,7 @@ import { UserWarning } from './UserWarning';
 import { Filter } from './components/Filter/Filter';
 import { TodoList } from './components/TodoList/TodoList';
 import {
+  ErrorsContext,
   TodoUpdateContext,
   TodosContext,
   TodosProvider,
@@ -20,14 +21,14 @@ export const AppContent: React.FC = () => {
   const { addTodo, changeTodo, removeTodo } = useContext(TodoUpdateContext);
   const { todos } = useContext(TodosContext);
   const [status, setStatus] = useState<Status>(Status.All);
-  const [isClicked, setIsClicked] = useState(false);
+  const { setShowError } = useContext(ErrorsContext);
 
   const handleStatusChange = (newStatus: Status) => {
     setStatus(newStatus);
   };
 
-  const handleSetIsClicked = (clicked: boolean) => {
-    setIsClicked(!clicked);
+  const handleSetIsClicked = () => {
+    setShowError(false);
   };
 
   if (!USER_ID) {
@@ -52,7 +53,7 @@ export const AppContent: React.FC = () => {
           />
         )}
       </div>
-      {isClicked && (<Error onIsClicked={handleSetIsClicked} />)}
+      <Error onIsClicked={handleSetIsClicked} />
       {/* Notification is shown in case of any error */}
       {/* Add the 'hidden' class to hide the message smoothly */}
     </div>

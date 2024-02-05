@@ -5,3 +5,10 @@ export enum ErrorMessages {
   unableToDelete = 'Unable to delete a todo',
   unableToUpdate = 'Unable to update a todo',
 }
+
+export interface Errors {
+  newError: ErrorMessages | null,
+  setNewError: React.Dispatch<React.SetStateAction<ErrorMessages | null>>,
+  showError: boolean,
+  setShowError: React.Dispatch<React.SetStateAction<boolean>>,
+}
