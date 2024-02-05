@@ -95,14 +95,14 @@ export const TodoProvider: React.FC<TodoContextProps> = ({ children }) => {
     if (titleField.current) {
       titleField.current.focus();
     }
-  }, [todos]);
+  }, [todos, error]);
 
-  const existingCompleted = todos.some((value) => {
-    return value.completed;
+  const existingCompleted = todos.some((todo) => {
+    return todo.completed;
   });
 
-  const nonCompletedTodos = todos.reduce((counter, value) => {
-    if (!value.completed) {
+  const nonCompletedTodos = todos.reduce((counter, todo) => {
+    if (!todo.completed) {
       return counter + 1;
     }
 
@@ -111,9 +111,9 @@ export const TodoProvider: React.FC<TodoContextProps> = ({ children }) => {
 
   const loadTodos = () => {
     api.getTodos(USER_ID)
-      .then((response) => {
-        setTodos(response);
-        setFilteredTodos(response);
+      .then((apiTodos) => {
+        setTodos(apiTodos);
+        setFilteredTodos(apiTodos);
       })
       .catch(() => {
         setError('Unable to load todos');
@@ -155,51 +155,6 @@ export const TodoProvider: React.FC<TodoContextProps> = ({ children }) => {
     setFilteredTodos(filtereDtodo());
   }, [filter, todos]);
 
-  // const handleSubmit = async () => {
-  //   if (!postTodo.trim()) {
-  //     setDisableInput(false);
-  //     setError('Title should not be empty');
-
-  //     return;
-  //   }
-
-  //   setTempTodo({
-  //     id: 0,
-  //     userId: USER_ID,
-  //     title: postTodo.trim(),
-  //     completed: false,
-  //   });
-
-  //   try {
-  //     setDisableInput(true);
-
-  //     const todo = await api.postTodos(USER_ID, {
-  //       id: 0,
-  //       userId: USER_ID,
-  //       title: postTodo.trim(),
-  //       completed: true,
-  //     });
-
-  //     setTodos((currentTodos) => [...currentTodos, todo]);
-  //     setFilteredTodos((currentFilteredTodos) => {
-  //       return [...currentFilteredTodos, todo];
-  //     });
-
-  //     setTempTodo(null);
-
-  //     // setIsLoading([todo.id]);
-  //     setPostTodo('');
-  //   } catch (err) {
-  //     setError('Unable to add a todo');
-  //   } finally {
-  //     setDisableInput(false);
-  //     if (titleField.current) {
-  //       titleField.current.focus();
-  //     }
-  //     // setIsLoading([]);
-  //   }
-  // };
-
   const handleSubmit = () => {
     if (!postTodo.trim()) {
       setDisableInput(false);
@@ -211,27 +166,26 @@ export const TodoProvider: React.FC<TodoContextProps> = ({ children }) => {
       id: 0,
       userId: USER_ID,
       title: postTodo.trim(),
-      completed: true,
+      completed: false,
     };
 
     setTempTodo(newTodo);
 
-    api.postTodos(USER_ID, newTodo)
+    api.postTodos(newTodo)
       .then((todo) => {
-        // setFilteredTodos((currentFilteredTodos) => {
-        //   return [...currentFilteredTodos, todo];
-        // });
-
         setTodos((currentTodos) => [...currentTodos, todo]);
-        // setIsLoading([todo.id]);
+        setTempTodo(null);
+        setPostTodo('');
       })
       .catch(() => {
         setError('Unable to add a todo');
+        setTempTodo(null);
+        if (titleField.current) {
+          titleField.current.focus();
+        }
       })
       .finally(() => {
         setDisableInput(false);
-        setIsLoading([]);
-        setPostTodo('');
       });
   };
 
@@ -313,31 +267,6 @@ export const TodoProvider: React.FC<TodoContextProps> = ({ children }) => {
       });
     }
   };
-
-  // const handleCompletedDelete = () => {
-  //   todos.forEach((value) => {
-  //     if (value.completed) {
-  //       setIsLoading(currentLoading => [...currentLoading, value.id]);
-  //     }
-  //   });
-
-  //   todos.forEach((value) => {
-  //     if (value.completed) {
-  //       api.deletTodos(value.id)
-  //         .then(() => {
-  //           setFilteredTodos((currentFilteredTodos) => {
-  //             return currentFilteredTodos.filter((todo) => !todo.completed);
-  //           });
-  //         })
-  //         .catch(() => {
-  //           setError('Unable to delete a todo');
-  //         })
-  //         .finally(() => {
-  //           setIsLoading([]);
-  //         });
-  //     }
-  //   });
-  // };
 
   const value = {
     postTodo,

@@ -2,6 +2,7 @@
 import React, { useContext } from 'react';
 import cn from 'classnames';
 import { TodoContext } from './TodoContext';
+import { Todo } from './types/Todo';
 
 export const App: React.FC = () => {
   const {
@@ -15,6 +16,9 @@ export const App: React.FC = () => {
     isLoading,
     isChosenToRename,
     editingTodo,
+    existingCompleted,
+    titleField,
+    tempTodo,
     setIsChosenToRename,
     setEditingTodo,
     setDisableInput,
@@ -27,10 +31,28 @@ export const App: React.FC = () => {
     makeTodoCompleted,
     handleEditing,
     makeTodoChange,
-    existingCompleted,
-    titleField,
-    tempTodo,
   } = useContext(TodoContext);
+
+  const onSubmitMainInput = (event: React.FormEvent<HTMLFormElement>) => {
+    event.preventDefault();
+    setDisableInput(true);
+    handleSubmit();
+    if (!postTodo.trim()) {
+      setError('Title should not be empty');
+    }
+  };
+
+  const onSubmitRenameField = (
+    event: React.FormEvent<HTMLFormElement>,
+    value: Todo,
+  ) => {
+    event.preventDefault();
+    makeTodoChange(value.id, editingTodo.trim());
+    setIsChosenToRename(0);
+    if (!editingTodo.trim()) {
+      setError('Title should not be empty');
+    }
+  };
 
   return (
     <div className="todoapp">
@@ -38,23 +60,13 @@ export const App: React.FC = () => {
 
       <div className="todoapp__content">
         <header className="todoapp__header">
-          {/* this buttons is active only if there are some active todos */}
           <button
             type="button"
             className="todoapp__toggle-all active"
             data-cy="ToggleAllButton"
           />
 
-          {/* Add a todo on form submit */}
-          <form onSubmit={(event) => {
-            event.preventDefault();
-            setDisableInput(true);
-            handleSubmit();
-            if (!postTodo.trim()) {
-              setError('Title should not be empty');
-            }
-          }}
-          >
+          <form onSubmit={onSubmitMainInput}>
             <input
               data-cy="NewTodoField"
               type="text"
@@ -71,9 +83,9 @@ export const App: React.FC = () => {
         </header>
 
         <section className="todoapp__main" data-cy="TodoList">
-          {filteredTodos.map((value) => (
-            <React.Fragment key={value.id}>
-              {isChosenToRename === value.id ? (
+          {filteredTodos.map((todo) => (
+            <React.Fragment key={todo.id}>
+              {isChosenToRename === todo.id ? (
                 <div data-cy="Todo" className="todo">
                   <label className="todo__status-label">
                     <input
@@ -82,15 +94,7 @@ export const App: React.FC = () => {
                       className="todo__status"
                     />
                   </label>
-                  <form onSubmit={(event) => {
-                    event.preventDefault();
-                    makeTodoChange(value.id, editingTodo.trim());
-                    setIsChosenToRename(0);
-                    if (!editingTodo.trim()) {
-                      setError('Title should not be empty');
-                    }
-                  }}
-                  >
+                  <form onSubmit={event => onSubmitRenameField(event, todo)}>
                     <input
                       data-cy="TodoTitleField"
                       type="text"
@@ -114,7 +118,7 @@ export const App: React.FC = () => {
                 <div
                   data-cy="Todo"
                   className={cn('todo', {
-                    completed: value.completed,
+                    completed: todo.completed,
                   })}
                 >
                   <label className="todo__status-label">
@@ -122,10 +126,10 @@ export const App: React.FC = () => {
                       data-cy="TodoStatus"
                       type="checkbox"
                       className="todo__status"
-                      checked={value.completed}
+                      checked={todo.completed}
                       onChange={() => null}
                       onClick={() => {
-                        makeTodoCompleted(value.id, value.completed);
+                        makeTodoCompleted(todo.id, todo.completed);
                       }}
                     />
                   </label>
@@ -136,16 +140,16 @@ export const App: React.FC = () => {
                     role="button"
                     tabIndex={0}
                     onClick={() => {
-                      handleEditing(value.id);
-                      setEditingTodo(value.title);
+                      handleEditing(todo.id);
+                      setEditingTodo(todo.title);
                     }}
                     onKeyUp={(event) => {
                       if (event.key === 'Enter') {
-                        handleEditing(value.id);
+                        handleEditing(todo.id);
                       }
                     }}
                   >
-                    {value.title}
+                    {todo.title}
                   </span>
 
                   <button
@@ -153,7 +157,7 @@ export const App: React.FC = () => {
                     className="todo__remove"
                     data-cy="TodoDelete"
                     onClick={() => {
-                      handleDelete(value.id);
+                      handleDelete(todo.id);
                     }}
                   >
                     ×
@@ -162,7 +166,7 @@ export const App: React.FC = () => {
                   <div
                     data-cy="TodoLoader"
                     className={cn('modal overlay', {
-                      'is-active': isLoading.includes(value.id),
+                      'is-active': isLoading.includes(todo.id),
                     })}
                   >
                     <div
@@ -175,37 +179,10 @@ export const App: React.FC = () => {
 
             </React.Fragment>
           ))}
+        </section>
 
-          {tempTodo && (
-            <div key={tempTodo.id} data-cy="Todo" className="todo temp-todo">
-              <label className="todo__status-label">
-                <input
-                  data-cy="TodoStatus"
-                  type="checkbox"
-                  className="todo__status"
-                />
-              </label>
-
-              <span data-cy="TodoTitle" className="todo__title">
-                {tempTodo.title}
-              </span>
-
-              <button
-                type="button"
-                className="todo__remove"
-                data-cy="TodoDelete"
-              >
-                ×
-              </button>
-              <div data-cy="TodoLoader" className="modal overlay is-active">
-                <div className="modal-background has-background-white-ter" />
-                <div className="loader" />
-              </div>
-            </div>
-          )}
-
-          {/* This todo is not completed */}
-          {/* {<div data-cy="Todo" className="todo">
+        {tempTodo && (
+          <div key={tempTodo.id} data-cy="Todo" className="todo temp-todo">
             <label className="todo__status-label">
               <input
                 data-cy="TodoStatus"
@@ -215,56 +192,29 @@ export const App: React.FC = () => {
             </label>
 
             <span data-cy="TodoTitle" className="todo__title">
-              Not Completed Todo
+              {tempTodo.title}
             </span>
-            <button type="button" className="todo__remove" data-cy="TodoDelete">
+
+            <button
+              type="button"
+              className="todo__remove"
+              data-cy="TodoDelete"
+            >
               ×
             </button>
-
-            <div data-cy="TodoLoader" className="modal overlay">
+            <div data-cy="TodoLoader" className="modal overlay is-active">
               <div className="modal-background has-background-white-ter" />
               <div className="loader" />
             </div>
-          </div>} */}
+          </div>
+        )}
 
-          {/* This todo is being edited */}
-          {/* {<div data-cy="Todo" className="todo">
-            <label className="todo__status-label">
-              <input
-                data-cy="TodoStatus"
-                type="checkbox"
-                className="todo__status"
-              />
-            </label>
-
-            This form is shown instead of the title and remove button
-            <form>
-              <input
-                data-cy="TodoTitleField"
-                type="text"
-                className="todo__title-field"
-                placeholder="Empty todo will be deleted"
-                value="Todo is being edited now"
-              />
-            </form>
-
-            <div data-cy="TodoLoader" className="modal overlay">
-              <div className="modal-background has-background-white-ter" />
-              <div className="loader" />
-            </div>
-          </div>} */}
-
-          {/* This todo is in loadind state */}
-        </section>
-
-        {/* Hide the footer if there are no todos */}
         {todos.length > 0 && (
           <footer className="todoapp__footer" data-cy="Footer">
             <span className="todo-count" data-cy="TodosCounter">
               {`${nonCompletedTodos} items left`}
             </span>
 
-            {/* Active filter should have a 'selected' class */}
             <nav className="filter" data-cy="Filter">
               <a
                 href="#/"
@@ -306,7 +256,6 @@ export const App: React.FC = () => {
               </a>
             </nav>
 
-            {/* don't show this button if there are no completed todos */}
             {existingCompleted && (
               <button
                 type="button"
@@ -322,11 +271,6 @@ export const App: React.FC = () => {
           </footer>
         )}
       </div>
-
-      {/* Notification is shown in case of any error */}
-      {/* Add the 'hidden' class to hide the message smoothly */}
-
-      {/* show only one message at a time */}
       <div
         data-cy="ErrorNotification"
         className={cn(
@@ -348,19 +292,16 @@ export const App: React.FC = () => {
         )}
         {error === 'Title should not be empty' && (
           <>
-            {/* {<br />} */}
             Title should not be empty
           </>
         )}
         {error === 'Unable to add a todo' && (
           <>
-            {/* {<br />} */}
             Unable to add a todo
           </>
         )}
         {error === 'Unable to delete a todo' && (
           <>
-            {/* {<br />} */}
             Unable to delete a todo
           </>
         )}
