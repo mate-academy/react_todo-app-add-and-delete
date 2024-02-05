@@ -20,7 +20,7 @@ export const Header: React.FC<Props> = ({
   const todoInput = useRef<HTMLInputElement>(null);
 
   const newTodo = {
-    usedId: USER_ID,
+    userId: USER_ID,
     title: value.trim(),
     completed: false,
   };
