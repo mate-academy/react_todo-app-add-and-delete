@@ -1,9 +1,9 @@
 import { useContext } from 'react';
-// eslint-disable-next-line import/no-cycle
+
 import { TodoContext } from './TodosContext';
 import { TodoContextProps } from '../types/TodoContextProps';
 import { Status } from '../types/Status';
-// eslint-disable-next-line import/no-cycle
+
 import { TodoItem } from './TodoItem';
 
 export const TodoList:React.FC = () => {

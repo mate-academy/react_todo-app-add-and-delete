@@ -6,7 +6,7 @@ import {
 } from 'react';
 import classNames from 'classnames';
 import { Todo } from '../types/Todo';
-// eslint-disable-next-line import/no-cycle
+
 import { TodoContext } from './TodosContext';
 
 interface Props {

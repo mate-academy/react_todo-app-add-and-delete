@@ -1,7 +1,6 @@
 /* eslint-disable jsx-a11y/control-has-associated-label */
 import React, { useContext, useEffect } from 'react';
 import classNames from 'classnames';
-// eslint-disable-next-line import/no-cycle
 import { TodoContext } from './TodosContext';
 
 export const ErrorComponent: React.FC = () => {

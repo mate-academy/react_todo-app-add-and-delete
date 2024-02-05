@@ -1,7 +1,7 @@
 import { useContext } from 'react';
-// eslint-disable-next-line import/no-cycle
+
 import { TodosFilter } from './TodoFilter';
-// eslint-disable-next-line import/no-cycle
+
 import { TodoContext } from './TodosContext';
 import { Status } from '../types/Status';
 

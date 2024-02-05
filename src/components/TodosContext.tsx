@@ -1,11 +1,10 @@
 import React, { useEffect, useState } from 'react';
 
-// eslint-disable-next-line import/no-cycle
-import { USER_ID } from '../App';
 import { Todo } from '../types/Todo';
 import { Status } from '../types/Status';
 import { TodoContextProps } from '../types/TodoContextProps';
 import { deleteTodoo, getTodos } from '../api/todos';
+import { USER_ID } from '../constants';
 
 export const TodoContext = React
   .createContext<TodoContextProps>({

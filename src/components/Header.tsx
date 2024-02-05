@@ -4,11 +4,11 @@ import React, {
   useRef,
   useState,
 } from 'react';
-// eslint-disable-next-line import/no-cycle
+
 import { TodoContext } from './TodosContext';
-// eslint-disable-next-line import/no-cycle
-import { USER_ID } from '../App';
+
 import { addTodos } from '../api/todos';
+import { USER_ID } from '../constants';
 
 /* eslint-disable jsx-a11y/control-has-associated-label */
 export const Header:React.FC = () => {
