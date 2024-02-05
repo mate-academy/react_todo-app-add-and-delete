@@ -6,7 +6,7 @@ export const getTodos = (userId: number) => {
 };
 
 export const deleteTodos = (todoId: number) => {
-  return client.delete(`/todos/${todoId}`)
+  return client.delete(`/todos/${todoId}`);
 };
 
 export const createTodo = ({ title, userId, completed }: Omit<Todo, 'id'>) => {

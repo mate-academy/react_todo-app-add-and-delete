@@ -1,9 +1,11 @@
 /* eslint-disable jsx-a11y/control-has-associated-label */
-import React, { useContext, useEffect, useMemo, useRef, useState } from 'react';
+import React, {
+  useContext, useEffect, useMemo, useRef, useState,
+} from 'react';
+import classNames from 'classnames';
 import { TodoContext } from '../context/TodoContext';
 import { USER_ID } from '../variables/UserID';
 import { createTodo } from '../api/todos';
-import classNames from 'classnames';
 
 export const Header: React.FC = () => {
   const [isDisabled, setIsDisabled] = useState(false);
@@ -26,7 +28,7 @@ export const Header: React.FC = () => {
   }, [todos, errorMessage]);
 
   const handleInput = (event: React.ChangeEvent<HTMLInputElement>) => {
-    setTitle(event.target.value)
+    setTitle(event.target.value);
   };
 
   const completedTodos = useMemo(() => {
@@ -58,7 +60,7 @@ export const Header: React.FC = () => {
       .finally(() => {
         setIsDisabled(false);
       });
-  }
+  };
 
   const handleSubmit = (event: React.FormEvent) => {
     event.preventDefault();
@@ -71,13 +73,12 @@ export const Header: React.FC = () => {
     }
   };
 
-
   return (
     <header className="todoapp__header">
       <button
         type="button"
         className={classNames('todoapp__toggle-all',
-        { active: completedTodos })}
+          { active: completedTodos })}
         data-cy="ToggleAllButton"
       />
 

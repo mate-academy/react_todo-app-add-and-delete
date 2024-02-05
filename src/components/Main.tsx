@@ -4,12 +4,14 @@ import { Todo } from '../types/Todo';
 import { TodoContext } from '../context/TodoContext';
 
 export const Main: React.FC = () => {
-  const { todos, filterTodoByStatus, status, tempTodo, errorMessage } = useContext(TodoContext);
+  const {
+    todos, filterTodoByStatus, status, tempTodo, errorMessage,
+  } = useContext(TodoContext);
   const [visibleTodos, setVisibleTodos] = useState<Todo[]>([]);
 
   useEffect(() => {
     setVisibleTodos(filterTodoByStatus(todos, status));
-  }, [todos, status]);
+  }, [todos, status, filterTodoByStatus]);
 
   return (
 

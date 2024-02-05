@@ -4,13 +4,13 @@ import { FilterStatus } from '../types/Status';
 import { TodoContext } from '../context/TodoContext';
 
 export const Footer: React.FC = () => {
-  const { todos, setStatus, status, clearTodo } = useContext(TodoContext);
+  const {
+    todos, setStatus, status, clearTodo,
+  } = useContext(TodoContext);
 
   const unCompletedTodos = useMemo(() => {
     return todos.filter(todo => !todo.completed).length;
   }, [todos]);
-
- 
 
   return (
     <footer className="todoapp__footer" data-cy="Footer">
@@ -54,17 +54,17 @@ export const Footer: React.FC = () => {
         >
           Completed
         </a>
-        </nav>
+      </nav>
 
-        <button
+      <button
         type="button"
         className="todoapp__clear-completed"
         data-cy="ClearCompletedButton"
         onClick={clearTodo}
         disabled={unCompletedTodos === todos.length}
-        >
-          Clear completed
-        </button>
+      >
+        Clear completed
+      </button>
     </footer>
   );
 };

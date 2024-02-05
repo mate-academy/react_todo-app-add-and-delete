@@ -1,6 +1,7 @@
-import classNames from "classnames";
-import React, { useContext, useEffect } from "react";
-import { TodoContext } from "../context/TodoContext";
+/* eslint-disable jsx-a11y/control-has-associated-label */
+import classNames from 'classnames';
+import React, { useContext, useEffect } from 'react';
+import { TodoContext } from '../context/TodoContext';
 
 export const ErrorArea: React.FC = () => {
   const { errorMessage, setErrorMessage } = useContext(TodoContext);
@@ -29,5 +30,5 @@ export const ErrorArea: React.FC = () => {
       />
       {errorMessage}
     </div>
-  )
-}
+  );
+};

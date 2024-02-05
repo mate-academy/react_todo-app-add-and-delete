@@ -54,7 +54,7 @@ export const TodoProvider: React.FC<Props> = ({ children }) => {
   const [todos, setTodos] = useState<Todo[]>([]);
   const [status, setStatus] = useState(FilterStatus.All);
   const [errorMessage, setErrorMessage] = useState('');
-  const [deletedId, setDeletedId] = useState<number[]>([])
+  const [deletedId, setDeletedId] = useState<number[]>([]);
   const [title, setTitle] = useState('');
   const [loading, setLoading] = useState(false);
   const [tempTodo, setTempTodo] = useState<Todo | null>(null);
@@ -72,7 +72,7 @@ export const TodoProvider: React.FC<Props> = ({ children }) => {
   function deleteTodos(todoId: number) {
     apiService.deleteTodos(todoId)
       .catch(() => {
-        setErrorMessage('Unable to delete todo')
+        setErrorMessage('Unable to delete todo');
       });
 
     setTodos(currentTodo => currentTodo.filter(todo => todo.id !== todoId));
@@ -90,21 +90,25 @@ export const TodoProvider: React.FC<Props> = ({ children }) => {
       const completedIds = todos
         .filter(todo => todo.completed)
         .map(todo => todo.id);
-  
+
       await Promise.all(completedIds.map(id => apiService.deleteTodos(id)));
-  
-      setTodos((prevTodos) => prevTodos.filter(todo => !completedIds.includes(todo.id)));
+
+      setTodos(
+        (prevTodos) => prevTodos.filter(
+          todo => !completedIds.includes(todo.id),
+        ),
+      );
     } catch (error) {
       setErrorMessage('Unable to delete todo');
     }
-  
+
     setDeletedId([]);
   };
 
   const value = useMemo(() => ({
     todos,
     status,
-    errorMessage, 
+    errorMessage,
     deletedId,
     title,
     loading,
@@ -120,7 +124,16 @@ export const TodoProvider: React.FC<Props> = ({ children }) => {
     clearTodo,
     filterTodoByStatus,
     toggleAll,
-  }), [todos, status, errorMessage, deletedId, title, tempTodo]); 
+  }), [
+    todos,
+    status,
+    errorMessage,
+    deletedId,
+    title,
+    tempTodo,
+    clearTodo,
+    loading,
+  ]);
 
   return (
     <TodoContext.Provider value={value}>

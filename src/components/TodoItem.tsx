@@ -4,7 +4,6 @@ import { Todo } from '../types/Todo';
 import { Loader } from './Loader';
 import { TodoContext } from '../context/TodoContext';
 
-
 interface Props {
   items: Todo;
 }
@@ -16,13 +15,13 @@ export const TodoItem: React.FC<Props> = ({ items }) => {
   async function handleDelete() {
     setLoading(true);
 
-      try {
-        await deleteTodos(id);
-      } catch (error) {
-        setErrorMessage('Unable to delete a todo');
-      } finally {
-        setLoading(false);
-      }
+    try {
+      await deleteTodos(id);
+    } catch (error) {
+      setErrorMessage('Unable to delete a todo');
+    } finally {
+      setLoading(false);
+    }
   }
 
   return (
@@ -34,8 +33,8 @@ export const TodoItem: React.FC<Props> = ({ items }) => {
         <input
           data-cy="TodoStatus"
           type="checkbox"
+          defaultChecked={completed}
           className={classNames('todo__status', { completed })}
-          checked={completed}
         />
       </label>
 
