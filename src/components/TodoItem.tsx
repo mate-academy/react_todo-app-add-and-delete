@@ -4,9 +4,10 @@ import { Todo } from '../types/Todo';
 
 interface Props {
   todo: Todo;
+  deleteTodo: (todoId: number) => void;
 }
 
-export const TodoItem: React.FC<Props> = ({ todo }) => {
+export const TodoItem: React.FC<Props> = ({ todo, deleteTodo }) => {
   const [isCompleted, setIsCompleted] = useState(todo.completed);
 
   return (
@@ -36,6 +37,7 @@ export const TodoItem: React.FC<Props> = ({ todo }) => {
         type="button"
         className="todo__remove"
         data-cy="TodoDelete"
+        onClick={() => deleteTodo(todo.id)}
       >
         ×
       </button>
