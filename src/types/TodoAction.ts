@@ -1,5 +1,7 @@
 export enum TodoAction {
-  SetError = 'setError',
-  SetFilterOptions = 'setFilterOptions',
-  SetOperatingTodos = 'setOperatingTodos',
+  SetError = 'SetError',
+  SetFilterOptions = 'SetFilterOptions',
+  AddOperatingTodoId = 'AddOperatingTodo',
+  DeleteOperatingTodoId = 'DeleteOperatingTodo',
+  SetOperatingTodoIds = 'SetOperatingTodos',
 }

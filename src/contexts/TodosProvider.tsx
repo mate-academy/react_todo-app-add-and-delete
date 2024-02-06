@@ -1,4 +1,6 @@
-import React, { useEffect, useMemo, useReducer, useState } from 'react';
+import React, {
+  useEffect, useMemo, useReducer, useState,
+} from 'react';
 import { Todo } from '../types/Todo';
 import { TodoAction } from '../types/TodoAction';
 import { FilterOptions } from '../types/FilterOptions';
@@ -16,14 +18,17 @@ type Action = {
   type: TodoAction.SetError,
   errorMessage: string,
 } | {
-  type: TodoAction.SetOperatingTodos,
-  todos: Todo[],
+  type: TodoAction.SetOperatingTodoIds,
+  todoIds: number[],
+} | {
+  type: TodoAction.AddOperatingTodoId | TodoAction.DeleteOperatingTodoId,
+  todoId: number,
 };
 
 interface State {
   filterOptions: FilterOptions,
   errorMessage: string,
-  operatingTodos: Todo[],
+  operatingTodoIds: number[],
 }
 
 function reducer(
@@ -31,69 +36,6 @@ function reducer(
   action: Action,
 ): State {
   switch (action.type) {
-    // case TodoAction.Add: {
-    //   return {
-    //     ...state,
-    //     todos: [...state.todos, action.todo],
-    //   };
-    // }
-
-    // case TodoAction.Delete: {
-    //   const newTodos = state.todos.filter(currentTodo => ((
-    //     currentTodo.id !== action.todo.id)));
-
-    //   return {
-    //     ...state,
-    //     todos: newTodos,
-    //   };
-    // }
-
-    // case TodoAction.Update: {
-    //   const todoCopy = [...state.todos];
-    //   const editedTodoIndex
-    //     = todoCopy.findIndex(currentTodo => (
-    //       currentTodo.id === action.todo.id));
-
-    //   todoCopy[editedTodoIndex] = action.todo;
-
-    //   return {
-    //     ...state,
-    //     todos: todoCopy,
-    //   };
-    // }
-
-    // case TodoAction.ClearCompleted: {
-    //   const completedTodos = state.todos.filter(({ completed }) => completed);
-
-    //   Promise.all(completedTodos.map(({ id }) => deleteTodo(id)))
-    //     .then(() => {
-    //       return {
-    //         ...state,
-    //         operatingTodos: [],
-    //       };
-    //     })
-    //     .catch(() => {
-    //       return {
-    //         ...state,
-    //         errorMessage: 'Unable to delete todo',
-    //       };
-    //     })
-    //     .finally(() => {
-    //       getTodos().then(todos => {
-
-    //       })
-    //     });
-
-    //   break;
-    // }
-
-    // case TodoAction.SetTodos: {
-    //   return {
-    //     ...state,
-    //     todos: action.todos,
-    //   };
-    // }
-
     case TodoAction.SetFilterOptions: {
       return {
         ...state,
@@ -108,10 +50,25 @@ function reducer(
       };
     }
 
-    case TodoAction.SetOperatingTodos: {
+    case TodoAction.SetOperatingTodoIds: {
       return {
         ...state,
-        operatingTodos: action.todos,
+        operatingTodoIds: action.todoIds,
+      };
+    }
+
+    case TodoAction.AddOperatingTodoId: {
+      return {
+        ...state,
+        operatingTodoIds: [...state.operatingTodoIds, action.todoId],
+      };
+    }
+
+    case TodoAction.DeleteOperatingTodoId: {
+      return {
+        ...state,
+        operatingTodoIds: state.operatingTodoIds
+          .filter(id => id !== action.todoId),
       };
     }
 
@@ -124,18 +81,25 @@ function reducer(
 
 export const TodosUpdateContext = React.createContext({
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
-  clearCompleted: (_completedTodos: Todo[]) => { },
+  toggleAll: (_isAllCompleted: boolean) => { },
+  updateTodo: (
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
+    _todoId: number,
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
+    _updatedFields: Partial<Todo>,
+  ) => (Promise.prototype),
+  clearCompleted: () => { },
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
-  addTodo: (_todo: Todo, _onSuccess = () => {}, _onFinally = () => {}) => { },
+  addTodo: (_todo: Todo) => (Promise.prototype),
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
-  deleteTodo: (_todoId: number, _onError = () => {}) => { },
+  deleteTodo: (_todoId: number) => (Promise.prototype),
 });
 
 export const TodosContext = React.createContext({
   errorMessage: '',
   todos: [] as Todo[],
   filterOptions: FilterOptions.All,
-  operatingTodos: [] as Todo[],
+  operatingTodoIds: [] as number[],
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
   dispatch: (_action: Action) => { },
 });
@@ -145,7 +109,7 @@ export const TodosProvider: React.FC<Props> = ({ children }) => {
   const [state, dispatch] = useReducer(reducer, {
     filterOptions: FilterOptions.All,
     errorMessage: '',
-    operatingTodos: [],
+    operatingTodoIds: [],
   });
 
   function loadTodos() {
@@ -165,80 +129,204 @@ export const TodosProvider: React.FC<Props> = ({ children }) => {
 
   function addTodo(
     todo: Todo,
-    onSuccess = () => {},
-    onFinally = () => {},
   ) {
     return api.addTodo(todo)
       .then(newTodo => {
         setTodos(currentTodos => [...currentTodos, newTodo]);
-        onSuccess();
       })
       .catch(() => {
         dispatch({
           type: TodoAction.SetError,
           errorMessage: 'Unable to add a todo',
         });
-      })
-      .finally(() => onFinally());
-  }
-
-  // eslint-disable-next-line react-hooks/exhaustive-deps
-  function deleteTodo(id: number, onError = () => {}) {
-    return api.deleteTodo(id)
-      .then(() => {
-        setTodos(todos.filter(todo => todo.id !== id));
-      })
-      .catch(() => {
-        onError();
-      })
-      .finally(() => {
-        dispatch({
-          type: TodoAction.SetOperatingTodos,
-          todos: state.operatingTodos
-            .filter(operatingTodo => operatingTodo.id !== id),
-        });
       });
   }
 
   // eslint-disable-next-line react-hooks/exhaustive-deps
-  function clearCompleted(completedTodos: Todo[]) {
-    return Promise.all(completedTodos.map(({ id }) => deleteTodo(id)))
+  function deleteTodo(todoId: number): Promise<void> {
+    dispatch({
+      type: TodoAction.AddOperatingTodoId,
+      todoId,
+    });
+
+    return api.deleteTodo(todoId)
+      .then(() => {
+        setTodos(todos.filter(todo => todo.id !== todoId));
+      })
       .catch(() => {
         dispatch({
           type: TodoAction.SetError,
-          errorMessage: 'Unable to delete todo',
+          errorMessage: 'Unable to delete a todo',
         });
+
+        throw new Error();
       })
       .finally(() => {
         dispatch({
-          type: TodoAction.SetOperatingTodos,
-          todos: [],
+          type: TodoAction.DeleteOperatingTodoId,
+          todoId,
         });
-
-        loadTodos();
       });
   }
 
-  // function updateTodo(todoId: number, updatedFields: Partial<Todo>) {
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  function updateTodo(
+    todoId: number,
+    updatedFields: Partial<Todo>,
+  ): Promise<void> {
+    dispatch({
+      type: TodoAction.AddOperatingTodoId,
+      todoId,
+    });
 
-  // }
+    return api.updateTodo(todoId, updatedFields)
+      .then((updatedTodo) => {
+        const updatedTodoIndex = todos.findIndex(todo => todo.id === todoId);
+
+        setTodos(currentTodos => ([
+          ...currentTodos.slice(0, updatedTodoIndex),
+          updatedTodo,
+          ...currentTodos.slice(updatedTodoIndex + 1),
+        ]));
+      })
+      .catch(() => {
+        dispatch({
+          type: TodoAction.SetError,
+          errorMessage: 'Unable to update a todo',
+        });
+
+        throw new Error();
+      })
+      .finally(() => {
+        dispatch({
+          type: TodoAction.DeleteOperatingTodoId,
+          todoId,
+        });
+      });
+  }
+
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  function clearCompleted() {
+    const completedTodos = todos.filter(({ completed }) => completed);
+    const completedTodoIds = completedTodos.map(({ id }) => id);
+
+    dispatch({
+      type: TodoAction.SetOperatingTodoIds,
+      todoIds: [...state.operatingTodoIds, ...completedTodoIds],
+    });
+
+    const deletedTodoIds: number[] = [];
+
+    return Promise.allSettled(completedTodos.map(({ id }) => (
+      api.deleteTodo(id)
+        .then(() => deletedTodoIds.push(id)))))
+      .then((results) => {
+        if (results.some(result => result.status === 'rejected')) {
+          dispatch({
+            type: TodoAction.SetError,
+            errorMessage: 'Unable to delete a todo',
+          });
+        }
+      })
+      .finally(() => {
+        setTodos(todos.filter(todo => !deletedTodoIds.includes(todo.id)));
+
+        dispatch({
+          type: TodoAction.SetOperatingTodoIds,
+          todoIds: state
+            .operatingTodoIds.filter((id) => !completedTodoIds.includes(id)),
+        });
+      });
+  }
+
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  function toggleAll(isAllCompleted: boolean) {
+    if (isAllCompleted) {
+      dispatch({
+        type: TodoAction.SetOperatingTodoIds,
+        todoIds: [...state.operatingTodoIds, ...todos.map(({ id }) => id)],
+      });
+
+      const updatedTodoIds: number[] = [];
+
+      return Promise.allSettled(
+        todos.map(todo => api.updateTodo(todo.id, { completed: false })
+          .then(() => updatedTodoIds.push(todo.id))),
+      )
+        .then((results) => {
+          if (results.some(result => result.status === 'rejected')) {
+            dispatch({
+              type: TodoAction.SetError,
+              errorMessage: 'Unable to update a todo',
+            });
+          }
+        })
+        .finally(() => {
+          setTodos(todos.map(todo => (
+            { ...todo, completed: !updatedTodoIds.includes(todo.id) })));
+
+          dispatch({
+            type: TodoAction.SetOperatingTodoIds,
+            todoIds: [],
+          });
+        });
+    }
+
+    const uncompletedTodos = todos.filter(({ completed }) => !completed);
+    const uncompletedTodoIds = uncompletedTodos.map(({ id }) => id);
+
+    dispatch({
+      type: TodoAction.SetOperatingTodoIds,
+      todoIds: uncompletedTodoIds,
+    });
+
+    const updatedTodoIds: number[] = [];
+
+    return Promise.allSettled(
+      uncompletedTodos.map(todo => api.updateTodo(todo.id, { completed: true })
+        .then(() => updatedTodoIds.push(todo.id))),
+    )
+      .then((results) => {
+        if (results.some(result => result.status === 'rejected')) {
+          dispatch({
+            type: TodoAction.SetError,
+            errorMessage: 'Unable to update a todo',
+          });
+        }
+      })
+      .finally(() => {
+        setTodos(
+          todos.map(todo => (uncompletedTodoIds.includes(todo.id)
+            ? ({ ...todo, completed: updatedTodoIds.includes(todo.id) })
+            : todo)),
+        );
+
+        dispatch({
+          type: TodoAction.SetOperatingTodoIds,
+          todoIds: state.operatingTodoIds
+            .filter((id) => !uncompletedTodoIds.includes(id)),
+        });
+      });
+  }
 
   const todosContextValue = useMemo(() => {
     return {
       todos,
       filterOptions: state.filterOptions,
       errorMessage: state.errorMessage,
-      operatingTodos: state.operatingTodos,
+      operatingTodoIds: state.operatingTodoIds,
       dispatch,
     };
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [state, todos]);
 
   const methods = useMemo(() => ({
+    toggleAll,
+    updateTodo,
     clearCompleted,
     addTodo,
     deleteTodo,
-  }), [deleteTodo, clearCompleted]);
+  }), [toggleAll, updateTodo, clearCompleted, deleteTodo]);
 
   return (
     <TodosUpdateContext.Provider value={methods}>

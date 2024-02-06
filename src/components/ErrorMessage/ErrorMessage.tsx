@@ -1,4 +1,5 @@
 import cn from 'classnames';
+import { useEffect } from 'react';
 
 interface Props {
   errorMessage: string,
@@ -14,6 +15,12 @@ export const ErrorMessage: React.FC<Props> = ({
   const handleErrorHiding = () => {
     onErrorHiding();
   };
+
+  useEffect(() => {
+    setTimeout(() => {
+      onErrorHiding();
+    }, 2000);
+  }, [errorMessage, onErrorHiding]);
 
   return (
     <div

@@ -1,5 +1,5 @@
 export enum FilterOptions {
-  All = 'all',
-  Completed = 'completed',
-  Active = 'active',
+  All = 'All',
+  Completed = 'Completed',
+  Active = 'Active',
 }
