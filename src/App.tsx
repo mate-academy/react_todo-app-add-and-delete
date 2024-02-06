@@ -1,6 +1,6 @@
 /* eslint-disable jsx-a11y/control-has-associated-label */
 import React, { useEffect, useState } from 'react';
-// import classNames from 'classnames';
+import classNames from 'classnames';
 import { UserWarning } from './UserWarning';
 import { addTodo, deleteTodo, getTodos } from './api/todos';
 import { Todo } from './types/Todo';
@@ -10,21 +10,7 @@ import { TodoList } from './components/TodoList';
 import { Header } from './components/Header';
 import { Footer } from './components/Footer';
 import { TodoItem } from './components/TodoItem';
-
-const USER_ID = 103;
-
-function filterTodoList(todos: Todo[], sortKey: SortType) {
-  switch (sortKey) {
-    case SortType.Completed:
-      return todos.filter(todo => todo.completed);
-
-    case SortType.Active:
-      return todos.filter(todo => !todo.completed);
-
-    default:
-      return todos;
-  }
-}
+import { USER_ID, filterTodoList } from './utils/variables';
 
 export const App: React.FC = () => {
   const [todos, setTodos] = useState<Todo[]>([]);
@@ -32,11 +18,11 @@ export const App: React.FC = () => {
   const [inputText, setInputText] = useState('');
   const [errorMessage, setErrorMessage] = useState<Errors | ''>('');
   const [sortBy, setSortBy] = useState<SortType>(SortType.All);
+  const [isLoading, setIsLoading] = useState<boolean>(false);
 
   const filteredTodos = filterTodoList(todos, sortBy);
-
-  const COMPLETED_TODO = filterTodoList(todos, SortType.Completed).length;
-  const ACTIVE_TODO = todos.length - COMPLETED_TODO;
+  const completedTodo = filterTodoList(todos, SortType.Completed);
+  const activeTodo = filterTodoList(todos, SortType.Active);
 
   const handleAddTodo = async (newTodo: Omit<Todo, 'id'>) => {
     setInputText(inputText);
@@ -45,16 +31,16 @@ export const App: React.FC = () => {
     addTodo(newTodo)
       .then(todo => {
         setTodos(current => [...current, todo]);
+        setInputText('');
       })
       .catch(() => {
-        setInputText(inputText);
         setErrorMessage(Errors.AddingError);
+        setInputText(inputText);
       })
       .finally(() => {
         setTempTodo(null);
+        setIsLoading(false);
       });
-
-    setInputText('');
   };
 
   const handleDeleteTodo = async (todoId: number) => {
@@ -81,13 +67,20 @@ export const App: React.FC = () => {
 
     getTodos(USER_ID)
       .then(setTodos)
-      .catch(() => setErrorMessage(Errors.LoadError))
-      .finally(() => {
-        setTimeout(() => {
-          setErrorMessage('');
-        }, 3000);
-      });
+      .catch(() => setErrorMessage(Errors.LoadError));
   }, [setTodos]);
+
+  useEffect(() => {
+    if (!errorMessage) {
+      return () => { };
+    }
+
+    const timerid = setTimeout(() => {
+      setErrorMessage('');
+    }, 2900);
+
+    return () => clearTimeout(timerid);
+  }, [errorMessage]);
 
   if (!USER_ID) {
     return <UserWarning />;
@@ -104,25 +97,28 @@ export const App: React.FC = () => {
           setInputText={setInputText}
           setError={setErrorMessage}
           handleAdd={handleAddTodo}
+          isLoading={isLoading}
+          setIsLoading={setIsLoading}
         />
 
         {!!todos.length && (
-          <TodoList todos={filteredTodos} deleteTodo={handleDeleteTodo} />
+          <>
+            <TodoList todos={filteredTodos} deleteTodo={handleDeleteTodo} />
+            {tempTodo && (
+              <TodoItem
+                todo={tempTodo}
+                key={tempTodo.id}
+                deleteTodo={handleDeleteTodo}
+                loading
+              />
+            )}
+          </>
         )}
 
-        {tempTodo && (
-          <TodoItem
-            todo={tempTodo}
-            key={tempTodo.id}
-            deleteTodo={handleDeleteTodo}
-          />
-        )}
-
-        {/* Hide the footer if there are no todos */}
-        {todos.length !== 0 && (
+        {!!todos.length && (
           <Footer
-            active={ACTIVE_TODO}
-            completed={COMPLETED_TODO}
+            active={activeTodo}
+            completed={completedTodo}
             setSortBy={setSortBy}
             sortBy={sortBy}
             deleteCompleted={handleDeleteCompleted}
@@ -131,24 +127,26 @@ export const App: React.FC = () => {
 
       </div>
 
-      {/* Notification is shown in case of any error */}
-      {/* Add the 'hidden' class to hide the message smoothly */}
-      {!!errorMessage.length && (
-        <div
-          data-cy="ErrorNotification"
-          className="notification is-danger is-light has-text-weight-normal"
-        >
-          <button
-            data-cy="HideErrorButton"
-            type="button"
-            className="delete"
-            onClick={() => setErrorMessage('')}
-          />
-          {/* show only one message at a time */}
-          {errorMessage}
-          <br />
-        </div>
-      )}
+      {/* {!!errorMessage.length && ( */}
+      <div
+        data-cy="ErrorNotification"
+        className={
+          classNames('notification is-danger is-light has-text-weight-normal',
+            {
+              hidden: !errorMessage,
+            })
+        }
+      >
+        <button
+          data-cy="HideErrorButton"
+          type="button"
+          className="delete"
+          onClick={() => setErrorMessage('')}
+        />
+        {errorMessage}
+        <br />
+      </div>
+      {/* )} */}
 
     </div>
   );

@@ -7,6 +7,8 @@ interface Props {
   userId: number,
   inputText: string;
   setInputText: (str: string) => void;
+  isLoading: boolean;
+  setIsLoading: (arg: boolean) => void;
   setError: (message: Errors | '') => void;
   handleAdd: (todo: Omit<Todo, 'id'>) => void;
 }
@@ -17,8 +19,16 @@ export const Header: React.FC<Props> = ({
   setInputText,
   setError,
   handleAdd,
+  isLoading,
+  setIsLoading,
 }) => {
   const inputField = useRef<HTMLInputElement>(null);
+
+  useEffect(() => {
+    if (inputField.current) {
+      inputField.current?.focus();
+    }
+  }, [isLoading]);
 
   useEffect(() => {
     if (inputField.current) {
@@ -29,15 +39,16 @@ export const Header: React.FC<Props> = ({
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
 
-    const title = inputText.trim();
+    const normalizedInput = inputText.trim();
 
-    if (title) {
+    if (normalizedInput) {
       const newTodo = {
-        title: inputText,
+        title: normalizedInput,
         userId,
         completed: false,
       };
 
+      setIsLoading(true);
       handleAdd(newTodo);
     } else {
       setError(Errors.EmptyTitle);
@@ -61,6 +72,7 @@ export const Header: React.FC<Props> = ({
           className="todoapp__new-todo"
           placeholder="What needs to be done?"
           ref={inputField}
+          disabled={isLoading}
           value={inputText}
           onChange={(e) => setInputText(e.target.value)}
         />

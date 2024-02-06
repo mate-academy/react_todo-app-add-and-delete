@@ -1,10 +1,11 @@
 import classNames from 'classnames';
 import React from 'react';
 import { SortType } from '../types/SortType';
+import { Todo } from '../types/Todo';
 
 interface Props {
-  active: number;
-  completed: number;
+  active: Todo[];
+  completed: Todo[];
   setSortBy: (sorted: SortType) => void;
   sortBy: SortType;
   deleteCompleted: () => void;
@@ -16,7 +17,7 @@ export const Footer: React.FC<Props> = ({
   return (
     <footer className="todoapp__footer" data-cy="Footer">
       <span className="todo-count" data-cy="TodosCounter">
-        {`${active} items left`}
+        {`${active.length} items left`}
       </span>
 
       {/* Active filter should have a 'selected' class */}
@@ -25,51 +26,50 @@ export const Footer: React.FC<Props> = ({
           href="#/"
           className={classNames(
             'filter__link',
-            { 'filter__link selected': sortBy === SortType.All },
+            { selected: sortBy === SortType.All },
           )}
           data-cy="FilterLinkAll"
           onClick={() => setSortBy(SortType.All)}
         >
-          All
+          {SortType.All}
         </a>
 
         <a
           href="#/active"
           className={classNames(
             'filter__link',
-            { 'filter__link selected': sortBy === SortType.Active },
+            { selected: sortBy === SortType.Active },
           )}
           data-cy="FilterLinkActive"
           onClick={() => setSortBy(SortType.Active)}
         >
-          Active
+          {SortType.Active}
         </a>
 
         <a
           href="#/completed"
           className={classNames(
             'filter__link',
-            { 'filter__link selected': sortBy === SortType.Completed },
+            { selected: sortBy === SortType.Completed },
           )}
           data-cy="FilterLinkCompleted"
           onClick={() => setSortBy(SortType.Completed)}
 
         >
-          Completed
+          {SortType.Completed}
         </a>
       </nav>
 
-      {/* don't show this button if there are no completed todos */}
-      {completed !== 0 && (
-        <button
-          type="button"
-          className="todoapp__clear-completed"
-          data-cy="ClearCompletedButton"
-          onClick={deleteCompleted}
-        >
-          Clear completed
-        </button>
-      )}
+      <button
+        type="button"
+        className={classNames('todoapp__clear-completed', {
+          hidden: !!completed.length,
+        })}
+        data-cy="ClearCompletedButton"
+        onClick={deleteCompleted}
+      >
+        Clear completed
+      </button>
     </footer>
   );
 };

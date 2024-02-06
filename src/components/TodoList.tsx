@@ -8,16 +8,15 @@ interface Props {
   deleteTodo: (todoId: number) => void;
 }
 
-export const TodoList: React.FC<Props> = ({ todos, deleteTodo }) => {
-  return (
-    <section className="todoapp__main" data-cy="TodoList">
-      {todos.map(todo => (
-        <TodoItem
-          todo={todo}
-          key={todo.id}
-          deleteTodo={deleteTodo}
-        />
-      ))}
-    </section>
-  );
-};
+export const TodoList: React.FC<Props> = ({ todos, deleteTodo }) => (
+  <section className="todoapp__main" data-cy="TodoList">
+    {todos.map(todo => (
+      <TodoItem
+        todo={todo}
+        key={todo.id}
+        deleteTodo={deleteTodo}
+      // loading={false}
+      />
+    ))}
+  </section>
+);
