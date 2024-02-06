@@ -37,7 +37,7 @@ export const ProviderTodo: React.FC<Props> = ({ children }) => {
 
   useEffect(() => {
     getTodos(USER_ID)
-      .then(fetchedTodos => setTodos(fetchedTodos))
+      .then(todosFromServer => setTodos(todosFromServer))
       .catch(() => {
         setErrorMessage(ErrorMessage.LoadError);
       });

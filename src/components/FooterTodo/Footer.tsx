@@ -33,30 +33,28 @@ export const FooterTodo = () => {
   return (
     <footer className="todoapp__footer" data-cy="Footer">
       <span className="todo-count" data-cy="TodosCounter">
-        {`${todos.length} items left`}
+        {`${todosLeft} items left`}
       </span>
 
       {/* Active filter should have a 'selected' class */}
       <nav className="filter" data-cy="Filter">
         <a
           href="#/"
-          data-cy="FilterLinkAll"
-          className={classNames('filter__link',
-            {
-              selected: filterBy === TodoFilter.All,
-            })}
           onClick={() => setFilterBy(TodoFilter.All)}
+          className={classNames('filter__link', {
+            selected: filterBy === TodoFilter.All,
+          })}
+          data-cy="FilterLinkAll"
         >
           All
         </a>
 
         <a
           href="#/active"
-          className={classNames('filter__link',
-            {
-              selected: filterBy === TodoFilter.Active,
-            })}
           onClick={() => setFilterBy(TodoFilter.Active)}
+          className={classNames('filter__link', {
+            selected: filterBy === TodoFilter.Active,
+          })}
           data-cy="FilterLinkActive"
         >
           Active
@@ -64,23 +62,21 @@ export const FooterTodo = () => {
 
         <a
           href="#/completed"
-          data-cy="FilterLinkCompleted"
-          className={classNames('filter__link',
-            {
-              selected: filterBy === TodoFilter.Completed,
-            })}
           onClick={() => setFilterBy(TodoFilter.Completed)}
+          className={classNames('filter__link', {
+            selected: filterBy === TodoFilter.Completed,
+          })}
+          data-cy="FilterLinkCompleted"
         >
           Completed
         </a>
       </nav>
 
-      {/* don't show this button if there are no completed todos */}
       <button
+        onClick={removeCompletedTodos}
         type="button"
         className="todoapp__clear-completed"
         data-cy="ClearCompletedButton"
-        onClick={removeCompletedTodos}
         disabled={todosLeft === todos.length}
       >
         Clear completed

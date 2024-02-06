@@ -1,14 +1,14 @@
 import classNames from 'classnames';
 import { useContext, useEffect } from 'react';
-// import { ErrorMessage } from '../../types';
 import { ContextTodo } from '../ContextTodo';
+import { ErrorMessage } from '../../types';
 
 export const ErrorNotification = () => {
   const { errorMessage, setErrorMessage } = useContext(ContextTodo);
 
   useEffect(() => {
     const timerID = setTimeout(() => {
-      setErrorMessage('');
+      setErrorMessage(ErrorMessage.NothingEror);
     }, 3000);
 
     return () => clearTimeout(timerID);
@@ -24,12 +24,12 @@ export const ErrorNotification = () => {
       }
     >
       {/* <button
-        onClick={() => setErrorMessage('')}
+        onClick={() => setErrorMessage(ErrorMessage.NothingEror)}
         data-cy="HideErrorButton"
         type="button"
         className="delete"
-      />
-      {errorMessage} */}
+      /> */}
+      {errorMessage}
     </div>
   );
 };

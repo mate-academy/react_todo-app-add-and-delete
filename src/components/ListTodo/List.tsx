@@ -4,9 +4,9 @@ import { Todo } from '../../types';
 import { ItemTodo } from '../ItemTodo/Item';
 import { ContextTodo } from '../ContextTodo';
 
-type Props = {
-  todos: Todo[] | null;
-};
+interface Props {
+  todos: Todo[]
+}
 
 export const ListTodo: React.FC<Props> = ({ todos }) => {
   const { tempTodo, errorMessage } = useContext(ContextTodo);
@@ -14,7 +14,7 @@ export const ListTodo: React.FC<Props> = ({ todos }) => {
   return (
     <section className="todoapp__main" data-cy="TodoList">
       <TransitionGroup>
-        {todos?.map(todo => (
+        {todos.map(todo => (
           <CSSTransition
             key={todo.id}
             timeout={300}

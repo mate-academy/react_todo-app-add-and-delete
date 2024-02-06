@@ -13,12 +13,12 @@ export const HeaderTodo = () => {
     setTitle,
     todos,
     setTodos,
-    errorMessage,
     setErrorMessage,
     setTempTodo,
+    errorMessage,
   } = useContext(ContextTodo);
 
-  const [isDisabledButton, setIsDisabledButton] = useState(false);
+  const [isDisabled, setIsDisabledButton] = useState(false);
 
   const changeValues = () => {
     setTempTodo({
@@ -34,12 +34,12 @@ export const HeaderTodo = () => {
       completed: false,
     })
       .then(todoFromServer => {
-        setTodos(currentTodo => [...currentTodo, todoFromServer]);
+        setTodos(curr => [...curr, todoFromServer]);
         setTitle('');
         setTempTodo(null);
       })
       .catch(() => {
-        setErrorMessage(ErrorMessage.AddTodoError);
+        setErrorMessage('Unable to add a todo');
         setTempTodo(null);
       })
       .finally(() => {
@@ -58,9 +58,10 @@ export const HeaderTodo = () => {
     }
   };
 
-  const handleOnChange = (event: React.ChangeEvent<HTMLInputElement>) => {
-    setTitle(event.target.value);
-  };
+  const changeHandler
+    = (event: React.ChangeEvent<HTMLInputElement>) => setTitle(
+      event.target.value,
+    );
 
   const todosLeft = useMemo(() => {
     return !todos.filter(todo => !todo.completed).length;
@@ -77,25 +78,26 @@ export const HeaderTodo = () => {
   return (
     <header className="todoapp__header">
       {/* this buttons is active only if there are some active todos */}
-      <button
-        type="button"
-        className={classNames('todoapp__toggle-all',
-          { active: todosLeft })}
-        data-cy="ToggleAllButton"
-        aria-label="Toggle All"
-      />
+      {!!todos.length && (
+        <button
+          type="button"
+          className={classNames('todoapp__toggle-all',
+            { active: todosLeft })}
+          data-cy="ToggleAllButton"
+          aria-label="Toggle"
+        />
+      )}
 
-      {/* +Add a todo on form submit */}
       <form onSubmit={submitHandler}>
         <input
+          disabled={isDisabled}
+          ref={titleField}
+          onChange={changeHandler}
           data-cy="NewTodoField"
+          value={title}
           type="text"
           className="todoapp__new-todo"
           placeholder="What needs to be done?"
-          value={title}
-          onChange={handleOnChange}
-          disabled={isDisabledButton}
-          ref={titleField}
         />
       </form>
     </header>
