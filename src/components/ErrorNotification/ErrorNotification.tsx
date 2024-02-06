@@ -23,12 +23,13 @@ export const ErrorNotification = () => {
         })
       }
     >
-      {/* <button
+      <button
+        aria-label="error"
         onClick={() => setErrorMessage(ErrorMessage.NothingEror)}
         data-cy="HideErrorButton"
         type="button"
         className="delete"
-      /> */}
+      />
       {errorMessage}
     </div>
   );
