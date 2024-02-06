@@ -10,20 +10,22 @@ export const FooterTodo = () => {
     setFilterBy,
     todos,
     setTodos,
-    setUpdatedTodos,
+    setLoadingTodoIds,
     setErrorMessage,
   } = useContext(ContextTodo);
 
-  const toDeleteTodos = todos.filter(todo => todo.completed);
+  const toDeleteTodosId = todos
+    .filter(todo => todo.completed)
+    .map(todo => todo.id);
 
   const removeCompletedTodos = () => {
-    setUpdatedTodos(toDeleteTodos);
+    setLoadingTodoIds(toDeleteTodosId);
 
-    toDeleteTodos.map(deletedTodo => deleteTodo(deletedTodo.id)
+    toDeleteTodosId.map(deletedTodoId => deleteTodo(deletedTodoId)
       .then(() => setTodos(currentTodos => currentTodos
-        .filter(currentTodo => currentTodo.id !== deletedTodo.id)))
+        .filter(currentTodo => currentTodo.id !== deletedTodoId)))
       .catch(() => setErrorMessage(ErrorMessage.DeleteTodoError))
-      .finally(() => setUpdatedTodos([])));
+      .finally(() => setLoadingTodoIds([])));
   };
 
   const todosLeft = useMemo(() => {

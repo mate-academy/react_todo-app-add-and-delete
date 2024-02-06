@@ -17,20 +17,20 @@ export const ItemTodo: React.FC<Props> = ({ todo }) => {
   const {
     setTodos,
     setErrorMessage,
-    updatedTodos,
-    setUpdatedTodos,
+    loadingTodoIds,
+    setLoadingTodoIds,
   } = useContext(ContextTodo);
 
   const clickHandler = () => {
-    setUpdatedTodos(currentTodos => [...currentTodos, todo]);
+    setLoadingTodoIds(currentId => [...currentId, id]);
 
-    deleteTodo(+id)
+    deleteTodo(id)
       .then(() => {
         setTodos(currentTodos => currentTodos
           .filter(currentTodo => currentTodo.id !== id));
       })
       .catch(() => setErrorMessage(ErrorMessage.DeleteTodoError))
-      .finally(() => setUpdatedTodos([]));
+      .finally(() => setLoadingTodoIds([]));
   };
 
   const changeHandler = () => {
@@ -75,7 +75,7 @@ export const ItemTodo: React.FC<Props> = ({ todo }) => {
       <div
         data-cy="TodoLoader"
         className={classNames('modal overlay',
-          { 'is-active': updatedTodos.includes(todo) })}
+          { 'is-active': loadingTodoIds.includes(todo.id) })}
       >
         <div className="modal-background has-background-white-ter" />
         <div className="loader" />

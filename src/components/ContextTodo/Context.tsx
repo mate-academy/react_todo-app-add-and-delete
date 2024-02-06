@@ -18,8 +18,8 @@ export const ContextTodo = createContext<TodoContext>({
   setErrorMessage: () => { },
   tempTodo: null,
   setTempTodo: () => { },
-  updatedTodos: [],
-  setUpdatedTodos: () => { },
+  loadingTodoIds: [],
+  setLoadingTodoIds: () => { },
 });
 
 type Props = {
@@ -33,7 +33,8 @@ export const ProviderTodo: React.FC<Props> = ({ children }) => {
 
   const [filterBy, setFilterBy] = useState(TodoFilter.All);
   const [tempTodo, setTempTodo] = useState<Todo | null>(null);
-  const [updatedTodos, setUpdatedTodos] = useState<Todo[]>([]);
+  // const [updatedTodos, setUpdatedTodos] = useState<Todo[]>([]);
+  const [loadingTodoIds, setLoadingTodoIds] = useState<number[]>([]);
 
   useEffect(() => {
     getTodos(USER_ID)
@@ -54,15 +55,15 @@ export const ProviderTodo: React.FC<Props> = ({ children }) => {
     setErrorMessage,
     tempTodo,
     setTempTodo,
-    updatedTodos,
-    setUpdatedTodos,
+    loadingTodoIds,
+    setLoadingTodoIds,
   }), [todos,
     title,
     filterBy,
     setTodos,
     errorMessage,
     tempTodo,
-    updatedTodos,
+    loadingTodoIds,
   ]);
 
   return (

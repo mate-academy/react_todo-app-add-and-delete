@@ -39,6 +39,6 @@ export type TodoContext = {
   setErrorMessage: (errorMessage: ErrorMessage | string) => void
   tempTodo: Todo | null
   setTempTodo: React.Dispatch<React.SetStateAction<Todo | null>>
-  updatedTodos: Todo[]
-  setUpdatedTodos: React.Dispatch<React.SetStateAction<Todo[]>>
+  loadingTodoIds: number[]
+  setLoadingTodoIds: React.Dispatch<React.SetStateAction<number[]>>
 };
