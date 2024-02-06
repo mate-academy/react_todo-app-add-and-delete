@@ -1,4 +1,4 @@
-import React, { useContext, useEffect, useMemo } from 'react';
+import React, { useContext, useMemo } from 'react';
 import cn from 'classnames';
 import { TodosContext } from '../Store/Store';
 import { FilterParams } from '../../types/FilterParams';
@@ -6,11 +6,13 @@ import { FilterParams } from '../../types/FilterParams';
 export const Footer: React.FC = React.memo(() => {
   const {
     todos,
+    setTodos,
     filter,
     setFilter,
     deleteTodo,
-    pressClearAll,
+    setErrorMessage,
     setPressClearAll,
+    setLoading,
   } = useContext(TodosContext);
 
   const itemsLeft = useMemo(() => {
@@ -21,17 +23,23 @@ export const Footer: React.FC = React.memo(() => {
     return todos.some(todo => todo.completed);
   }, [todos]);
 
-  const handleClearCompleted = () => {
-    setPressClearAll(true);
-  };
-
-  useEffect(() => {
-    if (pressClearAll) {
+  const handleClearCompleted = async () => {
+    try {
+      setPressClearAll(true);
       const completedTodos = todos.filter(todo => todo.completed);
 
-      Promise.all(completedTodos.map(todo => deleteTodo(todo.id)));
+      await Promise.all(completedTodos.map(todo => deleteTodo(todo.id)));
+
+      const updatedTodos = todos.filter(todo => !todo.completed);
+
+      setTodos(updatedTodos);
+    } catch {
+      setErrorMessage('Unable to delete a todos');
+    } finally {
+      setLoading(false);
+      setPressClearAll(false);
     }
-  }, [deleteTodo, pressClearAll, todos]);
+  };
 
   return (
     <>

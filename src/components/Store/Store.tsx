@@ -31,6 +31,7 @@ type TodosContextType = {
   setDisabled: React.Dispatch<boolean>;
   pressClearAll: boolean;
   setPressClearAll: React.Dispatch<boolean>;
+  setLoading: React.Dispatch<boolean>;
 };
 
 export const TodosContext = React.createContext<TodosContextType>({
@@ -53,6 +54,7 @@ export const TodosContext = React.createContext<TodosContextType>({
   setDisabled: () => { },
   pressClearAll: false,
   setPressClearAll: () => { },
+  setLoading: () => { },
 });
 
 type Props = {
@@ -133,26 +135,8 @@ export const TodosProvider: React.FC<Props> = ({ children }) => {
     setLoading(true);
     setCount((currentCount) => currentCount + 1);
 
-    return client.delete(`/${todoId}`)
-      .then(() => {
-        const updatedTodos = todos.filter(upTodo => upTodo.id !== todoId);
-
-        setTodos(() => {
-          if (pressClearAll) {
-            const notCompletedTodos = todos.filter(todo => !todo.completed);
-
-            return notCompletedTodos;
-          }
-
-          return updatedTodos;
-        });
-      })
-      .catch(() => setErrorMessage('Unable to delete a todo'))
-      .finally(() => {
-        setLoading(false);
-        setPressClearAll(false);
-      });
-  }, [pressClearAll, todos]);
+    return client.delete(`/${todoId}`);
+  }, []);
 
   const value = useMemo(() => ({
     todos,
@@ -174,6 +158,7 @@ export const TodosProvider: React.FC<Props> = ({ children }) => {
     setDisabled,
     pressClearAll,
     setPressClearAll,
+    setLoading,
   }), [
     todos,
     loading,

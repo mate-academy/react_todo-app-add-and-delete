@@ -15,8 +15,10 @@ export const TodoItem: React.FC<Props> = React.memo(({ todo }) => {
     todos,
     setTodos,
     loading,
+    setLoading,
     deleteTodo,
     errorMessage,
+    setErrorMessage,
     pressClearAll,
   } = useContext(TodosContext);
 
@@ -45,16 +47,20 @@ export const TodoItem: React.FC<Props> = React.memo(({ todo }) => {
     updateTodo(updatedTodo);
   };
 
-  const handleDeleteTodo = () => {
-    setIsDeleting(true);
-    deleteTodo(todo.id);
-  };
+  const handleDeleteTodo = async () => {
+    try {
+      setIsDeleting(true);
+      const updatedTodos = todos.filter(upTodo => upTodo.id !== todo.id);
 
-  useEffect(() => {
-    if (errorMessage) {
+      await deleteTodo(todo.id);
+      setTodos(updatedTodos);
+    } catch {
+      setErrorMessage('Unable to delete a todo');
+    } finally {
+      setLoading(false);
       setIsDeleting(false);
     }
-  }, [errorMessage]);
+  };
 
   const applyEditing = () => {
     if (editTitle.length === 0) {
