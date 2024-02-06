@@ -1,22 +1,17 @@
 import { TransitionGroup, CSSTransition } from 'react-transition-group';
 import TodoItem from './TodoItem';
-import { Todo } from '../../types/Todo';
+import '../../styles/transitions.scss';
+import { useTodoContext } from '../../context/TodoContext';
 
-type TodoListProps = {
-  todos: Todo[];
-  tempTodo: Todo | null;
-  loadingTodoId: number[];
-  removeTodo: (itemId: number) => void;
-  updateTodo: (itemId: number, completed: boolean) => void;
-};
+export const TodoList = () => {
+  const {
+    filteredTodos, tempTodo, loadingTodoId, removeTodo, updateTodo,
+  } = useTodoContext();
 
-export const TodoList = ({
-  todos, removeTodo, updateTodo, tempTodo, loadingTodoId,
-}: TodoListProps) => {
   return (
     <TransitionGroup>
 
-      {todos.map(todo => (
+      {filteredTodos.map(todo => (
         <CSSTransition
           key={todo.id}
           timeout={300}

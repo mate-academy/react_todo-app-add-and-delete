@@ -1,14 +1,11 @@
 import cn from 'classnames';
 import { useEffect, useState } from 'react';
 import { ErrorMessages } from '../../types/ErrorMessages';
+import { useTodoContext } from '../../context/TodoContext';
 
-type Props = {
-  error: string | null;
-  clearError: () => void;
-};
-
-export const NotificationModal = ({ error, clearError }: Props) => {
+export const NotificationModal = () => {
   const [notificationVisible, setNotificationVisible] = useState(false);
+  const { error, setError } = useTodoContext();
 
   useEffect(() => {
     if (error) {
@@ -34,7 +31,7 @@ export const NotificationModal = ({ error, clearError }: Props) => {
         aria-label="Close notification"
         onClick={() => {
           setNotificationVisible(false);
-          clearError();
+          setError(null);
         }}
       />
       {/* show only one message at a time */}
