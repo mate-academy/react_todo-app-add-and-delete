@@ -7,7 +7,9 @@ import { FooterTodo } from '../FooterTodo';
 import { ErrorNotification } from '../ErrorNotification';
 
 export const AppTodo = () => {
-  const { todos, filterBy, tempTodo } = useContext(ContextTodo);
+  const {
+    todos, filterBy, tempTodo, errorMessage,
+  } = useContext(ContextTodo);
   const filteredListTodos = filteredTodos(todos, filterBy);
 
   return (
@@ -23,7 +25,8 @@ export const AppTodo = () => {
         {!!todos.length
           && <FooterTodo />}
 
-        <ErrorNotification />
+        {!!errorMessage
+          && <ErrorNotification />}
       </div>
     </div>
   );

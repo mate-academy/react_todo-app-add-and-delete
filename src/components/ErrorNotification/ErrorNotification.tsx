@@ -24,7 +24,7 @@ export const ErrorNotification = () => {
       }
     >
       <button
-        aria-label="error"
+        aria-label="delete"
         onClick={() => setErrorMessage(ErrorMessage.NothingEror)}
         data-cy="HideErrorButton"
         type="button"
