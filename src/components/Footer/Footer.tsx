@@ -24,9 +24,10 @@ export const Footer: React.FC = React.memo(() => {
   }, [todos]);
 
   const handleClearCompleted = async () => {
+    const completedTodos = todos.filter(todo => todo.completed);
+
     try {
       setPressClearAll(true);
-      const completedTodos = todos.filter(todo => todo.completed);
 
       await Promise.all(completedTodos.map(todo => deleteTodo(todo.id)));
 
@@ -34,7 +35,9 @@ export const Footer: React.FC = React.memo(() => {
 
       setTodos(updatedTodos);
     } catch {
-      setErrorMessage('Unable to delete a todos');
+      setErrorMessage(completedTodos.length === 1
+        ? 'Unable to delete a todo'
+        : 'Unable to delete a todos');
     } finally {
       setLoading(false);
       setPressClearAll(false);
