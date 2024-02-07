@@ -11,7 +11,8 @@ import { ErrorValues } from '../../types/ErrorValues';
 export const Footer = () => {
   useSignals();
 
-  const activeItemsLeft = `${activeTodosCounter.value} ${activeTodosCounter.value === 1 ? 'item left' : 'items left'}`;
+  // const activeItemsLeft = `${activeTodosCounter.value} ${activeTodosCounter.value === 1 ? 'item left' : 'items left'}`;
+  const activeItemsLeft = `${activeTodosCounter.value} items left`;
 
   const handleClick = (event: React.MouseEvent<HTMLAnchorElement>) => {
     switch (event.currentTarget.innerText) {
