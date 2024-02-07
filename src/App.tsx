@@ -38,7 +38,7 @@ export const App: React.FC = () => {
     } else {
       tempTodo.value = {
         id: 0,
-        title: inputValue.value,
+        title: inputValue.value.trim(),
         completed: false,
         userId: USER_ID,
       };

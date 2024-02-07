@@ -27,7 +27,7 @@ function request<T>(
   }
 
   // DON'T change the delay it is required for tests
-  return wait(1000)
+  return wait(100)
     .then(() => fetch(BASE_URL + url, options))
     .then(response => {
       if (!response.ok) {
