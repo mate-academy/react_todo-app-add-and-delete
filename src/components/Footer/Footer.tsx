@@ -94,6 +94,7 @@ export const Footer = () => {
         type="button"
         className="todoapp__clear-completed"
         data-cy="ClearCompletedButton"
+        disabled={!completedTodosCounter.value}
         style={{
           visibility: completedTodosCounter.value
             ? 'visible'
