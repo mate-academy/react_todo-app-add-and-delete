@@ -1,3 +1,4 @@
+/* eslint-disable quote-props */
 /* eslint-disable no-console */
 import classNames from 'classnames';
 import { useContext } from 'react';
@@ -71,15 +72,17 @@ export const TodoItem: React.FC<Props> = ({ todo }) => {
       </button>
 
       {/* overlay will cover the todo while it is being updated */}
-      { loading && loading.includes(todo.id) && (
-        <div
-          data-cy="TodoLoader"
-          className="modal overlay is-active"
-        >
-          <div className="modal-background has-background-white-ter" />
-          <div className="loader" />
-        </div>
-      )}
+      <div
+        data-cy="TodoLoader"
+        className={classNames(
+          'modal overlay', {
+            'is-active': loading?.includes(todo.id),
+          },
+        )}
+      >
+        <div className="modal-background has-background-white-ter" />
+        <div className="loader" />
+      </div>
     </div>
   );
 };

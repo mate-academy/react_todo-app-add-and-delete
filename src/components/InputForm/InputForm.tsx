@@ -6,13 +6,16 @@ import {
   useRef,
   useState,
 } from 'react';
+
 import { Todo } from '../../types/Todo';
 import { USER_ID } from '../../App';
+
 import {
   ErrorsContext,
   LoadingContext,
   TodosContext,
 } from '../../TodosContext/TodosContext';
+
 import {
   checkAllStatuses,
   returnStatus,
@@ -31,9 +34,11 @@ type Props = {
 export const InputForm: React.FC<Props> = ({ onSubmit, onCompleted }) => {
   const [newTodoTitle, setNewTodoTitle] = useState('');
   const [completeAll, setCompleteAll] = useState(false);
-  const { todos } = useContext(TodosContext);
-  const { setLoading } = useContext(LoadingContext);
+  const { todos, setTodos } = useContext(TodosContext);
+  const { loading, setLoading } = useContext(LoadingContext);
   const {
+    newError,
+    showError,
     setNewError,
     setShowError,
   } = useContext(ErrorsContext);
@@ -65,6 +70,7 @@ export const InputForm: React.FC<Props> = ({ onSubmit, onCompleted }) => {
 
   function handleSubmit(event: React.FormEvent) {
     event.preventDefault();
+    const normalizedTitle = newTodoTitle.trim();
 
     try {
       const newTodo: Todo = {
@@ -74,16 +80,23 @@ export const InputForm: React.FC<Props> = ({ onSubmit, onCompleted }) => {
         completed: false,
       };
 
-      if (newTodoTitle.trim() !== '') {
+      if (normalizedTitle !== '') {
+        setLoading((current) => addLoadingIds(newTodo.id, current));
+        setTodos((prev) => [...prev, newTodo]);
         onSubmit(newTodo);
-        setNewTodoTitle('');
       }
-    } catch (error) {
-      throw new Error('error');
     } finally {
-      if (newTodoTitle.trim() === '') {
+      if (normalizedTitle === '') {
         setNewError(ErrorMessages.emptyTitle);
         setShowError(true);
+      }
+
+      if (showError && newError === ErrorMessages.unableToAddTodo) {
+        setNewTodoTitle(normalizedTitle);
+      }
+
+      if (!showError) {
+        setNewTodoTitle('');
       }
     }
   }
@@ -94,7 +107,7 @@ export const InputForm: React.FC<Props> = ({ onSubmit, onCompleted }) => {
     if (titleField.current) {
       titleField.current.focus();
     }
-  }, []);
+  }, [newError]);
 
   return (
     <header className="todoapp__header">
@@ -117,6 +130,7 @@ export const InputForm: React.FC<Props> = ({ onSubmit, onCompleted }) => {
           className="todoapp__new-todo"
           placeholder="What needs to be done?"
           value={newTodoTitle}
+          disabled={loading?.includes(0)}
           onChange={event => {
             setNewTodoTitle(event.target.value);
           }}
