@@ -16,7 +16,9 @@ export const UserWarning: React.FC = () => (
       <pre>const USER_ID = ...</pre>
 
       All requests to the API must be sent with this
-      <b> userId.</b>
+      <b>
+        userId.
+      </b>
     </p>
   </section>
 );
