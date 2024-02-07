@@ -8,13 +8,19 @@ import {
 } from 'react';
 import { Todo } from '../../types/Todo';
 import { USER_ID } from '../../App';
-import { ErrorsContext, TodosContext } from '../../TodosContext/TodosContext';
+import {
+  ErrorsContext,
+  LoadingContext,
+  TodosContext,
+} from '../../TodosContext/TodosContext';
 import {
   checkAllStatuses,
   returnStatus,
 } from '../../services/checkAllStatuses';
 import { changeAllStatuses } from '../../services/changeAllStatuses';
 import { ErrorMessages } from '../../types/Error';
+import { reduceItems } from '../../services/reduceItems';
+import { addLoadingIds } from '../../services/changeLoadingIds';
 
 /* eslint-disable jsx-a11y/control-has-associated-label */
 type Props = {
@@ -26,26 +32,33 @@ export const InputForm: React.FC<Props> = ({ onSubmit, onCompleted }) => {
   const [newTodoTitle, setNewTodoTitle] = useState('');
   const [completeAll, setCompleteAll] = useState(false);
   const { todos } = useContext(TodosContext);
-  const { setNewError, setShowError } = useContext(ErrorsContext);
+  const { setLoading } = useContext(LoadingContext);
+  const {
+    setNewError,
+    setShowError,
+  } = useContext(ErrorsContext);
+
+  const itemsLeft = reduceItems(todos, false);
 
   const handleChangeAll = () => {
     if (checkAllStatuses(todos)) {
-      console.log('change');
       const isCompleted = returnStatus(todos);
       const changeAll = changeAllStatuses(todos, isCompleted);
 
       changeAll.forEach(todo => {
         const { id } = todo;
 
+        setLoading((current) => addLoadingIds(id, current));
         onCompleted(id, !isCompleted);
       });
     } else {
-      const changeAll = changeAllStatuses(todos, true);
+      todos.forEach(todo => {
+        if (todo.completed === false) {
+          const { id, completed } = todo;
 
-      changeAll.forEach(todo => {
-        const { id, completed } = todo;
-
-        onCompleted(id, completed);
+          onCompleted(id, !completed);
+          setLoading((current) => addLoadingIds(id, current));
+        }
       });
     }
   };
@@ -63,6 +76,7 @@ export const InputForm: React.FC<Props> = ({ onSubmit, onCompleted }) => {
 
       if (newTodoTitle.trim() !== '') {
         onSubmit(newTodo);
+        setNewTodoTitle('');
       }
     } catch (error) {
       throw new Error('error');
@@ -71,8 +85,6 @@ export const InputForm: React.FC<Props> = ({ onSubmit, onCompleted }) => {
         setNewError(ErrorMessages.emptyTitle);
         setShowError(true);
       }
-
-      setNewTodoTitle('');
     }
   }
 
@@ -89,7 +101,7 @@ export const InputForm: React.FC<Props> = ({ onSubmit, onCompleted }) => {
       {/* this buttons is active only if there are some active todos */}
       <button
         type="button"
-        className="todoapp__toggle-all active"
+        className={`todoapp__toggle-all ${itemsLeft ? '' : 'active'}`}
         data-cy="ToggleAllButton"
         onClick={() => {
           handleChangeAll();

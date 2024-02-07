@@ -45,7 +45,7 @@ export const AppContent: React.FC = () => {
         <TodoList status={status} />
 
         {/* Hide the footer if there are no todos */}
-        {todos.length && (
+        {!!todos.length && (
           <Filter
             onChangeStatus={handleStatusChange}
             status={status}

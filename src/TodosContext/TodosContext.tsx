@@ -9,10 +9,16 @@ import { USER_ID } from '../App';
 import { Context } from '../types/Context';
 import { Todos } from '../types/Todos';
 import { ErrorMessages, Errors } from '../types/Error';
+import { deleteLoadingIds } from '../services/changeLoadingIds';
 
 type Props = {
   children: React.ReactNode;
 };
+
+interface Loading {
+  loading: number[] | null;
+  setLoading: React.Dispatch<React.SetStateAction<number[] | null>>;
+}
 
 export const TodosContext = React.createContext<Todos>({ todos: [] });
 
@@ -29,18 +35,24 @@ export const ErrorsContext = React.createContext<Errors>({
   setShowError: () => {},
 });
 
+export const LoadingContext = React.createContext<Loading>({
+  loading: null,
+  setLoading: () => {},
+});
+
 export const TodosProvider: React.FC<Props> = ({ children }) => {
   const [todos, setTodos] = useState<Todo[]>([]);
   const [newTodo, setNewTodo] = useState<Todo | null>(null);
-  const [newError, setNewError] = useState<ErrorMessages | null>(null);
+  const [Error, setError] = useState<ErrorMessages | null>(null);
   const [showError, setShowError] = useState<boolean>(false);
+  const [loading, setLoading] = useState<number[] | null>(null);
 
   function loadTodos() {
     api
       .getTodos(USER_ID)
       .then(setTodos)
       .catch(() => {
-        setNewError(ErrorMessages.unableToloadTodos);
+        setError(ErrorMessages.unableToloadTodos);
         setShowError(true);
       });
   }
@@ -49,20 +61,20 @@ export const TodosProvider: React.FC<Props> = ({ children }) => {
 
   useEffect(() => {
     if (newTodo !== null) {
-      const copy = [...todos, newTodo];
-
-      setTodos(copy);
+      console.log(newTodo);
+      setTodos((prev) => [...prev, newTodo]);
     }
   }, [newTodo]);
 
   function addTodo(todo: Todo) {
     api
       .createTodo(todo)
-      .then(setNewTodo)
+      .then((res) => setNewTodo(res))
       .catch(() => {
-        setNewError(ErrorMessages.unableToAddTodo);
+        setError(ErrorMessages.unableToAddTodo);
         setShowError(true);
-      });
+      })
+      .finally(() => setLoading(deleteLoadingIds(todo.id, loading)));
   }
 
   function removeTodo(todoId: number) {
@@ -70,9 +82,10 @@ export const TodosProvider: React.FC<Props> = ({ children }) => {
       .deleteTodo(todoId)
       .then(loadTodos)
       .catch(() => {
-        setNewError(ErrorMessages.unableToDelete);
+        setError(ErrorMessages.unableToDelete);
         setShowError(true);
-      });
+      })
+      .finally(() => setLoading(deleteLoadingIds(todoId, loading)));
   }
 
   function changeTodo(todoId: number, completed: boolean) {
@@ -80,23 +93,30 @@ export const TodosProvider: React.FC<Props> = ({ children }) => {
       .updateTodo(todoId, completed)
       .then(loadTodos)
       .catch(() => {
-        setNewError(ErrorMessages.unableToUpdate);
+        setError(ErrorMessages.unableToUpdate);
         setShowError(true);
+      }).finally(() => {
+        setLoading(deleteLoadingIds(todoId, loading));
       });
   }
 
+  const load = useMemo(() => ({ loading, setLoading }), [loading]);
   const methods = useMemo(() => ({ addTodo, removeTodo, changeTodo }), []);
   const value = useMemo(() => ({ todos }), [todos]);
   const errors = useMemo(() => (
     {
-      newError, setNewError, showError, setShowError,
-    }), [newError, showError]);
+      newError: Error, setNewError: setError, showError, setShowError,
+    }), [Error, showError]);
 
   return (
-    <ErrorsContext.Provider value={errors}>
-      <TodoUpdateContext.Provider value={methods}>
-        <TodosContext.Provider value={value}>{children}</TodosContext.Provider>
-      </TodoUpdateContext.Provider>
-    </ErrorsContext.Provider>
+    <LoadingContext.Provider value={load}>
+      <ErrorsContext.Provider value={errors}>
+        <TodoUpdateContext.Provider value={methods}>
+          <TodosContext.Provider value={value}>
+            {children}
+          </TodosContext.Provider>
+        </TodoUpdateContext.Provider>
+      </ErrorsContext.Provider>
+    </LoadingContext.Provider>
   );
 };
