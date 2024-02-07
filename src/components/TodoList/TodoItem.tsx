@@ -19,8 +19,10 @@ export const TodoItem: React.FC<Props> = ({ todoInfo }) => {
     loadId,
   } = useContext(TodoContext);
 
+  const { id, completed, title } = todoInfo;
+
   function handleDelete(todoId: number) {
-    const newLoadIds = [...loadId, todoInfo.id];
+    const newLoadIds = [...loadId, id];
 
     setLoadId(newLoadIds);
     deleteTodos(todoId)
@@ -35,19 +37,19 @@ export const TodoItem: React.FC<Props> = ({ todoInfo }) => {
   return (
     <div
       data-cy="Todo"
-      className={cn('todo', { completed: todoInfo.completed })}
+      className={cn('todo', { completed })}
     >
       <label className="todo__status-label">
         <input
           data-cy="TodoStatus"
           type="checkbox"
           className="todo__status"
-          checked={todoInfo.completed}
+          checked={completed}
         />
       </label>
 
       <span data-cy="TodoTitle" className="todo__title">
-        {todoInfo.title}
+        {title}
       </span>
 
       {/* Remove button appears only on hover */}
@@ -64,7 +66,7 @@ export const TodoItem: React.FC<Props> = ({ todoInfo }) => {
       <div
         data-cy="TodoLoader"
         className={cn('modal overlay',
-          { 'is-active': loadId.includes(todoInfo.id) })}
+          { 'is-active': loadId.includes(id) })}
       >
         <div className="modal-background has-background-white-ter" />
         <div className="loader" />

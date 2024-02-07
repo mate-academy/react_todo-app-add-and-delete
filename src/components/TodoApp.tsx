@@ -28,8 +28,6 @@ export const TodoApp: React.FC = () => {
 
   function filteredTodos() {
     switch (filter) {
-      case Filter.ALL:
-        return todos;
       case Filter.ACTIVE:
         return todos.filter(todo => !todo.completed);
       case Filter.COMPLETED:
@@ -48,7 +46,7 @@ export const TodoApp: React.FC = () => {
       <h1 className="todoapp__title">todos</h1>
       <Header />
       <TodoList filteredTodos={filteredTodos()} />
-      {todos.length > 0 && (
+      {!!todos.length && (
         <Footer
           setFilter={(filt) => setFilter(filt)}
           filter={filter}

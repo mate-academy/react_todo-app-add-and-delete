@@ -8,8 +8,6 @@ function wait(delay: number) {
   });
 }
 
-// https://mate.academy/students-api/todos?userId=54
-
 // To have autocompletion and avoid mistypes
 type RequestMethod = 'GET' | 'POST' | 'PATCH' | 'DELETE';
 

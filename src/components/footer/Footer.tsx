@@ -2,7 +2,6 @@ import React, { useContext } from 'react';
 import cn from 'classnames';
 import { TodoContext } from '../../Context/TodoContext';
 import { Filter } from '../../types/Filter';
-// import { Todo } from '../../types/Todo';
 import { deleteTodos } from '../../api/todos';
 import { Errors } from '../../types/Errors';
 
@@ -15,7 +14,6 @@ export const Footer: React.FC<Props> = ({ filter, setFilter }) => {
   const {
     todos,
     setTodos,
-    // setLoadingCompleted,
     setHasError,
     setErrorType,
     setLoadId,
@@ -27,15 +25,12 @@ export const Footer: React.FC<Props> = ({ filter, setFilter }) => {
   function handleClick() {
     setLoadId(completedTodos.map(todo => todo.id));
     completedTodos.map(todo => {
-      // setLoadingCompleted(true);
       deleteTodos(todo.id)
         .then(() => setTodos(activeTodos))
-        // .then(() => setTodos(todos.filter(todo => todo.id !== todoId)))
         .catch(() => {
           setHasError(true);
           setErrorType(Errors.Delete);
         })
-        // .finally(() => setLoadingCompleted(false));
         .finally(() => setLoadId([]));
 
       return todo;
@@ -82,7 +77,7 @@ export const Footer: React.FC<Props> = ({ filter, setFilter }) => {
         type="button"
         className="todoapp__clear-completed"
         data-cy="ClearCompletedButton"
-        disabled={completedTodos.length === 0}
+        disabled={!completedTodos.length}
         onClick={handleClick}
       >
         Clear completed
