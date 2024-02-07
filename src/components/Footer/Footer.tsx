@@ -38,13 +38,13 @@ export const Footer = () => {
       if (todo.completed) {
         todosToDelete.value = [...todosToDelete.value, todo.id];
         deleteTodo(todo.id)
-          .catch(() => {
-            isError.value = ErrorValues.delete;
-          })
           .then(() => {
             todos.value = todos.value.filter((t) => t.id !== todo.id);
             todosToDelete.value = todosToDelete.value
               .filter((t) => t !== todo.id);
+          })
+          .catch(() => {
+            isError.value = ErrorValues.delete;
           });
       }
     });
