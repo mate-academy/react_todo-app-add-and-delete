@@ -24,7 +24,7 @@ const page = {
       clock.restore();
     });
 
-    cy.wait(100);
+    cy.wait(200);
   },
 
   /**
@@ -111,9 +111,9 @@ Cypress.on('fail', (e) => {
   throw e;
 });
 
-describe.skip('', () => {
+describe('', () => {
   beforeEach(() => {
-    // if (failed) Cypress.runner.stop();
+    if (failed) Cypress.runner.stop();
   });
 
   describe('Page with no todos', () => {
@@ -176,6 +176,9 @@ describe.skip('', () => {
       });
 
       it('should hide error after 3 seconds', () => {
+        // just in case
+        cy.wait(50);
+
         cy.clock();
         cy.tick(2500);
         errorMessage.assertVisible();
@@ -404,6 +407,9 @@ describe.skip('', () => {
       });
 
       it('should hide an error message after 3 seconds', () => {
+        // just in case
+        cy.wait(50);
+
         cy.clock();
         cy.tick(3000);
         errorMessage.assertHidden();
@@ -430,6 +436,9 @@ describe.skip('', () => {
       });
 
       it('should hide an error message after 3 seconds', () => {
+        // just in case
+        cy.wait(50);
+
         cy.clock();
         cy.tick(3000);
         errorMessage.assertHidden();
@@ -491,6 +500,7 @@ describe.skip('', () => {
           cy.wait('@createRequest');
         });
 
+        // this test may be flaky
         it.skip('should replace loader with a created todo', () => {
           page.flushJSTimers();
           todos.assertCount(6);
@@ -547,7 +557,7 @@ describe.skip('', () => {
         cy.wait('@createRequest');
 
         // just in case
-        cy.wait(100);
+        page.flushJSTimers();
 
         todos.assertTitle(5, 'Other Title');
       });
@@ -689,6 +699,1062 @@ describe.skip('', () => {
 
     it('should show todosCounter', () => {
       page.todosCounter().should('have.text', '1 items left');
+    });
+  });
+
+  describe('Individual Todo Deletion', () => {
+    describe('Default behavior', () => {
+      beforeEach(() => {
+        page.mockLoad().as('loadRequest');
+        page.visit();
+        cy.wait('@loadRequest');
+      });
+
+      it('should display a loader on the todo when the TodoDeleteButton is clicked', () => {
+        page.mockDelete(257334);
+        page.pauseTimers();
+        todos.deleteButton(0).click();
+
+        todos.assertLoading(0);
+      });
+
+      it('should not delete a todo before successful response', () => {
+        page.mockDelete(257334);
+        page.pauseTimers();
+        todos.deleteButton(0).click();
+
+        todos.assertCount(5);
+      });
+
+      it('should remove the todo from the list on a successful API response', () => {
+        page.mockDelete(257334).as('deleteRequest');
+
+        todos.deleteButton(0).click();
+        cy.wait('@deleteRequest');
+
+        todos.assertCount(4);
+        todos.assertTitle(0, 'CSS');
+      });
+
+      it('should focus text field after todo deletion', () => {
+        page.mockDelete(257334).as('deleteRequest');
+
+        todos.deleteButton(0).click();
+        cy.wait('@deleteRequest');
+
+        page.newTodoField().should('be.focused');
+      });
+
+      it('should not remove the todo from the list on an API error', () => {
+        // to prevent Cypress from failing the test on uncaught exception
+        cy.once('uncaught:exception', () => false);
+
+        page.mockDelete(257334, { statusCode: 500, body: 'Internal Server Error' }).as('deleteRequest');
+
+        todos.deleteButton(0).click();
+        cy.wait('@deleteRequest');
+
+        todos.assertCount(5);
+        todos.assertTitle(0, 'HTML');
+      });
+
+      it('should show an error message on an API error', () => {
+        // to prevent Cypress from failing the test on uncaught exception
+        cy.once('uncaught:exception', () => false);
+
+        page.mockDelete(257334, { statusCode: 500, body: 'Internal Server Error' }).as('deleteRequest');
+
+        todos.deleteButton(0).click();
+        cy.wait('@deleteRequest');
+
+        errorMessage.assertVisible();
+        errorMessage.assertText('Unable to delete a todo');
+      });
+
+      it('should adjust the active todo count correctly after successful deletion', () => {
+        page.mockDelete(257338).as('deleteRequest');
+        todos.deleteButton(4).click();
+        cy.wait('@deleteRequest');
+
+        page.todosCounter().should('have.text', '1 items left');
+      });
+
+      it('should not adjust the active todo count after failed deletion', () => {
+        // to prevent Cypress from failing the test on uncaught exception
+        cy.once('uncaught:exception', () => false);
+
+        page.mockDelete(257338, { statusCode: 500, body: 'Internal Server Error' })
+          .as('deleteRequest');
+
+        todos.deleteButton(4).click();
+        cy.wait('@deleteRequest');
+
+        page.todosCounter().should('have.text', '2 items left');
+      });
+    });
+
+    describe('Last todo deletion', () => {
+      beforeEach(() => {
+        const todo = {
+          "id": 257334,
+          "createdAt": "2023-09-19T08:21:56.486Z",
+          "updatedAt": "2023-09-19T08:23:07.096Z",
+          "userId": 1,
+          "title": "HTML",
+          "completed": false
+        };
+
+        page.mockLoad({ body: [todo] }).as('loadRequest');
+        page.visit();
+        cy.wait('@loadRequest');
+
+        page.mockDelete(257334);
+        todos.deleteButton(0).click();
+      });
+
+      it('should hide todos', () => {
+        todos.assertCount(0);
+      });
+
+      it('should hide footer', () => {
+        filter.assertHidden();
+        page.clearCompletedButton().should('not.exist');
+        page.todosCounter().should('not.exist');
+      });
+
+      it('should focus text field after todo deletion', () => {
+        page.newTodoField().should('be.focused');
+      });
+    });
+  });
+
+  describe('Group Todo Deletion', () => {
+    describe('with no completed todos', () => {
+      beforeEach(() => {
+        page.mockLoad({ fixture: 'active-todos' }).as('loadRequest');
+        page.visit();
+        cy.wait('@loadRequest');
+      });
+
+      it('should not have active ClearCompleted button', () => {
+        page.clearCompletedButton().should('be.disabled');
+      });
+    });
+
+    describe('with some completed todos', () => {
+      beforeEach(() => {
+        page.mockLoad().as('loadRequest');
+        page.visit();
+        cy.wait('@loadRequest');
+      });
+
+      it('should have ClearCompleted button enabled', () => {
+        page.clearCompletedButton().should('not.be.disabled');
+      });
+
+      it('should send individual deletion request for each completed todo', () => {
+        page.mockDelete(257334).as('deleteRequest1');
+        page.mockDelete(257335).as('deleteRequest2');
+        page.mockDelete(257336).as('deleteRequest3');
+
+        page.clearCompletedButton().click();
+
+        cy.wait('@deleteRequest1');
+        cy.wait('@deleteRequest2');
+        cy.wait('@deleteRequest3');
+      });
+
+      describe('on success', () => {
+        beforeEach(() => {
+          page.mockDelete(257334).as('deleteRequest1');
+          page.mockDelete(257335).as('deleteRequest2');
+          page.mockDelete(257336).as('deleteRequest3');
+
+          page.clearCompletedButton().click();
+
+          cy.wait('@deleteRequest1');
+          cy.wait('@deleteRequest2');
+          cy.wait('@deleteRequest3');
+        });
+
+        it('should remove all completed todos from the list', () => {
+          todos.assertCount(2);
+          todos.assertTitle(0, 'TypeScript');
+          todos.assertTitle(1, 'React');
+        });
+
+        it('should disable ClearCompleted button', () => {
+          page.clearCompletedButton().should('be.disabled');
+        });
+
+        it('should focus the text field', () => {
+          page.newTodoField().should('be.focused');
+        });
+      });
+
+      describe('on a single fail', () => {
+        beforeEach(() => {
+          // to prevent Cypress from failing the test on uncaught exception
+          cy.once('uncaught:exception', () => false);
+
+          page.mockDelete(257334).as('deleteRequest1');
+          page.mockDelete(257335, { statusCode: 500, body: 'Internal Server Error' }).as('deleteRequest2');
+          page.mockDelete(257336).as('deleteRequest3');
+
+          page.clearCompletedButton().click();
+
+          cy.wait('@deleteRequest1');
+          cy.wait('@deleteRequest2');
+          cy.wait('@deleteRequest3');
+        });
+
+        it('should show an error message if any of the group deletions fails', () => {
+          errorMessage.assertVisible();
+          errorMessage.assertText('Unable to delete a todo');
+        });
+
+        it('should remove todos with success responses and keep todos with errors', () => {
+          todos.assertCount(3);
+          todos.assertTitle(0, 'CSS');
+          todos.assertTitle(1, 'TypeScript');
+        });
+
+        it('should not disable ClearCompleted button', () => {
+          page.clearCompletedButton().should('not.be.disabled');
+        });
+      });
+    });
+
+    describe('with all todos completed', () => {
+      beforeEach(() => {
+        page.mockLoad({ fixture: 'completed-todos' }).as('loadRequest');
+        page.visit();
+        cy.wait('@loadRequest');
+
+        page.mockDelete(257334).as('deleteRequest1');
+        page.mockDelete(257335).as('deleteRequest2');
+        page.mockDelete(257336).as('deleteRequest3');
+        page.mockDelete(257337).as('deleteRequest4');
+        page.mockDelete(257338).as('deleteRequest5');
+
+        page.clearCompletedButton().click();
+
+        cy.wait('@deleteRequest1');
+        cy.wait('@deleteRequest2');
+        cy.wait('@deleteRequest3');
+        cy.wait('@deleteRequest4');
+        cy.wait('@deleteRequest5');
+      });
+
+      it('should hide todos after clearing all completed todos', () => {
+        todos.assertCount(0);
+      });
+
+      it('should hide footer after clearing all completed todos', () => {
+        filter.assertHidden();
+        page.clearCompletedButton().should('not.exist');
+        page.todosCounter().should('not.exist');
+      });
+    });
+  });
+
+  describe.skip('Todo Toggling', () => {
+    beforeEach(() => {
+      page.mockLoad().as('loadRequest');
+      page.visit();
+      cy.wait('@loadRequest');
+    });
+
+    describe('before receving response', () => {
+      beforeEach(() => {
+        page.mockUpdate(257334).as('updateRequest');
+      });
+
+      it('should send an update request', () => {
+        todos.statusToggler(0).click();
+        cy.wait('@updateRequest');
+      });
+
+      it('should show loader after click', () => {
+        page.pauseTimers();
+        todos.statusToggler(0).click();
+
+        todos.assertLoading(0);
+      });
+
+      it('should not show error message after click', () => {
+        page.pauseTimers();
+        todos.statusToggler(0).click();
+
+        errorMessage.assertHidden();
+      });
+
+      it('should not hide a todo if filtered', () => {
+        filter.link('completed').click();
+        page.pauseTimers();
+        cy.tick(1000); // flush JS animation
+        todos.statusToggler(0).click();
+
+        todos.assertCount(3);
+        todos.assertTitle(0, 'HTML');
+      });
+    });
+
+    describe('on success', () => {
+      beforeEach(() => {
+        page.mockUpdate(257334).as('updateRequest');
+
+        todos.statusToggler(0).click();
+        cy.wait('@updateRequest');
+      });
+
+      it('should toggle a todo', () => {
+        todos.assertNotCompleted(0);
+        todos.statusToggler(0).should('not.be.checked');
+      });
+
+      it('should cancel loading', () => {
+        page.flushJSTimers();
+        todos.assertNotLoading(0);
+      });
+
+      it('should update the counter', () => {
+        page.todosCounter().should('have.text', '3 items left');
+      });
+
+      it('should not show an error message', () => {
+        errorMessage.assertHidden();
+      });
+    });
+
+    describe('on fail', () => {
+      beforeEach(() => {
+        // to prevent Cypress from failing the test on uncaught exception
+        cy.once('uncaught:exception', () => false);
+
+        page.mockUpdate(257334, { statusCode: 503, body: 'Service Unavailable' })
+          .as('updateRequest');
+
+        todos.statusToggler(0).click();
+        cy.wait('@updateRequest');
+      });
+
+      it('should show an error', () => {
+        errorMessage.assertVisible();
+        errorMessage.assertText('Unable to update a todo');
+      });
+
+      it('should not toggle a todo', () => {
+        todos.assertCompleted(0);
+        todos.statusToggler(0).should('be.checked');
+      });
+
+      it('should cancel loading', () => {
+        page.flushJSTimers();
+        todos.assertNotLoading(0);
+      });
+
+      it('should not update the counter', () => {
+        page.todosCounter().should('have.text', '2 items left');
+      });
+
+      it('should allow to toggle again', () => {
+        page.mockUpdate(257334).as('updateRequest2');
+
+        todos.statusToggler(0).click();
+        cy.wait('@updateRequest2');
+
+        todos.assertNotCompleted(0);
+      });
+    });
+
+    describe('if filtered', () => {
+      beforeEach(() => {
+        filter.link('completed').click();
+      });
+
+      it('should hide a todo on success', () => {
+        page.mockUpdate(257334).as('updateRequest');
+
+        todos.statusToggler(0).click();
+        cy.wait('@updateRequest');
+
+        todos.assertCount(2);
+        todos.assertTitle(0, 'CSS');
+      });
+
+      it('should show a todo on success when selected an oposite filter', () => {
+        page.mockUpdate(257334).as('updateRequest');
+
+        todos.statusToggler(0).click();
+        filter.link('active').click();
+        cy.wait('@updateRequest');
+
+        todos.assertCount(3);
+        todos.assertTitle(0, 'HTML');
+      });
+
+      it('should not hide a todo on fail', () => {
+        // to prevent Cypress from failing the test on uncaught exception
+        cy.once('uncaught:exception', () => false);
+
+        page.mockUpdate(257334, { statusCode: 503, body: 'Service Unavailable' })
+          .as('updateRequest');
+
+        todos.statusToggler(0).click();
+        cy.wait('@updateRequest');
+
+        todos.assertCount(3);
+        todos.assertTitle(0, 'HTML');
+      });
+    });
+  });
+
+  describe.skip('Toggle All Button', () => {
+    describe('if there are no todos', () => {
+      it('should not be visible while loading todos', () => {
+        page.mockLoad({ body: [] }).as('loadRequest');
+
+        page.pauseTimers();
+        page.visit();
+
+        page.toggleAllButton().should('not.exist');
+      });
+
+      it('should not be visible when loaded', () => {
+        page.mockLoad({ body: [] }).as('loadRequest');
+
+        page.visit();
+        cy.wait('@loadRequest');
+
+        page.toggleAllButton().should('not.exist');
+      });
+
+      it('should appear after adding a todo', () => {
+        page.mockLoad({ body: [] }).as('loadRequest');
+        page.mockCreate().as('createRequest');
+
+        page.visit();
+        cy.wait('@loadRequest');
+
+        page.newTodoField().type('First todo{enter}');
+        cy.wait('@createRequest');
+
+        page.toggleAllButton().should('exist');
+      });
+
+      it('should disappear after removing the last todo', () => {
+        const todo = {
+          "id": 257334,
+          "createdAt": "2023-09-19T08:21:56.486Z",
+          "updatedAt": "2023-09-19T08:23:07.096Z",
+          "userId": 1,
+          "title": "HTML",
+          "completed": false
+        };
+
+        page.mockLoad({ body: [todo] }).as('loadRequest');
+        page.mockDelete(257334).as('deleteRequest');
+
+        page.visit();
+        cy.wait('@loadRequest');
+
+        todos.deleteButton(0).click();
+        cy.wait('@deleteRequest');
+
+        page.toggleAllButton().should('not.exist');
+      });
+    });
+
+    describe('if all todos are completed', () => {
+      beforeEach(() => {
+        page.mockLoad({ fixture: 'completed-todos' }).as('loadRequest');
+
+        page.visit();
+        cy.wait('@loadRequest');
+      });
+
+      it('should be visible', () => {
+        page.toggleAllButton().should('exist');
+      });
+
+      it('should stay visible after filtering out all the todos', () => {
+        filter.link('active').click();
+
+        page.toggleAllButton().should('exist');
+      });
+
+      it('should be active', () => {
+        page.toggleAllButton().should('have.class', 'active');
+      });
+
+      it('should become not active after toggling a todo', () => {
+        page.mockUpdate(257335).as('updateRequest');
+        todos.statusToggler(1).click();
+        cy.wait('@updateRequest');
+
+        page.toggleAllButton().should('not.have.class', 'active');
+      });
+
+      it('should stay active after a todo toggling fail', () => {
+        // to prevent Cypress from failing the test on uncaught exception
+        cy.once('uncaught:exception', () => false);
+
+        page.mockUpdate(257335, { statusCode: 503 }).as('updateRequest');
+        todos.statusToggler(1).click();
+        cy.wait('@updateRequest');
+
+        page.toggleAllButton().should('have.class', 'active');
+      });
+
+      describe('on click', () => {
+        beforeEach(() => {
+          page.mockUpdate(257334).as('updateRequest4');
+          page.mockUpdate(257335).as('updateRequest5');
+          page.mockUpdate(257336).as('updateRequest6');
+          page.mockUpdate(257337).as('updateRequest7');
+          page.mockUpdate(257338).as('updateRequest8');
+
+          page.toggleAllButton().click();
+
+          cy.wait('@updateRequest4');
+          cy.wait('@updateRequest5');
+          cy.wait('@updateRequest6');
+          cy.wait('@updateRequest7');
+          cy.wait('@updateRequest8');
+        });
+
+        it('should send requests for all todos', () => {
+          // if before each pass
+        });
+
+        it('should make all todos active', () => {
+          todos.assertNotCompleted(0);
+          todos.assertNotCompleted(1);
+          todos.assertNotCompleted(2);
+          todos.assertNotCompleted(3);
+          todos.assertNotCompleted(4);
+        });
+
+        it('should become not active', () => {
+          page.toggleAllButton().should('not.have.class', 'active');
+        });
+      });
+    });
+
+    describe('if all todos are active', () => {
+      beforeEach(() => {
+        page.mockLoad({ fixture: 'active-todos' }).as('loadRequest');
+
+        page.visit();
+        cy.wait('@loadRequest');
+      });
+
+      it('should be visible', () => {
+        page.toggleAllButton().should('exist');
+      });
+
+      it('should not be active', () => {
+        page.toggleAllButton().should('not.have.class', 'active');
+      });
+
+      it('should not become active after toggling a todo', () => {
+        page.mockUpdate(257335).as('updateRequest');
+        todos.statusToggler(1).click();
+        cy.wait('@updateRequest');
+
+        page.toggleAllButton().should('not.have.class', 'active');
+      });
+
+      describe('on click', () => {
+        beforeEach(() => {
+          page.mockUpdate(257334).as('updateRequest4');
+          page.mockUpdate(257335).as('updateRequest5');
+          page.mockUpdate(257336).as('updateRequest6');
+          page.mockUpdate(257337).as('updateRequest7');
+          page.mockUpdate(257338).as('updateRequest8');
+
+          page.toggleAllButton().click();
+
+          cy.wait('@updateRequest4');
+          cy.wait('@updateRequest5');
+          cy.wait('@updateRequest6');
+          cy.wait('@updateRequest7');
+          cy.wait('@updateRequest8');
+        });
+
+        it('should send requests for all todos', () => {
+          // if before each pass
+        });
+
+        it('should make all todos completed', () => {
+          todos.assertCompleted(0);
+          todos.assertCompleted(1);
+          todos.assertCompleted(2);
+          todos.assertCompleted(3);
+          todos.assertCompleted(4);
+        });
+
+        it('should become active', () => {
+          page.toggleAllButton().should('have.class', 'active');
+        });
+      });
+    });
+
+    describe('if there are some mixed todos', () => {
+      beforeEach(() => {
+        page.mockLoad().as('loadRequest');
+
+        page.visit();
+        cy.wait('@loadRequest');
+      });
+
+      it('should be visible', () => {
+        page.toggleAllButton().should('exist');
+      });
+
+      it('should not be active', () => {
+        page.toggleAllButton().should('not.have.class', 'active');
+      });
+
+      it('should become active after completing all todos', () => {
+        page.mockUpdate(257337).as('updateRequest1');
+        page.mockUpdate(257338).as('updateRequest2');
+
+        todos.statusToggler(3).click();
+        cy.wait('@updateRequest1');
+        todos.statusToggler(4).click();
+        cy.wait('@updateRequest2');
+
+        page.toggleAllButton().should('have.class', 'active');
+      });
+
+      describe('on click', () => {
+        beforeEach(() => {
+          page.mockUpdate(257334, cy.stub().as('update4'));
+          page.mockUpdate(257335, cy.stub().as('update5'));
+          page.mockUpdate(257336, cy.stub().as('update6'));
+          page.mockUpdate(257337).as('updateRequest7');
+          page.mockUpdate(257338).as('updateRequest8');
+
+          page.toggleAllButton().click();
+
+          cy.wait('@updateRequest7');
+          cy.wait('@updateRequest8');
+        });
+
+        it('should send requests only for not completed todos', () => {
+          cy.get('@update4').should('not.be.called');
+          cy.get('@update5').should('not.be.called');
+          cy.get('@update6').should('not.be.called');
+        });
+
+        it('should make all todos completed', () => {
+          todos.assertCompleted(0);
+          todos.assertCompleted(1);
+          todos.assertCompleted(2);
+          todos.assertCompleted(3);
+          todos.assertCompleted(4);
+        });
+
+        it('should become active', () => {
+          page.toggleAllButton().should('have.class', 'active');
+        });
+      });
+    });
+  });
+
+  describe.skip('Renaming', () => {
+    beforeEach(() => {
+      page.mockLoad().as('loadRequest');
+      page.visit();
+      cy.wait('@loadRequest');
+    });
+
+    it('should not show forms by default', () => {
+      todos.titleField(0).should('not.exist');
+      todos.titleField(1).should('not.exist');
+      todos.titleField(2).should('not.exist');
+      todos.titleField(3).should('not.exist');
+      todos.titleField(4).should('not.exist');
+    });
+
+    describe('Edit Form', () => {
+      describe('by default', () => {
+        it('should be opened on dblclick', () => {
+          todos.title(0).trigger('dblclick');
+
+          todos.titleField(0).should('exist');
+        });
+
+        it('should have current value', () => {
+          todos.title(0).trigger('dblclick');
+
+          todos.titleField(0).should('have.value', 'HTML');
+        });
+
+        it('should be focused', () => {
+          todos.title(0).trigger('dblclick');
+
+          todos.titleField(0).should('be.focused');
+        });
+
+        it('should hide a title', () => {
+          todos.title(0).trigger('dblclick');
+
+          todos.title(0).should('not.exist');
+        });
+
+        it('should hide DeleteButton', () => {
+          todos.title(0).trigger('dblclick');
+
+          todos.deleteButton(0).should('not.exist');
+        });
+
+        it('should keep StatusToggler', () => {
+          todos.title(0).trigger('dblclick');
+
+          todos.statusToggler(0).should('exist');
+        });
+
+        it('should not open forms for other todos', () => {
+          todos.title(0).trigger('dblclick');
+
+          todos.titleField(1).should('not.exist');
+          todos.titleField(2).should('not.exist');
+          todos.titleField(3).should('not.exist');
+          todos.titleField(4).should('not.exist');
+        });
+
+        it('should not send a request on change', () => {
+          const spy = cy.stub()
+            .callsFake(req => req.reply({ body: { ...req.body, id: 257334 } }))
+            .as('renameCallback');
+
+          page.mockUpdate(257334, spy);
+
+          todos.title(0).trigger('dblclick');
+          todos.titleField(0).type('123');
+
+          cy.get('@renameCallback').should('not.be.called');
+        });
+      });
+
+      describe('on Escape', () => {
+        it('should be closed', () => {
+          todos.title(0).trigger('dblclick');
+          todos.titleField(0).type('123123{esc}');
+
+          todos.titleField(0).should('not.exist');
+        });
+
+        it('should keep current title', () => {
+          todos.title(0).trigger('dblclick');
+          todos.titleField(0).type('123123{esc}');
+
+          todos.assertTitle(0, 'HTML');
+        });
+
+        it('should not send a request', () => {
+          const spy = cy.stub()
+            .callsFake(req => req.reply({ body: { ...req.body, id: 257334 } }))
+            .as('renameCallback');
+
+          page.mockUpdate(257334, spy);
+
+          todos.title(0).trigger('dblclick');
+          todos.titleField(0).type('123123{esc}');
+
+          cy.get('@renameCallback').should('not.be.called');
+        });
+      });
+
+      describe('on enter before recieved a response', () => {
+        it('should send a request', () => {
+          const spy = cy.stub()
+            .callsFake(req => req.reply({ body: { ...req.body, id: 257334 } }))
+            .as('renameCallback');
+
+          page.mockUpdate(257334, spy);
+
+          todos.title(0).trigger('dblclick');
+          todos.titleField(0).type('123{enter}');
+
+          cy.get('@renameCallback').should('have.callCount', 1);
+        });
+
+        it('should show loader', () => {
+          page.mockUpdate(257334);
+
+          todos.title(0).trigger('dblclick');
+          page.pauseTimers();
+          todos.titleField(0).type('123{enter}');
+
+          todos.assertLoading(0);
+        });
+
+        // It depend on your implementation
+        it.skip('should stay while waiting', () => {
+          page.mockUpdate(257334);
+
+          todos.title(0).trigger('dblclick');
+          page.pauseTimers();
+          todos.titleField(0).type('123{enter}');
+
+          todos.titleField(0).should('exist');
+        });
+      });
+
+      describe('on success', () => {
+        beforeEach(() => {
+          page.mockUpdate(257334).as('renameRequest');
+
+          todos.title(0).trigger('dblclick');
+          todos.titleField(0).clear()
+        });
+
+        it('should cancel loading', () => {
+          todos.titleField(0).type('123{enter}');
+          cy.wait('@renameRequest');
+          page.flushJSTimers();
+
+          todos.assertNotLoading(0);
+        });
+
+        it('should be closed', () => {
+          todos.titleField(0).type('123{enter}');
+          cy.wait('@renameRequest');
+          page.flushJSTimers();
+
+          todos.titleField(0).should('not.exist');
+        });
+
+        it('should show the updated title', () => {
+          todos.titleField(0).type('Something{enter}');
+          cy.wait('@renameRequest');
+          page.flushJSTimers();
+
+          todos.assertTitle(0, 'Something');
+        });
+
+        it('should show trim the new title', () => {
+          todos.titleField(0).type('   Some new title      {enter}');
+          cy.wait('@renameRequest');
+          page.flushJSTimers();
+
+          todos.assertTitle(0, 'Some new title');
+        });
+      });
+
+      describe('on fail', () => {
+        beforeEach(() => {
+          // to prevent Cypress from failing the test on uncaught exception
+          cy.once('uncaught:exception', () => false);
+
+          page.mockUpdate(257334, { statusCode: 503 }).as('renameRequest');
+
+          todos.title(0).trigger('dblclick');
+          todos.titleField(0).type('123{enter}');
+          cy.wait('@renameRequest');
+        });
+
+        it('should cancel loading on fail', () => {
+          page.flushJSTimers();
+          todos.assertNotLoading(0);
+        });
+
+        it('should stay open on fail', () => {
+          todos.titleField(0).should('exist');
+        });
+
+        it('should show error message', () => {
+          errorMessage.assertVisible();
+          errorMessage.assertText('Unable to update a todo');
+        });
+
+        it('should hide error message in 3s', () => {
+          page.flushJSTimers(3000);
+
+          errorMessage.assertHidden();
+        });
+      });
+
+      describe('if title was not changed', () => {
+        it('should not send a request on enter', () => {
+          const spy = cy.stub()
+            .callsFake(req => req.reply({ body: { ...req.body, id: 257334 } }))
+            .as('renameCallback');
+
+          page.mockUpdate(257334, spy);
+
+          todos.title(0).trigger('dblclick');
+          todos.titleField(0).type('{enter}');
+
+          cy.get('@renameCallback').should('not.be.called');
+        });
+
+        it('should be close on enter', () => {
+          todos.title(0).trigger('dblclick');
+          todos.titleField(0).type('{enter}');
+
+          todos.titleField(0).should('not.exist');
+        });
+
+        it('should be closed on Escape', () => {
+          todos.title(0).trigger('dblclick');
+          todos.titleField(0).type('{esc}');
+
+          todos.titleField(0).should('not.exist');
+        });
+
+        it('should preserve current title on save', () => {
+          todos.title(0).trigger('dblclick');
+          todos.titleField(0).type('{enter}');
+
+          todos.assertTitle(0, 'HTML');
+        });
+      });
+
+      describe('if title became empty', () => {
+        beforeEach(() => {
+          const spy = cy.stub()
+            .callsFake(req => req.reply({ body: { ...req.body, id: 257334 } }))
+            .as('renameCallback');
+
+          page.mockUpdate(257334, spy);
+
+          todos.title(0).trigger('dblclick');
+          todos.titleField(0).clear();
+        });
+
+        it('should not send an update request on enter', () => {
+          page.mockDelete(257334).as('deleteRequest');
+          todos.titleField(0).type('{enter}');
+
+          cy.get('@renameCallback').should('not.be.called');
+        });
+
+        it('should send a delete request on enter', () => {
+          page.mockDelete(257334).as('deleteRequest');
+          todos.titleField(0).type('{enter}');
+
+          cy.wait('@deleteRequest');
+        });
+
+        it('should show loading on enter', () => {
+          page.mockDelete(257334).as('deleteRequest');
+
+          page.pauseTimers();
+          todos.titleField(0).type('{enter}');
+
+          todos.assertLoading(0);
+        });
+
+        it('should delete a todo on success', () => {
+          page.mockDelete(257334).as('deleteRequest');
+          todos.titleField(0).type('{enter}');
+          cy.wait('@deleteRequest');
+
+          todos.assertCount(4);
+          todos.assertTitle(0, 'CSS');
+        });
+
+        it('should show deleting error message on fail', () => {
+          // to prevent Cypress from failing the test on uncaught exception
+          cy.once('uncaught:exception', () => false);
+
+          page.mockDelete(257334, { statusCode: 503 }).as('deleteRequest');
+
+          todos.titleField(0).type('{enter}');
+          cy.wait('@deleteRequest');
+
+          errorMessage.assertVisible();
+          errorMessage.assertText('Unable to delete a todo')
+        });
+
+        // this test may be unstable
+        it.skip('should hide loader on fail', () => {
+          // to prevent Cypress from failing the test on uncaught exception
+          cy.once('uncaught:exception', () => false);
+
+          page.mockDelete(257334, { statusCode: 503 }).as('deleteRequest');
+
+          todos.titleField(0).type('{enter}');
+          cy.wait('@deleteRequest');
+          page.flushJSTimers();
+
+          todos.assertNotLoading(0);
+        });
+
+        it('should stay open on fail', () => {
+          // to prevent Cypress from failing the test on uncaught exception
+          cy.once('uncaught:exception', () => false);
+
+          page.mockDelete(257334, { statusCode: 503 }).as('deleteRequest');
+
+          todos.titleField(0).type('{enter}');
+          cy.wait('@deleteRequest');
+
+          todos.titleField(0).should('exist');
+        });
+
+        it('should be closed on Escape', () => {
+          todos.titleField(0).type('{esc}');
+
+          todos.titleField(0).should('not.exist');
+        });
+
+        it('should preserve current title on close', () => {
+          todos.titleField(0).type('{esc}');
+
+          todos.title(0).should('have.text', 'HTML');
+        });
+      });
+
+      describe('on Blur', () => {
+        it('should save', () => {
+          page.mockUpdate(257334).as('renameRequest');
+
+          todos.title(0).trigger('dblclick');
+          todos.titleField(0).clear()
+          todos.titleField(0).type('New title');
+          todos.titleField(0).blur();
+          cy.wait('@renameRequest');
+
+          // just in case
+          page.flushJSTimers();
+
+          todos.assertTitle(0, 'New title');
+        });
+
+        it('should cancel if title was not changed', () => {
+          const spy = cy.stub()
+            .callsFake(req => req.reply({ body: { ...req.body, id: 257334 } }))
+            .as('renameCallback');
+
+          page.mockUpdate(257334, spy);
+
+          todos.title(0).trigger('dblclick');
+          todos.titleField(0).blur();
+
+          cy.get('@renameCallback').should('not.be.called');
+          page.flushJSTimers();
+          todos.titleField(0).should('not.exist');
+          todos.assertTitle(0, 'HTML');
+        });
+
+        it('should delete if title is empty', () => {
+          page.mockDelete(257334).as('deleteRequest');
+
+          todos.title(0).trigger('dblclick');
+          todos.titleField(0).clear();
+          todos.titleField(0).blur();
+          cy.wait('@deleteRequest');
+
+          todos.assertCount(4);
+          todos.assertTitle(0, 'CSS');
+        })
+      });
     });
   });
 });
