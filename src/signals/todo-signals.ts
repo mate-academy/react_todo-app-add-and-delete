@@ -8,8 +8,8 @@ type Error = keyof typeof ErrorValues;
 
 export const todos = signal<Todo[]>([]);
 export const tempTodo = signal<Todo | null>(null);
-export const isLoading = signal<boolean>(false);
 export const isError = signal<Error | null>(null);
+export const todosToDelete = signal<number[]>([]);
 
 export const filteredTodos = computed<Todo[]>(() => {
   switch (filter.value) {
@@ -29,4 +29,8 @@ export const filteredTodos = computed<Todo[]>(() => {
 
 export const activeTodosCounter = computed<number>(() => {
   return todos.value.filter(todo => !todo.completed).length;
+});
+
+export const completedTodosCounter = computed<number>(() => {
+  return todos.value.filter(todo => todo.completed).length;
 });

@@ -2,7 +2,11 @@ import { useSignals } from '@preact/signals-react/runtime';
 import classNames from 'classnames';
 import { FilterValues } from '../../types/FilterValues';
 import { filter } from '../../signals/filter-signals';
-import { activeTodosCounter } from '../../signals';
+import {
+  activeTodosCounter, completedTodosCounter, isError, todos, todosToDelete,
+} from '../../signals';
+import { deleteTodo } from '../../api/todos';
+import { ErrorValues } from '../../types/ErrorValues';
 
 export const Footer = () => {
   useSignals();
@@ -26,6 +30,23 @@ export const Footer = () => {
       default:
         break;
     }
+  };
+
+  const handleClearCompleted = () => {
+    todos.value.forEach((todo) => {
+      if (todo.completed) {
+        todosToDelete.value = [...todosToDelete.value, todo.id];
+        deleteTodo(todo.id)
+          .catch(() => {
+            isError.value = ErrorValues.delete;
+          })
+          .finally(() => {
+            todos.value = todos.value.filter((t) => t.id !== todo.id);
+            todosToDelete.value = todosToDelete.value
+              .filter((t) => t !== todo.id);
+          });
+      }
+    });
   };
 
   return (
@@ -72,6 +93,12 @@ export const Footer = () => {
         type="button"
         className="todoapp__clear-completed"
         data-cy="ClearCompletedButton"
+        style={{
+          visibility: completedTodosCounter.value
+            ? 'visible'
+            : 'hidden',
+        }}
+        onClick={handleClearCompleted}
       >
         Clear completed
       </button>
