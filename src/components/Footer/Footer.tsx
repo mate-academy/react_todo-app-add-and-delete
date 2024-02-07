@@ -41,7 +41,7 @@ export const Footer = () => {
           .catch(() => {
             isError.value = ErrorValues.delete;
           })
-          .finally(() => {
+          .then(() => {
             todos.value = todos.value.filter((t) => t.id !== todo.id);
             todosToDelete.value = todosToDelete.value
               .filter((t) => t !== todo.id);
