@@ -25,7 +25,7 @@ export const App: React.FC = () => {
     if (inputRef.current) {
       inputRef.current.focus();
     }
-  }, []);
+  });
 
   const handleInput = (e: React.ChangeEvent<HTMLInputElement>) => {
     inputValue.value = e.target.value;
