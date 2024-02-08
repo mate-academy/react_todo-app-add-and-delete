@@ -1,6 +1,8 @@
 /// <reference types='cypress' />
 /// <reference types='../support' />
 
+import mixedTodos from '../fixtures/todos.json';
+
 //#region Page Objects
 const page = {
   toggleAllButton: () => cy.byDataCy('ToggleAllButton'),
@@ -24,7 +26,7 @@ const page = {
       clock.restore();
     });
 
-    cy.wait(200);
+    cy.wait(50);
   },
 
   /**
@@ -55,10 +57,11 @@ const page = {
     return cy.intercept(options, response || { body: '1' });
   },
   mockUpdate: (id, response) => {
+    const todo = mixedTodos.find(todo => todo.id === id) || {};
     const options = { method: 'PATCH', url: `**/todos/${id}` };
 
     const spy = cy.stub()
-      .callsFake(req => req.reply({ body: { ...req.body, id } }))
+      .callsFake(req => req.reply({ body: { ...todo, ...req.body, id } }))
       .as('updateCallback');
 
     return cy.intercept(options, response || spy);
