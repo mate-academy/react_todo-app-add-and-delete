@@ -14,21 +14,21 @@ and implement the ability to add and remove todos.
 
 Add a todo with the entered title on the form submit:
 
-- text field should be focused by default;
-- if the title is empty show the `Title should not be empty` notification at the bottom;
-- trim the title when checked or saved;
-- use your `userId` for the new todo;
-- send a POST request to the API (check the [API Documentation](https://mate-academy.github.io/fe-students-api/))
+DONE - text field should be focused by default;
+DONE - if the title is empty show the `Title should not be empty` notification at the bottom;
+DONE - trim the title when checked or saved;
+DONE - use your `userId` for the new todo;
+DONE - send a POST request to the API (check the [API Documentation](https://mate-academy.github.io/fe-students-api/))
 - disable the input until receiving a response from the API;
-- immediately after sending a request create a todo with `id: 0` and save it to the `tempTodo` variable in the state (NOT to the `todos` array);
-- show an independent `TodoItem` **after** the list if `tempTodo` is not `null`;
+DONE - immediately after sending a request create a todo with `id: 0` and save it to the `tempTodo` variable in the state (NOT to the `todos` array);
+DONE - show an independent `TodoItem` **after** the list if `tempTodo` is not `null`;
 - temp TodoItem should have the loader (check the original markup);
-- in case of success add the todo created by the API to the array (take it from the POST response);
-- in case of an API error showing `Unable to add a todo` notification at the bottom;
-- set `tempTodo` to `null` to hide the extra `TodoItem`;
+DONE - in case of success add the todo created by the API to the array (take it from the POST response);
+DONE - in case of an API error showing `Unable to add a todo` notification at the bottom;
+DONE - set `tempTodo` to `null` to hide the extra `TodoItem`;
 - focus the text field after receiving a response;
-- clear the text in case of success;
-- keep the text in case of error;
+DONE - clear the text in case of success;
+DONE - keep the text in case of error;
 
 > Don't try to implement animations for adding or removing Todos (at least until you finish everything else).
 > If you really feel confident to try, there is a hint at the end of the description.
@@ -38,8 +38,8 @@ Add a todo with the entered title on the form submit:
 Remove a todo on the `TodoDeleteButton` click:
 
 - covered the todo with the loader while waiting for the API response;
-- remove the todo from the list on success;
-- in case of API error show `Unable to delete a todo` notification at the bottom (the todo must stay in the list);
+DONE - remove the todo from the list on success;
+DONE - in case of API error show `Unable to delete a todo` notification at the bottom (the todo must stay in the list);
 
 Remove all the completed todos after the `Clear completed` button click:
 
@@ -55,7 +55,7 @@ Remove all the completed todos after the `Clear completed` button click:
 
 - Implement a solution following the [React task guideline](https://github.com/mate-academy/react_task-guideline#react-tasks-guideline).
 - Use the [React TypeScript cheat sheet](https://mate-academy.github.io/fe-program/js/extra/react-typescript).
-- Replace `<your_account>` with your Github username in the [DEMO LINK](https://<your_account>.github.io/react_todo-app-add-and-delete/) and add it to the PR description.
+DONE - Replace `<your_account>` with your Github username in the [DEMO LINK](https://Manankin.github.io/react_todo-app-add-and-delete/) and add it to the PR description.
 
 ## IF you want to implement smooth animations
 
