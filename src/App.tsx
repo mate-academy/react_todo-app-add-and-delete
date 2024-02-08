@@ -15,12 +15,9 @@ const inputValue = signal<string>('');
 
 export const App: React.FC = () => {
   useSignals();
-  // eslint-disable-next-line no-console
-  console.log('App rendered');
-  // useref to store the input element
+
   const inputRef = useRef<HTMLInputElement>(null);
 
-  // focus the input element on mount
   useEffect(() => {
     if (inputRef.current) {
       inputRef.current.focus();
