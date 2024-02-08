@@ -23,11 +23,10 @@ import {
 import { changeAllStatuses } from '../../services/changeAllStatuses';
 import { ErrorMessages } from '../../types/Error';
 import { reduceItems } from '../../services/reduceItems';
-import { addLoadingIds } from '../../services/changeLoadingIds';
 
 /* eslint-disable jsx-a11y/control-has-associated-label */
 type Props = {
-  onSubmit: (todo: Todo) => void;
+  onSubmit: (todo: Todo) => Promise<void>;
   onCompleted: (id: number, completeAll: boolean) => void;
 };
 
@@ -35,7 +34,7 @@ export const InputForm: React.FC<Props> = ({ onSubmit, onCompleted }) => {
   const [newTodoTitle, setNewTodoTitle] = useState('');
   const [completeAll, setCompleteAll] = useState(false);
   const { todos, setTodos } = useContext(TodosContext);
-  const { loading, setLoading } = useContext(LoadingContext);
+  const { loading, startLoading } = useContext(LoadingContext);
   const {
     newError,
     showError,
@@ -53,7 +52,7 @@ export const InputForm: React.FC<Props> = ({ onSubmit, onCompleted }) => {
       changeAll.forEach(todo => {
         const { id } = todo;
 
-        setLoading((current) => addLoadingIds(id, current));
+        startLoading(id);
         onCompleted(id, !isCompleted);
       });
     } else {
@@ -62,43 +61,34 @@ export const InputForm: React.FC<Props> = ({ onSubmit, onCompleted }) => {
           const { id, completed } = todo;
 
           onCompleted(id, !completed);
-          setLoading((current) => addLoadingIds(id, current));
+          startLoading(id);
         }
       });
     }
   };
 
-  function handleSubmit(event: React.FormEvent) {
+  async function handleSubmit(event: React.FormEvent) {
     event.preventDefault();
     const normalizedTitle = newTodoTitle.trim();
 
-    try {
-      const newTodo: Todo = {
-        id: 0,
-        title: newTodoTitle.trim(),
-        userId: USER_ID,
-        completed: false,
-      };
+    if (normalizedTitle === '') {
+      setNewError(ErrorMessages.emptyTitle);
+      setShowError(true);
 
-      if (normalizedTitle !== '') {
-        setLoading((current) => addLoadingIds(newTodo.id, current));
-        setTodos((prev) => [...prev, newTodo]);
-        onSubmit(newTodo);
-      }
-    } finally {
-      if (normalizedTitle === '') {
-        setNewError(ErrorMessages.emptyTitle);
-        setShowError(true);
-      }
-
-      if (showError && newError === ErrorMessages.unableToAddTodo) {
-        setNewTodoTitle(normalizedTitle);
-      }
-
-      if (!showError) {
-        setNewTodoTitle('');
-      }
+      return;
     }
+
+    const newTodo: Todo = {
+      id: 0,
+      title: normalizedTitle,
+      userId: USER_ID,
+      completed: false,
+    };
+
+    startLoading(0);
+    setTodos((prev) => [...prev, newTodo]);
+    await onSubmit(newTodo);
+    setNewTodoTitle('');
   }
 
   const titleField = useRef<HTMLInputElement>(null);
@@ -107,7 +97,7 @@ export const InputForm: React.FC<Props> = ({ onSubmit, onCompleted }) => {
     if (titleField.current) {
       titleField.current.focus();
     }
-  }, [newError]);
+  }, [newError, showError, newTodoTitle]);
 
   return (
     <header className="todoapp__header">

@@ -6,7 +6,6 @@ import { LoadingContext, TodosContext } from '../../TodosContext/TodosContext';
 import { Status } from '../../types/Status';
 import { reduceItems } from '../../services/reduceItems';
 import { filterByStatus } from '../../services/filterByStatus';
-import { addLoadingIds } from '../../services/changeLoadingIds';
 
 interface FilterProps {
   onChangeStatus: (newStatus: Status) => void;
@@ -20,7 +19,7 @@ export const Filter: React.FC<FilterProps> = ({
   onClearCompleted,
 }) => {
   const { todos } = useContext(TodosContext);
-  const { setLoading } = useContext(LoadingContext);
+  const { startLoading } = useContext(LoadingContext);
   const handleStatusChange = (newStatus: Status) => {
     onChangeStatus(newStatus);
   };
@@ -31,13 +30,14 @@ export const Filter: React.FC<FilterProps> = ({
     return onlyActiveTodos.map(todo => {
       const { id } = todo;
 
-      setLoading((current) => addLoadingIds(id, current));
+      startLoading(id);
 
       return onClearCompleted(id);
     });
   };
 
-  const itemsLeft = reduceItems(todos, false);
+  const todosLeft = todos.filter(todo => todo.id !== 0);
+  const itemsLeft = reduceItems(todosLeft, false);
 
   const itemsDone = reduceItems(todos, true);
   const clearCompletedStyle: React.CSSProperties = {

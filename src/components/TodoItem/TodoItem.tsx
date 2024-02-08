@@ -8,7 +8,6 @@ import {
   LoadingContext,
   TodoUpdateContext,
 } from '../../TodosContext/TodosContext';
-import { addLoadingIds } from '../../services/changeLoadingIds';
 
 type Props = {
   todo: Todo;
@@ -16,37 +15,23 @@ type Props = {
 
 export const TodoItem: React.FC<Props> = ({ todo }) => {
   const { removeTodo, changeTodo } = useContext(TodoUpdateContext);
-  const { loading, setLoading } = useContext(LoadingContext);
+  const { loading, startLoading } = useContext(LoadingContext);
 
   function handleRemove(event: React.FormEvent<HTMLButtonElement>) {
     event.preventDefault();
-    setLoading(addLoadingIds(todo.id, loading));
-    try {
-      const deleteId: number = todo.id;
+    startLoading(todo.id);
+    const deleteId: number = todo.id;
 
-      removeTodo(deleteId);
-    } finally {
-      console.log(`delete Todo by id  ${todo.id}`);
-    }
+    removeTodo(deleteId);
   }
 
   function handleChangeTodo() {
-    setLoading(addLoadingIds(todo.id, loading));
-    try {
-      changeTodo(todo.id, !todo.completed);
-    } catch (error) {
-      throw new Error('HandleChangeTodo in TodoItem');
-    }
+    startLoading(todo.id);
+    changeTodo(todo.id, !todo.completed);
   }
 
-  const isCompleted = classNames({
-    'todo completed': todo.completed,
-    // eslint-disable-next-line quote-props
-    'todo': todo.completed === false,
-  });
-
   return (
-    <div data-cy="Todo" className={isCompleted}>
+    <div data-cy="Todo" className={todo.completed ? 'todo completed' : 'todo'}>
       <label className="todo__status-label">
         <input
           data-cy="TodoStatus"
