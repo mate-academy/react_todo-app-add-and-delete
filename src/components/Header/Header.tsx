@@ -20,8 +20,7 @@ export const Header: React.FC<Props> = React.memo(() => {
     setErrorMessage,
     setCount,
     added,
-    disabled,
-    setDisabled,
+    loading,
   } = useContext(TodosContext);
 
   const [title, setTitle] = useState('');
@@ -56,7 +55,6 @@ export const Header: React.FC<Props> = React.memo(() => {
 
     addTempItem(newTodo);
     addTodo(newTodo);
-    setDisabled(true);
   };
 
   useEffect(() => {
@@ -103,7 +101,7 @@ export const Header: React.FC<Props> = React.memo(() => {
           ref={inputAutoFocus}
           value={title}
           onChange={handleTitle}
-          disabled={disabled}
+          disabled={loading}
         />
       </form>
     </header>

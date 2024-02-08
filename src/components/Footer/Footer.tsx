@@ -45,54 +45,52 @@ export const Footer: React.FC = React.memo(() => {
   };
 
   return (
-    <>
-      <footer className="todoapp__footer" data-cy="Footer">
-        <span className="todo-count" data-cy="TodosCounter">
-          {`${itemsLeft} items left`}
-        </span>
+    <footer className="todoapp__footer" data-cy="Footer">
+      <span className="todo-count" data-cy="TodosCounter">
+        {`${itemsLeft} items left`}
+      </span>
 
-        <nav className="filter" data-cy="Filter">
-          <a
-            href="#/"
-            className={cn('filter__link',
-              { selected: filter === FilterParams.All })}
-            data-cy="FilterLinkAll"
-            onClick={() => setFilter(FilterParams.All)}
-          >
-            All
-          </a>
-
-          <a
-            href="#/active"
-            className={cn('filter__link',
-              { selected: filter === FilterParams.Active })}
-            data-cy="FilterLinkActive"
-            onClick={() => setFilter(FilterParams.Active)}
-          >
-            Active
-          </a>
-
-          <a
-            href="#/completed"
-            className={cn('filter__link',
-              { selected: filter === FilterParams.Completed })}
-            data-cy="FilterLinkCompleted"
-            onClick={() => setFilter(FilterParams.Completed)}
-          >
-            Completed
-          </a>
-        </nav>
-
-        <button
-          type="button"
-          className={cn('todoapp__clear-completed',
-            { disabled: !hasCompleted })}
-          data-cy="ClearCompletedButton"
-          onClick={handleClearCompleted}
+      <nav className="filter" data-cy="Filter">
+        <a
+          href="#/"
+          className={cn('filter__link',
+            { selected: filter === FilterParams.All })}
+          data-cy="FilterLinkAll"
+          onClick={() => setFilter(FilterParams.All)}
         >
-          Clear completed
-        </button>
-      </footer>
-    </>
+          All
+        </a>
+
+        <a
+          href="#/active"
+          className={cn('filter__link',
+            { selected: filter === FilterParams.Active })}
+          data-cy="FilterLinkActive"
+          onClick={() => setFilter(FilterParams.Active)}
+        >
+          Active
+        </a>
+
+        <a
+          href="#/completed"
+          className={cn('filter__link',
+            { selected: filter === FilterParams.Completed })}
+          data-cy="FilterLinkCompleted"
+          onClick={() => setFilter(FilterParams.Completed)}
+        >
+          Completed
+        </a>
+      </nav>
+
+      <button
+        type="button"
+        className={cn('todoapp__clear-completed',
+          { disabled: !hasCompleted })}
+        data-cy="ClearCompletedButton"
+        onClick={handleClearCompleted}
+      >
+        Clear completed
+      </button>
+    </footer>
   );
 });
