@@ -12,21 +12,19 @@ export const Header: React.FC<Props> = React.memo(() => {
   const {
     todos,
     setTodos,
-    isCompletedAll,
-    setIsCompletedAll,
     setTempItem,
     addTodo,
     errorMessage,
     setErrorMessage,
-    setCount,
-    added,
     loading,
+    setLoading,
   } = useContext(TodosContext);
 
   const [title, setTitle] = useState('');
   const inputAutoFocus = useRef<HTMLInputElement>(null);
 
   const hasToggle = todos.length > 0;
+  const activeToggle = todos.every(todo => todo.completed);
 
   const handleTitle = (event: React.ChangeEvent<HTMLInputElement>) => {
     setTitle(event.target.value);
@@ -36,12 +34,11 @@ export const Header: React.FC<Props> = React.memo(() => {
     setTempItem(newTodo);
   }, [setTempItem]);
 
-  const handleSubmit = (event: React.FormEvent) => {
+  const handleSubmit = async (event: React.FormEvent) => {
     event.preventDefault();
 
     if (!title.trim()) {
       setErrorMessage('Title should not be empty');
-      setCount((currentCount) => currentCount + 1);
 
       return;
     }
@@ -54,20 +51,27 @@ export const Header: React.FC<Props> = React.memo(() => {
     };
 
     addTempItem(newTodo);
-    addTodo(newTodo);
+
+    try {
+      const createTodo = await addTodo(newTodo);
+
+      if (createTodo !== undefined) {
+        const updatedTodos = [...todos, createTodo];
+
+        setTodos(updatedTodos);
+        setTitle('');
+      }
+    } catch {
+      setErrorMessage('Unable to add a todo');
+    } finally {
+      setTempItem(null);
+      setLoading(false);
+    }
   };
 
-  useEffect(() => {
-    if (added) {
-      setTitle('');
-    }
-  }, [added]);
-
   const handleCompletedAll = () => {
-    setIsCompletedAll(!isCompletedAll);
-
     const updatedTodos = todos.map(upTodo => (
-      { ...upTodo, completed: !isCompletedAll }
+      { ...upTodo, completed: !activeToggle }
     ));
 
     setTodos(updatedTodos);
@@ -84,7 +88,7 @@ export const Header: React.FC<Props> = React.memo(() => {
       {hasToggle && (
         <button
           type="button"
-          className={cn('todoapp__toggle-all', { active: isCompletedAll })}
+          className={cn('todoapp__toggle-all', { active: activeToggle })}
           data-cy="ToggleAllButton"
           onClick={handleCompletedAll}
         />

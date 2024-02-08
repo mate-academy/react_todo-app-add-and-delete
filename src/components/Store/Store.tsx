@@ -3,7 +3,6 @@ import React, {
 } from 'react';
 import { client } from '../../utils/fetchClient';
 import { Todo } from '../../types/Todo';
-import { CompletedAll } from '../../types/CompletedAll';
 import { FilterParams } from '../../types/FilterParams';
 
 const USERS_URL = '?userId=';
@@ -14,8 +13,6 @@ type TodosContextType = {
   todos: Todo[];
   setTodos: React.Dispatch<Todo[]>;
   loading: boolean;
-  isCompletedAll: CompletedAll;
-  setIsCompletedAll: React.Dispatch<CompletedAll>;
   filter: FilterParams;
   setFilter: React.Dispatch<FilterParams>;
   tempItem: Todo | null;
@@ -24,8 +21,6 @@ type TodosContextType = {
   deleteTodo: (id: number) => void;
   errorMessage: string;
   setErrorMessage: React.Dispatch<string>;
-  setCount: React.Dispatch<React.SetStateAction<number>>;
-  added: boolean;
   pressClearAll: boolean;
   setPressClearAll: React.Dispatch<boolean>;
   setLoading: React.Dispatch<boolean>;
@@ -35,8 +30,6 @@ export const TodosContext = React.createContext<TodosContextType>({
   todos: [],
   setTodos: () => { },
   loading: false,
-  isCompletedAll: null,
-  setIsCompletedAll: () => { },
   filter: FilterParams.All,
   setFilter: () => { },
   tempItem: null,
@@ -45,8 +38,6 @@ export const TodosContext = React.createContext<TodosContextType>({
   deleteTodo: () => { },
   errorMessage: '',
   setErrorMessage: () => { },
-  setCount: () => { },
-  added: false,
   pressClearAll: false,
   setPressClearAll: () => { },
   setLoading: () => { },
@@ -59,12 +50,9 @@ type Props = {
 export const TodosProvider: React.FC<Props> = ({ children }) => {
   const [todos, setTodos] = useState<Todo[]>([]);
   const [loading, setLoading] = useState(false);
-  const [isCompletedAll, setIsCompletedAll] = useState<CompletedAll>(null); /// this line replace on var
   const [filter, setFilter] = useState<FilterParams>(FilterParams.All);
   const [tempItem, setTempItem] = useState<Todo | null>(null);
   const [errorMessage, setErrorMessage] = useState('');
-  const [count, setCount] = useState(0); /// this line replace on var
-  const [added, setAdded] = useState(false); /// this line replace on var
   const [pressClearAll, setPressClearAll] = useState(false);
 
   function loadTodos() {
@@ -90,37 +78,13 @@ export const TodosProvider: React.FC<Props> = ({ children }) => {
     return () => {
       clearTimeout(timerId);
     };
-  }, [count, errorMessage]);
-
-  useEffect(() => {
-    const completedAll = todos.every(completedTodo => completedTodo.completed);
-
-    if (completedAll && todos.length !== 0) {
-      setIsCompletedAll(true);
-    }
-
-    if (!completedAll) {
-      setIsCompletedAll(null);
-    }
-  }, [todos]);
+  }, [errorMessage]);
 
   function addTodo({ userId, title, completed }: Todo) {
     setErrorMessage('');
     setLoading(true);
-    setCount((currentCount) => currentCount + 1);
-    setAdded(false);
 
-    return client.post<Todo>(USERS_URL + USER_ID, { userId, title, completed })
-      .then(newTodo => {
-        setTodos(currentTodos => [...currentTodos, newTodo]);
-        setAdded(true);
-        setIsCompletedAll(null);
-      })
-      .catch(() => setErrorMessage('Unable to add a todo'))
-      .finally(() => {
-        setTempItem(null);
-        setLoading(false);
-      });
+    return client.post<Todo>(USERS_URL + USER_ID, { userId, title, completed });
   }
 
   const deleteTodo = useCallback((todoId: number) => {
@@ -134,8 +98,6 @@ export const TodosProvider: React.FC<Props> = ({ children }) => {
     todos,
     setTodos,
     loading,
-    isCompletedAll,
-    setIsCompletedAll,
     filter,
     setFilter,
     tempItem,
@@ -144,20 +106,16 @@ export const TodosProvider: React.FC<Props> = ({ children }) => {
     deleteTodo,
     errorMessage,
     setErrorMessage,
-    setCount,
-    added,
     pressClearAll,
     setPressClearAll,
     setLoading,
   }), [
     todos,
     loading,
-    isCompletedAll,
     filter,
     tempItem,
     deleteTodo,
     errorMessage,
-    added,
     pressClearAll,
   ]);
 
