@@ -18,17 +18,10 @@ export const App: React.FC = () => {
     setTodos,
   } = useContext(TodoContext);
 
-  const handleOverLoad = () => {
-    setTimeout(() => {
-      setErrorMessage('');
-    }, 3000);
-  };
-
   useEffect(() => {
-    getTodos(84)
-      .then((res) => setTodos(res))
-      .catch(() => setErrorMessage(ErrorMessage.failedLoad))
-      .finally(() => handleOverLoad());
+    getTodos(USER_ID)
+      .then(setTodos)
+      .catch(() => setErrorMessage(ErrorMessage.FailedLoad));
   }, []);
 
   if (!USER_ID) {
@@ -46,12 +39,9 @@ export const App: React.FC = () => {
           <TodoList />
         </section>
 
-        {/* Hide the footer if there are no todos */}
         {todos.length !== 0 && (<Footer />)}
       </div>
 
-      {/* Notification is shown in case of any error */}
-      {/* Add the 'hidden' class to hide the message smoothly */}
       <Error />
     </div>
   );

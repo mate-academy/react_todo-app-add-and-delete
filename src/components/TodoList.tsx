@@ -33,7 +33,7 @@ export const TodoList: React.FC = () => {
               timeout={300}
               classNames="temp-item"
             >
-              <TodoItem todo={tempTodo} isTemp />
+              <TodoItem todo={tempTodo} isTempTodo />
             </CSSTransition>
           )}
         </ul>

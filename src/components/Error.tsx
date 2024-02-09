@@ -1,10 +1,22 @@
 import classNames from 'classnames';
 
-import { useContext } from 'react';
+import { useContext, useEffect } from 'react';
 import { TodoContext } from '../contexts/TodoContext';
 
 export const Error: React.FC = () => {
   const { setErrorMessage, errorMessage } = useContext(TodoContext);
+
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      setErrorMessage('');
+    }, 3000);
+
+    return () => {
+      if (timer) {
+        clearTimeout(timer);
+      }
+    };
+  }, [errorMessage, setErrorMessage]);
 
   return (
     <div

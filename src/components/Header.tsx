@@ -4,26 +4,31 @@ import {
   useRef,
   useState,
 } from 'react';
+import classNames from 'classnames';
+
 import { TodoContext } from '../contexts/TodoContext';
 import { ErrorMessage } from '../types/ErrorMessage';
-import { createTodo } from '../api/todos';
+import { createTodo, updateTodos } from '../api/todos';
 import { USER_ID } from '../utils/constants';
 import { Todo } from '../types/Todo';
 
 export const Header: React.FC = () => {
   const [query, setQuery] = useState('');
-  const { setErrorMessage, setTodos, setTempTodo } = useContext(TodoContext);
+  const {
+    todos,
+    setErrorMessage,
+    setTodos,
+    setTempTodo,
+    idsToUpdate,
+    updateTodoList,
+  } = useContext(TodoContext);
   const inputRef = useRef<HTMLInputElement>(null);
+
+  const isAllTodoCompleted = todos.every(todo => todo.completed);
 
   useEffect(() => {
     inputRef.current?.focus();
-  }, []);
-
-  const handleCatch = () => {
-    setTimeout(() => {
-      setErrorMessage('');
-    }, 3000);
-  };
+  }, [todos]);
 
   const handleSubmit = (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
@@ -37,9 +42,8 @@ export const Header: React.FC = () => {
     };
 
     if (query.trim().length === 0) {
-      setErrorMessage(ErrorMessage.emptyTitle);
+      setErrorMessage(ErrorMessage.EmptyTitle);
       inputRef.current?.focus();
-      handleCatch();
 
       return;
     }
@@ -54,24 +58,50 @@ export const Header: React.FC = () => {
         setQuery('');
       })
       .catch(() => {
-        setErrorMessage(ErrorMessage.failedAddTodo);
+        setErrorMessage(ErrorMessage.FailedAddTodo);
       })
       .finally(() => {
-        handleCatch();
+        setTempTodo(null);
         inputRef.current?.removeAttribute('disabled');
         inputRef.current?.focus();
-        setTempTodo(null);
       });
+  };
+
+  const HandleCheckAll = () => {
+    setErrorMessage('');
+
+    const activeTodos = todos.filter(todo => !todo.completed);
+    const completedTodos = todos.filter(todo => todo.completed);
+    const todosOnStatusUpdate = !isAllTodoCompleted
+      ? activeTodos
+      : completedTodos;
+
+    todosOnStatusUpdate.forEach(({ title, completed, id }) => {
+      idsToUpdate(id);
+
+      updateTodos({ title, completed: !completed, id })
+        .then(() => updateTodoList({ title, completed: !completed, id }))
+        .catch(() => setErrorMessage(ErrorMessage.FailedUpdateTodo))
+        .finally(() => idsToUpdate(null));
+    });
   };
 
   return (
     <header className="todoapp__header">
-      {/* eslint-disable-next-line jsx-a11y/control-has-associated-label */}
-      <button
-        type="button"
-        className="todoapp__toggle-all active"
-        data-cy="ToggleAllButton"
-      />
+      {!!todos.length && (
+        // eslint-disable-next-line jsx-a11y/control-has-associated-label
+        <button
+          type="button"
+          className={classNames(
+            'todoapp__toggle-all',
+            {
+              active: isAllTodoCompleted,
+            },
+          )}
+          data-cy="ToggleAllButton"
+          onClick={HandleCheckAll}
+        />
+      )}
 
       <form
         onSubmit={handleSubmit}
@@ -82,9 +112,10 @@ export const Header: React.FC = () => {
           name="newTodoName"
           className="todoapp__new-todo"
           placeholder="What needs to be done?"
+          autoComplete="off"
           value={query}
-          onChange={(e) => setQuery(e.target.value)}
           ref={inputRef}
+          onChange={(e) => setQuery(e.target.value)}
         />
       </form>
     </header>

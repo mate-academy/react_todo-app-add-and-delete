@@ -1,30 +1,44 @@
-import { useContext } from 'react';
+import { useContext, useState } from 'react';
 import classNames from 'classnames';
 
 import { Todo } from '../types/Todo';
-import { deleteTodo } from '../api/todos';
+import { updateTodos } from '../api/todos';
 import { TodoContext } from '../contexts/TodoContext';
 import { ErrorMessage } from '../types/ErrorMessage';
+import { EditTodoForm } from './EditTodoForm';
 
 interface Props {
   todo: Todo,
-  isTemp?: boolean,
+  isTempTodo?: boolean,
 }
 
-export const TodoItem: React.FC<Props> = ({ todo, isTemp = false }) => {
-  const { setErrorMessage, setTodos } = useContext(TodoContext);
-  const handleCatch = () => {
-    setTimeout(() => {
-      setErrorMessage('');
-    }, 3000);
-  };
+export const TodoItem: React.FC<Props> = ({ todo, isTempTodo }) => {
+  const [isEditMode, setIsEditMode] = useState(false);
+  const {
+    setErrorMessage,
+    updateTodoList,
+    idsToUpdate,
+    idsToChange,
+    deleteTodoById,
+  } = useContext(TodoContext);
 
   const handleDeleteTodo = (todoId: number) => {
-    deleteTodo(todoId)
-      .then(() => setTodos(prevTodos => prevTodos
-        .filter(todoToFilter => todoToFilter.id !== todoId)))
-      .catch(() => setErrorMessage(ErrorMessage.failedLoad))
-      .finally(() => handleCatch());
+    idsToUpdate(todoId);
+
+    deleteTodoById(todoId);
+  };
+
+  const handleUpdateStatus = (todoToStatusUpdate: Omit<Todo, 'userId'>) => {
+    const { completed, id } = todoToStatusUpdate;
+
+    idsToUpdate(id);
+
+    updateTodos({ ...todoToStatusUpdate, completed: !completed })
+      .then(() => {
+        updateTodoList({ ...todoToStatusUpdate, completed: !completed });
+      })
+      .catch(() => setErrorMessage(ErrorMessage.FailedUpdateTodo))
+      .finally(() => idsToUpdate(null));
   };
 
   return (
@@ -32,33 +46,52 @@ export const TodoItem: React.FC<Props> = ({ todo, isTemp = false }) => {
       data-cy="Todo"
       className={classNames('todo', { completed: todo.completed })}
       key={todo.id}
+      onDoubleClick={() => setIsEditMode(true)}
     >
       <label className="todo__status-label">
         <input
           data-cy="TodoStatus"
           type="checkbox"
           className="todo__status"
-          onChange={() => { }}
+          onChange={() => handleUpdateStatus(todo)}
           checked={todo.completed}
         />
       </label>
 
-      <span data-cy="TodoTitle" className="todo__title">
-        {todo.title}
-      </span>
+      {
+        isEditMode
+          ? (
+            <EditTodoForm
+              todoOnUpdate={todo}
+              onEditMode={setIsEditMode}
+            />
+          )
+          : (
+            <>
+              <span data-cy="TodoTitle" className="todo__title">
+                {todo.title}
+              </span>
 
-      <button
-        type="button"
-        className="todo__remove"
-        data-cy="TodoDelete"
-        onClick={() => handleDeleteTodo(todo.id)}
-      >
-        ×
-      </button>
+              <button
+                type="button"
+                className="todo__remove"
+                data-cy="TodoDelete"
+                onClick={() => handleDeleteTodo(todo.id)}
+              >
+                ×
+              </button>
+            </>
+          )
+      }
 
       <div
         data-cy="TodoLoader"
-        className={classNames('modal overlay', { 'is-active': isTemp })}
+        className={classNames(
+          'modal overlay',
+          {
+            'is-active': idsToChange.includes(todo.id) || isTempTodo,
+          },
+        )}
       >
         <div className="modal-background has-background-white-ter" />
         <div className="loader" />
