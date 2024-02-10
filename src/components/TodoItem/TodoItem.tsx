@@ -9,7 +9,7 @@ type Props = {
 
 export const TodoItem: React.FC<Props> = ({ todo }) => {
   const { deleteTodo, deletedIds } = useContext(TodosContext);
-  const { id } = todo;
+  const { title, completed, id } = todo;
 
   const handleDeleteTodo = () => {
     deleteTodo(id);
@@ -19,7 +19,7 @@ export const TodoItem: React.FC<Props> = ({ todo }) => {
     <div
       data-cy="Todo"
       className={classNames('todo', {
-        completed: todo.completed,
+        completed,
       })}
     >
       <label className="todo__status-label">
@@ -27,12 +27,12 @@ export const TodoItem: React.FC<Props> = ({ todo }) => {
           data-cy="TodoStatus"
           type="checkbox"
           className="todo__status"
-          checked
+          checked={completed}
         />
       </label>
 
       <span data-cy="TodoTitle" className="todo__title">
-        {todo.title}
+        {title}
       </span>
 
       {/* Remove button appears only on hover */}

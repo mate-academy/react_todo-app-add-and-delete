@@ -86,25 +86,25 @@ export const TodosProvider: React.FC<Props> = ({ children }) => {
     });
   };
 
+  const value = {
+    todos,
+    tempTodo,
+    setTodos,
+    addTodo,
+    deleteTodo,
+    clearCompletedTodos,
+    filterStatus,
+    setFilterStatus,
+    errorMessage,
+    setErrorMessage,
+    isSubmitting,
+    setIsSubmitting,
+    deletedIds,
+    setDeletedIds,
+  };
+
   return (
-    <TodosContext.Provider
-      value={{
-        todos,
-        tempTodo,
-        setTodos,
-        addTodo,
-        deleteTodo,
-        clearCompletedTodos,
-        filterStatus,
-        setFilterStatus,
-        errorMessage,
-        setErrorMessage,
-        isSubmitting,
-        setIsSubmitting,
-        deletedIds,
-        setDeletedIds,
-      }}
-    >
+    <TodosContext.Provider value={value}>
       {children}
     </TodosContext.Provider>
   );

@@ -31,15 +31,11 @@ export const TodoApp: React.FC = () => {
       <div className="todoapp__content">
         <Header />
 
-        {todos.length > 0 && (
-          <TodoList />
-        )}
+        {!!todos.length && <TodoList />}
 
         {/* Hide the footer if there are no todos */}
 
-        {todos.length > 0 && (
-          <Footer />
-        )}
+        {!!todos.length && <Footer />}
       </div>
 
       {/* Notification is shown in case of any error */}

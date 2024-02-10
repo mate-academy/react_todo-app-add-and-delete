@@ -40,7 +40,6 @@ export const Header: React.FC = () => {
 
     addTodo(title.trim())
       .then(reset);
-    // setTitle('');
   };
 
   return (

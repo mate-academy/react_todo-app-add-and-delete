@@ -6,6 +6,8 @@ type Props = {
 };
 
 export const TempTodoItem: React.FC<Props> = ({ tempTodo }) => {
+  const { title } = tempTodo;
+
   return (
     <>
       <div
@@ -23,7 +25,7 @@ export const TempTodoItem: React.FC<Props> = ({ tempTodo }) => {
           data-cy="TodoTitle"
           className="todo__title"
         >
-          {tempTodo.title}
+          {title}
         </span>
         <button
           type="button"
