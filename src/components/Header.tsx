@@ -6,7 +6,7 @@ import React, {
 } from 'react';
 import classNames from 'classnames';
 import { DispatchContext, StateContext } from '../management/TodoContext';
-import { USER_ID, createTodos } from '../api/todos';
+import { USER_ID, createTodos, updateTodo } from '../api/todos';
 
 export const Header: React.FC = () => {
   const dispatch = useContext(DispatchContext);
@@ -85,9 +85,25 @@ export const Header: React.FC = () => {
   };
 
   const hendleChangeStatusAll = () => {
-    dispatch({
-      type: 'changeStatusAll',
-      payload: !completedAll,
+    todos.forEach(todo => {
+      updateTodo({
+        id: todo.id,
+        title: todo.title,
+        completed: !completedAll,
+      })
+        .then(newTodo => {
+          dispatch({
+            type: 'changeStatusAll',
+            payload: newTodo.completed,
+          });
+        })
+        .catch(() => {
+          dispatch({ type: 'getTodos', payload: todos });
+          dispatch({
+            type: 'errorMessage',
+            payload: 'Unable to update a todo',
+          });
+        });
     });
   };
 

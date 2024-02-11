@@ -8,7 +8,7 @@ import classNames from 'classnames';
 import { Todo } from '../types/Todo';
 import { DispatchContext, StateContext } from '../management/TodoContext';
 import { Loader } from './Loader';
-import { deleteTodo } from '../api/todos';
+import { deleteTodo, updateTodo } from '../api/todos';
 
 type Props = {
   todo: Todo;
@@ -37,10 +37,17 @@ export const TodoItem: React.FC<Props> = ({
   }, [isEdited]);
 
   function hendleStatus() {
-    dispatch({
-      type: 'markStatus',
-      payload: id,
-    });
+    updateTodo({ id, title, completed: !completed })
+      .then(newTodo => {
+        dispatch({
+          type: 'markStatus',
+          payload: newTodo.id,
+          completed: newTodo.completed,
+        });
+      }).catch(() => {
+        dispatch({ type: 'getTodos', payload: todos });
+        dispatch({ type: 'errorMessage', payload: 'Unable to update a todo' });
+      });
   }
 
   function hendleDeleteTodo() {

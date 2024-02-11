@@ -7,7 +7,7 @@ export type Action =
   | { type: 'editTitle', id: number, newTitle: string }
   | { type: 'deleteTodo', payload: number }
   | { type: 'deleteCompletedTodo' }
-  | { type: 'markStatus', payload: number }
+  | { type: 'markStatus', payload: number, completed: boolean }
   | { type: 'changeStatusAll', payload: boolean }
   | { type: 'addTodo', payload: Todo }
   | { type: 'errorMessage', payload: string }
@@ -76,7 +76,7 @@ export function reducer(state: State, action: Action) {
           if (todo.id === action.payload) {
             return {
               ...todo,
-              completed: !todo.completed,
+              completed: action.completed,
             };
           }
 
