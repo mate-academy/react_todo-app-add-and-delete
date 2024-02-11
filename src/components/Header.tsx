@@ -11,6 +11,7 @@ import { USER_ID, createTodos, updateTodo } from '../api/todos';
 export const Header: React.FC = () => {
   const dispatch = useContext(DispatchContext);
   const { todos, isLoading } = useContext(StateContext);
+
   const userId = USER_ID;
   const [title, setTitle] = useState('');
 
