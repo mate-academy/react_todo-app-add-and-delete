@@ -41,15 +41,6 @@ export const TodoItem: React.FC<Props> = ({
       type: 'markStatus',
       payload: id,
     });
-
-    // updateTodo(todo)
-    //   .then(newTodo => {
-    //     dispatch({
-    //       type: 'updateTodo',
-    //       id,
-    //       newTodo,
-    //     });
-    //   });
   }
 
   function hendleDeleteTodo() {

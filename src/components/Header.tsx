@@ -93,7 +93,7 @@ export const Header: React.FC = () => {
 
   return (
     <header className="todoapp__header">
-      {todos.length > 0 && (
+      {!!todos.length && (
         <button
           type="button"
           className={classNames('todoapp__toggle-all', {
@@ -114,7 +114,6 @@ export const Header: React.FC = () => {
           placeholder="What needs to be done?"
           value={title}
           onChange={e => setTitle(e.target.value)}
-        // onBlur={hendleAddedTodo}
         />
       </form>
     </header>

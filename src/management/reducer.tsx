@@ -5,7 +5,6 @@ import { Todo } from '../types/Todo';
 export type Action =
   { type: 'getTodos', payload: Todo[] }
   | { type: 'editTitle', id: number, newTitle: string }
-  // | { type: 'updateTodo', id: number, newTodo: Todo }
   | { type: 'deleteTodo', payload: number }
   | { type: 'deleteCompletedTodo' }
   | { type: 'markStatus', payload: number }
@@ -47,18 +46,6 @@ export function reducer(state: State, action: Action) {
         ...state,
         todos: state.todos.filter(todo => !todo.completed),
       };
-
-      // case 'updateTodo':
-      //   return {
-      //     ...state,
-      //     todos: state.todos.map(todo => {
-      //       if (todo.id === action.id) {
-      //         return action.newTodo;
-      //       }
-
-      //       return todo;
-      //     }),
-      //   };
 
     case 'addTodo':
       return {

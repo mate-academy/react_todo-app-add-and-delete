@@ -12,7 +12,6 @@ export const Footer: React.FC = () => {
   const completedTodos = todos.some(todo => todo.completed);
 
   const handleDeleteAllCompleted = () => {
-    // dispatch({ type: 'deleteCompletedTodo' });
     allCompletedTodos.forEach(todo => {
       dispatch({ type: 'isLoading', payload: true });
 
@@ -39,10 +38,8 @@ export const Footer: React.FC = () => {
         {`${activeTodos} items left`}
       </span>
 
-      {/* Active filter should have a 'selected' class */}
       <TodoFilter />
 
-      {/* don't show this button if there are no completed todos */}
       <button
         type="button"
         className="todoapp__clear-completed"

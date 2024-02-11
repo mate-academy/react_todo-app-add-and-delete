@@ -24,9 +24,11 @@ export const TodoList: React.FC = () => {
     }
   };
 
+  const visibleTodos = getFilteredTodos();
+
   return (
     <section className="todoapp__main" data-cy="TodoList">
-      {getFilteredTodos().map(todo => (
+      {visibleTodos.map(todo => (
         <TodoItem
           todo={todo}
           key={todo.id}
