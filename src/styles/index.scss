@@ -9,6 +9,7 @@ body {
 }
 
 .notification {
+  margin-top: 2px;
   transition-property: opacity, min-height;
   transition-duration: 1s;
   min-height: 36px;

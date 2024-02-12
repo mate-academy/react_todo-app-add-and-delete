@@ -6,5 +6,11 @@ import './styles/index.scss';
 
 import { App } from './App';
 
+import { GlobalStateProvider } from './components/Context/StateContext';
+
 createRoot(document.getElementById('root') as HTMLDivElement)
-  .render(<App />);
+  .render(
+    <GlobalStateProvider>
+      <App />
+    </GlobalStateProvider>,
+  );
