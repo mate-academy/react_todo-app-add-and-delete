@@ -20,7 +20,6 @@ export const Footer: React.FC = () => {
           dispatch({ type: 'deleteTodo', payload: todo.id });
         })
         .catch(() => {
-          dispatch({ type: 'getTodos', payload: todos });
           dispatch({
             type: 'errorMessage',
             payload: 'Unable to delete a todo',

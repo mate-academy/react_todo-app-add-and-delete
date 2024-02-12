@@ -13,6 +13,7 @@ export type Action =
   | { type: 'errorMessage', payload: string }
   | { type: 'isLoading', payload: boolean }
   | { type: 'tempTodo', payload: Todo | null }
+  | { type: 'replaceTodo', payload: Todo }
   | { type: 'filter', payload: Filter };
 
 export function reducer(state: State, action: Action) {
@@ -21,6 +22,11 @@ export function reducer(state: State, action: Action) {
       return {
         ...state,
         todos: action.payload,
+      };
+
+    case 'replaceTodo':
+      return {
+        ...state,
       };
 
     case 'isLoading':
