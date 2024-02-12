@@ -14,8 +14,8 @@ export const Footer: React.FC <Props> = ({
   sortField,
   clearCompletedTodos,
 }) => {
-  const unCompletedTodos = todos.filter(todo => todo.completed === false);
-  const completedTodos = todos.filter(todo => todo.completed === true);
+  const unCompletedTodos = todos.filter(todo => !todo.completed);
+  const completedTodos = todos.filter(todo => todo.completed);
 
   return (
     <footer className="todoapp__footer" data-cy="Footer">
@@ -23,7 +23,6 @@ export const Footer: React.FC <Props> = ({
         {`${unCompletedTodos.length} items left`}
       </span>
 
-      {/* Active filter should have a 'selected' class */}
       <nav className="filter" data-cy="Filter">
         <a
           onClick={() => {
@@ -59,10 +58,9 @@ export const Footer: React.FC <Props> = ({
         </a>
       </nav>
 
-      {/* don't show this button if there are no completed todos */}
       <button
         onClick={clearCompletedTodos}
-        disabled={completedTodos.length === 0}
+        disabled={!completedTodos.length}
         type="button"
         className="todoapp__clear-completed"
         data-cy="ClearCompletedButton"
