@@ -92,7 +92,9 @@ export const Header: React.FC = () => {
   };
 
   const hendleChangeStatusAll = () => {
+    dispatch({ type: 'isLoading', payload: true });
     todos.forEach(todo => {
+      dispatch({ type: 'createCurrentId', payload: todo.id });
       updateTodo({
         id: todo.id,
         title: todo.title,
@@ -105,11 +107,14 @@ export const Header: React.FC = () => {
           });
         })
         .catch(() => {
-          dispatch({ type: 'getTodos', payload: todos });
           dispatch({
             type: 'errorMessage',
             payload: 'Unable to update a todo',
           });
+        })
+        .finally(() => {
+          dispatch({ type: 'isLoading', payload: false });
+          dispatch({ type: 'clearCurrentId' });
         });
     });
   };
