@@ -12,14 +12,10 @@ import { deleteTodo, updateTodo } from '../api/todos';
 
 type Props = {
   todo: Todo;
-  tempTodo?: Todo | null;
-  isLoading?: boolean;
 };
 
 export const TodoItem: React.FC<Props> = ({
   todo,
-  tempTodo,
-  isLoading = false,
 }) => {
   const dispatch = useContext(DispatchContext);
   const { todos } = useContext(StateContext);
@@ -52,6 +48,7 @@ export const TodoItem: React.FC<Props> = ({
 
   function hendleDeleteTodo() {
     dispatch({ type: 'isLoading', payload: true });
+    dispatch({ type: 'currentId', payload: id });
 
     deleteTodo(id)
       .then(() => {
@@ -141,7 +138,7 @@ export const TodoItem: React.FC<Props> = ({
         ×
       </button>
 
-      <Loader tempTodo={tempTodo} isLoading={isLoading} />
+      <Loader id={id} />
     </div>
   );
 };

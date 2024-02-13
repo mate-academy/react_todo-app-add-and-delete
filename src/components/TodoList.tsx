@@ -8,7 +8,6 @@ export const TodoList: React.FC = () => {
     todos,
     filterBy,
     tempTodo,
-    isLoading,
   } = useContext(StateContext);
 
   const getFilteredTodos = () => {
@@ -32,10 +31,9 @@ export const TodoList: React.FC = () => {
         <TodoItem
           todo={todo}
           key={todo.id}
-          isLoading={isLoading}
         />
       ))}
-      {tempTodo && <TodoItem todo={tempTodo} tempTodo={tempTodo} />}
+      {tempTodo && <TodoItem todo={tempTodo} />}
     </section>
   );
 };

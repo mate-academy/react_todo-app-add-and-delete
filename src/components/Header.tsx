@@ -10,7 +10,7 @@ import { USER_ID, createTodos, updateTodo } from '../api/todos';
 
 export const Header: React.FC = () => {
   const dispatch = useContext(DispatchContext);
-  const { todos, isLoading } = useContext(StateContext);
+  const { todos } = useContext(StateContext);
 
   const userId = USER_ID;
   const [title, setTitle] = useState('');
@@ -19,10 +19,10 @@ export const Header: React.FC = () => {
   const inputRef = useRef<HTMLInputElement | null>(null);
 
   useEffect(() => {
-    if (inputRef.current && !title && !isLoading) {
+    if (inputRef.current && !title) {
       inputRef.current.focus();
     }
-  }, [title, isLoading]);
+  }, [title, todos.length]);
 
   const hendleAddedTodo = (e: React.FormEvent) => {
     e.preventDefault();
@@ -50,6 +50,9 @@ export const Header: React.FC = () => {
         },
       });
 
+      dispatch({ type: 'isLoading', payload: true });
+      dispatch({ type: 'currentId', payload: 0 });
+
       createTodos(data)
         .then(newTodo => {
           dispatch({
@@ -71,12 +74,14 @@ export const Header: React.FC = () => {
           }
 
           dispatch({ type: 'tempTodo', payload: null });
+          dispatch({ type: 'isLoading', payload: false });
         });
     } else {
       dispatch({
         type: 'errorMessage',
         payload: 'Title should not be empty',
       });
+      setTitle('');
 
       if (inputRef.current) {
         inputRef.current.disabled = false;
@@ -110,7 +115,7 @@ export const Header: React.FC = () => {
 
   return (
     <header className="todoapp__header">
-      {todos.length > 0 && (
+      {!!todos.length && (
         <button
           type="button"
           className={classNames('todoapp__toggle-all', {

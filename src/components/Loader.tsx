@@ -1,18 +1,21 @@
+import React, { useContext } from 'react';
 import classNames from 'classnames';
-import React from 'react';
-import { Todo } from '../types/Todo';
+import { StateContext } from '../management/TodoContext';
 
 type Props = {
-  tempTodo?: Todo | null;
-  isLoading?: boolean;
+  id: number;
 };
 
-export const Loader: React.FC<Props> = ({ tempTodo, isLoading = false }) => {
+export const Loader: React.FC<Props> = ({ id }) => {
+  const { isLoading, currentTodosId } = useContext(StateContext);
+
+  const showLoader = currentTodosId === id;
+
   return (
     <div
       data-cy="TodoLoader"
       className={classNames('modal overlay', {
-        'is-active': tempTodo || isLoading,
+        'is-active': isLoading && showLoader,
       })}
     >
       <div className="modal-background has-background-white-ter" />

@@ -12,11 +12,14 @@ export const Footer: React.FC = () => {
   const completedTodos = todos.some(todo => todo.completed);
 
   const handleDeleteAllCompleted = () => {
+    dispatch({ type: 'isLoading', payload: true });
     allCompletedTodos.forEach(todo => {
-      dispatch({ type: 'isLoading', payload: true });
+      dispatch({ type: 'currentId', payload: null });
 
       deleteTodo(todo.id)
         .then(() => {
+          dispatch({ type: 'isLoading', payload: true });
+
           dispatch({ type: 'deleteTodo', payload: todo.id });
         })
         .catch(() => {
@@ -27,8 +30,10 @@ export const Footer: React.FC = () => {
         })
         .finally(() => {
           dispatch({ type: 'isLoading', payload: false });
+          // dispatch({ type: 'currentId', payload: 0 });
         });
     });
+    dispatch({ type: 'isLoading', payload: false });
   };
 
   return (

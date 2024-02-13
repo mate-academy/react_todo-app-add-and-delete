@@ -6,6 +6,7 @@ export type Action =
   { type: 'getTodos', payload: Todo[] }
   | { type: 'editTitle', id: number, newTitle: string }
   | { type: 'deleteTodo', payload: number }
+  | { type: 'currentId', payload: number | null }
   | { type: 'deleteCompletedTodo' }
   | { type: 'markStatus', payload: number, completed: boolean }
   | { type: 'changeStatusAll', payload: boolean }
@@ -27,6 +28,12 @@ export function reducer(state: State, action: Action) {
     case 'replaceTodo':
       return {
         ...state,
+      };
+
+    case 'currentId':
+      return {
+        ...state,
+        currentTodosId: action.payload,
       };
 
     case 'isLoading':

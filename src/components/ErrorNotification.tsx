@@ -13,12 +13,14 @@ export const ErrorNotification: React.FC = () => {
     });
   };
 
-  setTimeout(() => {
-    dispatch({
-      type: 'errorMessage',
-      payload: '',
-    });
-  }, 3000);
+  if (errorMessage) {
+    setTimeout(() => {
+      dispatch({
+        type: 'errorMessage',
+        payload: '',
+      });
+    }, 3000);
+  }
 
   return (
     <div
