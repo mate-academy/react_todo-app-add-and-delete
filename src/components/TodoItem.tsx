@@ -33,6 +33,8 @@ export const TodoItem: React.FC<Props> = ({
   }, [isEdited]);
 
   function hendleStatus() {
+    dispatch({ type: 'isLoading', payload: true });
+    dispatch({ type: 'createCurrentId', payload: id });
     updateTodo({ id, title, completed: !completed })
       .then(newTodo => {
         dispatch({
@@ -43,12 +45,16 @@ export const TodoItem: React.FC<Props> = ({
       }).catch(() => {
         dispatch({ type: 'getTodos', payload: todos });
         dispatch({ type: 'errorMessage', payload: 'Unable to update a todo' });
+      })
+      .finally(() => {
+        dispatch({ type: 'isLoading', payload: false });
+        dispatch({ type: 'clearCurrentId' });
       });
   }
 
   function hendleDeleteTodo() {
     dispatch({ type: 'isLoading', payload: true });
-    dispatch({ type: 'currentId', payload: id });
+    dispatch({ type: 'createCurrentId', payload: id });
 
     deleteTodo(id)
       .then(() => {
@@ -60,6 +66,7 @@ export const TodoItem: React.FC<Props> = ({
       })
       .finally(() => {
         dispatch({ type: 'isLoading', payload: false });
+        dispatch({ type: 'clearCurrentId' });
       });
   }
 

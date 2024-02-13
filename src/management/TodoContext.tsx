@@ -10,7 +10,7 @@ const initialState: State = {
   errorMessage: '',
   tempTodo: null,
   isLoading: false,
-  currentTodosId: null,
+  currentTodosId: [],
 };
 
 export const StateContext = React.createContext(initialState);

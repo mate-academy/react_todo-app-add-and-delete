@@ -7,5 +7,5 @@ export interface State {
   errorMessage: string,
   tempTodo: Todo | null,
   isLoading: boolean,
-  currentTodosId: null | number,
+  currentTodosId: number[],
 }

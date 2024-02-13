@@ -9,7 +9,7 @@ type Props = {
 export const Loader: React.FC<Props> = ({ id }) => {
   const { isLoading, currentTodosId } = useContext(StateContext);
 
-  const showLoader = currentTodosId === id;
+  const showLoader = currentTodosId.includes(id);
 
   return (
     <div

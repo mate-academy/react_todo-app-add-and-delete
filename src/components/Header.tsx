@@ -51,7 +51,7 @@ export const Header: React.FC = () => {
       });
 
       dispatch({ type: 'isLoading', payload: true });
-      dispatch({ type: 'currentId', payload: 0 });
+      dispatch({ type: 'createCurrentId', payload: 0 });
 
       createTodos(data)
         .then(newTodo => {
@@ -75,6 +75,7 @@ export const Header: React.FC = () => {
 
           dispatch({ type: 'tempTodo', payload: null });
           dispatch({ type: 'isLoading', payload: false });
+          dispatch({ type: 'clearCurrentId' });
         });
     } else {
       dispatch({
