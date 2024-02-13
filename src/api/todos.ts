@@ -13,4 +13,4 @@ export const createTodo = (title: string) => {
     title,
     completed: false,
   });
-}
+};
