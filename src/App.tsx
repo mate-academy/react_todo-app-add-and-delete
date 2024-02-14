@@ -71,13 +71,13 @@ export const App: FC = () => {
   }, [todos]);
 
   useEffect(() => {
-    if (titleField.current !== null) {
+    if (titleField.current) {
       titleField.current.focus();
     }
   }, [isDisabled]);
 
   useEffect(() => {
-    if (titleField.current !== null) {
+    if (titleField.current) {
       titleField.current.focus();
     }
   }, [todos]);
@@ -87,7 +87,7 @@ export const App: FC = () => {
     event.preventDefault();
     setErrorMessage('');
 
-    if (newTodoTitle.trim() === '') {
+    if (!newTodoTitle.trim()) {
       setErrorMessage('Title should not be empty');
       setIsDisabled(false);
     } else {
@@ -197,7 +197,7 @@ export const App: FC = () => {
   };
 
   useEffect(() => {
-    if (titleField.current !== null) {
+    if (titleField.current) {
       titleField.current.focus();
     }
   }, []);
@@ -282,7 +282,7 @@ export const App: FC = () => {
       <div
         data-cy="ErrorNotification"
         className={cn('notification is-danger is-light has-text-weight-normal',
-          { hidden: errorMessage === '' })}
+          { hidden: !errorMessage })}
       >
         <button
           data-cy="HideErrorButton"
