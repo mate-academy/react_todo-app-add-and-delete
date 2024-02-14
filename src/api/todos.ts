@@ -16,10 +16,10 @@ export const addTodo = (newTodoTitle: string) => {
   });
 };
 
-export const removeTodo = (todoId: number) => {
-  return client.delete(`/todos/${todoId}`);
-};
-
 export const editTodo = (todo: Todo) => {
   return client.patch<Todo>(`/todos/${todo.id}`, todo);
+};
+
+export const removeTodo = (todoId: number) => {
+  return client.delete(`/todos/${todoId}`);
 };

@@ -118,18 +118,6 @@ export const App: FC = () => {
 
   const filteredTodos = filterTodos(todos, filter);
 
-  const deleteArrOfTodos = (arr:Todo[], index = 0) => {
-    removeTodo(arr[index].id)
-      .then(() => {
-        if (arr.length - 1 > index) {
-          deleteArrOfTodos(arr, index + 1);
-        } else {
-          setTodos(todos.filter(todo => !todo.completed));
-        }
-      })
-      .catch(() => setErrorMessage('Unable to delete a todo'));
-  };
-
   const changeCompletedInArrOfTodos = (
     arr:Todo[],
     result: boolean,
@@ -156,11 +144,28 @@ export const App: FC = () => {
       .catch(() => setErrorMessage('Unable to edit a todo'));
   };
 
-  const removeCompletedTodos = () => {
+  const removeCompletedTodos = async () => {
     setErrorMessage('');
     const completedTodos = todos.filter(todo => todo.completed);
+    const removedTodosId: number[] = [];
 
-    deleteArrOfTodos(completedTodos);
+    try {
+      const deletedTodosId = await Promise.allSettled(
+        completedTodos.map(el => removeTodo(el.id)),
+      );
+
+      for (let i = 0; i < deletedTodosId.length; i += 1) {
+        if (deletedTodosId[i].status === 'fulfilled') {
+          removedTodosId.push(completedTodos[i].id);
+        } else {
+          setErrorMessage('Unable to delete a todo');
+        }
+      }
+
+      setTodos(todos.filter(todo => !removedTodosId.includes(todo.id)));
+    } catch (err) {
+      setErrorMessage('Unable to delete a todo');
+    }
   };
 
   const changeCompletedTodoById = (todoId: number) => {
