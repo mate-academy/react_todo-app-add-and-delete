@@ -19,8 +19,6 @@ const USER_ID = 27;
 export const filterTodos = (currentTodos: Todo[], query: Filter) => {
   return currentTodos.filter(todo => {
     switch (query) {
-      case Filter.All:
-        return todo;
       case Filter.Completed:
         return todo.completed;
       case Filter.Active:
@@ -58,7 +56,7 @@ export const App: React.FC = () => {
   }, [todos]);
 
   const addNewTodo = useCallback((title: string) => {
-    if (title.trim() === '') {
+    if (!title.trim()) {
       setError(Error.NoTitle);
 
       return;

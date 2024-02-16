@@ -1,10 +1,8 @@
 .todo {
   position: relative;
-
   display: grid;
   grid-template-columns: 45px 1fr;
   justify-items: stretch;
-
   font-size: 24px;
   line-height: 1.4em;
   border-bottom: 1px solid #ededed;
@@ -29,8 +27,8 @@
   }
 
   &__title {
-    padding: 12px 55px;
-    //prevVer: padding: 12px 55px;
+    display: inline-block;
+    padding: 0 50px 35px;
 
     // word-break: break-all;
     transition: color 0.4s;
