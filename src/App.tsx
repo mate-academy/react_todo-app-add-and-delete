@@ -15,7 +15,9 @@ export const App: React.FC = () => {
       <p className="title is-4">
         Copy all you need from the prev task:
         <br />
-        <a href="https://github.com/mate-academy/react_todo-app-loading-todos#react-todo-app-load-todos">React Todo App - Load Todos</a>
+        <a href="https://github.com/mate-academy/react_todo-app-loading-todos#react-todo-app-load-todos">
+          React Todo App - Load Todos
+        </a>
       </p>
 
       <p className="subtitle">Styles are already copied</p>
