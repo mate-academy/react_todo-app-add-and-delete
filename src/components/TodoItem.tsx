@@ -24,6 +24,7 @@ export const TodoItem: React.FC<Props> = ({
     >
       <label
         className="todo__status-label"
+        aria-label="toggleAll"
       >
         <input
           type="checkbox"
@@ -31,10 +32,11 @@ export const TodoItem: React.FC<Props> = ({
           className="todo__status"
           defaultChecked={completed}
         />
-        <span data-cy="TodoTitle" className="todo__title">
-          {title}
-        </span>
       </label>
+
+      <span data-cy="TodoTitle" className="todo__title">
+        {title}
+      </span>
 
       <button
         type="button"
