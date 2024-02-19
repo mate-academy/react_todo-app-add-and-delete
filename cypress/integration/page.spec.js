@@ -36,32 +36,32 @@ const page = {
    * { statusCode: 503: body: 'Service Unavailable' }
    * spy = cy.stub().callsFake(req => req.reply(response)).as('alias')
    */
-  mockLoad: (response = { fixture: 'todos' }) => {
+  mockLoad: (response = {fixture: 'todos'}) => {
     return cy.intercept('**/todos?userId=*', response);
   },
   mockCreate: (response) => {
-    const options = { method: 'POST', url: '**/todos' };
+    const options = {method: 'POST', url: '**/todos'};
 
     const spy = cy.stub()
       .callsFake(req => req.reply({
         statusCode: 201,
-        body: { ...req.body, id: Math.random() },
+        body: {...req.body, id: Math.random()},
       }))
       .as('createCallback');
 
     return cy.intercept(options, response || spy);
   },
   mockDelete: (id, response) => {
-    const options = { method: 'DELETE', url: `**/todos/${id}` };
+    const options = {method: 'DELETE', url: `**/todos/${id}`};
 
-    return cy.intercept(options, response || { body: '1' });
+    return cy.intercept(options, response || {body: '1'});
   },
   mockUpdate: (id, response) => {
     const todo = mixedTodos.find(todo => todo.id === id) || {};
-    const options = { method: 'PATCH', url: `**/todos/${id}` };
+    const options = {method: 'PATCH', url: `**/todos/${id}`};
 
     const spy = cy.stub()
-      .callsFake(req => req.reply({ body: { ...todo, ...req.body, id } }))
+      .callsFake(req => req.reply({body: {...todo, ...req.body, id}}))
       .as('updateCallback');
 
     return cy.intercept(options, response || spy);
@@ -122,7 +122,7 @@ describe('', () => {
   describe('Page with no todos', () => {
     it('should send 1 todos request', () => {
       const spy = cy.stub()
-        .callsFake(req => req.reply({ body: [] }))
+        .callsFake(req => req.reply({body: []}))
         .as('loadCallback')
 
       page.mockLoad(spy).as('loadRequest');
@@ -136,7 +136,7 @@ describe('', () => {
 
     describe('', () => {
       beforeEach(() => {
-        page.mockLoad({ body: [] }).as('loadRequest');
+        page.mockLoad({body: []}).as('loadRequest');
         page.visit();
         cy.wait('@loadRequest');
       });
@@ -165,7 +165,7 @@ describe('', () => {
         // to prevent Cypress from failing the test on uncaught exception
         cy.once('uncaught:exception', () => false);
 
-        page.mockLoad({ statusCode: 404, body: 'Not found' }).as('loadRequest');
+        page.mockLoad({statusCode: 404, body: 'Not found'}).as('loadRequest');
         page.visit();
         cy.wait('@loadRequest');
       });
@@ -348,7 +348,7 @@ describe('', () => {
 
     describe('with active todos only', () => {
       beforeEach(() => {
-        page.mockLoad({ fixture: 'active-todos' }).as('loadRequest');
+        page.mockLoad({fixture: 'active-todos'}).as('loadRequest');
         page.visit();
         cy.wait('@loadRequest');
       });
@@ -372,7 +372,7 @@ describe('', () => {
 
     describe('with completed todos only', () => {
       beforeEach(() => {
-        page.mockLoad({ fixture: 'completed-todos' }).as('loadRequest');
+        page.mockLoad({fixture: 'completed-todos'}).as('loadRequest');
         page.visit();
         cy.wait('@loadRequest');
       });
@@ -581,7 +581,7 @@ describe('', () => {
         // to prevent Cypress from failing the test on uncaught exception
         cy.once('uncaught:exception', () => false);
 
-        page.mockCreate({ statusCode: 503, body: 'Service Unavailable' })
+        page.mockCreate({statusCode: 503, body: 'Service Unavailable'})
           .as('createRequest');
 
         page.newTodoField().type('Test Todo{enter}');
@@ -634,7 +634,7 @@ describe('', () => {
         // to prevent Cypress from failing the test on uncaught exception
         cy.once('uncaught:exception', () => false);
 
-        page.mockCreate({ statusCode: 503, body: 'Service Unavailable' })
+        page.mockCreate({statusCode: 503, body: 'Service Unavailable'})
           .as('createRequest2');
 
         page.newTodoField().type(`{enter}`);
@@ -647,7 +647,7 @@ describe('', () => {
         // to prevent Cypress from failing the test on uncaught exception
         cy.once('uncaught:exception', () => false);
 
-        page.mockCreate({ statusCode: 503, body: 'Service Unavailable' })
+        page.mockCreate({statusCode: 503, body: 'Service Unavailable'})
           .as('createRequest2');
 
         cy.clock();
@@ -669,7 +669,7 @@ describe('', () => {
         page.flushJSTimers();
 
         todos.assertCount(6);
-        // todos.assertNotLoading(5);
+        todos.assertNotLoading(5);
         todos.assertNotCompleted(5);
         todos.assertTitle(5, 'Test Todo');
 
@@ -680,7 +680,7 @@ describe('', () => {
 
   describe('Adding a first todo', () => {
     beforeEach(() => {
-      page.mockLoad({ body: [] }).as('loadRequest');
+      page.mockLoad({body: []}).as('loadRequest');
       page.visit();
       cy.wait('@loadRequest');
 
@@ -752,7 +752,7 @@ describe('', () => {
         // to prevent Cypress from failing the test on uncaught exception
         cy.once('uncaught:exception', () => false);
 
-        page.mockDelete(257334, { statusCode: 500, body: 'Internal Server Error' }).as('deleteRequest');
+        page.mockDelete(257334, {statusCode: 500, body: 'Internal Server Error'}).as('deleteRequest');
 
         todos.deleteButton(0).click();
         cy.wait('@deleteRequest');
@@ -765,7 +765,7 @@ describe('', () => {
         // to prevent Cypress from failing the test on uncaught exception
         cy.once('uncaught:exception', () => false);
 
-        page.mockDelete(257334, { statusCode: 500, body: 'Internal Server Error' }).as('deleteRequest');
+        page.mockDelete(257334, {statusCode: 500, body: 'Internal Server Error'}).as('deleteRequest');
 
         todos.deleteButton(0).click();
         cy.wait('@deleteRequest');
@@ -786,7 +786,7 @@ describe('', () => {
         // to prevent Cypress from failing the test on uncaught exception
         cy.once('uncaught:exception', () => false);
 
-        page.mockDelete(257338, { statusCode: 500, body: 'Internal Server Error' })
+        page.mockDelete(257338, {statusCode: 500, body: 'Internal Server Error'})
           .as('deleteRequest');
 
         todos.deleteButton(4).click();
@@ -807,7 +807,7 @@ describe('', () => {
           "completed": false
         };
 
-        page.mockLoad({ body: [todo] }).as('loadRequest');
+        page.mockLoad({body: [todo]}).as('loadRequest');
         page.visit();
         cy.wait('@loadRequest');
 
@@ -834,7 +834,7 @@ describe('', () => {
   describe('Group Todo Deletion', () => {
     describe('with no completed todos', () => {
       beforeEach(() => {
-        page.mockLoad({ fixture: 'active-todos' }).as('loadRequest');
+        page.mockLoad({fixture: 'active-todos'}).as('loadRequest');
         page.visit();
         cy.wait('@loadRequest');
       });
@@ -901,7 +901,7 @@ describe('', () => {
           cy.once('uncaught:exception', () => false);
 
           page.mockDelete(257334).as('deleteRequest1');
-          page.mockDelete(257335, { statusCode: 500, body: 'Internal Server Error' }).as('deleteRequest2');
+          page.mockDelete(257335, {statusCode: 500, body: 'Internal Server Error'}).as('deleteRequest2');
           page.mockDelete(257336).as('deleteRequest3');
 
           page.clearCompletedButton().click();
@@ -930,7 +930,7 @@ describe('', () => {
 
     describe('with all todos completed', () => {
       beforeEach(() => {
-        page.mockLoad({ fixture: 'completed-todos' }).as('loadRequest');
+        page.mockLoad({fixture: 'completed-todos'}).as('loadRequest');
         page.visit();
         cy.wait('@loadRequest');
 
@@ -961,7 +961,7 @@ describe('', () => {
     });
   });
 
-  describe.skip('Todo Toggling', () => {
+  describe('Todo Toggling', () => {
     beforeEach(() => {
       page.mockLoad().as('loadRequest');
       page.visit();
@@ -1035,7 +1035,7 @@ describe('', () => {
         // to prevent Cypress from failing the test on uncaught exception
         cy.once('uncaught:exception', () => false);
 
-        page.mockUpdate(257334, { statusCode: 503, body: 'Service Unavailable' })
+        page.mockUpdate(257334, {statusCode: 503, body: 'Service Unavailable'})
           .as('updateRequest');
 
         todos.statusToggler(0).click();
@@ -1101,7 +1101,7 @@ describe('', () => {
         // to prevent Cypress from failing the test on uncaught exception
         cy.once('uncaught:exception', () => false);
 
-        page.mockUpdate(257334, { statusCode: 503, body: 'Service Unavailable' })
+        page.mockUpdate(257334, {statusCode: 503, body: 'Service Unavailable'})
           .as('updateRequest');
 
         todos.statusToggler(0).click();
@@ -1116,7 +1116,7 @@ describe('', () => {
   describe.skip('Toggle All Button', () => {
     describe('if there are no todos', () => {
       it('should not be visible while loading todos', () => {
-        page.mockLoad({ body: [] }).as('loadRequest');
+        page.mockLoad({body: []}).as('loadRequest');
 
         page.pauseTimers();
         page.visit();
@@ -1125,7 +1125,7 @@ describe('', () => {
       });
 
       it('should not be visible when loaded', () => {
-        page.mockLoad({ body: [] }).as('loadRequest');
+        page.mockLoad({body: []}).as('loadRequest');
 
         page.visit();
         cy.wait('@loadRequest');
@@ -1134,7 +1134,7 @@ describe('', () => {
       });
 
       it('should appear after adding a todo', () => {
-        page.mockLoad({ body: [] }).as('loadRequest');
+        page.mockLoad({body: []}).as('loadRequest');
         page.mockCreate().as('createRequest');
 
         page.visit();
@@ -1156,7 +1156,7 @@ describe('', () => {
           "completed": false
         };
 
-        page.mockLoad({ body: [todo] }).as('loadRequest');
+        page.mockLoad({body: [todo]}).as('loadRequest');
         page.mockDelete(257334).as('deleteRequest');
 
         page.visit();
@@ -1171,7 +1171,7 @@ describe('', () => {
 
     describe('if all todos are completed', () => {
       beforeEach(() => {
-        page.mockLoad({ fixture: 'completed-todos' }).as('loadRequest');
+        page.mockLoad({fixture: 'completed-todos'}).as('loadRequest');
 
         page.visit();
         cy.wait('@loadRequest');
@@ -1203,7 +1203,7 @@ describe('', () => {
         // to prevent Cypress from failing the test on uncaught exception
         cy.once('uncaught:exception', () => false);
 
-        page.mockUpdate(257335, { statusCode: 503 }).as('updateRequest');
+        page.mockUpdate(257335, {statusCode: 503}).as('updateRequest');
         todos.statusToggler(1).click();
         cy.wait('@updateRequest');
 
@@ -1247,7 +1247,7 @@ describe('', () => {
 
     describe('if all todos are active', () => {
       beforeEach(() => {
-        page.mockLoad({ fixture: 'active-todos' }).as('loadRequest');
+        page.mockLoad({fixture: 'active-todos'}).as('loadRequest');
 
         page.visit();
         cy.wait('@loadRequest');
@@ -1431,7 +1431,7 @@ describe('', () => {
 
         it('should not send a request on change', () => {
           const spy = cy.stub()
-            .callsFake(req => req.reply({ body: { ...req.body, id: 257334 } }))
+            .callsFake(req => req.reply({body: {...req.body, id: 257334}}))
             .as('renameCallback');
 
           page.mockUpdate(257334, spy);
@@ -1460,7 +1460,7 @@ describe('', () => {
 
         it('should not send a request', () => {
           const spy = cy.stub()
-            .callsFake(req => req.reply({ body: { ...req.body, id: 257334 } }))
+            .callsFake(req => req.reply({body: {...req.body, id: 257334}}))
             .as('renameCallback');
 
           page.mockUpdate(257334, spy);
@@ -1475,7 +1475,7 @@ describe('', () => {
       describe('on enter before recieved a response', () => {
         it('should send a request', () => {
           const spy = cy.stub()
-            .callsFake(req => req.reply({ body: { ...req.body, id: 257334 } }))
+            .callsFake(req => req.reply({body: {...req.body, id: 257334}}))
             .as('renameCallback');
 
           page.mockUpdate(257334, spy);
@@ -1554,7 +1554,7 @@ describe('', () => {
           // to prevent Cypress from failing the test on uncaught exception
           cy.once('uncaught:exception', () => false);
 
-          page.mockUpdate(257334, { statusCode: 503 }).as('renameRequest');
+          page.mockUpdate(257334, {statusCode: 503}).as('renameRequest');
 
           todos.title(0).trigger('dblclick');
           todos.titleField(0).type('123{enter}');
@@ -1585,7 +1585,7 @@ describe('', () => {
       describe('if title was not changed', () => {
         it('should not send a request on enter', () => {
           const spy = cy.stub()
-            .callsFake(req => req.reply({ body: { ...req.body, id: 257334 } }))
+            .callsFake(req => req.reply({body: {...req.body, id: 257334}}))
             .as('renameCallback');
 
           page.mockUpdate(257334, spy);
@@ -1621,7 +1621,7 @@ describe('', () => {
       describe('if title became empty', () => {
         beforeEach(() => {
           const spy = cy.stub()
-            .callsFake(req => req.reply({ body: { ...req.body, id: 257334 } }))
+            .callsFake(req => req.reply({body: {...req.body, id: 257334}}))
             .as('renameCallback');
 
           page.mockUpdate(257334, spy);
@@ -1666,7 +1666,7 @@ describe('', () => {
           // to prevent Cypress from failing the test on uncaught exception
           cy.once('uncaught:exception', () => false);
 
-          page.mockDelete(257334, { statusCode: 503 }).as('deleteRequest');
+          page.mockDelete(257334, {statusCode: 503}).as('deleteRequest');
 
           todos.titleField(0).type('{enter}');
           cy.wait('@deleteRequest');
@@ -1680,7 +1680,7 @@ describe('', () => {
           // to prevent Cypress from failing the test on uncaught exception
           cy.once('uncaught:exception', () => false);
 
-          page.mockDelete(257334, { statusCode: 503 }).as('deleteRequest');
+          page.mockDelete(257334, {statusCode: 503}).as('deleteRequest');
 
           todos.titleField(0).type('{enter}');
           cy.wait('@deleteRequest');
@@ -1693,7 +1693,7 @@ describe('', () => {
           // to prevent Cypress from failing the test on uncaught exception
           cy.once('uncaught:exception', () => false);
 
-          page.mockDelete(257334, { statusCode: 503 }).as('deleteRequest');
+          page.mockDelete(257334, {statusCode: 503}).as('deleteRequest');
 
           todos.titleField(0).type('{enter}');
           cy.wait('@deleteRequest');
@@ -1732,7 +1732,7 @@ describe('', () => {
 
         it('should cancel if title was not changed', () => {
           const spy = cy.stub()
-            .callsFake(req => req.reply({ body: { ...req.body, id: 257334 } }))
+            .callsFake(req => req.reply({body: {...req.body, id: 257334}}))
             .as('renameCallback');
 
           page.mockUpdate(257334, spy);
