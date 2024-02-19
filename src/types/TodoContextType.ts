@@ -8,7 +8,7 @@ export interface TodoContextType {
   status: Status;
   tempTodo: Todo | null;
   errorMessage: ErrorMessage;
-  pdatingTodosIds: number[];
+  updatingTodosIds: number[];
   addTodo: (newTodo: Todo) => void;
   deleteTodo: (todoToDeleteID: number) => void;
   handleSetTempTodo: (newTodo: Todo | null) => void;

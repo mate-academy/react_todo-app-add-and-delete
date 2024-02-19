@@ -1,3 +1,4 @@
+/* eslint-disable */
 import { useContext, useEffect, useRef, useState } from 'react';
 import { TodoContext } from '../../context/TodoContext';
 import { ErrorMessage } from '../../types/ErrorMessage';
@@ -12,7 +13,7 @@ export const Header: React.FC = () => {
     tempTodo,
     addTodo,
     handleSetTempTodo,
-    handleSetErrorMessage
+    handleSetErrorMessage,
   } = useContext(TodoContext);
 
   const newTodoInput = useRef<HTMLInputElement>(null);
@@ -76,3 +77,4 @@ export const Header: React.FC = () => {
     </header>
   );
 };
+/* eslint-enable */

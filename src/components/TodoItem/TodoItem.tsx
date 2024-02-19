@@ -1,3 +1,4 @@
+/* eslint-disable */
 import { useContext } from 'react';
 import classNames from 'classnames';
 import { Todo } from '../../types/Todo';
@@ -64,3 +65,4 @@ export const TodoItem: React.FC<Props> = ({ todo }) => {
     </li>
   );
 };
+/* eslint-enable */

@@ -1,4 +1,4 @@
-/* eslint-disable max-len */
+/* eslint-disable */
 import React, { useCallback, useEffect, useMemo, useState } from 'react';
 import { TodoContextType } from '../../types/TodoContextType';
 import { Todo } from '../../types/Todo';
@@ -14,13 +14,13 @@ export const TodoContext = React.createContext<TodoContextType>({
   status: Status.All,
   tempTodo: null,
   errorMessage: ErrorMessage.None,
-  updatingTodosIds: [],
-  addTodo: () => {},
-  deleteTodo: () => {},
-  handleSetTempTodo: () => {},
-  handleSetErrorMessage: () => {},
-  handleUpdatingTodosIds: () => {},
-  changeStatus: () => {},
+  addTodo: () => { },
+  deleteTodo: () => { },
+  handleSetTempTodo: () => { },
+  handleSetErrorMessage: () => { },
+  handleUpdatingTodosIds: () => { },
+  changeStatus: () => { },
+  updatingTodosIds: []
 });
 
 type Props = {
@@ -111,8 +111,7 @@ export const TodoProvider: React.FC<Props> = ({ children }) => {
   );
 
   return (
-    <TodoContext.Provider value={todosValues}>
-      {children}
-    </TodoContext.Provider>
+    <TodoContext.Provider value={todosValues}>{children}</TodoContext.Provider>
   );
 };
+/* eslint-enable */

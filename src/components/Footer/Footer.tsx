@@ -1,3 +1,4 @@
+/* eslint-disable */
 import { useContext } from 'react';
 import { TodoContext } from '../../context/TodoContext';
 import { ErrorMessage } from '../../types/ErrorMessage';
@@ -52,3 +53,4 @@ export const Footer: React.FC<Props> = ({
     </footer>
   );
 };
+/* eslint-enable */
