@@ -9,15 +9,16 @@ import { USER_ID } from '../constants/User';
 import * as TodoClient from '../api/todos';
 
 export const TodoHeader = () => {
-  const [value, setValue] = useState('');
+  const [taskValue, setTaskValue] = useState('');
+
   const { todos, tempTodo, addTodo, handleSetTempTodo, handleSetErrorMessage } =
     useContext(TodoContext);
 
   const newTaskInput = useRef<HTMLInputElement>(null);
 
-  useEffect(() => {
-    newTaskInput.current?.focus();
-  }, [todos.length, tempTodo]);
+  const handleSetTaskValue = (event: React.ChangeEvent<HTMLInputElement>) => {
+    setTaskValue(event.target.value);
+  };
 
   const handleSubmit = (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
@@ -25,22 +26,24 @@ export const TodoHeader = () => {
 
     const newTask = {
       userId: USER_ID,
-      title: value.trim(),
+      title: taskValue.trim(),
       completed: false,
     };
 
-    if (!value.trim()) {
+    if (!taskValue.trim()) {
       handleSetErrorMessage(ErrorsMessage.Title);
 
       return;
     }
 
     newTaskInput.current?.setAttribute('disabled', 'true');
+
     handleSetTempTodo({ ...newTask, id: 0 });
+
     TodoClient.addTodo(newTask)
       .then(todo => {
         addTodo(todo);
-        setValue('');
+        setTaskValue('');
       })
       .catch(() => handleSetErrorMessage(ErrorsMessage.Add))
       .finally(() => {
@@ -48,6 +51,10 @@ export const TodoHeader = () => {
         handleSetTempTodo(null);
       });
   };
+
+  useEffect(() => {
+    newTaskInput.current?.focus();
+  }, [todos.length, tempTodo]);
 
   return (
     <header className="todoapp__header">
@@ -64,8 +71,8 @@ export const TodoHeader = () => {
           type="text"
           className="todoapp__new-todo"
           placeholder="What needs to be done?"
-          value={value}
-          onChange={e => setValue(e.target.value)}
+          value={taskValue}
+          onChange={event => handleSetTaskValue(event)}
         />
       </form>
     </header>

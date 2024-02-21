@@ -9,9 +9,13 @@ import { TodoContext } from './contexts/TodoContext';
 export const App: React.FC = () => {
   const { todos } = useContext(TodoContext);
 
-  const completedItems = todos.filter(({ completed }) => {
+  const activeItems = todos.filter(({ completed }) => {
     return !completed;
   }).length;
+
+  const completedTodos = todos
+    .filter(({ completed }) => completed)
+    .map(({ id }) => id);
 
   return (
     <div className="todoapp">
@@ -24,7 +28,10 @@ export const App: React.FC = () => {
           <>
             <TodoList />
 
-            <TodoFooter completed={completedItems} />
+            <TodoFooter
+              activeItems={activeItems}
+              completedTodos={completedTodos}
+            />
           </>
         )}
       </div>

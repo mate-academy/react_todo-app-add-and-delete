@@ -8,6 +8,10 @@ import { ErrorsMessage } from '../types/ErrorsMessage';
 export const ErrorNotification: React.FC = () => {
   const { errorMessage, handleSetErrorMessage } = useContext(TodoContext);
 
+  const handleClickHideError = () => {
+    handleSetErrorMessage(ErrorsMessage.None);
+  };
+
   useEffect(() => {
     wait(3000).then(() => handleSetErrorMessage(ErrorsMessage.None));
   }, [errorMessage, handleSetErrorMessage]);
@@ -27,7 +31,7 @@ export const ErrorNotification: React.FC = () => {
         data-cy="HideErrorButton"
         type="button"
         className="delete"
-        onClick={() => handleSetErrorMessage(ErrorsMessage.None)}
+        onClick={handleClickHideError}
       />
       {errorMessage}
     </div>
