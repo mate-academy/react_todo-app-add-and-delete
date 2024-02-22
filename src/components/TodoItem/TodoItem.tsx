@@ -11,12 +11,7 @@ type Props = {
 };
 
 export const TodoItem: React.FC<Props> = ({ todo }) => {
-  const {
-    setTodos,
-    setErrorMessage,
-    clearError,
-    handleChangeStatus,
-  } =
+  const { setTodos, setErrorMessage, clearError, handleChangeStatus } =
     useTodos();
 
   const [isLoading, setIsLoading] = useState(false);
