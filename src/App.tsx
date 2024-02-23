@@ -1,9 +1,12 @@
-/* eslint-disable max-len */
 /* eslint-disable jsx-a11y/control-has-associated-label */
 import React from 'react';
 import { UserWarning } from './UserWarning';
-
-const USER_ID = 0;
+import { USER_ID } from './api/todos';
+import { TodoList } from './components/TodoList/TodoList';
+import { ErrorNotification } from './components/ErrorNotification';
+import { Footer } from './components/Footer';
+import { Header } from './components/Header';
+import { ContextProvider } from './components/constext';
 
 export const App: React.FC = () => {
   if (!USER_ID) {
@@ -11,16 +14,23 @@ export const App: React.FC = () => {
   }
 
   return (
-    <section className="section container">
-      <p className="title is-4">
-        Copy all you need from the prev task:
-        <br />
-        <a href="https://github.com/mate-academy/react_todo-app-loading-todos#react-todo-app-load-todos">
-          React Todo App - Load Todos
-        </a>
-      </p>
+    <ContextProvider>
+      <div className="todoapp">
+        <h1 className="todoapp__title">todos</h1>
 
-      <p className="subtitle">Styles are already copied</p>
-    </section>
+        <div className="todoapp__content">
+          <Header />
+
+          <TodoList />
+
+          {/* Hide the footer if there are no todos */}
+          <Footer />
+        </div>
+
+        {/* DON'T use conditional rendering to hide the notification */}
+        {/* Add the 'hidden' class to hide the message smoothly */}
+        <ErrorNotification />
+      </div>
+    </ContextProvider>
   );
 };
