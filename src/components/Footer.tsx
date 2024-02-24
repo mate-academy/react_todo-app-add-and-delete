@@ -20,7 +20,7 @@ export const Footer: React.FC = () => {
     [todos],
   );
 
-  const handleDeleteComplTodos = () => {
+  const handleDeleteCompletedTodos = () => {
     handleSetErrorMessage(Error.none);
 
     completedIds.forEach(id => {
