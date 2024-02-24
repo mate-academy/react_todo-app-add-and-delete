@@ -1,4 +1,4 @@
-import React, { useContext } from 'react';
+import React, { useContext, useMemo } from 'react';
 import { TodoFilter } from './TodoFilter';
 import { TodoContext } from '../context/TodoContext';
 import { Error } from '../types/ErrorMessage';
@@ -8,12 +8,17 @@ export const Footer: React.FC = () => {
   const { todos, deleteTodo, handleSetErrorMessage, handleSetUpdatingIds } =
     useContext(TodoContext);
 
-  const completedIds: number[] = todos
-    .filter(({ completed }) => completed)
-    .map(({ id }) => id);
-  const hasActive = todos.filter(({ completed }) => {
-    return !completed;
-  }).length;
+  const completedIds: number[] = useMemo(
+    () => todos.filter(({ completed }) => completed).map(({ id }) => id),
+    [todos],
+  );
+  const hasActive = useMemo(
+    () =>
+      todos.filter(({ completed }) => {
+        return !completed;
+      }).length,
+    [todos],
+  );
 
   const handleDeleteComplTodos = () => {
     handleSetErrorMessage(Error.none);

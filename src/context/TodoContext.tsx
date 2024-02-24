@@ -1,4 +1,4 @@
-import React, { useCallback, useEffect, useMemo, useState } from 'react';
+import React, { useCallback, useEffect, useState } from 'react';
 import { Todo } from '../types/Todo';
 import { Status } from '../types/Status';
 import { Error } from '../types/ErrorMessage';
@@ -102,32 +102,20 @@ export const GlobalProvider: React.FC<Props> = ({ children }) => {
     setFilter(newFilter);
   };
 
-  const todosValue = useMemo(
-    () => ({
-      todos,
-      filteredTodos,
-      filter,
-      tempTodo,
-      errorMessage,
-      updatingIds,
-      addTodo,
-      deleteTodo,
-      handleSetErrorMessage,
-      handleSetTempTodo,
-      handleSetUpdatingIds,
-      filterChange,
-    }),
-    [
-      todos,
-      filteredTodos,
-      filter,
-      tempTodo,
-      errorMessage,
-      updatingIds,
-      addTodo,
-      deleteTodo,
-    ],
-  );
+  const todosValue = {
+    todos,
+    filteredTodos,
+    filter,
+    tempTodo,
+    errorMessage,
+    updatingIds,
+    addTodo,
+    deleteTodo,
+    handleSetErrorMessage,
+    handleSetTempTodo,
+    handleSetUpdatingIds,
+    filterChange,
+  };
 
   return (
     <TodoContext.Provider value={todosValue}>{children}</TodoContext.Provider>

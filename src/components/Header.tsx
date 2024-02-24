@@ -29,6 +29,8 @@ export const Header: React.FC = () => {
 
     if (!newTitle.trim()) {
       handleSetErrorMessage(Error.emptyTitle);
+
+      return;
     }
 
     setDisableInput(true);
