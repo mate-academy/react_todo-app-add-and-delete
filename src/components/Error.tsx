@@ -16,6 +16,8 @@ export const Error: React.FC<ErrorProps> = ({ error, setError }) => {
 
       return () => clearTimeout(timer);
     }
+
+    return () => {};
   }, [error, setError]);
 
   return (
