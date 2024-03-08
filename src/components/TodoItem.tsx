@@ -24,9 +24,7 @@ export const TodoItem: React.FC<TodoItemProps> = ({
     if (typeof id === 'number') {
       setAddingTodoId(id);
       deleteTodo(id)
-        .then(() => {
-          handleDelete(id);
-        })
+        .then(() => handleDelete(id))
         .catch(() => {
           setError('Unable to delete a todo');
           setAddingTodoId(null);
