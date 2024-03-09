@@ -24,15 +24,14 @@ export const App: React.FC = () => {
   const [tempTodo, setTempTodo] = useState<Todo | null>(null);
   const [status, setStatus] = useState<Status>(Status.All);
   const [errorMessage, setErrorMessage] = useState('');
+  const [processingTodos, setProcessingTodos] = useState<number[]>([]);
   const filteredTodos = getFilteredTodos(todos, status);
 
   const itemsLeft = todos.filter(({ completed }) => {
     return !completed;
   }).length;
 
-  const itemsCompleted = todos.filter(({ completed }) => {
-    return completed;
-  }).length;
+  const hasCompleted = todos.some(todo => todo.completed);
 
   const createTodoHandler = async (newTodo: Omit<Todo, 'id'>) => {
     setTempTodo({ ...newTodo, id: 0 });
@@ -44,7 +43,7 @@ export const App: React.FC = () => {
       })
       .catch(() => {
         setErrorMessage(UNABLE_TO_ADD_ERROR);
-
+        setTodos(todos);
         wait(3000).then(() => setErrorMessage(''));
       })
       .finally(() => {
@@ -53,14 +52,21 @@ export const App: React.FC = () => {
   };
 
   const handleDeteleTodo = (deletedId: number) => {
+    setProcessingTodos(prevProcessing => [...prevProcessing, deletedId]);
+
     deleteTodo(deletedId)
       .then(() => {
         setTodos((currentTodos: Todo[]) =>
           currentTodos.filter(todo => todo.id !== deletedId),
         );
       })
-      .catch(() => {
-        wait(3000).then(() => setErrorMessage(UNABLE_TO_DELETE_ERROR));
+      .catch(error => {
+        setErrorMessage(UNABLE_TO_DELETE_ERROR);
+
+        throw error;
+      })
+      .finally(() => {
+        setProcessingTodos(prevIds => prevIds.filter(id => id !== deletedId));
       });
   };
 
@@ -92,6 +98,7 @@ export const App: React.FC = () => {
 
       <div className="todoapp__content">
         <Header
+          todos={todos}
           tempTodo={tempTodo}
           inputText={inputText}
           setInputText={setInputText}
@@ -105,10 +112,11 @@ export const App: React.FC = () => {
               todos={filteredTodos}
               tempTodo={tempTodo}
               handleDeteleTodo={handleDeteleTodo}
+              processingTodos={processingTodos}
             />
             <Footer
+              hasCompleted={hasCompleted}
               itemsLeft={itemsLeft}
-              itemsCompleted={itemsCompleted}
               currentStatus={status}
               setStatus={setStatus}
               removeHandleDeleteTodo={removeHandleDeleteTodo}

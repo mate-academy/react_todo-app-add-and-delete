@@ -5,12 +5,14 @@ import { TodoItem } from '../TodoItem/TodoItem';
 type Props = {
   todos: Todo[];
   tempTodo: Todo | null;
+  processingTodos?: number[];
   handleDeteleTodo: (deletedId: number) => void;
 };
 
 export const TodoList: React.FC<Props> = ({
   todos,
   tempTodo,
+  processingTodos,
   handleDeteleTodo,
 }) => {
   return (
@@ -22,6 +24,7 @@ export const TodoList: React.FC<Props> = ({
               key={todo.id}
               todo={todo}
               onDelete={() => handleDeteleTodo(todo.id)}
+              processingTodos={processingTodos}
             />
           </CSSTransition>
         ))}

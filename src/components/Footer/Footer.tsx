@@ -4,15 +4,15 @@ import { Status } from '../../types/Status';
 
 type Props = {
   itemsLeft: number;
-  itemsCompleted: number;
   currentStatus: Status;
+  hasCompleted: boolean;
   setStatus: (value: Status) => void;
   removeHandleDeleteTodo: () => void;
 };
 
 export const Footer: React.FC<Props> = ({
   itemsLeft,
-  itemsCompleted,
+  hasCompleted,
   currentStatus,
   setStatus,
   removeHandleDeleteTodo,
@@ -23,7 +23,6 @@ export const Footer: React.FC<Props> = ({
         {`${itemsLeft} items left`}
       </span>
 
-      {/* Active link should have the 'selected' class */}
       <nav className="filter" data-cy="Filter">
         <a
           href="#/"
@@ -59,16 +58,15 @@ export const Footer: React.FC<Props> = ({
         </a>
       </nav>
 
-      {itemsCompleted && (
-        <button
-          type="button"
-          className="todoapp__clear-completed"
-          data-cy="ClearCompletedButton"
-          onClick={removeHandleDeleteTodo}
-        >
-          Clear completed
-        </button>
-      )}
+      <button
+        disabled={!hasCompleted}
+        type="button"
+        className="todoapp__clear-completed"
+        data-cy="ClearCompletedButton"
+        onClick={removeHandleDeleteTodo}
+      >
+        Clear completed
+      </button>
     </footer>
   );
 };
