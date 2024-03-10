@@ -43,9 +43,7 @@ export const App: React.FC = () => {
   const isCompletedTodos = todos.some(todo => todo.completed);
 
   const handleClearCompleted = () => {
-    const completedTodos = todos.filter(
-      todo => todo.completed && todo.id !== undefined,
-    );
+    const completedTodos = todos.filter(todo => todo.completed && todo.id);
 
     completedTodos.forEach(todo => {
       deleteTodo(todo.id!)

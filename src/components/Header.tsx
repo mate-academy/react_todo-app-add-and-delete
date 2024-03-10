@@ -27,7 +27,7 @@ export const Header: React.FC<HeaderProps> = ({
       event.preventDefault();
       const trimmedTitle = title.trim();
 
-      if (trimmedTitle === '') {
+      if (!trimmedTitle) {
         setError('Title should not be empty');
 
         return;
