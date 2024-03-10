@@ -1,22 +1,22 @@
 import classNames from 'classnames';
-import React from 'react';
+import React, { useContext } from 'react';
 import { Filtering } from '../../types/Filtering';
+import { MyContext, MyContextData } from '../context/myContext';
+import { Todo } from '../../types/Todo';
 
 interface Props {
   filterType: Filtering;
   handleClick: (arg: Filtering) => void;
-  itemLeft: string;
 }
 
-export const Footer: React.FC<Props> = ({
-  filterType,
-  handleClick,
-  itemLeft,
-}) => {
+export const Footer: React.FC<Props> = ({ filterType, handleClick }) => {
+  const { data } = useContext(MyContext) as MyContextData;
+  const itemsLeft = `${data.length - data.filter((elem: Todo) => elem.completed).length} items left`;
+
   return (
     <footer className="todoapp__footer" data-cy="Footer">
       <span className="todo-count" data-cy="TodosCounter">
-        {itemLeft}
+        {itemsLeft}
       </span>
 
       <nav className="filter" data-cy="Filter">

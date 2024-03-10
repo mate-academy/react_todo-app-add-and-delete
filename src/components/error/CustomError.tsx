@@ -1,18 +1,17 @@
 import classNames from 'classnames';
-import React from 'react';
+import React, { useContext } from 'react';
+import { MyContext, MyContextData } from '../context/myContext';
 
-interface Props {
-  errorMassage: string;
-  removeError: () => void;
-}
 
-export const CustomError: React.FC<Props> = ({ errorMassage, removeError }) => {
+
+export const CustomError: React.FC = () => {
+  const { error, handleSetError } = useContext(MyContext) as MyContextData;
   const handleClick = () => {
-    removeError();
+    handleSetError('');
   };
 
   window.setTimeout(() => {
-    removeError();
+    handleSetError('');
   }, 3000);
 
   return (
@@ -23,7 +22,7 @@ export const CustomError: React.FC<Props> = ({ errorMassage, removeError }) => {
         'is-danger',
         'is-light',
         'has-text-weight-normal',
-        { hidden: !errorMassage },
+        { hidden: !error },
       )}
     >
       {/* eslint-disable-next-line jsx-a11y/control-has-associated-label */}
@@ -33,7 +32,7 @@ export const CustomError: React.FC<Props> = ({ errorMassage, removeError }) => {
         className="delete"
         onClick={handleClick}
       />
-      {errorMassage}
+      {error}
     </div>
   );
 };
