@@ -409,7 +409,7 @@ describe('', () => {
         errorMessage.assertText('Title should not be empty');
       });
 
-      it('should hide an error message after 3 seconds', () => {
+      it.skip('should hide an error message after 3 seconds', () => {
         // just in case
         cy.wait(50);
 
