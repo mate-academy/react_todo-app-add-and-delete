@@ -5,7 +5,6 @@ import { Todo } from '../../types/Todo';
 import { TempTodo } from '../../types/TempTodo';
 import { TodoContext } from '../../context/TodoContext';
 import { Errors } from '../../types/Errors';
-import { delay } from '../../utils/delay';
 
 type Props = {
   todo: Todo | TempTodo;
@@ -18,8 +17,6 @@ export const TodoItem: React.FC<Props> = ({ todo }) => {
 
   const deleteTodoItem = async (todoId: number) => {
     setIsLoading(true);
-
-    await delay(100);
 
     todoService
       .deleteTodos(todoId)

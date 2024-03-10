@@ -57,15 +57,13 @@ export const TodoProvider: React.FC<ProviderProps> = ({ children }) => {
   /* const [loadingCompletedIds, setLoadingCompletedIds] = useState<number[]>([]); */
 
   useEffect(() => {
-    setTimeout(() => {
-      todoService
-        .getTodos(USER_ID)
-        .then(setTodos)
-        .catch((error) => {
-          setErrorMessage(Errors.LoadError);
-          throw error;
-        });
-    }, 100);
+    todoService
+      .getTodos(USER_ID)
+      .then(setTodos)
+      .catch((error) => {
+        setErrorMessage(Errors.LoadError);
+        throw error;
+      });
   }, []);
 
   const value: ContextProps = useMemo(
