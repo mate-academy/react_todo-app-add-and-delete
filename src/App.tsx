@@ -148,8 +148,7 @@ export const App: React.FC = () => {
           />
         )}
 
-        {/* Hide the footer if there are no todos */}
-        {todos.length !== 0 && (
+        {todos.length && (
           <Footer
             currentFilter={filter}
             setFilter={setFilter}
@@ -160,8 +159,6 @@ export const App: React.FC = () => {
         )}
       </div>
 
-      {/* DON'T use conditional rendering to hide the notification */}
-      {/* Add the 'hidden' class to hide the message smoothly */}
       <div
         data-cy="ErrorNotification"
         className={cn(

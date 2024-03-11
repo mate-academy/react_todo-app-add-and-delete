@@ -3,7 +3,7 @@ import { Todo } from '../../types/Todo';
 import { TodoItem } from '../TodoItem/TodoItem';
 
 type Props = {
-  todos: Todo[] | null;
+  todos: Todo[];
   addTodoId: number | null;
   handleDeleteTodo: (id: number) => void;
 };
