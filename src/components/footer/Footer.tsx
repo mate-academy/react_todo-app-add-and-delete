@@ -10,8 +10,10 @@ interface Props {
 }
 
 export const Footer: React.FC<Props> = ({ filterType, handleClick }) => {
-  const { data } = useContext(MyContext) as MyContextData;
+  const { data, handleSetTodosDelete } = useContext(MyContext) as MyContextData;
+
   const itemsLeft = `${data.length - data.filter((elem: Todo) => elem.completed).length} items left`;
+  const hasCompletedItems = data.find(elem => elem.completed);
 
   return (
     <footer className="todoapp__footer" data-cy="Footer">
@@ -58,6 +60,8 @@ export const Footer: React.FC<Props> = ({ filterType, handleClick }) => {
         type="button"
         className="todoapp__clear-completed"
         data-cy="ClearCompletedButton"
+        disabled={!hasCompletedItems}
+        onClick={handleSetTodosDelete}
       >
         Clear completed
       </button>

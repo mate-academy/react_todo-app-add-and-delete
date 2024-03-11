@@ -1,38 +1,51 @@
 import classNames from 'classnames';
-import { useContext } from 'react';
+import { useContext, useState } from 'react';
 import { Todo } from '../../types/Todo';
-import { deleteTodo } from '../../api/todos';
 import { MyContext, MyContextData } from '../context/myContext';
+import { deleteTodo } from '../../api/todos';
 
 interface Props {
-  todo: Todo;
-  loading?: boolean;
+  todo: Todo | null;
 }
 
-export const TodoItem: React.FC<Props> = ({ todo, loading }) => {
-  const { handleFetchData, handleSetError } = useContext(
-    MyContext,
-  ) as MyContextData;
+export const TodoItem: React.FC<Props> = ({ todo }) => {
+  const { data, handleSetError, handleSetData, TodosTodelete, focusField } =
+    useContext(MyContext) as MyContextData;
 
-  const { id, completed, title } = todo;
+  const [deleting, setDeleting] = useState(false);
+
+  if (todo === null) {
+    return null;
+  }
+
+  const { id, completed, title } = todo as Todo;
   const handleClick = () => {
-    if (typeof todo.id === 'number') {
-      deleteTodo(id as number)
-        .then(() => {
-          handleFetchData();
-        })
-        .catch(() => {
-          handleSetError('can`t remove a todo');
-        });
-    }
+    setDeleting(true);
+    deleteTodo(id as number)
+      .then(() => {
+        handleSetData(data.filter(elem => elem.id !== id));
+      })
+      .catch(() => {
+        handleSetError('Unable to delete a todo');
+      })
+      .finally(() => {
+        setTimeout(() => {
+          focusField();
+        }, 0);
+        setDeleting(false);
+      });
   };
+
+  if (TodosTodelete?.find(elem => elem.id === id)) {
+    handleClick();
+  }
 
   return (
     <div
       data-cy="Todo"
       className={classNames('todo', {
         completed,
-        'temp-item-enter-done': loading,
+        'temp-item-enter-done': id === 0,
       })}
     >
       <label className="todo__status-label">
@@ -61,7 +74,7 @@ export const TodoItem: React.FC<Props> = ({ todo, loading }) => {
         <div className="modal-background has-background-white-ter" />
         <div className="loader" />
       </div>
-      {id === 0 && (
+      {(id === 0 || deleting) && (
         <div data-cy="TodoLoader" className="modal overlay is-active">
           <div className="modal-background has-background-white-ter" />
           <div className="loader" />

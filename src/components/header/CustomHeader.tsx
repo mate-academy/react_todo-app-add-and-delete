@@ -4,7 +4,6 @@ import React, {
   FormEvent,
   useContext,
   useEffect,
-  useRef,
   useState,
 } from 'react';
 import { Todo } from '../../types/Todo';
@@ -15,20 +14,18 @@ export const CustomHeader: React.FC = () => {
   const {
     data,
     query,
+    inputRef,
+    focusField,
     handleSetError,
     handleSetQuery,
-    handleFetchData,
+    handleSetData,
     createTempTodo,
   } = useContext(MyContext) as MyContextData;
   const allTodosCompleted = data.every(elem => elem.completed);
   const [isAdding, setIsAdding] = useState(false);
-  const inputRef = useRef<HTMLInputElement>(null);
 
   useEffect(() => {
-    // Focus on the input element when the component mounts
-    if (inputRef.current) {
-      inputRef.current.focus();
-    }
+    focusField();
   }, []);
 
   const handleSubmit = (event: FormEvent<HTMLFormElement>) => {
@@ -37,23 +34,30 @@ export const CustomHeader: React.FC = () => {
 
     if (query.trim() !== '') {
       const obj: Todo = {
-        title: query,
+        title: query.trim(),
         userId: USER_ID,
         completed: false,
       };
 
       setIsAdding(true);
+      createTempTodo(true);
       addTodo(obj)
-        .then(() => {
+        .then(todo => {
           setIsAdding(false);
           handleSetQuery('');
-          handleFetchData();
+          createTempTodo(false);
+          handleSetData([...data, todo]);
         })
         .catch(() => {
           setIsAdding(false);
-          handleSetError('Can`t add a todo');
+          createTempTodo(false);
+          handleSetError('Unable to add a todo');
         })
-        .finally(() => createTempTodo(false));
+        .finally(() => {
+          setTimeout(() => {
+            focusField();
+          }, 0);
+        });
     } else {
       handleSetError('Title should not be empty');
     }

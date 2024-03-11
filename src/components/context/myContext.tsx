@@ -1,4 +1,11 @@
-import React, { ReactNode, createContext, useEffect, useState } from 'react';
+import React, {
+  ReactNode,
+  RefObject,
+  createContext,
+  useEffect,
+  useRef,
+  useState,
+} from 'react';
 import { Todo } from '../../types/Todo';
 import { USER_ID, getTodos } from '../../api/todos';
 
@@ -6,7 +13,11 @@ export interface MyContextData {
   data: Todo[];
   error: string;
   query: string;
+  inputRef: RefObject<HTMLInputElement>;
   tempTodo: Todo | null;
+  TodosTodelete: Todo[] | null;
+  focusField: () => void;
+  handleSetTodosDelete: () => void;
   createTempTodo: (arg: boolean) => void;
   handleFetchData: () => void;
   handleSetData: (arg: Todo[]) => void;
@@ -25,6 +36,8 @@ export const MyProvider: React.FC<Props> = ({ children }) => {
   const [error, setError] = useState<string>('');
   const [query, setQuery] = useState('');
   const [tempTodo, setTempTodo] = useState<Todo | null>(null);
+  const inputRef = useRef<HTMLInputElement>(null);
+  const [TodosTodelete, setTodosToDelete] = useState<Todo[] | []>([]);
   const handleSetData = (someData: Todo[]) => {
     setData(someData);
   };
@@ -35,6 +48,10 @@ export const MyProvider: React.FC<Props> = ({ children }) => {
 
   const handleSetQuery = (title: string) => {
     setQuery(title);
+  };
+
+  const handleSetTodosDelete = () => {
+    setTodosToDelete(data.filter(elem => elem.completed));
   };
 
   const createTempTodo = (arg = false) => {
@@ -63,13 +80,23 @@ export const MyProvider: React.FC<Props> = ({ children }) => {
     fetchData();
   };
 
+  const focusField = () => {
+    if (inputRef.current) {
+      inputRef.current.focus();
+    }
+  };
+
   const values: MyContextData = {
     data,
     error,
     query,
+    inputRef,
     tempTodo,
+    focusField,
+    TodosTodelete,
     createTempTodo,
     handleFetchData,
+    handleSetTodosDelete,
     handleSetData,
     handleSetError,
     handleSetQuery,

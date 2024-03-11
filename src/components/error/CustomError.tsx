@@ -2,8 +2,6 @@ import classNames from 'classnames';
 import React, { useContext } from 'react';
 import { MyContext, MyContextData } from '../context/myContext';
 
-
-
 export const CustomError: React.FC = () => {
   const { error, handleSetError } = useContext(MyContext) as MyContextData;
   const handleClick = () => {
