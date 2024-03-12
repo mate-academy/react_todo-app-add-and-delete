@@ -10,6 +10,8 @@ type TodosContextType = {
   setFilterValue: React.Dispatch<React.SetStateAction<Status>>;
   errorMessage: string;
   setErrorMessage: React.Dispatch<React.SetStateAction<string>>;
+  tempTodo: {};
+  setTempTodo: React.Dispatch<React.SetStateAction<Todo>>;
 };
 
 export const TodoContext = React.createContext<TodosContextType>({
@@ -19,6 +21,8 @@ export const TodoContext = React.createContext<TodosContextType>({
   setFilterValue: () => {},
   errorMessage: '',
   setErrorMessage: () => {},
+  tempTodo: {},
+  setTempTodo: () => {},
 });
 
 type Props = {
@@ -32,6 +36,8 @@ export const TodoProvider: React.FC<Props> = ({ children }) => {
 
   const [filterValue, setFilterValue] = useState<Status>(Status.All);
 
+  const [tempTodo, setTempTodo] = useState({});
+
   const value = {
     todos,
     setTodos,
@@ -39,6 +45,8 @@ export const TodoProvider: React.FC<Props> = ({ children }) => {
     setFilterValue,
     errorMessage,
     setErrorMessage,
+    tempTodo,
+    setTempTodo,
   };
 
   useEffect(() => {
