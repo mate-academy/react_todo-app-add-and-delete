@@ -64,7 +64,7 @@ export const Footer: React.FC<Props> = ({
           </nav>
 
           {/* don't show this button if there are no completed todos */}
-          {isCompleted && (
+          {isCompleted || (
             <button
               type="button"
               className="todoapp__clear-completed"
