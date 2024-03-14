@@ -48,11 +48,6 @@ export const App: React.FC = () => {
     }, 0);
   };
 
-  function handleOperationCompletion() {
-    setdeletingId(null);
-    focusInput();
-  }
-
   function getAllTodos() {
     getTodos()
       .then(receivedTodos => {
@@ -93,11 +88,13 @@ export const App: React.FC = () => {
     deleteTodo(id)
       .then(() => {
         setTodos(currentTodos => currentTodos.filter(todo => todo.id !== id));
-        handleOperationCompletion();
+        setdeletingId(null);
+        focusInput();
       })
       .catch(() => {
         setErrorMessage('Unable to delete a todo');
-        handleOperationCompletion();
+        setdeletingId(null);
+        focusInput();
       });
   }
 
