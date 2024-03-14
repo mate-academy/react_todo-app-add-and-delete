@@ -1,6 +1,7 @@
 import React from 'react';
 import cn from 'classnames';
 import { Todo } from '../../types/Todo';
+// import { TodoContext } from '../../context/TodoContext';
 
 type Props = {
   todo: Todo;
@@ -47,7 +48,12 @@ export const TodoItem: React.FC<Props> = ({ todo }) => {
       {/* overlay will cover the todo while it is being deleted or updated */}
 
       {/* 'is-active' class puts in className this modal on top of the todo */}
-      <div data-cy="TodoLoader" className="modal overlay">
+      <div
+        data-cy="TodoLoader"
+        className={cn('modal overlay', {
+          'is-active': todo.id === 0,
+        })}
+      >
         <div className="modal-background has-background-white-ter" />
         <div className="loader" />
       </div>

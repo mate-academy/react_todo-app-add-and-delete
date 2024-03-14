@@ -3,11 +3,14 @@ import cn from 'classnames';
 import { TodoContext } from '../../context/TodoContext';
 import * as todoService from '../../api/todos';
 import { USER_ID } from '../../api/todos';
+import { Errors } from '../../types/Errors';
 
 export const Header: React.FC = () => {
-  const { todos, setTodos, setErrorMessage } = useContext(TodoContext);
+  const { todos, setTodos, setErrorMessage, setTempTodo } =
+    useContext(TodoContext);
   const [newTodoTitle, setNewTodoTitle] = useState('');
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [timerId, setTimerId] = useState<any>(0);
 
   const titleField = useRef<HTMLInputElement>(null);
 
@@ -20,6 +23,11 @@ export const Header: React.FC = () => {
   }, []);
 
   const handleTitleChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+    if (timerId) {
+      clearTimeout(timerId);
+      setErrorMessage('');
+    }
+
     setNewTodoTitle(event.target.value);
   };
 
@@ -31,6 +39,12 @@ export const Header: React.FC = () => {
 
     if (correctTitle && !isDuplicate && !emptyTitle) {
       setIsSubmitting(true);
+      setTempTodo({
+        id: 0,
+        userId: USER_ID,
+        title: 'Test Todo',
+        completed: false,
+      });
 
       todoService
         .createTodo({
@@ -42,17 +56,27 @@ export const Header: React.FC = () => {
           setTodos(currentTodos => [...currentTodos, newTodo]);
           setNewTodoTitle('');
         })
+        .catch(() => {
+          setErrorMessage(Errors.AddError);
+          const timeOutId = setTimeout(() => {
+            setErrorMessage('');
+          }, 3000);
+
+          setTimerId(timeOutId);
+        })
         .finally(() => {
           setIsSubmitting(false);
-          if (titleField.current) {
-            titleField.current.focus();
-          }
-          /* eslint-disable-next-line */
-          console.log(titleField.current);
+          setTempTodo(null);
+
+          setTimeout(() => {
+            if (titleField.current) {
+              titleField.current.focus();
+            }
+          }, 0);
         });
     } else {
       setNewTodoTitle('');
-      setErrorMessage('Title should not be empty');
+      setErrorMessage(Errors.EmptyTitle);
       setTimeout(() => {
         setErrorMessage('');
       }, 3000);
@@ -91,3 +115,22 @@ export const Header: React.FC = () => {
 // if (isDuplicate) {
 //   setErrorMessage('This title already exists');
 // }
+
+// .catch((error: any) => {
+//    setErrorMessage(Errors.AddError);
+//    setTimeout(() => {
+//       setErrorMessage('');
+//    }, 3000);
+//    throw error;
+// })
+
+// const handleTitleChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+//   if (errorMessage) {
+//     setErrorMessage('');
+//   }
+
+//   setNewTodoTitle(event.target.value);
+// };
+
+// eslint-disable-next-line
+// console.log('finnaly');
