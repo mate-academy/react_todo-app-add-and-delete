@@ -1,3 +1,4 @@
+/* eslint-disable max-len */
 /* eslint-disable jsx-a11y/control-has-associated-label */
 import React, { useEffect, useRef, useState } from 'react';
 import classNames from 'classnames';
@@ -34,9 +35,18 @@ export const App: React.FC = () => {
   const [tempTodo, setTempTodo] = useState<Todo | null>(null);
   const [value, setValue] = useState<string>('');
   const [isSubmitting, setIsSubmitting] = useState(false);
-  const unCompletedTodos = todos.filter(todo => todo.completed === false);
-  const allCompletedTodos = todos.length - unCompletedTodos.length;
+  const [editingId, setEditingId] = useState<number | null>(null);
+  const completedTodos = todos.filter(todo => todo.completed);
+  const unCompletedTodos = todos.filter(todo => !todo.completed);
   const inputRef = useRef<HTMLInputElement | null>(null);
+  const activeTodosLength = todos.length - completedTodos.length;
+  const allCompletedTodos = todos.length - unCompletedTodos.length;
+
+  const focusInput = () => {
+    setTimeout(() => {
+      inputRef.current?.focus();
+    }, 0);
+  };
 
   function getAllTodos() {
     getTodos()
@@ -74,8 +84,18 @@ export const App: React.FC = () => {
   }
 
   function deleteSingleTodo(id: number) {
-    deleteTodo(id);
-    setTodos(currentTodos => currentTodos.filter(todo => todo.id !== id));
+    setEditingId(id);
+    deleteTodo(id)
+      .then(() => {
+        setTodos(currentTodos => currentTodos.filter(todo => todo.id !== id));
+        setEditingId(null);
+        focusInput();
+      })
+      .catch(() => {
+        setErrorMessage('Unable to delete a todo');
+        setEditingId(null);
+        focusInput();
+      });
   }
 
   function addTodo(): Promise<void> {
@@ -89,13 +109,16 @@ export const App: React.FC = () => {
 
     setTempTodo({ id: 0, completed: false, title: value, userId: USER_ID });
 
-    return createTodos({ userId: USER_ID, title: value, completed: false })
+    return createTodos({ userId: USER_ID, title: value, completed: true })
       .then(newTodo => {
         setTodos(currentTodos => [...currentTodos, newTodo]);
         setTempTodo(null);
+        focusInput();
       })
       .catch(error => {
         setErrorMessage('Unable to add a todo');
+        setTempTodo(null);
+        focusInput();
         throw error;
       });
   }
@@ -110,7 +133,7 @@ export const App: React.FC = () => {
     e.preventDefault();
     if (!value.trim()) {
       setErrorMessage('Title should not be empty');
-      setIsSubmitting(false); // Set isSubmitting to false here
+      setIsSubmitting(false);
       inputRef.current?.focus();
 
       return;
@@ -126,11 +149,8 @@ export const App: React.FC = () => {
   };
 
   const clearCompletedTodo = () => {
-    return todos
-      .filter(todo => todo.completed)
-      .forEach(todo => {
-        deleteTodo(todo.id);
-      });
+    completedTodos.map(todo => deleteSingleTodo(todo.id));
+    focusInput();
   };
 
   return (
@@ -179,9 +199,8 @@ export const App: React.FC = () => {
                     checked={completed}
                   />
                 </label>
-
                 <span data-cy="TodoTitle" className="todo__title">
-                  {title}
+                  {title.trim()}
                 </span>
                 <button
                   type="button"
@@ -193,19 +212,61 @@ export const App: React.FC = () => {
                 >
                   ×
                 </button>
-                <div data-cy="TodoLoader" className="modal overlay">
-                  <div className="modal-background has-background-white-ter is-active" />
+                <div
+                  data-cy="TodoLoader"
+                  className={classNames('modal overlay', {
+                    'is-active': editingId === id,
+                  })}
+                >
+                  <div className="modal-background has-background-white-ter" />
                   <div className="loader" />
                 </div>
               </div>
             </div>
           ))}
+
+          {tempTodo && (
+            <div>
+              <div
+                data-cy="Todo"
+                className={classNames('todo', {
+                  completed: tempTodo.completed,
+                })}
+              >
+                <label className="todo__status-label">
+                  <input
+                    data-cy="TodoStatus"
+                    type="checkbox"
+                    className="todo__status"
+                    checked={tempTodo.completed}
+                  />
+                </label>
+                <span data-cy="TodoTitle" className="todo__title">
+                  {tempTodo.title.trim()}
+                </span>
+                <button
+                  type="button"
+                  className="todo__remove"
+                  data-cy="TodoDelete"
+                  onClick={() => {
+                    deleteSingleTodo(tempTodo.id);
+                  }}
+                >
+                  ×
+                </button>
+                <div data-cy="TodoLoader" className="modal overlay is-active">
+                  <div className="modal-background has-background-white-ter" />
+                  <div className="loader" />
+                </div>
+              </div>
+            </div>
+          )}
         </section>
 
         {todos.length > 0 && (
           <footer className="todoapp__footer" data-cy="Footer">
             <span className="todo-count" data-cy="TodosCounter">
-              {unCompletedTodos.length} items left
+              {activeTodosLength} items left
             </span>
 
             <nav className="filter" data-cy="Filter">
