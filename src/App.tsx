@@ -109,7 +109,7 @@ export const App: React.FC = () => {
 
     setTempTodo({ id: 0, completed: false, title: value, userId: USER_ID });
 
-    return createTodos({ userId: USER_ID, title: value, completed: true })
+    return createTodos({ userId: USER_ID, title: value, completed: false })
       .then(newTodo => {
         setTodos(currentTodos => [...currentTodos, newTodo]);
         setTempTodo(null);
