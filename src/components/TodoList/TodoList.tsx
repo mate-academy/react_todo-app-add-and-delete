@@ -8,14 +8,15 @@ interface Props {
 }
 
 export const TodoList: React.FC<Props> = ({ data }) => {
-   const {tempTodo} = useContext(MyContext) as MyContextData;
-   const isTempTodo = !!tempTodo
+  const { tempTodo } = useContext(MyContext) as MyContextData;
+  const isTempTodo = !!tempTodo;
+
   return (
     <section className="todoapp__main" data-cy="TodoList">
       {data.map(item => (
         <TodoItem todo={item} key={item.id} />
       ))}
-      {isTempTodo &&(<TodoItem todo={tempTodo} />)}
+      {isTempTodo && <TodoItem todo={tempTodo} />}
     </section>
   );
 };
