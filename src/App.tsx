@@ -35,7 +35,7 @@ export const App: React.FC = () => {
   const [tempTodo, setTempTodo] = useState<Todo | null>(null);
   const [value, setValue] = useState<string>('');
   const [isSubmitting, setIsSubmitting] = useState(false);
-  const [editingId, setEditingId] = useState<number | null>(null);
+  const [deletingId, setdeletingId] = useState<number | null>(null);
   const completedTodos = todos.filter(todo => todo.completed);
   const unCompletedTodos = todos.filter(todo => !todo.completed);
   const inputRef = useRef<HTMLInputElement | null>(null);
@@ -47,6 +47,11 @@ export const App: React.FC = () => {
       inputRef.current?.focus();
     }, 0);
   };
+
+  function handleOperationCompletion() {
+    setdeletingId(null);
+    focusInput();
+  }
 
   function getAllTodos() {
     getTodos()
@@ -84,17 +89,15 @@ export const App: React.FC = () => {
   }
 
   function deleteSingleTodo(id: number) {
-    setEditingId(id);
+    setdeletingId(id);
     deleteTodo(id)
       .then(() => {
         setTodos(currentTodos => currentTodos.filter(todo => todo.id !== id));
-        setEditingId(null);
-        focusInput();
+        handleOperationCompletion();
       })
       .catch(() => {
         setErrorMessage('Unable to delete a todo');
-        setEditingId(null);
-        focusInput();
+        handleOperationCompletion();
       });
   }
 
@@ -215,7 +218,7 @@ export const App: React.FC = () => {
                 <div
                   data-cy="TodoLoader"
                   className={classNames('modal overlay', {
-                    'is-active': editingId === id,
+                    'is-active': deletingId === id,
                   })}
                 >
                   <div className="modal-background has-background-white-ter" />
@@ -329,13 +332,3 @@ export const App: React.FC = () => {
     </div>
   );
 };
-
-// Unable to load todos
-// <br />
-// Title should not be empty
-// <br />
-// Unable to add a todo
-// <br />
-// Unable to delete a todo
-// <br />
-// Unable to update a todo
