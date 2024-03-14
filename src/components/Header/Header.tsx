@@ -10,7 +10,6 @@ export const Header: React.FC = () => {
     useContext(TodoContext);
   const [newTodoTitle, setNewTodoTitle] = useState('');
   const [isSubmitting, setIsSubmitting] = useState(false);
-  const [timerId, setTimerId] = useState<any>(0);
 
   const titleField = useRef<HTMLInputElement>(null);
 
@@ -23,10 +22,7 @@ export const Header: React.FC = () => {
   }, []);
 
   const handleTitleChange = (event: React.ChangeEvent<HTMLInputElement>) => {
-    if (timerId) {
-      clearTimeout(timerId);
-      setErrorMessage('');
-    }
+    setErrorMessage('');
 
     setNewTodoTitle(event.target.value);
   };
@@ -35,9 +31,8 @@ export const Header: React.FC = () => {
     event.preventDefault();
     const correctTitle = newTodoTitle.trim();
     const emptyTitle = correctTitle.length <= 0;
-    const isDuplicate = todos.some(todo => todo.title === newTodoTitle);
 
-    if (correctTitle && !isDuplicate && !emptyTitle) {
+    if (correctTitle && !emptyTitle) {
       setIsSubmitting(true);
       setTempTodo({
         id: 0,
@@ -58,11 +53,9 @@ export const Header: React.FC = () => {
         })
         .catch(() => {
           setErrorMessage(Errors.AddError);
-          const timeOutId = setTimeout(() => {
+          setTimeout(() => {
             setErrorMessage('');
           }, 3000);
-
-          setTimerId(timeOutId);
         })
         .finally(() => {
           setIsSubmitting(false);
