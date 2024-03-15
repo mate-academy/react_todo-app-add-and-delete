@@ -5,6 +5,7 @@ import { getTodos } from '../api/todos';
 import { Errors } from '../types/Errors';
 
 type TodosContextType = {
+  // todo: Todo;
   todos: Todo[];
   setTodos: React.Dispatch<React.SetStateAction<Todo[]>>;
   filterValue: Status;
@@ -13,9 +14,13 @@ type TodosContextType = {
   setErrorMessage: React.Dispatch<React.SetStateAction<string>>;
   tempTodo: Todo | null;
   setTempTodo: React.Dispatch<React.SetStateAction<Todo | null>>;
+  loader: boolean;
+  setLoader: React.Dispatch<React.SetStateAction<boolean>>;
+  // titleField: null;
 };
 
 export const TodoContext = React.createContext<TodosContextType>({
+  // todo: {},
   todos: [],
   setTodos: () => {},
   filterValue: Status.All,
@@ -24,6 +29,9 @@ export const TodoContext = React.createContext<TodosContextType>({
   setErrorMessage: () => {},
   tempTodo: null,
   setTempTodo: () => {},
+  loader: false,
+  setLoader: () => {},
+  // titleField: null,
 });
 
 type Props = {
@@ -35,7 +43,10 @@ export const TodoProvider: React.FC<Props> = ({ children }) => {
   const [errorMessage, setErrorMessage] = useState('');
   const [filterValue, setFilterValue] = useState<Status>(Status.All);
   const [tempTodo, setTempTodo] = useState<Todo | null>(null);
+  const [loader, setLoader] = useState(false);
+  // const titleField = useRef<HTMLInputElement>(null);
   const value = {
+    // todo,
     todos,
     setTodos,
     filterValue,
@@ -44,6 +55,9 @@ export const TodoProvider: React.FC<Props> = ({ children }) => {
     setErrorMessage,
     tempTodo,
     setTempTodo,
+    loader,
+    setLoader,
+    // titleField,
   };
 
   useEffect(() => {
@@ -61,6 +75,3 @@ export const TodoProvider: React.FC<Props> = ({ children }) => {
     <TodoContext.Provider value={value}> {children} </TodoContext.Provider>
   );
 };
-
-// setTempTodo: React.Dispatch<React.SetStateAction<Todo>> |
-// React.Dispatch<React.SetStateAction<null>>;

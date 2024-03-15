@@ -22,8 +22,6 @@ export const Header: React.FC = () => {
   }, []);
 
   const handleTitleChange = (event: React.ChangeEvent<HTMLInputElement>) => {
-    setErrorMessage('');
-
     setNewTodoTitle(event.target.value);
   };
 
@@ -55,7 +53,7 @@ export const Header: React.FC = () => {
           setErrorMessage(Errors.AddError);
           setTimeout(() => {
             setErrorMessage('');
-          }, 3000);
+          }, 2000);
         })
         .finally(() => {
           setIsSubmitting(false);
@@ -72,7 +70,7 @@ export const Header: React.FC = () => {
       setErrorMessage(Errors.EmptyTitle);
       setTimeout(() => {
         setErrorMessage('');
-      }, 3000);
+      }, 2000);
     }
   };
 
