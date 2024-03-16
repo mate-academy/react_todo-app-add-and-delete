@@ -3,24 +3,23 @@ import React, { useEffect, useState } from 'react';
 import cn from 'classnames';
 
 import { UserWarning } from './UserWarning';
-import { USER_ID, getTodos, createTodo, deleteTodo } from './api/todos';
-import { Header } from './components/Header/Header';
-import { TodoList } from './components/TodoList/TodoList';
-import { Footer } from './components/Footer/Footer';
+import { USER_ID, createTodo, deleteTodo, getTodos } from './api/todos';
 import { Todo } from './types/Todo';
+import { Header } from './components/Header/Header';
+import { Footer } from './components/Footer/Footer';
+import { TodoList } from './components/TodoList/TodoList';
 import { Filter } from './types/Filter';
-import { getFilteredTodos } from './helper/getFilteredTodos';
 import { wait } from './utils/fetchClient';
+import { getFilteredTodos } from './helper/getFilteredTodos';
 import * as errors from './Errors/Errors';
 
 export const App: React.FC = () => {
   const [todos, setTodos] = useState<Todo[]>([]);
+  const [inputValue, setInputValue] = useState('');
+  const [tempTodo, setTempTodo] = useState<Todo | null>(null);
   const [filter, setFilter] = useState<Filter>(Filter.All);
   const [errorMessage, setErrorMessage] = useState('');
   const filteredTodos = getFilteredTodos(todos, filter);
-
-  const [inputValue, setInputValue] = useState('');
-  const [tempTodo, setTempTodo] = useState<Todo | null>(null);
 
   const itemsLeft = todos.filter(({ completed }) => {
     return !completed;
@@ -34,23 +33,25 @@ export const App: React.FC = () => {
     setTempTodo({ ...newTodo, id: 0 });
 
     createTodo(newTodo)
-      .then(() => {
-        setTodos((currentTodo: Todo[]) => [...currentTodo, newTodo]);
+      .then(createdTodo => {
+        setTodos((currentTodos: Todo[]) => [...currentTodos, createdTodo]);
         setInputValue('');
       })
       .catch(() => {
         setErrorMessage(errors.UNABLE_TO_ADD);
+
+        wait(3000).then(() => setErrorMessage(''));
       })
       .finally(() => {
         setTempTodo(null);
       });
   };
 
-  const deleteTodoHandler = (todoId: number) => {
-    deleteTodo(todoId)
+  const deleteTodoHandler = (targetId: number) => {
+    deleteTodo(targetId)
       .then(() => {
-        setTodos((currentTodo: Todo[]) =>
-          currentTodo.filter(todo => todo.id !== todoId),
+        setTodos((currentTodos: Todo[]) =>
+          currentTodos.filter(item => item.id !== targetId),
         );
       })
       .catch(() => {
@@ -74,7 +75,7 @@ export const App: React.FC = () => {
       .catch(() => {
         setErrorMessage(errors.UNABLE_TO_LOAD);
 
-        return wait(3000).then(() => setErrorMessage(''));
+        wait(3000).then(() => setErrorMessage(''));
       });
   }, []);
 
@@ -90,11 +91,10 @@ export const App: React.FC = () => {
         <Header
           inputValue={inputValue}
           setInputValue={setInputValue}
-          setErrorMessage={setErrorMessage}
           createTodoHandler={createTodoHandler}
+          setErrorMessage={setErrorMessage}
         />
-
-        {todos.length > 0 && (
+        {!!todos.length && (
           <>
             <TodoList
               todos={filteredTodos}
@@ -103,8 +103,8 @@ export const App: React.FC = () => {
             />
             <Footer
               itemsLeft={itemsLeft}
-              setFilter={setFilter}
               currentFilter={filter}
+              setFilter={setFilter}
               itemsCompleted={itemsCompleted}
               deletedCheckedTodoHandler={deletedCheckedTodoHandler}
             />
