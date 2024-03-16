@@ -13,6 +13,10 @@ export const TodoItem: React.FC<Props> = ({ todo, onDelete }) => {
 
   const [isCompleted, setIsCompleted] = useState(completed);
 
+  const isCompletedHandler = (event: React.ChangeEvent<HTMLInputElement>) => {
+    setIsCompleted(event.currentTarget.checked);
+  };
+
   return (
     <div data-cy="Todo" className={cn('todo', { completed })}>
       <label className="todo__status-label">
@@ -21,7 +25,7 @@ export const TodoItem: React.FC<Props> = ({ todo, onDelete }) => {
           type="checkbox"
           className="todo__status"
           defaultChecked={isCompleted}
-          onChange={event => setIsCompleted(event.currentTarget.checked)}
+          onChange={isCompletedHandler}
         />
       </label>
 

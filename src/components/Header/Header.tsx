@@ -43,6 +43,10 @@ export const Header: React.FC<Props> = ({
     }
   };
 
+  const inputValueHandler = (event: React.ChangeEvent<HTMLInputElement>) => {
+    setInputValue(event.target.value);
+  };
+
   return (
     <header className="todoapp__header">
       {/* eslint-disable jsx-a11y/control-has-associated-label */}
@@ -60,7 +64,7 @@ export const Header: React.FC<Props> = ({
           type="text"
           className="todoapp__new-todo"
           placeholder="What needs to be done?"
-          onChange={event => setInputValue(event.target.value)}
+          onChange={inputValueHandler}
         />
       </form>
     </header>

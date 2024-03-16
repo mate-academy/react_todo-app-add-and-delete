@@ -15,36 +15,36 @@ import * as errors from './Errors/Errors';
 
 export const App: React.FC = () => {
   const [todos, setTodos] = useState<Todo[]>([]);
-  const [inputValue, setInputValue] = useState('');
-  const [tempTodo, setTempTodo] = useState<Todo | null>(null);
   const [filter, setFilter] = useState<Filter>(Filter.All);
   const [errorMessage, setErrorMessage] = useState('');
   const filteredTodos = getFilteredTodos(todos, filter);
 
-  const itemsLeft = todos.filter(({ completed }) => {
+  const [inputValue, setInputValue] = useState('');
+  const [tempTodo, setTempTodo] = useState<Todo | null>(null);
+
+  const activeItems = todos.filter(({ completed }) => {
     return !completed;
   }).length;
 
-  const itemsCompleted = todos.filter(({ completed }) => {
+  const completedItems = todos.filter(({ completed }) => {
     return completed;
   }).length;
 
   const createTodoHandler = async (newTodo: Omit<Todo, 'id'>) => {
     setTempTodo({ ...newTodo, id: 0 });
 
-    createTodo(newTodo)
-      .then(createdTodo => {
-        setTodos((currentTodos: Todo[]) => [...currentTodos, createdTodo]);
-        setInputValue('');
-      })
-      .catch(() => {
-        setErrorMessage(errors.UNABLE_TO_ADD);
+    try {
+      const createdTodo = await createTodo(newTodo);
 
-        wait(3000).then(() => setErrorMessage(''));
-      })
-      .finally(() => {
-        setTempTodo(null);
-      });
+      setTodos((currentTodos: Todo[]) => [...currentTodos, createdTodo]);
+      setInputValue('');
+    } catch (error) {
+      setErrorMessage(errors.UNABLE_TO_ADD);
+
+      wait(3000).then(() => setErrorMessage(''));
+    } finally {
+      setTempTodo(null);
+    }
   };
 
   const deleteTodoHandler = (targetId: number) => {
@@ -79,6 +79,10 @@ export const App: React.FC = () => {
       });
   }, []);
 
+  const errorHandler = () => {
+    setErrorMessage('');
+  };
+
   if (!USER_ID) {
     return <UserWarning />;
   }
@@ -94,6 +98,7 @@ export const App: React.FC = () => {
           createTodoHandler={createTodoHandler}
           setErrorMessage={setErrorMessage}
         />
+
         {!!todos.length && (
           <>
             <TodoList
@@ -101,11 +106,12 @@ export const App: React.FC = () => {
               tempTodo={tempTodo}
               deleteTodoHandler={deleteTodoHandler}
             />
+
             <Footer
-              itemsLeft={itemsLeft}
+              activeItems={activeItems}
               currentFilter={filter}
               setFilter={setFilter}
-              itemsCompleted={itemsCompleted}
+              completedItems={completedItems}
               deletedCheckedTodoHandler={deletedCheckedTodoHandler}
             />
           </>
@@ -126,7 +132,7 @@ export const App: React.FC = () => {
           data-cy="HideErrorButton"
           type="button"
           className="delete"
-          onClick={() => setErrorMessage('')}
+          onClick={errorHandler}
         />
         {errorMessage}
       </div>
