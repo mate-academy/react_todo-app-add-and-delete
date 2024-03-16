@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { MutableRefObject, useEffect, useRef, useState } from 'react';
 import { Todo } from '../types/Todo';
 import { Status } from '../types/Status';
 import { getTodos } from '../api/todos';
@@ -16,7 +16,7 @@ type TodosContextType = {
   setTempTodo: React.Dispatch<React.SetStateAction<Todo | null>>;
   loader: boolean;
   setLoader: React.Dispatch<React.SetStateAction<boolean>>;
-  // titleField: null;
+  titleField: MutableRefObject<HTMLInputElement | null>;
 };
 
 export const TodoContext = React.createContext<TodosContextType>({
@@ -31,7 +31,7 @@ export const TodoContext = React.createContext<TodosContextType>({
   setTempTodo: () => {},
   loader: false,
   setLoader: () => {},
-  // titleField: null,
+  titleField: {} as MutableRefObject<HTMLInputElement | null>,
 });
 
 type Props = {
@@ -44,7 +44,12 @@ export const TodoProvider: React.FC<Props> = ({ children }) => {
   const [filterValue, setFilterValue] = useState<Status>(Status.All);
   const [tempTodo, setTempTodo] = useState<Todo | null>(null);
   const [loader, setLoader] = useState(false);
-  // const titleField = useRef<HTMLInputElement>(null);
+  const titleField = useRef<HTMLInputElement | null>(null);
+
+  // const handleLoadingChange = (loadingStatus: boolean) => {
+  //   setIsLoading(loadingStatus);
+  // };
+
   const value = {
     // todo,
     todos,
@@ -57,7 +62,7 @@ export const TodoProvider: React.FC<Props> = ({ children }) => {
     setTempTodo,
     loader,
     setLoader,
-    // titleField,
+    titleField,
   };
 
   useEffect(() => {

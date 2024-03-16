@@ -3,9 +3,10 @@ import * as todoService from '../../api/todos';
 import { Filter } from '../Filter';
 import { TodoContext } from '../../context/TodoContext';
 import { Errors } from '../../types/Errors';
+import { Todo } from '../../types/Todo';
 
 export const Footer: React.FC = () => {
-  const { todos, setTodos, setLoader, setErrorMessage } =
+  const { todos, setTodos, setLoader, setErrorMessage, titleField } =
     useContext(TodoContext);
 
   const hasEnoughTodos = todos.length > 0;
@@ -14,28 +15,36 @@ export const Footer: React.FC = () => {
 
   const hasEnoughCompletedTodo = todos.some(todo => todo.completed === true);
 
-  const removeTodos = () => {
-    todoService
-      .deleteTodo(todo.id)
-      .then(() => {
-        setTodos(todos.filter(task => !task.completed));
-      })
-      .catch(() => {
-        setErrorMessage(Errors.DeleteError);
-        setTimeout(() => {
-          setErrorMessage('');
-        }, 2000);
-      })
-      .finally(() => {
-        setLoader(false);
-        setTodos(todos.filter(todo => todo.completed === false));
-      });
+  const removeTodos = (completedTodos: Todo[]) => {
+    completedTodos.forEach(todo => {
+      setLoader(true);
+      todoService
+        .deleteTodo(todo.id)
+        .then(() => {
+          setTodos(todos.filter(task => !task.completed));
+        })
+        .catch(() => {
+          setErrorMessage(Errors.DeleteError);
+          setTimeout(() => {
+            setErrorMessage('');
+          }, 3000);
+        })
+        .finally(() => {
+          setLoader(false);
+          setTodos(todos.filter(t => t.completed === false));
+          setTimeout(() => {
+            if (titleField.current) {
+              titleField.current.focus();
+            }
+          }, 0);
+        });
+    });
   };
 
   const cleanCompletedTodos = () => {
     const completedTodos = todos.filter(todo => todo.completed);
 
-    completedTodos.forEach(todo => removeTodos(todo.id));
+    removeTodos(completedTodos);
   };
 
   return (
@@ -95,4 +104,14 @@ export const Footer: React.FC = () => {
 
     setTodos(todos.filter(todo => todo.completed === false));
   };
+*/
+
+/*
+.catch(() => {
+      setErrorMessage('');
+      setTimeout(() => {
+        setErrorMessage('');
+      }, 3000);
+      setErrorMessage(Errors.DeleteError);
+    })
 */

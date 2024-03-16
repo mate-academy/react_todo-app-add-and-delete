@@ -10,12 +10,11 @@ type Props = {
 };
 
 export const TodoItem: React.FC<Props> = ({ todo }) => {
-  const { todos, setTodos, setErrorMessage, loader, setLoader } =
+  const { todos, setTodos, setErrorMessage, loader, setLoader, titleField } =
     useContext(TodoContext);
 
   const deleteTodo = () => {
     setLoader(true);
-
     todoService
       .deleteTodo(todo.id)
       .then(() => {
@@ -25,10 +24,15 @@ export const TodoItem: React.FC<Props> = ({ todo }) => {
         setErrorMessage(Errors.DeleteError);
         setTimeout(() => {
           setErrorMessage('');
-        }, 2000);
+        }, 3000);
       })
       .finally(() => {
         setLoader(false);
+        setTimeout(() => {
+          if (titleField.current) {
+            titleField.current.focus();
+          }
+        }, 0);
       });
   };
 
@@ -105,3 +109,10 @@ export const TodoItem: React.FC<Props> = ({ todo }) => {
 //   setTodos(todos.filter(task => task.id !== todo.id));
 //   setLoader(false);
 // };
+
+// .catch(() => {
+//         setErrorMessage(Errors.DeleteError);
+//         setTimeout(() => {
+//           setErrorMessage('');
+//         }, 3000);
+//       })

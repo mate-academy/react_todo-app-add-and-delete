@@ -1,4 +1,4 @@
-import React, { useContext, useEffect, useRef, useState } from 'react';
+import React, { useContext, useEffect, useState } from 'react';
 import cn from 'classnames';
 import { TodoContext } from '../../context/TodoContext';
 import * as todoService from '../../api/todos';
@@ -6,17 +6,15 @@ import { USER_ID } from '../../api/todos';
 import { Errors } from '../../types/Errors';
 
 export const Header: React.FC = () => {
-  const { todos, setTodos, setErrorMessage, setTempTodo } =
+  const { todos, setTodos, setErrorMessage, setTempTodo, titleField } =
     useContext(TodoContext);
   const [newTodoTitle, setNewTodoTitle] = useState('');
   const [isSubmitting, setIsSubmitting] = useState(false);
 
-  const titleField = useRef<HTMLInputElement>(null);
-
   const allTodosAreCompleted = todos.every(todo => todo.completed === true);
 
   useEffect(() => {
-    if (titleField.current) {
+    if (titleField && titleField.current) {
       titleField.current.focus();
     }
   }, []);
@@ -53,7 +51,7 @@ export const Header: React.FC = () => {
           setErrorMessage(Errors.AddError);
           setTimeout(() => {
             setErrorMessage('');
-          }, 2000);
+          }, 3000);
         })
         .finally(() => {
           setIsSubmitting(false);
@@ -66,11 +64,10 @@ export const Header: React.FC = () => {
           }, 0);
         });
     } else {
-      setNewTodoTitle('');
       setErrorMessage(Errors.EmptyTitle);
       setTimeout(() => {
         setErrorMessage('');
-      }, 2000);
+      }, 3000);
     }
   };
 
@@ -125,3 +122,10 @@ export const Header: React.FC = () => {
 
 // eslint-disable-next-line
 // console.log('finnaly');
+
+// .catch(() => {
+//   setErrorMessage(Errors.AddError);
+//   setTimeout(() => {
+//     setErrorMessage('');
+//   }, 3000);
+// })
