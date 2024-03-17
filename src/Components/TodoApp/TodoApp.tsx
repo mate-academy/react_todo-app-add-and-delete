@@ -61,16 +61,15 @@ export const TodoApp: React.FC = () => {
           ...(currentTodos || []),
           newPost,
         ]));
+        setText('');
       })
       .catch(() => {
         setErrorMessage('Unable to add a todo');
         setTimeout(() => {
-          setText(text);
           setErrorMessage('');
         }, 3000);
       })
       .finally(() => {
-        setText('');
         setDisabledInput(false);
         setLoading(false);
         setTempTodo(null);
@@ -83,6 +82,10 @@ export const TodoApp: React.FC = () => {
       inputRef.current?.focus();
     }
   }, [inputFocused]);
+
+  useEffect(() => {
+    inputRef.current?.focus();
+  }, []);
 
   useEffect(() => {
     setLeftCount(todos.filter(
@@ -223,15 +226,6 @@ export const TodoApp: React.FC = () => {
           className="delete"
           onClick={() => setErrorMessage('')}
         />
-        {/* Unable to load todos
-          <br />
-          Title should not be empty
-          <br />
-          Unable to add a todo
-          <br />
-          Unable to delete a todo
-          <br />
-          Unable to update a todo */}
         {errorMessage}
       </div>
     </div>
