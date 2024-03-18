@@ -1,9 +1,10 @@
-/* eslint-disable max-len */
 /* eslint-disable jsx-a11y/control-has-associated-label */
 import React from 'react';
 import { UserWarning } from './UserWarning';
-
-const USER_ID = 0;
+import { USER_ID } from './api/todos';
+import { TodoProvider } from './context/TodoContext';
+import { Container } from './components/Container/Container';
+import { Error } from './components/Error';
 
 export const App: React.FC = () => {
   if (!USER_ID) {
@@ -11,16 +12,13 @@ export const App: React.FC = () => {
   }
 
   return (
-    <section className="section container">
-      <p className="title is-4">
-        Copy all you need from the prev task:
-        <br />
-        <a href="https://github.com/mate-academy/react_todo-app-loading-todos#react-todo-app-load-todos">
-          React Todo App - Load Todos
-        </a>
-      </p>
+    <div className="todoapp">
+      <h1 className="todoapp__title">todos</h1>
 
-      <p className="subtitle">Styles are already copied</p>
-    </section>
+      <TodoProvider>
+        <Container />
+        <Error />
+      </TodoProvider>
+    </div>
   );
 };
