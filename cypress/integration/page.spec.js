@@ -643,7 +643,7 @@ describe('', () => {
         errorMessage.assertVisible();
       });
 
-      it.skip('should keep an error message for 3s after the last fail', () => {
+      it('should keep an error message for 3s after the last fail', () => {
         // to prevent Cypress from failing the test on uncaught exception
         cy.once('uncaught:exception', () => false);
 
@@ -916,13 +916,13 @@ describe('', () => {
           errorMessage.assertText('Unable to delete a todo');
         });
 
-        it.skip('should remove todos with success responses and keep todos with errors', () => {
+        it('should remove todos with success responses and keep todos with errors', () => {
           todos.assertCount(3);
           todos.assertTitle(0, 'CSS');
           todos.assertTitle(1, 'TypeScript');
         });
 
-        it.skip('should not disable ClearCompleted button', () => {
+        it('should not disable ClearCompleted button', () => {
           page.clearCompletedButton().should('not.be.disabled');
         });
       });

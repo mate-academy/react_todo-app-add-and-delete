@@ -21,7 +21,7 @@ export const Footer: React.FC = () => {
       todoService
         .deleteTodo(todo.id)
         .then(() => {
-          setTodos(todos.filter(task => !task.completed));
+          setTodos(prevtodos => prevtodos.filter(task => task.id !== todo.id));
         })
         .catch(() => {
           setErrorMessage(Errors.DeleteError);
@@ -31,7 +31,6 @@ export const Footer: React.FC = () => {
         })
         .finally(() => {
           setMultiLoader(false);
-          setTodos(todos.filter(t => t.completed === false));
           setTimeout(() => {
             if (titleField.current) {
               titleField.current.focus();
