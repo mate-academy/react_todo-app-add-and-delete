@@ -1,5 +1,5 @@
 /* eslint-disable jsx-a11y/control-has-associated-label */
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import cn from 'classnames';
 
 import { UserWarning } from './UserWarning';
@@ -21,6 +21,10 @@ export const App: React.FC = () => {
 
   const [inputValue, setInputValue] = useState('');
   const [tempTodo, setTempTodo] = useState<Todo | null>(null);
+  const [loading, setLoading] = useState(false);
+  const [addTodoId, setAddTodoId] = useState<number | null>(null);
+
+  const titleField = useRef<HTMLInputElement>(null);
 
   const activeItems = todos.filter(({ completed }) => {
     return !completed;
@@ -30,24 +34,54 @@ export const App: React.FC = () => {
     return completed;
   }).length;
 
-  const createTodoHandler = async (newTodo: Omit<Todo, 'id'>) => {
-    setTempTodo({ ...newTodo, id: 0 });
+  const createTodoHandler = (event: React.FormEvent<HTMLFormElement>) => {
+    event.preventDefault();
 
-    try {
-      const createdTodo = await createTodo(newTodo);
-
-      setTodos((currentTodos: Todo[]) => [...currentTodos, createdTodo]);
-      setInputValue('');
-    } catch (error) {
-      setErrorMessage(errors.UNABLE_TO_ADD);
+    if (inputValue.trim().length === 0) {
+      setErrorMessage(errors.TITLE_EMPTY);
 
       wait(3000).then(() => setErrorMessage(''));
-    } finally {
-      setTempTodo(null);
+
+      return;
     }
+
+    setLoading(true);
+    setAddTodoId(0);
+
+    setTempTodo({
+      id: 0,
+      title: inputValue.trim(),
+      completed: false,
+      userId: USER_ID,
+    });
+
+    const newTodo = {
+      title: inputValue.trim(),
+      completed: false,
+      userId: USER_ID,
+    };
+
+    createTodo(newTodo)
+      .then(todo => {
+        setTodos(prevTodos => [...prevTodos, todo]);
+        setInputValue('');
+      })
+      .catch(() => {
+        setErrorMessage('Unable to add a todo');
+
+        return wait(3000).then(() => setErrorMessage(''));
+      })
+      .finally(() => {
+        setLoading(false);
+        setAddTodoId(null);
+        setTempTodo(null);
+      });
   };
 
   const deleteTodoHandler = (targetId: number) => {
+    setLoading(true);
+    setAddTodoId(targetId);
+
     deleteTodo(targetId)
       .then(() => {
         setTodos((currentTodos: Todo[]) =>
@@ -56,17 +90,20 @@ export const App: React.FC = () => {
       })
       .catch(() => {
         setErrorMessage(errors.UNABLE_TO_DELETE);
+        setAddTodoId(null);
 
         wait(3000).then(() => setErrorMessage(''));
+      })
+      .finally(() => {
+        setLoading(false);
+        setAddTodoId(null);
       });
   };
 
   const deletedCheckedTodoHandler = () => {
     const completedTodos = todos.filter(({ completed }) => completed);
-    const activeTodos = todos.filter(({ completed }) => !completed);
 
     completedTodos.forEach(({ id }) => deleteTodoHandler(id));
-    setTodos(activeTodos);
   };
 
   useEffect(() => {
@@ -78,6 +115,12 @@ export const App: React.FC = () => {
         wait(3000).then(() => setErrorMessage(''));
       });
   }, []);
+
+  useEffect(() => {
+    if (titleField.current) {
+      titleField.current.focus();
+    }
+  }, [tempTodo, todos]);
 
   const errorHandler = () => {
     setErrorMessage('');
@@ -95,8 +138,9 @@ export const App: React.FC = () => {
         <Header
           inputValue={inputValue}
           setInputValue={setInputValue}
-          createTodoHandler={createTodoHandler}
-          setErrorMessage={setErrorMessage}
+          onSubmit={createTodoHandler}
+          loading={loading}
+          titleField={titleField}
         />
 
         {!!todos.length && (
@@ -104,6 +148,7 @@ export const App: React.FC = () => {
             <TodoList
               todos={filteredTodos}
               tempTodo={tempTodo}
+              addTodoId={addTodoId}
               deleteTodoHandler={deleteTodoHandler}
             />
 

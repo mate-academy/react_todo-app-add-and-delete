@@ -1,48 +1,20 @@
-import React, { useEffect, useRef } from 'react';
-import { Todo } from '../../types/Todo';
-import { USER_ID } from '../../api/todos';
-import * as errors from '../../Errors/Errors';
-import { wait } from '../../utils/fetchClient';
+import React from 'react';
 
 interface Props {
   inputValue: string;
   setInputValue: (value: string) => void;
-  setErrorMessage: (error: string) => void;
-  createTodoHandler: (newTodo: Omit<Todo, 'id'>) => void;
+  onSubmit: (event: React.FormEvent<HTMLFormElement>) => void;
+  loading: boolean;
+  titleField: React.RefObject<HTMLInputElement>;
 }
 
 export const Header: React.FC<Props> = ({
   inputValue,
   setInputValue,
-  setErrorMessage,
-  createTodoHandler,
+  loading,
+  onSubmit,
+  titleField,
 }) => {
-  const titleField = useRef<HTMLInputElement>(null);
-
-  useEffect(() => {
-    if (titleField.current) {
-      titleField.current.focus();
-    }
-  }, []);
-
-  const submitHandler = (event: React.FormEvent) => {
-    event.preventDefault();
-
-    if (inputValue.trim().length > 0) {
-      const newTodoTemplate = {
-        userId: USER_ID,
-        title: inputValue,
-        completed: false,
-      };
-
-      createTodoHandler(newTodoTemplate);
-    } else {
-      setErrorMessage(errors.TITLE_EMPTY);
-
-      wait(3000).then(() => setErrorMessage(''));
-    }
-  };
-
   const inputValueHandler = (event: React.ChangeEvent<HTMLInputElement>) => {
     setInputValue(event.target.value);
   };
@@ -56,10 +28,11 @@ export const Header: React.FC<Props> = ({
         data-cy="ToggleAllButton"
       />
 
-      <form onSubmit={submitHandler}>
+      <form onSubmit={onSubmit}>
         <input
           ref={titleField}
           value={inputValue}
+          disabled={loading}
           data-cy="NewTodoField"
           type="text"
           className="todoapp__new-todo"
