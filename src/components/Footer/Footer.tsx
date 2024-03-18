@@ -6,7 +6,7 @@ import { Errors } from '../../types/Errors';
 import { Todo } from '../../types/Todo';
 
 export const Footer: React.FC = () => {
-  const { todos, setTodos, setLoader, setErrorMessage, titleField } =
+  const { todos, setTodos, setMultiLoader, setErrorMessage, titleField } =
     useContext(TodoContext);
 
   const hasEnoughTodos = todos.length > 0;
@@ -17,7 +17,7 @@ export const Footer: React.FC = () => {
 
   const removeTodos = (completedTodos: Todo[]) => {
     completedTodos.forEach(todo => {
-      setLoader(true);
+      setMultiLoader(true);
       todoService
         .deleteTodo(todo.id)
         .then(() => {
@@ -30,7 +30,7 @@ export const Footer: React.FC = () => {
           }, 3000);
         })
         .finally(() => {
-          setLoader(false);
+          setMultiLoader(false);
           setTodos(todos.filter(t => t.completed === false));
           setTimeout(() => {
             if (titleField.current) {

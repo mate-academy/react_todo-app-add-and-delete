@@ -14,8 +14,8 @@ type TodosContextType = {
   setErrorMessage: React.Dispatch<React.SetStateAction<string>>;
   tempTodo: Todo | null;
   setTempTodo: React.Dispatch<React.SetStateAction<Todo | null>>;
-  loader: boolean;
-  setLoader: React.Dispatch<React.SetStateAction<boolean>>;
+  multiLoader: boolean;
+  setMultiLoader: React.Dispatch<React.SetStateAction<boolean>>;
   titleField: MutableRefObject<HTMLInputElement | null>;
 };
 
@@ -29,8 +29,8 @@ export const TodoContext = React.createContext<TodosContextType>({
   setErrorMessage: () => {},
   tempTodo: null,
   setTempTodo: () => {},
-  loader: false,
-  setLoader: () => {},
+  multiLoader: false,
+  setMultiLoader: () => {},
   titleField: {} as MutableRefObject<HTMLInputElement | null>,
 });
 
@@ -43,7 +43,7 @@ export const TodoProvider: React.FC<Props> = ({ children }) => {
   const [errorMessage, setErrorMessage] = useState('');
   const [filterValue, setFilterValue] = useState<Status>(Status.All);
   const [tempTodo, setTempTodo] = useState<Todo | null>(null);
-  const [loader, setLoader] = useState(false);
+  const [multiLoader, setMultiLoader] = useState(false);
   const titleField = useRef<HTMLInputElement | null>(null);
 
   // const handleLoadingChange = (loadingStatus: boolean) => {
@@ -60,8 +60,8 @@ export const TodoProvider: React.FC<Props> = ({ children }) => {
     setErrorMessage,
     tempTodo,
     setTempTodo,
-    loader,
-    setLoader,
+    multiLoader,
+    setMultiLoader,
     titleField,
   };
 

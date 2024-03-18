@@ -1,4 +1,4 @@
-import React, { useContext } from 'react';
+import React, { useContext, useState } from 'react';
 import cn from 'classnames';
 import { Todo } from '../../types/Todo';
 import { TodoContext } from '../../context/TodoContext';
@@ -10,11 +10,20 @@ type Props = {
 };
 
 export const TodoItem: React.FC<Props> = ({ todo }) => {
-  const { todos, setTodos, setErrorMessage, loader, setLoader, titleField } =
+  const { todos, setTodos, setErrorMessage, multiLoader, titleField } =
     useContext(TodoContext);
+  const [deletedTodoId, setDeletedTodoId] = useState(0);
+  const [localLoader, setLocalLoader] = useState(false);
 
-  const deleteTodo = () => {
-    setLoader(true);
+  const hasLoaderOnCreation = todo.id === 0;
+  const hasLoaderOnDeletion = localLoader && deletedTodoId === todo.id;
+  const hasLoaderOnCleaning = multiLoader && todo.completed;
+  const isLoading =
+    hasLoaderOnCreation || hasLoaderOnDeletion || hasLoaderOnCleaning;
+
+  const removeTodo = () => {
+    setLocalLoader(true);
+    setDeletedTodoId(todo.id);
     todoService
       .deleteTodo(todo.id)
       .then(() => {
@@ -27,12 +36,13 @@ export const TodoItem: React.FC<Props> = ({ todo }) => {
         }, 3000);
       })
       .finally(() => {
-        setLoader(false);
+        setLocalLoader(false);
         setTimeout(() => {
           if (titleField.current) {
             titleField.current.focus();
           }
         }, 0);
+        setDeletedTodoId(0);
       });
   };
 
@@ -62,7 +72,7 @@ export const TodoItem: React.FC<Props> = ({ todo }) => {
         type="button"
         className="todo__remove"
         data-cy="TodoDelete"
-        onClick={deleteTodo}
+        onClick={removeTodo}
       >
         ×
       </button>
@@ -84,7 +94,7 @@ export const TodoItem: React.FC<Props> = ({ todo }) => {
       <div
         data-cy="TodoLoader"
         className={cn('modal overlay', {
-          'is-active': todo.id === 0 || loader,
+          'is-active': isLoading,
         })}
       >
         <div className="modal-background has-background-white-ter" />
@@ -116,3 +126,11 @@ export const TodoItem: React.FC<Props> = ({ todo }) => {
 //           setErrorMessage('');
 //         }, 3000);
 //       })
+
+// .then((response: any) => {
+//   if (!response.ok) {
+//     throw new Error(Errors.DeleteError);
+//   }
+
+//   setTodos(todos.filter(task => task.id !== todo.id));
+// })

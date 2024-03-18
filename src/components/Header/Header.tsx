@@ -33,7 +33,7 @@ export const Header: React.FC = () => {
       setTempTodo({
         id: 0,
         userId: USER_ID,
-        title: 'Test Todo',
+        title: correctTitle,
         completed: false,
       });
 
