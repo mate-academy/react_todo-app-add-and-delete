@@ -13,7 +13,7 @@ export const TempTodo: React.FC = () => {
             completed: tempTodo.completed,
           })}
         >
-          <label className="todo__status-label">
+          <label aria-label="check todo" className="todo__status-label">
             <input
               data-cy="TodoStatus"
               type="checkbox"
