@@ -168,7 +168,6 @@ export const App: React.FC = () => {
             data-cy="ToggleAllButton"
           />
 
-          {/* Add a todo on form submit */}
           <form onSubmit={handleSubmit}>
             <input
               ref={inputRef}
@@ -208,7 +207,9 @@ export const App: React.FC = () => {
                 className="todo__remove"
                 data-cy="TodoDelete"
                 onClick={() => deleteSingleTodo(id)}
-              ></button>
+              >
+                x
+              </button>
               <div
                 data-cy="TodoLoader"
                 className={classNames('modal overlay', {
@@ -248,7 +249,7 @@ export const App: React.FC = () => {
                     deleteSingleTodo(tempTodo.id);
                   }}
                 >
-                  ×
+                  x
                 </button>
                 <div data-cy="TodoLoader" className="modal overlay is-active">
                   <div className="modal-background has-background-white-ter" />
