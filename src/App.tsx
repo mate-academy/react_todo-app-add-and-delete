@@ -18,9 +18,9 @@ function prepareGoods(todos: Todo[], filteringType: FilterTypes): Todo[] {
 
   switch (filteringType) {
     case FilterTypes.Active:
-      return allTodos.filter(todo => todo.completed === false);
+      return allTodos.filter(todo => !todo.completed);
     case FilterTypes.Completed:
-      return allTodos.filter(todo => todo.completed === true);
+      return allTodos.filter(todo => todo.completed);
     default:
       return allTodos;
   }
@@ -84,7 +84,7 @@ export const App: React.FC = () => {
     return <UserWarning />;
   }
 
-  function deleteSingleTodo(id: number) {
+  const deleteSingleTodo = function (id: number) {
     setdeletingId(id);
     deleteTodo(id)
       .then(() => {
@@ -97,7 +97,7 @@ export const App: React.FC = () => {
         setdeletingId(null);
         focusInput();
       });
-  }
+  };
 
   function addTodo(): Promise<void> {
     setErrorMessage('');
@@ -185,43 +185,38 @@ export const App: React.FC = () => {
 
         <section className="todoapp__main" data-cy="TodoList">
           {filteredTodos.map(({ id, title, completed }) => (
-            <div key={id}>
+            <div
+              key={id}
+              data-cy="Todo"
+              className={classNames('todo', {
+                completed,
+              })}
+            >
+              <label className="todo__status-label">
+                <input
+                  data-cy="TodoStatus"
+                  type="checkbox"
+                  className="todo__status"
+                  checked={completed}
+                />
+              </label>
+              <span data-cy="TodoTitle" className="todo__title">
+                {title.trim()}
+              </span>
+              <button
+                type="button"
+                className="todo__remove"
+                data-cy="TodoDelete"
+                onClick={() => deleteSingleTodo(id)}
+              ></button>
               <div
-                data-cy="Todo"
-                className={classNames('todo', {
-                  completed,
+                data-cy="TodoLoader"
+                className={classNames('modal overlay', {
+                  'is-active': deletingId === id,
                 })}
               >
-                <label className="todo__status-label">
-                  <input
-                    data-cy="TodoStatus"
-                    type="checkbox"
-                    className="todo__status"
-                    checked={completed}
-                  />
-                </label>
-                <span data-cy="TodoTitle" className="todo__title">
-                  {title.trim()}
-                </span>
-                <button
-                  type="button"
-                  className="todo__remove"
-                  data-cy="TodoDelete"
-                  onClick={() => {
-                    deleteSingleTodo(id);
-                  }}
-                >
-                  ×
-                </button>
-                <div
-                  data-cy="TodoLoader"
-                  className={classNames('modal overlay', {
-                    'is-active': deletingId === id,
-                  })}
-                >
-                  <div className="modal-background has-background-white-ter" />
-                  <div className="loader" />
-                </div>
+                <div className="modal-background has-background-white-ter" />
+                <div className="loader" />
               </div>
             </div>
           ))}
@@ -274,7 +269,7 @@ export const App: React.FC = () => {
               <a
                 href="#/"
                 className={classNames('filter__link', {
-                  selected: filteringType === 'all',
+                  selected: filteringType === FilterTypes.All,
                 })}
                 data-cy="FilterLinkAll"
                 onClick={() => handleFiltering(FilterTypes.All)}
@@ -285,7 +280,7 @@ export const App: React.FC = () => {
               <a
                 href="#/active"
                 className={classNames('filter__link', {
-                  selected: filteringType === 'active',
+                  selected: filteringType === FilterTypes.Active,
                 })}
                 data-cy="FilterLinkActive"
                 onClick={() => handleFiltering(FilterTypes.Active)}
@@ -296,7 +291,7 @@ export const App: React.FC = () => {
               <a
                 href="#/completed"
                 className={classNames('filter__link', {
-                  selected: filteringType === 'completed',
+                  selected: filteringType === FilterTypes.Completed,
                 })}
                 data-cy="FilterLinkCompleted"
                 onClick={() => handleFiltering(FilterTypes.Completed)}
