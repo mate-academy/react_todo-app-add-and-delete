@@ -77,7 +77,7 @@ export const TodoItem: React.FC<Props> = ({ todo, temp = false }) => {
 
   const handlerEndEditTodoOnBlur = () => {
     if (isEditing) {
-      if (newTitle !== '') {
+      if (newTitle) {
         const updatedTodos = [...todos];
         const currentTodoIndex = updatedTodos.findIndex(
           (elem: Todo) => elem.id === id,
@@ -115,7 +115,7 @@ export const TodoItem: React.FC<Props> = ({ todo, temp = false }) => {
 
   return (
     <>
-      <div
+      <li
         data-cy="Todo"
         className={cn('todo', {
           completed: completed,
@@ -175,7 +175,7 @@ export const TodoItem: React.FC<Props> = ({ todo, temp = false }) => {
           <div className="modal-background has-background-white-ter" />
           <div className="loader" />
         </div>
-      </div>
+      </li>
     </>
   );
 };

@@ -82,7 +82,7 @@ export const TodosProvider: React.FC<Props> = ({ children }) => {
   const toggleAll = () => {
     let updatesTodos = [...todos];
 
-    if (updatesTodos.some(todo => todo.completed === false)) {
+    if (updatesTodos.some(todo => !todo.completed)) {
       updatesTodos = updatesTodos.map(todo => ({
         ...todo,
         completed: true,

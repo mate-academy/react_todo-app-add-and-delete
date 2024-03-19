@@ -39,7 +39,7 @@ export const TodoApp: React.FC = () => {
     event.preventDefault();
     setErrorMessage('');
 
-    if (title.trim().length !== 0) {
+    if (title.trim().length) {
       if (titleField && titleField.current) {
         titleField.current.disabled = true;
       }
