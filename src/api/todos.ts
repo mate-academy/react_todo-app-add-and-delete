@@ -14,5 +14,3 @@ export const addTodo = (newPost: Omit<Todo, 'id'>) => {
 export const delTodo = (todoId: number) => {
   return client.delete(`/todos/${todoId}`);
 };
-
-// Add more methods here

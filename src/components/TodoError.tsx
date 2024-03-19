@@ -22,16 +22,7 @@ export const TodoError: React.FC = () => {
         className="delete"
         onClick={() => setErrorMessage('')}
       />
-      {/* show only one message at a time */}
       {errorMessage}
-      {/* <br />
-      Title should not be empty
-      <br />
-      Unable to add a todo
-      <br />
-      Unable to delete a todo
-      <br />
-      Unable to update a todo */}
     </div>
   );
 };

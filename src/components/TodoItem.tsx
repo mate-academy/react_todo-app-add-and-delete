@@ -11,6 +11,7 @@ type Props = {
 };
 
 export const TodoItem: React.FC<Props> = ({ todo, temp = false }) => {
+  const { id, title, completed } = todo;
   const context = useContext(TodosContext);
   const { todos, setTodos, titleField } = context;
   const { setError, setErrorMessage, delTodoFromState } = context;
@@ -23,7 +24,7 @@ export const TodoItem: React.FC<Props> = ({ todo, temp = false }) => {
   const handlerCompleteTodo = () => {
     const updatedTodos = [...todos];
     const currentTodoIndex = updatedTodos.findIndex((elem: Todo) => {
-      return elem.id === todo.id;
+      return elem.id === id;
     });
 
     if (currentTodoIndex !== -1) {
@@ -43,9 +44,9 @@ export const TodoItem: React.FC<Props> = ({ todo, temp = false }) => {
     setIsDeleting(true);
     setErrorMessage('');
 
-    delTodo(todo.id)
+    delTodo(id)
       .then(() => {
-        delTodoFromState(todo.id);
+        delTodoFromState(id);
       })
       .catch(() => {
         setError('Unable to delete a todo');
@@ -60,7 +61,7 @@ export const TodoItem: React.FC<Props> = ({ todo, temp = false }) => {
   };
 
   const handlerEditTodo = () => {
-    setNewTitle(todo.title);
+    setNewTitle(title);
     setIsEditing(true);
   };
 
@@ -79,7 +80,7 @@ export const TodoItem: React.FC<Props> = ({ todo, temp = false }) => {
       if (newTitle !== '') {
         const updatedTodos = [...todos];
         const currentTodoIndex = updatedTodos.findIndex(
-          (elem: Todo) => elem.id === todo.id,
+          (elem: Todo) => elem.id === id,
         );
 
         if (currentTodoIndex !== -1) {
@@ -96,9 +97,7 @@ export const TodoItem: React.FC<Props> = ({ todo, temp = false }) => {
           setTodos(updatedTodos);
         }
       } else {
-        setTodos(currentTodos =>
-          currentTodos.filter(elem => elem.id !== todo.id),
-        );
+        setTodos(currentTodos => currentTodos.filter(elem => elem.id !== id));
       }
     }
 
@@ -107,7 +106,7 @@ export const TodoItem: React.FC<Props> = ({ todo, temp = false }) => {
 
   const handlerKeyUp = (event: React.KeyboardEvent<HTMLInputElement>) => {
     if (event.key === 'Escape') {
-      setNewTitle(todo.title);
+      setNewTitle(title);
       setIsEditing(false);
     } else if (event.key === 'Enter') {
       handlerEndEditTodoOnBlur();
@@ -116,14 +115,13 @@ export const TodoItem: React.FC<Props> = ({ todo, temp = false }) => {
 
   return (
     <>
-      {/* This is a completed todo */}
       <div
         data-cy="Todo"
         className={cn('todo', {
-          completed: todo.completed,
+          completed: completed,
           editing: isEditing,
         })}
-        data-id={todo.id}
+        data-id={id}
         onDoubleClick={handlerEditTodo}
       >
         {/* eslint-disable-next-line jsx-a11y/label-has-associated-control */}
@@ -132,12 +130,11 @@ export const TodoItem: React.FC<Props> = ({ todo, temp = false }) => {
             data-cy="TodoStatus"
             type="checkbox"
             className="todo__status"
-            checked={todo.completed}
+            checked={completed}
             onChange={handlerCompleteTodo}
           />
         </label>
 
-        {/* This form is shown instead of the title and remove button */}
         {isEditing ? (
           <form>
             <input
@@ -155,7 +152,7 @@ export const TodoItem: React.FC<Props> = ({ todo, temp = false }) => {
         ) : (
           <>
             <span data-cy="TodoTitle" className="todo__title">
-              {todo.title}
+              {title}
             </span>
 
             <button
@@ -169,7 +166,6 @@ export const TodoItem: React.FC<Props> = ({ todo, temp = false }) => {
           </>
         )}
 
-        {/* overlay will cover the todo while it is being deleted or updated */}
         <div
           data-cy="TodoLoader"
           className={classNames('modal overlay', {

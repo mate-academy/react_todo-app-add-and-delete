@@ -24,11 +24,11 @@ export const TodoApp: React.FC = () => {
     return todos.filter(todo => !todo.completed).length;
   }, [todos]);
   const todosCompletedAtLeastOne = useMemo(() => {
-    return todos.some(todo => todo.completed === true);
+    return todos.some(todo => todo.completed);
   }, [todos]);
 
   const todosCompletedAll = useMemo(() => {
-    return todos.every(todo => todo.completed === true);
+    return todos.every(todo => todo.completed);
   }, [todos]);
 
   const handleTitle = (event: React.ChangeEvent<HTMLInputElement>) => {
@@ -81,7 +81,7 @@ export const TodoApp: React.FC = () => {
   return (
     <>
       <header className="todoapp__header">
-        {todos.length > 0 && (
+        {!!todos.length && (
           <button
             type="button"
             className={classNames('todoapp__toggle-all', {
@@ -109,8 +109,7 @@ export const TodoApp: React.FC = () => {
         {tempTodo && <TodoItem todo={tempTodo} temp={true} />}
       </section>
 
-      {/* Hide the footer if there are no todos */}
-      {todos.length > 0 && (
+      {!!todos.length && (
         <footer className="todoapp__footer" data-cy="Footer">
           <span className="todo-count" data-cy="TodosCounter">
             {todosUncompleteLength} items left
