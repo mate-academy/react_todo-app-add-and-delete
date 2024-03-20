@@ -1,4 +1,11 @@
-import React, { Dispatch, SetStateAction, useEffect, useState } from 'react';
+import React, {
+  Dispatch,
+  RefObject,
+  SetStateAction,
+  useEffect,
+  useRef,
+  useState,
+} from 'react';
 import { Todo } from '../types/Todo';
 import { USER_ID, deleteTodos, getTodos } from '../api/todos';
 import { UserWarning } from '../UserWarning';
@@ -19,6 +26,10 @@ type TodosContextType = {
   handleErrorMessage: () => void;
   todoDeleteButton: (userId: number, todoId: number) => void;
   handleCompleteAll: () => void;
+  tempTodo: Todo | null;
+  setTempTodo: Dispatch<SetStateAction<Todo | null>>;
+  setLoading: Dispatch<SetStateAction<boolean>>;
+  titleField: RefObject<HTMLInputElement> | null;
 };
 
 const initialTodosContextValue: TodosContextType = {
@@ -36,6 +47,10 @@ const initialTodosContextValue: TodosContextType = {
   handleErrorMessage: () => {},
   todoDeleteButton: () => {},
   handleCompleteAll: () => {},
+  tempTodo: null,
+  setTempTodo: () => {},
+  setLoading: () => {},
+  titleField: null,
 };
 
 export const TodosContext = React.createContext<TodosContextType>(
@@ -52,6 +67,8 @@ export const TodoContextProvider: React.FC<PropsContext> = ({ children }) => {
   const [errorMessage, setErrorMessage] = useState('');
   const [filtred, setFiltred] = useState<Status>(Status.All);
   const [loading, setLoading] = useState<boolean>(false);
+  const [tempTodo, setTempTodo] = useState<Todo | null>(null);
+  const titleField = useRef<HTMLInputElement>(null);
 
   const newTodo: Todo[] = filterTodo(todos, filtred);
 
@@ -63,17 +80,30 @@ export const TodoContextProvider: React.FC<PropsContext> = ({ children }) => {
         setLoading(false);
       })
       .catch(() => {
-        setErrorMessage(`Unable to load todos`);
+        setErrorMessage('Unable to load todos');
         setLoading(false);
+        titleField.current?.focus();
       });
   }
 
   const todoDeleteButton = (userId: number, todoId: number) => {
+    const deletedTodo = todos.find(todo => todo.id === todoId);
+
     deleteTodos(userId, todoId)
       .then(() => {
+        if (deletedTodo) {
+          setTempTodo(deletedTodo);
+        }
+
         setTodos(prevTodos => prevTodos.filter(todo => todo.id !== todoId));
       })
-      .catch(() => {});
+      .catch(() => {})
+      .finally(() => {
+        setTimeout(() => {
+          titleField.current?.focus();
+          setTempTodo(null);
+        }, 500);
+      });
   };
 
   useEffect(() => {
@@ -138,6 +168,10 @@ export const TodoContextProvider: React.FC<PropsContext> = ({ children }) => {
         handleErrorMessage,
         todoDeleteButton,
         handleCompleteAll,
+        tempTodo,
+        setTempTodo,
+        setLoading,
+        titleField,
       }}
     >
       {children}

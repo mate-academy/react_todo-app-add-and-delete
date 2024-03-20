@@ -41,7 +41,6 @@ export const TodoItem: React.FC<PropsItem> = ({ todo }) => {
       >
         ×
       </button>
-
       <div data-cy="TodoLoader" className="modal overlay">
         <div
           className={classNames('modal-background has-background-white-ter', {

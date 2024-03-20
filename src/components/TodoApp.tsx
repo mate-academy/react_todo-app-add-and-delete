@@ -34,7 +34,7 @@ export const TodoApp: React.FC = () => {
           className="delete"
           onClick={handleErrorMessage}
         />
-        {errorMessage && <div>{errorMessage}</div>}
+        <div>{errorMessage}</div>
       </div>
     </div>
   );

@@ -1,11 +1,10 @@
 /* eslint-disable jsx-a11y/control-has-associated-label */
-import React, { useContext, useEffect, useRef } from 'react';
+import React, { useContext, useEffect, useState } from 'react';
 import classNames from 'classnames';
 import { TodosContext } from './Todos-Context';
 import { USER_ID, addTodos } from '../api/todos';
 
 export const TodoHeader: React.FC = () => {
-  // eslint-disable-next-line max-len, prettier/prettier
   const {
     query,
     setQuery,
@@ -13,19 +12,33 @@ export const TodoHeader: React.FC = () => {
     todos,
     setTodos,
     handleCompleteAll,
+    loading,
+    setTempTodo,
+    titleField,
+    tempTodo,
   } = useContext(TodosContext);
-  // const todoComplet = todos.some(todo => todo.completed);
+  const [isDisabled, setIsDisabled] = useState(false);
+  const [isSubmitting, setIsSubmitting] = useState(false);
 
   const handlerInput = (event: React.ChangeEvent<HTMLInputElement>) => {
     setQuery(event.target.value);
     event.preventDefault();
   };
 
+  useEffect(() => {
+    if (titleField?.current) {
+      titleField.current.focus();
+    }
+  }, [query, titleField, tempTodo]);
+
   const handleSubmit = (event: React.ChangeEvent<HTMLFormElement>) => {
     event.preventDefault();
     if (!query.trim()) {
       setErrorMessage('Title should not be empty');
     } else {
+      setIsSubmitting(true);
+      setIsDisabled(true);
+
       const newTodoData = {
         id: 0,
         userId: USER_ID,
@@ -33,24 +46,24 @@ export const TodoHeader: React.FC = () => {
         completed: false,
       };
 
+      setTempTodo(newTodoData);
       addTodos(newTodoData)
         .then(response => {
           setTodos([...todos, response]);
           setQuery('');
         })
         .catch(() => {
-          setErrorMessage(`Unable to load todos`);
+          setErrorMessage('Unable to add a todo');
+          titleField?.current?.focus();
+        })
+        .finally(() => {
+          setTempTodo(null);
+          setIsSubmitting(false);
+          setIsDisabled(false);
+          titleField?.current?.focus();
         });
     }
   };
-
-  const titleField = useRef<HTMLInputElement>(null);
-
-  useEffect(() => {
-    if (titleField.current) {
-      titleField.current.focus();
-    }
-  }, [titleField]);
 
   return (
     <header className="todoapp__header">
@@ -72,7 +85,21 @@ export const TodoHeader: React.FC = () => {
           placeholder="What needs to be done?"
           onChange={handlerInput}
           value={query}
+          disabled={isDisabled}
         />
+        {isSubmitting && (
+          <div data-cy="TodoLoader" className="modal overlay">
+            <div
+              className={classNames(
+                'modal-background has-background-white-ter',
+                {
+                  'is-active': loading,
+                },
+              )}
+            />
+            <div className="loader" />
+          </div>
+        )}
       </form>
     </header>
   );

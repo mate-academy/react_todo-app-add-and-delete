@@ -19,7 +19,7 @@ export const TodoFooter: React.FC = () => {
   return (
     <footer className="todoapp__footer" data-cy="Footer">
       <span className="todo-count" data-cy="TodosCounter">
-        {`${uncompletedTodos.length} ${uncompletedTodos.length === 1 ? 'item' : 'items'} left`}
+        {`${uncompletedTodos.length} ${uncompletedTodos.length === 1 ? 'items' : 'items'} left`}
       </span>
 
       <nav className="filter" data-cy="Filter">
