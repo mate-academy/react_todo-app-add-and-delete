@@ -14,7 +14,7 @@ const Footer: React.FC = () => {
     filter,
     setFilter,
     setIsAllDeleted,
-    handleError,
+    handleError
   } = useTodos();
 
   const isClearButtonVisible = todos.some(todo => todo.completed);
