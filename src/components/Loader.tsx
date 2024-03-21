@@ -1,4 +1,4 @@
-// eslint-disable jsx-a11y/label-has-associated-control
+/* eslint-disable jsx-a11y/control-has-associated-label */
 import React, { useContext } from 'react';
 import '../styles/Loader.scss';
 import classNames from 'classnames';
