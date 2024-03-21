@@ -13,14 +13,14 @@ export const App: React.FC = () => {
   return (
     <section className="section container">
       <p className="title is-4">
-        Copy all you need from the prev task:
+        Copy all you need from the prev task: tnjnrigrigk
         <br />
         <a href="https://github.com/mate-academy/react_todo-app-loading-todos#react-todo-app-load-todos">
-          React Todo App - Load Todos
+          React Todo App - Load Todos jtrirntirn
         </a>
       </p>
 
-      <p className="subtitle">Styles are already copied</p>
+      <p className="subtitle">Styles are already copied jnrtijnijni5</p>
     </section>
   );
 };
