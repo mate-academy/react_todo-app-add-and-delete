@@ -9,7 +9,7 @@ interface PropsItem {
 }
 export const TodoItem: React.FC<PropsItem> = ({ todo }) => {
   // eslint-disable-next-line max-len, prettier/prettier
-  const { loading, handleCompleted, todoDeleteButton } = useContext(TodosContext);
+  const { loading, handleCompleted, todoDeleteButton, deletingTodos } = useContext(TodosContext);
   const { title, completed, id } = todo;
 
   return (
@@ -41,7 +41,12 @@ export const TodoItem: React.FC<PropsItem> = ({ todo }) => {
       >
         ×
       </button>
-      <div data-cy="TodoLoader" className="modal overlay">
+      <div
+        data-cy="TodoLoader"
+        className={classNames('modal overlay', {
+          'is-active': deletingTodos.includes(id),
+        })}
+      >
         <div
           className={classNames('modal-background has-background-white-ter', {
             'is-active': loading,

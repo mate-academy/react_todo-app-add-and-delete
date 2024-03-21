@@ -30,6 +30,7 @@ type TodosContextType = {
   setTempTodo: Dispatch<SetStateAction<Todo | null>>;
   setLoading: Dispatch<SetStateAction<boolean>>;
   titleField: RefObject<HTMLInputElement> | null;
+  deletingTodos: number[];
 };
 
 const initialTodosContextValue: TodosContextType = {
@@ -51,6 +52,7 @@ const initialTodosContextValue: TodosContextType = {
   setTempTodo: () => {},
   setLoading: () => {},
   titleField: null,
+  deletingTodos: [],
 };
 
 export const TodosContext = React.createContext<TodosContextType>(
@@ -68,6 +70,7 @@ export const TodoContextProvider: React.FC<PropsContext> = ({ children }) => {
   const [filtred, setFiltred] = useState<Status>(Status.All);
   const [loading, setLoading] = useState<boolean>(false);
   const [tempTodo, setTempTodo] = useState<Todo | null>(null);
+  const [deletingTodos, setDeletingTodos] = useState<number[]>([]);
   const titleField = useRef<HTMLInputElement>(null);
 
   const newTodo: Todo[] = filterTodo(todos, filtred);
@@ -87,22 +90,15 @@ export const TodoContextProvider: React.FC<PropsContext> = ({ children }) => {
   }
 
   const todoDeleteButton = (userId: number, todoId: number) => {
-    const deletedTodo = todos.find(todo => todo.id === todoId);
-
+    setDeletingTodos([...deletingTodos, todoId]);
     deleteTodos(userId, todoId)
       .then(() => {
-        if (deletedTodo) {
-          setTempTodo(deletedTodo);
-        }
-
         setTodos(prevTodos => prevTodos.filter(todo => todo.id !== todoId));
       })
       .catch(() => {})
       .finally(() => {
-        setTimeout(() => {
-          titleField.current?.focus();
-          setTempTodo(null);
-        }, 500);
+        setDeletingTodos(deletingTodos.filter(id => id !== todoId));
+        titleField.current?.focus();
       });
   };
 
@@ -172,6 +168,7 @@ export const TodoContextProvider: React.FC<PropsContext> = ({ children }) => {
         setTempTodo,
         setLoading,
         titleField,
+        deletingTodos,
       }}
     >
       {children}
