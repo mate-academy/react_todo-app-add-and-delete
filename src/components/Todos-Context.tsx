@@ -31,6 +31,7 @@ type TodosContextType = {
   setLoading: Dispatch<SetStateAction<boolean>>;
   titleField: RefObject<HTMLInputElement> | null;
   deletingTodos: number[];
+  setDeletingTodos: Dispatch<SetStateAction<number[]>>;
 };
 
 const initialTodosContextValue: TodosContextType = {
@@ -53,6 +54,7 @@ const initialTodosContextValue: TodosContextType = {
   setLoading: () => {},
   titleField: null,
   deletingTodos: [],
+  setDeletingTodos: () => {},
 };
 
 export const TodosContext = React.createContext<TodosContextType>(
@@ -85,7 +87,6 @@ export const TodoContextProvider: React.FC<PropsContext> = ({ children }) => {
       .catch(() => {
         setErrorMessage('Unable to load todos');
         setLoading(false);
-        titleField.current?.focus();
       });
   }
 
@@ -95,10 +96,11 @@ export const TodoContextProvider: React.FC<PropsContext> = ({ children }) => {
       .then(() => {
         setTodos(prevTodos => prevTodos.filter(todo => todo.id !== todoId));
       })
-      .catch(() => {})
+      .catch(() => {
+        setErrorMessage('Unable to delete a todo');
+      })
       .finally(() => {
         setDeletingTodos(deletingTodos.filter(id => id !== todoId));
-        titleField.current?.focus();
       });
   };
 
@@ -169,6 +171,7 @@ export const TodoContextProvider: React.FC<PropsContext> = ({ children }) => {
         setLoading,
         titleField,
         deletingTodos,
+        setDeletingTodos,
       }}
     >
       {children}

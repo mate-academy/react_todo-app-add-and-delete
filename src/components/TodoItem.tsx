@@ -1,3 +1,4 @@
+// eslint-disable jsx-a11y/label-has-associated-control
 import React, { useContext } from 'react';
 import classNames from 'classnames';
 import { Todo } from '../types/Todo';

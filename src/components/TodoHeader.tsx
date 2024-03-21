@@ -16,6 +16,7 @@ export const TodoHeader: React.FC = () => {
     setTempTodo,
     titleField,
     tempTodo,
+    deletingTodos,
   } = useContext(TodosContext);
   const [isDisabled, setIsDisabled] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
@@ -29,7 +30,7 @@ export const TodoHeader: React.FC = () => {
     if (titleField?.current) {
       titleField.current.focus();
     }
-  }, [query, titleField, tempTodo]);
+  }, [query, titleField, tempTodo, deletingTodos]);
 
   const handleSubmit = (event: React.ChangeEvent<HTMLFormElement>) => {
     event.preventDefault();

@@ -2,9 +2,17 @@ import React, { useContext } from 'react';
 import classNames from 'classnames';
 import { TodosContext } from './Todos-Context';
 import { Status } from '../utils/TodosFilter';
+import { deleteTodos } from '../api/todos';
 
 export const TodoFooter: React.FC = () => {
-  const { setFiltred, todos, setTodos, filtred } = useContext(TodosContext);
+  const {
+    setFiltred,
+    todos,
+    setTodos,
+    filtred,
+    setDeletingTodos,
+    setErrorMessage,
+  } = useContext(TodosContext);
   const uncompletedTodos = todos.filter(todo => !todo.completed);
   const findCompleted = todos.some(todo => todo.completed);
 
@@ -13,13 +21,26 @@ export const TodoFooter: React.FC = () => {
   };
 
   const handleClear = () => {
-    setTodos(uncompletedTodos);
+    todos.forEach(todo => {
+      if (todo.completed) {
+        deleteTodos(todo.userId, todo.id)
+          .then(() => {
+            setTodos(prevTodos => prevTodos.filter(t => t.id !== todo.id));
+          })
+          .catch(() => {
+            setErrorMessage('Unable to delete a todo');
+          })
+          .finally(() => {
+            setDeletingTodos([]);
+          });
+      }
+    });
   };
 
   return (
     <footer className="todoapp__footer" data-cy="Footer">
       <span className="todo-count" data-cy="TodosCounter">
-        {`${uncompletedTodos.length} ${uncompletedTodos.length === 1 ? 'items' : 'items'} left`}
+        {`${uncompletedTodos.length} items left`}
       </span>
 
       <nav className="filter" data-cy="Filter">
