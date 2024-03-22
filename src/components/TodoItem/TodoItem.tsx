@@ -36,6 +36,8 @@ export const TodoItem: React.FC<Props> = ({ todo }) => {
   const isItemDeleting = (isLoading && todo.id === currentId)
     || (isDeletingAllCompleted && todo.completed);
 
+  const isTemptTodo = (todoIdValue: number) => todoIdValue === 0;
+
   return (
     <div
       data-cy="Todo"
@@ -68,7 +70,7 @@ export const TodoItem: React.FC<Props> = ({ todo }) => {
       <div
         data-cy="TodoLoader"
         className={cn('modal overlay', {
-          'is-active': isItemDeleting,
+          'is-active': isItemDeleting || isTemptTodo(todo.id),
         })}
       >
         <div className="modal-background has-background-white-ter" />

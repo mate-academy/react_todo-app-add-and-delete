@@ -8,7 +8,7 @@ import { ErrorNotification } from './components/ErrorNotification';
 import { useTodos } from './context/TodosContext';
 
 export const App: React.FC = () => {
-  const { todos } = useTodos();
+  const { todos, filterStatus, tempTodo } = useTodos();
 
   if (!USER_ID) {
     return <UserWarning />;
@@ -21,7 +21,11 @@ export const App: React.FC = () => {
       <div className="todoapp__content">
         <Header />
 
-        <TodoList />
+        <TodoList
+          todos={todos}
+          filterStatus={filterStatus}
+          tempTodo={tempTodo}
+        />
 
         {todos.length > 0 && <Footer />}
       </div>

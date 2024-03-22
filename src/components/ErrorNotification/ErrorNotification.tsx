@@ -2,7 +2,7 @@ import cn from 'classnames';
 import { useTodos } from '../../context/TodosContext';
 
 export const ErrorNotification: React.FC = () => {
-  const { todosError, handleRemoveError } = useTodos();
+  const { todosError, dispatch } = useTodos();
 
   return (
     <div
@@ -16,7 +16,7 @@ export const ErrorNotification: React.FC = () => {
         data-cy="HideErrorButton"
         type="button"
         className="delete"
-        onClick={handleRemoveError}
+        onClick={() => dispatch({ type: 'todos/setError', payload: '' })}
       />
       {todosError}
     </div>

@@ -1,17 +1,25 @@
-import { useTodos } from '../../context/TodosContext';
-import { TempTodo } from '../TempTodo';
+import { Status } from '../../types/Status';
+import { Todo } from '../../types/Todo';
 import { TodoItem } from '../TodoItem';
 
-export const TodoList: React.FC = () => {
-  const { todos, filterStatus } = useTodos();
+interface Props {
+  todos: Todo[];
+  tempTodo: Todo | null;
+  filterStatus: string;
+}
 
+export const TodoList: React.FC<Props> = ({
+  todos,
+  tempTodo,
+  filterStatus,
+}) => {
   const filteredTodos = todos.filter(todo => {
     switch (filterStatus) {
-      case 'Active':
+      case Status.Active:
         return !todo.completed;
-      case 'Completed':
+      case Status.Completed:
         return todo.completed;
-      case 'All':
+      case Status.All:
       default:
         return todo;
     }
@@ -22,7 +30,7 @@ export const TodoList: React.FC = () => {
       {filteredTodos.map(todo => (
         <TodoItem todo={todo} key={todo.id} />
       ))}
-      <TempTodo />
+      {tempTodo && <TodoItem todo={tempTodo} />}
     </section>
   );
 };

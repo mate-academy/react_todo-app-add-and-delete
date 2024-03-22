@@ -1,25 +1,21 @@
 import { createContext, useContext, useEffect, useReducer } from 'react';
 import { Todo } from '../types/Todo';
-import { Status } from '../types/Status';
 import { getTodos } from '../api/todos';
 import { wait } from '../utils/fetchClient';
-
-type FilterStatus = keyof typeof Status;
 
 type State = {
   todos: Todo[];
   tempTodo: Todo | null;
   isLoading: boolean;
   todosError: string;
-  filterStatus: FilterStatus;
+  filterStatus: string;
   isDeletingAllCompleted: boolean;
   addTodo: (todo: Todo) => void;
   handleDeleteTodo: (id: number) => void;
   setTempTodo: (todo: Todo | null) => void;
   toggleAllTodo: () => void;
-  handleFilterTodo: (status: FilterStatus) => void;
+  handleFilterTodo: (status: string) => void;
   handleSetError: (errorMessage: string) => void;
-  handleRemoveError: () => void;
 };
 
 const initialState: State = {
@@ -27,7 +23,7 @@ const initialState: State = {
   tempTodo: null,
   isLoading: false,
   todosError: '',
-  filterStatus: 'All',
+  filterStatus: '#/',
   isDeletingAllCompleted: false,
   addTodo: () => {},
   handleDeleteTodo: () => {},
@@ -35,7 +31,6 @@ const initialState: State = {
   toggleAllTodo: () => {},
   handleFilterTodo: () => {},
   handleSetError: () => {},
-  handleRemoveError: () => {},
 };
 
 type TodosContextType = State & {
@@ -52,7 +47,7 @@ type Action =
   | { type: 'todos/delete'; payload: number }
   | { type: 'todos/loaded'; payload: Todo[] }
   | { type: 'todos/setTempTodo'; payload: Todo | null }
-  | { type: 'todos/setFilterStatus'; payload: FilterStatus }
+  | { type: 'todos/setFilterStatus'; payload: string }
   | { type: 'rejected'; payload: string }
   | { type: 'todos/removeError' }
   | { type: 'todos/toggleAll' }
@@ -131,10 +126,6 @@ const TodosProvider: React.FC<Props> = ({ children }) => {
     tempTodo,
   } = state;
 
-  const handleRemoveError = () => {
-    dispatch({ type: 'todos/removeError' });
-  };
-
   useEffect(() => {
     const fetchTodos = async () => {
       dispatch({ type: 'loading', payload: true });
@@ -148,7 +139,9 @@ const TodosProvider: React.FC<Props> = ({ children }) => {
           payload: 'Unable to load todos',
         });
 
-        wait(3000).then(handleRemoveError);
+        wait(3000).then(() =>
+          dispatch({ type: 'todos/setError', payload: '' }),
+        );
       } finally {
         dispatch({ type: 'loading', payload: false });
       }
@@ -169,7 +162,7 @@ const TodosProvider: React.FC<Props> = ({ children }) => {
     dispatch({ type: 'todos/setTempTodo', payload: todo });
   };
 
-  const handleFilterTodo = (status: FilterStatus) => {
+  const handleFilterTodo = (status: string) => {
     dispatch({ type: 'todos/setFilterStatus', payload: status });
   };
 
@@ -180,7 +173,7 @@ const TodosProvider: React.FC<Props> = ({ children }) => {
   const handleSetError = (errorMessage: string) => {
     dispatch({ type: 'todos/setError', payload: errorMessage });
 
-    wait(3000).then(handleRemoveError);
+    wait(3000).then(() => dispatch({ type: 'todos/setError', payload: '' }));
   };
 
   return (
@@ -195,7 +188,6 @@ const TodosProvider: React.FC<Props> = ({ children }) => {
         isDeletingAllCompleted,
         setTempTodo,
         handleDeleteTodo,
-        handleRemoveError,
         handleFilterTodo,
         toggleAllTodo,
         handleSetError,
@@ -210,7 +202,7 @@ const TodosProvider: React.FC<Props> = ({ children }) => {
 const useTodos = () => {
   const context = useContext(TodosContext);
 
-  if (context === undefined) {
+  if (!context) {
     throw new Error('TodosContext was used outside of the PostProvider');
   }
 

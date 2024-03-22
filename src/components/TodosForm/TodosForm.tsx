@@ -1,6 +1,6 @@
 import { useEffect, useRef, useState } from 'react';
 import { useTodos } from '../../context/TodosContext';
-import { postTodos } from '../../api/todos';
+import { USER_ID, postTodos } from '../../api/todos';
 import { Todo, TodoWithoutId } from '../../types/Todo';
 
 export const TodosForm: React.FC = () => {
@@ -29,7 +29,7 @@ export const TodosForm: React.FC = () => {
       handleSetError('Title should not be empty');
     } else {
       const newTodo: TodoWithoutId = {
-        userId: 276,
+        userId: USER_ID,
         title: title.trim(),
         completed: false,
       };
@@ -43,7 +43,7 @@ export const TodosForm: React.FC = () => {
       dispatch({ type: 'loading', payload: true });
 
       try {
-        const response = (await postTodos(newTodo)) as Todo;
+        const response = await postTodos(newTodo);
 
         addTodo(response);
         setTitle('');

@@ -9,11 +9,11 @@ export const TodoFilter: React.FC = () => {
     <nav className="filter" data-cy="Filter">
       {Object.entries(Status).map(([key, value]) => (
         <a
-          onClick={() => handleFilterTodo(key as keyof typeof Status)}
+          onClick={() => handleFilterTodo(value)}
           href={value}
           key={key}
           className={cn('filter__link', {
-            selected: filterStatus === key,
+            selected: filterStatus === value,
           })}
           data-cy={`FilterLink${key}`}
         >
