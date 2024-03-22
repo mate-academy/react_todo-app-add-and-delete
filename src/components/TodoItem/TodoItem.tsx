@@ -3,6 +3,7 @@ import classNames from 'classnames';
 import { Todo } from '../../types/Todo';
 import { TodoContext } from '../Store/TodoContext';
 import { deleteTodos, updateTodos } from '../../api/todos';
+import { Error } from '../Error/ErrorMesage';
 
 type Props = {
   todo: Todo;
@@ -28,7 +29,7 @@ export const TodoItem: React.FC<Props> = ({ todo, isLoading }) => {
       await deleteTodos(todoId);
       setTodos(currentTodos => currentTodos.filter(post => post.id !== todoId));
     } catch (error) {
-      setErrorMessage('Unable to delete a todo');
+      setErrorMessage(Error.delete);
     }
   };
 

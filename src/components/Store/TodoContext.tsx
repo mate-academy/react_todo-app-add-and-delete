@@ -2,6 +2,7 @@ import React, { useEffect, useState } from 'react';
 import { Todo } from '../../types/Todo';
 import { Status } from '../../types/Status';
 import { getTodos } from '../../api/todos';
+import { Error } from '../Error/ErrorMesage';
 
 type TodosContextType = {
   todos: Todo[];
@@ -50,7 +51,7 @@ export const TodoProvide: React.FC<Props> = ({ children }) => {
     getTodos()
       .then(setTodos)
       .catch(() => {
-        setErrorMessage('Unable to load todos');
+        setErrorMessage(Error.loader);
         setTimeout(() => {
           setErrorMessage('');
         }, 3000);

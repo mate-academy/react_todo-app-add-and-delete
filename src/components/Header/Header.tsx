@@ -3,6 +3,7 @@ import React, { useContext, useEffect, useRef, useState } from 'react';
 import { TodoContext } from '../Store/TodoContext';
 import { Todo } from '../../types/Todo';
 import { addTodos, updateTodos } from '../../api/todos';
+import { Error } from '../Error/ErrorMesage';
 
 export const Header: React.FC = () => {
   const {
@@ -23,7 +24,7 @@ export const Header: React.FC = () => {
         setTodos(currentTodo => [...currentTodo, newTodo]);
       })
       .catch(() => {
-        setErrorMessage('Unable to add a todo');
+        setErrorMessage(Error.add);
       })
       .finally(() => {
         setTempTodo(null);
@@ -45,7 +46,7 @@ export const Header: React.FC = () => {
   const handleAddTodo = (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
     if (title.length < 1 || title.trim() === '') {
-      setErrorMessage('Title should not be empty');
+      setErrorMessage(Error.title);
     } else {
       creatNewTodo();
     }

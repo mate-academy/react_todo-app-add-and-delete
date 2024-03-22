@@ -2,6 +2,7 @@ import React, { useContext } from 'react';
 import { Filter } from '../Filter/Filter';
 import { TodoContext } from '../Store/TodoContext';
 import { deleteTodos } from '../../api/todos';
+import { Error } from '../Error/ErrorMesage';
 
 export const Footer: React.FC = () => {
   const { todos, setTodos, setErrorMessage } = useContext(TodoContext);
@@ -21,10 +22,8 @@ export const Footer: React.FC = () => {
           currentTodos.filter(post => post.id !== todoId),
         );
       })
-      .catch(error => {
-        setErrorMessage('Unable to delete a todo');
-        setTodos(todos);
-        throw error;
+      .catch(() => {
+        setErrorMessage(Error.delete);
       })
       .finally(() => {
         if (todoInput) {
@@ -34,8 +33,9 @@ export const Footer: React.FC = () => {
   };
 
   const handleTodoCleaning = () => {
-    todos.map(todo => todo.completed && handleDelete(todo.id));
-    setTodos(todos.filter(todo => !todo.completed));
+    const completedTodos = todos.filter(todo => todo.completed);
+
+    completedTodos.forEach(todo => handleDelete(todo.id));
   };
 
   return (
