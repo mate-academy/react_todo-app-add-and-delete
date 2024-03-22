@@ -43,7 +43,7 @@ export const TodoItem: React.FC<Props> = ({ todo }) => {
         completed: todo.completed,
       })}
     >
-      <label className="todo__status-label">
+      <label className="todo__status-label" aria-label="Check todo">
         <input
           data-cy="TodoStatus"
           type="checkbox"
