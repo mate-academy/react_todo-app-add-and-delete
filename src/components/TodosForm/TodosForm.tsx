@@ -28,17 +28,15 @@ export const TodosForm: React.FC = () => {
     if (isEmptyTodo) {
       handleSetError('Title should not be empty');
     } else {
-      const tempTodo: Todo = {
-        id: 0,
+      const newTodo: TodoWithoutId = {
         userId: 276,
         title: title.trim(),
         completed: false,
       };
 
-      const newTodo: TodoWithoutId = {
-        userId: 276,
-        title: title.trim(),
-        completed: false,
+      const tempTodo: Todo = {
+        id: 0,
+        ...newTodo,
       };
 
       setTempTodo(tempTodo);
