@@ -1,11 +1,11 @@
-import { deleteTodos } from '../../api/todos';
+import { deleteTodo } from '../../api/todos';
 import { useTodos } from '../../context/TodosContext';
 import { TodoFilter } from '../TodoFilter';
 
 export const Footer: React.FC = () => {
   const { todos, dispatch } = useTodos();
 
-  const uncompletedTodos = todos.filter(todo => !todo.completed).length;
+  const unCompletedTodos = todos.filter(todo => !todo.completed).length;
   const isCompletedTodo = todos.some(todo => todo.completed);
 
   const { handleDeleteTodo, handleSetError } = useTodos();
@@ -13,7 +13,7 @@ export const Footer: React.FC = () => {
   const handleDeletingTodo = async (todoId: number) => {
     dispatch({ type: 'todos/setIsDeletingAllCompleted', payload: true });
     try {
-      await deleteTodos(todoId);
+      await deleteTodo(todoId);
 
       handleDeleteTodo(todoId);
     } catch {
@@ -34,7 +34,7 @@ export const Footer: React.FC = () => {
   return (
     <footer className="todoapp__footer" data-cy="Footer">
       <span className="todo-count" data-cy="TodosCounter">
-        {uncompletedTodos} items left
+        {unCompletedTodos} items left
       </span>
 
       <TodoFilter />

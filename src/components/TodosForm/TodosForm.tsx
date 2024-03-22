@@ -14,7 +14,7 @@ export const TodosForm: React.FC = () => {
     dispatch,
     isDeletingAllCompleted,
   } = useTodos();
-  const isEmptyTodo = title.trim().length === 0;
+  const isEmptyTodo = !title.trim().length;
 
   useEffect(() => {
     if (inputRef.current) {

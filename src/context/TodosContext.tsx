@@ -98,22 +98,15 @@ function reducer(state: State, action: Action) {
         ...state,
         tempTodo: action.payload,
       };
-    // Cant't Fix because of prettier
-    /* eslint-disable */
     case 'todos/toggleAll':
       return {
         ...state,
-        todos: state.todos.every(todo => todo.completed)
-          ? state.todos.map(todo => ({
-              ...todo,
-              completed: false,
-            }))
-          : state.todos.map(todo => ({
-              ...todo,
-              completed: true,
-            })),
+        todos: state.todos.map(todo => ({
+          ...todo,
+          completed: !state.todos.every(todoItem => todoItem.completed),
+        })),
       };
-    /* eslint-disable */
+
     case 'todos/setError':
       return { ...state, todosError: action.payload };
 

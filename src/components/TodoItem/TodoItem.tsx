@@ -2,7 +2,7 @@ import cn from 'classnames';
 import { useState } from 'react';
 import { Todo } from '../../types/Todo';
 import { useTodos } from '../../context/TodosContext';
-import { deleteTodos } from '../../api/todos';
+import { deleteTodo } from '../../api/todos';
 
 type Props = {
   todo: Todo;
@@ -21,7 +21,7 @@ export const TodoItem: React.FC<Props> = ({ todo }) => {
     dispatch({ type: 'loading', payload: true });
     setCurrentId(todoId);
     try {
-      await deleteTodos(todoId);
+      await deleteTodo(todoId);
 
       handleDeleteTodo(todoId);
     } catch {
@@ -32,12 +32,9 @@ export const TodoItem: React.FC<Props> = ({ todo }) => {
     }
   };
 
-  // Cant't Fix because of prettier
-  /* eslint-disable */
-  const isItemDeleting =
-    (isLoading && todo.id === currentId) ||
-    (isDeletingAllCompleted && todo.completed);
-  /* eslint-disable */
+  // prettier-ignore
+  const isItemDeleting = (isLoading && todo.id === currentId)
+    || (isDeletingAllCompleted && todo.completed);
 
   return (
     <div
