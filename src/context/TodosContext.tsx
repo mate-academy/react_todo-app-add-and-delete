@@ -2,6 +2,7 @@ import { createContext, useContext, useEffect, useReducer } from 'react';
 import { Todo } from '../types/Todo';
 import { getTodos } from '../api/todos';
 import { wait } from '../utils/fetchClient';
+import { Status } from '../types/Status';
 
 type State = {
   todos: Todo[];
@@ -23,7 +24,7 @@ const initialState: State = {
   tempTodo: null,
   isLoading: false,
   todosError: '',
-  filterStatus: '#/',
+  filterStatus: Status.All,
   isDeletingAllCompleted: false,
   addTodo: () => {},
   handleDeleteTodo: () => {},
@@ -49,7 +50,6 @@ type Action =
   | { type: 'todos/setTempTodo'; payload: Todo | null }
   | { type: 'todos/setFilterStatus'; payload: string }
   | { type: 'rejected'; payload: string }
-  | { type: 'todos/removeError' }
   | { type: 'todos/toggleAll' }
   | { type: 'todos/setError'; payload: string }
   | { type: 'loading'; payload: boolean }
@@ -104,9 +104,6 @@ function reducer(state: State, action: Action) {
 
     case 'todos/setError':
       return { ...state, todosError: action.payload };
-
-    case 'todos/removeError':
-      return { ...state, todosError: '' };
 
     case 'rejected':
       return { ...state, isLoading: false, todosError: action.payload };
