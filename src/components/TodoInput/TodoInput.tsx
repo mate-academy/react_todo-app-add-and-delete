@@ -7,7 +7,6 @@ const TodoInput: React.FC = () => {
   const [isAllCompleted, setIsAllCompleted] = React.useState(false);
 
   const {
-    todos,
     setTodos,
     setError,
     isLoading,
@@ -76,7 +75,9 @@ const TodoInput: React.FC = () => {
   };
 
   const handleToggleAll = () => {
-    setTodos(todos.map(todo => ({ ...todo, completed: !isAllCompleted })));
+    setTodos(pervTodos =>
+      pervTodos.map(todo => ({ ...todo, completed: !isAllCompleted })),
+    );
     setIsAllCompleted(!isAllCompleted);
   };
 

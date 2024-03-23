@@ -1,7 +1,6 @@
-import cn from 'classnames';
 import React from 'react';
+import cn from 'classnames';
 
-import { deleteTodo } from '../../api/todos';
 import { useTodos } from '../../hooks/useTodos';
 import { Todo } from '../../types/Todo';
 
@@ -12,14 +11,7 @@ type Props = {
 const TodoItem: React.FC<Props> = ({ todo }) => {
   const [selectedTodoId, setSelectedTodoId] = React.useState<number>(0);
 
-  const {
-    todos,
-    setTodos,
-    isLoading,
-    setIsLoading,
-    handleError,
-    isAllDeleted,
-  } = useTodos();
+  const { todos, setTodos, isLoading, isAllDeleted, onDeleteTodo } = useTodos();
 
   const handleCheckbox = () => {
     setTodos(
@@ -32,24 +24,13 @@ const TodoItem: React.FC<Props> = ({ todo }) => {
   };
 
   const handleDeleteTodo = () => {
-    setIsLoading(true);
     setSelectedTodoId(todo.id);
-
-    deleteTodo(todo.id)
-      .then(() => {
-        setTodos(todos.filter(prevTodo => prevTodo.id !== todo.id));
-      })
-      .catch(() => {
-        handleError('Unable to delete a todo');
-      })
-      .finally(() => {
-        setIsLoading(false);
-      });
+    onDeleteTodo(todo.id);
   };
 
-  const firstCondition = isLoading && todo.id === selectedTodoId;
-  const secondCondition = todo.completed && isAllDeleted;
-  const isLoaderActive = firstCondition || secondCondition;
+  // eslint-disable-next-line prettier/prettier
+  const isLoaderActive = (isLoading && todo.id === selectedTodoId)
+  || (todo.completed && isAllDeleted);
 
   return (
     <div
@@ -58,7 +39,7 @@ const TodoItem: React.FC<Props> = ({ todo }) => {
         completed: todo.completed,
       })}
     >
-      <label className="todo__status-label">
+      <label className="todo__status-label" aria-label="check todo">
         <input
           data-cy="TodoStatus"
           type="checkbox"
@@ -81,11 +62,10 @@ const TodoItem: React.FC<Props> = ({ todo }) => {
         ×
       </button>
 
-      {/* overlay will cover the todo while it is being deleted or updated */}
       <div
         data-cy="TodoLoader"
         className={cn('modal overlay', {
-          'is-active': isLoaderActive,
+          'is-active': isLoaderActive || todo.id === 0,
         })}
       >
         <div className="modal-background has-background-white-ter" />

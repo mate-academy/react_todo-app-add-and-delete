@@ -2,39 +2,16 @@ import React from 'react';
 
 import TodoFilter from '../TodoFilter';
 
-import { deleteTodo } from '../../api/todos';
 import { useTodos } from '../../hooks/useTodos';
-import { Todo } from '../../types';
 
 const Footer: React.FC = () => {
-  // eslint-disable-next-line prettier/prettier
-  const {
-    todos,
-    setTodos,
-    filter,
-    setFilter,
-    setIsAllDeleted,
-    handleError
-  } = useTodos();
+  const { todos, filter, setFilter, onDeleteTodo } = useTodos();
 
   const isClearButtonVisible = todos.some(todo => todo.completed);
   const amountItemsLeft = todos.filter(todo => !todo.completed).length;
 
   const handleDeletetodo = (todoId: number) => {
-    setIsAllDeleted(true);
-
-    deleteTodo(todoId)
-      .then(() => {
-        setTodos((prevTodos: Todo[]) =>
-          prevTodos.filter(todo => todo.id !== todoId),
-        );
-      })
-      .catch(() => {
-        handleError('Unable to delete a todo');
-      })
-      .finally(() => {
-        setIsAllDeleted(false);
-      });
+    onDeleteTodo(todoId);
   };
 
   const handleClearCompleted = () => {

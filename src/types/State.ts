@@ -15,4 +15,5 @@ export interface State {
   handleError: (error: string) => void;
   isAllDeleted: boolean;
   setIsAllDeleted: React.Dispatch<React.SetStateAction<boolean>>;
+  onDeleteTodo: (todoId: number) => void;
 }

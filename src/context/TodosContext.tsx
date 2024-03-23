@@ -1,6 +1,6 @@
 import React, { useEffect } from 'react';
 
-import { getTodos } from '../api/todos';
+import { deleteTodo, getTodos } from '../api/todos';
 import { wait } from '../utils/fetchClient';
 import { Filter, State, Todo } from '../types';
 
@@ -20,6 +20,7 @@ export const TodosContext = React.createContext<State>({
   handleError: () => {},
   isAllDeleted: false,
   setIsAllDeleted: () => {},
+  onDeleteTodo: () => {},
 });
 
 interface Props {
@@ -40,6 +41,23 @@ export const TodosProvider: React.FC<Props> = ({ children }) => {
     wait(3000).then(() => {
       setError('');
     });
+  };
+
+  const onDeleteTodo = (todoId: number) => {
+    setIsLoading(true);
+
+    deleteTodo(todoId)
+      .then(() => {
+        setTodos((prevTodos: Todo[]) =>
+          prevTodos.filter(todo => todo.id !== todoId),
+        );
+      })
+      .catch(() => {
+        handleError('Unable to delete a todo');
+      })
+      .finally(() => {
+        setIsLoading(false);
+      });
   };
 
   useEffect(() => {
@@ -73,6 +91,7 @@ export const TodosProvider: React.FC<Props> = ({ children }) => {
     handleError,
     isAllDeleted,
     setIsAllDeleted,
+    onDeleteTodo,
   };
 
   return (

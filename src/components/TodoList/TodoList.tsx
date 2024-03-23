@@ -1,12 +1,10 @@
 import TodoItem from '../TodoItem/TodoItem';
 
-import TempTodo from '../TempTodo';
-
 import { useTodos } from '../../hooks/useTodos';
 import { Filter } from '../../types';
 
 const TodoList: React.FC = () => {
-  const { todos, filter } = useTodos();
+  const { todos, filter, tempTodo } = useTodos();
 
   const filteredTodos = todos.filter(todo => {
     switch (filter) {
@@ -25,7 +23,7 @@ const TodoList: React.FC = () => {
         <TodoItem key={todo.id} todo={todo} />
       ))}
 
-      <TempTodo />
+      {tempTodo && <TodoItem todo={tempTodo} />}
     </section>
   );
 };
