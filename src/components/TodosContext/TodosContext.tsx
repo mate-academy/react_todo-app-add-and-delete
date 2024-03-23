@@ -14,7 +14,7 @@ export const TodosContextProvider: React.FC<Props> = ({ children }) => {
   const [todos, setTodos] = useState<Todo[]>([]);
   const [errorMessage, setErrorMessage] = useState<Errors>(Errors.noErrors);
   const [filter, setFilter] = useState<Status>(Status.all);
-  const [loadingId, setLoadingId] = useState<number | null>(null);
+  const [loadingIds, setLoadingIds] = useState<number[]>([]);
 
   const resetError = useCallback(() => {
     setTimeout(() => setErrorMessage(Errors.noErrors), 3000);
@@ -28,8 +28,8 @@ export const TodosContextProvider: React.FC<Props> = ({ children }) => {
     filter,
     setFilter,
     resetError,
-    loadingId,
-    setLoadingId,
+    loadingIds,
+    setLoadingIds,
   };
 
   return (

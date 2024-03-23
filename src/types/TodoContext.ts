@@ -11,6 +11,6 @@ export type TodoContext = {
   filter: Status;
   setFilter: Dispatch<SetStateAction<Status>>;
   resetError: () => void;
-  loadingId: number | null;
-  setLoadingId: (todoId: number | null) => void;
+  loadingIds: number[];
+  setLoadingIds: (todoId: number[]) => void;
 };

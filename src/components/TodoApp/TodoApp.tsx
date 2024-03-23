@@ -15,7 +15,7 @@ export const TodoApp: React.FC = () => {
     errorMessage,
     setErrorMessage,
     resetError,
-    setLoadingId,
+    setLoadingIds,
   } = useContext(TodosContext);
 
   const [title, setTitle] = useState('');
@@ -61,7 +61,7 @@ export const TodoApp: React.FC = () => {
       .finally(() => {
         resetError();
         setTempTodo(null);
-        setLoadingId(null);
+        setLoadingIds([]);
         setLoading(false);
       });
   };
@@ -77,7 +77,7 @@ export const TodoApp: React.FC = () => {
     }
 
     setLoading(true);
-    setLoadingId(0);
+    setLoadingIds([0]);
     setTempTodo({
       id: 0,
       userId: USER_ID,
@@ -87,28 +87,27 @@ export const TodoApp: React.FC = () => {
     addTodo(title.trim());
   };
 
-  const handleDelete = (todoId: number) => {
-    setLoadingId(todoId);
+  const handleDeleteCompleted = async () => {
+    const completedTodoIds = todos
+      .filter(todo => todo.completed)
+      .map(todo => todo.id);
 
-    deleteTodo(todoId)
-      .then(() => {
-        setTodos(prevTodos =>
-          prevTodos.filter(prevTodo => prevTodo.id !== todoId),
-        );
-      })
-      .catch(() => {
-        setErrorMessage(Errors.unableDelete);
-        resetError();
-      })
-      .finally(() => setLoadingId(null));
-  };
+    setLoadingIds(completedTodoIds);
 
-  const handleDeleteCompleted = () => {
-    const completedTodos = todos.filter(todo => todo.completed);
+    const deletePromises = completedTodoIds.map(id =>
+      deleteTodo(id)
+        .then(() => {
+          setTodos(prevTodos =>
+            prevTodos.filter(prevTodo => prevTodo.id !== id),
+          );
+        })
+        .catch(() => {
+          setErrorMessage(Errors.unableDelete);
+          resetError();
+        }),
+    );
 
-    completedTodos.forEach(todo => {
-      handleDelete(todo.id);
-    });
+    Promise.allSettled(deletePromises).finally(() => setLoadingIds([]));
   };
 
   return (
@@ -138,8 +137,8 @@ export const TodoApp: React.FC = () => {
           </form>
         </header>
 
-        <TodoList handleDelete={handleDelete} />
-        {tempTodo && <TodoItem todo={tempTodo} handleDelete={handleDelete} />}
+        <TodoList />
+        {tempTodo && <TodoItem todo={tempTodo} />}
 
         {!!todos.length && (
           <footer className="todoapp__footer" data-cy="Footer">

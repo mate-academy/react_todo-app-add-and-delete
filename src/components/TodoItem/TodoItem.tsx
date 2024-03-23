@@ -1,16 +1,34 @@
 import React, { useContext } from 'react';
 import cn from 'classnames';
 import { Todo } from '../../types/Todo';
+import { Errors } from '../../types/Errors';
 import { TodosContext } from '../TodosContext/TodosContext';
+import { deleteTodo } from '../../api/todos';
 
 type Props = {
   todo: Todo;
-  handleDelete: (todoId: number) => void;
 };
 
-export const TodoItem: React.FC<Props> = ({ todo, handleDelete }) => {
+export const TodoItem: React.FC<Props> = ({ todo }) => {
   const { id, title, completed } = todo;
-  const { loadingId } = useContext(TodosContext);
+  const { setTodos, setErrorMessage, resetError, loadingIds, setLoadingIds } =
+    useContext(TodosContext);
+
+  const handleDelete = (todoId: number) => {
+    setLoadingIds([todoId]);
+
+    deleteTodo(todoId)
+      .then(() => {
+        setTodos(prevTodos =>
+          prevTodos.filter(prevTodo => prevTodo.id !== todoId),
+        );
+      })
+      .catch(() => {
+        setErrorMessage(Errors.unableDelete);
+        resetError();
+      })
+      .finally(() => setLoadingIds([]));
+  };
 
   return (
     <div data-cy="Todo" className={cn('todo', { completed: completed })}>
@@ -37,7 +55,9 @@ export const TodoItem: React.FC<Props> = ({ todo, handleDelete }) => {
 
       <div
         data-cy="TodoLoader"
-        className={cn('modal overlay', { 'is-active': id === loadingId })}
+        className={cn('modal overlay', {
+          'is-active': loadingIds.includes(id),
+        })}
       >
         <div className="modal-background has-background-white-ter" />
         <div className="loader" />
