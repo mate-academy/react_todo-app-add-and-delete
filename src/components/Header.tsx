@@ -12,6 +12,7 @@ type Props = {
 export const Header: React.FC<Props> = ({ error, todos, setTodos }) => {
   const [titleTodo, setTitleTodo] = useState('');
   const [selectAllTodos, setSelectAllTodos] = useState(false);
+  const [isAdding, setIsAdding] = useState(false);
   const selectAllTasks = () => {
     const allTodos = todos.map(todo => ({
       ...todo,
@@ -31,17 +32,22 @@ export const Header: React.FC<Props> = ({ error, todos, setTodos }) => {
   }, [todos]);
 
   function addTodos({ title, userId, completed }: Todo) {
+    setIsAdding(true);
     todoService
       .createTodo({ title, userId, completed })
       .then(newTodos => {
         setTodos(currentTodos => [...currentTodos, newTodos]);
         setTitleTodo('');
+        error('');
       })
       .catch(() => {
         error('Unable to add a todo');
         setTimeout(() => {
           error('');
         }, 4000);
+      })
+      .finally(() => {
+        setIsAdding(false);
       });
   }
 
@@ -61,7 +67,6 @@ export const Header: React.FC<Props> = ({ error, todos, setTodos }) => {
       };
 
       addTodos(newTodo);
-      setTitleTodo('');
       error('');
     }
   };
@@ -90,8 +95,10 @@ export const Header: React.FC<Props> = ({ error, todos, setTodos }) => {
           onChange={e => {
             setTitleTodo(e.target.value);
           }}
+          disabled={isAdding}
         />
       </form>
     </header>
   );
 };
+
