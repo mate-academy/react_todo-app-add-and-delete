@@ -4,8 +4,6 @@ import { useTodos } from '../../hooks/useTodos';
 import { USER_ID, addTodo } from '../../api/todos';
 
 const TodoInput: React.FC = () => {
-  const [isAllCompleted, setIsAllCompleted] = React.useState(false);
-
   const {
     setTodos,
     setError,
@@ -14,6 +12,7 @@ const TodoInput: React.FC = () => {
     setTempTodo,
     handleError,
     isAllDeleted,
+    setLoadingTodosIDs,
   } = useTodos();
 
   const [newTodoTitle, setNewTodoTitle] = React.useState('');
@@ -52,6 +51,7 @@ const TodoInput: React.FC = () => {
     };
 
     setIsLoading(true);
+    setLoadingTodosIDs(prev => [...prev, 0]);
 
     addTodo(newTodo)
       .then(data => {
@@ -64,6 +64,7 @@ const TodoInput: React.FC = () => {
       .finally(() => {
         setTempTodo(null);
         setIsLoading(false);
+        setLoadingTodosIDs([]);
       });
   };
 
@@ -74,13 +75,6 @@ const TodoInput: React.FC = () => {
     }
   };
 
-  const handleToggleAll = () => {
-    setTodos(pervTodos =>
-      pervTodos.map(todo => ({ ...todo, completed: !isAllCompleted })),
-    );
-    setIsAllCompleted(!isAllCompleted);
-  };
-
   return (
     <header className="todoapp__header">
       <button
@@ -88,7 +82,6 @@ const TodoInput: React.FC = () => {
         type="button"
         className="todoapp__toggle-all active"
         data-cy="ToggleAllButton"
-        onClick={handleToggleAll}
       />
 
       <form>

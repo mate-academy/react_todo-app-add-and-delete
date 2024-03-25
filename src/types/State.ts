@@ -16,4 +16,6 @@ export interface State {
   isAllDeleted: boolean;
   setIsAllDeleted: React.Dispatch<React.SetStateAction<boolean>>;
   onDeleteTodo: (todoId: number) => void;
+  loadingTodosIDs: number[];
+  setLoadingTodosIDs: React.Dispatch<React.SetStateAction<number[]>>;
 }

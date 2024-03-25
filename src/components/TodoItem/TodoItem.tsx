@@ -9,9 +9,7 @@ type Props = {
 };
 
 const TodoItem: React.FC<Props> = ({ todo }) => {
-  const [selectedTodoId, setSelectedTodoId] = React.useState<number>(0);
-
-  const { todos, setTodos, isLoading, isAllDeleted, onDeleteTodo } = useTodos();
+  const { todos, setTodos, onDeleteTodo, loadingTodosIDs } = useTodos();
 
   const handleCheckbox = () => {
     setTodos(
@@ -24,13 +22,8 @@ const TodoItem: React.FC<Props> = ({ todo }) => {
   };
 
   const handleDeleteTodo = () => {
-    setSelectedTodoId(todo.id);
     onDeleteTodo(todo.id);
   };
-
-  // eslint-disable-next-line prettier/prettier
-  const isLoaderActive = (isLoading && todo.id === selectedTodoId)
-  || (todo.completed && isAllDeleted);
 
   return (
     <div
@@ -65,7 +58,7 @@ const TodoItem: React.FC<Props> = ({ todo }) => {
       <div
         data-cy="TodoLoader"
         className={cn('modal overlay', {
-          'is-active': isLoaderActive || todo.id === 0,
+          'is-active': loadingTodosIDs.includes(todo.id) || todo.id === 0,
         })}
       >
         <div className="modal-background has-background-white-ter" />

@@ -21,6 +21,8 @@ export const TodosContext = React.createContext<State>({
   isAllDeleted: false,
   setIsAllDeleted: () => {},
   onDeleteTodo: () => {},
+  loadingTodosIDs: [],
+  setLoadingTodosIDs: () => {},
 });
 
 interface Props {
@@ -34,6 +36,7 @@ export const TodosProvider: React.FC<Props> = ({ children }) => {
   const [isLoading, setIsLoading] = React.useState(false);
   const [tempTodo, setTempTodo] = React.useState<Todo | null>(null);
   const [isAllDeleted, setIsAllDeleted] = React.useState(false);
+  const [loadingTodosIDs, setLoadingTodosIDs] = React.useState<number[]>([]);
 
   const handleError = (errorMessage: string) => {
     setError(errorMessage);
@@ -45,6 +48,7 @@ export const TodosProvider: React.FC<Props> = ({ children }) => {
 
   const onDeleteTodo = (todoId: number) => {
     setIsLoading(true);
+    setLoadingTodosIDs(prev => [...prev, todoId]);
 
     deleteTodo(todoId)
       .then(() => {
@@ -57,6 +61,7 @@ export const TodosProvider: React.FC<Props> = ({ children }) => {
       })
       .finally(() => {
         setIsLoading(false);
+        setLoadingTodosIDs([]);
       });
   };
 
@@ -92,6 +97,8 @@ export const TodosProvider: React.FC<Props> = ({ children }) => {
     isAllDeleted,
     setIsAllDeleted,
     onDeleteTodo,
+    loadingTodosIDs,
+    setLoadingTodosIDs,
   };
 
   return (
