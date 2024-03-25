@@ -5,9 +5,10 @@ import { UserWarning } from './UserWarning';
 import { USER_ID, deleteTodo, getTodos, postTodo } from './api/todos';
 import classNames from 'classnames';
 import { Todo } from './types/Todo';
-import { TodoItem } from './components/Todo/Todo';
 import { Filter } from './types/Filter';
-import { TodoField } from './components/Todo/TodoField/TodoField';
+import { Header } from './components/Header/Header';
+import { TodoList } from './components/TodoList/TodoList';
+import { Footer } from './components/Footer/Footer';
 
 export const App: React.FC = () => {
   const [todos, setTodos] = useState<Todo[]>([]);
@@ -58,14 +59,12 @@ export const App: React.FC = () => {
 
   const onCompleteDelete = useMemo(() => {
     return () => {
-      const ids: number[] = [];
-
-      todos.filter(todo => todo.completed).forEach(todo => ids.push(todo.id));
-
-      for (let i = 0; i < ids.length; i++) {
-        onDelete(ids[i]);
-      }
+      todos.filter(todo => todo.completed).forEach(todo => onDelete(todo.id));
     };
+  }, [todos]);
+
+  const unCompletedTodos = useMemo(() => {
+    return todos.filter(todo => !todo.completed).length;
   }, [todos]);
 
   const preparedTodos = useMemo(() => {
@@ -79,10 +78,6 @@ export const App: React.FC = () => {
     }
   }, [filter, todos]);
 
-  const unCompletedTodos = useMemo(() => {
-    return todos.filter(todo => !todo.completed).length;
-  }, [todos]);
-
   if (!USER_ID) {
     return <UserWarning />;
   }
@@ -92,7 +87,7 @@ export const App: React.FC = () => {
       <h1 className="todoapp__title">todos</h1>
 
       <div className="todoapp__content">
-        <TodoField
+        <Header
           unCompletedTodos={unCompletedTodos}
           todosLength={todos.length}
           setErrorMessage={setErrorMessage}
@@ -104,74 +99,21 @@ export const App: React.FC = () => {
           setShouldFocus={setShouldFocus}
         />
 
-        <section className="todoapp__main" data-cy="TodoList">
-          {preparedTodos.map((todo: Todo) => (
-            <TodoItem key={todo.id} todo={todo} onDelete={id => onDelete(id)} />
-          ))}
-
-          {tempTodo && (
-            <>
-              <TodoItem
-                key={tempTodo.id}
-                todo={tempTodo}
-                onDelete={id => onDelete(id)}
-                isLoading={isLoading}
-              />
-            </>
-          )}
-        </section>
+        <TodoList
+          preparedTodos={preparedTodos}
+          onDelete={onDelete}
+          tempTodo={tempTodo}
+          isLoading={isLoading}
+        />
 
         {todos.length > 0 && (
-          <footer className="todoapp__footer" data-cy="Footer">
-            <span className="todo-count" data-cy="TodosCounter">
-              {`${unCompletedTodos} items left`}
-            </span>
-
-            <nav className="filter" data-cy="Filter">
-              <a
-                href="#/"
-                className={classNames('filter__link', {
-                  selected: filter === Filter.All,
-                })}
-                data-cy="FilterLinkAll"
-                onClick={() => setFilter(Filter.All)}
-              >
-                All
-              </a>
-
-              <a
-                href="#/active"
-                className={classNames('filter__link', {
-                  selected: filter === Filter.Active,
-                })}
-                data-cy="FilterLinkActive"
-                onClick={() => setFilter(Filter.Active)}
-              >
-                Active
-              </a>
-
-              <a
-                href="#/completed"
-                className={classNames('filter__link', {
-                  selected: filter === Filter.Completed,
-                })}
-                data-cy="FilterLinkCompleted"
-                onClick={() => setFilter(Filter.Completed)}
-              >
-                Completed
-              </a>
-            </nav>
-
-            <button
-              type="button"
-              className="todoapp__clear-completed"
-              data-cy="ClearCompletedButton"
-              disabled={todos.length === unCompletedTodos}
-              onClick={onCompleteDelete}
-            >
-              Clear completed
-            </button>
-          </footer>
+          <Footer
+            unCompletedTodos={unCompletedTodos}
+            filter={filter}
+            setFilter={setFilter}
+            length={todos.length}
+            onCompleteDelete={onCompleteDelete}
+          />
         )}
       </div>
 

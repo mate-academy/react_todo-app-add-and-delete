@@ -1,7 +1,7 @@
 import classNames from 'classnames';
 import React, { useEffect, useRef, useState } from 'react';
-import { Todo } from '../../../types/Todo';
-import { USER_ID } from '../../../api/todos';
+import { Todo } from '../../types/Todo';
+import { USER_ID } from '../../api/todos';
 
 type Props = {
   unCompletedTodos: number;
@@ -16,7 +16,7 @@ type Props = {
   setShouldFocus: (shouldFocus: boolean) => void;
 };
 
-export const TodoField: React.FC<Props> = ({
+export const Header: React.FC<Props> = ({
   unCompletedTodos,
   todosLength,
   setErrorMessage = () => {},
@@ -48,39 +48,52 @@ export const TodoField: React.FC<Props> = ({
     event.preventDefault();
 
     setIsLoading(true);
+
     setTempTodo({
       id: 0,
       userId: USER_ID,
       title: value,
       completed: false,
     });
+
     addPost(value.trim())
-      .then(() => {
-        setValue('');
-      })
+      .then(() => setValue(''))
       .finally(() => {
-        setIsLoading(false);
         setTempTodo(null);
         setShouldFocus(true);
+        setIsLoading(false);
       });
   };
 
+  const onKeyEnter = (event: React.KeyboardEvent) => {
+    event.preventDefault();
+
+    if (value.trim().length === 0) {
+      setErrorMessage('Title should not be empty');
+
+      return;
+    }
+
+    handleSubmit(event);
+  };
+
+  const onKeyEscape = (event: React.KeyboardEvent) => {
+    setValue('');
+    (event.target as HTMLInputElement).blur();
+  };
+
   const onKeyDownHandle = (event: React.KeyboardEvent) => {
-    if (event.key === 'Enter') {
-      event.preventDefault();
-      if (value.trim().length === 0) {
-        setErrorMessage('Title should not be empty');
-
-        return;
-      }
-
-      handleSubmit(event);
+    switch (event.key) {
+      case 'Enter':
+        onKeyEnter(event);
+        break;
+      case 'Escape':
+        onKeyEscape(event);
     }
+  };
 
-    if (event.key === 'Escape') {
-      setValue('');
-      (event.target as HTMLInputElement).blur();
-    }
+  const handleOnChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+    setValue(event.target.value);
   };
 
   return (
@@ -102,7 +115,7 @@ export const TodoField: React.FC<Props> = ({
           className="todoapp__new-todo"
           disabled={isLoading}
           placeholder="What needs to be done?"
-          onChange={event => setValue(event.target.value)}
+          onChange={handleOnChange}
           onKeyDown={onKeyDownHandle}
         />
       </form>
