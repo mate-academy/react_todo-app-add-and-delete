@@ -4,13 +4,24 @@ import { TodoElement } from './TodoElement';
 
 type Props = {
   todos: Todo[];
+  isSubmitting: boolean;
+  handleRemoveTodo: (todoId: number) => void;
 };
 
-export const TodoList: React.FC<Props> = ({ todos }) => {
+export const TodoList: React.FC<Props> = ({
+  todos,
+  isSubmitting,
+  handleRemoveTodo,
+}) => {
   return (
     <section className="todoapp__main" data-cy="TodoList">
       {todos.map(todo => (
-        <TodoElement todo={todo} key={todo.id} />
+        <TodoElement
+          todo={todo}
+          isSubmitting={isSubmitting}
+          handleRemoveTodo={handleRemoveTodo}
+          key={todo.id}
+        />
       ))}
     </section>
   );

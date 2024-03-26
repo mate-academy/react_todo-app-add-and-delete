@@ -1,20 +1,27 @@
 /* eslint-disable jsx-a11y/label-has-associated-control */
 /* eslint-disable jsx-a11y/control-has-associated-label */
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import classNames from 'classnames';
 import { UserWarning } from './UserWarning';
-import { USER_ID, createTodo, getTodos } from './api/todos';
+import { USER_ID, createTodo, deleteTodo, getTodos } from './api/todos';
 import { Todo } from './types/Todo';
 import { TodoList } from './components/TodoList';
 import { Filter } from './types/Filter';
+import { TodoElement } from './components/TodoElement';
 
 export const App: React.FC = () => {
   const [todos, setTodos] = useState<Todo[]>([]);
   const [error, setError] = useState('');
   const [selectedFilter, setSelectedFilter] = useState<Filter>(Filter.All);
   const [todoTitle, setTodoTitle] = useState('');
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  const [tempTodo, setTempTodo] = useState<Todo | null>(null);
+
+  const inputAutoFocus = useRef<HTMLInputElement>(null);
 
   useEffect(() => {
+    inputAutoFocus.current?.focus();
+
     getTodos()
       .then(todosData => {
         setTodos(todosData);
@@ -54,22 +61,49 @@ export const App: React.FC = () => {
   const filteredTodos = filterTodos(selectedFilter);
 
   const addTodo = ({ title, userId, completed }: Omit<Todo, 'id'>) => {
-    createTodo({ title, userId, completed }).then(newTodo => {
-      setTodos(currentTodos => [...currentTodos, newTodo] as Todo[]);
-    });
+    setIsSubmitting(true);
+    setTempTodo({ id: 0, title, userId, completed });
+
+    createTodo({ title, userId, completed })
+      .then(newTodo => {
+        setTodos(currentTodos => [...currentTodos, newTodo] as Todo[]);
+        setTodoTitle('');
+        setError('');
+      })
+      .catch(() => {
+        setError('Unable to add a todo');
+      })
+      .finally(() => {
+        inputAutoFocus.current?.focus();
+        setIsSubmitting(false);
+        setTempTodo(null);
+      });
+  };
+
+  const removeTodo = (todoId: number) => {
+    deleteTodo(todoId)
+      .then(() => {
+        setTodos(currentTodos =>
+          currentTodos.filter(todo => todo.id !== todoId),
+        );
+      })
+      .catch(() => {
+        setError('Unable to delete a todo');
+      });
   };
 
   const handleFromSubmit = (event: React.FormEvent) => {
     event.preventDefault();
 
-    if (!todoTitle) {
+    const trimmedTitle = todoTitle.trim();
+
+    if (!trimmedTitle) {
       setError('Title should not be empty');
 
       return;
     }
 
-    addTodo({ title: todoTitle.trim(), userId: USER_ID, completed: false });
-    setTodoTitle('');
+    addTodo({ title: trimmedTitle, userId: USER_ID, completed: false });
   };
 
   return (
@@ -86,20 +120,33 @@ export const App: React.FC = () => {
 
           <form onSubmit={handleFromSubmit}>
             <input
+              ref={inputAutoFocus}
               data-cy="NewTodoField"
               type="text"
               className="todoapp__new-todo"
               placeholder="What needs to be done?"
               value={todoTitle}
               onChange={event => setTodoTitle(event?.target.value)}
-              autoFocus
+              disabled={isSubmitting}
             />
           </form>
         </header>
 
         {!!todos.length && (
           <>
-            <TodoList todos={filteredTodos} />
+            <TodoList
+              todos={filteredTodos}
+              isSubmitting={isSubmitting}
+              handleRemoveTodo={removeTodo}
+            />
+
+            {tempTodo && (
+              <TodoElement
+                todo={tempTodo}
+                handleRemoveTodo={removeTodo}
+                isSubmitting={isSubmitting}
+              />
+            )}
 
             <footer className="todoapp__footer" data-cy="Footer">
               <span className="todo-count" data-cy="TodosCounter">

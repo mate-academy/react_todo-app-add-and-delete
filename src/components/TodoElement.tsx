@@ -4,9 +4,15 @@ import { Todo } from '../types/Todo';
 
 type Props = {
   todo: Todo;
+  isSubmitting: boolean;
+  handleRemoveTodo: (todoId: number) => void;
 };
 
-export const TodoElement: React.FC<Props> = ({ todo }) => {
+export const TodoElement: React.FC<Props> = ({
+  todo,
+  isSubmitting,
+  handleRemoveTodo,
+}) => {
   const { title, completed } = todo;
 
   return (
@@ -20,7 +26,7 @@ export const TodoElement: React.FC<Props> = ({ todo }) => {
           data-cy="TodoStatus"
           type="checkbox"
           className="todo__status"
-          checked={completed}
+          defaultChecked={completed}
         />
       </label>
 
@@ -28,11 +34,21 @@ export const TodoElement: React.FC<Props> = ({ todo }) => {
         {title}
       </span>
 
-      <button type="button" className="todo__remove" data-cy="TodoDelete">
+      <button
+        type="button"
+        className="todo__remove"
+        data-cy="TodoDelete"
+        onClick={() => handleRemoveTodo(todo.id)}
+      >
         ×
       </button>
 
-      <div data-cy="TodoLoader" className="modal overlay">
+      <div
+        data-cy="TodoLoader"
+        className={classNames('modal', 'overlay', {
+          'is-active': isSubmitting && todo.id === 0,
+        })}
+      >
         <div className="modal-background has-background-white-ter" />
         <div className="loader" />
       </div>
