@@ -16,12 +16,11 @@ export const App: React.FC = () => {
   const [todoTitle, setTodoTitle] = useState('');
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [tempTodo, setTempTodo] = useState<Todo | null>(null);
+  const [isDeleting, setIsDeleting] = useState(false);
 
   const inputAutoFocus = useRef<HTMLInputElement>(null);
 
   useEffect(() => {
-    inputAutoFocus.current?.focus();
-
     getTodos()
       .then(todosData => {
         setTodos(todosData);
@@ -37,6 +36,10 @@ export const App: React.FC = () => {
 
     return () => clearTimeout(timeoutId);
   }, []);
+
+  useEffect(() => {
+    inputAutoFocus.current?.focus();
+  }, [error, todos.length]);
 
   if (!USER_ID) {
     return <UserWarning />;
@@ -74,21 +77,27 @@ export const App: React.FC = () => {
         setError('Unable to add a todo');
       })
       .finally(() => {
-        inputAutoFocus.current?.focus();
         setIsSubmitting(false);
         setTempTodo(null);
       });
   };
 
   const removeTodo = (todoId: number) => {
+    setIsSubmitting(true);
+
     deleteTodo(todoId)
       .then(() => {
         setTodos(currentTodos =>
           currentTodos.filter(todo => todo.id !== todoId),
         );
+        setIsDeleting(true);
       })
       .catch(() => {
         setError('Unable to delete a todo');
+      })
+      .finally(() => {
+        setIsSubmitting(false);
+        setIsDeleting(false);
       });
   };
 
@@ -137,6 +146,7 @@ export const App: React.FC = () => {
             <TodoList
               todos={filteredTodos}
               isSubmitting={isSubmitting}
+              isDeleting={isDeleting}
               handleRemoveTodo={removeTodo}
             />
 
@@ -145,6 +155,7 @@ export const App: React.FC = () => {
                 todo={tempTodo}
                 handleRemoveTodo={removeTodo}
                 isSubmitting={isSubmitting}
+                isDeleting={isDeleting}
               />
             )}
 
@@ -187,11 +198,11 @@ export const App: React.FC = () => {
                   Completed
                 </a>
               </nav>
-
               <button
                 type="button"
                 className="todoapp__clear-completed"
                 data-cy="ClearCompletedButton"
+                disabled={!todos.some(todo => todo.completed)}
               >
                 Clear completed
               </button>

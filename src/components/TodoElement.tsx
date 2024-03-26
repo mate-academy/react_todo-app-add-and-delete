@@ -5,12 +5,14 @@ import { Todo } from '../types/Todo';
 type Props = {
   todo: Todo;
   isSubmitting: boolean;
+  isDeleting: boolean;
   handleRemoveTodo: (todoId: number) => void;
 };
 
 export const TodoElement: React.FC<Props> = ({
   todo,
   isSubmitting,
+  isDeleting,
   handleRemoveTodo,
 }) => {
   const { title, completed } = todo;
@@ -46,7 +48,7 @@ export const TodoElement: React.FC<Props> = ({
       <div
         data-cy="TodoLoader"
         className={classNames('modal', 'overlay', {
-          'is-active': isSubmitting && todo.id === 0,
+          'is-active': (isSubmitting && todo.id === 0) || isDeleting,
         })}
       >
         <div className="modal-background has-background-white-ter" />
