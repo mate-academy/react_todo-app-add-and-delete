@@ -18,4 +18,5 @@ export type TodoContext = {
   setTempTodo: Dispatch<SetStateAction<Todo | null>>;
   isLoading: boolean;
   setIsloading: (isLoading: boolean) => void;
+  onDelete: (id: number) => void;
 };

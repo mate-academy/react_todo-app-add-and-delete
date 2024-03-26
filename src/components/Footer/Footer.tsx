@@ -1,37 +1,18 @@
 import { useTodosContext } from '../../utils/useTodosContext';
 import { TodoFilter } from '../TodoFilter';
-import * as todoSevice from '../../api/todos';
-import { handleRequestError } from '../../utils/handleRequestError';
-import { Errors } from '../../types/Errors';
 
 export const Footer: React.FC = () => {
   const {
     todos,
-    setTodos,
+
     activeTodos,
     completedTodos,
-    setLoadingTodoIds,
-    setIsloading,
-    setError,
+
+    onDelete,
   } = useTodosContext();
 
   function deleteTodo(todoId: number) {
-    setLoadingTodoIds([todoId]);
-
-    todoSevice
-      .deleteTodo(todoId)
-      .then(() => {
-        setTodos(currentTodos =>
-          currentTodos.filter(todo => todo.id !== todoId),
-        );
-        setIsloading(true);
-      })
-      .catch(() => {
-        handleRequestError(Errors.deleteTodo, setError);
-        setLoadingTodoIds([]);
-        setIsloading(true);
-      });
-    setLoadingTodoIds([todoId]);
+    onDelete(todoId);
   }
 
   const handleDeleteCompleted = () => {

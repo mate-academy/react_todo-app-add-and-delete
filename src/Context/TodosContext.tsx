@@ -4,6 +4,8 @@ import { useState } from 'react';
 import { Errors } from '../types/Errors';
 import { FilterTodos } from '../types/FilterTodos';
 import { Todo } from '../types/Todo';
+import * as todoSevice from '../api/todos';
+import { handleRequestError } from '../utils/handleRequestError';
 
 export const TodosContext = createContext<TodoContext | undefined>(undefined);
 
@@ -24,6 +26,25 @@ export const TodosContextProvider: React.FC<Props> = ({ children }) => {
   const completedTodos = todos.filter(todo => todo.completed);
   const activeTodos = todos.filter(todo => !todo.completed);
 
+  function onDelete(todoId: number) {
+    setLoadingTodoIds([todoId]);
+
+    todoSevice
+      .deleteTodo(todoId)
+      .then(() => {
+        setTodos(currentTodos =>
+          currentTodos.filter(todo => todo.id !== todoId),
+        );
+        setIsloading(true);
+      })
+      .catch(() => {
+        handleRequestError(Errors.deleteTodo, setError);
+        setLoadingTodoIds([]);
+        setIsloading(true);
+      });
+    setLoadingTodoIds([todoId]);
+  }
+
   const contextValues = {
     todos,
     setTodos,
@@ -39,6 +60,7 @@ export const TodosContextProvider: React.FC<Props> = ({ children }) => {
     setLoadingTodoIds,
     tempTodo,
     setTempTodo,
+    onDelete,
   };
 
   return (
