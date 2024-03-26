@@ -11,33 +11,38 @@ export const TodoList: React.FC = () => {
     todos,
     setTodos,
     setError,
-    loadingTodoIds,
     setLoadingTodoIds,
     filterSelected,
+    tempTodo,
+    setIsloading,
   } = useTodosContext();
   const preparedTodos = handleFilteredTodos(todos, filterSelected);
 
   function deleteTodo(todoId: number) {
-    setTodos(currentTodos => currentTodos.filter(todo => todo.id !== todoId));
-    setLoadingTodoIds([]);
+    setLoadingTodoIds([todoId]);
 
-    todoSevice.deleteTodo(todoId).catch(() => {
-      handleRequestError(Errors.deleteTodo, setError);
-      setLoadingTodoIds([]);
-    });
+    todoSevice
+      .deleteTodo(todoId)
+      .then(() => {
+        setTodos(currentTodos =>
+          currentTodos.filter(todo => todo.id !== todoId),
+        );
+        setIsloading(true);
+      })
+      .catch(() => {
+        handleRequestError(Errors.deleteTodo, setError);
+        setLoadingTodoIds([]);
+        setIsloading(true);
+      });
     setLoadingTodoIds([todoId]);
   }
 
   return (
     <section className="todoapp__main" data-cy="TodoList">
       {preparedTodos.map(todo => (
-        <TodoItem
-          key={todo.id}
-          todo={todo}
-          deleteTodo={deleteTodo}
-          loadingTodoIds={loadingTodoIds}
-        />
+        <TodoItem key={todo.id} todo={todo} deleteTodo={deleteTodo} />
       ))}
+      {tempTodo && <TodoItem todo={tempTodo} deleteTodo={deleteTodo} />}
     </section>
   );
 };

@@ -1,17 +1,15 @@
 import { Todo } from '../../types/Todo';
 import cn from 'classnames';
+import { useTodosContext } from '../../utils/useTodosContext';
 
 type Props = {
   todo: Todo;
   deleteTodo: (id: number) => void;
-  loadingTodoIds: number[];
 };
 
-export const TodoItem: React.FC<Props> = ({
-  todo,
-  deleteTodo,
-  loadingTodoIds,
-}) => {
+export const TodoItem: React.FC<Props> = ({ todo, deleteTodo }) => {
+  const { loadingTodoIds } = useTodosContext();
+
   return (
     <div
       data-cy="Todo"

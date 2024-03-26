@@ -23,20 +23,17 @@ export const App: React.FC = () => {
     return <UserWarning />;
   }
 
-  const completedTodos = todos.filter(todo => todo.completed);
-  const activeTodos = todos.filter(todo => !todo.completed);
-
   return (
     <div className="todoapp">
       <h1 className="todoapp__title">todos</h1>
 
       <div className="todoapp__content">
-        <Header completedTodos={completedTodos} activeTodos={activeTodos} />
+        <Header />
         {todos.length > 0 && (
           <>
             <TodoList />
 
-            <Footer completedTodos={completedTodos} activeTodos={activeTodos} />
+            <Footer />
           </>
         )}
       </div>

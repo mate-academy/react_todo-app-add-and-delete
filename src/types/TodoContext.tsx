@@ -6,6 +6,8 @@ import { Errors } from './Errors';
 export type TodoContext = {
   todos: Todo[];
   setTodos: Dispatch<SetStateAction<Todo[]>>;
+  activeTodos: Todo[];
+  completedTodos: Todo[];
   error: Errors;
   setError: Dispatch<SetStateAction<Errors>>;
   filterSelected: FilterTodos;
@@ -14,4 +16,6 @@ export type TodoContext = {
   setLoadingTodoIds: Dispatch<SetStateAction<number[]>>;
   tempTodo: Todo | null;
   setTempTodo: Dispatch<SetStateAction<Todo | null>>;
+  isLoading: boolean;
+  setIsloading: (isLoading: boolean) => void;
 };

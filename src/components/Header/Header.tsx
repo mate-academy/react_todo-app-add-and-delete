@@ -6,23 +6,29 @@ import { Errors } from '../../types/Errors';
 import { handleRequestError } from '../../utils/handleRequestError';
 import { useTodosContext } from '../../utils/useTodosContext';
 
-type Props = {
-  completedTodos: Todo[];
-  activeTodos: Todo[];
-};
-export const Header: React.FC<Props> = ({ completedTodos, activeTodos }) => {
-  const { todos, setTodos, setTempTodo, setError, setLoadingTodoIds } =
-    useTodosContext();
+export const Header: React.FC = () => {
+  const {
+    todos,
+    setTodos,
+    setTempTodo,
+    setError,
+    setLoadingTodoIds,
+    activeTodos,
+    completedTodos,
+    isLoading,
+    setIsloading,
+  } = useTodosContext();
   const addTodoInputRef = useRef<HTMLInputElement>(null);
   const isClassActive = completedTodos.length > 0 && activeTodos.length === 0;
   const [title, setTitle] = useState('');
   const [isSubMit, setIsSubmit] = useState(false);
 
   useEffect(() => {
-    if (todos && addTodoInputRef.current) {
+    if (isLoading && addTodoInputRef.current) {
       addTodoInputRef.current.focus();
+      setIsloading(false);
     }
-  }, [todos]);
+  }, [setIsloading, isLoading]);
 
   const handleInputChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     setError(Errors.default);
@@ -37,35 +43,12 @@ export const Header: React.FC<Props> = ({ completedTodos, activeTodos }) => {
       handleRequestError(Errors.emptyTitle, setError);
       setIsSubmit(false);
     } else {
-      setError(Errors.default);
-
       const newTodo = {
         title: title.trim(),
         userId: todoSevice.USER_ID,
         completed: false,
       };
 
-      todoSevice
-        .createTodo(newTodo)
-        .then((response: Todo) => {
-          setTodos((prevTodos: Todo[]) => [...prevTodos, response]);
-          setTempTodo(null);
-          setLoadingTodoIds([]);
-          setTitle('');
-        })
-        .catch(() => {
-          handleRequestError(Errors.default, setError);
-
-          handleRequestError(Errors.addTodo, setError);
-          setTempTodo(null);
-          setLoadingTodoIds([]);
-        })
-
-        .finally(() => {
-          setIsSubmit(false);
-          setTempTodo(null);
-          setLoadingTodoIds([]);
-        });
       const tempTodo = {
         id: 0,
         ...newTodo,
@@ -73,6 +56,25 @@ export const Header: React.FC<Props> = ({ completedTodos, activeTodos }) => {
 
       setTempTodo(tempTodo);
       setLoadingTodoIds([tempTodo.id]);
+      todoSevice
+        .createTodo(newTodo)
+        .then((response: Todo) => {
+          setTodos((prevTodos: Todo[]) => [...prevTodos, response]);
+          setTempTodo(null);
+          setLoadingTodoIds([]);
+          setTitle('');
+          setIsloading(true);
+        })
+        .catch(() => {
+          handleRequestError(Errors.addTodo, setError);
+          setTempTodo(null);
+          setLoadingTodoIds([]);
+          setIsloading(true);
+        })
+
+        .finally(() => {
+          setIsSubmit(false);
+        });
     }
   }
 
