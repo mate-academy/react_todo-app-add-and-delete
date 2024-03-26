@@ -6,6 +6,7 @@ import classNames from 'classnames';
 import * as todoService from '../api/todos';
 import { CSSTransition, TransitionGroup } from 'react-transition-group';
 import React from 'react';
+import { TodoItem } from './TodoItem';
 
 type Props = {
   todos: Todo[];
@@ -121,12 +122,7 @@ export const TodoList: React.FC<Props> = ({
         ))}
         {tempTodo && (
           <CSSTransition key="0" timeout={300} classNames="temp-item">
-            <div className="todo">
-              <div data-cy="TodoLoader" className="modal overlay is-active">
-                <div className="modal-background has-background-white-ter" />
-                <div className="loader" />
-              </div>
-            </div>
+            <TodoItem isLoading={true} />
           </CSSTransition>
         )}
         {/* This todo is an active todo */}

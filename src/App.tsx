@@ -33,7 +33,7 @@ export const App: React.FC = () => {
         setErrorMessage('Unable to load todos');
         setTimeout(() => {
           setErrorMessage('');
-        }, 4000);
+        }, 3000);
       });
 
     setTimeout(() => {
@@ -64,7 +64,7 @@ export const App: React.FC = () => {
         setErrorMessage('Unable to delete a todo');
         setTimeout(() => {
           setErrorMessage('');
-        }, 4000);
+        }, 3000);
       });
   }
 

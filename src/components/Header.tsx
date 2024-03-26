@@ -73,7 +73,7 @@ export const Header: React.FC<Props> = ({
       error('Title should not be empty');
       setTimeout(() => {
         error('');
-      }, 4000);
+      }, 3000);
     } else {
       const newTodo = {
         title: titleTodo,
