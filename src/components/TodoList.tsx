@@ -13,6 +13,7 @@ type Props = {
   filteredTodos: () => Todo[];
   destroy: (id: number) => void;
   error: React.Dispatch<React.SetStateAction<string>>;
+  tempTodo: Todo | null;
 };
 
 export const TodoList: React.FC<Props> = ({
@@ -21,6 +22,7 @@ export const TodoList: React.FC<Props> = ({
   error,
   todos,
   setTodos,
+  tempTodo,
 }) => {
   const isNotCompletedTodoVisible = false;
   const isEditingTodoVisible = false;
@@ -65,7 +67,7 @@ export const TodoList: React.FC<Props> = ({
         error('Unable to update a todo');
         setTimeout(() => {
           error('');
-        }, 4000);
+        }, 3000);
       });
   };
 
@@ -75,9 +77,8 @@ export const TodoList: React.FC<Props> = ({
         {filter.map(todo => (
           <CSSTransition key={todo.id} timeout={300} classNames="item">
             <div
-              key={todo.id}
               data-cy="Todo"
-              className={`todo ${todo.completed ? 'completed' : ''}`}
+              className={classNames('todo', { completed: todo.completed })}
               onSubmit={() => handleTodoUpdate(todo)}
             >
               {todo.completed}
@@ -118,7 +119,16 @@ export const TodoList: React.FC<Props> = ({
             </div>
           </CSSTransition>
         ))}
-
+        {tempTodo && (
+          <CSSTransition key="0" timeout={300} classNames="temp-item">
+            <div className="todo">
+              <div data-cy="TodoLoader" className="modal overlay is-active">
+                <div className="modal-background has-background-white-ter" />
+                <div className="loader" />
+              </div>
+            </div>
+          </CSSTransition>
+        )}
         {/* This todo is an active todo */}
 
         {isNotCompletedTodoVisible && (

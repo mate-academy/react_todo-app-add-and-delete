@@ -8,8 +8,14 @@ type Props = {
   todos: Todo[];
   setTodos: React.Dispatch<React.SetStateAction<Todo[]>>;
   error: React.Dispatch<React.SetStateAction<string>>;
+  setTempTodo: React.Dispatch<React.SetStateAction<Todo | null>>;
 };
-export const Header: React.FC<Props> = ({ error, todos, setTodos }) => {
+export const Header: React.FC<Props> = ({
+  error,
+  todos,
+  setTodos,
+  setTempTodo,
+}) => {
   const [titleTodo, setTitleTodo] = useState('');
   const [selectAllTodos, setSelectAllTodos] = useState(false);
   const [isAdding, setIsAdding] = useState(false);
@@ -32,19 +38,29 @@ export const Header: React.FC<Props> = ({ error, todos, setTodos }) => {
   }, [todos]);
 
   function addTodos({ title, userId, completed }: Todo) {
+    const newTempTodo: Todo = {
+      id: Math.random(),
+      userId: todoService.USER_ID,
+      completed: false,
+      title,
+    };
+
+    setTempTodo(newTempTodo);
     setIsAdding(true);
+
     todoService
       .createTodo({ title, userId, completed })
       .then(newTodos => {
         setTodos(currentTodos => [...currentTodos, newTodos]);
         setTitleTodo('');
+        setTempTodo(null);
         error('');
       })
       .catch(() => {
         error('Unable to add a todo');
         setTimeout(() => {
           error('');
-        }, 4000);
+        }, 3000);
       })
       .finally(() => {
         setIsAdding(false);
@@ -101,4 +117,3 @@ export const Header: React.FC<Props> = ({ error, todos, setTodos }) => {
     </header>
   );
 };
-

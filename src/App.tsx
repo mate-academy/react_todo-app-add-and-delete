@@ -15,6 +15,7 @@ export const App: React.FC = () => {
   const [errorMessage, setErrorMessage] = useState('');
   const [filterStatus, setFilterStatus] = useState(Status.All);
   const [todoMain, setTodoMain] = useState(false);
+  const [tempTodo, setTempTodo] = useState<Todo | null>(null);
 
   const handleChangeStatus = (
     status: Status,
@@ -76,7 +77,12 @@ export const App: React.FC = () => {
       <h1 className="todoapp__title">todos</h1>
 
       <div className="todoapp__content">
-        <Header todos={todos} setTodos={setTodos} error={setErrorMessage} />
+        <Header
+          todos={todos}
+          setTodos={setTodos}
+          error={setErrorMessage}
+          setTempTodo={setTempTodo}
+        />
         {todoMain && (
           <TodoList
             filteredTodos={filteredTodos}
@@ -84,6 +90,7 @@ export const App: React.FC = () => {
             setTodos={setTodos}
             destroy={destroy}
             error={setErrorMessage}
+            tempTodo={tempTodo}
           />
         )}
 
