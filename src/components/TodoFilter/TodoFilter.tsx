@@ -1,20 +1,10 @@
 import cn from 'classnames';
 import { FilterTodos } from '../../types/FilterTodos';
+import { useTodosContext } from '../../utils/useTodosContext';
 
-type Props = {
-  filterSelected: FilterTodos | string;
-  setFilterSelected: (filterSelected: FilterTodos) => void;
-};
-
-export const TodoFilter: React.FC<Props> = ({
-  filterSelected,
-  setFilterSelected,
-}) => {
-  const filterMenu = [
-    FilterTodos.all,
-    FilterTodos.active,
-    FilterTodos.completed,
-  ];
+export const TodoFilter: React.FC = ({}) => {
+  const { filterSelected, setFilterSelected } = useTodosContext();
+  const filterMenu = Object.values(FilterTodos);
 
   return (
     <nav className="filter" data-cy="Filter">

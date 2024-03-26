@@ -1,13 +1,11 @@
 import cn from 'classnames';
 
 import { Errors } from '../../types/Errors';
+import { useTodosContext } from '../../utils/useTodosContext';
 
-type Props = {
-  error: Errors;
-  setError: (error: Errors) => void;
-};
+export const ErrorNotification: React.FC = () => {
+  const { error, setError } = useTodosContext();
 
-export const ErrorNotification: React.FC<Props> = ({ error, setError }) => {
   return (
     <div
       data-cy="ErrorNotification"
@@ -21,7 +19,7 @@ export const ErrorNotification: React.FC<Props> = ({ error, setError }) => {
         className="delete"
         onClick={() => setError(Errors.default)}
       />
-      {/* show only one message at a time */}
+
       {error}
     </div>
   );
