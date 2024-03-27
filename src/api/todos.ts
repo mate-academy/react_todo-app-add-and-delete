@@ -39,21 +39,6 @@ export const deleteTodo = (todoId: number) => {
   return client.delete(`/todos/${todoId}`);
 };
 
-export const handleDeleteTodo = (
-  todo: Todo,
-  todoId: number,
-  setIsLoading: (e: number | null) => void,
-  setErrorMessage: (m: string) => void,
-) => {
-  setIsLoading(todoId);
-
-  deleteTodo(todo.id)
-    .catch(() => {
-      setErrorMessage(`Unable to delete a todo`);
-    })
-    .finally(() => setIsLoading(null));
-};
-
 export const getNewTodoId = (todos: Todo[] | null) => {
   if (todos !== null) {
     const maxId = Math.max(...todos.map(todo => todo.id));
