@@ -16,7 +16,6 @@ export const Header: React.FC = () => {
     setLoadingTodoIds,
     activeTodos,
     completedTodos,
-    setIsloading,
   } = useTodosContext();
   const addTodoInputRef = useRef<HTMLInputElement>(null);
   const isClassActive = completedTodos.length > 0 && activeTodos.length === 0;
@@ -26,7 +25,6 @@ export const Header: React.FC = () => {
   useEffect(() => {
     if (loadingTodoIds && addTodoInputRef.current) {
       addTodoInputRef.current.focus();
-      setIsloading(false);
     }
   }, [loadingTodoIds]);
 
@@ -55,25 +53,26 @@ export const Header: React.FC = () => {
       };
 
       setTempTodo(tempTodo);
-      setLoadingTodoIds([tempTodo.id]);
+      setLoadingTodoIds(prevLoadingTodoIds => [
+        ...prevLoadingTodoIds,
+        tempTodo.id,
+      ]);
       todoSevice
         .createTodo(newTodo)
         .then((response: Todo) => {
           setTodos((prevTodos: Todo[]) => [...prevTodos, response]);
-          setTempTodo(null);
-          setLoadingTodoIds([]);
           setTitle('');
-          setIsloading(true);
         })
         .catch(() => {
           handleRequestError(Errors.addTodo, setError);
-          setTempTodo(null);
-          setLoadingTodoIds([]);
-          setIsloading(true);
         })
 
         .finally(() => {
           setIsSubmit(false);
+          setTempTodo(null);
+          setLoadingTodoIds(prevLoadingTodoIds =>
+            prevLoadingTodoIds.filter(id => id !== tempTodo.id),
+          );
         });
     }
   };

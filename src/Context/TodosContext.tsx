@@ -21,8 +21,6 @@ export const TodosContextProvider: React.FC<Props> = ({ children }) => {
   const [error, setError] = useState<Errors>(Errors.default);
   const [loadingTodoIds, setLoadingTodoIds] = useState<number[]>([]);
   const [tempTodo, setTempTodo] = useState<Todo | null>(null);
-  const [isLoading, setIsloading] = useState(true);
-
   const completedTodos = todos.filter(todo => todo.completed);
   const activeTodos = todos.filter(todo => !todo.completed);
 
@@ -49,8 +47,6 @@ export const TodosContextProvider: React.FC<Props> = ({ children }) => {
   const contextValues = {
     todos,
     setTodos,
-    isLoading,
-    setIsloading,
     completedTodos,
     activeTodos,
     filterSelected,
