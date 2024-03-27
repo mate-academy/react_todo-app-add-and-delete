@@ -65,6 +65,7 @@ export const App: React.FC = () => {
           <>
             <TodoList
               todos={visibleTodos}
+              setPreparedTodos={setPreparedTodos}
               tempTodo={tempTodo}
               isLoading={isLoading}
               setIsLoading={setIsLoading}
@@ -72,6 +73,7 @@ export const App: React.FC = () => {
             />
 
             <Footer
+              setPreparedTodos={setPreparedTodos}
               selectedFilter={selectedFilter}
               onSelect={setSelectedFilter}
               count={getCount(preparedTodos)}

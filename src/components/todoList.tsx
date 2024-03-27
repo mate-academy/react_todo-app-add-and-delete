@@ -4,6 +4,7 @@ import { TodoItem } from './todoItem';
 
 type Props = {
   todos: Todo[];
+  setPreparedTodos: (e: Todo[]) => void;
   tempTodo: Todo | null;
   isLoading: number | null;
   setIsLoading: (e: number | null) => void;
@@ -12,6 +13,7 @@ type Props = {
 
 export const TodoList: React.FC<Props> = ({
   todos,
+  setPreparedTodos,
   tempTodo,
   isLoading,
   setIsLoading,
@@ -21,7 +23,9 @@ export const TodoList: React.FC<Props> = ({
     <section className="todoapp__main" data-cy="TodoList">
       {todos.map(todo => (
         <TodoItem
+          todos={todos}
           todo={todo}
+          setPreparedTodos={setPreparedTodos}
           key={todo.id}
           isLoading={isLoading}
           setIsLoading={setIsLoading}

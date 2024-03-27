@@ -3,6 +3,7 @@ import { Status, Todo } from '../types/Todo';
 import { deleteTodo } from '../api/todos';
 
 type Props = {
+  setPreparedTodos: (e: Todo[]) => void;
   selectedFilter: string;
   onSelect: (a: string) => void;
   count: number;
@@ -12,6 +13,7 @@ type Props = {
 };
 
 export const Footer: React.FC<Props> = ({
+  setPreparedTodos,
   selectedFilter,
   onSelect,
   count,
@@ -21,11 +23,20 @@ export const Footer: React.FC<Props> = ({
 }) => {
   const completedTodos = todos.filter(todo => todo.completed);
 
+  const completedTodoIds = completedTodos.map(todo => todo.id);
+
   const handleDeleteCompletedTodos = () => {
-    completedTodos.forEach(todo => {
+    completedTodos.map(todo => {
       setIsLoading(todo.id);
 
       deleteTodo(todo.id)
+        .then(() => {
+          setPreparedTodos(
+            todos.filter(
+              currentTodo => !completedTodoIds.includes(currentTodo.id),
+            ),
+          );
+        })
         .catch(() => {
           setErrorMessage(`Unable to delete a todo`);
         })

@@ -4,14 +4,18 @@ import { Todo } from '../types/Todo';
 import { deleteTodo } from '../api/todos';
 
 type Props = {
+  todos: Todo[];
   todo: Todo;
+  setPreparedTodos: (e: Todo[]) => void;
   isLoading: number | null;
   setIsLoading: (e: number | null) => void;
   setErrorMessage: (m: string) => void;
 };
 
 export const TodoItem: React.FC<Props> = ({
+  todos,
   todo,
+  setPreparedTodos,
   isLoading,
   setIsLoading,
   setErrorMessage,
@@ -20,6 +24,11 @@ export const TodoItem: React.FC<Props> = ({
     setIsLoading(todo.id);
 
     deleteTodo(todo.id)
+      .then(() => {
+        setPreparedTodos(
+          todos.filter(currentTodo => currentTodo.id !== todo.id),
+        );
+      })
       .catch(() => {
         setErrorMessage(`Unable to delete a todo`);
       })
