@@ -35,7 +35,7 @@ export const Header: React.FC = () => {
     setTitle(event.target.value);
   };
 
-  function handleSubmit(event: React.FormEvent) {
+  const handleSubmit = (event: React.FormEvent) => {
     event.preventDefault();
     setIsSubmit(true);
 
@@ -76,7 +76,7 @@ export const Header: React.FC = () => {
           setIsSubmit(false);
         });
     }
-  }
+  };
 
   return (
     <div>

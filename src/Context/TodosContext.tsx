@@ -27,7 +27,7 @@ export const TodosContextProvider: React.FC<Props> = ({ children }) => {
   const activeTodos = todos.filter(todo => !todo.completed);
 
   function onDelete(todoId: number) {
-    setLoadingTodoIds([todoId]);
+    setLoadingTodoIds(prevLoadingTodoIds => [...prevLoadingTodoIds, todoId]);
 
     todoSevice
       .deleteTodo(todoId)
