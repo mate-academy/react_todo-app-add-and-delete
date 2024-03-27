@@ -1,7 +1,13 @@
 /* eslint-disable jsx-a11y/control-has-associated-label */
 import React, { useEffect, useState } from 'react';
 import { UserWarning } from './UserWarning';
-import { USER_ID, getCount, getNewTodoId, getTodos } from './api/todos';
+import {
+  USER_ID,
+  getCount,
+  getNewTodoId,
+  getTodos,
+  getVisibleTodos,
+} from './api/todos';
 import { Todo, Status } from './types/Todo';
 import { TodoList } from './components/todoList';
 import { Footer } from './components/footer';
@@ -11,7 +17,7 @@ import { Header } from './components/header';
 export const App: React.FC = () => {
   const [preparedTodos, setPreparedTodos] = useState<Todo[]>([]);
   const [errorMessage, setErrorMessage] = useState<string>('');
-  const [selectedFilter, setSelectedFilter] = useState<string>(Status.all);
+  const [selectedFilter, setSelectedFilter] = useState<string>(Status.All);
   const [title, setTitle] = useState<string>('');
   const [isSubmitting, setIsSubmitting] = useState<boolean>(false);
   const [tempTodo, setTempTodo] = useState<Todo | null>(null);
@@ -26,23 +32,16 @@ export const App: React.FC = () => {
   useEffect(() => {
     getTodos()
       .then(todosFromServer => {
-        switch (selectedFilter) {
-          case Status.active:
-            setPreparedTodos(todosFromServer.filter(todo => !todo.completed));
-            break;
-          case Status.complited:
-            setPreparedTodos(todosFromServer.filter(todo => todo.completed));
-            break;
-          default:
-            setPreparedTodos(todosFromServer);
-        }
+        setPreparedTodos(todosFromServer);
       })
       .catch(() => setErrorMessage('Unable to load todos'));
-  }, [isSubmitting, selectedFilter, isLoading]);
+  }, [isLoading]);
 
   if (!USER_ID) {
     return <UserWarning />;
   }
+
+  const visibleTodos = getVisibleTodos(preparedTodos, selectedFilter);
 
   return (
     <div className="todoapp">
@@ -51,9 +50,10 @@ export const App: React.FC = () => {
       <div className="todoapp__content">
         <Header
           setPreparedTodos={setPreparedTodos}
-          todos={preparedTodos}
+          todos={visibleTodos}
           title={title}
           setTitle={setTitle}
+          errorMessage={errorMessage}
           setErrorMessage={setErrorMessage}
           todoId={getNewTodoId(preparedTodos)}
           setIsSubmitting={setIsSubmitting}
@@ -61,21 +61,21 @@ export const App: React.FC = () => {
           setTempTodo={setTempTodo}
         />
 
-        {/* Some problems with logic. When filter = complited and we don't have any complite todos, footer has gone */}
         {!!preparedTodos?.length && (
           <>
             <TodoList
-              todos={preparedTodos}
+              todos={visibleTodos}
               tempTodo={tempTodo}
               isLoading={isLoading}
               setIsLoading={setIsLoading}
               setErrorMessage={setErrorMessage}
             />
+
             <Footer
               selectedFilter={selectedFilter}
               onSelect={setSelectedFilter}
               count={getCount(preparedTodos)}
-              todos={preparedTodos}
+              todos={visibleTodos}
               setIsLoading={setIsLoading}
               setErrorMessage={setErrorMessage}
             />

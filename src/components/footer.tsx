@@ -1,6 +1,6 @@
 import cn from 'classnames';
 import { Status, Todo } from '../types/Todo';
-import { handleDeleteTodo } from '../api/todos';
+import { deleteTodo } from '../api/todos';
 
 type Props = {
   selectedFilter: string;
@@ -23,7 +23,13 @@ export const Footer: React.FC<Props> = ({
 
   const handleDeleteCompletedTodos = () => {
     completedTodos.forEach(todo => {
-      handleDeleteTodo(todo, todo.id, setIsLoading, setErrorMessage);
+      setIsLoading(todo.id);
+
+      deleteTodo(todo.id)
+        .catch(() => {
+          setErrorMessage(`Unable to delete a todo`);
+        })
+        .finally(() => setIsLoading(null));
     });
   };
 
@@ -33,43 +39,22 @@ export const Footer: React.FC<Props> = ({
         {`${count} items left`}
       </span>
 
-      {/* Active link should have the 'selected' class */}
       <nav className="filter" data-cy="Filter">
-        <a
-          href="#/"
-          className={cn('filter__link', {
-            selected: selectedFilter === Status.all,
-          })}
-          data-cy="FilterLinkAll"
-          onClick={() => onSelect(Status.all)}
-        >
-          {Status.all}
-        </a>
-
-        <a
-          href="#/active"
-          className={cn('filter__link', {
-            selected: selectedFilter === Status.active,
-          })}
-          data-cy="FilterLinkActive"
-          onClick={() => onSelect(Status.active)}
-        >
-          {Status.active}
-        </a>
-
-        <a
-          href="#/completed"
-          className={cn('filter__link', {
-            selected: selectedFilter === Status.complited,
-          })}
-          data-cy="FilterLinkCompleted"
-          onClick={() => onSelect(Status.complited)}
-        >
-          {Status.complited}
-        </a>
+        {Object.keys(Status).map(status => (
+          <a
+            key={status}
+            href="#/"
+            className={cn('filter__link', {
+              selected: selectedFilter === status,
+            })}
+            data-cy={`FilterLink${status}`}
+            onClick={() => onSelect(status)}
+          >
+            {status}
+          </a>
+        ))}
       </nav>
 
-      {/* this button should be disabled if there are no completed todos */}
       <button
         type="button"
         className="todoapp__clear-completed"

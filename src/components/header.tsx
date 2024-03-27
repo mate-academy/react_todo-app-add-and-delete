@@ -7,6 +7,7 @@ type Props = {
   todos: Todo[];
   title: string;
   setTitle: (e: string) => void;
+  errorMessage: string;
   setErrorMessage: (m: string) => void;
   todoId: number;
   isSubmitting: boolean;
@@ -18,6 +19,7 @@ export const Header: React.FC<Props> = ({
   setPreparedTodos,
   todos,
   setTitle,
+  errorMessage,
   setErrorMessage,
   title,
   todoId,
@@ -31,7 +33,7 @@ export const Header: React.FC<Props> = ({
     if (titleField.current) {
       titleField.current.focus();
     }
-  }, [todos]);
+  }, [todos, errorMessage]);
 
   const handleSubmit = (event: React.FormEvent) => {
     event.preventDefault();
@@ -66,6 +68,7 @@ export const Header: React.FC<Props> = ({
         ]);
       })
       .catch(() => {
+        setTempTodo(null);
         setErrorMessage(`Unable to add a todo`);
       })
       .finally(() => {
@@ -82,7 +85,6 @@ export const Header: React.FC<Props> = ({
         data-cy="ToggleAllButton"
       />
 
-      {/* Add a todo on form submit */}
       <form onSubmit={handleSubmit}>
         <input
           ref={titleField}
