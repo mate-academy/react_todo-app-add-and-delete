@@ -3,7 +3,7 @@ import { Status, Todo } from '../types/Todo';
 import { deleteTodo } from '../api/todos';
 
 type Props = {
-  setPreparedTodos: (e: Todo[]) => void;
+  setPreparedTodos: (e: (s: Todo[]) => Todo[]) => void;
   selectedFilter: string;
   onSelect: (a: string) => void;
   count: number;
@@ -26,13 +26,13 @@ export const Footer: React.FC<Props> = ({
   const completedTodoIds = completedTodos.map(todo => todo.id);
 
   const handleDeleteCompletedTodos = () => {
-    completedTodos.map(todo => {
+    completedTodos.forEach(todo => {
       setIsLoading(todo.id);
 
       deleteTodo(todo.id)
         .then(() => {
-          setPreparedTodos(
-            todos.filter(
+          setPreparedTodos(prevTodos =>
+            prevTodos.filter(
               currentTodo => !completedTodoIds.includes(currentTodo.id),
             ),
           );
