@@ -2,14 +2,7 @@ import { useTodosContext } from '../../utils/useTodosContext';
 import { TodoFilter } from '../TodoFilter';
 
 export const Footer: React.FC = () => {
-  const {
-    todos,
-
-    activeTodos,
-    completedTodos,
-
-    onDelete,
-  } = useTodosContext();
+  const { todos, activeTodos, completedTodos, onDelete } = useTodosContext();
 
   function deleteTodo(todoId: number) {
     onDelete(todoId);

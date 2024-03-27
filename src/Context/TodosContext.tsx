@@ -35,14 +35,15 @@ export const TodosContextProvider: React.FC<Props> = ({ children }) => {
         setTodos(currentTodos =>
           currentTodos.filter(todo => todo.id !== todoId),
         );
-        setIsloading(true);
       })
       .catch(() => {
         handleRequestError(Errors.deleteTodo, setError);
-        setLoadingTodoIds([]);
-        setIsloading(true);
+      })
+      .finally(() => {
+        setLoadingTodoIds(prevLoadingTodoIds =>
+          prevLoadingTodoIds.filter(id => id !== todoId),
+        );
       });
-    setLoadingTodoIds([todoId]);
   }
 
   const contextValues = {

@@ -12,10 +12,10 @@ export const Header: React.FC = () => {
     setTodos,
     setTempTodo,
     setError,
+    loadingTodoIds,
     setLoadingTodoIds,
     activeTodos,
     completedTodos,
-    isLoading,
     setIsloading,
   } = useTodosContext();
   const addTodoInputRef = useRef<HTMLInputElement>(null);
@@ -24,11 +24,11 @@ export const Header: React.FC = () => {
   const [isSubMit, setIsSubmit] = useState(false);
 
   useEffect(() => {
-    if (isLoading && addTodoInputRef.current) {
+    if (loadingTodoIds && addTodoInputRef.current) {
       addTodoInputRef.current.focus();
       setIsloading(false);
     }
-  }, [setIsloading, isLoading]);
+  }, [loadingTodoIds]);
 
   const handleInputChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     setError(Errors.default);

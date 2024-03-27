@@ -3,13 +3,7 @@ import { useTodosContext } from '../../utils/useTodosContext';
 import { handleFilteredTodos } from '../../utils/handleFiltredTodos';
 
 export const TodoList: React.FC = () => {
-  const {
-    todos,
-    filterSelected,
-    tempTodo,
-
-    onDelete,
-  } = useTodosContext();
+  const { todos, filterSelected, tempTodo, onDelete } = useTodosContext();
   const preparedTodos = handleFilteredTodos(todos, filterSelected);
 
   function deleteTodo(todoId: number) {
