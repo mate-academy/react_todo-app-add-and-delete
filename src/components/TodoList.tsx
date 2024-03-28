@@ -1,8 +1,6 @@
 /* eslint-disable jsx-a11y/label-has-associated-control */
 /* eslint-disable jsx-a11y/control-has-associated-label */
-import { useState } from 'react';
 import { Todo } from '../types/Todo';
-import classNames from 'classnames';
 import * as todoService from '../api/todos';
 import { CSSTransition, TransitionGroup } from 'react-transition-group';
 import React from 'react';
@@ -28,10 +26,8 @@ export const TodoList: React.FC<Props> = ({
   const isNotCompletedTodoVisible = false;
   const isEditingTodoVisible = false;
   const isLoadingTodoVisible = false;
-  const [loaderId, setLoaderId] = useState<number | null>(null);
   const filter = filteredTodos();
   const toggleTodoCompletion = (todoId: number) => {
-    setLoaderId(todoId);
     const updatedTodos = todos.map(todo => {
       if (todoId === todo.id) {
         return {
@@ -44,9 +40,6 @@ export const TodoList: React.FC<Props> = ({
     });
 
     setTodos(updatedTodos);
-    setTimeout(() => {
-      setLoaderId(null);
-    }, 300);
   };
 
   const handleTodoUpdate = (updatedTodo: Todo) => {
@@ -77,52 +70,23 @@ export const TodoList: React.FC<Props> = ({
       <TransitionGroup>
         {filter.map(todo => (
           <CSSTransition key={todo.id} timeout={300} classNames="item">
-            <div
-              data-cy="Todo"
-              className={classNames('todo', { completed: todo.completed })}
-              onSubmit={() => handleTodoUpdate(todo)}
-            >
-              {todo.completed}
-              <label className="todo__status-label">
-                <input
-                  data-cy="TodoStatus"
-                  type="checkbox"
-                  className="todo__status"
-                  placeholder="Empty todo will be deleted"
-                  onChange={() => toggleTodoCompletion(todo.id)}
-                  checked={todo.completed}
-                />
-              </label>
-
-              <span data-cy="TodoTitle" className="todo__title">
-                {todo.title}
-              </span>
-
-              <button
-                type="button"
-                className="todo__remove"
-                data-cy="TodoDelete"
-                onClick={() => {
-                  destroy(todo.id);
-                }}
-              >
-                ×
-              </button>
-              <div
-                data-cy="TodoLoader"
-                className={classNames('modal overlay', {
-                  'is-active': loaderId === todo.id,
-                })}
-              >
-                <div className="modal-background has-background-white-ter" />
-                <div className="loader" />
-              </div>
-            </div>
+            <TodoItem
+              todo={todo}
+              toggleTodoCompletion={toggleTodoCompletion}
+              onDelete={() => destroy(todo.id)}
+              onUpdate={handleTodoUpdate}
+            />
           </CSSTransition>
         ))}
         {tempTodo && (
           <CSSTransition key="0" timeout={300} classNames="temp-item">
-            <TodoItem isLoading={true} />
+            <TodoItem
+              isLoading={true}
+              todo={tempTodo}
+              toggleTodoCompletion={() => {}}
+              onDelete={() => {}}
+              onUpdate={() => {}}
+            />
           </CSSTransition>
         )}
         {/* This todo is an active todo */}
