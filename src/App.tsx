@@ -35,7 +35,7 @@ export const App: React.FC = () => {
         setPreparedTodos(todosFromServer);
       })
       .catch(() => setErrorMessage('Unable to load todos'));
-  }, [isLoading]);
+  }, []);
 
   if (!USER_ID) {
     return <UserWarning />;
