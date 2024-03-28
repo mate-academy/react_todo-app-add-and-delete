@@ -7,55 +7,75 @@ import React, {
   useRef,
   useState,
 } from 'react';
-import { SetTodosContext, TodosContext } from './TodosContext';
-import { addTodos, editTodos } from '../api/todos';
+import { SetTodosContext, TodosContext } from '../Contexts/TodosContext';
+import { USER_ID, addTodo, editTodos } from '../api/todos';
 import { Todo } from '../types/Todo';
 import classNames from 'classnames';
+import { SetErrorContext } from '../Contexts/ErrorContext';
+import { ErrorMessage } from '../types/Error';
+import { InputRef, SetInputRef } from '../Contexts/InputRefContext';
 
 type Props = {
-  setError: (newError: string) => void;
+  setTempTodo: (tempTodo: Todo | null) => void;
 };
 
-export const Header: React.FC<Props> = ({ setError }) => {
+export const Header: React.FC<Props> = ({ setTempTodo }) => {
   const todos = useContext(TodosContext);
   const setTodos = useContext(SetTodosContext);
+  const setErrorMessage = useContext(SetErrorContext);
+  const inputFocused = useContext(InputRef);
+  const setInputFocused = useContext(SetInputRef);
 
-  const [addingTodo, setAddingTodo] = useState(false);
   const [title, setTitle] = useState('');
-
   const inputRef = useRef<HTMLInputElement>(null);
 
   useEffect(() => {
-    if (inputRef.current) {
+    if (inputRef.current && inputFocused) {
       inputRef.current.focus();
+      setInputFocused(false);
     }
-  }, []);
+  }, [inputFocused, setInputFocused]);
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
 
-    if (addingTodo) {
-      return;
-    }
-
     const trimmedTitle = title.trim();
 
     if (!trimmedTitle) {
-      setError('Title should not be empty');
+      setErrorMessage(ErrorMessage.title);
+      setTitle('');
 
       return;
     }
 
-    setAddingTodo(true);
+    if (inputRef?.current) {
+      inputRef.current.disabled = true;
+    }
 
-    addTodos({ title: trimmedTitle })
-      .then(newTodo => {
-        setTodos(prevTodos => [...prevTodos, newTodo]);
+    setTempTodo({
+      id: 0,
+      title: trimmedTitle,
+      userId: USER_ID,
+      completed: false,
+    });
+
+    addTodo({
+      title: trimmedTitle,
+      userId: USER_ID,
+      completed: false,
+    })
+      .then((todo: Todo) => {
+        setTodos(prevTodos => prevTodos.concat(todo));
         setTitle('');
       })
-      .catch(() => setError('Unable to add a todo'))
+      .catch(() => setErrorMessage(ErrorMessage.add))
       .finally(() => {
-        setAddingTodo(false);
+        if (inputRef?.current) {
+          inputRef.current.disabled = false;
+          inputRef.current.focus();
+        }
+
+        setTempTodo(null);
       });
   };
 
@@ -75,7 +95,7 @@ export const Header: React.FC<Props> = ({ setError }) => {
 
   const handleToggleAll = useCallback(() => {
     const updatedTodos = todos.map(todo => {
-      if (todo.completed === !toggledAllCompleted) {
+      if (todo.completed !== toggledAllCompleted) {
         return todo;
       }
 
@@ -117,7 +137,6 @@ export const Header: React.FC<Props> = ({ setError }) => {
           onKeyUp={handleKeyUp}
           className="todoapp__new-todo"
           placeholder="What needs to be done?"
-          disabled={addingTodo}
         />
       </form>
     </header>

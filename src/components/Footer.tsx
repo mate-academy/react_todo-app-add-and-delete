@@ -1,8 +1,12 @@
-import { useContext } from 'react';
+import { useCallback, useContext } from 'react';
 import classNames from 'classnames';
-import { SetTodosContext, TodosContext } from './TodosContext';
-import { deleteCompletedTodos } from '../api/todos';
+import { SetTodosContext, TodosContext } from '../Contexts/TodosContext';
+import { deleteTodos } from '../api/todos';
 import { Filter } from '../types/Filter';
+import { SetInputRef } from '../Contexts/InputRefContext';
+import { SetErrorContext } from '../Contexts/ErrorContext';
+import { ErrorMessage } from '../types/Error';
+import { SetIsDeletingContext } from '../Contexts/DeletingContext';
 
 type Props = {
   setFilter: (newFilter: Filter) => void;
@@ -12,18 +16,33 @@ type Props = {
 export const Footer: React.FC<Props> = ({ setFilter, filter }) => {
   const todos = useContext(TodosContext);
   const setTodos = useContext(SetTodosContext);
+  const setInputFocused = useContext(SetInputRef);
+  const setErrorMessage = useContext(SetErrorContext);
+  const setIsDeleting = useContext(SetIsDeletingContext);
 
   const activeTodos = todos.filter(todo => !todo.completed).length;
   const completedTodos = todos.filter(todo => todo.completed).length;
 
-  const handleClearCompleted = () => {
+  const handleClearCompleted = useCallback(() => {
+    setIsDeleting(true);
     const todosToDelete = todos.filter(todo => todo.completed);
 
-    deleteCompletedTodos(todosToDelete);
-    setTodos(prevTodos => {
-      return prevTodos.filter(todo => !todo.completed);
+    Promise.allSettled(
+      todosToDelete.map(async todo => {
+        try {
+          await deleteTodos(todo.id);
+          setTodos(prevTodos => {
+            return prevTodos.filter(prevTodo => prevTodo.id !== todo.id);
+          });
+        } catch {
+          setErrorMessage(ErrorMessage.delete);
+        }
+      }),
+    ).finally(() => {
+      setInputFocused(true);
+      setIsDeleting(false);
     });
-  };
+  }, [setErrorMessage, setInputFocused, setTodos, todos, setIsDeleting]);
 
   const handleFiltration = (newFilter: Filter) => {
     setFilter(newFilter);
@@ -35,7 +54,6 @@ export const Footer: React.FC<Props> = ({ setFilter, filter }) => {
         {activeTodos} items left
       </span>
 
-      {/* Active link should have the 'selected' class */}
       <nav className="filter" data-cy="Filter">
         <a
           href="#/"

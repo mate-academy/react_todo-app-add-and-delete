@@ -6,19 +6,28 @@ import { UserWarning } from '../UserWarning';
 import { Header } from './Header';
 import { TodoList } from './TodoList';
 import { Footer } from './Footer';
-import { SetTodosContext, TodosContext } from './TodosContext';
+import { SetTodosContext, TodosContext } from '../Contexts/TodosContext';
 import { Filter } from '../types/Filter';
+import { Todo } from '../types/Todo';
+import { ErrorContext, SetErrorContext } from '../Contexts/ErrorContext';
+import { ErrorMessage } from '../types/Error';
+import { SetInputRef } from '../Contexts/InputRefContext';
 
 export const TodoApp: React.FC = () => {
   const todos = useContext(TodosContext);
   const setTodos = useContext(SetTodosContext);
+  const errorMessage = useContext(ErrorContext);
+  const setErrorMessage = useContext(SetErrorContext);
+  const setInputFocused = useContext(SetInputRef);
 
   const [filter, setFilter] = useState(Filter.All);
-  const [error, setError] = useState<string>('');
+  const [tempTodo, setTempTodo] = useState<Todo | null>(null);
 
   useEffect(() => {
-    setTimeout(() => setError(''), 3000);
-  }, [error]);
+    if (errorMessage !== ErrorMessage.noError) {
+      setTimeout(() => setErrorMessage(ErrorMessage.noError), 3000);
+    }
+  }, [errorMessage, setErrorMessage]);
 
   const preparedTodos = useMemo(() => {
     return todos.filter(todo => {
@@ -39,19 +48,17 @@ export const TodoApp: React.FC = () => {
     getTodos()
       .then(setTodos)
       .catch(() => {
-        setError('Unable to load todos');
+        setErrorMessage(ErrorMessage.load);
       })
-      .finally(() => {
-        setTimeout(() => setError(''), 3000);
-      });
-  }, [setTodos, setError]);
+      .finally(() => setInputFocused(true));
+  }, [setTodos, setErrorMessage, setInputFocused]);
 
   if (!USER_ID) {
     return <UserWarning />;
   }
 
   const handleErrorDelete = () => {
-    setError('');
+    setErrorMessage(ErrorMessage.noError);
   };
 
   return (
@@ -59,20 +66,18 @@ export const TodoApp: React.FC = () => {
       <h1 className="todoapp__title">todos</h1>
 
       <div className="todoapp__content">
-        <Header setError={setError} />
+        <Header setTempTodo={setTempTodo} />
 
-        <TodoList todos={preparedTodos} />
+        <TodoList todos={preparedTodos} tempTodo={tempTodo} />
 
         {todos.length !== 0 && <Footer setFilter={setFilter} filter={filter} />}
       </div>
 
-      {/* DON'T use conditional rendering to hide the notification */}
-      {/* Add the 'hidden' class to hide the message smoothly */}
       <div
         data-cy="ErrorNotification"
         className={classNames(
           'notification is-danger is-light has-text-weight-normal',
-          { hidden: !error },
+          { hidden: !errorMessage },
         )}
       >
         <button
@@ -81,7 +86,7 @@ export const TodoApp: React.FC = () => {
           className="delete"
           onClick={handleErrorDelete}
         />
-        {error}
+        {errorMessage}
       </div>
     </div>
   );
