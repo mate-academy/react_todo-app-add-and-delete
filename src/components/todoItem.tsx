@@ -7,8 +7,8 @@ type Props = {
   todos: Todo[];
   todo: Todo;
   setPreparedTodos: (e: Todo[]) => void;
-  isLoading: number | null;
-  setIsLoading: (e: number | null) => void;
+  isLoading: number[];
+  setIsLoading: (e: (s: number[]) => number[] | number[]) => void;
   setErrorMessage: (m: string) => void;
 };
 
@@ -21,7 +21,7 @@ export const TodoItem: React.FC<Props> = ({
   setErrorMessage,
 }) => {
   const handleDeleteTodo = () => {
-    setIsLoading(todo.id);
+    setIsLoading(prevTodosIds => [...prevTodosIds, todo.id]);
 
     deleteTodo(todo.id)
       .then(() => {
@@ -32,7 +32,7 @@ export const TodoItem: React.FC<Props> = ({
       .catch(() => {
         setErrorMessage(`Unable to delete a todo`);
       })
-      .finally(() => setIsLoading(null));
+      .finally(() => setIsLoading(() => []));
   };
 
   return (
@@ -59,7 +59,7 @@ export const TodoItem: React.FC<Props> = ({
         type="button"
         className="todo__remove"
         data-cy="TodoDelete"
-        onClick={() => handleDeleteTodo()}
+        onClick={handleDeleteTodo}
       >
         ×
       </button>
@@ -67,7 +67,7 @@ export const TodoItem: React.FC<Props> = ({
       <div
         data-cy="TodoLoader"
         className={cn('modal overlay', {
-          'is-active': isLoading === todo.id,
+          'is-active': isLoading.includes(todo.id),
         })}
       >
         <div className="modal-background has-background-white-ter" />

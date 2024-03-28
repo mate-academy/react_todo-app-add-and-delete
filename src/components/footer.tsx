@@ -8,7 +8,7 @@ type Props = {
   onSelect: (a: string) => void;
   count: number;
   todos: Todo[];
-  setIsLoading: (e: number | null) => void;
+  setIsLoading: (e: (s: number[]) => number[] | number[]) => void;
   setErrorMessage: (m: string) => void;
 };
 
@@ -27,7 +27,7 @@ export const Footer: React.FC<Props> = ({
 
   const handleDeleteCompletedTodos = () => {
     completedTodos.forEach(todo => {
-      setIsLoading(todo.id);
+      setIsLoading(prevTodosIds => [...prevTodosIds, todo.id]);
 
       deleteTodo(todo.id)
         .then(() => {
@@ -40,7 +40,7 @@ export const Footer: React.FC<Props> = ({
         .catch(() => {
           setErrorMessage(`Unable to delete a todo`);
         })
-        .finally(() => setIsLoading(null));
+        .finally(() => setIsLoading(() => []));
     });
   };
 
@@ -71,9 +71,7 @@ export const Footer: React.FC<Props> = ({
         className="todoapp__clear-completed"
         data-cy="ClearCompletedButton"
         disabled={!completedTodos.length}
-        onClick={() => {
-          handleDeleteCompletedTodos();
-        }}
+        onClick={handleDeleteCompletedTodos}
       >
         Clear completed
       </button>

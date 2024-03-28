@@ -21,7 +21,7 @@ export const App: React.FC = () => {
   const [title, setTitle] = useState<string>('');
   const [isSubmitting, setIsSubmitting] = useState<boolean>(false);
   const [tempTodo, setTempTodo] = useState<Todo | null>(null);
-  const [isLoading, setIsLoading] = useState<number | null>(null);
+  const [isLoading, setIsLoading] = useState<number[]>([]);
 
   if (errorMessage) {
     setTimeout(() => {

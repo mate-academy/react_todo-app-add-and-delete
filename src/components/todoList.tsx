@@ -6,8 +6,8 @@ type Props = {
   todos: Todo[];
   setPreparedTodos: (e: Todo[]) => void;
   tempTodo: Todo | null;
-  isLoading: number | null;
-  setIsLoading: (e: number | null) => void;
+  isLoading: number[];
+  setIsLoading: (e: (s: number[]) => number[] | number[]) => void;
   setErrorMessage: (m: string) => void;
 };
 
