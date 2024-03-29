@@ -1,4 +1,4 @@
-import React, { useCallback, useEffect, useState } from 'react';
+import React, { useCallback, useEffect, useRef, useState } from 'react';
 import { USER_ID, deleteTodo, getTodos, postTodo } from './api/todos';
 import { Todo } from './types/Todo';
 import { Errors } from './types/Error';
@@ -18,6 +18,8 @@ export const App: React.FC = () => {
   const [deleteTodoId, setDeleteTodoId] = useState<number | null>(null);
   const [title, setTitle] = useState('');
   const filteredTodo = filterTodo(todos, filter);
+
+  const inputRef = useRef<HTMLInputElement>(null);
 
   useEffect(() => {
     const getData = async () => {
@@ -74,23 +76,40 @@ export const App: React.FC = () => {
       .then(() => {
         setTodos(prev => prev.filter(todo => todo.id !== id));
       })
-      .catch(() => setError(Errors.Delete))
+      .catch(() => {
+        setError(Errors.Delete);
+      })
       .finally(() => setDeleteTodoId(null));
   }, []);
 
   const clearCompleted = async () => {
-    const todoToClear = todos.filter(todo => todo.completed);
+    const todoToClear: Todo[] = [];
 
     try {
-      for (const item of todoToClear) {
-        await deleteTodo(item.id);
+      for (const todo of todos) {
+        if (todo.completed) {
+          try {
+            await deleteTodo(todo.id);
+            todoToClear.push(todo);
+          } catch {
+            setError(Errors.Delete);
+          }
+        }
       }
 
-      setTodos(prevState => prevState.filter(todo => !todo.completed));
+      setTodos(prevState =>
+        prevState.filter(todo => !todoToClear.includes(todo)),
+      );
     } catch {
       setError(Errors.Delete);
     }
   };
+
+  useEffect(() => {
+    if (inputRef.current) {
+      inputRef.current.focus();
+    }
+  }, [tempTodo, todos]);
 
   return (
     <div className="todoapp">
@@ -98,6 +117,7 @@ export const App: React.FC = () => {
 
       <div className="todoapp__content">
         <TodoHeader
+          inputRef={inputRef}
           title={title}
           setTitle={setTitle}
           disabled={!!tempTodo}

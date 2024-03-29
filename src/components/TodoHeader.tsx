@@ -1,11 +1,10 @@
-import { useEffect, useRef } from 'react';
-
 type Props = {
-  tempAddTodo: () => void;
+  tempAddTodo: (title: string) => void;
   areAllCompleted: boolean;
   disabled: boolean;
   title: string;
   setTitle: (value: string) => void;
+  inputRef: React.RefObject<HTMLInputElement>;
 };
 
 export const TodoHeader: React.FC<Props> = ({
@@ -14,16 +13,11 @@ export const TodoHeader: React.FC<Props> = ({
   disabled,
   title,
   setTitle,
+  inputRef,
 }) => {
-  const inputRef = useRef<HTMLInputElement | null>(null);
-
-  useEffect(() => {
-    inputRef.current?.focus();
-  }, [disabled]);
-
   const submitForm = (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
-    tempAddTodo();
+    tempAddTodo(title);
   };
 
   return (
