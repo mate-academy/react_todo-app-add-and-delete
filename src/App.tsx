@@ -67,7 +67,7 @@ export const App: React.FC = () => {
     setIsSubmitting(true);
     setTempTodo({ id: 0, title, userId, completed });
 
-    createTodo({ title, userId, completed })
+    return createTodo({ title, userId, completed })
       .then(newTodo => {
         setTodos(currentTodos => [...currentTodos, newTodo] as Todo[]);
         setTodoTitle('');
@@ -86,14 +86,15 @@ export const App: React.FC = () => {
     setIsSubmitting(true);
     setDeletedTodoId(todoId);
 
-    deleteTodo(todoId)
+    return deleteTodo(todoId)
       .then(() => {
         setTodos(currentTodos =>
           currentTodos.filter(todo => todo.id !== todoId),
         );
       })
-      .catch(() => {
+      .catch(err => {
         setError('Unable to delete a todo');
+        throw err;
       })
       .finally(() => {
         setIsSubmitting(false);
@@ -122,7 +123,7 @@ export const App: React.FC = () => {
     const completedTodos = todos.filter(todo => todo.completed);
 
     try {
-      await Promise.all(completedTodos.map(todo => deleteTodo(todo.id)));
+      await Promise.all(completedTodos.map(todo => removeTodo(todo.id)));
 
       setTodos(prevTodos => prevTodos.filter(todo => !todo.completed));
     } catch {
