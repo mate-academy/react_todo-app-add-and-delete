@@ -1,3 +1,4 @@
+import { useMemo } from 'react';
 import { Filter } from '../types/Filter';
 import { Todo } from '../types/Todo';
 
@@ -5,10 +6,22 @@ type Props = {
   filter: Filter;
   setFilter: (value: Filter) => void;
   todos: Todo[];
+  clearCompleted: () => void;
 };
 
-export const TodoFooter: React.FC<Props> = ({ filter, setFilter, todos }) => {
-  const uncompletedTodo = todos.filter(todo => !todo.completed);
+export const TodoFooter: React.FC<Props> = ({
+  filter,
+  setFilter,
+  todos,
+  clearCompleted,
+}) => {
+  const completedTodos = useMemo(() => {
+    return todos.filter(todo => todo.completed);
+  }, [todos]);
+
+  const uncompletedTodo = useMemo(() => {
+    return todos.filter(todo => !todo.completed);
+  }, [todos]);
 
   return (
     <footer className="todoapp__footer" data-cy="Footer">
@@ -49,6 +62,8 @@ export const TodoFooter: React.FC<Props> = ({ filter, setFilter, todos }) => {
         type="button"
         className="todoapp__clear-completed"
         data-cy="ClearCompletedButton"
+        onClick={clearCompleted}
+        disabled={completedTodos.length === 0}
       >
         Clear completed
       </button>
