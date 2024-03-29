@@ -126,7 +126,7 @@ export const App: React.FC = () => {
         />
 
         {isLoading ? (
-          <p>Loading...</p>
+          <p className="todoapp__loading">Loading...</p>
         ) : (
           <TodoList
             tempTodo={tempTodo}
