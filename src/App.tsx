@@ -1,26 +1,86 @@
-/* eslint-disable max-len */
 /* eslint-disable jsx-a11y/control-has-associated-label */
-import React from 'react';
+import React, { useContext, useEffect, useState } from 'react';
+import classNames from 'classnames';
 import { UserWarning } from './UserWarning';
-
-const USER_ID = 0;
+import { TodoList } from './components/TodoList';
+import { TodoFilter } from './components/TodoFilter';
+import { USER_ID, getTodos } from './api/todos';
+import { DispatchContext, StateContext } from './components/MainContext';
+import { ActionTypes } from './types/ActionTypes';
+import { Header } from './components/Header';
+import { Todo } from './types/Todo';
 
 export const App: React.FC = () => {
+  const [query, setQuery] = useState('');
+  const dispatch = useContext(DispatchContext);
+  const { todos, errorMessage } = useContext(StateContext);
+  const [tempTodo, setTempTodo] = useState<Todo | null>(null);
+
+  const hasTodos = !!todos.length;
+
+  useEffect(() => {
+    getTodos()
+      .then(responce =>
+        dispatch({
+          type: ActionTypes.SetValuesByKeys,
+          payload: {
+            todos: responce,
+          },
+        }),
+      )
+      .catch(() =>
+        dispatch({
+          type: ActionTypes.SetValuesByKeys,
+          payload: {
+            errorMessage: 'Unable to load todos',
+          },
+        }),
+      );
+  }, [dispatch]);
+
   if (!USER_ID) {
     return <UserWarning />;
   }
 
   return (
-    <section className="section container">
-      <p className="title is-4">
-        Copy all you need from the prev task:
-        <br />
-        <a href="https://github.com/mate-academy/react_todo-app-loading-todos#react-todo-app-load-todos">
-          React Todo App - Load Todos
-        </a>
-      </p>
+    <div className="todoapp">
+      <h1 className="todoapp__title">todos</h1>
 
-      <p className="subtitle">Styles are already copied</p>
-    </section>
+      <div className="todoapp__content">
+        <Header query={query} setQuery={setQuery} setTempTodo={setTempTodo} />
+
+        <TodoList tempTodo={tempTodo} />
+
+        {hasTodos && <TodoFilter />}
+      </div>
+
+      <div
+        data-cy="ErrorNotification"
+        className={classNames(
+          'notification',
+          'is-danger',
+          'is-light',
+          'has-text-weight-normal',
+          {
+            hidden: !errorMessage,
+          },
+        )}
+      >
+        <button
+          data-cy="HideErrorButton"
+          type="button"
+          className="delete"
+          onClick={() =>
+            dispatch({
+              type: ActionTypes.SetValuesByKeys,
+              payload: {
+                errorMessage: '',
+              },
+            })
+          }
+        />
+        {errorMessage}
+      </div>
+    </div>
   );
 };
