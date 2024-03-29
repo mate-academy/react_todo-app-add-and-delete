@@ -40,6 +40,7 @@ export const TodoHeader: React.FC = () => {
     });
 
     const newTodo = {
+      id: 0,
       title: query.trim(),
       completed: false,
       userId: USER_ID,
