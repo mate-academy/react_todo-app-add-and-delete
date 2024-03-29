@@ -2,12 +2,15 @@ import { useTodos } from '../../utils/TodoContext';
 import { TodoFilter } from '../TodoFilter';
 
 export const TodoFooter: React.FC = () => {
-  const { todos, setTodos } = useTodos();
+  const { todos, removeTodo } = useTodos();
   const isClearButtonActive = todos.some(todo => todo.completed);
   const countActiveTodos = todos.filter(todo => !todo.completed).length;
 
   const clearAllCompleted = () => {
-    setTodos(prevTodos => prevTodos.filter(todo => !todo.completed));
+    todos
+      .filter(todo => todo.completed)
+      .map(todo => todo.id)
+      .forEach(id => removeTodo(id));
   };
 
   return (
@@ -18,16 +21,15 @@ export const TodoFooter: React.FC = () => {
 
       <TodoFilter />
 
-      {isClearButtonActive && (
-        <button
-          type="button"
-          className="todoapp__clear-completed"
-          data-cy="ClearCompletedButton"
-          onClick={() => clearAllCompleted()}
-        >
-          Clear completed
-        </button>
-      )}
+      <button
+        type="button"
+        className="todoapp__clear-completed"
+        data-cy="ClearCompletedButton"
+        onClick={() => clearAllCompleted()}
+        disabled={!isClearButtonActive}
+      >
+        Clear completed
+      </button>
     </footer>
   );
 };

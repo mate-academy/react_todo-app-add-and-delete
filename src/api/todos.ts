@@ -12,3 +12,7 @@ export const getTodos = () => {
 export const sendTodoToServer = (data: Omit<Todo, 'id'>) => {
   return client.post<Todo>(`/todos`, data);
 };
+
+export const deleteTodoFromServer = (id: number) => {
+  return client.delete(`/todos/${id}`);
+};

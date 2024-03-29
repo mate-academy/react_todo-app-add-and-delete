@@ -1,17 +1,17 @@
-import React, { useEffect, useRef, useState } from 'react';
+import React, { useEffect, useRef } from 'react';
 import { useTodos } from '../../utils/TodoContext';
-import { USER_ID, sendTodoToServer } from '../../api/todos';
+import { USER_ID } from '../../api/todos';
 import { ErrorMessage } from '../../types/ErrorMessage';
 
 export const TodoHeader: React.FC = () => {
-  const [query, setQuery] = useState<string>('');
   const {
     setTodos,
     setError,
     isLoading,
-    setIsLoading,
+    query,
+    setQuery,
     setTempTodo,
-    setLoadingTodosIDs,
+    addTodo,
   } = useTodos();
   const inputRef = useRef<HTMLInputElement>(null);
 
@@ -45,22 +45,7 @@ export const TodoHeader: React.FC = () => {
       userId: USER_ID,
     };
 
-    setIsLoading(true);
-    setLoadingTodosIDs(prev => [...prev, 0]);
-
-    sendTodoToServer(newTodo)
-      .then(reponse => {
-        setTodos(prevTodos => [...prevTodos, reponse]);
-        setQuery('');
-      })
-      .catch(() => {
-        setError(ErrorMessage.ADD_TODO_ERROR);
-      })
-      .finally(() => {
-        setTempTodo(null);
-        setIsLoading(false);
-        setLoadingTodosIDs([]);
-      });
+    addTodo(newTodo);
   };
 
   const toggleCompletedAll = () => {

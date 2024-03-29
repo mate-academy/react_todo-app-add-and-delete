@@ -8,7 +8,7 @@ import React, {
 import { Todo } from '../types/Todo';
 import { TodosContextType } from '../types/TodosContextType';
 import { Filter } from '../types/Filter';
-import { getTodos, sendTodoToServer } from '../api/todos';
+import { deleteTodoFromServer, getTodos, sendTodoToServer } from '../api/todos';
 import { ErrorMessage } from '../types/ErrorMessage';
 
 const initialTodos: Todo[] = [];
@@ -45,13 +45,39 @@ export const TodosProvider: FC<Props> = ({ children }) => {
   const [loadingTodosIDs, setLoadingTodosIDs] = React.useState<number[]>([]);
   const [tempTodo, setTempTodo] = useState<Todo | null>(null);
 
-  const addTodo = (newTodo: Todo) => {
-    // setTodos(prevTodos => [...prevTodos, newTodo]);
-    sendTodoToServer(newTodo);
+  const addTodo = (newTodo: Omit<Todo, 'id'>) => {
+    setIsLoading(true);
+    setLoadingTodosIDs(prev => [...prev, 0]);
+
+    sendTodoToServer(newTodo)
+      .then(response => {
+        setTodos(prevTodos => [...prevTodos, response]);
+        setQuery('');
+      })
+      .catch(() => {
+        setError(ErrorMessage.ADD_TODO_ERROR);
+      })
+      .finally(() => {
+        setTempTodo(null);
+        setIsLoading(false);
+        setLoadingTodosIDs([]);
+      });
   };
 
   const removeTodo = (id: number) => {
-    setTodos(prevTodos => prevTodos.filter(todo => todo.id !== id));
+    setIsLoading(true);
+    setLoadingTodosIDs(prev => [...prev, id]);
+    deleteTodoFromServer(id)
+      .then(() => {
+        setTodos(prevTodos => prevTodos.filter(todo => todo.id !== id));
+      })
+      .catch(() => {
+        setError(ErrorMessage.DELETE_TODO_ERROR);
+      })
+      .finally(() => {
+        setIsLoading(false);
+        setLoadingTodosIDs([]);
+      });
   };
 
   useEffect(() => {
