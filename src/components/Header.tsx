@@ -7,11 +7,11 @@ import React from 'react';
 type Props = {
   todos: Todo[];
   setTodos: React.Dispatch<React.SetStateAction<Todo[]>>;
-  error: React.Dispatch<React.SetStateAction<string>>;
+  setError: React.Dispatch<React.SetStateAction<string>>;
   setTempTodo: React.Dispatch<React.SetStateAction<Todo | null>>;
 };
 export const Header: React.FC<Props> = ({
-  error,
+  setError,
   todos,
   setTodos,
   setTempTodo,
@@ -32,12 +32,12 @@ export const Header: React.FC<Props> = ({
   const titleField = useRef<HTMLInputElement>(null);
 
   useEffect(() => {
-    if (titleField.current && todos) {
+    if (titleField.current) {
       titleField.current.focus();
     }
-  }, [todos]);
+  }, []);
 
-  function addTodos({ title, userId, completed }: Todo) {
+  function addTodo({ title, userId, completed }: Todo) {
     const newTempTodo: Todo = {
       id: Math.random(),
       userId: todoService.USER_ID,
@@ -54,12 +54,12 @@ export const Header: React.FC<Props> = ({
         setTodos(currentTodos => [...currentTodos, newTodos]);
         setTitleTodo('');
         setTempTodo(null);
-        error('');
+        setError('');
       })
       .catch(() => {
-        error('Unable to add a todo');
+        setError('Unable to add a todo');
         setTimeout(() => {
-          error('');
+          setError('');
         }, 3000);
       })
       .finally(() => {
@@ -70,9 +70,9 @@ export const Header: React.FC<Props> = ({
   const handleSubmit = (event: React.FormEvent) => {
     event.preventDefault();
     if (!titleTodo.trim()) {
-      error('Title should not be empty');
+      setError('Title should not be empty');
       setTimeout(() => {
-        error('');
+        setError('');
       }, 3000);
     } else {
       const newTodo = {
@@ -82,8 +82,8 @@ export const Header: React.FC<Props> = ({
         id: 0,
       };
 
-      addTodos(newTodo);
-      error('');
+      addTodo(newTodo);
+      setError('');
     }
   };
 

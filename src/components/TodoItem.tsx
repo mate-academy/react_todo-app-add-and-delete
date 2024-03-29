@@ -1,7 +1,7 @@
 /* eslint-disable jsx-a11y/label-has-associated-control */
 /* eslint-disable jsx-a11y/control-has-associated-label */
 import classNames from 'classnames';
-import React from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import { Todo } from '../types/Todo';
 
 type Props = {
@@ -24,12 +24,41 @@ export const TodoItem: React.FC<Props> = ({
   toggleTodoCompletion,
 }) => {
   const { title, userId, id, completed } = todo;
+  const [isEditing, setIsEditing] = useState(false);
+  const [editText, setEditText] = useState(todo.title);
+  const editInputRef = useRef<HTMLInputElement>(null);
+
+  useEffect(() => {
+    if (isEditing && editInputRef.current) {
+      editInputRef.current.focus();
+    }
+  }, [isEditing]);
+
+  const handleDoubleClick = () => {
+    setIsEditing(true);
+  };
+
+  const handleBlur = () => {
+    onUpdate({ ...todo, title: editText });
+    setIsEditing(false);
+  };
+
+  const handleKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
+    if (e.key === 'Enter') {
+      e.preventDefault();
+      setIsEditing(false);
+      setEditText(editText);
+      onUpdate({ ...todo, title: editText });
+    } else if (e.key === 'Escape') {
+      setIsEditing(false);
+      setEditText(title);
+    }
+  };
 
   return (
     <div
       data-cy="Todo"
       className={classNames('todo', { completed: completed })}
-      onSubmit={() => onUpdate(todo)}
     >
       {completed}
       <label className="todo__status-label">
@@ -43,9 +72,38 @@ export const TodoItem: React.FC<Props> = ({
         />
       </label>
 
-      <span data-cy="TodoTitle" className="todo__title">
-        {title}
-      </span>
+      {isEditing ? (
+        <>
+          <form>
+            <input
+              data-cy="TodoTitleField"
+              type="text"
+              placeholder="Empty todo will be deleted"
+              className="todo__title-field"
+              value={editText}
+              onChange={e => setEditText(e.target.value)}
+              onBlur={handleBlur}
+              onKeyDown={handleKeyDown}
+              ref={editInputRef}
+            />
+          </form>
+          <div
+            data-cy="TodoLoader"
+            className={classNames('modal overlay', { 'is-active': !isEditing })}
+          >
+            <div className="modal-background has-background-white-ter" />
+            <div className="loader" />
+          </div>
+        </>
+      ) : (
+        <span
+          data-cy="TodoTitle"
+          className="todo__title"
+          onDoubleClick={handleDoubleClick}
+        >
+          {title}
+        </span>
+      )}
 
       <button
         type="button"
