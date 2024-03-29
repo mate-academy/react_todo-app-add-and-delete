@@ -16,7 +16,7 @@ export const App: React.FC = () => {
   const [todoTitle, setTodoTitle] = useState('');
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [tempTodo, setTempTodo] = useState<Todo | null>(null);
-  const [isDeleting, setIsDeleting] = useState(false);
+  const [deletedTodoId, setDeletedTodoId] = useState<number>(0);
 
   const inputAutoFocus = useRef<HTMLInputElement>(null);
 
@@ -84,20 +84,20 @@ export const App: React.FC = () => {
 
   const removeTodo = (todoId: number) => {
     setIsSubmitting(true);
+    setDeletedTodoId(todoId);
 
     deleteTodo(todoId)
       .then(() => {
         setTodos(currentTodos =>
           currentTodos.filter(todo => todo.id !== todoId),
         );
-        setIsDeleting(true);
       })
       .catch(() => {
         setError('Unable to delete a todo');
       })
       .finally(() => {
         setIsSubmitting(false);
-        setIsDeleting(false);
+        setDeletedTodoId(0);
       });
   };
 
@@ -113,6 +113,23 @@ export const App: React.FC = () => {
     }
 
     addTodo({ title: trimmedTitle, userId: USER_ID, completed: false });
+  };
+
+  const todosCount = todos.filter(todo => !todo.completed).length;
+  const hasCompleted = todos.some(todo => todo.completed);
+
+  const handleClearCompletedClick = async () => {
+    const completedTodos = todos.filter(todo => todo.completed);
+
+    try {
+      await Promise.all(completedTodos.map(todo => deleteTodo(todo.id)));
+
+      setTodos(prevTodos => prevTodos.filter(todo => !todo.completed));
+    } catch {
+      setError('Unable to delete a todo');
+    } finally {
+      setIsSubmitting(false);
+    }
   };
 
   return (
@@ -146,22 +163,22 @@ export const App: React.FC = () => {
             <TodoList
               todos={filteredTodos}
               isSubmitting={isSubmitting}
-              isDeleting={isDeleting}
+              deletedTodoId={deletedTodoId}
               handleRemoveTodo={removeTodo}
             />
 
             {tempTodo && (
               <TodoElement
                 todo={tempTodo}
+                deletedTodoId={deletedTodoId}
                 handleRemoveTodo={removeTodo}
                 isSubmitting={isSubmitting}
-                isDeleting={isDeleting}
               />
             )}
 
             <footer className="todoapp__footer" data-cy="Footer">
               <span className="todo-count" data-cy="TodosCounter">
-                {todos.filter(todo => !todo.completed).length} items left
+                {todosCount} items left
               </span>
 
               <nav className="filter" data-cy="Filter">
@@ -202,7 +219,8 @@ export const App: React.FC = () => {
                 type="button"
                 className="todoapp__clear-completed"
                 data-cy="ClearCompletedButton"
-                disabled={!todos.some(todo => todo.completed)}
+                disabled={!hasCompleted}
+                onClick={handleClearCompletedClick}
               >
                 Clear completed
               </button>
