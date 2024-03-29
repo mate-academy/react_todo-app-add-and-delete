@@ -1,5 +1,5 @@
 import classNames from 'classnames';
-import { useContext } from 'react';
+import { useContext, useState } from 'react';
 import { Todo } from '../types/Todo';
 import { DispatchContext } from './MainContext';
 import { deleteTodo } from '../api/todos';
@@ -12,15 +12,20 @@ interface Props {
 
 export const TodoItem: React.FC<Props> = ({ todo }) => {
   const dispatch = useContext(DispatchContext);
+  const [isLoader, setIsLoader] = useState(false);
   const { id, title, completed } = todo;
 
   const handleDeleteTodo = (idNumber: number) => {
+    setIsLoader(true);
+
     deleteTodo(idNumber)
       .then(() => {
         dispatch({
           type: ActionTypes.DeleteTodo,
           payload: id,
         });
+
+        setIsLoader(false);
       })
       .catch(() => {
         dispatch({
@@ -29,6 +34,8 @@ export const TodoItem: React.FC<Props> = ({ todo }) => {
             errorMessage: 'Unable to delete a todo',
           },
         });
+
+        setIsLoader(false);
       });
   };
 
@@ -62,7 +69,7 @@ export const TodoItem: React.FC<Props> = ({ todo }) => {
         ×
       </button>
 
-      {id === 0 && <TodoLoader />}
+      {(id === 0 || isLoader) && <TodoLoader />}
     </div>
   );
 };
