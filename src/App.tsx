@@ -62,7 +62,7 @@ export const App: React.FC = () => {
           'is-light',
           'has-text-weight-normal',
           {
-            hidden: !errorMessage,
+            hidden: !errorMessage.length,
           },
         )}
       >

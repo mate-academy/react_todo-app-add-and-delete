@@ -4,6 +4,7 @@ import { Select } from '../types/Select';
 import { DispatchContext, StateContext } from './MainContext';
 import { Todo } from '../types/Todo';
 import { ActionTypes } from '../types/ActionTypes';
+import { deleteTodo } from '../api/todos';
 
 const filterValues = [
   {
@@ -35,6 +36,36 @@ export const TodoFilter = () => {
   const dispatch = useContext(DispatchContext);
 
   const itemsLeft = getItemsLeft(todos);
+  const itemsCompleted = todos.filter(todo => todo.completed).length;
+
+  const handleClearCompleted = () => {
+    dispatch({
+      type: ActionTypes.LoadingIdTodos,
+      payload: todos.filter(todo => todo.completed).map(todo => todo.id),
+    });
+
+    Promise.all(
+      todos
+        .filter(todo => todo.completed)
+        .map(todo =>
+          deleteTodo(todo.id)
+            .then(() => {
+              dispatch({
+                type: ActionTypes.DeleteTodo,
+                payload: todo.id,
+              });
+            })
+            .catch(() => {
+              dispatch({
+                type: ActionTypes.SetValuesByKeys,
+                payload: {
+                  errorMessage: 'Unable to delete a todo',
+                },
+              });
+            }),
+        ),
+    );
+  };
 
   return (
     <footer className="todoapp__footer" data-cy="Footer">
@@ -69,6 +100,8 @@ export const TodoFilter = () => {
         type="button"
         className="todoapp__clear-completed"
         data-cy="ClearCompletedButton"
+        onClick={handleClearCompleted}
+        disabled={!itemsCompleted}
       >
         Clear completed
       </button>

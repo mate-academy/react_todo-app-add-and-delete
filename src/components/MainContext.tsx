@@ -10,7 +10,9 @@ type Props = {
 type Action =
   | { type: ActionTypes.SetValuesByKeys; payload: Partial<State> }
   | { type: ActionTypes.AddTodo; payload: Todo }
-  | { type: ActionTypes.DeleteTodo; payload: number };
+  | { type: ActionTypes.DeleteTodo; payload: number }
+  | { type: ActionTypes.ClearCompleted; payload: Todo[] }
+  | { type: ActionTypes.LoadingIdTodos; payload: number[] };
 
 type DispatchType = (action: Action) => void;
 
@@ -24,6 +26,7 @@ type ErrorMessage =
 
 interface State {
   todos: Todo[];
+  loadingIdTodos: number[];
   selectPage: Select;
   errorMessage: ErrorMessage | '';
 }
@@ -35,6 +38,7 @@ export interface StateProvider extends State {
 
 const initialValues: State = {
   todos: [],
+  loadingIdTodos: [],
   errorMessage: '',
   selectPage: Select.ALL,
 };
@@ -60,6 +64,18 @@ const reducer = (state: State, action: Action): State => {
       return {
         ...state,
         todos: state.todos.filter(todo => todo.id !== action.payload),
+      };
+
+    case ActionTypes.ClearCompleted:
+      return {
+        ...state,
+        todos: state.todos.filter(todo => !todo.completed),
+      };
+
+    case ActionTypes.LoadingIdTodos:
+      return {
+        ...state,
+        loadingIdTodos: action.payload,
       };
 
     default:

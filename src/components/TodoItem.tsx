@@ -1,7 +1,7 @@
 import classNames from 'classnames';
 import { useContext, useState } from 'react';
 import { Todo } from '../types/Todo';
-import { DispatchContext } from './MainContext';
+import { DispatchContext, StateContext } from './MainContext';
 import { deleteTodo } from '../api/todos';
 import { ActionTypes } from '../types/ActionTypes';
 import { TodoLoader } from './TodoLoader';
@@ -14,6 +14,9 @@ export const TodoItem: React.FC<Props> = ({ todo }) => {
   const dispatch = useContext(DispatchContext);
   const [isLoader, setIsLoader] = useState(false);
   const { id, title, completed } = todo;
+  const { loadingIdTodos } = useContext(StateContext);
+
+  const isIncludesId = loadingIdTodos.includes(id);
 
   const handleDeleteTodo = (idNumber: number) => {
     setIsLoader(true);
@@ -69,7 +72,7 @@ export const TodoItem: React.FC<Props> = ({ todo }) => {
         ×
       </button>
 
-      {(id === 0 || isLoader) && <TodoLoader />}
+      <TodoLoader isLoader={isLoader} id={id} isIncludesId={isIncludesId} />
     </div>
   );
 };

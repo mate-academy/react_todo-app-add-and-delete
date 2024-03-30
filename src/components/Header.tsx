@@ -14,14 +14,14 @@ export const Header: React.FC<Props> = React.memo(
   ({ query, setQuery, setTempTodo }) => {
     const [disableInput, setDisableInput] = useState(false);
     const dispatch = useContext(DispatchContext);
-    const { todos } = useContext(StateContext);
+    const { todos, errorMessage, selectPage } = useContext(StateContext);
     const inputRef = useRef<HTMLInputElement>(null);
 
     useEffect(() => {
       if (inputRef.current) {
         inputRef.current.focus();
       }
-    }, [todos]);
+    }, [todos, errorMessage, selectPage]);
 
     const clearQueryAndEnableInput = () => {
       setQuery('');
@@ -32,17 +32,19 @@ export const Header: React.FC<Props> = React.memo(
       e.preventDefault();
       setDisableInput(true);
 
-      if (query.trim()) {
+      const trimmedQuery = query.trim();
+
+      if (trimmedQuery) {
         setTempTodo({
           id: 0,
           userId: USER_ID,
-          title: query,
+          title: trimmedQuery,
           completed: false,
         });
 
         addTodo({
           userId: USER_ID,
-          title: query,
+          title: trimmedQuery,
           completed: false,
         })
           .then(newTodo => {
