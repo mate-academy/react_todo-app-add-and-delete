@@ -4,20 +4,14 @@ import { Todo } from '../../types/Todo';
 
 type Props = {
   todo: Todo;
-  todoLoading?: boolean;
-  onSelect?: (todo: Todo) => void;
-  selected?: Todo | null;
   onDelete?: (todoId: number) => void;
-  todoIsSubmiting?: boolean;
+  onloadingTodoIds?: number[];
 };
 
 export const TodoItem: React.FC<Props> = ({
   todo,
-  todoLoading,
-  onSelect = () => {},
-  // selected,
+  onloadingTodoIds = [],
   onDelete = () => {},
-  todoIsSubmiting,
 }) => {
   return (
     <div
@@ -35,11 +29,7 @@ export const TodoItem: React.FC<Props> = ({
         />
       </label>
 
-      <span
-        data-cy="TodoTitle"
-        className="todo__title"
-        onClick={() => onSelect(todo)}
-      >
+      <span data-cy="TodoTitle" className="todo__title">
         {todo.title}
       </span>
 
@@ -55,7 +45,7 @@ export const TodoItem: React.FC<Props> = ({
       <div
         data-cy="TodoLoader"
         className={classNames('modal overlay ', {
-          'is-active': todoLoading || todoIsSubmiting,
+          'is-active': onloadingTodoIds.includes(todo.id) || todo.id === 0,
         })}
       >
         <div className="modal-background has-background-white-ter" />

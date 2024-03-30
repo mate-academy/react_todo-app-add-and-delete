@@ -17,9 +17,9 @@ export const App: React.FC = () => {
   const [filter, setFilter] = useState(Filter.All);
   const [todos, setTodos] = useState<Todo[]>([]);
   const [loading, setLoading] = useState(false);
-  const [isSubmiting, setIsSubmiting] = useState(false);
+  const [loadingTodoIds, setLoadingTodoIds] = useState<number[]>([]);
+  const [isSubmitting, setIsSubmitting] = useState(false);
   const [errorMessage, setErrorMessage] = useState('');
-  const [selectedTodo, setSelectedTodo] = useState<Todo | null>(null);
   const [tempTodo, setTempTodo] = useState<Todo | null>(null);
   const titleField = useRef<HTMLInputElement>(null);
   const completedTodos = todos.filter((todo: Todo) => todo.completed);
@@ -43,7 +43,7 @@ export const App: React.FC = () => {
     if (titleField.current) {
       return titleField.current.focus();
     }
-  }, []);
+  }, [isSubmitting]);
 
   useEffect(() => {
     let timeoutId = 0;
@@ -86,77 +86,114 @@ export const App: React.FC = () => {
 
   const handleTitleChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     setInput(event.target.value);
-  };
-
-  const handleAddTodo = ({ userId, title, completed }: Todo): Promise<void> => {
     setErrorMessage('');
-    if (title.trim() === '') {
-      setErrorMessage(Error.EmptyTitle);
-
-      return;
-    }
-
-    return todoService
-      .addTodo({ userId, title, completed })
-      .then(newTodo => setTodos(currentTodos => [...currentTodos, newTodo]))
-      .catch(error => {
-        setTempTodo(null);
-        setErrorMessage(Error.UnableToAdd);
-        throw error;
-      });
-  };
-
-  const reset = () => {
-    setInput('');
   };
 
   const submit = (event: React.FormEvent) => {
     event.preventDefault();
 
-    setIsSubmiting(true);
-    handleAddTodo({
-      id: 0,
-      userId: todoService.USER_ID,
-      title: input,
-      completed: false,
-    })
-      .then(reset)
-      .finally(() => setIsSubmiting(false));
-  };
+    if (input.trim() === '') {
+      setErrorMessage(Error.EmptyTitle);
 
-  const handleSelectTodo = (currentTodo: Todo) => {
-    setSelectedTodo(currentTodo);
+      return;
+    }
+
+    setIsSubmitting(true);
+    setErrorMessage('');
+
+    setTempTodo({
+      id: 0,
+      title: input.trim(),
+      userId: todoService.USER_ID,
+      completed: false,
+    });
+
+    if (tempTodo) {
+      setTodos(prevTodos => [...prevTodos, tempTodo]);
+    }
+
+    return todoService
+      .addTodo({
+        userId: todoService.USER_ID,
+        title: input.trim(),
+        completed: false,
+      })
+      .then(newTodo => {
+        setTodos(prevTodos =>
+          prevTodos.filter(todo => todo.id !== tempTodo?.id),
+        );
+
+        setTodos(prevTodos => [...prevTodos, newTodo]);
+        setInput('');
+        setTempTodo(null);
+      })
+      .catch(error => {
+        setTodos(todos);
+        setTempTodo(null);
+        setErrorMessage(Error.UnableToAdd);
+        throw error;
+      })
+      .finally(() => setIsSubmitting(false));
   };
 
   const handleDeleteTodo = (todoId: number) => {
-    setTodos(currentTodos =>
-      currentTodos.filter((todo: Todo) => todo.id !== todoId),
-    );
-    setIsSubmiting(true);
+    setIsSubmitting(true);
+    setLoadingTodoIds(prev => [...prev, todoId]);
 
     return todoService
       .deleteTodos(todoId)
+      .then(() =>
+        setTodos(prevTodos =>
+          prevTodos.filter((todo: Todo) => todo.id !== todoId),
+        ),
+      )
       .catch(error => {
         setTodos(todos);
         setErrorMessage(Error.UnableToDelete);
         throw error;
       })
-      .finally(() => setIsSubmiting(false));
+      .finally(() => {
+        setIsSubmitting(false);
+        setLoadingTodoIds(prev => prev.filter(id => id !== todoId));
+      });
   };
 
   const handleClearCompleted = () => {
-    setTodos(currentTodos =>
-      currentTodos.filter((todo: Todo) => !todo.completed),
-    );
-    setFilter(Filter.All);
+    setIsSubmitting(true);
 
-    completedTodos.forEach((todo: Todo) => {
-      return todoService.deleteTodos(todo.id).catch(error => {
+    const deletePromises = completedTodos.map(todo => {
+      setLoadingTodoIds(prev => [...prev, todo.id]);
+
+      return todoService.deleteTodos(todo.id);
+    });
+
+    Promise.allSettled(deletePromises)
+      .then(results => {
+        const deletingIds: number[] = [];
+
+        results.forEach((result, index) => {
+          if (result.status === 'fulfilled') {
+            deletingIds.push(completedTodos[index].id);
+          } else {
+            setErrorMessage(Error.UnableToDelete);
+          }
+        });
+
+        deletingIds.forEach(deletingId => {
+          setTodos(prevTodos =>
+            prevTodos.filter(todo => todo.id !== deletingId),
+          );
+        });
+      })
+      .catch(error => {
         setTodos(todos);
         setErrorMessage(Error.UnableToDelete);
         throw error;
+      })
+      .finally(() => {
+        setLoadingTodoIds([]);
+        setIsSubmitting(false);
       });
-    });
   };
 
   const handleCloseErrorMessage = () => {
@@ -185,7 +222,7 @@ export const App: React.FC = () => {
               className="todoapp__new-todo"
               placeholder="What needs to be done?"
               onChange={handleTitleChange}
-              disabled={isSubmiting}
+              disabled={isSubmitting}
             />
           </form>
         </header>
@@ -194,11 +231,8 @@ export const App: React.FC = () => {
           <>
             <TodoList
               todos={filteredTodos}
-              loading={loading}
-              onSelectTodo={handleSelectTodo}
-              selectedTodo={selectedTodo}
+              loadingTodoIds={loadingTodoIds}
               onDeleteTodo={handleDeleteTodo}
-              isSubmiting={isSubmiting}
             />
             {tempTodo !== null && <TodoItem todo={tempTodo} />}
           </>

@@ -3,20 +3,14 @@ import { TodoItem } from '../TodoItem';
 
 type Props = {
   todos: Todo[];
-  loading: boolean;
-  onSelectTodo?: (currentTodo: Todo) => void;
-  selectedTodo?: Todo | null;
-  onDeleteTodo?: (currentTodoId: number) => void;
-  isSubmiting: boolean;
+  loadingTodoIds?: number[];
+  onDeleteTodo?: (currentTodoId: number) => Promise<void>;
 };
 
 export const TodoList: React.FC<Props> = ({
   todos,
-  loading,
-  onSelectTodo = () => {},
-  selectedTodo,
+  loadingTodoIds,
   onDeleteTodo = () => {},
-  isSubmiting,
 }) => {
   return (
     <section className="todoapp__main" data-cy="TodoList">
@@ -24,12 +18,9 @@ export const TodoList: React.FC<Props> = ({
         return (
           <TodoItem
             key={todo.id}
+            onloadingTodoIds={loadingTodoIds}
             todo={todo}
-            todoLoading={loading}
-            onSelect={onSelectTodo}
-            selected={selectedTodo}
             onDelete={onDeleteTodo}
-            todoIsSubmiting={isSubmiting}
           />
         );
       })}
