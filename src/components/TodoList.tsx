@@ -28,7 +28,7 @@ export const TodoList: React.FC<Props> = ({ tempTodo }) => {
   return (
     <section className="todoapp__main" data-cy="TodoList">
       {visibleTodos.map((todo: Todo) => {
-        return <TodoItem todo={todo} />;
+        return <TodoItem todo={todo} key={todo.id} />;
       })}
 
       {tempTodo && <TodoItem todo={tempTodo} />}

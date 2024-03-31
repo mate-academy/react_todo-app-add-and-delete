@@ -10,100 +10,98 @@ interface Props {
   setTempTodo: (todo: Todo | null) => void;
 }
 
-export const Header: React.FC<Props> = React.memo(
-  ({ query, setQuery, setTempTodo }) => {
-    const [disableInput, setDisableInput] = useState(false);
-    const dispatch = useContext(DispatchContext);
-    const { todos, errorMessage, selectPage } = useContext(StateContext);
-    const inputRef = useRef<HTMLInputElement>(null);
+export const Header: React.FC<Props> = ({ query, setQuery, setTempTodo }) => {
+  const [disableInput, setDisableInput] = useState(false);
+  const dispatch = useContext(DispatchContext);
+  const { todos, errorMessage, selectPage } = useContext(StateContext);
+  const inputRef = useRef<HTMLInputElement>(null);
 
-    useEffect(() => {
-      if (inputRef.current) {
-        inputRef.current.focus();
-      }
-    }, [todos, errorMessage, selectPage]);
+  useEffect(() => {
+    if (inputRef.current) {
+      inputRef.current.focus();
+    }
+  }, [todos, errorMessage, selectPage]);
 
-    const clearQueryAndEnableInput = () => {
-      setQuery('');
-      setDisableInput(false);
-    };
+  const clearQueryAndEnableInput = () => {
+    setQuery('');
+    setDisableInput(false);
+  };
 
-    const handleSubmit = (e: React.FormEvent) => {
-      e.preventDefault();
-      setDisableInput(true);
+  const handleSubmit = (e: React.FormEvent) => {
+    e.preventDefault();
+    setDisableInput(true);
 
-      const trimmedQuery = query.trim();
+    const trimmedQuery = query.trim();
 
-      if (trimmedQuery) {
-        setTempTodo({
-          id: 0,
-          userId: USER_ID,
-          title: trimmedQuery,
-          completed: false,
-        });
+    if (trimmedQuery) {
+      setTempTodo({
+        id: 0,
+        userId: USER_ID,
+        title: trimmedQuery,
+        completed: false,
+      });
 
-        addTodo({
-          userId: USER_ID,
-          title: trimmedQuery,
-          completed: false,
-        })
-          .then(newTodo => {
-            dispatch({
-              type: ActionTypes.AddTodo,
-              payload: newTodo,
-            });
-
-            clearQueryAndEnableInput();
-            setTempTodo(null);
-          })
-          .catch(() => {
-            dispatch({
-              type: ActionTypes.SetValuesByKeys,
-              payload: {
-                errorMessage: 'Unable to add a todo',
-              },
-            });
-
-            setTempTodo(null);
-            setDisableInput(false);
+      addTodo({
+        userId: USER_ID,
+        title: trimmedQuery,
+        completed: false,
+      })
+        .then(newTodo => {
+          dispatch({
+            type: ActionTypes.AddTodo,
+            payload: newTodo,
           });
-      } else {
-        dispatch({
-          type: ActionTypes.SetValuesByKeys,
-          payload: {
-            errorMessage: 'Title should not be empty',
-          },
+
+          clearQueryAndEnableInput();
+          setTempTodo(null);
+        })
+        .catch(() => {
+          dispatch({
+            type: ActionTypes.SetValuesByKeys,
+            payload: {
+              errorMessage: 'Unable to add a todo',
+            },
+          });
+
+          setTempTodo(null);
+          setDisableInput(false);
         });
+    } else {
+      dispatch({
+        type: ActionTypes.SetValuesByKeys,
+        payload: {
+          errorMessage: 'Title should not be empty',
+        },
+      });
 
-        clearQueryAndEnableInput();
-      }
-    };
+      clearQueryAndEnableInput();
+    }
+  };
 
-    return (
-      <header className="todoapp__header">
-        <button
-          type="button"
-          className="todoapp__toggle-all"
-          data-cy="ToggleAllButton"
-          aria-label="Toggle all todos"
-        />
+  return (
+    <header className="todoapp__header">
+      <button
+        type="button"
+        className="todoapp__toggle-all"
+        data-cy="ToggleAllButton"
+        aria-label="Toggle all todos"
+      />
 
-        <form onSubmit={handleSubmit}>
-          <label htmlFor="newTodo">
-            <input
-              id="newTodo"
-              data-cy="NewTodoField"
-              type="text"
-              className="todoapp__new-todo"
-              placeholder="What needs to be done?"
-              disabled={disableInput}
-              ref={inputRef}
-              value={query}
-              onChange={e => setQuery(e.target.value)}
-            />
-          </label>
-        </form>
-      </header>
-    );
-  },
-);
+      <form onSubmit={handleSubmit}>
+        <label htmlFor="newTodo">
+          <input
+            id="newTodo"
+            data-cy="NewTodoField"
+            type="text"
+            className="todoapp__new-todo"
+            placeholder="What needs to be done?"
+            disabled={disableInput}
+            ref={inputRef}
+            value={query}
+            onChange={e => setQuery(e.target.value)}
+          />
+        </label>
+      </form>
+    </header>
+  );
+};
