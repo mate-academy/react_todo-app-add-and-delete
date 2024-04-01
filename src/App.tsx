@@ -1,4 +1,4 @@
-import React, { useCallback, useEffect, useRef, useState } from 'react';
+import React, { useCallback, useEffect, useState } from 'react';
 import { UserWarning } from './UserWarning';
 import { USER_ID, deleteTodo, getTodos, postTodo } from './api/todos';
 import { TodoList } from './components/TodoList';
@@ -15,17 +15,14 @@ export const App: React.FC = () => {
   );
   const [tempTodo, setTempTodo] = useState<Todo | null>();
   const [title, setTitle] = useState('');
-  const inputRef = useRef<HTMLInputElement>(null);
   const [isAddingTodo, setIsAddingTodo] = useState(false);
   const [deleteTodoByID, setDeleteTodoByID] = useState<number | null>();
 
   useEffect(() => {
     getTodos()
       .then(setTodos)
-      .catch(error => {
-        setErrorMessage(Errors.Load);
-        throw error;
-      });
+      .catch(() => setErrorMessage(Errors.Load));
+    setTimeout(() => setErrorMessage(null), 3000);
   }, []);
 
   useEffect(() => {
@@ -35,10 +32,18 @@ export const App: React.FC = () => {
   }, [errorMessage]);
 
   useEffect(() => {
-    if (inputRef.current) {
-      inputRef.current.focus();
+    const input = document.querySelector('input') as HTMLInputElement;
+
+    if (input) {
+      input.focus();
     }
-  }, [tempTodo, todos]);
+
+    if (!title.trim()) {
+      if (input) {
+        input.focus();
+      }
+    }
+  }, [tempTodo, todos, title]);
 
   const addNewTodo = () => {
     const trimmedTitle = title.trim();
@@ -86,24 +91,25 @@ export const App: React.FC = () => {
   }, []);
 
   const clearCompleted = async () => {
-    const todoToClear: Todo[] = [];
-
     try {
-      for (const todo of todos) {
-        if (todo.completed) {
-          try {
-            await deleteTodo(todo.id);
-            todoToClear.push(todo);
-          } catch {
-            setErrorMessage(Errors.Delete);
-          }
-        }
-      }
+      const completedTodoIds = todos
+        .filter(todo => todo.completed)
+        .map(todo => todo.id);
 
-      setTodos(prevState =>
-        prevState.filter(todo => !todoToClear.includes(todo)),
+      const deletePromises = completedTodoIds.map(id =>
+        deleteTodo(id)
+          .then(() => {
+            setTodos(prevTodos =>
+              prevTodos.filter(prevTodo => prevTodo.id !== id),
+            );
+          })
+          .catch(() => {
+            setErrorMessage(Errors.Delete);
+          }),
       );
-    } catch {
+
+      await Promise.allSettled(deletePromises);
+    } catch (error) {
       setErrorMessage(Errors.Delete);
     }
   };
@@ -115,20 +121,25 @@ export const App: React.FC = () => {
   const filterTodos = (todosToFilter: Todo[]) => {
     let filteredTodos: Todo[] = [];
 
-    if (selectedTasks === SelectedTasks.All) {
-      filteredTodos = todosToFilter;
-    }
-
-    if (selectedTasks === SelectedTasks.Completed) {
-      filteredTodos = todosToFilter.filter(todo => todo.completed === true);
-    }
-
-    if (selectedTasks === SelectedTasks.Active) {
-      filteredTodos = todosToFilter.filter(todo => todo.completed === false);
+    switch (selectedTasks) {
+      case SelectedTasks.All:
+        filteredTodos = todosToFilter;
+        break;
+      case SelectedTasks.Completed:
+        filteredTodos = todosToFilter.filter(todo => todo.completed === true);
+        break;
+      case SelectedTasks.Active:
+        filteredTodos = todosToFilter.filter(todo => todo.completed === false);
+        break;
+      default:
+        filteredTodos = todosToFilter;
+        break;
     }
 
     return filteredTodos;
   };
+
+  const filteredTodos = filterTodos(todos);
 
   return (
     <div className="todoapp">
@@ -136,7 +147,6 @@ export const App: React.FC = () => {
 
       <div className="todoapp__content">
         <HeaderInput
-          inputRef={inputRef}
           addNewTodo={addNewTodo}
           setTitle={setTitle}
           title={title}
@@ -144,14 +154,13 @@ export const App: React.FC = () => {
         />
 
         <TodoList
-          todos={filterTodos(todos)}
+          todos={filteredTodos}
           tempTodo={tempTodo}
           deleteCurrentTodo={deleteCurrentTodo}
           deleteTodoByID={deleteTodoByID}
         />
 
-        {/* Hide the footer if there are no todos */}
-        {todos.length !== 0 && (
+        {!!todos?.length && (
           <Footer
             todos={todos}
             selectedTasks={selectedTasks}
@@ -160,8 +169,6 @@ export const App: React.FC = () => {
           />
         )}
       </div>
-
-      {/* Show error notification only when errorMessage is not null */}
 
       <div
         data-cy="ErrorNotification"
@@ -179,7 +186,6 @@ export const App: React.FC = () => {
           className="delete"
           onClick={() => setErrorMessage(null)}
         />
-        {/* Show only one message at a time */}
         {errorMessage}
       </div>
     </div>

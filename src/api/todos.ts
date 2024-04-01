@@ -18,4 +18,3 @@ export const deleteTodo = (todoId: number) => {
 export const setCompletedTodo = ({ id, completed }: Todo) => {
   return client.patch<Todo>(`/todos/${id}`, { completed });
 };
-// Add more methods here

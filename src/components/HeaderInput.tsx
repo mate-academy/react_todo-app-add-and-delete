@@ -4,12 +4,10 @@ type HeaderInputProps = {
   addNewTodo: (title: string) => void;
   title: string;
   setTitle: (value: string) => void;
-  inputRef: React.RefObject<HTMLInputElement>;
   disabled: boolean;
 };
 
 export const HeaderInput = ({
-  inputRef,
   addNewTodo,
   title,
   setTitle,
@@ -34,7 +32,6 @@ export const HeaderInput = ({
           data-cy="NewTodoField"
           type="text"
           value={title}
-          ref={inputRef}
           className="todoapp__new-todo"
           placeholder="What needs to be done?"
           onChange={event => {
