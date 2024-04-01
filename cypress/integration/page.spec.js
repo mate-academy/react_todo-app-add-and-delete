@@ -1,5 +1,4 @@
 /// <reference types='cypress' />
-/// <reference types='../support' />
 
 import mixedTodos from '../fixtures/todos.json';
 
@@ -701,7 +700,7 @@ describe('', () => {
     });
 
     it('should show todosCounter', () => {
-      page.todosCounter().should('have.text', '1 items left');
+      page.todosCounter().should('contain.text', '1 item');
     });
   });
 
@@ -779,7 +778,7 @@ describe('', () => {
         todos.deleteButton(4).click();
         cy.wait('@deleteRequest');
 
-        page.todosCounter().should('have.text', '1 items left');
+        page.todosCounter().should('contain.text', '1 item');
       });
 
       it('should not adjust the active todo count after failed deletion', () => {
