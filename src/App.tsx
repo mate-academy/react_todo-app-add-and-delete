@@ -1,26 +1,33 @@
-/* eslint-disable max-len */
-/* eslint-disable jsx-a11y/control-has-associated-label */
 import React from 'react';
-import { UserWarning } from './UserWarning';
 
-const USER_ID = 0;
+import { Footer } from './components/Footer';
+import { TodoList } from './components/TodoList';
+import { TodoCreatingForm } from './components/TodoCreatingForm';
+import { ErrorNotification } from './components/ErrorNotification';
+import { Loader } from './components/Loader';
+import { useTodos } from './components/TodosProvider';
 
 export const App: React.FC = () => {
-  if (!USER_ID) {
-    return <UserWarning />;
-  }
+  const { todos, isLoadingData } = useTodos();
 
   return (
-    <section className="section container">
-      <p className="title is-4">
-        Copy all you need from the prev task:
-        <br />
-        <a href="https://github.com/mate-academy/react_todo-app-loading-todos#react-todo-app-load-todos">
-          React Todo App - Load Todos
-        </a>
-      </p>
+    <div className="todoapp">
+      <h1 className="todoapp__title">todos</h1>
 
-      <p className="subtitle">Styles are already copied</p>
-    </section>
+      <div className="todoapp__content">
+        <TodoCreatingForm />
+
+        <section className="todoapp__main" data-cy="TodoList">
+          {isLoadingData && <Loader />}
+
+          {!isLoadingData && <TodoList />}
+        </section>
+        {todos.length > 0 && <Footer />}
+      </div>
+
+      <ErrorNotification />
+    </div>
   );
 };
+
+export default App;
