@@ -1,31 +1,27 @@
 import classNames from 'classnames';
 import { Todo } from '../../types/Todo';
-import { useState } from 'react';
+import { useTodosContext } from '../../helpers/useTodoContext';
 
 interface TodoItemProps {
   todo: Todo;
 }
 
 export const TodoItem: React.FC<TodoItemProps> = ({ todo }) => {
+  const { onDelete, loadingTodoIds } = useTodosContext();
   const { id, title, completed } = todo;
-  const [isPending] = useState(false);
-
-  const checkboxName = `checkbox-${id}`;
 
   return (
     <div
       data-cy="Todo"
       className={classNames('todo', { completed: completed })}
     >
-      {/* eslint-disable-next-line jsx-a11y/label-has-associated-control */}
-      <label className="todo__status-label" htmlFor={checkboxName}>
+      <label className="todo__status-label">
         <input
           data-cy="TodoStatus"
           type="checkbox"
-          id={checkboxName}
-          name={checkboxName}
           className="todo__status"
           checked={completed}
+          aria-label="Todo status"
         />
       </label>
 
@@ -45,13 +41,20 @@ export const TodoItem: React.FC<TodoItemProps> = ({ todo }) => {
         )}
       </span>
 
-      <button type="button" className="todo__remove" data-cy="TodoDelete">
+      <button
+        type="button"
+        className="todo__remove"
+        data-cy="TodoDelete"
+        onClick={() => onDelete(id)}
+      >
         ×
       </button>
 
       <div
         data-cy="TodoLoader"
-        className={classNames('modal overlay', { 'is-active': isPending })}
+        className={classNames('modal overlay', {
+          'is-active': loadingTodoIds.includes(id),
+        })}
       >
         <div className="modal-background has-background-white-ter" />
         <div className="loader" />

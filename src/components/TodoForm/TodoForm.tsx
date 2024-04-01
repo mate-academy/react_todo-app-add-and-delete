@@ -1,17 +1,89 @@
-import { FormEventHandler } from 'react';
+import { useEffect, useRef, useState } from 'react';
+import { Errors } from '../../enums/Errors';
+import { useTodosContext } from '../../helpers/useTodoContext';
+import classNames from 'classnames';
+import { USER_ID, addTodos } from '../../api/todos';
+import { Todo } from '../../types/Todo';
+import { handleErrors } from '../../helpers/hendleErorrs';
 
-interface TodoFormProps {
-  addTodo: FormEventHandler;
-}
+export const TodoForm = () => {
+  const {
+    todos,
+    setTodos,
+    completedTodos,
+    activeTodos,
+    setErrorMessage,
+    setTempTodo,
+    setLoadingTodoIds,
+    loadingTodoIds,
+    shouldFocus,
+    setShouldFocus,
+  } = useTodosContext();
+  const addTodoInputRef = useRef<HTMLInputElement>(null);
+  const [title, setTitle] = useState('');
 
-export const TodoForm: React.FC<TodoFormProps> = ({ addTodo }) => {
+  const isClassActive = completedTodos.length > 0 && activeTodos.length === 0;
+
+  const handleInputChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+    setErrorMessage(null);
+    setTitle(event.target.value);
+  };
+
+  const addTodo = (event: React.FormEvent) => {
+    event.preventDefault();
+
+    if (!title.trim().length) {
+      handleErrors(Errors.EmptyTitle, setErrorMessage);
+    } else {
+      const newTodo = {
+        title: title.trim(),
+        userId: USER_ID,
+        completed: false,
+      };
+
+      const tempTodo = {
+        id: 0,
+        ...newTodo,
+      };
+
+      setTempTodo(tempTodo);
+      setLoadingTodoIds(prevLoadingTodoIds => [
+        ...prevLoadingTodoIds,
+        tempTodo.id,
+      ]);
+
+      addTodos(newTodo)
+        .then((resp: Todo) => {
+          setTodos((prev: Todo[]) => [...prev, resp]);
+          setTitle('');
+        })
+        .catch(() => handleErrors(Errors.AddTodo, setErrorMessage))
+        .finally(() => {
+          setLoadingTodoIds([]);
+          setTempTodo(null);
+          setShouldFocus(true);
+        });
+    }
+  };
+
+  useEffect(() => {
+    if (shouldFocus && addTodoInputRef.current) {
+      addTodoInputRef.current.focus();
+      setShouldFocus(false);
+    }
+  }, [shouldFocus]);
+
   return (
     <header className="todoapp__header">
-      <button
-        type="button"
-        className="todoapp__toggle-all active"
-        data-cy="ToggleAllButton"
-      />
+      {todos.length !== 0 && (
+        <button
+          type="button"
+          className={classNames('todoapp__toggle-all', {
+            active: isClassActive,
+          })}
+          data-cy="ToggleAllButton"
+        />
+      )}
 
       <form onSubmit={addTodo}>
         <input
@@ -20,6 +92,10 @@ export const TodoForm: React.FC<TodoFormProps> = ({ addTodo }) => {
           name="todo"
           className="todoapp__new-todo"
           placeholder="What needs to be done?"
+          value={title}
+          onChange={handleInputChange}
+          ref={addTodoInputRef}
+          disabled={loadingTodoIds.length > 0}
         />
       </form>
     </header>

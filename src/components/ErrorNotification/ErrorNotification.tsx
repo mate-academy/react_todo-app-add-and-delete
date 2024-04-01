@@ -1,14 +1,8 @@
 import classNames from 'classnames';
 import { useTodosContext } from '../../helpers/useTodoContext';
 
-interface ErrorNotificationProps {
-  clearErrorMessage: () => void;
-}
-
-export const ErrorNotification: React.FC<ErrorNotificationProps> = ({
-  clearErrorMessage,
-}) => {
-  const { errorMessage } = useTodosContext();
+export const ErrorNotification = () => {
+  const { errorMessage, setErrorMessage } = useTodosContext();
 
   return (
     <div
@@ -22,7 +16,7 @@ export const ErrorNotification: React.FC<ErrorNotificationProps> = ({
         data-cy="HideErrorButton"
         type="button"
         className="delete"
-        onClick={() => clearErrorMessage()}
+        onClick={() => setErrorMessage(null)}
       />
       {errorMessage}
     </div>

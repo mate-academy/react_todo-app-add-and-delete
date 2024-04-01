@@ -5,7 +5,7 @@ import '@fortawesome/fontawesome-free/css/all.css';
 import './styles/index.scss';
 
 import { App } from './App';
-import { TodosContextProvider } from './components/TodoContext/TodoContext';
+import { TodosContextProvider } from './context/TodoContext';
 
 const Root = () => (
   <TodosContextProvider>

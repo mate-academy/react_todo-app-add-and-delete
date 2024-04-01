@@ -2,8 +2,22 @@ import { useTodosContext } from '../../helpers/useTodoContext';
 import { TodoFilter } from '../TodoFilter/TodoFilter';
 
 export const TodoFooter: React.FC = () => {
-  const { activeTodos, filterSelected, setFilterSelected, completedTodos } =
-    useTodosContext();
+  const {
+    todos,
+    activeTodos,
+    filterSelected,
+    setFilterSelected,
+    completedTodos,
+    onDelete,
+  } = useTodosContext();
+
+  const handleDeleteCompleted = () => {
+    todos.forEach(todo => {
+      if (todo.completed) {
+        onDelete(todo.id);
+      }
+    });
+  };
 
   return (
     <footer className="todoapp__footer" data-cy="Footer">
@@ -21,6 +35,7 @@ export const TodoFooter: React.FC = () => {
         className="todoapp__clear-completed"
         data-cy="ClearCompletedButton"
         disabled={completedTodos.length === 0}
+        onClick={handleDeleteCompleted}
       >
         Clear completed
       </button>
