@@ -9,6 +9,7 @@ export const TodoCreatingForm: React.FC = () => {
     setNewTodoTitle,
     createNewTodo,
     setErrorMessage,
+    errorMessage,
     todos,
     isLoading,
   } = useTodos();
@@ -21,7 +22,7 @@ export const TodoCreatingForm: React.FC = () => {
     if (inputRef.current && !inputRef.current.disabled) {
       inputRef.current.focus();
     }
-  });
+  }, [todos, errorMessage]);
 
   function handleInputChange(event: React.ChangeEvent<HTMLInputElement>) {
     setNewTodoTitle(event.target.value);
