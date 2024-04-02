@@ -2,9 +2,9 @@ import { Dispatch, SetStateAction, createContext, useState } from 'react';
 import { Todo } from '../types/Todo';
 import { Errors } from '../enums/Errors';
 import { FilterOptions } from '../enums/FilterOptions';
-import { hendleFilteredTodos } from '../helpers/hendleFilteredTodos';
+import { getFilteredTodos } from '../helpers/getFilteredTodos';
 import { deleteTodos } from '../api/todos';
-import { handleErrors } from '../helpers/hendleErorrs';
+import { getErrors } from '../helpers/getErorrs';
 
 export type TodoContext = {
   todos: Todo[];
@@ -41,7 +41,7 @@ export const TodosContextProvider: React.FC<Props> = ({ children }) => {
   const [loadingTodoIds, setLoadingTodoIds] = useState<number[]>([]);
   const [shouldFocus, setShouldFocus] = useState(true);
 
-  const preparedTodos = hendleFilteredTodos(todos, filterSelected);
+  const preparedTodos = getFilteredTodos(todos, filterSelected);
   const completedTodos = todos.filter(todo => todo.completed);
   const activeTodos = todos.filter(todo => !todo.completed);
 
@@ -54,7 +54,7 @@ export const TodosContextProvider: React.FC<Props> = ({ children }) => {
         );
       })
       .catch(() => {
-        handleErrors(Errors.DeleteTodo, setErrorMessage);
+        getErrors(Errors.DeleteTodo, setErrorMessage);
       })
       .finally(() => {
         setLoadingTodoIds([]);

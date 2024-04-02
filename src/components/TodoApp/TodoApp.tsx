@@ -6,7 +6,7 @@ import { TodoFooter } from '../TodoFooter/TodoFooter';
 import { ErrorNotification } from '../ErrorNotification/ErrorNotification';
 import { Errors } from '../../enums/Errors';
 import { useTodosContext } from '../../helpers/useTodoContext';
-import { handleErrors } from '../../helpers/hendleErorrs';
+import { getErrors } from '../../helpers/getErorrs';
 
 export const TodoApp: React.FC = () => {
   const { todos, setTodos, setErrorMessage, preparedTodos } = useTodosContext();
@@ -16,7 +16,7 @@ export const TodoApp: React.FC = () => {
     getTodos()
       .then(setTodos)
       .catch(() => {
-        handleErrors(Errors.LoadTodos, setErrorMessage);
+        getErrors(Errors.LoadTodos, setErrorMessage);
       });
   }, []);
 

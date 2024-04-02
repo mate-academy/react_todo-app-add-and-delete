@@ -1,6 +1,6 @@
 import { Errors } from '../enums/Errors';
 
-export const handleErrors = (
+export const getErrors = (
   errorMessage: Errors | null,
   setErrorMessage: (errorMessage: Errors | null) => void,
 ) => {

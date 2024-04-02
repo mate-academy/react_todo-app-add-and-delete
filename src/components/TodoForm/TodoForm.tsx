@@ -4,7 +4,7 @@ import { useTodosContext } from '../../helpers/useTodoContext';
 import classNames from 'classnames';
 import { USER_ID, addTodos } from '../../api/todos';
 import { Todo } from '../../types/Todo';
-import { handleErrors } from '../../helpers/hendleErorrs';
+import { getErrors } from '../../helpers/getErorrs';
 
 export const TodoForm = () => {
   const {
@@ -32,38 +32,42 @@ export const TodoForm = () => {
   const addTodo = (event: React.FormEvent) => {
     event.preventDefault();
 
-    if (!title.trim().length) {
-      handleErrors(Errors.EmptyTitle, setErrorMessage);
-    } else {
-      const newTodo = {
-        title: title.trim(),
-        userId: USER_ID,
-        completed: false,
-      };
+    const trimmedTitle = title.trim();
 
-      const tempTodo = {
-        id: 0,
-        ...newTodo,
-      };
+    if (!trimmedTitle.length) {
+      getErrors(Errors.EmptyTitle, setErrorMessage);
 
-      setTempTodo(tempTodo);
-      setLoadingTodoIds(prevLoadingTodoIds => [
-        ...prevLoadingTodoIds,
-        tempTodo.id,
-      ]);
-
-      addTodos(newTodo)
-        .then((resp: Todo) => {
-          setTodos((prev: Todo[]) => [...prev, resp]);
-          setTitle('');
-        })
-        .catch(() => handleErrors(Errors.AddTodo, setErrorMessage))
-        .finally(() => {
-          setLoadingTodoIds([]);
-          setTempTodo(null);
-          setShouldFocus(true);
-        });
+      return;
     }
+
+    const newTodo = {
+      title: trimmedTitle,
+      userId: USER_ID,
+      completed: false,
+    };
+
+    const tempTodo = {
+      id: 0,
+      ...newTodo,
+    };
+
+    setTempTodo(tempTodo);
+    setLoadingTodoIds(prevLoadingTodoIds => [
+      ...prevLoadingTodoIds,
+      tempTodo.id,
+    ]);
+
+    addTodos(newTodo)
+      .then((resp: Todo) => {
+        setTodos((prev: Todo[]) => [...prev, resp]);
+        setTitle('');
+      })
+      .catch(() => getErrors(Errors.AddTodo, setErrorMessage))
+      .finally(() => {
+        setLoadingTodoIds([]);
+        setTempTodo(null);
+        setShouldFocus(true);
+      });
   };
 
   useEffect(() => {

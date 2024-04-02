@@ -1,7 +1,7 @@
 import { FilterOptions } from '../enums/FilterOptions';
 import { Todo } from '../types/Todo';
 
-export const hendleFilteredTodos = (
+export const getFilteredTodos = (
   todos: Todo[],
   filterSelected: FilterOptions,
 ) => {
