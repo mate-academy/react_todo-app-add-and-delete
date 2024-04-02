@@ -8,6 +8,7 @@ import { Footer } from './Footer';
 import { Errors } from './types/Errors';
 import { FilterBy } from './types/FiilterBy';
 import { ErrorNotification } from './ErrorNotification';
+import { wait } from './utils/fetchClient';
 
 type FilterTheTodos = (todos: Todo[], filterBy: FilterBy) => Todo[];
 
@@ -31,43 +32,61 @@ const getFilteredTodos: FilterTheTodos = (todos, filterBy) => {
 };
 
 export const App: React.FC = () => {
+  const inputRef = useRef<HTMLInputElement | null>(null);
+
   const [todos, setTodos] = useState<Todo[]>([]);
   const [errorMessage, setErrorMessage] = useState<Errors | null>(null);
   const [filterBy, setFilterBy] = useState<FilterBy>(FilterBy.All);
   const [tempTodo, setTempTodo] = useState<Todo | null>(null);
+  const [isDisabled, setIsDisabled] = useState(false);
   const [titleText, setTitleText] = useState('');
-  const inputRef = useRef<HTMLInputElement | null>(null);
-
-  useEffect(() => {
-    inputRef.current?.focus();
-    getTodos()
-      .then(setTodos)
-      .catch(() => {
-        setErrorMessage(Errors.Load);
-      });
-  }, []);
-
-  useEffect(() => {
-    if (errorMessage) {
-      setTimeout(() => setErrorMessage(null), 3000);
-    }
-  }, [errorMessage]);
+  const [deletingIDs, setDeletingIDs] = useState<number[]>([]);
 
   const handleClearingError = () => setErrorMessage(null);
   const handleChangingFilterBy = (value: FilterBy) => setFilterBy(value);
-  const handleClearingCompletedTodos = () =>
-    setTodos(currentTodos => currentTodos.filter(todo => !todo.completed));
+  const handleClearingCompletedTodos = () => {
+    // todos.forEach(todo => {
+    //   if (todo.completed) {
+    //     setDeletingIDs(prevIDs => [...prevIDs, todo.id]);
+    //     console.log('deletingIDs 0', deletingIDs);
+    //   }
+    // });
+
+    const idsToDelete: number[] = [];
+
+    todos.forEach(todo => {
+      if (todo.completed) {
+        idsToDelete.push(todo.id);
+      }
+    });
+
+    setDeletingIDs(idsToDelete);
+
+    Promise.all(idsToDelete.map(id => removeTodo(id)))
+      .then(() => {
+        setTodos(prevTodos => prevTodos.filter(todo => !todo.completed));
+      })
+      .catch(() => {
+        setErrorMessage(Errors.Delete);
+        wait(3000).then(() => setErrorMessage(null));
+      })
+      .finally(() => {
+        setDeletingIDs([]);
+      });
+  };
 
   const visibleTodos = getFilteredTodos(todos, filterBy);
 
   const activeTodosCount: number = todos.filter(todo => !todo.completed).length;
 
-  const addTodo = ({ title }: Todo) => {
+  const handleSubmit = ({ title }: Todo) => {
     if (!title.trim()) {
       setErrorMessage(Errors.Empty);
 
       return;
     }
+
+    setIsDisabled(true);
 
     setTempTodo({ id: 0, title, userId: USER_ID, completed: false });
 
@@ -82,17 +101,46 @@ export const App: React.FC = () => {
         setTitleText('');
       })
       .catch(() => {
-        setErrorMessage(Errors.Load);
+        setErrorMessage(Errors.Add);
         setTempTodo(null);
       })
       .finally(() => {
-        inputRef.current?.focus();
+        setIsDisabled(false);
       });
   };
 
   const deleteTodo = (id: number) => {
-    removeTodo(id);
+    setDeletingIDs(curIDs => [...curIDs, id]);
+
+    removeTodo(id)
+      .then(() => {
+        setTodos(prevTodos => prevTodos.filter(todo => todo.id !== id));
+      })
+      .catch(() => {
+        setErrorMessage(Errors.Delete);
+      })
+      .finally(() => {
+        setDeletingIDs([]);
+        inputRef.current?.focus();
+      });
   };
+
+  useEffect(() => {
+    inputRef.current?.focus();
+    getTodos()
+      .then(setTodos)
+      .catch(() => {
+        setErrorMessage(Errors.Load);
+      });
+  }, []);
+
+  useEffect(() => {
+    if (errorMessage) {
+      setTimeout(() => setErrorMessage(null), 3000);
+    }
+
+    inputRef.current?.focus();
+  }, [errorMessage, isDisabled]);
 
   if (!USER_ID) {
     return <UserWarning />;
@@ -111,10 +159,9 @@ export const App: React.FC = () => {
             data-cy="ToggleAllButton"
           />
 
-          {/* Add a todo on form submit */}
           <form
             onSubmit={() =>
-              addTodo({
+              handleSubmit({
                 title: titleText,
                 id: 0,
                 userId: 378,
@@ -125,7 +172,7 @@ export const App: React.FC = () => {
             <input
               data-cy="NewTodoField"
               type="text"
-              disabled={Boolean(tempTodo)}
+              disabled={isDisabled}
               ref={inputRef}
               value={titleText}
               className="todoapp__new-todo"
@@ -141,6 +188,7 @@ export const App: React.FC = () => {
               todos={visibleTodos}
               tempTodo={tempTodo}
               onDelete={deleteTodo}
+              deletingIDs={deletingIDs}
             />
 
             <Footer

@@ -7,9 +7,15 @@ interface Props {
   todos: Todo[];
   tempTodo: Todo | null;
   onDelete: (id: number) => void;
+  deletingIDs: number[];
 }
 
-export const TodoList: React.FC<Props> = ({ todos, tempTodo, onDelete }) => (
+export const TodoList: React.FC<Props> = ({
+  todos,
+  tempTodo,
+  onDelete,
+  deletingIDs,
+}) => (
   <section className="todoapp__main" data-cy="TodoList">
     {todos.map(todo => (
       <TodoComp
@@ -18,6 +24,7 @@ export const TodoList: React.FC<Props> = ({ todos, tempTodo, onDelete }) => (
         completed={todo.completed}
         title={todo.title}
         onDelete={onDelete}
+        deletingIDs={deletingIDs}
       />
     ))}
 

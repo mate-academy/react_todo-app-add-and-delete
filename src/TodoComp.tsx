@@ -6,6 +6,7 @@ interface Props {
   title: string;
   id: number;
   onDelete: (id: number) => void;
+  deletingIDs: number[];
 }
 
 export const TodoComp: React.FC<Props> = ({
@@ -13,6 +14,7 @@ export const TodoComp: React.FC<Props> = ({
   id,
   title,
   onDelete,
+  deletingIDs,
 }) => (
   <div data-cy="Todo" className={cn('todo', { completed: completed })} key={id}>
     <label aria-label="Todo-status" className="todo__status-label">
@@ -36,8 +38,12 @@ export const TodoComp: React.FC<Props> = ({
     >
       ×
     </button>
-
-    <div data-cy="TodoLoader" className="modal overlay">
+    <div
+      data-cy="TodoLoader"
+      className={cn('modal overlay', {
+        'is-active': deletingIDs.includes(id),
+      })}
+    >
       <div className="modal-background has-background-white-ter" />
       <div className="loader" />
     </div>
