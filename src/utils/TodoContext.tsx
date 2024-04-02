@@ -60,7 +60,7 @@ export const TodosProvider: FC<Props> = ({ children }) => {
       .finally(() => {
         setTempTodo(null);
         setIsLoading(false);
-        setLoadingTodosIDs([]);
+        setLoadingTodosIDs(prev => prev.filter(todoId => todoId !== 0));
       });
   };
 
@@ -76,7 +76,7 @@ export const TodosProvider: FC<Props> = ({ children }) => {
       })
       .finally(() => {
         setIsLoading(false);
-        setLoadingTodosIDs([]);
+        setLoadingTodosIDs(prev => prev.filter(todoId => todoId !== id));
       });
   };
 

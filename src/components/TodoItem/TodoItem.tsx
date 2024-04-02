@@ -48,7 +48,11 @@ export const TodoItem: React.FC<Props> = ({ todo }) => {
       }
 
       setEditingTodoId(null);
-    } else if (e.key === 'Escape') {
+
+      return;
+    }
+
+    if (e.key === 'Escape') {
       setEditingTodoId(null);
     }
   };

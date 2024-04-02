@@ -32,13 +32,6 @@ export const TodoHeader: React.FC = () => {
       return;
     }
 
-    setTempTodo({
-      id: 0,
-      title: query.trim(),
-      completed: false,
-      userId: USER_ID,
-    });
-
     const newTodo = {
       id: 0,
       title: query.trim(),
@@ -46,6 +39,7 @@ export const TodoHeader: React.FC = () => {
       userId: USER_ID,
     };
 
+    setTempTodo(newTodo);
     addTodo(newTodo);
   };
 

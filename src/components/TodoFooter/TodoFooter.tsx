@@ -9,11 +9,8 @@ export const TodoFooter: React.FC = () => {
   const clearAllCompleted = () => {
     todos
       .filter(todo => todo.completed)
-      .map(todo => todo.id)
-      .forEach(id => {
-        if (typeof id === 'number') {
-          removeTodo(id);
-        }
+      .forEach(todo => {
+        removeTodo(todo.id);
       });
   };
 
