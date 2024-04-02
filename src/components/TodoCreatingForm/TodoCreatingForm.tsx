@@ -18,12 +18,10 @@ export const TodoCreatingForm: React.FC = () => {
   const trimmedTodo = newTodoTitle.trim();
 
   useEffect(() => {
-    const currentInputRef = inputRef.current;
-
-    if (currentInputRef && !currentInputRef.disabled) {
-      currentInputRef.focus();
+    if (inputRef.current && !inputRef.current.disabled) {
+      inputRef.current.focus();
     }
-  }, [inputRef, todos.length]);
+  });
 
   function handleInputChange(event: React.ChangeEvent<HTMLInputElement>) {
     setNewTodoTitle(event.target.value);
