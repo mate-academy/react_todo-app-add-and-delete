@@ -68,12 +68,21 @@ export const TodosProvider: React.FC<Props> = ({ children }) => {
   const addTodo = async ({ title, completed, userId }: Todo) => {
     setErrorMessage(null);
 
-    setTempTodo({
+    // const tempTodo = {
+    //   id: 0,
+    //   title,
+    //   userId,
+    //   completed: false,
+    // };
+
+    const newTempTodo = {
       id: 0,
       title,
       userId,
       completed: false,
-    });
+    };
+
+    setTempTodo(newTempTodo);
 
     try {
       const newTodo = await todosServices.postTodos({
