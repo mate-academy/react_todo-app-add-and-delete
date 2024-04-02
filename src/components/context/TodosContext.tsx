@@ -67,8 +67,8 @@ export const TodosProvider: React.FC<Props> = ({ children }) => {
 
   const addTodo = async ({ title, completed, userId }: Todo) => {
     setErrorMessage(null);
-    
-// eslint-disable-next-line @typescript-eslint/no-shadow
+
+    // eslint-disable-next-line @typescript-eslint/no-shadow
     const tempTodo = {
       id: 0,
       title,
