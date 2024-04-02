@@ -1,0 +1,28 @@
+{
+  "todos":[
+    {
+      "id": 0,
+      "userId": 402,
+      "title": "Todo1",
+      "completed": false
+    },
+    {
+      "id": 1,
+      "userId": 402,
+      "title": "Todo2",
+      "completed": true
+    },
+    {
+      "id": 2,
+      "userId": 402,
+      "title": "Todo3",
+      "completed": true
+    },
+    {
+      "id": 3,
+      "userId": 402,
+      "title": "Todo4",
+      "completed": false
+    }
+  ]
+}
