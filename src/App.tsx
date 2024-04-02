@@ -1,51 +1,28 @@
-import React, { useEffect, useMemo, useRef, useState } from 'react';
-import { wait } from './utils/fetchClient';
+import React, { useEffect, useRef, useState } from 'react';
 import { TodoList } from './components/TodoList';
 import { Footer } from './components/Footer';
 import { ErrorNotification } from './components/ErrorNotification';
-import { Status } from './types/Status';
-import { Todo } from './types/Todo';
 import { USER_ID, getTodos, postTodo } from './api/todos';
 import { UserWarning } from './UserWarning';
+import { useTodosContext } from './context/TodoContext';
+import { ErrorList } from './types/ErrorList';
 
 export const App: React.FC = () => {
-  const [todos, setTodos] = useState<Todo[]>([]);
-  const [errorMessage, setErrorMessage] = useState('');
-  const [status, setStatus] = useState<Status>(Status.All);
+  const { todos, setTodos, errorMessage, handleError, setTempTodo } =
+    useTodosContext();
+
   const [query, setQuery] = useState<string>('');
-  const [tempTodo, setTempTodo] = useState<Todo | null>(null);
   const [isLoading, setIsLoading] = useState(false);
   const inputRef = useRef<HTMLInputElement | null>(null);
-
-  const handleError = (message: string) => {
-    setErrorMessage(message);
-
-    return wait(3000).then(() => setErrorMessage(''));
-  };
 
   useEffect(() => {
     inputRef.current?.focus();
     getTodos()
       .then(setTodos)
       .catch(() => {
-        handleError('Unable to load todos');
+        handleError(ErrorList.LoadTodos);
       });
   }, []);
-
-  const preparedTodos = useMemo(() => {
-    switch (status) {
-      case Status.Active:
-        return todos.filter(todo => !todo.completed);
-      case Status.Completed:
-        return todos.filter(todo => todo.completed);
-      default:
-        return todos;
-    }
-  }, [status, todos]);
-
-  if (!USER_ID) {
-    return <UserWarning />;
-  }
 
   const focusInput = () => {
     setTimeout(() => {
@@ -53,11 +30,15 @@ export const App: React.FC = () => {
     }, 0);
   };
 
+  if (!USER_ID) {
+    return <UserWarning />;
+  }
+
   const handleQuerySubmit = async (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
 
     if (query.trim().length <= 0) {
-      handleError('Title should not be empty');
+      handleError(ErrorList.EmptyTitle);
 
       return;
     }
@@ -79,7 +60,7 @@ export const App: React.FC = () => {
         focusInput();
       })
       .catch(() => {
-        handleError('Unable to add a todo');
+        handleError(ErrorList.AddTodo);
       })
       .finally(() => {
         setTempTodo(null);
@@ -121,23 +102,12 @@ export const App: React.FC = () => {
           </form>
         </header>
 
-        <TodoList
-          preparedTodos={preparedTodos}
-          setTodos={setTodos}
-          handleError={handleError}
-          tempTodo={tempTodo}
-          focusInput={focusInput}
-        />
+        <TodoList focusInput={focusInput} />
 
         {todos.length > 0 && (
           <Footer
             completedTodosCount={completedTodosCount}
-            status={status}
-            setStatus={setStatus}
-            preparedTodos={preparedTodos}
-            setTodos={setTodos}
             focusInput={focusInput}
-            handleError={handleError}
           />
         )}
       </div>

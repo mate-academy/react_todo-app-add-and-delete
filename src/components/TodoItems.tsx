@@ -2,24 +2,16 @@ import classNames from 'classnames';
 import React, { useState } from 'react';
 import { deleteTodo } from '../api/todos';
 import { Todo } from '../types/Todo';
+import { ErrorList } from '../types/ErrorList';
+import { useTodosContext } from '../context/TodoContext';
 
 interface Props {
   todo: Todo;
-  preparedTodos: Todo[];
-  setTodos: (value: Todo[]) => void;
-  handleError: (value: string) => void;
   focusInput: () => void;
-  todos: Todo[];
 }
 
-export const TodoItem: React.FC<Props> = ({
-  preparedTodos,
-  setTodos,
-  todo,
-  handleError,
-  focusInput,
-  todos,
-}) => {
+export const TodoItem: React.FC<Props> = ({ todo, focusInput }) => {
+  const { setTodos, preparedTodos, handleError } = useTodosContext();
   const [deleteID, setDeleteID] = useState<number | null>(null);
 
   const hendlerDestroyOne = (ItemId: number) => {
@@ -32,7 +24,7 @@ export const TodoItem: React.FC<Props> = ({
         setTodos(visibleTodos.filter(values => values.id !== ItemId));
       })
       .catch(() => {
-        handleError('Unable to delete a todo');
+        handleError(ErrorList.DeleteTodo);
       })
       .finally(() => {
         focusInput();
@@ -41,7 +33,7 @@ export const TodoItem: React.FC<Props> = ({
 
   const handleChecker = (ItemID: number) => {
     setTodos(
-      todos.map(prevItem => {
+      preparedTodos.map(prevItem => {
         if (prevItem.id === ItemID) {
           return {
             ...prevItem,

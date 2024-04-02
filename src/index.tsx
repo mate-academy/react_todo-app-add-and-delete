@@ -6,5 +6,12 @@ import './styles/index.scss';
 
 import { App } from './App';
 import React from 'react';
+import { TodosProvider } from './context/TodoContext';
 
-createRoot(document.getElementById('root') as HTMLDivElement).render(<App />);
+const Root = () => (
+  <TodosProvider>
+    <App />
+  </TodosProvider>
+);
+
+createRoot(document.getElementById('root') as HTMLDivElement).render(<Root />);

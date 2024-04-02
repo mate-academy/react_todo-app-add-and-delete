@@ -1,28 +1,20 @@
 import React from 'react';
 import { FilterTodos } from './FilterTodos';
-import { Status } from '../types/Status';
 import { deleteTodo } from '../api/todos';
-import { Todo } from '../types/Todo';
+import { useTodosContext } from '../context/TodoContext';
+import { ErrorList } from '../types/ErrorList';
 
 interface Props {
   completedTodosCount: number;
-  status: Status;
-  setStatus: (value: Status) => void;
-  preparedTodos: Todo[];
-  setTodos: React.Dispatch<React.SetStateAction<Todo[]>>;
   focusInput: () => void;
-  handleError: (value: string) => void;
 }
 
 export const Footer: React.FC<Props> = ({
-  status,
-  setStatus,
   completedTodosCount,
-  preparedTodos,
-  setTodos,
   focusInput,
-  handleError,
 }) => {
+  const { setTodos, preparedTodos, handleError } = useTodosContext();
+
   const completedTodos = preparedTodos.filter(todo => todo.completed);
 
   const hendlerDestroyAll = () => {
@@ -34,7 +26,7 @@ export const Footer: React.FC<Props> = ({
           );
         })
         .catch(() => {
-          handleError('Unable to delete a todo');
+          handleError(ErrorList.DeleteTodo);
         }),
     );
     focusInput();
@@ -47,7 +39,7 @@ export const Footer: React.FC<Props> = ({
       </span>
 
       <nav className="filter" data-cy="Filter">
-        <FilterTodos status={status} setStatus={setStatus} />
+        <FilterTodos />
       </nav>
 
       <button
