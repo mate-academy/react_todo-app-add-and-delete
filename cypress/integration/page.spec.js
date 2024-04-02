@@ -114,9 +114,9 @@ Cypress.on('fail', (e) => {
 });
 
 describe('', () => {
-  beforeEach(() => {
-    if (failed) Cypress.runner.stop();
-  });
+  // beforeEach(() => {
+  //   if (failed) Cypress.runner.stop();
+  // });
 
   describe('Page with no todos', () => {
     it('should send 1 todos request', () => {
