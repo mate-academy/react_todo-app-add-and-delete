@@ -5,10 +5,8 @@ import { useTodos } from '../TodosProvider';
 export const Footer: React.FC = () => {
   const { todos, clearCompletedTodos } = useTodos();
 
-  const quantityTodos: number = todos.filter(todo => !todo.completed).length;
-  const hasOnlyNotCompletedTodos: boolean = todos.every(
-    todo => !todo.completed,
-  );
+  const quantityTodos = todos.filter(todo => !todo.completed).length;
+  const hasOnlyNotCompletedTodos = todos.every(todo => !todo.completed);
 
   return (
     <footer className="todoapp__footer" data-cy="Footer">

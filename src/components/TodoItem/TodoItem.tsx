@@ -39,9 +39,9 @@ export const TodoItem: React.FC<Props> = ({ todo }) => {
   return (
     <div
       data-cy="Todo"
-      className={`todo ${cn({
+      className={cn('todo', {
         completed: todo.completed,
-      })}`}
+      })}
       key={todo.id}
       onDoubleClick={handleDoubleClick}
     >
@@ -53,6 +53,7 @@ export const TodoItem: React.FC<Props> = ({ todo }) => {
             value={editedTitle}
             className="todo__title-field"
             placeholder="Empty todo will be deleted"
+            onChange={e => setEditedTitle(e.target.value)}
             onKeyUp={handleKeyUp}
           />
         </form>

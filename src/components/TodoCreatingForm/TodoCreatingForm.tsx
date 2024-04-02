@@ -15,26 +15,30 @@ export const TodoCreatingForm: React.FC = () => {
 
   const inputRef = useRef<HTMLInputElement>(null);
 
+  const trimmedTodo = newTodoTitle.trim();
+
   useEffect(() => {
-    if (inputRef.current && !inputRef.current.disabled) {
-      inputRef.current.focus();
+    const currentInputRef = inputRef.current;
+
+    if (currentInputRef && !currentInputRef.disabled) {
+      currentInputRef.focus();
     }
-  });
+  }, [inputRef, todos.length]);
 
   function handleInputChange(event: React.ChangeEvent<HTMLInputElement>) {
     setNewTodoTitle(event.target.value);
   }
 
-  const handleSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
+  const handleSubmit = (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
-    if (!newTodoTitle.trim()) {
+    if (!trimmedTodo) {
       setErrorMessage(errorMessages.titleShouldNotBeEmpty);
 
       return;
     }
 
     try {
-      createNewTodo(newTodoTitle.trim());
+      createNewTodo(trimmedTodo);
     } catch (error) {
       setErrorMessage(errorMessages.unableToAddTodo);
     }

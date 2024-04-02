@@ -1,8 +1,6 @@
 import React, {
   createContext,
   useContext,
-  Dispatch,
-  SetStateAction,
   FC,
   useState,
   useEffect,
@@ -13,35 +11,16 @@ import { FilterStatus } from '../../types/FilterStatus';
 import { getTodos } from '../../api/todos';
 import * as todoService from '../../api/todos';
 import { errorMessages } from '../ErrorNotification';
-
-type TodosContextType = {
-  todos: Todo[];
-  setTodos: Dispatch<SetStateAction<Todo[]>>;
-  filterStatus: FilterStatus;
-  setFilterStatus: Dispatch<SetStateAction<FilterStatus>>;
-  filteredTodos: Todo[];
-  isLoading: boolean;
-  errorMessage: string;
-  setErrorMessage: Dispatch<SetStateAction<string>>;
-  isLoadingData: boolean;
-  setIsLoading: Dispatch<SetStateAction<boolean>>;
-  selectedTodoIds: number[];
-  setSelectedTodoIds: (ids: number[]) => void;
-  tempTodo: Todo | null;
-  setTempTodo: Dispatch<SetStateAction<Todo | null>>;
-  createNewTodo: (title: string) => void;
-  newTodoTitle: string;
-  setNewTodoTitle: (title: string) => void;
-  deleteTodo: (todoId: number) => void;
-  clearCompletedTodos: () => void;
-};
+import { TodosContextType } from '../../types/contextTypes';
+import {
+  initialFilterStatus,
+  initialTodos,
+} from '../../types/initialContextValues';
+import { getFilteredTodos } from '../../utils/getFilteredTodos';
 
 interface Props {
   children: React.ReactNode;
 }
-
-const initialTodos: Todo[] = [];
-const initialFilterStatus: FilterStatus = FilterStatus.All;
 
 const TodosContext = createContext<TodosContextType>({
   todos: initialTodos,
@@ -69,14 +48,20 @@ export const useTodos = () => useContext(TodosContext);
 
 export const TodosProvider: FC<Props> = ({ children }) => {
   const [todos, setTodos] = useState<Todo[]>(initialTodos);
-  const [filterStatus, setFilterStatus] =
-    useState<FilterStatus>(initialFilterStatus);
-  const [errorMessage, setErrorMessage] = useState('');
-  const [isLoadingData, setIsLoadingData] = useState(false);
-  const [isLoading, setIsLoading] = useState(false);
+
   const [selectedTodoIds, setSelectedTodoIds] = useState<number[]>([]);
   const [tempTodo, setTempTodo] = useState<Todo | null>(null);
   const [newTodoTitle, setNewTodoTitle] = useState('');
+
+  const [filterStatus, setFilterStatus] =
+    useState<FilterStatus>(initialFilterStatus);
+
+  const [isLoadingData, setIsLoadingData] = useState(false);
+  const [isLoading, setIsLoading] = useState(false);
+
+  const [errorMessage, setErrorMessage] = useState('');
+
+  const filteredTodos = getFilteredTodos(todos, filterStatus);
 
   useEffect(() => {
     setIsLoadingData(true);
@@ -91,32 +76,21 @@ export const TodosProvider: FC<Props> = ({ children }) => {
       .finally(() => setIsLoadingData(false));
   }, []);
 
-  const filteredTodos = todos.filter(todo => {
-    switch (filterStatus) {
-      case FilterStatus.Active:
-        return !todo.completed;
-      case FilterStatus.Completed:
-        return todo.completed;
-      default:
-        return true;
-    }
-  });
-
   const createNewTodo = useCallback(
     async (title: string) => {
       try {
         setIsLoading(true);
-        setSelectedTodoIds([...selectedTodoIds, 0]);
+        setSelectedTodoIds([...selectedTodoIds, todoService.USER_ID]);
 
         setTempTodo({
-          id: 0,
-          userId: 0,
+          id: todoService.USER_ID,
+          userId: todoService.USER_ID,
           title,
           completed: false,
         });
 
         const newTodo = await todoService.createTodo({
-          userId: 0,
+          userId: todoService.USER_ID,
           title,
           completed: false,
         });
@@ -125,11 +99,15 @@ export const TodosProvider: FC<Props> = ({ children }) => {
 
         setTodos(currentTodos => [...currentTodos, newTodo]);
       } catch (error) {
-        setSelectedTodoIds((ids: number[]) => ids.filter(id => id !== 0));
+        setSelectedTodoIds((ids: number[]) =>
+          ids.filter(id => id !== todoService.USER_ID),
+        );
         setErrorMessage(errorMessages.unableToAddTodo);
       } finally {
         setIsLoading(false);
-        setSelectedTodoIds((ids: number[]) => ids.filter(id => id !== 0));
+        setSelectedTodoIds((ids: number[]) =>
+          ids.filter(id => id !== todoService.USER_ID),
+        );
         setTempTodo(null);
       }
     },

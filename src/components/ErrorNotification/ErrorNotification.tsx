@@ -32,9 +32,9 @@ export const ErrorNotification: React.FC = () => {
   return (
     <div
       data-cy="ErrorNotification"
-      className={`notification is-danger is-light has-text-weight-normal ${cn({
+      className={cn('notification is-danger is-light has-text-weight-normal', {
         hidden: !errorMessage,
-      })}`}
+      })}
     >
       <button
         data-cy="HideErrorButton"
