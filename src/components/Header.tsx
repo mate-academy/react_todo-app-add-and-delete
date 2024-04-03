@@ -3,13 +3,14 @@ import cn from 'classnames';
 import { Todo } from '../types/Todo';
 
 interface Props {
-  onAddTodo: (title: string) => void;
+  onAddTodo: (title: string, setTitle: (title: string) => void) => void;
   isAllCompleted: boolean;
   todosLength: number;
   tempTodo: Todo | null;
   updateTodo: (updatedTodo: Todo) => void;
   inputDisabled: boolean;
-  shouldFocusInput: boolean;
+  todos: Todo[];
+  errorMessage: string;
 }
 
 const Header: React.FC<Props> = ({
@@ -17,17 +18,16 @@ const Header: React.FC<Props> = ({
   isAllCompleted,
   todosLength,
   inputDisabled,
-  shouldFocusInput,
+  todos,
+  errorMessage,
 }) => {
   const [title, setTitle] = useState('');
   const [shouldFocus, setShouldFocus] = useState(false);
   const inputRef = useRef<HTMLInputElement>(null);
 
   useEffect(() => {
-    if (shouldFocusInput && inputRef.current) {
-      inputRef.current.focus();
-    }
-  }, [shouldFocusInput]);
+    inputRef.current?.focus();
+  }, [todos, errorMessage]);
 
   const handleInputChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     setTitle(event.target.value);
@@ -35,12 +35,10 @@ const Header: React.FC<Props> = ({
 
   const handleSubmit = (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
-    onAddTodo(title);
+    onAddTodo(title, setTitle);
     if (!title.trim()) {
       setShouldFocus(true);
     }
-
-    setTitle('');
   };
 
   if (shouldFocus && inputRef.current) {
@@ -70,7 +68,6 @@ const Header: React.FC<Props> = ({
           value={title}
           onChange={handleInputChange}
           disabled={inputDisabled}
-          autoFocus
         />
       </form>
     </header>

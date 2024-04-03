@@ -34,7 +34,6 @@ export const App: React.FC = () => {
         setLoading(false);
       });
   }, []);
-
   useEffect(() => {
     if (shouldFocusInput) {
       setShouldFocusInput(false);
@@ -61,7 +60,7 @@ export const App: React.FC = () => {
     }
   });
 
-  const addTodo = (title: string) => {
+  const addTodo = (title: string, setTitle: (title: string) => void) => {
     const trimmedTitle = title.trim();
 
     if (!trimmedTitle) {
@@ -95,9 +94,10 @@ export const App: React.FC = () => {
       .then(() => {
         setTodos(prevTodos => [...prevTodos, newTodo]);
         setShouldFocusInput(true);
+        setTitle('');
       })
       .catch(() => {
-        handleError('Unable to add todo', setErrorMessage);
+        handleError('Unable to add a todo', setErrorMessage);
       })
       .finally(() => {
         setInputDisabled(false);
@@ -126,7 +126,7 @@ export const App: React.FC = () => {
         setTodos(prevTodos => prevTodos.filter(todoItem => todoItem.id !== id));
       })
       .catch(() => {
-        handleError('Unable to delete todo', setErrorMessage);
+        handleError('Unable to delete a todo', setErrorMessage);
       })
       .finally(() => {
         setTempTodo(null);
@@ -148,7 +148,7 @@ export const App: React.FC = () => {
           );
         })
         .catch(() => {
-          handleError('Unable to delete todo', setErrorMessage);
+          handleError('Unable to delete a todo', setErrorMessage);
         });
     });
   };
@@ -164,7 +164,8 @@ export const App: React.FC = () => {
           tempTodo={tempTodo}
           updateTodo={updateTodo}
           inputDisabled={inputDisabled}
-          shouldFocusInput={shouldFocusInput}
+          todos={todos}
+          errorMessage={errorMessage}
         />
         <TodoList
           todos={filteredTodos}

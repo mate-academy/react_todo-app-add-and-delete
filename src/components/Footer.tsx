@@ -27,16 +27,15 @@ const Footer: React.FC<Props> = ({
 
       <Filter status={status} onStatusChange={onStatusChange} />
 
-      {haveCompletedTodos && (
-        <button
-          type="button"
-          className="todoapp__clear-completed"
-          data-cy="ClearCompletedButton"
-          onClick={handleClearCompleted}
-        >
-          Clear completed
-        </button>
-      )}
+      <button
+        type="button"
+        className="todoapp__clear-completed"
+        data-cy="ClearCompletedButton"
+        onClick={handleClearCompleted}
+        disabled={!haveCompletedTodos}
+      >
+        Clear completed
+      </button>
     </footer>
   );
 };
