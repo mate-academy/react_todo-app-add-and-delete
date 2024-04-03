@@ -1,16 +1,27 @@
-import React, { useState } from 'react';
 import { TodoStatus } from '../../types/TodoStatus';
 import cn from 'classnames';
 import { Todo } from '../../types/Todo';
 import { TodoItemLoader } from '../TodoItemLoader';
+import React, { useState } from 'react';
 
 type Props = {
   todo: Todo;
+  startingStatus?: TodoStatus;
+  onTodoDelete: (id: number) => void;
 };
 
-export const TodoItem: React.FC<Props> = ({ todo }) => {
-  const [status] = useState<TodoStatus>(TodoStatus.Default);
-  // useState here is only a placeholder for next part of task.
+export const TodoItem: React.FC<Props> = ({
+  todo,
+  startingStatus = TodoStatus.Default,
+  onTodoDelete,
+}) => {
+  const [status, setStatus] = useState(startingStatus);
+
+  const handleTodoDelete = () => {
+    setStatus(TodoStatus.Loading);
+
+    onTodoDelete(todo.id);
+  };
 
   return (
     <div data-cy="Todo" className={cn('todo', { completed: todo.completed })}>
@@ -39,7 +50,12 @@ export const TodoItem: React.FC<Props> = ({ todo }) => {
             {todo.title}
           </span>
 
-          <button type="button" className="todo__remove" data-cy="TodoDelete">
+          <button
+            type="button"
+            className="todo__remove"
+            data-cy="TodoDelete"
+            onClick={() => handleTodoDelete()}
+          >
             ×
           </button>
         </>

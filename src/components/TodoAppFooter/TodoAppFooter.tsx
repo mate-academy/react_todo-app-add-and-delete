@@ -7,12 +7,14 @@ type Props = {
   onStatusFilterClick: (statusFilterValue: StatusFilter) => void;
   todos: Todo[];
   statusFilter: StatusFilter;
+  onCompletedTodoDelete: () => void;
 };
 
 export const TodoAppFooter: React.FC<Props> = ({
   onStatusFilterClick,
   todos,
   statusFilter,
+  onCompletedTodoDelete,
 }) => {
   const activeTodosCount = todos.filter(todo => !todo.completed).length;
 
@@ -41,7 +43,9 @@ export const TodoAppFooter: React.FC<Props> = ({
       <button
         type="button"
         className="todoapp__clear-completed"
+        disabled={todos.every(todo => !todo.completed)}
         data-cy="ClearCompletedButton"
+        onClick={() => onCompletedTodoDelete()}
       >
         Clear completed
       </button>
