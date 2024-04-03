@@ -1,4 +1,3 @@
-/* eslint-disable jsx-a11y/label-has-associated-control */
 import React from 'react';
 import { Todo } from '../../types/Todo';
 import classNames from 'classnames';
@@ -22,6 +21,7 @@ export const TodoItem: React.FC<Props> = ({
         data-cy="Todo"
         className={classNames('todo', { completed: completed })}
       >
+        {/*eslint-disable-next-line jsx-a11y/label-has-associated-control*/}
         <label className="todo__status-label">
           <input
             data-cy="TodoStatus"
@@ -44,7 +44,6 @@ export const TodoItem: React.FC<Props> = ({
           ×
         </button>
 
-        {/* overlay will cover the todo while it is being deleted or updated */}
         <div
           data-cy="TodoLoader"
           className={classNames('modal overlay', {
@@ -55,32 +54,6 @@ export const TodoItem: React.FC<Props> = ({
           <div className="loader" />
         </div>
       </div>
-      {/* This todo is being edited */}
-      {/* <div data-cy="Todo" className="todo">
-        <label className="todo__status-label">
-          <input
-            data-cy="TodoStatus"
-            type="checkbox"
-            className="todo__status"
-          />
-        </label>
-
-        This form is shown instead of the title and remove button
-        <form>
-          <input
-            data-cy="TodoTitleField"
-            type="text"
-            className="todo__title-field"
-            placeholder="Empty todo will be deleted"
-            value="Todo is being edited now"
-          />
-        </form>
-
-        <div data-cy="TodoLoader" className="modal overlay">
-          <div className="modal-background has-background-white-ter" />
-          <div className="loader" />
-        </div>
-      </div> */}
     </section>
   );
 };

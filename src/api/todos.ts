@@ -18,5 +18,3 @@ export const addTodo = (title: string) => {
 export const deleteTodo = (id: number) => {
   return client.delete(`/todos/${id}`);
 };
-
-// Add more methods here
