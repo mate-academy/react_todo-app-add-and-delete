@@ -8,8 +8,8 @@ interface Props {
 }
 
 export const TodoItem: React.FC<Props> = ({ todo }) => {
-  const { deleteTodo, handleCompleted } = useTodos();
-  const { title, completed } = todo;
+  const { deleteTodo, handleCompleted, modifiedTodoId } = useTodos();
+  const { id, title, completed } = todo;
 
   return (
     <div
@@ -18,6 +18,7 @@ export const TodoItem: React.FC<Props> = ({ todo }) => {
         completed: completed,
       })}
     >
+      {/* eslint-disable-next-line */}
       <label className="todo__status-label">
         <input
           data-cy="TodoStatus"
@@ -32,18 +33,21 @@ export const TodoItem: React.FC<Props> = ({ todo }) => {
         {title}
       </span>
 
-      {/* Remove button appears only on hover */}
       <button
         type="button"
         className="todo__remove"
         data-cy="TodoDelete"
-        onClick={() => deleteTodo(todo.id)}
+        onClick={() => deleteTodo(id)}
       >
         ×
       </button>
 
-      {/* overlay will cover the todo while it is being deleted or updated */}
-      <div data-cy="TodoLoader" className="modal overlay">
+      <div
+        data-cy="TodoLoader"
+        className={classNames('modal overlay', {
+          'is-active': id === modifiedTodoId,
+        })}
+      >
         <div className="modal-background has-background-white-ter" />
         <div className="loader" />
       </div>

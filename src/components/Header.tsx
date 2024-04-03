@@ -17,29 +17,35 @@ export const Header: React.FC = () => {
     }
   }, [loading, submitting, addTodo]);
 
-  const handleAddTodo = () => {
+  const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
+    e.preventDefault();
+    setErrMessage(ErrText.NoErr);
+    setLoading(true);
+    setSubmitting(true);
     const trimmedInput = inputTodo.trim();
 
-    if (trimmedInput) {
-      setSubmitting(true);
-      addTodo({
+    try {
+      if (!trimmedInput.length) {
+        setErrMessage(ErrText.EmptyErr);
+
+        return;
+      }
+
+      await addTodo({
         id: Date.now(),
         title: trimmedInput,
         completed: false,
         userId: USER_ID,
       });
+
       setInputTodo('');
       setSubmitting(false);
-    } else if (!trimmedInput.length) {
-      setErrMessage(ErrText.EmptyErr);
+    } catch (error) {
+      throw error;
+    } finally {
+      setLoading(false);
+      setSubmitting(false);
     }
-  };
-
-  const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
-    e.preventDefault();
-    setLoading(true);
-    setErrMessage(ErrText.NoErr);
-    handleAddTodo();
   };
 
   return (

@@ -4,7 +4,7 @@ import { TodoItem } from './TodoItem';
 import { getVisibleTodos } from '../utils/getVisibleTodos';
 
 export const TodoList: React.FC = () => {
-  const { todos, status } = useTodos();
+  const { todos, status, tempTodo } = useTodos();
   const visibleTodos = getVisibleTodos(todos, status);
 
   return (
@@ -12,6 +12,7 @@ export const TodoList: React.FC = () => {
       {visibleTodos.map(todo => (
         <TodoItem key={todo.id} todo={todo} />
       ))}
+      {tempTodo && <TodoItem todo={tempTodo} key={0} />}
     </section>
   );
 };

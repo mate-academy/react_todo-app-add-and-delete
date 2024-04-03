@@ -2,10 +2,22 @@ import React from 'react';
 import { useTodos } from '../utils/TodoContext';
 import classNames from 'classnames';
 import { Status } from '../types/Status';
+import { ErrText } from '../types/ErrText';
 
 export const Foofer: React.FC = () => {
-  const { todos, status, setStatus } = useTodos();
+  const { todos, status, setStatus, deleteTodo, setErrMessage } = useTodos();
   const itemsLeft = todos.filter(el => !el.completed).length;
+  const completedTodos = todos.filter(todo => todo.completed);
+
+  const clearCompleted = async () => {
+    try {
+      await Promise.allSettled(completedTodos.map(todo => deleteTodo(todo.id)));
+    } catch {
+      setErrMessage(ErrText.DeleteErr);
+    } finally {
+      setTimeout(() => setErrMessage(ErrText.NoErr), 3000);
+    }
+  };
 
   return (
     <footer className="todoapp__footer" data-cy="Footer">
@@ -15,7 +27,6 @@ export const Foofer: React.FC = () => {
         left
       </span>
 
-      {/* Active link should have the 'selected' class */}
       <nav className="filter" data-cy="Filter">
         <a
           href="#/"
@@ -56,6 +67,8 @@ export const Foofer: React.FC = () => {
         type="button"
         className="todoapp__clear-completed"
         data-cy="ClearCompletedButton"
+        onClick={clearCompleted}
+        disabled={!completedTodos.length}
       >
         Clear completed
       </button>

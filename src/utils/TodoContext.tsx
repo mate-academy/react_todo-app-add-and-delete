@@ -18,13 +18,14 @@ const initialTodoContext: TodoContextType = {
   setStatus: () => {},
   errMessage: ErrText.NoErr,
   setErrMessage: () => {},
-  deleteTodo: () => {},
-  addTodo: () => {},
+  deleteTodo: async () => {},
+  addTodo: async () => {},
   loading: false,
   setLoading: () => {},
   setTempTodo: () => {},
   tempTodo: null,
   handleCompleted: () => {},
+  modifiedTodoId: 0,
 };
 
 const TodoContext = React.createContext<TodoContextType>(initialTodoContext);
@@ -39,6 +40,7 @@ export const TodoContextProvider: React.FC<Props> = ({ children }) => {
   const [errMessage, setErrMessage] = useState(ErrText.NoErr);
   const [loading, setLoading] = useState(false);
   const [tempTodo, setTempTodo] = useState<Todo | null>(null);
+  const [modifiedTodoId, setModifiedTodoId] = useState(0);
 
   useEffect(() => {
     todoServices
@@ -48,48 +50,58 @@ export const TodoContextProvider: React.FC<Props> = ({ children }) => {
         setErrMessage(ErrText.LoadErr);
         setTimeout(() => setErrMessage(ErrText.NoErr), 3000);
       });
-  }, [setErrMessage]);
+  }, []);
 
   const deleteTodo = useCallback(
-    (todoId: number) => {
+    async (todoId: number) => {
       setLoading(true);
+      setModifiedTodoId(todoId);
       setErrMessage(ErrText.NoErr);
-      setTodos(currentTodos => currentTodos.filter(todo => todo.id !== todoId));
-      todoServices.deleteTodos(todoId).catch(() => {
+      try {
+        await todoServices.deleteTodos(todoId);
+        setTodos(currentTodos =>
+          currentTodos.filter(todo => todo.id !== todoId),
+        );
+        setLoading(false);
+      } catch {
         setErrMessage(ErrText.DeleteErr);
         setTodos(todos);
         setTimeout(() => setErrMessage(ErrText.NoErr), 3000);
-      });
+      } finally {
+        setLoading(false);
+        setModifiedTodoId(0);
+      }
     },
     [todos],
   );
 
-  const addTodo = ({ title, completed, userId }: Todo) => {
+  const addTodo = useCallback(async ({ title, completed, userId }: Todo) => {
     setLoading(true);
     setErrMessage(ErrText.NoErr);
     setTempTodo({ id: 0, title, userId, completed: false });
-    todoServices
-      .createTodos({
+    try {
+      const newestTodo = await todoServices.createTodos({
         title,
         completed,
         userId,
-      })
-      .then(newestTodo => {
-        setTodos(currentTodos => [...currentTodos, newestTodo]);
-        setLoading(false);
-        setTempTodo(null);
-      })
-      .catch(() => {
-        setErrMessage(ErrText.AddErr);
-        setTimeout(() => {
-          setErrMessage(ErrText.NoErr);
-          setTempTodo(null);
-        }, 3000);
-      })
-      .finally(() => setLoading(false));
-  };
+      });
 
-  const handleCompleted = (currentTodo: Todo) => {
+      setTempTodo(null);
+      setTodos(currentTodos => [...currentTodos, newestTodo]);
+      setLoading(false);
+    } catch (error) {
+      setErrMessage(ErrText.AddErr);
+      setTempTodo(null);
+      setTimeout(() => {
+        setErrMessage(ErrText.NoErr);
+      }, 3000);
+      throw error;
+    } finally {
+      setLoading(false);
+    }
+  }, []);
+
+  const handleCompleted = useCallback((currentTodo: Todo) => {
     setTodos(prevTodos =>
       prevTodos.map(todo =>
         todo.id === currentTodo.id
@@ -97,7 +109,7 @@ export const TodoContextProvider: React.FC<Props> = ({ children }) => {
           : todo,
       ),
     );
-  };
+  }, []);
 
   const todoContextValue = useMemo(
     () => ({
@@ -114,8 +126,19 @@ export const TodoContextProvider: React.FC<Props> = ({ children }) => {
       tempTodo,
       setTempTodo,
       handleCompleted,
+      modifiedTodoId,
     }),
-    [todos, status, tempTodo, deleteTodo, errMessage, loading],
+    [
+      todos,
+      status,
+      tempTodo,
+      deleteTodo,
+      addTodo,
+      errMessage,
+      loading,
+      handleCompleted,
+      modifiedTodoId,
+    ],
   );
 
   return (
