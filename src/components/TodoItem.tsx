@@ -12,7 +12,8 @@ export const TodoItem: FC<Props> = ({ todo }) => {
   const { setTodos, removeTodo, loadingTodosIds } = useTodos();
   const [idToEdit, setIdToEdit] = useState<number | null>(null);
   const [textToEdit, setTextToEdit] = useState(todo.title);
-  const isLoadingActive = loadingTodosIds.includes(todo.id) || !todo.id;
+  const isLoadingActive = loadingTodosIds.includes(todo.id) || todo.id === 0;
+  const isEditing = !idToEdit && idToEdit !== todo.id;
 
   const toggleCompletedTodo = (todoId: number) => {
     setTodos(prevTodos =>
@@ -63,18 +64,17 @@ export const TodoItem: FC<Props> = ({ todo }) => {
       })}
       onDoubleClick={() => toggleEditTodo(todo.id)}
     >
-      <label className="todo__status-label">
+      <label className="todo__status-label" aria-label="todo__status">
         <input
           data-cy="TodoStatus"
           type="checkbox"
           className="todo__status"
-          id={`toggle-view-${todo.id}`}
           checked={todo.completed}
           onChange={() => toggleCompletedTodo(todo.id)}
         />
       </label>
 
-      {!idToEdit && idToEdit !== todo.id ? (
+      {isEditing ? (
         <>
           <span data-cy="TodoTitle" className="todo__title">
             {todo.title}

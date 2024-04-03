@@ -11,7 +11,6 @@ import { useTodos } from './utils/TodosContext';
 
 export const App: React.FC = () => {
   const { todos } = useTodos();
-  const isMainContentPresent = todos.length > 0;
 
   if (!USER_ID) {
     return <UserWarning />;
@@ -23,7 +22,7 @@ export const App: React.FC = () => {
 
       <div className="todoapp__content">
         <TodoHeader />
-        {isMainContentPresent && (
+        {!!todos.length && (
           <>
             <TodoList />
             <TodoFooter />

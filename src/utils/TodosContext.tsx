@@ -67,6 +67,7 @@ export const TodosProvider: FC<Props> = ({ children }) => {
   const removeTodo = (id: number) => {
     setIsLoading(true);
     setLoadingTodosIds(prev => [...prev, id]);
+
     deleteTodo(id)
       .then(() => {
         setTodos(prevTodos => prevTodos.filter(todo => todo.id !== id));
@@ -77,7 +78,7 @@ export const TodosProvider: FC<Props> = ({ children }) => {
       .finally(() => {
         setIsLoading(false);
         setLoadingTodosIds(prevTodos =>
-          prevTodos.filter(todoId => todoId !== 0),
+          prevTodos.filter(todoId => todoId !== id),
         );
       });
   };
