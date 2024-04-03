@@ -7,6 +7,7 @@ interface Props {
   activeTodosCount: number;
   onClearCompleted: () => void;
   selectedFilterBy: FilterBy;
+  hasCompletedTodo: boolean;
 }
 
 export const Footer: React.FC<Props> = ({
@@ -14,6 +15,7 @@ export const Footer: React.FC<Props> = ({
   activeTodosCount,
   onClearCompleted,
   selectedFilterBy,
+  hasCompletedTodo,
 }) => (
   <footer className="todoapp__footer" data-cy="Footer">
     <span className="todo-count" data-cy="TodosCounter">
@@ -36,11 +38,11 @@ export const Footer: React.FC<Props> = ({
       ))}
     </nav>
 
-    {/* this button should be disabled if there are no completed todos */}
     <button
       type="button"
       className="todoapp__clear-completed"
       data-cy="ClearCompletedButton"
+      disabled={!hasCompletedTodo}
       onClick={onClearCompleted}
     >
       Clear completed

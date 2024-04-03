@@ -78,6 +78,7 @@ export const App: React.FC = () => {
   const visibleTodos = getFilteredTodos(todos, filterBy);
 
   const activeTodosCount: number = todos.filter(todo => !todo.completed).length;
+  const hasCompletedTodo: boolean = todos.some(todo => todo.completed);
 
   const handleSubmit = ({ title }: Todo) => {
     if (!title.trim()) {
@@ -196,6 +197,7 @@ export const App: React.FC = () => {
               activeTodosCount={activeTodosCount}
               onClearCompleted={handleClearingCompletedTodos}
               selectedFilterBy={filterBy}
+              hasCompletedTodo={hasCompletedTodo}
             />
           </>
         )}
