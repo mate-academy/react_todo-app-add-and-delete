@@ -1,4 +1,4 @@
-import TodoItem from './todoItem';
+import TodoItem from './TodoItem';
 import { Todo } from '../types/Todo';
 
 interface Props {
@@ -17,11 +17,7 @@ const TodoList: React.FC<Props> = ({
   return (
     <section className="todoapp__main" data-cy="TodoList">
       {todos.map(todo => (
-        <TodoItem
-          todo={todo}
-          key={todo.id}
-          onDeleteTodo={onDeleteTodo}
-        />
+        <TodoItem todo={todo} key={todo.id} onDeleteTodo={onDeleteTodo} />
       ))}
       {tempTodo && (
         <TodoItem

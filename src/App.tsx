@@ -5,7 +5,7 @@ import { UserWarning } from './UserWarning';
 import { USER_ID } from './api/todos';
 import Header from './components/Header';
 import { Footer } from './components/Footer';
-import TodoList from './components/todoList';
+import TodoList from './components/TodoList';
 import { Status } from './types/Status';
 import { getTodos, postTodo, deleteTodoById } from './api/todos';
 import { Todo } from './types/Todo';
@@ -59,6 +59,7 @@ export const App: FC = () => {
       handleError('Title should not be empty', setErrorMessage);
       setFocusInput(true);
       setIsLoading(false);
+
       return;
     }
 
@@ -71,6 +72,7 @@ export const App: FC = () => {
     };
 
     const copyNewTodo = { ...newTodo, id: todos.length + 1 };
+
     setTempTodo(newTodo);
 
     postTodo(newTodo)
@@ -90,6 +92,7 @@ export const App: FC = () => {
 
   const deleteTodo = (id: number) => {
     setIsLoading(true);
+
     deleteTodoById(id)
       .then(() => {
         setTodos(prevTodos => prevTodos.filter(todoItem => todoItem.id !== id));
@@ -103,10 +106,6 @@ export const App: FC = () => {
       });
   };
 
-  // const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-  //   setFieldQuery(e.target.value);
-  // };
-
   const clearCompleted = () => {
     setIsLoading(true);
     todos.forEach(todo => {
@@ -114,7 +113,6 @@ export const App: FC = () => {
         deleteTodo(todo.id);
       }
     });
-    // setTodos(prevTodos => prevTodos.filter(todoItem => !todoItem.completed));
   };
 
   return (
