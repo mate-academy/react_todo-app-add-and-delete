@@ -12,7 +12,7 @@ export const TodoList: React.FC = () => {
       {visibleTodos.map(todo => (
         <TodoItem key={todo.id} todo={todo} />
       ))}
-      {tempTodo && <TodoItem todo={tempTodo} key={0} />}
+      {tempTodo && <TodoItem todo={tempTodo} />}
     </section>
   );
 };
