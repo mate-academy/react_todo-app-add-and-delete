@@ -1,7 +1,7 @@
 /* eslint-disable jsx-a11y/control-has-associated-label */
 import React, { useEffect, useState } from 'react';
 import { UserWarning } from './UserWarning';
-import { USER_ID, createTodos, getTodos } from './api/todos';
+import { USER_ID, createTodos, deleteTodo, getTodos } from './api/todos';
 import { Todo } from './types/Todo';
 
 export const App: React.FC = () => {
@@ -10,6 +10,7 @@ export const App: React.FC = () => {
   const [isTitle, setTitle] = useState('');
   const [loading, setLoading] = useState(false);
   const [filterStatus, setFilterStatus] = useState('all');
+  const [tempTodo, setTempTodo] = useState<Todo | null>(null);
 
   const filteredTodos = todos.filter(todo => {
     switch (filterStatus) {
@@ -54,6 +55,19 @@ export const App: React.FC = () => {
     });
   };
 
+  const deleteTodos = async (userId: number) => {
+    try {
+      setLoading(true);
+
+      await deleteTodo(userId);
+      setTodos(currentTodo => currentTodo.filter(todo => todo.id !== userId));
+    } catch (errors) {
+      setError('Unable to delete a todo');
+    } finally {
+      setLoading(false);
+    }
+  };
+
   // Відповідає за обробку події форми.
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
@@ -65,11 +79,23 @@ export const App: React.FC = () => {
 
     try {
       setLoading(true);
-      await addTodo({
+
+      // create a todo with id: 0
+      setTempTodo({
+        id: 0,
         title: isTitle.trim(),
         completed: false,
         userId: USER_ID,
       });
+      // викликаємо функцію addTodo, яка відправляє запит на сервер для створення нового todo
+      const newTodo = await addTodo({
+        title: isTitle.trim(),
+        completed: false,
+        userId: USER_ID,
+      });
+
+      setTodos(prevTodos => [...prevTodos, newTodo] as Todo[]); // додаємо нове todo до масиву todos
+      setTempTodo(null); // Сховати tempTodo
       setTitle('');
       handleRequest(); // Оновлюємо список завдань після додавання нового завдання
     } catch (errors) {
@@ -88,6 +114,58 @@ export const App: React.FC = () => {
   };
 
   const allTodosCompleted = todos.every(todo => todo.completed);
+
+  // видаляє всі завершені todo
+  const clearCompletedTodos = async () => {
+    try {
+      setLoading(true);
+      // Відбір завершених todo
+      const completedTodosIds = todos
+        .filter(todo => todo.completed)
+        .map(todo => todo.id);
+
+      // Видалення кожної завершеної todo за її ідентифікатором
+      await Promise.all(completedTodosIds.map(id => deleteTodo(id)));
+      // Оновлення списку todos, виключаючи завершені todo
+      setTodos(currentTodos => currentTodos.filter(todo => !todo.completed));
+
+      // Перевірка, чи залишилися невиконані todo
+      if (todos.some(todo => !todo.completed)) {
+        setFilterStatus('completed'); // встановлюємо статус фільтра на 'Completed'todo
+      }
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  // Обчислює кількість невиконаних todo
+  const todosCounter = todos.filter(todo => !todo.completed).length;
+
+  const toggleTodoCompletion = (todoId: number) => {
+    try {
+      // Отримуємо посилання на завдання за його id
+      const updatedTodos = todos.map(todo =>
+        todo.id === todoId ? { ...todo, completed: !todo.completed } : todo,
+      );
+
+      // Оновлюємо стан todos
+      setTodos(updatedTodos);
+
+      // Отримуємо новий стан фільтра
+      let newFilterStatus = 'all';
+
+      if (filterStatus === 'completed') {
+        newFilterStatus = 'active';
+      } else if (filterStatus === 'active') {
+        newFilterStatus = 'all';
+      }
+
+      // Оновлюємо стан фільтра
+      setFilterStatus(newFilterStatus);
+    } catch (errors) {
+      setError('Unable to toggle todo completion');
+    }
+  };
 
   return (
     <div className="todoapp">
@@ -115,22 +193,28 @@ export const App: React.FC = () => {
               onChange={e => {
                 handleInputTodo(e);
               }}
+              disabled={loading}
               autoFocus
             />
           </form>
         </header>
 
-        {loading && (
+        {!loading && (
           <section className="todoapp__main" data-cy="TodoList">
             {/* This is a completed todo */}
             {filteredTodos.map(todo => (
-              <div key={todo.id} data-cy="Todo" className="todo completed">
+              <div
+                key={todo.id}
+                data-cy="Todo"
+                className={`todo ${todo.completed ? 'completed' : ''}`}
+              >
                 <label className="todo__status-label">
                   <input
                     data-cy="TodoStatus"
                     type="checkbox"
                     className="todo__status"
                     checked={todo.completed}
+                    onClick={() => toggleTodoCompletion(todo.id)}
                   />
                 </label>
                 <span data-cy="TodoTitle" className="todo__title">
@@ -142,12 +226,20 @@ export const App: React.FC = () => {
                   type="button"
                   className="todo__remove"
                   data-cy="TodoDelete"
+                  onClick={() => {
+                    if (deleteTodos) {
+                      deleteTodos(todo.id);
+                    }
+                  }}
                 >
                   ×
                 </button>
 
                 {/* overlay will cover the todo while it is being deleted or updated */}
-                <div data-cy="TodoLoader" className="modal overlay">
+                <div
+                  data-cy="TodoLoader"
+                  className={`modal overlay ${loading ? '' : 'hidden'}`}
+                >
                   <div className="modal-background has-background-white-ter" />
                   <div className="loader" />
                 </div>
@@ -157,10 +249,10 @@ export const App: React.FC = () => {
         )}
 
         {/* Hide the footer if there are no todos */}
-        {filteredTodos.length > 0 && (
+        {todos.length > 0 && (
           <footer className="todoapp__footer" data-cy="Footer">
             <span className="todo-count" data-cy="TodosCounter">
-              3 items left
+              {`${todosCounter} ${todosCounter === 1 ? 'item' : 'items'} left`}
             </span>
 
             {/* Active link should have the 'selected' class */}
@@ -176,16 +268,18 @@ export const App: React.FC = () => {
 
               <a
                 href="#/active"
-                className="filter__link"
+                className={`filter__link ${filterStatus === 'active' ? 'selected' : ''}`}
                 data-cy="FilterLinkActive"
+                onClick={() => setFilterStatus('active')}
               >
                 Active
               </a>
 
               <a
                 href="#/completed"
-                className="filter__link"
+                className={`filter__link ${filterStatus === 'completed' ? 'selected' : ''}`}
                 data-cy="FilterLinkCompleted"
+                onClick={() => setFilterStatus('completed')}
               >
                 Completed
               </a>
@@ -196,7 +290,8 @@ export const App: React.FC = () => {
               type="button"
               className="todoapp__clear-completed"
               data-cy="ClearCompletedButton"
-              disabled={todos.some(todo => todo.completed)}
+              disabled={!todos.some(todo => todo.completed)}
+              onClick={clearCompletedTodos}
             >
               Clear completed
             </button>
