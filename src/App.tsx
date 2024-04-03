@@ -14,8 +14,7 @@ import { ErrorMessages } from './types/ErrorMessages';
 import { FilterOptions } from './types/FilterOptions';
 import { Header } from './components/Header/Header';
 import { Footer } from './components/Footer/Footer';
-//eslint-disable-next-line max-len
-import { ErrorNotification } from './components/ErrorNotification/ErrorNotification';
+import { Error } from './components/Error/Error';
 import { Main } from './components/Main/Main';
 import { TodoItem } from './components/TodoItem/TodoItem';
 
@@ -151,7 +150,7 @@ export const App: React.FC = () => {
         {tempTodo && (
           <TodoItem todo={tempTodo} isShowLoader={Boolean(tempTodo)} />
         )}
-        {todos.length !== 0 && (
+        {!!todos.length && (
           <Footer
             counter={activeTodos.length}
             filterOption={filterOption}
@@ -162,10 +161,7 @@ export const App: React.FC = () => {
         )}
       </div>
 
-      <ErrorNotification
-        message={errorMessage}
-        setErrorMessage={setErrorMessage}
-      />
+      <Error message={errorMessage} setErrorMessage={setErrorMessage} />
     </div>
   );
 };
