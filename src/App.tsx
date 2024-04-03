@@ -23,7 +23,7 @@ const getFilteredTodos: FilterTheTodos = (todos, filterBy) => {
         case FilterBy.Completed:
           return todo.completed;
         default:
-          throw new Error('Unknown filter type');
+          throw new Error(Errors.Unknown);
       }
     });
   }
@@ -45,13 +45,6 @@ export const App: React.FC = () => {
   const handleClearingError = () => setErrorMessage(null);
   const handleChangingFilterBy = (value: FilterBy) => setFilterBy(value);
   const handleClearingCompletedTodos = () => {
-    // todos.forEach(todo => {
-    //   if (todo.completed) {
-    //     setDeletingIDs(prevIDs => [...prevIDs, todo.id]);
-    //     console.log('deletingIDs 0', deletingIDs);
-    //   }
-    // });
-
     const idsToDelete: number[] = [];
 
     todos.forEach(todo => {
