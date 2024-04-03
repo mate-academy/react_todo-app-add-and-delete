@@ -1,5 +1,6 @@
 /* eslint-disable jsx-a11y/control-has-associated-label */
-import React, { useEffect, useState } from 'react';
+/* eslint-disable */
+import React, { useEffect, useRef, useState } from 'react';
 import { UserWarning } from './UserWarning';
 import { USER_ID, createTodos, deleteTodo, getTodos } from './api/todos';
 import { Todo } from './types/Todo';
@@ -39,6 +40,14 @@ export const App: React.FC = () => {
     }
   };
 
+  const inputRef = useRef<HTMLInputElement>(null);
+  // додавання фокусу на input
+  useEffect(() => {
+    if (inputRef.current) {
+      inputRef.current.focus();
+    }
+  }, [todos])
+
   useEffect(() => {
     if (USER_ID) {
       handleRequest();
@@ -48,12 +57,6 @@ export const App: React.FC = () => {
       setError(''); // Очищаємо помилку після схову повідомлення
     }, 3000);
   }, []);
-
-  const addTodo = ({ title, completed, userId }: Omit<Todo, 'id'>) => {
-    createTodos({ title, completed, userId }).then(newTodo => {
-      setTodos(currentTodo => [...currentTodo, newTodo]);
-    });
-  };
 
   const deleteTodos = async (userId: number) => {
     try {
@@ -87,8 +90,8 @@ export const App: React.FC = () => {
         completed: false,
         userId: USER_ID,
       });
-      // викликаємо функцію addTodo, яка відправляє запит на сервер для створення нового todo
-      const newTodo = await addTodo({
+      // викликаємо функцію createTodos, яка відправляє запит на сервер та створює новий todo
+      const newTodo = await createTodos({
         title: isTitle.trim(),
         completed: false,
         userId: USER_ID,
@@ -97,6 +100,7 @@ export const App: React.FC = () => {
       setTodos(prevTodos => [...prevTodos, newTodo] as Todo[]); // додаємо нове todo до масиву todos
       setTempTodo(null); // Сховати tempTodo
       setTitle('');
+
       handleRequest(); // Оновлюємо список завдань після додавання нового завдання
     } catch (errors) {
       setError('Unable to add a todo');
@@ -141,6 +145,7 @@ export const App: React.FC = () => {
   // Обчислює кількість невиконаних todo
   const todosCounter = todos.filter(todo => !todo.completed).length;
 
+  // Функція відповідає за зміну статусу завдання
   const toggleTodoCompletion = (todoId: number) => {
     try {
       // Отримуємо посилання на завдання за його id
@@ -185,6 +190,7 @@ export const App: React.FC = () => {
           {/* Add a todo on form submit */}
           <form onSubmit={handleSubmit}>
             <input
+              ref={inputRef}
               data-cy="NewTodoField"
               type="text"
               value={isTitle}
@@ -194,7 +200,6 @@ export const App: React.FC = () => {
                 handleInputTodo(e);
               }}
               disabled={loading}
-              autoFocus
             />
           </form>
         </header>
@@ -246,6 +251,12 @@ export const App: React.FC = () => {
               </div>
             ))}
           </section>
+        )}
+
+        {loading && tempTodo && (
+          <div className="todo">
+            <span className="todo__title">{tempTodo.title}</span>
+          </div>
         )}
 
         {/* Hide the footer if there are no todos */}
@@ -326,86 +337,3 @@ export const App: React.FC = () => {
     </div>
   );
 };
-
-// {/* This todo is an active todo */ }
-// <div data-cy="Todo" className="todo">
-//   <label className="todo__status-label">
-//     <input
-//       data-cy="TodoStatus"
-//       type="checkbox"
-//       className="todo__status"
-//     />
-//   </label>
-
-//   <span data-cy="TodoTitle" className="todo__title">
-//     Not Completed Todo
-//   </span>
-//   <button
-//     type="button"
-//     className="todo__remove"
-//     data-cy="TodoDelete"
-//   >
-//     ×
-//   </button>
-
-//   <div data-cy="TodoLoader" className="modal overlay">
-//     <div className="modal-background has-background-white-ter" />
-//     <div className="loader" />
-//   </div>
-// </div>
-
-// {/* This todo is being edited */ }
-// <div data-cy="Todo" className="todo">
-//   <label className="todo__status-label">
-//     <input
-//       data-cy="TodoStatus"
-//       type="checkbox"
-//       className="todo__status"
-//     />
-//   </label>
-
-//   {/* This form is shown instead of the title and remove button */}
-//   <form>
-//     <input
-//       data-cy="TodoTitleField"
-//       type="text"
-//       className="todo__title-field"
-//       placeholder="Empty todo will be deleted"
-//       value="Todo is being edited now"
-//     />
-//   </form>
-
-//   <div data-cy="TodoLoader" className="modal overlay">
-//     <div className="modal-background has-background-white-ter" />
-//     <div className="loader" />
-//   </div>
-// </div>
-
-// {/* This todo is in loadind state */ }
-// <div data-cy="Todo" className="todo">
-//   <label className="todo__status-label">
-//     <input
-//       data-cy="TodoStatus"
-//       type="checkbox"
-//       className="todo__status"
-//     />
-//   </label>
-
-//   <span data-cy="TodoTitle" className="todo__title">
-//     Todo is being saved now
-//   </span>
-
-//   <button
-//     type="button"
-//     className="todo__remove"
-//     data-cy="TodoDelete"
-//   >
-//     ×
-//   </button>
-
-//   {/* 'is-active' class puts this modal on top of the todo */}
-//   <div data-cy="TodoLoader" className="modal overlay is-active">
-//     <div className="modal-background has-background-white-ter" />
-//     <div className="loader" />
-//   </div>
-// </div>
