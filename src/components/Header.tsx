@@ -27,6 +27,7 @@ export const Header: React.FC = () => {
     try {
       if (!trimmedInput.length) {
         setErrMessage(ErrText.EmptyErr);
+        setTimeout(() => setErrMessage(ErrText.NoErr), 3000);
 
         return;
       }

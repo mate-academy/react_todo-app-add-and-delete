@@ -16,5 +16,5 @@ export interface TodoContextType {
   tempTodo: Todo | null;
   setTempTodo: (todo: Todo) => void;
   handleCompleted: (todo: Todo) => void;
-  modifiedTodoId: number,
+  modifiedTodoId: number;
 }
