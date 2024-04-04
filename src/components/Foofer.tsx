@@ -62,7 +62,6 @@ export const Foofer: React.FC = () => {
         </a>
       </nav>
 
-      {/* this button should be disabled if there are no completed todos */}
       <button
         type="button"
         className="todoapp__clear-completed"
