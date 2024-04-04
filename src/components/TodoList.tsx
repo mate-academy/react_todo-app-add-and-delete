@@ -4,6 +4,7 @@ import { Todo } from '../types/Todo';
 import { TodoItem } from './TodoItem';
 import { ErrorTypes } from '../types/enums';
 import { handleError } from '../utils/services';
+import { TransitionGroup, CSSTransition } from 'react-transition-group';
 
 type Props = {
   todos: Todo[];
@@ -67,29 +68,35 @@ export const TodoList: React.FC<Props> = ({
 
   return (
     <section className="todoapp__main" data-cy="TodoList">
-      {todos.map(todo => (
-        <TodoItem
-          todo={todo}
-          key={todo.id}
-          setSelectedTodo={setSelectedTodo}
-          loading={loading}
-          selectedTodo={selectedTodo}
-          onDelete={onDelete}
-          onPatch={onPatch}
-        />
-      ))}
-      {tempTodo.length !== 0 &&
-        tempTodo.map(tTodo => (
-          <TodoItem
-            todo={tTodo}
-            key={tTodo.id}
-            setSelectedTodo={setSelectedTodo}
-            loading={loading}
-            selectedTodo={selectedTodo}
-            onDelete={onDelete}
-            onPatch={onPatch}
-          />
+      <TransitionGroup>
+        {todos.map(todo => (
+          <CSSTransition key={todo.id} timeout={300} classNames="item">
+            <TodoItem
+              todo={todo}
+              key={todo.id}
+              setSelectedTodo={setSelectedTodo}
+              loading={loading}
+              selectedTodo={selectedTodo}
+              onDelete={onDelete}
+              onPatch={onPatch}
+            />
+          </CSSTransition>
         ))}
+        {tempTodo.length !== 0 &&
+          tempTodo.map(tTodo => (
+            <CSSTransition key={0} timeout={300} classNames="temp-item">
+              <TodoItem
+                todo={tTodo}
+                key={tTodo.id}
+                setSelectedTodo={setSelectedTodo}
+                loading={loading}
+                selectedTodo={selectedTodo}
+                onDelete={onDelete}
+                onPatch={onPatch}
+              />
+            </CSSTransition>
+          ))}
+      </TransitionGroup>
     </section>
   );
 };
