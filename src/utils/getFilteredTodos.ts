@@ -1,19 +1,19 @@
 import { Todo } from '../types/Todo';
-import { StatesOfFilter } from '../types/StatesOfFilter';
+import { FilterStatus } from '../types/FilterStatus';
 
 export function getFilteredTodos(
   todos: Todo[],
-  filterOption: StatesOfFilter,
+  filterOption: FilterStatus,
 ): Todo[] {
   let filteredTodos = todos;
 
-  if (filterOption !== StatesOfFilter.All) {
+  if (filterOption !== FilterStatus.All) {
     filteredTodos = filteredTodos.filter(todo => {
       switch (filterOption) {
-        case StatesOfFilter.Active:
+        case FilterStatus.Active:
           return !todo.completed;
 
-        case StatesOfFilter.Completed:
+        case FilterStatus.Completed:
           return todo.completed;
 
         default:

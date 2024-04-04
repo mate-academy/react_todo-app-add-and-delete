@@ -1,13 +1,13 @@
 import cn from 'classnames';
 
-import { StatesOfFilter } from '../../types/StatesOfFilter';
+import { FilterStatus } from '../../types/FilterStatus';
 import { capitalizeFirstLetter } from '../../utils/capitalizeFirstLetter';
 
 type Props = {
-  onSetFilter: (state: StatesOfFilter) => void;
+  onSetFilter: (state: FilterStatus) => void;
   completedTodoCounts: number;
   activeTodoCounts: number;
-  selectedFilter: StatesOfFilter;
+  selectedFilter: FilterStatus;
   onDeleteCompletedPosts: () => void;
 };
 
@@ -25,7 +25,7 @@ export const Footer: React.FC<Props> = ({
       </span>
 
       <nav className="filter" data-cy="Filter">
-        {Object.values(StatesOfFilter).map(state => (
+        {Object.values(FilterStatus).map(state => (
           <a
             key={state}
             href={`#/${state}`}

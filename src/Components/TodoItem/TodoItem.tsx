@@ -16,6 +16,9 @@ export const TodoItem: React.FC<Props> = ({
 }) => {
   const [isDeleting, SetIsDeleting] = useState<boolean>(false);
 
+  const isActiveStatus =
+    !todo.id || isDeleting || (allTodosDeleting && todo.completed);
+
   return (
     <div
       key={todo.id}
@@ -28,6 +31,7 @@ export const TodoItem: React.FC<Props> = ({
           data-cy="TodoStatus"
           type="checkbox"
           className="todo__status"
+          onChange={() => {}}
           checked={todo.completed}
         />
       </label>
@@ -50,8 +54,7 @@ export const TodoItem: React.FC<Props> = ({
       <div
         data-cy="TodoLoader"
         className={cn('modal', 'overlay', {
-          'is-active':
-            !todo.id || isDeleting || (allTodosDeleting && todo.completed),
+          'is-active': isActiveStatus,
         })}
       >
         <div className="modal-background has-background-white-ter" />
