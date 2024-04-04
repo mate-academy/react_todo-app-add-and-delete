@@ -19,16 +19,18 @@ export const Header: React.FC<Props> = ({
   isLoading,
   todos,
 }) => {
+  const isEveryTodoctive = todos.every(todo => todo.completed);
+
   return (
     <header className="todoapp__header">
       <button
         type="button"
         className={cn('todoapp__toggle-all', {
-          active: todos.every(todo => todo.completed === true),
+          active: isEveryTodoctive,
         })}
         data-cy="ToggleAllButton"
       />
-      <form onSubmit={e => onSubmit(e)}>
+      <form onSubmit={onSubmit}>
         <input
           ref={inputRef}
           onChange={e => onChange(e.target.value)}

@@ -8,16 +8,14 @@ import { wait } from '../utils/fetchClient';
 
 type Props = {
   onFilter: (value: Status) => void;
-  onUncompletedTodos: () => Todo[];
   currentFilterStatus: Status;
   todos: Todo[];
   onDeleteTodo: (todoId: number) => Promise<unknown>;
-  clearError: (clearStr: string) => void;
-  onSetError: (error: string) => void;
+  clearError: () => void;
+  onSetError: (error: Errors) => void;
 };
 
 export const Footer: React.FC<Props> = ({
-  onUncompletedTodos,
   onFilter,
   currentFilterStatus,
   todos,
@@ -25,7 +23,9 @@ export const Footer: React.FC<Props> = ({
   clearError,
   onSetError,
 }) => {
-  const isAnyTodoCompleted = todos.some(todo => todo.completed === true);
+  const uncompletedTodos = todos.filter(item => !item.completed);
+
+  const isAnyTodoCompleted = todos.some(todo => todo.completed);
 
   const handleClearCompleted = async () => {
     const completedTodos = todos.filter(todo => todo.completed);
@@ -35,14 +35,14 @@ export const Footer: React.FC<Props> = ({
     } catch {
       onSetError(Errors.Delete);
     } finally {
-      wait(3000).then(() => clearError(''));
+      wait(3000).then(() => clearError());
     }
   };
 
   return (
     <footer className="todoapp__footer" data-cy="Footer">
       <span className="todo-count" data-cy="TodosCounter">
-        {`${onUncompletedTodos().length} items left`}
+        {`${uncompletedTodos.length} items left`}
       </span>
 
       <Filter onFilter={onFilter} currentFilterStatus={currentFilterStatus} />

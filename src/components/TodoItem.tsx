@@ -4,15 +4,17 @@ import { Todo } from '../types/Todo';
 
 type Props = {
   todo: Todo;
-  onDeleteTodo: (todoId: number) => void;
-  deleteTodoId: number;
+  onDeleteTodo?: (todoId: number) => void;
+  deletedTodoIds?: number[];
 };
 
 export const TodoItem: React.FC<Props> = ({
   todo,
-  onDeleteTodo,
-  deleteTodoId,
+  deletedTodoIds,
+  onDeleteTodo = () => {},
 }) => {
+  const isIncludesId = deletedTodoIds?.includes(todo.id);
+
   return (
     <div data-cy="Todo" className={cn('todo', { completed: todo.completed })}>
       <label aria-label="todo-status" className="todo__status-label">
@@ -40,7 +42,7 @@ export const TodoItem: React.FC<Props> = ({
       <div
         data-cy="TodoLoader"
         className={cn('modal overlay', {
-          'is-active': todo.id === deleteTodoId,
+          'is-active': isIncludesId || todo.id === 0,
         })}
       >
         <div className="modal-background has-background-white-ter" />

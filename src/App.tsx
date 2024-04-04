@@ -11,16 +11,16 @@ import { getFilterTodos } from './utils/getFilterTodos';
 import { ErrorNotification } from './components/ErrorNotification';
 import { Header } from './components/Header';
 import { Errors } from './types/Errors';
-import { TodoItem } from './components/TodoItem';
+// import { TodoItem } from './components/TodoItem';
 
 export const App: React.FC = () => {
   const [todos, setTodos] = useState<Todo[]>([]);
   const [newTitle, setNewTitle] = useState('');
   const [tempTodo, setTempTodo] = useState<Todo | null>(null);
-  const [errorMessage, setErrorMessage] = useState('');
+  const [errorMessage, setErrorMessage] = useState<Errors>(Errors.Default);
   const [status, setStatus] = useState<Status>(Status.All);
   const [isLoading, setIsLoading] = useState(false);
-  const [deletedTodoId, setDeletedTodoId] = useState<number>(0);
+  const [deletedTodoIds, setDeletedTodoIds] = useState<number[]>([]);
 
   const focusInput = useRef<HTMLInputElement>(null);
 
@@ -30,7 +30,7 @@ export const App: React.FC = () => {
       .catch(() => {
         setErrorMessage(Errors.Load);
 
-        wait(3000).then(() => setErrorMessage(''));
+        wait(3000).then(() => setErrorMessage(Errors.Default));
       });
   }, []);
 
@@ -42,11 +42,7 @@ export const App: React.FC = () => {
     return getFilterTodos(todos, status);
   }, [todos, status]);
 
-  const handleClearError = () => setErrorMessage('');
-
-  const filterUncompletedTodos = (): Todo[] => {
-    return todos.filter(item => !item.completed);
-  };
+  const handleClearError = () => setErrorMessage(Errors.Default);
 
   const addTodo = async (creatNewTodo: Omit<Todo, 'id'>) => {
     setTempTodo({ ...creatNewTodo, id: 0 });
@@ -69,7 +65,7 @@ export const App: React.FC = () => {
 
   const removeTodo = (todoId: number) => {
     setIsLoading(true);
-    setDeletedTodoId(todoId);
+    setDeletedTodoIds(prevIds => [...prevIds, todoId]);
 
     return deleteTodo(todoId)
       .then(() => {
@@ -81,8 +77,10 @@ export const App: React.FC = () => {
         setErrorMessage(Errors.Delete);
       })
       .finally(() => {
+        setDeletedTodoIds(() => []);
         setIsLoading(false);
-        setDeletedTodoId(0);
+
+        wait(3000).then(() => handleClearError());
       });
   };
 
@@ -136,26 +134,18 @@ export const App: React.FC = () => {
         <TodoList
           filteredTodos={filteredTodos}
           onDeleteTodo={removeTodo}
-          deleteTodoId={deletedTodoId}
+          tempTodo={tempTodo}
+          deletedTodoIds={deletedTodoIds}
         />
-
-        {tempTodo && (
-          <TodoItem
-            todo={tempTodo}
-            onDeleteTodo={removeTodo}
-            deleteTodoId={deletedTodoId}
-          />
-        )}
 
         {!!todos.length && (
           <Footer
             onFilter={handleSetStatus}
-            onUncompletedTodos={filterUncompletedTodos}
             onDeleteTodo={removeTodo}
             currentFilterStatus={status}
             todos={todos}
             clearError={handleClearError}
-            onSetError={() => setErrorMessage}
+            onSetError={setErrorMessage}
           />
         )}
       </div>

@@ -5,13 +5,15 @@ import { Todo } from '../types/Todo';
 type Props = {
   filteredTodos: Todo[];
   onDeleteTodo: (todoId: number) => void;
-  deleteTodoId: number;
+  tempTodo: Todo | null;
+  deletedTodoIds: number[];
 };
 
 export const TodoList: React.FC<Props> = ({
   filteredTodos,
   onDeleteTodo,
-  deleteTodoId,
+  tempTodo,
+  deletedTodoIds,
 }) => {
   return (
     <section className="todoapp__main" data-cy="TodoList">
@@ -20,9 +22,11 @@ export const TodoList: React.FC<Props> = ({
           key={todo.id}
           todo={todo}
           onDeleteTodo={onDeleteTodo}
-          deleteTodoId={deleteTodoId}
+          deletedTodoIds={deletedTodoIds}
         />
       ))}
+
+      {tempTodo && <TodoItem todo={tempTodo} />}
     </section>
   );
 };
