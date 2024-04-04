@@ -4,6 +4,7 @@ import React, { useEffect, useRef, useState } from 'react';
 import { UserWarning } from './UserWarning';
 import { USER_ID, createTodos, deleteTodo, getTodos } from './api/todos';
 import { Todo } from './types/Todo';
+import { TempTodo } from './components/TempTodo';
 
 export const App: React.FC = () => {
   const [error, setError] = useState<string | null>(null);
@@ -23,6 +24,16 @@ export const App: React.FC = () => {
         return true;
     }
   });
+
+  useEffect(() => {
+    if (USER_ID) {
+      handleRequest();
+    }
+
+    setTimeout(() => {
+      setError(''); // Очищаємо помилку після схову повідомлення
+    }, 3000);
+  }, []);
 
   // Відправляє запит на сервер для отримання списку (todos).
   const handleRequest = async () => {
@@ -46,30 +57,7 @@ export const App: React.FC = () => {
     if (inputRef.current) {
       inputRef.current.focus();
     }
-  }, [todos])
-
-  useEffect(() => {
-    if (USER_ID) {
-      handleRequest();
-    }
-
-    setTimeout(() => {
-      setError(''); // Очищаємо помилку після схову повідомлення
-    }, 3000);
-  }, []);
-
-  const deleteTodos = async (userId: number) => {
-    try {
-      setLoading(true);
-
-      await deleteTodo(userId);
-      setTodos(currentTodo => currentTodo.filter(todo => todo.id !== userId));
-    } catch (errors) {
-      setError('Unable to delete a todo');
-    } finally {
-      setLoading(false);
-    }
-  };
+  }, [todos]);
 
   // Відповідає за обробку події форми.
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
@@ -82,14 +70,6 @@ export const App: React.FC = () => {
 
     try {
       setLoading(true);
-
-      // create a todo with id: 0
-      setTempTodo({
-        id: 0,
-        title: isTitle.trim(),
-        completed: false,
-        userId: USER_ID,
-      });
       // викликаємо функцію createTodos, яка відправляє запит на сервер та створює новий todo
       const newTodo = await createTodos({
         title: isTitle.trim(),
@@ -97,11 +77,17 @@ export const App: React.FC = () => {
         userId: USER_ID,
       });
 
-      setTodos(prevTodos => [...prevTodos, newTodo] as Todo[]); // додаємо нове todo до масиву todos
-      setTempTodo(null); // Сховати tempTodo
-      setTitle('');
+      setTempTodo({
+        id: 0, // create a todo with id: 0
+        title: isTitle.trim(),
+        completed: false,
+        userId: USER_ID,
+      });
 
-      handleRequest(); // Оновлюємо список завдань після додавання нового завдання
+      //  додає новий елемент до масиву todos та оновлює його стан
+      setTodos(prevTodos => [...prevTodos, newTodo]);
+      setTitle('');
+      setTempTodo(null); // Сховати tempTodo
     } catch (errors) {
       setError('Unable to add a todo');
     } finally {
@@ -109,15 +95,47 @@ export const App: React.FC = () => {
     }
   };
 
-  if (!USER_ID) {
-    return <UserWarning />;
-  }
+  const deleteTodos = async (userId: number) => {
+    try {
+      setLoading(true);
 
-  const handleInputTodo = (e: React.ChangeEvent<HTMLInputElement>) => {
-    setTitle(e.target.value);
+      await deleteTodo(userId);
+      setTodos(currentTodo => currentTodo.filter(todo => todo.id !== userId));
+      setError(null);
+    } catch (errors) {
+      setError('Unable to delete a todo');
+    } finally {
+      setLoading(false);
+    }
   };
 
-  const allTodosCompleted = todos.every(todo => todo.completed);
+  // Функція відповідає за зміну статусу завдання
+  const toggleTodoCompletion = (todoId: number) => {
+    try {
+      // Отримуємо посилання на завдання за його id
+      const updatedTodos = todos.map(todo =>
+        todo.id === todoId ? { ...todo, completed: !todo.completed } : todo,
+      );
+
+      // Оновлюємо стан todos
+      setTodos(updatedTodos);
+      setError(null);
+
+      // Отримуємо новий стан фільтра
+      let newFilterStatus = 'all';
+
+      if (filterStatus === 'completed') {
+        newFilterStatus = 'active';
+      } else if (filterStatus === 'active') {
+        newFilterStatus = 'all';
+      }
+
+      // Оновлюємо стан фільтра
+      setFilterStatus(newFilterStatus);
+    } catch (errors) {
+      setError('Unable to toggle todo completion');
+    }
+  };
 
   // видаляє всі завершені todo
   const clearCompletedTodos = async () => {
@@ -142,35 +160,18 @@ export const App: React.FC = () => {
     }
   };
 
+  if (!USER_ID) {
+    return <UserWarning />;
+  }
+
+  const handleInputTodo = (e: React.ChangeEvent<HTMLInputElement>) => {
+    setTitle(e.target.value);
+  };
+
+  const allTodosCompleted = todos.every(todo => todo.completed);
+
   // Обчислює кількість невиконаних todo
   const todosCounter = todos.filter(todo => !todo.completed).length;
-
-  // Функція відповідає за зміну статусу завдання
-  const toggleTodoCompletion = (todoId: number) => {
-    try {
-      // Отримуємо посилання на завдання за його id
-      const updatedTodos = todos.map(todo =>
-        todo.id === todoId ? { ...todo, completed: !todo.completed } : todo,
-      );
-
-      // Оновлюємо стан todos
-      setTodos(updatedTodos);
-
-      // Отримуємо новий стан фільтра
-      let newFilterStatus = 'all';
-
-      if (filterStatus === 'completed') {
-        newFilterStatus = 'active';
-      } else if (filterStatus === 'active') {
-        newFilterStatus = 'all';
-      }
-
-      // Оновлюємо стан фільтра
-      setFilterStatus(newFilterStatus);
-    } catch (errors) {
-      setError('Unable to toggle todo completion');
-    }
-  };
 
   return (
     <div className="todoapp">
@@ -204,7 +205,6 @@ export const App: React.FC = () => {
           </form>
         </header>
 
-        {!loading && (
           <section className="todoapp__main" data-cy="TodoList">
             {/* This is a completed todo */}
             {filteredTodos.map(todo => (
@@ -219,7 +219,7 @@ export const App: React.FC = () => {
                     type="checkbox"
                     className="todo__status"
                     checked={todo.completed}
-                    onClick={() => toggleTodoCompletion(todo.id)}
+                    onChange={() => toggleTodoCompletion(todo.id)}
                   />
                 </label>
                 <span data-cy="TodoTitle" className="todo__title">
@@ -251,12 +251,9 @@ export const App: React.FC = () => {
               </div>
             ))}
           </section>
-        )}
 
-        {loading && tempTodo && (
-          <div className="todo">
-            <span className="todo__title">{tempTodo.title}</span>
-          </div>
+        {tempTodo && (
+          <TempTodo todo={tempTodo} loading={Boolean(tempTodo)} />
         )}
 
         {/* Hide the footer if there are no todos */}
