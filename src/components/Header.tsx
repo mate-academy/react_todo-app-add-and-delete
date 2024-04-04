@@ -1,76 +1,77 @@
-import React, { useEffect, useRef, useState } from 'react';
-import classNames from 'classnames';
-import { useTodos } from '../utils/TodoContext';
-import { USER_ID } from '../api/todos';
-import { ErrText } from '../types/ErrText';
+import React, { useState, useRef, useEffect } from 'react';
+import cn from 'classnames';
+import { Todo } from '../types/Todo';
 
-export const Header: React.FC = () => {
-  const [inputTodo, setInputTodo] = useState('');
-  const [submitting, setSubmitting] = useState(false);
-  const { todos, addTodo, setErrMessage, loading, setLoading } = useTodos();
-  const allCompleted = todos.every(el => el.completed);
-  const inputRef = useRef<HTMLInputElement | null>(null);
+interface Props {
+  onAddTodo: (title: string, setTitle: (title: string) => void) => void;
+  isAllCompleted: boolean;
+  todosLength: number;
+  tempTodo: Todo | null;
+  updateTodo: (updatedTodo: Todo) => void;
+  inputDisabled: boolean;
+  todos: Todo[];
+  errorMessage: string;
+}
+
+const Header: React.FC<Props> = ({
+  onAddTodo,
+  isAllCompleted,
+  todosLength,
+  inputDisabled,
+  todos,
+  errorMessage,
+}) => {
+  const [title, setTitle] = useState('');
+  const [shouldFocus, setShouldFocus] = useState(false);
+  const inputRef = useRef<HTMLInputElement>(null);
 
   useEffect(() => {
-    if (!loading && inputRef.current) {
-      inputRef.current.focus();
-    }
-  }, [loading, submitting, addTodo]);
+    inputRef.current?.focus();
+  }, [todos, errorMessage]);
 
-  const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
-    e.preventDefault();
-    setErrMessage(ErrText.NoErr);
-    setLoading(true);
-    setSubmitting(true);
-    const trimmedInput = inputTodo.trim();
+  const handleInputChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+    setTitle(event.target.value);
+  };
 
-    try {
-      if (!trimmedInput.length) {
-        setErrMessage(ErrText.EmptyErr);
-        setTimeout(() => setErrMessage(ErrText.NoErr), 3000);
-
-        return;
-      }
-
-      await addTodo({
-        id: Date.now(),
-        title: trimmedInput,
-        completed: false,
-        userId: USER_ID,
-      });
-
-      setInputTodo('');
-      setSubmitting(false);
-    } catch (error) {
-      throw error;
-    } finally {
-      setLoading(false);
-      setSubmitting(false);
+  const handleSubmit = (event: React.FormEvent<HTMLFormElement>) => {
+    event.preventDefault();
+    onAddTodo(title, setTitle);
+    if (!title.trim()) {
+      setShouldFocus(true);
     }
   };
 
+  if (shouldFocus && inputRef.current) {
+    inputRef.current.focus();
+    setShouldFocus(false);
+  }
+
   return (
     <header className="todoapp__header">
-      <button
-        type="button"
-        className={classNames('todoapp__toggle-all', {
-          active: allCompleted,
-        })}
-        data-cy="ToggleAllButton"
-      />
+      {todosLength > 0 && (
+        <button
+          type="button"
+          className={cn('todoapp__toggle-all', {
+            active: isAllCompleted,
+          })}
+          data-cy="ToggleAllButton"
+        />
+      )}
 
       <form onSubmit={handleSubmit}>
         <input
+          ref={inputRef}
           data-cy="NewTodoField"
           type="text"
           className="todoapp__new-todo"
           placeholder="What needs to be done?"
-          ref={inputRef}
-          value={inputTodo}
-          onChange={e => setInputTodo(e.target.value)}
-          disabled={submitting || loading}
+          value={title}
+          onChange={handleInputChange}
+          disabled={inputDisabled}
         />
       </form>
     </header>
   );
 };
+
+export default Header;

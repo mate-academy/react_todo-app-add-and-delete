@@ -5,10 +5,5 @@ import '@fortawesome/fontawesome-free/css/all.css';
 import './styles/index.scss';
 
 import { App } from './App';
-import { TodoContextProvider } from './utils/TodoContext';
 
-createRoot(document.getElementById('root') as HTMLDivElement).render(
-  <TodoContextProvider>
-    <App />
-  </TodoContextProvider>,
-);
+createRoot(document.getElementById('root') as HTMLDivElement).render(<App />);

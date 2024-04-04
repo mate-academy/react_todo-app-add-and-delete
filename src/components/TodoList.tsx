@@ -1,18 +1,45 @@
 import React from 'react';
-import { useTodos } from '../utils/TodoContext';
-import { TodoItem } from './TodoItem';
-import { getVisibleTodos } from '../utils/getVisibleTodos';
+import TodoItem from './TodoItem';
+import { Todo } from '../types/Todo';
 
-export const TodoList: React.FC = () => {
-  const { todos, status, tempTodo } = useTodos();
-  const visibleTodos = getVisibleTodos(todos, status);
+interface Props {
+  todos: Todo[];
+  onDeleteTodo: (id: number) => void;
+  updateTodo: (updatedTodo: Todo) => void;
+  tempTodo: Todo | null;
+  loading: boolean;
+}
 
+const TodoList: React.FC<Props> = ({
+  todos,
+  onDeleteTodo,
+  updateTodo,
+  tempTodo,
+  loading,
+}) => {
   return (
     <section className="todoapp__main" data-cy="TodoList">
-      {visibleTodos.map(todo => (
-        <TodoItem key={todo.id} todo={todo} />
+      {todos.map(todo => (
+        <TodoItem
+          todo={todo}
+          key={todo.id}
+          onDeleteTodo={onDeleteTodo}
+          onUpdateTodo={updateTodo}
+          loading={loading}
+        />
       ))}
-      {tempTodo && <TodoItem todo={tempTodo} />}
+
+      {tempTodo && (
+        <TodoItem
+          todo={tempTodo}
+          key={tempTodo.id}
+          onDeleteTodo={() => {}}
+          onUpdateTodo={() => {}}
+          loading={loading}
+        />
+      )}
     </section>
   );
 };
+
+export default TodoList;
