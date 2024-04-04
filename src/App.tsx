@@ -1,26 +1,38 @@
-/* eslint-disable max-len */
-/* eslint-disable jsx-a11y/control-has-associated-label */
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import { UserWarning } from './UserWarning';
-
-const USER_ID = 0;
+import { USER_ID } from './api/todos';
+import { UserTodos } from './components/UserTodos/UserTodos';
+import { TodoError } from './components/TodoError/TodoError';
 
 export const App: React.FC = () => {
+  const [errorMessage, setErrorMessage] = useState('');
+  const [isErrorVisible, setIsErrorVisible] = useState(false);
+
+  useEffect(() => {
+    if (errorMessage) {
+      setIsErrorVisible(true);
+      setTimeout(() => {
+        setErrorMessage('');
+        setIsErrorVisible(false);
+      }, 3000);
+    }
+  }, [errorMessage]);
+
   if (!USER_ID) {
     return <UserWarning />;
   }
 
   return (
-    <section className="section container">
-      <p className="title is-4">
-        Copy all you need from the prev task:
-        <br />
-        <a href="https://github.com/mate-academy/react_todo-app-loading-todos#react-todo-app-load-todos">
-          React Todo App - Load Todos
-        </a>
-      </p>
+    <div className="todoapp">
+      <h1 className="todoapp__title">todos</h1>
 
-      <p className="subtitle">Styles are already copied</p>
-    </section>
+      <UserTodos userId={USER_ID} onError={setErrorMessage} />
+
+      <TodoError
+        errorMessage={errorMessage}
+        isVisible={isErrorVisible}
+        onClose={() => setErrorMessage('')}
+      />
+    </div>
   );
 };
