@@ -11,7 +11,8 @@ export const Foofer: React.FC = () => {
 
   const clearCompleted = async () => {
     try {
-      await Promise.all(completedTodos.map(todo => deleteTodo(todo.id)));
+      // await Promise.all(completedTodos.map(todo => deleteTodo(todo.id)));
+      await Promise.allSettled(completedTodos.map(todo => deleteTodo(todo.id)));
     } catch {
       setErrMessage(ErrText.DeleteErr);
     } finally {
