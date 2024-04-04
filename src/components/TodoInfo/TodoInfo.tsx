@@ -14,8 +14,8 @@ export const TodoInfo: React.FC<Props> = ({ todo }) => {
   const [isLoading, setIsLoading] = useState(false);
 
   const handleRemove = async () => {
-    await removeTodo(todo.id);
     setIsLoading(true);
+    await removeTodo(todo.id);
   };
 
   const inputId = `todo-status-${todo.id}`;

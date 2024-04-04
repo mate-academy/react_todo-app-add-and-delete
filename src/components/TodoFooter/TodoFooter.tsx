@@ -7,12 +7,13 @@ import { Status } from '../../types/enums';
 export const TodoFooter: React.FC = () => {
   const { todos, statusTodo, handleClearCompleted, setStatusTodo } = useTodos();
 
-  const isCompletedTodos = todos.some(todo => todo.completed);
+  const isAnyCompletedTodos = todos.some(todo => todo.completed);
+  const activeLeft = todos.filter(todo => !todo.completed).length;
 
   return (
     <footer className="todoapp__footer" data-cy="Footer">
       <span className="todo-count" data-cy="TodosCounter">
-        {todos.filter(todo => !todo.completed).length} items left
+        {activeLeft} items left
       </span>
 
       <nav className="filter" data-cy="Filter">
@@ -37,7 +38,7 @@ export const TodoFooter: React.FC = () => {
         type="button"
         className="todoapp__clear-completed"
         data-cy="ClearCompletedButton"
-        disabled={!isCompletedTodos}
+        disabled={!isAnyCompletedTodos}
         onClick={handleClearCompleted}
       >
         Clear completed

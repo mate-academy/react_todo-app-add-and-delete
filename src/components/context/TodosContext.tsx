@@ -68,15 +68,20 @@ export const TodosProvider: React.FC<Props> = ({ children }) => {
   const addTodo = async ({ title, completed, userId }: Todo) => {
     setErrorMessage(null);
 
-    // eslint-disable-next-line @typescript-eslint/no-shadow
-    const tempTodo = {
+    // // eslint-disable-next-line @typescript-eslint/no-shadow
+    // let tempTodo = {
+    //   id: 0,
+    //   title,
+    //   userId,
+    //   completed: false,
+    // };
+
+    setTempTodo({
       id: 0,
       title,
       userId,
       completed: false,
-    };
-
-    setTempTodo(tempTodo);
+    });
 
     try {
       const newTodo = await todosServices.postTodos({
@@ -85,29 +90,33 @@ export const TodosProvider: React.FC<Props> = ({ children }) => {
         userId,
       });
 
-      setTempTodo(null);
+      // setTempTodo(null);
       setTodos(currTodos => [...currTodos, newTodo]);
     } catch (error) {
       setErrorMessage(TodoError.UnableToAdd);
       setTempTodo(null);
       throw error;
+    } finally {
+      setTempTodo(null);
     }
   };
 
   const removeTodo = async (todoId: number) => {
     setIsLoading(true);
 
-    setTimeout(async () => {
-      try {
-        await todosServices.deleteTodos(todoId);
-        setTodos(currTodos => currTodos.filter(todo => todo.id !== todoId));
-        setIsLoading(false);
-      } catch (error) {
-        setTodos(todos);
-        setErrorMessage(TodoError.UnableToDelete);
-        throw error;
-      }
-    }, 500);
+    // setTimeout(async () => {
+    try {
+      await todosServices.deleteTodos(todoId);
+      setTodos(currTodos => currTodos.filter(todo => todo.id !== todoId));
+      // setIsLoading(false);
+    } catch (error) {
+      // setTodos(todos);
+      setErrorMessage(TodoError.UnableToDelete);
+      throw error;
+    } finally {
+      setIsLoading(false);
+    }
+    // }, 500);
   };
 
   const updateTodo = async (updatedTodo: Todo) => {

@@ -6,7 +6,6 @@ import { TodoError } from '../../types/enums';
 export const TodoForm: React.FC = () => {
   const { addTodo, isLoading, setIsLoading, removeTodo } = useTodos();
   const [inputTodo, setInputTodo] = useState('');
-  const [isSubmited, setIsSubmited] = useState(false);
 
   const { setErrorMessage } = useError();
 
@@ -16,13 +15,12 @@ export const TodoForm: React.FC = () => {
     if (!isLoading) {
       inputRef.current?.focus();
     }
-  }, [isLoading, isSubmited, removeTodo]);
+  }, [isLoading, removeTodo]);
 
   const handleSumbmitTodo = async (event: React.FormEvent) => {
     event.preventDefault();
     setErrorMessage(null);
     setIsLoading(true);
-    setIsSubmited(true);
 
     const trimmedInput = inputTodo.trim();
 
@@ -43,11 +41,10 @@ export const TodoForm: React.FC = () => {
       await addTodo(newTodo);
       setInputTodo('');
     } catch (error) {
-      throw error;
+      setErrorMessage(TodoError.UnableToAdd);
     } finally {
       inputRef.current?.focus();
       setIsLoading(false);
-      setIsSubmited(false);
     }
   };
 
@@ -62,7 +59,7 @@ export const TodoForm: React.FC = () => {
         value={inputTodo}
         onChange={event => setInputTodo(event.target.value)}
         ref={inputRef}
-        disabled={isLoading || isSubmited}
+        disabled={isLoading}
       />
     </form>
   );

@@ -9,7 +9,7 @@ type Props = {
   isLoading?: boolean;
 };
 
-export const TodoItem: React.FC<Props> = ({ todo, isLoading }) => {
+export const TodoItem: React.FC<Props> = ({ todo, isLoading = true }) => {
   const { removeTodo, handleCheck } = useTodos();
 
   const inputId = `todo-status-${todo.id}`;
@@ -35,9 +35,7 @@ export const TodoItem: React.FC<Props> = ({ todo, isLoading }) => {
         type="button"
         className="todo__remove"
         data-cy="TodoDelete"
-        onClick={() => {
-          removeTodo(todo.id);
-        }}
+        onClick={() => removeTodo(todo.id)}
       >
         ×
       </button>

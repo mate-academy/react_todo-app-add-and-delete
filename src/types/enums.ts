@@ -4,12 +4,6 @@ export enum Status {
   'Completed' = 'Completed',
 }
 
-export enum State {
-  Edit = 'edit',
-  Loading = 'loading',
-  Active = 'active',
-}
-
 export enum TodoError {
   UnableToLoad = 'Unable to load todos',
   NoTitle = 'Title should not be empty',
