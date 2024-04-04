@@ -1,17 +1,27 @@
 import classNames from 'classnames';
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 
 type Props = {
   errorMessage: string;
-  isVisible: boolean;
   onClose: () => void;
 };
 
-export const TodoError: React.FC<Props> = ({
-  errorMessage,
-  isVisible,
-  onClose,
-}) => {
+export const TodoError: React.FC<Props> = ({ errorMessage, onClose }) => {
+  const [isErrorVisible, setIsVisible] = useState(false);
+
+  useEffect(() => {
+    if (errorMessage) {
+      setIsVisible(true);
+    }
+
+    const timer = setTimeout(() => {
+      setIsVisible(false);
+      onClose();
+    }, 3000);
+
+    return () => clearTimeout(timer);
+  }, [errorMessage, onClose]);
+
   return (
     <div
       data-cy="ErrorNotification"
@@ -20,7 +30,7 @@ export const TodoError: React.FC<Props> = ({
         'is-danger',
         'is-light',
         'has-text-weight-normal',
-        { hidden: !isVisible },
+        { hidden: !isErrorVisible },
       )}
     >
       <button
