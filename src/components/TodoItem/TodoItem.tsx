@@ -8,12 +8,12 @@ type Props = {
 };
 
 export const TodoItem: React.FC<Props> = ({ todo }) => {
-  const [editing, setEditing] = useState(false);
+  const [isEditing, setIsEditing] = useState(false);
   const [editedTitle, setEditedTitle] = useState(todo.title);
   const { deleteTodo, selectedTodoIds, setTodos } = useTodos();
 
   const handleDoubleClick = () => {
-    setEditing(true);
+    setIsEditing(true);
   };
 
   const handleToggleTodo = () => {
@@ -32,7 +32,7 @@ export const TodoItem: React.FC<Props> = ({ todo }) => {
     if (event.key === 'Enter' || event.key === 'Escape') {
       event.preventDefault();
       setEditedTitle(todo.title);
-      setEditing(false);
+      setIsEditing(false);
     }
   };
 
@@ -45,7 +45,7 @@ export const TodoItem: React.FC<Props> = ({ todo }) => {
       key={todo.id}
       onDoubleClick={handleDoubleClick}
     >
-      {editing ? (
+      {isEditing ? (
         <form>
           <input
             data-cy="TodoTitleField"

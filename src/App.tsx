@@ -22,7 +22,7 @@ export const App: React.FC = () => {
 
           {!isLoadingData && <TodoList />}
         </section>
-        {todos.length > 0 && <Footer />}
+        {!!todos.length && <Footer />}
       </div>
 
       <ErrorNotification />
