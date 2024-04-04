@@ -2,7 +2,6 @@ import React from 'react';
 import { TodoInfo } from '../TodoInfo/TodoInfo';
 import { useTodos } from '../context/TodosContext';
 import { getPreparedTodos } from '../../utils/todos';
-import { TodoItem } from '../TodoItem/TodoItem';
 
 export const TodoList: React.FC = () => {
   const { todos, statusTodo, tempTodo } = useTodos();
@@ -12,9 +11,9 @@ export const TodoList: React.FC = () => {
   return (
     <section className="todoapp__main" data-cy="TodoList">
       {visibleTodos.map(todo => (
-        <TodoInfo key={todo.id} todo={todo} />
+        <TodoInfo key={todo.id} todo={todo} isLoadingItem={false} />
       ))}
-      {tempTodo && <TodoItem todo={tempTodo} isLoading />}
+      {tempTodo && <TodoInfo todo={tempTodo} isLoadingItem={true} />}
     </section>
   );
 };

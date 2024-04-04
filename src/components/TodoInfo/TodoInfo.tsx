@@ -7,18 +7,19 @@ import { useState } from 'react';
 
 type Props = {
   todo: Todo;
+  isLoadingItem?: boolean;
 };
 
-export const TodoInfo: React.FC<Props> = ({ todo }) => {
+export const TodoInfo: React.FC<Props> = ({ todo, isLoadingItem = false }) => {
   const { removeTodo, handleCheck } = useTodos();
-  const [isLoading, setIsLoading] = useState(false);
+  const [isLoading, setIsLoading] = useState(isLoadingItem);
+
+  const inputId = `todo-status-${todo.id}`;
 
   const handleRemove = async () => {
     setIsLoading(true);
     await removeTodo(todo.id);
   };
-
-  const inputId = `todo-status-${todo.id}`;
 
   return (
     <div data-cy="Todo" className={cn('todo', { completed: todo.completed })}>
