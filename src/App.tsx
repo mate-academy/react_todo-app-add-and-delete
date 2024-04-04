@@ -31,7 +31,7 @@ export const App: React.FC = () => {
   const [newTodoTitle, setNewTodoTitle] = useState('');
   const [isInputDisabled, setIsInputDisabled] = useState(false);
   const [tempTodo, setTempTodo] = useState<Todo | null>(null);
-  const [processing, setProcessing] = useState<number[]>([]);
+  const [processingTodoIds, setProcessingTodoIds] = useState<number[]>([]);
 
   const visibleTodos = getPreparedTodos(todos, filterOption);
   const activeTodos = todos.filter(todo => !todo.completed);
@@ -45,7 +45,7 @@ export const App: React.FC = () => {
   };
 
   const handleTodoDelete = (todoId: number) => {
-    setProcessing(prevProcessing => [...prevProcessing, todoId]);
+    setProcessingTodoIds(prevProcessing => [...prevProcessing, todoId]);
 
     deleteTodoById(todoId)
       .then(() => {
@@ -55,7 +55,12 @@ export const App: React.FC = () => {
       })
       .catch(() => {
         handleShowError(ErrorMessages.Delete);
-      });
+      })
+      .finally(() =>
+        setProcessingTodoIds(prevProcessing =>
+          prevProcessing.filter(id => id !== todoId),
+        ),
+      );
   };
 
   const handleAddNewTodo = (title: string) => {
@@ -105,18 +110,15 @@ export const App: React.FC = () => {
 
   const handleDeleteAllCompleted = () => {
     todos.forEach(todo => {
-      if (todo.completed === true) {
+      if (todo.completed) {
         handleTodoDelete(todo.id);
       }
     });
-    setProcessing([]);
   };
 
   useEffect(() => {
     getTodosByUserId()
-      .then((data: React.SetStateAction<Todo[]>) => {
-        setTodos(data);
-      })
+      .then(setTodos)
       .catch(() => handleShowError(ErrorMessages.Load));
   }, []);
 
@@ -145,7 +147,7 @@ export const App: React.FC = () => {
         <Main
           todos={visibleTodos}
           onDelete={handleTodoDelete}
-          todosIdToDelete={processing}
+          todosIdToDelete={processingTodoIds}
         />
         {tempTodo && (
           <TodoItem todo={tempTodo} isShowLoader={Boolean(tempTodo)} />

@@ -13,9 +13,7 @@ export const Main: React.FC<Props> = ({ todos, onDelete, todosIdToDelete }) => {
   return (
     <section className="todoapp__main" data-cy="TodoList">
       {todos.map(todo => {
-        const isTodoOnDelete = Boolean(
-          todosIdToDelete.find(id => todo.id === id),
-        );
+        const isTodoOnDelete = todosIdToDelete.includes(todo.id);
 
         return (
           <TodoItem
