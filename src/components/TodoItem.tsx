@@ -2,25 +2,23 @@ import { Todo } from '../types/Todo';
 import classNames from 'classnames';
 
 type Props = {
-  todo?: Partial<Todo>;
-  tempTodo?: Partial<Todo>;
+  todo: Todo;
   onDelete?: (id: number) => void;
-  isLoading: boolean;
-  deletedTodo?: Todo[] | null;
+  isLoading?: boolean;
+  processingIds?: number[] | null;
 };
 
 export const TodoItem: React.FC<Props> = ({
   todo,
-  tempTodo,
   onDelete = () => {},
   isLoading,
-  deletedTodo,
+  processingIds,
 }) => {
   return (
     <div
       data-cy="Todo"
-      className={classNames('todo', { completed: todo?.completed })}
-      key={todo && todo.id}
+      className={classNames('todo', { completed: todo.completed })}
+      key={todo.id}
     >
       <label className="todo__status-label">
         {''}
@@ -29,10 +27,11 @@ export const TodoItem: React.FC<Props> = ({
           type="checkbox"
           className="todo__status"
           checked={todo?.completed}
+          onChange={() => {}}
         />
       </label>
       <span data-cy="TodoTitle" className="todo__title">
-        {tempTodo ? tempTodo?.title : todo?.title}
+        {todo.title}
       </span>
 
       <button
@@ -40,9 +39,7 @@ export const TodoItem: React.FC<Props> = ({
         className="todo__remove"
         data-cy="TodoDelete"
         onClick={() => {
-          if (todo && todo.id !== undefined) {
-            onDelete(todo.id);
-          }
+          onDelete(todo.id);
         }}
       >
         ×
@@ -51,12 +48,7 @@ export const TodoItem: React.FC<Props> = ({
       <div
         data-cy="TodoLoader"
         className={classNames('modal overlay', {
-          'is-active':
-            (isLoading && tempTodo) ||
-            (isLoading &&
-              deletedTodo &&
-              todo &&
-              deletedTodo.some(deleted => deleted.id === todo.id)),
+          'is-active': processingIds?.includes(todo.id) || isLoading,
         })}
       >
         <div className="modal-background has-background-white-ter" />

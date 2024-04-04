@@ -5,9 +5,9 @@ import { TodoItem } from './TodoItem';
 type Props = {
   todos: Todo[];
   onDelete?: (id: number) => void;
-  tempTodo: null | Partial<Todo>;
+  tempTodo: null | Todo;
   isLoading: boolean;
-  deletedTodo?: Todo[] | null;
+  processingIds?: number[] | null;
 };
 
 export const TodoList: React.FC<Props> = ({
@@ -15,7 +15,7 @@ export const TodoList: React.FC<Props> = ({
   onDelete = () => {},
   tempTodo,
   isLoading,
-  deletedTodo,
+  processingIds,
 }) => {
   return (
     <section className="todoapp__main" data-cy="TodoList">
@@ -24,11 +24,10 @@ export const TodoList: React.FC<Props> = ({
           todo={todo}
           key={todo.id}
           onDelete={onDelete}
-          deletedTodo={deletedTodo}
-          isLoading={isLoading}
+          processingIds={processingIds}
         />
       ))}
-      {tempTodo && <TodoItem tempTodo={tempTodo} isLoading={isLoading} />}
+      {tempTodo && <TodoItem todo={tempTodo} isLoading={isLoading} />}
     </section>
   );
 };

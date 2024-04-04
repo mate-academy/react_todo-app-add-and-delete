@@ -2,12 +2,12 @@ import classNames from 'classnames';
 import React from 'react';
 type Props = {
   errorMessage: string;
-  onError: (er: string) => void;
+  onError: (error: string) => void;
 };
 
 export const ErrorNotification: React.FC<Props> = ({
   errorMessage,
-  onError = () => {},
+  onError,
 }) => {
   return (
     <div
@@ -23,7 +23,6 @@ export const ErrorNotification: React.FC<Props> = ({
         className={classNames('delete')}
         onClick={() => onError('')}
       />
-      {/* show only one message at a time */}
       {errorMessage}
     </div>
   );

@@ -4,16 +4,16 @@ import { Todo } from '../types/Todo';
 type Props = {
   onSubmit: (todo: Omit<Todo, 'id'>) => Promise<void>;
   userId: number;
-  onError: (er: string) => void;
-  onSubmitTempTodo: (el: null | Omit<Todo, 'completed' | 'userId'>) => void;
+  onError: (error: string) => void;
+  onSubmitTempTodo: (todo: Todo | null) => void;
   isLoading: boolean;
 };
 
 export const NewTodoForm: React.FC<Props> = ({
   onSubmit,
   userId,
-  onError = () => {},
-  onSubmitTempTodo = () => {},
+  onError,
+  onSubmitTempTodo,
   isLoading,
 }) => {
   const [title, setTitle] = useState('');
@@ -32,23 +32,26 @@ export const NewTodoForm: React.FC<Props> = ({
   const handleSubmit = (event: React.FormEvent) => {
     event.preventDefault();
 
-    if (!title.trim()) {
+    const normalisedTitle = title.trim();
+
+    if (!normalisedTitle) {
       onError('Title should not be empty');
 
       return;
     }
 
-    const normalisedTitle = title.trim();
-    const prevTitle = title;
-
     setIsSubmiting(true);
 
-    onSubmitTempTodo({ id: 0, title: normalisedTitle });
+    onSubmitTempTodo({
+      id: 0,
+      title: normalisedTitle,
+      userId,
+      completed: false,
+    });
 
     onSubmit({ userId, completed: false, title: normalisedTitle })
       .then(() => setTitle(''))
       .catch(() => {
-        setTitle(prevTitle);
         onError('Unable to add a todo');
       })
       .finally(() => {

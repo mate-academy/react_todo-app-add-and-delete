@@ -4,21 +4,17 @@ import { Todo } from './types/Todo';
 import { NewTodoForm } from './components/FormTodo';
 import { TodoList } from './components/TodoList';
 import classNames from 'classnames';
-import {
-  getCompletedTodosLength,
-  getfilteredTodos,
-} from './utils/getFilterTodos';
+import { getfilteredTodos } from './utils/getFilterTodos';
 import { FILTERS } from './types/Filters';
 import { Footer } from './components/Footer';
 import { ErrorNotification } from './components/ErrorNotification';
 
 export const App: React.FC = () => {
   const [todos, setTodos] = useState<Todo[]>([]);
-  const [tempTodo, setTempTodo] = useState<null | Partial<Todo>>(null);
+  const [tempTodo, setTempTodo] = useState<null | Todo>(null);
   const [filter, setFilter] = useState(FILTERS.all);
   const [errorMessage, setErrorMessage] = useState('');
-  const [deletedTodo, setDeletedTodo] = useState<Todo[]>([]);
-
+  const [processingIds, setProcessingIds] = useState<number[]>([]);
   const [isLoading, setIsLoading] = useState(false);
 
   function showErrorMessage(error: string) {
@@ -37,6 +33,8 @@ export const App: React.FC = () => {
     }
   }, []);
 
+  const completedTodos = todos.filter(todo => todo.completed);
+
   function addTodos({ userId, completed, title }: Omit<Todo, 'id'>) {
     setIsLoading(true);
 
@@ -52,14 +50,9 @@ export const App: React.FC = () => {
 
   function deleteTodo(todoId: number) {
     setIsLoading(true);
+    setProcessingIds(prevIds => [...prevIds, todoId]);
 
-    const todoToDelete = todos.find(todo => todo.id === todoId);
-
-    if (todoToDelete) {
-      setDeletedTodo(prevTodos => [...prevTodos, todoToDelete]);
-    }
-
-    return todosService
+    todosService
       .deleteTodos(todoId)
       .then(() =>
         setTodos(currentTodos =>
@@ -70,49 +63,18 @@ export const App: React.FC = () => {
         showErrorMessage('Unable to delete a todo');
       })
       .finally(() => {
+        setProcessingIds(prevIds => prevIds.filter(id => id !== todoId));
         setIsLoading(false);
-        setDeletedTodo([]);
       });
   }
 
   function deleteCompletedTodos() {
-    setIsLoading(true);
-    const completedTodos = todos.filter(todo => todo.completed);
-
-    setDeletedTodo(completedTodos);
-
     completedTodos.forEach(todo => {
-      return todosService
-        .deleteTodos(todo.id)
-        .then(() => {
-          setTodos(currentTodos =>
-            currentTodos.filter(item => item.id !== todo.id),
-          );
-        })
-        .catch(() => {
-          showErrorMessage('Unable to delete a todo');
-        })
-        .finally(() => {
-          setIsLoading(false);
-          setDeletedTodo([]);
-        });
+      deleteTodo(todo.id);
     });
   }
 
   const visibleTodos = getfilteredTodos(todos, filter);
-
-  // function upDateTodo(updatedTodo: Todo) {
-  //   return todosService.upDateTodos(updatedTodo).then(todo => {
-  //     setTodos(currentTodos => {
-  //       const newTodos = [...currentTodos];
-  //       const index = newTodos.findIndex(todo => todo.id === updatedTodo.id);
-
-  //       newTodos.splice(index, 1, todo);
-
-  //       return newTodos;
-  //     });
-  //   });
-  // }
 
   return (
     <div className="todoapp">
@@ -123,7 +85,7 @@ export const App: React.FC = () => {
           <button
             type="button"
             className={classNames('todoapp__toggle-all', {
-              active: getCompletedTodosLength(todos) === todos.length,
+              active: completedTodos.length === todos.length,
             })}
             data-cy="ToggleAllButton"
           />
@@ -142,7 +104,7 @@ export const App: React.FC = () => {
             onDelete={deleteTodo}
             tempTodo={tempTodo}
             isLoading={isLoading}
-            deletedTodo={deletedTodo}
+            processingIds={processingIds}
           />
         )}
 

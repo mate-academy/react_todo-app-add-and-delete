@@ -14,15 +14,3 @@ export function getfilteredTodos(todos: Todo[], filter: string) {
 
   return preperedTodos;
 }
-
-export function getActiveTodosLength(todos: Todo[]) {
-  const count = todos.filter(todo => !todo.completed);
-
-  return count.length;
-}
-
-export function getCompletedTodosLength(todos: Todo[]) {
-  const count = todos.filter(todo => todo.completed);
-
-  return count.length;
-}

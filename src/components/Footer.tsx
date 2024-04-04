@@ -2,7 +2,6 @@ import React from 'react';
 import { FILTERS } from '../types/Filters';
 import { Todo } from '../types/Todo';
 import classNames from 'classnames';
-import { getActiveTodosLength } from '../utils/getFilterTodos';
 
 type Props = {
   filter: FILTERS;
@@ -13,17 +12,18 @@ type Props = {
 
 export const Footer: React.FC<Props> = ({
   filter,
-  onFilter = () => {},
+  onFilter,
   todos,
-  onDeleteAllComleted: onDeleteAllComleted = () => {},
+  onDeleteAllComleted,
 }) => {
   const filterOptions = Object.values(FILTERS);
   const isNotDisabled = todos.some(todo => todo.completed);
+  const activeTodos = todos.filter(todo => !todo.completed);
 
   return (
     <footer className="todoapp__footer" data-cy="Footer">
       <span className="todo-count" data-cy="TodosCounter">
-        {`${getActiveTodosLength(todos)} items left`}
+        {`${activeTodos.length} items left`}
       </span>
 
       <nav className="filter" data-cy="Filter">
