@@ -3,10 +3,10 @@ import { useTodos } from '../utils/TodoContext';
 
 export const Footer: React.FC = () => {
   const { todos, removeTodo } = useTodos();
-  const itemsLeft = todos.filter(todo => !todo.completed).length;
+  const todosLeft = todos.filter(todo => !todo.completed).length;
   const isCompletedTodos = todos.some(todo => todo.completed);
 
-  const singleOrPlural = itemsLeft === 1;
+  const singleOrPlural = todosLeft === 1;
 
   const clearCompletedTodos = () => {
     todos
@@ -19,7 +19,7 @@ export const Footer: React.FC = () => {
   return (
     <footer className="todoapp__footer" data-cy="Footer">
       <span className="todo-count" data-cy="TodosCounter">
-        {`${itemsLeft} item${singleOrPlural ? '' : 's'} left`}
+        {`${todosLeft} item${singleOrPlural ? '' : 's'} left`}
       </span>
 
       <Filter />
