@@ -21,4 +21,5 @@ export interface TodosContextType {
   loadingTodosIds: number[];
   setLoadingTodosIds: Dispatch<SetStateAction<number[]>>;
   removeTodo: (id: number) => void;
+  createTodo: (newTodo: Omit<Todo, 'id'>) => void;
 }

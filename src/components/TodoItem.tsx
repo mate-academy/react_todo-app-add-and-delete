@@ -11,6 +11,10 @@ export const TodoItem: React.FC<Props> = ({ todo }) => {
   const { setTodos, tempTodo, removeTodo, loadingTodosIds } = useTodos();
   const { id, title, completed } = todo;
 
+  if (tempTodo) {
+    loadingTodosIds.push(tempTodo.id);
+  }
+
   const isActive = loadingTodosIds.includes(id);
 
   const handleCompleteTodo = (todoId: number) => {
@@ -51,27 +55,15 @@ export const TodoItem: React.FC<Props> = ({ todo }) => {
         ×
       </button>
 
-      {!!tempTodo ? (
-        <div
-          data-cy="TodoLoader"
-          className={classNames('modal overlay', {
-            'is-active': id === tempTodo.id,
-          })}
-        >
-          <div className="modal-background has-background-white-ter" />
-          <div className="loader" />
-        </div>
-      ) : (
-        <div
-          data-cy="TodoLoader"
-          className={classNames('modal overlay', {
-            'is-active': isActive,
-          })}
-        >
-          <div className="modal-background has-background-white-ter" />
-          <div className="loader" />
-        </div>
-      )}
+      <div
+        data-cy="TodoLoader"
+        className={classNames('modal overlay', {
+          'is-active': isActive,
+        })}
+      >
+        <div className="modal-background has-background-white-ter" />
+        <div className="loader" />
+      </div>
     </div>
   );
 };

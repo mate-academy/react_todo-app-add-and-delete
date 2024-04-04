@@ -6,7 +6,7 @@ export const Footer: React.FC = () => {
   const todosLeft = todos.filter(todo => !todo.completed).length;
   const isCompletedTodos = todos.some(todo => todo.completed);
 
-  const singleOrPlural = todosLeft === 1;
+  const isSingleItemLeft = todosLeft === 1;
 
   const clearCompletedTodos = () => {
     todos
@@ -19,7 +19,7 @@ export const Footer: React.FC = () => {
   return (
     <footer className="todoapp__footer" data-cy="Footer">
       <span className="todo-count" data-cy="TodosCounter">
-        {`${todosLeft} item${singleOrPlural ? '' : 's'} left`}
+        {`${todosLeft} item${isSingleItemLeft ? '' : 's'} left`}
       </span>
 
       <Filter />

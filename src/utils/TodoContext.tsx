@@ -3,7 +3,7 @@ import { TodosContextType } from '../types/TodosContextTypes';
 import { Todo } from '../types/Todo';
 import { ErrorMessages } from '../types/ErrorMessages';
 import { FilterOptions } from '../types/FilterOptions';
-import { deleteTodo, getTodos } from '../api/todos';
+import { addTodo, deleteTodo, getTodos } from '../api/todos';
 
 const TodosContext = createContext<TodosContextType>({
   todos: [],
@@ -23,6 +23,7 @@ const TodosContext = createContext<TodosContextType>({
   loadingTodosIds: [],
   setLoadingTodosIds: () => {},
   removeTodo: () => {},
+  createTodo: () => {},
 });
 
 type Props = {
@@ -65,6 +66,24 @@ export const TodosProvider: React.FC<Props> = ({ children }) => {
     fetchTodos();
   }, []);
 
+  const createTodo = (newTodo: Omit<Todo, 'id'>) => {
+    setIsLoading(true);
+    setLoadingTodosIds(prev => [...prev, 0]);
+    setTempTodo({ ...newTodo, id: 0 });
+
+    addTodo(newTodo)
+      .then(sentTodo => {
+        setTodos(prevTodos => [...prevTodos, sentTodo]);
+        setTitle('');
+      })
+      .catch(() => showError(ErrorMessages.AddTodo))
+      .finally(() => {
+        setTempTodo(null);
+        setIsLoading(false);
+        setLoadingTodosIds(prev => prev.filter(todoId => todoId !== 0));
+      });
+  };
+
   const removeTodo = (id: number) => {
     setIsLoading(true);
     setLoadingTodosIds(prevTodosIds => [...prevTodosIds, id]);
@@ -103,6 +122,7 @@ export const TodosProvider: React.FC<Props> = ({ children }) => {
         loadingTodosIds,
         setLoadingTodosIds,
         removeTodo,
+        createTodo,
       }}
     >
       {children}

@@ -1,25 +1,12 @@
 import React from 'react';
 import { ErrorMessages } from '../types/ErrorMessages';
-import { USER_ID, addTodo } from '../api/todos';
-import { Todo } from '../types/Todo';
+import { USER_ID } from '../api/todos';
 import { useTodos } from '../utils/TodoContext';
 import classNames from 'classnames';
 
 export const Header: React.FC = () => {
-  const {
-    isLoading,
-    setIsLoading,
-    setTodos,
-    tempTodo,
-    setTempTodo,
-    title,
-    setTitle,
-    showError,
-    todos,
-  } = useTodos();
-
-  const userId = USER_ID;
-  const isCompleted = false;
+  const { isLoading, createTodo, title, setTitle, showError, todos } =
+    useTodos();
 
   const handleAddTodo = (event: React.FormEvent) => {
     event.preventDefault();
@@ -30,33 +17,13 @@ export const Header: React.FC = () => {
       return;
     }
 
-    setIsLoading(true);
-
-    setTempTodo({
-      id: 0,
+    const newTodo = {
       title: title.trim(),
       userId: USER_ID,
       completed: false,
-    });
+    };
 
-    if (tempTodo) {
-      setTodos(prevTodos => [...prevTodos, tempTodo]);
-    }
-
-    return addTodo({ title, userId, completed: isCompleted })
-      .then((newTodo: Todo) => {
-        setTodos(prevTodos =>
-          prevTodos.filter(todo => todo.id !== tempTodo?.id),
-        );
-        setTodos(prevTodos => [...prevTodos, newTodo]);
-        setTitle('');
-        setTempTodo(null);
-      })
-      .catch(() => showError(ErrorMessages.AddTodo))
-      .finally(() => {
-        setIsLoading(false);
-        setTempTodo(null);
-      });
+    createTodo(newTodo);
   };
 
   return (

@@ -1,4 +1,3 @@
-/* eslint-disable react/jsx-no-undef */
 import React from 'react';
 import { TodoItem } from './TodoItem';
 import { useTodos } from '../utils/TodoContext';
