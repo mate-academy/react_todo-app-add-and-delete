@@ -1,7 +1,8 @@
-import { useEffect, useState } from 'react';
+import { useState } from 'react';
 import classNames from 'classnames';
 import { Todo } from '../../types/Todo';
 import './TodoItem.scss';
+
 type Props = {
   todo: Todo;
   handleDeleteTodo: (todoId: number) => void;
@@ -12,12 +13,7 @@ export const TodoItem: React.FC<Props> = ({
   handleDeleteTodo,
   isLoading,
 }) => {
-  const [isChecked, setIsChecked] = useState(todo.completed);
   const [currentTodo, setCurrentTodo] = useState<number | null>(null);
-
-  useEffect(() => {
-    setIsChecked(todo.completed);
-  }, [todo.completed]);
 
   return (
     <div
@@ -30,7 +26,6 @@ export const TodoItem: React.FC<Props> = ({
           type="checkbox"
           className="todo__status"
           checked={todo.completed}
-          onChange={() => setIsChecked(!isChecked)}
         />
       </label>
 

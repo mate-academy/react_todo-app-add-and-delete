@@ -3,7 +3,6 @@ import React, { useEffect, useRef, useState } from 'react';
 import { UserWarning } from './UserWarning';
 import { USER_ID, creatTodo, deleteTodo, getTodos } from './api/todos';
 import { Todo } from './types/Todo';
-import { wait } from './utils/fetchClient';
 import { SortField } from './types/SortField';
 import { filterTodos } from './utils/helpers.ts/filterTodos';
 import { Header } from './components/Header';
@@ -22,13 +21,12 @@ export const App: React.FC = () => {
 
   const inputRef = useRef<HTMLInputElement>(null);
 
-  const handleReset = () => {
-    wait(3000).then(() => setError(null));
-  };
-
-  useEffect(() => {
-    inputRef.current?.focus();
-  }, [todos, error]);
+  function showErrorMessage(errorMessage: string) {
+    setError(errorMessage);
+    setTimeout(() => {
+      setError('');
+    }, 3000);
+  }
 
   const filteredTodos = filterTodos(todos, filter);
   const handelFilter = (filterValue: SortField) => {
@@ -39,8 +37,7 @@ export const App: React.FC = () => {
     event.preventDefault();
 
     if (!title.trim()) {
-      setError('Title should not be empty');
-      handleReset();
+      showErrorMessage('Title should not be empty');
 
       return;
     }
@@ -49,24 +46,22 @@ export const App: React.FC = () => {
     setIsLoading(true);
 
     try {
+      const newTodo = {
+        userId: USER_ID,
+        title: title.trim(),
+        completed: false,
+      };
+
       setTempTodo({
         id: 0,
-        userId: USER_ID,
-        title: title.trim(),
-        completed: false,
+        ...newTodo,
       });
+      const newCreatedTodo = await creatTodo(newTodo);
 
-      const newTodo = await creatTodo({
-        userId: USER_ID,
-        title: title.trim(),
-        completed: false,
-      });
-
-      setTodos(prevTodos => [...prevTodos, newTodo]);
+      setTodos(prevTodos => [...prevTodos, newCreatedTodo]);
       setTitle('');
     } catch {
-      setError('Unable to add a todo');
-      handleReset();
+      showErrorMessage('Unable to add a todo');
     } finally {
       setIsDisabled(false);
       setTempTodo(null);
@@ -81,8 +76,7 @@ export const App: React.FC = () => {
       await deleteTodo(todoId);
       setTodos(prevTodos => prevTodos.filter(todo => todo.id !== todoId));
     } catch {
-      setError('Unable to delete a todo');
-      handleReset();
+      showErrorMessage('Unable to delete a todo');
     } finally {
       setIsLoading(false);
     }
@@ -104,10 +98,13 @@ export const App: React.FC = () => {
     getTodos()
       .then(setTodos)
       .catch(() => {
-        setError('Unable to load todos');
-        handleReset();
+        showErrorMessage('Unable to load todos');
       });
   }, []);
+
+  useEffect(() => {
+    inputRef.current?.focus();
+  }, [todos, error]);
 
   if (!USER_ID) {
     return <UserWarning />;
@@ -133,7 +130,7 @@ export const App: React.FC = () => {
           isLoading={isLoading}
         />
 
-        {todos.length && (
+        {todos.length > 0 && (
           <Footer
             todos={todos}
             filter={filter}
@@ -142,7 +139,7 @@ export const App: React.FC = () => {
           />
         )}
       </div>
-      <ErrorNotification error={error} />
+      <ErrorNotification error={error} setError={setError} />
     </div>
   );
 };
