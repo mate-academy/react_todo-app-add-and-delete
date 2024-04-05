@@ -6,4 +6,10 @@ import './styles/index.scss';
 
 import { App } from './App';
 
-createRoot(document.getElementById('root') as HTMLDivElement).render(<App />);
+import { TodosProvider } from './utils/TodoContext';
+
+createRoot(document.getElementById('root') as HTMLDivElement).render(
+  <TodosProvider>
+    <App />
+  </TodosProvider>,
+);
