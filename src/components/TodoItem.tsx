@@ -2,7 +2,6 @@
 import React, { useState } from 'react';
 import { Todo } from '../types/Todo';
 import cn from 'classnames';
-import { Status } from '../types/Status';
 
 interface Props {
   todo: Todo;
@@ -45,12 +44,6 @@ const TodoItem: React.FC<Props> = ({
       completed: !todo.completed,
     };
 
-    if (todo.status === Status.Active) {
-      updatedTodo.status = Status.Completed;
-    } else if (todo.status === Status.Completed) {
-      updatedTodo.status = Status.Active;
-    }
-
     onUpdateTodo(updatedTodo);
   };
 
@@ -90,7 +83,9 @@ const TodoItem: React.FC<Props> = ({
 
       <div
         data-cy="TodoLoader"
-        className={`modal overlay ${!todo.id || (isLoading && todo.id === selectedTodo?.id) ? 'is-active' : ''}`}
+        className={cn('modal overlay', {
+          'is-active': !todo.id || (isLoading && todo.id === selectedTodo?.id),
+        })}
       >
         <div className="modal-background has-background-white-ter" />
         <div className="loader" />
