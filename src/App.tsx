@@ -72,16 +72,15 @@ export const App: React.FC = () => {
     }
 
     try {
-      setLoading(true);
-      // викликаємо функцію createTodos, яка відправляє запит на сервер та створює новий todo
-      const newTodo = await createTodos({
+      setTempTodo({
+        id: 0, // create a todo with id: 0
         title: isTitle.trim(),
         completed: false,
         userId: USER_ID,
       });
 
-      setTempTodo({
-        id: 0, // create a todo with id: 0
+      // викликаємо функцію createTodos, яка відправляє запит на сервер та створює новий todo
+      const newTodo = await createTodos({
         title: isTitle.trim(),
         completed: false,
         userId: USER_ID,
@@ -94,7 +93,6 @@ export const App: React.FC = () => {
       setError('Unable to add a todo');
     } finally {
       setTempTodo(null); // Сховати tempTodo
-      setLoading(false);
     }
   };
 
@@ -188,8 +186,9 @@ export const App: React.FC = () => {
           deleteTodos={deleteTodos}
         />
 
+
         {loading && tempTodo && (
-          <TempTodo todo={tempTodo} loading={Boolean(tempTodo)} />
+          <TempTodo todo={tempTodo} loading={loading} />
         )}
 
         {!!todos.length && (
