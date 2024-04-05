@@ -5,7 +5,7 @@ import cn from 'classnames';
 type Props = {
   todo: Todo;
   deleteTodo: (id: number) => void;
-  isLoading?: boolean | boolean[];
+  isLoading?: boolean;
 };
 
 export const TodoItem: React.FC<Props> = ({
@@ -13,8 +13,6 @@ export const TodoItem: React.FC<Props> = ({
   deleteTodo,
   isLoading,
 }) => {
-  // const [isDelete, setIsDelete] = useState(false);
-
   return (
     <div
       data-cy="Todo"

@@ -73,7 +73,7 @@ export const App: React.FC = () => {
 
     const normalizedTitle = todoTitle.trim();
 
-    if (normalizedTitle === '') {
+    if (!normalizedTitle) {
       handleError(`Title should not be empty`);
 
       return;
