@@ -48,7 +48,7 @@ export const App: React.FC = () => {
   const haveCompletedTodos = todos.some(({ completed }) => completed);
   const allCompleted = todos.every(({ completed }) => completed);
 
-  const filteredTodos = todos.filter(task => {
+  const filteredTodos = todos.filter(todo => {
     switch (status) {
       case Status.Active:
         return !task.completed;
