@@ -6,7 +6,8 @@ type Props = {
   userId: number;
   onError: (error: string) => void;
   onSubmitTempTodo: (todo: Todo | null) => void;
-  isLoading: boolean;
+  processingIds: number[];
+  tempTodo: null | Todo;
 };
 
 export const NewTodoForm: React.FC<Props> = ({
@@ -14,7 +15,8 @@ export const NewTodoForm: React.FC<Props> = ({
   userId,
   onError,
   onSubmitTempTodo,
-  isLoading,
+  processingIds,
+  tempTodo,
 }) => {
   const [title, setTitle] = useState('');
   const [isSubmiting, setIsSubmiting] = useState(false);
@@ -22,8 +24,10 @@ export const NewTodoForm: React.FC<Props> = ({
   const titleField = useRef<HTMLInputElement>(null);
 
   useEffect(() => {
-    titleField.current?.focus();
-  }, [isLoading]);
+    if (!tempTodo) {
+      titleField.current?.focus();
+    }
+  }, [processingIds.length, tempTodo]);
 
   const handleTitleChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     setTitle(event.target.value);
@@ -42,15 +46,16 @@ export const NewTodoForm: React.FC<Props> = ({
 
     setIsSubmiting(true);
 
+    const newTodo = { userId, completed: false, title: normalisedTitle };
+
     onSubmitTempTodo({
       id: 0,
-      title: normalisedTitle,
-      userId,
-      completed: false,
+      ...newTodo,
     });
-
-    onSubmit({ userId, completed: false, title: normalisedTitle })
-      .then(() => setTitle(''))
+    onSubmit(newTodo)
+      .then(() => {
+        setTitle('');
+      })
       .catch(() => {
         onError('Unable to add a todo');
       })

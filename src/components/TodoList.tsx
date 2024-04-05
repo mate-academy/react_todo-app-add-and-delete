@@ -1,4 +1,3 @@
-/* eslint-disable jsx-a11y/label-has-associated-control */
 import { Todo } from '../types/Todo';
 import { TodoItem } from './TodoItem';
 
@@ -6,7 +5,6 @@ type Props = {
   todos: Todo[];
   onDelete?: (id: number) => void;
   tempTodo: null | Todo;
-  isLoading: boolean;
   processingIds?: number[] | null;
 };
 
@@ -14,7 +12,6 @@ export const TodoList: React.FC<Props> = ({
   todos,
   onDelete = () => {},
   tempTodo,
-  isLoading,
   processingIds,
 }) => {
   return (
@@ -27,7 +24,7 @@ export const TodoList: React.FC<Props> = ({
           processingIds={processingIds}
         />
       ))}
-      {tempTodo && <TodoItem todo={tempTodo} isLoading={isLoading} />}
+      {tempTodo && <TodoItem todo={tempTodo} loading={true} />}
     </section>
   );
 };

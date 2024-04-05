@@ -15,7 +15,6 @@ export const App: React.FC = () => {
   const [filter, setFilter] = useState(FILTERS.all);
   const [errorMessage, setErrorMessage] = useState('');
   const [processingIds, setProcessingIds] = useState<number[]>([]);
-  const [isLoading, setIsLoading] = useState(false);
 
   function showErrorMessage(error: string) {
     setErrorMessage(error);
@@ -36,20 +35,16 @@ export const App: React.FC = () => {
   const completedTodos = todos.filter(todo => todo.completed);
 
   function addTodos({ userId, completed, title }: Omit<Todo, 'id'>) {
-    setIsLoading(true);
-
     return todosService
       .createTodos({ userId, completed, title })
       .then(newTodos => {
         setTodos(currentTodos => {
           return [...currentTodos, newTodos];
         });
-      })
-      .finally(() => setIsLoading(false));
+      });
   }
 
   function deleteTodo(todoId: number) {
-    setIsLoading(true);
     setProcessingIds(prevIds => [...prevIds, todoId]);
 
     todosService
@@ -64,7 +59,6 @@ export const App: React.FC = () => {
       })
       .finally(() => {
         setProcessingIds(prevIds => prevIds.filter(id => id !== todoId));
-        setIsLoading(false);
       });
   }
 
@@ -95,7 +89,8 @@ export const App: React.FC = () => {
             userId={todosService.USER_ID}
             onError={showErrorMessage}
             onSubmitTempTodo={setTempTodo}
-            isLoading={isLoading}
+            processingIds={processingIds}
+            tempTodo={tempTodo}
           />
         </header>
         {todos.length > 0 && (
@@ -103,7 +98,6 @@ export const App: React.FC = () => {
             todos={visibleTodos}
             onDelete={deleteTodo}
             tempTodo={tempTodo}
-            isLoading={isLoading}
             processingIds={processingIds}
           />
         )}
