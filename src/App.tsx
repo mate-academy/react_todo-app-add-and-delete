@@ -36,25 +36,6 @@ export const App: React.FC = () => {
       });
   }, [errorMessage]);
 
-  // const addTodo = ({ title, completed, userId }: Todo) => {
-  //   if (todoTitle.trim() === '') {
-  //     handleError(`Title should not be empty`);
-
-  //     return;
-  //   }
-
-  //   todosApi
-  //     .createTodos({ title, completed, userId })
-  //     .then(newTodo => {
-  //       setTodos(currentTodos => {
-  //         return [...currentTodos, newTodo];
-  //       });
-  //     })
-  //     .catch(() => {
-  //       handleError(`Unable to add a todo`);
-  //     });
-  // };
-
   useEffect(() => {
     if (!tempTodo) {
       titleFild.current?.focus();
@@ -83,12 +64,6 @@ export const App: React.FC = () => {
 
   const visibleTodos = getFilteredTodos([...todos], filter);
 
-  // const handleTitleChange = (
-  //   event: React.ChangeEvent<HTMLInputElement>,
-  // ) => {
-  //   setTodoTitle(event.target.value);
-  // };
-
   if (!todosApi.USER_ID) {
     return <UserWarning />;
   }
@@ -98,7 +73,7 @@ export const App: React.FC = () => {
 
     const normalizedTitle = todoTitle.trim();
 
-    if (!normalizedTitle) {
+    if (normalizedTitle === '') {
       handleError(`Title should not be empty`);
 
       return;
