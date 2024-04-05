@@ -8,7 +8,7 @@ interface Props {
   todosLength: number;
   tempTodo: Todo | null;
   updateTodo: (updatedTodo: Todo) => void;
-  inputDisabled: boolean;
+  isInputDisabled: boolean;
   todos: Todo[];
   errorMessage: string;
 }
@@ -17,12 +17,12 @@ const Header: React.FC<Props> = ({
   onAddTodo,
   isAllCompleted,
   todosLength,
-  inputDisabled,
+  isInputDisabled,
   todos,
   errorMessage,
 }) => {
   const [title, setTitle] = useState('');
-  const [shouldFocus, setShouldFocus] = useState(false);
+  const [isShouldFocus, setIsShouldFocus] = useState(false);
   const inputRef = useRef<HTMLInputElement>(null);
 
   useEffect(() => {
@@ -37,13 +37,13 @@ const Header: React.FC<Props> = ({
     event.preventDefault();
     onAddTodo(title, setTitle);
     if (!title.trim()) {
-      setShouldFocus(true);
+      setIsShouldFocus(true);
     }
   };
 
-  if (shouldFocus && inputRef.current) {
+  if (isShouldFocus && inputRef.current) {
     inputRef.current.focus();
-    setShouldFocus(false);
+    setIsShouldFocus(false);
   }
 
   return (
@@ -67,7 +67,7 @@ const Header: React.FC<Props> = ({
           placeholder="What needs to be done?"
           value={title}
           onChange={handleInputChange}
-          disabled={inputDisabled}
+          disabled={isInputDisabled}
         />
       </form>
     </header>

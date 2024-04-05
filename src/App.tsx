@@ -10,18 +10,19 @@ import { Status } from './types/Status';
 import * as postService from './api/todos';
 import { Todo } from './types/Todo';
 import { handleError } from './components/Error';
+import { filterTodos } from './utils/TodoHelpers/FilterTodos';
 
 export const App: React.FC = () => {
   const [todos, setTodos] = useState<Todo[]>([]);
   const [status, setStatus] = useState<Status>(Status.All);
   const [errorMessage, setErrorMessage] = useState<string>('');
   const [tempTodo, setTempTodo] = useState<Todo | null>(null);
-  const [inputDisabled, setInputDisabled] = useState(false);
-  const [loading, setLoading] = useState(false);
-  const [shouldFocusInput, setShouldFocusInput] = useState(false);
+  const [isInputDisabled, setIsInputDisabled] = useState(false);
+  const [isLoading, setIsLoading] = useState(false);
+  const [isShouldFocusInput, setIsShouldFocusInput] = useState(false);
 
   useEffect(() => {
-    setLoading(true);
+    setIsLoading(true);
     postService
       .getTodos()
       .then(fetchedTodos => {
@@ -31,14 +32,15 @@ export const App: React.FC = () => {
         handleError('Unable to load todos', setErrorMessage);
       })
       .finally(() => {
-        setLoading(false);
+        setIsLoading(false);
       });
   }, []);
+
   useEffect(() => {
-    if (shouldFocusInput) {
-      setShouldFocusInput(false);
+    if (isShouldFocusInput) {
+      setIsShouldFocusInput(false);
     }
-  }, [shouldFocusInput]);
+  }, [isShouldFocusInput]);
 
   if (!USER_ID) {
     return <UserWarning />;
@@ -48,17 +50,7 @@ export const App: React.FC = () => {
   const haveCompletedTodos = todos.some(({ completed }) => completed);
   const allCompleted = todos.every(({ completed }) => completed);
 
-  const filteredTodos = todos.filter(task => {
-    switch (status) {
-      case Status.Active:
-        return !task.completed;
-      case Status.Completed:
-        return task.completed;
-      case Status.All:
-      default:
-        return true;
-    }
-  });
+  const filteredTodos = filterTodos(todos, status);
 
   const addTodo = (title: string, setTitle: (title: string) => void) => {
     const trimmedTitle = title.trim();
@@ -69,10 +61,9 @@ export const App: React.FC = () => {
       return;
     }
 
-    setInputDisabled(true);
+    setIsInputDisabled(true);
 
-    const newTodo: Todo = {
-      id: Math.max(0, Math.max(...todos.map(todo => todo.id))) + 1,
+    const newTodo: Omit<Todo, 'id'> = {
       title: trimmedTitle,
       completed: false,
       userId: USER_ID,
@@ -81,45 +72,37 @@ export const App: React.FC = () => {
 
     const fakeTodo: Todo = {
       id: 0,
-      title: trimmedTitle,
-      completed: false,
-      userId: USER_ID,
-      status: status,
+      ...newTodo,
     };
 
     setTempTodo(fakeTodo);
 
     postService
       .postTodo(newTodo)
-      .then(() => {
-        setTodos(prevTodos => [...prevTodos, newTodo]);
-        setShouldFocusInput(true);
+      .then(createdTodo => {
+        setTodos(prevTodos => [...prevTodos, createdTodo]);
+        setIsShouldFocusInput(true);
         setTitle('');
       })
       .catch(() => {
         handleError('Unable to add a todo', setErrorMessage);
       })
       .finally(() => {
-        setInputDisabled(false);
+        setIsInputDisabled(false);
         setTempTodo(null);
       });
   };
 
   const updateTodo = (patchTodo: Todo) => {
     postService.updateTodo(patchTodo).then(task => {
-      setTodos(currentTodos => {
-        const newTodos = [...currentTodos];
-        const index = newTodos.findIndex(({ id }) => id === task.id);
-
-        newTodos[index] = task;
-
-        return newTodos;
-      });
+      setTodos(currentTodos =>
+        currentTodos.map(todo => (todo.id === task.id ? task : todo)),
+      );
     });
   };
 
   const deleteTodo = (id: number) => {
-    setLoading(true);
+    setIsLoading(true);
     postService
       .deleteTodo(`/todos/${id}`)
       .then(() => {
@@ -130,7 +113,7 @@ export const App: React.FC = () => {
       })
       .finally(() => {
         setTempTodo(null);
-        setLoading(false);
+        setIsLoading(false);
       });
   };
 
@@ -163,7 +146,7 @@ export const App: React.FC = () => {
           todosLength={todos.length}
           tempTodo={tempTodo}
           updateTodo={updateTodo}
-          inputDisabled={inputDisabled}
+          isInputDisabled={isInputDisabled}
           todos={todos}
           errorMessage={errorMessage}
         />
@@ -172,7 +155,7 @@ export const App: React.FC = () => {
           onDeleteTodo={deleteTodo}
           updateTodo={updateTodo}
           tempTodo={tempTodo}
-          loading={loading}
+          isLoading={isLoading}
         />
         {todos.length > 0 && (
           <Footer

@@ -8,14 +8,14 @@ interface Props {
   todo: Todo;
   onDeleteTodo: (id: number) => void;
   onUpdateTodo: (updatedTodo: Todo) => void;
-  loading: boolean;
+  isLoading: boolean;
 }
 
 const TodoItem: React.FC<Props> = ({
   todo,
   onDeleteTodo,
   onUpdateTodo,
-  loading,
+  isLoading,
 }) => {
   const [isEditing, setIsEditing] = useState(false);
   const [editedTitle, setEditedTitle] = useState(todo.title);
@@ -90,7 +90,7 @@ const TodoItem: React.FC<Props> = ({
 
       <div
         data-cy="TodoLoader"
-        className={`modal overlay ${!todo.id || (loading && todo.id === selectedTodo?.id) ? 'is-active' : ''}`}
+        className={`modal overlay ${!todo.id || (isLoading && todo.id === selectedTodo?.id) ? 'is-active' : ''}`}
       >
         <div className="modal-background has-background-white-ter" />
         <div className="loader" />

@@ -7,7 +7,7 @@ interface Props {
   onDeleteTodo: (id: number) => void;
   updateTodo: (updatedTodo: Todo) => void;
   tempTodo: Todo | null;
-  loading: boolean;
+  isLoading: boolean;
 }
 
 const TodoList: React.FC<Props> = ({
@@ -15,7 +15,7 @@ const TodoList: React.FC<Props> = ({
   onDeleteTodo,
   updateTodo,
   tempTodo,
-  loading,
+  isLoading,
 }) => {
   return (
     <section className="todoapp__main" data-cy="TodoList">
@@ -25,7 +25,7 @@ const TodoList: React.FC<Props> = ({
           key={todo.id}
           onDeleteTodo={onDeleteTodo}
           onUpdateTodo={updateTodo}
-          loading={loading}
+          isLoading={isLoading}
         />
       ))}
 
@@ -35,7 +35,7 @@ const TodoList: React.FC<Props> = ({
           key={tempTodo.id}
           onDeleteTodo={() => {}}
           onUpdateTodo={() => {}}
-          loading={loading}
+          isLoading={isLoading}
         />
       )}
     </section>
