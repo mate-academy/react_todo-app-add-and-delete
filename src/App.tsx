@@ -66,20 +66,20 @@ export const App: React.FC = () => {
   const handleAddNewTodo = (title: string) => {
     setIsInputDisabled(true);
 
-    setTempTodo({
-      id: 0,
+    const newTodo: Omit<Todo, 'id'> = {
       title,
       completed: false,
       userId: USER_ID,
+    };
+
+    setTempTodo({
+      ...newTodo,
+      id: 0,
     });
 
-    addNewTodo({
-      title,
-      completed: false,
-      userId: USER_ID,
-    })
-      .then(newTodo => {
-        setTodos(prevTodos => [...prevTodos, newTodo]);
+    addNewTodo(newTodo)
+      .then(todo => {
+        setTodos(prevTodos => [...prevTodos, todo]);
         setNewTodoTitle('');
       })
       .catch(() => {
