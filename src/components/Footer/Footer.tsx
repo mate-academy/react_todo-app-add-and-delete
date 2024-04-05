@@ -1,8 +1,8 @@
 import classNames from 'classnames';
-import React, { useContext } from 'react';
+import React from 'react';
 import { StatusFilterValue } from '../../types/Todo';
 import { Todo } from '../../types/Todo';
-import { TodoContext } from '../../TodoContext/TodoContext';
+import { useTodos } from '../../utils/hooks';
 
 type Props = {
   todos: Todo[];
@@ -15,7 +15,7 @@ export const Footer: React.FC<Props> = ({
   setStatusFilter,
   statusFilter,
 }) => {
-  const { handleDeleteTodo } = useContext(TodoContext);
+  const { handleDeleteTodo } = useTodos();
   const activeTodos = todos.filter(todo => !todo.completed);
   const completedTodos = todos.filter(todo => todo.completed);
 

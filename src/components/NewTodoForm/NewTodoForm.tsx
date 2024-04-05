@@ -1,13 +1,7 @@
-import React, {
-  SyntheticEvent,
-  useContext,
-  useEffect,
-  useRef,
-  useState,
-} from 'react';
+import React, { SyntheticEvent, useEffect, useRef, useState } from 'react';
 import * as todoService from '../../api/todos';
-import { TodoContext } from '../../TodoContext/TodoContext';
 import { ErrorMessages, Todo } from '../../types/Todo';
+import { useTodos } from '../../utils/hooks';
 
 interface Props {
   onTodoCreated: (todo: Todo) => void;
@@ -17,10 +11,16 @@ export type TodoCreateData = {
   title: string;
 };
 
-export const NewTodo: React.FC<Props> = ({ onTodoCreated }) => {
+export const NewTodoForm: React.FC<Props> = ({ onTodoCreated }) => {
   const { setError, displayError, isLoading, setIsLoading, setTempTodo } =
-    useContext(TodoContext);
+    useTodos();
   const [title, setTitle] = useState('');
+
+  const newTodo = {
+    userId: todoService.USER_ID,
+    title: title.trim(),
+    completed: false,
+  };
 
   const titleField = useRef<HTMLInputElement>(null);
 
@@ -37,16 +37,17 @@ export const NewTodo: React.FC<Props> = ({ onTodoCreated }) => {
       return;
     }
 
+    setTempTodo({
+      id: 0,
+      ...newTodo,
+    });
     setIsLoading(true);
     todoService
-      .createTodo({
-        userId: todoService.USER_ID,
-        title: { title: title.trim() }.title,
-        completed: false,
-      })
-      .then(newTodo => {
-        onTodoCreated(newTodo);
+      .createTodo(newTodo)
+      .then(newAddedTodo => {
+        onTodoCreated(newAddedTodo);
         setTitle('');
+        setIsLoading(false);
       })
       .catch(() => {
         displayError(ErrorMessages.AddTodo);
@@ -55,13 +56,31 @@ export const NewTodo: React.FC<Props> = ({ onTodoCreated }) => {
         setIsLoading(false);
         setTempTodo(null);
       });
-    setTempTodo({
-      id: 0,
-      userId: todoService.USER_ID,
-      title: { title: title.trim() }.title,
-      completed: false,
-    });
   };
+  //   todoService
+  //     .createTodo({
+  //       userId: todoService.USER_ID,
+  //       title: { title: title.trim() }.title,
+  //       completed: false,
+  //     })
+  //     .then(newTodo => {
+  //       onTodoCreated(newTodo);
+  //       setTitle('');
+  //     })
+  //     .catch(() => {
+  //       displayError(ErrorMessages.AddTodo);
+  //     })
+  //     .finally(() => {
+  //       setIsLoading(false);
+  //       setTempTodo(null);
+  //     });
+  //   setTempTodo({
+  //     id: 0,
+  //     userId: todoService.USER_ID,
+  //     title: { title: title.trim() }.title,
+  //     completed: false,
+  //   });
+  // };}
 
   useEffect(() => {
     setError(null);

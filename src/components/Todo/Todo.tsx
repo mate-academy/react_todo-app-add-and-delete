@@ -1,11 +1,8 @@
-/* eslint-disable jsx-a11y/label-has-associated-control */
-/* eslint-disable jsx-a11y/control-has-associated-label */
-
-import React, { useContext } from 'react';
+import React from 'react';
 import { ErrorMessages, Todo as TodoType } from '../../types/Todo';
 import classNames from 'classnames';
 import * as todoService from '../../api/todos';
-import { TodoContext } from '../../TodoContext/TodoContext';
+import { useTodos } from '../../utils/hooks';
 
 type Props = {
   todo: TodoType;
@@ -13,8 +10,7 @@ type Props = {
 };
 
 export const Todo: React.FC<Props> = ({ todo, isActive = false }) => {
-  const { setTodos, setActiveTodo, displayError, setIsLoading } =
-    useContext(TodoContext);
+  const { setTodos, setActiveTodo, displayError, setIsLoading } = useTodos();
 
   function handleDeleteTodo(id: number) {
     setIsLoading(true);
@@ -37,7 +33,7 @@ export const Todo: React.FC<Props> = ({ todo, isActive = false }) => {
       className={classNames('todo', { completed: todo.completed })}
       key={todo.id}
     >
-      <label className="todo__status-label">
+      <label className="todo__status-label" aria-label="status-label">
         <input
           data-cy="TodoStatus"
           type="checkbox"
