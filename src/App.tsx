@@ -176,7 +176,7 @@ export const App: React.FC = () => {
           tempTodo={tempTodo}
           loading={loading}
         />
-        {todos.length > 0 && (
+        {!!todos.length && (
           <Footer
             todos={todos}
             onStatusChange={setStatus}
