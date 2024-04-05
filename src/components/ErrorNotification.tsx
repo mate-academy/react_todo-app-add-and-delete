@@ -15,7 +15,7 @@ export const ErrorNotification: React.FC<Props> = ({ errorMessage }) => {
       )}
     >
       <button data-cy="HideErrorButton" type="button" className="delete" />
-      {errorMessage && <div>{errorMessage}</div>}
+      {errorMessage}
     </div>
   );
 };

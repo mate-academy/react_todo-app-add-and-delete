@@ -1,34 +1,30 @@
-import React, { useEffect, useRef, useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { TodoList } from './components/TodoList';
 import { Footer } from './components/Footer';
 import { ErrorNotification } from './components/ErrorNotification';
-import { USER_ID, getTodos, postTodo } from './api/todos';
+import { USER_ID, postTodo } from './api/todos';
 import { UserWarning } from './UserWarning';
 import { useTodosContext } from './context/TodoContext';
 import { ErrorList } from './types/ErrorList';
 
 export const App: React.FC = () => {
-  const { todos, setTodos, errorMessage, handleError, setTempTodo } =
-    useTodosContext();
+  const {
+    contextInputRef,
+    focusInput,
+    todos,
+    setTodos,
+    errorMessage,
+    handleError,
+    setTempTodo,
+  } = useTodosContext();
 
   const [query, setQuery] = useState<string>('');
   const [isLoading, setIsLoading] = useState(false);
-  const inputRef = useRef<HTMLInputElement | null>(null);
+  const itemsLeft = todos.filter(todo => !todo.completed).length;
 
   useEffect(() => {
-    inputRef.current?.focus();
-    getTodos()
-      .then(setTodos)
-      .catch(() => {
-        handleError(ErrorList.LoadTodos);
-      });
-  }, []);
-
-  const focusInput = () => {
-    setTimeout(() => {
-      inputRef.current?.focus();
-    }, 0);
-  };
+    focusInput();
+  }, [isLoading]);
 
   if (!USER_ID) {
     return <UserWarning />;
@@ -36,8 +32,9 @@ export const App: React.FC = () => {
 
   const handleQuerySubmit = async (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
+    const trimedQuery = query.trim();
 
-    if (query.trim().length <= 0) {
+    if (!trimedQuery.length) {
       handleError(ErrorList.EmptyTitle);
 
       return;
@@ -47,7 +44,7 @@ export const App: React.FC = () => {
 
     const newItem = {
       userId: USER_ID,
-      title: query.trim(),
+      title: trimedQuery,
       completed: false,
     };
 
@@ -57,7 +54,6 @@ export const App: React.FC = () => {
       .then(todo => {
         setTodos(prevTodos => [...prevTodos, todo]);
         setQuery('');
-        focusInput();
       })
       .catch(() => {
         handleError(ErrorList.AddTodo);
@@ -65,7 +61,6 @@ export const App: React.FC = () => {
       .finally(() => {
         setTempTodo(null);
         setIsLoading(false);
-        focusInput();
       });
   };
 
@@ -73,15 +68,12 @@ export const App: React.FC = () => {
     setQuery(event.target.value);
   };
 
-  const completedTodosCount = todos.filter(todo => !todo.completed).length;
-
   return (
     <div className="todoapp">
       <h1 className="todoapp__title">todos</h1>
 
       <div className="todoapp__content">
         <header className="todoapp__header">
-          {/* this button should have `active` class only if all todos are completed */}
           <button
             type="button"
             className="todoapp__toggle-all active"
@@ -90,7 +82,7 @@ export const App: React.FC = () => {
 
           <form onSubmit={handleQuerySubmit}>
             <input
-              ref={inputRef}
+              ref={contextInputRef}
               data-cy="NewTodoField"
               type="text"
               className="todoapp__new-todo"
@@ -102,14 +94,9 @@ export const App: React.FC = () => {
           </form>
         </header>
 
-        <TodoList focusInput={focusInput} />
+        <TodoList />
 
-        {todos.length > 0 && (
-          <Footer
-            completedTodosCount={completedTodosCount}
-            focusInput={focusInput}
-          />
-        )}
+        {!!todos.length && <Footer itemsLeft={itemsLeft} />}
       </div>
 
       <ErrorNotification errorMessage={errorMessage} />
