@@ -22,6 +22,6 @@ export const updateTodo = (updatedTodo: Todo) => {
   });
 };
 
-export const deleteTodo = (url: string) => {
-  return client.delete(url);
+export const deleteTodo = (id: number) => {
+  return client.delete(`/todos/${id}`);
 };

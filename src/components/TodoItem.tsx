@@ -5,15 +5,15 @@ import cn from 'classnames';
 
 interface Props {
   todo: Todo;
-  onDeleteTodo: (id: number) => void;
-  onUpdateTodo: (updatedTodo: Todo) => void;
+  onDeleteTodo?: (id: number) => void;
+  onUpdateTodo?: (updatedTodo: Todo) => void;
   isLoading: boolean;
 }
 
 const TodoItem: React.FC<Props> = ({
   todo,
-  onDeleteTodo,
-  onUpdateTodo,
+  onDeleteTodo = () => {},
+  onUpdateTodo = () => {},
   isLoading,
 }) => {
   const [isEditing, setIsEditing] = useState(false);

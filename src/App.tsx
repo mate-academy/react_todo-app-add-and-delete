@@ -104,7 +104,7 @@ export const App: React.FC = () => {
   const deleteTodo = (id: number) => {
     setIsLoading(true);
     postService
-      .deleteTodo(`/todos/${id}`)
+      .deleteTodo(id)
       .then(() => {
         setTodos(prevTodos => prevTodos.filter(todoItem => todoItem.id !== id));
       })
@@ -124,7 +124,7 @@ export const App: React.FC = () => {
 
     completedTodoIds.forEach(id => {
       postService
-        .deleteTodo(`/todos/${id}`)
+        .deleteTodo(id)
         .then(() => {
           setTodos(prevTodos =>
             prevTodos.filter(todoItem => todoItem.id !== id),
@@ -157,7 +157,7 @@ export const App: React.FC = () => {
           tempTodo={tempTodo}
           isLoading={isLoading}
         />
-        {todos.length > 0 && (
+        {!!todos.length && (
           <Footer
             todos={todos}
             onStatusChange={setStatus}

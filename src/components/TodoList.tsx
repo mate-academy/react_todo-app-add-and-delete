@@ -30,13 +30,7 @@ const TodoList: React.FC<Props> = ({
       ))}
 
       {tempTodo && (
-        <TodoItem
-          todo={tempTodo}
-          key={tempTodo.id}
-          onDeleteTodo={() => {}}
-          onUpdateTodo={() => {}}
-          isLoading={isLoading}
-        />
+        <TodoItem todo={tempTodo} key={tempTodo.id} isLoading={isLoading} />
       )}
     </section>
   );
