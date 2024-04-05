@@ -11,7 +11,6 @@ import { getFilterTodos } from './utils/getFilterTodos';
 import { ErrorNotification } from './components/ErrorNotification';
 import { Header } from './components/Header';
 import { Errors } from './types/Errors';
-// import { TodoItem } from './components/TodoItem';
 
 export const App: React.FC = () => {
   const [todos, setTodos] = useState<Todo[]>([]);
@@ -24,13 +23,19 @@ export const App: React.FC = () => {
 
   const focusInput = useRef<HTMLInputElement>(null);
 
+  const handleClearError = () => setErrorMessage(Errors.Default);
+
+  const handleError = (error: Errors) => {
+    setErrorMessage(error);
+
+    wait(3000).then(() => handleClearError());
+  };
+
   useEffect(() => {
     getTodos()
       .then(setTodos)
       .catch(() => {
-        setErrorMessage(Errors.Load);
-
-        wait(3000).then(() => setErrorMessage(Errors.Default));
+        handleError(Errors.Load);
       });
   }, []);
 
@@ -42,8 +47,6 @@ export const App: React.FC = () => {
     return getFilterTodos(todos, status);
   }, [todos, status]);
 
-  const handleClearError = () => setErrorMessage(Errors.Default);
-
   const addTodo = async (creatNewTodo: Omit<Todo, 'id'>) => {
     setTempTodo({ ...creatNewTodo, id: 0 });
 
@@ -54,9 +57,7 @@ export const App: React.FC = () => {
       setTodos(currentTodos => [...currentTodos, newTodo] as Todo[]);
       setNewTitle('');
     } catch {
-      setErrorMessage(Errors.Add);
-
-      wait(3000).then(() => handleClearError());
+      handleError(Errors.Add);
     } finally {
       setTempTodo(null);
       setIsLoading(false);
@@ -64,7 +65,6 @@ export const App: React.FC = () => {
   };
 
   const removeTodo = (todoId: number) => {
-    setIsLoading(true);
     setDeletedTodoIds(prevIds => [...prevIds, todoId]);
 
     return deleteTodo(todoId)
@@ -74,13 +74,10 @@ export const App: React.FC = () => {
         );
       })
       .catch(() => {
-        setErrorMessage(Errors.Delete);
+        handleError(Errors.Delete);
       })
       .finally(() => {
-        setDeletedTodoIds(() => []);
-        setIsLoading(false);
-
-        wait(3000).then(() => handleClearError());
+        setDeletedTodoIds(prevIds => prevIds.filter(id => id !== todoId));
       });
   };
 
@@ -94,8 +91,7 @@ export const App: React.FC = () => {
     const title = newTitle.trim();
 
     if (!title) {
-      setErrorMessage(Errors.EmptyTitle);
-      wait(3000).then(() => handleClearError());
+      handleError(Errors.EmptyTitle);
 
       return;
     }
@@ -144,8 +140,7 @@ export const App: React.FC = () => {
             onDeleteTodo={removeTodo}
             currentFilterStatus={status}
             todos={todos}
-            clearError={handleClearError}
-            onSetError={setErrorMessage}
+            onClearError={handleError}
           />
         )}
       </div>

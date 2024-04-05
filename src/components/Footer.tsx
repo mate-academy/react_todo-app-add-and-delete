@@ -4,15 +4,13 @@ import { Todo } from '../types/Todo';
 import { Status } from '../types/Status';
 import { Filter } from './Filter';
 import { Errors } from '../types/Errors';
-import { wait } from '../utils/fetchClient';
 
 type Props = {
   onFilter: (value: Status) => void;
   currentFilterStatus: Status;
   todos: Todo[];
   onDeleteTodo: (todoId: number) => Promise<unknown>;
-  clearError: () => void;
-  onSetError: (error: Errors) => void;
+  onClearError: (error: Errors) => void;
 };
 
 export const Footer: React.FC<Props> = ({
@@ -20,8 +18,7 @@ export const Footer: React.FC<Props> = ({
   currentFilterStatus,
   todos,
   onDeleteTodo,
-  clearError,
-  onSetError,
+  onClearError,
 }) => {
   const uncompletedTodos = todos.filter(item => !item.completed);
 
@@ -33,9 +30,7 @@ export const Footer: React.FC<Props> = ({
     try {
       await Promise.all(completedTodos.map(todo => onDeleteTodo(todo.id)));
     } catch {
-      onSetError(Errors.Delete);
-    } finally {
-      wait(3000).then(() => clearError());
+      onClearError(Errors.Delete);
     }
   };
 
