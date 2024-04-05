@@ -57,30 +57,6 @@ export const NewTodoForm: React.FC<Props> = ({ onTodoCreated }) => {
         setTempTodo(null);
       });
   };
-  //   todoService
-  //     .createTodo({
-  //       userId: todoService.USER_ID,
-  //       title: { title: title.trim() }.title,
-  //       completed: false,
-  //     })
-  //     .then(newTodo => {
-  //       onTodoCreated(newTodo);
-  //       setTitle('');
-  //     })
-  //     .catch(() => {
-  //       displayError(ErrorMessages.AddTodo);
-  //     })
-  //     .finally(() => {
-  //       setIsLoading(false);
-  //       setTempTodo(null);
-  //     });
-  //   setTempTodo({
-  //     id: 0,
-  //     userId: todoService.USER_ID,
-  //     title: { title: title.trim() }.title,
-  //     completed: false,
-  //   });
-  // };}
 
   useEffect(() => {
     setError(null);
