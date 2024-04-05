@@ -137,7 +137,7 @@ export const App: React.FC = () => {
           loadingIds={loadingIds}
         />
 
-        {todos.length > 0 && (
+        {!!todos.length && (
           <Footer
             todos={visibleTodos}
             itemsLeft={countIncompleteItems(todos)}
