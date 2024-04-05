@@ -5,6 +5,7 @@ import { useTodos } from '../context/TodosContext';
 
 export const TodoHeader = () => {
   const { todos, toggleAll } = useTodos();
+
   const allCompleted = todos.every(todo => todo.completed);
 
   return (

@@ -13,7 +13,7 @@ export const ErrorNotification: React.FC = () => {
     }, 3000);
 
     return () => clearTimeout(delay);
-  }, [errorMessage, setErrorMessage]);
+  }, [errorMessage]);
 
   return (
     <div

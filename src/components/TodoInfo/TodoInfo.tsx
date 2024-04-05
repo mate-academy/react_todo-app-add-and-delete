@@ -11,7 +11,7 @@ type Props = {
 };
 
 export const TodoInfo: React.FC<Props> = ({ todo, isLoadingItem = false }) => {
-  const { removeTodo, handleCheck } = useTodos();
+  const { removeTodo, toggleOne } = useTodos();
   const [isLoading, setIsLoading] = useState(isLoadingItem);
 
   const inputId = `todo-status-${todo.id}`;
@@ -31,7 +31,7 @@ export const TodoInfo: React.FC<Props> = ({ todo, isLoadingItem = false }) => {
           type="checkbox"
           className="todo__status"
           checked={todo.completed}
-          onChange={() => handleCheck(todo)}
+          onChange={() => toggleOne(todo)}
         />
       </label>
 
