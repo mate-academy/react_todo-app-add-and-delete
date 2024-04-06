@@ -7,22 +7,30 @@ type Props = {
   todos: Todo[];
   tempTodo: Todo | null;
   onTodoDelete: (todoId: number) => void;
+  onTodoCheck: (todo: Todo) => void;
 };
 
 export const TodoAppMain: React.FC<Props> = ({
   todos,
   tempTodo,
   onTodoDelete,
+  onTodoCheck,
 }) => (
   <section className="todoapp__main" data-cy="TodoList">
     {todos.map(todo => (
-      <TodoItem key={todo.id} todo={todo} onTodoDelete={onTodoDelete} />
+      <TodoItem
+        onTodoCheck={onTodoCheck}
+        key={todo.id}
+        todo={todo}
+        onTodoDelete={onTodoDelete}
+      />
     ))}
     {tempTodo && (
       <TodoItem
         todo={tempTodo}
         startingStatus={TodoStatus.Loading}
         onTodoDelete={onTodoDelete}
+        onTodoCheck={onTodoCheck}
       />
     )}
   </section>

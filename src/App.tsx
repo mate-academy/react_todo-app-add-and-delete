@@ -1,5 +1,11 @@
 import React, { useCallback, useEffect, useRef, useState } from 'react';
-import { USER_ID, postTodo, getTodos, deleteTodo } from './api/todos';
+import {
+  USER_ID,
+  postTodo,
+  getTodos,
+  deleteTodo,
+  updateTodo,
+} from './api/todos';
 import { UserWarning } from './UserWarning';
 import { TodoAppHeader } from './components/TodoAppHeader';
 import { TodoAppMain } from './components/TodoAppMain';
@@ -15,7 +21,6 @@ export const App: React.FC = () => {
   const [todos, setTodos] = useState<Todo[]>([]);
   const [tempTodo, setTempTodo] = useState<Todo | null>(null);
   const [errorText, setErrorText] = useState<ErrorText>(ErrorText.NoError);
-  const [isPosting, setIsPosting] = useState(false);
   const [title, setTitle] = useState('');
   const inputRef = useRef<HTMLInputElement>(null);
   const [statusFilter, setStatusFilter] = useState<StatusFilter>(
@@ -37,28 +42,16 @@ export const App: React.FC = () => {
     wait(3000).then(() => handleHideError());
   }, []);
 
-  const fetchTodos = useCallback(() => {
-    getTodos().then(
-      data => {
-        setTodos(data);
-      },
-      () => {
-        handleError(ErrorText.Loading);
-      },
-    );
-  }, [handleError]);
-
   const handleTodoDelete = (todoId: number) => {
-    deleteTodo(todoId).then(
-      () => {
+    deleteTodo(todoId)
+      .then(() => {
         setTodos(prevTodos => {
           return prevTodos.filter(prevTodo => todoId !== prevTodo.id);
         });
-      },
-      () => {
+      })
+      .catch(() => {
         handleError(ErrorText.Delete);
-      },
-    );
+      });
   };
 
   const handleCompletedTodoDelete = () => {
@@ -69,7 +62,7 @@ export const App: React.FC = () => {
     });
   };
 
-  const handleTodoAdd = async (newTitle: string) => {
+  const handleTodoAdd = (newTitle: string) => {
     const newTodo: Todo = {
       id: 0,
       userId: USER_ID,
@@ -77,42 +70,59 @@ export const App: React.FC = () => {
       completed: false,
     };
 
-    setIsPosting(true);
     setTempTodo(newTodo);
 
     postTodo(newTodo)
-      .then(
-        res => {
-          const newTodoId = res.id;
+      .then(res => {
+        setTitle('');
 
-          setTitle('');
-          setTempTodo(null);
-          setTodos(prevTodos => {
-            return [
-              ...prevTodos,
-              {
-                ...newTodo,
-                id: newTodoId,
-              },
-            ];
-          });
-
-          fetchTodos();
-        },
-        () => {
-          setTempTodo(null);
-          handleError(ErrorText.Add);
-        },
-      )
+        setTodos(prevTodos => {
+          return [
+            ...prevTodos,
+            {
+              ...newTodo,
+              id: res.id,
+            },
+          ];
+        });
+      })
+      .catch(() => {
+        handleError(ErrorText.Add);
+      })
       .finally(() => {
-        setIsPosting(false);
+        setTempTodo(null);
         inputRef.current?.focus();
       });
   };
 
+  const handleTodoCheck = (checkedTodo: Todo) => {
+    updateTodo({
+      ...checkedTodo,
+      completed: !checkedTodo.completed,
+    })
+      .then(resp => {
+        setTodos(currentTodos => {
+          return currentTodos.map(todo => (todo.id === resp.id ? resp : todo));
+        });
+      })
+      .catch(() => {
+        handleError(ErrorText.Update);
+      });
+  };
+
   useEffect(() => {
+    const fetchTodos = () => {
+      getTodos()
+        .then(data => {
+          setTodos(data);
+        })
+        .catch(() => {
+          handleError(ErrorText.Loading);
+        });
+    };
+
     fetchTodos();
-  }, [fetchTodos]);
+  }, [handleError]);
 
   if (!USER_ID) {
     return <UserWarning />;
@@ -124,7 +134,7 @@ export const App: React.FC = () => {
 
       <div className="todoapp__content">
         <TodoAppHeader
-          isPosting={isPosting}
+          isPosting={!!tempTodo}
           onAddNewTodo={handleTodoAdd}
           onError={handleError}
           title={title}
@@ -136,6 +146,7 @@ export const App: React.FC = () => {
           todos={preparedTodos}
           tempTodo={tempTodo}
           onTodoDelete={handleTodoDelete}
+          onTodoCheck={handleTodoCheck}
         />
 
         {!!todos.length && (

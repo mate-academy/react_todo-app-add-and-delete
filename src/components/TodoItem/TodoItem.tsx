@@ -8,12 +8,14 @@ type Props = {
   todo: Todo;
   startingStatus?: TodoStatus;
   onTodoDelete: (id: number) => void;
+  onTodoCheck: (todo: Todo) => void;
 };
 
 export const TodoItem: React.FC<Props> = ({
   todo,
   startingStatus = TodoStatus.Default,
   onTodoDelete,
+  onTodoCheck,
 }) => {
   const [status, setStatus] = useState(startingStatus);
 
@@ -25,7 +27,12 @@ export const TodoItem: React.FC<Props> = ({
 
   return (
     <div data-cy="Todo" className={cn('todo', { completed: todo.completed })}>
-      <div className="todo__status-label">
+      <div
+        onClick={() => {
+          onTodoCheck(todo);
+        }}
+        className="todo__status-label"
+      >
         <input
           data-cy="TodoStatus"
           type="checkbox"

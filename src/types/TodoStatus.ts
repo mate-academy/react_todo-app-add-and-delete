@@ -1,5 +1,5 @@
 export enum TodoStatus {
-  Default,
-  Editing,
-  Loading,
+  Default = 'default',
+  Editing = 'editing',
+  Loading = 'loading',
 }
