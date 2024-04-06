@@ -1,4 +1,4 @@
-import { Todo } from '../types/Todo';
+import { Todo } from '../types/todo';
 import { ErrorTypes, FilterTypes } from '../types/enums';
 
 export function prepareVisibleTodos(todos: Todo[], filterBy: FilterTypes) {

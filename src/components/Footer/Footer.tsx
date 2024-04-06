@@ -1,6 +1,5 @@
 import { useEffect, useState } from 'react';
-
-import { Todo } from '../../types/Todo';
+import { Todo } from '../../types/todo';
 import { ErrorTypes, FilterTypes } from '../../types/enums';
 import { Filter } from './Filter';
 import { deleteTodos } from '../../api/todos';

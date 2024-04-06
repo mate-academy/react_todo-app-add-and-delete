@@ -1,5 +1,5 @@
 import cn from 'classnames';
-import { Todo } from '../types/Todo';
+import { Todo } from '../types/todo';
 import { FormEvent, useEffect, useMemo, useRef, useState } from 'react';
 import { USER_ID, createTodos } from '../api/todos';
 import { ErrorTypes } from '../types/enums';
@@ -48,6 +48,7 @@ export const Header: React.FC<Props> = ({
     if (isSomeTodoCompleted) {
       setIsButtonActive(false);
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [todos]);
 
   const onButtonClick = () => {

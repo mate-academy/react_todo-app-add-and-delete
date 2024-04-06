@@ -1,4 +1,4 @@
-import { Todo } from '../types/Todo';
+import { Todo } from '../types/todo';
 import { client } from '../utils/fetchClient';
 
 export const USER_ID = 404;
