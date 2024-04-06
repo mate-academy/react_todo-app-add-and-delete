@@ -11,7 +11,8 @@ export const TodoItem: React.FC<Props> = ({ tempTodo }) => (
         data-cy="TodoStatus"
         type="checkbox"
         className="todo__status"
-        checked
+        checked={tempTodo.completed}
+        onChange={() => {}}
       />
     </label>
 

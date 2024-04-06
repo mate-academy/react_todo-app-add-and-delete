@@ -1,10 +1,8 @@
 import React from 'react';
 import cn from 'classnames';
 
-import { Errors } from './types/Errors';
-
 interface Props {
-  errorMessage: Errors | null;
+  errorMessage: string | null;
   onDeleteClick: () => void;
 }
 
