@@ -14,7 +14,7 @@ export const App: React.FC = () => {
 
   const [todos, setTodos] = useState<Todo[]>([]);
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
-  const [filterBy, setFilterBy] = useState<FilterBy>(FilterBy.All);
+  const [filterBy, setFilterBy] = useState(FilterBy.All);
   const [tempTodo, setTempTodo] = useState<Todo | null>(null);
   const [isDisabled, setIsDisabled] = useState(false);
   const [titleText, setTitleText] = useState('');
@@ -83,16 +83,8 @@ export const App: React.FC = () => {
   };
 
   const handleClearingCompletedTodos = () => {
-    const idsToDelete: number[] = [];
-
     todos.forEach(todo => {
       if (todo.completed) {
-        idsToDelete.push(todo.id);
-      }
-    });
-
-    todos.forEach(todo => {
-      if (idsToDelete.includes(todo.id)) {
         handledeletingTodo(todo.id);
       }
     });
