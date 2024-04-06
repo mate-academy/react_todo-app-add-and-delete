@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { deleteTodos, updateTodos } from '../api/todos';
-import { Todo } from '../types/todo';
+import { Todo } from '../types/Todo';
 import { TodoItem } from './TodoItem';
 import { ErrorTypes } from '../types/enums';
 import { handleError } from '../utils/services';

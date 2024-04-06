@@ -1,6 +1,6 @@
 import cn from 'classnames';
 
-import { Todo } from '../types/todo';
+import { Todo } from '../types/Todo';
 import { FormEvent, useState } from 'react';
 import { Loader } from './Loader';
 

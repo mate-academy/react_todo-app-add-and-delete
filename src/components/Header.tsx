@@ -1,5 +1,5 @@
 import cn from 'classnames';
-import { Todo } from '../types/todo';
+import { Todo } from '../types/Todo';
 import { FormEvent, useEffect, useMemo, useRef, useState } from 'react';
 import { USER_ID, createTodos } from '../api/todos';
 import { ErrorTypes } from '../types/enums';

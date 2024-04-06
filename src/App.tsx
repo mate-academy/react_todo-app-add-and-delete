@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { UserWarning } from './UserWarning';
 import { USER_ID, getTodos } from './api/todos';
-import { Todo } from './types/todo';
+import { Todo } from './types/Todo';
 import { TodoList } from './components/TodoList';
 import { ErrorTypes, FilterTypes } from './types/enums';
 import { handleError, prepareVisibleTodos } from './utils/services';
