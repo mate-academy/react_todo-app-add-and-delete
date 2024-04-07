@@ -52,28 +52,26 @@ export const App: React.FC = () => {
           setLoading={setLoading}
           setTempTodo={setTempTodo}
         />
+        <TodoList
+          todos={prepareVisibleTodos(todos, filterBy)}
+          isLoading={isLoading}
+          loading={loading}
+          setLoading={setLoading}
+          setTodos={setTodos}
+          setErrorMessage={setErrorMessage}
+          tempTodo={tempTodo}
+          setIsFocused={setIsFocused}
+        />
         {(todos.length > 0 || tempTodo.length > 0) && (
-          <>
-            <TodoList
-              todos={prepareVisibleTodos(todos, filterBy)}
-              isLoading={isLoading}
-              loading={loading}
-              setLoading={setLoading}
-              setTodos={setTodos}
-              setErrorMessage={setErrorMessage}
-              tempTodo={tempTodo}
-              setIsFocused={setIsFocused}
-            />
-            <Footer
-              filterBy={filterBy}
-              setFilterBy={setFilterBy}
-              todos={todos}
-              setLoading={setLoading}
-              setTodos={setTodos}
-              setIsFocused={setIsFocused}
-              setErrorMessage={setErrorMessage}
-            />
-          </>
+          <Footer
+            filterBy={filterBy}
+            setFilterBy={setFilterBy}
+            todos={todos}
+            setLoading={setLoading}
+            setTodos={setTodos}
+            setIsFocused={setIsFocused}
+            setErrorMessage={setErrorMessage}
+          />
         )}
       </div>
 
