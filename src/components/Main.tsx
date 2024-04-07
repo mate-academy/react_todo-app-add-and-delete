@@ -1,16 +1,23 @@
 /* eslint-disable jsx-a11y/control-has-associated-label */
 /* eslint-disable */
-import React from 'react';
 import { Todo } from '../types/Todo';
+import { TempTodo } from './TempTodo';
 
 type Props = {
   filteredTodos: Todo[];
   toggleTodoCompletion: (todoId: number) => void;
-  loading: Boolean;
-  deleteTodos?: (todoId: number) => void;
+  deleteTodos: (todoId: number) => void;
+  isLoadingTodo: number[];
+  tempTodo: Todo | null;
 };
 
-export const Main: React.FC<Props> = ({ filteredTodos, toggleTodoCompletion, loading, deleteTodos }) => {
+export const Main: React.FC<Props> = ({
+  filteredTodos,
+  toggleTodoCompletion,
+  isLoadingTodo,
+  deleteTodos,
+  tempTodo,
+}) => {
   return (
     <section className="todoapp__main" data-cy="TodoList">
       {/* This is a completed todo */}
@@ -38,11 +45,7 @@ export const Main: React.FC<Props> = ({ filteredTodos, toggleTodoCompletion, loa
             type="button"
             className="todo__remove"
             data-cy="TodoDelete"
-            onClick={() => {
-              if (deleteTodos) {
-                deleteTodos(todo.id);
-              }
-            }}
+            onClick={() => deleteTodos(todo.id)}
           >
             ×
           </button>
@@ -50,13 +53,20 @@ export const Main: React.FC<Props> = ({ filteredTodos, toggleTodoCompletion, loa
           {/* overlay will cover the todo while it is being deleted or updated */}
           <div
             data-cy="TodoLoader"
-            className={`modal overlay ${loading ? '' : 'hidden'}`}
+            className={`modal overlay ${isLoadingTodo.includes(todo.id) ? 'is-active' : 'hidden'}`}
           >
             <div className="modal-background has-background-white-ter" />
             <div className="loader" />
           </div>
         </div>
       ))}
+
+      {tempTodo && ( // Рендерити tempTodo, якщо він існує
+        <TempTodo
+          todo={tempTodo}
+          deleteTodos={deleteTodos}
+        />
+      )}
     </section>
   );
 }

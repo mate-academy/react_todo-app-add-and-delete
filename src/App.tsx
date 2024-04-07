@@ -4,7 +4,6 @@ import React, { useEffect, useRef, useState } from 'react';
 import { UserWarning } from './UserWarning';
 import { USER_ID, createTodos, deleteTodo, getTodos } from './api/todos';
 import { Todo } from './types/Todo';
-import { TempTodo } from './components/TempTodo';
 import { Header } from './components/Header';
 import { Main } from './components/Main';
 import { Footer } from './components/Footer';
@@ -16,6 +15,7 @@ export const App: React.FC = () => {
   const [loading, setLoading] = useState(false);
   const [filterStatus, setFilterStatus] = useState('all');
   const [tempTodo, setTempTodo] = useState<Todo | null>(null);
+  const [isLoadingTodo, setIsLoadingTodo] = useState<number[]>([]);
 
   const filteredTodos = todos.filter(todo => {
     switch (filterStatus) {
@@ -97,11 +97,16 @@ export const App: React.FC = () => {
   };
 
   const deleteTodos = async (userId: number) => {
+
     try {
+      setIsLoadingTodo(prevLoading => [...prevLoading, userId]); // Встановлення статусу завантаження для вибраного todo
+
       await deleteTodo(userId);
       setTodos(currentTodo => currentTodo.filter(todo => todo.id !== userId));
     } catch (errors) {
       setError('Unable to delete a todo');
+    } finally {
+      setIsLoadingTodo(prevLoading => prevLoading.filter(id => id !== userId)); // Видалення статусу завантаження після виконання операції
     }
   };
 
@@ -182,14 +187,10 @@ export const App: React.FC = () => {
         <Main
           filteredTodos={filteredTodos}
           toggleTodoCompletion={toggleTodoCompletion}
-          loading={loading}
+          isLoadingTodo={isLoadingTodo}
           deleteTodos={deleteTodos}
+          tempTodo={tempTodo}
         />
-
-
-        {loading && tempTodo && (
-          <TempTodo todo={tempTodo} loading={loading} />
-        )}
 
         {!!todos.length && (
           <Footer
@@ -218,4 +219,4 @@ export const App: React.FC = () => {
       </div>
     </div>
   );
-};
+}

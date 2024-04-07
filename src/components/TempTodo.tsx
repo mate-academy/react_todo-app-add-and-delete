@@ -1,15 +1,16 @@
 /* eslint-disable jsx-a11y/control-has-associated-label */
 /* eslint-disable */
-import React from 'react';
 import { Todo } from '../types/Todo';
 
 type Props = {
   todo: Todo;
-  loading: boolean;
-  deleteTodos?: (todoId: number) => void;
+  deleteTodos: (todoId: number) => void;
 };
 
-export const TempTodo: React.FC<Props> = ({ todo, loading, deleteTodos }) => {
+export const TempTodo: React.FC<Props> = ({
+  todo,
+  deleteTodos,
+ }) => {
   return (
     <section className="todoapp__main" data-cy="TodoList">
       {/* This is a completed todo */}
@@ -31,24 +32,20 @@ export const TempTodo: React.FC<Props> = ({ todo, loading, deleteTodos }) => {
             {todo.title}
           </span>
 
-          {/* Remove button appears only on hover */}
-          <button
-            type="button"
-            className="todo__remove"
-            data-cy="TodoDelete"
-          onClick={() => {
-            if (deleteTodos) {
-              deleteTodos(todo.id);
-            }
-          }}
-          >
-            ×
-          </button>
+        {/* Remove button appears only on hover */}
+        <button
+          type="button"
+          className="todo__remove"
+          data-cy="TodoDelete"
+          onClick={() => deleteTodos(todo.id)}
+        >
+          ×
+        </button>
 
           {/* overlay will cover the todo while it is being deleted or updated */}
           <div
             data-cy="TodoLoader"
-            className={`modal overlay ${loading ? '' : 'hidden'}`}
+          className="modal overlay is-active"
           >
             <div className="modal-background has-background-white-ter" />
             <div className="loader" />
