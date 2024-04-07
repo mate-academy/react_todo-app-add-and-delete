@@ -9,8 +9,10 @@ export function prepareVisibleTodos(todos: Todo[], filterBy: FilterTypes) {
       switch (filterBy) {
         case FilterTypes.Active:
           return !item.completed;
+
         case FilterTypes.Completed:
           return item.completed;
+
         default:
           return item;
       }

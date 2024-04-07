@@ -43,7 +43,7 @@ export const TodoList: React.FC<Props> = ({
   const onPatch = (todo: Todo, event?: React.FormEvent<HTMLFormElement>) => {
     event?.preventDefault();
 
-    if (todo.title.trim() === '') {
+    if (!todo.title.trim()) {
       onDelete(todo.id);
 
       return;
@@ -82,7 +82,7 @@ export const TodoList: React.FC<Props> = ({
             />
           </CSSTransition>
         ))}
-        {tempTodo.length !== 0 &&
+        {!!tempTodo.length &&
           tempTodo.map(tTodo => (
             <CSSTransition key={0} timeout={300} classNames="temp-item">
               <TodoItem
