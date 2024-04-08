@@ -10,24 +10,15 @@ import { TodoList } from './components/Todolist';
 import { Error } from './components/Error';
 import { Header } from './components/Header';
 import { Errors } from './types/Errors';
+import { getFilteredTodos } from './utils/getFilteredTodos';
 
 // eslint-disable-next-line @typescript-eslint/no-shadow
-const getFilterTodos = (todos: Todo[], filterField: Status) => {
-  switch (filterField) {
-    case Status.Active:
-      return todos.filter(todo => !todo.completed);
-    case Status.Completed:
-      return todos.filter(todo => todo.completed);
-    default:
-      return todos;
-  }
-};
 
 export const App: React.FC = () => {
-  const [tempTodo, setTempTodo] = useState<Todo | null>(null);
+  const [selectedTodo, setSelectedTodo] = useState<Todo | null>(null);
   const [todos, setTodos] = useState<Todo[]>([]);
   const [errorMessage, setErrorMessage] = useState<Errors>(Errors.Default);
-  const [deletet, setDeletet] = useState<number[]>([]);
+  const [deletTodo, setDeletTodo] = useState<number[]>([]);
   const [newTitle, setNewTitle] = useState('');
   const [filterStatus, setFilterStatus] = useState<Status>(Status.All);
   const [IsLoading, setIsLoading] = useState(false);
@@ -55,11 +46,11 @@ export const App: React.FC = () => {
   }, [errorMessage, todos]);
 
   const filteredTodos = useMemo(() => {
-    return getFilterTodos(todos, filterStatus);
+    return getFilteredTodos(todos, filterStatus);
   }, [todos, filterStatus]);
 
   const addTodo = async (createdNewTodo: Omit<Todo, 'id'>) => {
-    setTempTodo({ ...createdNewTodo, id: 0 });
+    setSelectedTodo({ ...createdNewTodo, id: 0 });
 
     try {
       setIsLoading(true);
@@ -70,20 +61,20 @@ export const App: React.FC = () => {
     } catch {
       handleError(Errors.Add);
     } finally {
-      setTempTodo(null);
+      setSelectedTodo(null);
       setIsLoading(false);
     }
   };
 
   const deletedTodo = async (todoId: number) => {
     try {
-      setDeletet(prevIds => [...prevIds, todoId]);
+      setDeletTodo(prevIds => [...prevIds, todoId]);
       await deleteTodo(todoId);
       setTodos(prevTodos => prevTodos.filter(todo => todo.id !== todoId));
     } catch {
       handleError(Errors.Delete);
     } finally {
-      setDeletet(prevIds => prevIds.filter(id => id !== todoId));
+      setDeletTodo(prevIds => prevIds.filter(id => id !== todoId));
     }
   };
 
@@ -136,8 +127,8 @@ export const App: React.FC = () => {
         <TodoList
           filteredTodos={filteredTodos}
           onDeleteTodo={deletedTodo}
-          tempTodo={tempTodo}
-          deletedTodoIds={deletet}
+          tempTodo={selectedTodo}
+          deletedTodoIds={deletTodo}
         />
 
         {!!todos.length && (

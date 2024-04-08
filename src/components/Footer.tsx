@@ -25,9 +25,7 @@ export const Footer: React.FC<Props> = ({
   const isAnyTodoCompleted = todos.some(todo => todo.completed);
 
   async function handleClearCompleted() {
-    const completedTodos = todos.filter(function (todo) {
-      return todo.completed;
-    });
+    const completedTodos = todos.filter(todo => todo.completed);
 
     try {
       await Promise.all(completedTodos.map(todo => onDeleteTodo(todo.id)));
