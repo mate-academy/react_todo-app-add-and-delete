@@ -6,10 +6,6 @@ type Props = {
 };
 
 export const ErrorNotification: React.FC<Props> = ({ error, onDismiss }) => {
-  const handleDismiss = () => {
-    onDismiss();
-  };
-
   return (
     <div
       data-cy="ErrorNotification"
@@ -24,7 +20,7 @@ export const ErrorNotification: React.FC<Props> = ({ error, onDismiss }) => {
         data-cy="HideErrorButton"
         type="button"
         className="delete"
-        onClick={handleDismiss}
+        onClick={onDismiss}
       />
       {error}
     </div>

@@ -4,7 +4,7 @@ import { TodoItem } from './TodoItem';
 type Props = {
   filteredTodos: Todo[];
   TodoDeleteButton: (todoId: number) => void;
-  isLoading: number;
+  isLoading: number[];
   tempTodo: Todo | null;
 };
 
@@ -29,7 +29,7 @@ export const TodoList: React.FC<Props> = ({
           todo={tempTodo}
           TodoDeleteButton={TodoDeleteButton}
           isLoading={isLoading}
-          key={tempTodo.id} // Key should be unique for each item
+          key={tempTodo.id}
         />
       )}
     </section>

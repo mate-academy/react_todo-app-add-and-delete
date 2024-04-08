@@ -16,64 +16,71 @@ export const App: React.FC = () => {
   const [error, setError] = useState<string>('');
   const [value, setValue] = useState('');
   const [inputDisabled, setInputDisabled] = useState(false);
-  const [isLoading, setIsLoading] = useState<number>(0);
+  const [isLoading, setIsLoading] = useState<number[]>([]);
   const [tempTodo, setTempTodo] = useState<Todo | null>(null);
 
   const inputRef = useRef<HTMLInputElement>(null);
 
   useEffect(() => {
     inputRef.current?.focus();
-  }, [todos, error]);
+  }, [todos, tempTodo]);
+
+  const handleError = (errorMessage: ErrorTypes) => {
+    setError(errorMessage);
+    setTimeout(() => {
+      setError('');
+    }, 3000);
+  };
 
   useEffect(() => {
     getTodos()
       .then(setTodos)
+      .then(() => {
+        if (isLoading.length > 0) {
+          setIsLoading([]);
+        }
+      })
       .catch(() => {
-        setError(ErrorTypes.OneMessage);
-        setTimeout(() => {
-          setError('');
-        }, 3000);
+        handleError(ErrorTypes.OneMessage);
       });
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   const removeTodo = (todoId: number) => {
-    setIsLoading(todoId);
+    setIsLoading(prev => [...prev, todoId]);
     deleteTodo(todoId)
       .then(() => {
         setTodos(prevTodos => prevTodos.filter(todo => todo.id !== todoId));
-        setIsLoading(0);
+        setIsLoading([]);
       })
       .catch(() => {
-        setError(ErrorTypes.UnableToDelete);
-        setTimeout(() => {
-          setError('');
-        }, 3000);
+        setIsLoading([]);
+        handleError(ErrorTypes.UnableToDelete);
       });
   };
 
   const addTodo = (title: string) => {
+    const trimmedTitle = title.trim();
+
     setTempTodo({
       id: 0,
       title,
       completed: false,
       userId: USER_ID,
     });
-    postTodo(title)
+    setIsLoading(prev => [...prev, 0]);
+    postTodo(trimmedTitle)
       .then(savedTodo => {
         setTodos(prevTodos => [...prevTodos, savedTodo]);
-        setIsLoading(savedTodo.id);
         setValue('');
       })
       .catch(() => {
-        setError(ErrorTypes.UnableToAdd);
-        setTimeout(() => {
-          setError('');
-        }, 3000);
+        handleError(ErrorTypes.UnableToAdd);
       })
       .finally(() => {
         setInputDisabled(false);
         setTempTodo(null);
-        setIsLoading(0);
+        setIsLoading([]);
       });
   };
 

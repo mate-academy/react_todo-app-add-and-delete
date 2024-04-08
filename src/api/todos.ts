@@ -18,13 +18,3 @@ export function postTodo(title: string) {
 export function deleteTodo(todoId: number) {
   return client.delete(`/todos/${todoId}`);
 }
-
-// export function updateTodo(title: string) {
-//   return client.patch<Todo>('/todos', {
-//     title,
-//     completed: false,
-//     userId: USER_ID,
-//   });
-// }
-
-// Add more methods here
