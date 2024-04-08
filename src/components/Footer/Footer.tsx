@@ -1,12 +1,9 @@
-import { Dispatch, SetStateAction, useContext } from 'react';
+import { useContext } from 'react';
 import { Filter } from '../Filter/Filter';
 import { DispatchContext, StateContext } from '../../store/Store';
 import { deleteTodo } from '../../api/todos';
 
-type Props = {
-  setIsDeleting: Dispatch<SetStateAction<boolean>>;
-};
-export const Footer: React.FC<Props> = ({ setIsDeleting }) => {
+export const Footer: React.FC = () => {
   const { todos } = useContext(StateContext);
   const dispatch = useContext(DispatchContext);
   const getUnCompletedTodos = todos.filter(todo => !todo.completed);
@@ -14,7 +11,6 @@ export const Footer: React.FC<Props> = ({ setIsDeleting }) => {
   const handleDeletionTodos = async () => {
     await Promise.all(
       getCompletedTodos.map(async todo => {
-        setIsDeleting(true);
         await deleteTodo(todo.id)
           .then(() => {
             dispatch({ type: 'REMOVE_LOCAL_TODO', payload: { id: todo.id } });

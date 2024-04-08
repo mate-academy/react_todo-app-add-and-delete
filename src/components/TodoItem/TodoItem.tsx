@@ -3,25 +3,18 @@
 
 import classNames from 'classnames';
 import { Todo } from '../../types/Todo';
-import { Dispatch, SetStateAction, useContext, useState } from 'react';
+import { useContext, useState } from 'react';
 import { DispatchContext } from '../../store/Store';
 import { deleteTodo } from '../../api/todos';
 
 type Props = {
   todo: Todo;
-  setIsDeleting: Dispatch<SetStateAction<boolean>>;
-  isDeleting: boolean;
 };
 
-export const TodoItem: React.FC<Props> = ({
-  todo,
-  setIsDeleting,
-  isDeleting,
-}) => {
+export const TodoItem: React.FC<Props> = ({ todo }) => {
   const dispatch = useContext(DispatchContext);
-  const [isLoading, setIsLoading] = useState<boolean>(false);
+  const [isDeleting, setIsDeleting] = useState<boolean>(false);
   const handleDeleteTodo = () => {
-    setIsLoading(true);
     setIsDeleting(true);
     deleteTodo(todo.id)
       .then(() => {
@@ -35,7 +28,6 @@ export const TodoItem: React.FC<Props> = ({
       })
       .finally(() => {
         setIsDeleting(false);
-        setIsLoading(false);
       });
   };
 
@@ -69,7 +61,7 @@ export const TodoItem: React.FC<Props> = ({
       <div
         data-cy="TodoLoader"
         className={classNames('modal', 'overlay', {
-          'is-active': isLoading || (isDeleting && todo.completed),
+          'is-active': isDeleting || todo.id === 0,
         })}
       >
         <div className="modal-background has-background-white-ter" />

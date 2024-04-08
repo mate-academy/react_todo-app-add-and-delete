@@ -14,7 +14,6 @@ import { Todo } from './types/Todo';
 export const App: React.FC = () => {
   const { todos } = useContext(StateContext);
   const [tempTodo, setTempTodo] = useState<Todo | null>(null);
-  const [isDeleting, setIsDeleting] = useState<boolean>(false);
 
   if (!USER_ID) {
     return <UserWarning />;
@@ -25,13 +24,9 @@ export const App: React.FC = () => {
       <h1 className="todoapp__title">todos</h1>
 
       <div className="todoapp__content">
-        <Header setTempTodo={setTempTodo} isDeleting={isDeleting} />
-        <TodoList
-          tempTodo={tempTodo}
-          setIsDeleting={setIsDeleting}
-          isDeleting={isDeleting}
-        />
-        {todos.length > 0 && <Footer setIsDeleting={setIsDeleting} />}
+        <Header setTempTodo={setTempTodo} />
+        <TodoList tempTodo={tempTodo} />
+        {todos.length > 0 && <Footer />}
       </div>
       <ErrorNotification />
     </div>

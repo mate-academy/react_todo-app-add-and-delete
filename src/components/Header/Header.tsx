@@ -6,17 +6,17 @@ import {
   useRef,
   useState,
 } from 'react';
-import { DispatchContext } from '../../store/Store';
+import { DispatchContext, StateContext } from '../../store/Store';
 import { USER_ID, createTodo } from '../../api/todos';
 import { Todo } from '../../types/Todo';
 
 type Props = {
   setTempTodo: Dispatch<SetStateAction<Todo | null>>;
-  isDeleting: boolean;
 };
 
-export const Header: React.FC<Props> = ({ setTempTodo, isDeleting }) => {
+export const Header: React.FC<Props> = ({ setTempTodo }) => {
   const [value, setValue] = useState<string>('');
+  const { todos } = useContext(StateContext);
   const inputRef = useRef<HTMLInputElement>(null);
   const dispatch = useContext(DispatchContext);
   const [disabledInput, setDisabledInput] = useState<boolean>(false);
@@ -25,7 +25,7 @@ export const Header: React.FC<Props> = ({ setTempTodo, isDeleting }) => {
     if (inputRef.current) {
       inputRef.current.focus();
     }
-  }, [disabledInput, isDeleting]);
+  }, [todos.length, disabledInput]);
 
   const handleSubmitForm = (e: React.FormEvent) => {
     e.preventDefault();

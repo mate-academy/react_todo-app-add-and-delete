@@ -12,7 +12,7 @@ export const deleteTodo = (id: number) => {
 };
 
 export const createTodo = ({ title }: Pick<Todo, 'title'>) => {
-  return client.post<Todo>(`/todos`, {
+  return client.post<Todo>('/todos', {
     userId: USER_ID,
     title,
     completed: false,
