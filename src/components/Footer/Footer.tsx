@@ -4,7 +4,7 @@ import { useTodos } from '../Store/Store';
 import { FilterBy } from '../../types/FilterBy';
 
 const Footer: React.FC = () => {
-  const { filter, setFilter, clearCompleted, filteredTodos } = useTodos();
+  const { filter, setFilter, filteredTodos } = useTodos();
 
   const handleChangeType = (filters: FilterBy) => () => {
     setFilter(filters);
