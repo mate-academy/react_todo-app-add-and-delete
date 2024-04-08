@@ -7,6 +7,7 @@ import { Todo } from './types/Todo';
 import { Header } from './components/Header';
 import { Main } from './components/Main';
 import { Footer } from './components/Footer';
+import classNames from 'classnames';
 
 export enum TodoStatus {
   All = 'all',
@@ -27,8 +28,10 @@ export const App: React.FC = () => {
     switch (filterStatus) {
       case TodoStatus.Active:
         return !todo.completed;
+
       case TodoStatus.Completed:
         return todo.completed;
+
       default:
         return true;
     }
@@ -44,7 +47,7 @@ export const App: React.FC = () => {
     }, 3000);
   }, []);
 
-  // Відправляє запит на сервер для отримання списку (todos).
+  // Sends a request to the server to get a list (todos).
   const handleRequest = async () => {
     try {
       const allTodo = await getTodos();
@@ -59,17 +62,17 @@ export const App: React.FC = () => {
   const isLoading = !!loadingTodoIds.length;
 
   const inputRef = useRef<HTMLInputElement>(null);
-  // додавання фокусу на input
+  // adds focus to the input
   useEffect(() => {
     if (inputRef.current) {
       inputRef.current.focus();
     }
   }, [todos]);
 
-  // Відповідає за обробку події форми.
+  // form event handling
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (title.trim() === '') {
+    if (!title.trim()) {
       setError('Title should not be empty');
 
       return;
@@ -83,50 +86,49 @@ export const App: React.FC = () => {
         userId: USER_ID,
       });
 
-      // викликаємо функцію createTodos, яка відправляє запит на сервер та створює новий todo
+      // function 'createTodos', sends a request to the server and creates a new 'todo'
       const newTodo = await createTodos({
         title: title.trim(),
         completed: false,
         userId: USER_ID,
       });
 
-      //  додає новий елемент до масиву todos та оновлює його стан
+      // adds a new element to the todos array and updates its state
       setTodos(prevTodos => [...prevTodos, newTodo]);
       setTitle('');
     } catch (errors) {
       setError('Unable to add a todo');
     } finally {
-      setTempTodo(null); // Сховати tempTodo
+      setTempTodo(null);
     }
   };
 
   const deleteSingleTodo = async (userId: number) => {
 
     try {
-      setLoadingTodoIds(prevLoading => [...prevLoading, userId]); // Встановлення статусу завантаження для вибраного todo
-
+      setLoadingTodoIds(prevLoading => [...prevLoading, userId]); // Set download status for selected todo
       await deleteTodo(userId);
       setTodos(currentTodo => currentTodo.filter(todo => todo.id !== userId));
     } catch (errors) {
       setError('Unable to delete a todo');
     } finally {
-      setLoadingTodoIds(prevLoading => prevLoading.filter(id => id !== userId)); // Видалення статусу завантаження після виконання операції
+      setLoadingTodoIds(prevLoading => prevLoading.filter(id => id !== userId)); // Clearing the download status after the operation
     }
   };
 
-  // Функція відповідає за зміну статусу завдання
+  // The function is responsible for changing the task status
   const toggleTodoCompletion = (todoId: number) => {
     try {
-      // Отримуємо посилання на завдання за його id
+      // get a link to the task by its 'id'
       const updatedTodos = todos.map(todo =>
         todo.id === todoId ? { ...todo, completed: !todo.completed } : todo,
       );
 
-      // Оновлюємо стан todos
+      // Updating the status of todos
       setTodos(updatedTodos);
       setError(null);
 
-      // Отримуємо новий стан фільтра
+      // get a new state of the filter
       let newFilterStatus: TodoStatus = TodoStatus.All;
 
       if (filterStatus === TodoStatus.Completed) {
@@ -135,7 +137,7 @@ export const App: React.FC = () => {
         newFilterStatus = TodoStatus.All;
       }
 
-      // Оновлюємо стан фільтра
+      // update the filter status
       setFilterStatus(newFilterStatus);
     } catch (errors) {
       setError('Unable to toggle todo completion');
@@ -144,17 +146,16 @@ export const App: React.FC = () => {
 
   const clearCompletedTodos = async () => {
     try {
-      // Відбір завершених todo
+      // Selection of completed todos
       const completedTodosIds = todos
         .filter(todo => todo.completed)
         .map(todo => todo.id);
 
-      // Видалення кожної завершеної todo за її ідентифікатором
+      // Deleting each completed todo by its ID
       await Promise.all(completedTodosIds.map(id => deleteSingleTodo(id)));
-      // Оновлення списку todos, виключаючи завершені todo
+      // Updating the todos list, excluding completed todos
       setTodos(currentTodos => currentTodos.filter(todo => !todo.completed));
 
-      // Перевірка, чи залишилися невиконані todo
       if (todos.some(todo => !todo.completed)) {
         setFilterStatus(TodoStatus.Completed);
       }
@@ -203,7 +204,7 @@ export const App: React.FC = () => {
       {/* Add the 'hidden' class to hide the message smoothly */}
       <div
         data-cy="ErrorNotification"
-        className={`notification is-danger is-light has-text-weight-normal ${!isLoading && error ? '' : 'hidden'}`}
+        className={classNames('notification', 'is-danger', 'is-light', 'has-text-weight-normal', { 'hidden': isLoading || !error })}
       >
         <button
           data-cy="HideErrorButton"

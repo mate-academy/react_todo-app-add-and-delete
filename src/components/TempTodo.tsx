@@ -1,5 +1,6 @@
 /* eslint-disable jsx-a11y/control-has-associated-label */
 /* eslint-disable */
+import classNames from 'classnames';
 import { Todo } from '../types/Todo';
 
 type Props = {
@@ -11,25 +12,26 @@ export const TempTodo: React.FC<Props> = ({
   todo,
   deleteSingleTodo,
  }) => {
+  const { title, id, completed } = todo;
   return (
     <section className="todoapp__main" data-cy="TodoList">
       {/* This is a completed todo */}
       <div
-        key={todo.id}
+        key={id}
         data-cy="Todo"
-        className={`todo ${todo.completed ? 'completed' : ''}`}
+        className={classNames('todo', {completed: completed})}
       >
         <label className="todo__status-label">
             <input
               data-cy="TodoStatus"
               type="checkbox"
               className="todo__status"
-              checked={todo.completed}
+              checked={completed}
               onChange={() => {}}
             />
           </label>
           <span data-cy="TodoTitle" className="todo__title">
-            {todo.title}
+            {title}
           </span>
 
         {/* Remove button appears only on hover */}
@@ -37,7 +39,7 @@ export const TempTodo: React.FC<Props> = ({
           type="button"
           className="todo__remove"
           data-cy="TodoDelete"
-          onClick={() => deleteSingleTodo(todo.id)}
+          onClick={() => deleteSingleTodo(id)}
         >
           ×
         </button>

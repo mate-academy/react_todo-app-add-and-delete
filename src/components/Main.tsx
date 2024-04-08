@@ -1,5 +1,6 @@
 /* eslint-disable jsx-a11y/control-has-associated-label */
 /* eslint-disable */
+import classNames from 'classnames';
 import { Todo } from '../types/Todo';
 import { TempTodo } from './TempTodo';
 
@@ -21,23 +22,23 @@ export const Main: React.FC<Props> = ({
   return (
     <section className="todoapp__main" data-cy="TodoList">
       {/* This is a completed todo */}
-      {filteredTodos.map(todo => (
+      {filteredTodos.map(({title, id, completed}) => (
         <div
-          key={todo.id}
+          key={id}
           data-cy="Todo"
-          className={`todo ${todo.completed ? 'completed' : ''}`}
+          className={classNames('todo', {completed: completed})}
         >
           <label className="todo__status-label">
             <input
               data-cy="TodoStatus"
               type="checkbox"
               className="todo__status"
-              checked={todo.completed}
-              onChange={() => toggleTodoCompletion(todo.id)}
+              checked={completed}
+              onChange={() => toggleTodoCompletion(id)}
             />
           </label>
           <span data-cy="TodoTitle" className="todo__title">
-            {todo.title}
+            {title}
           </span>
 
           {/* Remove button appears only on hover */}
@@ -45,7 +46,7 @@ export const Main: React.FC<Props> = ({
             type="button"
             className="todo__remove"
             data-cy="TodoDelete"
-            onClick={() => deleteSingleTodo(todo.id)}
+            onClick={() => deleteSingleTodo(id)}
           >
             ×
           </button>
@@ -53,7 +54,7 @@ export const Main: React.FC<Props> = ({
           {/* overlay will cover the todo while it is being deleted or updated */}
           <div
             data-cy="TodoLoader"
-            className={`modal overlay ${loadingTodoIds.includes(todo.id) ? 'is-active' : 'hidden'}`}
+            className={classNames('modal overlay', {'is-active': loadingTodoIds.includes(id)})}
           >
             <div className="modal-background has-background-white-ter" />
             <div className="loader" />
@@ -61,7 +62,7 @@ export const Main: React.FC<Props> = ({
         </div>
       ))}
 
-      {tempTodo && ( // Рендерити tempTodo, якщо він існує
+      {tempTodo && ( // Render the tempTodo if it exists
         <TempTodo
           todo={tempTodo}
           deleteSingleTodo={deleteSingleTodo}
