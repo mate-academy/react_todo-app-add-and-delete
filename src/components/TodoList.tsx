@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { deleteTodos, updateTodos } from '../api/todos';
+import { deleteTodos } from '../api/todos';
 import { Todo } from '../types/Todo';
 import { TodoItem } from './TodoItem';
 import { ErrorTypes } from '../types/enums';
@@ -8,12 +8,11 @@ import { TransitionGroup, CSSTransition } from 'react-transition-group';
 
 type Props = {
   todos: Todo[];
-  isLoading?: boolean;
   loading: number[];
   setLoading: React.Dispatch<React.SetStateAction<number[]>>;
   setTodos: React.Dispatch<React.SetStateAction<Todo[]>>;
   setErrorMessage: (errorMessage: ErrorTypes) => void;
-  tempTodo: Todo[];
+  tempTodo: Todo | null;
   setIsFocused: (isFocused: boolean) => void;
 };
 
@@ -40,32 +39,6 @@ export const TodoList: React.FC<Props> = ({
       .finally(() => setLoading(prev => prev.filter(item => item !== id)));
   };
 
-  const onPatch = (todo: Todo, event?: React.FormEvent<HTMLFormElement>) => {
-    event?.preventDefault();
-
-    if (todo.title.trim() === '') {
-      onDelete(todo.id);
-
-      return;
-    }
-
-    setLoading(prev => [...prev, todo.id]);
-
-    updateTodos(todo.id, todo)
-      .then((updatedTodo: Todo) =>
-        setTodos((currentTodos: Todo[]) =>
-          currentTodos.map(item =>
-            item.id === updatedTodo.id ? updatedTodo : item,
-          ),
-        ),
-      )
-      .catch(() => handleError(ErrorTypes.updErr, setErrorMessage))
-      .finally(() => {
-        setSelectedTodo(null);
-        setLoading(prev => prev.filter(item => item !== todo.id));
-      });
-  };
-
   return (
     <section className="todoapp__main" data-cy="TodoList">
       <TransitionGroup>
@@ -78,24 +51,27 @@ export const TodoList: React.FC<Props> = ({
               loading={loading}
               selectedTodo={selectedTodo}
               onDelete={onDelete}
-              onPatch={onPatch}
+              setTodos={setTodos}
+              setErrorMessage={setErrorMessage}
+              setLoading={setLoading}
             />
           </CSSTransition>
         ))}
-        {tempTodo.length !== 0 &&
-          tempTodo.map(tTodo => (
-            <CSSTransition key={0} timeout={300} classNames="temp-item">
-              <TodoItem
-                todo={tTodo}
-                key={tTodo.id}
-                setSelectedTodo={setSelectedTodo}
-                loading={loading}
-                selectedTodo={selectedTodo}
-                onDelete={onDelete}
-                onPatch={onPatch}
-              />
-            </CSSTransition>
-          ))}
+        {tempTodo && (
+          <CSSTransition key={0} timeout={300} classNames="temp-item">
+            <TodoItem
+              todo={tempTodo}
+              key={tempTodo.id}
+              setSelectedTodo={setSelectedTodo}
+              loading={loading}
+              selectedTodo={selectedTodo}
+              onDelete={onDelete}
+              setTodos={setTodos}
+              setErrorMessage={setErrorMessage}
+              setLoading={setLoading}
+            />
+          </CSSTransition>
+        )}
       </TransitionGroup>
     </section>
   );

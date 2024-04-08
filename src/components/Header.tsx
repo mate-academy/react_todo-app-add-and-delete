@@ -1,7 +1,7 @@
 import cn from 'classnames';
 import { Todo } from '../types/Todo';
 import { FormEvent, useEffect, useMemo, useRef, useState } from 'react';
-import { USER_ID, createTodos } from '../api/todos';
+import { USER_ID, createTodos, updateTodos } from '../api/todos';
 import { ErrorTypes } from '../types/enums';
 import { handleError } from '../utils/services';
 
@@ -12,7 +12,8 @@ type Props = {
   setTodos: React.Dispatch<React.SetStateAction<Todo[]>>;
   setErrorMessage: (errorMessage: ErrorTypes) => void;
   setLoading: React.Dispatch<React.SetStateAction<number[]>>;
-  setTempTodo: React.Dispatch<React.SetStateAction<Todo[]>>;
+  setTempTodo: React.Dispatch<React.SetStateAction<Todo | null>>;
+  tempTodo: Todo | null;
 };
 
 export const Header: React.FC<Props> = ({
@@ -23,8 +24,8 @@ export const Header: React.FC<Props> = ({
   setErrorMessage,
   setLoading,
   setTempTodo,
+  tempTodo,
 }) => {
-  const [isButtonActive, setIsButtonActive] = useState(true);
   const [isInputDisabled, setIsInputDisabled] = useState(false);
   const [title, setTitle] = useState('');
 
@@ -44,82 +45,91 @@ export const Header: React.FC<Props> = ({
     }
   }, [isFocused]);
 
-  useEffect(() => {
-    if (isSomeTodoCompleted) {
-      setIsButtonActive(false);
-    }
-  }, [todos]);
+  const onPatch = (todo: Todo) => {
+    setLoading(prev => [...prev, todo.id]);
+
+    updateTodos(todo.id, todo)
+      .catch(() => handleError(ErrorTypes.updErr, setErrorMessage))
+      .finally(() => {
+        setLoading(prev => prev.filter(item => item !== todo.id));
+      });
+  };
 
   const onButtonClick = () => {
+    const completedTodo = (todo: Todo) => ({ ...todo, completed: true });
+    const uncompletedTodo = (todo: Todo) => ({ ...todo, completed: false });
+
     if (isSomeTodoCompleted) {
-      setTodos(prev => prev.map(todo => ({ ...todo, completed: true })));
+      const optimizedTodos = todos
+        .filter(todo => !todo.completed)
+        .map(todo => completedTodo(todo));
+
+      setTodos(prev => prev.map(todo => completedTodo(todo)));
+      optimizedTodos.map(todo => onPatch(completedTodo(todo)));
     } else {
-      setTodos(prev => prev.map(todo => ({ ...todo, completed: false })));
+      const optimizedTodos = todos
+        .filter(todo => todo.completed)
+        .map(todo => completedTodo(todo));
+
+      setTodos(prev => prev.map(todo => uncompletedTodo(todo)));
+      optimizedTodos.map(todo => onPatch(uncompletedTodo(todo)));
     }
   };
 
   const onSubmit = (event?: FormEvent<HTMLFormElement>) => {
     event?.preventDefault();
 
-    if (normalisedTitle === '') {
+    if (!normalisedTitle) {
       handleError(ErrorTypes.titleErr, setErrorMessage);
     } else {
-      setTempTodo((prevTempTodos: Todo[]) => [
-        ...prevTempTodos,
-        {
-          id:
-            prevTempTodos.length > 0
-              ? Math.max(...prevTempTodos.map(prevTodo => prevTodo.id)) + 1
-              : Math.floor(Math.random() * 100),
-          userId: 404,
-          title: normalisedTitle,
-          completed: false,
-        },
-      ]);
+      const tempTodoId = tempTodo
+        ? tempTodo.id + 1
+        : Math.floor(Math.random() * 100);
+
+      setTempTodo({
+        id: tempTodoId,
+        userId: USER_ID,
+        title: normalisedTitle,
+        completed: false,
+      });
+      setLoading(prev => [...prev, tempTodoId]);
 
       setIsFocused(false);
       setIsInputDisabled(true);
 
       createTodos({ userId: USER_ID, completed: false, title: normalisedTitle })
         .then(resp => {
-          setTodos((prevTodos: Todo[]) => [
-            ...prevTodos,
-            {
-              id: resp.id,
-              userId: resp.userId,
-              title: resp.title,
-              completed: resp.completed,
-            },
-          ]);
+          setTodos((prevTodos: Todo[]) => [...prevTodos, resp]);
           setIsFocused(true);
-          setTempTodo(() => []);
+          setTempTodo(null);
           setLoading(prev =>
-            prev.filter(
-              item => item === Math.max(...todos.map(todo => todo.id)),
-            ),
+            prev.filter(id => todos.filter(todo => id === todo.id)),
           );
           setIsInputDisabled(false);
           setTitle('');
         })
         .catch(() => {
-          setTempTodo(() => []);
+          setTempTodo(null);
           setIsInputDisabled(false);
           setIsFocused(true);
           handleError(ErrorTypes.addErr, setErrorMessage);
-        });
+        })
+        .finally(() => setTempTodo(null));
     }
   };
 
   return (
     <header className="todoapp__header">
-      <button
-        type="button"
-        className={cn('todoapp__toggle-all', {
-          active: isButtonActive,
-        })}
-        data-cy="ToggleAllButton"
-        onClick={() => onButtonClick()}
-      />
+      {todos.length > 0 && (
+        <button
+          type="button"
+          className={cn('todoapp__toggle-all', {
+            active: !isSomeTodoCompleted,
+          })}
+          data-cy="ToggleAllButton"
+          onClick={() => onButtonClick()}
+        />
+      )}
 
       <form onSubmit={onSubmit}>
         <input

@@ -12,26 +12,16 @@ import { Header } from './components/Header';
 
 export const App: React.FC = () => {
   const [todos, setTodos] = useState<Todo[]>([]);
-  const [isLoading, setIsLoading] = useState(false);
   const [loading, setLoading] = useState<number[]>([]);
   const [errorMessage, setErrorMessage] = useState<ErrorTypes>(ErrorTypes.def);
   const [filterBy, setFilterBy] = useState<FilterTypes>(FilterTypes.All);
-  const [tempTodo, setTempTodo] = useState<Todo[]>([]);
+  const [tempTodo, setTempTodo] = useState<Todo | null>(null);
   const [isFocused, setIsFocused] = useState(true);
 
   useEffect(() => {
-    setLoading(tempTodo.map(todo => todo.id));
-  }, [tempTodo]);
-
-  useEffect(() => {
-    setIsLoading(true);
-
     getTodos()
       .then(setTodos)
-      .catch(() => handleError(ErrorTypes.loadErr, setErrorMessage))
-      .finally(() => {
-        setIsLoading(false);
-      });
+      .catch(() => handleError(ErrorTypes.loadErr, setErrorMessage));
   }, []);
 
   if (!USER_ID) {
@@ -51,10 +41,10 @@ export const App: React.FC = () => {
           setErrorMessage={setErrorMessage}
           setLoading={setLoading}
           setTempTodo={setTempTodo}
+          tempTodo={tempTodo}
         />
         <TodoList
           todos={prepareVisibleTodos(todos, filterBy)}
-          isLoading={isLoading}
           loading={loading}
           setLoading={setLoading}
           setTodos={setTodos}
@@ -62,7 +52,7 @@ export const App: React.FC = () => {
           tempTodo={tempTodo}
           setIsFocused={setIsFocused}
         />
-        {(todos.length > 0 || tempTodo.length > 0) && (
+        {(todos.length > 0 || tempTodo) && (
           <Footer
             filterBy={filterBy}
             setFilterBy={setFilterBy}

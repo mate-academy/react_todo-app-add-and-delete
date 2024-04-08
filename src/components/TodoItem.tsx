@@ -1,8 +1,11 @@
 import cn from 'classnames';
 
 import { Todo } from '../types/Todo';
-import { FormEvent, useState } from 'react';
+import { ChangeEvent, FormEvent, useEffect, useState } from 'react';
 import { Loader } from './Loader';
+import { ErrorTypes } from '../types/enums';
+import { updateTodos } from '../api/todos';
+import { handleError } from '../utils/services';
 
 type Props = {
   todo: Todo;
@@ -10,7 +13,9 @@ type Props = {
   loading: number[];
   selectedTodo: Todo | null;
   onDelete: (id: number) => void;
-  onPatch: (todo: Todo, event?: React.FormEvent<HTMLFormElement>) => void;
+  setTodos: React.Dispatch<React.SetStateAction<Todo[]>>;
+  setErrorMessage: (errorMessage: ErrorTypes) => void;
+  setLoading: React.Dispatch<React.SetStateAction<number[]>>;
 };
 
 export const TodoItem: React.FC<Props> = ({
@@ -19,67 +24,109 @@ export const TodoItem: React.FC<Props> = ({
   loading,
   selectedTodo,
   onDelete,
-  onPatch,
+  setLoading,
+  setTodos,
+  setErrorMessage,
 }) => {
-  const [isDoubleClicked, setIsDoubleClicked] = useState<boolean>(false);
-  const [newTitle, setNewTitle] = useState<string>(todo.title);
   const isTodoChanged =
     todo.title !== selectedTodo?.title ||
     selectedTodo?.completed !== todo.completed;
 
-  const onFormSubmit = (event?: FormEvent<HTMLFormElement>) => {
-    if (selectedTodo && isTodoChanged) {
-      setIsDoubleClicked(false);
-      if (event) {
-        onPatch(selectedTodo, event);
+  const [isDoubleClicked, setIsDoubleClicked] = useState<boolean>(false);
 
-        return;
+  useEffect(() => {
+    const handleEsc = (event: { key: string }) => {
+      if (event.key === 'Escape' && isDoubleClicked) {
+        setIsDoubleClicked(false);
       }
+    };
 
-      onPatch(selectedTodo);
-    } else {
+    window.addEventListener('keydown', handleEsc);
+
+    return () => {
+      window.removeEventListener('keydown', handleEsc);
+    };
+  }, [isDoubleClicked]);
+
+  const onPatch = (updTodo: Todo) => {
+    if (updTodo.title.trim() === '') {
+      onDelete(updTodo.id);
+
+      return;
+    }
+
+    setLoading(prev => [...prev, todo.id]);
+
+    updateTodos(updTodo.id, updTodo)
+      .then((updatedTodo: Todo) => {
+        {
+          setTodos((currentTodos: Todo[]) =>
+            currentTodos.map(item =>
+              item.id === updatedTodo.id ? updatedTodo : item,
+            ),
+          );
+          setIsDoubleClicked(false);
+        }
+      })
+      .catch(() => {
+        handleError(ErrorTypes.updErr, setErrorMessage);
+      })
+      .finally(() => {
+        setSelectedTodo(null);
+        setLoading(prev => prev.filter(item => item !== updTodo.id));
+      });
+  };
+
+  const onFormSubmit = (
+    event?: FormEvent<HTMLFormElement> | ChangeEvent<HTMLInputElement>,
+    newTodo?: Todo,
+  ) => {
+    event?.preventDefault();
+
+    if (newTodo && isTodoChanged) {
+      onPatch(newTodo);
+
+      return;
+    }
+
+    if (selectedTodo && isTodoChanged) {
+      onPatch({ ...selectedTodo, title: selectedTodo.title.trim() });
+    }
+
+    if (!isTodoChanged) {
       setIsDoubleClicked(false);
-      setSelectedTodo(null);
     }
   };
 
   return (
     <div data-cy="Todo" className={cn('todo', { completed: todo.completed })}>
-      <label
-        aria-label="todo-status"
-        className="todo__status-label"
-        onClick={() => {
-          setSelectedTodo({
-            ...todo,
-            completed: !todo.completed,
-          });
-        }}
-      >
+      <label aria-label="todo-status" className="todo__status-label">
         <input
           data-cy="TodoStatus"
           type="checkbox"
           className="todo__status"
           checked={todo.completed}
-          onChange={() => {
-            onFormSubmit();
+          onChange={event => {
+            const newtodo = {
+              ...todo,
+              completed: !todo.completed,
+            };
+
+            onFormSubmit(event, newtodo);
           }}
         />
       </label>
 
       {selectedTodo?.id === todo.id && isDoubleClicked ? (
-        <form
-          onSubmit={event => onFormSubmit(event)}
-          onBlur={event => onFormSubmit(event)}
-        >
+        <form onSubmit={onFormSubmit} onBlur={onFormSubmit}>
           <input
             data-cy="TodoTitleField"
             type="text"
             className="todo__title-field"
             placeholder="Empty todo will be deleted"
             autoFocus
-            value={selectedTodo.title}
+            value={selectedTodo ? selectedTodo.title : todo.title}
             onChange={event => {
-              setNewTitle(event.target.value);
               setSelectedTodo({
                 ...selectedTodo,
                 title: event.target.value,
@@ -96,7 +143,7 @@ export const TodoItem: React.FC<Props> = ({
             setIsDoubleClicked(true);
           }}
         >
-          {newTitle}
+          {todo.title}
         </span>
       )}
       {!isDoubleClicked && (

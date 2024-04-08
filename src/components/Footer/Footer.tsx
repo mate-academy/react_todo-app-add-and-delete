@@ -1,10 +1,9 @@
-import { useEffect, useState } from 'react';
-
 import { Todo } from '../../types/Todo';
 import { ErrorTypes, FilterTypes } from '../../types/enums';
 import { Filter } from './Filter';
 import { deleteTodos } from '../../api/todos';
 import { handleError, itemsLeft } from '../../utils/services';
+import { useMemo } from 'react';
 
 type Props = {
   filterBy: FilterTypes;
@@ -25,7 +24,10 @@ export const Footer: React.FC<Props> = ({
   setIsFocused,
   setErrorMessage,
 }) => {
-  const [isAnyTodoCompleted, setIsAnyTodoCompleted] = useState(false);
+  const isSomeTodoCompleted = useMemo(
+    () => todos.some(todo => todo.completed),
+    [todos],
+  );
 
   const onDelete = (completedTodos: Todo[]) => {
     completedTodos.map(completedTodo => {
@@ -43,14 +45,6 @@ export const Footer: React.FC<Props> = ({
     });
   };
 
-  useEffect(() => {
-    if (todos.some(todo => todo.completed)) {
-      setIsAnyTodoCompleted(true);
-    } else {
-      setIsAnyTodoCompleted(false);
-    }
-  }, [todos]);
-
   return (
     <footer className="todoapp__footer" data-cy="Footer">
       <span className="todo-count" data-cy="TodosCounter">
@@ -62,7 +56,7 @@ export const Footer: React.FC<Props> = ({
       <button
         type="button"
         className={'todoapp__clear-completed'}
-        disabled={isAnyTodoCompleted === false}
+        disabled={!isSomeTodoCompleted}
         data-cy="ClearCompletedButton"
         onClick={() => onDelete(todos.filter(todo => todo.completed))}
       >
