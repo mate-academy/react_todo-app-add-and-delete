@@ -6,8 +6,8 @@ type Props = {
   onChange: (value: string) => void;
   todos: Todo[];
   inputRef: Ref<HTMLInputElement> | null;
-  isTitle: string;
-  loading: boolean;
+  title: string;
+  isLoading: boolean;
 };
 
 export const Header: React.FC<Props> = ({
@@ -15,8 +15,8 @@ export const Header: React.FC<Props> = ({
   onChange,
   todos,
   inputRef,
-  isTitle,
-  loading,
+  title,
+  isLoading,
 }) => {
   const allTodosCompleted = todos.every(todo => todo.completed);
 
@@ -37,11 +37,11 @@ export const Header: React.FC<Props> = ({
           ref={inputRef}
           data-cy="NewTodoField"
           type="text"
-          value={isTitle}
+          value={title}
           className="todoapp__new-todo"
           placeholder="What needs to be done?"
           onChange={e => onChange(e.target.value)}
-          disabled={loading}
+          disabled={isLoading}
         />
       </form>
     </header>

@@ -8,20 +8,26 @@ import { Header } from './components/Header';
 import { Main } from './components/Main';
 import { Footer } from './components/Footer';
 
+export enum TodoStatus {
+  All = 'all',
+  Active = 'active',
+  Completed = 'completed',
+}
+
+
 export const App: React.FC = () => {
   const [error, setError] = useState<string | null>(null);
   const [todos, setTodos] = useState<Todo[]>([]);
-  const [isTitle, setTitle] = useState('');
-  const [loading, setLoading] = useState(false);
-  const [filterStatus, setFilterStatus] = useState('all');
+  const [title, setTitle] = useState('');
+  const [filterStatus, setFilterStatus] = useState<TodoStatus>(TodoStatus.All);
   const [tempTodo, setTempTodo] = useState<Todo | null>(null);
-  const [isLoadingTodo, setIsLoadingTodo] = useState<number[]>([]);
+  const [loadingTodoIds, setLoadingTodoIds] = useState<number[]>([]);
 
   const filteredTodos = todos.filter(todo => {
     switch (filterStatus) {
-      case 'active':
+      case TodoStatus.Active:
         return !todo.completed;
-      case 'completed':
+      case TodoStatus.Completed:
         return todo.completed;
       default:
         return true;
@@ -34,25 +40,23 @@ export const App: React.FC = () => {
     }
 
     setTimeout(() => {
-      setError(''); // Очищаємо помилку після схову повідомлення
+      setError('');
     }, 3000);
   }, []);
 
   // Відправляє запит на сервер для отримання списку (todos).
   const handleRequest = async () => {
     try {
-      setLoading(true);
       const allTodo = await getTodos();
 
       setTodos(allTodo);
-      setError(null); // При успішному завершенні запиту помилка схована
+      setError(null);
     } catch (errors) {
-      // Обробка помилок, якщо вони виникають під час відправлення запиту
       setError('Unable to load todos');
-    } finally {
-      setLoading(false);
     }
   };
+
+  const isLoading = !!loadingTodoIds.length;
 
   const inputRef = useRef<HTMLInputElement>(null);
   // додавання фокусу на input
@@ -65,7 +69,7 @@ export const App: React.FC = () => {
   // Відповідає за обробку події форми.
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (isTitle.trim() === '') {
+    if (title.trim() === '') {
       setError('Title should not be empty');
 
       return;
@@ -73,15 +77,15 @@ export const App: React.FC = () => {
 
     try {
       setTempTodo({
-        id: 0, // create a todo with id: 0
-        title: isTitle.trim(),
+        id: 0,
+        title: title.trim(),
         completed: false,
         userId: USER_ID,
       });
 
       // викликаємо функцію createTodos, яка відправляє запит на сервер та створює новий todo
       const newTodo = await createTodos({
-        title: isTitle.trim(),
+        title: title.trim(),
         completed: false,
         userId: USER_ID,
       });
@@ -96,17 +100,17 @@ export const App: React.FC = () => {
     }
   };
 
-  const deleteTodos = async (userId: number) => {
+  const deleteSingleTodo = async (userId: number) => {
 
     try {
-      setIsLoadingTodo(prevLoading => [...prevLoading, userId]); // Встановлення статусу завантаження для вибраного todo
+      setLoadingTodoIds(prevLoading => [...prevLoading, userId]); // Встановлення статусу завантаження для вибраного todo
 
       await deleteTodo(userId);
       setTodos(currentTodo => currentTodo.filter(todo => todo.id !== userId));
     } catch (errors) {
       setError('Unable to delete a todo');
     } finally {
-      setIsLoadingTodo(prevLoading => prevLoading.filter(id => id !== userId)); // Видалення статусу завантаження після виконання операції
+      setLoadingTodoIds(prevLoading => prevLoading.filter(id => id !== userId)); // Видалення статусу завантаження після виконання операції
     }
   };
 
@@ -123,12 +127,12 @@ export const App: React.FC = () => {
       setError(null);
 
       // Отримуємо новий стан фільтра
-      let newFilterStatus = 'all';
+      let newFilterStatus: TodoStatus = TodoStatus.All;
 
-      if (filterStatus === 'completed') {
-        newFilterStatus = 'active';
-      } else if (filterStatus === 'active') {
-        newFilterStatus = 'all';
+      if (filterStatus === TodoStatus.Completed) {
+        newFilterStatus = TodoStatus.Completed;
+      } else if (filterStatus === TodoStatus.Active) {
+        newFilterStatus = TodoStatus.All;
       }
 
       // Оновлюємо стан фільтра
@@ -138,36 +142,29 @@ export const App: React.FC = () => {
     }
   };
 
-  // видаляє всі завершені todo
   const clearCompletedTodos = async () => {
     try {
-      // setLoading(true);
       // Відбір завершених todo
       const completedTodosIds = todos
         .filter(todo => todo.completed)
         .map(todo => todo.id);
 
       // Видалення кожної завершеної todo за її ідентифікатором
-      await Promise.all(completedTodosIds.map(id => deleteTodo(id)));
+      await Promise.all(completedTodosIds.map(id => deleteSingleTodo(id)));
       // Оновлення списку todos, виключаючи завершені todo
       setTodos(currentTodos => currentTodos.filter(todo => !todo.completed));
 
       // Перевірка, чи залишилися невиконані todo
       if (todos.some(todo => !todo.completed)) {
-        setFilterStatus('completed'); // встановлюємо статус фільтра на 'Completed'todo
+        setFilterStatus(TodoStatus.Completed);
       }
     } finally {
-      // setLoading(false);
     }
   };
 
   if (!USER_ID) {
     return <UserWarning />;
   }
-
-  const handleInputTodo = (value: string) => {
-    setTitle(value);
-  };
 
   return (
     <div className="todoapp">
@@ -177,18 +174,18 @@ export const App: React.FC = () => {
 
         <Header
           onSubmit={handleSubmit}
-          onChange={handleInputTodo}
+          onChange={setTitle}
           todos={todos}
-          loading={loading}
+          isLoading={isLoading}
           inputRef={inputRef}
-          isTitle={isTitle}
+          title={title}
         />
 
         <Main
           filteredTodos={filteredTodos}
           toggleTodoCompletion={toggleTodoCompletion}
-          isLoadingTodo={isLoadingTodo}
-          deleteTodos={deleteTodos}
+          loadingTodoIds={loadingTodoIds}
+          deleteSingleTodo={deleteSingleTodo}
           tempTodo={tempTodo}
         />
 
@@ -206,7 +203,7 @@ export const App: React.FC = () => {
       {/* Add the 'hidden' class to hide the message smoothly */}
       <div
         data-cy="ErrorNotification"
-        className={`notification is-danger is-light has-text-weight-normal ${!loading && error ? '' : 'hidden'}`}
+        className={`notification is-danger is-light has-text-weight-normal ${!isLoading && error ? '' : 'hidden'}`}
       >
         <button
           data-cy="HideErrorButton"

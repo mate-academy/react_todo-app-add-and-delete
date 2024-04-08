@@ -1,11 +1,12 @@
 import React from 'react';
 import { Todo } from '../types/Todo';
+import { TodoStatus } from '../App';
 
 type Props = {
   todos: Todo[];
   clearCompletedTodos: () => void;
-  setFilterStatus: (filterStatus: string) => void;
-  filterStatus: string;
+  setFilterStatus: (filterStatus: TodoStatus) => void;
+  filterStatus: TodoStatus;
 };
 
 export const Footer: React.FC<Props> = ({
@@ -28,9 +29,9 @@ export const Footer: React.FC<Props> = ({
       <nav className="filter" data-cy="Filter">
         <a
           href="#/"
-          className={`filter__link ${filterStatus === 'all' ? 'selected' : ''}`} // use the selected class to highlight a selected link;
+          className={`filter__link ${filterStatus === TodoStatus.All ? 'selected' : ''}`} // use the selected class to highlight a selected link;
           data-cy="FilterLinkAll"
-          onClick={() => setFilterStatus('all')}
+          onClick={() => setFilterStatus(TodoStatus.All)}
         >
           All
         </a>
@@ -39,7 +40,7 @@ export const Footer: React.FC<Props> = ({
           href="#/active"
           className={`filter__link ${filterStatus === 'active' ? 'selected' : ''}`}
           data-cy="FilterLinkActive"
-          onClick={() => setFilterStatus('active')}
+          onClick={() => setFilterStatus(TodoStatus.Active)}
         >
           Active
         </a>
@@ -48,7 +49,7 @@ export const Footer: React.FC<Props> = ({
           href="#/completed"
           className={`filter__link ${filterStatus === 'completed' ? 'selected' : ''}`}
           data-cy="FilterLinkCompleted"
-          onClick={() => setFilterStatus('completed')}
+          onClick={() => setFilterStatus(TodoStatus.Completed)}
         >
           Completed
         </a>

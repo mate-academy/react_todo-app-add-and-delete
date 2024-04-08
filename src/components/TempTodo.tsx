@@ -4,12 +4,12 @@ import { Todo } from '../types/Todo';
 
 type Props = {
   todo: Todo;
-  deleteTodos: (todoId: number) => void;
+  deleteSingleTodo: (todoId: number) => void;
 };
 
 export const TempTodo: React.FC<Props> = ({
   todo,
-  deleteTodos,
+  deleteSingleTodo,
  }) => {
   return (
     <section className="todoapp__main" data-cy="TodoList">
@@ -37,7 +37,7 @@ export const TempTodo: React.FC<Props> = ({
           type="button"
           className="todo__remove"
           data-cy="TodoDelete"
-          onClick={() => deleteTodos(todo.id)}
+          onClick={() => deleteSingleTodo(todo.id)}
         >
           ×
         </button>

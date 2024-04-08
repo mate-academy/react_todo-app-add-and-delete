@@ -6,16 +6,16 @@ import { TempTodo } from './TempTodo';
 type Props = {
   filteredTodos: Todo[];
   toggleTodoCompletion: (todoId: number) => void;
-  deleteTodos: (todoId: number) => void;
-  isLoadingTodo: number[];
+  deleteSingleTodo: (todoId: number) => void;
+  loadingTodoIds: number[];
   tempTodo: Todo | null;
 };
 
 export const Main: React.FC<Props> = ({
   filteredTodos,
   toggleTodoCompletion,
-  isLoadingTodo,
-  deleteTodos,
+  loadingTodoIds,
+  deleteSingleTodo,
   tempTodo,
 }) => {
   return (
@@ -45,7 +45,7 @@ export const Main: React.FC<Props> = ({
             type="button"
             className="todo__remove"
             data-cy="TodoDelete"
-            onClick={() => deleteTodos(todo.id)}
+            onClick={() => deleteSingleTodo(todo.id)}
           >
             ×
           </button>
@@ -53,7 +53,7 @@ export const Main: React.FC<Props> = ({
           {/* overlay will cover the todo while it is being deleted or updated */}
           <div
             data-cy="TodoLoader"
-            className={`modal overlay ${isLoadingTodo.includes(todo.id) ? 'is-active' : 'hidden'}`}
+            className={`modal overlay ${loadingTodoIds.includes(todo.id) ? 'is-active' : 'hidden'}`}
           >
             <div className="modal-background has-background-white-ter" />
             <div className="loader" />
@@ -64,7 +64,7 @@ export const Main: React.FC<Props> = ({
       {tempTodo && ( // Рендерити tempTodo, якщо він існує
         <TempTodo
           todo={tempTodo}
-          deleteTodos={deleteTodos}
+          deleteSingleTodo={deleteSingleTodo}
         />
       )}
     </section>
