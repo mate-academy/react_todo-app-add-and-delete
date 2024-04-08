@@ -6,10 +6,7 @@ type Props = {
   onDeleteError: () => void;
 };
 
-export const Error: React.FC<Props> = ({
-  errorMessage,
-  onDeleteError,
-}) => (
+export const Error: React.FC<Props> = ({ errorMessage, onDeleteError }) => (
   <div
     data-cy="ErrorNotification"
     className={cn('notification is-danger is-light has-text-weight-normal', {

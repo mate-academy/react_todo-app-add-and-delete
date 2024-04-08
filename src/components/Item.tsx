@@ -13,7 +13,7 @@ export const TodoItem: React.FC<TodoItemProps> = ({
   deletedTodoIds = [],
   onDeleteTodo = () => {},
 }) => {
-  const isIncludesId = deletedTodoIds.includes(todo.id);
+  const deletedTodo = deletedTodoIds.includes(todo.id);
 
   return (
     <div data-cy="Todo" className={cn('todo', { completed: todo.completed })}>
@@ -42,7 +42,7 @@ export const TodoItem: React.FC<TodoItemProps> = ({
       <div
         data-cy="TodoLoader"
         className={cn('modal overlay', {
-          'is-active': isIncludesId || todo.id === 0,
+          'is-active': deletedTodo || todo.id === 0,
         })}
       >
         <div className="modal-background has-background-white-ter" />

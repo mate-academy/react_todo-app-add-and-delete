@@ -20,13 +20,9 @@ export const Footer: React.FC<Props> = ({
   onDeleteTodo,
   onClearError,
 }) => {
-  const uncompletedTodos = todos.filter(function (item) {
-    return !item.completed;
-  });
+  const uncompletedTodos = todos.filter(item => !item.completed);
 
-  const isAnyTodoCompleted = todos.some(function (todo) {
-    return todo.completed;
-  });
+  const isAnyTodoCompleted = todos.some(todo => todo.completed);
 
   async function handleClearCompleted() {
     const completedTodos = todos.filter(function (todo) {
@@ -34,11 +30,7 @@ export const Footer: React.FC<Props> = ({
     });
 
     try {
-      await Promise.all(
-        completedTodos.map(function (todo) {
-          return onDeleteTodo(todo.id);
-        }),
-      );
+      await Promise.all(completedTodos.map(todo => onDeleteTodo(todo.id)));
     } catch {
       onClearError(Errors.Delete);
     }

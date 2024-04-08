@@ -11,30 +11,30 @@ import { Error } from './components/Error';
 import { Header } from './components/Header';
 import { Errors } from './types/Errors';
 
+// eslint-disable-next-line @typescript-eslint/no-shadow
+const getFilterTodos = (todos: Todo[], filterField: Status) => {
+  switch (filterField) {
+    case Status.Active:
+      return todos.filter(todo => !todo.completed);
+    case Status.Completed:
+      return todos.filter(todo => todo.completed);
+    default:
+      return todos;
+  }
+};
+
 export const App: React.FC = () => {
   const [tempTodo, setTempTodo] = useState<Todo | null>(null);
   const [todos, setTodos] = useState<Todo[]>([]);
   const [errorMessage, setErrorMessage] = useState<Errors>(Errors.Default);
   const [deletet, setDeletet] = useState<number[]>([]);
   const [newTitle, setNewTitle] = useState('');
-  const [status, setStatus] = useState<Status>(Status.All);
-  const [loading, setIsLoading] = useState(false);
+  const [filterStatus, setFilterStatus] = useState<Status>(Status.All);
+  const [IsLoading, setIsLoading] = useState(false);
 
   const focusInput = useRef<HTMLInputElement>(null);
 
   const handleClearError = () => setErrorMessage(Errors.Default);
-
-  // eslint-disable-next-line @typescript-eslint/no-shadow
-  const getFilterTodos = (todos: Todo[], filterField: Status) => {
-    switch (filterField) {
-      case Status.Active:
-        return todos.filter(todo => !todo.completed);
-      case Status.Completed:
-        return todos.filter(todo => todo.completed);
-      default:
-        return todos;
-    }
-  };
 
   const handleError = (error: Errors) => {
     setErrorMessage(error);
@@ -55,15 +55,15 @@ export const App: React.FC = () => {
   }, [errorMessage, todos]);
 
   const filteredTodos = useMemo(() => {
-    return getFilterTodos(todos, status);
-  }, [todos, status]);
+    return getFilterTodos(todos, filterStatus);
+  }, [todos, filterStatus]);
 
-  const addTodo = async (creatNewTodo: Omit<Todo, 'id'>) => {
-    setTempTodo({ ...creatNewTodo, id: 0 });
+  const addTodo = async (createdNewTodo: Omit<Todo, 'id'>) => {
+    setTempTodo({ ...createdNewTodo, id: 0 });
 
     try {
       setIsLoading(true);
-      const newTodo = await addNewTodo(creatNewTodo);
+      const newTodo = await addNewTodo(createdNewTodo);
 
       setTodos(currentTodos => [...currentTodos, newTodo] as Todo[]);
       setNewTitle('');
@@ -75,7 +75,7 @@ export const App: React.FC = () => {
     }
   };
 
-  const deleted = async (todoId: number) => {
+  const deletedTodo = async (todoId: number) => {
     try {
       setDeletet(prevIds => [...prevIds, todoId]);
       await deleteTodo(todoId);
@@ -88,7 +88,7 @@ export const App: React.FC = () => {
   };
 
   const handleSetStatus = (field: Status) => {
-    setStatus(field);
+    setFilterStatus(field);
   };
 
   const handleSubmit = (event: React.FormEvent) => {
@@ -129,13 +129,13 @@ export const App: React.FC = () => {
           onSubmit={handleSubmit}
           onChange={handelSetNewTitle}
           newTitle={newTitle}
-          isLoading={loading}
+          isLoading={IsLoading}
           todos={todos}
         />
 
         <TodoList
           filteredTodos={filteredTodos}
-          onDeleteTodo={deleted}
+          onDeleteTodo={deletedTodo}
           tempTodo={tempTodo}
           deletedTodoIds={deletet}
         />
@@ -143,8 +143,8 @@ export const App: React.FC = () => {
         {!!todos.length && (
           <Footer
             onFilter={handleSetStatus}
-            onDeleteTodo={deleted}
-            currentFilterStatus={status}
+            onDeleteTodo={deletedTodo}
+            currentFilterStatus={filterStatus}
             todos={todos}
             onClearError={handleError}
           />
