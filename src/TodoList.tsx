@@ -1,6 +1,5 @@
 import React from 'react';
 import { Todo } from './types/Todo';
-import { TodoComp } from './TodoComp';
 import { TodoItem } from './TodoItem';
 
 interface Props {
@@ -18,16 +17,14 @@ export const TodoList: React.FC<Props> = ({
 }) => (
   <section className="todoapp__main" data-cy="TodoList">
     {todos.map(todo => (
-      <TodoComp
+      <TodoItem
         key={todo.id}
-        id={todo.id}
-        completed={todo.completed}
-        title={todo.title}
+        todo={todo}
         onDelete={onDelete}
         deletingIDs={deletingIDs}
       />
     ))}
 
-    {tempTodo && <TodoItem tempTodo={tempTodo} />}
+    {tempTodo && <TodoItem todo={tempTodo} />}
   </section>
 );

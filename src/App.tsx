@@ -8,6 +8,7 @@ import { Errors } from './types/Errors';
 import { FilterBy } from './types/FiilterBy';
 import { ErrorNotification } from './ErrorNotification';
 import { getFilteredTodos } from './utils/getFilteredTodos';
+import { Header } from './Header';
 
 export const App: React.FC = () => {
   const inputRef = useRef<HTMLInputElement>(null);
@@ -15,19 +16,10 @@ export const App: React.FC = () => {
   const [todos, setTodos] = useState<Todo[]>([]);
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
   const [filterBy, setFilterBy] = useState(FilterBy.All);
-  const [tempTodo, setTempTodo] = useState<Todo | null>(null);
-  const [isDisabled, setIsDisabled] = useState(false);
   const [titleText, setTitleText] = useState('');
+  const [isDisabled, setIsDisabled] = useState(false);
+  const [tempTodo, setTempTodo] = useState<Todo | null>(null);
   const [deletingIDs, setDeletingIDs] = useState<number[]>([]);
-
-  const handleClearingError = () => setErrorMessage(null);
-
-  const handleChangingFilterBy = (value: FilterBy) => setFilterBy(value);
-
-  const visibleTodos = getFilteredTodos(todos, filterBy);
-
-  const activeTodosCount: number = todos.filter(todo => !todo.completed).length;
-  const hasCompletedTodo: boolean = todos.some(todo => todo.completed);
 
   const handleSubmit = (event: React.FormEvent<HTMLFormElement>) => {
     event?.preventDefault();
@@ -66,6 +58,18 @@ export const App: React.FC = () => {
       });
   };
 
+  const handleTyping = (event: React.ChangeEvent<HTMLInputElement>) =>
+    setTitleText(event.target.value);
+
+  const handleClearingError = () => setErrorMessage(null);
+
+  const handleChangingFilterBy = (value: FilterBy) => setFilterBy(value);
+
+  const visibleTodos = getFilteredTodos(todos, filterBy);
+
+  const activeTodosCount: number = todos.filter(todo => !todo.completed).length;
+  const hasCompletedTodo: boolean = todos.some(todo => todo.completed);
+
   const handledeletingTodo = (id: number) => {
     setDeletingIDs(curIDs => [...curIDs, id]);
 
@@ -98,45 +102,19 @@ export const App: React.FC = () => {
       });
   }, []);
 
-  useEffect(() => {
-    if (!errorMessage) {
-      return;
-    }
-
-    const timerID = setTimeout(() => setErrorMessage(null), 3000);
-
-    return () => clearTimeout(timerID);
-  }, [errorMessage, isDisabled]);
-
-  useEffect(() => {
-    inputRef.current?.focus();
-  }, [tempTodo]);
-
   return (
     <div className="todoapp">
       <h1 className="todoapp__title">todos</h1>
 
       <div className="todoapp__content">
-        <header className="todoapp__header">
-          <button
-            type="button"
-            className="todoapp__toggle-all active"
-            data-cy="ToggleAllButton"
-          />
-
-          <form onSubmit={event => handleSubmit(event)}>
-            <input
-              data-cy="NewTodoField"
-              ref={inputRef}
-              type="text"
-              disabled={isDisabled}
-              value={titleText}
-              className="todoapp__new-todo"
-              placeholder="What needs to be done?"
-              onChange={event => setTitleText(event.target.value)}
-            />
-          </form>
-        </header>
+        <Header
+          tempTodo={tempTodo}
+          isDisabled={isDisabled}
+          titleText={titleText}
+          onSubmit={handleSubmit}
+          onType={handleTyping}
+          inputRef={inputRef}
+        />
 
         {todos.length > 0 && (
           <>
@@ -160,7 +138,7 @@ export const App: React.FC = () => {
 
       <ErrorNotification
         errorMessage={errorMessage}
-        onDeleteClick={handleClearingError}
+        onDeleteError={handleClearingError}
       />
     </div>
   );
