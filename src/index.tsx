@@ -1,9 +1,17 @@
+import React from 'react';
+import { App } from './App';
 import { createRoot } from 'react-dom/client';
 
 import 'bulma/css/bulma.css';
 import '@fortawesome/fontawesome-free/css/all.css';
 import './styles/index.scss';
 
-import { App } from './App';
+import { TodosProvider } from './components/Store/Store';
 
-createRoot(document.getElementById('root') as HTMLDivElement).render(<App />);
+const container = document.getElementById('root') as HTMLDivElement;
+
+createRoot(container).render(
+  <TodosProvider>
+    <App />
+  </TodosProvider>,
+);
