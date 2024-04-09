@@ -28,13 +28,11 @@ export const TodoContextProvider: React.FC<Props> = ({ children }) => {
   const completedTodos = todos.filter(todo => todo.completed);
 
   const onTodoDelete = (todoId: number): void => {
+    setLoadingTodosIds(prev => [...prev, todoId]);
     deleteTodo(todoId)
       .then(() => {
         setTodos(currentTodos =>
-          currentTodos.filter(item => item.id !== todoId),
-        );
-        setLoadingTodosIds(currentIds =>
-          currentIds.filter(id => id !== todoId),
+          currentTodos.filter(currentTodo => currentTodo.id !== todoId),
         );
       })
       .catch(() => {

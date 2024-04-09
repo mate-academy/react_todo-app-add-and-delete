@@ -37,6 +37,7 @@ export const TodoHeader: React.FC = () => {
 
     if (!trimmedTitle.length) {
       onErrors(Errors.EmptyTitle, setErrorMessage);
+      setIsSubmited(false);
 
       return;
     }
