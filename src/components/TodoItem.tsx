@@ -1,7 +1,7 @@
 import cn from 'classnames';
 
 import { Todo } from '../types/Todo';
-import { ChangeEvent, FormEvent, useEffect, useState } from 'react';
+import { ChangeEvent, FormEvent, useState } from 'react';
 import { Loader } from './Loader';
 import { ErrorTypes } from '../types/enums';
 import { updateTodos } from '../api/todos';
@@ -10,21 +10,21 @@ import { handleError } from '../utils/services';
 type Props = {
   todo: Todo;
   setSelectedTodo: (todo: Todo | null) => void;
-  loading: number[];
+  isLoading: number[];
   selectedTodo: Todo | null;
   onDelete: (id: number) => void;
   setTodos: React.Dispatch<React.SetStateAction<Todo[]>>;
   setErrorMessage: (errorMessage: ErrorTypes) => void;
-  setLoading: React.Dispatch<React.SetStateAction<number[]>>;
+  setIsLoading: React.Dispatch<React.SetStateAction<number[]>>;
 };
 
 export const TodoItem: React.FC<Props> = ({
   todo,
   setSelectedTodo,
-  loading,
+  isLoading,
   selectedTodo,
   onDelete,
-  setLoading,
+  setIsLoading,
   setTodos,
   setErrorMessage,
 }) => {
@@ -34,28 +34,20 @@ export const TodoItem: React.FC<Props> = ({
 
   const [isDoubleClicked, setIsDoubleClicked] = useState<boolean>(false);
 
-  useEffect(() => {
-    const handleEsc = (event: { key: string }) => {
-      if (event.key === 'Escape' && isDoubleClicked) {
-        setIsDoubleClicked(false);
-      }
-    };
-
-    window.addEventListener('keydown', handleEsc);
-
-    return () => {
-      window.removeEventListener('keydown', handleEsc);
-    };
-  }, [isDoubleClicked]);
+  const handleEsc = (event: { key: string }) => {
+    if (event.key === 'Escape') {
+      setIsDoubleClicked(false);
+    }
+  };
 
   const onPatch = (updTodo: Todo) => {
-    if (updTodo.title.trim() === '') {
+    if (!updTodo.title.trim()) {
       onDelete(updTodo.id);
 
       return;
     }
 
-    setLoading(prev => [...prev, todo.id]);
+    setIsLoading(prev => [...prev, todo.id]);
 
     updateTodos(updTodo.id, updTodo)
       .then((updatedTodo: Todo) => {
@@ -69,11 +61,11 @@ export const TodoItem: React.FC<Props> = ({
         }
       })
       .catch(() => {
-        handleError(ErrorTypes.updErr, setErrorMessage);
+        handleError(ErrorTypes.OnUpdErr, setErrorMessage);
       })
       .finally(() => {
         setSelectedTodo(null);
-        setLoading(prev => prev.filter(item => item !== updTodo.id));
+        setIsLoading(prev => prev.filter(item => item !== updTodo.id));
       });
   };
 
@@ -132,6 +124,7 @@ export const TodoItem: React.FC<Props> = ({
                 title: event.target.value,
               });
             }}
+            onKeyUp={handleEsc}
           />
         </form>
       ) : (
@@ -156,7 +149,7 @@ export const TodoItem: React.FC<Props> = ({
           ×
         </button>
       )}
-      <Loader loading={loading} id={todo.id} />
+      <Loader isLoading={isLoading} id={todo.id} />
     </div>
   );
 };

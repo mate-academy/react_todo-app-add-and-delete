@@ -6,9 +6,9 @@ export enum FilterTypes {
 
 export enum ErrorTypes {
   def = '',
-  loadErr = 'Unable to load todos',
-  titleErr = 'Title should not be empty',
-  addErr = 'Unable to add a todo',
-  delErr = 'Unable to delete a todo',
-  updErr = 'Unable to update a todo',
+  OnLoadErr = 'Unable to load todos',
+  OnEmptyTitleErr = 'Title should not be empty',
+  OnAddErr = 'Unable to add a todo',
+  OnDelErr = 'Unable to delete a todo',
+  OnUpdErr = 'Unable to update a todo',
 }

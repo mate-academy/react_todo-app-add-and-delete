@@ -28,6 +28,6 @@ export const handleError = (
   setTimeout(() => setErrorMessage(ErrorTypes.def), 3000);
 };
 
-export const itemsLeft = (todos: Todo[]) => {
+export const createItemsLeft = (todos: Todo[]) => {
   return todos.filter(item => !item.completed).length;
 };

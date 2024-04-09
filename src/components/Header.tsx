@@ -11,7 +11,7 @@ type Props = {
   setIsFocused: (isFocused: boolean) => void;
   setTodos: React.Dispatch<React.SetStateAction<Todo[]>>;
   setErrorMessage: (errorMessage: ErrorTypes) => void;
-  setLoading: React.Dispatch<React.SetStateAction<number[]>>;
+  setIsLoading: React.Dispatch<React.SetStateAction<number[]>>;
   setTempTodo: React.Dispatch<React.SetStateAction<Todo | null>>;
   tempTodo: Todo | null;
 };
@@ -22,7 +22,7 @@ export const Header: React.FC<Props> = ({
   setIsFocused,
   setTodos,
   setErrorMessage,
-  setLoading,
+  setIsLoading,
   setTempTodo,
   tempTodo,
 }) => {
@@ -46,41 +46,31 @@ export const Header: React.FC<Props> = ({
   }, [isFocused]);
 
   const onPatch = (todo: Todo) => {
-    setLoading(prev => [...prev, todo.id]);
+    setIsLoading(prev => [...prev, todo.id]);
 
     updateTodos(todo.id, todo)
-      .catch(() => handleError(ErrorTypes.updErr, setErrorMessage))
+      .catch(() => handleError(ErrorTypes.OnUpdErr, setErrorMessage))
       .finally(() => {
-        setLoading(prev => prev.filter(item => item !== todo.id));
+        setIsLoading(prev => prev.filter(item => item !== todo.id));
       });
   };
 
   const onButtonClick = () => {
-    const completedTodo = (todo: Todo) => ({ ...todo, completed: true });
-    const uncompletedTodo = (todo: Todo) => ({ ...todo, completed: false });
-
-    if (isSomeTodoCompleted) {
-      const optimizedTodos = todos
-        .filter(todo => !todo.completed)
-        .map(todo => completedTodo(todo));
-
-      setTodos(prev => prev.map(todo => completedTodo(todo)));
-      optimizedTodos.map(todo => onPatch(completedTodo(todo)));
-    } else {
-      const optimizedTodos = todos
-        .filter(todo => todo.completed)
-        .map(todo => completedTodo(todo));
-
-      setTodos(prev => prev.map(todo => uncompletedTodo(todo)));
-      optimizedTodos.map(todo => onPatch(uncompletedTodo(todo)));
-    }
+    setTodos(prev =>
+      prev.map(todo => ({ ...todo, completed: isSomeTodoCompleted })),
+    );
+    todos.map(todo =>
+      todo.completed !== isSomeTodoCompleted
+        ? onPatch({ ...todo, completed: isSomeTodoCompleted })
+        : todo,
+    );
   };
 
   const onSubmit = (event?: FormEvent<HTMLFormElement>) => {
     event?.preventDefault();
 
     if (!normalisedTitle) {
-      handleError(ErrorTypes.titleErr, setErrorMessage);
+      handleError(ErrorTypes.OnEmptyTitleErr, setErrorMessage);
     } else {
       const tempTodoId = tempTodo
         ? tempTodo.id + 1
@@ -92,7 +82,7 @@ export const Header: React.FC<Props> = ({
         title: normalisedTitle,
         completed: false,
       });
-      setLoading(prev => [...prev, tempTodoId]);
+      setIsLoading(prev => [...prev, tempTodoId]);
 
       setIsFocused(false);
       setIsInputDisabled(true);
@@ -102,7 +92,7 @@ export const Header: React.FC<Props> = ({
           setTodos((prevTodos: Todo[]) => [...prevTodos, resp]);
           setIsFocused(true);
           setTempTodo(null);
-          setLoading(prev =>
+          setIsLoading(prev =>
             prev.filter(id => todos.filter(todo => id === todo.id)),
           );
           setIsInputDisabled(false);
@@ -112,7 +102,7 @@ export const Header: React.FC<Props> = ({
           setTempTodo(null);
           setIsInputDisabled(false);
           setIsFocused(true);
-          handleError(ErrorTypes.addErr, setErrorMessage);
+          handleError(ErrorTypes.OnAddErr, setErrorMessage);
         })
         .finally(() => setTempTodo(null));
     }
@@ -120,7 +110,7 @@ export const Header: React.FC<Props> = ({
 
   return (
     <header className="todoapp__header">
-      {todos.length > 0 && (
+      {!!todos.length && (
         <button
           type="button"
           className={cn('todoapp__toggle-all', {

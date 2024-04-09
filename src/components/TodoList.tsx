@@ -8,8 +8,8 @@ import { TransitionGroup, CSSTransition } from 'react-transition-group';
 
 type Props = {
   todos: Todo[];
-  loading: number[];
-  setLoading: React.Dispatch<React.SetStateAction<number[]>>;
+  isLoading: number[];
+  setIsLoading: React.Dispatch<React.SetStateAction<number[]>>;
   setTodos: React.Dispatch<React.SetStateAction<Todo[]>>;
   setErrorMessage: (errorMessage: ErrorTypes) => void;
   tempTodo: Todo | null;
@@ -18,8 +18,8 @@ type Props = {
 
 export const TodoList: React.FC<Props> = ({
   todos,
-  loading,
-  setLoading,
+  isLoading,
+  setIsLoading,
   setTodos,
   setErrorMessage,
   tempTodo,
@@ -28,15 +28,15 @@ export const TodoList: React.FC<Props> = ({
   const [selectedTodo, setSelectedTodo] = useState<Todo | null>(null);
 
   const onDelete = (id: number) => {
-    setLoading(prev => [...prev, id]);
+    setIsLoading(prev => [...prev, id]);
 
     deleteTodos(id)
       .then(() => {
         setTodos(todos.filter(todo => todo.id !== id));
         setIsFocused(true);
       })
-      .catch(() => handleError(ErrorTypes.delErr, setErrorMessage))
-      .finally(() => setLoading(prev => prev.filter(item => item !== id)));
+      .catch(() => handleError(ErrorTypes.OnDelErr, setErrorMessage))
+      .finally(() => setIsLoading(prev => prev.filter(item => item !== id)));
   };
 
   return (
@@ -48,12 +48,12 @@ export const TodoList: React.FC<Props> = ({
               todo={todo}
               key={todo.id}
               setSelectedTodo={setSelectedTodo}
-              loading={loading}
+              isLoading={isLoading}
               selectedTodo={selectedTodo}
               onDelete={onDelete}
               setTodos={setTodos}
               setErrorMessage={setErrorMessage}
-              setLoading={setLoading}
+              setIsLoading={setIsLoading}
             />
           </CSSTransition>
         ))}
@@ -63,12 +63,12 @@ export const TodoList: React.FC<Props> = ({
               todo={tempTodo}
               key={tempTodo.id}
               setSelectedTodo={setSelectedTodo}
-              loading={loading}
+              isLoading={isLoading}
               selectedTodo={selectedTodo}
               onDelete={onDelete}
               setTodos={setTodos}
               setErrorMessage={setErrorMessage}
-              setLoading={setLoading}
+              setIsLoading={setIsLoading}
             />
           </CSSTransition>
         )}
