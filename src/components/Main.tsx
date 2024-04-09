@@ -23,9 +23,7 @@ export const Main: React.FC = () => {
     todos,
     setTodos,
     filter,
-    loading,
     setMessageError,
-    setLoading,
     setLoadingTodo,
     loadingTodo,
   } = useContext(TodosContext);
@@ -42,29 +40,21 @@ export const Main: React.FC = () => {
     setNewTodoTitle(event.target.value);
   };
 
-  const handleRemoveTodo = (todoId: number) => {
-    setLoading(true);
-    setLoadingTodo(todoId);
-
-    // // eslint-disable-next-line
-    // console.log(todoId);
-    // // eslint-disable-next-line
-    // console.log(loading);
-    // // eslint-disable-next-line
-    // console.log(loadingTodo);
+  const handleRemoveTodo = (todoId: number): Promise<void> => {
+    setLoadingTodo([todoId]);
 
     const updatedTodos = todos.filter(todo => todo.id !== todoId);
 
-    deleteTodo(todoId)
+    return deleteTodo(todoId)
+      .then(() => setTodos(updatedTodos))
       .catch(error => {
         setMessageError(Errors.CantDelete);
         hideError(setMessageError);
+        setTodos(todos);
         throw error;
       })
       .finally(() => {
-        setTodos(updatedTodos);
-        setLoading(false);
-        setLoadingTodo(null);
+        setLoadingTodo([]);
       });
   };
 
@@ -114,76 +104,79 @@ export const Main: React.FC = () => {
 
   return (
     <section className="todoapp__main" data-cy="TodoList">
-      {filterTodos(todos, filter).map(todo => (
-        <div
-          key={todo.id}
-          data-cy="Todo"
-          className={classNames('todo has-background-white-ter1 loader1', {
-            completed: todo.completed,
-          })}
-        >
-          {/* eslint-disable-next-line */}
-          <label className="todo__status-label">
-            <input
-              data-cy="TodoStatus"
-              type="checkbox"
-              className="todo__status"
-              checked={todo.completed}
-              onClick={() => handleComplitedTodo(todo.id)}
-            />
-          </label>
+      {filterTodos(todos, filter).map(todo => {
+        const { id, title, completed } = todo;
 
-          {editingTodoId === todo.id ? (
-            <form onSubmit={event => event.preventDefault()}>
-              <input
-                data-cy="TodoTitleField"
-                type="text"
-                className="todo__title-field"
-                placeholder="Empty todo will be deleted"
-                value={newTodoTitle}
-                onChange={handleInputChange}
-                onKeyUp={event => handleKeyUp(event, todo.id)}
-                autoFocus
-                onBlur={() => handleSaveChanges(todo.id)}
-              />
-            </form>
-          ) : (
-            <>
-              <span
-                data-cy="TodoTitle"
-                className="todo__title"
-                onDoubleClick={() => handleDoubleClick(todo.id, todo.title)}
-              >
-                {todo.title}
-              </span>
-
-              <button
-                type="button"
-                className="todo__remove"
-                data-cy="TodoDelete"
-                // onClick={() => handleRemoveTodo(todo.id)}
-                onChange={() => handleRemoveTodo(todo.id)}
-              >
-                ×
-              </button>
-            </>
-          )}
-
-          {/* overlay will cover the todo while it is being deleted or updated */}
-          {/* <div data-cy="TodoLoader" className="modal overlay is-active1"> */}
+        return (
           <div
-            data-cy="TodoLoader"
-            className={classNames('modal overlay is-active1', {
-              'is-active': loading && todo.id === loadingTodo,
-              // 'is-active': loading,
-              // 'is-active': todo.id === loadingTodo,
+            key={todo.id}
+            data-cy="Todo"
+            className={classNames('todo has-background-white-ter1 loader1', {
+              completed: completed,
             })}
           >
-            <div className="modal-background has-background-white-ter" />
-            <div className="loader" />
+            {/* I don't know how to fix this control, we was disdusting this issue
+            with mentor in chat but the issue doesn't gone.
+            If you know how to do that please let me know. */}
+            {/* eslint-disable-next-line */}
+            <label htmlFor={`${id}`} className="todo__status-label">
+              <input
+                id={`${id}`}
+                data-cy="TodoStatus"
+                type="checkbox"
+                className="todo__status"
+                checked={todo.completed}
+                onChange={() => handleComplitedTodo(id)}
+              />
+            </label>
+
+            {editingTodoId === todo.id ? (
+              <form onSubmit={event => event.preventDefault()}>
+                <input
+                  data-cy="TodoTitleField"
+                  type="text"
+                  className="todo__title-field"
+                  placeholder="Empty todo will be deleted"
+                  value={newTodoTitle}
+                  onChange={handleInputChange}
+                  onKeyUp={event => handleKeyUp(event, id)}
+                  autoFocus
+                  onBlur={() => handleSaveChanges(id)}
+                />
+              </form>
+            ) : (
+              <>
+                <span
+                  data-cy="TodoTitle"
+                  className="todo__title"
+                  onDoubleClick={() => handleDoubleClick(id, title)}
+                >
+                  {todo.title}
+                </span>
+
+                <button
+                  type="button"
+                  className="todo__remove"
+                  data-cy="TodoDelete"
+                  onClick={() => handleRemoveTodo(id)}
+                >
+                  ×
+                </button>
+              </>
+            )}
+
+            <div
+              data-cy="TodoLoader"
+              className={classNames('modal overlay is-active1', {
+                'is-active': loadingTodo?.includes(id),
+              })}
+            >
+              <div className="modal-background has-background-white-ter" />
+              <div className="loader" />
+            </div>
           </div>
-        </div>
-      ))}
+        );
+      })}
     </section>
   );
 };
