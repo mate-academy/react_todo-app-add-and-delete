@@ -1,4 +1,3 @@
-import { useState } from 'react';
 import { deleteTodos } from '../api/todos';
 import { Todo } from '../types/Todo';
 import { TodoItem } from './TodoItem';
@@ -25,8 +24,6 @@ export const TodoList: React.FC<Props> = ({
   tempTodo,
   setIsFocused,
 }) => {
-  const [selectedTodo, setSelectedTodo] = useState<Todo | null>(null);
-
   const onDelete = (id: number) => {
     setIsLoading(prev => [...prev, id]);
 
@@ -47,9 +44,7 @@ export const TodoList: React.FC<Props> = ({
             <TodoItem
               todo={todo}
               key={todo.id}
-              setSelectedTodo={setSelectedTodo}
               isLoading={isLoading}
-              selectedTodo={selectedTodo}
               onDelete={onDelete}
               setTodos={setTodos}
               setErrorMessage={setErrorMessage}
@@ -62,9 +57,7 @@ export const TodoList: React.FC<Props> = ({
             <TodoItem
               todo={tempTodo}
               key={tempTodo.id}
-              setSelectedTodo={setSelectedTodo}
               isLoading={isLoading}
-              selectedTodo={selectedTodo}
               onDelete={onDelete}
               setTodos={setTodos}
               setErrorMessage={setErrorMessage}

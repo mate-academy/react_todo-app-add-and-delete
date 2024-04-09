@@ -1,7 +1,7 @@
 import cn from 'classnames';
 
 import { Todo } from '../types/Todo';
-import { ChangeEvent, FormEvent, useState } from 'react';
+import { FormEvent, useState } from 'react';
 import { Loader } from './Loader';
 import { ErrorTypes } from '../types/enums';
 import { updateTodos } from '../api/todos';
@@ -9,9 +9,7 @@ import { handleError } from '../utils/services';
 
 type Props = {
   todo: Todo;
-  setSelectedTodo: (todo: Todo | null) => void;
   isLoading: number[];
-  selectedTodo: Todo | null;
   onDelete: (id: number) => void;
   setTodos: React.Dispatch<React.SetStateAction<Todo[]>>;
   setErrorMessage: (errorMessage: ErrorTypes) => void;
@@ -20,17 +18,13 @@ type Props = {
 
 export const TodoItem: React.FC<Props> = ({
   todo,
-  setSelectedTodo,
   isLoading,
-  selectedTodo,
   onDelete,
   setIsLoading,
   setTodos,
   setErrorMessage,
 }) => {
-  const isTodoChanged =
-    todo.title !== selectedTodo?.title ||
-    selectedTodo?.completed !== todo.completed;
+  const [newTitle, setNewTitle] = useState(todo.title);
 
   const [isDoubleClicked, setIsDoubleClicked] = useState<boolean>(false);
 
@@ -51,41 +45,27 @@ export const TodoItem: React.FC<Props> = ({
 
     updateTodos(updTodo.id, updTodo)
       .then((updatedTodo: Todo) => {
-        {
-          setTodos((currentTodos: Todo[]) =>
-            currentTodos.map(item =>
-              item.id === updatedTodo.id ? updatedTodo : item,
-            ),
-          );
-          setIsDoubleClicked(false);
-        }
+        setTodos((currentTodos: Todo[]) =>
+          currentTodos.map(item =>
+            item.id === updatedTodo.id ? updatedTodo : item,
+          ),
+        );
+        setIsDoubleClicked(false);
       })
       .catch(() => {
         handleError(ErrorTypes.OnUpdErr, setErrorMessage);
       })
       .finally(() => {
-        setSelectedTodo(null);
         setIsLoading(prev => prev.filter(item => item !== updTodo.id));
       });
   };
 
-  const onFormSubmit = (
-    event?: FormEvent<HTMLFormElement> | ChangeEvent<HTMLInputElement>,
-    newTodo?: Todo,
-  ) => {
-    event?.preventDefault();
+  const onSubmit = (event: FormEvent<HTMLFormElement>) => {
+    event.preventDefault();
 
-    if (newTodo && isTodoChanged) {
-      onPatch(newTodo);
-
-      return;
-    }
-
-    if (selectedTodo && isTodoChanged) {
-      onPatch({ ...selectedTodo, title: selectedTodo.title.trim() });
-    }
-
-    if (!isTodoChanged) {
+    if (todo.title !== newTitle) {
+      onPatch({ ...todo, title: newTitle.trim() });
+    } else {
       setIsDoubleClicked(false);
     }
   };
@@ -98,31 +78,28 @@ export const TodoItem: React.FC<Props> = ({
           type="checkbox"
           className="todo__status"
           checked={todo.completed}
-          onChange={event => {
+          onChange={() => {
             const newtodo = {
               ...todo,
               completed: !todo.completed,
             };
 
-            onFormSubmit(event, newtodo);
+            onPatch(newtodo);
           }}
         />
       </label>
 
-      {selectedTodo?.id === todo.id && isDoubleClicked ? (
-        <form onSubmit={onFormSubmit} onBlur={onFormSubmit}>
+      {isDoubleClicked ? (
+        <form onSubmit={onSubmit} onBlur={onSubmit}>
           <input
             data-cy="TodoTitleField"
             type="text"
             className="todo__title-field"
             placeholder="Empty todo will be deleted"
             autoFocus
-            value={selectedTodo ? selectedTodo.title : todo.title}
+            value={newTitle}
             onChange={event => {
-              setSelectedTodo({
-                ...selectedTodo,
-                title: event.target.value,
-              });
+              setNewTitle(event.target.value);
             }}
             onKeyUp={handleEsc}
           />
@@ -132,7 +109,6 @@ export const TodoItem: React.FC<Props> = ({
           data-cy="TodoTitle"
           className="todo__title"
           onDoubleClick={() => {
-            setSelectedTodo(todo);
             setIsDoubleClicked(true);
           }}
         >
