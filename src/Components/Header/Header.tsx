@@ -1,6 +1,8 @@
 import React, { useContext, useEffect, useRef, useState } from 'react';
 import { USER_ID, postTodos } from '../../api/todos';
 import { Actions, DispatchContext, StateContext } from '../../Store';
+import { Todo } from '../../types/Todo';
+import { wait } from '../../utils/fetchClient';
 export const Header: React.FC = () => {
   const [title, setTitle] = useState('');
   const dispatch = useContext(DispatchContext);
@@ -46,10 +48,12 @@ export const Header: React.FC = () => {
     });
 
     postTodos(preparingData)
-      .then((newPost: any) => {
+      .then(newPost => {
+        const typedNewPost = newPost as Todo;
+
         dispatch({
           type: Actions.postTodo,
-          post: newPost,
+          post: typedNewPost,
         });
       })
       .catch(error => {
@@ -71,9 +75,12 @@ export const Header: React.FC = () => {
         throw error;
       })
       .finally(() => {
+        wait(0).then(() => {
+          textField.current?.focus();
+        });
+
         setTitle('');
         dispatch({ type: Actions.isAdding, status: false });
-        textField.current?.focus();
 
         dispatch({
           type: Actions.addTempTodo,

@@ -15,6 +15,7 @@ export const Footer: React.FC = () => {
   }, [todos]);
 
   const handleDeleteCompleted = () => {
+    dispatch({ type: Actions.setIsRemoving, status: true });
     todos
       .filter((todo: Todo) => todo.completed)
       .map((todo: Todo) => {
@@ -33,6 +34,9 @@ export const Footer: React.FC = () => {
             });
 
             throw error;
+          })
+          .finally(() => {
+            dispatch({ type: Actions.setIsRemoving, status: false });
           });
       });
   };

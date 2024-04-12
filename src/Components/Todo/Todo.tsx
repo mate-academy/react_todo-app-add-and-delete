@@ -12,10 +12,8 @@ type Props = {
 
 export const Todo: React.FC<Props> = ({ todo }) => {
   const [isLoading, setIsLoading] = useState(false);
-  const { tempTodo, isRemoving, completedTodos } = useContext(StateContext);
+  const { tempTodo, isRemoving } = useContext(StateContext);
   const dispatch = useContext(DispatchContext);
-
-  console.log(isRemoving);
 
   const isCompleted = () => {
     setIsLoading(true);
@@ -25,6 +23,8 @@ export const Todo: React.FC<Props> = ({ todo }) => {
       setIsLoading(false);
     });
   };
+
+  // console.log(isLoading && todo.completed);
 
   const handleDelete = () => {
     setIsLoading(true);

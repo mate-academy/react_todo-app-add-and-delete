@@ -6,6 +6,7 @@ import './styles/index.scss';
 
 import { App } from './App';
 import { GlobalStateProvider } from './Store';
+import React from 'react';
 
 createRoot(document.getElementById('root') as HTMLDivElement).render(
   <GlobalStateProvider>

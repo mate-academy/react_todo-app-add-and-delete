@@ -12,6 +12,7 @@ export enum Actions {
   isRemoving = 'isRemoving',
   deleteTodo = 'deleteTodo',
   deleteCompleted = 'deleteCompleted',
+  setIsRemoving = 'setIsRemoving',
 }
 
 type Action =
@@ -23,7 +24,8 @@ type Action =
   | { type: Actions.markCompleted; id: number }
   | { type: Actions.changeTodosStatus; filterValue: string }
   | { type: Actions.setErrorLoad; payload: string }
-  | { type: Actions.isAdding; status: boolean };
+  | { type: Actions.isAdding; status: boolean }
+  | { type: Actions.setIsRemoving; status: boolean };
 
 export enum FilterValue {
   All = 'all',
@@ -37,7 +39,6 @@ interface State {
   filterStatus: string;
   errorLoad: string;
   isAdding: boolean;
-  completedTodos: number[];
   isRemoving: boolean;
 }
 
@@ -56,15 +57,9 @@ function reducer(state: State, action: Action) {
         todos: todos.filter(todo => todo.id !== action.id),
       };
     case Actions.deleteCompleted:
-      const completedIds = todos
-        .filter(todo => todo.completed)
-        .map(todo => todo.id);
-
       return {
         ...state,
         todos: todos.filter(todo => !todo.completed),
-        completedTodos: [...state.completedTodos, ...completedIds],
-        isRemoving: true,
       };
     case Actions.addTempTodo:
       return {
@@ -92,6 +87,8 @@ function reducer(state: State, action: Action) {
       return { ...state, todos: action.todos };
     case Actions.isAdding:
       return { ...state, isAdding: action.status };
+    case Actions.setIsRemoving:
+      return { ...state, isRemoving: action.status };
     default:
       return state;
   }
@@ -103,7 +100,6 @@ const initialState: State = {
   errorLoad: '',
   tempTodo: null,
   isAdding: false,
-  completedTodos: [],
   isRemoving: false,
 };
 
@@ -117,15 +113,7 @@ type Props = {
 
 export const GlobalStateProvider: React.FC<Props> = ({ children }) => {
   const [
-    {
-      todos,
-      filterStatus,
-      errorLoad,
-      tempTodo,
-      isAdding,
-      completedTodos,
-      isRemoving,
-    },
+    { todos, filterStatus, errorLoad, tempTodo, isAdding, isRemoving },
     dispatch,
   ] = useReducer(reducer, initialState);
 
@@ -138,7 +126,6 @@ export const GlobalStateProvider: React.FC<Props> = ({ children }) => {
           errorLoad,
           tempTodo,
           isAdding,
-          completedTodos,
           isRemoving,
         }}
       >

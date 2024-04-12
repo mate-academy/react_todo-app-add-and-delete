@@ -8,6 +8,7 @@ import {
 import { Todo as TodoType } from '../../types/Todo';
 import { getTodos } from '../../api/todos';
 import { Todo } from '../Todo';
+import { TransitionGroup, CSSTransition } from 'react-transition-group';
 
 export const TodoList: React.FC = () => {
   const { todos, filterStatus, isAdding, tempTodo } = useContext(StateContext);
@@ -48,10 +49,18 @@ export const TodoList: React.FC = () => {
 
   return (
     <section className="todoapp__main" data-cy="TodoList">
-      {filteredTodos.map((todo: TodoType) => {
-        return <Todo key={todo.id} todo={todo} />;
-      })}
-      {isAdding && tempTodo && <Todo todo={tempTodo} />}
+      <TransitionGroup>
+        {filteredTodos.map((todo: TodoType) => (
+          <CSSTransition key={todo.id} timeout={300} classNames="item">
+            <Todo todo={todo} />
+          </CSSTransition>
+        ))}
+        {isAdding && tempTodo && (
+          <CSSTransition timeout={300} classNames="temp-item">
+            <Todo todo={tempTodo} />
+          </CSSTransition>
+        )}
+      </TransitionGroup>
     </section>
   );
 };
