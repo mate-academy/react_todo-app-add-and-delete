@@ -9,7 +9,6 @@ type Props = {
 };
 
 export const TodoHeader: React.FC<Props> = ({
-  todos,
   onHandleSubmit,
   isSubmitting,
   shouldClearInput,
@@ -21,13 +20,13 @@ export const TodoHeader: React.FC<Props> = ({
     if (!isSubmitting) {
       inputRef.current?.focus();
     }
-  }, [todos, isSubmitting]);
+  }, [isSubmitting]);
 
   useEffect(() => {
     if (shouldClearInput) {
       setInputValue('');
     }
-  }, [todos, shouldClearInput]);
+  }, [shouldClearInput]);
 
   const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();

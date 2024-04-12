@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+import React, { useEffect, useState, useRef } from 'react';
 import { UserWarning } from './UserWarning';
 import { USER_ID, addTodo, deleteTodo, getTodos } from './api/todos';
 import { TodoHeader } from './components/TodoHeader';
@@ -8,10 +8,7 @@ import { Todo } from './types/Todo';
 import { FilterStatus } from './types/FilterStatus';
 import { ErrorStatus } from './types/ErrorStatus';
 import { ErrorNotification } from './components/ErrorNotification';
-import { wait } from './utils/fetchClient';
 import { getVisibleTodos } from './utils/getVisibleTodos';
-import { TodoItem } from './components/TodoItem';
-import React from 'react';
 
 export const App: React.FC = () => {
   const [todos, setTodos] = useState<Todo[]>([]);
@@ -19,33 +16,41 @@ export const App: React.FC = () => {
   const [tempTodo, setTempTodo] = useState<Todo | null>(null);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [currentId, setCurrentId] = useState<number | null>(null);
-
   const [shouldClearInput, setShouldClearInput] = useState(true);
   const [errorMessage, setErrorMessage] = useState<ErrorStatus>(
     ErrorStatus.NoError,
   );
 
   const visibleTodos = getVisibleTodos(todos, status);
+  const errorMessageTimeout = useRef<NodeJS.Timeout>();
 
   useEffect(() => {
     getTodos()
       .then(setTodos)
       .catch(() => {
         setErrorMessage(ErrorStatus.LoadError);
-        wait(3000).then(() => {
+        errorMessageTimeout.current = setTimeout(() => {
           setErrorMessage(ErrorStatus.NoError);
-        });
+        }, 3000);
       });
+
+    return () => {
+      clearTimeout(errorMessageTimeout.current);
+    };
   }, []);
+
+  const handleErrorMessage = (errorStatus: ErrorStatus) => {
+    setErrorMessage(errorStatus);
+    errorMessageTimeout.current = setTimeout(() => {
+      setErrorMessage(ErrorStatus.NoError);
+    }, 3000);
+  };
 
   const onHandleSubmit = (title: string) => {
     const trimmedTitle = title.trim();
 
     if (!trimmedTitle) {
-      setErrorMessage(ErrorStatus.TitleError);
-      wait(3000).then(() => {
-        setErrorMessage(ErrorStatus.NoError);
-      });
+      handleErrorMessage(ErrorStatus.TitleError);
 
       return;
     }
@@ -65,8 +70,7 @@ export const App: React.FC = () => {
         setTempTodo(null);
       })
       .catch(() => {
-        setErrorMessage(ErrorStatus.AddTodoError);
-        wait(3000).then(() => setErrorMessage(ErrorStatus.NoError));
+        handleErrorMessage(ErrorStatus.AddTodoError);
         setShouldClearInput(false);
       })
       .finally(() => {
@@ -84,8 +88,7 @@ export const App: React.FC = () => {
         setTodos(prevTodos => prevTodos.filter(todo => todo.id !== id));
       })
       .catch(() => {
-        setErrorMessage(ErrorStatus.RenameTodoError);
-        wait(3000).then(() => setErrorMessage(ErrorStatus.NoError));
+        handleErrorMessage(ErrorStatus.RenameTodoError);
       })
       .finally(() => {
         setCurrentId(null);
@@ -121,17 +124,10 @@ export const App: React.FC = () => {
             todos={visibleTodos}
             onHandleDeleteTodo={onHandleDeleteTodo}
             currentId={currentId}
+            tempTodo={tempTodo}
           />
 
-          {tempTodo && (
-            <TodoItem
-              todo={tempTodo}
-              currentId={currentId}
-              onHandleDeleteTodo={onHandleDeleteTodo}
-            />
-          )}
-
-          {todos.length > 0 && (
+          {!!todos.length && (
             <TodoFooter
               status={status}
               todos={todos}
