@@ -15,10 +15,7 @@ export const Todo: React.FC<Props> = ({ todo }) => {
   const { tempTodo, isRemoving, completedTodos } = useContext(StateContext);
   const dispatch = useContext(DispatchContext);
 
-  // eslint-disable-next-line no-console
   console.log(isRemoving);
-  // eslint-disable-next-line no-console
-  console.log(completedTodos);
 
   const isCompleted = () => {
     setIsLoading(true);
@@ -91,7 +88,10 @@ export const Todo: React.FC<Props> = ({ todo }) => {
       <div
         data-cy="TodoLoader"
         className={classNames('modal overlay', {
-          'is-active': isLoading || tempTodo?.id === todo.id,
+          'is-active':
+            isLoading ||
+            tempTodo?.id === todo.id ||
+            (isRemoving && todo.completed),
         })}
       >
         <div className="modal-background has-background-white-ter" />

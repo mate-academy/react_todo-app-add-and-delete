@@ -17,7 +17,7 @@ export enum Actions {
 type Action =
   | { type: Actions.postTodo; post: Todo }
   | { type: Actions.deleteTodo; id: number }
-  | { type: Actions.deleteCompleted; payload: boolean }
+  | { type: Actions.deleteCompleted }
   | { type: Actions.addTempTodo; preparingTodo: Todo | null }
   | { type: Actions.loadTodos; todos: Todo[] }
   | { type: Actions.markCompleted; id: number }
@@ -64,7 +64,7 @@ function reducer(state: State, action: Action) {
         ...state,
         todos: todos.filter(todo => !todo.completed),
         completedTodos: [...state.completedTodos, ...completedIds],
-        isRemoving: action.payload,
+        isRemoving: true,
       };
     case Actions.addTempTodo:
       return {

@@ -1,4 +1,4 @@
-import React, { useContext } from 'react';
+import React, { useContext, useMemo } from 'react';
 import { Filters } from '../Filters';
 import { Actions, DispatchContext, StateContext } from '../../Store';
 import { Todo } from '../../types/Todo';
@@ -7,8 +7,12 @@ import { deleteTodos } from '../../api/todos';
 export const Footer: React.FC = () => {
   const { todos } = useContext(StateContext);
   const dispatch = useContext(DispatchContext);
-  const isActiveTodos = todos.filter((todo: Todo) => !todo.completed);
-  const isDisableCompleted = todos.some((todo: Todo) => todo.completed);
+  const isActiveTodos = useMemo(() => {
+    return todos.filter((todo: Todo) => !todo.completed);
+  }, [todos]);
+  const isDisableCompleted = useMemo(() => {
+    return todos.some((todo: Todo) => todo.completed);
+  }, [todos]);
 
   const handleDeleteCompleted = () => {
     todos
@@ -16,7 +20,7 @@ export const Footer: React.FC = () => {
       .map((todo: Todo) => {
         deleteTodos(todo.id)
           .then(() => {
-            dispatch({ type: Actions.deleteCompleted, payload: true });
+            dispatch({ type: Actions.deleteCompleted });
           })
           .catch(error => {
             dispatch({
@@ -29,9 +33,6 @@ export const Footer: React.FC = () => {
             });
 
             throw error;
-          })
-          .finally(() => {
-            dispatch({ type: Actions.deleteCompleted, payload: false });
           });
       });
   };
