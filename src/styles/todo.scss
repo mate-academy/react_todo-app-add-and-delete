@@ -101,6 +101,10 @@
   }
 }
 
+.item-enter {
+  max-height: 0;
+}
+
 .item-enter-active {
   overflow: hidden;
   max-height: 58px;
@@ -142,8 +146,4 @@
 .has-error .temp-item-exit-active {
   transform: translateY(0);
   overflow: hidden;
-}
-
-.item-enter {
-  max-height: 0;
 }
