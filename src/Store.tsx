@@ -66,7 +66,9 @@ function reducer(state: State, action: Action) {
     case Actions.addTempTodo:
       return {
         ...state,
-        tempTodo: { ...action.preparingTodo, id: state.todos.length + 1 },
+        tempTodo: action.preparingTodo
+          ? { ...action.preparingTodo, id: state.todos.length + 1 }
+          : null,
       };
     case Actions.markCompleted:
       return {
