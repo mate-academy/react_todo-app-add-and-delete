@@ -58,13 +58,16 @@ function reducer(state: State, action: Action): State {
   switch (action.type) {
     case 'setFilter':
       return { ...state, filter: action.payload };
+
     case 'setTodos':
       return { ...state, todos: action.payload };
+
     case 'addTodo':
       return {
         ...state,
         todos: [...state.todos, action.payload],
       };
+
     case 'updateTodo':
       return {
         ...state,
@@ -72,21 +75,25 @@ function reducer(state: State, action: Action): State {
           todo.id === action.payload.id ? action.payload : todo,
         ),
       };
+
     case 'deleteTodo':
       return {
         ...state,
         todos: state.todos.filter(todo => todo.id !== action.payload),
       };
+
     case 'setTempTodo':
       return {
         ...state,
         tempTodo: action.payload,
       };
+
     case 'setErrorMessage':
       return {
         ...state,
         errorMessage: action.payload,
       };
+
     default:
       return state;
   }

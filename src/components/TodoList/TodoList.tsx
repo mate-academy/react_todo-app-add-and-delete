@@ -24,7 +24,7 @@ export const TodoList: React.FC = () => {
           <TodoInfo key={todo.id} todo={todo} />
         ))}
       </section>
-      {tempTodo !== null && (
+      {tempTodo && (
         <TodoInfo key={tempTodo.id} todo={tempTodo} isLoading={true} />
       )}
     </>

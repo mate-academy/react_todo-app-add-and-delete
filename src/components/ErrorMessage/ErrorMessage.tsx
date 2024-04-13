@@ -7,7 +7,7 @@ export const ErrorMessage: React.FC = () => {
   const [lastErrorMessage, setLastErrorMessage] = useState('');
 
   useEffect(() => {
-    if (errorMessage !== '') {
+    if (errorMessage) {
       setLastErrorMessage(errorMessage);
     }
   }, [errorMessage]);
