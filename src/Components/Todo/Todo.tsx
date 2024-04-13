@@ -24,8 +24,6 @@ export const Todo: React.FC<Props> = ({ todo }) => {
     });
   };
 
-  // console.log(isLoading && todo.completed);
-
   const handleDelete = () => {
     setIsLoading(true);
 
@@ -35,10 +33,6 @@ export const Todo: React.FC<Props> = ({ todo }) => {
         setIsLoading(false);
       })
       .catch(error => {
-        dispatch({
-          type: Actions.setErrorLoad,
-          payload: '',
-        });
         dispatch({
           type: Actions.setErrorLoad,
           payload: 'Unable to delete a todo',

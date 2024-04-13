@@ -1,6 +1,5 @@
 import classNames from 'classnames';
-import React, { useContext } from 'react';
-import { wait } from '../../utils/fetchClient';
+import React, { useContext, useEffect } from 'react';
 import { Actions, DispatchContext, StateContext } from '../../Store';
 
 export const ErrorNotification: React.FC = () => {
@@ -14,14 +13,17 @@ export const ErrorNotification: React.FC = () => {
     });
   };
 
-  wait(3000).then(() => {
+  useEffect(() => {
+    let timer = 0;
+
     if (errorLoad) {
-      dispatch({
-        type: Actions.setErrorLoad,
-        payload: '',
-      });
+      timer = window.setTimeout(() => {
+        dispatch({ type: Actions.setErrorLoad, payload: '' });
+      }, 3000);
     }
-  });
+
+    return () => clearTimeout(timer);
+  }, [dispatch, errorLoad]);
 
   return (
     <div

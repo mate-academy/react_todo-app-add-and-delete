@@ -3,23 +3,21 @@ import { USER_ID, postTodos } from '../../api/todos';
 import { Actions, DispatchContext, StateContext } from '../../Store';
 import { Todo } from '../../types/Todo';
 import { wait } from '../../utils/fetchClient';
+
 export const Header: React.FC = () => {
   const [title, setTitle] = useState('');
   const dispatch = useContext(DispatchContext);
-  const { isAdding } = useContext(StateContext);
+  const { isAdding, todos } = useContext(StateContext);
+
   const textField = useRef<HTMLInputElement | null>(null);
 
   useEffect(() => {
     if (textField.current) {
       textField.current.focus();
     }
-  }, []);
+  }, [todos]);
 
   const setErrorTitle = () => {
-    dispatch({
-      type: Actions.setErrorLoad,
-      payload: '',
-    });
     dispatch({
       type: Actions.setErrorLoad,
       payload: 'Title should not be empty',
@@ -36,7 +34,7 @@ export const Header: React.FC = () => {
 
     const preparingData = {
       id: 0,
-      title: title,
+      title: title.trim(),
       userId: USER_ID,
       completed: false,
     };
@@ -46,8 +44,9 @@ export const Header: React.FC = () => {
       type: Actions.addTempTodo,
       preparingTodo: preparingData,
     });
+    dispatch({ type: Actions.setErrorLoad, payload: '' });
 
-    postTodos(preparingData)
+    postTodos(title.trim())
       .then(newPost => {
         const typedNewPost = newPost as Todo;
 
@@ -55,18 +54,9 @@ export const Header: React.FC = () => {
           type: Actions.postTodo,
           post: typedNewPost,
         });
+        setTitle('');
       })
       .catch(error => {
-        dispatch({ type: Actions.isAdding, status: false });
-        dispatch({
-          type: Actions.addTempTodo,
-          preparingTodo: null,
-        });
-
-        dispatch({
-          type: Actions.setErrorLoad,
-          payload: '',
-        });
         dispatch({
           type: Actions.setErrorLoad,
           payload: 'Unable to add a todo',
@@ -79,7 +69,6 @@ export const Header: React.FC = () => {
           textField.current?.focus();
         });
 
-        setTitle('');
         dispatch({ type: Actions.isAdding, status: false });
 
         dispatch({

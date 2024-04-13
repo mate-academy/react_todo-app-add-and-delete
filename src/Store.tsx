@@ -11,21 +11,23 @@ export enum Actions {
   isAdding = 'isAdding',
   isRemoving = 'isRemoving',
   deleteTodo = 'deleteTodo',
-  deleteCompleted = 'deleteCompleted',
+  deleteCompletedId = 'deleteCompletedId',
   setIsRemoving = 'setIsRemoving',
+  setCompletedIds = 'setCompletedIds',
 }
 
 type Action =
   | { type: Actions.postTodo; post: Todo }
   | { type: Actions.deleteTodo; id: number }
-  | { type: Actions.deleteCompleted }
+  | { type: Actions.deleteCompletedId; id: number }
   | { type: Actions.addTempTodo; preparingTodo: Todo | null }
   | { type: Actions.loadTodos; todos: Todo[] }
   | { type: Actions.markCompleted; id: number }
   | { type: Actions.changeTodosStatus; filterValue: string }
   | { type: Actions.setErrorLoad; payload: string }
   | { type: Actions.isAdding; status: boolean }
-  | { type: Actions.setIsRemoving; status: boolean };
+  | { type: Actions.setIsRemoving; status: boolean }
+  | { type: Actions.setCompletedIds; ids: number[] };
 
 export enum FilterValue {
   All = 'all',
@@ -56,15 +58,15 @@ function reducer(state: State, action: Action) {
         ...state,
         todos: todos.filter(todo => todo.id !== action.id),
       };
-    case Actions.deleteCompleted:
+    case Actions.deleteCompletedId:
       return {
         ...state,
-        todos: todos.filter(todo => !todo.completed),
+        todos: todos.filter(todo => todo.id !== action.id),
       };
     case Actions.addTempTodo:
       return {
         ...state,
-        tempTodo: action.preparingTodo,
+        tempTodo: { ...action.preparingTodo, id: state.todos.length + 1 },
       };
     case Actions.markCompleted:
       return {
@@ -89,6 +91,8 @@ function reducer(state: State, action: Action) {
       return { ...state, isAdding: action.status };
     case Actions.setIsRemoving:
       return { ...state, isRemoving: action.status };
+    case Actions.setCompletedIds:
+      return { ...state, completedIds: action.ids };
     default:
       return state;
   }

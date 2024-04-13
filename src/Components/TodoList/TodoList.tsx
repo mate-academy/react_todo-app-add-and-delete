@@ -25,10 +25,6 @@ export const TodoList: React.FC = () => {
       .catch(error => {
         dispatch({
           type: Actions.setErrorLoad,
-          payload: '',
-        });
-        dispatch({
-          type: Actions.setErrorLoad,
           payload: 'Unable to load todos',
         });
 
@@ -37,14 +33,16 @@ export const TodoList: React.FC = () => {
   }, [dispatch]);
 
   const filteredTodos = useMemo(() => {
-    switch (filterStatus) {
-      case FilterValue.Active:
-        return todos.filter((todo: TodoType) => !todo.completed);
-      case FilterValue.Completed:
-        return todos.filter((todo: TodoType) => todo.completed);
-      default:
-        return todos;
-    }
+    return todos.filter((todo: TodoType) => {
+      switch (filterStatus) {
+        case FilterValue.Active:
+          return !todo.completed;
+        case FilterValue.Completed:
+          return todo.completed;
+        default:
+          return todos;
+      }
+    });
   }, [filterStatus, todos]);
 
   return (
