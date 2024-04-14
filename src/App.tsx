@@ -5,12 +5,7 @@ import { createTodo, deleteTodo, getTodos } from './api/todos';
 import { Todo } from './types/Todo';
 import classNames from 'classnames';
 import { TodoItem } from './TodoItem';
-
-enum Filter {
-  all = 'all',
-  active = 'active',
-  completed = 'completed',
-}
+import { Filter } from './types/Filter';
 
 export const App: React.FC = () => {
   const [todos, setTodos] = useState<Todo[]>([]);
@@ -228,13 +223,3 @@ export const App: React.FC = () => {
     </div>
   );
 };
-
-// Unable to load todos
-// <br />
-// Title should not be empty
-// <br />
-// Unable to add a todo
-// <br />
-// Unable to delete a todo
-// <br />
-// Unable to update a todo
