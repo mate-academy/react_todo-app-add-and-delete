@@ -1,26 +1,35 @@
-/* eslint-disable max-len */
+/* eslint-disable jsx-a11y/label-has-associated-control */
 /* eslint-disable jsx-a11y/control-has-associated-label */
-import React from 'react';
-import { UserWarning } from './UserWarning';
-
-const USER_ID = 0;
+import React, { useContext } from 'react';
+// import { UserWarning } from './UserWarning';
+// import { USER_ID } from './api/todos';
+import { TodoAppHeader } from './components/TodoAppHeader';
+import { TodoAppMain } from './components/TodoAppMain';
+import { TodoAppFooter } from './components/TodoAppFooter';
+import { TodoAppError } from './components/TodoAppError';
+import { StateContext } from './context/ContextReducer';
 
 export const App: React.FC = () => {
-  if (!USER_ID) {
-    return <UserWarning />;
-  }
+  const { todoApi } = useContext(StateContext);
+  // if (!USER_ID) {
+  //   return <UserWarning />;
+  // }
 
   return (
-    <section className="section container">
-      <p className="title is-4">
-        Copy all you need from the prev task:
-        <br />
-        <a href="https://github.com/mate-academy/react_todo-app-loading-todos#react-todo-app-load-todos">
-          React Todo App - Load Todos
-        </a>
-      </p>
+    <div className="todoapp">
+      <h1 className="todoapp__title">todos</h1>
 
-      <p className="subtitle">Styles are already copied</p>
-    </section>
+      <div className="todoapp__content">
+        <TodoAppHeader />
+
+        <TodoAppMain />
+        {/* Hide the footer if there are no todos */}
+        {todoApi.length !== 0 && <TodoAppFooter />}
+      </div>
+
+      {/* DON'T use conditional rendering to hide the notification */}
+      {/* Add the 'hidden' class to hide the message smoothly */}
+      <TodoAppError />
+    </div>
   );
 };
