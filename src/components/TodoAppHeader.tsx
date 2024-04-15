@@ -3,22 +3,35 @@ import cn from 'classnames';
 import { DispatchContext, StateContext } from '../context/ContextReducer';
 
 export const TodoAppHeader: React.FC = () => {
-  const { selectedAll, todoApi, query} = useContext(StateContext);
+  const { totalLength, query } = useContext(StateContext);
   const dispatch = useContext(DispatchContext);
+
+  const handleAddSubmit = (event: React.FormEvent<HTMLFormElement>) => {
+    event.preventDefault();
+
+    dispatch({ type: 'addTodo' });
+  };
+
+  const currentButton = totalLength.every(todo => todo.completed);
 
   return (
     <header className="todoapp__header">
-      {/* this button should have `active` class only if all todos are completed */}
       <button
         type="button"
-        className={cn('todoapp__toggle-all', { active: selectedAll || todoApi.every(todo => todo.completed)})}
+        onClick={() =>
+          dispatch({ type: 'setAllCompleted', currentComleted: currentButton })
+        }
+        className={cn('todoapp__toggle-all', {
+          active: currentButton && totalLength.length,
+        })}
         data-cy="ToggleAllButton"
       />
 
-      {/* Add a todo on form submit */}
-      <form onSubmit={() => dispatch({ type: "addTodo" })}>
+      <form onSubmit={handleAddSubmit}>
         <input
-          onChange={event => dispatch({ type: 'setQuery', value: event.target.value})}
+          onChange={event =>
+            dispatch({ type: 'setQuery', value: event.target.value })
+          }
           data-cy="NewTodoField"
           type="text"
           className="todoapp__new-todo"

@@ -1,22 +1,28 @@
 import React, { useContext } from 'react';
 import cn from 'classnames';
-import { StateContext } from '../context/ContextReducer';
+import { DispatchContext, StateContext } from '../context/ContextReducer';
 
 export const TodoAppError: React.FC = () => {
-  const { error } = useContext(StateContext);
+  const { showError } = useContext(StateContext);
+  const dispatch = useContext(DispatchContext);
 
   return (
     <div
       data-cy="ErrorNotification"
       className={cn({
-        'notification is-danger is-light has-text-weight-normal': error,
-        hidden: !error,
+        'notification is-danger is-light has-text-weight-normal': showError,
+        hidden: !showError,
       })}
     >
-      {error && (
-        <button data-cy="HideErrorButton" type="button" className="delete" />
+      {showError && (
+        <button
+          onClick={() => dispatch({ type: 'setError', error: '' })}
+          data-cy="HideErrorButton"
+          type="button"
+          className="delete"
+        />
       )}
-      {error}
+      {showError}
     </div>
   );
 };

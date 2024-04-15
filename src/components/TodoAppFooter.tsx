@@ -1,10 +1,13 @@
 import React, { useContext } from 'react';
-import { StateContext } from '../context/ContextReducer';
+import { DispatchContext, StateContext } from '../context/ContextReducer';
+import cn from 'classnames';
 
 export const TodoAppFooter: React.FC = () => {
-  const { todoApi } = useContext(StateContext);
+  const { select, totalLength } = useContext(StateContext);
+  const dispatch = useContext(DispatchContext);
 
-  const itemLeft = todoApi.filter(todo => todo.completed);
+  const itemLeft = totalLength.filter(todo => todo.completed);
+  const clear = totalLength.some(todo => todo.completed);
 
   return (
     <footer className="todoapp__footer" data-cy="Footer">
@@ -12,30 +15,41 @@ export const TodoAppFooter: React.FC = () => {
         {`${itemLeft.length} items left`}
       </span>
 
-      {/* Active link should have the 'selected' class */}
       <nav className="filter" data-cy="Filter">
-        <a href="#/" className="filter__link selected" data-cy="FilterLinkAll">
+        <a
+          onClick={() => dispatch({ type: 'setSelect', value: 'All' })}
+          href="#/"
+          className={cn('filter__link', { selected: select === 'All' })}
+          data-cy="FilterLinkAll"
+        >
           All
         </a>
 
-        <a href="#/active" className="filter__link" data-cy="FilterLinkActive">
+        <a
+          onClick={() => dispatch({ type: 'setSelect', value: 'Active' })}
+          href="#/active"
+          className={cn('filter__link', { selected: select === 'Active' })}
+          data-cy="FilterLinkActive"
+        >
           Active
         </a>
 
         <a
+          onClick={() => dispatch({ type: 'setSelect', value: 'Completed' })}
           href="#/completed"
-          className="filter__link"
+          className={cn('filter__link', { selected: select === 'Completed' })}
           data-cy="FilterLinkCompleted"
         >
           Completed
         </a>
       </nav>
 
-      {/* this button should be disabled if there are no completed todos */}
       <button
+        onClick={() => dispatch({ type: 'deleteAllCompleted' })}
         type="button"
         className="todoapp__clear-completed"
         data-cy="ClearCompletedButton"
+        disabled={!clear}
       >
         Clear completed
       </button>
