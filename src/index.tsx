@@ -13,8 +13,8 @@ import {
 } from './components/filterContext';
 import { ManageCheckboxProvider } from './components/manageCheckboxContext';
 import { ErrorProvider } from './components/errorMessageContext';
-import { LoaderProvider } from './components/loaderContext';
 import { SubmitingProvider } from './components/isSubmitingContext';
+import { TodoIdProvider } from './components/todoIdContext';
 
 createRoot(document.getElementById('root') as HTMLDivElement).render(
   <ManageCheckboxProvider>
@@ -23,11 +23,11 @@ createRoot(document.getElementById('root') as HTMLDivElement).render(
         <CompletedProvider>
           <TodosProvider>
             <ErrorProvider>
-              <LoaderProvider>
-                <SubmitingProvider>
+              <SubmitingProvider>
+                <TodoIdProvider>
                   <App />
-                </SubmitingProvider>
-              </LoaderProvider>
+                </TodoIdProvider>
+              </SubmitingProvider>
             </ErrorProvider>
           </TodosProvider>
         </CompletedProvider>

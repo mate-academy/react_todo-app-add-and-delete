@@ -1,6 +1,6 @@
 /* eslint-disable jsx-a11y/label-has-associated-control */
 
-import { useContext, useState } from 'react';
+import { useContext } from 'react';
 import { Todo } from '../types/Todo';
 import { TodosContext } from './todosContext';
 import { ActiveContext, AllContext, CompletedContext } from './filterContext';
@@ -8,8 +8,8 @@ import { ManageCheckboxContext } from './manageCheckboxContext';
 import classNames from 'classnames';
 import { deletePost } from '../api/todos';
 import { ErrorConstext } from './errorMessageContext';
-import { LoaderConstext } from './loaderContext';
 import { SubmitingConstext } from './isSubmitingContext';
+import { TodoIdConstext } from './todoIdContext';
 
 /* eslint-disable jsx-a11y/control-has-associated-label */
 interface ItemProps {
@@ -23,8 +23,8 @@ export const TodosItem: React.FC<ItemProps> = ({ item }) => {
   const { isCompletedSelected } = useContext(CompletedContext);
   const { setIsChecked } = useContext(ManageCheckboxContext);
   const { setErrorMessage } = useContext(ErrorConstext);
-  const { isLoaderActive, setIsLoaderActive } = useContext(LoaderConstext);
   const { setIsSubmiting } = useContext(SubmitingConstext);
+  const { allId, setAllId } = useContext(TodoIdConstext);
 
   const todosCopy = [...todos];
 
@@ -49,8 +49,10 @@ export const TodosItem: React.FC<ItemProps> = ({ item }) => {
     });
   };
 
-  const handleDestroyButton = () => {
+  const handleDestroyButton = (pressedId: number) => {
     todosCopy.splice(findIndex, 1);
+
+    setAllId([...allId, pressedId]);
 
     setIsSubmiting(true);
 
@@ -86,7 +88,7 @@ export const TodosItem: React.FC<ItemProps> = ({ item }) => {
   const loaderClass = classNames({
     modal: true,
     overlay: true,
-    'is-active': isLoaderActive,
+    'is-active': allId.includes(item.id) || item.id === 0,
   });
 
   return (
@@ -108,7 +110,7 @@ export const TodosItem: React.FC<ItemProps> = ({ item }) => {
           </span>
 
           <button
-            onClick={handleDestroyButton}
+            onClick={() => handleDestroyButton(item.id)}
             type="button"
             className="todo__remove"
             data-cy="TodoDelete"

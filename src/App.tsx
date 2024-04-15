@@ -17,12 +17,14 @@ import { Todo } from './types/Todo';
 import { SubmitingConstext } from './components/isSubmitingContext';
 
 import classNames from 'classnames';
+import { TodoIdConstext } from './components/todoIdContext';
 
 export const App: React.FC = () => {
   const { todos, setTodos } = useContext(TodosContext);
   const { isChecked, setIsChecked } = useContext(ManageCheckboxContext);
   const { setErrorMessage } = useContext(ErrorConstext);
   const { isSubmiting, setIsSubmiting } = useContext(SubmitingConstext);
+  const { allId } = useContext(TodoIdConstext);
 
   const [inputValue, setInputValue] = useState('');
   const [tempTodo, setTempTodo] = useState<Todo | null>(null);
@@ -45,6 +47,10 @@ export const App: React.FC = () => {
         }, 3000);
       });
   }, []);
+
+  useEffect(() => {
+    setErrorMessage('');
+  }, [todos]);
 
   const handleHowManyLeft = () => {
     const howManyLeft = todos.filter(todo => !todo.completed);
@@ -132,13 +138,15 @@ export const App: React.FC = () => {
     }
   };
 
-  const todosCopy = [...todos];
-
   const handleClearCompleted = () => {
-    for (let i = todosCopy.length - 1; i >= 0; i--) {
-      setIsSubmiting(true);
+    const todosCopy = [...todos];
 
+    setIsSubmiting(true);
+
+    for (let i = todosCopy.length - 1; i >= 0; i--) {
       if (todosCopy[i].completed === true) {
+        allId.push(todosCopy[i].id);
+
         deletePost(todosCopy[i].id)
           .then(() => setTodos(todosCopy))
           .catch(() => setErrorMessage('Unable to delete a todo'))
