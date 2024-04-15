@@ -278,7 +278,7 @@ export const App: React.FC = () => {
             </div>
           ))}
           {tempTodo && (
-            <div 
+            <div
               data-cy="Todo"
               className={cn('todo', {
                 completed: tempTodo.completed,
@@ -312,7 +312,6 @@ export const App: React.FC = () => {
                 <div className="modal-background has-background-white-ter" />
                 <div className="loader" />
               </div>
-
             </div>
           )}
         </section>
