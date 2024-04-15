@@ -43,7 +43,7 @@ export const App: React.FC = () => {
   const [errorVisible, setErrorVisible] = useState(false);
   const [loadingTodoIds, setLoadingTodoIds] = useState<number[]>([]);
   const [title, setTitle] = useState('');
-  const [temporaryTodo, setTemporaryTodo] = useState<Todo | null>(null);
+  const [tempTodo, setTempTodo] = useState<Todo | null>(null);
 
   const inputRef = useRef<HTMLInputElement>(null);
 
@@ -102,14 +102,14 @@ export const App: React.FC = () => {
 
     const inputTitle = title.trim();
 
-    const tempTodo: Todo = {
+    const temporaryTodo: Todo = {
       id: 0,
       userId: todoService.USER_ID,
       title: inputTitle,
       completed: false,
     };
 
-    setTemporaryTodo(tempTodo);
+    setTempTodo(temporaryTodo);
 
     if (inputRef.current) {
       inputRef.current.disabled = true;
@@ -128,7 +128,7 @@ export const App: React.FC = () => {
           inputRef.current.focus();
         }
 
-        setTemporaryTodo(null);
+        setTempTodo(null);
       })
       .catch(() => {
         if (inputRef.current) {
@@ -277,12 +277,42 @@ export const App: React.FC = () => {
               </div>
             </div>
           ))}
-          {temporaryTodo && (
-            <div className={cn('todo', 'temp-todo')}>
+          {tempTodo && (
+            <div 
+              data-cy="Todo"
+              className={cn('todo', {
+                completed: tempTodo.completed,
+              })}
+              key={tempTodo.id}
+            >
               <label className="todo__status-label">
-                <div className="loader" />
+                <input
+                  data-cy="TodoStatus"
+                  type="checkbox"
+                  className="todo__status"
+                  onChange={() => updateTodo(tempTodo)}
+                  checked={tempTodo.completed}
+                />
               </label>
-              <span className="todo__title">{temporaryTodo.title}</span>
+
+              <span className="todo__title">{tempTodo.title}</span>
+              <button
+                type="button"
+                className="todo__remove"
+                data-cy="TodoDelete"
+              >
+                ×
+              </button>
+              <div
+                data-cy="TodoLoader"
+                className={cn('modal', 'overlay', {
+                  'is-active': tempTodo,
+                })}
+              >
+                <div className="modal-background has-background-white-ter" />
+                <div className="loader" />
+              </div>
+
             </div>
           )}
         </section>
