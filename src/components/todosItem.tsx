@@ -3,13 +3,9 @@
 import { useContext } from 'react';
 import { Todo } from '../types/Todo';
 import { TodosContext } from './todosContext';
-import { ActiveContext, AllContext, CompletedContext } from './filterContext';
+import { FilterContext } from './filterContext';
 import { ManageCheckboxContext } from './manageCheckboxContext';
 import classNames from 'classnames';
-import { deletePost } from '../api/todos';
-import { ErrorConstext } from './errorMessageContext';
-import { SubmitingConstext } from './isSubmitingContext';
-import { TodoIdConstext } from './todoIdContext';
 
 /* eslint-disable jsx-a11y/control-has-associated-label */
 interface ItemProps {
@@ -17,18 +13,11 @@ interface ItemProps {
 }
 
 export const TodosItem: React.FC<ItemProps> = ({ item }) => {
-  const { todos, setTodos } = useContext(TodosContext);
-  const { isAllSelected } = useContext(AllContext);
-  const { isActiveSelected } = useContext(ActiveContext);
-  const { isCompletedSelected } = useContext(CompletedContext);
+  const { todos, setTodos, handleDeleteTodo } = useContext(TodosContext);
+  const { isAllSelected, isActiveSelected, isCompletedSelected } =
+    useContext(FilterContext);
   const { setIsChecked } = useContext(ManageCheckboxContext);
-  const { setErrorMessage } = useContext(ErrorConstext);
-  const { setIsSubmiting } = useContext(SubmitingConstext);
-  const { allId, setAllId } = useContext(TodoIdConstext);
-
-  const todosCopy = [...todos];
-
-  const findIndex = todos.findIndex(element => element.id === item.id);
+  const { allId } = useContext(TodosContext);
 
   if (todos.every(element => element.completed === true)) {
     setIsChecked(true);
@@ -47,25 +36,6 @@ export const TodosItem: React.FC<ItemProps> = ({ item }) => {
 
       return elem;
     });
-  };
-
-  const handleDestroyButton = (pressedId: number) => {
-    todosCopy.splice(findIndex, 1);
-
-    setAllId([...allId, pressedId]);
-
-    setIsSubmiting(true);
-
-    deletePost(item.id)
-      .then(() => setTodos(todosCopy))
-      .catch(() => setErrorMessage('Unable to delete a todo'))
-      .finally(() => {
-        setIsSubmiting(false);
-
-        setTimeout(() => {
-          setErrorMessage('');
-        }, 3000);
-      });
   };
 
   const toRender = () => {
@@ -110,7 +80,7 @@ export const TodosItem: React.FC<ItemProps> = ({ item }) => {
           </span>
 
           <button
-            onClick={() => handleDestroyButton(item.id)}
+            onClick={() => handleDeleteTodo(item.id)}
             type="button"
             className="todo__remove"
             data-cy="TodoDelete"

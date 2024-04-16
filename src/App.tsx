@@ -6,25 +6,21 @@ import React, {
   useState,
 } from 'react';
 import { UserWarning } from './UserWarning';
-import { USER_ID, deletePost, getTodos, addPost } from './api/todos';
+import { USER_ID, getTodos, addTodo } from './api/todos';
 import { TodosContext } from './components/todosContext';
 import { TodosList } from './components/todosList';
 import { TodosFilter } from './components/todoFeilter';
 import { ManageCheckboxContext } from './components/manageCheckboxContext';
 import { ErrorNotification } from './components/errorNotification';
-import { ErrorConstext } from './components/errorMessageContext';
 import { Todo } from './types/Todo';
-import { SubmitingConstext } from './components/isSubmitingContext';
 
 import classNames from 'classnames';
-import { TodoIdConstext } from './components/todoIdContext';
 
 export const App: React.FC = () => {
-  const { todos, setTodos } = useContext(TodosContext);
+  const { todos, setTodos, handleDeleteTodo } = useContext(TodosContext);
   const { isChecked, setIsChecked } = useContext(ManageCheckboxContext);
-  const { setErrorMessage } = useContext(ErrorConstext);
-  const { isSubmiting, setIsSubmiting } = useContext(SubmitingConstext);
-  const { allId } = useContext(TodoIdConstext);
+  const { setErrorMessage } = useContext(TodosContext);
+  const { isSubmiting, setIsSubmiting } = useContext(TodosContext);
 
   const [inputValue, setInputValue] = useState('');
   const [tempTodo, setTempTodo] = useState<Todo | null>(null);
@@ -35,7 +31,7 @@ export const App: React.FC = () => {
     if (focusInput.current && !isSubmiting) {
       focusInput.current.focus();
     }
-  }, [isSubmiting]);
+  }, [isSubmiting, todos]);
 
   useEffect(() => {
     getTodos()
@@ -105,7 +101,7 @@ export const App: React.FC = () => {
         completed: false,
         userId: USER_ID,
       });
-      addPost(newTodo)
+      addTodo(newTodo)
         .then(newTodoObj => {
           setInputValue('');
           setTodos([...todos, newTodoObj]);
@@ -138,28 +134,12 @@ export const App: React.FC = () => {
     }
   };
 
+  const completedTodos = todos.filter(todo => todo.completed);
+
   const handleClearCompleted = () => {
-    const todosCopy = [...todos];
-
-    setIsSubmiting(true);
-
-    for (let i = todosCopy.length - 1; i >= 0; i--) {
-      if (todosCopy[i].completed === true) {
-        allId.push(todosCopy[i].id);
-
-        deletePost(todosCopy[i].id)
-          .then(() => setTodos(todosCopy))
-          .catch(() => setErrorMessage('Unable to delete a todo'))
-          .finally(() => {
-            setIsSubmiting(false);
-
-            setTimeout(() => {
-              setErrorMessage('');
-            }, 3000);
-          });
-        todosCopy.splice(i, 1);
-      }
-    }
+    completedTodos.forEach(todo => {
+      handleDeleteTodo(todo.id);
+    });
   };
 
   return (

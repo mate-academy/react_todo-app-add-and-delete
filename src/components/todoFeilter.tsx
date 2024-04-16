@@ -1,5 +1,5 @@
 import { useContext } from 'react';
-import { ActiveContext, AllContext, CompletedContext } from './filterContext';
+import { FilterContext } from './filterContext';
 
 export const TodosFilter: React.FC = () => {
   enum Status {
@@ -8,10 +8,14 @@ export const TodosFilter: React.FC = () => {
     Completed = 'Completed',
   }
 
-  const { isAllSelected, setIsAllSelected } = useContext(AllContext);
-  const { isActiveSelected, setIsActiveSelected } = useContext(ActiveContext);
-  const { isCompletedSelected, setIsCompletedSelected } =
-    useContext(CompletedContext);
+  const {
+    isAllSelected,
+    setIsAllSelected,
+    isActiveSelected,
+    setIsActiveSelected,
+    isCompletedSelected,
+    setIsCompletedSelected,
+  } = useContext(FilterContext);
 
   const handleAllfilter = () => {
     setIsAllSelected(true);

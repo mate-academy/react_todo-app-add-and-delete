@@ -1,4 +1,6 @@
+/* eslint-disable @typescript-eslint/no-unused-vars */
 import React, { useMemo, useState } from 'react';
+import { deleteTodo } from '../api/todos';
 
 type Todo = {
   id: number;
@@ -10,11 +12,25 @@ type Todo = {
 type TodosContextType = {
   todos: Todo[];
   setTodos: (v: Todo[]) => void;
+  handleDeleteTodo: (pressedId: number) => void;
+  allId: number[];
+  setAllId: (allId: number[]) => void;
+  errorMessage: string;
+  setErrorMessage(errorMessage: string): void;
+  isSubmiting: boolean;
+  setIsSubmiting(isSubmiting: boolean): void;
 };
 
 export const TodosContext = React.createContext<TodosContextType>({
   todos: [],
   setTodos: () => {},
+  handleDeleteTodo: (_pressedId: number) => {},
+  allId: [],
+  setAllId: (_allId: number[]) => {},
+  errorMessage: '',
+  setErrorMessage: (_errorMessage: string) => {},
+  isSubmiting: false,
+  setIsSubmiting: (_isSubmiting: boolean) => {},
 });
 
 type Props = {
@@ -22,37 +38,43 @@ type Props = {
 };
 
 export const TodosProvider: React.FC<Props> = ({ children }) => {
-  function useLocalStorage<T>(key: string, startValue: T): [T, (v: T) => void] {
-    const [value, setValue] = useState(() => {
-      const data = localStorage.getItem(key);
+  const [isSubmiting, setIsSubmiting] = useState(false);
+  const [errorMessage, setErrorMessage] = useState('');
+  const [todos, setTodos] = useState<Todo[]>([]);
+  const [allId, setAllId] = useState<number[]>([]);
 
-      if (data === null) {
-        return startValue;
-      }
+  const handleDeleteTodo = (pressedId: number) => {
+    setAllId(prevAllId => [...prevAllId, pressedId]);
 
-      try {
-        return JSON.parse(data);
-      } catch {
-        return startValue;
-      }
-    });
+    setIsSubmiting(true);
 
-    const save = (newValue: T) => {
-      localStorage.setItem(key, JSON.stringify(newValue));
-      setValue(newValue);
-    };
+    deleteTodo(pressedId)
+      .then(() =>
+        setTodos(prevTodos => prevTodos.filter(todo => todo.id !== pressedId)),
+      )
+      .catch(() => setErrorMessage('Unable to delete a todo'))
+      .finally(() => {
+        setIsSubmiting(false);
 
-    return [value, save];
-  }
-
-  const [todos, setTodos] = useLocalStorage<Todo[]>('todos', []);
+        setTimeout(() => {
+          setErrorMessage('');
+        }, 3000);
+      });
+  };
 
   const value = useMemo(
     () => ({
       todos,
       setTodos,
+      handleDeleteTodo,
+      allId,
+      setAllId,
+      errorMessage,
+      setErrorMessage,
+      isSubmiting,
+      setIsSubmiting,
     }),
-    [todos, setTodos],
+    [todos, setTodos, allId, errorMessage, isSubmiting],
   );
 
   return (
