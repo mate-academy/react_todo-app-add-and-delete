@@ -100,12 +100,12 @@ export const App: React.FC = () => {
       return;
     }
 
-    const inputTitle = title.trim();
+    //const inputTitle = title.trim();
 
     const temporaryTodo: Todo = {
       id: 0,
       userId: todoService.USER_ID,
-      title: inputTitle,
+      title: title,
       completed: false,
     };
 
@@ -118,7 +118,7 @@ export const App: React.FC = () => {
     addTodo({
       id: 0,
       userId: todoService.USER_ID,
-      title: inputTitle,
+      title: title,
       completed: false,
     })
       .then(() => {
@@ -135,6 +135,7 @@ export const App: React.FC = () => {
           inputRef.current.disabled = false;
           inputRef.current.focus();
         }
+        setTempTodo(null);
       })
       .finally();
   };
@@ -256,7 +257,7 @@ export const App: React.FC = () => {
               </label>
 
               <span data-cy="TodoTitle" className="todo__title">
-                {todo.title}
+                {todo.title.trim()}
               </span>
               <button
                 type="button"
@@ -295,7 +296,12 @@ export const App: React.FC = () => {
                 />
               </label>
 
-              <span className="todo__title">{tempTodo.title}</span>
+              <span 
+                data-cy="TodoTitle" 
+                className="todo__title"
+              >
+                {tempTodo.title.trim()}
+              </span>
               <button
                 type="button"
                 className="todo__remove"
