@@ -1,11 +1,9 @@
+/* eslint-disable @typescript-eslint/no-unused-vars */
 import React, { useMemo, useState } from 'react';
 
 export const ManageCheckboxContext = React.createContext({
   isChecked: false,
-  setIsChecked: (isChecked: boolean) => {
-    // eslint-disable-next-line no-console
-    console.log(isChecked);
-  },
+  setIsChecked: (isChecked: boolean) => {},
 });
 
 type PropsIsItChecked = {

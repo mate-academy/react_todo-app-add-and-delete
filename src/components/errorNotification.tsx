@@ -12,10 +12,14 @@ export const ErrorNotification: React.FC = ({}) => {
     hidden: errorMessage === '',
   });
 
+  const handleCloseError = () => {
+    setErrorMessage('');
+  };
+
   return (
     <div data-cy="ErrorNotification" className={errorMessageClass}>
       <button
-        onClick={() => setErrorMessage('')}
+        onClick={handleCloseError}
         data-cy="HideErrorButton"
         type="button"
         className="delete"
@@ -24,9 +28,3 @@ export const ErrorNotification: React.FC = ({}) => {
     </div>
   );
 };
-
-// Unable to load todos
-// Title should not be empty
-// Unable to add a todo
-// Unable to delete a todo
-// Unable to update a todo

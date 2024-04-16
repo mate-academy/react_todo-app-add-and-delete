@@ -1,68 +1,54 @@
 import { useContext } from 'react';
 import { FilterContext } from './filterContext';
+import classNames from 'classnames';
 
 export const TodosFilter: React.FC = () => {
-  enum Status {
-    All = 'All',
-    Active = 'Active',
-    Completed = 'Completed',
-  }
+  const { isSelected, setIsSelected } = useContext(FilterContext);
 
-  const {
-    isAllSelected,
-    setIsAllSelected,
-    isActiveSelected,
-    setIsActiveSelected,
-    isCompletedSelected,
-    setIsCompletedSelected,
-  } = useContext(FilterContext);
-
-  const handleAllfilter = () => {
-    setIsAllSelected(true);
-    setIsActiveSelected(false);
-    setIsCompletedSelected(false);
+  const handleOnClick = (status: string) => {
+    switch (status) {
+      case 'All':
+        setIsSelected('All');
+        break;
+      case 'Active':
+        setIsSelected('Active');
+        break;
+      case 'Completed':
+        setIsSelected('Completed');
+        break;
+      default:
+        break;
+    }
   };
 
-  const handleActivefilter = () => {
-    setIsActiveSelected(true);
-    setIsAllSelected(false);
-    setIsCompletedSelected(false);
+  const getClassForMaper = (status: string) => {
+    const maperClass = classNames({
+      filter__link: true,
+      selected: status === isSelected,
+    });
+
+    return maperClass;
   };
 
-  const handleCompletedfilter = () => {
-    setIsCompletedSelected(true);
-    setIsAllSelected(false);
-    setIsActiveSelected(false);
+  const filterStatuses = {
+    All: 'All',
+    Active: 'Active',
+    Completed: 'Completed',
   };
 
   return (
     <>
-      <a
-        href="#/"
-        className={`filter__link ${isAllSelected === true ? 'selected' : ''}`}
-        data-cy="FilterLinkAll"
-        onClick={handleAllfilter}
-      >
-        {Status.All}
-      </a>
-
-      <a
-        href="#/active"
-        className={`filter__link ${isActiveSelected === true ? 'selected' : ''}`}
-        data-cy="FilterLinkActive"
-        onClick={handleActivefilter}
-      >
-        {Status.Active}
-      </a>
-
-      <a
-        href="#/completed"
-        className={`filter__link ${isCompletedSelected === true ? 'selected' : ''}`}
-        data-cy="FilterLinkCompleted"
-        onClick={handleCompletedfilter}
-      >
-        {Status.Completed}
-      </a>
+      {Object.values(filterStatuses).map(value => (
+        <a
+          key={value}
+          href="#/"
+          className={getClassForMaper(value)}
+          data-cy="FilterLinkAll"
+          onClick={() => handleOnClick(value)}
+        >
+          {value}
+        </a>
+      ))}
     </>
   );
 };

@@ -14,10 +14,9 @@ interface ItemProps {
 
 export const TodosItem: React.FC<ItemProps> = ({ item }) => {
   const { todos, setTodos, handleDeleteTodo } = useContext(TodosContext);
-  const { isAllSelected, isActiveSelected, isCompletedSelected } =
-    useContext(FilterContext);
   const { setIsChecked } = useContext(ManageCheckboxContext);
   const { allId } = useContext(TodosContext);
+  const { isSelected } = useContext(FilterContext);
 
   if (todos.every(element => element.completed === true)) {
     setIsChecked(true);
@@ -38,12 +37,21 @@ export const TodosItem: React.FC<ItemProps> = ({ item }) => {
     });
   };
 
+  enum FilterStatuses {
+    All = 'All',
+    Active = 'Active',
+    Completed = 'Completed',
+  }
+
   const toRender = () => {
-    if (isAllSelected === true) {
+    if (isSelected === FilterStatuses.All) {
       return true;
-    } else if (isActiveSelected && !item.completed) {
+    } else if (isSelected === FilterStatuses.Active && !item.completed) {
       return true;
-    } else if (isCompletedSelected === true && item.completed === true) {
+    } else if (
+      isSelected === FilterStatuses.Completed &&
+      item.completed === true
+    ) {
       return true;
     } else {
       return;
@@ -63,7 +71,7 @@ export const TodosItem: React.FC<ItemProps> = ({ item }) => {
 
   return (
     <>
-      {toRender() === true && (
+      {toRender() && (
         <div data-cy="Todo" className={isTodoCompletedClass}>
           <label className="todo__status-label">
             <input

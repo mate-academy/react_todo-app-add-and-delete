@@ -42,11 +42,11 @@ export const App: React.FC = () => {
           setErrorMessage('');
         }, 3000);
       });
-  }, []);
+  }, [setErrorMessage, setTodos]);
 
   useEffect(() => {
     setErrorMessage('');
-  }, [todos]);
+  }, [todos, setErrorMessage]);
 
   const handleHowManyLeft = () => {
     const howManyLeft = todos.filter(todo => !todo.completed);
@@ -85,52 +85,58 @@ export const App: React.FC = () => {
     setInputValue(event.target.value);
   };
 
-  const newTodo = {
-    id: +new Date(),
-    title: inputValue.trim(),
-    completed: false,
-    userId: USER_ID,
-  };
-
   const onSubmit = () => {
-    if (inputValue.trim() !== '') {
-      setIsSubmiting(true);
-      setTempTodo({
-        id: 0,
-        title: inputValue.trim(),
-        completed: false,
-        userId: USER_ID,
-      });
-      addTodo(newTodo)
-        .then(newTodoObj => {
-          setInputValue('');
-          setTodos([...todos, newTodoObj]);
-        })
-        .catch(() => {
-          setErrorMessage('Unable to add a todo');
-        })
-        .finally(() => {
-          setIsSubmiting(false);
-          setTempTodo(null);
-          setTimeout(() => {
-            setErrorMessage('');
-          }, 3000);
-        });
+    const newTodo = {
+      id: +new Date(),
+      title: inputValue.trim(),
+      completed: false,
+      userId: USER_ID,
+    };
+
+    if (inputValue.trim() === '') {
+      return;
     }
+
+    setIsSubmiting(true);
+
+    setTempTodo({
+      id: 0,
+      title: inputValue.trim(),
+      completed: false,
+      userId: USER_ID,
+    });
+
+    addTodo(newTodo)
+      .then(newTodoObj => {
+        setInputValue('');
+        setTodos([...todos, newTodoObj]);
+      })
+      .catch(() => {
+        setErrorMessage('Unable to add a todo');
+      })
+      .finally(() => {
+        setIsSubmiting(false);
+        setTempTodo(null);
+        setTimeout(() => {
+          setErrorMessage('');
+        }, 3000);
+      });
   };
 
   const handleEnter = (event: React.KeyboardEvent<HTMLInputElement>) => {
-    if (event.key === 'Enter' && inputValue.trim() !== '') {
-      event.preventDefault();
-      onSubmit();
-    } else if (event.key === 'Enter' && inputValue.trim() === '') {
-      event.preventDefault();
+    if (event.key !== 'Enter') {
+      return;
+    }
+
+    event.preventDefault();
+
+    if (inputValue.trim() === '') {
       setErrorMessage('Title should not be empty');
       setTimeout(() => {
         setErrorMessage('');
       }, 3000);
     } else {
-      return;
+      onSubmit();
     }
   };
 
@@ -141,6 +147,9 @@ export const App: React.FC = () => {
       handleDeleteTodo(todo.id);
     });
   };
+
+  const dissableClearCompleted = () =>
+    todos.every(element => !element.completed);
 
   return (
     <div className="todoapp">
@@ -183,12 +192,13 @@ export const App: React.FC = () => {
             <span className="todo-count" data-cy="TodosCounter">
               {handleHowManyLeft()}
             </span>
+
             <nav className="filter" data-cy="Filter">
               <TodosFilter />
             </nav>
 
             <button
-              disabled={todos.every(element => !element.completed)}
+              disabled={dissableClearCompleted()}
               type="button"
               className="todoapp__clear-completed"
               data-cy="ClearCompletedButton"
