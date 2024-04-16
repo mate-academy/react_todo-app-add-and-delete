@@ -46,5 +46,3 @@ export const updateTodoTitle = ({
 }) => {
   return client.patch<Todo>(`/todos/${id}/?userId=${USER_ID}`, { title });
 };
-
-// Add more methods here

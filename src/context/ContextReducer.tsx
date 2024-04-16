@@ -41,6 +41,7 @@ interface State {
   todoLoading: Record<number, boolean>;
   allTodoLoading: boolean;
   addItem: boolean;
+  focus: boolean;
 }
 
 export const reducer = (state: State, action: Action) => {
@@ -129,6 +130,7 @@ export const reducer = (state: State, action: Action) => {
         },
         allTodoLoading: false,
         addItem: false,
+        focus: true,
       };
 
     case 'setComplate':
@@ -153,6 +155,7 @@ export const reducer = (state: State, action: Action) => {
       return {
         ...state,
         currentId: action.currentId,
+        focus: false,
       };
 
     case 'setNewTitle':
@@ -227,6 +230,7 @@ const initialState: State = {
   },
   allTodoLoading: false,
   addItem: false,
+  focus: true,
 };
 
 export const StateContext = React.createContext(initialState);
@@ -247,16 +251,14 @@ export const GlobalProvider: React.FC<Props> = ({ children }) => {
     let mounted = true;
     const controller = new AbortController();
 
-    getTodos().then(todos =>
-      todos.map(todo => {
-        if (!todo.title.length) {
-          deleteTodo(todo.id);
-        }
-      }),
-    );
-
     getTodos()
       .then(todos => {
+        todos.map(todo => {
+          if (!todo.title.length) {
+            deleteTodo(todo.id);
+          }
+        });
+
         if (mounted) {
           switch (state.select) {
             case 'All':
@@ -304,7 +306,7 @@ export const GlobalProvider: React.FC<Props> = ({ children }) => {
       mounted = false;
       controller.abort();
     };
-  }, [state.error, state.fetch, state.select, state.showError]);
+  }, [state.fetch, state.select]);
 
   return (
     <StateContext.Provider value={state}>

@@ -1,9 +1,9 @@
-import React, { useContext } from 'react';
+import React, { useContext, useEffect, useRef } from 'react';
 import cn from 'classnames';
 import { DispatchContext, StateContext } from '../context/ContextReducer';
 
 export const TodoAppHeader: React.FC = () => {
-  const { totalLength, query } = useContext(StateContext);
+  const { totalLength, query, focus } = useContext(StateContext);
   const dispatch = useContext(DispatchContext);
 
   const handleAddSubmit = (event: React.FormEvent<HTMLFormElement>) => {
@@ -13,6 +13,14 @@ export const TodoAppHeader: React.FC = () => {
   };
 
   const currentButton = totalLength.every(todo => todo.completed);
+
+  const textFiled = useRef<HTMLInputElement | null>(null);
+
+  useEffect(() => {
+    if (textFiled.current && focus) {
+      textFiled.current.focus();
+    }
+  });
 
   return (
     <header className="todoapp__header">
@@ -29,6 +37,7 @@ export const TodoAppHeader: React.FC = () => {
 
       <form onSubmit={handleAddSubmit}>
         <input
+          ref={textFiled}
           onChange={event =>
             dispatch({ type: 'setQuery', value: event.target.value })
           }
