@@ -135,6 +135,7 @@ export const App: React.FC = () => {
           inputRef.current.disabled = false;
           inputRef.current.focus();
         }
+
         setTempTodo(null);
       })
       .finally();
@@ -296,10 +297,7 @@ export const App: React.FC = () => {
                 />
               </label>
 
-              <span 
-                data-cy="TodoTitle" 
-                className="todo__title"
-              >
+              <span data-cy="TodoTitle" className="todo__title">
                 {tempTodo.title.trim()}
               </span>
               <button
