@@ -259,6 +259,8 @@ export const GlobalProvider: React.FC<Props> = ({ children }) => {
           }
         });
 
+        dispatch({ type: 'setTotalLenght', payload: todos });
+
         if (mounted) {
           switch (state.select) {
             case 'All':
@@ -295,9 +297,6 @@ export const GlobalProvider: React.FC<Props> = ({ children }) => {
         }
       })
       .finally(() => {
-        getTodos().then(todos =>
-          dispatch({ type: 'setTotalLenght', payload: todos }),
-        );
         dispatch({ type: 'disableFetch' });
         deleteAfterShowError();
       });
