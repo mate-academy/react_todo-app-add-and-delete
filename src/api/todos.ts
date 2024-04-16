@@ -20,19 +20,31 @@ export const getTodosCompleted = () => {
 };
 
 export const addTodo = (newTodo: Omit<Todo, 'id'>) => {
-  return client.post<Todo[]>(`/todos?userId=${USER_ID}`, newTodo);
+  return client.post<Todo>(`/todos?userId=${USER_ID}`, newTodo);
 };
 
 export const deleteTodo = (currentId: number) => {
   return client.delete(`/todos/${currentId}/?userId=${USER_ID}`);
 };
 
-export const updateTodoCompleted = ({id, completed}: { id: number; completed: boolean }) => {
-  return client.patch<Todo>(`/todos/${id}/?userId=${USER_ID}`, {completed})
-}
+export const updateTodoCompleted = ({
+  id,
+  completed,
+}: {
+  id: number;
+  completed: boolean;
+}) => {
+  return client.patch<Todo>(`/todos/${id}/?userId=${USER_ID}`, { completed });
+};
 
-export const updateTodoTitle = ({id, title}: { id: number; title: string }) => {
-  return client.patch<Todo>(`/todos/${id}/?userId=${USER_ID}`, {title})
-}
+export const updateTodoTitle = ({
+  id,
+  title,
+}: {
+  id: number;
+  title: string;
+}) => {
+  return client.patch<Todo>(`/todos/${id}/?userId=${USER_ID}`, { title });
+};
 
 // Add more methods here

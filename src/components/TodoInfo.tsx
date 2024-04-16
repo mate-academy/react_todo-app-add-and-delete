@@ -9,7 +9,8 @@ interface Props {
 }
 
 export const TodoInfo: React.FC<Props> = ({ todo }) => {
-  const { fetch, currentId } = useContext(StateContext);
+  const { currentId, todoLoading, allTodoLoading } = useContext(StateContext);
+
   const dispatch = useContext(DispatchContext);
 
   const titleField = useRef<HTMLInputElement | null>(null);
@@ -44,6 +45,14 @@ export const TodoInfo: React.FC<Props> = ({ todo }) => {
       currentTitle: todo.title,
     });
     dispatch({ type: 'setEdit', currentId: 0 });
+  };
+
+  const handleChangeInput = (event: React.ChangeEvent<HTMLInputElement>) => {
+    dispatch({
+      type: 'setNewTitle',
+      value: event.target.value,
+      currentId: todo.id,
+    });
   };
 
   return (
@@ -88,7 +97,9 @@ export const TodoInfo: React.FC<Props> = ({ todo }) => {
 
       <div
         data-cy="TodoLoader"
-        className={cn('modal overlay', { 'is-active': fetch })}
+        className={cn('modal overlay', {
+          'is-active': todoLoading[todo.id] || allTodoLoading,
+        })}
       >
         <div className="modal-background has-background-white-ter" />
         <div className="loader" />
@@ -100,9 +111,7 @@ export const TodoInfo: React.FC<Props> = ({ todo }) => {
             <input
               ref={titleField}
               onKeyUp={handleKeyUp}
-              onChange={event =>
-                dispatch({ type: 'setNewTitle', value: event.target.value })
-              }
+              onChange={handleChangeInput}
               data-cy="TodoTitleField"
               type="text"
               className="todo__title-field"
@@ -114,7 +123,9 @@ export const TodoInfo: React.FC<Props> = ({ todo }) => {
 
           <div
             data-cy="TodoLoader"
-            className={cn('modal overlay', { 'is-active': fetch })}
+            className={cn('modal overlay', {
+              'is-active': todoLoading[todo.id] || allTodoLoading,
+            })}
           >
             <div className="modal-background has-background-white-ter" />
             <div className="loader" />

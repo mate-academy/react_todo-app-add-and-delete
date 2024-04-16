@@ -22,7 +22,7 @@ export type Action =
   | { type: 'disableFetch' }
   | { type: 'setComplate'; currentId: number; currentComplate: boolean }
   | { type: 'setEdit'; currentId: number }
-  | { type: 'setNewTitle'; value: string }
+  | { type: 'setNewTitle'; value: string; currentId: number }
   | { type: 'submitNewTitile'; currentId: number; currentTitle: string }
   | { type: 'setAllCompleted'; currentComleted: boolean }
   | { type: 'deleteAllCompleted' };
@@ -36,8 +36,11 @@ interface State {
   query: string;
   fetch: boolean;
   currentId: number;
-  newTitle: string;
+  prevTitle: string;
   showError: string;
+  todoLoading: Record<number, boolean>;
+  allTodoLoading: boolean;
+  addItem: boolean;
 }
 
 export const reducer = (state: State, action: Action) => {
@@ -88,6 +91,7 @@ export const reducer = (state: State, action: Action) => {
         query: '',
         fetch: true,
         error: 'Unable to add a todo',
+        addItem: true,
       };
 
     case 'setSelect':
@@ -110,13 +114,21 @@ export const reducer = (state: State, action: Action) => {
         cuurrentId: action.currentId,
         fetch: true,
         error: 'Unable to delete a todo',
+        todoLoading: {
+          ...state.todoLoading,
+          [action.currentId]: true,
+        },
       };
 
     case 'disableFetch':
       return {
         ...state,
         fetch: false,
-        newTitle: '',
+        todoLoading: {
+          [state.currentId]: false,
+        },
+        allTodoLoading: false,
+        addItem: false,
       };
 
     case 'setComplate':
@@ -132,6 +144,9 @@ export const reducer = (state: State, action: Action) => {
         cuurrentId: action.currentId,
         fetch: true,
         error: 'Unable to update a todo',
+        todoLoading: {
+          [action.currentId]: true,
+        },
       };
 
     case 'setEdit':
@@ -141,30 +156,22 @@ export const reducer = (state: State, action: Action) => {
       };
 
     case 'setNewTitle':
-      return {
-        ...state,
-        newTitle: action.value,
-      };
+      updateTodoTitle({
+        id: action.currentId,
+        title: action.value,
+      });
+
+      return state;
 
     case 'submitNewTitile':
-      if (!action.currentTitle) {
-        deleteTodo(action.currentId);
-      } else if (state.newTitle.length) {
-        updateTodoTitle({
-          id: action.currentId,
-          title: state.newTitle,
-        });
-
-        return {
-          ...state,
-          fetch: true,
-        };
-      }
-
       return {
         ...state,
-        currentId: 0,
+        fetch: true,
+        currentId: action.currentId,
         error: 'Unable to update a todo',
+        todoLoading: {
+          [state.currentId]: true,
+        },
       };
 
     case 'setAllCompleted':
@@ -180,6 +187,7 @@ export const reducer = (state: State, action: Action) => {
         ...state,
         fetch: true,
         error: 'Unable to update a todo',
+        allTodoLoading: true,
       };
 
     case 'deleteAllCompleted':
@@ -195,6 +203,7 @@ export const reducer = (state: State, action: Action) => {
         ...state,
         fetch: true,
         error: 'Unable to delete a todo',
+        allTodoLoading: true,
       };
 
     default:
@@ -212,7 +221,12 @@ const initialState: State = {
   query: '',
   fetch: false,
   currentId: 0,
-  newTitle: '',
+  prevTitle: '',
+  todoLoading: {
+    [0]: false,
+  },
+  allTodoLoading: false,
+  addItem: false,
 };
 
 export const StateContext = React.createContext(initialState);
@@ -232,6 +246,14 @@ export const GlobalProvider: React.FC<Props> = ({ children }) => {
   useEffect(() => {
     let mounted = true;
     const controller = new AbortController();
+
+    getTodos().then(todos =>
+      todos.map(todo => {
+        if (!todo.title.length) {
+          deleteTodo(todo.id);
+        }
+      }),
+    );
 
     getTodos()
       .then(todos => {

@@ -6,7 +6,7 @@ export const TodoAppFooter: React.FC = () => {
   const { select, totalLength } = useContext(StateContext);
   const dispatch = useContext(DispatchContext);
 
-  const itemLeft = totalLength.filter(todo => todo.completed);
+  const itemLeft = totalLength.filter(todo => !todo.completed);
   const clear = totalLength.some(todo => todo.completed);
 
   return (
