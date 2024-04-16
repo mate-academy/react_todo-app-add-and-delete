@@ -5,5 +5,10 @@ import '@fortawesome/fontawesome-free/css/all.css';
 import './styles/index.scss';
 
 import { App } from './App';
+import { GlobalProvider } from './context/ContextReducer';
 
-createRoot(document.getElementById('root') as HTMLDivElement).render(<App />);
+createRoot(document.getElementById('root') as HTMLDivElement).render(
+  <GlobalProvider>
+    <App />
+  </GlobalProvider>,
+);
