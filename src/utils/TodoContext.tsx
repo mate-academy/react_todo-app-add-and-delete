@@ -52,28 +52,21 @@ export const TodoContextProvider: React.FC<Props> = ({ children }) => {
       });
   }, []);
 
-  const deleteTodo = useCallback(
-    async (todoId: number) => {
-      setIsLoading(true);
-      setModifiedTodoId(todoId);
-      setErrorMessage(Errors.NoErrors);
-      try {
-        await todosServices.deleteTodos(todoId);
-        setTodos(currentTodos =>
-          currentTodos.filter(todo => todo.id !== todoId),
-        );
-        setIsLoading(false);
-      } catch {
-        setErrorMessage(Errors.DeleteTodo);
-        setTodos(todos);
-        setTimeout(() => setErrorMessage(Errors.NoErrors), 3000);
-      } finally {
-        setIsLoading(false);
-        setModifiedTodoId(0);
-      }
-    },
-    [todos],
-  );
+  const deleteTodo = useCallback(async (todoId: number) => {
+    setIsLoading(true);
+    setModifiedTodoId(todoId);
+    setErrorMessage(Errors.NoErrors);
+    try {
+      await todosServices.deleteTodos(todoId);
+      setTodos(currentTodos => currentTodos.filter(todo => todo.id !== todoId));
+    } catch {
+      setErrorMessage(Errors.DeleteTodo);
+      setTimeout(() => setErrorMessage(Errors.NoErrors), 3000);
+    } finally {
+      setIsLoading(false);
+      setModifiedTodoId(0);
+    }
+  }, []);
 
   const addTodo = useCallback(async ({ title, completed, userId }: Todo) => {
     setIsLoading(true);
