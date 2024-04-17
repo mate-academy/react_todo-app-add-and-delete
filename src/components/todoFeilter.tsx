@@ -5,16 +5,28 @@ import classNames from 'classnames';
 export const TodosFilter: React.FC = () => {
   const { isSelected, setIsSelected } = useContext(FilterContext);
 
+  enum FilterStatuses {
+    All = 'All',
+    Active = 'Active',
+    Completed = 'Completed',
+  }
+
+  enum FilterDataCy {
+    All = 'FilterLinkAll',
+    Active = 'FilterLinkActive',
+    Completed = 'FilterLinkCompleted',
+  }
+
   const handleOnClick = (status: string) => {
     switch (status) {
       case 'All':
-        setIsSelected('All');
+        setIsSelected(FilterStatuses.All);
         break;
       case 'Active':
-        setIsSelected('Active');
+        setIsSelected(FilterStatuses.Active);
         break;
       case 'Completed':
-        setIsSelected('Completed');
+        setIsSelected(FilterStatuses.Completed);
         break;
       default:
         break;
@@ -39,11 +51,11 @@ export const TodosFilter: React.FC = () => {
   const handleDataCy = (status: string) => {
     switch (status) {
       case 'All':
-        return 'FilterLinkAll';
+        return FilterDataCy.All;
       case 'Active':
-        return 'FilterLinkActive';
+        return FilterDataCy.Active;
       case 'Completed':
-        return 'FilterLinkCompleted';
+        return FilterDataCy.Completed;
       default:
         return;
     }

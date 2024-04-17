@@ -18,7 +18,7 @@ export const TodosItem: React.FC<ItemProps> = ({ item }) => {
   const { allId } = useContext(TodosContext);
   const { isSelected } = useContext(FilterContext);
 
-  if (todos.every(element => element.completed === true)) {
+  if (todos.every(element => element.completed)) {
     setIsChecked(true);
   } else {
     setIsChecked(false);
@@ -48,10 +48,7 @@ export const TodosItem: React.FC<ItemProps> = ({ item }) => {
       return true;
     } else if (isSelected === FilterStatuses.Active && !item.completed) {
       return true;
-    } else if (
-      isSelected === FilterStatuses.Completed &&
-      item.completed === true
-    ) {
+    } else if (isSelected === FilterStatuses.Completed && item.completed) {
       return true;
     } else {
       return;
@@ -66,7 +63,7 @@ export const TodosItem: React.FC<ItemProps> = ({ item }) => {
   const loaderClass = classNames({
     modal: true,
     overlay: true,
-    'is-active': allId.includes(item.id) || item.id === 0,
+    'is-active': allId.includes(item.id) || !item.id,
   });
 
   return (
