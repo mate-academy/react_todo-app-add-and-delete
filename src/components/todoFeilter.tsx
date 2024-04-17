@@ -36,6 +36,19 @@ export const TodosFilter: React.FC = () => {
     Completed: 'Completed',
   };
 
+  const handleDataCy = (status: string) => {
+    switch (status) {
+      case 'All':
+        return 'FilterLinkAll';
+      case 'Active':
+        return 'FilterLinkActive';
+      case 'Completed':
+        return 'FilterLinkCompleted';
+      default:
+        return;
+    }
+  };
+
   return (
     <>
       {Object.values(filterStatuses).map(value => (
@@ -43,7 +56,7 @@ export const TodosFilter: React.FC = () => {
           key={value}
           href="#/"
           className={getClassForMaper(value)}
-          data-cy="FilterLinkAll"
+          data-cy={handleDataCy(value)}
           onClick={() => handleOnClick(value)}
         >
           {value}
