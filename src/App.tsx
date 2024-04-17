@@ -17,6 +17,7 @@ export const App: React.FC = () => {
   const [newTitle, setNewTitle] = useState('');
   const [errMessage, setErrMessage] = useState('');
   const [stat, setStat] = useState(Status.all);
+  const [visibleErr, setVisibleErr] = useState(false);
 
   const filteredTodos = (tod: Todo[], type: Status) => {
     switch (type) {
@@ -32,11 +33,13 @@ export const App: React.FC = () => {
 
   const visibleTodos = filteredTodos(todos, stat);
   const editSelectedInput = useRef<HTMLInputElement>(null);
+  const selectInputTitle = useRef<HTMLInputElement>(null);
   const isAnyCompleted = todos.some(todo => todo.completed);
 
   const resetErr = () =>
     setTimeout(() => {
-      setErrMessage('');
+      // setErrMessage('');
+      setVisibleErr(false);
     }, 3000);
 
   useEffect(() => {
@@ -92,6 +95,7 @@ export const App: React.FC = () => {
       //   });
       // });
     } catch {
+      setVisibleErr(true);
       setErrMessage('Unable to update a todo');
       resetErr();
     } finally {
@@ -107,14 +111,23 @@ export const App: React.FC = () => {
       completed: false,
     };
 
+    const trimedTitle = newTitle.trim();
+
+    if (newTitle === '' || trimedTitle === '') {
+      setVisibleErr(true);
+      setErrMessage('Title should not be empty');
+      resetErr();
+
+      return;
+    }
+
     try {
       setIsLoading(0);
-
       await postTodo(newTodo);
-
       setTodos(prevTodos => [...prevTodos, newTodo]);
       await getTodos().then(setTodos);
     } catch (error) {
+      setVisibleErr(true);
       setErrMessage('Unable to add a todo');
       resetErr();
     } finally {
@@ -134,6 +147,7 @@ export const App: React.FC = () => {
       //   return prevTodos.filter(todo => todo.id !== todoToRmove.id);
       // });
     } catch {
+      setVisibleErr(true);
       setErrMessage('Unable to delete a todo');
       resetErr();
     } finally {
@@ -162,7 +176,10 @@ export const App: React.FC = () => {
   };
 
   const handleSubmit = () => {
-    if (newTitle === '') {
+    const trimedTitle = newTitle.trim();
+
+    if (newTitle === '' || trimedTitle === '') {
+      setVisibleErr(true);
       setErrMessage('Title should not be empty');
       resetErr();
 
@@ -170,6 +187,10 @@ export const App: React.FC = () => {
     }
 
     addTodo();
+
+    if (selectInputTitle.current) {
+      selectInputTitle.current.focus();
+    }
   };
 
   return (
@@ -178,6 +199,7 @@ export const App: React.FC = () => {
 
       <div className="todoapp__content">
         <Header
+          isLoading={isLoading}
           todos={todos}
           handleSubmit={handleSubmit}
           newTitle={newTitle}
@@ -219,6 +241,7 @@ export const App: React.FC = () => {
                     value={editedTitle}
                     onChange={event => setEditedTitle(event.target.value)}
                     onKeyUp={event => handleEditedTitle(event, todo)}
+                    onBlur={() => setIsEdited(null)}
                     ref={editSelectedInput}
                   />
                 </form>
@@ -251,14 +274,14 @@ export const App: React.FC = () => {
         data-cy="ErrorNotification"
         className={cn(
           'notification is-danger is-light has-text-weight-normal',
-          { hidden: !errMessage },
+          { hidden: !visibleErr },
         )}
       >
         <button
           data-cy="HideErrorButton"
           type="button"
           className="delete"
-          onClick={() => setErrMessage('')}
+          onClick={() => setVisibleErr(false)}
         />
         {errMessage}
       </div>
