@@ -7,12 +7,12 @@ export interface TodoContextType {
   status: Status;
   errorMessage: Errors;
   draftTodo: Todo | null;
-  loading: boolean;
+  isLoading: boolean;
   modifiedTodoId: number;
   setTodos: (todos: Todo[]) => void;
   setStatus: (status: Status) => void;
   setErrorMessage: (message: Errors) => void;
-  setLoading: (loading: boolean) => void;
+  setIsLoading: (loading: boolean) => void;
   setDraftTodo: (todo: Todo) => void;
   addTodo: (todo: Todo) => Promise<void>;
   deleteTodo: (todoId: number) => Promise<void>;

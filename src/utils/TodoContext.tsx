@@ -16,12 +16,12 @@ const initialTodo: TodoContextType = {
   status: Status.All,
   errorMessage: Errors.NoErrors,
   draftTodo: null,
-  loading: false,
+  isLoading: false,
   modifiedTodoId: 0,
   setTodos: () => {},
   setStatus: () => {},
   setErrorMessage: () => {},
-  setLoading: () => {},
+  setIsLoading: () => {},
   setDraftTodo: () => {},
   deleteTodo: async () => {},
   addTodo: async () => {},
@@ -38,7 +38,7 @@ export const TodoContextProvider: React.FC<Props> = ({ children }) => {
   const [todos, setTodos] = useState<Todo[]>([]);
   const [errorMessage, setErrorMessage] = useState(Errors.NoErrors);
   const [status, setStatus] = useState(Status.All);
-  const [loading, setLoading] = useState(false);
+  const [isLoading, setIsLoading] = useState(false);
   const [modifiedTodoId, setModifiedTodoId] = useState(0);
   const [draftTodo, setDraftTodo] = useState<Todo | null>(null);
 
@@ -54,7 +54,7 @@ export const TodoContextProvider: React.FC<Props> = ({ children }) => {
 
   const deleteTodo = useCallback(
     async (todoId: number) => {
-      setLoading(true);
+      setIsLoading(true);
       setModifiedTodoId(todoId);
       setErrorMessage(Errors.NoErrors);
       try {
@@ -62,13 +62,13 @@ export const TodoContextProvider: React.FC<Props> = ({ children }) => {
         setTodos(currentTodos =>
           currentTodos.filter(todo => todo.id !== todoId),
         );
-        setLoading(false);
+        setIsLoading(false);
       } catch {
         setErrorMessage(Errors.DeleteTodo);
         setTodos(todos);
         setTimeout(() => setErrorMessage(Errors.NoErrors), 3000);
       } finally {
-        setLoading(false);
+        setIsLoading(false);
         setModifiedTodoId(0);
       }
     },
@@ -76,7 +76,7 @@ export const TodoContextProvider: React.FC<Props> = ({ children }) => {
   );
 
   const addTodo = useCallback(async ({ title, completed, userId }: Todo) => {
-    setLoading(true);
+    setIsLoading(true);
     setErrorMessage(Errors.NoErrors);
     setDraftTodo({ id: 0, title, userId, completed: false });
     try {
@@ -88,7 +88,7 @@ export const TodoContextProvider: React.FC<Props> = ({ children }) => {
 
       setDraftTodo(null);
       setTodos(currentTodos => [...currentTodos, newestTodo]);
-      setLoading(false);
+      setIsLoading(false);
     } catch (error) {
       setErrorMessage(Errors.AddTodo);
       setDraftTodo(null);
@@ -97,7 +97,7 @@ export const TodoContextProvider: React.FC<Props> = ({ children }) => {
       }, 3000);
       throw error;
     } finally {
-      setLoading(false);
+      setIsLoading(false);
     }
   }, []);
 
@@ -118,12 +118,12 @@ export const TodoContextProvider: React.FC<Props> = ({ children }) => {
       errorMessage,
       draftTodo,
       modifiedTodoId,
-      loading,
+      isLoading,
       setTodos,
       setStatus,
       setErrorMessage,
       setDraftTodo,
-      setLoading,
+      setIsLoading,
       addTodo,
       deleteTodo,
       handleCompleted,
@@ -132,7 +132,7 @@ export const TodoContextProvider: React.FC<Props> = ({ children }) => {
       todos,
       status,
       errorMessage,
-      loading,
+      isLoading,
       modifiedTodoId,
       draftTodo,
       addTodo,

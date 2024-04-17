@@ -5,23 +5,22 @@ import { Errors } from '../types/ErrorsTodo';
 import { USER_ID } from '../api/todos';
 
 export const Header: React.FC = () => {
-  const { todos, addTodo, loading, setLoading, setErrorMessage } = useTodos();
+  const { todos, addTodo, isLoading, setIsLoading, setErrorMessage } =
+    useTodos();
   const inputRef = useRef<HTMLInputElement | null>(null);
   const [inputTodo, setInputTodo] = useState('');
-  const [submitting, setSubmitting] = useState(false);
   const allCompleted = todos.every(todo => todo.completed);
 
   useEffect(() => {
-    if (!loading && inputRef.current) {
+    if (!isLoading && inputRef.current) {
       inputRef.current.focus();
     }
-  }, [addTodo, loading, submitting]);
+  }, [isLoading]);
 
   const handleSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
     setErrorMessage(Errors.NoErrors);
-    setLoading(true);
-    setSubmitting(true);
+    setIsLoading(true);
 
     const trimmedInput = inputTodo.trim();
 
@@ -41,12 +40,10 @@ export const Header: React.FC = () => {
       });
 
       setInputTodo('');
-      setSubmitting(false);
     } catch (error) {
       throw error;
     } finally {
-      setLoading(false);
-      setSubmitting(false);
+      setIsLoading(false);
     }
   };
 
@@ -69,7 +66,7 @@ export const Header: React.FC = () => {
           ref={inputRef}
           value={inputTodo}
           onChange={event => setInputTodo(event.target.value)}
-          disabled={submitting || loading}
+          disabled={isLoading}
         />
       </form>
     </header>
