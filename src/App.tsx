@@ -38,8 +38,8 @@ export const App: React.FC = () => {
 
   const resetErr = () =>
     setTimeout(() => {
-      // setErrMessage('');
       setVisibleErr(false);
+      setErrMessage('');
     }, 3000);
 
   useEffect(() => {
@@ -53,6 +53,7 @@ export const App: React.FC = () => {
       getTodos()
         .then(setTodos)
         .catch(() => {
+          setVisibleErr(true);
           setErrMessage('Unable to load todos');
           resetErr();
         });
@@ -281,7 +282,7 @@ export const App: React.FC = () => {
           data-cy="HideErrorButton"
           type="button"
           className="delete"
-          onClick={() => setVisibleErr(false)}
+          onClick={() => setErrMessage('')}
         />
         {errMessage}
       </div>
