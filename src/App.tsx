@@ -12,12 +12,14 @@ import { Title } from './Title';
 export const App: React.FC = () => {
   const [isLoading, setIsLoading] = useState<number | null>(null);
   const [isEdited, setIsEdited] = useState<number | null>(null);
-  const [todos, setTodos] = useState<Todo[] | []>([]);
+  // const [todos, setTodos] = useState<Todo[] | []>([]);
   const [editedTitle, setEditedTitle] = useState('');
   const [newTitle, setNewTitle] = useState('');
   const [errMessage, setErrMessage] = useState('');
   const [stat, setStat] = useState(Status.all);
   const [visibleErr, setVisibleErr] = useState(false);
+  const [tempTodo, setTempTodo] = useState<Todo[] | null>(null);
+  const [todos, setTodos] = useState<Todo[] | []>([]);
 
   const filteredTodos = (tod: Todo[], type: Status) => {
     switch (type) {
@@ -31,9 +33,11 @@ export const App: React.FC = () => {
     }
   };
 
-  const visibleTodos = filteredTodos(todos, stat);
+  const visibleTodos = tempTodo
+    ? filteredTodos(tempTodo, stat)
+    : filteredTodos(todos, stat);
+
   const editSelectedInput = useRef<HTMLInputElement>(null);
-  // const selectInputTitle = useRef<HTMLInputElement>(null);
   const isAnyCompleted = todos.some(todo => todo.completed);
 
   const resetErr = () =>
@@ -41,12 +45,6 @@ export const App: React.FC = () => {
       setVisibleErr(false);
       setErrMessage('');
     }, 3000);
-
-  // useEffect(() => {
-  //   if (isEdited && editSelectedInput.current) {
-  //     editSelectedInput.current.focus();
-  //   }
-  // }, [isEdited]);
 
   useEffect(() => {
     const loadTodos = async () => {
@@ -123,11 +121,22 @@ export const App: React.FC = () => {
         completed: false,
       };
 
+      const temp = {
+        id: 0,
+        userId: 472,
+        title: trimedTitle,
+        completed: false,
+      };
+
+      setTempTodo([...todos, temp]);
+
       try {
         setIsLoading(0);
 
-        setTodos(prevTodos => [...prevTodos, newTodo]);
-        await postTodo(newTodo);
+        await postTodo(newTodo).then(respond => {
+          setTempTodo(null);
+          setTodos(prevTodos => [...prevTodos, respond]);
+        });
 
         await getTodos().then(setTodos);
       } catch (error) {
