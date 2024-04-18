@@ -9,17 +9,16 @@ import { UserWarning } from './UserWarning';
 import { USER_ID, getTodos, addTodo } from './api/todos';
 import { TodosContext } from './components/todosContext';
 import { TodosList } from './components/todosList';
-import { TodosFilter } from './components/todoFeilter';
+import { TodosFilter } from './components/todoFilter';
 import { ErrorNotification } from './components/errorNotification';
 import { Todo } from './types/Todo';
-import { FilterContext } from './components/filterContext';
+import { getFilteredTodos } from './utils/filterTodost';
 
 export const App: React.FC = () => {
   const { todos, setTodos, handleDeleteTodo } = useContext(TodosContext);
   const { setErrorMessage } = useContext(TodosContext);
   const { isSubmiting, setIsSubmiting } = useContext(TodosContext);
-  const { getFilteredTodos } = useContext(FilterContext);
-  const { selectedFilter } = useContext(FilterContext);
+  const { selectedFilter } = useContext(TodosContext);
 
   const [inputValue, setInputValue] = useState('');
   const [tempTodo, setTempTodo] = useState<Todo | null>(null);
@@ -127,7 +126,7 @@ export const App: React.FC = () => {
   const dissableClearCompleted = () =>
     todos.every(element => !element.completed);
 
-  const filteredTodos = getFilteredTodos(selectedFilter);
+  const filteredTodos = getFilteredTodos(selectedFilter, todos);
 
   return (
     <div className="todoapp">

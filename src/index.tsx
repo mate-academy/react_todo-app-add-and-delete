@@ -6,12 +6,9 @@ import './styles/index.scss';
 
 import { App } from './App';
 import { TodosProvider } from './components/todosContext';
-import { FilterProvider } from './components/filterContext';
 
 createRoot(document.getElementById('root') as HTMLDivElement).render(
-  <FilterProvider>
-    <TodosProvider>
-      <App />
-    </TodosProvider>
-  </FilterProvider>,
+  <TodosProvider>
+    <App />
+  </TodosProvider>,
 );

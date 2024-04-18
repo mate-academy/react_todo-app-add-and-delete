@@ -1,6 +1,7 @@
 /* eslint-disable @typescript-eslint/no-unused-vars */
 import React, { useMemo, useState } from 'react';
 import { deleteTodo } from '../api/todos';
+import { FilterStatuses } from '../data/enums';
 
 type Todo = {
   id: number;
@@ -19,6 +20,8 @@ type TodosContextType = {
   setErrorMessage(errorMessage: string): void;
   isSubmiting: boolean;
   setIsSubmiting(isSubmiting: boolean): void;
+  selectedFilter: FilterStatuses;
+  setSelectedFilter(selectedFilter: FilterStatuses): void;
 };
 
 export const TodosContext = React.createContext<TodosContextType>({
@@ -31,6 +34,8 @@ export const TodosContext = React.createContext<TodosContextType>({
   setErrorMessage: (_errorMessage: string) => {},
   isSubmiting: false,
   setIsSubmiting: (_isSubmiting: boolean) => {},
+  selectedFilter: FilterStatuses.All,
+  setSelectedFilter: (_selectedFilter: FilterStatuses) => {},
 });
 
 type Props = {
@@ -42,6 +47,7 @@ export const TodosProvider: React.FC<Props> = ({ children }) => {
   const [errorMessage, setErrorMessage] = useState('');
   const [todos, setTodos] = useState<Todo[]>([]);
   const [allId, setAllId] = useState<number[]>([]);
+  const [selectedFilter, setSelectedFilter] = useState(FilterStatuses.All);
 
   const handleDeleteTodo = (pressedId: number) => {
     setAllId(prevAllId => [...prevAllId, pressedId]);
@@ -73,8 +79,10 @@ export const TodosProvider: React.FC<Props> = ({ children }) => {
       setErrorMessage,
       isSubmiting,
       setIsSubmiting,
+      selectedFilter,
+      setSelectedFilter,
     }),
-    [todos, setTodos, allId, errorMessage, isSubmiting],
+    [todos, setTodos, allId, errorMessage, isSubmiting, selectedFilter],
   );
 
   return (
