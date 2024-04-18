@@ -4,7 +4,7 @@ import { FilterStatuses } from '../data/enums';
 
 export const FilterContext = React.createContext({
   selectedFilter: 'All',
-  setSelectedFilter: (_selectedFilter: string) => {},
+  setSelectedFilter: (_selectedFilter: FilterStatuses) => {},
 });
 
 type PropsCompleted = {
