@@ -84,7 +84,7 @@ export const App: React.FC = () => {
 
       await patchTodo(newTodo);
 
-      getTodos().then(setTodos);
+      await getTodos().then(setTodos);
 
       // setTodos(prevTodos => {
       //   return prevTodos.map(todo => {
@@ -124,8 +124,11 @@ export const App: React.FC = () => {
 
     try {
       setIsLoading(0);
+
       await postTodo(newTodo);
+
       setTodos(prevTodos => [...prevTodos, newTodo]);
+
       await getTodos().then(setTodos);
     } catch (error) {
       setVisibleErr(true);
@@ -177,15 +180,15 @@ export const App: React.FC = () => {
   };
 
   const handleSubmit = () => {
-    const trimedTitle = newTitle.trim();
+    // const trimedTitle = newTitle.trim();
 
-    if (newTitle === '' || trimedTitle === '') {
-      setVisibleErr(true);
-      setErrMessage('Title should not be empty');
-      resetErr();
+    // if (newTitle === '' || trimedTitle === '') {
+    //   setVisibleErr(true);
+    //   setErrMessage('Title should not be empty');
+    //   resetErr();
 
-      return;
-    }
+    //   return;
+    // }
 
     addTodo();
 
