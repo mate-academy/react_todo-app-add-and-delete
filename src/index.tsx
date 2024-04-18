@@ -7,14 +7,11 @@ import './styles/index.scss';
 import { App } from './App';
 import { TodosProvider } from './components/todosContext';
 import { FilterProvider } from './components/filterContext';
-import { ManageCheckboxProvider } from './components/manageCheckboxContext';
 
 createRoot(document.getElementById('root') as HTMLDivElement).render(
-  <ManageCheckboxProvider>
-    <FilterProvider>
-      <TodosProvider>
-        <App />
-      </TodosProvider>
-    </FilterProvider>
-  </ManageCheckboxProvider>,
+  <FilterProvider>
+    <TodosProvider>
+      <App />
+    </TodosProvider>
+  </FilterProvider>,
 );

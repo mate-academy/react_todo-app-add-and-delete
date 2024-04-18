@@ -10,17 +10,16 @@ import { USER_ID, getTodos, addTodo } from './api/todos';
 import { TodosContext } from './components/todosContext';
 import { TodosList } from './components/todosList';
 import { TodosFilter } from './components/todoFeilter';
-import { ManageCheckboxContext } from './components/manageCheckboxContext';
 import { ErrorNotification } from './components/errorNotification';
 import { Todo } from './types/Todo';
-
-import classNames from 'classnames';
+import { FilterContext } from './components/filterContext';
 
 export const App: React.FC = () => {
   const { todos, setTodos, handleDeleteTodo } = useContext(TodosContext);
-  const { isChecked, setIsChecked } = useContext(ManageCheckboxContext);
   const { setErrorMessage } = useContext(TodosContext);
   const { isSubmiting, setIsSubmiting } = useContext(TodosContext);
+  const { getFilteredTodos } = useContext(FilterContext);
+  const { selectedFilter } = useContext(FilterContext);
 
   const [inputValue, setInputValue] = useState('');
   const [tempTodo, setTempTodo] = useState<Todo | null>(null);
@@ -54,32 +53,9 @@ export const App: React.FC = () => {
     return `${howManyLeft.length} items left`;
   };
 
-  const changeAllComplete = () => {
-    return todos.map(elem => {
-      return {
-        ...elem,
-        completed: !isChecked,
-      };
-    });
-  };
-
-  const handleButtonCheckAll = () => {
-    if (todos.length === 0) {
-      return;
-    }
-
-    setIsChecked(!isChecked);
-    setTodos(changeAllComplete());
-  };
-
   if (!USER_ID) {
     return <UserWarning />;
   }
-
-  const toggleAllClass = classNames({
-    'todoapp__toggle-all': true,
-    active: isChecked,
-  });
 
   const handleInputChange = (event: ChangeEvent<HTMLInputElement>) => {
     setInputValue(event.target.value);
@@ -151,6 +127,8 @@ export const App: React.FC = () => {
   const dissableClearCompleted = () =>
     todos.every(element => !element.completed);
 
+  const filteredTodos = getFilteredTodos(selectedFilter);
+
   return (
     <div className="todoapp">
       <h1 className="todoapp__title">todos</h1>
@@ -159,9 +137,8 @@ export const App: React.FC = () => {
         <header className="todoapp__header">
           <button
             type="button"
-            className={toggleAllClass}
+            className="todoapp__toggle-all"
             data-cy="ToggleAllButton"
-            onClick={handleButtonCheckAll}
           />
 
           <form>
@@ -181,9 +158,9 @@ export const App: React.FC = () => {
 
         <section className="todoapp__main" data-cy="TodoList">
           {tempTodo ? (
-            <TodosList items={[...todos, tempTodo]} />
+            <TodosList items={[...filteredTodos, tempTodo]} />
           ) : (
-            <TodosList items={todos} />
+            <TodosList items={filteredTodos} />
           )}
         </section>
 

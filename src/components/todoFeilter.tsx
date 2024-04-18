@@ -6,7 +6,7 @@ import classNames from 'classnames';
 export const TodosFilter: React.FC = () => {
   const { selectedFilter, setSelectedFilter } = useContext(FilterContext);
 
-  const handleOnClick = (status: string) => {
+  const handleOnClick = (status: FilterStatuses) => {
     switch (status) {
       case 'All':
         setSelectedFilter(FilterStatuses.All);
