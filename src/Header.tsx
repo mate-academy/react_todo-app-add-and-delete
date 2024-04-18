@@ -4,7 +4,7 @@ import { useEffect, useRef } from 'react';
 
 type Props = {
   isLoading: number | null;
-  handleSubmit: () => void;
+  handleSubmit: (event: React.FormEvent) => void;
   newTitle: string;
   setNewTitle: (val: string) => void;
   todos: Todo[];

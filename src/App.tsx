@@ -126,9 +126,8 @@ export const App: React.FC = () => {
       try {
         setIsLoading(0);
 
-        await postTodo(newTodo);
-
         setTodos(prevTodos => [...prevTodos, newTodo]);
+        await postTodo(newTodo);
 
         await getTodos().then(setTodos);
       } catch (error) {
@@ -181,7 +180,7 @@ export const App: React.FC = () => {
     removeTodo(todo);
   };
 
-  const handleSubmit = (event: React.FormEvent<SubmitEvent>) => {
+  const handleSubmit = (event: React.FormEvent) => {
     event.preventDefault();
 
     addTodo();
