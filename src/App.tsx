@@ -33,7 +33,7 @@ export const App: React.FC = () => {
 
   const visibleTodos = filteredTodos(todos, stat);
   const editSelectedInput = useRef<HTMLInputElement>(null);
-  const selectInputTitle = useRef<HTMLInputElement>(null);
+  // const selectInputTitle = useRef<HTMLInputElement>(null);
   const isAnyCompleted = todos.some(todo => todo.completed);
 
   const resetErr = () =>
@@ -42,11 +42,11 @@ export const App: React.FC = () => {
       setErrMessage('');
     }, 3000);
 
-  useEffect(() => {
-    if (isEdited && editSelectedInput.current) {
-      editSelectedInput.current.focus();
-    }
-  }, [isEdited]);
+  // useEffect(() => {
+  //   if (isEdited && editSelectedInput.current) {
+  //     editSelectedInput.current.focus();
+  //   }
+  // }, [isEdited]);
 
   useEffect(() => {
     const loadTodos = async () => {
@@ -107,7 +107,7 @@ export const App: React.FC = () => {
   const addTodo = async () => {
     const trimedTitle = newTitle.trim();
 
-    if (newTitle === '' || trimedTitle === '') {
+    if (trimedTitle === '') {
       setVisibleErr(true);
       setErrMessage('Title should not be empty');
       resetErr();
@@ -115,28 +115,30 @@ export const App: React.FC = () => {
       return;
     }
 
-    const newTodo: Todo = {
-      id: 0,
-      userId: 472,
-      title: trimedTitle,
-      completed: false,
-    };
+    if (trimedTitle !== '') {
+      const newTodo: Todo = {
+        id: 0,
+        userId: 472,
+        title: trimedTitle,
+        completed: false,
+      };
 
-    try {
-      setIsLoading(0);
+      try {
+        setIsLoading(0);
 
-      await postTodo(newTodo);
+        await postTodo(newTodo);
 
-      setTodos(prevTodos => [...prevTodos, newTodo]);
+        setTodos(prevTodos => [...prevTodos, newTodo]);
 
-      await getTodos().then(setTodos);
-    } catch (error) {
-      setVisibleErr(true);
-      setErrMessage('Unable to add a todo');
-      resetErr();
-    } finally {
-      setIsLoading(null);
-      setNewTitle('');
+        await getTodos().then(setTodos);
+      } catch (error) {
+        setVisibleErr(true);
+        setErrMessage('Unable to add a todo');
+        resetErr();
+      } finally {
+        setIsLoading(null);
+        setNewTitle('');
+      }
     }
   };
 
@@ -179,22 +181,14 @@ export const App: React.FC = () => {
     removeTodo(todo);
   };
 
-  const handleSubmit = () => {
-    // const trimedTitle = newTitle.trim();
-
-    // if (newTitle === '' || trimedTitle === '') {
-    //   setVisibleErr(true);
-    //   setErrMessage('Title should not be empty');
-    //   resetErr();
-
-    //   return;
-    // }
+  const handleSubmit = (event: React.FormEvent<SubmitEvent>) => {
+    event.preventDefault();
 
     addTodo();
 
-    if (selectInputTitle.current) {
-      selectInputTitle.current.focus();
-    }
+    // if (selectInputTitle.current) {
+    //   selectInputTitle.current.focus();
+    // }
   };
 
   return (
