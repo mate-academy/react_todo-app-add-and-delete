@@ -7,22 +7,10 @@ export const TodosFilter: React.FC = () => {
   const { selectedFilter, setSelectedFilter } = useContext(TodosContext);
 
   const handleOnClick = (status: FilterStatuses) => {
-    switch (status) {
-      case FilterStatuses.All:
-        setSelectedFilter(FilterStatuses.All);
-        break;
-      case FilterStatuses.Active:
-        setSelectedFilter(FilterStatuses.Active);
-        break;
-      case FilterStatuses.Completed:
-        setSelectedFilter(FilterStatuses.Completed);
-        break;
-      default:
-        break;
-    }
+    setSelectedFilter(status);
   };
 
-  const getClassForMaper = (status: string) => {
+  const getFilterLinkClasses = (status: string) => {
     const maperClass = classNames({
       filter__link: true,
       selected: status === selectedFilter,
@@ -50,7 +38,7 @@ export const TodosFilter: React.FC = () => {
         <a
           key={value}
           href="#/"
-          className={getClassForMaper(value)}
+          className={getFilterLinkClasses(value)}
           data-cy={handleDataCy(value)}
           onClick={() => handleOnClick(value)}
         >

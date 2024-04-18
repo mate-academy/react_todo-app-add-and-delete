@@ -46,7 +46,7 @@ export const App: React.FC = () => {
     setErrorMessage('');
   }, [todos, setErrorMessage]);
 
-  const handleHowManyLeft = () => {
+  const getHowManyLeft = () => {
     const howManyLeft = todos.filter(todo => !todo.completed);
 
     return `${howManyLeft.length} items left`;
@@ -166,7 +166,7 @@ export const App: React.FC = () => {
         {!!todos.length && (
           <footer className="todoapp__footer" data-cy="Footer">
             <span className="todo-count" data-cy="TodosCounter">
-              {handleHowManyLeft()}
+              {getHowManyLeft()}
             </span>
 
             <nav className="filter" data-cy="Filter">
