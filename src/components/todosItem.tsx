@@ -16,7 +16,7 @@ export const TodosItem: React.FC<ItemProps> = ({ item }) => {
   const { todos, setTodos, handleDeleteTodo } = useContext(TodosContext);
   const { setIsChecked } = useContext(ManageCheckboxContext);
   const { allId } = useContext(TodosContext);
-  const { isSelected } = useContext(FilterContext);
+  const { selectedFilter } = useContext(FilterContext);
 
   if (todos.every(element => element.completed)) {
     setIsChecked(true);
@@ -44,11 +44,11 @@ export const TodosItem: React.FC<ItemProps> = ({ item }) => {
   }
 
   const toRender = () => {
-    if (isSelected === FilterStatuses.All) {
+    if (selectedFilter === FilterStatuses.All) {
       return true;
-    } else if (isSelected === FilterStatuses.Active && !item.completed) {
+    } else if (selectedFilter === FilterStatuses.Active && !item.completed) {
       return true;
-    } else if (isSelected === FilterStatuses.Completed && item.completed) {
+    } else if (selectedFilter === FilterStatuses.Completed && item.completed) {
       return true;
     } else {
       return;

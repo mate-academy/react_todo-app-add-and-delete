@@ -1,32 +1,21 @@
 import { useContext } from 'react';
 import { FilterContext } from './filterContext';
+import { FilterStatuses, FilterDataCy } from '../data/enums';
 import classNames from 'classnames';
 
 export const TodosFilter: React.FC = () => {
-  const { isSelected, setIsSelected } = useContext(FilterContext);
-
-  enum FilterStatuses {
-    All = 'All',
-    Active = 'Active',
-    Completed = 'Completed',
-  }
-
-  enum FilterDataCy {
-    All = 'FilterLinkAll',
-    Active = 'FilterLinkActive',
-    Completed = 'FilterLinkCompleted',
-  }
+  const { selectedFilter, setSelectedFilter } = useContext(FilterContext);
 
   const handleOnClick = (status: string) => {
     switch (status) {
       case 'All':
-        setIsSelected(FilterStatuses.All);
+        setSelectedFilter(FilterStatuses.All);
         break;
       case 'Active':
-        setIsSelected(FilterStatuses.Active);
+        setSelectedFilter(FilterStatuses.Active);
         break;
       case 'Completed':
-        setIsSelected(FilterStatuses.Completed);
+        setSelectedFilter(FilterStatuses.Completed);
         break;
       default:
         break;
@@ -36,19 +25,13 @@ export const TodosFilter: React.FC = () => {
   const getClassForMaper = (status: string) => {
     const maperClass = classNames({
       filter__link: true,
-      selected: status === isSelected,
+      selected: status === selectedFilter,
     });
 
     return maperClass;
   };
 
-  const filterStatuses = {
-    All: 'All',
-    Active: 'Active',
-    Completed: 'Completed',
-  };
-
-  const handleDataCy = (status: string) => {
+  const handleDataCy = (status: FilterStatuses) => {
     switch (status) {
       case 'All':
         return FilterDataCy.All;
@@ -63,7 +46,7 @@ export const TodosFilter: React.FC = () => {
 
   return (
     <>
-      {Object.values(filterStatuses).map(value => (
+      {Object.values(FilterStatuses).map(value => (
         <a
           key={value}
           href="#/"

@@ -1,9 +1,10 @@
 /* eslint-disable @typescript-eslint/no-unused-vars */
 import React, { useMemo, useState } from 'react';
+import { FilterStatuses } from '../data/enums';
 
 export const FilterContext = React.createContext({
-  isSelected: 'All',
-  setIsSelected: (_isSelected: string) => {},
+  selectedFilter: 'All',
+  setSelectedFilter: (_selectedFilter: string) => {},
 });
 
 type PropsCompleted = {
@@ -11,14 +12,14 @@ type PropsCompleted = {
 };
 
 export const FilterProvider: React.FC<PropsCompleted> = ({ children }) => {
-  const [isSelected, setIsSelected] = useState('All');
+  const [selectedFilter, setSelectedFilter] = useState(FilterStatuses.All);
 
   const value = useMemo(
     () => ({
-      isSelected,
-      setIsSelected,
+      selectedFilter,
+      setSelectedFilter,
     }),
-    [isSelected, setIsSelected],
+    [selectedFilter, setSelectedFilter],
   );
 
   return (

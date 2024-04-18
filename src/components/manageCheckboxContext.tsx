@@ -3,7 +3,7 @@ import React, { useMemo, useState } from 'react';
 
 export const ManageCheckboxContext = React.createContext({
   isChecked: false,
-  setIsChecked: (isChecked: boolean) => {},
+  setIsChecked: (_isChecked: boolean) => {},
 });
 
 type PropsIsItChecked = {
