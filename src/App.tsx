@@ -105,13 +105,6 @@ export const App: React.FC = () => {
   };
 
   const addTodo = async () => {
-    const newTodo: Todo = {
-      id: 0,
-      userId: 472,
-      title: newTitle,
-      completed: false,
-    };
-
     const trimedTitle = newTitle.trim();
 
     if (newTitle === '' || trimedTitle === '') {
@@ -121,6 +114,13 @@ export const App: React.FC = () => {
 
       return;
     }
+
+    const newTodo: Todo = {
+      id: 0,
+      userId: 472,
+      title: trimedTitle,
+      completed: false,
+    };
 
     try {
       setIsLoading(0);
@@ -282,7 +282,7 @@ export const App: React.FC = () => {
           data-cy="HideErrorButton"
           type="button"
           className="delete"
-          onClick={() => setErrMessage('')}
+          onClick={() => setVisibleErr(false)}
         />
         {errMessage}
       </div>
