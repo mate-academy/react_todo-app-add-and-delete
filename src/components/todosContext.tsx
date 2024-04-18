@@ -1,7 +1,7 @@
 /* eslint-disable @typescript-eslint/no-unused-vars */
 import React, { useMemo, useState } from 'react';
 import { deleteTodo } from '../api/todos';
-import { FilterStatuses, FilterDataCy } from '../data/enums';
+import { FilterStatuses } from '../data/enums';
 
 type Todo = {
   id: number;
