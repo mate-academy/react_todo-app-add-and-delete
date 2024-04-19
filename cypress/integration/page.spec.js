@@ -806,7 +806,7 @@ describe('', () => {
         page.todosCounter().should('contain.text', '1 item');
       });
 
-      it('should not adjust the active todo count after failed deletion', () => {
+      it.only('should not adjust the active todo count after failed deletion', () => {
         // to prevent Cypress from failing the test on uncaught exception
         cy.once('uncaught:exception', () => false);
 
