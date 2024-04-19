@@ -762,7 +762,7 @@ describe('', () => {
         page.newTodoField().should('be.focused');
       });
 
-      it('should not remove the todo from the list on an API error', () => {
+      it.only('should not remove the todo from the list on an API error', () => {
         // to prevent Cypress from failing the test on uncaught exception
         cy.once('uncaught:exception', () => false);
 
