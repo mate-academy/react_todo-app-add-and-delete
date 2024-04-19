@@ -150,7 +150,7 @@ export const App: React.FC = () => {
 
       todos.filter(todo => todo.id !== todoToRmove.id);
 
-      // getTodos().then(setTodos);
+      getTodos().then(setTodos);
     } catch {
       setVisibleErr(true);
       setErrMessage('Unable to delete a todo');
