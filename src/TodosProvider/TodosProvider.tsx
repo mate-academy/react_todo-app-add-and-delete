@@ -7,6 +7,8 @@ type Props = {
 };
 
 type ContextType = {
+  isSelected: Todo | null;
+  setIsSelected: (v: Todo | null) => void;
   handleDelete: (id: number) => void;
   isLoadingToDelete: boolean;
   setIsLoadingToDelete: (v: boolean) => void;
@@ -15,8 +17,6 @@ type ContextType = {
   fucused: Date;
   setFocused: (v: Date) => void;
   filterTodos: (list: Todo[], filterBy: string) => Todo[];
-  isLoadingToTemporary: boolean;
-  setIsLoadingToTemporary: (v: boolean) => void;
   isDisabled: boolean;
   setIdDisabled: (v: boolean) => void;
   isCompleted: boolean;
@@ -30,6 +30,8 @@ type ContextType = {
 };
 
 export const TodosContext = createContext<ContextType>({
+  isSelected: null,
+  setIsSelected: () => {},
   handleDelete: () => {},
   isLoadingToDelete: false,
   setIsLoadingToDelete: () => {},
@@ -38,8 +40,6 @@ export const TodosContext = createContext<ContextType>({
   fucused: new Date(),
   setFocused: () => {},
   filterTodos: () => [],
-  isLoadingToTemporary: false,
-  setIsLoadingToTemporary: () => {},
   isDisabled: false,
   setIdDisabled: () => {},
   isCompleted: false,
@@ -54,13 +54,14 @@ export const TodosContext = createContext<ContextType>({
 
 export const TodosProvider: React.FC<Props> = ({ children }) => {
   const [todos, setTodos] = useState<Todo[]>([]);
+
   const [tempTodo, setTempTodo] = useState<Todo | null>(null);
   const [errorMessage, setErrorMessage] = useState('');
   const [isCompleted, setIsCompleted] = useState(false);
   const [isDisabled, setIdDisabled] = useState(false);
-  const [isLoadingToTemporary, setIsLoadingToTemporary] = useState(false);
   const [fucused, setFocused] = useState(new Date());
   const [isLoadingToDelete, setIsLoadingToDelete] = useState(false);
+  const [isSelected, setIsSelected] = useState<Todo | null>(null);
 
   useEffect(() => {
     setErrorMessage('');
@@ -160,6 +161,8 @@ export const TodosProvider: React.FC<Props> = ({ children }) => {
   };
 
   const todosTools = {
+    isSelected,
+    setIsSelected,
     handleDelete,
     isLoadingToDelete,
     setIsLoadingToDelete,
@@ -178,8 +181,6 @@ export const TodosProvider: React.FC<Props> = ({ children }) => {
     setErrorMessage,
     isDisabled,
     setIdDisabled,
-    isLoadingToTemporary,
-    setIsLoadingToTemporary,
   };
 
   return (

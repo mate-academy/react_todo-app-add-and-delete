@@ -9,13 +9,20 @@ type Props = {
 };
 
 export const TodoItem: React.FC<Props> = ({ todo }) => {
-  const { handleComplete, isCompleted, handleDelete, isLoadingToDelete } =
-    useContext(TodosContext);
+  const {
+    handleComplete,
+    isCompleted,
+    handleDelete,
+    isSelected,
+    setIsSelected,
+  } = useContext(TodosContext);
 
   return (
     <div
       data-cy="Todo"
-      className={classNames('todo', { completed: todo.completed })}
+      className={classNames('todo', {
+        completed: todo.completed,
+      })}
     >
       <label className="todo__status-label">
         <input
@@ -35,7 +42,10 @@ export const TodoItem: React.FC<Props> = ({ todo }) => {
         type="button"
         className="todo__remove"
         data-cy="TodoDelete"
-        onClick={() => handleDelete(todo.id)}
+        onClick={() => {
+          handleDelete(todo.id);
+          setIsSelected(todo);
+        }}
       >
         ×
       </button>
@@ -43,7 +53,7 @@ export const TodoItem: React.FC<Props> = ({ todo }) => {
       <div
         data-cy="TodoLoader"
         className={classNames('modal overlay', {
-          'is-active': isLoadingToDelete,
+          'is-active': isSelected?.id === todo.id,
         })}
       >
         <div className="modal-background has-background-white-ter" />

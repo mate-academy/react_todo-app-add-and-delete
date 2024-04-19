@@ -1,4 +1,4 @@
-import { useContext, useEffect, useRef, useState } from 'react';
+import React, { useContext, useEffect, useRef, useState } from 'react';
 import { USER_ID, createTodo } from '../api/todos';
 import { TodosContext } from '../TodosProvider/TodosProvider';
 
@@ -12,10 +12,10 @@ export const TodoHeader: React.FC = () => {
     setTempTodo,
     isCompleted,
     setIdDisabled,
-    setIsLoadingToTemporary,
     fucused,
     setFocused,
     isDisabled,
+    setIsSelected,
   } = useContext(TodosContext);
 
   useEffect(() => {
@@ -25,6 +25,7 @@ export const TodoHeader: React.FC = () => {
   }, [fucused]);
 
   let isError = false;
+
   const onSubmit = (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
 
@@ -49,7 +50,7 @@ export const TodoHeader: React.FC = () => {
     };
 
     setTempTodo(temporaryTodo);
-    setIsLoadingToTemporary(true);
+    setIsSelected(temporaryTodo);
     setIdDisabled(true);
 
     createTodo(newTodo)
@@ -66,7 +67,7 @@ export const TodoHeader: React.FC = () => {
       })
       .finally(() => {
         setFocused(new Date());
-        setIsLoadingToTemporary(false);
+        setIsSelected(null);
         setIdDisabled(false);
         setTempTodo(null);
         setTimeout(() => {

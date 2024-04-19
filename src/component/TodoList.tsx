@@ -1,14 +1,11 @@
 /* eslint-disable jsx-a11y/label-has-associated-control */
 import { useContext } from 'react';
 import { TodoItem } from './TodoItem';
-import { TempTodo } from './TempTodo';
 import { TodosContext } from '../TodosProvider/TodosProvider';
 import { useLocation } from 'react-router-dom';
-type Props = {
-  isCompleted: boolean;
-};
+import { CSSTransition, TransitionGroup } from 'react-transition-group';
 
-export const TodoList: React.FC<Props> = () => {
+export const TodoList: React.FC = () => {
   const { todos, filterTodos, tempTodo } = useContext(TodosContext);
   const location = useLocation();
   const filteredTodos = filterTodos(todos, location.hash);
@@ -47,12 +44,19 @@ export const TodoList: React.FC<Props> = () => {
       </div> */}
 
       {/* This todo is an active todo */}
-      {filteredTodos.map(todo => (
-        <TodoItem key={todo.id} todo={todo} />
-      ))}
-      {tempTodo !== null && <TempTodo key={tempTodo.id} tempTodo={tempTodo} />}
-      {/* This todo is being edited */}
-      {/* <div data-cy="Todo" className="todo">
+      <TransitionGroup>
+        {filteredTodos.map(todo => (
+          <CSSTransition key={todo.id} timeout={300} classNames="item">
+            <TodoItem key={todo.id} todo={todo} />
+          </CSSTransition>
+        ))}
+        {tempTodo !== null && (
+          <CSSTransition key={0} timeout={300} classNames="temp-item">
+            <TodoItem key={tempTodo.id} todo={tempTodo} />
+          </CSSTransition>
+        )}
+        {/* This todo is being edited */}
+        {/* <div data-cy="Todo" className="todo">
         <label className="todo__status-label">
           <input
             data-cy="TodoStatus"
@@ -61,8 +65,8 @@ export const TodoList: React.FC<Props> = () => {
           />
         </label> */}
 
-      {/* This form is shown instead of the title and remove button */}
-      {/* <form>
+        {/* This form is shown instead of the title and remove button */}
+        {/* <form>
           <input
             data-cy="TodoTitleField"
             type="text"
@@ -78,8 +82,8 @@ export const TodoList: React.FC<Props> = () => {
         </div>
       </div> */}
 
-      {/* This todo is in loadind state */}
-      {/* <div data-cy="Todo" className="todo">
+        {/* This todo is in loadind state */}
+        {/* <div data-cy="Todo" className="todo">
         <label className="todo__status-label">
           <input
             data-cy="TodoStatus"
@@ -100,12 +104,13 @@ export const TodoList: React.FC<Props> = () => {
           ×
         </button> */}
 
-      {/* 'is-active' class puts this modal on top of the todo */}
-      {/* <div data-cy="TodoLoader" className="modal overlay is-active">
+        {/* 'is-active' class puts this modal on top of the todo */}
+        {/* <div data-cy="TodoLoader" className="modal overlay is-active">
           <div className="modal-background has-background-white-ter" />
           <div className="loader" />
         </div>
       </div> */}
+      </TransitionGroup>
     </section>
   );
 };

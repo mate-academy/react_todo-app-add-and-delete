@@ -8,7 +8,7 @@ import { TodoHeader } from './component/TodoHeader';
 import { TodoError } from './component/TodoError';
 
 export const App: React.FC = () => {
-  const { todos, isCompleted } = useContext(TodosContext);
+  const { todos } = useContext(TodosContext);
 
   if (!USER_ID) {
     return <UserWarning />;
@@ -22,7 +22,8 @@ export const App: React.FC = () => {
         <header className="todoapp__header">
           <TodoHeader />
         </header>
-        {todos.length > 0 && <TodoList isCompleted={isCompleted} />}
+
+        {todos.length > 0 && <TodoList />}
 
         {todos.length > 0 && <TodoFooter />}
       </div>
