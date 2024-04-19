@@ -64,7 +64,8 @@ Remove all the completed todos after the `Clear completed` button click:
 
   Use [React Transition Group](https://reactcommunity.org/react-transition-group/transition-group)
 
-  `  `tsx
+  `
+   `tsx
   <section className="todoapp__main" data-cy="TodoList">
     <TransitionGroup>
       {visibleTodos.map(todo => (
