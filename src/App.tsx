@@ -17,6 +17,7 @@ export const App: React.FC = () => {
     todos,
     setTodos,
     filter,
+    tempTodo,
     errorMessage,
     setErrorMessage,
     updatedAt,
@@ -69,7 +70,11 @@ export const App: React.FC = () => {
         <Header />
         {todos.length > 0 && (
           <>
-            <TodoList todos={displayedTodos} updatedAt={updatedAt} />
+            <TodoList
+              todos={displayedTodos}
+              updatedAt={updatedAt}
+              tempTodo={tempTodo}
+            />
             <Footer />
           </>
         )}

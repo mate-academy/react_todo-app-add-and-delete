@@ -50,6 +50,7 @@ export const Header: React.FC = () => {
         })
         .catch(error => {
           setErrorMessage(errorText.failAdding);
+          setTempTodo(null);
           throw error;
         })
         .then(() => setTitle(''))
