@@ -148,8 +148,6 @@ export const App: React.FC = () => {
 
       await deleteTodo(todoToRmove.id);
 
-      todos.filter(todo => todo.id !== todoToRmove.id);
-
       getTodos().then(setTodos);
     } catch {
       setVisibleErr(true);
