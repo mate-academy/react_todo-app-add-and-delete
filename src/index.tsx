@@ -6,9 +6,12 @@ import '@fortawesome/fontawesome-free/css/all.css';
 import './styles/index.scss';
 
 import { App } from './App';
+import { TodosProvider } from './TodosProvider/TodosProvider';
 
 createRoot(document.getElementById('root') as HTMLDivElement).render(
   <BrowserRouter>
-    <App />
+    <TodosProvider>
+      <App />
+    </TodosProvider>
   </BrowserRouter>,
 );
