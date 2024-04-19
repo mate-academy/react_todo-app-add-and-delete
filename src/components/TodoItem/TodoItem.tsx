@@ -4,6 +4,7 @@ import { Errors } from '../../types/Errors';
 import { Todo } from '../../types/Todo';
 import { DispatchContext, StateContext } from '../../utils/GlobalStateProvider';
 import { Loader } from '../Loader';
+import classNames from 'classnames';
 
 type Props = {
   todo: Todo;
@@ -32,22 +33,27 @@ export const TodoItem: React.FC<Props> = ({ todo, handleError }) => {
         }
 
         handleError(Errors.deletingError);
-        throw error;
       })
-      .finally(() => {
+      .then(() => {
         if (!isError) {
           dispatch({
             type: 'setTodos',
             payload: todos.filter(prevTodo => todo.id !== prevTodo.id),
           });
         }
-
+      })
+      .finally(() => {
         dispatch({ type: 'setDeletingList', payload: [] });
       });
   };
 
   return (
-    <div data-cy="Todo" className={'todo' + (completed ? ' completed' : '')}>
+    <div
+      data-cy="Todo"
+      className={classNames('todo', {
+        completed,
+      })}
+    >
       <label className="todo__status-label">
         <input
           data-cy="TodoStatus"
@@ -70,6 +76,7 @@ export const TodoItem: React.FC<Props> = ({ todo, handleError }) => {
       >
         ×
       </button>
+
       <Loader deletingList={deletingList} todoId={todo.id} />
     </div>
   );

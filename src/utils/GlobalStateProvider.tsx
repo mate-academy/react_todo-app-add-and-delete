@@ -82,7 +82,7 @@ function reducer(state: State, action: Action): State {
 
 export const StateContext = React.createContext(initialState);
 /* eslint-disable @typescript-eslint/no-unused-vars */
-export const DispatchContext = React.createContext((action: Action) => {});
+export const DispatchContext = React.createContext((_action: Action) => {});
 
 type Props = {
   children: React.ReactNode;

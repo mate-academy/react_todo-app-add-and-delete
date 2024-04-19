@@ -1,4 +1,4 @@
-import React, { useContext, useEffect, useMemo, useRef } from 'react';
+import React, { useContext, useEffect, useMemo, useRef, useState } from 'react';
 import cn from 'classnames';
 
 import { UserWarning } from './UserWarning';
@@ -9,45 +9,29 @@ import { Filter } from './types/Filter';
 import { Errors } from './types/Errors';
 import { DispatchContext, StateContext } from './utils/GlobalStateProvider';
 
-// function debounce(callback: Function, delay: number) {
-//   let timerId = 0;
-
-//   window.clearTimeout(timerId);
-//   return (...args: any) => {
-//     timerId = window.setTimeout(() => {
-//       callback(...args);
-//     }, delay);
-//   };
-// }
-
 export const App: React.FC = () => {
   const dispatch = useContext(DispatchContext);
   const { title, filter, todos, isDisabled, tempTodo, error } =
     useContext(StateContext);
+  const [isHidden, setIsHidden] = useState(false);
 
-  //#region useRef
-  const cancelRef = useRef<HTMLDivElement>(null);
   const inputRef = useRef<HTMLInputElement>(null);
-  const timerErrorId = useRef<number | null>(null);
-  //#endregion
+  const isNoCompletedTodos = todos.filter(todo => todo.completed).length === 0;
+  let timerErrorId = 0;
 
   //#region handlers
   const handleError = (errorMessage: Errors, delay = 3000) => {
     dispatch({ type: 'setError', payload: errorMessage });
+    setIsHidden(false);
 
-    if (timerErrorId.current) {
-      window.clearTimeout(timerErrorId.current);
+    if (timerErrorId) {
+      window.clearTimeout(timerErrorId);
     }
 
-    timerErrorId.current = window.setTimeout(() => {
+    timerErrorId = window.setTimeout(() => {
       dispatch({ type: 'setError', payload: Errors.reset });
     }, delay);
   };
-
-  // const applyQuery = useCallback(
-  //   debounce(setTitle, 300),
-  //   [],
-  // );
 
   const filteredTodos = () => {
     switch (filter) {
@@ -74,12 +58,6 @@ export const App: React.FC = () => {
     0,
   );
 
-  const handleCancel = () => {
-    if (cancelRef.current) {
-      cancelRef.current.classList.add('hidden');
-    }
-  };
-
   const handleDeleteAll = () => {
     const deletingIds = todos
       .filter(todo => todo.completed)
@@ -105,10 +83,6 @@ export const App: React.FC = () => {
             ),
           });
         });
-      })
-
-      .catch(promiseError => {
-        throw promiseError;
       })
 
       .finally(() => {
@@ -169,8 +143,6 @@ export const App: React.FC = () => {
 
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     dispatch({ type: 'setTitle', payload: e.target.value });
-    // setTitle(e.target.value);
-    // applyQuery(e.target.value);
   };
 
   //#endregion
@@ -248,7 +220,7 @@ export const App: React.FC = () => {
               className="todoapp__clear-completed"
               data-cy="ClearCompletedButton"
               onClick={handleDeleteAll}
-              disabled={todos.filter(todo => todo.completed).length === 0}
+              disabled={isNoCompletedTodos}
             >
               Clear completed
             </button>
@@ -261,16 +233,15 @@ export const App: React.FC = () => {
         className={cn(
           'notification is-danger is-light has-text-weight-normal',
           {
-            hidden: error.length === 0,
+            hidden: error.length === 0 || isHidden,
           },
         )}
-        ref={cancelRef}
       >
         <button
           data-cy="HideErrorButton"
           type="button"
           className="delete"
-          onClick={handleCancel}
+          onClick={() => setIsHidden(true)}
         />
         {error}
       </div>
