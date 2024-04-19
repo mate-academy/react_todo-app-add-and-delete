@@ -16,8 +16,12 @@ export const App: React.FC = () => {
   const [title, setTitle] = useState('');
   const [isCompleted, setIsCompleted] = useState(false);
   const [isDisabled, setIdDisabled] = useState(false);
+  const [isLoadingToDelete, setIsLoadingToDelete] = useState(false);
+  const [isLoadingToTemporary, setIsLoadingToTemporary] = useState(false);
+  const [fucused, setFocused] = useState(new Date());
   const focus = useRef<HTMLInputElement>(null);
   const location = useLocation();
+  let isError = false;
 
   function filterTodos(list: Todo[], filterBy: string) {
     switch (filterBy) {
@@ -33,12 +37,13 @@ export const App: React.FC = () => {
   }
 
   const filteredTodos = filterTodos(todos, location.hash);
+  const visibleClearCompleted = todos.some(todo => todo.completed);
 
   useEffect(() => {
     if (focus.current) {
       focus.current.focus();
     }
-  }, [isDisabled]);
+  }, [fucused]);
 
   useEffect(() => {
     setErrorMessage('');
@@ -84,6 +89,7 @@ export const App: React.FC = () => {
     };
 
     setTempTodo(temporaryTodo);
+    setIsLoadingToTemporary(true);
     setIdDisabled(true);
 
     createTodo(newTodo)
@@ -91,17 +97,26 @@ export const App: React.FC = () => {
         return setTodos(prevTodo => [...prevTodo, handleTodo]);
       })
       .catch(error => {
+        isError = true;
+
         setErrorMessage('Unable to add a todo');
-        throw error;
+        setTimeout(() => {
+          throw error;
+        }, 3000);
       })
       .finally(() => {
+        setFocused(new Date());
+        setIsLoadingToTemporary(false);
         setIdDisabled(false);
         setTempTodo(null);
-        setTitle('');
         setTimeout(() => {
           setErrorMessage('');
         }, 3000);
+        if (!isError) {
+          setTitle('');
+        }
       });
+    isError = false;
   };
 
   const handleComplete = (todoId: number, status: boolean) => {
@@ -124,21 +139,54 @@ export const App: React.FC = () => {
   };
 
   const handleDelete = (todoId: number) => {
-    setTodos(currentTodos => {
-      let copyCurrentTodos = [...currentTodos];
+    setIsLoadingToDelete(true);
 
-      copyCurrentTodos = copyCurrentTodos.filter(todo => todo.id !== todoId);
-
-      return [...copyCurrentTodos];
-    });
-
-    deleteTodo(todoId)
+    return deleteTodo(todoId)
       .then(() => {})
       .catch(error => {
-        setErrorMessage('Unable to add a todo');
+        setErrorMessage('Unable to delete a todo');
         setTodos(todos);
         throw error;
+      })
+      .finally(() => {
+        setTodos(currentTodos => {
+          let copyCurrentTodos = [...currentTodos];
+
+          copyCurrentTodos = copyCurrentTodos.filter(
+            todo => todo.id !== todoId,
+          );
+
+          return [...copyCurrentTodos];
+        });
+        setFocused(new Date());
+        setIsLoadingToDelete(false);
       });
+  };
+
+  const handleClearCompleted = () => {
+    todos.forEach(todo => {
+      if (todo.completed) {
+        deleteTodo(todo.id)
+          .then(() =>
+            setTodos(prevTodo => {
+              const copyTodo = [...prevTodo];
+
+              const index = copyTodo.findIndex(fTodo => fTodo.id === todo.id);
+
+              copyTodo.splice(index, 1);
+
+              return [...copyTodo];
+            }),
+          )
+          .catch(error => {
+            setErrorMessage('Unable to delete a todo');
+            setTodos(todos);
+
+            throw error;
+          })
+          .finally(() => setFocused(new Date()));
+      }
+    });
   };
 
   return (
@@ -214,7 +262,7 @@ export const App: React.FC = () => {
                       data-cy="TodoStatus"
                       type="checkbox"
                       className="todo__status"
-                      checked={isCompleted}
+                      checked={isCompleted ? isCompleted : todo.completed}
                       onChange={() => handleComplete(todo.id, !todo.completed)}
                     />
                   </label>
@@ -232,7 +280,12 @@ export const App: React.FC = () => {
                     ×
                   </button>
 
-                  <div data-cy="TodoLoader" className="modal overlay">
+                  <div
+                    data-cy="TodoLoader"
+                    className={classNames('modal overlay', {
+                      'is-active': isLoadingToDelete,
+                    })}
+                  >
                     <div className="modal-background has-background-white-ter" />
                     <div className="loader" />
                   </div>
@@ -271,7 +324,12 @@ export const App: React.FC = () => {
                     ×
                   </button>
 
-                  <div data-cy="TodoLoader" className="modal overlay is-active">
+                  <div
+                    data-cy="TodoLoader"
+                    className={classNames('modal overlay', {
+                      'is-active': isLoadingToTemporary,
+                    })}
+                  >
                     <div className="modal-background has-background-white-ter" />
                     <div className="loader" />
                   </div>
@@ -381,6 +439,8 @@ export const App: React.FC = () => {
                 type="button"
                 className="todoapp__clear-completed"
                 data-cy="ClearCompletedButton"
+                disabled={!visibleClearCompleted}
+                onClick={handleClearCompleted}
               >
                 Clear completed
               </button>
@@ -413,7 +473,7 @@ export const App: React.FC = () => {
         {errorMessage === 'Unable to delete a todo' &&
           'Unable to delete a todo'}
         <br />
-        {errorMessage === 'Unable to delete a todo' &&
+        {errorMessage === 'Unable to update a todo' &&
           'Unable to update a todo'}
       </div>
     </div>
