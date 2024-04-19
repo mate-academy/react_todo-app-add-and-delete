@@ -1,22 +1,36 @@
 import { Todo } from './types/Todo';
 import { Status } from './enums/status';
 import cn from 'classnames';
+import { deleteTodo, getTodos } from './api/todos';
 
 type Props = {
   todos: Todo[];
   isAnyCompleted: boolean;
   stat: Status;
+  setTodos: (todos: Todo[]) => void;
   setStat: (x: Status) => void;
 };
 
-export const Footer = ({ todos, isAnyCompleted, setStat, stat }: Props) => {
+export const Footer = ({
+  todos,
+  setTodos,
+  isAnyCompleted,
+  setStat,
+  stat,
+}: Props) => {
   const notActive = todos.reduce(
     (acc, todo) => (todo.completed === false ? acc + 1 : acc),
     0,
   );
 
   const handleDeleteActiv = () => {
-    //delete all active
+    const comletedTodo = todos.filter(todo => todo.completed);
+
+    comletedTodo.map(todo => {
+      deleteTodo(todo.id);
+    });
+
+    getTodos().then(setTodos);
   };
 
   return (

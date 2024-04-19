@@ -44,7 +44,7 @@ export const App: React.FC = () => {
     setTimeout(() => {
       setVisibleErr(false);
       setErrMessage('');
-    }, 3000);
+    }, 2500);
 
   useEffect(() => {
     const loadTodos = async () => {
@@ -82,17 +82,9 @@ export const App: React.FC = () => {
 
       await patchTodo(newTodo);
 
-      await getTodos().then(setTodos);
+      const updatedTodos = await getTodos();
 
-      // setTodos(prevTodos => {
-      //   return prevTodos.map(todo => {
-      //     if (todo.id === updatedTodo.id) {
-      //       return { ...todo, ...newTodo };
-      //     }
-
-      //     return todo;
-      //   });
-      // });
+      setTodos(updatedTodos);
     } catch {
       setVisibleErr(true);
       setErrMessage('Unable to update a todo');
@@ -136,16 +128,16 @@ export const App: React.FC = () => {
         await postTodo(newTodo).then(respond => {
           setTempTodo(null);
           setTodos(prevTodos => [...prevTodos, respond]);
+          setNewTitle('');
         });
-
-        await getTodos().then(setTodos);
       } catch (error) {
+        setIsLoading(null);
+        setTempTodo(null);
         setVisibleErr(true);
         setErrMessage('Unable to add a todo');
         resetErr();
       } finally {
         setIsLoading(null);
-        setNewTitle('');
       }
     }
   };
@@ -157,9 +149,6 @@ export const App: React.FC = () => {
       await deleteTodo(todoToRmove.id);
 
       getTodos().then(setTodos);
-      // setTodos(prevTodos => {
-      //   return prevTodos.filter(todo => todo.id !== todoToRmove.id);
-      // });
     } catch {
       setVisibleErr(true);
       setErrMessage('Unable to delete a todo');
@@ -205,6 +194,8 @@ export const App: React.FC = () => {
 
       <div className="todoapp__content">
         <Header
+          setIsLoading={setIsLoading}
+          setTodos={setTodos}
           isLoading={isLoading}
           todos={todos}
           handleSubmit={handleSubmit}
@@ -268,6 +259,7 @@ export const App: React.FC = () => {
 
         {todos.length > 0 && (
           <Footer
+            setTodos={setTodos}
             stat={stat}
             todos={todos}
             isAnyCompleted={isAnyCompleted}
