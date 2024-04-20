@@ -1,9 +1,11 @@
-import React, { useContext, useState } from 'react';
+import React, { useContext, useEffect, useRef, useState } from 'react';
 import { USER_ID, createTodo } from '../api/todos';
 import { TodosContext } from '../TodosProvider/TodosProvider';
 
 export const TodoHeader: React.FC = () => {
   const [title, setTitle] = useState('');
+  const focus = useRef<HTMLInputElement>(null);
+
   const {
     todos,
     setTodos,
@@ -15,10 +17,16 @@ export const TodoHeader: React.FC = () => {
     isDisabled,
     setIsSelected,
     setLoadingIds,
-    focus,
+    focused,
   } = useContext(TodosContext);
 
   let isError = false;
+
+  useEffect(() => {
+    if (focus.current) {
+      focus.current.focus();
+    }
+  }, [focused]);
 
   const onSubmit = (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();

@@ -1,4 +1,4 @@
-import { createContext, useEffect, useRef, useState } from 'react';
+import { createContext, useEffect, useState } from 'react';
 import { Todo } from '../types/Todo';
 import { deleteTodo, getTodos } from '../api/todos';
 import { Filter } from '../enum/Filter';
@@ -8,7 +8,7 @@ type Props = {
 };
 
 type ContextType = {
-  focus: React.RefObject<HTMLInputElement> | null;
+  focused: Date;
   loadingIds: number[];
   setLoadingIds: (v: number[]) => void;
   isSelected: Todo | null;
@@ -31,7 +31,7 @@ type ContextType = {
 };
 
 export const TodosContext = createContext<ContextType>({
-  focus: null,
+  focused: new Date(),
   loadingIds: [],
   setLoadingIds: () => [],
   isSelected: null,
@@ -63,7 +63,6 @@ export const TodosProvider: React.FC<Props> = ({ children }) => {
   const [focused, setFocused] = useState(new Date());
   const [isSelected, setIsSelected] = useState<Todo | null>(null);
   const [loadingIds, setLoadingIds] = useState<number[]>([]);
-  const focus = useRef<HTMLInputElement>(null);
 
   useEffect(() => {
     setErrorMessage('');
@@ -77,12 +76,6 @@ export const TodosProvider: React.FC<Props> = ({ children }) => {
       setErrorMessage('');
     }, 3000);
   }, []);
-
-  useEffect(() => {
-    if (focus.current) {
-      focus.current.focus();
-    }
-  }, [fucused]);
 
   const handleDelete = (todoId: number) => {
     setLoadingIds([...loadingIds, todoId]);
@@ -143,7 +136,7 @@ export const TodosProvider: React.FC<Props> = ({ children }) => {
   };
 
   const todosTools = {
-    focus,
+    focused,
     loadingIds,
     setLoadingIds,
     isSelected,
