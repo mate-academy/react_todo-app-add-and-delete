@@ -1,4 +1,4 @@
-import { createContext, useEffect, useState } from 'react';
+import { createContext, useEffect, useRef, useState } from 'react';
 import { Todo } from '../types/Todo';
 import { deleteTodo, getTodos } from '../api/todos';
 import { Filter } from '../enum/Filter';
@@ -8,6 +8,7 @@ type Props = {
 };
 
 type ContextType = {
+  focus: React.RefObject<HTMLInputElement> | null;
   loadingIds: number[];
   setLoadingIds: (v: number[]) => void;
   isSelected: Todo | null;
@@ -15,7 +16,6 @@ type ContextType = {
   handleDelete: (id: number) => void;
   handleComplete: (todoId: number, status: boolean) => void;
   handleClearCompleted: () => void;
-  fucused: Date;
   setFocused: (v: Date) => void;
   filterTodos: (list: Todo[], filterBy: string) => Todo[];
   isDisabled: boolean;
@@ -31,6 +31,7 @@ type ContextType = {
 };
 
 export const TodosContext = createContext<ContextType>({
+  focus: null,
   loadingIds: [],
   setLoadingIds: () => [],
   isSelected: null,
@@ -38,7 +39,6 @@ export const TodosContext = createContext<ContextType>({
   handleDelete: () => {},
   handleComplete: () => [],
   handleClearCompleted: () => {},
-  fucused: new Date(),
   setFocused: () => {},
   filterTodos: () => [],
   isDisabled: false,
@@ -63,6 +63,7 @@ export const TodosProvider: React.FC<Props> = ({ children }) => {
   const [fucused, setFocused] = useState(new Date());
   const [isSelected, setIsSelected] = useState<Todo | null>(null);
   const [loadingIds, setLoadingIds] = useState<number[]>([]);
+  const focus = useRef<HTMLInputElement>(null);
 
   useEffect(() => {
     setErrorMessage('');
@@ -70,13 +71,18 @@ export const TodosProvider: React.FC<Props> = ({ children }) => {
       .then(setTodos)
       .catch(() => {
         setErrorMessage('Unable to load todos');
-        // throw error; // чому тут не потрібно прокидувати помилку throw error
       });
 
     setTimeout(() => {
       setErrorMessage('');
     }, 3000);
   }, []);
+
+  useEffect(() => {
+    if (focus.current) {
+      focus.current.focus();
+    }
+  }, [fucused]);
 
   const handleDelete = (todoId: number) => {
     setLoadingIds([...loadingIds, todoId]);
@@ -113,25 +119,6 @@ export const TodosProvider: React.FC<Props> = ({ children }) => {
     todos.forEach(todo => {
       if (todo.completed) {
         handleDelete(todo.id);
-        // deleteTodo(todo.id)
-        //   .then(() =>
-        //     setTodos(prevTodo => {
-        //       const copyTodo = [...prevTodo];
-
-        //       const index = copyTodo.findIndex(fTodo => fTodo.id === todo.id);
-
-        //       copyTodo.splice(index, 1);
-
-        //       return [...copyTodo];
-        //     }),
-        //   )
-        //   .catch(error => {
-        //     setErrorMessage('Unable to delete a todo');
-        //     // setTodos(todos);
-
-        //     throw error;
-        //   })
-        //   .finally(() => setFocused(new Date()));
       }
     });
   };
@@ -156,6 +143,7 @@ export const TodosProvider: React.FC<Props> = ({ children }) => {
   };
 
   const todosTools = {
+    focus,
     loadingIds,
     setLoadingIds,
     isSelected,
@@ -163,7 +151,6 @@ export const TodosProvider: React.FC<Props> = ({ children }) => {
     handleDelete,
     handleComplete,
     handleClearCompleted,
-    fucused,
     setFocused,
     filterTodos,
     isCompleted,
