@@ -132,7 +132,7 @@ export const App: React.FC = () => {
         });
       } catch (error) {
         setIsLoading([]);
-        setTempTodo([]);
+        setTempTodo(null);
         setVisibleErr(true);
         setErrMessage('Unable to add a todo');
         resetErr();
