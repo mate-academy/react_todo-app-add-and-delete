@@ -11,7 +11,7 @@ import { Title } from './Title';
 import { Error } from './Error';
 
 export const App: React.FC = () => {
-  const [isLoading, setIsLoading] = useState<number[] | []>([]);
+  const [isLoading, setIsLoading] = useState<number[]>([]);
   const [isEdited, setIsEdited] = useState<number | null>(null);
   const [editedTitle, setEditedTitle] = useState('');
   const [newTitle, setNewTitle] = useState('');
@@ -144,7 +144,7 @@ export const App: React.FC = () => {
 
   const removeTodo = async (todoToRmove: Todo) => {
     try {
-      setIsLoading([todoToRmove.id]);
+      setIsLoading(state => [...state, todoToRmove.id]);
 
       await deleteTodo(todoToRmove.id).then(() =>
         setTodos(prevTodos => {
@@ -255,6 +255,7 @@ export const App: React.FC = () => {
 
         {todos.length > 0 && (
           <Footer
+            removeTodo={removeTodo}
             setIsLoading={setIsLoading}
             setErrMessage={setErrMessage}
             setTodos={setTodos}

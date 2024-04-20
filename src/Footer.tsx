@@ -1,23 +1,23 @@
 import { Todo } from './types/Todo';
 import { Status } from './enums/status';
 import cn from 'classnames';
-import { deleteTodo } from './api/todos';
 
 type Props = {
   setErrMessage: (string: string) => void;
   todos: Todo[];
   isAnyCompleted: boolean;
   stat: Status;
-  setIsLoading: React.Dispatch<React.SetStateAction<number[] | []>>;
-  setTodos: React.Dispatch<React.SetStateAction<[] | Todo[]>>;
+  removeTodo: (todo: Todo) => void;
+  setIsLoading: React.Dispatch<React.SetStateAction<number[]>>;
+  setTodos: React.Dispatch<React.SetStateAction<Todo[]>>;
   setStat: (x: Status) => void;
 };
 
 export const Footer = ({
+  removeTodo,
   setIsLoading,
   setErrMessage,
   todos,
-  setTodos,
   isAnyCompleted,
   setStat,
   stat,
@@ -29,21 +29,19 @@ export const Footer = ({
 
   const handleDeleteActive = async () => {
     try {
-      setIsLoading([]);
       const completedTodos = todos.filter(todo => todo.completed);
 
-      await Promise.all(
-        completedTodos.map(todo => {
-          setIsLoading(state => [...state, todo.id]);
+      completedTodos.map(todo => {
+        removeTodo(todo);
 
-          deleteTodo(todo.id).then(
-            setTodos(
-              (prevTodos: React.Dispatch<React.SetStateAction<[] | Todo[]>>) =>
-                prevTodos.filter(prevTodo => !prevTodo.completed),
-            ),
-          );
-        }),
-      );
+        // setIsLoading(state => [...state, todo.id]);
+
+        // deleteTodo(todo.id).then(() =>
+        //   setTodos(prevTodos =>
+        //     prevTodos.filter(prevTodo => !prevTodo.completed),
+        //   ),
+        // );
+      });
     } catch {
       setErrMessage('An error occurred while deleting completed todos');
     } finally {
