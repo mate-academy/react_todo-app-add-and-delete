@@ -50,7 +50,7 @@ export const TodoList: React.FC = () => {
             <TodoItem key={todo.id} todo={todo} />
           </CSSTransition>
         ))}
-        {tempTodo !== null && (
+        {tempTodo && (
           <CSSTransition key={0} timeout={300} classNames="temp-item">
             <TodoItem key={tempTodo.id} todo={tempTodo} />
           </CSSTransition>

@@ -16,6 +16,7 @@ export const TodoHeader: React.FC = () => {
     setFocused,
     isDisabled,
     setIsSelected,
+    setLoadingIds,
   } = useContext(TodosContext);
 
   useEffect(() => {
@@ -52,6 +53,7 @@ export const TodoHeader: React.FC = () => {
     setTempTodo(temporaryTodo);
     setIsSelected(temporaryTodo);
     setIdDisabled(true);
+    setLoadingIds([temporaryTodo.id]);
 
     createTodo(newTodo)
       .then(handleTodo => {
@@ -70,9 +72,11 @@ export const TodoHeader: React.FC = () => {
         setIsSelected(null);
         setIdDisabled(false);
         setTempTodo(null);
+        setLoadingIds([]);
         setTimeout(() => {
           setErrorMessage('');
         }, 3000);
+
         if (!isError) {
           setTitle('');
         }

@@ -1,17 +1,18 @@
 import { createContext, useEffect, useState } from 'react';
 import { Todo } from '../types/Todo';
 import { deleteTodo, getTodos } from '../api/todos';
+import { Filter } from '../enum/Filter';
 
 type Props = {
   children: React.ReactNode;
 };
 
 type ContextType = {
+  loadingIds: number[];
+  setLoadingIds: (v: number[]) => void;
   isSelected: Todo | null;
   setIsSelected: (v: Todo | null) => void;
   handleDelete: (id: number) => void;
-  isLoadingToDelete: boolean;
-  setIsLoadingToDelete: (v: boolean) => void;
   handleComplete: (todoId: number, status: boolean) => void;
   handleClearCompleted: () => void;
   fucused: Date;
@@ -30,11 +31,11 @@ type ContextType = {
 };
 
 export const TodosContext = createContext<ContextType>({
+  loadingIds: [],
+  setLoadingIds: () => [],
   isSelected: null,
   setIsSelected: () => {},
   handleDelete: () => {},
-  isLoadingToDelete: false,
-  setIsLoadingToDelete: () => {},
   handleComplete: () => [],
   handleClearCompleted: () => {},
   fucused: new Date(),
@@ -60,16 +61,16 @@ export const TodosProvider: React.FC<Props> = ({ children }) => {
   const [isCompleted, setIsCompleted] = useState(false);
   const [isDisabled, setIdDisabled] = useState(false);
   const [fucused, setFocused] = useState(new Date());
-  const [isLoadingToDelete, setIsLoadingToDelete] = useState(false);
   const [isSelected, setIsSelected] = useState<Todo | null>(null);
+  const [loadingIds, setLoadingIds] = useState<number[]>([]);
 
   useEffect(() => {
     setErrorMessage('');
     getTodos()
       .then(setTodos)
-      .catch(error => {
+      .catch(() => {
         setErrorMessage('Unable to load todos');
-        throw error;
+        // throw error; // чому тут не потрібно прокидувати помилку throw error
       });
 
     setTimeout(() => {
@@ -77,13 +78,31 @@ export const TodosProvider: React.FC<Props> = ({ children }) => {
     }, 3000);
   }, []);
 
+  const handleDelete = (todoId: number) => {
+    setLoadingIds([...loadingIds, todoId]);
+
+    return deleteTodo(todoId)
+      .then(() => {
+        setTodos(currentTodos =>
+          currentTodos.filter(todo => todo.id !== todoId),
+        );
+      })
+      .catch(() => {
+        setErrorMessage('Unable to delete a todo');
+      })
+      .finally(() => {
+        setLoadingIds(prev => prev.filter(item => item !== todoId));
+        setFocused(new Date());
+      });
+  };
+
   function filterTodos(list: Todo[], filterBy: string) {
     switch (filterBy) {
-      case '#/':
+      case Filter.all:
         return list;
-      case '#/active':
+      case Filter.active:
         return list.filter(todo => !todo.completed);
-      case '#/completed':
+      case Filter.completed:
         return list.filter(todo => todo.completed);
       default:
         return list;
@@ -93,25 +112,26 @@ export const TodosProvider: React.FC<Props> = ({ children }) => {
   const handleClearCompleted = () => {
     todos.forEach(todo => {
       if (todo.completed) {
-        deleteTodo(todo.id)
-          .then(() =>
-            setTodos(prevTodo => {
-              const copyTodo = [...prevTodo];
+        handleDelete(todo.id);
+        // deleteTodo(todo.id)
+        //   .then(() =>
+        //     setTodos(prevTodo => {
+        //       const copyTodo = [...prevTodo];
 
-              const index = copyTodo.findIndex(fTodo => fTodo.id === todo.id);
+        //       const index = copyTodo.findIndex(fTodo => fTodo.id === todo.id);
 
-              copyTodo.splice(index, 1);
+        //       copyTodo.splice(index, 1);
 
-              return [...copyTodo];
-            }),
-          )
-          .catch(error => {
-            setErrorMessage('Unable to delete a todo');
-            setTodos(todos);
+        //       return [...copyTodo];
+        //     }),
+        //   )
+        //   .catch(error => {
+        //     setErrorMessage('Unable to delete a todo');
+        //     // setTodos(todos);
 
-            throw error;
-          })
-          .finally(() => setFocused(new Date()));
+        //     throw error;
+        //   })
+        //   .finally(() => setFocused(new Date()));
       }
     });
   };
@@ -135,37 +155,12 @@ export const TodosProvider: React.FC<Props> = ({ children }) => {
     });
   };
 
-  const handleDelete = (todoId: number) => {
-    setIsLoadingToDelete(true);
-
-    return deleteTodo(todoId)
-      .then(() => {})
-      .catch(error => {
-        setErrorMessage('Unable to delete a todo');
-        setTodos(todos);
-        throw error;
-      })
-      .finally(() => {
-        setTodos(currentTodos => {
-          let copyCurrentTodos = [...currentTodos];
-
-          copyCurrentTodos = copyCurrentTodos.filter(
-            todo => todo.id !== todoId,
-          );
-
-          return [...copyCurrentTodos];
-        });
-        setFocused(new Date());
-        setIsLoadingToDelete(false);
-      });
-  };
-
   const todosTools = {
+    loadingIds,
+    setLoadingIds,
     isSelected,
     setIsSelected,
     handleDelete,
-    isLoadingToDelete,
-    setIsLoadingToDelete,
     handleComplete,
     handleClearCompleted,
     fucused,

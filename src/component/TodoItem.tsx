@@ -13,7 +13,7 @@ export const TodoItem: React.FC<Props> = ({ todo }) => {
     handleComplete,
     isCompleted,
     handleDelete,
-    isSelected,
+    loadingIds,
     setIsSelected,
   } = useContext(TodosContext);
 
@@ -53,7 +53,7 @@ export const TodoItem: React.FC<Props> = ({ todo }) => {
       <div
         data-cy="TodoLoader"
         className={classNames('modal overlay', {
-          'is-active': isSelected?.id === todo.id,
+          'is-active': loadingIds.includes(todo.id),
         })}
       >
         <div className="modal-background has-background-white-ter" />
