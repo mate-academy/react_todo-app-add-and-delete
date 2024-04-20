@@ -8,7 +8,7 @@ type Props = {
   handleSubmit: (event: React.FormEvent) => void;
   setTodos: (todos: Todo[]) => void;
   setNewTitle: (val: string) => void;
-  setIsLoading: (number: number[] | null) => void;
+  setIsLoading: (number: number[] | []) => void;
   newTitle: string;
   todos: Todo[];
 };
@@ -44,7 +44,7 @@ export const Header = ({
       await getTodos().then(setTodos);
     } catch (error) {
     } finally {
-      setIsLoading(null);
+      setIsLoading([]);
     }
   };
 
@@ -65,7 +65,7 @@ export const Header = ({
           placeholder="What needs to be done?"
           ref={selectInputTitle}
           value={newTitle}
-          disabled={isLoading !== null}
+          disabled={isLoading?.length !== 0}
           onChange={event => setNewTitle(event.target.value)}
         />
       </form>

@@ -3,7 +3,7 @@ import { Status } from './enums/status';
 import cn from 'classnames';
 import { deleteTodo } from './api/todos';
 
-type Load = number[] | null;
+type Load = number[] | [];
 
 type Props = {
   setIsLoading: (number: Load) => void;
@@ -30,14 +30,14 @@ export const Footer = ({
   );
 
   const handleDeleteActive = async () => {
-    setIsLoading([]);
-
     try {
+      setIsLoading([]);
       const completedTodos = todos.filter(todo => todo.completed);
 
       await Promise.all(
         completedTodos.map(todo => {
           setIsLoading((state: number[]) => [...state, todo.id]);
+
           deleteTodo(todo.id).then(
             setTodos((prevTodos: Todo[]) =>
               prevTodos.filter(prevTodo => !prevTodo.completed),
@@ -48,7 +48,7 @@ export const Footer = ({
     } catch {
       setErrMessage('An error occurred while deleting completed todos');
     } finally {
-      setIsLoading(null);
+      setIsLoading([]);
     }
   };
 

@@ -11,7 +11,7 @@ import { Title } from './Title';
 import { Error } from './Error';
 
 export const App: React.FC = () => {
-  const [isLoading, setIsLoading] = useState<number[] | null>(null);
+  const [isLoading, setIsLoading] = useState<number[] | []>([]);
   const [isEdited, setIsEdited] = useState<number | null>(null);
   const [editedTitle, setEditedTitle] = useState('');
   const [newTitle, setNewTitle] = useState('');
@@ -90,7 +90,7 @@ export const App: React.FC = () => {
       setErrMessage('Unable to update a todo');
       resetErr();
     } finally {
-      setIsLoading(null);
+      setIsLoading([]);
     }
   };
 
@@ -131,13 +131,13 @@ export const App: React.FC = () => {
           setNewTitle('');
         });
       } catch (error) {
-        setIsLoading(null);
-        setTempTodo(null);
+        setIsLoading([]);
+        setTempTodo([]);
         setVisibleErr(true);
         setErrMessage('Unable to add a todo');
         resetErr();
       } finally {
-        setIsLoading(null);
+        setIsLoading([]);
       }
     }
   };
@@ -156,7 +156,7 @@ export const App: React.FC = () => {
       setErrMessage('Unable to delete a todo');
       resetErr();
     } finally {
-      setIsLoading(null);
+      setIsLoading([]);
     }
   };
 
@@ -184,10 +184,6 @@ export const App: React.FC = () => {
     event.preventDefault();
 
     addTodo();
-
-    // if (selectInputTitle.current) {
-    //   selectInputTitle.current.focus();
-    // }
   };
 
   return (
@@ -221,7 +217,6 @@ export const App: React.FC = () => {
                   onChange={() => updateTodo(todo, 'completed')}
                 />
               </label>
-
               {!isEdited && (
                 <Title
                   handleRemoveButton={handleRemoveButton}
@@ -229,7 +224,6 @@ export const App: React.FC = () => {
                   setIsEdited={setIsEdited}
                 />
               )}
-
               {isEdited === todo.id && (
                 <form>
                   <input
@@ -245,18 +239,17 @@ export const App: React.FC = () => {
                   />
                 </form>
               )}
-
-              {isLoading && (
-                <div
-                  data-cy="TodoLoader"
-                  className={cn('modal overlay', {
-                    'is-active': isLoading.includes(todo.id),
-                  })}
-                >
-                  <div className="modal-background has-background-white-ter" />
-                  <div className="loader" />
-                </div>
-              )}
+              (
+              <div
+                data-cy="TodoLoader"
+                className={cn('modal overlay', {
+                  'is-active': isLoading.includes(todo.id),
+                })}
+              >
+                <div className="modal-background has-background-white-ter" />
+                <div className="loader" />
+              </div>
+              )
             </div>
           ))}
         </section>
