@@ -1,9 +1,13 @@
 import { Todo } from './types/Todo';
 import { Status } from './enums/status';
 import cn from 'classnames';
-import { deleteTodo, getTodos } from './api/todos';
+import { deleteTodo } from './api/todos';
+
+type Load = number[] | null;
 
 type Props = {
+  setIsLoading: (number: Load) => void;
+  setErrMessage: (string: string) => void;
   todos: Todo[];
   isAnyCompleted: boolean;
   stat: Status;
@@ -12,6 +16,8 @@ type Props = {
 };
 
 export const Footer = ({
+  setIsLoading,
+  setErrMessage,
   todos,
   setTodos,
   isAnyCompleted,
@@ -23,14 +29,27 @@ export const Footer = ({
     0,
   );
 
-  const handleDeleteActiv = () => {
-    const comletedTodo = todos.filter(todo => todo.completed);
+  const handleDeleteActive = async () => {
+    setIsLoading([]);
 
-    comletedTodo.map(todo => {
-      deleteTodo(todo.id);
-    });
+    try {
+      const completedTodos = todos.filter(todo => todo.completed);
 
-    getTodos().then(setTodos);
+      await Promise.all(
+        completedTodos.map(todo => {
+          setIsLoading((state: number[]) => [...state, todo.id]);
+          deleteTodo(todo.id).then(
+            setTodos((prevTodos: Todo[]) =>
+              prevTodos.filter(prevTodo => !prevTodo.completed),
+            ),
+          );
+        }),
+      );
+    } catch {
+      setErrMessage('An error occurred while deleting completed todos');
+    } finally {
+      setIsLoading(null);
+    }
   };
 
   return (
@@ -58,7 +77,7 @@ export const Footer = ({
         className="todoapp__clear-completed"
         data-cy="ClearCompletedButton"
         disabled={!isAnyCompleted}
-        onClick={handleDeleteActiv}
+        onClick={handleDeleteActive}
       >
         Clear completed
       </button>

@@ -8,11 +8,11 @@ import { Footer } from './Footer';
 import { Header } from './Header';
 import { Status } from './enums/status';
 import { Title } from './Title';
+import { Error } from './Error';
 
 export const App: React.FC = () => {
-  const [isLoading, setIsLoading] = useState<number | null>(null);
+  const [isLoading, setIsLoading] = useState<number[] | null>(null);
   const [isEdited, setIsEdited] = useState<number | null>(null);
-  // const [todos, setTodos] = useState<Todo[] | []>([]);
   const [editedTitle, setEditedTitle] = useState('');
   const [newTitle, setNewTitle] = useState('');
   const [errMessage, setErrMessage] = useState('');
@@ -62,7 +62,7 @@ export const App: React.FC = () => {
 
   const updateTodo = async (updatedTodo: Todo, option: keyof Todo) => {
     try {
-      setIsLoading(updatedTodo.id);
+      setIsLoading([updatedTodo.id]);
       const todoToUpdate = todos.find(tod => tod.id === updatedTodo.id);
 
       let newTodo: Todo = {
@@ -123,7 +123,7 @@ export const App: React.FC = () => {
       setTempTodo([...todos, temp]);
 
       try {
-        setIsLoading(0);
+        setIsLoading([0]);
 
         await postTodo(newTodo).then(respond => {
           setTempTodo(null);
@@ -144,11 +144,13 @@ export const App: React.FC = () => {
 
   const removeTodo = async (todoToRmove: Todo) => {
     try {
-      setIsLoading(todoToRmove.id);
+      setIsLoading([todoToRmove.id]);
 
-      await deleteTodo(todoToRmove.id);
-
-      getTodos().then(setTodos);
+      await deleteTodo(todoToRmove.id).then(() =>
+        setTodos(prevTodos => {
+          return prevTodos.filter(prevTodo => prevTodo.id !== todoToRmove.id);
+        }),
+      );
     } catch {
       setVisibleErr(true);
       setErrMessage('Unable to delete a todo');
@@ -244,21 +246,25 @@ export const App: React.FC = () => {
                 </form>
               )}
 
-              <div
-                data-cy="TodoLoader"
-                className={cn('modal overlay', {
-                  'is-active': isLoading === todo.id,
-                })}
-              >
-                <div className="modal-background has-background-white-ter" />
-                <div className="loader" />
-              </div>
+              {isLoading && (
+                <div
+                  data-cy="TodoLoader"
+                  className={cn('modal overlay', {
+                    'is-active': isLoading.includes(todo.id),
+                  })}
+                >
+                  <div className="modal-background has-background-white-ter" />
+                  <div className="loader" />
+                </div>
+              )}
             </div>
           ))}
         </section>
 
         {todos.length > 0 && (
           <Footer
+            setIsLoading={setIsLoading}
+            setErrMessage={setErrMessage}
             setTodos={setTodos}
             stat={stat}
             todos={todos}
@@ -268,21 +274,11 @@ export const App: React.FC = () => {
         )}
       </div>
 
-      <div
-        data-cy="ErrorNotification"
-        className={cn(
-          'notification is-danger is-light has-text-weight-normal',
-          { hidden: !visibleErr },
-        )}
-      >
-        <button
-          data-cy="HideErrorButton"
-          type="button"
-          className="delete"
-          onClick={() => setVisibleErr(false)}
-        />
-        {errMessage}
-      </div>
+      <Error
+        visibleErr={visibleErr}
+        setVisibleErr={setVisibleErr}
+        errMessage={errMessage}
+      />
     </div>
   );
 };

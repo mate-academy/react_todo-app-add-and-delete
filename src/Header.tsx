@@ -4,11 +4,11 @@ import { useEffect, useRef } from 'react';
 import { getTodos, patchTodo } from './api/todos';
 
 type Props = {
-  isLoading: number | null;
+  isLoading: number[] | null;
   handleSubmit: (event: React.FormEvent) => void;
   setTodos: (todos: Todo[]) => void;
   setNewTitle: (val: string) => void;
-  setIsLoading: (number: number | null) => void;
+  setIsLoading: (number: number[] | null) => void;
   newTitle: string;
   todos: Todo[];
 };
@@ -34,7 +34,7 @@ export const Header = ({
   const handleChangeCompleted = async () => {
     try {
       todos.map(todo => {
-        setIsLoading(todo.id);
+        setIsLoading([todo.id]);
         patchTodo({
           ...todo,
           completed: true,
