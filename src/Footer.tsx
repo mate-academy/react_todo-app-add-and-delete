@@ -3,15 +3,13 @@ import { Status } from './enums/status';
 import cn from 'classnames';
 import { deleteTodo } from './api/todos';
 
-type Load = number[] | [];
-
 type Props = {
-  setIsLoading: (number: Load) => void;
   setErrMessage: (string: string) => void;
   todos: Todo[];
   isAnyCompleted: boolean;
   stat: Status;
-  setTodos: (todos: Todo[]) => void;
+  setIsLoading: React.Dispatch<React.SetStateAction<number[] | []>>;
+  setTodos: React.Dispatch<React.SetStateAction<[] | Todo[]>>;
   setStat: (x: Status) => void;
 };
 
@@ -36,11 +34,12 @@ export const Footer = ({
 
       await Promise.all(
         completedTodos.map(todo => {
-          setIsLoading((state: number[]) => [...state, todo.id]);
+          setIsLoading(state => [...state, todo.id]);
 
           deleteTodo(todo.id).then(
-            setTodos((prevTodos: Todo[]) =>
-              prevTodos.filter(prevTodo => !prevTodo.completed),
+            setTodos(
+              (prevTodos: React.Dispatch<React.SetStateAction<[] | Todo[]>>) =>
+                prevTodos.filter(prevTodo => !prevTodo.completed),
             ),
           );
         }),

@@ -239,7 +239,7 @@ export const App: React.FC = () => {
                   />
                 </form>
               )}
-              (
+
               <div
                 data-cy="TodoLoader"
                 className={cn('modal overlay', {
@@ -249,7 +249,6 @@ export const App: React.FC = () => {
                 <div className="modal-background has-background-white-ter" />
                 <div className="loader" />
               </div>
-              )
             </div>
           ))}
         </section>
