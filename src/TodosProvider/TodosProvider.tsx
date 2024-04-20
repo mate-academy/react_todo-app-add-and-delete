@@ -60,6 +60,7 @@ export const TodosProvider: React.FC<Props> = ({ children }) => {
   const [errorMessage, setErrorMessage] = useState('');
   const [isCompleted, setIsCompleted] = useState(false);
   const [isDisabled, setIdDisabled] = useState(false);
+  // eslint-disable-next-line
   const [focused, setFocused] = useState(new Date());
   const [isSelected, setIsSelected] = useState<Todo | null>(null);
   const [loadingIds, setLoadingIds] = useState<number[]>([]);
