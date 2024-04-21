@@ -88,6 +88,32 @@ export const App: React.FC = () => {
       });
   }
 
+  function deleteTodo(todoId: number) {
+    setLoadingTodoIds(prevIds => [...prevIds, todoId]);
+
+    return todoService
+      .deleteTodo(todoId)
+      .then(() => {
+        setTodos(currentTodos =>
+          currentTodos.filter(todo => todo.id !== todoId),
+        );
+        if (inputRef.current) {
+          inputRef.current.focus();
+        }
+
+        setLoadingTodoIds(prevIds => prevIds.filter(id => id !== todoId));
+      })
+      .catch(error => {
+        setLoadingTodoIds(prevIds => prevIds.filter(id => id !== todoId));
+        setErrorMessage('Unable to delete a todo');
+        setErrorVisible(true);
+        setTimeout(() => {
+          setErrorVisible(false);
+        }, 3000);
+        throw error;
+      });
+  }
+
   const handleSubmit = (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
     if (!title || title.trim() === '') {
@@ -190,6 +216,16 @@ export const App: React.FC = () => {
     }
   }
 
+  function clearCompleted(deleteTodos: Todo[]) {
+    const todosCompleted = deleteTodos
+      .filter(todo => todo.completed)
+      .map(todo => todo.id);
+
+    todosCompleted.forEach(todoId => {
+      deleteTodo(todoId);
+    });
+  }
+
   const visibleTodos = getFilteredTodos(todos, query);
   let todosAllCompleted;
 
@@ -264,6 +300,7 @@ export const App: React.FC = () => {
                 type="button"
                 className="todo__remove"
                 data-cy="TodoDelete"
+                onClick={() => deleteTodo(todo.id)}
               >
                 ×
               </button>
@@ -369,6 +406,7 @@ export const App: React.FC = () => {
               className="todoapp__clear-completed"
               data-cy="ClearCompletedButton"
               disabled={todosAllUncomplited}
+              onClick={() => clearCompleted(visibleTodos)}
             >
               Clear completed
             </button>
