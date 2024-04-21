@@ -6,35 +6,10 @@ import cn from 'classnames';
 import { UserWarning } from './UserWarning';
 import * as todoService from './api/todos';
 import { Todo } from './types/Todo';
-
-enum FilterStatus {
-  Active = 'active',
-  All = 'all',
-  Completed = 'completed',
-}
-
-function getFilteredTodos(todos: Todo[], query: string) {
-  const preparedTodos = todos.filter(todo => {
-    switch (query) {
-      case FilterStatus.Active:
-        return !todo.completed;
-      case FilterStatus.Completed:
-        return todo.completed;
-      default:
-        return todos;
-    }
-  });
-
-  return preparedTodos;
-}
-
-function isCompleted(todo: Todo) {
-  return todo.completed;
-}
-
-function isUncompleted(todo: Todo) {
-  return !todo.completed;
-}
+import { getFilteredTodos } from './utils/getFilteredTodos';
+import { FilterStatus } from './utils/FilterStatus';
+import { Footer } from './components/Footer';
+import { Header } from './components/Header';
 
 export const App: React.FC = () => {
   const [todos, setTodos] = useState<Todo[]>([]);
@@ -125,8 +100,6 @@ export const App: React.FC = () => {
 
       return;
     }
-
-    //const inputTitle = title.trim();
 
     const temporaryTodo: Todo = {
       id: 0,
@@ -227,15 +200,7 @@ export const App: React.FC = () => {
   }
 
   const visibleTodos = getFilteredTodos(todos, query);
-  let todosAllCompleted;
 
-  if (visibleTodos.length > 0) {
-    todosAllCompleted = visibleTodos.every(isCompleted);
-  } else {
-    todosAllCompleted = false;
-  }
-
-  const todosAllUncomplited = visibleTodos.every(isUncompleted);
   const completedTodos = todos.filter(todo => todo.completed === false);
 
   if (!todoService.USER_ID) {
@@ -247,32 +212,15 @@ export const App: React.FC = () => {
       <h1 className="todoapp__title">todos</h1>
 
       <div className="todoapp__content">
-        <header className="todoapp__header">
-          {/* this button should have `active` class only if all todos are completed */}
-          {!!todos.length && (
-            <button
-              type="button"
-              className={cn('todoapp__toggle-all', {
-                active: todosAllCompleted,
-              })}
-              data-cy="ToggleAllButton"
-              onClick={() => checkAllTodos(visibleTodos)}
-            />
-          )}
-
-          {/* Add a todo on form submit */}
-          <form onSubmit={handleSubmit}>
-            <input
-              data-cy="NewTodoField"
-              type="text"
-              className="todoapp__new-todo"
-              placeholder="What needs to be done?"
-              value={title}
-              onChange={handleTitleChange}
-              ref={inputRef}
-            />
-          </form>
-        </header>
+        <Header
+          todos={todos}
+          filteredTodos={visibleTodos}
+          enteredTodo={title}
+          checkAllTodos={checkAllTodos}
+          handleSubmit={handleSubmit}
+          handleTitleChange={handleTitleChange}
+          inputRef={inputRef}
+        />
 
         <section className="todoapp__main" data-cy="TodoList">
           {visibleTodos.map(todo => (
@@ -359,58 +307,13 @@ export const App: React.FC = () => {
 
         {/* Hide the footer if there are no todos */}
         {!!todos.length && (
-          <footer className="todoapp__footer" data-cy="Footer">
-            <span className="todo-count" data-cy="TodosCounter">
-              {`${completedTodos.length} items left`}
-            </span>
-
-            {/* Active link should have the 'selected' class */}
-            <nav className="filter" data-cy="Filter">
-              <a
-                href="#/"
-                className={cn('filter__link', {
-                  selected: query === FilterStatus.All,
-                })}
-                data-cy="FilterLinkAll"
-                onClick={() => setQuery(FilterStatus.All)}
-              >
-                All
-              </a>
-
-              <a
-                href="#/active"
-                className={cn('filter__link', {
-                  selected: query === FilterStatus.Active,
-                })}
-                data-cy="FilterLinkActive"
-                onClick={() => setQuery(FilterStatus.Active)}
-              >
-                Active
-              </a>
-
-              <a
-                href="#/completed"
-                className={cn('filter__link', {
-                  selected: query === FilterStatus.Completed,
-                })}
-                data-cy="FilterLinkCompleted"
-                onClick={() => setQuery(FilterStatus.Completed)}
-              >
-                Completed
-              </a>
-            </nav>
-
-            {/* this button should be disabled if there are no completed todos */}
-            <button
-              type="button"
-              className="todoapp__clear-completed"
-              data-cy="ClearCompletedButton"
-              disabled={todosAllUncomplited}
-              onClick={() => clearCompleted(visibleTodos)}
-            >
-              Clear completed
-            </button>
-          </footer>
+          <Footer
+            visibleTodos={visibleTodos}
+            query={query}
+            filterQuery={setQuery}
+            filteredCompletedTodos={completedTodos}
+            clearCompleted={clearCompleted}
+          />
         )}
       </div>
 
