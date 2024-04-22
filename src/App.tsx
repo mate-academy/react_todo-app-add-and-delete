@@ -10,7 +10,6 @@ const noErrors = {
   titleError: false,
   addTodoError: false,
   deleteTodoError: false,
-  // updateTodoError: false,
 };
 
 enum Filters {
@@ -32,7 +31,7 @@ export const App: React.FC = () => {
 
   const clearErrors = () => {
     setTimeout(() => {
-      setErrors(errors);
+      setErrors(noErrors);
       handleHideError();
     }, 3000);
   };
@@ -113,19 +112,6 @@ export const App: React.FC = () => {
         return todos;
     }
   }, [todos, filter, completedTodos]);
-
-  // const isAllCompleted = useMemo(() => {
-  //   if (completedTodos.length === todos.length) {
-  //     return true;
-  //   } else {
-  //     return false;
-  //   }
-  // }, [completedTodos, todos]);
-
-  // const handleToggleAll = () => {
-
-  // };
-  // --- for next task
 
   return (
     <div className="todoapp">
