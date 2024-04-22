@@ -2,7 +2,6 @@
 /* eslint-disable jsx-a11y/label-has-associated-control */
 /* eslint-disable jsx-a11y/control-has-associated-label */
 import React, { useEffect, useRef, useState } from 'react';
-import cn from 'classnames';
 import { UserWarning } from './UserWarning';
 import * as todoService from './api/todos';
 import { Todo } from './types/Todo';
@@ -10,6 +9,9 @@ import { getFilteredTodos } from './utils/getFilteredTodos';
 import { FilterStatus } from './utils/FilterStatus';
 import { Footer } from './components/Footer';
 import { Header } from './components/Header';
+import { ErrorMessage } from './components/ErrorMessage';
+import { TodoList } from './components/TodoList';
+import { TodoListContext } from './variables/LangContext';
 
 export const App: React.FC = () => {
   const [todos, setTodos] = useState<Todo[]>([]);
@@ -221,89 +223,11 @@ export const App: React.FC = () => {
           handleTitleChange={handleTitleChange}
           inputRef={inputRef}
         />
-
-        <section className="todoapp__main" data-cy="TodoList">
-          {visibleTodos.map(todo => (
-            <div
-              data-cy="Todo"
-              className={cn('todo', {
-                completed: todo.completed,
-              })}
-              key={todo.id}
-            >
-              <label className="todo__status-label">
-                <input
-                  data-cy="TodoStatus"
-                  type="checkbox"
-                  className="todo__status"
-                  onChange={() => updateTodo(todo)}
-                  checked={todo.completed}
-                />
-              </label>
-
-              <span data-cy="TodoTitle" className="todo__title">
-                {todo.title.trim()}
-              </span>
-              <button
-                type="button"
-                className="todo__remove"
-                data-cy="TodoDelete"
-                onClick={() => deleteTodo(todo.id)}
-              >
-                ×
-              </button>
-
-              <div
-                data-cy="TodoLoader"
-                className={cn('modal', 'overlay', {
-                  'is-active': loadingTodoIds.includes(todo.id),
-                })}
-              >
-                <div className="modal-background has-background-white-ter" />
-                <div className="loader" />
-              </div>
-            </div>
-          ))}
-          {tempTodo && (
-            <div
-              data-cy="Todo"
-              className={cn('todo', {
-                completed: tempTodo.completed,
-              })}
-              key={tempTodo.id}
-            >
-              <label className="todo__status-label">
-                <input
-                  data-cy="TodoStatus"
-                  type="checkbox"
-                  className="todo__status"
-                  onChange={() => updateTodo(tempTodo)}
-                  checked={tempTodo.completed}
-                />
-              </label>
-
-              <span data-cy="TodoTitle" className="todo__title">
-                {tempTodo.title.trim()}
-              </span>
-              <button
-                type="button"
-                className="todo__remove"
-                data-cy="TodoDelete"
-              >
-                ×
-              </button>
-              <div
-                data-cy="TodoLoader"
-                className={cn('modal', 'overlay', {
-                  'is-active': tempTodo,
-                })}
-              >
-                <div className="modal-background has-background-white-ter" />
-                <div className="loader" />
-              </div>
-            </div>
-          )}
-        </section>
+        <TodoListContext.Provider
+          value={{ updateTodo, deleteTodo, loadingTodoIds, tempTodo }}
+        >
+          <TodoList visibleTodos={visibleTodos} />
+        </TodoListContext.Provider>
 
         {/* Hide the footer if there are no todos */}
         {!!todos.length && (
@@ -320,28 +244,11 @@ export const App: React.FC = () => {
       {/* DON'T use conditional rendering to hide the notification */}
       {/* Add the 'hidden' class to hide the message smoothly */}
 
-      <div
-        data-cy="ErrorNotification"
-        className={cn(
-          'notification',
-          'is-danger',
-          'is-light',
-          'has-text-weight-normal',
-          {
-            hidden: !errorVisible,
-          },
-        )}
-      >
-        <button
-          data-cy="HideErrorButton"
-          type="button"
-          className="delete"
-          onClick={() => {
-            setErrorVisible(false);
-          }}
-        />
-        {errorMessage}
-      </div>
+      <ErrorMessage
+        errorVisible={errorVisible}
+        errorMessage={errorMessage}
+        showError={setErrorVisible}
+      />
     </div>
   );
 };
