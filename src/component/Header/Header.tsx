@@ -7,6 +7,7 @@ export const Header = () => {
   const dispatch = useContext(DispatchContext);
   const { todos, focusNewTodo, idTodoSubmitting } = useContext(StateContext);
   const [newTodo, setNewTodo] = useState('');
+  const [isVaitingAdd, setIsVaitingAdd] = useState(false);
 
   const allTodosComplete = todos.every(todo => todo.completed);
 
@@ -18,6 +19,7 @@ export const Header = () => {
 
     if (newTodo.trim() && !idTodoSubmitting) {
       // dispatch({ type: 'AddTodo', title: newTodo });
+      setIsVaitingAdd(true);
 
       postTodo({
         title: newTodo.trim(),
@@ -36,6 +38,7 @@ export const Header = () => {
         .finally(() => {
           dispatch({ type: 'setIdTodoSelection', id: 0 });
           inputRef.current?.focus();
+          setIsVaitingAdd(false);
         });
     } else if (!newTodo.trim()) {
       dispatch({ type: 'setError', error: 'Title should not be empty' });
@@ -76,7 +79,7 @@ export const Header = () => {
           type="text"
           className="todoapp__new-todo"
           placeholder="What needs to be done?"
-          disabled={!!idTodoSubmitting}
+          disabled={isVaitingAdd}
           value={newTodo}
           onClick={() => dispatch({ type: 'setFocudNewTodo' })}
           onBlur={() => dispatch({ type: 'setFocudNewTodo' })}
