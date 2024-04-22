@@ -17,16 +17,17 @@ export const Header = () => {
     inputRef.current?.blur();
 
     if (newTodo.trim() && !idTodoSubmitting) {
-      dispatch({ type: 'AddTodo', title: newTodo });
+      // dispatch({ type: 'AddTodo', title: newTodo });
 
       postTodo({
         title: newTodo.trim(),
         completed: false,
         userId: USER_ID,
       })
-        .then(() => {
+        .then(res => {
           setNewTodo('');
           dispatch({ type: 'setFocudNewTodo' });
+          dispatch({ type: 'AddTodo', todo: res });
         })
         .catch(() => {
           dispatch({ type: 'setError', error: 'Unable to add a todo' });

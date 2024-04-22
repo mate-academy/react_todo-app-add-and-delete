@@ -42,7 +42,10 @@ export const TodoList = () => {
     dispatch({ type: 'setChangedTodoId', id: 0 });
   };
 
-  const hundleKeyUp = (e: React.KeyboardEvent<HTMLInputElement>) => {
+  const hundleKeyUp = (
+    e: React.KeyboardEvent<HTMLInputElement>,
+    id: number,
+  ) => {
     if (e.key === 'Escape') {
       dispatch({ type: 'escapeChangedText', id: id });
       dispatch({ type: 'setChangedTodoId', id: 0 });
@@ -88,7 +91,7 @@ export const TodoList = () => {
                 className="todo__title-field"
                 placeholder="Empty todo will be deleted"
                 value={title}
-                onKeyUp={hundleKeyUp}
+                onKeyUp={e => hundleKeyUp(e, id)}
                 autoFocus
                 onChange={e =>
                   dispatch({

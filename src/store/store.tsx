@@ -1,6 +1,5 @@
 import React, { useReducer } from 'react';
 import { Todo } from '../types/Todo';
-import { USER_ID } from '../api/todos';
 import { IsUseTodos } from '../types/IsUseTodos';
 
 interface State {
@@ -16,7 +15,7 @@ interface State {
 
 export type Action =
   | { type: 'setAllTodos'; todos: Todo[] }
-  | { type: 'AddTodo'; title: string }
+  | { type: 'AddTodo'; todo: Todo }
   | { type: 'removeTodo'; id: number }
   | { type: 'SetCheckedTodo'; id: number }
   | { type: 'setChangedTodoId'; id: number }
@@ -43,15 +42,7 @@ const reducer = (state: State, action: Action): State => {
 
       return {
         ...state,
-        todos: [
-          ...state.todos,
-          {
-            id: todoId,
-            title: action.title.trim(),
-            completed: false,
-            userId: USER_ID,
-          },
-        ],
+        todos: [...state.todos, { ...action.todo }],
         idTodoSubmitting: todoId,
       };
 
