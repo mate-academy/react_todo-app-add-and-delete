@@ -1,29 +1,22 @@
 import cn from 'classnames';
-import { Todo } from './types/Todo';
-import { useEffect, useRef } from 'react';
-import { getTodos, patchTodo } from './api/todos';
+import { useContext, useEffect, useRef } from 'react';
+import { patchTodo } from './api/todos';
+import { ContextTodos } from './TodoContext';
 
-type Props = {
-  isLoading: number[] | null;
-  handleSubmit: (event: React.FormEvent) => void;
-  setTodos: (todos: Todo[]) => void;
-  setNewTitle: (val: string) => void;
-  setIsLoading: (number: number[] | []) => void;
-  newTitle: string;
-  todos: Todo[];
-};
-
-export const Header = ({
-  setIsLoading,
-  setTodos,
-  isLoading,
-  handleSubmit,
-  newTitle,
-  setNewTitle,
-  todos,
-}: Props) => {
-  const selectInputTitle = useRef<HTMLInputElement>(null);
+export const Header = () => {
+  const {
+    setErrMessage,
+    setIsLoading,
+    setTodos,
+    isLoading,
+    handleSubmit,
+    newTitle,
+    setNewTitle,
+    todos,
+  } = useContext(ContextTodos);
   const isAllActive = todos.every(todo => todo.completed);
+
+  const selectInputTitle = useRef<HTMLInputElement>(null);
 
   useEffect(() => {
     if (selectInputTitle.current) {
@@ -32,17 +25,29 @@ export const Header = ({
   }, [isLoading]);
 
   const handleChangeCompleted = async () => {
-    try {
-      todos.map(todo => {
-        setIsLoading([todo.id]);
-        patchTodo({
-          ...todo,
-          completed: true,
-        });
-      });
+    const isEveryTodoCompleted = todos.every(todo => todo.completed);
 
-      await getTodos().then(setTodos);
-    } catch (error) {
+    try {
+      for (const todo of todos) {
+        if (todo.completed === !isEveryTodoCompleted) {
+          continue;
+        }
+
+        setIsLoading(prevState => [...prevState, todo.id]);
+
+        await patchTodo({
+          ...todo,
+          completed: !isEveryTodoCompleted,
+        }).then(respond => {
+          setTodos(prevTodos => {
+            return prevTodos.map(prevTodo =>
+              prevTodo.id === respond.id ? respond : prevTodo,
+            );
+          });
+        });
+      }
+    } catch {
+      setErrMessage('Unable to update a todo');
     } finally {
       setIsLoading([]);
     }
@@ -50,12 +55,14 @@ export const Header = ({
 
   return (
     <header className="todoapp__header">
-      <button
-        type="button"
-        className={cn('todoapp__toggle-all ', { active: isAllActive })}
-        data-cy="ToggleAllButton"
-        onClick={handleChangeCompleted}
-      />
+      {isLoading.length === 0 && todos.length > 0 && (
+        <button
+          type="button"
+          className={cn('todoapp__toggle-all ', { active: isAllActive })}
+          data-cy="ToggleAllButton"
+          onClick={handleChangeCompleted}
+        />
+      )}
 
       <form onSubmit={handleSubmit}>
         <input

@@ -1,12 +1,10 @@
 import cn from 'classnames';
+import { useContext } from 'react';
+import { ContextTodos } from './TodoContext';
 
-type Props = {
-  visibleErr: boolean;
-  errMessage: string;
-  setVisibleErr: (boolean: boolean) => void;
-};
+export const Error = () => {
+  const { visibleErr, setVisibleErr, errMessage } = useContext(ContextTodos);
 
-export const Error = ({ setVisibleErr, visibleErr, errMessage }: Props) => {
   return (
     <div
       data-cy="ErrorNotification"
