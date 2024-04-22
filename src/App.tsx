@@ -5,11 +5,37 @@ import { addTodo, deleteTodo, getTodos } from './api/todos';
 import { Todo } from './types/Todo';
 import classNames from 'classnames';
 
+const noErrors = {
+  loadError: false,
+  titleError: false,
+  addTodoError: false,
+  deleteTodoError: false,
+  // updateTodoError: false,
+};
+
+enum Filters {
+  All = 'all',
+  Active = 'active',
+  Completed = 'completed',
+}
+
 export const App: React.FC = () => {
   const [todos, setTodos] = useState<Todo[]>([]);
-  const [isError, setIsError] = useState(false);
+  const [errors, setErrors] = useState(noErrors);
   const [inputValue, setInputValue] = useState('');
   const [isLoadingId, setIsLoadingId] = useState<number | null>(null);
+  const [filter, setFilter] = useState<Filters>(Filters.All);
+
+  const handleHideError = () => {
+    setErrors(noErrors);
+  };
+
+  const clearErrors = () => {
+    setTimeout(() => {
+      setErrors(errors);
+      handleHideError();
+    }, 3000);
+  };
 
   const loadTodos = async () => {
     try {
@@ -17,35 +43,45 @@ export const App: React.FC = () => {
 
       setTodos(todosFromServer);
     } catch (error) {
-      setIsError(true);
+      setErrors({ ...noErrors, loadError: true });
     }
-  };
-
-  const handleHideError = () => {
-    setIsError(false);
   };
 
   const handleAdd = () => {
     if (inputValue.trim()) {
       setIsLoadingId(-1);
-      addTodo(inputValue).then(result => {
-        setIsLoadingId(result.id);
-        setTodos(prev => [...prev, result]);
-        setInputValue('');
-        setTimeout(() => setIsLoadingId(null), 500);
-      });
+      addTodo(inputValue)
+        .then(result => {
+          setIsLoadingId(result.id);
+          setTodos(prev => [...prev, result]);
+          setInputValue('');
+          setTimeout(() => setIsLoadingId(null), 500);
+        })
+        .catch(() => {
+          setErrors({ ...noErrors, addTodoError: true });
+        });
+    } else {
+      setErrors({ ...noErrors, titleError: true });
     }
   };
 
-  const handleDelete = (id: number) => {
+  const handleDelete = async (id: number) => {
     setIsLoadingId(id);
     try {
-      deleteTodo(id).then(() => {
-        setTodos(prev => prev.filter(todo => todo.id !== id));
-        setInputValue('');
-        setTimeout(() => setIsLoadingId(null), 500);
-      });
-    } catch (error) {}
+      const timer = setTimeout(() => {
+        throw Error('no result');
+      }, 5000);
+
+      await deleteTodo(id);
+
+      clearTimeout(timer);
+      setTodos(prev => prev.filter(todo => todo.id !== id));
+      setInputValue('');
+      setTimeout(() => setIsLoadingId(null), 500);
+    } catch (error) {
+      setErrors({ ...noErrors, deleteTodoError: true });
+      clearErrors();
+    }
   };
 
   const handleSubmit = (event: React.KeyboardEvent<HTMLFormElement>) => {
@@ -61,13 +97,22 @@ export const App: React.FC = () => {
     loadTodos();
   }, []);
 
-  const visibleTodos = useMemo(() => {
-    return todos;
-  }, [todos]);
-
   const completedTodos = useMemo(() => {
     return todos.filter(todo => todo.completed);
   }, [todos]);
+
+  const visibleTodos = useMemo(() => {
+    switch (filter) {
+      case Filters.Active:
+        return todos.filter(todo => !todo.completed);
+
+      case Filters.Completed:
+        return completedTodos;
+
+      default:
+        return todos;
+    }
+  }, [todos, filter, completedTodos]);
 
   // const isAllCompleted = useMemo(() => {
   //   if (completedTodos.length === todos.length) {
@@ -162,6 +207,7 @@ export const App: React.FC = () => {
                 href="#/"
                 className="filter__link selected"
                 data-cy="FilterLinkAll"
+                onClick={() => setFilter(Filters.All)}
               >
                 All
               </a>
@@ -170,6 +216,7 @@ export const App: React.FC = () => {
                 href="#/active"
                 className="filter__link"
                 data-cy="FilterLinkActive"
+                onClick={() => setFilter(Filters.Active)}
               >
                 Active
               </a>
@@ -178,6 +225,7 @@ export const App: React.FC = () => {
                 href="#/completed"
                 className="filter__link"
                 data-cy="FilterLinkCompleted"
+                onClick={() => setFilter(Filters.Completed)}
               >
                 Completed
               </a>
@@ -193,13 +241,11 @@ export const App: React.FC = () => {
           </footer>
         )}
       </div>
-
-      {/* Add the 'hidden' class to hide the message smoothly */}
       <div
         data-cy="ErrorNotification"
         className={classNames(
           'notification is-danger is-light has-text-weight-normal',
-          { hidden: !isError },
+          { hidden: errors === noErrors },
         )}
       >
         <button
@@ -208,7 +254,10 @@ export const App: React.FC = () => {
           onClick={handleHideError}
           className="delete"
         />
-        Unable to load todos
+        {errors.loadError && 'Unable to load todos'}
+        {errors.titleError && 'Title should not be empty'}
+        {errors.addTodoError && 'Unable to add a todo'}
+        {errors.deleteTodoError && 'Unable to delete a todo'}
       </div>
     </div>
   );
