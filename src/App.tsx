@@ -31,7 +31,6 @@ export const App: React.FC = () => {
 
   const clearErrors = () => {
     setTimeout(() => {
-      setErrors(noErrors);
       handleHideError();
     }, 3000);
   };
@@ -58,9 +57,11 @@ export const App: React.FC = () => {
         })
         .catch(() => {
           setErrors({ ...noErrors, addTodoError: true });
+          clearErrors();
         });
     } else {
       setErrors({ ...noErrors, titleError: true });
+      clearErrors();
     }
   };
 
