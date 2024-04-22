@@ -86,7 +86,7 @@ export const Footer = () => {
             type="button"
             className="todoapp__clear-completed"
             data-cy="ClearCompletedButton"
-            onClick={() => handleDeleteCompletedTodo()}
+            onClick={handleDeleteCompletedTodo}
             disabled={todosLeft === todos.length}
           >
             Clear completed

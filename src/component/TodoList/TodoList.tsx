@@ -37,6 +37,11 @@ export const TodoList = () => {
       });
   };
 
+  const hundleSubmitChangeTodo = (e: React.FormEvent<HTMLFormElement>) => {
+    e.preventDefault();
+    dispatch({ type: 'setChangedTodoId', id: 0 });
+  };
+
   return (
     <section className="todoapp__main" data-cy="TodoList">
       {todosFilter.map(({ id, title, completed }) => (
@@ -69,12 +74,7 @@ export const TodoList = () => {
           )}
 
           {id === changerId && (
-            <form
-              onSubmit={e => {
-                e.preventDefault();
-                dispatch({ type: 'setChangedTodoId', id: 0 });
-              }}
-            >
+            <form onSubmit={hundleSubmitChangeTodo}>
               <input
                 data-cy="TodoTitleField"
                 type="text"
