@@ -6,7 +6,6 @@ interface TodoListContextType {
   deleteTodo: (todoId: number) => void;
   loadingTodoIds: number[];
   tempTodo: Todo | null;
-  isLoading: boolean;
 }
 
 export const TodoListContext = React.createContext<TodoListContextType>({
@@ -14,5 +13,4 @@ export const TodoListContext = React.createContext<TodoListContextType>({
   deleteTodo: () => {},
   loadingTodoIds: [],
   tempTodo: null,
-  isLoading: false,
 });
