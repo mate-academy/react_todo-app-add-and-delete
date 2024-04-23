@@ -77,18 +77,18 @@ export const App: React.FC = () => {
         if (inputRef.current) {
           inputRef.current.focus();
         }
-
-        setLoadingTodoIds(prevIds => prevIds.filter(id => id !== todoId));
       })
       .catch(error => {
-        setLoadingTodoIds(prevIds => prevIds.filter(id => id !== todoId));
         setErrorMessage('Unable to delete a todo');
         setErrorVisible(true);
         setTimeout(() => {
           setErrorVisible(false);
         }, 3000);
         throw error;
-      });
+      })
+      .finally(() =>
+        setLoadingTodoIds(prevIds => prevIds.filter(id => id !== todoId)),
+      );
   }
 
   const handleSubmit = (event: React.FormEvent<HTMLFormElement>) => {
@@ -138,33 +138,25 @@ export const App: React.FC = () => {
         }
 
         setTempTodo(null);
-      })
-      .finally();
+      });
   };
 
   function updateTodo(updatedTodo: Todo) {
     setLoadingTodoIds(prevIds => [...prevIds, updatedTodo.id]);
     todoService
       .updateTodo(updatedTodo)
-      .then(todo => {
+      .then(() => {
         setTodos(currentTodos => {
-          const newTodo = todo;
-          const newTodos = [...currentTodos];
-          const index = newTodos.findIndex(
-            todoOpt => todoOpt.id === updatedTodo.id,
-          );
+          return currentTodos.map(todoOpt => {
+            if (todoOpt.id === updatedTodo.id) {
+              return {
+                ...todoOpt,
+                completed: !todoOpt.completed,
+              };
+            }
 
-          if (todo.completed === false) {
-            newTodo.completed = true;
-            newTodos.splice(index, 1, newTodo);
-
-            return newTodos;
-          } else {
-            newTodo.completed = false;
-            newTodos.splice(index, 1, newTodo);
-
-            return newTodos;
-          }
+            return todoOpt;
+          });
         });
       })
       .catch(() => {
