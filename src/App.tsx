@@ -21,6 +21,7 @@ export const App: React.FC = () => {
   const [loadingTodoIds, setLoadingTodoIds] = useState<number[]>([]);
   const [title, setTitle] = useState('');
   const [tempTodo, setTempTodo] = useState<Todo | null>(null);
+  const [isLoading, setIsLoading] = useState(false);
 
   const inputRef = useRef<HTMLInputElement>(null);
 
@@ -111,6 +112,7 @@ export const App: React.FC = () => {
     };
 
     setTempTodo(temporaryTodo);
+    setIsLoading(true);
 
     if (inputRef.current) {
       inputRef.current.disabled = true;
@@ -130,6 +132,7 @@ export const App: React.FC = () => {
         }
 
         setTempTodo(null);
+        setIsLoading(false);
       })
       .catch(() => {
         if (inputRef.current) {
@@ -138,6 +141,7 @@ export const App: React.FC = () => {
         }
 
         setTempTodo(null);
+        setIsLoading(false);
       });
   };
 
@@ -216,7 +220,13 @@ export const App: React.FC = () => {
           inputRef={inputRef}
         />
         <TodoListContext.Provider
-          value={{ updateTodo, deleteTodo, loadingTodoIds, tempTodo }}
+          value={{
+            updateTodo,
+            deleteTodo,
+            loadingTodoIds,
+            tempTodo,
+            isLoading,
+          }}
         >
           <TodoList visibleTodos={visibleTodos} />
         </TodoListContext.Provider>

@@ -10,7 +10,7 @@ type Props = {
 };
 
 export const TodoItem: React.FC<Props> = ({ todo }) => {
-  const { updateTodo, deleteTodo, loadingTodoIds } =
+  const { updateTodo, deleteTodo, loadingTodoIds, isLoading } =
     useContext(TodoListContext);
 
   return (
@@ -42,16 +42,27 @@ export const TodoItem: React.FC<Props> = ({ todo }) => {
       >
         ×
       </button>
-
-      <div
-        data-cy="TodoLoader"
-        className={cn('modal', 'overlay', {
-          'is-active': loadingTodoIds.includes(todo.id),
-        })}
-      >
-        <div className="modal-background has-background-white-ter" />
-        <div className="loader" />
-      </div>
+      {isLoading ? (
+        <div
+          data-cy="TodoLoader"
+          className={cn('modal', 'overlay', {
+            'is-active': todo,
+          })}
+        >
+          <div className="modal-background has-background-white-ter" />
+          <div className="loader" />
+        </div>
+      ) : (
+        <div
+          data-cy="TodoLoader"
+          className={cn('modal', 'overlay', {
+            'is-active': loadingTodoIds.includes(todo.id),
+          })}
+        >
+          <div className="modal-background has-background-white-ter" />
+          <div className="loader" />
+        </div>
+      )}
     </div>
   );
 };
