@@ -192,7 +192,9 @@ export const App: React.FC = () => {
             <nav className="filter" data-cy="Filter">
               <a
                 href="#/"
-                className="filter__link selected"
+                className={classNames('filter__link', {
+                  selected: filter === Filters.All,
+                })}
                 data-cy="FilterLinkAll"
                 onClick={() => setFilter(Filters.All)}
               >
@@ -201,7 +203,9 @@ export const App: React.FC = () => {
 
               <a
                 href="#/active"
-                className="filter__link"
+                className={classNames('filter__link', {
+                  selected: filter === Filters.Active,
+                })}
                 data-cy="FilterLinkActive"
                 onClick={() => setFilter(Filters.Active)}
               >
@@ -210,7 +214,9 @@ export const App: React.FC = () => {
 
               <a
                 href="#/completed"
-                className="filter__link"
+                className={classNames('filter__link', {
+                  selected: filter === Filters.Completed,
+                })}
                 data-cy="FilterLinkCompleted"
                 onClick={() => setFilter(Filters.Completed)}
               >
