@@ -1,4 +1,3 @@
-/* eslint-disable no-console */
 import React, { useCallback, useEffect, useRef, useState } from 'react';
 import { USER_ID, getTodos, deleteTodo, addTodo } from './api/todos';
 import { TodoList } from './components/TodoList';
