@@ -3,14 +3,18 @@ import { Filter } from '../types/Filter';
 
 type Props = {
   activeTodosAmount: number;
+  hasCompletedTodos: boolean;
   currentFilter: Filter;
   handleFilterChange: (filter: Filter) => () => void;
+  handleClearCompleted: () => void;
 };
 
 export const TodoFooter: React.FC<Props> = ({
   activeTodosAmount,
+  hasCompletedTodos,
   currentFilter,
   handleFilterChange,
+  handleClearCompleted,
 }) => {
   const getFilterClass = (linkFilter: Filter) =>
     classNames({
@@ -56,7 +60,9 @@ export const TodoFooter: React.FC<Props> = ({
       <button
         type="button"
         className="todoapp__clear-completed"
+        disabled={!hasCompletedTodos}
         data-cy="ClearCompletedButton"
+        onClick={() => handleClearCompleted()}
       >
         Clear completed
       </button>

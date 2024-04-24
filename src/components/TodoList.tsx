@@ -3,7 +3,7 @@ import { TodoItem } from './TodoItem';
 
 type Props = {
   todos: Todo[];
-  handleDeleteTodo: (todoId: Todo['id']) => void;
+  handleDeleteTodo: (id: number) => void;
 };
 
 export const TodoList: React.FC<Props> = ({ todos, handleDeleteTodo }) => {

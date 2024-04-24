@@ -1,5 +1,5 @@
 /* eslint-disable no-console */
-import React, { useEffect, useRef, useState } from 'react';
+import React, { useCallback, useEffect, useRef, useState } from 'react';
 import { USER_ID, getTodos, deleteTodo, addTodo } from './api/todos';
 import { TodoList } from './components/TodoList';
 import { Todo } from './types/Todo';
@@ -17,38 +17,34 @@ export const App: React.FC = () => {
   const [currentError, setCurrentError] = useState<Error | null>(null);
   const [currentFilter, setCurrentFilter] = useState<Filter>(Filter.All);
   const [deleteTodoId, setDeleteTodoId] = useState<Todo['id'] | null>(null);
-  const [addTodoTitle, setAddTodoTitle] = useState<string | null>(null);
+  const [addTodoTitle, setAddTodoTitle] = useState<string>('');
   const [tempTodo, setTempTodo] = useState<null | Todo>(null);
   const [isNewTodoLoading, setIsNewTodoLoading] = useState<boolean>(false);
-  // const [errorTimeoutId, setErrorTimeoutId] = useState<NodeJS.Timeout | null>(
-  //   null,
-  // );
+
+  const hasCompletedTodos = todos.some((todo: Todo) => todo.completed);
+
+  const activeTodosAmount = todos.filter(
+    (todo: Todo) => !todo.completed,
+  ).length;
 
   const newTodoInput = useRef<HTMLInputElement>(null);
 
   useEffect(() => {
-    // If there's no error
-    // if (!currentError) {
-    //   setErrorTimeoutId(null);
-    // }
+    setCurrentError(null);
 
-    // // If there is a timer
-    // if (errorTimeoutId) {
+    getTodos()
+      .then(setTodos)
+      .catch(() => {
+        setCurrentError(Error.CannotLoad);
+      });
+  }, []);
 
-    //   clearTimeout(errorTimeoutId);
-    // }
-
-    // Set a timeout to delete it
-    // const timeout = setTimeout(() => setCurrentError(null), 3000);
-
+  useEffect(() => {
     if (currentError) {
       newTodoInput.current?.focus();
 
       setTimeout(() => setCurrentError(null), 3000);
     }
-
-    // Remember new timeout's id
-    // setErrorTimeoutId(timeout);
   }, [currentError]);
 
   useEffect(() => {
@@ -74,17 +70,25 @@ export const App: React.FC = () => {
     }
   }, [deleteTodoId]);
 
-  useEffect(() => {
-    if (addTodoTitle === null) {
-      return;
-    }
+  const deleteTodoById = useCallback((id: number) => {
+    setDeleteTodoId(id);
 
-    // setCurrentError(null);
-    // console.log('Error: ', currentError);
+    deleteTodo(id)
+      .then(() =>
+        setTodos((currentTodos: Todo[]) =>
+          currentTodos.filter((todo: Todo) => todo.id !== id),
+        ),
+      )
+      .catch(() => {
+        setCurrentError(Error.CannotDelete);
+      })
+      .finally(() => setDeleteTodoId(null));
+  }, []);
 
-    if (addTodoTitle.length === 0) {
-      setAddTodoTitle(null);
-      // console.log('Set Error Back again');
+  const createTodo = useCallback(() => {
+    const todoTitle = addTodoTitle?.trim();
+
+    if (!todoTitle.length) {
       setCurrentError(Error.EmptyTitle);
 
       return;
@@ -99,49 +103,36 @@ export const App: React.FC = () => {
 
     setIsNewTodoLoading(true);
 
-    addTodo(addTodoTitle)
+    addTodo(todoTitle)
       .then(newTodo => {
-        // When this response get's back -> We want to:
-        // - Focus the header input
-        // - Remove the header input value
         setTodos(
           (currentTodos: Todo[]) => [...currentTodos, newTodo] as Todo[],
         );
 
-        setAddTodoTitle(null);
+        setAddTodoTitle('');
       })
-      .catch(() => {
-        setCurrentError(Error.CannotAdd);
-      })
+      .catch(() => setCurrentError(Error.CannotAdd))
       .finally(() => {
         setTempTodo(null);
         setIsNewTodoLoading(false);
       });
   }, [addTodoTitle]);
 
-  useEffect(() => {
-    setCurrentError(null);
+  const clearCompletedTodos = useCallback(() => {
+    const completedTodos = todos.filter((todo: Todo) => todo.completed);
 
-    getTodos()
-      .then(setTodos)
-      .catch(() => {
-        setCurrentError(Error.CannotLoad);
-      });
+    for (const todo of completedTodos) {
+      deleteTodoById(todo.id);
+    }
+  }, [deleteTodoById, todos]);
+
+  const handleFilterChange = useCallback((filter: Filter) => {
+    return () => setCurrentFilter(filter);
   }, []);
 
   if (!USER_ID) {
     return <UserWarning />;
   }
-
-  const activeTodosAmount = todos.filter(
-    (todo: Todo) => !todo.completed,
-  ).length;
-
-  const handleFilterChange = (filter: Filter) => {
-    return () => setCurrentFilter(filter);
-  };
-
-  // const allTodos = tempTodo ? todos.concat(tempTodo) : todos;
 
   return (
     <div className="todoapp">
@@ -149,8 +140,9 @@ export const App: React.FC = () => {
 
       <div className="todoapp__content">
         <TodoHeader
-          handleAddTodo={setAddTodoTitle}
+          handleChangeTitle={setAddTodoTitle}
           addTodoTitle={addTodoTitle}
+          createTodo={createTodo}
           newTodoInput={newTodoInput}
           isNewTodoLoading={isNewTodoLoading}
         />
@@ -158,7 +150,7 @@ export const App: React.FC = () => {
         {todos.length > 0 && (
           <TodoList
             todos={getFilteredTodos(todos, currentFilter)}
-            handleDeleteTodo={setDeleteTodoId}
+            handleDeleteTodo={deleteTodoById}
           />
         )}
 
@@ -173,8 +165,10 @@ export const App: React.FC = () => {
         {todos.length > 0 && (
           <TodoFooter
             activeTodosAmount={activeTodosAmount}
+            hasCompletedTodos={hasCompletedTodos}
             currentFilter={currentFilter}
             handleFilterChange={handleFilterChange}
+            handleClearCompleted={clearCompletedTodos}
           />
         )}
       </div>
