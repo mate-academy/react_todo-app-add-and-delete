@@ -15,7 +15,6 @@ export const App: React.FC = () => {
   const [todos, setTodos] = useState<Todo[]>([]);
   const [currentError, setCurrentError] = useState<Error | null>(null);
   const [currentFilter, setCurrentFilter] = useState<Filter>(Filter.All);
-  const [deleteTodoId, setDeleteTodoId] = useState<Todo['id'] | null>(null);
   const [addTodoTitle, setAddTodoTitle] = useState<string>('');
   const [tempTodo, setTempTodo] = useState<null | Todo>(null);
   const [isNewTodoLoading, setIsNewTodoLoading] = useState<boolean>(false);
@@ -50,28 +49,7 @@ export const App: React.FC = () => {
     newTodoInput.current?.focus();
   }, [todos, newTodoInput]);
 
-  useEffect(() => {
-    if (deleteTodoId) {
-      setCurrentError(null);
-
-      deleteTodo(deleteTodoId)
-        .then(() => {
-          getTodos()
-            .then(setTodos)
-            .catch(() => {
-              setCurrentError(Error.CannotLoad);
-            });
-        })
-        .catch(() => {
-          setCurrentError(Error.CannotDelete);
-        })
-        .finally(() => setDeleteTodoId(null));
-    }
-  }, [deleteTodoId]);
-
   const deleteTodoById = useCallback((id: number) => {
-    setDeleteTodoId(id);
-
     deleteTodo(id)
       .then(() =>
         setTodos((currentTodos: Todo[]) =>
@@ -80,8 +58,7 @@ export const App: React.FC = () => {
       )
       .catch(() => {
         setCurrentError(Error.CannotDelete);
-      })
-      .finally(() => setDeleteTodoId(null));
+      });
   }, []);
 
   const createTodo = useCallback(() => {
@@ -156,12 +133,12 @@ export const App: React.FC = () => {
         {tempTodo && (
           <TodoItem
             todo={tempTodo}
-            handleDeleteTodo={setDeleteTodoId}
+            handleDeleteTodo={deleteTodoById}
             isTemp={true}
           />
         )}
 
-        {todos.length > 0 && (
+        {!!todos?.length && (
           <TodoFooter
             activeTodosAmount={activeTodosAmount}
             hasCompletedTodos={hasCompletedTodos}
