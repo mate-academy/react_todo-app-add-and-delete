@@ -1,18 +1,18 @@
 import { Ref } from 'react';
 
 type Props = {
-  handleChangeTitle: (title: string) => void;
-  addTodoTitle: string;
+  handleTitleChange: (title: string) => void;
+  newTodoTitle: string;
   createTodo: () => void;
-  newTodoInput: Ref<HTMLInputElement>;
+  todoInput: Ref<HTMLInputElement>;
   isNewTodoLoading: boolean;
 };
 
 export const TodoHeader: React.FC<Props> = ({
-  handleChangeTitle,
-  addTodoTitle,
+  handleTitleChange,
+  newTodoTitle,
   createTodo,
-  newTodoInput,
+  todoInput,
   isNewTodoLoading,
 }) => {
   const handleFormSubmit = (event: React.FormEvent) => {
@@ -35,9 +35,9 @@ export const TodoHeader: React.FC<Props> = ({
           className="todoapp__new-todo"
           placeholder="What needs to be done?"
           disabled={isNewTodoLoading}
-          ref={newTodoInput}
-          value={addTodoTitle}
-          onChange={event => handleChangeTitle(event.target.value.trimStart())}
+          ref={todoInput}
+          value={newTodoTitle}
+          onChange={event => handleTitleChange(event.target.value.trimStart())}
         />
       </form>
     </header>
