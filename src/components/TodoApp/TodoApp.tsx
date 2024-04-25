@@ -14,6 +14,7 @@ export const TodoApp: React.FC = () => {
   const [loading, setLoading] = useState(false);
   const [errorMessage, setErrorMessage] = useState('');
   const [statusFilter, setStatusFilter] = useState(Status.All);
+  const [loadingTodoIds, setLoadingTodoIds] = useState<number[]>([]);
 
   useEffect(() => {
     setLoading(true);
@@ -56,6 +57,7 @@ export const TodoApp: React.FC = () => {
           setErrorMessage={setErrorMessage}
           loading={loading}
           setLoading={setLoading}
+          setLoadingTodoIds={setLoadingTodoIds}
         />
 
         <TodoList
@@ -63,6 +65,8 @@ export const TodoApp: React.FC = () => {
           setTodos={setTodos}
           statusFilter={statusFilter}
           setErrorMessage={setErrorMessage}
+          loadingTodoIds={loadingTodoIds}
+          setLoadingTodoIds={setLoadingTodoIds}
         />
 
         {!!todos.length && (
@@ -72,6 +76,7 @@ export const TodoApp: React.FC = () => {
             statusFilter={statusFilter}
             setStatusFilter={setStatusFilter}
             setErrorMessage={setErrorMessage}
+            setLoadingTodoIds={setLoadingTodoIds}
           />
         )}
       </div>

@@ -10,6 +10,7 @@ type Props = {
   statusFilter: Status;
   setStatusFilter: (newStatus: Status) => void;
   setErrorMessage: (errorMessage: string) => void;
+  setLoadingTodoIds: React.Dispatch<React.SetStateAction<number[]>>;
 };
 
 export const Footer: React.FC<Props> = ({
@@ -18,26 +19,41 @@ export const Footer: React.FC<Props> = ({
   statusFilter,
   setStatusFilter,
   setErrorMessage,
+  setLoadingTodoIds,
 }) => {
   const activeTodosCount = todos.filter(todo => !todo.completed).length;
   const complitedTodosCount = todos.filter(todo => todo.completed).length;
 
   function removeTodo(todoId: number) {
-    setTodos(currentTodos => currentTodos.filter(todo => todo.id !== todoId));
+    setLoadingTodoIds(prevIds => [...prevIds, todoId]);
 
     return todosService
       .deleteTodo(todoId)
-      .then(() => {})
-      .catch(error => {
+      .then(() => {
+        setTodos(currentTodos =>
+          currentTodos.filter(todo => todo.id !== todoId),
+        );
+        setLoadingTodoIds(prevIds => prevIds.filter(id => id !== todoId));
+      })
+      .catch(() => {
         setErrorMessage(`Unable to delete a todo`);
-        throw error;
       });
   }
 
   const handleClearButton = () => {
     const completedTodos = todos.filter(todo => todo.completed);
 
-    completedTodos.forEach(todo => removeTodo(todo.id));
+    completedTodos.forEach(todo => {
+      setLoadingTodoIds(prevIds => [...prevIds, todo.id]);
+
+      removeTodo(todo.id)
+        .then(() => {
+          setLoadingTodoIds(prevIds => prevIds.filter(id => id !== todo.id));
+        })
+        .catch(() => {
+          setErrorMessage(`Unable to delete a todo`);
+        });
+    });
   };
 
   return (

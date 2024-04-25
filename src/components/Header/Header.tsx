@@ -11,6 +11,7 @@ type Props = {
   setErrorMessage: (errorMessage: string) => void;
   loading: boolean;
   setLoading: (loadingStatus: boolean) => void;
+  setLoadingTodoIds: React.Dispatch<React.SetStateAction<number[]>>;
 };
 
 export const Header: React.FC<Props> = ({
@@ -21,6 +22,7 @@ export const Header: React.FC<Props> = ({
   setErrorMessage,
   loading,
   setLoading,
+  setLoadingTodoIds,
 }) => {
   const titleField = useRef<HTMLInputElement>(null);
 
@@ -28,8 +30,8 @@ export const Header: React.FC<Props> = ({
     if (titleField.current) {
       titleField.current.focus();
     }
-  }, []);
-  const allTodosCompleted = todos.every(todo => todo.completed);
+  });
+  const completedTodos = todos.every(todo => todo.completed);
 
   function addTodo(title: string) {
     if (!title.trim()) {
@@ -63,6 +65,15 @@ export const Header: React.FC<Props> = ({
       return { ...todo, completed: !todo.completed };
     });
 
+    updatedTodos.forEach(todo => {
+      setLoadingTodoIds(prevIds => [...prevIds, todo.id]);
+      setTimeout(() => {
+        setLoadingTodoIds(prevIds =>
+          prevIds.filter(prevTodoId => prevTodoId !== todo.id),
+        );
+      }, 500);
+    });
+
     setTodos(updatedTodos);
   };
 
@@ -77,7 +88,7 @@ export const Header: React.FC<Props> = ({
       <button
         type="button"
         className={classNames('todoapp__toggle-all', {
-          active: allTodosCompleted,
+          active: completedTodos,
         })}
         data-cy="ToggleAllButton"
         onClick={handleToggleAll}

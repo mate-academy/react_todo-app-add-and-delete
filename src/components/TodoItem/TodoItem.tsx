@@ -9,6 +9,8 @@ type Props = {
   todos: Todo[];
   setTodos: React.Dispatch<React.SetStateAction<Todo[]>>;
   setErrorMessage: (errorMessage: string) => void;
+  loadingTodoIds: number[];
+  setLoadingTodoIds: React.Dispatch<React.SetStateAction<number[]>>;
 };
 
 export const TodoItem: React.FC<Props> = ({
@@ -16,6 +18,8 @@ export const TodoItem: React.FC<Props> = ({
   todos,
   setTodos,
   setErrorMessage,
+  loadingTodoIds,
+  setLoadingTodoIds,
 }) => {
   const handleToggleComplete = (todoId: number) => {
     const updatedTodos = todos.map(todo => {
@@ -26,24 +30,35 @@ export const TodoItem: React.FC<Props> = ({
       return todo;
     });
 
+    setLoadingTodoIds(prevIds => [...prevIds, todoId]);
+
     setTodos(updatedTodos);
+    setTimeout(() => {
+      setLoadingTodoIds(prevIds =>
+        prevIds.filter(prevTodoId => prevTodoId !== todoId),
+      );
+    }, 500);
   };
 
   function removeTodo(todoId: number) {
-    setTodos(currentTodos => currentTodos.filter(todo => todo.id !== todoId));
+    setLoadingTodoIds(prevIds => [...prevIds, todoId]);
 
-    return todosService
+    todosService
       .deleteTodo(todoId)
-      .then(() => {})
-      .catch(error => {
+      .then(() => {
+        setTodos(currentTodos =>
+          currentTodos.filter(todo => todo.id !== todoId),
+        );
+      })
+      .catch(() => {
         setErrorMessage(`Unable to delete a todo`);
-        throw error;
+      })
+      .finally(() => {
+        setLoadingTodoIds(prevIds =>
+          prevIds.filter(prevTodoId => prevTodoId !== todoId),
+        );
       });
   }
-
-  const handleDelete = (todoId: number) => {
-    removeTodo(todoId);
-  };
 
   return (
     <div
@@ -69,15 +84,21 @@ export const TodoItem: React.FC<Props> = ({
         type="button"
         className="todo__remove"
         data-cy="TodoDelete"
-        onClick={() => handleDelete(id)}
+        onClick={() => removeTodo(id)}
       >
         ×
       </button>
 
-      <div data-cy="TodoLoader" className="modal overlay">
-        <div className="modal-background has-background-white-ter" />
-        <div className="loader" />
-      </div>
+      {loadingTodoIds.includes(id) && (
+        <div
+          className={classNames('modal overlay', {
+            'is-active': loadingTodoIds.includes(id),
+          })}
+        >
+          <div className="modal-background has-background-white-ter" />
+          <div className="loader" />
+        </div>
+      )}
     </div>
   );
 };
