@@ -11,25 +11,22 @@ import { Status } from '../../types/Status';
 export const TodoApp: React.FC = () => {
   const [todos, setTodos] = useState<Todo[]>([]);
   const [todoTitle, setTodoTitle] = useState('');
-  const [loading, setLoading] = useState(false);
   const [errorMessage, setErrorMessage] = useState('');
   const [statusFilter, setStatusFilter] = useState(Status.All);
   const [loadingTodoIds, setLoadingTodoIds] = useState<number[]>([]);
+  const [tempTodo, setTempTodo] = useState<Todo | null>(null);
 
   useEffect(() => {
-    setLoading(true);
-
     todosService
       .getTodos()
       .then(setTodos)
       .catch(() => {
         setErrorMessage(`Unable to load todos`);
-      })
-      .finally(() => setLoading(false));
+      });
   }, []);
 
   useEffect(() => {
-    if (errorMessage || (!todos.length && !loading)) {
+    if (errorMessage || !todos.length) {
       const timeout = setTimeout(() => {
         setErrorMessage('');
       }, 3000);
@@ -38,7 +35,7 @@ export const TodoApp: React.FC = () => {
     }
 
     return;
-  }, [errorMessage, todos, loading]);
+  }, [errorMessage, todos]);
 
   if (!todosService.USER_ID) {
     return <UserWarning />;
@@ -55,9 +52,9 @@ export const TodoApp: React.FC = () => {
           todoTitle={todoTitle}
           setTodoTitle={setTodoTitle}
           setErrorMessage={setErrorMessage}
-          loading={loading}
-          setLoading={setLoading}
+          loadingTodoIds={loadingTodoIds}
           setLoadingTodoIds={setLoadingTodoIds}
+          setTempTodo={setTempTodo}
         />
 
         <TodoList
@@ -67,6 +64,7 @@ export const TodoApp: React.FC = () => {
           setErrorMessage={setErrorMessage}
           loadingTodoIds={loadingTodoIds}
           setLoadingTodoIds={setLoadingTodoIds}
+          tempTodo={tempTodo}
         />
 
         {!!todos.length && (

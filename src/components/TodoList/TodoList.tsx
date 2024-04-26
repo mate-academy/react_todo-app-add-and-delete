@@ -10,6 +10,7 @@ type Props = {
   setErrorMessage: (errorMessage: string) => void;
   loadingTodoIds: number[];
   setLoadingTodoIds: React.Dispatch<React.SetStateAction<number[]>>;
+  tempTodo: Todo | null;
 };
 
 export const TodoList: React.FC<Props> = ({
@@ -19,6 +20,7 @@ export const TodoList: React.FC<Props> = ({
   setErrorMessage,
   loadingTodoIds,
   setLoadingTodoIds,
+  tempTodo,
 }) => {
   const filteredTodos = useMemo(() => {
     switch (statusFilter) {
@@ -46,6 +48,17 @@ export const TodoList: React.FC<Props> = ({
           setLoadingTodoIds={setLoadingTodoIds}
         />
       ))}
+
+      {tempTodo !== null && (
+        <TodoItem
+          todo={tempTodo}
+          todos={todos}
+          setTodos={setTodos}
+          setErrorMessage={setErrorMessage}
+          loadingTodoIds={loadingTodoIds}
+          setLoadingTodoIds={setLoadingTodoIds}
+        />
+      )}
     </section>
   );
 };
