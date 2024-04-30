@@ -24,6 +24,7 @@ const Footer = () => {
 
     completedTodosIds.forEach(id => handleDeleteTodo(id)());
   };
+
   return (
     <footer className="todoapp__footer" data-cy="Footer">
       <span className="todo-count" data-cy="TodosCounter">
