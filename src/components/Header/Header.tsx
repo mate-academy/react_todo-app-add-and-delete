@@ -12,6 +12,7 @@ type Props = {
 export const Header: FC<Props> = ({ onError, setTempTodo }) => {
   const titleRef = useRef<HTMLInputElement>(null);
   const [todoTitle, setTodoTitle] = useState('');
+  const [addingTodo, setAddingTodo] = useState(false);
   const dispatch = useContext(DispatchContext);
   const { todos } = useContext(StateContext);
 
@@ -19,12 +20,13 @@ export const Header: FC<Props> = ({ onError, setTempTodo }) => {
     if (titleRef.current) {
       titleRef.current.focus();
     }
-  }, [todos]);
+  }, [addingTodo]);
 
   const isAllTodoComplete = todos.every(todo => todo.completed);
 
   const handleSubmit = (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
+    setAddingTodo(true);
 
     const trimedTitle = todoTitle.trim();
 
@@ -46,12 +48,16 @@ export const Header: FC<Props> = ({ onError, setTempTodo }) => {
       .then(response => {
         dispatch({ type: Action.addTodo, payload: response });
         setTempTodo(null);
+        setTodoTitle('');
       })
       .catch(() => {
         onError('Unable to add a todo');
         setTempTodo(null);
+        setAddingTodo(false);
       })
-      .finally(() => setTodoTitle(''));
+      .finally(() => {
+        setAddingTodo(false);
+      });
   };
 
   const handleStatusChange = () => {
@@ -85,6 +91,7 @@ export const Header: FC<Props> = ({ onError, setTempTodo }) => {
         <input
           data-cy="NewTodoField"
           type="text"
+          {...(addingTodo && { disabled: true })}
           value={todoTitle}
           ref={titleRef}
           className="todoapp__new-todo"

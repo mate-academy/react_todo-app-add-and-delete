@@ -1,4 +1,4 @@
-import React, { FC, useContext, useEffect, useRef, useState } from 'react';
+import React, { FC, useContext, useState } from 'react';
 import { Action } from '../../types/actions';
 import { DispatchContext } from '../../store/todoReducer';
 import { TodoFromServer } from '../../types/state';
@@ -19,16 +19,7 @@ export const TodoItem: FC<Props> = ({
 }) => {
   const [updateMode, setUpdateMode] = useState(false);
   const [newTitle, setNewTitle] = useState(todo.title);
-  const newTitleRef = useRef<HTMLInputElement>(null);
   const dispatch = useContext(DispatchContext);
-
-  useEffect(() => {
-    if (updateMode) {
-      if (newTitleRef.current) {
-        newTitleRef.current.focus();
-      }
-    }
-  }, [updateMode]);
 
   const handeUpdateRequest = (newTodo: TodoFromServer) => {
     updateTodo(newTodo)
@@ -62,6 +53,8 @@ export const TodoItem: FC<Props> = ({
           onError('Unable to delete a todo');
           onCoverShow([]);
         });
+
+      return;
     }
 
     const copyTodo = { ...todo };
@@ -127,7 +120,6 @@ export const TodoItem: FC<Props> = ({
               <input
                 data-cy="TodoTitleField"
                 type="text"
-                ref={newTitleRef}
                 className="todo__title-field"
                 placeholder="Empty todo will be deleted"
                 value={newTitle}
