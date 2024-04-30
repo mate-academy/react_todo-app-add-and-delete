@@ -30,12 +30,12 @@ export const TodoItem: FC<Props> = ({
     }
   }, [updateMode]);
 
-  const handeUpdateRequest = (newTodo: TodoFromServer) => {
-    updateTodo(newTodo)
-      .then(updatedTodo => {
+  const handeUpdateRequest = (id: number, data: Partial<TodoFromServer>) => {
+    updateTodo(id, todo)
+      .then(() => {
         dispatch({
           type: Action.updateTodo,
-          payload: updatedTodo,
+          payload: { id, data },
         });
       })
       .catch(() => {
@@ -64,11 +64,9 @@ export const TodoItem: FC<Props> = ({
         });
     }
 
-    const copyTodo = { ...todo };
+    const title = newTitle.trim();
 
-    copyTodo.title = newTitle.trim();
-
-    handeUpdateRequest(copyTodo);
+    handeUpdateRequest(todo.id, { title });
   };
 
   const handleSubmit = (
@@ -81,25 +79,23 @@ export const TodoItem: FC<Props> = ({
     saveNewTitle();
   };
 
-  const handleUpdateComplete = (needToChangeTodo: TodoFromServer) => {
-    onCoverShow([needToChangeTodo.id]);
-    const copyTodo = { ...needToChangeTodo };
+  const handleUpdateComplete = (completed: Partial<TodoFromServer>) => {
+    onCoverShow([todo.id]);
 
-    copyTodo.completed = !copyTodo.completed;
-    dispatch({
-      type: Action.updateTodo,
-      payload: copyTodo,
-    });
+    // dispatch({
+    //   type: Action.updateTodo,
+    //   payload: { id, data: completed },
+    // });
 
-    handeUpdateRequest(copyTodo);
+    handeUpdateRequest(todo.id, completed);
   };
 
-  const handleRemove = (id: number) => {
-    onCoverShow([id]);
+  const handleRemove = () => {
+    onCoverShow([todo.id]);
 
-    deleteTodo(id)
+    deleteTodo(todo.id)
       .then(() => {
-        dispatch({ type: Action.deleteTodo, payload: id });
+        dispatch({ type: Action.deleteTodo, payload: todo.id });
         onCoverShow([]);
       })
       .catch(() => {
@@ -118,7 +114,9 @@ export const TodoItem: FC<Props> = ({
             type="checkbox"
             className="todo__status"
             checked={todo.completed}
-            onChange={() => handleUpdateComplete(todo)}
+            onChange={() =>
+              handleUpdateComplete({ completed: !todo.completed })
+            }
           />
         </label>
         {updateMode ? (
@@ -156,7 +154,7 @@ export const TodoItem: FC<Props> = ({
               type="button"
               className="todo__remove"
               data-cy="TodoDelete"
-              onClick={() => handleRemove(todo.id)}
+              onClick={handleRemove}
             >
               ×
             </button>
