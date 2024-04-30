@@ -79,20 +79,16 @@ export const TodoItem: FC<Props> = ({
     const copyTodo = { ...needToChangeTodo };
 
     copyTodo.completed = !copyTodo.completed;
-    dispatch({
-      type: Action.updateTodo,
-      payload: copyTodo,
-    });
 
     handeUpdateRequest(copyTodo);
   };
 
-  const handleRemove = (id: number) => {
-    onCoverShow([id]);
+  const handleRemove = () => {
+    onCoverShow([todo.id]);
 
-    deleteTodo(id)
+    deleteTodo(todo.id)
       .then(() => {
-        dispatch({ type: Action.deleteTodo, payload: id });
+        dispatch({ type: Action.deleteTodo, payload: todo.id });
         onCoverShow([]);
       })
       .catch(() => {
@@ -148,7 +144,7 @@ export const TodoItem: FC<Props> = ({
               type="button"
               className="todo__remove"
               data-cy="TodoDelete"
-              onClick={() => handleRemove(todo.id)}
+              onClick={handleRemove}
             >
               ×
             </button>

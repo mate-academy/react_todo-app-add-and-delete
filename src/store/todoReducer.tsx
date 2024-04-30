@@ -17,7 +17,9 @@ const reducer = (state: State, action: Actions) => {
 
       const index = newTodos.findIndex(todo => todo.id === action.payload.id);
 
-      newTodos.splice(index, 1, action.payload);
+      const newTodo = { ...newTodos[index], ...action.payload };
+
+      newTodos.splice(index, 1, newTodo);
 
       return { ...state, todos: newTodos };
     }

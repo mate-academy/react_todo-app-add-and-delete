@@ -12,7 +12,7 @@ export const createTodo = (data: Todo) => {
   return client.post<TodoFromServer>(`/todos`, data);
 };
 
-export const updateTodo = (todo: Partial<TodoFromServer>) => {
+export const updateTodo = (todo: TodoFromServer) => {
   return client.patch<TodoFromServer>(`/todos/${todo.id}`, todo);
 };
 
