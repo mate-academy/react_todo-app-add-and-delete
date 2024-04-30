@@ -7,11 +7,17 @@ export const Footer: React.FC = () => {
   const {
     state: { todos, filter },
     setFilter,
-    setTodos,
+    deleteTodo,
   } = useAppContext();
 
   const completed = todos.filter(todo => todo.completed);
   const notComleted = todos.filter(todo => !todo.completed);
+
+  const handleGroupDelete = () => {
+    completed.forEach(todo => {
+      deleteTodo(todo.id);
+    });
+  };
 
   return (
     <>
@@ -60,7 +66,7 @@ export const Footer: React.FC = () => {
             type="button"
             className="todoapp__clear-completed"
             data-cy="ClearCompletedButton"
-            onClick={() => setTodos(notComleted)}
+            onClick={handleGroupDelete}
             disabled={!completed.length}
           >
             Clear completed

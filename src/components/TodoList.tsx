@@ -9,7 +9,6 @@ export const TodoList: React.FC = () => {
     state: { todos, filter, tempTodo },
   } = useAppContext();
 
-  console.log(tempTodo);
   const filterFunctions: { [key: string]: (todo: Todo) => void } = {
     [Filter.Active]: todo => !todo.completed,
     [Filter.Completed]: todo => todo.completed,

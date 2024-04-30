@@ -99,7 +99,7 @@ export const TodoItem: React.FC<Props> = ({ todoData, isLoading = false }) => {
       ) : (
         <>
           <span data-cy="TodoTitle" className="todo__title">
-            {loading ? 'Todo is being saved now' : todoData.title}
+            {todoData.title}
           </span>
           <button
             type="button"

@@ -22,16 +22,19 @@ export const Header: React.FC = () => {
 
     if (!title) {
       setError('Title should not be empty');
+
       return;
     }
 
-    setInputText('');
     setIsSubmitting(true);
     addTodo(title)
+      .then(() => setInputText(''))
       .catch(() => {
-        setInputText(title);
+        setIsSubmitting(false);
       })
-      .finally(() => setIsSubmitting(false));
+      .finally(() => {
+        setIsSubmitting(false);
+      });
   };
 
   const handleToggleAllClick = () => {
@@ -42,6 +45,7 @@ export const Header: React.FC = () => {
           completed: false,
         })),
       );
+
       return;
     }
 
@@ -57,7 +61,7 @@ export const Header: React.FC = () => {
     if (mainInputRef.current) {
       mainInputRef.current.focus();
     }
-  }, [todos.length]);
+  }, [todos.length, isSubmitting]);
 
   return (
     <header className="todoapp__header">
