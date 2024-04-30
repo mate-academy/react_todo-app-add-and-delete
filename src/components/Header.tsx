@@ -6,8 +6,8 @@ import classNames from 'classnames';
 
 export const Header: React.FC = () => {
   const [inputTodo, setInputTodo] = useState('');
-  const [submitting, setSubmitting] = useState(false);
-  const { todos, addTodo, setErrMessage, loading, setLoading } = useTodos();
+  const [loading, setLoading] = useState(false);
+  const { todos, addTodo, setErrMessage } = useTodos();
   const allCompleted = todos.every(el => el.completed);
   const inputRef = useRef<HTMLInputElement | null>(null);
 
@@ -15,29 +15,34 @@ export const Header: React.FC = () => {
     if (!loading && inputRef.current) {
       inputRef.current.focus();
     }
-  }, [loading, submitting, addTodo]);
+  }, [loading]);
 
-  const handleAddTodo = () => {
+  const handleAddTodo = async () => {
     const trimmedInput = inputTodo.trim();
 
     if (trimmedInput) {
-      setSubmitting(true);
-      addTodo({
-        id: Date.now(),
-        title: trimmedInput,
-        completed: false,
-        userId: USER_ID,
-      });
-      setInputTodo('');
-      setSubmitting(false);
-    } else if (!trimmedInput.length) {
+      try {
+        setLoading(true);
+        await addTodo({
+          id: Date.now(),
+          title: trimmedInput,
+          completed: false,
+          userId: USER_ID,
+        });
+        setInputTodo('');
+        setLoading(false);
+      } catch (error) {
+        setErrMessage(ErrorText.AddErr);
+        setLoading(false);
+      }
+    } else {
       setErrMessage(ErrorText.EmptyTitleErr);
+      inputRef.current?.focus();
     }
   };
 
   const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
-    setLoading(true);
     setErrMessage(ErrorText.NoErr);
     handleAddTodo();
   };
@@ -61,7 +66,7 @@ export const Header: React.FC = () => {
           ref={inputRef}
           value={inputTodo}
           onChange={e => setInputTodo(e.target.value)}
-          disabled={submitting || loading}
+          disabled={loading}
         />
       </form>
     </header>
