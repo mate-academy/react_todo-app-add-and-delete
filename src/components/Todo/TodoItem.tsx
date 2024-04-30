@@ -85,9 +85,13 @@ export const TodoItem: FC<Props> = ({
 
   const handleRemove = () => {
     onCoverShow([todo.id]);
+  const handleRemove = () => {
+    onCoverShow([todo.id]);
 
     deleteTodo(todo.id)
+    deleteTodo(todo.id)
       .then(() => {
+        dispatch({ type: Action.deleteTodo, payload: todo.id });
         dispatch({ type: Action.deleteTodo, payload: todo.id });
         onCoverShow([]);
       })
@@ -144,6 +148,7 @@ export const TodoItem: FC<Props> = ({
               type="button"
               className="todo__remove"
               data-cy="TodoDelete"
+              onClick={handleRemove}
               onClick={handleRemove}
             >
               ×
