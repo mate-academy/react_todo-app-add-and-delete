@@ -10,28 +10,9 @@ import {
 } from 'react';
 import { Todo } from '../types/Todo';
 import { USER_ID, deleteTodo, getTodos, postTodo } from '../api/todos';
-
-export const errors = {
-  load: {
-    message: 'Unable to load todos',
-  },
-  add: {
-    message: 'Unable to add a todo',
-  },
-  delete: {
-    message: 'Unable to delete a todo',
-  },
-  update: {
-    message: 'Unable to update a todo',
-  },
-  empty: {
-    message: 'Title should not be empty',
-  },
-};
+import { TodoError } from '../types/TodoError';
 
 export type Filter = 'all' | 'completed' | 'active';
-
-export type ErrorType = keyof typeof errors;
 
 type TodosContextT = {
   allTodos: Todo[];
@@ -39,11 +20,12 @@ type TodosContextT = {
   completedTodos: Todo[];
   filteredTodos: Todo[];
   tempTodo: Todo | null;
-  error: ErrorType | null;
+  todosInUpdate: number[];
+  error: TodoError | null;
   filter: Filter;
   isLoading: boolean;
   setFilter: (filter: Filter) => void;
-  setError: (error: ErrorType | null) => void;
+  setError: (error: TodoError | null) => void;
   onAddTodo: (title: string) => void;
   onDeleteTodo: (...ids: number[]) => void;
 };
@@ -61,20 +43,22 @@ const TodosContext = createContext<TodosContextT>({
   activeTodos: [],
   completedTodos: [],
   tempTodo: null,
+  todosInUpdate: [],
 });
 
 export const TodosProvider: FC<PropsWithChildren> = ({ children }) => {
   const [todos, setTodos] = useState<Todo[]>([]);
-  const [error, setError] = useState<ErrorType | null>(null);
+  const [error, setError] = useState<TodoError | null>(null);
   const [filter, setFilter] = useState<Filter>('all');
   const [isLoading, setIsloading] = useState(false);
   const [tempTodo, setTempTodo] = useState<Todo | null>(null);
+  const [todosInUpdate, setTodosInUpdate] = useState<number[]>([]);
 
   useEffect(() => {
     setIsloading(true);
     getTodos()
       .then(data => setTodos(data))
-      .catch(() => setError('load'))
+      .catch(() => setError(TodoError.LOAD))
       .finally(() => setIsloading(false));
   }, []);
 
@@ -95,15 +79,22 @@ export const TodosProvider: FC<PropsWithChildren> = ({ children }) => {
 
   const onAddTodo = useCallback((title: string) => {
     if (!title) {
-      setError('empty');
+      setError(TodoError.EMPTY_TITLE);
     } else {
       setIsloading(true);
-      setTempTodo({ id: 0, userId: USER_ID, title, completed: false });
+      setTempTodo({
+        id: 0,
+        userId: USER_ID,
+        title,
+        completed: false,
+      });
+      setTodosInUpdate(prev => [...prev, 0]);
       postTodo(title, false)
         .then(todo => setTodos(prev => [...prev, todo]))
-        .catch(() => setError('add'))
+        .catch(() => setError(TodoError.ADD))
         .finally(() => {
           setTempTodo(null);
+          setTodosInUpdate(prev => prev.filter(id => id !== 0));
           setIsloading(false);
         });
     }
@@ -111,14 +102,17 @@ export const TodosProvider: FC<PropsWithChildren> = ({ children }) => {
 
   const onDeleteTodo = useCallback((...ids: number[]) => {
     setIsloading(true);
+    setTodosInUpdate(prev => [...prev, ...ids]);
     Promise.all(
       ids.map(id =>
-        deleteTodo(id).then(() =>
-          setTodos(prev => prev.filter(t => t.id !== id)),
-        ),
+        deleteTodo(id)
+          .then(() => setTodos(prev => prev.filter(t => t.id !== id)))
+          .finally(() =>
+            setTodosInUpdate(prev => prev.filter(tId => tId !== id)),
+          ),
       ),
     )
-      .catch(() => setError('delete'))
+      .catch(() => setError(TodoError.DELETE))
       .finally(() => setIsloading(false));
   }, []);
 
@@ -128,6 +122,7 @@ export const TodosProvider: FC<PropsWithChildren> = ({ children }) => {
     completedTodos,
     tempTodo,
     filteredTodos: getFilteredTodos(),
+    todosInUpdate,
     error,
     isLoading,
     setError,

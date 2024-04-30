@@ -1,26 +1,18 @@
 /* eslint-disable jsx-a11y/label-has-associated-control */
-import { FC, useEffect, useState } from 'react';
+import { FC } from 'react';
 import { Todo } from '../../types/Todo';
 import classNames from 'classnames';
 import { useTodos } from '../../providers';
 
 interface Props {
   todo: Todo;
-  defaultIsUpdate?: boolean;
 }
 
-export const TodoItem: FC<Props> = ({ todo, defaultIsUpdate = false }) => {
-  const [isUpdate, setIsUpdate] = useState(defaultIsUpdate);
+export const TodoItem: FC<Props> = ({ todo }) => {
+  const { todosInUpdate } = useTodos();
   const { onDeleteTodo } = useTodos();
 
-  useEffect(() => {
-    setIsUpdate(defaultIsUpdate);
-  }, [defaultIsUpdate, todo]);
-
-  const handleDelte = () => {
-    onDeleteTodo(todo.id);
-    setIsUpdate(true);
-  };
+  const handleDelte = () => onDeleteTodo(todo.id);
 
   return (
     <div
@@ -50,7 +42,9 @@ export const TodoItem: FC<Props> = ({ todo, defaultIsUpdate = false }) => {
       </button>
       <div
         data-cy="TodoLoader"
-        className={classNames('modal', 'overlay', { 'is-active': isUpdate })}
+        className={classNames('modal', 'overlay', {
+          'is-active': todosInUpdate.includes(todo.id),
+        })}
       >
         <div className="modal-background has-background-white-ter" />
         <div className="loader" />

@@ -11,7 +11,7 @@ export const TodoList: FC = () => {
       {todos.map(todo => (
         <TodoItem key={todo.id} todo={todo} />
       ))}
-      {tempTodo && <TodoItem todo={tempTodo} defaultIsUpdate />}
+      {tempTodo && <TodoItem todo={tempTodo} />}
     </section>
   );
 };

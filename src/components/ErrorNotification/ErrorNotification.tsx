@@ -1,7 +1,7 @@
 import classNames from 'classnames';
 import { FC, useCallback, useEffect } from 'react';
 import { useTimeout } from '../../hooks/useTimeout';
-import { errors, useTodos } from '../../providers';
+import { useTodos } from '../../providers';
 
 export const ErrorNotification: FC = () => {
   const { error, setError } = useTodos();
@@ -15,7 +15,6 @@ export const ErrorNotification: FC = () => {
       startHideTimeout();
     }
   }, [error, startHideTimeout]);
-  const message = error ? errors[error].message : '';
 
   return (
     <div
@@ -33,7 +32,7 @@ export const ErrorNotification: FC = () => {
         className="delete"
         onClick={handleClose}
       />
-      {message}
+      {error}
     </div>
   );
 };
