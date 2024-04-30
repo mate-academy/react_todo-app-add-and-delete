@@ -20,7 +20,7 @@ export const Header: FC<Props> = ({ onError, setTempTodo }) => {
     if (titleRef.current) {
       titleRef.current.focus();
     }
-  }, [addingTodo]);
+  }, [todos, addingTodo]);
 
   const isAllTodoComplete = todos.every(todo => todo.completed);
 
@@ -32,6 +32,8 @@ export const Header: FC<Props> = ({ onError, setTempTodo }) => {
 
     if (!trimedTitle) {
       onError('Title should not be empty');
+
+      setAddingTodo(false);
 
       return;
     }
