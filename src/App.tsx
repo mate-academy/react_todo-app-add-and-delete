@@ -1,26 +1,56 @@
-/* eslint-disable max-len */
+/* eslint-disable jsx-a11y/label-has-associated-control */
 /* eslint-disable jsx-a11y/control-has-associated-label */
-import React from 'react';
+import React, { useEffect, useState, useContext } from 'react';
 import { UserWarning } from './UserWarning';
-
-const USER_ID = 0;
+import { USER_ID, getTodos } from './api/todos';
+import { Header } from './components/Header';
+import { TodoList } from './components/TodoList';
+import { Footer } from './components/Footer';
+import { DispatchContext } from './store/todoReducer';
+import { Action } from './types/actions';
+import { ErrorMessage } from './components/ErrorMessage';
+import { Todo } from './types/Todo';
 
 export const App: React.FC = () => {
+  const [errorMessage, setErrorMessage] = useState('');
+  const [tempTodo, setTempTodo] = useState<Todo | null>(null);
+  const [coverShow, setCoverShow] = useState<number[]>([]);
+
+  const dispatch = useContext(DispatchContext);
+
+  useEffect(() => {
+    getTodos()
+      .then(response => {
+        response.forEach(todo => {
+          dispatch({ type: Action.addTodo, payload: todo });
+        });
+      })
+      .catch(() => setErrorMessage('Unable to load todos'));
+  }, []);
+
   if (!USER_ID) {
     return <UserWarning />;
   }
 
   return (
-    <section className="section container">
-      <p className="title is-4">
-        Copy all you need from the prev task:
-        <br />
-        <a href="https://github.com/mate-academy/react_todo-app-loading-todos#react-todo-app-load-todos">
-          React Todo App - Load Todos
-        </a>
-      </p>
+    <div className="todoapp">
+      <h1 className="todoapp__title">todos</h1>
 
-      <p className="subtitle">Styles are already copied</p>
-    </section>
+      <div className="todoapp__content">
+        <Header onError={setErrorMessage} setTempTodo={setTempTodo} />
+        <TodoList
+          onError={setErrorMessage}
+          tempTodo={tempTodo}
+          coverShow={coverShow}
+          onCoverShow={setCoverShow}
+        />
+        <Footer onError={setErrorMessage} onCoverShow={setCoverShow} />
+      </div>
+
+      <ErrorMessage
+        errorMessage={errorMessage}
+        setErrorMessage={setErrorMessage}
+      />
+    </div>
   );
 };
