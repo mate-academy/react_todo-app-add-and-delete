@@ -7,4 +7,5 @@ export type Action =
   | { type: 'updateTodo'; payload: Todo }
   | { type: 'deleteTodo'; payload: number }
   | { type: 'setFilter'; payload: Filter }
-  | { type: 'setError'; payload: string };
+  | { type: 'setError'; payload: string }
+  | { type: 'setTempTodo'; payload: Todo | null };

@@ -1,13 +1,15 @@
 import React, { useEffect, useRef, useState } from 'react';
 import { useAppContext } from '../context/Context';
 import cn from 'classnames';
-import { USER_ID, addTodo } from '../api/todos';
 
 export const Header: React.FC = () => {
   const [inputText, setInputText] = useState('');
+  const [isSubmitting, setIsSubmitting] = useState(false);
   const {
     state: { todos },
-    dispatch,
+    addTodo,
+    setError,
+    setTodos,
   } = useAppContext();
 
   const mainInputRef = useRef<HTMLInputElement>(null);
@@ -18,39 +20,37 @@ export const Header: React.FC = () => {
     event.preventDefault();
     const title = inputText.trim();
 
-    if (title) {
-      addTodo({ userId: USER_ID, title, completed: false })
-        .then(savedTodo => {
-          dispatch({ type: 'addTodo', payload: savedTodo });
-        })
-        .catch(() => {
-          // setError('Unable to add todo');
-        });
-
-      setInputText('');
+    if (!title) {
+      setError('Title should not be empty');
+      return;
     }
+
+    setInputText('');
+    setIsSubmitting(true);
+    addTodo(title)
+      .catch(() => {
+        setInputText(title);
+      })
+      .finally(() => setIsSubmitting(false));
   };
 
   const handleToggleAllClick = () => {
     if (allCompleted) {
-      dispatch({
-        type: 'setTodos',
-        payload: todos.map(todo => ({
+      setTodos(
+        todos.map(todo => ({
           ...todo,
           completed: false,
         })),
-      });
-
+      );
       return;
     }
 
-    dispatch({
-      type: 'setTodos',
-      payload: todos.map(todo => ({
+    setTodos(
+      todos.map(todo => ({
         ...todo,
         completed: true,
       })),
-    });
+    );
   };
 
   useEffect(() => {
@@ -79,6 +79,7 @@ export const Header: React.FC = () => {
           placeholder="What needs to be done?"
           value={inputText}
           onChange={e => setInputText(e.target.value)}
+          disabled={isSubmitting}
         />
       </form>
     </header>

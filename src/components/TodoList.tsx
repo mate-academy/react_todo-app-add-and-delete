@@ -6,9 +6,10 @@ import { Todo } from '../types/Todo';
 
 export const TodoList: React.FC = () => {
   const {
-    state: { todos, filter },
+    state: { todos, filter, tempTodo },
   } = useAppContext();
 
+  console.log(tempTodo);
   const filterFunctions: { [key: string]: (todo: Todo) => void } = {
     [Filter.Active]: todo => !todo.completed,
     [Filter.Completed]: todo => todo.completed,
@@ -22,6 +23,7 @@ export const TodoList: React.FC = () => {
       {filteredTodos.map(todo => (
         <TodoItem key={todo.id} todoData={todo} />
       ))}
+      {tempTodo && <TodoItem todoData={tempTodo} isLoading={true} />}
     </section>
   );
 };

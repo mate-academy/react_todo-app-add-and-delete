@@ -6,7 +6,8 @@ import { Filter } from '../types/Filter';
 export const Footer: React.FC = () => {
   const {
     state: { todos, filter },
-    dispatch,
+    setFilter,
+    setTodos,
   } = useAppContext();
 
   const completed = todos.filter(todo => todo.completed);
@@ -27,9 +28,7 @@ export const Footer: React.FC = () => {
                 selected: filter === Filter.All,
               })}
               data-cy="FilterLinkAll"
-              onClick={() =>
-                dispatch({ type: 'setFilter', payload: Filter.All })
-              }
+              onClick={() => setFilter(Filter.All)}
             >
               All
             </a>
@@ -40,9 +39,7 @@ export const Footer: React.FC = () => {
                 selected: filter === Filter.Active,
               })}
               data-cy="FilterLinkActive"
-              onClick={() =>
-                dispatch({ type: 'setFilter', payload: Filter.Active })
-              }
+              onClick={() => setFilter(Filter.Active)}
             >
               Active
             </a>
@@ -53,9 +50,7 @@ export const Footer: React.FC = () => {
                 selected: filter === Filter.Completed,
               })}
               data-cy="FilterLinkCompleted"
-              onClick={() =>
-                dispatch({ type: 'setFilter', payload: Filter.Completed })
-              }
+              onClick={() => setFilter(Filter.Completed)}
             >
               Completed
             </a>
@@ -65,7 +60,7 @@ export const Footer: React.FC = () => {
             type="button"
             className="todoapp__clear-completed"
             data-cy="ClearCompletedButton"
-            onClick={() => dispatch({ type: 'setTodos', payload: notComleted })}
+            onClick={() => setTodos(notComleted)}
             disabled={!completed.length}
           >
             Clear completed

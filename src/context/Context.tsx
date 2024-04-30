@@ -4,7 +4,7 @@ import { Action } from '../types/Action';
 import { Filter } from '../types/Filter';
 import { Todo } from '../types/Todo';
 import { InitialContextData } from '../types/InitialContextData';
-import { getTodos } from '../api/todos';
+import * as todoService from '../api/todos';
 
 // const savedData = localStorage.getItem('todos');
 
@@ -12,6 +12,7 @@ const initialState: State = {
   todos: [],
   filter: Filter.All,
   error: '',
+  tempTodo: null,
 };
 
 const reducer = (state: State, action: Action): State => {
@@ -20,6 +21,11 @@ const reducer = (state: State, action: Action): State => {
       return {
         ...state,
         todos: action.payload,
+      };
+    case 'setTempTodo':
+      return {
+        ...state,
+        tempTodo: action.payload,
       };
 
     case 'addTodo':
@@ -61,7 +67,13 @@ const reducer = (state: State, action: Action): State => {
 
 const AppContext = createContext<InitialContextData>({
   state: initialState,
-  dispatch: () => {},
+  setFilter: () => {},
+  setTodos: () => {},
+  addTodo: () => new Promise(() => {}),
+  // updateTodo: () => new Promise(() => {}),
+  deleteTodo: () => new Promise(() => {}),
+  setTempTodo: () => {},
+  setError: () => {},
 });
 
 export const AppContextProvider: React.FC<{
@@ -69,16 +81,60 @@ export const AppContextProvider: React.FC<{
 }> = ({ children }) => {
   const [state, dispatch] = useReducer(reducer, initialState);
 
+  const setTodos = (todos: Todo[]) => {
+    dispatch({ type: 'setTodos', payload: todos });
+  };
+
   const setError = (errorMessage: string) => {
     dispatch({ type: 'setError', payload: errorMessage });
     setTimeout(() => dispatch({ type: 'setError', payload: '' }), 3000);
   };
 
+  const setFilter = (filterType: Filter) => {
+    dispatch({ type: 'setFilter', payload: filterType });
+  };
+
+  const setTempTodo = (todo: Todo | null) => {
+    dispatch({ type: 'setTempTodo', payload: todo });
+  };
+
+  const addTodo = (title: string) => {
+    const newTodo = {
+      userId: todoService.USER_ID,
+      title,
+      completed: false,
+    };
+
+    setTempTodo({ ...newTodo, id: 0 });
+
+    return todoService
+      .addTodo(newTodo)
+      .then(res => dispatch({ type: 'addTodo', payload: res }))
+      .catch(error => {
+        setError('Unable to add a todo');
+        throw error;
+      })
+      .finally(() => setTempTodo(null));
+  };
+
+  const deleteTodo = (id: number) => {
+    setError('');
+
+    return todoService
+      .deleteTodo(id)
+      .then(() => dispatch({ type: 'deleteTodo', payload: id }))
+      .catch(error => {
+        setError('Unable to delete a todo');
+        throw error;
+      });
+  };
+
   useEffect(() => {
     // if (!state.todos.length) {
-    getTodos()
+    todoService
+      .getTodos()
       .then(todos => {
-        dispatch({ type: 'setTodos', payload: todos });
+        setTodos(todos);
         // localStorage.setItem('todos', JSON.stringify(fetchedData));
       })
       .catch(() => {
@@ -90,7 +146,17 @@ export const AppContextProvider: React.FC<{
   }, []);
 
   return (
-    <AppContext.Provider value={{ state, dispatch }}>
+    <AppContext.Provider
+      value={{
+        state,
+        setTodos,
+        setError,
+        setFilter,
+        setTempTodo,
+        addTodo,
+        deleteTodo,
+      }}
+    >
       {children}
     </AppContext.Provider>
   );
