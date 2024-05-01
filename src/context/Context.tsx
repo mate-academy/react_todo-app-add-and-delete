@@ -70,7 +70,6 @@ const AppContext = createContext<InitialContextData>({
   setFilter: () => {},
   setTodos: () => {},
   addTodo: () => new Promise(() => {}),
-  // updateTodo: () => new Promise(() => {}),
   deleteTodo: () => new Promise(() => {}),
   setTempTodo: () => {},
   setError: () => {},
@@ -129,36 +128,29 @@ export const AppContextProvider: React.FC<{
       });
   };
 
+  const contextData = {
+    state,
+    setTodos,
+    setError,
+    setFilter,
+    setTempTodo,
+    addTodo,
+    deleteTodo,
+  };
+
   useEffect(() => {
-    // if (!state.todos.length) {
     todoService
       .getTodos()
       .then(todos => {
         setTodos(todos);
-        // localStorage.setItem('todos', JSON.stringify(fetchedData));
       })
       .catch(() => {
         setError('Unable to load todos');
       });
-    // }
-
-    // localStorage.setItem('todos', JSON.stringify(state.todos));
   }, []);
 
   return (
-    <AppContext.Provider
-      value={{
-        state,
-        setTodos,
-        setError,
-        setFilter,
-        setTempTodo,
-        addTodo,
-        deleteTodo,
-      }}
-    >
-      {children}
-    </AppContext.Provider>
+    <AppContext.Provider value={contextData}>{children}</AppContext.Provider>
   );
 };
 

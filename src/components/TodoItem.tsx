@@ -34,14 +34,6 @@ export const TodoItem: React.FC<Props> = ({ todoData, isLoading = false }) => {
 
       return;
     }
-
-    // dispatch({
-    //   type: 'updateTodo',
-    //   payload: {
-    //     ...todoData,
-    //     title: title.trim(),
-    //   },
-    // });
     setEditMode(false);
   };
 
