@@ -93,13 +93,13 @@ export const App: React.FC = () => {
 
           setTodos(updatedTodos);
         } catch (err) {
-          setError(true);
+          setError(false);
           setErrorType('update');
         } finally {
           setFocus(true);
         }
 
-        // setTodos(prevTodos => [...prevTodos, newTodo]);
+        setTodos(prevTodos => [...prevTodos, newTodo]);
         setNewTodoTitle('');
       } else {
         setError(true);
