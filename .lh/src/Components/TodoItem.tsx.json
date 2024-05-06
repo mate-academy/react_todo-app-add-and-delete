@@ -1,0 +1,34 @@
+{
+    "sourceFile": "src/Components/TodoItem.tsx",
+    "activeCommit": 0,
+    "commits": [
+        {
+            "activePatchIndex": 4,
+            "patches": [
+                {
+                    "date": 1714995447704,
+                    "content": "Index: \n===================================================================\n--- \n+++ \n"
+                },
+                {
+                    "date": 1714995947864,
+                    "content": "Index: \n===================================================================\n--- \n+++ \n@@ -44,11 +44,8 @@\n       >\n         ×\n       </button>\n \n-      <div data-cy=\"TodoLoader\" className=\"modal overlay\">\n-        <div className=\"modal-background has-background-white-ter\" />\n-        <div className=\"loader\" />\n-      </div>\n+    \n     </div>\n   );\n };\n"
+                },
+                {
+                    "date": 1714995955263,
+                    "content": "Index: \n===================================================================\n--- \n+++ \n@@ -44,8 +44,8 @@\n       >\n         ×\n       </button>\n \n-    \n+    <Lo/>\n     </div>\n   );\n };\n"
+                },
+                {
+                    "date": 1714996023851,
+                    "content": "Index: \n===================================================================\n--- \n+++ \n@@ -1,5 +1,6 @@\n import React from 'react';\n+import { Loader } from './Loader';\n \n interface Props {\n   id: number;\n   title: string;\n@@ -44,8 +45,8 @@\n       >\n         ×\n       </button>\n \n-    <Lo/>\n+    <Loader/>\n     </div>\n   );\n };\n"
+                },
+                {
+                    "date": 1714996030842,
+                    "content": "Index: \n===================================================================\n--- \n+++ \n@@ -44,9 +44,8 @@\n         data-cy=\"TodoDelete\"\n       >\n         ×\n       </button>\n-\n-    <Loader/>\n+      <Loader />\n     </div>\n   );\n };\n"
+                }
+            ],
+            "date": 1714995447704,
+            "name": "Commit-0",
+            "content": "import React from 'react';\n\ninterface Props {\n  id: number;\n  title: string;\n  completed: boolean;\n  onDelete: () => void;\n  onToggle: () => void;\n}\n\nexport const TodoItem: React.FC<Props> = ({\n  id,\n  title,\n  completed,\n  onDelete,\n  onToggle,\n}) => {\n  return (\n    <div\n      data-cy=\"Todo\"\n      data-id={id}\n      className={`todo ${completed ? 'completed' : ''}`}\n    >\n      {/* eslint-disable jsx-a11y/label-has-associated-control */}\n      <label className=\"todo__status-label\">\n        <input\n          data-cy=\"TodoStatus\"\n          type=\"checkbox\"\n          className=\"todo__status\"\n          checked={completed}\n          onChange={onToggle}\n        />\n      </label>\n\n      <span data-cy=\"TodoTitle\" className=\"todo__title\">\n        {title}\n      </span>\n\n      <button\n        type=\"button\"\n        className=\"todo__remove\"\n        onClick={onDelete}\n        data-cy=\"TodoDelete\"\n      >\n        ×\n      </button>\n\n      <div data-cy=\"TodoLoader\" className=\"modal overlay\">\n        <div className=\"modal-background has-background-white-ter\" />\n        <div className=\"loader\" />\n      </div>\n    </div>\n  );\n};\n"
+        }
+    ]
+}

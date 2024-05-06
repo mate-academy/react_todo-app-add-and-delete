@@ -1,0 +1,46 @@
+{
+    "sourceFile": "src/Components/Loader.tsx",
+    "activeCommit": 0,
+    "commits": [
+        {
+            "activePatchIndex": 7,
+            "patches": [
+                {
+                    "date": 1714995977287,
+                    "content": "Index: \n===================================================================\n--- \n+++ \n"
+                },
+                {
+                    "date": 1714995994282,
+                    "content": "Index: \n===================================================================\n--- \n+++ \n@@ -1,1 +1,1 @@\n-export const Loader \n+export const Loader = \n"
+                },
+                {
+                    "date": 1714996002097,
+                    "content": "Index: \n===================================================================\n--- \n+++ \n@@ -1,1 +1,3 @@\n-export const Loader = \n+export const Loader = () => {\n+  return \n+}\n"
+                },
+                {
+                    "date": 1714996013094,
+                    "content": "Index: \n===================================================================\n--- \n+++ \n@@ -1,3 +1,8 @@\n export const Loader = () => {\n-  return \n-}\n+  return (\n+    <div data-cy=\"TodoLoader\" className=\"modal overlay\">\n+      <div className=\"modal-background has-background-white-ter\" />\n+      <div className=\"loader\" />\n+    </div>\n+  );\n+};\n"
+                },
+                {
+                    "date": 1714996048776,
+                    "content": "Index: \n===================================================================\n--- \n+++ \n@@ -1,4 +1,7 @@\n+\n+\n+\n export const Loader = () => {\n   return (\n     <div data-cy=\"TodoLoader\" className=\"modal overlay\">\n       <div className=\"modal-background has-background-white-ter\" />\n"
+                },
+                {
+                    "date": 1714996057620,
+                    "content": "Index: \n===================================================================\n--- \n+++ \n@@ -1,8 +1,8 @@\n+import React from \"react\";\n \n \n-\n-export const Loader = () => {\n+export const Loader:  = () => {\n   return (\n     <div data-cy=\"TodoLoader\" className=\"modal overlay\">\n       <div className=\"modal-background has-background-white-ter\" />\n       <div className=\"loader\" />\n"
+                },
+                {
+                    "date": 1714996065530,
+                    "content": "Index: \n===================================================================\n--- \n+++ \n@@ -1,8 +1,8 @@\n import React from \"react\";\n \n \n-export const Loader:  = () => {\n+export const Loader: React = () => {\n   return (\n     <div data-cy=\"TodoLoader\" className=\"modal overlay\">\n       <div className=\"modal-background has-background-white-ter\" />\n       <div className=\"loader\" />\n"
+                },
+                {
+                    "date": 1714996073613,
+                    "content": "Index: \n===================================================================\n--- \n+++ \n@@ -1,8 +1,7 @@\n-import React from \"react\";\n+import React from 'react';\n \n-\n-export const Loader: React = () => {\n+export const Loader: React.FC = () => {\n   return (\n     <div data-cy=\"TodoLoader\" className=\"modal overlay\">\n       <div className=\"modal-background has-background-white-ter\" />\n       <div className=\"loader\" />\n"
+                }
+            ],
+            "date": 1714995977287,
+            "name": "Commit-0",
+            "content": "export const Loader \n"
+        }
+    ]
+}

@@ -1,9 +1,9 @@
 import React from 'react';
-import { Todoo } from '../types/Todo';
-import { Todo } from './Todo';
+import { Todo } from '../types/Todo';
+import { TodoItem } from './TodoItem';
 
 interface Props {
-  todos: Todoo[];
+  todos: Todo[];
   onDeleteTodo: (id: number) => void;
   onToggleTodo: (id: number) => void;
   filter: string;
@@ -31,7 +31,7 @@ export const TodoList: React.FC<Props> = ({
     <section className="todoapp__main" data-cy="TodoList">
       {/* This is a completed todo */}
       {filteredTodos.map(todo => (
-        <Todo
+        <TodoItem
           key={todo.id}
           id={todo.id}
           title={todo.title}

@@ -2,15 +2,15 @@
 /* eslint-disable jsx-a11y/control-has-associated-label */
 import React, { useEffect, useState } from 'react';
 import { UserWarning } from './UserWarning';
-import { USER_ID, getTodos } from './api/todos';
+import { USER_ID, getTodos, postTodo } from './api/todos';
 import { TodoList } from './Components/TodoList';
 import { ErrorNotification } from './Components/ErrorNotification';
 import { Footer } from './Components/Footer';
-import { Status, Todoo } from './types/Todo';
+import { Status, Todo } from './types/Todo';
 import { Error } from './types/Todo';
 
 export const App: React.FC = () => {
-  const [todos, setTodos] = useState<Todoo[]>([]);
+  const [todos, setTodos] = useState<Todo[]>([]);
   const [error, setError] = useState<boolean>(false);
   const [errorType, setErrorType] = useState<Error | null>(null);
   const [filter, setFilter] = useState<Status>('all');
@@ -43,8 +43,6 @@ export const App: React.FC = () => {
   const handleDeleteTodo = (id: number) => {
     setTodos(prevTodos => prevTodos.filter(todo => todo.id !== id));
 
-    setError(true);
-
     setErrorType('delete');
   };
 
@@ -71,21 +69,37 @@ export const App: React.FC = () => {
     setError(false);
   };
 
-  const handleKeyDown = (event: React.KeyboardEvent<HTMLInputElement>) => {
+  const handleKeyDown = async (
+    event: React.KeyboardEvent<HTMLInputElement>,
+  ) => {
     const trimmedTodo = newTodoTitle.trim();
 
     if (event.key === 'Enter') {
       event.preventDefault();
 
       if (trimmedTodo) {
-        const newTodo: Todoo = {
+        const newTodo: Todo = {
           id: todos.length + 1,
           userId: USER_ID,
           title: trimmedTodo,
           completed: false,
         };
 
-        setTodos(prevTodos => [...prevTodos, newTodo]);
+        setFocus(false);
+
+        try {
+          await postTodo(newTodo);
+          const updatedTodos = await getTodos();
+
+          setTodos(updatedTodos);
+        } catch (err) {
+          setError(true);
+          setErrorType('update');
+        } finally {
+          setFocus(true);
+        }
+
+        // setTodos(prevTodos => [...prevTodos, newTodo]);
         setNewTodoTitle('');
       } else {
         setError(true);
@@ -133,6 +147,7 @@ export const App: React.FC = () => {
                 onChange={handleChange}
                 onFocus={handleFocus}
                 autoFocus={focus}
+                disabled={!focus}
               />
             </form>
           </header>

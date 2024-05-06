@@ -3,7 +3,7 @@
     "activeCommit": 0,
     "commits": [
         {
-            "activePatchIndex": 2,
+            "activePatchIndex": 3,
             "patches": [
                 {
                     "date": 1714990317305,
@@ -16,6 +16,10 @@
                 {
                     "date": 1714993539270,
                     "content": "Index: \n===================================================================\n--- \n+++ \n@@ -13,9 +13,9 @@\n ## Adding a todo\n \n Add a todo with the entered title on the form submit:\n \n-- text field should be focused by default;\n++ text field should be focused by default;\n + if the title is empty show the `Title should not be empty` notification at the bottom;\n + trim the title when checked or saved;\n - use your `userId` for the new todo;\n - send a POST request to the API (check the [API Documentation](https://mate-academy.github.io/fe-students-api/))\n"
+                },
+                {
+                    "date": 1714995255660,
+                    "content": "Index: \n===================================================================\n--- \n+++ \n@@ -18,9 +18,9 @@\n + if the title is empty show the `Title should not be empty` notification at the bottom;\n + trim the title when checked or saved;\n - use your `userId` for the new todo;\n - send a POST request to the API (check the [API Documentation](https://mate-academy.github.io/fe-students-api/))\n-- disable the input until receiving a response from the API;\n++ disable the input until receiving a response from the API;\n - immediately after sending a request create a todo with `id: 0` and save it to the `tempTodo` variable in the state (NOT to the `todos` array);\n - show an independent `TodoItem` **after** the list if `tempTodo` is not `null`;\n - temp TodoItem should have the loader (check the original markup);\n - in case of success add the todo created by the API to the array (take it from the POST response);\n"
                 }
             ],
             "date": 1714990317305,

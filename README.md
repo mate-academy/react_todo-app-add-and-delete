@@ -19,7 +19,7 @@ Add a todo with the entered title on the form submit:
 + trim the title when checked or saved;
 - use your `userId` for the new todo;
 - send a POST request to the API (check the [API Documentation](https://mate-academy.github.io/fe-students-api/))
-- disable the input until receiving a response from the API;
++ disable the input until receiving a response from the API;
 - immediately after sending a request create a todo with `id: 0` and save it to the `tempTodo` variable in the state (NOT to the `todos` array);
 - show an independent `TodoItem` **after** the list if `tempTodo` is not `null`;
 - temp TodoItem should have the loader (check the original markup);

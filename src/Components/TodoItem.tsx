@@ -1,4 +1,5 @@
 import React from 'react';
+import { Loader } from './Loader';
 
 interface Props {
   id: number;
@@ -8,7 +9,7 @@ interface Props {
   onToggle: () => void;
 }
 
-export const Todo: React.FC<Props> = ({
+export const TodoItem: React.FC<Props> = ({
   id,
   title,
   completed,
@@ -44,11 +45,7 @@ export const Todo: React.FC<Props> = ({
       >
         ×
       </button>
-
-      <div data-cy="TodoLoader" className="modal overlay">
-        <div className="modal-background has-background-white-ter" />
-        <div className="loader" />
-      </div>
+      <Loader />
     </div>
   );
 };

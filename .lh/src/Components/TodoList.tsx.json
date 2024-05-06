@@ -3,7 +3,7 @@
     "activeCommit": 0,
     "commits": [
         {
-            "activePatchIndex": 1,
+            "activePatchIndex": 11,
             "patches": [
                 {
                     "date": 1714989355833,
@@ -12,6 +12,46 @@
                 {
                     "date": 1714989515018,
                     "content": "Index: \n===================================================================\n--- \n+++ \n@@ -1,6 +1,6 @@\n import React from 'react';\n-import { Todoo } from '../types/Todo';\n+import { Todoo } from '../';\n import { Todo } from './Todo';\n \n interface Props {\n   todos: Todoo[];\n"
+                },
+                {
+                    "date": 1714995324457,
+                    "content": "Index: \n===================================================================\n--- \n+++ \n@@ -1,7 +1,7 @@\n import React from 'react';\n-import { Todoo } from '../';\n-import { Todo } from './Todo';\n+import { Todoo } from '../types/Todo';\n+import { Todo } from './TodoItem';\n \n interface Props {\n   todos: Todoo[];\n   onDeleteTodo: (id: number) => void;\n"
+                },
+                {
+                    "date": 1714995339936,
+                    "content": "Index: \n===================================================================\n--- \n+++ \n@@ -1,6 +1,6 @@\n import React from 'react';\n-import { Todoo } from '../types/Todo';\n+import { Todo } from '../types/Todo';\n import { Todo } from './TodoItem';\n \n interface Props {\n   todos: Todoo[];\n"
+                },
+                {
+                    "date": 1714995349221,
+                    "content": "Index: \n===================================================================\n--- \n+++ \n@@ -1,10 +1,10 @@\n import React from 'react';\n import { Todo } from '../types/Todo';\n-import { Todo } from './TodoItem';\n+import { TodoItem } from './TodoItem';\n \n interface Props {\n-  todos: Todoo[];\n+  todos: Todo[];\n   onDeleteTodo: (id: number) => void;\n   onToggleTodo: (id: number) => void;\n   filter: string;\n }\n"
+                },
+                {
+                    "date": 1714995357096,
+                    "content": "Index: \n===================================================================\n--- \n+++ \n@@ -30,9 +30,9 @@\n   return (\n     <section className=\"todoapp__main\" data-cy=\"TodoList\">\n       {/* This is a completed todo */}\n       {filteredTodos.map(todo => (\n-        <Todo\n+        <TodoItem\n           key={todo.id}\n           id={todo.id}\n           title={todo.title}\n           completed={todo.completed}\n"
+                },
+                {
+                    "date": 1714995371857,
+                    "content": "Index: \n===================================================================\n--- \n+++ \n@@ -1,7 +1,6 @@\n import React from 'react';\n import { Todo } from '../types/Todo';\n-import { TodoItem } from './TodoItem';\n \n interface Props {\n   todos: Todo[];\n   onDeleteTodo: (id: number) => void;\n"
+                },
+                {
+                    "date": 1714995378601,
+                    "content": "Index: \n===================================================================\n--- \n+++ \n@@ -1,7 +1,8 @@\n import React from 'react';\n import { Todo } from '../types/Todo';\n \n+\n interface Props {\n   todos: Todo[];\n   onDeleteTodo: (id: number) => void;\n   onToggleTodo: (id: number) => void;\n"
+                },
+                {
+                    "date": 1714995383731,
+                    "content": "Index: \n===================================================================\n--- \n+++ \n@@ -1,8 +1,8 @@\n import React from 'react';\n import { Todo } from '../types/Todo';\n+import \n \n-\n interface Props {\n   todos: Todo[];\n   onDeleteTodo: (id: number) => void;\n   onToggleTodo: (id: number) => void;\n"
+                },
+                {
+                    "date": 1714995391534,
+                    "content": "Index: \n===================================================================\n--- \n+++ \n@@ -1,7 +1,7 @@\n import React from 'react';\n import { Todo } from '../types/Todo';\n-import \n+import TodoItem\n \n interface Props {\n   todos: Todo[];\n   onDeleteTodo: (id: number) => void;\n"
+                },
+                {
+                    "date": 1714995398514,
+                    "content": "Index: \n===================================================================\n--- \n+++ \n@@ -1,7 +1,6 @@\n import React from 'react';\n import { Todo } from '../types/Todo';\n-import TodoItem\n \n interface Props {\n   todos: Todo[];\n   onDeleteTodo: (id: number) => void;\n"
+                },
+                {
+                    "date": 1714995455187,
+                    "content": "Index: \n===================================================================\n--- \n+++ \n@@ -1,6 +1,7 @@\n import React from 'react';\n import { Todo } from '../types/Todo';\n+import { TodoItem } from './TodoItem';\n \n interface Props {\n   todos: Todo[];\n   onDeleteTodo: (id: number) => void;\n"
                 }
             ],
             "date": 1714989355833,
