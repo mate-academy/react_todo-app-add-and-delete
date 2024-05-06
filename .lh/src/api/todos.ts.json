@@ -3,7 +3,7 @@
     "activeCommit": 0,
     "commits": [
         {
-            "activePatchIndex": 12,
+            "activePatchIndex": 13,
             "patches": [
                 {
                     "date": 1714989274596,
@@ -56,6 +56,10 @@
                 {
                     "date": 1714995094221,
                     "content": "Index: \n===================================================================\n--- \n+++ \n@@ -8,6 +8,5 @@\n };\n \n export const postTodo = (newTodo: Todoo) => {\n   return client.post<Todoo>('/todos', newTodo);\n-}\n-  ;\n+};\n"
+                },
+                {
+                    "date": 1714997285295,
+                    "content": "Index: \n===================================================================\n--- \n+++ \n@@ -1,5 +1,5 @@\n-import { Todoo } from '../types/Todo';\n+import { Todo } from '../types/Todo';\n import { client } from '../utils/fetchClient';\n \n export const USER_ID = 534;\n \n"
                 }
             ],
             "date": 1714989274596,
