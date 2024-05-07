@@ -23,7 +23,7 @@ export const Header = ({
     const newPost = {
       title: input,
       userId: 583,
-      completed: true,
+      completed: false,
     };
 
     setPosts(newPost);
