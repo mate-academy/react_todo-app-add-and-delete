@@ -3,7 +3,17 @@ import { createRoot } from 'react-dom/client';
 import 'bulma/css/bulma.css';
 import '@fortawesome/fontawesome-free/css/all.css';
 import './styles/index.scss';
+import './styles/todo.scss';
+import './styles/todoapp.scss';
+import './styles/filter.scss';
 
 import { App } from './App';
+import { TodoProvider } from './components/TodoContext';
 
-createRoot(document.getElementById('root') as HTMLDivElement).render(<App />);
+const container = document.getElementById('root') as HTMLDivElement;
+
+createRoot(container).render(
+  <TodoProvider>
+    <App />
+  </TodoProvider>,
+);
