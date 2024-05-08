@@ -23,7 +23,7 @@ export const Header: FC<Props> = ({
     if (newTodoInputRef.current) {
       newTodoInputRef.current.focus();
     }
-  }, []);
+  }, [todos]);
 
   const handleNewTodoForm = (e: React.FormEvent) => {
     e.preventDefault();

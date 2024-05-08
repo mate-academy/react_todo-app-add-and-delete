@@ -74,7 +74,7 @@ export const App: React.FC = () => {
 
   useEffect(() => {
     todoInput.current?.focus();
-  }, [todos, completeFilter]);
+  }, [todos, updateErrorCases]);
 
   const addTodo = async (tempTodoTitle: string) => {
     let didSucceed = false;
@@ -120,7 +120,6 @@ export const App: React.FC = () => {
       .then(() => {
         didSucceed = true;
         setTodos(prev => prev.filter(({ id }) => id !== todoId));
-        document.getElementById('todoapp__new-todo')?.focus();
       })
       .catch(() => {
         updateErrorCases(true, 'deleteTodo');
