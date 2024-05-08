@@ -3,7 +3,7 @@
     "activeCommit": 0,
     "commits": [
         {
-            "activePatchIndex": 143,
+            "activePatchIndex": 146,
             "patches": [
                 {
                     "date": 1714989355833,
@@ -580,6 +580,18 @@
                 {
                     "date": 1715169195909,
                     "content": "Index: \n===================================================================\n--- \n+++ \n@@ -13,9 +13,9 @@\n   setErrorType: (setErrorType: Error | null) => void;\n   handleDeleteTodo: (id: number) => void;\n   loadingTodoId: number | null;\n   loadingAddTodoId: number | null;\n-  addNewTodo: (addNewTodo: boolean) => void;\n+  addNewTodo: boolean\n }\n \n export const TodoList: React.FC<Props> = ({\n   todos,\n@@ -55,9 +55,9 @@\n           setErrorType={setErrorType}\n           onDelete={() => handleDeleteTodo(todo.id)}\n           loadingTodoId={loadingTodoId}\n           loadingAddTodoId={loadingAddTodoId}\n-          addNewTodo={loadingAddTodoId === todo.id}\n+          // addNewTodo={loadingAddTodoId === todo.id}\n         />\n       ))}\n       {noTodosMessage}\n     </section>\n"
+                },
+                {
+                    "date": 1715173405575,
+                    "content": "Index: \n===================================================================\n--- \n+++ \n@@ -13,9 +13,9 @@\n   setErrorType: (setErrorType: Error | null) => void;\n   handleDeleteTodo: (id: number) => void;\n   loadingTodoId: number | null;\n   loadingAddTodoId: number | null;\n-  addNewTodo: boolean\n+  addNewTodo: boolean;\n }\n \n export const TodoList: React.FC<Props> = ({\n   todos,\n@@ -55,9 +55,9 @@\n           setErrorType={setErrorType}\n           onDelete={() => handleDeleteTodo(todo.id)}\n           loadingTodoId={loadingTodoId}\n           loadingAddTodoId={loadingAddTodoId}\n-          // addNewTodo={loadingAddTodoId === todo.id}\n+          set\n         />\n       ))}\n       {noTodosMessage}\n     </section>\n"
+                },
+                {
+                    "date": 1715173411628,
+                    "content": "Index: \n===================================================================\n--- \n+++ \n@@ -55,9 +55,9 @@\n           setErrorType={setErrorType}\n           onDelete={() => handleDeleteTodo(todo.id)}\n           loadingTodoId={loadingTodoId}\n           loadingAddTodoId={loadingAddTodoId}\n-          set\n+          setFocus={set}\n         />\n       ))}\n       {noTodosMessage}\n     </section>\n"
+                },
+                {
+                    "date": 1715173421353,
+                    "content": "Index: \n===================================================================\n--- \n+++ \n@@ -14,9 +14,9 @@\n   handleDeleteTodo: (id: number) => void;\n   loadingTodoId: number | null;\n   loadingAddTodoId: number | null;\n   addNewTodo: boolean;\n-  setFocus\n+  setFocus:\n }\n \n export const TodoList: React.FC<Props> = ({\n   todos,\n"
                 }
             ],
             "date": 1714989355833,

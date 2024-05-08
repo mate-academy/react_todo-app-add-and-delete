@@ -1,6 +1,6 @@
 /* eslint-disable jsx-a11y/label-has-associated-control */
 /* eslint-disable jsx-a11y/control-has-associated-label */
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import { UserWarning } from './UserWarning';
 import { USER_ID, getTodos, postTodo } from './api/todos';
 import { TodoList } from './Components/TodoList';
@@ -23,6 +23,7 @@ export const App: React.FC = () => {
   const [loadingTodoId, setLoadingTodoId] = useState<number | null>(null);
   const [addNewTodo, setAddNewTodo] = useState<boolean>(false);
   const [loadingAddTodoId, setLoadingAddTodoId] = useState<number | null>(null);
+  const inputRef = useRef<HTMLInputElement>(null);
 
   useEffect(() => {
     const fetchTodos = async () => {
@@ -115,6 +116,9 @@ export const App: React.FC = () => {
     try {
       await deleteTodo(id);
       setTodos(prevTodos => prevTodos.filter(todo => todo.id !== id));
+      if (inputRef.current) {
+        inputRef.current.focus();
+      }
     } catch (err) {
       setError(true);
       setErrorType('delete');
@@ -174,6 +178,7 @@ export const App: React.FC = () => {
             {/* Add a todo on form submit */}
             <form>
               <input
+                ref={inputRef}
                 data-cy="NewTodoField"
                 type="text"
                 className="todoapp__new-todo"
@@ -198,6 +203,7 @@ export const App: React.FC = () => {
             loadingTodoId={loadingTodoId}
             loadingAddTodoId={loadingAddTodoId}
             addNewTodo={addNewTodo}
+            setFocus={setFocus}
           />
           {tempTodo && (
             <div className="todoapp__temp-todo">
@@ -213,6 +219,7 @@ export const App: React.FC = () => {
                 onDelete={() => handleDeleteTodo(tempTodo.id)}
                 loadingTodoId={loadingTodoId}
                 loadingAddTodoId={loadingAddTodoId}
+                setFocus={setFocus}
               />
             </div>
           )}

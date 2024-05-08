@@ -14,6 +14,7 @@ interface Props {
   onDelete: (id: number) => void;
   loadingTodoId: number | null;
   loadingAddTodoId: number | null;
+  setFocus: (setFocus: boolean) => void;
 }
 
 export const TodoItem: React.FC<Props> = ({
@@ -27,14 +28,17 @@ export const TodoItem: React.FC<Props> = ({
   onDelete,
   loadingTodoId,
   loadingAddTodoId,
+  setFocus,
 }) => {
   const showLoader = loadingTodoId === id || loadingAddTodoId === id;
 
   const handleDelete = async () => {
     setLoading(true);
     try {
-      onDelete(id);
+      await onDelete(id);
       await deleteTodo(id);
+
+      setFocus(true);
     } catch (err) {
       setError(true);
       setErrorType('delete');
