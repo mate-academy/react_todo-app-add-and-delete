@@ -21,8 +21,10 @@ export const TodoItem: FC<Props> = ({
   const handleClick = () => {
     setIsBeingDeleted(true);
 
-    deleteTodo(todo.id).catch(() => {
-      setIsBeingDeleted(false);
+    deleteTodo(todo.id).then(didSucceed => {
+      if (!didSucceed) {
+        setIsBeingDeleted(false);
+      }
     });
   };
 
