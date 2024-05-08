@@ -116,10 +116,7 @@ export const App: React.FC = () => {
           </footer>
         )}
       </div>
-
-      {error && (
-        <ErrorFile error={error} errorType={errorType} errorHide={hideError} />
-      )}
+      <ErrorFile error={error} errorType={errorType} errorHide={hideError} />
     </div>
   );
 };
