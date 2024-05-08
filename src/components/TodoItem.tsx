@@ -1,7 +1,6 @@
 import { useCallback, useContext, useEffect, useState } from 'react';
 import cn from 'classnames';
-import { ErrorMessage } from '../types/ErrorMessage';
-import { Todo } from '../types/Todo';
+import { ErrorMessage, Todo } from '../types';
 import { deleteTodo, patchTodo } from '../api/todos';
 import { TEMP_ITEM_ID } from '../utils';
 import {

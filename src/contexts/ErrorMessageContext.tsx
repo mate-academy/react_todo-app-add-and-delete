@@ -1,5 +1,5 @@
 import { createContext, useState } from 'react';
-import { ErrorMessage } from '../types/ErrorMessage';
+import { ErrorMessage } from '../types';
 
 type SetErrorMessageType = React.Dispatch<React.SetStateAction<ErrorMessage>>;
 
