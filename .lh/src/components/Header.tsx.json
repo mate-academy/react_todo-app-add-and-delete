@@ -1,0 +1,26 @@
+{
+    "sourceFile": "src/components/Header.tsx",
+    "activeCommit": 0,
+    "commits": [
+        {
+            "activePatchIndex": 2,
+            "patches": [
+                {
+                    "date": 1715156489300,
+                    "content": "Index: \n===================================================================\n--- \n+++ \n"
+                },
+                {
+                    "date": 1715160278590,
+                    "content": "Index: \n===================================================================\n--- \n+++ \n@@ -16,8 +16,9 @@\n     if (newTodoInputRef.current) {\n       newTodoInputRef.current.focus();\n     }\n   }, []);\n+  \n   const handleNewTodoForm = (e: React.FormEvent) => {\n     e.preventDefault();\n     addTodo(newTodoTitle).then(didSucceed => {\n       if (didSucceed) {\n"
+                },
+                {
+                    "date": 1715160567523,
+                    "content": "Index: \n===================================================================\n--- \n+++ \n@@ -5,11 +5,12 @@\n \n type Props = {\n   todos: TodoType[];\n   addTodo: (newTodoTitle: string) => Promise<boolean>;\n+  isInputDisabled: boolean;\n };\n \n-export const Header: FC<Props> = ({ todos, addTodo }) => {\n+export const Header: FC<Props> = ({ todos, addTodo, isInputDisabled }) => {\n   const [newTodoTitle, setNewTodoTitle] = useState<string>('');\n   const newTodoInputRef = useRef<HTMLInputElement>(null);\n \n   useEffect(() => {\n"
+                }
+            ],
+            "date": 1715156489300,
+            "name": "Commit-0",
+            "content": "import { FC, useEffect, useRef, useState } from 'react';\nimport React from 'react';\n\nimport { TodoType } from '../types/Todo';\n\ntype Props = {\n  todos: TodoType[];\n  addTodo: (newTodoTitle: string) => Promise<boolean>;\n};\n\nexport const Header: FC<Props> = ({ todos, addTodo }) => {\n  const [newTodoTitle, setNewTodoTitle] = useState<string>('');\n  const newTodoInputRef = useRef<HTMLInputElement>(null);\n\n  useEffect(() => {\n    if (newTodoInputRef.current) {\n      newTodoInputRef.current.focus();\n    }\n  }, []);\n  const handleNewTodoForm = (e: React.FormEvent) => {\n    e.preventDefault();\n    addTodo(newTodoTitle)\n      .then(didSucceed => {\n        if (didSucceed) {\n          setNewTodoTitle('');\n        }\n      });\n  };\n\n  return (\n    <header className=\"todoapp__header\">\n      <button\n        type=\"button\"\n        className={\n          'todoapp__toggle-all ' +\n          (todos.every(({ completed }) => completed) ? 'active' : '')\n        }\n        data-cy=\"ToggleAllButton\"\n      />\n\n      {/* Add a todos on form submit */}\n      <form onSubmit={handleNewTodoForm}>\n        <input\n          data-cy=\"NewTodoField\"\n          type=\"text\"\n          className=\"todoapp__new-todo\"\n          placeholder=\"What needs to be done?\"\n          value={newTodoTitle}\n          onChange={e => {\n            setNewTodoTitle(e.target.value);\n          }}\n          autoFocus\n        />\n      </form>\n    </header>\n  );\n};\n"
+        }
+    ]
+}

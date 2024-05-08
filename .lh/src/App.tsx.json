@@ -1,0 +1,38 @@
+{
+    "sourceFile": "src/App.tsx",
+    "activeCommit": 0,
+    "commits": [
+        {
+            "activePatchIndex": 5,
+            "patches": [
+                {
+                    "date": 1714992326695,
+                    "content": "Index: \n===================================================================\n--- \n+++ \n"
+                },
+                {
+                    "date": 1715153867665,
+                    "content": "Index: \n===================================================================\n--- \n+++ \n@@ -1,26 +1,77 @@\n-/* eslint-disable max-len */\n+/* eslint-disable jsx-a11y/label-has-associated-control */\n /* eslint-disable jsx-a11y/control-has-associated-label */\n-import React from 'react';\n+import React, { useCallback, useEffect, useMemo, useState } from 'react';\n import { UserWarning } from './UserWarning';\n \n-const USER_ID = 0;\n+import { USER_ID, getTodos, postTodo } from './api/todos';\n \n+import { Todo } from './types/Todo';\n+import { Filter } from './types/Filter';\n+import { Header } from './components/Header';\n+import { TodoList } from './components/TodoList';\n+import { Footer } from './components/Footer';\n+import { ErrorNotification, ErrorType } from './components/ErrorNotification';\n+\n export const App: React.FC = () => {\n+  const [todos, setTodos] = useState<Todo[]>([]);\n+  const [error, setError] = useState<ErrorType | null>(null);\n+  const [filter, setFilter] = useState<Filter>('all');\n+\n+  useEffect(() => {\n+    getTodos()\n+      .then(data => setTodos(data))\n+      .catch(() => setError('load'));\n+  }, []);\n+\n+  const filteredTodos = useMemo(() => {\n+    return todos.filter(todo => {\n+      switch (filter) {\n+        case 'completed':\n+          return todo.completed;\n+        case 'active':\n+          return !todo.completed;\n+        case 'all':\n+          return todo;\n+        default:\n+          return true;\n+      }\n+    });\n+  }, [todos, filter]);\n+\n+  const handleClosingError = useCallback(() => setError(null), [setError]);\n+\n+  const generateId = () => {\n+    return Math.floor(Math.random() * 2137);\n+  };\n+\n+  const addTodo = (newTodoTitle: string) => {\n+    postTodo({\n+      title: newTodoTitle,\n+      userId: USER_ID,\n+      completed: false,\n+      id: generateId(),\n+    }).then(newTodo => {\n+      setTodos(prevTodos => [...prevTodos, newTodo]);\n+    });\n+  };\n+\n   if (!USER_ID) {\n     return <UserWarning />;\n   }\n \n   return (\n-    <section className=\"section container\">\n-      <p className=\"title is-4\">\n-        Copy all you need from the prev task:\n-        <br />\n-        <a href=\"https://github.com/mate-academy/react_todo-app-loading-todos#react-todo-app-load-todos\">\n-          React Todo App - Load Todos\n-        </a>\n-      </p>\n+    <div className=\"todoapp\">\n+      <h1 className=\"todoapp__title\">todos</h1>\n \n-      <p className=\"subtitle\">Styles are already copied</p>\n-    </section>\n+      <div className=\"todoapp__content\">\n+        <Header todos={todos} addTodo={addTodo} />\n+        <TodoList todos={filteredTodos} />\n+        <Footer todos={todos} filter={filter} setFilter={setFilter} />\n+      </div>\n+      <ErrorNotification\n+        errorType={error}\n+        handleClosingError={handleClosingError}\n+      />\n+    </div>\n   );\n };\n"
+                },
+                {
+                    "date": 1715154327245,
+                    "content": "Index: \n===================================================================\n--- \n+++ \n@@ -10,13 +10,21 @@\n import { Header } from './components/Header';\n import { TodoList } from './components/TodoList';\n import { Footer } from './components/Footer';\n import { ErrorNotification, ErrorType } from './components/ErrorNotification';\n+import { ErrorTypes } from './types/Error';\n \n export const App: React.FC = () => {\n   const [todos, setTodos] = useState<Todo[]>([]);\n   const [error, setError] = useState<ErrorType | null>(null);\n   const [filter, setFilter] = useState<Filter>('all');\n+  const [errorCases, setErrorCases] = useState<ErrorTypes>({\n+    todoLoad: false,\n+    titleLength: false,\n+    addTodo: false,\n+    deleteTodo: false,\n+    updateTodo: false,\n+  })\n \n   useEffect(() => {\n     getTodos()\n       .then(data => setTodos(data))\n"
+                },
+                {
+                    "date": 1715154408318,
+                    "content": "Index: \n===================================================================\n--- \n+++ \n@@ -62,11 +62,14 @@\n       setTodos(prevTodos => [...prevTodos, newTodo]);\n     });\n   };\n \n+  const updateErrorCases = (errorTitle, value) => {\n+\n+  }\n   if (!USER_ID) {\n     return <UserWarning />;\n-  }\n+  };\n \n   return (\n     <div className=\"todoapp\">\n       <h1 className=\"todoapp__title\">todos</h1>\n"
+                },
+                {
+                    "date": 1715154531338,
+                    "content": "Index: \n===================================================================\n--- \n+++ \n@@ -62,9 +62,11 @@\n       setTodos(prevTodos => [...prevTodos, newTodo]);\n     });\n   };\n \n-  const updateErrorCases = (errorTitle, value) => {};\n+  const updateErrorCases = (errorTitle: keyof ErrorTypes | 'all' = 'all',, value) => {\n+  \n+  };\n   if (!USER_ID) {\n     return <UserWarning />;\n   }\n \n"
+                },
+                {
+                    "date": 1715154630261,
+                    "content": "Index: \n===================================================================\n--- \n+++ \n@@ -62,10 +62,23 @@\n       setTodos(prevTodos => [...prevTodos, newTodo]);\n     });\n   };\n \n-  const updateErrorCases = (errorTitle: keyof ErrorTypes | 'all' = 'all',, value) => {\n-  \n+  const updateErrorCases = (errorTitle: keyof ErrorTypes | 'all' = 'all', value: boolean) => {\n+    if (errorTitle === 'all') {\n+      setErrorCases({\n+        todoLoad: false,\n+        titleLength: false,\n+        addTodo: false,\n+        deleteTodo: false,\n+        updateTodo: false,\n+      });\n+    } else {\n+      setErrorCases(prev => ({\n+        ...prev,\n+        [errorTitle]: value,\n+      }))\n+    }\n   };\n   if (!USER_ID) {\n     return <UserWarning />;\n   }\n"
+                }
+            ],
+            "date": 1714992326695,
+            "name": "Commit-0",
+            "content": "/* eslint-disable max-len */\n/* eslint-disable jsx-a11y/control-has-associated-label */\nimport React from 'react';\nimport { UserWarning } from './UserWarning';\n\nconst USER_ID = 0;\n\nexport const App: React.FC = () => {\n  if (!USER_ID) {\n    return <UserWarning />;\n  }\n\n  return (\n    <section className=\"section container\">\n      <p className=\"title is-4\">\n        Copy all you need from the prev task:\n        <br />\n        <a href=\"https://github.com/mate-academy/react_todo-app-loading-todos#react-todo-app-load-todos\">\n          React Todo App - Load Todos\n        </a>\n      </p>\n\n      <p className=\"subtitle\">Styles are already copied</p>\n    </section>\n  );\n};\n"
+        }
+    ]
+}
