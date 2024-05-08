@@ -1,6 +1,4 @@
-import { FC, useMemo } from 'react';
-
-import React from 'react';
+import React, { FC, useMemo, useEffect } from 'react';
 import { ErrorTypes } from '../types/Error';
 
 const errorMessages = {
@@ -12,7 +10,7 @@ const errorMessages = {
 };
 
 type Props = {
-  errorCases: {};
+  errorCases: ErrorTypes;
   updateErrorCases: (value: boolean, error?: keyof ErrorTypes | 'all') => void;
 };
 
@@ -26,13 +24,21 @@ export const ErrorNotification: FC<Props> = ({
     if (fail.length === 0) {
       return null;
     } else {
-      setTimeout(() => {
-        updateErrorCases(false, fail[0][0] as keyof typeof errorMessages);
-      }, 3000);
-
       return errorMessages[fail[0][0] as keyof typeof errorMessages];
     }
-  }, [errorCases, updateErrorCases]);
+  }, [errorCases]);
+
+  useEffect(() => {
+    if (detectFailCase) {
+      const timer = setTimeout(() => {
+        updateErrorCases(false);
+      }, 3000);
+
+      return () => clearTimeout(timer);
+    } else {
+      return () => {};
+    }
+  }, [detectFailCase, updateErrorCases]);
 
   const handleHideError = () => {
     updateErrorCases(false);
