@@ -1,0 +1,54 @@
+{
+    "sourceFile": "src/components/TodoList.tsx",
+    "activeCommit": 0,
+    "commits": [
+        {
+            "activePatchIndex": 9,
+            "patches": [
+                {
+                    "date": 1715156174120,
+                    "content": "Index: \n===================================================================\n--- \n+++ \n"
+                },
+                {
+                    "date": 1715156183391,
+                    "content": "Index: \n===================================================================\n--- \n+++ \n@@ -5,9 +5,9 @@\n import { TodoItem } from '../components/TodoItem';\n \n type Props = {\n   todos: Todo[];\n-  deleteTodo: () => void;\n+  deleteTodo: (todoId: number) => void;\n };\n export const TodoList: FC<Props> = ({ todos, deleteTodo }) => {\n   return (\n     <section className=\"todoapp__main\" data-cy=\"TodoList\">\n"
+                },
+                {
+                    "date": 1715156224015,
+                    "content": "Index: \n===================================================================\n--- \n+++ \n@@ -11,9 +11,9 @@\n export const TodoList: FC<Props> = ({ todos, deleteTodo }) => {\n   return (\n     <section className=\"todoapp__main\" data-cy=\"TodoList\">\n       {todos.map(todo => (\n-        <TodoItem key={todo.id} todo={todo} />\n+        <TodoItem key={todo.id} todo={todo} deleteTodo={deleteTodo} />\n       ))}\n     </section>\n   );\n };\n"
+                },
+                {
+                    "date": 1715156278636,
+                    "content": "Index: \n===================================================================\n--- \n+++ \n@@ -5,9 +5,9 @@\n import { TodoItem } from '../components/TodoItem';\n \n type Props = {\n   todos: Todo[];\n-  deleteTodo: (todoId: number) => void;\n+  deleteTodo: (todoId: number) => Promise<boolean>;\n };\n export const TodoList: FC<Props> = ({ todos, deleteTodo }) => {\n   return (\n     <section className=\"todoapp__main\" data-cy=\"TodoList\">\n"
+                },
+                {
+                    "date": 1715159012801,
+                    "content": "Index: \n===================================================================\n--- \n+++ \n@@ -6,10 +6,11 @@\n \n type Props = {\n   todos: Todo[];\n   deleteTodo: (todoId: number) => Promise<boolean>;\n+  newTodo: Todo;\n };\n-export const TodoList: FC<Props> = ({ todos, deleteTodo }) => {\n+export const TodoList: FC<Props> = ({ todos, deleteTodo, newTodo }) => {\n   return (\n     <section className=\"todoapp__main\" data-cy=\"TodoList\">\n       {todos.map(todo => (\n         <TodoItem key={todo.id} todo={todo} deleteTodo={deleteTodo} />\n"
+                },
+                {
+                    "date": 1715159103152,
+                    "content": "Index: \n===================================================================\n--- \n+++ \n@@ -6,9 +6,9 @@\n \n type Props = {\n   todos: Todo[];\n   deleteTodo: (todoId: number) => Promise<boolean>;\n-  newTodo: Todo;\n+  newTodo: Todo | null;\n };\n export const TodoList: FC<Props> = ({ todos, deleteTodo, newTodo }) => {\n   return (\n     <section className=\"todoapp__main\" data-cy=\"TodoList\">\n"
+                },
+                {
+                    "date": 1715159208988,
+                    "content": "Index: \n===================================================================\n--- \n+++ \n@@ -14,7 +14,8 @@\n     <section className=\"todoapp__main\" data-cy=\"TodoList\">\n       {todos.map(todo => (\n         <TodoItem key={todo.id} todo={todo} deleteTodo={deleteTodo} />\n       ))}\n+      {newTodo && <TodoItem todo={newTodo} deleteTodo={deleteTodo} isTemp/>}\n     </section>\n   );\n };\n"
+                },
+                {
+                    "date": 1715167214614,
+                    "content": "Index: \n===================================================================\n--- \n+++ \n@@ -7,10 +7,11 @@\n type Props = {\n   todos: Todo[];\n   deleteTodo: (todoId: number) => Promise<boolean>;\n   newTodo: Todo | null;\n+  handleCompleteTodo: (todoId: number) => void;\n };\n-export const TodoList: FC<Props> = ({ todos, deleteTodo, newTodo }) => {\n+export const TodoList: FC<Props> = ({ todos, deleteTodo, newTodo, handleCompleteTodo }) => {\n   return (\n     <section className=\"todoapp__main\" data-cy=\"TodoList\">\n       {todos.map(todo => (\n         <TodoItem key={todo.id} todo={todo} deleteTodo={deleteTodo} />\n"
+                },
+                {
+                    "date": 1715167221686,
+                    "content": "Index: \n===================================================================\n--- \n+++ \n@@ -18,9 +18,10 @@\n }) => {\n   return (\n     <section className=\"todoapp__main\" data-cy=\"TodoList\">\n       {todos.map(todo => (\n-        <TodoItem key={todo.id} todo={todo} deleteTodo={deleteTodo} />\n+        <TodoItem key={todo.id} todo={todo} deleteTodo={deleteTodo}           handleCompleteTodo={handleCompleteTodo}\n+        />\n       ))}\n       {newTodo && <TodoItem todo={newTodo} deleteTodo={deleteTodo} isTemp />}\n     </section>\n   );\n"
+                },
+                {
+                    "date": 1715171221030,
+                    "content": "Index: \n===================================================================\n--- \n+++ \n@@ -6,15 +6,15 @@\n \n type Props = {\n   todos: Todo[];\n   deleteTodo: (todoId: number) => Promise<boolean>;\n-  newTodo: Todo | null;\n+  tempTodo: Todo | null;\n   handleCompleteTodo: (todoId: number) => void;\n };\n export const TodoList: FC<Props> = ({\n   todos,\n   deleteTodo,\n-  newTodo,\n+  tempTodo,\n   handleCompleteTodo,\n }) => {\n   return (\n     <section className=\"todoapp__main\" data-cy=\"TodoList\">\n@@ -25,11 +25,11 @@\n           deleteTodo={deleteTodo}\n           handleCompleteTodo={handleCompleteTodo}\n         />\n       ))}\n-      {newTodo && (\n+      {tempTodo && (\n         <TodoItem\n-          todo={newTodo}\n+          todo={tempTodo}\n           deleteTodo={deleteTodo}\n           isTemp\n           handleCompleteTodo={handleCompleteTodo}\n         />\n"
+                }
+            ],
+            "date": 1715156174120,
+            "name": "Commit-0",
+            "content": "import { FC } from 'react';\nimport React from 'react';\n\nimport { Todo } from '../types/Todo';\nimport { TodoItem } from '../components/TodoItem';\n\ntype Props = {\n  todos: Todo[];\n  deleteTodo: () => void;\n};\nexport const TodoList: FC<Props> = ({ todos, deleteTodo }) => {\n  return (\n    <section className=\"todoapp__main\" data-cy=\"TodoList\">\n      {todos.map(todo => (\n        <TodoItem key={todo.id} todo={todo} />\n      ))}\n    </section>\n  );\n};\n"
+        }
+    ]
+}

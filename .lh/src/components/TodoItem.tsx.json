@@ -1,0 +1,30 @@
+{
+    "sourceFile": "src/components/TodoItem.tsx",
+    "activeCommit": 0,
+    "commits": [
+        {
+            "activePatchIndex": 3,
+            "patches": [
+                {
+                    "date": 1715156267124,
+                    "content": "Index: \n===================================================================\n--- \n+++ \n"
+                },
+                {
+                    "date": 1715156298000,
+                    "content": "Index: \n===================================================================\n--- \n+++ \n@@ -24,9 +24,9 @@\n       <span data-cy=\"TodoTitle\" className=\"todo__title\">\n         {todo.title}\n       </span>\n \n-      <button type=\"button\" className=\"todo__remove\" data-cy=\"TodoDelete\">\n+      <button type=\"button\" className=\"todo__remove\" data-cy=\"TodoDelete\" onClick={handleClick}>\n         ×\n       </button>\n       {/*loader is required for tests, since updating todos not implemeted yet it has no effect on displayed todo*/}\n       <div data-cy=\"TodoLoader\" className=\"modal overlay\">\n"
+                },
+                {
+                    "date": 1715156347172,
+                    "content": "Index: \n===================================================================\n--- \n+++ \n@@ -7,8 +7,12 @@\n   deleteTodo: (todoId: number) => Promise<boolean>;\n };\n \n export const TodoItem: FC<Props> = ({ todo, deleteTodo }) => {\n+\n+  const handleClick = () => {\n+    deleteTodo(todo.id)\n+  }\n   return (\n     <div data-cy=\"Todo\" className={`todo ${todo.completed ? 'completed' : ''}`}>\n       {/* eslint-disable jsx-a11y/label-has-associated-control */}\n       <label className=\"todo__status-label\" htmlFor=\"TodoStatus\">\n"
+                },
+                {
+                    "date": 1715159223438,
+                    "content": "Index: \n===================================================================\n--- \n+++ \n@@ -4,11 +4,12 @@\n \n type Props = {\n   todo: Todo;\n   deleteTodo: (todoId: number) => Promise<boolean>;\n+  isTemp: boolean;\n };\n \n-export const TodoItem: FC<Props> = ({ todo, deleteTodo }) => {\n+export const TodoItem: FC<Props> = ({ todo, deleteTodo, isTemp }) => {\n   const handleClick = () => {\n     deleteTodo(todo.id);\n   };\n   return (\n"
+                }
+            ],
+            "date": 1715156267124,
+            "name": "Commit-0",
+            "content": "import { FC } from 'react';\nimport { Todo } from '../types/Todo';\nimport React from 'react';\n\ntype Props = {\n  todo: Todo;\n  deleteTodo: (todoId: number) => Promise<boolean>\n};\n\nexport const TodoItem: FC<Props> = ({ todo, deleteTodo }) => {\n  return (\n    <div data-cy=\"Todo\" className={`todo ${todo.completed ? 'completed' : ''}`}>\n      {/* eslint-disable jsx-a11y/label-has-associated-control */}\n      <label className=\"todo__status-label\" htmlFor=\"TodoStatus\">\n        <input\n          id=\"TodoStatus\"\n          data-cy=\"TodoStatus\"\n          type=\"checkbox\"\n          className=\"todo__status\"\n          checked={todo.completed}\n        />\n      </label>\n\n      <span data-cy=\"TodoTitle\" className=\"todo__title\">\n        {todo.title}\n      </span>\n\n      <button type=\"button\" className=\"todo__remove\" data-cy=\"TodoDelete\">\n        ×\n      </button>\n      {/*loader is required for tests, since updating todos not implemeted yet it has no effect on displayed todo*/}\n      <div data-cy=\"TodoLoader\" className=\"modal overlay\">\n        <div className=\"modal-background has-background-white-ter\" />\n        <div className=\"loader\" />\n      </div>\n    </div>\n  );\n};\n"
+        }
+    ]
+}

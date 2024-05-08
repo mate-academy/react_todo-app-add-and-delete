@@ -1,0 +1,26 @@
+{
+    "sourceFile": "src/api/todos.ts",
+    "activeCommit": 0,
+    "commits": [
+        {
+            "activePatchIndex": 2,
+            "patches": [
+                {
+                    "date": 1715155816986,
+                    "content": "Index: \n===================================================================\n--- \n+++ \n"
+                },
+                {
+                    "date": 1715162483000,
+                    "content": "Index: \n===================================================================\n--- \n+++ \n@@ -2,9 +2,9 @@\n import { client } from '../utils/fetchClient';\n \n export const USER_ID = 560;\n \n-export const getTodos = () => {\n+export const getTodosFromServer = () => {\n   return client.get<Todo[]>(`/todos?userId=${USER_ID}`);\n };\n \n export const postTodo = (newTodo: Todo) => {\n"
+                },
+                {
+                    "date": 1715162506896,
+                    "content": "Index: \n===================================================================\n--- \n+++ \n@@ -6,12 +6,12 @@\n export const getTodosFromServer = () => {\n   return client.get<Todo[]>(`/todos?userId=${USER_ID}`);\n };\n \n-export const postTodo = (newTodo: Todo) => {\n+export const postTodoToServer = (newTodo: Todo) => {\n   return client.post<Todo>('/todos', newTodo);\n };\n \n-export const deleteTodo = (todoId: number) => {\n+export const deleteTodoFromServer = (todoId: number) => {\n   return client.delete(`/todos/${todoId}`);\n };\n // Add more methods here\n"
+                }
+            ],
+            "date": 1715155816986,
+            "name": "Commit-0",
+            "content": "import { Todo } from '../types/Todo';\nimport { client } from '../utils/fetchClient';\n\nexport const USER_ID = 560;\n\nexport const getTodos = () => {\n  return client.get<Todo[]>(`/todos?userId=${USER_ID}`);\n};\n\nexport const postTodo = (newTodo: Todo) => {\n  return client.post<Todo>('/todos', newTodo);\n};\n\nexport const deleteTodo = (todoId: number) => {\n  return client.delete(`/todos/${todoId}`);\n};\n// Add more methods here\n"
+        }
+    ]
+}
