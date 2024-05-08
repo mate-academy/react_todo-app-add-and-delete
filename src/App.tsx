@@ -8,6 +8,8 @@ import { ErrorNotification } from './Components/ErrorNotification';
 import { Footer } from './Components/Footer';
 import { Status, Todo } from './types/Todo';
 import { Error } from './types/Todo';
+import { TodoItem } from './Components/TodoItem';
+import { deleteTodo } from './api/todos';
 
 export const App: React.FC = () => {
   const [todos, setTodos] = useState<Todo[]>([]);
@@ -16,6 +18,11 @@ export const App: React.FC = () => {
   const [filter, setFilter] = useState<Status>('all');
   const [newTodoTitle, setNewTodoTitle] = useState('');
   const [focus, setFocus] = useState<boolean>(true);
+  const [tempTodo, setTempTodo] = useState<Todo | null>(null);
+  const [loading, setLoading] = useState<boolean>(false);
+  const [loadingTodoId, setLoadingTodoId] = useState<number | null>(null);
+  const [addNewTodo, setAddNewTodo] = useState<boolean>(false);
+  const [loadingAddTodoId, setLoadingAddTodoId] = useState<number | null>(null);
 
   useEffect(() => {
     const fetchTodos = async () => {
@@ -32,42 +39,21 @@ export const App: React.FC = () => {
     fetchTodos();
   }, []);
 
+  useEffect(() => {
+    if (focus) {
+      const inputField = document.querySelector(
+        '.todoapp__new-todo',
+      ) as HTMLElement;
+
+      if (inputField) {
+        inputField.focus();
+      }
+    }
+  }, [focus]);
+
   if (!USER_ID) {
     return <UserWarning />;
   }
-
-  const handleFocus = () => {
-    setFocus(true);
-  };
-
-  const handleDeleteTodo = (id: number) => {
-    setTodos(prevTodos => prevTodos.filter(todo => todo.id !== id));
-
-    setErrorType('delete');
-  };
-
-  const handleToggleTodo = (id: number) => {
-    setTodos(prev =>
-      prev.map(todo =>
-        todo.id === id ? { ...todo, completed: !todo.completed } : todo,
-      ),
-    );
-  };
-
-  const handleToggleAllTodos = () => {
-    const allCompleted = todos.every(todo => todo.completed);
-
-    setTodos(prev =>
-      prev.map(todo => ({
-        ...todo,
-        completed: !allCompleted,
-      })),
-    );
-  };
-
-  const hideError = () => {
-    setError(false);
-  };
 
   const handleKeyDown = async (
     event: React.KeyboardEvent<HTMLInputElement>,
@@ -78,29 +64,32 @@ export const App: React.FC = () => {
       event.preventDefault();
 
       if (trimmedTodo) {
-        const newTodo: Todo = {
-          id: todos.length + 1,
-          userId: USER_ID,
-          title: trimmedTodo,
-          completed: false,
-        };
-
         setFocus(false);
 
         try {
-          await postTodo(newTodo);
-          const updatedTodos = await getTodos();
+          setAddNewTodo(true);
 
-          setTodos(updatedTodos);
-        } catch (err) {
-          setError(false);
-          setErrorType('update');
-        } finally {
+          const newTodo: Todo = {
+            id: 0,
+            userId: USER_ID,
+            title: trimmedTodo,
+            completed: false,
+          };
+          const response = await postTodo(newTodo);
+
+          setLoadingAddTodoId(response.id);
+
+          setTodos(prevTodos => [...prevTodos, response]);
+          setNewTodoTitle('');
+          setTempTodo(null);
+          setAddNewTodo(true);
+
           setFocus(true);
+        } catch (err) {
+          setError(true);
+          setErrorType('add');
+          setAddNewTodo(false);
         }
-
-        setTodos(prevTodos => [...prevTodos, newTodo]);
-        setNewTodoTitle('');
       } else {
         setError(true);
         setErrorType('empty');
@@ -118,6 +107,53 @@ export const App: React.FC = () => {
 
   const handleFilterChange = (newFilter: Status) => {
     setFilter(newFilter);
+  };
+
+  const handleDeleteTodo = async (id: number) => {
+    setLoading(true);
+    setLoadingTodoId(id);
+    try {
+      await deleteTodo(id);
+      setTodos(prevTodos => prevTodos.filter(todo => todo.id !== id));
+    } catch (err) {
+      setError(true);
+      setErrorType('delete');
+    } finally {
+      setLoading(false);
+      setLoadingTodoId(null);
+    }
+  };
+
+  const handleToggleTodo = async (id: number) => {
+    setLoading(true);
+    setLoadingTodoId(id);
+    try {
+      setTodos(prev =>
+        prev.map(todo =>
+          todo.id === id ? { ...todo, completed: !todo.completed } : todo,
+        ),
+      );
+    } catch (err) {
+      setError(true);
+      setErrorType('delete');
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const handleToggleAllTodos = () => {
+    const allCompleted = todos.every(todo => todo.completed);
+
+    setTodos(prev =>
+      prev.map(todo => ({
+        ...todo,
+        completed: !allCompleted,
+      })),
+    );
+  };
+
+  const hideError = () => {
+    setError(false);
   };
 
   return (
@@ -145,20 +181,41 @@ export const App: React.FC = () => {
                 onKeyDown={handleKeyDown}
                 value={newTodoTitle}
                 onChange={handleChange}
-                onFocus={handleFocus}
-                autoFocus={focus}
+                autoFocus
                 disabled={!focus}
               />
             </form>
           </header>
-
           <TodoList
             todos={todos}
-            onDeleteTodo={handleDeleteTodo}
             onToggleTodo={handleToggleTodo}
             filter={filter}
+            loading={loading}
+            setLoading={setLoading}
+            setError={setError}
+            setErrorType={setErrorType}
+            handleDeleteTodo={handleDeleteTodo}
+            loadingTodoId={loadingTodoId}
+            loadingAddTodoId={loadingAddTodoId}
+            addNewTodo={addNewTodo}
           />
-
+          {tempTodo && (
+            <div className="todoapp__temp-todo">
+              <TodoItem
+                key={tempTodo.id}
+                id={tempTodo.id}
+                title={tempTodo.title}
+                completed={tempTodo.completed}
+                onToggle={() => {}}
+                setLoading={setLoading}
+                setError={setError}
+                setErrorType={setErrorType}
+                onDelete={() => handleDeleteTodo(tempTodo.id)}
+                loadingTodoId={loadingTodoId}
+                loadingAddTodoId={loadingAddTodoId}
+              />
+            </div>
+          )}
           {/* Hide the footer if there are no todos */}
           {todos.length > 0 && (
             <Footer

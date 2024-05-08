@@ -1,19 +1,32 @@
 import React from 'react';
 import { Todo } from '../types/Todo';
 import { TodoItem } from './TodoItem';
+import { Error } from '../types/Todo';
 
 interface Props {
   todos: Todo[];
-  onDeleteTodo: (id: number) => void;
   onToggleTodo: (id: number) => void;
   filter: string;
+  setLoading: (setLoading: boolean) => void;
+  loading: boolean;
+  setError: (setError: boolean) => void;
+  setErrorType: (setErrorType: Error | null) => void;
+  handleDeleteTodo: (id: number) => void;
+  loadingTodoId: number | null;
+  loadingAddTodoId: number | null;
+  addNewTodo: boolean;
 }
 
 export const TodoList: React.FC<Props> = ({
   todos,
   onToggleTodo,
-  onDeleteTodo,
   filter,
+  setLoading,
+  setError,
+  setErrorType,
+  handleDeleteTodo,
+  loadingTodoId,
+  loadingAddTodoId,
 }) => {
   const filteredTodos =
     filter === 'active'
@@ -36,8 +49,14 @@ export const TodoList: React.FC<Props> = ({
           id={todo.id}
           title={todo.title}
           completed={todo.completed}
-          onDelete={() => onDeleteTodo(todo.id)}
           onToggle={() => onToggleTodo(todo.id)}
+          setLoading={setLoading}
+          setError={setError}
+          setErrorType={setErrorType}
+          onDelete={() => handleDeleteTodo(todo.id)}
+          loadingTodoId={loadingTodoId}
+          loadingAddTodoId={loadingAddTodoId}
+          // addNewTodo={loadingAddTodoId === todo.id}
         />
       ))}
       {noTodosMessage}

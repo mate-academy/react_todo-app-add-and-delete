@@ -3,7 +3,7 @@
     "activeCommit": 0,
     "commits": [
         {
-            "activePatchIndex": 4,
+            "activePatchIndex": 23,
             "patches": [
                 {
                     "date": 1714995447704,
@@ -24,6 +24,82 @@
                 {
                     "date": 1714996030842,
                     "content": "Index: \n===================================================================\n--- \n+++ \n@@ -44,9 +44,8 @@\n         data-cy=\"TodoDelete\"\n       >\n         ×\n       </button>\n-\n-    <Loader/>\n+      <Loader />\n     </div>\n   );\n };\n"
+                },
+                {
+                    "date": 1715085350418,
+                    "content": "Index: \n===================================================================\n--- \n+++ \n@@ -15,8 +15,9 @@\n   completed,\n   onDelete,\n   onToggle,\n }) => {\n+  \n   return (\n     <div\n       data-cy=\"Todo\"\n       data-id={id}\n"
+                },
+                {
+                    "date": 1715085356179,
+                    "content": "Index: \n===================================================================\n--- \n+++ \n@@ -15,9 +15,9 @@\n   completed,\n   onDelete,\n   onToggle,\n }) => {\n-  \n+  const [loading, set]\n   return (\n     <div\n       data-cy=\"Todo\"\n       data-id={id}\n"
+                },
+                {
+                    "date": 1715085362302,
+                    "content": "Index: \n===================================================================\n--- \n+++ \n@@ -1,5 +1,5 @@\n-import React from 'react';\n+import React, { useState } from 'react';\n import { Loader } from './Loader';\n \n interface Props {\n   id: number;\n@@ -15,9 +15,9 @@\n   completed,\n   onDelete,\n   onToggle,\n }) => {\n-  const [loading, set]\n+  const [loading, setLoading] = useState\n   return (\n     <div\n       data-cy=\"Todo\"\n       data-id={id}\n"
+                },
+                {
+                    "date": 1715085367454,
+                    "content": "Index: \n===================================================================\n--- \n+++ \n@@ -15,9 +15,9 @@\n   completed,\n   onDelete,\n   onToggle,\n }) => {\n-  const [loading, setLoading] = useState\n+  const [loading, setLoading] = useState<boolean>\n   return (\n     <div\n       data-cy=\"Todo\"\n       data-id={id}\n"
+                },
+                {
+                    "date": 1715085373301,
+                    "content": "Index: \n===================================================================\n--- \n+++ \n@@ -15,9 +15,11 @@\n   completed,\n   onDelete,\n   onToggle,\n }) => {\n-  const [loading, setLoading] = useState<boolean>\n+  const [loading, setLoading] = useState<boolean>(false);\n+\n+  \n   return (\n     <div\n       data-cy=\"Todo\"\n       data-id={id}\n"
+                },
+                {
+                    "date": 1715085413403,
+                    "content": "Index: \n===================================================================\n--- \n+++ \n@@ -17,9 +17,9 @@\n   onToggle,\n }) => {\n   const [loading, setLoading] = useState<boolean>(false);\n \n-  \n+  const \n   return (\n     <div\n       data-cy=\"Todo\"\n       data-id={id}\n"
+                },
+                {
+                    "date": 1715085421753,
+                    "content": "Index: \n===================================================================\n--- \n+++ \n@@ -17,9 +17,9 @@\n   onToggle,\n }) => {\n   const [loading, setLoading] = useState<boolean>(false);\n \n-  const \n+  const handleDelete = ()\n   return (\n     <div\n       data-cy=\"Todo\"\n       data-id={id}\n"
+                },
+                {
+                    "date": 1715085427129,
+                    "content": "Index: \n===================================================================\n--- \n+++ \n@@ -17,9 +17,9 @@\n   onToggle,\n }) => {\n   const [loading, setLoading] = useState<boolean>(false);\n \n-  const handleDelete = ()\n+  const handleDelete = () => {}\n   return (\n     <div\n       data-cy=\"Todo\"\n       data-id={id}\n"
+                },
+                {
+                    "date": 1715085455173,
+                    "content": "Index: \n===================================================================\n--- \n+++ \n@@ -17,9 +17,12 @@\n   onToggle,\n }) => {\n   const [loading, setLoading] = useState<boolean>(false);\n \n-  const handleDelete = () => {}\n+  const handleDelete = asy() => {\n+\n+  }\n+\n   return (\n     <div\n       data-cy=\"Todo\"\n       data-id={id}\n"
+                },
+                {
+                    "date": 1715085463667,
+                    "content": "Index: \n===================================================================\n--- \n+++ \n@@ -17,10 +17,10 @@\n   onToggle,\n }) => {\n   const [loading, setLoading] = useState<boolean>(false);\n \n-  const handleDelete = asy() => {\n-\n+  const handleDelete = async () => {\n+set\n   }\n \n   return (\n     <div\n"
+                },
+                {
+                    "date": 1715085469395,
+                    "content": "Index: \n===================================================================\n--- \n+++ \n@@ -18,9 +18,9 @@\n }) => {\n   const [loading, setLoading] = useState<boolean>(false);\n \n   const handleDelete = async () => {\n-set\n+setLoading(true)\n   }\n \n   return (\n     <div\n"
+                },
+                {
+                    "date": 1715085474797,
+                    "content": "Index: \n===================================================================\n--- \n+++ \n@@ -0,0 +1,58 @@\n+import React, { useState } from 'react';\n+import { Loader } from './Loader';\n+\n+interface Props {\n+  id: number;\n+  title: string;\n+  completed: boolean;\n+  onDelete: () => void;\n+  onToggle: () => void;\n+}\n+\n+export const TodoItem: React.FC<Props> = ({\n+  id,\n+  title,\n+  completed,\n+  onDelete,\n+  onToggle,\n+}) => {\n+  const [loading, setLoading] = useState<boolean>(false);\n+\n+  const handleDelete = async () => {\n+    setLoading(true);\n+    try \n+  }\n+\n+  return (\n+    <div\n+      data-cy=\"Todo\"\n+      data-id={id}\n+      className={`todo ${completed ? 'completed' : ''}`}\n+    >\n+      {/* eslint-disable jsx-a11y/label-has-associated-control */}\n+      <label className=\"todo__status-label\">\n+        <input\n+          data-cy=\"TodoStatus\"\n+          type=\"checkbox\"\n+          className=\"todo__status\"\n+          checked={completed}\n+          onChange={onToggle}\n+        />\n+      </label>\n+\n+      <span data-cy=\"TodoTitle\" className=\"todo__title\">\n+        {title}\n+      </span>\n+\n+      <button\n+        type=\"button\"\n+        className=\"todo__remove\"\n+        onClick={onDelete}\n+        data-cy=\"TodoDelete\"\n+      >\n+        ×\n+      </button>\n+      <Loader />\n+    </div>\n+  );\n+};\n"
+                },
+                {
+                    "date": 1715085481168,
+                    "content": "Index: \n===================================================================\n--- \n+++ \n@@ -19,9 +19,11 @@\n   const [loading, setLoading] = useState<boolean>(false);\n \n   const handleDelete = async () => {\n     setLoading(true);\n-    try \n+    try {\n+      await onDelete\n+    }\n   }\n \n   return (\n     <div\n@@ -55,61 +57,4 @@\n       <Loader />\n     </div>\n   );\n };\n-import React, { useState } from 'react';\n-import { Loader } from './Loader';\n-\n-interface Props {\n-  id: number;\n-  title: string;\n-  completed: boolean;\n-  onDelete: () => void;\n-  onToggle: () => void;\n-}\n-\n-export const TodoItem: React.FC<Props> = ({\n-  id,\n-  title,\n-  completed,\n-  onDelete,\n-  onToggle,\n-}) => {\n-  const [loading, setLoading] = useState<boolean>(false);\n-\n-  const handleDelete = async () => {\n-setLoading(true)\n-  }\n-\n-  return (\n-    <div\n-      data-cy=\"Todo\"\n-      data-id={id}\n-      className={`todo ${completed ? 'completed' : ''}`}\n-    >\n-      {/* eslint-disable jsx-a11y/label-has-associated-control */}\n-      <label className=\"todo__status-label\">\n-        <input\n-          data-cy=\"TodoStatus\"\n-          type=\"checkbox\"\n-          className=\"todo__status\"\n-          checked={completed}\n-          onChange={onToggle}\n-        />\n-      </label>\n-\n-      <span data-cy=\"TodoTitle\" className=\"todo__title\">\n-        {title}\n-      </span>\n-\n-      <button\n-        type=\"button\"\n-        className=\"todo__remove\"\n-        onClick={onDelete}\n-        data-cy=\"TodoDelete\"\n-      >\n-        ×\n-      </button>\n-      <Loader />\n-    </div>\n-  );\n-};\n"
+                },
+                {
+                    "date": 1715085487251,
+                    "content": "Index: \n===================================================================\n--- \n+++ \n@@ -20,10 +20,10 @@\n \n   const handleDelete = async () => {\n     setLoading(true);\n     try {\n-      await onDelete\n-    }\n+      await onDelete();\n+    } \n   }\n \n   return (\n     <div\n"
+                },
+                {
+                    "date": 1715085493104,
+                    "content": "Index: \n===================================================================\n--- \n+++ \n@@ -21,9 +21,11 @@\n   const handleDelete = async () => {\n     setLoading(true);\n     try {\n       await onDelete();\n-    } \n+    } finally {\n+      set\n+    }\n   }\n \n   return (\n     <div\n"
+                },
+                {
+                    "date": 1715085499234,
+                    "content": "Index: \n===================================================================\n--- \n+++ \n@@ -22,9 +22,9 @@\n     setLoading(true);\n     try {\n       await onDelete();\n     } finally {\n-      set\n+      setLoading(false);\n     }\n   }\n \n   return (\n"
+                },
+                {
+                    "date": 1715085510143,
+                    "content": "Index: \n===================================================================\n--- \n+++ \n@@ -24,9 +24,9 @@\n       await onDelete();\n     } finally {\n       setLoading(false);\n     }\n-  }\n+  };\n \n   return (\n     <div\n       data-cy=\"Todo\"\n"
+                },
+                {
+                    "date": 1715085534015,
+                    "content": "Index: \n===================================================================\n--- \n+++ \n@@ -50,9 +50,9 @@\n \n       <button\n         type=\"button\"\n         className=\"todo__remove\"\n-        onClick={hand}\n+        onClick={handl}\n         data-cy=\"TodoDelete\"\n       >\n         ×\n       </button>\n"
+                },
+                {
+                    "date": 1715085568134,
+                    "content": "Index: \n===================================================================\n--- \n+++ \n@@ -0,0 +1,63 @@\n+import React, { useState } from 'react';\n+import { Loader } from './Loader';\n+\n+interface Props {\n+  id: number;\n+  title: string;\n+  completed: boolean;\n+  onDelete: () => void;\n+  onToggle: () => void;\n+}\n+\n+export const TodoItem: React.FC<Props> = ({\n+  id,\n+  title,\n+  completed,\n+  onDelete,\n+  onToggle,\n+}) => {\n+  const [loading, setLoading] = useState<boolean>(false);\n+\n+  const handleDelete = async () => {\n+    setLoading(true);\n+    try {\n+      await onDelete();\n+    } finally {\n+      setLoading(false);\n+    }\n+  };\n+\n+  return (\n+    <div\n+      data-cy=\"Todo\"\n+      data-id={id}\n+      className={`todo ${completed ? 'completed' : ''}`}\n+    >\n+      {/* eslint-disable jsx-a11y/label-has-associated-control */}\n+      <label className=\"todo__status-label\">\n+        <input\n+          data-cy=\"TodoStatus\"\n+          type=\"checkbox\"\n+          className=\"todo__status\"\n+          checked={completed}\n+          onChange={onToggle}\n+        />\n+      </label>\n+\n+      <span data-cy=\"TodoTitle\" className=\"todo__title\">\n+        {title}\n+      </span>\n+\n+      <button\n+        type=\"button\"\n+        className=\"todo__remove\"\n+        onClick={handleDelete}\n+        data-cy=\"TodoDelete\"\n+        disabled={loading}\n+      >\n+        ×\n+      </button>\n+      {loading ? <Loader /> : '×'\n+    </div>\n+  );\n+};\n"
                 }
             ],
             "date": 1714995447704,

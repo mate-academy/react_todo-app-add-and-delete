@@ -1,21 +1,48 @@
 import React from 'react';
 import { Loader } from './Loader';
+import { deleteTodo } from '../api/todos';
+import { Error } from '../types/Todo';
 
 interface Props {
   id: number;
   title: string;
   completed: boolean;
-  onDelete: () => void;
   onToggle: () => void;
+  setLoading: (setLoading: boolean) => void;
+  setError: (setError: boolean) => void;
+  setErrorType: (setErrorType: Error | null) => void;
+  onDelete: (id: number) => void;
+  loadingTodoId: number | null;
+  loadingAddTodoId: number | null;
 }
 
 export const TodoItem: React.FC<Props> = ({
   id,
   title,
   completed,
-  onDelete,
   onToggle,
+  setLoading,
+  setError,
+  setErrorType,
+  onDelete,
+  loadingTodoId,
+  loadingAddTodoId,
 }) => {
+  const showLoader = loadingTodoId === id || loadingAddTodoId === id;
+
+  const handleDelete = async () => {
+    setLoading(true);
+    try {
+      onDelete(id);
+      await deleteTodo(id);
+    } catch (err) {
+      setError(true);
+      setErrorType('delete');
+    } finally {
+      setLoading(false);
+    }
+  };
+
   return (
     <div
       data-cy="Todo"
@@ -40,12 +67,13 @@ export const TodoItem: React.FC<Props> = ({
       <button
         type="button"
         className="todo__remove"
-        onClick={onDelete}
+        onClick={handleDelete}
         data-cy="TodoDelete"
+        disabled={showLoader}
       >
         ×
       </button>
-      <Loader />
+      <Loader loading={showLoader} />
     </div>
   );
 };
