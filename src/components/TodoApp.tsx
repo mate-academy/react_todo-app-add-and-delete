@@ -52,10 +52,6 @@ export const TodoApp: React.FC = () => {
   }, [setTodos, setErrorMessage]);
 
   useEffect(() => {
-    setErrorMessage(ErrorMessage.noError);
-  }, [todos, setErrorMessage]);
-
-  useEffect(() => {
     let timeoutId: NodeJS.Timeout;
 
     if (errorMessage) {
