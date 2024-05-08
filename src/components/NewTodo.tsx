@@ -12,7 +12,6 @@ const NewTodo: React.FC<NewTodoProps> = ({ onAddTodo, handleEmpty }) => {
   const [title, setTitle] = useState('');
   const [tempTodo, setTempTodo] = useState<Todo | null>(null);
   const [loading, setLoading] = useState(false);
-  const [error, setError] = useState<boolean>(false);
 
   const inputRef = useRef<HTMLInputElement>(null);
 
@@ -20,7 +19,6 @@ const NewTodo: React.FC<NewTodoProps> = ({ onAddTodo, handleEmpty }) => {
     e.preventDefault();
     if (title.trim()) {
       setLoading(true);
-      setError(false);
       try {
         const response = await client.post<Todo>('/todos', {
           userId: 587,
@@ -33,7 +31,6 @@ const NewTodo: React.FC<NewTodoProps> = ({ onAddTodo, handleEmpty }) => {
         setTitle('');
         onAddTodo(newTodo.title);
       } catch (err) {
-        setError(true);
       } finally {
         setLoading(false);
         if (inputRef.current) {
