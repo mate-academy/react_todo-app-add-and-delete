@@ -92,10 +92,12 @@ export const App: React.FC = () => {
           setError(true);
           setErrorType('add');
           setAddNewTodo(false);
+          setFocus(true);
         }
       } else {
         setError(true);
         setErrorType('empty');
+        setFocus(true);
       }
     }
   };
