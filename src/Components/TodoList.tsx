@@ -7,7 +7,6 @@ interface Props {
   todos: Todo[];
   onToggleTodo: (id: number) => void;
   filter: string;
-  setLoading: (setLoading: boolean) => void;
   loading: boolean;
   setError: (setError: boolean) => void;
   setErrorType: (setErrorType: Error | null) => void;
@@ -17,13 +16,13 @@ interface Props {
   addNewTodo: boolean;
   setFocus: (setFocus: boolean) => void;
   setLoadingTodoId: (setLoadingTodoId: number | null) => void;
+  tempTodo: Todo | null;
 }
 
 export const TodoList: React.FC<Props> = ({
   todos,
   onToggleTodo,
   filter,
-  setLoading,
   setError,
   setErrorType,
   handleDeleteTodo,
@@ -31,6 +30,9 @@ export const TodoList: React.FC<Props> = ({
   loadingAddTodoId,
   setFocus,
   setLoadingTodoId,
+  tempTodo,
+  addNewTodo,
+  loading,
 }) => {
   const filteredTodos =
     filter === 'active'
@@ -38,6 +40,8 @@ export const TodoList: React.FC<Props> = ({
       : filter === 'completed'
         ? todos.filter(todo => todo.completed)
         : todos;
+
+  const showLoader = loading && loadingTodoId !== null;
 
   const noTodosMessage =
     filter !== 'all' && filteredTodos.length === 0 ? (
@@ -54,7 +58,6 @@ export const TodoList: React.FC<Props> = ({
           title={todo.title}
           completed={todo.completed}
           onToggle={() => onToggleTodo(todo.id)}
-          setLoading={setLoading}
           setError={setError}
           setErrorType={setErrorType}
           onDelete={() => handleDeleteTodo(todo.id)}
@@ -62,8 +65,26 @@ export const TodoList: React.FC<Props> = ({
           loadingAddTodoId={loadingAddTodoId}
           setFocus={setFocus}
           setLoadingTodoId={setLoadingTodoId}
+          showLoader={showLoader}
         />
       ))}
+      {addNewTodo && tempTodo && (
+        <TodoItem
+          key={tempTodo.id}
+          id={tempTodo.id}
+          title={tempTodo.title}
+          completed={tempTodo.completed}
+          onToggle={() => onToggleTodo(tempTodo.id)}
+          setError={setError}
+          setErrorType={setErrorType}
+          onDelete={() => handleDeleteTodo(tempTodo.id)}
+          loadingTodoId={loadingTodoId}
+          loadingAddTodoId={loadingAddTodoId}
+          setFocus={setFocus}
+          setLoadingTodoId={setLoadingTodoId}
+          showLoader={true}
+        />
+      )}
       {noTodosMessage}
     </section>
   );

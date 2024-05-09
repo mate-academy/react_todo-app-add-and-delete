@@ -3,7 +3,7 @@
     "activeCommit": 0,
     "commits": [
         {
-            "activePatchIndex": 146,
+            "activePatchIndex": 147,
             "patches": [
                 {
                     "date": 1714989355833,
@@ -592,6 +592,10 @@
                 {
                     "date": 1715173421353,
                     "content": "Index: \n===================================================================\n--- \n+++ \n@@ -14,9 +14,9 @@\n   handleDeleteTodo: (id: number) => void;\n   loadingTodoId: number | null;\n   loadingAddTodoId: number | null;\n   addNewTodo: boolean;\n-  setFocus\n+  setFocus:\n }\n \n export const TodoList: React.FC<Props> = ({\n   todos,\n"
+                },
+                {
+                    "date": 1715243360102,
+                    "content": "Index: \n===================================================================\n--- \n+++ \n@@ -0,0 +1,71 @@\n+import React from 'react';\n+import { Todo } from '../types/Todo';\n+import { TodoItem } from './TodoItem';\n+import { Error } from '../types/Todo';\n+\n+interface Props {\n+  todos: Todo[];\n+  onToggleTodo: (id: number) => void;\n+  filter: string;\n+  setLoading: (setLoading: boolean) => void;\n+  loading: boolean;\n+  setError: (setError: boolean) => void;\n+  setErrorType: (setErrorType: Error | null) => void;\n+  handleDeleteTodo: (id: number) => void;\n+  loadingTodoId: number | null;\n+  loadingAddTodoId: number | null;\n+  addNewTodo: boolean;\n+  setFocus: (setFocus: boolean) => void;\n+  setLoadingTodoId: (setLoadingTodoId: number | null) => void;\n+  \n+}\n+\n+export const TodoList: React.FC<Props> = ({\n+  todos,\n+  onToggleTodo,\n+  filter,\n+  setLoading,\n+  setError,\n+  setErrorType,\n+  handleDeleteTodo,\n+  loadingTodoId,\n+  loadingAddTodoId,\n+  setFocus,\n+  setLoadingTodoId,\n+}) => {\n+  const filteredTodos =\n+    filter === 'active'\n+      ? todos.filter(todo => !todo.completed)\n+      : filter === 'completed'\n+        ? todos.filter(todo => todo.completed)\n+        : todos;\n+\n+  const noTodosMessage =\n+    filter !== 'all' && filteredTodos.length === 0 ? (\n+      <p className=\"todoapp__empty-list-message\"></p>\n+    ) : null;\n+\n+  return (\n+    <section className=\"todoapp__main\" data-cy=\"TodoList\">\n+      {/* This is a completed todo */}\n+      {filteredTodos.map(todo => (\n+        <TodoItem\n+          key={todo.id}\n+          id={todo.id}\n+          title={todo.title}\n+          completed={todo.completed}\n+          onToggle={() => onToggleTodo(todo.id)}\n+          setLoading={setLoading}\n+          setError={setError}\n+          setErrorType={setErrorType}\n+          onDelete={() => handleDeleteTodo(todo.id)}\n+          loadingTodoId={loadingTodoId}\n+          loadingAddTodoId={loadingAddTodoId}\n+          setFocus={setFocus}\n+          setLoadingTodoId={setLoadingTodoId}\n+        />\n+      ))}\n+      {noTodosMessage}\n+    </section>\n+  );\n+};\n"
                 }
             ],
             "date": 1714989355833,

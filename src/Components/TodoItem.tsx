@@ -8,7 +8,6 @@ interface Props {
   title: string;
   completed: boolean;
   onToggle: () => void;
-  setLoading: (setLoading: boolean) => void;
   setError: (setError: boolean) => void;
   setErrorType: (setErrorType: Error | null) => void;
   onDelete: (id: number) => void;
@@ -16,6 +15,7 @@ interface Props {
   loadingAddTodoId: number | null;
   setFocus: (setFocus: boolean) => void;
   setLoadingTodoId: (setLoadingTodoId: number | null) => void;
+  showLoader: boolean;
 }
 
 export const TodoItem: React.FC<Props> = ({
@@ -23,30 +23,27 @@ export const TodoItem: React.FC<Props> = ({
   title,
   completed,
   onToggle,
-  setLoading,
   setError,
   setErrorType,
   onDelete,
-  loadingTodoId,
-  loadingAddTodoId,
   setFocus,
   setLoadingTodoId,
+  showLoader,
+  loadingTodoId,
 }) => {
-  const showLoader = loadingTodoId === id || loadingAddTodoId === id;
-
   const handleDelete = async () => {
-    setLoading(true);
+    // setLoading(true);
     setLoadingTodoId(id);
     try {
       await onDelete(id);
       await deleteTodo(id);
-      setLoadingTodoId(null);
+      // setLoadingTodoId(null);
       setFocus(true);
     } catch (err) {
       setError(true);
       setErrorType('delete');
     } finally {
-      setLoading(false);
+      setLoadingTodoId(null);
     }
   };
 
@@ -80,7 +77,7 @@ export const TodoItem: React.FC<Props> = ({
       >
         ×
       </button>
-      <Loader loading={showLoader} />
+      <Loader loading={showLoader || loadingTodoId === id} />
     </div>
   );
 };

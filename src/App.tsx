@@ -6,9 +6,7 @@ import { USER_ID, getTodos, postTodo } from './api/todos';
 import { TodoList } from './Components/TodoList';
 import { ErrorNotification } from './Components/ErrorNotification';
 import { Footer } from './Components/Footer';
-import { Status, Todo } from './types/Todo';
-import { Error } from './types/Todo';
-import { TodoItem } from './Components/TodoItem';
+import { Status, Todo, Error } from './types/Todo';
 import { deleteTodo } from './api/todos';
 
 export const App: React.FC = () => {
@@ -76,6 +74,9 @@ export const App: React.FC = () => {
             title: trimmedTodo,
             completed: false,
           };
+
+          setTempTodo(newTodo);
+
           const response = await postTodo(newTodo);
 
           setLoadingAddTodoId(response.id);
@@ -112,7 +113,7 @@ export const App: React.FC = () => {
   };
 
   const handleDeleteTodo = async (id: number) => {
-    setLoading(true);
+    // setLoading(true);
     setLoadingTodoId(id);
     try {
       await deleteTodo(id);
@@ -124,13 +125,12 @@ export const App: React.FC = () => {
       setError(true);
       setErrorType('delete');
     } finally {
-      setLoading(false);
+      // setLoading(false);
       setLoadingTodoId(null);
     }
   };
 
   const handleToggleTodo = async (id: number) => {
-    setLoading(true);
     setLoadingTodoId(id);
     try {
       setTodos(prev =>
@@ -139,7 +139,6 @@ export const App: React.FC = () => {
         ),
       );
       await deleteTodo(id);
-      setLoading(false);
       setLoadingTodoId(null);
     } catch (err) {
       setError(true);
@@ -198,7 +197,6 @@ export const App: React.FC = () => {
             onToggleTodo={handleToggleTodo}
             filter={filter}
             loading={loading}
-            setLoading={setLoading}
             setError={setError}
             setErrorType={setErrorType}
             handleDeleteTodo={handleDeleteTodo}
@@ -207,8 +205,9 @@ export const App: React.FC = () => {
             addNewTodo={addNewTodo}
             setFocus={setFocus}
             setLoadingTodoId={setLoadingTodoId}
+            tempTodo={tempTodo}
           />
-          {tempTodo && (
+          {/* {tempTodo && (
             <div className="todoapp__temp-todo">
               <TodoItem
                 key={tempTodo.id}
@@ -226,7 +225,7 @@ export const App: React.FC = () => {
                 setLoadingTodoId={setLoadingTodoId}
               />
             </div>
-          )}
+          )} */}
           {/* Hide the footer if there are no todos */}
           {todos.length > 0 && (
             <Footer
