@@ -16,6 +16,7 @@ interface Props {
   setFocus: (setFocus: boolean) => void;
   setLoadingTodoId: (setLoadingTodoId: number | null) => void;
   showLoader: boolean;
+  setLoading: (setLoading: boolean) => void;
 }
 
 export const TodoItem: React.FC<Props> = ({

@@ -17,6 +17,7 @@ interface Props {
   setFocus: (setFocus: boolean) => void;
   setLoadingTodoId: (setLoadingTodoId: number | null) => void;
   tempTodo: Todo | null;
+  setLoading: (setLoading: boolean) => void;
 }
 
 export const TodoList: React.FC<Props> = ({
@@ -33,6 +34,7 @@ export const TodoList: React.FC<Props> = ({
   tempTodo,
   addNewTodo,
   loading,
+  setLoading,
 }) => {
   const filteredTodos =
     filter === 'active'
@@ -66,6 +68,7 @@ export const TodoList: React.FC<Props> = ({
           setFocus={setFocus}
           setLoadingTodoId={setLoadingTodoId}
           showLoader={showLoader}
+          setLoading={setLoading}
         />
       ))}
       {addNewTodo && tempTodo && (
@@ -83,6 +86,7 @@ export const TodoList: React.FC<Props> = ({
           setFocus={setFocus}
           setLoadingTodoId={setLoadingTodoId}
           showLoader={true}
+          setLoading={setLoading}
         />
       )}
       {noTodosMessage}

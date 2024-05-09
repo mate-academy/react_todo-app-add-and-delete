@@ -206,6 +206,7 @@ export const App: React.FC = () => {
             setFocus={setFocus}
             setLoadingTodoId={setLoadingTodoId}
             tempTodo={tempTodo}
+            setLoading={setLoading}
           />
           {/* {tempTodo && (
             <div className="todoapp__temp-todo">
