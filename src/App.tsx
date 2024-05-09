@@ -7,7 +7,7 @@ import { Todo, Error } from './types/Todo';
 import { ErrorFile } from './components/ErrorFile';
 import { client } from './utils/fetchClient';
 
-export const App: React.FC = () => {
+const App: React.FC = () => {
   const [filter, setFilter] = useState<'all' | 'active' | 'completed'>('all');
   const [todos, setTodos] = useState<Todo[]>([]);
   const [error, setError] = useState<boolean>(false);
@@ -30,21 +30,22 @@ export const App: React.FC = () => {
     };
 
     fetchTodos();
-  }, []);
+  }, [todos]);
 
-  const handleAddTodo = (title: string) => {
-    setTimeout(() => {
-      const newTodo: Todo = {
-        id: todos.length + 1,
+  const handleAddTodo = async (title: string) => {
+    try {
+      const newTodo: Todo = await client.post('/todos', {
         userId: 0,
         title,
         completed: false,
-        data: undefined,
-      };
+      });
 
       setErrorType('add');
-      setTodos([...todos, newTodo]);
-    }, 500);
+      setTodos(prevTodos => [...prevTodos, newTodo]);
+    } catch (err) {
+      setError(true);
+      setErrorType('add');
+    }
   };
 
   const handleDeleteTodo = async (id: number) => {
