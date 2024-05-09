@@ -18,6 +18,7 @@ export const App: React.FC = () => {
   const [newTodoTitle, setNewTodoTitle] = useState<string>('');
   const [isNewTodoLoading, setIsNewTodoLoading] = useState<boolean>(false);
   const [tempTodo, setTempTodo] = useState<null | Todo>(null);
+  const [isDeleting, setIsDeleting] = useState<boolean>(false);
 
   const hasCompletedTodos = todos.some((todo: Todo) => todo.completed);
 
@@ -53,6 +54,7 @@ export const App: React.FC = () => {
   }, [todos, currentError]);
 
   const deleteTodoById = useCallback((id: number) => {
+    setIsDeleting(true);
     deleteTodo(id)
       .then(() =>
         setTodos((currentTodos: Todo[]) =>
@@ -61,7 +63,9 @@ export const App: React.FC = () => {
       )
       .catch(() => {
         handleSetCurrentError(Error.CannotDelete);
-        setTimeout(() => handleSetCurrentError(null), 3000);
+      })
+      .finally(() => {
+        setIsDeleting(false);
       });
   }, []);
 
@@ -131,7 +135,7 @@ export const App: React.FC = () => {
         {todos.length > 0 && (
           <TodoList
             todos={getFilteredTodos(todos, currentFilter)}
-            handleDeleteTodo={deleteTodoById}
+            handleDeleteTodo={isDeleting ? () => {} : deleteTodoById}
           />
         )}
 
