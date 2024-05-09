@@ -106,7 +106,19 @@ export const App: React.FC = () => {
     setNewTodoTitle(event.target.value);
   };
 
-  const onClearCompleted = () => {
+  const onClearCompleted = async () => {
+    const completedTodos = todos.filter(todo => todo.completed);
+
+    for (const todo of completedTodos) {
+      try {
+        await deleteTodo(todo.id);
+      } catch (err) {
+        setError(true);
+        setErrorType('delete');
+        break;
+      }
+    }
+
     setTodos(prevTodos => prevTodos.filter(todo => !todo.completed));
   };
 
@@ -115,7 +127,6 @@ export const App: React.FC = () => {
   };
 
   const handleDeleteTodo = async (id: number) => {
-    // setLoading(true);
     setLoadingTodoId(id);
     try {
       await deleteTodo(id);
@@ -127,7 +138,6 @@ export const App: React.FC = () => {
       setError(true);
       setErrorType('delete');
     } finally {
-      // setLoading(false);
       setLoadingTodoId(null);
     }
   };
@@ -210,25 +220,6 @@ export const App: React.FC = () => {
             tempTodo={tempTodo}
             setLoading={setLoading}
           />
-          {/* {tempTodo && (
-            <div className="todoapp__temp-todo">
-              <TodoItem
-                key={tempTodo.id}
-                id={tempTodo.id}
-                title={tempTodo.title}
-                completed={tempTodo.completed}
-                onToggle={() => {}}
-                setLoading={setLoading}
-                setError={setError}
-                setErrorType={setErrorType}
-                onDelete={() => handleDeleteTodo(tempTodo.id)}
-                loadingTodoId={loadingTodoId}
-                loadingAddTodoId={loadingAddTodoId}
-                setFocus={setFocus}
-                setLoadingTodoId={setLoadingTodoId}
-              />
-            </div>
-          )} */}
           {/* Hide the footer if there are no todos */}
           {todos.length > 0 && (
             <Footer
