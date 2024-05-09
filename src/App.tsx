@@ -83,8 +83,9 @@ export const App: React.FC = () => {
           setTodos(prevTodos => [...prevTodos, response]);
           setNewTodoTitle('');
           setTempTodo(null);
-          setAddNewTodo(true);
+          setAddNewTodo(false);
 
+          setLoadingAddTodoId(null);
           setFocus(true);
         } catch (err) {
           setError(true);
@@ -137,11 +138,12 @@ export const App: React.FC = () => {
           todo.id === id ? { ...todo, completed: !todo.completed } : todo,
         ),
       );
+      await deleteTodo(id);
+      setLoading(false);
+      setLoadingTodoId(null);
     } catch (err) {
       setError(true);
       setErrorType('delete');
-    } finally {
-      setLoading(false);
     }
   };
 
@@ -204,6 +206,7 @@ export const App: React.FC = () => {
             loadingAddTodoId={loadingAddTodoId}
             addNewTodo={addNewTodo}
             setFocus={setFocus}
+            setLoadingTodoId={setLoadingTodoId}
           />
           {tempTodo && (
             <div className="todoapp__temp-todo">
@@ -220,6 +223,7 @@ export const App: React.FC = () => {
                 loadingTodoId={loadingTodoId}
                 loadingAddTodoId={loadingAddTodoId}
                 setFocus={setFocus}
+                setLoadingTodoId={setLoadingTodoId}
               />
             </div>
           )}

@@ -15,6 +15,7 @@ interface Props {
   loadingTodoId: number | null;
   loadingAddTodoId: number | null;
   setFocus: (setFocus: boolean) => void;
+  setLoadingTodoId: (setLoadingTodoId: number | null) => void;
 }
 
 export const TodoItem: React.FC<Props> = ({
@@ -29,15 +30,17 @@ export const TodoItem: React.FC<Props> = ({
   loadingTodoId,
   loadingAddTodoId,
   setFocus,
+  setLoadingTodoId,
 }) => {
   const showLoader = loadingTodoId === id || loadingAddTodoId === id;
 
   const handleDelete = async () => {
     setLoading(true);
+    setLoadingTodoId(id);
     try {
       await onDelete(id);
       await deleteTodo(id);
-
+      setLoadingTodoId(null);
       setFocus(true);
     } catch (err) {
       setError(true);

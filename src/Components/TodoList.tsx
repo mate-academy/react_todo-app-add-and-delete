@@ -16,6 +16,7 @@ interface Props {
   loadingAddTodoId: number | null;
   addNewTodo: boolean;
   setFocus: (setFocus: boolean) => void;
+  setLoadingTodoId: (setLoadingTodoId: number | null) => void;
 }
 
 export const TodoList: React.FC<Props> = ({
@@ -29,6 +30,7 @@ export const TodoList: React.FC<Props> = ({
   loadingTodoId,
   loadingAddTodoId,
   setFocus,
+  setLoadingTodoId,
 }) => {
   const filteredTodos =
     filter === 'active'
@@ -59,6 +61,7 @@ export const TodoList: React.FC<Props> = ({
           loadingTodoId={loadingTodoId}
           loadingAddTodoId={loadingAddTodoId}
           setFocus={setFocus}
+          setLoadingTodoId={setLoadingTodoId}
         />
       ))}
       {noTodosMessage}
