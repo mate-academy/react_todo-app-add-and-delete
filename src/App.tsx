@@ -120,6 +120,9 @@ export const App: React.FC = () => {
     }
 
     setTodos(prevTodos => prevTodos.filter(todo => !todo.completed));
+    if (inputRef.current) {
+      inputRef.current.focus();
+    }
   };
 
   const handleFilterChange = (newFilter: Status) => {
