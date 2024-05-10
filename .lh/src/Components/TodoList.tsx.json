@@ -1,0 +1,606 @@
+{
+    "sourceFile": "src/Components/TodoList.tsx",
+    "activeCommit": 0,
+    "commits": [
+        {
+            "activePatchIndex": 147,
+            "patches": [
+                {
+                    "date": 1714989355833,
+                    "content": "Index: \n===================================================================\n--- \n+++ \n"
+                },
+                {
+                    "date": 1714989515018,
+                    "content": "Index: \n===================================================================\n--- \n+++ \n@@ -1,6 +1,6 @@\n import React from 'react';\n-import { Todoo } from '../types/Todo';\n+import { Todoo } from '../';\n import { Todo } from './Todo';\n \n interface Props {\n   todos: Todoo[];\n"
+                },
+                {
+                    "date": 1714995324457,
+                    "content": "Index: \n===================================================================\n--- \n+++ \n@@ -1,7 +1,7 @@\n import React from 'react';\n-import { Todoo } from '../';\n-import { Todo } from './Todo';\n+import { Todoo } from '../types/Todo';\n+import { Todo } from './TodoItem';\n \n interface Props {\n   todos: Todoo[];\n   onDeleteTodo: (id: number) => void;\n"
+                },
+                {
+                    "date": 1714995339936,
+                    "content": "Index: \n===================================================================\n--- \n+++ \n@@ -1,6 +1,6 @@\n import React from 'react';\n-import { Todoo } from '../types/Todo';\n+import { Todo } from '../types/Todo';\n import { Todo } from './TodoItem';\n \n interface Props {\n   todos: Todoo[];\n"
+                },
+                {
+                    "date": 1714995349221,
+                    "content": "Index: \n===================================================================\n--- \n+++ \n@@ -1,10 +1,10 @@\n import React from 'react';\n import { Todo } from '../types/Todo';\n-import { Todo } from './TodoItem';\n+import { TodoItem } from './TodoItem';\n \n interface Props {\n-  todos: Todoo[];\n+  todos: Todo[];\n   onDeleteTodo: (id: number) => void;\n   onToggleTodo: (id: number) => void;\n   filter: string;\n }\n"
+                },
+                {
+                    "date": 1714995357096,
+                    "content": "Index: \n===================================================================\n--- \n+++ \n@@ -30,9 +30,9 @@\n   return (\n     <section className=\"todoapp__main\" data-cy=\"TodoList\">\n       {/* This is a completed todo */}\n       {filteredTodos.map(todo => (\n-        <Todo\n+        <TodoItem\n           key={todo.id}\n           id={todo.id}\n           title={todo.title}\n           completed={todo.completed}\n"
+                },
+                {
+                    "date": 1714995371857,
+                    "content": "Index: \n===================================================================\n--- \n+++ \n@@ -1,7 +1,6 @@\n import React from 'react';\n import { Todo } from '../types/Todo';\n-import { TodoItem } from './TodoItem';\n \n interface Props {\n   todos: Todo[];\n   onDeleteTodo: (id: number) => void;\n"
+                },
+                {
+                    "date": 1714995378601,
+                    "content": "Index: \n===================================================================\n--- \n+++ \n@@ -1,7 +1,8 @@\n import React from 'react';\n import { Todo } from '../types/Todo';\n \n+\n interface Props {\n   todos: Todo[];\n   onDeleteTodo: (id: number) => void;\n   onToggleTodo: (id: number) => void;\n"
+                },
+                {
+                    "date": 1714995383731,
+                    "content": "Index: \n===================================================================\n--- \n+++ \n@@ -1,8 +1,8 @@\n import React from 'react';\n import { Todo } from '../types/Todo';\n+import \n \n-\n interface Props {\n   todos: Todo[];\n   onDeleteTodo: (id: number) => void;\n   onToggleTodo: (id: number) => void;\n"
+                },
+                {
+                    "date": 1714995391534,
+                    "content": "Index: \n===================================================================\n--- \n+++ \n@@ -1,7 +1,7 @@\n import React from 'react';\n import { Todo } from '../types/Todo';\n-import \n+import TodoItem\n \n interface Props {\n   todos: Todo[];\n   onDeleteTodo: (id: number) => void;\n"
+                },
+                {
+                    "date": 1714995398514,
+                    "content": "Index: \n===================================================================\n--- \n+++ \n@@ -1,7 +1,6 @@\n import React from 'react';\n import { Todo } from '../types/Todo';\n-import TodoItem\n \n interface Props {\n   todos: Todo[];\n   onDeleteTodo: (id: number) => void;\n"
+                },
+                {
+                    "date": 1714995455187,
+                    "content": "Index: \n===================================================================\n--- \n+++ \n@@ -1,6 +1,7 @@\n import React from 'react';\n import { Todo } from '../types/Todo';\n+import { TodoItem } from './TodoItem';\n \n interface Props {\n   todos: Todo[];\n   onDeleteTodo: (id: number) => void;\n"
+                },
+                {
+                    "date": 1715092784398,
+                    "content": "Index: \n===================================================================\n--- \n+++ \n@@ -0,0 +1,46 @@\n+import React from 'react';\n+import { Todo } from '../types/Todo';\n+import { TodoItem } from './TodoItem';\n+\n+interface Props {\n+  todos: Todo[];\n+  onDeleteTodo: (id: number) => void;\n+  onToggleTodo: (id: number) => void;\n+  filter: string;\n+}\n+\n+export const TodoList: React.FC<Props> = ({\n+  todos,\n+  onToggleTodo,\n+  onDeleteTodo,\n+  filter,\n+}) => {\n+  const filteredTodos =\n+    filter === 'active'\n+      ? todos.filter(todo => !todo.completed)\n+      : filter === 'completed'\n+        ? todos.filter(todo => todo.completed)\n+        : todos;\n+\n+  const noTodosMessage =\n+    filter !== 'all' && filteredTodos.length === 0 ? (\n+      <p className=\"todoapp__empty-list-message\"></p>\n+    ) : null;\n+\n+  return (\n+    <section className=\"todoapp__main\" data-cy=\"TodoList\">\n+      {/* This is a completed todo */}\n+      {filteredTodos.map(todo => (\n+        <TodoItem\n+          key={todo.id}\n+          id={todo.id}\n+          title={todo.title}\n+          completed={todo.completed}\n+          onDelete={() => onDeleteTodo(todo.id)}\n+          onToggle={() => {onToggleTodo(todo.id)}}\n+        />\n+      ))}\n+      {noTodosMessage}\n+    </section>\n+  );\n+};\n"
+                },
+                {
+                    "date": 1715092797486,
+                    "content": "Index: \n===================================================================\n--- \n+++ \n@@ -35,58 +35,12 @@\n           key={todo.id}\n           id={todo.id}\n           title={todo.title}\n           completed={todo.completed}\n-          onDelete={() => onDeleteTodo(todo.id)}\n-          onToggle={() => {onToggleTodo(todo.id)}}\n+          onDelete={() => set}\n+          onToggle={() => {}}\n         />\n       ))}\n       {noTodosMessage}\n     </section>\n   );\n };\n-import React from 'react';\n-import { Todo } from '../types/Todo';\n-import { TodoItem } from './TodoItem';\n-\n-interface Props {\n-  todos: Todo[];\n-  onDeleteTodo: (id: number) => void;\n-  onToggleTodo: (id: number) => void;\n-  filter: string;\n-}\n-\n-export const TodoList: React.FC<Props> = ({\n-  todos,\n-  onToggleTodo,\n-  onDeleteTodo,\n-  filter,\n-}) => {\n-  const filteredTodos =\n-    filter === 'active'\n-      ? todos.filter(todo => !todo.completed)\n-      : filter === 'completed'\n-        ? todos.filter(todo => todo.completed)\n-        : todos;\n-\n-  const noTodosMessage =\n-    filter !== 'all' && filteredTodos.length === 0 ? (\n-      <p className=\"todoapp__empty-list-message\"></p>\n-    ) : null;\n-\n-  return (\n-    <section className=\"todoapp__main\" data-cy=\"TodoList\">\n-      {/* This is a completed todo */}\n-      {filteredTodos.map(todo => (\n-        <TodoItem\n-          key={todo.id}\n-          id={todo.id}\n-          title={todo.title}\n-          completed={todo.completed}\n-          onDelete={() => onDeleteTodo(todo.id)}\n-          onToggle={() => onToggleTodo(todo.id)}\n-        />\n-      ))}\n-      {noTodosMessage}\n-    </section>\n-  );\n-};\n"
+                },
+                {
+                    "date": 1715092804303,
+                    "content": "Index: \n===================================================================\n--- \n+++ \n@@ -35,9 +35,9 @@\n           key={todo.id}\n           id={todo.id}\n           title={todo.title}\n           completed={todo.completed}\n-          onDelete={() => set}\n+          onDelete={() => setTempTodo(null)}\n           onToggle={() => {}}\n         />\n       ))}\n       {noTodosMessage}\n"
+                },
+                {
+                    "date": 1715092830986,
+                    "content": "Index: \n===================================================================\n--- \n+++ \n@@ -13,8 +13,9 @@\n   todos,\n   onToggleTodo,\n   onDeleteTodo,\n   filter,\n+  setTemp\n }) => {\n   const filteredTodos =\n     filter === 'active'\n       ? todos.filter(todo => !todo.completed)\n"
+                },
+                {
+                    "date": 1715092838304,
+                    "content": "Index: \n===================================================================\n--- \n+++ \n@@ -6,16 +6,17 @@\n   todos: Todo[];\n   onDeleteTodo: (id: number) => void;\n   onToggleTodo: (id: number) => void;\n   filter: string;\n+  setTemp\n }\n \n export const TodoList: React.FC<Props> = ({\n   todos,\n   onToggleTodo,\n   onDeleteTodo,\n   filter,\n-  setTemp\n+  setTempTodo,\n }) => {\n   const filteredTodos =\n     filter === 'active'\n       ? todos.filter(todo => !todo.completed)\n"
+                },
+                {
+                    "date": 1715092855084,
+                    "content": "Index: \n===================================================================\n--- \n+++ \n@@ -6,9 +6,9 @@\n   todos: Todo[];\n   onDeleteTodo: (id: number) => void;\n   onToggleTodo: (id: number) => void;\n   filter: string;\n-  setTemp\n+  setTempTodo: Todo | \n }\n \n export const TodoList: React.FC<Props> = ({\n   todos,\n"
+                },
+                {
+                    "date": 1715092866305,
+                    "content": "Index: \n===================================================================\n--- \n+++ \n@@ -6,9 +6,9 @@\n   todos: Todo[];\n   onDeleteTodo: (id: number) => void;\n   onToggleTodo: (id: number) => void;\n   filter: string;\n-  setTempTodo: Todo | \n+  setTempTodo: Todo | null\n }\n \n export const TodoList: React.FC<Props> = ({\n   todos,\n"
+                },
+                {
+                    "date": 1715092873026,
+                    "content": "Index: \n===================================================================\n--- \n+++ \n@@ -6,17 +6,15 @@\n   todos: Todo[];\n   onDeleteTodo: (id: number) => void;\n   onToggleTodo: (id: number) => void;\n   filter: string;\n-  setTempTodo: Todo | null\n }\n \n export const TodoList: React.FC<Props> = ({\n   todos,\n   onToggleTodo,\n   onDeleteTodo,\n   filter,\n-  setTempTodo,\n }) => {\n   const filteredTodos =\n     filter === 'active'\n       ? todos.filter(todo => !todo.completed)\n@@ -37,10 +35,10 @@\n           key={todo.id}\n           id={todo.id}\n           title={todo.title}\n           completed={todo.completed}\n-          onDelete={() => setTempTodo(null)}\n-          onToggle={() => {}}\n+          onDelete={() => onDeleteTodo(todo.id)}\n+          onToggle={() => {onToggleTodo(todo.id)}}\n         />\n       ))}\n       {noTodosMessage}\n     </section>\n"
+                },
+                {
+                    "date": 1715095259705,
+                    "content": "Index: \n===================================================================\n--- \n+++ \n@@ -29,18 +29,28 @@\n \n   return (\n     <section className=\"todoapp__main\" data-cy=\"TodoList\">\n       {/* This is a completed todo */}\n-      {filteredTodos.map(todo => (\n-        <TodoItem\n-          key={todo.id}\n-          id={todo.id}\n-          title={todo.title}\n-          completed={todo.completed}\n-          onDelete={() => onDeleteTodo(todo.id)}\n-          onToggle={() => {onToggleTodo(todo.id)}}\n-        />\n-      ))}\n+      {[tempTodo, ...filteredTodos].map(todo => (\n+  <TodoItem\n+    key={todo.id}\n+    id={todo.id}\n+    title={todo.title}\n+    completed={todo.completed}\n+    onDelete={() => {\n+      if (todo.id === 0) {\n+        setTempTodo(null);\n+      } else {\n+        onDeleteTodo(todo.id);\n+      }\n+    }}\n+    onToggle={() => {\n+      if (todo.id !== 0) {\n+        onToggleTodo(todo.id);\n+      }\n+    }}\n+  />\n+))}\n       {noTodosMessage}\n     </section>\n   );\n };\n"
+                },
+                {
+                    "date": 1715095275383,
+                    "content": "Index: \n===================================================================\n--- \n+++ \n@@ -6,8 +6,9 @@\n   todos: Todo[];\n   onDeleteTodo: (id: number) => void;\n   onToggleTodo: (id: number) => void;\n   filter: string;\n+  temp\n }\n \n export const TodoList: React.FC<Props> = ({\n   todos,\n@@ -30,27 +31,27 @@\n   return (\n     <section className=\"todoapp__main\" data-cy=\"TodoList\">\n       {/* This is a completed todo */}\n       {[tempTodo, ...filteredTodos].map(todo => (\n-  <TodoItem\n-    key={todo.id}\n-    id={todo.id}\n-    title={todo.title}\n-    completed={todo.completed}\n-    onDelete={() => {\n-      if (todo.id === 0) {\n-        setTempTodo(null);\n-      } else {\n-        onDeleteTodo(todo.id);\n-      }\n-    }}\n-    onToggle={() => {\n-      if (todo.id !== 0) {\n-        onToggleTodo(todo.id);\n-      }\n-    }}\n-  />\n-))}\n+        <TodoItem\n+          key={todo.id}\n+          id={todo.id}\n+          title={todo.title}\n+          completed={todo.completed}\n+          onDelete={() => {\n+            if (todo.id === 0) {\n+              setTempTodo(null);\n+            } else {\n+              onDeleteTodo(todo.id);\n+            }\n+          }}\n+          onToggle={() => {\n+            if (todo.id !== 0) {\n+              onToggleTodo(todo.id);\n+            }\n+          }}\n+        />\n+      ))}\n       {noTodosMessage}\n     </section>\n   );\n };\n"
+                },
+                {
+                    "date": 1715095282624,
+                    "content": "Index: \n===================================================================\n--- \n+++ \n@@ -6,9 +6,9 @@\n   todos: Todo[];\n   onDeleteTodo: (id: number) => void;\n   onToggleTodo: (id: number) => void;\n   filter: string;\n-  temp\n+  tempTodo:\n }\n \n export const TodoList: React.FC<Props> = ({\n   todos,\n"
+                },
+                {
+                    "date": 1715095307254,
+                    "content": "Index: \n===================================================================\n--- \n+++ \n@@ -6,9 +6,9 @@\n   todos: Todo[];\n   onDeleteTodo: (id: number) => void;\n   onToggleTodo: (id: number) => void;\n   filter: string;\n-  tempTodo:\n+  tempTodo: Todo\n }\n \n export const TodoList: React.FC<Props> = ({\n   todos,\n"
+                },
+                {
+                    "date": 1715095314902,
+                    "content": "Index: \n===================================================================\n--- \n+++ \n@@ -6,16 +6,17 @@\n   todos: Todo[];\n   onDeleteTodo: (id: number) => void;\n   onToggleTodo: (id: number) => void;\n   filter: string;\n-  tempTodo: Todo\n+  tempTodo: Todo | null;\n }\n \n export const TodoList: React.FC<Props> = ({\n   todos,\n   onToggleTodo,\n   onDeleteTodo,\n   filter,\n+  \n }) => {\n   const filteredTodos =\n     filter === 'active'\n       ? todos.filter(todo => !todo.completed)\n"
+                },
+                {
+                    "date": 1715095369828,
+                    "content": "Index: \n===================================================================\n--- \n+++ \n@@ -14,9 +14,9 @@\n   todos,\n   onToggleTodo,\n   onDeleteTodo,\n   filter,\n-  \n+  tempTodo,\n }) => {\n   const filteredTodos =\n     filter === 'active'\n       ? todos.filter(todo => !todo.completed)\n@@ -33,9 +33,9 @@\n     <section className=\"todoapp__main\" data-cy=\"TodoList\">\n       {/* This is a completed todo */}\n       {[tempTodo, ...filteredTodos].map(todo => (\n         <TodoItem\n-          key={todo.id}\n+          key={todo?.id}\n           id={todo.id}\n           title={todo.title}\n           completed={todo.completed}\n           onDelete={() => {\n"
+                },
+                {
+                    "date": 1715095381188,
+                    "content": "Index: \n===================================================================\n--- \n+++ \n@@ -34,10 +34,10 @@\n       {/* This is a completed todo */}\n       {[tempTodo, ...filteredTodos].map(todo => (\n         <TodoItem\n           key={todo?.id}\n-          id={todo.id}\n-          title={todo.title}\n+          id={todo?.id}\n+          title={todo?.title}\n           completed={todo.completed}\n           onDelete={() => {\n             if (todo.id === 0) {\n               setTempTodo(null);\n"
+                },
+                {
+                    "date": 1715095390606,
+                    "content": "Index: \n===================================================================\n--- \n+++ \n@@ -36,11 +36,11 @@\n         <TodoItem\n           key={todo?.id}\n           id={todo?.id}\n           title={todo?.title}\n-          completed={todo.completed}\n+          completed={todo?.completed}\n           onDelete={() => {\n-            if (todo.id === 0) {\n+            if (todo?.id === 0) {\n               setTempTodo(null);\n             } else {\n               onDeleteTodo(todo.id);\n             }\n"
+                },
+                {
+                    "date": 1715095396154,
+                    "content": "Index: \n===================================================================\n--- \n+++ \n@@ -41,14 +41,14 @@\n           onDelete={() => {\n             if (todo?.id === 0) {\n               setTempTodo(null);\n             } else {\n-              onDeleteTodo(todo.id);\n+              onDeleteTodo(todo?.id);\n             }\n           }}\n           onToggle={() => {\n-            if (todo.id !== 0) {\n-              onToggleTodo(todo.id);\n+            if (todo?.id !== 0) {\n+              onToggleTodo(todo?.id);\n             }\n           }}\n         />\n       ))}\n"
+                },
+                {
+                    "date": 1715095403412,
+                    "content": "Index: \n===================================================================\n--- \n+++ \n@@ -41,14 +41,14 @@\n           onDelete={() => {\n             if (todo?.id === 0) {\n               setTempTodo(null);\n             } else {\n-              onDeleteTodo(todo?.id);\n+              onDeleteTodo(todo.id);\n             }\n           }}\n           onToggle={() => {\n             if (todo?.id !== 0) {\n-              onToggleTodo(todo?.id);\n+              onToggleTodo(todo.id);\n             }\n           }}\n         />\n       ))}\n"
+                },
+                {
+                    "date": 1715095438946,
+                    "content": "Index: \n===================================================================\n--- \n+++ \n@@ -34,9 +34,9 @@\n       {/* This is a completed todo */}\n       {[tempTodo, ...filteredTodos].map(todo => (\n         <TodoItem\n           key={todo?.id}\n-          id={todo?.id}\n+          id?={todo?.id}\n           title={todo?.title}\n           completed={todo?.completed}\n           onDelete={() => {\n             if (todo?.id === 0) {\n"
+                },
+                {
+                    "date": 1715095677505,
+                    "content": "Index: \n===================================================================\n--- \n+++ \n@@ -14,9 +14,9 @@\n   todos,\n   onToggleTodo,\n   onDeleteTodo,\n   filter,\n-  tempTodo,\n+  tempTodo\n }) => {\n   const filteredTodos =\n     filter === 'active'\n       ? todos.filter(todo => !todo.completed)\n@@ -33,21 +33,21 @@\n     <section className=\"todoapp__main\" data-cy=\"TodoList\">\n       {/* This is a completed todo */}\n       {[tempTodo, ...filteredTodos].map(todo => (\n         <TodoItem\n-          key={todo?.id}\n-          id?={todo?.id}\n-          title={todo?.title}\n-          completed={todo?.completed}\n+          key={todo.id}\n+          id={todo.id}\n+          title={todo.title}\n+          completed={todo.completed}\n           onDelete={() => {\n-            if (todo?.id === 0) {\n+            if (todo.id === 0) {\n               setTempTodo(null);\n             } else {\n               onDeleteTodo(todo.id);\n             }\n           }}\n           onToggle={() => {\n-            if (todo?.id !== 0) {\n+            if (todo.id !== 0) {\n               onToggleTodo(todo.id);\n             }\n           }}\n         />\n"
+                },
+                {
+                    "date": 1715095685182,
+                    "content": "Index: \n===================================================================\n--- \n+++ \n@@ -6,17 +6,15 @@\n   todos: Todo[];\n   onDeleteTodo: (id: number) => void;\n   onToggleTodo: (id: number) => void;\n   filter: string;\n-  tempTodo: Todo | null;\n }\n \n export const TodoList: React.FC<Props> = ({\n   todos,\n   onToggleTodo,\n   onDeleteTodo,\n   filter,\n-  tempTodo\n }) => {\n   const filteredTodos =\n     filter === 'active'\n       ? todos.filter(todo => !todo.completed)\n@@ -32,27 +30,27 @@\n   return (\n     <section className=\"todoapp__main\" data-cy=\"TodoList\">\n       {/* This is a completed todo */}\n       {[tempTodo, ...filteredTodos].map(todo => (\n-        <TodoItem\n-          key={todo.id}\n-          id={todo.id}\n-          title={todo.title}\n-          completed={todo.completed}\n-          onDelete={() => {\n-            if (todo.id === 0) {\n-              setTempTodo(null);\n-            } else {\n-              onDeleteTodo(todo.id);\n-            }\n-          }}\n-          onToggle={() => {\n-            if (todo.id !== 0) {\n-              onToggleTodo(todo.id);\n-            }\n-          }}\n-        />\n-      ))}\n+  <TodoItem\n+    key={todo.id}\n+    id={todo.id}\n+    title={todo.title}\n+    completed={todo.completed}\n+    onDelete={() => {\n+      if (todo.id === 0) {\n+        setTempTodo(null);\n+      } else {\n+        onDeleteTodo(todo.id);\n+      }\n+    }}\n+    onToggle={() => {\n+      if (todo.id !== 0) {\n+        onToggleTodo(todo.id);\n+      }\n+    }}\n+  />\n+))}\n       {noTodosMessage}\n     </section>\n   );\n };\n"
+                },
+                {
+                    "date": 1715095717633,
+                    "content": "Index: \n===================================================================\n--- \n+++ \n@@ -6,8 +6,9 @@\n   todos: Todo[];\n   onDeleteTodo: (id: number) => void;\n   onToggleTodo: (id: number) => void;\n   filter: string;\n+  \n }\n \n export const TodoList: React.FC<Props> = ({\n   todos,\n@@ -30,27 +31,27 @@\n   return (\n     <section className=\"todoapp__main\" data-cy=\"TodoList\">\n       {/* This is a completed todo */}\n       {[tempTodo, ...filteredTodos].map(todo => (\n-  <TodoItem\n-    key={todo.id}\n-    id={todo.id}\n-    title={todo.title}\n-    completed={todo.completed}\n-    onDelete={() => {\n-      if (todo.id === 0) {\n-        setTempTodo(null);\n-      } else {\n-        onDeleteTodo(todo.id);\n-      }\n-    }}\n-    onToggle={() => {\n-      if (todo.id !== 0) {\n-        onToggleTodo(todo.id);\n-      }\n-    }}\n-  />\n-))}\n+        <TodoItem\n+          key={todo.id}\n+          id={todo.id}\n+          title={todo.title}\n+          completed={todo.completed}\n+          onDelete={() => {\n+            if (todo.id === 0) {\n+              setTempTodo(null);\n+            } else {\n+              onDeleteTodo(todo.id);\n+            }\n+          }}\n+          onToggle={() => {\n+            if (todo.id !== 0) {\n+              onToggleTodo(todo.id);\n+            }\n+          }}\n+        />\n+      ))}\n       {noTodosMessage}\n     </section>\n   );\n };\n"
+                },
+                {
+                    "date": 1715095722828,
+                    "content": "Index: \n===================================================================\n--- \n+++ \n@@ -6,9 +6,9 @@\n   todos: Todo[];\n   onDeleteTodo: (id: number) => void;\n   onToggleTodo: (id: number) => void;\n   filter: string;\n-  \n+  tempTodo: Todo\n }\n \n export const TodoList: React.FC<Props> = ({\n   todos,\n"
+                },
+                {
+                    "date": 1715095728585,
+                    "content": "Index: \n===================================================================\n--- \n+++ \n@@ -6,9 +6,9 @@\n   todos: Todo[];\n   onDeleteTodo: (id: number) => void;\n   onToggleTodo: (id: number) => void;\n   filter: string;\n-  tempTodo: Todo\n+  tempTodo: Todo | null\n }\n \n export const TodoList: React.FC<Props> = ({\n   todos,\n"
+                },
+                {
+                    "date": 1715095734009,
+                    "content": "Index: \n===================================================================\n--- \n+++ \n@@ -6,9 +6,10 @@\n   todos: Todo[];\n   onDeleteTodo: (id: number) => void;\n   onToggleTodo: (id: number) => void;\n   filter: string;\n-  tempTodo: Todo | null\n+  tempTodo: Todo | null;\n+  setTempTodo\n }\n \n export const TodoList: React.FC<Props> = ({\n   todos,\n"
+                },
+                {
+                    "date": 1715095739634,
+                    "content": "Index: \n===================================================================\n--- \n+++ \n@@ -7,9 +7,9 @@\n   onDeleteTodo: (id: number) => void;\n   onToggleTodo: (id: number) => void;\n   filter: string;\n   tempTodo: Todo | null;\n-  setTempTodo\n+  setTempTodo: Todo | null;\n }\n \n export const TodoList: React.FC<Props> = ({\n   todos,\n"
+                },
+                {
+                    "date": 1715095744721,
+                    "content": "Index: \n===================================================================\n--- \n+++ \n@@ -15,8 +15,9 @@\n   todos,\n   onToggleTodo,\n   onDeleteTodo,\n   filter,\n+  tempTodo\n }) => {\n   const filteredTodos =\n     filter === 'active'\n       ? todos.filter(todo => !todo.completed)\n"
+                },
+                {
+                    "date": 1715095890447,
+                    "content": "Index: \n===================================================================\n--- \n+++ \n@@ -15,9 +15,10 @@\n   todos,\n   onToggleTodo,\n   onDeleteTodo,\n   filter,\n-  tempTodo\n+  tempTodo,\n+  setTempTodo,\n }) => {\n   const filteredTodos =\n     filter === 'active'\n       ? todos.filter(todo => !todo.completed)\n@@ -34,9 +35,9 @@\n     <section className=\"todoapp__main\" data-cy=\"TodoList\">\n       {/* This is a completed todo */}\n       {[tempTodo, ...filteredTodos].map(todo => (\n         <TodoItem\n-          key={todo.id}\n+          key={temptodo.id}\n           id={todo.id}\n           title={todo.title}\n           completed={todo.completed}\n           onDelete={() => {\n"
+                },
+                {
+                    "date": 1715095897978,
+                    "content": "Index: \n===================================================================\n--- \n+++ \n@@ -35,9 +35,9 @@\n     <section className=\"todoapp__main\" data-cy=\"TodoList\">\n       {/* This is a completed todo */}\n       {[tempTodo, ...filteredTodos].map(todo => (\n         <TodoItem\n-          key={temptodo.id}\n+          key={tempTodo.id}\n           id={todo.id}\n           title={todo.title}\n           completed={todo.completed}\n           onDelete={() => {\n"
+                },
+                {
+                    "date": 1715095927112,
+                    "content": "Index: \n===================================================================\n--- \n+++ \n@@ -35,9 +35,9 @@\n     <section className=\"todoapp__main\" data-cy=\"TodoList\">\n       {/* This is a completed todo */}\n       {[tempTodo, ...filteredTodos].map(todo => (\n         <TodoItem\n-          key={tempTodo.id}\n+          key={temptodo.id}\n           id={todo.id}\n           title={todo.title}\n           completed={todo.completed}\n           onDelete={() => {\n"
+                },
+                {
+                    "date": 1715096113441,
+                    "content": "Index: \n===================================================================\n--- \n+++ \n@@ -35,14 +35,14 @@\n     <section className=\"todoapp__main\" data-cy=\"TodoList\">\n       {/* This is a completed todo */}\n       {[tempTodo, ...filteredTodos].map(todo => (\n         <TodoItem\n-          key={temptodo.id}\n+          key={todo.id}\n           id={todo.id}\n           title={todo.title}\n           completed={todo.completed}\n           onDelete={() => {\n-            if (todo.id === 0) {\n+            if (todo todo.id === 0) {\n               setTempTodo(null);\n             } else {\n               onDeleteTodo(todo.id);\n             }\n"
+                },
+                {
+                    "date": 1715096129538,
+                    "content": "Index: \n===================================================================\n--- \n+++ \n@@ -40,16 +40,16 @@\n           id={todo.id}\n           title={todo.title}\n           completed={todo.completed}\n           onDelete={() => {\n-            if (todo todo.id === 0) {\n+            if (todo && todo.id === 0) {\n               setTempTodo(null);\n-            } else {\n+            } else if (todo) {\n               onDeleteTodo(todo.id);\n             }\n           }}\n           onToggle={() => {\n-            if (todo.id !== 0) {\n+            if (todo && todo.id !== 0) {\n               onToggleTodo(todo.id);\n             }\n           }}\n         />\n"
+                },
+                {
+                    "date": 1715096463576,
+                    "content": "Index: \n===================================================================\n--- \n+++ \n@@ -7,9 +7,9 @@\n   onDeleteTodo: (id: number) => void;\n   onToggleTodo: (id: number) => void;\n   filter: string;\n   tempTodo: Todo | null;\n-  setTempTodo: Todo | null;\n+  setTempTodo: Todo | null);\n }\n \n export const TodoList: React.FC<Props> = ({\n   todos,\n"
+                },
+                {
+                    "date": 1715096469531,
+                    "content": "Index: \n===================================================================\n--- \n+++ \n@@ -7,9 +7,9 @@\n   onDeleteTodo: (id: number) => void;\n   onToggleTodo: (id: number) => void;\n   filter: string;\n   tempTodo: Todo | null;\n-  setTempTodo: Todo | null);\n+  setTempTodo: (todo: Todo | null);\n }\n \n export const TodoList: React.FC<Props> = ({\n   todos,\n"
+                },
+                {
+                    "date": 1715096475032,
+                    "content": "Index: \n===================================================================\n--- \n+++ \n@@ -7,9 +7,9 @@\n   onDeleteTodo: (id: number) => void;\n   onToggleTodo: (id: number) => void;\n   filter: string;\n   tempTodo: Todo | null;\n-  setTempTodo: (todo: Todo | null);\n+  setTempTodo: (todo: Todo | null) => void;\n }\n \n export const TodoList: React.FC<Props> = ({\n   todos,\n"
+                },
+                {
+                    "date": 1715096481178,
+                    "content": "Index: \n===================================================================\n--- \n+++ \n@@ -35,9 +35,9 @@\n     <section className=\"todoapp__main\" data-cy=\"TodoList\">\n       {/* This is a completed todo */}\n       {[tempTodo, ...filteredTodos].map(todo => (\n         <TodoItem\n-          key={todo.id}\n+          key={todo?.id}\n           id={todo.id}\n           title={todo.title}\n           completed={todo.completed}\n           onDelete={() => {\n"
+                },
+                {
+                    "date": 1715096586799,
+                    "content": "Index: \n===================================================================\n--- \n+++ \n@@ -6,9 +6,9 @@\n   todos: Todo[];\n   onDeleteTodo: (id: number) => void;\n   onToggleTodo: (id: number) => void;\n   filter: string;\n-  tempTodo: Todo | null;\n+  tempTodo: Todo;\n   setTempTodo: (todo: Todo | null) => void;\n }\n \n export const TodoList: React.FC<Props> = ({\n@@ -35,9 +35,9 @@\n     <section className=\"todoapp__main\" data-cy=\"TodoList\">\n       {/* This is a completed todo */}\n       {[tempTodo, ...filteredTodos].map(todo => (\n         <TodoItem\n-          key={todo?.id}\n+          key={todo.id}\n           id={todo.id}\n           title={todo.title}\n           completed={todo.completed}\n           onDelete={() => {\n"
+                },
+                {
+                    "date": 1715096784521,
+                    "content": "Index: \n===================================================================\n--- \n+++ \n@@ -6,9 +6,9 @@\n   todos: Todo[];\n   onDeleteTodo: (id: number) => void;\n   onToggleTodo: (id: number) => void;\n   filter: string;\n-  tempTodo: Todo;\n+  tempTodo: Todo | null;\n   setTempTodo: (todo: Todo | null) => void;\n }\n \n export const TodoList: React.FC<Props> = ({\n"
+                },
+                {
+                    "date": 1715096850758,
+                    "content": "Index: \n===================================================================\n--- \n+++ \n@@ -33,9 +33,9 @@\n \n   return (\n     <section className=\"todoapp__main\" data-cy=\"TodoList\">\n       {/* This is a completed todo */}\n-      {[tempTodo, ...filteredTodos].map(todo => (\n+      {.map(todo => (\n         <TodoItem\n           key={todo.id}\n           id={todo.id}\n           title={todo.title}\n"
+                },
+                {
+                    "date": 1715096859318,
+                    "content": "Index: \n===================================================================\n--- \n+++ \n@@ -33,10 +33,10 @@\n \n   return (\n     <section className=\"todoapp__main\" data-cy=\"TodoList\">\n       {/* This is a completed todo */}\n-      {.map(todo => (\n-        <TodoItem\n+      {todos.map(todo => (\n+        {todo <TodoItem\n           key={todo.id}\n           id={todo.id}\n           title={todo.title}\n           completed={todo.completed}\n"
+                },
+                {
+                    "date": 1715096878230,
+                    "content": "Index: \n===================================================================\n--- \n+++ \n@@ -34,25 +34,16 @@\n   return (\n     <section className=\"todoapp__main\" data-cy=\"TodoList\">\n       {/* This is a completed todo */}\n       {todos.map(todo => (\n-        {todo <TodoItem\n+        {todo && (<TodoItem\n           key={todo.id}\n-          id={todo.id}\n-          title={todo.title}\n-          completed={todo.completed}\n-          onDelete={() => {\n-            if (todo && todo.id === 0) {\n-              setTempTodo(null);\n-            } else if (todo) {\n-              onDeleteTodo(todo.id);\n-            }\n-          }}\n-          onToggle={() => {\n-            if (todo && todo.id !== 0) {\n-              onToggleTodo(todo.id);\n-            }\n-          }}\n+          todo={todo}\n+          onDeleteTodo={onDeleteTodo}\n+          onToggleTodo={onToggleTodo}\n+          setTempTodo={setTempTodo}\n+          // Dodaj obsługę tempTodo, sprawdzając, czy nie jest null przed użyciem\n+          tempTodoId={tempTodo ? tempTodo.id : null}\n         />\n       ))}\n       {noTodosMessage}\n     </section>\n"
+                },
+                {
+                    "date": 1715096890072,
+                    "content": "Index: \n===================================================================\n--- \n+++ \n@@ -34,18 +34,17 @@\n   return (\n     <section className=\"todoapp__main\" data-cy=\"TodoList\">\n       {/* This is a completed todo */}\n       {todos.map(todo => (\n-        {todo && (<TodoItem\n+        { todo && (<TodoItem\n           key={todo.id}\n           todo={todo}\n           onDeleteTodo={onDeleteTodo}\n           onToggleTodo={onToggleTodo}\n           setTempTodo={setTempTodo}\n-          // Dodaj obsługę tempTodo, sprawdzając, czy nie jest null przed użyciem\n           tempTodoId={tempTodo ? tempTodo.id : null}\n         />\n-      ))}\n+        )})}\n       {noTodosMessage}\n     </section>\n   );\n };\n"
+                },
+                {
+                    "date": 1715096972314,
+                    "content": "Index: \n===================================================================\n--- \n+++ \n@@ -40,11 +40,12 @@\n           todo={todo}\n           onDeleteTodo={onDeleteTodo}\n           onToggleTodo={onToggleTodo}\n           setTempTodo={setTempTodo}\n-          tempTodoId={tempTodo ? tempTodo.id : null}\n+          tempTodoId={tempTodo}\n         />\n-        )})}\n+        )}\n+      ))}\n       {noTodosMessage}\n     </section>\n   );\n };\n"
+                },
+                {
+                    "date": 1715096994092,
+                    "content": "Index: \n===================================================================\n--- \n+++ \n@@ -34,9 +34,9 @@\n   return (\n     <section className=\"todoapp__main\" data-cy=\"TodoList\">\n       {/* This is a completed todo */}\n       {todos.map(todo => (\n-        { todo && (<TodoItem\n+        {todo && (<TodoItem\n           key={todo.id}\n           todo={todo}\n           onDeleteTodo={onDeleteTodo}\n           onToggleTodo={onToggleTodo}\n"
+                },
+                {
+                    "date": 1715097087459,
+                    "content": "Index: \n===================================================================\n--- \n+++ \n@@ -41,9 +41,9 @@\n           onDeleteTodo={onDeleteTodo}\n           onToggleTodo={onToggleTodo}\n           setTempTodo={setTempTodo}\n           tempTodoId={tempTodo}\n-        />\n+          />\n         )}\n       ))}\n       {noTodosMessage}\n     </section>\n"
+                },
+                {
+                    "date": 1715097093713,
+                    "content": "Index: \n===================================================================\n--- \n+++ \n@@ -0,0 +1,51 @@\n+import React from 'react';\n+import { Todo } from '../types/Todo';\n+import { TodoItem } from './TodoItem';\n+\n+interface Props {\n+  todos: Todo[];\n+  onDeleteTodo: (id: number) => void;\n+  onToggleTodo: (id: number) => void;\n+  filter: string;\n+  tempTodo: Todo | null;\n+  setTempTodo: (todo: Todo | null) => void;\n+}\n+\n+export const TodoList: React.FC<Props> = ({\n+  todos,\n+  onToggleTodo,\n+  onDeleteTodo,\n+  filter,\n+  tempTodo,\n+  setTempTodo,\n+}) => {\n+  const filteredTodos =\n+    filter === 'active'\n+      ? todos.filter(todo => !todo.completed)\n+      : filter === 'completed'\n+        ? todos.filter(todo => todo.completed)\n+        : todos;\n+\n+  const noTodosMessage =\n+    filter !== 'all' && filteredTodos.length === 0 ? (\n+      <p className=\"todoapp__empty-list-message\"></p>\n+    ) : null;\n+\n+  return (\n+    <section className=\"todoapp__main\" data-cy=\"TodoList\">\n+      {/* This is a completed todo */}\n+      {todos.map(todo => (\n+        {todo && (<TodoItem\n+          key={todo.id}\n+          todo={todo}\n+          onDeleteTodo={onDeleteTodo}\n+          onToggleTodo={onToggleTodo}\n+          setTempTodo={setTempTodo}\n+          tempTodoId={tempTodo}\n+          />\n+        )};\n+      ))}\n+      {noTodosMessage}\n+    </section>\n+  );\n+};\n"
+                },
+                {
+                    "date": 1715097204551,
+                    "content": "Index: \n===================================================================\n--- \n+++ \n@@ -42,61 +42,10 @@\n           onToggleTodo={onToggleTodo}\n           setTempTodo={setTempTodo}\n           tempTodoId={tempTodo}\n           />\n-        )};\n+        )\n       ))}\n       {noTodosMessage}\n     </section>\n   );\n };\n-import React from 'react';\n-import { Todo } from '../types/Todo';\n-import { TodoItem } from './TodoItem';\n-\n-interface Props {\n-  todos: Todo[];\n-  onDeleteTodo: (id: number) => void;\n-  onToggleTodo: (id: number) => void;\n-  filter: string;\n-  tempTodo: Todo | null;\n-  setTempTodo: (todo: Todo | null) => void;\n-}\n-\n-export const TodoList: React.FC<Props> = ({\n-  todos,\n-  onToggleTodo,\n-  onDeleteTodo,\n-  filter,\n-  tempTodo,\n-  setTempTodo,\n-}) => {\n-  const filteredTodos =\n-    filter === 'active'\n-      ? todos.filter(todo => !todo.completed)\n-      : filter === 'completed'\n-        ? todos.filter(todo => todo.completed)\n-        : todos;\n-\n-  const noTodosMessage =\n-    filter !== 'all' && filteredTodos.length === 0 ? (\n-      <p className=\"todoapp__empty-list-message\"></p>\n-    ) : null;\n-\n-  return (\n-    <section className=\"todoapp__main\" data-cy=\"TodoList\">\n-      {/* This is a completed todo */}\n-      {todos.map(todo => (\n-        {todo && (<TodoItem\n-          key={todo.id}\n-          todo={todo}\n-          onDeleteTodo={onDeleteTodo}\n-          onToggleTodo={onToggleTodo}\n-          setTempTodo={setTempTodo}\n-          tempTodoId={tempTodo}\n-          />\n-        )}\n-      ))}\n-      {noTodosMessage}\n-    </section>\n-  );\n-};\n"
+                },
+                {
+                    "date": 1715097219489,
+                    "content": "Index: \n===================================================================\n--- \n+++ \n@@ -32,20 +32,21 @@\n     ) : null;\n \n   return (\n     <section className=\"todoapp__main\" data-cy=\"TodoList\">\n-      {/* This is a completed todo */}\n-      {todos.map(todo => (\n-        {todo && (<TodoItem\n+    {/* This is a completed todo */}\n+    {todos.map(todo => (\n+      todo && (\n+        <TodoItem\n           key={todo.id}\n           todo={todo}\n           onDeleteTodo={onDeleteTodo}\n           onToggleTodo={onToggleTodo}\n           setTempTodo={setTempTodo}\n           tempTodoId={tempTodo}\n-          />\n-        )\n-      ))}\n-      {noTodosMessage}\n-    </section>\n+        />\n+      )\n+    ))}\n+    {noTodosMessage}\n+  </section>\n   );\n };\n"
+                },
+                {
+                    "date": 1715097305140,
+                    "content": "Index: \n===================================================================\n--- \n+++ \n@@ -32,21 +32,22 @@\n     ) : null;\n \n   return (\n     <section className=\"todoapp__main\" data-cy=\"TodoList\">\n-    {/* This is a completed todo */}\n-    {todos.map(todo => (\n-      todo && (\n-        <TodoItem\n-          key={todo.id}\n-          todo={todo}\n-          onDeleteTodo={onDeleteTodo}\n-          onToggleTodo={onToggleTodo}\n-          setTempTodo={setTempTodo}\n-          tempTodoId={tempTodo}\n-        />\n-      )\n-    ))}\n-    {noTodosMessage}\n-  </section>\n+      {/* This is a completed todo */}\n+      {todos.map(\n+        todo =>\n+          todo && (\n+            <TodoItem\n+              key={todo.id}\n+              todo={todo}\n+              onDeleteTodo={onDeleteTodo}\n+              onToggleTodo={onToggleTodo}\n+              setTempTodo={setTempTodo}\n+              tempTodo={tempTodo}\n+            />\n+          ),\n+      )}\n+      {noTodosMessage}\n+    </section>\n   );\n };\n"
+                },
+                {
+                    "date": 1715097328177,
+                    "content": "Index: \n===================================================================\n--- \n+++ \n@@ -38,9 +38,8 @@\n         todo =>\n           todo && (\n             <TodoItem\n               key={todo.id}\n-              todo={todo}\n               onDeleteTodo={onDeleteTodo}\n               onToggleTodo={onToggleTodo}\n               setTempTodo={setTempTodo}\n               tempTodo={tempTodo}\n"
+                },
+                {
+                    "date": 1715097364462,
+                    "content": "Index: \n===================================================================\n--- \n+++ \n@@ -38,12 +38,13 @@\n         todo =>\n           todo && (\n             <TodoItem\n               key={todo.id}\n+              todo={todo}\n               onDeleteTodo={onDeleteTodo}\n               onToggleTodo={onToggleTodo}\n               setTempTodo={setTempTodo}\n-              tempTodo={tempTodo}\n+              tempTodo={tempTodo  ? tempTodoId.id : null}\n             />\n           ),\n       )}\n       {noTodosMessage}\n"
+                },
+                {
+                    "date": 1715097372044,
+                    "content": "Index: \n===================================================================\n--- \n+++ \n@@ -42,9 +42,9 @@\n               todo={todo}\n               onDeleteTodo={onDeleteTodo}\n               onToggleTodo={onToggleTodo}\n               setTempTodo={setTempTodo}\n-              tempTodo={tempTodo  ? tempTodoId.id : null}\n+              tempTodo={tempTodo ? tempTodo.id : null}\n             />\n           ),\n       )}\n       {noTodosMessage}\n"
+                },
+                {
+                    "date": 1715097391609,
+                    "content": "Index: \n===================================================================\n--- \n+++ \n@@ -33,21 +33,19 @@\n \n   return (\n     <section className=\"todoapp__main\" data-cy=\"TodoList\">\n       {/* This is a completed todo */}\n-      {todos.map(\n-        todo =>\n-          todo && (\n-            <TodoItem\n-              key={todo.id}\n-              todo={todo}\n-              onDeleteTodo={onDeleteTodo}\n-              onToggleTodo={onToggleTodo}\n-              setTempTodo={setTempTodo}\n-              tempTodo={tempTodo ? tempTodo.id : null}\n-            />\n-          ),\n-      )}\n+      {todos.map(todo => (\n+        {todo && (<TodoItem\n+          key={todo.id}\n+          todo={todo}\n+          onDeleteTodo={onDeleteTodo}\n+          onToggleTodo={onToggleTodo}\n+          setTempTodo={setTempTodo}\n+          tempTodoId={tempTodo}\n+          />\n+        )\n+      ))}\n       {noTodosMessage}\n     </section>\n   );\n };\n"
+                },
+                {
+                    "date": 1715097397390,
+                    "content": "Index: \n===================================================================\n--- \n+++ \n@@ -34,17 +34,26 @@\n   return (\n     <section className=\"todoapp__main\" data-cy=\"TodoList\">\n       {/* This is a completed todo */}\n       {todos.map(todo => (\n-        {todo && (<TodoItem\n+        {todo && <TodoItem\n           key={todo.id}\n-          todo={todo}\n-          onDeleteTodo={onDeleteTodo}\n-          onToggleTodo={onToggleTodo}\n-          setTempTodo={setTempTodo}\n-          tempTodoId={tempTodo}\n-          />\n-        )\n+          id={todo.id}\n+          title={todo.title}\n+          completed={todo.completed}\n+          onDelete={() => {\n+            if (todo && todo.id === 0) {\n+              setTempTodo(null);\n+            } else if (todo) {\n+              onDeleteTodo(todo.id);\n+            }\n+          }}\n+          onToggle={() => {\n+            if (todo && todo.id !== 0) {\n+              onToggleTodo(todo.id);\n+            }\n+          }}\n+        />\n       ))}\n       {noTodosMessage}\n     </section>\n   );\n"
+                },
+                {
+                    "date": 1715097479755,
+                    "content": "Index: \n===================================================================\n--- \n+++ \n@@ -33,24 +33,25 @@\n \n   return (\n     <section className=\"todoapp__main\" data-cy=\"TodoList\">\n       {/* This is a completed todo */}\n-      {todos.map(todo => (\n-        {todo && <TodoItem\n+      {[tempTodo, ...filteredTodos].map(todo => (\n+        <TodoItem\n           key={todo.id}\n           id={todo.id}\n           title={todo.title}\n           completed={todo.completed}\n           onDelete={() => {\n-            if (todo && todo.id === 0) {\n+            if (todo.id === 0) {\n               setTempTodo(null);\n-            } else if (todo) {\n+            } else {\n               onDeleteTodo(todo.id);\n             }\n           }}\n           onToggle={() => {\n-            if (todo && todo.id !== 0) {\n+            if (todo.id !== 0) {\n               onToggleTodo(todo.id);\n+\n             }\n           }}\n         />\n       ))}\n"
+                },
+                {
+                    "date": 1715097544278,
+                    "content": "Index: \n===================================================================\n--- \n+++ \n@@ -40,18 +40,17 @@\n           id={todo.id}\n           title={todo.title}\n           completed={todo.completed}\n           onDelete={() => {\n-            if (todo.id === 0) {\n+            if (todo && todo.id === 0) {\n               setTempTodo(null);\n-            } else {\n+            } else if (todo) {\n               onDeleteTodo(todo.id);\n             }\n           }}\n           onToggle={() => {\n-            if (todo.id !== 0) {\n+            if (todo && todo.id !== 0) {\n               onToggleTodo(todo.id);\n-\n             }\n           }}\n         />\n       ))}\n"
+                },
+                {
+                    "date": 1715097712331,
+                    "content": "Index: \n===================================================================\n--- \n+++ \n@@ -35,9 +35,9 @@\n     <section className=\"todoapp__main\" data-cy=\"TodoList\">\n       {/* This is a completed todo */}\n       {[tempTodo, ...filteredTodos].map(todo => (\n         <TodoItem\n-          key={todo.id}\n+          key={todo!.id}\n           id={todo.id}\n           title={todo.title}\n           completed={todo.completed}\n           onDelete={() => {\n"
+                },
+                {
+                    "date": 1715097730216,
+                    "content": "Index: \n===================================================================\n--- \n+++ \n@@ -36,11 +36,11 @@\n       {/* This is a completed todo */}\n       {[tempTodo, ...filteredTodos].map(todo => (\n         <TodoItem\n           key={todo!.id}\n-          id={todo.id}\n-          title={todo.title}\n-          completed={todo.completed}\n+          id={todo!.id}\n+          title={todo!.title}\n+          completed={todo!.completed}\n           onDelete={() => {\n             if (todo && todo.id === 0) {\n               setTempTodo(null);\n             } else if (todo) {\n"
+                },
+                {
+                    "date": 1715097939784,
+                    "content": "Index: \n===================================================================\n--- \n+++ \n@@ -33,9 +33,10 @@\n \n   return (\n     <section className=\"todoapp__main\" data-cy=\"TodoList\">\n       {/* This is a completed todo */}\n-      {[tempTodo, ...filteredTodos].map(todo => (\n+      {[tempTodo, ...filteredTodos].filter(todo => todo !== null).map(todo => {\n+  if (!todo) return null;{[tempTodo, ...filteredTodos].map(todo => (\n         <TodoItem\n           key={todo!.id}\n           id={todo!.id}\n           title={todo!.title}\n"
+                },
+                {
+                    "date": 1715097951229,
+                    "content": "Index: \n===================================================================\n--- \n+++ \n@@ -33,10 +33,9 @@\n \n   return (\n     <section className=\"todoapp__main\" data-cy=\"TodoList\">\n       {/* This is a completed todo */}\n-      {[tempTodo, ...filteredTodos].filter(todo => todo !== null).map(todo => {\n-  if (!todo) return null;{[tempTodo, ...filteredTodos].map(todo => (\n+      {[tempTodo, ...filteredTodos].map(todo => (\n         <TodoItem\n           key={todo!.id}\n           id={todo!.id}\n           title={todo!.title}\n"
+                },
+                {
+                    "date": 1715097992953,
+                    "content": "Index: \n===================================================================\n--- \n+++ \n@@ -22,10 +22,10 @@\n   const filteredTodos =\n     filter === 'active'\n       ? todos.filter(todo => !todo.completed)\n       : filter === 'completed'\n-        ? todos.filter(todo => todo.completed)\n-        : todos;\n+      ? todos.filter(todo => todo.completed)\n+      : todos;\n \n   const noTodosMessage =\n     filter !== 'all' && filteredTodos.length === 0 ? (\n       <p className=\"todoapp__empty-list-message\"></p>\n@@ -33,28 +33,31 @@\n \n   return (\n     <section className=\"todoapp__main\" data-cy=\"TodoList\">\n       {/* This is a completed todo */}\n-      {[tempTodo, ...filteredTodos].map(todo => (\n-        <TodoItem\n-          key={todo!.id}\n-          id={todo!.id}\n-          title={todo!.title}\n-          completed={todo!.completed}\n-          onDelete={() => {\n-            if (todo && todo.id === 0) {\n-              setTempTodo(null);\n-            } else if (todo) {\n-              onDeleteTodo(todo.id);\n-            }\n-          }}\n-          onToggle={() => {\n-            if (todo && todo.id !== 0) {\n-              onToggleTodo(todo.id);\n-            }\n-          }}\n-        />\n-      ))}\n+      {[tempTodo, ...filteredTodos].filter(todo => todo !== null).map(todo => {\n+        if (!todo) return null;\n+        return (\n+          <TodoItem\n+            key={todo!.id}\n+            id={todo!.id}\n+            title={todo!.title}\n+            completed={todo!.completed}\n+            onDelete={() => {\n+              if (todo && todo.id === 0) {\n+                setTempTodo(null);\n+              } else if (todo) {\n+                onDeleteTodo(todo.id);\n+              }\n+            }}\n+            onToggle={() => {\n+              if (todo && todo.id !== 0) {\n+                onToggleTodo(todo.id);\n+              }\n+            }}\n+          />\n+        );\n+      })}\n       {noTodosMessage}\n     </section>\n   );\n };\n"
+                },
+                {
+                    "date": 1715098002688,
+                    "content": "Index: \n===================================================================\n--- \n+++ \n@@ -22,10 +22,10 @@\n   const filteredTodos =\n     filter === 'active'\n       ? todos.filter(todo => !todo.completed)\n       : filter === 'completed'\n-      ? todos.filter(todo => todo.completed)\n-      : todos;\n+        ? todos.filter(todo => todo.completed)\n+        : todos;\n \n   const noTodosMessage =\n     filter !== 'all' && filteredTodos.length === 0 ? (\n       <p className=\"todoapp__empty-list-message\"></p>\n@@ -33,31 +33,34 @@\n \n   return (\n     <section className=\"todoapp__main\" data-cy=\"TodoList\">\n       {/* This is a completed todo */}\n-      {[tempTodo, ...filteredTodos].filter(todo => todo !== null).map(todo => {\n-        if (!todo) return null;\n-        return (\n-          <TodoItem\n-            key={todo!.id}\n-            id={todo!.id}\n-            title={todo!.title}\n-            completed={todo!.completed}\n-            onDelete={() => {\n-              if (todo && todo.id === 0) {\n-                setTempTodo(null);\n-              } else if (todo) {\n-                onDeleteTodo(todo.id);\n-              }\n-            }}\n-            onToggle={() => {\n-              if (todo && todo.id !== 0) {\n-                onToggleTodo(todo.id);\n-              }\n-            }}\n-          />\n-        );\n-      })}\n+      {[tempTodo, ...filteredTodos]\n+        .filter(todo => todo !== null)\n+        .map(todo => {\n+          if (!todo) return null;\n+\n+          return (\n+            <TodoItem\n+              key={todo!.id}\n+              id={todo!.id}\n+              title={todo!.title}\n+              completed={todo!.completed}\n+              onDelete={() => {\n+                if (todo && todo.id === 0) {\n+                  setTempTodo(null);\n+                } else if (todo) {\n+                  onDeleteTodo(todo.id);\n+                }\n+              }}\n+              onToggle={() => {\n+                if (todo && todo.id !== 0) {\n+                  onToggleTodo(todo.id);\n+                }\n+              }}\n+            />\n+          );\n+        })}\n       {noTodosMessage}\n     </section>\n   );\n };\n"
+                },
+                {
+                    "date": 1715098009874,
+                    "content": "Index: \n===================================================================\n--- \n+++ \n@@ -33,34 +33,29 @@\n \n   return (\n     <section className=\"todoapp__main\" data-cy=\"TodoList\">\n       {/* This is a completed todo */}\n-      {[tempTodo, ...filteredTodos]\n-        .filter(todo => todo !== null)\n-        .map(todo => {\n-          if (!todo) return null;\n+      {[tempTodo, ...filteredTodos].map(todo => (\n+        <TodoItem\n+          key={todo.id}\n+          id={todo.id}\n+          title={todo.title}\n+          completed={todo.completed}\n+          onDelete={() => {\n+            if (todo.id === 0) {\n+              setTempTodo(null);\n+            } else {\n+              onDeleteTodo(todo.id);\n+            }\n+          }}\n+          onToggle={() => {\n+            if (todo.id !== 0) {\n+              onToggleTodo(todo.id);\n \n-          return (\n-            <TodoItem\n-              key={todo!.id}\n-              id={todo!.id}\n-              title={todo!.title}\n-              completed={todo!.completed}\n-              onDelete={() => {\n-                if (todo && todo.id === 0) {\n-                  setTempTodo(null);\n-                } else if (todo) {\n-                  onDeleteTodo(todo.id);\n-                }\n-              }}\n-              onToggle={() => {\n-                if (todo && todo.id !== 0) {\n-                  onToggleTodo(todo.id);\n-                }\n-              }}\n-            />\n-          );\n-        })}\n+            }\n+          }}\n+        />\n+      ))}\n       {noTodosMessage}\n     </section>\n   );\n };\n"
+                },
+                {
+                    "date": 1715098020546,
+                    "content": "Index: \n===================================================================\n--- \n+++ \n@@ -6,19 +6,15 @@\n   todos: Todo[];\n   onDeleteTodo: (id: number) => void;\n   onToggleTodo: (id: number) => void;\n   filter: string;\n-  tempTodo: Todo | null;\n-  setTempTodo: (todo: Todo | null) => void;\n }\n \n export const TodoList: React.FC<Props> = ({\n   todos,\n   onToggleTodo,\n   onDeleteTodo,\n   filter,\n-  tempTodo,\n-  setTempTodo,\n }) => {\n   const filteredTodos =\n     filter === 'active'\n       ? todos.filter(todo => !todo.completed)\n@@ -49,9 +45,8 @@\n           }}\n           onToggle={() => {\n             if (todo.id !== 0) {\n               onToggleTodo(todo.id);\n-\n             }\n           }}\n         />\n       ))}\n"
+                },
+                {
+                    "date": 1715150289436,
+                    "content": "Index: \n===================================================================\n--- \n+++ \n@@ -29,26 +29,17 @@\n \n   return (\n     <section className=\"todoapp__main\" data-cy=\"TodoList\">\n       {/* This is a completed todo */}\n-      {[tempTodo, ...filteredTodos].map(todo => (\n+      {filteredTodos.map(todo => (\n         <TodoItem\n           key={todo.id}\n           id={todo.id}\n           title={todo.title}\n           completed={todo.completed}\n-          onDelete={() => {\n-            if (todo.id === 0) {\n-              setTempTodo(null);\n-            } else {\n-              onDeleteTodo(todo.id);\n-            }\n-          }}\n-          onToggle={() => {\n-            if (todo.id !== 0) {\n-              onToggleTodo(todo.id);\n-            }\n-          }}\n+          onDelete={() => onDeleteTodo(todo.id)}\n+          onToggle={() => onToggleTodo(todo.id)}\n+          loading\n         />\n       ))}\n       {noTodosMessage}\n     </section>\n"
+                },
+                {
+                    "date": 1715150299116,
+                    "content": "Index: \n===================================================================\n--- \n+++ \n@@ -1,7 +1,8 @@\n import React from 'react';\n import { Todo } from '../types/Todo';\n import { TodoItem } from './TodoItem';\n+import { LOADIPHLPAPI } from 'dns';\n \n interface Props {\n   todos: Todo[];\n   onDeleteTodo: (id: number) => void;\n@@ -37,9 +38,9 @@\n           title={todo.title}\n           completed={todo.completed}\n           onDelete={() => onDeleteTodo(todo.id)}\n           onToggle={() => onToggleTodo(todo.id)}\n-          loading\n+          loading={loading}\n         />\n       ))}\n       {noTodosMessage}\n     </section>\n"
+                },
+                {
+                    "date": 1715150305328,
+                    "content": "Index: \n===================================================================\n--- \n+++ \n@@ -7,8 +7,9 @@\n   todos: Todo[];\n   onDeleteTodo: (id: number) => void;\n   onToggleTodo: (id: number) => void;\n   filter: string;\n+  loa\n }\n \n export const TodoList: React.FC<Props> = ({\n   todos,\n"
+                },
+                {
+                    "date": 1715150310531,
+                    "content": "Index: \n===================================================================\n--- \n+++ \n@@ -7,9 +7,9 @@\n   todos: Todo[];\n   onDeleteTodo: (id: number) => void;\n   onToggleTodo: (id: number) => void;\n   filter: string;\n-  loa\n+  loading: boolean\n }\n \n export const TodoList: React.FC<Props> = ({\n   todos,\n"
+                },
+                {
+                    "date": 1715150315763,
+                    "content": "Index: \n===================================================================\n--- \n+++ \n@@ -7,16 +7,17 @@\n   todos: Todo[];\n   onDeleteTodo: (id: number) => void;\n   onToggleTodo: (id: number) => void;\n   filter: string;\n-  loading: boolean\n+  loading: boolean;\n }\n \n export const TodoList: React.FC<Props> = ({\n   todos,\n   onToggleTodo,\n   onDeleteTodo,\n   filter,\n+  loading;\n }) => {\n   const filteredTodos =\n     filter === 'active'\n       ? todos.filter(todo => !todo.completed)\n"
+                },
+                {
+                    "date": 1715150338868,
+                    "content": "Index: \n===================================================================\n--- \n+++ \n@@ -1,8 +1,7 @@\n import React from 'react';\n import { Todo } from '../types/Todo';\n import { TodoItem } from './TodoItem';\n-import { LOADIPHLPAPI } from 'dns';\n \n interface Props {\n   todos: Todo[];\n   onDeleteTodo: (id: number) => void;\n@@ -15,9 +14,9 @@\n   todos,\n   onToggleTodo,\n   onDeleteTodo,\n   filter,\n-  loading;\n+  loading,\n }) => {\n   const filteredTodos =\n     filter === 'active'\n       ? todos.filter(todo => !todo.completed)\n"
+                },
+                {
+                    "date": 1715150344965,
+                    "content": "Index: \n===================================================================\n--- \n+++ \n@@ -15,8 +15,9 @@\n   onToggleTodo,\n   onDeleteTodo,\n   filter,\n   loading,\n+  setLoading\n }) => {\n   const filteredTodos =\n     filter === 'active'\n       ? todos.filter(todo => !todo.completed)\n"
+                },
+                {
+                    "date": 1715150352373,
+                    "content": "Index: \n===================================================================\n--- \n+++ \n@@ -6,8 +6,9 @@\n   todos: Todo[];\n   onDeleteTodo: (id: number) => void;\n   onToggleTodo: (id: number) => void;\n   filter: string;\n+  set\n   loading: boolean;\n }\n \n export const TodoList: React.FC<Props> = ({\n@@ -15,9 +16,9 @@\n   onToggleTodo,\n   onDeleteTodo,\n   filter,\n   loading,\n-  setLoading\n+  setLoading,\n }) => {\n   const filteredTodos =\n     filter === 'active'\n       ? todos.filter(todo => !todo.completed)\n"
+                },
+                {
+                    "date": 1715150362487,
+                    "content": "Index: \n===================================================================\n--- \n+++ \n@@ -6,9 +6,9 @@\n   todos: Todo[];\n   onDeleteTodo: (id: number) => void;\n   onToggleTodo: (id: number) => void;\n   filter: string;\n-  set\n+  setLoading: boolean;\n   loading: boolean;\n }\n \n export const TodoList: React.FC<Props> = ({\n@@ -42,8 +42,9 @@\n           completed={todo.completed}\n           onDelete={() => onDeleteTodo(todo.id)}\n           onToggle={() => onToggleTodo(todo.id)}\n           loading={loading}\n+          set\n         />\n       ))}\n       {noTodosMessage}\n     </section>\n"
+                },
+                {
+                    "date": 1715150368584,
+                    "content": "Index: \n===================================================================\n--- \n+++ \n@@ -42,9 +42,9 @@\n           completed={todo.completed}\n           onDelete={() => onDeleteTodo(todo.id)}\n           onToggle={() => onToggleTodo(todo.id)}\n           loading={loading}\n-          set\n+          setLoading={setLoading}\n         />\n       ))}\n       {noTodosMessage}\n     </section>\n"
+                },
+                {
+                    "date": 1715150470655,
+                    "content": "Index: \n===================================================================\n--- \n+++ \n@@ -6,9 +6,9 @@\n   todos: Todo[];\n   onDeleteTodo: (id: number) => void;\n   onToggleTodo: (id: number) => void;\n   filter: string;\n-  setLoading: boolean;\n+  setLoading: ;\n   loading: boolean;\n }\n \n export const TodoList: React.FC<Props> = ({\n"
+                },
+                {
+                    "date": 1715150478884,
+                    "content": "Index: \n===================================================================\n--- \n+++ \n@@ -6,9 +6,9 @@\n   todos: Todo[];\n   onDeleteTodo: (id: number) => void;\n   onToggleTodo: (id: number) => void;\n   filter: string;\n-  setLoading: ;\n+  setLoading: () => void;\n   loading: boolean;\n }\n \n export const TodoList: React.FC<Props> = ({\n"
+                },
+                {
+                    "date": 1715150547598,
+                    "content": "Index: \n===================================================================\n--- \n+++ \n@@ -6,9 +6,9 @@\n   todos: Todo[];\n   onDeleteTodo: (id: number) => void;\n   onToggleTodo: (id: number) => void;\n   filter: string;\n-  setLoading: () => void;\n+  setLoading: (set) => void;\n   loading: boolean;\n }\n \n export const TodoList: React.FC<Props> = ({\n"
+                },
+                {
+                    "date": 1715150553213,
+                    "content": "Index: \n===================================================================\n--- \n+++ \n@@ -6,9 +6,9 @@\n   todos: Todo[];\n   onDeleteTodo: (id: number) => void;\n   onToggleTodo: (id: number) => void;\n   filter: string;\n-  setLoading: (set) => void;\n+  setLoading: (setLoading: b) => void;\n   loading: boolean;\n }\n \n export const TodoList: React.FC<Props> = ({\n"
+                },
+                {
+                    "date": 1715154558605,
+                    "content": "Index: \n===================================================================\n--- \n+++ \n@@ -6,9 +6,9 @@\n   todos: Todo[];\n   onDeleteTodo: (id: number) => void;\n   onToggleTodo: (id: number) => void;\n   filter: string;\n-  setLoading: (setLoading: b) => void;\n+  setLoading: (setLoading: boolean) => void;\n   loading: boolean;\n }\n \n export const TodoList: React.FC<Props> = ({\n@@ -39,9 +39,8 @@\n           key={todo.id}\n           id={todo.id}\n           title={todo.title}\n           completed={todo.completed}\n-          onDelete={() => onDeleteTodo(todo.id)}\n           onToggle={() => onToggleTodo(todo.id)}\n           loading={loading}\n           setLoading={setLoading}\n         />\n"
+                },
+                {
+                    "date": 1715154567587,
+                    "content": "Index: \n===================================================================\n--- \n+++ \n@@ -13,9 +13,8 @@\n \n export const TodoList: React.FC<Props> = ({\n   todos,\n   onToggleTodo,\n-  onDeleteTodo,\n   filter,\n   loading,\n   setLoading,\n }) => {\n@@ -42,8 +41,10 @@\n           completed={todo.completed}\n           onToggle={() => onToggleTodo(todo.id)}\n           loading={loading}\n           setLoading={setLoading}\n+          setError={setError}\n+          setErrorType={setErrorType}\n         />\n       ))}\n       {noTodosMessage}\n     </section>\n"
+                },
+                {
+                    "date": 1715154572934,
+                    "content": "Index: \n===================================================================\n--- \n+++ \n@@ -3,9 +3,8 @@\n import { TodoItem } from './TodoItem';\n \n interface Props {\n   todos: Todo[];\n-  onDeleteTodo: (id: number) => void;\n   onToggleTodo: (id: number) => void;\n   filter: string;\n   setLoading: (setLoading: boolean) => void;\n   loading: boolean;\n"
+                },
+                {
+                    "date": 1715154583825,
+                    "content": "Index: \n===================================================================\n--- \n+++ \n@@ -7,8 +7,10 @@\n   onToggleTodo: (id: number) => void;\n   filter: string;\n   setLoading: (setLoading: boolean) => void;\n   loading: boolean;\n+  setError: (setError: boolean) => void;\n+  setErrorType: (setErrorType: Error | null) => void;\n }\n \n export const TodoList: React.FC<Props> = ({\n   todos,\n"
+                },
+                {
+                    "date": 1715154588942,
+                    "content": "Index: \n===================================================================\n--- \n+++ \n@@ -17,8 +17,10 @@\n   onToggleTodo,\n   filter,\n   loading,\n   setLoading,\n+  setError,\n+  setErrorType,\n }) => {\n   const filteredTodos =\n     filter === 'active'\n       ? todos.filter(todo => !todo.completed)\n"
+                },
+                {
+                    "date": 1715154618128,
+                    "content": "Index: \n===================================================================\n--- \n+++ \n@@ -8,9 +8,9 @@\n   filter: string;\n   setLoading: (setLoading: boolean) => void;\n   loading: boolean;\n   setError: (setError: boolean) => void;\n-  setErrorType: (setErrorType: Error | null) => void;\n+  setErrorType: Error | null\n }\n \n export const TodoList: React.FC<Props> = ({\n   todos,\n"
+                },
+                {
+                    "date": 1715154626210,
+                    "content": "Index: \n===================================================================\n--- \n+++ \n@@ -7,10 +7,10 @@\n   onToggleTodo: (id: number) => void;\n   filter: string;\n   setLoading: (setLoading: boolean) => void;\n   loading: boolean;\n-  setError: (setError: boolean) => void;\n-  setErrorType: Error | null\n+  setError: boolean\n+  setErrorType: Error | null;\n }\n \n export const TodoList: React.FC<Props> = ({\n   todos,\n"
+                },
+                {
+                    "date": 1715154645999,
+                    "content": "Index: \n===================================================================\n--- \n+++ \n@@ -7,9 +7,9 @@\n   onToggleTodo: (id: number) => void;\n   filter: string;\n   setLoading: (setLoading: boolean) => void;\n   loading: boolean;\n-  setError: boolean\n+  setError: (setError: boolean) => void';\n   setErrorType: Error | null;\n }\n \n export const TodoList: React.FC<Props> = ({\n"
+                },
+                {
+                    "date": 1715154664825,
+                    "content": "Index: \n===================================================================\n--- \n+++ \n@@ -7,10 +7,10 @@\n   onToggleTodo: (id: number) => void;\n   filter: string;\n   setLoading: (setLoading: boolean) => void;\n   loading: boolean;\n-  setError: (setError: boolean) => void';\n-  setErrorType: Error | null;\n+  setError: (setError: boolean) => void;\n+  setErrorType: (setErrorType: Error | null) => void\n }\n \n export const TodoList: React.FC<Props> = ({\n   todos,\n"
+                },
+                {
+                    "date": 1715154686859,
+                    "content": "Index: \n===================================================================\n--- \n+++ \n@@ -1,16 +1,17 @@\n import React from 'react';\n import { Todo } from '../types/Todo';\n import { TodoItem } from './TodoItem';\n+i\n \n interface Props {\n   todos: Todo[];\n   onToggleTodo: (id: number) => void;\n   filter: string;\n   setLoading: (setLoading: boolean) => void;\n   loading: boolean;\n   setError: (setError: boolean) => void;\n-  setErrorType: (setErrorType: Error | null) => void\n+  setErrorType: (setErrorType: Error | null) => void;\n }\n \n export const TodoList: React.FC<Props> = ({\n   todos,\n"
+                },
+                {
+                    "date": 1715158807723,
+                    "content": "Index: \n===================================================================\n--- \n+++ \n@@ -1,8 +1,8 @@\n import React from 'react';\n import { Todo } from '../types/Todo';\n import { TodoItem } from './TodoItem';\n-i\n+import { Error } from '../types/Todo';\n \n interface Props {\n   todos: Todo[];\n   onToggleTodo: (id: number) => void;\n@@ -47,8 +47,9 @@\n           loading={loading}\n           setLoading={setLoading}\n           setError={setError}\n           setErrorType={setErrorType}\n+          handleDeleteTodo={handleDeleteTodo}\n         />\n       ))}\n       {noTodosMessage}\n     </section>\n"
+                },
+                {
+                    "date": 1715158817898,
+                    "content": "Index: \n===================================================================\n--- \n+++ \n@@ -10,8 +10,9 @@\n   setLoading: (setLoading: boolean) => void;\n   loading: boolean;\n   setError: (setError: boolean) => void;\n   setErrorType: (setErrorType: Error | null) => void;\n+  handleDeleteTodo: (id: number) => void;\n }\n \n export const TodoList: React.FC<Props> = ({\n   todos,\n"
+                },
+                {
+                    "date": 1715158823059,
+                    "content": "Index: \n===================================================================\n--- \n+++ \n@@ -21,8 +21,9 @@\n   loading,\n   setLoading,\n   setError,\n   setErrorType,\n+  handleDeleteTodo,\n }) => {\n   const filteredTodos =\n     filter === 'active'\n       ? todos.filter(todo => !todo.completed)\n"
+                },
+                {
+                    "date": 1715159096634,
+                    "content": "Index: \n===================================================================\n--- \n+++ \n@@ -49,9 +49,9 @@\n           loading={loading}\n           setLoading={setLoading}\n           setError={setError}\n           setErrorType={setErrorType}\n-          handleDeleteTodo={handleDeleteTodo}\n+          onDelete={handleDeleteTodo}\n         />\n       ))}\n       {noTodosMessage}\n     </section>\n"
+                },
+                {
+                    "date": 1715159506829,
+                    "content": "Index: \n===================================================================\n--- \n+++ \n@@ -49,9 +49,9 @@\n           loading={loading}\n           setLoading={setLoading}\n           setError={setError}\n           setErrorType={setErrorType}\n-          onDelete={handleDeleteTodo}\n+          onDelete={(handleDeleteTodo}\n         />\n       ))}\n       {noTodosMessage}\n     </section>\n"
+                },
+                {
+                    "date": 1715159513388,
+                    "content": "Index: \n===================================================================\n--- \n+++ \n@@ -49,9 +49,9 @@\n           loading={loading}\n           setLoading={setLoading}\n           setError={setError}\n           setErrorType={setErrorType}\n-          onDelete={(handleDeleteTodo}\n+          onDelete={()=>handleDeleteTodo()}\n         />\n       ))}\n       {noTodosMessage}\n     </section>\n"
+                },
+                {
+                    "date": 1715159520824,
+                    "content": "Index: \n===================================================================\n--- \n+++ \n@@ -49,9 +49,9 @@\n           loading={loading}\n           setLoading={setLoading}\n           setError={setError}\n           setErrorType={setErrorType}\n-          onDelete={()=>handleDeleteTodo()}\n+          onDelete={() => handleDeleteTodo(todo.id)}\n         />\n       ))}\n       {noTodosMessage}\n     </section>\n"
+                },
+                {
+                    "date": 1715159542880,
+                    "content": "Index: \n===================================================================\n--- \n+++ \n@@ -45,9 +45,9 @@\n           id={todo.id}\n           title={todo.title}\n           completed={todo.completed}\n           onToggle={() => onToggleTodo(todo.id)}\n-          loading={loading}\n+          loading={loading && loadingTodoId === todo.id}\n           setLoading={setLoading}\n           setError={setError}\n           setErrorType={setErrorType}\n           onDelete={() => handleDeleteTodo(todo.id)}\n"
+                },
+                {
+                    "date": 1715159551030,
+                    "content": "Index: \n===================================================================\n--- \n+++ \n@@ -11,8 +11,9 @@\n   loading: boolean;\n   setError: (setError: boolean) => void;\n   setErrorType: (setErrorType: Error | null) => void;\n   handleDeleteTodo: (id: number) => void;\n+  loadi\n }\n \n export const TodoList: React.FC<Props> = ({\n   todos,\n"
+                },
+                {
+                    "date": 1715159559555,
+                    "content": "Index: \n===================================================================\n--- \n+++ \n@@ -11,9 +11,9 @@\n   loading: boolean;\n   setError: (setError: boolean) => void;\n   setErrorType: (setErrorType: Error | null) => void;\n   handleDeleteTodo: (id: number) => void;\n-  loadi\n+  loadingTodoId:\n }\n \n export const TodoList: React.FC<Props> = ({\n   todos,\n@@ -23,8 +23,9 @@\n   setLoading,\n   setError,\n   setErrorType,\n   handleDeleteTodo,\n+  loadingTodoId\n }) => {\n   const filteredTodos =\n     filter === 'active'\n       ? todos.filter(todo => !todo.completed)\n"
+                },
+                {
+                    "date": 1715159570505,
+                    "content": "Index: \n===================================================================\n--- \n+++ \n@@ -11,9 +11,9 @@\n   loading: boolean;\n   setError: (setError: boolean) => void;\n   setErrorType: (setErrorType: Error | null) => void;\n   handleDeleteTodo: (id: number) => void;\n-  loadingTodoId:\n+  loadingTodoId: number\n }\n \n export const TodoList: React.FC<Props> = ({\n   todos,\n@@ -23,9 +23,9 @@\n   setLoading,\n   setError,\n   setErrorType,\n   handleDeleteTodo,\n-  loadingTodoId\n+  loadingTodoId,\n }) => {\n   const filteredTodos =\n     filter === 'active'\n       ? todos.filter(todo => !todo.completed)\n"
+                },
+                {
+                    "date": 1715159588511,
+                    "content": "Index: \n===================================================================\n--- \n+++ \n@@ -11,9 +11,9 @@\n   loading: boolean;\n   setError: (setError: boolean) => void;\n   setErrorType: (setErrorType: Error | null) => void;\n   handleDeleteTodo: (id: number) => void;\n-  loadingTodoId: number\n+  loadingTodoId: number ;\n }\n \n export const TodoList: React.FC<Props> = ({\n   todos,\n"
+                },
+                {
+                    "date": 1715160096673,
+                    "content": "Index: \n===================================================================\n--- \n+++ \n@@ -11,9 +11,9 @@\n   loading: boolean;\n   setError: (setError: boolean) => void;\n   setErrorType: (setErrorType: Error | null) => void;\n   handleDeleteTodo: (id: number) => void;\n-  loadingTodoId: number ;\n+  loadingTodoId: number | null;\n }\n \n export const TodoList: React.FC<Props> = ({\n   todos,\n@@ -41,20 +41,20 @@\n   return (\n     <section className=\"todoapp__main\" data-cy=\"TodoList\">\n       {/* This is a completed todo */}\n       {filteredTodos.map(todo => (\n-        <TodoItem\n-          key={todo.id}\n-          id={todo.id}\n-          title={todo.title}\n-          completed={todo.completed}\n-          onToggle={() => onToggleTodo(todo.id)}\n-          loading={loading && loadingTodoId === todo.id}\n-          setLoading={setLoading}\n-          setError={setError}\n-          setErrorType={setErrorType}\n-          onDelete={() => handleDeleteTodo(todo.id)}\n-        />\n+  <TodoItem\n+    key={todo.id}\n+    id={todo.id}\n+    title={todo.title}\n+    completed={todo.completed}\n+    onToggle={() => onToggleTodo(todo.id)}\n+    loading={loading && loadingTodoId === todo.id}\n+    setLoading={setLoading}\n+    setError={setError}\n+    setErrorType={setErrorType}\n+    onDelete={() => handleDeleteTodo(todo.id)}\n+  />\n       ))}\n       {noTodosMessage}\n     </section>\n   );\n"
+                },
+                {
+                    "date": 1715162328715,
+                    "content": "Index: \n===================================================================\n--- \n+++ \n@@ -41,20 +41,22 @@\n   return (\n     <section className=\"todoapp__main\" data-cy=\"TodoList\">\n       {/* This is a completed todo */}\n       {filteredTodos.map(todo => (\n-  <TodoItem\n-    key={todo.id}\n-    id={todo.id}\n-    title={todo.title}\n-    completed={todo.completed}\n-    onToggle={() => onToggleTodo(todo.id)}\n-    loading={loading && loadingTodoId === todo.id}\n-    setLoading={setLoading}\n-    setError={setError}\n-    setErrorType={setErrorType}\n-    onDelete={() => handleDeleteTodo(todo.id)}\n-  />\n+        <TodoItem\n+          key={todo.id}\n+          id={todo.id}\n+          title={todo.title}\n+          completed={todo.completed}\n+          onToggle={() => onToggleTodo(todo.id)}\n+          loading={loading && loadingTodoId === todo.id}\n+          setLoading={setLoading}\n+          setError={setError}\n+          setErrorType={setErrorType}\n+          onDelete={() => handleDeleteTodo(todo.id)}\n+          loadingTodoId={loadingTodoId}\n+\n+        />\n       ))}\n       {noTodosMessage}\n     </section>\n   );\n"
+                },
+                {
+                    "date": 1715162923608,
+                    "content": "Index: \n===================================================================\n--- \n+++ \n@@ -47,15 +47,14 @@\n           id={todo.id}\n           title={todo.title}\n           completed={todo.completed}\n           onToggle={() => onToggleTodo(todo.id)}\n-          loading={loading && loadingTodoId === todo.id}\n+          loading={loading}\n           setLoading={setLoading}\n           setError={setError}\n           setErrorType={setErrorType}\n           onDelete={() => handleDeleteTodo(todo.id)}\n           loadingTodoId={loadingTodoId}\n-\n         />\n       ))}\n       {noTodosMessage}\n     </section>\n"
+                },
+                {
+                    "date": 1715163275757,
+                    "content": "Index: \n===================================================================\n--- \n+++ \n@@ -52,9 +52,8 @@\n           setLoading={setLoading}\n           setError={setError}\n           setErrorType={setErrorType}\n           onDelete={() => handleDeleteTodo(todo.id)}\n-          loadingTodoId={loadingTodoId}\n         />\n       ))}\n       {noTodosMessage}\n     </section>\n"
+                },
+                {
+                    "date": 1715163300662,
+                    "content": "Index: \n===================================================================\n--- \n+++ \n@@ -23,9 +23,8 @@\n   setLoading,\n   setError,\n   setErrorType,\n   handleDeleteTodo,\n-  loadingTodoId,\n }) => {\n   const filteredTodos =\n     filter === 'active'\n       ? todos.filter(todo => !todo.completed)\n"
+                },
+                {
+                    "date": 1715163416878,
+                    "content": "Index: \n===================================================================\n--- \n+++ \n@@ -11,9 +11,8 @@\n   loading: boolean;\n   setError: (setError: boolean) => void;\n   setErrorType: (setErrorType: Error | null) => void;\n   handleDeleteTodo: (id: number) => void;\n-  loadingTodoId: number | null;\n }\n \n export const TodoList: React.FC<Props> = ({\n   todos,\n@@ -23,8 +22,9 @@\n   setLoading,\n   setError,\n   setErrorType,\n   handleDeleteTodo,\n+  loadingTodoId\n }) => {\n   const filteredTodos =\n     filter === 'active'\n       ? todos.filter(todo => !todo.completed)\n"
+                },
+                {
+                    "date": 1715163425173,
+                    "content": "Index: \n===================================================================\n--- \n+++ \n@@ -11,8 +11,9 @@\n   loading: boolean;\n   setError: (setError: boolean) => void;\n   setErrorType: (setErrorType: Error | null) => void;\n   handleDeleteTodo: (id: number) => void;\n+  loadingTodoId: number | null;\n }\n \n export const TodoList: React.FC<Props> = ({\n   todos,\n@@ -22,9 +23,9 @@\n   setLoading,\n   setError,\n   setErrorType,\n   handleDeleteTodo,\n-  loadingTodoId\n+  loadingTodoId,\n }) => {\n   const filteredTodos =\n     filter === 'active'\n       ? todos.filter(todo => !todo.completed)\n"
+                },
+                {
+                    "date": 1715163432333,
+                    "content": "Index: \n===================================================================\n--- \n+++ \n@@ -0,0 +1,62 @@\n+import React from 'react';\n+import { Todo } from '../types/Todo';\n+import { TodoItem } from './TodoItem';\n+import { Error } from '../types/Todo';\n+\n+interface Props {\n+  todos: Todo[];\n+  onToggleTodo: (id: number) => void;\n+  filter: string;\n+  setLoading: (setLoading: boolean) => void;\n+  loading: boolean;\n+  setError: (setError: boolean) => void;\n+  setErrorType: (setErrorType: Error | null) => void;\n+  handleDeleteTodo: (id: number) => void;\n+  loadingTodoId: number | null;\n+}\n+\n+export const TodoList: React.FC<Props> = ({\n+  todos,\n+  onToggleTodo,\n+  filter,\n+  loading,\n+  setLoading,\n+  setError,\n+  setErrorType,\n+  handleDeleteTodo,\n+  loadingTodoId,\n+}) => {\n+  const filteredTodos =\n+    filter === 'active'\n+      ? todos.filter(todo => !todo.completed)\n+      : filter === 'completed'\n+        ? todos.filter(todo => todo.completed)\n+        : todos;\n+\n+  const noTodosMessage =\n+    filter !== 'all' && filteredTodos.length === 0 ? (\n+      <p className=\"todoapp__empty-list-message\"></p>\n+    ) : null;\n+\n+  return (\n+    <section className=\"todoapp__main\" data-cy=\"TodoList\">\n+      {/* This is a completed todo */}\n+      {filteredTodos.map(todo => (\n+        <TodoItem\n+          key={todo.id}\n+          id={todo.id}\n+          title={todo.title}\n+          completed={todo.completed}\n+          onToggle={() => onToggleTodo(todo.id)}\n+          loading={loading}\n+          setLoading={setLoading}\n+          setError={setError}\n+          setErrorType={setErrorType}\n+          onDelete={() => handleDeleteTodo(todo.id)}\n+          loadi\n+        />\n+      ))}\n+      {noTodosMessage}\n+    </section>\n+  );\n+};\n"
+                },
+                {
+                    "date": 1715163437416,
+                    "content": "Index: \n===================================================================\n--- \n+++ \n@@ -52,72 +52,11 @@\n           setLoading={setLoading}\n           setError={setError}\n           setErrorType={setErrorType}\n           onDelete={() => handleDeleteTodo(todo.id)}\n-          loadi\n+          loadingTodoId={loadingt}\n         />\n       ))}\n       {noTodosMessage}\n     </section>\n   );\n };\n-import React from 'react';\n-import { Todo } from '../types/Todo';\n-import { TodoItem } from './TodoItem';\n-import { Error } from '../types/Todo';\n-\n-interface Props {\n-  todos: Todo[];\n-  onToggleTodo: (id: number) => void;\n-  filter: string;\n-  setLoading: (setLoading: boolean) => void;\n-  loading: boolean;\n-  setError: (setError: boolean) => void;\n-  setErrorType: (setErrorType: Error | null) => void;\n-  handleDeleteTodo: (id: number) => void;\n-  loadingTodoId: number | null;\n-}\n-\n-export const TodoList: React.FC<Props> = ({\n-  todos,\n-  onToggleTodo,\n-  filter,\n-  loading,\n-  setLoading,\n-  setError,\n-  setErrorType,\n-  handleDeleteTodo,\n-  loadingTodoId,\n-}) => {\n-  const filteredTodos =\n-    filter === 'active'\n-      ? todos.filter(todo => !todo.completed)\n-      : filter === 'completed'\n-        ? todos.filter(todo => todo.completed)\n-        : todos;\n-\n-  const noTodosMessage =\n-    filter !== 'all' && filteredTodos.length === 0 ? (\n-      <p className=\"todoapp__empty-list-message\"></p>\n-    ) : null;\n-\n-  return (\n-    <section className=\"todoapp__main\" data-cy=\"TodoList\">\n-      {/* This is a completed todo */}\n-      {filteredTodos.map(todo => (\n-        <TodoItem\n-          key={todo.id}\n-          id={todo.id}\n-          title={todo.title}\n-          completed={todo.completed}\n-          onToggle={() => onToggleTodo(todo.id)}\n-          loading={loading}\n-          setLoading={setLoading}\n-          setError={setError}\n-          setErrorType={setErrorType}\n-          onDelete={() => handleDeleteTodo(todo.id)}\n-        />\n-      ))}\n-      {noTodosMessage}\n-    </section>\n-  );\n-};\n"
+                },
+                {
+                    "date": 1715163634862,
+                    "content": "Index: \n===================================================================\n--- \n+++ \n@@ -47,14 +47,13 @@\n           id={todo.id}\n           title={todo.title}\n           completed={todo.completed}\n           onToggle={() => onToggleTodo(todo.id)}\n-          loading={loading}\n           setLoading={setLoading}\n           setError={setError}\n           setErrorType={setErrorType}\n           onDelete={() => handleDeleteTodo(todo.id)}\n-          loadingTodoId={loadingt}\n+          loadingTodoId={loadingTodoId}\n         />\n       ))}\n       {noTodosMessage}\n     </section>\n"
+                },
+                {
+                    "date": 1715164139606,
+                    "content": "Index: \n===================================================================\n--- \n+++ \n@@ -18,9 +18,8 @@\n export const TodoList: React.FC<Props> = ({\n   todos,\n   onToggleTodo,\n   filter,\n-  loading,\n   setLoading,\n   setError,\n   setErrorType,\n   handleDeleteTodo,\n@@ -52,8 +51,9 @@\n           setError={setError}\n           setErrorType={setErrorType}\n           onDelete={() => handleDeleteTodo(todo.id)}\n           loadingTodoId={loadingTodoId}\n+          addNewTodo={addNewTodo}\n         />\n       ))}\n       {noTodosMessage}\n     </section>\n"
+                },
+                {
+                    "date": 1715164144875,
+                    "content": "Index: \n===================================================================\n--- \n+++ \n@@ -51,9 +51,9 @@\n           setError={setError}\n           setErrorType={setErrorType}\n           onDelete={() => handleDeleteTodo(todo.id)}\n           loadingTodoId={loadingTodoId}\n-          addNewTodo={addNewTodo}\n+          \n         />\n       ))}\n       {noTodosMessage}\n     </section>\n"
+                },
+                {
+                    "date": 1715164200744,
+                    "content": "Index: \n===================================================================\n--- \n+++ \n@@ -51,9 +51,9 @@\n           setError={setError}\n           setErrorType={setErrorType}\n           onDelete={() => handleDeleteTodo(todo.id)}\n           loadingTodoId={loadingTodoId}\n-          \n+          addNewTodo={addNew}\n         />\n       ))}\n       {noTodosMessage}\n     </section>\n"
+                },
+                {
+                    "date": 1715164215532,
+                    "content": "Index: \n===================================================================\n--- \n+++ \n@@ -12,8 +12,9 @@\n   setError: (setError: boolean) => void;\n   setErrorType: (setErrorType: Error | null) => void;\n   handleDeleteTodo: (id: number) => void;\n   loadingTodoId: number | null;\n+  add\n }\n \n export const TodoList: React.FC<Props> = ({\n   todos,\n@@ -51,9 +52,9 @@\n           setError={setError}\n           setErrorType={setErrorType}\n           onDelete={() => handleDeleteTodo(todo.id)}\n           loadingTodoId={loadingTodoId}\n-          addNewTodo={addNew}\n+          addNewTodo={addNewTodo}\n         />\n       ))}\n       {noTodosMessage}\n     </section>\n"
+                },
+                {
+                    "date": 1715164221598,
+                    "content": "Index: \n===================================================================\n--- \n+++ \n@@ -12,9 +12,9 @@\n   setError: (setError: boolean) => void;\n   setErrorType: (setErrorType: Error | null) => void;\n   handleDeleteTodo: (id: number) => void;\n   loadingTodoId: number | null;\n-  add\n+  addNewTodo: boolean\n }\n \n export const TodoList: React.FC<Props> = ({\n   todos,\n"
+                },
+                {
+                    "date": 1715164227578,
+                    "content": "Index: \n===================================================================\n--- \n+++ \n@@ -12,9 +12,9 @@\n   setError: (setError: boolean) => void;\n   setErrorType: (setErrorType: Error | null) => void;\n   handleDeleteTodo: (id: number) => void;\n   loadingTodoId: number | null;\n-  addNewTodo: boolean\n+  addNewTodo: boolean;\n }\n \n export const TodoList: React.FC<Props> = ({\n   todos,\n@@ -24,8 +24,9 @@\n   setError,\n   setErrorType,\n   handleDeleteTodo,\n   loadingTodoId,\n+  addNewTodo,\n }) => {\n   const filteredTodos =\n     filter === 'active'\n       ? todos.filter(todo => !todo.completed)\n"
+                },
+                {
+                    "date": 1715166803864,
+                    "content": "Index: \n===================================================================\n--- \n+++ \n@@ -53,9 +53,9 @@\n           setError={setError}\n           setErrorType={setErrorType}\n           onDelete={() => handleDeleteTodo(todo.id)}\n           loadingTodoId={loadingTodoId}\n-          addNewTodo={addNewTodo}\n+          number | null;={addNewTodo}\n         />\n       ))}\n       {noTodosMessage}\n     </section>\n"
+                },
+                {
+                    "date": 1715166810904,
+                    "content": "Index: \n===================================================================\n--- \n+++ \n@@ -53,9 +53,9 @@\n           setError={setError}\n           setErrorType={setErrorType}\n           onDelete={() => handleDeleteTodo(todo.id)}\n           loadingTodoId={loadingTodoId}\n-          number | null;={addNewTodo}\n+          loadingAddTodoId={addNewTodo}\n         />\n       ))}\n       {noTodosMessage}\n     </section>\n"
+                },
+                {
+                    "date": 1715166817388,
+                    "content": "Index: \n===================================================================\n--- \n+++ \n@@ -0,0 +1,63 @@\n+import React from 'react';\n+import { Todo } from '../types/Todo';\n+import { TodoItem } from './TodoItem';\n+import { Error } from '../types/Todo';\n+\n+interface Props {\n+  todos: Todo[];\n+  onToggleTodo: (id: number) => void;\n+  filter: string;\n+  setLoading: (setLoading: boolean) => void;\n+  loading: boolean;\n+  setError: (setError: boolean) => void;\n+  setErrorType: (setErrorType: Error | null) => void;\n+  handleDeleteTodo: (id: number) => void;\n+  loadingTodoId: number | null;\n+  loadingAddTodoId: boolean;\n+}\n+\n+export const TodoList: React.FC<Props> = ({\n+  todos,\n+  onToggleTodo,\n+  filter,\n+  setLoading,\n+  setError,\n+  setErrorType,\n+  handleDeleteTodo,\n+  loadingTodoId,\n+  loadingAddTodoId,\n+}) => {\n+  const filteredTodos =\n+    filter === 'active'\n+      ? todos.filter(todo => !todo.completed)\n+      : filter === 'completed'\n+        ? todos.filter(todo => todo.completed)\n+        : todos;\n+\n+  const noTodosMessage =\n+    filter !== 'all' && filteredTodos.length === 0 ? (\n+      <p className=\"todoapp__empty-list-message\"></p>\n+    ) : null;\n+\n+  return (\n+    <section className=\"todoapp__main\" data-cy=\"TodoList\">\n+      {/* This is a completed todo */}\n+      {filteredTodos.map(todo => (\n+        <TodoItem\n+          key={todo.id}\n+          id={todo.id}\n+          title={todo.title}\n+          completed={todo.completed}\n+          onToggle={() => onToggleTodo(todo.id)}\n+          setLoading={setLoading}\n+          setError={setError}\n+          setErrorType={setErrorType}\n+          onDelete={() => handleDeleteTodo(todo.id)}\n+          loadingTodoId={loadingTodoId}\n+          loadingAddTodoId={loadingAddTodoId}\n+        />\n+      ))}\n+      {noTodosMessage}\n+    </section>\n+  );\n+};\n"
+                },
+                {
+                    "date": 1715167215908,
+                    "content": "Index: \n===================================================================\n--- \n+++ \n@@ -12,9 +12,9 @@\n   setError: (setError: boolean) => void;\n   setErrorType: (setErrorType: Error | null) => void;\n   handleDeleteTodo: (id: number) => void;\n   loadingTodoId: number | null;\n-  loadingAddTodoId: boolean;\n+  loadingAddTodoId: number | null;\n }\n \n export const TodoList: React.FC<Props> = ({\n   todos,\n@@ -53,74 +53,11 @@\n           setError={setError}\n           setErrorType={setErrorType}\n           onDelete={() => handleDeleteTodo(todo.id)}\n           loadingTodoId={loadingTodoId}\n-          loadingAddTodoId={loadingAddTodoId}\n+          loadingAddTodoId={loadingAddTodoId === todo.id}\n         />\n       ))}\n       {noTodosMessage}\n     </section>\n   );\n };\n-import React from 'react';\n-import { Todo } from '../types/Todo';\n-import { TodoItem } from './TodoItem';\n-import { Error } from '../types/Todo';\n-\n-interface Props {\n-  todos: Todo[];\n-  onToggleTodo: (id: number) => void;\n-  filter: string;\n-  setLoading: (setLoading: boolean) => void;\n-  loading: boolean;\n-  setError: (setError: boolean) => void;\n-  setErrorType: (setErrorType: Error | null) => void;\n-  handleDeleteTodo: (id: number) => void;\n-  loadingTodoId: number | null;\n-  addNewTodo: boolean;\n-}\n-\n-export const TodoList: React.FC<Props> = ({\n-  todos,\n-  onToggleTodo,\n-  filter,\n-  setLoading,\n-  setError,\n-  setErrorType,\n-  handleDeleteTodo,\n-  loadingTodoId,\n-  addNewTodo,\n-}) => {\n-  const filteredTodos =\n-    filter === 'active'\n-      ? todos.filter(todo => !todo.completed)\n-      : filter === 'completed'\n-        ? todos.filter(todo => todo.completed)\n-        : todos;\n-\n-  const noTodosMessage =\n-    filter !== 'all' && filteredTodos.length === 0 ? (\n-      <p className=\"todoapp__empty-list-message\"></p>\n-    ) : null;\n-\n-  return (\n-    <section className=\"todoapp__main\" data-cy=\"TodoList\">\n-      {/* This is a completed todo */}\n-      {filteredTodos.map(todo => (\n-        <TodoItem\n-          key={todo.id}\n-          id={todo.id}\n-          title={todo.title}\n-          completed={todo.completed}\n-          onToggle={() => onToggleTodo(todo.id)}\n-          setLoading={setLoading}\n-          setError={setError}\n-          setErrorType={setErrorType}\n-          onDelete={() => handleDeleteTodo(todo.id)}\n-          loadingTodoId={loadingTodoId}\n-          loadingAddTodoId={addNewTodo}\n-        />\n-      ))}\n-      {noTodosMessage}\n-    </section>\n-  );\n-};\n"
+                },
+                {
+                    "date": 1715167223960,
+                    "content": "Index: \n===================================================================\n--- \n+++ \n@@ -53,9 +53,9 @@\n           setError={setError}\n           setErrorType={setErrorType}\n           onDelete={() => handleDeleteTodo(todo.id)}\n           loadingTodoId={loadingTodoId}\n-          loadingAddTodoId={loadingAddTodoId === todo.id}\n+          loadingAddTodoId={loadingAddTodoId}\n         />\n       ))}\n       {noTodosMessage}\n     </section>\n"
+                },
+                {
+                    "date": 1715167230987,
+                    "content": "Index: \n===================================================================\n--- \n+++ \n@@ -54,8 +54,9 @@\n           setErrorType={setErrorType}\n           onDelete={() => handleDeleteTodo(todo.id)}\n           loadingTodoId={loadingTodoId}\n           loadingAddTodoId={loadingAddTodoId}\n+          addingTodo={loadingAddTodoId === todo.id}\n         />\n       ))}\n       {noTodosMessage}\n     </section>\n"
+                },
+                {
+                    "date": 1715167237738,
+                    "content": "Index: \n===================================================================\n--- \n+++ \n@@ -13,8 +13,9 @@\n   setErrorType: (setErrorType: Error | null) => void;\n   handleDeleteTodo: (id: number) => void;\n   loadingTodoId: number | null;\n   loadingAddTodoId: number | null;\n+  addingTodo\n }\n \n export const TodoList: React.FC<Props> = ({\n   todos,\n"
+                },
+                {
+                    "date": 1715167243171,
+                    "content": "Index: \n===================================================================\n--- \n+++ \n@@ -13,9 +13,9 @@\n   setErrorType: (setErrorType: Error | null) => void;\n   handleDeleteTodo: (id: number) => void;\n   loadingTodoId: number | null;\n   loadingAddTodoId: number | null;\n-  addingTodo\n+  addingTodo: () => void;\n }\n \n export const TodoList: React.FC<Props> = ({\n   todos,\n"
+                },
+                {
+                    "date": 1715167268222,
+                    "content": "Index: \n===================================================================\n--- \n+++ \n@@ -13,9 +13,9 @@\n   setErrorType: (setErrorType: Error | null) => void;\n   handleDeleteTodo: (id: number) => void;\n   loadingTodoId: number | null;\n   loadingAddTodoId: number | null;\n-  addingTodo: () => void;\n+  addingTodo: (id: number) => void;\n }\n \n export const TodoList: React.FC<Props> = ({\n   todos,\n"
+                },
+                {
+                    "date": 1715167276754,
+                    "content": "Index: \n===================================================================\n--- \n+++ \n@@ -13,9 +13,9 @@\n   setErrorType: (setErrorType: Error | null) => void;\n   handleDeleteTodo: (id: number) => void;\n   loadingTodoId: number | null;\n   loadingAddTodoId: number | null;\n-  addingTodo: (id: number) => void;\n+  addingTodo: (id: boolean) => void;\n }\n \n export const TodoList: React.FC<Props> = ({\n   todos,\n"
+                },
+                {
+                    "date": 1715167303312,
+                    "content": "Index: \n===================================================================\n--- \n+++ \n@@ -55,9 +55,9 @@\n           setErrorType={setErrorType}\n           onDelete={() => handleDeleteTodo(todo.id)}\n           loadingTodoId={loadingTodoId}\n           loadingAddTodoId={loadingAddTodoId}\n-          addingTodo={loadingAddTodoId === todo.id}\n+          addNewTodo={loadingAddTodoId === todo.id}\n         />\n       ))}\n       {noTodosMessage}\n     </section>\n"
+                },
+                {
+                    "date": 1715167317898,
+                    "content": "Index: \n===================================================================\n--- \n+++ \n@@ -13,9 +13,9 @@\n   setErrorType: (setErrorType: Error | null) => void;\n   handleDeleteTodo: (id: number) => void;\n   loadingTodoId: number | null;\n   loadingAddTodoId: number | null;\n-  addingTodo: (id: boolean) => void;\n+  addNewTodo: (id: boolean) => void;\n }\n \n export const TodoList: React.FC<Props> = ({\n   todos,\n"
+                },
+                {
+                    "date": 1715167372384,
+                    "content": "Index: \n===================================================================\n--- \n+++ \n@@ -13,9 +13,9 @@\n   setErrorType: (setErrorType: Error | null) => void;\n   handleDeleteTodo: (id: number) => void;\n   loadingTodoId: number | null;\n   loadingAddTodoId: number | null;\n-  addNewTodo: (id: boolean) => void;\n+  addNewTodo: (add: boolean) => void;\n }\n \n export const TodoList: React.FC<Props> = ({\n   todos,\n"
+                },
+                {
+                    "date": 1715167953430,
+                    "content": "Index: \n===================================================================\n--- \n+++ \n@@ -13,9 +13,9 @@\n   setErrorType: (setErrorType: Error | null) => void;\n   handleDeleteTodo: (id: number) => void;\n   loadingTodoId: number | null;\n   loadingAddTodoId: number | null;\n-  addNewTodo: (add: boolean) => void;\n+  addNewTodo: (addNewTodo: boolean) => void;\n }\n \n export const TodoList: React.FC<Props> = ({\n   todos,\n@@ -55,9 +55,9 @@\n           setErrorType={setErrorType}\n           onDelete={() => handleDeleteTodo(todo.id)}\n           loadingTodoId={loadingTodoId}\n           loadingAddTodoId={loadingAddTodoId}\n-          addNewTodo={loadingAddTodoId === todo.id}\n+          // addNewTodo={loadingAddTodoId === todo.id}\n         />\n       ))}\n       {noTodosMessage}\n     </section>\n"
+                },
+                {
+                    "date": 1715168970549,
+                    "content": "Index: \n===================================================================\n--- \n+++ \n@@ -55,9 +55,9 @@\n           setErrorType={setErrorType}\n           onDelete={() => handleDeleteTodo(todo.id)}\n           loadingTodoId={loadingTodoId}\n           loadingAddTodoId={loadingAddTodoId}\n-          // addNewTodo={loadingAddTodoId === todo.id}\n+          addNewTodo={loadingAddTodoId === todo.id}\n         />\n       ))}\n       {noTodosMessage}\n     </section>\n"
+                },
+                {
+                    "date": 1715169195909,
+                    "content": "Index: \n===================================================================\n--- \n+++ \n@@ -13,9 +13,9 @@\n   setErrorType: (setErrorType: Error | null) => void;\n   handleDeleteTodo: (id: number) => void;\n   loadingTodoId: number | null;\n   loadingAddTodoId: number | null;\n-  addNewTodo: (addNewTodo: boolean) => void;\n+  addNewTodo: boolean\n }\n \n export const TodoList: React.FC<Props> = ({\n   todos,\n@@ -55,9 +55,9 @@\n           setErrorType={setErrorType}\n           onDelete={() => handleDeleteTodo(todo.id)}\n           loadingTodoId={loadingTodoId}\n           loadingAddTodoId={loadingAddTodoId}\n-          addNewTodo={loadingAddTodoId === todo.id}\n+          // addNewTodo={loadingAddTodoId === todo.id}\n         />\n       ))}\n       {noTodosMessage}\n     </section>\n"
+                },
+                {
+                    "date": 1715173405575,
+                    "content": "Index: \n===================================================================\n--- \n+++ \n@@ -13,9 +13,9 @@\n   setErrorType: (setErrorType: Error | null) => void;\n   handleDeleteTodo: (id: number) => void;\n   loadingTodoId: number | null;\n   loadingAddTodoId: number | null;\n-  addNewTodo: boolean\n+  addNewTodo: boolean;\n }\n \n export const TodoList: React.FC<Props> = ({\n   todos,\n@@ -55,9 +55,9 @@\n           setErrorType={setErrorType}\n           onDelete={() => handleDeleteTodo(todo.id)}\n           loadingTodoId={loadingTodoId}\n           loadingAddTodoId={loadingAddTodoId}\n-          // addNewTodo={loadingAddTodoId === todo.id}\n+          set\n         />\n       ))}\n       {noTodosMessage}\n     </section>\n"
+                },
+                {
+                    "date": 1715173411628,
+                    "content": "Index: \n===================================================================\n--- \n+++ \n@@ -55,9 +55,9 @@\n           setErrorType={setErrorType}\n           onDelete={() => handleDeleteTodo(todo.id)}\n           loadingTodoId={loadingTodoId}\n           loadingAddTodoId={loadingAddTodoId}\n-          set\n+          setFocus={set}\n         />\n       ))}\n       {noTodosMessage}\n     </section>\n"
+                },
+                {
+                    "date": 1715173421353,
+                    "content": "Index: \n===================================================================\n--- \n+++ \n@@ -14,9 +14,9 @@\n   handleDeleteTodo: (id: number) => void;\n   loadingTodoId: number | null;\n   loadingAddTodoId: number | null;\n   addNewTodo: boolean;\n-  setFocus\n+  setFocus:\n }\n \n export const TodoList: React.FC<Props> = ({\n   todos,\n"
+                },
+                {
+                    "date": 1715243360102,
+                    "content": "Index: \n===================================================================\n--- \n+++ \n@@ -0,0 +1,71 @@\n+import React from 'react';\n+import { Todo } from '../types/Todo';\n+import { TodoItem } from './TodoItem';\n+import { Error } from '../types/Todo';\n+\n+interface Props {\n+  todos: Todo[];\n+  onToggleTodo: (id: number) => void;\n+  filter: string;\n+  setLoading: (setLoading: boolean) => void;\n+  loading: boolean;\n+  setError: (setError: boolean) => void;\n+  setErrorType: (setErrorType: Error | null) => void;\n+  handleDeleteTodo: (id: number) => void;\n+  loadingTodoId: number | null;\n+  loadingAddTodoId: number | null;\n+  addNewTodo: boolean;\n+  setFocus: (setFocus: boolean) => void;\n+  setLoadingTodoId: (setLoadingTodoId: number | null) => void;\n+  \n+}\n+\n+export const TodoList: React.FC<Props> = ({\n+  todos,\n+  onToggleTodo,\n+  filter,\n+  setLoading,\n+  setError,\n+  setErrorType,\n+  handleDeleteTodo,\n+  loadingTodoId,\n+  loadingAddTodoId,\n+  setFocus,\n+  setLoadingTodoId,\n+}) => {\n+  const filteredTodos =\n+    filter === 'active'\n+      ? todos.filter(todo => !todo.completed)\n+      : filter === 'completed'\n+        ? todos.filter(todo => todo.completed)\n+        : todos;\n+\n+  const noTodosMessage =\n+    filter !== 'all' && filteredTodos.length === 0 ? (\n+      <p className=\"todoapp__empty-list-message\"></p>\n+    ) : null;\n+\n+  return (\n+    <section className=\"todoapp__main\" data-cy=\"TodoList\">\n+      {/* This is a completed todo */}\n+      {filteredTodos.map(todo => (\n+        <TodoItem\n+          key={todo.id}\n+          id={todo.id}\n+          title={todo.title}\n+          completed={todo.completed}\n+          onToggle={() => onToggleTodo(todo.id)}\n+          setLoading={setLoading}\n+          setError={setError}\n+          setErrorType={setErrorType}\n+          onDelete={() => handleDeleteTodo(todo.id)}\n+          loadingTodoId={loadingTodoId}\n+          loadingAddTodoId={loadingAddTodoId}\n+          setFocus={setFocus}\n+          setLoadingTodoId={setLoadingTodoId}\n+        />\n+      ))}\n+      {noTodosMessage}\n+    </section>\n+  );\n+};\n"
+                }
+            ],
+            "date": 1714989355833,
+            "name": "Commit-0",
+            "content": "import React from 'react';\nimport { Todoo } from '../types/Todo';\nimport { Todo } from './Todo';\n\ninterface Props {\n  todos: Todoo[];\n  onDeleteTodo: (id: number) => void;\n  onToggleTodo: (id: number) => void;\n  filter: string;\n}\n\nexport const TodoList: React.FC<Props> = ({\n  todos,\n  onToggleTodo,\n  onDeleteTodo,\n  filter,\n}) => {\n  const filteredTodos =\n    filter === 'active'\n      ? todos.filter(todo => !todo.completed)\n      : filter === 'completed'\n        ? todos.filter(todo => todo.completed)\n        : todos;\n\n  const noTodosMessage =\n    filter !== 'all' && filteredTodos.length === 0 ? (\n      <p className=\"todoapp__empty-list-message\"></p>\n    ) : null;\n\n  return (\n    <section className=\"todoapp__main\" data-cy=\"TodoList\">\n      {/* This is a completed todo */}\n      {filteredTodos.map(todo => (\n        <Todo\n          key={todo.id}\n          id={todo.id}\n          title={todo.title}\n          completed={todo.completed}\n          onDelete={() => onDeleteTodo(todo.id)}\n          onToggle={() => onToggleTodo(todo.id)}\n        />\n      ))}\n      {noTodosMessage}\n    </section>\n  );\n};\n"
+        }
+    ]
+}

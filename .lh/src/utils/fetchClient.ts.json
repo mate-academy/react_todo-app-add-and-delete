@@ -1,0 +1,18 @@
+{
+    "sourceFile": "src/utils/fetchClient.ts",
+    "activeCommit": 0,
+    "commits": [
+        {
+            "activePatchIndex": 0,
+            "patches": [
+                {
+                    "date": 1714989425165,
+                    "content": "Index: \n===================================================================\n--- \n+++ \n"
+                }
+            ],
+            "date": 1714989425165,
+            "name": "Commit-0",
+            "content": "/* eslint-disable @typescript-eslint/no-explicit-any */\nconst BASE_URL = 'https://mate.academy/students-api';\n\n// returns a promise resolved after a given delay\nfunction wait(delay: number) {\n  return new Promise(resolve => {\n    setTimeout(resolve, delay);\n  });\n}\n\n// To have autocompletion and avoid mistypes\ntype RequestMethod = 'GET' | 'POST' | 'PATCH' | 'DELETE';\n\nasync function request<T>(\n  url: string,\n  method: RequestMethod = 'GET',\n  data: any = null, // we can send any data to the server\n): Promise<T> {\n  const options: RequestInit = { method };\n\n  if (data) {\n    // We add body and Content-Type only for the requests with data\n    options.body = JSON.stringify(data);\n    options.headers = {\n      'Content-Type': 'application/json; charset=UTF-8',\n    };\n  }\n\n  // DON'T change the delay it is required for tests\n  await wait(100);\n  const response = await fetch(BASE_URL + url, options);\n\n  if (!response.ok) {\n    throw new Error();\n  }\n\n  return response.json();\n}\n\nexport const client = {\n  get: <T>(url: string) => request<T>(url),\n  post: <T>(url: string, data: any) => request<T>(url, 'POST', data),\n  patch: <T>(url: string, data: any) => request<T>(url, 'PATCH', data),\n  delete: (url: string) => request(url, 'DELETE'),\n};\n"
+        }
+    ]
+}

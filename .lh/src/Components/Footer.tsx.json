@@ -1,0 +1,26 @@
+{
+    "sourceFile": "src/Components/Footer.tsx",
+    "activeCommit": 0,
+    "commits": [
+        {
+            "activePatchIndex": 2,
+            "patches": [
+                {
+                    "date": 1714989326986,
+                    "content": "Index: \n===================================================================\n--- \n+++ \n"
+                },
+                {
+                    "date": 1714989503443,
+                    "content": "Index: \n===================================================================\n--- \n+++ \n@@ -1,6 +1,6 @@\n import React from 'react';\n-import { Status } from '../types/Todo';\n+import { Status } from '//';\n \n interface Props {\n   todosCount: number;\n   completedTodosCount: number;\n"
+                },
+                {
+                    "date": 1714989508669,
+                    "content": "Index: \n===================================================================\n--- \n+++ \n@@ -1,6 +1,6 @@\n import React from 'react';\n-import { Status } from '//';\n+import { Status } from '../types/Todo';\n \n interface Props {\n   todosCount: number;\n   completedTodosCount: number;\n"
+                }
+            ],
+            "date": 1714989326986,
+            "name": "Commit-0",
+            "content": "import React from 'react';\nimport { Status } from '../types/Todo';\n\ninterface Props {\n  todosCount: number;\n  completedTodosCount: number;\n  onClearCompleted: () => void;\n  handleFilterChange: (newFilter: Status) => void;\n  filter: Status;\n}\n\nexport const Footer: React.FC<Props> = ({\n  todosCount,\n  completedTodosCount,\n  onClearCompleted,\n  handleFilterChange,\n  filter,\n}) => {\n  const activeTodosCounter = todosCount - completedTodosCount;\n\n  return (\n    <footer className=\"todoapp__footer\" data-cy=\"Footer\">\n      <span className=\"todo-count\" data-cy=\"TodosCounter\">\n        {activeTodosCounter === 1\n          ? '1 item left'\n          : `${activeTodosCounter} items left`}\n      </span>\n\n      {/* Active link should have the 'selected' class */}\n      <nav className=\"filter\" data-cy=\"Filter\">\n        <a\n          href=\"#/\"\n          className={`filter__link ${filter === 'all' ? 'selected' : ''}`}\n          data-cy=\"FilterLinkAll\"\n          onClick={() => handleFilterChange('all')}\n        >\n          All\n        </a>\n\n        <a\n          href=\"#/active\"\n          className={`filter__link ${filter === 'active' ? 'selected' : ''}`}\n          onClick={() => handleFilterChange('active')}\n          data-cy=\"FilterLinkActive\"\n        >\n          Active\n        </a>\n\n        <a\n          href=\"#/completed\"\n          className={`filter__link ${filter === 'completed' ? 'selected' : ''}`}\n          data-cy=\"FilterLinkCompleted\"\n          onClick={() => handleFilterChange('completed')}\n        >\n          Completed\n        </a>\n      </nav>\n\n      {/* this button should be disabled if there are no completed todos */}\n      <button\n        type=\"button\"\n        className=\"todoapp__clear-completed\"\n        data-cy=\"ClearCompletedButton\"\n        onClick={onClearCompleted}\n        disabled={completedTodosCount === 0}\n      >\n        Clear completed\n      </button>\n    </footer>\n  );\n};\n"
+        }
+    ]
+}

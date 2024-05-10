@@ -1,0 +1,170 @@
+{
+    "sourceFile": "src/Components/Loader.tsx",
+    "activeCommit": 0,
+    "commits": [
+        {
+            "activePatchIndex": 38,
+            "patches": [
+                {
+                    "date": 1714995977287,
+                    "content": "Index: \n===================================================================\n--- \n+++ \n"
+                },
+                {
+                    "date": 1714995994282,
+                    "content": "Index: \n===================================================================\n--- \n+++ \n@@ -1,1 +1,1 @@\n-export const Loader \n+export const Loader = \n"
+                },
+                {
+                    "date": 1714996002097,
+                    "content": "Index: \n===================================================================\n--- \n+++ \n@@ -1,1 +1,3 @@\n-export const Loader = \n+export const Loader = () => {\n+  return \n+}\n"
+                },
+                {
+                    "date": 1714996013094,
+                    "content": "Index: \n===================================================================\n--- \n+++ \n@@ -1,3 +1,8 @@\n export const Loader = () => {\n-  return \n-}\n+  return (\n+    <div data-cy=\"TodoLoader\" className=\"modal overlay\">\n+      <div className=\"modal-background has-background-white-ter\" />\n+      <div className=\"loader\" />\n+    </div>\n+  );\n+};\n"
+                },
+                {
+                    "date": 1714996048776,
+                    "content": "Index: \n===================================================================\n--- \n+++ \n@@ -1,4 +1,7 @@\n+\n+\n+\n export const Loader = () => {\n   return (\n     <div data-cy=\"TodoLoader\" className=\"modal overlay\">\n       <div className=\"modal-background has-background-white-ter\" />\n"
+                },
+                {
+                    "date": 1714996057620,
+                    "content": "Index: \n===================================================================\n--- \n+++ \n@@ -1,8 +1,8 @@\n+import React from \"react\";\n \n \n-\n-export const Loader = () => {\n+export const Loader:  = () => {\n   return (\n     <div data-cy=\"TodoLoader\" className=\"modal overlay\">\n       <div className=\"modal-background has-background-white-ter\" />\n       <div className=\"loader\" />\n"
+                },
+                {
+                    "date": 1714996065530,
+                    "content": "Index: \n===================================================================\n--- \n+++ \n@@ -1,8 +1,8 @@\n import React from \"react\";\n \n \n-export const Loader:  = () => {\n+export const Loader: React = () => {\n   return (\n     <div data-cy=\"TodoLoader\" className=\"modal overlay\">\n       <div className=\"modal-background has-background-white-ter\" />\n       <div className=\"loader\" />\n"
+                },
+                {
+                    "date": 1714996073613,
+                    "content": "Index: \n===================================================================\n--- \n+++ \n@@ -1,8 +1,7 @@\n-import React from \"react\";\n+import React from 'react';\n \n-\n-export const Loader: React = () => {\n+export const Loader: React.FC = () => {\n   return (\n     <div data-cy=\"TodoLoader\" className=\"modal overlay\">\n       <div className=\"modal-background has-background-white-ter\" />\n       <div className=\"loader\" />\n"
+                },
+                {
+                    "date": 1715091271835,
+                    "content": "Index: \n===================================================================\n--- \n+++ \n@@ -1,6 +1,6 @@\n import React from 'react';\n-\n+interfac\n export const Loader: React.FC = () => {\n   return (\n     <div data-cy=\"TodoLoader\" className=\"modal overlay\">\n       <div className=\"modal-background has-background-white-ter\" />\n"
+                },
+                {
+                    "date": 1715091276983,
+                    "content": "Index: \n===================================================================\n--- \n+++ \n@@ -1,6 +1,8 @@\n import React from 'react';\n-interfac\n+interface Props {\n+  \n+}\n export const Loader: React.FC = () => {\n   return (\n     <div data-cy=\"TodoLoader\" className=\"modal overlay\">\n       <div className=\"modal-background has-background-white-ter\" />\n"
+                },
+                {
+                    "date": 1715091288765,
+                    "content": "Index: \n===================================================================\n--- \n+++ \n@@ -1,7 +1,7 @@\n import React from 'react';\n interface Props {\n-  \n+  loading: boolean\n }\n export const Loader: React.FC = () => {\n   return (\n     <div data-cy=\"TodoLoader\" className=\"modal overlay\">\n"
+                },
+                {
+                    "date": 1715091295105,
+                    "content": "Index: \n===================================================================\n--- \n+++ \n@@ -1,9 +1,10 @@\n import React from 'react';\n interface Props {\n-  loading: boolean\n+  loading: boolean;\n }\n-export const Loader: React.FC = () => {\n+\n+export const Loader: React.FC<> = () => {\n   return (\n     <div data-cy=\"TodoLoader\" className=\"modal overlay\">\n       <div className=\"modal-background has-background-white-ter\" />\n       <div className=\"loader\" />\n"
+                },
+                {
+                    "date": 1715091301977,
+                    "content": "Index: \n===================================================================\n--- \n+++ \n@@ -2,9 +2,9 @@\n interface Props {\n   loading: boolean;\n }\n \n-export const Loader: React.FC<> = () => {\n+export const Loader: React.FC<Props> = ({loading}) => {\n   return (\n     <div data-cy=\"TodoLoader\" className=\"modal overlay\">\n       <div className=\"modal-background has-background-white-ter\" />\n       <div className=\"loader\" />\n"
+                },
+                {
+                    "date": 1715091322948,
+                    "content": "Index: \n===================================================================\n--- \n+++ \n@@ -2,11 +2,11 @@\n interface Props {\n   loading: boolean;\n }\n \n-export const Loader: React.FC<Props> = ({loading}) => {\n+export const Loader: React.FC<Props> = ({ loading }) => {\n   return (\n-    <div data-cy=\"TodoLoader\" className=\"modal overlay\">\n+    <div data-cy=\"TodoLoader\" className={\"modal overlay\">\n       <div className=\"modal-background has-background-white-ter\" />\n       <div className=\"loader\" />\n     </div>\n   );\n"
+                },
+                {
+                    "date": 1715091328841,
+                    "content": "Index: \n===================================================================\n--- \n+++ \n@@ -4,9 +4,9 @@\n }\n \n export const Loader: React.FC<Props> = ({ loading }) => {\n   return (\n-    <div data-cy=\"TodoLoader\" className={\"modal overlay\">\n+    <div data-cy=\"TodoLoader\" className={\"modal overlay\"}>\n       <div className=\"modal-background has-background-white-ter\" />\n       <div className=\"loader\" />\n     </div>\n   );\n"
+                },
+                {
+                    "date": 1715091333854,
+                    "content": "Index: \n===================================================================\n--- \n+++ \n@@ -4,9 +4,9 @@\n }\n \n export const Loader: React.FC<Props> = ({ loading }) => {\n   return (\n-    <div data-cy=\"TodoLoader\" className={\"modal overlay\"}>\n+    <div data-cy=\"TodoLoader\" className={classna\"modal overlay\"}>\n       <div className=\"modal-background has-background-white-ter\" />\n       <div className=\"loader\" />\n     </div>\n   );\n"
+                },
+                {
+                    "date": 1715091365023,
+                    "content": "Index: \n===================================================================\n--- \n+++ \n@@ -4,9 +4,9 @@\n }\n \n export const Loader: React.FC<Props> = ({ loading }) => {\n   return (\n-    <div data-cy=\"TodoLoader\" className={classna\"modal overlay\"}>\n+    <div data-cy=\"TodoLoader\" className={\"modal overlay\"}>\n       <div className=\"modal-background has-background-white-ter\" />\n       <div className=\"loader\" />\n     </div>\n   );\n"
+                },
+                {
+                    "date": 1715091381914,
+                    "content": "Index: \n===================================================================\n--- \n+++ \n@@ -4,9 +4,9 @@\n }\n \n export const Loader: React.FC<Props> = ({ loading }) => {\n   return (\n-    <div data-cy=\"TodoLoader\" className={\"modal overlay\"}>\n+    <div data-cy=\"TodoLoader\" className={\"modal overlay\">\n       <div className=\"modal-background has-background-white-ter\" />\n       <div className=\"loader\" />\n     </div>\n   );\n"
+                },
+                {
+                    "date": 1715091396972,
+                    "content": "Index: \n===================================================================\n--- \n+++ \n@@ -4,9 +4,9 @@\n }\n \n export const Loader: React.FC<Props> = ({ loading }) => {\n   return (\n-    <div data-cy=\"TodoLoader\" className={\"modal overlay\">\n+    <div data-cy=\"TodoLoader\" className={\"modal overlay'}>\n       <div className=\"modal-background has-background-white-ter\" />\n       <div className=\"loader\" />\n     </div>\n   );\n"
+                },
+                {
+                    "date": 1715091402099,
+                    "content": "Index: \n===================================================================\n--- \n+++ \n@@ -4,9 +4,9 @@\n }\n \n export const Loader: React.FC<Props> = ({ loading }) => {\n   return (\n-    <div data-cy=\"TodoLoader\" className={\"modal overlay'}>\n+    <div data-cy=\"TodoLoader\" className={'modal overlay'}>\n       <div className=\"modal-background has-background-white-ter\" />\n       <div className=\"loader\" />\n     </div>\n   );\n"
+                },
+                {
+                    "date": 1715091411807,
+                    "content": "Index: \n===================================================================\n--- \n+++ \n@@ -4,9 +4,9 @@\n }\n \n export const Loader: React.FC<Props> = ({ loading }) => {\n   return (\n-    <div data-cy=\"TodoLoader\" className={'modal overlay'}>\n+    <div data-cy=\"TodoLoader\" className={'modal overlay' }>\n       <div className=\"modal-background has-background-white-ter\" />\n       <div className=\"loader\" />\n     </div>\n   );\n"
+                },
+                {
+                    "date": 1715091419107,
+                    "content": "Index: \n===================================================================\n--- \n+++ \n@@ -4,9 +4,9 @@\n }\n \n export const Loader: React.FC<Props> = ({ loading }) => {\n   return (\n-    <div data-cy=\"TodoLoader\" className={'modal overlay' }>\n+    <div data-cy=\"TodoLoader\" className={'modal overlay {'}>\n       <div className=\"modal-background has-background-white-ter\" />\n       <div className=\"loader\" />\n     </div>\n   );\n"
+                },
+                {
+                    "date": 1715091424888,
+                    "content": "Index: \n===================================================================\n--- \n+++ \n@@ -4,9 +4,9 @@\n }\n \n export const Loader: React.FC<Props> = ({ loading }) => {\n   return (\n-    <div data-cy=\"TodoLoader\" className={'modal overlay {'}>\n+    <div data-cy=\"TodoLoader\" className={'modal overlay {is-acti}'}>\n       <div className=\"modal-background has-background-white-ter\" />\n       <div className=\"loader\" />\n     </div>\n   );\n"
+                },
+                {
+                    "date": 1715091445392,
+                    "content": "Index: \n===================================================================\n--- \n+++ \n@@ -4,9 +4,9 @@\n }\n \n export const Loader: React.FC<Props> = ({ loading }) => {\n   return (\n-    <div data-cy=\"TodoLoader\" className={'modal overlay {is-acti}'}>\n+    <div data-cy=\"TodoLoader\" className={'modal overlay &&{is-active}'}>\n       <div className=\"modal-background has-background-white-ter\" />\n       <div className=\"loader\" />\n     </div>\n   );\n"
+                },
+                {
+                    "date": 1715091450722,
+                    "content": "Index: \n===================================================================\n--- \n+++ \n@@ -4,9 +4,9 @@\n }\n \n export const Loader: React.FC<Props> = ({ loading }) => {\n   return (\n-    <div data-cy=\"TodoLoader\" className={'modal overlay &&{is-active}'}>\n+    <div data-cy=\"TodoLoader\" className={'modal overlay {is-active}'}>\n       <div className=\"modal-background has-background-white-ter\" />\n       <div className=\"loader\" />\n     </div>\n   );\n"
+                },
+                {
+                    "date": 1715091468308,
+                    "content": "Index: \n===================================================================\n--- \n+++ \n@@ -4,9 +4,9 @@\n }\n \n export const Loader: React.FC<Props> = ({ loading }) => {\n   return (\n-    <div data-cy=\"TodoLoader\" className={'modal overlay {is-active}'}>\n+    <div data-cy=\"TodoLoader\" className={'modal overlay loa{is-active}'}>\n       <div className=\"modal-background has-background-white-ter\" />\n       <div className=\"loader\" />\n     </div>\n   );\n"
+                },
+                {
+                    "date": 1715091479795,
+                    "content": "Index: \n===================================================================\n--- \n+++ \n@@ -0,0 +1,13 @@\n+import React from 'react';\n+interface Props {\n+  loading: boolean;\n+}\n+\n+export const Loader: React.FC<Props> = ({ loading }) => {\n+  return (\n+    <div data-cy=\"TodoLoader\" className={'modal overlay  {is-active}'}>\n+      <div className=\"modal-background has-background-white-ter\" />\n+      <div className=\"loader\" />\n+    </div>\n+  );\n+};\n"
+                },
+                {
+                    "date": 1715091485718,
+                    "content": "Index: \n===================================================================\n--- \n+++ \n@@ -4,23 +4,10 @@\n }\n \n export const Loader: React.FC<Props> = ({ loading }) => {\n   return (\n-    <div data-cy=\"TodoLoader\" className={'modal overlay  {is-active}'}>\n+    <div data-cy=\"TodoLoader\" className={'modal overlay  {loading ? is-active : '}'}>\n       <div className=\"modal-background has-background-white-ter\" />\n       <div className=\"loader\" />\n     </div>\n   );\n };\n-import React from 'react';\n-interface Props {\n-  loading: boolean;\n-}\n-\n-export const Loader: React.FC<Props> = ({ loading }) => {\n-  return (\n-    <div data-cy=\"TodoLoader\" className={'modal overlay loa{is-active}'}>\n-      <div className=\"modal-background has-background-white-ter\" />\n-      <div className=\"loader\" />\n-    </div>\n-  );\n-};\n"
+                },
+                {
+                    "date": 1715091493251,
+                    "content": "Index: \n===================================================================\n--- \n+++ \n@@ -4,9 +4,9 @@\n }\n \n export const Loader: React.FC<Props> = ({ loading }) => {\n   return (\n-    <div data-cy=\"TodoLoader\" className={'modal overlay  {loading ? is-active : '}'}>\n+    <div data-cy=\"TodoLoader\" className={'modal overlay ${loading ? is-active : ''}'}>\n       <div className=\"modal-background has-background-white-ter\" />\n       <div className=\"loader\" />\n     </div>\n   );\n"
+                },
+                {
+                    "date": 1715091502296,
+                    "content": "Index: \n===================================================================\n--- \n+++ \n@@ -4,9 +4,9 @@\n }\n \n export const Loader: React.FC<Props> = ({ loading }) => {\n   return (\n-    <div data-cy=\"TodoLoader\" className={'modal overlay ${loading ? is-active : ''}'}>\n+    <div data-cy=\"TodoLoader\" className={`modal overlay ${loading ? is-active : ''}'}>\n       <div className=\"modal-background has-background-white-ter\" />\n       <div className=\"loader\" />\n     </div>\n   );\n"
+                },
+                {
+                    "date": 1715091507791,
+                    "content": "Index: \n===================================================================\n--- \n+++ \n@@ -4,9 +4,12 @@\n }\n \n export const Loader: React.FC<Props> = ({ loading }) => {\n   return (\n-    <div data-cy=\"TodoLoader\" className={`modal overlay ${loading ? is-active : ''}'}>\n+    <div\n+      data-cy=\"TodoLoader\"\n+      className={`modal overlay ${loading ? is - active : ''}`}\n+    >\n       <div className=\"modal-background has-background-white-ter\" />\n       <div className=\"loader\" />\n     </div>\n   );\n"
+                },
+                {
+                    "date": 1715091513344,
+                    "content": "Index: \n===================================================================\n--- \n+++ \n@@ -6,9 +6,9 @@\n export const Loader: React.FC<Props> = ({ loading }) => {\n   return (\n     <div\n       data-cy=\"TodoLoader\"\n-      className={`modal overlay ${loading ? is - active : ''}`}\n+      className={`modal overlay ${loading ? 'is - active : ''}`}\n     >\n       <div className=\"modal-background has-background-white-ter\" />\n       <div className=\"loader\" />\n     </div>\n"
+                },
+                {
+                    "date": 1715091522163,
+                    "content": "Index: \n===================================================================\n--- \n+++ \n@@ -6,9 +6,9 @@\n export const Loader: React.FC<Props> = ({ loading }) => {\n   return (\n     <div\n       data-cy=\"TodoLoader\"\n-      className={`modal overlay ${loading ? 'is - active : ''}`}\n+      className={`modal overlay ${loading ? 'is -active' : ''}`}\n     >\n       <div className=\"modal-background has-background-white-ter\" />\n       <div className=\"loader\" />\n     </div>\n"
+                },
+                {
+                    "date": 1715152708138,
+                    "content": "Index: \n===================================================================\n--- \n+++ \n@@ -6,9 +6,9 @@\n export const Loader: React.FC<Props> = ({ loading }) => {\n   return (\n     <div\n       data-cy=\"TodoLoader\"\n-      className={`modal overlay ${loading ? 'is -active' : ''}`}\n+      className={`modal overlay ${loading ? 'active' : ''}`}\n     >\n       <div className=\"modal-background has-background-white-ter\" />\n       <div className=\"loader\" />\n     </div>\n"
+                },
+                {
+                    "date": 1715153123980,
+                    "content": "Index: \n===================================================================\n--- \n+++ \n@@ -6,9 +6,9 @@\n export const Loader: React.FC<Props> = ({ loading }) => {\n   return (\n     <div\n       data-cy=\"TodoLoader\"\n-      className={`modal overlay ${loading ? 'active' : ''}`}\n+      className={`modal overlay ${loading ? 'is-active' : ''}`}\n     >\n       <div className=\"modal-background has-background-white-ter\" />\n       <div className=\"loader\" />\n     </div>\n"
+                },
+                {
+                    "date": 1715153228633,
+                    "content": "Index: \n===================================================================\n--- \n+++ \n@@ -1,5 +1,6 @@\n import React from 'react';\n+\n interface Props {\n   loading: boolean;\n }\n \n"
+                },
+                {
+                    "date": 1715153492195,
+                    "content": "Index: \n===================================================================\n--- \n+++ \n@@ -7,9 +7,9 @@\n export const Loader: React.FC<Props> = ({ loading }) => {\n   return (\n     <div\n       data-cy=\"TodoLoader\"\n-      className={`modal overlay ${loading ? 'is-active' : ''}`}\n+      className={`modal overlay ${loading  'is-active' : ''}`}\n     >\n       <div className=\"modal-background has-background-white-ter\" />\n       <div className=\"loader\" />\n     </div>\n"
+                },
+                {
+                    "date": 1715153497887,
+                    "content": "Index: \n===================================================================\n--- \n+++ \n@@ -7,9 +7,9 @@\n export const Loader: React.FC<Props> = ({ loading }) => {\n   return (\n     <div\n       data-cy=\"TodoLoader\"\n-      className={`modal overlay ${loading  'is-active' : ''}`}\n+      className={`modal overlay ${loading && 'is-active'}`}\n     >\n       <div className=\"modal-background has-background-white-ter\" />\n       <div className=\"loader\" />\n     </div>\n"
+                },
+                {
+                    "date": 1715153536771,
+                    "content": "Index: \n===================================================================\n--- \n+++ \n@@ -7,9 +7,9 @@\n export const Loader: React.FC<Props> = ({ loading }) => {\n   return (\n     <div\n       data-cy=\"TodoLoader\"\n-      className={`modal overlay ${loading && 'is-active'}`}\n+      className={`modal overlay ${loading && 'is-active' : ''}`}\n     >\n       <div className=\"modal-background has-background-white-ter\" />\n       <div className=\"loader\" />\n     </div>\n"
+                }
+            ],
+            "date": 1714995977287,
+            "name": "Commit-0",
+            "content": "export const Loader \n"
+        }
+    ]
+}
