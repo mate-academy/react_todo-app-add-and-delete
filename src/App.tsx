@@ -113,6 +113,7 @@ export const App: React.FC = () => {
     for (const todo of completedTodos) {
       try {
         await deleteTodo(todo.id);
+        setTodos(prevTodos => prevTodos.filter(t => t.id !== todo.id));
       } catch (err) {
         setError(true);
         setErrorType('delete');
@@ -123,11 +124,8 @@ export const App: React.FC = () => {
     if (errorAll) {
       setError(true);
       setErrorType('delete');
-
-      return;
     }
 
-    setTodos(prevTodos => prevTodos.filter(todo => !todo.completed));
     if (inputRef.current) {
       inputRef.current.focus();
     }

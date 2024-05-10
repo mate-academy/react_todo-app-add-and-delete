@@ -3,7 +3,7 @@
     "activeCommit": 0,
     "commits": [
         {
-            "activePatchIndex": 28,
+            "activePatchIndex": 31,
             "patches": [
                 {
                     "date": 1715081793896,
@@ -120,6 +120,18 @@
                 {
                     "date": 1715252501098,
                     "content": "Index: \n===================================================================\n--- \n+++ \n@@ -909,12 +909,12 @@\n           cy.wait('@deleteRequest2');\n           cy.wait('@deleteRequest3');\n         });\n \n-        // it('should show an error message if any of the group deletions fails', () => {\n-        //   errorMessage.assertVisible();\n-        //   errorMessage.assertText('Unable to delete a todo');\n-        // });\n+        it('should show an error message if any of the group deletions fails', () => {\n+          errorMessage.assertVisible();\n+          errorMessage.assertText('Unable to delete a todo');\n+        });\n \n         it('should remove todos with success responses and keep todos with errors', () => {\n           todos.assertCount(3);\n           todos.assertTitle(0, 'CSS');\n"
+                },
+                {
+                    "date": 1715344925194,
+                    "content": "Index: \n===================================================================\n--- \n+++ \n@@ -914,13 +914,13 @@\n           errorMessage.assertVisible();\n           errorMessage.assertText('Unable to delete a todo');\n         });\n \n-        it('should remove todos with success responses and keep todos with errors', () => {\n-          todos.assertCount(3);\n-          todos.assertTitle(0, 'CSS');\n-          todos.assertTitle(1, 'TypeScript');\n-        });\n+        // it('should remove todos with success responses and keep todos with errors', () => {\n+        //   todos.assertCount(3);\n+        //   todos.assertTitle(0, 'CSS');\n+        //   todos.assertTitle(1, 'TypeScript');\n+        // });\n \n         it('should not disable ClearCompleted button', () => {\n           page.clearCompletedButton().should('not.be.disabled');\n         });\n"
+                },
+                {
+                    "date": 1715345082601,
+                    "content": "Index: \n===================================================================\n--- \n+++ \n@@ -920,11 +920,11 @@\n         //   todos.assertTitle(0, 'CSS');\n         //   todos.assertTitle(1, 'TypeScript');\n         // });\n \n-        it('should not disable ClearCompleted button', () => {\n-          page.clearCompletedButton().should('not.be.disabled');\n-        });\n+        // it('should not disable ClearCompleted button', () => {\n+        //   page.clearCompletedButton().should('not.be.disabled');\n+        // });\n       });\n     });\n \n     describe('with all todos completed', () => {\n"
+                },
+                {
+                    "date": 1715345289204,
+                    "content": "Index: \n===================================================================\n--- \n+++ \n@@ -914,17 +914,17 @@\n           errorMessage.assertVisible();\n           errorMessage.assertText('Unable to delete a todo');\n         });\n \n-        // it('should remove todos with success responses and keep todos with errors', () => {\n-        //   todos.assertCount(3);\n-        //   todos.assertTitle(0, 'CSS');\n-        //   todos.assertTitle(1, 'TypeScript');\n-        // });\n+        it('should remove todos with success responses and keep todos with errors', () => {\n+          todos.assertCount(3);\n+          todos.assertTitle(0, 'CSS');\n+          todos.assertTitle(1, 'TypeScript');\n+        });\n \n-        // it('should not disable ClearCompleted button', () => {\n-        //   page.clearCompletedButton().should('not.be.disabled');\n-        // });\n+        it('should not disable ClearCompleted button', () => {\n+          page.clearCompletedButton().should('not.be.disabled');\n+        });\n       });\n     });\n \n     describe('with all todos completed', () => {\n"
                 }
             ],
             "date": 1715081793896,
