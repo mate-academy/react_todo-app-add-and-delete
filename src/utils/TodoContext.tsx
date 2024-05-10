@@ -69,7 +69,7 @@ export const TodoContextProvider: React.FC<Props> = ({ children }) => {
         setTimeout(() => setErrMessage(ErrText.NoErr), 3000);
       } finally {
         setLoading(false);
-        setModifiedTodoId(0);
+        // setModifiedTodoId(0);
       }
     },
     [todos],
@@ -88,7 +88,7 @@ export const TodoContextProvider: React.FC<Props> = ({ children }) => {
 
       setTempTodo(null);
       setTodos(currentTodos => [...currentTodos, newestTodo]);
-      // setLoading(false);
+      setLoading(false);
     } catch (error) {
       setErrMessage(ErrText.AddErr);
       setTempTodo(null);
