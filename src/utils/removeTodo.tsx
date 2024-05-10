@@ -2,28 +2,28 @@ import { deleteTodo } from '../api/todos';
 import { Todo } from '../types/Todo';
 
 type Args = {
-  onErrorMessage: (errMessage: string) => void;
-  onTodos: React.Dispatch<React.SetStateAction<Todo[]>>;
   deletedId: number;
-  onLoadingItemsIds: React.Dispatch<React.SetStateAction<number[]>>;
+  setTodos: React.Dispatch<React.SetStateAction<Todo[]>>;
+  setLoadingItemsIds: React.Dispatch<React.SetStateAction<number[]>>;
+  handleError: (errMessage: string) => void;
 };
 
-export const removeTodo = ({
+export const RemoveTodo = ({
   deletedId,
-  onTodos,
-  onErrorMessage,
-  onLoadingItemsIds,
+  setTodos,
+  setLoadingItemsIds,
+  handleError,
 }: Args) => {
-  onLoadingItemsIds(prevIds => [...prevIds, deletedId]);
+  setLoadingItemsIds(prevIds => [...prevIds, deletedId]);
 
   deleteTodo(deletedId)
     .then(() => {
-      onTodos(todos => todos.filter(todoItem => todoItem.id !== deletedId));
+      setTodos(todos => todos.filter(todoItem => todoItem.id !== deletedId));
     })
     .catch(() => {
-      onErrorMessage('Unable to delete a todo');
+      handleError('Unable to delete a todo');
     })
     .finally(() => {
-      onLoadingItemsIds(prevIds => prevIds.filter(id => id !== deletedId));
+      setLoadingItemsIds(prevIds => prevIds.filter(id => id !== deletedId));
     });
 };

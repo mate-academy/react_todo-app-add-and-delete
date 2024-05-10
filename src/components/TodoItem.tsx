@@ -1,17 +1,12 @@
 import React from 'react';
 import { Todo } from '../types/Todo';
-import { removeTodo } from '../utils/removeTodo';
+import { RemoveTodo } from '../utils/removeTodo';
+import { useTodosContext } from '../TodoContext';
 import classNames from 'classnames';
 
 type Props = {
-  key: number;
   todoId: number;
-  onTodos: React.Dispatch<React.SetStateAction<Todo[]>>;
-  todos: Todo[];
   todo: Todo;
-  onErrorMessage: (errMessage: string) => void;
-  loadingItemsIds: number[];
-  onLoadingItemsIds: React.Dispatch<React.SetStateAction<number[]>>;
 };
 
 const getLoaderClass = (isItemLoading: boolean) =>
@@ -19,21 +14,12 @@ const getLoaderClass = (isItemLoading: boolean) =>
     'is-active': isItemLoading,
   });
 
-export const TodoItem: React.FC<Props> = ({
-  onTodos,
-  todo,
-  todoId,
-  onErrorMessage,
-  loadingItemsIds,
-  onLoadingItemsIds,
-}) => {
+export const TodoItem: React.FC<Props> = ({ todoId, todo }) => {
+  const { setTodos, loadingItemsIds, setLoadingItemsIds, handleError } =
+    useTodosContext();
+
   const handleDeleteTodo = (deletedId: number) => {
-    return removeTodo({
-      deletedId,
-      onTodos,
-      onErrorMessage,
-      onLoadingItemsIds,
-    });
+    return RemoveTodo({ deletedId, setTodos, setLoadingItemsIds, handleError });
   };
 
   const isItemLoading = loadingItemsIds.includes(todoId);

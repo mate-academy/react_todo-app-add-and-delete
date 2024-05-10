@@ -1,40 +1,31 @@
-import React from 'react';
-import classNames from 'classnames';
-import { CompletedStatus } from '../types/CompletedStatus';
+import { CompletionStatus } from '../types/CompletionStatus';
+import { RemoveTodo } from '../utils/removeTodo';
+import { countItemsLeft } from '../utils/countItemsLeft';
+import { useTodosContext } from '../TodoContext';
 import { Todo } from '../types/Todo';
-import { removeTodo } from '../utils/removeTodo';
+import classNames from 'classnames';
 
 type Props = {
   todos: Todo[];
-  onTodos: React.Dispatch<React.SetStateAction<Todo[]>>;
-  onErrorMessage: (errMessage: string) => void;
-  itemsLeft: number;
-  filterByStatus: CompletedStatus;
-  onFilterByStatus: (status: CompletedStatus) => void;
-  onLoadingItemsIds: React.Dispatch<React.SetStateAction<number[]>>;
 };
 
-export const TodoFooter: React.FC<Props> = ({
-  todos,
-  onTodos,
-  onErrorMessage,
-  itemsLeft,
-  filterByStatus,
-  onFilterByStatus,
-  onLoadingItemsIds,
-}) => {
+export const TodoFooter: React.FC<Props> = ({ todos }) => {
+  const {
+    filterByStatus,
+    setFilterByStatus,
+    setTodos,
+    setLoadingItemsIds,
+    handleError,
+  } = useTodosContext();
+
   const completedTodos = todos.filter(todo => todo.completed);
+  const itemsLeft = countItemsLeft(todos);
 
   const handleClearCompletedTodos = () => {
     completedTodos.forEach(completedTodo => {
       const deletedId = completedTodo.id;
 
-      removeTodo({
-        deletedId,
-        onTodos,
-        onErrorMessage,
-        onLoadingItemsIds,
-      });
+      RemoveTodo({ deletedId, setTodos, setLoadingItemsIds, handleError });
     });
   };
 
@@ -45,17 +36,17 @@ export const TodoFooter: React.FC<Props> = ({
       </span>
 
       <nav className="filter" data-cy="Filter">
-        {Object.values(CompletedStatus).map(status => (
+        {Object.values(CompletionStatus).map(status => (
           <a
             data-cy={`FilterLink${status}`}
-            key={CompletedStatus[status]}
+            key={CompletionStatus[status]}
             href="#/"
             className={classNames('filter__link', {
-              selected: filterByStatus === CompletedStatus[status],
+              selected: filterByStatus === CompletionStatus[status],
             })}
-            onClick={() => onFilterByStatus(CompletedStatus[status])}
+            onClick={() => setFilterByStatus(CompletionStatus[status])}
           >
-            {CompletedStatus[status]}
+            {CompletionStatus[status]}
           </a>
         ))}
       </nav>

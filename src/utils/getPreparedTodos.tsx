@@ -1,18 +1,18 @@
 import { Todo } from '../types/Todo';
-import { CompletedStatus } from '../types/CompletedStatus';
+import { CompletionStatus } from '../types/CompletionStatus';
 
 export const getPreparedTodos = (
   todos: Todo[],
-  { filterByStatus }: { filterByStatus: CompletedStatus },
+  { filterByStatus }: { filterByStatus: CompletionStatus },
 ) => {
   let preparedTodos;
 
   switch (filterByStatus) {
-    case CompletedStatus.Active:
+    case CompletionStatus.Active:
       preparedTodos = todos.filter(todo => !todo.completed);
       break;
 
-    case CompletedStatus.Completed:
+    case CompletionStatus.Completed:
       preparedTodos = todos.filter(todo => todo.completed);
       break;
 

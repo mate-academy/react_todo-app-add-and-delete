@@ -1,53 +1,44 @@
 import React, { useState } from 'react';
-import classNames from 'classnames';
 import { Todo } from '../types/Todo';
 import { createTodo } from '../api/todos';
 import { USER_ID } from '../api/todos';
+import { useTodosContext } from '../TodoContext';
+import classNames from 'classnames';
 
 type Props = {
   todos: Todo[];
-  titleField: string;
-  onTitleField: (newTitle: string) => void;
-  onTodos: (newTodos: Todo[]) => void;
-  onErrorMessage: (errMessage: string) => void;
-  onTempTodo: (tempTodo: Todo | null) => void;
-  onLoadingItemsIds: React.Dispatch<React.SetStateAction<number[]>>;
 };
 
-export const TodoHeader: React.FC<Props> = ({
-  todos,
-  titleField,
-  onTitleField,
-  onTodos,
-  onErrorMessage,
-  onTempTodo,
-  onLoadingItemsIds,
-}) => {
+export const TodoHeader: React.FC<Props> = ({ todos }) => {
+  const {
+    titleField,
+    handleError,
+    setTodos,
+    setTitleField,
+    setTempTodo,
+    setLoadingItemsIds,
+  } = useTodosContext();
+
   const [isDisabled, setIsDisabled] = useState(false);
   const normalizedTitleField = titleField.trim();
 
-  const handleErrorMessage = (errMessage: string) => {
-    onErrorMessage(errMessage);
-    setTimeout(() => onErrorMessage(''), 3000);
-  };
-
   const addTodo = (newTodo: Omit<Todo, 'id'>) => {
-    const tempId = 0;
+    const tempTodoId = 0;
 
-    onTempTodo(Object.assign(newTodo, { id: tempId }));
-    onLoadingItemsIds(prevIds => [...prevIds, tempId]);
+    setTempTodo(Object.assign(newTodo, { id: tempTodoId }));
+    setLoadingItemsIds(prevIds => [...prevIds, tempTodoId]);
 
     setIsDisabled(true);
 
     createTodo(newTodo)
       .then(res => {
-        onTodos([...todos, res]);
-        onTitleField('');
-        onLoadingItemsIds(prevIds => prevIds.filter(id => id !== tempId));
+        setTodos([...todos, res]);
+        setTitleField('');
+        setLoadingItemsIds(prevIds => prevIds.filter(id => id !== tempTodoId));
       })
-      .catch(() => handleErrorMessage('Unable to add a todo'))
+      .catch(() => handleError('Unable to add a todo'))
       .finally(() => {
-        onTempTodo(null);
+        setTempTodo(null);
         setIsDisabled(false);
       });
   };
@@ -56,7 +47,7 @@ export const TodoHeader: React.FC<Props> = ({
     event.preventDefault();
 
     if (!normalizedTitleField.length) {
-      handleErrorMessage('Title should not be empty');
+      handleError('Title should not be empty');
 
       return;
     }
@@ -84,10 +75,9 @@ export const TodoHeader: React.FC<Props> = ({
           type="text"
           className="todoapp__new-todo"
           placeholder="What needs to be done?"
-          onChange={event => onTitleField(event.target.value)}
+          onChange={event => setTitleField(event.target.value)}
           value={titleField}
           disabled={isDisabled}
-          autoFocus
           ref={input => input && input.focus()}
         />
       </form>
