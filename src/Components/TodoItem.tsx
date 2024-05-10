@@ -35,12 +35,10 @@ export const TodoItem: React.FC<Props> = ({
   deleteFewTodo,
 }) => {
   const handleDelete = async () => {
-    // setLoading(true);
     setLoadingTodoId(id);
     try {
       await onDelete(id);
       await deleteTodo(id);
-      // setLoadingTodoId(null);
       setFocus(true);
     } catch (err) {
       setError(true);
