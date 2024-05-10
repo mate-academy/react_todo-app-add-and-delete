@@ -53,21 +53,29 @@ export const App: React.FC = () => {
     todoInput.current?.focus();
   }, [todos, currentError]);
 
-  const deleteTodoById = useCallback((id: number) => {
-    setIsDeleting(true);
-    deleteTodo(id)
-      .then(() =>
-        setTodos((currentTodos: Todo[]) =>
-          currentTodos.filter((todo: Todo) => todo.id !== id),
-        ),
-      )
-      .catch(() => {
-        handleSetCurrentError(Error.CannotDelete);
-      })
-      .finally(() => {
-        setIsDeleting(false);
-      });
-  }, []);
+  const deleteTodoById = useCallback(
+    (id: number) => {
+      if (isDeleting) {
+        return;
+      }
+
+      setIsDeleting(false);
+
+      return deleteTodo(id)
+        .then(() =>
+          setTodos((currentTodos: Todo[]) =>
+            currentTodos.filter((todo: Todo) => todo.id !== id),
+          ),
+        )
+        .catch(() => {
+          handleSetCurrentError(Error.CannotDelete);
+        })
+        .finally(() => {
+          setIsDeleting(false);
+        });
+    },
+    [isDeleting],
+  );
 
   const createTodo = useCallback(() => {
     const todoTitle = newTodoTitle?.trim();
