@@ -108,6 +108,7 @@ export const App: React.FC = () => {
 
   const onClearCompleted = async () => {
     const completedTodos = todos.filter(todo => todo.completed);
+    let errorAll = false;
 
     for (const todo of completedTodos) {
       try {
@@ -115,8 +116,15 @@ export const App: React.FC = () => {
       } catch (err) {
         setError(true);
         setErrorType('delete');
-        break;
+        errorAll = true;
       }
+    }
+
+    if (errorAll) {
+      setError(true);
+      setErrorType('delete');
+
+      return;
     }
 
     setTodos(prevTodos => prevTodos.filter(todo => !todo.completed));
