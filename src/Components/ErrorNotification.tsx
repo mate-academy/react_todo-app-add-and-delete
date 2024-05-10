@@ -11,6 +11,14 @@ export const ErrorNotification: React.FC<Props> = ({
   error,
   hideError,
 }) => {
+  useEffect(() => {
+    const timeout = setTimeout(() => {
+      hideError();
+    }, 3000);
+
+    return () => clearTimeout(timeout);
+  }, [error, errorType, hideError]);
+
   let errorMessage = '';
 
   switch (errorType) {
@@ -33,14 +41,6 @@ export const ErrorNotification: React.FC<Props> = ({
       errorMessage = 'Unknown error';
       break;
   }
-
-  useEffect(() => {
-    const timeout = setTimeout(() => {
-      hideError();
-    }, 3000);
-
-    return () => clearTimeout(timeout);
-  }, [error, errorType, hideError]);
 
   return (
     <div

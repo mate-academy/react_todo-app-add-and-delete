@@ -2,12 +2,11 @@
 /* eslint-disable jsx-a11y/control-has-associated-label */
 import React, { useEffect, useRef, useState } from 'react';
 import { UserWarning } from './UserWarning';
-import { USER_ID, getTodos, postTodo } from './api/todos';
+import { USER_ID, deleteTodo, getTodos, postTodo } from './api/todos';
 import { TodoList } from './Components/TodoList';
 import { ErrorNotification } from './Components/ErrorNotification';
 import { Footer } from './Components/Footer';
 import { Status, Todo, Error } from './types/Todo';
-import { deleteTodo } from './api/todos';
 
 export const App: React.FC = () => {
   const [todos, setTodos] = useState<Todo[]>([]);
@@ -22,6 +21,7 @@ export const App: React.FC = () => {
   const [addNewTodo, setAddNewTodo] = useState<boolean>(false);
   const [loadingAddTodoId, setLoadingAddTodoId] = useState<number | null>(null);
   const inputRef = useRef<HTMLInputElement>(null);
+  const [deleteFewTodo, setDeleteFewTodo] = useState<number[]>([]);
 
   useEffect(() => {
     const fetchTodos = async () => {
@@ -130,6 +130,7 @@ export const App: React.FC = () => {
   };
 
   const handleDeleteTodo = async (id: number) => {
+    setDeleteFewTodo(prev => [...prev, id]);
     setLoadingTodoId(id);
     try {
       await deleteTodo(id);
@@ -141,6 +142,7 @@ export const App: React.FC = () => {
       setError(true);
       setErrorType('delete');
     } finally {
+      setDeleteFewTodo(prev => prev.filter(todoId => todoId !== id));
       setLoadingTodoId(null);
     }
   };
@@ -222,6 +224,7 @@ export const App: React.FC = () => {
             setLoadingTodoId={setLoadingTodoId}
             tempTodo={tempTodo}
             setLoading={setLoading}
+            deleteFewTodo={deleteFewTodo}
           />
           {/* Hide the footer if there are no todos */}
           {todos.length > 0 && (

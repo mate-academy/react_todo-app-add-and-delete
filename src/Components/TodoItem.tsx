@@ -17,6 +17,7 @@ interface Props {
   setLoadingTodoId: (setLoadingTodoId: number | null) => void;
   showLoader: boolean;
   setLoading: (setLoading: boolean) => void;
+  deleteFewTodo: number[];
 }
 
 export const TodoItem: React.FC<Props> = ({
@@ -31,6 +32,7 @@ export const TodoItem: React.FC<Props> = ({
   setLoadingTodoId,
   showLoader,
   loadingTodoId,
+  deleteFewTodo,
 }) => {
   const handleDelete = async () => {
     // setLoading(true);
@@ -74,7 +76,7 @@ export const TodoItem: React.FC<Props> = ({
         className="todo__remove"
         onClick={handleDelete}
         data-cy="TodoDelete"
-        disabled={showLoader}
+        disabled={showLoader || deleteFewTodo.includes(id)}
       >
         ×
       </button>

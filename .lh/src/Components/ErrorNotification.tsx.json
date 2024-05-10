@@ -3,7 +3,7 @@
     "activeCommit": 0,
     "commits": [
         {
-            "activePatchIndex": 1,
+            "activePatchIndex": 9,
             "patches": [
                 {
                     "date": 1714989304391,
@@ -12,6 +12,38 @@
                 {
                     "date": 1714989494032,
                     "content": "Index: \n===================================================================\n--- \n+++ \n@@ -1,6 +1,6 @@\n import React, { useEffect } from 'react';\n-import { Error } from '../types/Todo';\n+import { Error } from '../ty';\n \n interface Props {\n   errorType: Error | null;\n   error: boolean;\n"
+                },
+                {
+                    "date": 1715251771637,
+                    "content": "Index: \n===================================================================\n--- \n+++ \n@@ -1,6 +1,6 @@\n import React, { useEffect } from 'react';\n-import { Error } from '../ty';\n+import { Error } from '../types/Todo';\n \n interface Props {\n   errorType: Error | null;\n   error: boolean;\n@@ -10,8 +10,9 @@\n   errorType,\n   error,\n   hideError,\n }) => {\n+  if \n   let errorMessage = '';\n \n   switch (errorType) {\n     case 'load':\n"
+                },
+                {
+                    "date": 1715251777639,
+                    "content": "Index: \n===================================================================\n--- \n+++ \n@@ -10,9 +10,9 @@\n   errorType,\n   error,\n   hideError,\n }) => {\n-  if \n+  if (!error) {}\n   let errorMessage = '';\n \n   switch (errorType) {\n     case 'load':\n"
+                },
+                {
+                    "date": 1715251784676,
+                    "content": "Index: \n===================================================================\n--- \n+++ \n@@ -10,9 +10,12 @@\n   errorType,\n   error,\n   hideError,\n }) => {\n-  if (!error) {}\n+  if (!error) {\n+    return null;\n+  }\n+\n   let errorMessage = '';\n \n   switch (errorType) {\n     case 'load':\n"
+                },
+                {
+                    "date": 1715251808120,
+                    "content": "Index: \n===================================================================\n--- \n+++ \n@@ -16,28 +16,9 @@\n   }\n \n   let errorMessage = '';\n \n-  switch (errorType) {\n-    case 'load':\n-      errorMessage = 'Unable to load todos';\n-      break;\n-    case 'empty':\n-      errorMessage = 'Title should not be empty';\n-      break;\n-    case 'add':\n-      errorMessage = 'Unable to add a todo';\n-      break;\n-    case 'delete':\n-      errorMessage = 'Unable to delete a todo';\n-      break;\n-    case 'update':\n-      errorMessage = 'Unable to update a todo';\n-      break;\n-    default:\n-      errorMessage = 'Unknown error';\n-      break;\n-  }\n+  \n \n   useEffect(() => {\n     const timeout = setTimeout(() => {\n       hideError();\n"
+                },
+                {
+                    "date": 1715251815211,
+                    "content": "Index: \n===================================================================\n--- \n+++ \n@@ -16,18 +16,37 @@\n   }\n \n   let errorMessage = '';\n \n-  \n-\n   useEffect(() => {\n     const timeout = setTimeout(() => {\n       hideError();\n     }, 3000);\n \n     return () => clearTimeout(timeout);\n   }, [error, errorType, hideError]);\n \n+  switch (errorType) {\n+    case 'load':\n+      errorMessage = 'Unable to load todos';\n+      break;\n+    case 'empty':\n+      errorMessage = 'Title should not be empty';\n+      break;\n+    case 'add':\n+      errorMessage = 'Unable to add a todo';\n+      break;\n+    case 'delete':\n+      errorMessage = 'Unable to delete a todo';\n+      break;\n+    case 'update':\n+      errorMessage = 'Unable to update a todo';\n+      break;\n+    default:\n+      errorMessage = 'Unknown error';\n+      break;\n+  }\n+\n   return (\n     <div\n       data-cy=\"ErrorNotification\"\n       className={`notification is-danger is-light has-text-weight-normal ${error ? '' : 'hidden'}`}\n"
+                },
+                {
+                    "date": 1715251844703,
+                    "content": "Index: \n===================================================================\n--- \n+++ \n@@ -10,14 +10,10 @@\n   errorType,\n   error,\n   hideError,\n }) => {\n-  if (!error) {\n-    return null;\n-  }\n+  \n \n-  let errorMessage = '';\n-\n   useEffect(() => {\n     const timeout = setTimeout(() => {\n       hideError();\n     }, 3000);\n"
+                },
+                {
+                    "date": 1715251851485,
+                    "content": "Index: \n===================================================================\n--- \n+++ \n@@ -10,9 +10,8 @@\n   errorType,\n   error,\n   hideError,\n }) => {\n-  \n \n   useEffect(() => {\n     const timeout = setTimeout(() => {\n       hideError();\n@@ -20,8 +19,14 @@\n \n     return () => clearTimeout(timeout);\n   }, [error, errorType, hideError]);\n \n+  if (!error) {\n+    return null;\n+  }\n+\n+  let errorMessage = '';\n+\n   switch (errorType) {\n     case 'load':\n       errorMessage = 'Unable to load todos';\n       break;\n"
+                },
+                {
+                    "date": 1715251957097,
+                    "content": "Index: \n===================================================================\n--- \n+++ \n@@ -10,20 +10,16 @@\n   errorType,\n   error,\n   hideError,\n }) => {\n-\n   useEffect(() => {\n     const timeout = setTimeout(() => {\n       hideError();\n     }, 3000);\n \n     return () => clearTimeout(timeout);\n   }, [error, errorType, hideError]);\n \n-  if (!error) {\n-    return null;\n-  }\n \n   let errorMessage = '';\n \n   switch (errorType) {\n"
                 }
             ],
             "date": 1714989304391,
