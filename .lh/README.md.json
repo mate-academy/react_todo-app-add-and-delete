@@ -3,7 +3,7 @@
     "activeCommit": 0,
     "commits": [
         {
-            "activePatchIndex": 5,
+            "activePatchIndex": 6,
             "patches": [
                 {
                     "date": 1714990317305,
@@ -28,6 +28,10 @@
                 {
                     "date": 1715092687578,
                     "content": "Index: \n===================================================================\n--- \n+++ \n@@ -19,10 +19,10 @@\n + trim the title when checked or saved;\n - use your `userId` for the new todo;\n - send a POST request to the API (check the [API Documentation](https://mate-academy.github.io/fe-students-api/))\n + disable the input until receiving a response from the API;\n-<!-- - immediately after sending a request create a todo with `id: 0` and save it to the `tempTodo` variable in the state (NOT to the `todos` array);\n-- show an independent `TodoItem` **after** the list if `tempTodo` is not `null`; -->\n+- immediately after sending a request create a todo with `id: 0` and save it to the `tempTodo` variable in the state (NOT to the `todos` array);\n+- show an independent `TodoItem` **after** the list if `tempTodo` is not `null`;\n - temp TodoItem should have the loader (check the original markup);\n - in case of success add the todo created by the API to the array (take it from the POST response);\n - in case of an API error showing `Unable to add a todo` notification at the bottom;\n - set `tempTodo` to `null` to hide the extra `TodoItem`;\n"
+                },
+                {
+                    "date": 1715335695128,
+                    "content": "Index: \n===================================================================\n--- \n+++ \n@@ -54,9 +54,9 @@\n ## Instructions\n - Install Prettier Extention and use this [VSCode settings](https://mate-academy.github.io/fe-program/tools/vscode/settings.json) to enable format on save.\n - Implement a solution following the [React task guideline](https://github.com/mate-academy/react_task-guideline#react-tasks-guideline).\n - Use the [React TypeScript cheat sheet](https://mate-academy.github.io/fe-program/js/extra/react-typescript).\n-- Replace `<your_account>` with your Github username in the [DEMO LINK](https://<your_account>.github.io/react_todo-app-add-and-delete/) and add it to the PR description.\n+- Replace `<your_account>` with your Github username in the [DEMO LINK](https://.github.io/react_todo-app-add-and-delete/) and add it to the PR description.\n \n ## IF you want to implement smooth animations\n \n <details>\n"
                 }
             ],
             "date": 1714990317305,
