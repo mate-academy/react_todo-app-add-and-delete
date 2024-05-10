@@ -1,6 +1,5 @@
 import { CompletionStatus } from '../types/CompletionStatus';
 import { RemoveTodo } from '../utils/removeTodo';
-import { countItemsLeft } from '../utils/countItemsLeft';
 import { useTodosContext } from '../TodoContext';
 import { Todo } from '../types/Todo';
 import classNames from 'classnames';
@@ -12,6 +11,7 @@ type Props = {
 export const TodoFooter: React.FC<Props> = ({ todos }) => {
   const {
     filterByStatus,
+    itemsLeft,
     setFilterByStatus,
     setTodos,
     setLoadingItemsIds,
@@ -19,7 +19,6 @@ export const TodoFooter: React.FC<Props> = ({ todos }) => {
   } = useTodosContext();
 
   const completedTodos = todos.filter(todo => todo.completed);
-  const itemsLeft = countItemsLeft(todos);
 
   const handleClearCompletedTodos = () => {
     completedTodos.forEach(completedTodo => {

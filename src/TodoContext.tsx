@@ -1,6 +1,7 @@
 import { createContext, useContext, useState } from 'react';
 import { CompletionStatus } from './types/CompletionStatus';
 import { Todo } from './types/Todo';
+import { countItemsLeft } from './utils/countItemsLeft';
 
 type TodoProviderProps = {
   children: React.ReactNode;
@@ -13,6 +14,7 @@ type TodosContext = {
   tempTodo: Todo | null;
   filterByStatus: CompletionStatus;
   loadingItemsIds: number[];
+  itemsLeft: number;
   setTodos: React.Dispatch<React.SetStateAction<Todo[]>>;
   setTitleField: React.Dispatch<React.SetStateAction<string>>;
   setTempTodo: React.Dispatch<React.SetStateAction<Todo | null>>;
@@ -29,6 +31,7 @@ const initialState = {
   tempTodo: null,
   filterByStatus: CompletionStatus.All,
   loadingItemsIds: [],
+  itemsLeft: 0,
   setTodos: () => {},
   setTitleField: () => {},
   setTempTodo: () => {},
@@ -54,6 +57,8 @@ export function TodoProvider({ children }: TodoProviderProps) {
     CompletionStatus.All,
   );
 
+  const itemsLeft = countItemsLeft(todos);
+
   const handleError = (errMessage: string) => {
     setErrorMessage(errMessage);
 
@@ -69,6 +74,7 @@ export function TodoProvider({ children }: TodoProviderProps) {
         tempTodo,
         filterByStatus,
         loadingItemsIds,
+        itemsLeft,
         handleError,
         setTodos,
         setTitleField,
