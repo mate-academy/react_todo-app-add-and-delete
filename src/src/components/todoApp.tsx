@@ -1,5 +1,5 @@
 /* eslint-disable jsx-a11y/control-has-associated-label */
-import React, { useContext, useEffect, useState } from "react";
+import React, { useContext, useEffect, useRef, useState } from "react";
 import cn from "classnames";
 import { Todos } from "./todos";
 
@@ -135,6 +135,14 @@ export const TodoApp: React.FC = () => {
     }
   };
 
+  const inputField = useRef<HTMLInputElement>(null);
+
+  useEffect(() => {
+    if (inputField.current) {
+      inputField.current.focus();
+    }
+  });
+
   return (
     <div className="todoapp">
       <h1 className="todoapp__title">todos</h1>
@@ -153,6 +161,7 @@ export const TodoApp: React.FC = () => {
 
           <form method="POST" action="api/todos">
             <input
+              ref={inputField}
               data-cy="NewTodoField"
               type="text"
               className="todoapp__new-todo"
