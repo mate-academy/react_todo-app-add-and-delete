@@ -29,13 +29,17 @@ export const Footer: React.FC<Props> = ({
           setTodos(prevTodos =>
             prevTodos.filter(prevTodo => prevTodo.id !== todo.id)
           );
+          setIsLoading(false);
+          setInputFocus(true);
         })
         .catch(() => {
           setErrorMessage('Unable to delete a todo');
+
+          setTimeout(() => {
+            setErrorMessage('');
+          }, 3000);
         });
     });
-    setIsLoading(false);
-    setInputFocus(true);
   };
 
   const notCompletedCount = todos.filter(todo => !todo.completed).length;

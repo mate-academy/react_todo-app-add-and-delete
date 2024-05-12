@@ -9,15 +9,17 @@ import { TodoList } from './components/TodoList/TodoList';
 import { FilterType } from './types/FilterType';
 
 export const App: React.FC = () => {
-  const [inputFocus, setInputFocus] = useState(true);
   const [isLoading, setIsLoading] = useState(true);
   const [errorMessage, setErrorMessage] = useState('');
   const [filterType, setFilterType] = useState<FilterType>(FilterType.All);
   const [todos, setTodos] = useState<TypeTodo[]>([]);
+  const [tempTodo, setTempTodo] = useState<TypeTodo | null>(null);
+
+  const [inputFocus, setInputFocus] = useState(true);
   const inputRef = useRef<HTMLInputElement>(null);
 
   const allTodosCompleted = todos.every(todo => todo.completed);
-  const hasAnyTodos = todos.length !== 0;
+  const hasTodos = todos.length !== 0;
 
   const filteredTodo = todos.filter(todo => {
     if (filterType === FilterType.Active) {
@@ -51,6 +53,12 @@ export const App: React.FC = () => {
     }
   }, []);
 
+  useEffect(() => {
+    if (inputFocus && inputRef.current) {
+      inputRef.current.focus();
+    }
+  }, [tempTodo, inputFocus]);
+
   if (!USER_ID) {
     return <UserWarning />;
   }
@@ -65,24 +73,24 @@ export const App: React.FC = () => {
           setTodos={setTodos}
           inputRef={inputRef}
           inputFocus={inputFocus}
-          setIsLoading={setIsLoading}
+          setTempTodo={setTempTodo}
           setInputFocus={setInputFocus}
           setErrorMessage={setErrorMessage}
           allTodosCompleted={allTodosCompleted}
         />
 
         <TodoList
+          todos={todos}
+          setTodos={setTodos}
+          tempTodo={tempTodo}
           isLoading={isLoading}
+          filteredTodo={filteredTodo}
           setIsLoading={setIsLoading}
           setErrorMessage={setErrorMessage}
-          todos={todos}
-          filteredTodo={filteredTodo}
-          setTodos={setTodos}
           setInputFocus={setInputFocus}
         />
 
-        {/* Hide the footer if there are no todos */}
-        {hasAnyTodos && (
+        {hasTodos && (
           <Footer
             todos={todos}
             setTodos={setTodos}
@@ -95,8 +103,6 @@ export const App: React.FC = () => {
         )}
       </div>
 
-      {/* DON'T use conditional rendering to hide the notification */}
-      {/* Add the 'hidden' class to hide the message smoothly */}
       <div
         data-cy="ErrorNotification"
         className={
@@ -112,7 +118,6 @@ export const App: React.FC = () => {
           className="delete"
           onClick={() => setErrorMessage('')}
         />
-        {/* show only one message at a time */}
         {errorMessage}
       </div>
     </div>

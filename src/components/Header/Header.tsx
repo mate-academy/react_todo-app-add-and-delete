@@ -1,5 +1,5 @@
 import classNames from 'classnames';
-import React, { useEffect, useState } from 'react';
+import React, { useCallback, useState } from 'react';
 import { TypeTodo } from '../../types/Todo';
 import { USER_ID, createData } from '../../api/todos';
 
@@ -9,15 +9,15 @@ interface Props {
   allTodosCompleted: boolean;
   setInputFocus: (focus: boolean) => void;
   setErrorMessage: (message: string) => void;
-  setIsLoading: (isLoading: boolean) => void;
   inputRef: React.RefObject<HTMLInputElement>;
   setTodos: React.Dispatch<React.SetStateAction<TypeTodo[]>>;
+  setTempTodo: React.Dispatch<React.SetStateAction<TypeTodo | null>>;
 }
 
 export const Header: React.FC<Props> = ({
-  todos, inputRef, allTodosCompleted,
-  inputFocus, setInputFocus, setErrorMessage,
-  setTodos, setIsLoading
+  inputFocus, inputRef, allTodosCompleted,
+  todos, setInputFocus, setErrorMessage,
+  setTodos, setTempTodo
 }) => {
   const [title, setTitle] = useState('');
   const [isDisabled, setIsDisabled] = useState(false);
@@ -28,31 +28,44 @@ export const Header: React.FC<Props> = ({
     }
 
     const maxId = todos.reduce((max, todo) => Math.max(max, todo.id), 0);
-    const tempTodo: TypeTodo = {
-      id: maxId + 1,
-      userId: USER_ID,
-      title: title.trim(),
-      completed: true,
-    };
 
-    setIsLoading(true);
+    setTempTodo({
+      title: title.trim(),
+      userId: USER_ID,
+      completed: false,
+      id: maxId + 1,
+    });
+
     setIsDisabled(true);
-    try {
-      await createData(tempTodo);
-      setTodos(prevTodos => [...prevTodos, tempTodo]);
-      setTitle('');
-    } catch (error) {
-      setErrorMessage('Failed to add todo');
-    } finally {
-      setIsLoading(false);
-      setIsDisabled(false);
-      setInputFocus(true);
-    }
+    await createData({
+      title: title.trim(),
+      userId: USER_ID,
+      completed: false,
+      id: maxId + 1,
+    })
+      .then(response => {
+        setTodos(prevTodos => [...prevTodos, response]);
+        setTitle('');
+        setInputFocus(true);
+      })
+      .catch(() => {
+        setErrorMessage('Unable to add a todo');
+
+        setTimeout(() => {
+          setErrorMessage('');
+        }, 3000);
+      })
+      .finally(() => {
+        setTempTodo(null);
+        setIsDisabled(false);
+      });
   };
 
-  const handleKeyPress = (event: React.KeyboardEvent<HTMLInputElement>) => {
+  const handleKeyPress = useCallback((
+    event: React.KeyboardEvent<HTMLInputElement>
+  ) => {
     if (event.key === 'Enter') {
-      if (!title) {
+      if (!title.trim()) {
         setErrorMessage('Title should not be empty');
 
         setTimeout(() => {
@@ -62,10 +75,9 @@ export const Header: React.FC<Props> = ({
         return;
       }
 
-      event.preventDefault();
       handleCreateNew();
     }
-  };
+  }, [title, setErrorMessage, handleCreateNew]);
 
   const handlePreventSubmit = (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
@@ -82,12 +94,6 @@ export const Header: React.FC<Props> = ({
   const handleInputBlur = () => {
     setInputFocus(false);
   };
-
-  useEffect(() => {
-    if (inputFocus && inputRef.current) {
-      inputRef.current.focus();
-    }
-  }, [inputFocus, inputRef]);
 
   return (
     <header className="todoapp__header">

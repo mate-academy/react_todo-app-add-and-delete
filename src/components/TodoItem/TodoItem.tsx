@@ -1,38 +1,41 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { TypeTodo } from '../../types/Todo';
 import classNames from 'classnames';
 import { deleteData } from '../../api/todos';
-import { Loader } from '../Loader/Loader';
 
 interface Props {
+  isTemp?: boolean,
   todo: TypeTodo,
-  isLoading: boolean,
   setIsLoading: (isLoading: boolean) => void,
   setErrorMessage: (message: string) => void,
   setTodos: React.Dispatch<React.SetStateAction<TypeTodo[]>>,
   setInputFocus: (focus: boolean) => void,
 }
 
-export const Todo: React.FC<Props> = ({
-  todo, isLoading, setIsLoading, setErrorMessage, setTodos, setInputFocus
+export const TodoItem: React.FC<Props> = ({
+  todo, setErrorMessage,
+  setTodos, setInputFocus, isTemp
 }) => {
   const { id, title, completed } = todo;
+  const [isDeleting, setIsDeleting] = useState(false);
 
   const todoDeleteButton = () => {
-    setIsLoading(true);
+    setIsDeleting(true);
     deleteData(id)
       .then(() => {
-        setIsLoading(false);
+        setTodos(currectTodos => currectTodos.filter((plan) => plan.id !== id));
+        setInputFocus(true);
       })
       .catch(() => {
-        setErrorMessage('Unable to delete todo');
+        setErrorMessage('Unable to delete a todo');
 
         setTimeout(() => {
           setErrorMessage('');
         }, 3000);
+      })
+      .finally(() => {
+        setIsDeleting(false);
       });
-    setTodos(currectTodos => currectTodos.filter((plan) => plan.id !== id));
-    setInputFocus(true);
   };
 
   return (
@@ -55,20 +58,22 @@ export const Todo: React.FC<Props> = ({
       <span data-cy="TodoTitle" className="todo__title">
         {title}
       </span>
-      {isLoading
-        ? <Loader />
-        : (
-          <button
-            type="button"
-            className="todo__remove"
-            data-cy="TodoDelete"
-            onClick={todoDeleteButton}
-          >
-            ×
-          </button>
-        )}
+      <button
+        type="button"
+        className="todo__remove"
+        data-cy="TodoDelete"
+        onClick={todoDeleteButton}
+      >
+        ×
+      </button>
 
-      <div data-cy="TodoLoader" className="modal overlay">
+      <div
+        data-cy="TodoLoader"
+        className={classNames(
+          'modal modal-overlay',
+          { 'is-active': isTemp || isDeleting, }
+        )}
+      >
         <div className="modal-background has-background-white-ter" />
         <div className="loader" />
       </div>

@@ -24,12 +24,6 @@ export const deleteData = async (todoId: number) => {
 };
 
 export const createData = async (newTodo: TypeTodo) => {
-  try {
-    const response  = await client.post(`/todos?userId=${USER_ID}`, newTodo);
-
-    return response;
-  } catch (error) {
-    throw error;
-  }
+  return client.post<TypeTodo>('/todos', newTodo);
 };
 
