@@ -1,22 +1,21 @@
+/* eslint-disable no-console */
 /* eslint-disable jsx-a11y/label-has-associated-control */
-import React, { useState } from 'react';
+import React from 'react';
 import { Todo as TodoType } from '../types/Todo';
+import classNames from 'classnames';
 
 interface TodoProps {
   todo: TodoType;
   onDeleteTodo: (id: number) => void;
+  pending: number | null;
 }
 
-const TodoItem: React.FC<TodoProps> = ({ todo, onDeleteTodo }) => {
-  const [deleting, setDeleting] = useState(false);
-
+const TodoItem: React.FC<TodoProps> = ({ todo, onDeleteTodo, pending }) => {
   const handleDeleteClick = async () => {
-    setDeleting(true);
     try {
       await onDeleteTodo(todo.id);
     } catch (error) {
-    } finally {
-      setDeleting(false);
+      console.log(error);
     }
   };
 
@@ -38,16 +37,19 @@ const TodoItem: React.FC<TodoProps> = ({ todo, onDeleteTodo }) => {
         className="todo__remove"
         data-cy="TodoDelete"
         onClick={handleDeleteClick}
-        disabled={deleting}
       >
-        {deleting ? 'Deleting...' : '×'}
+        ×
       </button>
-      {deleting && (
-        <div data-cy="TodoLoader" className="modal overlay">
-          <div className="modal-background has-background-white-ter" />
-          <div className="loader" />
-        </div>
-      )}
+
+      <div
+        data-cy="TodoLoader"
+        className={classNames('modal overlay', {
+          'is-active': pending === todo.id,
+        })}
+      >
+        <div className="modal-background has-background-white-ter" />
+        <div className="loader" />
+      </div>
     </div>
   );
 };

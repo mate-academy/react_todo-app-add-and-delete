@@ -1,5 +1,6 @@
+/* eslint-disable no-console */
 import React, { useEffect, useState } from 'react';
-import { getTodos } from './api/todos';
+import { getTodos, delTodos } from './api/todos';
 import Filter from './components/Filter';
 import TodoList from './components/TodoList';
 import NewTodo from './components/NewTodo';
@@ -12,6 +13,8 @@ const App: React.FC = () => {
   const [todos, setTodos] = useState<Todo[]>([]);
   const [error, setError] = useState<boolean>(false);
   const [errorType, setErrorType] = useState<Error | null>(null);
+  const [tempTodo, setTempTodo] = useState<string>('');
+  const [pending, setPending] = useState<number | null>(null);
 
   const hideError = () => {
     setError(false);
@@ -32,10 +35,14 @@ const App: React.FC = () => {
     fetchTodos();
   }, [todos]);
 
+  //tempTodo readme only title and userId
   const handleAddTodo = async (title: string) => {
+    setTempTodo(title);
+    console.log(title);
+    setPending(-1);
     try {
       const newTodo: Todo = await client.post('/todos', {
-        userId: 0,
+        userId: 587,
         title,
         completed: false,
       });
@@ -45,16 +52,22 @@ const App: React.FC = () => {
     } catch (err) {
       setError(true);
       setErrorType('add');
+    } finally {
+      setPending(null);
+      setTempTodo('');
     }
   };
 
   const handleDeleteTodo = async (id: number) => {
+    setPending(id);
     try {
-      await client.delete(`/todos/${id}`);
+      await delTodos(id);
       setTodos(todos.filter(todo => todo.id !== id));
     } catch (err) {
       setError(true);
       setErrorType('delete');
+    } finally {
+      setPending(null);
     }
   };
 
@@ -70,26 +83,20 @@ const App: React.FC = () => {
 
   const remainingTodoCount = todos.filter(todo => !todo.completed).length;
 
-  const handleEmpty = () => {
-    setError(true);
-    setErrorType('empty');
-    setTimeout(() => {
-      hideError();
-    }, 3000);
-  };
-
   return (
     <div className="todoapp">
       <h1 className="todoapp__title">todos</h1>
 
       <div className="todoapp__content">
-        <NewTodo onAddTodo={handleAddTodo} handleEmpty={handleEmpty} />
+        <NewTodo onAddTodo={handleAddTodo} />
 
         {todos.length > 0 && (
           <TodoList
             todos={todos}
             filter={filter}
             onDeleteTodo={handleDeleteTodo}
+            tempTodo={tempTodo}
+            pending={pending}
           />
         )}
 

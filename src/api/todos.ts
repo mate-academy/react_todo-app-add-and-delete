@@ -8,3 +8,10 @@ export const getTodos = () => {
 };
 
 // Add more methods here
+export const delTodos = (id: number) => {
+  return client.delete(`/todos/${id}`);
+};
+
+// export const addTodos = () => {
+//   return client.get<Todo[]>(`/todos/${}`);
+// };
