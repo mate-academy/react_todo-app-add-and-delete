@@ -9,7 +9,6 @@ interface Props {
 
 export const Footer: React.FC<Props> = ({ inputRef }) => {
   const { todos, filterField } = useCurrentState();
-
   const { setFilterField, deleteTodoLocal, setTimeoutErrorMessage } =
     useTodosMethods();
 
@@ -40,6 +39,7 @@ export const Footer: React.FC<Props> = ({ inputRef }) => {
         });
     }
 
+    // focuses on input field
     inputRef.current?.focus();
   };
 

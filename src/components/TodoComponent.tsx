@@ -23,6 +23,7 @@ export const TodoComponent: React.FC<Props> = ({
   const onDelete = (todoId: number) => {
     setLoading(true);
 
+    // tries to delete on server, if success - removes locally
     deleteTodo(todoId)
       .then(() => {
         deleteTodoLocal(todo.id);
@@ -31,6 +32,7 @@ export const TodoComponent: React.FC<Props> = ({
         setTimeoutErrorMessage('Unable to delete a todo');
       });
 
+    // focuses on input field
     inputRef.current?.focus();
   };
 
@@ -53,7 +55,6 @@ export const TodoComponent: React.FC<Props> = ({
         {todo.title}
       </span>
 
-      {/* Remove button appears only on hover */}
       <button
         type="button"
         className="todo__remove"
@@ -63,7 +64,6 @@ export const TodoComponent: React.FC<Props> = ({
         ×
       </button>
 
-      {/* overlay will cover the todo while it is being deleted or updated */}
       <div
         data-cy="TodoLoader"
         className={`modal overlay ${(isTemp || loading) && 'is-active'}`}

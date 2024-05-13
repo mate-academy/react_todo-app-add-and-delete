@@ -66,6 +66,7 @@ const StateContext = React.createContext(initialState);
 // eslint-disable-next-line @typescript-eslint/no-explicit-any, @typescript-eslint/no-unused-vars
 const DispatchContext = React.createContext((_value: any) => {});
 
+// this hook returns current state of todos array, filter and error message
 export const useCurrentState = () => {
   const todos = useContext(StateContext).todos;
   const filterField = useContext(StateContext).filterField;
@@ -78,7 +79,14 @@ export const useCurrentState = () => {
   };
 };
 
-// wrapper to make methods more convenient to use
+// hook that returns object with method for more convenient usage
+// this methods are responsible ONLY for local todos array
+//
+// with such approach you can write, for example:
+// "deleteTodoLocal(someId)
+//
+// instead of
+// "dispatch({ type: ActionType.DeleteTodo, payload: someId })"
 export const useTodosMethods = (): TodoMethods => {
   const dispatch = useContext(DispatchContext);
 

@@ -10,8 +10,7 @@ interface Props {
 }
 
 export const TodoList: React.FC<Props> = ({ tempTodo, inputRef }) => {
-  const { todos } = useCurrentState();
-  const { filterField } = useCurrentState();
+  const { todos, filterField } = useCurrentState();
 
   let visibleTodos: Todo[] = [];
 

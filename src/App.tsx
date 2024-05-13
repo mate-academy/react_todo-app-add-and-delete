@@ -1,6 +1,7 @@
-import React, { useState, useEffect, useRef } from 'react';
+import React, { useState, useEffect, useRef, useMemo } from 'react';
 import { UserWarning } from './UserWarning';
 
+// API
 import { USER_ID, getTodos, addTodo } from './api/todos';
 
 import { Todo } from './types/Todo';
@@ -13,10 +14,11 @@ import { ErrorNotification } from './components/ErrorNotification';
 
 export const App: React.FC = () => {
   const { todos } = useCurrentState();
-  const { setTodosLocal, addTodoLocal, setTimeoutErrorMessage } =
-    useTodosMethods();
+  const { setTodosLocal, addTodoLocal, setTimeoutErrorMessage } = useMemo(
+    useTodosMethods,
+    [],
+  );
 
-  // const [errorMessage, setErrorMessage] = useState('');
   const [input, setInput] = useState('');
   const [tempTodo, setTempTodo] = useState<Todo | null>(null);
 
@@ -30,7 +32,7 @@ export const App: React.FC = () => {
       .catch(() => {
         setTimeoutErrorMessage('Unable to load todos');
       });
-  }, []);
+  }, [setTimeoutErrorMessage, setTodosLocal]);
 
   const onSubmit = (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
