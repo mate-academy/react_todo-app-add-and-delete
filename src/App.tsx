@@ -1,26 +1,51 @@
-/* eslint-disable max-len */
-/* eslint-disable jsx-a11y/control-has-associated-label */
-import React from 'react';
-import { UserWarning } from './UserWarning';
+import { FC, useEffect, useState } from 'react';
 
-const USER_ID = 0;
+import { Header, TodoList, Footer, ErrorNotification } from './components';
 
-export const App: React.FC = () => {
-  if (!USER_ID) {
-    return <UserWarning />;
-  }
+import { getFilteredTodos, getTodos } from './helpers';
+
+import { ErrorType, StatusSelect, Todo } from './types';
+
+export const App: FC = () => {
+  const [todos, setTodos] = useState<Todo[] | []>([]);
+
+  const [status, setStatus] = useState<StatusSelect>(StatusSelect.All);
+
+  const [errorType, setErrorType] = useState<ErrorType | null>(null);
+
+  const filteredTodo = getFilteredTodos(todos, status);
+
+  useEffect(() => {
+    const fetchTodo = async () => {
+      try {
+        const result = await getTodos();
+
+        setTodos(result);
+      } catch (er) {
+        setErrorType('load');
+
+        setTimeout(() => {
+          setErrorType(null);
+        }, 3000);
+      }
+    };
+
+    fetchTodo();
+  }, [errorType, status]);
 
   return (
-    <section className="section container">
-      <p className="title is-4">
-        Copy all you need from the prev task:
-        <br />
-        <a href="https://github.com/mate-academy/react_todo-app-loading-todos#react-todo-app-load-todos">
-          React Todo App - Load Todos
-        </a>
-      </p>
+    <div className="todoapp">
+      <h1 className="todoapp__title">todos</h1>
 
-      <p className="subtitle">Styles are already copied</p>
-    </section>
+      <div className="todoapp__content">
+        <Header todos={todos} />
+
+        <TodoList todos={filteredTodo} />
+
+        <Footer setStatus={setStatus} status={status} todos={todos} />
+      </div>
+
+      <ErrorNotification errorType={errorType} setError={setErrorType} />
+    </div>
   );
 };
