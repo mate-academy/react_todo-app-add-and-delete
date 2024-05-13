@@ -4,9 +4,10 @@ import { Todo } from '../../types/Todo';
 
 type Props = {
   todos: Todo[];
+  onDelete: (id: number) => void;
 };
 
-export const Todos: React.FC<Props> = ({ todos }) => {
+export const Todos: React.FC<Props> = ({ todos, onDelete }) => {
   return (
     <section className="todoapp__main" data-cy="TodoList">
       {todos.map(todo => (
@@ -28,7 +29,12 @@ export const Todos: React.FC<Props> = ({ todos }) => {
             {todo.title}
           </span>
 
-          <button type="button" className="todo__remove" data-cy="TodoDelete">
+          <button
+            onClick={() => onDelete(todo.id)}
+            type="button"
+            className="todo__remove"
+            data-cy="TodoDelete"
+          >
             ×
           </button>
 
