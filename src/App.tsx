@@ -16,22 +16,21 @@ export const App: React.FC = () => {
 
   useEffect(() => {
     setLoading(true);
-    const res = getTodos();
-
-    res.then(data => {
-      dispatch({
-        type: 'setTodos',
-        payload: data,
+    getTodos()
+      .then(data => {
+        dispatch({
+          type: 'setTodos',
+          payload: data,
+        });
+        setLoading(false);
+      })
+      .catch(() => {
+        setLoading(false);
+        dispatch({
+          type: 'setError',
+          payload: 'Unable to load todos',
+        });
       });
-      setLoading(false);
-    });
-    res.catch(() => {
-      setLoading(false);
-      dispatch({
-        type: 'setError',
-        payload: 'Unable to load todos',
-      });
-    });
   }, [dispatch]);
 
   if (!USER_ID) {

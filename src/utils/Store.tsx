@@ -2,6 +2,12 @@ import { createContext, useReducer } from 'react';
 import React from 'react';
 import { Todo } from '../types/Todo';
 
+export enum FilterOfTodos {
+  'All',
+  'Active',
+  'Completed',
+}
+
 export type Action =
   | { type: 'setTodos'; payload: Todo[] }
   | { type: 'addTodo'; payload: Todo }
@@ -9,7 +15,7 @@ export type Action =
   | { type: 'completed'; payload: { id: number } }
   | { type: 'allCompleted' }
   | { type: 'deleteAllCompleted' }
-  | { type: 'filterTodos'; name: 'All' | 'Active' | 'Completed' }
+  | { type: 'filterTodos'; name: FilterOfTodos }
   | { type: 'editTodo'; payload: { id: number; title: string } }
   | { type: 'setError'; payload: string }
   | { type: 'addToLoading'; payload: { id: number } }
@@ -18,7 +24,7 @@ export type Action =
 
 export type State = {
   todos: Todo[];
-  filterTodos: 'All' | 'Active' | 'Completed';
+  filterTodos: FilterOfTodos;
   error: string;
   loading: number[];
   tempTodo: Todo | null;
@@ -26,7 +32,7 @@ export type State = {
 
 const initialState: State = {
   todos: [],
-  filterTodos: 'All',
+  filterTodos: FilterOfTodos.All,
   error: '',
   loading: [],
   tempTodo: null,

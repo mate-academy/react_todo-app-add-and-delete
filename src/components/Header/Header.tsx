@@ -16,9 +16,9 @@ export const Header = () => {
     setTitle(event.target.value);
   };
 
-  function getRandomDigits() {
+  const getRandomDigits = () => {
     return Math.random().toFixed(4).slice(2);
-  }
+  };
 
   const Submit = (event: React.FormEvent) => {
     event.preventDefault();
@@ -53,32 +53,31 @@ export const Header = () => {
       payload: '',
     });
 
-    const res = addTodo(todo);
+    addTodo(todo)
+      .then(() => {
+        setTitle('');
 
-    res.then(() => {
-      setTitle('');
-
-      dispatch({
-        type: 'addTodo',
-        payload: todo,
+        dispatch({
+          type: 'addTodo',
+          payload: todo,
+        });
+      })
+      .catch(() => {
+        dispatch({
+          type: 'setError',
+          payload: 'Unable to add a todo',
+        });
+      })
+      .finally(() => {
+        dispatch({
+          type: 'setTempTodo',
+          payload: null,
+        });
+        dispatch({
+          type: 'removeFromLoading',
+          payload: { id: todo.id },
+        });
       });
-    });
-    res.catch(() => {
-      dispatch({
-        type: 'setError',
-        payload: 'Unable to add a todo',
-      });
-    });
-    res.finally(() => {
-      dispatch({
-        type: 'setTempTodo',
-        payload: null,
-      });
-      dispatch({
-        type: 'removeFromLoading',
-        payload: { id: todo.id },
-      });
-    });
   };
 
   const AllCompleted = () => {

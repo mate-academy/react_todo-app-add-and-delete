@@ -45,13 +45,10 @@ export const TodoItem = ({ todoItem }: Props) => {
       });
     };
 
-    const res = deleteTodo(todo.id);
-
-    res.then(successDeleteTodo);
-    res.catch(unsuccessDeleteTodo);
+    deleteTodo(todo.id).then(successDeleteTodo).catch(unsuccessDeleteTodo);
   };
 
-  const complitedTodo = (todo: Todo) => {
+  const completedTodo = (todo: Todo) => {
     dispatch({
       type: 'completed',
       payload: { id: todo.id },
@@ -72,6 +69,11 @@ export const TodoItem = ({ todoItem }: Props) => {
     }
 
     setIsEdit(false);
+  };
+
+  const handleIsEdit = () => {
+    setIsEdit(true);
+    setValue(todoItem.title);
   };
 
   return (
@@ -95,7 +97,7 @@ export const TodoItem = ({ todoItem }: Props) => {
               className="todo__title-field"
               placeholder="Empty todo will be deleted"
               value={value}
-              onBlur={() => saveChanges()}
+              onBlur={saveChanges}
               onKeyUp={(event: React.KeyboardEvent<HTMLInputElement>) => {
                 if (event.key === 'Escape') {
                   setIsEdit(false);
@@ -122,17 +124,14 @@ export const TodoItem = ({ todoItem }: Props) => {
               type="checkbox"
               className="todo__status"
               checked={todoItem.completed}
-              onChange={() => complitedTodo(todoItem)}
+              onChange={() => completedTodo(todoItem)}
             />
           </label>
 
           <span
             data-cy="TodoTitle"
             className="todo__title"
-            onDoubleClick={() => {
-              setIsEdit(true);
-              setValue(todoItem.title);
-            }}
+            onDoubleClick={handleIsEdit}
           >
             {todoItem.title}
           </span>

@@ -1,4 +1,4 @@
-import { StateContext } from '../../utils/Store';
+import { StateContext, FilterOfTodos } from '../../utils/Store';
 import { useContext } from 'react';
 import { TodoItem } from '../../components/TodoItem/TodoItem';
 
@@ -8,11 +8,11 @@ export const TodoList = () => {
 
   let list = tempTodo ? [...todos, tempTodo] : todos;
 
-  if (filterTodos === 'Active') {
+  if (filterTodos === FilterOfTodos.Active) {
     list = list.filter(todo => todo.completed === false);
   }
 
-  if (filterTodos === 'Completed') {
+  if (filterTodos === FilterOfTodos.Completed) {
     list = list.filter(todo => todo.completed === true);
   }
 

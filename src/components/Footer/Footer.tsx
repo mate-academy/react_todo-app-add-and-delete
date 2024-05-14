@@ -1,18 +1,18 @@
 /* eslint-disable max-len */
 import { useContext } from 'react';
-import { DispatchContext, StateContext } from '../../utils/Store';
+import {
+  DispatchContext,
+  StateContext,
+  FilterOfTodos,
+} from '../../utils/Store';
 import cn from 'classnames';
 import { deleteTodo } from '../../api/todos';
 import { Todo } from '../../types/Todo';
-// import { Todo } from '../../types/Todo';
-// import { getTodos } from '../../api/todos';
 
 export const Footer = () => {
   const { filterTodos } = useContext(StateContext);
   const state = useContext(StateContext);
   const dispatch = useContext(DispatchContext);
-
-  // const [loading, setLoading] = useState(false);
 
   const completed = state.todos.filter(todo => todo.completed === true);
 
@@ -75,18 +75,26 @@ export const Footer = () => {
       <nav className="filter" data-cy="Filter">
         <a
           href="#/"
-          className={cn('filter__link', { selected: filterTodos === 'All' })}
+          className={cn('filter__link', {
+            selected: filterTodos === FilterOfTodos.All,
+          })}
           data-cy="FilterLinkAll"
-          onClick={() => dispatch({ type: 'filterTodos', name: 'All' })}
+          onClick={() =>
+            dispatch({ type: 'filterTodos', name: FilterOfTodos.All })
+          }
         >
           All
         </a>
 
         <a
           href="#/active"
-          className={cn('filter__link', { selected: filterTodos === 'Active' })}
+          className={cn('filter__link', {
+            selected: filterTodos === FilterOfTodos.Active,
+          })}
           data-cy="FilterLinkActive"
-          onClick={() => dispatch({ type: 'filterTodos', name: 'Active' })}
+          onClick={() =>
+            dispatch({ type: 'filterTodos', name: FilterOfTodos.Active })
+          }
         >
           Active
         </a>
@@ -94,10 +102,12 @@ export const Footer = () => {
         <a
           href="#/completed"
           className={cn('filter__link', {
-            selected: filterTodos === 'Completed',
+            selected: filterTodos === FilterOfTodos.Completed,
           })}
           data-cy="FilterLinkCompleted"
-          onClick={() => dispatch({ type: 'filterTodos', name: 'Completed' })}
+          onClick={() =>
+            dispatch({ type: 'filterTodos', name: FilterOfTodos.Completed })
+          }
         >
           Completed
         </a>
