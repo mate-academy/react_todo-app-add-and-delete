@@ -22,8 +22,8 @@ export const Error: React.FC = () => {
         'notification is-danger is-light has-text-weight-normal',
         {
           hidden: !errorMessage,
-        })
-      }
+        }
+      )}
     >
       <button
         data-cy="HideErrorButton"
