@@ -1,7 +1,6 @@
 import React, { useEffect, useRef, useState } from 'react';
 import { UserWarning } from './UserWarning';
 import { USER_ID, getTodos, getDelete, getAdd } from './api/todos';
-
 import { Todo } from './types/Todo';
 import { SortType } from './types/SortType';
 
