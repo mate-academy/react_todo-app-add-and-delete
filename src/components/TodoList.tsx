@@ -1,7 +1,6 @@
 import React, { useContext } from 'react';
 import { TodoContext } from './TodoContext';
 import { TodoItem } from './TodoItem';
-import { TEMP_USER_ID } from './Header';
 
 export const TodoList: React.FC = () => {
   const {
@@ -9,7 +8,8 @@ export const TodoList: React.FC = () => {
     dispatch,
     handleError,
     deleteCandidates,
-    handleDeleteCandidates,
+    handleClearCompleted,
+    tmpTodo,
   } = useContext(TodoContext);
 
   return (
@@ -18,14 +18,23 @@ export const TodoList: React.FC = () => {
         <TodoItem
           key={todo.id}
           todo={todo}
-          loading={
-            todo.id === TEMP_USER_ID || deleteCandidates.includes(todo.id)
-          }
+          loading={deleteCandidates.includes(todo.id)}
           dispatch={dispatch}
           handleError={handleError}
-          onDelete={handleDeleteCandidates}
+          onDelete={handleClearCompleted}
         />
       ))}
+
+      {tmpTodo && (
+        <TodoItem
+          key={tmpTodo.id}
+          todo={tmpTodo}
+          loading={true}
+          dispatch={dispatch}
+          handleError={handleError}
+          onDelete={handleClearCompleted}
+        />
+      )}
     </>
   );
 };

@@ -1,10 +1,4 @@
-import React, {
-  useCallback,
-  useEffect,
-  useMemo,
-  useReducer,
-  useState,
-} from 'react';
+import React, { useEffect, useMemo, useReducer, useState } from 'react';
 import { Todo } from '../types/Todo';
 import { deleteTodo, getTodos } from '../api/todos';
 
@@ -21,11 +15,13 @@ type TodoContextType = {
   originalTodos: Todo[];
   dispatch: (action: Action) => void;
   filteredBy: FilterBy;
-  handleFilterBy: (type: FilterBy) => void;
+  setFilteredBy: (type: FilterBy) => void;
   error: string | null;
   handleError: (message: string) => void;
   deleteCandidates: number[];
-  handleDeleteCandidates: (ids: number[]) => void;
+  handleClearCompleted: (ids: number[]) => void;
+  tmpTodo: Todo | null;
+  handleTmpTodo: (todo: Todo | null) => void;
 };
 
 export const TodoContext = React.createContext<TodoContextType>({
@@ -33,11 +29,13 @@ export const TodoContext = React.createContext<TodoContextType>({
   originalTodos: [],
   dispatch: () => {},
   filteredBy: FilterBy.All,
-  handleFilterBy: () => {},
+  setFilteredBy: () => {},
   error: null,
   handleError: () => {},
   deleteCandidates: [],
-  handleDeleteCandidates: () => {},
+  handleClearCompleted: () => {},
+  tmpTodo: null,
+  handleTmpTodo: () => {},
 });
 
 export type Props = {
@@ -49,26 +47,21 @@ export enum ActionNames {
   Add = 'ADD',
   Delete = 'DELETE',
   Update = 'UPDATE',
-  ToggleCompleted = 'TOGGLE_COMPLETED',
+  Completed = 'TOGGLE_COMPLETED',
   ToggleAllCompleted = 'TOGGLE_ALL_COMPLETED',
   ClearCompleted = 'CLEAR_COMPLETED',
 }
-
-type T = {
-  type: ActionNames.ToggleCompleted;
-  payload: { id: number; completed: boolean };
-};
 
 export type Action =
   | { type: ActionNames.Load; payload: Todo[] }
   | { type: ActionNames.Add; payload: Todo }
   | { type: ActionNames.Delete; payload: number }
   | { type: ActionNames.Update; payload: { id: number; title: string } }
-  | T
+  | { type: ActionNames.Completed; payload: { id: number; completed: boolean } }
   | { type: ActionNames.ToggleAllCompleted; payload: Todo[] }
   | { type: ActionNames.ClearCompleted };
 
-export const Errors = {
+export const errors = {
   LoadTodos: 'Unable to load todos',
   EmptyTitle: 'Title should not be empty',
   AddTodo: 'Unable to add a todo',
@@ -111,6 +104,7 @@ function filter(todos: Todo[], type: FilterAction) {
 
 export const TodoProvider: React.FC<Props> = ({ children }) => {
   const [todos, dispatch] = useReducer(reducer, []);
+  const [tmpTodo, setTmpTodo] = useState<Todo | null>(null);
   const [filteredBy, setFilteredBy] = useState<FilterBy>(FilterBy.All);
   const [error, setError] = useState<string | null>(null);
   const [deleteCandidates, setDeleteCandidates] = useState<number[]>([]);
@@ -120,12 +114,12 @@ export const TodoProvider: React.FC<Props> = ({ children }) => {
     setTimeout(() => setError(null), 3000);
   };
 
-  const handleFilterBy = useCallback((type: FilterBy) => {
-    setFilteredBy(type);
-  }, []);
-
-  const handleDeleteCandidates = (ids: number[]) => {
+  const handleClearCompleted = (ids: number[]) => {
     setDeleteCandidates(prev => [...prev, ...ids]);
+  };
+
+  const handleTmpTodo = (todo: Todo | null) => {
+    setTmpTodo(todo);
   };
 
   const value = useMemo(
@@ -134,13 +128,23 @@ export const TodoProvider: React.FC<Props> = ({ children }) => {
       originalTodos: todos,
       dispatch,
       filteredBy,
-      handleFilterBy,
+      setFilteredBy,
       error,
       handleError,
       deleteCandidates,
-      handleDeleteCandidates,
+      handleClearCompleted,
+      tmpTodo,
+      handleTmpTodo,
     }),
-    [todos, dispatch, filteredBy, handleFilterBy, error, deleteCandidates],
+    [
+      todos,
+      dispatch,
+      filteredBy,
+      setFilteredBy,
+      error,
+      deleteCandidates,
+      tmpTodo,
+    ],
   );
 
   useEffect(() => {
@@ -150,7 +154,7 @@ export const TodoProvider: React.FC<Props> = ({ children }) => {
           .then(() => {
             dispatch({ type: ActionNames.Delete, payload: id });
           })
-          .catch(() => handleError(Errors.DeleteTodo));
+          .catch(() => handleError(errors.DeleteTodo));
       });
     }
   }, [deleteCandidates]);
@@ -161,7 +165,7 @@ export const TodoProvider: React.FC<Props> = ({ children }) => {
         dispatch({ type: ActionNames.Load, payload: loadedTodos }),
       )
       .catch(() => {
-        handleError(Errors.LoadTodos);
+        handleError(errors.LoadTodos);
       });
   }, []);
 

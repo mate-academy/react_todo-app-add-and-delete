@@ -1,17 +1,18 @@
 import React, { useContext, useEffect, useRef, useState } from 'react';
-import { ActionNames, Errors, TodoContext } from './TodoContext';
+import { ActionNames, TodoContext, errors } from './TodoContext';
 import { Todo } from '../types/Todo';
 import { USER_ID, createTodo } from '../api/todos';
 
-export const TEMP_USER_ID = -1;
+export const TEMP_USER_ID = 0;
 
 export const Header: React.FC = () => {
-  const { todos, dispatch, handleError } = useContext(TodoContext);
+  const { todos, dispatch, handleError, tmpTodo, handleTmpTodo } =
+    useContext(TodoContext);
   const [value, setValue] = useState('');
   const [disabled, setDisabled] = useState(false);
   const inputRef = useRef<HTMLInputElement>(null);
 
-  const handleOnChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+  const handleChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     event.preventDefault();
     setValue(event.target.value);
   };
@@ -19,8 +20,8 @@ export const Header: React.FC = () => {
   const handleKeyDown = (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
 
-    if (value.trim() === '') {
-      handleError(Errors.EmptyTitle);
+    if (!value.trim()) {
+      handleError(errors.EmptyTitle);
 
       return;
     }
@@ -34,17 +35,17 @@ export const Header: React.FC = () => {
 
     setDisabled(true);
 
-    dispatch({ type: ActionNames.Add, payload: newTodo });
+    handleTmpTodo(newTodo);
 
     createTodo(newTodo)
       .then(nt => {
-        dispatch({ type: ActionNames.Delete, payload: newTodo.id });
+        handleTmpTodo(null);
         dispatch({ type: ActionNames.Add, payload: nt });
         setValue('');
       })
       .catch(() => {
-        dispatch({ type: ActionNames.Delete, payload: newTodo.id });
-        handleError(Errors.AddTodo);
+        handleError(errors.AddTodo);
+        handleTmpTodo(null);
       })
       .finally(() => setDisabled(false));
   };
@@ -57,7 +58,7 @@ export const Header: React.FC = () => {
 
   useEffect(() => {
     focusInput();
-  }, [todos]);
+  }, [todos, tmpTodo]);
 
   return (
     <header className="todoapp__header">
@@ -79,7 +80,7 @@ export const Header: React.FC = () => {
           value={value}
           ref={inputRef}
           disabled={disabled}
-          onChange={handleOnChange}
+          onChange={handleChange}
         />
       </form>
     </header>

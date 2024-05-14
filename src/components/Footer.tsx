@@ -7,12 +7,12 @@ export const Footer = () => {
     todos,
     originalTodos,
     filteredBy,
-    handleFilterBy,
-    handleDeleteCandidates,
+    setFilteredBy,
+    handleClearCompleted,
   } = useContext(TodoContext);
 
   const activeTodos = originalTodos.filter(
-    todo => todo.completed === false && todo.id !== -1,
+    todo => !todo.completed && todo.id !== 0,
   ).length;
   const disabled = todos.some(todo => todo.completed);
 
@@ -22,13 +22,13 @@ export const Footer = () => {
   ) => {
     event.preventDefault();
 
-    handleFilterBy(type);
+    setFilteredBy(type);
   };
 
   const handleClearTodos = () => {
     const done = todos.filter(({ completed }) => completed);
 
-    handleDeleteCandidates(done.map(({ id }) => id));
+    handleClearCompleted(done.map(({ id }) => id));
   };
 
   return (
