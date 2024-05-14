@@ -11,15 +11,19 @@ import { getFilter } from './components/FilterFunc/FilterFunc';
 import { Form } from './components/Header-Form/Form';
 import { ErrorType } from './types/ErrorType';
 import { ErrorMessage } from './components/ErrorMessage/ErrorMessage';
+import { TodoItem } from './components/TodoItem/TodoItem';
 
 export const App: React.FC = () => {
   const [todos, setTodos] = useState<Todo[]>([]);
+
+  const [titleNew, setTitleNew] = useState('');
+  const [isSubmitingNewTodo, setIsSubmitingNewTodo] = useState(false);
+
   const [errorMessage, setErrorMessage] = useState<ErrorType | null>(null);
   const [sortField, setSortField] = useState(SortType.All);
 
-  // const [isDeleting, setIsDeleting] = useState(false);
-
-  // const [tempTodo, setTempTodo] = useState<null | Todo>(null);
+  const [tempTodo, setTempTodo] = useState<null | Todo>(null);
+  const [isDeleting, setIsDeleting] = useState(false);
 
   const activeInput = useRef<HTMLInputElement>(null);
 
@@ -35,36 +39,80 @@ export const App: React.FC = () => {
           setErrorMessage(null);
         }, 3000);
       });
-
-    if (activeInput.current) {
-      activeInput.current.focus();
-    }
   }, []);
 
+  useEffect(() => {
+    activeInput.current?.focus();
+  }, [todos, errorMessage]);
+
   const sortedTodos = getFilter(todos, sortField);
-  // const everyTodosCompleted = todos.every(todo => todo.completed);
 
   const onDelete = (todoId: number) => {
-    setTodos(currentTodos => currentTodos.filter(todo => todo.id !== todoId));
+    if (isDeleting) {
+      return;
+    }
 
-    return getDelete(todoId).catch(error => {
-      setTodos(todos);
-      setErrorMessage(ErrorType.UnableDelete);
-      throw error;
-    });
+    setIsDeleting(false);
+
+    return getDelete(todoId)
+      .then(() => {
+        setTodos(currentTodos =>
+          currentTodos.filter(todo => todo.id !== todoId),
+        );
+      })
+      .catch(() => {
+        setErrorMessage(ErrorType.UnableDelete);
+        setTimeout(() => {
+          setErrorMessage(null);
+        }, 3000);
+        setTodos(todos);
+      })
+      .finally(() => {
+        setIsDeleting(false);
+      });
   };
 
-  const onAdd = ({ title, completed, userId }: Todo) => {
-    setErrorMessage(null);
+  const createNewTodo = () => {
+    if (!titleNew.trim()) {
+      setErrorMessage(ErrorType.EmptyTitle);
 
-    return getAdd({ title, completed, userId })
-      .then(newPost => {
-        setTodos(currentTodos => [...currentTodos, newPost]);
+      setTimeout(() => {
+        setErrorMessage(null);
+      }, 3000);
+
+      return;
+    }
+
+    const newTodo = {
+      id: 0,
+      title: titleNew.trim(),
+      completed: false,
+      userId: USER_ID,
+    };
+
+    setTempTodo(newTodo);
+
+    setIsSubmitingNewTodo(true);
+
+    getAdd(newTodo)
+      .then(created => {
+        setTodos(currentTodos => [...currentTodos, created]);
+        setTitleNew('');
       })
-      .catch(error => {
+      .catch(() => {
         setErrorMessage(ErrorType.UnableAdd);
-        throw error;
+        setTimeout(() => {
+          setErrorMessage(null);
+        }, 3000);
+      })
+      .finally(() => {
+        setTempTodo(null);
+        setIsSubmitingNewTodo(false);
       });
+  };
+
+  const clearCompleted = () => {
+    return todos.filter(todo => todo.completed).map(todo => onDelete(todo.id));
   };
 
   if (!USER_ID) {
@@ -74,21 +122,30 @@ export const App: React.FC = () => {
   return (
     <div className="todoapp">
       <h1 className="todoapp__title">todos</h1>
-
       <div className="todoapp__content">
         <Form
-          onSubmit={onAdd}
-          setErrorMessage={setErrorMessage}
+          titleNew={titleNew}
+          setTitleNew={setTitleNew}
+          createNewTodo={createNewTodo}
           activeInput={activeInput}
+          isSubmitingNewTodo={isSubmitingNewTodo}
         />
 
-        <Todos todos={sortedTodos} onDelete={onDelete} />
+        <Todos
+          todos={sortedTodos}
+          onDelete={isDeleting ? () => {} : onDelete}
+        />
+
+        {tempTodo && (
+          <TodoItem todo={tempTodo} onDelete={onDelete} isTemp={true} />
+        )}
 
         {todos.length > 0 && (
           <Footer
             todos={todos}
             sortField={sortField}
             setSortField={setSortField}
+            clearCompleted={clearCompleted}
           />
         )}
       </div>

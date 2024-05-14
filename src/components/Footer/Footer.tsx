@@ -5,10 +5,16 @@ type Props = {
   sortField: SortType;
   setSortField: (field: SortType) => void;
   todos: Todo[];
+  clearCompleted: () => void;
 };
 
-export const Footer: React.FC<Props> = ({ sortField, setSortField, todos }) => {
-  const oneTodoCompleted = todos.find(todo => todo.completed);
+export const Footer: React.FC<Props> = ({
+  sortField,
+  setSortField,
+  todos,
+  clearCompleted,
+}) => {
+  const oneTodoCompleted = todos.some(todo => todo.completed);
 
   const activeTodos = todos.reduce(
     (acc, todo) => (todo.completed ? acc : acc + 1),
@@ -50,15 +56,15 @@ export const Footer: React.FC<Props> = ({ sortField, setSortField, todos }) => {
         </a>
       </nav>
 
-      {oneTodoCompleted && (
-        <button
-          type="button"
-          className="todoapp__clear-completed"
-          data-cy="ClearCompletedButton"
-        >
-          Clear completed
-        </button>
-      )}
+      <button
+        onClick={clearCompleted}
+        disabled={!oneTodoCompleted}
+        type="button"
+        className="todoapp__clear-completed"
+        data-cy="ClearCompletedButton"
+      >
+        Clear completed
+      </button>
     </footer>
   );
 };

@@ -1,54 +1,24 @@
-import { useState } from 'react';
-import { Todo } from '../../types/Todo';
-import { USER_ID } from '../../api/todos';
-import { ErrorType } from '../../types/ErrorType';
+import React, { Ref } from 'react';
 
 type Props = {
-  activeInput: React.RefObject<HTMLInputElement>;
-  onSubmit: (todo: Todo) => Promise<void>;
-  setErrorMessage: (error: ErrorType | null) => void;
+  activeInput: Ref<HTMLInputElement>;
+  createNewTodo: () => void;
+  titleNew: string;
+  setTitleNew: (title: string) => void;
+  isSubmitingNewTodo: boolean;
 };
 
 export const Form: React.FC<Props> = ({
   activeInput,
-  onSubmit,
-  setErrorMessage,
+  createNewTodo,
+  titleNew,
+  setTitleNew,
+  isSubmitingNewTodo,
 }) => {
-  const [title, setTitle] = useState('');
-  const [isSubmiting, setIsSubmiting] = useState(false);
-
-  const reset = () => {
-    setTitle('');
-  };
-
-  const onCreateTodo = (event: React.ChangeEvent<HTMLInputElement>) => {
-    setTitle(event.target.value);
-  };
-
   const onAddNewTodo = (event: React.FormEvent) => {
     event.preventDefault();
 
-    if (!title.trim()) {
-      setErrorMessage(ErrorType.EmptyTitle);
-
-      setTimeout(() => {
-        setErrorMessage(null);
-      }, 3000);
-
-      return;
-    }
-
-    title.trim();
-
-    setIsSubmiting(true);
-    onSubmit({
-      id: 0,
-      title,
-      completed: false,
-      userId: USER_ID,
-    })
-      .then(reset)
-      .finally(() => setIsSubmiting(false));
+    createNewTodo();
   };
 
   return (
@@ -60,10 +30,10 @@ export const Form: React.FC<Props> = ({
       />
       <form method="POST" onSubmit={onAddNewTodo}>
         <input
+          disabled={isSubmitingNewTodo}
           ref={activeInput}
-          value={title}
-          onChange={onCreateTodo}
-          disabled={isSubmiting}
+          value={titleNew}
+          onChange={event => setTitleNew(event.target.value)}
           data-cy="NewTodoField"
           type="text"
           className="todoapp__new-todo"
