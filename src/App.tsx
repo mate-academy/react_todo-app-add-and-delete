@@ -1,6 +1,6 @@
 /* eslint-disable jsx-a11y/label-has-associated-control */
 /* eslint-disable jsx-a11y/control-has-associated-label */
-import React, { useEffect, useRef, useState } from 'react';
+import React, { useEffect, useMemo, useRef, useState } from 'react';
 import { UserWarning } from './UserWarning';
 import {
   USER_ID,
@@ -33,15 +33,27 @@ export const App: React.FC = () => {
     inputRefAddTodo.current?.focus();
   }, [loading]);
 
-  const todoList = todos.filter(todo => {
-    if (selectSort === 'active') {
-      return !todo.completed;
-    } else if (selectSort === 'completed') {
-      return todo.completed;
-    }
+  const todoList = useMemo(() => {
+    return todos.filter(todo => {
+      if (selectSort === 'active') {
+        return !todo.completed;
+      } else if (selectSort === 'completed') {
+        return todo.completed;
+      }
 
-    return true;
-  });
+      return true;
+    });
+  }, [selectSort, todos]);
+
+  const remainingItemsCount = useMemo(() => {
+    return todos.reduce((count, todo) => {
+      if (todo.id !== Infinity && !todo.completed) {
+        return count + 1;
+      }
+
+      return count;
+    }, 0);
+  }, [todos]);
 
   useEffect(() => {
     getTodos()
@@ -69,46 +81,48 @@ export const App: React.FC = () => {
 
   function handleKeyDown(event: React.KeyboardEvent<HTMLInputElement>) {
     setError('');
-    if (event.key === 'Enter') {
-      event.preventDefault();
-      if (inputTodo.trim() === '') {
-        setError('Title should not be empty');
-      } else {
-        setLoading(true);
-        setTodos(currentTodos => [
-          ...currentTodos,
-          {
-            id: Infinity,
-            title: inputTodo,
-            userId: USER_ID,
-            completed: false,
-          },
-        ]);
-        createTodo({
-          title: inputTodo.trim(),
+    if (event.key !== 'Enter') {
+      return;
+    }
+
+    event.preventDefault();
+    if (inputTodo.trim() === '') {
+      setError('Title should not be empty');
+    } else {
+      setLoading(true);
+      setTodos(currentTodos => [
+        ...currentTodos,
+        {
+          id: Infinity,
+          title: inputTodo,
           userId: USER_ID,
           completed: false,
-        })
-          .then(newTodo => {
-            setTodos(currentTodos => {
-              currentTodos.pop();
+        },
+      ]);
+      createTodo({
+        title: inputTodo.trim(),
+        userId: USER_ID,
+        completed: false,
+      })
+        .then(newTodo => {
+          setTodos(currentTodos => {
+            currentTodos.pop();
 
-              return [...currentTodos, newTodo];
-            });
-          })
-          .then(() => setInputTodo(''))
-          .catch(() => {
-            setTodos(currentTodo => {
-              currentTodo.pop();
-
-              return currentTodo;
-            });
-            setError('Unable to add a todo');
-          })
-          .finally(() => {
-            setLoading(false);
+            return [...currentTodos, newTodo];
           });
-      }
+        })
+        .then(() => setInputTodo(''))
+        .catch(() => {
+          setTodos(currentTodo => {
+            currentTodo.pop();
+
+            return [...currentTodo];
+          });
+          setError('Unable to add a todo');
+        })
+        .finally(() => {
+          setLoading(false);
+        });
     }
   }
 
@@ -156,25 +170,23 @@ export const App: React.FC = () => {
     }
   }
 
-  async function handleDeleteCompletedTodos() {
-    const toBeDeleted: number[] = [];
+  function handleDeleteCompletedTodos() {
+    const deletedID: number[] = [];
 
     setError('');
     setLoading(true);
     todos
       .filter(el => el.completed)
-      .forEach(async todoCompleted => {
-        await deleteTodo(todoCompleted.id)
+      .forEach(todoCompleted => {
+        deleteTodo(todoCompleted.id)
           .then(() => {
-            toBeDeleted.push(todoCompleted.id);
+            deletedID.push(todoCompleted.id);
+
+            setTodos(tds => tds.filter(el => !deletedID.includes(el.id)));
           })
-          .catch(() => setError('Unable to delete a todo'));
+          .catch(() => setError('Unable to delete a todo'))
+          .finally(() => setLoading(false));
       });
-    const result = todos.filter(el => !toBeDeleted.includes(el.id));
-
-    setTodos(result);
-
-    setLoading(false);
   }
 
   return (
@@ -222,9 +234,7 @@ export const App: React.FC = () => {
         {todos.length !== 0 && (
           <footer className="todoapp__footer" data-cy="Footer">
             <span className="todo-count" data-cy="TodosCounter">
-              {todos.filter(el => !el.completed).length -
-                todos.filter(el => el.id === Infinity).length}{' '}
-              items left
+              {remainingItemsCount} items left
             </span>
 
             {/* Active link should have the 'selected' class */}

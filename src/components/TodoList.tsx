@@ -7,7 +7,7 @@ import { ErrorMessages } from '../App';
 type Props = {
   todoList: Todo[];
   todos: Todo[];
-  setTodos: (todo: Todo[]) => void;
+  setTodos: React.Dispatch<React.SetStateAction<Todo[]>>;
   setError: (error: ErrorMessages) => void;
   setLoading: (loading: boolean) => void;
 };
@@ -19,7 +19,6 @@ export const TodoList: React.FC<Props> = ({
   setError,
   setLoading,
 }) => {
-  // const [todos, setTodos] = useState<Todo[]>([]);
   const [formActive, setFormActive] = useState(false);
   const [todoTitle, setTodoTitle] = useState('');
   const [todoId, setTodoId] = useState(Infinity);
@@ -48,8 +47,8 @@ export const TodoList: React.FC<Props> = ({
       completed: !todoSelect.completed,
     })
       .then(updatedTodo => {
-        setTodos(
-          [...todos].map(todo => {
+        setTodos(last =>
+          [...last].map(todo => {
             if (todo.id === todoSelect.id) {
               return { ...todo, completed: updatedTodo.completed };
             }
