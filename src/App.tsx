@@ -64,7 +64,7 @@ export const App: React.FC = () => {
         setTimeout(() => {
           setErrorMessage(null);
         }, 3000);
-        setTodos(todos);
+        // setTodos(todos);
       })
       .finally(() => {
         setIsDeleting(false);
