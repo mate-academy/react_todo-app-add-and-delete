@@ -95,14 +95,15 @@ export const TodosProvider: React.FC<Props> = ({ children }) => {
   };
 
   const deleteTodo = (id: number) => {
-    postService.deleteTodo(id)
+    postService
+      .deleteTodo(id)
       .then(() => {
         setTodos(todos.filter(currentTodo => currentTodo.id !== id));
       })
       .catch(error => {
         setErrorMessage('Unable to delete a todo');
         throw error;
-    })
+      });
   };
 
   const toggleTodoCompleted = (id: number, completed: boolean) => {
@@ -111,41 +112,48 @@ export const TodosProvider: React.FC<Props> = ({ children }) => {
     postService
       .toggleCompleted(id, completed)
       .then(() => {
-        setTodos(todos.map(currentTodo => {
-          if (currentTodo.id === id) {
-            return { ...currentTodo, completed: !currentTodo.completed };
-          }
+        setTodos(
+          todos.map(currentTodo => {
+            if (currentTodo.id === id) {
+              return { ...currentTodo, completed: !currentTodo.completed };
+            }
 
-          return currentTodo;
-        }));
+            return currentTodo;
+          }),
+        );
       })
-      .catch((error) => {
-        setTimeout(() => { setTodos(prevTodos); }, 1000);
+      .catch(error => {
+        setTimeout(() => {
+          setTodos(prevTodos);
+        }, 1000);
         setErrorMessage('Unable to update a todo');
         throw error;
       });
   };
 
-
   const editTodo = (id: number, title: string) => {
     const prevTodos = todos;
 
-    postService.editTodo(id, title)
+    postService
+      .editTodo(id, title)
       .then(() => {
         const currentTitle = title.trim();
-        setTodos(todos.map(item => {
-          if (id === item.id) {
-            return { ...item, title: currentTitle };
-          }
 
-          return item;
-        }));
+        setTodos(
+          todos.map(item => {
+            if (id === item.id) {
+              return { ...item, title: currentTitle };
+            }
+
+            return item;
+          }),
+        );
       })
-      .catch((error) => {
+      .catch(error => {
         setTodos(prevTodos);
         setErrorMessage('Unable to update a todo');
         throw error;
-    });
+      });
   };
 
   const value = useMemo(

@@ -30,7 +30,7 @@ export const TodoItem: React.FC<Props> = ({ todo }) => {
   const todoEditStart = () => {
     setEditing(true);
     setEditingId(todo.id.toString());
-  }
+  };
 
   return (
     <div
@@ -50,7 +50,9 @@ export const TodoItem: React.FC<Props> = ({ todo }) => {
           className="todo__status"
           id={todo.id.toString()}
           checked={todo.completed}
-          onChange={event => toggleTodoCompleted(+event.target.id, todo.completed)}
+          onChange={event =>
+            toggleTodoCompleted(+event.target.id, todo.completed)
+          }
         />
       </label>
 
@@ -65,7 +67,7 @@ export const TodoItem: React.FC<Props> = ({ todo }) => {
             value={editingValue}
             onBlur={() => {
               todoEditEnd();
-              editTodo(todo.id, editingValue.trim())
+              editTodo(todo.id, editingValue.trim());
             }}
             onKeyUp={event => {
               if (event.key === 'Escape' || event.key === 'Enter') {
