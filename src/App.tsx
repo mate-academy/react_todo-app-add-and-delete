@@ -127,7 +127,7 @@ export const App: React.FC = () => {
       return () => clearTimeout(timer);
     }
 
-    return; // Добавленный возврат, если errorMessage равно null
+    return;
   }, [errorMessage]);
 
   if (!USER_ID) {

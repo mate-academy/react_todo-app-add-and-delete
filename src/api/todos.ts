@@ -8,11 +8,11 @@ export const getTodos = () => {
 };
 
 export const deleteTodo = (id: number) => {
-  return client.delete(`/todos/${id}`)
-}
+  return client.delete(`/todos/${id}`);
+};
 
 export const addTodo = (newTodo: Todo) => {
-  return client.post<Todo>('/todos', newTodo)
-}
+  return client.post<Todo>('/todos', newTodo);
+};
 
 // Add more methods here
