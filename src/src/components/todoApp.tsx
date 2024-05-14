@@ -92,14 +92,15 @@ export const TodoApp: React.FC = () => {
     OnSubmit(tempTodo);
   }
 
-  const activeTodos = todos.every((todo) => todo.completed);
+  const allTodosActive = todos.every((todo) => todo.completed);
+  const todosWithNotCompleted = todos.some((todo) => !todo.completed);
 
   const handleAllTodosButton = () => {
     setAllTodosButton(!allTodosButton);
 
     let copiedTodos = [...todos];
 
-    if (allTodosButton || activeTodos) {
+    if (allTodosActive) {
       copiedTodos = [...todos].map((todo) => {
         const todoItem = todo;
 
@@ -107,7 +108,7 @@ export const TodoApp: React.FC = () => {
 
         return todoItem;
       });
-    } else {
+    } else if (todosWithNotCompleted) {
       copiedTodos = [...todos].map((todo) => {
         const todoItem = todo;
 
@@ -127,7 +128,7 @@ export const TodoApp: React.FC = () => {
     } else if (event.key === "Enter" && !title.trim().length) {
       event.preventDefault();
       setIsHidden(false);
-      setLoadErrorMessage("Title shouldn't be empty");
+      setLoadErrorMessage("Title should not be empty");
       setTimeout(() => {
         setIsHidden(true);
         setLoadErrorMessage("");
@@ -152,7 +153,7 @@ export const TodoApp: React.FC = () => {
           {todos.length > 0 && (
             <button
               className={cn("todoapp__toggle-all", {
-                active: activeTodos,
+                active: allTodosActive, //check active
               })}
               data-cy="ToggleAllButton"
               onClick={handleAllTodosButton}
