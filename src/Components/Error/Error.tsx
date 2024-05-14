@@ -18,7 +18,8 @@ export const Error: React.FC = () => {
   return (
     <div
       data-cy="ErrorNotification"
-      className={classNames("notification is-danger is-light has-text-weight-normal", {
+      className={classNames(
+        "notification is-danger is-light has-text-weight-normal", {
         hidden: !errorMessage,
       }
       )}
@@ -30,7 +31,6 @@ export const Error: React.FC = () => {
         onClick={() => setErrorMessage('')}
       />
       {errorMessage}
-
     </div>
   );
 };
