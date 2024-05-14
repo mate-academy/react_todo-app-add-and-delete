@@ -31,6 +31,7 @@ export const App: React.FC = () => {
   const [title, setTitle] = useState('');
   const [addingTodo, setAddingTodo] = useState<boolean>(false);
   const [loaderToDeleteAll, setLoaderToDeleteAll] = useState(false);
+  const [errorid, setErrorid] = useState(0);
 
   const inputRef = useRef<HTMLInputElement>(null);
 
@@ -41,7 +42,10 @@ export const App: React.FC = () => {
     todosService
       .getTodos()
       .then(todos => setTodosFromServer(todos))
-      .catch(() => setErrorMessage('Unable to load todos'));
+      .catch(() => {
+        setErrorMessage('Unable to load todos');
+        setErrorid(errorid + 1);
+      });
   }, []);
 
   useEffect(
@@ -64,13 +68,16 @@ export const App: React.FC = () => {
           currentTodos.filter(todo => todo.id !== todoId),
         ),
       )
-      .catch(() => setErrorMessage('Unable to delete a todo'))
+      .catch(() => {
+        setErrorid(errorid + 1);
+        setErrorMessage('Unable to delete a todo');
+      })
       .finally(() => setLoader(null));
   };
 
   const onSubmit = (event: React.FormEvent<HTMLFormElement>) => {
-    event.preventDefault();
     setErrorMessage(null);
+    event.preventDefault();
     const id = Math.floor(Math.random() * 100000);
     const newTodo = {
       title: title.trim(),
@@ -80,6 +87,7 @@ export const App: React.FC = () => {
     };
 
     if (title.trim() === '') {
+      setErrorid(errorid + 1);
       setErrorMessage('Title should not be empty');
 
       return;
@@ -94,6 +102,7 @@ export const App: React.FC = () => {
         setTitle('');
       })
       .catch(error => {
+        setErrorid(errorid + 1);
         setErrorMessage('Unable to add a todo');
         throw error;
       })
@@ -110,25 +119,24 @@ export const App: React.FC = () => {
         .deleteTodo(todo.id)
         .then(() =>
           setTodosFromServer(currentTodos =>
-            currentTodos.filter(singleTodo => !singleTodo.completed),
+            currentTodos.filter(singleTodo => todo.id !== singleTodo.id),
           ),
         )
-        .catch(() => setErrorMessage('Unable to delete a todo'))
+        .catch(() => {
+          setErrorMessage('Unable to delete a todo');
+          setErrorid(errorid + 1);
+        })
         .finally(() => setLoaderToDeleteAll(false)),
     );
   };
 
   useEffect(() => {
-    if (errorMessage) {
-      const timer = setTimeout(() => {
-        setErrorMessage(null);
-      }, 3000);
+    const timer = setTimeout(() => {
+      setErrorMessage('');
+    }, 3000);
 
-      return () => clearTimeout(timer);
-    }
-
-    return;
-  }, [errorMessage]);
+    return () => clearTimeout(timer);
+  }, [errorid]);
 
   if (!USER_ID) {
     return <UserWarning />;
