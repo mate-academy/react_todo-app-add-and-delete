@@ -69,80 +69,74 @@ export const TodoList: React.FC<Props> = ({
     [setError, setTodos],
   );
 
-  const handleDeleteTodo = useCallback(
-    (id: number) => {
-      setLoading(true);
-      setError('');
-      setIdsToUpdated(state => [...state, id]);
+  function handleDeleteTodo(id: number) {
+    setLoading(true);
+    setError('');
+    setIdsToUpdated(state => [...state, id]);
 
-      deleteTodo(id)
-        .then(() => {
-          setTodos(state => state.filter(todo => todo.id !== id));
-        })
-        .catch(() => setError('Unable to delete a todo'))
-        .finally(() => {
-          setIdsToUpdated(state => state.filter(el => el !== id));
-          setLoading(false);
-        });
-    },
-    [setError, setLoading, setTodos],
-  );
+    deleteTodo(id)
+      .then(() => {
+        setTodos(state => state.filter(todo => todo.id !== id));
+      })
+      .catch(() => setError('Unable to delete a todo'))
+      .finally(() => {
+        setIdsToUpdated(state => state.filter(el => el !== id));
+        setLoading(false);
+      });
+  }
 
-  const handleUpdateTitleTodo = useCallback(
-    (todoSelect: Todo) => {
-      setError('');
-      setIdsToUpdated(state => [...state, todoSelect.id]);
+  function handleUpdateTitleTodo(todoSelect: Todo) {
+    setError('');
+    setIdsToUpdated(state => [...state, todoSelect.id]);
 
-      setTodos(
-        [...todos].map(todo => {
-          if (todo.id === todoId) {
-            return { ...todo, title: todoTitle };
-          }
-
-          return todo;
-        }),
-      );
-
-      if (tempTitle !== todoTitle.trim()) {
-        if (todoTitle.trim() === '') {
-          handleDeleteTodo(todoSelect.id);
-
-          return;
+    setTodos(
+      [...todos].map(todo => {
+        if (todo.id === todoId) {
+          return { ...todo, title: todoTitle };
         }
 
-        updateTodo({
-          id: todoSelect.id,
-          userId: USER_ID,
-          title: todoTitle.trim(),
-          completed: todoSelect.completed,
-        })
-          .then(updatedTodo => {
-            setTodos(
-              [...todos].map(todo => {
-                if (todo.id === todoId) {
-                  return { ...todo, title: updatedTodo.title };
-                }
+        return todo;
+      }),
+    );
 
-                return todo;
-              }),
-            );
-            setTempTitle('');
-            setFormActive(false);
-          })
-          .catch(() => {
-            setError('Unable to update a todo');
-            setFormActive(true);
-          })
-          .finally(() => {
-            setIdsToUpdated(state => state.filter(el => el !== todoSelect.id));
-          });
-      } else {
-        setIdsToUpdated(state => state.filter(el => el !== todoSelect.id));
-        setFormActive(false);
+    if (tempTitle !== todoTitle.trim()) {
+      if (todoTitle.trim() === '') {
+        handleDeleteTodo(todoSelect.id);
+
+        return;
       }
-    },
-    [handleDeleteTodo, setError, setTodos, tempTitle, todoId, todoTitle, todos],
-  );
+
+      updateTodo({
+        id: todoSelect.id,
+        userId: USER_ID,
+        title: todoTitle.trim(),
+        completed: todoSelect.completed,
+      })
+        .then(updatedTodo => {
+          setTodos(
+            [...todos].map(todo => {
+              if (todo.id === todoId) {
+                return { ...todo, title: updatedTodo.title };
+              }
+
+              return todo;
+            }),
+          );
+          setTempTitle('');
+          setFormActive(false);
+        })
+        .catch(() => {
+          setError('Unable to update a todo');
+          setFormActive(true);
+        })
+        .finally(() => {
+          setIdsToUpdated(state => state.filter(el => el !== todoSelect.id));
+        });
+    } else {
+      setIdsToUpdated(state => state.filter(el => el !== todoSelect.id));
+      setFormActive(false);
+    }
+  }
 
   function handleBlur(todoSelect: Todo) {
     if (idsToUptdated.length === 0) {
