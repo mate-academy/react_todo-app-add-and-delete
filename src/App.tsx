@@ -1,26 +1,151 @@
-/* eslint-disable max-len */
-/* eslint-disable jsx-a11y/control-has-associated-label */
-import React from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import { UserWarning } from './UserWarning';
+import { USER_ID, getTodos, getDelete, getAdd } from './api/todos';
+import { Todo } from './types/Todo';
+import { SortType } from './types/SortType';
 
-const USER_ID = 0;
+import { Todos } from './components/Todos/Todos';
+import { Footer } from './components/Footer/Footer';
+import { getFilter } from './components/FilterFunc/FilterFunc';
+import { Form } from './components/Header-Form/Form';
+import { ErrorType } from './types/ErrorType';
+import { ErrorMessage } from './components/ErrorMessage/ErrorMessage';
+import { TodoItem } from './components/TodoItem/TodoItem';
 
 export const App: React.FC = () => {
+  const [todos, setTodos] = useState<Todo[]>([]);
+
+  const [titleNew, setTitleNew] = useState('');
+  const [isSubmitingNewTodo, setIsSubmitingNewTodo] = useState(false);
+
+  const [errorMessage, setErrorMessage] = useState<ErrorType | null>(null);
+  const [sortField, setSortField] = useState(SortType.All);
+
+  const [tempTodo, setTempTodo] = useState<null | Todo>(null);
+  const [isDeleting, setIsDeleting] = useState(false);
+
+  const activeInput = useRef<HTMLInputElement>(null);
+
+  const setErrorWithSetTimeout = (error: ErrorType) => {
+    setErrorMessage(error);
+    setTimeout(() => {
+      setErrorMessage(null);
+    }, 3000);
+  };
+
+  useEffect(() => {
+    setErrorMessage(null);
+
+    getTodos()
+      .then(setTodos)
+      .catch(() => {
+        setErrorWithSetTimeout(ErrorType.UnableLoad);
+      });
+  }, []);
+
+  useEffect(() => {
+    activeInput.current?.focus();
+  }, [todos, errorMessage]);
+
+  const sortedTodos = getFilter(todos, sortField);
+
+  const onDelete = (todoId: number) => {
+    if (isDeleting) {
+      return;
+    }
+
+    setIsDeleting(false);
+
+    return getDelete(todoId)
+      .then(() => {
+        setTodos(currentTodos =>
+          currentTodos.filter(todo => todo.id !== todoId),
+        );
+      })
+      .catch(() => {
+        setErrorWithSetTimeout(ErrorType.UnableDelete);
+        // setTodos(todos);
+      })
+      .finally(() => {
+        setIsDeleting(false);
+      });
+  };
+
+  const createNewTodo = () => {
+    if (!titleNew.trim()) {
+      setErrorWithSetTimeout(ErrorType.EmptyTitle);
+
+      return;
+    }
+
+    const newTodo = {
+      id: 0,
+      title: titleNew.trim(),
+      completed: false,
+      userId: USER_ID,
+    };
+
+    setTempTodo(newTodo);
+
+    setIsSubmitingNewTodo(true);
+
+    getAdd(newTodo)
+      .then(created => {
+        setTodos(currentTodos => [...currentTodos, created]);
+        setTitleNew('');
+      })
+      .catch(() => {
+        setErrorWithSetTimeout(ErrorType.UnableAdd);
+      })
+      .finally(() => {
+        setTempTodo(null);
+        setIsSubmitingNewTodo(false);
+      });
+  };
+
+  const clearCompleted = () => {
+    return todos.filter(todo => todo.completed).map(todo => onDelete(todo.id));
+  };
+
   if (!USER_ID) {
     return <UserWarning />;
   }
 
   return (
-    <section className="section container">
-      <p className="title is-4">
-        Copy all you need from the prev task:
-        <br />
-        <a href="https://github.com/mate-academy/react_todo-app-loading-todos#react-todo-app-load-todos">
-          React Todo App - Load Todos
-        </a>
-      </p>
+    <div className="todoapp">
+      <h1 className="todoapp__title">todos</h1>
+      <div className="todoapp__content">
+        <Form
+          titleNew={titleNew}
+          setTitleNew={setTitleNew}
+          createNewTodo={createNewTodo}
+          activeInput={activeInput}
+          isSubmitingNewTodo={isSubmitingNewTodo}
+        />
 
-      <p className="subtitle">Styles are already copied</p>
-    </section>
+        <Todos
+          todos={sortedTodos}
+          onDelete={isDeleting ? () => {} : onDelete}
+        />
+
+        {tempTodo && (
+          <TodoItem todo={tempTodo} onDelete={onDelete} isTemp={true} />
+        )}
+
+        {todos.length > 0 && (
+          <Footer
+            todos={todos}
+            sortField={sortField}
+            setSortField={setSortField}
+            clearCompleted={clearCompleted}
+          />
+        )}
+      </div>
+
+      <ErrorMessage
+        errorMessage={errorMessage}
+        setErrorMessage={setErrorMessage}
+      />
+    </div>
   );
 };
