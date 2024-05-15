@@ -1,5 +1,5 @@
 /* eslint-disable jsx-a11y/label-has-associated-control */
-import React, { useEffect, useRef, useState } from 'react';
+import React, { useCallback, useEffect, useRef, useState } from 'react';
 import { Todo } from '../types/Todo';
 import { USER_ID, deleteTodo, updateTodo } from '../api/todos';
 import { ErrorMessages } from '../App';
@@ -21,9 +21,10 @@ export const TodoList: React.FC<Props> = ({
 }) => {
   const [formActive, setFormActive] = useState(false);
   const [todoTitle, setTodoTitle] = useState('');
-  const [todoId, setTodoId] = useState(Infinity);
+  const [todoId, setTodoId] = useState(0);
   const inputRef = useRef<HTMLInputElement>(null);
   const [tempTitle, setTempTitle] = useState('');
+  const [idsToUptdated, setIdsToUpdated] = useState<number[]>([]);
 
   useEffect(() => {
     if (formActive && inputRef.current) {
@@ -34,91 +35,121 @@ export const TodoList: React.FC<Props> = ({
   function handleSetFormActive(title: string, id: number) {
     setFormActive(true);
     setTodoId(id);
+
     setTodoTitle(title);
     setTempTitle(title);
   }
 
-  function handleChangeCompleted(todoSelect: Todo) {
-    setError('');
-    updateTodo({
-      id: todoSelect.id,
-      userId: USER_ID,
-      title: todoSelect.title,
-      completed: !todoSelect.completed,
-    })
-      .then(updatedTodo => {
-        setTodos(last =>
-          [...last].map(todo => {
-            if (todo.id === todoSelect.id) {
-              return { ...todo, completed: updatedTodo.completed };
-            }
-
-            return todo;
-          }),
-        );
-      })
-      .catch(() => setError('Unable to update a todo'));
-  }
-
-  function handleDeleteTodo(id: number) {
-    setLoading(true);
-    setError('');
-    setTodoId(id);
-    deleteTodo(id)
-      .then(() => setTodos(todos.filter(todo => todo.id !== id)))
-      .catch(() => setError('Unable to delete a todo'))
-      .finally(() => {
-        setTodoId(Infinity);
-        setLoading(false);
-      });
-  }
-
-  function handleUpdateTitleTodo(todoSelect: Todo) {
-    setError('');
-
-    setTodos(
-      [...todos].map(todo => {
-        if (todo.id === todoId) {
-          return { ...todo, title: todoTitle };
-        }
-
-        return todo;
-      }),
-    );
-    if (tempTitle !== todoTitle) {
+  const handleChangeCompleted = useCallback(
+    (todoSelect: Todo) => {
+      setError('');
+      setIdsToUpdated(state => [...state, todoSelect.id]);
       updateTodo({
         id: todoSelect.id,
         userId: USER_ID,
-        title: todoTitle,
-        completed: todoSelect.completed,
+        title: todoSelect.title,
+        completed: !todoSelect.completed,
       })
         .then(updatedTodo => {
-          setTodos(
-            [...todos].map(todo => {
-              if (todo.id === todoId) {
-                return { ...todo, title: updatedTodo.title };
+          setTodos(last =>
+            [...last].map(todo => {
+              if (todo.id === todoSelect.id) {
+                return { ...todo, completed: updatedTodo.completed };
               }
 
               return todo;
             }),
           );
-          setTempTitle('');
-          setFormActive(false);
-          setTodoId(Infinity);
         })
-        .catch(() => {
-          setError('Unable to update a todo');
-          setFormActive(true);
-          setTodoId(todoSelect.id);
+        .catch(() => setError('Unable to update a todo'))
+        .finally(() =>
+          setIdsToUpdated(state => state.filter(el => el !== todoSelect.id)),
+        );
+    },
+    [setError, setTodos],
+  );
+
+  const handleDeleteTodo = useCallback(
+    (id: number) => {
+      setLoading(true);
+      setError('');
+      setIdsToUpdated(state => [...state, id]);
+
+      deleteTodo(id)
+        .then(() => {
+          setTodos(state => state.filter(todo => todo.id !== id));
+        })
+        .catch(() => setError('Unable to delete a todo'))
+        .finally(() => {
+          setIdsToUpdated(state => state.filter(el => el !== id));
+          setLoading(false);
         });
-    } else {
-      setTodoId(Infinity);
-    }
-  }
+    },
+    [setError, setLoading, setTodos],
+  );
+
+  const handleUpdateTitleTodo = useCallback(
+    (todoSelect: Todo) => {
+      setError('');
+      setIdsToUpdated(state => [...state, todoSelect.id]);
+
+      setTodos(
+        [...todos].map(todo => {
+          if (todo.id === todoId) {
+            return { ...todo, title: todoTitle };
+          }
+
+          return todo;
+        }),
+      );
+
+      if (tempTitle !== todoTitle.trim()) {
+        if (todoTitle.trim() === '') {
+          handleDeleteTodo(todoSelect.id);
+
+          return;
+        }
+
+        updateTodo({
+          id: todoSelect.id,
+          userId: USER_ID,
+          title: todoTitle.trim(),
+          completed: todoSelect.completed,
+        })
+          .then(updatedTodo => {
+            setTodos(
+              [...todos].map(todo => {
+                if (todo.id === todoId) {
+                  return { ...todo, title: updatedTodo.title };
+                }
+
+                return todo;
+              }),
+            );
+            setTempTitle('');
+            setFormActive(false);
+          })
+          .catch(() => {
+            setError('Unable to update a todo');
+            setFormActive(true);
+          })
+          .finally(() => {
+            setIdsToUpdated(state => state.filter(el => el !== todoSelect.id));
+          });
+      } else {
+        setIdsToUpdated(state => state.filter(el => el !== todoSelect.id));
+        setFormActive(false);
+      }
+    },
+    [handleDeleteTodo, setError, setTodos, tempTitle, todoId, todoTitle, todos],
+  );
 
   function handleBlur(todoSelect: Todo) {
-    setFormActive(false);
-    handleUpdateTitleTodo(todoSelect);
+    if (idsToUptdated.length === 0) {
+      handleUpdateTitleTodo(todoSelect);
+
+      return;
+    }
   }
 
   function handleKeyDown(
@@ -127,8 +158,17 @@ export const TodoList: React.FC<Props> = ({
   ) {
     if (event.key === 'Enter') {
       event.preventDefault();
-      setFormActive(false);
+
       handleUpdateTitleTodo(todo);
+
+      return;
+    }
+
+    if (event.key === 'Escape') {
+      event.preventDefault();
+      setFormActive(false);
+
+      return;
     }
   }
 
@@ -138,7 +178,7 @@ export const TodoList: React.FC<Props> = ({
         <div
           key={todo.id}
           data-cy="Todo"
-          className={`todo ${todo.completed ? 'completed' : ''} ${todo.id === Infinity ? 'temp' : ''}`}
+          className={`todo ${todo.completed ? 'completed' : ''} ${todo.id === 0 ? 'temp' : ''}`}
         >
           <label className="todo__status-label">
             <input
@@ -184,15 +224,13 @@ export const TodoList: React.FC<Props> = ({
             </>
           )}
 
-          {!formActive && (
-            <div
-              data-cy="TodoLoader"
-              className={`modal overlay ${todo.id === Infinity || todo.id === todoId ? 'is-active' : ''}`}
-            >
-              <div className="modal-background has-background-white-ter" />
-              <div className="loader" />
-            </div>
-          )}
+          <div
+            data-cy="TodoLoader"
+            className={`modal overlay ${todo.id === 0 || idsToUptdated.includes(todo.id) ? 'is-active' : ''}`}
+          >
+            <div className="modal-background has-background-white-ter" />
+            <div className="loader" />
+          </div>
         </div>
       ))}
     </>

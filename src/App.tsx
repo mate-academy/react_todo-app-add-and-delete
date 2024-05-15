@@ -1,6 +1,6 @@
 /* eslint-disable jsx-a11y/label-has-associated-control */
 /* eslint-disable jsx-a11y/control-has-associated-label */
-import React, { useEffect, useMemo, useRef, useState } from 'react';
+import React, { useEffect, useMemo, useState } from 'react';
 import { UserWarning } from './UserWarning';
 import {
   USER_ID,
@@ -27,11 +27,11 @@ export const App: React.FC = () => {
   const [error, setError] = useState<ErrorMessages>('');
   const [inputTodo, setInputTodo] = useState('');
   const [loading, setLoading] = useState(false);
-  const inputRefAddTodo = useRef<HTMLInputElement>(null);
+  // const inputRefAddTodo = useRef<HTMLInputElement>(null);
 
-  useEffect(() => {
-    inputRefAddTodo.current?.focus();
-  }, [loading]);
+  // useEffect(() => {
+  //   inputRefAddTodo.current?.focus();
+  // }, [loading]);
 
   const todoList = useMemo(() => {
     return todos.filter(todo => {
@@ -47,7 +47,7 @@ export const App: React.FC = () => {
 
   const remainingItemsCount = useMemo(() => {
     return todos.reduce((count, todo) => {
-      if (todo.id !== Infinity && !todo.completed) {
+      if (todo.id !== 0 && !todo.completed) {
         return count + 1;
       }
 
@@ -93,7 +93,7 @@ export const App: React.FC = () => {
       setTodos(currentTodos => [
         ...currentTodos,
         {
-          id: Infinity,
+          id: 0,
           title: inputTodo,
           userId: USER_ID,
           completed: false,
@@ -171,8 +171,6 @@ export const App: React.FC = () => {
   }
 
   function handleDeleteCompletedTodos() {
-    const deletedID: number[] = [];
-
     setError('');
     setLoading(true);
     todos
@@ -180,9 +178,7 @@ export const App: React.FC = () => {
       .forEach(todoCompleted => {
         deleteTodo(todoCompleted.id)
           .then(() => {
-            deletedID.push(todoCompleted.id);
-
-            setTodos(tds => tds.filter(el => !deletedID.includes(el.id)));
+            setTodos(tds => tds.filter(el => el.id !== todoCompleted.id));
           })
           .catch(() => setError('Unable to delete a todo'))
           .finally(() => setLoading(false));
@@ -196,7 +192,7 @@ export const App: React.FC = () => {
       <div className="todoapp__content">
         <header className="todoapp__header">
           {/* this button should have `active` class only if all todos are completed */}
-          {todos.length !== 0 && todos[0].id !== Infinity && (
+          {todos.length !== 0 && todos[0].id !== 0 && (
             <button
               type="button"
               className={`todoapp__toggle-all ${todos.every(el => el.completed) && todos.length !== 0 ? 'active' : ''}`}
@@ -208,7 +204,9 @@ export const App: React.FC = () => {
           {/* Add a todo on form submit */}
           <form>
             <input
-              ref={inputRefAddTodo}
+              ref={reference => {
+                reference?.focus();
+              }}
               data-cy="NewTodoField"
               type="text"
               value={inputTodo}
