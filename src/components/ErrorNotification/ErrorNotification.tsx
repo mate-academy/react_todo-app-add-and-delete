@@ -1,19 +1,21 @@
-import { FC, SetStateAction } from 'react';
+import { FC, useContext, useEffect } from 'react';
 
 import { errors } from '../../constants';
 
-import { ErrorType } from '../../types';
+import { AppContext } from '../../wrappers/AppProvider';
 
-export interface IErrorNotification {
-  errorType: ErrorType | null;
-  setError: React.Dispatch<SetStateAction<ErrorType | null>>;
-}
+export const ErrorNotification: FC = () => {
+  const { errorType, setErrorType } = useContext(AppContext);
 
-export const ErrorNotification: FC<IErrorNotification> = ({
-  errorType,
-  setError,
-}) => {
   const errorMessage = errorType ? errors[errorType].message : '';
+
+  useEffect(() => {
+    if (errorType) {
+      setTimeout(() => {
+        setErrorType(null);
+      }, 3000);
+    }
+  });
 
   return (
     <div
@@ -25,7 +27,7 @@ export const ErrorNotification: FC<IErrorNotification> = ({
         data-cy="HideErrorButton"
         type="button"
         className="delete"
-        onClick={() => setError(null)}
+        onClick={() => setErrorType(null)}
       />
     </div>
   );

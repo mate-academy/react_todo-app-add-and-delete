@@ -1,17 +1,10 @@
-import { FC, useEffect, useRef } from 'react';
+import { FC, useContext } from 'react';
 
-import { Todo } from '../../types';
+import { Form } from '..';
+import { AppContext } from '../../wrappers/AppProvider';
 
-export interface IHeader {
-  todos: Todo[];
-}
-
-export const Header: FC<IHeader> = ({ todos }) => {
-  const inputRef = useRef<HTMLInputElement>(null);
-
-  useEffect(() => {
-    inputRef.current?.focus();
-  }, []);
+export const Header: FC = () => {
+  const { todos } = useContext(AppContext);
 
   const allCompleted = todos.every(todo => todo.completed === true);
 
@@ -19,20 +12,10 @@ export const Header: FC<IHeader> = ({ todos }) => {
     <header className="todoapp__header">
       <button
         type="button"
-        className={`todoapp__toggle-all  ${allCompleted ? 'active' : ''}`}
+        className={`todoapp__toggle-all  ${allCompleted && todos.length > 0 ? 'active' : ''}`}
         data-cy="ToggleAllButton"
       />
-
-      {/* Add a todo on form submit */}
-      <form>
-        <input
-          ref={inputRef}
-          data-cy="NewTodoField"
-          type="text"
-          className="todoapp__new-todo"
-          placeholder="What needs to be done?"
-        />
-      </form>
+      <Form />
     </header>
   );
 };

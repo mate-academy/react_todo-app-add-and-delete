@@ -10,3 +10,8 @@ export enum StatusSelect {
   Active = 'active',
   Completed = 'completed',
 }
+
+export interface ITempTodo {
+  isLoading: boolean;
+  todo: Omit<Todo, 'userId'> | null;
+}

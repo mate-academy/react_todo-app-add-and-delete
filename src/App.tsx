@@ -1,51 +1,33 @@
-import { FC, useEffect, useState } from 'react';
+import { FC, useContext } from 'react';
 
-import { Header, TodoList, Footer, ErrorNotification } from './components';
+import {
+  Header,
+  TodoList,
+  Footer,
+  ErrorNotification,
+  TodoInfo,
+} from './components';
 
-import { getFilteredTodos, getTodos } from './helpers';
-
-import { ErrorType, StatusSelect, Todo } from './types';
+import { AppContext } from './wrappers/AppProvider';
 
 export const App: FC = () => {
-  const [todos, setTodos] = useState<Todo[] | []>([]);
-
-  const [status, setStatus] = useState<StatusSelect>(StatusSelect.All);
-
-  const [errorType, setErrorType] = useState<ErrorType | null>(null);
-
-  const filteredTodo = getFilteredTodos(todos, status);
-
-  useEffect(() => {
-    const fetchTodo = async () => {
-      try {
-        const result = await getTodos();
-
-        setTodos(result);
-      } catch (er) {
-        setErrorType('load');
-
-        setTimeout(() => {
-          setErrorType(null);
-        }, 3000);
-      }
-    };
-
-    fetchTodo();
-  }, [errorType, status]);
+  const { tempTodo } = useContext(AppContext);
 
   return (
     <div className="todoapp">
       <h1 className="todoapp__title">todos</h1>
 
       <div className="todoapp__content">
-        <Header todos={todos} />
+        <Header />
 
-        <TodoList todos={filteredTodo} />
+        <TodoList />
 
-        <Footer setStatus={setStatus} status={status} todos={todos} />
+        {tempTodo.isLoading && <TodoInfo />}
+
+        <Footer />
       </div>
 
-      <ErrorNotification errorType={errorType} setError={setErrorType} />
+      <ErrorNotification />
     </div>
   );
 };
