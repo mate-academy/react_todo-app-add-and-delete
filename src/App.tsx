@@ -1,26 +1,33 @@
-/* eslint-disable max-len */
-/* eslint-disable jsx-a11y/control-has-associated-label */
-import React from 'react';
-import { UserWarning } from './UserWarning';
+import { FC, useContext } from 'react';
 
-const USER_ID = 0;
+import {
+  Header,
+  TodoList,
+  Footer,
+  ErrorNotification,
+  TodoInfo,
+} from './components';
 
-export const App: React.FC = () => {
-  if (!USER_ID) {
-    return <UserWarning />;
-  }
+import { AppContext } from './wrappers/AppProvider';
+
+export const App: FC = () => {
+  const { tempTodo } = useContext(AppContext);
 
   return (
-    <section className="section container">
-      <p className="title is-4">
-        Copy all you need from the prev task:
-        <br />
-        <a href="https://github.com/mate-academy/react_todo-app-loading-todos#react-todo-app-load-todos">
-          React Todo App - Load Todos
-        </a>
-      </p>
+    <div className="todoapp">
+      <h1 className="todoapp__title">todos</h1>
 
-      <p className="subtitle">Styles are already copied</p>
-    </section>
+      <div className="todoapp__content">
+        <Header />
+
+        <TodoList />
+
+        {tempTodo.isLoading && <TodoInfo />}
+
+        <Footer />
+      </div>
+
+      <ErrorNotification />
+    </div>
   );
 };
