@@ -3,12 +3,14 @@
 import React, { FC, useContext, useEffect, useState } from 'react';
 import { TodoContext, TodoDispatch } from '../../Context/TodoContext';
 import { USER_ID, addTodo } from '../../api/todos';
+import { Todo } from '../../types/Todo';
 
 interface IProps {
   showError: (err: string) => void;
+  setTempTodo: (todo: Todo | null) => void;
 }
 
-export const FormHeader: FC<IProps> = ({ showError }) => {
+export const FormHeader: FC<IProps> = ({ showError, setTempTodo }) => {
   const [text, setNewTodo] = useState('');
   const [load, setLoad] = useState(false);
   const { inputRef, handleFocusInput } = useContext(TodoContext);
@@ -29,6 +31,12 @@ export const FormHeader: FC<IProps> = ({ showError }) => {
       return;
     }
 
+    setTempTodo({
+      id: crypto.randomUUID(),
+      title: text.trim(),
+      completed: false,
+    });
+
     const newTodo = {
       id: crypto.randomUUID(),
       userId: USER_ID,
@@ -36,11 +44,12 @@ export const FormHeader: FC<IProps> = ({ showError }) => {
       completed: false,
     };
 
+    setLoad(true);
     try {
-      setLoad(true);
       const todo = await addTodo(newTodo);
 
       dispatch({ type: 'ADD_TODO', payload: todo });
+      setTempTodo(null);
       showError('');
       setNewTodo('');
       handleFocusInput();

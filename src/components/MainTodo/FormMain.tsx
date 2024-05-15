@@ -16,6 +16,7 @@ interface IProps {
   title: string;
   setEditableTodoId: () => void;
   showError: (err: string) => void;
+  setLoading: (bool: boolean) => void;
 }
 
 export const FormMain: FC<IProps> = ({
@@ -23,6 +24,7 @@ export const FormMain: FC<IProps> = ({
   title,
   setEditableTodoId,
   showError,
+  setLoading,
 }) => {
   const { handleFocusInput } = useContext(TodoContext);
   const dispatch = useContext(TodoDispatch);
@@ -30,53 +32,44 @@ export const FormMain: FC<IProps> = ({
 
   const editFormRef = useRef<HTMLFormElement>(null);
 
-  const cancelEdit = useCallback(() => {
-    dispatch({ type: 'CANCEL_TODO' });
-  }, [dispatch]);
-
   const handleSubmit = useCallback(
     async (e: React.FormEvent | MouseEvent) => {
       e.preventDefault();
+      setLoading(true);
 
-      if (!editText.trim()) {
-        if (id) {
-          try {
+      try {
+        if (!editText.trim()) {
+          if (id) {
             await deleteTodo(id);
             dispatch({ type: 'DELETE_TODO', payload: id });
             handleFocusInput();
-          } catch (error) {
-            showError('Title should not be empty');
           }
-        }
-      } else {
-        const newTodo = {
-          id: id,
-          title: editText.trim(),
-          completed: false,
-        };
-
-        try {
+        } else {
+          const newTodo = {
+            id: id,
+            title: editText.trim(),
+            completed: false,
+          };
           const updatedTodo = await updateTodo(newTodo);
 
           dispatch({ type: 'EDIT_TODO', payload: updatedTodo });
-        } catch (error) {
-          showError('Unable to update a todo');
+          handleFocusInput();
         }
-
-        cancelEdit();
-        handleFocusInput();
+      } catch (error) {
+        showError('Unable to update or delete the todo');
+      } finally {
+        setLoading(false);
+        setEditableTodoId();
       }
-
-      setEditableTodoId();
     },
     [
       editText,
-      setEditableTodoId,
       id,
       dispatch,
       handleFocusInput,
       showError,
-      cancelEdit,
+      setEditableTodoId,
+      setLoading,
     ],
   );
 
@@ -92,11 +85,14 @@ export const FormMain: FC<IProps> = ({
     [handleSubmit],
   );
 
-  const handleKeyUp = (e: React.KeyboardEvent<HTMLInputElement>) => {
-    if (e.key === 'Escape') {
-      setEditableTodoId();
-    }
-  };
+  const handleKeyUp = useCallback(
+    (e: React.KeyboardEvent<HTMLInputElement>) => {
+      if (e.key === 'Escape') {
+        setEditableTodoId();
+      }
+    },
+    [setEditableTodoId],
+  );
 
   useEffect(() => {
     const handleOutsideClick = (e: MouseEvent) => handleClickOutside(e);

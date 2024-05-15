@@ -4,11 +4,18 @@ import { deleteTodo } from '../../api/todos';
 
 interface IProps {
   id: string;
+  loading: boolean;
   showError: (err: string) => void;
   setLoading: (bool: boolean) => void;
+  onDeleteClick: () => void;
 }
 
-export const ButtonMain: FC<IProps> = ({ id, showError, setLoading }) => {
+export const ButtonMain: FC<IProps> = ({
+  id,
+  showError,
+  setLoading,
+  onDeleteClick,
+}) => {
   const { handleFocusInput } = useContext(TodoContext);
   const dispatch = useContext(TodoDispatch);
 
@@ -30,7 +37,10 @@ export const ButtonMain: FC<IProps> = ({ id, showError, setLoading }) => {
       type="button"
       className="todo__remove"
       data-cy="TodoDelete"
-      onClick={handleDeleteClick}
+      onClick={() => {
+        onDeleteClick();
+        handleDeleteClick();
+      }}
     >
       ×
     </button>

@@ -40,12 +40,6 @@ export const TodoReducer = (state: TodoContextType, action: Action) => {
           return todo;
         }),
       };
-    case 'CANCEL_TODO':
-      return {
-        ...state,
-        textToEdit: '',
-        editID: '',
-      };
     case 'DELETE_COMPLETED_TODO':
       return {
         ...state,

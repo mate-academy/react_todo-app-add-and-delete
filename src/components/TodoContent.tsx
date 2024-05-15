@@ -5,10 +5,12 @@ import { MainTodo } from './MainTodo/MainTodo';
 import { FooterTodo } from './FooterTodo/FooterTodo';
 import { ErrorsTodo } from './Erorrs/ErrorsTodo';
 import { getTodos } from '../api/todos';
+import { Todo } from '../types/Todo';
 
 export const TodoContent: FC = () => {
   const [errorMessage, setErrorMessage] = useState('');
   const [loading, setLoading] = useState(false);
+  const [tempTodo, setTempTodo] = useState<Todo | null>(null);
 
   const { todos } = useContext(TodoContext);
   const dispatch = useContext(TodoDispatch);
@@ -44,13 +46,14 @@ export const TodoContent: FC = () => {
   return (
     <>
       <div className="todoapp__content">
-        <HeaderTodo showError={showError} />
+        <HeaderTodo showError={showError} setTempTodo={setTempTodo} />
         {hasTodos && (
           <>
             <MainTodo
               loading={loading}
               showError={showError}
               setLoading={setLoading}
+              tempTodo={tempTodo}
             />
 
             <FooterTodo showError={showError} />
