@@ -51,6 +51,7 @@ export const AppContext = createContext<AppContextProps>({
 
 export const AppProvider: FC<IAppProvider> = ({ children }) => {
   const [todos, setTodos] = useState<Todo[]>([]);
+  const [filteredTodo, setFilteredTodo] = useState<Todo[]>([]);
   const [status, setStatus] = useState<StatusSelect>(StatusSelect.All);
   const [errorType, setErrorType] = useState<ErrorType | null>(null);
   const [tempTodo, setTempTodo] = useState<ITempTodo>({
@@ -58,7 +59,6 @@ export const AppProvider: FC<IAppProvider> = ({ children }) => {
     todo: { id: 0, title: '', completed: false },
   });
   const [todoDeleteId, setTodoDeleteId] = useState<number[] | null>(null);
-  const filteredTodo = getFilteredTodos(todos, status);
   const inputRef = useRef<HTMLInputElement>(null);
 
   useEffect(() => {
@@ -74,6 +74,10 @@ export const AppProvider: FC<IAppProvider> = ({ children }) => {
 
     fetchTodo();
   }, [errorType, tempTodo, setErrorType, setTodos]);
+
+  useEffect(() => {
+    setFilteredTodo(getFilteredTodos(todos, status));
+  }, [todos, status]);
 
   return (
     <AppContext.Provider

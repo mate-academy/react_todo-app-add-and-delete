@@ -40,6 +40,7 @@ export const Form: FC = () => {
           completed: false,
         },
       }));
+      setIsLoading(true);
 
       const result = await postTodo(trimmedQuery);
 
