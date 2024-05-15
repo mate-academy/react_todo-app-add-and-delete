@@ -30,25 +30,19 @@ export const Footer: FC = () => {
 
       setTodoDeleteId(idToDelete);
 
-      const deletePromises = allCompleted.map(todo => deleteTodos(todo.id));
+      await Promise.all(
+        allCompleted.map(async todo => {
+          try {
+            await deleteTodos(todo.id);
 
-      const results = await Promise.allSettled(deletePromises);
-
-      const successfulIds = results
-        .filter(result => result.status === 'fulfilled')
-        .map((_, index) => allCompleted[index].id);
-
-      if (successfulIds.length !== allCompleted.length) {
-        setErrorType('delete');
-      }
-
-      setTodos(prevState =>
-        prevState.filter(todo => !successfulIds.includes(todo.id)),
+            setTodos(prevState => prevState.filter(el => el.id !== todo.id));
+          } catch (err) {
+            setErrorType('delete');
+          }
+        }),
       );
 
       inputRef.current?.focus();
-    } catch (err) {
-      setErrorType('delete');
     } finally {
       setTodoDeleteId(null);
     }

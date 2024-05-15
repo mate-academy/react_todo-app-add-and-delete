@@ -20,6 +20,7 @@ interface AppContextProps {
   todos: Todo[];
   filteredTodo: Todo[];
   setTodos: Dispatch<SetStateAction<Todo[]>>;
+  setFilteredTodo: Dispatch<SetStateAction<Todo[]>>;
   status: StatusSelect;
   setStatus: Dispatch<SetStateAction<StatusSelect>>;
   errorType: ErrorType | null;
@@ -35,6 +36,7 @@ export const AppContext = createContext<AppContextProps>({
   todos: [],
   filteredTodo: [],
   setTodos: () => {},
+  setFilteredTodo: () => {},
   status: StatusSelect.All,
   setStatus: () => {},
   errorType: null,
@@ -73,7 +75,7 @@ export const AppProvider: FC<IAppProvider> = ({ children }) => {
     };
 
     fetchTodo();
-  }, [errorType, tempTodo, setErrorType, setTodos]);
+  }, []);
 
   useEffect(() => {
     setFilteredTodo(getFilteredTodos(todos, status));
@@ -96,6 +98,7 @@ export const AppProvider: FC<IAppProvider> = ({ children }) => {
           SetStateAction<number[] | null>
         >,
         inputRef,
+        setFilteredTodo,
       }}
     >
       {children}

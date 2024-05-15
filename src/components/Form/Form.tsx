@@ -31,15 +31,14 @@ export const Form: FC = () => {
     try {
       setIsLoading(true);
 
-      setTempTodo(prevState => ({
-        ...prevState,
+      setTempTodo({
         isLoading: true,
         todo: {
           title: trimmedQuery,
           id: 0,
           completed: false,
         },
-      }));
+      });
       setIsLoading(true);
 
       const result = await postTodo(trimmedQuery);
@@ -51,8 +50,10 @@ export const Form: FC = () => {
       setErrorType('add');
     } finally {
       setIsLoading(false);
-
-      setTempTodo(prevState => ({ ...prevState, isLoading: false }));
+      setTempTodo({
+        todo: null,
+        isLoading: false,
+      });
     }
   };
 
