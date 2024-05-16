@@ -1,18 +1,22 @@
 /* eslint-disable @typescript-eslint/no-shadow */
-import React, { useEffect, useMemo, useState } from 'react';
+import React, { useEffect, useMemo, useRef, useState } from 'react';
 import { Todo } from './types/Todo';
-import TodoService from './services/todo';
 import { TodoComponent } from './components/Todo/todo.component';
 import { TodoStatus } from './components/Filter/filter.status';
 import { ErrorTypes } from './components/Errors/error';
+import * as Services from './api/todos';
 
 export const App: React.FC = () => {
   const [todos, setTodos] = useState<Todo[]>([]);
   const [errorTitle, setErrorTitle] = useState<string | null>(null);
   const [status, setStatus] = useState<TodoStatus>(TodoStatus.All);
+  const [newTodoTitle, setNewTodoTitle] = useState<string>('');
+  const [isLoading, setIsLoading] = useState<boolean>(false);
+  const [tempTodo, setTempTodo] = useState<Todo | null>(null);
+  const inputRef = useRef<HTMLInputElement>(null);
 
   useEffect(() => {
-    TodoService.getTodos()
+    Services.getTodos()
       .then(setTodos)
       .catch(() => setErrorTitle(ErrorTypes.UnableToLoadTodos));
   }, []);
@@ -23,15 +27,48 @@ export const App: React.FC = () => {
     }
   }, [errorTitle]);
 
+  useEffect(() => {
+    inputRef.current?.focus();
+  }, [todos]);
+
   const handleAddTodo = (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
-    const newTodoField = event.currentTarget.value;
+    const trimmedTitle = newTodoTitle.trim();
 
-    if (!newTodoField) {
+    if (!trimmedTitle) {
       setErrorTitle(ErrorTypes.TitleError);
 
       return;
     }
+
+    const newTempTodo: Todo = {
+      id: 0,
+      title: trimmedTitle,
+      completed: false,
+      userId: Services.USER_ID,
+    };
+
+    setTempTodo(newTempTodo);
+    setNewTodoTitle('');
+    setIsLoading(true);
+
+    Services.createTodo(trimmedTitle, Services.USER_ID)
+      .then(newTodo => {
+        setTempTodo(null);
+
+        return newTodo;
+      })
+      .then(newTodo => {
+        setTodos(prevTodo => [...prevTodo, newTodo]);
+      })
+      .catch(() => {
+        setErrorTitle(ErrorTypes.UnableToAddTodo);
+        setNewTodoTitle(trimmedTitle);
+        setTempTodo(null);
+      })
+      .finally(() => {
+        setIsLoading(false);
+      });
   };
 
   const handleStatus = (status: TodoStatus) => {
@@ -69,14 +106,18 @@ export const App: React.FC = () => {
               type="text"
               className="todoapp__new-todo"
               placeholder="What needs to be done?"
+              ref={inputRef}
+              value={newTodoTitle}
+              onChange={e => setNewTodoTitle(e.target.value)}
+              disabled={isLoading}
             />
           </form>
         </header>
-
         <section className="todoapp__main" data-cy="TodoList">
           {filteredTodos.map(todo => (
             <TodoComponent key={todo.id} todo={todo} />
           ))}
+          {tempTodo && <TodoComponent todo={tempTodo} isTemp={true} />}
         </section>
 
         {todos.length > 0 && (

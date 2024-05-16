@@ -3,14 +3,16 @@ import { Todo } from './../types/Todo';
 
 export const USER_ID = 628;
 
-export const getTodosFromAPI = () => {
+export const getTodos = () => {
   return client.get<Todo[]>(`/todos?userId=${USER_ID}`);
 };
 
-export const getCompletedTodosFromAPI = () => {
-  return client.get<Todo[]>(`/todos?userId=${USER_ID}&completed=true`);
-};
+export const createTodo = (
+  title: string,
+  userId: number,
+  completed = false,
+): Promise<Todo> => {
+  const data = { title, userId, completed };
 
-export const getTodoFromAPI = (id: number) => {
-  return client.get<Todo[]>(`/todos?id=${id}`);
+  return client.post<Todo>('/todos', data);
 };
