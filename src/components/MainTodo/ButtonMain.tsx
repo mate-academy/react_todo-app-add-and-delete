@@ -28,6 +28,8 @@ export const ButtonMain: FC<IProps> = ({
     } catch (error) {
       showError('Unable to delete a todo');
     } finally {
+      onDeleteClick();
+
       setLoading(false);
     }
   };
