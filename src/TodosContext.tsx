@@ -110,20 +110,22 @@ export const TodosProvider: React.FC<Props> = ({ children }) => {
 
   const deleteCompleted = () => {
     const completedTodos = todos
-      .filter(todo => todo.completed).map(item => item);
+      .filter(todo => todo.completed)
+      .map(item => item);
 
     setLoader(true);
 
-    Promise.allSettled(completedTodos).then(
-      res => res.forEach(item => {
+    Promise.allSettled(completedTodos).then(res =>
+      res.forEach(item => {
         if (item.status === 'fulfilled') {
           postService.deleteTodo(item.value.id);
         }
-      }));
+      }),
+    );
 
     setTodos(todos.filter(item => !item.completed));
     setLoader(false);
-  }
+  };
 
   const toggleTodoCompleted = (id: number, completed: boolean) => {
     const prevTodos = todos;
