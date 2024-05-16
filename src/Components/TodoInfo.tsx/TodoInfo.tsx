@@ -48,6 +48,7 @@ export const TodoInfo: React.FC<TodoInfoProps> = ({ todo }) => {
           data-cy="TodoStatus"
           type="checkbox"
           className="todo__status"
+          onChange={() => {}}
           checked={todo.completed}
         />
       </label>

@@ -34,7 +34,7 @@ export const Header: React.FC = () => {
 
       addTodo(newTodo)
         .then((todo: Todo) => {
-          setTodos(prevTodos => [...prevTodos, todo]);
+          setTodos((prevTodos: Todo[]) => [...prevTodos, todo]);
           setTitle('');
         })
         .catch(() => {

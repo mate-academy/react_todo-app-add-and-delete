@@ -1,7 +1,11 @@
+function generateId(): number {
+  return Math.floor(Math.random() * 900000) + 100000;
+}
+
 export const createTodo = (title: string) => {
   const newTodo = {
-    id: new Date().getTime(),
-    userId: 620,
+    id: generateId(),
+    userId: 645,
     title: title,
     completed: false,
   };
