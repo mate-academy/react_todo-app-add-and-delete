@@ -11,21 +11,11 @@ enum Selected {
 export const Footer: React.FC = () => {
   const {
     todos,
-    setTodos,
     setSelectedFilter,
     showFilteredTodos,
     selectedFilter,
-    deleteTodo,
+    deleteCompleted,
   } = useContext(TodosContext);
-
-  const removeCompleted = () => {
-    setTodos(todos.filter(item => !item.completed));
-    todos.forEach(item => {
-      if (item.completed) {
-        deleteTodo(item.id);
-      }
-    });
-  };
 
   return (
     <>
@@ -78,7 +68,7 @@ export const Footer: React.FC = () => {
             type="button"
             className="todoapp__clear-completed"
             data-cy="ClearCompletedButton"
-            onClick={removeCompleted}
+            onClick={deleteCompleted}
           >
             Clear completed
           </button>

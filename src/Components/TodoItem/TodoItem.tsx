@@ -8,8 +8,13 @@ type Props = {
 };
 
 export const TodoItem: React.FC<Props> = ({ todo }) => {
-  const { deleteTodo, toggleTodoCompleted, editTodo } =
-    useContext(TodosContext);
+  const {
+    loader,
+    deleteTodo,
+    toggleTodoCompleted,
+    editTodo
+  } = useContext(TodosContext);
+
   const [editing, setEditing] = useState(false);
   const [editingValue, setEditingValue] = useState(todo.title);
   const [editingId, setEditingId] = useState('');
@@ -31,6 +36,19 @@ export const TodoItem: React.FC<Props> = ({ todo }) => {
     setEditing(true);
     setEditingId(todo.id.toString());
   };
+
+  const handleFocusMiss = () => {
+    todoEditEnd();
+    editTodo(todo.id, editingValue.trim());
+  }
+
+  const handleKeyUp = (event: React.KeyboardEvent) => {
+    if (event.key === 'Escape' || event.key === 'Enter') {
+      event.preventDefault();
+      todoEditEnd();
+      editTodo(todo.id, editingValue.trim());
+    }
+  }
 
   return (
     <div
@@ -65,17 +83,8 @@ export const TodoItem: React.FC<Props> = ({ todo }) => {
             className="todo__title-field"
             placeholder="Empty todo will be deleted"
             value={editingValue}
-            onBlur={() => {
-              todoEditEnd();
-              editTodo(todo.id, editingValue.trim());
-            }}
-            onKeyUp={event => {
-              if (event.key === 'Escape' || event.key === 'Enter') {
-                event.preventDefault();
-                todoEditEnd();
-                editTodo(todo.id, editingValue.trim());
-              }
-            }}
+            onBlur={handleFocusMiss}
+            onKeyUp={handleKeyUp}
             onChange={event => setEditingValue(event.target.value)}
           />
         </form>
@@ -100,7 +109,9 @@ export const TodoItem: React.FC<Props> = ({ todo }) => {
         ×
       </button>
 
-      <div data-cy="TodoLoader" className="modal overlay">
+      <div data-cy="TodoLoader" className={classNames("modal overlay", {
+        'is-active': loader,
+      })}>
         <div className="modal-background has-background-white-ter" />
         <div className="loader" />
       </div>

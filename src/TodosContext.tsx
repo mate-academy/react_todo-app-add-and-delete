@@ -17,6 +17,7 @@ type ContextType = {
   setTodos: (prevTodos: Todo[]) => void;
   addTodo: (todo: Todo) => void;
   deleteTodo: (id: number) => void;
+  deleteCompleted: () => void;
   toggleTodoCompleted: (id: number, completed: boolean) => void;
   editTodo: (id: number, title: string) => void;
   setErrorMessage: (value: string) => void;
@@ -38,7 +39,8 @@ export const TodosContext = React.createContext<ContextType>({
   showFilteredTodos: () => [],
   setTodos: () => [],
   addTodo: () => {},
-  deleteTodo: () => {},
+  deleteTodo: () => { },
+  deleteCompleted: () => {},
   toggleTodoCompleted: () => {},
   editTodo: () => {},
   setErrorMessage: () => {},
@@ -106,6 +108,23 @@ export const TodosProvider: React.FC<Props> = ({ children }) => {
       });
   };
 
+  const deleteCompleted = () => {
+    const completedTodos = todos.filter(todo => todo.completed).map(item => item);
+
+    setLoader(true);
+
+    Promise.allSettled(completedTodos)
+      .then(res => res.forEach(item => {
+        if (item.status === 'fulfilled') {
+          postService.deleteTodo(item.value.id);
+        }
+      }))
+
+
+    setTodos(todos.filter(item => !item.completed));
+    setLoader(false);
+  }
+
   const toggleTodoCompleted = (id: number, completed: boolean) => {
     const prevTodos = todos;
 
@@ -168,6 +187,7 @@ export const TodosProvider: React.FC<Props> = ({ children }) => {
       setTodos,
       addTodo,
       deleteTodo,
+      deleteCompleted,
       toggleTodoCompleted,
       editTodo,
       setErrorMessage,
