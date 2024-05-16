@@ -39,7 +39,7 @@ export const TodosContext = React.createContext<ContextType>({
   showFilteredTodos: () => [],
   setTodos: () => [],
   addTodo: () => {},
-  deleteTodo: () => { },
+  deleteTodo: () => {},
   deleteCompleted: () => {},
   toggleTodoCompleted: () => {},
   editTodo: () => {},
@@ -109,7 +109,8 @@ export const TodosProvider: React.FC<Props> = ({ children }) => {
   };
 
   const deleteCompleted = () => {
-    const completedTodos = todos.filter(todo => todo.completed).map(item => item);
+    const completedTodos =
+      todos.filter(todo => todo.completed).map(item => item);
 
     setLoader(true);
 
@@ -118,8 +119,7 @@ export const TodosProvider: React.FC<Props> = ({ children }) => {
         if (item.status === 'fulfilled') {
           postService.deleteTodo(item.value.id);
         }
-      }))
-
+      }));
 
     setTodos(todos.filter(item => !item.completed));
     setLoader(false);

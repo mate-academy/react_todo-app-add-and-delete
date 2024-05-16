@@ -8,12 +8,7 @@ type Props = {
 };
 
 export const TodoItem: React.FC<Props> = ({ todo }) => {
-  const {
-    loader,
-    deleteTodo,
-    toggleTodoCompleted,
-    editTodo
-  } = useContext(TodosContext);
+  const {loader, deleteTodo, toggleTodoCompleted, editTodo } = useContext(TodosContext);
 
   const [editing, setEditing] = useState(false);
   const [editingValue, setEditingValue] = useState(todo.title);
@@ -40,7 +35,7 @@ export const TodoItem: React.FC<Props> = ({ todo }) => {
   const handleFocusMiss = () => {
     todoEditEnd();
     editTodo(todo.id, editingValue.trim());
-  }
+  };
 
   const handleKeyUp = (event: React.KeyboardEvent) => {
     if (event.key === 'Escape' || event.key === 'Enter') {
@@ -48,7 +43,7 @@ export const TodoItem: React.FC<Props> = ({ todo }) => {
       todoEditEnd();
       editTodo(todo.id, editingValue.trim());
     }
-  }
+  };
 
   return (
     <div
