@@ -109,13 +109,13 @@ export const TodosProvider: React.FC<Props> = ({ children }) => {
   };
 
   const deleteCompleted = () => {
-    const completedTodos =
-      todos.filter(todo => todo.completed).map(item => item);
+    const completedTodos = todos
+      .filter(todo => todo.completed).map(item => item);
 
     setLoader(true);
 
-    Promise.allSettled(completedTodos)
-      .then(res => res.forEach(item => {
+    Promise.allSettled(completedTodos).then(
+      res => res.forEach(item => {
         if (item.status === 'fulfilled') {
           postService.deleteTodo(item.value.id);
         }

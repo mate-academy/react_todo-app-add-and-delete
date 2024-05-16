@@ -8,7 +8,8 @@ type Props = {
 };
 
 export const TodoItem: React.FC<Props> = ({ todo }) => {
-  const {loader, deleteTodo, toggleTodoCompleted, editTodo } = useContext(TodosContext);
+  const { loader, deleteTodo, toggleTodoCompleted, editTodo }
+    = useContext(TodosContext);
 
   const [editing, setEditing] = useState(false);
   const [editingValue, setEditingValue] = useState(todo.title);
@@ -104,9 +105,12 @@ export const TodoItem: React.FC<Props> = ({ todo }) => {
         ×
       </button>
 
-      <div data-cy="TodoLoader" className={classNames("modal overlay", {
+      <div
+        data-cy="TodoLoader"
+        className={classNames("modal overlay", {
         'is-active': loader,
-      })}>
+        })}
+      >
         <div className="modal-background has-background-white-ter" />
         <div className="loader" />
       </div>
