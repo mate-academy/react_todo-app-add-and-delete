@@ -7,10 +7,15 @@ import { Todo } from '../../types/Todo';
 
 interface IProps {
   showError: (err: string) => void;
+  setLoadingAdd: (err: boolean) => void;
   setTempTodo: (todo: Todo | null) => void;
 }
 
-export const FormHeader: FC<IProps> = ({ showError, setTempTodo }) => {
+export const FormHeader: FC<IProps> = ({
+  showError,
+  setTempTodo,
+  setLoadingAdd,
+}) => {
   const [text, setNewTodo] = useState('');
   const [load, setLoad] = useState(false);
   const { inputRef, handleFocusInput } = useContext(TodoContext);
@@ -24,9 +29,13 @@ export const FormHeader: FC<IProps> = ({ showError, setTempTodo }) => {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+    setLoad(true);
+    setLoadingAdd(true);
 
     if (!text.trim()) {
       showError('Title should not be empty');
+      setLoad(false);
+      setLoadingAdd(false);
 
       return;
     }
@@ -44,19 +53,19 @@ export const FormHeader: FC<IProps> = ({ showError, setTempTodo }) => {
       completed: false,
     };
 
-    setLoad(true);
     try {
       const todo = await addTodo(newTodo);
 
       dispatch({ type: 'ADD_TODO', payload: todo });
-      setTempTodo(null);
       showError('');
       setNewTodo('');
       handleFocusInput();
     } catch (error) {
       showError('Unable to add a todo');
     } finally {
+      setTempTodo(null);
       setLoad(false);
+      setLoadingAdd(false);
     }
   };
 

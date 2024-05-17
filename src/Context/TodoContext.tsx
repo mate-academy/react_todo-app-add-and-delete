@@ -19,7 +19,7 @@ export type Action =
   | { type: 'DELETE_TODO'; payload: string }
   | { type: 'EDIT_TODO'; payload: Todo }
   | { type: 'CANCEL_TODO' }
-  | { type: 'DELETE_COMPLETED_TODO' }
+  | { type: 'DELETE_COMPLETED_TODO'; payload: string[] }
   | { type: 'CHECK_ALL_TODO' };
 
 export interface TodoContextType {

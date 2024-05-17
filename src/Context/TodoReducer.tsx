@@ -43,7 +43,9 @@ export const TodoReducer = (state: TodoContextType, action: Action) => {
     case 'DELETE_COMPLETED_TODO':
       return {
         ...state,
-        todos: state.todos.filter((todo: Todo) => !todo.completed),
+        todos: state.todos.filter(
+          (todo: Todo) => !todo.completed || !action.payload.includes(todo.id),
+        ),
       };
     case 'CHECK_ALL_TODO':
       const allCompleted = state.todos.every((todo: Todo) => todo.completed);
