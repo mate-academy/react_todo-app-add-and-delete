@@ -1,26 +1,26 @@
-/* eslint-disable max-len */
+/* eslint-disable jsx-a11y/label-has-associated-control */
 /* eslint-disable jsx-a11y/control-has-associated-label */
-import React from 'react';
-import { UserWarning } from './UserWarning';
+import { FC } from 'react';
 
-const USER_ID = 0;
+import { USER_ID } from './api/todos';
+import { UserWarning } from './components/Warning/UserWarning';
+import { TodoProvider } from './Context/TodoContext';
+import { FilterProvider } from './Context/FilterContext';
+import { TodoContent } from './components/TodoContent';
 
-export const App: React.FC = () => {
+export const App: FC = () => {
   if (!USER_ID) {
     return <UserWarning />;
   }
 
   return (
-    <section className="section container">
-      <p className="title is-4">
-        Copy all you need from the prev task:
-        <br />
-        <a href="https://github.com/mate-academy/react_todo-app-loading-todos#react-todo-app-load-todos">
-          React Todo App - Load Todos
-        </a>
-      </p>
-
-      <p className="subtitle">Styles are already copied</p>
-    </section>
+    <div className="todoapp">
+      <h1 className="todoapp__title">todos</h1>
+      <TodoProvider>
+        <FilterProvider>
+          <TodoContent />
+        </FilterProvider>
+      </TodoProvider>
+    </div>
   );
 };
