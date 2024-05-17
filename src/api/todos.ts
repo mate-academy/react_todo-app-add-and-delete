@@ -16,3 +16,11 @@ export const createTodo = (
 
   return client.post<Todo>('/todos', data);
 };
+
+export const deleteTodo = (todoId: number) => {
+  return client.delete(`/todos/${todoId}`) as Promise<number>;
+};
+
+export const updateTodo = (todoId: number, data: Partial<Todo>) => {
+  return client.patch(`/todos/${todoId}`, data) as Promise<Todo>;
+};

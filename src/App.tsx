@@ -1,5 +1,11 @@
 /* eslint-disable @typescript-eslint/no-shadow */
-import React, { useEffect, useMemo, useRef, useState } from 'react';
+import React, {
+  useCallback,
+  useEffect,
+  useMemo,
+  useRef,
+  useState,
+} from 'react';
 import { Todo } from './types/Todo';
 import { TodoComponent } from './components/Todo/todo.component';
 import { TodoStatus } from './components/Filter/filter.status';
@@ -29,7 +35,7 @@ export const App: React.FC = () => {
 
   useEffect(() => {
     inputRef.current?.focus();
-  }, [todos]);
+  }, [todos, errorTitle]);
 
   const handleAddTodo = (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
@@ -49,21 +55,19 @@ export const App: React.FC = () => {
     };
 
     setTempTodo(newTempTodo);
-    setNewTodoTitle('');
     setIsLoading(true);
 
     Services.createTodo(trimmedTitle, Services.USER_ID)
       .then(newTodo => {
         setTempTodo(null);
-
-        return newTodo;
-      })
-      .then(newTodo => {
-        setTodos(prevTodo => [...prevTodo, newTodo]);
+        setTodos(prevTodos => [
+          ...prevTodos.filter(todo => todo.title !== trimmedTitle),
+          newTodo,
+        ]);
+        setNewTodoTitle('');
       })
       .catch(() => {
         setErrorTitle(ErrorTypes.UnableToAddTodo);
-        setNewTodoTitle(trimmedTitle);
         setTempTodo(null);
       })
       .finally(() => {
@@ -74,6 +78,38 @@ export const App: React.FC = () => {
   const handleStatus = (status: TodoStatus) => {
     setStatus(status);
   };
+
+  const handleTodoChange = (updatedTodo: Partial<Todo> & { id: number }) => {
+    setTodos(state =>
+      state.map(todo =>
+        todo.id === updatedTodo.id ? { ...todo, ...updatedTodo } : todo,
+      ),
+    );
+  };
+
+  const handleToggleAll = useCallback(() => {
+    const allCompleted = todos.every(todo => todo.completed);
+    const newCompletedState = !allCompleted;
+
+    setIsLoading(true);
+    Promise.all(
+      todos.map(todo =>
+        Services.updateTodo(todo.id, { completed: newCompletedState })
+          .then(() => ({ ...todo, completed: newCompletedState }))
+          .catch(() => {
+            setErrorTitle(ErrorTypes.UnableToUpdateTodo);
+
+            return todo;
+          }),
+      ),
+    )
+      .then(updatedTodos => {
+        setTodos(updatedTodos);
+      })
+      .finally(() => {
+        setIsLoading(false);
+      });
+  }, [todos]);
 
   const filteredTodos = useMemo(() => {
     switch (status) {
@@ -86,6 +122,32 @@ export const App: React.FC = () => {
     }
   }, [status, todos]);
 
+  const hasCompletedTodos = useMemo(() => {
+    return todos.some(todo => todo.completed);
+  }, [todos]);
+
+  const handleDeleteTodo = (deletedTodoId: number) => {
+    setTodos(prevTodos => prevTodos.filter(todo => todo.id !== deletedTodoId));
+  };
+
+  const handleDeleteCompleted = () => {
+    todos.forEach(todo => {
+      if (!todo.completed) {
+        return;
+      }
+
+      Services.deleteTodo(todo.id)
+        .then(() => {
+          setTodos(prevTodo =>
+            prevTodo.filter(currTodo => currTodo.id !== todo.id),
+          );
+        })
+        .catch(() => {
+          setErrorTitle(ErrorTypes.UnableToDeleteTodo);
+        });
+    });
+  };
+
   return (
     <div className="todoapp">
       <h1 className="todoapp__title">todos</h1>
@@ -94,6 +156,7 @@ export const App: React.FC = () => {
         <header className="todoapp__header">
           {todos.length > 0 && (
             <button
+              onClick={handleToggleAll}
               type="button"
               className={`todoapp__toggle-all ${todos.every(todo => todo.completed) ? 'active' : ''}`}
               data-cy="ToggleAllButton"
@@ -115,9 +178,23 @@ export const App: React.FC = () => {
         </header>
         <section className="todoapp__main" data-cy="TodoList">
           {filteredTodos.map(todo => (
-            <TodoComponent key={todo.id} todo={todo} />
+            <TodoComponent
+              key={todo.id}
+              todo={todo}
+              onTodoChange={handleTodoChange}
+              onDeleteTodo={handleDeleteTodo}
+              onError={errorMessage => setErrorTitle(errorMessage)}
+            />
           ))}
-          {tempTodo && <TodoComponent todo={tempTodo} isTemp={true} />}
+          {tempTodo && (
+            <TodoComponent
+              todo={tempTodo}
+              isTemp={true}
+              onTodoChange={handleTodoChange}
+              onError={errorMessage => setErrorTitle(errorMessage)}
+              onDeleteTodo={handleDeleteTodo}
+            />
+          )}
         </section>
 
         {todos.length > 0 && (
@@ -169,6 +246,8 @@ export const App: React.FC = () => {
               type="button"
               className="todoapp__clear-completed"
               data-cy="ClearCompletedButton"
+              disabled={!hasCompletedTodos}
+              onClick={handleDeleteCompleted}
             >
               Clear completed
             </button>
@@ -178,7 +257,7 @@ export const App: React.FC = () => {
 
       <div
         data-cy="ErrorNotification"
-        className={`notification is-danger is-light has-text-weight-normal ${errorTitle ? '' : 'hidden'}`}
+        className={`notification is-danger is-light has-text-weight-normal${errorTitle ? '' : ' hidden'}`}
       >
         {errorTitle}
         <button
