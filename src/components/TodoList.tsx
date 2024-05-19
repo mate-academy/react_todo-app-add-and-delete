@@ -1,8 +1,8 @@
 import React from 'react';
 import { useCurrentState } from '../store/reducer';
-import { FilterField } from '../types/FilterField';
 import { Todo } from '../types/Todo';
 import { TodoComponent } from './TodoComponent';
+import { getFilteredTodos } from '../utils/getFilteredTodos';
 
 interface Props {
   tempTodo: null | Todo;
@@ -12,18 +12,7 @@ interface Props {
 export const TodoList: React.FC<Props> = ({ tempTodo, inputRef }) => {
   const { todos, filterField } = useCurrentState();
 
-  let visibleTodos: Todo[] = [];
-
-  switch (filterField) {
-    case FilterField.Active:
-      visibleTodos = todos.filter(todo => !todo.completed);
-      break;
-    case FilterField.Completed:
-      visibleTodos = todos.filter(todo => todo.completed);
-      break;
-    case FilterField.All:
-      visibleTodos = [...todos];
-  }
+  const visibleTodos: Todo[] = getFilteredTodos(filterField, todos);
 
   return (
     <section className="todoapp__main" data-cy="TodoList">

@@ -12,9 +12,19 @@ export const Footer: React.FC<Props> = ({ inputRef }) => {
   const { setFilterField, deleteTodoLocal, setTimeoutErrorMessage } =
     useTodosMethods();
 
-  const activeTodosAmount = todos.reduce(
-    (acc, todo) => (todo.completed ? acc : acc + 1),
-    0,
+  const { activeTodos: activeTodosAmount } = todos.reduce(
+    (acc, todo) => {
+      if (todo.completed) {
+        // eslint-disable-next-line no-param-reassign
+        acc.completedTodos += 1;
+      } else {
+        // eslint-disable-next-line no-param-reassign
+        acc.activeTodos += 1;
+      }
+
+      return acc;
+    },
+    { activeTodos: 0, completedTodos: 0 },
   );
 
   const setFilter = (newFilterField: FilterField) => {
@@ -26,21 +36,19 @@ export const Footer: React.FC<Props> = ({ inputRef }) => {
   const deleteCompleted = () => {
     const completedTodos = todos.filter(todo => todo.completed);
 
-    // for each ID in completed todos we try to remove it from server
-    // success - removes them from local todos array
-    // fail - shows an error, doesn't remove locally
-    for (const { id } of completedTodos) {
-      deleteTodo(id)
-        .then(() => {
-          deleteTodoLocal(id);
-        })
-        .catch(() => {
-          setTimeoutErrorMessage('Unable to delete a todo');
-        });
-    }
+    const deletePromises = completedTodos.map(({ id }) =>
+      deleteTodo(id).then(() => {
+        deleteTodoLocal(id);
+      }),
+    );
 
-    // focuses on input field
-    inputRef.current?.focus();
+    Promise.all(deletePromises)
+      .then(() => {
+        inputRef.current?.focus();
+      })
+      .catch(() => {
+        setTimeoutErrorMessage('Unable to delete a todo');
+      });
   };
 
   const hasCompleted = todos.some(todo => todo.completed);

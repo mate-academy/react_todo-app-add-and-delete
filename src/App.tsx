@@ -4,13 +4,23 @@ import { UserWarning } from './UserWarning';
 // API
 import { USER_ID, getTodos, addTodo } from './api/todos';
 
+// TYPES
 import { Todo } from './types/Todo';
 
+// REDUCER
 import { useCurrentState, useTodosMethods } from './store/reducer';
 
+// COMPONENTS
 import { TodoList } from './components/TodoList';
 import { Footer } from './components/Footer';
 import { ErrorNotification } from './components/ErrorNotification';
+
+const createNewTodo = (title: string): Todo => ({
+  id: 0,
+  title: title.trim(),
+  userId: USER_ID,
+  completed: false,
+});
 
 export const App: React.FC = () => {
   const { todos } = useCurrentState();
@@ -43,12 +53,7 @@ export const App: React.FC = () => {
       return;
     }
 
-    const newTodo: Todo = {
-      id: 0,
-      title: input.trim(),
-      userId: USER_ID,
-      completed: false,
-    };
+    const newTodo: Todo = createNewTodo(input);
 
     if (inputRef.current) {
       inputRef.current.disabled = true;
@@ -107,7 +112,7 @@ export const App: React.FC = () => {
 
         <TodoList tempTodo={tempTodo} inputRef={inputRef} />
 
-        {todos.length !== 0 && <Footer inputRef={inputRef} />}
+        {!!todos.length && <Footer inputRef={inputRef} />}
       </div>
 
       <ErrorNotification />
