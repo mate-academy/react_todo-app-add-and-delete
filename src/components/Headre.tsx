@@ -27,19 +27,15 @@ const Header: FC<Props> = ({
     if (title.trim() === '' && !isSendingTodo) {
       inputRef.current?.focus();
     }
-  }, [title, isSendingTodo, inputRef]);
 
-  useEffect(() => {
     if (deletingId) {
       inputRef.current?.focus();
     }
-  }, [inputRef, deletingId]);
 
-  useEffect(() => {
     if (errorMessage && errorMessage !== '') {
       inputRef.current?.focus();
     }
-  }, [errorMessage, inputRef]);
+  }, [title, isSendingTodo, deletingId, errorMessage, inputRef]);
 
   const addTodo = () => {
     setIsSendingTodo(true);

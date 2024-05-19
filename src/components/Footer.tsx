@@ -30,7 +30,7 @@ const Footer: FC<Props> = ({
       deleteTodos(todo.id)
         .then(() =>
           setTodos((prevState: Todo[]) =>
-            prevState.filter(t => t.id !== todo.id),
+            prevState.filter(todoItem => todoItem.id !== todo.id),
           ),
         )
         .catch(() => onErrorMessage('Unable to delete a todo'))

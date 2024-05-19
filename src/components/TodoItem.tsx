@@ -24,7 +24,9 @@ const TodoItem: FC<Props> = ({
     setDeletingId(id);
     deleteTodos(id)
       .then(() =>
-        setTodos((prevState: Todo[]) => prevState.filter(t => t.id !== id)),
+        setTodos((prevState: Todo[]) =>
+          prevState.filter(todoItem => todoItem.id !== id),
+        ),
       )
       .catch(() => onErrorMessage('Unable to delete a todo'))
       .finally(() => setDeletingId(0));
