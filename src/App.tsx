@@ -32,6 +32,7 @@ export const App: React.FC = () => {
   const [status, setStatus] = useState(Status.All);
   const [tempTodo, setTempTodo] = useState<Todo | null>(null);
   const [title, setTitle] = useState('');
+  const [isLoading, setIsLoading] = useState<boolean>(false);
 
   useEffect(() => {
     getTodos()
@@ -42,9 +43,13 @@ export const App: React.FC = () => {
   }, []);
 
   useEffect(() => {
+    let timeoutId: NodeJS.Timeout;
+
     if (error) {
-      setTimeout(() => setError(''), 3000);
+      timeoutId = setTimeout(() => setError(''), 3000);
     }
+
+    return () => clearTimeout(timeoutId);
   }, [error]);
 
   const visibleToDos = useMemo(
@@ -52,7 +57,7 @@ export const App: React.FC = () => {
     [todos, status],
   );
 
-  const addTodo = async (toDoTitle: string) => {
+  const addTodo = (toDoTitle: string) => {
     const newTitle = toDoTitle.trim();
 
     if (!newTitle) {
@@ -61,25 +66,37 @@ export const App: React.FC = () => {
       return;
     }
 
+    setIsLoading(true);
+
     const newToDo = { id: 0, title: newTitle, completed: false };
 
     setTempTodo(newToDo);
-    createTodo(newToDo)
+
+    return createTodo(newToDo)
       .then(resultTodo => {
         setTodos([...todos, resultTodo]);
         setTitle('');
       })
-      .catch(() => setError('Unable to create a Todo'))
-      .finally(() => setTempTodo(null));
+      .catch(() => setError('Unable to add a todo'))
+      .finally(() => {
+        setTempTodo(null);
+        setIsLoading(false);
+      });
   };
 
-  const deleteTodoById = async (id: number) => {
-    try {
-      await deleteTodo(id);
-      setTodos(toDoState => toDoState.filter(todo => todo.id !== id));
-    } catch {
-      setError('Unable to delete a Todo');
-    }
+  const deleteTodoById = (id: number) => {
+    setIsLoading(true);
+
+    return deleteTodo(id)
+      .then(() => {
+        setTodos(toDoState => toDoState.filter(todo => todo.id !== id));
+      })
+      .catch(() => {
+        setError('Unable to delete a todo');
+      })
+      .finally(() => {
+        setIsLoading(false);
+      });
   };
 
   const updateToDoByID = (id: number, updatedToDo: Partial<Todo>) => {
@@ -95,17 +112,23 @@ export const App: React.FC = () => {
   };
 
   const handleDeleteCompleted = () => {
+    setIsLoading(true);
+    const promises: Promise<void>[] = [];
+
     todos.forEach(todo => {
       if (!todo.completed) {
         return;
       }
 
-      deleteTodo(todo.id)
-        .then(() =>
-          setTodos(prevTodos => prevTodos.filter(el => el.id !== todo.id)),
-        )
-        .catch(() => setError('Unable to delete a Todo'));
+      promises.push(
+        deleteTodo(todo.id)
+          .then(() =>
+            setTodos(prevTodos => prevTodos.filter(el => el.id !== todo.id)),
+          )
+          .catch(() => setError('Unable to delete a todo')),
+      );
     });
+    Promise.all(promises).finally(() => setIsLoading(false));
   };
 
   if (!USER_ID) {
@@ -121,6 +144,7 @@ export const App: React.FC = () => {
           onToDoSave={addTodo}
           onTitleChange={setTitle}
           initialTitle={title}
+          isLoading={isLoading}
         />
         <ToDoList
           visibleToDos={visibleToDos}

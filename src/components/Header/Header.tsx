@@ -1,24 +1,22 @@
-import React, { useEffect, useRef, useState } from 'react';
+import React, { useEffect, useRef } from 'react';
 
 export const Header: React.FC<{
-  onToDoSave: (title: string) => void;
+  onToDoSave: (title: string) => Promise<void> | undefined;
   onTitleChange: (title: string) => void;
   initialTitle: string;
-}> = ({ onToDoSave, onTitleChange, initialTitle }) => {
+  isLoading: boolean;
+}> = ({ onToDoSave, onTitleChange, initialTitle, isLoading }) => {
   const inputRef = useRef<HTMLInputElement>(null);
-  const [isLoading, setIsLoading] = useState<boolean>(false);
 
   useEffect(() => {
-    if (inputRef.current) {
+    if (inputRef.current && !isLoading) {
       inputRef.current.focus();
     }
-  }, []);
+  }, [isLoading]);
 
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
-    setIsLoading(true);
     onToDoSave(initialTitle);
-    setIsLoading(false);
   };
 
   return (

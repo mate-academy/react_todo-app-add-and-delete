@@ -5,7 +5,7 @@ import { Todo } from '../../types/Todo';
 type Props = {
   todo: Todo;
   onUpdate: (id: number, updatedTodo: Partial<Todo>) => void;
-  onDelete: (id: number) => void;
+  onDelete: (id: number) => Promise<void>;
   isTempToDo?: boolean;
 };
 
@@ -17,6 +17,7 @@ export const ToDoItem: React.FC<Props> = ({
 }) => {
   const [isEditing, setIsEditing] = useState(false);
   const [editText, setEditText] = useState(todo.title);
+  const [isLoading, setIsLoading] = useState(false);
 
   const handleEditChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     setEditText(event.target.value);
@@ -27,7 +28,8 @@ export const ToDoItem: React.FC<Props> = ({
   };
 
   const handleDelete = () => {
-    onDelete(todo.id);
+    setIsLoading(true);
+    onDelete(todo.id).finally(() => setIsLoading(false));
   };
 
   return (
@@ -68,7 +70,7 @@ export const ToDoItem: React.FC<Props> = ({
       </button>
       <div
         data-cy="TodoLoader"
-        className={`modal overlay ${isTempToDo ? 'is-active' : ''}`}
+        className={`modal overlay ${isTempToDo || isLoading ? 'is-active' : ''}`}
       >
         <div className="modal-background has-background-white-ter" />
         <div className="loader" />

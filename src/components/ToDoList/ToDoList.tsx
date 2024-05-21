@@ -4,7 +4,7 @@ import { ToDoItem } from '../ToDoItem/ToDoItem';
 
 type Props = {
   visibleToDos: Todo[];
-  onDelete: (id: number) => void;
+  onDelete: (id: number) => Promise<void>;
   onUpdate: (id: number, updated: Partial<Todo>) => void;
   tempTodo: Todo | null;
 };
