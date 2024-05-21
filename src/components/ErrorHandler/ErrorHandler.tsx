@@ -11,6 +11,20 @@ export const ErrorHandler: React.FC<Props> = ({
   errorMessage,
   setErrorMessage,
 }) => {
+  //   if (errorMessage) {
+  //     setNotification(true);
+  //   }
+
+  //   const timer = setTimeout(() => {
+  //     setErrorMessage(null);
+  //     setNotification(false);
+  //   }, 3000);
+
+  //   return () => {
+  //     clearTimeout(timer);
+  //   };
+  // }, [errorMessage]);
+
   useEffect(() => {
     const timer = setTimeout(() => {
       setErrorMessage(null);
