@@ -2,10 +2,11 @@ import React, { useContext, useEffect, useRef, useState } from 'react';
 import cn from 'classnames';
 
 import { DispatchContex, StateContex } from '../../Store';
-import { Todo } from '../../types/Todo';
+import { USER_ID, createTodo } from '../../api/todos';
 
-export const AppHeader: React.FC = () => {
+export const Header: React.FC = () => {
   const [newTitle, setNewTitle] = useState('');
+  const [isSubmitting, setIsSubmitting] = useState(false);
   const dispatch = useContext(DispatchContex);
   const { todos } = useContext(StateContex);
 
@@ -23,16 +24,35 @@ export const AppHeader: React.FC = () => {
   const handlerFormSubmit = (evt: React.FormEvent<HTMLFormElement>) => {
     evt.preventDefault();
 
-    if (newTitle.trim()) {
-      const newTodo: Todo = {
+    if (!newTitle.trim()) {
+      dispatch({ type: 'set-error', payload: 'Title should not be empty' });
+    } else {
+      const newTodo = {
         title: newTitle.trim(),
         completed: false,
-        id: +new Date(),
-        userId: 663,
+        userId: USER_ID,
       };
 
-      dispatch({ type: 'add', payload: newTodo });
-      setNewTitle('');
+      setIsSubmitting(true);
+
+      dispatch({ type: 'set-temp-todo', payload: { ...newTodo, id: 0 } });
+
+      createTodo(newTodo)
+        .then(todoFromServer => {
+          dispatch({ type: 'add-todo', payload: todoFromServer });
+          setNewTitle('');
+        })
+        .catch(() => {
+          setTimeout(() => {
+            inputRef.current?.focus();
+          }, 1);
+
+          dispatch({ type: 'set-error', payload: 'Unable to add a todo' });
+        })
+        .finally(() => {
+          dispatch({ type: 'set-temp-todo', payload: null });
+          setIsSubmitting(false);
+        });
     }
   };
 
@@ -47,7 +67,6 @@ export const AppHeader: React.FC = () => {
 
   return (
     <header className="todoapp__header">
-      {/* this button have `active` class only if all todos are completed */}
       {!!todos.length && (
         <button
           type="button"
@@ -57,7 +76,6 @@ export const AppHeader: React.FC = () => {
         />
       )}
 
-      {/* Add a todo on form submit */}
       <form onSubmit={handlerFormSubmit}>
         <input
           data-cy="NewTodoField"
@@ -67,6 +85,7 @@ export const AppHeader: React.FC = () => {
           value={newTitle}
           onChange={evt => setNewTitle(evt.target.value)}
           ref={inputRef}
+          disabled={isSubmitting}
         />
       </form>
     </header>

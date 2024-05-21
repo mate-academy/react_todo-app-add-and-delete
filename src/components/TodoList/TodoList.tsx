@@ -5,7 +5,7 @@ import { TodoItem } from '../TodoItem';
 import { Filter } from '../../types/Filter';
 
 export const TodoList: React.FC = () => {
-  const { todos, filter } = useContext(StateContex);
+  const { todos, filter, tempTodo } = useContext(StateContex);
 
   const visibleTodos = todos.filter(todo => {
     switch (filter) {
@@ -20,9 +20,10 @@ export const TodoList: React.FC = () => {
 
   return (
     <section className="todoapp__main" data-cy="TodoList">
-      {visibleTodos.map(todo => (
-        <TodoItem key={todo.id} todo={todo} />
-      ))}
+      {visibleTodos.map(todo => {
+        return <TodoItem key={todo.id} todo={todo} />;
+      })}
+      {tempTodo && <TodoItem todo={tempTodo} isPending={true} />}
     </section>
   );
 };

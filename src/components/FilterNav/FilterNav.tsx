@@ -9,36 +9,19 @@ export const FilterNav = () => {
 
   return (
     <nav className="filter" data-cy="Filter">
-      <a
-        href="#/"
-        className={cn('filter__link', { selected: filter === Filter.ALL })}
-        data-cy="FilterLinkAll"
-        onClick={() => dispatch({ type: 'set-filter', payload: Filter.ALL })}
-      >
-        All
-      </a>
-
-      <a
-        href="#/active"
-        className={cn('filter__link', { selected: filter === Filter.ACTIVE })}
-        data-cy="FilterLinkActive"
-        onClick={() => dispatch({ type: 'set-filter', payload: Filter.ACTIVE })}
-      >
-        Active
-      </a>
-
-      <a
-        href="#/completed"
-        className={cn('filter__link', {
-          selected: filter === Filter.COMPLETED,
-        })}
-        data-cy="FilterLinkCompleted"
-        onClick={() =>
-          dispatch({ type: 'set-filter', payload: Filter.COMPLETED })
-        }
-      >
-        Completed
-      </a>
+      {Object.values(Filter).map(status => {
+        return (
+          <a
+            key={status}
+            href={`#/${status === Filter.ALL ? '' : status.toLowerCase()}`}
+            className={cn('filter__link', { selected: filter === status })}
+            data-cy={`FilterLink${status}`}
+            onClick={() => dispatch({ type: 'set-filter', payload: status })}
+          >
+            {status}
+          </a>
+        );
+      })}
     </nav>
   );
 };

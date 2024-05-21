@@ -10,10 +10,12 @@ export const ErrorNotification: React.FC<Props> = React.memo(
     const dispatch = useContext(DispatchContex);
 
     useEffect(() => {
-      window.setTimeout(() => {
-        dispatch({ type: 'set-error', payload: '' });
-      }, 3000);
-    }, [dispatch]);
+      if (errorMessage) {
+        window.setTimeout(() => {
+          dispatch({ type: 'set-error', payload: '' });
+        }, 3000);
+      }
+    }, [dispatch, errorMessage]);
 
     return (
       <div

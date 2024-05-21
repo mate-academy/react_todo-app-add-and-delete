@@ -2,19 +2,42 @@ import React, { useContext } from 'react';
 
 import { DispatchContex, StateContex } from '../../Store';
 import { FilterNav } from '../FilterNav';
+import { deleteTodo } from '../../api/todos';
 
-export const AppFooter: React.FC = () => {
+export const Footer: React.FC = () => {
   const { todos } = useContext(StateContex);
   const dispatch = useContext(DispatchContex);
 
-  const isAvailabilityCompleted = !todos.filter(todo => todo.completed).length;
+  const hasCompleted = todos.filter(todo => todo.completed).length;
 
   const countTodosLeft = todos.filter(t => !t.completed).length;
 
   const handlerClearCompleted = () => {
     todos.forEach(({ id, completed }) => {
       if (completed) {
-        dispatch({ type: 'remove', payload: id });
+        dispatch({
+          type: 'add-pending-todo',
+          payload: id,
+        });
+
+        deleteTodo(id)
+          .then(res => {
+            if (res === 1) {
+              dispatch({ type: 'remove-todo', payload: id });
+            }
+          })
+          .catch(() =>
+            dispatch({
+              type: 'set-error',
+              payload: 'Unable to delete a todo',
+            }),
+          )
+          .finally(() =>
+            dispatch({
+              type: 'remove-pending-todo',
+              payload: id,
+            }),
+          );
       }
     });
   };
@@ -33,7 +56,7 @@ export const AppFooter: React.FC = () => {
         className="todoapp__clear-completed"
         data-cy="ClearCompletedButton"
         onClick={handlerClearCompleted}
-        disabled={isAvailabilityCompleted}
+        disabled={!hasCompleted}
       >
         Clear completed
       </button>

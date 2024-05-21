@@ -1,7 +1,7 @@
 import React, { useContext } from 'react';
 import { ErrorNotification } from './components/ErrorNotification';
-import { AppHeader } from './components/AppHeader';
-import { AppFooter } from './components/AppFooter';
+import { Header } from './components/Header';
+import { Footer } from './components/Footer';
 import { TodoList } from './components/TodoList';
 import { StateContex } from './Store';
 
@@ -13,11 +13,11 @@ export const App: React.FC = () => {
       <h1 className="todoapp__title">todos</h1>
 
       <div className="todoapp__content">
-        <AppHeader />
+        <Header />
 
         <TodoList />
 
-        {!!todos.length && <AppFooter />}
+        {!!todos.length && <Footer />}
       </div>
 
       <ErrorNotification errorMessage={error} />

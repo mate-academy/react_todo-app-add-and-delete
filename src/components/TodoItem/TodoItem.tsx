@@ -2,24 +2,33 @@ import React, { useContext, useEffect, useRef, useState } from 'react';
 import cn from 'classnames';
 
 import { Todo } from '../../types/Todo';
-import { DispatchContex } from '../../Store';
+import { DispatchContex, StateContex } from '../../Store';
+import { deleteTodo } from '../../api/todos';
 
 interface Props {
   todo: Todo;
+  isPending?: boolean;
 }
 
-export const TodoItem: React.FC<Props> = ({ todo }) => {
+export const TodoItem: React.FC<Props> = ({ todo, isPending }) => {
   const { completed, title, id } = todo;
   const [value, setValue] = useState(title);
   const [isEdit, setIsEdit] = useState(false);
-  const [isLoading] = useState(false);
+  const [isLoading, setIsLoading] = useState(isPending);
   const dispatch = useContext(DispatchContex);
+  const { tempPendingTodos } = useContext(StateContex);
 
   const inputRef = useRef<HTMLInputElement>(null);
 
+  useEffect(() => {
+    if (tempPendingTodos.includes(id)) {
+      setIsLoading(true);
+    }
+  }, [id, tempPendingTodos]);
+
   const handlerEndEdit = () => {
     if (!value.trim()) {
-      dispatch({ type: 'remove', payload: id });
+      dispatch({ type: 'remove-todo', payload: id });
     } else {
       dispatch({
         type: 'set-title',
@@ -39,6 +48,20 @@ export const TodoItem: React.FC<Props> = ({ todo }) => {
       setValue(todo.title);
       setIsEdit(false);
     }
+  };
+
+  const handlerDeleteTodo = () => {
+    setIsLoading(true);
+    deleteTodo(id)
+      .then(res => {
+        if (res === 1) {
+          dispatch({ type: 'remove-todo', payload: id });
+        }
+      })
+      .catch(() => {
+        dispatch({ type: 'set-error', payload: 'Unable to delete a todo' });
+      })
+      .finally(() => setIsLoading(false));
   };
 
   useEffect(() => {
@@ -89,21 +112,20 @@ export const TodoItem: React.FC<Props> = ({ todo }) => {
             {title}
           </span>
 
-          {/* Remove button appears only on hover */}
           <button
             type="button"
             className="todo__remove"
             data-cy="TodoDelete"
-            onClick={() => {
-              dispatch({ type: 'remove', payload: id });
-            }}
+            onClick={handlerDeleteTodo}
           >
             ×
           </button>
 
           <div
             data-cy="TodoLoader"
-            className={cn('modal overlay', { 'is-active': isLoading })}
+            className={cn('modal overlay', {
+              'is-active': isLoading,
+            })}
           >
             <div className="modal-background has-background-white-ter" />
             <div className="loader" />

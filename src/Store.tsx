@@ -5,9 +5,12 @@ import { Filter } from './types/Filter';
 import { getTodos } from './api/todos';
 
 type Action =
-  | { type: 'add'; payload: Todo }
+  | { type: 'add-todo'; payload: Todo }
+  | { type: 'remove-todo'; payload: number }
   | { type: 'set-todos'; payload: Todo[] }
-  | { type: 'remove'; payload: number }
+  | { type: 'set-temp-todo'; payload: Todo | null }
+  | { type: 'add-pending-todo'; payload: number }
+  | { type: 'remove-pending-todo'; payload: number }
   | { type: 'set-complete'; payload: { id: number; completed: boolean } }
   | { type: 'set-title'; payload: { id: number; title: string } }
   | { type: 'set-filter'; payload: Filter }
@@ -15,8 +18,10 @@ type Action =
 
 interface State {
   todos: Todo[];
+  tempTodo: Todo | null;
   filter: Filter;
   error: string;
+  tempPendingTodos: number[];
 }
 
 const reducer = (state: State, action: Action): State => {
@@ -26,7 +31,7 @@ const reducer = (state: State, action: Action): State => {
         ...state,
         filter: action.payload,
       };
-    case 'add':
+    case 'add-todo':
       return {
         ...state,
         todos: [...state.todos, action.payload],
@@ -36,10 +41,33 @@ const reducer = (state: State, action: Action): State => {
         ...state,
         todos: action.payload,
       };
-    case 'remove':
+    case 'set-temp-todo':
       return {
         ...state,
-        todos: state.todos.filter(todo => todo.id !== action.payload),
+        tempTodo: action.payload,
+      };
+    case 'add-pending-todo':
+      return {
+        ...state,
+        tempPendingTodos: [...state.tempPendingTodos, action.payload],
+      };
+    case 'remove-pending-todo':
+      const filteredTempPendingTodos = state.tempPendingTodos.filter(
+        id => id !== action.payload,
+      );
+
+      return {
+        ...state,
+        tempPendingTodos: filteredTempPendingTodos,
+      };
+    case 'remove-todo':
+      const filteredTodos = state.todos.filter(
+        todo => todo.id !== action.payload,
+      );
+
+      return {
+        ...state,
+        todos: filteredTodos,
       };
     case 'set-error':
       return {
@@ -79,6 +107,8 @@ const reducer = (state: State, action: Action): State => {
 
 const initialState: State = {
   todos: [],
+  tempTodo: null,
+  tempPendingTodos: [],
   filter: Filter.ALL,
   error: '',
 };
