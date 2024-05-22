@@ -2,12 +2,12 @@ import React, { useContext, useEffect, useRef, useState } from 'react';
 import cn from 'classnames';
 
 import { Todo } from '../../types/Todo';
-import { DispatchContex, StateContex } from '../../Store';
+import { DispatchContex } from '../../Store';
 import { deleteTodo } from '../../api/todos';
 
 interface Props {
   todo: Todo;
-  isPending?: boolean;
+  isPending: boolean;
 }
 
 export const TodoItem: React.FC<Props> = ({ todo, isPending }) => {
@@ -16,15 +16,14 @@ export const TodoItem: React.FC<Props> = ({ todo, isPending }) => {
   const [isEdit, setIsEdit] = useState(false);
   const [isLoading, setIsLoading] = useState(isPending);
   const dispatch = useContext(DispatchContex);
-  const { tempPendingTodos } = useContext(StateContex);
 
   const inputRef = useRef<HTMLInputElement>(null);
 
   useEffect(() => {
-    if (tempPendingTodos.includes(id)) {
+    if (isPending) {
       setIsLoading(true);
     }
-  }, [id, tempPendingTodos]);
+  }, [isPending]);
 
   const handlerEndEdit = () => {
     if (!value.trim()) {
