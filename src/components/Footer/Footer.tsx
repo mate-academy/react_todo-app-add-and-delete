@@ -24,7 +24,7 @@ export const Footer: React.FC<Props> = ({
   const completedTodos = todos.filter(todo => todo.completed);
 
   const handleClearCompleted = () => {
-    const deletePromises = completedTodos.map(todo => {
+    completedTodos.map(todo => {
       setDeletingIds(prevIds => [...prevIds, todo.id]);
 
       return deleteTodo(todo.id)
@@ -39,10 +39,6 @@ export const Footer: React.FC<Props> = ({
         .finally(() => {
           setDeletingIds(prevIds => prevIds.filter(id => id !== todo.id));
         });
-    });
-
-    Promise.all(deletePromises).then(() => {
-      // Optional: Perform any action after all deletions are complete
     });
   };
 
