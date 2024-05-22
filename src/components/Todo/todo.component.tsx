@@ -24,11 +24,11 @@ export const TodoComponent: React.FC<TodoProps> = ({
     setIsEditionActive(value => !value);
   };
 
-  const handleTitle = (event: ChangeEvent<HTMLInputElement>) => {
+  const handleTitle = useCallback((event: ChangeEvent<HTMLInputElement>) => {
     setTitle(event.target.value);
-  };
+  }, []);
 
-  const handleCheckboxChange = useCallback(() => {
+  const handleCheckboxChange = () => {
     const newCheckedState = !todo.completed;
 
     setIsLoading(true);
@@ -42,7 +42,7 @@ export const TodoComponent: React.FC<TodoProps> = ({
       .finally(() => {
         setIsLoading(false);
       });
-  }, [onError, todo, onTodoChange]);
+  };
 
   const handleDelete = () => {
     setIsLoading(true);
@@ -51,9 +51,7 @@ export const TodoComponent: React.FC<TodoProps> = ({
         onDeleteTodo && onDeleteTodo(todo.id);
       })
       .catch(() => {
-        const errorMessage = ErrorTypes.UnableToDeleteTodo;
-
-        onError && onError(errorMessage);
+        onError(ErrorTypes.UnableToDeleteTodo);
       })
       .finally(() => {
         setIsLoading(true);

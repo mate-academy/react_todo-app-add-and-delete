@@ -37,47 +37,50 @@ export const App: React.FC = () => {
     inputRef.current?.focus();
   }, [todos, errorTitle]);
 
-  const handleAddTodo = (event: React.FormEvent<HTMLFormElement>) => {
-    event.preventDefault();
-    const trimmedTitle = newTodoTitle.trim();
+  const handleAddTodo = useCallback(
+    (event: React.FormEvent<HTMLFormElement>) => {
+      event.preventDefault();
+      const trimmedTitle = newTodoTitle.trim();
 
-    if (!trimmedTitle) {
-      setErrorTitle(ErrorTypes.TitleError);
+      if (!trimmedTitle) {
+        setErrorTitle(ErrorTypes.TitleError);
 
-      return;
-    }
+        return;
+      }
 
-    const newTempTodo: Todo = {
-      id: 0,
-      title: trimmedTitle,
-      completed: false,
-      userId: Services.USER_ID,
-    };
+      const newTempTodo: Todo = {
+        id: 0,
+        title: trimmedTitle,
+        completed: false,
+        userId: Services.USER_ID,
+      };
 
-    setTempTodo(newTempTodo);
-    setIsLoading(true);
+      setTempTodo(newTempTodo);
+      setIsLoading(true);
 
-    Services.createTodo(trimmedTitle, Services.USER_ID)
-      .then(newTodo => {
-        setTempTodo(null);
-        setTodos(prevTodos => [
-          ...prevTodos.filter(todo => todo.title !== trimmedTitle),
-          newTodo,
-        ]);
-        setNewTodoTitle('');
-      })
-      .catch(() => {
-        setErrorTitle(ErrorTypes.UnableToAddTodo);
-        setTempTodo(null);
-      })
-      .finally(() => {
-        setIsLoading(false);
-      });
-  };
+      Services.createTodo(trimmedTitle, Services.USER_ID)
+        .then(newTodo => {
+          setTempTodo(null);
+          setTodos(prevTodos => [
+            ...prevTodos.filter(todo => todo.title !== trimmedTitle),
+            newTodo,
+          ]);
+          setNewTodoTitle('');
+        })
+        .catch(() => {
+          setErrorTitle(ErrorTypes.UnableToAddTodo);
+          setTempTodo(null);
+        })
+        .finally(() => {
+          setIsLoading(false);
+        });
+    },
+    [newTodoTitle],
+  );
 
-  const handleStatus = (status: TodoStatus) => {
+  const handleStatus = useCallback((status: TodoStatus) => {
     setStatus(status);
-  };
+  }, []);
 
   const handleTodoChange = (updatedTodo: Partial<Todo> & { id: number }) => {
     setTodos(state =>
@@ -87,7 +90,7 @@ export const App: React.FC = () => {
     );
   };
 
-  const handleToggleAll = useCallback(() => {
+  const handleToggleAll = () => {
     const allCompleted = todos.every(todo => todo.completed);
     const newCompletedState = !allCompleted;
 
@@ -109,7 +112,7 @@ export const App: React.FC = () => {
       .finally(() => {
         setIsLoading(false);
       });
-  }, [todos]);
+  };
 
   const filteredTodos = useMemo(() => {
     switch (status) {
@@ -131,6 +134,7 @@ export const App: React.FC = () => {
   };
 
   const handleDeleteCompleted = () => {
+    setIsLoading(true);
     todos.forEach(todo => {
       if (!todo.completed) {
         return;
@@ -144,8 +148,15 @@ export const App: React.FC = () => {
         })
         .catch(() => {
           setErrorTitle(ErrorTypes.UnableToDeleteTodo);
+        })
+        .finally(() => {
+          setIsLoading(false);
         });
     });
+  };
+
+  const handleError = (errorMessage: string) => {
+    setErrorTitle(errorMessage);
   };
 
   return (
@@ -183,7 +194,7 @@ export const App: React.FC = () => {
               todo={todo}
               onTodoChange={handleTodoChange}
               onDeleteTodo={handleDeleteTodo}
-              onError={errorMessage => setErrorTitle(errorMessage)}
+              onError={handleError}
             />
           ))}
           {tempTodo && (
@@ -191,7 +202,7 @@ export const App: React.FC = () => {
               todo={tempTodo}
               isTemp={true}
               onTodoChange={handleTodoChange}
-              onError={errorMessage => setErrorTitle(errorMessage)}
+              onError={handleError}
               onDeleteTodo={handleDeleteTodo}
             />
           )}
