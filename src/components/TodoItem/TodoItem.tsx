@@ -1,22 +1,22 @@
-import { FC } from 'react';
-import classNames from 'classnames';
+/* eslint-disable jsx-a11y/label-has-associated-control */
+import React, { useState } from 'react';
 import { Todo } from '../../types/Todo';
 
-interface Props {
+type Props = {
   todo: Todo;
-  onDeleteTodo: (id: number) => void;
-}
+  isTemp?: boolean;
+  onDelete: (id: number) => void;
+};
 
-const TodoItem: FC<Props> = ({ todo, onDeleteTodo}) => {
+export const TodoItem: React.FC<Props> = ({todo, isTemp = false, onDelete}) => {
+  const [beingRemoved, setBeingRemoved] = useState(false);
+
   return (
     <div
-      key={todo.id}
       data-cy="Todo"
-      className={classNames('todo', {
-        completed: todo.completed,
-      })}
+      className={`todo ${todo.completed && 'completed'}`}
+      key={todo.id}
     >
-      {/* eslint-disable-next-line jsx-a11y/label-has-associated-control */}
       <label className="todo__status-label">
         <input
           data-cy="TodoStatus"
@@ -29,21 +29,26 @@ const TodoItem: FC<Props> = ({ todo, onDeleteTodo}) => {
       <span data-cy="TodoTitle" className="todo__title">
         {todo.title}
       </span>
+
       <button
-          type="button"
-          className="todo__remove"
-          data-cy="TodoDelete"
-          onClick={() => onDeleteTodo(todo.id)}
+        onClick={() => {
+          onDelete(todo.id);
+          setBeingRemoved(true);
+        }}
+        type="button"
+        className="todo__remove"
+        data-cy="TodoDelete"
       >
         ×
       </button>
 
-      <div data-cy="TodoLoader" className="modal overlay">
+      <div
+        data-cy="TodoLoader"
+        className={`modal overlay ${(isTemp || beingRemoved) && 'is-active'}`}
+      >
         <div className="modal-background has-background-white-ter" />
         <div className="loader" />
       </div>
     </div>
   );
 };
-
-export default TodoItem;

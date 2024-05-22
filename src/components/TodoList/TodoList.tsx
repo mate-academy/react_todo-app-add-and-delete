@@ -1,20 +1,22 @@
-import { FC } from 'react';
+/* eslint-disable jsx-a11y/label-has-associated-control */
+/* eslint-disable jsx-a11y/control-has-associated-label */
 import { Todo } from '../../types/Todo';
-import TodoItem from '../TodoItem/TodoItem';
+import { TodoItem } from '../TodoItem/TodoItem';
+import React from "react";
 
-interface ITodoList {
+type Props = {
   todos: Todo[];
-  onDeleteTodo: (id: number) => void;
-}
+  onDelete: (id: number) => void;
+};
 
-export const TodoList: FC<ITodoList> = ({ todos, onDeleteTodo }) => {
+export const TodoList: React.FC<Props> = ({ todos, onDelete }) => {
   return (
     <section className="todoapp__main" data-cy="TodoList">
       {todos.map(todo => (
         <TodoItem
-            todo={todo}
-            key={todo.id}
-            onDeleteTodo={onDeleteTodo}
+          todo={todo}
+          onDelete={onDelete}
+          key={todo.id}
         />
       ))}
     </section>

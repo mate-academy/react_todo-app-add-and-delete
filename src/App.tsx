@@ -1,104 +1,145 @@
-/* eslint-disable jsx-a11y/label-has-associated-control */
-/* eslint-disable jsx-a11y/control-has-associated-label */
-import React, { useEffect, useState } from 'react';
-import {createTodo, deleteTodo, getTodos} from './api/todos';
+import React, { useEffect, useRef, useState } from 'react';
+import { UserWarning } from './UserWarning';
+import { USER_ID, getTodos, getDelete, getAdd } from './api/todos';
 import { Todo } from './types/Todo';
-// import { UserWarning } from './UserWarning';
-import Header from './components/Header/Header';
-import { Status } from './types/Status';
-import { TodoList } from './components/TodoList/TodoList';
-import { Footer } from './components/Footer/Footer';
-// eslint-disable-next-line max-len
-import { ErrorNotification } from './components/ErrorNotification/ErrorNotification';
-import { ErrorType } from './types/Error';
-import { todoFilter } from './utils/todoFilter';
+import { TodoItem } from './components/TodoItem/TodoItem';
+import {Header} from "./components/Header/Header";
+import {ErrorType} from "./types/Error";
+import {Status} from "./types/Status";
+import {todoFilter} from "./utils/todoFilter";
+import {TodoList} from "./components/TodoList/TodoList";
+import {Footer} from "./components/Footer/Footer";
+import {ErrorMessage} from "./components/ErrorNotification/ErrorNotification";
 
 export const App: React.FC = () => {
-    const [todos, setTodos] = useState<Todo[]>([]);
-    const [error, setError] = useState<ErrorType | null>(null);
-    const [status, setStatus] = useState<Status>(Status.All);
-    const [newTodoTitle, setNewTodoTitle] = useState<string>('');
-    const [isLoading, setIsLoading] = useState(false);
+  const [todos, setTodos] = useState<Todo[]>([]);
+  const [titleNew, setTitleNew] = useState('');
+  const [loadTodo, setLoadTodo] = useState(false);
+  const [errorMessage, setErrorMessage] = useState<ErrorType | null>(null);
+  const [sortField, setSortField] = useState(Status.All);
+  const [tempTodo, setTempTodo] = useState<null | Todo>(null);
+  const [isDeleting, setIsDeleting] = useState(false);
 
-    const filteredTodo = todoFilter(todos, status);
+  const activeInput = useRef<HTMLInputElement>(null);
 
-    const activeTodoCount = todos.reduce(
-        (acc, todo) => (todo.completed ? acc : acc + 1),
-        0,
-    );
-    const hasCompletedTodos = todos.some(todo => todo.completed);
+  const setErrorWithSetTimeout = (error: ErrorType) => {
+    setErrorMessage(error);
+    setTimeout(() => {
+      setErrorMessage(null);
+    }, 3000);
+  };
 
-    useEffect(() => {
-        const fetchTodo = async () => {
-            try {
-                const result = await getTodos();
+  useEffect(() => {
+    setErrorMessage(null);
 
-                setTodos(result);
-            } catch (e) {
-                setError('load');
+    getTodos()
+        .then(setTodos)
+        .catch(() => {
+          setErrorWithSetTimeout(ErrorType.UnableLoad);
+        });
+  }, []);
 
-                setTimeout(() => {
-                    setError(null);
-                }, 3000);
-            }
-        };
+  useEffect(() => {
+    activeInput.current?.focus();
+  }, [todos, errorMessage]);
 
-        fetchTodo();
-    }, [error, status]);
+  const sortedTodos = todoFilter(todos, sortField);
 
-    const handleAddTodo = (event: React.FormEvent) => {
-        event.preventDefault();
+  const onDelete = (todoId: number) => {
+    if (isDeleting) {
+      return;
+    }
 
-        if (!newTodoTitle.trim()) {
-            return;
-        }
+    setIsDeleting(false);
 
-        setIsLoading(true);
-        createTodo(newTodoTitle.trim())
-            .then(newTodo => {
-                // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-                // @ts-ignore
-                setTodos(prevTodos => [...prevTodos, newTodo]);
-                setNewTodoTitle('');
-            })
-            .catch(() => setError('add'))
-            .finally(() => setIsLoading(false));
+    getDelete(todoId)
+        .then(() => {
+          setTodos(currentTodos =>
+              currentTodos.filter(todo => todo.id !== todoId),
+          );
+        })
+        .catch(() => {
+          setErrorWithSetTimeout(ErrorType.UnableDelete);
+        })
+        .finally(() => {
+          setIsDeleting(false);
+        });
+  };
+
+  const createNewTodo = () => {
+    if (!titleNew.trim()) {
+      setErrorWithSetTimeout(ErrorType.EmptyTitle);
+
+      return;
+    }
+
+    const newTodo = {
+      id: 0,
+      title: titleNew.trim(),
+      completed: false,
+      userId: USER_ID,
     };
 
-    const handleDeleteTodo = (id: number) => {
-        setIsLoading(true);
-        deleteTodo(id)
-            .then(() => {
-                setTodos(prevTodos => prevTodos.filter(todo => todo.id !== id));
-            })
-            .catch(() => setError('delete'))
-            .finally(() => setIsLoading(false));
-    };
+    setTempTodo(newTodo);
+      setLoadTodo(true);
 
-    return (
-        <div className="todoapp">
-            <h1 className="todoapp__title">todos</h1>
+    getAdd(newTodo)
+        .then(created => {
+          setTodos(currentTodos => [...currentTodos, created]);
+          setTitleNew('');
+        })
+        .catch(() => {
+          setErrorWithSetTimeout(ErrorType.UnableAdd);
+        })
+        .finally(() => {
+          setTempTodo(null);
+            setLoadTodo(false);
+        });
+  };
 
-            <div className="todoapp__content">
-                <Header
-                    handleAddTodo={handleAddTodo}
-                    newTodoTitle={newTodoTitle}
-                    setNewTodoTitle={setNewTodoTitle}
-                    isLoading={isLoading}
-                />
-                <TodoList
-                    todos={filteredTodo}
-                    onDeleteTodo={handleDeleteTodo}
-                />
-                <Footer
-                    setStatus={setStatus}
-                    status={status}
-                    activeTodoCount={activeTodoCount}
-                    hasCompletedTodos={hasCompletedTodos}
-                />
-            </div>
+  const clearCompleted = () => {
+    return todos.filter(todo => todo.completed).map(todo => onDelete(todo.id));
+  };
 
-            <ErrorNotification error={error} setError={setError} />
+  if (!USER_ID) {
+    return <UserWarning />;
+  }
+
+  return (
+      <div className="todoapp">
+        <h1 className="todoapp__title">todos</h1>
+        <div className="todoapp__content">
+          <Header
+              titleNew={titleNew}
+              setTitleNew={setTitleNew}
+              createNewTodo={createNewTodo}
+              activeInput={activeInput}
+              loadTodo={loadTodo}
+          />
+
+          <TodoList
+              todos={sortedTodos}
+              onDelete={isDeleting ? () => {} : onDelete}
+          />
+
+          {tempTodo && (
+              <TodoItem todo={tempTodo} onDelete={onDelete} isTemp={true} />
+          )}
+
+          {todos.length > 0 && (
+              <Footer
+                  todos={todos}
+                  sortField={sortField}
+                  setSortField={setSortField}
+                  clearCompleted={clearCompleted}
+              />
+          )}
         </div>
-    );
+
+        <ErrorMessage
+            errorMessage={errorMessage}
+            setErrorMessage={setErrorMessage}
+        />
+      </div>
+  );
 };

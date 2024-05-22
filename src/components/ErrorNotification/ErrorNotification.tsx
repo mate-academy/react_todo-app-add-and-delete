@@ -1,30 +1,28 @@
-import React, { FC, SetStateAction } from 'react';
-import { ErrorType } from '../../types/Error';
-import { errors } from '../../constants/error.contstants';
+import React from "react";
+import {ErrorType} from "../../types/Error";
 
-export interface IErrorNotification {
-  error: ErrorType | null;
-  setError: React.Dispatch<SetStateAction<ErrorType | null>>;
-}
+type Props = {
+  errorMessage: ErrorType | null;
+  setErrorMessage: (error: ErrorType | null) => void;
+};
 
-export const ErrorNotification: FC<IErrorNotification> = ({
-  error,
-  setError,
+export const ErrorMessage: React.FC<Props> = ({
+  errorMessage,
+  setErrorMessage,
 }) => {
-  const errorMessage = error ? errors[error].message : '';
-
   return (
     <div
       data-cy="ErrorNotification"
-      className={`notification is-danger is-light has-text-weight-normal ${!error ? 'hidden' : ''}`}
+      className={`notification is-danger is-light has-text-weight-normal
+  ${!errorMessage && 'hidden'}`}
     >
-      {errorMessage}
       <button
+        onClick={() => setErrorMessage(null)}
         data-cy="HideErrorButton"
         type="button"
         className="delete"
-        onClick={() => setError(null)}
       />
+      {errorMessage}
     </div>
   );
 };

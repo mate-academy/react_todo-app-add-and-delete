@@ -1,66 +1,71 @@
-import React, { FC, SetStateAction } from 'react';
-import { Status } from '../../types/Status';
+import { Todo } from '../../types/Todo';
+import {Status} from "../../types/Status";
+import React from "react";
 
-export interface IFooter {
-  setStatus: React.Dispatch<SetStateAction<Status>>;
-  status: Status;
-  activeTodoCount: number;
-  hasCompletedTodos: boolean;
-}
+type Props = {
+    sortField: Status;
+    setSortField: (field: Status) => void;
+    todos: Todo[];
+    clearCompleted: () => void;
+};
 
-export const Footer: FC<IFooter> = ({
-  setStatus,
-  status,
-  activeTodoCount,
-  hasCompletedTodos,
+export const Footer: React.FC<Props> = ({
+  sortField,
+  setSortField,
+  todos,
+  clearCompleted,
 }) => {
-  if (activeTodoCount === 0 && !hasCompletedTodos) {
-    return null;
-  }
+    const oneTodoCompleted = todos.some(todo => todo.completed);
 
-  return (
-    <footer className="todoapp__footer" data-cy="Footer">
+    const activeTodos = todos.reduce(
+        (acc, todo) => (todo.completed ? acc : acc + 1),
+        0,
+    );
+
+    return (
+        <footer className="todoapp__footer" data-cy="Footer">
       <span className="todo-count" data-cy="TodosCounter">
-        {activeTodoCount} items left
+        {activeTodos} items left
       </span>
 
-      <nav className="filter" data-cy="Filter">
-        <a
-          href="#/"
-          className={`filter__link ${status === Status.All ? 'selected' : ''}`}
-          data-cy="FilterLinkAll"
-          onClick={() => setStatus(Status.All)}
-        >
-          All
-        </a>
+            <nav className="filter" data-cy="Filter">
+                <a
+                    href="#/"
+                    className={`filter__link ${sortField === Status.All && 'selected'}`}
+                    data-cy="FilterLinkAll"
+                    onClick={() => setSortField(Status.All)}
+                >
+                    All
+                </a>
 
-        <a
-          href="#/active"
-          className={`filter__link ${status === Status.Active ? 'selected' : ''}`}
-          data-cy="FilterLinkActive"
-          onClick={() => setStatus(Status.Active)}
-        >
-          Active
-        </a>
+                <a
+                    href="#/active"
+                    className={`filter__link ${sortField === Status.Active && 'selected'}`}
+                    data-cy="FilterLinkActive"
+                    onClick={() => setSortField(Status.Active)}
+                >
+                    Active
+                </a>
 
-        <a
-          href="#/completed"
-          className={`filter__link ${status === Status.Completed ? 'selected' : ''}`}
-          data-cy="FilterLinkCompleted"
-          onClick={() => setStatus(Status.Completed)}
-        >
-          Completed
-        </a>
-      </nav>
+                <a
+                    href="#/completed"
+                    className={`filter__link ${sortField === Status.Completed && 'selected'}`}
+                    data-cy="FilterLinkCompleted"
+                    onClick={() => setSortField(Status.Completed)}
+                >
+                    Completed
+                </a>
+            </nav>
 
-      <button
-        type="button"
-        className="todoapp__clear-completed"
-        data-cy="ClearCompletedButton"
-        disabled={!hasCompletedTodos}
-      >
-        Clear completed
-      </button>
-    </footer>
-  );
+            <button
+                onClick={clearCompleted}
+                disabled={!oneTodoCompleted}
+                type="button"
+                className="todoapp__clear-completed"
+                data-cy="ClearCompletedButton"
+            >
+                Clear completed
+            </button>
+        </footer>
+    );
 };
