@@ -16,7 +16,7 @@ export const Header: React.FC<Props> = ({
   query, 
   setQuery,
   inputRef,
- }) => {
+}) => {
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();

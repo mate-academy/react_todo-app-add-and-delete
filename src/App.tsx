@@ -1,10 +1,12 @@
 /* eslint-disable jsx-a11y/label-has-associated-control */
 /* eslint-disable jsx-a11y/control-has-associated-label */
-import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react';
+import React, { useCallback, useEffect, useMemo, useRef, useState }
+  from 'react';
 import { UserWarning } from './UserWarning';
-import { USER_ID, deleteTodo, getTodos, postTodo} from './api/todos';
+import { USER_ID, deleteTodo, getTodos, postTodo } from './api/todos';
 import { Todo } from './types/Todo';
-import { ErrorType, HandleErrors } from './components/HandleErrors/HandleErrors';
+import { ErrorType, HandleErrors }
+  from './components/HandleErrors/HandleErrors';
 import { TodoList } from './components/TodoList/TodoList';
 import { Header } from './components/Header/Header';
 import { Footer } from './components/Footer/Footer';
@@ -32,9 +34,9 @@ export const App: React.FC = () => {
     }
   }, [todos, isError]);
 
-  const handleCloseError = () => {
+  const handleCloseError = useCallback(() => {
     setError(null);
-  };
+  }, []);
 
   const addTodo = (newTodoTitle: string) => {
 
@@ -66,7 +68,7 @@ export const App: React.FC = () => {
         setTempTodo(null);
         setLoad(false);
       });
-  }
+  };
 
   const handleDeleteTodo = (todoId: number) => {
     deleteTodo(todoId)
@@ -139,4 +141,4 @@ export const App: React.FC = () => {
       <HandleErrors errorType={isError} onClose={handleCloseError} />
     </div>
   );
-}
+};
