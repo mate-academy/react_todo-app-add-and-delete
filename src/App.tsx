@@ -14,7 +14,6 @@ import { ErrorTypes } from './types/ErrorTypes';
 
 export const App: React.FC = () => {
   const [todos, setTodos] = useState<Todo[]>([]);
-  const [filteredTodos, setFilteredTodos] = useState<Todo[]>([]);
   const [filter, setFilter] = useState(Filter.All);
   const [errorMessage, setErrorMessage] = useState<ErrorTypes | null>(null);
   const [isSubmitting, setIsSubmitting] = useState(false);
@@ -25,7 +24,6 @@ export const App: React.FC = () => {
     getTodos()
       .then(data => {
         setTodos(data);
-        setFilteredTodos(data);
       })
       .catch(() => {
         setErrorMessage(ErrorTypes.UnableToLoad);
@@ -36,13 +34,8 @@ export const App: React.FC = () => {
     return <UserWarning />;
   }
 
-  const applyFilter = (filt: string, todosArr: Todo[]) => {
-    setFilteredTodos(FilterBy(filt, todosArr));
-  };
-
   const handleFilterChange = (newFilter: Filter) => {
     setFilter(newFilter);
-    applyFilter(newFilter, todos);
   };
 
   const handleToggleTodo = (id: number) => {
@@ -51,7 +44,6 @@ export const App: React.FC = () => {
     );
 
     setTodos(updatedTodos);
-    applyFilter(filter, updatedTodos);
   };
 
   function onDeleteTodo(todoId: number): Promise<void> {
@@ -61,9 +53,6 @@ export const App: React.FC = () => {
     return deleteTodo(todoId)
       .then(() => {
         setTodos(currentTodos =>
-          currentTodos.filter(todo => todo.id !== todoId),
-        );
-        setFilteredTodos(currentTodos =>
           currentTodos.filter(todo => todo.id !== todoId),
         );
       })
@@ -100,7 +89,6 @@ export const App: React.FC = () => {
 
         setTodos(updatedTodos);
         setTempTodo(null);
-        applyFilter(filter, updatedTodos);
       })
       .catch(error => {
         setErrorMessage(ErrorTypes.UnableToAdd);
@@ -111,6 +99,8 @@ export const App: React.FC = () => {
         setIsSubmitting(false);
       });
   };
+
+  const filteredTodos = FilterBy(todos, filter);
 
   return (
     <div className="todoapp">

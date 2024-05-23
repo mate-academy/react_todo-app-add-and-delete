@@ -1,7 +1,7 @@
 import { Filter } from '../types/Filter';
 import { Todo } from '../types/Todo';
 
-export function FilterBy(filt: string, todosArr: Todo[]) {
+export function FilterBy(todosArr: Todo[], filt: string) {
   switch (filt) {
     case Filter.Active:
       return todosArr.filter(todo => !todo.completed);
