@@ -14,6 +14,8 @@ type TodoProps = {
 export const Todo: React.FC<TodoProps> = ({ todo }) => {
   const { state, dispatch } = useContext(AppContext);
   const { targetTodo, todoDeleteDisabled } = state;
+  const isLoaderActive =
+    todoDeleteDisabled.value && todoDeleteDisabled.targetId === todo.id;
 
   const editRef = useRef<HTMLInputElement>(null);
 
@@ -41,8 +43,6 @@ export const Todo: React.FC<TodoProps> = ({ todo }) => {
         type: 'UPDATE_ERROR_STATUS',
         payload: { type: 'DeleteTodoError' },
       });
-
-      throw error;
     } finally {
       dispatch({
         type: 'SET_TODO_DISABLED',
@@ -102,8 +102,7 @@ export const Todo: React.FC<TodoProps> = ({ todo }) => {
       <div
         data-cy="TodoLoader"
         className={classNames('modal overlay', {
-          'is-active':
-            todoDeleteDisabled.value && todoDeleteDisabled.targetId === todo.id,
+          'is-active': isLoaderActive,
         })}
       >
         <div className="modal-background has-background-white-ter" />

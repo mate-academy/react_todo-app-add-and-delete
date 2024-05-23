@@ -60,7 +60,6 @@ export const TodoHeader: React.FC = memo(() => {
         type: 'UPDATE_ERROR_STATUS',
         payload: { type: 'AddTodoError' },
       });
-      // throw error;
     } finally {
       dispatch({ type: 'SET_INPUT_DISABLED', payload: false });
       dispatch({ type: 'CREATE_TEMP_TODO', payload: null });

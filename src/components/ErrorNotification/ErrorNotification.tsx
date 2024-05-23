@@ -12,15 +12,15 @@ export const ErrorNotification: React.FC = memo(() => {
   const activeError = state.errors.find(error => error.value);
 
   useEffect(() => {
+    let timer: NodeJS.Timeout;
+
     if (activeError) {
-      const timer = setTimeout(() => {
+      timer = setTimeout(() => {
         hideErrors();
       }, 3000);
-
-      return () => clearTimeout(timer);
     }
 
-    return;
+    return () => clearTimeout(timer);
   }, [activeError, hideErrors]);
 
   return (
