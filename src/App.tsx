@@ -15,7 +15,7 @@ import { getFilteredTodos } from './utils/getFilteredTodos';
 
 export const App: React.FC = () => {
   const [todos, setTodos] = useState<Todo[]>([]);
-  const [errorMessage, setErrorMessage] = useState<Errors | null>(null);
+  const [errorMessage, setErrorMessage] = useState<Errors | ''>('');
   const [status, setStatus] = useState<Statuses>('all');
   const [title, setTitle] = useState<string>('');
   const [tempTodo, setTempTodo] = useState<Todo | null>(null);
@@ -47,7 +47,7 @@ export const App: React.FC = () => {
     }
 
     const timeout = setTimeout(() => {
-      setErrorMessage(null);
+      setErrorMessage('');
     }, 3000);
 
     return () => clearTimeout(timeout);
@@ -234,7 +234,7 @@ export const App: React.FC = () => {
           data-cy="HideErrorButton"
           type="button"
           className="delete"
-          onClick={() => setErrorMessage(null)}
+          onClick={() => setErrorMessage('')}
         />
         {errorMessage}
       </div>
