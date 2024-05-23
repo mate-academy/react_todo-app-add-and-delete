@@ -2,7 +2,7 @@ import { memo, useContext } from 'react';
 import { AppContext } from '../../context/AppContext';
 import classNames from 'classnames';
 import { Filter } from '../../types/Filter';
-import { deleteTodo, getTodos } from '../../api/todos';
+import { deleteTodo } from '../../api/todos';
 
 export const TodoFooter: React.FC = memo(() => {
   const { state, dispatch } = useContext(AppContext);
@@ -20,41 +20,43 @@ export const TodoFooter: React.FC = memo(() => {
     });
   };
 
-  const handleClearComleted = async () => {
-    const completedIds = state.todos
-      .filter(todo => todo.completed)
-      .map(todo => todo.id);
+  const handleClearCompleted = async () => {
+    const completedTodos = state.todos.filter(todo => todo.completed);
 
-    for (const value of completedIds) {
+    completedTodos.forEach(todo => {
       dispatch({
         type: 'SET_TODO_DISABLED',
         payload: {
           value: true,
-          targetId: value,
+          targetId: todo.id,
         },
       });
-      dispatch({ type: 'DELETE_TODO', payload: value });
+    });
 
-      try {
-        await deleteTodo(value);
+    const deletePromises = completedTodos.map(todo => deleteTodo(todo.id));
 
-        dispatch({ type: 'LOAD_TODOS_FROM_SERVER', payload: await getTodos() });
-      } catch (error) {
+    const results = await Promise.allSettled(deletePromises);
+
+    results.forEach((result, index) => {
+      const todoId = completedTodos[index].id;
+
+      if (result.status === 'fulfilled') {
+        dispatch({ type: 'DELETE_TODO', payload: todoId });
+      } else {
         dispatch({
           type: 'UPDATE_ERROR_STATUS',
           payload: { type: 'DeleteTodoError' },
         });
-        throw error;
-      } finally {
-        dispatch({
-          type: 'SET_TODO_DISABLED',
-          payload: {
-            value: false,
-            targetId: 0,
-          },
-        });
       }
-    }
+
+      dispatch({
+        type: 'SET_TODO_DISABLED',
+        payload: {
+          value: false,
+          targetId: todoId,
+        },
+      });
+    });
   };
 
   return (
@@ -87,7 +89,7 @@ export const TodoFooter: React.FC = memo(() => {
             className="todoapp__clear-completed"
             data-cy="ClearCompletedButton"
             disabled={buttonDisabled}
-            onClick={handleClearComleted}
+            onClick={handleClearCompleted}
           >
             Clear completed
           </button>

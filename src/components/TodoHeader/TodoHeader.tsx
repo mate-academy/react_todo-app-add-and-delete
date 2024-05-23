@@ -1,12 +1,12 @@
 import { memo, useContext, useEffect, useRef, useState } from 'react';
 import { AppContext } from '../../context/AppContext';
 import classNames from 'classnames';
-import { USER_ID, addTodo, getTodos } from '../../api/todos';
+import { USER_ID, addTodo } from '../../api/todos';
 
 export const TodoHeader: React.FC = memo(() => {
   // TODO check some problems with POST
   const { state, dispatch } = useContext(AppContext);
-  const { todos, inputDisabled } = state;
+  const { todos, inputDisabled, errors } = state;
   const allCompleted =
     todos.every(todo => todo.completed) && state.todos.length > 0;
 
@@ -16,7 +16,7 @@ export const TodoHeader: React.FC = memo(() => {
     if (inputRef.current) {
       inputRef.current.focus();
     }
-  }, [todos]);
+  }, [todos, errors]);
 
   const [todo, setTodo] = useState('');
 
@@ -54,20 +54,16 @@ export const TodoHeader: React.FC = memo(() => {
       if (response) {
         dispatch({ type: 'ADD_TODO', payload: response });
         setTodo('');
-
-        const updTodos = await getTodos();
-
-        dispatch({ type: 'LOAD_TODOS_FROM_SERVER', payload: updTodos });
-
-        dispatch({ type: 'CREATE_TEMP_TODO', payload: null });
-        dispatch({ type: 'SET_INPUT_DISABLED', payload: false });
       }
     } catch (error) {
       dispatch({
         type: 'UPDATE_ERROR_STATUS',
         payload: { type: 'AddTodoError' },
       });
-      throw error;
+      // throw error;
+    } finally {
+      dispatch({ type: 'SET_INPUT_DISABLED', payload: false });
+      dispatch({ type: 'CREATE_TEMP_TODO', payload: null });
     }
   };
 

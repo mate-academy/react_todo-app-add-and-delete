@@ -2,16 +2,16 @@
 /* eslint-disable jsx-a11y/control-has-associated-label */
 
 import classNames from 'classnames';
-import { memo, useContext, useEffect, useRef } from 'react';
+import { useContext, useEffect, useRef } from 'react';
 import { AppContext } from '../../context/AppContext';
 import { Todo as TodoType } from '../../types/Todo';
-import { deleteTodo, getTodos } from '../../api/todos';
+import { deleteTodo } from '../../api/todos';
 
 type TodoProps = {
   todo: TodoType;
 };
 
-export const Todo: React.FC<TodoProps> = memo(({ todo }) => {
+export const Todo: React.FC<TodoProps> = ({ todo }) => {
   const { state, dispatch } = useContext(AppContext);
   const { targetTodo, todoDeleteDisabled } = state;
 
@@ -21,7 +21,7 @@ export const Todo: React.FC<TodoProps> = memo(({ todo }) => {
     if (editRef.current) {
       editRef.current.focus();
     }
-  }, []);
+  }, [targetTodo]);
 
   // TODO avoid duplication vs footer?
   const handleDelete = async (todoId: number) => {
@@ -29,20 +29,19 @@ export const Todo: React.FC<TodoProps> = memo(({ todo }) => {
       type: 'SET_TODO_DISABLED',
       payload: {
         value: true,
-        targetId: todoId,
+        targetId: todo.id,
       },
     });
-    dispatch({ type: 'DELETE_TODO', payload: todoId });
 
     try {
       await deleteTodo(todoId);
-
-      dispatch({ type: 'LOAD_TODOS_FROM_SERVER', payload: await getTodos() });
+      dispatch({ type: 'DELETE_TODO', payload: todoId });
     } catch (error) {
       dispatch({
         type: 'UPDATE_ERROR_STATUS',
         payload: { type: 'DeleteTodoError' },
       });
+
       throw error;
     } finally {
       dispatch({
@@ -103,7 +102,8 @@ export const Todo: React.FC<TodoProps> = memo(({ todo }) => {
       <div
         data-cy="TodoLoader"
         className={classNames('modal overlay', {
-          'is-active': todoDeleteDisabled.targetId === todo.id,
+          'is-active':
+            todoDeleteDisabled.value && todoDeleteDisabled.targetId === todo.id,
         })}
       >
         <div className="modal-background has-background-white-ter" />
@@ -111,6 +111,6 @@ export const Todo: React.FC<TodoProps> = memo(({ todo }) => {
       </div>
     </div>
   );
-});
+};
 
 Todo.displayName = 'Todo';

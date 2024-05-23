@@ -116,7 +116,10 @@ const reducer = (state: State, action: Action): State => {
     case 'SET_TODO_DISABLED':
       return {
         ...state,
-        todoDeleteDisabled: action.payload,
+        todoDeleteDisabled: {
+          value: action.payload.value,
+          targetId: action.payload.targetId,
+        },
       };
     case 'CREATE_TEMP_TODO':
       return {
