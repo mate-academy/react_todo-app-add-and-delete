@@ -1,5 +1,5 @@
 import classNames from 'classnames';
-import React, { Dispatch, SetStateAction } from 'react';
+import React from 'react';
 import { Todo } from '../types/Todo';
 
 type Props = {
@@ -7,20 +7,16 @@ type Props = {
   handleToggleTodo: (id: number) => void;
   onDeleteTodo: (id: number) => void;
   loadingIds: number[];
-  setLoadingIds: Dispatch<SetStateAction<number[]>>;
 };
 
 export const TodoItem: React.FC<Props> = ({
   todo,
   handleToggleTodo,
   loadingIds,
-  setLoadingIds,
   onDeleteTodo,
 }) => {
   const { completed, id, title } = todo;
   const handleDelete = (todoId: number) => {
-    setLoadingIds(prevIds => [...prevIds, todoId]);
-
     return onDeleteTodo(todoId);
   };
 

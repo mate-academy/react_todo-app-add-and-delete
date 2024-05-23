@@ -17,7 +17,7 @@ export const ErrorMessage: React.FC<Props> = ({
     }, 3000);
 
     return () => clearTimeout(timer);
-  }, [errorMessage, setErrorMessage]);
+  }, [errorMessage]);
 
   return (
     <div

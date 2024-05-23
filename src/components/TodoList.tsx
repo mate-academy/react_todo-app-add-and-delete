@@ -1,4 +1,4 @@
-import React, { Dispatch, SetStateAction } from 'react';
+import React from 'react';
 import { TodoItem } from './TodoItem';
 import { Todo } from '../types/Todo';
 import classNames from 'classnames';
@@ -8,7 +8,6 @@ interface Props {
   handleToggleTodo: (id: number) => void;
   onDeleteTodo: (id: number) => void;
   loadingIds: number[];
-  setLoadingIds: Dispatch<SetStateAction<number[]>>;
   tempTodo: Todo | null;
 }
 
@@ -17,7 +16,6 @@ export const TodoList: React.FC<Props> = ({
   handleToggleTodo,
   onDeleteTodo,
   loadingIds,
-  setLoadingIds,
   tempTodo,
 }) => {
   return (
@@ -29,7 +27,6 @@ export const TodoList: React.FC<Props> = ({
           key={todo.id}
           onDeleteTodo={onDeleteTodo}
           loadingIds={loadingIds}
-          setLoadingIds={setLoadingIds}
         />
       ))}
       {tempTodo && (
@@ -47,6 +44,7 @@ export const TodoList: React.FC<Props> = ({
                 type="checkbox"
                 className="todo__status"
                 checked={tempTodo.completed}
+                onChange={() => handleToggleTodo(tempTodo.id)}
               />
             </label>
             <span data-cy="TodoTitle" className="todo__title">

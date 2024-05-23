@@ -56,20 +56,25 @@ export const App: React.FC = () => {
 
   function onDeleteTodo(todoId: number): Promise<void> {
     setIsSubmitting(true);
+    setLoadingIds(prevIds => [...prevIds, todoId]);
 
     return deleteTodo(todoId)
       .then(() => {
-        const updatedTodos = todos.filter(todo => todo.id !== todoId);
-
-        setTodos(updatedTodos);
-        setFilteredTodos(updatedTodos);
-        setLoadingIds([]);
+        setTodos(currentTodos =>
+          currentTodos.filter(todo => todo.id !== todoId),
+        );
+        setFilteredTodos(currentTodos =>
+          currentTodos.filter(todo => todo.id !== todoId),
+        );
       })
       .catch(error => {
         setErrorMessage(ErrorTypes.UnableToDelete);
         throw error;
       })
-      .finally(() => setIsSubmitting(false));
+      .finally(() => {
+        setIsSubmitting(false);
+        setLoadingIds([]);
+      });
   }
 
   const handleAddTodo = ({
@@ -123,7 +128,6 @@ export const App: React.FC = () => {
           handleToggleTodo={handleToggleTodo}
           onDeleteTodo={onDeleteTodo}
           loadingIds={loadingIds}
-          setLoadingIds={setLoadingIds}
           tempTodo={tempTodo}
         />
 
@@ -132,7 +136,6 @@ export const App: React.FC = () => {
             filter={filter}
             handleFilterChange={handleFilterChange}
             todos={todos}
-            setLoadingIds={setLoadingIds}
             onDeleteTodo={onDeleteTodo}
           />
         )}

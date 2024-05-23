@@ -1,5 +1,5 @@
 import classNames from 'classnames';
-import React, { Dispatch, SetStateAction } from 'react';
+import React from 'react';
 import { Filter } from '../types/Filter';
 import { Todo } from '../types/Todo';
 
@@ -7,7 +7,6 @@ interface Props {
   handleFilterChange: (newFilter: Filter) => void;
   filter: string;
   todos: Todo[];
-  setLoadingIds: Dispatch<SetStateAction<number[]>>;
   onDeleteTodo: (todoId: number) => void;
 }
 
@@ -15,19 +14,16 @@ export const Footer: React.FC<Props> = ({
   filter,
   handleFilterChange,
   todos,
-  setLoadingIds,
   onDeleteTodo,
 }) => {
   const todosLeft = todos.filter(todo => !todo.completed).length;
   const hasCompleted = todos.some(todo => todo.completed);
-  const onClearCompleted = async (list: Todo[]) => {
-    const completedTodosId = list
+  const onClearCompleted = async () => {
+    const completedTodosId = todos
       .filter(todo => todo.completed)
       .map(todo => todo.id);
 
-    setLoadingIds(completedTodosId);
-
-    await Promise.all(completedTodosId.map(id => onDeleteTodo(id)));
+    await completedTodosId.forEach(id => onDeleteTodo(id));
   };
 
   return (
@@ -76,7 +72,7 @@ export const Footer: React.FC<Props> = ({
         className="todoapp__clear-completed"
         data-cy="ClearCompletedButton"
         disabled={!hasCompleted}
-        onClick={() => onClearCompleted(todos)}
+        onClick={onClearCompleted}
       >
         Clear completed
       </button>
