@@ -4,7 +4,6 @@ import classNames from 'classnames';
 import { deleteTodo } from '../api/todos';
 import { Filtering } from '../types/Filtering';
 import { TodosContext } from '../TodosContext';
-import React from 'react';
 
 export const Footer = () => {
   const {

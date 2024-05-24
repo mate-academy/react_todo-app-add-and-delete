@@ -6,7 +6,6 @@ import './styles/index.scss';
 
 import { App } from './App';
 import { TodoProvider } from './TodosContext';
-import React from 'react';
 
 createRoot(document.getElementById('root') as HTMLDivElement).render(
   <TodoProvider>
