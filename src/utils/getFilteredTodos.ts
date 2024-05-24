@@ -5,10 +5,8 @@ import { Todo } from '../types/Todo';
 type FilterTheTodos = (todos: Todo[], filterBy: FilterBy) => Todo[];
 
 export const getFilteredTodos: FilterTheTodos = (todos, filterBy) => {
-  let filteredTodos = todos;
-
   if (filterBy !== FilterBy.All) {
-    filteredTodos = filteredTodos.filter(todo => {
+    return todos.filter(todo => {
       switch (filterBy) {
         case FilterBy.Active:
           return !todo.completed;
@@ -20,5 +18,5 @@ export const getFilteredTodos: FilterTheTodos = (todos, filterBy) => {
     });
   }
 
-  return filteredTodos;
+  return todos;
 };

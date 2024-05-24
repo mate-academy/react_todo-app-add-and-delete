@@ -9,6 +9,7 @@ interface Props {
   titleText: string;
   onType: (event: React.ChangeEvent<HTMLInputElement>) => void;
 }
+
 export const Header: React.FC<Props> = ({
   inputRef,
   onSubmit,
@@ -19,6 +20,7 @@ export const Header: React.FC<Props> = ({
 }) => {
   useEffect(() => {
     inputRef.current?.focus();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [tempTodo]);
 
   return (

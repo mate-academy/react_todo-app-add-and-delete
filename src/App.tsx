@@ -116,7 +116,7 @@ export const App: React.FC = () => {
           inputRef={inputRef}
         />
 
-        {todos.length > 0 && (
+        {!!todos.length && (
           <>
             <TodoList
               todos={visibleTodos}
