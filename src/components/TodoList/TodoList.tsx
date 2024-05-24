@@ -39,21 +39,6 @@ export const TodoList: React.FC = () => {
                 className="todo__title-field"
                 placeholder="Empty todo will be deleted"
                 defaultValue={todo.title}
-                // onChange={event => {
-                //   setEditedTitle(event.target.value.trim());
-                //   setWasEdited(true);
-                // }}
-                // onKeyDown={event => {
-                //   if (event.key === 'Enter') {
-                //     handleSubmit(event);
-                //   } else if (event.key === 'Escape') {
-                //     setEditedTitle(selectedTodo.title);
-                //     setSelectedTodo(null);
-                //   }
-                // }}
-                // onBlur={event => {
-                //   handleSubmit(event);
-                // }}
               />
             </form>
           )}
@@ -101,7 +86,6 @@ export const TodoList: React.FC = () => {
             ×
           </button>
 
-          {/* 'is-active' class puts this modal on top of the todo */}
           <div data-cy="TodoLoader" className="modal overlay is-active">
             <div className="modal-background has-background-white-ter" />
             <div className="loader" />
