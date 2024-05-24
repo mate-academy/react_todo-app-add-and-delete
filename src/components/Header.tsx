@@ -27,6 +27,11 @@ export const Header: React.FC<Props> = ({
     addTodo(title);
   };
 
+  const handleTitle = (event: React.ChangeEvent<HTMLInputElement>) => {
+    event.preventDefault();
+    setTitle(event.target.value);
+  };
+
   return (
     <header className="todoapp__header">
       <button
@@ -44,7 +49,7 @@ export const Header: React.FC<Props> = ({
           ref={inputRef}
           disabled={isLoading}
           value={title}
-          onChange={event => setTitle(event.target.value)}
+          onChange={handleTitle}
         />
       </form>
     </header>

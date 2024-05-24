@@ -9,6 +9,7 @@ type Props = {
 
 export const TodoItem: React.FC<Props> = ({ todo, deleteTodo }) => {
   const [loadingTodo, setLoadingTodo] = useState<Todo | null>(null);
+  const { id, title, completed } = todo;
 
   return (
     <div data-cy="Todo" className={cn('todo', { completed: todo.completed })}>
@@ -18,19 +19,20 @@ export const TodoItem: React.FC<Props> = ({ todo, deleteTodo }) => {
           data-cy="TodoStatus"
           type="checkbox"
           className="todo__status"
-          checked={todo.completed}
+          checked={completed}
         />
       </label>
 
       <span data-cy="TodoTitle" className="todo__title">
-        {todo.title}
+        {title}
       </span>
+
       <button
         type="button"
         className="todo__remove"
         data-cy="TodoDelete"
         onClick={() => {
-          deleteTodo(todo.id);
+          deleteTodo(id);
           setLoadingTodo(todo);
         }}
       >
@@ -40,7 +42,7 @@ export const TodoItem: React.FC<Props> = ({ todo, deleteTodo }) => {
       <div
         data-cy="TodoLoader"
         className={cn('modal overlay', {
-          'is-active': todo.id === 0 || loadingTodo,
+          'is-active': id === 0 || loadingTodo,
         })}
       >
         <div className="modal-background has-background-white-ter" />

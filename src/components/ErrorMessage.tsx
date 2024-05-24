@@ -3,7 +3,7 @@ import cn from 'classnames';
 
 type Props = {
   errorMessage: string;
-  setErrorMessage: (errorMesage: string) => void;
+  setErrorMessage: (errorMessage: string) => void;
 };
 
 export const Error: React.FC<Props> = ({ errorMessage, setErrorMessage }) => {
