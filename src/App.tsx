@@ -16,7 +16,7 @@ import { getFilteredTodos } from './utils/getFilteredTodos';
 export const App: React.FC = () => {
   const [todos, setTodos] = useState<Todo[]>([]);
   const [errorMessage, setErrorMessage] = useState<Errors | ''>('');
-  const [status, setStatus] = useState<Statuses>('all');
+  const [status, setStatus] = useState<Statuses>(Statuses.All);
   const [title, setTitle] = useState<string>('');
   const [tempTodo, setTempTodo] = useState<Todo | null>(null);
   const [loadingTodos, setLoadingTodos] = useState<number[]>([]);
@@ -37,7 +37,7 @@ export const App: React.FC = () => {
     inputRef.current?.focus();
     getTodos()
       .then(setTodos)
-      .catch(() => setErrorMessage('Unable to load todos'));
+      .catch(() => setErrorMessage(Errors.LoadTodo));
   }, []);
 
   // Handle ErrorMessage
@@ -59,7 +59,7 @@ export const App: React.FC = () => {
 
     // ---validate title
     if (!title) {
-      setErrorMessage('Title should not be empty');
+      setErrorMessage(Errors.EmptyTodoTitle);
 
       return;
     }
@@ -92,7 +92,7 @@ export const App: React.FC = () => {
         setTitle('');
       })
       .catch(() => {
-        setErrorMessage('Unable to add a todo');
+        setErrorMessage(Errors.AddTodo);
       })
       .finally(() => {
         if (inputRef.current) {
@@ -115,7 +115,7 @@ export const App: React.FC = () => {
           currentTodos.filter(todo => todo.id !== todoId),
         ),
       )
-      .catch(() => setErrorMessage('Unable to delete a todo'))
+      .catch(() => setErrorMessage(Errors.DeleteTodo))
       .finally(() => {
         setLoadingTodos(current =>
           current.filter(delTodoId => delTodoId !== todoId),
@@ -145,7 +145,7 @@ export const App: React.FC = () => {
         .filter(Boolean);
 
       if (successfulDeletes.length < completedTodosId.length) {
-        setErrorMessage('Unable to delete a todo');
+        setErrorMessage(Errors.DeleteTodo);
       }
 
       setTodos(currentTodos =>

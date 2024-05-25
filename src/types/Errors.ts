@@ -1,6 +1,7 @@
-export type Errors =
-  | 'Unable to load todos'
-  | 'Title should not be empty'
-  | 'Unable to add a todo'
-  | 'Unable to delete a todo'
-  | 'Unable to update a todo';
+export enum Errors {
+  LoadTodo = 'Unable to load todos',
+  EmptyTodoTitle = 'Title should not be empty',
+  AddTodo = 'Unable to add a todo',
+  DeleteTodo = 'Unable to delete a todo',
+  UpdateTodo = 'Unable to update a todo',
+}

@@ -5,14 +5,12 @@ interface Filter {
   status: Statuses;
 }
 
-export const getFilteredTodos = (todos: Todo[], { status }: Filter) => {
-  let filteredTodos = [...todos];
-
-  if (status !== 'all') {
-    filteredTodos = filteredTodos.filter(todo =>
-      status === 'completed' ? todo.completed : !todo.completed,
-    );
+export const getFilteredTodos = (todos: Todo[], { status }: Filter): Todo[] => {
+  if (status === Statuses.All) {
+    return todos;
   }
 
-  return filteredTodos;
+  return todos.filter(todo =>
+    status === Statuses.Completed ? todo.completed : !todo.completed,
+  );
 };
