@@ -24,6 +24,7 @@ type ContextProps = {
   handleDeleteCompleted: () => void;
   isFormDisabled: boolean;
   isDeletion: boolean;
+  deletedTodoId: number | null;
   tempTodo: Todo | null;
 };
 
@@ -48,6 +49,7 @@ export const TodoContext = React.createContext<ContextProps>({
   isFormDisabled: false,
   isDeletion: false,
   tempTodo: null,
+  deletedTodoId: null,
 });
 
 type Props = {
@@ -85,6 +87,7 @@ export const TodoProvider: React.FC<Props> = ({ children }) => {
   const [filterField, setFilterField] = useState('all');
   const [isFormDisabled, setIsFormDisabled] = useState(false);
   const [isDeletion, setIsDeletion] = useState(false);
+  const [deletedTodoId, setDeletedTodoId] = useState<number | null>(null);
 
   useEffect(() => {
     todoServices
@@ -154,6 +157,7 @@ export const TodoProvider: React.FC<Props> = ({ children }) => {
 
   const handleDelete = (currentTodo: Todo) => {
     setIsDeletion(true);
+    setDeletedTodoId(currentTodo.id);
 
     todoServices
       .deletePost(currentTodo)
@@ -172,6 +176,7 @@ export const TodoProvider: React.FC<Props> = ({ children }) => {
       })
       .finally(() => {
         setIsDeletion(false);
+        setDeletedTodoId(null);
       });
   };
 
@@ -248,6 +253,7 @@ export const TodoProvider: React.FC<Props> = ({ children }) => {
     isFormDisabled,
     isDeletion,
     tempTodo,
+    deletedTodoId,
   };
 
   return <TodoContext.Provider value={value}>{children}</TodoContext.Provider>;

@@ -11,6 +11,7 @@ export const TodoList: React.FC = () => {
     handleDelete,
     tempTodo,
     isDeletion,
+    deletedTodoId,
   } = useContext(TodoContext);
 
   return (
@@ -57,8 +58,8 @@ export const TodoList: React.FC = () => {
             </button>
             <div
               data-cy="TodoLoader"
-              className={classNames('modal', {
-                'is-active': isDeletion,
+              className={classNames('modal', 'overlay', {
+                'is-active': isDeletion && todo.id === deletedTodoId,
               })}
             >
               <div className="modal-background has-background-white-ter" />
