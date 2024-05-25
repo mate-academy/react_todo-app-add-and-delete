@@ -1,26 +1,155 @@
-/* eslint-disable max-len */
+/* eslint-disable jsx-a11y/label-has-associated-control */
 /* eslint-disable jsx-a11y/control-has-associated-label */
-import React from 'react';
+import React, { useEffect, useMemo, useState } from 'react';
 import { UserWarning } from './UserWarning';
-
-const USER_ID = 0;
+import {
+  USER_ID,
+  getTodos,
+  createTodo,
+  deleteTodo,
+  updateTodo,
+} from './api/todos'; // Ensure createTodo is imported
+import { Todo } from './types/Todo';
+import { Status } from './types/Status';
+import { Header, TodoList, Error, Footer } from './components';
+import { getVisibleTodos } from './utils/getVisibleTodos';
 
 export const App: React.FC = () => {
+  const [todos, setTodos] = useState<Todo[]>([]);
+  const [error, setError] = useState('');
+  const [isLoading, setIsLoading] = useState<boolean>(false);
+  const [tempTodo, setTempTodo] = useState<Todo | null>(null);
+  const [status, setStatus] = useState(Status.All);
+  const [title, setTitle] = useState('');
+
+  useEffect(() => {
+    getTodos()
+      .then(setTodos)
+      .catch(() => {
+        setError('Unable to load todos');
+      });
+  }, []);
+
+  useEffect(() => {
+    let timeoutId: NodeJS.Timeout;
+
+    if (error) {
+      timeoutId = setTimeout(() => setError(''), 3000);
+    }
+
+    return () => clearTimeout(timeoutId);
+  }, [error]);
+
+  const visibleTodos = useMemo(
+    () => getVisibleTodos(todos, status),
+    [todos, status],
+  );
+
+  const addTodo = (todoTitle: string) => {
+    const newTitle = todoTitle.trim();
+
+    if (!newTitle) {
+      setError('Title should not be empty');
+
+      return;
+    }
+
+    setIsLoading(true);
+
+    const newTodo = { id: 0, title: newTitle, completed: false };
+
+    setTempTodo(newTodo);
+
+    return createTodo(newTodo)
+      .then(resultTodo => {
+        setTodos([...todos, resultTodo]);
+        setTitle('');
+      })
+      .catch(() => setError('Unable to add a todo'))
+      .finally(() => {
+        setTempTodo(null);
+        setIsLoading(false);
+      });
+  };
+
+  const deleteTodoById = (id: number) => {
+    setIsLoading(true);
+
+    return deleteTodo(id)
+      .then(() => {
+        setTodos(todoState => todoState.filter(todo => todo.id !== id));
+      })
+      .catch(() => {
+        setError('Unable to delete a todo');
+      })
+      .finally(() => {
+        setIsLoading(false);
+      });
+  };
+
+  const updateTodoByID = (id: number, updatedTodo: Partial<Todo>) => {
+    updateTodo(id, updatedTodo)
+      .then(() =>
+        setTodos(state =>
+          state.map(todo =>
+            todo.id === id ? { ...todo, ...updatedTodo } : todo,
+          ),
+        ),
+      )
+      .catch(() => setError('Unable to update a Todo'));
+  };
+
+  const handleDeleteCompleted = () => {
+    setIsLoading(true);
+    const promises: Promise<void>[] = [];
+
+    todos.forEach(todo => {
+      if (!todo.completed) {
+        return;
+      }
+
+      promises.push(
+        deleteTodo(todo.id)
+          .then(() =>
+            setTodos(prevTodos => prevTodos.filter(el => el.id !== todo.id)),
+          )
+          .catch(() => setError('Unable to delete a todo')),
+      );
+    });
+    Promise.all(promises).finally(() => setIsLoading(false));
+  };
+
   if (!USER_ID) {
     return <UserWarning />;
   }
 
   return (
-    <section className="section container">
-      <p className="title is-4">
-        Copy all you need from the prev task:
-        <br />
-        <a href="https://github.com/mate-academy/react_todo-app-loading-todos#react-todo-app-load-todos">
-          React Todo App - Load Todos
-        </a>
-      </p>
+    <div className="todoapp">
+      <h1 className="todoapp__title">todos</h1>
 
-      <p className="subtitle">Styles are already copied</p>
-    </section>
+      <div className="todoapp__content">
+        <Header
+          onTodoSave={addTodo}
+          onTitleChange={setTitle}
+          initialTitle={title}
+          isLoading={isLoading}
+        />
+        <TodoList
+          visibleTodos={visibleTodos}
+          onDelete={deleteTodoById}
+          onUpdate={updateTodoByID}
+          tempTodo={tempTodo}
+        />
+        {!!todos.length && (
+          <Footer
+            todos={todos}
+            status={status}
+            setStatus={setStatus}
+            deleteCompleteTodo={handleDeleteCompleted}
+          />
+        )}
+      </div>
+      <Error error={error} setError={setError} />
+    </div>
   );
 };
