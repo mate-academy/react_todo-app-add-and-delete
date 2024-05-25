@@ -220,7 +220,7 @@ export const TodoProvider: React.FC<Props> = ({ children }) => {
     setTempTodo({
       id: 0,
       userId: USER_ID,
-      title: 'Test Todo',
+      title: title.trim(),
       completed: false,
     });
 
