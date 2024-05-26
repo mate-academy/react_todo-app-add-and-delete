@@ -12,19 +12,7 @@ import {
 import { Todo } from './types/Todo';
 import { Status } from './types/Status';
 import { Header, ToDoList, Error, Footer } from './components';
-
-function getVisibleToDos(newTodos: Todo[], newStatus: Status) {
-  switch (newStatus) {
-    case Status.Active:
-      return newTodos.filter(todo => !todo.completed);
-
-    case Status.Completed:
-      return newTodos.filter(todo => todo.completed);
-
-    default:
-      return newTodos;
-  }
-}
+import { getVisibleToDos } from './utils/todoUtils'; // Import the function
 
 export const App: React.FC = () => {
   const [todos, setTodos] = useState<Todo[]>([]);
