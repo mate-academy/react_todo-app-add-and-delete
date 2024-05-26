@@ -7,11 +7,22 @@ import { Todo } from './types/Todo';
 import cn from 'classnames';
 import { TodoItem } from './components/TodoItem';
 
-type Sort = 'All' | 'Active' | 'Completed';
+enum Errors {
+  unableToLoadTodos = 'Unable to load todos',
+  unableToDeleteTodo = 'Unable to delete a todo',
+  titleShoulNotBeEmpty = 'Title should not be empty',
+  unableToAddATodo = 'Unable to add a todo',
+}
+
+enum Sort {
+  all = 'All',
+  active = 'Active',
+  completed = 'Completed',
+}
 
 export const App: React.FC = () => {
   const [todos, setTodos] = useState<Todo[]>([]);
-  const [sortBy, setSortBy] = useState<Sort>('All');
+  const [sortBy, setSortBy] = useState<Sort>(Sort.all);
   const [title, setTitle] = useState('');
   const [loadingIds, setLoadingIds] = useState<number[]>([]);
   const [errorMessage, setErrorMessage] = useState('');
@@ -26,7 +37,7 @@ export const App: React.FC = () => {
       .then(todosFromServer => {
         setTodos(todosFromServer);
       })
-      .catch(() => setErrorMessage('Unable to load todos'));
+      .catch(() => setErrorMessage(Errors.unableToLoadTodos));
   }, []);
 
   if (!USER_ID) {
@@ -51,7 +62,7 @@ export const App: React.FC = () => {
       .then(() => {
         setTodos(currentTodo => currentTodo.filter(todo => todo.id !== id));
       })
-      .catch(() => setErrorMessage('Unable to delete a todo'))
+      .catch(() => setErrorMessage(Errors.unableToDeleteTodo))
       .finally(() => {
         setLoadingIds([]);
         inputRef.current?.focus();
@@ -89,7 +100,7 @@ export const App: React.FC = () => {
     const trimmedTitle = title.trim();
 
     if (trimmedTitle.length === 0) {
-      setErrorMessage('Title should not be empty');
+      setErrorMessage(Errors.titleShoulNotBeEmpty);
 
       return;
     }
@@ -118,7 +129,7 @@ export const App: React.FC = () => {
         setTodos(currentTodo => [...currentTodo, newTodoFromServer]);
         setTitle('');
       })
-      .catch(() => setErrorMessage('Unable to add a todo'))
+      .catch(() => setErrorMessage(Errors.unableToAddATodo))
       .finally(() => {
         if (inputRef.current) {
           inputRef.current.disabled = false;
@@ -139,23 +150,15 @@ export const App: React.FC = () => {
     deletedIds.forEach(id => handleDelete(id));
   };
 
-  const sortTodos = () => {
-    const filteredTodos = [...todos].filter(todo => {
-      if (sortBy === 'Active') {
-        return todo.completed === false;
-      }
+  let filteredTodos = todos;
 
-      if (sortBy === 'Completed') {
-        return todo.completed === true;
-      }
+  if (sortBy === Sort.active) {
+    filteredTodos = activeTodo;
+  }
 
-      return todo;
-    });
-
-    return filteredTodos;
-  };
-
-  const filteredTodos = sortTodos();
+  if (sortBy === Sort.completed) {
+    filteredTodos = completedTodo;
+  }
 
   return (
     <div className="todoapp">
@@ -163,14 +166,12 @@ export const App: React.FC = () => {
 
       <div className="todoapp__content">
         <header className="todoapp__header">
-          {/* this button should have `active` class only if all todos are completed */}
           <button
             type="button"
             className="todoapp__toggle-all active"
             data-cy="ToggleAllButton"
           />
 
-          {/* Add a todo on form submit */}
           <form onSubmit={handleSubmit}>
             <input
               ref={inputRef}
@@ -206,20 +207,20 @@ export const App: React.FC = () => {
           )}
         </section>
 
-        {/* Hide the footer if there are no todos */}
         {todos.length > 0 && (
           <footer className="todoapp__footer" data-cy="Footer">
             <span className="todo-count" data-cy="TodosCounter">
               {activeTodo.length} items left
             </span>
 
-            {/* Active link should have the 'selected' class */}
             <nav className="filter" data-cy="Filter">
               <a
                 href="#/"
-                className={cn('filter__link', { selected: sortBy === 'All' })}
+                className={cn('filter__link', {
+                  selected: sortBy === Sort.all,
+                })}
                 data-cy="FilterLinkAll"
-                onClick={() => setSortBy('All')}
+                onClick={() => setSortBy(Sort.all)}
               >
                 All
               </a>
@@ -227,10 +228,10 @@ export const App: React.FC = () => {
               <a
                 href="#/active"
                 className={cn('filter__link', {
-                  selected: sortBy === 'Active',
+                  selected: sortBy === Sort.active,
                 })}
                 data-cy="FilterLinkActive"
-                onClick={() => setSortBy('Active')}
+                onClick={() => setSortBy(Sort.active)}
               >
                 Active
               </a>
@@ -238,18 +239,16 @@ export const App: React.FC = () => {
               <a
                 href="#/completed"
                 className={cn('filter__link', {
-                  selected: sortBy === 'Completed',
+                  selected: sortBy === Sort.completed,
                 })}
                 data-cy="FilterLinkCompleted"
-                onClick={() => setSortBy('Completed')}
+                onClick={() => setSortBy(Sort.completed)}
               >
                 Completed
               </a>
             </nav>
 
-            {/* this button should be disabled if there are no completed todos */}
-
-            {completedTodo.length === 0 ? (
+            {!completedTodo.length ? (
               <button
                 type="button"
                 className="todoapp__clear-completed"
@@ -272,8 +271,6 @@ export const App: React.FC = () => {
         )}
       </div>
 
-      {/* DON'T use conditional rendering to hide the notification */}
-      {/* Add the 'hidden' class to hide the message smoothly */}
       <div
         data-cy="ErrorNotification"
         className={cn(
@@ -282,7 +279,6 @@ export const App: React.FC = () => {
         )}
       >
         <button data-cy="HideErrorButton" type="button" className="delete" />
-        {/* show only one message at a time */}
         {errorMessage}
       </div>
     </div>
