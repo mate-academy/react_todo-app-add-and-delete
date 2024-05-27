@@ -113,22 +113,21 @@ export const App: React.FC = () => {
 
   const handleDeleteCompleted = () => {
     setIsLoading(true);
-    const promises: Promise<void>[] = [];
+    const promises: Promise<number>[] = [];
 
-    todos.forEach(todo => {
-      if (!todo.completed) {
-        return;
-      }
+    todos
+      .filter(todo => todo.completed)
+      .forEach(todo => {
+        promises.push(deleteTodo(todo.id).then(() => todo.id));
+      });
 
-      promises.push(
-        deleteTodo(todo.id)
-          .then(() =>
-            setTodos(prevTodos => prevTodos.filter(el => el.id !== todo.id)),
-          )
-          .catch(() => setError('Unable to delete a todo')),
-      );
-    });
-    Promise.all(promises).finally(() => setIsLoading(false));
+    Promise.all(promises)
+      .then(idsToDelete => {
+        setTodos(prevTodos =>
+          prevTodos.filter(td => !idsToDelete.includes(td.id)),
+        );
+      })
+      .finally(() => setIsLoading(false));
   };
 
   if (!USER_ID) {

@@ -1,11 +1,18 @@
 import React, { useEffect, useRef } from 'react';
 
-export const Header: React.FC<{
+type Props = {
   onToDoSave: (title: string) => Promise<void> | undefined;
   onTitleChange: (title: string) => void;
   initialTitle: string;
   isLoading: boolean;
-}> = ({ onToDoSave, onTitleChange, initialTitle, isLoading }) => {
+};
+
+export const Header: React.FC<Props> = ({
+  onToDoSave,
+  onTitleChange,
+  initialTitle,
+  isLoading,
+}) => {
   const inputRef = useRef<HTMLInputElement>(null);
 
   useEffect(() => {
