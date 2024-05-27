@@ -1,6 +1,6 @@
-import { useEffect, useState } from "react";
-import { Error } from "../../types/Error";
-import cn from "classnames";
+import { useEffect, useState } from 'react';
+import { Error } from '../../types/Error';
+import cn from 'classnames';
 
 interface Props {
   error: Error | null;
@@ -38,5 +38,5 @@ export const ErrorMessage: React.FC<Props> = ({ error }) => {
       />
       {error}
     </div>
-  )
-}
+  );
+};

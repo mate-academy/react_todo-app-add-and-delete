@@ -30,7 +30,7 @@ export const Header: React.FC<Props> = ({
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setNewTitle(e.target.value);
-  }
+  };
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
@@ -50,7 +50,7 @@ export const Header: React.FC<Props> = ({
       userId: USER_ID,
       title: trimmedTitle,
       completed: false,
-    }
+    };
 
     setTempTodo({ ...newTodo, id: 0 });
 
@@ -66,7 +66,7 @@ export const Header: React.FC<Props> = ({
       .finally(() => {
         setIsLoading(false);
         setTempTodo(null);
-    });
+      });
   };
 
   return (

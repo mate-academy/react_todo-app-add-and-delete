@@ -20,7 +20,7 @@ export const Footer: React.FC<Props> = ({
   setError,
   setDeleteIds,
 }) => {
-  const isActiveTodos = todos.filter(todo => !todo.completed).length;
+  const activeTodos = todos.filter(todo => !todo.completed).length;
   const completedTodos = todos.filter(todo => todo.completed);
 
   const clearCompleted = () => {
@@ -29,7 +29,7 @@ export const Footer: React.FC<Props> = ({
 
       return deleteTodo(todo.id)
         .then(() => {
-          setTodos(prevTodos => prevTodos.filter(item => item.id !== todo.id))
+          setTodos(prevTodos => prevTodos.filter(item => item.id !== todo.id));
         })
         .catch(() => {
           setError(Error.UnableDelete);
@@ -40,12 +40,12 @@ export const Footer: React.FC<Props> = ({
     });
 
     return deletePromis;
-  }
+  };
 
   return (
     <footer className="todoapp__footer" data-cy="Footer">
       <span className="todo-count" data-cy="TodosCounter">
-        {`${isActiveTodos} items left`}
+        {`${activeTodos} items left`}
       </span>
 
       <nav className="filter" data-cy="Filter">

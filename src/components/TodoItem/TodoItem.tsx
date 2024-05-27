@@ -25,7 +25,11 @@ export const TodoItem: React.FC<Props> = ({
     setDeleteIds(prevIds => [...prevIds, todoId]);
 
     deleteTodo(todoId)
-      .then(() => setTodos((prevTodos: Todo[]) => prevTodos.filter(todoItem => todoItem.id !== todoId)))
+      .then(() =>
+        setTodos((prevTodos: Todo[]) =>
+          prevTodos.filter(todoItem => todoItem.id !== todoId),
+        ),
+      )
       .catch(() => {
         setError(Error.UnableDelete);
       })
