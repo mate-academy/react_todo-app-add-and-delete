@@ -37,11 +37,7 @@ export const TodoComponent: React.FC<Props> = ({
   };
 
   return (
-    <div
-      data-cy="Todo"
-      className={cn('todo', { completed: todo.completed })}
-      key={todo.id}
-    >
+    <div data-cy="Todo" className={cn('todo', { completed: todo.completed })}>
       <label className="todo__status-label">
         <input
           data-cy="TodoStatus"
@@ -66,7 +62,7 @@ export const TodoComponent: React.FC<Props> = ({
 
       <div
         data-cy="TodoLoader"
-        className={`modal overlay ${(isTemp || loading) && 'is-active'}`}
+        className={cn('modal overlay', { 'is-active': isTemp || loading })}
       >
         <div className="modal-background has-background-white-ter" />
         <div className="loader" />

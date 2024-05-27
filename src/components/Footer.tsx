@@ -12,20 +12,7 @@ export const Footer: React.FC<Props> = ({ inputRef }) => {
   const { setFilterField, deleteTodoLocal, setTimeoutErrorMessage } =
     useTodosMethods();
 
-  const { activeTodos: activeTodosAmount } = todos.reduce(
-    (acc, todo) => {
-      if (todo.completed) {
-        // eslint-disable-next-line no-param-reassign
-        acc.completedTodos += 1;
-      } else {
-        // eslint-disable-next-line no-param-reassign
-        acc.activeTodos += 1;
-      }
-
-      return acc;
-    },
-    { activeTodos: 0, completedTodos: 0 },
-  );
+  const activeTodos = todos.filter(todo => !todo.completed);
 
   const setFilter = (newFilterField: FilterField) => {
     if (filterField !== newFilterField) {
@@ -56,7 +43,7 @@ export const Footer: React.FC<Props> = ({ inputRef }) => {
   return (
     <footer className="todoapp__footer" data-cy="Footer">
       <span className="todo-count" data-cy="TodosCounter">
-        {activeTodosAmount} items left
+        {activeTodos.length} items left
       </span>
 
       <nav className="filter" data-cy="Filter">
