@@ -8,7 +8,6 @@ interface State {
   error: string;
   isLoading: boolean;
   isLoadingItems: { [key: number]: boolean };
-  isAdded: boolean;
 }
 
 type Action =
@@ -16,6 +15,7 @@ type Action =
   | { type: 'updateTodoId'; payload: { temporaryId: number; serverId: number } }
   | { type: 'deleteTodo'; payload: { id: number } }
   | { type: 'addTodo'; payload: { newTodo: Todo } }
+  | { type: 'addTempTodo'; payload: { tempTodo: Todo } }
   | { type: 'setTodos'; payload: Todo[] }
   | { type: 'clearCompleted' }
   | { type: 'activeTab'; payload: { tab: SortingTodos } }
@@ -32,7 +32,6 @@ const initialState: State = {
   error: '',
   isLoading: false,
   isLoadingItems: {},
-  isAdded: false,
 };
 
 const deleteTodo = (state: State, id: number): State => {
@@ -87,7 +86,17 @@ function reducer(state: State, action: Action): State {
     case 'addTodo': {
       return {
         ...state,
-        todos: [action.payload.newTodo, ...state.todos],
+        todos: [
+          ...state.todos.filter(todo => !todo.isLoading),
+          action.payload.newTodo,
+        ],
+      };
+    }
+
+    case 'addTempTodo': {
+      return {
+        ...state,
+        todos: [...state.todos, action.payload.tempTodo],
       };
     }
 
@@ -103,11 +112,6 @@ function reducer(state: State, action: Action): State {
             ? { ...todo, id: action.payload.serverId }
             : todo,
         ),
-
-        isLoadingItems: {
-          ...state.isLoadingItems,
-          [action.payload.serverId]: false,
-        },
       };
     }
 
@@ -158,12 +162,12 @@ function reducer(state: State, action: Action): State {
       };
     }
 
-    case 'setAdding': {
-      return {
-        ...state,
-        isAdded: action.payload.isAdded,
-      };
-    }
+    // case 'setAdding': {
+    //   return {
+    //     ...state,
+    //     isAdded: action.payload.isAdded,
+    //   };
+    // }
 
     default: {
       return state;

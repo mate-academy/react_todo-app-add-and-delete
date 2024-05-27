@@ -8,7 +8,6 @@ export const Header: React.FC = () => {
   const { dispatch, resetErrorMessage } = useContext(DispatchContext);
   const [title, setTitle] = useState('');
   const { todos } = useContext(TodoContext);
-  // const state = useContext(TodoContext);
   const [isDisabled, setIsDisabled] = useState(false);
 
   const handleSubmit = useCallback(
@@ -25,23 +24,23 @@ export const Header: React.FC = () => {
       }
 
       if (title.trim()) {
-        dispatch({ type: 'setAdding', payload: { isAdded: true } });
         setIsDisabled(true);
 
         const temporaryId = +new Date();
 
-        const newTodo = {
+        const tempTodo = {
           id: temporaryId,
           title,
           userId: USER_ID,
           completed: false,
+          isLoading: true,
         };
 
-        dispatch({ type: 'addTodo', payload: { newTodo } });
+        dispatch({ type: 'addTodo', payload: { newTodo: tempTodo } });
 
         dispatch({
           type: 'setItemLoading',
-          payload: { id: newTodo.id, isLoading: true },
+          payload: { id: tempTodo.id, isLoading: true },
         });
 
         return addTodoToServer({ title, userId: USER_ID, completed: false })
@@ -50,15 +49,8 @@ export const Header: React.FC = () => {
               type: 'updateTodoId',
               payload: { temporaryId, serverId: createdTodo.id },
             });
-
-            dispatch({
-              type: 'setItemLoading',
-              payload: { id: createdTodo.id, isLoading: false },
-            });
           })
           .catch(error => {
-            dispatch({ type: 'deleteTodo', payload: { id: temporaryId } });
-
             dispatch({
               type: 'setError',
               payload: { errorMessage: 'Unable to add a todo' },
@@ -73,7 +65,6 @@ export const Header: React.FC = () => {
           })
           .finally(() => {
             setIsDisabled(false);
-            dispatch({ type: 'setAdding', payload: { isAdded: false } });
           });
       }
 
@@ -133,7 +124,6 @@ export const Header: React.FC = () => {
             setTitle(e.target.value);
           }}
           autoFocus
-          // ref={inputField}
         />
       </form>
     </header>

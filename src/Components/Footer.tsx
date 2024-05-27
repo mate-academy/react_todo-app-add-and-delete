@@ -8,7 +8,6 @@ export const Footer: React.FC = () => {
   const { dispatch } = useContext(DispatchContext);
   const { todos, tab } = useContext(TodoContext);
   const todosCounter = todos.filter(todo => !todo.completed);
-
   const handleClearTodos = () => {
     const todosCompleted = todos.filter(todo => todo.completed);
     const res = todosCompleted.map(todo => {
