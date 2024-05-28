@@ -4,6 +4,7 @@ import React, { useEffect, useMemo, useState } from 'react';
 import { UserWarning } from './UserWarning';
 import { Todo } from './types/Todo';
 import { client } from './utils/fetchClient';
+import { BottomButtons } from './utils/BottomButtons';
 
 const USER_ID = 700;
 
@@ -204,34 +205,12 @@ export const App: React.FC = () => {
           </span>
 
           {/* Active link should have the 'selected' class */}
-          <nav className="filter" data-cy="Filter">
-            <a
-              href="#/"
-              className={`filter__link ${filter === '' ? 'selected' : ''}`}
-              data-cy="FilterLinkAll"
-              onClick={handleFilterAll}
-            >
-              All
-            </a>
-
-            <a
-              href="#/active"
-              className={`filter__link ${filter === 'active' ? 'selected' : ''}`}
-              data-cy="FilterLinkActive"
-              onClick={handleFilterActive}
-            >
-              Active
-            </a>
-
-            <a
-              href="#/completed"
-              className={`filter__link ${filter === 'completed' ? 'selected' : ''}`}
-              data-cy="FilterLinkCompleted"
-              onClick={handleFilterCompleted}
-            >
-              Completed
-            </a>
-          </nav>
+          <BottomButtons
+            handleFilterAll={handleFilterAll}
+            handleFilterActive={handleFilterActive}
+            handleFilterCompleted={handleFilterCompleted}
+            filter={filter}
+          />
 
           {/* this button should be disabled if there are no completed todos */}
           <button
@@ -257,13 +236,34 @@ export const App: React.FC = () => {
           onClick={handleErrorClose}
         />
         {/* show only one message at a time */}
-        {error === 'Title should not be empty' && (
-          <p>Title should not be empty</p>
+        {error && (
+          <p>
+            {error === 'Title should not be empty'
+              ? 'Title should not be empty'
+              : error}
+          </p>
         )}
-        {error === 'Unable to add a todo' && <p>Unable to add a todo</p>}
-        {error === 'Unable to delete a todo' && <p>Unable to delete a todo</p>}
-        {error === 'Unable to update a todo' && <p>Unable to update a todo</p>}
-        {error === 'get' && <p>Unable to retrieve todos</p>}
+        {error && (
+          <p>
+            {error === 'Unable to add a todo' ? 'Unable to add a todo' : error}
+          </p>
+        )}
+        {error && (
+          <p>
+            {error === 'Unable to delete a todo'
+              ? 'Unable to delete a todo'
+              : error}
+          </p>
+        )}
+
+        {error && (
+          <p>
+            {error === 'Unable to update a todo'
+              ? 'Unable to update a todo'
+              : error}
+          </p>
+        )}
+        {error && <p>{error === 'get' ? 'Unable to retrieve todos' : error}</p>}
       </div>
     </div>
   );
