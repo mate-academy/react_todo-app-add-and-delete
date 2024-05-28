@@ -7,7 +7,7 @@ import { deleteTodoFromServer } from '../api/todos';
 export const Footer: React.FC = () => {
   const { dispatch } = useContext(DispatchContext);
   const { todos, tab } = useContext(TodoContext);
-  const todosCounter = todos.filter(todo => !todo.completed);
+  const todosCounter = todos.filter(todo => !todo.completed && !todo.isLoading);
   const handleClearTodos = () => {
     const todosCompleted = todos.filter(todo => todo.completed);
     const res = todosCompleted.map(todo => {

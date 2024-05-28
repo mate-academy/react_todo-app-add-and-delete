@@ -6,8 +6,8 @@ interface State {
   todos: Todo[];
   tab: SortingTodos;
   error: string;
-  isLoading: boolean;
   isLoadingItems: { [key: number]: boolean };
+  isLoading: boolean;
 }
 
 type Action =
@@ -30,8 +30,8 @@ const initialState: State = {
   todos: [],
   tab: SortingTodos.all,
   error: '',
-  isLoading: false,
   isLoadingItems: {},
+  isLoading: false,
 };
 
 const deleteTodo = (state: State, id: number): State => {
@@ -193,10 +193,10 @@ type Props = {
 export const GlobalContext: React.FC<Props> = ({ children }) => {
   const [state, dispatch] = useReducer(reducer, initialState);
 
-  const resetErrorMessage = () => {
+  const resetErrorMessage = (delay = 3000) => {
     setTimeout(() => {
       dispatch({ type: 'clearError' });
-    }, 3000);
+    }, delay);
   };
 
   return (

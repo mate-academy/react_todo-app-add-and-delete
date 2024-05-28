@@ -1,4 +1,10 @@
-import React, { useCallback, useContext, useState } from 'react';
+import React, {
+  useCallback,
+  useContext,
+  useEffect,
+  useRef,
+  useState,
+} from 'react';
 import { addTodoToServer, updateTodo, USER_ID } from '../api/todos';
 import { UserWarning } from '../UserWarning';
 import { DispatchContext, TodoContext } from './TodoContext';
@@ -9,11 +15,11 @@ export const Header: React.FC = () => {
   const [title, setTitle] = useState('');
   const { todos } = useContext(TodoContext);
   const [isDisabled, setIsDisabled] = useState(false);
-
+  const state = useContext(TodoContext);
   const handleSubmit = useCallback(
     (event: React.FormEvent) => {
+      dispatch({ type: 'clearError' });
       event.preventDefault();
-
       if (title.trim().length === 0) {
         dispatch({
           type: 'setError',
@@ -36,18 +42,27 @@ export const Header: React.FC = () => {
           isLoading: true,
         };
 
-        dispatch({ type: 'addTodo', payload: { newTodo: tempTodo } });
+        dispatch({ type: 'addTempTodo', payload: { tempTodo: tempTodo } });
 
         dispatch({
           type: 'setItemLoading',
           payload: { id: tempTodo.id, isLoading: true },
         });
 
-        return addTodoToServer({ title, userId: USER_ID, completed: false })
+        return addTodoToServer({
+          title: title.trim(),
+          userId: USER_ID,
+          completed: false,
+          isLoading: false,
+        })
           .then(createdTodo => {
             dispatch({
               type: 'updateTodoId',
               payload: { temporaryId, serverId: createdTodo.id },
+            });
+            dispatch({
+              type: 'updateTodo',
+              payload: { updatedTodo: { ...createdTodo, isLoading: false } },
             });
           })
           .catch(error => {
@@ -57,6 +72,8 @@ export const Header: React.FC = () => {
             });
 
             resetErrorMessage();
+
+            dispatch({ type: 'deleteTodo', payload: { id: temporaryId } });
 
             throw error;
           })
@@ -72,6 +89,14 @@ export const Header: React.FC = () => {
     },
     [title, dispatch, resetErrorMessage],
   );
+
+  const inputField = useRef<HTMLInputElement>(null);
+
+  useEffect(() => {
+    if (inputField.current) {
+      inputField.current.focus();
+    }
+  }, [state]);
 
   const handleToggleAll = () => {
     const areAllCompleted = todos.every(todo => todo.completed);
@@ -123,7 +148,7 @@ export const Header: React.FC = () => {
           onChange={e => {
             setTitle(e.target.value);
           }}
-          autoFocus
+          ref={inputField}
         />
       </form>
     </header>

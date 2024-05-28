@@ -13,8 +13,7 @@ export const TodoInfo: React.FC<Props> = ({ todo }) => {
   const [isEditing, setIsEditing] = useState(false);
   const [editedTitle, setEditedTitle] = useState(todo.title);
   const { dispatch } = useContext(DispatchContext);
-  // const [loading, setLoading] = useState(false);
-  const { todos, isLoading, isAdded, isLoadingItems } = useContext(TodoContext);
+  const { todos, isLoading, isLoadingItems } = useContext(TodoContext);
 
   // useEffect(() => {}, [isLoadingItem]);
 
@@ -31,6 +30,7 @@ export const TodoInfo: React.FC<Props> = ({ todo }) => {
       userId: USER_ID,
       title: todo.title,
       completed: newStatus,
+      isLoading: todo.isLoading,
     })
       .then(updatedTodo => {
         dispatch({
@@ -55,6 +55,7 @@ export const TodoInfo: React.FC<Props> = ({ todo }) => {
         userId: USER_ID,
         title: trimmedTitle,
         completed: todo.completed,
+        isLoading: todo.isLoading,
       })
         .then(() => {
           dispatch({
@@ -96,15 +97,35 @@ export const TodoInfo: React.FC<Props> = ({ todo }) => {
     setIsEditing(true);
   };
 
-  const handleClick = () => {
-    dispatch({ type: 'deleteTodo', payload: { id: todo.id } });
-    deleteTodoFromServer(todo.id).catch(() => {
-      dispatch({ type: 'setTodos', payload: todos });
-      dispatch({
-        type: 'setError',
-        payload: { errorMessage: 'Unable to delete a todo' },
-      });
+  const handleClick = (todoDelete: Todo) => {
+    const currentTodos = [...todos];
+
+    dispatch({
+      type: 'setItemLoading',
+      payload: { id: todoDelete.id, isLoading: true },
     });
+
+    deleteTodoFromServer(todo.id)
+      .then(() => {
+        dispatch({ type: 'deleteTodo', payload: { id: todoDelete.id } });
+      })
+      .catch(() => {
+        dispatch({
+          type: 'setError',
+          payload: { errorMessage: 'Unable to delete a todo' },
+        });
+
+        dispatch({
+          type: 'setTodos',
+          payload: currentTodos,
+        });
+      })
+      .finally(() => {
+        dispatch({
+          type: 'setItemLoading',
+          payload: { id: todoDelete.id, isLoading: false },
+        });
+      });
   };
 
   return (
@@ -114,7 +135,6 @@ export const TodoInfo: React.FC<Props> = ({ todo }) => {
           data-cy="Todo"
           className={classNames('todo', {
             completed: todo.completed,
-            'temp-item-enter-active': isAdded,
           })}
         >
           {/* eslint-disable-next-line jsx-a11y/label-has-associated-control */}
@@ -155,7 +175,7 @@ export const TodoInfo: React.FC<Props> = ({ todo }) => {
                 type="button"
                 className="todo__remove"
                 data-cy="TodoDelete"
-                onClick={handleClick}
+                onClick={() => handleClick(todo)}
               >
                 ×
               </button>
