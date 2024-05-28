@@ -8,14 +8,77 @@ export const Footer: React.FC = () => {
   const { dispatch } = useContext(DispatchContext);
   const { todos, tab } = useContext(TodoContext);
   const todosCounter = todos.filter(todo => !todo.completed && !todo.isLoading);
+
+  // const handleClearTodos = () => {
+  //   const todosCompleted = todos.filter(todo => todo.completed);
+  //   const res = todosCompleted.map(todo => {
+  //     deleteTodoFromServer(todo.id).then(() => {
+  //       Promise.all(res).then(() => {
+  //         dispatch({ type: 'clearCompleted' });
+  //       });
+  //     });
+  //   });
+  //
+  //   todosCompleted.map(todo =>
+  //     dispatch({type: 'setItemLoading', payload: {id: todo.id, isLoading: true})
+  //
+  //     deleteTodoFromServer(todo.id)
+  //       .then(() => {
+  //         dispatch({ type: 'deleteTodo', payload: { id: todo.id } });
+  //       })
+  //       .catch(() => {
+  //         dispatch({
+  //           type: 'setError',
+  //           payload: { errorMessage: 'Unable to delete a todo' },
+  //         });
+  //
+  //         dispatch({
+  //           type: 'setTodos',
+  //           payload: todos,
+  //         });
+  //       }),
+  //   );
+  // };
   const handleClearTodos = () => {
     const todosCompleted = todos.filter(todo => todo.completed);
-    const res = todosCompleted.map(todo => {
-      deleteTodoFromServer(todo.id).then(() => {
-        Promise.all(res).then(() => {
-          dispatch({ type: 'clearCompleted' });
-        });
+    const updatedTodos = [...todos];
+
+    todosCompleted.forEach(todo => {
+      dispatch({
+        type: 'setItemLoading',
+        payload: { id: todo.id, isLoading: true },
       });
+
+      deleteTodoFromServer(todo.id)
+        .then(() => {
+          dispatch({ type: 'deleteTodo', payload: { id: todo.id } });
+
+          // Check if all completed todos are deleted
+          if (
+            todosCompleted.every(
+              _todo => !updatedTodos.some(t => t.id === _todo.id),
+            )
+          ) {
+            dispatch({ type: 'clearCompleted' });
+          }
+        })
+        .catch(() => {
+          dispatch({
+            type: 'setError',
+            payload: { errorMessage: 'Unable to delete a todo' },
+          });
+        })
+        .finally(() => {
+          dispatch({
+            type: 'setItemLoading',
+            payload: { id: todo.id, isLoading: false },
+          });
+        });
+    });
+
+    dispatch({
+      type: 'setTodos',
+      payload: updatedTodos,
     });
   };
 

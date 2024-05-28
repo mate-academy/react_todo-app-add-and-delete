@@ -106,10 +106,7 @@ export const TodoInfo: React.FC<Props> = ({ todo }) => {
     });
 
     deleteTodoFromServer(todo.id)
-      .then(() => {
-        dispatch({ type: 'deleteTodo', payload: { id: todoDelete.id } });
-      })
-      .catch(() => {
+      .catch(error => {
         dispatch({
           type: 'setError',
           payload: { errorMessage: 'Unable to delete a todo' },
@@ -119,6 +116,11 @@ export const TodoInfo: React.FC<Props> = ({ todo }) => {
           type: 'setTodos',
           payload: currentTodos,
         });
+
+        throw error;
+      })
+      .then(() => {
+        dispatch({ type: 'deleteTodo', payload: { id: todoDelete.id } });
       })
       .finally(() => {
         dispatch({
