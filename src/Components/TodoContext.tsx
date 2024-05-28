@@ -162,13 +162,6 @@ function reducer(state: State, action: Action): State {
       };
     }
 
-    // case 'setAdding': {
-    //   return {
-    //     ...state,
-    //     isAdded: action.payload.isAdded,
-    //   };
-    // }
-
     default: {
       return state;
     }

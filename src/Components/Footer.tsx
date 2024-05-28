@@ -9,36 +9,6 @@ export const Footer: React.FC = () => {
   const { todos, tab } = useContext(TodoContext);
   const todosCounter = todos.filter(todo => !todo.completed && !todo.isLoading);
 
-  // const handleClearTodos = () => {
-  //   const todosCompleted = todos.filter(todo => todo.completed);
-  //   const res = todosCompleted.map(todo => {
-  //     deleteTodoFromServer(todo.id).then(() => {
-  //       Promise.all(res).then(() => {
-  //         dispatch({ type: 'clearCompleted' });
-  //       });
-  //     });
-  //   });
-  //
-  //   todosCompleted.map(todo =>
-  //     dispatch({type: 'setItemLoading', payload: {id: todo.id, isLoading: true})
-  //
-  //     deleteTodoFromServer(todo.id)
-  //       .then(() => {
-  //         dispatch({ type: 'deleteTodo', payload: { id: todo.id } });
-  //       })
-  //       .catch(() => {
-  //         dispatch({
-  //           type: 'setError',
-  //           payload: { errorMessage: 'Unable to delete a todo' },
-  //         });
-  //
-  //         dispatch({
-  //           type: 'setTodos',
-  //           payload: todos,
-  //         });
-  //       }),
-  //   );
-  // };
   const handleClearTodos = () => {
     const todosCompleted = todos.filter(todo => todo.completed);
     const updatedTodos = [...todos];

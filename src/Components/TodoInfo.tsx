@@ -15,8 +15,6 @@ export const TodoInfo: React.FC<Props> = ({ todo }) => {
   const { dispatch } = useContext(DispatchContext);
   const { todos, isLoading, isLoadingItems } = useContext(TodoContext);
 
-  // useEffect(() => {}, [isLoadingItem]);
-
   const handleCheckBoxChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const newStatus = e.target.checked;
 
