@@ -72,9 +72,7 @@ export const Footer: React.FC = () => {
             selected: tab === SortingTodos.all,
           })}
           data-cy="FilterLinkAll"
-          onClick={() => {
-            handleActiveTab(SortingTodos.all);
-          }}
+          onClick={() => handleActiveTab(SortingTodos.all)}
         >
           All
         </a>
@@ -85,9 +83,7 @@ export const Footer: React.FC = () => {
             selected: tab === SortingTodos.active,
           })}
           data-cy="FilterLinkActive"
-          onClick={() => {
-            handleActiveTab(SortingTodos.active);
-          }}
+          onClick={() => handleActiveTab(SortingTodos.active)}
         >
           Active
         </a>
@@ -98,9 +94,7 @@ export const Footer: React.FC = () => {
             selected: tab === SortingTodos.completed,
           })}
           data-cy="FilterLinkCompleted"
-          onClick={() => {
-            handleActiveTab(SortingTodos.completed);
-          }}
+          onClick={() => handleActiveTab(SortingTodos.completed)}
         >
           Completed
         </a>

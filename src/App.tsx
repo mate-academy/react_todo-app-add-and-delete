@@ -25,16 +25,18 @@ export const App: React.FC = () => {
 
         resetErrorMessage();
       });
-  }, []);
+  }, [dispatch, resetErrorMessage]);
 
   const { todos, tab } = useContext(TodoContext);
 
   const filteredTodos = useMemo((): Todo[] => {
     switch (tab) {
       case SortingTodos.completed:
-        return todos.filter(t => t.completed);
+        return todos.filter(todo => todo.completed);
+
       case SortingTodos.active:
-        return todos.filter(t => !t.completed);
+        return todos.filter(todo => !todo.completed);
+
       default:
         return todos;
     }
@@ -54,7 +56,7 @@ export const App: React.FC = () => {
           <TodoList todos={filteredTodos} />
         </section>
 
-        {todos.length !== 0 && <Footer />}
+        {!!todos.length && <Footer />}
       </div>
 
       <div

@@ -36,6 +36,7 @@ export const TodoInfo: React.FC<Props> = ({ todo }) => {
           payload: { updatedTodo },
         });
       })
+
       .finally(() => {
         dispatch({
           type: 'setItemLoading',
@@ -61,6 +62,7 @@ export const TodoInfo: React.FC<Props> = ({ todo }) => {
             payload: { updatedTodo: { ...todo, title: trimmedTitle } },
           });
         })
+
         .catch(() => {
           dispatch({
             type: 'setError',
@@ -159,6 +161,7 @@ export const TodoInfo: React.FC<Props> = ({ todo }) => {
                 onChange={e => setEditedTitle(e.target.value)}
                 onBlur={saveChanges}
                 onKeyUp={handleKeyUp}
+                autoFocus
               />
             </form>
           ) : (

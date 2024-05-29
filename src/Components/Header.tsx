@@ -65,6 +65,7 @@ export const Header: React.FC = () => {
               payload: { updatedTodo: { ...createdTodo, isLoading: false } },
             });
           })
+
           .catch(error => {
             dispatch({
               type: 'setError',
@@ -77,12 +78,10 @@ export const Header: React.FC = () => {
 
             throw error;
           })
-          .then(() => {
-            setTitle('');
-          })
-          .finally(() => {
-            setIsDisabled(false);
-          });
+
+          .then(() => setTitle(''))
+
+          .finally(() => setIsDisabled(false));
       }
 
       return null;
@@ -126,7 +125,7 @@ export const Header: React.FC = () => {
 
   return (
     <header className="todoapp__header">
-      {todos.length > 0 && (
+      {!!todos.length && (
         <button
           type="button"
           className={classNames('todoapp__toggle-all', {
@@ -145,9 +144,7 @@ export const Header: React.FC = () => {
           type="text"
           className="todoapp__new-todo"
           placeholder="What needs to be done?"
-          onChange={e => {
-            setTitle(e.target.value);
-          }}
+          onChange={e => setTitle(e.target.value)}
           ref={inputField}
         />
       </form>

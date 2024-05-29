@@ -1,4 +1,4 @@
-import React, { useReducer } from 'react';
+import React, { useCallback, useReducer } from 'react';
 import { Todo } from '../types/Todo';
 import { SortingTodos } from '../types/Sorting';
 
@@ -157,7 +157,7 @@ function reducer(state: State, action: Action): State {
         ...state,
         isLoadingItems: {
           ...state.isLoadingItems,
-          [action.payload.id]: action.payload.isLoading, // Set loading state for specific item
+          [action.payload.id]: action.payload.isLoading,
         },
       };
     }
@@ -186,11 +186,11 @@ type Props = {
 export const GlobalContext: React.FC<Props> = ({ children }) => {
   const [state, dispatch] = useReducer(reducer, initialState);
 
-  const resetErrorMessage = (delay = 3000) => {
+  const resetErrorMessage = useCallback((delay = 3000) => {
     setTimeout(() => {
       dispatch({ type: 'clearError' });
     }, delay);
-  };
+  }, []);
 
   return (
     <DispatchContext.Provider value={{ dispatch, resetErrorMessage }}>
