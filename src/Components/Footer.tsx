@@ -23,7 +23,6 @@ export const Footer: React.FC = () => {
         .then(() => {
           dispatch({ type: 'deleteTodo', payload: { id: todo.id } });
 
-          // Check if all completed todos are deleted
           if (
             todosCompleted.every(
               _todo => !updatedTodos.some(t => t.id === _todo.id),
