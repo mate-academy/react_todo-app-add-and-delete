@@ -1,26 +1,79 @@
-/* eslint-disable max-len */
-/* eslint-disable jsx-a11y/control-has-associated-label */
-import React from 'react';
-import { UserWarning } from './UserWarning';
-
-const USER_ID = 0;
+import React, { useContext, useEffect, useMemo } from 'react';
+import { Header } from './Components/Header';
+import { TodoList } from './Components/TodoList';
+import { Todo } from './types/Todo';
+import { SortingTodos } from './types/Sorting';
+import { Footer } from './Components/Footer';
+import { DispatchContext, TodoContext } from './Components/TodoContext';
+import { getTodos } from './api/todos';
+import classNames from 'classnames';
 
 export const App: React.FC = () => {
-  if (!USER_ID) {
-    return <UserWarning />;
-  }
+  const { dispatch, resetErrorMessage } = useContext(DispatchContext);
+  const { error } = useContext(TodoContext);
+
+  useEffect(() => {
+    getTodos()
+      .then(data => {
+        dispatch({ type: 'setTodos', payload: data });
+      })
+      .catch(() => {
+        dispatch({
+          type: 'setError',
+          payload: { errorMessage: 'Unable to load todos' },
+        });
+
+        resetErrorMessage();
+      });
+  }, [dispatch, resetErrorMessage]);
+
+  const { todos, tab } = useContext(TodoContext);
+
+  const filteredTodos = useMemo((): Todo[] => {
+    switch (tab) {
+      case SortingTodos.completed:
+        return todos.filter(todo => todo.completed);
+
+      case SortingTodos.active:
+        return todos.filter(todo => !todo.completed);
+
+      default:
+        return todos;
+    }
+  }, [todos, tab]);
+
+  const resetErrorMessageOnClick = () => {
+    dispatch({ type: 'setError', payload: { errorMessage: '' } });
+  };
 
   return (
-    <section className="section container">
-      <p className="title is-4">
-        Copy all you need from the prev task:
-        <br />
-        <a href="https://github.com/mate-academy/react_todo-app-loading-todos#react-todo-app-load-todos">
-          React Todo App - Load Todos
-        </a>
-      </p>
+    <div className="todoapp">
+      <h1 className="todoapp__title">todos</h1>
 
-      <p className="subtitle">Styles are already copied</p>
-    </section>
+      <div className="todoapp__content">
+        <Header />
+        <section className="todoapp__main" data-cy="TodoList">
+          <TodoList todos={filteredTodos} />
+        </section>
+
+        {!!todos.length && <Footer />}
+      </div>
+
+      <div
+        data-cy="ErrorNotification"
+        className={classNames(
+          'notification is-danger is-light has-text-weight-normal',
+          { hidden: !error },
+        )}
+      >
+        <button
+          data-cy="HideErrorButton"
+          type="button"
+          className="delete"
+          onClick={resetErrorMessageOnClick}
+        />
+        {error}
+      </div>
+    </div>
   );
 };
