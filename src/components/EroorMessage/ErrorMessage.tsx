@@ -14,7 +14,7 @@ export const ErrorMessage: React.FC<Props> = ({
       data-cy="ErrorNotification"
       className={classNames(
         'notification is-danger is-light has-text-weight-normal',
-        { hidden: errorMessage.length === 0 },
+        { hidden: !errorMessage.length },
       )}
     >
       <button

@@ -56,6 +56,11 @@ export const TodoInput: React.FC<Props> = ({
     completed: false,
   };
 
+  const handleSubmit = (event: React.FormEvent<HTMLFormElement>) => {
+    event.preventDefault();
+    addTodo(todoToCreate);
+  };
+
   useEffect(() => {
     if (title !== '') {
       setErrorMessage('');
@@ -77,12 +82,7 @@ export const TodoInput: React.FC<Props> = ({
         data-cy="ToggleAllButton"
       />
 
-      <form
-        onSubmit={event => {
-          event.preventDefault();
-          addTodo(todoToCreate);
-        }}
-      >
+      <form onSubmit={handleSubmit}>
         <input
           ref={inputRef}
           disabled={isLoading}

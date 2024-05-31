@@ -12,7 +12,7 @@ export const createTodo = (data: Omit<Todo, 'id'>) => {
 };
 
 export const deleteTodo = (id: number) => {
-  return client.delete(`/todos/${id}`);
+  return client.delete<Todo>(`/todos/${id}`);
 };
 
 // Add more methods here

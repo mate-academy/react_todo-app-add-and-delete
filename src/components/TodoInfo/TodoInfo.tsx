@@ -1,5 +1,5 @@
+/* eslint-disable react-hooks/exhaustive-deps */
 /* eslint-disable jsx-a11y/label-has-associated-control */
-/* eslint-disable @typescript-eslint/no-unused-vars */
 import { useEffect, useState } from 'react';
 import { Todo } from '../../types/Todo';
 import classNames from 'classnames';
@@ -53,13 +53,13 @@ export const TodoInfo: React.FC<Props> = ({
   const switchCompleted = () => {};
 
   useEffect(() => {
-    for (let i = 0; i < todosToDelete.length; i++) {
-      if (todo.id === todosToDelete[i]) {
+    todosToDelete.forEach((idToDelete, index) => {
+      if (todo.id === idToDelete) {
         handleDelete();
-        setTodosToDelete(prev => prev.splice(i, 1));
+        setTodosToDelete(prev => prev.filter((_, i) => i !== index));
       }
-    }
-  }, [todosToDelete]);
+    });
+  }, [todosToDelete, todo.id, setTodosToDelete]);
 
   return (
     <div
