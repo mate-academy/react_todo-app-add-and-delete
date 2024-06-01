@@ -28,7 +28,7 @@ export const TodoFooter: React.FC<Props> = ({
 
   return (
     <>
-      {!!todos.length ? (
+      {!!todos.length && (
         <footer className="todoapp__footer" data-cy="Footer">
           <span className="todo-count" data-cy="TodosCounter">
             {`${todosLeft} item${todos.length === 1 ? '' : 's'} left`}
@@ -81,8 +81,6 @@ export const TodoFooter: React.FC<Props> = ({
             Clear completed
           </button>
         </footer>
-      ) : (
-        <div> </div>
       )}
     </>
   );

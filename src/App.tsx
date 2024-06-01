@@ -20,6 +20,8 @@ export const App: React.FC = () => {
   const inputRef = useRef<HTMLInputElement>(null);
   const [todosToDelete, setTodosToDelete] = useState<number[]>([]);
 
+  const getTodos = client.get<Todo[]>(`/todos?userId=${USER_ID}`);
+
   const getFilteredTodos = () => {
     switch (filter) {
       case Filter.Active:
@@ -34,12 +36,9 @@ export const App: React.FC = () => {
   const todosToRender = getFilteredTodos();
 
   useEffect(() => {
-    client
-      .get<Todo[]>(`/todos?userId=${USER_ID}`)
-      .then(setTodos)
-      .catch(() => {
-        setErrorMessage('Unable to load todos');
-      });
+    getTodos.then(setTodos).catch(() => {
+      setErrorMessage('Unable to load todos');
+    });
   }, []);
 
   useEffect(() => {
