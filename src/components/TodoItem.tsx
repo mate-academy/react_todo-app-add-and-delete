@@ -35,31 +35,20 @@ export const TodoItem: React.FC<TodoItemProps> = ({
           onChange={() => {}}
         />
       </label>
-      {true ? (
-        <>
-          <span data-cy="TodoTitle" className="todo__title">
-            {title}
-          </span>
+      <span data-cy="TodoTitle" className="todo__title">
+        {title}
+      </span>
 
-          <button
-            type="button"
-            className="todo__remove"
-            data-cy="TodoDelete"
-            onClick={handleTodoDeleteButton}
-            disabled={isSubmitting}
-          >
-            ×
-          </button>
-        </>
-      ) : (
-        <form>
-          <input
-            data-cy="TodoTitleField"
-            type="text"
-            className="todo__title-field"
-          />
-        </form>
-      )}
+      <button
+        type="button"
+        className="todo__remove"
+        data-cy="TodoDelete"
+        onClick={handleTodoDeleteButton}
+        disabled={isSubmitting}
+      >
+        ×
+      </button>
+
       <div
         data-cy="TodoLoader"
         className={`modal overlay ${isLoading ? 'is-active' : ''}`}

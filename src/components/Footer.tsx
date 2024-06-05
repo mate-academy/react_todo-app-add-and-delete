@@ -6,12 +6,14 @@ interface FooterProps {
   todos: Todo[];
   selectedFilter: Status;
   setSelectedFilter: (filterBy: Status) => void;
+  onClearCompleted: () => void;
 }
 
 export const Footer: React.FC<FooterProps> = ({
   todos,
   selectedFilter,
   setSelectedFilter,
+  onClearCompleted,
 }) => {
   const isActiveTodos = todos.filter(todo => !todo.completed).length;
   const completedTodos = todos.filter(todo => todo.completed).length;
@@ -47,6 +49,7 @@ export const Footer: React.FC<FooterProps> = ({
         className="todoapp__clear-completed"
         data-cy="ClearCompletedButton"
         disabled={!completedTodos}
+        onClick={onClearCompleted}
       >
         Clear completed
       </button>

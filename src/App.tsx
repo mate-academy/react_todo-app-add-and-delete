@@ -20,10 +20,17 @@ export const App: React.FC = () => {
 
   const inputRef = useRef<HTMLInputElement | null>(null);
 
-  const showError = (message: string) => {
-    setError(message);
-    setTimeout(() => setError(null), 3000);
-  };
+  useEffect(() => {
+    if (error !== '') {
+      const timer = setTimeout(() => {
+        setError('');
+      }, 3000);
+
+      return () => clearTimeout(timer);
+    }
+
+    return;
+  }, [error]);
 
   const removeTempTodo = () => {
     setTempTodo(null);
@@ -31,11 +38,9 @@ export const App: React.FC = () => {
 
   useEffect(() => {
     getTodos()
-      .then(todosData => {
-        setTodos(todosData);
-      })
+      .then(setTodos)
       .catch(() => {
-        showError(errors.load);
+        setError(errors.load);
       });
   }, []);
 
@@ -62,11 +67,11 @@ export const App: React.FC = () => {
         setTempTodo(null);
       })
       .catch(catchError => {
-        removeTempTodo();
-        showError(errors.add);
+        setError(errors.add);
         throw catchError;
       })
       .finally(() => {
+        removeTempTodo();
         setIsSubmitting(false);
         setLoadingTodos(prevLoadingTodos =>
           prevLoadingTodos.filter(todoId => todoId !== 0),
@@ -76,6 +81,33 @@ export const App: React.FC = () => {
         }
       });
   }
+
+  const handleDeleteTodo = (todoId: number) => {
+    setLoadingTodos(curr => [...curr, todoId]);
+    setError('');
+
+    return todoServise
+      .deleteTodos(todoId)
+      .then(() =>
+        setTodos(currTodos => currTodos.filter(todo => todo.id !== todoId)),
+      )
+      .catch(() => {
+        setError(errors.delete);
+      })
+      .finally(() => {
+        setLoadingTodos(curr =>
+          curr.filter(deletingTodoId => todoId !== deletingTodoId),
+        );
+        if (inputRef.current) {
+          inputRef.current.focus();
+        }
+      });
+  };
+
+  const completedTodos = todos.filter(todo => todo.completed);
+  const deleteAllComleted = () => {
+    completedTodos.forEach(todo => handleDeleteTodo(todo.id));
+  };
 
   return (
     <div className="todoapp">
@@ -96,13 +128,12 @@ export const App: React.FC = () => {
         {todos.length !== 0 && (
           <TodoList
             todos={todos}
-            setTodos={setTodos}
             selectedFilter={selectedFilter}
-            setError={setError}
             isSubmitting={isSubmitting}
             setIsSubmitting={setIsSubmitting}
             tempTodo={tempTodo}
             loadingTodos={loadingTodos}
+            onDelete={handleDeleteTodo}
           />
         )}
 
@@ -111,6 +142,7 @@ export const App: React.FC = () => {
             todos={todos}
             selectedFilter={selectedFilter}
             setSelectedFilter={setSelectedFilter}
+            onClearCompleted={deleteAllComleted}
           />
         )}
       </div>
