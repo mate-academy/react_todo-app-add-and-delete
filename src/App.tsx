@@ -7,6 +7,7 @@ import { Header } from './components/Header';
 import { errors } from './constans/Errors';
 import { TodoList } from './components/TodoList';
 import { Footer } from './components/Footer';
+import { Errors } from './components/Errors';
 import { Status } from './types/Status';
 import * as todoServise from './api/todos';
 
@@ -19,18 +20,6 @@ export const App: React.FC = () => {
   const [loadingTodos, setLoadingTodos] = useState<number[]>([]);
 
   const inputRef = useRef<HTMLInputElement | null>(null);
-
-  useEffect(() => {
-    if (error !== '') {
-      const timer = setTimeout(() => {
-        setError('');
-      }, 3000);
-
-      return () => clearTimeout(timer);
-    }
-
-    return;
-  }, [error]);
 
   const removeTempTodo = () => {
     setTempTodo(null);
@@ -146,20 +135,7 @@ export const App: React.FC = () => {
           />
         )}
       </div>
-
-      <div
-        data-cy="ErrorNotification"
-        className={`notification is-danger is-light has-text-weight-normal ${error ? '' : 'hidden'}`}
-      >
-        <button
-          data-cy="HideErrorButton"
-          type="button"
-          className="delete"
-          onClick={() => setError(null)}
-          disabled={isSubmitting}
-        />
-        {error}
-      </div>
+      <Errors error={error} setError={setError} isSubmitting={isSubmitting} />
     </div>
   );
 };
