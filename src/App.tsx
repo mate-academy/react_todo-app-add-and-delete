@@ -8,11 +8,12 @@ import { Footer } from './components/footer/footer';
 import { ToDoList } from './components/todoList/todoList';
 import { Header } from './components/header/header';
 import { Todo } from './types/Todo';
+import { Status } from './types/status';
 
 export const App: React.FC = () => {
   const [todos, setTodos] = useState<Todo[]>([]);
   const [errorMessage, setErrorMessage] = useState('');
-  const [status, setStatus] = useState('all');
+  const [status, setStatus] = useState('');
   const [idTodo, setIdTodo] = useState(0);
   const [newTodo, setNewTodo] = useState({
     userId: USER_ID,
@@ -24,14 +25,11 @@ export const App: React.FC = () => {
     getTodos()
       .then(todosFromServer => {
         switch (status) {
-          case 'all':
-            setTodos(todosFromServer);
-            break;
-          case 'active':
+          case Status.active:
             setTodos(todosFromServer.filter(todo => !todo.completed));
             break;
 
-          case 'completed':
+          case Status.completed:
             setTodos(todosFromServer.filter(todo => todo.completed));
             break;
 
@@ -126,9 +124,9 @@ export const App: React.FC = () => {
           onError={setErrorMessage}
         />
 
-        <ToDoList list={todos} onDelete={onDeleteTodo} id={idTodo} />
+        <ToDoList list={todos} onDelete={onDeleteTodo} idTodo={idTodo} />
 
-        {todos.length > 0 && (
+        {!!todos.length && (
           <Footer
             onClick={setStatus}
             status={status}

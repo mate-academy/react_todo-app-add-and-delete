@@ -1,4 +1,6 @@
+import classNames from 'classnames';
 import { Todo } from '../../types/Todo';
+import { Status } from '../../types/status';
 
 type Props = {
   onClick: (status: string) => void;
@@ -25,27 +27,31 @@ export const Footer: React.FC<Props> = ({
       <nav className="filter" data-cy="Filter">
         <a
           href="#/"
-          className={`filter__link ${status === 'all' && 'selected'}`}
+          className={classNames('filter__link', { selected: !status })}
           data-cy="FilterLinkAll"
-          onClick={() => onClick('all')}
+          onClick={() => onClick('')}
         >
           All
         </a>
 
         <a
           href="#/active"
-          className={`filter__link ${status === 'active' && 'selected'}`}
+          className={classNames('filter__link', {
+            selected: status === 'active',
+          })}
           data-cy="FilterLinkActive"
-          onClick={() => onClick('active')}
+          onClick={() => onClick(Status.active)}
         >
           Active
         </a>
 
         <a
           href="#/completed"
-          className={`filter__link ${status === 'completed' && 'selected'}`}
+          className={classNames('filter__link', {
+            selected: status === 'completed',
+          })}
           data-cy="FilterLinkCompleted"
-          onClick={() => onClick('completed')}
+          onClick={() => onClick(Status.completed)}
         >
           Completed
         </a>

@@ -1,3 +1,4 @@
+import classNames from 'classnames';
 import React from 'react';
 
 type Props = {
@@ -9,12 +10,15 @@ export const Errors: React.FC<Props> = ({ errorMessage, onClose }) => {
   return (
     <div
       data-cy="ErrorNotification"
-      className={`notification is-danger is-light has-text-weight-normal ${!errorMessage && 'hidden'}`}
+      className={classNames(
+        'notification is-danger is-light has-text-weight-normal',
+        { hidden: !errorMessage },
+      )}
     >
       <button
         data-cy="HideErrorButton"
         type="button"
-        className={`delete ${!errorMessage && 'hidden'}`}
+        className={classNames('delete', { hidden: !errorMessage })}
         onClick={() => onClose('')}
       />
       {errorMessage}
