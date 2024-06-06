@@ -1,5 +1,6 @@
 import React, { useReducer } from 'react';
 import { Todo } from '../types/Todo';
+import { ActionType, Actions } from './types/Actions';
 
 export interface TodoState {
   todos: Todo[];
@@ -10,34 +11,6 @@ export const TodoContext = React.createContext<TodoState>({
   todos: [],
   dispatch: () => {},
 });
-
-export enum ActionType {
-  GET = 'GET',
-  ADD = 'ADD',
-  DELETE = 'DELETE',
-  SET = 'SET',
-}
-
-export type GetAction = {
-  type: ActionType.GET;
-};
-
-export type SetAction = {
-  type: ActionType.SET;
-  payload: Todo[];
-};
-
-export type AddAction = {
-  type: ActionType.ADD;
-  payload: Todo;
-};
-
-export type DeleteAction = {
-  type: ActionType.DELETE;
-  payload: number;
-};
-
-export type Actions = GetAction | AddAction | DeleteAction | SetAction;
 
 const reducer = (state: Todo[], action: Actions): Todo[] => {
   switch (action.type) {

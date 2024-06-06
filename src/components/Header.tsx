@@ -2,8 +2,9 @@
 import { useContext, useState } from 'react';
 import { USER_ID, addPost } from '../api/todos';
 import { Todo } from '../types/Todo';
-import { ActionType, TodoContext } from '../contexts/TodoContext';
+import { TodoContext } from '../contexts/TodoContext';
 import { ErrorContext } from '../contexts/ErrorContext';
+import { ActionType } from '../contexts/types/Actions';
 
 export interface HeaderType {
   inputRef: React.RefObject<HTMLInputElement>;
@@ -56,6 +57,10 @@ export const Header: React.FC<HeaderType> = ({ inputRef }) => {
       });
   };
 
+  const changeValueInput = (e: React.ChangeEvent<HTMLInputElement>) => {
+    setTodoTitle(e.target.value);
+  };
+
   return (
     <header className="todoapp__header">
       {/* this button should have `active` class only if all todos are completed */}
@@ -71,7 +76,7 @@ export const Header: React.FC<HeaderType> = ({ inputRef }) => {
           type="text"
           ref={inputRef}
           value={todoTitle}
-          onChange={e => setTodoTitle(e.target.value)}
+          onChange={changeValueInput}
           className="todoapp__new-todo"
           placeholder="What needs to be done?"
         />

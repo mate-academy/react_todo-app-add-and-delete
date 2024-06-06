@@ -4,8 +4,8 @@ import classNames from 'classnames';
 import { FilterType } from '../App';
 
 export interface FooterType {
-  filter: boolean | null;
-  setFilter: React.Dispatch<React.SetStateAction<boolean | null>>;
+  filter: FilterType;
+  setFilter: React.Dispatch<React.SetStateAction<FilterType>>;
   deleteAll: () => void;
 }
 
@@ -24,27 +24,13 @@ export const Footer: React.FC<FooterType> = ({
       e.preventDefault();
       e.stopPropagation();
 
-      switch (filterName) {
-        case FilterType.ALL: {
-          setFilter(null);
-          break;
-        }
-
-        case FilterType.ACTIVE: {
-          setFilter(false);
-          break;
-        }
-
-        case FilterType.COMPLETED: {
-          setFilter(true);
-          break;
-        }
-      }
+      setFilter(filterName);
     },
     [setFilter],
   );
 
   const todosLength = todos.filter(x => !x.completed && x.id !== 0).length;
+  const hasCompleted = todos.find(x => x.completed) === undefined;
 
   return (
     <footer className="todoapp__footer" data-cy="Footer">
@@ -54,38 +40,19 @@ export const Footer: React.FC<FooterType> = ({
 
       {/* Active link should have the 'selected' class */}
       <nav className="filter" data-cy="Filter">
-        <a
-          href="#/"
-          className={classNames('filter__link', {
-            selected: filter === null,
-          })}
-          data-cy="FilterLinkAll"
-          onClick={e => establishFilter(FilterType.ALL, e)}
-        >
-          All
-        </a>
-
-        <a
-          href="#/active"
-          className={classNames('filter__link', {
-            selected: filter === false,
-          })}
-          data-cy="FilterLinkActive"
-          onClick={e => establishFilter(FilterType.ACTIVE, e)}
-        >
-          Active
-        </a>
-
-        <a
-          href="#/completed"
-          className={classNames('filter__link', {
-            selected: filter === true,
-          })}
-          data-cy="FilterLinkCompleted"
-          onClick={e => establishFilter(FilterType.COMPLETED, e)}
-        >
-          Completed
-        </a>
+        {Object.values(FilterType).map(value => (
+          <a
+            key={value}
+            href="#/"
+            className={classNames('filter__link', {
+              selected: filter === value,
+            })}
+            data-cy="FilterLinkAll"
+            onClick={e => establishFilter(value, e)}
+          >
+            {value}
+          </a>
+        ))}
       </nav>
 
       {/* this button should be disabled if there are no completed todos */}
@@ -94,8 +61,8 @@ export const Footer: React.FC<FooterType> = ({
         type="button"
         className="todoapp__clear-completed"
         data-cy="ClearCompletedButton"
-        onClick={() => deleteAll()}
-        disabled={todos.find(x => x.completed) === undefined}
+        onClick={deleteAll}
+        disabled={hasCompleted}
       >
         Clear completed
       </button>

@@ -12,20 +12,21 @@ import { UserWarning } from './UserWarning';
 import { USER_ID, deletePost, getTodos } from './api/todos';
 import { Todo } from './types/Todo';
 import classNames from 'classnames';
-import { ActionType, TodoContext } from './contexts/TodoContext';
+import { TodoContext } from './contexts/TodoContext';
 import { Footer } from './components/Footer';
 import { TodoList } from './components/TodoList';
 import { ErrorContext } from './contexts/ErrorContext';
 import { Header } from './components/Header';
+import { ActionType } from './contexts/types/Actions';
 
 export enum FilterType {
-  ALL = 'ALL',
-  ACTIVE = 'ACTIVE',
-  COMPLETED = 'COMPLETED',
+  ALL = 'All',
+  ACTIVE = 'Active',
+  COMPLETED = 'Completed',
 }
 
 export const App: React.FC = () => {
-  const [filter, setFilter] = useState<boolean | null>(null);
+  const [filter, setFilter] = useState<FilterType>(FilterType.ALL);
   const inputRef = useRef<HTMLInputElement>(null);
 
   const { todos, dispatch } = useContext(TodoContext);
@@ -47,11 +48,19 @@ export const App: React.FC = () => {
 
   const getFormedTodos = useCallback(
     (todosItems: Todo[]) => {
-      if (filter !== null) {
-        return todosItems.filter(x => x.completed === filter);
-      }
+      switch (filter) {
+        case FilterType.ALL: {
+          return todosItems;
+        }
 
-      return todosItems;
+        case FilterType.ACTIVE: {
+          return todosItems.filter(x => !x.completed);
+        }
+
+        case FilterType.COMPLETED: {
+          return todosItems.filter(x => x.completed);
+        }
+      }
     },
     [filter],
   );

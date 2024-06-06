@@ -3,9 +3,10 @@
 import classNames from 'classnames';
 import { Todo } from '../types/Todo';
 import { useContext, useState } from 'react';
-import { ActionType, TodoContext } from '../contexts/TodoContext';
+import { TodoContext } from '../contexts/TodoContext';
 import { deletePost } from '../api/todos';
 import { ErrorContext } from '../contexts/ErrorContext';
+import { ActionType } from '../contexts/types/Actions';
 
 export interface TodotodoType {
   todo: Todo;
