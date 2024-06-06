@@ -47,7 +47,7 @@ export const Footer: React.FC<FooterType> = ({
             className={classNames('filter__link', {
               selected: filter === value,
             })}
-            data-cy="FilterLinkAll"
+            data-cy={'FilterLink' + value}
             onClick={e => establishFilter(value, e)}
           >
             {value}
