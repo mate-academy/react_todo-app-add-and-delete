@@ -93,12 +93,8 @@ export const App: React.FC = () => {
           </div>
         </section>
 
-        {todos.length > 0 && (
-          <Footer
-            filter={filter}
-            setFilter={setFilter}
-            deleteAll={() => deleteAll()}
-          />
+        {!!todos.length && (
+          <Footer filter={filter} setFilter={setFilter} deleteAll={deleteAll} />
         )}
       </div>
 

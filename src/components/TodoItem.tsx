@@ -17,7 +17,9 @@ export const TodoItem: React.FC<TodotodoType> = ({ todo, inputRef }) => {
   const { error, setError } = useContext(ErrorContext);
   const [deletedId, setDeletedId] = useState(0);
 
-  const deleteTodo = (id: number) => {
+  const { id, title, completed } = todo;
+
+  const deleteTodo = () => {
     setDeletedId(id);
     (inputRef.current as HTMLInputElement).disabled = true;
 
@@ -41,27 +43,27 @@ export const TodoItem: React.FC<TodotodoType> = ({ todo, inputRef }) => {
     <div
       data-cy="Todo"
       className={classNames('todo', {
-        completed: todo.completed,
+        completed: completed,
       })}
     >
       <label className="todo__status-label">
         <input
           data-cy="TodoStatus"
           type="checkbox"
-          checked={todo.completed}
+          checked={completed}
           className="todo__status"
         />
       </label>
 
       <span data-cy="TodoTitle" className="todo__title">
-        {todo.title}
+        {title}
       </span>
 
       <button
         type="button"
         className="todo__remove"
         data-cy="TodoDelete"
-        onClick={() => deleteTodo(todo.id)}
+        onClick={() => deleteTodo()}
       >
         ×
       </button>
@@ -69,7 +71,7 @@ export const TodoItem: React.FC<TodotodoType> = ({ todo, inputRef }) => {
       <div
         data-cy="TodoLoader"
         className={classNames('modal overlay', {
-          'is-active': todo.id === 0 || deletedId === todo.id,
+          'is-active': id === 0 || deletedId === id,
         })}
       >
         <div className="modal-background has-background-white-ter" />
