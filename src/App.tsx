@@ -4,10 +4,10 @@ import React, { useEffect, useMemo, useState } from 'react';
 import { UserWarning } from './UserWarning';
 import { Todo } from './types/Todo';
 import { client } from './utils/fetchClient';
-import { Errors } from './utils/Errors';
-import { Footer } from './utils/Footer';
-import { Header } from './utils/Header';
-import { TodoList } from './utils/TodoList';
+import { Errors } from './utils/Errors/Errors';
+import { Footer } from './utils/Footer/Footer';
+import { Header } from './utils/Header/Header';
+import { TodoList } from './utils/TodoList/TodoList';
 import { deleteTodos, getTodos, patchTodos, postTodos } from './api/todos';
 
 const USER_ID = 700;
@@ -19,13 +19,15 @@ enum Filter {
 }
 
 export const App: React.FC = () => {
+  const [, setLoadingTodos] = useState<number[]>([]);
   const [todos, setTodos] = useState<Todo[]>([]);
   const [error, setError] = useState<string>('');
   const [filter, setFilter] = useState<string>('');
   const [newTodoTitle, setNewTodoTitle] = useState<string>('');
   const [allCompleted, setAllCompleted] = useState<boolean>(false);
+  const [tempTodo, setTempTodo] = useState<Todo | null>(null);
 
-  const completedTodos = todos.filter(todo => todo.completed).length;
+  const completedTodos = todos.filter(todo => todo.completed === false).length;
 
   const areAllCompleted =
     todos?.length > 0 && todos?.every(todo => todo.completed);
@@ -52,10 +54,6 @@ export const App: React.FC = () => {
   const visibleTodos = useMemo(() => {
     return getVisibleTodos(todos, filter);
   }, [todos, filter]);
-
-  const visibleTodosCount = useMemo(() => {
-    return visibleTodos.length;
-  }, [visibleTodos]);
 
   // #endregion
 
@@ -136,18 +134,31 @@ export const App: React.FC = () => {
       return;
     }
 
-    const newTodo = {
+    setTempTodo({
+      id: 0,
       userId: USER_ID,
       title: newTodoTitle,
       completed: false,
-    };
+    });
 
-    postTodos(newTodo)
+    setLoadingTodos(currentTodos => [...currentTodos, 0]);
+
+    postTodos({
+      title: newTodoTitle.trim(),
+      userId: USER_ID,
+      completed: false,
+    })
       .then(addedTodo => {
         setTodos(prevTodos => [...prevTodos, addedTodo]);
         setNewTodoTitle('');
       })
-      .catch(() => setError('Unable to add a todo'));
+      .catch(() => setError('Unable to add a todo'))
+      .finally(() => {
+        setLoadingTodos(currentTodos =>
+          currentTodos.filter(todoId => todoId !== 0),
+        );
+        setTempTodo(null);
+      });
   };
 
   //#endregion
@@ -171,12 +182,14 @@ export const App: React.FC = () => {
           handleAddTodo={handleAddTodo}
           handleInputChange={handleInputChange}
           newTodoTitle={newTodoTitle}
+          tempTodo={tempTodo}
         />
 
         <TodoList
           visibleTodos={visibleTodos}
           handleDeleteTodo={handleDeleteTodo}
           handleTodoStatusChange={handleTodoStatusChange}
+          tempTodo={tempTodo}
         />
 
         {/* Hide the footer if there are no todos */}
@@ -185,7 +198,6 @@ export const App: React.FC = () => {
             completedTodos={completedTodos}
             filter={filter}
             setFilter={setFilter}
-            visibleTodosCount={visibleTodosCount}
             handleClearCompleted={handleClearCompleted}
           />
         )}

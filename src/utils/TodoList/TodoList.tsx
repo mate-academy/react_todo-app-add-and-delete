@@ -1,34 +1,49 @@
+import { Todo } from '../../types/Todo';
+import { TodoItem } from '../TodoItem/TodoItem';
+
 type Props = {
   visibleTodos: Array<{ id: number; title: string; completed: boolean }>;
   handleTodoStatusChange: (id: number) => void;
   handleDeleteTodo: (id: number) => void;
+  tempTodo: Todo | null;
 };
 
 export const TodoList: React.FC<Props> = ({
   visibleTodos,
   handleTodoStatusChange,
   handleDeleteTodo,
+  tempTodo,
 }) => {
   return (
     <section className="todoapp__main" data-cy="TodoList">
       {visibleTodos.map(todo => (
-        <div
+        <TodoItem
           key={todo.id}
+          todo={todo}
+          handleTodoStatusChange={handleTodoStatusChange}
+          handleDeleteTodo={handleDeleteTodo}
+          tempTodo={tempTodo}
+        />
+      ))}
+
+      {tempTodo && (
+        <div
+          key={tempTodo.id}
           data-cy="Todo"
-          className={`todo ${todo.completed ? 'completed' : ''}`}
+          className={`todo ${tempTodo.completed ? 'completed' : ''}`}
         >
           <label className="todo__status-label">
             <input
               data-cy="TodoStatus"
               type="checkbox"
               className="todo__status"
-              checked={todo.completed}
-              onChange={() => handleTodoStatusChange(todo.id)}
+              checked={tempTodo.completed}
+              onChange={() => handleTodoStatusChange(tempTodo.id)}
             />
           </label>
 
           <span data-cy="TodoTitle" className="todo__title">
-            {todo.title}
+            {tempTodo.title}
           </span>
 
           {/* Remove button appears only on hover */}
@@ -36,18 +51,18 @@ export const TodoList: React.FC<Props> = ({
             type="button"
             className="todo__remove"
             data-cy="TodoDelete"
-            onClick={() => handleDeleteTodo(todo.id)}
+            onClick={() => handleDeleteTodo(tempTodo.id)}
           >
             ×
           </button>
 
           {/* overlay will cover the todo while it is being deleted or updated */}
-          <div data-cy="TodoLoader" className="modal overlay">
+          <div data-cy="TodoLoader" className="modal overlay is-active">
             <div className="modal-background has-background-white-ter" />
             <div className="loader" />
           </div>
         </div>
-      ))}
+      )}
     </section>
   );
 };
