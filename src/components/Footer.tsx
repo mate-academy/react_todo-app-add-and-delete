@@ -29,8 +29,10 @@ export const Footer: React.FC<FooterType> = ({
     [setFilter],
   );
 
-  const todosLength = todos.filter(x => !x.completed && x.id !== 0).length;
-  const hasCompleted = todos.find(x => x.completed) === undefined;
+  const todosLength = todos.filter(
+    todo => !todo.completed && todo.id !== 0,
+  ).length;
+  const hasCompleted = todos.some(todo => todo.completed);
 
   return (
     <footer className="todoapp__footer" data-cy="Footer">

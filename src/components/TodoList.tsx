@@ -8,10 +8,10 @@ export interface TodoListType {
 
 export const TodoList: React.FC<TodoListType> = ({ todos, inputRef }) => {
   return (
-    <div>
+    <ul>
       {todos.map(item => (
         <TodoItem todo={item} key={item.id} inputRef={inputRef} />
       ))}
-    </div>
+    </ul>
   );
 };

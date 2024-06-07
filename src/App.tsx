@@ -54,11 +54,11 @@ export const App: React.FC = () => {
         }
 
         case FilterType.ACTIVE: {
-          return todosItems.filter(x => !x.completed);
+          return todosItems.filter(todo => !todo.completed);
         }
 
         case FilterType.COMPLETED: {
-          return todosItems.filter(x => x.completed);
+          return todosItems.filter(todo => todo.completed);
         }
       }
     },
@@ -66,7 +66,7 @@ export const App: React.FC = () => {
   );
 
   const deleteAll = () => {
-    for (const todo of todos.filter(x => x.completed)) {
+    for (const todo of todos.filter(td => td.completed)) {
       if (error) {
         break;
       }
