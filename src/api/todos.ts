@@ -8,7 +8,7 @@ export const getTodos = () => {
 };
 
 export const patchTodos = (todo: { id: number }) => {
-  return client.patch<Todo[]>(`/todos/${todo.id}`, todo);
+  return client.patch<Todo>(`/todos/${todo.id}`, todo);
 };
 
 export const postTodos = (newTodo: object) => {
