@@ -7,3 +7,7 @@ import './styles/index.scss';
 import { App } from './App';
 
 createRoot(document.getElementById('root') as HTMLDivElement).render(<App />);
+
+export function creatTodo() {
+  throw new Error('Function not implemented.');
+}
