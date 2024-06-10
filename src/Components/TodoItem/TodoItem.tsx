@@ -8,28 +8,32 @@ type Props = {
   isLoading: boolean;
 };
 
-export const TodoItem: React.FC<Props> = ({ todo, onDelete, isLoading }) => {
+export const TodoItem: React.FC<Props> = ({
+  todo: { title, completed, id },
+  onDelete,
+  isLoading,
+}) => {
   return (
     <div
       data-cy="Todo"
       className={cn('todo', {
-        'todo completed': todo.completed,
+        'todo completed': completed,
       })}
-      key={todo.id}
+      key={id}
     >
       {/* eslint-disable jsx-a11y/label-has-associated-control */}
-      <label className="todo__status-label" htmlFor={`${todo.id}`}>
+      <label className="todo__status-label" htmlFor={`${id}`}>
         <input
-          id={`${todo.id}`}
+          id={`${id}`}
           data-cy="TodoStatus"
           type="checkbox"
           className="todo__status"
-          checked={todo.completed ? true : false}
+          checked={completed}
         />
       </label>
 
       <span data-cy="TodoTitle" className="todo__title">
-        {todo.title}
+        {title}
       </span>
 
       {/* Remove button appears only on hover */}
@@ -37,7 +41,7 @@ export const TodoItem: React.FC<Props> = ({ todo, onDelete, isLoading }) => {
         type="button"
         className="todo__remove"
         data-cy="TodoDelete"
-        onClick={() => onDelete(todo.id)}
+        onClick={() => onDelete(id)}
       >
         ×
       </button>
