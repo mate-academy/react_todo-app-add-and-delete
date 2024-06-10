@@ -1,3 +1,5 @@
+/* eslint-disable jsx-a11y/label-has-associated-control */
+import React from 'react';
 import { Todo } from '../../types/Todo';
 import { TodoItem } from '../TodoItem/TodoItem';
 
@@ -5,6 +7,7 @@ type Props = {
   visibleTodos: Array<{ id: number; title: string; completed: boolean }>;
   handleTodoStatusChange: (id: number) => void;
   handleDeleteTodo: (id: number) => void;
+  loadingTodoId: number | null;
   tempTodo: Todo | null;
 };
 
@@ -12,6 +15,7 @@ export const TodoList: React.FC<Props> = ({
   visibleTodos,
   handleTodoStatusChange,
   handleDeleteTodo,
+  loadingTodoId,
   tempTodo,
 }) => {
   return (
@@ -22,6 +26,7 @@ export const TodoList: React.FC<Props> = ({
           todo={todo}
           handleTodoStatusChange={handleTodoStatusChange}
           handleDeleteTodo={handleDeleteTodo}
+          loadingTodoId={loadingTodoId === todo.id}
           tempTodo={tempTodo}
         />
       ))}

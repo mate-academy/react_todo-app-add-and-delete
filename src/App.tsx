@@ -19,15 +19,17 @@ enum Filter {
 }
 
 export const App: React.FC = () => {
-  const [, setLoadingTodos] = useState<number[]>([]);
   const [todos, setTodos] = useState<Todo[]>([]);
   const [error, setError] = useState<string>('');
-  const [filter, setFilter] = useState<string>('');
+  const [filter, setFilter] = useState<string>(Filter.All);
   const [newTodoTitle, setNewTodoTitle] = useState<string>('');
   const [allCompleted, setAllCompleted] = useState<boolean>(false);
   const [tempTodo, setTempTodo] = useState<Todo | null>(null);
+  const [loadingTodoId, setLoadingTodoId] = useState<number | null>(null);
 
-  const completedTodos = todos.filter(todo => todo.completed === false).length;
+  const completedTodos = todos.filter(todo => todo.completed).length;
+
+  const notCompletedTodos = todos.filter(todo => !todo.completed).length;
 
   const areAllCompleted =
     todos?.length > 0 && todos?.every(todo => todo.completed);
@@ -51,7 +53,7 @@ export const App: React.FC = () => {
     return filteredTodos;
   };
 
-  const visibleTodos = useMemo(() => {
+  const visibleTodos: Todo[] = useMemo(() => {
     return getVisibleTodos(todos, filter);
   }, [todos, filter]);
 
@@ -73,6 +75,8 @@ export const App: React.FC = () => {
   };
 
   const handleTodoStatusChange = (id: number) => {
+    setLoadingTodoId(id);
+
     const todoToUpdate = todos.find(todo => todo.id === id);
 
     if (!todoToUpdate) {
@@ -89,22 +93,28 @@ export const App: React.FC = () => {
       .then(updated => {
         setTodos(todos.map(todo => (todo.id === id ? updated : todo)));
       })
-      .catch(() => setError('Unable to update a todo'));
+      .catch(() => setError('Unable to update a todo'))
+      .finally(() => {
+        setLoadingTodoId(null);
+      });
   };
 
-  // const handleEditTodo = (id) => {
-
-  // };
   //#endregion
 
   //#region delete
 
   const handleDeleteTodo = (id: number) => {
+    setLoadingTodoId(id);
+
     deleteTodos(id)
       .then(() => {
         setTodos(currentTodos => currentTodos.filter(todo => todo.id !== id));
       })
-      .catch(() => setError('Unable to delete a todo'));
+      .catch(() => setError('Unable to delete a todo'))
+      .finally(() => {
+        setLoadingTodoId(null);
+        setTempTodo(null);
+      });
   };
 
   const handleClearCompleted = () => {
@@ -141,8 +151,6 @@ export const App: React.FC = () => {
       completed: false,
     });
 
-    setLoadingTodos(currentTodos => [...currentTodos, 0]);
-
     postTodos({
       title: newTodoTitle.trim(),
       userId: USER_ID,
@@ -154,9 +162,6 @@ export const App: React.FC = () => {
       })
       .catch(() => setError('Unable to add a todo'))
       .finally(() => {
-        setLoadingTodos(currentTodos =>
-          currentTodos.filter(todoId => todoId !== 0),
-        );
         setTempTodo(null);
       });
   };
@@ -183,12 +188,14 @@ export const App: React.FC = () => {
           handleInputChange={handleInputChange}
           newTodoTitle={newTodoTitle}
           tempTodo={tempTodo}
+          todos={todos}
         />
 
         <TodoList
           visibleTodos={visibleTodos}
           handleDeleteTodo={handleDeleteTodo}
           handleTodoStatusChange={handleTodoStatusChange}
+          loadingTodoId={loadingTodoId}
           tempTodo={tempTodo}
         />
 
@@ -196,6 +203,7 @@ export const App: React.FC = () => {
         {todos.length > 0 && (
           <Footer
             completedTodos={completedTodos}
+            notCompletedTodos={notCompletedTodos}
             filter={filter}
             setFilter={setFilter}
             handleClearCompleted={handleClearCompleted}

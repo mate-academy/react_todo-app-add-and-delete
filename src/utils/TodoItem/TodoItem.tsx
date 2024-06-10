@@ -1,9 +1,12 @@
+/* eslint-disable jsx-a11y/label-has-associated-control */
+import React from 'react';
 import { Todo } from '../../types/Todo';
 
 type Props = {
   todo: Todo;
   handleTodoStatusChange: (id: number) => void;
   handleDeleteTodo: (id: number) => void;
+  loadingTodoId: boolean;
   tempTodo: Todo | null;
 };
 
@@ -11,6 +14,7 @@ export const TodoItem: React.FC<Props> = ({
   todo,
   handleDeleteTodo,
   handleTodoStatusChange,
+  loadingTodoId,
 }) => {
   return (
     <div
@@ -38,12 +42,17 @@ export const TodoItem: React.FC<Props> = ({
         className="todo__remove"
         data-cy="TodoDelete"
         onClick={() => handleDeleteTodo(todo.id)}
+        disabled={loadingTodoId}
       >
         ×
       </button>
 
       {/* overlay will cover the todo while it is being deleted or updated */}
-      <div data-cy="TodoLoader" className="modal overlay">
+
+      <div
+        data-cy="TodoLoader"
+        className={`modal overlay ${loadingTodoId ? `is-active` : ``}`}
+      >
         <div className="modal-background has-background-white-ter" />
         <div className="loader" />
       </div>

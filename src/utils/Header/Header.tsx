@@ -9,6 +9,7 @@ type Props = {
   handleInputChange: (event: React.ChangeEvent<HTMLInputElement>) => void;
   newTodoTitle: string;
   tempTodo: Todo | null;
+  todos: Todo[];
 };
 
 export const Header: React.FC<Props> = ({
@@ -18,14 +19,15 @@ export const Header: React.FC<Props> = ({
   handleInputChange,
   newTodoTitle,
   tempTodo,
+  todos,
 }) => {
   const inputRef = useRef<HTMLInputElement>(null);
 
   useEffect(() => {
-    if (inputRef.current) {
+    if (tempTodo === null && inputRef.current) {
       inputRef.current.focus();
     }
-  }, []);
+  }, [tempTodo, inputRef, todos]);
 
   return (
     <header className="todoapp__header">
@@ -49,7 +51,7 @@ export const Header: React.FC<Props> = ({
           placeholder="What needs to be done?"
           value={newTodoTitle}
           onChange={handleInputChange}
-          disabled={tempTodo}
+          disabled={!!tempTodo}
         />
       </form>
     </header>
