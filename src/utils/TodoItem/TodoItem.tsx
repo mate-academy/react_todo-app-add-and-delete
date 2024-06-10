@@ -17,11 +17,7 @@ export const TodoItem: React.FC<Props> = ({
   loadingTodoId,
 }) => {
   return (
-    <div
-      key={todo.id}
-      data-cy="Todo"
-      className={`todo ${todo.completed ? 'completed' : ''}`}
-    >
+    <div data-cy="Todo" className={`todo ${todo.completed ? 'completed' : ''}`}>
       <label className="todo__status-label">
         <input
           data-cy="TodoStatus"

@@ -3,7 +3,6 @@
 import React, { useEffect, useMemo, useState } from 'react';
 import { UserWarning } from './UserWarning';
 import { Todo } from './types/Todo';
-import { client } from './utils/fetchClient';
 import { Errors } from './utils/Errors/Errors';
 import { Footer } from './utils/Footer/Footer';
 import { Header } from './utils/Header/Header';
@@ -28,9 +27,7 @@ export const App: React.FC = () => {
   const [loadingTodoId, setLoadingTodoId] = useState<number | null>(null);
 
   const completedTodos = todos.filter(todo => todo.completed).length;
-
   const notCompletedTodos = todos.filter(todo => !todo.completed).length;
-
   const areAllCompleted =
     todos?.length > 0 && todos?.every(todo => todo.completed);
 
@@ -88,11 +85,10 @@ export const App: React.FC = () => {
       completed: !todoToUpdate.completed,
     };
 
-    client
-      .patch<Todo>(`/todos/${id}`, updatedTodoStatus)
-      .then(updated => {
-        setTodos(todos.map(todo => (todo.id === id ? updated : todo)));
-      })
+    patchTodos(updatedTodoStatus)
+      .then(updated =>
+        setTodos(todos.map(todo => (todo.id === id ? updated : todo))),
+      )
       .catch(() => setError('Unable to update a todo'))
       .finally(() => {
         setLoadingTodoId(null);
