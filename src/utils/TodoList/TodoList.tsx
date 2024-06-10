@@ -4,7 +4,7 @@ import { Todo } from '../../types/Todo';
 import { TodoItem } from '../TodoItem/TodoItem';
 
 type Props = {
-  visibleTodos: Array<{ id: number; title: string; completed: boolean }>;
+  visibleTodos: Array<Todo>;
   handleTodoStatusChange: (id: number) => void;
   handleDeleteTodo: (id: number) => void;
   loadingTodoId: number | null;
