@@ -18,7 +18,7 @@ export const App: React.FC = () => {
   const [selectedValue, setSelectedValue] = useState(Status.all);
   const [errorMessage, setErrorMessage] = useState<ErrorTypes | null>(null);
   const [query, setQuery] = useState('');
-  const [responding, setResponding] = useState(false);
+  const [isResponding, setisResponding] = useState(false);
   const [tempTodo, setTempTodo] = useState<Todo | null>(null);
   const [loadingTodoId, setLoadingTodoId] = useState<number[]>([]);
 
@@ -62,7 +62,7 @@ export const App: React.FC = () => {
   const addTodo = ({ userId, title, completed }: Omit<Todo, 'id'>) => {
     setErrorMessage(null);
     setTempTodo({ id: 0, userId, title, completed });
-    setResponding(true);
+    setisResponding(true);
 
     return todoService
       .addTodo({ userId, title, completed })
@@ -77,13 +77,13 @@ export const App: React.FC = () => {
         throw err;
       })
       .finally(() => {
-        setResponding(false);
+        setisResponding(false);
         setTempTodo(null);
       });
   };
 
   const deleteTodo = (id: number) => {
-    setResponding(true);
+    setisResponding(true);
     setLoadingTodoId(carrent => [...carrent, id]);
     todoService
       .deleteTodo(id)
@@ -99,7 +99,7 @@ export const App: React.FC = () => {
         }, 3000);
       })
       .finally(() => {
-        setResponding(false);
+        setisResponding(false);
         setLoadingTodoId([]);
       });
   };
@@ -122,7 +122,7 @@ export const App: React.FC = () => {
           title={query}
           addTodo={addTodo}
           setErrorMessage={setErrorMessage}
-          responding={responding}
+          isResponding={isResponding}
           allCompleted={allCompleted}
         />
 
@@ -134,7 +134,6 @@ export const App: React.FC = () => {
             handleCompleted={handleCompleted}
             deleteTodo={deleteTodo}
             tempTodo={tempTodo}
-            responding={responding}
             loadingTodoId={loadingTodoId}
           />
         )}

@@ -25,38 +25,19 @@ export const Footer: React.FC<Props> = ({
 
       {/* Active link should have the 'selected' class */}
       <nav className="filter" data-cy="Filter">
-        <a
-          href="#/"
-          className={cn('filter__link', {
-            selected: selectedValue === Status.all,
-          })}
-          data-cy="FilterLinkAll"
-          onClick={() => setSelectedValue(Status.all)}
-        >
-          All
-        </a>
-
-        <a
-          href="#/active"
-          className={cn('filter__link', {
-            selected: selectedValue === Status.active,
-          })}
-          data-cy="FilterLinkActive"
-          onClick={() => setSelectedValue(Status.active)}
-        >
-          Active
-        </a>
-
-        <a
-          href="#/completed"
-          className={cn('filter__link', {
-            selected: selectedValue === Status.completed,
-          })}
-          data-cy="FilterLinkCompleted"
-          onClick={() => setSelectedValue(Status.completed)}
-        >
-          Completed
-        </a>
+        {Object.values(Status).map(value => (
+          <a
+            href={`#/${value}`}
+            className={cn('filter__link', {
+              selected: selectedValue === value,
+            })}
+            data-cy={`FilterLink${value}`}
+            onClick={() => setSelectedValue(value)}
+            key={value}
+          >
+            {value}
+          </a>
+        ))}
       </nav>
 
       <button

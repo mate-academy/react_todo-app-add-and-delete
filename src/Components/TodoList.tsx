@@ -7,7 +7,6 @@ type Props = {
   handleCompleted: (id: number) => void;
   deleteTodo: (id: number) => void;
   tempTodo: Todo | null;
-  responding: boolean;
   loadingTodoId: number[];
 };
 
@@ -20,7 +19,7 @@ export const TodoList: React.FC<Props> = ({
 }) => {
   return (
     <section className="todoapp__main" data-cy="TodoList">
-      {mainTodoList &&
+      {mainTodoList.length > 0 &&
         mainTodoList.map(todo => (
           <TodoItem
             key={todo.id}

@@ -9,7 +9,7 @@ type Props = {
   title: string;
   addTodo: (newTodo: Omit<Todo, 'id'>) => Promise<void>;
   setErrorMessage: (message: ErrorTypes | null) => void;
-  responding: boolean;
+  isResponding: boolean;
   allCompleted: boolean;
 };
 
@@ -18,16 +18,16 @@ export const Header: React.FC<Props> = ({
   title,
   addTodo,
   setErrorMessage,
-  responding,
+  isResponding,
   allCompleted,
 }) => {
   const inputRef = useRef<HTMLInputElement | null>(null);
 
   useEffect(() => {
-    if (!responding && inputRef.current) {
+    if (!isResponding && inputRef.current) {
       inputRef.current.focus();
     }
-  }, [responding]);
+  }, [isResponding]);
 
   const titleChangeHandle = (event: React.ChangeEvent<HTMLInputElement>) => {
     setQuery(event.target.value);
@@ -76,7 +76,7 @@ export const Header: React.FC<Props> = ({
           ref={inputRef}
           onChange={titleChangeHandle}
           autoFocus
-          disabled={responding}
+          disabled={isResponding}
         />
       </form>
     </header>
