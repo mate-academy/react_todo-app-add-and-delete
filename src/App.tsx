@@ -11,6 +11,7 @@ export const App: React.FC = () => {
   const [errorMessage, setErrorMessage] = useState('');
   const [title, setTitle] = useState('');
   const [todos, setTodos] = useState<Todo[]>([]);
+  const [tempTodo, setTempTodo] = useState<Todo | null>(null);
   const [visibleTodos, setVisibleTodos] = useState<Todo[]>([]);
   const [selectedFilter, setSelectedFilter] = useState<Filter>(Filter.All);
 
@@ -34,22 +35,30 @@ export const App: React.FC = () => {
       return;
     }
 
-    const currentTodo: Omit<Todo, 'id'> = {
+    const currentTodo = {
+      id: 0,
       title,
       userId: postService.USER_ID,
       completed: false,
     };
 
-    postService.addTodo(postService.USER_ID, currentTodo).then(newTodo => {
-      setTodos(currentTodos => [...currentTodos, newTodo]);
-    });
+    setTempTodo(currentTodo);
+
+    if (tempTodo) {
+      postService.addTodo(postService.USER_ID, currentTodo).then(newTodo => {
+        setTodos(prevTodos => [...prevTodos, newTodo]);
+        setTempTodo(null);
+      });
+    }
 
     setTitle('');
   };
 
   const deleteTodo = (id: number) => {
-    postService.delTodo(id);
-    // setTodos(currentTodos => currentTodos.filter(todo => todo.id !== id));
+    setTodos(prevTodos => prevTodos.filter(todo => todo.id !== id));
+    postService.delTodo(id).then(() => {
+      setTempTodo(null);
+    });
   };
 
   const sortByStatus = (filter: string) => {
@@ -73,7 +82,7 @@ export const App: React.FC = () => {
       .getTodos(postService.USER_ID)
       .then(todosFromServer => {
         setTodos(todosFromServer);
-        setVisibleTodos(todos);
+        setVisibleTodos(todosFromServer);
       })
       .catch(() => {
         handleError('Unable to load todos');
@@ -84,7 +93,7 @@ export const App: React.FC = () => {
     if (focusField.current) {
       focusField.current.focus();
     }
-  }, [todos]);
+  }, []);
 
   const todoCounter = todos.filter(todo => !todo.completed).length;
 
