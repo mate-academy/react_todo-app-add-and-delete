@@ -14,7 +14,7 @@ import { Todo } from './types/Todo';
 import { Filter } from './types/Filter';
 import { ErrorsTypes } from './types/ErrorsType';
 import { TodoList } from './components/TodoList';
-import { TodoFilterPanel } from './components/TododilterPanel';
+import { TodoFilterPanel } from './components/TodofilterPanel';
 import { TodoItem } from './components/TodoItem';
 
 export const App: React.FC = () => {
@@ -28,7 +28,7 @@ export const App: React.FC = () => {
   const [errorMessage, setErrorMessage] = useState('');
   const titleField = useRef<HTMLInputElement>(null);
   const active = todos.filter((todo: Todo) => !todo.completed);
-  const isDisabled = todos.some(todo => todo.completed);
+  const todoCompleted = todos.filter(todo => todo.completed);
 
   useEffect(() => {
     setLoading(true);
@@ -210,6 +210,7 @@ export const App: React.FC = () => {
             )}
           </>
         )}
+
         {todos.length > 0 && (
           <footer className="todoapp__footer" data-cy="Footer">
             <span className="todo-count" data-cy="TodosCounter">
@@ -224,7 +225,7 @@ export const App: React.FC = () => {
               type="button"
               className="todoapp__clear-completed"
               data-cy="ClearCompletedButton"
-              disabled={!isDisabled}
+              disabled={todoCompleted.length === 0}
               onClick={clearAllCopleted}
             >
               Clear completed
