@@ -8,6 +8,7 @@ type Props = {
   allTodosAreCompleted: boolean;
   toDoTitle: string;
   setToDoTitle: (toDoTitle: string) => void;
+  isLoading: boolean;
 };
 export const TodoHeader = ({
   addTodos,
@@ -15,14 +16,15 @@ export const TodoHeader = ({
   allTodosAreCompleted,
   toDoTitle,
   setToDoTitle,
+  isLoading,
 }: Props) => {
   const inputRef = useRef<HTMLInputElement>(null);
 
   useEffect(() => {
-    if (inputRef.current) {
+    if (inputRef.current && !isLoading) {
       inputRef.current.focus();
     }
-  }, []);
+  }, [isLoading]);
 
   return (
     <header className="todoapp__header">
@@ -46,6 +48,7 @@ export const TodoHeader = ({
           placeholder="What needs to be done?"
           value={toDoTitle}
           onChange={event => setToDoTitle(event.target.value)}
+          disabled={isLoading}
         />
       </form>
     </header>

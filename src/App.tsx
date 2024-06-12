@@ -21,6 +21,7 @@ export const App: React.FC = () => {
   const [filterButton, setFilterButton] = useState<FilterButtons>(
     FilterButtons.All,
   );
+  const [isLoading, setIsLoading] = useState(false);
 
   const handleError = (errorsTexts: Errors) => {
     setError(errorsTexts);
@@ -52,6 +53,8 @@ export const App: React.FC = () => {
       return;
     }
 
+    setIsLoading(true);
+
     const createdTodo = {
       id: 0,
       userId: USER_ID,
@@ -74,6 +77,7 @@ export const App: React.FC = () => {
       .finally(() => {
         setTemporaryTodo(null);
         setTempIds(currentIds => currentIds.filter(todoId => todoId !== 0));
+        setIsLoading(false);
       });
   };
 
@@ -147,6 +151,7 @@ export const App: React.FC = () => {
           allTodosAreCompleted={allTodosAreCompleted}
           toDoTitle={newToDoTitle}
           setToDoTitle={setNewToDoTitle}
+          isLoading={isLoading}
         />
         <TodoList
           todos={todos}
