@@ -11,7 +11,6 @@ import { type Todo } from './types/Todo';
 import { createTodo } from '../src/components/api/todos';
 import { FilterButtons } from './types/FilterType';
 import { Errors } from './types/EnumedErrors';
-import { time } from 'console';
 
 export const App: React.FC = () => {
   const [todos, setTodos] = useState<Todo[]>([]);
