@@ -9,12 +9,10 @@ import { Footer } from './Components/Footer';
 import { Header } from './Components/Header';
 import cn from 'classnames';
 import { ErrorTypes } from './types/ErrorTypes';
-import { Loader } from './Components/Loader/Loader';
 import { Status } from './types/Status';
 
 export const App: React.FC = () => {
   const [listOfTodos, setListOfTodos] = useState<Todo[]>([]);
-  const [isLoading, setIsLoading] = useState(false);
   const [selectedValue, setSelectedValue] = useState(Status.all);
   const [errorMessage, setErrorMessage] = useState<ErrorTypes | null>(null);
   const [query, setQuery] = useState('');
@@ -23,7 +21,6 @@ export const App: React.FC = () => {
   const [loadingTodoId, setLoadingTodoId] = useState<number[]>([]);
 
   useEffect(() => {
-    setIsLoading(true);
     todoService
       .getTodos()
       .then(setListOfTodos)
@@ -32,15 +29,14 @@ export const App: React.FC = () => {
         setTimeout(() => {
           setErrorMessage(null);
         }, 3000);
-      })
-      .finally(() => setIsLoading(false));
+      });
   }, []);
 
   if (!todoService.USER_ID) {
     return <UserWarning />;
   }
 
-  const getFilteringTodos = listOfTodos.filter(todo => {
+  const getFilteredTodos = listOfTodos.filter(todo => {
     switch (selectedValue) {
       case Status.active:
         return !todo.completed;
@@ -69,12 +65,11 @@ export const App: React.FC = () => {
       .then(newTodo => {
         setListOfTodos(currentTodos => [...currentTodos, newTodo]);
       })
-      .catch(err => {
+      .catch(() => {
         setErrorMessage(ErrorTypes.UnableToAdd);
         setTimeout(() => {
           setErrorMessage(null);
         }, 3000);
-        throw err;
       })
       .finally(() => {
         setisResponding(false);
@@ -104,7 +99,7 @@ export const App: React.FC = () => {
       });
   };
 
-  const completedTodos = listOfTodos.filter(todo => todo.completed === true);
+  const completedTodos = listOfTodos.filter(todo => todo.completed);
   const todosLeft = listOfTodos.length - completedTodos.length;
   const allCompleted = listOfTodos.every(todo => todo.completed);
 
@@ -126,11 +121,9 @@ export const App: React.FC = () => {
           allCompleted={allCompleted}
         />
 
-        {isLoading ? (
-          <Loader />
-        ) : (
+        {!!listOfTodos.length && (
           <TodoList
-            mainTodoList={getFilteringTodos}
+            mainTodoList={getFilteredTodos}
             handleCompleted={handleCompleted}
             deleteTodo={deleteTodo}
             tempTodo={tempTodo}
