@@ -58,7 +58,7 @@ export const App: React.FC = () => {
     const createdTodo = {
       id: 0,
       userId: USER_ID,
-      title: newToDoTitle,
+      title: newToDoTitle.trim(),
       completed: false,
       editted: false,
     };
