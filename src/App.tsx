@@ -31,16 +31,17 @@ export const App: React.FC = () => {
       .then(setTodos)
       .catch(() => {
         setError(Errors.UnableToLoad);
-      })
-      .finally(() => {
-        let timeoutError: NodeJS.Timeout;
-
-        if (error) {
-          timeoutError = setTimeout(() => setError(Errors.NoLetters), 3000);
-        }
-
-        return () => clearTimeout(timeoutError);
       });
+  }, [error]);
+
+  useEffect(() => {
+    let timeoutError: NodeJS.Timeout;
+
+    if (error) {
+      timeoutError = setTimeout(() => setError(Errors.NoLetters), 3000);
+    }
+
+    return () => clearTimeout(timeoutError);
   }, [error]);
 
   const handleAddingTodos = (event: React.FormEvent<Element>) => {
