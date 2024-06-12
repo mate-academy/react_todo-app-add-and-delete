@@ -11,6 +11,7 @@ import { type Todo } from './types/Todo';
 import { createTodo } from '../src/components/api/todos';
 import { FilterButtons } from './types/FilterType';
 import { Errors } from './types/EnumedErrors';
+import { time } from 'console';
 
 export const App: React.FC = () => {
   const [todos, setTodos] = useState<Todo[]>([]);
@@ -33,11 +34,15 @@ export const App: React.FC = () => {
         setError(Errors.UnableToLoad);
       })
       .finally(() => {
-        setTimeout(() => {
-          setError('');
-        }, 3000);
+        let timeoutError: NodeJS.Timeout;
+
+        if (error) {
+          timeoutError = setTimeout(() => setError(Errors.NoLetters), 3000);
+        }
+
+        return () => clearTimeout(timeoutError);
       });
-  }, []);
+  }, [error]);
 
   const handleAddingTodos = (event: React.FormEvent<Element>) => {
     event.preventDefault();
@@ -142,7 +147,6 @@ export const App: React.FC = () => {
           allTodosAreCompleted={allTodosAreCompleted}
           toDoTitle={newToDoTitle}
           setToDoTitle={setNewToDoTitle}
-          error={error}
         />
         <TodoList
           todos={todos}

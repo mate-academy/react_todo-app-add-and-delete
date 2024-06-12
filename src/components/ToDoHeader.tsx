@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useEffect, useRef } from 'react';
 import { Todo } from '../types/Todo';
 import classNames from 'classnames';
 type Props = {
@@ -8,7 +8,6 @@ type Props = {
   allTodosAreCompleted: boolean;
   toDoTitle: string;
   setToDoTitle: (toDoTitle: string) => void;
-  error: string;
 };
 export const TodoHeader = ({
   addTodos,
@@ -17,6 +16,14 @@ export const TodoHeader = ({
   toDoTitle,
   setToDoTitle,
 }: Props) => {
+  const inputRef = useRef<HTMLInputElement>(null);
+
+  useEffect(() => {
+    if (inputRef.current) {
+      inputRef.current.focus();
+    }
+  }, []);
+
   return (
     <header className="todoapp__header">
       {/* this button should have `active` class only if all todos are completed */}
@@ -32,6 +39,7 @@ export const TodoHeader = ({
       {/* Add a todo on form submit */}
       <form onSubmit={addTodos}>
         <input
+          ref={inputRef}
           data-cy="NewTodoField"
           type="text"
           className="todoapp__new-todo"
