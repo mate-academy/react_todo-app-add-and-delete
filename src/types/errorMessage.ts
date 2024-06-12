@@ -1,8 +1,8 @@
-import { errorText } from '../enums/errorText';
+import { ErrorText } from '../enums/errorText';
 
 export interface ErrorMessage {
-  Loading: errorText;
-  Adding: errorText;
-  Deliting: errorText;
-  Title: errorText;
+  Loading: ErrorText;
+  Adding: ErrorText;
+  Deliting: ErrorText;
+  Title: ErrorText;
 }
