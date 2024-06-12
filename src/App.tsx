@@ -134,9 +134,7 @@ export const App: React.FC = () => {
   const onlyActiveTodos = todos.filter(todo => !todo.completed);
 
   const todosCounter =
-    todos.length === 1
-      ? 'one item left'
-      : `${onlyActiveTodos.length} items left`;
+    todos.length === 1 ? '1 item' : `${onlyActiveTodos.length} items`;
 
   return (
     <div className="todoapp">
