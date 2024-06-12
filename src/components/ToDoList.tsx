@@ -1,10 +1,9 @@
 /* eslint-disable jsx-a11y/label-has-associated-control */
-import React from 'react';
+import React, { useMemo } from 'react';
 import { Todo } from '../types/Todo';
 import { FilterButtons } from '../types/FilterType';
 import { ToDoItem } from './ToDoItem';
 type Props = {
-  filteredTodos: (todos: Todo[], filterStatus: FilterButtons) => Todo[];
   todos: Todo[];
   filter: FilterButtons;
   deleteTodo: (idNumber: number) => void;
@@ -13,14 +12,33 @@ type Props = {
 };
 
 export const TodoList = ({
-  filteredTodos,
   todos,
   filter,
   deleteTodo,
   loadingTodos,
   temporaryTodo,
 }: Props) => {
-  const filteringTodos = filteredTodos(todos, filter);
+  const filteredTodos = (filtrTodos: Todo[], filterStatus: FilterButtons) => {
+    const updateTodos = [...filtrTodos];
+
+    if (filterStatus) {
+      switch (filterStatus) {
+        case FilterButtons.Active:
+          return updateTodos.filter(todo => !todo.completed);
+        case FilterButtons.Completed:
+          return updateTodos.filter(todo => todo.completed);
+        default:
+          break;
+      }
+    }
+
+    return updateTodos;
+  };
+
+  const filteringTodos: Todo[] = useMemo(
+    () => filteredTodos(todos, filter),
+    [todos, filter],
+  );
 
   return (
     <section className="todoapp__main" data-cy="TodoList">

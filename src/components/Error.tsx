@@ -1,8 +1,9 @@
 import React from 'react';
+import { Errors } from '../types/EnumedErrors';
 
 type Props = {
   error: string;
-  setError: (error: string) => void;
+  setError: (error: Errors) => void;
 };
 
 export const Error = ({ error, setError }: Props) => {
@@ -15,7 +16,7 @@ export const Error = ({ error, setError }: Props) => {
         data-cy="HideErrorButton"
         type="button"
         className="delete"
-        onClick={() => setError('')}
+        onClick={() => setError(Errors.NoLetters)}
       />
       <div>{error}</div>
     </div>

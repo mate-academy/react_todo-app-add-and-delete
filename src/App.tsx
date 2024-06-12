@@ -10,6 +10,7 @@ import { Error } from './components/Error';
 import { type Todo } from './types/Todo';
 import { createTodo } from '../src/components/api/todos';
 import { FilterButtons } from './types/FilterType';
+import { Errors } from './types/EnumedErrors';
 
 export const App: React.FC = () => {
   const [todos, setTodos] = useState<Todo[]>([]);
@@ -21,18 +22,27 @@ export const App: React.FC = () => {
     FilterButtons.All,
   );
 
+  const handleError = (errorsTexts: Errors) => {
+    setError(errorsTexts);
+  };
+
   useEffect(() => {
     getTodos()
       .then(setTodos)
       .catch(() => {
-        setError('Unable to load todos');
+        setError(Errors.UnableToLoad);
+      })
+      .finally(() => {
+        setTimeout(() => {
+          setError('');
+        }, 3000);
       });
   }, []);
 
   const handleAddingTodos = (event: React.FormEvent<Element>) => {
     event.preventDefault();
     if (!newToDoTitle.trim()) {
-      setError('Title should not be empty');
+      setError(Errors.TitleEmpty);
 
       return;
     }
@@ -54,7 +64,7 @@ export const App: React.FC = () => {
         setNewToDoTitle('');
       })
       .catch(() => {
-        setError('Unable to add a todo');
+        setError(Errors.UnableToAdd);
       })
       .finally(() => {
         setTemporaryTodo(null);
@@ -72,7 +82,7 @@ export const App: React.FC = () => {
         );
       })
       .catch(() => {
-        setError('Unable to delete a todo');
+        setError(Errors.UnableToDelete);
       })
       .finally(() => {
         setTempIds(currentIds =>
@@ -85,26 +95,6 @@ export const App: React.FC = () => {
     const removeDeletedTodos = todos.filter(todo => !todo.completed);
 
     setTodos(removeDeletedTodos);
-  };
-
-  const filteredTodos = (
-    filtrTodos: Todo[],
-    filterStatus: FilterButtons,
-  ): Todo[] => {
-    const updateTodos = [...filtrTodos];
-
-    if (filterStatus) {
-      switch (filterStatus) {
-        case FilterButtons.Active:
-          return updateTodos.filter(todo => !todo.completed);
-        case FilterButtons.Completed:
-          return updateTodos.filter(todo => todo.completed);
-        default:
-          break;
-      }
-    }
-
-    return updateTodos;
   };
 
   const allTodosAreCompleted =
@@ -156,7 +146,6 @@ export const App: React.FC = () => {
         />
         <TodoList
           todos={todos}
-          filteredTodos={filteredTodos}
           filter={filterButton}
           deleteTodo={handleDeletedTodo}
           loadingTodos={tempIds}
@@ -171,7 +160,7 @@ export const App: React.FC = () => {
         />
       </div>
 
-      <Error error={error} setError={setError} />
+      <Error error={error} setError={handleError} />
     </div>
   );
 };
