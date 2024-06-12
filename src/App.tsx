@@ -65,11 +65,12 @@ export const App: React.FC = () => {
       .then(newTodo => {
         setListOfTodos(currentTodos => [...currentTodos, newTodo]);
       })
-      .catch(() => {
+      .catch(err => {
         setErrorMessage(ErrorTypes.UnableToAdd);
         setTimeout(() => {
           setErrorMessage(null);
         }, 3000);
+        throw err;
       })
       .finally(() => {
         setisResponding(false);
