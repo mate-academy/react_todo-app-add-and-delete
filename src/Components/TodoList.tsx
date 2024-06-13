@@ -7,6 +7,7 @@ type Props = {
   tempTodo: Todo | null;
   setTodos: React.Dispatch<React.SetStateAction<Todo[]>>;
   setErrorMessage: (value: string) => void;
+  inputRef: React.RefObject<HTMLInputElement>;
 };
 
 export const TodoList: React.FC<Props> = ({
@@ -14,6 +15,7 @@ export const TodoList: React.FC<Props> = ({
   tempTodo,
   setTodos,
   setErrorMessage,
+  inputRef,
 }) => {
   return (
     <section className="todoapp__main" data-cy="TodoList">
@@ -24,6 +26,7 @@ export const TodoList: React.FC<Props> = ({
             key={todo.id}
             setTodos={setTodos}
             setErrorMessage={setErrorMessage}
+            inputRef={inputRef}
           />
         );
       })}
@@ -32,6 +35,7 @@ export const TodoList: React.FC<Props> = ({
           todo={tempTodo}
           setTodos={setTodos}
           setErrorMessage={setErrorMessage}
+          inputRef={inputRef}
         />
       )}
     </section>

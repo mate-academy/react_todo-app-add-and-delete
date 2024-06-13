@@ -3,30 +3,42 @@
 import classNames from 'classnames';
 import { Todo } from '../types/Todo';
 import { deleteTodo } from '../api/todos';
+import { useState } from 'react';
 
 type Props = {
   todo: Todo;
   setTodos: React.Dispatch<React.SetStateAction<Todo[]>>;
   setErrorMessage: (value: string) => void;
+  inputRef: React.RefObject<HTMLInputElement>;
 };
 
 export const TodoItem: React.FC<Props> = ({
   todo,
   setTodos,
   setErrorMessage,
+  inputRef,
 }) => {
-  const haldeTodoDelete = (id: number) => {
+  const [isDeleting, setIsDeleting] = useState(false);
+
+  const handleTodoDelete = (id: number) => {
+    setIsDeleting(true);
     deleteTodo(id)
       .then(() => {
         setTodos((prevTodos: Todo[]) =>
           prevTodos.filter(prevTodo => prevTodo.id !== id),
         );
+        if (inputRef.current) {
+          inputRef.current.focus();
+        }
       })
       .catch(() => {
         setErrorMessage('Unable to delete a todo');
         setTimeout(() => {
           setErrorMessage('');
         }, 3000);
+      })
+      .finally(() => {
+        setIsDeleting(false);
       });
   };
 
@@ -53,14 +65,16 @@ export const TodoItem: React.FC<Props> = ({
         type="button"
         className="todo__remove"
         data-cy="TodoDelete"
-        onClick={() => haldeTodoDelete(todo.id)}
+        onClick={() => handleTodoDelete(todo.id)}
       >
         ×
       </button>
 
       <div
         data-cy="TodoLoader"
-        className={classNames('modal overlay', { 'is-active': todo.id === 0 })}
+        className={classNames('modal overlay', {
+          'is-active': todo.id === 0 || isDeleting,
+        })}
       >
         <div className="modal-background has-background-white-ter" />
         <div className="loader" />

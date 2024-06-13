@@ -1,22 +1,28 @@
-import React, { RefObject, useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { USER_ID, postTodo } from '../api/todos';
 import { Todo } from '../types/Todo';
 
 type Props = {
-  inputRef: RefObject<HTMLInputElement>;
   setErrorMessage: (value: string) => void;
   setTodos: React.Dispatch<React.SetStateAction<Todo[]>>;
   setTempTodo: (value: Todo | null) => void;
+  inputRef: React.RefObject<HTMLInputElement>;
 };
 
 export const Header: React.FC<Props> = ({
-  inputRef,
   setErrorMessage,
   setTodos,
   setTempTodo,
+  inputRef,
 }) => {
   const [input, setInput] = useState('');
   const [isAdding, setIsAdding] = useState(false);
+
+  useEffect(() => {
+    if (inputRef.current) {
+      inputRef.current.focus();
+    }
+  }, [isAdding, inputRef]);
 
   const handleInputChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     setInput(event.target.value);
@@ -53,9 +59,6 @@ export const Header: React.FC<Props> = ({
         setTempTodo(null);
         setTodos(prevTodos => [...prevTodos, data]);
         setInput('');
-        if (inputRef.current) {
-          inputRef.current.focus();
-        }
       })
       .catch(() => {
         setTempTodo(null);

@@ -1,20 +1,63 @@
 import classNames from 'classnames';
 import { Filter } from '../types/Filter';
 import { Todo } from '../types/Todo';
+import { deleteTodo } from '../api/todos';
 
 type Props = {
-  completedTodos: Todo[] | [];
+  todos: Todo[];
+  setTodos: React.Dispatch<React.SetStateAction<Todo[]>>;
   filteredButton: string;
-  todosLeft: number;
   filterBy: (value: Filter) => void;
+  setErrorMessage: (value: string) => void;
+  inputRef: React.RefObject<HTMLInputElement>;
 };
 
 export const Footer: React.FC<Props> = ({
-  completedTodos,
+  todos,
   filteredButton,
   filterBy,
-  todosLeft,
+  setTodos,
+  setErrorMessage,
+  inputRef,
 }) => {
+  const completedTodos = todos.filter(todo => todo.completed);
+  const todosLeft = todos.length - completedTodos.length;
+
+  const handleClearCompleted = () => {
+    const completedTodoIds = completedTodos.map(todo => todo.id);
+
+    Promise.allSettled(completedTodoIds.map(id => deleteTodo(id)))
+      .then(results => {
+        const failedDeletions: Todo[] = results
+          .map((result, index) =>
+            result.status === 'rejected' ? completedTodos[index] : null,
+          )
+          .filter((todo): todo is Todo => todo !== null);
+
+        if (failedDeletions.length > 0) {
+          setErrorMessage('Unable to delete a todo');
+          setTimeout(() => {
+            setErrorMessage('');
+          }, 3000);
+        }
+
+        setTodos((prevTodos: Todo[]) => [
+          ...prevTodos.filter(todo => !todo.completed),
+          ...failedDeletions,
+        ]);
+
+        if (inputRef.current) {
+          inputRef.current.focus();
+        }
+      })
+      .catch(() => {
+        setErrorMessage('Unable to clear completed todos');
+        setTimeout(() => {
+          setErrorMessage('');
+        }, 3000);
+      });
+  };
+
   return (
     <footer className="todoapp__footer" data-cy="Footer">
       <span className="todo-count" data-cy="TodosCounter">
@@ -60,6 +103,7 @@ export const Footer: React.FC<Props> = ({
         type="button"
         className="todoapp__clear-completed"
         data-cy="ClearCompletedButton"
+        onClick={handleClearCompleted}
         disabled={completedTodos.length === 0}
       >
         Clear completed

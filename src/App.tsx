@@ -21,10 +21,6 @@ export const App: React.FC = () => {
   const inputRef = useRef<HTMLInputElement>(null);
 
   useEffect(() => {
-    if (inputRef.current) {
-      inputRef.current.focus();
-    }
-
     setIsLoading(true);
     getTodos()
       .then(data => setTodos(data))
@@ -42,20 +38,16 @@ export const App: React.FC = () => {
     return <UserWarning />;
   }
 
-  const completedTodos = todos.filter(todo => todo.completed);
-  const todosLeft = todos.length - completedTodos.length;
-
   return (
     <div className="todoapp">
       <h1 className="todoapp__title">todos</h1>
 
       <div className="todoapp__content">
         <Header
-          inputRef={inputRef}
           setErrorMessage={setErrorMessage}
-          // todos={todos}
           setTodos={setTodos}
           setTempTodo={setTempTodo}
+          inputRef={inputRef}
         />
 
         {isLoading ? (
@@ -66,15 +58,18 @@ export const App: React.FC = () => {
             tempTodo={tempTodo}
             setTodos={setTodos}
             setErrorMessage={setErrorMessage}
+            inputRef={inputRef}
           />
         )}
 
         {todos.length > 0 && (
           <Footer
-            completedTodos={completedTodos}
+            todos={todos}
             filteredButton={filteredButton}
             filterBy={setFilteredButton}
-            todosLeft={todosLeft}
+            setTodos={setTodos}
+            setErrorMessage={setErrorMessage}
+            inputRef={inputRef}
           />
         )}
       </div>
