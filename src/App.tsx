@@ -116,11 +116,19 @@ export const App: React.FC = () => {
   const handleClearCompleted = () => {
     const modifiedTodos = todos.filter(todo => todo.completed === true);
 
-    Promise.all(modifiedTodos.map(todo => deleteTodos(todo.id)))
-      .then(() => {
-        setTodos(currentTodos => currentTodos.filter(todo => !todo.completed));
-      })
-      .catch(() => setError('Unable to delete a todo'));
+    const modifiedTodosIds = modifiedTodos.map(todo => todo.id);
+
+    modifiedTodosIds.forEach(id => {
+      deleteTodos(id)
+        .then(() => {
+          setTodos(currentTodos =>
+            currentTodos.filter(currentTodo => currentTodo.id !== id),
+          );
+        })
+        .catch(() => {
+          setError('Unable to delete a todo');
+        });
+    });
   };
 
   //#endregion
