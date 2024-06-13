@@ -120,7 +120,7 @@ export const App: React.FC = () => {
       .then(() => {
         setTodos(currentTodos => currentTodos.filter(todo => !todo.completed));
       })
-      .catch(() => setError('Unable to delete completed todos'));
+      .catch(() => setError('Unable to delete a todo'));
   };
 
   //#endregion
