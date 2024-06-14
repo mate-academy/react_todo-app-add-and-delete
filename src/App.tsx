@@ -42,6 +42,9 @@ export const App: React.FC = () => {
     event.preventDefault();
     if (!newToDoTitle.trim()) {
       setError(Errors.TitleEmpty);
+      setTimeout(() => {
+        setError(Errors.NoLetters);
+      }, 3000);
 
       return;
     }
