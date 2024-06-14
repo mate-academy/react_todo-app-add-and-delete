@@ -8,6 +8,8 @@ type Props = {
   setTodos: React.Dispatch<React.SetStateAction<Todo[]>>;
   setErrorMessage: (value: string) => void;
   inputRef: React.RefObject<HTMLInputElement>;
+  completedTodoIds: number[];
+  completedClearing: boolean;
 };
 
 export const TodoList: React.FC<Props> = ({
@@ -16,6 +18,8 @@ export const TodoList: React.FC<Props> = ({
   setTodos,
   setErrorMessage,
   inputRef,
+  completedClearing,
+  completedTodoIds,
 }) => {
   return (
     <section className="todoapp__main" data-cy="TodoList">
@@ -27,6 +31,8 @@ export const TodoList: React.FC<Props> = ({
             setTodos={setTodos}
             setErrorMessage={setErrorMessage}
             inputRef={inputRef}
+            completedClearing={completedClearing}
+            completedTodoIds={completedTodoIds}
           />
         );
       })}
@@ -36,6 +42,8 @@ export const TodoList: React.FC<Props> = ({
           setTodos={setTodos}
           setErrorMessage={setErrorMessage}
           inputRef={inputRef}
+          completedClearing={completedClearing}
+          completedTodoIds={completedTodoIds}
         />
       )}
     </section>

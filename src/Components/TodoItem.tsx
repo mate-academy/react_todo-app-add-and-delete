@@ -10,6 +10,8 @@ type Props = {
   setTodos: React.Dispatch<React.SetStateAction<Todo[]>>;
   setErrorMessage: (value: string) => void;
   inputRef: React.RefObject<HTMLInputElement>;
+  completedTodoIds: number[];
+  completedClearing: boolean;
 };
 
 export const TodoItem: React.FC<Props> = ({
@@ -17,6 +19,8 @@ export const TodoItem: React.FC<Props> = ({
   setTodos,
   setErrorMessage,
   inputRef,
+  completedClearing,
+  completedTodoIds,
 }) => {
   const [isDeleting, setIsDeleting] = useState(false);
 
@@ -73,7 +77,10 @@ export const TodoItem: React.FC<Props> = ({
       <div
         data-cy="TodoLoader"
         className={classNames('modal overlay', {
-          'is-active': todo.id === 0 || isDeleting,
+          'is-active':
+            todo.id === 0 ||
+            isDeleting ||
+            (completedClearing && completedTodoIds.includes(todo.id)),
         })}
       >
         <div className="modal-background has-background-white-ter" />

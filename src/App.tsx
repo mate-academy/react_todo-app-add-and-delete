@@ -17,8 +17,12 @@ export const App: React.FC = () => {
   const [isLoading, setIsLoading] = useState(false);
   const [errorMessage, setErrorMessage] = useState('');
   const [tempTodo, setTempTodo] = useState<Todo | null>(null);
+  const [completedClearing, setCompletedClearing] = useState(false);
 
   const inputRef = useRef<HTMLInputElement>(null);
+  const completedTodoIds = todos
+    .filter(todo => todo.completed)
+    .map(todo => todo.id);
 
   useEffect(() => {
     setIsLoading(true);
@@ -59,6 +63,8 @@ export const App: React.FC = () => {
             setTodos={setTodos}
             setErrorMessage={setErrorMessage}
             inputRef={inputRef}
+            completedTodoIds={completedTodoIds}
+            completedClearing={completedClearing}
           />
         )}
 
@@ -70,6 +76,7 @@ export const App: React.FC = () => {
             setTodos={setTodos}
             setErrorMessage={setErrorMessage}
             inputRef={inputRef}
+            setCompletedClearing={setCompletedClearing}
           />
         )}
       </div>

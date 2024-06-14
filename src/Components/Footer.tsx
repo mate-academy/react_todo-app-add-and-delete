@@ -9,6 +9,7 @@ type Props = {
   filteredButton: string;
   filterBy: (value: Filter) => void;
   setErrorMessage: (value: string) => void;
+  setCompletedClearing: (value: boolean) => void;
   inputRef: React.RefObject<HTMLInputElement>;
 };
 
@@ -19,43 +20,33 @@ export const Footer: React.FC<Props> = ({
   setTodos,
   setErrorMessage,
   inputRef,
+  setCompletedClearing,
 }) => {
   const completedTodos = todos.filter(todo => todo.completed);
   const todosLeft = todos.length - completedTodos.length;
 
-  const handleClearCompleted = () => {
-    const completedTodoIds = completedTodos.map(todo => todo.id);
-
-    Promise.allSettled(completedTodoIds.map(id => deleteTodo(id)))
-      .then(results => {
-        const failedDeletions: Todo[] = results
-          .map((result, index) =>
-            result.status === 'rejected' ? completedTodos[index] : null,
-          )
-          .filter((todo): todo is Todo => todo !== null);
-
-        if (failedDeletions.length > 0) {
-          setErrorMessage('Unable to delete a todo');
-          setTimeout(() => {
-            setErrorMessage('');
-          }, 3000);
-        }
-
-        setTodos((prevTodos: Todo[]) => [
-          ...prevTodos.filter(todo => !todo.completed),
-          ...failedDeletions,
-        ]);
-
-        if (inputRef.current) {
-          inputRef.current.focus();
-        }
+  const onDelete = (id: number) => {
+    setCompletedClearing(true);
+    deleteTodo(id)
+      .then(() => {
+        setTodos(todoState => todoState.filter(todo => todo.id !== id));
       })
       .catch(() => {
-        setErrorMessage('Unable to clear completed todos');
+        setErrorMessage('Unable to delete a todo');
         setTimeout(() => {
           setErrorMessage('');
         }, 3000);
+      })
+      .finally(() => {
+        setCompletedClearing(false);
       });
+  };
+
+  const handleClearCompleted = async () => {
+    completedTodos.forEach(todo => onDelete(todo.id));
+    if (inputRef.current) {
+      inputRef.current.focus();
+    }
   };
 
   return (
