@@ -32,6 +32,9 @@ export const App: React.FC = () => {
       .then(setTodos)
       .catch(() => {
         setError(Errors.UnableToLoad);
+        setTimeout(() => {
+          setError(Errors.NoLetters);
+        }, 3000);
       });
   }, [error]);
 
