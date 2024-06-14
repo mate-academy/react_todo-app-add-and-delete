@@ -63,6 +63,9 @@ export const App: React.FC = () => {
       })
       .catch(() => {
         setError(Errors.UnableToAdd);
+        setTimeout(() => {
+          setError(Errors.NoLetters);
+        }, 3000);
       })
       .finally(() => {
         setTemporaryTodo(null);
