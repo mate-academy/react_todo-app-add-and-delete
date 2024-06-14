@@ -3,6 +3,7 @@ import React, { useMemo } from 'react';
 import { Todo } from '../types/Todo';
 import { FilterButtons } from '../types/FilterType';
 import { ToDoItem } from './ToDoItem';
+import { TempTodoItem } from './TempTodoItem';
 type Props = {
   todos: Todo[];
   filter: FilterButtons;
@@ -53,13 +54,7 @@ export const TodoList = ({
           />
         ))}
 
-      {temporaryTodo && (
-        <ToDoItem
-          todo={temporaryTodo}
-          isLoading={loadingTodos.includes(0)}
-          deleteTodo={() => {}}
-        />
-      )}
+      {temporaryTodo && <TempTodoItem todo={temporaryTodo} />}
     </section>
   );
 };

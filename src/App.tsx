@@ -14,7 +14,7 @@ import { Errors } from './types/EnumedErrors';
 
 export const App: React.FC = () => {
   const [todos, setTodos] = useState<Todo[]>([]);
-  const [error, setError] = useState('');
+  const [error, setError] = useState<Errors>(Errors.NoLetters);
   const [temporaryTodo, setTemporaryTodo] = useState<Todo | null>(null);
   const [tempIds, setTempIds] = useState<number[]>([]);
   const [newToDoTitle, setNewToDoTitle] = useState('');
@@ -33,16 +33,6 @@ export const App: React.FC = () => {
       .catch(() => {
         setError(Errors.UnableToLoad);
       });
-  }, [error]);
-
-  useEffect(() => {
-    let timeoutError: NodeJS.Timeout;
-
-    if (error) {
-      timeoutError = setTimeout(() => setError(Errors.NoLetters), 3000);
-    }
-
-    return () => clearTimeout(timeoutError);
   }, [error]);
 
   const handleAddingTodos = (event: React.FormEvent<Element>) => {
@@ -76,34 +66,35 @@ export const App: React.FC = () => {
       })
       .finally(() => {
         setTemporaryTodo(null);
-        setTempIds(currentIds => currentIds.filter(todoId => todoId !== 0));
+        setTempIds([]);
         setIsLoading(false);
       });
   };
 
   const handleDeletedTodo = (idNumber: number) => {
+    setIsLoading(true);
     setTempIds(currentIds => [...currentIds, idNumber]);
 
     return deleteTodo(idNumber)
       .then(() => {
-        setTodos(updateTodos =>
-          updateTodos.filter(todo => todo.id !== idNumber),
-        );
+        setTodos(currTodos => currTodos.filter(todo => todo.id !== idNumber));
       })
       .catch(() => {
         setError(Errors.UnableToDelete);
+        setTimeout(() => {
+          setError(Errors.NoLetters);
+        }, 3000);
       })
       .finally(() => {
-        setTempIds(currentIds =>
-          currentIds.filter(deletedId => idNumber !== deletedId),
-        );
+        setTempIds([]);
+        setIsLoading(false);
       });
   };
 
-  const deleteOnlyCompleted = () => {
-    const removeDeletedTodos = todos.filter(todo => !todo.completed);
+  const completedTodos = todos.filter(todo => todo.completed);
 
-    setTodos(removeDeletedTodos);
+  const deleteOnlyCompleted = () => {
+    completedTodos.forEach(todo => handleDeletedTodo(todo.id));
   };
 
   const allTodosAreCompleted =
@@ -162,8 +153,8 @@ export const App: React.FC = () => {
           todos={todos}
           filter={filterButton}
           setFilter={setFilterButton}
-          deleteAllCompleted={deleteOnlyCompleted}
           todosCounter={todosCounter}
+          deletedAllCompleted={deleteOnlyCompleted}
         />
       </div>
 

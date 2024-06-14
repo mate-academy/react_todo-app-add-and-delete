@@ -7,16 +7,16 @@ type Props = {
   todos: Todo[];
   filter: FilterButtons;
   setFilter: (filter: FilterButtons) => void;
-  deleteAllCompleted: () => void;
   todosCounter: string;
+  deletedAllCompleted: () => void;
 };
 
 export const TodoFooter = ({
   todos,
   filter,
   setFilter,
-  deleteAllCompleted,
   todosCounter,
+  deletedAllCompleted,
 }: Props) => {
   const onlyActiveTodos = todos.filter(todo => !todo.completed);
 
@@ -66,7 +66,7 @@ export const TodoFooter = ({
               type="button"
               className="todoapp__clear-completed"
               data-cy="ClearCompletedButton"
-              onClick={() => deleteAllCompleted}
+              onClick={() => deletedAllCompleted()}
               disabled={todos.length === onlyActiveTodos.length}
             >
               Clear completed
