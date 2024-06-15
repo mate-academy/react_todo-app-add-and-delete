@@ -1,4 +1,5 @@
 import React, { useContext, useCallback } from 'react';
+import classNames from 'classnames';
 
 import { deleteTodo } from '../api/todos';
 import { TodoContext } from './TodoContext';
@@ -9,6 +10,7 @@ export const TodoFooter: React.FC = () => {
   const { state, dispatch } = useContext(TodoContext);
 
   const hasCompletedTodos = state.todos.some(todo => todo.completed);
+  const activeTodoCount = state.todos.filter(todo => !todo.completed).length;
 
   const handleFilterClick = useCallback(
     (status: TodoStatus) => (event: React.MouseEvent) => {
@@ -39,7 +41,7 @@ export const TodoFooter: React.FC = () => {
   return (
     <footer className="todoapp__footer" data-cy="Footer">
       <span className="todo-count" data-cy="TodosCounter">
-        {state.todos.filter(todo => !todo.completed).length} items left
+        {activeTodoCount} items left
       </span>
 
       <nav className="filter" data-cy="Filter">
@@ -49,7 +51,9 @@ export const TodoFooter: React.FC = () => {
             href={
               status !== TodoStatus.All ? `#/${status.toLowerCase()}` : '#/'
             }
-            className={`filter__link ${state.filter === status ? 'selected' : ''}`}
+            className={classNames('filter__link', {
+              selected: state.filter === status,
+            })}
             data-cy={`FilterLink${status}`}
             onClick={handleFilterClick(status)}
           >
@@ -59,7 +63,9 @@ export const TodoFooter: React.FC = () => {
       </nav>
       <button
         type="button"
-        className={`todoapp__clear-completed ${hasCompletedTodos ? 'todoapp__clear-completed--active' : ''}`}
+        className={classNames('todoapp__clear-completed', {
+          'todoapp__clear-completed--active': hasCompletedTodos,
+        })}
         data-cy="ClearCompletedButton"
         onClick={handleClearCompleted}
         disabled={!hasCompletedTodos}

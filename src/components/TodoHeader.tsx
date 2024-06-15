@@ -5,6 +5,7 @@ import React, {
   useRef,
   useEffect,
 } from 'react';
+import classNames from 'classnames';
 
 import { USER_ID, createTodo } from '../api/todos';
 import { TodoErrors } from '../types/TodoErrors';
@@ -74,7 +75,9 @@ export const TodoHeader: React.FC = () => {
       {state.todos.length > 0 && (
         <button
           type="button"
-          className={`todoapp__toggle-all ${state.todos.every(todo => todo.completed) ? 'active' : ''}`}
+          className={classNames('todoapp__toggle-all', {
+            active: state.todos.every(todo => todo.completed),
+          })}
           data-cy="ToggleAllButton"
           onClick={handleToggleAll}
         />

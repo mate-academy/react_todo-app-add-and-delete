@@ -1,4 +1,5 @@
 import React, { useContext, useState, useCallback } from 'react';
+import classNames from 'classnames';
 
 import { deleteTodo } from '../api/todos';
 import { Todo } from '../types/Todo';
@@ -58,7 +59,10 @@ export const TodoItem: React.FC<Props> = ({ todo }) => {
   }, [todo.id, dispatch]);
 
   return (
-    <div data-cy="Todo" className={`todo ${todo.completed ? 'completed' : ''}`}>
+    <div
+      data-cy="Todo"
+      className={classNames('todo', { completed: todo.completed })}
+    >
       <label className="todo__status-label">
         <input
           data-cy="TodoStatus"
@@ -107,7 +111,7 @@ export const TodoItem: React.FC<Props> = ({ todo }) => {
 
       <div
         data-cy="TodoLoader"
-        className={`modal overlay ${todo.isLoading ? 'is-active' : ''}`}
+        className={classNames('modal overlay', { 'is-active': todo.isLoading })}
       >
         <div className="modal-background has-background-white-ter" />
         <div className="loader" />
