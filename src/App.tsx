@@ -6,14 +6,17 @@ import * as postService from './api/todos';
 import classNames from 'classnames';
 import { Todo } from './types/Todo';
 import { Filter } from './types/Filter';
+import { TodoInfo } from './components/TodoInfo/TodoInfo';
+import { TodoItem } from './components/TodoItem/TodoItem';
 
 export const App: React.FC = () => {
-  const [errorMessage, setErrorMessage] = useState('');
-  const [title, setTitle] = useState('');
   const [todos, setTodos] = useState<Todo[]>([]);
+  const [title, setTitle] = useState('');
   const [tempTodo, setTempTodo] = useState<Todo | null>(null);
   const [visibleTodos, setVisibleTodos] = useState<Todo[]>([]);
+  const [errorMessage, setErrorMessage] = useState('');
   const [selectedFilter, setSelectedFilter] = useState<Filter>(Filter.All);
+  const [idListForDelete, setIdListForDelete] = useState<number[]>([]);
 
   const focusField = useRef<HTMLInputElement>(null);
   const handleError = (message: string) => {
@@ -37,28 +40,63 @@ export const App: React.FC = () => {
 
     const currentTodo = {
       id: 0,
-      title,
+      title: titleChecked,
       userId: postService.USER_ID,
       completed: false,
     };
 
     setTempTodo(currentTodo);
 
-    if (tempTodo) {
-      postService.addTodo(postService.USER_ID, currentTodo).then(newTodo => {
+    postService
+      .addTodo(postService.USER_ID, currentTodo)
+      .then(newTodo => {
         setTodos(prevTodos => [...prevTodos, newTodo]);
+        setTitle('');
+      })
+      .catch(() => {
+        handleError(`Unable to add a todo`);
         setTempTodo(null);
-      });
-    }
 
-    setTitle('');
+        return <UserWarning />;
+      });
   };
 
-  const deleteTodo = (id: number) => {
-    setTodos(prevTodos => prevTodos.filter(todo => todo.id !== id));
-    postService.delTodo(id).then(() => {
-      setTempTodo(null);
-    });
+  const deleteTodo = (idsForDelete: number[]) => {
+    setIdListForDelete(idsForDelete);
+
+    for (let i = 0; i < idsForDelete.length; i++) {
+      const todoForDelete = {
+        id: idsForDelete[i],
+        title,
+        userId: postService.USER_ID,
+        completed: false,
+      };
+
+      setTempTodo(todoForDelete);
+
+      postService
+        .delTodo(idsForDelete[i])
+        .then(() => {
+          setTodos(prevTodos =>
+            prevTodos.filter(todo => todo.id !== idsForDelete[i]),
+          );
+        })
+        .catch(() => {
+          handleError(`Unable to delete a todo`);
+          setTempTodo(null);
+          setIdListForDelete([]);
+
+          return <UserWarning />;
+        });
+    }
+  };
+
+  const onDeleteCompletedTodos = () => {
+    const completedTodos = todos
+      .filter(todo => todo.completed)
+      .map(todo => todo.id);
+
+    deleteTodo(completedTodos);
   };
 
   const sortByStatus = (filter: string) => {
@@ -83,6 +121,7 @@ export const App: React.FC = () => {
       .then(todosFromServer => {
         setTodos(todosFromServer);
         setVisibleTodos(todosFromServer);
+        setTempTodo(null);
       })
       .catch(() => {
         handleError('Unable to load todos');
@@ -93,9 +132,10 @@ export const App: React.FC = () => {
     if (focusField.current) {
       focusField.current.focus();
     }
-  }, []);
+  }, [tempTodo]);
 
   const todoCounter = todos.filter(todo => !todo.completed).length;
+  const completedTodoCounter = todos.length - todoCounter;
 
   return (
     <div className="todoapp">
@@ -106,7 +146,9 @@ export const App: React.FC = () => {
           {/* this button should have `active` class only if all todos are completed */}
           <button
             type="button"
-            className="todoapp__toggle-all active"
+            className={classNames('todoapp__toggle-all', {
+              active: todoCounter === 0,
+            })}
             data-cy="ToggleAllButton"
           />
 
@@ -119,52 +161,23 @@ export const App: React.FC = () => {
               className="todoapp__new-todo"
               placeholder="What needs to be done?"
               ref={focusField}
+              disabled={tempTodo ? true : false}
               onChange={event => setTitle(event.target.value)}
             />
           </form>
         </header>
 
         <section className="todoapp__main" data-cy="TodoList">
-          {/* ++++++++++++++++++++++++++++++++++++++++++++++++ */}
-
           {visibleTodos.map(todo => (
-            <div
-              data-cy="Todo"
-              className={classNames('todo', { completed: todo.completed })}
+            <TodoInfo
               key={todo.id}
-            >
-              <label className="todo__status-label">
-                <input
-                  data-cy="TodoStatus"
-                  type="checkbox"
-                  className="todo__status"
-                  checked={todo.completed}
-                />
-              </label>
-
-              <span data-cy="TodoTitle" className="todo__title">
-                {todo.title}
-              </span>
-
-              {/* Remove button appears only on hover */}
-              <button
-                type="button"
-                className="todo__remove"
-                data-cy="TodoDelete"
-                onClick={() => deleteTodo(todo.id)}
-              >
-                ×
-              </button>
-
-              {/* overlay will cover the todo while it is being deleted or updated */}
-              <div data-cy="TodoLoader" className="modal overlay">
-                <div className="modal-background has-background-white-ter" />
-                <div className="loader" />
-              </div>
-            </div>
+              todoInfo={todo}
+              onDelete={deleteTodo}
+              todosForDelete={idListForDelete || [tempTodo?.id]}
+            />
           ))}
 
-          {/* ++++++++++++++++++++++++++++++++++++++++++++++++ */}
+          {tempTodo?.id === 0 && <TodoItem tempTitle={tempTodo.title} />}
         </section>
 
         {/* Hide the footer if there are no todos */}
@@ -214,7 +227,9 @@ export const App: React.FC = () => {
             <button
               type="button"
               className="todoapp__clear-completed"
+              disabled={completedTodoCounter === 0}
               data-cy="ClearCompletedButton"
+              onClick={onDeleteCompletedTodos}
             >
               Clear completed
             </button>
@@ -235,12 +250,6 @@ export const App: React.FC = () => {
         {/* show only one message at a time */}
         {errorMessage}
         {/*
-        Title should not be empty
-        <br />
-        Unable to add a todo
-        <br />
-        Unable to delete a todo
-        <br />
         Unable to update a todo
         */}
       </div>
