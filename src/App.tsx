@@ -8,14 +8,14 @@ import { Todo } from './types/Todo';
 import { Filter } from './types/Filter';
 import { TodoInfo } from './components/TodoInfo/TodoInfo';
 import { TodoItem } from './components/TodoItem/TodoItem';
+import { TransitionGroup, CSSTransition } from 'react-transition-group';
 
 export const App: React.FC = () => {
   const [todos, setTodos] = useState<Todo[]>([]);
   const [title, setTitle] = useState('');
+  const [filter, setFilter] = useState<Filter>(Filter.All);
   const [tempTodo, setTempTodo] = useState<Todo | null>(null);
-  const [visibleTodos, setVisibleTodos] = useState<Todo[]>([]);
   const [errorMessage, setErrorMessage] = useState('');
-  const [selectedFilter, setSelectedFilter] = useState<Filter>(Filter.All);
   const [idListForDelete, setIdListForDelete] = useState<number[]>([]);
 
   const focusField = useRef<HTMLInputElement>(null);
@@ -26,6 +26,25 @@ export const App: React.FC = () => {
       setErrorMessage('');
     }, 3000);
   };
+
+  useEffect(() => {
+    postService
+      .getTodos(postService.USER_ID)
+      .then(todosFromServer => {
+        setTodos(todosFromServer);
+      })
+      .catch(() => {
+        handleError('Unable to load todos');
+
+        return <UserWarning />;
+      });
+  }, []);
+
+  useEffect(() => {
+    if (focusField.current) {
+      focusField.current.focus();
+    }
+  }, [tempTodo]);
 
   const handleFormSubmit = (event: React.FormEvent) => {
     event.preventDefault();
@@ -55,9 +74,11 @@ export const App: React.FC = () => {
       })
       .catch(() => {
         handleError(`Unable to add a todo`);
-        setTempTodo(null);
 
         return <UserWarning />;
+      })
+      .finally(() => {
+        setTempTodo(null);
       });
   };
 
@@ -87,6 +108,9 @@ export const App: React.FC = () => {
           setIdListForDelete([]);
 
           return <UserWarning />;
+        })
+        .finally(() => {
+          setTempTodo(null);
         });
     }
   };
@@ -99,40 +123,16 @@ export const App: React.FC = () => {
     deleteTodo(completedTodos);
   };
 
-  const sortByStatus = (filter: string) => {
+  const visibleTodos = todos.filter(todo => {
     switch (filter) {
-      case 'active':
-        setVisibleTodos(todos.filter(todo => !todo.completed));
-        setSelectedFilter(Filter.Active);
-        break;
-      case 'completed':
-        setVisibleTodos(todos.filter(todo => todo.completed));
-        setSelectedFilter(Filter.Completed);
-        break;
+      case Filter.Active:
+        return !todo.completed;
+      case Filter.Completed:
+        return todo.completed;
       default:
-        setSelectedFilter(Filter.All);
-        setVisibleTodos(todos);
+        return todo;
     }
-  };
-
-  useEffect(() => {
-    postService
-      .getTodos(postService.USER_ID)
-      .then(todosFromServer => {
-        setTodos(todosFromServer);
-        setVisibleTodos(todosFromServer);
-        setTempTodo(null);
-      })
-      .catch(() => {
-        handleError('Unable to load todos');
-
-        return <UserWarning />;
-      });
-
-    if (focusField.current) {
-      focusField.current.focus();
-    }
-  }, [tempTodo]);
+  });
 
   const todoCounter = todos.filter(todo => !todo.completed).length;
   const completedTodoCounter = todos.length - todoCounter;
@@ -161,23 +161,31 @@ export const App: React.FC = () => {
               className="todoapp__new-todo"
               placeholder="What needs to be done?"
               ref={focusField}
-              disabled={tempTodo ? true : false}
+              disabled={!!tempTodo}
               onChange={event => setTitle(event.target.value)}
             />
           </form>
         </header>
 
         <section className="todoapp__main" data-cy="TodoList">
-          {visibleTodos.map(todo => (
-            <TodoInfo
-              key={todo.id}
-              todoInfo={todo}
-              onDelete={deleteTodo}
-              todosForDelete={idListForDelete || [tempTodo?.id]}
-            />
-          ))}
+          <TransitionGroup>
+            {visibleTodos.map(todo => (
+              <CSSTransition key={todo.id} timeout={300} classNames="item">
+                <TodoInfo
+                  key={todo.id}
+                  todoInfo={todo}
+                  onDelete={deleteTodo}
+                  todosForDelete={idListForDelete}
+                />
+              </CSSTransition>
+            ))}
 
-          {tempTodo?.id === 0 && <TodoItem tempTitle={tempTodo.title} />}
+            {tempTodo?.id === 0 && (
+              <CSSTransition key={0} timeout={300} classNames="temp-item">
+                <TodoItem tempTitle={tempTodo.title} />
+              </CSSTransition>
+            )}
+          </TransitionGroup>
         </section>
 
         {/* Hide the footer if there are no todos */}
@@ -192,10 +200,10 @@ export const App: React.FC = () => {
               <a
                 href="#/"
                 className={classNames('filter__link', {
-                  selected: selectedFilter === Filter.All,
+                  selected: filter === Filter.All,
                 })}
                 data-cy="FilterLinkAll"
-                onClick={() => sortByStatus('all')}
+                onClick={() => setFilter(Filter.All)}
               >
                 All
               </a>
@@ -203,10 +211,10 @@ export const App: React.FC = () => {
               <a
                 href="#/active"
                 className={classNames('filter__link', {
-                  selected: selectedFilter === Filter.Active,
+                  selected: filter === Filter.Active,
                 })}
                 data-cy="FilterLinkActive"
-                onClick={() => sortByStatus('active')}
+                onClick={() => setFilter(Filter.Active)}
               >
                 Active
               </a>
@@ -214,10 +222,10 @@ export const App: React.FC = () => {
               <a
                 href="#/completed"
                 className={classNames('filter__link', {
-                  selected: selectedFilter === Filter.Completed,
+                  selected: filter === Filter.Completed,
                 })}
                 data-cy="FilterLinkCompleted"
-                onClick={() => sortByStatus('completed')}
+                onClick={() => setFilter(Filter.Completed)}
               >
                 Completed
               </a>
@@ -227,7 +235,7 @@ export const App: React.FC = () => {
             <button
               type="button"
               className="todoapp__clear-completed"
-              disabled={completedTodoCounter === 0}
+              disabled={!completedTodoCounter}
               data-cy="ClearCompletedButton"
               onClick={onDeleteCompletedTodos}
             >
