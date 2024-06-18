@@ -67,7 +67,7 @@ export const App: React.FC = () => {
     setTempTodo(currentTodo);
 
     postService
-      .addTodo(postService.USER_ID, currentTodo)
+      .addTodo(currentTodo)
       .then(newTodo => {
         setTodos(prevTodos => [...prevTodos, newTodo]);
         setTitle('');
