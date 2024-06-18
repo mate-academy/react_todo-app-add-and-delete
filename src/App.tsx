@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { UserWarning } from './UserWarning';
-import { USER_ID, getTodos } from './api/todos';
+import { USER_ID, deleteTodo, getTodos } from './api/todos';
 import { Todo } from './types/Todo';
 import { Header } from './components/header/Header';
 import { TodoList } from './components/todoList/TodoList';
@@ -20,10 +20,14 @@ export const App: React.FC = () => {
             setTodos(todosFromServer);
             break;
           case 'active':
-            setTodos(todosFromServer.filter(todo => !todo.completed));
+            setTodos(
+              todosFromServer.filter(todoStatus => !todoStatus.completed),
+            );
             break;
           case 'completed':
-            setTodos(todosFromServer.filter(todo => todo.completed));
+            setTodos(
+              todosFromServer.filter(todoStatus => todoStatus.completed),
+            );
             break;
           default:
             setTodos(todosFromServer);
@@ -35,7 +39,20 @@ export const App: React.FC = () => {
       });
   }, [status]);
 
-  const leftItems = todos.filter(todo => !todo.completed).length;
+  const leftItems = todos.filter(todoStatus => !todoStatus.completed).length;
+
+  const handleDeleteTodo = (todoId: number) => {
+    deleteTodo(todoId)
+      .then(() => {
+        setTodos(currentTodos =>
+          currentTodos.filter(todo => todo.id !== todoId),
+        );
+      })
+      .catch(error => {
+        setErrorMessage('');
+        throw error;
+      });
+  };
 
   if (!USER_ID) {
     return <UserWarning />;
@@ -47,7 +64,13 @@ export const App: React.FC = () => {
 
       <div className="todoapp__content">
         <Header />
-        {todos.length > 0 && <TodoList todos={todos} onDelete={} />}
+        {todos.length > 0 && (
+          <TodoList
+            todos={todos}
+            onDeleteTodo={handleDeleteTodo}
+            handleToggleTodo={}
+          />
+        )}
         <Footer onClick={setStatus} status={status} items={leftItems} />
       </div>
 
