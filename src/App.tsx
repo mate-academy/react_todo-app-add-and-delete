@@ -36,7 +36,7 @@ export const App: React.FC = () => {
           setError(Errors.NoLetters);
         }, 3000);
       });
-  }, [error]);
+  }, []);
 
   const handleAddingTodos = (event: React.FormEvent<Element>) => {
     event.preventDefault();
@@ -106,11 +106,10 @@ export const App: React.FC = () => {
     completedTodos.forEach(todo => handleDeletedTodo(todo.id));
   };
 
-  const allTodosAreCompleted =
-    todos.filter(todo => todo.completed).length === todos.length;
+  const TodosCompleted = completedTodos.length === todos.length;
 
   const handleChangingStatusButton = () => {
-    if (allTodosAreCompleted) {
+    if (TodosCompleted) {
       const changeTodos: Todo[] = todos.map(todo => {
         return {
           ...todo,
@@ -146,7 +145,7 @@ export const App: React.FC = () => {
           addTodos={handleAddingTodos}
           toggleButton={handleChangingStatusButton}
           todos={todos}
-          allTodosAreCompleted={allTodosAreCompleted}
+          allTodosAreCompleted={TodosCompleted}
           toDoTitle={newToDoTitle}
           setToDoTitle={setNewToDoTitle}
           isLoading={isLoading}
