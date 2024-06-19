@@ -13,6 +13,8 @@ import { TodoStatus } from './types/TodoStatus';
 export const App: React.FC = () => {
   const [todos, setTodos] = useState<Todo[]>([]);
   const [filtrationParam, setFiltrationParam] = useState(TodoStatus.all);
+  const [newTodoTitle, setNewTodoTitle] = useState('');
+  const [tempTodo, setTempTodo] = useState<Todo | null>(null);
   const [errorMessage, setErrorMessage] = useState('');
 
   useEffect(() => {
@@ -53,9 +55,18 @@ export const App: React.FC = () => {
       <h1 className="todoapp__title">todos</h1>
 
       <div className="todoapp__content">
-        <Header />
+        <Header
+          titleValue={newTodoTitle}
+          setTitle={setNewTodoTitle}
+          setErrorMessage={setErrorMessage}
+          setTempTodo={setTempTodo}
+          setTodos={setTodos}
+        />
         {!!todos.length && (
-          <TodoList todos={filterTodos(todos, filtrationParam)} />
+          <TodoList
+            todos={filterTodos(todos, filtrationParam)}
+            tempTodo={tempTodo}
+          />
         )}
         {!!todos.length && (
           <Footer
