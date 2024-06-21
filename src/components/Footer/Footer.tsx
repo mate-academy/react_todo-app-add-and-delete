@@ -30,9 +30,7 @@ export const Footer: React.FC<Props> = ({
             selected: selectedParam === TodoStatus.all,
           })}
           data-cy="FilterLinkAll"
-          onClick={() => {
-            onSelectParam(TodoStatus.all);
-          }}
+          onClick={() => onSelectParam(TodoStatus.all)}
         >
           All
         </a>
@@ -43,9 +41,7 @@ export const Footer: React.FC<Props> = ({
             selected: selectedParam === TodoStatus.active,
           })}
           data-cy="FilterLinkActive"
-          onClick={() => {
-            onSelectParam(TodoStatus.active);
-          }}
+          onClick={() => onSelectParam(TodoStatus.active)}
         >
           Active
         </a>
@@ -56,9 +52,7 @@ export const Footer: React.FC<Props> = ({
             selected: selectedParam === TodoStatus.completed,
           })}
           data-cy="FilterLinkCompleted"
-          onClick={() => {
-            onSelectParam(TodoStatus.completed);
-          }}
+          onClick={() => onSelectParam(TodoStatus.completed)}
         >
           Completed
         </a>

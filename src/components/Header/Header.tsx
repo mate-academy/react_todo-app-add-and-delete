@@ -36,7 +36,7 @@ export const Header: React.FC<Props> = ({
     e.preventDefault();
     const newTitle = titleValue.trim();
 
-    if (newTitle === '') {
+    if (!newTitle) {
       setErrorMessage('Title should not be empty');
 
       return;
