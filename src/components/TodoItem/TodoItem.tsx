@@ -1,12 +1,17 @@
-import React from 'react';
 import { Todo } from '../../types/Todo';
 import classNames from 'classnames';
 
 type Props = {
   todo: Todo;
+  isProcessed: boolean;
+  deleteTodo: (id: number) => void;
 };
 
-export const TodoItem: React.FC<Props> = ({ todo }) => {
+export const TodoItem: React.FC<Props> = ({
+  todo,
+  isProcessed,
+  deleteTodo,
+}) => {
   const { id, title, completed } = todo;
 
   return (
@@ -30,15 +35,19 @@ export const TodoItem: React.FC<Props> = ({ todo }) => {
       </span>
 
       {/* Remove button appears only on hover */}
-      <button type="button" className="todo__remove" data-cy="TodoDelete">
+      <button
+        onClick={() => deleteTodo(id)}
+        type="button"
+        className="todo__remove"
+        data-cy="TodoDelete"
+      >
         ×
       </button>
 
       {/* overlay will cover the todo while it is being deleted or updated */}
       <div
         data-cy="TodoLoader"
-        // className="modal overlay"
-        className={classNames('modal overlay', { 'is-active': id === 0 })}
+        className={classNames('modal overlay', { 'is-active': isProcessed })}
       >
         {/* eslint-disable-next-line max-len */}
         <div className="modal-background has-background-white-ter" />

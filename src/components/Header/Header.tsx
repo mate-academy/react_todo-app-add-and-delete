@@ -12,16 +12,16 @@ import { USER_ID } from '../../api/todos';
 type Props = {
   titleValue: string;
   setTitle: (title: string) => void;
-  setTempTodo: (todo: Todo | null) => void;
   setTodos: Dispatch<SetStateAction<Todo[]>>;
+  setTempTodo: (todo: Todo | null) => void;
   setErrorMessage: (message: string) => void;
 };
 
 export const Header: React.FC<Props> = ({
   titleValue,
   setTitle,
-  setTempTodo,
   setTodos,
+  setTempTodo,
   setErrorMessage,
 }) => {
   const inputField = useRef<HTMLInputElement>(null);

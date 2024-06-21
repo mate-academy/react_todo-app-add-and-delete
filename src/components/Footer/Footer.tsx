@@ -4,14 +4,18 @@ import { TodoStatus } from '../../types/TodoStatus';
 
 type Props = {
   activeTodosCount: number;
+  completedTodosCount: number;
   selectedParam: TodoStatus;
   onSelectParam: (param: TodoStatus) => void;
+  deleteAllCompletedTodos: () => void;
 };
 
 export const Footer: React.FC<Props> = ({
-  activeTodosCount = 0,
+  activeTodosCount,
+  completedTodosCount,
   selectedParam,
   onSelectParam,
+  deleteAllCompletedTodos,
 }) => {
   return (
     <footer className="todoapp__footer" data-cy="Footer">
@@ -65,6 +69,8 @@ export const Footer: React.FC<Props> = ({
         type="button"
         className="todoapp__clear-completed"
         data-cy="ClearCompletedButton"
+        disabled={!completedTodosCount}
+        onClick={deleteAllCompletedTodos}
       >
         Clear completed
       </button>
