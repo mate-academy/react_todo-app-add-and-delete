@@ -1,12 +1,50 @@
 import classNames from 'classnames';
-import React, { useEffect, useRef } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import { Todo } from '../types/Todo';
 
 type Props = {
   todos: Todo[];
+  setErrorMessage: (error: string) => void;
+  onSubmit: (todo: Todo) => Promise<void>;
+  userId: number;
 };
 
-export const Header: React.FC<Props> = ({ todos }) => {
+export const Header: React.FC<Props> = ({
+  todos,
+  setErrorMessage,
+  onSubmit,
+  userId,
+}) => {
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  const [title, setTitle] = useState('');
+
+  const handleTitle = (e: React.ChangeEvent<HTMLInputElement>) => {
+    setTitle(e.target.value);
+  };
+
+  const reset = () => {
+    setTitle('');
+    setErrorMessage('');
+  };
+
+  const handleSubmit = (e: React.FormEvent) => {
+    e.preventDefault();
+    const normalizedTitle = title.trim();
+
+    if (!normalizedTitle) {
+      setErrorMessage('Title should not be empty');
+      setTimeout(() => setErrorMessage(''), 3000);
+
+      return;
+    }
+
+    setIsSubmitting(true);
+
+    onSubmit({ id: 0, title: normalizedTitle, userId, completed: false })
+      .then(reset)
+      .finally(() => setIsSubmitting(false));
+  };
+
   const completedTodos = todos.every(todo => todo.completed);
   const inputField = useRef<HTMLInputElement>(null);
 
@@ -14,11 +52,10 @@ export const Header: React.FC<Props> = ({ todos }) => {
     if (inputField.current) {
       inputField.current.focus();
     }
-  }, []);
+  }, [isSubmitting, todos]);
 
   return (
     <header className="todoapp__header">
-      {/* this button should have `active` class only if all todos are completed */}
       {!!todos.length && (
         <button
           type="button"
@@ -29,14 +66,16 @@ export const Header: React.FC<Props> = ({ todos }) => {
         />
       )}
 
-      {/* Add a todo on form submit */}
-      <form>
+      <form onSubmit={handleSubmit}>
         <input
           data-cy="NewTodoField"
           type="text"
           className="todoapp__new-todo"
           placeholder="What needs to be done?"
+          value={title}
           ref={inputField}
+          onChange={handleTitle}
+          disabled={isSubmitting}
         />
       </form>
     </header>

@@ -7,11 +7,27 @@ type Props = {
   setStatus: (status: Status) => void;
   status: Status;
   todos: Todo[];
+  onDelete: (id: number) => Promise<void>;
 };
 
-export const TodoFilter: React.FC<Props> = ({ setStatus, status, todos }) => {
-  const isAnyCompletedTodo = todos.some(todo => todo.completed);
+export const TodoFilter: React.FC<Props> = ({
+  setStatus,
+  status,
+  todos,
+  onDelete,
+}) => {
+  const completedTodos = todos.filter(todo => todo.completed);
   const activeTodos = todos.filter(todo => !todo.completed);
+
+  const handleSeveralDeletes = () => {
+    const deleteTodos: Promise<void>[] = [];
+
+    completedTodos.forEach(todo => {
+      deleteTodos.push(onDelete(todo.id));
+    });
+
+    Promise.allSettled(deleteTodos);
+  };
 
   return (
     <footer className="todoapp__footer" data-cy="Footer">
@@ -19,7 +35,6 @@ export const TodoFilter: React.FC<Props> = ({ setStatus, status, todos }) => {
         {activeTodos.length} items left
       </span>
 
-      {/* Active link should have the 'selected' class */}
       <nav className="filter" data-cy="Filter">
         <a
           href="#/"
@@ -55,12 +70,12 @@ export const TodoFilter: React.FC<Props> = ({ setStatus, status, todos }) => {
         </a>
       </nav>
 
-      {/* this button should be disabled if there are no completed todos */}
       <button
         type="button"
         className="todoapp__clear-completed"
         data-cy="ClearCompletedButton"
-        disabled={!isAnyCompletedTodo}
+        disabled={!completedTodos.length}
+        onClick={handleSeveralDeletes}
       >
         Clear completed
       </button>
