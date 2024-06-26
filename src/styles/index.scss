@@ -17,7 +17,11 @@ body {
 .notification.hidden {
   min-height: 0;
   opacity: 0;
-  pointer-events: none;
+  
+  .delete {
+    cursor: auto;
+    pointer-events: none;
+  }
 }
 
 @import "./todoapp";
