@@ -7,8 +7,8 @@ import { TodoList } from './components/TodoList';
 import { TodoFilter } from './components/TodoFilter';
 import { Header } from './components/Header';
 import { Todo } from './types/Todo';
-import classNames from 'classnames';
 import { Status } from './types/Status';
+import { ErrorNotification } from './components/ErrorNotification';
 
 export const App: React.FC = () => {
   const [todos, setTodos] = useState<Todo[]>([]);
@@ -18,18 +18,23 @@ export const App: React.FC = () => {
   const [processedId, setProcessedId] = useState<number[]>([]);
 
   useEffect(() => {
+    if (errorMessage) {
+      const timer = setTimeout(() => setErrorMessage(''), 3000);
+
+      return () => clearTimeout(timer);
+    }
+
+    return undefined;
+  }, [errorMessage]);
+
+  useEffect(() => {
     todoApi
       .getTodos()
       .then(setTodos)
       .catch(() => {
         setErrorMessage('Unable to load todos');
-        setTimeout(() => setErrorMessage(''), 3000);
       });
   }, []);
-
-  // useEffect(() => {
-  //   console.log('useEffect > isProcessedId', isProcessedId);
-  // }, [isProcessedId]);
 
   const filteredTodos = useMemo(() => {
     if (status === Status.all) {
@@ -62,7 +67,6 @@ export const App: React.FC = () => {
       .catch(error => {
         setTempTodo(null);
         setErrorMessage('Unable to add a todo');
-        setTimeout(() => setErrorMessage(''), 3000);
         throw error;
       });
   }
@@ -77,7 +81,6 @@ export const App: React.FC = () => {
       })
       .catch(() => {
         setErrorMessage('Unable to delete a todo');
-        setTimeout(() => setErrorMessage(''), 3000);
       })
       .finally(() => setProcessedId([]));
   }
@@ -116,24 +119,10 @@ export const App: React.FC = () => {
         )}
       </div>
 
-      <div
-        data-cy="ErrorNotification"
-        className={classNames(
-          'notification is-danger is-light has-text-weight-normal',
-          { hidden: !errorMessage },
-        )}
-      >
-        <button
-          data-cy="HideErrorButton"
-          type="button"
-          className="delete"
-          onClick={() => setErrorMessage('')}
-        />
-        {errorMessage}
-
-        {/*
-        Unable to update a todo */}
-      </div>
+      <ErrorNotification
+        errorMessage={errorMessage}
+        setErrorMessage={setErrorMessage}
+      />
     </div>
   );
 };

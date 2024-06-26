@@ -80,9 +80,6 @@ export const TodoItem: React.FC<Props> = ({
         </>
       )}
 
-      {/* overlay will cover the todo while it is being deleted or updated */}
-      {/* when todo is in loadind state 'is-active' class puts this modal on top of the todo */}
-
       <div
         data-cy="TodoLoader"
         className={classNames('modal overlay', {

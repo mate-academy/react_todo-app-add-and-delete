@@ -33,7 +33,6 @@ export const Header: React.FC<Props> = ({
 
     if (!normalizedTitle) {
       setErrorMessage('Title should not be empty');
-      setTimeout(() => setErrorMessage(''), 3000);
 
       return;
     }
