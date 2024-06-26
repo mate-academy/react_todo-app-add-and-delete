@@ -1,35 +1,22 @@
-import { useCallback, useEffect, useState } from 'react';
+import { useCallback } from 'react';
 import { FiltersEnum } from '../../utils/FiltersEnum';
-import { TodoFilterProps } from '../../types/ComponentsProps';
+
+export interface TodoFilterProps {
+  setSelectedFilter: (filter: FiltersEnum) => void;
+  selectedFilter: FiltersEnum;
+}
 
 export const TodoFilter: React.FC<TodoFilterProps> = ({
-  todoList,
-  filterTodoList,
-  updateClearDisabled,
+  setSelectedFilter,
+  selectedFilter,
 }) => {
-  const [selectedFilter, setSelecetedFilter] = useState<FiltersEnum>(
-    FiltersEnum.All,
+  const handleSelectFilter = useCallback(
+    (filter: FiltersEnum) => {
+      setSelectedFilter(filter);
+    },
+
+    [setSelectedFilter],
   );
-
-  useEffect(() => {
-    const filteredTodos = todoList.filter(todo => {
-      switch (selectedFilter) {
-        case FiltersEnum.Active:
-          return !todo.completed;
-        case FiltersEnum.Completed:
-          return todo.completed;
-        default:
-          return todo;
-      }
-    });
-
-    filterTodoList(filteredTodos);
-    updateClearDisabled();
-  }, [selectedFilter, todoList, filterTodoList, updateClearDisabled]);
-
-  const handleSelectFilter = useCallback((filter: FiltersEnum) => {
-    setSelecetedFilter(filter);
-  }, []);
 
   return (
     <nav className="filter" data-cy="Filter">

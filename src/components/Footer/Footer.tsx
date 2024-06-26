@@ -1,28 +1,30 @@
-import { useMemo } from 'react';
-import { TodoFooterProps } from '../../types/ComponentsProps';
+import { FiltersEnum } from '../../utils/FiltersEnum';
 import { TodoFilter } from '../TodoFilter/TodoFilter';
 
-export const Footer: React.FC<TodoFooterProps> = ({
-  todoList,
-  isClearDisabled,
-  filterTodoList,
-  clearCompleted,
-  updateClearDisabled,
-}) => {
-  const getItemsLeft = useMemo(() => {
-    return todoList.filter(todo => !todo.completed).length;
-  }, [todoList]);
+export interface TodoFooterProps {
+  isClearDisabled: boolean;
+  itemsLeft: number;
+  clearCompleted: () => void;
+  setSelectedFilter: (filter: FiltersEnum) => void;
+  selectedFilter: FiltersEnum;
+}
 
+export const Footer: React.FC<TodoFooterProps> = ({
+  isClearDisabled,
+  itemsLeft,
+  clearCompleted,
+  setSelectedFilter,
+  selectedFilter,
+}) => {
   return (
     <footer className="todoapp__footer" data-cy="Footer">
       <span className="todo-count" data-cy="TodosCounter">
-        {getItemsLeft} items left
+        {itemsLeft} items left
       </span>
 
       <TodoFilter
-        todoList={todoList}
-        filterTodoList={filterTodoList}
-        updateClearDisabled={updateClearDisabled}
+        setSelectedFilter={setSelectedFilter}
+        selectedFilter={selectedFilter}
       />
 
       <button

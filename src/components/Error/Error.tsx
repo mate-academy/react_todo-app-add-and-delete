@@ -1,5 +1,10 @@
 import { useCallback } from 'react';
-import { ErrorProps } from '../../types/ComponentsProps';
+import { ErrorsEnum } from '../../utils/ErrorsEnum';
+
+export interface ErrorProps {
+  error: ErrorsEnum | null;
+  clearError: (value: null) => void;
+}
 
 export const Error: React.FC<ErrorProps> = ({ error, clearError }) => {
   const handleCloseError = useCallback(() => {

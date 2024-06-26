@@ -1,39 +1,61 @@
 /* eslint-disable max-len */
 /* eslint-disable jsx-a11y/control-has-associated-label */
-import React, { useCallback, useEffect, useState } from 'react';
+import React, { useCallback, useEffect, useMemo, useState } from 'react';
 import { UserWarning } from './UserWarning';
 import * as todosService from './api/todos';
-import { Todo } from './types/Todo';
+import { TodoType } from './types/Todo.type';
 import { ErrorsEnum } from './utils/ErrorsEnum';
 import { Error } from './components/Error/Error';
 import { TodoList } from './components/TodoList/TodoList';
 import { Footer } from './components/Footer/Footer';
 import { Header } from './components/Header/Header';
+import { FiltersEnum } from './utils/FiltersEnum';
 
 export const App: React.FC = () => {
-  const [todoList, setTodosList] = useState<Todo[]>([]);
-  const [filteredTodoList, setFilteredTodoList] = useState<Todo[]>([]);
-  const [tempTodo, setTempTodo] = useState<Todo | null>(null);
+  const [todoList, setTodosList] = useState<TodoType[]>([]);
+  const [tempTodo, setTempTodo] = useState<TodoType | null>(null);
   const [error, setError] = useState<ErrorsEnum | null>(null);
   const [isEnabled, setIsEnabled] = useState(true);
   const [isClearDisabled, setIsClearDisabled] = useState(false);
   const [inputValue, setInputValue] = useState('');
+  const [selectedFilter, setSelectedFilter] = useState<FiltersEnum>(
+    FiltersEnum.All,
+  );
+
+  const filteredTodoList = useMemo<TodoType[]>(() => {
+    return todoList.filter(todo => {
+      switch (selectedFilter) {
+        case FiltersEnum.Active:
+          return !todo.completed;
+        case FiltersEnum.Completed:
+          return todo.completed;
+        default:
+          return todo;
+      }
+    });
+  }, [todoList, selectedFilter]);
+
+  const itemsLeft = useMemo(() => {
+    return todoList.filter(todo => !todo.completed).length;
+  }, [todoList]);
 
   const updateClearDisabled = useCallback(() => {
     setIsClearDisabled(!todoList.some(todo => todo.completed));
   }, [todoList]);
 
   useEffect(() => {
+    setTimeout(() => setError(null), 3000);
+  }, [error]);
+
+  useEffect(() => {
     todosService
       .getTodos()
       .then(todos => {
         setTodosList(todos);
-        setFilteredTodoList(todos);
         updateClearDisabled();
       })
       .catch(() => {
         setError(ErrorsEnum.UNABLE_LOAD_TODOS);
-        setTimeout(() => setError(null), 3000);
       });
   });
 
@@ -45,13 +67,9 @@ export const App: React.FC = () => {
         setTodosList(currentTodos =>
           currentTodos.filter(todo => todo.id !== todoId),
         );
-        setFilteredTodoList(currentTodos =>
-          currentTodos.filter(todo => todo.id !== todoId),
-        );
       })
       .catch(() => {
         setError(ErrorsEnum.UANBLE_DELETE_TODO);
-        setTimeout(() => setError(null), 3000);
       })
       .finally(() => {
         setIsEnabled(true);
@@ -66,14 +84,11 @@ export const App: React.FC = () => {
     });
   }, [todoList]);
 
-  if (!todosService.USER_ID) {
-    return <UserWarning />;
-  }
-
   const addTodo = () => {
-    if (inputValue.trim() === '') {
+    const title = inputValue.trim();
+
+    if (title === '') {
       setError(ErrorsEnum.TITLE_IS_EMPTY);
-      setTimeout(() => setError(null), 3000);
       setIsEnabled(true);
 
       return;
@@ -82,26 +97,28 @@ export const App: React.FC = () => {
     setTempTodo({
       id: 0,
       userId: 0,
-      title: inputValue.trim(),
+      title: title,
       completed: false,
     });
 
     todosService
-      .createTodos(inputValue.trim())
+      .createTodos(title)
       .then(newTodo => {
         setTodosList(currentTodos => [...currentTodos, newTodo]);
-        setFilteredTodoList(currentTodos => [...currentTodos, newTodo]);
         setInputValue('');
       })
       .catch(() => {
         setError(ErrorsEnum.UNABLE_ADD_TODO);
-        setTimeout(() => setError(null), 3000);
       })
       .finally(() => {
         setTempTodo(null);
         setIsEnabled(true);
       });
   };
+
+  if (!todosService.USER_ID) {
+    return <UserWarning />;
+  }
 
   return (
     <div className="todoapp">
@@ -124,11 +141,11 @@ export const App: React.FC = () => {
 
         {todoList.length > 0 && (
           <Footer
-            todoList={todoList}
             isClearDisabled={isClearDisabled}
-            filterTodoList={setFilteredTodoList}
+            itemsLeft={itemsLeft}
             clearCompleted={handleClearCompleted}
-            updateClearDisabled={updateClearDisabled}
+            setSelectedFilter={setSelectedFilter}
+            selectedFilter={selectedFilter}
           />
         )}
       </div>

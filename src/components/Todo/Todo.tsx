@@ -1,5 +1,10 @@
 import { useEffect, useState } from 'react';
-import { TodoProps } from '../../types/ComponentsProps';
+import { TodoType } from '../../types/Todo.type';
+
+export interface TodoProps {
+  todo: TodoType;
+  deleteTodo: (todoId: number) => void;
+}
 
 export const Todo: React.FC<TodoProps> = ({ todo, deleteTodo }) => {
   const [isLoading, setIsLoading] = useState(false);
@@ -22,9 +27,11 @@ export const Todo: React.FC<TodoProps> = ({ todo, deleteTodo }) => {
         className={`todo ${todo.completed ? 'completed' : ''}`}
         key={todo.id}
       >
+        {/* eslint-disable-next-line jsx-a11y/label-has-associated-control */}
         <label className="todo__status-label" htmlFor={`todo-${todo.id}`}>
           <input
             id={`todo-${todo.id}`}
+            name={`todo-${todo.id}`}
             data-cy="TodoStatus"
             type="checkbox"
             className="todo__status"

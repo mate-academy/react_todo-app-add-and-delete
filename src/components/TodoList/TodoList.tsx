@@ -1,6 +1,12 @@
 import React from 'react';
-import { TodoListProps } from '../../types/ComponentsProps';
 import { Todo } from '../Todo/Todo';
+import { TodoType } from '../../types/Todo.type';
+
+export interface TodoListProps {
+  todoList: TodoType[];
+  tempTodo: TodoType | null;
+  deleteTodo: (todoId: number) => void;
+}
 
 export const TodoList: React.FC<TodoListProps> = ({
   todoList,

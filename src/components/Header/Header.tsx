@@ -1,5 +1,12 @@
 import React, { useEffect, useRef } from 'react';
-import { TodoHeaderProps } from '../../types/ComponentsProps';
+
+export interface TodoHeaderProps {
+  inputValue: string;
+  isEnabled: boolean;
+  createTodo: () => void;
+  setInputValue: (value: string) => void;
+  toggleEnabled: (value: boolean) => void;
+}
 
 export const Header: React.FC<TodoHeaderProps> = ({
   inputValue,
