@@ -2,7 +2,7 @@
 /* eslint-disable jsx-a11y/control-has-associated-label */
 
 //#region imports
-import React, { useEffect, useMemo, useRef, useState } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import { CSSTransition, TransitionGroup } from 'react-transition-group';
 import { Todo } from './types/Todo';
 import * as todoService from './api/todos';
@@ -12,6 +12,7 @@ import { Footer } from './components/Footer/Footer';
 import { Header } from './components/Header/Header';
 // eslint-disable-next-line
 import { ErrorNotification } from './components/ErrorNotification/ErrorNotification';
+import { TodoList } from './components/Todolist/TodoList';
 //#endregion
 
 const ERROR_DELAY = 3000;
@@ -171,19 +172,6 @@ export const App: React.FC = () => {
   };
   //#endregion
 
-  const filteredTodos = useMemo(() => {
-    switch (filter) {
-      case SelectedFilter.ACTIVE:
-        return todos.filter(todo => !todo.completed);
-
-      case SelectedFilter.COMPLETED:
-        return todos.filter(todo => todo.completed);
-
-      default:
-        return todos;
-    }
-  }, [filter, todos]);
-
   // if (!USER_ID) {
   //   return <UserWarning />;
   // }
@@ -203,16 +191,13 @@ export const App: React.FC = () => {
 
         <section className="todoapp__main" data-cy="TodoList">
           <TransitionGroup>
-            {filteredTodos.map((todo: Todo) => (
-              <CSSTransition key={todo.id} timeout={300} classNames="item">
-                <TodoItem
-                  todo={todo}
-                  onChangeCheckbox={id => handleChangeCheckbox(id)}
-                  onDelete={deleteTodo}
-                  loadingIds={loadingIds}
-                />
-              </CSSTransition>
-            ))}
+            <TodoList
+              todos={todos}
+              onChangeCheckbox={handleChangeCheckbox}
+              onDelete={deleteTodo}
+              loadingIds={loadingIds}
+              filter={filter}
+            />
 
             {creatingTodo !== null && (
               <CSSTransition key={0} timeout={300} classNames="temp-item">
@@ -279,9 +264,10 @@ export const App: React.FC = () => {
             <Footer
               itemsLeft={itemsLeft()}
               filter={filter}
-              massDelete={massDelete(getIdOfCompletedTodos())}
+              massDelete={massDelete}
               isOneActive={isOneActive}
               onSetFilter={handleSetFilter}
+              getCompletedId={getIdOfCompletedTodos}
             />
           </footer>
         )}

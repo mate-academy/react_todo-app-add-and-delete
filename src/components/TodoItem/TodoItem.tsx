@@ -6,7 +6,7 @@ import { Todo } from '../../types/Todo';
 
 type Props = {
   todo: Todo;
-  onChangeCheckbox?: (id: number) => void;
+  onChangeCheckbox?: (id: number) => void | undefined;
   onDelete?: (todoId: number) => Promise<void>;
   loadingIds: number[];
 };
@@ -29,7 +29,7 @@ export const TodoItem: React.FC<Props> = ({
           data-cy="TodoStatus"
           type="checkbox"
           className="todo__status"
-          checked={todo.completed}
+          defaultChecked={todo.completed}
           onClick={() => onChangeCheckbox(todo.id)}
         />
       </label>

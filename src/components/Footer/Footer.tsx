@@ -6,8 +6,9 @@ type Props = {
   itemsLeft: string;
   filter: SelectedFilter;
   onSetFilter: (filterType: SelectedFilter) => void;
-  massDelete: Promise<void>;
+  massDelete: (todoIds: number[]) => Promise<void>;
   isOneActive: () => Todo[];
+  getCompletedId: () => number[];
 };
 
 export const Footer: React.FC<Props> = ({
@@ -16,6 +17,7 @@ export const Footer: React.FC<Props> = ({
   onSetFilter,
   massDelete,
   isOneActive,
+  getCompletedId,
 }) => {
   return (
     <>
@@ -62,10 +64,10 @@ export const Footer: React.FC<Props> = ({
         type="button"
         className="todoapp__clear-completed"
         data-cy="ClearCompletedButton"
-        onClick={() => massDelete}
-        disabled={isOneActive.length === 0}
+        onClick={() => massDelete(getCompletedId())}
+        disabled={isOneActive().length === 0}
       >
-        {isOneActive.length > 0 && 'Clear completed'}
+        Clear completed
       </button>
     </>
   );
