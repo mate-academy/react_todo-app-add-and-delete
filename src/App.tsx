@@ -1,6 +1,6 @@
 /* eslint-disable jsx-a11y/label-has-associated-control */
 /* eslint-disable jsx-a11y/control-has-associated-label */
-import React, { useEffect, useMemo, useState } from 'react';
+import React, { useEffect, useMemo, useRef, useState } from 'react';
 import { UserWarning } from './UserWarning';
 import * as todoApi from './api/todos';
 import { TodoList } from './components/TodoList';
@@ -17,14 +17,14 @@ export const App: React.FC = () => {
   const [tempTodo, setTempTodo] = useState<Todo | null>(null);
   const [processedId, setProcessedId] = useState<number[]>([]);
 
+  const errorTimer = useRef(0);
+
   useEffect(() => {
     if (errorMessage) {
-      const timer = setTimeout(() => setErrorMessage(''), 3000);
-
-      return () => clearTimeout(timer);
+      errorTimer.current = window.setTimeout(() => setErrorMessage(''), 3000);
     }
 
-    return undefined;
+    return () => clearTimeout(errorTimer.current);
   }, [errorMessage]);
 
   useEffect(() => {
