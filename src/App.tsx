@@ -106,8 +106,6 @@ export const App: React.FC = () => {
       });
   };
 
-  // const completedTodos = todos.filter(todo => todo.completed);
-
   const completedTodos = getVisibleTodos(todos, status);
 
   const deleteAllCompleted = () => {
