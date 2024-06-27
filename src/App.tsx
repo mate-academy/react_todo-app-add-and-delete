@@ -1,7 +1,6 @@
 /* eslint-disable jsx-a11y/label-has-associated-control */
 /* eslint-disable jsx-a11y/control-has-associated-label */
 
-//#region imports
 import React, { useEffect, useRef, useState } from 'react';
 import { CSSTransition, TransitionGroup } from 'react-transition-group';
 import { Todo } from './types/Todo';
@@ -13,12 +12,11 @@ import { Header } from './components/Header/Header';
 // eslint-disable-next-line
 import { ErrorNotification } from './components/ErrorNotification/ErrorNotification';
 import { TodoList } from './components/Todolist/TodoList';
-//#endregion
+import { UserWarning } from './UserWarning';
 
 const ERROR_DELAY = 3000;
 
 export const App: React.FC = () => {
-  //#region States
   const [todos, setTodos] = useState<Todo[]>([]);
   const [creatingTodo, setCreatingTodo] = useState<Todo | null>(null);
 
@@ -31,9 +29,7 @@ export const App: React.FC = () => {
   const [loadingIds, setLoadingIds] = useState<number[]>([0]);
 
   const inputRef = useRef<HTMLInputElement>(null);
-  //#endregion
 
-  //#region useEffects
   useEffect(() => {
     if (!isDisabledInput && inputRef.current && loadingIds) {
       inputRef.current.focus();
@@ -49,10 +45,8 @@ export const App: React.FC = () => {
         setTimeout(() => setErrorMessage(''), ERROR_DELAY);
       });
   }, []);
-  //#endregion
 
-  //#region serverRequest
-  async function addTodo({ title, userId, completed }: Omit<Todo, 'id'>) {
+  const addTodo = async ({ title, userId, completed }: Omit<Todo, 'id'>) => {
     setIsDisabledInput(true);
 
     setCreatingTodo({
@@ -75,9 +69,9 @@ export const App: React.FC = () => {
       setCreatingTodo(null);
       setIsDisabledInput(false);
     }
-  }
+  };
 
-  async function deleteTodo(todoId: number) {
+  const deleteTodo = async (todoId: number) => {
     setLoadingIds(prev => [...prev, todoId]);
 
     try {
@@ -90,7 +84,7 @@ export const App: React.FC = () => {
     } finally {
       setLoadingIds(loadingIds.filter(id => id !== todoId));
     }
-  }
+  };
 
   const massDelete = async (todoIds: number[]) => {
     await Promise.all(
@@ -99,9 +93,7 @@ export const App: React.FC = () => {
       }),
     );
   };
-  //#endregion
 
-  //#region eventHandlers
   const handleSubmit = (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
 
@@ -136,9 +128,7 @@ export const App: React.FC = () => {
   const handleChangeQuery = (event: React.ChangeEvent<HTMLInputElement>) => {
     setQuery(event.target.value);
   };
-  //#endregion
 
-  //#region helperFunctions
   const isOneActive = () => {
     return todos.filter(todo => todo.completed);
   };
@@ -170,11 +160,10 @@ export const App: React.FC = () => {
 
     return `${leftItems} ${leftItems === 1 ? 'item' : 'items'} left`;
   };
-  //#endregion
 
-  // if (!USER_ID) {
-  //   return <UserWarning />;
-  // }
+  if (!todoService.USER_ID) {
+    return <UserWarning />;
+  }
 
   return (
     <div className="todoapp">
@@ -260,16 +249,14 @@ export const App: React.FC = () => {
         </section>
         {/* Hide the footer if there are no todos */}
         {(todos.length !== 0 || creatingTodo) && (
-          <footer className="todoapp__footer" data-cy="Footer">
-            <Footer
-              itemsLeft={itemsLeft()}
-              filter={filter}
-              massDelete={massDelete}
-              isOneActive={isOneActive}
-              onSetFilter={handleSetFilter}
-              getCompletedId={getIdOfCompletedTodos}
-            />
-          </footer>
+          <Footer
+            itemsLeft={itemsLeft()}
+            filter={filter}
+            massDelete={massDelete}
+            isOneActive={isOneActive}
+            onSetFilter={handleSetFilter}
+            getCompletedId={getIdOfCompletedTodos}
+          />
         )}
       </div>
       <ErrorNotification

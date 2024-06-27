@@ -12,7 +12,7 @@ type Props = {
 };
 
 export const TodoItem: React.FC<Props> = ({
-  todo,
+  todo: { id, title, completed },
   onChangeCheckbox = () => {},
   onDelete = () => {},
   loadingIds = [],
@@ -21,7 +21,7 @@ export const TodoItem: React.FC<Props> = ({
     <div
       data-cy="Todo"
       className={cn('todo', {
-        completed: todo.completed,
+        completed: completed,
       })}
     >
       <label className="todo__status-label">
@@ -29,21 +29,21 @@ export const TodoItem: React.FC<Props> = ({
           data-cy="TodoStatus"
           type="checkbox"
           className="todo__status"
-          defaultChecked={todo.completed}
-          onClick={() => onChangeCheckbox(todo.id)}
+          defaultChecked={completed}
+          onClick={() => onChangeCheckbox(id)}
         />
       </label>
       <span data-cy="TodoTitle" className="todo__title">
-        {todo.title}
+        {title}
       </span>
 
       {/* Remove button appears only on hover */}
-      {todo.id ? (
+      {id ? (
         <button
           type="button"
           className="todo__remove"
           data-cy="TodoDelete"
-          onClick={() => onDelete(todo.id)}
+          onClick={() => onDelete(id)}
         >
           x
         </button>
@@ -55,7 +55,7 @@ export const TodoItem: React.FC<Props> = ({
       <div
         data-cy="TodoLoader"
         className={cn('modal overlay', {
-          'is-active': loadingIds.includes(todo.id),
+          'is-active': loadingIds.includes(id),
         })}
       >
         {/* eslint-disable-next-line */}
