@@ -1,6 +1,6 @@
 import React, { useMemo } from 'react';
 import { Todo } from '../types/Todo';
-import { ToDoItem } from './ToDoItem';
+import { TodoItem } from './TodoItem';
 
 type Props = {
   visibleToDos: Todo[];
@@ -9,7 +9,7 @@ type Props = {
   tempTodo: Todo | null;
 };
 
-export const ToDoList: React.FC<Props> = ({
+export const TodoList: React.FC<Props> = ({
   visibleToDos,
   onDelete,
   onUpdate,
@@ -23,7 +23,7 @@ export const ToDoList: React.FC<Props> = ({
   return (
     <section className="todoapp__main" data-cy="TodoList">
       {renderToDos.map(todo => (
-        <ToDoItem
+        <TodoItem
           key={todo.id}
           todo={todo}
           onDelete={onDelete}

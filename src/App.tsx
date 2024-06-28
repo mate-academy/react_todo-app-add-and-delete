@@ -10,7 +10,7 @@ import {
 import { Todo } from './types/Todo';
 import { Status } from './types/Status';
 import { Header } from './components/Header';
-import { ToDoList } from './components/ToDoList';
+import { TodoList } from './components/TodoList';
 import { Error } from './components/Error';
 import { Footer } from './components/Footer';
 function getVisibleToDos(newTodos: Todo[], newStatus: Status) {
@@ -66,11 +66,11 @@ export const App: React.FC = () => {
 
     setIsLoading(true);
 
-    const newToDo = { id: 0, title: newTitle, completed: false };
+    const newTodo = { id: 0, title: newTitle, completed: false };
 
-    setTempTodo(newToDo);
+    setTempTodo(newTodo);
 
-    return createTodo(newToDo)
+    return createTodo(newTodo)
       .then(resultTodo => {
         setTodos([...todos, resultTodo]);
         setTitle('');
@@ -144,7 +144,7 @@ export const App: React.FC = () => {
           initialTitle={title}
           isLoading={isLoading}
         />
-        <ToDoList
+        <TodoList
           visibleToDos={visibleToDos}
           onDelete={deleteTodoById}
           onUpdate={updateTodoByID}

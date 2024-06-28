@@ -9,7 +9,7 @@ type Props = {
   isTempToDo?: boolean;
 };
 
-export const ToDoItem: React.FC<Props> = ({
+export const TodoItem: React.FC<Props> = ({
   todo,
   onUpdate,
   onDelete,
@@ -25,6 +25,7 @@ export const ToDoItem: React.FC<Props> = ({
 
   const handleSave = () => {
     onUpdate(todo.id, { title: editText });
+    setIsEditing(false);
   };
 
   const handleDelete = () => {
@@ -38,8 +39,9 @@ export const ToDoItem: React.FC<Props> = ({
       className={classNames('todo', { completed: todo.completed })}
     >
       {/* eslint-disable jsx-a11y/label-has-associated-control */}
-      <label className="todo__status-label">
+      <label htmlFor={`todo-checkbox-${todo.id}`} className="todo__status-label">
         <input
+          id={`todo-checkbox-${todo.id}`}
           data-cy="TodoStatus"
           type="checkbox"
           className="todo__status"
@@ -55,9 +57,16 @@ export const ToDoItem: React.FC<Props> = ({
             onChange={handleEditChange}
             onBlur={handleSave}
             autoFocus
+            className="todo__edit-input"
           />
         ) : (
-          <label onDoubleClick={() => setIsEditing(true)}>{todo.title}</label>
+          <label
+          htmlFor={`todo-title-${todo.id}`}
+            className="todo__title-label"
+          onDoubleClick={() =>
+          setIsEditing(true)}>
+            {todo.title}
+            </label>
         )}
       </span>
       <button
@@ -70,7 +79,9 @@ export const ToDoItem: React.FC<Props> = ({
       </button>
       <div
         data-cy="TodoLoader"
-        className={`modal overlay ${isTempToDo || isLoading ? 'is-active' : ''}`}
+        className={classNames('modal', 'overlay', {
+          'is-active': isTempToDo || isLoading,
+        })}
       >
         <div className="modal-background has-background-white-ter" />
         <div className="loader" />
