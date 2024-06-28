@@ -130,6 +130,7 @@ export const App: React.FC = () => {
           handleTodoClick={handleTodoClick}
           deleteTodos={handleDelete}
           isSubmitting={isSubmitting}
+          tempTodo={tempTodo}
         />
 
         {!!todos.length && (
