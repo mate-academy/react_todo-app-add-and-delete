@@ -1,6 +1,6 @@
 import React, { useMemo } from 'react';
 import { Todo } from '../types/Todo';
-import { ToDoItem } from '../components/TodoItem';
+import { ToDoItem } from './ToDoItem';
 
 type Props = {
   visibleToDos: Todo[];

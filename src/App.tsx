@@ -5,12 +5,12 @@ import {
   getTodos,
   createTodo,
   deleteTodo,
-  updateToDo,
+  updateTodo,
 } from './api/todos';
 import { Todo } from './types/Todo';
 import { Status } from './types/Status';
 import { Header } from './components/Header';
-import { ToDoList } from './components/TodoList';
+import { ToDoList } from './components/ToDoList';
 import { Error } from './components/Error';
 import { Footer } from './components/Footer';
 function getVisibleToDos(newTodos: Todo[], newStatus: Status) {
@@ -97,12 +97,12 @@ export const App: React.FC = () => {
       });
   };
 
-  const updateToDoByID = (id: number, updatedToDo: Partial<Todo>) => {
-    updateToDo(id, updatedToDo)
+  const updateTodoByID = (id: number, updatedTodo: Partial<Todo>) => {
+    updateTodo(id, updatedTodo)
       .then(() =>
         setTodos(state =>
           state.map(todo =>
-            todo.id === id ? { ...todo, ...updatedToDo } : todo,
+            todo.id === id ? { ...todo, ...updatedTodo } : todo,
           ),
         ),
       )
@@ -147,7 +147,7 @@ export const App: React.FC = () => {
         <ToDoList
           visibleToDos={visibleToDos}
           onDelete={deleteTodoById}
-          onUpdate={updateToDoByID}
+          onUpdate={updateTodoByID}
           tempTodo={tempTodo}
         />
         {!!todos.length && (

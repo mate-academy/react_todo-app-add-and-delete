@@ -11,7 +11,7 @@ export const createTodo = (todo: Partial<Todo>) => {
   return client.post<Todo>(`/todos`, { userId: USER_ID, ...todo });
 };
 
-export const updateToDo = (id: number, updatedToDo: Partial<Todo>) => {
+export const updateTodo = (id: number, updatedToDo: Partial<Todo>) => {
   return client.patch<Todo>(`/todos/${id}`, updatedToDo);
 };
 
