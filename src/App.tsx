@@ -14,20 +14,6 @@ import { TodoFooter } from './components/TodoFooter/TodoFooter';
 import { Status } from './types/Status';
 import { TodoItem } from './components/TodoItem/TodoItem';
 
-const hasAllWhiteSpaces = (title: string) => {
-  let counter = 0;
-
-  for (let i = 0; i < title.length; i++) {
-    if (title[i] === ' ') {
-      counter++;
-    }
-  }
-
-  // console.log(counter);
-
-  return title.length === counter;
-};
-
 const getTodosByStatus = (status: string, todos: Todo[]) => {
   const preperedTodos = [...todos];
 
@@ -57,14 +43,12 @@ export const App: React.FC = () => {
   const addTodo = (newTodoTitle: string) => {
     const editedTitle = newTodoTitle.trim();
 
-    if (!newTodoTitle || hasAllWhiteSpaces(newTodoTitle) === true) {
+    if (!editedTitle) {
       setTitleError(true);
       wait(3000).then(() => setTitleError(false));
 
       return;
-    }
-
-    if (newTodoTitle) {
+    } else {
       setTempTodo({
         id: 0,
         userId: 839,
@@ -80,7 +64,6 @@ export const App: React.FC = () => {
         .then(newTodo => {
           setTodos(prevTodos => [...prevTodos, newTodo]);
           setTempTodo(null);
-
         })
         .catch(error => {
           setLoadError(true);
@@ -137,15 +120,7 @@ export const App: React.FC = () => {
           deletTodo={handleDeleteTodo}
         />
 
-        {tempTodo !== null && (
-          <>
-            <div data-cy="TodoLoader" className="modal overlay">
-              <div className="modal-background has-background-white-ter" />
-              <div className="loader" />
-              <TodoItem todo={tempTodo} />
-            </div>
-          </>
-        )}
+        {tempTodo !== null && <TodoItem todo={tempTodo} />}
 
         {!!todos.length && (
           // {/* Hide the footer if there are no todos */}
