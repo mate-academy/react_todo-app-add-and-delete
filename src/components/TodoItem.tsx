@@ -1,5 +1,5 @@
-import { Todo } from '../types/Todo';
 import cn from 'classnames';
+import { Todo } from '../types/Todo';
 
 interface Props {
   todoId: number;
@@ -7,8 +7,8 @@ interface Props {
   isCompleted: boolean;
   handleTodoClick: (id: number) => void;
   deleteTodos: (id: number) => void;
-  isSubmitting: boolean;
-  tempTodo: Todo | null;
+  isSubmitting: Todo | null;
+  isLoading: boolean;
 }
 
 export const TodoItem: React.FC<Props> = ({
@@ -18,7 +18,7 @@ export const TodoItem: React.FC<Props> = ({
   handleTodoClick,
   deleteTodos,
   isSubmitting,
-  tempTodo,
+  isLoading,
 }) => {
   return (
     <div
@@ -51,17 +51,15 @@ export const TodoItem: React.FC<Props> = ({
         ×
       </button>
 
-      {tempTodo && (
-        <div
-          data-cy="TodoLoader"
-          className={cn('modal overlay', {
-            'is-active': isSubmitting,
-          })}
-        >
-          <div className="modal-background has-background-white-ter" />
-          <div className="loader" />
-        </div>
-      )}
+      <div
+        data-cy="TodoLoader"
+        className={cn('modal overlay', {
+          'is-active': isLoading || isSubmitting?.id === todoId,
+        })}
+      >
+        <div className="modal-background has-background-white-ter" />
+        <div className="loader" />
+      </div>
     </div>
   );
 };

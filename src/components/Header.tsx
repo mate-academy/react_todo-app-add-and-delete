@@ -30,7 +30,7 @@ export const Header: React.FC<Props> = ({
 
   const onKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
     if (e.key === 'Enter' && newTodo.trim() !== '') {
-      addTodo({ title: newTodo, completed: false, userId: USER_ID });
+      addTodo({ title: newTodo.trim(), completed: false, userId: USER_ID });
     }
   };
 

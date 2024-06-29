@@ -5,10 +5,11 @@ import React, { useEffect, useMemo, useRef, useState } from 'react';
 import { UserWarning } from './UserWarning';
 import { USER_ID, getTodos, deleteTodos, createTodos } from './api/todos';
 import { Filter, Todo, NewTodos } from './types/Todo';
-import TodoList from './components/TodosList';
 import { Footer } from './components/Footer';
 import { Header } from './components/Header';
 import { ErrorComponent } from './components/ErrorComponent';
+import { TodoItem } from './components/TodoItem';
+import { CSSTransition, TransitionGroup } from 'react-transition-group';
 
 export const App: React.FC = () => {
   const [todos, setTodos] = useState<Todo[]>([]);
@@ -22,7 +23,8 @@ export const App: React.FC = () => {
   const [selectedFilter, setSelectedFilter] = useState<Filter>(Filter.ALL);
   const inputRef = useRef<HTMLInputElement>(null);
 
-  // #region functions
+  //#region functions
+
   useEffect(() => {
     getTodos()
       .then(setTodos)
@@ -59,7 +61,9 @@ export const App: React.FC = () => {
   };
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    setNewTodo(e.target.value);
+    const input = e.target.value;
+
+    setNewTodo(input);
   };
 
   const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
@@ -76,10 +80,9 @@ export const App: React.FC = () => {
 
   const addTodo = async ({ title, completed, userId }: NewTodos) => {
     createTodos({ title, completed, userId })
-      .then(newT => {
-        setTodos(currentTodo => [...currentTodo, newT]);
+      .then(newTodos => {
+        setTodos(currentTodo => [...currentTodo, newTodos]);
         setNewTodo('');
-        setTempTodo(null);
         inputRef.current?.focus();
         setIsSubmitting(true);
       })
@@ -104,12 +107,29 @@ export const App: React.FC = () => {
     setErrorMessage('');
   };
 
-  const handleDelete = (id: number) => {
-    deleteTodos(id);
-    setTodos(todos.filter(todo => todo.id !== id));
+  const handleDelete = async (id: number) => {
+    if (todos.filter(todo => todo.id !== id)) {
+      setIsLoading(true);
+    }
+
+    return deleteTodos(id)
+      .then(() => {
+        setTodos(stateTodo => stateTodo.filter(todo => todo.id !== id));
+      })
+      .catch(() => {
+        setErrorMessage('Unable to delete a todo');
+      })
+      .finally(() => {
+        setIsLoading(false);
+      });
   };
 
-  // #endregion;
+  const memoryTodo = useMemo(
+    () => (tempTodo ? [...filteredTodos, tempTodo] : filteredTodos),
+    [filteredTodos, tempTodo],
+  );
+
+  //#endregion;
 
   return (
     <div className="todoapp">
@@ -125,13 +145,23 @@ export const App: React.FC = () => {
           isSubmitting={isSubmitting}
         />
 
-        <TodoList
-          todos={filteredTodos}
-          handleTodoClick={handleTodoClick}
-          deleteTodos={handleDelete}
-          isSubmitting={isSubmitting}
-          tempTodo={tempTodo}
-        />
+        <section className="todoapp__main" data-cy="TodoList">
+          <TransitionGroup>
+            {memoryTodo.map(({ id, title, completed }) => (
+              <CSSTransition key={id} timeout={300} classNames="item">
+                <TodoItem
+                  todoId={id}
+                  todoTitle={title}
+                  isCompleted={completed}
+                  handleTodoClick={handleTodoClick}
+                  deleteTodos={handleDelete}
+                  isSubmitting={tempTodo}
+                  isLoading={isLoading}
+                />
+              </CSSTransition>
+            ))}
+          </TransitionGroup>
+        </section>
 
         {!!todos.length && (
           <Footer
