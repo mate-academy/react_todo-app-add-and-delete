@@ -96,29 +96,13 @@ export const App: React.FC = () => {
     );
 
     setTodos(createTodo);
-
-    if (id) {
-      setTodoId(id);
-      setIsLoading(true);
-      setIsSubmitting(true);
-    }
-
-    setTimeout(() => setTodoId(0), 500);
   };
 
   const handleClearCompleted = async () => {
-    const activeTodos = todos.filter(todo => !todo.completed);
-
-    if (activeTodos) {
-      setIsLoading(true);
-      setIsSubmitting(true);
-    }
-
-    setTodos(activeTodos);
-
-    Promise.all(
-      todos.map(todo => {
-        return deleteTodos(todoId)
+    todos.forEach(todo => {
+      if (todo.completed) {
+        setIsSubmitting(true);
+        deleteTodos(todo.id)
           .then(() => {
             setTodos(stateTodo =>
               stateTodo.filter(item => item.id !== todo.id),
@@ -127,11 +111,12 @@ export const App: React.FC = () => {
           .catch(() => {
             setErrorMessage('Unable to delete a todo');
             setTimeout(() => setErrorMessage(''), 3000);
+          })
+          .finally(() => {
+            setIsSubmitting(false);
+            setIsLoading(false);
           });
-      }),
-    ).finally(() => {
-      setIsSubmitting(false);
-      setIsLoading(false);
+      }
     });
   };
 
