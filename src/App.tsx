@@ -18,12 +18,13 @@ export const App: React.FC = () => {
 
   const [errorMessage, setErrorMessage] = useState('');
   const [isLoading, setIsLoading] = useState(false);
+  const [todoId, setTodoId] = useState(0);
   const [isSubmitting, setIsSubmitting] = useState(false);
 
   const [selectedFilter, setSelectedFilter] = useState<Filter>(Filter.ALL);
   const inputRef = useRef<HTMLInputElement>(null);
 
-  //#region functions
+  // #region functions
 
   useEffect(() => {
     getTodos()
@@ -51,14 +52,6 @@ export const App: React.FC = () => {
         return todos;
     }
   }, [selectedFilter, todos]);
-
-  const handleTodoClick = (id: number) => {
-    const createTodo = todos.map(todo =>
-      todo.id === id ? { ...todo, completed: !todo.completed } : todo,
-    );
-
-    setTodos(createTodo);
-  };
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const input = e.target.value;
@@ -97,19 +90,56 @@ export const App: React.FC = () => {
       });
   };
 
-  const handleClearCompleted = () => {
-    const activeTodos = todos.filter(todo => !todo.completed);
+  const handleTodoClick = (id: number) => {
+    const createTodo = todos.map(todo =>
+      todo.id === id ? { ...todo, completed: !todo.completed } : todo,
+    );
 
-    setTodos(activeTodos);
+    setTodos(createTodo);
+
+    if (id) {
+      setTodoId(id);
+      setIsLoading(true);
+      setIsSubmitting(true);
+    }
+
+    setTimeout(() => setTodoId(0), 500);
   };
 
-  const handleCleanButton = () => {
-    setErrorMessage('');
+  const handleClearCompleted = async () => {
+    const activeTodos = todos.filter(todo => !todo.completed);
+
+    if (activeTodos) {
+      setIsLoading(true);
+      setIsSubmitting(true);
+    }
+
+    setTodos(activeTodos);
+
+    Promise.all(
+      todos.map(todo => {
+        return deleteTodos(todoId)
+          .then(() => {
+            setTodos(stateTodo =>
+              stateTodo.filter(item => item.id !== todo.id),
+            );
+          })
+          .catch(() => {
+            setErrorMessage('Unable to delete a todo');
+            setTimeout(() => setErrorMessage(''), 3000);
+          });
+      }),
+    ).finally(() => {
+      setIsSubmitting(false);
+      setIsLoading(false);
+    });
   };
 
   const handleDelete = async (id: number) => {
-    if (todos.filter(todo => todo.id !== id)) {
+    if (id) {
+      setTodoId(id);
       setIsLoading(true);
+      setIsSubmitting(true);
     }
 
     return deleteTodos(id)
@@ -118,8 +148,10 @@ export const App: React.FC = () => {
       })
       .catch(() => {
         setErrorMessage('Unable to delete a todo');
+        setTimeout(() => setErrorMessage(''), 3000);
       })
       .finally(() => {
+        setIsSubmitting(false);
         setIsLoading(false);
       });
   };
@@ -129,7 +161,11 @@ export const App: React.FC = () => {
     [filteredTodos, tempTodo],
   );
 
-  //#endregion;
+  const handleCleanButton = () => {
+    setErrorMessage('');
+  };
+
+  // #endregion;
 
   return (
     <div className="todoapp">
@@ -156,7 +192,7 @@ export const App: React.FC = () => {
                   handleTodoClick={handleTodoClick}
                   deleteTodos={handleDelete}
                   isSubmitting={tempTodo}
-                  isLoading={isLoading}
+                  deletingTodo={todoId}
                 />
               </CSSTransition>
             ))}

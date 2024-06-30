@@ -26,7 +26,7 @@ export const Header: React.FC<Props> = ({
     if (inputRef.current && !isSubmitting) {
       inputRef.current.focus();
     }
-  }, [newTodo, isSubmitting]);
+  }, [isSubmitting]);
 
   const onKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
     if (e.key === 'Enter' && newTodo.trim() !== '') {
