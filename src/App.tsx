@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 /* eslint-disable @typescript-eslint/dot-notation */
 /* eslint-disable jsx-a11y/label-has-associated-control */
 /* eslint-disable jsx-a11y/control-has-associated-label */
@@ -35,27 +36,28 @@ export const App: React.FC = () => {
   const [titleError, setTitleError] = useState(false);
   const [todos, setTodos] = useState<Todo[]>([]);
   const [loadError, setLoadError] = useState(false);
+  const [addError, setAddError] = useState(false);
   const [status, setStatus] = useState('all');
   const [tempTodo, setTempTodo] = useState<Todo | null>(null);
 
   const filteredTodos = getTodosByStatus(status, todos);
 
-  const addTodo = (newTodoTitle: string) => {
+  function addTodo(newTodoTitle: string): any {
     const editedTitle = newTodoTitle.trim();
 
     if (!editedTitle) {
       setTitleError(true);
       wait(3000).then(() => setTitleError(false));
-
-      return;
     } else {
+      setAddError(false);
       setTempTodo({
         id: 0,
         userId: 839,
         title: editedTitle,
         completed: false,
       });
-      todosFromServer
+
+      return todosFromServer
         .createTodos({
           userId: 839,
           title: editedTitle,
@@ -65,12 +67,9 @@ export const App: React.FC = () => {
           setTodos(prevTodos => [...prevTodos, newTodo]);
           setTempTodo(null);
         })
-        .catch(error => {
-          setLoadError(true);
-          throw error;
-        });
+        .catch(() => setAddError(true));
     }
-  };
+  }
 
   function updateTodo(updatedTodo: Todo) {
     todosFromServer.updateTodos(updatedTodo).then((todo: Todo) =>
@@ -135,18 +134,24 @@ export const App: React.FC = () => {
         data-cy="ErrorNotification"
         className={classNames(
           'notification is-danger is-light has-text-weight-normal',
-          { hidden: !titleError && !loadError },
+          { hidden: !titleError && !loadError && !addError },
         )}
       >
-        <button data-cy="HideErrorButton" type="button" className="delete" />
+        <button data-cy="HideErrorButton" type="button" className="delete"
+        onClick={()=>{
+          setLoadError(false);
+          setAddError(false);
+          setTitleError(false);
+        }}
+        />
         {/* show only one message at a time */}
         {loadError && 'Unable to load todos'}
         <br />
         {titleError && 'Title should not be empty'}
         <br />
-        {/* Unable to add a todo
-          <br />
-          Unable to delete a todo
+        {addError && 'Unable to add a todo'}
+        <br />
+        {/*  Unable to delete a todo
           <br />
           Unable to update a todo */}
       </div>

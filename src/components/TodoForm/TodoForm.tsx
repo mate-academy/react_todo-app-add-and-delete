@@ -1,7 +1,7 @@
 import { ChangeEvent, FormEvent, useEffect, useRef, useState } from 'react';
 
 type Props = {
-  onSubmit: (title: string) => void;
+  onSubmit: (title: string) => Promise<void>;
 };
 
 export const TodoForm: React.FC<Props> = ({ onSubmit }) => {
@@ -20,9 +20,9 @@ export const TodoForm: React.FC<Props> = ({ onSubmit }) => {
   const handleFormSubmit = (event: FormEvent) => {
     event.preventDefault();
     setIsSubmitting(true);
-    onSubmit(title);
-    setTitle('');
-    setIsSubmitting(false);
+    onSubmit(title)
+      .then(() => setTitle(''))
+      .finally(() => setIsSubmitting(false));
   };
 
   return (
