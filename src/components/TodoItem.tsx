@@ -9,6 +9,7 @@ interface Props {
   deleteTodos: (id: number) => void;
   isSubmitting: Todo | null;
   deletingTodo: number;
+  currentTodos: number[];
 }
 
 export const TodoItem: React.FC<Props> = ({
@@ -19,8 +20,11 @@ export const TodoItem: React.FC<Props> = ({
   deleteTodos,
   isSubmitting,
   deletingTodo,
+  currentTodos,
 }) => {
-  const handleChange = isSubmitting?.id === todoId || deletingTodo === todoId;
+  const id = currentTodos.find(currentId => currentId === todoId);
+  const handleChange =
+    isSubmitting?.id === todoId || deletingTodo === todoId || id;
 
   return (
     <div

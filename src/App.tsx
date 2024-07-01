@@ -15,6 +15,7 @@ export const App: React.FC = () => {
   const [todos, setTodos] = useState<Todo[]>([]);
   const [newTodo, setNewTodo] = useState('');
   const [tempTodo, setTempTodo] = useState<Todo | null>(null);
+  const [selectedIdTodo, setSelectedIdTodo] = useState<number[]>([]);
 
   const [errorMessage, setErrorMessage] = useState('');
   const [isLoading, setIsLoading] = useState(false);
@@ -101,6 +102,7 @@ export const App: React.FC = () => {
   const handleClearCompleted = async () => {
     todos.forEach(todo => {
       if (todo.completed) {
+        setSelectedIdTodo(currentId => [...currentId, todo.id]);
         setIsSubmitting(true);
         deleteTodos(todo.id)
           .then(() => {
@@ -178,6 +180,7 @@ export const App: React.FC = () => {
                   deleteTodos={handleDelete}
                   isSubmitting={tempTodo}
                   deletingTodo={todoId}
+                  currentTodos={selectedIdTodo}
                 />
               </CSSTransition>
             ))}
