@@ -1,5 +1,3 @@
-/* eslint-disable react-hooks/rules-of-hooks */
-/* eslint-disable jsx-a11y/label-has-associated-control */
 /* eslint-disable jsx-a11y/control-has-associated-label */
 import React, { useEffect, useMemo, useRef, useState } from 'react';
 import { UserWarning } from './UserWarning';
@@ -24,8 +22,6 @@ export const App: React.FC = () => {
 
   const [selectedFilter, setSelectedFilter] = useState<Filter>(Filter.ALL);
   const inputRef = useRef<HTMLInputElement>(null);
-
-  // #region functions
 
   useEffect(() => {
     getTodos()
@@ -68,7 +64,12 @@ export const App: React.FC = () => {
       setTimeout(() => setErrorMessage(''), 3000);
     } else {
       setIsSubmitting(true);
-      setTempTodo({ id: 0, title: newTodo, completed: false, userId: USER_ID });
+      setTempTodo({
+        id: 0,
+        title: newTodo.trim(),
+        completed: false,
+        userId: USER_ID,
+      });
     }
   };
 
@@ -151,8 +152,6 @@ export const App: React.FC = () => {
   const handleCleanButton = () => {
     setErrorMessage('');
   };
-
-  // #endregion;
 
   return (
     <div className="todoapp">
