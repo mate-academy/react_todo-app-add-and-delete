@@ -1,10 +1,12 @@
 import { ChangeEvent, FormEvent, useEffect, useRef, useState } from 'react';
+import { wait } from '../../utils/fetchClient';
 
 type Props = {
   onSubmit: (title: string) => Promise<void>;
+  setTitleError: (value: boolean) => void;
 };
 
-export const TodoForm: React.FC<Props> = ({ onSubmit }) => {
+export const TodoForm: React.FC<Props> = ({ onSubmit, setTitleError }) => {
   const [title, setTitle] = useState('');
   const [isSubmitting, setIsSubmitting] = useState(false);
   const titleField = useRef<HTMLInputElement>(null);
@@ -19,10 +21,19 @@ export const TodoForm: React.FC<Props> = ({ onSubmit }) => {
 
   const handleFormSubmit = (event: FormEvent) => {
     event.preventDefault();
-    setIsSubmitting(true);
-    onSubmit(title)
-      .then(() => setTitle(''))
-      .finally(() => setIsSubmitting(false));
+    if (!title.trim()) {
+      setTitleError(true);
+      wait(3000).then(() => setTitleError(false));
+    }
+
+    if (title.trim()) {
+      setIsSubmitting(true);
+      onSubmit(title.trim())
+        .then(() => {
+          setTitle('');
+        })
+        .finally(() => setIsSubmitting(false));
+    }
   };
 
   return (

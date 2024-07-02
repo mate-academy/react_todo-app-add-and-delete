@@ -37,6 +37,7 @@ export const App: React.FC = () => {
   const [todos, setTodos] = useState<Todo[]>([]);
   const [loadError, setLoadError] = useState(false);
   const [addError, setAddError] = useState(false);
+  const [deleteError, setDeleteError] = useState(false);
   const [status, setStatus] = useState('all');
   const [tempTodo, setTempTodo] = useState<Todo | null>(null);
 
@@ -48,8 +49,9 @@ export const App: React.FC = () => {
     if (!editedTitle) {
       setTitleError(true);
       wait(3000).then(() => setTitleError(false));
+
+      return;
     } else {
-      setAddError(false);
       setTempTodo({
         id: 0,
         userId: 839,
@@ -67,7 +69,10 @@ export const App: React.FC = () => {
           setTodos(prevTodos => [...prevTodos, newTodo]);
           setTempTodo(null);
         })
-        .catch(() => setAddError(true));
+        .catch(() => {
+          setAddError(true);
+          wait(3000).then(() => setAddError(false));
+        });
     }
   }
 
@@ -86,9 +91,18 @@ export const App: React.FC = () => {
     );
   }
 
-  const handleDeleteTodo = (paramTodo: Todo) => {
-    todosFromServer.deleteTodos(paramTodo.id);
-    setTodos(prevTodos => prevTodos.filter(todo => todo.id !== paramTodo.id));
+  const deleteTodo = (paramTodo: Todo) => {
+    todosFromServer
+      .deleteTodos(paramTodo.id)
+      .then(() =>
+        setTodos(prevTodos =>
+          prevTodos.filter(todo => todo.id !== paramTodo.id),
+        ),
+      )
+      .catch(() => {
+        setDeleteError(true);
+        wait(3000).then(() => setDeleteError(false));
+      });
   };
 
   useEffect(() => {
@@ -103,6 +117,10 @@ export const App: React.FC = () => {
     return <UserWarning />;
   }
 
+  const deleteCompletedTodos = (paramTodos: Todo[]) => {
+    paramTodos.forEach(todo => deleteTodo(todo));
+  };
+
   return (
     <div className="todoapp">
       <h1 className="todoapp__title">todos</h1>
@@ -110,20 +128,25 @@ export const App: React.FC = () => {
       <div className="todoapp__content">
         <header className="todoapp__header">
           {/* Add a todo on form submit */}
-          <TodoForm onSubmit={addTodo} />
+          <TodoForm onSubmit={addTodo} setTitleError={setTitleError} />
         </header>
 
         <TodoList
           todos={filteredTodos}
           updateTodo={updateTodo}
-          deletTodo={handleDeleteTodo}
+          deletTodo={deleteTodo}
         />
 
         {tempTodo !== null && <TodoItem todo={tempTodo} />}
 
         {!!todos.length && (
           // {/* Hide the footer if there are no todos */}
-          <TodoFooter todos={todos} setStatus={setStatus} status={status} />
+          <TodoFooter
+            todos={todos}
+            setStatus={setStatus}
+            status={status}
+            deleteCompletedTodos={deleteCompletedTodos}
+          />
         )}
       </div>
 
@@ -134,15 +157,19 @@ export const App: React.FC = () => {
         data-cy="ErrorNotification"
         className={classNames(
           'notification is-danger is-light has-text-weight-normal',
-          { hidden: !titleError && !loadError && !addError },
+          { hidden: !titleError && !loadError && !addError && !deleteError },
         )}
       >
-        <button data-cy="HideErrorButton" type="button" className="delete"
-        onClick={()=>{
-          setLoadError(false);
-          setAddError(false);
-          setTitleError(false);
-        }}
+        <button
+          data-cy="HideErrorButton"
+          type="button"
+          className="delete"
+          // onClick={() => {
+          //   setLoadError(false);
+          //   setAddError(false);
+          //   setTitleError(false);
+          //   setDeleteError(false);
+          // }}
         />
         {/* show only one message at a time */}
         {loadError && 'Unable to load todos'}
@@ -151,9 +178,9 @@ export const App: React.FC = () => {
         <br />
         {addError && 'Unable to add a todo'}
         <br />
-        {/*  Unable to delete a todo
-          <br />
-          Unable to update a todo */}
+        {deleteError && 'Unable to delete a todo'}
+        <br />
+        {/* Unable to update a todo */}
       </div>
     </div>
   );

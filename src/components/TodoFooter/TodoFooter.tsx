@@ -6,6 +6,7 @@ type Props = {
   todos: Todo[];
   setStatus: (status: string) => void;
   status: string;
+  deleteCompletedTodos: (todos: Todo[]) => void;
 };
 
 const getDataCYByStatus = (status: string) => {
@@ -19,10 +20,22 @@ const getDataCYByStatus = (status: string) => {
   }
 };
 
-export const TodoFooter: React.FC<Props> = ({ todos, setStatus, status }) => {
+export const TodoFooter: React.FC<Props> = ({
+  todos,
+  setStatus,
+  status,
+  deleteCompletedTodos,
+}) => {
   const itemsLeft = todos.filter(todo => !todo.completed).length;
   const handleTodosStatus = (currentStatus: string) => {
     setStatus(currentStatus);
+  };
+
+  const isOneComplited =
+    todos.filter(todo => todo.completed).length > 0 ? false : true;
+
+  const handleDeleteAllCompleted = () => {
+    deleteCompletedTodos(todos.filter(t => t.completed === true));
   };
 
   return (
@@ -50,9 +63,11 @@ export const TodoFooter: React.FC<Props> = ({ todos, setStatus, status }) => {
 
       {/* this button should be disabled if there are no completed todos */}
       <button
+        disabled={isOneComplited}
         type="button"
         className="todoapp__clear-completed"
         data-cy="ClearCompletedButton"
+        onClick={() => handleDeleteAllCompleted()}
       >
         Clear completed
       </button>
