@@ -69,9 +69,11 @@ export const App: React.FC = () => {
           setTodos(prevTodos => [...prevTodos, newTodo]);
           setTempTodo(null);
         })
-        .catch(() => {
+        .catch(error => {
           setAddError(true);
+          setTempTodo(null);
           wait(3000).then(() => setAddError(false));
+          throw error;
         });
     }
   }

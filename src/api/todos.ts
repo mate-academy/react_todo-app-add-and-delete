@@ -11,7 +11,7 @@ export const getTodos = () => {
 // Add more methods here
 
 export const createTodos = ({ userId, title, completed }: Omit<Todo, 'id'>) => {
-  return client.post<Todo>(`/todos?userId=${USER_ID}`, {
+  return client.post<Todo>(`/todos`, {
     userId,
     title,
     completed,

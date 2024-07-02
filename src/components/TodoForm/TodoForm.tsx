@@ -13,7 +13,7 @@ export const TodoForm: React.FC<Props> = ({ onSubmit, setTitleError }) => {
 
   useEffect(() => {
     titleField.current?.focus();
-  }, []);
+  }, [title, isSubmitting, onSubmit]);
 
   const handleTitleChange = (event: ChangeEvent<HTMLInputElement>) => {
     setTitle(event.target.value);
@@ -32,6 +32,7 @@ export const TodoForm: React.FC<Props> = ({ onSubmit, setTitleError }) => {
         .then(() => {
           setTitle('');
         })
+        .catch(() => setTitle(title))
         .finally(() => setIsSubmitting(false));
     }
   };
