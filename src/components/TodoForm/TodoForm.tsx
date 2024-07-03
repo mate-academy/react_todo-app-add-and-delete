@@ -1,5 +1,6 @@
 import { ChangeEvent, FormEvent, useEffect, useRef, useState } from 'react';
 import { wait } from '../../utils/fetchClient';
+import classNames from 'classnames';
 
 type Props = {
   onSubmit: (title: string) => Promise<void>;
@@ -42,7 +43,7 @@ export const TodoForm: React.FC<Props> = ({ onSubmit, setTitleError }) => {
       {/* this button should have `active` class only if all todos are completed */}
       <button
         type="button"
-        // className={classNames("todoapp__toggle-all", { "active": todo.completed})}
+        className={classNames('todoapp__toggle-all')}
         data-cy="ToggleAllButton"
       />
       <form onSubmit={handleFormSubmit}>

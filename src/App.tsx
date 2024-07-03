@@ -1,7 +1,3 @@
-/* eslint-disable @typescript-eslint/no-explicit-any */
-/* eslint-disable @typescript-eslint/dot-notation */
-/* eslint-disable jsx-a11y/label-has-associated-control */
-/* eslint-disable jsx-a11y/control-has-associated-label */
 import React, { useEffect, useState } from 'react';
 import { UserWarning } from './UserWarning';
 import { USER_ID } from './api/todos';
@@ -43,7 +39,7 @@ export const App: React.FC = () => {
 
   const filteredTodos = getTodosByStatus(status, todos);
 
-  function addTodo(newTodoTitle: string): any {
+  async function addTodo(newTodoTitle: string) {
     const editedTitle = newTodoTitle.trim();
 
     if (!editedTitle) {
@@ -78,7 +74,7 @@ export const App: React.FC = () => {
     }
   }
 
-  function updateTodo(updatedTodo: Todo) {
+  const updateTodo = (updatedTodo: Todo) => {
     todosFromServer.updateTodos(updatedTodo).then((todo: Todo) =>
       setTodos(currentTodos => {
         const newTodos = [...currentTodos];
@@ -91,7 +87,7 @@ export const App: React.FC = () => {
         return newTodos;
       }),
     );
-  }
+  };
 
   const deleteTodo = (paramTodo: Todo) => {
     todosFromServer
@@ -139,7 +135,7 @@ export const App: React.FC = () => {
           deletTodo={deleteTodo}
         />
 
-        {tempTodo !== null && <TodoItem todo={tempTodo} />}
+        {tempTodo && <TodoItem todo={tempTodo} />}
 
         {!!todos.length && (
           // {/* Hide the footer if there are no todos */}
@@ -162,17 +158,7 @@ export const App: React.FC = () => {
           { hidden: !titleError && !loadError && !addError && !deleteError },
         )}
       >
-        <button
-          data-cy="HideErrorButton"
-          type="button"
-          className="delete"
-          // onClick={() => {
-          //   setLoadError(false);
-          //   setAddError(false);
-          //   setTitleError(false);
-          //   setDeleteError(false);
-          // }}
-        />
+        <button data-cy="HideErrorButton" type="button" className="delete" />
         {/* show only one message at a time */}
         {loadError && 'Unable to load todos'}
         <br />
