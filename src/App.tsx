@@ -8,40 +8,14 @@ import {
   useState,
 } from 'react';
 import { UserWarning } from './UserWarning';
-import { Todo } from './types/Todo';
+import { Todo, TodoStatus } from './types/Todo';
 import classNames from 'classnames';
 import { USER_ID, deleteTodo, getTodos, uploadTodo } from './api/todos';
-import { TodoItem } from './components/Todo';
-import { CSSTransition, TransitionGroup } from 'react-transition-group';
-
-enum Errors {
-  LOAD_TODOS = 'Unable to load todos',
-  VALIDATION = 'Title should not be empty',
-  ADD = 'Unable to add a todo',
-  DELETE = 'Unable to delete a todo',
-  UPDATE = 'Unable to update a todo',
-}
-
-enum TodoStatus {
-  All = 'All',
-  Active = 'Active',
-  Completed = 'Completed',
-}
-
-const TodoStatusRoutes: Record<TodoStatus, string> = {
-  [TodoStatus.All]: '/',
-  [TodoStatus.Active]: '/active',
-  [TodoStatus.Completed]: '/completed',
-};
-
-const emptyTodo: Todo = {
-  id: 0,
-  completed: false,
-  userId: USER_ID,
-  title: '',
-};
-
-const errorDelay = 3000;
+import { Header } from './components/Header';
+import { TodoList } from './components/TodoList';
+import { emptyTodo, errorDelay } from './utils/const';
+import { Errors } from './types/Error';
+import { Footer } from './components/Footer';
 
 export const App: FC = () => {
   const [todos, setTodos] = useState<Todo[]>([]);
@@ -190,7 +164,7 @@ export const App: FC = () => {
 
   useEffect(() => {
     focusInputField();
-  }, [todoTitle, todos, selectedStatus]);
+  }, [todoTitle, todos, selectedStatus, isLoading]);
 
   useEffect(() => {
     getTodos()
@@ -208,89 +182,33 @@ export const App: FC = () => {
       <h1 className="todoapp__title">todos</h1>
 
       <div className="todoapp__content">
-        <header className="todoapp__header">
-          {/* this button should have `active` class only if all todos are completed */}
-          <button
-            type="button"
-            className="todoapp__toggle-all active"
-            data-cy="ToggleAllButton"
-          />
+        <Header
+          value={todoTitle}
+          onChange={changeTodoTitleHandler}
+          addTodo={addTodo}
+          inputRef={inputRef}
+          isLoading={isLoading}
+        />
 
-          <form onSubmit={addTodo}>
-            <input
-              data-cy="NewTodoField"
-              type="text"
-              className="todoapp__new-todo"
-              placeholder="What needs to be done?"
-              ref={inputRef}
-              value={todoTitle}
-              onChange={changeTodoTitleHandler}
-              disabled={isLoading}
-            />
-          </form>
-        </header>
-
-        <section className="todoapp__main" data-cy="TodoList">
-          <TransitionGroup>
-            {filteringTodosByStatus.map(todo => (
-              <CSSTransition key={todo.id} timeout={300} classNames="item">
-                <TodoItem
-                  todo={todo}
-                  isActive={processingsTodos.includes(todo.id)}
-                  removeTodo={() => removeTodo(todo.id)}
-                />
-              </CSSTransition>
-            ))}
-            {tempTodo && (
-              <CSSTransition key={0} timeout={300} classNames="temp-item">
-                <TodoItem todo={tempTodo} isActive={true} />
-              </CSSTransition>
-            )}
-          </TransitionGroup>
-        </section>
+        <TodoList
+          removeTodo={removeTodo}
+          processingsTodos={processingsTodos}
+          tempTodo={tempTodo}
+          visibleTodos={filteringTodosByStatus}
+        />
 
         {/* Hide the footer if there are no todos */}
         {(todos.length !== 0 || tempTodo) && (
-          <footer className="todoapp__footer" data-cy="Footer">
-            <span className="todo-count" data-cy="TodosCounter">
-              {filteringTodosByActiveStatus.length} items left
-            </span>
-
-            {/* Active link should have the 'selected' class */}
-            <nav className="filter" data-cy="Filter">
-              {Object.keys(TodoStatusRoutes).map(status => (
-                <a
-                  key={status}
-                  href={`#${TodoStatusRoutes[status as TodoStatus]}`}
-                  className={classNames('filter__link', {
-                    selected: selectedStatus === status,
-                  })}
-                  data-cy={`FilterLink${status}`}
-                  onClick={() =>
-                    selectedStatusTodosHandler(status as TodoStatus)
-                  }
-                >
-                  {status}
-                </a>
-              ))}
-            </nav>
-
-            {/* this button should be disabled if there are no completed todos */}
-            <button
-              type="button"
-              className="todoapp__clear-completed"
-              data-cy="ClearCompletedButton"
-              disabled={filteringTodosByCompletedStatus.length === 0}
-              onClick={removeTodos}
-            >
-              Clear completed
-            </button>
-          </footer>
+          <Footer
+            setStatus={selectedStatusTodosHandler}
+            activeTodosCount={filteringTodosByActiveStatus.length}
+            completedTodosCount={filteringTodosByCompletedStatus.length}
+            selectedStatus={selectedStatus}
+            removeTodos={removeTodos}
+          />
         )}
       </div>
 
-      {/* DON'T use conditional rendering to hide the notification */}
-      {/* Add the 'hidden' class to hide the message smoothly */}
       <div
         data-cy="ErrorNotification"
         className={classNames(
