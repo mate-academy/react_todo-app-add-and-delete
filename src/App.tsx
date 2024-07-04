@@ -2,12 +2,12 @@
 /* eslint-disable jsx-a11y/control-has-associated-label */
 import { useEffect, useRef, useState } from 'react';
 import { UserWarning } from './UserWarning';
-import { USER_ID, deleteTodo, getTodos, makeTodo } from './api/todo';
+import { USER_ID, deleteTodo, getTodos, makeTodo } from './api/todos';
 import { Footer } from './components/Footer/Footer';
 import { Header } from './components/Header/Header';
 import { TodoList } from './components/TodoList/TodoList';
 import { Todo } from './types/Todo';
-import { Errors } from './components/Erros/Erros';
+import { Errors } from './components/Errors/Errors';
 import { TodoStatus } from './types/TodoStatus';
 import { Error } from './types/Error';
 import { getVisibleTodos } from './utils/getVisibleTodos';
