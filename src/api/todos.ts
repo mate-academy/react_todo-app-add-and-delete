@@ -1,5 +1,5 @@
 import { Todo } from '../types/Todo';
-import { client } from '../utils/fetchClient';
+import { client } from '../utils/FetchClient';
 
 export const USER_ID = 798;
 
