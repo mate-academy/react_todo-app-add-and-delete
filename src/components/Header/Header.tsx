@@ -19,6 +19,7 @@ export const Header: React.FC<HeaderProps> = ({
   const [todoTitle, setTodoTitle] = useState('');
   const [submitting, setSubmitting] = useState(false);
 
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   useEffect(() => {
     if (inputRef.current) {
       inputRef.current.focus();
