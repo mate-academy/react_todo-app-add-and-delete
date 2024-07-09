@@ -5,7 +5,7 @@ module.exports = defineConfig({
     baseUrl: 'http://localhost:3000',
     specPattern: 'cypress/integration/**/*.spec.{js,ts,jsx,tsx}',
   },
-  video: true,
+  video: false,
   viewportHeight: 1920,
   viewportWidth: 1080,
   screenshotOnRunFailure: true,
