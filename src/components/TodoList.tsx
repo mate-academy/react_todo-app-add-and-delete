@@ -6,6 +6,7 @@ type Props = {
   filteredTodos: Todo[];
   tempTodo: Todo | null;
   isDeleteing: boolean;
+  isClearCompleted: boolean;
   handleDelete: (id: number) => void;
   todoForDelete: number;
 };
@@ -14,6 +15,7 @@ export const TodoList: React.FC<Props> = ({
   filteredTodos,
   tempTodo,
   isDeleteing,
+  // isClearCompleted,
   handleDelete,
   todoForDelete,
 }) => (
@@ -23,6 +25,7 @@ export const TodoList: React.FC<Props> = ({
         todo={todo}
         key={todo.id}
         isDeleteing={isDeleteing}
+        // isClearCompleted={isClearCompleted}
         handleDelete={handleDelete}
         todoIdForDelete={todoForDelete}
       />
