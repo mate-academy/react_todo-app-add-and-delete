@@ -5,8 +5,10 @@ import { addTodo, deleteTodo, getTodos, USER_ID } from './api/todos';
 import { Todo } from './types/Todo';
 import { Errors } from './types/Errors';
 import { Filter } from './types/Filter';
-import classNames from 'classnames';
-import { TodoItem } from './components/TodoItem';
+import { Notification } from './components/Notification/Notification';
+import { Footer } from './components/Footer/Footer';
+import { Header } from './components/Header/Header';
+import { Main } from './components/Main/Main';
 
 export const App: React.FC = () => {
   const [todos, setTodos] = useState<Todo[]>([]);
@@ -19,21 +21,6 @@ export const App: React.FC = () => {
 
   const newTodoInput = useRef<HTMLInputElement>(null);
   const errorMessageTimeout = useRef<number | null>(null);
-
-  const visibleTodos = todos.filter(todo => {
-    switch (filterBy) {
-      case Filter.active:
-        return !todo.completed;
-      case Filter.completed:
-        return todo.completed;
-      default:
-        return true;
-    }
-  });
-
-  const todosCounter = todos.filter(todo => !todo.completed).length;
-
-  const hasAnyCompletedTodos = todos.some(todo => todo.completed);
 
   const focusNewTodoInput = () => {
     if (newTodoInput.current) {
@@ -186,150 +173,37 @@ export const App: React.FC = () => {
       <h1 className="todoapp__title">todos</h1>
 
       <div className="todoapp__content">
-        <header className="todoapp__header">
-          <button
-            type="button"
-            className={classNames('todoapp__toggle-all', {
-              active: todos.every(todo => todo.completed) && todos.length > 0,
-            })}
-            data-cy="ToggleAllButton"
-          />
+        <Header
+          todos={todos}
+          handleNewTodoFormSubmit={handleNewTodoFormSubmit}
+          newTodoTitle={newTodoTitle}
+          setNewTodoTitle={setNewTodoTitle}
+          newTodoInput={newTodoInput}
+          isSending={isSending}
+        />
 
-          <form onSubmit={handleNewTodoFormSubmit}>
-            <input
-              data-cy="NewTodoField"
-              type="text"
-              className="todoapp__new-todo"
-              placeholder="What needs to be done?"
-              ref={newTodoInput}
-              value={newTodoTitle}
-              onChange={event => setNewTodoTitle(event.target.value)}
-              disabled={isSending}
-            />
-          </form>
-        </header>
-
-        <section className="todoapp__main" data-cy="TodoList">
-          {visibleTodos.map(todo => (
-            <TodoItem
-              key={todo.id}
-              todo={todo}
-              tempTodo={tempTodo}
-              onDelete={handleTodoDelete}
-              deletingCompleted={deletingCompleted}
-            />
-          ))}
-
-          {tempTodo && (
-            <TodoItem
-              todo={tempTodo}
-              tempTodo={tempTodo}
-              onDelete={handleTodoDelete}
-              deletingCompleted={deletingCompleted}
-            />
-          )}
-
-          {/* This todo is being edited */}
-          {false && (
-            <div data-cy="Todo" className="todo">
-              <label className="todo__status-label">
-                <input
-                  data-cy="TodoStatus"
-                  type="checkbox"
-                  className="todo__status"
-                />
-              </label>
-
-              {/* This form is shown instead of the title and remove button */}
-              <form>
-                <input
-                  data-cy="TodoTitleField"
-                  type="text"
-                  className="todo__title-field"
-                  placeholder="Empty todo will be deleted"
-                  value="Todo is being edited now"
-                />
-              </form>
-
-              <div data-cy="TodoLoader" className="modal overlay">
-                <div className="modal-background has-background-white-ter" />
-                <div className="loader" />
-              </div>
-            </div>
-          )}
-        </section>
+        <Main
+          todos={todos}
+          filterBy={filterBy}
+          tempTodo={tempTodo}
+          handleTodoDelete={handleTodoDelete}
+          deletingCompleted={deletingCompleted}
+        />
 
         {todos.length > 0 && (
-          <footer className="todoapp__footer" data-cy="Footer">
-            <span className="todo-count" data-cy="TodosCounter">
-              {todosCounter} items left
-            </span>
-
-            <nav className="filter" data-cy="Filter">
-              <a
-                href="#/"
-                className={classNames('filter__link', {
-                  selected: filterBy === Filter.all,
-                })}
-                data-cy="FilterLinkAll"
-                onClick={() => setFilterBy(Filter.all)}
-              >
-                All
-              </a>
-
-              <a
-                href="#/active"
-                className={classNames('filter__link', {
-                  selected: filterBy === Filter.active,
-                })}
-                data-cy="FilterLinkActive"
-                onClick={() => setFilterBy(Filter.active)}
-              >
-                Active
-              </a>
-
-              <a
-                href="#/completed"
-                className={classNames('filter__link', {
-                  selected: filterBy === Filter.completed,
-                })}
-                data-cy="FilterLinkCompleted"
-                onClick={() => setFilterBy(Filter.completed)}
-              >
-                Completed
-              </a>
-            </nav>
-
-            <button
-              type="button"
-              className="todoapp__clear-completed"
-              data-cy="ClearCompletedButton"
-              disabled={!hasAnyCompletedTodos}
-              onClick={handleClearCompleted}
-            >
-              Clear completed
-            </button>
-          </footer>
+          <Footer
+            todos={todos}
+            filterBy={filterBy}
+            setFilterBy={setFilterBy}
+            handleClearCompleted={handleClearCompleted}
+          />
         )}
       </div>
 
-      <div
-        data-cy="ErrorNotification"
-        className={classNames(
-          'notification is-danger is-light has-text-weight-normal',
-          {
-            hidden: !errorMessage,
-          },
-        )}
-      >
-        <button
-          data-cy="HideErrorButton"
-          type="button"
-          className="delete"
-          onClick={() => setErrorMessage('')}
-        />
-        {errorMessage}
-      </div>
+      <Notification
+        errorMessage={errorMessage}
+        setErrorMessage={setErrorMessage}
+      />
     </div>
   );
 };
