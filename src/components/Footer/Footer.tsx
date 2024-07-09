@@ -21,7 +21,7 @@ export const Footer: React.FC<FooterProps> = ({
   const [numOfCompletedTodos, setNumOfCompletedTodos] = useState(0);
   const [numOfActiveTodos, setNumOfActiveTodos] = useState(0);
 
-  const countTypesOfTodos = () => {
+  function countTypesOfTodos() {
     const activeTodos = todos.reduce(
       (count, todo) => count + (todo.completed ? 0 : 1),
       0,
@@ -29,7 +29,7 @@ export const Footer: React.FC<FooterProps> = ({
 
     setNumOfActiveTodos(activeTodos);
     setNumOfCompletedTodos(todos.length - activeTodos);
-  };
+  }
 
   useEffect(countTypesOfTodos, [todos, numOfCompletedTodos, numOfActiveTodos]);
 
@@ -65,38 +65,19 @@ export const Footer: React.FC<FooterProps> = ({
 
           {/* Active link should have the 'selected' class */}
           <nav className="filter" data-cy="Filter">
-            <a
-              href="#/"
-              className={cn('filter__link', {
-                selected: selectedStatus === SelectedStatus.all,
-              })}
-              data-cy="FilterLinkAll"
-              onClick={setStatus}
-            >
-              {SelectedStatus.all}
-            </a>
-
-            <a
-              href="#/active"
-              className={cn('filter__link', {
-                selected: selectedStatus === SelectedStatus.active,
-              })}
-              data-cy="FilterLinkActive"
-              onClick={setStatus}
-            >
-              {SelectedStatus.active}
-            </a>
-
-            <a
-              href="#/completed"
-              className={cn('filter__link', {
-                selected: selectedStatus === SelectedStatus.completed,
-              })}
-              data-cy="FilterLinkCompleted"
-              onClick={setStatus}
-            >
-              {SelectedStatus.completed}
-            </a>
+            {Object.values(SelectedStatus).map(status => (
+              <a
+                key={status}
+                href="#/"
+                className={cn('filter__link', {
+                  selected: selectedStatus === status,
+                })}
+                data-cy={`FilterLink${status}`}
+                onClick={setStatus}
+              >
+                {status}
+              </a>
+            ))}
           </nav>
 
           {/* this button should be disabled if there are no completed todos */}

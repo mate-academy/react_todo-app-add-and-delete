@@ -16,11 +16,11 @@ export const App: React.FC = () => {
   const [tempTodo, setTempTodo] = useState<Todo | null>(null);
   const inputRef = useRef<HTMLInputElement>(null);
 
-  const handleSetStatus = (e: React.MouseEvent<HTMLElement>) => {
+  function handleSetStatus(e: React.MouseEvent<HTMLElement>) {
     const target = e.target as HTMLElement;
 
     setSelectedStatus(target.textContent as SelectedStatus);
-  };
+  }
 
   useEffect(() => {
     getTodos()

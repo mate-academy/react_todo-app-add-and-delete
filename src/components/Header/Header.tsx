@@ -26,15 +26,15 @@ export const Header: React.FC<HeaderProps> = ({
     }
   }, [submitting]);
 
-  const handleTodoTitle = (e: React.ChangeEvent<HTMLInputElement>) => {
+  function handleTodoTitle(e: React.ChangeEvent<HTMLInputElement>) {
     setTodoTitle(e.target.value);
-  };
+  }
 
   function handleReset() {
     setTodoTitle('');
   }
 
-  const handleSubmit = (e: React.FormEvent) => {
+  function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
 
     const trimmedTitle = todoTitle.trim();
@@ -69,7 +69,7 @@ export const Header: React.FC<HeaderProps> = ({
         onTempTodo(null);
       })
       .finally(() => setSubmitting(false));
-  };
+  }
 
   return (
     <header className="todoapp__header">
