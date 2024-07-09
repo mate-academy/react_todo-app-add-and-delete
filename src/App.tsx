@@ -19,19 +19,7 @@ export const App: React.FC = () => {
   const handleSetStatus = (e: React.MouseEvent<HTMLElement>) => {
     const target = e.target as HTMLElement;
 
-    switch (target.textContent) {
-      case SelectedStatus.all:
-        setSelectedStatus(SelectedStatus.all);
-        break;
-      case SelectedStatus.active:
-        setSelectedStatus(SelectedStatus.active);
-        break;
-      case SelectedStatus.completed:
-        setSelectedStatus(SelectedStatus.completed);
-        break;
-      default:
-        break;
-    }
+    setSelectedStatus(target.textContent as SelectedStatus);
   };
 
   useEffect(() => {

@@ -1,4 +1,3 @@
-import { useEffect, useState } from 'react';
 import { SelectedStatus, Todo } from '../../types/Todo';
 import { TodoItem } from '../TodoItem';
 
@@ -19,75 +18,40 @@ export const TodoList: React.FC<TodoListProps> = ({
   onDeleteTodo,
   onErrorMessage,
 }) => {
-  const [selectedTodos, setSelectedTodos] = useState<Todo[]>([]);
+  let filteredTodos: Todo[] = [];
 
-  function filterSelectedTodos() {
-    let filteredTodos: Todo[] = [];
-
-    if (status === SelectedStatus.all) {
-      setSelectedTodos(todos);
-
-      return;
-    }
-
-    if (status === SelectedStatus.active) {
-      filteredTodos = todos.filter(todo => !todo.completed) || [];
-    }
-
-    if (status === SelectedStatus.completed) {
-      filteredTodos = todos.filter(todo => todo.completed) || [];
-    }
-
-    setSelectedTodos(filteredTodos);
+  if (status === SelectedStatus.all) {
+    filteredTodos = todos;
+  } else if (status === SelectedStatus.active) {
+    filteredTodos = todos.filter(todo => !todo.completed);
+  } else if (status === SelectedStatus.completed) {
+    filteredTodos = todos.filter(todo => todo.completed);
   }
 
-  useEffect(filterSelectedTodos, [todos, status]);
-
-  if (selectedTodos.length === 0) {
+  if (filteredTodos.length === 0) {
     return null;
   }
 
   return (
-    <>
-      <section className="todoapp__main" data-cy="TodoList">
-        {selectedTodos.map(todo => (
-          <TodoItem
-            key={todo.id}
-            todo={todo}
-            onCheckTodo={onCheckTodo}
-            onDeleteTodo={onDeleteTodo}
-            onErrorMessage={onErrorMessage}
-          />
-        ))}
+    <section className="todoapp__main" data-cy="TodoList">
+      {filteredTodos.map(todo => (
+        <TodoItem
+          key={todo.id}
+          todo={todo}
+          onCheckTodo={onCheckTodo}
+          onDeleteTodo={onDeleteTodo}
+          onErrorMessage={onErrorMessage}
+        />
+      ))}
 
-        {/* This todo is in loadind state */}
-        {tempTodo && (
-          <div data-cy="Todo" className="todo">
-            {/* eslint-disable-next-line */}
-            <label className="todo__status-label">
-              <input
-                data-cy="TodoStatus"
-                type="checkbox"
-                className="todo__status"
-              />
-            </label>
-
-            <span data-cy="TodoTitle" className="todo__title">
-              {tempTodo.title}
-            </span>
-
-            <button type="button" className="todo__remove" data-cy="TodoDelete">
-              ×
-            </button>
-
-            {/* 'is-active' class puts this modal on top of the todo */}
-            <div data-cy="TodoLoader" className="modal overlay is-active">
-              <div className="modal-background has-background-white-ter" />
-              <div className="loader" />
-            </div>
-          </div>
-        )}
-      </section>
-    </>
+      {tempTodo && (
+        <TodoItem
+          todo={tempTodo}
+          onCheckTodo={onCheckTodo}
+          onDeleteTodo={onDeleteTodo}
+          onErrorMessage={onErrorMessage}
+        />
+      )}
+    </section>
   );
 };

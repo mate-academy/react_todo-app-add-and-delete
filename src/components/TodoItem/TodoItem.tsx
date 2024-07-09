@@ -64,7 +64,9 @@ export const TodoItem: React.FC<TodoItemProps> = ({
       {/* overlay will cover the todo while it is being deleted or updated */}
       <div
         data-cy="TodoLoader"
-        className={cn('modal overlay', { 'is-active': isTodoDelete })}
+        className={cn('modal overlay', {
+          'is-active': isTodoDelete || todo.id === 0,
+        })}
       >
         <div className={cn('modal-background', ' has-background-white-ter')} />
         <div className="loader" />
