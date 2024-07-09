@@ -24,9 +24,7 @@ export const App: React.FC = () => {
 
   useEffect(() => {
     getTodos()
-      .then(todoData => {
-        setTodos(todoData);
-      })
+      .then(setTodos)
       .catch(() => {
         setErrorMessage('Unable to load todos');
       });
