@@ -37,7 +37,6 @@ export const App: React.FC = () => {
       })
       .catch(() => {
         setErrorMessage('Unable to add a todo');
-        // throw new Error('Unable to load todos');
       })
       .finally(() => {
         if (todosLength === 1) {
@@ -80,7 +79,6 @@ export const App: React.FC = () => {
       })
       .catch(() => {
         setErrorMessage('Unable to delete a todo');
-        // throw new Error('Unable to delete a todo');
       })
       .finally(() => setDelTodo(NaN));
   }, []);
@@ -90,7 +88,7 @@ export const App: React.FC = () => {
 
     switch (filter) {
       case Filters.Active:
-        return filtrTodos.filter(todo => todo.completed === false);
+        return filtrTodos.filter(todo => !todo.completed);
 
       case Filters.Completed:
         return filtrTodos.filter(todo => todo.completed);
@@ -124,7 +122,7 @@ export const App: React.FC = () => {
           onDelete={handleDeleteTodo}
         />
 
-        {todos.length !== 0 && (
+        {!!todos.length && (
           <TodoFooter
             todos={todos}
             isDelCompleted={isDelCompleted}
@@ -137,7 +135,7 @@ export const App: React.FC = () => {
 
       <ErrorNotification
         errorMessage={errorMessage}
-        onErrorMessage={setErrorMessage}
+        onCloseErrorMessage={() => setErrorMessage('')}
       />
     </div>
   );

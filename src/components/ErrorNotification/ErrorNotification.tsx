@@ -1,16 +1,22 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import cn from 'classnames';
 
 interface Props {
   errorMessage: string;
-  onErrorMessage: (val: string) => void;
+  onCloseErrorMessage: () => void;
 }
 
 export const ErrorNotification: React.FC<Props> = ({
   errorMessage,
-  onErrorMessage,
+  onCloseErrorMessage,
 }) => {
-  setTimeout(() => onErrorMessage(''), 3000);
+  useEffect(() => {
+    const timeout = setTimeout(onCloseErrorMessage, 3000);
+
+    return () => {
+      clearTimeout(timeout);
+    };
+  }, [errorMessage]);
 
   return (
     <div
@@ -23,10 +29,9 @@ export const ErrorNotification: React.FC<Props> = ({
         data-cy="HideErrorButton"
         type="button"
         className="delete"
-        onClick={() => onErrorMessage('')}
+        onClick={onCloseErrorMessage}
       />
       {errorMessage}
-      {/* Unable to update a todo */}
     </div>
   );
 };

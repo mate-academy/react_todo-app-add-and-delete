@@ -17,12 +17,9 @@ export const TodoFooter: React.FC<Props> = ({
   onChangeFilter,
   onDeleteCompleted,
 }) => {
-  const allFilters = [Filters.All, Filters.Active, Filters.Completed];
+  const allFilters = Object.values(Filters);
 
-  const activeTodos = todos.reduce(
-    (acc, curr) => (!curr.completed ? acc + 1 : acc),
-    0,
-  );
+  const activeTodos = todos.filter(todo => !todo.completed).length;
 
   const isCompleted = todos.some(todo => todo.completed);
 
