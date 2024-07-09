@@ -1,4 +1,4 @@
-import React, { useCallback, useEffect, useMemo, useState } from 'react';
+import React, { useEffect, useMemo, useState } from 'react';
 import { TodoList } from './components/TodoList';
 import { Todo } from './types/Todo';
 import { addTodo, deleteTodo, getTodos } from './api/todos';
@@ -26,7 +26,7 @@ export const App: React.FC = () => {
       });
   }, []);
 
-  const handleAddTodo = useCallback((newTodo: Todo) => {
+  const handleAddTodo = (newTodo: Todo) => {
     setTempTodo(newTodo);
     let todosLength = 0;
 
@@ -45,7 +45,7 @@ export const App: React.FC = () => {
 
         setTempTodo(null);
       });
-  }, []);
+  };
 
   const handleDeleteCompletedTodos = () => {
     setIsDelCompleted(true);
@@ -70,7 +70,7 @@ export const App: React.FC = () => {
       .finally(() => setIsDelCompleted(false));
   };
 
-  const handleDeleteTodo = useCallback((todoID: number) => {
+  const handleDeleteTodo = (todoID: number) => {
     setDelTodo(todoID);
 
     deleteTodo(todoID)
@@ -81,7 +81,7 @@ export const App: React.FC = () => {
         setErrorMessage('Unable to delete a todo');
       })
       .finally(() => setDelTodo(NaN));
-  }, []);
+  };
 
   const filteredTodos = useMemo(() => {
     const filtrTodos = [...todos];
