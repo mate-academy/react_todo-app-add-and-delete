@@ -1,6 +1,15 @@
 import React from 'react';
 import classNames from 'classnames';
-import { HeaderProps } from '../../types/HeaderProps';
+import { Todo } from '../../types/Todo';
+
+interface HeaderProps {
+  todos: Todo[];
+  handleNewTodoFormSubmit: (event: React.FormEvent<HTMLFormElement>) => void;
+  newTodoTitle: string;
+  setNewTodoTitle: (title: string) => void;
+  newTodoInput: React.RefObject<HTMLInputElement>;
+  isSending: boolean;
+}
 
 export const Header: React.FC<HeaderProps> = ({
   todos,

@@ -133,8 +133,6 @@ export const App: React.FC = () => {
       }, 3000);
     }
 
-    focusNewTodoInput();
-
     return () => {
       if (errorMessageTimeout.current) {
         clearTimeout(errorMessageTimeout.current);
@@ -162,11 +160,7 @@ export const App: React.FC = () => {
 
   useEffect(() => {
     focusNewTodoInput();
-  }, []);
-
-  useEffect(() => {
-    focusNewTodoInput();
-  }, [todos]);
+  }, [todos, filterBy, errorMessage]);
 
   return (
     <div className="todoapp">

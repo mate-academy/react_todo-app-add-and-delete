@@ -1,7 +1,14 @@
 import React from 'react';
 import classNames from 'classnames';
 import { Filter } from '../../types/Filter';
-import { FooterProps } from '../../types/FooterProps';
+import { Todo } from '../../types/Todo';
+
+interface FooterProps {
+  todos: Todo[];
+  filterBy: string;
+  setFilterBy: (filterBy: Filter) => void;
+  handleClearCompleted: () => void;
+}
 
 export const Footer: React.FC<FooterProps> = ({
   todos,

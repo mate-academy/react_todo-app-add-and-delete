@@ -1,17 +1,21 @@
 import React, { useState } from 'react';
 import classNames from 'classnames';
-import { TodoItemProps } from '../types/TodoItemProps';
+import { Todo } from '../../types/Todo';
+
+interface TodoItemProps {
+  todo: Todo;
+  onDelete: (todoId: number) => void;
+  isLoading: boolean;
+}
 
 export const TodoItem: React.FC<TodoItemProps> = ({
   todo,
-  tempTodo,
   onDelete,
-  deletingCompleted = false,
+  isLoading = false,
 }) => {
   const [isDeleting, setIsDeleting] = useState(false);
 
-  const showLoader =
-    todo.id === tempTodo?.id || isDeleting || deletingCompleted;
+  const showLoader = isLoading || isDeleting;
 
   const handleDeleteClick = (todoId: number) => {
     setIsDeleting(true);

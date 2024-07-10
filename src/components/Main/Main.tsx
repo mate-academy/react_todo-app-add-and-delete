@@ -1,7 +1,15 @@
 import React from 'react';
-import { MainProps } from '../../types/MainProps';
-import { TodoItem } from '../TodoItem';
+import { TodoItem } from '../TodoItem/TodoItem';
 import { Filter } from '../../types/Filter';
+import { Todo } from '../../types/Todo';
+
+interface MainProps {
+  todos: Todo[];
+  filterBy: string;
+  tempTodo: Todo | null;
+  handleTodoDelete: (todoId: number) => void;
+  deletingCompleted: boolean;
+}
 
 export const Main: React.FC<MainProps> = ({
   todos,
@@ -27,19 +35,13 @@ export const Main: React.FC<MainProps> = ({
         <TodoItem
           key={todo.id}
           todo={todo}
-          tempTodo={tempTodo}
           onDelete={handleTodoDelete}
-          deletingCompleted={deletingCompleted}
+          isLoading={deletingCompleted && todo.completed}
         />
       ))}
 
       {tempTodo && (
-        <TodoItem
-          todo={tempTodo}
-          tempTodo={tempTodo}
-          onDelete={handleTodoDelete}
-          deletingCompleted={deletingCompleted}
-        />
+        <TodoItem todo={tempTodo} onDelete={handleTodoDelete} isLoading />
       )}
 
       {/* This todo is being edited */}

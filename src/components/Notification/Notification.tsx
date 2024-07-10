@@ -1,6 +1,10 @@
 import React from 'react';
 import classNames from 'classnames';
-import { NotificationProps } from '../../types/NotificationProps';
+
+interface NotificationProps {
+  errorMessage: string;
+  setErrorMessage: (errorMessage: string) => void;
+}
 
 export const Notification: React.FC<NotificationProps> = ({
   errorMessage,
