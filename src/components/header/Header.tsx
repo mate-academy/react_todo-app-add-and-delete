@@ -39,7 +39,7 @@ export const Header: React.FC<Props> = ({
     const newTodo = {
       id: 0,
       userId: USER_ID,
-      title: value,
+      title: value.trim(),
       completed: false,
     };
 
