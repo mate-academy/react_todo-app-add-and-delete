@@ -9,7 +9,6 @@ import { TodoList } from './TodoList/TodoList';
 import { TodoFooter } from './TodoFooter/TodoFooter';
 import { TodoHeader } from './TodoHeader/TodoHeader';
 import { TodoErrors } from './TodoErrors/TodoErrors';
-
 export const App: React.FC = () => {
   const [todos, setTodos] = useState<Todo[]>([]);
   const [newTodos, setNewTodos] = useState<string>('');
@@ -24,7 +23,6 @@ export const App: React.FC = () => {
       .then(setTodos)
       .catch(() => setErrorMessage('Unable to load todos'));
   }, []);
-
   useEffect(() => {
     if (errorMessage) {
       const timer = setTimeout(() => {
@@ -36,18 +34,16 @@ export const App: React.FC = () => {
 
     return undefined;
   }, [errorMessage]);
-
   useEffect(() => {
     if (inputRef.current) {
       inputRef.current.focus();
     }
   }, []);
-
   if (!USER_ID) {
     return <UserWarning />;
   }
 
-  function addTodo({ title, userId, completed }: Todo) {
+  function addTodo({ title, userId, completed }: Omit<Todo, 'id'>) {
     if (title.trim() === '') {
       setErrorMessage('Title should not be empty');
       setIsSubmitting(false);
@@ -63,12 +59,12 @@ export const App: React.FC = () => {
     };
 
     setFakeTodos(fakeTodo);
-
     createTodos({ title, userId, completed })
       .then(newTodo => {
         setTodos(currentTodos => [
           ...currentTodos,
           {
+            id: newTodo.id,
             title: newTodo.title,
             userId: newTodo.userId,
             completed: newTodo.completed,
@@ -86,8 +82,9 @@ export const App: React.FC = () => {
   }
 
   function deleteTodo(todoId: number) {
-    deleteTodos(todoId);
-    setTodos(currentTodos => currentTodos.filter(todo => todo.id !== todoId));
+    deleteTodos(todoId).then(() => {
+      setTodos(currentTodos => currentTodos.filter(todo => todo.id !== todoId));
+    });
   }
 
   const handleAddTodo = (event: React.FormEvent) => {
@@ -99,7 +96,6 @@ export const App: React.FC = () => {
   return (
     <div className="todoapp">
       <h1 className="todoapp__title">todos</h1>
-
       <div className="todoapp__content">
         <TodoHeader
           todos={todos}
@@ -109,14 +105,12 @@ export const App: React.FC = () => {
           inputRef={inputRef}
           isSubmitting={isSubmitting}
         />
-
         <TodoList
           todos={todos}
           filter={filter}
           deleteTodo={deleteTodo}
           fakeTodo={fakeTodos}
         />
-
         {todos.length > 0 && (
           <TodoFooter todos={todos} filter={filter} setFilter={setFilter} />
         )}

@@ -12,7 +12,6 @@ interface TodoListProps {
   deleteTodo: (todoId: number) => void;
   fakeTodo: Todo | null;
 }
-
 export const TodoList: React.FC<TodoListProps> = ({
   todos,
   filter,
@@ -25,38 +24,40 @@ export const TodoList: React.FC<TodoListProps> = ({
     <section className="todoapp__main" data-cy="TodoList">
       <TransitionGroup>
         {filteredTodos.map(todo => (
-          <div
-            key={todo.id}
-            data-cy="Todo"
-            className={classNames('todo', { completed: todo.completed })}
-          >
-            <label className="todo__status-label">
-              <input
-                data-cy="TodoStatus"
-                type="checkbox"
-                className="todo__status"
-                checked={todo.completed}
-              />
-            </label>
-
-            <span data-cy="TodoTitle" className="todo__title">
-              {todo.title}
-            </span>
-
-            {/* Remove button appears only on hover */}
-            <button
-              type="button"
-              className="todo__remove"
-              data-cy="TodoDelete"
-              onClick={() => todo.id !== undefined && deleteTodo(todo.id)}
+          <CSSTransition key={todo.id} timeout={300} classNames="item">
+            <div
+              data-cy="Todo"
+              className={classNames('todo', { completed: todo.completed })}
             >
-              ×
-            </button>
-          </div>
+              <label className="todo__status-label">
+                <input
+                  data-cy="TodoStatus"
+                  type="checkbox"
+                  className="todo__status"
+                  checked={todo.completed}
+                />
+              </label>
+              <span data-cy="TodoTitle" className="todo__title">
+                {todo.title}
+              </span>
+              {/* Remove button appears only on hover */}
+              <button
+                type="button"
+                className="todo__remove"
+                data-cy="TodoDelete"
+                onClick={() => deleteTodo(todo.id)}
+              >
+                ×
+              </button>
+            </div>
+          </CSSTransition>
         ))}
         {fakeTodo && (
-          <CSSTransition key="fakeTodo" timeout={300} classNames="temp-item">
-            <div>
+          <CSSTransition key={0} timeout={300} classNames="temp-item">
+            <div
+              data-cy="Todo"
+              className={classNames('todo', { completed: fakeTodo.completed })}
+            >
               <div data-cy="TodoLoader" className="modal overlay">
                 <div className="modal-background has-background-white-ter" />
                 <div className="loader" />
@@ -75,7 +76,6 @@ export const TodoList: React.FC<TodoListProps> = ({
                     checked={fakeTodo.completed}
                   />
                 </label>
-
                 <span data-cy="TodoTitle" className="todo__title">
                   {fakeTodo.title}
                 </span>
@@ -83,9 +83,7 @@ export const TodoList: React.FC<TodoListProps> = ({
                   type="button"
                   className="todo__remove"
                   data-cy="TodoDelete"
-                  onClick={() =>
-                    fakeTodo.id !== undefined && deleteTodo(fakeTodo.id)
-                  }
+                  onClick={() => deleteTodo(fakeTodo.id)}
                 >
                   ×
                 </button>
