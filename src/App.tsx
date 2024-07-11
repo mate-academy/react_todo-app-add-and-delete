@@ -71,7 +71,11 @@ export const App: React.FC = () => {
     return todos.find(todo => !todo.completed) || false;
   }
 
+  const handleDelete = () => setIsDeleteing(true);
+
   const clearCompleted = () => {
+    handleDelete();
+
     todos.forEach(todoOnServer => {
       if (todoOnServer.completed) {
         deleteTodo(todoOnServer.id)
@@ -101,8 +105,6 @@ export const App: React.FC = () => {
     setIsDeleteing(true);
     setId(todoId);
   };
-
-  const handleDelete = () => setIsDeleteing(true);
 
   const handleSubmit = (event: React.FormEvent) => {
     event.preventDefault();
