@@ -1,7 +1,8 @@
 import React from 'react';
 import { Todo } from '../../types/Todo';
 import { TodoItem } from '../todoItem';
-import { v4 as uuidv4 } from 'uuid';
+// eslint-disable-next-line import/no-extraneous-dependencies
+import { v4 as uuidv4 } from 'gi';
 
 type Props = {
   todos: Todo[];
