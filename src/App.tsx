@@ -13,6 +13,7 @@ export const App: React.FC = () => {
   const [loading, setLoading] = useState<boolean>(false);
   const [filter, setFilter] = useState<Status>(Status.all);
   const [inputDisabled, setInputDisabled] = useState<boolean>(false);
+  const [tempTodo, setTempTodo] = useState<Todo | null>(null);
   const inputRef = useRef<HTMLInputElement>(null);
 
   useEffect(() => {
@@ -48,13 +49,15 @@ export const App: React.FC = () => {
       return;
     }
 
-    const tempTodo: Todo = {
+    const newtempTodo: Todo = {
       id: Date.now(),
       userId: 0,
       title: newTodo,
       completed: false,
     };
-    setTodos([...todos, tempTodo]);
+
+    setTempTodo(newtempTodo);
+    setTodos([...todos, newtempTodo]);
 
     setLoading(true);
     setInputDisabled(true);
@@ -62,10 +65,12 @@ export const App: React.FC = () => {
 
     loadTodos(newTodo)
       .then(addedTodo => {
-        setTodos(todos =>
-          todos.map(todo => todo.id === tempTodo.id ? addedTodo : todo));
+        setTodos(prevTodos =>
+          prevTodos.map(todo => (todo.id === newtempTodo.id ? addedTodo : todo)),
+        );
         setNewTodo('');
         setInputDisabled(false);
+        setTempTodo(null);
 
         setTimeout(() => {
           inputRef.current?.focus();
@@ -74,7 +79,6 @@ export const App: React.FC = () => {
       .catch(() => setError('Unable to add a todo'))
       .finally(() => setLoading(false));
   };
-
 
   const handleDeleteTodo = (id: number) => {
     setTodos(todos.filter(todo => todo.id !== id));
@@ -127,6 +131,7 @@ export const App: React.FC = () => {
           todos={filteredTodos}
           loading={loading}
           onDelete={handleDeleteTodo}
+          tempTodo={tempTodo}
         />
 
         {todos.length > 0 && (

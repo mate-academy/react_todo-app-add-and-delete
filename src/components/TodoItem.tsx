@@ -5,9 +5,10 @@ import { Todo } from '../types/Todo';
 export type Props = {
   todo: Todo;
   onDelete: (id: number) => void;
+  loading: boolean;
 };
 
-export const TodoItem: React.FC<Props> = ({ todo, onDelete }) => {
+export const TodoItem: React.FC<Props> = ({ todo, onDelete, loading }) => {
   return (
     <div
       key={todo.id}
@@ -18,12 +19,16 @@ export const TodoItem: React.FC<Props> = ({ todo, onDelete }) => {
     >
       {/* eslint-disable-next-line jsx-a11y/label-has-associated-control */}
       <label className="todo__status-label">
-        <input
-          data-cy="TodoStatus"
-          type="checkbox"
-          className="todo__status"
-          checked={todo.completed}
-        />
+        {loading ? (
+          <div className="loader is-active" data-cy="TodoLoader"></div>
+        ) : (
+          <input
+            data-cy="TodoStatus"
+            type="checkbox"
+            className="todo__status"
+            checked={todo.completed}
+          />
+        )}
       </label>
       <span data-cy="TodoTitle" className="todo__title">
         {todo.title}
@@ -36,8 +41,15 @@ export const TodoItem: React.FC<Props> = ({ todo, onDelete }) => {
       >
         ×
       </button>
-      <div data-cy="TodoLoader" className="modal overlay">
+
+      <div
+        data-cy="TodoLoader"
+        className={classNames('modal overlay', {
+          'is-active': loading,
+        })}
+      >
         <div className="modal-background has-background-white-ter" />
+        <div className="loader" />
       </div>
     </div>
   );
