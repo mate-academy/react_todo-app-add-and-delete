@@ -1,26 +1,163 @@
-/* eslint-disable max-len */
-/* eslint-disable jsx-a11y/control-has-associated-label */
-import React from 'react';
-import { UserWarning } from './UserWarning';
-
-const USER_ID = 0;
+import React, { useEffect, useState, useRef } from 'react';
+import { Todo } from './types/Todo';
+import { getTodos, loadTodos } from './api/todos';
+import classNames from 'classnames';
+import { TodoList } from './components/TodoList';
+import { Footer } from './components/Footer';
+import { Status } from './separate/Status';
 
 export const App: React.FC = () => {
-  if (!USER_ID) {
-    return <UserWarning />;
-  }
+  const [todos, setTodos] = useState<Todo[]>([]);
+  const [error, setError] = useState<string | null>(null);
+  const [newTodo, setNewTodo] = useState<string>('');
+  const [loading, setLoading] = useState<boolean>(false);
+  const [filter, setFilter] = useState<Status>(Status.all);
+  const [inputDisabled, setInputDisabled] = useState<boolean>(false);
+  const inputRef = useRef<HTMLInputElement>(null);
+
+  useEffect(() => {
+    setLoading(true);
+    setError(null);
+    getTodos()
+      .then(setTodos)
+      .catch(() => setError('Unable to load todos'))
+      .finally(() => setLoading(false));
+  }, []);
+
+  useEffect(() => {
+    if (error) {
+      const timer = setTimeout(() => {
+        setError(null);
+      }, 3000);
+
+      return () => clearTimeout(timer);
+    }
+
+    return () => {};
+  }, [error]);
+
+  const countActiveTodos = () => {
+    return todos.filter(todo => !todo.completed).length;
+  };
+
+  const handleNewTodo = (event: React.FormEvent) => {
+    event.preventDefault();
+    if (!newTodo.trim()) {
+      setError('Title should not be empty');
+
+      return;
+    }
+
+    const tempTodo: Todo = {
+      id: Date.now(),
+      userId: 0,
+      title: newTodo,
+      completed: false,
+    };
+    setTodos([...todos, tempTodo]);
+
+    setLoading(true);
+    setInputDisabled(true);
+    setError(null);
+
+    loadTodos(newTodo)
+      .then(addedTodo => {
+        setTodos(todos =>
+          todos.map(todo => todo.id === tempTodo.id ? addedTodo : todo));
+        setNewTodo('');
+        setInputDisabled(false);
+
+        setTimeout(() => {
+          inputRef.current?.focus();
+        });
+      })
+      .catch(() => setError('Unable to add a todo'))
+      .finally(() => setLoading(false));
+  };
+
+
+  const handleDeleteTodo = (id: number) => {
+    setTodos(todos.filter(todo => todo.id !== id));
+  };
+
+  const filteredTodos = todos.filter(todo => {
+    if (filter === Status.all) {
+      return true;
+    }
+
+    if (filter === Status.active) {
+      return !todo.completed;
+    }
+
+    if (filter === Status.completed) {
+      return todo.completed;
+    }
+
+    return true;
+  });
 
   return (
-    <section className="section container">
-      <p className="title is-4">
-        Copy all you need from the prev task:
-        <br />
-        <a href="https://github.com/mate-academy/react_todo-app-loading-todos#react-todo-app-load-todos">
-          React Todo App - Load Todos
-        </a>
-      </p>
+    <div className="todoapp">
+      <h1 className="todoapp__title">todos</h1>
+      <div className="todoapp__content">
+        <header className="todoapp__header">
+          <button
+            type="button"
+            className={classNames('todoapp__toggle-all', {
+              active: todos.length > 0 && todos.every(todo => todo.completed),
+            })}
+            data-cy="ToggleAllButton"
+          />
+          <form onSubmit={handleNewTodo}>
+            <input
+              data-cy="NewTodoField"
+              type="text"
+              className="todoapp__new-todo"
+              placeholder="What needs to be done?"
+              autoFocus
+              value={newTodo}
+              onChange={event => setNewTodo(event.target.value)}
+              disabled={inputDisabled}
+              ref={inputRef}
+            />
+          </form>
+        </header>
 
-      <p className="subtitle">Styles are already copied</p>
-    </section>
+        <TodoList
+          todos={filteredTodos}
+          loading={loading}
+          onDelete={handleDeleteTodo}
+        />
+
+        {todos.length > 0 && (
+          <Footer
+            filter={filter}
+            setFilter={setFilter}
+            activeCount={countActiveTodos()}
+          />
+        )}
+      </div>
+
+      <div
+        data-cy="ErrorNotification"
+        className={classNames(
+          'notification',
+          'is-danger',
+          'is-light',
+          'has-text-weight-normal',
+          {
+            hidden: !error,
+          },
+        )}
+      >
+        <button
+          data-cy="HideErrorButton"
+          type="button"
+          className="delete"
+          onClick={() => setError(null)}
+        />
+        {error}
+      </div>
+    </div>
   );
 };
