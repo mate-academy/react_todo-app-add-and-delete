@@ -22,14 +22,14 @@ export const ErrorNotification: React.FC<Props> = ({
     data-cy="ErrorNotification"
     className={classNames(
       'notification is-danger is-light has-text-weight-normal',
-      { hidden: hasError === false },
+      { hidden: !hasError },
     )}
   >
     <button
       data-cy="HideErrorButton"
       type="button"
       className="delete"
-      onClick={() => setHasError()}
+      onClick={setHasError}
     />
     {todosError && (
       <>

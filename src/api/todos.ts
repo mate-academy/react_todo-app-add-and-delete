@@ -14,12 +14,4 @@ export const addTodo = ({ title, userId, completed }: Omit<Todo, 'id'>) => {
 
 export const deleteTodo = (id: number) => {
   return client.delete(`/todos/${id}`);
-  // return new Promise((resolve, reject) => {
-  //   const random = Math.random();
-
-  //   if (random > 0.5) {
-  //     resolve(id);
-  //   } else {
-  //     reject(id);
-  //   }
 };

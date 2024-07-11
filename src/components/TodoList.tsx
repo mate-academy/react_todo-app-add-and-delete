@@ -6,7 +6,6 @@ type Props = {
   filteredTodos: Todo[];
   tempTodo: Todo | null;
   isDeleteing: boolean;
-  isClearCompleted: boolean;
   handleDelete: (id: number) => void;
   todoForDelete: number;
 };

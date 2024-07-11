@@ -30,7 +30,6 @@ export const App: React.FC = () => {
   const [tempTodo, setTempTodo] = useState<Todo | null>(null);
   const [isSubmiting, setIsSubmiting] = useState<boolean>(false);
   const [isDeleteing, setIsDeleteing] = useState<boolean>(false);
-  const [isClearCompleted, setIsClearCompleted] = useState<boolean>(false);
 
   const ref = useRef<HTMLInputElement>(null);
 
@@ -73,20 +72,17 @@ export const App: React.FC = () => {
   }
 
   const clearCompleted = () => {
-    setIsClearCompleted(true);
-
-    const idToDelete = [];
-
     todos.forEach(todoOnServer => {
       if (todoOnServer.completed) {
         deleteTodo(todoOnServer.id)
-          .then(() => {
-            idToDelete.push(todoOnServer.id);
-            setTodos(prevTodos => {
-              return prevTodos.filter(todo => todo.id !== todoOnServer.id);
-            });
-          })
+          .then(() =>
+            setTodos([
+              ...todos.filter(todoFromArr => todoFromArr.completed === false),
+            ]),
+          )
           .catch(() => {
+            setTodos([...todos, todoOnServer]);
+
             setHasError(true);
             setDeleteError(true);
           })
@@ -119,7 +115,7 @@ export const App: React.FC = () => {
       id: todos.length,
       userId: USER_ID,
       title: query.trim(),
-      completed: true,
+      completed: false,
     };
 
     if (!query || /^\s+$/.test(query)) {
@@ -196,7 +192,6 @@ export const App: React.FC = () => {
           filteredTodos={filteredTodosByStatus}
           tempTodo={tempTodo}
           isDeleteing={isDeleteing}
-          isClearCompleted={isClearCompleted}
           handleDelete={handleSetDelete}
           todoForDelete={id}
         />
