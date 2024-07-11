@@ -21,8 +21,8 @@ export const TodoItem: React.FC<Props> = ({
   const { completed, title, id } = todo;
 
   const removeById = () => {
-    onSelectedTodo(todo.id);
-    onDeleteTodo(todo.id);
+    onSelectedTodo(id);
+    onDeleteTodo(id);
   };
 
   return (

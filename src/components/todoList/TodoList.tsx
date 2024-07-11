@@ -1,6 +1,8 @@
 import React from 'react';
 import { Todo } from '../../types/Todo';
 import { TodoItem } from '../todoItem';
+import { v4 as uuidv4 } from 'uuid';
+
 type Props = {
   todos: Todo[];
   tempTodo: Todo | null;
@@ -25,7 +27,7 @@ export const TodoList: React.FC<Props> = ({
       {todos.map(todo => (
         <TodoItem
           todo={todo}
-          key={todo.id}
+          key={uuidv4()}
           selectedTodo={selectedTodo}
           doneTask={doneTask}
           onDeleteTodo={onDeleteTodo}
