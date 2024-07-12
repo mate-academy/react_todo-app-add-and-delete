@@ -42,36 +42,37 @@ export const App: React.FC = () => {
       });
   }, [setTodos, status]);
 
-  async function onDeleteTodo(todoId: number) {
+  function onDeleteTodo(todoId: number) {
     setIdTodo(todoId);
 
-    try {
-      await deleteTodo(todoId);
-      setTodos(currentTodos => {
-        return currentTodos.filter(todo => todo.id !== todoId);
+    return deleteTodo(todoId)
+      .then(() => {
+        setTodos(currentTodos => {
+          return currentTodos.filter(todo => todo.id !== todoId);
+        });
+      })
+      .catch(() => {
+        setTodos(todos);
+        setErrorMessage('Unable to delete a todo');
       });
-    } catch {
-      setTodos(todos);
-      setErrorMessage('Unable to delete a todo');
-    }
   }
 
-  async function onCreateTodo(newTodos: Omit<Todo, 'id'>) {
+  function onCreateTodo(newTodos: Omit<Todo, 'id'>) {
     const trimmedTodo = { ...newTodos, title: newTodos.title.trim() };
 
     setTodos(currentTodos => [...currentTodos, { ...newTodo, id: 0 }]);
     setIdTodo(0);
 
-    try {
-      const todo = await createTodo(trimmedTodo);
-
-      setTodos(todos);
-      setTodos(currentTodos_1 => [...currentTodos_1, todo]);
-    } catch (error) {
-      setErrorMessage('Unable to add a todo');
-      setTodos(todos);
-      throw error;
-    }
+    return createTodo(trimmedTodo)
+      .then(todo => {
+        setTodos(todos);
+        setTodos(currentTodos => [...currentTodos, todo]);
+      })
+      .catch(error => {
+        setErrorMessage('Unable to add a todo');
+        setTodos(todos);
+        throw error;
+      });
   }
 
   function handleChangeTitle(value: string) {
