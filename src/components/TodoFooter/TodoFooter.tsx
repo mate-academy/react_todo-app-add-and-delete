@@ -29,7 +29,6 @@ export const TodoFooter: React.FC<Props> = ({
         {activeTodos} items left
       </span>
 
-      {/* Active link should have the 'selected' class */}
       <nav className="filter" data-cy="Filter">
         {allFilters.map(filter => (
           <a

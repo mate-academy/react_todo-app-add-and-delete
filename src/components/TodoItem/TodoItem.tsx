@@ -8,14 +8,12 @@ interface Props {
   todo: Todo;
   delTodo?: number;
   isDelCompleted?: boolean;
-  isTempTodo: boolean;
   onDelete: (todoID: number) => void;
 }
 
 export const TodoItem: React.FC<Props> = ({
   todo,
   delTodo,
-  isTempTodo,
   isDelCompleted,
   onDelete,
 }) => {
@@ -34,7 +32,6 @@ export const TodoItem: React.FC<Props> = ({
         {todo.title}
       </span>
 
-      {/* Remove button appears only on hover */}
       <button
         type="button"
         className="todo__remove"
@@ -44,12 +41,11 @@ export const TodoItem: React.FC<Props> = ({
         ×
       </button>
 
-      {/* overlay will cover the todo while it is being deleted or updated */}
       <div
         data-cy="TodoLoader"
         className={cn('modal overlay', {
           'is-active':
-            isTempTodo ||
+            todo.id === 0 ||
             (isDelCompleted && todo.completed) ||
             todo.id === delTodo,
         })}

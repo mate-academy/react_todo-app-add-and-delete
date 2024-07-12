@@ -1,38 +1,23 @@
-import React, { useEffect, useRef } from 'react';
+import React, { useState } from 'react';
 import { Todo } from '../../types';
 import { USER_ID } from '../../api/todos';
 
 interface Props {
-  value: string;
-  onChangeValue: (val: string) => void;
-  isDelCompleted: boolean;
-  delTodo: number;
+  titleField: React.RefObject<HTMLInputElement>;
   tempTodo: Todo | null;
+  onChangeTempTodo: (val: Todo | null) => void;
   onErrorMessage: (val: string) => void;
-  onSubmit: (todo: Todo) => void;
+  onSubmit: (todo: Todo) => Promise<Todo | void>;
 }
 
 export const TodoHeader: React.FC<Props> = ({
-  value,
-  onChangeValue,
-  isDelCompleted,
-  delTodo,
+  titleField,
   tempTodo,
+  onChangeTempTodo,
   onErrorMessage,
   onSubmit,
 }) => {
-  const titleField = useRef<HTMLInputElement>(null);
-
-  useEffect(() => {
-    if (
-      titleField.current &&
-      tempTodo === null &&
-      Object.is(delTodo, NaN) &&
-      isDelCompleted === false
-    ) {
-      titleField.current.focus();
-    }
-  }, [tempTodo, delTodo, isDelCompleted]);
+  const [value, setValue] = useState('');
 
   const addingTodo = (event: React.FormEvent<HTMLElement>) => {
     event.preventDefault();
@@ -50,7 +35,20 @@ export const TodoHeader: React.FC<Props> = ({
       completed: false,
     };
 
-    onSubmit(newTodo);
+    let flag = 0;
+
+    onSubmit(newTodo)
+      .catch(() => {
+        onErrorMessage('Unable to add a todo');
+        flag = 1;
+      })
+      .finally(() => {
+        if (flag !== 1) {
+          setValue('');
+        }
+
+        onChangeTempTodo(null);
+      });
   };
 
   return (
@@ -62,7 +60,6 @@ export const TodoHeader: React.FC<Props> = ({
         data-cy="ToggleAllButton"
       />
 
-      {/* Add a todo on form submit */}
       <form onSubmit={addingTodo}>
         <input
           data-cy="NewTodoField"
@@ -72,7 +69,7 @@ export const TodoHeader: React.FC<Props> = ({
           ref={titleField}
           disabled={Boolean(tempTodo)}
           value={value}
-          onChange={event => onChangeValue(event.target.value)}
+          onChange={event => setValue(event.target.value)}
         />
       </form>
     </header>

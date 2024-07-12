@@ -1,4 +1,4 @@
-import React, { useEffect, useMemo, useState } from 'react';
+import React, { useEffect, useMemo, useRef, useState } from 'react';
 import { TodoList } from './components/TodoList';
 import { Todo } from './types/Todo';
 import { addTodo, deleteTodo, getTodos } from './api/todos';
@@ -15,7 +15,6 @@ export const App: React.FC = () => {
   const [errorMessage, setErrorMessage] = useState('');
   const [filter, setFilter] = useState<Filters>(Filters.All);
   const [isDelCompleted, setIsDelCompleted] = useState(false);
-  const [value, setValue] = useState('');
 
   useEffect(() => {
     getTodos()
@@ -26,25 +25,25 @@ export const App: React.FC = () => {
       });
   }, []);
 
-  const handleAddTodo = (newTodo: Todo) => {
+  const titleField = useRef<HTMLInputElement>(null);
+
+  useEffect(() => {
+    if (
+      titleField.current &&
+      tempTodo === null &&
+      Object.is(delTodo, NaN) &&
+      isDelCompleted === false
+    ) {
+      titleField.current.focus();
+    }
+  }, [tempTodo, delTodo, isDelCompleted]);
+
+  const handleAddTodo = (newTodo: Todo): Promise<Todo | void> => {
     setTempTodo(newTodo);
-    let todosLength = 0;
 
-    addTodo(newTodo)
-      .then(newTodoRes => {
-        setTodos(prevTodos => [...prevTodos, newTodoRes]);
-        todosLength = 1;
-      })
-      .catch(() => {
-        setErrorMessage('Unable to add a todo');
-      })
-      .finally(() => {
-        if (todosLength === 1) {
-          setValue('');
-        }
-
-        setTempTodo(null);
-      });
+    return addTodo(newTodo).then(newTodoRes => {
+      setTodos(prevTodos => [...prevTodos, newTodoRes]);
+    });
   };
 
   const handleDeleteCompletedTodos = () => {
@@ -55,7 +54,7 @@ export const App: React.FC = () => {
       completedTodos.map(todo => deleteTodo(todo.id).then(() => todo)),
     )
       .then(values => {
-        values.forEach(value1 => {
+        values.map(value1 => {
           if (value1.status === 'rejected') {
             setErrorMessage('Unable to delete a todo');
           } else {
@@ -105,11 +104,9 @@ export const App: React.FC = () => {
 
       <div className="todoapp__content">
         <TodoHeader
-          value={value}
-          onChangeValue={setValue}
-          isDelCompleted={isDelCompleted}
-          delTodo={delTodo}
+          titleField={titleField}
           tempTodo={tempTodo}
+          onChangeTempTodo={setTempTodo}
           onErrorMessage={setErrorMessage}
           onSubmit={handleAddTodo}
         />
