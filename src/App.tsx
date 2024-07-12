@@ -43,31 +43,29 @@ export const App: React.FC = () => {
 
   const handleNewTodo = (event: React.FormEvent) => {
     event.preventDefault();
-    if (!newTodo.trim()) {
+    const trimTitle = newTodo.trim();
+
+    if (!trimTitle) {
       setError('Title should not be empty');
 
       return;
     }
 
     const newtempTodo: Todo = {
-      id: Date.now(),
+      id: 0,
       userId: 0,
-      title: newTodo,
+      title: trimTitle,
       completed: false,
     };
 
     setTempTodo(newtempTodo);
-    setTodos([...todos, newtempTodo]);
-
     setLoading(true);
     setInputDisabled(true);
     setError(null);
 
-    loadTodos(newTodo)
+    loadTodos(trimTitle)
       .then(addedTodo => {
-        setTodos(prevTodos =>
-          prevTodos.map(todo => (todo.id === newtempTodo.id ? addedTodo : todo)),
-        );
+        setTodos(prevTodos => [...prevTodos, addedTodo]);
         setNewTodo('');
         setInputDisabled(false);
         setTempTodo(null);
@@ -76,7 +74,13 @@ export const App: React.FC = () => {
           inputRef.current?.focus();
         });
       })
-      .catch(() => setError('Unable to add a todo'))
+      .catch(() => {
+        setTodos(prevTodos =>
+          prevTodos.filter(todo => todo.id !== newtempTodo.id),
+        );
+        setTempTodo(null);
+        setError('Unable to add a todo');
+      })
       .finally(() => setLoading(false));
   };
 
@@ -126,14 +130,12 @@ export const App: React.FC = () => {
             />
           </form>
         </header>
-
         <TodoList
           todos={filteredTodos}
           loading={loading}
           onDelete={handleDeleteTodo}
           tempTodo={tempTodo}
         />
-
         {todos.length > 0 && (
           <Footer
             filter={filter}
@@ -142,7 +144,6 @@ export const App: React.FC = () => {
           />
         )}
       </div>
-
       <div
         data-cy="ErrorNotification"
         className={classNames(
