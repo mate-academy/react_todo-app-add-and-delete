@@ -6,9 +6,17 @@ export type Props = {
   filter: Status;
   setFilter: (filter: Status) => void;
   activeCount: number;
+  completedCount: number;
+  onClearCompleted: () => void;
 };
 
-export const Footer: React.FC<Props> = ({ filter, setFilter, activeCount }) => {
+export const Footer: React.FC<Props> = ({
+  filter,
+  setFilter,
+  activeCount,
+  completedCount,
+  onClearCompleted,
+}) => {
   return (
     <footer className="todoapp__footer" data-cy="Footer">
       <span className="todo-count" data-cy="TodosCounter">
@@ -47,13 +55,16 @@ export const Footer: React.FC<Props> = ({ filter, setFilter, activeCount }) => {
         </a>
       </nav>
 
-      <button
-        type="button"
-        className="todoapp__clear-completed"
-        data-cy="ClearCompletedButton"
-      >
-        Clear completed
-      </button>
+      {completedCount > 0 && (
+        <button
+          type="button"
+          className="todoapp__clear-completed"
+          data-cy="ClearCompletedButton"
+          onClick={onClearCompleted}
+        >
+          Clear completed
+        </button>
+      )}
     </footer>
   );
 };

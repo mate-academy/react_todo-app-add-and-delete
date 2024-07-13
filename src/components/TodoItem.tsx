@@ -6,9 +6,19 @@ export type Props = {
   todo: Todo;
   onDelete: (id: number) => void;
   loading: boolean;
+  deleting: number | null;
 };
 
-export const TodoItem: React.FC<Props> = ({ todo, onDelete, loading }) => {
+export const TodoItem: React.FC<Props> = ({
+  todo,
+  onDelete,
+  loading,
+  deleting,
+}) => {
+  const handleDelete = () => {
+    onDelete(todo.id);
+  };
+
   return (
     <div
       key={todo.id}
@@ -19,7 +29,7 @@ export const TodoItem: React.FC<Props> = ({ todo, onDelete, loading }) => {
     >
       {/* eslint-disable-next-line jsx-a11y/label-has-associated-control */}
       <label className="todo__status-label">
-        {loading ? (
+        {loading && todo.id === 0 ? (
           <div className="loader is-active" data-cy="TodoLoader"></div>
         ) : (
           <input
@@ -37,7 +47,7 @@ export const TodoItem: React.FC<Props> = ({ todo, onDelete, loading }) => {
         type="button"
         className="todo__remove"
         data-cy="TodoDelete"
-        onClick={() => onDelete(todo.id)}
+        onClick={handleDelete}
       >
         ×
       </button>
@@ -45,7 +55,7 @@ export const TodoItem: React.FC<Props> = ({ todo, onDelete, loading }) => {
       <div
         data-cy="TodoLoader"
         className={classNames('modal overlay', {
-          'is-active': loading,
+          'is-active': deleting === todo.id,
         })}
       >
         <div className="modal-background has-background-white-ter" />

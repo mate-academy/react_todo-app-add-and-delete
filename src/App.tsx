@@ -1,6 +1,6 @@
 import React, { useEffect, useState, useRef } from 'react';
 import { Todo } from './types/Todo';
-import { getTodos, loadTodos } from './api/todos';
+import { getTodos, loadTodos, deleteTodo } from './api/todos';
 import classNames from 'classnames';
 import { TodoList } from './components/TodoList';
 import { Footer } from './components/Footer';
@@ -11,6 +11,7 @@ export const App: React.FC = () => {
   const [error, setError] = useState<string | null>(null);
   const [newTodo, setNewTodo] = useState<string>('');
   const [loading, setLoading] = useState<boolean>(false);
+  const [deleting, setDeleting] = useState<number | null>(null);
   const [filter, setFilter] = useState<Status>(Status.all);
   const [inputDisabled, setInputDisabled] = useState<boolean>(false);
   const [tempTodo, setTempTodo] = useState<Todo | null>(null);
@@ -67,12 +68,7 @@ export const App: React.FC = () => {
       .then(addedTodo => {
         setTodos(prevTodos => [...prevTodos, addedTodo]);
         setNewTodo('');
-        setInputDisabled(false);
         setTempTodo(null);
-
-        setTimeout(() => {
-          inputRef.current?.focus();
-        });
       })
       .catch(() => {
         setTodos(prevTodos =>
@@ -81,11 +77,39 @@ export const App: React.FC = () => {
         setTempTodo(null);
         setError('Unable to add a todo');
       })
-      .finally(() => setLoading(false));
+      .finally(() => {
+        setLoading(false);
+        setInputDisabled(false);
+
+        setTimeout(() => {
+          inputRef.current?.focus();
+        });
+      });
   };
 
   const handleDeleteTodo = (id: number) => {
-    setTodos(todos.filter(todo => todo.id !== id));
+    setDeleting(id);
+    deleteTodo(id)
+      .then(() => {
+        setTodos(todos.filter(todo => todo.id !== id));
+
+        setTimeout(() => {
+          inputRef.current?.focus();
+        });
+      })
+      .catch(() => {
+        setError('Unable to delete a todo');
+      })
+      .finally(() => setDeleting(null));
+  };
+
+  const completedCount = todos.filter(todo => todo.completed).length;
+
+  const handleClearCompleted = () => {
+    const completedTodos = todos.filter(todo => todo.completed);
+
+    completedTodos.forEach(todo => deleteTodo(todo.id));
+    setTodos(prevTodos => prevTodos.filter(todo => !todo.completed));
   };
 
   const filteredTodos = todos.filter(todo => {
@@ -109,13 +133,15 @@ export const App: React.FC = () => {
       <h1 className="todoapp__title">todos</h1>
       <div className="todoapp__content">
         <header className="todoapp__header">
-          <button
-            type="button"
-            className={classNames('todoapp__toggle-all', {
-              active: todos.length > 0 && todos.every(todo => todo.completed),
-            })}
-            data-cy="ToggleAllButton"
-          />
+          {todos.length > 0 && (
+            <button
+              type="button"
+              className={classNames('todoapp__toggle-all', {
+                active: todos.length > 0 && todos.every(todo => todo.completed),
+              })}
+              data-cy="ToggleAllButton"
+            />
+          )}
           <form onSubmit={handleNewTodo}>
             <input
               data-cy="NewTodoField"
@@ -133,6 +159,7 @@ export const App: React.FC = () => {
         <TodoList
           todos={filteredTodos}
           loading={loading}
+          deleting={deleting}
           onDelete={handleDeleteTodo}
           tempTodo={tempTodo}
         />
@@ -141,6 +168,8 @@ export const App: React.FC = () => {
             filter={filter}
             setFilter={setFilter}
             activeCount={countActiveTodos()}
+            completedCount={completedCount}
+            onClearCompleted={handleClearCompleted}
           />
         )}
       </div>
