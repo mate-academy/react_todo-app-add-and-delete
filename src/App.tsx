@@ -69,6 +69,10 @@ export const App: React.FC = () => {
         setTodos(prevTodos => [...prevTodos, addedTodo]);
         setNewTodo('');
         setTempTodo(null);
+
+        setTimeout(() => {
+          inputRef.current?.focus();
+        });
       })
       .catch(() => {
         setTodos(prevTodos =>
@@ -107,9 +111,24 @@ export const App: React.FC = () => {
 
   const handleClearCompleted = () => {
     const completedTodos = todos.filter(todo => todo.completed);
+    const deletePromises = completedTodos.map(todo => deleteTodo(todo.id));
 
-    completedTodos.forEach(todo => deleteTodo(todo.id));
-    setTodos(prevTodos => prevTodos.filter(todo => !todo.completed));
+  Promise.allSettled(deletePromises)
+    .then(results => {
+      const hasFailures = results.some(result => result.status === 'rejected');
+
+      if (hasFailures) {
+        setError('Unable to update a todo');
+      }
+
+      setTodos(prevTodos => prevTodos.filter(todo => !todo.completed));
+    })
+    .catch(() => {
+      setError('Unable to update a todo');
+    })
+    .finally(() => {
+      inputRef.current?.focus();
+    });
   };
 
   const filteredTodos = todos.filter(todo => {
