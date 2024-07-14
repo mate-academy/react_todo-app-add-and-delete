@@ -26,7 +26,7 @@ export const Footer: React.FC<Props> = ({
     </span>
 
     <nav className="filter" data-cy="Filter">
-      {Object.values(Filter).map((filterOption, index) => (
+      {Object.values(Filter).map(filterOption => (
         <a
           href="#/"
           className={cn('filter__link', {
@@ -34,7 +34,7 @@ export const Footer: React.FC<Props> = ({
           })}
           data-cy={`FilterLink${filterOption}`}
           onClick={() => setFilter(filterOption)}
-          key={index}
+          key={filterOption}
         >
           {filterOption}
         </a>
