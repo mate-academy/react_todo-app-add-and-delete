@@ -4,66 +4,28 @@ import { Status } from '../separate/Status';
 
 export type Props = {
   filter: Status;
-  setFilter: (filter: Status) => void;
-  activeCount: number;
-  completedCount: number;
-  onClearCompleted: () => void;
+  statusChange: (newStatus: Status) => void;
 };
 
 export const Footer: React.FC<Props> = ({
   filter,
-  setFilter,
-  activeCount,
-  completedCount,
-  onClearCompleted,
+  statusChange = () => {},
 }) => {
   return (
-    <footer className="todoapp__footer" data-cy="Footer">
-      <span className="todo-count" data-cy="TodosCounter">
-        {activeCount} items left
-      </span>
-      <nav className="filter" data-cy="Filter">
+    <nav className="filter" data-cy="Filter">
+      {Object.values(Status).map(value => (
         <a
           href="#/"
           className={classNames('filter__link', {
-            selected: filter === Status.all,
+            selected: filter === value,
           })}
-          data-cy="FilterLinkAll"
-          onClick={() => setFilter(Status.all)}
+          data-cy={`FilterLink${value}`}
+          onClick={() => statusChange(value)}
+          key={value}
         >
-          All
+          {value}
         </a>
-        <a
-          href="#/active"
-          className={classNames('filter__link', {
-            selected: filter === Status.active,
-          })}
-          data-cy="FilterLinkActive"
-          onClick={() => setFilter(Status.active)}
-        >
-          Active
-        </a>
-        <a
-          href="#/completed"
-          className={classNames('filter__link', {
-            selected: filter === Status.completed,
-          })}
-          data-cy="FilterLinkCompleted"
-          onClick={() => setFilter(Status.completed)}
-        >
-          Completed
-        </a>
-      </nav>
-
-        <button
-          type="button"
-          className="todoapp__clear-completed"
-          data-cy="ClearCompletedButton"
-          onClick={onClearCompleted}
-          disabled={!completedCount}
-        >
-          Clear completed
-        </button>
-    </footer>
+      ))}
+    </nav>
   );
 };

@@ -4,50 +4,44 @@ import { Todo } from '../types/Todo';
 
 export type Props = {
   todo: Todo;
-  onDelete: (id: number) => void;
-  loading: boolean;
-  deleting: number | null;
+  onloadingTodoIds?: number[];
+  handleToggleTodo: (id: number) => void;
+  handleTodoDelete?: (id: number) => void;
 };
 
 export const TodoItem: React.FC<Props> = ({
-  todo,
-  onDelete,
-  loading,
-  deleting,
+  todo: { title, completed, id },
+  onloadingTodoIds = [],
+  handleToggleTodo = () => {},
+  handleTodoDelete = () => {},
 }) => {
-  const handleDelete = () => {
-    onDelete(todo.id);
-  };
+  const isActiveTodoIds = onloadingTodoIds.includes(id) || id === 0;
 
   return (
     <div
-      key={todo.id}
       data-cy="Todo"
       className={classNames('todo', {
-        completed: todo.completed,
+        completed: completed,
       })}
     >
       {/* eslint-disable-next-line jsx-a11y/label-has-associated-control */}
       <label className="todo__status-label">
-        {loading && todo.id === 0 ? (
-          <div className="loader is-active" data-cy="TodoLoader"></div>
-        ) : (
-          <input
-            data-cy="TodoStatus"
-            type="checkbox"
-            className="todo__status"
-            checked={todo.completed}
-          />
-        )}
+        <input
+          data-cy="TodoStatus"
+          type="checkbox"
+          className="todo__status"
+          checked={completed}
+          onChange={() => handleToggleTodo(id)}
+        />
       </label>
       <span data-cy="TodoTitle" className="todo__title">
-        {todo.title}
+        {title}
       </span>
       <button
         type="button"
         className="todo__remove"
         data-cy="TodoDelete"
-        onClick={handleDelete}
+        onClick={() => handleTodoDelete(id)}
       >
         ×
       </button>
@@ -55,7 +49,7 @@ export const TodoItem: React.FC<Props> = ({
       <div
         data-cy="TodoLoader"
         className={classNames('modal overlay', {
-          'is-active': deleting === todo.id,
+          'is-active': isActiveTodoIds,
         })}
       >
         <div className="modal-background has-background-white-ter" />

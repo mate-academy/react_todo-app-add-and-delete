@@ -1,166 +1,178 @@
-import React, { useEffect, useState, useRef } from 'react';
+import React, {
+  useEffect,
+  useState,
+  useRef,
+  useCallback,
+  useMemo,
+} from 'react';
 import { Todo } from './types/Todo';
-import { getTodos, loadTodos, deleteTodo } from './api/todos';
+import { getTodos, loadTodos, deleteTodo, USER_ID } from './api/todos';
 import classNames from 'classnames';
 import { TodoList } from './components/TodoList';
+import { TodoItem } from './components/TodoItem';
 import { Footer } from './components/Footer';
 import { Status } from './separate/Status';
 
 export const App: React.FC = () => {
+  const [title, setTitle] = useState('');
   const [todos, setTodos] = useState<Todo[]>([]);
-  const [error, setError] = useState<string | null>(null);
-  const [newTodo, setNewTodo] = useState<string>('');
+  const [errorMassage, setErrorMassage] = useState<string | null>(null);
   const [loading, setLoading] = useState<boolean>(false);
-  const [deleting, setDeleting] = useState<number | null>(null);
+  const [loadingTodoId, setLoadingTodoId] = useState<number[]>([]);
   const [filter, setFilter] = useState<Status>(Status.all);
   const [inputDisabled, setInputDisabled] = useState<boolean>(false);
   const [tempTodo, setTempTodo] = useState<Todo | null>(null);
+
   const inputRef = useRef<HTMLInputElement>(null);
+  const active = todos.filter((todo: Todo) => !todo.completed);
+  const todoCompleted = todos.filter(todo => todo.completed);
 
   useEffect(() => {
     setLoading(true);
-    setError(null);
     getTodos()
       .then(setTodos)
-      .catch(() => setError('Unable to load todos'))
+      .catch(() => setErrorMassage('Unable to load todos'))
       .finally(() => setLoading(false));
   }, []);
 
   useEffect(() => {
-    if (error) {
-      const timer = setTimeout(() => {
-        setError(null);
-      }, 3000);
+    const timer = setTimeout(() => {
+      setErrorMassage(null);
+    }, 3000);
 
-      return () => clearTimeout(timer);
+    return () => clearTimeout(timer);
+  }, [errorMassage]);
+
+  useEffect(() => {
+    if (inputRef.current) {
+      return inputRef.current.focus();
     }
+  }, [inputDisabled]);
 
-    return () => {};
-  }, [error]);
+  const handleStatusChange = (newFilter: Status) => {
+    setFilter(newFilter);
+  };
 
-  const countActiveTodos = () => {
-    return todos.filter(todo => !todo.completed).length;
+  const handleToggleTodo = (id: number) => {
+    const toggleTodo = todos.map(todo =>
+      todo.id === id ? { ...todo, completed: !todo.completed } : todo,
+    );
+
+    setTodos(toggleTodo);
+  };
+
+  const handleTitleChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+    setTitle(event.target.value);
+
+    setErrorMassage('');
   };
 
   const handleNewTodo = (event: React.FormEvent) => {
     event.preventDefault();
-    const trimTitle = newTodo.trim();
 
-    if (!trimTitle) {
-      setError('Title should not be empty');
+    if (!title.trim()) {
+      setErrorMassage('Title should not be empty');
 
       return;
     }
 
-    const newtempTodo: Todo = {
-      id: 0,
-      userId: 0,
-      title: trimTitle,
-      completed: false,
-    };
-
-    setTempTodo(newtempTodo);
-    setLoading(true);
     setInputDisabled(true);
-    setError(null);
+    setErrorMassage('');
 
-    loadTodos(trimTitle)
-      .then(addedTodo => {
-        setTodos(prevTodos => [...prevTodos, addedTodo]);
-        setNewTodo('');
-        setTempTodo(null);
+    setTempTodo({
+      id: 0,
+      userId: USER_ID,
+      title: title.trim(),
+      completed: false,
+    });
 
-        setTimeout(() => {
-          inputRef.current?.focus();
-        });
-      })
-      .catch(() => {
+    if (tempTodo) {
+      setTodos(prevTodos => [...prevTodos, tempTodo]);
+    }
+
+    return loadTodos({
+      userId: USER_ID,
+      title: title.trim(),
+      completed: false,
+    })
+      .then(newTodo => {
         setTodos(prevTodos =>
-          prevTodos.filter(todo => todo.id !== newtempTodo.id),
+          prevTodos.filter(todo => todo.id !== tempTodo?.id),
         );
+        setTodos(prevTodos => [...prevTodos, newTodo]);
+        setTitle('');
         setTempTodo(null);
-        setError('Unable to add a todo');
+      })
+      .catch(error => {
+        setTodos(todos);
+        setTempTodo(null);
+        setErrorMassage('Unable to add a todo');
+        throw error;
+      })
+      .finally(() => setInputDisabled(false));
+  };
+
+  const handleDeleteTodo = (todoId: number) => {
+    setInputDisabled(true);
+    setLoadingTodoId(prevId => [...prevId, todoId]);
+
+    return deleteTodo(todoId)
+      .then(() => {
+        setTodos(currentTodos =>
+          currentTodos.filter(todo => todo.id !== todoId),
+        );
+      })
+      .catch(error => {
+        setErrorMassage('Unable to delete a todo');
+        throw error;
       })
       .finally(() => {
-        setLoading(false);
         setInputDisabled(false);
-
-        setTimeout(() => {
-          inputRef.current?.focus();
-        });
+        setLoadingTodoId([]);
       });
   };
 
-  const handleDeleteTodo = (id: number) => {
-    setDeleting(id);
-    deleteTodo(id)
-      .then(() => {
-        setTodos(todos.filter(todo => todo.id !== id));
+  const handleClearCompleted = async () => {
+    const completedTodos = todos
+      .filter(todo =>todo.completed)
+      .map(todo => todo.id);
 
-        setTimeout(() => {
-          inputRef.current?.focus();
-        });
-      })
-      .catch(() => {
-        setError('Unable to delete a todo');
-      })
-      .finally(() => setDeleting(null));
+    await completedTodos.forEach(id => handleDeleteTodo(id));
   };
 
-  const completedCount = todos.filter(todo => todo.completed).length;
+  const hanldeCloseErrorMessage = () => {
+    setErrorMassage('');
+  };
 
-  const handleClearCompleted = () => {
-    const completedTodos = todos.filter(todo => todo.completed);
-    const deletePromises = completedTodos.map(todo => deleteTodo(todo.id));
-
-  Promise.allSettled(deletePromises)
-    .then(results => {
-      const hasFailures = results.some(result => result.status === 'rejected');
-
-      if (hasFailures) {
-        setError('Unable to update a todo');
+  const filterTodos = useCallback(
+    (currentTodos: Todo[], currentStatus: Status) => {
+      if (currentStatus === Status.active) {
+        return currentTodos.filter((todo: Todo) => !todo.completed);
+      } else if (currentStatus === Status.completed) {
+        return currentTodos.filter((todo: Todo) => todo.completed);
+      } else {
+        return currentTodos;
       }
+    },
+    [],
+  );
 
-      setTodos(prevTodos => prevTodos.filter(todo => !todo.completed));
-    })
-    .catch(() => {
-      setError('Unable to update a todo');
-    })
-    .finally(() => {
-      inputRef.current?.focus();
-    });
-  };
-
-  const filteredTodos = todos.filter(todo => {
-    if (filter === Status.all) {
-      return true;
-    }
-
-    if (filter === Status.active) {
-      return !todo.completed;
-    }
-
-    if (filter === Status.completed) {
-      return todo.completed;
-    }
-
-    return true;
-  });
+  const filteredTodos = useMemo(() => {
+    return filterTodos(todos, filter);
+  }, [filterTodos, todos, filter]);
 
   return (
     <div className="todoapp">
       <h1 className="todoapp__title">todos</h1>
       <div className="todoapp__content">
         <header className="todoapp__header">
-          {todos.length > 0 && (
-            <button
-              type="button"
-              className={classNames('todoapp__toggle-all', {
-                active: todos.length > 0 && todos.every(todo => todo.completed),
-              })}
-              data-cy="ToggleAllButton"
-            />
-          )}
+          <button
+            type="button"
+            className={classNames('todoapp__toggle-all', {
+              active: todos.every(todo => todo.completed),
+            })}
+            data-cy="ToggleAllButton"
+          />
           <form onSubmit={handleNewTodo}>
             <input
               data-cy="NewTodoField"
@@ -168,28 +180,44 @@ export const App: React.FC = () => {
               className="todoapp__new-todo"
               placeholder="What needs to be done?"
               autoFocus
-              value={newTodo}
-              onChange={event => setNewTodo(event.target.value)}
+              value={title}
+              onChange={handleTitleChange}
               disabled={inputDisabled}
               ref={inputRef}
             />
           </form>
         </header>
-        <TodoList
-          todos={filteredTodos}
-          loading={loading}
-          deleting={deleting}
-          onDelete={handleDeleteTodo}
-          tempTodo={tempTodo}
-        />
+        {!loading && (
+          <>
+            <TodoList
+              todos={filteredTodos}
+              handleToggleTodo={handleToggleTodo}
+              onDeleteTodo={handleDeleteTodo}
+              loadingTodoId={loadingTodoId}
+            />
+            {tempTodo !== null && (
+              <TodoItem todo={tempTodo} handleToggleTodo={handleToggleTodo} />
+            )}
+          </>
+        )}
         {todos.length > 0 && (
-          <Footer
-            filter={filter}
-            setFilter={setFilter}
-            activeCount={countActiveTodos()}
-            completedCount={completedCount}
-            onClearCompleted={handleClearCompleted}
-          />
+          <footer className="todoapp__footer" data-cy="Footer">
+            <span className="todo-count" data-cy="TodosCounter">
+              {active.length} items left
+            </span>
+
+            <Footer filter={filter} statusChange={handleStatusChange} />
+
+            <button
+              type="button"
+              className="todoapp__clear-completed"
+              data-cy="ClearCompletedButton"
+              onClick={handleClearCompleted}
+              disabled={todoCompleted.length === 0}
+            >
+              Clear completed
+            </button>
+          </footer>
         )}
       </div>
       <div
@@ -200,7 +228,7 @@ export const App: React.FC = () => {
           'is-light',
           'has-text-weight-normal',
           {
-            hidden: !error,
+            hidden: !errorMassage,
           },
         )}
       >
@@ -208,9 +236,9 @@ export const App: React.FC = () => {
           data-cy="HideErrorButton"
           type="button"
           className="delete"
-          onClick={() => setError(null)}
+          onClick={hanldeCloseErrorMessage}
         />
-        {error}
+        {errorMassage}
       </div>
     </div>
   );
