@@ -8,7 +8,6 @@ interface Props {
   todo: Todo;
   loading: number[] | null;
   onDelete?: (id: number[]) => void;
-  delateTodoId: number[] | null;
   onEdit: (id: number, data: Partial<Todo>) => void;
 }
 
@@ -16,7 +15,6 @@ export const TodoUser: React.FC<Props> = ({
   todo,
   loading,
   onDelete = () => {},
-  delateTodoId,
   onEdit,
 }) => {
   return (
@@ -51,8 +49,7 @@ export const TodoUser: React.FC<Props> = ({
       <div
         data-cy="TodoLoader"
         className={cn('modal overlay', {
-          'is-active':
-            loading?.includes(todo.id) || delateTodoId?.includes(todo.id),
+          'is-active': loading?.includes(todo.id),
         })}
       >
         <div className="modal-background has-background-white-ter" />

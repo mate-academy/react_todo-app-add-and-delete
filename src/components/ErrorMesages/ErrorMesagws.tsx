@@ -21,13 +21,6 @@ export const ErrorMesages: React.FC<Props> = ({ loadError, setLoadError }) => {
         onClick={() => setLoadError('')}
       />
       {loadError}
-      {/* Title should not be empty
-        <br />
-        Unable to add a todo
-        <br />
-        Unable to delete a todo
-        <br />
-        Unable to update a todo */}
     </div>
   );
 };

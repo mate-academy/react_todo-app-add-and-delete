@@ -10,17 +10,16 @@ import { TodoFiler } from './components/TodoFilter/TodoFilter';
 import { Filters } from './types/Filters';
 import { Header } from './components/Header/Header';
 import { ErrorMesages } from './components/ErrorMesages/ErrorMesagws';
-
+import { ErrorValues } from './types/errorValues';
 
 export const App: FC = () => {
   const [todos, setTodos] = useState<Todo[]>([]);
   const [loadError, setLoadError] = useState('');
   const [filter, setFilter] = useState(Filters.All);
   const [loading, setLoading] = useState<number[] | null>(null);
-  const [delateTodoId, setDelateTodoId] = useState<number[] | null>(null);
   const [tempTodo, setTempTodo] = useState<Todo | null>(null);
 
-  const newError = (error: string) => {
+  const showNewError = (error: string) => {
     setLoadError(error);
     setTimeout(() => setLoadError(''), 3000);
   };
@@ -32,7 +31,7 @@ export const App: FC = () => {
 
         setTodos(todo);
       } catch (error) {
-        newError('Unable to load todos');
+        showNewError(ErrorValues.Load);
       }
     };
 
@@ -46,7 +45,7 @@ export const App: FC = () => {
 
       setTodos(curenTodos => [...curenTodos, nuwTodo]);
     } catch (error) {
-      newError('Unable to add a todo');
+      showNewError(ErrorValues.Add);
       throw error;
     } finally {
       setTempTodo(null);
@@ -57,14 +56,13 @@ export const App: FC = () => {
     try {
       setLoadError('');
       setLoading(todosId);
-      setDelateTodoId(todosId);
 
       for (const id of todosId) {
         await delateTodos(id);
         setTodos(currentTodos => currentTodos.filter(todo => todo.id !== id));
       }
     } catch (error) {
-      newError('Unable to delete a todo');
+      showNewError(ErrorValues.Delete);
       throw error;
     } finally {
       setLoading(null);
@@ -75,19 +73,19 @@ export const App: FC = () => {
     const filterTodos = todos.filter(todo => todo.completed);
 
     try {
-      const delatECalback = async (todo: Todo) => {
+      const delateCalback = async (todo: Todo) => {
         try {
           await deletedTodo([todo.id]);
 
           return { id: todo.id, status: 'resolved' };
         } catch {
-          newError('Unable to delete a todo');
+          showNewError(ErrorValues.Delete);
 
           return { id: todo.id, status: 'rejected' };
         }
       };
 
-      const rest = await Promise.allSettled(filterTodos.map(delatECalback));
+      const rest = await Promise.allSettled(filterTodos.map(delateCalback));
 
       const resolvedId = rest.reduce(
         (acc, item) => {
@@ -114,7 +112,7 @@ export const App: FC = () => {
         }),
       );
     } catch {
-      newError('Unable to clear complited todos');
+      showNewError(ErrorValues.ClearComplited);
     }
   };
 
@@ -132,7 +130,7 @@ export const App: FC = () => {
         }),
       );
     } catch {
-      newError('Unable to edit todo');
+      showNewError(ErrorValues.Edit);
     }
   };
 
@@ -160,14 +158,13 @@ export const App: FC = () => {
           creatTodo={creatTodo}
           loading={loading}
           setLoading={setLoading}
-          newError={newError}
+          showNewError={showNewError}
         />
 
         <TodoList
           loading={loading}
           todos={preparedTodos}
           onDelete={deletedTodo}
-          delateTodoId={delateTodoId}
           tempTodo={tempTodo}
           onEdit={hendleEdit}
         />

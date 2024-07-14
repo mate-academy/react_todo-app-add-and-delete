@@ -6,7 +6,6 @@ interface Props {
   todos: Todo[];
   loading: number[] | null;
   onDelete?: (id: number[]) => void;
-  delateTodoId: number[] | null;
   tempTodo: Todo | null;
   onEdit: (id: number, data: Partial<Todo>) => void;
 }
@@ -15,7 +14,6 @@ export const TodoList: React.FC<Props> = ({
   todos,
   loading,
   onDelete,
-  delateTodoId,
   tempTodo,
   onEdit,
 }) => {
@@ -27,7 +25,6 @@ export const TodoList: React.FC<Props> = ({
           key={todo.id}
           loading={loading}
           onDelete={onDelete}
-          delateTodoId={delateTodoId}
           onEdit={onEdit}
         />
       ))}
@@ -37,7 +34,6 @@ export const TodoList: React.FC<Props> = ({
           key={tempTodo.id}
           loading={loading}
           onDelete={onDelete}
-          delateTodoId={delateTodoId}
           onEdit={onEdit}
         />
       )}

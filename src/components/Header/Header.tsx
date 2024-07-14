@@ -1,18 +1,19 @@
 import { Todo } from '../../types/Todo';
 import { useRef, useEffect, useState } from 'react';
+import { ErrorValues } from '../../types/errorValues';
 
 interface Props {
   creatTodo: (todo: Todo) => Promise<void>;
   loading: number[] | null;
   setLoading: (val: number[] | null) => void;
-  newError: (str: string) => void;
+  showNewError: (str: string) => void;
 }
 
 export const Header: React.FC<Props> = ({
   creatTodo,
   loading,
   setLoading,
-  newError,
+  showNewError,
 }) => {
   const [title, setTitle] = useState('');
 
@@ -34,7 +35,7 @@ export const Header: React.FC<Props> = ({
     const normalizeTitle = title.trim();
 
     if (!normalizeTitle) {
-      newError('Title should not be empty');
+      showNewError(ErrorValues.Empty);
       setLoading(null);
 
       return;
