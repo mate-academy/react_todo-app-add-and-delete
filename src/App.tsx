@@ -10,7 +10,7 @@ import { TodoFiler } from './components/TodoFilter/TodoFilter';
 import { Filters } from './types/Filters';
 import { Header } from './components/Header/Header';
 import { ErrorMesages } from './components/ErrorMesages/ErrorMesagws';
-import { getActiveTodos } from './servisec/getActiveTodos';
+
 
 export const App: FC = () => {
   const [todos, setTodos] = useState<Todo[]>([]);
@@ -87,9 +87,32 @@ export const App: FC = () => {
         }
       };
 
-      await Promise.allSettled(filterTodos.map(delatECalback));
+      const rest = await Promise.allSettled(filterTodos.map(delatECalback));
 
-      setTodos(currentTodos => getActiveTodos(currentTodos));
+      const resolvedId = rest.reduce(
+        (acc, item) => {
+          if (item.status === 'rejected') {
+            return acc;
+          }
+
+          if (item.value.status === 'resolved') {
+            return { ...acc, [item.value.id]: item.value.id };
+          }
+
+          return acc;
+        },
+        {} as Record<number, number>,
+      );
+
+      setTodos(currentTodos =>
+        currentTodos.filter(todo => {
+          if (resolvedId[todo.id] && todo.completed) {
+            return false;
+          }
+
+          return true;
+        }),
+      );
     } catch {
       newError('Unable to clear complited todos');
     }
