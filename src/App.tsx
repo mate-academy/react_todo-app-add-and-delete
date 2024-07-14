@@ -11,6 +11,7 @@ import { TodoList } from './components/TodoList';
 import { addTodo, deleteTodo, getTodos, USER_ID } from './api/todos';
 import { Filter } from './types/Filter';
 import { Errors } from './types/Errors';
+import { ErrorNotification } from './components/ErrorNotification';
 
 const BASE_ERRORS: Errors = {
   loadingError: false,
@@ -23,15 +24,15 @@ export const App: React.FC = () => {
   const [todosFromServer, setTodosFromServer] = useState<Todo[]>([]);
   const [loading, setLoading] = useState<boolean>(false);
   const [errors, setErrors] = useState<Errors>(BASE_ERRORS);
-  const [filter, setFilter] = useState<Filter>(Filter.all);
+  const [filter, setFilter] = useState<Filter>(Filter.All);
   const [newTodoTitle, setNewTodoTitle] = useState<string>('');
   const [loadingTodosIds, setLoadingTodosIds] = useState<number[]>([-1]);
+
+  const inputField = useRef<HTMLInputElement>(null);
 
   const isError = useCallback(() => {
     return Object.values(errors).some(value => value);
   }, [errors]);
-
-  const inputField = useRef<HTMLInputElement>(null);
 
   const errorTimeout = useRef(0);
 
@@ -42,6 +43,18 @@ export const App: React.FC = () => {
       setErrors(BASE_ERRORS);
     }, 3000);
   }, []);
+
+  const isEveryTodoCompleted = useMemo(() => {
+    return todosFromServer.every(todo => todo.completed);
+  }, [todosFromServer]);
+
+  const isLoadingNewTodo = useMemo(() => {
+    return todosFromServer.some(todo => todo.id === -1);
+  }, [todosFromServer]);
+
+  const isTodoListShown = useMemo(() => {
+    return !loading && !!todosFromServer.length;
+  }, [todosFromServer, loading]);
 
   const areThereCompletedTodos = useMemo(() => {
     return todosFromServer.some(todo => todo.completed);
@@ -59,13 +72,13 @@ export const App: React.FC = () => {
 
   const displayedTodos = useMemo(() => {
     switch (filter) {
-      case Filter.all:
+      case Filter.All:
         return todosFromServer;
 
-      case Filter.active:
+      case Filter.Active:
         return todosFromServer.filter(todo => !todo.completed);
 
-      case Filter.completed:
+      case Filter.Completed:
         return todosFromServer.filter(todo => todo.completed);
     }
   }, [todosFromServer, filter]);
@@ -86,6 +99,11 @@ export const App: React.FC = () => {
       })
       .finally(() => setLoading(false));
   }, [resetErrors]);
+
+  const handleInputChange = useCallback(
+    (e: React.ChangeEvent<HTMLInputElement>) => setNewTodoTitle(e.target.value),
+    [],
+  );
 
   const handleSubmit = useCallback(
     (e: React.FormEvent<HTMLFormElement>, title: string) => {
@@ -179,13 +197,11 @@ export const App: React.FC = () => {
       <div className="todoapp__content">
         <header className="todoapp__header">
           {/* this button should have `active` class only if all todos are completed */}
-          {!!displayedTodos.length && (
+          {!loading && (
             <button
               type="button"
               className={cn('todoapp__toggle-all', {
-                active:
-                  todosFromServer.every(todo => todo.completed) &&
-                  !!todosFromServer.length,
+                active: isEveryTodoCompleted,
               })}
               data-cy="ToggleAllButton"
             />
@@ -199,14 +215,14 @@ export const App: React.FC = () => {
               className="todoapp__new-todo"
               placeholder="What needs to be done?"
               value={newTodoTitle}
-              onChange={e => setNewTodoTitle(e.target.value)}
-              disabled={todosFromServer.some(todo => todo.id === -1)}
+              onChange={handleInputChange}
+              disabled={isLoadingNewTodo}
               ref={inputField}
             />
           </form>
         </header>
 
-        {!loading && !!todosFromServer.length && (
+        {isTodoListShown && (
           <TodoList
             todosFromServer={todosFromServer}
             displayedTodos={displayedTodos}
@@ -221,25 +237,7 @@ export const App: React.FC = () => {
         )}
       </div>
 
-      {/* DON'T use conditional rendering to hide the notification */}
-      {/* Add the 'hidden' class to hide the message smoothly */}
-      <div
-        data-cy="ErrorNotification"
-        className={cn(
-          'notification',
-          'is-danger',
-          'is-light',
-          'has-text-weight-normal',
-          { hidden: !isError() },
-        )}
-      >
-        <button data-cy="HideErrorButton" type="button" className="delete" />
-        {/* show only one message at a time */}
-        {errors.loadingError && 'Unable to load todos'}
-        {errors.emptyTitleError && 'Title should not be empty'}
-        {errors.addingError && 'Unable to add a todo'}
-        {errors.deletingError && 'Unable to delete a todo'}
-      </div>
+      <ErrorNotification isError={isError} errors={errors} />
     </div>
   );
 };
