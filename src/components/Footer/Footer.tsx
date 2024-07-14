@@ -32,7 +32,7 @@ export const Footer: React.FC<Props> = ({
           className={cn('filter__link', {
             selected: filter === filterOption,
           })}
-          data-cy="FilterLinkAll"
+          data-cy={`FilterLink${filterOption}`}
           onClick={() => setFilter(filterOption)}
           key={index}
         >
