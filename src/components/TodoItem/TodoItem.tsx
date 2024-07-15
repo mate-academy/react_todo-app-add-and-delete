@@ -3,13 +3,10 @@ import { Todo } from '../../types/Todo';
 
 type TodoItemProps = {
   todo: Todo;
-  showLoader?: boolean;
+  isTemp?: boolean;
 };
 
-export const TodoItem: React.FC<TodoItemProps> = ({
-  todo,
-  showLoader = false,
-}) => {
+export const TodoItem: React.FC<TodoItemProps> = ({ todo, isTemp }) => {
   return (
     <div data-cy="Todo" className={`todo ${todo.completed ? 'completed' : ''}`}>
       {/* eslint-disable-next-line jsx-a11y/label-has-associated-control */}
@@ -30,8 +27,7 @@ export const TodoItem: React.FC<TodoItemProps> = ({
       </button>
       <div
         data-cy="TodoLoader"
-        className="modal overlay"
-        style={{ display: showLoader ? 'flex' : 'none' }}
+        className={`overlay ${isTemp ? 'visible' : 'hidden'}`}
       >
         <div className="modal-background has-background-white-ter" />
         <div className="loader" />

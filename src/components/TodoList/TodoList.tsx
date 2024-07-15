@@ -15,7 +15,7 @@ export const TodoList: React.FC<TodoListProps> = ({ todos }) => {
       {todos.map(todo => (
         <TodoItem key={todo.id} todo={todo} />
       ))}
-      {tempTodo && <TodoItem key={tempTodo.id} todo={tempTodo} showLoader />}
+      {tempTodo && <TodoItem key={tempTodo.id} todo={tempTodo} isTemp />}
     </section>
   );
 };

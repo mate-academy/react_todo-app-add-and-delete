@@ -12,7 +12,7 @@ type UsePostTodosProps = {
 };
 
 export const usePostTodos = (): UsePostTodosProps => {
-  const { setTodos, tempTodo, setTempTodo } = useTodos();
+  const { todos, setTodos, tempTodo, setTempTodo } = useTodos();
   const [error, setError] = useState<ErrorType | null>(null);
   const [isSubmitting, setIsSubmitting] = useState<boolean>(false);
 
@@ -32,15 +32,15 @@ export const usePostTodos = (): UsePostTodosProps => {
       completed: false,
     };
 
-    setTempTodo(newTodo); // Set temporary todo in context
+    setTempTodo(newTodo);
+    setTodos([...todos, newTodo]); // Add tempTodo to todos
 
     try {
       const createdTodo = await postTodos(newTodo);
 
-      setTodos(prevTodos => [
-        ...prevTodos.filter(todo => todo.id !== 0),
-        createdTodo,
-      ]); // Remove tempTodo and add createdTodo
+      setTodos(prevTodos =>
+        prevTodos.map(todo => (todo.id === 0 ? createdTodo : todo)),
+      ); // Replace tempTodo with createdTodo
       setTempTodo(null); // Clear temporary todo after success
       setIsSubmitting(false);
 
