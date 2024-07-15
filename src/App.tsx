@@ -17,6 +17,7 @@ export const App: React.FC = () => {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const inputRef = useRef<HTMLInputElement>(null);
   const [fakeTodos, setFakeTodos] = useState<Todo | null>(null);
+  const [isLoading, setIsLoading] = useState(false);
 
   useEffect(() => {
     getTodos()
@@ -59,6 +60,8 @@ export const App: React.FC = () => {
     };
 
     setFakeTodos(fakeTodo);
+    setIsLoading(true);
+
     createTodos({ title, userId, completed })
       .then(newTodo => {
         setTodos(currentTodos => [
@@ -71,12 +74,14 @@ export const App: React.FC = () => {
           },
         ]);
         setFakeTodos(null);
+        setIsLoading(false);
         setNewTodos('');
         setIsSubmitting(false);
       })
       .catch(() => {
         setErrorMessage('Unable to add a todo');
         setFakeTodos(null);
+        setIsLoading(false);
         setIsSubmitting(false);
       });
   }
@@ -110,6 +115,7 @@ export const App: React.FC = () => {
           filter={filter}
           deleteTodo={deleteTodo}
           fakeTodo={fakeTodos}
+          isLoading={isLoading}
         />
         {todos.length > 0 && (
           <TodoFooter todos={todos} filter={filter} setFilter={setFilter} />

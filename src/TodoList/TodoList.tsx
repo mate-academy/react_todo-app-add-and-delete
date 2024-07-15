@@ -11,12 +11,14 @@ interface TodoListProps {
   filter: FilterTypes;
   deleteTodo: (todoId: number) => void;
   fakeTodo: Todo | null;
+  isLoading: boolean;
 }
 export const TodoList: React.FC<TodoListProps> = ({
   todos,
   filter,
   deleteTodo,
   fakeTodo,
+  isLoading,
 }) => {
   const filteredTodos = getFilteredTodos(todos, filter);
 
@@ -49,6 +51,15 @@ export const TodoList: React.FC<TodoListProps> = ({
               >
                 ×
               </button>
+              <div
+                data-cy="TodoLoader"
+                className={classNames('modal overlay', {
+                  'is-active': isLoading,
+                })}
+              >
+                <div className="modal-background has-background-white-ter" />
+                <div className="loader" />
+              </div>
             </div>
           </CSSTransition>
         ))}
@@ -58,10 +69,6 @@ export const TodoList: React.FC<TodoListProps> = ({
               data-cy="Todo"
               className={classNames('todo', { completed: fakeTodo.completed })}
             >
-              <div data-cy="TodoLoader" className="modal overlay">
-                <div className="modal-background has-background-white-ter" />
-                <div className="loader" />
-              </div>
               <div
                 data-cy="Todo"
                 className={classNames('todo', {
