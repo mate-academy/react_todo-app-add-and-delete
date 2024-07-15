@@ -134,7 +134,7 @@ export const App: React.FC = () => {
 
   const handleClearCompleted = async () => {
     const completedTodos = todos
-      .filter(todo =>todo.completed)
+      .filter(todo => todo.completed)
       .map(todo => todo.id);
 
     await completedTodos.forEach(id => handleDeleteTodo(id));
@@ -146,16 +146,21 @@ export const App: React.FC = () => {
 
   const filterTodos = useCallback(
     (currentTodos: Todo[], currentStatus: Status) => {
-      if (currentStatus === Status.active) {
-        return currentTodos.filter((todo: Todo) => !todo.completed);
-      } else if (currentStatus === Status.completed) {
-        return currentTodos.filter((todo: Todo) => todo.completed);
-      } else {
-        return currentTodos;
+      switch (currentStatus) {
+        case Status.active:
+          return currentTodos.filter((todo: Todo) => !todo.completed);
+
+        case Status.completed:
+          return currentTodos.filter((todo: Todo) => todo.completed);
+
+        case Status.all:
+        default:
+          return currentTodos;
       }
     },
     [],
   );
+
 
   const filteredTodos = useMemo(() => {
     return filterTodos(todos, filter);
@@ -195,12 +200,12 @@ export const App: React.FC = () => {
               onDeleteTodo={handleDeleteTodo}
               loadingTodoId={loadingTodoId}
             />
-            {tempTodo !== null && (
+            {tempTodo && (
               <TodoItem todo={tempTodo} handleToggleTodo={handleToggleTodo} />
             )}
           </>
         )}
-        {todos.length > 0 && (
+        {!!todos.length && (
           <footer className="todoapp__footer" data-cy="Footer">
             <span className="todo-count" data-cy="TodosCounter">
               {active.length} items left
