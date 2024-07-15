@@ -1,5 +1,3 @@
-/* eslint-disable jsx-a11y/label-has-associated-control */
-/* eslint-disable jsx-a11y/control-has-associated-label */
 import React, { useEffect, useRef, useState } from 'react';
 import { UserWarning } from './UserWarning';
 import { USER_ID, getTodos, deleteTodos, createTodos } from './api/todos';
@@ -9,6 +7,7 @@ import { TodoList } from './TodoList/TodoList';
 import { TodoFooter } from './TodoFooter/TodoFooter';
 import { TodoHeader } from './TodoHeader/TodoHeader';
 import { TodoErrors } from './TodoErrors/TodoErrors';
+
 export const App: React.FC = () => {
   const [todos, setTodos] = useState<Todo[]>([]);
   const [newTodos, setNewTodos] = useState<string>('');
@@ -64,6 +63,7 @@ export const App: React.FC = () => {
 
     createTodos({ title, userId, completed })
       .then(newTodo => {
+        setFakeTodos(null);
         setTodos(currentTodos => [
           ...currentTodos,
           {
@@ -73,7 +73,6 @@ export const App: React.FC = () => {
             completed: newTodo.completed,
           },
         ]);
-        setFakeTodos(null);
         setIsLoading(false);
         setNewTodos('');
         setIsSubmitting(false);
