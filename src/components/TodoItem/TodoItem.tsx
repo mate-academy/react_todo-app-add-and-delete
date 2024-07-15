@@ -27,7 +27,8 @@ export const TodoItem: React.FC<TodoItemProps> = ({ todo, isTemp }) => {
       </button>
       <div
         data-cy="TodoLoader"
-        className={`overlay ${isTemp ? 'visible' : 'hidden'}`}
+        className="overlay"
+        style={{ display: isTemp ? 'flex' : 'none' }}
       >
         <div className="modal-background has-background-white-ter" />
         <div className="loader" />
