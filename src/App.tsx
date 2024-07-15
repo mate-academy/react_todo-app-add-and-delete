@@ -118,7 +118,7 @@ export const App: React.FC = () => {
     const deletePromises = completedTodos.map(todo =>
       deleteTodos(todo.id).then(
         () => ({ status: 'fulfilled', id: todo.id }),
-        errorDelete => ({ status: 'rejected', id: todo.id, errorDelete }),
+        errorTodo => ({ status: 'rejected', id: todo.id, errorTodo }),
       ),
     );
 
