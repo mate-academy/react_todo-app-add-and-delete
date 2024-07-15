@@ -9,6 +9,7 @@ export const getTodos = () => {
 
 export const deleteTodos = async (id: number) => {
   const response = await client.delete(`/todos/${id}`);
+
   return response as Response;
 };
 

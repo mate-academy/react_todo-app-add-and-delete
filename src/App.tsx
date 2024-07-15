@@ -13,7 +13,7 @@ export const App: React.FC = () => {
   const [error, setError] = useState<string | null>(null);
   const [tempTodo, setTempTodo] = useState<Todo | null>(null);
   const [inputText, setInputText] = useState<string>('');
-  const [shouldFocusInput, setShouldFocusInput] = useState(true);
+  // const [shouldFocusInput, setShouldFocusInput] = useState(true);
 
   const newTodoFieldRef = useRef<HTMLInputElement>(null);
 
@@ -21,6 +21,7 @@ export const App: React.FC = () => {
     const fetchInitialData = async () => {
       try {
         const todosResponse = await getTodos();
+
         setTodos(todosResponse);
       } catch (errorTodo) {
         setError('Unable to load todos');
@@ -53,18 +54,21 @@ export const App: React.FC = () => {
 
   const todosCounter = useMemo(() => {
     const incompleteTodosCount = todos.filter(todo => !todo.completed).length;
+
     return `${incompleteTodosCount} ${incompleteTodosCount === 1 ? 'item' : 'items'} left`;
   }, [todos]);
 
   const handleSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
     const trimmedText = inputText.trim();
+
     if (!trimmedText) {
       setError('Title should not be empty');
       setTimeout(() => {
         setError(null);
       }, 3000);
-      setShouldFocusInput(true);
+      // setShouldFocusInput(true);
+
       return;
     }
 
@@ -77,18 +81,19 @@ export const App: React.FC = () => {
 
     try {
       const newTodo = await postTodos(trimmedText, USER_ID);
+
       setTodos(prevTodos => [...prevTodos, newTodo]);
       setTempTodo(null);
       setError(null);
       setInputText('');
-      setShouldFocusInput(true);
-    } catch (error) {
+      // setShouldFocusInput(true);
+    } catch (errorMessage) {
       setError('Unable to add a todo');
       setTimeout(() => {
         setError(null);
       }, 3000);
       setTempTodo(null);
-      setShouldFocusInput(true);
+      // setShouldFocusInput(true);
     }
   };
 
@@ -110,10 +115,12 @@ export const App: React.FC = () => {
 
   const handleClearCompleted = async () => {
     const completedTodos = todos.filter(todo => todo.completed);
-    const deletePromises = completedTodos.map(todo => deleteTodos(todo.id).then(
-      () => ({ status: 'fulfilled', id: todo.id }),
-      (error) => ({ status: 'rejected', id: todo.id, error })
-    ));
+    const deletePromises = completedTodos.map(todo =>
+      deleteTodos(todo.id).then(
+        () => ({ status: 'fulfilled', id: todo.id }),
+        errorDelete => ({ status: 'rejected', id: todo.id, errorDelete }),
+      ),
+    );
 
     const results = await Promise.all(deletePromises);
 
@@ -132,7 +139,9 @@ export const App: React.FC = () => {
       }, 3000);
     }
 
-    setTodos(prevTodos => prevTodos.filter(todo => !successfulDeletions.includes(todo.id)));
+    setTodos(prevTodos =>
+      prevTodos.filter(todo => !successfulDeletions.includes(todo.id)),
+    );
   };
 
   if (!USER_ID) {
