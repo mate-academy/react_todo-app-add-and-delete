@@ -50,6 +50,8 @@ export const Todo: FC<Props> = ({ todo, onDelete, onEdit }) => {
       return;
     }
 
+    return;
+
     handleEdit({ title });
     setIsEditing(false);
   };
