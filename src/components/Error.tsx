@@ -6,7 +6,7 @@ interface Props {
   onClose: () => void;
 }
 
-export const Error: FC<Props> = ({ message, onClose }) => {
+export const ErrorMessage: FC<Props> = ({ message, onClose }) => {
   useEffect(() => {
     const timeout = setTimeout(onClose, 3000);
 
@@ -20,12 +20,7 @@ export const Error: FC<Props> = ({ message, onClose }) => {
         hidden: !message,
       })}
     >
-      <button
-        data-cy="HideErrorButton"
-        type="button"
-        className="delete"
-        onClick={onClose}
-      />
+      <button data-cy="HideErrorButton" type="button" className="delete" />
       {/* show only one message at a time */}
       {message}
     </div>
