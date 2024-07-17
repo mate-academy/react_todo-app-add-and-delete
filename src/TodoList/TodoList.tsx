@@ -3,9 +3,8 @@ import React from 'react';
 import { getFilteredTodos } from '../components/filteredTodos';
 import { Todo } from '../types/Todo';
 import { FilterTypes } from '../types/filterTypes';
-import { TransitionGroup } from 'react-transition-group';
+import { TransitionGroup, CSSTransition } from 'react-transition-group';
 import { TodoItem } from '../TodoItem/TodoItem';
-
 interface TodoListProps {
   todos: Todo[];
   filter: FilterTypes;
@@ -23,25 +22,28 @@ export const TodoList: React.FC<TodoListProps> = ({
   const filteredTodos = getFilteredTodos(todos, filter);
 
   return (
-    <TransitionGroup>
-      <section className="todoapp__main" data-cy="TodoList" key={0}>
+    <section className="todoapp__main" data-cy="TodoList">
+      <TransitionGroup>
         {filteredTodos.map(todo => (
-          <TodoItem
-            key={1}
-            deleteTodo={deleteTodo}
-            todo={todo}
-            isLoading={isLoading}
-          />
+          // eslint-disable-next-line react/jsx-no-undef
+          <CSSTransition key={todo.id} timeout={300} classNames="temp-item">
+            <TodoItem
+              deleteTodo={deleteTodo}
+              todo={todo}
+              isLoading={isLoading}
+            />
+          </CSSTransition>
         ))}
         {fakeTodo && (
-          <TodoItem
-            key={0}
-            deleteTodo={deleteTodo}
-            todo={fakeTodo}
-            isLoading={isLoading}
-          />
+          <CSSTransition key={0} timeout={300} classNames="temp-item">
+            <TodoItem
+              deleteTodo={deleteTodo}
+              todo={fakeTodo}
+              isLoading={isLoading}
+            />
+          </CSSTransition>
         )}
-      </section>
-    </TransitionGroup>
+      </TransitionGroup>
+    </section>
   );
 };

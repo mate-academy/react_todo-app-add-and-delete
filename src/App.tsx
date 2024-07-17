@@ -7,7 +7,6 @@ import { TodoList } from './TodoList/TodoList';
 import { TodoFooter } from './TodoFooter/TodoFooter';
 import { TodoHeader } from './TodoHeader/TodoHeader';
 import { TodoErrors } from './TodoErrors/TodoErrors';
-
 export const App: React.FC = () => {
   const [todos, setTodos] = useState<Todo[]>([]);
   const [newTodos, setNewTodos] = useState<string>('');
@@ -38,13 +37,15 @@ export const App: React.FC = () => {
     if (inputRef.current) {
       inputRef.current.focus();
     }
-  }, []);
+  }, [todos]);
   if (!USER_ID) {
     return <UserWarning />;
   }
 
   function addTodo({ title, userId, completed }: Omit<Todo, 'id'>) {
-    if (title.trim() === '') {
+    const trimmedTitle = title.trim();
+
+    if (trimmedTitle === '') {
       setErrorMessage('Title should not be empty');
       setIsSubmitting(false);
 
@@ -52,7 +53,7 @@ export const App: React.FC = () => {
     }
 
     const fakeTodo: Todo = {
-      id: Date.now(),
+      id: 0,
       title,
       userId,
       completed,
@@ -60,8 +61,7 @@ export const App: React.FC = () => {
 
     setFakeTodos(fakeTodo);
     setIsLoading(true);
-
-    createTodos({ title, userId, completed })
+    createTodos({ title: trimmedTitle, userId, completed })
       .then(newTodo => {
         setFakeTodos(null);
         setTodos(currentTodos => [
@@ -76,12 +76,14 @@ export const App: React.FC = () => {
         setIsLoading(false);
         setNewTodos('');
         setIsSubmitting(false);
+        inputRef.current?.focus();
       })
       .catch(() => {
         setErrorMessage('Unable to add a todo');
         setFakeTodos(null);
         setIsLoading(false);
         setIsSubmitting(false);
+        inputRef.current?.focus();
       });
   }
 
