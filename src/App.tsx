@@ -69,10 +69,6 @@ export const App: React.FC = () => {
   };
 
   useEffect(() => {
-    if (!error) {
-      return;
-    }
-
     const timeout = setTimeout(() => {
       setError(null);
     }, 3000);
