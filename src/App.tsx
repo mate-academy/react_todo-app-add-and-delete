@@ -69,15 +69,17 @@ export const App: React.FC = () => {
   };
 
   useEffect(() => {
-    setTimeout(() => {
-      const timeout = setTimeout(() => {
-        setError(null);
-      }, 3000);
+    if (!error) {
+      return;
+    }
 
-      return () => {
-        clearTimeout(timeout);
-      };
-    });
+    const timeout = setTimeout(() => {
+      setError(null);
+    }, 3000);
+
+    return () => {
+      clearTimeout(timeout);
+    };
   }, [error]);
 
   const returnLeftNumber = () => {
