@@ -5,13 +5,13 @@ import { ErrorType } from '../types/ErrorType';
 type ErrorNotificationProps = {
   error: ErrorType | null;
   returnError: () => string | null;
-  setError: (error: ErrorType | null) => void;
+  onSetError: (error: ErrorType | null) => void;
 };
 
 export const ErrorNotification = ({
   error,
   returnError,
-  setError,
+  onSetError,
 }: ErrorNotificationProps) => {
   return (
     <div
@@ -25,7 +25,7 @@ export const ErrorNotification = ({
         data-cy="HideErrorButton"
         type="button"
         className="delete"
-        onClick={() => setError(null)}
+        onClick={() => onSetError(null)}
       />
       {returnError()}
     </div>

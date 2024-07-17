@@ -69,13 +69,15 @@ export const App: React.FC = () => {
   };
 
   useEffect(() => {
-    const timeout = setTimeout(() => {
-      setError(null);
-    }, 3000);
+    setTimeout(() => {
+      const timeout = setTimeout(() => {
+        setError(null);
+      }, 3000);
 
-    return () => {
-      clearTimeout(timeout);
-    };
+      return () => {
+        clearTimeout(timeout);
+      };
+    });
   }, [error]);
 
   const returnLeftNumber = () => {
@@ -146,12 +148,16 @@ export const App: React.FC = () => {
     return !todos.some(todo => todo.completed);
   };
 
+  const handleSetError = (er: ErrorType | null) => {
+    setError(er);
+  };
+
   return (
     <div className="todoapp">
       <h1 className="todoapp__title">todos</h1>
 
       <div className="todoapp__content">
-        <Header inputRef={inputRef} handleSubmit={handleSubmit} />
+        <Header inputRef={inputRef} onSubmit={handleSubmit} />
 
         {filteredTodos && filteredTodos.length > 0 && (
           <TodosList
@@ -164,7 +170,7 @@ export const App: React.FC = () => {
 
         {todos && todos.length > 0 && (
           <Footer
-            handleSetQuery={handleSetQuery}
+            onSetQuery={handleSetQuery}
             query={query}
             left={returnLeftNumber}
             isClearAllCompletedActive={isClearAllCompletedActive}
@@ -175,7 +181,7 @@ export const App: React.FC = () => {
       <ErrorNotification
         error={error}
         returnError={returnError}
-        setError={setError}
+        onSetError={handleSetError}
       />
     </div>
   );

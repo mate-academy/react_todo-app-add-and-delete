@@ -2,10 +2,10 @@ import React from 'react';
 
 type HeaderProps = {
   inputRef: React.Ref<HTMLInputElement>;
-  handleSubmit: (event: React.FormEvent<HTMLFormElement>) => void;
+  onSubmit: (event: React.FormEvent<HTMLFormElement>) => void;
 };
 
-export const Header = ({ inputRef, handleSubmit }: HeaderProps) => {
+export const Header = ({ inputRef, onSubmit }: HeaderProps) => {
   return (
     <header className="todoapp__header">
       {/* this button should have `active` class only if all todos are completed */}
@@ -16,7 +16,7 @@ export const Header = ({ inputRef, handleSubmit }: HeaderProps) => {
       />
 
       {/* Add a todo on form submit */}
-      <form onSubmit={handleSubmit}>
+      <form onSubmit={onSubmit}>
         <input
           data-cy="NewTodoField"
           type="text"
