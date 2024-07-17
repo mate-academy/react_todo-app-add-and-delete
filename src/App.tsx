@@ -37,7 +37,7 @@ export const App: React.FC = () => {
     if (inputRef.current) {
       inputRef.current.focus();
     }
-  }, [todos]);
+  }, [todos, errorMessage]);
   if (!USER_ID) {
     return <UserWarning />;
   }
@@ -68,7 +68,7 @@ export const App: React.FC = () => {
           ...currentTodos,
           {
             id: newTodo.id,
-            title: newTodo.title,
+            title: trimmedTitle,
             userId: newTodo.userId,
             completed: newTodo.completed,
           },
@@ -76,14 +76,12 @@ export const App: React.FC = () => {
         setIsLoading(false);
         setNewTodos('');
         setIsSubmitting(false);
-        inputRef.current?.focus();
       })
       .catch(() => {
         setErrorMessage('Unable to add a todo');
         setFakeTodos(null);
         setIsLoading(false);
         setIsSubmitting(false);
-        inputRef.current?.focus();
       });
   }
 
