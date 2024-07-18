@@ -11,6 +11,7 @@ interface TodoListProps {
   deleteTodo: (todoId: number) => void;
   fakeTodo: Todo | null;
   isLoading: boolean;
+  loadingTodoId: number[];
 }
 export const TodoList: React.FC<TodoListProps> = ({
   todos,
@@ -18,6 +19,7 @@ export const TodoList: React.FC<TodoListProps> = ({
   deleteTodo,
   fakeTodo,
   isLoading,
+  loadingTodoId,
 }) => {
   const filteredTodos = getFilteredTodos(todos, filter);
 
@@ -30,7 +32,7 @@ export const TodoList: React.FC<TodoListProps> = ({
             <TodoItem
               deleteTodo={deleteTodo}
               todo={todo}
-              isLoading={isLoading}
+              isLoading={loadingTodoId.includes(todo.id)}
             />
           </CSSTransition>
         ))}

@@ -16,6 +16,7 @@ export const App: React.FC = () => {
   const inputRef = useRef<HTMLInputElement>(null);
   const [fakeTodos, setFakeTodos] = useState<Todo | null>(null);
   const [isLoading, setIsLoading] = useState(false);
+  const [loadingTodoId, setLoadingTodoId] = useState<number[]>([]);
 
   useEffect(() => {
     getTodos()
@@ -60,6 +61,7 @@ export const App: React.FC = () => {
     };
 
     setFakeTodos(fakeTodo);
+    setLoadingTodoId(prevIds => [...prevIds, fakeTodo.id]);
     setIsLoading(true);
     createTodos({ title: trimmedTitle, userId, completed })
       .then(newTodo => {
@@ -73,12 +75,12 @@ export const App: React.FC = () => {
             completed: newTodo.completed,
           },
         ]);
-        setIsLoading(false);
         setNewTodos('');
         setIsSubmitting(false);
       })
       .catch(() => {
         setErrorMessage('Unable to add a todo');
+        setLoadingTodoId(prevIds => prevIds.filter(id => id !== fakeTodo.id));
         setFakeTodos(null);
         setIsLoading(false);
         setIsSubmitting(false);
@@ -115,6 +117,7 @@ export const App: React.FC = () => {
           deleteTodo={deleteTodo}
           fakeTodo={fakeTodos}
           isLoading={isLoading}
+          loadingTodoId={loadingTodoId}
         />
         {todos.length > 0 && (
           <TodoFooter todos={todos} filter={filter} setFilter={setFilter} />
