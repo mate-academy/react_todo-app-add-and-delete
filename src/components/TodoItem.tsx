@@ -8,6 +8,7 @@ type TodoItemProps = {
   title: string;
   updatedTodosId: number[];
   onRemove: (id: number) => void;
+  onTogle: (id: number) => void;
 };
 
 export const TodoItem = ({
@@ -16,6 +17,7 @@ export const TodoItem = ({
   title,
   updatedTodosId,
   onRemove,
+  onTogle,
 }: TodoItemProps) => {
   const isUpdated = () => {
     return id < 0 || updatedTodosId.includes(id);
@@ -29,6 +31,7 @@ export const TodoItem = ({
           type="checkbox"
           className="todo__status"
           checked={completed}
+          onChange={() => onTogle(id)}
         />
       </label>
 

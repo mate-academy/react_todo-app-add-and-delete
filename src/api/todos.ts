@@ -1,3 +1,4 @@
+import { OptionaAtributs } from '../types/OptionaAtributs';
 import { Todo } from '../types/Todo';
 import { client } from '../utils/fetchClient';
 
@@ -19,4 +20,8 @@ export const postTodo = (title: string) => {
 
 export const removeTodo = (id: number) => {
   return client.delete(`/todos/${id}`);
+};
+
+export const updateTodo = (id: number, data: OptionaAtributs<Todo>) => {
+  return client.patch<Todo>(`/todos/${id}`, data);
 };

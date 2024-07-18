@@ -1,7 +1,7 @@
 /* eslint-disable jsx-a11y/label-has-associated-control */
 /* eslint-disable jsx-a11y/control-has-associated-label */
 import React, { useEffect, useRef, useState } from 'react';
-import { getTodos, postTodo, removeTodo } from './api/todos';
+import { getTodos, postTodo, removeTodo, updateTodo } from './api/todos';
 import { Todo } from './types/Todo';
 import { TodosList } from './components/TodosList';
 import { FilterType } from './types/FilterType';
@@ -9,6 +9,7 @@ import { Footer } from './components/Footer';
 import { ErrorType } from './types/ErrorType';
 import { ErrorNotification } from './components/ErrorNotification';
 import { MyInput } from './components/Header';
+import { OptionaAtributs } from './types/OptionaAtributs';
 
 export const App: React.FC = () => {
   const inputRef = useRef<HTMLInputElement>(null);
@@ -129,6 +130,29 @@ export const App: React.FC = () => {
     setError(errorType);
   };
 
+  const handleUpdate = async (id: number, data: OptionaAtributs<Todo>) => {
+    setUpdatedTodosId(prev => [...prev, id]);
+
+    updateTodo(id, data)
+      .then(response => {
+        setTodos(prev => prev.map(todo => (todo.id === id ? response : todo)));
+      })
+      .catch(() => handleSetError(ErrorType.UnableToUpdate))
+      .finally(() => setUpdatedTodosId(prev => prev.filter(el => el != id)));
+  };
+
+  const handleToogle = (id: number) => {
+    handleUpdate(id, {
+      completed: !todos.find(todo => todo.id === id)?.completed ?? false,
+    });
+  };
+
+  const handleSetAllActive = () => {
+    todos.map(todo => {
+      handleUpdate(todo.id, { completed: false });
+    });
+  };
+
   return (
     <div className="todoapp">
       <h1 className="todoapp__title">todos</h1>
@@ -138,6 +162,7 @@ export const App: React.FC = () => {
           ref={inputRef}
           onSubmit={handleSubmit}
           isAllTodosCompleted={isAllTodosCompleted}
+          onSetAllActive={handleSetAllActive}
         />
 
         {filteredTodos && filteredTodos.length > 0 && (
@@ -146,6 +171,7 @@ export const App: React.FC = () => {
             tmpTodo={tmpTodo}
             updatedTodosId={updatedTodosId}
             onRemove={handleRemoveTodoById}
+            onTogle={handleToogle}
           />
         )}
 
