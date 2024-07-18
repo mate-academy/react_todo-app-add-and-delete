@@ -27,6 +27,7 @@ const initialStates: States = {
   isUpdating: false,
   selectedTodo: null,
   filter: Filter.all,
+  tempTodo: null,
 };
 
 function reducer(states: States, action: Action) {

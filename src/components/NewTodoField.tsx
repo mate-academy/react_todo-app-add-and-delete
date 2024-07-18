@@ -10,30 +10,30 @@ export const NewTodoField: React.FC = () => {
     setTitle(event.target.value);
   };
 
-  return (
-    <form
-      onSubmit={(e: React.FormEvent<HTMLFormElement>) => {
-        e.preventDefault();
-        dispatch({ type: 'startUpdate' });
-        if (!title.trim()) {
-          dispatch({
-            type: 'showError',
-            payload: 'Title should not be empty',
-          });
+  const handleOnSubmit = (e: React.FormEvent<HTMLFormElement>) => {
+    e.preventDefault();
+    dispatch({ type: 'startUpdate' });
+    if (!title.trim()) {
+      dispatch({
+        type: 'showError',
+        payload: 'Title should not be empty',
+      });
+      dispatch({ type: 'stopUpdate' });
+    } else {
+      addTodo({ userId: 962, title: title.trim(), completed: false })
+        .then(newTodo => dispatch({ type: 'addTodo', payload: newTodo }))
+        .catch(() => {
+          dispatch({ type: 'showError', payload: 'Unable to add a todo' });
+        })
+        .finally(() => {
           dispatch({ type: 'stopUpdate' });
-        } else {
-          addTodo({ userId: 962, title: title.trim(), completed: false })
-            .then(newTodo => dispatch({ type: 'addTodo', payload: newTodo }))
-            .catch(() => {
-              dispatch({ type: 'showError', payload: 'Unable to add a todo' });
-            })
-            .finally(() => {
-              dispatch({ type: 'stopUpdate' });
-              setTitle('');
-            });
-        }
-      }}
-    >
+          setTitle('');
+        });
+    }
+  };
+
+  return (
+    <form onSubmit={handleOnSubmit}>
       <input
         autoFocus
         data-cy="NewTodoField"

@@ -8,4 +8,5 @@ export interface States {
   isUpdating: boolean;
   selectedTodo: number | null;
   filter: Filter;
+  tempTodo: Todo | null;
 }
