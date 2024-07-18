@@ -1,18 +1,43 @@
 import classNames from 'classnames';
-import React from 'react';
+import React, { useEffect } from 'react';
 import { ErrorType } from '../types/ErrorType';
 
 type ErrorNotificationProps = {
   error: ErrorType | null;
-  returnError: () => string | null;
   onSetError: (error: ErrorType | null) => void;
 };
 
 export const ErrorNotification = ({
   error,
-  returnError,
   onSetError,
 }: ErrorNotificationProps) => {
+  useEffect(() => {
+    const timeout = setTimeout(() => {
+      onSetError(null);
+    }, 3000);
+
+    return () => {
+      clearTimeout(timeout);
+    };
+  }, [error]);
+
+  const returnError = () => {
+    switch (error) {
+      case ErrorType.EmptyTitle:
+        return 'Title should not be empty';
+      case ErrorType.UnableToDelete:
+        return 'Unable to delete a todo';
+      case ErrorType.UnableToLoad:
+        return 'Unable to load todos';
+      case ErrorType.UnableToUpdate:
+        return 'Unable to update a todo';
+      case ErrorType.UnableToAdd:
+        return 'Unable to add a todo';
+      default:
+        return null;
+    }
+  };
+
   return (
     <div
       data-cy="ErrorNotification"

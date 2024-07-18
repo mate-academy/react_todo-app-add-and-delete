@@ -6,9 +6,9 @@ import { Todo } from './types/Todo';
 import { TodosList } from './components/TodosList';
 import { FilterType } from './types/FilterType';
 import { Footer } from './components/Footer';
-import { Header } from './components/Header';
 import { ErrorType } from './types/ErrorType';
 import { ErrorNotification } from './components/ErrorNotification';
+import { MyInput } from './components/Header';
 
 export const App: React.FC = () => {
   const inputRef = useRef<HTMLInputElement>(null);
@@ -41,7 +41,7 @@ export const App: React.FC = () => {
         case FilterType.Active:
           setFilteredTodos(todos.filter(todo => !todo.completed));
           break;
-        case FilterType.Complited:
+        case FilterType.Completed:
           setFilteredTodos(todos.filter(todo => todo.completed));
           break;
         default:
@@ -50,33 +50,6 @@ export const App: React.FC = () => {
       }
     }
   }, [todos, query]);
-
-  const returnError = () => {
-    switch (error) {
-      case ErrorType.EmptyTitle:
-        return 'Title should not be empty';
-      case ErrorType.UnableToDelete:
-        return 'Unable to delete a todo';
-      case ErrorType.UnableToLoad:
-        return 'Unable to load todos';
-      case ErrorType.UnableToUpdate:
-        return 'Unable to update a todo';
-      case ErrorType.UnableToAdd:
-        return 'Unable to add a todo';
-      default:
-        return null;
-    }
-  };
-
-  useEffect(() => {
-    const timeout = setTimeout(() => {
-      setError(null);
-    }, 3000);
-
-    return () => {
-      clearTimeout(timeout);
-    };
-  }, [error]);
 
   const returnLeftNumber = () => {
     return todos.filter(todo => todo.completed != true).length;
@@ -118,7 +91,7 @@ export const App: React.FC = () => {
     }
   };
 
-  const removeOneTodo = (id: number) => {
+  const handleRemoveTodoById = (id: number) => {
     setUpdatedTodosId(prev => [...prev, id]);
 
     removeTodo(id)
@@ -132,22 +105,24 @@ export const App: React.FC = () => {
       });
   };
 
-  const removeAllComplited = () => {
-    const tmp = todos.filter(todo => todo.completed).map(todo => todo.id);
+  const handleRemoveAllComplited = () => {
+    const todosToRemoveIds = todos
+      .filter(todo => todo.completed)
+      .map(todo => todo.id);
 
-    setUpdatedTodosId(tmp);
+    setUpdatedTodosId(todosToRemoveIds);
 
-    tmp.map(id => {
-      removeOneTodo(id);
+    todosToRemoveIds.map(id => {
+      handleRemoveTodoById(id);
     });
   };
 
   const isClearAllCompletedActive = () => {
-    return !todos.some(todo => todo.completed);
+    return !todos.every(todo => todo.completed);
   };
 
-  const handleSetError = (er: ErrorType | null) => {
-    setError(er);
+  const handleSetError = (errorType: ErrorType | null) => {
+    setError(errorType);
   };
 
   return (
@@ -155,14 +130,14 @@ export const App: React.FC = () => {
       <h1 className="todoapp__title">todos</h1>
 
       <div className="todoapp__content">
-        <Header inputRef={inputRef} onSubmit={handleSubmit} />
+        <MyInput ref={inputRef} onSubmit={handleSubmit} />
 
         {filteredTodos && filteredTodos.length > 0 && (
           <TodosList
             todos={filteredTodos}
             tmpTodo={tmpTodo}
             updatedTodosId={updatedTodosId}
-            removeOneTodo={removeOneTodo}
+            onRemove={handleRemoveTodoById}
           />
         )}
 
@@ -172,15 +147,11 @@ export const App: React.FC = () => {
             query={query}
             left={returnLeftNumber}
             isClearAllCompletedActive={isClearAllCompletedActive}
-            removeAllComplited={removeAllComplited}
+            onRemoveAllComplited={handleRemoveAllComplited}
           />
         )}
       </div>
-      <ErrorNotification
-        error={error}
-        returnError={returnError}
-        onSetError={handleSetError}
-      />
+      <ErrorNotification error={error} onSetError={handleSetError} />
     </div>
   );
 };

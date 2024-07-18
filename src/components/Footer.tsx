@@ -7,7 +7,7 @@ type FooterProps = {
   query: FilterType;
   left: () => number;
   isClearAllCompletedActive: () => boolean;
-  removeAllComplited: () => void;
+  onRemoveAllComplited: () => void;
 };
 
 export const Footer = ({
@@ -15,7 +15,7 @@ export const Footer = ({
   query,
   left,
   isClearAllCompletedActive,
-  removeAllComplited,
+  onRemoveAllComplited,
 }: FooterProps) => {
   return (
     <footer className="todoapp__footer" data-cy="Footer">
@@ -50,10 +50,10 @@ export const Footer = ({
         <a
           href="#/completed"
           className={classNames('filter__link', {
-            selected: query === FilterType.Complited,
+            selected: query === FilterType.Completed,
           })}
           data-cy="FilterLinkCompleted"
-          onClick={() => onSetQuery(FilterType.Complited)}
+          onClick={() => onSetQuery(FilterType.Completed)}
         >
           Completed
         </a>
@@ -65,7 +65,7 @@ export const Footer = ({
         className="todoapp__clear-completed"
         data-cy="ClearCompletedButton"
         disabled={isClearAllCompletedActive()}
-        onClick={() => removeAllComplited()}
+        onClick={() => onRemoveAllComplited()}
       >
         Clear completed
       </button>

@@ -7,7 +7,7 @@ type TodoItemProps = {
   completed: boolean;
   title: string;
   updatedTodosId: number[];
-  removeOneTodo: (id: number) => void;
+  onRemove: (id: number) => void;
 };
 
 export const TodoItem = ({
@@ -15,8 +15,12 @@ export const TodoItem = ({
   completed,
   title,
   updatedTodosId,
-  removeOneTodo,
+  onRemove,
 }: TodoItemProps) => {
+  const isUpdated = () => {
+    return id < 0 || updatedTodosId.includes(id);
+  };
+
   return (
     <div data-cy="Todo" className={classNames('todo', { completed })} key={id}>
       <label className="todo__status-label">
@@ -36,7 +40,7 @@ export const TodoItem = ({
         type="button"
         className="todo__remove"
         data-cy="TodoDelete"
-        onClick={() => removeOneTodo(id)}
+        onClick={() => onRemove(id)}
       >
         ×
       </button>
@@ -45,7 +49,7 @@ export const TodoItem = ({
       <div
         data-cy="TodoLoader"
         className={classNames('modal overlay', {
-          'is-active': id < 0 || updatedTodosId.includes(id),
+          'is-active': isUpdated(),
         })}
       >
         <div className="modal-background has-background-white-ter" />

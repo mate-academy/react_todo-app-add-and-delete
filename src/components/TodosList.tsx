@@ -7,14 +7,14 @@ type TodoListProps = {
   todos: Todo[];
   tmpTodo: Omit<Todo, 'userId'> | null;
   updatedTodosId: number[];
-  removeOneTodo: (id: number) => void;
+  onRemove: (id: number) => void;
 };
 
 export const TodosList = ({
   todos,
   tmpTodo,
   updatedTodosId,
-  removeOneTodo,
+  onRemove,
 }: TodoListProps) => {
   return (
     <section className="todoapp__main" data-cy="TodoList">
@@ -27,7 +27,7 @@ export const TodosList = ({
           title={title}
           key={id}
           updatedTodosId={updatedTodosId}
-          removeOneTodo={removeOneTodo}
+          onRemove={onRemove}
         />
       ))}
       {tmpTodo && (
@@ -36,7 +36,7 @@ export const TodosList = ({
           completed={tmpTodo.completed}
           title={tmpTodo.title}
           updatedTodosId={[]}
-          removeOneTodo={removeOneTodo}
+          onRemove={onRemove}
         />
       )}
     </section>
