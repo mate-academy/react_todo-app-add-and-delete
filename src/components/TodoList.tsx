@@ -5,7 +5,7 @@ import { useContext, useEffect, useRef, useState } from 'react';
 import { DispatchContext, StatesContext } from '../context/Store';
 import classNames from 'classnames';
 import { TodoLoader } from './TodoLoader';
-import { deleteTodo } from '../api/todos';
+import { deleteTodo, updateTodo } from '../api/todos';
 
 export const TodoList: React.FC = () => {
   const { todos, selectedTodo, filter } = useContext(StatesContext);
@@ -49,12 +49,26 @@ export const TodoList: React.FC = () => {
                 type="checkbox"
                 className="todo__status"
                 checked={todo.completed}
-                onChange={e =>
+                onChange={e => {
+                  dispatch({ type: 'startUpdate' });
                   dispatch({
-                    type: 'updateTodos',
+                    type: 'updateTodo',
                     payload: { ...todo, completed: e.target.checked },
+                  });
+                  updateTodo(todo.id, {
+                    ...todo,
+                    completed: e.target.checked,
                   })
-                }
+                    .catch(() => {
+                      dispatch({
+                        type: 'showError',
+                        payload: 'Unable to update a todo',
+                      });
+                    })
+                    .finally(() => {
+                      dispatch({ type: 'stopUpdate' });
+                    });
+                }}
               />
             </label>
 

@@ -14,3 +14,7 @@ export const deleteTodo = (todoId: number) => {
 export const updateTodo = (todoId: number, todo: Todo) => {
   return client.patch<Todo>(`/todos/${todoId}`, todo);
 };
+
+export const addTodo = ({ userId, title, completed }: Omit<Todo, 'id'>) => {
+  return client.post<Todo>(`/todos`, { userId, title, completed });
+};

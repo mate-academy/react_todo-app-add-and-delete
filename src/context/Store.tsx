@@ -15,9 +15,10 @@ type Action =
   | { type: 'startUpdate' }
   | { type: 'stopUpdate' }
   | { type: 'selectTodo'; payload: number }
-  | { type: 'updateTodos'; payload: Todo }
+  | { type: 'updateTodo'; payload: Todo }
   | { type: 'setFilter'; payload: Filter }
-  | { type: 'deleteTodo'; payload: number };
+  | { type: 'deleteTodo'; payload: number }
+  | { type: 'addTodo'; payload: Todo };
 
 const initialStates: States = {
   todos: [],
@@ -53,7 +54,7 @@ function reducer(states: States, action: Action) {
     case 'selectTodo':
       newStates = { ...newStates, selectedTodo: action.payload };
       break;
-    case 'updateTodos':
+    case 'updateTodo':
       newStates = {
         ...newStates,
         todos: states.todos.map(t =>
@@ -69,6 +70,13 @@ function reducer(states: States, action: Action) {
         ...newStates,
         todos: states.todos.filter(t => t.id !== action.payload),
       };
+      break;
+    case 'addTodo':
+      newStates = {
+        ...newStates,
+        todos: [...states.todos, action.payload],
+      };
+
       break;
     default:
       return states;
