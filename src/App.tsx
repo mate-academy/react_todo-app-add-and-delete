@@ -117,8 +117,8 @@ export const App: React.FC = () => {
     });
   };
 
-  const isClearAllCompletedActive = () => {
-    return !todos.every(todo => todo.completed);
+  const activateClearAllButton = () => {
+    return !todos.some(todo => todo.completed);
   };
 
   const handleSetError = (errorType: ErrorType | null) => {
@@ -146,7 +146,7 @@ export const App: React.FC = () => {
             onSetQuery={handleSetQuery}
             query={query}
             left={returnLeftNumber}
-            isClearAllCompletedActive={isClearAllCompletedActive}
+            activateClearAllButton={activateClearAllButton}
             onRemoveAllComplited={handleRemoveAllComplited}
           />
         )}

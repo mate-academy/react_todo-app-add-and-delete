@@ -6,7 +6,7 @@ type FooterProps = {
   onSetQuery: (FilterType: FilterType) => void;
   query: FilterType;
   left: () => number;
-  isClearAllCompletedActive: () => boolean;
+  activateClearAllButton: () => boolean;
   onRemoveAllComplited: () => void;
 };
 
@@ -14,7 +14,7 @@ export const Footer = ({
   onSetQuery,
   query,
   left,
-  isClearAllCompletedActive,
+  activateClearAllButton,
   onRemoveAllComplited,
 }: FooterProps) => {
   return (
@@ -64,7 +64,7 @@ export const Footer = ({
         type="button"
         className="todoapp__clear-completed"
         data-cy="ClearCompletedButton"
-        disabled={isClearAllCompletedActive()}
+        disabled={activateClearAllButton()}
         onClick={() => onRemoveAllComplited()}
       >
         Clear completed
