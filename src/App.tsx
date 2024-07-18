@@ -117,7 +117,7 @@ export const App: React.FC = () => {
     });
   };
 
-  const activateClearAllButton = () => {
+  const deactivateClearAllButton = () => {
     return !todos.some(todo => todo.completed);
   };
 
@@ -146,7 +146,7 @@ export const App: React.FC = () => {
             onSetQuery={handleSetQuery}
             query={query}
             left={returnLeftNumber}
-            activateClearAllButton={activateClearAllButton}
+            deactivateClearAllButton={deactivateClearAllButton}
             onRemoveAllComplited={handleRemoveAllComplited}
           />
         )}
