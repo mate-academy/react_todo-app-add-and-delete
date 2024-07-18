@@ -121,6 +121,10 @@ export const App: React.FC = () => {
     return !todos.some(todo => todo.completed);
   };
 
+  const isAllTodosCompleted = () => {
+    return todos.every(todo => todo.completed);
+  };
+
   const handleSetError = (errorType: ErrorType | null) => {
     setError(errorType);
   };
@@ -130,7 +134,11 @@ export const App: React.FC = () => {
       <h1 className="todoapp__title">todos</h1>
 
       <div className="todoapp__content">
-        <MyInput ref={inputRef} onSubmit={handleSubmit} />
+        <MyInput
+          ref={inputRef}
+          onSubmit={handleSubmit}
+          isAllTodosCompleted={isAllTodosCompleted}
+        />
 
         {filteredTodos && filteredTodos.length > 0 && (
           <TodosList
