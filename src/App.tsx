@@ -15,7 +15,6 @@ export const App: React.FC = () => {
   const inputRef = useRef<HTMLInputElement>(null);
   const [error, setError] = useState<ErrorType | null>(null);
   const [todos, setTodos] = useState<Todo[]>([]);
-  // const [filteredTodos, setFilteredTodos] = useState<Todo[]>([]);
   const [query, setQuery] = useState<FilterType>(FilterType.All);
   const [tmpTodo, setTmpTodo] = useState<Omit<Todo, 'userId'> | null>(null);
   const [updatedTodosId, setUpdatedTodosId] = useState<number[]>([]);
@@ -25,7 +24,6 @@ export const App: React.FC = () => {
       const tmp = await getTodos();
 
       setTodos(tmp);
-      // setFilteredTodos(tmp);
     } catch {
       setError(ErrorType.UnableToLoad);
     }
@@ -36,23 +34,6 @@ export const App: React.FC = () => {
     inputRef.current?.focus();
   }, []);
 
-  /*
-  useEffect(() => {
-    if (todos) {
-      switch (query) {
-        case FilterType.Active:
-          setFilteredTodos(todos.filter(todo => !todo.completed));
-          break;
-        case FilterType.Completed:
-          setFilteredTodos(todos.filter(todo => todo.completed));
-          break;
-        default:
-          setFilteredTodos(todos);
-          break;
-      }
-    }
-  }, [todos, query]);
-  */
   const filterTodos = () => {
     if (query === FilterType.Active) {
       return todos.filter(todo => !todo.completed);
