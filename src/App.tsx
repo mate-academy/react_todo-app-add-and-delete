@@ -23,11 +23,7 @@ export const App: React.FC = () => {
   const [tempTodo, setTempTodo] = useState<null | string>(null);
   const [lockInput, setLockInput] = useState(false);
   const [deleteAll, setDeleteAll] = useState(false);
-
-  const [loadingError, setLoadingError] = useState(false);
-  const [titleError, setTitleError] = useState(false);
-  const [todoAddError, setTodoAddError] = useState(false);
-  const [deleteError, setDeleteError] = useState(false);
+  const [errorMessage, setErrorMessage] = useState<null | string>(null);
 
   const inputElement = useRef<HTMLInputElement>(null);
 
@@ -37,7 +33,7 @@ export const App: React.FC = () => {
 
       setTodosFromServer(todos);
     } catch {
-      setLoadingError(true);
+      setErrorMessage('Unable to load todos');
     }
   };
 
@@ -61,16 +57,9 @@ export const App: React.FC = () => {
     setInputValue(value.trim());
   };
 
-  const handleDeleteAllErrors = useCallback(() => {
-    setLoadingError(false);
-    setTitleError(false);
-    setTodoAddError(false);
-    setDeleteError(false);
-  }, []);
-
   const handleDeleteTodo = useCallback(
     async (id: number) => {
-      handleDeleteAllErrors();
+      setErrorMessage(null);
       setLockInput(true);
       try {
         await deleteTodo(id);
@@ -79,24 +68,23 @@ export const App: React.FC = () => {
           [...todosFromServer].filter(todoItem => todoItem.id !== id),
         );
       } catch {
-        setDeleteError(true);
+        setErrorMessage('Unable to delete a todo');
       } finally {
         setLockInput(false);
       }
     },
-    [handleDeleteAllErrors, todosFromServer],
+    [todosFromServer],
   );
 
   const handlePostTodo = async (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
+    setErrorMessage(null);
 
     if (!inputValue.length) {
-      setTitleError(true);
+      setErrorMessage('Title should not be empty');
 
       return;
     }
-
-    handleDeleteAllErrors();
 
     setLockInput(true);
     setTempTodo(inputValue);
@@ -107,7 +95,7 @@ export const App: React.FC = () => {
 
       setInputValue('');
     } catch {
-      setTodoAddError(true);
+      setErrorMessage('Unable to add a todo');
     } finally {
       setLockInput(false);
       setTempTodo(null);
@@ -116,21 +104,24 @@ export const App: React.FC = () => {
 
   const handleDeleteAll = async () => {
     setDeleteAll(true);
+    setErrorMessage(null);
 
     try {
-      const deleteAllActive = todosFromServer.map(async todo => {
-        const { id, completed } = todo;
+      const deletePromises: Promise<void>[] = [];
 
-        if (completed) {
-          await handleDeleteTodo(id);
+      todosFromServer.forEach(todo => {
+        if (todo.completed) {
+          deletePromises.push(handleDeleteTodo(todo.id));
         }
       });
 
-      await Promise.all(deleteAllActive);
+      await Promise.all(deletePromises);
 
-      setTodosFromServer([...todosFromServer].filter(todo => !todo.completed));
+      setTodosFromServer(currentTodos =>
+        currentTodos.filter(todo => !todo.completed),
+      );
     } catch {
-      setDeleteError(true);
+      setErrorMessage('Unable to delete a todo');
     } finally {
       setDeleteAll(false);
     }
@@ -233,11 +224,8 @@ export const App: React.FC = () => {
       </div>
 
       <ErrorMessage
-        loadingError={loadingError}
-        titleError={titleError}
-        todoAddError={todoAddError}
-        deleteError={deleteError}
-        handleDeleteAllErrors={handleDeleteAllErrors}
+        errorMessage={errorMessage}
+        setErrorMessage={setErrorMessage}
       />
     </div>
   );

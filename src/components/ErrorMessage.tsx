@@ -2,28 +2,19 @@ import { useEffect, useRef } from 'react';
 import cn from 'classnames';
 
 type Props = {
-  loadingError: boolean;
-  titleError: boolean;
-  todoAddError: boolean;
-  deleteError: boolean;
-  handleDeleteAllErrors: () => void;
+  errorMessage: null | string;
+  setErrorMessage: (value: null | string) => void;
 };
 
 export const ErrorMessage: React.FC<Props> = ({
-  loadingError,
-  titleError,
-  todoAddError,
-  deleteError,
-  handleDeleteAllErrors,
+  errorMessage,
+  setErrorMessage,
 }) => {
   const timerId = useRef(0);
 
-  const isHidden =
-    !loadingError && !titleError && !todoAddError && !deleteError;
-
   useEffect(() => {
     timerId.current = window.setTimeout(() => {
-      handleDeleteAllErrors();
+      setErrorMessage(null);
     }, 3000);
 
     return () => {
@@ -36,7 +27,7 @@ export const ErrorMessage: React.FC<Props> = ({
       window.clearTimeout(timerId.current);
     }
 
-    handleDeleteAllErrors();
+    setErrorMessage(null);
   };
 
   return (
@@ -47,7 +38,7 @@ export const ErrorMessage: React.FC<Props> = ({
         'is-danger',
         'is-light',
         'has-text-weight-normal',
-        { hidden: isHidden },
+        { hidden: !errorMessage },
       )}
     >
       <button
@@ -57,10 +48,7 @@ export const ErrorMessage: React.FC<Props> = ({
         aria-label="Close notification"
         onClick={handleCloseNotification}
       />
-      {loadingError && 'Unable to load todos'}
-      {titleError && 'Title should not be empty'}
-      {todoAddError && 'Unable to add a todo'}
-      {deleteError && 'Unable to delete a todo'}
+      {errorMessage}
       {/* Unable to update a todo */}
     </div>
   );
