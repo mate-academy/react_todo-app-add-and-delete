@@ -149,7 +149,9 @@ export const App: React.FC = () => {
     const status = !isAllTodosCompleted();
 
     todos.map(todo => {
-      handleUpdate(todo.id, { completed: status });
+      if ((status && !todo.completed) || !status) {
+        handleUpdate(todo.id, { completed: status });
+      }
     });
   };
 
