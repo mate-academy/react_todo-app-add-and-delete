@@ -88,9 +88,19 @@ export const App: React.FC = () => {
   }
 
   function deleteTodo(todoId: number) {
-    deleteTodos(todoId).then(() => {
-      setTodos(currentTodos => currentTodos.filter(todo => todo.id !== todoId));
-    });
+    setLoadingTodoId(prevIds => [...prevIds, todoId]);
+    deleteTodos(todoId)
+      .then(() => {
+        setTodos(currentTodos =>
+          currentTodos.filter(todo => todo.id !== todoId),
+        );
+      })
+      .catch(() => {
+        setErrorMessage('Unable to delete a todo');
+      })
+      .finally(() => {
+        setLoadingTodoId(prevIds => prevIds.filter(id => id !== todoId));
+      });
   }
 
   const handleAddTodo = (event: React.FormEvent) => {
