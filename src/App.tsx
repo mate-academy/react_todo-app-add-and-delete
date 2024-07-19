@@ -15,7 +15,7 @@ export const App: React.FC = () => {
   const inputRef = useRef<HTMLInputElement>(null);
   const [error, setError] = useState<ErrorType | null>(null);
   const [todos, setTodos] = useState<Todo[]>([]);
-  const [filteredTodos, setFilteredTodos] = useState<Todo[]>([]);
+  // const [filteredTodos, setFilteredTodos] = useState<Todo[]>([]);
   const [query, setQuery] = useState<FilterType>(FilterType.All);
   const [tmpTodo, setTmpTodo] = useState<Omit<Todo, 'userId'> | null>(null);
   const [updatedTodosId, setUpdatedTodosId] = useState<number[]>([]);
@@ -25,7 +25,7 @@ export const App: React.FC = () => {
       const tmp = await getTodos();
 
       setTodos(tmp);
-      setFilteredTodos(tmp);
+      // setFilteredTodos(tmp);
     } catch {
       setError(ErrorType.UnableToLoad);
     }
@@ -36,6 +36,7 @@ export const App: React.FC = () => {
     inputRef.current?.focus();
   }, []);
 
+  /*
   useEffect(() => {
     if (todos) {
       switch (query) {
@@ -51,6 +52,18 @@ export const App: React.FC = () => {
       }
     }
   }, [todos, query]);
+  */
+  const filterTodos = () => {
+    if (query === FilterType.Active) {
+      return todos.filter(todo => !todo.completed);
+    } else if (query === FilterType.Completed) {
+      return todos.filter(todo => todo.completed);
+    } else {
+      return todos;
+    }
+  };
+
+  const filteredTodos = filterTodos();
 
   const returnLeftNumber = () => {
     return todos.filter(todo => todo.completed != true).length;
@@ -123,6 +136,10 @@ export const App: React.FC = () => {
   };
 
   const isAllTodosCompleted = () => {
+    if (todos.length === 0) {
+      return false;
+    }
+
     return todos.every(todo => todo.completed);
   };
 
@@ -147,9 +164,11 @@ export const App: React.FC = () => {
     });
   };
 
-  const handleSetAllActive = () => {
+  const handleToggleAll = () => {
+    const status = !isAllTodosCompleted();
+
     todos.map(todo => {
-      handleUpdate(todo.id, { completed: false });
+      handleUpdate(todo.id, { completed: status });
     });
   };
 
@@ -162,7 +181,8 @@ export const App: React.FC = () => {
           ref={inputRef}
           onSubmit={handleSubmit}
           isAllTodosCompleted={isAllTodosCompleted}
-          onSetAllActive={handleSetAllActive}
+          onToggleAll={handleToggleAll}
+          todosLength={todos.length}
         />
 
         {filteredTodos && filteredTodos.length > 0 && (

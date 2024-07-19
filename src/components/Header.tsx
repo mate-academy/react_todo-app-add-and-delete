@@ -4,25 +4,28 @@ import React, { forwardRef } from 'react';
 type HeaderProps = {
   onSubmit: (event: React.FormEvent<HTMLFormElement>) => void;
   isAllTodosCompleted: () => boolean;
-  onSetAllActive: () => void;
+  onToggleAll: () => void;
+  todosLength: number;
 };
 
 export const MyInput = forwardRef(function MyInput(
   props: HeaderProps,
   ref: React.Ref<HTMLInputElement>,
 ) {
-  const { onSubmit, isAllTodosCompleted, onSetAllActive } = props;
+  const { onSubmit, isAllTodosCompleted, onToggleAll, todosLength } = props;
 
   return (
     <header className="todoapp__header">
-      <button
-        type="button"
-        className={classNames('todoapp__toggle-all', {
-          active: isAllTodosCompleted(),
-        })}
-        data-cy="ToggleAllButton"
-        onClick={() => onSetAllActive()}
-      />
+      {todosLength > 0 && (
+        <button
+          type="button"
+          className={classNames('todoapp__toggle-all', {
+            active: isAllTodosCompleted(),
+          })}
+          data-cy="ToggleAllButton"
+          onClick={() => onToggleAll()}
+        />
+      )}
 
       <form onSubmit={onSubmit}>
         <input
