@@ -1,7 +1,8 @@
 import * as React from 'react';
-import { ChangeEvent, FormEvent, useState } from 'react';
+import { ChangeEvent, FormEvent, useEffect, useState } from 'react';
 import { ErrorType } from '../../types/ErrorType';
 import { usePostTodos } from '../../hooks/usePostTodos';
+import { useTodos } from '../../utils/TodoContext';
 
 type TodoContentProps = {
   children: React.ReactNode;
@@ -14,6 +15,7 @@ export const TodoContent: React.FC<TodoContentProps> = ({
 }) => {
   const [input, setInput] = useState<string>('');
   const { postTodo, error, isSubmitting } = usePostTodos();
+  const { inputRef, triggerFocus } = useTodos();
 
   const handleInputChange = (event: ChangeEvent<HTMLInputElement>) => {
     setInput(event.target.value);
@@ -24,33 +26,35 @@ export const TodoContent: React.FC<TodoContentProps> = ({
     postTodo(input).then(success => {
       if (success) {
         setInput('');
+        triggerFocus();
       }
     });
   };
 
-  // Handle error changes
-  React.useEffect(() => {
+  useEffect(() => {
     if (error) {
       onErrorChange(error);
+      triggerFocus();
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [error, onErrorChange]);
 
   return (
     <>
       <h1 className="todoapp__title">todos</h1>
-
       <div className="todoapp__content">
         <header className="todoapp__header">
           <form onSubmit={onFormSubmit}>
             <input
+              ref={inputRef}
               data-cy="NewTodoField"
               type="text"
               className="todoapp__new-todo"
               placeholder="What needs to be done?"
-              autoFocus
               value={input}
               onChange={handleInputChange}
               disabled={isSubmitting}
+              autoFocus
             />
           </form>
         </header>

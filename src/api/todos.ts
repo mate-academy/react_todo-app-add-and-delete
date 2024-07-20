@@ -11,3 +11,7 @@ export const getTodos = () => {
 export const postTodos = (data: Partial<Todo>) => {
   return client.post<Todo>('/todos', { ...data, userId: USER_ID });
 };
+
+export const deleteTodo = (id: number) => {
+  return client.delete(`/todos/${id}`);
+};

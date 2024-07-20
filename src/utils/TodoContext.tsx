@@ -11,6 +11,7 @@ import { Todo } from '../types/Todo';
 import { useFetchTodos } from '../hooks/useFetchTodos';
 import { useFilteredTodos } from '../hooks/useFilteredTodos';
 import { useErrorState } from '../hooks/useErrorState';
+import { useInputFocus } from '../hooks/useInputFocus';
 
 type TodoContextType = {
   todos: Todo[];
@@ -22,6 +23,8 @@ type TodoContextType = {
   setError: (error: ErrorType | null) => void;
   tempTodo: Todo | null;
   setTempTodo: React.Dispatch<React.SetStateAction<Todo | null>>;
+  inputRef: React.RefObject<HTMLInputElement>;
+  triggerFocus: () => void; // Add triggerFocus
 };
 
 type TodoProviderProps = {
@@ -41,6 +44,7 @@ export const TodoProvider: React.FC<TodoProviderProps> = ({ children }) => {
   const filteredTodos = useFilteredTodos({ todos, filter });
   const { error } = useErrorState();
   const [tempTodo, setTempTodo] = useState<Todo | null>(null);
+  const { inputRef, triggerFocus } = useInputFocus(); // Get triggerFocus and inputRef from useInputFocus
 
   useEffect(() => {
     if (initialTodos) {
@@ -58,6 +62,8 @@ export const TodoProvider: React.FC<TodoProviderProps> = ({ children }) => {
     setError: setFetchError,
     tempTodo,
     setTempTodo,
+    inputRef,
+    triggerFocus, // Add triggerFocus to context value
   };
 
   return (
