@@ -1,26 +1,66 @@
-/* eslint-disable max-len */
-/* eslint-disable jsx-a11y/control-has-associated-label */
-import React from 'react';
-import { UserWarning } from './UserWarning';
+import React, { useContext, useEffect, useState } from 'react';
 
-const USER_ID = 0;
+import { USER_ID, getTodos } from './api/todos';
+
+import { ErrorNotification } from './components/ErrorNotification';
+import { UserWarning } from './UserWarning';
+import { Header } from './components/Header';
+import { TodoList } from './components/TodoList';
+import { Footer } from './components/Footer';
+import { Loader } from './components/Loader';
+
+import { DispatchContext, StateContext } from './store/TodoContext';
+import { useErrorMessage } from './components/useErrorMessage';
+
+import { ActionType } from './types/Actions';
 
 export const App: React.FC = () => {
+  const [isLoading, setIsLoading] = useState(false);
+  const { todos } = useContext(StateContext);
+  const dispatch = useContext(DispatchContext);
+  const handleError = useErrorMessage();
+
+  useEffect(() => {
+    dispatch({ type: ActionType.SetIsInputFocused, payload: true });
+    setIsLoading(true);
+
+    getTodos()
+      .then(todosFromServer => {
+        return dispatch({
+          type: ActionType.SetTodos,
+          payload: todosFromServer,
+        });
+      })
+      .catch(() => {
+        handleError('Unable to load todos');
+      })
+      .finally(() => {
+        setIsLoading(false);
+      });
+  }, [dispatch, handleError]);
+
   if (!USER_ID) {
     return <UserWarning />;
   }
 
   return (
-    <section className="section container">
-      <p className="title is-4">
-        Copy all you need from the prev task:
-        <br />
-        <a href="https://github.com/mate-academy/react_todo-app-loading-todos#react-todo-app-load-todos">
-          React Todo App - Load Todos
-        </a>
-      </p>
+    <div className="todoapp">
+      <h1 className="todoapp__title">todos</h1>
 
-      <p className="subtitle">Styles are already copied</p>
-    </section>
+      <div className="todoapp__content">
+        <Header />
+
+        {isLoading && <Loader />}
+
+        {!!todos.length && (
+          <>
+            <TodoList />
+            <Footer />
+          </>
+        )}
+
+        <ErrorNotification />
+      </div>
+    </div>
   );
 };
