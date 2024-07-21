@@ -518,8 +518,8 @@ describe('', () => {
           cy.wait('@createRequest');
         });
 
-        // this test may be flaky
-        it.skip('should replace loader with a created todo', () => {
+        // this test may be flaky '.skip' was removed
+        it('should replace loader with a created todo', () => {
           page.flushJSTimers();
           todos.assertCount(6);
           todos.assertNotLoading(5);
