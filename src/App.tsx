@@ -1,6 +1,12 @@
 import React, { useEffect, useRef, useState } from 'react';
 import { UserWarning } from './UserWarning';
-import { USER_ID, getTodos, deleteTodos, createTodos } from './api/todos';
+import {
+  USER_ID,
+  getTodos,
+  deleteTodos,
+  createTodos,
+  updateTodos,
+} from './api/todos';
 import { Todo } from './types/Todo';
 import { FilterTypes } from './types/filterTypes';
 import { TodoList } from './TodoList/TodoList';
@@ -115,7 +121,7 @@ export const App: React.FC = () => {
 
       setLoadingTodoId(prevIds => [...prevIds, todoId]);
 
-      updateTodo(todoId, updateTodo)
+      updateTodos(updateTodo)
         .then(() => {
           setTodos(currentTodos =>
             currentTodos.map(t => (t.id === todoId ? updateTodo : t)),
