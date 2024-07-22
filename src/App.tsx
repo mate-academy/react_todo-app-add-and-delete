@@ -135,16 +135,12 @@ export const App: React.FC = () => {
 
     completedTodos.forEach(todo => {
       setLoadingTodoId(prevIds => [...prevIds, todo.id]);
-
       deleteTodos(todo.id)
         .then(() => {
           setTodos(currentTodos => currentTodos.filter(t => t.id !== todo.id));
         })
         .catch(() => {
-          setErrorMessage(
-            prevMessage =>
-              `${prevMessage} Unable to delete todo with id: ${todo.id}`,
-          );
+          setErrorMessage('Unable to delete a todo');
         })
         .finally(() => {
           setLoadingTodoId(prevIds => prevIds.filter(id => id !== todo.id));
