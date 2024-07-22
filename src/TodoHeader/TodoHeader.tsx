@@ -4,7 +4,7 @@ import { Todo } from '../types/Todo';
 
 interface TodoHeaderProps {
   todos: Todo[];
-  newTodos: string;
+  newTodosTitle: string;
   setNewTodos: (value: string) => void;
   handleAddTodo: (event: React.FormEvent) => void;
   inputRef: React.RefObject<HTMLInputElement>;
@@ -13,7 +13,7 @@ interface TodoHeaderProps {
 
 export const TodoHeader: React.FC<TodoHeaderProps> = ({
   todos,
-  newTodos,
+  newTodosTitle,
   setNewTodos,
   handleAddTodo,
   inputRef,
@@ -37,7 +37,7 @@ export const TodoHeader: React.FC<TodoHeaderProps> = ({
           type="text"
           className="todoapp__new-todo"
           placeholder="What needs to be done?"
-          value={newTodos}
+          value={newTodosTitle}
           onChange={e => setNewTodos(e.target.value)}
           ref={inputRef}
           disabled={isSubmitting}

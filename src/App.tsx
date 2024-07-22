@@ -16,12 +16,12 @@ import { TodoErrors } from './TodoErrors/TodoErrors';
 
 export const App: React.FC = () => {
   const [todos, setTodos] = useState<Todo[]>([]);
-  const [newTodos, setNewTodos] = useState<string>('');
+  const [newTodosTitle, setNewTodosTitle] = useState<string>('');
   const [errorMessage, setErrorMessage] = useState('');
   const [filter, setFilter] = useState<FilterTypes>(FilterTypes.All);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const inputRef = useRef<HTMLInputElement>(null);
-  const [fakeTodos, setFakeTodos] = useState<Todo | null>(null);
+  const [fakeTodo, setFakeTodo] = useState<Todo | null>(null);
   const [isLoading, setIsLoading] = useState(false);
   const [loadingTodoId, setLoadingTodoId] = useState<number[]>([]);
 
@@ -63,19 +63,19 @@ export const App: React.FC = () => {
       return;
     }
 
-    const fakeTodo: Todo = {
+    const tempTodo: Todo = {
       id: 0,
       title,
       userId,
       completed,
     };
 
-    setFakeTodos(fakeTodo);
-    setLoadingTodoId(prevIds => [...prevIds, fakeTodo.id]);
+    setFakeTodo(tempTodo);
+    setLoadingTodoId(prevIds => [...prevIds, tempTodo.id]);
     setIsLoading(true);
     createTodos({ title: trimmedTitle, userId, completed })
       .then(newTodo => {
-        setFakeTodos(null);
+        setFakeTodo(null);
         setTodos(currentTodos => [
           ...currentTodos,
           {
@@ -85,13 +85,13 @@ export const App: React.FC = () => {
             completed: newTodo.completed,
           },
         ]);
-        setNewTodos('');
+        setNewTodosTitle('');
         setIsSubmitting(false);
       })
       .catch(() => {
         setErrorMessage('Unable to add a todo');
-        setLoadingTodoId(prevIds => prevIds.filter(id => id !== fakeTodo.id));
-        setFakeTodos(null);
+        setLoadingTodoId(prevIds => prevIds.filter(id => id !== tempTodo.id));
+        setFakeTodo(null);
         setIsLoading(false);
         setIsSubmitting(false);
       });
@@ -157,7 +157,7 @@ export const App: React.FC = () => {
   const handleAddTodo = (event: React.FormEvent) => {
     setIsSubmitting(true);
     event.preventDefault();
-    addTodo({ title: newTodos, userId: USER_ID, completed: false });
+    addTodo({ title: newTodosTitle, userId: USER_ID, completed: false });
   };
 
   return (
@@ -166,8 +166,8 @@ export const App: React.FC = () => {
       <div className="todoapp__content">
         <TodoHeader
           todos={todos}
-          newTodos={newTodos}
-          setNewTodos={setNewTodos}
+          newTodosTitle={newTodosTitle}
+          setNewTodos={setNewTodosTitle}
           handleAddTodo={handleAddTodo}
           inputRef={inputRef}
           isSubmitting={isSubmitting}
@@ -176,7 +176,7 @@ export const App: React.FC = () => {
           todos={todos}
           filter={filter}
           deleteTodo={deleteTodo}
-          fakeTodo={fakeTodos}
+          fakeTodo={fakeTodo}
           isLoading={isLoading}
           loadingTodoId={loadingTodoId}
           toggleTodoCompleted={toggleTodoCompleted}
