@@ -15,6 +15,7 @@ import { Todo } from './components/Todo';
 import { TodoFilter } from './components/TodoFilter';
 import { ErrorMessage } from './components/ErrorMessage';
 import { TempTodo } from './components/TempTodo';
+import { CSSTransition, TransitionGroup } from 'react-transition-group';
 
 export const App: React.FC = () => {
   const [todosFromServer, setTodosFromServer] = useState<TodoType[]>([]);
@@ -27,6 +28,35 @@ export const App: React.FC = () => {
 
   const inputElement = useRef<HTMLInputElement>(null);
 
+  const completedTodos = useMemo(
+    () => todosFromServer.filter(todo => todo.completed),
+    [todosFromServer],
+  );
+
+  const activeTodos = useMemo(
+    () => todosFromServer.filter(todo => !todo.completed),
+    [todosFromServer],
+  );
+
+  const preparedTodos = useMemo(
+    () =>
+      todosFromServer.filter(todo => {
+        const { completed } = todo;
+
+        switch (filterStatus) {
+          case Filter.Active:
+            return !completed;
+
+          case Filter.Completed:
+            return completed;
+
+          default:
+            return todo;
+        }
+      }),
+    [todosFromServer, filterStatus],
+  );
+
   const loadTodos = async () => {
     try {
       const todos = await getTodos();
@@ -38,23 +68,19 @@ export const App: React.FC = () => {
   };
 
   useEffect(() => {
-    if (inputElement.current) {
-      inputElement.current.focus();
-    }
+    inputElement.current?.focus();
 
     loadTodos();
   }, []);
 
   useEffect(() => {
-    if (inputElement.current) {
-      inputElement.current.focus();
-    }
+    inputElement.current?.focus();
   }, [lockInput]);
 
   const handleInputChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     const { value } = event.target;
 
-    setInputValue(value.trim());
+    setInputValue(value);
   };
 
   const handleDeleteTodo = useCallback(
@@ -78,18 +104,22 @@ export const App: React.FC = () => {
 
   const handlePostTodo = async (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
+
+    const preparedInputValue = inputValue.trim();
+
     setErrorMessage(null);
 
-    if (!inputValue.length) {
+    if (!preparedInputValue.length) {
       setErrorMessage('Title should not be empty');
 
       return;
     }
 
     setLockInput(true);
-    setTempTodo(inputValue);
+    setTempTodo(preparedInputValue);
+
     try {
-      const newPost = await postTodo(inputValue);
+      const newPost = await postTodo(preparedInputValue);
 
       setTodosFromServer(currentTodos => [...currentTodos, newPost]);
 
@@ -106,54 +136,27 @@ export const App: React.FC = () => {
     setDeleteAll(true);
     setErrorMessage(null);
 
-    try {
-      const deletePromises: Promise<void>[] = [];
+    let updatedTodos = [...todosFromServer];
 
-      todosFromServer.forEach(todo => {
-        if (todo.completed) {
-          deletePromises.push(handleDeleteTodo(todo.id));
-        }
-      });
+    await Promise.allSettled(
+      todosFromServer.map(async ({ completed, id }) => {
+        // const { completed, id } = todo;
 
-      await Promise.all(deletePromises);
-
-      setTodosFromServer(currentTodos =>
-        currentTodos.filter(todo => !todo.completed),
-      );
-    } catch {
-      setErrorMessage('Unable to delete a todo');
-    } finally {
-      setDeleteAll(false);
-    }
-  };
-
-  const preparedTodos = useMemo(
-    () =>
-      todosFromServer.filter(todo => {
-        const { completed } = todo;
-
-        switch (filterStatus) {
-          case Filter.Active:
-            return !completed;
-
-          case Filter.Completed:
-            return completed;
-
-          default:
-            return todo;
+        if (completed) {
+          try {
+            await deleteTodo(id);
+            updatedTodos = updatedTodos.filter(item => item.id !== id);
+          } catch {
+            setErrorMessage('Unable to delete a todo');
+          }
         }
       }),
-    [todosFromServer, filterStatus],
-  );
+    );
 
-  const activeTodos = useMemo(
-    () => todosFromServer.filter(todo => !todo.completed),
-    [todosFromServer],
-  );
-  const completedTodos = useMemo(
-    () => todosFromServer.filter(todo => todo.completed),
-    [todosFromServer],
-  );
+    setTodosFromServer(updatedTodos);
+    setDeleteAll(false);
+    inputElement.current?.focus();
+  };
 
   return (
     <div className="todoapp">
@@ -170,7 +173,6 @@ export const App: React.FC = () => {
             data-cy="ToggleAllButton"
           />
 
-          {/* Add a todo on form submit */}
           <form onSubmit={handlePostTodo}>
             <input
               data-cy="NewTodoField"
@@ -186,15 +188,22 @@ export const App: React.FC = () => {
         </header>
 
         <section className="todoapp__main" data-cy="TodoList">
-          {preparedTodos.map(todo => (
-            <Todo
-              key={todo.id}
-              todo={todo}
-              deleteTodo={handleDeleteTodo}
-              deleteAll={deleteAll}
-            />
-          ))}
-          {tempTodo && <TempTodo value={tempTodo} />}
+          <TransitionGroup>
+            {preparedTodos.map(todo => (
+              <CSSTransition key={todo.id} timeout={300} classNames="item">
+                <Todo
+                  todo={todo}
+                  deleteTodo={handleDeleteTodo}
+                  deleteAll={deleteAll}
+                />
+              </CSSTransition>
+            ))}
+            {tempTodo && (
+              <CSSTransition key={0} timeout={300} classNames="temp-item">
+                <TempTodo value={tempTodo} />
+              </CSSTransition>
+            )}
+          </TransitionGroup>
         </section>
 
         {!!todosFromServer.length && (
@@ -208,17 +217,15 @@ export const App: React.FC = () => {
               setFilterStatus={setFilterStatus}
             />
 
-            {/* this button should be disabled if there are no completed todos */}
-            {!!completedTodos.length && (
-              <button
-                type="button"
-                className="todoapp__clear-completed"
-                data-cy="ClearCompletedButton"
-                onClick={handleDeleteAll}
-              >
-                Clear completed
-              </button>
-            )}
+            <button
+              disabled={!completedTodos.length}
+              type="button"
+              className="todoapp__clear-completed"
+              data-cy="ClearCompletedButton"
+              onClick={handleDeleteAll}
+            >
+              Clear completed
+            </button>
           </footer>
         )}
       </div>

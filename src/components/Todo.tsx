@@ -40,7 +40,6 @@ export const Todo: React.FC<Props> = ({ todo, deleteAll, deleteTodo }) => {
           {title}
         </span>
 
-        {/* Remove button appears only on hover */}
         <button
           type="button"
           className="todo__remove"
