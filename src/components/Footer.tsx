@@ -16,16 +16,15 @@ export const Footer: React.FC = () => {
   const handleClearClick = async () => {
     const deletedTodos = todos.filter(t => t.completed);
 
-    try {
-      Promise.all(
-        deletedTodos.map(async todo => {
-          await deleteTodo(todo.id);
-          dispatch({ type: 'deleteTodo', payload: todo.id });
-        }),
-      );
-    } catch (error) {
-      dispatch({ type: 'showError', payload: 'Unable to delete a todo' });
-    }
+    Promise.all(
+      deletedTodos.map(async todo => {
+        await deleteTodo(todo.id)
+          .then(() => dispatch({ type: 'deleteTodo', payload: todo.id }))
+          .catch(() =>
+            dispatch({ type: 'showError', payload: 'Unable to delete a todo' }),
+          );
+      }),
+    );
   };
 
   return (
