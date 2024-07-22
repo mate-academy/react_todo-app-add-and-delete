@@ -18,7 +18,7 @@ export const Footer: React.FC = () => {
 
     Promise.all(
       deletedTodos.map(async todo => {
-        await deleteTodo(todo.id)
+        deleteTodo(todo.id)
           .then(() => dispatch({ type: 'deleteTodo', payload: todo.id }))
           .catch(() =>
             dispatch({ type: 'showError', payload: 'Unable to delete a todo' }),
