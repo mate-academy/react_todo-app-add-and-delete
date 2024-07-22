@@ -7,6 +7,7 @@ import { TodoList } from './TodoList/TodoList';
 import { TodoFooter } from './TodoFooter/TodoFooter';
 import { TodoHeader } from './TodoHeader/TodoHeader';
 import { TodoErrors } from './TodoErrors/TodoErrors';
+
 export const App: React.FC = () => {
   const [todos, setTodos] = useState<Todo[]>([]);
   const [newTodos, setNewTodos] = useState<string>('');
@@ -23,6 +24,7 @@ export const App: React.FC = () => {
       .then(setTodos)
       .catch(() => setErrorMessage('Unable to load todos'));
   }, []);
+
   useEffect(() => {
     if (errorMessage) {
       const timer = setTimeout(() => {
@@ -34,11 +36,13 @@ export const App: React.FC = () => {
 
     return undefined;
   }, [errorMessage]);
+
   useEffect(() => {
     if (inputRef.current) {
       inputRef.current.focus();
     }
   }, [todos, errorMessage]);
+
   if (!USER_ID) {
     return <UserWarning />;
   }
@@ -103,6 +107,51 @@ export const App: React.FC = () => {
       });
   }
 
+  function toggleTodoCompleted(todoId: number) {
+    const todo = todos.find(t => t.id === todoId);
+
+    if (todo) {
+      const updateTodo = { ...todo, completed: !todo.completed };
+
+      setLoadingTodoId(prevIds => [...prevIds, todoId]);
+
+      updateTodo(todoId, updateTodo)
+        .then(() => {
+          setTodos(currentTodos =>
+            currentTodos.map(t => (t.id === todoId ? updateTodo : t)),
+          );
+        })
+        .catch(() => {
+          setErrorMessage('Unable to update todo');
+        })
+        .finally(() => {
+          setLoadingTodoId(prevIds => prevIds.filter(id => id !== todoId));
+        });
+    }
+  }
+
+  const deleteCompletedTodos = () => {
+    const completedTodos = todos.filter(todo => todo.completed);
+
+    completedTodos.forEach(todo => {
+      setLoadingTodoId(prevIds => [...prevIds, todo.id]);
+
+      deleteTodos(todo.id)
+        .then(() => {
+          setTodos(currentTodos => currentTodos.filter(t => t.id !== todo.id));
+        })
+        .catch(() => {
+          setErrorMessage(
+            prevMessage =>
+              `${prevMessage} Unable to delete todo with id: ${todo.id}`,
+          );
+        })
+        .finally(() => {
+          setLoadingTodoId(prevIds => prevIds.filter(id => id !== todo.id));
+        });
+    });
+  };
+
   const handleAddTodo = (event: React.FormEvent) => {
     setIsSubmitting(true);
     event.preventDefault();
@@ -128,9 +177,15 @@ export const App: React.FC = () => {
           fakeTodo={fakeTodos}
           isLoading={isLoading}
           loadingTodoId={loadingTodoId}
+          toggleTodoCompleted={toggleTodoCompleted}
         />
         {todos.length > 0 && (
-          <TodoFooter todos={todos} filter={filter} setFilter={setFilter} />
+          <TodoFooter
+            todos={todos}
+            filter={filter}
+            setFilter={setFilter}
+            deleteCompletedTodos={deleteCompletedTodos}
+          />
         )}
       </div>
       <TodoErrors

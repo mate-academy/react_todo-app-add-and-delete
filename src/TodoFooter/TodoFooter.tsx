@@ -6,14 +6,17 @@ interface TodoFooterProps {
   todos: Todo[];
   filter: FilterTypes;
   setFilter: (filter: FilterTypes) => void;
+  deleteCompletedTodos: () => void;
 }
 
 export const TodoFooter: React.FC<TodoFooterProps> = ({
   todos,
   filter,
   setFilter,
+  deleteCompletedTodos,
 }) => {
   const incompleteTodosCount = todos.filter(todo => !todo.completed).length;
+  const completedCount = todos.length - incompleteTodosCount;
 
   return (
     <footer className="todoapp__footer" data-cy="Footer">
@@ -56,7 +59,8 @@ export const TodoFooter: React.FC<TodoFooterProps> = ({
         type="button"
         className="todoapp__clear-completed"
         data-cy="ClearCompletedButton"
-        disabled={todos.every(todo => !todo.completed)}
+        onClick={deleteCompletedTodos}
+        disabled={completedCount === 0}
       >
         Clear completed
       </button>

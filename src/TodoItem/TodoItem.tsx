@@ -7,12 +7,14 @@ interface TodoItemProps {
   deleteTodo: (todoId: number) => void;
   todo: Todo;
   isLoading: boolean;
+  toggleTodoCompleted: (todoId: number) => void;
 }
 
 export const TodoItem: React.FC<TodoItemProps> = ({
   deleteTodo,
   todo,
   isLoading,
+  toggleTodoCompleted,
 }) => {
   return (
     <div
@@ -27,7 +29,7 @@ export const TodoItem: React.FC<TodoItemProps> = ({
           type="checkbox"
           className="todo__status"
           checked={todo.completed}
-          onChange={() => {}}
+          onChange={() => toggleTodoCompleted(todo.id)}
         />
       </label>
       <span data-cy="TodoTitle" className="todo__title">

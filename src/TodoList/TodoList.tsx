@@ -13,6 +13,7 @@ interface TodoListProps {
   fakeTodo: Todo | null;
   isLoading: boolean;
   loadingTodoId: number[];
+  toggleTodoCompleted: (todoId: number) => void;
 }
 
 export const TodoList: React.FC<TodoListProps> = ({
@@ -21,6 +22,7 @@ export const TodoList: React.FC<TodoListProps> = ({
   deleteTodo,
   fakeTodo,
   loadingTodoId,
+  toggleTodoCompleted,
 }) => {
   const filteredTodos = getFilteredTodos(todos, filter);
 
@@ -33,6 +35,7 @@ export const TodoList: React.FC<TodoListProps> = ({
               deleteTodo={deleteTodo}
               todo={todo}
               isLoading={loadingTodoId.includes(todo.id)}
+              toggleTodoCompleted={toggleTodoCompleted}
             />
           </CSSTransition>
         ))}
@@ -42,6 +45,7 @@ export const TodoList: React.FC<TodoListProps> = ({
               deleteTodo={deleteTodo}
               todo={fakeTodo}
               isLoading={loadingTodoId.includes(fakeTodo.id)}
+              toggleTodoCompleted={() => {}}
             />
           </CSSTransition>
         )}
