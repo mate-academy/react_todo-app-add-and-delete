@@ -3,7 +3,7 @@ import { StatesContext } from '../context/Store';
 import { TodoItem } from './TodoItem';
 
 export const TodoList: React.FC = () => {
-  const { todos, filter } = useContext(StatesContext);
+  const { todos, filter, tempTodo } = useContext(StatesContext);
   const filteredTodos = todos.filter(t => {
     switch (filter) {
       case 'all':
@@ -22,6 +22,7 @@ export const TodoList: React.FC = () => {
       {filteredTodos.map(todo => {
         return <TodoItem todo={todo} key={todo.id} />;
       })}
+      {tempTodo && <TodoItem todo={tempTodo} />}
     </section>
   );
 };

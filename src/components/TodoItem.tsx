@@ -28,23 +28,25 @@ export const TodoItem: React.FC<Props> = ({ todo }) => {
 
   const handleOnChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     dispatch({ type: 'startUpdate' });
-    dispatch({
-      type: 'updateTodo',
-      payload: { ...todo, completed: e.target.checked },
-    });
-    updateTodo(todo.id, {
-      ...todo,
-      completed: e.target.checked,
-    })
-      .catch(() => {
-        dispatch({
-          type: 'showError',
-          payload: 'Unable to update a todo',
-        });
-      })
-      .finally(() => {
-        dispatch({ type: 'stopUpdate' });
+    if (todo) {
+      dispatch({
+        type: 'updateTodo',
+        payload: { ...todo, completed: e.target.checked },
       });
+      updateTodo(todo.id, {
+        ...todo,
+        completed: e.target.checked,
+      })
+        .catch(() => {
+          dispatch({
+            type: 'showError',
+            payload: 'Unable to update a todo',
+          });
+        })
+        .finally(() => {
+          dispatch({ type: 'stopUpdate' });
+        });
+    }
   };
 
   return (
@@ -107,7 +109,7 @@ export const TodoItem: React.FC<Props> = ({ todo }) => {
           </button>
         </>
       )}
-      <TodoLoader />
+      <TodoLoader todo={todo} />
     </div>
   );
 };

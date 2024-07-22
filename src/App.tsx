@@ -12,7 +12,7 @@ export const App: React.FC = () => {
   const dispatch = useContext(DispatchContext);
 
   useEffect(() => {
-    dispatch({ type: 'startLoading' });
+    dispatch({ type: 'startUpdate' });
     getTodos()
       .then(todosFromServer => {
         dispatch({ type: 'loadTodos', payload: todosFromServer });
@@ -21,7 +21,7 @@ export const App: React.FC = () => {
         dispatch({ type: 'showError', payload: `Unable to load todos` });
       })
       .finally(() => {
-        dispatch({ type: 'stopLoading' });
+        dispatch({ type: 'stopUpdate' });
       });
   }, []);
 

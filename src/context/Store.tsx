@@ -8,8 +8,6 @@ type DispatchContextType = {
 };
 
 type Action =
-  | { type: 'startLoading' }
-  | { type: 'stopLoading' }
   | { type: 'loadTodos'; payload: Todo[] }
   | { type: 'showError'; payload: string | null }
   | { type: 'startUpdate' }
@@ -18,11 +16,12 @@ type Action =
   | { type: 'updateTodo'; payload: Todo }
   | { type: 'setFilter'; payload: Filter }
   | { type: 'deleteTodo'; payload: number }
-  | { type: 'addTodo'; payload: Todo };
+  | { type: 'addTodo'; payload: Todo }
+  | { type: 'addTempTodo'; payload: Todo }
+  | { type: 'removeTempTodo' };
 
 const initialStates: States = {
   todos: [],
-  isLoading: false,
   errorMessage: null,
   isUpdating: false,
   selectedTodo: null,
@@ -34,12 +33,6 @@ function reducer(states: States, action: Action) {
   let newStates: States = { ...states };
 
   switch (action.type) {
-    case 'startLoading':
-      newStates = { ...newStates, isLoading: true };
-      break;
-    case 'stopLoading':
-      newStates = { ...newStates, isLoading: false };
-      break;
     case 'loadTodos':
       newStates = { ...newStates, todos: action.payload };
       break;
@@ -77,7 +70,12 @@ function reducer(states: States, action: Action) {
         ...newStates,
         todos: [...states.todos, action.payload],
       };
-
+      break;
+    case 'addTempTodo':
+      newStates = { ...newStates, tempTodo: action.payload };
+      break;
+    case 'removeTempTodo':
+      newStates = { ...newStates, tempTodo: null };
       break;
     default:
       return states;

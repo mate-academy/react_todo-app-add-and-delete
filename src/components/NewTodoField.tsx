@@ -1,4 +1,4 @@
-import { useContext, useState } from 'react';
+import { useContext, useEffect, useRef, useState } from 'react';
 import { DispatchContext, StatesContext } from '../context/Store';
 import { addTodo } from '../api/todos';
 
@@ -10,6 +10,8 @@ export const NewTodoField: React.FC = () => {
     setTitle(event.target.value);
   };
 
+  const inputRef = useRef<HTMLInputElement | null>(null);
+
   const handleOnSubmit = (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     dispatch({ type: 'startUpdate' });
@@ -20,22 +22,31 @@ export const NewTodoField: React.FC = () => {
       });
       dispatch({ type: 'stopUpdate' });
     } else {
+      dispatch({
+        type: 'addTempTodo',
+        payload: { userId: 962, id: 0, title: title.trim(), completed: false },
+      });
       addTodo({ userId: 962, title: title.trim(), completed: false })
         .then(newTodo => dispatch({ type: 'addTodo', payload: newTodo }))
         .catch(() => {
           dispatch({ type: 'showError', payload: 'Unable to add a todo' });
         })
         .finally(() => {
-          dispatch({ type: 'stopUpdate' });
           setTitle('');
+          dispatch({ type: 'removeTempTodo' });
+          dispatch({ type: 'stopUpdate' });
+          inputRef.current?.focus();
         });
     }
   };
 
+  useEffect(() => {
+    inputRef.current?.focus();
+  });
+
   return (
     <form onSubmit={handleOnSubmit}>
       <input
-        autoFocus
         data-cy="NewTodoField"
         type="text"
         className="todoapp__new-todo"
@@ -43,6 +54,7 @@ export const NewTodoField: React.FC = () => {
         value={title}
         onChange={handleOnChange}
         disabled={isUpdating}
+        ref={inputRef}
       />
     </form>
   );
