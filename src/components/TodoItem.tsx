@@ -94,8 +94,11 @@ export const TodoItem: React.FC<Props> = ({ todo }) => {
             data-cy="TodoDelete"
             onClick={() => {
               dispatch({ type: 'startUpdate' });
-              dispatch({ type: 'deleteTodo', payload: todo.id });
+              dispatch({ type: 'selectTodo', payload: todo.id });
               deleteTodo(todo.id)
+                .then(() => {
+                  dispatch({ type: 'deleteTodo', payload: todo.id });
+                })
                 .catch(() => {
                   dispatch({
                     type: 'showError',

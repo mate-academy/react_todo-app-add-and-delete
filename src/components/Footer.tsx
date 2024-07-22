@@ -2,15 +2,31 @@ import { useContext } from 'react';
 import { DispatchContext, StatesContext } from '../context/Store';
 import { Filter } from '../types/Filter';
 import classNames from 'classnames';
+import { deleteTodo } from '../api/todos';
 
 export const Footer: React.FC = () => {
-  const states = useContext(StatesContext);
+  const { todos, filter } = useContext(StatesContext);
   const dispatch = useContext(DispatchContext);
-  const todosLeft = states.todos.filter(t => !t.completed);
+  const todosLeft = todos.filter(t => !t.completed);
 
-  function handleClick(filter: Filter) {
-    dispatch({ type: 'setFilter', payload: filter });
+  function handleFilterClick(selectedFilter: Filter) {
+    dispatch({ type: 'setFilter', payload: selectedFilter });
   }
+
+  const handleClearClick = async () => {
+    const deletedTodos = todos.filter(t => t.completed);
+
+    try {
+      Promise.all(
+        deletedTodos.map(async todo => {
+          await deleteTodo(todo.id);
+          dispatch({ type: 'deleteTodo', payload: todo.id });
+        }),
+      );
+    } catch (error) {
+      dispatch({ type: 'showError', payload: 'Unable to delete a todo' });
+    }
+  };
 
   return (
     <footer className="todoapp__footer" data-cy="Footer">
@@ -22,10 +38,10 @@ export const Footer: React.FC = () => {
         <a
           href="#/"
           className={classNames('filter__link', {
-            selected: states.filter === 'all',
+            selected: filter === 'all',
           })}
           data-cy="FilterLinkAll"
-          onClick={() => handleClick(Filter.all)}
+          onClick={() => handleFilterClick(Filter.all)}
         >
           All
         </a>
@@ -33,10 +49,10 @@ export const Footer: React.FC = () => {
         <a
           href="#/active"
           className={classNames('filter__link', {
-            selected: states.filter === 'active',
+            selected: filter === 'active',
           })}
           data-cy="FilterLinkActive"
-          onClick={() => handleClick(Filter.active)}
+          onClick={() => handleFilterClick(Filter.active)}
         >
           Active
         </a>
@@ -44,10 +60,10 @@ export const Footer: React.FC = () => {
         <a
           href="#/completed"
           className={classNames('filter__link', {
-            selected: states.filter === 'completed',
+            selected: filter === 'completed',
           })}
           data-cy="FilterLinkCompleted"
-          onClick={() => handleClick(Filter.completed)}
+          onClick={() => handleFilterClick(Filter.completed)}
         >
           Completed
         </a>
@@ -57,7 +73,8 @@ export const Footer: React.FC = () => {
         type="button"
         className="todoapp__clear-completed"
         data-cy="ClearCompletedButton"
-        disabled={states.todos.length === 0}
+        onClick={() => handleClearClick()}
+        disabled={todos.length === 0 || !todos.some(t => t.completed)}
       >
         Clear completed
       </button>

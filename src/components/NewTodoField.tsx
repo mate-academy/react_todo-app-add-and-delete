@@ -27,12 +27,14 @@ export const NewTodoField: React.FC = () => {
         payload: { userId: 962, id: 0, title: title.trim(), completed: false },
       });
       addTodo({ userId: 962, title: title.trim(), completed: false })
-        .then(newTodo => dispatch({ type: 'addTodo', payload: newTodo }))
+        .then(newTodo => {
+          dispatch({ type: 'addTodo', payload: newTodo });
+          setTitle('');
+        })
         .catch(() => {
           dispatch({ type: 'showError', payload: 'Unable to add a todo' });
         })
         .finally(() => {
-          setTitle('');
           dispatch({ type: 'removeTempTodo' });
           dispatch({ type: 'stopUpdate' });
           inputRef.current?.focus();
