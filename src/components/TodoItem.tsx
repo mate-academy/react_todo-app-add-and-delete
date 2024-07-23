@@ -8,7 +8,11 @@ import { useErrorMessage } from './useErrorMessage';
 import { deleteTodo } from '../api/todos';
 
 import { Todo } from '../types/Todo';
-import { ActionType } from '../types/Actions';
+import {
+  setInputFocuseAction,
+  deleteTodoAction,
+  setCurrentlyLoadingItemsIdsAction,
+} from './todoActions';
 
 interface TodoItemProps {
   todo: Todo;
@@ -22,28 +26,30 @@ export const TodoItem: React.FC<TodoItemProps> = ({ todo }) => {
   const handleDeleteTodo = (todoId: number) => {
     deleteTodo(todoId)
       .then(() => {
-        dispatch({ type: ActionType.DeleteTodo, payload: todoId });
-        dispatch({
-          type: ActionType.SetCurrentlyLoadingItemsIds,
-          payload: [...currentlyLoadingItemsIds, todoId],
-        });
-        dispatch({ type: ActionType.SetIsInputFocused, payload: true });
+        dispatch(deleteTodoAction(todoId));
+        dispatch(
+          setCurrentlyLoadingItemsIdsAction([
+            ...currentlyLoadingItemsIds,
+            todoId,
+          ]),
+        );
+        dispatch(setInputFocuseAction(true));
       })
       .catch(() => {
         handleError('Unable to delete a todo');
-        dispatch({ type: ActionType.SetIsInputFocused, payload: true });
+        dispatch(setInputFocuseAction(true));
       })
       .finally(() => {
-        dispatch({
-          type: ActionType.SetCurrentlyLoadingItemsIds,
-          payload: currentlyLoadingItemsIds.filter(id => id !== todoId),
-        });
+        dispatch(
+          setCurrentlyLoadingItemsIdsAction(
+            currentlyLoadingItemsIds.filter(id => id !== todoId),
+          ),
+        );
       });
 
-    dispatch({
-      type: ActionType.SetCurrentlyLoadingItemsIds,
-      payload: [...currentlyLoadingItemsIds, todoId],
-    });
+    dispatch(
+      setCurrentlyLoadingItemsIdsAction([...currentlyLoadingItemsIds, todoId]),
+    );
   };
 
   return (

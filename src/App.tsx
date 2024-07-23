@@ -12,7 +12,7 @@ import { Loader } from './components/Loader';
 import { DispatchContext, StateContext } from './store/TodoContext';
 import { useErrorMessage } from './components/useErrorMessage';
 
-import { ActionType } from './types/Actions';
+import { setInputFocuseAction, setTodosAction } from './components/todoActions';
 
 export const App: React.FC = () => {
   const [isLoading, setIsLoading] = useState(false);
@@ -21,15 +21,12 @@ export const App: React.FC = () => {
   const handleError = useErrorMessage();
 
   useEffect(() => {
-    dispatch({ type: ActionType.SetIsInputFocused, payload: true });
+    dispatch(setInputFocuseAction(true));
     setIsLoading(true);
 
     getTodos()
       .then(todosFromServer => {
-        return dispatch({
-          type: ActionType.SetTodos,
-          payload: todosFromServer,
-        });
+        return dispatch(setTodosAction(todosFromServer));
       })
       .catch(() => {
         handleError('Unable to load todos');
@@ -58,9 +55,9 @@ export const App: React.FC = () => {
             <Footer />
           </>
         )}
-
-        <ErrorNotification />
       </div>
+
+      <ErrorNotification />
     </div>
   );
 };

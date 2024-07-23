@@ -3,26 +3,69 @@ import React, { useCallback, useContext } from 'react';
 import cn from 'classnames';
 
 import { FilterStatus } from '../types/FilterStatus';
+import { deleteTodo } from '../api/todos';
+import { useErrorMessage } from './useErrorMessage';
 
 import { StateContext, DispatchContext } from '../store/TodoContext';
-import { ActionType } from '../types/Actions';
+import {
+  setFilterAction,
+  deleteTodoAction,
+  setCurrentlyLoadingItemsIdsAction,
+  setInputFocuseAction,
+} from './todoActions';
 
 export const Footer: React.FC = () => {
-  const { todos, filterStatus } = useContext(StateContext);
+  const { todos, filterStatus, currentlyLoadingItemsIds } =
+    useContext(StateContext);
   const dispatch = useContext(DispatchContext);
 
-  const completedTodos = todos.filter(todo => todo.completed);
+  const handleError = useErrorMessage();
+
+  const completedTodosIds = todos
+    .filter(todo => todo.completed)
+    .map(todo => todo.id);
+
   const activeTodos = todos.filter(todo => !todo.completed);
 
   const onFilterChange = useCallback(
     (filter: FilterStatus) => {
-      dispatch({ type: ActionType.SetFilter, payload: filter });
+      dispatch(setFilterAction(filter));
     },
     [dispatch],
   );
 
+  function handleDeleteTodo(todoId: number) {
+    deleteTodo(todoId)
+      .then(() => {
+        dispatch(deleteTodoAction(todoId));
+        dispatch(
+          setCurrentlyLoadingItemsIdsAction([
+            ...currentlyLoadingItemsIds.filter(id => id !== todoId),
+          ]),
+        );
+      })
+      .catch(() => {
+        handleError('Unable to delete a todo');
+      });
+  }
+
   function handleClearCompleted() {
-    dispatch({ type: ActionType.SetTodos, payload: activeTodos });
+    dispatch(setCurrentlyLoadingItemsIdsAction(completedTodosIds));
+
+    const deleteTodoPromises = completedTodosIds.map(todoId =>
+      handleDeleteTodo(todoId),
+    );
+
+    Promise.all(deleteTodoPromises)
+      .then(() => {
+        dispatch(setInputFocuseAction(true));
+      })
+      .catch(() => {
+        handleError('Unable to delete completed todos');
+        dispatch(setInputFocuseAction(true));
+
+        dispatch(setCurrentlyLoadingItemsIdsAction([]));
+      });
   }
 
   return (
@@ -73,7 +116,7 @@ export const Footer: React.FC = () => {
         className="todoapp__clear-completed"
         data-cy="ClearCompletedButton"
         onClick={handleClearCompleted}
-        disabled={completedTodos.length === 0}
+        disabled={completedTodosIds.length === 0}
       >
         Clear completed
       </button>

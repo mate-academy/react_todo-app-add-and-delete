@@ -1,17 +1,17 @@
 import { useContext, useCallback } from 'react';
 
 import { DispatchContext } from '../store/TodoContext';
-import { ActionType } from '../types/Actions';
+import { setErrorMessageAction } from './todoActions';
 
 export function useErrorMessage() {
   const dispatch = useContext(DispatchContext);
 
   return useCallback(
     (message: string) => {
-      dispatch({ type: ActionType.SetErrorMessage, payload: message });
+      dispatch(setErrorMessageAction(message));
 
       const timeoutId = setTimeout(() => {
-        dispatch({ type: ActionType.SetErrorMessage, payload: '' });
+        dispatch(setErrorMessageAction(''));
       }, 3000);
 
       return () => clearTimeout(timeoutId);

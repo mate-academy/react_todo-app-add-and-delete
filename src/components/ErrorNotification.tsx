@@ -3,8 +3,7 @@ import cn from 'classnames';
 
 import { StateContext, DispatchContext } from '../store/TodoContext';
 import { useErrorMessage } from './useErrorMessage';
-
-import { ActionType } from '../types/Actions';
+import { setInputFocuseAction } from './todoActions';
 
 export const ErrorNotification: React.FC = () => {
   const { errorMessage } = useContext(StateContext);
@@ -14,13 +13,13 @@ export const ErrorNotification: React.FC = () => {
 
   useEffect(() => {
     if (!errorMessage) {
-      dispatch({ type: ActionType.SetIsInputFocused, payload: true });
+      dispatch(setInputFocuseAction(true));
     }
   }, [errorMessage, dispatch]);
 
   function handleErrorMessageClose() {
     handleError('');
-    dispatch({ type: ActionType.SetIsInputFocused, payload: true });
+    dispatch(setInputFocuseAction(true));
   }
 
   return (

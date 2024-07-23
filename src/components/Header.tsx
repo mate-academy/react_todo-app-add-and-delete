@@ -5,7 +5,12 @@ import { USER_ID, postTodo } from '../api/todos';
 import { StateContext, DispatchContext } from '../store/TodoContext';
 import { useErrorMessage } from './useErrorMessage';
 
-import { ActionType } from '../types/Actions';
+import {
+  setInputFocuseAction,
+  setTodosAction,
+  setTempTodoAction,
+  setCurrentlyLoadingItemsIdsAction,
+} from './todoActions';
 
 export const Header: React.FC = () => {
   const { todos, isInputFocused } = useContext(StateContext);
@@ -21,13 +26,12 @@ export const Header: React.FC = () => {
   useEffect(() => {
     if (isInputFocused && focusField.current) {
       focusField.current.focus();
-      dispatch({ type: ActionType.SetIsInputFocused, payload: false });
+      dispatch(setInputFocuseAction(false));
     }
   }, [isInputFocused, dispatch]);
 
-  function onFormSubmit(event: React.FormEvent<HTMLFormElement>) {
+  function onFormSubmit(event: React.FormEvent) {
     event.preventDefault();
-    setIsFormSubmitted(true);
 
     if (!todoTitle.trim().length) {
       handleError('Title should not be empty');
@@ -42,24 +46,20 @@ export const Header: React.FC = () => {
       userId: USER_ID,
     };
 
+    setIsFormSubmitted(true);
+
     postTodo(newTodo)
       .then(todoFromServer => {
-        dispatch({
-          type: ActionType.SetTodos,
-          payload: [...todos, todoFromServer],
-        });
+        dispatch(setTodosAction([...todos, todoFromServer]));
         setTodoTitle('');
       })
       .catch(() => {
         handleError('Unable to add a todo');
       })
       .finally(() => {
-        dispatch({
-          type: ActionType.SetTempTodo,
-          payload: null,
-        });
-        dispatch({ type: ActionType.SetIsInputFocused, payload: true });
-        dispatch({ type: ActionType.SetCurrentlyLoadingItemsIds, payload: [] });
+        dispatch(setTempTodoAction(null));
+        dispatch(setInputFocuseAction(true));
+        dispatch(setCurrentlyLoadingItemsIdsAction([]));
         setIsFormSubmitted(false);
       });
 
@@ -68,24 +68,15 @@ export const Header: React.FC = () => {
       id: 0,
     };
 
-    dispatch({
-      type: ActionType.SetTempTodo,
-      payload: tempTodo,
-    });
+    dispatch(setTempTodoAction(tempTodo));
 
-    dispatch({
-      type: ActionType.SetCurrentlyLoadingItemsIds,
-      payload: [tempTodo.id],
-    });
-
-    setTodoTitle('');
-    setIsFormSubmitted(false);
+    dispatch(setCurrentlyLoadingItemsIdsAction([tempTodo.id]));
   }
 
-  function handleKeyUp(event: React.KeyboardEvent<HTMLInputElement>) {
+  function handleEscKeyUp(event: React.KeyboardEvent<HTMLInputElement>) {
     if (event.key === 'Escape') {
       setTodoTitle('');
-      dispatch({ type: ActionType.SetIsInputFocused, payload: true });
+      dispatch(setInputFocuseAction(true));
     }
   }
 
@@ -95,10 +86,7 @@ export const Header: React.FC = () => {
       completed: !areAllTodosCompleted,
     }));
 
-    dispatch({
-      type: ActionType.SetTodos,
-      payload: updatedTodos,
-    });
+    dispatch(setTodosAction(updatedTodos));
   }
 
   return (
@@ -119,7 +107,7 @@ export const Header: React.FC = () => {
           type="text"
           className="todoapp__new-todo"
           placeholder="What needs to be done?"
-          onKeyUp={handleKeyUp}
+          onKeyUp={handleEscKeyUp}
           disabled={isFormSubmitted}
         />
       </form>
