@@ -15,7 +15,7 @@ export const TodoContent: React.FC<TodoContentProps> = ({
 }) => {
   const [input, setInput] = useState<string>('');
   const { postTodo, error, isSubmitting } = usePostTodos();
-  const { inputRef, triggerFocus } = useTodos(); // Get triggerFocus from context
+  const { inputRef, triggerFocus } = useTodos();
 
   const handleInputChange = (event: ChangeEvent<HTMLInputElement>) => {
     setInput(event.target.value);
