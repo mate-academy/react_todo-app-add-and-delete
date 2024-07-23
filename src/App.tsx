@@ -23,7 +23,6 @@ export const App: React.FC = () => {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const inputRef = useRef<HTMLInputElement>(null);
   const [fakeTodo, setFakeTodo] = useState<Todo | null>(null);
-  const [isLoading, setIsLoading] = useState(false);
   const [loadingTodoId, setLoadingTodoId] = useState<number[]>([]);
 
   useEffect(() => {
@@ -73,7 +72,6 @@ export const App: React.FC = () => {
 
     setFakeTodo(tempTodo);
     setLoadingTodoId(prevIds => [...prevIds, tempTodo.id]);
-    setIsLoading(true);
     createTodos({ title: trimmedTitle, userId, completed })
       .then(newTodo => {
         setFakeTodo(null);
@@ -93,7 +91,6 @@ export const App: React.FC = () => {
         setErrorMessage('Unable to add a todo');
         setLoadingTodoId(prevIds => prevIds.filter(id => id !== tempTodo.id));
         setFakeTodo(null);
-        setIsLoading(false);
         setIsSubmitting(false);
       });
   }
@@ -114,7 +111,7 @@ export const App: React.FC = () => {
       });
   }
 
-  function toggleTodoCompleted(todoId: number) {
+  const toggleTodoCompleted = (todoId: number) => {
     const todo = todos.find(t => t.id === todoId);
 
     if (todo) {
@@ -135,7 +132,7 @@ export const App: React.FC = () => {
           setLoadingTodoId(prevIds => prevIds.filter(id => id !== todoId));
         });
     }
-  }
+  };
 
   const deleteCompletedTodos = () => {
     const completedTodos = todos.filter(todo => todo.completed);
@@ -179,11 +176,10 @@ export const App: React.FC = () => {
           todos={filteredTodos}
           deleteTodo={deleteTodo}
           fakeTodo={fakeTodo}
-          isLoading={isLoading}
           loadingTodoId={loadingTodoId}
           toggleTodoCompleted={toggleTodoCompleted}
         />
-        {todos.length > 0 && (
+        {!!todos.length && (
           <TodoFooter
             todos={todos}
             filter={filter}

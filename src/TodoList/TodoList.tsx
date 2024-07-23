@@ -8,7 +8,6 @@ interface TodoListProps {
   todos: Todo[];
   deleteTodo: (todoId: number) => void;
   fakeTodo: Todo | null;
-  isLoading: boolean;
   loadingTodoId: number[];
   toggleTodoCompleted: (todoId: number) => void;
 }
