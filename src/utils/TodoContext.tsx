@@ -24,7 +24,7 @@ type TodoContextType = {
   tempTodo: Todo | null;
   setTempTodo: React.Dispatch<React.SetStateAction<Todo | null>>;
   inputRef: React.RefObject<HTMLInputElement>;
-  triggerFocus: () => void; // Add triggerFocus
+  triggerFocus: () => void;
 };
 
 type TodoProviderProps = {
@@ -44,7 +44,7 @@ export const TodoProvider: React.FC<TodoProviderProps> = ({ children }) => {
   const filteredTodos = useFilteredTodos({ todos, filter });
   const { error } = useErrorState();
   const [tempTodo, setTempTodo] = useState<Todo | null>(null);
-  const { inputRef, triggerFocus } = useInputFocus(); // Get triggerFocus and inputRef from useInputFocus
+  const { inputRef, triggerFocus } = useInputFocus();
 
   useEffect(() => {
     if (initialTodos) {

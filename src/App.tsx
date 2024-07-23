@@ -5,10 +5,15 @@ import { Errors } from './components/Errors/Errors';
 import { TodoContent } from './components/TodoContent/TodoContent';
 import { Footer } from './components/Footer/Footer';
 import { TodoList } from './components/TodoList/TodoList';
+import { useClearCompleted } from './hooks/useClearCompleted';
 
 const AppContent: React.FC = () => {
   const { todos, filteredTodos, error, setFilter, setError, filter } =
     useTodos();
+  const { handleClearCompleted, error: clearCompletedError } =
+    useClearCompleted();
+
+  const combinedError = error || clearCompletedError;
 
   if (!todos) {
     return <UserWarning />;
@@ -17,10 +22,15 @@ const AppContent: React.FC = () => {
   return (
     <div className="todoapp">
       <TodoContent onErrorChange={setError}>
-        <TodoList todos={filteredTodos} />
-        <Footer todos={todos} filter={filter} onFilterChange={setFilter} />
+        <TodoList todos={filteredTodos} onErrorChange={setError} />
+        <Footer
+          todos={todos}
+          filter={filter}
+          onFilterChange={setFilter}
+          onClearCompleted={handleClearCompleted}
+        />
       </TodoContent>
-      <Errors error={error} onErrorChange={setError} />
+      <Errors error={combinedError} onErrorChange={setError} />
     </div>
   );
 };

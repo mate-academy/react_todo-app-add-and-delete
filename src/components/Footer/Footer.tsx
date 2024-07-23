@@ -6,12 +6,14 @@ type FooterProps = {
   todos: Todo[];
   filter: FilterType;
   onFilterChange: (filter: FilterType) => void;
+  onClearCompleted: () => void; // Add onClearCompleted prop
 };
 
 export const Footer: React.FC<FooterProps> = ({
   todos,
   filter,
   onFilterChange,
+  onClearCompleted, // Destructure onClearCompleted prop
 }) => {
   if (todos.length === 0) {
     return null;
@@ -26,7 +28,6 @@ export const Footer: React.FC<FooterProps> = ({
         {activeTodosCount} items left
       </span>
 
-      {/* Active link should have the 'selected' class */}
       <nav className="filter" data-cy="Filter">
         <a
           href="#/"
@@ -56,12 +57,12 @@ export const Footer: React.FC<FooterProps> = ({
         </a>
       </nav>
 
-      {/* this button should be disabled if there are no completed todos */}
       <button
         type="button"
         className="todoapp__clear-completed"
         data-cy="ClearCompletedButton"
         disabled={completedTodosCount === 0}
+        onClick={onClearCompleted} // Add onClick handler
       >
         Clear completed
       </button>
