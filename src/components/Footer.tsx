@@ -24,7 +24,10 @@ export const Footer: React.FC = () => {
       }
 
       return results
-        .filter(res => res.status === 'fulfilled')
+        .filter(
+          (res): res is PromiseFulfilledResult<number> =>
+            res.status === 'fulfilled',
+        )
         .map(res => dispatch({ type: 'deleteTodo', payload: res.value }));
     });
   };
