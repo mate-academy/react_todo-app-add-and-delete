@@ -13,6 +13,7 @@ import { TodoList } from './TodoList/TodoList';
 import { TodoFooter } from './TodoFooter/TodoFooter';
 import { TodoHeader } from './TodoHeader/TodoHeader';
 import { TodoErrors } from './TodoErrors/TodoErrors';
+import { getFilteredTodos } from './components/filteredTodos';
 
 export const App: React.FC = () => {
   const [todos, setTodos] = useState<Todo[]>([]);
@@ -160,12 +161,14 @@ export const App: React.FC = () => {
     addTodo({ title: newTodosTitle, userId: USER_ID, completed: false });
   };
 
+  const filteredTodos = getFilteredTodos(todos, filter);
+
   return (
     <div className="todoapp">
       <h1 className="todoapp__title">todos</h1>
       <div className="todoapp__content">
         <TodoHeader
-          todos={todos}
+          todos={filteredTodos}
           newTodosTitle={newTodosTitle}
           setNewTodos={setNewTodosTitle}
           handleAddTodo={handleAddTodo}
@@ -173,8 +176,7 @@ export const App: React.FC = () => {
           isSubmitting={isSubmitting}
         />
         <TodoList
-          todos={todos}
-          filter={filter}
+          todos={filteredTodos}
           deleteTodo={deleteTodo}
           fakeTodo={fakeTodo}
           isLoading={isLoading}
