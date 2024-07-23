@@ -13,18 +13,20 @@ export const Footer: React.FC = () => {
     dispatch({ type: 'setFilter', payload: selectedFilter });
   }
 
-  const handleClearClick = async () => {
-    const deletedTodos = todos.filter(t => t.completed);
+  const handleClearClick = () => {
+    const completedTodos = todos.filter(t => t.completed);
 
-    Promise.all(
-      deletedTodos.map(async todo => {
-        deleteTodo(todo.id)
-          .then(() => dispatch({ type: 'deleteTodo', payload: todo.id }))
-          .catch(() =>
-            dispatch({ type: 'showError', payload: 'Unable to delete a todo' }),
-          );
-      }),
-    );
+    Promise.allSettled(
+      completedTodos.map(todo => deleteTodo(todo.id).then(() => todo.id)),
+    ).then(results => {
+      if (results.some(res => res.status === 'rejected')) {
+        dispatch({ type: 'showError', payload: 'Unable to delete a todo' });
+      }
+
+      return results
+        .filter(res => res.status === 'fulfilled')
+        .map(res => dispatch({ type: 'deleteTodo', payload: res.value }));
+    });
   };
 
   return (
