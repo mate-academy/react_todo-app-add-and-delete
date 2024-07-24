@@ -15,9 +15,9 @@ const Header: React.FC<HeaderProps> = ({ onAddTodo, isSubmitting }) => {
 
   useEffect(() => {
     if (inputRef.current) {
-      inputRef.current.focus();
+      inputRef.current?.focus();
     }
-  }, []);
+  }, [inputRef, isSubmitting]);
 
   const handleCloseError = () => setErrorType(null);
 
@@ -48,6 +48,7 @@ const Header: React.FC<HeaderProps> = ({ onAddTodo, isSubmitting }) => {
 
         <form onSubmit={handleSubmit}>
           <input
+            autoFocus
             ref={inputRef}
             value={title}
             onChange={handleInputChange}

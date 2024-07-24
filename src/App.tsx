@@ -9,14 +9,12 @@ import { ErrorType } from './types/Errors';
 import { Status } from './types/Status';
 import TodoList from './components/ToDoList';
 import ErrorNotification from './components/ErrorNotification';
-// import ToDoItem from './components/ToDoItem';
 
 export const App: React.FC = () => {
   const [todos, setTodos] = useState<Todo[]>([]);
   const [errorType, setErrorType] = useState<ErrorType | null>(null);
   const [isLoading, setIsLoading] = useState(true);
   const [filter, setFilter] = useState<Status>(Status.ALL);
-  // const [tempTodo, setTempTodo] = useState<Todo | null>(null);
 
   useEffect(() => {
     getTodos()
@@ -44,20 +42,10 @@ export const App: React.FC = () => {
       return;
     }
 
-    // const newTempTodo: Todo = {
-    //   id: 0,
-    //   title,
-    //   userId: USER_ID,
-    //   completed: false,
-    // };
-
-    // setTempTodo(newTempTodo);
-
     try {
       const createdTodo = await createTodo(title);
 
       setTodos(prevTodos => [...prevTodos, createdTodo]);
-      // setTempTodo(null); // Убираем временную задачу после успешного добавления
     } catch (error) {
       console.error(error);
       setErrorType(ErrorType.LOAD_TODOS);
@@ -79,7 +67,6 @@ export const App: React.FC = () => {
     const deletePromises = completedTodos.map(todo => deleteTodo(todo.id));
 
     try {
-      await Promise.allSettled(deletePromises);
       const results = await Promise.allSettled(deletePromises);
 
       results.forEach((result, index) => {
@@ -119,10 +106,6 @@ export const App: React.FC = () => {
 
   return (
     <div className="todoapp">
-      {!isLoading && errorType && (
-        <p className="notification is-danger">{errorType}</p>
-      )}
-
       <h1 className="todoapp__title">todos</h1>
 
       <div className="todoapp__content">
@@ -143,21 +126,12 @@ export const App: React.FC = () => {
         )}
       </div>
 
-      <ErrorNotification
-        errorType={errorType}
-        handleCloseError={handleCloseError}
-      />
-
-      {/* {tempTodo && (
-        <div>
-          <h3>Temporary Todo</h3>
-          <ToDoItem
-            id={tempTodo.id}
-            title={tempTodo.title}
-            completed={tempTodo.completed}
-          />
-        </div>
-      )} */}
+      {errorType && (
+        <ErrorNotification
+          errorType={errorType}
+          handleCloseError={handleCloseError}
+        />
+      )}
     </div>
   );
 };
