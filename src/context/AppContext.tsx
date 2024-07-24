@@ -127,9 +127,6 @@ export const AppContext = ({ children }: Props) => {
 
       if (failedDeletions.length > 0) {
         setError('Unable to delete a todo');
-        setTimeout(() => {
-          setError(null);
-        }, 3000);
       }
 
       setTodos(prev => {
