@@ -1,25 +1,26 @@
 /* eslint-disable no-console */
 import React, { ChangeEvent, useEffect, useRef, useState } from 'react';
 import { ErrorType } from '../types/Errors';
-import ErrorNotification from './ErrorNotification';
 
 interface HeaderProps {
   onAddTodo: (title: string) => void;
   isSubmitting: boolean;
+  setErrorType: (error: ErrorType) => void;
 }
 
-const Header: React.FC<HeaderProps> = ({ onAddTodo, isSubmitting }) => {
+const Header: React.FC<HeaderProps> = ({
+  onAddTodo,
+  isSubmitting,
+  setErrorType,
+}) => {
   const inputRef = useRef<HTMLInputElement>(null);
   const [title, setTitle] = useState<string>('');
-  const [errorType, setErrorType] = useState<ErrorType | null>(null);
 
   useEffect(() => {
     if (inputRef.current) {
       inputRef.current?.focus();
     }
   }, [inputRef, isSubmitting]);
-
-  const handleCloseError = () => setErrorType(null);
 
   const handleInputChange = (event: ChangeEvent<HTMLInputElement>) => {
     setTitle(event.target.value);
@@ -60,12 +61,6 @@ const Header: React.FC<HeaderProps> = ({ onAddTodo, isSubmitting }) => {
           />
         </form>
       </header>
-      {errorType && (
-        <ErrorNotification
-          errorType={errorType}
-          handleCloseError={handleCloseError}
-        />
-      )}
     </>
   );
 };

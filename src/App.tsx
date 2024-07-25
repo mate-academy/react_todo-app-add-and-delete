@@ -109,7 +109,11 @@ export const App: React.FC = () => {
       <h1 className="todoapp__title">todos</h1>
 
       <div className="todoapp__content">
-        <Header onAddTodo={handleAddTodo} isSubmitting={isLoading} />
+        <Header
+          onAddTodo={handleAddTodo}
+          isSubmitting={isLoading}
+          setErrorType={setErrorType}
+        />
 
         {todos.length > 0 && (
           <TodoList todos={filteredTodos} onDeleteTodo={handleDeleteTodo} />
