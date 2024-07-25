@@ -32,7 +32,15 @@ type Props = {
 const AppContextContainer = createContext({} as AppContextContainerProps);
 
 export const useAppContextContainer = () => {
-  return useContext(AppContextContainer);
+  const context = useContext(AppContextContainer);
+
+  if (context === undefined) {
+    throw new Error(
+      'Context must be used within an AppContextContainerProvider',
+    );
+  }
+
+  return context;
 };
 
 export const AppContext = ({ children }: Props) => {
