@@ -5,7 +5,7 @@ It is the second part of the React Todo App with API.
 Take your code implemented for [Loading todos](https://github.com/mate-academy/react_todo-app-loading-todos)
 and implement the ability to add and remove todos.
 
-> Here is [the working example](https://mate-academy.github.io/react_todo-app-with-api/)
+> Here is [the working example](https://mate-acadeamy.github.io/react_todo-app-with-api/)
 # ❗️❗️❗️</br>Please implement only adding and deleting todos in addition to what was already implemented.<br><br>All the other features from the working version will be implemented in the next task.</br>❗️❗️❗️
 
 > Check the [API Documentation](https://mate-academy.github.io/fe-students-api/)
@@ -42,7 +42,6 @@ Remove a todo on the `TodoDeleteButton` click:
 - in case of API error show `Unable to delete a todo` notification at the bottom (the todo must stay in the list);
 
 Remove all the completed todos after the `Clear completed` button click:
-
 - the button should be enabled only if there is at least 1 completed todo;
 - the deletion should work as several individual deletions running at the same time;
 - in case of any error show error message but process success deletions;
@@ -55,7 +54,7 @@ Remove all the completed todos after the `Clear completed` button click:
 - Install Prettier Extention and use this [VSCode settings](https://mate-academy.github.io/fe-program/tools/vscode/settings.json) to enable format on save.
 - Implement a solution following the [React task guideline](https://github.com/mate-academy/react_task-guideline#react-tasks-guideline).
 - Use the [React TypeScript cheat sheet](https://mate-academy.github.io/fe-program/js/extra/react-typescript).
-- Replace `<your_account>` with your Github username in the [DEMO LINK](https://<your_account>.github.io/react_todo-app-add-and-delete/) and add it to the PR description.
+- Replace `<your_account>` with your Github username in the [DEMO LINK](https://shelyaa.github.io/react_todo-app-add-and-delete/) and add it to the PR description.
 
 ## IF you want to implement smooth animations
 
