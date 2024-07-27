@@ -1,20 +1,20 @@
 import React from 'react';
-import { Todo } from '../types/Todo';
 import classNames from 'classnames';
+import { Todo } from '../types/Todo';
 
-interface Props {
+interface HeaderProps {
   todos: Todo[];
   addTodo: (e: React.FormEvent<HTMLFormElement>) => void;
-  newTodo: Omit<Todo, 'id'>;
+  title: string; // Changed from `newTodo` to `title`
   onChange: (e: React.ChangeEvent<HTMLInputElement>) => void;
   onBlur: () => void;
   isLoading: boolean;
 }
 
-export const Header: React.FC<Props> = ({
+export const Header: React.FC<HeaderProps> = ({
   todos,
   addTodo,
-  newTodo,
+  title,
   onChange,
   onBlur,
   isLoading,
@@ -35,7 +35,7 @@ export const Header: React.FC<Props> = ({
           type="text"
           className="todoapp__new-todo"
           placeholder="What needs to be done?"
-          value={newTodo.title}
+          value={title}
           onChange={onChange}
           onBlur={onBlur}
           autoFocus

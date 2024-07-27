@@ -23,7 +23,7 @@ const TodoStatusRoutes: Record<TodoStatus, string> = {
 
 export const App: React.FC = () => {
   const [todos, setTodos] = useState<Todo[]>([]);
-  const [newTodo, setNewTodo] = useState<Omit<Todo, 'id'>>(emptyTodo);
+  const [title, setTitle] = useState<string>('');
   const [isLoading, setIsLoading] = useState<boolean>(false);
   const [selectedTodoStatus, setSelectedTodoStatus] = useState<TodoStatus>(
     TodoStatus.All,
@@ -42,9 +42,11 @@ export const App: React.FC = () => {
 
   useEffect(() => {
     if (errorMessage) {
-      setTimeout(() => {
+      const timer = setTimeout(() => {
         setErrorMessage(null);
       }, 3000);
+
+      return () => clearTimeout(timer);
     }
   }, [errorMessage]);
 
@@ -73,26 +75,26 @@ export const App: React.FC = () => {
     (e: React.FormEvent<HTMLFormElement>) => {
       e.preventDefault();
 
-      if (newTodo.title.trim() === '') {
+      if (title.trim() === '') {
         setEmptyTitle(true);
         setErrorMessage(null);
 
         return;
       }
 
-      const trimmedTitle = newTodo.title.trim();
+      const trimmedTitle = title.trim();
 
       setIsLoading(true);
       setErrorMessage(null);
-      setTempTodo({ ...newTodo, title: trimmedTitle });
+      setTempTodo({ ...emptyTodo, title: trimmedTitle });
 
       addNewTodo({
-        ...newTodo,
+        ...emptyTodo,
         title: trimmedTitle,
       })
         .then(todo => {
           setTodos(currentTodos => [...currentTodos, todo]);
-          setNewTodo(emptyTodo);
+          setTitle(''); // Clear the title
           setTempTodo(null);
         })
         .catch(() => {
@@ -102,26 +104,20 @@ export const App: React.FC = () => {
           setIsLoading(false);
         });
     },
-    [newTodo],
+    [title],
   );
 
   const changeTodoHandler = useCallback(
     (e: React.ChangeEvent<HTMLInputElement>) => {
       setErrorMessage(null);
       setEmptyTitle(false);
-      setNewTodo(current => ({
-        ...current,
-        title: e.target.value,
-      }));
+      setTitle(e.target.value); // Update title state
     },
     [],
   );
 
   const handleBlur = () => {
-    setNewTodo(current => ({
-      ...current,
-      title: current.title.trim(),
-    }));
+    setTitle(title.trim()); // Trim title on blur
   };
 
   const deleteTodoHandler = useCallback((todoId: number) => {
@@ -179,7 +175,7 @@ export const App: React.FC = () => {
         <Header
           todos={todos}
           addTodo={addTodo}
-          newTodo={newTodo}
+          title={title} // Pass title instead of newTodo
           onChange={changeTodoHandler}
           onBlur={handleBlur}
           isLoading={isLoading}
