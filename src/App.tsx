@@ -48,6 +48,8 @@ export const App: React.FC = () => {
 
       return () => clearTimeout(timer);
     }
+
+    return () => {};
   }, [errorMessage]);
 
   const filteredTodos = useMemo(() => {
