@@ -4,10 +4,13 @@
 import React, { useCallback, useEffect, useMemo, useState } from 'react';
 import cn from 'classnames';
 import { UserWarning } from './UserWarning';
-import { USER_ID, addTodo } from './api/todos';
-import { getTodos } from './api/todos';
-import { deleteTodo } from './api/todos';
-import { updateTodo } from './api/todos';
+import {
+  USER_ID,
+  addTodo,
+  getTodos,
+  deleteTodo,
+  updateTodo,
+} from './api/todos';
 import { Todo } from './types/Todo';
 import Header from './Cpmponents/Header';
 import TodoList from './Cpmponents/TodoList';
@@ -20,12 +23,6 @@ export const App: React.FC = () => {
   const [filterBy, setFilterBy] = useState(Status.all);
   const [errorMessage, setErrorMessage] = useState('');
   const [newTodo, setNewTodo] = useState('');
-  // const [newTodo, setNewTodo] = useState<Todo>({
-  //   id: 0,
-  //   title: '',
-  //   userId: USER_ID,
-  //   completed: false,
-  // });
   const [inProcess, setInProcess] = useState<number[]>([]);
   const [isLoading, setIsLoading] = useState<boolean>(false);
 
@@ -114,50 +111,6 @@ export const App: React.FC = () => {
       setTimeout(() => setErrorMessage(''), 3000);
     }
   };
-
-  // const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-  //   setNewTodo({ ...newTodo, [e.target.name]: e.target.value });
-  // };
-
-  // const handleAddTodo = () => {
-  //   const { title, userId, completed } = newTodo;
-
-  //   if (title.trim()) {
-  //     const tempTodo = { ...newTodo };
-
-  //     setInProcess(prev => [...prev, newTodo.id]);
-  //     setTodos([...todos, tempTodo]);
-  //     tempTodoCount += 1;
-  //     setIsLoading(true);
-
-  //     addTodo({ title, userId, completed })
-  //       .then((addedTodo: Todo) => {
-  //         setTodos(prevTodos =>
-  //           [...prevTodos, addedTodo].filter(todo => todo.id !== tempTodo.id),
-  //         );
-  //         setNewTodo({
-  //           id: 0,
-  //           title: '',
-  //           userId: USER_ID,
-  //           completed: false,
-  //         });
-  //       })
-  //       .catch(() => {
-  //         setErrorMessage('Unable to add todo');
-  //         setTimeout(() => setErrorMessage(''), 3000);
-  //       })
-  //       .finally(() => {
-  //         setIsLoading(false);
-  //         setTodos(prevTodos =>
-  //           prevTodos.filter(todo => todo.id !== tempTodo.id),
-  //         );
-  //         tempTodoCount = tempTodoCount -1;
-  //       });
-  //   } else {
-  //     setErrorMessage('Title should not be empty');
-  //     setTimeout(() => setErrorMessage(''), 3000);
-  //   }
-  // };
 
   const handleOnDelete = (todoId: number) => {
     setInProcess(prevInProcess => [...prevInProcess, todoId]);
