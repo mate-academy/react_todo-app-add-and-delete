@@ -1,65 +1,53 @@
-import React, { useState } from 'react';
+import cn from 'classnames';
 import { Todo } from '../types/Todo';
-import classNames from 'classnames';
 
-interface TodoListProps {
-  preparedTodos: Todo[];
-  onDelete: (todoId: number) => void;
-  isLoading: boolean;
-}
+type Props = {
+  list: Todo[];
+  onDelete: (id: number) => void;
+  idTodo: number;
+};
 
-export const TodoList: React.FC<TodoListProps> = ({
-  preparedTodos,
-  onDelete,
-}) => {
-  const [loadingTodoIds, setLoadingTodoIds] = useState<number[]>([]);
-
-  const handleDelete = (todoId: number) => {
-    setLoadingTodoIds(current => [...current, todoId]);
-    onDelete(todoId);
-  };
-
+export const TodoList: React.FC<Props> = ({ list, onDelete, idTodo }) => {
   return (
     <section className="todoapp__main" data-cy="TodoList">
-      {preparedTodos.map(todo => (
+      {list.map(({ title, id, completed }) => (
         <div
-          key={todo.id}
           data-cy="Todo"
-          className={classNames('todo', { completed: todo.completed })}
+          className={`todo ${completed && 'completed'}`}
+          key={id}
         >
-          {/* eslint-disable-next-line jsx-a11y/label-has-associated-control */}
-          <label className="todo__status-label">
+          {/* eslint-disable jsx-a11y/label-has-associated-control  */}
+          <label className="todo__status-label" htmlFor={'' + id}>
             <input
+              id={'' + id}
               data-cy="TodoStatus"
               type="checkbox"
               className="todo__status"
-              checked={todo.completed}
-              readOnly
+              checked={completed ? true : false}
             />
           </label>
 
           <span data-cy="TodoTitle" className="todo__title">
-            {todo.title}
+            {title}
           </span>
 
           <button
             type="button"
             className="todo__remove"
             data-cy="TodoDelete"
-            onClick={() => handleDelete(todo.id)}
-            disabled={loadingTodoIds.includes(todo.id)}
+            onClick={() => onDelete(id)}
           >
             ×
           </button>
 
           <div
             data-cy="TodoLoader"
-            className={classNames('modal overlay', {
-              'is-loading': loadingTodoIds.includes(todo.id),
+            className={cn('modal overlay', {
+              'is-active': id === idTodo,
             })}
           >
             <div className="modal-background has-background-white-ter" />
-            {loadingTodoIds.includes(todo.id) && <div className="loader" />}
+            <div className="loader" />
           </div>
         </div>
       ))}

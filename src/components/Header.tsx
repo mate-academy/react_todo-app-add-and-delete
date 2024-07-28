@@ -1,45 +1,64 @@
-import React from 'react';
-import classNames from 'classnames';
+import { FormEvent, useEffect, useRef, useState } from 'react';
 import { Todo } from '../types/Todo';
 
-interface HeaderProps {
-  todos: Todo[];
-  addTodo: (e: React.FormEvent<HTMLFormElement>) => void;
-  title: string; // Changed from `newTodo` to `title`
-  onChange: (e: React.ChangeEvent<HTMLInputElement>) => void;
-  onBlur: () => void;
-  isLoading: boolean;
-}
+type Props = {
+  todo: Omit<Todo, 'id'>;
+  onSubmit: (todo: Omit<Todo, 'id'>) => Promise<void>;
+  onChange: (value: string) => void;
+  onReset: () => void;
+  onError: (error: string) => void;
+};
 
-export const Header: React.FC<HeaderProps> = ({
-  todos,
-  addTodo,
-  title,
+export const Header: React.FC<Props> = ({
+  todo,
+  onSubmit,
   onChange,
-  onBlur,
-  isLoading,
+  onReset,
+  onError,
 }) => {
+  const titleField = useRef<HTMLInputElement>(null);
+  const [loading, setLoading] = useState(false);
+
+  useEffect(() => {
+    if (titleField.current) {
+      titleField.current.focus();
+    }
+  }, [onReset]);
+
+  const handleSubmit = (event: FormEvent<HTMLFormElement>) => {
+    onError('');
+    event.preventDefault();
+
+    if (!todo.title.trim()) {
+      onError('Title should not be empty');
+
+      return;
+    }
+
+    setLoading(true);
+    onSubmit(todo)
+      .then(onReset)
+      .finally(() => setLoading(false));
+  };
+
   return (
     <header className="todoapp__header">
       <button
         type="button"
-        className={classNames('todoapp__toggle-all', {
-          active: todos.every(todo => todo.completed),
-        })}
+        className="todoapp__toggle-all active"
         data-cy="ToggleAllButton"
       />
 
-      <form onSubmit={addTodo}>
+      <form onSubmit={handleSubmit}>
         <input
+          value={todo.title}
+          ref={titleField}
           data-cy="NewTodoField"
           type="text"
           className="todoapp__new-todo"
           placeholder="What needs to be done?"
-          value={title}
-          onChange={onChange}
-          onBlur={onBlur}
-          autoFocus
-          disabled={isLoading}
+          onChange={event => onChange(event.target.value)}
+          disabled={loading ? true : false}
         />
       </form>
     </header>
