@@ -17,7 +17,15 @@ const Footer: React.FC<Props> = ({
   activeTodos,
   completedTask,
 }) => {
-  const { all, active, completed } = Status;
+  const filterOption = Object.values(Status);
+
+  const getStatusName = (status: Status) => {
+    return status === Status.all
+      ? 'All'
+      : status === Status.active
+        ? 'Active'
+        : 'Completed';
+  };
 
   const handleFilter = (newFilter: Status) => {
     changeFilter(newFilter);
@@ -30,32 +38,17 @@ const Footer: React.FC<Props> = ({
       </span>
 
       <nav className="filter" data-cy="Filter">
-        <a
-          href="#/"
-          className={cn('filter__link', { selected: filterBy === all })}
-          onClick={() => handleFilter(Status.all)}
-          data-cy="FilterLinkAll"
-        >
-          All
-        </a>
-
-        <a
-          href="#/active"
-          className={cn('filter__link', { selected: filterBy === active })}
-          onClick={() => handleFilter(Status.active)}
-          data-cy="FilterLinkActive"
-        >
-          Active
-        </a>
-
-        <a
-          href="#/completed"
-          className={cn('filter__link', { selected: filterBy === completed })}
-          onClick={() => handleFilter(Status.completed)}
-          data-cy="FilterLinkCompleted"
-        >
-          Completed
-        </a>
+        {filterOption.map(option => (
+          <a
+            key={option}
+            href={`#${option}`}
+            className={cn('filter__link', { selected: filterBy === option })}
+            onClick={() => handleFilter(option)}
+            data-cy={`FilterLink${getStatusName(option)}`}
+          >
+            {getStatusName(option)}
+          </a>
+        ))}
       </nav>
 
       <button
