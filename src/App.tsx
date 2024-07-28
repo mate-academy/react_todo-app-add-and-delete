@@ -1,7 +1,7 @@
 /* eslint-disable max-len */
 /* eslint-disable jsx-a11y/control-has-associated-label */
 /* eslint-disable jsx-a11y/label-has-associated-control */
-import React, { useCallback, useEffect, useMemo, useState } from 'react';
+import React, { useEffect, useMemo, useState } from 'react';
 import cn from 'classnames';
 import { UserWarning } from './UserWarning';
 import {
@@ -36,7 +36,7 @@ export const App: React.FC = () => {
       });
   }, []);
 
-  const Tasks = () => {
+  const tasks = () => {
     const { active, completed } = Status;
     const allTodos = [...todos, ...tempTodos];
 
@@ -59,10 +59,6 @@ export const App: React.FC = () => {
 
   const completedTask = todos.length > 0 && allActive === 0;
   const completedTodos = todos.filter(todo => todo.completed);
-
-  const changeFilter = useCallback((newFilter: Status) => {
-    setFilterBy(newFilter);
-  }, []);
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setNewTodo(e.target.value);
@@ -173,7 +169,7 @@ export const App: React.FC = () => {
           todos={todos}
         />
         <TodoList
-          tasks={Tasks()}
+          tasks={tasks()}
           handleOnDelete={handleOnDelete}
           inProcess={inProcess}
           handleUpdate={handleUpdate}
@@ -182,7 +178,7 @@ export const App: React.FC = () => {
         {!!todos.length && (
           <Footer
             filterBy={filterBy}
-            changeFilter={changeFilter}
+            setFilterBy={setFilterBy}
             deleteAllCompleted={deleteAllCompleted}
             activeTodos={allActive}
             completedTask={completedTodos}

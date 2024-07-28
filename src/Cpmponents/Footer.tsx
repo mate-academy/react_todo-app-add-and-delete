@@ -6,31 +6,27 @@ type Props = {
   completedTask: Todo[];
   activeTodos: number;
   filterBy: Status;
-  changeFilter: (newFilter: Status) => void;
+  setFilterBy: (newFilter: Status) => void;
   deleteAllCompleted: () => void;
+};
+
+const filterOption = Object.values(Status);
+
+const getStatusName = (status: Status) => {
+  return status === Status.all
+    ? 'All'
+    : status === Status.active
+      ? 'Active'
+      : 'Completed';
 };
 
 const Footer: React.FC<Props> = ({
   filterBy,
-  changeFilter,
+  setFilterBy,
   deleteAllCompleted,
   activeTodos,
   completedTask,
 }) => {
-  const filterOption = Object.values(Status);
-
-  const getStatusName = (status: Status) => {
-    return status === Status.all
-      ? 'All'
-      : status === Status.active
-        ? 'Active'
-        : 'Completed';
-  };
-
-  const handleFilter = (newFilter: Status) => {
-    changeFilter(newFilter);
-  };
-
   return (
     <footer className="todoapp__footer" data-cy="Footer">
       <span className="todo-count" data-cy="TodosCounter">
@@ -43,7 +39,7 @@ const Footer: React.FC<Props> = ({
             key={option}
             href={`#${option}`}
             className={cn('filter__link', { selected: filterBy === option })}
-            onClick={() => handleFilter(option)}
+            onClick={() => setFilterBy(option)}
             data-cy={`FilterLink${getStatusName(option)}`}
           >
             {getStatusName(option)}
