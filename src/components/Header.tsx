@@ -47,7 +47,7 @@ export const Header: React.FC<Props> = ({
     };
 
     try {
-      setLoading([todo.id]);
+      setLoading(todo.id);
       await createTodo(todo);
       reset();
     } catch (error) {

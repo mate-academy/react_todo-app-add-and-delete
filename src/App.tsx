@@ -3,10 +3,10 @@
 import { useEffect, FC, useMemo, useState } from 'react';
 import { UserWarning } from './UserWarning';
 import {
-  patchTodos,
+  patchTodo,
   USER_ID,
-  createTodos,
-  deleteTodos,
+  createTodo,
+  deleteTodo,
   getTodos,
 } from './api/todos';
 
@@ -22,7 +22,7 @@ export const App: FC = () => {
   const [todos, setTodos] = useState<Todo[]>([]);
   const [errorMessage, setErrorMessage] = useState('');
   const [filter, setFilter] = useState<Filters>(Filters.All);
-  const [loading, setLoading] = useState<number[] | null>(null);
+  const [loadingIds, setLoading] = useState<number[]>([]);
   const [tempTodo, setTempTodo] = useState<Todo | null>(null);
 
   const showNewError = (error: string) => {
@@ -44,10 +44,10 @@ export const App: FC = () => {
     loadTodos();
   }, []);
 
-  const createTodo = async ({ userId, completed, title }: Todo) => {
+  const addTodo = async ({ userId, completed, title }: Todo) => {
     try {
       setTempTodo({ userId, completed, title, id: 0 });
-      const newTodo = await createTodos({ userId, completed, title });
+      const newTodo = await createTodo({ userId, completed, title });
 
       setTodos(currTodos => [...currTodos, newTodo]);
     } catch (error) {
@@ -64,7 +64,7 @@ export const App: FC = () => {
       setLoading(todosId);
 
       for (const id of todosId) {
-        await deleteTodos(id);
+        await deleteTodo(id);
         setTodos(currentTodos => currentTodos.filter(todo => todo.id !== id));
       }
     } catch (error) {
@@ -131,12 +131,12 @@ export const App: FC = () => {
 
   const handlePatch = async (id: number, data: Partial<Todo>) => {
     try {
-      const patchTodo = await patchTodos(id, data);
+      const editTodo = await patchTodo(id, data);
 
       setTodos(currTodo =>
         currTodo.map(todo => {
           if (todo.id === id) {
-            return patchTodo;
+            return editTodo;
           }
 
           return todo;
@@ -169,14 +169,14 @@ export const App: FC = () => {
 
       <div className="todoapp__content">
         <Header
-          createTodo={createTodo}
-          loading={loading}
+          createTodo={addTodo}
+          loading={loadingIds}
           setLoading={setLoading}
           showNewError={showNewError}
         />
 
         <TodoList
-          loading={loading}
+          loading={loadingIds}
           todos={filteredTodos}
           onDelete={deletedTodo}
           tempTodo={tempTodo}
