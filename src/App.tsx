@@ -1,6 +1,6 @@
 /* eslint-disable max-len */
 /* eslint-disable jsx-a11y/control-has-associated-label */
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useMemo, useState } from 'react';
 import { UserWarning } from './UserWarning';
 import { USER_ID, getTodos, deleteTodo, addNewTodo } from './api/todos';
 import { ErrorNotification } from './components/ErrorNotification';
@@ -13,7 +13,7 @@ import { TodoStatus } from './types/SortTypes';
 export const App: React.FC = () => {
   const [todos, setTodos] = useState<Todo[]>([]);
   const [errorMessage, setErrorMessage] = useState('');
-  const [status, setStatus] = useState('');
+  const [status, setStatus] = useState(TodoStatus.All);
   const [idTodo, setIdTodo] = useState(0);
   const [newTodo, setNewTodo] = useState({
     userId: USER_ID,
@@ -23,33 +23,32 @@ export const App: React.FC = () => {
 
   useEffect(() => {
     getTodos()
-      .then(todosFromServer => {
-        switch (status) {
-          case TodoStatus.Active:
-            setTodos(todosFromServer.filter(todo => !todo.completed));
-            break;
-          case TodoStatus.Completed:
-            setTodos(todosFromServer.filter(todo => todo.completed));
-            break;
-
-          default:
-            setTodos(todosFromServer);
-        }
-      })
+      .then(todosFromServer => setTodos(todosFromServer))
       .catch(() => setErrorMessage('Unable to load todos'))
       .finally(() => {
         setTimeout(() => setErrorMessage(''), 3000);
       });
-  }, [setTodos, status]);
+  }, []);
+
+  const filteredTodos = useMemo(() => {
+    switch (status) {
+      case TodoStatus.Active:
+        return todos.filter(todo => !todo.completed);
+      case TodoStatus.Completed:
+        return todos.filter(todo => todo.completed);
+      default:
+        return todos;
+    }
+  }, [todos, status]);
 
   function onDeleteTodo(todoId: number) {
     setIdTodo(todoId);
 
     return deleteTodo(todoId)
       .then(() => {
-        setTodos(currentTodos => {
-          return currentTodos.filter(todo => todo.id !== todoId);
-        });
+        setTodos(currentTodos =>
+          currentTodos.filter(todo => todo.id !== todoId),
+        );
       })
       .catch(() => {
         setTodos(todos);
@@ -68,10 +67,9 @@ export const App: React.FC = () => {
         setTodos(todos);
         setTodos(currentTodos => [...currentTodos, todo]);
       })
-      .catch(error => {
+      .catch(() => {
         setErrorMessage('Unable to add a todo');
         setTodos(todos);
-        throw error;
       });
   }
 
@@ -98,9 +96,9 @@ export const App: React.FC = () => {
     completedItems.map(async todo => {
       await deleteTodo(todo.id)
         .then(() => {
-          setTodos(currentTodos => {
-            return currentTodos.filter(item => item.id !== todo.id);
-          });
+          setTodos(currentTodos =>
+            currentTodos.filter(item => item.id !== todo.id),
+          );
         })
         .catch(() => {
           setErrorMessage('Unable to delete a todo');
@@ -124,14 +122,20 @@ export const App: React.FC = () => {
           onReset={reset}
           onError={setErrorMessage}
         />
-        <TodoList list={todos} onDelete={onDeleteTodo} idTodo={idTodo} />
-        <Footer
-          onClick={setStatus}
-          status={status}
-          leftItems={leftItemsCount}
-          completedItems={completedItems}
-          onDelete={clearCompletedTodo}
+        <TodoList
+          list={filteredTodos}
+          onDelete={onDeleteTodo}
+          idTodo={idTodo}
         />
+        {todos.length > 0 && (
+          <Footer
+            onClick={setStatus}
+            status={status}
+            leftItems={leftItemsCount}
+            completedItems={completedItems}
+            onDelete={clearCompletedTodo}
+          />
+        )}
       </div>
       <ErrorNotification
         errorMessage={errorMessage}

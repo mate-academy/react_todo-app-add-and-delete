@@ -19,11 +19,15 @@ export const Header: React.FC<Props> = ({
   const titleField = useRef<HTMLInputElement>(null);
   const [loading, setLoading] = useState(false);
 
+  const handleChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+    onChange(event.target.value);
+  };
+
   useEffect(() => {
     if (titleField.current) {
       titleField.current.focus();
     }
-  }, [onReset]);
+  }, []);
 
   const handleSubmit = (event: FormEvent<HTMLFormElement>) => {
     onError('');
@@ -37,7 +41,10 @@ export const Header: React.FC<Props> = ({
 
     setLoading(true);
     onSubmit(todo)
-      .then(onReset)
+      .then(() => {
+        onReset();
+        titleField.current?.focus();
+      })
       .finally(() => setLoading(false));
   };
 
@@ -57,7 +64,7 @@ export const Header: React.FC<Props> = ({
           type="text"
           className="todoapp__new-todo"
           placeholder="What needs to be done?"
-          onChange={event => onChange(event.target.value)}
+          onChange={handleChange}
           disabled={loading ? true : false}
         />
       </form>

@@ -4,7 +4,7 @@ import { TodoStatus } from '../types/SortTypes';
 import React from 'react';
 
 type Props = {
-  onClick: (status: string) => void;
+  onClick: (status: TodoStatus) => void;
   status: string;
   leftItems: number;
   completedItems: Todo[];
@@ -29,7 +29,7 @@ export const Footer: React.FC<Props> = ({
           href="#/"
           className={cn('filter__link', { selected: !status })}
           data-cy="FilterLinkAll"
-          onClick={() => onClick('')}
+          onClick={() => onClick(TodoStatus.All)}
         >
           All
         </a>
