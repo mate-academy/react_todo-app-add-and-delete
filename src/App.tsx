@@ -125,15 +125,13 @@ export const App: React.FC = () => {
           onError={setErrorMessage}
         />
         <TodoList list={todos} onDelete={onDeleteTodo} idTodo={idTodo} />
-        {todos.length > 0 && (
-          <Footer
-            onClick={setStatus}
-            status={status}
-            leftItems={leftItemsCount}
-            completedItems={completedItems}
-            onDelete={clearCompletedTodo}
-          />
-        )}
+        <Footer
+          onClick={setStatus}
+          status={status}
+          leftItems={leftItemsCount}
+          completedItems={completedItems}
+          onDelete={clearCompletedTodo}
+        />
       </div>
       <ErrorNotification
         errorMessage={errorMessage}
