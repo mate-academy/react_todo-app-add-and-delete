@@ -15,11 +15,7 @@ export const App: React.FC = () => {
   const [errorMessage, setErrorMessage] = useState('');
   const [status, setStatus] = useState(TodoStatus.All);
   const [idTodo, setIdTodo] = useState(0);
-  const [newTodo, setNewTodo] = useState({
-    userId: USER_ID,
-    title: '',
-    completed: false,
-  });
+  const [title, setTitle] = useState('');
 
   useEffect(() => {
     getTodos()
@@ -56,13 +52,17 @@ export const App: React.FC = () => {
       });
   }
 
-  function onCreateTodo(newTodos: Omit<Todo, 'id'>) {
-    const trimmedTodo = { ...newTodos, title: newTodos.title.trim() };
+  function onCreateTodo() {
+    const newTodo = {
+      userId: USER_ID,
+      title: title.trim(),
+      completed: false,
+    };
 
     setTodos(currentTodos => [...currentTodos, { ...newTodo, id: 0 }]);
     setIdTodo(0);
 
-    return addNewTodo(trimmedTodo)
+    return addNewTodo(newTodo)
       .then(todo => {
         setTodos(todos);
         setTodos(currentTodos => [...currentTodos, todo]);
@@ -74,17 +74,11 @@ export const App: React.FC = () => {
   }
 
   function handleChangeTitle(value: string) {
-    setNewTodo(currentTodo => ({
-      ...currentTodo,
-      title: value,
-    }));
+    setTitle(value);
   }
 
   function reset() {
-    setNewTodo(currentTodo => ({
-      ...currentTodo,
-      title: '',
-    }));
+    setTitle('');
   }
 
   const leftItemsCount = todos.filter(
@@ -116,7 +110,8 @@ export const App: React.FC = () => {
 
       <div className="todoapp__content">
         <Header
-          todo={newTodo}
+          todos={todos}
+          title={title}
           onSubmit={onCreateTodo}
           onChange={handleChangeTitle}
           onReset={reset}

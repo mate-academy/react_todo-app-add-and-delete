@@ -2,7 +2,8 @@ import { FormEvent, useEffect, useRef, useState } from 'react';
 import { Todo } from '../types/Todo';
 
 type Props = {
-  todo: Omit<Todo, 'id'>;
+  todos: Todo[];
+  title: string;
   onSubmit: (todo: Omit<Todo, 'id'>) => Promise<void>;
   onChange: (value: string) => void;
   onReset: () => void;
@@ -10,7 +11,8 @@ type Props = {
 };
 
 export const Header: React.FC<Props> = ({
-  todo,
+  title,
+  todos,
   onSubmit,
   onChange,
   onReset,
@@ -27,20 +29,26 @@ export const Header: React.FC<Props> = ({
     if (titleField.current) {
       titleField.current.focus();
     }
-  }, []);
+  }, [todos]);
 
   const handleSubmit = (event: FormEvent<HTMLFormElement>) => {
     onError('');
     event.preventDefault();
 
-    if (!todo.title.trim()) {
+    if (!title.trim()) {
       onError('Title should not be empty');
 
       return;
     }
 
+    const newTodo: Omit<Todo, 'id'> = {
+      userId: 939,
+      title: title.trim(),
+      completed: false,
+    };
+
     setLoading(true);
-    onSubmit(todo)
+    onSubmit(newTodo)
       .then(() => {
         onReset();
         titleField.current?.focus();
@@ -58,7 +66,7 @@ export const Header: React.FC<Props> = ({
 
       <form onSubmit={handleSubmit}>
         <input
-          value={todo.title}
+          value={title}
           ref={titleField}
           data-cy="NewTodoField"
           type="text"
