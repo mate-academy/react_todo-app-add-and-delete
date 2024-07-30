@@ -5,7 +5,8 @@ import { Actions } from './types/Actions';
 import { ListOfTodos } from './components/ListOfTodos';
 import { FooterTodos } from './components/FooterTodos';
 import { ErrorNotification } from './components/ErrorNotification';
-import classNames from 'classnames';
+import { focusInput } from './utils/focusInput';
+import HeaderTodos from './components/HeaderTodos/HeaderTodos';
 
 export const App: React.FC = () => {
   const [todos, setTodos] = useState<Todo[]>([]);
@@ -13,24 +14,12 @@ export const App: React.FC = () => {
   const [showNotification, setShowNotification] = useState(true);
   const [filterActions, setFilterActions] = useState<Actions>(Actions.ALL);
   const [loading, setLoading] = useState<{ [key: number]: boolean }>({});
-  const [isInputDisabled, setIsInputDisabled] = useState(false);
-  const [newInputTitle, setNewInputTitle] = useState('');
   const [tempTodo, setTempTodo] = useState<Todo | null>(null);
   const timeoutId = useRef<number | null>(null);
-  const inputRef = useRef<HTMLInputElement>(null);
-
-  const focusInput = () => {
-    const timeout = setTimeout(() => {
-      if (inputRef.current) {
-        inputRef.current.focus();
-      }
-    }, 0);
-
-    return () => clearTimeout(timeout);
-  };
+  const inputRef = useRef<{ focus: () => void }>(null);
 
   useEffect(() => {
-    focusInput();
+    focusInput(inputRef);
 
     postServise
       .getTodos()
@@ -62,57 +51,6 @@ export const App: React.FC = () => {
     }, 3000);
   };
 
-  const handleTitle = (e: React.ChangeEvent<HTMLInputElement>) => {
-    setNewInputTitle(e.currentTarget.value);
-  };
-
-  const addTodo = (e: React.FormEvent<HTMLFormElement>) => {
-    e.preventDefault();
-
-    const titleTrim = newInputTitle.trim();
-
-    if (titleTrim.length === 0) {
-      errorNotification('Title should not be empty');
-      focusInput();
-
-      return;
-    }
-
-    const newTodo = {
-      id: 0,
-      userId: postServise.USER_ID,
-      title: titleTrim,
-      completed: false,
-    };
-
-    setTempTodo(newTodo);
-    setLoading(prev => ({ ...prev, [newTodo.id]: true }));
-    setIsInputDisabled(true);
-
-    const { userId, title, completed } = newTodo;
-
-    postServise
-      .postTodos({ userId, title, completed })
-      .then(newTodoFromServer => {
-        setTodos(currentTodos => [...currentTodos, newTodoFromServer as Todo]);
-        setTempTodo(null);
-        setNewInputTitle('');
-        setLoading(prev => {
-          const { [newTodo.id]: ignored, ...rest } = prev;
-
-          return rest;
-        });
-      })
-      .catch(() => {
-        setTempTodo(null);
-        errorNotification(`Unable to add a todo`);
-      })
-      .finally(() => {
-        setIsInputDisabled(false);
-        focusInput();
-      });
-  };
-
   const deleteTodo = (todoId: number) => {
     setLoading(prevLoading => ({ ...prevLoading, [todoId]: true }));
     postServise
@@ -131,7 +69,7 @@ export const App: React.FC = () => {
 
           return rest;
         });
-        focusInput();
+        focusInput(inputRef);
       });
   };
 
@@ -149,6 +87,25 @@ export const App: React.FC = () => {
     await Promise.allSettled(deletePromises);
   };
 
+  const handleLoading = (newTodo: Todo, type: string) => {
+    switch (type) {
+      case 'turnOn':
+        setLoading(prev => ({ ...prev, [newTodo.id]: true }));
+        break;
+      case 'turnOff':
+        setLoading(prev => {
+          const { [newTodo.id]: ignored, ...rest } = prev;
+
+          return rest;
+        });
+        break;
+    }
+  };
+
+  const setTodosFormServer = (todoFromServer: Todo) => {
+    setTodos(currentTodos => [...currentTodos, todoFromServer as Todo]);
+  };
+
   const hasCompletedTodos = todos.some(todo => todo.completed);
 
   const checkCompleted = todos?.every(todo => todo.completed === true);
@@ -158,28 +115,14 @@ export const App: React.FC = () => {
       <h1 className="todoapp__title">todos</h1>
 
       <div className="todoapp__content">
-        <header className="todoapp__header">
-          <button
-            type="button"
-            className={classNames('todoapp__toggle-all', {
-              active: checkCompleted,
-            })}
-            data-cy="ToggleAllButton"
-          />
-
-          <form onSubmit={addTodo}>
-            <input
-              data-cy="NewTodoField"
-              type="text"
-              value={newInputTitle}
-              ref={inputRef}
-              className="todoapp__new-todo"
-              placeholder="What needs to be done?"
-              onChange={handleTitle}
-              disabled={isInputDisabled}
-            />
-          </form>
-        </header>
+        <HeaderTodos
+          checkCompleted={checkCompleted}
+          errorNotification={errorNotification}
+          ref={inputRef}
+          setTempTodo={setTempTodo}
+          setTodos={setTodosFormServer}
+          setLoading={handleLoading}
+        />
 
         <ListOfTodos
           todos={todos}

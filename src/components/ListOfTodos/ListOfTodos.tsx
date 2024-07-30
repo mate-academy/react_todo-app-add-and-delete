@@ -23,51 +23,50 @@ export const ListOfTodos: React.FC<Props> = ({
     <>
       {todos.length > 0 && (
         <section className="todoapp__main" data-cy="TodoList">
-          {todos.length > 0 &&
-            filteredTodos(todos, actions).map(({ id, title, completed }) => (
-              <div
-                data-cy="Todo"
-                className={classNames('todo', {
-                  completed: completed,
-                })}
-                key={id}
+          {filteredTodos(todos, actions).map(({ id, title, completed }) => (
+            <div
+              data-cy="Todo"
+              className={classNames('todo', {
+                completed: completed,
+              })}
+              key={id}
+            >
+              <label className="todo__status-label">
+                <input
+                  data-cy="TodoStatus"
+                  type="checkbox"
+                  className="todo__status"
+                  defaultChecked={completed}
+                />
+              </label>
+
+              <span data-cy="TodoTitle" className="todo__title">
+                {title}
+              </span>
+
+              <button
+                type="button"
+                className="todo__remove"
+                data-cy="TodoDelete"
+                onClick={() => onDelete(id)}
               >
-                <label className="todo__status-label">
-                  <input
-                    data-cy="TodoStatus"
-                    type="checkbox"
-                    className="todo__status"
-                    defaultChecked={completed}
-                  />
-                </label>
+                ×
+              </button>
 
-                <span data-cy="TodoTitle" className="todo__title">
-                  {title}
-                </span>
-
-                <button
-                  type="button"
-                  className="todo__remove"
-                  data-cy="TodoDelete"
-                  onClick={() => onDelete(id)}
-                >
-                  ×
-                </button>
-
+              <div
+                data-cy="TodoLoader"
+                className={classNames('modal overlay', {
+                  'is-active': loading[id],
+                })}
+              >
                 <div
-                  data-cy="TodoLoader"
-                  className={classNames('modal overlay', {
-                    'is-active': loading[id],
-                  })}
-                >
-                  <div
-                    className="modal-background
+                  className="modal-background
                     has-background-white-ter"
-                  />
-                  <div className="loader" />
-                </div>
+                />
+                <div className="loader" />
               </div>
-            ))}
+            </div>
+          ))}
           {tempTodo && (
             <div
               data-cy="Todo"
