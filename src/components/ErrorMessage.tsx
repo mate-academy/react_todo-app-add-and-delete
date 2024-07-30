@@ -8,8 +8,8 @@ interface Props {
 
 export const ErrorMessage: React.FC<Props> = ({ isError, errors }) => (
   <div
-      data-cy="ErrorNotification"
-      className={cn(
+    data-cy="ErrorNotification"
+    className={cn(
       'notification',
       'is-danger',
       'is-light',
