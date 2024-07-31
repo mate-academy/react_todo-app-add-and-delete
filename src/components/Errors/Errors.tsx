@@ -1,4 +1,4 @@
-import React, { useEffect } from 'react';
+import React, { useEffect, useRef } from 'react';
 import { ErrorType } from '../../types/ErrorType';
 
 type ErrorsProps = {
@@ -7,18 +7,24 @@ type ErrorsProps = {
 };
 
 export const Errors: React.FC<ErrorsProps> = ({ error, onErrorChange }) => {
-  useEffect(() => {
-    let timer: NodeJS.Timeout | null = null;
+  const timerRef = useRef<NodeJS.Timeout | null>(null);
 
+  useEffect(() => {
     if (error) {
-      timer = setTimeout(() => {
+      if (timerRef.current) {
+        clearTimeout(timerRef.current);
+      }
+
+      timerRef.current = setTimeout(() => {
         onErrorChange(null);
+        timerRef.current = null;
       }, 3000);
     }
 
     return () => {
-      if (timer) {
-        clearTimeout(timer);
+      if (timerRef.current) {
+        clearTimeout(timerRef.current);
+        timerRef.current = null;
       }
     };
   }, [error, onErrorChange]);
@@ -26,9 +32,9 @@ export const Errors: React.FC<ErrorsProps> = ({ error, onErrorChange }) => {
   return (
     <div
       data-cy="ErrorNotification"
-      className={`notification
-        is-danger is-light
-        has-text-weight-normal ${!error ? 'hidden' : ''}`}
+      className={`notification is-danger is-light has-text-weight-normal ${
+        !error ? 'hidden' : ''
+      }`}
     >
       <button
         data-cy="HideErrorButton"
@@ -36,7 +42,6 @@ export const Errors: React.FC<ErrorsProps> = ({ error, onErrorChange }) => {
         className="delete"
         onClick={() => onErrorChange(null)}
       />
-      {/* show only one message at a time */}
       {error && <span>{error}</span>}
     </div>
   );

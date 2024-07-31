@@ -14,7 +14,7 @@ export const TodoContent: React.FC<TodoContentProps> = ({
   onErrorChange,
 }) => {
   const [input, setInput] = useState<string>('');
-  const { postTodo, error, isSubmitting } = usePostTodos();
+  const { postTodo, error, clearError, isSubmitting } = usePostTodos();
   const { inputRef, triggerFocus } = useTodos();
 
   const handleInputChange = (event: ChangeEvent<HTMLInputElement>) => {
@@ -36,8 +36,12 @@ export const TodoContent: React.FC<TodoContentProps> = ({
       onErrorChange(error);
       triggerFocus();
     }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [error, onErrorChange]);
+
+    // Clear the error after 3 seconds using Errors component logic
+    return () => {
+      clearError(); // Clear the error manually if needed
+    };
+  }, [error, onErrorChange, clearError, triggerFocus]);
 
   return (
     <>

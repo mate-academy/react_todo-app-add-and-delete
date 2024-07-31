@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { Todo } from '../types/Todo';
 import { ErrorType } from '../types/ErrorType';
 import { postTodos, USER_ID } from '../api/todos';
@@ -8,6 +8,7 @@ type UsePostTodosProps = {
   tempTodo: Todo | null;
   postTodo: (title: string) => Promise<boolean>;
   error: ErrorType | null;
+  clearError: () => void;
   isSubmitting: boolean;
 };
 
@@ -15,6 +16,12 @@ export const usePostTodos = (): UsePostTodosProps => {
   const { setTodos, tempTodo, setTempTodo } = useTodos();
   const [error, setError] = useState<ErrorType | null>(null);
   const [isSubmitting, setIsSubmitting] = useState<boolean>(false);
+
+  useEffect(() => {
+    if (error) {
+      // Trigger any side effect when error occurs (like resetting a form)
+    }
+  }, [error]);
 
   const postTodo = async (title: string): Promise<boolean> => {
     if (title.trim() === '') {
@@ -51,10 +58,15 @@ export const usePostTodos = (): UsePostTodosProps => {
     }
   };
 
+  const clearError = () => {
+    setError(null);
+  };
+
   return {
     tempTodo,
     postTodo,
     error,
+    clearError,
     isSubmitting,
   };
 };
