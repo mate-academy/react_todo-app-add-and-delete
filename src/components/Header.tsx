@@ -8,24 +8,29 @@ type Props = {
   todos: Todo[];
   setTodos: (todos: Todo[]) => void;
   showError: (error: string) => void;
-  setTodosAreLoadingIds: (todosAreLoadingIds: number[]) => void;
   setTodosActiveIds: (todosActiveIds: number[]) => void;
-  todosAreLoadingIds: number[];
   todosActiveIds: number[];
+  setTempTodo: (tempTodo: Todo | null) => void;
+  tempTodo: Todo | null;
 };
 
 export const Header: React.FC<Props> = ({
   todos,
   setTodos,
   showError,
-  setTodosAreLoadingIds,
   setTodosActiveIds,
-  todosAreLoadingIds,
   todosActiveIds,
+  setTempTodo,
+  tempTodo,
 }) => {
+  const [newTitle, setNewTitle] = useState('');
+
   const allAreCompleted = todos.every(todo => todo.completed);
   const field = useRef<HTMLInputElement>(null);
-  const [newTitle, setNewTitle] = useState('');
+
+  useEffect(() => {
+    field.current?.focus();
+  }, [todos, showError]);
 
   const handleSubmit = (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
@@ -36,15 +41,12 @@ export const Header: React.FC<Props> = ({
       return;
     }
 
-    const tempTodo = {
-      title: newTitle,
+    setTempTodo({
+      title: newTitle.trim(),
       completed: false,
       userId: USER_ID,
-      id: 50,
-    };
-
-    setTodos([...todos, tempTodo]);
-    setTodosAreLoadingIds([...todosAreLoadingIds, tempTodo.id]);
+      id: 0,
+    });
 
     addTodo({ title: newTitle.trim(), completed: false, userId: USER_ID })
       .then(newTodo => {
@@ -54,18 +56,14 @@ export const Header: React.FC<Props> = ({
       })
       .catch(() => {
         showError(Error.add);
-        setTodos(todos);
       })
-      .finally(() => setTodosAreLoadingIds([]));
+      .finally(() => {
+        setTempTodo(null);
+      });
   };
-
-  useEffect(() => {
-    field.current?.focus();
-  }, [todos, showError]);
 
   return (
     <header className="todoapp__header">
-      {/* this button should have `active` class only if all todos are completed */}
       <button
         type="button"
         className={classNames('todoapp__toggle-all', {
@@ -84,7 +82,7 @@ export const Header: React.FC<Props> = ({
           ref={field}
           value={newTitle}
           onChange={event => setNewTitle(event.target.value)}
-          disabled={!!todosAreLoadingIds.length}
+          disabled={!!tempTodo}
         />
       </form>
     </header>

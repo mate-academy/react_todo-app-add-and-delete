@@ -17,6 +17,7 @@ export const App: React.FC = () => {
   const [errorMessage, setErrorMessage] = useState('');
   const [todosAreLoadingIds, setTodosAreLoadingIds] = useState<number[]>([]);
   const [todosActiveIds, setTodosActiveIds] = useState<number[]>([]);
+  const [tempTodo, setTempTodo] = useState<Todo | null>(null);
 
   const showError = (error: string) => {
     setErrorMessage(error);
@@ -90,16 +91,17 @@ export const App: React.FC = () => {
           todos={todos}
           setTodos={setTodos}
           showError={showError}
-          setTodosAreLoadingIds={setTodosAreLoadingIds}
           setTodosActiveIds={setTodosActiveIds}
-          todosAreLoadingIds={todosAreLoadingIds}
           todosActiveIds={todosActiveIds}
+          setTempTodo={setTempTodo}
+          tempTodo={tempTodo}
         />
 
         <TodoList
           todos={filteredTodos}
           onDelete={handleDeleteTodo}
           todosAreLoadingIds={todosAreLoadingIds}
+          tempTodo={tempTodo}
         />
 
         {!!todos.length && (
@@ -108,7 +110,7 @@ export const App: React.FC = () => {
             onFilter={setFilter}
             completedTodosId={completedTodosId}
             todosActiveIds={todosActiveIds}
-            handleDeleteTodo={handleDeleteTodo}
+            onDelete={handleDeleteTodo}
           />
         )}
       </div>

@@ -7,7 +7,7 @@ type Props = {
   onFilter: (filter: Filter[keyof Filter]) => void;
   completedTodosId: number[];
   todosActiveIds: number[];
-  handleDeleteTodo: (id: number) => void;
+  onDelete: (id: number) => void;
 };
 
 export const Footer: React.FC<Props> = ({
@@ -15,10 +15,10 @@ export const Footer: React.FC<Props> = ({
   onFilter,
   completedTodosId,
   todosActiveIds,
-  handleDeleteTodo,
+  onDelete,
 }) => {
   const handleDeleteCompletedTodo = () => {
-    completedTodosId.forEach(id => handleDeleteTodo(id));
+    completedTodosId.forEach(id => onDelete(id));
   };
 
   return (
