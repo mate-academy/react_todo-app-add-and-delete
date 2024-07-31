@@ -37,7 +37,7 @@ export const App: React.FC = () => {
     }
   }, [todos, status]);
 
-  function onDeleteTodo(todoId: number) {
+  const onDeleteTodo = (todoId: number) => {
     setIdTodo(todoId);
 
     return deleteTodo(todoId)
@@ -50,9 +50,9 @@ export const App: React.FC = () => {
         setTodos(todos);
         setErrorMessage('Unable to delete a todo');
       });
-  }
+  };
 
-  function onCreateTodo() {
+  const onCreateTodo = () => {
     const newTodo = {
       userId: USER_ID,
       title: title.trim(),
@@ -71,15 +71,15 @@ export const App: React.FC = () => {
         setErrorMessage('Unable to add a todo');
         setTodos(todos);
       });
-  }
+  };
 
-  function handleChangeTitle(value: string) {
+  const handleChangeTitle = (value: string) => {
     setTitle(value);
-  }
+  };
 
-  function reset() {
+  const reset = () => {
     setTitle('');
-  }
+  };
 
   const leftItemsCount = todos.filter(
     todo => !todo.completed && todo.id !== 0,

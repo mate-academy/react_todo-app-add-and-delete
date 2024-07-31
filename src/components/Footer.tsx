@@ -11,6 +11,12 @@ type Props = {
   onDelete: () => void;
 };
 
+const FILTER_TITLES = {
+  [TodoStatus.All]: 'All',
+  [TodoStatus.Active]: 'Active',
+  [TodoStatus.Completed]: 'Completed',
+};
+
 export const Footer: React.FC<Props> = ({
   onClick,
   status,
@@ -25,36 +31,19 @@ export const Footer: React.FC<Props> = ({
       </span>
 
       <nav className="filter" data-cy="Filter">
-        <a
-          href="#/"
-          className={cn('filter__link', { selected: !status })}
-          data-cy="FilterLinkAll"
-          onClick={() => onClick(TodoStatus.All)}
-        >
-          All
-        </a>
-
-        <a
-          href="#/active"
-          className={cn('filter__link', {
-            selected: status === TodoStatus.Active,
-          })}
-          data-cy="FilterLinkActive"
-          onClick={() => onClick(TodoStatus.Active)}
-        >
-          Active
-        </a>
-
-        <a
-          href="#/completed"
-          className={cn('filter__link', {
-            selected: status === TodoStatus.Completed,
-          })}
-          data-cy="FilterLinkCompleted"
-          onClick={() => onClick(TodoStatus.Completed)}
-        >
-          Completed
-        </a>
+        {Object.values(TodoStatus).map(filterStatus => (
+          <a
+            key={filterStatus}
+            href={`#/${filterStatus.toLowerCase()}`}
+            className={cn('filter__link', {
+              selected: status === filterStatus,
+            })}
+            data-cy={`FilterLink${FILTER_TITLES[filterStatus]}`}
+            onClick={() => onClick(filterStatus)}
+          >
+            {FILTER_TITLES[filterStatus]}
+          </a>
+        ))}
       </nav>
 
       <button
