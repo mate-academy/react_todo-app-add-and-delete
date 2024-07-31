@@ -54,16 +54,15 @@ export const TodoFilter: React.FC<Props> = ({
         </a>
       </nav>
 
-      {completedTodosCount > 0 && (
-        <button
-          type="button"
-          className="clear-completed"
-          onClick={onClearCompleted}
-          data-cy="ClearCompletedButton"
-        >
-          Clear completed
-        </button>
-      )}
+      <button
+        type="button"
+        className="todoapp__clear-completed"
+        onClick={onClearCompleted}
+        data-cy="ClearCompletedButton"
+        disabled={completedTodosCount === 0}
+      >
+        Clear completed
+      </button>
     </footer>
   );
 };

@@ -20,13 +20,17 @@ export const App: React.FC = () => {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const newTodoFieldRef = useRef<HTMLInputElement>(null);
 
+  const showErrorMessage = (message: string) => {
+    setErrorMessage(message);
+    setTimeout(() => setErrorMessage(''), 3000);
+  };
+
   useEffect(() => {
     todoServices
       .getTodos()
       .then(setTodos)
       .catch(() => {
         setErrorMessage('Unable to load todos');
-        setTimeout(() => setErrorMessage(''), 3000);
       });
   }, []);
 
@@ -49,9 +53,15 @@ export const App: React.FC = () => {
     );
   }, [todos]);
 
-  useEffect(() => {
-    if (newTodoFieldRef.current && !isSubmitting) {
+  const focusNewTodoField = () => {
+    if (newTodoFieldRef.current) {
       newTodoFieldRef.current.focus();
+    }
+  };
+
+  useEffect(() => {
+    if (!isSubmitting) {
+      focusNewTodoField();
     }
   }, [isSubmitting]);
 
@@ -61,7 +71,6 @@ export const App: React.FC = () => {
 
     if (!title) {
       setErrorMessage('Title should not be empty');
-      setTimeout(() => setErrorMessage(''), 3000);
 
       return;
     }
@@ -84,14 +93,11 @@ export const App: React.FC = () => {
       ]);
       setNewTodoTitle('');
     } catch {
-      setErrorMessage('Unable to add a todo');
-      setTimeout(() => setErrorMessage(''), 3000);
+      showErrorMessage('Unable to add a todo');
     } finally {
       setTempTodo(null);
       setIsSubmitting(false);
-      if (newTodoFieldRef.current) {
-        newTodoFieldRef.current.focus();
-      }
+      focusNewTodoField();
     }
   };
 
@@ -104,23 +110,36 @@ export const App: React.FC = () => {
       );
       await todoServices.deleteTodo(todoId);
       setTodos(todos.filter(todo => todo.id !== todoId));
+      focusNewTodoField();
     } catch {
       setErrorMessage('Unable to delete a todo');
-      setTimeout(() => setErrorMessage(''), 3000);
     }
   };
 
   const handleClearCompleted = () => {
     const completedTodos = todos.filter(todo => todo.completed);
 
-    Promise.all(completedTodos.map(todo => todoServices.deleteTodo(todo.id)))
-      .then(() => {
-        setTodos(prevTodos => prevTodos.filter(todo => !todo.completed));
-      })
-      .catch(() => {
+    Promise.allSettled(
+      completedTodos.map(todo => todoServices.deleteTodo(todo.id)),
+    ).then(results => {
+      const successfulDeletions = results
+        .map((result, index) =>
+          result.status === 'fulfilled' ? completedTodos[index].id : null,
+        )
+        .filter(id => id !== null);
+
+      setTodos(prevTodos =>
+        prevTodos.filter(todo => !successfulDeletions.includes(todo.id)),
+      );
+
+      const hasErrors = results.some(result => result.status === 'rejected');
+
+      if (hasErrors) {
         setErrorMessage('Unable to delete a todo');
-        setTimeout(() => setErrorMessage(''), 3000);
-      });
+      }
+
+      focusNewTodoField();
+    });
   };
 
   if (!USER_ID) {
@@ -149,6 +168,9 @@ export const App: React.FC = () => {
               onChange={e => setNewTodoTitle(e.target.value)}
               ref={newTodoFieldRef}
               disabled={isSubmitting}
+              id="new-todo-field"
+              name="newTodoField"
+              autoFocus
             />
           </form>
         </header>
@@ -161,6 +183,7 @@ export const App: React.FC = () => {
                   todo={todo}
                   onDelete={() => handleDeleteTodo(todo.id)}
                   onUpdate={todoServices.updateTodo}
+                  isProcessed={todo.isDeleting}
                 />
               </CSSTransition>
             ))}

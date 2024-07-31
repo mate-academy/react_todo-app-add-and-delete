@@ -6,10 +6,7 @@ interface Props {
   todo: Todo;
   isProcessed?: boolean;
   onDelete?: (id: number) => void;
-  onUpdate?: (
-    id: number,
-    updatedFields: Partial<{ title: string; completed: boolean }>,
-  ) => void;
+  onUpdate?: (todoId: number, data: Partial<Todo>) => void;
 }
 
 export const TodoItem: React.FC<Props> = ({
