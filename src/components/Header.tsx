@@ -53,7 +53,12 @@ export const Header: React.FC<Props> = ({
         onReset();
         titleField.current?.focus();
       })
-      .finally(() => setLoading(false));
+      .catch(() => {
+        onError('Unable to add a todo');
+      })
+      .finally(() => {
+        setLoading(false);
+      });
   };
 
   return (

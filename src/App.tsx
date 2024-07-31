@@ -67,9 +67,10 @@ export const App: React.FC = () => {
         setTodos(todos);
         setTodos(currentTodos => [...currentTodos, todo]);
       })
-      .catch(() => {
+      .catch(error => {
         setErrorMessage('Unable to add a todo');
-        setTodos(todos);
+        setTodos(currentTodos => currentTodos.filter(t => t.id !== 0));
+        throw error;
       });
   };
 
