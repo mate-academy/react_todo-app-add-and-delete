@@ -1,6 +1,6 @@
 /* eslint-disable jsx-a11y/label-has-associated-control */
 /* eslint-disable jsx-a11y/control-has-associated-label */
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import { UserWarning } from './UserWarning';
 import { USER_ID, getTodos, createTodo, deleteTodo } from './api/todos';
 import { Todo } from './types/Todo';
@@ -20,6 +20,17 @@ const errorMessages = {
   update: 'Unable to update a todo',
 };
 
+const filterTodos = (todos: Todo[], filter: Filter): Todo[] => {
+  switch (filter) {
+    case Filter.active:
+      return todos.filter(todo => !todo.completed);
+    case Filter.completed:
+      return todos.filter(todo => todo.completed);
+    default:
+      return todos;
+  }
+};
+
 export const App: React.FC = () => {
   const [todos, setTodos] = useState<Todo[]>([]);
   const [loading, setLoading] = useState<boolean>(true);
@@ -28,6 +39,8 @@ export const App: React.FC = () => {
   const [filter, setFilter] = useState<Filter>(Filter.all);
   const [inputText, setInputText] = useState('');
   const [tempTodo, setTempTodo] = useState<Todo | null>(null);
+
+  const inputRef = useRef<HTMLInputElement>(null);
 
   useEffect(() => {
     getTodos()
@@ -52,20 +65,7 @@ export const App: React.FC = () => {
     return <UserWarning />;
   }
 
-  let filteredTodos = todos;
-
-  if (filter !== Filter.all) {
-    filteredTodos = todos.filter(todo => {
-      switch (filter) {
-        case Filter.active:
-          return !todo.completed;
-        case Filter.completed:
-          return todo.completed;
-        default:
-          return true;
-      }
-    });
-  }
+  const filteredTodos = filterTodos(todos, filter);
 
   const handleAddTodo = (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
@@ -90,21 +90,21 @@ export const App: React.FC = () => {
       completed: false,
     });
 
-    setInputText('');
-    setLoadingId(0);
+    setLoading(true);
 
     createTodo(newTodo)
       .then(createdTodo => {
         setTodos(prevTodos => [...prevTodos, createdTodo]);
         setTempTodo(null);
+        setInputText('');
       })
       .catch(() => {
         setError('add');
-        setTempTodo(null);
         setInputText(trimmedTitle);
+        setTempTodo(null);
       })
       .finally(() => {
-        setLoadingId(null);
+        setLoading(false);
       });
   };
 
@@ -113,6 +113,9 @@ export const App: React.FC = () => {
     deleteTodo(id)
       .then(() => {
         setTodos(prevTodos => prevTodos.filter(todo => todo.id !== id));
+        if (inputRef.current) {
+          inputRef.current.focus();
+        }
       })
       .catch(() => setError('delete'))
       .finally(() => setLoadingId(null));
@@ -125,6 +128,9 @@ export const App: React.FC = () => {
       deleteTodo(todo.id)
         .then(() => {
           setTodos(prevTodos => prevTodos.filter(t => t.id !== todo.id));
+          if (inputRef.current) {
+            inputRef.current.focus();
+          }
         })
         .catch(() => setError('delete'));
     });
@@ -140,12 +146,14 @@ export const App: React.FC = () => {
           setInputText={setInputText}
           handleAddTodo={handleAddTodo}
           loading={loading}
+          inputRef={inputRef}
         />
 
         <TodoList
           filteredTodos={filteredTodos}
           handleDeleteTodo={handleDeleteTodo}
           loadingId={loadingId}
+          loading={loading}
         />
 
         {tempTodo && (
@@ -153,7 +161,8 @@ export const App: React.FC = () => {
             <TodoItem
               todo={tempTodo}
               handleDeleteTodo={handleDeleteTodo}
-              loadingId={loadingId}
+              loadingId={0} // Показувати індикатор завантаження для тимчасового TodoItem
+              loading={true} // Показувати індикатор завантаження для тимчасового TodoItem
             />
           </div>
         )}

@@ -1,8 +1,11 @@
+import { useEffect } from 'react';
+
 interface HeaderProps {
   inputText: string;
   setInputText: (inputText: string) => void;
   handleAddTodo: (event: React.FormEvent<HTMLFormElement>) => void;
   loading: boolean;
+  inputRef: React.RefObject<HTMLInputElement>;
 }
 
 export const Header: React.FC<HeaderProps> = ({
@@ -10,7 +13,14 @@ export const Header: React.FC<HeaderProps> = ({
   setInputText,
   handleAddTodo,
   loading,
+  inputRef,
 }) => {
+  useEffect(() => {
+    if (inputRef.current) {
+      inputRef.current.focus();
+    }
+  }, [loading]);
+
   return (
     <header className="todoapp__header">
       {/* this button should have `active` class only if all todos are completed */}
@@ -29,8 +39,8 @@ export const Header: React.FC<HeaderProps> = ({
           placeholder="What needs to be done?"
           value={inputText}
           onChange={event => setInputText(event.target.value)}
-          autoFocus
-          disabled={loading}
+          ref={inputRef}
+          disabled={!!loading} // Convert loading to boolean
         />
       </form>
     </header>

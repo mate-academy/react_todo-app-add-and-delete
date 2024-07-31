@@ -5,12 +5,14 @@ interface TodoListProps {
   filteredTodos: Todo[];
   loadingId: number | null;
   handleDeleteTodo: (id: number) => void;
+  loading: boolean;
 }
 
 export const TodoList: React.FC<TodoListProps> = ({
   filteredTodos,
   loadingId,
   handleDeleteTodo,
+  loading,
 }) => {
   return (
     <section className="todoapp__main" data-cy="TodoList">
@@ -20,6 +22,7 @@ export const TodoList: React.FC<TodoListProps> = ({
           todo={todo}
           handleDeleteTodo={handleDeleteTodo}
           loadingId={loadingId}
+          loading={loading}
         />
       ))}
     </section>

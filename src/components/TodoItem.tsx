@@ -6,12 +6,14 @@ interface TodoItemProps {
   todo: Todo;
   handleDeleteTodo: (id: number) => void;
   loadingId: number | null;
+  loading: boolean;
 }
 
 export const TodoItem: React.FC<TodoItemProps> = ({
   todo,
   handleDeleteTodo,
   loadingId,
+  loading,
 }) => {
   const { id, completed, title } = todo;
   const [isChecked, setisChecked] = useState(completed);
@@ -36,6 +38,7 @@ export const TodoItem: React.FC<TodoItemProps> = ({
           className="todo__status"
           checked={isChecked}
           onChange={handleCheckboxChange}
+          disabled={loading}
         />
       </label>
 
@@ -55,7 +58,7 @@ export const TodoItem: React.FC<TodoItemProps> = ({
 
       {/* overlay will cover the todo while it is being deleted or updated */}
       {loadingId === id && (
-        <div data-cy="TodoLoader" className="modal overlay">
+        <div data-cy="TodoLoader" className="modal overlay is-active">
           <div className="modal-background has-background-white-ter" />
           <div className="loader" />
         </div>
