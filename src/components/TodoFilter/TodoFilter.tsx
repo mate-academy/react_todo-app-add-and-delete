@@ -23,6 +23,10 @@ export const TodoFilter: React.FC<Props> = ({
     { value: Filter.completed, label: 'Completed', href: '#/completed' },
   ];
 
+  const handleFilterChange = (value: Filter) => {
+    setFilter(value);
+  };
+
   return (
     <footer className="todoapp__footer" data-cy="Footer">
       <span className="todo-count" data-cy="TodosCounter">
@@ -38,7 +42,7 @@ export const TodoFilter: React.FC<Props> = ({
               selected: filter === value,
             })}
             data-cy={`FilterLink${label}`}
-            onClick={() => setFilter(value)}
+            onClick={() => handleFilterChange(value)}
           >
             {label}
           </a>

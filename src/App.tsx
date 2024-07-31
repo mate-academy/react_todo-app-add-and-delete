@@ -1,4 +1,10 @@
-import React, { useEffect, useMemo, useState, useRef } from 'react';
+import React, {
+  useEffect,
+  useMemo,
+  useState,
+  useRef,
+  useCallback,
+} from 'react';
 import cn from 'classnames';
 import { UserWarning } from './UserWarning';
 import {
@@ -155,6 +161,10 @@ export const App: React.FC = () => {
     completedTodos.forEach(todo => handleOnDelete(todo.id));
   };
 
+  const handleHideError = useCallback(() => {
+    setError('');
+  }, []);
+
   if (!USER_ID) {
     return <UserWarning />;
   }
@@ -202,7 +212,7 @@ export const App: React.FC = () => {
           data-cy="HideErrorButton"
           type="button"
           className="delete"
-          onClick={() => setError('')}
+          onClick={handleHideError}
         />
         {error}
       </div>

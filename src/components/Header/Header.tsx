@@ -18,6 +18,12 @@ export const Header: React.FC<Props> = ({
   isLoading,
   inputRef,
 }) => {
+  const handleKeyDown = (event: React.KeyboardEvent<HTMLInputElement>) => {
+    if (event.key === 'Enter') {
+      handleAddTodo();
+    }
+  };
+
   return (
     <header className="header">
       <input
@@ -28,11 +34,7 @@ export const Header: React.FC<Props> = ({
         placeholder="What needs to be done?"
         value={todoTitle}
         onChange={handleChange}
-        onKeyDown={event => {
-          if (event.key === 'Enter') {
-            handleAddTodo();
-          }
-        }}
+        onKeyDown={handleKeyDown}
         disabled={isLoading}
         ref={inputRef}
       />

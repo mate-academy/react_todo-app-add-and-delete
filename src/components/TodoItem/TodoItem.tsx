@@ -38,6 +38,10 @@ export const TodoItem: React.FC<Props> = ({
     }
   };
 
+  const handleTitleDoubleClick = () => {
+    setIsEditing(true);
+  };
+
   return (
     <div data-cy="Todo" className={cn('todo', { completed })}>
       <label className="todo__status-label">
@@ -52,7 +56,7 @@ export const TodoItem: React.FC<Props> = ({
       <span
         data-cy="TodoTitle"
         className={cn('todo__title', { editing: isEditing })}
-        onDoubleClick={() => setIsEditing(true)}
+        onDoubleClick={handleTitleDoubleClick}
       >
         {isEditing ? (
           <input
