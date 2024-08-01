@@ -1,5 +1,6 @@
 import React, { useEffect, useRef } from 'react';
 import { useTodos } from '../../utils/TodoContext';
+import classNames from 'classnames';
 
 export const Errors: React.FC = () => {
   const { error, clearCompletedError, setError, setClearCompletedError } =
@@ -32,9 +33,15 @@ export const Errors: React.FC = () => {
   return (
     <div
       data-cy="ErrorNotification"
-      className={`notification is-danger is-light has-text-weight-normal ${
-        !combinedError ? 'hidden' : ''
-      }`}
+      className={classNames(
+        'notification',
+        'is-danger',
+        'is-light',
+        'has-text-weight-normal',
+        {
+          hidden: !combinedError,
+        },
+      )}
     >
       <button
         data-cy="HideErrorButton"

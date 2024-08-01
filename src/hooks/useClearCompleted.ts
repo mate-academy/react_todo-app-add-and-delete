@@ -5,7 +5,7 @@ import { deleteTodo as deleteTodoAPI } from '../api/todos';
 
 export const useClearCompleted = () => {
   const { todos, setTodos, setClearCompletedError } = useTodos();
-  const [isDeleting, setIsDeleting] = useState<boolean>(false);
+  const [isDeleting, setIsDeleting] = useState(false);
 
   const handleClearCompleted = async () => {
     setIsDeleting(true);

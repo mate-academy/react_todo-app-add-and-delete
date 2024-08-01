@@ -6,7 +6,7 @@ import { useTodos } from '../../utils/TodoContext';
 export const TodoContent: React.FC<{ children: React.ReactNode }> = ({
   children,
 }) => {
-  const [input, setInput] = useState<string>('');
+  const [input, setInput] = useState('');
   const { postTodo, error, clearError, isSubmitting } = usePostTodos();
   const { inputRef, triggerFocus, setError } = useTodos();
 
