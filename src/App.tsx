@@ -8,8 +8,7 @@ import { TodoList } from './components/TodoList/TodoList';
 import { useClearCompleted } from './hooks/useClearCompleted';
 
 const AppContent: React.FC = () => {
-  const { todos, filteredTodos, error, setFilter, setError, filter } =
-    useTodos();
+  const { todos, filteredTodos, error, filter } = useTodos();
   const { handleClearCompleted, error: clearCompletedError } =
     useClearCompleted();
 
@@ -21,16 +20,15 @@ const AppContent: React.FC = () => {
 
   return (
     <div className="todoapp">
-      <TodoContent onErrorChange={setError}>
-        <TodoList todos={filteredTodos} onErrorChange={setError} />
+      <TodoContent>
+        <TodoList todos={filteredTodos} />
         <Footer
           todos={todos}
           filter={filter}
-          onFilterChange={setFilter}
           onClearCompleted={handleClearCompleted}
         />
       </TodoContent>
-      <Errors error={combinedError} onErrorChange={setError} />
+      <Errors error={combinedError} />
     </div>
   );
 };

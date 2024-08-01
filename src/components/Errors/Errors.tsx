@@ -1,12 +1,13 @@
 import React, { useEffect, useRef } from 'react';
+import { useTodos } from '../../utils/TodoContext';
 import { ErrorType } from '../../types/ErrorType';
 
 type ErrorsProps = {
   error: ErrorType | null;
-  onErrorChange: (error: ErrorType | null) => void;
 };
 
-export const Errors: React.FC<ErrorsProps> = ({ error, onErrorChange }) => {
+export const Errors: React.FC<ErrorsProps> = ({ error }) => {
+  const { setError } = useTodos();
   const timerRef = useRef<NodeJS.Timeout | null>(null);
 
   useEffect(() => {
@@ -16,7 +17,7 @@ export const Errors: React.FC<ErrorsProps> = ({ error, onErrorChange }) => {
       }
 
       timerRef.current = setTimeout(() => {
-        onErrorChange(null);
+        setError(null);
         timerRef.current = null;
       }, 3000);
     }
@@ -27,7 +28,7 @@ export const Errors: React.FC<ErrorsProps> = ({ error, onErrorChange }) => {
         timerRef.current = null;
       }
     };
-  }, [error, onErrorChange]);
+  }, [error, setError]);
 
   return (
     <div
@@ -40,7 +41,7 @@ export const Errors: React.FC<ErrorsProps> = ({ error, onErrorChange }) => {
         data-cy="HideErrorButton"
         type="button"
         className="delete"
-        onClick={() => onErrorChange(null)}
+        onClick={() => setError(null)}
       />
       {error && <span>{error}</span>}
     </div>

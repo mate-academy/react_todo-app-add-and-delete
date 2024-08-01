@@ -1,21 +1,14 @@
 import * as React from 'react';
 import { ChangeEvent, FormEvent, useEffect, useState } from 'react';
-import { ErrorType } from '../../types/ErrorType';
 import { usePostTodos } from '../../hooks/usePostTodos';
 import { useTodos } from '../../utils/TodoContext';
 
-type TodoContentProps = {
-  children: React.ReactNode;
-  onErrorChange: (error: ErrorType | null) => void;
-};
-
-export const TodoContent: React.FC<TodoContentProps> = ({
+export const TodoContent: React.FC<{ children: React.ReactNode }> = ({
   children,
-  onErrorChange,
 }) => {
   const [input, setInput] = useState<string>('');
   const { postTodo, error, clearError, isSubmitting } = usePostTodos();
-  const { inputRef, triggerFocus } = useTodos();
+  const { inputRef, triggerFocus, setError } = useTodos();
 
   const handleInputChange = (event: ChangeEvent<HTMLInputElement>) => {
     setInput(event.target.value);
@@ -33,15 +26,14 @@ export const TodoContent: React.FC<TodoContentProps> = ({
 
   useEffect(() => {
     if (error) {
-      onErrorChange(error);
+      setError(error);
       triggerFocus();
     }
 
-    // Clear the error after 3 seconds using Errors component logic
     return () => {
-      clearError(); // Clear the error manually if needed
+      clearError();
     };
-  }, [error, onErrorChange, clearError, triggerFocus]);
+  }, [error, setError, triggerFocus, clearError]);
 
   return (
     <>

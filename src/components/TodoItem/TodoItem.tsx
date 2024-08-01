@@ -7,17 +7,12 @@ import { ErrorType } from '../../types/ErrorType';
 type TodoItemProps = {
   todo: Todo;
   isTemp?: boolean;
-  onErrorChange: (error: ErrorType | null) => void; // Add onErrorChange prop
 };
 
-export const TodoItem: React.FC<TodoItemProps> = ({
-  todo,
-  isTemp,
-  onErrorChange,
-}) => {
-  const { deleteTodo, isDeleting, error } = useDeleteTodo(); // Get error from useDeleteTodo
-  const [showLoader, setShowLoader] = useState<boolean>(false);
-  const { triggerFocus } = useTodos(); // Get triggerFocus from context
+export const TodoItem: React.FC<TodoItemProps> = ({ todo, isTemp }) => {
+  const { deleteTodo, isDeleting, error } = useDeleteTodo();
+  const [showLoader, setShowLoader] = useState(false);
+  const { triggerFocus, setError } = useTodos();
 
   const handleDelete = async () => {
     setShowLoader(true);
@@ -25,16 +20,17 @@ export const TodoItem: React.FC<TodoItemProps> = ({
 
     if (!success) {
       setShowLoader(false);
+      setError(ErrorType.UnableToDeleteTodo);
     } else {
-      triggerFocus(); // Use triggerFocus
+      triggerFocus();
     }
   };
 
   useEffect(() => {
     if (error) {
-      onErrorChange(error);
+      setError(error);
     }
-  }, [error, onErrorChange]);
+  }, [error, setError]);
 
   return (
     <div data-cy="Todo" className={`todo ${todo.completed ? 'completed' : ''}`}>

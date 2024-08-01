@@ -1,20 +1,22 @@
 import React from 'react';
 import { Todo } from '../../types/Todo';
 import { FilterType } from '../../types/FilterType';
+import { useTodos } from '../../utils/TodoContext';
+import classNames from 'classnames';
 
 type FooterProps = {
   todos: Todo[];
   filter: FilterType;
-  onFilterChange: (filter: FilterType) => void;
   onClearCompleted: () => void;
 };
 
 export const Footer: React.FC<FooterProps> = ({
   todos,
   filter,
-  onFilterChange,
   onClearCompleted,
 }) => {
+  const { setFilter } = useTodos();
+
   if (todos.length === 0) {
     return null;
   }
@@ -49,9 +51,11 @@ export const Footer: React.FC<FooterProps> = ({
           <a
             key={type}
             href={href}
-            className={`filter__link ${filter === type ? 'selected' : ''}`}
+            className={classNames('filter__link', {
+              selected: filter === type,
+            })}
             data-cy={cy}
-            onClick={() => onFilterChange(type)}
+            onClick={() => setFilter(type)}
           >
             {label}
           </a>
