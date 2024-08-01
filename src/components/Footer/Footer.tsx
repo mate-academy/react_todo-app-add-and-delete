@@ -1,14 +1,14 @@
 import React from 'react';
 import { FilterType } from '../../types/FilterType';
 import { useTodos } from '../../utils/TodoContext';
-import { useClearCompleted } from '../../hooks/useClearCompleted'; // Importowanie useClearCompleted
+import { useClearCompleted } from '../../hooks/useClearCompleted';
 import classNames from 'classnames';
 
 export const Footer: React.FC = () => {
   const { todos, filter, setFilter } = useTodos();
-  const { handleClearCompleted } = useClearCompleted(); // Użycie handleClearCompleted
+  const { handleClearCompleted } = useClearCompleted();
 
-  if (todos.length === 0) {
+  if (!todos?.length) {
     return null;
   }
 

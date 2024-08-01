@@ -19,7 +19,6 @@ export const usePostTodos = (): UsePostTodosProps => {
 
   useEffect(() => {
     if (error) {
-      // Trigger any side effect when error occurs (like resetting a form)
     }
   }, [error]);
 
@@ -39,19 +38,19 @@ export const usePostTodos = (): UsePostTodosProps => {
       completed: false,
     };
 
-    setTempTodo(newTodo); // Set temporary todo in context
+    setTempTodo(newTodo);
 
     try {
       const createdTodo = await postTodos(newTodo);
 
       setTodos(prevTodos => [...prevTodos, createdTodo]);
-      setTempTodo(null); // Clear temporary todo after success
+      setTempTodo(null);
       setIsSubmitting(false);
 
       return true;
     } catch (thrownError) {
       setError(ErrorType.UnableToAddTodo);
-      setTempTodo(null); // Clear temporary todo after failure
+      setTempTodo(null);
       setIsSubmitting(false);
 
       return false;

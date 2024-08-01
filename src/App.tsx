@@ -1,5 +1,5 @@
 import React from 'react';
-import { TodoProvider, useTodos } from './utils/TodoContext'; // Poprawny import TodoProvider
+import { TodoProvider, useTodos } from './utils/TodoContext';
 import { UserWarning } from './UserWarning';
 import { Errors } from './components/Errors/Errors';
 import { TodoContent } from './components/TodoContent/TodoContent';
