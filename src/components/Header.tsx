@@ -8,8 +8,6 @@ type Props = {
   todos: Todo[];
   setTodos: (todos: Todo[]) => void;
   showError: (error: string) => void;
-  setTodosActiveIds: (todosActiveIds: number[]) => void;
-  todosActiveIds: number[];
   setTempTodo: (tempTodo: Todo | null) => void;
   tempTodo: Todo | null;
 };
@@ -18,8 +16,6 @@ export const Header: React.FC<Props> = ({
   todos,
   setTodos,
   showError,
-  setTodosActiveIds,
-  todosActiveIds,
   setTempTodo,
   tempTodo,
 }) => {
@@ -52,7 +48,6 @@ export const Header: React.FC<Props> = ({
       .then(newTodo => {
         setTodos([...todos, newTodo]);
         setNewTitle('');
-        setTodosActiveIds([...todosActiveIds, newTodo.id]);
       })
       .catch(() => {
         showError(Error.add);

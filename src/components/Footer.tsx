@@ -4,7 +4,7 @@ import classNames from 'classnames';
 
 type Props = {
   filter: Filter[keyof Filter];
-  onFilter: (filter: Filter[keyof Filter]) => void;
+  onFilter: (filter: Filter) => void;
   completedTodosId: number[];
   todosActiveIds: number[];
   onDelete: (id: number) => void;
