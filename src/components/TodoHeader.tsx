@@ -3,42 +3,46 @@ import { USER_ID, postTodos } from '../api/todos';
 import { Todo } from '../types/Todo';
 
 type Props = {
+  todos: Todo[];
   onAdd: (todo: Todo) => void;
   setErrorMessage: React.Dispatch<React.SetStateAction<string | null>>;
   setTempTodo: React.Dispatch<React.SetStateAction<Todo | null>>;
 };
 
 export const TodoHeader: React.FC<Props> = ({
+  todos,
   onAdd,
   setErrorMessage,
   setTempTodo,
 }) => {
+  const field = useRef<HTMLInputElement>(null);
   const [title, setTitle] = useState('');
   const [isSubmitting, setIsSubmitting] = useState(false);
-  const fieldTitle = useRef<HTMLInputElement>(null);
 
   const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
 
-    if (!title) {
+    if (title.replace(/\s+/g, '').length === 0) {
       setErrorMessage('Title should not be empty');
+      setTimeout(() => setErrorMessage(null), 3000);
     } else {
       setIsSubmitting(true);
       const todo = {
-        title,
+        title: title.trim(),
         userId: USER_ID,
         completed: false,
         id: 0,
       };
 
       setTempTodo(todo);
-      postTodos(title)
+      postTodos(title.trim())
         .then(newTodo => {
           onAdd(newTodo);
           setTitle('');
         })
         .catch(() => {
           setErrorMessage('Unable to add a todo');
+          setTimeout(() => setErrorMessage(null), 3000);
         })
         .finally(() => {
           setIsSubmitting(false);
@@ -48,8 +52,8 @@ export const TodoHeader: React.FC<Props> = ({
   };
 
   useEffect(() => {
-    fieldTitle.current?.focus();
-  }, [isSubmitting]);
+    field.current?.focus();
+  }, [todos, isSubmitting]);
 
   return (
     <header className="todoapp__header">
@@ -60,7 +64,7 @@ export const TodoHeader: React.FC<Props> = ({
       />
       <form onSubmit={handleSubmit}>
         <input
-          ref={fieldTitle}
+          ref={field}
           data-cy="NewTodoField"
           type="text"
           className="todoapp__new-todo"

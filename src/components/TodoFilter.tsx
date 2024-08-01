@@ -58,20 +58,19 @@ export const TodoFilter: React.FC<Props> = ({
           Completed
         </a>
       </nav>
-      {todos.some(todo => todo.completed) && (
-        <button
-          type="button"
-          className="todoapp__clear-completed"
-          data-cy="ClearCompletedButton"
-          onClick={() => {
-            todos
-              .filter(todo => todo.completed)
-              .forEach(todo => onDelete(todo.id));
-          }}
-        >
-          Clear completed
-        </button>
-      )}
+      <button
+        type="button"
+        className="todoapp__clear-completed"
+        data-cy="ClearCompletedButton"
+        disabled={todos.length - countActiveTodos(todos).length === 0}
+        onClick={() => {
+          todos
+            .filter(todo => todo.completed)
+            .forEach(todo => onDelete(todo.id));
+        }}
+      >
+        Clear completed
+      </button>
     </footer>
   );
 };

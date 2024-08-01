@@ -32,18 +32,6 @@ export const App: React.FC = () => {
       });
   }, []);
 
-  useEffect(() => {
-    if (errorMessage) {
-      const timerId = setTimeout(() => {
-        setErrorMessage(null);
-      }, 3000);
-
-      return () => clearTimeout(timerId);
-    }
-
-    return undefined;
-  }, [errorMessage, setErrorMessage]);
-
   const handleCompletedStatus = (id: number) => {
     const updatedTodos = todos.map(todo =>
       todo.id === id ? { ...todo, completed: !todo.completed } : todo,
@@ -66,6 +54,7 @@ export const App: React.FC = () => {
       })
       .catch(() => {
         setErrorMessage('Unable to delete a todo');
+        setTimeout(() => setErrorMessage(null), 3000);
       })
       .finally(() => setProcessedId([]));
   }
@@ -91,6 +80,7 @@ export const App: React.FC = () => {
 
       <div className="todoapp__content">
         <TodoHeader
+          todos={todos}
           onAdd={addTodo}
           setErrorMessage={setErrorMessage}
           setTempTodo={setTempTodo}
