@@ -1,6 +1,6 @@
 import React from 'react';
+import { TodoProvider, useTodos } from './utils/TodoContext'; // Poprawny import TodoProvider
 import { UserWarning } from './UserWarning';
-import { TodoProvider, useTodos } from './utils/TodoContext';
 import { Errors } from './components/Errors/Errors';
 import { TodoContent } from './components/TodoContent/TodoContent';
 import { Footer } from './components/Footer/Footer';
@@ -8,7 +8,7 @@ import { TodoList } from './components/TodoList/TodoList';
 import { useClearCompleted } from './hooks/useClearCompleted';
 
 const AppContent: React.FC = () => {
-  const { todos, filteredTodos, error, filter } = useTodos();
+  const { todos, error } = useTodos();
   const { handleClearCompleted, error: clearCompletedError } =
     useClearCompleted();
 
@@ -21,19 +21,15 @@ const AppContent: React.FC = () => {
   return (
     <div className="todoapp">
       <TodoContent>
-        <TodoList todos={filteredTodos} />
-        <Footer
-          todos={todos}
-          filter={filter}
-          onClearCompleted={handleClearCompleted}
-        />
+        <TodoList />
+        <Footer onClearCompleted={handleClearCompleted} />
       </TodoContent>
       <Errors error={combinedError} />
     </div>
   );
 };
 
-export const App: React.FC = () => {
+const App: React.FC = () => {
   return (
     <TodoProvider>
       <AppContent />

@@ -1,21 +1,14 @@
 import React from 'react';
-import { Todo } from '../../types/Todo';
 import { FilterType } from '../../types/FilterType';
 import { useTodos } from '../../utils/TodoContext';
 import classNames from 'classnames';
 
 type FooterProps = {
-  todos: Todo[];
-  filter: FilterType;
   onClearCompleted: () => void;
 };
 
-export const Footer: React.FC<FooterProps> = ({
-  todos,
-  filter,
-  onClearCompleted,
-}) => {
-  const { setFilter } = useTodos();
+export const Footer: React.FC<FooterProps> = ({ onClearCompleted }) => {
+  const { todos, filter, setFilter } = useTodos();
 
   if (todos.length === 0) {
     return null;
