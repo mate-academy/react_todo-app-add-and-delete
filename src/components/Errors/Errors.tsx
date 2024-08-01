@@ -1,23 +1,22 @@
 import React, { useEffect, useRef } from 'react';
 import { useTodos } from '../../utils/TodoContext';
-import { ErrorType } from '../../types/ErrorType';
 
-type ErrorsProps = {
-  error: ErrorType | null;
-};
-
-export const Errors: React.FC<ErrorsProps> = ({ error }) => {
-  const { setError } = useTodos();
+export const Errors: React.FC = () => {
+  const { error, clearCompletedError, setError, setClearCompletedError } =
+    useTodos();
   const timerRef = useRef<NodeJS.Timeout | null>(null);
 
+  const combinedError = error || clearCompletedError;
+
   useEffect(() => {
-    if (error) {
+    if (combinedError) {
       if (timerRef.current) {
         clearTimeout(timerRef.current);
       }
 
       timerRef.current = setTimeout(() => {
         setError(null);
+        setClearCompletedError(null);
         timerRef.current = null;
       }, 3000);
     }
@@ -28,22 +27,25 @@ export const Errors: React.FC<ErrorsProps> = ({ error }) => {
         timerRef.current = null;
       }
     };
-  }, [error, setError]);
+  }, [combinedError, setError, setClearCompletedError]);
 
   return (
     <div
       data-cy="ErrorNotification"
       className={`notification is-danger is-light has-text-weight-normal ${
-        !error ? 'hidden' : ''
+        !combinedError ? 'hidden' : ''
       }`}
     >
       <button
         data-cy="HideErrorButton"
         type="button"
         className="delete"
-        onClick={() => setError(null)}
+        onClick={() => {
+          setError(null);
+          setClearCompletedError(null);
+        }}
       />
-      {error && <span>{error}</span>}
+      {combinedError && <span>{combinedError}</span>}
     </div>
   );
 };

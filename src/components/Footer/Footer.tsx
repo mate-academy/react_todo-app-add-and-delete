@@ -1,14 +1,12 @@
 import React from 'react';
 import { FilterType } from '../../types/FilterType';
 import { useTodos } from '../../utils/TodoContext';
+import { useClearCompleted } from '../../hooks/useClearCompleted'; // Importowanie useClearCompleted
 import classNames from 'classnames';
 
-type FooterProps = {
-  onClearCompleted: () => void;
-};
-
-export const Footer: React.FC<FooterProps> = ({ onClearCompleted }) => {
+export const Footer: React.FC = () => {
   const { todos, filter, setFilter } = useTodos();
+  const { handleClearCompleted } = useClearCompleted(); // Użycie handleClearCompleted
 
   if (todos.length === 0) {
     return null;
@@ -60,7 +58,7 @@ export const Footer: React.FC<FooterProps> = ({ onClearCompleted }) => {
         className="todoapp__clear-completed"
         data-cy="ClearCompletedButton"
         disabled={completedTodosCount === 0}
-        onClick={onClearCompleted}
+        onClick={handleClearCompleted} // Wywołanie handleClearCompleted
       >
         Clear completed
       </button>

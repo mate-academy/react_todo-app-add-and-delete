@@ -19,8 +19,10 @@ type TodoContextType = {
   filteredTodos: Todo[];
   filter: FilterType;
   error: ErrorType | null;
+  clearCompletedError: ErrorType | null; // Dodaj clearCompletedError do kontekstu
   setFilter: (filter: FilterType) => void;
   setError: (error: ErrorType | null) => void;
+  setClearCompletedError: (error: ErrorType | null) => void; // Funkcja do ustawiania błędu
   tempTodo: Todo | null;
   setTempTodo: React.Dispatch<React.SetStateAction<Todo | null>>;
   inputRef: React.RefObject<HTMLInputElement>;
@@ -43,6 +45,8 @@ export const TodoProvider: React.FC<TodoProviderProps> = ({ children }) => {
   const [todos, setTodos] = useState<Todo[]>(initialTodos || []);
   const filteredTodos = useFilteredTodos({ todos, filter });
   const { error } = useErrorState();
+  const [clearCompletedError, setClearCompletedError] =
+    useState<ErrorType | null>(null); // Stan dla clearCompletedError
   const [tempTodo, setTempTodo] = useState<Todo | null>(null);
   const { inputRef, triggerFocus } = useInputFocus();
 
@@ -58,12 +62,14 @@ export const TodoProvider: React.FC<TodoProviderProps> = ({ children }) => {
     filteredTodos,
     filter,
     error: error || fetchError,
+    clearCompletedError,
     setFilter,
     setError: setFetchError,
+    setClearCompletedError,
     tempTodo,
     setTempTodo,
     inputRef,
-    triggerFocus, // Add triggerFocus to context value
+    triggerFocus,
   };
 
   return (

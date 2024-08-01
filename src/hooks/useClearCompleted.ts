@@ -4,8 +4,7 @@ import { useTodos } from '../utils/TodoContext';
 import { deleteTodo as deleteTodoAPI } from '../api/todos';
 
 export const useClearCompleted = () => {
-  const { todos, setTodos, triggerFocus } = useTodos();
-  const [error, setError] = useState<ErrorType | null>(null);
+  const { todos, setTodos, setClearCompletedError } = useTodos();
   const [isDeleting, setIsDeleting] = useState<boolean>(false);
 
   const handleClearCompleted = async () => {
@@ -15,23 +14,19 @@ export const useClearCompleted = () => {
 
     const results = await Promise.allSettled(deletePromises);
 
-    const successfulDeletes = completedTodos
-      .filter((_, index) => results[index].status === 'fulfilled')
-      .map(todo => todo.id);
-
+    const successfulDeletes = results.filter(
+      result => result.status === 'fulfilled',
+    );
     const failedDeletes = results.filter(
       result => result.status === 'rejected',
     );
 
     if (successfulDeletes.length > 0) {
-      setTodos(prevTodos =>
-        prevTodos.filter(todo => !successfulDeletes.includes(todo.id)),
-      );
-      triggerFocus();
+      setTodos(prevTodos => prevTodos.filter(todo => !todo.completed));
     }
 
     if (failedDeletes.length > 0) {
-      setError(ErrorType.UnableToDeleteTodo);
+      setClearCompletedError(ErrorType.UnableToDeleteTodo);
     }
 
     setIsDeleting(false);
@@ -39,7 +34,6 @@ export const useClearCompleted = () => {
 
   return {
     handleClearCompleted,
-    error,
     isDeleting,
   };
 };

@@ -5,14 +5,9 @@ import { Errors } from './components/Errors/Errors';
 import { TodoContent } from './components/TodoContent/TodoContent';
 import { Footer } from './components/Footer/Footer';
 import { TodoList } from './components/TodoList/TodoList';
-import { useClearCompleted } from './hooks/useClearCompleted';
 
 const AppContent: React.FC = () => {
-  const { todos, error } = useTodos();
-  const { handleClearCompleted, error: clearCompletedError } =
-    useClearCompleted();
-
-  const combinedError = error || clearCompletedError;
+  const { todos } = useTodos();
 
   if (!todos) {
     return <UserWarning />;
@@ -22,9 +17,9 @@ const AppContent: React.FC = () => {
     <div className="todoapp">
       <TodoContent>
         <TodoList />
-        <Footer onClearCompleted={handleClearCompleted} />
+        <Footer />
       </TodoContent>
-      <Errors error={combinedError} />
+      <Errors />
     </div>
   );
 };
