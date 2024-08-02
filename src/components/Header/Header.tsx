@@ -16,6 +16,7 @@ export const Header: React.FC<Props> = ({
   setIsLoadingId,
 }) => {
   const [query, setQuery] = useState('');
+  const [isDisabled, setIsDisabled] = useState(false);
 
   const textField = useRef<HTMLInputElement>(null);
 
@@ -33,12 +34,14 @@ export const Header: React.FC<Props> = ({
     event.preventDefault();
 
     setIsLoadingId(0);
+    setIsDisabled(true);
 
     if (!query) {
       setErrorMessage('Title should not be empty');
       setTimeout(() => {
         setErrorMessage('');
         setIsLoadingId(null);
+        setIsDisabled(false);
       }, 3000);
 
       return;
@@ -64,7 +67,10 @@ export const Header: React.FC<Props> = ({
         setErrorMessage('Unable to add a todo');
         setTimeout(() => setErrorMessage(''), 3000);
       })
-      .finally(() => setIsLoadingId(null));
+      .finally(() => {
+        setIsLoadingId(null);
+        setIsDisabled(false);
+      });
   };
 
   return (
@@ -86,6 +92,7 @@ export const Header: React.FC<Props> = ({
           placeholder="What needs to be done?"
           value={query}
           onChange={handleChangeQuery}
+          disabled={isDisabled}
         />
       </form>
     </header>

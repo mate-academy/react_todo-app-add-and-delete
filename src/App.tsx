@@ -6,7 +6,7 @@ import classNames from 'classnames';
 import { UserWarning } from './UserWarning';
 import { deleteTodo, getTodos, USER_ID } from './api/todos';
 
-import { Todo } from './types/Todo';
+import { FilterTodo, Todo } from './types/Todo';
 
 import { ListTodo } from './components/ListTodo';
 import { Footer } from './components/Footer';
@@ -16,7 +16,7 @@ export const App: React.FC = () => {
   const [todos, setTodos] = useState<Todo[]>([]);
   const [completedTodos, setCompletedTodos] = useState<Todo[]>([]);
   const [tempTodo, setTempTodo] = useState<Todo | null>(null);
-  const [filter, setFilter] = useState('All');
+  const [filter, setFilter] = useState(FilterTodo.all);
   const [errorMessage, setErrorMessage] = useState('');
   const [isLoadingId, setIsLoadingId] = useState<number | null>(null);
 
@@ -36,9 +36,9 @@ export const App: React.FC = () => {
   const filterTodos = useMemo(() => {
     return todos.filter(todo => {
       switch (filter) {
-        case 'Active':
+        case FilterTodo.active:
           return !todo.completed;
-        case 'Completed':
+        case FilterTodo.completed:
           return todo.completed;
         default:
           return todo;
@@ -57,6 +57,16 @@ export const App: React.FC = () => {
       );
     }, 1000);
   }, []);
+
+  const handleClearCompleted = () => {
+    completedTodos.forEach(({ id }) => deleteTodo(id));
+
+    setTimeout(() => {
+      setTodos(prevState => {
+        return prevState.filter(todo => !todo.completed);
+      });
+    }, 300);
+  };
 
   if (!USER_ID) {
     return <UserWarning />;
@@ -86,9 +96,11 @@ export const App: React.FC = () => {
         {todos.length && (
           <Footer
             todos={todos}
-            filterTodo={setFilter}
+            setTodos={setTodos}
+            setFilter={setFilter}
             filter={filter}
             completedTodos={completedTodos}
+            onRemoveCompleted={handleClearCompleted}
           />
         )}
       </div>

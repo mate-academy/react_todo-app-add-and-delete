@@ -16,16 +16,17 @@ export const TodoItem: React.FC<Props> = ({
   isLoadingId,
   setIsLoadingId,
 }) => {
-  const handleDelete = (id: number) => {
-    deleteTodo(id);
-    setIsLoadingId(id);
+  const { title, completed, id } = todo;
+  const handleDelete = (idTodo: number) => {
+    deleteTodo(idTodo);
+    setIsLoadingId(idTodo);
   };
 
   return (
     <div
       data-cy="Todo"
       className={classNames('todo', 'item-enter-done', {
-        completed: todo.completed,
+        completed,
       })}
     >
       <label className="todo__status-label">
@@ -33,7 +34,7 @@ export const TodoItem: React.FC<Props> = ({
       </label>
 
       <span data-cy="TodoTitle" className="todo__title">
-        {todo.title}
+        {title}
       </span>
 
       {/* Remove button appears only on hover */}
@@ -41,7 +42,7 @@ export const TodoItem: React.FC<Props> = ({
         type="button"
         className="todo__remove"
         data-cy="TodoDelete"
-        onClick={() => handleDelete(todo.id)}
+        onClick={() => handleDelete(id)}
       >
         ×
       </button>
@@ -50,7 +51,7 @@ export const TodoItem: React.FC<Props> = ({
       <div
         data-cy="TodoLoader"
         className={classNames('modal', 'overlay', {
-          'is-active': isLoadingId === todo.id,
+          'is-active': isLoadingId === id,
         })}
       >
         <div className="modal-background has-background-white-ter" />
