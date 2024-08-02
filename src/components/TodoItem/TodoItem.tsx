@@ -1,5 +1,5 @@
 /* eslint-disable jsx-a11y/label-has-associated-control */
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import classNames from 'classnames';
 import { Todo } from '../../types/Todo';
 
@@ -16,22 +16,42 @@ export const TodoItem: React.FC<Props> = ({
   isLoadingId,
   setIsLoadingId,
 }) => {
+  const [checked, setChecked] = useState(false);
+  const [itemEnterDone, setItemEnterDone] = useState(false);
+
   const { title, completed, id } = todo;
+
   const handleDelete = (idTodo: number) => {
     deleteTodo(idTodo);
     setIsLoadingId(idTodo);
+  };
+
+  useEffect(() => {
+    setChecked(completed);
+    setItemEnterDone(true);
+  }, []);
+
+  const handleOnChecked = (event: React.ChangeEvent<HTMLInputElement>) => {
+    setChecked(event.target.checked);
+    setItemEnterDone(false);
   };
 
   return (
     <div
       data-cy="Todo"
       className={classNames('todo', {
-        completed,
-        'item-enter-done': !completed,
+        completed: checked,
+        'item-enter-done': itemEnterDone,
       })}
     >
       <label className="todo__status-label">
-        <input data-cy="TodoStatus" type="checkbox" className="todo__status" />
+        <input
+          data-cy="TodoStatus"
+          type="checkbox"
+          className="todo__status"
+          checked={checked}
+          onChange={handleOnChecked}
+        />
       </label>
 
       <span data-cy="TodoTitle" className="todo__title">

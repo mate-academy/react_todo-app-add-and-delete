@@ -38,8 +38,10 @@ export const App: React.FC = () => {
       switch (filter) {
         case FilterTodo.active:
           return !todo.completed;
+
         case FilterTodo.completed:
           return todo.completed;
+
         default:
           return todo;
       }
