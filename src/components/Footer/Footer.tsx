@@ -13,7 +13,7 @@ export const Footer: React.FC = () => {
   }
 
   const activeTodosCount = todos.filter(todo => !todo.completed).length;
-  const completedTodosCount = todos.filter(todo => todo.completed).length;
+  const completedTodosCount = todos.length - activeTodosCount;
 
   const filters = [
     { type: FilterType.All, label: 'All', cy: 'FilterLinkAll', href: '#/' },
