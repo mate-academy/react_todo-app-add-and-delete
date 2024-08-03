@@ -15,6 +15,7 @@ import { UserWarning } from './UserWarning';
 
 export const App: React.FC = () => {
   const [todos, setTodos] = useState<Todo[]>([]);
+  const [tempTodo, setTempTodo] = useState<Todo | null>(null);
   const [newTodo, setNewTodo] = useState('');
   const [error, setError] = useState<string | null>(null);
   const [filter, setFilter] = useState<'all' | 'active' | 'completed'>('all');
@@ -42,13 +43,24 @@ export const App: React.FC = () => {
 
     setLoading(true);
 
+    const newTempTodo: Todo = {
+      id: 0,
+      title: newTodo,
+      completed: false,
+      userId: USER_ID,
+    };
+
+    setTempTodo(newTempTodo);
+
     createTodo(newTodo)
       .then((newTodoItem: Todo) => {
         setTodos(prevTodos => [...prevTodos, newTodoItem]);
         setNewTodo('');
+        setTempTodo(null);
       })
       .catch(() => {
         setError('Unable to add a todo');
+        setTempTodo(null);
       })
       .finally(() => setLoading(false));
   };
@@ -185,6 +197,7 @@ export const App: React.FC = () => {
 
             <TodoList
               todos={todos}
+              tempTodo={tempTodo}
               filter={filter}
               editingTodoId={editingTodoId}
               editingTodoTitle={editingTodoTitle}

@@ -4,6 +4,7 @@ import { TodoItem } from './todoItem';
 
 interface TodoListProps {
   todos: Todo[];
+  tempTodo: Todo | null;
   filter: 'all' | 'active' | 'completed';
   editingTodoId: number | null;
   editingTodoTitle: string;
@@ -18,6 +19,7 @@ interface TodoListProps {
 
 export const TodoList: React.FC<TodoListProps> = ({
   todos,
+  tempTodo,
   filter,
   editingTodoId,
   editingTodoTitle,
@@ -62,6 +64,21 @@ export const TodoList: React.FC<TodoListProps> = ({
           onCancelEdit={onCancelEdit}
         />
       ))}
+      {tempTodo && (
+        <TodoItem
+          key={`temp-${tempTodo.id}`}
+          todo={tempTodo}
+          editingTodoId={editingTodoId}
+          editingTodoTitle={editingTodoTitle}
+          loading={true}
+          onToggleTodo={onToggleTodo}
+          onDeleteTodo={onDeleteTodo}
+          onEditTodo={onEditTodo}
+          onUpdateTodo={onUpdateTodo}
+          onEditingTodoTitleChange={onEditingTodoTitleChange}
+          onCancelEdit={onCancelEdit}
+        />
+      )}
     </section>
   );
 };
