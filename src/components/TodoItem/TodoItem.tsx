@@ -29,7 +29,7 @@ export const TodoItem: React.FC<Props> = ({
   useEffect(() => {
     setChecked(completed);
     setItemEnterDone(true);
-  }, []);
+  }, [completed]);
 
   const handleOnChecked = (event: React.ChangeEvent<HTMLInputElement>) => {
     setChecked(event.target.checked);

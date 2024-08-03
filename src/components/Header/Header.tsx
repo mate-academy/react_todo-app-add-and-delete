@@ -10,7 +10,6 @@ type Props = {
 };
 
 export const Header: React.FC<Props> = ({
-  todos,
   setTempTodo,
   setErrorMessage,
   setIsLoadingId,
@@ -24,7 +23,7 @@ export const Header: React.FC<Props> = ({
     if (textField.current) {
       textField.current.focus();
     }
-  }, [todos]);
+  }, []);
 
   const handleChangeQuery = (event: React.ChangeEvent<HTMLInputElement>) => {
     setQuery(event.target.value.trimStart());
