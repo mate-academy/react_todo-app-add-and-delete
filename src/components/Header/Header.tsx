@@ -29,10 +29,12 @@ export const Header: React.FC<Props> = ({
   const handleCreateTodo = (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
 
+    const formattedTitle = query.trim();
+
     setIsLoadingId(0);
     setIsDisabled(true);
 
-    if (!query.trim()) {
+    if (!formattedTitle) {
       setQuery('');
       setErrorMessage('Title should not be empty');
       textField.current?.focus();
@@ -48,14 +50,14 @@ export const Header: React.FC<Props> = ({
 
     setTempTodo({
       id: 0,
-      title: query,
+      title: formattedTitle,
       userId: USER_ID,
       completed: false,
     });
 
     createTodo({
       completed: false,
-      title: query.trim(),
+      title: formattedTitle,
       userId: USER_ID,
     })
       .then(() => {
