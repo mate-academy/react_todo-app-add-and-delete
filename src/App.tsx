@@ -186,37 +186,50 @@ export const App: React.FC = () => {
           <h1 className="todoapp__title">todos</h1>
 
           <div className="todoapp__content">
-            <Header
-              newTodo={newTodo}
-              loading={loading}
-              onAddTodo={handleAddTodo}
-              onNewTodoChange={setNewTodo}
-              onToggleAllTodos={handleToggleAllTodos}
-              allCompleted={allCompleted}
-            />
-
-            <TodoList
-              todos={todos}
-              tempTodo={tempTodo}
-              filter={filter}
-              editingTodoId={editingTodoId}
-              editingTodoTitle={editingTodoTitle}
-              loading={loading}
-              onToggleTodo={handleToggleTodo}
-              onDeleteTodo={handleDeleteTodo}
-              onEditTodo={handleEditTodo}
-              onUpdateTodo={handleUpdateTodo}
-              onEditingTodoTitleChange={setEditingTodoTitle}
-              onCancelEdit={handleCancelEdit}
-            />
-
-            {todos.length > 0 && (
-              <Footer
-                todos={todos}
-                filter={filter}
-                onSetFilter={setFilter}
-                onClearCompleted={handleClearCompleted}
+            {todos.length === 0 ? (
+              <Header
+                newTodo={newTodo}
+                loading={loading}
+                onAddTodo={handleAddTodo}
+                onNewTodoChange={setNewTodo}
+                onToggleAllTodos={function (): void {
+                  throw new Error('Function not implemented.');
+                }}
+                allCompleted={false}
               />
+            ) : (
+              <>
+                <Header
+                  newTodo={newTodo}
+                  loading={loading}
+                  onAddTodo={handleAddTodo}
+                  onNewTodoChange={setNewTodo}
+                  onToggleAllTodos={handleToggleAllTodos}
+                  allCompleted={allCompleted}
+                />
+
+                <TodoList
+                  todos={todos}
+                  tempTodo={tempTodo}
+                  filter={filter}
+                  editingTodoId={editingTodoId}
+                  editingTodoTitle={editingTodoTitle}
+                  loading={loading}
+                  onToggleTodo={handleToggleTodo}
+                  onDeleteTodo={handleDeleteTodo}
+                  onEditTodo={handleEditTodo}
+                  onUpdateTodo={handleUpdateTodo}
+                  onEditingTodoTitleChange={setEditingTodoTitle}
+                  onCancelEdit={handleCancelEdit}
+                />
+
+                <Footer
+                  todos={todos}
+                  filter={filter}
+                  onSetFilter={setFilter}
+                  onClearCompleted={handleClearCompleted}
+                />
+              </>
             )}
           </div>
 
