@@ -24,6 +24,7 @@ export const App: React.FC = () => {
     getTodos()
       .then(data => {
         setTodos(data);
+        setTempTodo(null);
       })
       .catch(() => {
         setErrorMessage('Unable to load todos');
@@ -101,7 +102,6 @@ export const App: React.FC = () => {
           <Footer
             todos={todos}
             setTodos={setTodos}
-            tempTodo={tempTodo}
             setFilter={setFilter}
             filter={filter}
             completedTodos={completedTodos}
