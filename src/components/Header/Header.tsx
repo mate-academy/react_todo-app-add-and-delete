@@ -23,7 +23,7 @@ export const Header: React.FC<Props> = ({
   }, [isDisabled]);
 
   const handleChangeQuery = (event: React.ChangeEvent<HTMLInputElement>) => {
-    setQuery(event.target.value.trimStart());
+    setQuery(event.target.value);
   };
 
   const handleCreateTodo = (event: React.FormEvent<HTMLFormElement>) => {
@@ -32,7 +32,8 @@ export const Header: React.FC<Props> = ({
     setIsLoadingId(0);
     setIsDisabled(true);
 
-    if (!query) {
+    if (!query.trim()) {
+      setQuery('');
       setErrorMessage('Title should not be empty');
       textField.current?.focus();
 
@@ -54,7 +55,7 @@ export const Header: React.FC<Props> = ({
 
     createTodo({
       completed: false,
-      title: query,
+      title: query.trim(),
       userId: USER_ID,
     })
       .then(() => {
