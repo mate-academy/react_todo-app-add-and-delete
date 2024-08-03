@@ -8,6 +8,7 @@ type Props = {
   filter: FilterTodo;
   setTodos: (todos: Todo[]) => void;
   onRemoveCompleted: () => void;
+  tempTodo: Todo | null;
 };
 
 export const Footer: React.FC<Props> = ({
@@ -16,8 +17,10 @@ export const Footer: React.FC<Props> = ({
   setFilter,
   filter,
   onRemoveCompleted,
+  tempTodo,
 }) => {
-  const countActiveTodo = todos.filter(todo => !todo.completed).length;
+  const countActiveTodo =
+    todos.filter(todo => !todo.completed).length + (tempTodo ? 1 : 0);
 
   return (
     <footer className="todoapp__footer" data-cy="Footer">

@@ -22,7 +22,9 @@ export const App: React.FC = () => {
 
   useEffect(() => {
     getTodos()
-      .then(setTodos)
+      .then(data => {
+        setTodos(data);
+      })
       .catch(() => {
         setErrorMessage('Unable to load todos');
         setTimeout(() => setErrorMessage(''), 3000);
@@ -99,6 +101,7 @@ export const App: React.FC = () => {
           <Footer
             todos={todos}
             setTodos={setTodos}
+            tempTodo={tempTodo}
             setFilter={setFilter}
             filter={filter}
             completedTodos={completedTodos}
