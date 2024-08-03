@@ -16,14 +16,11 @@ export const Header: React.FC<Props> = ({
 }) => {
   const [query, setQuery] = useState('');
   const [isDisabled, setIsDisabled] = useState(false);
-
   const textField = useRef<HTMLInputElement>(null);
 
   useEffect(() => {
-    if (textField.current) {
-      textField.current.focus();
-    }
-  }, []);
+    textField.current?.focus();
+  }, [isDisabled]);
 
   const handleChangeQuery = (event: React.ChangeEvent<HTMLInputElement>) => {
     setQuery(event.target.value.trimStart());
@@ -37,6 +34,8 @@ export const Header: React.FC<Props> = ({
 
     if (!query) {
       setErrorMessage('Title should not be empty');
+      textField.current?.focus();
+
       setTimeout(() => {
         setErrorMessage('');
         setIsLoadingId(null);
