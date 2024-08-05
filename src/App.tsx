@@ -90,18 +90,20 @@ export const App: React.FC = () => {
       completed: false,
     });
 
-    setLoading(true);
+    setLoadingId(0);
 
     createTodo(newTodo)
       .then(createdTodo => {
         setTodos(prevTodos => [...prevTodos, createdTodo]);
         setTempTodo(null);
         setInputText('');
+        setLoadingId(null);
       })
       .catch(() => {
         setError('add');
         setInputText(trimmedTitle);
         setTempTodo(null);
+        setLoadingId(null);
       })
       .finally(() => {
         setLoading(false);
@@ -145,7 +147,7 @@ export const App: React.FC = () => {
           inputText={inputText}
           setInputText={setInputText}
           handleAddTodo={handleAddTodo}
-          loading={loading}
+          loading={loading || loadingId !== null}
           inputRef={inputRef}
         />
 

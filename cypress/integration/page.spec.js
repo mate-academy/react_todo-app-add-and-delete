@@ -215,13 +215,13 @@ describe('', () => {
       todos.deleteButton(0).should('exist');
     });
 
-    // it('should not have loaders', () => {
-    //   todos.assertNotLoading(0);
-    //   todos.assertNotLoading(1);
-    //   todos.assertNotLoading(2);
-    //   todos.assertNotLoading(3);
-    //   todos.assertNotLoading(4);
-    // })
+    it('should not have loaders', () => {
+      todos.assertNotLoading(0);
+      todos.assertNotLoading(1);
+      todos.assertNotLoading(2);
+      todos.assertNotLoading(3);
+      todos.assertNotLoading(4);
+    })
 
     it('should have correct todo titles', () => {
       todos.assertTitle(0, 'HTML');
@@ -496,13 +496,13 @@ describe('', () => {
         todos.assertNotCompleted(5);
       });
 
-      // it('should not show loaders for existing todos', () => {
-      //   todos.assertNotLoading(0);
-      //   todos.assertNotLoading(1);
-      //   todos.assertNotLoading(2);
-      //   todos.assertNotLoading(3);
-      //   todos.assertNotLoading(4);
-      // });
+      it('should not show loaders for existing todos', () => {
+        todos.assertNotLoading(0);
+        todos.assertNotLoading(1);
+        todos.assertNotLoading(2);
+        todos.assertNotLoading(3);
+        todos.assertNotLoading(4);
+      });
 
       it('should not update active counter', () => {
         page.todosCounter().should('have.text', '2 items left');
@@ -869,21 +869,21 @@ describe('', () => {
         cy.wait('@loadRequest');
       });
 
-      // it('should have ClearCompleted button enabled', () => {
-      //   page.clearCompletedButton().should('not.be.disabled');
-      // });
+      it('should have ClearCompleted button enabled', () => {
+        page.clearCompletedButton().should('not.be.disabled');
+      });
 
-      // it('should send individual deletion request for each completed todo', () => {
-      //   page.mockDelete(257334).as('deleteRequest1');
-      //   page.mockDelete(257335).as('deleteRequest2');
-      //   page.mockDelete(257336).as('deleteRequest3');
+      it('should send individual deletion request for each completed todo', () => {
+        page.mockDelete(257334).as('deleteRequest1');
+        page.mockDelete(257335).as('deleteRequest2');
+        page.mockDelete(257336).as('deleteRequest3');
 
-      //   page.clearCompletedButton().click();
+        page.clearCompletedButton().click();
 
-      //   cy.wait('@deleteRequest1');
-      //   cy.wait('@deleteRequest2');
-      //   cy.wait('@deleteRequest3');
-      // });
+        cy.wait('@deleteRequest1');
+        cy.wait('@deleteRequest2');
+        cy.wait('@deleteRequest3');
+      });
 
       describe('on success', () => {
         beforeEach(() => {
@@ -898,11 +898,11 @@ describe('', () => {
           cy.wait('@deleteRequest3');
         });
 
-        // it('should remove all completed todos from the list', () => {
-        //   todos.assertCount(2);
-        //   todos.assertTitle(0, 'TypeScript');
-        //   todos.assertTitle(1, 'React');
-        // });
+        it('should remove all completed todos from the list', () => {
+          todos.assertCount(2);
+          todos.assertTitle(0, 'TypeScript');
+          todos.assertTitle(1, 'React');
+        });
 
         it('should disable ClearCompleted button', () => {
           page.clearCompletedButton().should('be.disabled');
