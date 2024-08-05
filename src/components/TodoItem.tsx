@@ -12,7 +12,7 @@ interface TodoItemProps {
 export const TodoItem: React.FC<TodoItemProps> = ({
   todo,
   handleDeleteTodo,
-  // loadingId,
+  loadingId,
   loading,
 }) => {
   const { id, completed, title } = todo;
@@ -57,12 +57,12 @@ export const TodoItem: React.FC<TodoItemProps> = ({
       </button>
 
       {/* overlay will cover the todo while it is being deleted or updated */}
-      {/* {loadingId === id && ( */}
-      <div data-cy="TodoLoader" className="modal overlay">
-        <div className="modal-background has-background-white-ter" />
-        <div className="loader" />
-      </div>
-      {/* // )} */}
+      {loadingId === id && (
+        <div data-cy="TodoLoader" className="modal overlay is-active">
+          <div className="modal-background has-background-white-ter" />
+          <div className="loader" />
+        </div>
+      )}
     </div>
   );
 };
