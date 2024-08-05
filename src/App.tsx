@@ -1,7 +1,6 @@
 /* eslint-disable jsx-a11y/control-has-associated-label */
-import React, { useEffect, useMemo, useRef, useState } from 'react';
+import React, { useEffect, useMemo, useState } from 'react';
 import { UserWarning } from './UserWarning';
-// import { getTodos, postTodo, USER_ID } from './api/todos';
 import * as todoService from './api/todos';
 import { Todo } from './types/Todo';
 import { Footer } from './components/Footer';
@@ -11,13 +10,12 @@ import cn from 'classnames';
 
 export const App: React.FC = () => {
   const [todos, setTodos] = useState<Todo[]>([]);
-
   const [newTodoTitle, setNewTodoTitle] = useState('');
   const [filter, setFilter] = useState('All');
   const [isLoading, setIsLoading] = useState(false);
   const [errorMessage, setErrorMessage] = useState('');
   const [tempTodo, setTempTodo] = useState<Todo | null>(null);
-  const newTodoRef = useRef(newTodoTitle);
+  const [todosAreLoadingIds, setTodosAreLoadingIds] = useState<number[]>([]);
 
   useEffect(() => {
     todoService
@@ -31,17 +29,22 @@ export const App: React.FC = () => {
 
   const addTodo = (newTodo: Omit<Todo, 'id'>) => {
     setIsLoading(true);
+    setTodosAreLoadingIds(currentIds => [...currentIds, newTodo.userId]); // Додаємо id до loading ids
     todoService
       .postTodo(newTodo)
       .then(addedTodo => {
         setTodos(currentTodos => [...currentTodos, addedTodo]);
         setNewTodoTitle('');
-        // setTempTodo(null);
+        setTodosAreLoadingIds(currentIds =>
+          currentIds.filter(id => id !== newTodo.userId),
+        ); // Видаляємо id з loading ids
       })
       .catch(() => {
         setErrorMessage('Unable to add a todo');
-        setNewTodoTitle(newTodoRef.current);
-        // setTempTodo(null);
+        setNewTodoTitle('');
+        setTodosAreLoadingIds(currentIds =>
+          currentIds.filter(id => id !== newTodo.userId),
+        ); // Видаляємо id з loading ids
       })
       .finally(() => {
         setIsLoading(false);
@@ -51,15 +54,22 @@ export const App: React.FC = () => {
 
   const deleteTodo = (userId: number) => {
     setIsLoading(true);
+    setTodosAreLoadingIds(currentIds => [...currentIds, userId]); // Додаємо id до loading ids
     todoService
       .deleteTodo(userId)
       .then(() => {
         setTodos(currentTodos =>
           currentTodos.filter(todo => todo.id !== userId),
         );
+        setTodosAreLoadingIds(currentIds =>
+          currentIds.filter(id => id !== userId),
+        ); // Видаляємо id з loading ids
       })
       .catch(() => {
         setErrorMessage('Unable to delete a todo');
+        setTodosAreLoadingIds(currentIds =>
+          currentIds.filter(id => id !== userId),
+        ); // Видаляємо id з loading ids
       })
       .finally(() => {
         setIsLoading(false);
@@ -69,7 +79,7 @@ export const App: React.FC = () => {
   const handleEmptyLineError = (event: React.FormEvent) => {
     event.preventDefault();
 
-    if (newTodoTitle.trim() === '') {
+    if (!newTodoTitle.trim()) {
       setErrorMessage('Title should not be empty');
       setTimeout(() => setErrorMessage(''), 3000);
 
@@ -82,9 +92,6 @@ export const App: React.FC = () => {
       completed: false,
       userId: todoService.USER_ID,
     });
-
-    // setTempTodo(tempTodo);
-    newTodoRef.current = newTodoTitle;
 
     addTodo({
       userId: todoService.USER_ID,
@@ -123,16 +130,21 @@ export const App: React.FC = () => {
         <Header
           todos={todos}
           newTodoTitle={newTodoTitle}
-          isLoading={isLoading}
+          // isLoading={isLoading}
           handleChangeNewTitle={handleChangeNewTitle}
           handleEmptyLineError={handleEmptyLineError}
+          errorMessage={errorMessage}
+          tempTodo={tempTodo}
         />
 
-        <TodoList
-          todos={filteredTodos}
-          tempTodo={tempTodo}
-          deleteTodo={deleteTodo}
-        />
+        {!isLoading && !!todos && (
+          <TodoList
+            todos={filteredTodos}
+            tempTodo={tempTodo}
+            deleteTodo={deleteTodo}
+            todosAreLoadingIds={todosAreLoadingIds} // Передаємо todosAreLoadingIds
+          />
+        )}
         {!!todos.length && (
           <Footer todos={todos} onFilter={setFilter} filter={filter} />
         )}

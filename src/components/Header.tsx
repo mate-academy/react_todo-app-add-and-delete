@@ -1,22 +1,32 @@
+import React, { useEffect, useRef } from 'react';
 import cn from 'classnames';
 import { Todo } from '../types/Todo';
 
 type Props = {
   todos: Todo[];
   newTodoTitle: string;
-  isLoading: boolean;
+  // isLoading: boolean;
   handleChangeNewTitle: (event: React.ChangeEvent<HTMLInputElement>) => void;
   handleEmptyLineError: (event: React.FormEvent) => void;
+  errorMessage: string;
+  tempTodo: Todo | null;
 };
 
 export const Header: React.FC<Props> = ({
   todos,
   newTodoTitle,
-  isLoading,
+  // isLoading,
   handleChangeNewTitle,
   handleEmptyLineError,
+  errorMessage,
+  tempTodo,
 }) => {
   const allChecked = todos.every(todo => todo.completed);
+  const newTodoRef = useRef<HTMLInputElement>(null);
+
+  useEffect(() => {
+    newTodoRef.current?.focus();
+  }, [todos, errorMessage]);
 
   return (
     <header className="todoapp__header">
@@ -26,7 +36,7 @@ export const Header: React.FC<Props> = ({
           active: allChecked,
         })}
         data-cy="ToggleAllButton"
-        disabled={isLoading}
+        // disabled={isLoading}
       />
 
       <form onSubmit={handleEmptyLineError}>
@@ -35,10 +45,10 @@ export const Header: React.FC<Props> = ({
           type="text"
           className="todoapp__new-todo"
           placeholder="What needs to be done?"
-          autoFocus
           value={newTodoTitle}
           onChange={handleChangeNewTitle}
-          disabled={isLoading}
+          disabled={!!tempTodo}
+          ref={newTodoRef}
         />
       </form>
     </header>

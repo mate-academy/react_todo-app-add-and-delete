@@ -1,13 +1,19 @@
 /* eslint-disable jsx-a11y/label-has-associated-control */
+import React from 'react';
 import cn from 'classnames';
 import { Todo } from '../types/Todo';
 
 type Props = {
   todo: Todo;
   deleteTodo: (userId: number) => void;
+  todosAreLoadingIds: number[]; // Додай todosAreLoadingIds до пропсів
 };
 
-export const TodoItem: React.FC<Props> = ({ todo, deleteTodo }) => {
+export const TodoItem: React.FC<Props> = ({
+  todo,
+  deleteTodo,
+  todosAreLoadingIds,
+}) => {
   const handleDelete = () => {
     if (todo.id !== undefined) {
       deleteTodo(todo.id);
@@ -36,7 +42,12 @@ export const TodoItem: React.FC<Props> = ({ todo, deleteTodo }) => {
       >
         ×
       </button>
-      <div data-cy="TodoLoader" className="modal overlay">
+      <div
+        data-cy="TodoLoader"
+        className={cn('modal overlay', {
+          'is-active': todosAreLoadingIds.includes(todo.userId), // Перевірка на включення id
+        })}
+      >
         <div className="modal-background has-background-white-ter" />
         <div className="loader" />
       </div>
