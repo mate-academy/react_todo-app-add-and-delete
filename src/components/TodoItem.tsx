@@ -6,7 +6,7 @@ import { Todo } from '../types/Todo';
 type Props = {
   todo: Todo;
   deleteTodo: (userId: number) => void;
-  todosAreLoadingIds: number[]; // Додай todosAreLoadingIds до пропсів
+  todosAreLoadingIds: number[];
 };
 
 export const TodoItem: React.FC<Props> = ({
@@ -45,7 +45,7 @@ export const TodoItem: React.FC<Props> = ({
       <div
         data-cy="TodoLoader"
         className={cn('modal overlay', {
-          'is-active': todosAreLoadingIds.includes(todo.userId), // Перевірка на включення id
+          'is-active': todosAreLoadingIds.includes(todo.userId),
         })}
       >
         <div className="modal-background has-background-white-ter" />

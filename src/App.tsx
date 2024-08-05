@@ -29,7 +29,7 @@ export const App: React.FC = () => {
 
   const addTodo = (newTodo: Omit<Todo, 'id'>) => {
     setIsLoading(true);
-    setTodosAreLoadingIds(currentIds => [...currentIds, newTodo.userId]); // Додаємо id до loading ids
+    setTodosAreLoadingIds(currentIds => [...currentIds, newTodo.userId]);
     todoService
       .postTodo(newTodo)
       .then(addedTodo => {
@@ -37,14 +37,14 @@ export const App: React.FC = () => {
         setNewTodoTitle('');
         setTodosAreLoadingIds(currentIds =>
           currentIds.filter(id => id !== newTodo.userId),
-        ); // Видаляємо id з loading ids
+        );
       })
       .catch(() => {
         setErrorMessage('Unable to add a todo');
         setNewTodoTitle('');
         setTodosAreLoadingIds(currentIds =>
           currentIds.filter(id => id !== newTodo.userId),
-        ); // Видаляємо id з loading ids
+        );
       })
       .finally(() => {
         setIsLoading(false);
@@ -54,7 +54,7 @@ export const App: React.FC = () => {
 
   const deleteTodo = (userId: number) => {
     setIsLoading(true);
-    setTodosAreLoadingIds(currentIds => [...currentIds, userId]); // Додаємо id до loading ids
+    setTodosAreLoadingIds(currentIds => [...currentIds, userId]);
     todoService
       .deleteTodo(userId)
       .then(() => {
@@ -63,13 +63,13 @@ export const App: React.FC = () => {
         );
         setTodosAreLoadingIds(currentIds =>
           currentIds.filter(id => id !== userId),
-        ); // Видаляємо id з loading ids
+        );
       })
       .catch(() => {
         setErrorMessage('Unable to delete a todo');
         setTodosAreLoadingIds(currentIds =>
           currentIds.filter(id => id !== userId),
-        ); // Видаляємо id з loading ids
+        );
       })
       .finally(() => {
         setIsLoading(false);
@@ -142,7 +142,7 @@ export const App: React.FC = () => {
             todos={filteredTodos}
             tempTodo={tempTodo}
             deleteTodo={deleteTodo}
-            todosAreLoadingIds={todosAreLoadingIds} // Передаємо todosAreLoadingIds
+            todosAreLoadingIds={todosAreLoadingIds}
           />
         )}
         {!!todos.length && (
