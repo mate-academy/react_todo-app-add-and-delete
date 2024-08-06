@@ -91,7 +91,9 @@ export const App: React.FC = () => {
     addTodo(inputText)
       .then(newTodo => {
         setTodos(prevTodos => [...prevTodos, newTodo]);
-        setTempTodos(prevTempTodos => prevTempTodos.filter(todo => todo.id !== tempTodo.id));
+        setTempTodos(prevTempTodos =>
+          prevTempTodos.filter(todo => todo.id !== tempTodo.id),
+        );
         setInputText('');
         setValidationError('');
         if (inputRef.current) {
@@ -100,7 +102,9 @@ export const App: React.FC = () => {
       })
       .catch(() => {
         setLoadingError('Unable to add a todo');
-        setTempTodos(prevTempTodos => prevTempTodos.filter(todo => todo.id !== tempTodo.id));
+        setTempTodos(prevTempTodos =>
+          prevTempTodos.filter(todo => todo.id !== tempTodo.id),
+        );
         setTimeout(() => {
           setLoadingError('');
         }, 3000);
