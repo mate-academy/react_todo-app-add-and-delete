@@ -1,10 +1,16 @@
 import React from 'react';
 import { Todo } from '../types/Todo';
 
+enum Filter {
+  All = 'all',
+  Active = 'active',
+  Completed = 'completed',
+}
+
 interface FooterProps {
   todos: Todo[];
-  filter: 'all' | 'active' | 'completed';
-  onSetFilter: (filter: 'all' | 'active' | 'completed') => void;
+  filter: Filter;
+  onSetFilter: (filter: Filter) => void;
   onClearCompleted: () => void;
 }
 
@@ -25,7 +31,7 @@ export const Footer: React.FC<FooterProps> = ({
           href="#/"
           className={`filter__link ${filter === 'all' ? 'selected' : ''}`}
           data-cy="FilterLinkAll"
-          onClick={() => onSetFilter('all')}
+          onClick={() => onSetFilter(Filter.All)}
         >
           All
         </a>
@@ -34,7 +40,7 @@ export const Footer: React.FC<FooterProps> = ({
           href="#/active"
           className={`filter__link ${filter === 'active' ? 'selected' : ''}`}
           data-cy="FilterLinkActive"
-          onClick={() => onSetFilter('active')}
+          onClick={() => onSetFilter(Filter.Active)}
         >
           Active
         </a>
@@ -43,7 +49,7 @@ export const Footer: React.FC<FooterProps> = ({
           href="#/completed"
           className={`filter__link ${filter === 'completed' ? 'selected' : ''}`}
           data-cy="FilterLinkCompleted"
-          onClick={() => onSetFilter('completed')}
+          onClick={() => onSetFilter(Filter.Completed)}
         >
           Completed
         </a>

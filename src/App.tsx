@@ -6,42 +6,47 @@ import {
   getTodos,
   updateTodo,
 } from './api/todos';
-import { ErrorNotification } from './components/errorNotification';
-import { Footer } from './components/footer';
-import { Header } from './components/header';
-import { TodoList } from './components/todoList';
+import { ErrorNotification } from './components/ErrorNotification';
+import { Footer } from './components/Footer';
+import { Header } from './components/Header';
+import { TodoList } from './components/TodoList';
 import { Todo } from './types/Todo';
 import { UserWarning } from './UserWarning';
+
+enum Filter {
+  All = 'all',
+  Active = 'active',
+  Completed = 'completed',
+}
 
 export const App: React.FC = () => {
   const [todos, setTodos] = useState<Todo[]>([]);
   const [tempTodo, setTempTodo] = useState<Todo | null>(null);
   const [newTodo, setNewTodo] = useState('');
   const [error, setError] = useState<string | null>(null);
-  const [filter, setFilter] = useState<'all' | 'active' | 'completed'>('all');
-  const [loading, setLoading] = useState<boolean>(false);
+  const [filter, setFilter] = useState<Filter>(Filter.All);
+  const [isLoading, setIsLoading] = useState(false);
   const [editingTodoId, setEditingTodoId] = useState<number | null>(null);
   const [editingTodoTitle, setEditingTodoTitle] = useState<string>('');
 
   useEffect(() => {
     if (USER_ID) {
-      setLoading(true);
+      setIsLoading(true);
       getTodos()
         .then(setTodos)
         .catch(() => setError('Unable to load todos'))
-        .finally(() => setLoading(false));
+        .finally(() => setIsLoading(false));
     }
   }, []);
 
-  const handleAddTodo = (event: React.FormEvent) => {
-    event.preventDefault();
-    if (!newTodo.trim()) {
+  const handleAddTodo = (title: string) => {
+    if (!title.trim()) {
       setError('Title should not be empty');
 
       return;
     }
 
-    setLoading(true);
+    setIsLoading(true);
 
     const newTempTodo: Todo = {
       id: 0,
@@ -52,7 +57,7 @@ export const App: React.FC = () => {
 
     setTempTodo(newTempTodo);
 
-    createTodo(newTodo)
+    createTodo(title)
       .then((newTodoItem: Todo) => {
         setTodos(prevTodos => [...prevTodos, newTodoItem]);
         setNewTodo('');
@@ -62,13 +67,13 @@ export const App: React.FC = () => {
         setError('Unable to add a todo');
         setTempTodo(null);
       })
-      .finally(() => setLoading(false));
+      .finally(() => setIsLoading(false));
   };
 
   const handleToggleTodo = (todo: Todo) => {
     const updatedTodo = { ...todo, completed: !todo.completed };
 
-    setLoading(true);
+    setIsLoading(true);
 
     updateTodo(todo.id, updatedTodo)
       .then(() => {
@@ -79,14 +84,14 @@ export const App: React.FC = () => {
       .catch(() => {
         setError('Unable to update a todo');
       })
-      .finally(() => setLoading(false));
+      .finally(() => setIsLoading(false));
   };
 
   const handleToggleAllTodos = () => {
     const allCompleted = todos.every(todo => todo.completed);
     const newStatus = !allCompleted;
 
-    setLoading(true);
+    setIsLoading(true);
 
     const updatedTodos = todos.map(todo => ({
       ...todo,
@@ -103,7 +108,7 @@ export const App: React.FC = () => {
       .then(() => {
         setTodos(updatedTodos);
       })
-      .finally(() => setLoading(false));
+      .finally(() => setIsLoading(false));
   };
 
   const handleDeleteTodo = (todoId: number) => {
@@ -113,7 +118,7 @@ export const App: React.FC = () => {
       return;
     }
 
-    setLoading(true);
+    setIsLoading(true);
 
     deleteTodo(todoId)
       .then(() => {
@@ -122,7 +127,7 @@ export const App: React.FC = () => {
       .catch(() => {
         setError('Unable to delete a todo');
       })
-      .finally(() => setLoading(false));
+      .finally(() => setIsLoading(false));
   };
 
   const handleEditTodo = (todo: Todo) => {
@@ -130,10 +135,10 @@ export const App: React.FC = () => {
     setEditingTodoTitle(todo.title);
   };
 
-  const handleUpdateTodo = (event: React.FormEvent) => {
+  const handleUpdateTodo = (event: React.FormEvent, todoId: number) => {
     event.preventDefault();
     if (editingTodoTitle.trim() === '') {
-      handleDeleteTodo(editingTodoId as number);
+      handleDeleteTodo(todoId);
 
       return;
     }
@@ -150,21 +155,22 @@ export const App: React.FC = () => {
       return;
     }
 
-    setLoading(true);
+    setIsLoading(true);
 
-    const newTodoo = { ...updatedTodo, title: editingTodoTitle };
+    // eslint-disable-next-line @typescript-eslint/no-shadow
+    const newTodo = { ...updatedTodo, title: editingTodoTitle };
 
-    updateTodo(editingTodoId as number, newTodoo)
+    updateTodo(todoId, newTodo)
       .then(() => {
         setTodos(prevTodos =>
-          prevTodos.map(todo => (todo.id === editingTodoId ? newTodoo : todo)),
+          prevTodos.map(todo => (todo.id === todoId ? newTodo : todo)),
         );
         setEditingTodoId(null);
       })
       .catch(() => {
         setError('Unable to update a todo');
       })
-      .finally(() => setLoading(false));
+      .finally(() => setIsLoading(false));
   };
 
   const handleCancelEdit = () => {
@@ -172,7 +178,25 @@ export const App: React.FC = () => {
   };
 
   const handleClearCompleted = () => {
-    setTodos(todos.filter(todo => !todo.completed));
+    const completedTodos = todos.filter(todo => todo.completed);
+
+    if (completedTodos.length === 0) {
+      return;
+    }
+
+    setIsLoading(true);
+
+    Promise.all(
+      completedTodos.map(todo =>
+        deleteTodo(todo.id).catch(() => {
+          setError('Unable to delete a todo');
+        }),
+      ),
+    )
+      .then(() => {
+        setTodos(prevTodos => prevTodos.filter(todo => !todo.completed));
+      })
+      .finally(() => setIsLoading(false));
   };
 
   const allCompleted = todos.length > 0 && todos.every(todo => todo.completed);
@@ -188,22 +212,16 @@ export const App: React.FC = () => {
           <div className="todoapp__content">
             {todos.length === 0 ? (
               <Header
-                newTodo={newTodo}
-                loading={loading}
+                loading={isLoading}
                 onAddTodo={handleAddTodo}
-                onNewTodoChange={setNewTodo}
-                onToggleAllTodos={function (): void {
-                  throw new Error('Function not implemented.');
-                }}
+                onToggleAllTodos={() => {}}
                 allCompleted={false}
               />
             ) : (
               <>
                 <Header
-                  newTodo={newTodo}
-                  loading={loading}
+                  loading={isLoading}
                   onAddTodo={handleAddTodo}
-                  onNewTodoChange={setNewTodo}
                   onToggleAllTodos={handleToggleAllTodos}
                   allCompleted={allCompleted}
                 />
@@ -214,7 +232,7 @@ export const App: React.FC = () => {
                   filter={filter}
                   editingTodoId={editingTodoId}
                   editingTodoTitle={editingTodoTitle}
-                  loading={loading}
+                  loading={isLoading}
                   onToggleTodo={handleToggleTodo}
                   onDeleteTodo={handleDeleteTodo}
                   onEditTodo={handleEditTodo}

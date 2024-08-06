@@ -9,7 +9,7 @@ interface TodoItemProps {
   onToggleTodo: (todo: Todo) => void;
   onDeleteTodo: (todoId: number) => void;
   onEditTodo: (todo: Todo) => void;
-  onUpdateTodo: (event: React.FormEvent) => void;
+  onUpdateTodo: (event: React.FormEvent, todoId: number) => void;
   onEditingTodoTitleChange: (title: string) => void;
   onCancelEdit: () => void;
 }
@@ -33,12 +33,12 @@ export const TodoItem: React.FC<TodoItemProps> = ({
       className={`todo ${todo.completed ? 'completed' : ''}`}
     >
       {editingTodoId === todo.id ? (
-        <form onSubmit={onUpdateTodo}>
+        <form onSubmit={event => onUpdateTodo(event, todo.id)}>
           <input
             type="text"
             value={editingTodoTitle}
             onChange={e => onEditingTodoTitleChange(e.target.value)}
-            onBlur={onUpdateTodo}
+            onBlur={event => onUpdateTodo(event, todo.id)}
             onKeyUp={e => {
               if (e.key === 'Escape') {
                 onCancelEdit();
@@ -82,11 +82,6 @@ export const TodoItem: React.FC<TodoItemProps> = ({
           >
             ×
           </button>
-
-          <div data-cy="TodoLoader" className="modal overlay">
-            <div className="modal-background has-background-white-ter" />
-            <div className="loader" />
-          </div>
         </>
       )}
     </div>

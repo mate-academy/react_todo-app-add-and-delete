@@ -1,18 +1,24 @@
-import React from 'react';
+import React, { useMemo } from 'react';
 import { Todo } from '../types/Todo';
-import { TodoItem } from './todoItem';
+import { TodoItem } from './TodoItem';
+
+enum Filter {
+  All = 'all',
+  Active = 'active',
+  Completed = 'completed',
+}
 
 interface TodoListProps {
   todos: Todo[];
   tempTodo: Todo | null;
-  filter: 'all' | 'active' | 'completed';
+  filter: Filter;
   editingTodoId: number | null;
   editingTodoTitle: string;
   loading: boolean;
   onToggleTodo: (todo: Todo) => void;
   onDeleteTodo: (todoId: number) => void;
   onEditTodo: (todo: Todo) => void;
-  onUpdateTodo: (event: React.FormEvent) => void;
+  onUpdateTodo: (event: React.FormEvent, todoId: number) => void;
   onEditingTodoTitleChange: (title: string) => void;
   onCancelEdit: () => void;
 }
@@ -31,21 +37,23 @@ export const TodoList: React.FC<TodoListProps> = ({
   onEditingTodoTitleChange,
   onCancelEdit,
 }) => {
-  const filteredTodos = todos.filter(todo => {
-    if (filter === 'all') {
-      return true;
-    }
+  const filteredTodos = useMemo(() => {
+    return todos.filter(todo => {
+      if (filter === Filter.All) {
+        return true;
+      }
 
-    if (filter === 'active') {
-      return !todo.completed;
-    }
+      if (filter === Filter.Active) {
+        return !todo.completed;
+      }
 
-    if (filter === 'completed') {
-      return todo.completed;
-    }
+      if (filter === Filter.Completed) {
+        return todo.completed;
+      }
 
-    return false;
-  });
+      return false;
+    });
+  }, [todos, filter]);
 
   return (
     <section className="todoapp__main" data-cy="TodoList">
@@ -59,7 +67,7 @@ export const TodoList: React.FC<TodoListProps> = ({
           onToggleTodo={onToggleTodo}
           onDeleteTodo={onDeleteTodo}
           onEditTodo={onEditTodo}
-          onUpdateTodo={onUpdateTodo}
+          onUpdateTodo={e => onUpdateTodo(e, todo.id)}
           onEditingTodoTitleChange={onEditingTodoTitleChange}
           onCancelEdit={onCancelEdit}
         />
@@ -74,7 +82,7 @@ export const TodoList: React.FC<TodoListProps> = ({
           onToggleTodo={onToggleTodo}
           onDeleteTodo={onDeleteTodo}
           onEditTodo={onEditTodo}
-          onUpdateTodo={onUpdateTodo}
+          onUpdateTodo={e => onUpdateTodo(e, tempTodo.id)}
           onEditingTodoTitleChange={onEditingTodoTitleChange}
           onCancelEdit={onCancelEdit}
         />
