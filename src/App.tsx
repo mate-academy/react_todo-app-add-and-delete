@@ -128,7 +128,7 @@ export const App: React.FC = () => {
       })
       .finally(() => {
         setLoadingTodos(prev => prev.filter(todoId => todoId !== id));
-      })
+      });
   };
 
   const clearErrors = () => {
