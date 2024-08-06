@@ -148,8 +148,6 @@ export const App: React.FC = () => {
   };
 
   const clearCompleted = () => {
-    setTodos(prevTodos => prevTodos.filter(todo => !todo.completed));
-
     const completedTodoIds = todos
       .filter(todo => todo.completed)
       .map(todo => todo.id);
