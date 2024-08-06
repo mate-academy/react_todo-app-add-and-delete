@@ -12,10 +12,15 @@ export const App: React.FC = () => {
   const [todos, setTodos] = useState<Todo[]>([]);
   const [newTodoTitle, setNewTodoTitle] = useState('');
   const [filter, setFilter] = useState('All');
-  const [isLoading, setIsLoading] = useState(false);
   const [errorMessage, setErrorMessage] = useState('');
   const [tempTodo, setTempTodo] = useState<Todo | null>(null);
   const [todosAreLoadingIds, setTodosAreLoadingIds] = useState<number[]>([]);
+
+  const hideErrorMessage = () => {
+    setTimeout(() => {
+      setErrorMessage('');
+    }, 3000);
+  };
 
   useEffect(() => {
     todoService
@@ -28,7 +33,6 @@ export const App: React.FC = () => {
   }, []);
 
   const addTodo = (newTodo: Omit<Todo, 'id'>) => {
-    setIsLoading(true);
     setTodosAreLoadingIds(currentIds => [...currentIds, newTodo.userId]);
     todoService
       .postTodo(newTodo)
@@ -41,19 +45,17 @@ export const App: React.FC = () => {
       })
       .catch(() => {
         setErrorMessage('Unable to add a todo');
-        setNewTodoTitle('');
         setTodosAreLoadingIds(currentIds =>
           currentIds.filter(id => id !== newTodo.userId),
         );
+        hideErrorMessage();
       })
       .finally(() => {
-        setIsLoading(false);
         setTempTodo(null);
       });
   };
 
   const deleteTodo = (userId: number) => {
-    setIsLoading(true);
     setTodosAreLoadingIds(currentIds => [...currentIds, userId]);
     todoService
       .deleteTodo(userId)
@@ -70,16 +72,16 @@ export const App: React.FC = () => {
         setTodosAreLoadingIds(currentIds =>
           currentIds.filter(id => id !== userId),
         );
-      })
-      .finally(() => {
-        setIsLoading(false);
+        hideErrorMessage();
       });
   };
 
   const handleEmptyLineError = (event: React.FormEvent) => {
     event.preventDefault();
 
-    if (!newTodoTitle.trim()) {
+    const trimmedTitle = newTodoTitle.trim();
+
+    if (!trimmedTitle) {
       setErrorMessage('Title should not be empty');
       setTimeout(() => setErrorMessage(''), 3000);
 
@@ -88,14 +90,14 @@ export const App: React.FC = () => {
 
     setTempTodo({
       id: 0,
-      title: newTodoTitle.trim(),
+      title: trimmedTitle,
       completed: false,
       userId: todoService.USER_ID,
     });
 
     addTodo({
       userId: todoService.USER_ID,
-      title: newTodoTitle,
+      title: trimmedTitle,
       completed: false,
     });
   };
@@ -118,6 +120,12 @@ export const App: React.FC = () => {
     });
   }, [todos, filter]);
 
+  const handleDeleteAllCompleted = (todosId: number[]) => {
+    todosId.forEach(id => {
+      deleteTodo(id);
+    });
+  };
+
   if (!todoService.USER_ID) {
     return <UserWarning />;
   }
@@ -130,14 +138,12 @@ export const App: React.FC = () => {
         <Header
           todos={todos}
           newTodoTitle={newTodoTitle}
-          // isLoading={isLoading}
           handleChangeNewTitle={handleChangeNewTitle}
           handleEmptyLineError={handleEmptyLineError}
           errorMessage={errorMessage}
           tempTodo={tempTodo}
         />
-
-        {!isLoading && !!todos && (
+        {!!todos && (
           <TodoList
             todos={filteredTodos}
             tempTodo={tempTodo}
@@ -146,7 +152,12 @@ export const App: React.FC = () => {
           />
         )}
         {!!todos.length && (
-          <Footer todos={todos} onFilter={setFilter} filter={filter} />
+          <Footer
+            todos={todos}
+            onFilter={setFilter}
+            filter={filter}
+            handleDeleteAllCompleted={handleDeleteAllCompleted}
+          />
         )}
       </div>
 

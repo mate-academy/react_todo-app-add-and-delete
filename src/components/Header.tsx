@@ -5,7 +5,6 @@ import { Todo } from '../types/Todo';
 type Props = {
   todos: Todo[];
   newTodoTitle: string;
-  // isLoading: boolean;
   handleChangeNewTitle: (event: React.ChangeEvent<HTMLInputElement>) => void;
   handleEmptyLineError: (event: React.FormEvent) => void;
   errorMessage: string;
@@ -15,7 +14,6 @@ type Props = {
 export const Header: React.FC<Props> = ({
   todos,
   newTodoTitle,
-  // isLoading,
   handleChangeNewTitle,
   handleEmptyLineError,
   errorMessage,
@@ -36,7 +34,6 @@ export const Header: React.FC<Props> = ({
           active: allChecked,
         })}
         data-cy="ToggleAllButton"
-        // disabled={isLoading}
       />
 
       <form onSubmit={handleEmptyLineError}>

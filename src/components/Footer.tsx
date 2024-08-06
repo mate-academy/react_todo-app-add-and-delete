@@ -6,9 +6,19 @@ type Props = {
   todos: Todo[];
   onFilter: React.Dispatch<React.SetStateAction<string>>;
   filter: string;
+  handleDeleteAllCompleted: (currentsTodo: number[]) => void;
 };
 
-export const Footer: React.FC<Props> = ({ todos, onFilter, filter }) => {
+export const Footer: React.FC<Props> = ({
+  todos,
+  onFilter,
+  filter,
+  handleDeleteAllCompleted,
+}) => {
+  const hasCompletedTodos = todos
+    .filter(todo => todo.completed)
+    .map(todo => todo.id);
+
   return (
     <footer className="todoapp__footer" data-cy="Footer">
       <span className="todo-count" data-cy="TodosCounter">
@@ -47,6 +57,8 @@ export const Footer: React.FC<Props> = ({ todos, onFilter, filter }) => {
         type="button"
         className="todoapp__clear-completed"
         data-cy="ClearCompletedButton"
+        disabled={!hasCompletedTodos.length}
+        onClick={() => handleDeleteAllCompleted(hasCompletedTodos)}
       >
         Clear completed
       </button>
