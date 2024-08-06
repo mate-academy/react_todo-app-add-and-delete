@@ -11,7 +11,7 @@ export const App: React.FC = () => {
   const [tempTodos, setTempTodos] = useState<Todo[]>([]); // Для временных задач
   const [loadingError, setLoadingError] = useState('');
   const [validationError, setValidationError] = useState('');
-  const [isLoading, setLoading] = useState(false); // Состояние загрузки
+  const [loadingTodos, setLoadingTodos] = useState<number[]>([]); // Состояние для ID задач с лоадером
 
   const inputRef = useRef<HTMLInputElement>(null);
   const [filterSelected, setFilterSelected] = useState<Filter>(Filter.All);
@@ -77,8 +77,6 @@ export const App: React.FC = () => {
       return;
     }
 
-    setLoading(true);
-
     const tempTodo: Todo = {
       id: Date.now(),
       title: inputText,
@@ -87,6 +85,7 @@ export const App: React.FC = () => {
     };
 
     setTempTodos(prevTempTodos => [...prevTempTodos, tempTodo]);
+    setLoadingTodos(prev => [...prev, tempTodo.id]); // Добавляем ID в массив загрузки
 
     addTodo(inputText)
       .then(newTodo => {
@@ -110,11 +109,13 @@ export const App: React.FC = () => {
         }, 3000);
       })
       .finally(() => {
-        setLoading(false); // Отключаем загрузку
+        setLoadingTodos(prev => prev.filter(id => id !== tempTodo.id)); // Удаляем ID из массива загрузки
       });
   };
 
   const deletePost = (id: number) => {
+    setLoadingTodos(prev => [...prev, id]); // Добавляем ID в массив загрузки
+
     deleteTodo(id)
       .then(() => {
         setTodos(prevTodos => prevTodos.filter(todo => todo.id !== id));
@@ -124,7 +125,10 @@ export const App: React.FC = () => {
         setTimeout(() => {
           setLoadingError('');
         }, 3000);
-      });
+      })
+      .finally(() => {
+        setLoadingTodos(prev => prev.filter(todoId => todoId !== id));
+      })
   };
 
   const clearErrors = () => {
@@ -167,7 +171,7 @@ export const App: React.FC = () => {
               ref={inputRef}
               value={inputText}
               onChange={handleInputChange}
-              disabled={isLoading}
+              disabled={loadingTodos.length > 0}
             />
           </form>
         </header>
@@ -175,7 +179,7 @@ export const App: React.FC = () => {
           todos={allTodos}
           toggleTodo={toggleTodo}
           deletePost={deletePost}
-          isLoading={isLoading}
+          loadingTodos={loadingTodos} // Передаем массив ID задач
         />
         {todos.length > 0 && (
           <footer className="todoapp__footer" data-cy="Footer">
