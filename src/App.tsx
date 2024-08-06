@@ -44,7 +44,7 @@ export const App: React.FC = () => {
     if (inputRef.current) {
       inputRef.current.focus();
     }
-  }, []);
+  }, [todos, loadingTodos]);
 
   const toggleTodo = (id: number) => {
     setTodos(prevTodos =>
@@ -85,9 +85,13 @@ export const App: React.FC = () => {
     };
 
     setTempTodos(prevTempTodos => [...prevTempTodos, tempTodo]);
-    setLoadingTodos(prev => [...prev, tempTodo.id]); // Добавляем ID в массив загрузки
+    setLoadingTodos(prev => {
+      const updated = [...prev, tempTodo.id];
 
-    addTodo(inputText)
+      return updated;
+    });
+
+    addTodo(inputText.trim())
       .then(newTodo => {
         setTodos(prevTodos => [...prevTodos, newTodo]);
         setTempTodos(prevTempTodos =>
@@ -96,7 +100,7 @@ export const App: React.FC = () => {
         setInputText('');
         setValidationError('');
         if (inputRef.current) {
-          inputRef.current.focus();
+          inputRef.current.focus(); // Устанавливаем фокус на текстовое поле после успешного добавления
         }
       })
       .catch(() => {
@@ -109,12 +113,19 @@ export const App: React.FC = () => {
         }, 3000);
       })
       .finally(() => {
-        setLoadingTodos(prev => prev.filter(id => id !== tempTodo.id)); // Удаляем ID из массива загрузки
+        setLoadingTodos(prev => {
+          const updated = prev.filter(id => id !== tempTodo.id);
+
+          return updated;
+        });
+        if (inputRef.current) {
+          inputRef.current.focus(); // Устанавливаем фокус на текстовое поле в блоке finally
+        }
       });
   };
 
   const deletePost = (id: number) => {
-    setLoadingTodos(prev => [...prev, id]); // Добавляем ID в массив загрузки
+    setLoadingTodos(prev => [...prev, id]);
 
     deleteTodo(id)
       .then(() => {
@@ -138,6 +149,14 @@ export const App: React.FC = () => {
 
   const clearCompleted = () => {
     setTodos(prevTodos => prevTodos.filter(todo => !todo.completed));
+
+    const completedTodoIds = todos
+      .filter(todo => todo.completed)
+      .map(todo => todo.id);
+
+    completedTodoIds.forEach(id => {
+      deletePost(id);
+    });
   };
 
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -149,7 +168,7 @@ export const App: React.FC = () => {
 
   const filterValues = Object.values(Filter);
 
-  const allTodos = [...tempTodos, ...filterTodos]; // Объединяем временные задачи и отфильтрованные задачи
+  const allTodos = [...filterTodos, ...tempTodos];
 
   return (
     <div className="todoapp">
