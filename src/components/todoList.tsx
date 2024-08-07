@@ -1,8 +1,6 @@
-/* eslint-disable import/extensions */
 import React, { useMemo } from 'react';
 import { Todo } from '../types/Todo';
-// eslint-disable-next-line import/extensions
-import { TodoItem } from './TodoItem.tsx';
+import { TodoItem } from './TodoItem';
 
 enum Filter {
   All = 'all',
