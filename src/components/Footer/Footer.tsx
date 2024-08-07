@@ -24,7 +24,7 @@ export const Footer: React.FC<Props> = ({
     return todos.reduce((sum, todo) => sum + Number(!todo.completed), 0);
   }, [todos]);
 
-  const deleteCompleted = () => {
+  const handleDelete = () => {
     const completedTodos = todos.filter(todo => todo.completed);
 
     completedTodos.forEach(todo => onDelete(todo.id));
@@ -52,13 +52,12 @@ export const Footer: React.FC<Props> = ({
         ))}
       </nav>
 
-      {/* this button should be disabled if there are no completed todos */}
       <button
         type="button"
         className="todoapp__clear-completed"
         data-cy="ClearCompletedButton"
         disabled={!hasCompleted}
-        onClick={deleteCompleted}
+        onClick={handleDelete}
       >
         Clear completed
       </button>

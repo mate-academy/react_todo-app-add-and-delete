@@ -9,7 +9,7 @@ type Props = {
   setCompleted: (completed: boolean) => void;
   tempTodo: Todo | null;
   onDelete: (todoId: number) => void;
-  idOfDeletedTodo: number;
+  idOfDeletedTodo: number[];
 };
 
 export const TodoList: React.FC<Props> = ({
@@ -52,7 +52,7 @@ export const TodoList: React.FC<Props> = ({
         <div
           data-cy="TodoLoader"
           className={classNames('modal', 'overlay', {
-            'is-active': id === idOfDeletedTodo,
+            'is-active': idOfDeletedTodo.includes(id),
           })}
         >
           <div className="modal-background has-background-white-ter" />

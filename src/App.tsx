@@ -15,7 +15,7 @@ export const App: React.FC = () => {
   const [todoStatus, setTodoStatus] = useState<Status>(Status.All);
   const [submitting, setSubmitting] = useState(false);
   const [tempTodo, setTempTodo] = useState<Todo | null>(null);
-  const [idOfDeletedTodo, setIdOfDeletedTodo] = useState(0);
+  const [idOfDeletedTodo, setIdOfDeletedTodo] = useState<number[]>([]);
 
   const [title, setTitle] = useState('');
   // const [completed, setCompleted] = useState(false);
@@ -49,17 +49,16 @@ export const App: React.FC = () => {
       await apiTodos.deleteTodo(todoId);
 
       setTodos(currentTodos => currentTodos.filter(todo => todo.id !== todoId));
+      setIdOfDeletedTodo([]);
     } catch (error) {
       setErrorMessage('Unable to delete a todo');
       setTimeout(resetError, 3000);
-    } finally {
-      setIdOfDeletedTodo(0);
     }
   }
 
   const handleDelete = (todoId: number) => {
+    setIdOfDeletedTodo(currentId => [...currentId, todoId]);
     deleteTodo(todoId);
-    setIdOfDeletedTodo(todoId);
   };
 
   const filteredTodos: Todo[] = useMemo(() => {
