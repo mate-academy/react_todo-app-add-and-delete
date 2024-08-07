@@ -87,7 +87,7 @@ export const App: React.FC = () => {
     if (inputField.current) {
       inputField.current.focus();
     }
-  }, [todos]);
+  }, [todos, error]);
 
   if (!USER_ID) {
     return <UserWarning />;
@@ -125,7 +125,7 @@ export const App: React.FC = () => {
         setDeletingTodosIds(prev => prev.filter(id => id !== todoId));
       })
       .catch(() => {
-        setError('Unable to delete the todo');
+        setError('Unable to delete a todo');
         setTimeout(() => {
           setError('');
         }, 3000);
@@ -137,20 +137,31 @@ export const App: React.FC = () => {
       .filter(todo => todo.completed)
       .map(todo => todo.id);
 
-    setDeletingTodosIds(completedIds);
-
-    Promise.all(completedIds.map(id => deleteTodos(id)))
-      .then(() => {
-        setTodos(todos.filter(todo => !completedIds.includes(todo.id)));
-        setDeletingTodosIds([]);
-      })
-      .catch(() => {
-        setError('Unable to delete the todos');
-        setTimeout(() => {
-          setError('');
-        }, 3000);
-      });
+    completedIds.forEach(id => {
+      handleDeleteTodo(id);
+    });
   };
+  // const handleCompletedDelete = () => {
+  //   const completedIds = todos
+  //     .filter(todo => todo.completed)
+  //     .map(todo => todo.id);
+
+  //   setDeletingTodosIds(completedIds);
+
+  //    completedIds.forEach(id => deleteTodos(id));
+
+  //   // Promise.all(completedIds.map(id => deleteTodos(id)))
+  //   //   .then(() => {
+  //   //     setTodos(todos.filter(todo => !completedIds.includes(todo.id)));
+  //   //     setDeletingTodosIds([]);
+  //   //   })
+  //   //   .catch(() => {
+  //   //     setError('Unable to delete a todo');
+  //   //     setTimeout(() => {
+  //   //       setError('');
+  //   //     }, 3000);
+  //   //   });
+  // };
 
   return (
     <div className="todoapp">
@@ -224,7 +235,7 @@ export const App: React.FC = () => {
             </div>
           ))}
           {tempTodo && (
-            <div data-cy="TempTodo" className="todo">
+            <div data-cy="Todo" className="todo">
               <label
                 className="todo__status-label"
                 htmlFor={`todo-${tempTodo.id}`}
@@ -237,7 +248,9 @@ export const App: React.FC = () => {
                   disabled
                 />
               </label>
-              <span className="todo__title">{tempTodo.title}</span>
+              <span data-cy="TodoTitle" className="todo__title">
+                {tempTodo.title}
+              </span>
               <div
                 data-cy="TodoLoader"
                 className={cn('modal overlay', {
