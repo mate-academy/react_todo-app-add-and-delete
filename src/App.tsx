@@ -18,8 +18,7 @@ export const App: React.FC = () => {
   const [idOfDeletedTodo, setIdOfDeletedTodo] = useState<number[]>([]);
 
   const [title, setTitle] = useState('');
-  // const [completed, setCompleted] = useState(false);
-  const [completed, setCompleted] = useState(true);
+  const [completed, setCompleted] = useState(false);
 
   function resetError() {
     setErrorMessage('');
