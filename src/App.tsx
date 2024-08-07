@@ -1,4 +1,7 @@
-/* eslint-disable import/extensions */
+{
+  /* eslint-disable import/extensions */
+}
+
 import React, { useEffect, useState } from 'react';
 import {
   USER_ID,
@@ -7,7 +10,10 @@ import {
   getTodos,
   updateTodo,
 } from './api/todos';
-// eslint-disable-next-line import/extensions
+{
+  /*  eslint-disable-next-line import/extensions */
+}
+
 import { ErrorNotification } from './components/ErrorNotification.tsx';
 import { Footer } from './components/Footer.tsx';
 import { Header } from './components/Header.tsx';
