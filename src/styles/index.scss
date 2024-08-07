@@ -20,6 +20,11 @@ body {
   pointer-events: none;
 }
 
+.visually-hidden {
+  position: absolute;
+  visibility: hidden;
+}
+
 @import "./todoapp";
 @import "./todo";
 @import "./filter";
