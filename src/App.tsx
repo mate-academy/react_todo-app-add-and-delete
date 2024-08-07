@@ -8,8 +8,8 @@ import {
 } from './api/todos';
 import { ErrorNotification } from './components/ErrorNotification';
 import { Footer } from './components/Footer';
-import { Header } from './components/Header';
 import { TodoList } from './components/TodoList';
+import { Header } from './components/Header';
 import { Todo } from './types/Todo';
 import { UserWarning } from './UserWarning';
 
