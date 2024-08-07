@@ -1,6 +1,8 @@
+/* eslint-disable import/extensions */
 import React, { useMemo } from 'react';
 import { Todo } from '../types/Todo';
-import { TodoItem } from './TodoItem';
+// eslint-disable-next-line import/extensions
+import { TodoItem } from './TodoItem.tsx';
 
 enum Filter {
   All = 'all',
@@ -67,7 +69,7 @@ export const TodoList: React.FC<TodoListProps> = ({
           onToggleTodo={onToggleTodo}
           onDeleteTodo={onDeleteTodo}
           onEditTodo={onEditTodo}
-          onUpdateTodo={e => onUpdateTodo(e, todo.id)}
+          onUpdateTodo={(e: React.FormEvent) => onUpdateTodo(e, todo.id)}
           onEditingTodoTitleChange={onEditingTodoTitleChange}
           onCancelEdit={onCancelEdit}
         />
@@ -82,7 +84,7 @@ export const TodoList: React.FC<TodoListProps> = ({
           onToggleTodo={onToggleTodo}
           onDeleteTodo={onDeleteTodo}
           onEditTodo={onEditTodo}
-          onUpdateTodo={e => onUpdateTodo(e, tempTodo.id)}
+          onUpdateTodo={(e: React.FormEvent) => onUpdateTodo(e, tempTodo.id)}
           onEditingTodoTitleChange={onEditingTodoTitleChange}
           onCancelEdit={onCancelEdit}
         />

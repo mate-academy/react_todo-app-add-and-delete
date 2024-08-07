@@ -1,3 +1,4 @@
+/* eslint-disable import/extensions */
 import React, { useEffect, useState } from 'react';
 import {
   USER_ID,
@@ -6,12 +7,12 @@ import {
   getTodos,
   updateTodo,
 } from './api/todos';
-import { ErrorNotification } from './components/ErrorNotification';
-import { Footer } from './components/Footer';
-import { TodoList } from './components/TodoList';
-import { Header } from './components/Header';
+import { ErrorNotification } from './components/ErrorNotification.tsx';
+import { Footer } from './components/Footer.tsx';
+import { Header } from './components/Header.tsx';
+import { TodoList } from './components/TodoList.tsx';
 import { Todo } from './types/Todo';
-import { UserWarning } from './UserWarning';
+import { UserWarning } from './UserWarning.tsx';
 
 enum Filter {
   All = 'all',
