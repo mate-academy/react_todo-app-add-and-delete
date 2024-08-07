@@ -4,14 +4,15 @@ import { addTodo, deleteTodo, getTodos } from './api/todos';
 import { Todo } from './types/Todo';
 import cn from 'classnames';
 import { Filter } from './types/types';
+import { Footer } from './components/Footer';
 
 export const App: React.FC = () => {
   const [inputText, setInputText] = useState('');
   const [todos, setTodos] = useState<Todo[]>([]);
-  const [tempTodos, setTempTodos] = useState<Todo[]>([]); // Для временных задач
+  const [tempTodos, setTempTodos] = useState<Todo[]>([]);
   const [loadingError, setLoadingError] = useState('');
   const [validationError, setValidationError] = useState('');
-  const [loadingTodos, setLoadingTodos] = useState<number[]>([]); // Состояние для ID задач с лоадером
+  const [loadingTodos, setLoadingTodos] = useState<number[]>([]);
 
   const inputRef = useRef<HTMLInputElement>(null);
   const [filterSelected, setFilterSelected] = useState<Filter>(Filter.All);
@@ -20,8 +21,10 @@ export const App: React.FC = () => {
     switch (filterSelected) {
       case Filter.Active:
         return todos.filter(todo => !todo.completed);
+
       case Filter.Completed:
         return todos.filter(todo => todo.completed);
+
       default:
         return todos;
     }
@@ -29,9 +32,7 @@ export const App: React.FC = () => {
 
   useEffect(() => {
     getTodos()
-      .then(todoList => {
-        setTodos(todoList);
-      })
+      .then(setTodos)
       .catch(() => {
         setLoadingError('Unable to load todos');
         setTimeout(() => {
@@ -100,7 +101,7 @@ export const App: React.FC = () => {
         setInputText('');
         setValidationError('');
         if (inputRef.current) {
-          inputRef.current.focus(); // Устанавливаем фокус на текстовое поле после успешного добавления
+          inputRef.current.focus();
         }
       })
       .catch(() => {
@@ -119,7 +120,7 @@ export const App: React.FC = () => {
           return updated;
         });
         if (inputRef.current) {
-          inputRef.current.focus(); // Устанавливаем фокус на текстовое поле в блоке finally
+          inputRef.current.focus();
         }
       });
   };
@@ -168,6 +169,8 @@ export const App: React.FC = () => {
 
   const allTodos = [...filterTodos, ...tempTodos];
 
+  const cnButton = todos.every(todo => todo.completed);
+
   return (
     <div className="todoapp">
       <h1 className="todoapp__title">todos</h1>
@@ -175,7 +178,7 @@ export const App: React.FC = () => {
         <header className="todoapp__header">
           <button
             type="button"
-            className={`todoapp__toggle-all ${todos.every(todo => todo.completed) ? 'active' : ''}`}
+            className={cn('todoapp__toggle-all', { active: cnButton })}
             data-cy="ToggleAllButton"
             onClick={toggleTodoAll}
           />
@@ -196,44 +199,24 @@ export const App: React.FC = () => {
           todos={allTodos}
           toggleTodo={toggleTodo}
           deletePost={deletePost}
-          loadingTodos={loadingTodos} // Передаем массив ID задач
+          loadingTodos={loadingTodos}
         />
         {todos.length > 0 && (
-          <footer className="todoapp__footer" data-cy="Footer">
-            <span className="todo-count" data-cy="TodosCounter">
-              {leftItem} items left
-            </span>
-            <nav className="filter" data-cy="Filter">
-              {filterValues.map(filter => (
-                <a
-                  key={filter}
-                  href={`#/${filter !== 'all' ? filter : ''}`}
-                  className={cn('filter__link', {
-                    selected: filterSelected === filter,
-                  })}
-                  data-cy={`FilterLink${filter.charAt(0).toUpperCase() + filter.slice(1)}`}
-                  onClick={() => setFilterSelected(filter)}
-                >
-                  {filter}
-                </a>
-              ))}
-            </nav>
-
-            <button
-              type="button"
-              className="todoapp__clear-completed"
-              data-cy="ClearCompletedButton"
-              disabled={disabledButton}
-              onClick={clearCompleted}
-            >
-              Clear completed
-            </button>
-          </footer>
+          <Footer
+            leftItem={leftItem}
+            filterValues={filterValues}
+            filterSelected={filterSelected}
+            setFilterSelected={setFilterSelected}
+            disabledButton={disabledButton}
+            clearCompleted={clearCompleted}
+          />
         )}
       </div>
       <div
         data-cy="ErrorNotification"
-        className={`notification is-danger is-light has-text-weight-normal ${loadingError || validationError ? '' : 'hidden'}`}
+        className={cn('notification', 'is-danger', 'is-light', 'has-text-weight-normal', {
+          hidden: !loadingError && !validationError,
+        })}
       >
         <button
           data-cy="HideErrorButton"

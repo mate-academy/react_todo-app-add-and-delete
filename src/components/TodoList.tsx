@@ -6,7 +6,7 @@ type Props = {
   todos: Todo[];
   toggleTodo: (id: number) => void;
   deletePost: (id: number) => void;
-  loadingTodos: number[]; // Массив ID задач с лоадером
+  loadingTodos: number[];
 };
 
 export const TodoList: React.FC<Props> = ({

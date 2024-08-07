@@ -30,7 +30,11 @@ export const TodoComponent: React.FC<Props> = ({
         <span className="visually-hidden">Mark as completed</span>
       </label>
 
-      <span data-cy="TodoTitle" className="todo__title">
+      <span
+        data-cy="TodoTitle"
+        className="todo__title"
+        onDoubleClick={() => {}}
+      >
         {title}
       </span>
 
