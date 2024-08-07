@@ -7,6 +7,7 @@ import {
   getTodos,
   updateTodo,
 } from './api/todos';
+// eslint-disable-next-line import/extensions
 import { ErrorNotification } from './components/ErrorNotification.tsx';
 import { Footer } from './components/Footer.tsx';
 import { Header } from './components/Header.tsx';
