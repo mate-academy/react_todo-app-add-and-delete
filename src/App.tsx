@@ -121,7 +121,7 @@ export const App: React.FC = () => {
 
     deleteTodos(todoId)
       .then(() => {
-        setTodos(todos.filter(todo => todo.id !== todoId));
+        setTodos(prev => prev.filter(todo => todo.id !== todoId));
         setDeletingTodosIds(prev => prev.filter(id => id !== todoId));
       })
       .catch(() => {
@@ -141,27 +141,6 @@ export const App: React.FC = () => {
       handleDeleteTodo(id);
     });
   };
-  // const handleCompletedDelete = () => {
-  //   const completedIds = todos
-  //     .filter(todo => todo.completed)
-  //     .map(todo => todo.id);
-
-  //   setDeletingTodosIds(completedIds);
-
-  //    completedIds.forEach(id => deleteTodos(id));
-
-  //   // Promise.all(completedIds.map(id => deleteTodos(id)))
-  //   //   .then(() => {
-  //   //     setTodos(todos.filter(todo => !completedIds.includes(todo.id)));
-  //   //     setDeletingTodosIds([]);
-  //   //   })
-  //   //   .catch(() => {
-  //   //     setError('Unable to delete a todo');
-  //   //     setTimeout(() => {
-  //   //       setError('');
-  //   //     }, 3000);
-  //   //   });
-  // };
 
   return (
     <div className="todoapp">
