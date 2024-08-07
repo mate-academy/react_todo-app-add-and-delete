@@ -214,9 +214,15 @@ export const App: React.FC = () => {
       </div>
       <div
         data-cy="ErrorNotification"
-        className={cn('notification', 'is-danger', 'is-light', 'has-text-weight-normal', {
-          hidden: !loadingError && !validationError,
-        })}
+        className={cn(
+          'notification',
+          'is-danger',
+          'is-light',
+          'has-text-weight-normal',
+          {
+            hidden: !loadingError && !validationError,
+          },
+        )}
       >
         <button
           data-cy="HideErrorButton"
