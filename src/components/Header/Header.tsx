@@ -23,7 +23,7 @@ export const Header: React.FC<Props> = ({
     if (!isSubmitting && inputRef.current) {
       inputRef.current.focus();
     }
-  }, [isSubmitting]);
+  }, [isSubmitting, todos]);
 
   const handleSubmit = (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
@@ -54,6 +54,7 @@ export const Header: React.FC<Props> = ({
       .catch(() => {
         setErrorMessage('Unable to add a todo');
         setTimeout(() => setErrorMessage(''), 3000);
+        setTempTodo(null);
       })
       .finally(() => {
         setIsSubmitting(false);
