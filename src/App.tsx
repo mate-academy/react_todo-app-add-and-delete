@@ -6,10 +6,10 @@ import {
   getTodos,
   updateTodo,
 } from './api/todos';
-import { ErrorNotification } from './components/ErrorNotification';
-import { Footer } from './components/Footer';
-import { Header } from './components/Header';
-import { TodoList } from './components/TodoList';
+import { ErrorNotification } from './components/ErrorNotification_temp';
+import { Footer } from './components/Footer_temp';
+import { Header } from './components/Header_temp';
+import { TodoList } from './components/TodoList_temp';
 import { Todo } from './types/Todo';
 import { UserWarning } from './UserWarning';
 

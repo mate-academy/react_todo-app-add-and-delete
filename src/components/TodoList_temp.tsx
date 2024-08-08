@@ -1,6 +1,6 @@
 import React, { useMemo } from 'react';
 import { Todo } from '../types/Todo';
-import { TodoItem } from './TodoItem';
+import { TodoItem } from './TodoItem_temp';
 
 enum Filter {
   All = 'all',
