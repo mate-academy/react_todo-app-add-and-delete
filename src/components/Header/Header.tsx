@@ -10,7 +10,7 @@ type Props = {
   setErrorMessage: (message: string) => void;
   resetError: () => void;
   addTodo: (todo: Omit<Todo, 'id'>) => Promise<void>;
-  completed: boolean;
+  // completed: boolean;
   todos: Todo[];
   submitting: boolean;
 };
@@ -22,7 +22,7 @@ export const Header: React.FC<Props> = ({
   setErrorMessage,
   resetError,
   addTodo,
-  completed,
+  // completed,
   todos,
   submitting,
 }) => {
@@ -45,8 +45,8 @@ export const Header: React.FC<Props> = ({
 
     addTodo({
       userId: USER_ID,
-      title,
-      completed,
+      title: title.trim(),
+      completed: false,
     });
   };
 

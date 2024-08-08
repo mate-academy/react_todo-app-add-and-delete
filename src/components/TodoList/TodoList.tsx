@@ -6,7 +6,7 @@ import classNames from 'classnames';
 
 type Props = {
   todos: Todo[];
-  setCompleted: (completed: boolean) => void;
+  // setCompleted: (completed: boolean) => void;
   tempTodo: Todo | null;
   onDelete: (todoId: number) => void;
   idOfDeletedTodo: number[];
@@ -14,7 +14,7 @@ type Props = {
 
 export const TodoList: React.FC<Props> = ({
   todos,
-  setCompleted,
+  // setCompleted,
   tempTodo,
   onDelete,
   idOfDeletedTodo,
@@ -32,7 +32,7 @@ export const TodoList: React.FC<Props> = ({
             type="checkbox"
             className="todo__status"
             checked={completed}
-            onChange={event => setCompleted(event.target.checked)}
+            // onChange={event => setCompleted(event.target.checked)}
           />
         </label>
 

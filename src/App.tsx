@@ -18,7 +18,7 @@ export const App: React.FC = () => {
   const [idOfDeletedTodo, setIdOfDeletedTodo] = useState<number[]>([]);
 
   const [title, setTitle] = useState('');
-  const [completed, setCompleted] = useState(false);
+  // const [completed, setCompleted] = useState(false);
 
   function resetError() {
     setErrorMessage('');
@@ -101,14 +101,14 @@ export const App: React.FC = () => {
           setErrorMessage={setErrorMessage}
           resetError={resetError}
           addTodo={addTodo}
-          completed={completed}
+          // completed={completed}
           todos={todos}
           submitting={submitting}
         />
 
         <TodoList
           todos={filteredTodos}
-          setCompleted={setCompleted}
+          // setCompleted={setCompleted}
           tempTodo={tempTodo}
           onDelete={handleDelete}
           idOfDeletedTodo={idOfDeletedTodo}
