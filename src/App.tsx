@@ -5,7 +5,7 @@ import { TodoFilter } from './components/TodoFilter/TodoFilter';
 import { Header } from './components/Header/Header';
 import { TodoList } from './components/TodoList/TodoList';
 import { ErrorInfo } from './components/ErrorInfo/ErrorInfo';
-import { useTodoContext } from './utils/hooks/useTodoContext';
+import { useTodoContext } from './context/TodoContext';
 
 export const App: React.FC = () => {
   const { todos } = useTodoContext();

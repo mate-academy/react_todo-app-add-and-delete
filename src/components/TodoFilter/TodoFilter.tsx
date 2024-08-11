@@ -5,7 +5,7 @@ import {
   checkHasCompletedTodo,
 } from '../../utils/helpers/filterService';
 import classNames from 'classnames';
-import { useTodoContext } from '../../utils/hooks/useTodoContext';
+import { useTodoContext } from '../../context/TodoContext';
 import { useTodoActions } from '../../utils/hooks/useTodoActions';
 
 export const TodoFilter: FC = () => {

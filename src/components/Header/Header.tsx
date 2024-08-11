@@ -2,7 +2,7 @@ import { FC, useState } from 'react';
 import { ErrorMessages } from '../../types/ErrorMessages/ErrorMessages';
 import { USER_ID } from '../../api/todos';
 import { Todo } from '../../types/Todo/Todo';
-import { useTodoContext } from '../../utils/hooks/useTodoContext';
+import { useTodoContext } from '../../context/TodoContext';
 import { isAllTodosComplete } from '../../utils/helpers/filterService';
 import { useTodoActions } from '../../utils/hooks/useTodoActions';
 import { getuuidNumber } from '../../utils/uuidNumber';

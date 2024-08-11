@@ -1,7 +1,7 @@
 import { FC, useState, useEffect } from 'react';
 import { Todo } from '../../types/Todo/Todo';
 import classNames from 'classnames';
-import { useTodoContext } from '../../utils/hooks/useTodoContext';
+import { useTodoContext } from '../../context/TodoContext';
 import { useTodoActions } from '../../utils/hooks/useTodoActions';
 import { ErrorMessages } from '../../types/ErrorMessages/ErrorMessages';
 

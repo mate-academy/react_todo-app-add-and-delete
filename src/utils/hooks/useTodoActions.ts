@@ -1,5 +1,5 @@
 import { addTodos, delateTodos, patchTodos } from '../../api/todos';
-import { useTodoContext } from './useTodoContext';
+import { useTodoContext } from '../../context/TodoContext';
 import { ErrorMessages } from '../../types/ErrorMessages/ErrorMessages';
 import { Todo } from '../../types/Todo/Todo';
 

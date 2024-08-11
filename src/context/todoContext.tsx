@@ -1,5 +1,6 @@
 import React, {
   createContext,
+  useContext,
   useState,
   ReactNode,
   useEffect,
@@ -99,4 +100,14 @@ export const TodoProvider: React.FC<ProviderProps> = ({
       {children}
     </TodoContext.Provider>
   );
+};
+
+export const useTodoContext = () => {
+  const context = useContext(TodoContext);
+
+  if (context === undefined) {
+    throw new Error('useTodoContext must be used within a TodoProvider');
+  }
+
+  return context;
 };

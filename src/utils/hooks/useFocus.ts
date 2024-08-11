@@ -1,5 +1,5 @@
 import { useRef, useEffect } from 'react';
-import { useTodoContext } from './useTodoContext';
+import { useTodoContext } from '../../context/TodoContext';
 
 export const useFocus = () => {
   const inputRef = useRef<HTMLInputElement>(null);

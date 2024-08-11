@@ -1,6 +1,6 @@
 import { FC } from 'react';
 import { TodoItem } from '../TodoItem/TodoItem';
-import { useTodoContext } from '../../utils/hooks/useTodoContext';
+import { useTodoContext } from '../../context/TodoContext';
 import { TransitionGroup, CSSTransition } from 'react-transition-group';
 import { TempTodo } from '../TodoTemp/TodoTemp';
 
