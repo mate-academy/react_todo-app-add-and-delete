@@ -73,9 +73,11 @@ export const useTodoActions = () => {
         .map(async todo => {
           try {
             await deleteTodo([todo.id]);
+
             return { id: todo.id, success: true };
           } catch {
             showError(ErrorMessages.Delete);
+
             return { id: todo.id, success: false };
           }
         }),
@@ -85,6 +87,7 @@ export const useTodoActions = () => {
       const result = results.find(
         r => r.status === 'fulfilled' && r.value && r.value.id === todo.id,
       );
+
       return (
         !result || (result.status === 'fulfilled' && !result.value.success)
       );

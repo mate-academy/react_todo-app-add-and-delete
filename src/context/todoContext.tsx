@@ -12,6 +12,10 @@ import { ErrorMessages } from '../types/ErrorMessages/ErrorMessages';
 import { Filters } from '../types/Filters/Filters';
 import { getFiltedTodos } from '../utils/helpers/filterService';
 
+export const TodoContext = createContext<TodoContextType | undefined>(
+  undefined,
+);
+
 export interface TodoContextType {
   todos: Todo[];
   filteredTodos: Todo[];
@@ -30,10 +34,6 @@ export interface TodoContextType {
   showError: (error: ErrorMessages | string) => void;
   setLoadingTodoIds: React.Dispatch<React.SetStateAction<number[] | null>>;
 }
-
-export const TodoContext = createContext<TodoContextType | undefined>(
-  undefined,
-);
 
 interface ProviderProps {
   children: ReactNode;
