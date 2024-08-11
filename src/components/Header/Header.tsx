@@ -1,19 +1,21 @@
-import { FC, useState, useEffect } from 'react';
+import { FC, useState } from 'react';
 import { ErrorMessages } from '../../types/ErrorMessages/ErrorMessages';
 import { USER_ID } from '../../api/todos';
 import { Todo } from '../../types/Todo/Todo';
 import { useTodoContext } from '../../utils/hooks/useTodoContext';
-import { isAllTodosComplete } from '../../services/FilterService';
-import { TodoService } from '../../services/TodoService';
+import { isAllTodosComplete } from '../../utils/helpers/filterService';
+import { useTodoActions } from '../../utils/hooks/useTodoActions';
 import { getuuidNumber } from '../../utils/uuidNumber';
 import classNames from 'classnames';
+import { useFocus } from '../../utils/hooks/useFocus';
 
 export const Header: FC = ({}) => {
-  const { showError, setLoading, todos, inputRef, setTodoTemp, setFocusInput } =
+  const { showError, setLoadingTodoIds, todos, setTodoTemp, setLockedFocus } =
     useTodoContext();
-  const { createTodo, toggleAllCompleted } = TodoService();
+  const { createTodo, toggleAllCompleted } = useTodoActions();
+  const { inputRef } = useFocus();
   const [title, setTitle] = useState('');
-  const [isSubmitting, setIsSubmitting] = useState(false);
+  const [isSubmitting, setIsSubmitting] = useState(false); // - тут стан для фокусу
 
   const reset = () => {
     setTitle('');
@@ -28,8 +30,8 @@ export const Header: FC = ({}) => {
 
     if (!normalizeTitle) {
       showError(ErrorMessages.Empty);
-      setLoading(null);
-      setFocusInput(true);
+      setLoadingTodoIds(null);
+      setLockedFocus(true);
 
       return;
     }
@@ -44,21 +46,20 @@ export const Header: FC = ({}) => {
     };
 
     try {
+      setLockedFocus(false);
       setIsSubmitting(true);
-      setLoading([todo.id]);
+      setLoadingTodoIds([todo.id]);
       await createTodo(todo);
       reset();
-    } catch (error) {
+    } catch {
+      setTitle(normalizeTitle);
     } finally {
-      setLoading(null);
+      setLoadingTodoIds(null);
       setTodoTemp(null);
       setIsSubmitting(false);
+      setLockedFocus(true);
     }
   };
-
-  useEffect(() => {
-    inputRef.current?.focus();
-  }, [isSubmitting, inputRef]);
 
   return (
     <header className="todoapp__header">

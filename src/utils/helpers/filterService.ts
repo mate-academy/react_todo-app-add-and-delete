@@ -1,5 +1,5 @@
-import { Filters } from '../types/Filters/Filters';
-import { Todo } from '../types/Todo/Todo';
+import { Filters } from '../../types/Filters/Filters';
+import { Todo } from '../../types/Todo/Todo';
 
 export const filterTodos = (todos: Todo[], isCompleted: boolean) => {
   return todos.filter(todo => todo.completed === isCompleted);
@@ -17,7 +17,7 @@ export const isAllTodosComplete = (todos: Todo[]) => {
   return todos.every(todo => todo.completed === true);
 };
 
-export const getOneCompletedTodo = (todos: Todo[]) => {
+export const checkHasCompletedTodo = (todos: Todo[]) => {
   return todos.some(todo => todo.completed);
 };
 

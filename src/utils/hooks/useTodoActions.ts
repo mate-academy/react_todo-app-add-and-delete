@@ -1,24 +1,17 @@
-import { useEffect } from 'react';
-import { addTodos, delateTodos, patchTodos } from '../api/todos';
-import { useTodoContext } from '../utils/hooks/useTodoContext';
-import { ErrorMessages } from '../types/ErrorMessages/ErrorMessages';
-import { Todo } from '../types/Todo/Todo';
+import { addTodos, delateTodos, patchTodos } from '../../api/todos';
+import { useTodoContext } from './useTodoContext';
+import { ErrorMessages } from '../../types/ErrorMessages/ErrorMessages';
+import { Todo } from '../../types/Todo/Todo';
 
-export const TodoService = () => {
+export const useTodoActions = () => {
   const {
     todos,
     setTodos,
     setErrorMessage,
     showError,
-    setLoading,
-    setFocusInput,
-    inputRef,
-    focusInput,
+    setLoadingTodoIds,
+    setLockedFocus,
   } = useTodoContext();
-
-  useEffect(() => {
-    inputRef.current?.focus();
-  }, [focusInput, inputRef]);
 
   const editTodo = async (id: number, data: Partial<Todo>) => {
     try {
@@ -33,8 +26,9 @@ export const TodoService = () => {
           return todo;
         }),
       );
-    } catch {
+    } catch (error) {
       showError(ErrorMessages.Edit);
+      throw error;
     }
   };
 
@@ -46,71 +40,57 @@ export const TodoService = () => {
     } catch (error) {
       showError(ErrorMessages.Add);
       throw error;
-    } finally {
     }
   };
 
   const deleteTodo = async (todosId: number[]) => {
+    setLockedFocus(false);
     try {
-      setFocusInput(false);
       setErrorMessage('');
-      setLoading(todosId);
+      setLoadingTodoIds(todosId);
 
       for (const id of todosId) {
         await delateTodos(id);
         setTodos(currentTodos => currentTodos.filter(todo => todo.id !== id));
       }
+
+      setLockedFocus(true);
     } catch (error) {
       showError(ErrorMessages.Delete);
-      setFocusInput(true);
+      setLockedFocus(true);
       throw error;
     } finally {
-      setFocusInput(true);
-      setLoading(null);
+      setLoadingTodoIds(null);
     }
   };
 
   const clearCompletedTodos = async () => {
-    const completedTodos = todos.filter(todo => todo.completed);
+    let updatedTodos = [...todos];
 
-    if (completedTodos.length === 0) {
-      return;
-    }
-
-    try {
-      setErrorMessage('');
-      setLoading(completedTodos.map(todo => todo.id));
-
-      const deletionResults = await Promise.allSettled(
-        completedTodos.map(async todo => {
+    const results = await Promise.allSettled(
+      todos
+        .filter(todo => todo.completed)
+        .map(async todo => {
           try {
             await deleteTodo([todo.id]);
-
-            return todo.id;
+            return { id: todo.id, success: true };
           } catch {
             showError(ErrorMessages.Delete);
-
-            return null;
+            return { id: todo.id, success: false };
           }
         }),
-      );
+    );
 
-      const successfulDeletions = deletionResults
-        .filter(
-          (result): result is PromiseFulfilledResult<number> =>
-            result.status === 'fulfilled' && result.value !== null,
-        )
-        .map(result => result.value);
-
-      setTodos(currentTodos =>
-        currentTodos.filter(todo => !successfulDeletions.includes(todo.id)),
+    updatedTodos = updatedTodos.filter(todo => {
+      const result = results.find(
+        r => r.status === 'fulfilled' && r.value && r.value.id === todo.id,
       );
-    } catch (error) {
-      showError(ErrorMessages.ClearCompleted);
-      throw error;
-    } finally {
-      setLoading(null);
-    }
+      return (
+        !result || (result.status === 'fulfilled' && !result.value.success)
+      );
+    });
+
+    setTodos(updatedTodos);
   };
 
   const toggleAllCompleted = async () => {
@@ -125,7 +105,7 @@ export const TodoService = () => {
     }
 
     try {
-      setLoading(todosToToggleIds);
+      setLoadingTodoIds(todosToToggleIds);
 
       const updateTodos = todosToToggle.map(async todo => {
         await editTodo(todo.id, { completed: toggleState });
@@ -142,9 +122,8 @@ export const TodoService = () => {
       );
     } catch (error) {
       showError(ErrorMessages.Edit);
-      throw error;
     } finally {
-      setLoading(null);
+      setLoadingTodoIds(null);
     }
   };
 

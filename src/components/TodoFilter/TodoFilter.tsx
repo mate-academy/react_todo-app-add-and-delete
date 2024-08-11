@@ -2,15 +2,15 @@ import { FC } from 'react';
 import { Filters } from '../../types/Filters/Filters';
 import {
   getActiveTodos,
-  getOneCompletedTodo,
-} from '../../services/FilterService';
+  checkHasCompletedTodo,
+} from '../../utils/helpers/filterService';
 import classNames from 'classnames';
 import { useTodoContext } from '../../utils/hooks/useTodoContext';
-import { TodoService } from '../../services/TodoService';
+import { useTodoActions } from '../../utils/hooks/useTodoActions';
 
 export const TodoFilter: FC = () => {
   const { todos, setFilter, filter } = useTodoContext();
-  const { clearCompletedTodos } = TodoService();
+  const { clearCompletedTodos } = useTodoActions();
 
   return (
     <footer className="todoapp__footer" data-cy="Footer">
@@ -57,7 +57,7 @@ export const TodoFilter: FC = () => {
         type="button"
         className="todoapp__clear-completed"
         data-cy="ClearCompletedButton"
-        disabled={!getOneCompletedTodo(todos)}
+        disabled={!checkHasCompletedTodo(todos)}
         onClick={clearCompletedTodos}
       >
         Clear completed

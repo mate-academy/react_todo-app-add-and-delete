@@ -2,21 +2,21 @@ import { FC, useState, useEffect } from 'react';
 import { Todo } from '../../types/Todo/Todo';
 import classNames from 'classnames';
 import { useTodoContext } from '../../utils/hooks/useTodoContext';
-import { TodoService } from '../../services/TodoService';
+import { useTodoActions } from '../../utils/hooks/useTodoActions';
 import { ErrorMessages } from '../../types/ErrorMessages/ErrorMessages';
 
 type Props = { todo: Todo };
 
 export const TodoItem: FC<Props> = ({ todo }) => {
   const {
-    loading,
+    loadingTodoIds,
     showError,
-    setLoading,
+    setLoadingTodoIds,
     editTodoId,
     setEditTodoId,
-    setFocusInput,
+    setLockedFocus,
   } = useTodoContext();
-  const { deleteTodo, editTodo } = TodoService();
+  const { deleteTodo, editTodo } = useTodoActions();
   const [activeEdit, setActiveEdit] = useState(false);
   const [title, setTitle] = useState(todo.title);
   const [completed, setCompleted] = useState<boolean>(todo.completed);
@@ -26,12 +26,12 @@ export const TodoItem: FC<Props> = ({ todo }) => {
       event.preventDefault();
     }
 
-    setLoading([todo.id]);
+    setLoadingTodoIds([todo.id]);
     const normalizeTitle = title.trim();
 
     if (!normalizeTitle) {
       showError(ErrorMessages.Empty);
-      setLoading(null);
+      setLoadingTodoIds(null);
 
       return;
     }
@@ -39,24 +39,23 @@ export const TodoItem: FC<Props> = ({ todo }) => {
     try {
       await editTodo(todo.id, { title });
     } catch (error) {
-      showError(ErrorMessages.Edit);
-      setFocusInput(true);
+      setTitle(title);
+      setLockedFocus(true);
     } finally {
-      setActiveEdit(false);
       setEditTodoId(null);
-      setLoading(null);
+      setLoadingTodoIds(null);
     }
   };
 
   const handleToggleCompleted = async () => {
-    setLoading([todo.id]);
+    setLoadingTodoIds([todo.id]);
     try {
       await editTodo(todo.id, { completed: !completed });
       setCompleted(prev => !prev);
     } catch (error) {
       showError(ErrorMessages.Edit);
     } finally {
-      setLoading(null);
+      setLoadingTodoIds(null);
     }
   };
 
@@ -107,6 +106,7 @@ export const TodoItem: FC<Props> = ({ todo }) => {
               if (todo.completed === false) {
                 setEditTodoId(todo.id);
                 setActiveEdit(true);
+                setLockedFocus(true);
               }
             }}
           >
@@ -126,7 +126,7 @@ export const TodoItem: FC<Props> = ({ todo }) => {
       <div
         data-cy="TodoLoader"
         className={classNames('modal overlay', {
-          'is-active': loading?.includes(todo.id),
+          'is-active': loadingTodoIds?.includes(todo.id),
         })}
       >
         <div className="modal-background has-background-white-ter" />

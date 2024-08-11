@@ -5,32 +5,30 @@ import React, {
   useEffect,
   useMemo,
   useCallback,
-  useRef,
 } from 'react';
 import { Todo } from '../types/Todo/Todo';
 import { getTodos } from '../api/todos';
 import { ErrorMessages } from '../types/ErrorMessages/ErrorMessages';
 import { Filters } from '../types/Filters/Filters';
-import { getFiltedTodos } from '../services/FilterService';
+import { getFiltedTodos } from '../utils/helpers/filterService';
 
 export interface TodoContextType {
   todos: Todo[];
   filteredTodos: Todo[];
-  inputRef: React.RefObject<HTMLInputElement>;
   filter: Filters;
-  loading: number[] | null;
+  loadingTodoIds: number[] | null;
   editTodoId: number | null;
   todoTemp: string | null;
   errorMessage: ErrorMessages | string;
+  lockedFocus: boolean;
+  setLockedFocus: React.Dispatch<React.SetStateAction<boolean>>;
   setEditTodoId: React.Dispatch<React.SetStateAction<number | null>>;
   setTodoTemp: React.Dispatch<React.SetStateAction<string | null>>;
   setTodos: React.Dispatch<React.SetStateAction<Todo[]>>;
   setErrorMessage: React.Dispatch<React.SetStateAction<ErrorMessages | string>>;
   setFilter: React.Dispatch<React.SetStateAction<Filters>>;
   showError: (error: ErrorMessages | string) => void;
-  setLoading: React.Dispatch<React.SetStateAction<number[] | null>>;
-  setFocusInput: React.Dispatch<React.SetStateAction<boolean | null>>;
-  focusInput: boolean | null;
+  setLoadingTodoIds: React.Dispatch<React.SetStateAction<number[] | null>>;
 }
 
 export const TodoContext = createContext<TodoContextType | undefined>(
@@ -47,15 +45,10 @@ export const TodoProvider: React.FC<ProviderProps> = ({
   const [todos, setTodos] = useState<Todo[]>([]);
   const [filter, setFilter] = useState(Filters.All);
   const [errorMessage, setErrorMessage] = useState<ErrorMessages | string>('');
-  const [loading, setLoading] = useState<number[] | null>(null);
+  const [loadingTodoIds, setLoadingTodoIds] = useState<number[] | null>(null);
   const [editTodoId, setEditTodoId] = useState<number | null>(null);
-  const [focusInput, setFocusInput] = useState<boolean | null>(false);
   const [todoTemp, setTodoTemp] = useState<string | null>(null);
-  const inputRef = useRef<HTMLInputElement>(null);
-
-  useEffect(() => {
-    inputRef.current?.focus();
-  }, [focusInput]);
+  const [lockedFocus, setLockedFocus] = useState(false);
 
   const showError = useCallback((error: ErrorMessages | string) => {
     setErrorMessage(error);
@@ -63,6 +56,7 @@ export const TodoProvider: React.FC<ProviderProps> = ({
   }, []);
 
   useEffect(() => {
+    setLockedFocus(true);
     const loadTodos = async () => {
       try {
         const data = await getTodos();
@@ -92,15 +86,14 @@ export const TodoProvider: React.FC<ProviderProps> = ({
         errorMessage,
         setErrorMessage,
         showError,
-        setLoading,
-        loading,
+        setLoadingTodoIds,
+        loadingTodoIds,
         editTodoId,
         setEditTodoId,
-        inputRef,
         setTodoTemp,
         todoTemp,
-        setFocusInput,
-        focusInput,
+        lockedFocus,
+        setLockedFocus,
       }}
     >
       {children}

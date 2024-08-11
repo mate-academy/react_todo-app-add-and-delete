@@ -4,7 +4,7 @@ import { useTodoContext } from '../../utils/hooks/useTodoContext';
 import { TransitionGroup, CSSTransition } from 'react-transition-group';
 import { TempTodo } from '../TodoTemp/TodoTemp';
 
-export const TodoListItem: FC = () => {
+export const TodoList: FC = () => {
   const { filteredTodos, todoTemp } = useTodoContext();
 
   return (
