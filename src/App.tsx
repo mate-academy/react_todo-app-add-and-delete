@@ -132,12 +132,10 @@ export const App: React.FC = () => {
         setTempTodo(null);
       })
       .finally(() => {
-        setTimeout(() => {
-          if (field.current) {
-            field.current.disabled = false;
-            field.current.focus();
-          }
-        }, 100);
+        if (field.current) {
+          field.current.disabled = false;
+          field.current.focus();
+        }
       });
   };
 
@@ -150,7 +148,7 @@ export const App: React.FC = () => {
           {/* this button should have `active` class only if all todos are completed */}
           <button
             type="button"
-            className="todoapp__toggle-all active"
+            className={`todoapp__toggle-all ${completedTodos.length === todos.length} && 'active`}
             data-cy="ToggleAllButton"
           />
 
