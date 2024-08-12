@@ -7,7 +7,9 @@ import { ErrorMessages } from '../../types/ErrorMessages/ErrorMessages';
 
 type Props = { todo: Todo };
 
-export const TodoItem: FC<Props> = ({ todo }) => {
+export const TodoItem: FC<Props> = ({
+  todo: { id, title: todoTitle, completed: todoCompleted },
+}) => {
   const {
     loadingTodoIds,
     showError,
@@ -18,15 +20,15 @@ export const TodoItem: FC<Props> = ({ todo }) => {
   } = useTodoContext();
   const { deleteTodo, editTodo } = useTodoActions();
   const [activeEdit, setActiveEdit] = useState(false);
-  const [title, setTitle] = useState(todo.title);
-  const [completed, setCompleted] = useState<boolean>(todo.completed);
+  const [title, setTitle] = useState(todoTitle);
+  const [completed, setCompleted] = useState<boolean>(todoCompleted);
 
   const handleSubmitEdit = async (event?: React.FormEvent) => {
     if (event) {
       event.preventDefault();
     }
 
-    setLoadingTodoIds([todo.id]);
+    setLoadingTodoIds([id]);
     const normalizeTitle = title.trim();
 
     if (!normalizeTitle) {
@@ -37,7 +39,7 @@ export const TodoItem: FC<Props> = ({ todo }) => {
     }
 
     try {
-      await editTodo(todo.id, { title });
+      await editTodo(id, { title });
     } catch (error) {
       setTitle(title);
       setLockedFocus(true);
@@ -48,9 +50,9 @@ export const TodoItem: FC<Props> = ({ todo }) => {
   };
 
   const handleToggleCompleted = async () => {
-    setLoadingTodoIds([todo.id]);
+    setLoadingTodoIds([id]);
     try {
-      await editTodo(todo.id, { completed: !completed });
+      await editTodo(id, { completed: !completed });
       setCompleted(prev => !prev);
     } catch (error) {
       showError(ErrorMessages.Edit);
@@ -59,21 +61,29 @@ export const TodoItem: FC<Props> = ({ todo }) => {
     }
   };
 
-  useEffect(() => {
-    if (activeEdit && editTodoId === todo.id) {
-      setTitle(todo.title);
+  const handleDoubleClick = () => {
+    if (!todoCompleted) {
+      setEditTodoId(id);
+      setActiveEdit(true);
+      setLockedFocus(true);
     }
-  }, [editTodoId, activeEdit, todo.title, todo.id]);
+  };
 
   useEffect(() => {
-    setCompleted(todo.completed);
-  }, [todo.completed]);
+    if (activeEdit && editTodoId === id) {
+      setTitle(todoTitle);
+    }
+  }, [editTodoId, activeEdit, todoTitle, id]);
+
+  useEffect(() => {
+    setCompleted(todoCompleted);
+  }, [todoCompleted]);
 
   return (
     <div
       data-cy="Todo"
       className={classNames('todo', 'item-enter-done', {
-        completed: todo.completed,
+        completed: todoCompleted,
       })}
     >
       <label className="todo__status-label">
@@ -87,7 +97,7 @@ export const TodoItem: FC<Props> = ({ todo }) => {
         />
       </label>
 
-      {activeEdit && editTodoId === todo.id ? (
+      {activeEdit && editTodoId === id ? (
         <form onSubmit={handleSubmitEdit}>
           <input
             data-cy="TodoTitleField"
@@ -102,21 +112,15 @@ export const TodoItem: FC<Props> = ({ todo }) => {
           <span
             data-cy="TodoTitle"
             className="todo__title"
-            onDoubleClick={() => {
-              if (todo.completed === false) {
-                setEditTodoId(todo.id);
-                setActiveEdit(true);
-                setLockedFocus(true);
-              }
-            }}
+            onDoubleClick={handleDoubleClick}
           >
-            {todo.title}
+            {todoTitle}
           </span>
           <button
             type="button"
             className="todo__remove"
             data-cy="TodoDelete"
-            onClick={() => deleteTodo([todo.id])}
+            onClick={() => deleteTodo([id])}
           >
             ×
           </button>
@@ -126,7 +130,7 @@ export const TodoItem: FC<Props> = ({ todo }) => {
       <div
         data-cy="TodoLoader"
         className={classNames('modal overlay', {
-          'is-active': loadingTodoIds?.includes(todo.id),
+          'is-active': loadingTodoIds?.includes(id),
         })}
       >
         <div className="modal-background has-background-white-ter" />

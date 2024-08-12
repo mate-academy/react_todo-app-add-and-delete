@@ -19,38 +19,19 @@ export const TodoFilter: FC = () => {
       </span>
 
       <nav className="filter" data-cy="Filter">
-        <a
-          href="#/"
-          className={classNames('filter__link', {
-            selected: filter === Filters.All,
-          })}
-          data-cy="FilterLinkAll"
-          onClick={() => setFilter(Filters.All)}
-        >
-          All
-        </a>
-
-        <a
-          href="#/active"
-          className={classNames('filter__link', {
-            selected: filter === Filters.Active,
-          })}
-          data-cy="FilterLinkActive"
-          onClick={() => setFilter(Filters.Active)}
-        >
-          Active
-        </a>
-
-        <a
-          href="#/completed"
-          className={classNames('filter__link', {
-            selected: filter === Filters.Completed,
-          })}
-          data-cy="FilterLinkCompleted"
-          onClick={() => setFilter(Filters.Completed)}
-        >
-          Completed
-        </a>
+        {Object.values(Filters).map(filterValue => (
+          <a
+            key={filterValue}
+            href={`#/${filterValue.toLowerCase()}`}
+            className={classNames('filter__link', {
+              selected: filter === filterValue,
+            })}
+            data-cy={`FilterLink${filterValue}`}
+            onClick={() => setFilter(filterValue)}
+          >
+            {filterValue}
+          </a>
+        ))}
       </nav>
 
       <button

@@ -15,7 +15,7 @@ export const Header: FC = ({}) => {
   const { createTodo, toggleAllCompleted } = useTodoActions();
   const { inputRef } = useFocus();
   const [title, setTitle] = useState('');
-  const [isSubmitting, setIsSubmitting] = useState(false); // - тут стан для фокусу
+  const [isSubmitting, setIsSubmitting] = useState(false);
 
   const reset = () => {
     setTitle('');
@@ -63,7 +63,7 @@ export const Header: FC = ({}) => {
 
   return (
     <header className="todoapp__header">
-      {todos.length > 0 && (
+      {!!todos.length && (
         <button
           type="button"
           className={classNames('todoapp__toggle-all', {

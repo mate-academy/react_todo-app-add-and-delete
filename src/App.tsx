@@ -20,7 +20,7 @@ export const App: React.FC = () => {
       <div className="todoapp__content">
         <Header />
         <TodoList />
-        {todos.length > 0 && <TodoFilter />}
+        {!!todos.length && <TodoFilter />}
       </div>
       <ErrorInfo />
     </div>

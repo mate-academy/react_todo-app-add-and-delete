@@ -76,29 +76,27 @@ export const TodoProvider: React.FC<ProviderProps> = ({
     [filter, todos],
   );
 
+  const contextValue = {
+    todos,
+    setTodos,
+    filteredTodos,
+    setFilter,
+    filter,
+    errorMessage,
+    setErrorMessage,
+    showError,
+    setLoadingTodoIds,
+    loadingTodoIds,
+    editTodoId,
+    setEditTodoId,
+    setTodoTemp,
+    todoTemp,
+    lockedFocus,
+    setLockedFocus,
+  };
+
   return (
-    <TodoContext.Provider
-      value={{
-        todos,
-        setTodos,
-        filteredTodos,
-        setFilter,
-        filter,
-        errorMessage,
-        setErrorMessage,
-        showError,
-        setLoadingTodoIds,
-        loadingTodoIds,
-        editTodoId,
-        setEditTodoId,
-        setTodoTemp,
-        todoTemp,
-        lockedFocus,
-        setLockedFocus,
-      }}
-    >
-      {children}
-    </TodoContext.Provider>
+    <TodoContext.Provider value={contextValue}>{children}</TodoContext.Provider>
   );
 };
 
