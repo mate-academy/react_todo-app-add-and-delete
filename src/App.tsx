@@ -32,7 +32,7 @@ export const App: React.FC = () => {
 
   const [showErrorBox, setShowErrorBox] = useState(false);
 
-  const [inputdisable, setInputdisable] = useState(false);
+  const [isInputDisable, setIsInputDisable] = useState(false);
   const [arrayIdsOfLoading, setArrayIdsOfLoading] = useState<number[]>([]);
 
   const [textOfError, setTextOfError] = useState<ERROR_MESSAGE | null>(null);
@@ -45,7 +45,7 @@ export const App: React.FC = () => {
     if (autoFocusRef.current) {
       autoFocusRef.current.focus();
     }
-  }, [inputdisable]);
+  }, [isInputDisable]);
 
   useEffect(() => {
     getTodos()
@@ -60,7 +60,7 @@ export const App: React.FC = () => {
   }, []);
 
   function addPost(title: string) {
-    setInputdisable(true);
+    setIsInputDisable(true);
     // Create a temporary Todo item with a unique temporary id (e.g., -1)
     const tempTodo: Todo = {
       id: -1, // temporary id
@@ -90,7 +90,7 @@ export const App: React.FC = () => {
         wait(WAIT_TIME)
           .then(() => {
             setTodoInput('');
-            setInputdisable(false);
+            setIsInputDisable(false);
           })
           .finally(() => {
             setArrayIdsOfLoading([]);
@@ -99,7 +99,7 @@ export const App: React.FC = () => {
       .catch(() => {
         setShowErrorBox(true);
         setTextOfError(ERROR_MESSAGE.addError);
-        setInputdisable(false);
+        setIsInputDisable(false);
 
         // Optionally, remove the temporary Todo item if there's an error
         setTodoData((prevData: Todo[]): Todo[] => {
@@ -132,18 +132,6 @@ export const App: React.FC = () => {
 
   function updatePost(todoId: number, info: Todo) {
     setArrayIdsOfLoading(prevId => [...prevId, todoId]);
-    setTodoData((prevData: Todo[]): Todo[] => {
-      const updatedData = prevData.map(el => {
-        if (el.id === todoId) {
-          return info;
-        }
-
-        return el;
-      });
-
-      return updatedData as Todo[];
-    });
-
     wait(WAIT_TIME).then(() => {
       updateTodo(todoId, info)
         .then((data: Todo[]) => {
@@ -210,10 +198,10 @@ export const App: React.FC = () => {
       case FILTER_STATUS.all:
         setFilteredData(todoData);
         break;
-      case 'active':
+      case FILTER_STATUS.active:
         setFilteredData(todoData.filter(el => !el.completed));
         break;
-      case 'completed':
+      case FILTER_STATUS.completed:
         setFilteredData(todoData.filter(el => el.completed));
         break;
     }
@@ -253,6 +241,8 @@ export const App: React.FC = () => {
     });
   };
 
+  const clearButton = !todoData.some(el => el.completed);
+
   return (
     <div className="todoapp">
       <h1 className="todoapp__title">todos</h1>
@@ -276,7 +266,7 @@ export const App: React.FC = () => {
           {/* Add a todo on form submit */}
           <form onSubmit={handleSubmit}>
             <input
-              disabled={inputdisable}
+              disabled={isInputDisable}
               ref={autoFocusRef}
               value={todoInput}
               onChange={e => setTodoInput(e.target.value)}
@@ -341,7 +331,7 @@ export const App: React.FC = () => {
 
             {/* this button should be disabled if there are no completed todos */}
             <button
-              disabled={!todoData.some(el => el.completed)}
+              disabled={clearButton}
               onClick={clearAllCopmpleted}
               type="button"
               className="todoapp__clear-completed"

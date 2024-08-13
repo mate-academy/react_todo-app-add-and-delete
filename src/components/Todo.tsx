@@ -4,7 +4,7 @@ import { Todo as TodoInterface } from '../types/Todo';
 type Props = {
   todo: TodoInterface;
   deletePost: (v: number) => void;
-  updatePost: (v: number, b: TodoInterface) => any;
+  updatePost: (v: number, b: TodoInterface) => void;
   arrayIdsOfLoading: number[];
 };
 
