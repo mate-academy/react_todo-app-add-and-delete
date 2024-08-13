@@ -6,6 +6,8 @@ import { addTodo, deleteTodo, getTodos, updateTodo } from './api/todos';
 import { wait } from './utils/fetchClient';
 import { Todo as TodoElement } from './components/Todo';
 
+const WAIT_TIME = 500;
+
 // eslint-disable-next-line @typescript-eslint/naming-convention
 enum ERROR_MESSAGE {
   serverError = 'Unable to load todos',
@@ -31,15 +33,26 @@ export const App: React.FC = () => {
   const [showErrorBox, setShowErrorBox] = useState(false);
 
   const [inputdisable, setInputdisable] = useState(false);
-  const [idOfLoading, setIdOfLoading] = useState<number | null>(null);
   const [arrayIdsOfLoading, setArrayIdsOfLoading] = useState<number[]>([]);
 
   const [textOfError, setTextOfError] = useState<ERROR_MESSAGE | null>(null);
   const [todoInput, setTodoInput] = useState('');
 
+  const isFirstRender = useRef(true);
+  const autoFocusRef = useRef<HTMLInputElement>(null);
+
+  useEffect(() => {
+    if (autoFocusRef.current) {
+      autoFocusRef.current.focus();
+    }
+  }, [inputdisable]);
+
   useEffect(() => {
     getTodos()
-      .then(setTodoData)
+      .then(data => {
+        setTodoData(data);
+        setTododCounter(data.filter(el => !el.completed).length);
+      })
       .catch(() => {
         setShowErrorBox(true);
         setTextOfError(ERROR_MESSAGE.serverError);
@@ -48,63 +61,77 @@ export const App: React.FC = () => {
 
   function addPost(title: string) {
     setInputdisable(true);
-    // const localId = new Date().getTime();
-    // const localData = {
-    //   id: localId,
-    //   userId: 690,
-    //   title: title,
-    //   completed: false,
-    // };
-
-    // setTodoData((prevData: Todo[]): Todo[] => {
-    //   return [...prevData, localData];
-    // });
-
-    // setIdOfLoading(localId);
-
-    const ownData = {
+    // Create a temporary Todo item with a unique temporary id (e.g., -1)
+    const tempTodo: Todo = {
+      id: -1, // temporary id
       userId: 690,
-      title: title,
+      title: title.trim(),
       completed: false,
     };
 
-    wait(500)
-      .then(() => {
-        addTodo(ownData)
-          .then((data: Todo) => {
+    // Add the temporary Todo item to the state immediately
+    setTodoData((prevData: Todo[]): Todo[] => {
+      return [...prevData, tempTodo];
+    });
+
+    setArrayIdsOfLoading(prev => [...prev, tempTodo.id]);
+
+    addTodo({
+      userId: 690,
+      title: title.trim(),
+      completed: false,
+    })
+      .then((data: Todo) => {
+        // Replace the temporary Todo with the actual data from the response
+        setTodoData((prevData: Todo[]): Todo[] => {
+          return prevData.map(todo => (todo.id === tempTodo.id ? data : todo));
+        });
+        setArrayIdsOfLoading(prev => [...prev, data.id]);
+        wait(WAIT_TIME)
+          .then(() => {
             setTodoInput('');
-            setTodoData((prevData: Todo[]): Todo[] => {
-              return [data, ...prevData];
-            });
+            setInputdisable(false);
           })
-          .catch(() => {
-            setShowErrorBox(true);
-            setTextOfError(ERROR_MESSAGE.addError);
+          .finally(() => {
+            setArrayIdsOfLoading([]);
           });
       })
-      .finally(() => {
-        setTodoInput('');
+      .catch(() => {
+        setShowErrorBox(true);
+        setTextOfError(ERROR_MESSAGE.addError);
         setInputdisable(false);
-        setIdOfLoading(null);
-      });
+
+        // Optionally, remove the temporary Todo item if there's an error
+        setTodoData((prevData: Todo[]): Todo[] => {
+          return prevData.filter(todo => todo.id !== tempTodo.id);
+        });
+      })
+      .finally(() => {});
   }
 
   function deletePost(todoId: number) {
     setArrayIdsOfLoading(prev => [...prev, todoId]);
+
     deleteTodo(todoId)
-      .then()
-      .catch(() => {
-        setShowErrorBox(true);
-        setTextOfError(ERROR_MESSAGE.deleteError);
-      });
-    wait(500)
       .then(() => {
         setTodoData(prevData => prevData.filter(el => el.id !== todoId));
       })
-      .finally();
+      .catch(() => {
+        setShowErrorBox(true);
+        setTextOfError(ERROR_MESSAGE.deleteError);
+      })
+      .finally(() => {
+        setArrayIdsOfLoading([]);
+
+        // Refocus the input field after deletion
+        if (autoFocusRef.current) {
+          autoFocusRef.current.focus();
+        }
+      });
   }
 
   function updatePost(todoId: number, info: Todo) {
+    setArrayIdsOfLoading(prevId => [...prevId, todoId]);
     setTodoData((prevData: Todo[]): Todo[] => {
       const updatedData = prevData.map(el => {
         if (el.id === todoId) {
@@ -117,7 +144,7 @@ export const App: React.FC = () => {
       return updatedData as Todo[];
     });
 
-    wait(500).then(() => {
+    wait(WAIT_TIME).then(() => {
       updateTodo(todoId, info)
         .then((data: Todo[]) => {
           setTodoData((prevData: Todo[]): Todo[] => {
@@ -135,6 +162,9 @@ export const App: React.FC = () => {
         .catch(() => {
           setShowErrorBox(true);
           setTextOfError(ERROR_MESSAGE.updateError);
+        })
+        .finally(() => {
+          setArrayIdsOfLoading([]);
         });
     });
   }
@@ -166,7 +196,13 @@ export const App: React.FC = () => {
   }, [showErrorBox]);
 
   useEffect(() => {
-    setTododCounter(todoData.filter(el => !el.completed).length);
+    if (isFirstRender.current) {
+      isFirstRender.current = false;
+    } else {
+      wait(WAIT_TIME).then(() => {
+        setTododCounter(todoData.filter(el => !el.completed).length);
+      });
+    }
   }, [todoData]);
 
   useEffect(() => {
@@ -185,46 +221,34 @@ export const App: React.FC = () => {
 
   const hasIncompleteTasks = todoData.some(el => !el.completed);
 
-  const autoFocusRef = useRef<HTMLInputElement>(null);
-
-  useEffect(() => {
-    if (autoFocusRef.current) {
-      autoFocusRef.current.focus();
-    }
-  }, []);
-
   const makeAllTaskAsComplited = () => {
-    wait(500).then(() => {
-      setTodoData(prev => {
-        return prev.map(el => {
-          if (!el.completed) {
-            const updatedEl = { ...el, completed: true };
+    setTodoData(prev => {
+      return prev.map(el => {
+        if (!el.completed) {
+          const updatedEl = { ...el, completed: true };
 
-            updatePost(el.id, updatedEl);
+          updatePost(el.id, updatedEl);
 
-            return updatedEl;
-          }
+          return updatedEl;
+        }
 
-          return el;
-        });
+        return el;
       });
     });
   };
 
   const makeAllTaskAsActive = () => {
-    wait(500).then(() => {
-      setTodoData(prev => {
-        return prev.map(el => {
-          if (el.completed) {
-            const updatedEl = { ...el, completed: false };
+    setTodoData(prev => {
+      return prev.map(el => {
+        if (el.completed) {
+          const updatedEl = { ...el, completed: false };
 
-            updatePost(el.id, updatedEl);
+          updatePost(el.id, updatedEl);
 
-            return updatedEl;
-          }
+          return updatedEl;
+        }
 
-          return el;
-        });
+        return el;
       });
     });
   };
@@ -269,7 +293,6 @@ export const App: React.FC = () => {
             return (
               <TodoElement
                 arrayIdsOfLoading={arrayIdsOfLoading}
-                idOfLoading={idOfLoading}
                 key={todo.id}
                 todo={todo}
                 deletePost={deletePost}

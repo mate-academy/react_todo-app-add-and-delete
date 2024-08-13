@@ -5,7 +5,6 @@ type Props = {
   todo: TodoInterface;
   deletePost: (v: number) => void;
   updatePost: (v: number, b: TodoInterface) => any;
-  idOfLoading: number | null;
   arrayIdsOfLoading: number[];
 };
 
@@ -13,7 +12,6 @@ export const Todo: React.FC<Props> = ({
   todo,
   deletePost,
   updatePost,
-  idOfLoading,
   arrayIdsOfLoading,
 }) => {
   const [inputChange, setInputChange] = useState(todo.title);
@@ -49,7 +47,6 @@ export const Todo: React.FC<Props> = ({
     }
   };
 
-  const localLoading = idOfLoading === todo.id ? true : false;
   const localManyid = arrayIdsOfLoading.includes(todo.id);
 
   return (
@@ -104,7 +101,7 @@ export const Todo: React.FC<Props> = ({
 
       <div
         data-cy="TodoLoader"
-        className={`modal overlay ${(localLoading || localManyid) && 'is-active'}`}
+        className={`modal overlay ${localManyid && 'is-active'}`}
       >
         <div className="modal-background has-background-white-ter" />
         <div className="loader" />
