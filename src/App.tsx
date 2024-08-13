@@ -106,17 +106,13 @@ export const App: React.FC = () => {
     }
 
     const currentTodo = {
+      id: 0,
       title: titleWithOutSpaces,
       userId: todoService.USER_ID,
       completed: false,
     };
 
-    setTempTodo({
-      id: 0,
-      title: 'Test Todo',
-      userId: todoService.USER_ID,
-      completed: false,
-    });
+    setTempTodo(currentTodo);
 
     if (field.current) {
       field.current.disabled = true;
@@ -126,8 +122,8 @@ export const App: React.FC = () => {
       .createTodo(currentTodo)
       .then(newTodo => {
         setTodos(prev => [...prev, newTodo]);
-        setTempTodo(null);
         setTodoTitle('');
+        setTempTodo(null);
       })
       .catch(() => {
         handleError('Unable to add a todo');
@@ -154,6 +150,7 @@ export const App: React.FC = () => {
         />
 
         <TodoList
+          tempTitle={todoTitle}
           field={field}
           todoList={visibleTodos}
           tempTodo={tempTodo}
