@@ -15,6 +15,7 @@ export const App: React.FC = () => {
   const [filter, setFilter] = useState<Filter>(Filter.all);
   const [errorMessage, setErrorMessage] = useState('');
   const [tempTodo, setTempTodo] = useState<Todo | null>(null);
+  const [todosInProcess, setTodosInProcess] = useState<number[]>([]);
 
   useEffect(() => {
     todoService
@@ -45,18 +46,24 @@ export const App: React.FC = () => {
   };
 
   const deleteTodo = (postId: number) => {
-    const prev = [...todos];
+    setTodosInProcess(currentIds => [...currentIds, postId]);
 
     return todoService
       .deleteTodos(postId)
       .then(() => {
-        setTodos(currentTodo => currentTodo.filter(todo => todo.id !== postId));
+        setTodos(currentTodos =>
+          currentTodos.filter(todo => todo.id !== postId),
+        );
       })
       .catch(error => {
-        setTodos(prev);
         setErrorMessage('Unable to delete a todo');
         setTimeout(() => setErrorMessage(''), 3000);
         throw error;
+      })
+      .finally(() => {
+        setTodosInProcess(currentTodos =>
+          currentTodos.filter(id => id !== postId),
+        );
       });
   };
 
@@ -94,6 +101,7 @@ export const App: React.FC = () => {
           todos={filteredTodos}
           tempTodo={tempTodo}
           onDelete={deleteTodo}
+          todosInProcess={todosInProcess}
         />
         {todos.length !== 0 && (
           <Footer

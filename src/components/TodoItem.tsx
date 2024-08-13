@@ -6,24 +6,24 @@ import { useState } from 'react';
 type Props = {
   todo: Todo;
   onDelete: (postId: number) => Promise<unknown>;
+  todosInProcess: number[];
 };
 
 export const TodoItem: React.FC<Props> = ({
   todo: { completed, title, id },
   onDelete,
+  todosInProcess,
 }) => {
   const [isChecked, setIsChecked] = useState(completed);
-  const [isLoading, setIsLoading] = useState(false);
+
+  const isInProcess = todosInProcess.includes(id);
 
   const handleChangeChecked = (event: React.ChangeEvent<HTMLInputElement>) => {
     setIsChecked(event.target.checked);
   };
 
   const handleDelete = () => {
-    setIsLoading(true);
-    setTimeout(() => {
-      onDelete(id).finally(() => setIsLoading(false));
-    }, 100); // Затримка для відображення loader
+    onDelete(id);
   };
 
   return (
@@ -52,11 +52,10 @@ export const TodoItem: React.FC<Props> = ({
       <div
         data-cy="TodoLoader"
         className={cn('modal overlay', {
-          'is-active': isLoading,
+          'is-active': isInProcess,
         })}
       >
         <div className="modal-background has-background-white-ter" />
-
         <div className="loader" />
       </div>
     </div>
