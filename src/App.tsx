@@ -103,7 +103,7 @@ export const App: React.FC = () => {
           onDelete={deleteTodo}
           todosInProcess={todosInProcess}
         />
-        {todos.length !== 0 && (
+        {!!todos.length && (
           <Footer
             todos={todos}
             onFilter={setFilter}
