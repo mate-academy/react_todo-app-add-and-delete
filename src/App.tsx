@@ -16,15 +16,14 @@ export const App: React.FC = () => {
   const [todoTitle, setTodoTitle] = useState('');
   const [status, setStatus] = useState<TodoStatus>(TodoStatus.all);
   const [errorMessage, setErrorMessage] = useState('');
-  const [editingTodo, setEditingTodo] = useState(0);
-  const [tempTodo, setTempTodo] = useState<Todo | null>(null);
+  const [editingTodoId, setEditingTodoId] = useState(0);
   const [deleteTodoId, setDeleteTodoId] = useState(0);
+  const [tempTodo, setTempTodo] = useState<Todo | null>(null);
 
   if (!todoService.USER_ID) {
     return <UserWarning />;
   }
 
-  // eslint-disable-next-line react-hooks/rules-of-hooks
   const field = useRef<HTMLInputElement>(null);
 
   const handleError = (message: string) => {
@@ -57,7 +56,7 @@ export const App: React.FC = () => {
     if (field.current) {
       field.current.focus();
     }
-  }, [editingTodo]);
+  }, [editingTodoId]);
 
   const visibleTodos = todos.filter(todo => {
     switch (status) {
@@ -158,9 +157,9 @@ export const App: React.FC = () => {
           field={field}
           todoList={visibleTodos}
           tempTodo={tempTodo}
-          editTodo={editingTodo}
+          editTodo={editingTodoId}
           deleteTodo={deleteTodoId}
-          onEdit={setEditingTodo}
+          onEdit={setEditingTodoId}
           onDelete={deleteTodo}
         />
 

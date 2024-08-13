@@ -1,5 +1,5 @@
 export enum TodoStatus {
-  all = 'all',
-  active = 'active',
-  completed = 'completed',
+  all = 'All',
+  active = 'Active',
+  completed = 'Completed',
 }
