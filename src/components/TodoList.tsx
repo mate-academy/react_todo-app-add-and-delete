@@ -1,7 +1,7 @@
 /* eslint-disable jsx-a11y/label-has-associated-control */
 import React from 'react';
 import { Todo } from '../types/Todo';
-import classNames from 'classnames';
+import { TodoItem } from './TodoItem';
 
 type Props = {
   tempTitle: string;
@@ -27,64 +27,17 @@ export const TodoList: React.FC<Props> = ({
   return (
     <section className="todoapp__main" data-cy="TodoList">
       {todoList.map(({ id, title, completed }) => (
-        <div
-          data-cy="Todo"
-          className={classNames('todo', { completed: completed })}
+        <TodoItem
           key={id}
-        >
-          <label className="todo__status-label">
-            <input
-              data-cy="TodoStatus"
-              type="checkbox"
-              className="todo__status"
-              checked={completed}
-            />
-          </label>
-
-          {editTodo === id ? (
-            <form>
-              <input
-                ref={field}
-                data-cy="TodoTitleField"
-                type="text"
-                className="todo__title-field"
-                placeholder="Empty todo will be deleted"
-                value={title}
-                onBlur={() => onEdit(0)}
-              />
-            </form>
-          ) : (
-            <>
-              <span
-                data-cy="TodoTitle"
-                className="todo__title"
-                onDoubleClick={() => onEdit(id)}
-              >
-                {title}
-              </span>
-
-              <button
-                type="button"
-                className="todo__remove"
-                data-cy="TodoDelete"
-                onClick={() => onDelete(id)}
-              >
-                ×
-              </button>
-
-              {/* overlay will cover the todo while it is being deleted or updated */}
-              <div
-                data-cy="TodoLoader"
-                className={classNames('modal overlay', {
-                  'is-active': deleteTodo === id,
-                })}
-              >
-                <div className="modal-background has-background-white-ter" />
-                <div className="loader" />
-              </div>
-            </>
-          )}
-        </div>
+          id={id}
+          title={title}
+          completed={completed}
+          editTodo={editTodo}
+          deleteTodo={deleteTodo}
+          onEdit={onEdit}
+          onDelete={onDelete}
+          field={field}
+        />
       ))}
 
       {tempTodo && (
