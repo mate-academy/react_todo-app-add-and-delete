@@ -7,14 +7,16 @@ import { deleteTodo } from '../api/todos';
 import { Errors } from '../types/Errors';
 import { hideError } from '../functions/hideError';
 
-const filterTodos = (t: Todo[], filterBy: FilterStatus) => {
+const filterTodos = (todos: Todo[], filterBy: FilterStatus) => {
   switch (filterBy) {
     case FilterStatus.Active:
-      return t.filter(todo => !todo.completed);
+      return todos.filter(todo => !todo.completed);
+
     case FilterStatus.Completed:
-      return t.filter(todo => todo.completed);
+      return todos.filter(todo => todo.completed);
+
     default:
-      return t;
+      return todos;
   }
 };
 
