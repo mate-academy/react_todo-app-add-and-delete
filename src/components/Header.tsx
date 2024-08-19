@@ -21,7 +21,7 @@ export const Header: React.FC = () => {
     inputRef.current?.focus();
   }, [todos.length, todoTitle, messageError]);
 
-  const AddNewTodo = (
+  const addNewTodo = (
     title: string,
     completed = false,
     userId = USER_ID,
@@ -65,7 +65,7 @@ export const Header: React.FC = () => {
       return;
     }
 
-    AddNewTodo(todoTitle.trim()).then(() => setTodoTitle(''));
+    addNewTodo(todoTitle.trim()).then(() => setTodoTitle(''));
   };
 
   const isAllComplited = todos.every(todo => todo.completed);
