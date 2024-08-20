@@ -6,7 +6,6 @@ import { addTodo, deleteTodo, getTodos, USER_ID } from './api/todos';
 import { Todo } from './types/Todo';
 import { TodoList } from './components/TodoList/TodoList';
 import { Filter } from './types/Filter';
-import classNames from 'classnames';
 import { Footer } from './components/Footer/Footer';
 import { Header } from './components/Header/Header';
 import { Notification } from './components/Notification/Notification';
@@ -15,17 +14,10 @@ export const App: React.FC = () => {
   const [todos, setTodos] = useState<Todo[]>([]);
   const [todoTitle, setTodoTitle] = useState('');
   const [filter, setFilter] = useState<Filter>(Filter.All);
-  const [isErrorHidden, setIsErrorHidden] = useState(true);
   const [isInputDisabled, setIsInputDisabled] = useState(false);
   const [tempTodo, setTempTodo] = useState<Todo | null>(null);
-  // const [isTodosLoadedError, setIsTodosLoadedError] = useState(false);
   const [errorMessage, setErrorMessage] = useState('');
-  const [isTitleError, setIsTitleError] = useState(false);
   const [isDeletedTodoHasLoader, setIsDeletedTodoHasLoader] = useState(false);
-  // const [isRequestHasError, setIsRequestHasError] = useState(false);
-  // const [isDeletedRequestHasError, setIsDeletedRequestHasError] =
-  //   useState(false);
-
   const areTodosExist = todos.length !== 0;
   const notCompletedTodos = todos.filter(todo => !todo.completed).length;
 
@@ -43,14 +35,8 @@ export const App: React.FC = () => {
   useEffect(() => {
     getTodos()
       .then(setTodos)
-      .catch(error => {
-        setIsErrorHidden(false);
-        alert(error);
-      })
-      .finally(() => {
-        setTimeout(() => {
-          setIsErrorHidden(true);
-        }, 3000);
+      .catch(() => {
+        setErrorMessage('Unable to load todos');
       });
   }, []);
 
@@ -58,15 +44,11 @@ export const App: React.FC = () => {
     event.preventDefault();
 
     if (todoTitle.trim().length === 0) {
-      setIsTitleError(true);
-      setIsErrorHidden(false);
-
       return;
     }
 
-    setIsTitleError(false);
-    setIsErrorHidden(true);
     setIsInputDisabled(true);
+
     setTempTodo({
       id: 0,
       userId: USER_ID,
@@ -77,36 +59,16 @@ export const App: React.FC = () => {
     addTodo({ userId: USER_ID, title: todoTitle.trim(), completed: false })
       .then(newTodo => {
         setTodos(currentTodos => [...currentTodos, newTodo]);
-        setIsTitleError(false);
-        setIsErrorHidden(true);
         setTodoTitle('');
       })
       .catch(() => {
         setErrorMessage('Unable to add a todo');
-        setIsErrorHidden(false);
-        setTimeout(() => {
-          setIsErrorHidden(true);
-          setErrorMessage('');
-        }, 3000);
       })
       .finally(() => {
         setIsInputDisabled(false);
         setTempTodo(null);
       });
   };
-
-  useEffect(() => {
-    let timeoutId: NodeJS.Timeout;
-
-    if (isTitleError) {
-      timeoutId = setTimeout(() => {
-        setIsTitleError(false);
-        setIsErrorHidden(true);
-      }, 3000);
-    }
-
-    return () => clearTimeout(timeoutId);
-  }, [isTitleError]);
 
   const handleDeleteTodo = (todoId: number) => {
     setIsDeletedTodoHasLoader(true);
@@ -117,13 +79,7 @@ export const App: React.FC = () => {
         );
       })
       .catch(() => {
-        setIsErrorHidden(false);
         setErrorMessage('Unable to delete a todo');
-
-        setTimeout(() => {
-          setIsErrorHidden(true);
-          setErrorMessage('');
-        }, 3000);
       })
       .finally(() => setIsDeletedTodoHasLoader(false));
   };
@@ -135,7 +91,6 @@ export const App: React.FC = () => {
   return (
     <div className="todoapp">
       <h1 className="todoapp__title">todos</h1>
-
       <div className="todoapp__content">
         <Header
           isInputDisabled={isInputDisabled}
@@ -143,7 +98,6 @@ export const App: React.FC = () => {
           setTodoTitle={setTodoTitle}
           handleAddTodo={handleAddTodo}
         />
-
         {areTodosExist && (
           <TodoList
             todos={filteredTodos}
@@ -161,37 +115,10 @@ export const App: React.FC = () => {
           />
         )}
       </div>
-
-      {/* DON'T use conditional rendering to hide the notification */}
-      {/* Add the 'hidden' class to hide the message smoothly */}
-
-      <div
-        data-cy="ErrorNotification"
-        className={classNames(
-          'notification',
-          'is-danger',
-          'is-light',
-          'has-text-weight-normal',
-          { hidden: isErrorHidden },
-        )}
-      >
-        <button
-          data-cy="HideErrorButton"
-          type="button"
-          className="delete"
-          onClick={() => {
-            setIsErrorHidden(true);
-            setIsTitleError(false);
-            setErrorMessage('');
-          }}
-        />
-        {/* show only one message at a time */}
-        <Notification errorMessage={errorMessage} onClose={setErrorMessage} />
-        {/* {isTodosLoadedError && 'Unable to load todos'}
-        {isTitleError && 'Title should not be empty'}
-        {isRequestHasError && 'Unable to add a todo'}
-        {isDeletedRequestHasError && 'Unable to delete a todo'} */}
-      </div>
+      <Notification
+        errorMessage={errorMessage}
+        setErrorMessage={setErrorMessage}
+      />
     </div>
   );
 };
