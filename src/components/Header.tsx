@@ -3,7 +3,7 @@ import React, { ChangeEvent, useEffect, useRef, useState } from 'react';
 import { ErrorType } from '../types/Errors';
 
 interface HeaderProps {
-  onAddTodo: (title: string) => void;
+  onAddTodo: (title: string) => Promise<void>; // Изменено на Promise<void>
   isSubmitting: boolean;
   setErrorType: (error: ErrorType) => void;
 }
@@ -15,6 +15,7 @@ const Header: React.FC<HeaderProps> = ({
 }) => {
   const inputRef = useRef<HTMLInputElement>(null);
   const [title, setTitle] = useState<string>('');
+  const [isAdding, setIsAdding] = useState(false); // Новое состояние
 
   useEffect(() => {
     if (inputRef.current) {
@@ -26,7 +27,8 @@ const Header: React.FC<HeaderProps> = ({
     setTitle(event.target.value);
   };
 
-  const handleSubmit = (event: React.FormEvent) => {
+  const handleSubmit = async (event: React.FormEvent) => {
+    // Изменено на async
     event.preventDefault();
     if (!title.trim()) {
       setErrorType(ErrorType.EMPTY_TITLE);
@@ -34,8 +36,16 @@ const Header: React.FC<HeaderProps> = ({
       return;
     }
 
-    onAddTodo(title);
-    setTitle('');
+    setIsAdding(true); // Устанавливаем флаг добавления
+    try {
+      await onAddTodo(title);
+      setTitle('');
+    } catch (error) {
+      console.error(error);
+      setErrorType(ErrorType.ADD_TODO); // Предполагаем, что у вас есть такой тип ошибки
+    } finally {
+      setIsAdding(false); // Сбрасываем флаг добавления
+    }
   };
 
   return (
@@ -57,7 +67,7 @@ const Header: React.FC<HeaderProps> = ({
             type="text"
             className="todoapp__new-todo"
             placeholder="What needs to be done?"
-            disabled={isSubmitting}
+            disabled={isSubmitting || isAdding} // Добавляем isAdding
           />
         </form>
       </header>
