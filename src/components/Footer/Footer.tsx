@@ -24,28 +24,42 @@ export const Footer: React.FC<Props> = ({
   const hasCompletedTodos = todos.find(todo => todo.completed) !== undefined;
 
   const handleOnClickCLearAll = async () => {
-    const completedTodosId = todos
-      .filter(todo => todo.completed)
-      .map(todo => todo.id);
+    const completedTodos = todos.filter(todo => todo.completed);
+    const completedIds = completedTodos.map(todo => todo.id);
 
-    setLoadingTodosId(prev => [...prev, ...completedTodosId]);
+    setLoadingTodosId(completedIds);
 
     try {
-      const results = await Promise.allSettled(
-        completedTodosId.map(id => deleteTodo(id)),
+      const deleteCallback = async (todo: Todo) => {
+        try {
+          await deleteTodo(todo.id);
+
+          return { id: todo.id, status: 'resolved' };
+        } catch {
+          setErrorMessage('Unable to delete a todo');
+
+          return { id: todo.id, status: 'rejected' };
+        }
+      };
+
+      const res = await Promise.allSettled(completedTodos.map(deleteCallback));
+
+      const resolvedIds = res.reduce(
+        (acc, item) => {
+          if (item.status === 'fulfilled' && item.value.status === 'resolved') {
+            return { ...acc, [item.value.id]: item.value.id };
+          }
+
+          return acc;
+        },
+        {} as Record<number, number>,
       );
 
-      const successfulDeletions = results
-        .filter(result => result.status === 'fulfilled')
-        .map((_, index) => completedTodosId[index]);
-
-      setTodos(todos.filter(todo => !successfulDeletions.includes(todo.id)));
-
-      if (results.some(result => result.status === 'rejected')) {
-        setErrorMessage('Unable to delete some todos');
-      }
-    } catch (error) {
-      setErrorMessage('Unable to delete a todo');
+      setTodos(currentTodos =>
+        currentTodos.filter(todo => !resolvedIds[todo.id]),
+      );
+    } catch {
+      setErrorMessage('Unable to clear completed todos');
     } finally {
       setLoadingTodosId([]);
     }
