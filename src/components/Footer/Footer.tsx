@@ -12,6 +12,8 @@ export const Footer: React.FC<Props> = ({
   onFilterChange,
   currentFilter,
 }) => {
+  const filterOptions = Object.values(Filter);
+
   return (
     <footer className="todoapp__footer" data-cy="Footer">
       <span className="todo-count" data-cy="TodosCounter">
@@ -20,50 +22,25 @@ export const Footer: React.FC<Props> = ({
 
       {/* Active link should have the 'selected' class */}
       <nav className="currentFilter" data-cy="Filter">
-        <a
-          href="#/"
-          className={classNames('filter__link', {
-            selected: currentFilter === Filter.All,
-          })}
-          data-cy="FilterLinkAll"
-          onClick={() => {
-            if (currentFilter !== Filter.All) {
-              onFilterChange(Filter.All);
-            }
-          }}
-        >
-          All
-        </a>
-
-        <a
-          href="#/active"
-          className={classNames('filter__link', {
-            selected: currentFilter === Filter.Active,
-          })}
-          data-cy="FilterLinkActive"
-          onClick={() => {
-            if (currentFilter !== Filter.Active) {
-              onFilterChange(Filter.Active);
-            }
-          }}
-        >
-          Active
-        </a>
-
-        <a
-          href="#/completed"
-          className={classNames('filter__link', {
-            selected: currentFilter === Filter.Completed,
-          })}
-          data-cy="FilterLinkCompleted"
-          onClick={() => {
-            if (currentFilter !== Filter.Completed) {
-              onFilterChange(Filter.Completed);
-            }
-          }}
-        >
-          Completed
-        </a>
+        {filterOptions.map(filter => (
+          <a
+            key={filter}
+            href={`#/${filter}`}
+            className={classNames('filter__link', {
+              selected: currentFilter === filter,
+            })}
+            // data-cy="FilterLinkAll"
+            data-cy={`FilterLink${filter.charAt(0).toUpperCase() + filter.slice(1)}`}
+            onClick={e => {
+              e.preventDefault();
+              if (currentFilter !== filter) {
+                onFilterChange(filter);
+              }
+            }}
+          >
+            {filter.charAt(0).toUpperCase() + filter.slice(1)}
+          </a>
+        ))}
       </nav>
 
       {/* this button should be disabled if there are no completed todos */}
