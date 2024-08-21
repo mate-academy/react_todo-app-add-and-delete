@@ -1,19 +1,20 @@
 /* eslint-disable jsx-a11y/label-has-associated-control */
 /* eslint-disable jsx-a11y/control-has-associated-label */
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useMemo, useState } from 'react';
 import { UserWarning } from './UserWarning';
-import { deleteTodo, USER_ID } from './api/todos';
+import { USER_ID } from './api/todos';
 import { Todo } from './types/Todo';
 import cn from 'classnames';
 import { FilterMethods } from './types/FilterMethods';
 import { wait } from './utils/fetchClient';
 import { Header } from './components/Header/Header';
 import { TodoList } from './components/TodoList/TodoList';
+import { Footer } from './components/Footer/Footer';
 
 export const App: React.FC = () => {
   const [todos, setTodos] = useState<Todo[]>([]);
   const [errorMessage, setErrorMessage] = useState('');
-  const [activeFilter, setActiveFilter] = useState('all');
+  const [activeFilter, setActiveFilter] = useState(FilterMethods.All);
   const [tempTodo, setTempTodo] = useState<Todo | null>(null);
   const [loadingTodosId, setLoadingTodosId] = useState<number[]>([]);
 
@@ -24,44 +25,25 @@ export const App: React.FC = () => {
   useEffect(() => {
     if (errorMessage) {
       wait(3000).then(() => setErrorMessage(''));
-    } else {
-      return;
     }
   }, [errorMessage]);
 
-  const filteredTodos = todos.filter(todo => {
-    switch (activeFilter) {
-      case FilterMethods.All:
-        return todo;
-      case FilterMethods.ACTIVE:
-        return !todo.completed;
-      case FilterMethods.COMPLETED:
-        return todo.completed;
-      default:
-        return todo;
-    }
-  });
+  const filteredTodos = useMemo(() => {
+    return todos.filter(todo => {
+      switch (activeFilter) {
+        case FilterMethods.All:
+          return todo;
+        case FilterMethods.ACTIVE:
+          return !todo.completed;
+        case FilterMethods.COMPLETED:
+          return todo.completed;
+        default:
+          return todo;
+      }
+    });
+  }, [todos, activeFilter]);
 
-  const handleOnClickFilter = (method: FilterMethods) => {
-    setActiveFilter(method);
-  };
-
-  const handleOnClickCLearAll = async () => {
-    const completedTodosId = todos
-      .filter(todo => todo.completed)
-      .map(todo => todo.id);
-
-    try {
-      setLoadingTodosId(prev => [...prev, ...completedTodosId]);
-      await Promise.all(completedTodosId.map(id => deleteTodo(id)));
-    } catch (error) {
-      setErrorMessage('Unable to delete a todo');
-      throw error;
-    } finally {
-      setLoadingTodosId([]);
-      setTodos(todos.filter(todo => !todo.completed));
-    }
-  };
+  const handleOnClickHideError = () => setErrorMessage('');
 
   if (!USER_ID) {
     return <UserWarning />;
@@ -95,62 +77,15 @@ export const App: React.FC = () => {
             addIdToLoad={addIdToLoad}
           />
         </section>
-
-        {todos.length !== 0 && (
-          <footer className="todoapp__footer" data-cy="Footer">
-            <span className="todo-count" data-cy="TodosCounter">
-              {todos.filter(todo => !todo.completed).length} items left
-            </span>
-
-            {/* Active link should have the 'selected' class */}
-            <nav className="filter" data-cy="Filter">
-              <a
-                href="#/"
-                className={cn('filter__link', {
-                  selected: activeFilter === FilterMethods.All,
-                })}
-                data-cy="FilterLinkAll"
-                onClick={() => handleOnClickFilter(FilterMethods.All)}
-              >
-                All
-              </a>
-
-              <a
-                href="#/active"
-                className={cn('filter__link', {
-                  selected: activeFilter === FilterMethods.ACTIVE,
-                })}
-                data-cy="FilterLinkActive"
-                onClick={() => handleOnClickFilter(FilterMethods.ACTIVE)}
-              >
-                Active
-              </a>
-
-              <a
-                href="#/completed"
-                className={cn('filter__link', {
-                  selected: activeFilter === FilterMethods.COMPLETED,
-                })}
-                data-cy="FilterLinkCompleted"
-                onClick={() => handleOnClickFilter(FilterMethods.COMPLETED)}
-              >
-                Completed
-              </a>
-            </nav>
-            <button
-              type="button"
-              className="todoapp__clear-completed"
-              data-cy="ClearCompletedButton"
-              onClick={handleOnClickCLearAll}
-              disabled={todos.find(todo => todo.completed) === undefined}
-            >
-              Clear completed
-            </button>
-          </footer>
-        )}
+        <Footer
+          todos={todos}
+          activeFilter={activeFilter}
+          setActiveFilter={setActiveFilter}
+          setLoadingTodosId={setLoadingTodosId}
+          setTodos={setTodos}
+          setErrorMessage={setErrorMessage}
+        />
       </div>
-
-      {/* DON'T use conditional rendering to hide the notification */}
       <div
         data-cy="ErrorNotification"
         className={cn(
@@ -165,7 +100,7 @@ export const App: React.FC = () => {
           data-cy="HideErrorButton"
           type="button"
           className="delete"
-          onClick={() => setErrorMessage('')}
+          onClick={handleOnClickHideError}
         />
         {errorMessage}
       </div>

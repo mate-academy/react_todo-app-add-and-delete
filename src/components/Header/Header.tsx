@@ -24,25 +24,26 @@ export const Header: React.FC<Props> = ({
   loadingTodosId,
   addIdToLoad,
 }) => {
-  const [query, setQuery] = useState('');
+  const [input, setInput] = useState('');
 
   const inputRef = useRef<HTMLInputElement>(null);
+  const hasLoadingTodos = loadingTodosId.length > 0;
 
   const handleOnChange = (event: React.ChangeEvent<HTMLInputElement>) => {
-    setQuery(event.target.value);
+    setInput(event.target.value);
   };
 
   const handleOnSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
     setErrorMessage('');
 
-    if (!query.trim()) {
+    if (!input.trim()) {
       return setErrorMessage('Title should not be empty');
     }
 
     const forFetchTodo: Omit<Todo, 'id'> = {
       userId: USER_ID,
-      title: query.toString().trim(),
+      title: input.toString().trim(),
       completed: false,
     };
 
@@ -57,28 +58,25 @@ export const Header: React.FC<Props> = ({
       const addedTodo = await addTodo(forFetchTodo);
 
       setTodos(prevTodos => [...prevTodos, addedTodo]);
-      setTempTodo(null);
-      setQuery('');
+      setInput('');
       inputRef.current?.focus();
     } catch (error) {
       setErrorMessage('Unable to add a todo');
-      setTempTodo(null);
-      throw error;
     } finally {
       setLoadingTodosId([]);
       inputRef.current?.focus();
+      setTempTodo(null);
     }
   };
 
   const handleOnClick = async () => {
     let activeTodosId: number[] = [];
 
-    try {
-      if (todos.some(todo => !todo.completed)) {
-        activeTodosId = todos
-          .filter(todo => !todo.completed)
-          .map(todo => todo.id);
+    const activeTodos = todos.filter(todo => !todo.completed);
 
+    try {
+      if (activeTodos.length > 0) {
+        activeTodosId = activeTodos.map(todo => todo.id);
         setLoadingTodosId(prev => [...prev, ...activeTodosId]);
         await Promise.all(activeTodosId.map(id => updateTodoStatus(id, true)));
       } else {
@@ -98,7 +96,6 @@ export const Header: React.FC<Props> = ({
       );
     } catch (error) {
       setErrorMessage('Unable to update a todo');
-      throw error;
     } finally {
       setLoadingTodosId([]);
     }
@@ -110,7 +107,6 @@ export const Header: React.FC<Props> = ({
 
   return (
     <header className="todoapp__header">
-      {/* this button should have `active` class only if all todos are completed */}
       {todos.length !== 0 && (
         <button
           type="button"
@@ -129,9 +125,9 @@ export const Header: React.FC<Props> = ({
           type="text"
           className="todoapp__new-todo"
           placeholder="What needs to be done?"
-          value={query}
+          value={input}
           onChange={handleOnChange}
-          disabled={loadingTodosId.length > 0}
+          disabled={hasLoadingTodos}
         />
       </form>
     </header>

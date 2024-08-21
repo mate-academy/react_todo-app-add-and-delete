@@ -6,6 +6,8 @@ type Props = {
 };
 
 export const TodoItem: React.FC<Props> = ({ tempTodo }) => {
+  const { id, title } = tempTodo;
+
   return (
     <div data-cy="Todo" className="todo">
       <label className="todo__status-label">
@@ -13,19 +15,18 @@ export const TodoItem: React.FC<Props> = ({ tempTodo }) => {
           data-cy="TodoStatus"
           type="checkbox"
           className="todo__status"
-          aria-labelledby={`todo-${tempTodo.id}`}
+          aria-labelledby={`todo-${id}`}
         />
       </label>
 
       <span data-cy="TodoTitle" className="todo__title">
-        {tempTodo.title}
+        {title}
       </span>
 
       <button type="button" className="todo__remove" data-cy="TodoDelete">
         ×
       </button>
 
-      {/* 'is-active' class puts this modal on top of the todo */}
       <div data-cy="TodoLoader" className="modal overlay is-active">
         <div className="modal-background has-background-white-ter" />
         <div className="loader" />
