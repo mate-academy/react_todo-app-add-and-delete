@@ -89,20 +89,6 @@ export const App: React.FC = () => {
       .finally(() => setIsDeletedTodoHasLoader(false));
   };
 
-  // const clearCompletedTodos = () => {
-  //   const completedTodos = todos
-  //     .filter(todo => todo.completed)
-  //     .map(todo => todo.id);
-
-  //   Promise.all(completedTodos.map(todoId => deleteTodo(todoId)))
-  //     .then(() => {
-  //       setTodos(prevTodos => prevTodos.filter(todo => !todo.completed));
-  //     })
-  //     .catch(() => {
-  //       setErrorMessage('Unable to delete a todo');
-  //     });
-  // };
-
   const clearCompletedTodos = async () => {
     const completedTodos = todos.filter(todo => todo.completed);
 
