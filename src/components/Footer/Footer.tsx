@@ -5,12 +5,16 @@ type Props = {
   notCompletedTodos: number;
   onFilterChange: (currentFilter: Filter) => void;
   currentFilter: Filter;
+  isAnyCompletedTodos: boolean;
+  clearCompletedTodos: () => void;
 };
 
 export const Footer: React.FC<Props> = ({
   notCompletedTodos,
   onFilterChange,
   currentFilter,
+  isAnyCompletedTodos,
+  clearCompletedTodos,
 }) => {
   const filterOptions = Object.values(Filter);
 
@@ -48,6 +52,8 @@ export const Footer: React.FC<Props> = ({
         type="button"
         className="todoapp__clear-completed"
         data-cy="ClearCompletedButton"
+        disabled={isAnyCompletedTodos}
+        onClick={clearCompletedTodos}
       >
         Clear completed
       </button>

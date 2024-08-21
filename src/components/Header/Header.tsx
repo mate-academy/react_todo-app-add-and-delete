@@ -5,6 +5,8 @@ type Props = {
   inputValue: string;
   setTodoTitle: (any: string) => void;
   handleAddTodo: (event: React.FormEvent<HTMLFormElement>) => void;
+  isDeletedTodoHasLoader: boolean;
+  isAnyCompletedTodos: boolean;
 };
 
 export const Header: React.FC<Props> = ({
@@ -12,6 +14,8 @@ export const Header: React.FC<Props> = ({
   inputValue,
   setTodoTitle,
   handleAddTodo,
+  isDeletedTodoHasLoader,
+  isAnyCompletedTodos,
 }) => {
   const inputRef = useRef<HTMLInputElement>(null);
 
@@ -19,7 +23,7 @@ export const Header: React.FC<Props> = ({
     if (inputRef.current) {
       inputRef.current.focus();
     }
-  }, []);
+  }, [isInputDisabled, isDeletedTodoHasLoader, isAnyCompletedTodos]);
 
   return (
     <header className="todoapp__header">

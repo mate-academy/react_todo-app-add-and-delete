@@ -20,6 +20,7 @@ export const App: React.FC = () => {
   const [isDeletedTodoHasLoader, setIsDeletedTodoHasLoader] = useState(false);
   const areTodosExist = todos.length !== 0;
   const notCompletedTodos = todos.filter(todo => !todo.completed).length;
+  const isAnyCompletedTodos = notCompletedTodos === todos.length;
 
   const filteredTodos = useMemo(() => {
     switch (filter) {
@@ -44,8 +45,12 @@ export const App: React.FC = () => {
     event.preventDefault();
 
     if (todoTitle.trim().length === 0) {
+      setErrorMessage('Title should not be empty');
+
       return;
     }
+
+    setErrorMessage('');
 
     setIsInputDisabled(true);
 
@@ -84,6 +89,20 @@ export const App: React.FC = () => {
       .finally(() => setIsDeletedTodoHasLoader(false));
   };
 
+  const clearCompletedTodos = () => {
+    const completedTodos = todos
+      .filter(todo => todo.completed)
+      .map(todo => todo.id);
+
+    Promise.all(completedTodos.map(todoId => deleteTodo(todoId)))
+      .then(() => {
+        setTodos(prevTodos => prevTodos.filter(todo => !todo.completed));
+      })
+      .catch(() => {
+        setErrorMessage('Unable to delete a todo');
+      });
+  };
+
   if (!USER_ID) {
     return <UserWarning />;
   }
@@ -97,6 +116,8 @@ export const App: React.FC = () => {
           inputValue={todoTitle}
           setTodoTitle={setTodoTitle}
           handleAddTodo={handleAddTodo}
+          isDeletedTodoHasLoader={isDeletedTodoHasLoader}
+          isAnyCompletedTodos={isAnyCompletedTodos}
         />
         {areTodosExist && (
           <TodoList
@@ -112,6 +133,8 @@ export const App: React.FC = () => {
             notCompletedTodos={notCompletedTodos}
             onFilterChange={setFilter}
             currentFilter={filter}
+            isAnyCompletedTodos={isAnyCompletedTodos}
+            clearCompletedTodos={clearCompletedTodos}
           />
         )}
       </div>
