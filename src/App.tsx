@@ -16,7 +16,6 @@ export const App: React.FC = () => {
   const [tempTodo, setTempTodo] = useState<Todo | null>(null);
 
   const [errorMessage, setErrorMessage] = useState('');
-  const [, setIsLoading] = useState(true);
 
   const [filterParams, setFilterParams] = useState<FilterParams>(
     FilterParams.All,
@@ -45,7 +44,6 @@ export const App: React.FC = () => {
   useEffect(() => {
     getTodos()
       .then(data => setTodos(data))
-      .finally(() => setIsLoading(false))
       .catch(() => setErrorMessage(Errors.CantLoad));
   }, []);
 
