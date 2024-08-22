@@ -33,11 +33,9 @@ export const App: React.FC = () => {
       await deleteTodo(id);
       setTodos(currentTodos => currentTodos.filter(todo => todo.id !== id));
     } catch (error) {
-      setTodos(todos);
       setErrorMessage(Errors.CantDelete);
-      throw error;
     } finally {
-      setTodosToBeDeleted([]);
+      setTodosToBeDeleted(prev => prev.filter(todoId => todoId !== id));
     }
   };
 
@@ -63,6 +61,7 @@ export const App: React.FC = () => {
       }
     });
   };
+
   const visibleTodos: Todo[] = getVisibleTodos();
 
   const onClearCompleted = async () => {
