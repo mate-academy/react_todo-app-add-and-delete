@@ -49,6 +49,10 @@ export const App: React.FC = () => {
       .catch(() => setErrorMessage(Errors.CantLoad));
   }, []);
 
+  if (!USER_ID) {
+    return <UserWarning />;
+  }
+
   const getVisibleTodos = () => {
     return todos.filter(todo => {
       switch (filterParams) {
@@ -61,7 +65,6 @@ export const App: React.FC = () => {
       }
     });
   };
-
   const visibleTodos: Todo[] = getVisibleTodos();
 
   const onClearCompleted = async () => {
@@ -79,10 +82,6 @@ export const App: React.FC = () => {
 
   const itemsLeft = todos.filter(item => item.completed === false).length;
   const isClearButtonDisabled = !visibleTodos.some(todo => todo.completed);
-
-  if (!USER_ID) {
-    return <UserWarning />;
-  }
 
   return (
     <div className="todoapp">
@@ -105,6 +104,7 @@ export const App: React.FC = () => {
           onDeleteTodo={onDeleteTodo}
         />
 
+        {/* Hide the footer if there are no todos */}
         {!!todos.length && (
           <Footer
             setFilterParams={setFilterParams}
@@ -116,6 +116,8 @@ export const App: React.FC = () => {
         )}
       </div>
 
+      {/* DON'T use conditional rendering to hide the notification */}
+      {/* Add the 'hidden' class to hide the message smoothly */}
       <ErrorMessage error={errorMessage} setErrorMessage={setErrorMessage} />
     </div>
   );
