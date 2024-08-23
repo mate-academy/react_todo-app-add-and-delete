@@ -1,11 +1,12 @@
 import React from 'react';
 import { Todo } from '../types/Todo';
 import ToDoItem from './ToDoItem'; // Импортируем ToDoItem
+import TempTodo from './TempTodo';
 
 interface TodoListProps {
   todos: Todo[];
   onDeleteTodo: (todoId: number) => void;
-  tempTodo?: Todo | null; // Добавляем пропс для временной задачи
+  tempTodo?: Todo | null;
 }
 
 const TodoList: React.FC<TodoListProps> = ({
@@ -15,14 +16,6 @@ const TodoList: React.FC<TodoListProps> = ({
 }) => {
   return (
     <section className="todoapp__main" data-cy="TodoList">
-      {tempTodo && (
-        <div className="todo-item todo-item--loading">
-          <input type="checkbox" className="toggle" disabled />
-          <label>{tempTodo.title}</label>
-          <div className="loader" />
-        </div>
-      )}
-
       {todos.map(todo => (
         <ToDoItem
           key={todo.id}
@@ -32,6 +25,7 @@ const TodoList: React.FC<TodoListProps> = ({
           onDelete={() => onDeleteTodo(todo.id)}
         />
       ))}
+      {tempTodo && <TempTodo tempTodo={tempTodo} />}
     </section>
   );
 };

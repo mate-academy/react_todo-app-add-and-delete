@@ -12,6 +12,7 @@ import ErrorNotification from './components/ErrorNotification';
 
 export const App: React.FC = () => {
   const [todos, setTodos] = useState<Todo[]>([]);
+  const [tempTodo, setTempTodo] = useState<Todo | null>(null);
   const [errorType, setErrorType] = useState<ErrorType | null>(null);
   const [isLoading, setIsLoading] = useState(true);
   const [filter, setFilter] = useState<Status>(Status.ALL);
@@ -24,31 +25,47 @@ export const App: React.FC = () => {
   }, []);
 
   useEffect(() => {
-    if (errorType) {
-      const timer = setTimeout(() => setErrorType(null), 3000);
+    let timer = 0;
 
-      return () => clearTimeout(timer);
+    if (errorType) {
+      timer = window.setTimeout(() => setErrorType(null), 3000);
     }
 
-    return undefined;
+    return () => {
+      if (timer) {
+        clearTimeout(timer);
+      }
+    };
   }, [errorType]);
 
   const handleCloseError = () => setErrorType(null);
 
   const handleAddTodo = async (title: string) => {
-    if (!title.trim()) {
+    const trimmedTitle = title.trim();
+
+    if (!trimmedTitle) {
       setErrorType(ErrorType.EMPTY_TITLE);
 
       return;
     }
 
+    const newTodo = {
+      title: trimmedTitle,
+      completed: false,
+      userId: USER_ID,
+    };
+
+    setTempTodo({ id: 0, ...newTodo });
+
     try {
-      const createdTodo = await createTodo(title);
+      const createdTodo = await createTodo(newTodo);
 
       setTodos(prevTodos => [...prevTodos, createdTodo]);
     } catch (error) {
       console.error(error);
       setErrorType(ErrorType.LOAD_TODOS);
+    } finally {
+      setTempTodo(null);
     }
   };
 
@@ -115,9 +132,11 @@ export const App: React.FC = () => {
           setErrorType={setErrorType}
         />
 
-        {todos.length > 0 && (
-          <TodoList todos={filteredTodos} onDeleteTodo={handleDeleteTodo} />
-        )}
+        <TodoList
+          todos={filteredTodos}
+          onDeleteTodo={handleDeleteTodo}
+          tempTodo={tempTodo}
+        />
 
         {todos.length > 0 && (
           <Footer
@@ -130,12 +149,10 @@ export const App: React.FC = () => {
         )}
       </div>
 
-      {errorType && (
-        <ErrorNotification
-          errorType={errorType}
-          handleCloseError={handleCloseError}
-        />
-      )}
+      <ErrorNotification
+        errorType={errorType}
+        handleCloseError={handleCloseError}
+      />
     </div>
   );
 };
