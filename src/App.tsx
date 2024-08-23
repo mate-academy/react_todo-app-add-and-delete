@@ -1,26 +1,162 @@
-/* eslint-disable max-len */
-/* eslint-disable jsx-a11y/control-has-associated-label */
-import React from 'react';
-import { UserWarning } from './UserWarning';
+import React, {
+  ChangeEvent,
+  KeyboardEvent,
+  useEffect,
+  useRef,
+  useState,
+} from 'react';
+import { FilterStatusType, Todo } from './types/Todo';
+import * as tadoService from './api/todos';
+import { Footer } from './component/Footer';
+import { Error } from './component/Error';
+import { ListComponent } from './component/ListComponent';
 
-const USER_ID = 0;
+function filterTodos(todos: Todo[], filter: FilterStatusType) {
+  switch (filter) {
+    case FilterStatusType.All:
+      return todos;
+    case FilterStatusType.Active:
+      return todos.filter(todo => !todo.completed);
+    case FilterStatusType.Completed:
+      return todos.filter(todo => todo.completed);
+    default:
+      return todos;
+  }
+}
 
 export const App: React.FC = () => {
-  if (!USER_ID) {
-    return <UserWarning />;
-  }
+  const [todos, setTodos] = useState<Todo[]>([]);
+  const [filterBy, setFilterBy] = useState<FilterStatusType>(
+    FilterStatusType.All,
+  );
+  const [query, setQuery] = useState('');
+  const [errorMessage, setErrorMessage] = useState('');
+  const [isLoading, setIsLoading] = useState(false);
+  const inputRef = useRef<HTMLInputElement>(null);
+  const [isLoadingTodos, setIsLoadingTodo] = useState<number[]>([]);
+  const [tempTodo, setTempTodo] = useState<Todo | null>(null);
+
+  const handleError = (message: string) => {
+    setErrorMessage(message);
+
+    setTimeout(() => {
+      setErrorMessage('');
+    }, 3000);
+  };
+
+  useEffect(() => {
+    tadoService
+      .getTodos()
+      .then(setTodos)
+      .catch(() => {
+        handleError('Unable to load todos');
+      });
+  }, []);
+
+  const handleDelete = (todoId: number) => {
+    setIsLoadingTodo(prev => [...prev, todoId]);
+
+    tadoService
+      .deleteTodos(todoId)
+      .then(() => {
+        setTodos(currentTodos =>
+          currentTodos.filter(todo => todo.id !== todoId),
+        );
+      })
+      .finally(() => {
+        setIsLoadingTodo(prev => prev.filter(id => id !== todoId));
+      });
+  };
+
+  const handleQueryChange = (event: ChangeEvent<HTMLInputElement>) => {
+    setQuery(event.target.value);
+  };
+
+  const handleAddTodo = (event: KeyboardEvent<HTMLInputElement>): void => {
+    if (event.key === 'Enter') {
+      event.preventDefault();
+
+      if (query.trim() === '') {
+        handleError('Title should not be empty');
+
+        return;
+      }
+
+      const newTodo = {
+        title: query,
+        completed: false,
+        userId: tadoService.USER_ID,
+      };
+
+      const tempTado = {
+        id: 0,
+        ...newTodo,
+      };
+
+      setTempTodo(tempTado);
+
+      setIsLoading(true);
+
+      tadoService
+        .addTodos(newTodo)
+        .then(newTodos => {
+          setTodos(currentPosts => [...currentPosts, newTodos]);
+          setQuery('');
+        })
+        .finally(() => {
+          setIsLoading(false);
+          setTempTodo(null);
+          setTimeout(() => {
+            if (inputRef.current) {
+              inputRef.current.focus();
+            }
+          }, 0);
+        });
+    }
+  };
+
+  const tasks = filterTodos(todos, filterBy);
 
   return (
-    <section className="section container">
-      <p className="title is-4">
-        Copy all you need from the prev task:
-        <br />
-        <a href="https://github.com/mate-academy/react_todo-app-loading-todos#react-todo-app-load-todos">
-          React Todo App - Load Todos
-        </a>
-      </p>
+    <div className="todoapp">
+      <h1 className="todoapp__title">todos</h1>
 
-      <p className="subtitle">Styles are already copied</p>
-    </section>
+      <div className="todoapp__content">
+        <header className="todoapp__header">
+          <button
+            type="button"
+            className="todoapp__toggle-all active"
+            data-cy="ToggleAllButton"
+          />
+
+          <form onSubmit={event => event.preventDefault()}>
+            <input
+              ref={inputRef}
+              data-cy="NewTodoField"
+              type="text"
+              className="todoapp__new-todo"
+              placeholder="What needs to be done?"
+              value={query}
+              onChange={handleQueryChange}
+              onKeyDown={handleAddTodo}
+              autoFocus
+              disabled={isLoading}
+            />
+          </form>
+        </header>
+
+        <ListComponent
+          todos={tasks}
+          handleDelete={handleDelete}
+          isLoadingTodos={isLoadingTodos}
+          isLoading={isLoading}
+          tempTodo={tempTodo}
+        />
+        {todos.length > 0 && (
+          <Footer setFilterBy={setFilterBy} todos={todos} filterBy={filterBy} />
+        )}
+      </div>
+      <Error errorMessage={errorMessage} setErrorMessage={setErrorMessage} />
+    </div>
   );
 };
