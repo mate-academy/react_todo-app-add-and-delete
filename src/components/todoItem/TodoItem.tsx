@@ -1,48 +1,42 @@
 /* eslint-disable jsx-a11y/label-has-associated-control */
-import { FC, useContext, useEffect, useState } from 'react';
+import { FC } from 'react';
 import { Todo } from '../../types/Todo';
 import classNames from 'classnames';
-import { TodoContext } from '../../context/context';
 import { updateTodo } from '../../api/todos';
+import { useTodosContext } from '../../context/context';
 
 interface Props {
   todo: Todo;
 }
 
 export const TodoItem: FC<Props> = ({ todo }) => {
-  const context = useContext(TodoContext);
-  const [selectedTodoId, setSelectedTodoId] = useState<number | null>(null);
-  const [todoStatus, setTodoStatus] = useState<boolean | null>(null);
+  const {
+    setTodoLoading,
+    setErrorMessage,
+    setTodos,
+    todoLoadingStates,
+    handleDelete,
+  } = useTodosContext();
 
-  const onSelectInputChange = (id: number, completed: boolean) => {
-    setSelectedTodoId(id);
-    setTodoStatus(!completed);
-  };
+  const onSelectInputChange = async () => {
+    const { id, completed } = todo;
+    const newStatus = !completed;
 
-  useEffect(() => {
-    if (selectedTodoId !== null && todoStatus !== null) {
-      const updateTodoStatus = async () => {
-        try {
-          context?.setTodoLoading(selectedTodoId, true);
-          context?.setErrorMessage('');
-          await updateTodo(selectedTodoId, todoStatus);
-          context?.setTodos(prevTodos =>
-            prevTodos.map(item =>
-              item.id === selectedTodoId
-                ? { ...item, completed: todoStatus }
-                : item,
-            ),
-          );
-        } catch (error) {
-          context?.setErrorMessage('Something went wrong');
-        } finally {
-          context?.setTodoLoading(selectedTodoId, false);
-        }
-      };
-
-      updateTodoStatus();
+    try {
+      setTodoLoading(id, true);
+      setErrorMessage('');
+      await updateTodo(id, newStatus);
+      setTodos(prevTodos => {
+        return prevTodos.map(item =>
+          item.id === id ? { ...item, completed: newStatus } : item,
+        );
+      });
+    } catch (error) {
+      setErrorMessage('Something went wrong');
+    } finally {
+      setTodoLoading(id, false);
     }
-  }, [selectedTodoId, todoStatus]);
+  };
 
   const { id, completed, title } = todo;
 
@@ -58,7 +52,7 @@ export const TodoItem: FC<Props> = ({ todo }) => {
           type="checkbox"
           className="todo__status"
           checked={completed}
-          onChange={() => onSelectInputChange(id, completed)}
+          onChange={onSelectInputChange}
         />
       </label>
 
@@ -69,7 +63,7 @@ export const TodoItem: FC<Props> = ({ todo }) => {
         type="button"
         className="todo__remove"
         data-cy="TodoDelete"
-        onClick={() => context?.handleDelete(id)}
+        onClick={() => handleDelete(id)}
       >
         ×
       </button>
@@ -77,7 +71,7 @@ export const TodoItem: FC<Props> = ({ todo }) => {
       <div
         data-cy="TodoLoader"
         className={classNames('modal', 'overlay', {
-          'is-active': context?.todoLoadingStates[id] || false,
+          'is-active': todoLoadingStates[id] || false,
         })}
       >
         <div className="modal-background has-background-white-ter" />

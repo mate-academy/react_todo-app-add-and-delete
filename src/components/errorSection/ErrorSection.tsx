@@ -1,12 +1,13 @@
 import { FC } from 'react';
 import classNames from 'classnames';
+import { useClearErrorMessage } from '../../hooks/useClearErrorMessage';
+import { useTodosContext } from '../../context/context';
 
-interface Props {
-  errorMessage: string;
-  setErrorMessage: (message: string) => void;
-}
+export const ErrorSection: FC = () => {
+  const { errorMessage, setErrorMessage } = useTodosContext();
 
-export const ErrorSection: FC<Props> = ({ errorMessage, setErrorMessage }) => {
+  useClearErrorMessage(errorMessage, setErrorMessage);
+
   return (
     <div
       data-cy="ErrorNotification"

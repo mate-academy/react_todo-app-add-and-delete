@@ -1,22 +1,18 @@
 import classNames from 'classnames';
 import { FC, FormEvent, useEffect, useRef, useState } from 'react';
 import { Todo } from '../../types/Todo';
+import { useTodosContext } from '../../context/context';
 
 interface Props {
-  todos: Todo[];
-  setErrorMessage: (message: string) => void;
   addTodoToTodoList: (todo: Todo) => Promise<void>;
   isLoading: boolean;
 }
 
-export const TodoForm: FC<Props> = ({
-  todos,
-  setErrorMessage,
-  addTodoToTodoList,
-  isLoading,
-}) => {
+export const TodoForm: FC<Props> = ({ addTodoToTodoList, isLoading }) => {
   const [todoValue, setTodoValue] = useState('');
   const inputRef = useRef<HTMLInputElement>(null);
+
+  const { todos, setErrorMessage } = useTodosContext();
 
   const completedTodos = todos.filter(todo => todo.completed).length;
   const trimmedTodoValue = todoValue.trim();

@@ -1,4 +1,4 @@
-import { Dispatch, SetStateAction, RefObject } from 'react';
+import { Dispatch, SetStateAction } from 'react';
 
 import { Todo } from '../types/Todo';
 import { deleteTodo } from '../api/todos'; // Змініть шлях відповідно до вашої структури проекту
@@ -8,7 +8,6 @@ export const deleteTodoInTodoList = async (
   setTodoLoading: (id: number, loading: boolean) => void,
   setErrorMessage: (message: string) => void,
   setTodos: Dispatch<SetStateAction<Todo[]>>,
-  inputRef: RefObject<HTMLInputElement>,
 ) => {
   try {
     setTodoLoading(id, true);
@@ -21,10 +20,5 @@ export const deleteTodoInTodoList = async (
     throw error;
   } finally {
     setTodoLoading(id, false);
-    setTimeout(() => {
-      if (inputRef.current) {
-        inputRef.current.focus();
-      }
-    }, 0);
   }
 };
