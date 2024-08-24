@@ -1,6 +1,4 @@
-/* eslint-disable jsx-a11y/label-has-associated-control */
-/* eslint-disable jsx-a11y/control-has-associated-label */
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, useRef } from 'react';
 import { UserWarning } from './UserWarning';
 import { USER_ID, getTodos, deleteTodo, createTodo } from './api/todos';
 import { Errors } from './components/errors/errors';
@@ -21,6 +19,20 @@ export const App: React.FC = () => {
     completed: false,
   });
 
+  const errorTimeoutRef = useRef<NodeJS.Timeout | null>(null);
+
+  const handleError = (message: string) => {
+    setErrorMessage(message);
+
+    if (errorTimeoutRef.current) {
+      clearTimeout(errorTimeoutRef.current);
+    }
+
+    errorTimeoutRef.current = setTimeout(() => {
+      setErrorMessage('');
+    }, 3000);
+  };
+
   useEffect(() => {
     getTodos()
       .then(todosFromServer => {
@@ -37,10 +49,7 @@ export const App: React.FC = () => {
             setTodos(todosFromServer);
         }
       })
-      .catch(() => setErrorMessage('Unable to load todos'))
-      .finally(() => {
-        setTimeout(() => setErrorMessage(''), 3000);
-      });
+      .catch(() => handleError('Unable to load todos'));
   }, [setTodos, status]);
 
   function onDeleteTodo(todoId: number) {
@@ -53,8 +62,7 @@ export const App: React.FC = () => {
         });
       })
       .catch(() => {
-        setTodos(todos);
-        setErrorMessage('Unable to delete a todo');
+        handleError('Unable to delete a todo');
       });
   }
 
@@ -70,7 +78,7 @@ export const App: React.FC = () => {
         setTodos(currentTodos => [...currentTodos, todo]);
       })
       .catch(error => {
-        setErrorMessage('Unable to add a todo');
+        handleError('Unable to add a todo');
         setTodos(todos);
         throw error;
       });
@@ -102,7 +110,7 @@ export const App: React.FC = () => {
           });
         })
         .catch(() => {
-          setErrorMessage('Unable to delete a todo');
+          handleError('Unable to delete a todo');
         });
     });
   }
@@ -121,7 +129,7 @@ export const App: React.FC = () => {
           onSubmit={onCreateTodo}
           onChange={handleChangeTitle}
           onReset={reset}
-          onError={setErrorMessage}
+          onError={handleError}
         />
 
         <ToDoList list={todos} onDelete={onDeleteTodo} idTodo={idTodo} />
