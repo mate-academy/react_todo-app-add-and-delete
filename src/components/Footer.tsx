@@ -1,56 +1,64 @@
-import classNames from 'classnames';
 import React from 'react';
-import { Status } from '../types/Status';
+import { Todo } from '../types/Todo';
+import cn from 'classnames';
 
-interface FooterProps {
-  filter: Status;
-  setFilter: (filter: Status) => void;
-  activeCount: number;
-  completedCount: number;
-  onClearCompleted: () => void;
-}
+type Props = {
+  todos: Todo[];
+  onFilter: React.Dispatch<React.SetStateAction<string>>;
+  filter: string;
+  handleDeleteAllCompleted: (currentsTodo: number[]) => void;
+};
 
-export const Footer: React.FC<FooterProps> = ({
+export const Footer: React.FC<Props> = ({
+  todos,
+  onFilter,
   filter,
-  setFilter,
-  activeCount,
-  completedCount,
-  onClearCompleted,
+  handleDeleteAllCompleted,
 }) => {
-  const itemCountText = `${activeCount} ${activeCount === 1 ? 'item' : 'items'} left`;
-
-  const handleFilterClick = (status: Status) => {
-    setFilter(status);
-  };
+  const hasCompletedTodos = todos
+    .filter(todo => todo.completed)
+    .map(todo => todo.id);
 
   return (
     <footer className="todoapp__footer" data-cy="Footer">
       <span className="todo-count" data-cy="TodosCounter">
-        {itemCountText}
+        {todos.filter(todo => !todo.completed).length} items left
       </span>
 
       <nav className="filter" data-cy="Filter">
-        {Object.values(Status).map(status => (
-          <a
-            key={status}
-            href={`#/${status.toLowerCase()}`}
-            className={classNames('filter__link', {
-              selected: filter === status,
-            })}
-            data-cy={`FilterLink${status.charAt(0).toUpperCase() + status.slice(1).toLowerCase()}`}
-            onClick={() => handleFilterClick(status)}
-          >
-            {status.charAt(0) + status.slice(1).toLowerCase()}
-          </a>
-        ))}
-      </nav>
+        <a
+          href="#/"
+          className={cn('filter__link', { selected: filter === 'All' })}
+          data-cy="FilterLinkAll"
+          onClick={() => onFilter('All')}
+        >
+          All
+        </a>
 
+        <a
+          href="#/active"
+          className={cn('filter__link', { selected: filter === 'active' })}
+          data-cy="FilterLinkActive"
+          onClick={() => onFilter('active')}
+        >
+          Active
+        </a>
+
+        <a
+          href="#/completed"
+          className={cn('filter__link', { selected: filter === 'completed' })}
+          data-cy="FilterLinkCompleted"
+          onClick={() => onFilter('completed')}
+        >
+          Completed
+        </a>
+      </nav>
       <button
         type="button"
         className="todoapp__clear-completed"
         data-cy="ClearCompletedButton"
-        disabled={completedCount === 0}
-        onClick={onClearCompleted}
+        disabled={!hasCompletedTodos.length}
+        onClick={() => handleDeleteAllCompleted(hasCompletedTodos)}
       >
         Clear completed
       </button>

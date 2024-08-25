@@ -1,33 +1,31 @@
-import React from 'react';
 import { Todo } from '../types/Todo';
-import ToDoItem from './ToDoItem'; // Импортируем ToDoItem
-import TempTodo from './TempTodo';
+import { TempTodo } from './TempTodo';
+import { TodoItem } from './ToDoItem';
 
-interface TodoListProps {
+type Props = {
   todos: Todo[];
-  onDeleteTodo: (todoId: number) => void;
-  tempTodo?: Todo | null;
-}
+  tempTodo: Todo | null;
+  deleteTodo: (userId: number) => void;
+  todosAreLoadingIds: number[];
+};
 
-const TodoList: React.FC<TodoListProps> = ({
+export const TodoList: React.FC<Props> = ({
   todos,
-  onDeleteTodo,
+  deleteTodo,
   tempTodo,
+  todosAreLoadingIds,
 }) => {
   return (
     <section className="todoapp__main" data-cy="TodoList">
       {todos.map(todo => (
-        <ToDoItem
+        <TodoItem
+          todo={todo}
           key={todo.id}
-          id={todo.id}
-          title={todo.title}
-          completed={todo.completed}
-          onDelete={() => onDeleteTodo(todo.id)}
+          deleteTodo={deleteTodo}
+          todosAreLoadingIds={todosAreLoadingIds}
         />
       ))}
-      {tempTodo && <TempTodo tempTodo={tempTodo} />}
+      {tempTodo && <TempTodo tempTitle={tempTodo.title} />}
     </section>
   );
 };
-
-export default TodoList;

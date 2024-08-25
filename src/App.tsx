@@ -1,123 +1,132 @@
-/* eslint-disable no-console */
-import React, { useEffect, useState } from 'react';
+/* eslint-disable jsx-a11y/control-has-associated-label */
+import React, { useEffect, useMemo, useState } from 'react';
 import { UserWarning } from './UserWarning';
-import { USER_ID, getTodos, createTodo, deleteTodo } from './api/todos';
-import Header from './components/Header';
-import { Footer } from './components/Footer';
+import * as todoService from './api/todos';
 import { Todo } from './types/Todo';
-import { ErrorType } from './types/Errors';
-import { Status } from './types/Status';
-import TodoList from './components/ToDoList';
-import ErrorNotification from './components/ErrorNotification';
+import { Footer } from './components/Footer';
+import { Header } from './components/Header';
+import { TodoList } from './components/ToDoList';
+import cn from 'classnames';
 
 export const App: React.FC = () => {
   const [todos, setTodos] = useState<Todo[]>([]);
+  const [newTodoTitle, setNewTodoTitle] = useState('');
+  const [filter, setFilter] = useState('All');
+  const [errorMessage, setErrorMessage] = useState('');
   const [tempTodo, setTempTodo] = useState<Todo | null>(null);
-  const [errorType, setErrorType] = useState<ErrorType | null>(null);
-  const [isLoading, setIsLoading] = useState(true);
-  const [filter, setFilter] = useState<Status>(Status.ALL);
+  const [todosAreLoadingIds, setTodosAreLoadingIds] = useState<number[]>([]);
+
+  const hideErrorMessage = () => {
+    setTimeout(() => {
+      setErrorMessage('');
+    }, 3000);
+  };
 
   useEffect(() => {
-    getTodos()
+    todoService
+      .getTodos()
       .then(setTodos)
-      .catch(() => setErrorType(ErrorType.LOAD_TODOS))
-      .finally(() => setIsLoading(false));
+      .catch(() => {
+        setErrorMessage('Unable to load todos');
+        setTimeout(() => setErrorMessage(''), 3000);
+      });
   }, []);
 
-  useEffect(() => {
-    let timer = 0;
+  const addTodo = (newTodo: Omit<Todo, 'id'>) => {
+    setTodosAreLoadingIds(currentIds => [...currentIds, newTodo.userId]);
+    todoService
+      .postTodo(newTodo)
+      .then(addedTodo => {
+        setTodos(currentTodos => [...currentTodos, addedTodo]);
+        setNewTodoTitle('');
+        setTodosAreLoadingIds(currentIds =>
+          currentIds.filter(id => id !== newTodo.userId),
+        );
+      })
+      .catch(() => {
+        setErrorMessage('Unable to add a todo');
+        setTodosAreLoadingIds(currentIds =>
+          currentIds.filter(id => id !== newTodo.userId),
+        );
+        hideErrorMessage();
+      })
+      .finally(() => {
+        setTempTodo(null);
+      });
+  };
 
-    if (errorType) {
-      timer = window.setTimeout(() => setErrorType(null), 3000);
-    }
+  const deleteTodo = (userId: number) => {
+    setTodosAreLoadingIds(currentIds => [...currentIds, userId]);
+    todoService
+      .deleteTodo(userId)
+      .then(() => {
+        setTodos(currentTodos =>
+          currentTodos.filter(todo => todo.id !== userId),
+        );
+        setTodosAreLoadingIds(currentIds =>
+          currentIds.filter(id => id !== userId),
+        );
+      })
+      .catch(() => {
+        setErrorMessage('Unable to delete a todo');
+        setTodosAreLoadingIds(currentIds =>
+          currentIds.filter(id => id !== userId),
+        );
+        hideErrorMessage();
+      });
+  };
 
-    return () => {
-      if (timer) {
-        clearTimeout(timer);
-      }
-    };
-  }, [errorType]);
+  const handleEmptyLineError = (event: React.FormEvent) => {
+    event.preventDefault();
 
-  const handleCloseError = () => setErrorType(null);
-
-  const handleAddTodo = async (title: string) => {
-    const trimmedTitle = title.trim();
+    const trimmedTitle = newTodoTitle.trim();
 
     if (!trimmedTitle) {
-      setErrorType(ErrorType.EMPTY_TITLE);
+      setErrorMessage('Title should not be empty');
+      setTimeout(() => setErrorMessage(''), 3000);
 
       return;
     }
 
-    const newTodo = {
+    setTempTodo({
+      id: 0,
       title: trimmedTitle,
       completed: false,
-      userId: USER_ID,
-    };
+      userId: todoService.USER_ID,
+    });
 
-    setTempTodo({ id: 0, ...newTodo });
-
-    try {
-      const createdTodo = await createTodo(newTodo);
-
-      setTodos(prevTodos => [...prevTodos, createdTodo]);
-    } catch (error) {
-      console.error(error);
-      setErrorType(ErrorType.LOAD_TODOS);
-    } finally {
-      setTempTodo(null);
-    }
+    addTodo({
+      userId: todoService.USER_ID,
+      title: trimmedTitle,
+      completed: false,
+    });
   };
 
-  const handleDeleteTodo = async (todoId: number) => {
-    try {
-      await deleteTodo(todoId);
-      setTodos(prevTodos => prevTodos.filter(todo => todo.id !== todoId));
-    } catch (error) {
-      console.error(error);
-      setErrorType(ErrorType.DELETE_TODO);
-    }
+  const handleChangeNewTitle = (event: React.ChangeEvent<HTMLInputElement>) => {
+    setNewTodoTitle(event.target.value);
   };
 
-  const handleClearCompleted = async () => {
-    const completedTodos = todos.filter(todo => todo.completed);
-    const deletePromises = completedTodos.map(todo => deleteTodo(todo.id));
+  const filteredTodos = useMemo(() => {
+    return todos.filter(todo => {
+      if (filter === 'active') {
+        return !todo.completed;
+      }
 
-    try {
-      const results = await Promise.allSettled(deletePromises);
+      if (filter === 'completed') {
+        return todo.completed;
+      }
 
-      results.forEach((result, index) => {
-        if (result.status === 'fulfilled') {
-          setTodos(prevTodos =>
-            prevTodos.filter(todo => todo.id !== completedTodos[index].id),
-          );
-        } else {
-          console.error(`Failed to delete todo ${completedTodos[index].id}`);
-          setErrorType(ErrorType.DELETE_TODO);
-        }
-      });
-    } catch (error) {
-      console.error(error);
-      setErrorType(ErrorType.DELETE_TODO);
-    }
+      return true;
+    });
+  }, [todos, filter]);
+
+  const handleDeleteAllCompleted = (todosId: number[]) => {
+    todosId.forEach(id => {
+      deleteTodo(id);
+    });
   };
 
-  const filteredTodos = todos.filter(todo => {
-    if (filter === Status.ACTIVE) {
-      return !todo.completed;
-    }
-
-    if (filter === Status.COMPLETED) {
-      return todo.completed;
-    }
-
-    return true;
-  });
-
-  const activeTodosCount = todos.filter(todo => !todo.completed).length;
-  const completedTodosCount = todos.length - activeTodosCount;
-
-  if (!USER_ID) {
+  if (!todoService.USER_ID) {
     return <UserWarning />;
   }
 
@@ -127,32 +136,46 @@ export const App: React.FC = () => {
 
       <div className="todoapp__content">
         <Header
-          onAddTodo={handleAddTodo}
-          isSubmitting={isLoading}
-          setErrorType={setErrorType}
-        />
-
-        <TodoList
-          todos={filteredTodos}
-          onDeleteTodo={handleDeleteTodo}
+          todos={todos}
+          newTodoTitle={newTodoTitle}
+          handleChangeNewTitle={handleChangeNewTitle}
+          handleEmptyLineError={handleEmptyLineError}
+          errorMessage={errorMessage}
           tempTodo={tempTodo}
         />
-
-        {todos.length > 0 && (
+        {!!todos && (
+          <TodoList
+            todos={filteredTodos}
+            tempTodo={tempTodo}
+            deleteTodo={deleteTodo}
+            todosAreLoadingIds={todosAreLoadingIds}
+          />
+        )}
+        {!!todos.length && (
           <Footer
+            todos={todos}
+            onFilter={setFilter}
             filter={filter}
-            setFilter={setFilter}
-            activeCount={activeTodosCount}
-            completedCount={completedTodosCount}
-            onClearCompleted={handleClearCompleted}
+            handleDeleteAllCompleted={handleDeleteAllCompleted}
           />
         )}
       </div>
 
-      <ErrorNotification
-        errorType={errorType}
-        handleCloseError={handleCloseError}
-      />
+      <div
+        data-cy="ErrorNotification"
+        className={cn(
+          'notification is-danger is-light has-text-weight-normal',
+          { hidden: !errorMessage },
+        )}
+      >
+        <button
+          data-cy="HideErrorButton"
+          type="button"
+          className="delete"
+          onClick={() => setErrorMessage('')}
+        />
+        {errorMessage}
+      </div>
     </div>
   );
 };
