@@ -18,7 +18,7 @@ export const ErrorNotification: React.FC<Props> = ({
         setErrorMessage('');
       }, 3000);
     }
-  }, [message]);
+  }, [message, setErrorMessage]);
 
   useEffect(() => {
     return () => {

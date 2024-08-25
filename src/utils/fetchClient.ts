@@ -1,12 +1,10 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
-/* eslint-disable no-console */
 const BASE_URL = 'https://mate.academy/students-api';
 
 // returns a promise resolved after a given delay
 function wait(delay: number) {
   return new Promise(resolve => {
     setTimeout(resolve, delay);
-    // console.log(resolve, delay);
   });
 }
 
