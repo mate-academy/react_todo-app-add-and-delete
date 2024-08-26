@@ -58,6 +58,12 @@ export const App: React.FC = () => {
   const handleDelete = (todoId: number) => {
     setIsLoadingTodo(prev => [...prev, todoId]);
 
+    // setTimeout(() => {
+    if (inputRef.current) {
+      inputRef.current.focus();
+    }
+    // }, 0);
+
     tadoService
       .deleteTodos(todoId)
       .then(() => {
@@ -67,11 +73,6 @@ export const App: React.FC = () => {
       })
       .finally(() => {
         setIsLoadingTodo(prev => prev.filter(id => id !== todoId));
-        setTimeout(() => {
-          if (inputRef.current) {
-            inputRef.current.focus();
-          }
-        }, 0);
       });
   };
 
@@ -149,7 +150,7 @@ export const App: React.FC = () => {
               value={query}
               onChange={handleQueryChange}
               onKeyDown={handleAddTodo}
-              autoFocus
+              // autoFocus
               disabled={isLoading}
             />
           </form>
