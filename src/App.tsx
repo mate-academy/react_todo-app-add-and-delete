@@ -71,6 +71,9 @@ export const App: React.FC = () => {
           currentTodos.filter(todo => todo.id !== todoId),
         );
       })
+      .catch(() => {
+        handleError(errorMessages.delete);
+      })
       .finally(() => {
         setIsLoadingTodo(prev => prev.filter(id => id !== todoId));
       });
