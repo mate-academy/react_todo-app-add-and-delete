@@ -36,6 +36,7 @@ export const App: React.FC = () => {
   const inputRef = useRef<HTMLInputElement>(null);
   const [isLoadingTodos, setIsLoadingTodo] = useState<number[]>([]);
   const [tempTodo, setTempTodo] = useState<Todo | null>(null);
+  // const todoRef = useRef<HTMLInputElement>(null);
 
   const handleError = (message: ErrorMessages) => {
     setErrorMessage(message);
@@ -66,6 +67,11 @@ export const App: React.FC = () => {
       })
       .finally(() => {
         setIsLoadingTodo(prev => prev.filter(id => id !== todoId));
+        setTimeout(() => {
+          if (inputRef.current) {
+            inputRef.current.focus();
+          }
+        }, 0);
       });
   };
 
