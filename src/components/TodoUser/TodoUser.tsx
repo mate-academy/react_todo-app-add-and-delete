@@ -1,7 +1,7 @@
 /* eslint-disable jsx-a11y/label-has-associated-control */
 /* eslint-disable jsx-a11y/control-has-associated-label */
 import React, { useEffect, useRef, useState } from 'react';
-import { Todo } from '../types/Todo.js';
+import { Todo } from '../../types/Todo.js';
 import cn from 'classnames';
 
 type Props = {

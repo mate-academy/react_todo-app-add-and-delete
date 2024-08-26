@@ -1,6 +1,6 @@
-import { Todo } from '../types/Todo';
-import { Filters } from './Filters';
-import { countActiveTodos } from '../utils/countActiveTodos';
+import { Todo } from '../../types/Todo';
+import { Filters } from '../Filters/Filters';
+import { countActiveTodos } from '../../utils/countActiveTodos';
 
 import cn from 'classnames';
 

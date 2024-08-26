@@ -1,6 +1,6 @@
 import React, { useEffect, useRef, useState } from 'react';
-import { USER_ID, postTodos } from '../api/todos';
-import { Todo } from '../types/Todo';
+import { USER_ID, postTodos } from '../../api/todos';
+import { Todo } from '../../types/Todo';
 
 type Props = {
   todos: Todo[];

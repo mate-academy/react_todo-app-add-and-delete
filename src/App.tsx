@@ -3,12 +3,12 @@
 import React, { useEffect, useMemo, useState } from 'react';
 import { UserWarning } from './UserWarning';
 import * as todosService from './api/todos';
-import { TodoHeader } from './components/TodoHeader';
-import { TodoList } from './components/TodoList';
+import { TodoHeader } from './components/TodoHeader/TodoHeader';
+import { TodoList } from './components/TodoList/TodoList';
 import { Todo } from './types/Todo';
-import { TodoFilter } from './components/TodoFilter';
-import { Filters } from './components/Filters';
-import { TodoError } from './components/TodoError';
+import { TodoFilter } from './components/TodoFilter/TodoFilter';
+import { Filters } from './components/Filters/Filters';
+import { TodoError } from './components/TodoError/TodoError';
 
 export const App: React.FC = () => {
   const [todos, setTodos] = useState<Todo[]>([]);
