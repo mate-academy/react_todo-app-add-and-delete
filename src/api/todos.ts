@@ -12,5 +12,5 @@ export const deleteTodos = (todoId: number) => {
 };
 
 export const addTodos = (todo: Omit<Todo, 'id'>) => {
-  return client.post<Todo>(`/todo/`, todo);
+  return client.post<Todo>(`/todos/`, todo);
 };
