@@ -104,6 +104,9 @@ export const App: React.FC = () => {
           setTodos(currentPosts => [...currentPosts, newTodos]);
           setQuery('');
         })
+        .catch(() => {
+          handleError(errorMessages.add);
+        })
         .finally(() => {
           setIsLoading(false);
           setTempTodo(null);
