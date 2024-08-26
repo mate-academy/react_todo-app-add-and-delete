@@ -10,6 +10,7 @@ import * as tadoService from './api/todos';
 import { Footer } from './component/Footer';
 import { Error } from './component/Error';
 import { ListComponent } from './component/ListComponent';
+import { ErrorMessages, errorMessages } from './types/err';
 
 function filterTodos(todos: Todo[], filter: FilterStatusType) {
   switch (filter) {
@@ -30,17 +31,17 @@ export const App: React.FC = () => {
     FilterStatusType.All,
   );
   const [query, setQuery] = useState('');
-  const [errorMessage, setErrorMessage] = useState('');
+  const [errorMessage, setErrorMessage] = useState<ErrorMessages | null>(null);
   const [isLoading, setIsLoading] = useState(false);
   const inputRef = useRef<HTMLInputElement>(null);
   const [isLoadingTodos, setIsLoadingTodo] = useState<number[]>([]);
   const [tempTodo, setTempTodo] = useState<Todo | null>(null);
 
-  const handleError = (message: string) => {
+  const handleError = (message: ErrorMessages) => {
     setErrorMessage(message);
 
     setTimeout(() => {
-      setErrorMessage('');
+      setErrorMessage(null);
     }, 3000);
   };
 
@@ -49,7 +50,7 @@ export const App: React.FC = () => {
       .getTodos()
       .then(setTodos)
       .catch(() => {
-        handleError('Unable to load todos');
+        handleError(errorMessages.load);
       });
   }, []);
 
@@ -83,7 +84,7 @@ export const App: React.FC = () => {
       }
 
       const newTodo = {
-        title: query,
+        title: query.trim(),
         completed: false,
         userId: tadoService.USER_ID,
       };

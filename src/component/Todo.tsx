@@ -3,7 +3,6 @@
 import classNames from 'classnames';
 import React from 'react';
 import { Todo } from '../types/Todo';
-import { Loading } from './Loading';
 
 type Props = {
   todo: Todo | null;
@@ -17,7 +16,7 @@ export const TodoItem: React.FC<Props> = ({
   isProcessing,
 }) => {
   if (!todo) {
-    return null; // Повертає `null`, якщо `todo` не існує.
+    return null;
   }
 
   return (
@@ -49,7 +48,15 @@ export const TodoItem: React.FC<Props> = ({
         ×
       </button>
 
-      {isProcessing && <Loading />}
+      <div
+        data-cy="TodoLoader"
+        className={classNames('modal overlay', {
+          'is-active': isProcessing,
+        })}
+      >
+        <div className="modal-background has-background-white-ter" />
+        <div className="loader" />
+      </div>
     </div>
   );
 };
