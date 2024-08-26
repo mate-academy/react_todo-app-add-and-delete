@@ -150,7 +150,7 @@ export const App: React.FC = () => {
               value={query}
               onChange={handleQueryChange}
               onKeyDown={handleAddTodo}
-              // autoFocus
+              autoFocus
               disabled={isLoading}
             />
           </form>
