@@ -1,5 +1,4 @@
 import React from 'react';
-// import './Loader.scss';
 
 export const Loading: React.FC = () => (
   <div data-cy="TodoLoader" className="modal overlay is-active">

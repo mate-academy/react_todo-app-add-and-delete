@@ -36,7 +36,6 @@ export const App: React.FC = () => {
   const inputRef = useRef<HTMLInputElement>(null);
   const [isLoadingTodos, setIsLoadingTodo] = useState<number[]>([]);
   const [tempTodo, setTempTodo] = useState<Todo | null>(null);
-  // const todoRef = useRef<HTMLInputElement>(null);
 
   const handleError = (message: ErrorMessages) => {
     setErrorMessage(message);
@@ -58,11 +57,9 @@ export const App: React.FC = () => {
   const handleDelete = (todoId: number) => {
     setIsLoadingTodo(prev => [...prev, todoId]);
 
-    // setTimeout(() => {
     if (inputRef.current) {
       inputRef.current.focus();
     }
-    // }, 0);
 
     tadoService
       .deleteTodos(todoId)
@@ -120,11 +117,9 @@ export const App: React.FC = () => {
         .finally(() => {
           setIsLoading(false);
           setTempTodo(null);
-          setTimeout(() => {
-            if (inputRef.current) {
-              inputRef.current.focus();
-            }
-          }, 0);
+          if (inputRef.current) {
+            inputRef.current.focus();
+          }
         });
     }
   };

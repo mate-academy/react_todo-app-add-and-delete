@@ -16,7 +16,6 @@ export const Footer: React.FC<Props> = ({
   onClearCompleted,
 }) => {
   const leftTodosCount = todos.filter(todo => !todo.completed).length;
-  // const completedTaskCount = todos.filter(todo => todo.completed).length;
   const isCompleted = todos.some(todo => todo.completed);
 
   return (

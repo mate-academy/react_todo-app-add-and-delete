@@ -8,8 +8,6 @@ type Props = {
 };
 
 export const Error: React.FC<Props> = ({ errorMessage, setErrorMessage }) => {
-  // console.log(errorMessage);
-
   return (
     <div
       data-cy="ErrorNotification"
