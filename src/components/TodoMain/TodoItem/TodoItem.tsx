@@ -1,18 +1,41 @@
+/* eslint-disable no-console */
 import classNames from 'classnames';
 import { Todo } from '../../../types/Todo';
+import { useEffect, useState } from 'react';
 
 /* eslint-disable jsx-a11y/label-has-associated-control */
 type Props = {
   todo: Todo;
-  removeTodo: (todoId: number) => void;
+  isDataInProceeding: boolean;
+  selectedTodoId: number | null;
+  todoIsDeleting?: number | null;
+  onDelete: (todoId: number) => void;
   toggleStatus: (todoId: number) => void;
 };
 
 export const TodoItem: React.FC<Props> = ({
   todo,
-  removeTodo,
+  isDataInProceeding,
+  selectedTodoId,
+  todoIsDeleting,
+  onDelete,
   toggleStatus,
 }) => {
+  const [isTempTodoCreating, setIsTempTodoCreating] = useState(false);
+
+  useEffect(() => {
+    if (todo.id === 0) {
+      setIsTempTodoCreating(true);
+      setInterval(() => {
+        setIsTempTodoCreating(false);
+      }, 100);
+    }
+  }, [todo.id]);
+
+  useEffect(() => {
+    console.log('selectedTodoId before deletion:', selectedTodoId);
+  }, [selectedTodoId]);
+
   return (
     <div
       data-cy="Todo"
@@ -39,15 +62,25 @@ export const TodoItem: React.FC<Props> = ({
         type="button"
         className="todo__remove"
         data-cy="TodoDelete"
-        onClick={() => {
-          removeTodo(todo.id);
+        onClick={async () => {
+          await onDelete(todo.id);
+          console.log('after deletion', isDataInProceeding); // for testing
+          console.log('selectedTodoId after deletion', selectedTodoId); // for testing
         }}
       >
         x
       </button>
 
       {/* overlay will cover the todo while it is being deleted or updated */}
-      <div data-cy="TodoLoader" className="modal overlay">
+      <div
+        data-cy="TodoLoader"
+        className={classNames('modal overlay', {
+          'is-active':
+            (isDataInProceeding && selectedTodoId === todo.id) ||
+            isTempTodoCreating ||
+            todoIsDeleting,
+        })}
+      >
         <div className="modal-background has-background-white-ter" />
         <div className="loader" />
       </div>

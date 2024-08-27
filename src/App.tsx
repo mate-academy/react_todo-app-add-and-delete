@@ -1,8 +1,9 @@
+/* eslint-disable no-console */
 /* eslint-disable jsx-a11y/label-has-associated-control */
 /* eslint-disable jsx-a11y/control-has-associated-label */
 import React, { useEffect, useState } from 'react';
 import { UserWarning } from './UserWarning';
-import { USER_ID, getTodos } from './api/todos';
+import { USER_ID, deleteTodo, getTodos } from './api/todos';
 import { TodoHeader } from './components/TodoHeader';
 import { TodoMain } from './components/TodoMain';
 import { TodoFooter } from './components/TodoFooter';
@@ -12,8 +13,6 @@ import { Todo } from './types/Todo';
 import { FilterOptions } from './types/FilterOptions';
 
 function filterTodos(todos: Todo[], option: FilterOptions) {
-  // eslint-disable-next-line no-console
-  console.log('called');
   if (option === -1) {
     return todos;
   }
@@ -25,23 +24,27 @@ export const App: React.FC = () => {
   const [todos, setTodos] = useState<Todo[]>([]);
   const [errorMessage, setErrorMessage] = useState('');
   const [selectedOption, setSelectedOption] = useState<FilterOptions>(-1);
-  // const handleCreatingNewTodo = ({
-  //   userId,
-  //   title,
-  //   completed,
-  // }: Omit<Todo, 'id'>) => {
-  //   createNewTodo({ userId, title, completed });
-  // };
+  const [tempTodo, setTempTodo] = useState<Todo | null>(null);
+  const [isDataInProceeding, setIsDataInProceeding] = useState(false);
+  const [deletingTodoIds, setDeletingTodoIds] = useState<number[]>([]);
+  const [selectedTodoId, setSelectedTodoId] = useState<number | null>(null);
+
+  const handleSetTempTodo = (newTempTodo: Todo | null) => {
+    setTempTodo(newTempTodo);
+    setIsDataInProceeding(true);
+  };
 
   const handleFiltrationOption = (option: FilterOptions) => {
     setSelectedOption(option);
   };
 
-  const filteredTodos = filterTodos(todos, selectedOption);
-
-  const handleRemoveTodo = (todoId: number) => {
-    setTodos(currentTodos => currentTodos.filter(todo => todo.id !== todoId));
+  const handleNewTodo = (newTodo: Todo) => {
+    setTodos(currentTodos => {
+      return [...currentTodos, newTodo];
+    });
   };
+
+  const filteredTodos = filterTodos(todos, selectedOption);
 
   const handleToggleTodoStatus = (todoId: number) => {
     setTodos(currentTodos =>
@@ -57,6 +60,34 @@ export const App: React.FC = () => {
       setErrorMessage('');
     }, 3000);
   };
+
+  const handleDeletionTodo = async (todoId: number) => {
+    setIsDataInProceeding(true);
+    setSelectedTodoId(todoId);
+    try {
+      await deleteTodo(todoId);
+      setTodos(currentTodos => currentTodos.filter(todo => todo.id !== todoId));
+    } catch (error) {
+      handleError('Unable to delete a todo');
+    } finally {
+      setIsDataInProceeding(false);
+      setSelectedTodoId(null);
+    }
+  };
+
+  const handleDeleteCompletedTodos = async () => {
+    const completedTodos = todos.filter(todo => todo.completed === true);
+
+    setDeletingTodoIds(completedTodos.map(todo => todo.id));
+
+    await Promise.allSettled(
+      completedTodos.map(completedTodo => handleDeletionTodo(completedTodo.id)),
+    );
+  };
+
+  useEffect(() => {
+    console.log('isDataInProceeding after update:', isDataInProceeding); // for testing
+  }, [isDataInProceeding]);
 
   useEffect(() => {
     getTodos()
@@ -75,11 +106,20 @@ export const App: React.FC = () => {
       <h1 className="todoapp__title">todos</h1>
 
       <div className="todoapp__content">
-        <TodoHeader />
+        <TodoHeader
+          todos={todos}
+          addTempTodo={handleSetTempTodo}
+          updateTodoList={handleNewTodo}
+          onError={handleError}
+        />
 
         <TodoMain
           todos={filteredTodos}
-          removeTodo={handleRemoveTodo}
+          onDelete={handleDeletionTodo}
+          selectedTodoId={selectedTodoId}
+          todosIsDeleting={deletingTodoIds}
+          tempTodo={tempTodo}
+          isDataInProceeding={isDataInProceeding}
           toggleStatus={handleToggleTodoStatus}
         />
 
@@ -88,6 +128,7 @@ export const App: React.FC = () => {
           <TodoFooter
             todos={todos}
             selectedOption={selectedOption}
+            deleteCompletedTodos={handleDeleteCompletedTodos}
             selectOption={handleFiltrationOption}
           />
         )}

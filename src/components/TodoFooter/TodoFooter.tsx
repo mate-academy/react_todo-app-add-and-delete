@@ -5,12 +5,14 @@ import { FilterOptions } from '../../types/FilterOptions';
 type Props = {
   todos: Todo[];
   selectedOption: FilterOptions;
+  deleteCompletedTodos: () => void;
   selectOption: (option: FilterOptions) => void;
 };
 
 export const TodoFooter: React.FC<Props> = ({
   todos,
   selectedOption,
+  deleteCompletedTodos,
   selectOption,
 }) => {
   return (
@@ -66,6 +68,7 @@ export const TodoFooter: React.FC<Props> = ({
         type="button"
         className="todoapp__clear-completed"
         data-cy="ClearCompletedButton"
+        onClick={deleteCompletedTodos}
         disabled={!todos.some(todo => todo.completed === true)}
       >
         Clear completed
