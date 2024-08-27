@@ -40,7 +40,7 @@ export const Header: React.FC<Props> = ({
           placeholder="What needs to be done?"
           ref={inputRef}
           value={query}
-          onChange={e => setQuery(e.target.value)}
+          onChange={event => setQuery(event.target.value)}
         />
       </form>
     </header>

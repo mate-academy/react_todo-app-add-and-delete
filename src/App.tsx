@@ -10,6 +10,7 @@ import { Errors } from './components/Errors/Errors';
 import { Header } from './components/Header/Header';
 import { UserWarning } from './UserWarning';
 import { Todo } from './types/Todo';
+import { ErrorMessages } from './types/Error';
 
 export const App: React.FC = () => {
   const [todos, setTodos] = useState<Todo[]>([]);
@@ -17,7 +18,7 @@ export const App: React.FC = () => {
   const [status, setStatus] = useState(Status.All);
   const [query, setQuery] = useState('');
   const [tempTodo, setTempTodo] = useState<Todo | null>(null);
-  const [loadingTodos, setLoadingTodos] = useState<number[]>([]);
+  const [loadingTodosCount, setLoadingTodosCount] = useState<number[]>([]);
 
   const inputRef = useRef<HTMLInputElement | null>(null);
 
@@ -25,12 +26,12 @@ export const App: React.FC = () => {
     getTodos()
       .then(setTodos)
       .catch(() => {
-        setError('Unable to load todos');
+        setError(ErrorMessages.UnableToLoadTodos);
         setTimeout(() => setError(''), 3000);
       });
   }, []);
 
-  function getVisiebleTodos(newTodos: Todo[], newStatus: Status) {
+  function getVisibleTodos(newTodos: Todo[], newStatus: Status) {
     switch (newStatus) {
       case Status.Active:
         return newTodos.filter(todo => !todo.completed);
@@ -43,13 +44,13 @@ export const App: React.FC = () => {
     }
   }
 
-  const visiebleTodos = getVisiebleTodos(todos, status);
+  const visibleTodos = getVisibleTodos(todos, status);
 
   const addTodo = () => {
     const todoTitle = query.trim();
 
     if (!todoTitle.length) {
-      setError('Title should not be empty');
+      setError(ErrorMessages.TitleShouldNotBeEmpty);
       setTimeout(() => setError(''), 3000);
 
       return;
@@ -67,15 +68,15 @@ export const App: React.FC = () => {
     };
 
     setTempTodo(newTempTodo);
-    setLoadingTodos(c => [...c, 0]);
+    setLoadingTodosCount(currentCount => [...currentCount, 0]);
 
     postTodo({ title: todoTitle, userId: USER_ID, completed: false })
       .then((newTodo: Todo) => {
-        setTodos(curTodos => [...curTodos, newTodo]);
+        setTodos(currentTodos => [...currentTodos, newTodo]);
         setQuery('');
       })
       .catch(() => {
-        setError('Unable to add a todo');
+        setError(ErrorMessages.UnableToAddTodo);
         setTimeout(() => setError(''), 3000);
       })
       .finally(() => {
@@ -85,24 +86,28 @@ export const App: React.FC = () => {
         }
 
         setTempTodo(null);
-        setLoadingTodos(c => c.filter(todoId => todoId !== 0));
+        setLoadingTodosCount(currentCount =>
+          currentCount.filter(todoId => todoId !== 0),
+        );
       });
   };
 
   const handleDeleteTodo = (todoId: number) => {
-    setLoadingTodos(curr => [...curr, todoId]);
+    setLoadingTodosCount(current => [...current, todoId]);
 
     deleteTodo(todoId)
       .then(() =>
-        setTodos(currTodos => currTodos.filter(todo => todo.id !== todoId)),
+        setTodos(currentTodos =>
+          currentTodos.filter(todo => todo.id !== todoId),
+        ),
       )
       .catch(() => {
-        setError('Unable to delete a todo');
+        setError(ErrorMessages.UnableToDeleteTodo);
         setTimeout(() => setError(''), 3000);
       })
       .finally(() =>
-        setLoadingTodos(curr =>
-          curr.filter(deletingTodoId => todoId !== deletingTodoId),
+        setLoadingTodosCount(current =>
+          current.filter(deletingTodoId => todoId !== deletingTodoId),
         ),
       );
 
@@ -111,7 +116,7 @@ export const App: React.FC = () => {
 
   const completedTodos = todos.filter(todo => todo.completed);
 
-  const deleteAllComleted = () => {
+  const deleteAllCompleted = () => {
     completedTodos.forEach(todo => handleDeleteTodo(todo.id));
   };
 
@@ -132,10 +137,10 @@ export const App: React.FC = () => {
         />
         {!!todos.length && (
           <TodoList
-            visiebleTodos={visiebleTodos}
+            visiebleTodos={visibleTodos}
             tempTodo={tempTodo}
             onDelete={handleDeleteTodo}
-            loadingTodos={loadingTodos}
+            loadingTodos={loadingTodosCount}
           />
         )}
         {!!todos.length && (
@@ -143,7 +148,7 @@ export const App: React.FC = () => {
             todos={todos}
             status={status}
             setStatus={setStatus}
-            onClearCompleted={deleteAllComleted}
+            onClearCompleted={deleteAllCompleted}
           />
         )}
       </div>
