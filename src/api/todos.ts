@@ -8,7 +8,7 @@ export const getTodos = () => {
 };
 
 export const deleteTodos = (todoId: number) => {
-  return client.delete(`/todo/${todoId}`);
+  return client.delete(`/todos/${todoId}`);
 };
 
 export const addTodos = (todo: Omit<Todo, 'id'>) => {
