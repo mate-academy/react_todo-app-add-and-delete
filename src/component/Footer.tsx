@@ -6,11 +6,18 @@ type Props = {
   setFilterBy: (filter: FilterStatusType) => void;
   todos: Todo[];
   filterBy: FilterStatusType;
+  onClearCompleted: () => void;
 };
 
-export const Footer: React.FC<Props> = ({ setFilterBy, todos, filterBy }) => {
+export const Footer: React.FC<Props> = ({
+  setFilterBy,
+  todos,
+  filterBy,
+  onClearCompleted,
+}) => {
   const leftTodosCount = todos.filter(todo => !todo.completed).length;
-  const completedTaskCount = todos.filter(todo => todo.completed).length;
+  // const completedTaskCount = todos.filter(todo => todo.completed).length;
+  const isCompleted = todos.some(todo => todo.completed);
 
   return (
     <footer className="todoapp__footer" data-cy="Footer">
@@ -56,7 +63,8 @@ export const Footer: React.FC<Props> = ({ setFilterBy, todos, filterBy }) => {
         type="button"
         className="todoapp__clear-completed"
         data-cy="ClearCompletedButton"
-        disabled={completedTaskCount === 0}
+        disabled={!isCompleted}
+        onClick={onClearCompleted}
       >
         Clear completed
       </button>

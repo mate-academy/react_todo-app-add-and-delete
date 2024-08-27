@@ -131,6 +131,12 @@ export const App: React.FC = () => {
 
   const tasks = filterTodos(todos, filterBy);
 
+  const completedTodos = todos.filter(todo => todo.completed);
+
+  const deleteAllCompleted = () => {
+    completedTodos.forEach(todo => handleDelete(todo.id));
+  };
+
   return (
     <div className="todoapp">
       <h1 className="todoapp__title">todos</h1>
@@ -167,7 +173,12 @@ export const App: React.FC = () => {
           tempTodo={tempTodo}
         />
         {todos.length > 0 && (
-          <Footer setFilterBy={setFilterBy} todos={todos} filterBy={filterBy} />
+          <Footer
+            onClearCompleted={deleteAllCompleted}
+            setFilterBy={setFilterBy}
+            todos={todos}
+            filterBy={filterBy}
+          />
         )}
       </div>
       <Error errorMessage={errorMessage} setErrorMessage={setErrorMessage} />
