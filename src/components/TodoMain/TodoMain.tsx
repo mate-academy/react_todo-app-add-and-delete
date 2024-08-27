@@ -38,6 +38,8 @@ export const TodoMain: React.FC<Props> = ({
               key={todo.id}
             />
           );
+        } else {
+          return;
         }
       })}
     </section>
