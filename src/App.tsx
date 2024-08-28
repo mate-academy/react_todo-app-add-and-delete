@@ -14,20 +14,11 @@ import { FilterOptions } from './types/FilterOptions';
 import { ErrorMessage } from './types/ErrorMessage';
 
 function filterTodos(todos: Todo[], option: FilterOptions) {
-  switch (option) {
-    case FilterOptions.FilterByAllButton:
-      return todos;
-
-    case FilterOptions.FilterByActiveTodos:
-      return todos.filter(
-        todo => Number(todo.completed) === FilterOptions.FilterByActiveTodos,
-      );
-
-    case FilterOptions.FilterByCompletedTodos:
-      return todos.filter(
-        todo => Number(todo.completed) === FilterOptions.FilterByCompletedTodos,
-      );
+  if (option === FilterOptions.FilterByAllButton) {
+    return todos;
   }
+
+  return todos.filter(todo => Number(todo.completed) === option);
 }
 
 export const App: React.FC = () => {
