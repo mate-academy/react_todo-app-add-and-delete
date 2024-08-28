@@ -8,6 +8,7 @@ import { UserWarning } from './UserWarning';
 import { getTodos, createTodos, deleteTodos, USER_ID } from './api/todos';
 import { Todo } from './types/Todo';
 import { Filter } from './types/Filter';
+import { ErrorMessage } from './types/ErrorMessages';
 
 export const App: React.FC = () => {
   const [todos, setTodos] = useState<Todo[]>([]);
@@ -29,7 +30,7 @@ export const App: React.FC = () => {
     getTodos()
       .then(setTodos)
       .catch(() => {
-        setError('Unable to load todos');
+        setError(ErrorMessage.UnableToLoadTodos);
 
         setTimeout(() => {
           setError('');
@@ -42,7 +43,7 @@ export const App: React.FC = () => {
     const inputValue = newTodoField.current?.value.trim();
 
     if (!inputValue) {
-      setError('Title should not be empty');
+      setError(ErrorMessage.TitleShouldNotBeEmpty);
 
       setTimeout(() => {
         setError('');
@@ -71,7 +72,7 @@ export const App: React.FC = () => {
         }
       })
       .catch(() => {
-        setError('Unable to add a todo');
+        setError(ErrorMessage.UnableToAddTodo);
 
         setTimeout(() => {
           setError('');
@@ -128,7 +129,7 @@ export const App: React.FC = () => {
         setDeletingTodoId(prev => prev.filter(id => id !== todoId));
       })
       .catch(() => {
-        setError('Unable to delete a todo');
+        setError(ErrorMessage.UnableToDeleteTodo);
 
         setTimeout(() => {
           setError('');
@@ -144,6 +145,9 @@ export const App: React.FC = () => {
     completedIds.forEach(id => handleDeleteTodo(id));
   };
 
+  const areAllTodosCompleted =
+    todos.length > 0 && todos.every(todo => todo.completed);
+
   return (
     <div className="todoapp">
       <h1 className="todoapp__title">Todos</h1>
@@ -151,10 +155,11 @@ export const App: React.FC = () => {
       <div className="todoapp__content">
         <header className="todoapp__header">
           {/* this button should have `active` class only if all todos are completed */}
+
           <button
             type="button"
             className={cn('todoapp__toggle-all', {
-              active: todos.length > 0 && todos.every(todo => todo.completed),
+              active: areAllTodosCompleted,
             })}
             data-cy="ToggleAllButton"
           />
