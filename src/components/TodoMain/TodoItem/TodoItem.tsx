@@ -1,7 +1,7 @@
 /* eslint-disable no-console */
 import classNames from 'classnames';
 import { Todo } from '../../../types/Todo';
-import { useEffect, useState } from 'react';
+import { useEffect } from 'react';
 
 /* eslint-disable jsx-a11y/label-has-associated-control */
 type Props = {
@@ -21,19 +21,8 @@ export const TodoItem: React.FC<Props> = ({
   onDelete,
   toggleStatus,
 }) => {
-  const [isTempTodoCreating, setIsTempTodoCreating] = useState(false);
-
   useEffect(() => {
-    if (todo.id === 0) {
-      setIsTempTodoCreating(true);
-      setInterval(() => {
-        setIsTempTodoCreating(false);
-      }, 100);
-    }
-  }, [todo.id]);
-
-  useEffect(() => {
-    console.log('selectedTodoId before deletion:', selectedTodoId);
+    console.log('selectedTodoId before deletion:', selectedTodoId); // for testing
   }, [selectedTodoId]);
 
   return (
@@ -77,7 +66,6 @@ export const TodoItem: React.FC<Props> = ({
         className={classNames('modal overlay', {
           'is-active':
             (isDataInProceeding && selectedTodoId === todo.id) ||
-            isTempTodoCreating ||
             todoIsDeleting,
         })}
       >

@@ -31,7 +31,9 @@ export const App: React.FC = () => {
 
   const handleSetTempTodo = (newTempTodo: Todo | null) => {
     setTempTodo(newTempTodo);
-    setIsDataInProceeding(true);
+    if (newTempTodo) {
+      setSelectedTodoId(newTempTodo.id);
+    }
   };
 
   const handleFiltrationOption = (option: FilterOptions) => {
@@ -42,6 +44,10 @@ export const App: React.FC = () => {
     setTodos(currentTodos => {
       return [...currentTodos, newTodo];
     });
+  };
+
+  const handleSetDataLoadingStatus = (status: boolean) => {
+    setIsDataInProceeding(status);
   };
 
   const filteredTodos = filterTodos(todos, selectedOption);
@@ -108,6 +114,8 @@ export const App: React.FC = () => {
       <div className="todoapp__content">
         <TodoHeader
           todos={todos}
+          handleSetDataLoadingStatus={handleSetDataLoadingStatus}
+          isDataInProceeding={isDataInProceeding}
           addTempTodo={handleSetTempTodo}
           updateTodoList={handleNewTodo}
           onError={handleError}

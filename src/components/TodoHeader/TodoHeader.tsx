@@ -5,6 +5,8 @@ import classNames from 'classnames';
 
 type Props = {
   todos: Todo[];
+  isDataInProceeding: boolean;
+  handleSetDataLoadingStatus: (status: boolean) => void;
   addTempTodo: (tempTodo: Todo | null) => void;
   updateTodoList: (newTodo: Todo) => void;
   onError: (message: string) => void;
@@ -12,12 +14,13 @@ type Props = {
 
 export const TodoHeader: React.FC<Props> = ({
   todos,
+  isDataInProceeding,
+  handleSetDataLoadingStatus,
   addTempTodo,
   updateTodoList,
   onError,
 }) => {
   const [titleTodo, setTitleTodo] = useState<string>('');
-  const [isDataLoading, setIsDataLoading] = useState(false);
   const focusOnInput = useRef<HTMLInputElement>(null);
 
   const handleFormInput = (event: FormEvent<HTMLInputElement>) => {
@@ -41,7 +44,7 @@ export const TodoHeader: React.FC<Props> = ({
       })
       .finally(() => {
         addTempTodo(null);
-        setIsDataLoading(false);
+        handleSetDataLoadingStatus(false);
       });
   };
 
@@ -54,7 +57,7 @@ export const TodoHeader: React.FC<Props> = ({
       return;
     }
 
-    setIsDataLoading(true);
+    handleSetDataLoadingStatus(true);
     addTempTodo({
       id: 0,
       userId: USER_ID,
@@ -94,7 +97,7 @@ export const TodoHeader: React.FC<Props> = ({
           value={titleTodo}
           className="todoapp__new-todo"
           placeholder="What needs to be done?"
-          disabled={isDataLoading}
+          disabled={isDataInProceeding}
           onChange={handleFormInput}
         />
       </form>
