@@ -15,10 +15,17 @@ export const TodoFooter: React.FC<Props> = ({
   deleteCompletedTodos,
   selectOption,
 }) => {
+  const howManyTodosIsActive = todos.filter(
+    todo => todo.completed === false,
+  ).length;
+  const completedClearButtonIsActive = todos.some(
+    todo => todo.completed === true,
+  );
+
   return (
     <footer className="todoapp__footer" data-cy="Footer">
       <span className="todo-count" data-cy="TodosCounter">
-        {`${todos.filter(todo => todo.completed === false).length} items left`}
+        {`${howManyTodosIsActive} items left`}
       </span>
 
       {/* Active link should have the 'selected' class */}
@@ -26,11 +33,11 @@ export const TodoFooter: React.FC<Props> = ({
         <a
           href="#/"
           className={classNames('filter__link', {
-            selected: selectedOption === -1,
+            selected: selectedOption === FilterOptions.FilterByAllButton,
           })}
           data-cy="FilterLinkAll"
           onClick={() => {
-            selectOption(-1);
+            selectOption(FilterOptions.FilterByAllButton);
           }}
         >
           All
@@ -39,11 +46,11 @@ export const TodoFooter: React.FC<Props> = ({
         <a
           href="#/active"
           className={classNames('filter__link', {
-            selected: selectedOption === false,
+            selected: selectedOption === FilterOptions.FilterByActiveTodos,
           })}
           data-cy="FilterLinkActive"
           onClick={() => {
-            selectOption(false);
+            selectOption(FilterOptions.FilterByActiveTodos);
           }}
         >
           Active
@@ -52,11 +59,11 @@ export const TodoFooter: React.FC<Props> = ({
         <a
           href="#/completed"
           className={classNames('filter__link', {
-            selected: selectedOption === true,
+            selected: selectedOption === FilterOptions.FilterByCompletedTodos,
           })}
           data-cy="FilterLinkCompleted"
           onClick={() => {
-            selectOption(true);
+            selectOption(FilterOptions.FilterByCompletedTodos);
           }}
         >
           Completed
@@ -69,7 +76,7 @@ export const TodoFooter: React.FC<Props> = ({
         className="todoapp__clear-completed"
         data-cy="ClearCompletedButton"
         onClick={deleteCompletedTodos}
-        disabled={!todos.some(todo => todo.completed === true)}
+        disabled={!completedClearButtonIsActive}
       >
         Clear completed
       </button>

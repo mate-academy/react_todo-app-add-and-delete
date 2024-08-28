@@ -11,19 +11,33 @@ import { TodoFooter } from './components/TodoFooter';
 import { ErrorNotification } from './components/ErrorNotification/ErrorNotification';
 import { Todo } from './types/Todo';
 import { FilterOptions } from './types/FilterOptions';
+import { ErrorMessage } from './types/ErrorMessage';
 
 function filterTodos(todos: Todo[], option: FilterOptions) {
-  if (option === -1) {
-    return todos;
-  }
+  switch (option) {
+    case FilterOptions.FilterByAllButton:
+      return todos;
 
-  return todos.filter(todo => todo.completed === option);
+    case FilterOptions.FilterByActiveTodos:
+      return todos.filter(
+        todo => Number(todo.completed) === FilterOptions.FilterByActiveTodos,
+      );
+
+    case FilterOptions.FilterByCompletedTodos:
+      return todos.filter(
+        todo => Number(todo.completed) === FilterOptions.FilterByCompletedTodos,
+      );
+  }
 }
 
 export const App: React.FC = () => {
   const [todos, setTodos] = useState<Todo[]>([]);
-  const [errorMessage, setErrorMessage] = useState('');
-  const [selectedOption, setSelectedOption] = useState<FilterOptions>(-1);
+  const [errorMessage, setErrorMessage] = useState<ErrorMessage>(
+    ErrorMessage.NoErrors,
+  );
+  const [selectedOption, setSelectedOption] = useState<FilterOptions>(
+    FilterOptions.FilterByAllButton,
+  );
   const [tempTodo, setTempTodo] = useState<Todo | null>(null);
   const [isDataInProceeding, setIsDataInProceeding] = useState(false);
   const [deletingTodoIds, setDeletingTodoIds] = useState<number[]>([]);
@@ -60,10 +74,10 @@ export const App: React.FC = () => {
     );
   };
 
-  const handleError = (message: string) => {
+  const handleError = (message: ErrorMessage) => {
     setErrorMessage(message);
     setTimeout(() => {
-      setErrorMessage('');
+      setErrorMessage(ErrorMessage.NoErrors);
     }, 3000);
   };
 
@@ -74,7 +88,7 @@ export const App: React.FC = () => {
       await deleteTodo(todoId);
       setTodos(currentTodos => currentTodos.filter(todo => todo.id !== todoId));
     } catch (error) {
-      handleError('Unable to delete a todo');
+      handleError(ErrorMessage.OnDeletionTodo);
     } finally {
       setIsDataInProceeding(false);
       setSelectedTodoId(null);
@@ -99,7 +113,7 @@ export const App: React.FC = () => {
     getTodos()
       .then(setTodos)
       .catch(() => {
-        handleError('Unable to load todos');
+        handleError(ErrorMessage.OnLoadingTodos);
       });
   }, []);
 

@@ -2,6 +2,7 @@ import { FormEvent, useEffect, useRef, useState } from 'react';
 import { USER_ID, createNewTodo } from '../../api/todos';
 import { Todo } from '../../types/Todo';
 import classNames from 'classnames';
+import { ErrorMessage } from '../../types/ErrorMessage';
 
 type Props = {
   todos: Todo[];
@@ -9,7 +10,7 @@ type Props = {
   handleSetDataLoadingStatus: (status: boolean) => void;
   addTempTodo: (tempTodo: Todo | null) => void;
   updateTodoList: (newTodo: Todo) => void;
-  onError: (message: string) => void;
+  onError: (message: ErrorMessage) => void;
 };
 
 export const TodoHeader: React.FC<Props> = ({
@@ -38,7 +39,7 @@ export const TodoHeader: React.FC<Props> = ({
         setTitleTodo('');
       })
       .catch(() => {
-        onError('Unable to add a todo');
+        onError(ErrorMessage.OnAddingTodo);
         setTitleTodo(title.trim());
         addTempTodo(null);
       })
@@ -52,7 +53,7 @@ export const TodoHeader: React.FC<Props> = ({
     event.preventDefault();
 
     if (titleTodo.trim().length < 1) {
-      onError('Title should not be empty');
+      onError(ErrorMessage.OnTitleLength);
 
       return;
     }

@@ -1,8 +1,9 @@
 import classNames from 'classnames';
+import { ErrorMessage } from '../../types/ErrorMessage';
 
 type Props = {
   errorMessage: string;
-  onClose: (message: string) => void;
+  onClose: (message: ErrorMessage) => void;
 };
 
 export const ErrorNotification: React.FC<Props> = ({
@@ -22,19 +23,10 @@ export const ErrorNotification: React.FC<Props> = ({
         type="button"
         className={classNames('delete', { hidden: !errorMessage })}
         onClick={() => {
-          onClose('');
+          onClose(ErrorMessage.NoErrors);
         }}
       />
       {errorMessage}
-      {/* Unable to load todos
-      <br />
-      Title should not be empty
-      <br />
-      Unable to add a todo
-      <br />
-      Unable to delete a todo
-      <br />
-      Unable to update a todo */}
     </div>
   );
 };
