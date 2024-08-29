@@ -12,23 +12,32 @@ type Props = {
 };
 
 export const TodoFilter: React.FC<Props> = ({
-                                              filter,
-                                              setFilter,
-                                              onDelete,
-                                              todos,
-                                            }) => {
+  filter,
+  setFilter,
+  onDelete,
+  todos,
+}) => {
   const filterLinks = [
     { key: Filters.All, href: '#/', label: 'All', dataCy: 'FilterLinkAll' },
-    { key: Filters.Active, href: '#/active', label: 'Active', dataCy: 'FilterLinkActive' },
-    { key: Filters.Completed, href: '#/completed', label: 'Completed', dataCy: 'FilterLinkCompleted' },
+    {
+      key: Filters.Active,
+      href: '#/active',
+      label: 'Active',
+      dataCy: 'FilterLinkActive',
+    },
+    {
+      key: Filters.Completed,
+      href: '#/completed',
+      label: 'Completed',
+      dataCy: 'FilterLinkCompleted',
+    },
   ];
 
-  const isNoCompletedTodos = todos.length - countActiveTodos(todos).length === 0;
+  const isNoCompletedTodos =
+    todos.length - countActiveTodos(todos).length === 0;
 
   const handleClearCompleted = () => {
-    todos
-      .filter(todo => todo.completed)
-      .forEach(todo => onDelete(todo.id));
+    todos.filter(todo => todo.completed).forEach(todo => onDelete(todo.id));
   };
 
   return (
