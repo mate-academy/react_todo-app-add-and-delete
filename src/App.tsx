@@ -9,13 +9,14 @@ import { Todo } from './types/Todo';
 import { TodoFilter } from './components/TodoFilter/TodoFilter';
 import { Filters } from './components/Filters/Filters';
 import { TodoError } from './components/TodoError/TodoError';
+import { ErrorMessages } from './types/Error';
 
 export const App: React.FC = () => {
   const [todos, setTodos] = useState<Todo[]>([]);
   const [currentFilter, setCurrentFilter] = useState(Filters.All);
-  const [errorMessage, setErrorMessage] = useState<string | null>(null);
   const [tempTodo, setTempTodo] = useState<Todo | null>(null);
   const [processedId, setProcessedId] = useState<number[]>([]);
+  const [errorMessage, setErrorMessage] = useState<string | null>(null);
 
   useEffect(() => {
     if (!todosService.USER_ID) {
@@ -27,7 +28,7 @@ export const App: React.FC = () => {
       .getTodos()
       .then(setTodos)
       .catch(() => {
-        setErrorMessage('Unable to load todos');
+        setErrorMessage(ErrorMessages.UNABLE_TO_LOAD);
         setTimeout(() => setErrorMessage(null), 3000);
       });
   }, []);
@@ -53,7 +54,7 @@ export const App: React.FC = () => {
         setTodos(currentTodos => currentTodos.filter(todo => todo.id !== id));
       })
       .catch(() => {
-        setErrorMessage('Unable to delete a todo');
+        setErrorMessage(ErrorMessages.UNABLE_TO_DELETE);
         setTimeout(() => setErrorMessage(null), 3000);
       })
       .finally(() => setProcessedId([]));
@@ -94,7 +95,7 @@ export const App: React.FC = () => {
           processedIds={processedId}
         />
 
-        {todos.length > 0 && (
+        {!!todos.length && (
           <TodoFilter
             filter={currentFilter}
             setFilter={setCurrentFilter}

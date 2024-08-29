@@ -1,6 +1,7 @@
 import React, { useEffect, useRef, useState } from 'react';
 import { USER_ID, postTodos } from '../../api/todos';
 import { Todo } from '../../types/Todo';
+import { ErrorMessages } from '../../types/Error';
 
 type Props = {
   todos: Todo[];
@@ -19,11 +20,11 @@ export const TodoHeader: React.FC<Props> = ({
   const [title, setTitle] = useState('');
   const [isSubmitting, setIsSubmitting] = useState(false);
 
-  const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
-    e.preventDefault();
+  const handleSubmit = (event: React.FormEvent<HTMLFormElement>) => {
+    event.preventDefault();
 
     if (title.replace(/\s+/g, '').length === 0) {
-      setErrorMessage('Title should not be empty');
+      setErrorMessage(ErrorMessages.EMPTY_TITLE);
       setTimeout(() => setErrorMessage(null), 3000);
     } else {
       setIsSubmitting(true);
@@ -41,7 +42,7 @@ export const TodoHeader: React.FC<Props> = ({
           setTitle('');
         })
         .catch(() => {
-          setErrorMessage('Unable to add a todo');
+          setErrorMessage(ErrorMessages.UNABLE_TO_ADD);
           setTimeout(() => setErrorMessage(null), 3000);
         })
         .finally(() => {

@@ -56,7 +56,9 @@ export const TodoUser: React.FC<Props> = ({
             className="todo__title-field"
             placeholder="Empty todo will be deleted"
             value={isEditingTodo.title}
-            onChange={e => setIsEditingTodo({ ...todo, title: e.target.value })}
+            onChange={event =>
+              setIsEditingTodo({ ...todo, title: event.target.value })
+            }
             onBlur={() => setIsEditingTodo(null)}
             ref={todoField}
           />
