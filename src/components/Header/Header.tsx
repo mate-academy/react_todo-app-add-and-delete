@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState } from 'react';
+import { RefObject, useEffect, useState } from 'react';
 import * as todoService from '../../utils/helpers';
 import { Todo } from '../../types/Todo';
 import { errorMessages, TEMP_TODO } from '../../utils/const';
@@ -12,6 +12,7 @@ type Props = {
   setTempTodo: React.Dispatch<React.SetStateAction<Todo | null>>;
   setIsLoading: (isLoading: boolean) => void;
   isLoading: boolean;
+  inputRef: RefObject<HTMLInputElement>;
 };
 export const Header: React.FC<Props> = ({
   todos,
@@ -21,9 +22,9 @@ export const Header: React.FC<Props> = ({
   setTempTodo,
   setIsLoading,
   isLoading,
+  inputRef,
 }) => {
   const [title, setTitle] = useState<string>('');
-  const inputRef = useRef<HTMLInputElement>(null);
 
   const compleatedTodos = todos.every(todo => todo.completed);
 
@@ -53,13 +54,13 @@ export const Header: React.FC<Props> = ({
     if (inputRef.current) {
       inputRef.current.focus();
     }
-  }, []);
+  }, [inputRef]);
 
   useEffect(() => {
     if (!isLoading && inputRef.current) {
       inputRef.current.focus();
     }
-  }, [isLoading]);
+  }, [isLoading, inputRef]);
 
   return (
     <header className="todoapp__header">

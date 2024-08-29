@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { RefObject } from 'react';
 import { Todo } from '../../types/Todo';
 import { TodoItem } from '../TodoItem';
 
@@ -10,6 +10,9 @@ type Props = {
   isLoadingWhileDelete: boolean;
   setIsLoading: (isLoading: boolean) => void;
   setIsLoadingWhileDelete: (isLoading: boolean) => void;
+  inputRef: RefObject<HTMLInputElement>;
+  setHasError: (value: boolean) => void;
+  setErrorMessage: (message: string) => void;
 };
 
 export const TodoList: React.FC<Props> = ({
@@ -20,27 +23,36 @@ export const TodoList: React.FC<Props> = ({
   setIsLoading,
   setIsLoadingWhileDelete,
   isLoadingWhileDelete,
+  inputRef,
+  setHasError,
+  setErrorMessage,
 }) => {
   return (
     <section className="todoapp__main" data-cy="TodoList">
       {todos.map(todo => (
         <TodoItem
+          setErrorMessage={setErrorMessage}
           todo={todo}
           key={todo.id}
           setTodos={setTodos}
           setIsLoading={setIsLoading}
           isLoadingWhileDelete={isLoadingWhileDelete}
           setIsLoadingWhileDelete={setIsLoadingWhileDelete}
+          inputRef={inputRef}
+          setHasError={setHasError}
         />
       ))}
       {tempTodo && (
         <TodoItem
+          setErrorMessage={setErrorMessage}
           todo={tempTodo}
           setTodos={setTodos}
           isLoading={isLoading}
           setIsLoading={setIsLoading}
           isLoadingWhileDelete={isLoadingWhileDelete}
           setIsLoadingWhileDelete={setIsLoadingWhileDelete}
+          inputRef={inputRef}
+          setHasError={setHasError}
         />
       )}
     </section>

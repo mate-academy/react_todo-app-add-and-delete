@@ -29,7 +29,8 @@ export const deleteTodo = (
   todoId: number,
   setTodos: (update: (todos: Todo[]) => Todo[]) => void,
   setIsLoadingWhileDelete: (isLoading: boolean) => void,
-  setErrorMessage?: (message: string) => void,
+  setHasError: (value: boolean) => void,
+  setErrorMessage: (message: string) => void,
   onSuccess?: () => void,
 ) => {
   setIsLoadingWhileDelete(true);
@@ -43,6 +44,7 @@ export const deleteTodo = (
     })
     .catch(() => {
       if (setErrorMessage) {
+        setHasError(true);
         setErrorMessage(errorMessages.deleteError);
       }
     })
@@ -75,8 +77,8 @@ export const addTodo = (
     });
 };
 
-export const updateTodoCompleated = (todoId: number, compleated: boolean) => {
+export const updateTodoCompleated = (todoId: number, completed: boolean) => {
   return client.patch<Todo>(`/todos/${todoId}`, {
-    compleated: compleated,
+    completed: completed,
   });
 };

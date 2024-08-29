@@ -1,6 +1,6 @@
 /* eslint-disable jsx-a11y/label-has-associated-control */
 /* eslint-disable jsx-a11y/control-has-associated-label */
-import React, { useEffect, useMemo, useState } from 'react';
+import React, { useEffect, useMemo, useRef, useState } from 'react';
 // import { UserWarning } from './UserWarning';
 import { getTodos } from './api/todos';
 import { Todo } from './types/Todo';
@@ -22,6 +22,7 @@ export const App: React.FC = () => {
   const [isLoading, setIsLoading] = useState<boolean>(false);
   const [isLoadingWhileDelete, setIsLoadingWhileDelete] =
     useState<boolean>(false);
+  const inputRef = useRef<HTMLInputElement>(null);
 
   useEffect(() => {
     setHasError(false);
@@ -63,8 +64,10 @@ export const App: React.FC = () => {
           setHasError={setHasError}
           setTempTodo={setTempTodo}
           isLoading={isLoading}
+          inputRef={inputRef}
         />
         <TodoList
+          setErrorMessage={setErrorMessage}
           setIsLoading={setIsLoading}
           setIsLoadingWhileDelete={setIsLoadingWhileDelete}
           isLoading={isLoading}
@@ -72,13 +75,19 @@ export const App: React.FC = () => {
           todos={filteredTodos}
           setTodos={setTodos}
           tempTodo={tempTodo}
+          inputRef={inputRef}
+          setHasError={setHasError}
         />
 
         {todos.length > 0 && (
           <Footer
             todos={todos}
+            setTodos={setTodos}
             setSelectedFilter={setSelectedFilter}
             selectedFilter={selectedFilter}
+            setErrorMessage={setErrorMessage}
+            setHasError={setHasError}
+            inputRef={inputRef}
           />
         )}
       </div>

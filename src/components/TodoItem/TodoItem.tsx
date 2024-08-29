@@ -1,7 +1,7 @@
 /* eslint-disable jsx-a11y/label-has-associated-control */
 import classNames from 'classnames';
 import { Todo } from '../../types/Todo';
-import { useRef, useState } from 'react';
+import { RefObject, useEffect, useState } from 'react';
 import { deleteTodo } from '../../utils/helpers';
 
 type Props = {
@@ -11,6 +11,9 @@ type Props = {
   setIsLoadingWhileDelete: (isLoading: boolean) => void;
   isLoading?: boolean;
   isLoadingWhileDelete: boolean;
+  inputRef: RefObject<HTMLInputElement>;
+  setHasError: (value: boolean) => void;
+  setErrorMessage: (message: string) => void;
 };
 
 export const TodoItem: React.FC<Props> = ({
@@ -19,17 +22,32 @@ export const TodoItem: React.FC<Props> = ({
   isLoading,
   setIsLoadingWhileDelete,
   isLoadingWhileDelete,
+  inputRef,
+  setHasError,
+  setErrorMessage,
 }) => {
   const [isCompleated, setIsCompleated] = useState<boolean>(todo.completed);
-  const inputRef = useRef<HTMLInputElement>(null);
+
+  useEffect(() => {
+    if (inputRef.current) {
+      inputRef.current.focus();
+    }
+  });
 
   const handleDelete = () => {
     setIsLoadingWhileDelete(true);
-    deleteTodo(todo.id, setTodos, setIsLoadingWhileDelete, () => {
-      if (inputRef.current) {
-        inputRef.current.focus();
-      }
-    });
+    deleteTodo(
+      todo.id,
+      setTodos,
+      setIsLoadingWhileDelete,
+      setHasError,
+      setErrorMessage,
+      () => {
+        if (inputRef.current) {
+          inputRef.current.focus();
+        }
+      },
+    );
   };
 
   return (
@@ -46,7 +64,6 @@ export const TodoItem: React.FC<Props> = ({
           className="todo__status"
           onClick={() => setIsCompleated(prev => !prev)}
           checked={isCompleated}
-          ref={inputRef}
         />
       </label>
 
