@@ -6,7 +6,7 @@ type Props = {
   todo: Todo;
   onUpdate: (id: number, updatedTodo: Partial<Todo>) => void;
   onDelete: (id: number) => Promise<void>;
-  isTempToDo?: boolean;
+  isLoading: boolean;
 };
 
 export const TodoItem: React.FC<Props> = ({
