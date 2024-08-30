@@ -10,7 +10,7 @@ type Props = {
 };
 
 export const TodoList: React.FC<Props> = ({
-  visibleToDos,
+  todos,
   onDelete,
   onUpdate,
   tempTodo,
