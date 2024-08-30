@@ -1,58 +1,52 @@
+/* eslint-disable @typescript-eslint/indent */
 import classNames from 'classnames';
 import { Status } from '../../utils/helpers';
 import { Todo } from '../../types/Todo';
 import { deleteTodos } from '../../api/todos';
 import { errorMessages } from '../../utils/const';
-import { RefObject } from 'react';
 
 type Props = {
   todos: Todo[];
   selectedFilter: Status;
   setSelectedFilter: (filter: Status) => void;
-  setHasError: (value: boolean) => void;
-  setErrorMessage: (message: string) => void;
-  setTodos: (update: (todos: Todo[]) => Todo[]) => void;
-  inputRef: RefObject<HTMLInputElement>;
+  setError: React.Dispatch<
+    React.SetStateAction<{ hasError: boolean; message: string }>
+  >;
+  setTodos: React.Dispatch<React.SetStateAction<Todo[]>>;
 };
 
 export const Footer: React.FC<Props> = ({
   todos,
   selectedFilter,
   setSelectedFilter,
-  setHasError,
-  setErrorMessage,
+  setError,
   setTodos,
 }) => {
   const activeTodosCount = todos.filter(todo => !todo.completed).length;
-  const completedTodo = todos.filter(todo => todo.completed);
+  const completedTodos = todos.filter(todo => todo.completed);
 
-  const deleteAllHandler = () => {
-    const completedTodoIds = completedTodo.map(
-      completedTodos => completedTodos.id,
-    );
+  const handleClearCompleted = () => {
+    Promise.allSettled(completedTodos.map(todo => deleteTodos(todo.id)))
+      .then(results => {
+        const successfulDeletions = completedTodos.filter(
+          (_todo, index) => results[index].status === 'fulfilled',
+        );
 
-    const idsToDelete = completedTodoIds.map(id => deleteTodos(id));
+        setTodos(currentTodos =>
+          currentTodos.filter(todo => !successfulDeletions.includes(todo)),
+        );
 
-    Promise.allSettled(idsToDelete).then(results => {
-      let isError = false;
-      const todosIdForDelete: number[] = [];
+        const failedDeletions = completedTodos.filter(
+          (_todo, index) => results[index].status === 'rejected',
+        );
 
-      results.forEach((result, index) => {
-        if (result.status === 'rejected') {
-          isError = true;
+        if (failedDeletions.length > 0) {
+          setError({ hasError: true, message: errorMessages.deleteError });
         }
-
-        if (result.status === 'fulfilled') {
-          todosIdForDelete.push(completedTodoIds[index]);
-        }
+      })
+      .catch(() => {
+        setError({ hasError: true, message: errorMessages.deleteError });
       });
-
-      setTodos(() => todos.filter(todo => !todosIdForDelete.includes(todo.id)));
-      if (isError) {
-        setHasError(true);
-        setErrorMessage(errorMessages.deleteError);
-      }
-    });
   };
 
   return (
@@ -100,8 +94,8 @@ export const Footer: React.FC<Props> = ({
         type="button"
         className="todoapp__clear-completed"
         data-cy="ClearCompletedButton"
-        disabled={!completedTodo.length}
-        onClick={deleteAllHandler}
+        disabled={!completedTodos.length}
+        onClick={handleClearCompleted}
       >
         Clear completed
       </button>

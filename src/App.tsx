@@ -1,7 +1,4 @@
-/* eslint-disable jsx-a11y/label-has-associated-control */
-/* eslint-disable jsx-a11y/control-has-associated-label */
-import React, { useEffect, useMemo, useRef, useState } from 'react';
-// import { UserWarning } from './UserWarning';
+import React, { useCallback, useEffect, useMemo, useState } from 'react';
 import { getTodos } from './api/todos';
 import { Todo } from './types/Todo';
 import { TodoList } from './components/TodoList';
@@ -16,82 +13,71 @@ export const App: React.FC = () => {
   const [selectedFilter, setSelectedFilter] = useState<todoService.Status>(
     todoService.Status.all,
   );
-  const [hasError, setHasError] = useState(false);
-  const [errorMessage, setErrorMessage] = useState('');
+  const [error, setError] = useState({ hasError: false, message: '' });
   const [tempTodo, setTempTodo] = useState<Todo | null>(null);
   const [isLoading, setIsLoading] = useState<boolean>(false);
-  const [isLoadingWhileDelete, setIsLoadingWhileDelete] =
-    useState<boolean>(false);
-  const inputRef = useRef<HTMLInputElement>(null);
+  const [hasVisible, setHasVisible] = useState<boolean>(false);
 
   useEffect(() => {
-    setHasError(false);
-
     getTodos()
-      .then(setTodos)
-      .catch(() => {
-        setErrorMessage(errorMessages.loadingError);
-        setHasError(true);
-      });
+      .then(fetchedTodos => {
+        setTodos(fetchedTodos);
+        setHasVisible(true);
+      })
+      .catch(() =>
+        setError({ hasError: true, message: errorMessages.loadingError }),
+      );
   }, []);
 
   useEffect(() => {
-    if (!hasError) {
+    if (!error.hasError) {
       return;
     }
 
-    const timer = setTimeout(() => {
-      setHasError(false);
-    }, 3000);
+    const timer = setTimeout(
+      () => setError({ hasError: false, message: '' }),
+      3000,
+    );
 
     return () => clearTimeout(timer);
-  }, [hasError]);
+  }, [error.hasError]);
 
   const filteredTodos = useMemo(() => {
     return todoService.filter(todos, selectedFilter);
   }, [todos, selectedFilter]);
+
+  const setTodosCallback = useCallback(
+    (update: React.SetStateAction<Todo[]>) => {
+      setTodos(update);
+    },
+    [],
+  );
+
+  const appProps = {
+    todos,
+    setTodos: setTodosCallback,
+    error,
+    setError,
+    tempTodo,
+    setTempTodo,
+    isLoading,
+    setIsLoading,
+    selectedFilter,
+    setSelectedFilter,
+    filteredTodos,
+    hasVisible,
+  };
 
   return (
     <div className="todoapp">
       <h1 className="todoapp__title">todos</h1>
 
       <div className="todoapp__content">
-        <Header
-          setIsLoading={setIsLoading}
-          todos={todos}
-          setTodos={setTodos}
-          setErrorMessage={setErrorMessage}
-          setHasError={setHasError}
-          setTempTodo={setTempTodo}
-          isLoading={isLoading}
-          inputRef={inputRef}
-        />
-        <TodoList
-          setErrorMessage={setErrorMessage}
-          setIsLoading={setIsLoading}
-          setIsLoadingWhileDelete={setIsLoadingWhileDelete}
-          isLoading={isLoading}
-          isLoadingWhileDelete={isLoadingWhileDelete}
-          todos={filteredTodos}
-          setTodos={setTodos}
-          tempTodo={tempTodo}
-          inputRef={inputRef}
-          setHasError={setHasError}
-        />
-
-        {todos.length > 0 && (
-          <Footer
-            todos={todos}
-            setTodos={setTodos}
-            setSelectedFilter={setSelectedFilter}
-            selectedFilter={selectedFilter}
-            setErrorMessage={setErrorMessage}
-            setHasError={setHasError}
-            inputRef={inputRef}
-          />
-        )}
+        <Header {...appProps} />
+        <TodoList {...appProps} />
+        {todos.length > 0 && <Footer {...appProps} />}
       </div>
-      <Error hasError={hasError} errorMessage={errorMessage} />
+      <Error hasError={error.hasError} errorMessage={error.message} />
     </div>
   );
 };
