@@ -17,6 +17,7 @@ export const App: React.FC = () => {
   const [newTodoTitle, setNewTodoTitle] = useState('');
   const [isSubmitting, setIsSubmitting] = useState(false);
   const newTodoFieldRef = useRef<HTMLInputElement>(null);
+  const [isLoading, setIsLoading] = useState(true);
 
   const showErrorMessage = (message: string) => {
     setErrorMessage(message);
@@ -24,11 +25,15 @@ export const App: React.FC = () => {
   };
 
   useEffect(() => {
+    setIsLoading(true);
     todoServices
       .getTodos()
       .then(setTodos)
       .catch(() => {
         setErrorMessage('Unable to load todos');
+      })
+      .finally(() => {
+        setIsLoading(false);
       });
   }, []);
 
@@ -146,70 +151,76 @@ export const App: React.FC = () => {
 
   return (
     <div className="todoapp">
-      <h1 className="todoapp__title">todos</h1>
+      {isLoading ? (
+        <p>Loading...</p>
+      ) : (
+        <>
+          <h1 className="todoapp__title">todos</h1>
 
-      <div className="todoapp__content">
-        <header className="todoapp__header">
-          <button
-            type="button"
-            className="todoapp__toggle-all active"
-            data-cy="ToggleAllButton"
-          />
+          <div className="todoapp__content">
+            <header className="todoapp__header">
+              <button
+                type="button"
+                className="todoapp__toggle-all active"
+                data-cy="ToggleAllButton"
+              />
 
-          <form onSubmit={handleAddTodo}>
-            <input
-              data-cy="NewTodoField"
-              type="text"
-              className="todoapp__new-todo"
-              placeholder="What needs to be done?"
-              value={newTodoTitle}
-              onChange={e => setNewTodoTitle(e.target.value)}
-              ref={newTodoFieldRef}
-              disabled={isSubmitting}
-              id="new-todo-field"
-              name="newTodoField"
-              autoFocus
-            />
-          </form>
-        </header>
-
-        <section className="todoapp__main" data-cy="TodoList">
-          <TransitionGroup>
-            {filteredTodos.map(todo => (
-              <CSSTransition key={todo.id} timeout={300} classNames="item">
-                <TodoItem
-                  todo={todo}
-                  onDelete={() => handleDeleteTodo(todo.id)}
-                  onUpdate={todoServices.updateTodo}
-                  isProcessed={todo.isDeleting}
+              <form onSubmit={handleAddTodo}>
+                <input
+                  data-cy="NewTodoField"
+                  type="text"
+                  className="todoapp__new-todo"
+                  placeholder="What needs to be done?"
+                  value={newTodoTitle}
+                  onChange={e => setNewTodoTitle(e.target.value)}
+                  ref={newTodoFieldRef}
+                  disabled={isSubmitting}
+                  id="new-todo-field"
+                  name="newTodoField"
+                  autoFocus
                 />
-              </CSSTransition>
-            ))}
+              </form>
+            </header>
 
-            {tempTodo && (
-              <CSSTransition
-                key={tempTodo.id}
-                timeout={300}
-                classNames="temp-item"
-              >
-                <TodoItem todo={tempTodo} isProcessed />
-              </CSSTransition>
+            <section className="todoapp__main" data-cy="TodoList">
+              <TransitionGroup>
+                {filteredTodos.map(todo => (
+                  <CSSTransition key={todo.id} timeout={300} classNames="item">
+                    <TodoItem
+                      todo={todo}
+                      onDelete={() => handleDeleteTodo(todo.id)}
+                      onUpdate={todoServices.updateTodo}
+                      isProcessed={todo.isDeleting}
+                    />
+                  </CSSTransition>
+                ))}
+
+                {tempTodo && (
+                  <CSSTransition
+                    key={tempTodo.id}
+                    timeout={300}
+                    classNames="temp-item"
+                  >
+                    <TodoItem todo={tempTodo} isProcessed />
+                  </CSSTransition>
+                )}
+              </TransitionGroup>
+            </section>
+
+            {todos.length > 0 && (
+              <TodoFilter
+                currentFilter={filter}
+                onFilterChange={setFilter}
+                todos={todos}
+                activeTodosCount={activeTodosCount}
+                onClearCompleted={handleClearCompleted}
+              />
             )}
-          </TransitionGroup>
-        </section>
+          </div>
 
-        {todos.length > 0 && (
-          <TodoFilter
-            currentFilter={filter}
-            onFilterChange={setFilter}
-            todos={todos}
-            activeTodosCount={activeTodosCount}
-            onClearCompleted={handleClearCompleted}
-          />
-        )}
-      </div>
-
-      <ErrorMessage error={errorMessage} setError={setErrorMessage} />
+          <ErrorMessage error={errorMessage} setError={setErrorMessage} />
+        </>
+      )}
     </div>
   );
 };
