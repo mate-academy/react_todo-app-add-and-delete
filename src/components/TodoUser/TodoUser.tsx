@@ -21,7 +21,7 @@ export const TodoUser: React.FC<Props> = ({
 
   const { id, completed, title } = todo;
 
-  const processedTodos = processedId?.includes(id) || id === 0;
+  const isTodoProcessing = processedId?.includes(id) || id === 0;
 
   const todoField = useRef<HTMLInputElement>(null);
 
@@ -87,7 +87,7 @@ export const TodoUser: React.FC<Props> = ({
       <div
         data-cy="TodoLoader"
         className={cn('modal overlay', {
-          'is-active': processedTodos,
+          'is-active': isTodoProcessing,
         })}
       >
         <div className="modal-background has-background-white-ter" />

@@ -17,21 +17,12 @@ export const TodoFilter: React.FC<Props> = ({
   onDelete,
   todos,
 }) => {
-  const filterLinks = [
-    { key: Filters.All, href: '#/', label: 'All', dataCy: 'FilterLinkAll' },
-    {
-      key: Filters.Active,
-      href: '#/active',
-      label: 'Active',
-      dataCy: 'FilterLinkActive',
-    },
-    {
-      key: Filters.Completed,
-      href: '#/completed',
-      label: 'Completed',
-      dataCy: 'FilterLinkCompleted',
-    },
-  ];
+  const filterLinks = Object.entries(Filters).map(([key, value]) => ({
+    key: value,
+    href: value === Filters.All ? '#/' : `#/${value.toLowerCase()}`,
+    label: key,
+    dataCy: `FilterLink${key}`,
+  }));
 
   const isNoCompletedTodos =
     todos.length - countActiveTodos(todos).length === 0;

@@ -1,6 +1,6 @@
 /* eslint-disable jsx-a11y/label-has-associated-control */
 /* eslint-disable jsx-a11y/control-has-associated-label */
-import React, { useEffect, useMemo, useState } from 'react';
+import React, { useEffect, useMemo, useState, useCallback } from 'react';
 import { UserWarning } from './UserWarning';
 import * as todosService from './api/todos';
 import { TodoHeader } from './components/TodoHeader/TodoHeader';
@@ -10,6 +10,9 @@ import { TodoFilter } from './components/TodoFilter/TodoFilter';
 import { Filters } from './components/Filters/Filters';
 import { TodoError } from './components/TodoError/TodoError';
 import { ErrorMessages } from './types/Error';
+import { filterTodos } from './utils/Helpers';
+
+type ErrorMessageSetter = React.Dispatch<React.SetStateAction<string | null>>;
 
 export const App: React.FC = () => {
   const [todos, setTodos] = useState<Todo[]>([]);
@@ -18,58 +21,68 @@ export const App: React.FC = () => {
   const [processedId, setProcessedId] = useState<number[]>([]);
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
 
+  const handleError = useCallback((error: ErrorMessages) => {
+    setErrorMessage(error);
+    setTimeout(() => {
+      setErrorMessage(null);
+    }, 3000);
+  }, []);
+
+  const setErrorMessageWrapper: ErrorMessageSetter = useCallback(
+    error => {
+      if (typeof error === 'function') {
+        const currentError = error(errorMessage);
+
+        handleError(currentError as ErrorMessages);
+      } else {
+        handleError(error as ErrorMessages);
+      }
+    },
+    [handleError, errorMessage],
+  );
+
   useEffect(() => {
     if (!todosService.USER_ID) {
       return;
     }
 
-    setErrorMessage(null);
     todosService
       .getTodos()
       .then(setTodos)
-      .catch(() => {
-        setErrorMessage(ErrorMessages.UNABLE_TO_LOAD);
-        setTimeout(() => setErrorMessage(null), 3000);
-      });
+      .catch(() => handleError(ErrorMessages.UNABLE_TO_LOAD));
+  }, [handleError]);
+
+  const handleCompletedStatus = useCallback((id: number) => {
+    setTodos(prevTodos =>
+      prevTodos.map(todo =>
+        todo.id === id ? { ...todo, completed: !todo.completed } : todo,
+      ),
+    );
   }, []);
 
-  const handleCompletedStatus = (id: number) => {
-    const updatedTodos = todos.map(todo =>
-      todo.id === id ? { ...todo, completed: !todo.completed } : todo,
-    );
-
-    setTodos(updatedTodos);
-  };
-
-  const addTodo = (todo: Todo) => {
+  const addTodo = useCallback((todo: Todo) => {
     setTodos(prevTodos => [...prevTodos, todo]);
-  };
+  }, []);
 
-  function deleteTodo(id: number) {
-    setProcessedId(ids => [...ids, id]);
+  const deleteTodo = useCallback(
+    (id: number) => {
+      setProcessedId(ids => [...ids, id]);
 
-    return todosService
-      .deleteTodos(id)
-      .then(() => {
-        setTodos(currentTodos => currentTodos.filter(todo => todo.id !== id));
-      })
-      .catch(() => {
-        setErrorMessage(ErrorMessages.UNABLE_TO_DELETE);
-        setTimeout(() => setErrorMessage(null), 3000);
-      })
-      .finally(() => setProcessedId([]));
-  }
+      return todosService
+        .deleteTodos(id)
+        .then(() => {
+          setTodos(currentTodos => currentTodos.filter(todo => todo.id !== id));
+        })
+        .catch(() => handleError(ErrorMessages.UNABLE_TO_DELETE))
+        .finally(() => setProcessedId([]));
+    },
+    [handleError],
+  );
 
-  const filteredTodos = useMemo(() => {
-    switch (currentFilter) {
-      case Filters.Active:
-        return todos.filter(todo => !todo.completed);
-      case Filters.Completed:
-        return todos.filter(todo => todo.completed);
-      default:
-        return todos;
-    }
-  }, [currentFilter, todos]);
+  const filteredTodos = useMemo(
+    () => filterTodos(todos, currentFilter),
+    [todos, currentFilter],
+  );
 
   if (!todosService.USER_ID) {
     return <UserWarning />;
@@ -83,7 +96,7 @@ export const App: React.FC = () => {
         <TodoHeader
           todos={todos}
           onAdd={addTodo}
-          setErrorMessage={setErrorMessage}
+          setErrorMessage={setErrorMessageWrapper}
           setTempTodo={setTempTodo}
         />
 
