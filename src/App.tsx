@@ -41,8 +41,10 @@ export const App: React.FC = () => {
     switch (filter) {
       case Filters.Active:
         return todos.filter(todo => !todo.completed);
+
       case Filters.Completed:
         return todos.filter(todo => todo.completed);
+
       case Filters.All:
       default:
         return todos;
@@ -207,7 +209,7 @@ export const App: React.FC = () => {
               </TransitionGroup>
             </section>
 
-            {todos.length > 0 && (
+            {!!todos.length && (
               <TodoFilter
                 currentFilter={filter}
                 onFilterChange={setFilter}
