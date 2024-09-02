@@ -9,7 +9,7 @@ type Props = {
   handleDelete: (todoId: number) => void;
 };
 
-export const Main: React.FC<Props> = ({
+export const TodoList: React.FC<Props> = ({
   todos,
   loading,
   tempTodo,

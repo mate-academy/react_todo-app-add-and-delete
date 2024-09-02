@@ -1,65 +1,23 @@
-import React, { useLayoutEffect, useRef, useState } from 'react';
+import React, { RefObject } from 'react';
 import classNames from 'classnames';
-import { Todo } from '../../types/Todo';
-import { Error } from '../../types/errors';
-import { USER_ID } from '../../api/todos';
-import { TodoServiceApi } from '../../utils/todoService';
 
 type Props = {
   areTodosActive: boolean;
-  setErrorMessage: (error: string) => void;
-  todos: Todo[];
-  setTodos: (todos: Todo[] | ((prevTodos: Todo[]) => Todo[])) => void;
-  setTempTodo: (tempTodo: Todo | null) => void;
+  handleFormSubmit: (event: React.FormEvent) => void;
+  todoText: string;
+  setTodoText: (todoText: string) => void;
+  isSubmitting: boolean;
+  inputRef: RefObject<HTMLInputElement>;
 };
 
 export const Header: React.FC<Props> = ({
   areTodosActive,
-  setErrorMessage,
-  setTodos,
-  setTempTodo,
+  handleFormSubmit,
+  todoText,
+  setTodoText,
+  isSubmitting,
+  inputRef,
 }) => {
-  const [todoText, setTodoText] = useState<string>('');
-  const [isSubmitting, setIsSubmitting] = useState(false);
-
-  const inputRef = useRef<HTMLInputElement>(null);
-
-  useLayoutEffect(() => {
-    inputRef.current?.focus();
-  }, []);
-
-  const handleFormSubmit = (event: React.FormEvent) => {
-    event.preventDefault();
-    inputRef.current?.focus();
-    setIsSubmitting(true);
-
-    const trimmedTodo = todoText.trim();
-
-    if (trimmedTodo.length === 0) {
-      setErrorMessage(Error.TITLE);
-
-      return;
-    }
-
-    setTempTodo({
-      id: 0,
-      title: trimmedTodo,
-      userId: USER_ID,
-      completed: false,
-    });
-
-    TodoServiceApi.addTodo(trimmedTodo)
-      .then(newTodo => {
-        setTodos(prevTodos => [...prevTodos, newTodo]);
-        setTodoText('');
-      })
-      .catch(() => setErrorMessage(Error.POST))
-      .finally(() => {
-        setIsSubmitting(false);
-        setTempTodo(null);
-      });
-  };
-
   return (
     <header className="todoapp__header">
       <button

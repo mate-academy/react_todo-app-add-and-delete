@@ -1,6 +1,6 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import { Header } from './components/header';
-import { Main } from './components/main';
+import { TodoList } from './components/todoList';
 import { Footer } from './components/footer';
 import { ErrorNotification } from './components/error';
 
@@ -8,7 +8,7 @@ import { TodoFilter } from './types/filter';
 import { Todo } from './types/Todo';
 import { Error } from './types/errors';
 
-import { getTodos } from './api/todos';
+import { getTodos, USER_ID } from './api/todos';
 import { handleFilter } from './utils/filterFunction';
 import { TodoServiceApi } from './utils/todoService';
 
@@ -18,6 +18,14 @@ export const App: React.FC = () => {
   const [onError, setOnError] = useState('');
   const [loading, setLoading] = useState([0]);
   const [tempTodo, setTempTodo] = useState<Todo | null>(null);
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  const [todoText, setTodoText] = useState<string>('');
+
+  const inputRef = useRef<HTMLInputElement>(null);
+
+  useEffect(() => {
+    inputRef.current?.focus();
+  }, [isSubmitting]);
 
   const areTodosActive =
     todos.every(todo => todo.completed) && todos.length > 0;
@@ -36,6 +44,7 @@ export const App: React.FC = () => {
   }, []);
 
   const handleDelete = (id: number) => {
+    setIsSubmitting(true);
     setLoading(prevTodo => [...prevTodo, id]);
 
     TodoServiceApi.deleteTodo(id)
@@ -43,6 +52,41 @@ export const App: React.FC = () => {
       .catch(() => setOnError(Error.DELETE))
       .finally(() => {
         setLoading(prevTodo => prevTodo.filter(todoId => todoId !== id));
+        setIsSubmitting(false);
+      });
+  };
+
+  const handleFormSubmit = (event: React.FormEvent) => {
+    event.preventDefault();
+    setIsSubmitting(true);
+
+    const trimmedTodo = todoText.trim();
+
+    if (trimmedTodo.length === 0) {
+      setOnError(Error.TITLE);
+      setIsSubmitting(false);
+
+      return;
+    }
+
+    setTempTodo({
+      id: 0,
+      title: trimmedTodo,
+      userId: USER_ID,
+      completed: false,
+    });
+
+    TodoServiceApi.addTodo(trimmedTodo)
+      .then(newTodo => {
+        setTodos(prevTodos => [...prevTodos, newTodo]);
+        setTodoText('');
+      })
+      .catch(() => {
+        setOnError(Error.POST);
+      })
+      .finally(() => {
+        setIsSubmitting(false);
+        setTempTodo(null);
       });
   };
 
@@ -53,12 +97,13 @@ export const App: React.FC = () => {
       <div className="todoapp__content">
         <Header
           areTodosActive={areTodosActive}
-          setErrorMessage={setOnError}
-          todos={todos}
-          setTodos={setTodos}
-          setTempTodo={setTempTodo}
+          handleFormSubmit={handleFormSubmit}
+          todoText={todoText}
+          setTodoText={setTodoText}
+          isSubmitting={isSubmitting}
+          inputRef={inputRef}
         />
-        <Main
+        <TodoList
           todos={prepared}
           handleDelete={handleDelete}
           loading={loading}
