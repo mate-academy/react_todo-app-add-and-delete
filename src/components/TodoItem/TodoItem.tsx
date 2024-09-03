@@ -4,14 +4,26 @@ import { Todo } from '../../types/Todo';
 
 interface Props {
   todo: Todo;
-  onDelete?: (todoId: number) => void;
+  onDelete?: (todoId: number) => Promise<void>;
 }
 
-export const TodoItem: React.FC<Props> = ({ todo, onDelete = () => {} }) => {
+export const TodoItem: React.FC<Props> = ({
+  todo,
+  onDelete = () => Promise.resolve(),
+}) => {
   const [isChecked, setIsChecked] = useState(todo.completed);
+  const [isDeleting, setIsDeleting] = useState(false);
 
   const handleCheckboxChange = () => {
     setIsChecked(!isChecked);
+  };
+
+  const handleDelete = () => {
+    setIsDeleting(true);
+
+    onDelete(todo.id).finally(() => {
+      setIsDeleting(false);
+    });
   };
 
   return (
@@ -41,7 +53,7 @@ export const TodoItem: React.FC<Props> = ({ todo, onDelete = () => {} }) => {
         type="button"
         className="todo__remove"
         data-cy="TodoDelete"
-        onClick={() => onDelete(todo.id)}
+        onClick={handleDelete}
       >
         ×
       </button>
@@ -51,7 +63,7 @@ export const TodoItem: React.FC<Props> = ({ todo, onDelete = () => {} }) => {
         data-cy="TodoLoader"
         // className="modal overlay"
         className={classNames('modal overlay', {
-          'is-active': todo.id === 0,
+          'is-active': isDeleting || todo.id === 0,
         })}
       >
         <div className="modal-background has-background-white-ter" />
