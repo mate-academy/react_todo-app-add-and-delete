@@ -1,6 +1,6 @@
 import { Filter } from '../../types/Filter';
 import { Todo } from '../../types/Todo';
-import classNames from 'classnames';
+import { FilterItem } from '../FilterItem';
 
 interface Props {
   todosAmount: number;
@@ -25,38 +25,14 @@ export const Footer: React.FC<Props> = ({
 
       {/* Active link should have the 'selected' class */}
       <nav className="filter" data-cy="Filter">
-        <a
-          href="#/"
-          className={classNames('filter__link', {
-            selected: filterTodos === Filter.ALL,
-          })}
-          data-cy="FilterLinkAll"
-          onClick={() => setFilterTodos(Filter.ALL)}
-        >
-          All
-        </a>
-
-        <a
-          href="#/active"
-          className={classNames('filter__link', {
-            selected: filterTodos === Filter.ACTIVE,
-          })}
-          data-cy="FilterLinkActive"
-          onClick={() => setFilterTodos(Filter.ACTIVE)}
-        >
-          Active
-        </a>
-
-        <a
-          href="#/completed"
-          className={classNames('filter__link', {
-            selected: filterTodos === Filter.COMPLETED,
-          })}
-          data-cy="FilterLinkCompleted"
-          onClick={() => setFilterTodos(Filter.COMPLETED)}
-        >
-          Completed
-        </a>
+        {Object.values(Filter).map(filterItem => (
+          <FilterItem
+            key={filterItem}
+            filterTodos={filterTodos}
+            filterItem={filterItem}
+            setFilterTodos={setFilterTodos}
+          />
+        ))}
       </nav>
 
       {/* this button should be disabled if there are no completed todos */}

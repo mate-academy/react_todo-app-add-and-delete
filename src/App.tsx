@@ -122,7 +122,6 @@ export const App: React.FC = () => {
         );
       })
       .catch(() => {
-        // setTodos(todos);
         setErrorMessage('Unable to delete a todo');
       })
       .finally(() => {
@@ -150,6 +149,12 @@ export const App: React.FC = () => {
     setErrorMessage('');
   };
 
+  const clearCompleted = () => {
+    if (completedTodos.length === todos.length) {
+      deleteCompleted(todos);
+    }
+  };
+
   return (
     <div className="todoapp">
       <h1 className="todoapp__title">todos</h1>
@@ -157,18 +162,14 @@ export const App: React.FC = () => {
       <div className="todoapp__content">
         <header className="todoapp__header">
           {/* this button should have `active` class only if all todos are completed */}
-          {todos.length !== 0 && (
+          {!!todos.length && (
             <button
               type="button"
               className={classNames('todoapp__toggle-all', {
                 active: completedTodos.length === todos.length,
               })}
               data-cy="ToggleAllButton"
-              onClick={() => {
-                if (completedTodos.length === todos.length) {
-                  deleteCompleted(todos);
-                }
-              }}
+              onClick={clearCompleted}
             />
           )}
 
