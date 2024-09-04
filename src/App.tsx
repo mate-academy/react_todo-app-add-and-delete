@@ -7,6 +7,7 @@ import { Filter } from './utils/Filter';
 import { filterTodos } from './utils/todoFilter';
 import { addTodo, deleteTodo, getTodos, USER_ID } from './api/todos';
 import { Todo } from './types/Todo';
+import { ErrorText } from './utils/ErrorText';
 
 export const App: React.FC = () => {
   const [todos, setTodos] = useState<Todo[]>([]);
@@ -35,7 +36,7 @@ export const App: React.FC = () => {
 
     setIsLoading(true);
     if (!normalizeText) {
-      setErrorMessage('Title should not be empty');
+      setErrorMessage(ErrorText.TitleEmpty);
       setIsLoading(false);
 
       return;
@@ -52,7 +53,7 @@ export const App: React.FC = () => {
         setTodos(prevTodos => [...prevTodos, currentTodo]);
         setTodoText('');
       })
-      .catch(() => setErrorMessage('Unable to add a todo'))
+      .catch(() => setErrorMessage(ErrorText.TodoAdd))
       .finally(() => {
         setIsLoading(false);
         setTempTodo(null);
@@ -63,7 +64,7 @@ export const App: React.FC = () => {
     setIsLoading(true);
     deleteTodo(id)
       .then(() => setTodos(prevTodo => prevTodo.filter(elem => elem.id !== id)))
-      .catch(() => setErrorMessage('Unable to delete a todo'))
+      .catch(() => setErrorMessage(ErrorText.TodoDelete))
       .finally(() => {
         setIsLoading(false);
       });
@@ -82,7 +83,7 @@ export const App: React.FC = () => {
               prevTodos.filter(prevTodo => prevTodo.id !== completedTodo.id),
             ),
           )
-          .catch(() => setErrorMessage('Unable to delete a todo'))
+          .catch(() => setErrorMessage(ErrorText.TodoDelete))
           .finally(() => {
             setIsLoading(false);
             setCompletedTodos([]);
@@ -119,7 +120,7 @@ export const App: React.FC = () => {
           completedTodos={completedTodos}
         />
 
-        {todos.length !== 0 && (
+        {!!todos.length && (
           <TodoFooter
             setFilter={setFilter}
             activeTodosCount={activeTodosCount}

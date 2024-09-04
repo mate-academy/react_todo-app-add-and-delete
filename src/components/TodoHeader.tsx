@@ -34,10 +34,7 @@ export const TodoHeader: React.FC<Props> = ({
     <header className="todoapp__header">
       <button
         type="button"
-        className={classNames(
-          'todoapp__toggle-all',
-          isEveryActive === true && 'active',
-        )}
+        className={classNames('todoapp__toggle-all', isEveryActive && 'active')}
         data-cy="ToggleAllButton"
       />
 
