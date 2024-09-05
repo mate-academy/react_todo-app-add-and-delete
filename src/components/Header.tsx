@@ -4,9 +4,19 @@ import { Todo } from '../types/Todo';
 
 type Props = {
   todos: Todo[];
+  title: string;
+  setTitle: (title: string) => void;
+  onSubmit: (event: React.FormEvent) => void;
+  inputRef: React.RefObject<HTMLInputElement>;
 };
 
-const Header: React.FC<Props> = ({ todos }) => {
+const Header: React.FC<Props> = ({
+  todos,
+  title,
+  setTitle,
+  onSubmit,
+  inputRef,
+}) => {
   const allTodosCompleted = todos.every(todo => todo.completed);
 
   return (
@@ -19,13 +29,16 @@ const Header: React.FC<Props> = ({ todos }) => {
         />
       )}
 
-      <form>
+      <form onSubmit={onSubmit}>
         <input
           data-cy="NewTodoField"
           type="text"
           className="todoapp__new-todo"
           placeholder="What needs to be done?"
           autoFocus
+          value={title}
+          onChange={event => setTitle(event.target.value)}
+          ref={inputRef}
         />
       </form>
     </header>

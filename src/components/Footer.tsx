@@ -2,12 +2,14 @@ import React from 'react';
 import cn from 'classnames';
 import { Filter } from '../types/Filter';
 import { Todo } from '../types/Todo';
+import { deleteTodo } from '../api/todos';
 
 type Props = {
   todos: Todo[];
   setTodos: (todos: Todo[]) => void;
   filterValue: Filter;
   onClickFilter: (filterValue: Filter) => void;
+  setErrorMessage: (message: string) => void;
 };
 
 const Footer: React.FC<Props> = ({
@@ -15,12 +17,11 @@ const Footer: React.FC<Props> = ({
   setTodos,
   filterValue,
   onClickFilter,
+  setErrorMessage,
 }) => {
   const isCompleted = todos.some(todo => todo.completed);
 
   const allNotCompleted = todos.filter(todo => !todo.completed).length;
-
-  const allActive = todos.filter(todo => !todo.completed);
 
   const showFilterNavigation = Object.values(Filter).map(value => (
     <a
@@ -33,6 +34,19 @@ const Footer: React.FC<Props> = ({
       {value}
     </a>
   ));
+
+  const handleClearCompleted = async () => {
+    const completedTodos = todos.filter(todo => todo.completed);
+
+    const deleteCompliteTodos = completedTodos.map(todo => deleteTodo(todo.id));
+
+    try {
+      await Promise.all(deleteCompliteTodos);
+      setTodos(todos.filter(todo => !todo.completed));
+    } catch {
+      setErrorMessage('Unable to delete some todos');
+    }
+  };
 
   return (
     <footer className="todoapp__footer" data-cy="Footer">
@@ -49,7 +63,7 @@ const Footer: React.FC<Props> = ({
         className="todoapp__clear-completed"
         data-cy="ClearCompletedButton"
         disabled={!isCompleted}
-        onClick={() => setTodos(allActive)}
+        onClick={handleClearCompleted}
       >
         Clear completed
       </button>
