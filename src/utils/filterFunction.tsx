@@ -1,7 +1,7 @@
 import { TodoFilter } from '../types/filter';
 import { Todo } from '../types/Todo';
 
-export const handleFilter = (todos: Todo[], filters: TodoFilter) => {
+export const filterTodos = (todos: Todo[], filters: TodoFilter) => {
   return todos.filter(todo => {
     switch (filters) {
       case TodoFilter.Active:

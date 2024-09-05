@@ -9,14 +9,14 @@ import { Todo } from './types/Todo';
 import { Error } from './types/errors';
 
 import { getTodos, USER_ID } from './api/todos';
-import { handleFilter } from './utils/filterFunction';
+import { filterTodos } from './utils/filterFunction';
 import { TodoServiceApi } from './utils/todoService';
 
 export const App: React.FC = () => {
   const [todos, setTodos] = useState<Todo[]>([]);
   const [sortFilter, setSortFilter] = useState<TodoFilter>(TodoFilter.All);
-  const [onError, setOnError] = useState('');
-  const [loading, setLoading] = useState([0]);
+  const [errorMessage, setErrorMessage] = useState('');
+  const [loadingTodos, setLoadingTodos] = useState([0]);
   const [tempTodo, setTempTodo] = useState<Todo | null>(null);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [todoText, setTodoText] = useState<string>('');
@@ -29,29 +29,33 @@ export const App: React.FC = () => {
 
   const areTodosActive =
     todos.every(todo => todo.completed) && todos.length > 0;
-  const prepared = handleFilter(todos, sortFilter);
-  const activeCounter = todos.filter(todo => !todo.completed).length;
-  const notActiveCounter = todos.filter(todo => todo.completed).length;
+  const preparedTodos = filterTodos(todos, sortFilter);
+  const activeTodosCounter = todos.filter(todo => !todo.completed).length;
+  const notActiveTodosCounter = todos.filter(todo => todo.completed).length;
+  const handleError = (message: Error) => {
+    setErrorMessage(message);
+    setTimeout(() => {
+      setErrorMessage('');
+    }, 3000);
+  };
 
   useEffect(() => {
     getTodos()
       .then(setTodos)
-      .catch(() => setOnError(Error.GET));
-
-    setTimeout(() => {
-      setOnError('');
-    }, 3000);
+      .catch(() => {
+        handleError(Error.GET);
+      });
   }, []);
 
   const handleDelete = (id: number) => {
     setIsSubmitting(true);
-    setLoading(prevTodo => [...prevTodo, id]);
+    setLoadingTodos(prevTodo => [...prevTodo, id]);
 
     TodoServiceApi.deleteTodo(id)
       .then(() => setTodos(prevTodo => prevTodo.filter(elem => elem.id !== id)))
-      .catch(() => setOnError(Error.DELETE))
+      .catch(() => handleError(Error.DELETE))
       .finally(() => {
-        setLoading(prevTodo => prevTodo.filter(todoId => todoId !== id));
+        setLoadingTodos(prevTodo => prevTodo.filter(todoId => todoId !== id));
         setIsSubmitting(false);
       });
   };
@@ -63,7 +67,7 @@ export const App: React.FC = () => {
     const trimmedTodo = todoText.trim();
 
     if (trimmedTodo.length === 0) {
-      setOnError(Error.TITLE);
+      handleError(Error.TITLE);
       setIsSubmitting(false);
 
       return;
@@ -82,7 +86,7 @@ export const App: React.FC = () => {
         setTodoText('');
       })
       .catch(() => {
-        setOnError(Error.POST);
+        handleError(Error.POST);
       })
       .finally(() => {
         setIsSubmitting(false);
@@ -104,9 +108,9 @@ export const App: React.FC = () => {
           inputRef={inputRef}
         />
         <TodoList
-          todos={prepared}
+          todos={preparedTodos}
           handleDelete={handleDelete}
-          loading={loading}
+          loadingTodos={loadingTodos}
           tempTodo={tempTodo}
         />
 
@@ -114,15 +118,18 @@ export const App: React.FC = () => {
           <Footer
             sortFilter={sortFilter}
             setSortFilter={setSortFilter}
-            activeCounter={activeCounter}
-            notActiveCounter={notActiveCounter}
+            activeTodosCounter={activeTodosCounter}
+            notActiveTodosCounter={notActiveTodosCounter}
             todos={todos}
             handleDelete={handleDelete}
           />
         )}
       </div>
 
-      <ErrorNotification errorMessage={onError} setErrorMessage={setOnError} />
+      <ErrorNotification
+        errorMessage={errorMessage}
+        setErrorMessage={setErrorMessage}
+      />
     </div>
   );
 };

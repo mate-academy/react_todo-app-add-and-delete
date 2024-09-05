@@ -7,8 +7,8 @@ import { Todo } from '../../types/Todo';
 type Props = {
   sortFilter: TodoFilter;
   setSortFilter: (value: TodoFilter) => void;
-  activeCounter: number;
-  notActiveCounter: number;
+  activeTodosCounter: number;
+  notActiveTodosCounter: number;
   todos: Todo[];
   handleDelete: (todoId: number) => void;
 };
@@ -16,8 +16,8 @@ type Props = {
 export const Footer: React.FC<Props> = ({
   sortFilter,
   setSortFilter,
-  activeCounter,
-  notActiveCounter,
+  activeTodosCounter,
+  notActiveTodosCounter,
   todos,
   handleDelete,
 }) => {
@@ -32,7 +32,7 @@ export const Footer: React.FC<Props> = ({
   return (
     <footer className="todoapp__footer" data-cy="Footer">
       <span className="todo-count" data-cy="TodosCounter">
-        {activeCounter} items left
+        {activeTodosCounter} items left
       </span>
 
       <nav className="filter" data-cy="Filter">
@@ -57,7 +57,7 @@ export const Footer: React.FC<Props> = ({
         type="button"
         className="todoapp__clear-completed"
         data-cy="ClearCompletedButton"
-        disabled={notActiveCounter === 0}
+        disabled={notActiveTodosCounter === 0}
         onClick={handleDeleteCompleted}
       >
         Clear completed
