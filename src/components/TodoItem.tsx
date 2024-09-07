@@ -5,11 +5,12 @@ import { Todo } from '../types/Todo';
 
 type Props = {
   todo: Todo;
+  todosBoot: number[];
   deleteTodo: (todoId: number) => void;
 };
 
-const TodoItem: React.FC<Props> = ({ todo, deleteTodo }) => {
-  const { title, completed } = todo;
+const TodoItem: React.FC<Props> = ({ todo, todosBoot, deleteTodo }) => {
+  const { id, title, completed } = todo;
 
   return (
     <div data-cy="Todo" className={cn('todo', { completed: completed })}>
@@ -30,12 +31,15 @@ const TodoItem: React.FC<Props> = ({ todo, deleteTodo }) => {
         type="button"
         className="todo__remove"
         data-cy="TodoDelete"
-        onClick={() => deleteTodo(todo.id)}
+        onClick={() => deleteTodo(id)}
       >
         ×
       </button>
 
-      <div data-cy="TodoLoader" className="modal overlay">
+      <div
+        data-cy="TodoLoader"
+        className={cn('modal overlay', { 'is-active': todosBoot.includes(id) })}
+      >
         <div className="modal-background has-background-white-ter" />
         <div className="loader" />
       </div>

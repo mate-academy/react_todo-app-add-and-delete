@@ -15,11 +15,22 @@ export const App: React.FC = () => {
   const [errorMessage, setErrorMessage] = useState<string>('');
   const [filterValue, setFilterValue] = useState<Filter>(Filter.All);
 
+  const [todosInTheBoot, setTodosInTheBoot] = useState<number[]>([]);
+
+  const hideAllErrorMessage = () => {
+    setTimeout(() => {
+      setErrorMessage('');
+    }, 3000);
+  };
+
   useEffect(() => {
     todoService
       .getTodos()
       .then(todosFromServer => setTodos(todosFromServer))
-      .catch(() => setErrorMessage('Unable to load todos'));
+      .catch(() => {
+        setErrorMessage('Unable to load todos');
+        hideAllErrorMessage();
+      });
   }, [todos]);
 
   const filteredTodos = useMemo(() => {
@@ -41,9 +52,23 @@ export const App: React.FC = () => {
     return <UserWarning />;
   }
 
-  // DeletePost function
+  // DeleteTodo function
   const deleteTodo = (todoId: number) => {
-    todoService.deleteTodo(todoId);
+    setTodosInTheBoot(currentBootTodos => [...currentBootTodos, todoId]);
+    todoService
+      .deleteTodo(todoId)
+      .then(() => {
+        setTodosInTheBoot(currentBootTodos =>
+          currentBootTodos.filter(id => id !== todoId),
+        );
+      })
+      .catch(() => {
+        setErrorMessage('Unable to delete a todo');
+        setTodosInTheBoot(currentBootTodos =>
+          currentBootTodos.filter(id => id !== todoId),
+        );
+        hideAllErrorMessage();
+      });
   };
 
   return (
@@ -51,7 +76,11 @@ export const App: React.FC = () => {
       <h1 className="todoapp__title">todos</h1>
       <div className="todoapp__content">
         <Header todos={todos} />
-        <TodoList todos={filteredTodos} deleteTodo={deleteTodo} />
+        <TodoList
+          todos={filteredTodos}
+          todosBoot={todosInTheBoot}
+          deleteTodo={deleteTodo}
+        />
 
         {!!todos.length && (
           <Footer
