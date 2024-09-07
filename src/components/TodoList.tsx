@@ -4,10 +4,13 @@ import TodoItem from './TodoItem';
 
 type Props = {
   todos: Todo[];
+  deleteTodo: (todoId: number) => void;
 };
 
-const TodoList: React.FC<Props> = ({ todos }) => {
-  const showTodos = todos.map(todo => <TodoItem todo={todo} key={todo.id} />);
+const TodoList: React.FC<Props> = ({ todos, deleteTodo }) => {
+  const showTodos = todos.map(todo => (
+    <TodoItem todo={todo} key={todo.id} deleteTodo={deleteTodo} />
+  ));
 
   return (
     <section className="todoapp__main" data-cy="TodoList">

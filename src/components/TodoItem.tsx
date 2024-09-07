@@ -5,9 +5,10 @@ import { Todo } from '../types/Todo';
 
 type Props = {
   todo: Todo;
+  deleteTodo: (todoId: number) => void;
 };
 
-const TodoItem: React.FC<Props> = ({ todo }) => {
+const TodoItem: React.FC<Props> = ({ todo, deleteTodo }) => {
   const { title, completed } = todo;
 
   return (
@@ -25,7 +26,12 @@ const TodoItem: React.FC<Props> = ({ todo }) => {
         {title}
       </span>
 
-      <button type="button" className="todo__remove" data-cy="TodoDelete">
+      <button
+        type="button"
+        className="todo__remove"
+        data-cy="TodoDelete"
+        onClick={() => deleteTodo(todo.id)}
+      >
         ×
       </button>
 

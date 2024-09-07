@@ -2,7 +2,7 @@
 /* eslint-disable jsx-a11y/control-has-associated-label */
 import React, { useEffect, useMemo, useState } from 'react';
 import { UserWarning } from './UserWarning';
-import { getTodos, USER_ID } from './api/todos';
+import * as todoService from './api/todos';
 import Header from './components/Header';
 import TodoList from './components/TodoList';
 import Footer from './components/Footer';
@@ -16,10 +16,11 @@ export const App: React.FC = () => {
   const [filterValue, setFilterValue] = useState<Filter>(Filter.All);
 
   useEffect(() => {
-    getTodos()
+    todoService
+      .getTodos()
       .then(todosFromServer => setTodos(todosFromServer))
       .catch(() => setErrorMessage('Unable to load todos'));
-  }, []);
+  }, [todos]);
 
   const filteredTodos = useMemo(() => {
     return todos.filter(todo => {
@@ -36,16 +37,21 @@ export const App: React.FC = () => {
     });
   }, [todos, filterValue]);
 
-  if (!USER_ID) {
+  if (!todoService.USER_ID) {
     return <UserWarning />;
   }
+
+  // DeletePost function
+  const deleteTodo = (todoId: number) => {
+    todoService.deleteTodo(todoId);
+  };
 
   return (
     <div className="todoapp">
       <h1 className="todoapp__title">todos</h1>
       <div className="todoapp__content">
         <Header todos={todos} />
-        <TodoList todos={filteredTodos} />
+        <TodoList todos={filteredTodos} deleteTodo={deleteTodo} />
 
         {!!todos.length && (
           <Footer
