@@ -14,8 +14,8 @@ export const App: React.FC = () => {
   const [todos, setTodos] = useState<Todo[]>([]);
   const [errorMessage, setErrorMessage] = useState<string>('');
   const [filterValue, setFilterValue] = useState<Filter>(Filter.All);
-
   const [todosInTheBoot, setTodosInTheBoot] = useState<number[]>([]);
+  const [todoTitle, setTodoTitle] = useState<string>('');
 
   const hideAllErrorMessage = () => {
     setTimeout(() => {
@@ -71,11 +71,28 @@ export const App: React.FC = () => {
       });
   };
 
+  // Handle Func for form submit
+  const handleFormSubmit = (event: React.FormEvent) => {
+    event.preventDefault();
+
+    if (!todoTitle.trim()) {
+      setErrorMessage('Title should not be empty');
+      hideAllErrorMessage();
+
+      return;
+    }
+  };
+
   return (
     <div className="todoapp">
       <h1 className="todoapp__title">todos</h1>
       <div className="todoapp__content">
-        <Header todos={todos} />
+        <Header
+          todos={todos}
+          todoTitle={todoTitle}
+          setTodoTitle={setTodoTitle}
+          formSubmit={handleFormSubmit}
+        />
         <TodoList
           todos={filteredTodos}
           todosBoot={todosInTheBoot}
