@@ -5,22 +5,21 @@ import { Todo } from '../types/Todo';
 
 type Props = {
   todos: Todo[];
-  setTodos: (todos: Todo[]) => void;
+  // setTodos: (todos: Todo[]) => void;
   filterValue: Filter;
   onClickFilter: (filterValue: Filter) => void;
+  deleteTodo: (todoId: number) => void;
 };
 
 const Footer: React.FC<Props> = ({
   todos,
-  setTodos,
   filterValue,
   onClickFilter,
+  deleteTodo,
 }) => {
   const isCompleted = todos.some(todo => todo.completed);
 
   const allNotCompleted = todos.filter(todo => !todo.completed).length;
-
-  const allActive = todos.filter(todo => !todo.completed);
 
   const showFilterNavigation = Object.values(Filter).map(value => (
     <a
@@ -33,6 +32,12 @@ const Footer: React.FC<Props> = ({
       {value}
     </a>
   ));
+
+  const handleDeleteCompleteTodos = () => {
+    const allCompletedTodos = todos.filter(todo => todo.completed);
+
+    allCompletedTodos.map(todo => deleteTodo(todo.id));
+  };
 
   return (
     <footer className="todoapp__footer" data-cy="Footer">
@@ -49,7 +54,7 @@ const Footer: React.FC<Props> = ({
         className="todoapp__clear-completed"
         data-cy="ClearCompletedButton"
         disabled={!isCompleted}
-        onClick={() => setTodos(allActive)}
+        onClick={handleDeleteCompleteTodos}
       >
         Clear completed
       </button>

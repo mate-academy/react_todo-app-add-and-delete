@@ -56,9 +56,9 @@ export const App: React.FC = () => {
         {!!todos.length && (
           <Footer
             todos={todos}
-            setTodos={setTodos}
             filterValue={filterValue}
             onClickFilter={setFilterValue}
+            deleteTodo={deleteTodo}
           />
         )}
       </div>
