@@ -1,7 +1,6 @@
 /* eslint-disable jsx-a11y/label-has-associated-control */
 /* eslint-disable jsx-a11y/control-has-associated-label */
 import React, { useEffect, useMemo, useState } from 'react';
-import { UserWarning } from './UserWarning';
 import * as todoService from './api/todos';
 import Header from './components/Header';
 import TodoList from './components/TodoList';
@@ -16,6 +15,7 @@ export const App: React.FC = () => {
   const [filterValue, setFilterValue] = useState<Filter>(Filter.All);
   const [todosInTheBoot, setTodosInTheBoot] = useState<number[]>([]);
   const [todoTitle, setTodoTitle] = useState<string>('');
+  const [tempTodo, setTempTodo] = useState<Todo | null>(null);
 
   const hideAllErrorMessage = () => {
     setTimeout(() => {
@@ -48,10 +48,6 @@ export const App: React.FC = () => {
     });
   }, [todos, filterValue]);
 
-  if (!todoService.USER_ID) {
-    return <UserWarning />;
-  }
-
   // DeleteTodo function
   const deleteTodo = (todoId: number) => {
     setTodosInTheBoot(currentBootTodos => [...currentBootTodos, todoId]);
@@ -71,16 +67,58 @@ export const App: React.FC = () => {
       });
   };
 
+  const addTodo = (newTodo: Omit<Todo, 'id'>) => {
+    setTodosInTheBoot(currentBootTodos => [
+      ...currentBootTodos,
+      newTodo.userId,
+    ]);
+
+    todoService
+      .postTodo(newTodo)
+      .then(addingTodo => {
+        setTodos(currentTodos => [...currentTodos, addingTodo]);
+        setTodoTitle('');
+        setTodosInTheBoot(currentBootTodos =>
+          currentBootTodos.filter(id => id !== newTodo.userId),
+        );
+      })
+      .catch(() => {
+        setErrorMessage('Unable to add a todo');
+        setTodosInTheBoot(currentBootTodos =>
+          currentBootTodos.filter(id => id !== newTodo.userId),
+        );
+        hideAllErrorMessage();
+      })
+      .finally(() => {
+        setTempTodo(null);
+      });
+  };
+
   // Handle Func for form submit
   const handleFormSubmit = (event: React.FormEvent) => {
     event.preventDefault();
 
-    if (!todoTitle.trim()) {
+    const title = todoTitle.trim();
+
+    if (!title) {
       setErrorMessage('Title should not be empty');
       hideAllErrorMessage();
 
       return;
     }
+
+    setTempTodo({
+      id: 0,
+      title,
+      completed: false,
+      userId: todoService.USER_ID,
+    });
+
+    addTodo({
+      title,
+      completed: false,
+      userId: todoService.USER_ID,
+    });
   };
 
   return (
@@ -97,6 +135,7 @@ export const App: React.FC = () => {
           todos={filteredTodos}
           todosBoot={todosInTheBoot}
           deleteTodo={deleteTodo}
+          tempTodo={tempTodo}
         />
 
         {!!todos.length && (
