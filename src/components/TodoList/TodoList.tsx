@@ -3,26 +3,29 @@ import { Todo } from '../../types/Todo';
 import { TodoItem } from '../TodoItem';
 
 type Props = {
-  filteredTodo: Todo[];
+  filteredTodos: Todo[];
   onDeleteTodo: (todoId: number) => Promise<void>;
   tempTodo: Todo | null;
   onToggleComplete: (todoId: number) => void;
+  loadingTodos: { [key: number]: boolean };
 };
 
 export const TodoList: React.FC<Props> = ({
-  filteredTodo,
+  filteredTodos,
   onDeleteTodo,
   tempTodo,
   onToggleComplete,
+  loadingTodos,
 }) => {
   return (
     <section className="todoapp__main" data-cy="TodoList">
-      {filteredTodo.map(todo => (
+      {filteredTodos.map(todo => (
         <TodoItem
           key={todo.id}
           todo={todo}
           onDelete={onDeleteTodo}
           onToggleComplete={onToggleComplete}
+          isDeleting={loadingTodos[todo.id] || false}
         />
       ))}
 
@@ -30,8 +33,9 @@ export const TodoList: React.FC<Props> = ({
         <TodoItem
           todo={tempTodo}
           onDelete={() => Promise.resolve()}
-          isTemp={true}
+          isTemp
           onToggleComplete={() => {}}
+          isDeleting={false}
         />
       )}
     </section>

@@ -5,7 +5,6 @@ import { Errors } from '../../types/Errors';
 import { USER_ID } from '../../api/todos';
 
 type Props = {
-  // filteredTodo: Todo[];
   todos: Todo[];
   showError: (error: Errors) => void;
   onAddTodo: (todo: Omit<Todo, 'id'>) => Promise<void>;
@@ -15,7 +14,6 @@ type Props = {
 };
 
 export const Header: React.FC<Props> = ({
-  // filteredTodo,
   todos,
   showError,
   onAddTodo,
@@ -51,10 +49,6 @@ export const Header: React.FC<Props> = ({
         completed: false,
       });
 
-      // if (result instanceof Promise) {
-      //   await result;
-      // }
-
       setTitle('');
       setButtonVisible(true);
     } catch (error) {
@@ -75,12 +69,12 @@ export const Header: React.FC<Props> = ({
     setButtonVisible(todos.length > 0);
   }, [todos]);
 
-  const toggleCheckbox = useMemo(() => {
+  const areAllTodosCompleted = useMemo(() => {
     return todos.every(todo => todo.completed);
   }, [todos]);
 
   const handleToggleAll = () => {
-    onToogleAll(!toggleCheckbox);
+    onToogleAll(!areAllTodosCompleted);
   };
 
   return (
@@ -89,7 +83,7 @@ export const Header: React.FC<Props> = ({
         <button
           type="button"
           className={classNames('todoapp__toggle-all', {
-            active: toggleCheckbox,
+            active: areAllTodosCompleted,
           })}
           data-cy="ToggleAllButton"
           onClick={handleToggleAll}

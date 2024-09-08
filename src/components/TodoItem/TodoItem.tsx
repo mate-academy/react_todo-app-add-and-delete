@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React from 'react';
 import { Todo } from '../../types/Todo';
 import classNames from 'classnames';
 import { Loader } from '../Loader';
@@ -8,6 +8,7 @@ type Props = {
   onToggleComplete: (todoId: number) => void;
   onDelete: (todoId: number) => Promise<void>;
   isTemp?: boolean;
+  isDeleting: boolean;
 };
 
 export const TodoItem: React.FC<Props> = ({
@@ -15,9 +16,9 @@ export const TodoItem: React.FC<Props> = ({
   onToggleComplete,
   onDelete,
   isTemp,
+  isDeleting,
 }) => {
   const { id, title, completed } = todo;
-  const [isDeleting, setIsDeleting] = useState(false);
 
   const handleCheckboxChange = () => {
     if (isTemp) {
@@ -25,16 +26,6 @@ export const TodoItem: React.FC<Props> = ({
     }
 
     onToggleComplete(id);
-  };
-
-  const handleDelete = (todoId: number) => {
-    if (isTemp) {
-      return;
-    }
-
-    setIsDeleting(true);
-
-    onDelete(todoId).finally(() => setIsDeleting(false));
   };
 
   return (
@@ -62,16 +53,14 @@ export const TodoItem: React.FC<Props> = ({
           type="button"
           className="todo__remove"
           data-cy="TodoDelete"
-          onClick={() => handleDelete(todo.id)}
+          onClick={() => onDelete(todo.id)}
           disabled={isDeleting}
         >
           ×
         </button>
       )}
 
-      <Loader isTemp={isDeleting} />
-
-      {isTemp && <Loader isTemp={isTemp} />}
+      <Loader isTemp={isTemp || isDeleting} />
     </div>
   );
 };

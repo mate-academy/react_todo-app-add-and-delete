@@ -8,7 +8,7 @@ type Props = {
   selected: Options;
   setSelected: (selected: Options) => void;
   onClearCompleted: () => void;
-  activeTodo: Todo[];
+  activeTodos: Todo[];
 };
 
 export const Footer: React.FC<Props> = ({
@@ -16,14 +16,14 @@ export const Footer: React.FC<Props> = ({
   selected,
   setSelected,
   onClearCompleted,
-  activeTodo,
+  activeTodos,
 }) => {
   const completeCount = todos.filter(todo => todo.completed);
 
   return (
     <footer className="todoapp__footer" data-cy="Footer">
       <span className="todo-count" data-cy="TodosCounter">
-        {activeTodo.length} items left
+        {activeTodos.length} items left
       </span>
 
       <FooterFilter selected={selected} setSelected={setSelected} />
