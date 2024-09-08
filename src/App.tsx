@@ -1,6 +1,6 @@
 /* eslint-disable jsx-a11y/label-has-associated-control */
 /* eslint-disable jsx-a11y/control-has-associated-label */
-import React, { useEffect, useMemo, useState } from 'react';
+import React, { useEffect, useMemo, useRef, useState } from 'react';
 import * as todoService from './api/todos';
 import Header from './components/Header';
 import TodoList from './components/TodoList';
@@ -16,6 +16,9 @@ export const App: React.FC = () => {
   const [todosInTheBoot, setTodosInTheBoot] = useState<number[]>([]);
   const [todoTitle, setTodoTitle] = useState<string>('');
   const [tempTodo, setTempTodo] = useState<Todo | null>(null);
+  const [isAdding, setIsAdding] = useState<boolean>(false);
+
+  const inputRef = useRef<HTMLInputElement>(null);
 
   const hideAllErrorMessage = () => {
     setTimeout(() => {
@@ -31,7 +34,13 @@ export const App: React.FC = () => {
         setErrorMessage('Unable to load todos');
         hideAllErrorMessage();
       });
-  }, [todos]);
+  }, []);
+
+  useEffect(() => {
+    if (!isAdding && inputRef.current) {
+      inputRef.current.focus();
+    }
+  }, [isAdding, todos]);
 
   const filteredTodos = useMemo(() => {
     return todos.filter(todo => {
@@ -48,12 +57,14 @@ export const App: React.FC = () => {
     });
   }, [todos, filterValue]);
 
-  // DeleteTodo function
   const deleteTodo = (todoId: number) => {
     setTodosInTheBoot(currentBootTodos => [...currentBootTodos, todoId]);
     todoService
       .deleteTodo(todoId)
       .then(() => {
+        setTodos(currentTodos =>
+          currentTodos.filter(todo => todo.id !== todoId),
+        );
         setTodosInTheBoot(currentBootTodos =>
           currentBootTodos.filter(id => id !== todoId),
         );
@@ -73,6 +84,8 @@ export const App: React.FC = () => {
       newTodo.userId,
     ]);
 
+    setIsAdding(true);
+
     todoService
       .postTodo(newTodo)
       .then(addingTodo => {
@@ -91,10 +104,10 @@ export const App: React.FC = () => {
       })
       .finally(() => {
         setTempTodo(null);
+        setIsAdding(false);
       });
   };
 
-  // Handle Func for form submit
   const handleFormSubmit = (event: React.FormEvent) => {
     event.preventDefault();
 
@@ -130,6 +143,8 @@ export const App: React.FC = () => {
           todoTitle={todoTitle}
           setTodoTitle={setTodoTitle}
           formSubmit={handleFormSubmit}
+          isAdding={isAdding}
+          inputRef={inputRef}
         />
         <TodoList
           todos={filteredTodos}

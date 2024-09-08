@@ -7,6 +7,8 @@ type Props = {
   todoTitle: string;
   setTodoTitle: (title: string) => void;
   formSubmit: (event: React.FormEvent) => void;
+  isAdding: boolean;
+  inputRef: React.RefObject<HTMLInputElement>;
 };
 
 const Header: React.FC<Props> = ({
@@ -14,6 +16,8 @@ const Header: React.FC<Props> = ({
   todoTitle,
   setTodoTitle,
   formSubmit,
+  isAdding,
+  inputRef,
 }) => {
   const allTodosCompleted = todos.every(todo => todo.completed);
 
@@ -40,6 +44,8 @@ const Header: React.FC<Props> = ({
           autoFocus
           value={todoTitle}
           onChange={handleChangeTitle}
+          disabled={isAdding}
+          ref={inputRef}
         />
       </form>
     </header>
