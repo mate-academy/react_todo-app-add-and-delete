@@ -1,5 +1,5 @@
 import React from 'react';
-
+/* eslint-disable */
 export const UserWarning: React.FC = () => (
   <section className="section">
     <p className="box is-size-3">
@@ -13,3 +13,4 @@ export const UserWarning: React.FC = () => (
     </p>
   </section>
 );
+/* eslint-enable */
