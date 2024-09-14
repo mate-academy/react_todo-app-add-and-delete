@@ -17,23 +17,15 @@ const todoProperties = {
 export const App: React.FC = () => {
   const [todos, setTodos] = useState<Todo[]>([]);
   const [errorMessage, setErrorMessage] = useState<ErrorMessage | null>(null);
-  const [activeFilter, setActiveFilter] = useState<TodoStatus>(TodoStatus.all);
+  const [activeFilter, setActiveFilter] = useState<TodoStatus>(TodoStatus.All);
   const [isSubmitting, setIsSumbitting] = useState(false);
   const [tempTodo, setTempTodo] = useState<Todo | null>(null);
   const [isTitleClear, setIsTitleClear] = useState(false);
 
   useEffect(() => {
-    const fetchTodos = async () => {
-      try {
-        const fetchedTodos = await getTodos();
-
-        setTodos(fetchedTodos);
-      } catch {
-        setErrorMessage(ErrorMessage.load);
-      }
-    };
-
-    fetchTodos();
+    getTodos()
+      .then(setTodos)
+      .catch(() => setErrorMessage(ErrorMessage.load));
   }, []);
 
   async function handleAddTodo(event: React.KeyboardEvent<HTMLInputElement>) {
@@ -134,7 +126,7 @@ export const App: React.FC = () => {
           isSubmitting={isSubmitting}
         />
 
-        {todos.length !== 0 && (
+        {!!todos.length && (
           <Footer
             activeTodosCount={activeTodosCount}
             completedTodosCount={completedTodosCount}
