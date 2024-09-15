@@ -4,7 +4,7 @@
 import './styles/index.scss';
 import React, { useEffect, useMemo, useState } from 'react';
 import { UserWarning } from './UserWarning';
-import { createTodos, deleteTodos, getTodos, USER_ID } from './api/todos';
+import { deleteTodos, getTodos, USER_ID } from './api/todos';
 import { Todo, TodoStatusFilter } from './types/Todo';
 import { Header } from './components/Header';
 import { TodoError } from './components/TodoError/TodoError';
@@ -69,22 +69,6 @@ export const App: React.FC = () => {
     setTodos(prevTodos => prevTodos.filter(todo => todo.id !== todoId));
   };
 
-  const handleCreateTodo = async ({
-    title,
-    completed,
-    userId,
-  }: Omit<Todo, 'id'>) => {
-    setIsLoading(true);
-    createTodos({ title, completed, userId })
-      .then(newTodo => {
-        setTodos(currentTodos => [...currentTodos, newTodo]);
-      })
-      .catch(() => setError('Unable to add todo'))
-      .finally(() => {
-        setIsLoading(false);
-      });
-  };
-
   if (!USER_ID) {
     return <UserWarning />;
   }
@@ -94,7 +78,8 @@ export const App: React.FC = () => {
       <h1 className="todoapp__title">todos</h1>
       <div className="todoapp__content">
         <Header
-          onCreateTodo={handleCreateTodo}
+          todos={todos}
+          setTodos={setTodos}
           errorMessage={error}
           setError={setError}
           isLoading={isLoading}

@@ -1,9 +1,11 @@
-import React, { useEffect, useRef, useState } from 'react';
+import React, { useEffect, useMemo, useRef, useState } from 'react';
 import { Todo } from '../../types/Todo';
-import { USER_ID } from '../../api/todos';
+import { createTodos, USER_ID } from '../../api/todos';
+import classNames from 'classnames';
 
 type Props = {
-  onCreateTodo: ({ title, completed, userId }: Omit<Todo, 'id'>) => void;
+  todos: Todo[];
+  setTodos: (todos: Todo[] | ((prevTodos: Todo[]) => Todo[])) => void;
   errorMessage: string | null;
   setError: (message: string | null) => void;
   isLoading: boolean;
@@ -12,7 +14,8 @@ type Props = {
 };
 
 export const Header: React.FC<Props> = ({
-  onCreateTodo,
+  todos,
+  setTodos,
   errorMessage,
   setError,
   isLoading,
@@ -20,7 +23,6 @@ export const Header: React.FC<Props> = ({
   setTempTodo,
 }) => {
   const [titleTodo, setTitleTodo] = useState('');
-  const [, setTemporaryTodo] = useState<Todo | null>(null);
   const inputRef = useRef<HTMLInputElement>(null);
 
   useEffect(() => {
@@ -28,6 +30,10 @@ export const Header: React.FC<Props> = ({
       inputRef.current.focus();
     }
   }, [errorMessage]);
+
+  const isEveryTodoCompleted = useMemo(() => {
+    return todos.every(todo => todo.completed);
+  }, [todos]);
 
   const handleKeyDown = async (
     event: React.KeyboardEvent<HTMLInputElement>,
@@ -54,26 +60,30 @@ export const Header: React.FC<Props> = ({
       setTempTodo({ id: 0, ...newTodo });
       setIsLoading(true);
 
-      try {
-        await onCreateTodo({ title, completed, userId });
-        setTitleTodo('');
-        setError(null);
-        setTemporaryTodo(null);
-      } catch (error) {
-        setError('Failed to create todo');
-      } finally {
-        setTempTodo(null);
-      }
+      createTodos(newTodo)
+        .then(todo => {
+          setTodos([...todos, todo]);
+          setTitleTodo('');
+        })
+        .catch(() => setError('Failed to create todo'))
+        .finally(() => {
+          setTempTodo(null);
+          setIsLoading(false);
+        });
     }
   };
 
   return (
     <header className="todoapp__header">
-      <button
-        type="button"
-        className="todoapp__toggle-all active"
-        data-cy="ToggleAllButton"
-      />
+      {!isLoading && (
+        <button
+          type="button"
+          className={classNames('todoapp__toggle-all', {
+            active: isEveryTodoCompleted,
+          })}
+          data-cy="ToggleAllButton"
+        />
+      )}
 
       <form onSubmit={e => e.preventDefault()}>
         <input
