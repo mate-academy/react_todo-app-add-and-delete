@@ -3,11 +3,13 @@ import classNames from 'classnames';
 import { Todo } from './types/Todo';
 
 type Props = {
+  isLoading: boolean;
   todo: Todo;
   onDelete: (id: number) => void;
 };
 
 export const TodoInfo: React.FC<Props> = ({
+  isLoading,
   todo: { id, title, completed },
   onDelete,
 }) => {
@@ -38,7 +40,10 @@ export const TodoInfo: React.FC<Props> = ({
         ×
       </button>
 
-      <div data-cy="TodoLoader" className="modal overlay">
+      <div
+        data-cy="TodoLoader"
+        className={classNames('modal overlay', { 'is-active': isLoading })}
+      >
         <div className="modal-background has-background-white-ter" />
         <div className="loader" />
       </div>

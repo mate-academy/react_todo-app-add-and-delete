@@ -3,12 +3,14 @@ import { TodoInfo } from './TodoInfo';
 import { Todo } from './types/Todo';
 
 type Props = {
+  isLoading: boolean;
   todos: Todo[];
   onDelete?: (id: number) => void;
   tempTodo?: Todo | null;
 };
 
 export const TodoList: React.FC<Props> = ({
+  isLoading,
   todos,
   onDelete = () => {},
   tempTodo,
@@ -16,7 +18,14 @@ export const TodoList: React.FC<Props> = ({
   return (
     <section className="todoapp__main" data-cy="TodoList">
       {todos.map(todo => {
-        return <TodoInfo onDelete={onDelete} key={todo.id} todo={todo} />;
+        return (
+          <TodoInfo
+            isLoading={isLoading}
+            onDelete={onDelete}
+            key={todo.id}
+            todo={todo}
+          />
+        );
       })}
       {tempTodo && (
         <div data-cy="Todo" className="todo">

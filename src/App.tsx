@@ -14,15 +14,12 @@ export const App: React.FC = () => {
   const [filtered, setFiltered] = useState('all');
   const [titleTodo, setTitleTodo] = useState('');
   const [inputTodo, setInputTodo] = useState(true);
+  const [isLoading, setIsLoading] = useState(false);
   const [tempTodo, setTempTodo] = useState<Todo | null>(null);
 
   const inputFocus = useRef<HTMLInputElement>(null);
 
   useEffect(() => {
-    if (inputFocus.current && inputTodo) {
-      inputFocus.current.focus();
-    }
-
     getTodos()
       .then(setTodos)
       .catch(() => {
@@ -33,6 +30,12 @@ export const App: React.FC = () => {
           setErrorMessage('');
         }, 3000);
       });
+  }, [inputTodo]);
+
+  useEffect(() => {
+    if (inputFocus.current && inputTodo) {
+      inputFocus.current.focus();
+    }
   }, [inputTodo]);
 
   const filteredTodos = todos.filter(todo => {
@@ -50,14 +53,34 @@ export const App: React.FC = () => {
   const todosCounter = todos.filter(todo => !todo.completed).length;
 
   function deletePost(todoId: number) {
-    deleteTodos(todoId);
-    setTodos(currentTodos => currentTodos.filter(todo => todo.id !== todoId));
+    setInputTodo(false);
+    setIsLoading(true);
+    deleteTodos(todoId)
+      .then(() =>
+        setTodos(currentTodos =>
+          currentTodos.filter(todo => todo.id !== todoId),
+        ),
+      )
+      .catch(() => {
+        setErrorMessage('Unable to delete a todo');
+      })
+      .finally(() => {
+        setInputTodo(true);
+        setIsLoading(false);
+      })
   }
 
-  function addTodo({ userId, title, completed }: Omit<Todo, 'id'>) {
-    return postTodos({ userId, title, completed }).then(newTodo => {
-      setTodos(currentTodos => [...currentTodos, newTodo]);
-    });
+  function addTodo({ userId, title, completed }: Todo) {
+    postTodos({ userId, title, completed })
+      .then(newTodo => {
+        setTodos(currentTodos => [...currentTodos, newTodo]);
+        setTitleTodo('');
+      })
+      .catch(() => setErrorMessage('Unable to add a todo'))
+      .finally(() => {
+        setInputTodo(true);
+        setTempTodo(null);
+      });
   }
 
   const HandleSubmit = (event: React.FormEvent) => {
@@ -72,7 +95,7 @@ export const App: React.FC = () => {
     const newTempTodo = {
       id: 0,
       userId: USER_ID,
-      title: titleTodo,
+      title: titleTodo.trim(),
       completed: false,
     };
 
@@ -80,22 +103,7 @@ export const App: React.FC = () => {
 
     setInputTodo(false);
 
-    addTodo({
-      userId: USER_ID,
-      title: titleTodo.trim(),
-      completed: false,
-    })
-      .then(() => {
-        setTitleTodo('');
-      })
-      .catch(() => {
-        setInputTodo(true);
-        setTempTodo(null);
-      })
-      .finally(() => {
-        setInputTodo(true);
-        setTempTodo(null);
-      });
+    addTodo(newTempTodo);
   };
 
   const HandleTitle = (event: React.ChangeEvent<HTMLInputElement>) => {
@@ -105,6 +113,14 @@ export const App: React.FC = () => {
   const HandleErrorClose = () => {
     setErrorMessage('');
   };
+
+  const HandleClearCompleted = () => {
+    todos.map(todo => {
+      if (todo.completed === true) {
+        deletePost(todo.id);
+      }
+    })
+  }
 
   if (!USER_ID) {
     return <UserWarning />;
@@ -139,6 +155,7 @@ export const App: React.FC = () => {
         </header>
 
         <TodoList
+          isLoading={isLoading}
           tempTodo={tempTodo}
           onDelete={deletePost}
           todos={filteredTodos}
@@ -158,7 +175,9 @@ export const App: React.FC = () => {
             <button
               type="button"
               className="todoapp__clear-completed"
+              onClick={HandleClearCompleted}
               data-cy="ClearCompletedButton"
+              disabled={todosCounter === todos.length}
             >
               Clear completed
             </button>
