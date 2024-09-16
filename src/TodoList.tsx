@@ -1,4 +1,4 @@
-import { useState } from 'react';
+/* eslint-disable jsx-a11y/label-has-associated-control */
 import { TodoInfo } from './TodoInfo';
 import { Todo } from './types/Todo';
 
@@ -8,8 +8,11 @@ type Props = {
   tempTodo?: Todo | null;
 };
 
-export const TodoList: React.FC<Props> = ({ todos, onDelete = () => { }, tempTodo }) => {
-
+export const TodoList: React.FC<Props> = ({
+  todos,
+  onDelete = () => {},
+  tempTodo,
+}) => {
   return (
     <section className="todoapp__main" data-cy="TodoList">
       {todos.map(todo => {
@@ -141,5 +144,5 @@ export const TodoList: React.FC<Props> = ({ todos, onDelete = () => { }, tempTod
         </div>
       </div> */}
     </section>
-  )
-}
+  );
+};

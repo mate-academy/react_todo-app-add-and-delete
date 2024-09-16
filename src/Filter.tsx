@@ -39,5 +39,5 @@ export const Filter: React.FC<Props> = ({ filtered, setFiltered }) => {
         Completed
       </a>
     </nav>
-  )
-}
+  );
+};

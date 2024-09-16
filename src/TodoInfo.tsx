@@ -1,10 +1,11 @@
+/* eslint-disable jsx-a11y/label-has-associated-control */
 import classNames from 'classnames';
 import { Todo } from './types/Todo';
 
 type Props = {
   todo: Todo;
   onDelete: (id: number) => void;
-}
+};
 
 export const TodoInfo: React.FC<Props> = ({
   todo: { id, title, completed },
@@ -42,5 +43,5 @@ export const TodoInfo: React.FC<Props> = ({
         <div className="loader" />
       </div>
     </div>
-  )
-}
+  );
+};
