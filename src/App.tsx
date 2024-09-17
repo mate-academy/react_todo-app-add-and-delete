@@ -30,7 +30,7 @@ export const App: React.FC = () => {
           setErrorMessage('');
         }, 3000);
       });
-  }, [inputTodo]);
+  }, []);
 
   useEffect(() => {
     if (inputFocus.current && inputTodo) {
@@ -67,7 +67,7 @@ export const App: React.FC = () => {
       .finally(() => {
         setInputTodo(true);
         setIsLoading(false);
-      })
+      });
   }
 
   function addTodo({ userId, title, completed }: Todo) {
@@ -119,8 +119,8 @@ export const App: React.FC = () => {
       if (todo.completed === true) {
         deletePost(todo.id);
       }
-    })
-  }
+    });
+  };
 
   if (!USER_ID) {
     return <UserWarning />;
@@ -132,14 +132,6 @@ export const App: React.FC = () => {
 
       <div className="todoapp__content">
         <header className="todoapp__header">
-          {/* this button should have `active` class only if all todos are completed */}
-          {/* <button
-            type="button"
-            className="todoapp__toggle-all active"
-            data-cy="ToggleAllButton"
-          /> */}
-
-          {/* Add a todo on form submit */}
           <form onSubmit={HandleSubmit}>
             <input
               data-cy="NewTodoField"
@@ -185,8 +177,6 @@ export const App: React.FC = () => {
         )}
       </div>
 
-      {/* DON'T use conditional rendering to hide the notification */}
-      {/* Add the 'hidden' class to hide the message smoothly */}
       <div
         data-cy="ErrorNotification"
         className={classNames(
