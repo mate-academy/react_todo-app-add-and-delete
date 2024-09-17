@@ -6,7 +6,8 @@ import { deleteTodos, getTodos, postTodos, USER_ID } from './api/todos';
 import { Todo } from './types/Todo';
 import { TodoList } from './TodoList';
 import classNames from 'classnames';
-import { Filter } from './Filter';
+import { Header } from './Header';
+import { Footer } from './Footer';
 
 export const App: React.FC = () => {
   const [errorMessage, setErrorMessage] = useState('');
@@ -131,20 +132,13 @@ export const App: React.FC = () => {
       <h1 className="todoapp__title">todos</h1>
 
       <div className="todoapp__content">
-        <header className="todoapp__header">
-          <form onSubmit={HandleSubmit}>
-            <input
-              data-cy="NewTodoField"
-              type="text"
-              value={titleTodo}
-              className="todoapp__new-todo"
-              placeholder="What needs to be done?"
-              onChange={HandleTitle}
-              ref={inputFocus}
-              disabled={!inputTodo}
-            />
-          </form>
-        </header>
+        <Header
+          HandleSubmit={HandleSubmit}
+          titleTodo={titleTodo}
+          HandleTitle={HandleTitle}
+          inputFocus={inputFocus}
+          inputTodo={inputTodo}
+        />
 
         <TodoList
           isLoading={isLoading}
@@ -155,25 +149,13 @@ export const App: React.FC = () => {
 
         {/* Hide the footer if there are no todos */}
         {todos.length !== 0 && (
-          <footer className="todoapp__footer" data-cy="Footer">
-            <span className="todo-count" data-cy="TodosCounter">
-              {todosCounter} items left
-            </span>
-
-            {/* Active link should have the 'selected' class */}
-            <Filter filtered={filtered} setFiltered={setFiltered} />
-
-            {/* this button should be disabled if there are no completed todos */}
-            <button
-              type="button"
-              className="todoapp__clear-completed"
-              onClick={HandleClearCompleted}
-              data-cy="ClearCompletedButton"
-              disabled={todosCounter === todos.length}
-            >
-              Clear completed
-            </button>
-          </footer>
+          <Footer
+            todosCounter={todosCounter}
+            filtered={filtered}
+            setFiltered={setFiltered}
+            HandleClearCompleted={HandleClearCompleted}
+            todos={todos}
+          />
         )}
       </div>
 
@@ -190,17 +172,7 @@ export const App: React.FC = () => {
           type="button"
           className="delete"
         />
-        {/* show only one message at a time */}
         {errorMessage}
-        {/* Unable to load todos
-        <br />
-        Title should not be empty
-        <br />
-        Unable to add a todo
-        <br />
-        Unable to delete a todo
-        <br />
-        Unable to update a todo */}
       </div>
     </div>
   );
