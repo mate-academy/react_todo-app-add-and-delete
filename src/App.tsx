@@ -117,33 +117,10 @@ export const App: React.FC = () => {
       .finally(() => setLoadingTodoId(null));
   }
 
-  function deleteCompletedTodos() {
-    setLoading(true);
-    getTodos()
-      .then(fetchedTodos => {
-        const completedTodos = fetchedTodos.filter(todo => todo.completed);
+  function handleDeleteAllCompleted() {
+    const allCompletedTodos = todos.filter(todo => todo.completed);
 
-        const deletionPromises = completedTodos.map(todo =>
-          deleteTodos(todo.id)
-            .then(() => {
-              // Уменьшаем счетчик после успешного удаления
-              setCounterOfActiveTodos(currentCount => currentCount - 1);
-            })
-            .catch(err => {
-              // Обрабатываем ошибку, если задача не была удалена
-              setError('Unable to delete a todo' + err.message);
-            }),
-        );
-
-        return Promise.all(deletionPromises);
-      })
-      .then(() => {
-        // Обновляем состояние todos, удаляя успешно удаленные задачи
-        setTodos(currentTodos => currentTodos.filter(todo => !todo.completed));
-      })
-      .finally(() => {
-        setLoading(false); // Optional: Hide loading state
-      });
+    allCompletedTodos.map(todo => deleteTodo(todo.id));
   }
 
   function updateTodoStatus(todoId: number, completed: boolean) {
@@ -292,7 +269,7 @@ export const App: React.FC = () => {
               className="todoapp__clear-completed"
               data-cy="ClearCompletedButton"
               disabled={!todos.some(todo => todo.completed)}
-              onClick={deleteCompletedTodos}
+              onClick={handleDeleteAllCompleted}
             >
               Clear completed
             </button>
