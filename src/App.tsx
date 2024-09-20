@@ -16,7 +16,6 @@ export const App: React.FC = () => {
   const [todos, setTodos] = useState<Todo[]>([]);
   const [errorMessage, setErrorMessage] = useState<Errors | null>(null);
   const [filter, setFilter] = useState<Filters>(Filters.all);
-  const [filteredTodos, setFilteredTodos] = useState<Todo[]>([]);
   const [inputResetFlag, setInputResetFlag] = useState(Math.random());
   const [inputLoadingFlag, setInputLoadingFlag] = useState(false);
   const [loadingTodoId, setLoadingTodoId] = useState<number | null>(null);
@@ -27,6 +26,24 @@ export const App: React.FC = () => {
       setErrorMessage(error);
     }, 300);
   };
+
+  const filtering = (arr: Todo[], filterParam: Filters): Todo[] | [] => {
+    const filteredArr = [...arr];
+
+    switch (filterParam) {
+      case Filters.completed:
+        return filteredArr.filter(todo => todo.completed);
+
+      case Filters.active:
+        return filteredArr.filter(todo => !todo.completed);
+
+      case Filters.all:
+      default:
+        return filteredArr;
+    }
+  };
+
+  const filteredTodos: Todo[] = filtering(todos, filter);
 
   // Initial TODOs loading
   useEffect(() => {
@@ -39,24 +56,6 @@ export const App: React.FC = () => {
         handleErrors(Errors.load);
       });
   }, []);
-
-  //Apply Filtering
-  useEffect(() => {
-    switch (filter) {
-      case Filters.completed:
-        setFilteredTodos(todos.filter(todo => todo.completed));
-        break;
-
-      case Filters.active:
-        setFilteredTodos(todos.filter(todo => !todo.completed));
-        break;
-
-      case Filters.all:
-      default:
-        setFilteredTodos(todos);
-        break;
-    }
-  }, [filter, todos]);
 
   // Error Reset
   useEffect(() => {

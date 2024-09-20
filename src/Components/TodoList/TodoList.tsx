@@ -29,7 +29,6 @@ export const TodoList: React.FC<Props> = ({
 
       {tempTodoTitle && (
         <TodoItem
-          key={0}
           todo={{ id: 0, userId: 0, title: tempTodoTitle, completed: false }}
           loadingId={0}
         />
