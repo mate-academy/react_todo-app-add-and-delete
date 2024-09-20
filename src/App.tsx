@@ -36,8 +36,6 @@ export const App: React.FC = () => {
         setError('Unable to load todos' + err.message);
       })
       .finally(() => setLoading(false));
-
-    console.log(error); // Проверка значения error
   }, []);
 
   useEffect(() => {
