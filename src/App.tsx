@@ -1,4 +1,5 @@
 /* eslint-disable jsx-a11y/label-has-associated-control */
+
 import React, { useEffect, useState, useRef } from 'react';
 import { UserWarning } from './UserWarning';
 import { USER_ID } from './api/todos';
@@ -35,6 +36,8 @@ export const App: React.FC = () => {
         setError('Unable to load todos' + err.message);
       })
       .finally(() => setLoading(false));
+
+    console.log(error); // Проверка значения error
   }, []);
 
   useEffect(() => {
@@ -275,14 +278,13 @@ export const App: React.FC = () => {
             </button>
           </footer>
         )}
-
-        <div
-          data-cy="ErrorNotification"
-          className={`notification is-danger is-light has-text-weight-normal ${error === null ? 'hidden' : ''}`}
-        >
-          <button data-cy="HideErrorButton" type="button" className="delete" />
-          {error}
-        </div>
+      </div>
+      <div
+        data-cy="ErrorNotification"
+        className={`notification is-danger is-light has-text-weight-normal ${error === null ? 'hidden' : ''}`}
+      >
+        <button data-cy="HideErrorButton" type="button" className="delete" />
+        {error}
       </div>
     </div>
   );
