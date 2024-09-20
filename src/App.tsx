@@ -64,49 +64,43 @@ export const App: React.FC = () => {
     }, 3000);
   }, [errorMessage]);
 
-  const addTodos = useCallback(
-    (newTodoTitle: string) => {
-      setInputLoadingFlag(true);
-      setTempTodo(newTodoTitle);
-      todosClient
-        .add({
-          title: newTodoTitle,
-          userId: +USER_ID,
-          completed: false,
-        })
-        .then(res => {
-          setTodos(current => [...current, res]);
-          setInputResetFlag(Math.random());
-        })
-        .catch(() => {
-          handleErrors(Errors.add);
-        })
-        .finally(() => {
-          setInputLoadingFlag(false);
-          setTempTodo(null);
-        });
-    },
-    [todos],
-  );
+  const addTodos = useCallback((newTodoTitle: string) => {
+    setInputLoadingFlag(true);
+    setTempTodo(newTodoTitle);
+    todosClient
+      .add({
+        title: newTodoTitle,
+        userId: +USER_ID,
+        completed: false,
+      })
+      .then(res => {
+        setTodos(current => [...current, res]);
+        setInputResetFlag(Math.random());
+      })
+      .catch(() => {
+        handleErrors(Errors.add);
+      })
+      .finally(() => {
+        setInputLoadingFlag(false);
+        setTempTodo(null);
+      });
+  }, []);
 
-  const deleteTodos = useCallback(
-    (idDelete: number) => {
-      setLoadingTodoId(() => idDelete);
-      todosClient
-        .delete(idDelete)
-        .then(() => {
-          setTodos(cuurent => cuurent.filter(todo => todo.id !== idDelete));
-        })
-        .catch(() => {
-          handleErrors(Errors.delete);
-        })
-        .finally(() => {
-          setLoadingTodoId(() => null);
-          setInputResetFlag(Math.random());
-        });
-    },
-    [todos],
-  );
+  const deleteTodos = useCallback((idDelete: number) => {
+    setLoadingTodoId(() => idDelete);
+    todosClient
+      .delete(idDelete)
+      .then(() => {
+        setTodos(cuurent => cuurent.filter(todo => todo.id !== idDelete));
+      })
+      .catch(() => {
+        handleErrors(Errors.delete);
+      })
+      .finally(() => {
+        setLoadingTodoId(() => null);
+        setInputResetFlag(Math.random());
+      });
+  }, []);
 
   const deleteAllCompleted = useCallback(() => {
     Promise.allSettled(
@@ -118,7 +112,7 @@ export const App: React.FC = () => {
     )
       .catch(() => handleErrors(Errors.delete))
       .finally(() => setInputResetFlag(Math.random()));
-  }, [todos]);
+  }, [todos, deleteTodos]);
 
   if (!USER_ID) {
     return <UserWarning />;
