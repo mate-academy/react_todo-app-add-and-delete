@@ -172,20 +172,23 @@ export const App: React.FC = () => {
           setNewTodoTitle={setNewTodoTitle}
           addTodo={addTodo}
         />
-        <TodoList
-          filteredTodos={filteredTodos}
-          updateTodoStatus={updateTodoStatus}
-          deleteTodo={deleteTodo}
-          loadingTodoId={loadingTodoId}
-        />
+
         {todos.length > 0 && (
-          <Footer
-            counterOfActiveTodos={counterOfActiveTodos}
-            filter={filter}
-            todos={todos}
-            handleFilterChange={handleFilterChange}
-            handleDeleteAllCompleted={handleDeleteAllCompleted}
-          />
+          <>
+            <TodoList
+              filteredTodos={filteredTodos}
+              updateTodoStatus={updateTodoStatus}
+              deleteTodo={deleteTodo}
+              loadingTodoId={loadingTodoId}
+            />
+            <Footer
+              counterOfActiveTodos={counterOfActiveTodos}
+              filter={filter}
+              todos={todos}
+              handleFilterChange={handleFilterChange}
+              handleDeleteAllCompleted={handleDeleteAllCompleted}
+            />
+          </>
         )}
       </div>
       <Error error={error} />
