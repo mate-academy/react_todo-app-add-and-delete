@@ -1,12 +1,14 @@
 import React from 'react';
 import { Filter } from '../Filter/Filter';
 import { SelectOption } from '../../App';
+import cn from 'classnames';
 
 type Props = {
   todosCounter: number;
   checkCompleted: boolean;
   option: SelectOption;
   onSetOption: (v: SelectOption) => void;
+  onDeleteCompleted: () => void;
 };
 
 export const Footer: React.FC<Props> = ({
@@ -14,6 +16,7 @@ export const Footer: React.FC<Props> = ({
   todosCounter,
   checkCompleted,
   onSetOption,
+  onDeleteCompleted,
 }) => {
   return (
     <footer className="todoapp__footer" data-cy="Footer">
@@ -21,18 +24,17 @@ export const Footer: React.FC<Props> = ({
         {todosCounter} items left
       </span>
 
-      {/* Active link should have the 'selected' class */}
       <Filter option={option} onSetOption={onSetOption} />
 
-      {!checkCompleted && (
-        <button
-          type="button"
-          className="todoapp__clear-completed"
-          data-cy="ClearCompletedButton"
-        >
-          Clear completed
-        </button>
-      )}
+      <button
+        type="button"
+        className={cn('todoapp__clear-completed')}
+        data-cy="ClearCompletedButton"
+        onClick={onDeleteCompleted}
+        disabled={!checkCompleted}
+      >
+        Clear completed
+      </button>
     </footer>
   );
 };

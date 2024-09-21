@@ -5,7 +5,7 @@ type Props = {
   onSubmit: (e: React.FormEvent) => void;
   title: string;
   onFocus: React.RefObject<HTMLInputElement>;
-  isLoading: boolean;
+  inputTodo: boolean;
 };
 
 export const Header: React.FC<Props> = ({
@@ -13,7 +13,7 @@ export const Header: React.FC<Props> = ({
   onSubmit,
   title,
   onFocus,
-  isLoading,
+  inputTodo,
 }) => {
   return (
     <header className="todoapp__header">
@@ -32,7 +32,7 @@ export const Header: React.FC<Props> = ({
           className="todoapp__new-todo"
           placeholder="What needs to be done?"
           onChange={e => onSetTitle(e.target.value)}
-          disabled={isLoading}
+          disabled={!inputTodo}
         />
       </form>
     </header>

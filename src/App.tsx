@@ -18,8 +18,10 @@ export const App: React.FC = () => {
   const [errorMessage, setErrorMessage] = useState('');
   const [option, setOption] = useState(SelectOption.All);
   const [loading, setLoading] = useState(false);
-  const [titleFInput, setTitleFInput] = useState('');
+  const [titleTodo, setTitleTodo] = useState('');
+  const [inputTodo, setInputTodo] = useState(true);
   const inputFocus = useRef<HTMLInputElement>(null);
+  const [tempTodo, setTempTodo] = useState<Todo | null>(null);
 
   useEffect(() => {
     getTodos()
@@ -33,8 +35,10 @@ export const App: React.FC = () => {
   }, []);
 
   useEffect(() => {
-    inputFocus.current?.focus();
-  }, [loading]);
+    if (inputFocus.current && inputTodo) {
+      inputFocus.current.focus();
+    }
+  }, [inputTodo]);
 
   const filteredTodos = todos.filter(todo => {
     switch (option) {
@@ -50,19 +54,25 @@ export const App: React.FC = () => {
 
   const todosLength = todos.filter(todo => !todo.completed).length;
 
-  const checkCompletedTodos = todos.every(todo => todo.completed === true);
+  const checkCompletedTodos = todos.some(todo => todo.completed === true);
 
   function addTodo({ title, userId, completed }: Todo) {
-    setLoading(true);
     postTodo({ title, userId, completed })
-      .then(newTodo => setTodos(currentTodo => [...currentTodo, newTodo]))
-      .catch(() => {
-        setErrorMessage('Unable to add todo');
+      .then(newTodo => {
+        setTodos(currentTodo => [...currentTodo, newTodo]);
+        setTitleTodo('');
       })
-      .finally(() => setLoading(false));
+      .catch(() => {
+        setErrorMessage('Unable to add a todo');
+      })
+      .finally(() => {
+        setInputTodo(true);
+        setTempTodo(null);
+      });
   }
 
   function deleteTodos(todoId: number) {
+    setInputTodo(false);
     setLoading(true);
     deleteTodo(todoId)
       .then(() =>
@@ -71,13 +81,16 @@ export const App: React.FC = () => {
         ),
       )
       .catch(() => setErrorMessage('Unable to delete a todo'))
-      .finally(() => setLoading(false));
+      .finally(() => {
+        setInputTodo(true);
+        setLoading(false);
+      });
   }
 
   const handleSubmit = (event: React.FormEvent) => {
     event.preventDefault();
 
-    if (!titleFInput.trim()) {
+    if (!titleTodo.trim()) {
       setErrorMessage('Title should not be empty');
 
       return;
@@ -86,12 +99,21 @@ export const App: React.FC = () => {
     const newTodo = {
       id: 0,
       userId: USER_ID,
-      title: titleFInput,
+      title: titleTodo.trim(),
       completed: false,
     };
 
-    setTitleFInput('');
+    setTempTodo(newTodo);
+    setInputTodo(false);
     addTodo(newTodo);
+  };
+
+  const handleClearCompleted = () => {
+    todos.map(todo => {
+      if (todo.completed) {
+        deleteTodos(todo.id);
+      }
+    });
   };
 
   if (!USER_ID) {
@@ -104,17 +126,18 @@ export const App: React.FC = () => {
 
       <div className="todoapp__content">
         <Header
-          onSetTitle={setTitleFInput}
+          onSetTitle={setTitleTodo}
           onSubmit={handleSubmit}
-          title={titleFInput}
+          title={titleTodo}
           onFocus={inputFocus}
-          isLoading={loading}
+          inputTodo={inputTodo}
         />
 
         <TodoList
           todos={filteredTodos}
           onDelete={deleteTodos}
           isLoading={loading}
+          tempTodo={tempTodo}
         />
         {todos.length !== 0 && (
           <Footer
@@ -122,6 +145,7 @@ export const App: React.FC = () => {
             checkCompleted={checkCompletedTodos}
             option={option}
             onSetOption={setOption}
+            onDeleteCompleted={handleClearCompleted}
           />
         )}
       </div>
