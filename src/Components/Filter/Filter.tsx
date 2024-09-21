@@ -3,45 +3,26 @@ import { SelectOption } from '../../App';
 import cn from 'classnames';
 
 type Props = {
-  option: SelectOption;
-  onSetOption: (v: SelectOption) => void;
+  option: string;
+  onSetOption: (v: string) => void;
 };
 
 export const Filter: React.FC<Props> = ({ option, onSetOption }) => {
   return (
     <nav className="filter" data-cy="Filter">
-      <a
-        href="#/"
-        className={cn('filter__link', {
-          selected: option === SelectOption.All,
-        })}
-        data-cy="FilterLinkAll"
-        onClick={() => onSetOption(SelectOption.All)}
-      >
-        All
-      </a>
-
-      <a
-        href="#/active"
-        className={cn('filter__link', {
-          selected: option === SelectOption.Active,
-        })}
-        data-cy="FilterLinkActive"
-        onClick={() => onSetOption(SelectOption.Active)}
-      >
-        Active
-      </a>
-
-      <a
-        href="#/completed"
-        className={cn('filter__link', {
-          selected: option === SelectOption.Completed,
-        })}
-        data-cy="FilterLinkCompleted"
-        onClick={() => onSetOption(SelectOption.Completed)}
-      >
-        Completed
-      </a>
+      {Object.values(SelectOption).map((filterType, index) => (
+        <a
+          href="#/"
+          key={index}
+          className={cn('filter__link', {
+            selected: option === filterType,
+          })}
+          data-cy={`FilterLink${filterType.slice(0, 1).toUpperCase() + filterType.slice(1)}`}
+          onClick={() => onSetOption(filterType)}
+        >
+          {filterType.slice(0, 1).toUpperCase() + filterType.slice(1)}
+        </a>
+      ))}
     </nav>
   );
 };

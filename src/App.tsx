@@ -56,7 +56,7 @@ export const App: React.FC = () => {
 
   const checkCompletedTodos = todos.some(todo => todo.completed === true);
 
-  function addTodo({ title, userId, completed }: Todo) {
+  const addTodo = ({ title, userId, completed }: Todo) => {
     postTodo({ title, userId, completed })
       .then(newTodo => {
         setTodos(currentTodo => [...currentTodo, newTodo]);
@@ -69,9 +69,9 @@ export const App: React.FC = () => {
         setInputTodo(true);
         setTempTodo(null);
       });
-  }
+  };
 
-  function deleteTodos(todoId: number) {
+  const deleteTodos = (todoId: number) => {
     setInputTodo(false);
     setLoading(true);
     deleteTodo(todoId)
@@ -85,7 +85,7 @@ export const App: React.FC = () => {
         setInputTodo(true);
         setLoading(false);
       });
-  }
+  };
 
   const handleSubmit = (event: React.FormEvent) => {
     event.preventDefault();
@@ -139,7 +139,7 @@ export const App: React.FC = () => {
           isLoading={loading}
           tempTodo={tempTodo}
         />
-        {todos.length !== 0 && (
+        {!!todos.length && (
           <Footer
             todosCounter={todosLength}
             checkCompleted={checkCompletedTodos}

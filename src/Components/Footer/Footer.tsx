@@ -1,13 +1,11 @@
-import React from 'react';
+import React, { Dispatch, SetStateAction } from 'react';
 import { Filter } from '../Filter/Filter';
-import { SelectOption } from '../../App';
-import cn from 'classnames';
 
 type Props = {
   todosCounter: number;
   checkCompleted: boolean;
-  option: SelectOption;
-  onSetOption: (v: SelectOption) => void;
+  option: string;
+  onSetOption: Dispatch<SetStateAction<string>>;
   onDeleteCompleted: () => void;
 };
 
@@ -28,7 +26,7 @@ export const Footer: React.FC<Props> = ({
 
       <button
         type="button"
-        className={cn('todoapp__clear-completed')}
+        className="todoapp__clear-completed"
         data-cy="ClearCompletedButton"
         onClick={onDeleteCompleted}
         disabled={!checkCompleted}
