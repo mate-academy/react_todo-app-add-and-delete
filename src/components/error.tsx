@@ -1,5 +1,5 @@
 interface ErrorProps {
-  error: string | null; // изменить на 'error'
+  error: string | null;
 }
 
 export const Error: React.FC<ErrorProps> = ({ error }) => {

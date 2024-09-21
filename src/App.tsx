@@ -1,6 +1,7 @@
 /* eslint-disable jsx-a11y/label-has-associated-control */
 
 import React, { useEffect, useState, useRef } from 'react';
+
 import { UserWarning } from './UserWarning';
 import { USER_ID } from './api/todos';
 import { Todo } from './types/Todo';
@@ -15,13 +16,13 @@ export const App: React.FC = () => {
   const [todos, setTodos] = useState<Todo[]>([]);
   const [error, setError] = useState<string | null>(null);
   const [filter, setFilter] = useState<Filter>(Filter.ALL);
-  const [loading, setLoading] = useState<boolean>(false);
+  const [isLoading, setIsLoading] = useState<boolean>(false);
   const [newTodoTitle, setNewTodoTitle] = useState('');
   const [loadingTodoId, setLoadingTodoId] = useState<number | null>(null);
   const [counterOfActiveTodos, setCounterOfActiveTodos] = useState(0);
 
   useEffect(() => {
-    setLoading(true);
+    setIsLoading(true);
     getTodos()
       .then(fetchedTodos => {
         setTodos(fetchedTodos);
@@ -33,7 +34,7 @@ export const App: React.FC = () => {
       .catch(err => {
         setError('Unable to load todos' + err.message);
       })
-      .finally(() => setLoading(false));
+      .finally(() => setIsLoading(false));
   }, []);
 
   useEffect(() => {
@@ -70,7 +71,7 @@ export const App: React.FC = () => {
 
     setTodos(currentTodos => [...currentTodos, tempTodo]);
 
-    setLoading(true);
+    setIsLoading(true);
     setLoadingTodoId(tempTodo.id);
 
     createTodos({ title: trimmedTitle, userId: USER_ID, completed: false })
@@ -94,7 +95,7 @@ export const App: React.FC = () => {
         );
       })
       .finally(() => {
-        setLoading(false);
+        setIsLoading(false);
         setLoadingTodoId(null);
         if (inputRef.current) {
           inputRef.current.focus();
@@ -165,7 +166,7 @@ export const App: React.FC = () => {
       <div className="todoapp__content">
         <Header
           todos={todos}
-          loading={loading}
+          isLoading={isLoading}
           inputRef={inputRef}
           newTodoTitle={newTodoTitle}
           setNewTodoTitle={setNewTodoTitle}

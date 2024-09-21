@@ -2,7 +2,7 @@ import { Todo } from '../types/Todo';
 
 interface HeaderProps {
   todos: Todo[];
-  loading: boolean;
+  isLoading: boolean;
   inputRef: React.RefObject<HTMLInputElement> | null;
   newTodoTitle: string;
   setNewTodoTitle: (value: string) => void;
@@ -11,28 +11,30 @@ interface HeaderProps {
 
 export const Header: React.FC<HeaderProps> = ({
   todos,
-  loading,
+  isLoading,
   inputRef,
   newTodoTitle,
   setNewTodoTitle,
   addTodo,
 }) => {
+  const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
+    e.preventDefault();
+    if (!isLoading) {
+      addTodo(newTodoTitle);
+    }
+  };
+
+  const isAllCompleted = todos.every(todo => todo.completed);
+
   return (
     <header className="todoapp__header">
       <button
         type="button"
-        className={`todoapp__toggle-all ${todos.every(todo => todo.completed) ? 'active' : ''}`}
+        className={`todoapp__toggle-all ${isAllCompleted ? 'active' : ''}`}
         data-cy="ToggleAllButton"
       />
 
-      <form
-        onSubmit={e => {
-          e.preventDefault();
-          if (!loading) {
-            addTodo(newTodoTitle);
-          }
-        }}
-      >
+      <form onSubmit={handleSubmit}>
         <input
           ref={inputRef}
           name="todo"
@@ -42,7 +44,7 @@ export const Header: React.FC<HeaderProps> = ({
           placeholder="What needs to be done?"
           value={newTodoTitle}
           onChange={e => setNewTodoTitle(e.target.value)}
-          disabled={loading}
+          disabled={isLoading}
         />
       </form>
     </header>

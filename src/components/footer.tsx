@@ -5,9 +5,9 @@ import { Filter } from '../types/Filter';
 interface FooterProps {
   counterOfActiveTodos: number;
   filter: string;
-  todos: Todo[]; // Предположим, у вас есть тип Todo
+  todos: Todo[];
   handleFilterChange: (filter: Filter) => void;
-  handleDeleteAllCompleted: () => void; // Укажите, что это функция без аргументов
+  handleDeleteAllCompleted: () => void;
 }
 
 export const Footer: React.FC<FooterProps> = ({
@@ -17,42 +17,34 @@ export const Footer: React.FC<FooterProps> = ({
   handleFilterChange,
   handleDeleteAllCompleted,
 }) => {
+  const renderFilterLink = (filterValue: Filter, label: string) => (
+    <a
+      href={`#/${filterValue.toLowerCase()}`}
+      className={`filter__link ${filter === filterValue ? 'selected' : ''}`}
+      onClick={() => handleFilterChange(filterValue)}
+      data-cy={`FilterLink${label}`}
+    >
+      {label}
+    </a>
+  );
+
+  const hasCompletedTodos = todos.some(todo => todo.completed);
+
   return (
     <footer className="todoapp__footer" data-cy="Footer">
       <span className="todo-count" data-cy="TodosCounter">
         {`${counterOfActiveTodos} items left`}
       </span>
       <nav className="filter" data-cy="Filter">
-        <a
-          href="#/"
-          className={`filter__link ${filter === Filter.ALL ? 'selected' : ''}`}
-          onClick={() => handleFilterChange(Filter.ALL)}
-          data-cy="FilterLinkAll"
-        >
-          All
-        </a>
-        <a
-          href="#/active"
-          className={`filter__link ${filter === Filter.ACTIVE ? 'selected' : ''}`}
-          onClick={() => handleFilterChange(Filter.ACTIVE)}
-          data-cy="FilterLinkActive"
-        >
-          Active
-        </a>
-        <a
-          href="#/completed"
-          className={`filter__link ${filter === Filter.COMPLETED ? 'selected' : ''}`}
-          onClick={() => handleFilterChange(Filter.COMPLETED)}
-          data-cy="FilterLinkCompleted"
-        >
-          Completed
-        </a>
+        {renderFilterLink(Filter.ALL, 'All')}
+        {renderFilterLink(Filter.ACTIVE, 'Active')}
+        {renderFilterLink(Filter.COMPLETED, 'Completed')}
       </nav>
       <button
         type="button"
         className="todoapp__clear-completed"
         data-cy="ClearCompletedButton"
-        disabled={!todos.some(todo => todo.completed)}
+        disabled={!hasCompletedTodos}
         onClick={handleDeleteAllCompleted}
       >
         Clear completed
