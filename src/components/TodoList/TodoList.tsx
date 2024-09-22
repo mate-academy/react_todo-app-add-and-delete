@@ -9,6 +9,9 @@ type Props = {
   errorFunction: (el: string) => void;
   deletingFunction: (el: boolean) => void;
   deletingListId: number[];
+  todosFunction: (el: Todo[]) => void;
+  todos: Todo[];
+  focusInput: () => void;
 };
 
 export const TodoList: React.FC<Props> = ({
@@ -17,16 +20,22 @@ export const TodoList: React.FC<Props> = ({
   errorFunction,
   deletingFunction,
   deletingListId,
+  todosFunction,
+  todos,
+  focusInput,
 }) => {
   return (
     <section className="todoapp__main" data-cy="TodoList">
       {sortedTodos.map(todo => (
         <TodoItem
-          todo={todo}
           key={todo.id}
+          todo={todo}
+          todosFunction={todosFunction}
           errorFunction={errorFunction}
           deletingFunction={deletingFunction}
           deletingListId={deletingListId}
+          todos={todos}
+          focusInput={focusInput}
         />
       ))}
       {loadingTodo && (

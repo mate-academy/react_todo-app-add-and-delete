@@ -4,6 +4,7 @@ import cn from 'classnames';
 import { Todo } from '../../types/Todo';
 import { USER_ID } from '../../api/todos';
 import * as todoService from '../../api/todos';
+import { showErrorMesage } from '../../utils/showErrorMesage';
 
 type Props = {
   todos: Todo[];
@@ -14,6 +15,7 @@ type Props = {
   loadingTodoFunction: (el: Todo | null) => void;
   inputRef: React.RefObject<HTMLInputElement>;
   isDeleting: boolean;
+  focusInput: () => void;
 };
 
 export const Header: React.FC<Props> = ({
@@ -25,6 +27,7 @@ export const Header: React.FC<Props> = ({
   loadingTodoFunction,
   inputRef,
   isDeleting,
+  focusInput,
 }) => {
   const [loading, setLoading] = useState(false);
 
@@ -39,6 +42,7 @@ export const Header: React.FC<Props> = ({
 
     setLoading(true);
     loadingTodoFunction(newTempTodo);
+    errorFunction('');
 
     return todoService
       .createTodo({ title, completed, userId })
@@ -47,11 +51,13 @@ export const Header: React.FC<Props> = ({
         loadingTodoFunction(null);
       })
       .catch(er => {
-        errorFunction('Unable to add a todo');
+        showErrorMesage('Unable to add a todo', errorFunction);
+        loadingTodoFunction(null);
         throw er;
       })
       .finally(() => {
         setLoading(false);
+        setTimeout(() => focusInput(), 0);
       });
   }
   //#endregion
@@ -70,13 +76,13 @@ export const Header: React.FC<Props> = ({
   const handleForm: React.FormEventHandler<HTMLFormElement> = ev => {
     ev.preventDefault();
 
-    if (!titleText) {
-      errorFunction('Title should not be empty');
+    if (!titleText.trim()) {
+      showErrorMesage('Title should not be empty', errorFunction);
 
       return;
     }
 
-    addTodos(titleText, true, USER_ID).then(() => {
+    addTodos(titleText.trim(), false, USER_ID).then(() => {
       errorFunction('');
       reset();
     });
@@ -102,7 +108,7 @@ export const Header: React.FC<Props> = ({
           placeholder="What needs to be done?"
           value={titleText}
           onChange={el => {
-            titleFunction(el.target.value.trim());
+            titleFunction(el.target.value);
           }}
           disabled={loading || isDeleting}
         />

@@ -64,7 +64,7 @@ export const App: React.FC = () => {
         showErrorMesage('Unable to load todos', setErrorMessage);
         throw er;
       });
-  }, [todos]);
+  }, []);
 
   useEffect(() => {
     sortList(selectedSort);
@@ -89,6 +89,7 @@ export const App: React.FC = () => {
           loadingTodoFunction={setLoadingTodo}
           inputRef={inputRef}
           isDeleting={isDeleting}
+          focusInput={handleFocusInput}
         />
 
         <TodoList
@@ -97,6 +98,9 @@ export const App: React.FC = () => {
           errorFunction={setErrorMessage}
           deletingFunction={setIsDeleting}
           deletingListId={deletingListId}
+          todosFunction={setTodos}
+          todos={todos}
+          focusInput={handleFocusInput}
         />
 
         {!!todos.length && (

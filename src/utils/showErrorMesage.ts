@@ -1,7 +1,17 @@
+let errorTimeout: NodeJS.Timeout | null = null;
+
 export function showErrorMesage(
   errorText: string,
-  errorFunction: (el: string) => void,
+  setError: (el: string) => void,
 ): void {
-  errorFunction(errorText);
-  setTimeout(() => errorFunction(''), 3000);
+  if (errorTimeout) {
+    clearTimeout(errorTimeout);
+  }
+
+  setError(errorText);
+
+  errorTimeout = setTimeout(() => {
+    setError('');
+    errorTimeout = null;
+  }, 3000);
 }

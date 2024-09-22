@@ -4,14 +4,14 @@ import { SortBy } from '../../types/SortBy';
 import cn from 'classnames';
 import { Todo } from '../../types/Todo';
 import { counterActiveTodos } from '../../utils/counterActiveTodos';
-import { deleteTodo } from '../../api/todos';
+import * as todoService from '../../api/todos';
 import { showErrorMesage } from '../../utils/showErrorMesage';
 
 type Props = {
   sortFunction: (el: SortBy) => void;
   todos: Todo[];
   howSort: SortBy;
-  todosFunction: (el: Todo[]) => void;
+  todosFunction: (todos: Todo[]) => void;
   errorFunction: (el: string) => void;
   focusInput: () => void;
   deletingFunction: (el: boolean) => void;
@@ -22,6 +22,7 @@ export const Footer: React.FC<Props> = ({
   sortFunction,
   todos,
   howSort,
+  todosFunction,
   errorFunction,
   focusInput,
   deletingFunction,
@@ -35,14 +36,16 @@ export const Footer: React.FC<Props> = ({
     deletingListFunction(completedTodosIds);
     deletingFunction(true);
 
-    Promise.all(
-      completedTodosIds.map(id => {
-        deleteTodo(id);
-      }),
-    )
+    Promise.all(completedTodosIds.map(id => todoService.deleteTodo(id)))
       .then(() => {
-        focusInput();
+        const updatedTodos = todos.filter(
+          todo => !completedTodosIds.includes(todo.id),
+        );
+
+        todosFunction(updatedTodos);
+
         deletingListFunction([]);
+        setTimeout(() => focusInput(), 0);
       })
       .catch(er => {
         showErrorMesage('Unable to delete a todo', errorFunction);

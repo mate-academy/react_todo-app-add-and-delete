@@ -7,29 +7,39 @@ import { showErrorMesage } from '../../utils/showErrorMesage';
 
 type Props = {
   todo: Todo;
+  todosFunction: (el: Todo[]) => void;
   errorFunction: (el: string) => void;
   deletingFunction: (el: boolean) => void;
   deletingListId: number[];
+  todos: Todo[];
+  focusInput: () => void;
 };
 
 export const TodoItem: React.FC<Props> = ({
   todo,
+  todosFunction,
   errorFunction,
   deletingFunction,
   deletingListId,
+  todos,
+  focusInput,
 }) => {
   const { id, completed, title } = todo;
 
   const [loader, setLoader] = useState(false);
-  // const [isChecked, setChecked] = useState(false);
 
   const isDeleting = deletingListId.includes(id);
 
-  const handleDeleteBtn = () => {
+  const handleDeleteBtn = (todoId: number) => {
     setLoader(true);
     deletingFunction(true);
 
-    deleteTodo(todo.id)
+    deleteTodo(id)
+      .then(() => {
+        const updatedTodos = todos.filter((td: Todo) => td.id !== todoId);
+
+        todosFunction(updatedTodos);
+      })
       .catch(er => {
         showErrorMesage('Unable to delete a todo', errorFunction);
         throw er;
@@ -37,6 +47,7 @@ export const TodoItem: React.FC<Props> = ({
       .finally(() => {
         setLoader(false);
         deletingFunction(false);
+        setTimeout(() => focusInput(), 0);
       });
   };
 
@@ -80,7 +91,7 @@ export const TodoItem: React.FC<Props> = ({
         className="todo__remove"
         data-cy="TodoDelete"
         onClick={() => {
-          handleDeleteBtn();
+          handleDeleteBtn(todo.id);
         }}
       >
         ×
