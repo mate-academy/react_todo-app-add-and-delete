@@ -34,20 +34,20 @@ export const App: React.FC = () => {
     }
   };
 
-  const fetchTodos = async () => {
-    setIsLoading(true);
-    try {
-      const fetchedTodos = await getTodos(USER_ID);
-
-      setTodos(fetchedTodos);
-    } catch {
-      showError('Unable to load todos');
-    } finally {
-      setIsLoading(false);
-    }
-  };
-
   useEffect(() => {
+    const fetchTodos = async () => {
+      setIsLoading(true);
+      try {
+        const fetchedTodos = await getTodos(USER_ID);
+
+        setTodos(fetchedTodos);
+      } catch {
+        showError('Unable to load todos');
+      } finally {
+        setIsLoading(false);
+      }
+    };
+
     fetchTodos();
   }, []);
 
