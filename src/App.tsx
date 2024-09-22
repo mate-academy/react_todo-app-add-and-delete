@@ -49,7 +49,7 @@ export const App: React.FC = () => {
     };
 
     fetchTodos();
-  });
+  }, []);
 
   useEffect(() => {
     focusInput();
