@@ -1,5 +1,5 @@
 import React from 'react';
-import { TodoStatusFilter } from '../../types/Todo';
+import { TodoStatusFilter } from '../../types/ErrorMessage';
 import cn from 'classnames';
 
 type Props = {

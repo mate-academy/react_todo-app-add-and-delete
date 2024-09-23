@@ -1,106 +1,168 @@
-/* eslint-disable react-hooks/rules-of-hooks */
-/* eslint-disable jsx-a11y/label-has-associated-control */
-/* eslint-disable jsx-a11y/control-has-associated-label */
-import './styles/index.scss';
-import React, { useEffect, useMemo, useState } from 'react';
-import { UserWarning } from './UserWarning';
-import { deleteTodos, getTodos, USER_ID } from './api/todos';
-import { Todo, TodoStatusFilter } from './types/Todo';
-import { Header } from './components/Header';
-import { TodoError } from './components/TodoError/TodoError';
-import { Footer } from './components/Footer';
-import { TodoList } from './components/TodoList';
+import React, { useEffect, useMemo, useRef, useState } from 'react';
+import { getTodos } from './api/todos';
+import { Header } from './components/Header/Header';
+import { Footer } from './components/Footer/Footer';
+import { TodoList } from './components/TodoList/TodoList';
+import { ErrorMessage } from './components/TodoError/ErrorMessage';
+import * as todoService from './api/todos';
+import { Todo } from './types/Todo';
+import { FILTER } from './types/Filter';
+import { ERROR } from './types/ErrorMessage';
+import { focusInput } from './utils/inputFocus';
+
+const filterByStatus = (todos: Todo[], selectedStatus: string) => {
+  if (selectedStatus === FILTER.ACTIVE) {
+    return todos.filter(todo => !todo.completed);
+  }
+
+  if (selectedStatus === FILTER.COMPLETED) {
+    return todos.filter(todo => todo.completed);
+  }
+
+  return todos;
+};
 
 export const App: React.FC = () => {
   const [todos, setTodos] = useState<Todo[]>([]);
-  const [selectedStatus, setSelectedStatus] = useState(TodoStatusFilter.All);
-  const [error, setError] = useState<string | null>(null);
+  const [selectedStatus, setSelectedStatus] = useState<string>(FILTER.ALL);
+  const [errorMessage, setErrorMessage] = useState<string>('');
+  const [isLoadingTodo, setIsLoadingTodo] = useState<boolean>(false);
+  const [deletingTodoId, setDeletingTodoId] = useState<number | null>(null);
+  const [title, setTitle] = useState<string>('');
+  const [isDisabled, setIsDisabled] = useState<boolean>(false);
   const [tempTodo, setTempTodo] = useState<Todo | null>(null);
-  const [isLoading, setIsLoading] = useState(false);
+
+  const filteredTodos = useMemo(
+    () => filterByStatus(todos, selectedStatus),
+    [todos, selectedStatus],
+  );
+  const completedTodosCount = useMemo(
+    () => todos.filter(todo => todo.completed).length,
+    [todos],
+  );
+  const activeTodosCount = useMemo(
+    () => todos.filter(todo => !todo.completed).length,
+    [todos],
+  );
+
+  const inputRef = useRef<HTMLInputElement>(null);
 
   useEffect(() => {
     getTodos()
       .then(setTodos)
-      .catch(() => setError('Unable to load todos'));
+      .catch(() => {
+        setErrorMessage(ERROR.LOAD);
+      });
   }, []);
 
   useEffect(() => {
-    if (error) {
-      const timer = setTimeout(() => {
-        setError(null);
-      }, 3000);
+    focusInput(inputRef);
+  });
 
-      return () => clearTimeout(timer);
+  const addTodo = (newTitle: string) => {
+    const editedTitle = newTitle.trim();
+
+    if (!editedTitle) {
+      setErrorMessage(ERROR.TITLE);
+
+      return;
     }
 
-    return;
-  }, [error]);
+    setIsDisabled(true);
+    setIsLoadingTodo(true);
 
-  if (!USER_ID) {
-    return <UserWarning />;
-  }
+    const temporaryTodo = {
+      id: 0,
+      title: newTitle,
+      completed: false,
+      userId: todoService.USER_ID,
+    };
 
-  const filteredStatus = useMemo(() => {
-    switch (selectedStatus) {
-      case TodoStatusFilter.Active:
-        return todos.filter(todo => !todo.completed);
-      case TodoStatusFilter.Completed:
-        return todos.filter(todo => todo.completed);
-      case TodoStatusFilter.All:
+    setTempTodo(temporaryTodo);
 
-      default:
-        return todos;
-    }
-  }, [todos, selectedStatus]);
+    const todoToAdd = {
+      title: editedTitle,
+      completed: false,
+      userId: todoService.USER_ID,
+    };
 
-  const handleErrorClose = () => {
-    setError(null);
+    return todoService
+      .addTodo(todoToAdd)
+      .then(addedTodo => {
+        setTodos(currentTodos => [...currentTodos, addedTodo]);
+        setTitle('');
+      })
+      .catch(() => {
+        setErrorMessage(ERROR.ADD);
+      })
+      .finally(() => {
+        setIsDisabled(false);
+        setTempTodo(null);
+        setIsLoadingTodo(false);
+      });
   };
 
-  const handleSelectedStatus = (status: TodoStatusFilter) => {
-    setSelectedStatus(status);
+  const deleteTodo = (id: number) => {
+    setDeletingTodoId(id);
+
+    return todoService
+      .deleteTodo(id)
+      .then(() => {
+        setTodos(currentTodos => currentTodos.filter(todo => todo.id !== id));
+      })
+      .catch(() => {
+        setErrorMessage(ERROR.DELETE);
+      })
+      .finally(() => {
+        setDeletingTodoId(null);
+      });
   };
 
-  const hasTodos = todos.length > 0;
-  const hasCompletedTodos = todos.some(todo => todo.completed);
+  const deleteCompletedTodos = () => {
+    const completedTodos = todos.filter(todo => todo.completed);
 
-  const handleDeleteTodo = (todoId: number) => {
-    deleteTodos(todoId);
-    setTodos(prevTodos => prevTodos.filter(todo => todo.id !== todoId));
+    completedTodos.forEach(todo => {
+      deleteTodo(todo.id);
+    });
   };
-
-  if (!USER_ID) {
-    return <UserWarning />;
-  }
 
   return (
     <div className="todoapp">
       <h1 className="todoapp__title">todos</h1>
+
       <div className="todoapp__content">
         <Header
-          todos={todos}
-          setTodos={setTodos}
-          errorMessage={error}
-          setError={setError}
-          isLoading={isLoading}
-          setIsLoading={setIsLoading}
-          setTempTodo={setTempTodo}
+          inputRef={inputRef}
+          addTodo={addTodo}
+          title={title}
+          setTitle={setTitle}
+          isDisabled={isDisabled}
+          isLoadingTodo={isLoadingTodo}
         />
+
         <TodoList
-          todos={filteredStatus}
-          onDeleteTodo={handleDeleteTodo}
+          todos={filteredTodos}
+          deleteTodo={deleteTodo}
+          deletingTodoId={deletingTodoId}
           tempTodo={tempTodo}
+          isLoadingTodo={isLoadingTodo}
         />
-        {hasTodos && (
+
+        {!!todos.length && (
           <Footer
-            todos={todos}
-            hasCompletedTodos={hasCompletedTodos}
+            activeTodosCount={activeTodosCount}
+            completedTodosCount={completedTodosCount}
+            setSelectedStatus={setSelectedStatus}
             selectedStatus={selectedStatus}
-            handleSelectedStatus={handleSelectedStatus}
+            deleteCompletedTodos={deleteCompletedTodos}
           />
         )}
       </div>
-      <TodoError message={error} onCLose={handleErrorClose} />
+
+      <ErrorMessage
+        errorMessage={errorMessage}
+        setErrorMessage={setErrorMessage}
+      />
     </div>
   );
 };
