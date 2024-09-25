@@ -5,5 +5,13 @@ import '@fortawesome/fontawesome-free/css/all.css';
 import './styles/index.scss';
 
 import { App } from './App';
+import { TodosProvider } from './context/TodosContext';
+import { ErrorProvider } from './context/ErrorContext';
 
-createRoot(document.getElementById('root') as HTMLDivElement).render(<App />);
+createRoot(document.getElementById('root') as HTMLDivElement).render(
+  <TodosProvider>
+    <ErrorProvider>
+      <App />
+    </ErrorProvider>
+  </TodosProvider>,
+);
