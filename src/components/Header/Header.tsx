@@ -1,65 +1,47 @@
-import React, { useState, useEffect } from 'react';
+import React, { useEffect } from 'react';
 import cn from 'classnames';
 
 import { Todo } from '../../types/Todo';
 import { USER_ID } from '../../api/todos';
-import * as todoService from '../../api/todos';
 import { showErrorMesage } from '../../utils/showErrorMesage';
 
-type Props = {
+type TodosState = {
   todos: Todo[];
-  titleText: string;
-  titleFunction: (el: string) => void;
-  errorFunction: (el: string) => void;
-  todosFunction: (el: Todo[] | ((currentTodos: Todo[]) => Todo[])) => void;
-  loadingTodoFunction: (el: Todo | null) => void;
+  setTodos: (el: Todo[]) => void;
+};
+
+type TitleState = {
+  todoTitle: string;
+  setTodoTitle: (el: string) => void;
+};
+
+type Props = {
+  todosState: TodosState;
+  titleState: TitleState;
+  reset: () => void;
   inputRef: React.RefObject<HTMLInputElement>;
   isDeleting: boolean;
-  focusInput: () => void;
+  loading: boolean;
+  addTodos: (
+    title: string,
+    completed: boolean,
+    userId: number,
+  ) => Promise<Todo | void>;
+  setErrorMessage: (el: string) => void;
 };
 
 export const Header: React.FC<Props> = ({
-  todos,
-  titleText,
-  titleFunction,
-  errorFunction,
-  todosFunction,
-  loadingTodoFunction,
+  todosState,
+  titleState,
+  reset,
   inputRef,
   isDeleting,
-  focusInput,
+  loading,
+  addTodos,
+  setErrorMessage,
 }) => {
-  const [loading, setLoading] = useState(false);
-
   //#region Setvice Functions
-  function addTodos(title: string, completed: boolean, userId: number) {
-    const newTempTodo: Todo = {
-      id: 0,
-      title: titleText.trim(),
-      completed: false,
-      userId: USER_ID,
-    };
 
-    setLoading(true);
-    loadingTodoFunction(newTempTodo);
-    errorFunction('');
-
-    return todoService
-      .createTodo({ title, completed, userId })
-      .then(newTodo => {
-        todosFunction((currentTodos: Todo[]) => [...currentTodos, newTodo]);
-        loadingTodoFunction(null);
-      })
-      .catch(er => {
-        showErrorMesage('Unable to add a todo', errorFunction);
-        loadingTodoFunction(null);
-        throw er;
-      })
-      .finally(() => {
-        setLoading(false);
-        setTimeout(() => focusInput(), 0);
-      });
-  }
   //#endregion
 
   useEffect(() => {
@@ -68,29 +50,23 @@ export const Header: React.FC<Props> = ({
     }
   }, [loading]);
 
-  const reset = () => {
-    errorFunction('');
-    titleFunction('');
-  };
-
   const handleForm: React.FormEventHandler<HTMLFormElement> = ev => {
     ev.preventDefault();
 
-    if (!titleText.trim()) {
-      showErrorMesage('Title should not be empty', errorFunction);
+    if (!titleState.todoTitle.trim()) {
+      showErrorMesage('Title should not be empty', setErrorMessage);
 
       return;
     }
 
-    addTodos(titleText.trim(), false, USER_ID).then(() => {
-      errorFunction('');
+    addTodos(titleState.todoTitle.trim(), false, USER_ID).then(() => {
       reset();
     });
   };
 
   return (
     <header className="todoapp__header">
-      {!!todos.length && (
+      {!!todosState.todos.length && (
         <button
           type="button"
           className={cn('todoapp__toggle-all')}
@@ -106,9 +82,9 @@ export const Header: React.FC<Props> = ({
           type="text"
           className="todoapp__new-todo"
           placeholder="What needs to be done?"
-          value={titleText}
+          value={titleState.todoTitle}
           onChange={el => {
-            titleFunction(el.target.value);
+            titleState.setTodoTitle(el.target.value);
           }}
           disabled={loading || isDeleting}
         />

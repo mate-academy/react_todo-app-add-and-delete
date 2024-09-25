@@ -16,7 +16,6 @@ export const App: React.FC = () => {
   //#region States
   //Todos states
   const [todos, setTodos] = useState<Todo[]>([]);
-  const [sortedTodos, setSortedTodos] = useState<Todo[]>([]);
   const [loadingTodo, setLoadingTodo] = useState<Todo | null>(null);
 
   //Service states
@@ -26,13 +25,13 @@ export const App: React.FC = () => {
 
   //Header constans
   const [todoTitle, setTodoTitle] = useState('');
+  const [loading, setLoading] = useState(false);
 
   //FooterList
   const [deletingListId, setDeletingListId] = useState<number[]>([]);
-  // const [deletingList, setDeletingList] = useState(false);
-
   //#endregion
 
+  //#region Functions
   const inputRef = useRef<HTMLInputElement>(null);
 
   const handleFocusInput = () => {
@@ -44,16 +43,51 @@ export const App: React.FC = () => {
   const sortList = (sort: SortBy) => {
     switch (sort) {
       case SortBy.Active:
-        setSortedTodos(todos.filter(todo => !todo.completed));
-        break;
+        return todos.filter(todo => !todo.completed);
       case SortBy.Completed:
-        setSortedTodos(todos.filter(todo => todo.completed));
-        break;
+        return todos.filter(todo => todo.completed);
       default:
-        setSortedTodos(todos);
-        break;
+        return todos;
     }
   };
+
+  const sortedArray = sortList(selectedSort);
+
+  function addTodos(title: string, completed: boolean, userId: number) {
+    const newTempTodo: Todo = {
+      id: 0,
+      title: todoTitle.trim(),
+      completed: false,
+      userId: USER_ID,
+    };
+
+    setLoading(true);
+    setLoadingTodo(newTempTodo);
+    setErrorMessage('');
+
+    return todoService
+      .createTodo({ title, completed, userId })
+      .then(newTodo => {
+        setTodos((currentTodos: Todo[]) => [...currentTodos, newTodo]);
+        setLoadingTodo(null);
+      })
+      .catch(er => {
+        showErrorMesage('Unable to add a todo', setErrorMessage);
+        setLoadingTodo(null);
+        throw er;
+      })
+      .finally(() => {
+        setLoading(false);
+        setTimeout(() => handleFocusInput(), 0);
+      });
+  }
+
+  const reset = () => {
+    setErrorMessage('');
+    setTodoTitle('');
+  };
+
+  //#endregion
 
   //#region useEffect
   useEffect(() => {
@@ -66,10 +100,6 @@ export const App: React.FC = () => {
       });
   }, []);
 
-  useEffect(() => {
-    sortList(selectedSort);
-  }, [todos, selectedSort]);
-
   //#endregion
 
   if (!USER_ID) {
@@ -81,19 +111,18 @@ export const App: React.FC = () => {
       <h1 className="todoapp__title">todos</h1>
       <div className="todoapp__content">
         <Header
-          todos={todos}
-          titleText={todoTitle}
-          titleFunction={setTodoTitle}
-          errorFunction={setErrorMessage}
-          todosFunction={setTodos}
-          loadingTodoFunction={setLoadingTodo}
+          todosState={{ todos, setTodos }}
+          titleState={{ todoTitle, setTodoTitle }}
+          reset={reset}
           inputRef={inputRef}
           isDeleting={isDeleting}
-          focusInput={handleFocusInput}
+          loading={loading}
+          addTodos={addTodos}
+          setErrorMessage={setErrorMessage}
         />
 
         <TodoList
-          sortedTodos={sortedTodos}
+          sortedArray={sortedArray}
           loadingTodo={loadingTodo}
           errorFunction={setErrorMessage}
           deletingFunction={setIsDeleting}

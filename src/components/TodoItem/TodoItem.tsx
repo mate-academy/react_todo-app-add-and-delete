@@ -64,7 +64,6 @@ export const TodoItem: React.FC<Props> = ({
           type="checkbox"
           className="todo__status"
           checked={completed}
-          // onChange={e => setChecked(e.target.checked)}
         />
         {/* Add accessible text */}
         <span className="sr-only">

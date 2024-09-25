@@ -4,7 +4,7 @@ import { Todo } from '../../types/Todo';
 import { TodoItem } from '../TodoItem/TodoItem';
 
 type Props = {
-  sortedTodos: Todo[];
+  sortedArray: Todo[];
   loadingTodo: Todo | null;
   errorFunction: (el: string) => void;
   deletingFunction: (el: boolean) => void;
@@ -15,7 +15,7 @@ type Props = {
 };
 
 export const TodoList: React.FC<Props> = ({
-  sortedTodos,
+  sortedArray,
   loadingTodo,
   errorFunction,
   deletingFunction,
@@ -26,7 +26,7 @@ export const TodoList: React.FC<Props> = ({
 }) => {
   return (
     <section className="todoapp__main" data-cy="TodoList">
-      {sortedTodos.map(todo => (
+      {sortedArray.map((todo: Todo) => (
         <TodoItem
           key={todo.id}
           todo={todo}
