@@ -7,11 +7,16 @@ import { counterActiveTodos } from '../../utils/counterActiveTodos';
 import * as todoService from '../../api/todos';
 import { showErrorMesage } from '../../utils/showErrorMesage';
 
+type TodosFunction = {
+  (todos: Todo[]): void;
+  (callback: (currentTodos: Todo[]) => Todo[]): void;
+};
+
 type Props = {
   sortFunction: (el: SortBy) => void;
   todos: Todo[];
   howSort: SortBy;
-  todosFunction: (todos: Todo[]) => void;
+  todosFunction: TodosFunction;
   errorFunction: (el: string) => void;
   focusInput: () => void;
   deletingFunction: (el: boolean) => void;
