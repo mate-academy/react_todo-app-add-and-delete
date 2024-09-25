@@ -28,32 +28,36 @@ export const Footer: React.FC<Props> = ({
   deletingFunction,
   deletingListFunction,
 }) => {
-  const handleClearCompleted = () => {
+  const handleClearCompleted = async () => {
     const completedTodosIds = todos
       .filter(todo => todo.completed)
       .map(todo => todo.id);
 
+    if (completedTodosIds.length === 0) {
+      return;
+    }
+
     deletingListFunction(completedTodosIds);
     deletingFunction(true);
 
-    Promise.all(completedTodosIds.map(id => todoService.deleteTodo(id)))
-      .then(() => {
-        const updatedTodos = todos.filter(
-          todo => !completedTodosIds.includes(todo.id),
-        );
-
-        todosFunction(updatedTodos);
-
-        deletingListFunction([]);
-        setTimeout(() => focusInput(), 0);
-      })
-      .catch(er => {
-        showErrorMesage('Unable to delete a todo', errorFunction);
-        throw er;
-      })
-      .finally(() => {
-        deletingFunction(false);
-      });
+    Promise.allSettled(
+      completedTodosIds.map(async todoId => {
+        try {
+          await todoService.deleteTodo(todoId);
+          todosFunction((currentTodos: Todo[]) =>
+            currentTodos.filter(todo => todo.id !== todoId),
+          );
+        } catch {
+          showErrorMesage('Unable to delete a todo', errorFunction);
+        }
+      }),
+    ).finally(() => {
+      deletingListFunction([]);
+      deletingFunction(false);
+      setTimeout(() => {
+        focusInput();
+      }, 0);
+    });
   };
 
   return (
@@ -80,7 +84,6 @@ export const Footer: React.FC<Props> = ({
         })}
       </nav>
 
-      {/* this button should be disabled if there are no completed todos */}
       <button
         type="button"
         className="todoapp__clear-completed"
