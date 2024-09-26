@@ -1,26 +1,75 @@
-/* eslint-disable max-len */
-/* eslint-disable jsx-a11y/control-has-associated-label */
-import React from 'react';
-import { UserWarning } from './UserWarning';
+import React, { useEffect, useState } from 'react';
 
-const USER_ID = 0;
+import { UserWarning } from './UserWarning';
+import { USER_ID, getTodos } from './api/todos';
+import { Todo } from './types/Todo';
+import { TodoList } from './components/TodoList';
+import { ErrorTypes, FilterTypes } from './types/enums';
+import { handleError, prepareVisibleTodos } from './utils/services';
+import { Footer } from './components/Footer/Footer';
+import { Header } from './components/Header';
+import { ErrorNotification } from './components/ErrorNotification';
 
 export const App: React.FC = () => {
+  const [todos, setTodos] = useState<Todo[]>([]);
+  const [isLoading, setIsLoading] = useState<number[]>([]);
+  const [errorMessage, setErrorMessage] = useState<ErrorTypes>(ErrorTypes.def);
+  const [filterBy, setFilterBy] = useState<FilterTypes>(FilterTypes.All);
+  const [tempTodo, setTempTodo] = useState<Todo | null>(null);
+  const [isFocused, setIsFocused] = useState(true);
+  const areTodosExist = todos.length > 0 || tempTodo;
+
+  useEffect(() => {
+    getTodos()
+      .then(setTodos)
+      .catch(() => handleError(ErrorTypes.OnLoadErr, setErrorMessage));
+  }, []);
+
   if (!USER_ID) {
     return <UserWarning />;
   }
 
   return (
-    <section className="section container">
-      <p className="title is-4">
-        Copy all you need from the prev task:
-        <br />
-        <a href="https://github.com/mate-academy/react_todo-app-loading-todos#react-todo-app-load-todos">
-          React Todo App - Load Todos
-        </a>
-      </p>
+    <div className="todoapp">
+      <h1 className="todoapp__title">todos</h1>
 
-      <p className="subtitle">Styles are already copied</p>
-    </section>
+      <div className="todoapp__content">
+        <Header
+          todos={todos}
+          isFocused={isFocused}
+          setIsFocused={setIsFocused}
+          setTodos={setTodos}
+          setErrorMessage={setErrorMessage}
+          setIsLoading={setIsLoading}
+          setTempTodo={setTempTodo}
+          tempTodo={tempTodo}
+        />
+        <TodoList
+          todos={prepareVisibleTodos(todos, filterBy)}
+          isLoading={isLoading}
+          setIsLoading={setIsLoading}
+          setTodos={setTodos}
+          setErrorMessage={setErrorMessage}
+          tempTodo={tempTodo}
+          setIsFocused={setIsFocused}
+        />
+        {areTodosExist && (
+          <Footer
+            filterBy={filterBy}
+            setFilterBy={setFilterBy}
+            todos={todos}
+            setIsLoading={setIsLoading}
+            setTodos={setTodos}
+            setIsFocused={setIsFocused}
+            setErrorMessage={setErrorMessage}
+          />
+        )}
+      </div>
+
+      <ErrorNotification
+        errorMessage={errorMessage}
+        setErrorMessage={setErrorMessage}
+      />
+    </div>
   );
 };
