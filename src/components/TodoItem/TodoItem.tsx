@@ -65,7 +65,6 @@ export const TodoItem: React.FC<Props> = ({
           className="todo__status"
           checked={completed}
         />
-        {/* Add accessible text */}
         <span className="sr-only">
           Mark as {completed ? 'incomplete' : 'complete'}
         </span>
@@ -95,7 +94,6 @@ export const TodoItem: React.FC<Props> = ({
       >
         ×
       </button>
-      {/* <div data-cy="TodoLoader" className="modal overlay "> */}
       <div
         data-cy="TodoLoader"
         className={cn('modal overlay', {

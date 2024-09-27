@@ -40,15 +40,19 @@ export const Header: React.FC<Props> = ({
   addTodos,
   setErrorMessage,
 }) => {
-  //#region Setvice Functions
-
-  //#endregion
+  {
+    /* eslint-disable-next-line */
+  }
 
   useEffect(() => {
     if (!loading && inputRef.current) {
       inputRef.current.focus();
     }
   }, [loading]);
+
+  {
+    /* eslint-enable max-len */
+  }
 
   const handleForm: React.FormEventHandler<HTMLFormElement> = ev => {
     ev.preventDefault();
@@ -69,7 +73,7 @@ export const Header: React.FC<Props> = ({
       {!!todosState.todos.length && (
         <button
           type="button"
-          className={cn('todoapp__toggle-all')}
+          className="todoapp__toggle-all"
           data-cy="ToggleAllButton"
         />
       )}

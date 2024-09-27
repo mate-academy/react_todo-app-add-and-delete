@@ -13,25 +13,18 @@ import { SortBy } from './types/SortBy';
 import { showErrorMesage } from './utils/showErrorMesage';
 
 export const App: React.FC = () => {
-  //#region States
-  //Todos states
   const [todos, setTodos] = useState<Todo[]>([]);
   const [loadingTodo, setLoadingTodo] = useState<Todo | null>(null);
 
-  //Service states
   const [selectedSort, setSelectedSort] = useState<SortBy>(SortBy.All);
   const [errorMessage, setErrorMessage] = useState('');
   const [isDeleting, setIsDeleting] = useState(false);
 
-  //Header constans
   const [todoTitle, setTodoTitle] = useState('');
   const [loading, setLoading] = useState(false);
 
-  //FooterList
   const [deletingListId, setDeletingListId] = useState<number[]>([]);
-  //#endregion
 
-  //#region Functions
   const inputRef = useRef<HTMLInputElement>(null);
 
   const handleFocusInput = () => {
@@ -53,7 +46,7 @@ export const App: React.FC = () => {
 
   const sortedArray = sortList(selectedSort);
 
-  function addTodos(title: string, completed: boolean, userId: number) {
+  const addTodos = (title: string, completed: boolean, userId: number) => {
     const newTempTodo: Todo = {
       id: 0,
       title: todoTitle.trim(),
@@ -80,16 +73,13 @@ export const App: React.FC = () => {
         setLoading(false);
         setTimeout(() => handleFocusInput(), 0);
       });
-  }
+  };
 
   const reset = () => {
     setErrorMessage('');
     setTodoTitle('');
   };
 
-  //#endregion
-
-  //#region useEffect
   useEffect(() => {
     todoService
       .getTodos()
@@ -99,8 +89,6 @@ export const App: React.FC = () => {
         throw er;
       });
   }, []);
-
-  //#endregion
 
   if (!USER_ID) {
     return <UserWarning />;
