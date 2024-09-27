@@ -1,9 +1,9 @@
 /* eslint-disable jsx-a11y/label-has-associated-control */
 /* eslint-disable jsx-a11y/control-has-associated-label */
 
-import { Todo } from "../types/Todo";
-import React, { useState } from "react";
-import classNames from "classnames";
+import { Todo } from '../types/Todo';
+import React, { useState } from 'react';
+import classNames from 'classnames';
 
 interface TodoItemProps {
   todo: Todo;
@@ -37,18 +37,18 @@ export const TodoItem: React.FC<TodoItemProps> = ({
   };
 
   const handleKeyDown = (event: React.KeyboardEvent<HTMLInputElement>) => {
-    if (event.key === "Enter") {
+    if (event.key === 'Enter') {
       handleSave();
     }
 
-    if (event.key === "Escape") {
+    if (event.key === 'Escape') {
       setIsEditing(false);
       setTitle(todo.title);
     }
   };
 
   return (
-    <div data-cy="Todo" className={`todo ${todo.completed ? "completed" : ""}`}>
+    <div data-cy="Todo" className={`todo ${todo.completed ? 'completed' : ''}`}>
       <label className="todo__status-label">
         <input
           data-cy="TodoStatus"
@@ -66,7 +66,7 @@ export const TodoItem: React.FC<TodoItemProps> = ({
           type="text"
           className="todo__title-field"
           value={title}
-          onChange={(event) => setTitle(event.target.value)}
+          onChange={event => setTitle(event.target.value)}
           onBlur={handleSave}
           onKeyDown={handleKeyDown}
           autoFocus
@@ -96,8 +96,8 @@ export const TodoItem: React.FC<TodoItemProps> = ({
 
       <div
         data-cy="TodoLoader"
-        className={classNames("modal overlay", {
-          "is-active": loading,
+        className={classNames('modal overlay', {
+          'is-active': loading,
         })}
       >
         <div className="modal-background has-background-white-ter" />

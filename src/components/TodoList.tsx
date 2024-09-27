@@ -1,6 +1,6 @@
-import { Todo } from "../types/Todo";
-import React from "react";
-import { TodoItem } from "./TodoItem";
+import { Todo } from '../types/Todo';
+import React from 'react';
+import { TodoItem } from './TodoItem';
 
 interface TodoListProps {
   todos: Todo[];
@@ -26,7 +26,7 @@ export const TodoList: React.FC<TodoListProps> = ({
     <section className="todoapp__main" data-cy="TodoList">
       {/* {loading && <div className="loader" />} */}
 
-      {todos.map((todo) => (
+      {todos.map(todo => (
         <TodoItem
           key={todo.id}
           todo={todo}

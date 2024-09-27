@@ -1,4 +1,4 @@
-import React, { useEffect } from "react";
+import React, { useEffect } from 'react';
 
 interface Props {
   errorMessage: string | null;
@@ -18,7 +18,7 @@ export const Notifications: React.FC<Props> = ({ errorMessage, onClose }) => {
     <div
       data-cy="ErrorNotification"
       className={`notification is-danger is-light has-text-weight-normal ${
-        !errorMessage ? "hidden" : ""
+        !errorMessage ? 'hidden' : ''
       }`}
     >
       <button data-cy="HideErrorButton" type="button" className="delete" />

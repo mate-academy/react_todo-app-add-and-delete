@@ -1,6 +1,6 @@
-import { useEffect } from "react";
-import { useRef } from "react";
-import { Todo } from "../types/Todo";
+import { useEffect } from 'react';
+import { useRef } from 'react';
+import { Todo } from '../types/Todo';
 
 interface HeaderProps {
   todos: Todo[];
@@ -21,7 +21,7 @@ export const Header: React.FC<HeaderProps> = ({
   isSubmitting,
   error,
 }) => {
-  const completedTodo = todos.filter((todo) => todo.completed).length;
+  const completedTodo = todos.filter(todo => todo.completed).length;
   const inputRef = useRef<HTMLInputElement>(null);
 
   const handleSubmit = (event: React.FormEvent) => {
@@ -40,7 +40,7 @@ export const Header: React.FC<HeaderProps> = ({
       {/* this button should have `active` class only if all todos are completed */}
       <button
         type="button"
-        className={`todoapp__toggle-all ${completedTodo ? "active" : ""}`}
+        className={`todoapp__toggle-all ${completedTodo ? 'active' : ''}`}
         data-cy="ToggleAllButton"
         onClick={onChange}
       />
@@ -54,7 +54,7 @@ export const Header: React.FC<HeaderProps> = ({
           className="todoapp__new-todo"
           placeholder="What needs to be done?"
           value={title}
-          onChange={(e) => setTitle(e.target.value)}
+          onChange={e => setTitle(e.target.value)}
           disabled={isSubmitting}
         />
       </form>
