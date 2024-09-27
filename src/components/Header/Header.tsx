@@ -1,5 +1,4 @@
 import React, { useEffect } from 'react';
-import cn from 'classnames';
 
 import { Todo } from '../../types/Todo';
 import { USER_ID } from '../../api/todos';
