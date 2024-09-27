@@ -1,0 +1,4 @@
+export const UNABLE_LOAD_ERROR = 'Unable to load todos';
+export const UNABLE_TO_ADD_ERROR = 'Unable to add a todo';
+export const UNABLE_TO_DELETE_ERROR = 'Unable to delete a todo';
+export const TITLE_EMPTY_ERROR = 'Title should not be empty';
