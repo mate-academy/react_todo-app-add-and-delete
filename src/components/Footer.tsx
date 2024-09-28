@@ -1,8 +1,9 @@
 import { Todo } from '../types/Todo';
+import { TodoStatus } from '../App';
 
 interface FooterProps {
-  filter: 'all' | 'active' | 'completed';
-  setFilter: (filter: 'all' | 'active' | 'completed') => void;
+  filter: TodoStatus;
+  setFilter: (filter: TodoStatus) => void;
   todos: Todo[];
   onClick: () => void;
 }
@@ -26,27 +27,27 @@ export const Footer: React.FC<FooterProps> = ({
       <nav className="filter" data-cy="Filter">
         <a
           href="#/"
-          className={`filter__link ${filter === 'all' ? 'selected' : ''}`}
+          className={`filter__link ${filter === TodoStatus.ALL ? 'selected' : ''}`}
           data-cy="FilterLinkAll"
-          onClick={() => setFilter('all')}
+          onClick={() => setFilter(TodoStatus.ALL)}
         >
           All
         </a>
 
         <a
           href="#/active"
-          className={`filter__link ${filter === 'active' ? 'selected' : ''}`}
+          className={`filter__link ${filter === TodoStatus.ACTIVE ? 'selected' : ''}`}
           data-cy="FilterLinkActive"
-          onClick={() => setFilter('active')}
+          onClick={() => setFilter(TodoStatus.ACTIVE)}
         >
           Active
         </a>
 
         <a
           href="#/completed"
-          className={`filter__link ${filter === 'completed' ? 'selected' : ''}`}
+          className={`filter__link ${filter === TodoStatus.COMPLITED ? 'selected' : ''}`}
           data-cy="FilterLinkCompleted"
-          onClick={() => setFilter('completed')}
+          onClick={() => setFilter(TodoStatus.COMPLITED)}
         >
           Completed
         </a>

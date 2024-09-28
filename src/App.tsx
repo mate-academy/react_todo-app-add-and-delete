@@ -15,12 +15,18 @@ import { Notifications } from './components/Notifications';
 import { Header } from './components/Header';
 import { TodoList } from './components/TodoList';
 
+export enum TodoStatus {
+  ALL = 'all',
+  ACTIVE = 'active',
+  COMPLITED = 'complited',
+}
+
 export const App: React.FC = () => {
   const [todos, setTodos] = useState<Todo[]>([]);
   const [loading, setLoading] = useState(false);
 
   const [newTodoTitle, setNewTodoTitle] = useState('');
-  const [filter, setFilter] = useState<'all' | 'active' | 'completed'>('all');
+  const [filter, setFilter] = useState<TodoStatus>(TodoStatus.ALL);
   const [filtered, setFiltered] = useState<Todo[]>([]);
   const [error, setError] = useState<string | null>(null);
   const [tempTodo, setTempTodo] = useState<Todo | null>(null);
@@ -145,22 +151,24 @@ export const App: React.FC = () => {
 
   useEffect(() => {
     const filteredTodos = todos.filter(todo => {
-      if (filter === 'active') {
+      if (filter === TodoStatus.ACTIVE) {
         return !todo.completed;
       }
 
-      if (filter === 'completed') {
+      if (filter === TodoStatus.COMPLITED) {
         return todo.completed;
       }
 
-      return filter === 'all';
+      return filter === TodoStatus.ALL;
     });
 
     setFiltered(filteredTodos);
   }, [filter, todos]);
 
   const handleClearCompleted = async () => {
-    const completedTodos = todos.filter(todo => todo.completed).map(todo => todo.id);
+    const completedTodos = todos
+      .filter(todo => todo.completed)
+      .map(todo => todo.id);
 
     for (const id of completedTodos) {
       try {
