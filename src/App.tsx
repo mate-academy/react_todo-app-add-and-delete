@@ -1,26 +1,124 @@
-/* eslint-disable max-len */
-/* eslint-disable jsx-a11y/control-has-associated-label */
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import { UserWarning } from './UserWarning';
-
-const USER_ID = 0;
+import { getTodos, USER_ID } from './api/todos';
+import { Todo } from './types/Todo';
+import classNames from 'classnames';
+import { Header } from './components/Header';
+import { TodoList } from './components/TodoList';
+import { Footer } from './components/Footer';
 
 export const App: React.FC = () => {
+  const [todos, setTodos] = useState<Todo[]>([]);
+  const [fetchedTodos, setFetchedTodos] = useState<Todo[]>([]);
+  const [errorMessage, setErrorMessage] = useState('');
+  const [isHidden, setIsHidden] = useState(true);
+  const [filterBy, setFilterBy] = useState<'all' | 'active' | 'completed'>(
+    'all',
+  );
+  const [tempTodo, setTempTodo] = useState<Todo | null>(null);
+  const [completedTodoIds, setCompletedTodoIds] = useState<number[] | null>(
+    null,
+  );
+
+  const hasCompleted = fetchedTodos.find(todo => todo.completed)?.completed;
+
+  const numOfActiveTodos = todos.filter(todo => !todo.completed).length;
+  const todoCounterTitle =
+    (numOfActiveTodos !== 1
+      ? `${numOfActiveTodos} items`
+      : `${numOfActiveTodos} item`) + ' left';
+
+  const errorMessageHandler = (er: Error) => {
+    setIsHidden(false);
+    setErrorMessage(er.message ?? er);
+
+    new Promise(resolve =>
+      setTimeout(() => {
+        setIsHidden(true);
+        setTimeout(() => resolve(''), 1000);
+      }, 3000),
+    ).then(() => setErrorMessage(''));
+  };
+  // <br />
+  // Unable to update a todo
+
+  useEffect(() => {
+    getTodos()
+      .then(serverTodos => {
+        setTodos(serverTodos);
+        setFetchedTodos(serverTodos);
+      })
+      .catch(errorMessageHandler);
+  }, []);
+
+  useEffect(() => {
+    let filteredTodos = todos;
+
+    if (filterBy !== 'all') {
+      filteredTodos = todos.filter(todo =>
+        filterBy === 'active' ? !todo.completed : todo.completed,
+      );
+    }
+
+    setFetchedTodos([...filteredTodos]);
+  }, [filterBy, todos]);
+
   if (!USER_ID) {
     return <UserWarning />;
   }
 
   return (
-    <section className="section container">
-      <p className="title is-4">
-        Copy all you need from the prev task:
-        <br />
-        <a href="https://github.com/mate-academy/react_todo-app-loading-todos#react-todo-app-load-todos">
-          React Todo App - Load Todos
-        </a>
-      </p>
+    <div className="todoapp">
+      <h1 className="todoapp__title">todos</h1>
 
-      <p className="subtitle">Styles are already copied</p>
-    </section>
+      <div className="todoapp__content">
+        <Header
+          todos={todos}
+          onError={errorMessageHandler}
+          onSuccess={setTodos}
+          setTempTodo={setTempTodo}
+          setIsHidden={setIsHidden}
+        />
+        <TodoList
+          renderedList={fetchedTodos}
+          tempTodo={tempTodo}
+          todos={todos}
+          forClear={completedTodoIds}
+          setForClear={setCompletedTodoIds}
+          onDelete={setTodos}
+          onError={errorMessageHandler}
+        />
+
+        {/* Hide the footer if there are no todos */}
+        {(tempTodo || !!todos.length) && (
+          <Footer
+            counterTitle={todoCounterTitle}
+            filterBy={filterBy}
+            setFilter={setFilterBy}
+            completed={hasCompleted}
+            todos={todos}
+            onClearCompleted={setCompletedTodoIds}
+          />
+        )}
+      </div>
+
+      {/* DON'T use conditional rendering to hide the notification */}
+      {/* Add the 'hidden' class to hide the message smoothly */}
+      <div
+        data-cy="ErrorNotification"
+        className={classNames(
+          'notification is-danger is-light has-text-weight-normal',
+          { hidden: isHidden },
+        )}
+      >
+        <button
+          data-cy="HideErrorButton"
+          type="button"
+          className="delete"
+          onClick={() => setIsHidden(true)}
+        />
+        {errorMessage}
+      </div>
+    </div>
   );
 };
