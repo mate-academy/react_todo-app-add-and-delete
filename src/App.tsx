@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useCallback, useEffect, useRef, useState } from 'react';
 import { UserWarning } from './UserWarning';
 import { getTodos, USER_ID } from './api/todos';
 import { Todo } from './types/Todo';
@@ -11,7 +11,6 @@ export const App: React.FC = () => {
   const [todos, setTodos] = useState<Todo[]>([]);
   const [fetchedTodos, setFetchedTodos] = useState<Todo[]>([]);
   const [errorMessage, setErrorMessage] = useState('');
-  const [isHidden, setIsHidden] = useState(true);
   const [filterBy, setFilterBy] = useState<'all' | 'active' | 'completed'>(
     'all',
   );
@@ -19,26 +18,36 @@ export const App: React.FC = () => {
   const [completedTodoIds, setCompletedTodoIds] = useState<number[] | null>(
     null,
   );
+  const [isHiddenError, setIsHiddenError] = useState(true);
 
-  const hasCompleted = fetchedTodos.find(todo => todo.completed)?.completed;
+  const timeoutRef = useRef<number | null>(null);
 
-  const numOfActiveTodos = todos.filter(todo => !todo.completed).length;
-  const todoCounterTitle =
-    (numOfActiveTodos !== 1
-      ? `${numOfActiveTodos} items`
-      : `${numOfActiveTodos} item`) + ' left';
+  const removeErrorMessage = () => {
+    setIsHiddenError(true);
+    // Clear timeout for removing the error message
+    if (timeoutRef.current) {
+      clearTimeout(timeoutRef.current);
+      timeoutRef.current = null;
+    }
 
-  const errorMessageHandler = (er: Error) => {
-    setIsHidden(false);
-    setErrorMessage(er.message ?? er);
-
-    new Promise(resolve =>
-      setTimeout(() => {
-        setIsHidden(true);
-        setTimeout(() => resolve(''), 1000);
-      }, 3000),
-    ).then(() => setErrorMessage(''));
+    timeoutRef.current = window.setTimeout(() => {
+      setErrorMessage('');
+    }, 1000);
   };
+
+  const errorMessageHandler = useCallback((er: Error) => {
+    setErrorMessage(er.message ?? String(er));
+    setIsHiddenError(false);
+
+    if (timeoutRef.current) {
+      clearTimeout(timeoutRef.current);
+    }
+
+    timeoutRef.current = window.setTimeout(() => {
+      removeErrorMessage();
+    }, 3000);
+  }, []);
+
   // <br />
   // Unable to update a todo
 
@@ -77,8 +86,8 @@ export const App: React.FC = () => {
           onError={errorMessageHandler}
           onSuccess={setTodos}
           setTempTodo={setTempTodo}
-          setIsHidden={setIsHidden}
         />
+
         <TodoList
           renderedList={fetchedTodos}
           tempTodo={tempTodo}
@@ -92,10 +101,8 @@ export const App: React.FC = () => {
         {/* Hide the footer if there are no todos */}
         {(tempTodo || !!todos.length) && (
           <Footer
-            counterTitle={todoCounterTitle}
             filterBy={filterBy}
             setFilter={setFilterBy}
-            completed={hasCompleted}
             todos={todos}
             onClearCompleted={setCompletedTodoIds}
           />
@@ -105,9 +112,9 @@ export const App: React.FC = () => {
       {/* DON'T use conditional rendering to hide the notification */}
       {/* Add the 'hidden' class to hide the message smoothly */}
       <ErrorMessage
-        isHidden={isHidden}
         errorMessage={errorMessage}
-        setIsHidden={setIsHidden}
+        removeError={removeErrorMessage}
+        isHiddenError={isHiddenError}
       />
     </div>
   );

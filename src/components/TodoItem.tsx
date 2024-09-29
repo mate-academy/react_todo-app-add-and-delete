@@ -37,9 +37,9 @@ export const TodoItem: React.FC<Props> = ({
     Promise.all(promiseArr)
       .then(() => {
         onDelete([...newRenderedList]);
-        setForClear(null);
       })
-      .catch(onError);
+      .catch(onError)
+      .finally(() => setForClear(null));
   }
 
   const deleteTodo: React.MouseEventHandler<HTMLButtonElement> = () => {

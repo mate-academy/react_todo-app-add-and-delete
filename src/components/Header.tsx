@@ -1,4 +1,4 @@
-import React, { useRef, useState } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import { Todo } from '../types/Todo';
 import { addTodo, USER_ID } from '../api/todos';
 
@@ -7,7 +7,6 @@ interface Props {
   onError: (error: Error) => void;
   setTempTodo: (todo: Todo | null) => void;
   onSuccess: (todos: Todo[]) => void;
-  setIsHidden: (value: boolean) => void;
 }
 
 export const Header: React.FC<Props> = ({
@@ -15,15 +14,16 @@ export const Header: React.FC<Props> = ({
   onError,
   setTempTodo,
   onSuccess,
-  setIsHidden,
 }) => {
   const [todoTitle, setTodoTitle] = useState('');
   const [isDisabled, setIsDisabled] = useState(false);
   const input = useRef<HTMLInputElement>(null);
 
-  if (input.current) {
-    input.current.focus();
-  }
+  useEffect(() => {
+    if (input.current) {
+      input.current.focus();
+    }
+  }, [todos]);
 
   const inputHandler: React.ChangeEventHandler<HTMLInputElement> = event => {
     setTodoTitle(event.target.value.trim());
@@ -31,7 +31,6 @@ export const Header: React.FC<Props> = ({
 
   const onEnter: React.KeyboardEventHandler<HTMLInputElement> = event => {
     if (event.key === 'Enter') {
-      setIsHidden(true);
       if (todoTitle) {
         setTempTodo({
           title: todoTitle,

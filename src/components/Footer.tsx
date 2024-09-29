@@ -5,34 +5,36 @@ import { Todo } from '../types/Todo';
 type TodoFilter = 'all' | 'active' | 'completed';
 
 interface Props {
-  counterTitle: string;
   filterBy: TodoFilter;
   setFilter: (value: TodoFilter) => void;
-  completed: boolean | undefined;
   todos: Todo[];
   onClearCompleted: (ids: number[]) => void;
 }
 
 export const Footer: React.FC<Props> = ({
-  counterTitle,
   filterBy,
   setFilter,
-  completed,
   todos,
   onClearCompleted,
 }) => {
-  const clearCompletedHandler = () => {
-    const completedTodoIds = todos
-      .filter(todo => todo.completed)
-      .map(todo => todo.id);
+  const completedTodoIds = todos
+    .filter(todo => todo.completed)
+    .map(todo => todo.id);
 
+  const numOfActiveTodos = todos.filter(todo => !todo.completed).length;
+  const todoCounterTitle =
+    (numOfActiveTodos !== 1
+      ? `${numOfActiveTodos} items`
+      : `${numOfActiveTodos} item`) + ' left';
+
+  const clearCompletedHandler = () => {
     onClearCompleted(completedTodoIds);
   };
 
   return (
     <footer className="todoapp__footer" data-cy="Footer">
       <span className="todo-count" data-cy="TodosCounter">
-        {counterTitle}
+        {todoCounterTitle}
       </span>
       {/* Active link should have the 'selected' class */}
       <nav className="filter" data-cy="Filter">
@@ -74,7 +76,7 @@ export const Footer: React.FC<Props> = ({
         type="button"
         className="todoapp__clear-completed"
         data-cy="ClearCompletedButton"
-        disabled={!completed}
+        disabled={!completedTodoIds.length}
         onClick={clearCompletedHandler}
       >
         Clear completed
