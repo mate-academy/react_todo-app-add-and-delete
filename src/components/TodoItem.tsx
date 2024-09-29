@@ -25,7 +25,7 @@ export const TodoItem: React.FC<Props> = ({ todo }) => {
     <div data-cy="Todo" className={cn('todo', { completed: todo.completed })}>
       {
         todo.isLoading ? (
-          <div data-cy="TodoLoader" className="loader">Loading...</div>
+          <div data-cy="TodoLoader" className="loader"></div>
         ) : (
           <>
             <label className="todo__status-label" htmlFor={`${todo.id}`}>
@@ -35,6 +35,7 @@ export const TodoItem: React.FC<Props> = ({ todo }) => {
                 id={`${todo.id}`}
                 className="todo__status"
                 checked={todo.completed}
+                readOnly
               />
             </label>
 

@@ -9,7 +9,7 @@ type ErrorProps = {
 
 export const ErrorContext = React.createContext<ErrorProps>({
   errorMessage: '',
-  setErrorMessage: () => {},
+  setErrorMessage: () => { },
 });
 
 type FilterProps = {
@@ -19,7 +19,7 @@ type FilterProps = {
 
 export const FilterContext = React.createContext<FilterProps>({
   filter: 'All',
-  setFilter: () => {},
+  setFilter: () => { },
 });
 
 type InitialTodosProps = {
@@ -29,7 +29,7 @@ type InitialTodosProps = {
 
 export const InitialTodosContext = React.createContext<InitialTodosProps>({
   initialTodos: [],
-  setInitialTodos: () => {},
+  setInitialTodos: () => { },
 });
 
 type TodosContextProps = {
@@ -39,7 +39,7 @@ type TodosContextProps = {
 
 export const TodosContext = React.createContext<TodosContextProps>({
   todos: [],
-  dispatch: () => {},
+  dispatch: () => { },
 });
 
 type Props = {
@@ -59,8 +59,12 @@ export const todoReducer = (
       return action.payload.filter((todo: Todo) => todo.completed);
     case 'ACTIVE':
       return action.payload.filter((todo: Todo) => !todo.completed);
-    case 'ADD_TODO':
+    case 'ADD_TEMP_TODO':
       return [...state, action.payload];
+    case 'ADD_TODO':
+      return state.map(todo =>
+        todo.id === action.payload.id ? action.payload : todo
+      );
     case 'REMOVE_TODO':
       return state.filter(todo => todo.id !== action.payload);
     default:

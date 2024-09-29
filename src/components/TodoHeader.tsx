@@ -9,7 +9,7 @@ export const TodoHeader: React.FC = () => {
   const { filter } = useContext(FilterContext);
   const { initialTodos, setInitialTodos } = useContext(InitialTodosContext);
   const { setErrorMessage } = useContext(ErrorContext);
-  const [title, setTitle] = useState<string>('');
+  const [heading, setHeading] = useState<string>('');
   const [isInputDisabled, setIsInputDisabled] = useState<boolean>(false);
   const inputRef = useRef<HTMLInputElement>(null);
 
@@ -19,13 +19,14 @@ export const TodoHeader: React.FC = () => {
     if (inputRef.current) {
       inputRef.current.focus();
     }
-  }, []);
+  }, [initialTodos.length]);
 
   const addNewTodo = async (event: React.KeyboardEvent<HTMLInputElement>) => {
     if (event.key === 'Enter') {
       event.preventDefault();
+      setIsInputDisabled(true);
 
-      if (!title.trim()) {
+      if (!heading.trim()) {
         setErrorMessage('Title should not be empty');
 
         setTimeout(() => {
@@ -37,39 +38,40 @@ export const TodoHeader: React.FC = () => {
 
       const newTodo: Todo = {
         id: +new Date(),
-        title: title.trim(),
+        title: heading.trim(),
         userId: USER_ID,
         completed: false,
         isLoading: true,
       };
 
-      dispatch({ type: 'ADD_TODO', payload: [...initialTodos, newTodo] })
+      dispatch({ type: 'ADD_TEMP_TODO', payload: newTodo });
 
       try {
-        const { userId, title, completed } = newTodo;
-        setIsInputDisabled(true);
-        const response = await postTodo({ userId, title, completed })
+        const response = await postTodo({
+          userId: newTodo.userId,
+          title: newTodo.title,
+          completed: newTodo.completed,
+        });
 
-        if (response) {
-          dispatch({ type: 'ADD_TODO', payload: response });
-          dispatch({
-            type: filter.toUpperCase(),
-            payload: [...initialTodos, response],
-          });
-          setInitialTodos(prevState => [...prevState, response]);
-          setTitle('');
-        }
-      } catch {
+        dispatch({ type: 'ADD_TODO', payload: response });
+
+        dispatch({
+          type: filter.toUpperCase(),
+          payload: [...todos, response],
+        });
+
+        setInitialTodos(prevTodos => [...prevTodos, response]);
+        setIsInputDisabled(false);
+        setHeading('');
+      } catch (error) {
         setErrorMessage('Unable to add a todo');
       } finally {
         setTimeout(() => {
-          setIsInputDisabled(false);
           setErrorMessage('');
         }, 3000);
       }
     }
   };
-
 
   return (
     <header className="todoapp__header">
@@ -87,8 +89,8 @@ export const TodoHeader: React.FC = () => {
           type="text"
           className="todoapp__new-todo"
           placeholder="What needs to be done?"
-          value={title}
-          onChange={event => setTitle(event.target.value)}
+          value={heading}
+          onChange={event => setHeading(event.target.value)}
           onKeyPress={addNewTodo}
           ref={inputRef}
           disabled={isInputDisabled}
