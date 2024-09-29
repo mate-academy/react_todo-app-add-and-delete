@@ -30,10 +30,14 @@ export const Header: React.FC<Props> = ({
   };
 
   const onEnter: React.KeyboardEventHandler<HTMLInputElement> = event => {
+    const trimmedTitle = todoTitle.trim();
+
     if (event.key === 'Enter') {
-      if (todoTitle.trim()) {
+      event.preventDefault();
+
+      if (trimmedTitle) {
         setTempTodo({
-          title: todoTitle.trim(),
+          title: trimmedTitle,
           completed: false,
           userId: USER_ID,
           id: 0,
@@ -42,7 +46,7 @@ export const Header: React.FC<Props> = ({
       }
 
       addTodo({
-        title: todoTitle.trim(),
+        title: trimmedTitle,
         completed: false,
         userId: USER_ID,
       })
