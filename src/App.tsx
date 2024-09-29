@@ -47,7 +47,6 @@ export const App: React.FC = () => {
       removeErrorMessage();
     }, 3000);
   }, []);
-
   // <br />
   // Unable to update a todo
 
