@@ -2,10 +2,10 @@ import React, { useEffect, useState } from 'react';
 import { UserWarning } from './UserWarning';
 import { getTodos, USER_ID } from './api/todos';
 import { Todo } from './types/Todo';
-import classNames from 'classnames';
 import { Header } from './components/Header';
 import { TodoList } from './components/TodoList';
 import { Footer } from './components/Footer';
+import { ErrorMessage } from './components/ErrorMessage';
 
 export const App: React.FC = () => {
   const [todos, setTodos] = useState<Todo[]>([]);
@@ -104,21 +104,11 @@ export const App: React.FC = () => {
 
       {/* DON'T use conditional rendering to hide the notification */}
       {/* Add the 'hidden' class to hide the message smoothly */}
-      <div
-        data-cy="ErrorNotification"
-        className={classNames(
-          'notification is-danger is-light has-text-weight-normal',
-          { hidden: isHidden },
-        )}
-      >
-        <button
-          data-cy="HideErrorButton"
-          type="button"
-          className="delete"
-          onClick={() => setIsHidden(true)}
-        />
-        {errorMessage}
-      </div>
+      <ErrorMessage
+        isHidden={isHidden}
+        errorMessage={errorMessage}
+        setIsHidden={setIsHidden}
+      />
     </div>
   );
 };
