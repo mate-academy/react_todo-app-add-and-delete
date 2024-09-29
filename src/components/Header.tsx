@@ -26,14 +26,14 @@ export const Header: React.FC<Props> = ({
   }, [todos]);
 
   const inputHandler: React.ChangeEventHandler<HTMLInputElement> = event => {
-    setTodoTitle(event.target.value.trim());
+    setTodoTitle(event.target.value);
   };
 
   const onEnter: React.KeyboardEventHandler<HTMLInputElement> = event => {
     if (event.key === 'Enter') {
-      if (todoTitle) {
+      if (todoTitle.trim()) {
         setTempTodo({
-          title: todoTitle,
+          title: todoTitle.trim(),
           completed: false,
           userId: USER_ID,
           id: 0,
@@ -42,7 +42,7 @@ export const Header: React.FC<Props> = ({
       }
 
       addTodo({
-        title: todoTitle,
+        title: todoTitle.trim(),
         completed: false,
         userId: USER_ID,
       })
