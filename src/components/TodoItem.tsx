@@ -1,14 +1,14 @@
 import React, { useState } from 'react';
 import classNames from 'classnames';
-import * as Action from '../api/todos';
+import * as action from '../api/todos';
 
 interface Props {
   title: string;
   id: number;
   status?: boolean;
   onError: (error: Error) => void;
-  forClear: number[] | null;
-  setForClear: (todoIds: number[] | null) => void;
+  idsToDelete: number[] | null;
+  resetIdsToDelete: (todoIds: number[]) => void;
   handleDelete: (val: number) => void;
 }
 
@@ -17,19 +17,20 @@ export const TodoItem: React.FC<Props> = ({
   title,
   id,
   onError,
-  forClear,
-  setForClear,
+  idsToDelete,
+  resetIdsToDelete,
   handleDelete,
 }) => {
   const [value, setValue] = useState(title);
   const [deletedTodoId, setDeletedTodoId] = useState(0);
 
-  if (forClear?.length) {
-    forClear.forEach(todoId => {
-      Action.deleteTodo(todoId)
+  if (idsToDelete?.length) {
+    idsToDelete.forEach(todoId => {
+      action
+        .deleteTodo(todoId)
         .then(() => {
           handleDelete(todoId);
-          setForClear(forClear.filter(oldId => oldId !== todoId));
+          resetIdsToDelete(idsToDelete.filter(oldId => oldId !== todoId));
         })
         .catch(onError);
     });
@@ -38,7 +39,8 @@ export const TodoItem: React.FC<Props> = ({
   const deleteTodo: React.MouseEventHandler<HTMLButtonElement> = () => {
     setDeletedTodoId(id);
 
-    Action.deleteTodo(id)
+    action
+      .deleteTodo(id)
       .then(() => {
         handleDelete(id);
       })
@@ -78,7 +80,7 @@ export const TodoItem: React.FC<Props> = ({
       <div
         data-cy="TodoLoader"
         className={classNames('modal overlay', {
-          'is-active': deletedTodoId === id || forClear?.includes(id),
+          'is-active': deletedTodoId === id || idsToDelete?.includes(id),
         })}
       >
         <div className="modal-background has-background-white-ter" />

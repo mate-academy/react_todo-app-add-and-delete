@@ -1,8 +1,7 @@
 import classNames from 'classnames';
 import React from 'react';
 import { Todo } from '../types/Todo';
-
-type TodoFilter = 'all' | 'active' | 'completed';
+import { TodoFilter } from '../types/TodoFilter';
 
 interface Props {
   filterBy: TodoFilter;

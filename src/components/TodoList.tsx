@@ -7,10 +7,9 @@ interface Props {
   renderedList: Todo[];
   todos: Todo[];
   tempTodo: Todo | null;
-  onDelete: (todos: Todo[]) => void;
-  forClear: number[] | null;
+  idsToDelete: number[] | null;
   onError: (error: Error) => void;
-  setForClear: (todoIds: number[] | null) => void;
+  resetIdsToDelete: (todoIds: number[]) => void;
   handleDelete: (val: number) => void;
 }
 
@@ -18,8 +17,8 @@ export const TodoList: React.FC<Props> = ({
   renderedList,
   tempTodo,
   onError,
-  forClear,
-  setForClear,
+  idsToDelete,
+  resetIdsToDelete,
   handleDelete,
 }) => {
   return (
@@ -31,8 +30,8 @@ export const TodoList: React.FC<Props> = ({
           key={id}
           id={id}
           onError={onError}
-          forClear={forClear}
-          setForClear={setForClear}
+          idsToDelete={idsToDelete}
+          resetIdsToDelete={resetIdsToDelete}
           handleDelete={handleDelete}
         />
       ))}

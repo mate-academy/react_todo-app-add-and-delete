@@ -6,18 +6,15 @@ import { Header } from './components/Header';
 import { TodoList } from './components/TodoList';
 import { Footer } from './components/Footer';
 import { ErrorMessage } from './components/ErrorMessage';
+import { TodoFilter } from './types/TodoFilter';
 
 export const App: React.FC = () => {
   const [todos, setTodos] = useState<Todo[]>([]);
-  const [fetchedTodos, setFetchedTodos] = useState<Todo[]>([]);
+  const [filteredTodos, setFilteredTodos] = useState<Todo[]>([]);
   const [errorMessage, setErrorMessage] = useState('');
-  const [filterBy, setFilterBy] = useState<'all' | 'active' | 'completed'>(
-    'all',
-  );
+  const [filterBy, setFilterBy] = useState<TodoFilter>('all');
   const [tempTodo, setTempTodo] = useState<Todo | null>(null);
-  const [completedTodoIds, setCompletedTodoIds] = useState<number[] | null>(
-    null,
-  );
+  const [idsToDelete, setIdsToDelete] = useState<number[]>([]);
   const [isHiddenError, setIsHiddenError] = useState(true);
 
   const timeoutRef = useRef<number | null>(null);
@@ -50,28 +47,26 @@ export const App: React.FC = () => {
       removeErrorMessage();
     }, 3000);
   }, []);
-  // <br />
-  // Unable to update a todo
 
   useEffect(() => {
     getTodos()
       .then(serverTodos => {
         setTodos(serverTodos);
-        setFetchedTodos(serverTodos);
+        setFilteredTodos(serverTodos);
       })
       .catch(errorMessageHandler);
   }, []);
 
   useEffect(() => {
-    let filteredTodos = todos;
+    let filteredTD = todos;
 
     if (filterBy !== 'all') {
-      filteredTodos = todos.filter(todo =>
+      filteredTD = todos.filter(todo =>
         filterBy === 'active' ? !todo.completed : todo.completed,
       );
     }
 
-    setFetchedTodos([...filteredTodos]);
+    setFilteredTodos(filteredTD);
   }, [filterBy, todos]);
 
   if (!USER_ID) {
@@ -92,12 +87,11 @@ export const App: React.FC = () => {
         />
 
         <TodoList
-          renderedList={fetchedTodos}
+          renderedList={filteredTodos}
           tempTodo={tempTodo}
           todos={todos}
-          forClear={completedTodoIds}
-          setForClear={setCompletedTodoIds}
-          onDelete={setTodos}
+          idsToDelete={idsToDelete}
+          resetIdsToDelete={setIdsToDelete}
           onError={errorMessageHandler}
           handleDelete={handleDelete}
         />
@@ -108,7 +102,7 @@ export const App: React.FC = () => {
             filterBy={filterBy}
             setFilter={setFilterBy}
             todos={todos}
-            onClearCompleted={setCompletedTodoIds}
+            onClearCompleted={setIdsToDelete}
           />
         )}
       </div>
