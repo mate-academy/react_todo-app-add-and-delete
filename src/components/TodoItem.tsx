@@ -1,62 +1,46 @@
 import React, { useState } from 'react';
 import classNames from 'classnames';
 import * as Action from '../api/todos';
-import { Todo } from '../types/Todo';
 
 interface Props {
   title: string;
   id: number;
   status?: boolean;
-  onDelete: (todos: Todo[]) => void;
-  todos: Todo[];
   onError: (error: Error) => void;
   forClear: number[] | null;
   setForClear: (todoIds: number[] | null) => void;
+  handleDelete: (val: number) => void;
 }
 
 export const TodoItem: React.FC<Props> = ({
   status = false,
   title,
   id,
-  onDelete,
-  todos,
   onError,
   forClear,
   setForClear,
+  handleDelete,
 }) => {
   const [value, setValue] = useState(title);
   const [deletedTodoId, setDeletedTodoId] = useState(0);
 
   if (forClear?.length) {
-    const newRenderedList = todos.filter(todo => !forClear.includes(todo.id));
-
-    const promiseArr: Promise<void>[] = [];
-
     forClear.forEach(todoId => {
       Action.deleteTodo(todoId)
         .then(() => {
-          onDelete(newRenderedList);
+          handleDelete(todoId);
           setForClear(forClear.filter(oldId => oldId !== todoId));
         })
         .catch(onError);
     });
-
-    Promise.all(promiseArr)
-      .then(() => {
-        onDelete(newRenderedList);
-      })
-      .catch(onError)
-      .finally(() => setForClear(null));
   }
 
   const deleteTodo: React.MouseEventHandler<HTMLButtonElement> = () => {
-    const newRenderedList = todos.filter(todo => todo.id !== id);
-
     setDeletedTodoId(id);
 
     Action.deleteTodo(id)
       .then(() => {
-        onDelete(newRenderedList);
+        handleDelete(id);
       })
       .catch(onError)
       .finally(() => setDeletedTodoId(0));

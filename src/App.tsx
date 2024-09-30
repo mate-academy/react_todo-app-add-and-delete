@@ -24,7 +24,6 @@ export const App: React.FC = () => {
 
   const removeErrorMessage = () => {
     setIsHiddenError(true);
-    // Clear timeout for removing the error message
     if (timeoutRef.current) {
       clearTimeout(timeoutRef.current);
       timeoutRef.current = null;
@@ -33,6 +32,10 @@ export const App: React.FC = () => {
     timeoutRef.current = window.setTimeout(() => {
       setErrorMessage('');
     }, 1000);
+  };
+
+  const handleDelete = (id: number) => {
+    setTodos(prevTodo => prevTodo.filter(todo => todo.id !== id));
   };
 
   const errorMessageHandler = useCallback((er: Error) => {
@@ -96,6 +99,7 @@ export const App: React.FC = () => {
           setForClear={setCompletedTodoIds}
           onDelete={setTodos}
           onError={errorMessageHandler}
+          handleDelete={handleDelete}
         />
 
         {/* Hide the footer if there are no todos */}

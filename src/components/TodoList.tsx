@@ -11,16 +11,16 @@ interface Props {
   forClear: number[] | null;
   onError: (error: Error) => void;
   setForClear: (todoIds: number[] | null) => void;
+  handleDelete: (val: number) => void;
 }
 
 export const TodoList: React.FC<Props> = ({
   renderedList,
-  todos,
   tempTodo,
-  onDelete,
   onError,
   forClear,
   setForClear,
+  handleDelete,
 }) => {
   return (
     <section className="todoapp__main" data-cy="TodoList">
@@ -30,11 +30,10 @@ export const TodoList: React.FC<Props> = ({
           status={completed}
           key={id}
           id={id}
-          onDelete={onDelete}
-          todos={todos}
           onError={onError}
           forClear={forClear}
           setForClear={setForClear}
+          handleDelete={handleDelete}
         />
       ))}
 
