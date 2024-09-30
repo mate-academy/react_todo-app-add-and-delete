@@ -15,13 +15,13 @@ export const addTodo = (data: Omit<Todo, 'id'>): Promise<Todo> => {
     return Promise.reject('Title should not be empty');
   }
 
-  return client.post<Todo>(`/todos?userId=${USER_ID}`, data).catch(() => {
+  return client.post<Todo>(`/todos`, data).catch(() => {
     throw new Error('Unable to add a todo');
   });
 };
 
 export const deleteTodo = (id: number): Promise<void> => {
-  return client.delete(`/todos/${id}?userId=${USER_ID}`).catch(() => {
+  return client.delete(`/todos/${id}`).catch(() => {
     throw new Error('Unable to delete a todo');
   });
 };

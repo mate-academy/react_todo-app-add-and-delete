@@ -85,6 +85,7 @@ export const App: React.FC = () => {
           onError={errorMessageHandler}
           onSuccess={setTodos}
           setTempTodo={setTempTodo}
+          errorMessage={errorMessage}
         />
 
         <TodoList
