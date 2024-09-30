@@ -7,7 +7,7 @@ interface Props {
   onError: (error: Error) => void;
   setTempTodo: (todo: Todo | null) => void;
   onSuccess: (todos: Todo[]) => void;
-  errorMessage: string
+  errorMessage: string;
 }
 
 export const Header: React.FC<Props> = ({
@@ -15,7 +15,7 @@ export const Header: React.FC<Props> = ({
   onError,
   setTempTodo,
   onSuccess,
-                                          errorMessage
+  errorMessage,
 }) => {
   const [todoTitle, setTodoTitle] = useState('');
   const [isDisabled, setIsDisabled] = useState(false);

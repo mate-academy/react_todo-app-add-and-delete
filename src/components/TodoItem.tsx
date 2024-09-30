@@ -32,11 +32,18 @@ export const TodoItem: React.FC<Props> = ({
 
     const promiseArr: Promise<void>[] = [];
 
-    forClear.forEach(todoId => promiseArr.push(Action.deleteTodo(todoId)));
+    forClear.forEach(todoId => {
+      Action.deleteTodo(todoId)
+        .then(() => {
+          onDelete(newRenderedList);
+          setForClear(forClear.filter(oldId => oldId !== todoId));
+        })
+        .catch(onError);
+    });
 
     Promise.all(promiseArr)
       .then(() => {
-        onDelete([...newRenderedList]);
+        onDelete(newRenderedList);
       })
       .catch(onError)
       .finally(() => setForClear(null));
@@ -48,7 +55,9 @@ export const TodoItem: React.FC<Props> = ({
     setDeletedTodoId(id);
 
     Action.deleteTodo(id)
-      .then(() => onDelete([...newRenderedList]))
+      .then(() => {
+        onDelete(newRenderedList);
+      })
       .catch(onError)
       .finally(() => setDeletedTodoId(0));
   };
