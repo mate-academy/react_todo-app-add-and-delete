@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import classNames from 'classnames';
 import * as action from '../api/todos';
 
@@ -24,18 +24,6 @@ export const TodoItem: React.FC<Props> = ({
   const [value, setValue] = useState(title);
   const [deletedTodoId, setDeletedTodoId] = useState(0);
 
-  if (idsToDelete?.length) {
-    idsToDelete.forEach(todoId => {
-      action
-        .deleteTodo(todoId)
-        .then(() => {
-          handleDelete(todoId);
-          resetIdsToDelete(idsToDelete.filter(oldId => oldId !== todoId));
-        })
-        .catch(onError);
-    });
-  }
-
   const deleteTodo: React.MouseEventHandler<HTMLButtonElement> = () => {
     setDeletedTodoId(id);
 
@@ -47,6 +35,18 @@ export const TodoItem: React.FC<Props> = ({
       .catch(onError)
       .finally(() => setDeletedTodoId(0));
   };
+
+  useEffect(() => {
+    if (idsToDelete?.includes(id)) {
+      action
+        .deleteTodo(id)
+        .then(() => {
+          handleDelete(id);
+          resetIdsToDelete(idsToDelete?.filter(todoId => todoId !== id));
+        })
+        .catch(onError);
+    }
+  }, [idsToDelete]);
 
   return (
     <div data-cy="Todo" className={classNames('todo', { completed: status })}>
