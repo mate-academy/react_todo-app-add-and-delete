@@ -34,6 +34,10 @@ export const App: React.FC = () => {
 
   const handleAddTodo = async (title: string, completed: boolean): Promise<Todo | undefined> => {
     const trimmedTitle = title.trim()
+    if (trimmedTitle === '') {
+      setError('Title should not be empty');
+      return;
+    }
 
     const newTodo: Omit<Todo, 'id'> = { title: trimmedTitle, userId: USER_ID, completed };
 
@@ -45,10 +49,6 @@ export const App: React.FC = () => {
     setError(null);
 
     try {
-      if (trimmedTitle === '') {
-        setError('Title should not be empty');
-      }
-
       const createdTodo = await createTodos(newTodo);
 
       setTodos(prevTodos => [...prevTodos, createdTodo]);
