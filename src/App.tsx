@@ -90,8 +90,7 @@ export const App: React.FC = () => {
       .createTodo({ userId: myId, title: inputTitle.trim(), completed: false })
       .then(newTodo => {
         setTodos(currentTodos => [...currentTodos, newTodo]);
-        setLoading(false);
-        setTempTodo(null);
+
         setInputTitle('');
       })
       .catch(error => {
@@ -114,14 +113,15 @@ export const App: React.FC = () => {
         setTodos(currentTodos =>
           currentTodos.filter(todo => todo.id !== todoId),
         );
-        setDeletingId(null);
         inputRef.current?.focus();
       })
       .catch(error => {
         setTodos(todos);
         setErrorMessage('Unable to delete a todo');
-        setDeletingId(null);
         throw error;
+      })
+      .finally(() => {
+        setDeletingId(null);
       });
   };
 
