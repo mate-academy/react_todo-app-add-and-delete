@@ -1,5 +1,5 @@
 import React, { useEffect } from 'react';
-// import cn from 'classnames';
+import cn from 'classnames';
 
 interface ErrorProps {
   error: string | null;
@@ -22,7 +22,9 @@ export const Error: React.FC<ErrorProps> = ({ error, onClose }) => {
   return (
     <div
       data-cy="ErrorNotification"
-      className={`notification is-danger is-light has-text-weight-normal ${error === null ? 'hidden' : ''}`}
+      className={cn('notification', 'is-danger', 'is-light', 'has-text-weight-normal', {
+        hidden: error === null,
+      })}
     >
       <button data-cy="HideErrorButton" type="button" className="delete" onClick={onClose} />
       {error}
