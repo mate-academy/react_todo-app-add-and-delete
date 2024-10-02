@@ -21,6 +21,18 @@ export const Footer: React.FC<Props> = ({
         {`${todos.filter(todo => !todo.completed).length} items left`}
       </span>
 
+      {/* {filterOptions.map((option) => (
+      <a
+        key={option}
+        href={`#/${option}`}
+        className={`filter__link ${filter === option ? 'selected' : ''}`}
+        data-cy={`FilterLink${option.charAt(0).toUpperCase() + option.slice(1)}`}
+        onClick={() => handleFilter(option)}
+      >
+        {option.charAt(0).toUpperCase() + option.slice(1)}
+      </a>
+    ))} */}
+
       <nav className="filter" data-cy="Filter">
         <a
           href="#/"

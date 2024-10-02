@@ -9,7 +9,7 @@ const page = {
   todosCounter: () => cy.byDataCy('TodosCounter'),
   clearCompletedButton: () => cy.byDataCy('ClearCompletedButton'),
 
-  visit: (url = 'http://localhost:5173/') => {
+  visit: (url = '/') => {
     cy.visit(url, {
       onBeforeLoad: win => win.localStorage.setItem('user', '{ "id": 1 }'),
     });

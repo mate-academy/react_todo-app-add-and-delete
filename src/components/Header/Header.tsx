@@ -1,5 +1,5 @@
 type Props = {
-  addTodo: () => void;
+  addTodo: (e: React.FormEvent<HTMLFormElement>) => void;
   setInputTitle: (value: string) => void;
   inputTitle: string;
   inputRef: React.RefObject<HTMLInputElement>;
@@ -20,12 +20,7 @@ export const Header: React.FC<Props> = ({
         data-cy="ToggleAllButton"
       />
 
-      <form
-        onSubmit={e => {
-          e.preventDefault();
-          addTodo();
-        }}
-      >
+      <form onSubmit={addTodo}>
         <input
           data-cy="NewTodoField"
           type="text"

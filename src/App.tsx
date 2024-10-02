@@ -7,6 +7,12 @@ import { Footer } from './components/Footer/Footer';
 import { TodoList } from './components/TodoList/TodoList';
 import { Notifications } from './components/Notifications/Notifications';
 
+export enum Filter {
+  All = 'all',
+  Active = 'active',
+  Completed = 'completed',
+}
+
 export const App: React.FC = () => {
   const [todos, setTodos] = useState<Todo[]>([]);
   const [loading, setLoading] = useState(false);
@@ -32,23 +38,21 @@ export const App: React.FC = () => {
 
   const completedCount = todos.filter(todo => todo.completed).length;
 
-  function close() {
+  const close = () => {
     setErrorMessage('');
-  }
+  };
 
-  function loadTodos() {
+  const loadTodos = () => {
     setLoading(true);
-    // setIsErrorVisiable(false);
 
     todoService
       .getTodos()
       .then(setTodos)
       .catch(() => {
         setErrorMessage('Unable to load todos');
-        // setIsErrorVisiable(true);
       })
       .finally(() => setLoading(false));
-  }
+  };
 
   useEffect(() => {
     if (errorMessage) {
@@ -62,7 +66,8 @@ export const App: React.FC = () => {
 
   useEffect(loadTodos, [myId]);
 
-  function addTodo() {
+  const addTodo = (e: React.FormEvent<HTMLFormElement>) => {
+    e.preventDefault();
     setErrorMessage('');
     if (!inputTitle.trim()) {
       setErrorMessage('Title should not be empty');
@@ -98,9 +103,9 @@ export const App: React.FC = () => {
         setLoading(false);
         setTempTodo(null);
       });
-  }
+  };
 
-  function deleteTodo(todoId: number) {
+  const deleteTodo = (todoId: number) => {
     setDeletingId(todoId);
 
     return todoService
@@ -118,9 +123,9 @@ export const App: React.FC = () => {
         setDeletingId(null);
         throw error;
       });
-  }
+  };
 
-  function deleteTodos(todoIds: number[]) {
+  const deleteTodos = (todoIds: number[]) => {
     const promices = todoIds.map(todoId => todoService.deleteTodo(todoId));
 
     return Promise.allSettled(promices).then(results => {
@@ -131,9 +136,9 @@ export const App: React.FC = () => {
 
       return { errors, successIds };
     });
-  }
+  };
 
-  function deleteCompletedTodos() {
+  const deleteCompletedTodos = () => {
     setLoading(true);
 
     const completedTodos = todos.filter(todo => todo.completed);
@@ -155,10 +160,9 @@ export const App: React.FC = () => {
       })
       .catch(() => {
         setTodos(todos);
-        // setErrorMessage('Unable to delete a todo');
         setLoading(false);
       });
-  }
+  };
 
   const handleFilter = (currentFilter: string) => {
     setFilter(currentFilter);
@@ -166,13 +170,10 @@ export const App: React.FC = () => {
 
   const filteredTodos = todos.filter(todo => {
     switch (filter) {
-      case 'all':
-        return true;
-
-      case 'active':
+      case Filter.Active:
         return !todo.completed;
 
-      case 'completed':
+      case Filter.Completed:
         return todo.completed;
 
       default:

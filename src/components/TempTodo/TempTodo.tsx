@@ -7,33 +7,30 @@ type Props = {
 };
 
 export const TempTodo: React.FC<Props> = ({ tempTodo }) => {
+  const { completed, title } = tempTodo;
+
   return (
     <div
       data-cy="Todo"
-      className={classNames('todo', { completed: tempTodo?.completed })}
+      className={classNames('todo', { completed: completed })}
     >
       <label className="todo__status-label">
         <input
           data-cy="TodoStatus"
           type="checkbox"
           className="todo__status"
-          defaultChecked={tempTodo?.completed}
+          defaultChecked={completed}
         />
       </label>
 
       <span data-cy="TodoTitle" className="todo__title">
-        {tempTodo?.title}
+        {title}
       </span>
       <button type="button" className="todo__remove" data-cy="TodoDelete">
         ×
       </button>
 
-      <div
-        data-cy="TodoLoader"
-        className={classNames('modal overlay', {
-          'is-active': true,
-        })}
-      >
+      <div data-cy="TodoLoader" className="modal overlay is-active">
         <div className="modal-background has-background-white-ter" />
         <div className="loader" />
       </div>
