@@ -1,3 +1,4 @@
+import { Filter } from '../../App';
 import { Todo } from '../../types/types';
 
 type Props = {
@@ -21,45 +22,18 @@ export const Footer: React.FC<Props> = ({
         {`${todos.filter(todo => !todo.completed).length} items left`}
       </span>
 
-      {/* {filterOptions.map((option) => (
-      <a
-        key={option}
-        href={`#/${option}`}
-        className={`filter__link ${filter === option ? 'selected' : ''}`}
-        data-cy={`FilterLink${option.charAt(0).toUpperCase() + option.slice(1)}`}
-        onClick={() => handleFilter(option)}
-      >
-        {option.charAt(0).toUpperCase() + option.slice(1)}
-      </a>
-    ))} */}
-
       <nav className="filter" data-cy="Filter">
-        <a
-          href="#/"
-          className={`filter__link ${filter === 'all' ? 'selected' : ''}`}
-          data-cy="FilterLinkAll"
-          onClick={() => handleFilter('all')}
-        >
-          All
-        </a>
-
-        <a
-          href="#/active"
-          className={`filter__link ${filter === 'active' ? 'selected' : ''}`}
-          data-cy="FilterLinkActive"
-          onClick={() => handleFilter('active')}
-        >
-          Active
-        </a>
-
-        <a
-          href="#/completed"
-          className={`filter__link ${filter === 'completed' ? 'selected' : ''}`}
-          data-cy="FilterLinkCompleted"
-          onClick={() => handleFilter('completed')}
-        >
-          Completed
-        </a>
+        {Object.values(Filter).map(option => (
+          <a
+            key={option}
+            href={`#/${option}`}
+            className={`filter__link ${filter === option ? 'selected' : ''}`}
+            data-cy={`FilterLink${option.charAt(0).toUpperCase() + option.slice(1)}`}
+            onClick={() => handleFilter(option)}
+          >
+            {option.charAt(0).toUpperCase() + option.slice(1)}
+          </a>
+        ))}
       </nav>
 
       <button
