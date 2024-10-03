@@ -24,6 +24,8 @@ export const App: React.FC = () => {
     [key: number]: boolean;
   }>({});
 
+  const inputRef = useRef<HTMLInputElement | null>(null);
+
   const displayedTodos = getFilteredTodos(todos, filter);
 
   const errorTimerId = useRef(0);
@@ -70,6 +72,7 @@ export const App: React.FC = () => {
     } catch (error) {
       showError(Add);
       setTempTodo(null);
+      throw error;
     } finally {
       setTodoLoading(0, false);
       setIsLoading(false);
@@ -84,8 +87,10 @@ export const App: React.FC = () => {
       setTodos(prevTodos => prevTodos.filter(todo => todo.id !== todoId));
     } catch (error) {
       showError(Delete);
+      throw error;
     } finally {
       setTodoLoading(todoId, false);
+      inputRef.current?.focus();
     }
   };
 
@@ -105,6 +110,7 @@ export const App: React.FC = () => {
       );
     } catch (error) {
       showError(Update);
+      throw error;
     } finally {
       setTodoLoading(id, false);
     }
@@ -120,6 +126,7 @@ export const App: React.FC = () => {
           onAdd={onAdd}
           isLoading={isLoading}
           todos={todos}
+          inputRef={inputRef}
         />
 
         <TodoList

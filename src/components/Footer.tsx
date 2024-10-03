@@ -7,7 +7,7 @@ interface Props {
   setFilter: Dispatch<SetStateAction<FilterType>>;
   filter: string;
   todos: Todo[];
-  onDelete: (userId: number) => void;
+  onDelete: (userId: number) => Promise<void>;
 }
 
 export const Footer: FC<Props> = ({ setFilter, filter, todos, onDelete }) => {
@@ -19,13 +19,20 @@ export const Footer: FC<Props> = ({ setFilter, filter, todos, onDelete }) => {
     return acc;
   }, 0);
 
-  const handleClearCompleted = () => {
-    todos.forEach(todo => {
-      if (todo.completed) {
-        onDelete(todo.id);
+  const handleClearCompleted = async () => {
+    const completedTodos = todos.filter(todo => todo.completed);
+
+    for (const todo of completedTodos) {
+      try {
+        await onDelete(todo.id);
+      } catch (error) {
+        // eslint-disable-next-line no-console
+        console.error(`Failed to delete todo with id ${todo.id}`, error);
       }
-    });
+    }
   };
+
+  const someCompleted = todos.some(todo => todo.completed === true);
 
   return (
     <footer className="todoapp__footer" data-cy="Footer">
@@ -54,6 +61,7 @@ export const Footer: FC<Props> = ({ setFilter, filter, todos, onDelete }) => {
       </nav>
 
       <button
+        disabled={!someCompleted}
         type="button"
         className="todoapp__clear-completed"
         data-cy="ClearCompletedButton"

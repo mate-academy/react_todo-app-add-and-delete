@@ -1,5 +1,5 @@
 import classNames from 'classnames';
-import React, { FormEvent, useEffect, useRef, useState } from 'react';
+import React, { FormEvent, useEffect, useState } from 'react';
 import { Todo } from '../types/Todo';
 import { ErrorMessages } from '../enum/ErrorMassages';
 
@@ -8,6 +8,7 @@ interface Props {
   showError: (message: ErrorMessages) => void;
   isLoading: boolean;
   todos: Todo[];
+  inputRef: React.RefObject<HTMLInputElement>;
 }
 
 export const Header: React.FC<Props> = ({
@@ -15,9 +16,9 @@ export const Header: React.FC<Props> = ({
   showError,
   isLoading,
   todos,
+  inputRef,
 }) => {
   const [title, setTitle] = useState<string>('');
-  const inputRef = useRef<HTMLInputElement | null>(null);
 
   const trimmedTitle = title.trim();
 
@@ -33,9 +34,6 @@ export const Header: React.FC<Props> = ({
       return;
     }
 
-    // eslint-disable-next-line no-console
-    console.log('Calling onAdd with:', trimmedTitle);
-
     try {
       await onAdd({
         id: 0,
@@ -45,8 +43,6 @@ export const Header: React.FC<Props> = ({
       });
       setTitle('');
     } catch (error) {
-      // eslint-disable-next-line no-console
-      console.log('Error while adding todo:', error);
       showError(ErrorMessages.Add);
       inputRef.current?.focus();
     }
