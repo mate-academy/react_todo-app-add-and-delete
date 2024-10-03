@@ -200,15 +200,13 @@ export const App: React.FC = () => {
           tempTodo={tempTodo}
         />
 
-        {todos.length !== 0 && (
-          <Footer
-            todos={todos}
-            filter={filter}
-            handleFilter={handleFilter}
-            completedCount={completedCount}
-            deleteCompletedTodos={deleteCompletedTodos}
-          />
-        )}
+        <Footer
+          todos={todos}
+          filter={filter}
+          handleFilter={handleFilter}
+          completedCount={completedCount}
+          deleteCompletedTodos={deleteCompletedTodos}
+        />
       </div>
 
       <Notifications errorMessage={errorMessage} />
