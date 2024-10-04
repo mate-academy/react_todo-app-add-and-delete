@@ -11,13 +11,7 @@ interface Props {
 }
 
 export const Footer: FC<Props> = ({ setFilter, filter, todos, onDelete }) => {
-  const handleActiveTodos = todos.reduce((acc, val) => {
-    if (!val.completed) {
-      return acc + 1;
-    }
-
-    return acc;
-  }, 0);
+  const countActiveTodos = todos.filter(todo => !todo.completed).length;
 
   const handleClearCompleted = async () => {
     const completedTodos = todos.filter(todo => todo.completed);
@@ -37,7 +31,7 @@ export const Footer: FC<Props> = ({ setFilter, filter, todos, onDelete }) => {
   return (
     <footer className="todoapp__footer" data-cy="Footer">
       <span className="todo-count" data-cy="TodosCounter">
-        {handleActiveTodos} items left
+        {countActiveTodos} items left
       </span>
 
       <nav className="filter" data-cy="Filter">

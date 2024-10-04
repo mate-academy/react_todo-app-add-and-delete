@@ -42,6 +42,7 @@ export const App: React.FC = () => {
       .getTodos()
       .then(setTodos)
       .catch(() => showError(Load));
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   const setTodoLoading = (id: number, loading: boolean) => {
