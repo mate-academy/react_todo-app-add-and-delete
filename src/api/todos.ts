@@ -18,8 +18,3 @@ export const addTodo = ({ userId, title, completed }: Omit<Todo, 'id'>) => {
 export const deleteTodo = (todoId: number) => {
   return client.delete(`/todos/${todoId}`);
 };
-
-// export const deleteTodos = (todoIds: number[]) => {
-
-//   return client.delete(`/todos/${todoId}`);
-// };
