@@ -15,28 +15,30 @@ export const TodoItem: React.FC<Props> = ({
   deleteSelectTodo,
   isLoadingById,
 }) => {
+  const { id, completed, title } = todo;
+
   return (
     <div
       data-cy="Todo"
-      className={classNames('todo', { completed: todo.completed })}
+      className={classNames('todo', { completed: completed })}
     >
       <label className="todo__status-label">
         <input
           data-cy="TodoStatus"
           type="checkbox"
           className="todo__status"
-          defaultChecked={todo.completed}
+          defaultChecked={completed}
         />
       </label>
 
       <span data-cy="TodoTitle" className="todo__title">
-        {todo.title}
+        {title}
       </span>
       <button
         type="button"
         className="todo__remove"
         data-cy="TodoDelete"
-        onClick={() => deleteSelectTodo(todo.id)}
+        onClick={() => deleteSelectTodo(id)}
       >
         ×
       </button>
