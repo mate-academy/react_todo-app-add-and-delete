@@ -10,7 +10,7 @@ import classNames from 'classnames';
 
 export const App: React.FC = () => {
   const [todos, setTodos] = useState<Todo[]>([]);
-  const [filteredTodos, setFilteredTodos] = useState<Todo[]>(todos);
+  // const [filteredTodos, setFilteredTodos] = useState<Todo[]>(todos);
   const [filterStatus, setFilterStatus] = useState<Status>(Status.All);
   const [errorMessage, setErrorMessage] = useState('');
   const [title, setTitle] = useState('');
@@ -30,17 +30,15 @@ export const App: React.FC = () => {
   const filterTodosByStatus = () => {
     switch (filterStatus) {
       case Status.Active:
-        return setFilteredTodos(todos.filter((todo: Todo) => !todo.completed));
+        return todos.filter((todo: Todo) => !todo.completed);
       case Status.Completed:
-        return setFilteredTodos(todos.filter((todo: Todo) => todo.completed));
+        return todos.filter((todo: Todo) => todo.completed);
       default:
-        return setFilteredTodos(todos);
+        return todos;
     }
   };
 
-  useEffect(() => {
-    filterTodosByStatus();
-  }, [todos, filterStatus]);
+  const filteredTodos = filterTodosByStatus();
 
   const createTempTodo = (tempTitle: string): Todo => {
     return {
