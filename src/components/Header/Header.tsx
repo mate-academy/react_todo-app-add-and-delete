@@ -1,4 +1,4 @@
-import React, { useEffect, useRef, useState } from 'react';
+import React, { useEffect, useRef } from 'react';
 import { Todo } from '../../types/Todo';
 import { USER_ID } from '../../api/todos';
 
@@ -6,16 +6,16 @@ type Props = {
   addTodo: (newTodo: Todo) => void;
   setErrorMessage: React.Dispatch<React.SetStateAction<string>>;
   loading: boolean;
-  title: string;
-  setTitle: React.Dispatch<React.SetStateAction<string>>;
+  titleTodo: string;
+  setTitleTodo: React.Dispatch<React.SetStateAction<string>>;
 };
 
 export const Header: React.FC<Props> = ({
   addTodo,
   setErrorMessage,
   loading,
-  title,
-  setTitle,
+  titleTodo,
+  setTitleTodo,
 }) => {
   const inputRef = useRef<HTMLInputElement>(null);
 
@@ -28,14 +28,14 @@ export const Header: React.FC<Props> = ({
   const handleSubmit = (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
 
-    if (!title.trim()) {
+    if (!titleTodo.trim()) {
       setErrorMessage('Title should not be empty');
       return;
     }
     addTodo({
       id: 0,
       userId: USER_ID,
-      title: title.trim(),
+      title: titleTodo.trim(),
       completed: false,
     });
   };
@@ -56,9 +56,9 @@ export const Header: React.FC<Props> = ({
           type="text"
           className="todoapp__new-todo"
           placeholder="What needs to be done?"
-          value={title}
+          value={titleTodo}
           onChange={event => {
-            setTitle(event.target.value);
+            setTitleTodo(event.target.value);
           }}
           disabled={loading}
           ref={inputRef}

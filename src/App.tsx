@@ -24,7 +24,7 @@ export const App: React.FC = () => {
   const [loading, setLoading] = useState(false);
   const [deletingTodoId, setDeletingTodoId] = useState<number | null>(null);
   const [filter, setFilter] = useState<FilterCriteria>(FilterCriteria.All);
-  const [title, setTitle] = useState('');
+  const [titleTodo, setTitleTodo] = useState('');
   const [tempTodo, setTempTodo] = useState<Todo | null>(null);
 
   useEffect(() => {
@@ -58,13 +58,13 @@ export const App: React.FC = () => {
   function addTodo({ title, userId, completed }: Todo) {
     setLoading(true);
 
-    const tempTodo = {
+    const newTempTodo = {
       id: 0,
       userId: todoServise.USER_ID,
       title,
       completed: false,
     };
-    setTempTodo(tempTodo);
+    setTempTodo(newTempTodo);
 
     todoServise
       .createTodo({ title, userId, completed })
@@ -76,7 +76,7 @@ export const App: React.FC = () => {
       })
       .finally(() => {
         setLoading(false);
-        setTitle('');
+        setTitleTodo('');
         setTempTodo(null);
       });
   }
@@ -100,7 +100,7 @@ export const App: React.FC = () => {
       })
       .finally(() => {
         setLoading(false);
-        setTitle('');
+        setTitleTodo('');
       });
   }
 
@@ -139,8 +139,8 @@ export const App: React.FC = () => {
           addTodo={addTodo}
           setErrorMessage={setErrorMessage}
           loading={loading}
-          title={title}
-          setTitle={setTitle}
+          titleTodo={titleTodo}
+          setTitleTodo={setTitleTodo}
         />
 
         <TodoList
