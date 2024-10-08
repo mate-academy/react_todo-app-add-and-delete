@@ -23,9 +23,7 @@ export const ErrorNotification: React.FC<Props> = ({
         className="delete"
         onClick={() => onError('')}
       />
-      {/* show only one message at a time */}
       {errorMessage}
-      {/*Unable to update a todo */}
     </div>
   );
 };

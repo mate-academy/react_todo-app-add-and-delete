@@ -4,9 +4,12 @@ import { TodoItem } from '../TodoItem/TodoItem';
 type Props = {
   visibleTodos: Todo[];
   onDelete: (val: number) => void;
-  isLoading: number;
+  isLoading: number[];
   tempTodo: Todo | null;
   textField: string;
+  onStatusChange: (val: Todo) => Promise<void>;
+  onEdit: (val: Todo) => Promise<void>;
+  isUpdateError: boolean;
 };
 
 export const TodoList: React.FC<Props> = ({
@@ -15,6 +18,9 @@ export const TodoList: React.FC<Props> = ({
   isLoading,
   tempTodo,
   textField,
+  onStatusChange,
+  onEdit,
+  isUpdateError,
 }) => {
   return (
     <section className="todoapp__main" data-cy="TodoList">
@@ -26,6 +32,9 @@ export const TodoList: React.FC<Props> = ({
               todo={todo}
               onDelete={onDelete}
               isLoading={isLoading}
+              onStatusChange={onStatusChange}
+              onEdit={onEdit}
+              isUpdateError={isUpdateError}
             />
           ))}
         </div>
@@ -45,7 +54,6 @@ export const TodoList: React.FC<Props> = ({
             {textField}
           </span>
 
-          {/* overlay will cover the todo while it is being deleted or updated */}
           <div data-cy="TodoLoader" className="modal overlay is-active">
             {/* eslint-disable-next-line max-len */}
             <div className="modal-background has-background-white-ter" />
@@ -53,35 +61,6 @@ export const TodoList: React.FC<Props> = ({
           </div>
         </div>
       )}
-
-      {/* This section i delete in the last task */}
-
-      {/* This todo is being edited */}
-      {/* <div data-cy="Todo" className="todo">
-            <label className="todo__status-label">
-              <input
-                data-cy="TodoStatus"
-                type="checkbox"
-                className="todo__status"
-              />
-            </label>
-
-            {/* This form is shown instead of the title and remove button
-            <form>
-              <input
-                data-cy="TodoTitleField"
-                type="text"
-                className="todo__title-field"
-                placeholder="Empty todo will be deleted"
-                value="Todo is being edited now"
-              />
-            </form>
-
-            <div data-cy="TodoLoader" className="modal overlay">
-              <div className="modal-background has-background-white-ter" />
-              <div className="loader" />
-            </div>
-          </div> */}
     </section>
   );
 };

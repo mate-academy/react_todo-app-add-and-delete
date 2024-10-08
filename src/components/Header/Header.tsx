@@ -1,9 +1,14 @@
+import classNames from 'classnames';
+
 type Props = {
   textField: string;
   onTextField: (e: React.ChangeEvent<HTMLInputElement>) => void;
   onSubmit: (e: React.FormEvent) => void;
   isSubmiting: boolean;
   field: React.RefObject<HTMLInputElement>;
+  onToggleAll: () => void;
+  isToggleActive: boolean;
+  isToggleVisible: boolean;
 };
 
 export const Header: React.FC<Props> = ({
@@ -12,17 +17,23 @@ export const Header: React.FC<Props> = ({
   onSubmit,
   isSubmiting,
   field,
+  onToggleAll,
+  isToggleActive,
+  isToggleVisible,
 }) => {
   return (
     <header className="todoapp__header">
-      {/* this button should have `active` class only if all todos are completed */}
-      <button
-        type="button"
-        className="todoapp__toggle-all active"
-        data-cy="ToggleAllButton"
-      />
+      {isToggleVisible && (
+        <button
+          type="button"
+          className={classNames('todoapp__toggle-all', {
+            active: isToggleActive,
+          })}
+          data-cy="ToggleAllButton"
+          onClick={onToggleAll}
+        />
+      )}
 
-      {/* Add a todo on form submit */}
       <form onSubmit={onSubmit}>
         <input
           data-cy="NewTodoField"
