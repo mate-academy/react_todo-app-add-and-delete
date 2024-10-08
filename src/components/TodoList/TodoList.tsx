@@ -1,4 +1,5 @@
 import { Todo } from '../../types/Todo';
+import { TempTodo } from '../TempTodo/TempTodo';
 import { TodoItem } from '../TodoItem/TodoItem';
 
 type Props = {
@@ -8,9 +9,7 @@ type Props = {
   isLoading: boolean;
   setErrorMessage: (errorText: string) => void;
   handleDeleteTodo: (id: number) => void;
-  setloadingIds: (
-    loading: number[] | ((prevLoading: number[]) => number[]),
-  ) => void;
+  setloadingIds: React.Dispatch<React.SetStateAction<number[]>>;
   deletingTodoId: number | null;
   loadingIds: number[];
 };
@@ -19,7 +18,6 @@ export const TodoList: React.FC<Props> = ({
   todos,
   setTodos,
   tempTodo,
-  isLoading,
   handleDeleteTodo,
   setErrorMessage,
   deletingTodoId,
@@ -40,14 +38,7 @@ export const TodoList: React.FC<Props> = ({
           setErrorMessage={setErrorMessage}
         />
       ))}
-      {tempTodo && (
-        <TodoItem
-          todo={tempTodo}
-          key={tempTodo.id}
-          isLoading={isLoading}
-          handleDeleteTodo={handleDeleteTodo}
-        />
-      )}
+      {tempTodo && <TempTodo todo={tempTodo} />}
     </section>
   );
 };

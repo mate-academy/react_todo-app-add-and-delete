@@ -55,6 +55,7 @@ export const TodoHeader: React.FC<Props> = ({
     } catch (error) {
       setErrorMessage('Unable to add a todo');
     } finally {
+      setTempTodo(null);
       setIsLoading(false);
     }
   };

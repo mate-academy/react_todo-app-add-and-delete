@@ -1,5 +1,3 @@
-//import React from 'react'
-
 import { Todo } from '../../types/Todo';
 import { Status } from '../../types/Status';
 
@@ -18,7 +16,7 @@ export const Footer: React.FC<Props> = ({
   statusOfTodos,
   deleteCompletedTodo,
 }) => {
-  //const completTodo = todos.filter(todo => todo.completed);
+  const completTodo = todos.filter(todo => todo.completed);
   const notCompletTodo = todos.filter(todo => !todo.completed);
 
   return (
@@ -27,7 +25,6 @@ export const Footer: React.FC<Props> = ({
         {notCompletTodo.length} items left
       </span>
 
-      {/* Active link should have the 'selected' class */}
       <nav className="filter" data-cy="Filter">
         <a
           href="#/"
@@ -63,12 +60,12 @@ export const Footer: React.FC<Props> = ({
         </a>
       </nav>
 
-      {/* this button should be disabled if there are no completed todos */}
       <button
         type="button"
         className="todoapp__clear-completed"
         data-cy="ClearCompletedButton"
         onClick={deleteCompletedTodo}
+        disabled={!completTodo.length}
       >
         Clear completed
       </button>

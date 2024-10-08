@@ -9,6 +9,7 @@ import { TodoList } from './components/TodoList/TodoList';
 import { deleteTodos, getTodos, USER_ID } from './api/todos';
 import { Footer } from './components/Footer/Footer';
 import { Status } from './types/Status';
+// eslint-disable-next-line max-len
 import { ErrorNotification } from './components/ErrorNotification/ErrorNotification';
 
 export const App: React.FC = () => {
