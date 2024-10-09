@@ -7,8 +7,7 @@ type Props = {
   todos: Todo[] | null;
   updateTodo: (updatedTodo: Todo) => void;
   deleteTodo: (todoId: number) => void;
-  loading: boolean;
-  deletingTodoId: number | null;
+  loadingTodoIds: number[];
   tempTodo: Todo | null;
 };
 
@@ -16,8 +15,7 @@ export const TodoList: React.FC<Props> = ({
   todos,
   updateTodo,
   deleteTodo,
-  loading,
-  deletingTodoId,
+  loadingTodoIds,
   tempTodo,
 }) => {
   return (
@@ -28,8 +26,7 @@ export const TodoList: React.FC<Props> = ({
             todo={todo}
             updateTodo={updateTodo}
             deleteTodo={deleteTodo}
-            loading={loading}
-            deletingTodoId={deletingTodoId}
+            isLoading={loadingTodoIds.includes(todo.id)}
             key={todo.id}
           />
         ))}
@@ -38,8 +35,7 @@ export const TodoList: React.FC<Props> = ({
           todo={tempTodo}
           updateTodo={updateTodo}
           deleteTodo={deleteTodo}
-          loading={loading}
-          deletingTodoId={deletingTodoId}
+          isLoading={false}
         />
       )}
     </section>

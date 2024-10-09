@@ -22,10 +22,11 @@ export const App: React.FC = () => {
   const [todos, setTodos] = useState<Todo[]>([]);
   const [errorMessage, setErrorMessage] = useState('');
   const [loading, setLoading] = useState(false);
-  const [deletingTodoId, setDeletingTodoId] = useState<number | null>(null);
   const [filter, setFilter] = useState<FilterCriteria>(FilterCriteria.All);
   const [titleTodo, setTitleTodo] = useState('');
   const [tempTodo, setTempTodo] = useState<Todo | null>(null);
+
+  const [loadingTodoIds, setLoadingTodoIds] = useState<number[]>([]);
 
   useEffect(() => {
     setLoading(true);
@@ -82,7 +83,7 @@ export const App: React.FC = () => {
   }
 
   function updateTodo(updatedTodo: Todo) {
-    setLoading(true);
+    setLoadingTodoIds(ids => [...ids, updatedTodo.id]);
 
     todoServise
       .updateTodo(updatedTodo)
@@ -99,14 +100,13 @@ export const App: React.FC = () => {
         setErrorMessage('Unable to update a todo');
       })
       .finally(() => {
-        setLoading(false);
+        setLoadingTodoIds(ids => ids.filter(id => id !== updatedTodo.id)); // Remove todo id from loading state
         setTitleTodo('');
       });
   }
 
   function deleteTodo(todoId: number) {
-    setLoading(true);
-    setDeletingTodoId(todoId);
+    setLoadingTodoIds(ids => [...ids, todoId]); // Add id to the array
 
     todoServise
       .deleteTodo(todoId)
@@ -119,8 +119,7 @@ export const App: React.FC = () => {
         setErrorMessage('Unable to delete todo');
       })
       .finally(() => {
-        setLoading(false);
-        setDeletingTodoId(null);
+        setLoadingTodoIds(ids => ids.filter(id => id !== todoId)); // Delete id after completion
       });
   }
 
@@ -147,12 +146,10 @@ export const App: React.FC = () => {
           todos={getFilteredTodos}
           updateTodo={updateTodo}
           deleteTodo={deleteTodo}
-          loading={loading}
-          deletingTodoId={deletingTodoId}
+          loadingTodoIds={loadingTodoIds}
           tempTodo={tempTodo}
         />
 
-        {/* Hide the footer if there are no todos */}
         {!!todos.length && !loading && (
           <Footer
             handleFilter={handleFilter}
