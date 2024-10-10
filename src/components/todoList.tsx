@@ -7,13 +7,16 @@ type Props = {
   visibleTodos: Todo[];
   deleteOneTodo: (id: number) => void;
   tempTodo: Todo | null;
+  delLoading: boolean;
 };
 
 export const TodoList: React.FC<Props> = ({
   visibleTodos,
   deleteOneTodo,
   tempTodo,
+  delLoading,
 }) => {
+
   return (
     <section className="todoapp__main" data-cy="TodoList">
       {visibleTodos.map(todo => (
@@ -48,7 +51,11 @@ export const TodoList: React.FC<Props> = ({
           </button>
 
           {/* overlay will cover the todo while it is being deleted or updated */}
-          <div data-cy="TodoLoader" className="modal overlay">
+          <div
+            data-cy="TodoLoader"
+            className={cn("modal overlay", {
+              'is-active': delLoading ,
+            })}>
             <div className="modal-background has-background-white-ter" />
             <div className="loader" />
           </div>

@@ -7,6 +7,7 @@ type Props = {
   complete: Todo[];
   setFilter: (filter: Filter) => void;
   filter: Filter;
+  deleteCompleted: () => void;
 };
 
 export const Footer: React.FC<Props> = ({
@@ -14,6 +15,7 @@ export const Footer: React.FC<Props> = ({
   filter,
   active,
   complete,
+  deleteCompleted,
 }) => {
   const handleAllChange = (
     event: React.MouseEvent<HTMLAnchorElement, MouseEvent>,
@@ -81,6 +83,7 @@ export const Footer: React.FC<Props> = ({
         className="todoapp__clear-completed"
         data-cy="ClearCompletedButton"
         disabled={complete.length === 0}
+        onClick={() => deleteCompleted}
       >
         Clear completed
       </button>
