@@ -105,7 +105,7 @@ export const App: React.FC = () => {
   }
 
   function deleteCompleted() {
-    todos.map(todo => todo.completed && deleteOneTodo(todo.id));
+    todos.forEach(todo => todo.completed && deleteOneTodo(todo.id));
   }
 
   if (!USER_ID) {
