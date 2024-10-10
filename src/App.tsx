@@ -79,14 +79,18 @@ export const App: React.FC = () => {
       })
       .finally(() => {
         setLoading(false);
-        setTempTodo(null)
+        setTempTodo(null);
       });
   }
 
   function deleteOneTodo(todoId: number) {
     setTodos(currentTodos => currentTodos.filter(todo => todo.id !== todoId));
 
-    deleteTodo(todoId);
+    return deleteTodo(todoId).catch(error => {
+      setErrorMessage('Unable to delete a todo');
+      setTimeout(() => setErrorMessage(''), 3000);
+      throw error;
+    });
   }
 
   if (!USER_ID) {

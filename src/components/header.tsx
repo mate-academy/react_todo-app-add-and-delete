@@ -38,6 +38,7 @@ export const Header: React.FC<Props> = ({
       event.preventDefault();
       if (!todoTitle.trim()) {
         setErrorMessage('Title should not be empty');
+        setTimeout(() => setErrorMessage(''), 3000);
       }
 
       if (todoTitle.trim()) {
