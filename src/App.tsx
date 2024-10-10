@@ -57,6 +57,7 @@ export const App: React.FC = () => {
   }, [todos]);
 
   function addTodo({ userId, title, completed }: Omit<Todo, 'id'>) {
+    setErrorMessage('');
     setLoading(true);
     setTempTodo({
       id: 0,
