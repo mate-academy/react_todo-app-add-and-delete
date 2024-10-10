@@ -10,6 +10,7 @@ type Props = {
   allActive: boolean;
   setErrorMessage: (text: string) => void;
   loading: boolean;
+  todos: Todo[];
 };
 
 export const Header: React.FC<Props> = ({
@@ -19,6 +20,7 @@ export const Header: React.FC<Props> = ({
   allActive,
   setErrorMessage,
   loading,
+  todos,
 }) => {
   const titleField = useRef<HTMLInputElement>(null);
 
@@ -26,7 +28,7 @@ export const Header: React.FC<Props> = ({
     if (titleField.current) {
       titleField.current.focus();
     }
-  }, [loading]);
+  }, [loading, todos]);
 
   const handleTitleChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     setErrorMessage('');

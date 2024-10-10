@@ -17,9 +17,8 @@ export const App: React.FC = () => {
   const [errorMessage, setErrorMessage] = useState('');
   const [filter, setFilter] = useState(Filter.all);
   const [loading, setLoading] = useState(false);
-  const [delLoading, setDelLoading] = useState(false)
+  const [delLoading, setDelLoading] = useState(false);
   const [tempTodo, setTempTodo] = useState<Todo | null>(null);
-  
 
   function getVisibleTodos(filt: Filter) {
     switch (filt) {
@@ -87,23 +86,26 @@ export const App: React.FC = () => {
   }
 
   function deleteOneTodo(todoId: number) {
-    setDelLoading(true)
+    setDelLoading(true);
 
     return deleteTodo(todoId)
       .then(() => {
         setTodos(currentTodos =>
-          currentTodos.filter(todo => todo.id !== todoId))
+          currentTodos.filter(todo => todo.id !== todoId),
+        );
       })
       .catch(error => {
         setErrorMessage('Unable to delete a todo');
         setTimeout(() => setErrorMessage(''), 3000);
         throw error;
       })
-      .finally(() => {setDelLoading(false)});
+      .finally(() => {
+        setDelLoading(false);
+      });
   }
 
   function deleteCompleted() {
-    todos.map(todo => todo.completed && deleteOneTodo(todo.id))
+    todos.map(todo => todo.completed && deleteOneTodo(todo.id));
   }
 
   if (!USER_ID) {
@@ -116,6 +118,7 @@ export const App: React.FC = () => {
 
       <div className="todoapp__content">
         <Header
+          todos={todos}
           todoTitle={todoTitle}
           setTodoTitle={setTodoTitle}
           addTodo={addTodo}
