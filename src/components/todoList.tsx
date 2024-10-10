@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState } from 'react';
 import cn from 'classnames';
 
 import { Todo } from '../types/Todo';
@@ -7,15 +7,20 @@ type Props = {
   visibleTodos: Todo[];
   deleteOneTodo: (id: number) => void;
   tempTodo: Todo | null;
-  delLoading: boolean;
 };
 
 export const TodoList: React.FC<Props> = ({
   visibleTodos,
   deleteOneTodo,
   tempTodo,
-  delLoading,
 }) => {
+  const [deletedId, setDeletedId] = useState<number | null>(null);
+
+  const handleDelete = (id: number) => {
+    setDeletedId(id)
+    deleteOneTodo(id)
+  }
+
   return (
     <section className="todoapp__main" data-cy="TodoList">
       {visibleTodos.map(todo => (
@@ -44,7 +49,7 @@ export const TodoList: React.FC<Props> = ({
             type="button"
             className="todo__remove"
             data-cy="TodoDelete"
-            onClick={() => deleteOneTodo(todo.id)}
+            onClick={() => handleDelete(todo.id)}
           >
             ×
           </button>
@@ -53,7 +58,7 @@ export const TodoList: React.FC<Props> = ({
           <div
             data-cy="TodoLoader"
             className={cn('modal overlay', {
-              'is-active': delLoading,
+              'is-active': todo.id === deletedId,
             })}
           >
             <div className="modal-background has-background-white-ter" />
@@ -96,7 +101,6 @@ export const TodoList: React.FC<Props> = ({
             type="button"
             className="todo__remove"
             data-cy="TodoDelete"
-            onClick={() => deleteOneTodo(tempTodo.id)}
           >
             ×
           </button>

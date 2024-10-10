@@ -17,7 +17,6 @@ export const App: React.FC = () => {
   const [errorMessage, setErrorMessage] = useState('');
   const [filter, setFilter] = useState(Filter.all);
   const [loading, setLoading] = useState(false);
-  const [delLoading, setDelLoading] = useState(false);
   const [tempTodo, setTempTodo] = useState<Todo | null>(null);
 
   function getVisibleTodos(filt: Filter) {
@@ -86,8 +85,6 @@ export const App: React.FC = () => {
   }
 
   function deleteOneTodo(todoId: number) {
-    setDelLoading(true);
-
     return deleteTodo(todoId)
       .then(() => {
         setTodos(currentTodos =>
@@ -99,9 +96,6 @@ export const App: React.FC = () => {
         setTimeout(() => setErrorMessage(''), 3000);
         throw error;
       })
-      .finally(() => {
-        setDelLoading(false);
-      });
   }
 
   function deleteCompleted() {
@@ -131,7 +125,6 @@ export const App: React.FC = () => {
           visibleTodos={getVisibleTodos(filter)}
           deleteOneTodo={deleteOneTodo}
           tempTodo={tempTodo}
-          delLoading={delLoading}
         />
 
         {todos.length > 0 && (
