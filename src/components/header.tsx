@@ -26,7 +26,7 @@ export const Header: React.FC<Props> = ({
     if (titleField.current) {
       titleField.current.focus();
     }
-  }, []);
+  }, [loading]);
 
   const handleTitleChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     setErrorMessage('');

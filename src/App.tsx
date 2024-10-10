@@ -33,7 +33,7 @@ export const App: React.FC = () => {
 
   useEffect(() => {
     setLoading(true);
-  
+
     getTodos()
       .then(setTodos)
       .catch(error => {
@@ -41,7 +41,7 @@ export const App: React.FC = () => {
         setTimeout(() => setErrorMessage(''), 3000);
         throw error;
       })
-      .finally(() => setLoading(false))
+      .finally(() => setLoading(false));
   }, []);
 
   const allActive = useMemo(() => {
@@ -56,34 +56,36 @@ export const App: React.FC = () => {
     return todos.filter(todo => todo.completed);
   }, [todos]);
 
-  
   function addTodo({ userId, title, completed }: Omit<Todo, 'id'>) {
     setLoading(true);
     setTempTodo({
-      id: 0, 
+      id: 0,
       userId: USER_ID,
-      title: `Temp todo: ${todoTitle}`,
+      title: todoTitle,
       completed: false,
-    })
+    });
 
     createTodo({ userId, title, completed })
       .then(newTodo => {
-        setTodos(currentTodos => [...currentTodos, newTodo])
+        setTodos(currentTodos => [...currentTodos, newTodo]);
         setTodoTitle('');
       })
-        
+
       .catch(error => {
         setErrorMessage('Unable to add a todo');
-        setTempTodo(null)
+        setTempTodo(null);
         setTimeout(() => setErrorMessage(''), 3000);
         throw error;
       })
-      .finally(() => setLoading(false))
+      .finally(() => {
+        setLoading(false);
+        setTempTodo(null)
+      });
   }
 
   function deleteOneTodo(todoId: number) {
     setTodos(currentTodos => currentTodos.filter(todo => todo.id !== todoId));
-    
+
     deleteTodo(todoId);
   }
 
@@ -124,4 +126,3 @@ export const App: React.FC = () => {
     </div>
   );
 };
-
