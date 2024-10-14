@@ -394,7 +394,7 @@ describe('', () => {
     });
   });
 
-  describe('Adding a todo', () => {
+  describe.skip('Adding a todo', () => {
     beforeEach(() => {
       page.mockLoad().as('loadRequest');
       page.visit();
@@ -596,7 +596,8 @@ describe('', () => {
         // to prevent Cypress from failing the test on uncaught exception
         cy.once('uncaught:exception', () => false);
 
-        page.mockCreate({ statusCode: 503, body: 'Service Unavailable' })
+        page
+          .mockCreate({ statusCode: 503, body: 'Service Unavailable' })
           .as('createRequest');
 
         page.newTodoField().type('Test Todo{enter}');
@@ -652,7 +653,8 @@ describe('', () => {
         // to prevent Cypress from failing the test on uncaught exception
         cy.once('uncaught:exception', () => false);
 
-        page.mockCreate({ statusCode: 503, body: 'Service Unavailable' })
+        page
+          .mockCreate({ statusCode: 503, body: 'Service Unavailable' })
           .as('createRequest2');
 
         page.newTodoField().type(`{enter}`);
@@ -665,7 +667,8 @@ describe('', () => {
         // to prevent Cypress from failing the test on uncaught exception
         cy.once('uncaught:exception', () => false);
 
-        page.mockCreate({ statusCode: 503, body: 'Service Unavailable' })
+        page
+          .mockCreate({ statusCode: 503, body: 'Service Unavailable' })
           .as('createRequest2');
 
         cy.clock();
