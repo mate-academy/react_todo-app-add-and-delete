@@ -1,26 +1,83 @@
-/* eslint-disable max-len */
-/* eslint-disable jsx-a11y/control-has-associated-label */
-import React from 'react';
-import { UserWarning } from './UserWarning';
+import { FC, useEffect, useMemo, useState } from 'react';
 
-const USER_ID = 0;
+import { FilterOptions } from './utils/FilterOptions';
+import { getFilteredTodos } from './utils/GetFilteredTodos';
+import { handleError } from './utils/HandleError';
+import { handleDeleteTodo } from './utils/HandleDeleteTodo';
 
-export const App: React.FC = () => {
-  if (!USER_ID) {
-    return <UserWarning />;
+import { getTodos } from './api/todos';
+import { ToodoList } from './components/TodoList';
+import { Footer } from './components/Footer';
+import { ErrorNotification } from './components/ErrorNotification';
+import { Header } from './components/Header';
+
+import { ErrorMessages } from './types/ErrorMessages';
+import { Todo } from './types/Todo';
+
+export const App: FC = () => {
+  const [todos, setTodos] = useState<Todo[]>([]);
+  const [tempTodo, setTempTodo] = useState<Todo | null>(null);
+  const [error, setError] = useState<ErrorMessages>(ErrorMessages.None);
+  const [idsForDelete, setIdsForDelete] = useState<number[]>([]);
+  const [filterOption, setFilterOption] = useState<FilterOptions>(
+    FilterOptions.All,
+  );
+
+  if (idsForDelete.length !== 0) {
+    handleDeleteTodo(idsForDelete, setTodos, setIdsForDelete, setError);
   }
 
-  return (
-    <section className="section container">
-      <p className="title is-4">
-        Copy all you need from the prev task:
-        <br />
-        <a href="https://github.com/mate-academy/react_todo-app-loading-todos#react-todo-app-load-todos">
-          React Todo App - Load Todos
-        </a>
-      </p>
+  useEffect(() => {
+    getTodos()
+      .then(setTodos)
+      .catch(() => handleError(setError, ErrorMessages.LoadFail));
+  }, []);
 
-      <p className="subtitle">Styles are already copied</p>
-    </section>
+  const completedTodosId = useMemo(() => {
+    return todos.filter(todo => todo.completed).map(todo => todo.id);
+  }, [todos]);
+
+  const numberOfActiveTodos = useMemo(() => {
+    return todos.filter(todo => !todo.completed).length;
+  }, [todos]);
+
+  const filteredTodos = useMemo(() => {
+    return getFilteredTodos(todos, filterOption);
+  }, [todos, filterOption]);
+
+  return (
+    <div className="todoapp">
+      <h1 className="todoapp__title">todos</h1>
+
+      <div className="todoapp__content">
+        <Header
+          setTempTodo={setTempTodo}
+          setError={setError}
+          setTodos={setTodos}
+          tempTodo={tempTodo}
+          todos={todos}
+        />
+
+        {!!todos.length && (
+          <>
+            <ToodoList
+              todos={filteredTodos}
+              tempTodo={tempTodo}
+              setIdsForDelete={setIdsForDelete}
+              idsForDelete={idsForDelete}
+            />
+            <Footer
+              setFilterOption={setFilterOption}
+              filterOption={filterOption}
+              numberOfActiveTodos={numberOfActiveTodos}
+              completedTodosId={completedTodosId}
+              setIdsForDelete={setIdsForDelete}
+            />
+          </>
+        )}
+      </div>
+
+      <ErrorNotification error={error} />
+    </div>
   );
 };
