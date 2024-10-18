@@ -1,26 +1,28 @@
-/* eslint-disable max-len */
-/* eslint-disable jsx-a11y/control-has-associated-label */
-import React from 'react';
+import React, { useState } from 'react';
 import { UserWarning } from './UserWarning';
-
-const USER_ID = 0;
+import { USER_ID } from './api/todos';
+import { TodoErrors } from './components/TodoErrors';
+import { TodoContent } from './components/TodoContent';
 
 export const App: React.FC = () => {
+  const [errorMessage, setErrorMessage] = useState('');
+
+  const errorFunction = (message: string) => {
+    setErrorMessage(message);
+
+    setTimeout(() => {
+      setErrorMessage('');
+    }, 3000);
+  };
+
   if (!USER_ID) {
     return <UserWarning />;
   }
 
   return (
-    <section className="section container">
-      <p className="title is-4">
-        Copy all you need from the prev task:
-        <br />
-        <a href="https://github.com/mate-academy/react_todo-app-loading-todos#react-todo-app-load-todos">
-          React Todo App - Load Todos
-        </a>
-      </p>
-
-      <p className="subtitle">Styles are already copied</p>
-    </section>
+    <div className="todoapp">
+      <TodoContent errorFunction={errorFunction} />
+      <TodoErrors errorMessage={errorMessage} closeError={setErrorMessage} />
+    </div>
   );
 };
