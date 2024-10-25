@@ -62,13 +62,23 @@ export const App: React.FC = () => {
   const bulkDeleteTodo = async (todoList: Todo[]) => {
     setDeletingIdList(todoList.map(todo => todo.id));
     try {
-      await Promise.all(todoList.map(todo => postService.deleteTodo(todo.id)));
-      setTodos(currentTodos =>
-        currentTodos.filter(todo => !todoList.some(t => t.id === todo.id)),
+      const deletedTodos = await Promise.allSettled(
+        todoList.map(todo => postService.deleteTodo(todo.id)),
       );
-    } catch (error) {
-      setErrorMessage('Unable to delete a todo');
-      throw error;
+
+      const successDeleted = todoList.filter(
+        (_, index) => deletedTodos[index].status === 'fulfilled',
+      );
+
+      setTodos(currentTodos =>
+        currentTodos.filter(
+          todo => !successDeleted.some(t => t.id === todo.id),
+        ),
+      );
+
+      if (deletedTodos.some(result => result.status === 'rejected')) {
+        setErrorMessage('Unable to delete a todo');
+      }
     } finally {
       focusInput();
       setDeletingIdList([]);

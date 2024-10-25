@@ -75,7 +75,7 @@ export const TodoForm: React.FC<Props> = ({
     if (!disableInput && inputRef.current) {
       inputRef.current.focus();
     }
-  }, [disableInput]);
+  }, [disableInput, inputRef]);
 
   return (
     <>
