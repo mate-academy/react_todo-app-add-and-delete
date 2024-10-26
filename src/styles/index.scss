@@ -8,18 +8,7 @@ body {
   margin: 0 auto;
 }
 
-.notification {
-  transition-property: opacity, min-height;
-  transition-duration: 1s;
-  min-height: 36px;
-}
-
-.notification.hidden {
-  min-height: 0;
-  opacity: 0;
-  pointer-events: none;
-}
-
-@import "./todoapp";
-@import "./todo";
-@import "./filter";
+@import './App';
+@import '../components/TodoItem/TodoItem';
+@import '../components/Filter/Filter';
+@import '../components/ErrorNotification/ErrorNotification';
