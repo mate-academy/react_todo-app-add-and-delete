@@ -33,6 +33,8 @@
 
     word-break: break-all;
     transition: color 0.4s;
+    display: inline-block; /* Зберігає текст в одному рядку */
+    white-space: nowrap; /* Запобігає переносу рядка */
   }
 
   &.completed &__title {
