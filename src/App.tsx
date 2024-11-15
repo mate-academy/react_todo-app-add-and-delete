@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import { useEffect, useState, FC } from 'react';
 import { Header } from './components/Header/Header';
 import { TodoList } from './components/TodoList';
 import { Footer } from './components/Footer';
@@ -12,11 +12,11 @@ import { Todo } from './types/Todo';
 import { Errors } from './types/Errors';
 import { Filter } from './types/Filters';
 
-export const App: React.FC = () => {
+export const App: FC = () => {
   const [todos, setTodos] = useState<Todo[]>([]);
   const [filter, setFilter] = useState(Filter.All);
 
-  const [errorMessage, setErrorMessage] = useState('');
+  const [errorMessage, setErrorMessage] = useState(Errors.DEFAULT);
   const [isLoading, setIsLoading] = useState(false);
 
   const [tempTodo, setTempTodo] = useState<Todo | null>(null);
@@ -25,17 +25,17 @@ export const App: React.FC = () => {
 
   const filteredTodos = getFilteredTodosByStatus(todos, filter);
 
-  useEffect(() => {
+  const countActiveTodos = todos.reduce((accum, todo) => {
+    return !todo.completed ? accum + 1 : accum;
+  }, 0);
+
+  const handleGetTodos = () => {
     getTodos()
       .then(setTodos)
       .catch(() => {
         setErrorMessage(Errors.LOADING);
       });
-  }, []);
-
-  const countActiveTodos = todos.reduce((accum, todo) => {
-    return !todo.completed ? accum + 1 : accum;
-  }, 0);
+  };
 
   const handleDeleteTodo = (id: number) => {
     setIsLoading(true);
@@ -57,6 +57,10 @@ export const App: React.FC = () => {
         throw error;
       });
   };
+
+  useEffect(() => {
+    handleGetTodos();
+  }, []);
 
   return (
     <div className="todoapp">
@@ -83,7 +87,7 @@ export const App: React.FC = () => {
               setErrorMessage={setErrorMessage}
               deleteTodoId={deleteTodoId}
               setDeleteTodoId={setDeleteTodoId}
-              handleDeleteTodo={handleDeleteTodo}
+              onDeleteTodo={handleDeleteTodo}
             />
 
             <Footer
@@ -91,7 +95,7 @@ export const App: React.FC = () => {
               filter={filter}
               setFilter={setFilter}
               todos={todos}
-              handleDeleteTodo={handleDeleteTodo}
+              onDeleteTodo={handleDeleteTodo}
             />
           </>
         )}

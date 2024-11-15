@@ -1,18 +1,20 @@
+import { Errors } from '../../types/Errors';
 import { Todo } from '../../types/Todo';
 import { TodoItem } from '../TodoItem';
+import { FC } from 'react';
 
 type Props = {
   todos: Todo[];
   tempTodo: Todo | null;
   isLoading: boolean;
   setTodos: React.Dispatch<React.SetStateAction<Todo[]>>;
-  setErrorMessage: React.Dispatch<React.SetStateAction<string>>;
+  setErrorMessage: React.Dispatch<React.SetStateAction<Errors>>;
   deleteTodoId: number[];
   setDeleteTodoId: React.Dispatch<React.SetStateAction<number[]>>;
-  handleDeleteTodo: (id: number) => void;
+  onDeleteTodo: (id: number) => void;
 };
 
-export const TodoList: React.FC<Props> = ({
+export const TodoList: FC<Props> = ({
   todos,
   tempTodo,
   isLoading,
@@ -20,7 +22,7 @@ export const TodoList: React.FC<Props> = ({
   setErrorMessage,
   deleteTodoId,
   setDeleteTodoId,
-  handleDeleteTodo,
+  onDeleteTodo,
 }) => {
   return (
     <section className="todoapp__main" data-cy="TodoList">
@@ -34,7 +36,7 @@ export const TodoList: React.FC<Props> = ({
             setErrorMessage={setErrorMessage}
             deleteTodoId={deleteTodoId}
             setDeleteTodoId={setDeleteTodoId}
-            handleDeleteTodo={handleDeleteTodo}
+            onDeleteTodo={onDeleteTodo}
           />
         );
       })}
@@ -47,7 +49,7 @@ export const TodoList: React.FC<Props> = ({
           setErrorMessage={setErrorMessage}
           deleteTodoId={deleteTodoId}
           setDeleteTodoId={setDeleteTodoId}
-          handleDeleteTodo={handleDeleteTodo}
+          onDeleteTodo={onDeleteTodo}
         />
       )}
     </section>

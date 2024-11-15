@@ -1,24 +1,25 @@
 /* eslint-disable jsx-a11y/label-has-associated-control */
 /* eslint-disable jsx-a11y/control-has-associated-label */
-
+import {FC} from 'react';
+import { Errors } from '../../types/Errors';
 import { Todo } from '../../types/Todo';
 import cn from 'classnames';
 
 type Props = {
   todo: Todo;
   setTodos: React.Dispatch<React.SetStateAction<Todo[]>>;
-  setErrorMessage: React.Dispatch<React.SetStateAction<string>>;
+  setErrorMessage: React.Dispatch<React.SetStateAction<Errors>>;
   isLoading: boolean;
   deleteTodoId: number[];
   setDeleteTodoId: React.Dispatch<React.SetStateAction<number[]>>;
-  handleDeleteTodo: (id: number) => void;
+  onDeleteTodo: (id: number) => void;
 };
 
-export const TodoItem: React.FC<Props> = ({
+export const TodoItem: FC<Props> = ({
   todo,
   isLoading,
   deleteTodoId,
-  handleDeleteTodo,
+  onDeleteTodo,
 }) => {
   return (
     <div
@@ -45,7 +46,7 @@ export const TodoItem: React.FC<Props> = ({
         type="button"
         className="todo__remove"
         data-cy="TodoDelete"
-        onClick={() => handleDeleteTodo(todo.id)}
+        onClick={() => onDeleteTodo(todo.id)}
       >
         ×
       </button>

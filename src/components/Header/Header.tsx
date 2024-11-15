@@ -4,6 +4,7 @@ import React, {
   useEffect,
   useRef,
   useState,
+  FC,
 } from 'react';
 import { Todo } from '../../types/Todo';
 import { todosService } from '../../api';
@@ -20,7 +21,7 @@ type Props = {
   errorMessage: string;
 };
 
-export const Header: React.FC<Props> = ({
+export const Header: FC<Props> = ({
   setTempTodo,
   isLoading,
   setIsLoading,
@@ -86,7 +87,6 @@ export const Header: React.FC<Props> = ({
 
   return (
     <header className="todoapp__header">
-      {/* this button should have `active` class only if all todos are completed */}
       <button
         type="button"
         className="todoapp__toggle-all active"
