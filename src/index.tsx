@@ -1,9 +1,13 @@
-import { createRoot } from 'react-dom/client';
-
-import 'bulma/css/bulma.css';
 import '@fortawesome/fontawesome-free/css/all.css';
+import 'bulma/css/bulma.css';
+import React from 'react';
+import { createRoot } from 'react-dom/client';
+import { App } from './App';
+import { AppProvider } from './context/AppContext';
 import './styles/index.scss';
 
-import { App } from './App';
-
-createRoot(document.getElementById('root') as HTMLDivElement).render(<App />);
+createRoot(document.getElementById('root') as HTMLDivElement).render(
+  <AppProvider>
+    <App />
+  </AppProvider>,
+);

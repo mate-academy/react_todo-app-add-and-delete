@@ -1,0 +1,1 @@
+export { FilteringPanel } from './FilteringPanel';
