@@ -10,6 +10,7 @@ import { ErrorNotification } from './components/ErrorNotification';
 import { ErrorType } from './types/ErrorTypes';
 import { FilterStatus } from './types/FilterStatus';
 
+// write code
 export const App: React.FC = () => {
   const [todos, setTodos] = useState<Todo[]>([]);
   const [errorMessage, setErrorMessage] = useState<ErrorType>(ErrorType.Empty);
