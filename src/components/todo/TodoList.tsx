@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { Todo } from '../../types/Todo';
-import cn from 'classnames';
 import { deleteTodos } from '../../api/todos';
+import { TodoItem } from '../TodoItem/TodoItem';
 
 interface Props {
   todoList: Todo[];
@@ -20,7 +20,6 @@ export const TodoList: React.FC<Props> = ({
 
   const handleDeleteTodo = async (id: number) => {
     setLoadingId(id);
-
     try {
       await deleteTodos(id);
 
@@ -35,47 +34,15 @@ export const TodoList: React.FC<Props> = ({
   return (
     <section className="todoapp__main" data-cy="TodoList">
       {todoList.map(todo => (
-        <div
-          data-cy="Todo"
-          className={cn('todo', { completed: todo.completed })}
+        <TodoItem
           key={todo.id}
-        >
-          {/* eslint-disable-next-line jsx-a11y/label-has-associated-control*/}
-          <label className="todo__status-label">
-            <input
-              data-cy="TodoStatus"
-              type="checkbox"
-              className="todo__status"
-              checked={todo.completed}
-            />
-          </label>
-          <span data-cy="TodoTitle" className="todo__title">
-            {todo.title}
-          </span>
-          <button
-            type="button"
-            className="todo__remove"
-            data-cy="TodoDelete"
-            onClick={() => handleDeleteTodo(todo.id)}
-          >
-            ×
-          </button>
-          {loadingId === todo.id && (
-            <div data-cy="TodoLoader" className="modal overlay">
-              <div className="modal-background has-background-white-ter" />
-              <div className="loader" />
-            </div>
-          )}
-        </div>
+          todo={todo}
+          loading={todo.id === loadingId}
+          handleDeleteTodo={handleDeleteTodo}
+        />
       ))}
       {tempTodo && (
-        <div className="todo">
-          <span className="todo__title">{tempTodo.title}</span>
-          <div className="modal overlay">
-            <div className="modal-background has-background-white-ter" />
-            <div className="loader" />
-          </div>
-        </div>
+        <TodoItem todo={tempTodo} loading={true} handleDeleteTodo={() => {}} />
       )}
     </section>
   );

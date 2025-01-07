@@ -52,10 +52,15 @@ export const App: React.FC = () => {
     }
   }, [statusFilter, todos]);
 
-  const newTodo = async (title: string) => {
-    const temp = { id: 0, title, userId: USER_ID, completed: false };
+  const onAdd = async (title: string) => {
+    const newTempTodo = {
+      id: 0,
+      title: title,
+      completed: false,
+      userId: USER_ID,
+    };
 
-    setTempTodo(temp);
+    setTempTodo(newTempTodo);
 
     try {
       const addedTodo = await addTodos({
@@ -64,10 +69,10 @@ export const App: React.FC = () => {
         completed: false,
       });
 
-      setTodos(prev => [...prev, addedTodo as Todo]);
-      setTempTodo(null);
+      setTodos(prev => [...prev, addedTodo]);
     } catch {
       setErrorMesage('Unable to add a todo');
+    } finally {
       setTempTodo(null);
     }
   };
@@ -77,7 +82,7 @@ export const App: React.FC = () => {
       <h1 className="todoapp__title">todos</h1>
 
       <div className="todoapp__content">
-        <Header setError={setErrorMesage} onAdd={newTodo} />
+        <Header setError={setErrorMesage} onAdd={onAdd} />
         <TodoList
           todoList={filteredTodos}
           setError={setErrorMesage}

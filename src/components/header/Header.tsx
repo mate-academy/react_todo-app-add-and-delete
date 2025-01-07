@@ -1,10 +1,8 @@
 import React, { useEffect, useRef, useState } from 'react';
-
 interface Props {
   setError: (error: string) => void;
-  onAdd: (title: string) => void;
+  onAdd: (title: string) => Promise<void>;
 }
-
 export const Header: React.FC<Props> = ({ setError, onAdd }) => {
   const [title, setTitle] = useState('');
   const [isLoading, setIsLoading] = useState(false);
@@ -14,11 +12,10 @@ export const Header: React.FC<Props> = ({ setError, onAdd }) => {
     if (inputRef.current) {
       inputRef.current.focus();
     }
-  }, []);
+  }, [isLoading]);
 
   const handleSubmit = async (event: React.FormEvent) => {
     event.preventDefault();
-
     if (!title.trim()) {
       setError('Title should not be empty');
 
@@ -26,10 +23,12 @@ export const Header: React.FC<Props> = ({ setError, onAdd }) => {
     }
 
     setIsLoading(true);
-
     try {
       await onAdd(title.trim());
       setTitle('');
+      if (inputRef.current) {
+        inputRef.current.focus();
+      }
     } catch {
       setError('Unable to add todo');
     } finally {
@@ -45,13 +44,12 @@ export const Header: React.FC<Props> = ({ setError, onAdd }) => {
         className="todoapp__toggle-all active"
         data-cy="ToggleAllButton"
       />
-
       {/* Add a todo on form submit */}
       <form onSubmit={handleSubmit}>
         <input
           ref={inputRef}
           value={title}
-          onChange={e => setTitle(e.target.value)}
+          onChange={event => setTitle(event.target.value)}
           disabled={isLoading}
           data-cy="NewTodoField"
           type="text"
