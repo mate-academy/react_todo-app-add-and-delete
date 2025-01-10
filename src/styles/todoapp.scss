@@ -131,8 +131,10 @@
       text-decoration: none;
     }
 
-    &:disabled {
-      visibility: hidden;
-    }
+    // &:disabled {
+    //   visibility: hidden;
+    //   opacity: 0.5;
+    //   cursor: not-allowed;
+    // }
   }
 }
