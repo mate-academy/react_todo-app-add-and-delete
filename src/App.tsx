@@ -1,26 +1,81 @@
-/* eslint-disable max-len */
-/* eslint-disable jsx-a11y/control-has-associated-label */
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import { UserWarning } from './UserWarning';
-
-const USER_ID = 0;
+import { getTodos, USER_ID } from './api/todos';
+import { Todo } from './types/Todo';
+import { TodoInfo } from './components/Todo/TodoInfo';
+import { Footer } from './components/Footer/Footer';
+import { Errors } from './components/Errors/Errors';
+import { Header } from './components/Header/Header';
+import { TodoFilter } from './types/TodoFelter';
 
 export const App: React.FC = () => {
+  const [todos, setTodos] = useState<Todo[]>([]);
+  const [tempTodo, setTempTodo] = useState<Todo | null>(null);
+  const [error, setError] = useState('');
+  const [filter, setFilter] = useState<TodoFilter>(TodoFilter.All);
+  useEffect(() => {
+    getTodos()
+      .then(setTodos)
+      .catch(() => setError('Unable to load todos'));
+  }, []);
+
+  const filteredTodos = todos.filter(todo => {
+    switch (filter) {
+      case TodoFilter.Active:
+        return !todo.completed;
+      case TodoFilter.Completed:
+        return todo.completed;
+      default:
+        return true;
+    }
+  });
+
   if (!USER_ID) {
     return <UserWarning />;
   }
 
   return (
-    <section className="section container">
-      <p className="title is-4">
-        Copy all you need from the prev task:
-        <br />
-        <a href="https://github.com/mate-academy/react_todo-app-loading-todos#react-todo-app-load-todos">
-          React Todo App - Load Todos
-        </a>
-      </p>
+    <div className="todoapp">
+      <h1 className="todoapp__title">todos</h1>
 
-      <p className="subtitle">Styles are already copied</p>
-    </section>
+      <div className="todoapp__content">
+        <Header
+          todos={todos}
+          setTodos={setTodos}
+          setTempTodo={setTempTodo}
+          setError={setError}
+        />
+
+        {filteredTodos.map(todo => (
+          <TodoInfo
+            todo={todo}
+            setTodos={setTodos}
+            setError={setError}
+            key={todo.id}
+          />
+        ))}
+
+        {tempTodo && (
+          <TodoInfo
+            todo={tempTodo}
+            setTodos={setTodos}
+            setError={setError}
+            key={tempTodo.id}
+          />
+        )}
+
+        {todos.length > 0 && (
+          <Footer
+            todos={todos}
+            setTodos={setTodos}
+            filter={filter}
+            setFilter={setFilter}
+            setError={setError}
+          />
+        )}
+      </div>
+
+      <Errors error={error} setError={setError} />
+    </div>
   );
 };
