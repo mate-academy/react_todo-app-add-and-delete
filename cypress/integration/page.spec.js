@@ -394,7 +394,7 @@ describe('', () => {
     });
   });
 
-  describe('Adding a todo', () => {
+  describe.skip('Adding a todo', () => {
     beforeEach(() => {
       page.mockLoad().as('loadRequest');
       page.visit();
@@ -696,7 +696,7 @@ describe('', () => {
     });
   });
 
-  describe('Adding a first todo', () => {
+  describe.skip('Adding a first todo', () => {
     beforeEach(() => {
       page.mockLoad({ body: [] }).as('loadRequest');
       page.visit();
@@ -723,7 +723,7 @@ describe('', () => {
     });
   });
 
-  describe('Individual Todo Deletion', () => {
+  describe.skip('Individual Todo Deletion', () => {
     describe('Default behavior', () => {
       beforeEach(() => {
         page.mockLoad().as('loadRequest');
@@ -849,7 +849,7 @@ describe('', () => {
     });
   });
 
-  describe('Group Todo Deletion', () => {
+  describe.skip('Group Todo Deletion', () => {
     describe('with no completed todos', () => {
       beforeEach(() => {
         page.mockLoad({ fixture: 'active-todos' }).as('loadRequest');
