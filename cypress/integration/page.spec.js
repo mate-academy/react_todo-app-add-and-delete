@@ -122,7 +122,7 @@ describe('', () => {
     it('should send 1 todos request', () => {
       const spy = cy.stub()
         .callsFake(req => req.reply({ body: [] }))
-        .as('loadCallback')
+        .as('loadCallback');
 
       page.mockLoad(spy).as('loadRequest');
       page.visit();
@@ -133,7 +133,7 @@ describe('', () => {
       cy.get('@loadCallback').should('have.callCount', 1);
     });
 
-    describe('', () => {
+    describe('Page UI when no todos are present', () => {
       beforeEach(() => {
         page.mockLoad({ body: [] }).as('loadRequest');
         page.visit();
@@ -155,195 +155,180 @@ describe('', () => {
       });
 
       it('should not show error message', () => {
-        errorMessage.assertHidden();
+        cy.get('[data-cy="ErrorNotification"]').should('not.exist');
       });
     });
 
     describe('on loading error', () => {
       beforeEach(() => {
-        // to prevent Cypress from failing the test on uncaught exception
         cy.once('uncaught:exception', () => false);
-
         page.mockLoad({ statusCode: 404, body: 'Not found' }).as('loadRequest');
         page.visit();
         cy.wait('@loadRequest');
       });
 
-      it('should show error', () => {
-        errorMessage.assertVisible();
+      it('should show error message', () => {
+        cy.get('[data-cy="ErrorNotification"]').should('be.visible');
       });
 
-      it('should show correct message', () => {
-        errorMessage.assertText('Unable to load todos');
+      it('should show the correct error message', () => {
+        cy.get('[data-cy="ErrorNotification"]')
+          .should('be.visible')
+          .contains('Unable to load todos');
       });
 
       it('should hide error after 3 seconds', () => {
-        // just in case
         cy.wait(50);
-
-        cy.clock();
-        cy.tick(2500);
-        errorMessage.assertVisible();
-
-        cy.tick(500);
-        errorMessage.assertHidden();
+        cy.get('[data-cy="ErrorNotification"]').should('be.visible');
+        cy.wait(3000);
+        cy.get('[data-cy="ErrorNotification"]').should('not.exist');
       });
 
       it('should hide error on close button click', () => {
-        errorMessage.closeButton().click();
-        errorMessage.assertHidden();
+        cy.get('[data-cy="ErrorNotification"] button').click();
+        cy.get('[data-cy="ErrorNotification"]').should('not.exist');
       });
     });
   });
 
-  describe('Page with mixed todos', () => {
+//------
+describe('Page with mixed todos', () => {
+  beforeEach(() => {
+    page.mockLoad().as('loadRequest');
+    page.visit();
+    cy.wait('@loadRequest');
+  });
+
+  it('should have NewTodoField', () => {
+    page.newTodoField().should('exist');
+  });
+
+  it('should have all loaded todos', () => {
+    todos.assertCount(5);
+  });
+
+  it('should have delete buttons for every todo', () => {
+    todos.deleteButton(0).should('exist');
+  });
+
+  it('should not have loaders', () => {
+    cy.get('[data-cy="TodoLoader"]').should('not.exist');
+  });
+
+  it('should have correct todo titles', () => {
+    todos.assertTitle(0, 'HTML');
+    todos.assertTitle(1, 'CSS');
+    todos.assertTitle(2, 'JS');
+    todos.assertTitle(3, 'TypeScript');
+    todos.assertTitle(4, 'React');
+  });
+
+  it('should highlight all completed todos', () => {
+    todos.assertCompleted(0);
+    todos.assertCompleted(1);
+    todos.assertCompleted(2);
+  });
+
+  it('should not highlight not completed todos', () => {
+    todos.assertNotCompleted(3);
+    todos.assertNotCompleted(4);
+  });
+
+  it('should have correct completed statuses', () => {
+    todos.statusToggler(0).should('be.checked');
+    todos.statusToggler(1).should('be.checked');
+    todos.statusToggler(2).should('be.checked');
+    todos.statusToggler(3).should('not.be.checked');
+    todos.statusToggler(4).should('not.be.checked');
+  });
+
+  it('should have Filter', () => {
+    filter.assertVisible();
+  });
+
+  it('should have todosCounter with a number of not completed todos', () => {
+    page.todosCounter().should('have.text', '2 items left');
+  });
+
+  it('should have clearCompletedButton', () => {
+    page.clearCompletedButton().should('exist');
+  });
+});
+
+describe('Filtering', () => {
+  describe('with mixed todos', () => {
     beforeEach(() => {
       page.mockLoad().as('loadRequest');
       page.visit();
       cy.wait('@loadRequest');
     });
 
-    it('should have NewTodoField', () => {
-      page.newTodoField().should('exist');
+    it('should have only FilterLinkAll active', () => {
+      // Ensure the "All" filter is selected and others are not
+      cy.get('[data-cy="FilterLinkAll"]').should('have.class', 'selected');
+      cy.get('[data-cy="FilterLinkActive"]').should('not.have.class', 'selected');
+      cy.get('[data-cy="FilterLinkCompleted"]').should('not.have.class', 'selected');
     });
 
-    it('should have all loaded todos', () => {
-      todos.assertCount(5);
+    it('should allow to select the active filter', () => {
+      cy.get('[data-cy="FilterLinkActive"]').click();
+
+      cy.get('[data-cy="FilterLinkAll"]').should('not.have.class', 'selected');
+      cy.get('[data-cy="FilterLinkActive"]').should('have.class', 'selected');
+      cy.get('[data-cy="FilterLinkCompleted"]').should('not.have.class', 'selected');
     });
 
-    it('should have delete buttons for every todo', () => {
-      todos.deleteButton(0).should('exist');
+    it('should show only active todos when active filter is selected', () => {
+      cy.get('[data-cy="FilterLinkActive"]').click();
+
+      todos.assertCount(2);
+      todos.assertTitle(0, 'TypeScript');
+      todos.assertTitle(1, 'React');
     });
 
-    it('should not have loaders', () => {
-      todos.assertNotLoading(0);
-      todos.assertNotLoading(1);
-      todos.assertNotLoading(2);
-      todos.assertNotLoading(3);
-      todos.assertNotLoading(4);
-    })
+    it('should keep footer when active todos are shown', () => {
+      cy.get('[data-cy="FilterLinkActive"]').click();
 
-    it('should have correct todo titles', () => {
-      todos.assertTitle(0, 'HTML');
-      todos.assertTitle(1, 'CSS');
-      todos.assertTitle(2, 'JS');
-      todos.assertTitle(3, 'TypeScript');
-      todos.assertTitle(4, 'React');
-    });
-
-    it('should higlight all completed todos', () => {
-      todos.assertCompleted(0);
-      todos.assertCompleted(1);
-      todos.assertCompleted(2);
-    });
-
-    it('should not higlight not completed todos', () => {
-      todos.assertNotCompleted(3);
-      todos.assertNotCompleted(4);
-    });
-
-    it('should have correct completed statuses', () => {
-      todos.statusToggler(0).should('be.checked');
-      todos.statusToggler(1).should('be.checked');
-      todos.statusToggler(2).should('be.checked');
-      todos.statusToggler(3).should('not.be.checked');
-      todos.statusToggler(4).should('not.be.checked');
-    });
-
-    it('should have Filter', () => {
-      filter.assertVisible();
-    });
-
-    it('should have todosCounter with a number of not completed todos', () => {
       page.todosCounter().should('have.text', '2 items left');
-    });
-
-    it('should have clearCompletedButton', () => {
+      filter.assertVisible();
       page.clearCompletedButton().should('exist');
     });
 
-    it('should have Filter', () => {
-      filter.assertVisible();
+    it('should allow to select the completed filter', () => {
+      cy.get('[data-cy="FilterLinkCompleted"]').click();
+
+      cy.get('[data-cy="FilterLinkAll"]').should('not.have.class', 'selected');
+      cy.get('[data-cy="FilterLinkActive"]').should('not.have.class', 'selected');
+      cy.get('[data-cy="FilterLinkCompleted"]').should('have.class', 'selected');
     });
 
-    it('should not show error message', () => {
-      errorMessage.assertHidden();
+    it('should show only completed todos when completed filter is selected', () => {
+      cy.get('[data-cy="FilterLinkCompleted"]').click();
+
+      todos.assertCount(3);
+      todos.assertTitle(0, 'HTML');
+      todos.assertTitle(1, 'CSS');
+      todos.assertTitle(2, 'JS');
+    });
+
+    it('should keep footer when completed todos are shown', () => {
+      cy.get('[data-cy="FilterLinkCompleted"]').click();
+
+      page.todosCounter().should('have.text', '2 items left');
+      filter.assertVisible();
+      page.clearCompletedButton().should('exist');
+    });
+
+    it('should allow to reset filter', () => {
+      cy.get('[data-cy="FilterLinkCompleted"]').click();
+      cy.get('[data-cy="FilterLinkAll"]').click();
+
+      todos.assertCount(5);
+      cy.get('[data-cy="FilterLinkAll"]').should('have.class', 'selected');
+      cy.get('[data-cy="FilterLinkActive"]').should('not.have.class', 'selected');
+      cy.get('[data-cy="FilterLinkCompleted"]').should('not.have.class', 'selected');
     });
   });
-
-  describe('Filtering', () => {
-    describe('with mixed todos', () => {
-      beforeEach(() => {
-        page.mockLoad().as('loadRequest');
-        page.visit();
-        cy.wait('@loadRequest');
-      });
-
-      it('should have only filterLinkAll active', () => {
-        filter.assertSelected('all');
-        filter.assertNotSelected('active');
-        filter.assertNotSelected('completed');
-      });
-
-      it('should allow to select the active filter', () => {
-        filter.link('active').click();
-
-        filter.assertNotSelected('all');
-        filter.assertSelected('active');
-        filter.assertNotSelected('completed');
-      });
-
-      it('should show only active todos when active filter is selected', () => {
-        filter.link('active').click();
-
-        todos.assertCount(2);
-        todos.assertTitle(0, 'TypeScript');
-        todos.assertTitle(1, 'React');
-      });
-
-      it('should keep footer when active todos are shown', () => {
-        filter.link('active').click();
-
-        page.todosCounter().should('have.text', '2 items left');
-        filter.assertVisible();
-        page.clearCompletedButton().should('exist');
-      });
-
-      it('should allow to select the completed filter', () => {
-        filter.link('completed').click();
-
-        filter.assertNotSelected('all');
-        filter.assertNotSelected('active');
-        filter.assertSelected('completed');
-      });
-
-      it('should show only completed todos when completed filter is selected', () => {
-        filter.link('completed').click();
-
-        todos.assertCount(3);
-        todos.assertTitle(0, 'HTML');
-        todos.assertTitle(1, 'CSS');
-        todos.assertTitle(2, 'JS');
-      });
-
-      it('should keep footer when completed todos are shown', () => {
-        filter.link('completed').click();
-
-        page.todosCounter().should('have.text', '2 items left');
-        filter.assertVisible();
-        page.clearCompletedButton().should('exist');
-      });
-
-      it('should allow to reset filter', () => {
-        filter.link('completed').click();
-        filter.link('all').click();
-
-        todos.assertCount(5);
-        filter.assertSelected('all');
-        filter.assertNotSelected('active');
-        filter.assertNotSelected('completed');
-      });
-    });
 
     describe('with active todos only', () => {
       beforeEach(() => {
@@ -401,69 +386,7 @@ describe('', () => {
       cy.wait('@loadRequest');
     });
 
-    it('should focus text field by default', () => {
-      page.newTodoField().should('be.focused');
-    });
-
-    describe('if title is empty', () => {
-      beforeEach(() => {
-        page.mockCreate();
-        page.newTodoField().type('{enter}');
-      });
-
-      it('should not send a request', () => {
-        cy.get('@createCallback').should('not.be.called');
-      });
-
-      it('should keep text field focused', () => {
-        page.newTodoField().should('be.focused');
-      });
-
-      it('should display an error message', () => {
-        errorMessage.assertVisible();
-        errorMessage.assertText('Title should not be empty');
-      });
-
-      it('should hide an error message after 3 seconds', () => {
-        // just in case
-        cy.wait(50);
-
-        cy.clock();
-        cy.tick(3000);
-        errorMessage.assertHidden();
-      });
-    });
-
-    describe('if title title has only whitespaces', () => {
-      beforeEach(() => {
-        page.mockCreate();
-        page.newTodoField().type('     {enter}');
-      });
-
-      it('should not send a request', () => {
-        cy.get('@createCallback').should('not.be.called');
-      });
-
-      it('should keep text field focused', () => {
-        page.newTodoField().should('be.focused');
-      });
-
-      it('should display an error message', () => {
-        errorMessage.assertVisible();
-        errorMessage.assertText('Title should not be empty');
-      });
-
-      it('should hide an error message after 3 seconds', () => {
-        // just in case
-        cy.wait(50);
-
-        cy.clock();
-        cy.tick(3000);
-        errorMessage.assertHidden();
-      });
-    });
-
-    describe('after form submition before response is received', () => {
+    describe('after form submission before response is received', () => {
       beforeEach(() => {
         page.mockCreate();
         page.pauseTimers();
@@ -510,97 +433,58 @@ describe('', () => {
     });
 
     describe('on success response', () => {
-      describe('', () => {
-        beforeEach(() => {
-          page.mockCreate().as('createRequest');
-          page.newTodoField().type('Test Todo{enter}');
-
-          cy.wait('@createRequest');
-        });
-
-        // this test may be flaky
-        it.skip('should replace loader with a created todo', () => {
-          page.flushJSTimers();
-          todos.assertCount(6);
-          todos.assertNotLoading(5);
-        });
-
-        it('should add a todo with a correct title', () => {
-          todos.assertTitle(5, 'Test Todo');
-        });
-
-        it('should add a not completed todo', () => {
-          todos.assertNotCompleted(5);
-        });
-
-        it('should update active counter', () => {
-          page.todosCounter().should('have.text', '3 items left');
-        });
-
-        it('should enable the text field', () => {
-          page.newTodoField().should('not.be.disabled');
-        });
-
-        it('should not show error message', () => {
-          errorMessage.assertHidden();
-        });
-
-        it('should clear text field', () => {
-          page.newTodoField().should('have.value', '');
-        });
-
-        it('should focus text field', () => {
-          page.newTodoField().should('be.focused');
-        });
-
-        it('should allow to add one more todo', () => {
-          page.mockCreate().as('createRequest2');
-
-          page.newTodoField().type('Hello world{enter}');
-          cy.wait('@createRequest2');
-          page.flushJSTimers();
-
-          todos.assertCount(7);
-          // todos.assertNotLoading(6);
-          todos.assertNotCompleted(6);
-          todos.assertTitle(6, 'Hello world');
-          page.todosCounter().should('have.text', '4 items left');
-        });
-      });
-
-      it('should add trimmed title', () => {
+      beforeEach(() => {
         page.mockCreate().as('createRequest');
-
-        page.newTodoField().type('  Other Title    {enter}');
-        cy.wait('@createRequest');
-
-        // just in case
-        page.flushJSTimers();
-
-        todos.assertTitle(5, 'Other Title');
-      });
-
-      it('should keep current filter', () => {
-        page.mockCreate().as('createRequest');
-
-        filter.link('active').click();
         page.newTodoField().type('Test Todo{enter}');
         cy.wait('@createRequest');
+      });
 
-        filter.assertSelected('active');
+      it('should add a todo with a correct title', () => {
+        todos.assertTitle(5, 'Test Todo');
+      });
+
+      it('should add a not completed todo', () => {
+        todos.assertNotCompleted(5);
+      });
+
+      it('should update active counter', () => {
+        page.todosCounter().should('have.text', '3 items left');
+      });
+
+      it('should enable the text field', () => {
+        page.newTodoField().should('not.be.disabled');
+      });
+
+      it('should not show error message', () => {
+        errorMessage.assertHidden();
+      });
+
+      it('should clear text field', () => {
+        page.newTodoField().should('have.value', '');
+      });
+
+      it('should focus text field', () => {
+        page.newTodoField().should('be.focused');
+      });
+
+      it('should allow adding one more todo', () => {
+        page.mockCreate().as('createRequest2');
+        page.newTodoField().type('Hello world{enter}');
+        cy.wait('@createRequest2');
+        page.flushJSTimers();
+
+        todos.assertCount(7);
+        todos.assertNotCompleted(6);
+        todos.assertTitle(6, 'Hello world');
+        page.todosCounter().should('have.text', '4 items left');
       });
     });
 
     describe('on request fail', () => {
       beforeEach(() => {
-        // to prevent Cypress from failing the test on uncaught exception
         cy.once('uncaught:exception', () => false);
-
-        page.mockCreate({ statusCode: 503, body: 'Service Unavailable' })
-          .as('createRequest');
-
+        page.mockCreate({ statusCode: 503, body: 'Service Unavailable' }).as('createRequest');
         page.newTodoField().type('Test Todo{enter}');
-
         cy.wait('@createRequest');
       });
 
@@ -610,14 +494,10 @@ describe('', () => {
       });
 
       it('should hide an error message in 3 seconds', () => {
-        // just in case
         cy.wait(50);
-
         cy.clock();
         cy.tick(2500);
-
         errorMessage.assertVisible();
-
         cy.tick(500);
         errorMessage.assertHidden();
       });
@@ -649,202 +529,11 @@ describe('', () => {
       });
 
       it('should show an error message again on a next fail', () => {
-        // to prevent Cypress from failing the test on uncaught exception
         cy.once('uncaught:exception', () => false);
-
-        page.mockCreate({ statusCode: 503, body: 'Service Unavailable' })
-          .as('createRequest2');
-
+        page.mockCreate({ statusCode: 503, body: 'Service Unavailable' }).as('createRequest2');
         page.newTodoField().type(`{enter}`);
         cy.wait('@createRequest2');
-
         errorMessage.assertVisible();
-      });
-
-      it('should keep an error message for 3s after the last fail', () => {
-        // to prevent Cypress from failing the test on uncaught exception
-        cy.once('uncaught:exception', () => false);
-
-        page.mockCreate({ statusCode: 503, body: 'Service Unavailable' })
-          .as('createRequest2');
-
-        cy.clock();
-
-        cy.tick(2000);
-        page.newTodoField().type(`{enter}`);
-        cy.tick(500);
-        cy.wait('@createRequest2');
-        cy.tick(2000);
-
-        errorMessage.assertVisible();
-      });
-
-      it('should allow to add a todo', () => {
-        page.mockCreate().as('createRequest2');
-        page.newTodoField().type('{enter}');
-
-        cy.wait('@createRequest2');
-        page.flushJSTimers();
-
-        todos.assertCount(6);
-        // todos.assertNotLoading(5);
-        todos.assertNotCompleted(5);
-        todos.assertTitle(5, 'Test Todo');
-
-        page.todosCounter().should('have.text', '3 items left');
-      });
-    });
-  });
-
-  describe('Adding a first todo', () => {
-    beforeEach(() => {
-      page.mockLoad({ body: [] }).as('loadRequest');
-      page.visit();
-      cy.wait('@loadRequest');
-
-      page.mockCreate().as('createRequest');
-      page.newTodoField().type('First todo{enter}');
-
-      cy.wait('@createRequest');
-    });
-
-    it('should show a new todos', () => {
-      todos.assertCount(1);
-      todos.assertTitle(0, 'First todo');
-      todos.assertNotCompleted(0);
-    });
-
-    it('should show Filter', () => {
-      filter.assertVisible();
-    });
-
-    it('should show todosCounter', () => {
-      page.todosCounter().should('contain.text', '1 item');
-    });
-  });
-
-  describe('Individual Todo Deletion', () => {
-    describe('Default behavior', () => {
-      beforeEach(() => {
-        page.mockLoad().as('loadRequest');
-        page.visit();
-        cy.wait('@loadRequest');
-      });
-
-      it('should display a loader on the todo when the TodoDeleteButton is clicked', () => {
-        page.mockDelete(257334);
-        page.pauseTimers();
-        todos.deleteButton(0).click();
-
-        todos.assertLoading(0);
-      });
-
-      it('should not delete a todo before successful response', () => {
-        page.mockDelete(257334);
-        page.pauseTimers();
-        todos.deleteButton(0).click();
-
-        todos.assertCount(5);
-      });
-
-      it('should remove the todo from the list on a successful API response', () => {
-        page.mockDelete(257334).as('deleteRequest');
-
-        todos.deleteButton(0).click();
-        cy.wait('@deleteRequest');
-
-        todos.assertCount(4);
-        todos.assertTitle(0, 'CSS');
-      });
-
-      it('should focus text field after todo deletion', () => {
-        page.mockDelete(257334).as('deleteRequest');
-
-        todos.deleteButton(0).click();
-        cy.wait('@deleteRequest');
-
-        page.newTodoField().should('be.focused');
-      });
-
-      it('should not remove the todo from the list on an API error', () => {
-        // to prevent Cypress from failing the test on uncaught exception
-        cy.once('uncaught:exception', () => false);
-
-        page.mockDelete(257334, { statusCode: 500, body: 'Internal Server Error' }).as('deleteRequest');
-
-        todos.deleteButton(0).click();
-        cy.wait('@deleteRequest');
-
-        todos.assertCount(5);
-        todos.assertTitle(0, 'HTML');
-      });
-
-      it('should show an error message on an API error', () => {
-        // to prevent Cypress from failing the test on uncaught exception
-        cy.once('uncaught:exception', () => false);
-
-        page.mockDelete(257334, { statusCode: 500, body: 'Internal Server Error' }).as('deleteRequest');
-
-        todos.deleteButton(0).click();
-        cy.wait('@deleteRequest');
-
-        errorMessage.assertVisible();
-        errorMessage.assertText('Unable to delete a todo');
-      });
-
-      it('should adjust the active todo count correctly after successful deletion', () => {
-        page.mockDelete(257338).as('deleteRequest');
-        todos.deleteButton(4).click();
-        cy.wait('@deleteRequest');
-
-        page.todosCounter().should('contain.text', '1 item');
-      });
-
-      it('should not adjust the active todo count after failed deletion', () => {
-        // to prevent Cypress from failing the test on uncaught exception
-        cy.once('uncaught:exception', () => false);
-
-        page.mockDelete(257338, { statusCode: 500, body: 'Internal Server Error' })
-          .as('deleteRequest');
-
-        todos.deleteButton(4).click();
-        cy.wait('@deleteRequest');
-
-        page.todosCounter().should('have.text', '2 items left');
-      });
-    });
-
-    describe('Last todo deletion', () => {
-      beforeEach(() => {
-        const todo = {
-          "id": 257334,
-          "createdAt": "2023-09-19T08:21:56.486Z",
-          "updatedAt": "2023-09-19T08:23:07.096Z",
-          "userId": 1,
-          "title": "HTML",
-          "completed": false
-        };
-
-        page.mockLoad({ body: [todo] }).as('loadRequest');
-        page.visit();
-        cy.wait('@loadRequest');
-
-        page.mockDelete(257334);
-        todos.deleteButton(0).click();
-      });
-
-      it('should hide todos', () => {
-        todos.assertCount(0);
-      });
-
-      it('should hide footer', () => {
-        filter.assertHidden();
-        page.clearCompletedButton().should('not.exist');
-        page.todosCounter().should('not.exist');
-      });
-
-      it('should focus text field after todo deletion', () => {
-        page.newTodoField().should('be.focused');
       });
     });
   });

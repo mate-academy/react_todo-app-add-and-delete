@@ -4,6 +4,7 @@
   display: grid;
   grid-template-columns: 45px 1fr;
   justify-items: stretch;
+  align-items: center;
 
   font-size: 24px;
   line-height: 1.4em;
@@ -30,6 +31,9 @@
 
   &__title {
     padding: 12px 15px;
+    position: relative;
+    display: flex;
+    align-items: center;
 
     word-break: break-all;
     transition: color 0.4s;
@@ -43,8 +47,8 @@
   &__remove {
     position: absolute;
     right: 12px;
-    top: 0;
-    bottom: 0;
+    top: 50%;
+    transform: translateY(-50%);
 
     font-size: 120%;
     line-height: 1;
@@ -52,12 +56,10 @@
     font-weight: inherit;
     color: #cc9a9a;
 
-    float: right;
     border: 0;
     background: none;
     cursor: pointer;
 
-    transform: translateY(-2px);
     opacity: 0;
     transition: color 0.2s ease-out;
 
@@ -146,4 +148,8 @@
 .has-error .temp-item-exit-active {
   transform: translateY(0);
   overflow: hidden;
+}
+
+.loader-margin {
+  margin-left: 70px;
 }
