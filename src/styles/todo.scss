@@ -101,6 +101,10 @@
   }
 }
 
+.hidden {
+  display: none !important;
+}
+
 .item-enter {
   max-height: 0;
 }
