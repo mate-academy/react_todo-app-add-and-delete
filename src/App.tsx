@@ -1,5 +1,5 @@
 import React, { useCallback, useEffect, useState } from 'react';
-import { getTodos, USER_ID } from './api/todos';
+import { deleteTodo, getTodos, postTodo, USER_ID } from './api/todos';
 import { TodoHeader } from './components/TodoHeader';
 import { TodoFooter } from './components/TodoFooter';
 import { TodoList } from './components/TodoList';
@@ -33,6 +33,24 @@ export const App: React.FC = () => {
       .finally(() => setIsloading(false));
   }, []);
 
+  const handleDeleteTodo = (id: number) => {
+    setTodoList(prevTodo => prevTodo.filter(todo => todo.id !== id));
+  };
+
+  const handleDeleteCompletedTodos = () => {
+    setTodoList(todoList.filter(todo => !todo.completed));
+  };
+
+  function handleDeleteTodoFromServ(postId: number) {
+    deleteTodo(postId)
+      .then(() => {
+        handleDeleteTodo(postId);
+      })
+      .catch(() => {
+        setErrorMessage(ErrorMessage.Delete);
+      });
+  }
+
   const handleHideError = () => {
     setErrorMessage('');
   };
@@ -41,8 +59,14 @@ export const App: React.FC = () => {
     setErrorMessage(error);
   };
 
-  const handleAddNewTodo = (newTodo: Todo) => {
-    setTodoList(prevTodos => [...prevTodos, newTodo]);
+  const handleAddNewTodoToServ = (newTodo: Todo) => {
+    postTodo(newTodo.title)
+      .then(addedTodo => {
+        setTodoList(prevTodos => [...prevTodos, addedTodo]);
+      })
+      .catch(() => {
+        setErrorMessage(ErrorMessage.Add);
+      });
   };
 
   const markAllTodoCompleted = () => {
@@ -62,14 +86,6 @@ export const App: React.FC = () => {
         todo.id === id ? { ...todo, completed: !todo.completed } : todo,
       ),
     );
-  };
-
-  const handleDeleteTodo = (id: number) => {
-    setTodoList(prevTodo => prevTodo.filter(todo => todo.id !== id));
-  };
-
-  const handleDeleteCompletedTodos = () => {
-    setTodoList(todoList.filter(todo => !todo.completed));
   };
 
   const handleFilterTodo = useCallback(
@@ -100,9 +116,9 @@ export const App: React.FC = () => {
       <h1 className="todoapp__title">todos</h1>
       <div className="todoapp__content">
         <TodoHeader
-          todos={todoList}
+          todos={filteredTodos}
           onError={handleError}
-          onAddTodo={handleAddNewTodo}
+          onAddTodo={handleAddNewTodoToServ}
           onCompleted={markAllTodoCompleted}
         />
         {!isLoading && (
@@ -111,6 +127,7 @@ export const App: React.FC = () => {
             isLoading={isLoading}
             onToggle={handleChangeToggle}
             onDelete={handleDeleteTodo}
+            onDeleteFromServ={handleDeleteTodoFromServ}
             onError={handleError}
           />
         )}

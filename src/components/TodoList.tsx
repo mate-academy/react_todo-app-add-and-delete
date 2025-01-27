@@ -7,6 +7,7 @@ interface TodoListProps {
   isLoading: boolean;
   onToggle: (id: number) => void;
   onDelete: (id: number) => void;
+  onDeleteFromServ: (id: number) => void;
   onError: (error: string) => void;
 }
 
@@ -15,6 +16,7 @@ export const TodoList: React.FC<TodoListProps> = ({
   isLoading,
   onToggle,
   onDelete,
+  onDeleteFromServ,
   onError,
 }) => {
   return (
@@ -26,6 +28,7 @@ export const TodoList: React.FC<TodoListProps> = ({
           isLoading={isLoading}
           onToggle={onToggle}
           onDelete={onDelete}
+          onDeleteFromServ={onDeleteFromServ}
           onError={onError}
         />
       ))}

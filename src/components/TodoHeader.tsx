@@ -1,7 +1,7 @@
 import React, { useEffect, useRef, useState } from 'react';
 import { Todo } from '../types/Todo';
-import { USER_ID } from '../api/todos';
 import { ErrorMessage } from '../App';
+import classNames from 'classnames';
 
 interface TodoHeaderProps {
   onError: (error: string) => void;
@@ -29,20 +29,21 @@ export const TodoHeader: React.FC<TodoHeaderProps> = ({
     setTodoTitle(newTitleTodo);
   };
 
+  const handleTodoCheck = () => {
+    return todos.every(todo => todo.completed);
+  };
+
   const handleAddNewTodo = (event: React.FormEvent) => {
     event.preventDefault();
 
-    if (!todoTitle) {
+    if (!todoTitle.trim()) {
       onError(ErrorMessage.Title);
-    } else {
-      onAddTodo({
-        id: Math.floor(999 + Math.random() * 111),
-        userId: USER_ID,
-        title: todoTitle,
-        completed: false,
-      });
-      setTodoTitle('');
+
+      return;
     }
+
+    onAddTodo({ title: todoTitle.trim() } as Todo);
+    setTodoTitle('');
   };
 
   return (
@@ -50,7 +51,9 @@ export const TodoHeader: React.FC<TodoHeaderProps> = ({
       {todos.length > 0 && (
         <button
           type="button"
-          className="todoapp__toggle-all active"
+          className={classNames('todoapp__toggle-all', {
+            active: handleTodoCheck(),
+          })}
           data-cy="ToggleAllButton"
           onClick={onCompleted}
         />

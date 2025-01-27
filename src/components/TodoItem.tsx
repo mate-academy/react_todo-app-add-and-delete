@@ -10,6 +10,7 @@ interface TodoItemProps {
   isLoading: boolean;
   onToggle: (id: number) => void;
   onDelete: (id: number) => void;
+  onDeleteFromServ: (id: number) => void;
   onError: (error: string) => void;
 }
 
@@ -20,6 +21,7 @@ export const TodoItem: React.FC<TodoItemProps> = ({
   isLoading,
   onToggle,
   onDelete,
+  onDeleteFromServ,
   onError,
 }) => {
   const handleCheckboxChange = () => {
@@ -29,6 +31,7 @@ export const TodoItem: React.FC<TodoItemProps> = ({
   const handleDeleteTodo = () => {
     if (id) {
       onDelete(id);
+      onDeleteFromServ(id);
     } else {
       onError(ErrorMessage.Delete);
     }
