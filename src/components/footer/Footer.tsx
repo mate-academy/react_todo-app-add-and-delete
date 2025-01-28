@@ -1,82 +1,52 @@
-/* eslint-disable prettier/prettier */
-import React from 'react';
-import { Todo } from '../../types/Todo';
-import { deleteTodos } from '../../api/todos';
+import React, { Dispatch, SetStateAction } from 'react';
+import { FilterStatus } from '../../types/FilterStatus';
+import classNames from 'classnames';
 
-interface Props {
-  todos: Todo[];
-  statusFilter: string;
-  setFilterStatus: (status: string) => void;
-  setTodoList: (todos: Todo[]) => void;
-  setError: (error: string) => void;
-}
+type Props = {
+  filterStatus: FilterStatus;
+  setFilterStatus: Dispatch<SetStateAction<FilterStatus>>;
+  todosLeft: number;
+  todosCompleted: number;
+  onClearCompleted: () => Promise<void>;
+};
 
-export const Footer: React.FC<Props> = ({
-  todos,
-  statusFilter,
-  setFilterStatus,
-  setTodoList,
-  setError
-}) => {
-
-  const completedCount = todos.filter(todo => !todo.completed).length;
-
-  const handleDeleteCompletedTodo = async () => {
-    const completedTodos = todos.filter(todo => todo.completed);
-
-    try {
-      await Promise.all(completedTodos.map(todo => deleteTodos(todo.id)));
-
-      setTodoList(todos.filter(todo => !todo.completed));
-    } catch {
-      setError('Unable to delete a todo');
-    }
-  };
+export const Footer: React.FC<Props> = props => {
+  const {
+    filterStatus,
+    setFilterStatus,
+    todosLeft,
+    todosCompleted,
+    onClearCompleted,
+  } = props;
 
   return (
     <footer className="todoapp__footer" data-cy="Footer">
       <span className="todo-count" data-cy="TodosCounter">
-        {`${completedCount} items left`}
+        {todosLeft} items left
       </span>
 
-      {/* Active link should have the 'selected' class */}
       <nav className="filter" data-cy="Filter">
-        <a
-          href="#/"
-          className={`filter__link ${statusFilter === 'all' ? 'selected' : ''}`}
-          data-cy="FilterLinkAll"
-          onClick={() => setFilterStatus('all')}
-        >
-          All
-        </a>
-
-        <a
-          href="#/active"
-          className={`filter__link ${statusFilter === 'active' ? 'selected' : ''}`}
-          data-cy="FilterLinkActive"
-          onClick={() => setFilterStatus('active')}
-        >
-          Active
-        </a>
-
-        <a
-          href="#/completed"
-          className={`filter__link ${statusFilter === 'completed' ? 'selected' : ''}`}
-          data-cy="FilterLinkCompleted"
-          onClick={() => setFilterStatus('completed')}
-        >
-          Completed
-        </a>
+        {Object.values(FilterStatus).map(filter => (
+          <a
+            key={filter}
+            href={`#/${filter === FilterStatus.All ? '' : filter.toLocaleLowerCase()}`}
+            className={classNames('filter__link', {
+              selected: filterStatus === filter,
+            })}
+            data-cy={`FilterLink${filter}`}
+            onClick={() => setFilterStatus(filter)}
+          >
+            {filter}
+          </a>
+        ))}
       </nav>
 
-
-      {/* this button should be disabled if there are no completed todos */}
       <button
         type="button"
         className="todoapp__clear-completed"
         data-cy="ClearCompletedButton"
-        onClick={handleDeleteCompletedTodo}
-        disabled={todos.some(todo => !todo.completed)}
+        onClick={onClearCompleted}
+        disabled={todosCompleted === 0}
       >
         Clear completed
       </button>

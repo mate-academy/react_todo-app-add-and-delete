@@ -1,36 +1,42 @@
-import React, { useEffect } from 'react';
-import cn from 'classnames';
+import React, { Dispatch, SetStateAction, useEffect } from 'react';
+import { ErrorType } from '../../types/ErrorTypes';
+import classNames from 'classnames';
 
-interface Props {
-  error: string | null;
-  onClose: () => void;
-}
+type Props = {
+  error: ErrorType;
+  setError: Dispatch<SetStateAction<ErrorType>>;
+};
 
-export const ErrorNotification: React.FC<Props> = ({ error, onClose }) => {
+export const Error: React.FC<Props> = props => {
+  const { error, setError } = props;
+
   useEffect(() => {
-    if (error === '') {
+    if (error === ErrorType.Empty) {
       return;
     }
 
-    const timer = setTimeout(() => {
-      onClose();
+    const timerId = setTimeout(() => {
+      setError(ErrorType.Empty);
     }, 3000);
 
-    return () => clearTimeout(timer);
-  }, [error, onClose]);
+    return () => {
+      clearTimeout(timerId);
+    };
+  }, [error, setError]);
 
   return (
     <div
       data-cy="ErrorNotification"
-      className={cn('notification is-danger is-light has-text-weight-normal', {
-        hidden: !error,
-      })}
+      className={classNames(
+        'notification is-danger is-light has-text-weight-normal',
+        { hidden: error === ErrorType.Empty },
+      )}
     >
       <button
         data-cy="HideErrorButton"
         type="button"
         className="delete"
-        onClick={onClose}
+        onClick={() => setError(ErrorType.Empty)}
       />
       {error}
     </div>

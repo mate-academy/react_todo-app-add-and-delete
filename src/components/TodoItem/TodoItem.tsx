@@ -1,25 +1,22 @@
+/* eslint-disable jsx-a11y/label-has-associated-control */
 import React from 'react';
 import { Todo } from '../../types/Todo';
-import cn from 'classnames';
+import classNames from 'classnames';
 
-interface Props {
+type Props = {
   todo: Todo;
-  loading: boolean;
-  handleDeleteTodo: (id: number) => void;
-}
+  isLoading?: boolean;
+  onRemoveTodo: (todoId: number) => Promise<void>;
+};
 
-export const TodoItem: React.FC<Props> = ({
-  todo,
-  handleDeleteTodo,
-  loading,
-}) => {
+export const TodoItem: React.FC<Props> = props => {
+  const { todo, isLoading, onRemoveTodo } = props;
+
   return (
     <div
       data-cy="Todo"
-      className={cn('todo', { completed: todo.completed })}
-      key={todo.id}
+      className={classNames('todo', { completed: todo.completed })}
     >
-      {/* eslint-disable-next-line jsx-a11y/label-has-associated-control*/}
       <label className="todo__status-label">
         <input
           data-cy="TodoStatus"
@@ -28,6 +25,7 @@ export const TodoItem: React.FC<Props> = ({
           checked={todo.completed}
         />
       </label>
+
       <span data-cy="TodoTitle" className="todo__title">
         {todo.title}
       </span>
@@ -35,13 +33,14 @@ export const TodoItem: React.FC<Props> = ({
         type="button"
         className="todo__remove"
         data-cy="TodoDelete"
-        onClick={() => handleDeleteTodo(todo.id)}
+        onClick={() => onRemoveTodo(todo.id)}
       >
         ×
       </button>
+
       <div
         data-cy="TodoLoader"
-        className={cn('modal overlay', { 'is-active': loading })}
+        className={classNames('modal overlay', { 'is-active': isLoading })}
       >
         <div className="modal-background has-background-white-ter" />
         <div className="loader" />
