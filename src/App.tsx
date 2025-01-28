@@ -6,7 +6,7 @@ import { TodoList } from './components/TodoList';
 import { Error } from './components/Error';
 import { Todo } from './types/Todo';
 import { UserWarning } from './UserWarning';
-
+import { FilterOptions } from './types/FilterOptions';
 export enum ErrorMessage {
   Update = 'Unable to update a todo',
   Add = 'Unable to add a todo',
@@ -18,17 +18,13 @@ export enum ErrorMessage {
 export const App: React.FC = () => {
   const [todoList, setTodoList] = useState<Todo[]>([]);
   const [filteredTodos, setFilteredTodos] = useState<Todo[]>([]);
-
   const [isLoading, setIsloading] = useState(false);
-
   const [errorMessage, setErrorMessage] = useState('');
 
   useEffect(() => {
     setIsloading(true);
     getTodos()
-      .then(todos => {
-        setTodoList(todos);
-      })
+      .then(setTodoList)
       .catch(() => setErrorMessage(ErrorMessage.Get))
       .finally(() => setIsloading(false));
   }, []);
@@ -71,7 +67,6 @@ export const App: React.FC = () => {
 
   const markAllTodoCompleted = () => {
     const isCompleted = todoList.every(todo => todo.completed);
-
     const updatedTodo = todoList.map(todo => ({
       ...todo,
       completed: !isCompleted,
@@ -89,16 +84,16 @@ export const App: React.FC = () => {
   };
 
   const handleFilterTodo = useCallback(
-    (option: string) => {
+    (option: FilterOptions) => {
       switch (option) {
-        case 'All':
+        case FilterOptions.All:
           setFilteredTodos(todoList);
           break;
-        case 'Active':
-          setFilteredTodos(todoList.filter(todo => todo.completed === false));
+        case FilterOptions.Active:
+          setFilteredTodos(todoList.filter(todo => !todo.completed));
           break;
-        case 'Completed':
-          setFilteredTodos(todoList.filter(todo => todo.completed === true));
+        case FilterOptions.Completed:
+          setFilteredTodos(todoList.filter(todo => todo.completed));
           break;
         default:
           setFilteredTodos(todoList);

@@ -1,3 +1,4 @@
+import classNames from 'classnames';
 import React, { useState } from 'react';
 
 interface ErrorMessageProps {
@@ -27,9 +28,12 @@ export const Error: React.FC<ErrorMessageProps> = ({
   return (
     <div
       data-cy="ErrorNotification"
-      className={`notification is-danger is-light has-text-weight-normal ${
-        isVisible ? '' : 'hidden'
-      }`}
+      className={classNames(
+        'notification is-danger is-light has-text-weight-normal',
+        {
+          hidden: !isVisible,
+        },
+      )}
     >
       <button
         data-cy="HideErrorButton"
