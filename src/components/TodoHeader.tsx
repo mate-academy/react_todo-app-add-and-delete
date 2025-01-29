@@ -1,73 +1,66 @@
-import React, { useEffect, useRef, useState } from 'react';
-import { Todo } from '../types/Todo';
-import { ErrorMessage } from '../App';
 import classNames from 'classnames';
+import React from 'react';
+import { useState, useEffect } from 'react';
+import { Todo } from '../types/Todo';
 
-interface TodoHeaderProps {
-  onError: (error: string) => void;
-  onAddTodo: (newTodo: Todo) => void;
-  onCompleted: () => void;
+type Props = {
+  todoTitleRef: React.RefObject<HTMLInputElement> | null;
+  onAddTodo: (title: string) => Promise<boolean>;
+  isLoading: boolean;
   todos: Todo[];
-}
+  onCompleted: () => void;
+};
 
-export const TodoHeader: React.FC<TodoHeaderProps> = ({
-  onError,
+export const TodoHeader: React.FC<Props> = ({
+  todoTitleRef,
   onAddTodo,
-  onCompleted,
+  isLoading,
   todos,
+  onCompleted,
 }) => {
   const [todoTitle, setTodoTitle] = useState('');
-  const inputRef = useRef<HTMLInputElement>(null);
+
+  const onSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
+    event.preventDefault();
+    const trimmedTitle = todoTitle.trim();
+
+    const success = await onAddTodo(trimmedTitle);
+
+    if (success) {
+      setTodoTitle('');
+    }
+  };
 
   useEffect(() => {
-    inputRef.current?.focus();
-  }, []);
-
-  const handleEnteredTodo = (event: React.ChangeEvent<HTMLInputElement>) => {
-    const newTitleTodo = event.target.value;
-
-    setTodoTitle(newTitleTodo);
-  };
-
-  const handleTodoCheck = () => {
-    return todos.every(todo => todo.completed);
-  };
-
-  const handleAddNewTodo = (event: React.FormEvent) => {
-    event.preventDefault();
-
-    if (!todoTitle.trim()) {
-      onError(ErrorMessage.Title);
-
-      return;
+    if (!isLoading) {
+      todoTitleRef?.current?.focus();
     }
-
-    onAddTodo({ title: todoTitle.trim() } as Todo);
-    setTodoTitle('');
-  };
+  }, [todoTitleRef, isLoading]);
 
   return (
-    <header className="todoapp__header" onSubmit={handleAddNewTodo}>
+    <header className="todoapp__header">
       {todos.length > 0 && (
         <button
           type="button"
           className={classNames('todoapp__toggle-all', {
-            active: handleTodoCheck(),
+            active: todos.every(todo => todo.completed),
           })}
           data-cy="ToggleAllButton"
           onClick={onCompleted}
         />
       )}
 
-      <form>
+      {/* Add a todo on form submit */}
+      <form onSubmit={onSubmit}>
         <input
-          ref={inputRef}
           data-cy="NewTodoField"
           type="text"
           className="todoapp__new-todo"
           placeholder="What needs to be done?"
+          ref={todoTitleRef}
           value={todoTitle}
-          onChange={handleEnteredTodo}
+          onChange={event => setTodoTitle(event.target.value)}
+          disabled={isLoading}
         />
       </form>
     </header>
