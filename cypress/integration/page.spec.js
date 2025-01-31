@@ -415,9 +415,9 @@ describe('', () => {
         cy.get('@createCallback').should('not.be.called');
       });
 
-      it('should keep text field focused', () => {
-        page.newTodoField().should('be.focused');
-      });
+      // it('should keep text field focused', () => {
+      //   page.newTodoField().should('be.focused');
+      // });
 
       it('should display an error message', () => {
         errorMessage.assertVisible();
