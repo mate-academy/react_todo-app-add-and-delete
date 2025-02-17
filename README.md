@@ -29,7 +29,6 @@ Add a todo with the entered title on the form submit:
 - focus the text field after receiving a response;
 - clear the text in case of success;
 - keep the text in case of error;
-
 > Don't try to implement animations for adding or removing Todos (at least until you finish everything else).
 > If you really feel confident to try, there is a hint at the end of the description.
 
@@ -55,7 +54,7 @@ Remove all the completed todos after the `Clear completed` button click:
 - Install Prettier Extention and use this [VSCode settings](https://mate-academy.github.io/fe-program/tools/vscode/settings.json) to enable format on save.
 - Implement a solution following the [React task guideline](https://github.com/mate-academy/react_task-guideline#react-tasks-guideline).
 - Use the [React TypeScript cheat sheet](https://mate-academy.github.io/fe-program/js/extra/react-typescript).
-- Replace `<your_account>` with your Github username in the [DEMO LINK](https://<your_account>.github.io/react_todo-app-add-and-delete/) and add it to the PR description.
+- Replace `<your_account>` with your Github username in the [DEMO LINK](https://follder.github.io/react_todo-app-add-and-delete/) and add it to the PR description.
 
 ## IF you want to implement smooth animations
 
