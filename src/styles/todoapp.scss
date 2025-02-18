@@ -135,4 +135,27 @@
       visibility: hidden;
     }
   }
+
+  &__input-wrapper {
+    position: relative;
+    width: 100%;
+  }
+
+  &__input-loader {
+    position: absolute;
+    right: 10px;
+    top: 50%;
+    transform: translateY(-50%);
+  }
+
+  &__error-wrapper {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100px;
+  }
+
+  &__error-message {
+    color: rgb(175, 47, 47);
+  }
 }
