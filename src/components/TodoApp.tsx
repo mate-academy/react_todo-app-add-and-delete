@@ -5,21 +5,26 @@ import { TodoList } from './TodoList';
 import { TodoFooter } from './TodoFooter';
 import { TodoError } from './TodoError';
 
-import { createTodo, getTodos } from '../api/todos';
+// import { createTodo, getTodos, USER_ID, deleteTodo } from '../api/todos';
+import * as todoService from '../api/todos';
 import { Todo } from '../types/Todo';
 import { Filters } from '../types/Filter';
 import { MessageError } from '../types/ErrorMessage';
 
 export const TodoApp = () => {
   const [todos, setTodos] = useState<Todo[]>([]);
+  const [tempTodo, setTempTodo] = useState<Todo | null>(null);
   const [filter, setFilter] = useState<Filters>(Filters.All);
   const [isError, setIsError] = useState(false);
   const [errorMessage, setErrorMessage] = useState<MessageError>(
     MessageError.default,
   );
+  const [loading, setLoading] = useState(false);
+  const [deletingTodoIds, setDeletingTodoIds] = useState<number[]>([]);
 
   useEffect(() => {
-    getTodos()
+    todoService
+      .getTodos()
       .then(setTodos)
       .catch(() => {
         setIsError(true);
@@ -38,15 +43,65 @@ export const TodoApp = () => {
     return () => clearTimeout(timer);
   }, [isError]);
 
-  const addTodo = (str: string) => {
-    return createTodo(str)
+  function addTodo(str: string) {
+    setLoading(true);
+
+    setTempTodo({
+      id: 0,
+      userId: todoService.USER_ID,
+      title: str.trim(),
+      completed: false,
+    });
+
+    return todoService
+      .createTodo(str)
       .then(todo => {
         setTodos(currentTodos => [...currentTodos, todo]);
+
+        return true;
       })
-      .catch(error => {
-        throw error;
+      .catch(() => {
+        setIsError(true);
+        setErrorMessage(MessageError.addError);
+
+        return false;
+      })
+      .finally(() => {
+        setLoading(false);
+        setTempTodo(null);
       });
-  };
+  }
+
+  function deleteTodo(todoId: number) {
+    setDeletingTodoIds(current => [...current, todoId]);
+
+    return todoService
+      .deleteTodo(todoId)
+      .then(() => {
+        setTodos(currentTodos =>
+          currentTodos.filter(todo => todo.id !== todoId),
+        );
+
+        return true;
+      })
+      .catch(() => {
+        setIsError(true);
+        setErrorMessage(MessageError.deleteError);
+
+        return false;
+      })
+      .finally(() => {
+        setDeletingTodoIds(current => current.filter(id => id !== todoId));
+      });
+  }
+
+  function deleteCompletedTodo() {
+    todos.map(todo => {
+      if (todo.completed) {
+        deleteTodo(todo.id);
+      }
+    });
+  }
 
   const filterTodos = () => {
     switch (filter) {
@@ -69,13 +124,25 @@ export const TodoApp = () => {
         <TodoHeader
           addTodo={addTodo}
           todos={todos}
+          loading={loading}
           setIsError={setIsError}
           setErrorMessage={setErrorMessage}
         />
         {todos.length > 0 && (
           <>
-            <TodoList todos={filteredTodos} />
-            <TodoFooter todos={todos} filter={filter} setFilter={setFilter} />
+            <TodoList
+              todos={filteredTodos}
+              tempTodo={tempTodo}
+              loading={loading}
+              deleteTodo={deleteTodo}
+              deletingTodoIds={deletingTodoIds}
+            />
+            <TodoFooter
+              todos={todos}
+              filter={filter}
+              setFilter={setFilter}
+              deleteCompletedTodo={deleteCompletedTodo}
+            />
           </>
         )}
       </div>

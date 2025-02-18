@@ -7,9 +7,11 @@ import { Todo } from '../types/Todo';
 
 interface Props {
   todo: Todo;
+  loading: boolean;
+  deleteTodo: (id: number) => Promise<boolean>;
 }
 
-export const TodoItem: React.FC<Props> = ({ todo }) => {
+export const TodoItem: React.FC<Props> = ({ todo, loading, deleteTodo }) => {
   const { id, title, completed } = todo;
 
   return (
@@ -31,11 +33,21 @@ export const TodoItem: React.FC<Props> = ({ todo }) => {
         {title}
       </span>
 
-      <button type="button" className="todo__remove" data-cy="TodoDelete">
+      <button
+        type="button"
+        className="todo__remove"
+        data-cy="TodoDelete"
+        onClick={() => deleteTodo(todo.id)}
+      >
         ×
       </button>
 
-      <div data-cy="TodoLoader" className="modal overlay">
+      <div
+        data-cy="TodoLoader"
+        className={classNames('modal overlay', {
+          'is-active': loading,
+        })}
+      >
         <div className="modal-background has-background-white-ter" />
         <div className="loader" />
       </div>

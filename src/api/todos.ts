@@ -10,7 +10,7 @@ export const getTodos = () => {
 export const createTodo = (title: string) => {
   return client.post<Todo>('/todos', {
     userId: USER_ID,
-    title,
+    title: title.trim(),
     completed: false,
   });
 };

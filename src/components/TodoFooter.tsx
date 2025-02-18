@@ -7,9 +7,15 @@ interface Props {
   todos: Todo[];
   filter: Filters;
   setFilter: (str: Filters) => void;
+  deleteCompletedTodo: () => void;
 }
 
-export const TodoFooter = ({ todos, filter, setFilter }: Props) => {
+export const TodoFooter = ({
+  todos,
+  filter,
+  setFilter,
+  deleteCompletedTodo,
+}: Props) => {
   const activeTodosLength = todos.filter(todo => !todo.completed).length;
 
   return (
@@ -41,6 +47,7 @@ export const TodoFooter = ({ todos, filter, setFilter }: Props) => {
         className="todoapp__clear-completed"
         data-cy="ClearCompletedButton"
         disabled={todos.length === activeTodosLength}
+        onClick={deleteCompletedTodo}
       >
         Clear completed
       </button>

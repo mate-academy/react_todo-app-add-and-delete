@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useRef, useState, useEffect } from 'react';
 import classNames from 'classnames';
 
 import { MessageError } from '../types/ErrorMessage';
@@ -6,18 +6,27 @@ import { Todo } from '../types/Todo';
 
 interface Props {
   todos: Todo[];
-  addTodo: (text: string) => void;
+  loading: boolean;
+  addTodo: (text: string) => Promise<boolean>;
   setIsError: (value: boolean) => void;
   setErrorMessage: (str: MessageError) => void;
 }
 
 export const TodoHeader: React.FC<Props> = ({
   todos,
+  loading,
   addTodo,
   setIsError,
   setErrorMessage,
 }) => {
   const [query, setQuery] = useState('');
+  const inputRef = useRef<HTMLInputElement | null>(null);
+
+  useEffect(() => {
+    if (!loading) {
+      inputRef.current?.focus();
+    }
+  }, [loading, todos]);
 
   const handleInputChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     setQuery(event.target.value);
@@ -25,14 +34,23 @@ export const TodoHeader: React.FC<Props> = ({
 
   const handleSubmit = (event: React.FormEvent) => {
     event.preventDefault();
-    if (query) {
-      addTodo(query);
-    } else {
+
+    if (!query.trim()) {
       setIsError(true);
       setErrorMessage(MessageError.queryError);
+
+      return;
     }
 
-    setQuery('');
+    addTodo(query)
+      .then(isSuccess => {
+        if (isSuccess) {
+          setQuery('');
+        }
+      })
+      .finally(() => {
+        inputRef.current?.focus();
+      });
   };
 
   return (
@@ -49,12 +67,14 @@ export const TodoHeader: React.FC<Props> = ({
 
       <form onSubmit={handleSubmit}>
         <input
+          ref={inputRef}
           data-cy="NewTodoField"
           type="text"
           className="todoapp__new-todo"
           placeholder="What needs to be done?"
           value={query}
           onChange={handleInputChange}
+          disabled={loading}
         />
       </form>
     </header>
