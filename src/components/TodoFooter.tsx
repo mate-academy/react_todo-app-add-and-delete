@@ -1,0 +1,56 @@
+import classNames from 'classnames';
+
+import { Filters } from '../types/Filter';
+import { Todo } from '../types/Todo';
+
+interface Props {
+  todos: Todo[];
+  filter: Filters;
+  setFilter: (str: Filters) => void;
+  deleteCompletedTodo: () => void;
+}
+
+export const TodoFooter = ({
+  todos,
+  filter,
+  setFilter,
+  deleteCompletedTodo,
+}: Props) => {
+  const activeTodosLength = todos.filter(todo => !todo.completed).length;
+
+  return (
+    <footer className="todoapp__footer" data-cy="Footer">
+      <span className="todo-count" data-cy="TodosCounter">
+        {activeTodosLength} items left
+      </span>
+
+      <nav className="filter" data-cy="Filter">
+        {Object.values(Filters).map(item => {
+          return (
+            <a
+              href={item !== 'All' ? `#/${item.toLowerCase()}` : '#/'}
+              className={classNames('filter__link', {
+                selected: item === filter,
+              })}
+              data-cy={`FilterLink${item}`}
+              onClick={() => setFilter(item)}
+              key={item}
+            >
+              {item}
+            </a>
+          );
+        })}
+      </nav>
+
+      <button
+        type="button"
+        className="todoapp__clear-completed"
+        data-cy="ClearCompletedButton"
+        disabled={todos.length === activeTodosLength}
+        onClick={deleteCompletedTodo}
+      >
+        Clear completed
+      </button>
+    </footer>
+  );
+};
