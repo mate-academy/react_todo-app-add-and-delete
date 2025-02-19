@@ -5,7 +5,6 @@ import { TodoList } from './TodoList';
 import { TodoFooter } from './TodoFooter';
 import { TodoError } from './TodoError';
 
-// import { createTodo, getTodos, USER_ID, deleteTodo } from '../api/todos';
 import * as todoService from '../api/todos';
 import { Todo } from '../types/Todo';
 import { Filters } from '../types/Filter';
@@ -43,7 +42,7 @@ export const TodoApp = () => {
     return () => clearTimeout(timer);
   }, [isError]);
 
-  function addTodo(str: string) {
+  const addTodo = (str: string) => {
     setLoading(true);
 
     setTempTodo({
@@ -70,9 +69,9 @@ export const TodoApp = () => {
         setLoading(false);
         setTempTodo(null);
       });
-  }
+  };
 
-  function deleteTodo(todoId: number) {
+  const deleteTodo = (todoId: number) => {
     setDeletingTodoIds(current => [...current, todoId]);
 
     return todoService
@@ -93,15 +92,19 @@ export const TodoApp = () => {
       .finally(() => {
         setDeletingTodoIds(current => current.filter(id => id !== todoId));
       });
-  }
+  };
 
-  function deleteCompletedTodo() {
-    todos.map(todo => {
-      if (todo.completed) {
-        deleteTodo(todo.id);
-      }
-    });
-  }
+  const deleteCompletedTodo = async () => {
+    const completedTodos = todos.filter(todo => todo.completed);
+    const deletePromises = completedTodos.map(todo => deleteTodo(todo.id));
+
+    try {
+      await Promise.all(deletePromises);
+    } catch (error) {
+      setIsError(true);
+      setErrorMessage(MessageError.deleteError);
+    }
+  };
 
   const filterTodos = () => {
     switch (filter) {

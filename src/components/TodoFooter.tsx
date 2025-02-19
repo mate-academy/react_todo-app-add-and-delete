@@ -25,7 +25,7 @@ export const TodoFooter = ({
       </span>
 
       <nav className="filter" data-cy="Filter">
-        {Object.values(Filters).map((item, i) => {
+        {Object.values(Filters).map(item => {
           return (
             <a
               href={item !== 'All' ? `#/${item.toLowerCase()}` : '#/'}
@@ -34,7 +34,7 @@ export const TodoFooter = ({
               })}
               data-cy={`FilterLink${item}`}
               onClick={() => setFilter(item)}
-              key={i}
+              key={item}
             >
               {item}
             </a>
