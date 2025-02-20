@@ -112,6 +112,7 @@ export const App: React.FC = () => {
       .catch(() => {
         setErrorMessage('Unable to load todos');
       });
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []); // get user todos
 
   if (!USER_ID) {
