@@ -13,7 +13,7 @@ type Props = {
 };
 
 export const TodoItem: React.FC<Props> = ({
-  todo,
+  todo: { title, completed },
   loading,
   isSelected,
   onSelect,
@@ -23,8 +23,8 @@ export const TodoItem: React.FC<Props> = ({
     <div
       data-cy="Todo"
       className={cn('todo', {
-        completed: todo.completed,
-        selected: isSelected,
+        'completed': completed,
+        'selected': isSelected,
       })}
     >
       <label className="todo__status-label" aria-label="Toggle todo status">
@@ -32,13 +32,13 @@ export const TodoItem: React.FC<Props> = ({
           data-cy="TodoStatus"
           type="checkbox"
           className="todo__status"
-          checked={todo.completed}
+          checked={completed}
           onChange={onSelect}
         />
       </label>
 
       <span data-cy="TodoTitle" className="todo__title">
-        {todo.title}
+        {title}
       </span>
 
       <button

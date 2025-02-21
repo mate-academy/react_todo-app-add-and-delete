@@ -23,38 +23,23 @@ export const Filter: React.FC<Props> = ({
 
   return (
     <nav className="filter" data-cy="Filter">
-      <a
-        href="#/"
-        className={cn('filter__link', {
-          selected: filterType === 'all',
-        })}
-        data-cy="FilterLinkAll"
-        onClick={handleFilterChange('all')}
-      >
-        All
-      </a>
+      {Object.values(FilterType).map((filter: FilterType) => {
+        const displayName = filter.charAt(0).toUpperCase() + filter.slice(1);
 
-      <a
-        href="#/active"
-        className={cn('filter__link', {
-          selected: filterType === 'active',
-        })}
-        data-cy="FilterLinkActive"
-        onClick={handleFilterChange('active')}
-      >
-        Active
-      </a>
-
-      <a
-        href="#/completed"
-        className={cn('filter__link', {
-          selected: filterType === 'completed',
-        })}
-        data-cy="FilterLinkCompleted"
-        onClick={handleFilterChange('completed')}
-      >
-        Completed
-      </a>
+        return (
+          <a
+            key={filter}
+            href={`#/${filter.toLowerCase()}`}
+            className={cn('filter__link', {
+              selected: filterType === filter,
+            })}
+            data-cy={`FilterLink${displayName}`}
+            onClick={handleFilterChange(filter)}
+          >
+            {displayName}
+          </a>
+        );
+      })}
     </nav>
   );
 };

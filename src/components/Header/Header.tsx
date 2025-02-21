@@ -38,6 +38,7 @@ export const Header: React.FC<Props> = ({
 
     if (!inputValue.trim()) {
       setErrorMessage('Title should not be empty');
+
       return;
     }
 

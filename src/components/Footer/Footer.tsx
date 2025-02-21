@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useMemo } from 'react';
 
 import './Footer.scss';
 
@@ -16,13 +16,18 @@ type Props = {
 export const Footer: React.FC<Props> = ({
   todos,
   filterType,
-  onFilterType = () => { },
+  onFilterType = () => {},
   onClearCompleted,
 }) => {
+  const activeTodosCount = useMemo(
+    () => todos.filter(todo => !todo.completed).length,
+    [todos],
+  );
+
   return (
     <footer className="todoapp__footer" data-cy="Footer">
       <span className="todo-count" data-cy="TodosCounter">
-        {todos.filter(todo => !todo.completed).length} items left
+        {activeTodosCount} items left
       </span>
 
       <Filter filterType={filterType} onFilterType={onFilterType} />

@@ -20,13 +20,14 @@ export const App: React.FC = () => {
   const [errorMessage, setErrorMessage] = useState('');
   const [loadingTodoIds, setLoadingTodoIds] = useState<number[]>([]);
 
-  const [filterType, setFilterType] = useState<FilterType>('all');
+  const [filterType, setFilterType] = useState<FilterType>(FilterType.ALL);
   const [inputValue, setInputValue] = useState('');
 
   const [selectedTodo, setSelectedTodo] = useState<Todo | null>(null);
 
   const [tempTodo, setTempTodo] = useState<Todo | null>(null);
-  const [inputRef, setInputRef] = useState<React.RefObject<HTMLInputElement> | null>(null);
+  const [inputRef, setInputRef] =
+    useState<React.RefObject<HTMLInputElement> | null>(null);
 
   useEffect(() => {
     setLoadingTodoIds(current => [...current, 0]);
@@ -97,6 +98,7 @@ export const App: React.FC = () => {
         userId: todoService.USER_ID,
         completed: false,
       });
+
       setTodos(currentTodos => [...currentTodos, newTodo]);
       setInputValue('');
     } catch (error) {
