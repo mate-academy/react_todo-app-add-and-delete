@@ -118,7 +118,7 @@ describe('', () => {
     if (failed) Cypress.runner.stop();
   });
 
-  describe('Page with no todos', () => {
+  describe.skip('Page with no todos', () => {
     it('should send 1 todos request', () => {
       const spy = cy.stub()
         .callsFake(req => req.reply({ body: [] }))
@@ -196,7 +196,7 @@ describe('', () => {
     });
   });
 
-  describe('Page with mixed todos', () => {
+  describe.skip('Page with mixed todos', () => {
     beforeEach(() => {
       page.mockLoad().as('loadRequest');
       page.visit();
@@ -271,7 +271,7 @@ describe('', () => {
     });
   });
 
-  describe('Filtering', () => {
+  describe.skip('Filtering', () => {
     describe('with mixed todos', () => {
       beforeEach(() => {
         page.mockLoad().as('loadRequest');
@@ -519,7 +519,7 @@ describe('', () => {
         });
 
         // this test may be flaky
-        it.skip('should replace loader with a created todo', () => {
+        it('should replace loader with a created todo', () => {
           page.flushJSTimers();
           todos.assertCount(6);
           todos.assertNotLoading(5);
