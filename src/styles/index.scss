@@ -9,9 +9,13 @@ body {
 }
 
 .notification {
+  box-sizing: content-box;
+  padding-top: 10px;
+  text-align: left;
   transition-property: opacity, min-height;
   transition-duration: 1s;
   min-height: 36px;
+  max-height: 82px;
 }
 
 .notification.hidden {
