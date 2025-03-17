@@ -35,6 +35,18 @@
     transition: color 0.4s;
   }
 
+  &__title--edit {
+    font-size: inherit;
+    padding: 12px 15px;
+    font-weight: inherit;
+    color: inherit;
+    background: transparent;
+    border: none;
+    outline: none;
+    width: 100%;
+    transition: color 0.4s;
+  }
+
   &.completed &__title {
     color: #d9d9d9;
     text-decoration: line-through;
