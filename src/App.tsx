@@ -57,9 +57,7 @@ export const App: React.FC = () => {
       .finally(() => setLoading(false));
   }, []);
 
-  const handleCreateNewTodo = async (
-    event: React.FormEvent<HTMLFormElement>,
-  ) => {
+  const handleCreateTodo = async (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
     const trimmedTitle = newTodoTitle.trim();
 
@@ -81,37 +79,36 @@ export const App: React.FC = () => {
     }
   };
 
-  const handleDelete = async (id: number) => {
-    setError('');
-    setLoadingMultiplueTodo(prev => [...prev, id]);
-    try {
-      await deleteTodo(id);
-      setTodos(prev => prev.filter(todo => todo.id !== id));
-      setFocused(true);
-    } catch {
-      errorTimeout('Unable to delete Todo');
-    } finally {
-      setLoadingMultiplueTodo(prev => prev.filter(todoId => todoId !== id));
-    }
-  };
-
-  const handleMultiplueDelete = async () => {
+  const handleDelete = async (id: number = -1) => {
     setError('');
 
-    const completedIds = todos
-      .filter(todo => todo.completed)
-      .map(todo => todo.id);
+    if (id !== -1) {
+      setLoadingMultiplueTodo(prev => [...prev, id]);
+      try {
+        await deleteTodo(id);
+        setTodos(prev => prev.filter(todo => todo.id !== id));
+        setFocused(true);
+      } catch {
+        errorTimeout('Unable to delete Todo');
+      } finally {
+        setLoadingMultiplueTodo(prev => prev.filter(todoId => todoId !== id));
+      }
+    } else {
+      const completedIds = todos
+        .filter(todo => todo.completed)
+        .map(todo => todo.id);
 
-    setLoadingMultiplueTodo(completedIds);
+      setLoadingMultiplueTodo(completedIds);
 
-    try {
-      await Promise.all(completedIds.map(id => deleteTodo(id)));
+      try {
+        await Promise.all(completedIds.map(Todoid => deleteTodo(Todoid)));
 
-      setTodos(prev => prev.filter(todo => !completedIds.includes(todo.id)));
-    } catch {
-      errorTimeout('Unable to delete some Todos');
-    } finally {
-      setLoadingMultiplueTodo([]);
+        setTodos(prev => prev.filter(todo => !completedIds.includes(todo.id)));
+      } catch {
+        errorTimeout('Unable to delete some Todos');
+      } finally {
+        setLoadingMultiplueTodo([]);
+      }
     }
 
     setFocused(true);
@@ -131,7 +128,7 @@ export const App: React.FC = () => {
     return filteredTodos;
   }, [filter, todos]);
 
-  const getAcitve = useMemo(() => {
+  const acitveCount = useMemo(() => {
     return todos.filter(todo => !todo.completed).length;
   }, [todos]);
 
@@ -149,7 +146,7 @@ export const App: React.FC = () => {
           />
 
           {/* Add a todo on form submit */}
-          <form onSubmit={e => handleCreateNewTodo(e)}>
+          <form onSubmit={e => handleCreateTodo(e)}>
             <input
               data-cy="NewTodoField"
               type="text"
@@ -242,7 +239,7 @@ export const App: React.FC = () => {
         {!!todos.length && (
           <footer className="todoapp__footer" data-cy="Footer">
             <span className="todo-count" data-cy="TodosCounter">
-              {`${getAcitve} items left`}
+              {`${acitveCount} items left`}
             </span>
 
             {/* Active link should have the 'selected' class */}
@@ -286,7 +283,8 @@ export const App: React.FC = () => {
               type="button"
               className="todoapp__clear-completed"
               data-cy="ClearCompletedButton"
-              onClick={() => handleMultiplueDelete()}
+              onClick={() => handleDelete()}
+              disabled={acitveCount === todos.length}
             >
               Clear completed
             </button>

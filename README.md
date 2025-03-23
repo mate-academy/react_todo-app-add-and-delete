@@ -2,6 +2,8 @@
 
 It is the second part of the React Todo App with API.
 
+const USER_ID = 2480;
+
 Take your code implemented for [Loading todos](https://github.com/mate-academy/react_todo-app-loading-todos)
 and implement the ability to add and remove todos.
 
@@ -55,7 +57,7 @@ Remove all the completed todos after the `Clear completed` button click:
 - Install Prettier Extention and use this [VSCode settings](https://mate-academy.github.io/fe-program/tools/vscode/settings.json) to enable format on save.
 - Implement a solution following the [React task guideline](https://github.com/mate-academy/react_task-guideline#react-tasks-guideline).
 - Use the [React TypeScript cheat sheet](https://mate-academy.github.io/fe-program/js/extra/react-typescript).
-- Replace `<your_account>` with your Github username in the [DEMO LINK](https://<your_account>.github.io/react_todo-app-add-and-delete/) and add it to the PR description.
+- Replace `<your_account>` with your Github username in the [DEMO LINK](https://Grifion.github.io/react_todo-app-add-and-delete/) and add it to the PR description.
 
 ## IF you want to implement smooth animations
 
