@@ -1,6 +1,4 @@
 /* eslint-disable jsx-a11y/label-has-associated-control */
-/* eslint-disable max-len */
-/* eslint-disable jsx-a11y/control-has-associated-label */
 import classNames from 'classnames';
 import React, {
   useCallback,
@@ -10,7 +8,7 @@ import React, {
   useState,
 } from 'react';
 import { Todo } from './types/Todo';
-import { createTodo, deleteTodo, getTodos } from './api/todo';
+import { createTodo, getTodos } from './api/todo';
 
 export const App: React.FC = () => {
   const [focused, setFocused] = useState(true);
@@ -18,9 +16,10 @@ export const App: React.FC = () => {
   const [todos, setTodos] = useState<Todo[]>([]);
   const [error, setError] = useState('');
   const [filter, setFilter] = useState('all');
-  const [temporaryTodo, setTemporaryTodo] = useState('');
   const [loading, setLoading] = useState(false);
-  const [todoForDelete, setLoadingMultiplueTodo] = useState<number[]>([]);
+  const [todoForDelete] = useState<number[]>([]);
+  const [tempTodo, setTempTodo] = useState<Todo | undefined>();
+  const [isDisabled, setIsDisabled] = useState(false);
 
   const timerRef = useRef<NodeJS.Timeout | null>(null);
   const inputRef = useRef<HTMLInputElement | null>(null);
@@ -55,63 +54,45 @@ export const App: React.FC = () => {
       })
       .catch(() => errorTimeout('Unable to load todos'))
       .finally(() => setLoading(false));
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
-  const handleCreateTodo = async (event: React.FormEvent<HTMLFormElement>) => {
+  const handleCreateTodo = (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
-    const trimmedTitle = newTodoTitle.trim();
+    const trimmeredTitle = newTodoTitle.trim();
 
-    if (!trimmedTitle) {
-      return errorTimeout('Title should not be empty');
+    if (trimmeredTitle === '') {
+      errorTimeout('Title should not be empty');
+
+      return;
     }
 
-    try {
-      setTemporaryTodo(trimmedTitle);
-      const newTodo = await createTodo(trimmedTitle);
+    setIsDisabled(true);
+    setTempTodo({
+      userId: 0,
+      title: newTodoTitle,
+      completed: false,
+      id: 0,
+    });
 
-      setTodos(prev => [...prev, newTodo]);
-      setNewTodoTitle('');
-    } catch {
-      errorTimeout('Unable to add a todo');
-    } finally {
-      setTemporaryTodo('');
-      setFocused(true);
-    }
+    // Create the new todo and handle response
+    createTodo(trimmeredTitle)
+      .then(response => {
+        setIsDisabled(false);
+        setFocused(true); // Focus back on the input field after the request
+        setTodos(prev => [...prev, response]);
+        setNewTodoTitle('');
+        setTempTodo(undefined); // Remove the temp todo once the real one is created
+      })
+      .catch(() => {
+        setIsDisabled(false); // Re-enable the button if there's an error
+        errorTimeout(`Unable to add a todo`);
+      });
   };
 
-  const handleDelete = async (id: number = -1) => {
-    setError('');
-
-    if (id !== -1) {
-      setLoadingMultiplueTodo(prev => [...prev, id]);
-      try {
-        await deleteTodo(id);
-        setTodos(prev => prev.filter(todo => todo.id !== id));
-        setFocused(true);
-      } catch {
-        errorTimeout('Unable to delete Todo');
-      } finally {
-        setLoadingMultiplueTodo(prev => prev.filter(todoId => todoId !== id));
-      }
-    } else {
-      const completedIds = todos
-        .filter(todo => todo.completed)
-        .map(todo => todo.id);
-
-      setLoadingMultiplueTodo(completedIds);
-
-      try {
-        await Promise.all(completedIds.map(Todoid => deleteTodo(Todoid)));
-
-        setTodos(prev => prev.filter(todo => !completedIds.includes(todo.id)));
-      } catch {
-        errorTimeout('Unable to delete some Todos');
-      } finally {
-        setLoadingMultiplueTodo([]);
-      }
-    }
-
-    setFocused(true);
+  const handleDelete = (todo?: number) => {
+    // eslint-disable-next-line no-console
+    console.log(todo);
   };
 
   const getFilteredTodos = useMemo(() => {
@@ -157,7 +138,7 @@ export const App: React.FC = () => {
               placeholder="What needs to be done?"
               onChange={e => setNewTodoTitle(e.target.value)}
               value={newTodoTitle}
-              disabled={temporaryTodo !== ''}
+              disabled={isDisabled}
             />
           </form>
         </header>
@@ -205,30 +186,26 @@ export const App: React.FC = () => {
             );
           })}
 
-          {temporaryTodo && (
+          {tempTodo && (
             <div
               data-cy="Todo"
-              className={classNames('todo', { completed: false })}
+              key={tempTodo.id}
+              className={classNames('todo', { completed: tempTodo.completed })}
             >
               <label className="todo__status-label">
                 <input
                   data-cy="TodoStatus"
                   type="checkbox"
                   className="todo__status"
-                  checked={false}
+                  checked={tempTodo.completed}
                 />
               </label>
 
               <span data-cy="TodoTitle" className="todo__title">
-                {temporaryTodo}
+                {tempTodo.title}
               </span>
 
-              <div
-                data-cy="TodoLoader"
-                className={classNames('modal overlay', {
-                  'is-active': temporaryTodo,
-                })}
-              >
+              <div data-cy="TodoLoader" className={'modal overlay is-active'}>
                 <div className="modal-background has-background-white-ter" />
                 <div className="loader" />
               </div>
