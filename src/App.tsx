@@ -8,7 +8,7 @@ import React, {
   useState,
 } from 'react';
 import { Todo } from './types/Todo';
-import { createTodo, getTodos } from './api/todo';
+import { createTodo, deleteTodo, getTodos } from './api/todo';
 
 export const App: React.FC = () => {
   const [focused, setFocused] = useState(true);
@@ -17,9 +17,9 @@ export const App: React.FC = () => {
   const [error, setError] = useState('');
   const [filter, setFilter] = useState('all');
   const [loading, setLoading] = useState(false);
-  const [todoForDelete] = useState<number[]>([]);
   const [tempTodo, setTempTodo] = useState<Todo | undefined>();
   const [isDisabled, setIsDisabled] = useState(false);
+  const [todoForDelete, setLoadingMultiplueTodo] = useState<number[]>([]);
 
   const timerRef = useRef<NodeJS.Timeout | null>(null);
   const inputRef = useRef<HTMLInputElement | null>(null);
@@ -37,12 +37,8 @@ export const App: React.FC = () => {
   }, []);
 
   useEffect(() => {
-    if (inputRef.current) {
-      if (focused) {
-        inputRef.current.focus();
-      } else {
-        inputRef.current.blur();
-      }
+    if (focused && inputRef.current) {
+      setTimeout(() => inputRef.current?.focus(), 0);
     }
   }, [focused]);
 
@@ -59,14 +55,15 @@ export const App: React.FC = () => {
 
   const handleCreateTodo = (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
-    const trimmeredTitle = newTodoTitle.trim();
+    const trimmedTitle = newTodoTitle.trim();
 
-    if (trimmeredTitle === '') {
+    if (trimmedTitle === '') {
       errorTimeout('Title should not be empty');
 
       return;
     }
 
+    setFocused(false);
     setIsDisabled(true);
     setTempTodo({
       userId: 0,
@@ -75,24 +72,63 @@ export const App: React.FC = () => {
       id: 0,
     });
 
-    // Create the new todo and handle response
-    createTodo(trimmeredTitle)
+    createTodo(trimmedTitle)
       .then(response => {
-        setIsDisabled(false);
-        setFocused(true); // Focus back on the input field after the request
         setTodos(prev => [...prev, response]);
         setNewTodoTitle('');
-        setTempTodo(undefined); // Remove the temp todo once the real one is created
+        setTempTodo(undefined);
       })
       .catch(() => {
-        setIsDisabled(false); // Re-enable the button if there's an error
-        errorTimeout(`Unable to add a todo`);
+        setIsDisabled(false);
+        errorTimeout('Unable to add a todo');
+        setTempTodo(undefined);
+      })
+      .finally(() => {
+        setIsDisabled(false);
+        setFocused(true);
       });
   };
 
-  const handleDelete = (todo?: number) => {
-    // eslint-disable-next-line no-console
-    console.log(todo);
+  const handleDelete = async (id: number = -1) => {
+    setError('');
+    if (id !== -1) {
+      setLoadingMultiplueTodo(prev => [...prev, id]);
+      try {
+        await deleteTodo(id);
+        setTodos(prev => prev.filter(todo => todo.id !== id));
+      } catch {
+        errorTimeout('Unable to delete a todo');
+      } finally {
+        setLoadingMultiplueTodo(prev => prev.filter(todoId => todoId !== id));
+      }
+    } else {
+      const completedIds = todos
+        .filter(todo => todo.completed)
+        .map(todo => todo.id);
+
+      setLoadingMultiplueTodo(completedIds);
+
+      const successfulDeletes: number[] = [];
+
+      await Promise.all(
+        completedIds.map(async todoId => {
+          try {
+            await deleteTodo(todoId);
+            successfulDeletes.push(todoId);
+          } catch {
+            errorTimeout('Unable to delete a todo');
+          }
+        }),
+      );
+
+      setTodos(prev =>
+        prev.filter(todo => !successfulDeletes.includes(todo.id)),
+      );
+      setLoadingMultiplueTodo([]);
+    }
+
+    setFocused(false);
+    setFocused(true);
   };
 
   const getFilteredTodos = useMemo(() => {
