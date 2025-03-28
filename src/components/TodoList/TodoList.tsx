@@ -7,16 +7,16 @@ import { TodoField } from '../TodoField';
 type Props = {
   todos: Todo[];
   deleteTodo: (id: number) => void;
-  setIsLoaded: (id: number[]) => void;
-  isLoaded: number[];
+  setIsLoadedIDs: (id: number[]) => void;
+  isLoadedIDs: number[];
   tempTodo: Todo | null;
 };
 
 export const TodoList: React.FC<Props> = ({
   todos,
   deleteTodo,
-  isLoaded,
-  setIsLoaded,
+  isLoadedIDs,
+  setIsLoadedIDs,
   tempTodo,
 }) => {
   return (
@@ -26,8 +26,8 @@ export const TodoList: React.FC<Props> = ({
           key={todo.id}
           todo={todo}
           deleteTodo={deleteTodo}
-          isLoaded={isLoaded}
-          setIsLoaded={setIsLoaded}
+          isLoadedIDs={isLoadedIDs}
+          setIsLoadedIDs={setIsLoadedIDs}
         />
       ))}
 
@@ -36,8 +36,8 @@ export const TodoList: React.FC<Props> = ({
           key={tempTodo.id}
           todo={tempTodo}
           deleteTodo={() => {}}
-          isLoaded={[0]}
-          setIsLoaded={() => {}}
+          isLoadedIDs={[0]}
+          setIsLoadedIDs={() => {}}
         />
       )}
     </section>

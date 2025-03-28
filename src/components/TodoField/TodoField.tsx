@@ -6,18 +6,18 @@ import { Todo } from '../../types/Todo';
 type Props = {
   todo: Todo;
   deleteTodo: (id: number) => void;
-  setIsLoaded: (id: number[]) => void;
-  isLoaded: number[];
+  setIsLoadedIDs: (id: number[]) => void;
+  isLoadedIDs: number[];
 };
 
 export const TodoField: React.FC<Props> = ({
   todo,
   deleteTodo,
-  isLoaded,
-  setIsLoaded,
+  isLoadedIDs,
+  setIsLoadedIDs,
 }) => {
   const handleDeleteTodo = (todoId: number) => {
-    setIsLoaded([todoId, ...isLoaded]);
+    setIsLoadedIDs([todoId, ...isLoadedIDs]);
     deleteTodo(todoId);
   };
 
@@ -50,7 +50,7 @@ export const TodoField: React.FC<Props> = ({
       <div
         data-cy="TodoLoader"
         className={cn('modal overlay', {
-          'is-active': isLoaded.includes(todo.id),
+          'is-active': isLoadedIDs.includes(todo.id),
         })}
       >
         <div className="modal-background has-background-white-ter" />

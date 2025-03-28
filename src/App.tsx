@@ -38,7 +38,7 @@ export const App: React.FC = () => {
   const [todos, setTodos] = useState<Todo[]>([]);
   const [errorMessage, setErrorMessage] = useState(Errors.Default);
   const [filterBy, setFilterBy] = useState(FilterBy.All);
-  const [isLoaded, setIsLoaded] = useState<number[]>([]);
+  const [isLoadedIDs, setIsLoadedIDs] = useState<number[]>([]);
   const [tempTodo, setTempTodo] = useState<Todo | null>(null);
 
   const timerId = useRef(0);
@@ -76,12 +76,12 @@ export const App: React.FC = () => {
         changeErrorMesssage(Errors.Delete);
       })
       .finally(() => {
-        setIsLoaded((loading: number[]) => {
-          const stilLoading = loading;
+        setIsLoadedIDs((loadingIDs: number[]) => {
+          const stilLoadingIDs = loadingIDs;
 
-          stilLoading.pop();
+          stilLoadingIDs.pop();
 
-          return stilLoading;
+          return stilLoadingIDs;
         });
       });
   };
@@ -90,7 +90,10 @@ export const App: React.FC = () => {
     const completedTodos = todos.filter(todo => todo.completed);
 
     completedTodos.forEach(todo => {
-      setIsLoaded((alreadyLoad: number[]) => [...alreadyLoad, todo.id]);
+      setIsLoadedIDs((alreadyLoadedIDs: number[]) => [
+        ...alreadyLoadedIDs,
+        todo.id,
+      ]);
       handleDeleteTodo(todo.id);
     });
   };
@@ -135,8 +138,8 @@ export const App: React.FC = () => {
             <TodoList
               todos={filteredTodos}
               deleteTodo={handleDeleteTodo}
-              isLoaded={isLoaded}
-              setIsLoaded={setIsLoaded}
+              isLoadedIDs={isLoadedIDs}
+              setIsLoadedIDs={setIsLoadedIDs}
               tempTodo={tempTodo}
             />
 
