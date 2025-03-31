@@ -1,9 +1,10 @@
 import cn from 'classnames';
 import { Todo } from '../../types/Todo';
+import { CompleteStatus } from '../../types/CompleteStatus.enum';
 
 type Props = {
   filter: string;
-  onFilter: (v: string) => void;
+  onFilter: (v: CompleteStatus) => void;
   activeTodosCount: number;
   complitedTodos: Todo[];
   onDelete: (v: number) => void;
@@ -25,27 +26,27 @@ export const Footer: React.FC<Props> = ({
       <nav className="filter" data-cy="Filter">
         <a
           href="#/"
-          className={cn('filter__link', { selected: filter === 'all' })}
+          className={cn('filter__link', { selected: filter === CompleteStatus.ALL })}
           data-cy="FilterLinkAll"
-          onClick={() => onFilter('all')}
+          onClick={() => onFilter(CompleteStatus.ALL)}
         >
           All
         </a>
 
         <a
           href="#/active"
-          className={cn('filter__link', { selected: filter === 'active' })}
+          className={cn('filter__link', { selected: filter === CompleteStatus.ACTIVE })}
           data-cy="FilterLinkActive"
-          onClick={() => onFilter('active')}
+          onClick={() => onFilter(CompleteStatus.ACTIVE)}
         >
           Active
         </a>
 
         <a
           href="#/completed"
-          className={cn('filter__link', { selected: filter === 'completed' })}
+          className={cn('filter__link', { selected: filter === CompleteStatus.COMPLETED })}
           data-cy="FilterLinkCompleted"
-          onClick={() => onFilter('completed')}
+          onClick={() => onFilter(CompleteStatus.COMPLETED)}
         >
           Completed
         </a>

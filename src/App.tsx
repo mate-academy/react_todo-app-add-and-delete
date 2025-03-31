@@ -8,12 +8,13 @@ import { Footer } from './components/Footer/Footer';
 import { Todo } from './types/Todo';
 import { Error } from './components/Error/Error';
 import { ErrorEnum } from './types/ErrorEnum';
+import { CompleteStatus } from './types/CompleteStatus.enum';
 
 export const App: React.FC = () => {
   const [query, setQuery] = useState('');
   const [todos, setTodos] = useState<Todo[]>([]);
-  const [error, setError] = useState<ErrorEnum | null>(null);
-  const [filter, setFilter] = useState('all');
+  const [errorMessage, setErrorMessage] = useState<ErrorEnum | null>(null);
+  const [filter, setFilter] = useState(CompleteStatus.ALL);
   const [tempTodo, setTempTodo] = useState<Todo | null>(null);
   const [isLoading, setIsLoading] = useState(false);
 
@@ -21,7 +22,7 @@ export const App: React.FC = () => {
     todosService
       .getTodos()
       .then(setTodos)
-      .catch(() => setError(ErrorEnum.LOAD));
+      .catch(() => setErrorMessage(ErrorEnum.LOAD));
   }, []);
 
   useEffect(() => {
@@ -32,7 +33,7 @@ export const App: React.FC = () => {
 
   const addTodoHandler = useCallback(() => {
     if (query.trim() === '') {
-      setError(ErrorEnum.TITLE);
+      setErrorMessage(ErrorEnum.TITLE);
 
       return;
     }
@@ -52,7 +53,7 @@ export const App: React.FC = () => {
         setTodos(prevTodos => [...prevTodos, todo]);
         setQuery('');
       })
-      .catch(() => setError(ErrorEnum.ADD))
+      .catch(() => setErrorMessage(ErrorEnum.ADD))
       .finally(() => {
         setTempTodo(null);
         setIsLoading(false);
@@ -68,7 +69,7 @@ export const App: React.FC = () => {
       )
       .catch(() => {
         setTodos(prevTodos => prevTodos);
-        setError(ErrorEnum.DELETE);
+        setErrorMessage(ErrorEnum.DELETE);
       })
       .finally(() => {
         setIsLoading(false);
@@ -78,14 +79,14 @@ export const App: React.FC = () => {
 
   const filteredTodos = todos.filter(todo => {
     switch (filter) {
-      case 'active':
+      case CompleteStatus.ACTIVE:
         return !todo.completed;
 
-      case 'completed':
+      case CompleteStatus.COMPLETED:
         return todo.completed;
 
       default:
-      case 'all':
+      case CompleteStatus.ALL:
         return true;
     }
   });
@@ -124,7 +125,7 @@ export const App: React.FC = () => {
         )}
       </div>
 
-      <Error error={error} onClose={() => setError(null)} />
+      <Error errorMessage={errorMessage} onClose={() => setErrorMessage(null)} />
     </div>
   );
 };

@@ -3,20 +3,20 @@ import { ErrorEnum } from '../../types/ErrorEnum';
 import { useEffect } from 'react';
 
 type Props = {
-  error: ErrorEnum | null;
+  errorMessage: ErrorEnum | null;
   onClose: () => void;
 };
 
-export const Error: React.FC<Props> = ({ error, onClose }) => {
+export const Error: React.FC<Props> = ({ errorMessage, onClose }) => {
   useEffect(() => {
     setTimeout(onClose, 3000);
-  }, [error, onClose]);
+  }, [errorMessage, onClose]);
 
   return (
     <div
       data-cy="ErrorNotification"
       className={cn('notification is-danger is-light has-text-weight-normal', {
-        hidden: !error,
+        hidden: !errorMessage,
       })}
     >
       <button
@@ -25,7 +25,7 @@ export const Error: React.FC<Props> = ({ error, onClose }) => {
         className="delete"
         onClick={onClose}
       />
-      {error}
+      {errorMessage}
     </div>
   );
 };
