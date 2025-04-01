@@ -12,10 +12,11 @@ import { TodoHeader } from './components/TodoHeader';
 import { TodoList } from './components/TodoList';
 import { TodoFooter } from './components/TodoFooter';
 import { ErrorNotification } from './components/ErrorNotification';
+import { Filter } from './types/Filter';
 export const App: React.FC = () => {
   const [isInput, setIsInput] = useState('');
-  const [isTodo, setTodo] = useState<Todo[]>([]);
-  const [filter, setFilter] = useState<'all' | 'active' | 'completed'>('all');
+  const [todos, setTodo] = useState<Todo[]>([]);
+  const [filter, setFilter] = useState<Filter>(Filter.All);
   const [errorType, setErrorType] = useState<string | null>(null);
   const [tempTodo, setTempTodo] = useState<null | Todo>(null);
   const [isLoading, setIsLoading] = useState(false);
@@ -27,19 +28,19 @@ export const App: React.FC = () => {
   };
 
   useEffect(() => {
-    if (!USER_ID) {
-      return <UserWarning />;
-    }
-
     getTodos()
-      .then(data => setTodo(Array.isArray(data) ? data : []))
+      .then(setTodo)
       .catch(() => {
         handleError('Unable to load todos');
       })
       .finally(() => {});
   }, []);
 
-  function addTodo(userId, title, completed) {
+  if (!USER_ID) {
+    return <UserWarning />;
+  }
+
+  const addTodo = (userId, title, completed) => {
     const newTempTodo: Todo = {
       id: 0,
       userId,
@@ -56,16 +57,16 @@ export const App: React.FC = () => {
       .finally(() => {
         setTempTodo(null);
       });
-  }
+  };
 
   const getFilter = () => {
     switch (filter) {
-      case 'active':
-        return isTodo.filter(todo => !todo.completed);
-      case 'completed':
-        return isTodo.filter(todo => todo.completed);
+      case Filter.Active:
+        return todos.filter(todo => !todo.completed);
+      case Filter.Completed:
+        return todos.filter(todo => todo.completed);
       default:
-        return isTodo;
+        return todos;
     }
   };
 
@@ -85,7 +86,7 @@ export const App: React.FC = () => {
   };
 
   const handleRemoveCompleted = () => {
-    const completedTodos = isTodo.filter(todo => todo.completed);
+    const completedTodos = todos.filter(todo => todo.completed);
     const completedIds = completedTodos.map(todo => todo.id);
 
     setLoadingTodoId(prev => [...prev, ...completedIds]);
@@ -142,10 +143,10 @@ export const App: React.FC = () => {
         }
 
         {/* Hide the footer if there are no todos */}
-        {isTodo.length > 0 && (
+        {todos.length > 0 && (
           <TodoFooter
             setFilter={setFilter}
-            isTodo={isTodo}
+            isTodo={todos}
             filter={filter}
             handleRemoveCompleted={handleRemoveCompleted}
           />
