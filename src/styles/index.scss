@@ -2,22 +2,38 @@ iframe {
   display: none;
 }
 
-body {
+html {
   min-width: 230px;
   max-width: 550px;
+  min-height: 100vh;
   margin: 0 auto;
+
+  background-color: #f5f5f5;
+
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
+  font-size: 14px;
+  font-weight: 300;
+  line-height: 1.4em;
+  color: #4d4d4d;
+
+  transition-duration: 0.3s;
+  transition-property: background-color;
 }
 
 .notification {
-  transition-property: opacity, min-height;
-  transition-duration: 1s;
-  min-height: 36px;
-}
-
-.notification.hidden {
-  min-height: 0;
-  opacity: 0;
   pointer-events: none;
+  min-height: 36px;
+
+  transition-duration: 0.3s;
+  transition-property: opacity, min-height;
+
+  &.hidden {
+    pointer-events: none;
+    min-height: 0;
+    opacity: 0;
+  }
 }
 
 @import "./todoapp";
