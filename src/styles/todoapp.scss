@@ -1,9 +1,9 @@
-
 .todoapp {
   font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
   font-size: 24px;
   font-weight: 300;
   color: #4d4d4d;
+
   margin: 40px 20px;
 
   &__content {
@@ -30,19 +30,19 @@
   &__toggle-all {
     position: absolute;
 
-    height: 100%;
     width: 45px;
+    height: 100%;
 
     display: flex;
-    justify-content: center;
     align-items: center;
+    justify-content: center;
 
     font-size: 24px;
     color: #e6e6e6;
 
     border: 0;
-    background-color: transparent;
     cursor: pointer;
+    background-color: transparent;
 
     &.active {
       color: #737373;
@@ -56,13 +56,11 @@
   }
 
   &__new-todo {
-    width: 100%;
-    padding: 16px 16px 16px 60px;
-
-    font-size: 24px;
-    line-height: 1.4em;
     font-family: inherit;
     font-weight: inherit;
+    font-size: 24px;
+    line-height: 1.4em;
+
     color: inherit;
     -webkit-font-smoothing: antialiased;
     -moz-osx-font-smoothing: grayscale;
@@ -118,9 +116,9 @@
     background: none;
 
     -webkit-appearance: none;
-    appearance: none;
     -webkit-font-smoothing: antialiased;
     -moz-osx-font-smoothing: grayscale;
+
     transition: opacity 0.3s;
 
     &:hover {
