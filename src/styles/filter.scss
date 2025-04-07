@@ -6,9 +6,9 @@
     padding: 3px 7px;
 
     color: inherit;
+    border: 1px solid transparent; // Moved before text-decoration
     text-decoration: none;
 
-    border: 1px solid transparent;
     border-radius: 3px;
 
     &:hover {
