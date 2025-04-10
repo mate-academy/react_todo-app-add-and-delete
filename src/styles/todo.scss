@@ -15,13 +15,13 @@
 
   &__status-label {
     cursor: pointer;
-    background-image: url("data:image/svg+xml;utf8,%3Csvg%20xmlns%3D%22http%3A//www.w3.org/2000/svg%22%20width%3D%2240%22%20height%3D%2240%22%20viewBox%3D%22-10%20-18%20100%20135%22%3E%3Ccircle%20cx%3D%2250%22%20cy%3D%2250%22%20r%3D%2250%22%20fill%3D%22none%22%20stroke%3D%22%23ededed%22%20stroke-width%3D%223%22/%3E%3C/svg%3E");
+    background-image: url('data:image/svg+xml;utf8,%3Csvg%20xmlns%3D%22http%3A//www.w3.org/2000/svg%22%20width%3D%2240%22%20height%3D%2240%22%20viewBox%3D%22-10%20-18%20100%20135%22%3E%3Ccircle%20cx%3D%2250%22%20cy%3D%2250%22%20r%3D%2250%22%20fill%3D%22none%22%20stroke%3D%22%23ededed%22%20stroke-width%3D%223%22/%3E%3C/svg%3E');
     background-repeat: no-repeat;
     background-position: center left;
   }
 
   &.completed &__status-label {
-    background-image: url("data:image/svg+xml;utf8,%3Csvg%20xmlns%3D%22http%3A//www.w3.org/2000/svg%22%20width%3D%2240%22%20height%3D%2240%22%20viewBox%3D%22-10%20-18%20100%20135%22%3E%3Ccircle%20cx%3D%2250%22%20cy%3D%2250%22%20r%3D%2250%22%20fill%3D%22none%22%20stroke%3D%22%23bddad5%22%20stroke-width%3D%223%22/%3E%3Cpath%20fill%3D%22%235dc2af%22%20d%3D%22M72%2025L42%2071%2027%2056l-4%204%2020%2020%2034-52z%22/%3E%3C/svg%3E");
+    background-image: url('data:image/svg+xml;utf8,%3Csvg%20xmlns%3D%22http%3A//www.w3.org/2000/svg%22%20width%3D%2240%22%20height%3D%2240%22%20viewBox%3D%22-10%20-18%20100%20135%22%3E%3Ccircle%20cx%3D%2250%22%20cy%3D%2250%22%20r%3D%2250%22%20fill%3D%22none%22%20stroke%3D%22%23bddad5%22%20stroke-width%3D%223%22/%3E%3Cpath%20fill%3D%22%235dc2af%22%20d%3D%22M72%2025L42%2071%2027%2056l-4%204%2020%2020%2034-52z%22/%3E%3C/svg%3E');
   }
 
   &__status {
@@ -146,4 +146,66 @@
 .has-error .temp-item-exit-active {
   transform: translateY(0);
   overflow: hidden;
+}
+
+.notification {
+  position: fixed;
+  bottom: 20px;
+  left: 50%;
+  transform: translateX(-50%);
+  background-color: #f8d7da; /* Light red for error background */
+  color: #721c24; /* Dark red for error text */
+  padding: 16px;
+  border: 1px solid #f5c6cb; /* Border to match the background */
+  border-radius: 5px;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1); /* Subtle shadow */
+  font-size: 1rem;
+  z-index: 1000; /* Ensure it appears above other elements */
+  transition:
+    opacity 0.3s ease-out,
+    transform 0.3s ease-out;
+}
+
+.notification.hidden {
+  opacity: 0;
+  transform: translateY(20px); /* Smooth exit animation */
+}
+
+.notification.is-danger {
+  background-color: #f8d7da; /* Red background for danger notifications */
+}
+
+.notification.is-light {
+  background-color: #fff; /* Light variant (if needed) */
+}
+
+.notification .delete {
+  float: right;
+  border: none;
+  background: none;
+  font-size: 1.2rem;
+  color: #721c24;
+  cursor: pointer;
+}
+
+.error-message {
+  color: #721c24; /* Dark red text */
+  background-color: #f8d7da; /* Light red background */
+  padding: 8px;
+  border: 1px solid #f5c6cb;
+  border-radius: 4px;
+  margin-top: 8px; /* Space above the error message */
+  font-size: 0.9rem;
+  line-height: 1.4;
+  text-align: left; /* Align text to the left for readability */
+  animation: fadeIn 0.3s ease-in-out; /* Optional animation for a smoother display */
+}
+
+@keyframes fade-in {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
 }
