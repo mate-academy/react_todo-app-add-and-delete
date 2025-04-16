@@ -1,12 +1,14 @@
 import React from 'react';
 import { Filter } from '../../types/Filter';
 import classNames from 'classnames';
+import { Todo } from '../../types/Todo';
 
 type FooterProps = {
   filteredBy: Filter;
   setFilteredBy: React.Dispatch<React.SetStateAction<Filter>>;
   todosCounter: number;
   clearCompleted: () => void;
+  completedTodos: Todo[];
 };
 
 export const Footer: React.FC<FooterProps> = ({
@@ -14,6 +16,7 @@ export const Footer: React.FC<FooterProps> = ({
   setFilteredBy,
   todosCounter,
   clearCompleted,
+  completedTodos,
 }) => {
   return (
     <footer className="todoapp__footer" data-cy="Footer">
@@ -46,6 +49,7 @@ export const Footer: React.FC<FooterProps> = ({
         className="todoapp__clear-completed"
         data-cy="ClearCompletedButton"
         onClick={clearCompleted}
+        disabled={completedTodos.length === 0}
       >
         Clear completed
       </button>

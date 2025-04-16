@@ -19,6 +19,8 @@ export const App: React.FC = () => {
   const [filteredBy, setFilteredBy] = useState(Filter.All);
   const [todosCounter, setTodosCounter] = useState(0);
   const shouldRenderFooter = todos && todos.length > 0;
+  const completedTodos = todos.filter(todo => todo.completed);
+  const completedTodosIds = completedTodos.map(todo => todo.id);
 
   const loadTodos = useCallback(() => {
     setLoading(true);
@@ -63,7 +65,7 @@ export const App: React.FC = () => {
 
     setTempTodo({
       id: 0,
-      title: title,
+      title: title.trim(),
       completed: false,
       userId: todoService.USER_ID,
     });
@@ -109,9 +111,6 @@ export const App: React.FC = () => {
   function clearCompleted() {
     setLoading(true);
 
-    const completedTodos = todos.filter(todo => todo.completed);
-    const completedTodosIds = completedTodos.map(todo => todo.id);
-
     if (completedTodosIds.length === 0) {
       return;
     }
@@ -119,7 +118,7 @@ export const App: React.FC = () => {
     setLoadingTodoIds(prev => [...prev, ...completedTodosIds]);
 
     Promise.allSettled(
-      completedTodosIds.map(todoIdCompleted => {
+      completedTodosIds.map(todoIdCompleted =>
         todoService.deleteTodo(todoIdCompleted).then(() => {
           setTodos(currentTodos =>
             currentTodos.filter(
@@ -127,15 +126,19 @@ export const App: React.FC = () => {
             ),
           );
           setLoadingTodoIds(prev => prev.filter(id => id !== todoIdCompleted));
-        });
-      }),
+        }),
+      ),
     )
-      .catch(() => {
-        setErrorMessage('Unable to delete some completed todos');
-        setShowError(true);
+      .then(results => {
+        const hasError = results.some(r => r.status === 'rejected');
+
+        if (hasError) {
+          setErrorMessage('Unable to delete a todo');
+          setShowError(true);
+          setTimeout(() => setShowError(false), 3000);
+        }
       })
       .finally(() => {
-        setTimeout(() => setShowError(false), 3000);
         setLoading(false);
       });
   }
@@ -182,6 +185,7 @@ export const App: React.FC = () => {
             setFilteredBy={setFilteredBy}
             todosCounter={todosCounter}
             clearCompleted={clearCompleted}
+            completedTodos={completedTodos}
           />
         )}
       </div>

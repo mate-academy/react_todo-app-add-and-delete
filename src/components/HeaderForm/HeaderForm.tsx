@@ -30,7 +30,7 @@ export const HeaderForm: React.FC<HeaderFormProps> = ({
     onSubmit({
       id: 0,
       userId: USER_ID,
-      title: newTodoTitle,
+      title: newTodoTitle.trim(),
       completed: false,
     });
   }
