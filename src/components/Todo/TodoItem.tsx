@@ -55,12 +55,13 @@ export const TodoItem: React.FC<Props> = ({ todo, loading, deleteTodo }) => {
       </button>
 
       {/* overlay will cover the todo while it is being deleted or updated */}
-      {isLoading && (
-        <div data-cy="TodoLoader" className="modal overlay is-active">
-          <div className="modal-background has-background-white-ter" />
-          <div className="loader" />
-        </div>
-      )}
+      <div
+        data-cy="TodoLoader"
+        className={classNames('modal', 'overlay', { 'is-active': isLoading })}
+      >
+        <div className="modal-background has-background-white-ter" />
+        <div className="loader" />
+      </div>
     </div>
   );
 };

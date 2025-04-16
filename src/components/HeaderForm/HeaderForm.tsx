@@ -24,7 +24,7 @@ export const HeaderForm: React.FC<HeaderFormProps> = ({
     }
   }, [loading]);
 
-  function handleSublit(submitEvent: React.FormEvent) {
+  function handleSubmit(submitEvent: React.FormEvent) {
     submitEvent.preventDefault();
 
     onSubmit({
@@ -44,7 +44,7 @@ export const HeaderForm: React.FC<HeaderFormProps> = ({
         data-cy="ToggleAllButton"
       />
 
-      <form onSubmit={handleSublit}>
+      <form onSubmit={handleSubmit}>
         <input
           data-cy="NewTodoField"
           type="text"
