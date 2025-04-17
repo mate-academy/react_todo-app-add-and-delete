@@ -11,11 +11,11 @@ const wait = (delay: number) => {
 // To have autocompletion and avoid mistypes
 type RequestMethod = 'GET' | 'POST' | 'PATCH' | 'DELETE';
 
-function request<T>(
+const request = <T>(
   url: string,
   method: RequestMethod = 'GET',
-  data: any = null, // we can send any data to the server
-): Promise<T> {
+  data: any = null,
+): Promise<T> => {
   const options: RequestInit = { method };
 
   if (data) {
@@ -36,7 +36,7 @@ function request<T>(
 
       return response.json();
     });
-}
+};
 
 export const client = {
   get: <T>(url: string) => request<T>(url),
