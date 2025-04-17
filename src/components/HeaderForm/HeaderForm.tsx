@@ -8,6 +8,7 @@ type HeaderFormProps = {
   setTodoTitle: React.Dispatch<React.SetStateAction<string>>;
   onSubmit: (newTodo: Todo) => void;
   loading: boolean;
+  isAllTasksCompleted: boolean;
 };
 
 export const HeaderForm: React.FC<HeaderFormProps> = ({
@@ -15,6 +16,7 @@ export const HeaderForm: React.FC<HeaderFormProps> = ({
   setTodoTitle,
   onSubmit,
   loading,
+  isAllTasksCompleted,
 }) => {
   const inputRef = useRef<HTMLInputElement>(null);
 
@@ -24,7 +26,7 @@ export const HeaderForm: React.FC<HeaderFormProps> = ({
     }
   }, [loading]);
 
-  function handleSubmit(submitEvent: React.FormEvent) {
+  const handleSubmit = (submitEvent: React.FormEvent) => {
     submitEvent.preventDefault();
 
     onSubmit({
@@ -33,14 +35,15 @@ export const HeaderForm: React.FC<HeaderFormProps> = ({
       title: newTodoTitle.trim(),
       completed: false,
     });
-  }
+  };
 
   return (
     <header className="todoapp__header">
-      {/* this button should have `active` class only if all todos are completed */}
       <button
         type="button"
-        className={classNames('todoapp__toggle-all', 'active')}
+        className={classNames('todoapp__toggle-all', {
+          active: isAllTasksCompleted,
+        })}
         data-cy="ToggleAllButton"
       />
 
@@ -52,9 +55,7 @@ export const HeaderForm: React.FC<HeaderFormProps> = ({
           placeholder="What needs to be done?"
           ref={inputRef}
           value={newTodoTitle}
-          onChange={e => {
-            setTodoTitle(e.target.value);
-          }}
+          onChange={e => setTodoTitle(e.target.value)}
           disabled={loading}
         />
       </form>

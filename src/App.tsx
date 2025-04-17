@@ -21,14 +21,13 @@ export const App: React.FC = () => {
   const shouldRenderFooter = todos && todos.length > 0;
   const completedTodos = todos.filter(todo => todo.completed);
   const completedTodosIds = completedTodos.map(todo => todo.id);
+  const isAllTasksCompleted = completedTodos.length === todos.length;
 
   const loadTodos = useCallback(() => {
     setLoading(true);
     todoService
       .getTodos()
-      .then(fetchedTodo => {
-        setTodos(fetchedTodo);
-      })
+      .then(setTodos)
       .catch(() => {
         setErrorMessage('Unable to load todos');
         setShowError(true);
@@ -50,7 +49,7 @@ export const App: React.FC = () => {
     }
   }, [todos, filteredBy]);
 
-  function addTodo(newTodo: Todo) {
+  const addTodo = (newTodo: Todo) => {
     const { userId, title, completed } = newTodo;
 
     setLoading(true);
@@ -85,9 +84,9 @@ export const App: React.FC = () => {
         setTempTodo(null);
         setLoading(false);
       });
-  }
+  };
 
-  function deleteTodo(todoId: number) {
+  const deleteTodo = (todoId: number) => {
     setLoading(true);
     setLoadingTodoIds(prev => [...prev, todoId]);
     todoService
@@ -106,9 +105,9 @@ export const App: React.FC = () => {
         setTimeout(() => setShowError(false), 3000);
         setLoading(false);
       });
-  }
+  };
 
-  function clearCompleted() {
+  const clearCompleted = () => {
     setLoading(true);
 
     if (completedTodosIds.length === 0) {
@@ -141,7 +140,7 @@ export const App: React.FC = () => {
       .finally(() => {
         setLoading(false);
       });
-  }
+  };
 
   useEffect(() => {
     loadTodos();
@@ -169,7 +168,9 @@ export const App: React.FC = () => {
           setTodoTitle={setTodoTitle}
           onSubmit={addTodo}
           loading={loading}
+          isAllTasksCompleted={isAllTasksCompleted}
         />
+
         {todos && (
           <TodoList
             filteredTodos={filteredTodos}
@@ -211,9 +212,3 @@ export const App: React.FC = () => {
     </div>
   );
 };
-
-// Unable to add a todo
-
-// Unable to delete a todo
-
-// Unable to update a todo

@@ -12,7 +12,6 @@ type Props = {
 export const TodoList: React.FC<Props> = ({
   filteredTodos,
   tempTodo,
-
   loadingTodoIds,
   deleteTodo,
 }) => {
