@@ -18,6 +18,7 @@ export const App: React.FC = () => {
   const [loading, setLoading] = useState(true);
   const [filteredBy, setFilteredBy] = useState(Filter.All);
   const [todosCounter, setTodosCounter] = useState(0);
+  
   const shouldRenderFooter = todos && todos.length > 0;
   const completedTodos = todos.filter(todo => todo.completed);
   const completedTodosIds = completedTodos.map(todo => todo.id);
