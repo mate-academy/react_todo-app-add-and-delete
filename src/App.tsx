@@ -10,23 +10,21 @@ import { TodoItem } from './component/TodoItem/TodoItem';
 
 export const App: React.FC = () => {
   const [todos, setTodos] = useState<Todo[]>([]);
-  const [loading, setLoading] = useState<number[]>([]);
   const [error, setError] = useState('');
   const [status, setStatus] = useState('all');
   const [todo, setTodo] = useState<Todo>();
+  const [todosIsLoading, setTodosIsLoading] = useState<number[]>([]);
+  const [isInputDisabled, setInputDisabled] = useState(false);
 
   useEffect(() => {
-    // setLoading(true);
     todosService
       .getTodos()
       .then(setTodos)
       .catch(() => {
         setError('Unable to load todos');
       })
-      .finally(() => {
-        // setLoading(false);
-      });
-  }, []);
+      .finally(() => {});
+  }, [todosIsLoading]);
 
   const filteredTodos = useMemo(() => {
     let fltrdTodos: Todo[] | undefined = todos;
@@ -58,12 +56,18 @@ export const App: React.FC = () => {
   }
 
   function addTodo({ userId, title, completed }: Todo) {
-    setLoading([userId]);
+    setTodo({
+      id: 0,
+      userId: userId,
+      title: title.trim(),
+      completed: completed,
+    });
+
+    setInputDisabled(true);
 
     return todosService
       .createTodo({ userId, title, completed })
       .then(newTodo => {
-        //fix current Todos
         setTodos(currentTodos => [...currentTodos, newTodo]);
       })
       .catch(e => {
@@ -71,39 +75,34 @@ export const App: React.FC = () => {
         throw e;
       })
       .finally(() => {
-        setLoading([]);
+        setInputDisabled(false);
         setTodo(undefined);
       });
   }
 
   function deleteTodo(todoId: number[]) {
-    setLoading(todoId);
-    setTodos(currentTodo => currentTodo?.filter(td => !todoId.includes(td.id)));
-    const todoToDelete = [];
-
-    for (const trrr of todoId) {
-      todoToDelete.push(todosService.deleteTodos(trrr));
+    setTodosIsLoading(todoId);
+    // setTodos(currentTodo => currentTodo?.filter(td => !todoId.includes(td.id)));
+    for (const id of todoId) {
+      todosService
+        .deleteTodos(id)
+        .then(() => {
+          setTodos(currentTodo =>
+            currentTodo?.filter(td => !todoId.includes(td.id)),
+          );
+        })
+        .catch(e => {
+          // setTodos(todos);
+          setError('Unable to delete a todo');
+          throw e;
+        })
+        .finally(() => {
+          setTodosIsLoading([]);
+        });
     }
 
-    return Promise.all(todoToDelete)
-      .catch(e => {
-        setTodos(todos);
-        setError('Unable to delete a todo');
-        throw e;
-      })
-      .finally(() => setLoading([]));
+    // setTodos(currentTodo => currentTodo?.filter(td => !todoId.includes(td.id)));
   }
-
-  // function updateTodo(updateTodo: Todo) {
-  //   setTodos(currentTodo => {
-  //     const newTodo = [...currentTodo];
-  //     const index = newTodo.findIndex(td => td.id === updateTodo.id);
-
-  //     newTodo.splice(index, 1, updateTodo);
-
-  //     return newTodo;
-  //   });
-  // }
 
   return (
     <div className="todoapp">
@@ -115,13 +114,23 @@ export const App: React.FC = () => {
           setError={setError}
           setTodo={setTodo}
           onSubmit={addTodo}
+          isDisabled={isInputDisabled}
+          error={error}
         />
 
         {todos && todos.length > 0 && (
-          <TodoList todos={filteredTodos} removeTodo={deleteTodo} />
+          <TodoList
+            todos={filteredTodos}
+            removeTodo={deleteTodo}
+            todosIsLoading={todosIsLoading}
+          />
         )}
         {todo && (
-          <TodoItem todo={todo} removeTodo={deleteTodo} loading={loading[0]} />
+          <TodoItem
+            todo={todo}
+            removeTodo={deleteTodo}
+            isLoading={todo ? true : false}
+          />
         )}
 
         {todos && todos.length > 0 && (

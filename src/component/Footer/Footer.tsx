@@ -5,7 +5,7 @@ type Props = {
   todos: Todo[];
   status: string;
   handleClick: (event: React.MouseEvent) => void;
-  deleteTodos: (todos: number[]) => Promise<unknown[]>;
+  deleteTodos: (todos: number[]) => void;
 };
 
 export const Footer: React.FC<Props> = ({
@@ -57,20 +57,23 @@ export const Footer: React.FC<Props> = ({
       </nav>
 
       {/* this button should be disabled if there are no completed todos */}
-      {todos?.filter(todo => todo.completed === true).length !== 0 && (
-        <button
-          type="button"
-          className="todoapp__clear-completed"
-          data-cy="ClearCompletedButton"
-          onClick={() =>
-            deleteTodos(
-              todos?.filter(todo => todo.completed === true).map(td => td.id),
-            )
-          }
-        >
-          Clear completed
-        </button>
-      )}
+      <button
+        type="button"
+        className="todoapp__clear-completed"
+        data-cy="ClearCompletedButton"
+        onClick={() =>
+          deleteTodos(
+            todos?.filter(todo => todo.completed === true).map(td => td.id),
+          )
+        }
+        disabled={
+          todos?.filter(todo => todo.completed === true).length === 0
+            ? true
+            : false
+        }
+      >
+        Clear completed
+      </button>
     </footer>
   );
 };
