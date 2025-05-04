@@ -82,14 +82,14 @@ export const App: React.FC = () => {
 
   function deleteTodo(todoId: number[]) {
     setTodosIsLoading(todoId);
-    // setTodos(currentTodo => currentTodo?.filter(td => !todoId.includes(td.id)));
+
     for (const id of todoId) {
       todosService
         .deleteTodos(id)
         .then(() => {
-          setTodos(currentTodo =>
-            currentTodo?.filter(td => !todoId.includes(td.id)),
-          );
+          setTodos(currentTodo => {
+            return currentTodo?.filter(td => td.id !== id);
+          });
         })
         .catch(e => {
           // setTodos(todos);
@@ -100,8 +100,6 @@ export const App: React.FC = () => {
           setTodosIsLoading([]);
         });
     }
-
-    // setTodos(currentTodo => currentTodo?.filter(td => !todoId.includes(td.id)));
   }
 
   return (
