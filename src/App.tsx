@@ -83,23 +83,23 @@ export const App: React.FC = () => {
   function deleteTodo(todoId: number[]) {
     setTodosIsLoading(todoId);
 
-    for (const id of todoId) {
-      todosService
-        .deleteTodos(id)
-        .then(() => {
-          setTodos(currentTodo => {
-            return currentTodo?.filter(td => td.id !== id);
-          });
-        })
-        .catch(e => {
-          // setTodos(todos);
-          setError('Unable to delete a todo');
-          throw e;
-        })
-        .finally(() => {
-          setTodosIsLoading([]);
+    Promise.allSettled(
+      todoId.map(td => todosService.deleteTodos(td).then(() => td)),
+    )
+      .then(values => {
+        values.map(value1 => {
+          if (value1.status === 'rejected') {
+            setError('Unable to delete a todo');
+          } else {
+            setTodos(prevTodos => {
+              const todoID = value1.value as number;
+
+              return prevTodos.filter(todo1 => todo1.id !== todoID);
+            });
+          }
         });
-    }
+      })
+      .finally(() => {});
   }
 
   return (
