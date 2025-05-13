@@ -13,6 +13,7 @@ and implement the ability to add and remove todos.
 ## Adding a todo
 
 Add a todo with the entered title on the form submit:
+gonna add a reame
 
 - text field should be focused by default;
 - if the title is empty show the `Title should not be empty` notification at the bottom;
@@ -55,7 +56,7 @@ Remove all the completed todos after the `Clear completed` button click:
 - Install Prettier Extention and use this [VSCode settings](https://mate-academy.github.io/fe-program/tools/vscode/settings.json) to enable format on save.
 - Implement a solution following the [React task guideline](https://github.com/mate-academy/react_task-guideline#react-tasks-guideline).
 - Use the [React TypeScript cheat sheet](https://mate-academy.github.io/fe-program/js/extra/react-typescript).
-- Replace `<your_account>` with your Github username in the [DEMO LINK](https://<your_account>.github.io/react_todo-app-add-and-delete/) and add it to the PR description.
+- Replace `<your_account>` with your Github username in the [DEMO LINK](https://drdakka.github.io/react_todo-app-add-and-delete/) and add it to the PR description.
 
 ## IF you want to implement smooth animations
 

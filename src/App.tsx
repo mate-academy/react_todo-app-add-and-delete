@@ -1,26 +1,55 @@
-/* eslint-disable max-len */
+/* eslint-disable jsx-a11y/label-has-associated-control */
 /* eslint-disable jsx-a11y/control-has-associated-label */
 import React from 'react';
-import { UserWarning } from './UserWarning';
-
-const USER_ID = 0;
+import { Header } from './components/Header/Header';
+import { useHooks } from './hooks/general';
+import { ErrorMsg } from './components/ErrorMsg/ErrorMsg';
+import { TodoItem } from './components/TodoItem/TodoItem';
+import { Footer } from './components/Footer/Footer';
+import { TempTodo } from './components/TodoItem/TempTodo';
 
 export const App: React.FC = () => {
-  if (!USER_ID) {
-    return <UserWarning />;
-  }
+  const hooks = useHooks();
 
   return (
-    <section className="section container">
-      <p className="title is-4">
-        Copy all you need from the prev task:
-        <br />
-        <a href="https://github.com/mate-academy/react_todo-app-loading-todos#react-todo-app-load-todos">
-          React Todo App - Load Todos
-        </a>
-      </p>
+    <div className="todoapp">
+      <h1 className="todoapp__title">todos</h1>
 
-      <p className="subtitle">Styles are already copied</p>
-    </section>
+      <div className="todoapp__content">
+        <Header
+          todos={hooks.todosFromServer}
+          query={hooks.query}
+          setQuery={hooks.setQuery}
+          addTodo={hooks.addTodo}
+          disabled={hooks.disabled}
+          inputRef={hooks.inputRef}
+          patch={hooks.toggleAll}
+        />
+
+        <section className="todoapp__main" data-cy="TodoList">
+          {hooks.visibleTodos &&
+            hooks.visibleTodos.map(todo => (
+              <TodoItem
+                todo={todo}
+                loading={hooks.loading.includes(todo.id)}
+                key={todo.id}
+                del={hooks.deleteTodo}
+                patch={hooks.patchTodo}
+              />
+            ))}
+          {hooks.tempTodo && <TempTodo todo={hooks.tempTodo} />}
+        </section>
+        {hooks.todosFromServer.length > 0 && (
+          <Footer
+            filter={hooks.filter}
+            setFilter={hooks.setFilter}
+            todos={hooks.todosFromServer}
+            clear={hooks.clear}
+          />
+        )}
+
+        <ErrorMsg error={hooks.error} setError={hooks.setError} />
+      </div>
+    </div>
   );
 };
