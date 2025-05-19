@@ -54,7 +54,7 @@ export const TodoItem = ({
           data-cy="TodoStatus"
           type="checkbox"
           className="todo__status"
-          checked={completed === true}
+          checked={completed}
           onChange={() => onChange(todo, { completed: !completed })}
         />
       </label>

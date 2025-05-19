@@ -12,11 +12,13 @@ import { MESSAGE, ACTION } from './const';
 import { FilterState } from './types/FilterState';
 
 const getFilteredTodo = (todos: Todo[], query: FilterState): Todo[] => {
-  if (query === 'All') {
+  if (query === FilterState.All) {
     return todos;
   }
 
-  return todos.filter(todo => todo.completed === (query === 'Completed'));
+  return todos.filter(
+    todo => todo.completed === (query === FilterState.Completed),
+  );
 };
 
 function wait(delay: number): Promise<void> {
@@ -205,9 +207,7 @@ export const App: React.FC = () => {
             <Footer
               itemsLeft={itemsLeft}
               filterState={filterState}
-              disableClearButton={
-                !filteredTodos.some(todo => todo.completed === true)
-              }
+              disableClearButton={!filteredTodos.some(todo => todo.completed)}
               onFilter={onFilter}
               onClearCompleted={onClearCompleted}
             />
@@ -222,4 +222,3 @@ export const App: React.FC = () => {
     </div>
   );
 };
-
