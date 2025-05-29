@@ -53,6 +53,14 @@ export const App: React.FC = () => {
     return () => clearTimeout(timer);
   }, [currentError]);
 
+  useEffect(() => {
+    if (shouldFocusInput) {
+      setShouldFocusInput(false);
+    }
+  }, [shouldFocusInput]);
+
+
+
   async function handleTodoAdd(newTodo: Todo) {
     try {
       setTempTodo({
@@ -76,6 +84,7 @@ export const App: React.FC = () => {
     try {
       await deleteTodo(todoId);
       setTodos(currentTodos => currentTodos.filter(todo => todo.id !== todoId));
+      setShouldFocusInput(true);
     } catch {
       setCurrentError(ErrorType.UnableToDeleteTodo);
       throw new Error(ErrorType.UnableToDeleteTodo);
@@ -131,8 +140,7 @@ export const App: React.FC = () => {
           />
         )}
       </div>
-      {/* DON'T use conditional rendering to hide the notification */}
-      {/* Add the 'hidden' class to hide the message smoothly */}
+
       <ErrorNotification
         currentError={currentError}
         setCurrentError={setCurrentError}
