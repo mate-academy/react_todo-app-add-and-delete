@@ -31,6 +31,7 @@ export const App: React.FC = () => {
   const [selectedPostId, setSelectedPostId] = useState(0);
   const [currentError, setCurrentError] = useState<ErrorType | ''>('');
   const [shouldFocusInput, setShouldFocusInput] = useState(false);
+  const [processingTodoIds, setProcessingTodoIds] = useState<number[]>([]);
 
   useEffect(() => {
     getTodos()
@@ -58,8 +59,6 @@ export const App: React.FC = () => {
       setShouldFocusInput(false);
     }
   }, [shouldFocusInput]);
-
-
 
   async function handleTodoAdd(newTodo: Todo) {
     try {
@@ -91,17 +90,36 @@ export const App: React.FC = () => {
     }
   }
 
-  async function handleClearCompleted() {
-    const completed = todos.filter(todo => todo.completed);
+  const handleClearCompleted = async () => {
+    const completedTodos = todos.filter(todo => todo.completed);
 
-    try {
-      await Promise.all(completed.map(todo => deleteTodo(todo.id)));
+    const deletePromises = completedTodos.map(todo => {
+      return deleteTodo(todo.id)
+        .then(() => ({ id: todo.id, success: true }))
+        .catch(() => ({ id: todo.id, success: false }));
+    });
 
-      setTodos(currentTodos => currentTodos.filter(todo => !todo.completed));
-    } catch {
+    setProcessingTodoIds(completedTodos.map(todo => todo.id));
+
+    const results = await Promise.all(deletePromises);
+
+    const deletedSuccess = results
+      .filter(result => result.success)
+      .map(result => result.id);
+
+    if (results.some(result => !result.success)) {
       setCurrentError(ErrorType.UnableToDeleteTodo);
     }
-  }
+
+    setTodos(current =>
+      current.filter(todo => !deletedSuccess.includes(todo.id)),
+    );
+    setProcessingTodoIds([]);
+
+    if (deletedSuccess.length > 0) {
+      setShouldFocusInput(true);
+    }
+  };
 
   const activeTodos: number = todos.filter(todo => !todo.completed).length;
   const completedtodos: number = todos.filter(todo => todo.completed).length;
@@ -128,6 +146,7 @@ export const App: React.FC = () => {
           setSelectedPostId={setSelectedPostId}
           tempTodo={tempTodo}
           onDelete={handleDeleteTodo}
+          processingTodoIds={processingTodoIds}
         />
 
         {todos.length > 0 && (

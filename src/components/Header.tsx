@@ -1,10 +1,8 @@
 import React, { useEffect, useRef, useState } from 'react';
 import classNames from 'classnames';
-
 import { USER_ID } from '../api/todos';
 import { Todo } from '../types/Todo';
 import { ErrorType } from '../App';
-
 type Props = {
   todos: Todo[];
   setTodos: (value: Todo[] | ((prevTodos: Todo[]) => Todo[])) => void;
@@ -13,30 +11,32 @@ type Props = {
   onTodoAdd: (todo: Todo) => void;
   shouldFocusInput?: boolean;
 };
-
 export const Header: React.FC<Props> = ({
   todos,
   completedTodos,
   setCurrentError,
   onTodoAdd,
   shouldFocusInput = false,
+  setTodos,
 }) => {
   const inputRef = useRef<HTMLInputElement>(null);
-
   const [title, setTitle] = useState('');
   const [isLoading, setIsLoading] = useState(false);
   const [shouldFocus, setShouldFocus] = useState(false);
 
+  useEffect(() => {
+    if (inputRef) {
+      inputRef.current?.focus();
+    }
+  }, []);
   useEffect(() => {
     if (shouldFocus || shouldFocusInput) {
       inputRef.current?.focus();
       setShouldFocus(false);
     }
   }, [shouldFocus, shouldFocusInput]);
-
   const handleSubmit = async (event: React.FormEvent) => {
     event.preventDefault();
-
     if (!title.trim()) {
       setCurrentError(ErrorType.EmptyTitle);
       inputRef.current?.focus();
@@ -46,7 +46,6 @@ export const Header: React.FC<Props> = ({
 
     setIsLoading(true);
     setCurrentError('');
-
     try {
       const newTodo = {
         userId: USER_ID,
@@ -60,9 +59,19 @@ export const Header: React.FC<Props> = ({
       setCurrentError(ErrorType.UnableToAddTodo);
     } finally {
       setIsLoading(false);
-      setShouldFocus(true);
     }
+
+    setTimeout(() => setShouldFocus(true), 0);
   };
+
+  function handleCompleteAllTodos() {
+    setTodos(
+      todos.map(todo => ({
+        ...todo,
+        completed: !todo.completed,
+      })),
+    );
+  }
 
   return (
     <header className="todoapp__header">
@@ -72,8 +81,8 @@ export const Header: React.FC<Props> = ({
           active: todos.length === completedTodos,
         })}
         data-cy="ToggleAllButton"
+        onClick={handleCompleteAllTodos}
       />
-
       <form onSubmit={handleSubmit}>
         <input
           ref={inputRef}
@@ -84,7 +93,6 @@ export const Header: React.FC<Props> = ({
           value={title}
           onChange={event => setTitle(event.target.value)}
           disabled={isLoading}
-          autoFocus
         />
       </form>
     </header>

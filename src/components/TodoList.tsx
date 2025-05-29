@@ -13,6 +13,8 @@ type Props = {
   selectedFilter: Filter;
   tempTodo: Todo | null;
   onDelete: (todoId: number) => Promise<void>;
+  processingTodoIds: number[];
+
 };
 
 export const TodoList: React.FC<Props> = ({
