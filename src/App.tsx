@@ -3,7 +3,6 @@
 import React, { useEffect, useState, useRef } from 'react';
 import { UserWarning } from './UserWarning';
 import * as postService from './api/todos';
-// import { USER_ID, getTodos } from './api/todos';
 
 import { Todo } from './types/Todo';
 import { TodoList } from './components/TodoList/TodoList';
@@ -53,16 +52,17 @@ export const App: React.FC = () => {
 
   function addTodo(newTitle: string) {
     setInputDisabled(true);
+    const trimmedTitle = newTitle.trim();
     setTempTodo({
       id: 0,
       userId: postService.USER_ID,
-      title: newTitle,
+      title: trimmedTitle,
       completed: false,
     });
 
     const newToDo = {
       userId: postService.USER_ID,
-      title: newTitle,
+      title: trimmedTitle,
       completed: false,
     };
 
