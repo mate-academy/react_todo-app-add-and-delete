@@ -1,4 +1,3 @@
-
 .todoapp {
   font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
   font-size: 24px;
@@ -9,7 +8,8 @@
   &__content {
     margin-bottom: 20px;
     background: #fff;
-    box-shadow: 0 2px 4px 0 rgba(0, 0, 0, 0.2),
+    box-shadow:
+      0 2px 4px 0 rgba(0, 0, 0, 0.2),
       0 25px 50px 0 rgba(0, 0, 0, 0.1);
   }
 
@@ -69,7 +69,7 @@
 
     border: none;
     background: rgba(0, 0, 0, 0.01);
-    box-shadow: inset 0 -2px 1px rgba(0,0,0,0.03);
+    box-shadow: inset 0 -2px 1px rgba(0, 0, 0, 0.03);
 
     &::placeholder {
       font-style: italic;
@@ -97,7 +97,8 @@
     text-align: center;
     border-top: 1px solid #e6e6e6;
 
-    box-shadow: 0 1px 1px rgba(0, 0, 0, 0.2),
+    box-shadow:
+      0 1px 1px rgba(0, 0, 0, 0.2),
       0 8px 0 -3px #f6f6f6,
       0 9px 1px -3px rgba(0, 0, 0, 0.2),
       0 16px 0 -6px #f6f6f6,
@@ -135,4 +136,16 @@
       visibility: hidden;
     }
   }
+}
+
+.visually-hidden {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border: 0;
 }
