@@ -23,43 +23,21 @@ export const Footer: React.FC<FooterProps> = ({
         {activeTodosQuantity} items left
       </span>
 
-      {/* Active link should have the 'selected' class */}
       <nav className="filter" data-cy="Filter">
-        <a
-          href="#/"
-          className={classNames('filter__link', {
-            selected: filter === 'All',
-          })}
-          data-cy="FilterLinkAll"
-          onClick={() => setFilter('All')}
-        >
-          All
-        </a>
-
-        <a
-          href="#/active"
-          className={classNames('filter__link', {
-            selected: filter === 'Active',
-          })}
-          data-cy="FilterLinkActive"
-          onClick={() => setFilter('Active')}
-        >
-          Active
-        </a>
-
-        <a
-          href="#/completed"
-          className={classNames('filter__link', {
-            selected: filter === 'Completed',
-          })}
-          data-cy="FilterLinkCompleted"
-          onClick={() => setFilter('Completed')}
-        >
-          Completed
-        </a>
+        {Object.values(Filter).map(filterValue => (
+          <a
+            key={filterValue}
+            href={`#/${filterValue === Filter.All ? '' : filterValue.toLowerCase()}`}
+            className={classNames('filter__link', {
+              selected: filter === filterValue,
+            })}
+            data-cy={`FilterLink${filterValue}`}
+            onClick={() => setFilter(filterValue)}
+          >
+            {filterValue}
+          </a>
+        ))}
       </nav>
-
-      {/* this button should be disabled if there are no completed todos */}
 
       <button
         type="button"

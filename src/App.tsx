@@ -14,11 +14,12 @@ import { ErrorTypes } from './types/ErrorTypes';
 export const App: React.FC = () => {
   const [todos, setTodos] = useState<Todo[]>([]);
   const [errorMessage, setErrorMessage] = useState<ErrorTypes | null>(null);
-  const [filter, setFilter] = useState<Filter>('All');
+  const [filter, setFilter] = useState<Filter>(Filter.All);
   const [filteredTodos, setFilteredTodos] = useState<Todo[]>([]);
-  const [addTodo, setAddTodo] = useState<boolean>(false);
+  const [addTodo, setAddTodo] = useState(false);
   const [tempTodo, setTempTodo] = useState<Todo | null>(null);
   const activeTodosQuantity = todos.filter(todo => !todo.completed).length;
+  const [loadingTodos, setLoadingTodos] = useState<number[]>([]);
 
   const clearErrorMessage = () => {
     setErrorMessage(null);
@@ -40,12 +41,12 @@ export const App: React.FC = () => {
     let newTodos = [...todos];
 
     switch (filter) {
-      case 'All':
+      case Filter.All:
         break;
-      case 'Active':
+      case Filter.Active:
         newTodos = todos.filter(todo => !todo.completed);
         break;
-      case 'Completed':
+      case Filter.Completed:
         newTodos = todos.filter(todo => todo.completed);
         break;
     }
@@ -63,6 +64,7 @@ export const App: React.FC = () => {
 
   const handleAddTodo = async (title: string) => {
     setAddTodo(true);
+
     const temporaryTodo: Todo = {
       id: 0,
       userId: USER_ID,
@@ -81,44 +83,48 @@ export const App: React.FC = () => {
       });
 
       setTodos(prevTodos =>
-        prevTodos.map(todo =>
-          todo.id === temporaryTodo.id ? newTodoFromApi : todo,
-        ),
+        prevTodos.map(todo => (todo === temporaryTodo ? newTodoFromApi : todo)),
       );
     } catch {
+      setTodos(prevTodos => prevTodos.filter(todo => todo !== temporaryTodo));
       setErrorMessage(ErrorTypes.ADD_TODO_FAILED);
-      setTimeout(clearErrorMessage, 3000);
-      setTodos(prevTodos =>
-        prevTodos.filter(todo => todo.id !== temporaryTodo.id),
-      );
+      setTimeout(() => setErrorMessage(null), 3000);
     } finally {
-      setTempTodo(null);
       setAddTodo(false);
+      setTempTodo(null);
     }
   };
 
   const handleDeleteTodo = async (id: number) => {
     try {
+      setLoadingTodos(current => [...current, id]); // Додаємо завдання до оброблюваних
       await deleteTodo(id);
       setTodos(currentTodos => currentTodos.filter(todo => todo.id !== id));
     } catch {
       setErrorMessage(ErrorTypes.DELETE_TODO_FAILED);
       setTimeout(clearErrorMessage, 3000);
+    } finally {
+      setLoadingTodos(current => current.filter(todoId => todoId !== id)); // Видаляємо завдання з оброблюваних
     }
   };
 
   const clearCompletedTodos = async () => {
+    const completedIds = todos
+      .filter(todo => todo.completed)
+      .map(todo => todo.id);
     try {
-      const completedIds = todos
-        .filter(todo => todo.completed)
-        .map(todo => todo.id);
+      setLoadingTodos(current => [...current, ...completedIds]); // Додаємо всі завершені завдання до loading
 
-      await Promise.all(completedIds.map(id => deleteTodo(id)));
+      await Promise.all(completedIds.map(id => deleteTodo(id))); // Видаляємо з сервера
 
-      setTodos(todos.filter(todo => !todo.completed));
+      setTodos(todos.filter(todo => !todo.completed)); // Видаляємо з локального стану
     } catch {
       setErrorMessage(ErrorTypes.CLEAR_COMPLETED_FAILED);
       setTimeout(clearErrorMessage, 3000);
+    } finally {
+      setLoadingTodos(current =>
+        current.filter(id => !completedIds.includes(id)), // Видаляємо тільки оброблені
+      );
     }
   };
 
@@ -140,15 +146,14 @@ export const App: React.FC = () => {
         />
         {todos.length > 0 && (
           <TodoList
-            todos={filteredTodos}
+            filteredTodos={filteredTodos}
             onChange={handleTodoChange}
             handleDeleteTodo={handleDeleteTodo}
             tempTodo={tempTodo}
-            addTodo={addTodo}
+            loadingTodos={loadingTodos}
           />
         )}
 
-        {/* Hide the footer if there are no todos */}
         {todos.length > 0 && (
           <Footer
             activeTodosQuantity={activeTodosQuantity}
