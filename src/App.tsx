@@ -5,6 +5,7 @@ import { UserWarning } from './UserWarning';
 
 import * as todoServices from './api/todos';
 import { ErrorMessage } from './utils/ErrorMessage';
+import { FilterStatus } from './utils/FilterStatus';
 
 import { Todo } from './types/Todo';
 import { TodoFooter } from './components/TodoFooter';
@@ -12,7 +13,6 @@ import { TodoHeader } from './components/TodoHeader';
 import { ErrorNotification } from './components/ErrorNotification';
 import { TodoItem } from './components/TodoItem';
 import { TodoList } from './components/TodoList';
-import { FilterStatus } from './utils/FilterStatus';
 
 export const App: React.FC = () => {
   //#region State declarations
