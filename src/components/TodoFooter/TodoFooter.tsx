@@ -1,5 +1,5 @@
 import React from 'react';
-import { FilterStatus } from '../../App';
+import { FilterStatus } from '../../utils/FilterStatus';
 
 type TodoFooterProps = {
   activeTodosCount: number;

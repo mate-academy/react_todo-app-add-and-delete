@@ -1,6 +1,6 @@
 /* eslint-disable jsx-a11y/label-has-associated-control */
 /* eslint-disable jsx-a11y/control-has-associated-label */
-import React, { useCallback, useEffect, useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { UserWarning } from './UserWarning';
 
 import * as todoServices from './api/todos';
@@ -12,14 +12,10 @@ import { TodoHeader } from './components/TodoHeader';
 import { ErrorNotification } from './components/ErrorNotification';
 import { TodoItem } from './components/TodoItem';
 import { TodoList } from './components/TodoList';
-
-export enum FilterStatus {
-  All = 'All',
-  Active = 'Active',
-  Completed = 'Completed',
-}
+import { FilterStatus } from './utils/FilterStatus';
 
 export const App: React.FC = () => {
+  //#region State declarations
   const [todos, setTodos] = useState<Todo[]>([]);
   const [filter, setFilter] = useState<FilterStatus>(FilterStatus.All);
 
@@ -29,33 +25,29 @@ export const App: React.FC = () => {
   const [deletingTodoId, setDeletingTodoId] = useState<number | null>(null);
   const [isDeletingTodoCompleted, setIsDeletingTodoCompleted] = useState(false);
 
-  const [errorMessage, setErrorMessage] = useState('');
+  const [errorMessage, setErrorMessage] = useState<ErrorMessage>(
+    ErrorMessage.DEFAULT_ERROR,
+  );
 
-  const showError = useCallback((message: string) => {
-    setErrorMessage(message);
-  }, []);
+  //#endregion
 
-  // const showError = (message: string) => {
-  //   setErrorMessage(message);
-  //   setTimeout(() => {
-  //     setErrorMessage('');
-  //   }, 3000);
-  // };
-
+  //#region UseEffect to load
   useEffect(() => {
-    setErrorMessage('');
+    setErrorMessage(ErrorMessage.DEFAULT_ERROR);
 
     todoServices
       .getTodos()
       .then(setTodos)
       .catch(() => {
-        showError(ErrorMessage.LOAD_TODOS_FAILED);
+        setErrorMessage(ErrorMessage.LOAD_TODOS_FAILED);
       });
-  }, [showError]);
+  }, []);
 
   if (!todoServices.USER_ID) {
     return <UserWarning />;
   }
+
+  //#endregion
 
   //#region filterTodos
   const visibleTodos = todos.filter(todo => {
@@ -70,20 +62,19 @@ export const App: React.FC = () => {
     }
   });
 
-  const activeTodosCount = todos.filter(todo => !todo.completed).length;
   //#endregion
 
   //#region addTodo
-  async function handleAddTodo() {
+  const handleAddTodo = async () => {
     const normalizedTitle = newTodoTitle.trim();
 
     if (!normalizedTitle) {
-      showError(ErrorMessage.TITLE_EMPTY);
+      setErrorMessage(ErrorMessage.TITLE_EMPTY);
 
       return;
     }
 
-    setErrorMessage('');
+    setErrorMessage(ErrorMessage.DEFAULT_ERROR);
 
     const newTempTodo: Todo = {
       id: 0,
@@ -100,39 +91,38 @@ export const App: React.FC = () => {
       setTodos(prevTodos => [...prevTodos, addedTodo]);
       setNewTodoTitle('');
     } catch (error) {
-      showError(ErrorMessage.ADD_TODO_FAILED);
+      setErrorMessage(ErrorMessage.ADD_TODO_FAILED);
     } finally {
       setTempTodo(null);
     }
-  }
+  };
 
-  const isAddingTodo = tempTodo !== null;
   //#endregion
 
   //#region deleteTodo
 
-  async function handleDeleteTodo(id: number) {
+  const handleDeleteTodo = async (id: number) => {
     setDeletingTodoId(id);
-    setErrorMessage('');
+    setErrorMessage(ErrorMessage.DEFAULT_ERROR);
 
     try {
       await todoServices.deleteTodo(id);
       setTodos(prevTodos => prevTodos.filter(todo => todo.id !== id));
     } catch (error) {
-      showError(ErrorMessage.DELETE_TODO_FAILED);
+      setErrorMessage(ErrorMessage.DELETE_TODO_FAILED);
     } finally {
       setDeletingTodoId(null);
     }
-  }
+  };
 
   //#endregion
 
   //#region clearCompleted
 
-  async function handleClearCompleted() {
+  const handleClearCompleted = async () => {
     const completedTodos = todos.filter(todo => todo.completed);
 
-    setErrorMessage('');
+    setErrorMessage(ErrorMessage.DEFAULT_ERROR);
     setIsDeletingTodoCompleted(true);
 
     const deletePromises = completedTodos.map(todo =>
@@ -157,18 +147,21 @@ export const App: React.FC = () => {
       );
 
       if (hasError) {
-        showError(ErrorMessage.DELETE_TODO_FAILED);
+        setErrorMessage(ErrorMessage.DELETE_TODO_FAILED);
       }
     } catch (error) {
-      showError(ErrorMessage.DELETE_TODO_FAILED);
+      setErrorMessage(ErrorMessage.DELETE_TODO_FAILED);
     } finally {
       setIsDeletingTodoCompleted(false);
     }
-  }
+  };
 
   //#endregion
 
+  const isAddingTodo = tempTodo !== null;
   const isDeletingAnyTodo = deletingTodoId !== null || isDeletingTodoCompleted;
+  const activeTodosCount = todos.filter(todo => !todo.completed).length;
+  const showFooter = todos.length > 0;
 
   return (
     <div className="todoapp">
@@ -192,8 +185,7 @@ export const App: React.FC = () => {
           <TodoItem key="temp-todo-loader" todo={tempTodo} isTemp={true} />
         )}
 
-        {/* Hide the footer if there are no todos */}
-        {todos.length > 0 && (
+        {showFooter && (
           <TodoFooter
             activeTodosCount={activeTodosCount}
             filter={filter}
@@ -204,11 +196,9 @@ export const App: React.FC = () => {
         )}
       </div>
 
-      {/* DON'T use conditional rendering to hide the notification */}
-      {/* Add the 'hidden' class to hide the message smoothly */}
       <ErrorNotification
         message={errorMessage}
-        onClose={() => setErrorMessage('')}
+        onClose={() => setErrorMessage(ErrorMessage.DEFAULT_ERROR)}
       />
     </div>
   );
