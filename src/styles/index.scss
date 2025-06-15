@@ -12,6 +12,8 @@ body {
   transition-property: opacity, min-height;
   transition-duration: 1s;
   min-height: 36px;
+  background-color: #ffd5dd;
+  color: #870010
 }
 
 .notification.hidden {
