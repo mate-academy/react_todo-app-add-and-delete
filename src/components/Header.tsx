@@ -9,6 +9,9 @@ type HeaderProps = {
   addTodo: boolean;
   setErrorMessage: React.Dispatch<React.SetStateAction<ErrorTypes | null>>;
   handleTodoChange: (id: number, completed: boolean) => void;
+  newTodoTitle: string;
+  setNewTodoTitle: React.Dispatch<React.SetStateAction<string>>;
+  inputRef: React.RefObject<HTMLInputElement>;
 };
 
 export const Header: React.FC<HeaderProps> = ({
@@ -17,6 +20,9 @@ export const Header: React.FC<HeaderProps> = ({
   addTodo,
   setErrorMessage,
   handleTodoChange,
+  newTodoTitle,
+  setNewTodoTitle,
+  inputRef,
 }) => {
   return (
     <header className="todoapp__header">
@@ -32,6 +38,9 @@ export const Header: React.FC<HeaderProps> = ({
         addTodo={addTodo}
         setErrorMessage={setErrorMessage}
         handleAddTodo={handleAddTodo}
+        newTodoTitle={newTodoTitle}
+        setNewTodoTitle={setNewTodoTitle}
+        inputRef={inputRef}
       />
     </header>
   );

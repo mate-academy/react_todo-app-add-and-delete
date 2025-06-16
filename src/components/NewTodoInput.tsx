@@ -1,40 +1,33 @@
-import React, { useEffect, useRef, useState } from 'react';
+import React from 'react';
 import { ErrorTypes } from '../types/ErrorTypes';
 
 type Props = {
   setErrorMessage: React.Dispatch<React.SetStateAction<ErrorTypes | null>>;
   addTodo: boolean;
   handleAddTodo: (title: string) => Promise<void>;
+  newTodoTitle: string;
+  setNewTodoTitle: React.Dispatch<React.SetStateAction<string>>;
+  inputRef: React.RefObject<HTMLInputElement>;
 };
 
 export const NewTodoInput: React.FC<Props> = ({
   setErrorMessage,
   addTodo,
   handleAddTodo,
+  newTodoTitle,
+  setNewTodoTitle,
+  inputRef,
 }) => {
-  const [inputValue, setInputValue] = useState('');
-  const inputRef = useRef<HTMLInputElement>(null);
-
-  const handleFocus = () => {
-    inputRef.current?.focus();
-  };
-
-  useEffect(() => {
-    if (!addTodo && inputRef.current) {
-      handleFocus();
-    }
-  }, [addTodo]);
-
   const handleInputChange = (event: React.ChangeEvent<HTMLInputElement>) => {
-    setInputValue(event.target.value);
+    setNewTodoTitle(event.target.value);
   };
 
   const handleSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
 
-    const trimmedValue = inputValue.trim();
+    const trimmedValue = newTodoTitle.trim();
 
-    if (trimmedValue === '') {
+    if (!trimmedValue) {
       setErrorMessage(ErrorTypes.EMPTY_TITLE);
       setTimeout(() => {
         setErrorMessage(null);
@@ -44,7 +37,6 @@ export const NewTodoInput: React.FC<Props> = ({
 
       try {
         await handleAddTodo(trimmedValue);
-        setInputValue('');
       } catch (error) {
         setErrorMessage(ErrorTypes.ADD_TODO_FAILED);
         setTimeout(() => setErrorMessage(null), 3000);
@@ -59,9 +51,8 @@ export const NewTodoInput: React.FC<Props> = ({
         type="text"
         className="todoapp__new-todo"
         placeholder="What needs to be done?"
-        value={inputValue}
+        value={newTodoTitle}
         onChange={handleInputChange}
-        onFocus={handleFocus}
         ref={inputRef}
         disabled={addTodo}
       />

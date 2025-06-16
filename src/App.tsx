@@ -1,6 +1,6 @@
 /* eslint-disable max-len */
 /* eslint-disable jsx-a11y/control-has-associated-label */
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import { UserWarning } from './UserWarning';
 import { deleteTodo, getTodos, postTodo, USER_ID } from './api/todos';
 import { Todo } from './types/Todo';
@@ -20,6 +20,14 @@ export const App: React.FC = () => {
   const [tempTodo, setTempTodo] = useState<Todo | null>(null);
   const activeTodosQuantity = todos.filter(todo => !todo.completed).length;
   const [loadingTodos, setLoadingTodos] = useState<number[]>([]);
+  const [newTodoTitle, setNewTodoTitle] = useState('');
+  const inputRef = useRef<HTMLInputElement | null>(null);
+
+  useEffect(() => {
+    if (inputRef.current) {
+      inputRef.current.focus();
+    }
+  }, []);
 
   const clearErrorMessage = () => {
     setErrorMessage(null);
@@ -72,7 +80,6 @@ export const App: React.FC = () => {
     };
 
     setTempTodo(temporaryTodo);
-    setTodos(prevTodos => [...prevTodos, temporaryTodo]);
     try {
       const newTodoFromApi = await postTodo({
         userId: USER_ID,
@@ -82,9 +89,10 @@ export const App: React.FC = () => {
 
       setTempTodo(null);
       setTodos(prevTodos => [...prevTodos, newTodoFromApi]);
+      setNewTodoTitle('');
     } catch {
-      setTodos(prevTodos => prevTodos.filter(todo => todo !== temporaryTodo));
       setErrorMessage(ErrorTypes.ADD_TODO_FAILED);
+      setNewTodoTitle(title);
       setTimeout(() => setErrorMessage(null), 3000);
     } finally {
       setAddTodo(false);
@@ -102,6 +110,8 @@ export const App: React.FC = () => {
       setTimeout(clearErrorMessage, 3000);
     } finally {
       setLoadingTodos(current => current.filter(todoId => todoId !== id));
+
+      inputRef.current?.focus();
     }
   };
 
@@ -120,9 +130,11 @@ export const App: React.FC = () => {
       setErrorMessage(ErrorTypes.CLEAR_COMPLETED_FAILED);
       setTimeout(clearErrorMessage, 3000);
     } finally {
-      setLoadingTodos(
-        current => current.filter(id => !completedIds.includes(id)),
+      setLoadingTodos(current =>
+        current.filter(id => !completedIds.includes(id)),
       );
+
+      inputRef.current?.focus();
     }
   };
 
@@ -141,6 +153,9 @@ export const App: React.FC = () => {
           activeTodosQuantity={activeTodosQuantity}
           handleAddTodo={handleAddTodo}
           handleTodoChange={handleTodoChange}
+          newTodoTitle={newTodoTitle}
+          setNewTodoTitle={setNewTodoTitle}
+          inputRef={inputRef}
         />
         {todos.length > 0 && (
           <TodoList
