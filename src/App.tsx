@@ -64,7 +64,6 @@ export const App: React.FC = () => {
 
   const handleAddTodo = async (title: string) => {
     setAddTodo(true);
-
     const temporaryTodo: Todo = {
       id: 0,
       userId: USER_ID,
@@ -74,7 +73,6 @@ export const App: React.FC = () => {
 
     setTempTodo(temporaryTodo);
     setTodos(prevTodos => [...prevTodos, temporaryTodo]);
-
     try {
       const newTodoFromApi = await postTodo({
         userId: USER_ID,
@@ -82,9 +80,8 @@ export const App: React.FC = () => {
         completed: false,
       });
 
-      setTodos(prevTodos =>
-        prevTodos.map(todo => (todo === temporaryTodo ? newTodoFromApi : todo)),
-      );
+      setTempTodo(null);
+      setTodos(prevTodos => [...prevTodos, newTodoFromApi]);
     } catch {
       setTodos(prevTodos => prevTodos.filter(todo => todo !== temporaryTodo));
       setErrorMessage(ErrorTypes.ADD_TODO_FAILED);
@@ -97,14 +94,14 @@ export const App: React.FC = () => {
 
   const handleDeleteTodo = async (id: number) => {
     try {
-      setLoadingTodos(current => [...current, id]); // Додаємо завдання до оброблюваних
+      setLoadingTodos(current => [...current, id]);
       await deleteTodo(id);
       setTodos(currentTodos => currentTodos.filter(todo => todo.id !== id));
     } catch {
       setErrorMessage(ErrorTypes.DELETE_TODO_FAILED);
       setTimeout(clearErrorMessage, 3000);
     } finally {
-      setLoadingTodos(current => current.filter(todoId => todoId !== id)); // Видаляємо завдання з оброблюваних
+      setLoadingTodos(current => current.filter(todoId => todoId !== id));
     }
   };
 
@@ -112,18 +109,19 @@ export const App: React.FC = () => {
     const completedIds = todos
       .filter(todo => todo.completed)
       .map(todo => todo.id);
+
     try {
-      setLoadingTodos(current => [...current, ...completedIds]); // Додаємо всі завершені завдання до loading
+      setLoadingTodos(current => [...current, ...completedIds]);
 
-      await Promise.all(completedIds.map(id => deleteTodo(id))); // Видаляємо з сервера
+      await Promise.all(completedIds.map(id => deleteTodo(id)));
 
-      setTodos(todos.filter(todo => !todo.completed)); // Видаляємо з локального стану
+      setTodos(todos.filter(todo => !todo.completed));
     } catch {
       setErrorMessage(ErrorTypes.CLEAR_COMPLETED_FAILED);
       setTimeout(clearErrorMessage, 3000);
     } finally {
-      setLoadingTodos(current =>
-        current.filter(id => !completedIds.includes(id)), // Видаляємо тільки оброблені
+      setLoadingTodos(
+        current => current.filter(id => !completedIds.includes(id)),
       );
     }
   };
