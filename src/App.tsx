@@ -15,7 +15,7 @@ import { Todo } from './types/Todo';
 import { ErrorNotification } from './components/ErrorNotification';
 import { TodoItem } from './components/TodoItem';
 import { FilterOptions, StatusFilter } from './components/StatusFilter';
-//import cn from 'classnames';
+import { AddTodoForm } from './components/AddTodoForm';
 
 interface GetFilteredTodosFilter {
   status: FilterOptions;
@@ -43,9 +43,7 @@ export const App: React.FC = () => {
   const [statusFiltration, setStatusFiltration] = useState(FilterOptions.All);
   const [proccesTodosId, setProcessTodosId] = useState<Todo['id'][]>([]);
 
-  const [newTodoTitle, setNewTodoTitle] = useState('');
   const [tempTodo, setTempTodo] = useState<Todo | null>(null);
-  const [isAddingTodo, setIsAddingTodo] = useState(false);
   const inputRef = useRef<HTMLInputElement>(null);
 
   const handleAddTodoProcessing = (todoId: Todo['id']) => {
@@ -91,45 +89,39 @@ export const App: React.FC = () => {
       });
   }, []);
 
-  const handleAddTodo = (event: React.FormEvent) => {
-    event.preventDefault();
-
-    const trimmedTitle = newTodoTitle.trim();
-
-    if (!trimmedTitle) {
-      setErrorMessage(TodosErrors.TitleShouldNotBeEmpty);
-
-      return;
+  const handleAddTodo = useCallback((title: Todo['title']) => {
+    if (inputRef.current) {
+      inputRef.current.disabled = true;
     }
 
     const newTodo = {
       userId: USER_ID,
-      title: trimmedTitle,
+      title,
       completed: false,
     };
 
-    const temp = { ...newTodo, id: 0 };
+    const temp: Todo = { ...newTodo, id: 0 };
 
     setTempTodo(temp);
-    setIsAddingTodo(true);
 
-    createTodo(newTodo)
+    return createTodo(newTodo)
       .then(createdTodo => {
         setTodos(current => [...current, createdTodo]);
-        setNewTodoTitle('');
       })
       .catch(() => {
         setErrorMessage(TodosErrors.UnableToAddTodo);
-        setNewTodoTitle(trimmedTitle);
+
+        throw new Error(TodosErrors.UnableToAddTodo);
       })
       .finally(() => {
         setTempTodo(null);
-        setIsAddingTodo(false);
-        setTimeout(() => {
-          inputRef.current?.focus();
-        }, 0);
+
+        if (inputRef.current) {
+          inputRef.current.disabled = false;
+          inputRef.current.focus();
+        }
       });
-  };
+  }, []);
 
   const handleClearCompleted = useCallback(() => {
     completedTodos.forEach(todo => {
@@ -154,20 +146,11 @@ export const App: React.FC = () => {
             data-cy="ToggleAllButton"
           />
 
-          {/* Add a todo on form submit */}
-          <form onSubmit={handleAddTodo}>
-            <input
-              ref={inputRef}
-              data-cy="NewTodoField"
-              type="text"
-              className="todoapp__new-todo"
-              placeholder="What needs to be done?"
-              value={newTodoTitle}
-              onChange={event => setNewTodoTitle(event.target.value)}
-              disabled={isAddingTodo}
-              autoFocus
-            />
-          </form>
+          <AddTodoForm
+            ref={inputRef}
+            onSubmit={handleAddTodo}
+            onError={setErrorMessage}
+          />
         </header>
 
         {!isLoading && (
