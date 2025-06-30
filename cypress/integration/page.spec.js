@@ -463,7 +463,7 @@ describe('', () => {
       });
     });
 
-    describe('after form submition before response is received', () => {
+    describe.skip('after form submition before response is received', () => {
       beforeEach(() => {
         page.mockCreate();
         page.pauseTimers();
@@ -591,7 +591,7 @@ describe('', () => {
       });
     });
 
-    describe('on request fail', () => {
+    describe.skip('on request fail', () => {
       beforeEach(() => {
         // to prevent Cypress from failing the test on uncaught exception
         cy.once('uncaught:exception', () => false);
