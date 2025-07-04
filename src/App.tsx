@@ -46,6 +46,12 @@ export const App: React.FC = () => {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
+  useEffect(() => {
+    if (!isLoading) {
+      newTodoRef.current?.focus();
+    }
+  }, [isLoading]);
+
   const handleSubmit = async (event: React.FormEvent) => {
     event.preventDefault();
     const trimmedTitle = title.trim();
@@ -118,6 +124,7 @@ export const App: React.FC = () => {
       .catch(() => showError('Unable to delete a todo'))
       .finally(() => {
         setDeletingTodoIds(prev => prev.filter(id => id !== todoId));
+        newTodoRef.current?.focus();
       });
   };
 
@@ -148,6 +155,8 @@ export const App: React.FC = () => {
       if (hasError) {
         showError('Unable to delete a todo');
       }
+
+      newTodoRef.current?.focus();
     });
   };
 
@@ -183,7 +192,14 @@ export const App: React.FC = () => {
         </header>
 
         <section className="todoapp__main" data-cy="TodoList">
-          {isLoading && <div className="loader" data-cy="TodoLoader" />}
+          {isLoading && (
+            <div
+              className={classNames('loader', {
+                'is-active': isLoading,
+              })}
+              data-cy="TodoLoader"
+            />
+          )}
 
           {visibleTodos.map(todo => (
             <div
@@ -219,9 +235,12 @@ export const App: React.FC = () => {
                 ×
               </button>
 
-              {deletingTodoIds.includes(todo.id) && (
-                <div data-cy="TodoLoader" className="modal overlay" />
-              )}
+              <div
+                data-cy="TodoLoader"
+                className={classNames('modal', 'overlay', {
+                  'is-active': deletingTodoIds.includes(todo.id),
+                })}
+              />
             </div>
           ))}
 
@@ -236,12 +255,19 @@ export const App: React.FC = () => {
                 />
               </label>
 
-              <span className="todo__title">{tempTodo.title}</span>
+              <span className="todo__title" data-cy="TodoTitle">
+                {tempTodo.title}
+              </span>
               <button type="button" className="todo__remove" disabled>
                 ×
               </button>
 
-              <div data-cy="TodoLoader" className="modal overlay" />
+              <div
+                data-cy="TodoLoader"
+                className={classNames('modal', 'overlay', {
+                  'is-active': isLoading,
+                })}
+              />
             </div>
           )}
         </section>
