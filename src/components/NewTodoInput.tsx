@@ -32,6 +32,7 @@ export const NewTodoInput: React.FC<Props> = ({
       setTimeout(() => {
         setErrorMessage(null);
       }, 3000);
+      inputRef.current?.focus();
     } else {
       setErrorMessage(null);
 

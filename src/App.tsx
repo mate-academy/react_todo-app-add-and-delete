@@ -90,6 +90,9 @@ export const App: React.FC = () => {
       setTempTodo(null);
       setTodos(prevTodos => [...prevTodos, newTodoFromApi]);
       setNewTodoTitle('');
+      setTimeout(() => {
+        inputRef.current?.focus();
+      }, 900);
     } catch {
       setErrorMessage(ErrorTypes.ADD_TODO_FAILED);
       setNewTodoTitle(title);
@@ -108,6 +111,7 @@ export const App: React.FC = () => {
     } catch {
       setErrorMessage(ErrorTypes.DELETE_TODO_FAILED);
       setTimeout(clearErrorMessage, 3000);
+      inputRef.current?.focus();
     } finally {
       setLoadingTodos(current => current.filter(todoId => todoId !== id));
 
