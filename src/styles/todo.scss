@@ -1,6 +1,5 @@
 .todo {
   position: relative;
-
   display: grid;
   grid-template-columns: 45px 1fr;
   justify-items: stretch;
@@ -30,8 +29,7 @@
 
   &__title {
     padding: 12px 15px;
-
-    word-break: break-all;
+    word-break: break-word;
     transition: color 0.4s;
   }
 
@@ -42,21 +40,20 @@
 
   &__remove {
     position: absolute;
-    right: 12px;
     top: 0;
+    right: 12px;
     bottom: 0;
 
+    float: right;
     font-size: 120%;
     line-height: 1;
     font-family: inherit;
     font-weight: inherit;
     color: #cc9a9a;
 
-    float: right;
     border: 0;
     background: none;
     cursor: pointer;
-
     transform: translateY(-2px);
     opacity: 0;
     transition: color 0.2s ease-out;
@@ -74,10 +71,10 @@
     width: 100%;
     padding: 11px 14px;
 
-    font-size: inherit;
-    line-height: inherit;
     font-family: inherit;
+    font-size: inherit;
     font-weight: inherit;
+    line-height: inherit;
     color: inherit;
 
     border: 1px solid #999;
@@ -96,22 +93,24 @@
     left: 0;
     right: 0;
     height: 58px;
-
     opacity: 0.5;
   }
 }
 
-.item-enter {
+.item-enter,
+.temp-item-enter {
   max-height: 0;
 }
 
-.item-enter-active {
+.item-enter-active,
+.temp-item-enter-active {
   overflow: hidden;
   max-height: 58px;
   transition: max-height 0.3s ease-in-out;
 }
 
-.item-exit {
+.item-exit,
+.temp-item-exit {
   max-height: 58px;
 }
 
@@ -119,20 +118,6 @@
   overflow: hidden;
   max-height: 0;
   transition: max-height 0.3s ease-in-out;
-}
-
-.temp-item-enter {
-  max-height: 0;
-}
-
-.temp-item-enter-active {
-  overflow: hidden;
-  max-height: 58px;
-  transition: max-height 0.3s ease-in-out;
-}
-
-.temp-item-exit {
-  max-height: 58px;
 }
 
 .temp-item-exit-active {
@@ -146,4 +131,18 @@
 .has-error .temp-item-exit-active {
   transform: translateY(0);
   overflow: hidden;
+}
+
+.todo__loader {
+  position: absolute;
+  inset: 0;
+  display: none;
+  justify-content: center;
+  align-items: center;
+  background-color: rgba(255, 255, 255, 0.6);
+  z-index: 10;
+
+  &.is-active {
+    display: flex;
+  }
 }
