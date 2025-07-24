@@ -14,9 +14,11 @@ body {
   min-height: 36px;
 }
 
-.notification.hidden {
+.notification.hidden,
+.hidden {
   min-height: 0;
   opacity: 0;
+  display: none;
   pointer-events: none;
 }
 
