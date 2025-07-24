@@ -15,6 +15,7 @@ export const App: React.FC = () => {
   const [loadingIds, setLoadingIds] = useState<number[]>([]); // for delete loaders
   const [error, setError] = useState('');
   const [isAdding, setIsAdding] = useState(false);
+  const [filter, setFilter] = useState<'all' | 'active' | 'completed'>('all');
   const inputRef = useRef<HTMLInputElement>(null);
 
   // Load todos on mount
@@ -85,6 +86,7 @@ export const App: React.FC = () => {
     try {
       await deleteTodo(id);
       setTodos(prev => prev.filter(todo => todo.id !== id));
+      inputRef.current?.focus();
     } catch {
       setError('Unable to delete a todo');
     } finally {
@@ -98,11 +100,22 @@ export const App: React.FC = () => {
         todo.id === id ? { ...todo, completed: !todo.completed } : todo,
       ),
     );
-    // Here you would also call the API to update the todo
   };
 
   const completedTodos = todos.filter(todo => todo.completed);
   const activeTodos = todos.filter(todo => !todo.completed);
+
+  const visibleTodos = todos.filter(todo => {
+    if (filter === 'active') {
+      return !todo.completed;
+    }
+
+    if (filter === 'completed') {
+      return todo.completed;
+    }
+
+    return true;
+  });
 
   const handleClearCompleted = async () => {
     const completed = todos.filter(todo => todo.completed);
@@ -120,6 +133,7 @@ export const App: React.FC = () => {
         }
       }),
     );
+    inputRef.current?.focus();
   };
 
   if (!USER_ID) {
@@ -141,7 +155,6 @@ export const App: React.FC = () => {
             }
             data-cy="ToggleAllButton"
             aria-label="Toggle all todos"
-            // onClick={handleToggleAll} // implement if needed
           />
           <TodoForm
             inputValue={inputValue}
@@ -152,7 +165,7 @@ export const App: React.FC = () => {
           />
         </header>
         <TodoList
-          todos={todos}
+          todos={visibleTodos}
           tempTodo={tempTodo}
           loadingIds={loadingIds}
           onDelete={handleDelete}
@@ -166,22 +179,34 @@ export const App: React.FC = () => {
             <nav className="filter" data-cy="Filter">
               <a
                 href="#/"
-                className="filter__link selected"
+                className={`filter__link${filter === 'all' ? ' selected' : ''}`}
                 data-cy="FilterLinkAll"
+                onClick={e => {
+                  e.preventDefault();
+                  setFilter('all');
+                }}
               >
                 All
               </a>
               <a
                 href="#/active"
-                className="filter__link"
+                className={`filter__link${filter === 'active' ? ' selected' : ''}`}
                 data-cy="FilterLinkActive"
+                onClick={e => {
+                  e.preventDefault();
+                  setFilter('active');
+                }}
               >
                 Active
               </a>
               <a
                 href="#/completed"
-                className="filter__link"
+                className={`filter__link${filter === 'completed' ? ' selected' : ''}`}
                 data-cy="FilterLinkCompleted"
+                onClick={e => {
+                  e.preventDefault();
+                  setFilter('completed');
+                }}
               >
                 Completed
               </a>

@@ -47,13 +47,15 @@ export const TodoItem: React.FC<TodoItemProps> = ({
         ×
       </button>
 
-      {/* Loader overlay */}
-      {isLoading && (
-        <div data-cy="TodoLoader" className="modal overlay is-active">
-          <div className="modal-background has-background-white-ter" />
-          <div className="loader" />
-        </div>
-      )}
+      <div
+        data-cy="TodoLoader"
+        className={`modal overlay${isLoading ? ' is-active' : ''}`}
+        aria-hidden={!isLoading}
+        style={{ display: isLoading ? 'block' : 'none' }}
+      >
+        <div className="modal-background has-background-white-ter" />
+        <div className="loader" />
+      </div>
     </div>
   );
 };
