@@ -1,30 +1,46 @@
-import classNames from 'classnames';
-import React from 'react';
+import cn from 'classnames';
+import React, { useEffect } from 'react';
+import { ErrorMessages } from '../../types/ErrorMessages';
 
-type Props = {
+interface Props {
   errorMessage: string;
-  isHidden: boolean;
-  onClose: (value: boolean) => void;
-};
+  setErrorMessage: (value: ErrorMessages.None) => void;
+}
 
-export const Notification: React.FC<Props> = ({
+export const ErrorNotification: React.FC<Props> = ({
   errorMessage,
-  isHidden,
-  onClose,
-}) => (
-  <div
-    data-cy="ErrorNotification"
-    className={classNames(
-      'notification is-danger is-light has-text-weight-normal',
-      { hidden: isHidden },
-    )}
-  >
-    <button
-      data-cy="HideErrorButton"
-      type="button"
-      className="delete"
-      onClick={() => onClose(true)}
-    />
-    {errorMessage}
-  </div>
-);
+  setErrorMessage,
+}) => {
+  useEffect(() => {
+    if (!errorMessage) {
+      return;
+    }
+
+    const timer = setTimeout(() => {
+      setErrorMessage(ErrorMessages.None);
+    }, 3000);
+
+    return () => clearTimeout(timer);
+  }, [errorMessage, setErrorMessage]);
+
+  return (
+    <div
+      data-cy="ErrorNotification"
+      className={cn(
+        'notification',
+        'is-danger',
+        'is-light',
+        'has-text-weight-normal',
+        { hidden: !errorMessage },
+      )}
+    >
+      <button
+        data-cy="HideErrorButton"
+        type="button"
+        className="delete"
+        onClick={() => setErrorMessage(ErrorMessages.None)}
+      />
+      {errorMessage}
+    </div>
+  );
+};
