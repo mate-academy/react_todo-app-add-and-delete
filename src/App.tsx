@@ -1,143 +1,137 @@
 import React, { useEffect, useMemo, useRef, useState } from 'react';
+import * as todosApi from './api/todos';
+
+import { FilterParams } from './types/FilterParams';
 
 import { UserWarning } from './UserWarning';
-import { getTodos, USER_ID, addTodo, deleteTodo } from './api/todos';
 import { Todo } from './types/Todo';
-import { Header } from './components/Header';
-import { Footer } from './components/Footer';
+import { AppHeader } from './components/AppHeader';
 import { TodoList } from './components/TodoList';
-import { Notification } from './components/Notification';
-import { Filter } from './FilterEnum';
-import { filterTodos } from './utils/todo/filterTodos';
+import { AppFooter } from './components/AppFooter';
+import { ErrorNotification } from './components/ErrorNotification';
+import { ErrorMessages } from './types/ErrorMessages';
+
+// чи виносить мені цю функцію у компонент AppFooter? (там де фильтрация)
+const prepareTodoList = (todoData: Todo[], filter: FilterParams): Todo[] => {
+  return todoData.filter(todo => {
+    switch (filter) {
+      case FilterParams.Active:
+        return !todo.completed;
+      case FilterParams.Completed:
+        return todo.completed;
+      default:
+        return true;
+    }
+  });
+};
 
 export const App: React.FC = () => {
-  const [todos, setTodos] = useState<Todo[]>([]);
-  const [filter, setFilter] = useState<Filter>(Filter.All);
-  const [errorMessage, setErrorMessage] = useState('');
-  const [isNotificationHidden, setIsNotificationHidden] = useState(true);
+  const [todoData, setTodoData] = useState<Todo[]>([]);
+  const [errorMessage, setErrorMessage] = useState(ErrorMessages.None);
+
+  const [todoTitle, setTodoTitle] = useState('');
+
+  const [filterParam, setFilterParam] = useState(FilterParams.All);
+
+  const [isInputActive, setIsInputActive] = useState(true);
+
   const [tempTodo, setTempTodo] = useState<Todo | null>(null);
-  const [deletingTodoIds, setDeletingTodoIds] = useState<number[]>([]);
+
+  const [deletedTodo, setDeletedTodo] = useState<number[]>([]);
 
   const inputRef = useRef<HTMLInputElement>(null);
 
-  const showErrorMessage = (message: string) => {
-    setErrorMessage(message);
-    setIsNotificationHidden(false);
+  // може обгорунть ці три змінні одним юз мемо? типу "const { activeTodos, isCompletedTodos, isAllTodosCompleted } = useMemo(() => {})"
 
-    setTimeout(() => {
-      setErrorMessage('');
-      setIsNotificationHidden(true);
-    }, 3000);
-  };
+  const activeTodos = useMemo(() => {
+    return todoData.filter(todo => !todo.completed).length;
+  }, [todoData]);
+
+  const isCompletedTodos = useMemo(() => {
+    return todoData.some(todo => todo.completed);
+  }, [todoData]);
+
+  const isAllTodosCompleted = useMemo(() => {
+    return todoData.length > 0 && todoData.every(todo => todo.completed);
+  }, [todoData]);
 
   useEffect(() => {
-    getTodos()
-      .then(setTodos)
-      .catch(() => {
-        showErrorMessage('Unable to load todos');
-      });
+    todosApi
+      .getTodos()
+      .then(setTodoData)
+      .catch(() => setErrorMessage(ErrorMessages.OnGet));
   }, []);
 
-  const hasTodos = !!todos.length;
+  // Мастер, скажи чи виносить цей хендлер в компонент AppHeader (він спрацьовує на сабмит) чи залишати в App?
+  const handleSubmit = (title: string) => {
+    if (!title) {
+      setErrorMessage(ErrorMessages.OnEmptyTitle);
 
-  const visibleTodos = useMemo(
-    () => filterTodos(todos, filter),
-    [todos, filter],
-  );
-
-  const activeTodosCount = useMemo(
-    () => todos.filter(todo => !todo.completed).length,
-    [todos],
-  );
-
-  const areAllTodosCompleted = useMemo(
-    () => activeTodosCount === 0,
-    [activeTodosCount],
-  );
-
-  const hasCompletedTodos = useMemo(
-    () => todos.some(todo => todo.completed),
-    [todos],
-  );
-
-  const handleAddTodo = (title: string) => {
-    setErrorMessage('');
-
-    const trimmedTitle = title.trim();
-
-    if (!trimmedTitle.length) {
-      showErrorMessage('Title should not be empty');
-
-      return Promise.reject('Title is empty');
+      return;
     }
 
-    setTempTodo({
-      title: trimmedTitle,
-      userId: USER_ID,
+    setIsInputActive(false);
+
+    const newTodo = {
+      userId: todosApi.USER_ID,
+      title: title,
       completed: false,
-      id: 0,
-    });
+    };
 
-    return addTodo({ title: trimmedTitle, userId: USER_ID, completed: false })
-      .then(newTodo => {
-        setTodos(currentTodos => [...currentTodos, newTodo]);
+    setTempTodo({ id: 0, ...newTodo });
+
+    todosApi
+      .postTodo(newTodo)
+      .then(todo => {
+        setTodoData(current => [...current, todo]);
+        setTodoTitle('');
       })
-      .catch(error => {
-        showErrorMessage('Unable to add a todo');
-        throw new Error(error);
-      })
+      .catch(() => setErrorMessage(ErrorMessages.OnPost))
       .finally(() => {
+        setIsInputActive(true);
         setTempTodo(null);
+        setTimeout(() => {
+          inputRef.current?.focus();
+        }, 0);
       });
   };
 
-  const handleDeleteTodo = (todoId: number) => {
-    setDeletingTodoIds([todoId]);
-
-    return deleteTodo(todoId)
-      .then(() => {
-        setTodos(curr => curr.filter(todo => todo.id !== todoId));
-      })
-      .catch(error => {
-        showErrorMessage('Unable to delete a todo');
-        throw new Error(error);
-      })
-      .finally(() => {
-        setDeletingTodoIds([]);
-
-        if (inputRef.current) {
-          inputRef.current.focus();
-        }
-      });
-  };
-
-  const handleClearCompletedTodos = () => {
-    const completedTodoIds = todos
+  // а это в компонент AppFooter ?
+  const handleClearCompleted = () => {
+    const completedIds = todoData
       .filter(todo => todo.completed)
       .map(todo => todo.id);
 
-    setDeletingTodoIds(completedTodoIds);
-    Promise.all(
-      completedTodoIds.map(id =>
-        deleteTodo(id)
-          .then(() => {
-            setTodos(curr => curr.filter(todo => todo.id !== id));
-          })
-          .catch(error => {
-            showErrorMessage('Unable to delete a todo');
-            throw new Error(error);
-          })
-          .finally(() => {
-            setDeletingTodoIds([]);
-            if (inputRef.current) {
-              inputRef.current.focus();
-            }
-          }),
-      ),
-    );
+    setDeletedTodo(cur => [...cur, ...completedIds]);
+
+    Promise.allSettled(
+      completedIds.map(id => todosApi.deleteTodo(id).then(() => id)),
+    )
+      .then(results => {
+        const succesIds = results
+          .filter(r => r.status === 'fulfilled')
+          .map(r => r.value);
+
+        const isSomeFailed = results.some(r => r.status === 'rejected');
+
+        if (isSomeFailed) {
+          setErrorMessage(ErrorMessages.OnDelete);
+        }
+
+        setTodoData(cur => cur.filter(todo => !succesIds.includes(todo.id)));
+      })
+      .finally(() => {
+        setDeletedTodo(cur => cur.filter(id => !completedIds.includes(id)));
+        setTimeout(() => {
+          inputRef.current?.focus();
+        }, 0);
+      });
   };
 
-  if (!USER_ID) {
+  const todoList = prepareTodoList(todoData, filterParam);
+  const shouldShowFooter = todoData.length > 0 || activeTodos > 0;
+
+  if (!todosApi.USER_ID) {
     return <UserWarning />;
   }
 
@@ -146,37 +140,39 @@ export const App: React.FC = () => {
       <h1 className="todoapp__title">todos</h1>
 
       <div className="todoapp__content">
-        <Header
-          areAllTodosCompleted={areAllTodosCompleted}
-          onAdd={handleAddTodo}
+        <AppHeader
+          onSubmit={handleSubmit}
+          todoTitle={todoTitle}
+          setTodoTitle={setTodoTitle}
+          isInputActive={isInputActive}
           inputRef={inputRef}
-          hasTodos={hasTodos}
+          isAllTodosCompleted={isAllTodosCompleted}
         />
 
-        {hasTodos && (
-          <TodoList
-            todos={visibleTodos}
-            tempTodo={tempTodo}
-            todoIdsToDelete={deletingTodoIds}
-            onDelete={handleDeleteTodo}
-          />
-        )}
+        <TodoList
+          todoList={todoList}
+          tempTodo={tempTodo}
+          deletedTodo={deletedTodo}
+          setTodoData={setTodoData}
+          setDeletedTodo={setDeletedTodo}
+          setErrorMessage={setErrorMessage}
+          inputRef={inputRef}
+        />
 
-        {hasTodos && (
-          <Footer
-            currFilter={filter}
-            activeTodosCount={activeTodosCount}
-            hasCompletedTodos={hasCompletedTodos}
-            onFilterClick={setFilter}
-            onClearCompletedTodos={handleClearCompletedTodos}
+        {shouldShowFooter && (
+          <AppFooter
+            handleClearCompleted={handleClearCompleted}
+            setFilterParam={setFilterParam}
+            filterParam={filterParam}
+            isCompletedTodos={isCompletedTodos}
+            activeTodos={activeTodos}
           />
         )}
       </div>
 
-      <Notification
+      <ErrorNotification
         errorMessage={errorMessage}
-        isHidden={isNotificationHidden}
-        onClose={setIsNotificationHidden}
+        setErrorMessage={setErrorMessage}
       />
     </div>
   );
