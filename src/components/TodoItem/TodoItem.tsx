@@ -1,52 +1,69 @@
+/* eslint-disable jsx-a11y/label-has-associated-control */
+
+import cn from 'classnames';
 import React from 'react';
 import { Todo } from '../../types/Todo';
-import classNames from 'classnames';
 
-type Props = {
+interface Props {
   todo: Todo;
-  isLoading?: boolean;
-  onDelete?: (id: number) => Promise<void>;
-};
+  isOverlayActive?: boolean;
+  handleDelete?: (value: number) => void;
+  handleSwitchStatus?: (value: number) => void;
+}
 
 export const TodoItem: React.FC<Props> = ({
   todo,
-  isLoading = false,
-  onDelete = () => {},
+  isOverlayActive = true,
+  handleDelete = () => {},
+  handleSwitchStatus = () => {},
 }) => {
-  const { completed, id, title } = todo;
+  const { id, completed, title } = todo;
+  const placeHolder = true; //цей функціонал буде реалізованно в наступній тасці
 
   return (
-    <div
-      data-cy="Todo"
-      className={classNames('todo', { completed: completed })}
-      key={id}
-    >
+    <div data-cy="Todo" className={cn('todo', { completed: completed })}>
       <label className="todo__status-label">
-        {/* add onChange callback */}
         <input
           data-cy="TodoStatus"
           type="checkbox"
           className="todo__status"
           checked={completed}
-          onChange={() => {}}
+          onChange={() => handleSwitchStatus(id)}
         />
       </label>
 
-      <span data-cy="TodoTitle" className="todo__title">
-        {title}
-      </span>
-      <button
-        type="button"
-        className="todo__remove"
-        data-cy="TodoDelete"
-        onClick={() => onDelete(id)}
-      >
-        ×
-      </button>
+      {placeHolder ? (
+        <>
+          <span data-cy="TodoTitle" className="todo__title">
+            {title}
+          </span>
+
+          <button
+            type="button"
+            className="todo__remove"
+            data-cy="TodoDelete"
+            onClick={() => handleDelete(id)}
+          >
+            ×
+          </button>
+        </>
+      ) : (
+        <form>
+          <input
+            data-cy="TodoTitleField"
+            type="text"
+            className="todo__title-field"
+            placeholder="Empty todo will be deleted"
+            value="Todo is being edited now"
+          />
+        </form>
+      )}
 
       <div
         data-cy="TodoLoader"
-        className={classNames('modal overlay', { 'is-active': isLoading })}
+        className={cn('modal', 'overlay', {
+          'is-active': isOverlayActive,
+        })}
       >
         <div className="modal-background has-background-white-ter" />
         <div className="loader" />
