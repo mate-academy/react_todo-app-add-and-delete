@@ -1,1 +1,1 @@
-export * from './Notification';
+export { ErrorNotification } from './ErrorNotification';
