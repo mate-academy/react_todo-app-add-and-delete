@@ -1,44 +1,48 @@
+import cn from 'classnames';
 import React from 'react';
-import classNames from 'classnames';
+import { FilterParams } from '../../types/FilterParams';
 
-import { Filter } from '../../FilterEnum';
+interface Props {
+  handleClearCompleted: () => void;
+  setFilterParam: (value: FilterParams) => void;
+  filterParam: FilterParams;
+  isCompletedTodos: boolean;
+  activeTodos: number;
+}
 
-type Props = {
-  currFilter: Filter;
-  activeTodosCount: number;
-  hasCompletedTodos: boolean;
-  onFilterClick: (newFilter: Filter) => void;
-  onClearCompletedTodos: () => void;
-};
+const filters = [
+  { value: FilterParams.All, label: 'All' },
+  { value: FilterParams.Active, label: 'Active' },
+  { value: FilterParams.Completed, label: 'Completed' },
+];
 
-export const Footer: React.FC<Props> = ({
-  currFilter,
-  activeTodosCount,
-  hasCompletedTodos,
-  onFilterClick,
-  onClearCompletedTodos,
+export const AppFooter: React.FC<Props> = ({
+  handleClearCompleted,
+  setFilterParam,
+  filterParam,
+  isCompletedTodos,
+  activeTodos,
 }) => (
   <footer className="todoapp__footer" data-cy="Footer">
     <span className="todo-count" data-cy="TodosCounter">
-      {`${activeTodosCount} items left`}
+      {`${activeTodos} items left`}
     </span>
 
     <nav className="filter" data-cy="Filter">
-      {Object.values(Filter).map(filter => {
-        const capitalizedFilter =
-          filter[0].toUpperCase() + filter.slice(1).toLowerCase();
+      {filters.map(filter => {
+        const { value, label } = filter;
 
         return (
           <a
-            key={filter}
-            href={`#/${filter === Filter.All ? '' : filter}`}
-            className={classNames('filter__link', {
-              selected: currFilter === filter,
+            key={value}
+            href="#/"
+            className={cn('filter__link', {
+              selected: filterParam === value,
             })}
-            data-cy={`FilterLink${capitalizedFilter}`}
-            onClick={() => onFilterClick(filter)}
+            data-cy={`FilterLink${label}`}
+            onClick={() => setFilterParam(value)}
           >
-            {capitalizedFilter}
+            {label}
           </a>
         );
       })}
@@ -48,8 +52,8 @@ export const Footer: React.FC<Props> = ({
       type="button"
       className="todoapp__clear-completed"
       data-cy="ClearCompletedButton"
-      onClick={onClearCompletedTodos}
-      disabled={!hasCompletedTodos}
+      disabled={!isCompletedTodos}
+      onClick={() => handleClearCompleted()}
     >
       Clear completed
     </button>
