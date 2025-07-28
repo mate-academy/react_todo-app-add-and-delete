@@ -40,6 +40,10 @@
     text-decoration: line-through;
   }
 
+  &--temp {
+    background-color: #fafbfc;
+  }
+
   &__remove {
     position: absolute;
     right: 12px;
@@ -98,6 +102,11 @@
     height: 58px;
 
     opacity: 0.5;
+
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    pointer-events: none;
   }
 }
 
@@ -146,4 +155,20 @@
 .has-error .temp-item-exit-active {
   transform: translateY(0);
   overflow: hidden;
+}
+
+.loader {
+  width: 24px;
+  height: 24px;
+  border: 2px solid #ccc;
+  border-top-color: #333;
+  border-radius: 50%;
+  animation: spin 1s linear infinite;
+  display: inline-block;
+}
+
+@keyframes spin {
+  to {
+    transform: rotate(360deg);
+  }
 }
