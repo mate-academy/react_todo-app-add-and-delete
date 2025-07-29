@@ -1,0 +1,51 @@
+import React from 'react';
+import classNames from 'classnames';
+import { Todo } from '../types/Todo';
+
+type Props = {
+  todo: Todo;
+  onDelete: (id: number) => void;
+};
+
+export const TodoItem: React.FC<Props> = ({ todo, onDelete }) => {
+  return (
+    <div
+      data-cy="Todo"
+      className={classNames('todo', { completed: todo.completed })}
+    >
+      <div className="todo__status-label">
+        <input
+          data-cy="TodoStatus"
+          type="checkbox"
+          className="todo__status"
+          checked={todo.completed}
+          onChange={() => {}}
+        />
+      </div>
+
+      <span data-cy="TodoTitle" className="todo__title">
+        {todo.title}
+      </span>
+
+      <button
+        type="button"
+        className="todo__remove"
+        data-cy="TodoDelete"
+        onClick={() => onDelete(todo.id)}
+      >
+        ×
+      </button>
+
+      {/* Loader - solo visible cuando isLoading es true */}
+      <div
+        data-cy="TodoLoader"
+        className={classNames('modal overlay', {
+          'is-active': todo.isLoading,
+        })}
+      >
+        <div className="modal-background has-background-white-ter" />
+        <div className="loader" />
+      </div>
+    </div>
+  );
+};
