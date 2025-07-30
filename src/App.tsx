@@ -1,6 +1,7 @@
 /* eslint-disable jsx-a11y/label-has-associated-control */
 /* eslint-disable jsx-a11y/control-has-associated-label */
 import React, { useEffect, useRef, useState } from 'react';
+import { Filter } from './types/Filter';
 import { UserWarning } from './UserWarning';
 import { USER_ID, getTodos, addTodo, deleteTodo } from './api/todos';
 import { Todo } from './types/Todo';
@@ -15,7 +16,7 @@ export const App: React.FC = () => {
   const [loadingIds, setLoadingIds] = useState<number[]>([]); // for delete loaders
   const [error, setError] = useState('');
   const [isAdding, setIsAdding] = useState(false);
-  const [filter, setFilter] = useState<'all' | 'active' | 'completed'>('all');
+  const [filter, setFilter] = useState<Filter>(Filter.ALL);
   const inputRef = useRef<HTMLInputElement>(null);
 
   // Load todos on mount
@@ -177,39 +178,32 @@ export const App: React.FC = () => {
               {activeTodos.length} items left
             </span>
             <nav className="filter" data-cy="Filter">
-              <a
-                href="#/"
-                className={`filter__link${filter === 'all' ? ' selected' : ''}`}
-                data-cy="FilterLinkAll"
-                onClick={e => {
-                  e.preventDefault();
-                  setFilter('all');
-                }}
-              >
-                All
-              </a>
-              <a
-                href="#/active"
-                className={`filter__link${filter === 'active' ? ' selected' : ''}`}
-                data-cy="FilterLinkActive"
-                onClick={e => {
-                  e.preventDefault();
-                  setFilter('active');
-                }}
-              >
-                Active
-              </a>
-              <a
-                href="#/completed"
-                className={`filter__link${filter === 'completed' ? ' selected' : ''}`}
-                data-cy="FilterLinkCompleted"
-                onClick={e => {
-                  e.preventDefault();
-                  setFilter('completed');
-                }}
-              >
-                Completed
-              </a>
+              {(Object.keys(Filter) as Array<keyof typeof Filter>).map(
+                filterKey => {
+                  const filterValue = Filter[filterKey];
+
+                  return (
+                    <a
+                      key={filterValue}
+                      href={`#/${filterValue}`}
+                      className={`filter__link${
+                        filter === filterValue ? ' selected' : ''
+                      }`}
+                      data-cy={`FilterLink${
+                        filterValue.charAt(0).toUpperCase() +
+                        filterValue.slice(1)
+                      }`}
+                      onClick={e => {
+                        e.preventDefault();
+                        setFilter(filterValue);
+                      }}
+                    >
+                      {filterValue.charAt(0).toUpperCase() +
+                        filterValue.slice(1)}
+                    </a>
+                  );
+                },
+              )}
             </nav>
             <button
               type="button"
