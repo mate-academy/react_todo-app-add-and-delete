@@ -12,6 +12,7 @@ import { TodoItem } from './components/TodoItem';
 import { FilterType } from './types/FilterType';
 
 export const App: React.FC = () => {
+  // #region state
   const [todos, setTodos] = useState<Todo[]>([]);
   const [error, setError] = useState('');
   const [hasErrorMessage, setHasErrorMessage] = useState(false);
@@ -20,7 +21,9 @@ export const App: React.FC = () => {
   const [submitting, setSubmitting] = useState(false);
   const [tempTodo, setTempTodo] = useState<Todo | null>(null);
   const [deletingTodoId, setDeletingTodoId] = useState<number | null>(null);
+  //#endregion
 
+  // #region loadTodos
   function loadTodos() {
     setError('');
     setHasErrorMessage(false);
@@ -36,6 +39,7 @@ export const App: React.FC = () => {
         }, 3000);
       });
   }
+  //#endregion
 
   useEffect(loadTodos, []);
 
@@ -66,6 +70,7 @@ export const App: React.FC = () => {
     setTodos(currentTodos => [...currentTodos, newTodo]);
   };
 
+  // #region deleteTodo
   function deleteTodo(todoId: number) {
     setDeletingTodoId(todoId);
 
@@ -90,7 +95,9 @@ export const App: React.FC = () => {
         setSubmitting(false);
       });
   }
+  //#endregion
 
+  // #region clearCompleted
   const clearCompleted = async () => {
     const completedIds = todos
       .filter(todo => todo.completed)
@@ -116,7 +123,7 @@ export const App: React.FC = () => {
       );
       // якщо хоча б один не вдалось видалити — показати помилку
       if (results.some(result => result.status === 'rejected')) {
-        setError('Unable to delete completed todos');
+        setError('Unable to delete a todo');
         setHasErrorMessage(true);
         setTimeout(() => setHasErrorMessage(false), 3000);
       }
@@ -124,7 +131,9 @@ export const App: React.FC = () => {
       setSubmitting(false);
     }
   };
+  //#endregion
 
+  // #region handleSubmit
   const handleSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
     event?.preventDefault();
 
@@ -167,6 +176,7 @@ export const App: React.FC = () => {
       setSubmitting(false);
     }
   };
+  //#endregion
 
   if (!USER_ID) {
     return <UserWarning />;
