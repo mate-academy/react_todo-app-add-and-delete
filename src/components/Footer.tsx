@@ -26,16 +26,15 @@ export const Footer: React.FC<Props> = ({
 
       <Filter filter={filter} setFilter={setFilter} />
 
-      {hasCompleted && (
-        <button
-          type="button"
-          className="todoapp__clear-completed"
-          data-cy="ClearCompletedButton"
-          onClick={onClearCompleted}
-        >
-          Clear completed
-        </button>
-      )}
+      <button
+        type="button"
+        className="todoapp__clear-completed"
+        data-cy="ClearCompletedButton"
+        onClick={onClearCompleted}
+        disabled={!hasCompleted}
+      >
+        Clear completed
+      </button>
     </footer>
   );
 };
