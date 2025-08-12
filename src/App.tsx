@@ -40,6 +40,7 @@ export const App: React.FC = () => {
 
     if (!trimmedTitle) {
       setError('Title should not be empty');
+      inputRef.current?.focus();
 
       return;
     }
@@ -60,7 +61,13 @@ export const App: React.FC = () => {
       setIsLoading(true);
       const createdTodo = await createTodo(newTodo);
 
-      setTodos(prev => [...prev, createdTodo]);
+      setTodos(prev => [
+        ...prev,
+        {
+          ...createdTodo,
+          isLoading: false,
+        },
+      ]);
       setTitle('');
     } catch {
       setError('Unable to add a todo');
@@ -83,7 +90,6 @@ export const App: React.FC = () => {
       setTodos(prev => prev.filter(todo => todo.id !== id));
     } catch {
       setError('Unable to delete a todo');
-    } finally {
       setTodos(prev =>
         prev.map(todo =>
           todo.id === id ? { ...todo, isLoading: false } : todo,
@@ -106,10 +112,32 @@ export const App: React.FC = () => {
         ),
       );
 
-      await Promise.all(completedTodos.map(todo => deleteTodo(todo.id)));
-      setTodos(prev => prev.filter(todo => !todo.completed));
+      const results = await Promise.allSettled(
+        completedTodos.map(todo =>
+          deleteTodo(todo.id)
+            .then(() => ({ success: true, id: todo.id }))
+            .catch(() => ({ success: false, id: todo.id })),
+        ),
+      );
+
+      const hasErrors = results.some(result => !result.value.success);
+
+      if (hasErrors) {
+        setError('Unable to delete a todo');
+      }
+
+      setTodos(prev =>
+        prev.filter(todo => {
+          const result = results.find(r => r.value.id === todo.id);
+
+          return !todo.completed || (result && !result.value.success);
+        }),
+      );
     } catch {
       setError('Unable to delete completed todos');
+    } finally {
+      setTodos(prev => prev.map(todo => ({ ...todo, isLoading: false })));
+      inputRef.current?.focus();
     }
   };
 

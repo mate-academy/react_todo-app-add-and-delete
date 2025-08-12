@@ -35,8 +35,6 @@ export const TodoItem: React.FC<Props> = ({ todo, onDelete }) => {
       >
         ×
       </button>
-
-      {/* Loader - solo visible cuando isLoading es true */}
       <div
         data-cy="TodoLoader"
         className={classNames('modal overlay', {
