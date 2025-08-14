@@ -723,6 +723,7 @@ describe('', () => {
     });
   });
 
+
   describe('Individual Todo Deletion', () => {
     describe('Default behavior', () => {
       beforeEach(() => {
