@@ -1,4 +1,5 @@
 import { ErrorMessage } from '../../types/ErrorMessage';
+import classNames from 'classnames';
 
 interface Props {
   errorMessage: ErrorMessage;
@@ -12,18 +13,20 @@ export const ErrorNotification: React.FC<Props> = ({
   return (
     <div
       data-cy="ErrorNotification"
-      className={
-        'notification is-danger is-light has-text-weight-normal' +
-        (errorMessage ? '' : ' hidden')
-      }
+      className={classNames(
+        'notification is-danger is-light has-text-weight-normal',
+        { hidden: !errorMessage },
+      )}
     >
       <button
         data-cy="HideErrorButton"
         type="button"
         className="delete"
-        onClick={() => hideError()}
+        onClick={hideError}
       />
       {errorMessage}
     </div>
   );
 };
+
+export * from './ErrorNotification';

@@ -15,6 +15,8 @@ import { Footer } from './components/Footer';
 import { TodoList } from './components/TodoList';
 import { Header } from './components/Header';
 
+let tempId = -1; // for unique temporary IDs
+
 export const App: React.FC = () => {
   const errorTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
   const inputRef = useRef<HTMLInputElement>(null);
@@ -41,6 +43,8 @@ export const App: React.FC = () => {
       activeTodosAmount: active.length,
     };
   }, [todos, filterBy]);
+
+  const allCompleted = todos.length > 0 && todos.every(t => t.completed);
 
   const focusInput = useCallback(() => {
     setTimeout(() => inputRef.current?.focus(), 0);
@@ -87,14 +91,14 @@ export const App: React.FC = () => {
   const createTodo = useCallback(
     (trimmedTitle: string) => {
       const newTodo: Todo = {
-        id: 0,
+        id: tempId--, // unique negative ID
         userId: todoService.USER_ID,
         title: trimmedTitle,
         completed: false,
       };
 
       setTempTodo(newTodo);
-      setLoadingItemIds(prev => [...prev, 0]);
+      setLoadingItemIds(prev => [...prev, newTodo.id]);
 
       todoService
         .createTodo({
@@ -109,7 +113,7 @@ export const App: React.FC = () => {
         .catch(() => showError(ErrorMessage.Create))
         .finally(() => {
           setTempTodo(null);
-          finalizeAction([0]);
+          finalizeAction([newTodo.id]);
         });
     },
     [showError, finalizeAction],
@@ -158,6 +162,23 @@ export const App: React.FC = () => {
     }
   }, [todos, showError, focusInput]);
 
+  const toggleAllTodos = useCallback(() => {
+    const updatedTodos = todos.map(todo => ({
+      ...todo,
+      completed: !allCompleted,
+    }));
+
+    setTodos(updatedTodos);
+
+    Promise.allSettled(
+      updatedTodos.map(todo =>
+        todoService
+          .updateTodo(todo)
+          .catch(() => showError(ErrorMessage.Update)),
+      ),
+    );
+  }, [todos, allCompleted, showError]);
+
   const handleSubmit = useCallback(
     (e: React.FormEvent<HTMLFormElement>) => {
       e.preventDefault();
@@ -193,6 +214,8 @@ export const App: React.FC = () => {
           loadingItemIds={loadingItemIds}
           handleSubmit={handleSubmit}
           inputRef={inputRef}
+          allCompleted={allCompleted}
+          onToggleAll={toggleAllTodos}
         />
 
         <TodoList

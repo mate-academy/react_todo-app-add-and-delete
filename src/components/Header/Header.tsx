@@ -1,4 +1,5 @@
 import React, { RefObject } from 'react';
+import classNames from 'classnames';
 
 interface Props {
   query: string;
@@ -6,6 +7,8 @@ interface Props {
   loadingItemIds: number[];
   handleSubmit: (e: React.FormEvent<HTMLFormElement>) => void;
   inputRef: RefObject<HTMLInputElement>;
+  allCompleted: boolean;
+  onToggleAll: () => void;
 }
 
 export const Header: React.FC<Props> = ({
@@ -14,13 +17,18 @@ export const Header: React.FC<Props> = ({
   loadingItemIds,
   handleSubmit,
   inputRef,
+  allCompleted,
+  onToggleAll,
 }) => {
   return (
     <header className="todoapp__header">
       <button
         type="button"
-        className="todoapp__toggle-all active"
+        className={classNames('todoapp__toggle-all', {
+          active: allCompleted,
+        })}
         data-cy="ToggleAllButton"
+        onClick={onToggleAll}
       />
 
       <form onSubmit={handleSubmit}>
@@ -39,3 +47,5 @@ export const Header: React.FC<Props> = ({
     </header>
   );
 };
+
+export * from './Header';

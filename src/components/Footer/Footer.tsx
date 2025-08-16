@@ -1,6 +1,7 @@
 import { filters } from '../../constants/filterOptions';
 import { FilterBy } from '../../types/FilterBy';
 import { Todo } from '../../types/Todo';
+import classNames from 'classnames';
 
 interface Props {
   todos: Todo[];
@@ -30,7 +31,9 @@ export const Footer: React.FC<Props> = ({
           <a
             key={value}
             href={href}
-            className={`filter__link ${filterBy === value ? 'selected' : ''}`}
+            className={classNames('filter__link', {
+              selected: filterBy === value,
+            })}
             data-cy={cy}
             onClick={e => {
               e.preventDefault();
@@ -54,3 +57,5 @@ export const Footer: React.FC<Props> = ({
     </footer>
   );
 };
+
+export * from './Footer';
