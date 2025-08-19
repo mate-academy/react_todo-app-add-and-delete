@@ -1,10 +1,12 @@
 /* eslint-disable jsx-a11y/label-has-associated-control */
 /* eslint-disable jsx-a11y/control-has-associated-label */
+/* eslint-disable max-len */
 import React, { useEffect, useRef, useState } from 'react';
 import { UserWarning } from './UserWarning';
 import { getTodos, USER_ID, addTodo, deleteTodo } from './api/todos';
 import { Todo } from './types/Todo';
 import classNames from 'classnames';
+import { CSSTransition, TransitionGroup } from 'react-transition-group';
 
 // Your userId is 3341
 // Please use it for all your requests to the Students API. For example:
@@ -180,84 +182,90 @@ export const App: React.FC = () => {
 
         <section className="todoapp__main" data-cy="TodoList">
           {/* //! todos from API */}
-          {visibleTodos.map(todo => (
-            <div
-              key={todo.id}
-              data-cy="Todo"
-              className={`todo ${todo.completed ? 'completed' : ''}`}
-            >
-              <label className="todo__status-label">
-                <input
-                  data-cy="TodoStatus"
-                  type="checkbox"
-                  className="todo__status"
-                  onChange={() => handleToggleTodo(todo.id)}
-                  checked={todo.completed}
-                />
-              </label>
+          <TransitionGroup>
+            {visibleTodos.map(todo => (
+              <CSSTransition key={todo.id} timeout={300} classNames="item">
+                <div
+                  key={todo.id}
+                  data-cy="Todo"
+                  className={`todo ${todo.completed ? 'completed' : ''}`}
+                >
+                  <label className="todo__status-label">
+                    <input
+                      data-cy="TodoStatus"
+                      type="checkbox"
+                      className="todo__status"
+                      onChange={() => handleToggleTodo(todo.id)}
+                      checked={todo.completed}
+                    />
+                  </label>
 
-              <span data-cy="TodoTitle" className="todo__title">
-                {todo.title}
-              </span>
+                  <span data-cy="TodoTitle" className="todo__title">
+                    {todo.title}
+                  </span>
 
-              {/* Remove button appears only on hover */}
-              <button
-                onClick={() => handleDeleteTodo(todo.id)}
-                type="button"
-                className="todo__remove"
-                data-cy="TodoDelete"
-              >
-                ×
-              </button>
+                  {/* Remove button appears only on hover */}
+                  <button
+                    onClick={() => handleDeleteTodo(todo.id)}
+                    type="button"
+                    className="todo__remove"
+                    data-cy="TodoDelete"
+                  >
+                    ×
+                  </button>
 
-              {/* overlay will cover the todo while it is being deleted or updated */}
-              <div
-                data-cy="TodoLoader"
-                className={classNames('modal overlay', {
-                  'is-active': processingIds.includes(todo.id),
-                })}
-              >
-                <div className="modal-background has-background-white-ter" />
-                <div className="loader" />
-              </div>
-            </div>
-          ))}
-          {/* //! temp todo */}
-          {tempTodo && (
-            <div
-              key={tempTodo.id}
-              data-cy="Todo"
-              className={`todo ${tempTodo.completed ? 'completed' : ''}`}
-            >
-              <label className="todo__status-label">
-                <input
-                  data-cy="TodoStatus"
-                  type="checkbox"
-                  className="todo__status"
-                  onChange={() => handleToggleTodo(tempTodo.id)}
-                  checked={tempTodo.completed}
-                />
-              </label>
+                  {/* overlay will cover the todo while it is being deleted or updated */}
+                  <div
+                    data-cy="TodoLoader"
+                    className={classNames('modal overlay', {
+                      'is-active': processingIds.includes(todo.id),
+                    })}
+                  >
+                    <div className="modal-background has-background-white-ter" />
+                    <div className="loader" />
+                  </div>
+                </div>
+              </CSSTransition>
+            ))}
+            {/* //! temp todo */}
+            {tempTodo && (
+              <CSSTransition key={0} timeout={300} classNames="temp-item">
+                <div
+                  key={tempTodo.id}
+                  data-cy="Todo"
+                  className={`todo ${tempTodo.completed ? 'completed' : ''}`}
+                >
+                  <label className="todo__status-label">
+                    <input
+                      data-cy="TodoStatus"
+                      type="checkbox"
+                      className="todo__status"
+                      onChange={() => handleToggleTodo(tempTodo.id)}
+                      checked={tempTodo.completed}
+                    />
+                  </label>
 
-              <span data-cy="TodoTitle" className="todo__title">
-                {tempTodo.title}
-              </span>
+                  <span data-cy="TodoTitle" className="todo__title">
+                    {tempTodo.title}
+                  </span>
 
-              {/* Remove button appears only on hover */}
-              <button
-                type="button"
-                className="todo__remove"
-                data-cy="TodoDelete"
-              >
-                ×
-              </button>
+                  {/* Remove button appears only on hover */}
+                  <button
+                    type="button"
+                    className="todo__remove"
+                    data-cy="TodoDelete"
+                  >
+                    ×
+                  </button>
 
-              <div data-cy="TodoLoader" className="modal overlay is-active">
-                <div className="modal-background has-background-white-ter" />
-                <div className="loader" />
-              </div>
-            </div>
-          )}
+                  <div data-cy="TodoLoader" className="modal overlay is-active">
+                    <div className="modal-background has-background-white-ter" />
+                    <div className="loader" />
+                  </div>
+                </div>
+              </CSSTransition>
+            )}
+          </TransitionGroup>
         </section>
 
         {/* //! todo footer  */}
@@ -308,8 +316,6 @@ export const App: React.FC = () => {
       </div>
 
       {/* //! todo errors */}
-      {/* DON'T use conditional rendering to hide the notification */}
-      {/* Add the 'hidden' class to hide the message smoothly */}
       <div
         data-cy="ErrorNotification"
         className={classNames(
