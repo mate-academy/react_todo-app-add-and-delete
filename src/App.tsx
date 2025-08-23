@@ -2,25 +2,23 @@
 /* eslint-disable jsx-a11y/control-has-associated-label */
 import React from 'react';
 import { UserWarning } from './UserWarning';
+import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
+import { ReactQueryDevtools } from '@tanstack/react-query-devtools';
+import { TodoApp } from './components/TodoApp';
 
-const USER_ID = 0;
+const USER_ID = 3334;
 
 export const App: React.FC = () => {
   if (!USER_ID) {
     return <UserWarning />;
   }
 
-  return (
-    <section className="section container">
-      <p className="title is-4">
-        Copy all you need from the prev task:
-        <br />
-        <a href="https://github.com/mate-academy/react_todo-app-loading-todos#react-todo-app-load-todos">
-          React Todo App - Load Todos
-        </a>
-      </p>
+  const queryClient = new QueryClient();
 
-      <p className="subtitle">Styles are already copied</p>
-    </section>
+  return (
+    <QueryClientProvider client={queryClient}>
+      <TodoApp />
+      <ReactQueryDevtools initialIsOpen={false} />
+    </QueryClientProvider>
   );
 };
