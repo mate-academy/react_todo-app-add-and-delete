@@ -1,13 +1,15 @@
 /* eslint-disable jsx-a11y/label-has-associated-control */
 /* eslint-disable jsx-a11y/control-has-associated-label */
 
-import React, { useEffect, useRef, useState } from 'react';
+import React, { useState } from 'react';
 import { Todo } from '../../types/Todo';
-import cn from 'classnames';
+import { TodoItem } from '../TodoItem';
+import { CSSTransition, TransitionGroup } from 'react-transition-group';
 
 type Props = {
   todos: Todo[];
-  loadingTodoIds: number[] | null;
+  loadingTodoIds: number[];
+  tempTodo: Todo | null;
   onTodoTitleUpdate?: (title: string) => Promise<void>;
   onTodoDelete?: (id: number) => void;
   onOneTodoToggle?: (id: number) => void;
@@ -16,107 +18,62 @@ type Props = {
 const TodosComponent: React.FC<Props> = ({
   todos,
   loadingTodoIds,
+  tempTodo = null,
   onTodoTitleUpdate = () => Promise.resolve(),
   onTodoDelete = () => {},
   onOneTodoToggle = () => {},
- }) => {
+}) => {
   const [editedTodoId, setEditedTodoId] = useState<number | null>(null);
-  const [query, setQuery] = useState('');
-  const inputEditElement = useRef<HTMLInputElement>(null);
+  const [editQuery, setEditQuery] = useState('');
 
   const handleEditSubmit = () => {
-    if (!query.trim()) {
+    if (!editQuery.trim()) {
       return;
     }
 
-    onTodoTitleUpdate(query).then(() => setQuery(''));
+    onTodoTitleUpdate(editQuery).then(() => setEditQuery(''));
     setEditedTodoId(null);
-  }
+  };
 
-  const handleDoubleClick = (event: React.MouseEvent<HTMLSpanElement>, id: number) => {
-    setQuery(todos.find(todo => todo.id === id)?.title as string);
+  const handleDoubleClick = (id: number) => {
+    setEditQuery(todos.find(todo => todo.id === id)?.title as string);
     setEditedTodoId(id);
-  }
+  };
 
-  const handleTodoRemove = (id: number) => {
-    onTodoDelete(id);
-  }
-
-  useEffect(() => {
-    if (inputEditElement.current) {
-      inputEditElement.current.focus();
-    }
-  }, [editedTodoId]);
+  const handleEditQueryChange = (newQuery: string) => {
+    setEditQuery(newQuery);
+  };
 
   return (
     <section className="todoapp__main" data-cy="TodoList">
-      {todos.map(todo => (
-        <div
-          data-cy="Todo"
-          className={cn("todo", {
-          completed: todo.completed,
-          })}
-          key={todo.id}
-        >
-          <label className="todo__status-label">
-            <input
-              data-cy="TodoStatus"
-              type="checkbox"
-              className="todo__status"
-              checked={todo.completed}
-              onClick={() => onOneTodoToggle(todo.id)}
+      <TransitionGroup>
+        {todos.map(todo => (
+          <CSSTransition key={todo.id} timeout={300} classNames="item">
+            <TodoItem
+              todo={todo}
+              isEditing={todo.id === editedTodoId}
+              isLoading={loadingTodoIds.includes(todo.id)}
+              editQuery={editQuery}
+              onOneTodoToggle={onOneTodoToggle}
+              onEditSubmit={handleEditSubmit}
+              onEditQueryChange={handleEditQueryChange}
+              onDoubleClick={handleDoubleClick}
+              onTodoRemove={onTodoDelete}
+              key={todo.id}
             />
-          </label>
-
-          {editedTodoId === todo.id ? (
-            <form onSubmit={(event) => {
-                event.preventDefault()
-                handleEditSubmit();
-              }}
-            >
-              <input
-                ref={inputEditElement}
-                data-cy="TodoTitleField"
-                type="text"
-                className="todo__title-field"
-                placeholder="Empty todo will be deleted"
-                value={query}
-                onChange={(event) => setQuery(event.target.value)}
-                onBlur={() => handleEditSubmit()}
-              />
-            </form>
-          ) : (
-            <>
-              <span
-                data-cy="TodoTitle"
-                className="todo__title"
-                onDoubleClick={event => handleDoubleClick(event, todo.id)}
-              >
-                {todo.title}
-              </span>
-
-              {/* Remove button appears only on hover */}
-              <button
-                type="button"
-                className="todo__remove"
-                data-cy="TodoDelete"
-                onClick={() => handleTodoRemove(todo.id)}
-              >
-                ×
-              </button>
-            </>
-          )}
-
-          <div data-cy="TodoLoader"
-            className={cn("modal overlay", {
-              'is-active': loadingTodoIds?.includes(todo.id)
-            })}
-          >
-            <div className="modal-background has-background-white-ter" />
-            <div className="loader" />
-          </div>
-        </div>
-      ))}
+          </CSSTransition>
+        ))}
+        {tempTodo && (
+          <CSSTransition key={0} timeout={300} classNames="temp-item">
+            <TodoItem
+              todo={tempTodo}
+              isEditing={false}
+              isLoading={true}
+              editQuery={''}
+            />
+          </CSSTransition>
+        )}
+      </TransitionGroup>
     </section>
   );
 };

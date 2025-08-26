@@ -1,34 +1,40 @@
 import cn from 'classnames';
-import { useEffect, useRef, useState } from 'react';
+import { useEffect, useRef } from 'react';
 
 type Props = {
   areAllCompleted: boolean;
+  adding: boolean;
   loading: boolean;
-  onNewTodo?: (title: string) => Promise<void>;
+  query: string;
+  onQueryChange?: (newQuery: string) => void;
+  onNewTodo?: (title: string) => void;
   onCompleteToggle?: () => void;
 };
 
 export const Header: React.FC<Props> = ({
   areAllCompleted,
+  adding,
   loading,
-  onNewTodo = () => Promise.resolve(),
+  query,
+  onQueryChange = () => {},
+  onNewTodo = () => {},
   onCompleteToggle = () => {},
 }) => {
-  const [query, setQuery] = useState('');
   const inputElement = useRef<HTMLInputElement>(null);
 
   const handleSubmit = (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
 
-    onNewTodo(query).then(() => setQuery(''));
-    inputElement.current?.blur();
+    onNewTodo(query.trim());
   };
 
   useEffect(() => {
-    if (!loading) {
+    if (adding || loading) {
+      inputElement.current?.blur();
+    } else {
       inputElement.current?.focus();
     }
-  }, [loading]);
+  }, [loading, adding]);
 
   return (
     <header className="todoapp__header">
@@ -47,8 +53,8 @@ export const Header: React.FC<Props> = ({
           className="todoapp__new-todo"
           placeholder="What needs to be done?"
           value={query}
-          onChange={event => setQuery(event.target.value)}
-          disabled={loading}
+          onChange={event => onQueryChange(event.target.value)}
+          disabled={adding}
         />
       </form>
     </header>
