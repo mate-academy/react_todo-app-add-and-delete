@@ -124,6 +124,7 @@ export const App: React.FC = () => {
       showError('Unable to delete a todo');
     } finally {
       setProcessingIds(prev => prev.filter(id => id !== todoId));
+      newTodoField.current?.focus();
     }
   };
 
