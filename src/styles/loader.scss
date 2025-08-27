@@ -1,0 +1,21 @@
+.loader,
+.todo__loader {
+  border: 3px solid #eee;
+  border-top-color: #999;
+  border-radius: 50%;
+  width: 18px;
+  height: 18px;
+  animation: spin .8s linear infinite;
+}
+
+.loader {
+  margin: 16px auto;
+}
+
+.todo__loader {
+  margin-left: 12px;
+}
+
+@keyframes spin {
+  to { transform: rotate(360deg); }
+}

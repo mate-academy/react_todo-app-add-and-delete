@@ -1,9 +1,10 @@
 import { createRoot } from 'react-dom/client';
-
-import 'bulma/css/bulma.css';
-import '@fortawesome/fontawesome-free/css/all.css';
-import './styles/index.scss';
-
 import { App } from './App';
 
-createRoot(document.getElementById('root') as HTMLDivElement).render(<App />);
+const container = document.getElementById('root');
+
+if (!container) {
+  throw new Error('Root container not found');
+}
+
+createRoot(container).render(<App />);
