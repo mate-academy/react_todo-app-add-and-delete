@@ -50,6 +50,7 @@ export const App: React.FC = () => {
 
     try {
       const data = await getTodos();
+
       setTodos(data.map(todo => ({ ...todo, loading: false })));
     } catch {
       showError('Unable to load todos');
@@ -96,10 +97,12 @@ export const App: React.FC = () => {
 
     if (!newTitle.trim()) {
       showError('Title should not be empty');
+
       return;
     }
 
     const title = newTitle.trim();
+
     setIsAdding(true);
 
     const temp = {
@@ -134,7 +137,6 @@ export const App: React.FC = () => {
     }
   };
 
-
   const handleDelete = async (id: number) => {
     setTodos(prev =>
       prev.map(todo => (todo.id === id ? { ...todo, loading: true } : todo)),
@@ -162,6 +164,7 @@ export const App: React.FC = () => {
 
     try {
       const updated = await updateTodo(id, { completed: !completed });
+
       setTodos(prev =>
         prev.map(todo =>
           todo.id === id ? { ...updated, loading: false } : todo,
@@ -178,6 +181,7 @@ export const App: React.FC = () => {
   const handleRename = async (id: number) => {
     if (!editingTitle.trim()) {
       await handleDelete(id);
+
       return;
     }
 
@@ -187,6 +191,7 @@ export const App: React.FC = () => {
 
     try {
       const updated = await updateTodo(id, { title: editingTitle.trim() });
+
       setTodos(prev =>
         prev.map(todo =>
           todo.id === id ? { ...updated, loading: false } : todo,
@@ -323,10 +328,7 @@ export const App: React.FC = () => {
                 >
                   ×
                 </button>
-                <div
-                  data-cy="TodoLoader"
-                  className="modal overlay is-active"
-                >
+                <div data-cy="TodoLoader" className="modal overlay is-active">
                   <div className="modal-background has-background-white-ter" />
                   <div className="loader" />
                 </div>
