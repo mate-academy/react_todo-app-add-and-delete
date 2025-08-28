@@ -8,7 +8,7 @@ import { Errors } from '../types/Error';
 type TodoItemProps = {
   todo: Todo;
   isPending?: boolean;
-  onError: (message: Errors | null) => void;
+  onError: (message: Errors) => void;
   onDelete: (id: number) => void;
   onSetLoading: (ids: number[]) => void;
 };

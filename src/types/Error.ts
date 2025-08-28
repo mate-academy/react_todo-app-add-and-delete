@@ -1,4 +1,5 @@
 export enum Errors {
+  Default = '',
   FetchError = 'Unable to load todos',
   EmptyTitle = 'Title should not be empty',
   AddTodo = 'Unable to add a todo',

@@ -3,7 +3,7 @@ import React, { useEffect, useRef, useState } from 'react';
 import { Todo } from '../types/Todo';
 import { addTodo, getTodos, USER_ID } from '../api/todos';
 import classNames from 'classnames';
-import TodoMain from './TodoMain';
+import TodoList from './TodoList';
 import ErrorNotification from './ErrorNotification';
 import { useError } from '../hooks/useError';
 import { Errors } from '../types/Error';
@@ -11,7 +11,7 @@ import { Errors } from '../types/Error';
 function HomePage() {
   const [todos, setTodos] = useState<Todo[]>([]);
   const [tempTodo, setTempTodo] = useState<Todo | null>(null);
-  const [error, setError] = useError();
+  const [errorMessage, setError] = useError();
   const [loadingIds, setLoadingIds] = useState<number[]>([]);
   const allCompleted = todos.every(todo => todo.completed);
   const inputRef = useRef<HTMLInputElement | null>(null);
@@ -41,8 +41,8 @@ function HomePage() {
     inputRef.current?.focus();
   }
 
-  function handleTodoError(errorMessage: Errors | null) {
-    setError(errorMessage);
+  function handleTodoError(message: Errors) {
+    setError(message);
   }
 
   function handleLoadingIds(ids: number[]) {
@@ -120,7 +120,7 @@ function HomePage() {
           </form>
         </header>
       </div>
-      <TodoMain
+      <TodoList
         todos={todos}
         tempTodo={tempTodo}
         handleDelete={handleDelete}
@@ -129,8 +129,8 @@ function HomePage() {
         loadingIds={loadingIds}
       />
       <ErrorNotification
-        erorrMessage={error}
-        clearError={() => setError(null)}
+        erorrMessage={errorMessage}
+        clearError={() => setError(Errors.Default)}
       />
     </div>
   );

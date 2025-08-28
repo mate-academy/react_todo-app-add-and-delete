@@ -9,7 +9,7 @@ type Props = {
   todos: Todo[];
   tempTodo: Todo | null;
   handleDelete: (id: number | number[]) => void;
-  handleTodoError: (message: Errors | null) => void;
+  handleTodoError: (message: Errors) => void;
   onSetLoading: (ids: number[]) => void;
   loadingIds: number[];
 };
@@ -18,7 +18,7 @@ enum Filters {
   Active,
   Completed,
 }
-function TodoMain({
+function TodoList({
   todos,
   tempTodo,
   handleDelete,
@@ -162,4 +162,4 @@ function TodoMain({
   );
 }
 
-export default TodoMain;
+export default TodoList;
