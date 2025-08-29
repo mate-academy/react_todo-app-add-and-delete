@@ -6,7 +6,7 @@ import { Result } from '../types/Results';
 type Props = {
   isLoading: boolean;
   isTodosListEmpty: boolean;
-  isAllTodosCompleted: boolean;
+  areAllTodosCompleted: boolean;
   lastAction: number;
   onNewTodoFormSubmit: (result: Result) => Promise<boolean>;
 };
@@ -14,7 +14,7 @@ type Props = {
 export const TodoHeader: React.FC<Props> = ({
   isLoading,
   isTodosListEmpty,
-  isAllTodosCompleted,
+  areAllTodosCompleted,
   lastAction,
   onNewTodoFormSubmit,
 }) => {
@@ -24,7 +24,7 @@ export const TodoHeader: React.FC<Props> = ({
         <button
           type="button"
           className={classNames('todoapp__toggle-all', {
-            active: isAllTodosCompleted,
+            active: areAllTodosCompleted,
           })}
           data-cy="ToggleAllButton"
         />

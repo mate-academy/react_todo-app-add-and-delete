@@ -4,11 +4,13 @@ import React, { useEffect, useMemo, useState } from 'react';
 import { UserWarning } from './UserWarning';
 import { addTodo, deleteTodo, getTodos, USER_ID } from './api/todos';
 import { Todo } from './types/Todo';
-import { TodoApp } from './components/TodoApp';
 import { ErrorMessage } from './types/ErrorMessage';
 import { FilterStatus } from './types/FilterStatus';
 import { ErrorNotification } from './components/ErrorNotification';
 import { Result } from './types/Results';
+import { TodoHeader } from './components/TodoHeader';
+import { TodoList } from './components/TodoList';
+import { TodoFooter } from './components/TodoFooter';
 
 const prepareTodos = (todos: Todo[], filterStatus: FilterStatus): Todo[] => {
   return todos.filter(todo => {
@@ -43,11 +45,11 @@ export const App: React.FC = () => {
     return todos.filter(todo => !todo.completed).length;
   }, [todos]);
 
-  const isAllTodosCompleted = useMemo(() => {
+  const areAllTodosCompleted = useMemo(() => {
     return todos.length > 0 && todos.every(todo => todo.completed);
   }, [todos]);
 
-  const isHasCompletedTodos = useMemo(() => {
+  const hasCompletedTodos = useMemo(() => {
     return todos.some(todo => todo.completed);
   }, [todos]);
 
@@ -171,25 +173,37 @@ export const App: React.FC = () => {
     <div className="todoapp">
       <h1 className="todoapp__title">todos</h1>
 
-      <TodoApp
-        isLoading={isLoading}
-        filteredTodos={filteredTodos}
-        allTodos={todos}
-        todosLeft={todosLeft}
-        tempTodo={tempTodo}
-        isAllTodosCompleted={isAllTodosCompleted}
-        isHasCompletedTodos={isHasCompletedTodos}
-        filterStatus={filterStatus}
-        lastAction={lastAction}
-        onFilterChange={setFilterStatus}
-        onNewTodoFormSubmit={handleNewTodoFormSubmit}
-        onTodoDelete={handleTodoDelete}
-        onClearCompletedTodos={handleClearCompletedTodos}
-      />
+      <div className="todoapp__content">
+        <TodoHeader
+          isLoading={isLoading}
+          isTodosListEmpty={filteredTodos.length === 0}
+          areAllTodosCompleted={areAllTodosCompleted}
+          lastAction={lastAction}
+          onNewTodoFormSubmit={handleNewTodoFormSubmit}
+        />
+
+        {todos.length > 0 && (
+          <>
+            <TodoList
+              todos={filteredTodos}
+              tempTodo={tempTodo}
+              onTodoDelete={handleTodoDelete}
+            />
+
+            <TodoFooter
+              todosLeft={todosLeft}
+              hasCompletedTodos={hasCompletedTodos}
+              filterStatus={filterStatus}
+              onFilterChange={setFilterStatus}
+              onClearCompletedTodos={handleClearCompletedTodos}
+            />
+          </>
+        )}
+      </div>
 
       <ErrorNotification
         errorMessage={errorMessage}
-        onHideErrorButtonClick={() => setErrorMessage(null)}
+        onHideError={() => setErrorMessage(null)}
       />
     </div>
   );

@@ -4,12 +4,12 @@ import React from 'react';
 
 type Props = {
   errorMessage: ErrorMessage | null;
-  onHideErrorButtonClick: () => void;
+  onHideError: () => void;
 };
 
 export const ErrorNotification: React.FC<Props> = ({
   errorMessage,
-  onHideErrorButtonClick,
+  onHideError,
 }) => {
   return (
     <div
@@ -23,7 +23,7 @@ export const ErrorNotification: React.FC<Props> = ({
         data-cy="HideErrorButton"
         type="button"
         className="delete"
-        onClick={onHideErrorButtonClick}
+        onClick={onHideError}
       />
 
       {errorMessage}
