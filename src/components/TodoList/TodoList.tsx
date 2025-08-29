@@ -5,14 +5,14 @@ import TodoItem from '../TodoItem/TodoItem';
 type Props = {
   todos: Todo[];
   onDeleteTodo?: (id: number) => void;
-  isTodoTemp?: boolean;
+  tempTodo?: Todo | null;
   loadingIds?: number[];
 };
 
 export const TodoList: FC<Props> = ({
   todos,
   onDeleteTodo,
-  isTodoTemp,
+  tempTodo,
   loadingIds,
 }) => {
   return (
@@ -25,11 +25,19 @@ export const TodoList: FC<Props> = ({
             todo={todo}
             key={todo.id}
             onDeleteTodo={onDeleteTodo}
-            isTodoTemp={isTodoTemp}
             isLoadingTodo={isLoadingTodo}
           />
         );
       })}
+
+      {tempTodo && (
+        <TodoItem
+          key={tempTodo.id}
+          todo={tempTodo}
+          isTodoTemp={true}
+          isLoadingTodo={loadingIds?.includes(tempTodo.id) ?? false}
+        />
+      )}
     </section>
   );
 };

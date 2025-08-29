@@ -4,4 +4,5 @@ export enum TodoErrors {
   UNABLE_TO_ADD = 'Unable to add a todo',
   UNABLE_TO_DELETE = 'Unable to delete a todo',
   UNABLE_TO_UPDATE = 'Unable to update a todo',
+  DEFAULT_VALUE = '',
 }
