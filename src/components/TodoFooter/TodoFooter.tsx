@@ -4,6 +4,7 @@ import cn from 'classnames';
 type Props = {
   todosLeft: number;
   isThereCoplited: boolean;
+  isInputProcessing: boolean;
   handleFilterOption: (option: FilterOptions) => void;
   handleDeleteCopmleted: () => void;
   filterOption: FilterOptions;
@@ -12,14 +13,17 @@ type Props = {
 export const TodoFooter: React.FC<Props> = ({
   todosLeft,
   isThereCoplited,
+  isInputProcessing,
   handleFilterOption,
   handleDeleteCopmleted,
   filterOption,
 }) => {
+  const todosCounter = isInputProcessing ? todosLeft - 1 : todosLeft;
+
   return (
     <footer className="todoapp__footer" data-cy="Footer">
       <span className="todo-count" data-cy="TodosCounter">
-        {todosLeft} items left
+        {todosCounter} items left
       </span>
       <nav className="filter" data-cy="Filter">
         <a

@@ -4,27 +4,35 @@ import cn from 'classnames';
 
 type Props = {
   isAllCompleted: boolean;
+  isInputProcessing: boolean;
   todosAmount: number;
-  handleSubmit: (inputedTitle: string) => void;
+  handleSubmit: (inputedTitle: string) => Promise<boolean>;
+  isErrorState: boolean;
 };
 
 export const TodoHeader: React.FC<Props> = ({
   isAllCompleted,
+  isInputProcessing,
   todosAmount,
   handleSubmit,
+  // isErrorState,
 }) => {
   const [inputValue, setInputValue] = useState('');
   const inputRef = useRef<HTMLInputElement>(null);
-
-  const onHandleSubmit = (event: React.FormEvent<HTMLFormElement>) => {
+  const onHandleSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
-    handleSubmit(inputValue);
-    setInputValue('');
+    const normilezedInputValue = inputValue.trim();
+
+    const success = await handleSubmit(normilezedInputValue);
+
+    if (success) {
+      setInputValue('');
+    }
   };
 
   useEffect(() => {
     inputRef.current?.focus();
-  }, [todosAmount]);
+  }, [todosAmount, isInputProcessing]);
 
   return (
     <header className="todoapp__header">
@@ -46,6 +54,7 @@ export const TodoHeader: React.FC<Props> = ({
           onChange={e => {
             setInputValue(e.currentTarget.value);
           }}
+          disabled={isInputProcessing}
         />
       </form>
     </header>

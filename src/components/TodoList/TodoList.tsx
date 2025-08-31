@@ -10,6 +10,8 @@ type Props = {
   todos: Todo[];
   filterOption: FilterOptions;
   isTodoDeleting: boolean;
+  isInputProcessing: boolean;
+  processingId: number;
   handleDeleteTodo: (id: number) => void;
 };
 
@@ -17,6 +19,8 @@ export const TodoList: React.FC<Props> = ({
   todos,
   filterOption,
   isTodoDeleting,
+  isInputProcessing,
+  processingId,
   handleDeleteTodo,
 }) => {
   const visibleTodos = useMemo(() => {
@@ -65,8 +69,12 @@ export const TodoList: React.FC<Props> = ({
                 >
                   ×
                 </button>
-
-                <Loader isLoading={isTodoDeleting} />
+                <Loader
+                  processingId={processingId}
+                  todoId={todo.id}
+                  isLoading={isTodoDeleting}
+                  isInputProcessing={isInputProcessing}
+                />
               </div>
             </CSSTransition>
           );

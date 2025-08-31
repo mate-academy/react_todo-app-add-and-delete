@@ -14,10 +14,13 @@ export const Todos: React.FC = () => {
 
   const [isLoading, setIsLoading] = useState(false);
   const [errorMessage, setErrorMessage] = useState<Errors>(Errors.NoError);
+  const [isErrorState, setIsErrorState] = useState(false);
   const [filterOption, setFilterOption] = useState<FilterOptions>(
     FilterOptions.All,
   );
+  const [processingId, setProcessingId] = useState<number>(0);
   const [isTodoDeleting, setIsTodoDeleting] = useState(false);
+  const [isInputProcessing, setIsInputProcessing] = useState(false);
 
   const isAllCompleted: boolean = todos.every(todo => todo.completed);
   const todosCompleted: Todo[] = todos.filter(todo => todo.completed);
@@ -37,6 +40,8 @@ export const Todos: React.FC = () => {
   const handleDeleteTodo = async (id: number) => {
     const afterDeletingTodo = todos.filter(todo => todo.id !== id);
 
+    setProcessingId(id);
+
     try {
       setIsTodoDeleting(true);
       await deleteTodo(id);
@@ -45,6 +50,7 @@ export const Todos: React.FC = () => {
       setErrorMessage(Errors.UnableDeleteTodo);
     } finally {
       setIsTodoDeleting(false);
+      setProcessingId(0);
     }
   };
 
@@ -65,29 +71,44 @@ export const Todos: React.FC = () => {
     }
   };
 
-  const handleSubmit = async (inputedTitle: string) => {
+  const handleSubmit = async (inputedTitle: string): Promise<boolean> => {
     if (inputedTitle === '') {
       setErrorMessage(Errors.NoTitle);
-    } else {
-      const newTodo: Todo = {
-        id: todosAmount + 1,
-        userId: USER_ID,
-        title: inputedTitle,
-        completed: false,
-      };
-      const { id, ...normilizedTodo }: Todo = newTodo;
 
-      const afterAddingTodo = [...todos, newTodo];
+      return false;
+    }
 
-      try {
-        // setIsLoading(true);
-        await postTodo(normilizedTodo);
-        setTodos(afterAddingTodo);
-      } catch (error) {
-        setErrorMessage(Errors.UnableAddTodo);
-      } finally {
-        // setIsLoading(false);
-      }
+    const prevTodo = [...todos];
+    const newTodo: Todo = {
+      id: todosAmount + 1,
+      userId: USER_ID,
+      title: inputedTitle,
+      completed: false,
+    };
+
+    setProcessingId(newTodo.id);
+    const { id, ...normilizedTodo }: Todo = newTodo;
+
+    const afterAddingTodo = [...todos, newTodo];
+
+    try {
+      setIsInputProcessing(true);
+      setTodos(afterAddingTodo);
+      const afterPostitngTodo: Todo = await postTodo(normilizedTodo);
+      const newStateTodo: Todo[] = [...prevTodo, afterPostitngTodo];
+
+      setTodos(newStateTodo);
+
+      return true;
+    } catch (error) {
+      setErrorMessage(Errors.UnableAddTodo);
+      setIsErrorState(true);
+      setTodos(prevTodo);
+
+      return false;
+    } finally {
+      setIsInputProcessing(false);
+      setProcessingId(0);
     }
   };
 
@@ -130,7 +151,9 @@ export const Todos: React.FC = () => {
         <TodoHeader
           isAllCompleted={isAllCompleted}
           todosAmount={todosAmount}
+          isInputProcessing={isInputProcessing}
           handleSubmit={handleSubmit}
+          isErrorState={isErrorState}
         />
         {isVisibleTodoList && (
           <TodoList
@@ -138,12 +161,15 @@ export const Todos: React.FC = () => {
             filterOption={filterOption}
             handleDeleteTodo={handleDeleteTodo}
             isTodoDeleting={isTodoDeleting}
+            isInputProcessing={isInputProcessing}
+            processingId={processingId}
           />
         )}
         {!!todos.length && (
           <TodoFooter
             todosLeft={todosLeft}
             isThereCoplited={isThereCoplited}
+            isInputProcessing={isInputProcessing}
             handleFilterOption={handleFilterOption}
             handleDeleteCopmleted={handleDeleteCopmleted}
             filterOption={filterOption}
