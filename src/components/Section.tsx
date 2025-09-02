@@ -1,47 +1,35 @@
 import React from 'react';
 import { Todo } from '../types/Todo';
+import { TodoItem } from './TodoItem';
 
 type Props = {
   todos: Todo[];
+  tempTodo: Todo | null;
+  deletingTodoIds: number[];
+  onDelete: (id: number) => void;
 };
 
-export const Section: React.FC<Props> = ({ todos }) => {
-  if (todos.length === 0) {
+export const Section: React.FC<Props> = ({
+  todos,
+  tempTodo,
+  deletingTodoIds,
+  onDelete,
+}) => {
+  if (todos.length === 0 && !tempTodo) {
     return null;
   }
 
+  const allTodos = tempTodo ? [...todos, tempTodo] : todos;
+
   return (
     <section className="todoapp__main" data-cy="TodoList">
-      {todos.map(todo => (
-        <div
-          key={todo.id}
-          data-cy="Todo"
-          className={`todo ${todo.completed ? 'completed' : ''}`}
-        >
-          <label className="todo__status-label">
-            <input
-              data-cy="TodoStatus"
-              type="checkbox"
-              className="todo__status"
-              checked={todo.completed}
-              aria-label="Mark todo as completed"
-              readOnly
-            />
-          </label>
-
-          <span data-cy="TodoTitle" className="todo__title">
-            {todo.title}
-          </span>
-
-          <button type="button" className="todo__remove" data-cy="TodoDelete">
-            ×
-          </button>
-
-          <div data-cy="TodoLoader" className="modal overlay">
-            <div className="modal-background has-background-white-ter" />
-            <div className="loader" />
-          </div>
-        </div>
+      {allTodos.map(todo => (
+        <TodoItem
+          key={todo.id || 'temp'}
+          todo={todo}
+          deleting={deletingTodoIds.includes(todo.id)}
+          onDelete={onDelete}
+        />
       ))}
     </section>
   );
