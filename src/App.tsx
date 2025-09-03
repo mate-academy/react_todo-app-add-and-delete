@@ -5,8 +5,11 @@ import React, { useEffect, useRef, useState } from 'react';
 import { UserWarning } from './UserWarning';
 import { getTodos, USER_ID, addTodo, deleteTodo } from './api/todos';
 import { Todo } from './types/Todo';
+import { ErrorMessage } from './types/ErrorMessage';
 import classNames from 'classnames';
 import { CSSTransition, TransitionGroup } from 'react-transition-group';
+
+import { ErrorNotification } from './components/ErrorNotification';
 
 // Your userId is 3341
 // Please use it for all your requests to the Students API. For example:
@@ -26,7 +29,7 @@ export const App: React.FC = () => {
   const [processingIds, setProcessingIds] = useState<number[]>([]);
 
   // show and clear error messages
-  const showError = (message: string = 'Error') => {
+  const showError = (message: ErrorMessage = ErrorMessage.DEFAULT) => {
     setErrorMessage(message);
     setTimeout(() => {
       setErrorMessage('');
@@ -42,7 +45,7 @@ export const App: React.FC = () => {
   useEffect(() => {
     getTodos()
       .then(setTodos)
-      .catch(() => showError('Unable to load todos'));
+      .catch(() => showError(ErrorMessage.LOAD));
   }, []);
 
   const handleClearCompleted = async () => {
@@ -55,7 +58,7 @@ export const App: React.FC = () => {
       await Promise.all(completedTodoIds.map(deleteTodo));
       setTodos(prev => prev.filter(todo => !todo.completed));
     } catch (error) {
-      showError('Unable to delete a todo');
+      showError(ErrorMessage.DELETE);
     } finally {
       setProcessingIds(prev =>
         prev.filter(id => !completedTodoIds.includes(id)),
@@ -80,7 +83,7 @@ export const App: React.FC = () => {
     const title = input.value.trim();
 
     if (!title) {
-      showError('Title should not be empty');
+      showError(ErrorMessage.EMPTY_TITLE);
 
       return;
     }
@@ -106,7 +109,7 @@ export const App: React.FC = () => {
       setTodos(prev => [...prev, newTodo]);
       input.value = '';
     } catch (error) {
-      showError('Unable to add a todo');
+      showError(ErrorMessage.ADD);
     } finally {
       input.disabled = false;
       input.focus();
@@ -121,7 +124,7 @@ export const App: React.FC = () => {
       await deleteTodo(todoId);
       setTodos(prev => prev.filter(todo => todo.id !== todoId));
     } catch (error) {
-      showError('Unable to delete a todo');
+      showError(ErrorMessage.DELETE);
     } finally {
       setProcessingIds(prev => prev.filter(id => id !== todoId));
       newTodoField.current?.focus();
@@ -155,7 +158,9 @@ export const App: React.FC = () => {
         <header className="todoapp__header">
           <button
             type="button"
-            className={`todoapp__toggle-all ${todos.length > 0 && completedTodosCount === todos.length ? 'active' : ''}`}
+            className={classNames('todoapp__toggle-all', {
+              active: todos.length > 0 && completedTodosCount === todos.length,
+            })}
             data-cy="ToggleAllButton"
             onClick={() => {
               const areAllCompleted = completedTodosCount === todos.length;
@@ -189,7 +194,7 @@ export const App: React.FC = () => {
                 <div
                   key={todo.id}
                   data-cy="Todo"
-                  className={`todo ${todo.completed ? 'completed' : ''}`}
+                  className={classNames('todo', { completed: todo.completed })}
                 >
                   <label className="todo__status-label">
                     <input
@@ -234,7 +239,9 @@ export const App: React.FC = () => {
                 <div
                   key={tempTodo.id}
                   data-cy="Todo"
-                  className={`todo ${tempTodo.completed ? 'completed' : ''}`}
+                  className={classNames('todo', {
+                    completed: tempTodo.completed,
+                  })}
                 >
                   <label className="todo__status-label">
                     <input
@@ -278,7 +285,9 @@ export const App: React.FC = () => {
             <nav className="filter" data-cy="Filter">
               <a
                 href="#/"
-                className={`filter__link ${filterBy === 'all' ? 'selected' : ''}`}
+                className={classNames('filter__link', {
+                  selected: filterBy === 'all',
+                })}
                 data-cy="FilterLinkAll"
                 onClick={() => setFilterBy('all')}
               >
@@ -287,7 +296,9 @@ export const App: React.FC = () => {
 
               <a
                 href="#/active"
-                className={`filter__link ${filterBy === 'active' ? 'selected' : ''}`}
+                className={classNames('filter__link', {
+                  selected: filterBy === 'active',
+                })}
                 data-cy="FilterLinkActive"
                 onClick={() => setFilterBy('active')}
               >
@@ -296,7 +307,9 @@ export const App: React.FC = () => {
 
               <a
                 href="#/completed"
-                className={`filter__link ${filterBy === 'completed' ? 'selected' : ''}`}
+                className={classNames('filter__link', {
+                  selected: filterBy === 'completed',
+                })}
                 data-cy="FilterLinkCompleted"
                 onClick={() => setFilterBy('completed')}
               >
@@ -316,25 +329,10 @@ export const App: React.FC = () => {
         )}
       </div>
 
-      {/* //! todo errors */}
-      <div
-        data-cy="ErrorNotification"
-        className={classNames(
-          'notification',
-          'is-danger',
-          'is-light',
-          'has-text-weight-normal',
-          { hidden: !errorMessage },
-        )}
-      >
-        <button
-          data-cy="HideErrorButton"
-          type="button"
-          className="delete"
-          onClick={() => setErrorMessage('')}
-        />
-        {errorMessage}
-      </div>
+      <ErrorNotification
+        errorMessage={errorMessage}
+        onClear={() => setErrorMessage('')}
+      />
     </div>
   );
 };
