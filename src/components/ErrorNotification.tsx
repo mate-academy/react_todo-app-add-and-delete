@@ -6,7 +6,10 @@ interface Props {
   onClear: () => void;
 }
 
-export const ErrorNotification: React.FC<Props> = ({ errorMessage, onClear }) => {
+export const ErrorNotification: React.FC<Props> = ({
+  errorMessage,
+  onClear,
+}) => {
   return (
     <div
       data-cy="ErrorNotification"
