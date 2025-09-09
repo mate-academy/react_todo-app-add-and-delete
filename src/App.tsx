@@ -32,7 +32,6 @@ export const App: React.FC = () => {
 
   const [input, setInput] = useState('');
   const inputRef = useRef<HTMLInputElement>(null);
-  const [disableInput, setDisable] = useState(false);
 
   const [error, setError] = useState<ErrorMessage | null>(null);
   const [loader, setLoader] = useState(false);
@@ -61,7 +60,6 @@ export const App: React.FC = () => {
   }
 
   function creationOfTodo(title: string) {
-    setDisable(true);
     setLoader(true);
 
     const temp: Todo = {
@@ -85,7 +83,6 @@ export const App: React.FC = () => {
       .finally(() => {
         setTempTodo(null);
         setTimeout(() => inputRef.current?.focus(), 0);
-        setDisable(false);
         setLoader(false);
       });
   }
@@ -93,7 +90,6 @@ export const App: React.FC = () => {
   function deleteTodo(todoId: number) {
     setProcessTodoIds(ids => [...ids, todoId]);
 
-    setDisable(true);
     setLoader(true);
 
     todoService
@@ -103,7 +99,6 @@ export const App: React.FC = () => {
       })
       .catch(() => setError(ErrorMessage.Delete))
       .finally(() => {
-        setDisable(false);
         setTimeout(() => inputRef.current?.focus(), 0);
         setLoader(false);
         setProcessTodoIds(ids => ids.filter(id => id !== todoId));
@@ -160,7 +155,7 @@ export const App: React.FC = () => {
                 setInput(e.target.value);
               }}
               ref={inputRef}
-              disabled={disableInput}
+              disabled={loader ? true : false}
             />
           </form>
         </header>
