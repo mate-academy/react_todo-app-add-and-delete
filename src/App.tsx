@@ -4,13 +4,13 @@ import React, { useEffect, useRef, useState } from 'react';
 import { UserWarning } from './UserWarning';
 import * as todoService from './api/todos';
 import { Todo } from './types/Todo';
-import classNames from 'classnames';
 import { TodoItem } from './components/TodoItem';
 import { TempTodo } from './components/TempTodo';
 import { Header } from './components/Header';
 import { Footer } from './components/Footer';
 import { FilterOption } from './types/FilterOption';
 import { ErrorMessage } from './types/ErrorMessage';
+import { ErrorNotification } from './components/ErrorNotification';
 
 export const App: React.FC = () => {
   const [todos, setTodos] = useState<Todo[]>([]);
@@ -166,21 +166,7 @@ export const App: React.FC = () => {
         )}
       </div>
 
-      <div
-        data-cy="ErrorNotification"
-        className={classNames(
-          'notification is-danger is-light has-text-weight-normal',
-          { hidden: error === null },
-        )}
-      >
-        <button data-cy="HideErrorButton" type="button" className="delete" />
-        {error && (
-          <>
-            {error}
-            <br />
-          </>
-        )}
-      </div>
+      <ErrorNotification error={error} />
     </div>
   );
 };
