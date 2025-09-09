@@ -8,12 +8,25 @@ import classNames from 'classnames';
 import { TodoRow } from './components/TodoRow';
 import { TodoItem } from './components/TodoItem';
 
-type ErrorMessage = 'LOAD' | 'TITLE' | 'ADD' | 'DELETE' | 'UPDATE' | null;
-type SortTodos = 'All' | 'Active' | 'Completed';
+enum ErrorMessage {
+  Load,
+  Title,
+  Add,
+  Delete,
+  Update,
+}
+
+enum FilterOption {
+  All,
+  Active,
+  Completed,
+}
 
 export const App: React.FC = () => {
   const [todos, setTodos] = useState<Todo[]>([]);
-  const [sortTodos, setSortTodos] = useState<SortTodos>('All');
+  const [filterOption, setFilterOption] = useState<FilterOption>(
+    FilterOption.All,
+  );
   const [tempTodo, setTempTodo] = useState<Todo | null>(null);
   const [processTodoIds, setProcessTodoIds] = useState<number[]>([]);
 
@@ -21,14 +34,14 @@ export const App: React.FC = () => {
   const inputRef = useRef<HTMLInputElement>(null);
   const [disableInput, setDisable] = useState(false);
 
-  const [error, setError] = useState<ErrorMessage>(null);
+  const [error, setError] = useState<ErrorMessage | null>(null);
   const [loader, setLoader] = useState(false);
 
-  function sorterTodos(sortStatus: SortTodos) {
-    switch (sortStatus) {
-      case 'Active':
+  function sorterTodos(filterStatus: FilterOption) {
+    switch (filterStatus) {
+      case FilterOption.Active:
         return todos.filter((t: Todo) => !t.completed);
-      case 'Completed':
+      case FilterOption.Completed:
         return todos.filter((t: Todo) => t.completed);
       default:
         return todos;
@@ -43,7 +56,7 @@ export const App: React.FC = () => {
         setTimeout(() => inputRef.current?.focus(), 0);
       })
       .catch(() => {
-        setError('LOAD');
+        setError(ErrorMessage.Load);
       });
   }
 
@@ -67,7 +80,7 @@ export const App: React.FC = () => {
         setInput('');
       })
       .catch(() => {
-        setError('ADD');
+        setError(ErrorMessage.Add);
       })
       .finally(() => {
         setTempTodo(null);
@@ -88,7 +101,7 @@ export const App: React.FC = () => {
       .then(() => {
         setTodos(prev => prev.filter(t => t.id !== todoId));
       })
-      .catch(() => setError('DELETE'))
+      .catch(() => setError(ErrorMessage.Delete))
       .finally(() => {
         setDisable(false);
         setTimeout(() => inputRef.current?.focus(), 0);
@@ -107,7 +120,7 @@ export const App: React.FC = () => {
     if (input.trim().length > 0) {
       creationOfTodo(input.trim());
     } else {
-      setError('TITLE');
+      setError(ErrorMessage.Title);
     }
   }
 
@@ -153,7 +166,7 @@ export const App: React.FC = () => {
         </header>
 
         <section className="todoapp__main" data-cy="TodoList">
-          {sorterTodos(sortTodos).map(todo => {
+          {sorterTodos(filterOption).map(todo => {
             return (
               <TodoRow
                 todo={todo}
@@ -179,10 +192,10 @@ export const App: React.FC = () => {
               <a
                 href="#/"
                 className={classNames('filter__link', {
-                  selected: sortTodos === 'All',
+                  selected: filterOption === FilterOption.All,
                 })}
                 data-cy="FilterLinkAll"
-                onClick={() => setSortTodos('All')}
+                onClick={() => setFilterOption(FilterOption.All)}
               >
                 All
               </a>
@@ -190,10 +203,10 @@ export const App: React.FC = () => {
               <a
                 href="#/active"
                 className={classNames('filter__link', {
-                  selected: sortTodos === 'Active',
+                  selected: filterOption === FilterOption.Active,
                 })}
                 data-cy="FilterLinkActive"
-                onClick={() => setSortTodos('Active')}
+                onClick={() => setFilterOption(FilterOption.Active)}
               >
                 Active
               </a>
@@ -201,10 +214,10 @@ export const App: React.FC = () => {
               <a
                 href="#/completed"
                 className={classNames('filter__link', {
-                  selected: sortTodos === 'Completed',
+                  selected: filterOption === FilterOption.Completed,
                 })}
                 data-cy="FilterLinkCompleted"
-                onClick={() => setSortTodos('Completed')}
+                onClick={() => setFilterOption(FilterOption.Completed)}
               >
                 Completed
               </a>
@@ -234,31 +247,31 @@ export const App: React.FC = () => {
       >
         <button data-cy="HideErrorButton" type="button" className="delete" />
         {/* show only one message at a time */}
-        {error === 'LOAD' && (
+        {error === ErrorMessage.Load && (
           <>
             Unable to load todos
             <br />
           </>
         )}
-        {error === 'TITLE' && (
+        {error === ErrorMessage.Title && (
           <>
             Title should not be empty
             <br />
           </>
         )}
-        {error === 'ADD' && (
+        {error === ErrorMessage.Add && (
           <>
             Unable to add a todo
             <br />
           </>
         )}
-        {error === 'DELETE' && (
+        {error === ErrorMessage.Delete && (
           <>
             Unable to delete a todo
             <br />
           </>
         )}
-        {error === 'UPDATE' && (
+        {error === ErrorMessage.Update && (
           <>
             Unable to update a todo
             <br />
