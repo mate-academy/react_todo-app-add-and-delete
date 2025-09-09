@@ -9,11 +9,10 @@ import { TodoRow } from './components/TodoRow';
 import { TodoItem } from './components/TodoItem';
 
 enum ErrorMessage {
-  Load,
-  Title,
-  Add,
-  Delete,
-  Update,
+  Load = 'Unable to load todos',
+  Add = 'Unable to add a todo',
+  Delete = 'Unable to delete a todo',
+  Title = 'Title should not be empty',
 }
 
 enum FilterOption {
@@ -97,7 +96,9 @@ export const App: React.FC = () => {
       .then(() => {
         setTodos(prev => prev.filter(t => t.id !== todoId));
       })
-      .catch(() => setError(ErrorMessage.Delete))
+      .catch(() => {
+        setError(ErrorMessage.Delete);
+      })
       .finally(() => {
         setTimeout(() => inputRef.current?.focus(), 0);
         setLoader(false);
@@ -241,34 +242,9 @@ export const App: React.FC = () => {
         )}
       >
         <button data-cy="HideErrorButton" type="button" className="delete" />
-        {/* show only one message at a time */}
-        {error === ErrorMessage.Load && (
+        {error && (
           <>
-            Unable to load todos
-            <br />
-          </>
-        )}
-        {error === ErrorMessage.Title && (
-          <>
-            Title should not be empty
-            <br />
-          </>
-        )}
-        {error === ErrorMessage.Add && (
-          <>
-            Unable to add a todo
-            <br />
-          </>
-        )}
-        {error === ErrorMessage.Delete && (
-          <>
-            Unable to delete a todo
-            <br />
-          </>
-        )}
-        {error === ErrorMessage.Update && (
-          <>
-            Unable to update a todo
+            {error}
             <br />
           </>
         )}
