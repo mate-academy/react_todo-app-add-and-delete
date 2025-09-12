@@ -1,26 +1,33 @@
-import React, { useEffect, useRef, useState } from 'react';
+import React, { useEffect } from 'react';
 
 type Props = {
   loading: boolean;
   onAdd: (title: string) => void;
+  newTodoTitle: string;
+  setNewTodoTitle: (value: string) => void;
+  inputRef: React.RefObject<HTMLInputElement>;
 };
 
-function Header({ loading, onAdd }: Props) {
-  const [title, setTitle] = useState('');
-  const inputRef = useRef<HTMLInputElement>(null);
-
+function Header({
+  loading,
+  onAdd,
+  newTodoTitle,
+  setNewTodoTitle,
+  inputRef,
+}: Props) {
   useEffect(() => {
     if (!loading) {
       setTimeout(() => {
         inputRef.current?.focus();
       }, 0);
     }
-  }, [loading]);
+  }, [loading, inputRef]);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    await onAdd(title);
-    setTitle('');
+    if (!loading) {
+      onAdd(newTodoTitle);
+    }
   };
 
   return (
@@ -38,10 +45,9 @@ function Header({ loading, onAdd }: Props) {
           type="text"
           className="todoapp__new-todo"
           placeholder="What needs to be done?"
-          value={title}
-          onChange={e => setTitle(e.target.value)}
+          value={newTodoTitle}
+          onChange={e => setNewTodoTitle(e.target.value)}
           disabled={loading}
-          autoFocus
         />
       </form>
     </header>

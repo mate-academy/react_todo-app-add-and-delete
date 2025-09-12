@@ -4,14 +4,16 @@ import { Todo } from '../types/Todo';
 type Props = {
   todo: Todo;
   selectedTodoId?: number;
-  onDelete: (userId: number) => void;
+  onDelete: (todoId: number) => void;
   onSelect?: (todo: Todo) => void;
+  deletingTodoId: number | null;
 };
 
 export const TodoItem: React.FC<Props> = ({
   todo,
   onSelect = () => {},
   onDelete = () => {},
+  deletingTodoId,
 }) => {
   return (
     <div
@@ -41,12 +43,14 @@ export const TodoItem: React.FC<Props> = ({
       >
         ×
       </button>
-      {todo.id === 0 && (
-        <div data-cy="TodoLoader" className="modal overlay">
-          <div className="modal-background has-background-white-ter" />
-          <div className="loader" />
-        </div>
-      )}
+
+      <div
+        data-cy="TodoLoader"
+        className={`modal overlay ${todo.id === 0 || deletingTodoId ? 'is-active' : ''}`}
+      >
+        <div className="modal-background has-background-white-ter" />
+        <div className="loader" />
+      </div>
     </div>
   );
 };

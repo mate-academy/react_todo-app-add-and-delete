@@ -1,56 +1,70 @@
 import React from 'react';
 
 import { Todo } from '../types/Todo';
+import { SortType } from '../App';
 
 type Props = {
   todos: Todo[];
-  filter: string;
-  setFilter: (filter: string) => void;
+  filter: SortType;
+  setFilter: (filter: SortType) => void;
+  clearCompleted: () => void;
 };
 
-export const Footer: React.FC<Props> = ({ todos, filter, setFilter }) => (
-  <footer className="todoapp__footer" data-cy="Footer">
-    <span className="todo-count" data-cy="TodosCounter">
-      {todos.filter(e => !e.completed).length} items left
-    </span>
+export const Footer: React.FC<Props> = ({
+  todos,
+  filter,
+  setFilter,
+  clearCompleted,
+}) => {
+  const activeCount = todos.filter(
+    todo => !todo.completed && todo.id !== 0,
+  ).length;
 
-    <nav className="filters" data-cy="Filter">
-      <a
-        href="#/"
-        className={`filter__link ${filter === 'All' ? 'selected' : ''}`}
-        data-cy="FilterLinkAll"
-        onClick={() => setFilter('All')}
-      >
-        All
-      </a>
+  return (
+    <footer className="todoapp__footer" data-cy="Footer">
+      <span className="todo-count" data-cy="TodosCounter">
+        {activeCount} {activeCount === 1 ? 'item' : 'items'} left
+      </span>
 
-      <a
-        href="#/active"
-        className={`filter__link ${filter === 'Active' ? 'selected' : ''}`}
-        data-cy="FilterLinkActive"
-        onClick={() => setFilter('Active')}
-      >
-        Active
-      </a>
+      <nav className="filters" data-cy="Filter">
+        <a
+          href="#/"
+          className={`filter__link ${filter === 'All' ? 'selected' : ''}`}
+          data-cy="FilterLinkAll"
+          onClick={() => setFilter(SortType.All)}
+        >
+          All
+        </a>
 
-      <a
-        href="#/completed"
-        className={`filter__link ${filter === 'Completed' ? 'selected' : ''}`}
-        data-cy="FilterLinkCompleted"
-        onClick={() => setFilter('Completed')}
+        <a
+          href="#/active"
+          className={`filter__link ${filter === 'Active' ? 'selected' : ''}`}
+          data-cy="FilterLinkActive"
+          onClick={() => setFilter(SortType.Active)}
+        >
+          Active
+        </a>
+
+        <a
+          href="#/completed"
+          className={`filter__link ${filter === 'Completed' ? 'selected' : ''}`}
+          data-cy="FilterLinkCompleted"
+          onClick={() => setFilter(SortType.Completed)}
+        >
+          Completed
+        </a>
+      </nav>
+      <button
+        type="button"
+        className="clear-completed"
+        data-cy="ClearCompletedButton"
+        onClick={clearCompleted}
+        disabled={!todos.some(todo => todo.completed)}
       >
-        Completed
-      </a>
-    </nav>
-    <button
-      type="button"
-      className="clear-completed"
-      data-cy="ClearCompletedButton"
-      disabled={todos.filter(todo => todo.completed).length === 0}
-    >
-      Clear completed
-    </button>
-  </footer>
-);
+        Clear completed
+      </button>
+    </footer>
+  );
+};
 
 export default Footer;

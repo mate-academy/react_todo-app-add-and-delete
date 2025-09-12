@@ -6,10 +6,16 @@ type Props = {
   todos: Todo[];
   onDelete: (id: number) => void;
   onSelect?: (todo: Todo) => void;
+  deletingTodoId: number | null;
 };
 
 // eslint-disable-next-line max-len
-export const TodoList: React.FC<Props> = ({ todos, onDelete, onSelect }) => (
+export const TodoList: React.FC<Props> = ({
+  todos,
+  onDelete,
+  onSelect,
+  deletingTodoId,
+}) => (
   <section className="todoapp__main" data-cy="TodoList">
     {todos.map(e => (
       <TodoItem
@@ -17,6 +23,7 @@ export const TodoList: React.FC<Props> = ({ todos, onDelete, onSelect }) => (
         todo={e}
         onDelete={onDelete}
         onSelect={onSelect}
+        deletingTodoId={deletingTodoId}
         data-cy="Todo"
       />
     ))}
