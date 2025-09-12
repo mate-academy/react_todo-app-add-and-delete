@@ -8,17 +8,20 @@ type Props = {
   onSetTitleError: (errorMessage: ErrorTypes | null) => void;
   todos: Todo[];
   onSubmit: (todo: Omit<Todo, 'id'>) => Promise<void>;
+  isSubmitting: boolean;
+  setIsSubmitting: (b: boolean) => void;
 };
 
 export const TodoHeader: React.FC<Props> = ({
   onSetTitleError,
   todos,
   onSubmit,
+  isSubmitting,
+  setIsSubmitting,
 }) => {
   const inputRef = useRef<HTMLInputElement | null>(null);
 
   const [title, setTitle] = useState('');
-  const [isSubmitting, setIsSubmitting] = useState(false);
 
   const AllTodosCompleted = todos.every(todo => todo.completed);
 
@@ -39,6 +42,7 @@ export const TodoHeader: React.FC<Props> = ({
     if (!title.trim()) {
       onSetTitleError('Title should not be empty');
       setTitle('');
+      inputRef.current?.focus();
 
       return;
     }
@@ -48,12 +52,25 @@ export const TodoHeader: React.FC<Props> = ({
 
     setIsSubmitting(true);
 
-    onSubmit({ title, completed, userId })
+    onSubmit({ title: title.trim(), completed, userId })
       .then(reset)
-      .finally(() => setIsSubmitting(false));
+      .catch(() => {
+        inputRef.current?.focus();
+      })
+      .finally(() => {
+        setIsSubmitting(false);
+      });
   }
 
-  useEffect(() => inputRef.current?.focus(), [todos]);
+  useEffect(() => {
+    inputRef.current?.focus();
+  }, [todos]);
+
+  useEffect(() => {
+    if (!isSubmitting) {
+      inputRef.current?.focus();
+    }
+  }, [isSubmitting]);
 
   return (
     <header className="todoapp__header">

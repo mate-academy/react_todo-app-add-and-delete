@@ -15,6 +15,7 @@ export const App: React.FC = () => {
   const [deletingTodoIds, setDeletingTodoIds] = useState<number[]>([]);
 
   const [errorMessage, setErrorMessage] = useState<ErrorTypes | null>(null);
+  const [isSubmitting, setIsSubmitting] = useState(false);
 
   async function loadTodos() {
     try {
@@ -32,6 +33,7 @@ export const App: React.FC = () => {
   async function addTodo({ userId, title, completed }: Omit<Todo, 'id'>) {
     setErrorMessage(null);
     setTempTodo({ id: 0, userId, title, completed });
+    setIsSubmitting(true);
 
     try {
       const response = await todosService.addTodos({
@@ -48,6 +50,7 @@ export const App: React.FC = () => {
       throw error;
     } finally {
       setTempTodo(null);
+      setIsSubmitting(false);
     }
   }
 
@@ -90,6 +93,8 @@ export const App: React.FC = () => {
           onSetTitleError={setErrorMessage}
           todos={todos}
           onSubmit={addTodo}
+          isSubmitting={isSubmitting}
+          setIsSubmitting={setIsSubmitting}
         />
 
         <TodoList
@@ -97,6 +102,7 @@ export const App: React.FC = () => {
           tempTodo={tempTodo}
           onDelete={deleteTodo}
           deletingTodoIds={deletingTodoIds}
+          isSubmitting={isSubmitting}
         />
 
         {todos.length > 0 && (
