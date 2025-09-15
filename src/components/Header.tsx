@@ -1,55 +1,43 @@
-import React, { useEffect } from 'react';
-import { Todo } from '../types/Todo';
+import React from 'react';
+import { useState } from 'react';
 
 type Props = {
   onAdd: (title: string) => void;
-  todos: Todo[];
-  isLoading: boolean;
-  disabled: boolean;
-  inputValue: string;
-  setInputValue: (value: string) => void;
-  inputRef: React.RefObject<HTMLInputElement>;
+  allCompleted: boolean;
 };
 
-export const Header: React.FC<Props> = ({
-  onAdd,
-  todos,
-  isLoading,
-  disabled,
-  inputValue,
-  setInputValue,
-  inputRef,
-}) => {
-  useEffect(() => {
-    if (!disabled) {
-      inputRef.current?.focus();
-    }
-  }, [disabled, inputRef]);
+export const Header: React.FC<Props> = ({ onAdd, allCompleted }) => {
+  const [value, setValue] = useState('');
 
   const onSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    onAdd(inputValue);
+    if (!value.trim()) {
+      return;
+    }
 
-    inputRef.current?.focus();
+    onAdd(value.trim());
+    setValue('');
   };
 
   return (
     <header className="todoapp__header">
+      {/* this button should have `active` class only if all todos are completed */}
       <button
         type="button"
-        className={`todoapp__toggle-all ${todos.every(todo => todo.completed) && `active`}`}
+        className={`todoapp__toggle-all ${allCompleted ? 'active' : ''}`}
         data-cy="ToggleAllButton"
       />
+
+      {/* Add a todo on form submit */}
       <form onSubmit={onSubmit}>
         <input
           data-cy="NewTodoField"
           type="text"
           className="todoapp__new-todo"
-          value={inputValue}
-          onChange={e => setInputValue(e.target.value)}
-          onFocus={() => true}
-          disabled={isLoading}
-          ref={inputRef}
+          placeholder="What needs to be done?"
+          value={value}
+          onChange={e => setValue(e.target.value)}
+          // onFocus={() => true}
         />
       </form>
     </header>
