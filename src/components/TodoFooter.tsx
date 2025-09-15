@@ -1,38 +1,33 @@
-import { useState } from 'react';
+import { Filter } from '../types/filter';
 import { Todo } from '../types/Todo';
 import classNames from 'classnames';
 
 type Props = {
   todos: Todo[];
-  setTodosToDisplay: (currentTodos: Todo[]) => void;
   onDelete: (id: number) => void;
+  setSelectedFilter: (filter: Filter) => void;
+  selectedFilter: Filter;
 };
-
-type Filter = 'All' | 'Active' | 'Completed';
 
 export const TodoFooter: React.FC<Props> = ({
   todos,
-  setTodosToDisplay,
   onDelete,
+  setSelectedFilter,
+  selectedFilter,
 }) => {
-  const [selectedFilter, setSelectedFilter] = useState<Filter>('All');
-
   const hasNoCompletedTodos = !todos.some(todo => todo.completed);
 
   //#region filter
   function filterAll() {
     setSelectedFilter('All');
-    setTodosToDisplay(todos);
   }
 
   function filterActive() {
     setSelectedFilter('Active');
-    setTodosToDisplay(todos.filter(todo => !todo.completed));
   }
 
   function filterCompleted() {
     setSelectedFilter('Completed');
-    setTodosToDisplay(todos.filter(todo => todo.completed));
   }
   //#endregion
 

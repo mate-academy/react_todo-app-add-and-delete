@@ -7,7 +7,6 @@ type Props = {
   tempTodo: Todo | null;
   onDelete: (idToDelete: number) => void;
   deletingTodoIds: number[];
-  isSubmitting: boolean;
 };
 
 export const TodoList: React.FC<Props> = ({
@@ -15,7 +14,6 @@ export const TodoList: React.FC<Props> = ({
   tempTodo,
   onDelete,
   deletingTodoIds,
-  isSubmitting,
 }) => {
   return (
     <section className="todoapp__main" data-cy="TodoList">
@@ -32,7 +30,7 @@ export const TodoList: React.FC<Props> = ({
           </CSSTransition>
         ))}
 
-        {isSubmitting && (
+        {tempTodo && (
           <CSSTransition key={0} timeout={300} classNames="temp-item">
             <TodoItem todo={tempTodo} isProcessed />
           </CSSTransition>

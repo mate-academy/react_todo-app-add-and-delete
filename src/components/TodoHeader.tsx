@@ -8,16 +8,16 @@ type Props = {
   onSetTitleError: (errorMessage: ErrorTypes | null) => void;
   todos: Todo[];
   onSubmit: (todo: Omit<Todo, 'id'>) => Promise<void>;
-  isSubmitting: boolean;
-  setIsSubmitting: (b: boolean) => void;
+  tempTodo: Todo | null;
+  setTempTodo: (todo: Todo | null) => void;
 };
 
 export const TodoHeader: React.FC<Props> = ({
   onSetTitleError,
   todos,
   onSubmit,
-  isSubmitting,
-  setIsSubmitting,
+  tempTodo,
+  setTempTodo,
 }) => {
   const inputRef = useRef<HTMLInputElement | null>(null);
 
@@ -50,15 +50,11 @@ export const TodoHeader: React.FC<Props> = ({
     const completed = false;
     const userId = USER_ID;
 
-    setIsSubmitting(true);
-
     onSubmit({ title: title.trim(), completed, userId })
       .then(reset)
       .catch(() => {
         inputRef.current?.focus();
-      })
-      .finally(() => {
-        setIsSubmitting(false);
+        setTempTodo(null);
       });
   }
 
@@ -67,10 +63,10 @@ export const TodoHeader: React.FC<Props> = ({
   }, [todos]);
 
   useEffect(() => {
-    if (!isSubmitting) {
+    if (!tempTodo) {
       inputRef.current?.focus();
     }
-  }, [isSubmitting]);
+  }, [tempTodo]);
 
   return (
     <header className="todoapp__header">
@@ -93,7 +89,7 @@ export const TodoHeader: React.FC<Props> = ({
           placeholder="What needs to be done?"
           value={title}
           onChange={handleChangeTitle}
-          disabled={isSubmitting}
+          disabled={Boolean(tempTodo)}
         />
       </form>
     </header>

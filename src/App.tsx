@@ -6,23 +6,23 @@ import classNames from 'classnames';
 import { Todo } from './types/Todo';
 import * as todosService from './api/todos';
 import { ErrorTypes } from './types/ErrorTypes';
+import { Filter } from './types/filter';
 
 export const App: React.FC = () => {
   const [todos, setTodos] = useState<Todo[]>([]);
-  const [todosToDisplay, setTodosToDisplay] = useState<Todo[]>([]);
 
   const [tempTodo, setTempTodo] = useState<Todo | null>(null);
   const [deletingTodoIds, setDeletingTodoIds] = useState<number[]>([]);
 
   const [errorMessage, setErrorMessage] = useState<ErrorTypes | null>(null);
-  const [isSubmitting, setIsSubmitting] = useState(false);
+
+  const [selectedFilter, setSelectedFilter] = useState<Filter>('All');
 
   async function loadTodos() {
     try {
       const currentTodos = await todosService.getTodos();
 
       setTodos(currentTodos);
-      setTodosToDisplay(currentTodos);
     } catch (error) {
       setErrorMessage('Unable to load todos');
 
@@ -33,7 +33,6 @@ export const App: React.FC = () => {
   async function addTodo({ userId, title, completed }: Omit<Todo, 'id'>) {
     setErrorMessage(null);
     setTempTodo({ id: 0, userId, title, completed });
-    setIsSubmitting(true);
 
     try {
       const response = await todosService.addTodos({
@@ -42,15 +41,12 @@ export const App: React.FC = () => {
         completed,
       });
 
-      setTodosToDisplay(currentTodos => [...currentTodos, response]);
+      setTempTodo(null);
       setTodos(currentTodos => [...currentTodos, response]);
     } catch (error) {
       setErrorMessage('Unable to add a todo');
 
       throw error;
-    } finally {
-      setTempTodo(null);
-      setIsSubmitting(false);
     }
   }
 
@@ -62,7 +58,6 @@ export const App: React.FC = () => {
       await todosService.deleteTodo(todoId);
 
       setTodos(current => current.filter(todo => todo.id !== todoId));
-      setTodosToDisplay(current => current.filter(todo => todo.id !== todoId));
     } catch (error) {
       setErrorMessage('Unable to delete a todo');
     } finally {
@@ -84,6 +79,14 @@ export const App: React.FC = () => {
     return;
   }, [errorMessage]);
 
+  let todosToDisplay: Todo[] = todos;
+
+  if (selectedFilter === 'Active') {
+    todosToDisplay = todos.filter(todo => !todo.completed);
+  } else if (selectedFilter === 'Completed') {
+    todosToDisplay = todos.filter(todo => todo.completed);
+  }
+
   return (
     <div className="todoapp">
       <h1 className="todoapp__title">todos</h1>
@@ -93,8 +96,8 @@ export const App: React.FC = () => {
           onSetTitleError={setErrorMessage}
           todos={todos}
           onSubmit={addTodo}
-          isSubmitting={isSubmitting}
-          setIsSubmitting={setIsSubmitting}
+          tempTodo={tempTodo}
+          setTempTodo={setTempTodo}
         />
 
         <TodoList
@@ -102,14 +105,14 @@ export const App: React.FC = () => {
           tempTodo={tempTodo}
           onDelete={deleteTodo}
           deletingTodoIds={deletingTodoIds}
-          isSubmitting={isSubmitting}
         />
 
         {todos.length > 0 && (
           <TodoFooter
             todos={todos}
-            setTodosToDisplay={setTodosToDisplay}
             onDelete={deleteTodo}
+            setSelectedFilter={setSelectedFilter}
+            selectedFilter={selectedFilter}
           />
         )}
       </div>

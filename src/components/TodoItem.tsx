@@ -6,7 +6,7 @@ import { Todo } from '../types/Todo';
 import { useEffect, useRef, useState } from 'react';
 
 type Props = {
-  todo: Todo | null;
+  todo: Todo;
   onDelete?: (idToDelete: number) => void;
   deletingTodoIds?: number[];
   tempTodo?: Todo | null;
@@ -17,7 +17,7 @@ export const TodoItem: React.FC<Props> = ({
   todo,
   onDelete = () => {},
   deletingTodoIds,
-  tempTodo,
+  isProcessed,
 }) => {
   const [edetingId, setEditingId] = useState<number | null>(null);
 
@@ -75,9 +75,7 @@ export const TodoItem: React.FC<Props> = ({
           <div
             data-cy="TodoLoader"
             className={classNames('modal overlay', {
-              'is-active':
-                (todo && deletingTodoIds?.includes(todo.id)) ||
-                (tempTodo && tempTodo.id === todo?.id),
+              'is-active': deletingTodoIds?.includes(todo.id) || isProcessed,
             })}
           >
             <div className="modal-background has-background-white-ter" />
