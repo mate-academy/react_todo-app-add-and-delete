@@ -1,4 +1,5 @@
 import React, { useEffect, useRef } from 'react';
+import classNames from 'classnames';
 import { Todo } from '../types/Todo';
 
 type Props = {
@@ -25,13 +26,19 @@ export const Header: React.FC<Props> = ({
     inputRef.current?.focus();
   }, [todos]);
 
+  const allCompleted =
+    todos.length > 0 && todos.every(todo => todo.completed === true);
+
   return (
     <header className="todoapp__header">
+      <h1 className="todoapp__title">todos</h1>
+
       {/* this button should have `active` class only if all todos are completed */}
       <button
         type="button"
-        className="todoapp__toggle-all active"
+        className={classNames('todoapp__toggle-all', { active: allCompleted })}
         data-cy="ToggleAllButton"
+        // handler opcional aqui no futuro
       />
 
       {/* Add a todo on form submit */}
