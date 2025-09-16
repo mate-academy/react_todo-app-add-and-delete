@@ -17,20 +17,6 @@ export const TodoFooter: React.FC<Props> = ({
 }) => {
   const hasNoCompletedTodos = !todos.some(todo => todo.completed);
 
-  //#region filter
-  function filterAll() {
-    setSelectedFilter('All');
-  }
-
-  function filterActive() {
-    setSelectedFilter('Active');
-  }
-
-  function filterCompleted() {
-    setSelectedFilter('Completed');
-  }
-  //#endregion
-
   async function deleteCompleted() {
     const completedTodos = todos.filter(todo => todo.completed);
 
@@ -47,10 +33,10 @@ export const TodoFooter: React.FC<Props> = ({
         <a
           href="#/"
           className={classNames('filter__link', {
-            selected: selectedFilter === 'All',
+            selected: selectedFilter === Filter.All,
           })}
           data-cy="FilterLinkAll"
-          onClick={filterAll}
+          onClick={() => setSelectedFilter(Filter.All)}
         >
           All
         </a>
@@ -58,10 +44,10 @@ export const TodoFooter: React.FC<Props> = ({
         <a
           href="#/active"
           className={classNames('filter__link', {
-            selected: selectedFilter === 'Active',
+            selected: selectedFilter === Filter.Active,
           })}
           data-cy="FilterLinkActive"
-          onClick={filterActive}
+          onClick={() => setSelectedFilter(Filter.Active)}
         >
           Active
         </a>
@@ -69,10 +55,10 @@ export const TodoFooter: React.FC<Props> = ({
         <a
           href="#/completed"
           className={classNames('filter__link', {
-            selected: selectedFilter === 'Completed',
+            selected: selectedFilter === Filter.Completed,
           })}
           data-cy="FilterLinkCompleted"
-          onClick={filterCompleted}
+          onClick={() => setSelectedFilter(Filter.Completed)}
         >
           Completed
         </a>

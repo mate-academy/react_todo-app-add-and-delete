@@ -1,11 +1,11 @@
 import React, { useEffect, useRef, useState } from 'react';
 import { Todo } from '../types/Todo';
 import classNames from 'classnames';
-import { ErrorTypes } from '../types/ErrorTypes';
 import { USER_ID } from '../api/todos';
+import { Errors } from '../types/Errors';
 
 type Props = {
-  onSetTitleError: (errorMessage: ErrorTypes | null) => void;
+  onSetTitleError: (errorMessage: Errors) => void;
   todos: Todo[];
   onSubmit: (todo: Omit<Todo, 'id'>) => Promise<void>;
   tempTodo: Todo | null;
@@ -27,20 +27,16 @@ export const TodoHeader: React.FC<Props> = ({
 
   function reset() {
     setTitle('');
-    onSetTitleError(null);
-  }
-
-  function handleChangeTitle(event: React.ChangeEvent<HTMLInputElement>) {
-    setTitle(event.target.value);
+    onSetTitleError(Errors.Empty);
   }
 
   function handleSubmit(event: React.FormEvent) {
     event.preventDefault();
 
-    onSetTitleError(null);
+    onSetTitleError(Errors.Empty);
 
     if (!title.trim()) {
-      onSetTitleError('Title should not be empty');
+      onSetTitleError(Errors.Title);
       setTitle('');
       inputRef.current?.focus();
 
@@ -53,8 +49,8 @@ export const TodoHeader: React.FC<Props> = ({
     onSubmit({ title: title.trim(), completed, userId })
       .then(reset)
       .catch(() => {
-        inputRef.current?.focus();
         setTempTodo(null);
+        inputRef.current?.focus();
       });
   }
 
@@ -88,7 +84,7 @@ export const TodoHeader: React.FC<Props> = ({
           className="todoapp__new-todo"
           placeholder="What needs to be done?"
           value={title}
-          onChange={handleChangeTitle}
+          onChange={e => setTitle(e.target.value)}
           disabled={Boolean(tempTodo)}
         />
       </form>
