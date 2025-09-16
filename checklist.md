@@ -16,17 +16,17 @@
 1. Callbacks that work with the main state should take prepared data instead of the whole child's state.
 1. Code should be split into small, reusable components if it possible (`Filter`, `TodoList`, `Todo`, `NewTodo`)
 1. ID for new todos should be unique, you can use an internal ID counter for this, and increment it.
-1. “Toggle all” should be active only in case when all todos are completed.
-1. If you manually toggle all todos to completed state, “Toggle all” should stay active.
+1. â€œToggle allâ€ should be active only in case when all todos are completed.
+1. If you manually toggle all todos to completed state, â€œToggle allâ€ should stay active.
 1. "Toggle all" should stay inactive if at least one todo is not completed.
-1. `NewTodo` form shouldn’t create empty todos.
+1. `NewTodo` form shouldnâ€™t create empty todos.
 1. `NewTodo` form should trim redundant spaces.
 1. Do not rely on the unknown string, make constants for this.
     ```
     const FILTERS = {
-      all: ‘all’,
-      completed: ‘completed’,
-      active: ‘active’,
+      all: â€˜allâ€™,
+      completed: â€˜completedâ€™,
+      active: â€˜activeâ€™,
     };
     ```
 1. Show only `NewTodo` form if todos array is empty.
