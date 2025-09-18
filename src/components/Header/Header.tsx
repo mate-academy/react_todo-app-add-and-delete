@@ -19,16 +19,17 @@ const Header: React.FC<Props> = ({
   onAdd,
   setInputRef,
 }) => {
+  const inputRef = useRef<HTMLInputElement>(null);
+
   useEffect(() => {
     if (!loading) {
       setTimeout(() => {
         inputRef.current?.focus();
-      }, 0)
+      }, 0);
     }
+
     setInputRef(inputRef.current);
   }, [loading, setInputRef]);
-
-  const inputRef = useRef<HTMLInputElement>(null);
 
   const handleSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();

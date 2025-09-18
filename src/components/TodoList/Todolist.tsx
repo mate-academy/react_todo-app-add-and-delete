@@ -28,6 +28,7 @@ const TodoList: React.FC<Props> = ({
       {tempTodo && (
         <div data-cy="Todo" className="todo">
           <label className="todo__status-label" htmlFor="temp-todo">
+            {'  '}
             <input
               data-cy="TodoStatus"
               type="checkbox"

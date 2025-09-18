@@ -7,7 +7,7 @@ import { Todo } from './types/Todo';
 import Header from './components/Header/Header';
 import TodoList from './components/TodoList/Todolist';
 import Footer from './components/Footer/Footer';
-import ErrorNotification from './components/ErrorNotification/ErrorNotification';
+import ErrorNotification from './components/Error/ErrorNotification';
 
 export enum Filter {
   All = 'all',
@@ -80,7 +80,7 @@ export const App: React.FC = () => {
       setTimeout(() => {
         // const input = document.querySelector<HTMLInputElement>('[data-cy="NewTodoField"]');
         inputEl?.focus();
-      })
+      });
     } catch {
       setErrorMessage(ErrorMessages.Delete);
     } finally {

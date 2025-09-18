@@ -20,11 +20,11 @@ const TodoItem: React.FC<Props> = ({ todo, deleteTodoHandler, loadingIds }) => {
         completed: todo.completed,
       })}
     >
-      <label className="todo__status-label" htmlFor={`todo-${todo.id}`}>
+      <label className="todo__status-label">
+        {' '}
         <input
           data-cy="TodoStatus"
           type="checkbox"
-          id={`todo-${todo.id}`}
           className="todo__status"
           checked={todo.completed}
           readOnly
