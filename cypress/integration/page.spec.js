@@ -732,7 +732,7 @@ describe('', () => {
       });
 
       it('should display a loader on the todo when the TodoDeleteButton is clicked', () => {
-        page.mockDelete(257334);
+        page.mockDelete(257334, { delay: 1000 });
         page.pauseTimers();
         todos.deleteButton(0).click();
 
@@ -740,7 +740,7 @@ describe('', () => {
       });
 
       it('should not delete a todo before successful response', () => {
-        page.mockDelete(257334);
+        page.mockDelete(257334, { delay: 1000 }).as('deleteRequest');
         page.pauseTimers();
         todos.deleteButton(0).click();
 
@@ -857,8 +857,8 @@ describe('', () => {
         cy.wait('@loadRequest');
       });
 
-      it('should not have active ClearCompleted button', () => {
-        page.clearCompletedButton().should('be.disabled');
+      it('should not show ClearCompleted button', () => {
+        cy.get('[data-cy="ClearCompletedButton"]').should('not.exist');
       });
     });
 
@@ -904,7 +904,7 @@ describe('', () => {
           todos.assertTitle(1, 'React');
         });
 
-        it('should disable ClearCompleted button', () => {
+        it('should hide ClearCompleted button', () => {
           page.clearCompletedButton().should('be.disabled');
         });
 
@@ -979,7 +979,7 @@ describe('', () => {
     });
   });
 
-  describe.skip('Todo Toggling', () => {
+  describe('Todo Toggling', () => {
     beforeEach(() => {
       page.mockLoad().as('loadRequest');
       page.visit();
@@ -1131,7 +1131,7 @@ describe('', () => {
     });
   });
 
-  describe.skip('Toggle All Button', () => {
+  describe('Toggle All Button', () => {
     describe('if there are no todos', () => {
       it('should not be visible while loading todos', () => {
         page.mockLoad({ body: [] }).as('loadRequest');
@@ -1385,7 +1385,7 @@ describe('', () => {
     });
   });
 
-  describe.skip('Renaming', () => {
+  describe('Renaming', () => {
     beforeEach(() => {
       page.mockLoad().as('loadRequest');
       page.visit();
