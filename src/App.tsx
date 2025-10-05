@@ -1,133 +1,173 @@
-/* eslint-disable jsx-a11y/label-has-associated-control */
-/* eslint-disable jsx-a11y/control-has-associated-label */
-import React, { useEffect, useState } from 'react';
-
-import {
-  createTodo,
-  deleteTodo,
-  getTodos,
-  updateTodo,
-  USER_ID,
-} from './api/todos';
-import { Todo } from './types/Todo';
-import { ErrorNotification } from './components/ErrorNotification';
+import React, { useEffect, useRef, useState } from 'react';
 import { UserWarning } from './UserWarning';
+import * as todoServise from './api/todos';
+import { TodoHeader } from './components/Header';
 import { TodoList } from './components/TodoList';
-import { ErrorType } from './types/ErrorType';
-import { Filter } from './utils/Filter';
-import { Header } from './components/Header/Header';
-import { Footer } from './components/Footer';
+import { TodoFooter } from './components/Footer';
+import { ErrorNotification } from './components/ErrorNotification';
+import { Todo } from './types/Todo';
+import { FilterType } from './types/FilterType';
+import { ErrorMessage } from './types/ErrorMessage';
+
 export const App: React.FC = () => {
-  const [isTodoEditing, setIsTodoEditing] = useState(false);
-  const [selectedPostId, setIsSelectedPostId] = useState(0);
-  const [currentError, setCurrentError] = useState<ErrorType | ''>('');
-  const [selectedFilter, setSelectedFilter] = useState(Filter.all);
   const [todos, setTodos] = useState<Todo[]>([]);
+  const [tempTodo, setTempTodo] = useState<Todo | null>(null);
+
+  const [error, setError] = useState<ErrorMessage | null>(null);
+  const [filtering, setFiltering] = useState<FilterType>(FilterType.all);
+
+  const [isInput, setIsInput] = useState(false);
+  const [processingTodos, setProcessingTodos] = useState<number[]>([]);
+  const [query, setQuery] = useState('');
+
+  const field = useRef<HTMLInputElement>(null);
+  const returnFocus = () => setTimeout(() => field.current?.focus(), 50);
+
+  const handleSetQuery = (title: string) => {
+    setQuery(title);
+  };
+
+  const handleAddTodo = (createdTodo: Todo) => {
+    setTempTodo(createdTodo);
+    setError(null);
+    setIsInput(true);
+
+    const { title, completed, userId } = createdTodo;
+
+    todoServise
+      .createTodos({ title, completed, userId })
+      .then(newTodo => {
+        setTodos(currentTodo => [...currentTodo, newTodo]);
+
+        if (tempTodo === null) {
+          setQuery('');
+        }
+      })
+      .catch(() => setError(ErrorMessage.AddTodos))
+      .finally(() => {
+        setTempTodo(null);
+        setIsInput(false);
+
+        returnFocus();
+      });
+  };
+
+  const handleDeleteTodo = (todoId: number) => {
+    setProcessingTodos(currentIds => [...currentIds, todoId]);
+
+    return todoServise
+      .deleteTodos(todoId)
+      .then(() =>
+        setTodos(currentTodos =>
+          currentTodos.filter(todo => todo.id !== todoId),
+        ),
+      )
+      .catch(() => setError(ErrorMessage.DeleteTodos))
+      .finally(() => {
+        setProcessingTodos(currentIds =>
+          currentIds.filter(id => id !== todoId),
+        );
+
+        returnFocus();
+      });
+  };
+
+  const handleSetFilter = (value: FilterType) => {
+    setFiltering(value);
+  };
+
+  const handleClearCompleted = () => {
+    [...todos]
+      .filter(todo => todo.completed)
+      .forEach(todo => {
+        setProcessingTodos(currentIds => [...currentIds, todo.id]);
+
+        todoServise
+          .deleteTodos(todo.id)
+          .then(() =>
+            setTodos(currentTodos =>
+              currentTodos.filter(prevTodo => prevTodo.id !== todo.id),
+            ),
+          )
+          .catch(() => setError(ErrorMessage.DeleteTodos))
+          .finally(() => {
+            setProcessingTodos(currentIds =>
+              currentIds.filter(id => id !== todo.id),
+            );
+
+            returnFocus();
+          });
+      });
+  };
+
+  const handleSetError = (newError: ErrorMessage) => {
+    setError(newError);
+  };
+
+  const handleRemoveError = () => {
+    setError(null);
+  };
 
   useEffect(() => {
-    const loadTodos = async () => {
-      try {
-        const todosFromServer = await getTodos();
+    if (!todoServise.USER_ID) {
+      return;
+    }
 
-        setTodos(todosFromServer);
-      } catch {
-        setCurrentError(ErrorType.TodosLoad);
-      }
-    };
+    setError(null);
+    field.current?.focus();
 
-    loadTodos();
+    todoServise
+      .getTodos()
+      .then(setTodos)
+      .catch(() => setError(ErrorMessage.LoadTodos));
   }, []);
 
-  const handleTodoAdd = async (newTodo: Todo) => {
-    const createdTodo = await createTodo(newTodo);
-
-    setTodos(currentTodos => [...currentTodos, createdTodo]);
-  };
-
-  const handleTodoDelete = async (todoId: number) => {
-    try {
-      await deleteTodo(todoId);
-
-      setTodos(currentTodos => currentTodos.filter(todo => todo.id !== todoId));
-    } catch {
-      setCurrentError(ErrorType.UnableToDeleteTodo);
-    }
-  };
-
-  const handleTodoUpdate = async (updatedTodo: Todo) => {
-    try {
-      await updateTodo(updatedTodo);
-
-      setTodos(currentTodos =>
-        currentTodos.map(todo =>
-          todo.id === updatedTodo.id ? updatedTodo : todo,
-        ),
-      );
-    } catch {
-      setCurrentError(ErrorType.UnableToUpdateTodo);
-    }
-  };
-
   useEffect(() => {
-    if (!currentError) {
+    if (!error) {
       return;
     }
 
     const timer = setTimeout(() => {
-      setCurrentError('');
+      setError(null);
     }, 3000);
 
     return () => clearTimeout(timer);
-  }, [currentError]);
+  }, [error]);
 
-  if (!USER_ID) {
+  if (!todoServise.USER_ID) {
     return <UserWarning />;
   }
-
-  const activeTodos: number = todos.filter(
-    (todo: Todo) => !todo.completed,
-  ).length;
-
-  const completedTodos: number = todos.filter(
-    (todo: Todo) => todo.completed,
-  ).length;
 
   return (
     <div className="todoapp">
       <h1 className="todoapp__title">todos</h1>
 
-      <Header
-        todos={todos}
-        completedTodos={completedTodos}
-        setCurrentError={setCurrentError}
-        onTodoAdd={handleTodoAdd}
-      />
-
       <div className="todoapp__content">
-        <TodoList
-          selectedFilter={selectedFilter}
-          visibleTodos={todos}
-          isTodoEditing={isTodoEditing}
-          selectedPostId={selectedPostId}
-          setIsTodoEditing={setIsTodoEditing}
-          setSelectedPostId={setIsSelectedPostId}
-          onDelete={handleTodoDelete}
-          onUpdate={handleTodoUpdate}
+        <TodoHeader
+          onAdd={handleAddTodo}
+          onError={handleSetError}
+          onFocus={field}
+          isInput={isInput}
+          query={query}
+          setQuery={handleSetQuery}
         />
-
-        {!!todos.length && (
-          <Footer
-            activeTodos={activeTodos}
-            selectedFilter={selectedFilter}
-            setSelectedFilter={setSelectedFilter}
-            completedTodos={completedTodos}
+        <TodoList
+          processingTodos={processingTodos}
+          todos={todos}
+          filterValue={filtering}
+          onDelete={handleDeleteTodo}
+          tempTodo={tempTodo}
+        />
+        {todos.length !== 0 && (
+          <TodoFooter
+            todos={todos}
+            filterValue={filtering}
+            setFilter={handleSetFilter}
+            onClear={handleClearCompleted}
           />
         )}
       </div>
-      <ErrorNotification
-        currentError={currentError}
-        setCurrentError={setCurrentError}
-      />
+      <ErrorNotification Error={error} onClose={handleRemoveError} />
     </div>
   );
 };

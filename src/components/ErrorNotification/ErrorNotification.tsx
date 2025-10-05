@@ -1,31 +1,30 @@
-import React from 'react';
 import classNames from 'classnames';
-import { ErrorType } from '../../types/ErrorType';
+import React from 'react';
+import { ErrorMessage } from '../../types/ErrorMessage';
 
 type Props = {
-  currentError: string;
-  setCurrentError: React.Dispatch<React.SetStateAction<'' | ErrorType>>;
+  Error: ErrorMessage | null;
+  onClose: () => void;
 };
 
-export const ErrorNotification: React.FC<Props> = ({
-  currentError,
-  setCurrentError,
-}) => {
+export const ErrorNotification: React.FC<Props> = ({ Error, onClose }) => {
   return (
     <div
       data-cy="ErrorNotification"
       className={classNames(
         'notification is-danger is-light has-text-weight-normal',
-        { hidden: !currentError },
+        { hidden: Error === null },
       )}
     >
+      {/* DON'T use conditional rendering to hide the notification */}
+      {/* Add the 'hidden' class to hide the message smoothly */}
       <button
         data-cy="HideErrorButton"
         type="button"
         className="delete"
-        onClick={() => setCurrentError('')}
+        onClick={onClose}
       />
-      {currentError}
+      {Error}
     </div>
   );
 };
