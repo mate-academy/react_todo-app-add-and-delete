@@ -29,6 +29,7 @@
 
   &__toggle-all {
     position: absolute;
+    bottom: -74px;
 
     height: 100%;
     width: 45px;
@@ -135,4 +136,45 @@
       visibility: hidden;
     }
   }
+}
+
+.todo__overlay {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  background: rgba(255, 255, 255, 0.6);
+  z-index: 10;
+
+  .todo__loader {
+    border: 4px solid rgba(255, 255, 255, 0.6);
+    border-left-color: #6E7F80;
+    border-radius: 50%;
+    width: 30px;
+    height: 30px;
+    animation: spin 1s linear infinite;
+  }
+
+  @keyframes spin {
+    to {
+      transform: rotate(360deg);
+    }
+  }
+
+  &--hidden {
+    display: none !important;
+  }
+}
+
+.div{
+  width: 500px;
+  height: 100px;
+  background-color: green;
+  display: flex;
+  justify-content: center;
+  color: white;
 }
