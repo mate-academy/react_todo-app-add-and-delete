@@ -4,7 +4,10 @@
     "src"
   ],
   "compilerOptions": {
+    "jsx": "react-jsx",
+    "moduleResolution": "node",
+    "esModuleInterop": true,
     "sourceMap": false,
-    "types": ["node", "cypress"]
+    "types": ["node", "cypress", "react", "react-dom"]
   }
 }
