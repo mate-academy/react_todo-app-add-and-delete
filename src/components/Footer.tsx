@@ -16,7 +16,6 @@ export const Footer: React.FC<Props> = ({
   todos,
   onDelete,
 }) => {
-
   const hasCompleted = todos.some(todo => todo.completed);
 
   return (
@@ -61,9 +60,7 @@ export const Footer: React.FC<Props> = ({
         className="todoapp__clear-completed"
         data-cy="ClearCompletedButton"
         onClick={() => {
-          todos
-          .filter(todo => todo.completed)
-          .map(todo => onDelete(todo.id));
+          todos.filter(todo => todo.completed).map(todo => onDelete(todo.id));
         }}
         disabled={!hasCompleted}
       >

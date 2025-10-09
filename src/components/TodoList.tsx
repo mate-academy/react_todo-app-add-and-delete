@@ -38,8 +38,8 @@ export const TodoList: React.FC<Props> = ({
                 onChange={() => {
                   setTodos(
                     todos.map(t =>
-                      t.id === todo.id ? { ...t, completed: !t.completed } : t
-                    )
+                      t.id === todo.id ? { ...t, completed: !t.completed } : t,
+                    ),
                   );
                 }}
               />
@@ -54,14 +54,17 @@ export const TodoList: React.FC<Props> = ({
               className="todo__remove"
               data-cy="TodoDelete"
               onClick={() => {
-                onDelete(todo.id)
+                onDelete(todo.id);
               }}
             >
               x
             </button>
 
             {/* Overlay для реальних todo – без is-active */}
-            <div data-cy="TodoLoader" className={`modal overlay ${todo.isDeleting ? 'is-active' : ''}`}>
+            <div
+              data-cy="TodoLoader"
+              className={`modal overlay ${todo.isDeleting ? 'is-active' : ''}`}
+            >
               <div className="modal-background has-background-white-ter" />
               <div className="loader" />
             </div>

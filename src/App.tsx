@@ -15,7 +15,7 @@ export const App: React.FC = () => {
   const [notificationError, setNotificationError] = useState<string | null>(
     null,
   );
-    const [tempTodo, setTempTodo] = useState<Todo | null>(null);
+  const [tempTodo, setTempTodo] = useState<Todo | null>(null);
 
   useEffect(() => {
     getTodos()
@@ -25,6 +25,8 @@ export const App: React.FC = () => {
         setTimeout(() => setNotificationError(null), 3000);
       });
   }, []);
+
+  const inputRef = React.useRef<HTMLInputElement>(null);
 
   if (!USER_ID) {
     return <UserWarning />;
@@ -41,30 +43,28 @@ export const App: React.FC = () => {
     }
   });
 
-  const inputRef = React.useRef<HTMLInputElement>(null);
-
-const onDelete = (todoId: number) => {
-  setTodos(prevTodos =>
-    prevTodos.map((todo: Todo) =>
-      todo.id === todoId ? { ...todo, isDeleting: true } : todo
-    )
-  );
-
-  deleteTodos(todoId)
-  .then(() => {
-    setTodos(prevTodos => prevTodos.filter(todo => todo.id !== todoId))
-    inputRef.current?.focus()
-  })
-  .catch(() => {
-    setNotificationError('Unable to delete a todo');
-    setTimeout(() => setNotificationError(null), 3000);
+  const onDelete = (todoId: number) => {
     setTodos(prevTodos =>
-      prevTodos.map(todo =>
-        todo.id === todoId ? { ...todo, isDeleting: false } : todo
-      )
-    )
-  })
-  }
+      prevTodos.map((todo: Todo) =>
+        todo.id === todoId ? { ...todo, isDeleting: true } : todo,
+      ),
+    );
+
+    deleteTodos(todoId)
+      .then(() => {
+        setTodos(prevTodos => prevTodos.filter(todo => todo.id !== todoId));
+        inputRef.current?.focus();
+      })
+      .catch(() => {
+        setNotificationError('Unable to delete a todo');
+        setTimeout(() => setNotificationError(null), 3000);
+        setTodos(prevTodos =>
+          prevTodos.map(todo =>
+            todo.id === todoId ? { ...todo, isDeleting: false } : todo,
+          ),
+        );
+      });
+  };
 
   return (
     <div className="todoapp">
@@ -72,11 +72,12 @@ const onDelete = (todoId: number) => {
 
       <div className="todoapp__content">
         <Header
-        inputRef={inputRef}
-        todos={todos}
-        setTodos={setTodos}
-        setNotificationError={setNotificationError}
-        setTempTodo={setTempTodo}/>
+          inputRef={inputRef}
+          todos={todos}
+          setTodos={setTodos}
+          setNotificationError={setNotificationError}
+          setTempTodo={setTempTodo}
+        />
 
         <TodoList
           onDelete={onDelete}
