@@ -5,6 +5,13 @@
   ],
   "compilerOptions": {
     "sourceMap": false,
-    "types": ["node", "cypress"]
+    "types": ["node", "cypress"],
+     "jsx": "react-jsx",
+    "esModuleInterop": true,
+    "allowSyntheticDefaultImports": true,
+    "strict": true,
+    "moduleResolution": "node",
+    "module": "esnext",
+    "target": "esnext"
   }
 }
