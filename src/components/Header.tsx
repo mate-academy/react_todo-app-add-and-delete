@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import { Todo } from '../types/Todo';
 import { USER_ID } from '../api/todos';
 import { client } from '../utils/fetchClient';
+import classNames from 'classnames';
 
 type Props = {
   inputRef: React.RefObject<HTMLInputElement>;
@@ -67,15 +68,12 @@ export const Header: React.FC<Props> = ({
 
   return (
     <header className="todoapp__header">
-      {/* this button should have `active` class only if all todos are completed */}
       <button
         type="button"
-        className={`todoapp__toggle-all ${allCompleted ? 'active' : ''}`}
+        className={classNames('todoapp__toggle-all', { active: allCompleted })}
         data-cy="ToggleAllButton"
         onClick={toggleAll}
       />
-
-      {/* Add a todo on form submit */}
       <form onSubmit={handleSubmit}>
         <input
           ref={inputRef}

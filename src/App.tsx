@@ -1,6 +1,6 @@
 /* eslint-disable jsx-a11y/label-has-associated-control */
 /* eslint-disable jsx-a11y/control-has-associated-label */
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useMemo, useState } from 'react';
 import { UserWarning } from './UserWarning';
 import { getTodos, USER_ID, deleteTodos } from './api/todos';
 import { Todo } from './types/Todo';
@@ -8,10 +8,11 @@ import { Footer } from './components/Footer';
 import { OurErrors } from './components/OurErrors';
 import { TodoList } from './components/TodoList';
 import { Header } from './components/Header';
+import { Filter } from './types/Filter';
 
 export const App: React.FC = () => {
   const [todos, setTodos] = useState<Todo[]>([]);
-  const [filter, setFilter] = useState<'all' | 'active' | 'completed'>('all');
+  const [filter, setFilter] = useState<Filter>(Filter.All);
   const [notificationError, setNotificationError] = useState<string | null>(
     null,
   );
@@ -28,20 +29,22 @@ export const App: React.FC = () => {
 
   const inputRef = React.useRef<HTMLInputElement>(null);
 
+  const visibleTodos = useMemo(() => {
+    return todos.filter(todo => {
+      switch (filter) {
+        case Filter.Active:
+          return !todo.completed;
+        case Filter.Completed:
+          return todo.completed;
+        default:
+          return true;
+      }
+    });
+  }, [todos, filter]);
+
   if (!USER_ID) {
     return <UserWarning />;
   }
-
-  const visibleTodos = todos.filter(todo => {
-    switch (filter) {
-      case 'active':
-        return !todo.completed;
-      case 'completed':
-        return todo.completed;
-      default:
-        return true;
-    }
-  });
 
   const onDelete = (todoId: number) => {
     setTodos(prevTodos =>
@@ -78,7 +81,6 @@ export const App: React.FC = () => {
           setNotificationError={setNotificationError}
           setTempTodo={setTempTodo}
         />
-
         <TodoList
           onDelete={onDelete}
           tempTodo={tempTodo}
@@ -86,8 +88,6 @@ export const App: React.FC = () => {
           setTodos={setTodos}
           todos={todos}
         />
-
-        {/* Hide the footer if there are no todos */}
         {todos.length > 0 && (
           <Footer
             onDelete={onDelete}
@@ -97,9 +97,6 @@ export const App: React.FC = () => {
           />
         )}
       </div>
-
-      {/* DON'T use conditional rendering to hide the notification */}
-      {/* Add the 'hidden' class to hide the message smoothly */}
       <OurErrors
         notificationError={notificationError}
         setNotificationError={setNotificationError}

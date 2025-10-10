@@ -1,3 +1,4 @@
+import classNames from 'classnames';
 import React from 'react';
 
 type Props = {
@@ -12,10 +13,13 @@ export const OurErrors: React.FC<Props> = ({
   return (
     <div
       data-cy="ErrorNotification"
-      className={`
-    notification is-danger is-light has-text-weight-normal
-    ${!notificationError ? 'hidden' : ''}
-  `}
+      className={classNames(
+        'notification',
+        'is-danger',
+        'is-light',
+        'has-text-weight-normal',
+        { hidden: !notificationError },
+      )}
     >
       <button
         data-cy="HideErrorButton"
@@ -23,7 +27,6 @@ export const OurErrors: React.FC<Props> = ({
         className="delete"
         onClick={() => setNotificationError(null)}
       />
-      {/* show only one message at a time */}
       {notificationError}
     </div>
   );

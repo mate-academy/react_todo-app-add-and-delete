@@ -1,7 +1,7 @@
 import React, { Dispatch, SetStateAction } from 'react';
 import { Todo } from '../types/Todo';
-
-type Filter = 'all' | 'active' | 'completed';
+import { Filter } from '../types/Filter';
+import classNames from 'classnames';
 
 type Props = {
   todos: Todo[];
@@ -24,37 +24,41 @@ export const Footer: React.FC<Props> = ({
         {todos.filter(todo => !todo.completed).length} items left
       </span>
 
-      {/* Active link should have the 'selected' class */}
       <nav className="filter" data-cy="Filter">
         <a
           href="#/"
-          className={`filter__link ${filter === 'all' ? 'selected' : ''}`}
+          className={classNames('filter__link', {
+            selected: filter === Filter.All,
+          })}
           data-cy="FilterLinkAll"
-          onClick={() => setFilter('all')}
+          onClick={() => setFilter(Filter.All)}
         >
           All
         </a>
 
         <a
           href="#/active"
-          className={`filter__link ${filter === 'active' ? 'selected' : ''}`}
+          className={classNames('filter__link', {
+            selected: filter === Filter.Active,
+          })}
           data-cy="FilterLinkActive"
-          onClick={() => setFilter('active')}
+          onClick={() => setFilter(Filter.Active)}
         >
           Active
         </a>
 
         <a
           href="#/completed"
-          className={`filter__link ${filter === 'completed' ? 'selected' : ''}`}
+          className={classNames('filter__link', {
+            selected: filter === Filter.Completed,
+          })}
           data-cy="FilterLinkCompleted"
-          onClick={() => setFilter('completed')}
+          onClick={() => setFilter(Filter.Completed)}
         >
           Completed
         </a>
       </nav>
 
-      {/* this button should be disabled if there are no completed todos */}
       <button
         type="button"
         className="todoapp__clear-completed"
