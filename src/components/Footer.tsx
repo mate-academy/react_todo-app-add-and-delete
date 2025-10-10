@@ -7,14 +7,14 @@ type Props = {
   todos: Todo[];
   filter: Filter;
   setFilter: Dispatch<SetStateAction<Filter>>;
-  onDelete: (todoId: number) => void;
+  onDeleteCompleted: () => void;
 };
 
 export const Footer: React.FC<Props> = ({
   filter,
   setFilter,
   todos,
-  onDelete,
+  onDeleteCompleted,
 }) => {
   const hasCompleted = todos.some(todo => todo.completed);
 
@@ -63,9 +63,7 @@ export const Footer: React.FC<Props> = ({
         type="button"
         className="todoapp__clear-completed"
         data-cy="ClearCompletedButton"
-        onClick={() => {
-          todos.filter(todo => todo.completed).map(todo => onDelete(todo.id));
-        }}
+        onClick={onDeleteCompleted}
         disabled={!hasCompleted}
       >
         Clear completed

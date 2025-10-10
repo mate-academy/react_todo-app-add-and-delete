@@ -69,6 +69,9 @@ export const App: React.FC = () => {
       });
   };
 
+ const onDeleteCompleted = () => {
+    todos.filter(todo => todo.completed).forEach(todo => onDelete(todo.id));
+  };
   return (
     <div className="todoapp">
       <h1 className="todoapp__title">todos</h1>
@@ -90,7 +93,7 @@ export const App: React.FC = () => {
         />
         {todos.length > 0 && (
           <Footer
-            onDelete={onDelete}
+            onDeleteCompleted={onDeleteCompleted}
             todos={todos}
             filter={filter}
             setFilter={setFilter}
