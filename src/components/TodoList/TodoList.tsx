@@ -6,6 +6,7 @@ type Props = {
   tempTodo: Todo | null;
   onDelete: (id: number) => void;
   loading?: boolean;
+  deletingTodoIds: number[];
 };
 
 export const TodoList: React.FC<Props> = ({
@@ -13,6 +14,7 @@ export const TodoList: React.FC<Props> = ({
   tempTodo,
   onDelete,
   loading,
+  deletingTodoIds,
 }) => {
   return (
     <section className="todoapp__main" data-cy="TodoList">
@@ -33,9 +35,11 @@ export const TodoList: React.FC<Props> = ({
               data-cy="TodoStatus"
             />
           </label>
+
           <span className="todo__title" data-cy="TodoTitle">
             {todo.title}
           </span>
+
           <button
             type="button"
             className="todo__remove"
@@ -44,7 +48,13 @@ export const TodoList: React.FC<Props> = ({
           >
             ×
           </button>
-          <div data-cy="TodoLoader" className="modal overlay" />
+
+          <div
+            data-cy="TodoLoader"
+            className={`modal overlay ${
+              deletingTodoIds.includes(todo.id) ? 'is-active' : ''
+            }`}
+          />
         </div>
       ))}
 
@@ -53,9 +63,11 @@ export const TodoList: React.FC<Props> = ({
           <label className="todo__status-label">
             <input type="checkbox" className="todo__status" disabled />
           </label>
+
           <span className="todo__title" data-cy="TodoTitle">
             {tempTodo.title}
           </span>
+
           <div data-cy="TodoLoader" className="modal overlay is-active" />
         </div>
       )}

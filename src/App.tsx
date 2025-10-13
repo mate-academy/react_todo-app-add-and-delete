@@ -3,6 +3,7 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { getTodos, addTodo, deleteTodo, USER_ID } from './api/todos';
 import { Todo } from './types/Todo';
+
 import { UserWarning } from './UserWarning';
 import { Header } from './components/Header/Header';
 import { TodoList } from './components/TodoList/TodoList';
@@ -20,6 +21,7 @@ export const App: React.FC = () => {
   const [newTitle, setNewTitle] = useState('');
   const [tempTodo, setTempTodo] = useState<Todo | null>(null);
   const inputRef = useRef<HTMLInputElement>(null);
+  const [deletingTodoIds, setDeletingTodoIds] = useState<number[]>([]);
 
   const loadTodos = async () => {
     setLoading(true);
@@ -36,7 +38,12 @@ export const App: React.FC = () => {
   };
 
   useEffect(() => {
-    loadTodos();
+    const init = async () => {
+      await loadTodos();
+      inputRef.current?.focus();
+    };
+
+    init();
   }, []);
 
   const filteredTodos = todos.filter(todo => {
@@ -92,12 +99,36 @@ export const App: React.FC = () => {
   };
 
   const handleDeleteTodo = async (todoId: number) => {
+    setDeletingTodoIds(prev => [...prev, todoId]);
+
     try {
       await deleteTodo(todoId);
       setTodos(prev => prev.filter(todo => todo.id !== todoId));
     } catch {
       setError(ErrorType.UNABLE_TO_DELETE_TODO);
+    } finally {
+      setDeletingTodoIds(prev => prev.filter(id => id !== todoId));
+
+      inputRef.current?.focus();
     }
+  };
+
+  const handleClearCompleted = async () => {
+    const completedTodos = todos.filter(todo => todo.completed);
+
+    for (const todo of completedTodos) {
+      try {
+        setDeletingTodoIds(prev => [...prev, todo.id]);
+        await deleteTodo(todo.id);
+        setTodos(prev => prev.filter(t => t.id !== todo.id));
+      } catch {
+        setError(ErrorType.UNABLE_TO_DELETE_TODO);
+      } finally {
+        setDeletingTodoIds(prev => prev.filter(id => id !== todo.id));
+      }
+    }
+
+    inputRef.current?.focus();
   };
 
   if (!USER_ID) {
@@ -122,13 +153,16 @@ export const App: React.FC = () => {
           tempTodo={tempTodo}
           onDelete={handleDeleteTodo}
           loading={loading}
+          deletingTodoIds={deletingTodoIds}
         />
 
         {todos.length > 0 && (
           <Footer
             todosCount={todos.filter(todo => !todo.completed).length}
+            completedCount={todos.filter(todo => todo.completed).length}
             statusFilter={statusFilter}
             setStatusFilter={setStatusFilter}
+            onClearCompleted={handleClearCompleted}
           />
         )}
 

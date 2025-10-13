@@ -1,11 +1,11 @@
-import React, { useRef } from 'react';
+import React from 'react';
 
 type Props = {
   newTitle: string;
   setNewTitle: (title: string) => void;
   onAdd: (event: React.FormEvent) => void;
   disabled?: boolean;
-  inputRef?: React.RefObject<HTMLInputElement>;
+  inputRef: React.RefObject<HTMLInputElement>;
 };
 
 export const Header: React.FC<Props> = ({
@@ -13,9 +13,8 @@ export const Header: React.FC<Props> = ({
   setNewTitle,
   onAdd,
   disabled,
+  inputRef,
 }) => {
-  const inputRef = useRef<HTMLInputElement>(null);
-
   return (
     <header className="todoapp__header">
       <button type="button" className="todoapp__toggle-all active" />
