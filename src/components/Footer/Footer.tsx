@@ -1,10 +1,11 @@
 import React from 'react';
+import { StatusFilter } from '../../App';
 
 type Props = {
   todosCount: number;
   completedCount: number;
-  statusFilter: 'all' | 'active' | 'completed';
-  setStatusFilter: (filter: 'all' | 'active' | 'completed') => void;
+  statusFilter: StatusFilter;
+  setStatusFilter: React.Dispatch<React.SetStateAction<StatusFilter>>;
   onClearCompleted?: () => void;
 };
 
@@ -27,7 +28,7 @@ export const Footer: React.FC<Props> = ({
         className={`filter__link ${statusFilter === 'all' ? 'selected' : ''}`}
         onClick={e => {
           e.preventDefault();
-          setStatusFilter('all');
+          setStatusFilter(StatusFilter.All);
         }}
       >
         All
@@ -38,7 +39,7 @@ export const Footer: React.FC<Props> = ({
         className={`filter__link ${statusFilter === 'active' ? 'selected' : ''}`}
         onClick={e => {
           e.preventDefault();
-          setStatusFilter('active');
+          setStatusFilter(StatusFilter.Active);
         }}
       >
         Active
@@ -49,7 +50,7 @@ export const Footer: React.FC<Props> = ({
         className={`filter__link ${statusFilter === 'completed' ? 'selected' : ''}`}
         onClick={e => {
           e.preventDefault();
-          setStatusFilter('completed');
+          setStatusFilter(StatusFilter.Completed);
         }}
       >
         Completed

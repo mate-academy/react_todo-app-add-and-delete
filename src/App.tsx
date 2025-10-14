@@ -19,9 +19,11 @@ export enum StatusFilter {
 
 export const App: React.FC = () => {
   const [todos, setTodos] = useState<Todo[]>([]);
-  const [statusFilter, setStatusFilter] = useState<StatusFilter>('all');
-  const [loading, setLoading] = useState(false);
-  const [isActionLoading, setIsActionLoading] = useState(false);
+  const [statusFilter, setStatusFilter] = useState<StatusFilter>(
+    StatusFilter.All,
+  );
+  const [, setLoading] = useState(false);
+  const [, setIsActionLoading] = useState(false);
   const [error, setError] = useState<ErrorType | null>(null);
   const [newTitle, setNewTitle] = useState('');
   const [tempTodo, setTempTodo] = useState<Todo | null>(null);
