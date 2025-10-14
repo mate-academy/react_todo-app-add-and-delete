@@ -8,15 +8,20 @@ import { UserWarning } from './UserWarning';
 import { Header } from './components/Header/Header';
 import { TodoList } from './components/TodoList/TodoList';
 import { Footer } from './components/Footer/Footer';
-import { ErrorNotification } from './components/ErrorNotification/ErrorNotification';
+import { ErrorNotification } from './components/ErrorNotification';
 import { ErrorType } from './types/ErrorType';
 
-type StatusFilter = 'all' | 'active' | 'completed';
+export enum StatusFilter {
+  All = 'all',
+  Active = 'active',
+  Completed = 'completed',
+}
 
 export const App: React.FC = () => {
   const [todos, setTodos] = useState<Todo[]>([]);
   const [statusFilter, setStatusFilter] = useState<StatusFilter>('all');
   const [loading, setLoading] = useState(false);
+  const [isActionLoading, setIsActionLoading] = useState(false);
   const [error, setError] = useState<ErrorType | null>(null);
   const [newTitle, setNewTitle] = useState('');
   const [tempTodo, setTempTodo] = useState<Todo | null>(null);
@@ -82,6 +87,7 @@ export const App: React.FC = () => {
     };
 
     setTempTodo(newTodo);
+    setIsActionLoading(true);
 
     try {
       const created = await addTodo(trimmedTitle);
@@ -92,6 +98,7 @@ export const App: React.FC = () => {
       setError(ErrorType.UNABLE_TO_ADD_TODO);
     } finally {
       setTempTodo(null);
+      setIsActionLoading(false);
       setTimeout(() => {
         inputRef.current?.focus();
       }, 0);
@@ -100,6 +107,7 @@ export const App: React.FC = () => {
 
   const handleDeleteTodo = async (todoId: number) => {
     setDeletingTodoIds(prev => [...prev, todoId]);
+    setIsActionLoading(true);
 
     try {
       await deleteTodo(todoId);
@@ -109,6 +117,7 @@ export const App: React.FC = () => {
     } finally {
       setDeletingTodoIds(prev => prev.filter(id => id !== todoId));
 
+      setIsActionLoading(false);
       inputRef.current?.focus();
     }
   };
@@ -152,7 +161,7 @@ export const App: React.FC = () => {
           todos={filteredTodos}
           tempTodo={tempTodo}
           onDelete={handleDeleteTodo}
-          loading={loading}
+          // loading={loading}
           deletingTodoIds={deletingTodoIds}
         />
 

@@ -1,3 +1,5 @@
+/* eslint-disable jsx-a11y/label-has-associated-control */ /* eslint-disable jsx-a11y/control-has-associated-label */
+
 import React from 'react';
 import { Todo } from '../../types/Todo';
 
@@ -5,7 +7,7 @@ type Props = {
   todos: Todo[];
   tempTodo: Todo | null;
   onDelete: (id: number) => void;
-  loading?: boolean;
+  // loading?: boolean;
   deletingTodoIds: number[];
 };
 
@@ -13,12 +15,12 @@ export const TodoList: React.FC<Props> = ({
   todos,
   tempTodo,
   onDelete,
-  loading,
+  // loading,
   deletingTodoIds,
 }) => {
   return (
     <section className="todoapp__main" data-cy="TodoList">
-      {loading && <div>Загрузка...</div>}
+      {/* {loading && <div>Загрузка...</div>} */}
 
       {todos.map(todo => (
         <div
