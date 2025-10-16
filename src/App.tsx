@@ -113,6 +113,7 @@ export const App: React.FC = () => {
           onToggleTodo={handleToggleTodo}
           loadingTodoId={loadingTodoId}
           deletedTodo={deletedTodo}
+          setIsLoading={setIsLoading}
         />
 
         {todos.length > 0 && (

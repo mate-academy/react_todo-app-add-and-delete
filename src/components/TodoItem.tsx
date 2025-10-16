@@ -5,6 +5,7 @@ type Props = {
   onToggle: (id: number, completed: boolean) => void;
   isLoading: boolean;
   deletedTodo: (idTodo: number) => void;
+  setIsLoading: (p: boolean) => void;
 };
 
 export const TodoItem: React.FC<Props> = ({
@@ -12,6 +13,7 @@ export const TodoItem: React.FC<Props> = ({
   onToggle,
   isLoading,
   deletedTodo,
+  setIsLoading,
 }) => {
   const handleToggleComplete = () => {
     onToggle(todo.id, !todo.completed);
@@ -39,7 +41,9 @@ export const TodoItem: React.FC<Props> = ({
         className="todo__remove"
         data-cy="TodoDelete"
         onClick={() => {
+          setIsLoading(true);
           deletedTodo(todo.id);
+          setIsLoading(false);
         }}
       >
         ×

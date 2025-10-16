@@ -6,6 +6,7 @@ type Props = {
   onToggleTodo: (id: number, completed: boolean) => void;
   loadingTodoId: number | null;
   deletedTodo: (todoId: number) => void;
+  setIsLoading: () => void;
 };
 
 const TodoList: React.FC<Props> = ({
@@ -13,6 +14,7 @@ const TodoList: React.FC<Props> = ({
   onToggleTodo,
   loadingTodoId,
   deletedTodo,
+  setIsLoading,
 }) => {
   return (
     <>
@@ -25,6 +27,7 @@ const TodoList: React.FC<Props> = ({
               todo={todo}
               onToggle={onToggleTodo}
               isLoading={loadingTodoId === todo.id}
+              setIsLoading={setIsLoading}
             />
           );
         })}
