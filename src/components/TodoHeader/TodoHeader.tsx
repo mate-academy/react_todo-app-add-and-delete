@@ -1,10 +1,16 @@
 import { FormEvent, useEffect, useRef, useState } from 'react';
+import { ErrorMessages } from '../../types/Todo';
 
 type Props = {
-  onAddTodo: (title: string) => void;
+  onAddTodo: (title: string) => Promise<void>;
   disabled: boolean;
+  onErrorMessage: (errMessage: ErrorMessages) => void;
 };
-export default function TodoHeader({ onAddTodo, disabled }: Props) {
+export default function TodoHeader({
+  onAddTodo,
+  disabled,
+  onErrorMessage,
+}: Props) {
   const queryInputRef = useRef<HTMLInputElement>(null);
   const [titleTodo, setTitleTodo] = useState('');
 
@@ -14,16 +20,20 @@ export default function TodoHeader({ onAddTodo, disabled }: Props) {
     }
   }, [disabled]);
 
-  const handlerSubmitTodos = (event: FormEvent) => {
+  const handlerSubmitTodos = async (event: FormEvent) => {
     event.preventDefault();
     const trimTitle = titleTodo.trim();
 
     if (!trimTitle) {
+      onErrorMessage(ErrorMessages.ERROR_NO_TITLE);
+
       return;
     }
 
-    onAddTodo(trimTitle);
-    setTitleTodo('');
+    try {
+      await onAddTodo(trimTitle);
+      setTitleTodo('');
+    } catch (error) {}
   };
 
   return (

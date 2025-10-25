@@ -54,7 +54,7 @@ export const App: React.FC = () => {
   }, [errorMessage]);
 
   // Add Todo handler
-  function handlePostTodo(title: string) {
+  function handlePostTodo(title: string): Promise<void> {
     const newTempTodo: Todo = {
       id: 0,
       title,
@@ -64,12 +64,14 @@ export const App: React.FC = () => {
 
     setTempTodo(newTempTodo);
 
-    postTodo(title)
+    return postTodo(title)
       .then(newTodo => {
         setTodos(prevTodos => [...prevTodos, newTodo]);
       })
       .catch(() => {
         setErrorMessage(ErrorMessages.ERROR_ADD_TODO);
+
+        throw new Error('Unable to add todo');
       })
       .finally(() => {
         setLoadingIds(prev => prev.filter(id => id !== 0));
@@ -138,6 +140,7 @@ export const App: React.FC = () => {
         <TodoHeader
           onAddTodo={handlePostTodo}
           disabled={loadingIds.length > 0 || tempTodo !== null}
+          onErrorMessage={setErrorMessage}
         />
 
         <TodoList
