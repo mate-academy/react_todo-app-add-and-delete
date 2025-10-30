@@ -1,5 +1,4 @@
 import React, { useState, useEffect } from 'react';
-
 interface NewTodoProps {
   focusedInput: React.RefObject<HTMLInputElement>;
   onAddTodo: (title: string) => Promise<void>;

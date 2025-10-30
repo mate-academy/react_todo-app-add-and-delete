@@ -24,7 +24,6 @@ export const App: React.FC = () => {
   }
 
   const [todos, setTodos] = useState<Todo[]>([]);
-  // eslint-disable-next-line react-hooks/rules-of-hooks
   const [currentFilter, setCurrentFilter] = useState<FilterStatus>(
     FilterStatus.All,
   );
@@ -60,7 +59,7 @@ export const App: React.FC = () => {
   const filteredTodos = todos.filter(allFilters[currentFilter]);
   const incompletedTodos = todos.filter(td => !td.completed);
 
-  const handleAddTodo = async (title: string): Promise<void> => {
+  const handleAddTodo = async (title: string) => {
     const trimmedTitle = title.trim();
 
     if (!trimmedTitle) {
@@ -78,9 +77,8 @@ export const App: React.FC = () => {
     };
 
     setIsAdding(true);
-
     setTempTodo({
-      id: 1,
+      id: 0,
       ...newTodo,
     });
 
@@ -117,13 +115,12 @@ export const App: React.FC = () => {
         setTimeout(() => setErrorMessage(''), 3000);
       })
       .finally(() => {
-        setUpdatingTodoIds(prev => prev.filter(t => t !== id));
+        setUpdatingTodoIds(prev => prev.filter(tid => tid !== id));
       });
   };
 
   const handleDeleteTodo = (id: number) => {
     setDeletingTodoIds(prev => [...prev, id]);
-
     deleteTodo(id)
       .then(() => setTodos(prev => prev.filter(td => td.id !== id)))
       .catch(() => {
@@ -135,12 +132,12 @@ export const App: React.FC = () => {
   const handleClearCompleted = () => {
     const completed = todos.filter(td => td.completed);
 
-    Promise.all(completed.map(td => deleteTodo(td.id)))
-      .then(() => setTodos(prev => prev.filter(td => !td.completed)))
-      .catch(() => {
-        setErrorMessage('Unable to clear completed todos');
-        setTimeout(() => setErrorMessage(''), 3000);
-      });
+    if (!completed.length) {
+      return;
+    }
+
+    setDeletingTodoIds(prev => [...prev, ...completed.map(td => td.id)]);
+    completed.forEach(td => handleDeleteTodo(td.id));
   };
 
   const handleCloseError = () => setErrorMessage('');
