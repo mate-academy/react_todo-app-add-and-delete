@@ -33,6 +33,7 @@ export const App: React.FC = () => {
   const [isAdding, setIsAdding] = useState(false);
   const [tempTodo, setTempTodo] = useState<Todo | null>(null);
   const [deletingTodoIds, setDeletingTodoIds] = useState<number[]>([]);
+  const [updatingTodoIds, setUpdatingTodoIds] = useState<number[]>([]);
   const focusedInput = useRef<HTMLInputElement>(null);
 
   const allFilters = useMemo(() => {
@@ -103,6 +104,7 @@ export const App: React.FC = () => {
       return;
     }
 
+    setUpdatingTodoIds(prev => [...prev, id]);
     patchTodo(id, { completed: !todo.completed })
       .then(updated =>
         setTodos(prev =>
@@ -112,6 +114,9 @@ export const App: React.FC = () => {
       .catch(() => {
         setErrorMessage('Unable to update a todo');
         setTimeout(() => setErrorMessage(''), 3000);
+      })
+      .finally(() => {
+        setUpdatingTodoIds(prev => prev.filter(t => t !== id));
       });
   };
 
@@ -157,6 +162,7 @@ export const App: React.FC = () => {
           todos={filteredTodos}
           tempTodo={tempTodo}
           deletingTodoIds={deletingTodoIds}
+          updatingTodoIds={updatingTodoIds}
           onToggle={handleToggleTodo}
           onDelete={handleDeleteTodo}
         />

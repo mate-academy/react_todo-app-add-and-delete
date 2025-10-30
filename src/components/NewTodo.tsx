@@ -20,8 +20,10 @@ export const NewTodo: React.FC<NewTodoProps> = ({
       return;
     }
 
-    await onAddTodo(title);
-    setTitle('');
+    try {
+      await onAddTodo(title);
+      setTitle('');
+    } catch (error) {}
   };
 
   const handleChange = (event: React.ChangeEvent<HTMLInputElement>) => {
