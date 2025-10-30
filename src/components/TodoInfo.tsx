@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState, useRef, useEffect } from 'react';
 import cn from 'classnames';
 import { Todo } from '../types/Todo';
 
@@ -6,6 +6,7 @@ interface TodoProps {
   todo: Todo;
   onToggle: () => void;
   onDelete: () => void;
+  onRename: (id: number, newTitle: string) => void;
   isLoading?: boolean;
 }
 
@@ -13,8 +14,61 @@ export const TodoInfo: React.FC<TodoProps> = ({
   todo,
   onToggle,
   onDelete,
+  onRename,
   isLoading = false,
 }) => {
+  const [isEditing, setIsEditing] = useState(false);
+  const [editTitle, setEditTitle] = useState(todo.title);
+  const inputRef = useRef<HTMLInputElement>(null);
+
+  useEffect(() => {
+    if (isEditing && inputRef.current) {
+      inputRef.current.focus();
+    }
+  }, [isEditing]);
+
+  const handleDoubleClick = () => {
+    setIsEditing(true);
+
+    setEditTitle(todo.title);
+  };
+
+  const handleSubmit = async () => {
+    const trimmedTitle = editTitle.trim();
+
+    if (!trimmedTitle) {
+      onDelete();
+
+      return;
+    }
+
+    if (trimmedTitle === todo.title) {
+      setIsEditing(false);
+
+      return;
+    }
+
+    try {
+      await onRename(todo.id, trimmedTitle);
+
+      setIsEditing(false);
+    } catch (error) {}
+  };
+
+  const handleKeyDown = (event: React.KeyboardEvent) => {
+    if (event.key === 'Enter') {
+      handleSubmit();
+    } else if (event.key === 'Escape') {
+      setIsEditing(false);
+
+      setEditTitle(todo.title);
+    }
+  };
+
+  const handleBlur = () => {
+    handleSubmit();
+  };
+
   return (
     <div data-cy="Todo" className={cn('todo', { completed: todo.completed })}>
       <label className="todo__status-label" aria-label="Toggle todo status">
@@ -27,18 +81,37 @@ export const TodoInfo: React.FC<TodoProps> = ({
           disabled={isLoading}
         />
       </label>
-      <span data-cy="TodoTitle" className="todo__title">
-        {todo.title}
-      </span>
-      <button
-        type="button"
-        className="todo__remove"
-        data-cy="TodoDelete"
-        onClick={onDelete}
-        disabled={isLoading}
-      >
-        ×
-      </button>
+      {isEditing ? (
+        <input
+          data-cy="TodoTitleField"
+          type="text"
+          className="todo__title-field"
+          value={editTitle}
+          onChange={event => setEditTitle(event.target.value)}
+          onKeyDown={handleKeyDown}
+          onBlur={handleBlur}
+          ref={inputRef}
+        />
+      ) : (
+        <>
+          <span
+            data-cy="TodoTitle"
+            className="todo__title"
+            onDoubleClick={handleDoubleClick}
+          >
+            {todo.title}
+          </span>
+          <button
+            type="button"
+            className="todo__remove"
+            data-cy="TodoDelete"
+            onClick={onDelete}
+            disabled={isLoading}
+          >
+            ×
+          </button>
+        </>
+      )}
 
       <div
         data-cy="TodoLoader"

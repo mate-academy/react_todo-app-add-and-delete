@@ -15,8 +15,11 @@ export const NewTodo: React.FC<NewTodoProps> = ({
   const handleSubmit = async (event: React.FormEvent) => {
     event.preventDefault();
 
-    await onAddTodo(title);
-    setTitle('');
+    try {
+      await onAddTodo(title);
+
+      setTitle('');
+    } catch {}
   };
 
   const handleChange = (event: React.ChangeEvent<HTMLInputElement>) => {

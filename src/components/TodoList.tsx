@@ -10,6 +10,7 @@ interface TodoListProps {
   updatingTodoIds: number[];
   onToggle: (id: number) => void;
   onDelete: (id: number) => void;
+  onRename: (id: number, newTitle: string) => void;
 }
 
 export const TodoList: React.FC<TodoListProps> = ({
@@ -19,6 +20,7 @@ export const TodoList: React.FC<TodoListProps> = ({
   updatingTodoIds,
   onToggle,
   onDelete,
+  onRename,
 }) => (
   <section className="todoapp__main" data-cy="TodoList">
     <TransitionGroup>
@@ -34,6 +36,7 @@ export const TodoList: React.FC<TodoListProps> = ({
               onToggle={() => onToggle(todo.id)}
               onDelete={() => onDelete(todo.id)}
               isLoading={isLoading}
+              onRename={onRename}
             />
           </CSSTransition>
         );
@@ -46,6 +49,7 @@ export const TodoList: React.FC<TodoListProps> = ({
             onToggle={() => {}}
             onDelete={() => {}}
             isLoading={true}
+            onRename={onRename}
           />
         </CSSTransition>
       )}
