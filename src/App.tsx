@@ -66,6 +66,7 @@ export const App: React.FC = () => {
     if (!trimmedTitle) {
       setErrorMessage('Title should not be empty');
       setTimeout(() => setErrorMessage(''), 3000);
+      focusedInput.current?.focus();
 
       return;
     }
@@ -87,9 +88,9 @@ export const App: React.FC = () => {
       const todo = await postTodos(newTodo);
 
       setTodos(prev => [...prev, todo]);
-      focusedInput.current?.focus();
     } catch (error) {
       setErrorMessage('Unable to add a todo');
+      focusedInput.current?.focus();
       setTimeout(() => setErrorMessage(''), 3000);
     } finally {
       setTempTodo(null);

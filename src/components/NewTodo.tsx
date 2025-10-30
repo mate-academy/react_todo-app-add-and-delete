@@ -1,7 +1,7 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 
 interface NewTodoProps {
-  focusedInput: React.Ref<HTMLInputElement>;
+  focusedInput: React.RefObject<HTMLInputElement>;
   onAddTodo: (title: string) => Promise<void>;
   disabled?: boolean;
 }
@@ -16,19 +16,19 @@ export const NewTodo: React.FC<NewTodoProps> = ({
   const handleSubmit = async (event: React.FormEvent) => {
     event.preventDefault();
 
-    if (disabled) {
-      return;
-    }
-
-    try {
-      await onAddTodo(title);
-      setTitle('');
-    } catch (error) {}
+    await onAddTodo(title);
+    setTitle('');
   };
 
   const handleChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     setTitle(event.target.value);
   };
+
+  useEffect(() => {
+    if (!disabled) {
+      focusedInput.current?.focus();
+    }
+  }, [disabled]);
 
   return (
     <form onSubmit={handleSubmit}>
