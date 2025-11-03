@@ -4,14 +4,14 @@ import React, { useEffect, useRef } from 'react';
 import { UserWarning } from './UserWarning';
 import './styles/index.scss';
 import { getTodos, USER_ID, addTodo, deleteTodo } from './api/todos';
-import { Todo } from './types/Todo';
+import { Todo } from './types/todo';
 import { useState } from 'react';
 // import { client } from './utils/fetchClient';
 import cn from 'classnames';
-import { TodoFilter } from './types/Filters';
-import { ErrorTypes } from './types/ErrorTypes';
+import { TodoFilter } from './types/filters';
+import { ErrorTypes } from './types/errorTypes';
 import { TodoList } from './components/TodoList';
-import { Footer } from './components/Footer/Footer';
+import { Footer } from './components/Footer';
 import { NewTodo } from './components/NewTodo';
 
 export const App: React.FC = () => {

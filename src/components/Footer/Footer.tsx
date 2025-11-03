@@ -1,6 +1,6 @@
-import { TodoFilter } from '../../types/Filters';
+import { TodoFilter } from '../../types/filters';
 import React from 'react';
-import { Todo } from '../../types/Todo';
+import { Todo } from '../../types/todo';
 import cn from 'classnames';
 import '../../styles/filter.scss';
 

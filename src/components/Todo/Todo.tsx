@@ -1,6 +1,6 @@
 import React from 'react';
 import cn from 'classnames';
-import { Todo as TodoType } from '../../types/Todo';
+import { Todo as TodoType } from '../../types/todo';
 import '../../styles/todo.scss';
 
 type Props = {
