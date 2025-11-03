@@ -1,5 +1,5 @@
 import React from 'react';
-import { FilterStatus } from '../types/FilterStatus';
+import { FilterStatus } from '../types/filterStatus';
 import cn from 'classnames';
 
 interface TodoFilterProps {

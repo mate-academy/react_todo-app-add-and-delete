@@ -1,7 +1,7 @@
 /* eslint-disable react-hooks/rules-of-hooks */
 /* eslint-disable jsx-a11y/label-has-associated-control */
 /* eslint-disable jsx-a11y/control-has-associated-label */
-import React, { useMemo, useState, useRef, useEffect } from 'react';
+import React, { useState, useRef, useEffect } from 'react';
 import { UserWarning } from './UserWarning';
 import {
   USER_ID,
@@ -16,7 +16,7 @@ import { Filter } from './components/Filter';
 import { TodoList } from './components/TodoList';
 import { NewTodo } from './components/NewTodo';
 import { TodoButtons } from './components/TodoButtons';
-import { FilterStatus } from './types/FilterStatus';
+import { FilterStatus } from './types/filterStatus';
 export const App: React.FC = () => {
   if (!USER_ID) {
     return <UserWarning />;
@@ -33,15 +33,11 @@ export const App: React.FC = () => {
   const [deletingTodoIds, setDeletingTodoIds] = useState<number[]>([]);
   const [updatingTodoIds, setUpdatingTodoIds] = useState<number[]>([]);
   const focusedInput = useRef<HTMLInputElement>(null);
-  const allFilters = useMemo(() => {
-    return {
-      [FilterStatus.All]: () => true,
-
-      [FilterStatus.Active]: (td: Todo) => !td.completed,
-
-      [FilterStatus.Completed]: (td: Todo) => td.completed,
-    };
-  }, []);
+  const allFilters = {
+    [FilterStatus.All]: () => true,
+    [FilterStatus.Active]: (td: Todo) => !td.completed,
+    [FilterStatus.Completed]: (td: Todo) => td.completed,
+  };
   // eslint-disable-next-line react-hooks/rules-of-hooks
 
   useEffect(() => {
@@ -217,7 +213,7 @@ export const App: React.FC = () => {
           onToggle={handleToggleTodo}
           onDelete={handleDeleteTodo}
           onRename={handleRenameTodo}
-        />{' '}
+        />
         {todos.length > 0 && (
           <footer className="todoapp__footer" data-cy="Footer">
             <span className="todo-count" data-cy="TodosCounter">
