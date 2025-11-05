@@ -7,19 +7,19 @@ import { Todo } from '../types/Todo';
 
 type Props = {
   todo: Todo;
-  loading: boolean;
+  isLoading: boolean;
   processingIds: number[];
   onDelete?: () => void;
 };
 
 export const TodoItem: React.FC<Props> = ({
   todo,
-  loading,
+  isLoading: isLoading,
   onDelete,
   processingIds,
 }) => {
   const isProcessing = processingIds.includes(todo.id) || todo.id === 0;
-  const shouldShowLoader = isProcessing || loading;
+  const shouldShowLoader = isProcessing || isLoading;
 
   return (
     <div data-cy="Todo" className={cn('todo', { completed: todo.completed })}>
@@ -52,7 +52,7 @@ export const TodoItem: React.FC<Props> = ({
         data-cy="TodoLoader"
         className={cn('modal overlay', {
           hidden: !shouldShowLoader,
-          'is-active': loading,
+          'is-active': isLoading,
         })}
       >
         <div className="modal-background has-background-white-ter" />

@@ -1,7 +1,7 @@
 import { Todo } from '../types/Todo';
 
 type Props = {
-  loading: boolean;
+  isLoading: boolean;
   focusedInput: React.Ref<HTMLInputElement>;
   todoTitle: Todo['title'];
   onTitleChange?: (title: Todo['title']) => void;
@@ -9,7 +9,7 @@ type Props = {
 };
 
 export const NewTodo: React.FC<Props> = ({
-  loading,
+  isLoading: isLoading,
   focusedInput,
   onTitleChange = () => {},
   todoTitle,
@@ -22,7 +22,7 @@ export const NewTodo: React.FC<Props> = ({
         type="text"
         className="todoapp__new-todo"
         placeholder="What needs to be done?"
-        disabled={loading}
+        disabled={isLoading}
         ref={focusedInput}
         value={todoTitle}
         onChange={event => onTitleChange(event.target.value)}

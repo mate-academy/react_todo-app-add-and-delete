@@ -28,8 +28,8 @@ export const App: React.FC = () => {
 
   const [todoTitle, setTodoTitle] = useState('');
   const [tempTodo, setTempTodo] = useState<Todo | null>(null);
-  const [creating, setIsCreating] = useState(false);
-  const [processing, setProcessing] = useState<number[]>([]);
+  const [isCreating, setIsCreating] = useState(false);
+  const [processingIds, setProcessingIds] = useState<Todo['id'][]>([]);
 
   useEffect(() => {
     const fetchTodos = async () => {
@@ -51,10 +51,10 @@ export const App: React.FC = () => {
   }, []);
 
   useEffect(() => {
-    if (!isLoading && !creating && focusedInput.current) {
+    if (!isLoading && !isCreating && focusedInput.current) {
       focusedInput.current.focus();
     }
-  }, [isLoading, creating]);
+  }, [isLoading, isCreating]);
 
   const getFilteredTodos = (todosToFilter: Todo[], filters: FilterStatus) => {
     switch (filters) {
@@ -113,14 +113,14 @@ export const App: React.FC = () => {
 
   const handleDeleteTodo = async (id: number) => {
     try {
-      setProcessing(prev => [...prev, id]);
+      setProcessingIds(prev => [...prev, id]);
       await deleteTodos(id);
 
       setTodos(prev => prev.filter(todo => todo.id !== id));
     } catch {
       setErrorMessage(todosServiceErrorText.Unable_to_delete_a_todo);
     } finally {
-      setProcessing(prev => prev.filter(todoId => todoId !== id));
+      setProcessingIds(prev => prev.filter(todoId => todoId !== id));
       focusedInput.current?.focus();
     }
   };
@@ -133,7 +133,10 @@ export const App: React.FC = () => {
     }
 
     try {
-      setProcessing(prev => [...prev, ...completedTodos.map(todo => todo.id)]);
+      setProcessingIds(prev => [
+        ...prev,
+        ...completedTodos.map(todo => todo.id),
+      ]);
 
       const results = await Promise.allSettled(
         completedTodos.map(todo => deleteTodos(todo.id)),
@@ -152,7 +155,7 @@ export const App: React.FC = () => {
         setTimeout(() => setErrorMessage(null), 3000);
       }
     } finally {
-      setProcessing(prev =>
+      setProcessingIds(prev =>
         prev.filter(
           id => !todos.some(todo => todo.completed && todo.id === id),
         ),
@@ -186,7 +189,7 @@ export const App: React.FC = () => {
           />
 
           <NewTodo
-            loading={isLoading || creating}
+            isLoading={isLoading || isCreating}
             focusedInput={focusedInput}
             todoTitle={todoTitle}
             onTitleChange={setTodoTitle}
@@ -197,10 +200,10 @@ export const App: React.FC = () => {
         {hasTodos && (
           <TodoList
             todos={filteredTodos}
-            loading={isLoading}
-            processingIds={processing}
+            isLoading={isLoading}
+            processingIds={processingIds}
             onDeleteTodo={handleDeleteTodo}
-            creating={creating}
+            isCreating={isCreating}
             tempTodo={tempTodo}
           />
         )}
