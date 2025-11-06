@@ -1,9 +1,9 @@
-import { FormEvent, useEffect, useRef, useState } from 'react';
+import { FormEvent, useEffect, useMemo, useRef, useState } from 'react';
 import cn from 'classnames';
 import { deleteTodo, addTodo, getTodos, USER_ID } from './api/todos';
 import { Todo } from './types/Todo';
 
-import { QueryType } from './types/QueryType';
+import { FilterType } from './types/FilterType';
 import { Header } from './components/Header';
 import { TodoList } from './components/TodoList';
 import { Footer } from './components/Footer';
@@ -13,10 +13,9 @@ import { TodoItem } from './components/TodoItem';
 
 export const App: React.FC = () => {
   const [isSubmitting, setIsSubmitting] = useState(false);
-  const [query, setQuery] = useState<QueryType>(QueryType.All);
+  const [query, setQuery] = useState<FilterType>(FilterType.All);
   const [selectedTitle, setSelectedTitle] = useState('');
   const [todos, setTodos] = useState<Todo[]>([]);
-  const [visibleTodos, setVisibleTodos] = useState<Todo[]>(todos);
   const [loading, setLoading] = useState(false);
   const [title, setTitle] = useState('');
   const [selected, setSelected] = useState<number | null>(null);
@@ -30,7 +29,21 @@ export const App: React.FC = () => {
   const completedTodo = todos.filter(todo => todo.completed);
   const notCompletedTodosCount = todos.filter(todo => !todo.completed).length;
 
-  function addOptimisticTodo(trimmedTitle: string) {
+  const handleSubmit = (event: FormEvent<HTMLFormElement>) => {
+    event.preventDefault();
+
+    const trimmedTitle = title.trim();
+
+    if (!trimmedTitle) {
+      setErrorMessage(ErrorMessageType.TITLE);
+      setTitle('');
+      inputRef.current?.focus();
+      setIsSubmitting(false);
+
+      return;
+    }
+
+    setIsSubmitting(true);
     const newTodo = {
       completed: false,
       title: trimmedTitle,
@@ -44,29 +57,6 @@ export const App: React.FC = () => {
       completed: false,
     });
 
-    return newTodo;
-  }
-
-  const handleSubmit = (event: FormEvent<HTMLFormElement>) => {
-    event.preventDefault();
-
-    const trimmedTitle = title.trim();
-
-    if (!trimmedTitle) {
-      setErrorMessage(ErrorMessageType.TITLE);
-      setTitle('');
-      inputRef.current?.focus();
-      setIsSubmitting(false);
-      setTimeout(() => {
-        setErrorMessage(ErrorMessageType.NONE);
-      }, 3000);
-
-      return;
-    }
-
-    setIsSubmitting(true);
-    const newTodo = addOptimisticTodo(trimmedTitle);
-
     setTitle(trimmedTitle);
 
     addTodo(newTodo)
@@ -78,9 +68,6 @@ export const App: React.FC = () => {
       .catch(() => {
         setTempTodo(null);
         setErrorMessage(ErrorMessageType.ADD);
-        setTimeout(() => {
-          setErrorMessage(ErrorMessageType.NONE);
-        }, 3000);
       })
       .finally(() => {
         setIsSubmitting(false);
@@ -96,9 +83,6 @@ export const App: React.FC = () => {
       })
       .catch(() => {
         setErrorMessage(ErrorMessageType.DELETE);
-        setTimeout(() => {
-          setErrorMessage(ErrorMessageType.NONE);
-        }, 3000);
       })
       .finally(() => setDeletingTodosId([]));
   };
@@ -116,6 +100,8 @@ export const App: React.FC = () => {
     async function deleteTodosAsync() {
       const promises = ids.map(i => deleteTodo(i));
 
+      setIsSubmitting(true);
+
       try {
         const results = await Promise.allSettled(promises);
 
@@ -127,14 +113,17 @@ export const App: React.FC = () => {
             ? successIds.push(ids[i])
             : failedIds.push(ids[i]),
         );
+
+        if (failedIds.length > 0) {
+          setErrorMessage(ErrorMessageType.DELETE);
+        }
+
         setTodos(prev => prev.filter(todo => !successIds.includes(todo.id)));
       } catch {
         setErrorMessage(ErrorMessageType.DELETE);
-        setTimeout(() => {
-          setErrorMessage(ErrorMessageType.NONE);
-        }, 3000);
       } finally {
         setDeletingTodosId([]);
+        setIsSubmitting(false);
       }
     }
 
@@ -142,23 +131,23 @@ export const App: React.FC = () => {
   };
 
   useEffect(() => {
-    const filterTodos = (todosArg: Todo[], queryArg: QueryType) => {
-      setVisibleTodos(() =>
-        todosArg.filter(todo => {
-          switch (queryArg) {
-            case QueryType.Active:
-              return !todo.completed;
-            case QueryType.Completed:
-              return todo.completed;
-          }
+    setTimeout(() => {
+      setErrorMessage(ErrorMessageType.NONE);
+    }, 3000);
+  }, [errorMessage]);
 
-          return todos;
-        }),
-      );
-    };
-
-    filterTodos(todos, query);
-  }, [query, todos]);
+  const visibleTodos = useMemo(() => {
+    return todos.filter(todo => {
+      switch (query) {
+        case FilterType.Active:
+          return !todo.completed;
+        case FilterType.Completed:
+          return todo.completed;
+        default:
+          return true;
+      }
+    });
+  }, [todos, query]);
 
   useEffect(() => {
     setLoading(true);
@@ -171,9 +160,6 @@ export const App: React.FC = () => {
         setTodos(todosFromServer);
       } catch {
         setErrorMessage(ErrorMessageType.LOAD);
-        setTimeout(() => {
-          setErrorMessage(ErrorMessageType.NONE);
-        }, 3000);
       } finally {
         setLoading(false);
       }
@@ -207,7 +193,7 @@ export const App: React.FC = () => {
           deletingTodosId={deletingTodosId}
         ></TodoList>
 
-        {tempTodo !== null && (
+        {tempTodo && (
           <>
             <div
               data-cy="TodoLoader"

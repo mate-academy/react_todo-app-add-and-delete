@@ -23,6 +23,8 @@ export const TodoItem = ({
   deletingTodosId,
 }: Props) => {
   const statusInputId = `todo-${todo.id}-status`;
+  const shouldLoad =
+    deletingTodosId?.includes(todo.id) || (todo.id === 0 && isSubmitting);
 
   return (
     <div
@@ -76,9 +78,7 @@ export const TodoItem = ({
       <div
         data-cy="TodoLoader"
         className={cn('modal overlay', {
-          'is-active':
-            deletingTodosId?.includes(todo.id) ||
-            (todo.id === 0 && isSubmitting),
+          'is-active': shouldLoad,
         })}
       >
         {/* eslint-disable-next-line max-len */}

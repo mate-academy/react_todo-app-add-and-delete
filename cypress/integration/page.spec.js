@@ -696,7 +696,7 @@ describe('', () => {
     });
   });
 
-  describe.skip('Adding a first todo', () => {
+  describe('Adding a first todo', () => {
     beforeEach(() => {
       page.mockLoad({ body: [] }).as('loadRequest');
       page.visit();
@@ -849,7 +849,7 @@ describe('', () => {
     });
   });
 
-  describe.skip('Group Todo Deletion', () => {
+  describe('Group Todo Deletion', () => {
     describe('with no completed todos', () => {
       beforeEach(() => {
         page.mockLoad({ fixture: 'active-todos' }).as('loadRequest');

@@ -1,10 +1,10 @@
-import { QueryType } from '../../types/QueryType';
+import { FilterType } from '../../types/FilterType';
 import cn from 'classnames';
 
 interface Props {
   notCompletedTodosCount: number;
-  setQuery: (value: React.SetStateAction<QueryType>) => void;
-  query: string;
+  setQuery: (value: React.SetStateAction<FilterType>) => void;
+  query: FilterType;
   clearCompleted: () => void;
   completedTodoLength: number;
 }
@@ -24,38 +24,21 @@ export const Footer = ({
 
       {/* Active link should have the 'selected' class */}
       <nav className="filter" data-cy="Filter">
-        <a
-          onClick={() => setQuery(QueryType.All)}
-          href="#/"
-          className={cn('filter__link', {
-            selected: query === QueryType.All,
-          })}
-          data-cy="FilterLinkAll"
-        >
-          All
-        </a>
-
-        <a
-          onClick={() => setQuery(QueryType.Active)}
-          href="#/active"
-          className={cn('filter__link', {
-            selected: query === QueryType.Active,
-          })}
-          data-cy="FilterLinkActive"
-        >
-          Active
-        </a>
-
-        <a
-          onClick={() => setQuery(QueryType.Completed)}
-          href="#/completed"
-          className={cn('filter__link', {
-            selected: query === QueryType.Completed,
-          })}
-          data-cy="FilterLinkCompleted"
-        >
-          Completed
-        </a>
+        {Object.values(FilterType).map(t => {
+          return (
+            <a
+              key={t}
+              onClick={() => setQuery(t)}
+              href={`#/${t}`}
+              className={cn('filter__link', {
+                selected: query === t,
+              })}
+              data-cy={`FilterLink${t}`}
+            >
+              {t}
+            </a>
+          );
+        })}
       </nav>
 
       <button
