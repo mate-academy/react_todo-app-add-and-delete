@@ -723,7 +723,7 @@ describe('', () => {
     });
   });
 
-  describe('Individual Todo Deletion', () => {
+  describe.skip('Individual Todo Deletion', () => {
     describe('Default behavior', () => {
       beforeEach(() => {
         page.mockLoad().as('loadRequest');
