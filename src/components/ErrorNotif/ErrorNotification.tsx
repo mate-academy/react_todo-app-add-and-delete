@@ -23,17 +23,13 @@ export const ErrorNotification: React.FC<ErrorNotificationProps> = ({
         { hidden: !isErrorVisible },
       )}
     >
-      {errorMessage && (
-        <>
-          <button
-            data-cy="HideErrorButton"
-            type="button"
-            className="delete"
-            onClick={onClose}
-          />
-          {errorMessage}
-        </>
-      )}
+      <button
+        data-cy="HideErrorButton"
+        type="button"
+        className="delete"
+        onClick={onClose}
+      />
+      {errorMessage}
     </div>
   );
 };
