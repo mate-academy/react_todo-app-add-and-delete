@@ -4,10 +4,10 @@ import React, { FormEvent, useEffect, useRef, useState } from 'react';
 import { UserWarning } from './UserWarning';
 import { createTodo, deleteTodo, getTodos, USER_ID } from './api/todos';
 import { Todo } from './types/Todo';
-import { TodoItem } from './components/todoItem';
-import { Error } from './components/errorMessage';
-import { FilterEnum, Footer } from './components/footer';
-import { Header } from './components/header';
+import { TodoItem } from './components/TodoItem/todoItem';
+import { Error } from './components/Error/errorMessage';
+import { FilterEnum, Footer } from './components/Footer/footer';
+import { Header } from './components/Header/header';
 
 export const App: React.FC = () => {
   const [todos, setTodos] = useState<Todo[] | null>(null);
@@ -16,7 +16,7 @@ export const App: React.FC = () => {
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
   const [filteredTodos, setFilteredTodos] = useState<Todo[] | null>(todos);
   const [value, setValue] = useState('');
-  const [countOfTodos, setCountOfTodos] = useState<number>(0);
+  const [countOfTodos, setCountOfTodos] = useState(0);
   const [waiting, setWaiting] = useState(false);
   const [tempTodo, setTempTodo] = useState<Todo | null>(null);
   const [isProcessed, setIsProcessed] = useState(false);
@@ -51,13 +51,13 @@ export const App: React.FC = () => {
   useEffect(() => {
     if (filter && todos) {
       switch (filter) {
-        case 'all':
+        case FilterEnum.all:
           setFilteredTodos(todos);
           break;
-        case 'active':
+        case FilterEnum.active:
           setFilteredTodos(todos.filter(todo => !todo.completed));
           break;
-        case 'completed':
+        case FilterEnum.completed:
           setFilteredTodos(todos.filter(todo => todo.completed));
           break;
         default:
@@ -201,7 +201,6 @@ export const App: React.FC = () => {
         />
 
         <section className="todoapp__main" data-cy="TodoList">
-          {/* This todo is an active todo */}
           {filteredTodos?.map((todo: Todo) => {
             return (
               <TodoItem

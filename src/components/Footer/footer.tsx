@@ -1,6 +1,6 @@
 import classNames from 'classnames';
 import React from 'react';
-import { Todo } from '../types/Todo';
+import { Todo } from '../../types/Todo';
 
 export enum FilterEnum {
   all = 'all',
@@ -29,7 +29,6 @@ export const Footer: React.FC<Props> = ({
         {countOfTodos} items left
       </span>
 
-      {/* Active link should have the 'selected' class */}
       <nav className="filter" data-cy="Filter">
         <a
           href="#/"
@@ -65,7 +64,6 @@ export const Footer: React.FC<Props> = ({
         </a>
       </nav>
 
-      {/* this button should be disabled if there are no completed todos */}
       <button
         type="button"
         className="todoapp__clear-completed"

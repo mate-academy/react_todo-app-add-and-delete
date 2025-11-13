@@ -1,5 +1,5 @@
 import React, { MouseEvent, RefObject } from 'react';
-import { Todo } from '../types/Todo';
+import { Todo } from '../../types/Todo';
 import classNames from 'classnames';
 
 type Props = {
@@ -36,6 +36,8 @@ export const TodoItem: React.FC<Props> = ({
     });
   };
 
+  const handleToggleTodo = (todoId: number) => toggleTodoCompleted(todoId);
+
   return (
     <div
       data-cy="Todo"
@@ -52,7 +54,7 @@ export const TodoItem: React.FC<Props> = ({
           type="checkbox"
           checked={todo.completed}
           className="todo__status"
-          onChange={() => toggleTodoCompleted(todo.id)}
+          onChange={() => handleToggleTodo(todo.id)}
         />
       </label>
 
