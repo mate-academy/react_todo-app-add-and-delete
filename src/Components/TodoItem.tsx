@@ -1,30 +1,29 @@
 /* eslint-disable jsx-a11y/label-has-associated-control */
 import React, { useContext } from 'react';
-import { TodoContext } from '../Contexts/TodoContext';
-
-import { Todo } from '../types/Todo';
 import classNames from 'classnames';
+import { TodoContext } from '../Contexts/TodoContext';
+import { Todo } from '../types/Todo';
 
 type Props = {
   todo: Todo;
-  selectedTodo?: Todo | null;
+  selectedTodoId?: number | null;
   isLoading?: boolean;
-  onSelect?: (todo: Todo | null) => void;
+  onSelect?: (id: number | null) => void;
 };
 
 const TodoItemComponent: React.FC<Props> = ({
   todo,
-  selectedTodo,
+  selectedTodoId,
   isLoading = false,
   onSelect = () => {},
 }) => {
   const { onDeleteTodo, onCompleteTodo } = useContext(TodoContext);
 
   const inputId = `todo-${todo.id}`;
+  const isSelected = selectedTodoId === todo.id;
 
   return (
     <div
-      key={todo.id}
       data-cy="Todo"
       className={classNames('todo', { completed: todo.completed })}
     >
@@ -39,10 +38,10 @@ const TodoItemComponent: React.FC<Props> = ({
         />
       </label>
 
-      {selectedTodo !== todo ? (
+      {!isSelected ? (
         <>
           <span
-            onDoubleClick={() => onSelect(todo)}
+            onDoubleClick={() => onSelect(todo.id)}
             data-cy="TodoTitle"
             className="todo__title"
           >

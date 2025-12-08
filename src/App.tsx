@@ -1,6 +1,7 @@
 /* eslint-disable jsx-a11y/label-has-associated-control */
 /* eslint-disable jsx-a11y/control-has-associated-label */
 import React, {
+  createRef,
   useCallback,
   useEffect,
   useMemo,
@@ -20,24 +21,36 @@ import { AppError } from './types/Errors';
 import { TodoContext } from './Contexts/TodoContext';
 export const App: React.FC = () => {
   const [todosFromServer, setTodosFromServer] = useState<Todo[]>([]);
-  const [errorMessage, setErrorMessage] = useState<AppError | null>(null);
-  const [filter, setFilter] = useState<FilterTodo>(FilterTodo.all);
+  const [loadingIds, setLoadingIds] = useState<number[]>([]);
   const [tempTodo, setTempTodo] = useState<Todo | null>(null);
+  const [filter, setFilter] = useState<FilterTodo>(FilterTodo.all);
+  const [errorMessage, setErrorMessage] = useState<AppError | null>(null);
   const [loading, setLoading] = useState(false);
   const inputRef = useRef<HTMLInputElement>(null);
   const timerCloseId = useRef(0);
 
-  const addErrorMessage = (message: string, isServerError: boolean) => {
-    setErrorMessage({ message, isServerError });
-    timerCloseId.current = window.setTimeout(() => {
-      setErrorMessage(null);
-    }, 3000);
-  };
+  const addErrorMessage = useCallback(
+    (message: string, isServerError: boolean) => {
+      setErrorMessage({ message, isServerError });
+      timerCloseId.current = window.setTimeout(() => {
+        setErrorMessage(null);
+      }, 3000);
+    },
+    [],
+  );
 
-  const clearErrorMessage = () => {
+  const clearErrorMessage = useCallback(() => {
     window.clearTimeout(timerCloseId.current);
     timerCloseId.current = 0;
     setErrorMessage(null);
+  }, []);
+
+  const addLoadingId = (id: number) => {
+    setLoadingIds(prev => [...prev, id]);
+  };
+
+  const removeLoadingId = (id: number) => {
+    setLoadingIds(prev => prev.filter(loadingId => loadingId !== id));
   };
 
   const getTodosFromServer = useCallback(async () => {
@@ -52,47 +65,45 @@ export const App: React.FC = () => {
     } finally {
       setLoading(false);
     }
-  }, []);
+  }, [addErrorMessage]);
 
-  const addTodo = useCallback(async (title: string) => {
-    const newTodo: Todo = {
-      id: 0,
-      userId: todoApi.USER_ID,
-      title,
-      completed: false,
-      isLoading: true,
-    };
+  const addTodo = useCallback(
+    async (title: string) => {
+      const newTodo: Todo = {
+        id: 0,
+        userId: todoApi.USER_ID,
+        title,
+        completed: false,
+        nodeRef: createRef(),
+      };
 
-    setErrorMessage(null);
-    setTempTodo(newTodo);
+      setErrorMessage(null);
+      setTempTodo(newTodo);
 
-    try {
-      const createdTodo = await todoApi.addTodo(newTodo);
+      try {
+        const createdTodo = await todoApi.addTodo(newTodo);
 
-      setTodosFromServer(prev => [...prev, createdTodo]);
-    } catch (error) {
-      addErrorMessage('Unable to add a todo', true);
-      throw new Error();
-    } finally {
-      setTempTodo(null);
-    }
-  }, []);
+        setTodosFromServer(prev => [...prev, createdTodo]);
+      } catch (error) {
+        addErrorMessage('Unable to add a todo', true);
+        throw new Error();
+      } finally {
+        setTempTodo(null);
+      }
+    },
+    [addErrorMessage],
+  );
 
   const deleteTodo = async (id: number) => {
-    setTodosFromServer(prev =>
-      prev.map(todo => (todo.id === id ? { ...todo, isLoading: true } : todo)),
-    );
+    addLoadingId(id);
     try {
       await todoApi.deleteTodo(id);
       setTodosFromServer(prev => prev.filter(todo => todo.id !== id));
       inputRef.current?.focus();
     } catch (error) {
       addErrorMessage('Unable to delete a todo', true);
-      setTodosFromServer(prev =>
-        prev.map(todo =>
-          todo.id === id ? { ...todo, isLoading: false } : todo,
-        ),
-      );
+    } finally {
+      removeLoadingId(id);
     }
   };
 
@@ -135,7 +146,11 @@ export const App: React.FC = () => {
             onError={addErrorMessage}
           />
           {isTodoListVisible && (
-            <TodoList todos={filteredTodos} tempTodo={tempTodo} />
+            <TodoList
+              todos={filteredTodos}
+              tempTodo={tempTodo}
+              loadingIds={loadingIds}
+            />
           )}
           {isTodoFooterVisible && (
             <TodoFooter

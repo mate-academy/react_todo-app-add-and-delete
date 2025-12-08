@@ -47,8 +47,10 @@ const TodoFooterComponent: React.FC<Props> = ({
   ];
   const { onDeleteTodo } = useContext(TodoContext);
 
-  const completedTodos = filterTodo(todos, FilterTodo.completed);
-
+  const completedTodos = React.useMemo(
+    () => filterTodo(todos, FilterTodo.completed),
+    [todos],
+  );
   const deleteCompletedTodos = async () => {
     setIsStartDeleting(true);
     const promises = completedTodos.map(todo => onDeleteTodo(todo.id));

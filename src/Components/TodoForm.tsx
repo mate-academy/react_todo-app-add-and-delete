@@ -44,14 +44,17 @@ const TodoFormComponent: React.FC<Props> = ({
 
     try {
       setIsSubmited(true);
-      await onSubmit(normailedQuery.trim());
+      await onSubmit(normailedQuery);
       resetForm();
     } finally {
       setIsSubmited(false);
     }
   };
 
-  const completedTodos = filterTodo(todos, FilterTodo.completed);
+  const completedTodos = React.useMemo(
+    () => filterTodo(todos, FilterTodo.completed),
+    [todos],
+  );
 
   return (
     <header className="todoapp__header">

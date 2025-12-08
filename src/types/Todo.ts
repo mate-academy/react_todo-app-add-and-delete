@@ -3,5 +3,5 @@ export interface Todo {
   userId: number;
   title: string;
   completed: boolean;
-  isLoading?: boolean;
+  nodeRef: React.RefObject<unknown>;
 }
