@@ -52,10 +52,16 @@ Remove all the completed todos after the `Clear completed` button click:
 - replace `describe.skip` with `describe` for the root `describe`
 
 ## Instructions
-- Install Prettier Extention and use this [VSCode settings](https://mate-academy.github.io/fe-program/tools/vscode/settings.json) to enable format on save.
+- Install Prettier Extention and use this [VSCode settings](https://mate-academy.github.io/fe-program/tools/vscode/settings.json) to enable forma on save.
 - Implement a solution following the [React task guideline](https://github.com/mate-academy/react_task-guideline#react-tasks-guideline).
 - Use the [React TypeScript cheat sheet](https://mate-academy.github.io/fe-program/js/extra/react-typescript).
-- Replace `<your_account>` with your Github username in the [DEMO LINK](https://<your_account>.github.io/react_todo-app-add-and-delete/) and add it to the PR description.
+<<<<<<< HEAD
+- Replace `<your_account>` with your Github username in the
+[DEMO LINK](https://Mishadoloh.github.io/react_todo-app-add-and-delete/) and add it to the PR description.
+=======
+- Replace `<your_account>` with your Github username in the
+[DEMO LINK](https://Mishadoloh.github.io/react_todo-app-add-and-delete/) and add it to the PR description.
+>>>>>>> 5bc2fa08297e70bedca4118482351f7448f76821
 
 ## IF you want to implement smooth animations
 
