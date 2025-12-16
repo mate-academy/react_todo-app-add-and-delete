@@ -180,6 +180,7 @@ export const App: React.FC = () => {
                   data-cy="TodoStatus"
                   type="checkbox"
                   className="todo__status"
+                  checked
                 />
               </label>
 
@@ -218,11 +219,11 @@ export const App: React.FC = () => {
           ))}
           {tempTodo && (
             <div className="todo">
-              <label className="todo__status-label">
+              <label className="todo__status-label ">
                 <input
                   data-cy="TodoStatus"
                   type="checkbox"
-                  className="todo__status"
+                  className="todo__status "
                 />
               </label>
 
