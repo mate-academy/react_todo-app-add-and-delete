@@ -142,7 +142,7 @@ export const App: React.FC = () => {
                 setTempTodo(newTempTodo);
                 await addTodo({
                   completed: false,
-                  title: value,
+                  title: value.trim(),
                   userId: USER_ID,
                 });
                 setTempTodo(null);
@@ -180,7 +180,7 @@ export const App: React.FC = () => {
                   data-cy="TodoStatus"
                   type="checkbox"
                   className="todo__status"
-                  checked
+                  checked={item.completed}
                 />
               </label>
 
@@ -218,7 +218,7 @@ export const App: React.FC = () => {
             </div>
           ))}
           {tempTodo && (
-            <div className="todo">
+            <div data-cy="Todo" className="todo">
               <label className="todo__status-label ">
                 <input
                   data-cy="TodoStatus"
@@ -227,7 +227,7 @@ export const App: React.FC = () => {
                 />
               </label>
 
-              <span className="todo__title">{tempTodo.title}</span>
+              <span  data-cy="TodoTitle" className="todo__title">{tempTodo.title}</span>
 
               <div data-cy="TodoLoader" className="modal overlay is-active">
                 <div className="modal-background has-background-white-ter" />
@@ -243,7 +243,7 @@ export const App: React.FC = () => {
         {todosList.length > 0 && (
           <footer className="todoapp__footer" data-cy="Footer">
             <span className="todo-count" data-cy="TodosCounter">
-              {todosList.length} items left
+              {todosList.filter(item => !item.completed).length} items left
             </span>
 
             {/* Active link should have the 'selected' class */}
