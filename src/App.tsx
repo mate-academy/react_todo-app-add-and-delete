@@ -227,7 +227,9 @@ export const App: React.FC = () => {
                 />
               </label>
 
-              <span  data-cy="TodoTitle" className="todo__title">{tempTodo.title}</span>
+              <span data-cy="TodoTitle" className="todo__title">
+                {tempTodo.title}
+              </span>
 
               <div data-cy="TodoLoader" className="modal overlay is-active">
                 <div className="modal-background has-background-white-ter" />
