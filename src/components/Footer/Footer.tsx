@@ -2,25 +2,31 @@ import classNames from 'classnames';
 import './Footer.scss';
 import { StatusTypes } from '../../enums/StatusTypes';
 import React from 'react';
+import { Todo } from '../../types/Todo';
 
 type Props = {
+  todos: Todo[];
   todosCount: number;
   statusFilter: StatusTypes;
   onStatusFilter: (statusFilter: StatusTypes) => void;
+  onClearCompleted: () => void;
 };
 
 export const Footer: React.FC<Props> = ({
+  todos,
   todosCount,
   statusFilter,
   onStatusFilter,
+  onClearCompleted,
 }) => {
+  const isNoComplitedTodos = !todos.some(todo => todo.completed);
+
   return (
     <footer className="todoapp__footer" data-cy="Footer">
       <span className="todo-count" data-cy="TodosCounter">
         {todosCount} items left
       </span>
 
-      {/* Active link should have the 'selected' class */}
       <nav className="filter" data-cy="Filter">
         <a
           href="#/"
@@ -36,7 +42,7 @@ export const Footer: React.FC<Props> = ({
         <a
           href="#/active"
           className={classNames('filter__link', {
-            selected: statusFilter === 'active',
+            selected: statusFilter === StatusTypes.ACTIVE,
           })}
           data-cy="FilterLinkActive"
           onClick={() => onStatusFilter(StatusTypes.ACTIVE)}
@@ -47,7 +53,7 @@ export const Footer: React.FC<Props> = ({
         <a
           href="#/completed"
           className={classNames('filter__link', {
-            selected: statusFilter === 'completed',
+            selected: statusFilter === StatusTypes.COMPLETED,
           })}
           data-cy="FilterLinkCompleted"
           onClick={() => onStatusFilter(StatusTypes.COMPLETED)}
@@ -56,11 +62,12 @@ export const Footer: React.FC<Props> = ({
         </a>
       </nav>
 
-      {/* this button should be disabled if there are no completed todos */}
       <button
+        disabled={isNoComplitedTodos}
         type="button"
         className="todoapp__clear-completed"
         data-cy="ClearCompletedButton"
+        onClick={onClearCompleted}
       >
         Clear completed
       </button>

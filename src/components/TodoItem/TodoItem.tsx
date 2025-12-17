@@ -7,9 +7,14 @@ import './TodoItem.scss';
 type Props = {
   todo: Todo;
   loading: boolean;
+  onDelete?: () => void;
 };
 
-export const TodoItem: React.FC<Props> = ({ todo, loading }) => {
+export const TodoItem: React.FC<Props> = ({
+  todo,
+  loading,
+  onDelete = () => {},
+}) => {
   return (
     <div
       data-cy="Todo"
@@ -28,7 +33,12 @@ export const TodoItem: React.FC<Props> = ({ todo, loading }) => {
         {todo.title}
       </span>
 
-      <button type="button" className="todo__remove" data-cy="TodoDelete">
+      <button
+        type="button"
+        className="todo__remove"
+        data-cy="TodoDelete"
+        onClick={onDelete}
+      >
         ×
       </button>
 
