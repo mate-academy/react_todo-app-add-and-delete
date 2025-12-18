@@ -1,0 +1,20 @@
+[
+    {
+        "id": 0,
+        "useFulName": "",
+        "name": "All",
+        "test": "FilterLinkAll"
+    },
+    {
+        "id": 1,
+        "useFulName": "active",
+        "name": "Active",
+        "test": "FilterLinkActive"
+    },
+    {
+        "id": 2,
+        "useFulName": "completed",
+        "name": "Completed",
+        "test": "FilterLinkCompleted"
+    }
+]
