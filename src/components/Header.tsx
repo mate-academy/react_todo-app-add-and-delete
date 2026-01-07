@@ -6,6 +6,7 @@ interface Props {
   todoInputRef: React.RefObject<HTMLInputElement>;
   isEveryTodoCompleted: boolean;
   onAdd: (title: string) => Promise<void>;
+  onToggleAll: () => void;
   disabled: boolean;
 }
 
@@ -13,6 +14,7 @@ export const Header: React.FC<Props> = ({
   todoInputRef,
   isEveryTodoCompleted,
   onAdd,
+  onToggleAll,
   disabled,
 }) => {
   const [title, setTitle] = useState('');
@@ -20,11 +22,17 @@ export const Header: React.FC<Props> = ({
   const handleSubmit = (event: React.FormEvent) => {
     event.preventDefault();
 
+    if (disabled) {
+      return;
+    }
+
     const trimmedTitle = title.trim();
 
-    onAdd(trimmedTitle).then(() => {
-      setTitle('');
-    });
+    onAdd(trimmedTitle)
+      .then(() => {
+        setTitle('');
+      })
+      .catch(() => {});
   };
 
   return (
@@ -35,6 +43,7 @@ export const Header: React.FC<Props> = ({
           active: isEveryTodoCompleted,
         })}
         data-cy="ToggleAllButton"
+        onClick={onToggleAll}
       />
 
       <form onSubmit={handleSubmit}>

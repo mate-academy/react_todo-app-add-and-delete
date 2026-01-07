@@ -81,8 +81,11 @@ export const App: React.FC = () => {
   }, [todos, filter]);
 
   const handleAddTodo = async (title: string) => {
-    if (!title) {
+    const trimmedTitle = title.trim();
+
+    if (!trimmedTitle) {
       setErrorMessage(ErrorMessage.Title);
+
       throw new Error();
     }
 
@@ -91,14 +94,14 @@ export const App: React.FC = () => {
     setTempTodo({
       id: 0,
       userId: todosApi.USER_ID,
-      title,
+      title: trimmedTitle,
       completed: false,
     });
 
     try {
       const newTodo = await todosApi.addTodo({
         userId: todosApi.USER_ID,
-        title,
+        title: trimmedTitle,
         completed: false,
       });
 
@@ -141,6 +144,42 @@ export const App: React.FC = () => {
     }
   };
 
+  const handleClearCompleted = async () => {
+    setErrorMessage('');
+
+    const completedTodos = todos.filter(todo => todo.completed);
+
+    try {
+      await Promise.all(
+        completedTodos.map(todo => todosApi.deleteTodo(todo.id)),
+      );
+
+      setTodos(prevTodos => prevTodos.filter(todo => !todo.completed));
+    } catch {
+      setErrorMessage(ErrorMessage.Delete);
+    }
+  };
+
+  const handleToggleAll = async () => {
+    const allCompleted = todos.every(todo => todo.completed);
+
+    const todosToUpdate = allCompleted
+      ? todos
+      : todos.filter(todo => !todo.completed);
+
+    try {
+      await Promise.all(
+        todosToUpdate.map(todo => todosApi.updateTodo(todo.id, !allCompleted)),
+      );
+
+      setTodos(prevTodos =>
+        prevTodos.map(todo => ({ ...todo, completed: !allCompleted })),
+      );
+    } catch {
+      setErrorMessage(ErrorMessage.Update);
+    }
+  };
+
   if (!todosApi.USER_ID) {
     return <UserWarning />;
   }
@@ -154,6 +193,7 @@ export const App: React.FC = () => {
           todoInputRef={todoInput}
           isEveryTodoCompleted={isEveryTodoCompleted}
           onAdd={handleAddTodo}
+          onToggleAll={handleToggleAll}
           disabled={isAdding}
         />
 
@@ -170,6 +210,7 @@ export const App: React.FC = () => {
             filter={filter}
             onFilterChange={setFilter}
             hasCompletedTodos={hasCompletedTodos}
+            onClearCompleted={handleClearCompleted}
           />
         )}
       </div>
