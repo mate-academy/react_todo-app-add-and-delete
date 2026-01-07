@@ -6,12 +6,14 @@ interface Props {
   todos: Todo[];
   onDelete: (id: number) => void;
   onStatusChange: (id: number, completed: boolean) => void;
+  tempTodo: Todo | null;
 }
 
 export const TodoList: React.FC<Props> = ({
   todos,
   onDelete,
   onStatusChange,
+  tempTodo,
 }) => (
   <section className="todoapp__main" data-cy="TodoList">
     {todos.map(todo => (
@@ -22,5 +24,7 @@ export const TodoList: React.FC<Props> = ({
         onStatusChange={onStatusChange}
       />
     ))}
+
+    {tempTodo && <TodoItem todo={tempTodo} isLoading />}
   </section>
 );

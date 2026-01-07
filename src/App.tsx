@@ -13,22 +13,31 @@ export const App: React.FC = () => {
   const [todos, setTodos] = useState<Todo[]>([]);
   const [errorMessage, setErrorMessage] = useState<ErrorMessage | ''>('');
   const [filter, setFilter] = useState<Filter>(Filter.All);
+  const [tempTodo, setTempTodo] = useState<Todo | null>(null);
+  const [isAdding, setIsAdding] = useState(false);
   const todoInput = useRef<HTMLInputElement>(null);
 
   useEffect(() => {
-    setErrorMessage('');
+    const loadTodos = async () => {
+      setErrorMessage('');
 
-    todosApi
-      .getTodos()
-      .then(setTodos)
-      .catch(() => setErrorMessage(ErrorMessage.Load));
+      try {
+        const loadedTodos = await todosApi.getTodos();
+
+        setTodos(loadedTodos);
+      } catch {
+        setErrorMessage(ErrorMessage.Load);
+      }
+    };
+
+    loadTodos();
   }, []);
 
   useEffect(() => {
     if (todoInput.current) {
       todoInput.current.focus();
     }
-  }, [todos]);
+  }, [todos, tempTodo]);
 
   useEffect(() => {
     if (!errorMessage) {
@@ -71,35 +80,65 @@ export const App: React.FC = () => {
     return todos;
   }, [todos, filter]);
 
-  const handleTodoStatusChange = (
+  const handleAddTodo = async (title: string) => {
+    if (!title) {
+      setErrorMessage(ErrorMessage.Title);
+      throw new Error();
+    }
+
+    setErrorMessage('');
+    setIsAdding(true);
+    setTempTodo({
+      id: 0,
+      userId: todosApi.USER_ID,
+      title,
+      completed: false,
+    });
+
+    try {
+      const newTodo = await todosApi.addTodo({
+        userId: todosApi.USER_ID,
+        title,
+        completed: false,
+      });
+
+      setTodos(prevTodos => [...prevTodos, newTodo]);
+    } catch {
+      setErrorMessage(ErrorMessage.Add);
+      throw new Error();
+    } finally {
+      setIsAdding(false);
+      setTempTodo(null);
+    }
+  };
+
+  const handleTodoStatusChange = async (
     todoId: number,
     currentCompleted: boolean,
   ) => {
     setErrorMessage('');
 
-    todosApi
-      .updateTodo(todoId, !currentCompleted)
-      .then(updatedTodo => {
-        setTodos(previousTodos =>
-          previousTodos.map(todo => (todo.id === todoId ? updatedTodo : todo)),
-        );
-      })
-      .catch(() => setErrorMessage(ErrorMessage.Update));
+    try {
+      const updatedTodo = await todosApi.updateTodo(todoId, !currentCompleted);
+
+      setTodos(previousTodos =>
+        previousTodos.map(todo => (todo.id === todoId ? updatedTodo : todo)),
+      );
+    } catch {
+      setErrorMessage(ErrorMessage.Update);
+    }
   };
 
-  const handleDeleteTodo = (todoId: number) => {
+  const handleDeleteTodo = async (todoId: number) => {
     setErrorMessage('');
 
-    todosApi
-      .deleteTodo(todoId)
-      .then(() => {
-        setTodos(currentTodos =>
-          currentTodos.filter(todo => todo.id !== todoId),
-        );
-      })
-      .catch(() => {
-        setErrorMessage(ErrorMessage.Delete);
-      });
+    try {
+      await todosApi.deleteTodo(todoId);
+
+      setTodos(currentTodos => currentTodos.filter(todo => todo.id !== todoId));
+    } catch {
+      setErrorMessage(ErrorMessage.Delete);
+    }
   };
 
   if (!todosApi.USER_ID) {
@@ -114,15 +153,18 @@ export const App: React.FC = () => {
         <Header
           todoInputRef={todoInput}
           isEveryTodoCompleted={isEveryTodoCompleted}
+          onAdd={handleAddTodo}
+          disabled={isAdding}
         />
 
         <TodoList
           todos={filteredTodos}
           onDelete={handleDeleteTodo}
           onStatusChange={handleTodoStatusChange}
+          tempTodo={tempTodo}
         />
 
-        {todos.length > 0 && (
+        {(todos.length > 0 || tempTodo) && (
           <Footer
             activeTodosCount={activeTodosCount}
             filter={filter}

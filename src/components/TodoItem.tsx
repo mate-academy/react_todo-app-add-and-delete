@@ -6,14 +6,16 @@ import { Todo } from '../types/Todo';
 
 interface Props {
   todo: Todo;
-  onDelete: (id: number) => void;
-  onStatusChange: (id: number, completed: boolean) => void;
+  onDelete?: (id: number) => void;
+  onStatusChange?: (id: number, completed: boolean) => void;
+  isLoading?: boolean;
 }
 
 export const TodoItem: React.FC<Props> = ({
   todo,
-  onDelete,
-  onStatusChange,
+  onDelete = () => {},
+  onStatusChange = () => {},
+  isLoading = false,
 }) => (
   <div
     data-cy="Todo"
@@ -49,7 +51,6 @@ export const TodoItem: React.FC<Props> = ({
       {todo.title}
     </span>
 
-    {/* Remove button appears only on hover */}
     <button
       type="button"
       className="todo__remove"
@@ -59,18 +60,14 @@ export const TodoItem: React.FC<Props> = ({
       ×
     </button>
 
-    {/* overlay will cover the todo while it is being deleted or updated */}
-    <div data-cy="TodoLoader" className="modal overlay">
+    <div
+      data-cy="TodoLoader"
+      className={classNames('modal', 'overlay', {
+        'is-active': isLoading,
+      })}
+    >
       <div className="modal-background has-background-white-ter" />
       <div className="loader" />
     </div>
-
-    {/* When a todo is saving/updating/deleting - add 'is-active' to show spinner */}
-    {/*
-    <div data-cy="TodoLoader" className="modal overlay is-active">
-      <div className="modal-background has-background-white-ter" />
-      <div className="loader" />
-    </div>
-    */}
   </div>
 );
