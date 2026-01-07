@@ -7,6 +7,7 @@ interface Props {
   onDelete: (id: number) => void;
   onStatusChange: (id: number, completed: boolean) => void;
   tempTodo: Todo | null;
+  deletingTodo: number | null;
 }
 
 export const TodoList: React.FC<Props> = ({
@@ -14,6 +15,7 @@ export const TodoList: React.FC<Props> = ({
   onDelete,
   onStatusChange,
   tempTodo,
+  deletingTodo: deletingTodo,
 }) => (
   <section className="todoapp__main" data-cy="TodoList">
     {todos.map(todo => (
@@ -22,6 +24,7 @@ export const TodoList: React.FC<Props> = ({
         todo={todo}
         onDelete={onDelete}
         onStatusChange={onStatusChange}
+        isLoading={deletingTodo === todo.id}
       />
     ))}
 

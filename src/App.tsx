@@ -15,6 +15,7 @@ export const App: React.FC = () => {
   const [filter, setFilter] = useState<Filter>(Filter.All);
   const [tempTodo, setTempTodo] = useState<Todo | null>(null);
   const [isAdding, setIsAdding] = useState(false);
+  const [deletingTodo, setDeletingTodo] = useState<number | null>(null);
   const todoInput = useRef<HTMLInputElement>(null);
 
   useEffect(() => {
@@ -134,6 +135,7 @@ export const App: React.FC = () => {
 
   const handleDeleteTodo = async (todoId: number) => {
     setErrorMessage('');
+    setDeletingTodo(todoId);
 
     try {
       await todosApi.deleteTodo(todoId);
@@ -141,6 +143,8 @@ export const App: React.FC = () => {
       setTodos(currentTodos => currentTodos.filter(todo => todo.id !== todoId));
     } catch {
       setErrorMessage(ErrorMessage.Delete);
+    } finally {
+      setDeletingTodo(null);
     }
   };
 
@@ -149,13 +153,30 @@ export const App: React.FC = () => {
 
     const completedTodos = todos.filter(todo => todo.completed);
 
-    try {
-      await Promise.all(
-        completedTodos.map(todo => todosApi.deleteTodo(todo.id)),
-      );
+    // the deletion should work as several individual deletions running at the same time
+    // using Promise.allSettled
+    const results = await Promise.allSettled(
+      completedTodos.map(todo => todosApi.deleteTodo(todo.id)),
+    );
 
-      setTodos(prevTodos => prevTodos.filter(todo => !todo.completed));
-    } catch {
+    const successfulDeletedTodos: number[] = [];
+
+    completedTodos.forEach((todo, index) => {
+      if (results[index].status === 'fulfilled') {
+        successfulDeletedTodos.push(todo.id);
+      }
+    });
+
+    const rejectedCount = results.filter(
+      result => result.status === 'rejected',
+    ).length;
+    const hasErrors = rejectedCount > 0;
+
+    setTodos(previousTodos =>
+      previousTodos.filter(todo => !successfulDeletedTodos.includes(todo.id)),
+    );
+
+    if (hasErrors) {
       setErrorMessage(ErrorMessage.Delete);
     }
   };
@@ -202,6 +223,7 @@ export const App: React.FC = () => {
           onDelete={handleDeleteTodo}
           onStatusChange={handleTodoStatusChange}
           tempTodo={tempTodo}
+          deletingTodo={deletingTodo}
         />
 
         {(todos.length > 0 || tempTodo) && (
