@@ -121,6 +121,16 @@
   transition: max-height 0.3s ease-in-out;
 }
 
+.item-appear {
+  max-height: 0;
+}
+
+.item-appear-active {
+  overflow: hidden;
+  max-height: 58px;
+  transition: max-height 0.3s ease-in-out;
+}
+
 .temp-item-enter {
   max-height: 0;
 }
