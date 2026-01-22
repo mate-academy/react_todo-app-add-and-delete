@@ -36,7 +36,9 @@ export const NewTodo: React.FC<Props> = ({
     const newTitle = title.trim();
 
     if (newTitle) {
-      onSubmit(newTitle).then(reset);
+      onSubmit(newTitle)
+        .then(reset)
+        .catch(() => setTitle(title));
     } else {
       onErrorInput();
     }

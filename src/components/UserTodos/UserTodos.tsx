@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useMemo } from 'react';
+import React, { useState, useEffect, useMemo, useRef } from 'react';
 import { Todo } from './../../types/Todo';
 
 import { FILTERS } from './../../constants/Filters';
@@ -24,6 +24,7 @@ export const UserTodos: React.FC<Props> = ({ userId }) => {
   const [disabledInput, setDisabledInput] = useState(false);
   const [tempTodo, setTempTodo] = useState<Todo | null>(null);
   const [affectedTodoIds, setAffectedTodoIds] = useState<number[]>([]);
+  const timerRef = useRef<number | null>(null);
 
   const resetErrorMessage = () => {
     setErrorMessage('');
@@ -35,7 +36,7 @@ export const UserTodos: React.FC<Props> = ({ userId }) => {
       .getTodos()
       .then(setTodos)
       .catch(() => {
-        setErrorMessage('Unable to load todos');
+        setErrorMessage(ERROR_MESSAGES.load);
       })
       .finally(() => {
         setLoading(false);
@@ -45,8 +46,12 @@ export const UserTodos: React.FC<Props> = ({ userId }) => {
   useEffect(loadTodos, [userId]);
 
   useEffect(() => {
+    if (timerRef.current !== null) {
+      clearTimeout(timerRef.current);
+    }
+
     if (errorMessage) {
-      setTimeout(resetErrorMessage, 3000);
+      timerRef.current = window.setTimeout(resetErrorMessage, 3000);
     }
   }, [errorMessage]);
 
