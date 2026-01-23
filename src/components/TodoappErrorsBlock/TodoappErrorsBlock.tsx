@@ -1,8 +1,9 @@
 import cl from 'classnames';
+import { ErrorMessage } from '../../types/ErrorMessage';
 
 type Props = {
   errorMessage: string;
-  onDelete: (value: string) => void;
+  onDelete: (value: ErrorMessage | '') => void;
 };
 
 export const TodoappErrorsBlock: React.FC<Props> = ({

@@ -2,17 +2,20 @@ import React, { useState, useEffect } from 'react';
 import { TodoappHeader } from './components/TodoappHeader';
 import { Todo } from './types/Todo';
 import { Filter } from './types/Filter';
-import { getTodos } from './api/todos';
-import { TodoList } from './components/TodoList/TodoList';
+import { createTodo, deleteTodo, getTodos, USER_ID } from './api/todos';
+import { TodoList } from './components/TodoList';
 import { TodoappErrorsBlock } from './components/TodoappErrorsBlock';
 import { TodoappFooter } from './components/TodoappFooter';
 import { ErrorMessage } from './types/ErrorMessage';
+import { TodoListItem } from './components/TodoListItem';
 
 export const App: React.FC = () => {
   const [todos, setTodos] = useState<Todo[]>([]);
-  const [errorMessage, setErrorMessage] = useState('');
+  const [errorMessage, setErrorMessage] = useState<ErrorMessage | ''>('');
   const [inputValue, setInputValue] = useState('');
   const [filter, setFilter] = useState<Filter>(Filter.All);
+  const [tempTodo, setTempTodo] = useState<Todo | null>(null);
+  const [loadingTodoIds, setLoadingTodoIds] = useState<number[]>([]);
 
   useEffect(() => {
     setErrorMessage('');
@@ -24,6 +27,76 @@ export const App: React.FC = () => {
         setTimeout(() => setErrorMessage(''), 3000);
       });
   }, []);
+
+  const handleAddTodo = (title: string): Promise<void> => {
+    setTempTodo({
+      id: 0,
+      userId: USER_ID,
+      completed: false,
+      title,
+    });
+
+    return createTodo({
+      title,
+      userId: USER_ID,
+      completed: false,
+    })
+      .then(newTodo => {
+        setTodos(currentTodos => [...currentTodos, newTodo]);
+        setTempTodo(null);
+        setInputValue('');
+      })
+      .catch(() => {
+        setErrorMessage(ErrorMessage.AddTodo);
+        setTempTodo(null);
+        setTimeout(() => {
+          setErrorMessage('');
+        }, 3000);
+
+        throw new Error();
+      });
+  };
+
+  const handleDeleteTodo = (todoId: number): Promise<void> => {
+    setLoadingTodoIds(prevIds => [...prevIds, todoId]);
+
+    return deleteTodo(todoId)
+      .then(() => {
+        setTodos(currentTodos =>
+          currentTodos.filter(todo => todo.id !== todoId),
+        );
+      })
+      .catch(() => {
+        setErrorMessage(ErrorMessage.DeleteTodo);
+        setTimeout(() => setErrorMessage(''), 3000);
+      })
+      .finally(() =>
+        setLoadingTodoIds(prevIds => prevIds.filter(id => id !== todoId)),
+      );
+  };
+
+  const handleDeleteAllCompleted = () => {
+    const completedTodos = todos.filter(todo => todo.completed);
+    const completedIds = completedTodos.map(todo => todo.id);
+
+    setLoadingTodoIds(prevIds => [...prevIds, ...completedIds]);
+
+    const promises = completedTodos.map(todo => deleteTodo(todo.id));
+
+    Promise.all(promises)
+      .then(() =>
+        setTodos(currentTodos => currentTodos.filter(todo => !todo.completed)),
+      )
+      .catch(() => {
+        setErrorMessage(ErrorMessage.DeleteTodo);
+        setTimeout(() => setErrorMessage(''), 3000);
+      })
+      .finally(() =>
+        setLoadingTodoIds(prevIds =>
+          prevIds.filter(id => !completedIds.includes(id)),
+        ),
+      );
+  };
 
   const visibleTodos = [...todos].filter(todo => {
     if (filter === Filter.Active) {
@@ -42,14 +115,29 @@ export const App: React.FC = () => {
       <h1 className="todoapp__title">todos</h1>
 
       <div className="todoapp__content">
-        <TodoappHeader inputValue={inputValue} onInputChange={setInputValue} />
-        {todos.length > 0 && (
+        <TodoappHeader
+          inputValue={inputValue}
+          onAddTodo={handleAddTodo}
+          onInputChange={setInputValue}
+          changeError={setErrorMessage}
+        />
+        {(todos.length > 0 || tempTodo) && (
           <>
-            <TodoList todos={visibleTodos} />
+            <TodoList
+              todos={visibleTodos}
+              onDeleteTodo={handleDeleteTodo}
+              loadingTodoIds={loadingTodoIds}
+            />
+
+            {tempTodo && (
+              <TodoListItem todo={tempTodo} onDeleteTodo={handleDeleteTodo} />
+            )}
+
             <TodoappFooter
               todos={todos}
               selectedFilter={filter}
               onFilterChange={setFilter}
+              onClearCompleted={handleDeleteAllCompleted}
             />
           </>
         )}

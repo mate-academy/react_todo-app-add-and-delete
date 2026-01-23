@@ -7,12 +7,14 @@ import { Filter } from '../../types/Filter';
 type Props = {
   todos: Todo[];
   selectedFilter: string;
+  onClearCompleted: () => void;
   onFilterChange: (value: Filter) => void;
 };
 
 export const TodoappFooter: React.FC<Props> = ({
   todos,
   selectedFilter,
+  onClearCompleted,
   onFilterChange,
 }) => {
   const activeCount = todos.filter(todo => !todo.completed).length;
@@ -63,6 +65,7 @@ export const TodoappFooter: React.FC<Props> = ({
         type="button"
         className="todoapp__clear-completed"
         data-cy="ClearCompletedButton"
+        onClick={onClearCompleted}
         disabled={completedCount === 0}
       >
         Clear completed
