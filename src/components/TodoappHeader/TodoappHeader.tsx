@@ -1,8 +1,9 @@
-import { useEffect, useRef, useState } from 'react';
+import { useEffect, useState } from 'react';
 import { ErrorMessage } from '../../types/ErrorMessage';
 
 type Props = {
   inputValue: string;
+  todoInputRef: React.RefObject<HTMLInputElement>;
   changeError: (newErrorText: ErrorMessage | '') => void;
   onInputChange: (value: string) => void;
   onAddTodo: (title: string) => Promise<void>;
@@ -10,24 +11,23 @@ type Props = {
 
 export const TodoappHeader: React.FC<Props> = ({
   inputValue,
+  todoInputRef,
   changeError,
   onInputChange,
   onAddTodo,
 }) => {
   const [isLoading, setIsLoading] = useState(false);
 
-  const inputRef = useRef<HTMLInputElement>(null);
-
   useEffect(() => {
-    if (inputRef.current) {
-      inputRef.current.focus();
+    if (todoInputRef.current) {
+      todoInputRef.current.focus();
     }
-  }, [isLoading]);
+  }, [isLoading, todoInputRef]);
 
-  const handleSubmit = (event: React.FormEvent, title: string) => {
+  const handleSubmit = (event: React.FormEvent) => {
     event.preventDefault();
 
-    const normalizedValue = title.trim();
+    const normalizedValue = inputValue.trim();
 
     if (normalizedValue === '') {
       changeError(ErrorMessage.EmptyTitle);
@@ -35,8 +35,13 @@ export const TodoappHeader: React.FC<Props> = ({
       return;
     }
 
+    changeError('');
+
     setIsLoading(true);
-    onAddTodo(normalizedValue).finally(() => setIsLoading(false));
+    onAddTodo(normalizedValue)
+      .then(() => onInputChange(''))
+      .catch(() => {})
+      .finally(() => setIsLoading(false));
   };
 
   return (
@@ -49,9 +54,9 @@ export const TodoappHeader: React.FC<Props> = ({
       />
 
       {/* Add a todo on form submit */}
-      <form onSubmit={e => handleSubmit(e, inputValue)}>
+      <form onSubmit={e => handleSubmit(e)}>
         <input
-          ref={inputRef}
+          ref={todoInputRef}
           data-cy="NewTodoField"
           type="text"
           className="todoapp__new-todo"

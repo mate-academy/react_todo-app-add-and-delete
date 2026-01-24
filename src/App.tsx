@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { TodoappHeader } from './components/TodoappHeader';
 import { Todo } from './types/Todo';
 import { Filter } from './types/Filter';
@@ -17,15 +17,19 @@ export const App: React.FC = () => {
   const [tempTodo, setTempTodo] = useState<Todo | null>(null);
   const [loadingTodoIds, setLoadingTodoIds] = useState<number[]>([]);
 
+  const todoInputRef = useRef<HTMLInputElement>(null);
+
+  const showError = (text: ErrorMessage | '') => {
+    setErrorMessage(text);
+    setTimeout(() => setErrorMessage(''), 3000);
+  };
+
   useEffect(() => {
     setErrorMessage('');
 
     getTodos()
       .then(setTodos)
-      .catch(() => {
-        setErrorMessage(ErrorMessage.LoadTodos);
-        setTimeout(() => setErrorMessage(''), 3000);
-      });
+      .catch(() => showError(ErrorMessage.LoadTodos));
   }, []);
 
   const handleAddTodo = (title: string): Promise<void> => {
@@ -47,11 +51,8 @@ export const App: React.FC = () => {
         setInputValue('');
       })
       .catch(() => {
-        setErrorMessage(ErrorMessage.AddTodo);
+        showError(ErrorMessage.AddTodo);
         setTempTodo(null);
-        setTimeout(() => {
-          setErrorMessage('');
-        }, 3000);
 
         throw new Error();
       });
@@ -65,10 +66,11 @@ export const App: React.FC = () => {
         setTodos(currentTodos =>
           currentTodos.filter(todo => todo.id !== todoId),
         );
+
+        todoInputRef.current?.focus();
       })
       .catch(() => {
-        setErrorMessage(ErrorMessage.DeleteTodo);
-        setTimeout(() => setErrorMessage(''), 3000);
+        showError(ErrorMessage.DeleteTodo);
       })
       .finally(() =>
         setLoadingTodoIds(prevIds => prevIds.filter(id => id !== todoId)),
@@ -81,15 +83,23 @@ export const App: React.FC = () => {
 
     setLoadingTodoIds(prevIds => [...prevIds, ...completedIds]);
 
-    const promises = completedTodos.map(todo => deleteTodo(todo.id));
+    const promises = completedTodos.map(todo =>
+      deleteTodo(todo.id)
+        .then(() => todo.id)
+        .catch(() => null),
+    );
 
     Promise.all(promises)
-      .then(() =>
-        setTodos(currentTodos => currentTodos.filter(todo => !todo.completed)),
-      )
-      .catch(() => {
-        setErrorMessage(ErrorMessage.DeleteTodo);
-        setTimeout(() => setErrorMessage(''), 3000);
+      .then(result => {
+        setTodos(currentTodos =>
+          currentTodos.filter(todo => !result.includes(todo.id)),
+        );
+
+        if (result.includes(null)) {
+          showError(ErrorMessage.DeleteTodo);
+        }
+
+        todoInputRef.current?.focus();
       })
       .finally(() =>
         setLoadingTodoIds(prevIds =>
@@ -116,10 +126,11 @@ export const App: React.FC = () => {
 
       <div className="todoapp__content">
         <TodoappHeader
+          todoInputRef={todoInputRef}
           inputValue={inputValue}
           onAddTodo={handleAddTodo}
           onInputChange={setInputValue}
-          changeError={setErrorMessage}
+          changeError={showError}
         />
         {(todos.length > 0 || tempTodo) && (
           <>
