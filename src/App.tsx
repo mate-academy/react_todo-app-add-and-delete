@@ -27,18 +27,15 @@ export const App: React.FC = () => {
   const [isCreating, setIsCreating] = useState(false);
   const inputRef = useRef<HTMLInputElement>(null);
 
-  const fetchTodos = async () => {
+  useEffect(() => {
     getTodos()
       .then(data => {
         setTodosFromServer(data);
         setTodos(data);
       })
       .catch(() => setErrorMessage('Unable to load todos'));
-  };
-
-  useEffect(() => {
-    fetchTodos();
   }, []);
+  // const fetchTodos = async () => {};
 
   useEffect(() => {
     if (error) {
@@ -110,14 +107,62 @@ export const App: React.FC = () => {
           completed: response.completed,
         },
       ]);
+
+      setTitle('');
     } catch {
       setErrorMessage('Unable to add a todo');
       setTodos([...todos].filter(todo => todo.id !== newTodo.id));
     } finally {
-      setTitle('');
       setIsCreating(false);
       inputRef.current?.focus();
     }
+  };
+
+  const handleDelete = async (todo: Todo) => {
+    setIsLoaded([todo.id]);
+
+    try {
+      await client.delete(`/todos/${todo.id}`);
+      setIsLoaded(null);
+      setTodos([...todos].filter(t => t.id !== todo.id));
+      setTodosFromServer([...todosFromServer].filter(t => t.id !== todo.id));
+    } catch {
+      setErrorMessage('Unable to delete a todo');
+    } finally {
+      setIsLoaded(null);
+      inputRef.current?.focus();
+    }
+  };
+
+  const handleClear = async () => {
+    const result = todosFromServer
+      .filter(todo => todo.completed)
+      .map(todo => todo.id);
+
+    setIsLoaded(result);
+
+    const results = await Promise.allSettled(
+      result.map(id => client.delete(`/todos/${id}`)),
+    );
+    const succesfulIds = results.flatMap((r, i) =>
+      r.status === 'fulfilled' ? result[i] : [],
+    );
+
+    const hasError = results.some(r => r.status === 'rejected');
+
+    if (succesfulIds.length > 0) {
+      setTodos(prev => prev.filter(t => !succesfulIds.includes(t.id)));
+      setTodosFromServer(prev =>
+        prev.filter(t => !succesfulIds.includes(t.id)),
+      );
+    }
+
+    if (hasError) {
+      setErrorMessage('Unable to delete a todo');
+    }
+
+    setIsLoaded(null);
+    inputRef.current?.focus();
   };
 
   return (
@@ -200,18 +245,7 @@ export const App: React.FC = () => {
                       type="button"
                       className="todo__remove"
                       data-cy="TodoDelete"
-                      onClick={async () => {
-                        setIsLoaded([todo.id]);
-                        try {
-                          await client.delete(`/todos/${todo.id}`);
-                          setIsLoaded(null);
-                        } catch {
-                          setErrorMessage('Unable to delete a todo');
-                        } finally {
-                          setIsLoaded(null);
-                          fetchTodos();
-                        }
-                      }}
+                      onClick={() => handleDelete(todo)}
                     >
                       ×
                     </button>
@@ -237,8 +271,9 @@ export const App: React.FC = () => {
         {todosFromServer.length > 0 && (
           <footer className="todoapp__footer" data-cy="Footer">
             <span className="todo-count" data-cy="TodosCounter">
-              {[...todosFromServer].filter(todo => !todo.completed).length}{' '}
-              items left
+              {[...todosFromServer].filter(todo => !todo.completed).length === 1
+                ? '1 item'
+                : `${[...todosFromServer].filter(todo => !todo.completed).length} items left`}
             </span>
 
             <nav className="filter" data-cy="Filter">
@@ -282,24 +317,8 @@ export const App: React.FC = () => {
               type="button"
               className="todoapp__clear-completed"
               data-cy="ClearCompletedButton"
-              onClick={async () => {
-                const temp = todosFromServer.filter(todo => todo.completed);
-                const result = temp.map(todo => todo.id);
-
-                setIsLoaded(result);
-                try {
-                  for (let i = 0; i < result.length; i++) {
-                    await client.delete(`/todos/${result[i]}`);
-                  }
-
-                  setIsLoaded(null);
-                } catch {
-                  setErrorMessage('Unable to delete a todo');
-                } finally {
-                  setIsLoaded(null);
-                  fetchTodos();
-                }
-              }}
+              disabled={[...todos].filter(t => t.completed).length === 0}
+              onClick={handleClear}
             >
               Clear completed
             </button>
