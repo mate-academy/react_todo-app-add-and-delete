@@ -17,6 +17,22 @@ export const App: React.FC = () => {
   const newTodoRef = useRef<HTMLInputElement>(null);
   const activeCount = todos.filter(t => !t.completed).length;
 
+  const hideNotification = () => {
+    if (timeRef.current) {
+      clearTimeout(timeRef.current);
+      timeRef.current = null;
+    }
+
+    setErrorMessage('');
+  };
+
+  const showNotification = useCallback((message: string) => {
+    hideNotification();
+    setErrorMessage(message);
+    timeRef.current = window.setTimeout(() => {
+      hideNotification();
+    }, 3000);
+  }, []);
   const handleDeleteTodo = async (id: number) => {
     setProcessings(prev => new Set(prev).add(id));
 
@@ -28,7 +44,9 @@ export const App: React.FC = () => {
     } finally {
       setProcessings(prev => {
         const copy = new Set(prev);
+
         copy.delete(id);
+
         return copy;
       });
     }
@@ -41,7 +59,9 @@ export const App: React.FC = () => {
 
     setProcessings(prev => {
       const copy = new Set(prev);
+
       completedIds.forEach(id => copy.add(id));
+
       return copy;
     });
 
@@ -59,27 +79,12 @@ export const App: React.FC = () => {
 
     setProcessings(prev => {
       const copy = new Set(prev);
+
       completedIds.forEach(id => copy.delete(id));
+
       return copy;
     });
   };
-
-  const hideNotification = () => {
-    if (timeRef.current) {
-      clearTimeout(timeRef.current);
-      timeRef.current = null;
-    }
-
-    setErrorMessage('');
-  };
-
-  const showNotification = useCallback((message: string) => {
-    hideNotification();
-    setErrorMessage(message);
-    timeRef.current = window.setTimeout(() => {
-      hideNotification();
-    }, 3000);
-  }, []);
 
   useEffect(() => {
     return () => {
@@ -145,8 +150,10 @@ export const App: React.FC = () => {
             onSubmit={async event => {
               event.preventDefault();
               const title = newTodoRef.current?.value.trim() || '';
+
               if (!title) {
                 showNotification('Title should not be empty');
+
                 return;
               }
 
@@ -167,7 +174,9 @@ export const App: React.FC = () => {
 
                 setTodos(prev => [...prev, newTodo]);
 
-                if (newTodoRef.current) newTodoRef.current.value = '';
+                if (newTodoRef.current) {
+                  newTodoRef.current.value = '';
+                }
               } catch (error) {
                 showNotification('Unable to add a todo');
               } finally {
@@ -226,6 +235,7 @@ export const App: React.FC = () => {
                     className="todo__remove"
                     data-cy="TodoDelete"
                     onClick={() => handleDeleteTodo(todo.id)}
+                    disabled={processings.has(todo.id)}
                   >
                     ×
                   </button>
