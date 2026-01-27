@@ -23,7 +23,32 @@ export const App: React.FC = () => {
   const [filter, setFilter] = useState<FilterType>('all');
   const [inputValue, setInputValue] = useState<string>('');
   const [isLoading, setIsLoading] = useState<boolean>(false);
+  const [loadingTodoIds, setLoadingTodoIds] = useState<Set<number>>(
+    () => new Set(),
+  );
   const todoHeaderRef = useRef<TodoHeaderHandle>(null);
+
+  const addLoadingIds = (ids: number[]) => {
+    if (ids.length === 0) {
+      return;
+    }
+
+    setLoadingTodoIds(prev => new Set([...Array.from(prev), ...ids]));
+  };
+
+  const removeLoadingIds = (ids: number[]) => {
+    if (ids.length === 0) {
+      return;
+    }
+
+    setLoadingTodoIds(prev => {
+      const next = new Set(prev);
+
+      ids.forEach(id => next.delete(id));
+
+      return next;
+    });
+  };
 
   const filterTodos = (todosList: Todo[], filterType: FilterType) => {
     switch (filterType) {
@@ -120,13 +145,25 @@ export const App: React.FC = () => {
     const allCompleted = todos.every(t => t.completed);
     const newCompleted = !allCompleted;
 
-    Promise.all(
+    const idsToUpdate = todos
+      .filter(todo => todo.completed !== newCompleted)
+      .map(todo => todo.id);
+
+    addLoadingIds(idsToUpdate);
+
+    Promise.allSettled(
       todos.map(todo =>
         todo.completed === newCompleted
           ? Promise.resolve()
           : handlers.onUpdate(todo.id, newCompleted),
       ),
-    ).catch(() => setError('Unable to toggle todos'));
+    )
+      .then(results => {
+        if (results.some(r => r.status === 'rejected')) {
+          setError('Unable to toggle todos');
+        }
+      })
+      .finally(() => removeLoadingIds(idsToUpdate));
   };
 
   const handleDeleteCompleted = () => {
@@ -134,11 +171,19 @@ export const App: React.FC = () => {
       .filter(todo => todo.completed)
       .map(todo => todo.id);
 
-    Promise.all(completedIds.map(id => handlers.onDelete(id)))
-      .then(() => {
+    addLoadingIds(completedIds);
+
+    Promise.allSettled(completedIds.map(id => handlers.onDelete(id)))
+      .then(results => {
+        if (results.some(r => r.status === 'rejected')) {
+          setError('Unable to delete a todo');
+
+          return;
+        }
+
         handleFocusInput();
       })
-      .catch(() => setError('Unable to delete a todo'));
+      .finally(() => removeLoadingIds(completedIds));
   };
 
   // #region Effects
@@ -198,6 +243,7 @@ export const App: React.FC = () => {
               allTodos={todos}
               filter={filter}
               handlers={handlers}
+              loadingTodoIds={loadingTodoIds}
               onDeleteCompleted={handleDeleteCompleted}
               onFocusInput={handleFocusInput}
             />

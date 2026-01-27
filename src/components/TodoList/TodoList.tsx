@@ -10,6 +10,7 @@ interface TodoListProps {
   allTodos: Todo[];
   filter: FilterType;
   handlers: TodoHandlers;
+  loadingTodoIds: Set<number>;
   onDeleteCompleted: () => void;
   onFocusInput?: () => void;
 }
@@ -19,6 +20,7 @@ export const TodoList: React.FC<TodoListProps> = ({
   allTodos,
   filter,
   handlers,
+  loadingTodoIds,
   onDeleteCompleted,
   onFocusInput,
 }) => {
@@ -30,6 +32,7 @@ export const TodoList: React.FC<TodoListProps> = ({
           todo={todo}
           handlers={handlers}
           onFocusInput={onFocusInput}
+          isProcessing={loadingTodoIds.has(todo.id)}
         />
       ))}
       <ListFooter

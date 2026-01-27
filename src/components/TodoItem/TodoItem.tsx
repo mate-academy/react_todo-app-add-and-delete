@@ -10,12 +10,14 @@ interface TodoItemProps {
   todo: Todo;
   handlers: TodoHandlers;
   onFocusInput?: () => void;
+  isProcessing?: boolean;
 }
 
 export const TodoItem: React.FC<TodoItemProps> = ({
   todo,
   handlers,
   onFocusInput,
+  isProcessing = false,
 }) => {
   const [state, setState] = useState<TodoItemState>('view');
   const [editingTitle, setEditingTitle] = useState(todo.title);
@@ -23,7 +25,7 @@ export const TodoItem: React.FC<TodoItemProps> = ({
   const wasEditingRef = useRef<boolean>(false);
 
   const isTempTodo = todo.id === 0;
-  const isLoading = state === 'saving' || isTempTodo;
+  const isLoading = state === 'saving' || isTempTodo || isProcessing;
   const isEditing = state === 'editing';
   const showEditor = isEditing || (state === 'saving' && wasEditingRef.current);
 
@@ -92,10 +94,10 @@ export const TodoItem: React.FC<TodoItemProps> = ({
           <span
             data-cy="TodoTitle"
             className="todo__title"
-            onDoubleClick={() => {
-              wasEditingRef.current = true;
-              setState('editing');
-            }}
+            onDoubleClick={
+              // eslint-disable-next-line max-len, prettier/prettier, brace-style
+              isLoading ? undefined : () => { wasEditingRef.current = true; setState('editing'); }
+            }
           >
             {todo.title}
           </span>
