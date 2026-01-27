@@ -70,6 +70,11 @@ export const TodoItem: React.FC<TodoItemProps> = ({
     }
   };
 
+  const handleDoubleClick = () => {
+    wasEditingRef.current = true;
+    setState('editing');
+  };
+
   return (
     <div data-cy="Todo" className={`todo ${todo.completed ? 'completed' : ''}`}>
       <label className="todo__status-label">
@@ -94,10 +99,7 @@ export const TodoItem: React.FC<TodoItemProps> = ({
           <span
             data-cy="TodoTitle"
             className="todo__title"
-            onDoubleClick={
-              // eslint-disable-next-line max-len, prettier/prettier, brace-style
-              isLoading ? undefined : () => { wasEditingRef.current = true; setState('editing'); }
-            }
+            onDoubleClick={isLoading ? undefined : handleDoubleClick}
           >
             {todo.title}
           </span>
