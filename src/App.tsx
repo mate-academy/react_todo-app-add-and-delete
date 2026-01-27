@@ -123,7 +123,22 @@ export const App: React.FC = () => {
   const handleDeleteCompleted = () => {
     const completedTodos = todos.filter(todo => todo.completed);
 
-    completedTodos.map(todo => handleDeleteTodo(todo.id));
+    const deletePromises = completedTodos.map(todo =>
+      handleDeleteTodo(todo.id),
+    );
+
+    Promise.all(deletePromises)
+      .then(() => {
+        setTodos(prevTodos => prevTodos.filter(todo => !todo.completed));
+
+        setDeletingTodoId(null);
+      })
+      .catch(() => {
+        handleError('Unable to delete a todo');
+      })
+      .finally(() => {
+        setDeletingTodoId(null);
+      });
   };
 
   return (
