@@ -8,7 +8,7 @@ import cn from 'classnames';
 type Props = {
   todo: Todo;
   handleDeleteTodo: (todoId: number) => void;
-  deletingTodoId: number | null;
+  deletingTodoId: number[] | null;
 };
 
 export const TodoItem: React.FC<Props> = ({
@@ -51,7 +51,7 @@ export const TodoItem: React.FC<Props> = ({
         <div
           data-cy="TodoLoader"
           className={cn('modal overlay', {
-            'is-active': id === 0 || id === deletingTodoId,
+            'is-active': id === 0 || deletingTodoId?.includes(id),
           })}
         >
           <div className="modal-background has-background-white-ter" />

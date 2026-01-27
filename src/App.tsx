@@ -25,7 +25,7 @@ export const App: React.FC = () => {
 
   const [tempTodo, setTempTodo] = useState<Todo | null>(null);
   const [isError, setIsError] = useState<ErrorType | null>(null);
-  const [deletingTodoId, setDeletingTodoId] = useState<number | null>(null);
+  const [deletingTodoId, setDeletingTodoId] = useState<number[] | null>(null);
   const [title, setTitle] = useState('');
 
   const inputRef = useRef<HTMLInputElement | null>(null);
@@ -101,7 +101,7 @@ export const App: React.FC = () => {
   };
 
   const handleDeleteTodo = (todoId: number) => {
-    setDeletingTodoId(todoId);
+    setDeletingTodoId(prev => (prev ? [...prev, todoId] : [todoId]));
 
     deleteTodo(todoId)
       .then(() => {
@@ -111,7 +111,9 @@ export const App: React.FC = () => {
         setIsError('Unable to delete a todo');
       })
       .finally(() => {
-        setDeletingTodoId(null);
+        setDeletingTodoId(prev =>
+          prev ? prev.filter(id => id !== todoId) : null,
+        );
         inputRef.current?.focus();
       });
   };

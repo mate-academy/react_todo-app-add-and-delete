@@ -6,7 +6,7 @@ type Props = {
   todos: Todo[];
   tempTodo: Todo | null;
   handleDeleteTodo: (todoId: number) => void;
-  deletingTodoId: number | null;
+  deletingTodoId: number[] | null;
 };
 
 export const TodoList: React.FC<Props> = ({
