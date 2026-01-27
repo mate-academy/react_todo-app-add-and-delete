@@ -184,7 +184,7 @@ export const App: React.FC = () => {
 
       setTodos(prev => [...prev, newTodo]);
       newTodoRef.current!.value = '';
-      setTimeout(() => newTodoRef.current?.focus(), 0); // Фокус після рендера
+      setTimeout(() => newTodoRef.current?.focus(), 0);
     } catch {
       showNotification('Unable to add a todo');
     } finally {
