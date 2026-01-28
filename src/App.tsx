@@ -1,21 +1,22 @@
 /* eslint-disable jsx-a11y/label-has-associated-control */
 /* eslint-disable jsx-a11y/control-has-associated-label */
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useMemo, useState } from 'react';
 import cn from 'classnames';
 import { UserWarning } from './UserWarning';
 import { createNewTodo, deleteTodo, getTodos, USER_ID } from './api/todos';
 import { Todo } from './types/Todo';
-import { FilterParameters } from './types/filterParameters';
 import { Header } from './components/Header';
 import { TodoList } from './components/TodoList';
 import { Footer } from './components/Footer';
+import { FilterType } from './types/filterType';
+import { ErrorMessages } from './types/Errors';
 
 export const App: React.FC = () => {
   const inputField = React.useRef<HTMLInputElement>(null);
 
   const [todos, setTodos] = useState<Todo[]>([]);
   const [error, setError] = useState<string>('');
-  const [filter, setFilter] = useState<FilterParameters>('all');
+  const [filter, setFilter] = useState<FilterType>(FilterType.All);
 
   const [title, setTitle] = useState<string>('');
   const [loading, setLoading] = useState<boolean>(false);
@@ -23,15 +24,15 @@ export const App: React.FC = () => {
   const [deletingTodoId, setDeletingTodoId] = useState<number[]>([]);
 
   const filteredTodos = todos.filter(todo => {
-    if (filter === 'active') {
-      return !todo.completed;
+    switch (filter) {
+      case FilterType.Active:
+        return !todo.completed;
+      case FilterType.Completed:
+        return todo.completed;
+      case FilterType.All:
+      default:
+        return true;
     }
-
-    if (filter === 'completed') {
-      return todo.completed;
-    }
-
-    return true;
   });
 
   useEffect(() => {
@@ -40,7 +41,7 @@ export const App: React.FC = () => {
     getTodos()
       .then(setTodos)
       .catch(() => {
-        setError('Unable to load todos');
+        setError(ErrorMessages.LoadTodos);
       });
   }, []);
 
@@ -62,17 +63,13 @@ export const App: React.FC = () => {
     }
   }, [loading]);
 
-  if (!USER_ID) {
-    return <UserWarning />;
-  }
-
   const handleSubmit = (event: React.FormEvent) => {
     event.preventDefault();
 
     const trimmedTitle = title.trim();
 
     if (!trimmedTitle) {
-      setError('Title should not be empty');
+      setError(ErrorMessages.EmptyTitle);
 
       return;
     }
@@ -93,7 +90,7 @@ export const App: React.FC = () => {
         setTodos(prevTodos => [...prevTodos, newTodo]);
         setTitle('');
       })
-      .catch(() => setError('Unable to add a todo'))
+      .catch(() => setError(ErrorMessages.AddTodo))
       .finally(() => {
         setTempTodo(null);
         setLoading(false);
@@ -108,7 +105,7 @@ export const App: React.FC = () => {
         setTodos(prevTodos => prevTodos.filter(todo => todo.id !== id));
         inputField.current?.focus();
       })
-      .catch(() => setError('Unable to delete a todo'))
+      .catch(() => setError(ErrorMessages.DeleteTodo))
       .finally(() => {
         setDeletingTodoId(prev => prev.filter(todo => todo !== id));
       });
@@ -120,9 +117,24 @@ export const App: React.FC = () => {
       .forEach(todo => handleDeleteTodo(todo.id));
   };
 
-  const allTodosIsComplited = todos.every(todo => todo.completed);
-  const todoIsComplited = todos.some(todo => todo.completed);
-  const activeTodosCount = todos.filter(todo => !todo.completed).length;
+  const allTodosIsComplited = useMemo(
+    () => todos.every(todo => todo.completed),
+    [todos],
+  );
+
+  const todoIsComplited = useMemo(
+    () => todos.some(todo => todo.completed),
+    [todos],
+  );
+
+  const activeTodosCount = useMemo(
+    () => todos.filter(todo => !todo.completed).length,
+    [todos],
+  );
+
+  if (!USER_ID) {
+    return <UserWarning />;
+  }
 
   return (
     <div className="todoapp">

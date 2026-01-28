@@ -1,10 +1,10 @@
 import React from 'react';
 import cn from 'classnames';
-import { FilterParameters } from '../types/filterParameters';
+import { FilterType } from '../types/filterType';
 
 interface Props {
-  filter: FilterParameters;
-  setFilter: (filter: FilterParameters) => void;
+  filter: FilterType;
+  setFilter: (filter: FilterType) => void;
   todoIsComplited: boolean;
   activeTodosCount: number;
   onClearCompleted: () => void;
@@ -27,27 +27,33 @@ export const Footer: React.FC<Props> = ({
       <nav className="filter" data-cy="Filter">
         <a
           href="#/"
-          className={cn('filter__link', { selected: filter === 'all' })}
+          className={cn('filter__link', {
+            selected: filter === FilterType.All,
+          })}
           data-cy="FilterLinkAll"
-          onClick={() => setFilter('all')}
+          onClick={() => setFilter(FilterType.All)}
         >
           All
         </a>
 
         <a
           href="#/active"
-          className={cn('filter__link', { selected: filter === 'active' })}
+          className={cn('filter__link', {
+            selected: filter === FilterType.Active,
+          })}
           data-cy="FilterLinkActive"
-          onClick={() => setFilter('active')}
+          onClick={() => setFilter(FilterType.Active)}
         >
           Active
         </a>
 
         <a
           href="#/completed"
-          className={cn('filter__link', { selected: filter === 'completed' })}
+          className={cn('filter__link', {
+            selected: filter === FilterType.Completed,
+          })}
           data-cy="FilterLinkCompleted"
-          onClick={() => setFilter('completed')}
+          onClick={() => setFilter(FilterType.Completed)}
         >
           Completed
         </a>
