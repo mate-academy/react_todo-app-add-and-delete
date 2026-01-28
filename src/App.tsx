@@ -5,7 +5,7 @@ import { UserWarning } from './UserWarning';
 import { Todo, TodoFilter } from './types/Todo';
 import * as todoApi from './api/todos';
 import { TodoFooter } from './components/TodoFooter';
-import { TodoList } from './components/todoList';
+import { TodoList } from './components/TodoList';
 
 export const App: React.FC = () => {
   const [todos, setTodos] = useState<Todo[]>([]);
