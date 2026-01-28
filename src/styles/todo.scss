@@ -101,11 +101,13 @@
   }
 }
 
-.item-enter {
+.item-enter,
+.item-appear {
   max-height: 0;
 }
 
-.item-enter-active {
+.item-enter-active,
+.item-appear-active {
   overflow: hidden;
   max-height: 58px;
   transition: max-height 0.3s ease-in-out;
