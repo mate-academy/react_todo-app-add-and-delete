@@ -13,7 +13,6 @@ type RequestMethod = 'GET' | 'POST' | 'PATCH' | 'DELETE';
 
 const DELAY_VALUE = 2000;
 
-
 function request<T>(
   url: string,
   method: RequestMethod = 'GET',

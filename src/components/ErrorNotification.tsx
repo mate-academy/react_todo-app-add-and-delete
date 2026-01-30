@@ -1,26 +1,25 @@
+import classNames from 'classnames';
 import React, { memo } from 'react';
 
 interface Props {
   errorMessage: string;
-  setErrorMessage: (message: string) => void;
+  handleHideError: () => void;
 }
 
 const ErrorNotification: React.FC<Props> = ({
   errorMessage,
-  setErrorMessage,
+  handleHideError,
 }) => {
   return (
     <div
       data-cy="ErrorNotification"
-      className={`notification is-danger is-light has-text-weight-normal ${
-        !errorMessage ? 'hidden' : ''
-      }`}
+      className={classNames("notification is-danger is-light has-text-weight-normal",{hidden :!errorMessage})}
     >
       <button
         data-cy="HideErrorButton"
         type="button"
         className="delete"
-        onClick={() => setErrorMessage('')}
+        onClick={() => handleHideError()}
       />
       {errorMessage}
     </div>
