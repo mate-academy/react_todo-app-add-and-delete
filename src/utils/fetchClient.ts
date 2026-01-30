@@ -11,6 +11,9 @@ function wait(delay: number) {
 // To have autocompletion and avoid mistypes
 type RequestMethod = 'GET' | 'POST' | 'PATCH' | 'DELETE';
 
+const DELAY_VALUE = 2000;
+
+
 function request<T>(
   url: string,
   method: RequestMethod = 'GET',
@@ -27,7 +30,7 @@ function request<T>(
   }
 
   // DON'T change the delay it is required for tests
-  return wait(100)
+  return wait(DELAY_VALUE)
     .then(() => fetch(BASE_URL + url, options))
     .then(response => {
       if (!response.ok) {

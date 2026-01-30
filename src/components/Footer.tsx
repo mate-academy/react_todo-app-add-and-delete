@@ -14,6 +14,7 @@ export const FooterComponent: React.FC<Props> = ({
   hasCompleted,
 }) => {
   return (
+    
     <footer className="todoapp__footer" data-cy="Footer">
       <span className="todo-count" data-cy="TodosCounter">
         {activeTodosCount} items left

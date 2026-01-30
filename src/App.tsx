@@ -1,7 +1,7 @@
 /* eslint-disable jsx-a11y/label-has-associated-control */
 /* eslint-disable jsx-a11y/control-has-associated-label */
 import React, { useEffect, useMemo, useState } from 'react';
-import { USER_ID, getTodos } from './api/todos';
+import * as todoServise from './api/todos';
 import { Todo } from './types/Todo';
 import { TodoList, Footer, Header, Error, UserWarning } from './components';
 
@@ -21,8 +21,8 @@ export const App: React.FC = () => {
 
   useEffect(() => {
     setErrorMessage('');
-    getTodos()
-      .then(setTodos)
+    todoServise.getTodos()
+      .then(serverTodos => setTodos(serverTodos))
       .catch(() => showError('Unable to load todos'));
   }, []);
 
@@ -40,7 +40,7 @@ export const App: React.FC = () => {
     });
   }, [todos, filter]);
 
-  if (!USER_ID) {
+  if (!todoServise.USER_ID) {
     return <UserWarning />;
   }
 

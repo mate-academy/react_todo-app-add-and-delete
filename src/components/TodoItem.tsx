@@ -6,12 +6,12 @@ interface Props {
   todo: Todo;
 }
 
-export const TodoItem: React.FC<Props> = ({ todo:{completed, title} }) => {
+export const TodoItem: React.FC<Props> = ({ todo: { completed, title } }) => {
   return (
-    <div 
-      data-cy="Todo" 
-      className={classNames('todo', {completed: completed})}
-      >
+    <div
+      data-cy="Todo"
+      className={classNames('todo', { completed: completed })}
+    >
       <label className="todo__status-label">
         <input
           data-cy="TodoStatus"
