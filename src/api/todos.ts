@@ -11,18 +11,12 @@ export const deleteTodo = (todoId: number) => {
   return client.delete(`/todos/${todoId}`);
 };
 
-export const editTodo = (todoId: number, changedValue: Partial<Todo>) => {
+export const edit = (todoId: number, changedValue: Partial<Todo>) => {
   const data = { ...changedValue };
 
   return client.patch<Todo>(`/todos/${todoId}`, data);
 };
 
-export const createTodo = (title: string) => {
-  const data = {
-    title,
-    userId: USER_ID,
-    completed: false,
-  };
-
-  return client.post<Todo>(`/todos?userId=${USER_ID}`, data);
+export const createTodo = (data: Partial<Todo>) => {
+  return client.post<Todo>('/todos', data);
 };

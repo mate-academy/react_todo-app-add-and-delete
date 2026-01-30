@@ -2,7 +2,7 @@ import cn from 'classnames';
 import React, { RefObject } from 'react';
 
 type Props = {
-  onSubmit: (value: React.FormEvent<HTMLFormElement>) => void;
+  onSubmit: (value: React.FormEvent) => void;
   onSetTitle: (query: string) => void;
   activeTodos: number;
   todosQuantity: number;
@@ -32,7 +32,7 @@ export const NewTodo: React.FC<Props> = ({
       )}
 
       {/* Add a todo on form submit */}
-      <form onSubmit={event => onSubmit(event)}>
+      <form onSubmit={onSubmit}>
         <input
           data-cy="NewTodoField"
           type="text"

@@ -5,7 +5,6 @@ import classNames from 'classnames';
 import React, { useEffect, useRef, useState } from 'react';
 
 import * as todoServise from './api/todos';
-import { UserWarning } from './UserWarning';
 import { TodoList } from './components/TodoList';
 import { Filter } from './components/Filter';
 
@@ -61,10 +60,6 @@ export const App: React.FC = () => {
       });
   }, []);
 
-  const quantityActiveTodos: number = todos.filter(
-    todo => todo.completed === false,
-  ).length;
-
   const handleChangeFilterField = (filterField: Filters) => {
     setFilterByField(filterField);
   };
@@ -100,29 +95,31 @@ export const App: React.FC = () => {
       });
   };
 
-  const handleSubmitNewTodo = (event: React.FormEvent<HTMLFormElement>) => {
+  const handleSubmitNewTodo = (event: React.FormEvent) => {
     event.preventDefault();
 
-    const normilizedTitle = normalizeTitle(title);
+    const normalizedTitle = normalizeTitle(title);
 
-    if (!normilizedTitle) {
+    if (!normalizedTitle) {
       handleShowError(Errors.EmptyTitle);
 
       return;
     }
 
     setErrorMessage(Errors.Default);
-    setLoading(true);
 
-    setTempTodo({
+    const newTempTodo = {
       id: 0,
       userId: 3884,
-      title: normilizedTitle,
+      title: normalizedTitle,
       completed: false,
-    });
+    };
+
+    setTempTodo(newTempTodo);
+    setLoading(true);
 
     todoServise
-      .createTodo(normilizedTitle)
+      .createTodo(newTempTodo)
       .then(newTodo => {
         setTodos(currentTodos => [...currentTodos, newTodo]);
         setTitle('');
@@ -134,11 +131,11 @@ export const App: React.FC = () => {
       });
   };
 
-  if (!todoServise.USER_ID) {
-    return <UserWarning />;
-  }
+  const activeTodosCount: number = todos.filter(
+    todo => todo.completed === false,
+  ).length;
 
-  const countTodos = todos.length;
+  const todosCount = todos.length;
 
   const filteredTodos = [...todos].filter(todo => {
     switch (filterByField) {
@@ -165,8 +162,8 @@ export const App: React.FC = () => {
           onSubmit={event => handleSubmitNewTodo(event)}
           query={title}
           onSetTitle={query => setTitle(query)}
-          activeTodos={quantityActiveTodos}
-          todosQuantity={countTodos}
+          activeTodos={activeTodosCount}
+          todosQuantity={todosCount}
           onFocus={inputFocus}
           isDisabled={loading}
         />
@@ -187,8 +184,8 @@ export const App: React.FC = () => {
             onChangeFilter={handleChangeFilterField}
             onClear={handleClearComplatedTodos}
             filterField={filterByField}
-            completedItemsCount={todos.length - completedTodoIds?.length}
-            activeItemsCount={quantityActiveTodos}
+            completedItemsCount={todos.length - activeTodosCount}
+            activeItemsCount={activeTodosCount}
           />
         )}
       </div>

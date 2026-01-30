@@ -7,7 +7,7 @@ type Props = {
   visibleTodos: Todo[];
   onDelete: (todoId: number) => void;
   selectedTodo: number | null;
-  completedTodosIds: number[] | null;
+  completedTodosIds: number[];
   creating: Todo | null;
 };
 
@@ -27,13 +27,14 @@ export const TodoList: React.FC<Props> = ({
             key={todo.id}
             timeout={300}
             classNames="item"
-            apear={true}
+            appear={true}
           >
             <TodoItem
               todo={todo}
-              isProcessed={completedTodosIds?.includes(todo.id)}
+              isProcessed={
+                completedTodosIds?.includes(todo.id) || selectedTodo === todo.id
+              }
               onDelete={() => onDelete(todo.id)}
-              selectedTodo={selectedTodo}
             />
           </CSSTransition>
         ))}
@@ -43,7 +44,7 @@ export const TodoList: React.FC<Props> = ({
             key={0}
             timeout={300}
             classNames="temp-item"
-            apear={true}
+            appear={true}
           >
             <TodoItem todo={creating} isProcessed={true} />
           </CSSTransition>
