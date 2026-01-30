@@ -1,17 +1,22 @@
 import React, { memo } from 'react';
+import { FilterState } from '../App';
+import classNames from 'classnames';
 
 interface Props {
   activeTodosCount: number;
-  filter: string;
-  setFilter: (filter: string) => void;
+  selectedFilter: FilterState;
   hasCompleted: boolean;
+  handleFilterChange: (
+    event: React.MouseEvent,
+    newFilterState: FilterState,
+  ) => void;
 }
 
 export const FooterComponent: React.FC<Props> = ({
   activeTodosCount,
-  filter,
-  setFilter,
+  selectedFilter,
   hasCompleted,
+  handleFilterChange,
 }) => {
   return (
     <footer className="todoapp__footer" data-cy="Footer">
@@ -22,24 +27,30 @@ export const FooterComponent: React.FC<Props> = ({
       <nav className="filter" data-cy="Filter">
         <a
           href="#/"
-          className={`filter__link ${filter === 'all' ? 'selected' : ''}`}
-          onClick={() => setFilter('all')}
+          className={classNames('filter__link', {
+            selected: selectedFilter === FilterState.All,
+          })}
+          onClick={event => handleFilterChange(event, FilterState.All)}
           data-cy="FilterLinkAll"
         >
           All
         </a>
         <a
           href="#/active"
-          className={`filter__link ${filter === 'active' ? 'selected' : ''}`}
-          onClick={() => setFilter('active')}
+          className={classNames('filter__link', {
+            selected: selectedFilter === FilterState.Active,
+          })}
+          onClick={event => handleFilterChange(event, FilterState.Active)}
           data-cy="FilterLinkActive"
         >
           Active
         </a>
         <a
           href="#/completed"
-          className={`filter__link ${filter === 'completed' ? 'selected' : ''}`}
-          onClick={() => setFilter('completed')}
+          className={classNames('filter__link', {
+            selected: selectedFilter === FilterState.Completed,
+          })}
+          onClick={event => handleFilterChange(event, FilterState.Completed)}
           data-cy="FilterLinkCompleted"
         >
           Completed

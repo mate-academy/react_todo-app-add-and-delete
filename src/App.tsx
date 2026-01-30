@@ -4,25 +4,38 @@ import React, { useEffect, useMemo, useRef, useState } from 'react';
 import * as todoServise from './api/todos';
 import { Todo } from './types/Todo';
 import { TodoList, Footer, Header, Error, UserWarning } from './components';
+import { filterTodos } from './use_cases/filterTodos';
+
+export enum FilterState {
+  All = 'all',
+  Active = 'active',
+  Completed = 'completed',
+}
 
 export const App: React.FC = () => {
   const [todos, setTodos] = useState<Todo[]>([]);
   const [errorMessage, setErrorMessage] = useState('');
-  const [filter, setFilter] = useState('all');
+  const [selectedFilter, setSelectedFilter] = useState<FilterState>(
+    FilterState.All,
+  );
+
+  const activeTodosCount = useMemo(
+    () => todos.filter(todo => !todo.completed).length,
+    [todos],
+  );
+
+  const hasCompleted = useMemo(
+    () => todos.some(todo => todo.completed),
+    [todos],
+  );
 
   const errorTimerId = useRef(0);
+
   const showError = (message: string) => {
     setErrorMessage(message);
     window.clearTimeout(errorTimerId.current);
-    errorTimerId.current = window.
-    setTimeout(() => setErrorMessage(''), 3000);
+    errorTimerId.current = window.setTimeout(() => setErrorMessage(''), 3000);
   };
-
-  const activeTodosCount = () => todos.filter(todo => !todo.completed).length;
-
-  const hasCompleted = () => todos.some(todo => todo.completed);
-
- 
 
   useEffect(() => {
     setErrorMessage('');
@@ -36,21 +49,19 @@ export const App: React.FC = () => {
     setErrorMessage('');
   }
 
+  function handleFilterChange(
+    event: React.MouseEvent,
+    newFilterState: FilterState,
+  ) {
+    event.preventDefault();
 
+    setSelectedFilter(newFilterState);
+  }
 
-  const visibleTodos = useMemo(() => {
-    return todos.filter(todo => {
-      if (filter === 'active') {
-        return !todo.completed;
-      }
-
-      if (filter === 'completed') {
-        return todo.completed;
-      }
-
-      return true;
-    });
-  }, [todos, filter]);
+  const filteredTodos = useMemo(
+    () => filterTodos(selectedFilter, '', todos),
+    [todos, selectedFilter],
+  );
 
   if (!todoServise.USER_ID) {
     return <UserWarning />;
@@ -63,19 +74,19 @@ export const App: React.FC = () => {
       <div className="todoapp__content">
         <Header todos={todos} />
 
-        {todos.length > 0 && <TodoList visibleTodos={visibleTodos} />}
+        {todos.length > 0 && <TodoList filteredTodos={filteredTodos} />}
 
         {todos.length > 0 && (
           <Footer
-            activeTodosCount={activeTodosCount()}
-            filter={filter}
-            setFilter={setFilter}
-            hasCompleted={hasCompleted()}
+            activeTodosCount={activeTodosCount}
+            selectedFilter={selectedFilter}
+            hasCompleted={hasCompleted}
+            handleFilterChange={handleFilterChange}
           />
         )}
       </div>
 
-      <Error errorMessage={errorMessage} handleHideError={handleHideError}/>
+      <Error errorMessage={errorMessage} handleHideError={handleHideError} />
     </div>
   );
 };
