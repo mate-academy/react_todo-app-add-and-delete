@@ -4,21 +4,32 @@ import { Todo } from '../types/Todo';
 
 interface Props {
   todos: Todo[];
+  onAddTodo: (title: string) => void;
 }
 
-export const Header: React.FC<Props> = ({ todos }) => {
-    const [title, setTitle] = useState('');
+export const Header: React.FC<Props> = ({ todos, onAddTodo }) => {
+  const [title, setTitle] = useState('');
   const inputRef = useRef<HTMLInputElement | null>(null);
 
-    useEffect(() => {
+  useEffect(() => {
     inputRef.current?.focus();
   }, []);
 
-   function handleSubmit(event: React.FormEvent) {
+  function handleSubmit(event: React.FormEvent) {
     event.preventDefault();
+
+    const trimmedTitle = title.trim();
+
+    if (!trimmedTitle) {
+      onAddTodo('');
+      return;
+    }
+
+    onAddTodo?.(trimmedTitle);
+    setTitle('');
   }
 
-    function handleTitleChange(event: React.ChangeEvent<HTMLInputElement>) {
+  function handleTitleChange(event: React.ChangeEvent<HTMLInputElement>) {
     setTitle(event.target.value);
   }
 
