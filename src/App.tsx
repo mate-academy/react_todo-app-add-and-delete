@@ -3,7 +3,14 @@
 import React, { useEffect, useMemo, useRef, useState } from 'react';
 import * as todoServise from './api/todos';
 import { Todo } from './types/Todo';
-import { TodoList, Footer, Header, Error, UserWarning } from './components';
+import {
+  TodoList,
+  Footer,
+  Header,
+  Error,
+  UserWarning,
+  TodoItem,
+} from './components';
 import { filterTodos } from './use_cases/filterTodos';
 
 export enum FilterState {
@@ -14,6 +21,8 @@ export enum FilterState {
 
 export const App: React.FC = () => {
   const [todos, setTodos] = useState<Todo[]>([]);
+  const [tempTodo, setTempTodo] = useState<Todo | null>(null);
+  const [isSubmitting, setIsSubmitting] = useState(false);
   const [errorMessage, setErrorMessage] = useState('');
   const [selectedFilter, setSelectedFilter] = useState<FilterState>(
     FilterState.All,
@@ -45,6 +54,36 @@ export const App: React.FC = () => {
       .catch(() => showError('Unable to load todos'));
   }, []);
 
+  function handleAddTodo(title: string) {
+    const trimmedTitle = title.trim();
+
+    if (!trimmedTitle) {
+      showError('Title should not be empty');
+
+      return;
+    }
+
+    const newTempTodo: Todo = {
+      id: 0,
+      title: trimmedTitle,
+      completed: false,
+      userId: todoServise.USER_ID,
+    };
+
+    setTempTodo(newTempTodo);
+
+    setIsSubmitting(true);
+    todoServise
+      .createTodo(trimmedTitle)
+      .then(apiTodo => {
+        setTodos(prevTodos => [...prevTodos, apiTodo]);
+        setTempTodo(null);
+      })
+      .catch(() => showError('Unable to add a todo'))
+      .finally(() => setIsSubmitting(false));
+    setTempTodo(null);
+  }
+
   function handleHideError() {
     setErrorMessage('');
   }
@@ -72,16 +111,22 @@ export const App: React.FC = () => {
       <h1 className="todoapp__title">todos</h1>
 
       <div className="todoapp__content">
-        <Header todos={todos} />
+        <Header
+          todos={todos}
+          onAddTodo={handleAddTodo}
+          isSubmitting={isSubmitting}
+        />
 
         {todos.length > 0 && <TodoList filteredTodos={filteredTodos} />}
+
+        {tempTodo && <TodoItem todo={tempTodo} />}
 
         {todos.length > 0 && (
           <Footer
             activeTodosCount={activeTodosCount}
             selectedFilter={selectedFilter}
             hasCompleted={hasCompleted}
-            handleFilterChange={handleFilterChange}
+            onFilterChange={handleFilterChange}
           />
         )}
       </div>

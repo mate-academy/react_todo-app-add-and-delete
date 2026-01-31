@@ -6,11 +6,13 @@ interface Props {
   todo: Todo;
 }
 
-export const TodoItem: React.FC<Props> = ({ todo: { completed, title } }) => {
+export const TodoItem: React.FC<Props> = ({
+  todo: { completed, title, id },
+}) => {
   return (
     <div
       data-cy="Todo"
-      className={classNames('todo', { completed: completed })}
+      className={classNames('todo', { completed, 'is-temp': id === 0 })}
     >
       <label className="todo__status-label">
         <input
@@ -31,10 +33,11 @@ export const TodoItem: React.FC<Props> = ({ todo: { completed, title } }) => {
         ×
       </button>
 
-      <div data-cy="TodoLoader" className="modal overlay">
-        <div className="modal-background has-background-white-ter" />
-        <div className="loader" />
-      </div>
+      {id === 0 && (
+        <div data-cy="TodoLoader" className="modal overlay">
+          <div className="modal-background has-background-white-ter" />
+          <div className="loader" />
+        </div>)}
     </div>
   );
 };

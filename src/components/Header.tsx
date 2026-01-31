@@ -5,15 +5,18 @@ import { Todo } from '../types/Todo';
 interface Props {
   todos: Todo[];
   onAddTodo: (title: string) => void;
+  isSubmitting: boolean;
 }
 
-export const Header: React.FC<Props> = ({ todos, onAddTodo }) => {
+export const Header: React.FC<Props> = ({ todos, onAddTodo, isSubmitting }) => {
   const [title, setTitle] = useState('');
   const inputRef = useRef<HTMLInputElement | null>(null);
 
   useEffect(() => {
-    inputRef.current?.focus();
-  }, []);
+    if (!isSubmitting) {
+      inputRef.current?.focus();
+    }
+  }, [isSubmitting]);
 
   function handleSubmit(event: React.FormEvent) {
     event.preventDefault();
@@ -22,6 +25,7 @@ export const Header: React.FC<Props> = ({ todos, onAddTodo }) => {
 
     if (!trimmedTitle) {
       onAddTodo('');
+
       return;
     }
 
@@ -53,6 +57,7 @@ export const Header: React.FC<Props> = ({ todos, onAddTodo }) => {
           value={title}
           onChange={handleTitleChange}
           aria-label="New todo title"
+          disabled={isSubmitting}
         />
       </form>
     </header>

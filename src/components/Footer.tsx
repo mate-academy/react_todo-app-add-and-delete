@@ -6,7 +6,7 @@ interface Props {
   activeTodosCount: number;
   selectedFilter: FilterState;
   hasCompleted: boolean;
-  handleFilterChange: (
+  onFilterChange: (
     event: React.MouseEvent,
     newFilterState: FilterState,
   ) => void;
@@ -16,7 +16,7 @@ export const FooterComponent: React.FC<Props> = ({
   activeTodosCount,
   selectedFilter,
   hasCompleted,
-  handleFilterChange,
+  onFilterChange,
 }) => {
   return (
     <footer className="todoapp__footer" data-cy="Footer">
@@ -30,7 +30,7 @@ export const FooterComponent: React.FC<Props> = ({
           className={classNames('filter__link', {
             selected: selectedFilter === FilterState.All,
           })}
-          onClick={event => handleFilterChange(event, FilterState.All)}
+          onClick={event => onFilterChange(event, FilterState.All)}
           data-cy="FilterLinkAll"
         >
           All
@@ -40,7 +40,7 @@ export const FooterComponent: React.FC<Props> = ({
           className={classNames('filter__link', {
             selected: selectedFilter === FilterState.Active,
           })}
-          onClick={event => handleFilterChange(event, FilterState.Active)}
+          onClick={event => onFilterChange(event, FilterState.Active)}
           data-cy="FilterLinkActive"
         >
           Active
@@ -50,7 +50,7 @@ export const FooterComponent: React.FC<Props> = ({
           className={classNames('filter__link', {
             selected: selectedFilter === FilterState.Completed,
           })}
-          onClick={event => handleFilterChange(event, FilterState.Completed)}
+          onClick={event => onFilterChange(event, FilterState.Completed)}
           data-cy="FilterLinkCompleted"
         >
           Completed
