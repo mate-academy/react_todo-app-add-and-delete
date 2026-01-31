@@ -11,7 +11,7 @@ function wait(delay: number) {
 // To have autocompletion and avoid mistypes
 type RequestMethod = 'GET' | 'POST' | 'PATCH' | 'DELETE';
 
-const DELAY_VALUE = 2000;
+const DELAY_VALUE = 300;
 
 function request<T>(
   url: string,

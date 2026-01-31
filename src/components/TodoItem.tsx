@@ -9,6 +9,8 @@ interface Props {
 export const TodoItem: React.FC<Props> = ({
   todo: { completed, title, id },
 }) => {
+  const isLoading = id === 0;
+
   return (
     <div
       data-cy="Todo"
@@ -33,12 +35,13 @@ export const TodoItem: React.FC<Props> = ({
         ×
       </button>
 
-      {id === 0 && (
-        <div data-cy="TodoLoader" className="modal overlay">
-          <div className="modal-background has-background-white-ter" />
-          <div className="loader" />
-        </div>
-      )}
+      <div
+        data-cy="TodoLoader"
+        className={classNames('modal overlay', { 'is-active': isLoading })}
+      >
+        <div className="modal-background has-background-white-ter" />
+        <div className="loader" />
+      </div>
     </div>
   );
 };

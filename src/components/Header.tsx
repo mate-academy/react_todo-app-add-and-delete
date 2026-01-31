@@ -4,7 +4,7 @@ import { Todo } from '../types/Todo';
 
 interface Props {
   todos: Todo[];
-  onAddTodo: (title: string) => void;
+  onAddTodo: (title: string) => Promise<void>;
   isSubmitting: boolean;
 }
 
@@ -18,19 +18,21 @@ export const Header: React.FC<Props> = ({ todos, onAddTodo, isSubmitting }) => {
     }
   }, [isSubmitting]);
 
-  function handleSubmit(event: React.FormEvent) {
+  async function handleSubmit(event: React.FormEvent) {
     event.preventDefault();
 
     const trimmedTitle = title.trim();
 
     if (!trimmedTitle) {
-      onAddTodo('');
+      onAddTodo('').catch(() => {});
 
       return;
     }
 
-    onAddTodo?.(trimmedTitle);
-    setTitle('');
+    try {
+      await onAddTodo(trimmedTitle);
+      setTitle('');
+    } catch (error) {}
   }
 
   function handleTitleChange(event: React.ChangeEvent<HTMLInputElement>) {

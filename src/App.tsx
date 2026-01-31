@@ -13,9 +13,7 @@ import {
 } from './components';
 import { filterTodos } from './use_cases/filterTodos';
 import { FilterState } from './types/FilterState';
-import { ErrorMessage } from './types/ErrorMassage';
-import { prepareNewTodo, createTodoOnServer } from './use_cases/todoOperations';
-
+import { ErrorMessage } from './types/ErrorMessage';
 
 export const App: React.FC = () => {
   const [todos, setTodos] = useState<Todo[]>([]);
@@ -52,35 +50,48 @@ export const App: React.FC = () => {
       .catch(() => showError(ErrorMessage.Load));
   }, []);
 
-  function handleAddTodo(title: string) {
+  function handleAddTodo(title: string): Promise<void> {
     const trimmedTitle = title.trim();
 
     if (!trimmedTitle) {
       showError(ErrorMessage.EmptyTitle);
-      return;
+
+      return Promise.reject();
     }
 
-    const newTempTodo = prepareNewTodo(trimmedTitle);
+    const newTempTodo: Todo = {
+      id: 0,
+      title: trimmedTitle,
+      completed: false,
+      userId: todoServise.USER_ID,
+    };
+
     setTempTodo(newTempTodo);
     setIsSubmitting(true);
 
-    createTodoOnServer(trimmedTitle)
-    .then(apiTodo => {
-      setTodos(prevTodos => [...prevTodos, apiTodo]);
-      setTempTodo(null);
-    })
-    .catch(() => showError(ErrorMessage.Add))
-    .finally(() => setIsSubmitting(false));
+    return todoServise
+      .createTodo(trimmedTitle)
+      .then(apiTodo => {
+        setTodos(prevTodos => [...prevTodos, apiTodo]);
+      })
+      .catch(() => {
+        showError(ErrorMessage.Add);
+        throw new window.Error();
+      })
+      .finally(() => {
+        setIsSubmitting(false);
+        setTempTodo(null);
+      });
   }
 
   function handleHideError() {
     setErrorMessage('');
   }
-  
+
   function handleFilterChange(
     event: React.MouseEvent,
     newFilterState: FilterState,
-    ) {
+  ) {
     event.preventDefault();
 
     setSelectedFilter(newFilterState);
