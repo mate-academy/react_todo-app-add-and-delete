@@ -12,18 +12,16 @@ import {
   TodoItem,
 } from './components';
 import { filterTodos } from './use_cases/filterTodos';
+import { FilterState } from './types/FilterState';
+import { ErrorMessage } from './types/ErrorMassage';
+import { prepareNewTodo, createTodoOnServer } from './use_cases/todoOperations';
 
-export enum FilterState {
-  All = 'all',
-  Active = 'active',
-  Completed = 'completed',
-}
 
 export const App: React.FC = () => {
   const [todos, setTodos] = useState<Todo[]>([]);
   const [tempTodo, setTempTodo] = useState<Todo | null>(null);
   const [isSubmitting, setIsSubmitting] = useState(false);
-  const [errorMessage, setErrorMessage] = useState('');
+  const [errorMessage, setErrorMessage] = useState<ErrorMessage | ''>('');
   const [selectedFilter, setSelectedFilter] = useState<FilterState>(
     FilterState.All,
   );
@@ -40,7 +38,7 @@ export const App: React.FC = () => {
 
   const errorTimerId = useRef(0);
 
-  const showError = (message: string) => {
+  const showError = (message: ErrorMessage) => {
     setErrorMessage(message);
     window.clearTimeout(errorTimerId.current);
     errorTimerId.current = window.setTimeout(() => setErrorMessage(''), 3000);
@@ -51,47 +49,38 @@ export const App: React.FC = () => {
     todoServise
       .getTodos()
       .then(setTodos)
-      .catch(() => showError('Unable to load todos'));
+      .catch(() => showError(ErrorMessage.Load));
   }, []);
 
   function handleAddTodo(title: string) {
     const trimmedTitle = title.trim();
 
     if (!trimmedTitle) {
-      showError('Title should not be empty');
-
+      showError(ErrorMessage.EmptyTitle);
       return;
     }
 
-    const newTempTodo: Todo = {
-      id: 0,
-      title: trimmedTitle,
-      completed: false,
-      userId: todoServise.USER_ID,
-    };
-
+    const newTempTodo = prepareNewTodo(trimmedTitle);
     setTempTodo(newTempTodo);
-
     setIsSubmitting(true);
-    todoServise
-      .createTodo(trimmedTitle)
-      .then(apiTodo => {
-        setTodos(prevTodos => [...prevTodos, apiTodo]);
-        setTempTodo(null);
-      })
-      .catch(() => showError('Unable to add a todo'))
-      .finally(() => setIsSubmitting(false));
-    setTempTodo(null);
+
+    createTodoOnServer(trimmedTitle)
+    .then(apiTodo => {
+      setTodos(prevTodos => [...prevTodos, apiTodo]);
+      setTempTodo(null);
+    })
+    .catch(() => showError(ErrorMessage.Add))
+    .finally(() => setIsSubmitting(false));
   }
 
   function handleHideError() {
     setErrorMessage('');
   }
-
+  
   function handleFilterChange(
     event: React.MouseEvent,
     newFilterState: FilterState,
-  ) {
+    ) {
     event.preventDefault();
 
     setSelectedFilter(newFilterState);

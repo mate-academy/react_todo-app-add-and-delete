@@ -1,5 +1,5 @@
 import React, { memo } from 'react';
-import { FilterState } from '../App';
+import { FilterState } from '../types/FilterState';
 import classNames from 'classnames';
 
 interface Props {

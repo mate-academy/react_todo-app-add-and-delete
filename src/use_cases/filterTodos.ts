@@ -1,4 +1,4 @@
-import { FilterState } from '../App';
+import { FilterState } from '../types/FilterState';
 import { Todo } from '../types/Todo';
 
 export function filterTodos(
