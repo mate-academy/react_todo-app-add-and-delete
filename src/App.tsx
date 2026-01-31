@@ -23,6 +23,8 @@ export const App: React.FC = () => {
   const [selectedFilter, setSelectedFilter] = useState<FilterState>(
     FilterState.All,
   );
+  // App.tsx
+  const [loadingIds, setLoadingIds] = useState<number[]>([]);
 
   const activeTodosCount = useMemo(
     () => todos.filter(todo => !todo.completed).length,
@@ -76,11 +78,27 @@ export const App: React.FC = () => {
       })
       .catch(() => {
         showError(ErrorMessage.Add);
-        throw new window.Error();
+        throw new window.Error(ErrorMessage.Add);
       })
       .finally(() => {
         setIsSubmitting(false);
         setTempTodo(null);
+      });
+  }
+
+  function handleDeleteTodo(todoId: number) {
+    setLoadingIds(prev => [...prev, todoId]);
+
+    todoServise
+      .deleteTodo(todoId)
+      .then(() => {
+        setTodos(prev => prev.filter(todo => todo.id !== todoId));
+      })
+      .catch(() => {
+        showError(ErrorMessage.Delete);
+      })
+      .finally(() => {
+        setLoadingIds(prev => prev.filter(id => id !== todoId));
       });
   }
 
@@ -117,9 +135,16 @@ export const App: React.FC = () => {
           isSubmitting={isSubmitting}
         />
 
-        {todos.length > 0 && <TodoList filteredTodos={filteredTodos} />}
+        {todos.length > 0 && (
+          <TodoList
+            filteredTodos={filteredTodos}
+          onDeleteTodo={handleDeleteTodo}
+            loadingIds={loadingIds}
+        />)}
 
-        {tempTodo && <TodoItem todo={tempTodo} />}
+        {tempTodo && (
+          <TodoItem todo={tempTodo} onDeleteTodo={handleDeleteTodo} />
+        )}
 
         {todos.length > 0 && (
           <Footer

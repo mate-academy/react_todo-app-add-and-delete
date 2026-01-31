@@ -4,13 +4,15 @@ import classNames from 'classnames';
 
 interface Props {
   todo: Todo;
+  onDeleteTodo: (id: number) => void;
+  isLoading?: boolean;
 }
 
 export const TodoItem: React.FC<Props> = ({
   todo: { completed, title, id },
+  onDeleteTodo,
+  isLoading = false,
 }) => {
-  const isLoading = id === 0;
-
   return (
     <div
       data-cy="Todo"
@@ -31,13 +33,20 @@ export const TodoItem: React.FC<Props> = ({
         {title}
       </span>
 
-      <button type="button" className="todo__remove" data-cy="TodoDelete">
+      <button
+        type="button"
+        className="todo__remove"
+        data-cy="TodoDeleteButton"
+        onClick={() => onDeleteTodo?.(id)}
+      >
         ×
       </button>
 
       <div
         data-cy="TodoLoader"
-        className={classNames('modal overlay', { 'is-active': isLoading })}
+        className={classNames('modal overlay', {
+          'is-active': isLoading || id === 0,
+        })}
       >
         <div className="modal-background has-background-white-ter" />
         <div className="loader" />
