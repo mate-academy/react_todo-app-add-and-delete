@@ -10,6 +10,7 @@ interface Props {
     event: React.MouseEvent,
     newFilterState: FilterState,
   ) => void;
+  onClearCompleted: () => void;
 }
 
 export const FooterComponent: React.FC<Props> = ({
@@ -17,6 +18,7 @@ export const FooterComponent: React.FC<Props> = ({
   selectedFilter,
   hasCompleted,
   onFilterChange,
+  onClearCompleted,
 }) => {
   return (
     <footer className="todoapp__footer" data-cy="Footer">
@@ -62,6 +64,7 @@ export const FooterComponent: React.FC<Props> = ({
         className="todoapp__clear-completed"
         data-cy="ClearCompletedButton"
         disabled={!hasCompleted}
+        onClick={onClearCompleted}
       >
         Clear completed
       </button>

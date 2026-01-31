@@ -1,22 +1,27 @@
 import classNames from 'classnames';
-import React, { useEffect, useRef, useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { Todo } from '../types/Todo';
 
 interface Props {
   todos: Todo[];
   onAddTodo: (title: string) => Promise<void>;
   isSubmitting: boolean;
+  todoFieldRef?: React.RefObject<HTMLInputElement> | undefined;
 }
 
-export const Header: React.FC<Props> = ({ todos, onAddTodo, isSubmitting }) => {
+export const Header: React.FC<Props> = ({ 
+  todos, 
+  onAddTodo, 
+  isSubmitting,
+  todoFieldRef,
+ }) => {
   const [title, setTitle] = useState('');
-  const inputRef = useRef<HTMLInputElement | null>(null);
 
   useEffect(() => {
     if (!isSubmitting) {
-      inputRef.current?.focus();
+      todoFieldRef?.current?.focus();
     }
-  }, [isSubmitting]);
+  }, [isSubmitting, todoFieldRef]);
 
   async function handleSubmit(event: React.FormEvent) {
     event.preventDefault();
@@ -51,7 +56,7 @@ export const Header: React.FC<Props> = ({ todos, onAddTodo, isSubmitting }) => {
 
       <form onSubmit={handleSubmit}>
         <input
-          ref={inputRef}
+          ref={todoFieldRef}
           data-cy="NewTodoField"
           type="text"
           className="todoapp__new-todo"

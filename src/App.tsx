@@ -1,19 +1,22 @@
 /* eslint-disable jsx-a11y/label-has-associated-control */
 /* eslint-disable jsx-a11y/control-has-associated-label */
 import React, { useEffect, useMemo, useRef, useState } from 'react';
-import * as todoServise from './api/todos';
-import { Todo } from './types/Todo';
+import * as todoService from './api/todos';
+import { filterTodos } from './use_cases/filterTodos';
 import {
   TodoList,
   Footer,
   Header,
   Error,
-  UserWarning,
   TodoItem,
 } from './components';
-import { filterTodos } from './use_cases/filterTodos';
-import { FilterState } from './types/FilterState';
-import { ErrorMessage } from './types/ErrorMessage';
+import { 
+  Todo, 
+  FilterState, 
+  ErrorMessage } from './types';
+
+
+
 
 export const App: React.FC = () => {
   const [todos, setTodos] = useState<Todo[]>([]);
@@ -46,11 +49,13 @@ export const App: React.FC = () => {
 
   useEffect(() => {
     setErrorMessage('');
-    todoServise
+    todoService
       .getTodos()
       .then(setTodos)
       .catch(() => showError(ErrorMessage.Load));
   }, []);
+
+  const todoFieldRef = useRef<HTMLInputElement>(null);
 
   function handleAddTodo(title: string): Promise<void> {
     const trimmedTitle = title.trim();
@@ -65,13 +70,13 @@ export const App: React.FC = () => {
       id: 0,
       title: trimmedTitle,
       completed: false,
-      userId: todoServise.USER_ID,
+      userId: todoService.USER_ID,
     };
 
     setTempTodo(newTempTodo);
     setIsSubmitting(true);
 
-    return todoServise
+    return todoService
       .createTodo(trimmedTitle)
       .then(apiTodo => {
         setTodos(prevTodos => [...prevTodos, apiTodo]);
@@ -89,10 +94,11 @@ export const App: React.FC = () => {
   function handleDeleteTodo(todoId: number) {
     setLoadingIds(prev => [...prev, todoId]);
 
-    todoServise
+    todoService
       .deleteTodo(todoId)
       .then(() => {
         setTodos(prev => prev.filter(todo => todo.id !== todoId));
+        todoFieldRef.current?.focus();
       })
       .catch(() => {
         showError(ErrorMessage.Delete);
@@ -102,6 +108,30 @@ export const App: React.FC = () => {
       });
   }
 
+  function handleClearCompleted() {
+    const completedTodos = todos.filter(todo => todo.completed);
+
+    const deletePromises = completedTodos.map(todo => {
+      setLoadingIds(prev => [...prev, todo.id]);
+      
+      return todoService.deleteTodo(todo.id)
+        .then(() => todo.id)
+        .catch(() => {
+          showError(ErrorMessage.Delete);
+          return null;
+        })
+        .finally(() => {
+          setLoadingIds(prev => prev.filter(id => id !== todo.id));
+        });
+    });
+
+    Promise.all(deletePromises).then(results => {
+      const deletedIds = results.filter(id => id !== null);
+      setTodos(prev => prev.filter(todo => !deletedIds.includes(todo.id)));
+      todoFieldRef.current?.focus();
+    });
+  }
+
   function handleHideError() {
     setErrorMessage('');
   }
@@ -109,9 +139,8 @@ export const App: React.FC = () => {
   function handleFilterChange(
     event: React.MouseEvent,
     newFilterState: FilterState,
-  ) {
+    ) {
     event.preventDefault();
-
     setSelectedFilter(newFilterState);
   }
 
@@ -120,27 +149,24 @@ export const App: React.FC = () => {
     [todos, selectedFilter],
   );
 
-  if (!todoServise.USER_ID) {
-    return <UserWarning />;
-  }
-
   return (
     <div className="todoapp">
       <h1 className="todoapp__title">todos</h1>
-
       <div className="todoapp__content">
         <Header
           todos={todos}
           onAddTodo={handleAddTodo}
           isSubmitting={isSubmitting}
+          todoFieldRef={todoFieldRef}  
         />
 
         {todos.length > 0 && (
           <TodoList
             filteredTodos={filteredTodos}
-          onDeleteTodo={handleDeleteTodo}
+            onDeleteTodo={handleDeleteTodo}
             loadingIds={loadingIds}
-        />)}
+          />
+        )}
 
         {tempTodo && (
           <TodoItem todo={tempTodo} onDeleteTodo={handleDeleteTodo} />
@@ -152,6 +178,7 @@ export const App: React.FC = () => {
             selectedFilter={selectedFilter}
             hasCompleted={hasCompleted}
             onFilterChange={handleFilterChange}
+            onClearCompleted={handleClearCompleted}
           />
         )}
       </div>

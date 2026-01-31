@@ -36,7 +36,7 @@ export const TodoItem: React.FC<Props> = ({
       <button
         type="button"
         className="todo__remove"
-        data-cy="TodoDeleteButton"
+        data-cy="TodoDelete"
         onClick={() => onDeleteTodo?.(id)}
       >
         ×
