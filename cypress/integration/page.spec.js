@@ -519,7 +519,7 @@ describe('', () => {
         });
 
         // this test may be flaky
-        it.skip('should replace loader with a created todo', () => {
+        it('should replace loader with a created todo', () => {
           page.flushJSTimers();
           todos.assertCount(6);
           todos.assertNotLoading(5);
