@@ -1,49 +1,47 @@
 import React from 'react';
 import classNames from 'classnames';
-import { FilterType } from '../types/filterType';
+import { FilterStatus } from '../types/FilterStatus';
 
 type Props = {
-  filterType: string;
-  onFilterClick: (type: FilterType) => void;
+  filterStatus: FilterStatus;
+  onFilterClick: (status: FilterStatus) => void;
 };
 
-export const Filter: React.FC<Props> = ({ filterType, onFilterClick }) => {
+export const Filter: React.FC<Props> = ({ filterStatus, onFilterClick }) => {
   return (
-    <>
-      <nav className="filter" data-cy="Filter">
-        <a
-          href="#/"
-          className={classNames('filter__link', {
-            selected: filterType === FilterType.all,
-          })}
-          data-cy="FilterLinkAll"
-          onClick={() => onFilterClick(FilterType.all)}
-        >
-          All
-        </a>
+    <nav className="filter" data-cy="Filter">
+      <a
+        href="#/"
+        className={classNames('filter__link', {
+          selected: filterStatus === FilterStatus.All,
+        })}
+        data-cy="FilterLinkAll"
+        onClick={() => onFilterClick(FilterStatus.All)}
+      >
+        All
+      </a>
 
-        <a
-          href="#/active"
-          className={classNames('filter__link', {
-            selected: filterType === FilterType.active,
-          })}
-          data-cy="FilterLinkActive"
-          onClick={() => onFilterClick(FilterType.active)}
-        >
-          Active
-        </a>
+      <a
+        href="#/active"
+        className={classNames('filter__link', {
+          selected: filterStatus === FilterStatus.Active,
+        })}
+        data-cy="FilterLinkActive"
+        onClick={() => onFilterClick(FilterStatus.Active)}
+      >
+        Active
+      </a>
 
-        <a
-          href="#/completed"
-          className={classNames('filter__link', {
-            selected: filterType === FilterType.completed,
-          })}
-          data-cy="FilterLinkCompleted"
-          onClick={() => onFilterClick(FilterType.completed)}
-        >
-          Completed
-        </a>
-      </nav>
-    </>
+      <a
+        href="#/completed"
+        className={classNames('filter__link', {
+          selected: filterStatus === FilterStatus.Completed,
+        })}
+        data-cy="FilterLinkCompleted"
+        onClick={() => onFilterClick(FilterStatus.Completed)}
+      >
+        Completed
+      </a>
+    </nav>
   );
 };
