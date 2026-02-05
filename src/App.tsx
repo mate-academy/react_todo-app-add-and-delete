@@ -9,9 +9,6 @@ import { FilterState } from './enums/FilterState';
 import { Header } from './components/Header';
 import { TodoError } from './enums/TodoError';
 
-// Переконайся, що у тебе є цей ID. Якщо ні - використовуй будь-яке число, наприклад 1.
-const USER_ID = 111;
-
 export const App: React.FC = () => {
   const [todos, setTodos] = useState<Todo[]>([]);
   const [errorMessage, setErrorMessage] = useState<TodoError>(TodoError.None);
@@ -71,7 +68,7 @@ export const App: React.FC = () => {
       id: 0,
       completed: false,
       title: trimmedTitle,
-      userId: USER_ID,
+      userId: 0,
     });
 
     try {

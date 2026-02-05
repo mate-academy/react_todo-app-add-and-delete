@@ -14,8 +14,6 @@ export const Header = forwardRef<HTMLInputElement, Props>(
   ) {
     function handleFormSubmit(event: FormEvent<HTMLFormElement>) {
       event.preventDefault();
-      // ВАЖЛИВО: Ми просто викликаємо функцію.
-      // Ніяких перевірок if (disabled) тут бути не повинно!
       onAddTodo();
     }
 
