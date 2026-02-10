@@ -24,21 +24,10 @@ export const TodoItem: React.FC<Props> = ({ todo, isProcessing, onDelete }) => {
         />
       </label>
 
-      {/* <form>
-      <input
-        data-cy="TodoTitleField"
-        type="text"
-        className="todo__title-field"
-        placeholder="Empty todo will be deleted"
-        value={todo.title}
-      />
-    </form> */}
-
       <span data-cy="TodoTitle" className="todo__title">
         {todo.title}
       </span>
 
-      {/* Remove button appears only on hover */}
       <button
         type="button"
         className="todo__remove"
