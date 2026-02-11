@@ -4,7 +4,7 @@ import cn from 'classnames';
 import { ERROR_DISPLAY_DURATION, TEMP_TODO_ID } from './constants';
 import { USER_ID, addTodo, deleteTodo, getTodos } from './api/todos';
 import { Todo } from './types/Todo';
-import { t, getNoun } from './utils/phrases';
+import { t } from './utils/phrases';
 import { UserWarning } from './UserWarning';
 import { Filter, FilterType } from './types/FilterType';
 import { TodoList } from './components/TodoList';
@@ -144,16 +144,10 @@ export const App: React.FC = () => {
       ),
     ).then(() => {
       if (errorCount > 0) {
-        if (errorCount === completedTodos.length) {
-          setErrorMessage(t('error.deleteFailed'));
-        } else {
-          const nounText = getNoun(errorCount, 'noun.todo', 'noun.todos');
-
-          setErrorMessage(
-            t('error.bulkDeleteFailed', { count: errorCount, noun: nounText }),
-          );
-        }
+        setErrorMessage(t('error.deleteFailed'));
       }
+
+      input.current?.focus();
     });
   };
 
