@@ -1,6 +1,6 @@
 import { ErrorMessage, ERROR_MESSAGES } from '../../types/ErrorMessages';
 import React, { useRef, useState } from 'react';
-import { addTodos } from '../../api/todos';
+import { addTodos, USER_ID } from '../../api/todos';
 import { Todo } from '../../types/Todo';
 
 type HeaderProps = {
@@ -34,7 +34,7 @@ export const Header = ({
 
     onSetTempTodo({
       id: 0,
-      userId: 3958,
+      userId: USER_ID,
       title: normalizedTitle,
       completed: false,
     });

@@ -18,16 +18,26 @@ export const TodoItem = ({
   setTodos,
   setErrorMessage,
 }: TodoItemProps) => {
+  const isProcessing = processingIds.includes(todo.id);
+
   const handleDeleteButton = (id: number): void => {
+    if (processingIds.includes(id)) {
+      return;
+    }
+
     setProcessingIds(prevIds => [...prevIds, id]);
     deleteTodos(id)
       .then(() => {
         setTodos?.(prevTodos => prevTodos.filter(t => t.id !== id));
+      })
+      .catch(() => {
+        setErrorMessage?.(ERROR_MESSAGES.DELETE_FAIL);
+      })
+      .finally(() => {
         setProcessingIds(prevState =>
           prevState.filter(todoId => todoId !== id),
         );
-      })
-      .catch(() => setErrorMessage?.(ERROR_MESSAGES.DELETE_FAIL));
+      });
   };
 
   return (
@@ -59,6 +69,7 @@ export const TodoItem = ({
         onClick={() => {
           handleDeleteButton(todo.id);
         }}
+        disabled={isProcessing}
       >
         ×
       </button>
@@ -67,7 +78,7 @@ export const TodoItem = ({
       <div
         data-cy="TodoLoader"
         className={classNames('modal overlay', {
-          'is-active': processingIds.includes(todo.id),
+          'is-active': isProcessing,
         })}
       >
         <div className="modal-background has-background-white-ter" />
