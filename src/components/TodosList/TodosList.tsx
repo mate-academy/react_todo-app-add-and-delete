@@ -1,5 +1,6 @@
 import { Todo } from '../../types/Todo';
 import { TodoItem } from '../TodoItem/TodoItem';
+import { ErrorMessage } from '../../types/ErrorMessages';
 
 type TodosListProps = {
   todos: Todo[];
@@ -7,6 +8,8 @@ type TodosListProps = {
   tempTodo: Todo | null;
   setProcessingIds: React.Dispatch<React.SetStateAction<number[]>>;
   processingIds: number[];
+  setTodos: React.Dispatch<React.SetStateAction<Todo[]>>;
+  setErrorMessage?: (errorMessage: ErrorMessage) => void;
 };
 
 export const TodosList = ({
@@ -15,6 +18,8 @@ export const TodosList = ({
   tempTodo,
   setProcessingIds,
   processingIds,
+  setTodos,
+  setErrorMessage,
 }: TodosListProps) => {
   return (
     <>
@@ -26,6 +31,8 @@ export const TodosList = ({
               key={todo.id}
               setProcessingIds={setProcessingIds}
               processingIds={processingIds}
+              setTodos={setTodos}
+              setErrorMessage={setErrorMessage}
             />
           ))}
           {tempTodo && (

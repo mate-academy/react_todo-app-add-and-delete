@@ -72,6 +72,8 @@ export const App: React.FC = () => {
           tempTodo={tempTodo}
           setProcessingIds={setProcessingIds}
           processingIds={processingIds}
+          setTodos={setTodos}
+          setErrorMessage={setErrorMessage}
         />
         <Footer
           todos={todos}

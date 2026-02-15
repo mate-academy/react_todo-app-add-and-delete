@@ -5,12 +5,16 @@ type TodoItemProps = {
   todo: Todo;
   setProcessingIds: React.Dispatch<React.SetStateAction<number[]>>;
   processingIds: number[];
+  setTodos?: React.Dispatch<React.SetStateAction<Todo[]>>;
+  setErrorMessage?: (errorMessage: ErrorMessage) => void;
 };
 
 export const TodoItem = ({
   todo,
   setProcessingIds,
   processingIds,
+  setTodos,
+  setErrorMessage,
 }: TodoItemProps) => {
   return (
     <div
