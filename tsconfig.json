@@ -4,7 +4,8 @@
     "src"
   ],
   "compilerOptions": {
-    "sourceMap": false,
-    "types": ["node", "cypress"]
+    "esModuleInterop": true,
+    "skipLibCheck": true,
+    "forceConsistentCasingInFileNames": true
   }
 }
