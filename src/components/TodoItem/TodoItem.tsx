@@ -1,5 +1,7 @@
 import classNames from 'classnames';
 import { Todo } from '../../types/Todo';
+import { deleteTodos } from '../../api/todos';
+import { ERROR_MESSAGES, ErrorMessage } from '../../types/ErrorMessages';
 
 type TodoItemProps = {
   todo: Todo;
@@ -16,6 +18,18 @@ export const TodoItem = ({
   setTodos,
   setErrorMessage,
 }: TodoItemProps) => {
+  const handleDeleteButton = (id: number): void => {
+    setProcessingIds(prevIds => [...prevIds, id]);
+    deleteTodos(id)
+      .then(() => {
+        setTodos?.(prevTodos => prevTodos.filter(t => t.id !== id));
+        setProcessingIds(prevState =>
+          prevState.filter(todoId => todoId !== id),
+        );
+      })
+      .catch(() => setErrorMessage?.(ERROR_MESSAGES.DELETE_FAIL));
+  };
+
   return (
     <div
       data-cy="Todo"
@@ -42,7 +56,9 @@ export const TodoItem = ({
         type="button"
         className="todo__remove"
         data-cy="TodoDelete"
-        onClick={() => setProcessingIds(prevIds => [...prevIds, todo.id])}
+        onClick={() => {
+          handleDeleteButton(todo.id);
+        }}
       >
         ×
       </button>

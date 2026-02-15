@@ -15,3 +15,7 @@ export const addTodos = (title: string) => {
     userId: USER_ID,
   });
 };
+
+export const deleteTodos = (id: number) => {
+  return client.delete(`/todos/${id}`);
+};
