@@ -1,4 +1,57 @@
-export const Header = () => {
+import { ErrorMessage, ERROR_MESSAGES } from '../../types/ErrorMessages';
+import React, { useRef, useState } from 'react';
+import { addTodos } from '../../api/todos';
+import { Todo } from '../../types/Todo';
+
+type HeaderProps = {
+  onErrorMessage: (errorMessage: ErrorMessage) => void;
+  onSetTempTodo: (todo: Todo | null) => void;
+  onSetTodo: React.Dispatch<React.SetStateAction<Todo[]>>;
+};
+
+export const Header = ({
+  onErrorMessage,
+  onSetTempTodo,
+  onSetTodo,
+}: HeaderProps) => {
+  const [titleValue, setTitleValue] = useState<string>('');
+  const [isSubmitting, setIsSubmitting] = useState(false);
+
+  const inputRef = useRef<HTMLInputElement>(null);
+
+  function handleSubmit(e: React.FormEvent<HTMLFormElement>) {
+    e.preventDefault();
+
+    const normalizedTitle = titleValue.trim();
+
+    if (!normalizedTitle) {
+      onErrorMessage(ERROR_MESSAGES.EMPTY_TITLE);
+
+      return;
+    }
+
+    onSetTempTodo({
+      id: 0,
+      userId: 3958,
+      title: normalizedTitle,
+      completed: false,
+    });
+    setIsSubmitting(true);
+    addTodos(normalizedTitle)
+      .then(todo => {
+        onSetTodo(todos => [...todos, todo]);
+        setTitleValue('');
+      })
+      .catch(() => {
+        onErrorMessage(ERROR_MESSAGES.ADD_FAIL);
+      })
+      .finally(() => {
+        setIsSubmitting(false);
+        onSetTempTodo(null);
+        setTimeout(() => inputRef.current?.focus());
+      });
+  }
+
   return (
     <header className="todoapp__header">
       {/* this button should have `active` class only if all todos are completed */}
@@ -9,12 +62,17 @@ export const Header = () => {
       />
 
       {/* Add a todo on form submit */}
-      <form>
+      <form onSubmit={handleSubmit}>
         <input
           data-cy="NewTodoField"
           type="text"
           className="todoapp__new-todo"
           placeholder="What needs to be done?"
+          autoFocus
+          value={titleValue}
+          onChange={e => setTitleValue(e.target.value)}
+          disabled={isSubmitting}
+          ref={inputRef}
         />
       </form>
     </header>
