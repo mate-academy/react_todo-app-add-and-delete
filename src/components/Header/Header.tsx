@@ -7,12 +7,14 @@ type HeaderProps = {
   onErrorMessage: (errorMessage: ErrorMessage) => void;
   onSetTempTodo: (todo: Todo | null) => void;
   onSetTodo: React.Dispatch<React.SetStateAction<Todo[]>>;
+  setProcessingIds: React.Dispatch<React.SetStateAction<number[]>>;
 };
 
 export const Header = ({
   onErrorMessage,
   onSetTempTodo,
   onSetTodo,
+  setProcessingIds,
 }: HeaderProps) => {
   const [titleValue, setTitleValue] = useState<string>('');
   const [isSubmitting, setIsSubmitting] = useState(false);
@@ -36,6 +38,7 @@ export const Header = ({
       title: normalizedTitle,
       completed: false,
     });
+    setProcessingIds(prevIds => [...prevIds, 0]);
     setIsSubmitting(true);
     addTodos(normalizedTitle)
       .then(todo => {
@@ -48,6 +51,7 @@ export const Header = ({
       .finally(() => {
         setIsSubmitting(false);
         onSetTempTodo(null);
+        setProcessingIds(prevIds => prevIds.filter(id => id !== 0));
         setTimeout(() => inputRef.current?.focus());
       });
   }

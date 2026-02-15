@@ -16,7 +16,7 @@ export const App: React.FC = () => {
   const [errorMessage, setErrorMessage] = useState<ErrorMessage | null>(null);
   const [filterBy, setFilterBy] = useState<TodoFilter>('all');
   const [tempTodo, setTempTodo] = useState<Todo | null>(null);
-  // const [processingIds, setProcessingIds] = useState<number[]>([]);
+  const [processingIds, setProcessingIds] = useState<number[]>([]);
 
   const activeTodosCounter = todos.filter(todo => !todo.completed).length;
 
@@ -64,11 +64,14 @@ export const App: React.FC = () => {
           onErrorMessage={setErrorMessage}
           onSetTempTodo={setTempTodo}
           onSetTodo={setTodos}
+          setProcessingIds={setProcessingIds}
         />
         <TodosList
           todos={todos}
           filteredTodos={filteredTodos}
           tempTodo={tempTodo}
+          setProcessingIds={setProcessingIds}
+          processingIds={processingIds}
         />
         <Footer
           todos={todos}
