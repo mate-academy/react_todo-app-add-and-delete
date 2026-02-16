@@ -7,6 +7,8 @@ type FooterProps = {
   activeTodosCounter: number;
   filterBy: TodoFilter;
   onFilterChange: (filter: TodoFilter) => void;
+  hasCompletedTodos: boolean;
+  handleClearCompleted: () => void;
 };
 
 type FilterLink = {
@@ -37,6 +39,8 @@ export const Footer = ({
   activeTodosCounter,
   filterBy,
   onFilterChange,
+  hasCompletedTodos,
+  handleClearCompleted,
 }: FooterProps) => {
   return (
     <>
@@ -67,6 +71,8 @@ export const Footer = ({
             type="button"
             className="todoapp__clear-completed"
             data-cy="ClearCompletedButton"
+            disabled={!hasCompletedTodos}
+            onClick={handleClearCompleted}
           >
             Clear completed
           </button>

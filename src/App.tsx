@@ -2,7 +2,7 @@
 /* eslint-disable jsx-a11y/control-has-associated-label */
 import React, { useEffect, useRef, useState } from 'react';
 import { UserWarning } from './UserWarning';
-import { getTodos, USER_ID } from './api/todos';
+import { deleteTodos, getTodos, USER_ID } from './api/todos';
 import { Todo } from './types/Todo';
 import { TodoFilter } from './types/TodoFilter';
 import { ERROR_MESSAGES, ErrorMessage } from './types/ErrorMessages';
@@ -21,6 +21,7 @@ export const App: React.FC = () => {
   const activeTodosCounter = todos.filter(todo => !todo.completed).length;
   const inputRef = useRef<HTMLInputElement>(null);
   const focusInput = () => inputRef.current?.focus();
+  const hasCompletedTodos = todos.some(todo => todo.completed);
 
   const filteredTodos = todos.filter(todo => {
     if (filterBy === 'active') {
@@ -54,6 +55,41 @@ export const App: React.FC = () => {
     return () => window.clearTimeout(timerId);
   }, [errorMessage]);
 
+  const handleClearCompleted = () => {
+    const completedTodos = todos.filter(todo => todo.completed);
+    const completedIds = completedTodos.map(todo => todo.id);
+
+    if (!completedTodos.length) {
+      return;
+    }
+
+    setProcessingIds(prevState => [...prevState, ...completedIds]);
+
+    Promise.allSettled(completedIds.map(id => deleteTodos(id)))
+      .then(results => {
+        const successIds = completedIds.filter(
+          (_, index) => results[index].status === 'fulfilled',
+        );
+        const hasRejected = results.some(
+          result => result.status === 'rejected',
+        );
+
+        if (hasRejected) {
+          setErrorMessage(ERROR_MESSAGES.DELETE_FAIL);
+        }
+
+        setTodos(prevState =>
+          prevState.filter(todo => !successIds.includes(todo.id)),
+        );
+      })
+      .finally(() => {
+        setProcessingIds(prevState =>
+          prevState.filter(id => !completedIds.includes(id)),
+        );
+        focusInput();
+      });
+  };
+
   if (!USER_ID) {
     return <UserWarning />;
   }
@@ -84,6 +120,8 @@ export const App: React.FC = () => {
           activeTodosCounter={activeTodosCounter}
           filterBy={filterBy}
           onFilterChange={setFilterBy}
+          hasCompletedTodos={hasCompletedTodos}
+          handleClearCompleted={handleClearCompleted}
         />
       </div>
       {/* DON'T use conditional rendering to hide the notification */}
