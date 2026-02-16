@@ -1,5 +1,5 @@
 import { ErrorMessage, ERROR_MESSAGES } from '../../types/ErrorMessages';
-import React, { useRef, useState } from 'react';
+import React, { useState } from 'react';
 import { addTodos, USER_ID } from '../../api/todos';
 import { Todo } from '../../types/Todo';
 
@@ -8,6 +8,7 @@ type HeaderProps = {
   onSetTempTodo: (todo: Todo | null) => void;
   onSetTodo: React.Dispatch<React.SetStateAction<Todo[]>>;
   setProcessingIds: React.Dispatch<React.SetStateAction<number[]>>;
+  inputRef: React.MutableRefObject<HTMLInputElement | null>;
 };
 
 export const Header = ({
@@ -15,11 +16,10 @@ export const Header = ({
   onSetTempTodo,
   onSetTodo,
   setProcessingIds,
+  inputRef,
 }: HeaderProps) => {
   const [titleValue, setTitleValue] = useState<string>('');
   const [isSubmitting, setIsSubmitting] = useState(false);
-
-  const inputRef = useRef<HTMLInputElement>(null);
 
   function handleSubmit(e: React.FormEvent<HTMLFormElement>) {
     e.preventDefault();

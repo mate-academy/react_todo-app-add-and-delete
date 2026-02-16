@@ -1,6 +1,6 @@
 /* eslint-disable jsx-a11y/label-has-associated-control */
 /* eslint-disable jsx-a11y/control-has-associated-label */
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import { UserWarning } from './UserWarning';
 import { getTodos, USER_ID } from './api/todos';
 import { Todo } from './types/Todo';
@@ -19,6 +19,8 @@ export const App: React.FC = () => {
   const [processingIds, setProcessingIds] = useState<number[]>([]);
 
   const activeTodosCounter = todos.filter(todo => !todo.completed).length;
+  const inputRef = useRef<HTMLInputElement>(null);
+  const focusInput = () => inputRef.current?.focus();
 
   const filteredTodos = todos.filter(todo => {
     if (filterBy === 'active') {
@@ -65,6 +67,7 @@ export const App: React.FC = () => {
           onSetTempTodo={setTempTodo}
           onSetTodo={setTodos}
           setProcessingIds={setProcessingIds}
+          inputRef={inputRef}
         />
         <TodosList
           todos={todos}
@@ -74,6 +77,7 @@ export const App: React.FC = () => {
           processingIds={processingIds}
           setTodos={setTodos}
           setErrorMessage={setErrorMessage}
+          focusInput={focusInput}
         />
         <Footer
           todos={todos}

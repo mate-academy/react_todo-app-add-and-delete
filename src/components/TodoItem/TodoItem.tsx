@@ -9,6 +9,7 @@ type TodoItemProps = {
   processingIds: number[];
   setTodos?: React.Dispatch<React.SetStateAction<Todo[]>>;
   setErrorMessage?: (errorMessage: ErrorMessage) => void;
+  focusInput?: () => void;
 };
 
 export const TodoItem = ({
@@ -17,6 +18,7 @@ export const TodoItem = ({
   processingIds,
   setTodos,
   setErrorMessage,
+  focusInput,
 }: TodoItemProps) => {
   const isProcessing = processingIds.includes(todo.id);
 
@@ -37,6 +39,7 @@ export const TodoItem = ({
         setProcessingIds(prevState =>
           prevState.filter(todoId => todoId !== id),
         );
+        focusInput?.();
       });
   };
 

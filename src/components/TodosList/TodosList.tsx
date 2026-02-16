@@ -10,6 +10,7 @@ type TodosListProps = {
   processingIds: number[];
   setTodos: React.Dispatch<React.SetStateAction<Todo[]>>;
   setErrorMessage?: (errorMessage: ErrorMessage) => void;
+  focusInput?: () => void;
 };
 
 export const TodosList = ({
@@ -20,6 +21,7 @@ export const TodosList = ({
   processingIds,
   setTodos,
   setErrorMessage,
+  focusInput,
 }: TodosListProps) => {
   return (
     <>
@@ -33,6 +35,7 @@ export const TodosList = ({
               processingIds={processingIds}
               setTodos={setTodos}
               setErrorMessage={setErrorMessage}
+              focusInput={focusInput}
             />
           ))}
           {tempTodo && (
