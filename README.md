@@ -47,6 +47,7 @@ Remove all the completed todos after the `Clear completed` button click:
 - the deletion should work as several individual deletions running at the same time;
 - in case of any error show error message but process success deletions;
 
+
 ## If you want to enable tests
 - open `cypress/integration/page.spec.js`
 - replace `describe.skip` with `describe` for the root `describe`
