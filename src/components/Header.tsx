@@ -1,3 +1,4 @@
+import { event } from 'cypress/types/jquery';
 import React from 'react';
 import { useEffect, useRef, useState } from 'react';
 
@@ -31,6 +32,11 @@ export const Header: React.FC<Props> = ({ onCreateTodo, triggerFocus }) => {
     }
   }, [disabled, triggerFocus]);
 
+  // eslint-disable-next-line @typescript-eslint/no-shadow
+  const handleTitleChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+    setTitle(event.target.value);
+  };
+
   return (
     <header className="todoapp__header">
       {/* this button should have `active` class only if all the todos are completed */}
@@ -45,9 +51,7 @@ export const Header: React.FC<Props> = ({ onCreateTodo, triggerFocus }) => {
         <input
           ref={inputRef}
           disabled={disabled}
-          onChange={event => {
-            setTitle(event.target.value);
-          }}
+          onChange={handleTitleChange}
           value={title}
           data-cy="NewTodoField"
           type="text"
