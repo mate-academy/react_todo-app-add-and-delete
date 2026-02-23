@@ -37,7 +37,8 @@ export const App: React.FC = () => {
         showError('Unable to load todos');
       }
     };
-    loadTodos()
+
+    loadTodos();
   }, []);
 
   const filteredTodos = () => {
