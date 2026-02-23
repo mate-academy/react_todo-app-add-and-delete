@@ -20,16 +20,14 @@ export const Footer: React.FC<Props> = ({
     <span className="todo-count" data-cy="TodosCounter">
       {activeCount} items left
     </span>
-
-    {/* Active link should have the 'selected' class */}
     <nav className="filter" data-cy="Filter">
       <a
         href="#/"
         data-cy="FilterLinkAll"
-        className={`filter__link ${filter === 'all' ? 'selected' : ''}`}
+        className={`filter__link ${filter === FilterType.All ? 'selected' : ''}`}
         onClick={e => {
           e.preventDefault();
-          setFilter('all');
+          setFilter(FilterType.All);
         }}
       >
         All
@@ -38,10 +36,10 @@ export const Footer: React.FC<Props> = ({
       <a
         href="#/active"
         data-cy="FilterLinkActive"
-        className={`filter__link ${filter === 'active' ? 'selected' : ''}`}
+        className={`filter__link ${filter === FilterType.Active ? 'selected' : ''}`}
         onClick={e => {
           e.preventDefault();
-          setFilter('active');
+          setFilter(FilterType.Active);
         }}
       >
         Active
@@ -50,10 +48,10 @@ export const Footer: React.FC<Props> = ({
       <a
         href="#/completed"
         data-cy="FilterLinkCompleted"
-        className={`filter__link ${filter === 'completed' ? 'selected' : ''}`}
+        className={`filter__link ${filter === FilterType.Completed ? 'selected' : ''}`}
         onClick={e => {
           e.preventDefault();
-          setFilter('completed');
+          setFilter(FilterType.Completed);
         }}
       >
         Completed
