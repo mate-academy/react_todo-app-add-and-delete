@@ -123,6 +123,23 @@ export const App: React.FC = () => {
     }
   };
 
+  const onToggleTodo = async (todo: Todo) => {
+    setErrorMessage('');
+    setLoadingIds(prev => [...prev, todo.id]);
+
+    try {
+      const updatedTodo = await todoService.updateTodo(todo.id, {
+        completed: !todo.completed,
+      });
+
+      setTodos(prev => prev.map(t => (t.id === todo.id ? updatedTodo : t)));
+    } catch {
+      showError('Unable to update a todo');
+    } finally {
+      setLoadingIds(prev => prev.filter(id => id !== todo.id));
+    }
+  };
+
   const clearCompleted = () => {
     const completedTodos = todos.filter(t => t.completed);
 
@@ -154,6 +171,7 @@ export const App: React.FC = () => {
               loadingIds={loadingIds}
               tempTodo={tempTodo}
               onDeleteTodo={onDeleteTodo}
+              onToggleTodo={onToggleTodo}
             />
             <Footer
               activeTodosCount={activeTodosCount}

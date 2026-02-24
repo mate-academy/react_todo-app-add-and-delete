@@ -9,6 +9,7 @@ type Props = {
   loadingIds: number[];
   tempTodo: Todo | null;
   onDeleteTodo: (todoId: number) => void;
+  onToggleTodo: (todo: Todo) => void;
 };
 
 export const TodoList: React.FC<Props> = ({
@@ -16,6 +17,7 @@ export const TodoList: React.FC<Props> = ({
   loadingIds,
   tempTodo,
   onDeleteTodo,
+  onToggleTodo,
 }) => (
   <section className="todoapp__main" data-cy="TodoList">
     {todos.map(todo => (
@@ -24,10 +26,16 @@ export const TodoList: React.FC<Props> = ({
         todo={todo}
         isLoading={loadingIds.includes(todo.id)}
         onDeleteTodo={onDeleteTodo}
+        onToggleTodo={onToggleTodo}
       />
     ))}
     {tempTodo && (
-      <TodoItem todo={tempTodo} isLoading={true} onDeleteTodo={onDeleteTodo} />
+      <TodoItem
+        todo={tempTodo}
+        isLoading={true}
+        onDeleteTodo={onDeleteTodo}
+        onToggleTodo={onToggleTodo}
+      />
     )}
   </section>
 );
