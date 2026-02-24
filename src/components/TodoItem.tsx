@@ -9,15 +9,17 @@ interface Props {
 }
 
 export const TodoItem: React.FC<Props> = ({ todo, isLoading, onDelete }) => {
+  const statusId = `todo-status-${todo.id}`;
+
   return (
     <div
       data-cy="Todo"
-      className={classNames('todo', {
-        completed: todo.completed,
-      })}
+      className={classNames('todo', { completed: todo.completed })}
     >
-      <label className="todo__status-label">
+      {/* eslint-disable-next-line jsx-a11y/label-has-associated-control */}
+      <label className="todo__status-label" htmlFor={statusId}>
         <input
+          id={statusId}
           data-cy="TodoStatus"
           type="checkbox"
           className="todo__status"
@@ -41,9 +43,7 @@ export const TodoItem: React.FC<Props> = ({ todo, isLoading, onDelete }) => {
 
       <div
         data-cy="TodoLoader"
-        className={classNames('modal overlay', {
-          'is-active': isLoading,
-        })}
+        className={classNames('modal overlay', { 'is-active': isLoading })}
       >
         <div className="modal-background has-background-white-ter" />
         <div className="loader" />
