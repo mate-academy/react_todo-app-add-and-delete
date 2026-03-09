@@ -11,4 +11,8 @@ export const addTodo = (todo: Partial<Todo>): Promise<Todo> => {
   return client.post('/todos', todo);
 };
 
+export const deleteTodo = (todoId: number): Promise<void> => {
+  return client.delete(`/todos/${todoId}`);
+};
+
 // Add more methods here

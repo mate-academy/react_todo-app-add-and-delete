@@ -2,7 +2,7 @@
 /* eslint-disable jsx-a11y/control-has-associated-label */
 import React, { useEffect, useRef, useState } from 'react';
 import { UserWarning } from './UserWarning';
-import { USER_ID, addTodo, getTodos } from './api/todos';
+import { USER_ID, addTodo, getTodos, deleteTodo } from './api/todos';
 import { Todo } from './types/Todo';
 import classNames from 'classnames';
 
@@ -14,6 +14,7 @@ export const App: React.FC = () => {
   const [title, setTitle] = useState('');
   const [errorMessage, setErrorMessage] = useState('');
   const [addingTodo, setAddingTodo] = useState(false);
+  const [deletingTodoIds, setDeletingTodoIds] = useState<number[]>([]);
   const [filterType, setFilterType] = useState<FilterType>('all');
   const itemsLeft = todos.filter(todo => !todo.completed).length;
   const inputRef = useRef<HTMLInputElement | null>(null);
@@ -59,6 +60,61 @@ export const App: React.FC = () => {
       setAddingTodo(false);
       setTempTodo(null);
     }
+  };
+
+  const handleDeleteTodo = async (todoId: number) => {
+    setDeletingTodoIds(prev => [...prev, todoId]);
+    try {
+      await deleteTodo(todoId);
+      setTodos(prevTodos => prevTodos.filter(todo => todo.id !== todoId));
+    } catch {
+      setErrorMessage('Unable to delete a todo');
+      setTimeout(() => {
+        setErrorMessage('');
+      }, 3_000);
+    } finally {
+      setDeletingTodoIds(prev => prev.filter(id => id !== todoId));
+      inputRef.current?.focus();
+    }
+  };
+
+  const handleClearCompleted = async () => {
+    const completedTodos = todos.filter(todo => todo.completed);
+    const completedIds = completedTodos.map(todo => todo.id);
+
+    setDeletingTodoIds(prev => [...prev, ...completedIds]);
+
+    const deletePromises = completedTodos.map(todo =>
+      deleteTodo(todo.id)
+        .then(() => ({ success: true, id: todo.id }))
+        .catch(() => ({ success: false, id: todo.id })),
+    );
+
+    const results = await Promise.all(deletePromises);
+
+    const successfulIds = results
+      .filter(result => result.success)
+      .map(result => result.id);
+
+    const failedIds = results
+      .filter(result => !result.success)
+      .map(result => result.id);
+
+    if (successfulIds.length > 0) {
+      setTodos(prevTodos =>
+        prevTodos.filter(todo => !successfulIds.includes(todo.id)),
+      );
+    }
+
+    if (failedIds.length > 0) {
+      setErrorMessage('Unable to delete a todo');
+      setTimeout(() => {
+        setErrorMessage('');
+      }, 3_000);
+    }
+
+    setDeletingTodoIds(prev => prev.filter(id => !completedIds.includes(id)));
+    inputRef.current?.focus();
   };
 
   useEffect(() => {
@@ -156,12 +212,18 @@ export const App: React.FC = () => {
                 type="button"
                 className="todo__remove"
                 data-cy="TodoDelete"
+                onClick={() => handleDeleteTodo(todo.id)}
               >
                 ×
               </button>
 
               {/* overlay will cover the todo while it is being deleted or updated */}
-              <div data-cy="TodoLoader" className="modal overlay">
+              <div
+                data-cy="TodoLoader"
+                className={classNames('modal overlay', {
+                  'is-active': deletingTodoIds.includes(todo.id),
+                })}
+              >
                 <div className="modal-background has-background-white-ter" />
                 <div className="loader" />
               </div>
@@ -242,15 +304,15 @@ export const App: React.FC = () => {
             </nav>
 
             {/* this button should be disabled if there are no completed todos */}
-            {todos.filter(todo => todo.completed).length && (
-              <button
-                type="button"
-                className="todoapp__clear-completed"
-                data-cy="ClearCompletedButton"
-              >
-                Clear completed
-              </button>
-            )}
+            <button
+              type="button"
+              className="todoapp__clear-completed"
+              data-cy="ClearCompletedButton"
+              onClick={handleClearCompleted}
+              disabled={!todos.some(todo => todo.completed)}
+            >
+              Clear completed
+            </button>
           </footer>
         )}
       </div>
