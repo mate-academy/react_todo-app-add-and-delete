@@ -7,6 +7,7 @@ type Props = {
   completedTodosCount: number;
   filter: Filter;
   onFilterChange: (filter: Filter) => void;
+  handleClearCompleted: () => Promise<void>;
 };
 
 export const Footer: React.FC<Props> = ({
@@ -14,6 +15,7 @@ export const Footer: React.FC<Props> = ({
   completedTodosCount,
   filter,
   onFilterChange,
+  handleClearCompleted,
 }) => {
   return (
     <footer className="todoapp__footer" data-cy="Footer">
@@ -21,7 +23,6 @@ export const Footer: React.FC<Props> = ({
         {activeTodosCount} items left
       </span>
 
-      {/* Active link should have the 'selected' class */}
       <nav className="filter" data-cy="Filter">
         {filterLinks.map(({ value, href, label, dataCy }) => (
           <a
@@ -42,6 +43,7 @@ export const Footer: React.FC<Props> = ({
         className="todoapp__clear-completed"
         data-cy="ClearCompletedButton"
         disabled={completedTodosCount === 0}
+        onClick={handleClearCompleted}
       >
         Clear completed
       </button>

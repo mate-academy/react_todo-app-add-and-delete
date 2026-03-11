@@ -1,7 +1,6 @@
 /* eslint-disable jsx-a11y/control-has-associated-label */
-import React, { useEffect, useState } from 'react';
-import { USER_ID } from './api/todos';
-import { getTodos } from './api/todos';
+import React, { useEffect, useRef, useState } from 'react';
+import * as postService from './api/todos';
 import { UserWarning } from './UserWarning';
 import { Todo } from './types/Todo';
 import { Header } from './components/Header';
@@ -15,9 +14,16 @@ export const App: React.FC = () => {
   const [todos, setTodos] = useState<Todo[]>([]);
   const [errorMessage, setErrorMessage] = useState<ErrorMessage | null>(null);
   const [filter, setFilter] = useState<Filter>(Filter.All);
+  const [isSubmitting, setIsSubmitting] = useState<boolean>(false);
+  const [tempTodo, setTempTodo] = useState<Todo | null>(null);
+  const [title, setTitle] = useState('');
+  const [deletingTodoIds, setDeletingTodoIds] = useState<number[]>([]);
+
+  const inputRef = useRef<HTMLInputElement>(null);
+
   const loadTodos = async () => {
     try {
-      const todosFromServer = await getTodos();
+      const todosFromServer = await postService.getTodos();
 
       setTodos(todosFromServer);
     } catch {
@@ -41,9 +47,92 @@ export const App: React.FC = () => {
     setFilter(value);
   };
 
+  const onTitleChange = (newTitle: string) => {
+    setTitle(newTitle);
+  };
+
   const handleErrorClose = () => {
     setErrorMessage(null);
   };
+
+  const deleteTodo = async (todoId: number) => {
+    setErrorMessage(null);
+
+    try {
+      setDeletingTodoIds(prev => [...prev, todoId]);
+      await postService.deleteTodo(todoId);
+      setTodos(prev => prev.filter(todo => todo.id !== todoId));
+    } finally {
+      setDeletingTodoIds(prev => prev.filter(id => id !== todoId));
+    }
+  };
+
+  const handleDeleteOneTodo = async (todoId: number) => {
+    setErrorMessage(null);
+
+    try {
+      await deleteTodo(todoId);
+    } catch {
+      setErrorMessage(ErrorMessage.DeleteTodo);
+    }
+  };
+
+  const handleClearCompleted = async () => {
+    setErrorMessage(null);
+
+    const completeTodoIds = todos
+      .filter(completedTodo => completedTodo.completed)
+      .map(completedTodo => completedTodo.id);
+
+    const results = await Promise.allSettled(
+      completeTodoIds.map(id => deleteTodo(id)),
+    );
+
+    const hasRejected = results.some(result => result.status === 'rejected');
+
+    if (hasRejected) {
+      setErrorMessage(ErrorMessage.DeleteTodo);
+    }
+  };
+
+  const addTodo = async (newTitle: string) => {
+    setErrorMessage(null);
+
+    const clearTitle = newTitle.trim();
+
+    if (clearTitle.length === 0) {
+      setErrorMessage(ErrorMessage.EmptyTitle);
+
+      return;
+    }
+
+    const temporaryTodo: Todo = {
+      id: 0,
+      userId: postService.USER_ID,
+      title: clearTitle,
+      completed: false,
+    };
+
+    try {
+      setIsSubmitting(true);
+      setTempTodo(temporaryTodo);
+      const newTodo = await postService.createTodo(clearTitle);
+
+      setTodos(prev => [...prev, newTodo]);
+      setTitle('');
+    } catch {
+      setErrorMessage(ErrorMessage.AddTodo);
+    } finally {
+      setIsSubmitting(false);
+      setTempTodo(null);
+    }
+  };
+
+  useEffect(() => {
+    if (!isSubmitting && deletingTodoIds.length === 0) {
+      inputRef.current?.focus();
+    }
+  }, [isSubmitting, deletingTodoIds]);
 
   useEffect(() => {
     loadTodos();
@@ -59,7 +148,7 @@ export const App: React.FC = () => {
     return () => clearTimeout(timer);
   }, [errorMessage]);
 
-  if (!USER_ID) {
+  if (!postService.USER_ID) {
     return <UserWarning />;
   }
 
@@ -73,23 +162,33 @@ export const App: React.FC = () => {
       <h1 className="todoapp__title">todos</h1>
 
       <div className="todoapp__content">
-        <Header allTodosCompleted={allTodosCompleted} />
+        <Header
+          allTodosCompleted={allTodosCompleted}
+          title={title}
+          onTitleChange={onTitleChange}
+          addTodo={addTodo}
+          isSubmitting={isSubmitting}
+          inputRef={inputRef}
+        />
 
-        <TodoList filteredTodos={filteredTodos} />
+        <TodoList
+          visibleTodos={filteredTodos}
+          tempTodo={tempTodo}
+          handleDeleteTodo={handleDeleteOneTodo}
+          deletingTodoIds={deletingTodoIds}
+        />
 
-        {/* Hide the footer if there are no todos */}
         {todos.length !== 0 && (
           <Footer
             activeTodosCount={activeTodosCount}
             completedTodosCount={completedTodosCount}
             filter={filter}
             onFilterChange={onFilterChange}
+            handleClearCompleted={handleClearCompleted}
           />
         )}
       </div>
 
-      {/* DON'T use conditional rendering to hide the notification */}
-      {/* Add the 'hidden' class to hide the message smoothly */}
       <ErrorNotification
         errorMessage={errorMessage}
         onClose={handleErrorClose}

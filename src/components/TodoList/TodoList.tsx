@@ -1,49 +1,39 @@
 /* eslint-disable jsx-a11y/label-has-associated-control */
 import React from 'react';
-import cn from 'classnames';
 import { Todo } from '../../types/Todo';
+import { TodoItem } from '../TodoItem';
 
 type Props = {
-  filteredTodos: Todo[];
+  visibleTodos: Todo[];
+  tempTodo: Todo | null;
+  handleDeleteTodo: (todoId: number) => Promise<void>;
+  deletingTodoIds: number[];
 };
 
-export const TodoList: React.FC<Props> = ({ filteredTodos }) => {
+export const TodoList: React.FC<Props> = ({
+  visibleTodos,
+  tempTodo,
+  handleDeleteTodo,
+  deletingTodoIds,
+}) => {
   return (
     <section className="todoapp__main" data-cy="TodoList">
-      {filteredTodos.map((todo: Todo) => (
-        <div
-          data-cy="Todo"
-          className={cn('todo', {
-            completed: todo.completed,
-          })}
+      {visibleTodos.map((todo: Todo) => (
+        <TodoItem
+          todo={todo}
           key={todo.id}
-        >
-          <label className="todo__status-label">
-            <input
-              data-cy="TodoStatus"
-              type="checkbox"
-              className="todo__status"
-              checked={todo.completed}
-              onChange={() => {}}
-            />
-          </label>
-
-          <span data-cy="TodoTitle" className="todo__title">
-            {todo.title}
-          </span>
-
-          {/* Remove button appears only on hover */}
-          <button type="button" className="todo__remove" data-cy="TodoDelete">
-            ×
-          </button>
-
-          {/* overlay will cover the todo while it is being deleted or updated */}
-          <div data-cy="TodoLoader" className="modal overlay">
-            <div className="modal-background has-background-white-ter" />
-            <div className="loader" />
-          </div>
-        </div>
+          isLoading={deletingTodoIds.includes(todo.id)}
+          handleDeleteTodo={handleDeleteTodo}
+        />
       ))}
+
+      {tempTodo && (
+        <TodoItem
+          todo={tempTodo}
+          isLoading={true}
+          handleDeleteTodo={handleDeleteTodo}
+        />
+      )}
     </section>
   );
 };
