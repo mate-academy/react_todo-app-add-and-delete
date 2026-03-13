@@ -34,7 +34,7 @@ export const App: React.FC = () => {
     if (trimmedTitle === '') {
       setError(ErrorMessage.EmptyTitle);
 
-      return;
+      return false;
     }
 
     const newTempTodo: Todo = {
@@ -52,9 +52,13 @@ export const App: React.FC = () => {
 
       setTodos(prevTodos => [...prevTodos, addedTodo]);
       setTempTodo(null);
+
+      return true;
     } catch {
       setError(ErrorMessage.UnableToAdd);
       setTempTodo(null);
+
+      return false;
     } finally {
       setIsAdding(false);
     }
@@ -139,6 +143,7 @@ export const App: React.FC = () => {
   }, [todos]);
 
   const allCompleted = todos.length > 0 && activeTodosCount === 0;
+  const isDeleting = deletingTodoIds.length > 0;
 
   if (!USER_ID) {
     return <UserWarning />;
@@ -153,6 +158,7 @@ export const App: React.FC = () => {
           allCompleted={allCompleted}
           onAddTodo={onAddTodo}
           isAdding={isAdding}
+          isDeleting={isDeleting}
         />
 
         {todos.length > 0 && (
@@ -174,6 +180,7 @@ export const App: React.FC = () => {
           <TodoList
             todos={[tempTodo]}
             deletingTodoIds={deletingTodoIds}
+            addingTodoId={tempTodo.id}
             onDeleteTodo={onDeleteTodo}
           />
         )}

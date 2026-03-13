@@ -3,14 +3,16 @@ import classNames from 'classnames';
 
 interface Props {
   allCompleted: boolean;
-  onAddTodo: (title: string) => void;
+  onAddTodo: (title: string) => Promise<boolean>;
   isAdding: boolean;
+  isDeleting: boolean;
 }
 
 export const TodoHeader: React.FC<Props> = ({
   allCompleted,
   onAddTodo,
   isAdding,
+  isDeleting,
 }) => {
   const [inputValue, setInputValue] = useState('');
   const inputRef = useRef<HTMLInputElement>(null);
@@ -19,13 +21,16 @@ export const TodoHeader: React.FC<Props> = ({
     if (!isAdding && inputRef.current) {
       inputRef.current.focus();
     }
-  }, [isAdding]);
+  }, [isAdding, isDeleting]);
 
   const handleSubmit = async (event: React.FormEvent) => {
     event.preventDefault();
 
-    onAddTodo(inputValue);
-    setInputValue('');
+    const success = await onAddTodo(inputValue);
+
+    if (success) {
+      setInputValue('');
+    }
   };
 
   return (
