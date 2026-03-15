@@ -1,3 +1,4 @@
+// styles/index.scss
 iframe {
   display: none;
 }
@@ -9,17 +10,53 @@ body {
 }
 
 .notification {
-  transition-property: opacity, min-height;
-  transition-duration: 1s;
+  position: fixed;
+  bottom: 20px;
+  left: 50%;
+  transform: translateX(-50%);
+
+  display: flex;
+  align-items: center;
+
   min-height: 36px;
+
+  transition-duration: 1s;
+  transition-property: opacity, min-height;
 }
 
 .notification.hidden {
+  pointer-events: none;
   min-height: 0;
   opacity: 0;
-  pointer-events: none;
+}
+
+.modal.overlay.hidden {
+  display: none;
+}
+
+.filters {
+  display: flex;
+  gap: 10px;
+}
+
+.filter__link {
+  padding: 5px 10px;
+  border: 1px solid transparent;
+  border-radius: 3px;
+
+  color: #777;
+  text-decoration: none;
+}
+
+.filter__link:hover {
+  border-color: rgba(175, 47, 47, 0.1);
+}
+
+.filter__link.selected {
+  border-color: rgba(175, 47, 47, 0.2);
 }
 
 @import "./todoapp";
 @import "./todo";
 @import "./filter";
+
