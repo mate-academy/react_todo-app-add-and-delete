@@ -7,7 +7,7 @@ import { Todo as TodoType } from '../types/Todo';
 type Props = {
   todo: TodoType;
   isLoading?: boolean;
-  onDelete: (id: number) => void
+  onDelete: (id: number) => void;
 };
 export const Todo: React.FC<Props> = ({ todo, isLoading, onDelete }) => {
   return (
@@ -31,7 +31,12 @@ export const Todo: React.FC<Props> = ({ todo, isLoading, onDelete }) => {
         {todo.title}
       </span>
 
-      <button type="button" className="todo__remove" data-cy="TodoDelete" onClick={() => onDelete(todo.id)}>
+      <button
+        type="button"
+        className="todo__remove"
+        data-cy="TodoDelete"
+        onClick={() => onDelete(todo.id)}
+      >
         x
       </button>
       <div

@@ -113,20 +113,22 @@ export const App: React.FC = () => {
           <form
             onSubmit={async e => {
               e.preventDefault();
-              console.log('submit works');
 
               const trimmedTitle = title.trim();
 
               if (!trimmedTitle) {
                 setError('Title should not be empty');
+
                 return;
               }
+
               const newTodo: Todo = {
                 id: 0,
                 title: trimmedTitle,
                 completed: false,
                 userId: USER_ID,
               };
+
               setTempTodo(newTodo);
               setIsLoading(true);
 

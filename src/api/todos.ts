@@ -13,6 +13,6 @@ export const addTodo = (todo: Omit<Todo, 'id'>) => {
 
 export const deleteTodo = (id: number) => {
   return client.delete(`/todos/${id}`);
-}
+};
 
 // Add more methods here
