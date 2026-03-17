@@ -1,6 +1,6 @@
-import { deleteTodo } from '../../../api/todos';
-import { ErrorType, Status } from '../../../types';
-import { Todo } from '../../../types';
+import { deleteTodo } from '../../api/todos';
+import { ErrorType, Status } from '../../types';
+import { Todo } from '../../types';
 
 type Props = {
   status: Status;

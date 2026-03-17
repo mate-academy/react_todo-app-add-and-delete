@@ -1,5 +1,5 @@
-import { addTodo, patchTodo, USER_ID } from '../../../api/todos';
-import { ErrorType, Todo } from '../../../types';
+import { addTodo, patchTodo, USER_ID } from '../../api/todos';
+import { ErrorType, Todo } from '../../types';
 import { useState } from 'react';
 
 type Props = {

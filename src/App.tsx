@@ -13,9 +13,9 @@ import type { Todo, ErrorType, Status } from './types';
 import { ErrorNotification }
   from './components/Notifications/ErrorNotification';
 
-import { Header } from './components/Notifications/Header/Header';
-import { Footer } from './components/Notifications/Footer/Footer';
-import { Section } from './components/Notifications/Section/Section';
+import { Header } from './components/Header/Header';
+import { Footer } from './components/Footer/Footer';
+import { Section } from './components/Section/Section';
 
 export const App: React.FC = () => {
   const [error, setError] = React.useState<ErrorType>(null);
