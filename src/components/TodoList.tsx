@@ -21,7 +21,10 @@ export const TodoList: React.FC<Props> = ({
   return (
     <section className="todoapp__main" data-cy="TodoList">
       {/* This is a completed todo */}
-      {isLoading && <div data-cy="TodoLoader" className="loader"></div>}
+      {isLoading && <div data-cy="TodoLoader" className="modal overlay">
+          <div className='loader'></div>
+          <div className='modal-background has-background-white-ter'></div>
+        </div>}
 
       {!isLoading && (
         <TransitionGroup>
