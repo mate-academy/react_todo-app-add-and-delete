@@ -1,12 +1,5 @@
 import React from 'react';
-import { Todo } from '../types/Todo';
-
-interface TodoItemProps {
-  todo: Todo;
-  isLoading: boolean;
-  onDelete?: (id: number) => void;
-  isDeleteDisabled?: boolean;
-}
+import { TodoItemProps } from '../types/TodoItemProps';
 
 export const TodoItem: React.FC<TodoItemProps> = ({
   todo,
