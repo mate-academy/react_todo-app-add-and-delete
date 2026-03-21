@@ -7,11 +7,7 @@ type Props = {
   todosCount: number;
 };
 
-export const Header = ({
-  isAllCompleted,
-  onAddingTodo,
-  todosCount
-}: Props) => {
+export const Header = ({ isAllCompleted, onAddingTodo, todosCount }: Props) => {
   const [isLoading, setIsLoading] = useState(false);
   const inputRef = useRef<HTMLInputElement>(null);
 
