@@ -3,7 +3,8 @@
 import { useRef, useState } from 'react';
 import { useEffect } from 'react';
 import { UserWarning } from './UserWarning';
-import { deleteTodo, getTodos, USER_ID } from './api/todos';
+import { deleteTodo, getTodos, postCreateTodo, USER_ID } from './api/todos';
+import { TempTodo, Todo } from './types/Todo';
 import { TodoList } from './componentes/todolist';
 import { TodoContext } from './context/todocontext';
 import { TodoApp } from './componentes/todoApp';
@@ -11,31 +12,29 @@ import { FILTERS } from './filters/filter';
 import classNames from 'classnames';
 import 'bulma/css/bulma.css';
 import { getFilteredTodo } from './utils/filteredtodo';
-import { useTodo } from './utils/useTodo';
 
 export const App: React.FC = () => {
-  const {
-    todo,
-    tempTodo,
-    errorMessage,
-    isError,
-    disableInput,
-    title,
-    setTodo,
-    addTodo,
-    setTempTodo,
-    setTitle,
-    setErrorMessage,
-    setIsError,
-  } = useTodo([]);
+  const [title, setTitle] = useState<string>('');
 
+  const [todo, setTodo] = useState<Todo[]>([]);
+
+  const [tempTodo, setTempTodo] = useState<TempTodo[] | null>([]);
   const [deletingIds, setDeletingsIds] = useState<number[]>([]);
 
   const { all, active, completed } = FILTERS;
 
   const [filter, setFilter] = useState<string>(all);
 
+  const [isError, setIsError] = useState<boolean>(false);
+  const [errorMessage, setErrorMessage] = useState<string>('');
+
+  const [disableInput, setDisableInput] = useState<boolean>(false);
+
   const inputRef = useRef<HTMLInputElement>(null);
+
+  const reset = () => {
+    setTitle('');
+  };
 
   const getError = (message: string) => {
     setErrorMessage(message);
@@ -43,6 +42,25 @@ export const App: React.FC = () => {
   };
 
   const isActive = todo.every(f => f.completed === true);
+
+  const addTodo = ({ title: todoTitle, completed: isDone, userId }: Todo) => {
+    setDisableInput(true);
+
+    postCreateTodo({ title: todoTitle, completed: isDone, userId })
+      .then(newTodo => {
+        setTodo(currentTodos => [...currentTodos, newTodo]);
+        reset();
+      })
+      .catch(() => {
+        // toda requisiçao ao servidor deve vir acompanha de catch para tratamento de erros, e tbm response.ok
+        getError('Unable to add a todo');
+      })
+      .finally(() => {
+        setDisableInput(false);
+        setTempTodo(null);
+      });
+    // como estou passando valor para os Sets, deve criar uma funçao anonima, abrir colchetes e atualizar os estados
+  };
 
   const handleTitle = (event: React.ChangeEvent<HTMLInputElement>) => {
     setTitle(event.target.value);
@@ -165,7 +183,7 @@ export const App: React.FC = () => {
       .catch(() => {
         getError('Unable to load todos');
       });
-  }, [getError, getTodos]);
+  }, []);
 
   useEffect(() => {
     if (!isError) {
@@ -179,7 +197,7 @@ export const App: React.FC = () => {
     return () => {
       clearTimeout(timerId);
     };
-  }, [isError, setIsError]);
+  }, [isError]);
 
   useEffect(() => {
     if (!disableInput) {
@@ -191,7 +209,7 @@ export const App: React.FC = () => {
     return <UserWarning />;
   }
 
-  const visibleTodos = getFilteredTodo(todo, filter); // visibleTodos é uma constante que guarda o valor da função getFilteredTodo
+  const visibleTodos = getFilteredTodo(todo, filter); // visibleTodos é uma variavel que guarda o valor da função getFilteredTodo
 
   return (
     <div className="todoapp">
