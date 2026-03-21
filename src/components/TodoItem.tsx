@@ -36,8 +36,8 @@ export const TodoItem: React.FC<Props> = ({
         data-cy="TodoLoader"
         className={`todo__loader modal overlay ${showLoader ? 'is-active' : ''}`}
       >
-          <div className='modal-background has-background-white-ter'></div>
-           <div className='loader'></div>
+        <div className="modal-background has-background-white-ter"></div>
+        <div className="loader"></div>
       </div>
 
       {/* Remove button appears only on hover */}
