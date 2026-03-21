@@ -27,7 +27,7 @@ export const TodoList: React.FC = () => {
   const handleEdit = (id: number, newTitle: string) => {
     /* o filter pega todos os objetos que tem o id diferente do id do objeto que estou
         editando e retorna true para esses objetos montando um novo array com eles, enquanto os objetos com id igual retorna false
-        e remove da matriz */
+        e remove da matriz tex*/
     const newArray =
       newTitle.length === 0
         ? todo.filter(t => t.id !== id)
