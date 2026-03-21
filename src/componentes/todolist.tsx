@@ -17,7 +17,7 @@ export const TodoList: React.FC = () => {
   const {
     handleSelected,
     handleRemove,
-    filteredTodo,
+    visibleTodos,
     setTodo,
     todo,
     tempTodo,
@@ -63,7 +63,7 @@ export const TodoList: React.FC = () => {
   return (
     <>
       {/* This is a completed todo */}
-      {filteredTodo.map(t => {
+      {visibleTodos?.map(t => {
         const isBeingDeleted = deletingIds.includes(t.id);
 
         if (isBeingDeleted) {
@@ -128,6 +128,15 @@ export const TodoList: React.FC = () => {
                   </button>
                 </>
               )}
+              <div
+                data-cy="TodoLoader"
+                className={classNames('modal overlay', {
+                  'is-active': false,
+                })}
+              >
+                <div className="modal-background has-background-white-ter" />
+                <div className="loader" />
+              </div>
               {/* Remove button appears only on hover */}
             </div>
           );

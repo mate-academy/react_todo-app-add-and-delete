@@ -3,60 +3,46 @@
 import { useRef, useState } from 'react';
 import { useEffect } from 'react';
 import { UserWarning } from './UserWarning';
-import { deleteTodo, getTodos, postCreateTodo, USER_ID } from './api/todos';
-import { TempTodo, Todo } from './types/Todo';
+import { deleteTodo, getTodos, USER_ID } from './api/todos';
 import { TodoList } from './componentes/todolist';
 import { TodoContext } from './context/todocontext';
 import { TodoApp } from './componentes/todoApp';
 import { FILTERS } from './filters/filter';
 import classNames from 'classnames';
 import 'bulma/css/bulma.css';
+import { getFilteredTodo } from './utils/filteredtodo';
+import { useTodo } from './utils/useTodo';
 
 export const App: React.FC = () => {
-  const [title, setTitle] = useState<string>('');
+  const {
+    todo,
+    tempTodo,
+    errorMessage,
+    isError,
+    disableInput,
+    title,
+    setTodo,
+    addTodo,
+    setTempTodo,
+    setTitle,
+    setErrorMessage,
+    setIsError,
+  } = useTodo([]);
 
-  const [todo, setTodo] = useState<Todo[]>([]);
-
-  const [tempTodo, setTempTodo] = useState<TempTodo[] | null>([]);
   const [deletingIds, setDeletingsIds] = useState<number[]>([]);
 
   const { all, active, completed } = FILTERS;
 
   const [filter, setFilter] = useState<string>(all);
 
-  const [isShowFooter, setIsShowFooter] = useState<boolean>(false);
-  const [isShowActiveAll, setIsShowActiveAll] = useState<boolean>(false);
-
-  const [isError, setIsError] = useState<boolean>(false);
-  const [errorMessage, setErrorMessage] = useState<string>('');
-
-  const [disableInput, setDisableInput] = useState<boolean>(false);
-
   const inputRef = useRef<HTMLInputElement>(null);
 
-  const reset = () => {
-    setTitle('');
+  const getError = (message: string) => {
+    setErrorMessage(message);
+    setIsError(true);
   };
 
-  const addTodo = ({ title: todoTitle, completed: isDone, userId }: Todo) => {
-    setDisableInput(true);
-
-    postCreateTodo({ title: todoTitle, completed: isDone, userId })
-      .then(newTodo => {
-        setTodo(currentTodos => [...currentTodos, newTodo]);
-        reset();
-      })
-      .catch(() => {
-        // toda requisiçao ao servidor deve vir acompanha de catch para tratamento de erros, e tbm response.ok
-        setErrorMessage('Unable to add a todo');
-        setIsError(true);
-      })
-      .finally(() => {
-        setDisableInput(false);
-        setTempTodo(null);
-      });
-    // como estou passando valor para os Sets, deve criar uma funçao anonima, abrir colchetes e atualizar os estados
-  };
+  const isActive = todo.every(f => f.completed === true);
 
   const handleTitle = (event: React.ChangeEvent<HTMLInputElement>) => {
     setTitle(event.target.value);
@@ -66,8 +52,7 @@ export const App: React.FC = () => {
     event.preventDefault();
 
     if (title.trim().length === 0) {
-      setIsError(true);
-      setErrorMessage('Title should not be empty');
+      getError('Title should not be empty');
 
       return;
     }
@@ -105,39 +90,13 @@ export const App: React.FC = () => {
         setTodo(currentTodo => currentTodo.filter(t => t.id !== id));
       })
       .catch(() => {
-        setErrorMessage('Unable to delete a todo');
-        setIsError(true);
+        getError('Unable to delete a todo');
+      })
+      .finally(() => {
         setDeletingsIds(loadingId => loadingId.filter(l => l !== id));
+        inputRef.current?.focus();
       });
   };
-
-  const filteredTodo = todo.filter(t => {
-    /* todo tem todos os elementos do array
-        a unica coisa que filter faz é dizer: mostre os ativos, mostre todos, mostre os completos
-        não posso filtrar o valor de todo e dar um setTodo pois isso vai subcrever os valores.
-        */
-    if (!t) {
-      return false;
-    } else if (filter === active) {
-      /* - Se o filtro atual for "active", retorna true apenas para os itens
-        não concluídos (t.completed === false).
-  - Resultado: só tarefas ativas entram no array.
-  */
-      return t.completed === false;
-    } else if (filter === completed) {
-      /*- Se o filtro atual for "completed",
-        retorna true apenas para os itens concluídos (t.completed === true).
-  - Resultado: só tarefas concluídas entram no array.
-
-        */
-      return t.completed === true;
-    }
-
-    return true; /* - Se não for "active" nem "completed", cai aqui.
-- Isso significa que o filtro é "all".
-- Retorna true para todos os itens, ou seja, mantém todos no array.
- */
-  });
 
   const handleActiveAll = () => {
     const allCompleted = todo.every(
@@ -167,19 +126,28 @@ export const App: React.FC = () => {
     setDeletingsIds(prev => [...prev, ...allcompletedIds]);
     const promises = allcompletedIds.map(id => deleteTodo(id));
 
-    Promise.all(promises)
-      .then(() => {
-        setTodo(todo.filter(t => t.completed === false));
-      })
-      .catch(() => {
-        setErrorMessage('Unable to delete a todo');
-        setIsError(true);
+    Promise.allSettled(promises)
+      .then(results => {
+        const failedIds = allcompletedIds.filter(
+          (id, index) => results[index].status === 'rejected',
+        );
+
+        if (failedIds.length > 0) {
+          getError('Unable to delete a todo');
+        }
+
+        setTodo(currentTodo =>
+          currentTodo.filter(
+            t => !allcompletedIds.includes(t.id) || failedIds.includes(t.id),
+          ),
+        );
       })
       .finally(() => {
         // 5. DESLIGAR O LOADER (Limpamos os IDs que acabamos de processar)
         setDeletingsIds(prev =>
           prev.filter(id => !allcompletedIds.includes(id)),
         );
+        inputRef.current?.focus();
       });
   };
 
@@ -195,25 +163,9 @@ export const App: React.FC = () => {
         setTodo(todosVindoDaApi);
       })
       .catch(() => {
-        setErrorMessage('Unable to load todos');
-        setIsError(true);
+        getError('Unable to load todos');
       });
-  }, []);
-
-  useEffect(() => {
-    setIsShowFooter(todo.some(t => t && t.title && t.title.trim().length > 0));
-  }, [todo]); // executado quando todo muda
-  /* .some(callback) retorna verdadeiro true se callback retornar um valor verdadeiro para pelo menos um elemento na matriz,
-    caso contrário , retorna falso.*/
-
-  useEffect(() => {
-    setIsShowActiveAll(
-      todo.every(f => f.completed === true),
-    ); /* toda vez que houver uma alteração na
-    dependencia todo o useefect é ativado e faz a verificação do settIsShowActiveAll
-    every verifica se todos são true, a condição que passei como callback, se todos forem true ele retorna true
-    */
-  }, [todo]);
+  }, [getError, getTodos]);
 
   useEffect(() => {
     if (!isError) {
@@ -227,7 +179,7 @@ export const App: React.FC = () => {
     return () => {
       clearTimeout(timerId);
     };
-  }, [isError]);
+  }, [isError, setIsError]);
 
   useEffect(() => {
     if (!disableInput) {
@@ -239,6 +191,8 @@ export const App: React.FC = () => {
     return <UserWarning />;
   }
 
+  const visibleTodos = getFilteredTodo(todo, filter); // visibleTodos é uma constante que guarda o valor da função getFilteredTodo
+
   return (
     <div className="todoapp">
       <h1 className="todoapp__title">todos</h1>
@@ -246,11 +200,11 @@ export const App: React.FC = () => {
       <div className="todoapp__content">
         <header className="todoapp__header">
           {/* this button should have `active` class only if all todos are completed */}
-          {isShowFooter && (
+          {todo.length > 0 && (
             <button
               type="button"
               className={classNames('todoapp__toggle-all', {
-                active: isShowActiveAll,
+                active: isActive,
               })}
               data-cy="ToggleAllButton"
               onClick={() => handleActiveAll()}
@@ -278,7 +232,7 @@ export const App: React.FC = () => {
             setTodo,
             handleSelected,
             handleRemove,
-            filteredTodo,
+            visibleTodos,
             handleRemoveCompleted,
             filter,
             handleActive,
@@ -293,7 +247,7 @@ export const App: React.FC = () => {
           </section>
 
           {/* Hide the footer if there are no todos */}
-          {isShowFooter && (
+          {todo.length > 0 && (
             <footer className="todoapp__footer" data-cy="Footer">
               <TodoApp />
             </footer>
