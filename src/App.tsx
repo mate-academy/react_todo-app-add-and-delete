@@ -9,22 +9,10 @@ import { Footer } from './components/Footer';
 import { ErrorNotification } from './components/ErrorNotification';
 import { getTodos } from './api/todos';
 import { client } from './utils/fetchClient';
+import { Errors } from './types/Errors';
+import { Filter } from './types/Filter';
 
 const USER_ID = 4088;
-
-export enum Filter {
-  All = 'All',
-  Active = 'Active',
-  Completed = 'Completed',
-}
-
-export enum Errors {
-  Load = 'Unable to load todos',
-  Title = 'Title should not be empty',
-  UnableTodo = 'Unable to add a todo',
-  UnableDelete = 'Unable to delete a todo',
-  UnableUpdate = 'Unable to update a todo',
-}
 
 export const filterOptions = [
   { id: 'all', title: Filter.All, href: '#/' },
