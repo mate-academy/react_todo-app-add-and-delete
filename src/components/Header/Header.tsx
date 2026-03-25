@@ -1,7 +1,7 @@
 import React, { useEffect, useRef, useState } from 'react';
 import { Todo } from '../../types/Todo';
 import classNames from 'classnames';
-import { Errors } from '../../App';
+import { Errors } from '../../types/Errors';
 import { USER_ID } from '../../api/todos';
 import { client } from '../../utils/fetchClient';
 
