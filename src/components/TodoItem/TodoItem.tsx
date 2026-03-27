@@ -4,30 +4,37 @@ import { deleteTodo } from '../../api/todos';
 import { Todo } from '../../types/Todo';
 import { TodoContext } from '../../store/TodoContext';
 import { ErrorContext } from '../../store/ErrorContext';
+import { LoadingContext } from '../../store/LoadingContext';
 
 type Props = {
   todo: Todo;
 };
 
 export const TodoItem: React.FC<Props> = ({ todo }) => {
-  const { setTodos, deletingIds, setDeletingIds } = useContext(TodoContext);
+  const { setTodos } = useContext(TodoContext);
+  const { loadingIds, setLoadingIds } = useContext(LoadingContext);
   const { showError } = useContext(ErrorContext);
 
-  const TodoDeleteButton = async () => {
-    setDeletingIds(prev => [...prev, todo.id]);
+  const deleteTodoFromServer = async (skipLoading = false) => {
+    if (!skipLoading) {
+      setLoadingIds(prev => [...prev, todo.id]);
+    }
+
     try {
       const response = await deleteTodo(todo.id);
 
-      if (!response) {
-        throw new Error('Error 400');
+      if (response === 0) {
+        throw new Error('Invalid response from server');
       }
 
       setTodos(prev => prev.filter(t => t.id !== todo.id));
     } catch (err) {
       showError('Unable to delete a todo');
+    } finally {
+      if (!skipLoading) {
+        setLoadingIds(prev => prev.filter(i => i !== todo.id));
+      }
     }
-
-    setDeletingIds([]);
   };
 
   return (
@@ -52,7 +59,7 @@ export const TodoItem: React.FC<Props> = ({ todo }) => {
         type="button"
         className="todo__remove"
         data-cy="TodoDelete"
-        onClick={TodoDeleteButton}
+        onClick={() => deleteTodoFromServer(false)}
       >
         ×
       </button>
@@ -60,7 +67,7 @@ export const TodoItem: React.FC<Props> = ({ todo }) => {
       <div
         data-cy="TodoLoader"
         className={classNames('modal overlay', {
-          'is-active': todo.id === 0 || deletingIds.includes(todo.id),
+          'is-active': todo.id === 0 || loadingIds.includes(todo.id),
         })}
       >
         <div className="modal-background has-background-white-ter" />

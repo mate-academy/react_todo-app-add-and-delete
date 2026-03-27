@@ -1,6 +1,6 @@
 /* eslint-disable jsx-a11y/label-has-associated-control */
 /* eslint-disable jsx-a11y/control-has-associated-label */
-import React from 'react';
+import React, { useContext, useMemo } from 'react';
 import { UserWarning } from './UserWarning';
 import { getTodos, USER_ID } from './api/todos';
 import { useState } from 'react';
@@ -12,17 +12,18 @@ import { Footer } from './components/Footer/Footer';
 import { Filter } from './types/Filters';
 
 import classNames from 'classnames';
-import { useError } from './hooks/useError';
 import { TodoContext } from './store/TodoContext';
 import { ErrorContext } from './store/ErrorContext';
+import { TodoItem } from './components/TodoItem/TodoItem';
 
 export const App: React.FC = () => {
-  const { error, showError, closeError } = useError();
-  const [todos, setTodos] = useState<Todo[]>([]);
-  const [deletingIds, setDeletingIds] = useState<number[]>([]);
+  const { isError, errorMessage, showError, closeError } =
+    useContext(ErrorContext);
+  const { todos, setTodos } = useContext(TodoContext);
   const [tempTodo, setTempTodo] = useState<Todo | null>(null);
   const [filter, setFilter] = useState<Filter>('All');
 
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   useEffect(() => {
     const loadTodos = async () => {
       try {
@@ -41,26 +42,16 @@ export const App: React.FC = () => {
     loadTodos();
   }, []);
 
-  const filteredTodos = () => {
-    let copyTodos = [...todos];
-
+  const filteredTodos = useMemo(() => {
     switch (filter) {
       case 'Active':
-        copyTodos = copyTodos.filter(item => !item.completed);
-        break;
+        return todos.filter(item => !item.completed);
       case 'Completed':
-        copyTodos = copyTodos.filter(item => item.completed);
-        break;
+        return todos.filter(item => item.completed);
       default:
-        break;
+        return todos;
     }
-
-    if (tempTodo !== null) {
-      copyTodos = [...copyTodos, tempTodo];
-    }
-
-    return copyTodos;
-  };
+  }, [todos, filter]);
 
   if (!USER_ID) {
     return <UserWarning />;
@@ -71,17 +62,10 @@ export const App: React.FC = () => {
       <h1 className="todoapp__title">todos</h1>
 
       <div className="todoapp__content">
-        <TodoContext.Provider
-          value={{ todos, setTodos, deletingIds, setDeletingIds }}
-        >
-          <ErrorContext.Provider value={{ ...error, showError, closeError }}>
-            <Header setTempTodo={setTempTodo} />
-            <TodoList todos={filteredTodos()} />
-            {todos.length > 0 && (
-              <Footer filter={filter} setFilter={setFilter} />
-            )}
-          </ErrorContext.Provider>
-        </TodoContext.Provider>
+        <Header setTempTodo={setTempTodo} />
+        <TodoList todos={filteredTodos} />
+        {tempTodo !== null && <TodoItem todo={tempTodo} />}
+        {todos.length > 0 && <Footer filter={filter} setFilter={setFilter} />}
       </div>
 
       <div
@@ -89,7 +73,7 @@ export const App: React.FC = () => {
         className={classNames(
           'notification is-danger is-light has-text-weight-normal',
           {
-            hidden: !error.isError,
+            hidden: !isError,
           },
         )}
       >
@@ -99,7 +83,7 @@ export const App: React.FC = () => {
           className="delete"
           onClick={closeError}
         />
-        {error.errorMessage}
+        {errorMessage}
       </div>
     </div>
   );

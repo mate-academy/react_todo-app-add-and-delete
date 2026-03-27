@@ -34,17 +34,16 @@ export const Header: React.FC<Props> = ({ setTempTodo }) => {
       completed: false,
     };
 
-    setTempTodo({ ...data, id: 0 });
-    setDisabled(true);
-
     try {
-      const response = await addTodo(data);
+      setTempTodo({ ...data, id: 0 });
+      setDisabled(true);
+      const created = await addTodo(data);
 
-      if (!response || !response.id) {
+      if (!created || !created.id) {
         throw new Error('Invalid response from server');
       }
 
-      setTodos(prev => [...prev, { ...data, id: 0 }]);
+      setTodos(prev => [...prev, created]);
       setNewTodo('');
     } catch (err) {
       showError('Unable to add a todo');
@@ -58,7 +57,7 @@ export const Header: React.FC<Props> = ({ setTempTodo }) => {
     if (inputRef.current) {
       inputRef.current.focus();
     }
-  }, [todos]);
+  }, [todos, disabled]);
 
   return (
     <header className="todoapp__header">

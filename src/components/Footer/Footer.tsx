@@ -5,6 +5,7 @@ import { Filter } from '../../types/Filters';
 import { TodoContext } from '../../store/TodoContext';
 import { ErrorContext } from '../../store/ErrorContext';
 import { deleteTodo } from '../../api/todos';
+import { LoadingContext } from '../../store/LoadingContext';
 
 type Props = {
   filter: Filter;
@@ -12,31 +13,40 @@ type Props = {
 };
 
 export const Footer: React.FC<Props> = ({ filter, setFilter }) => {
-  const { todos, setTodos, setDeletingIds } = useContext(TodoContext);
+  const { todos, setTodos } = useContext(TodoContext);
+  const { setLoadingIds } = useContext(LoadingContext);
   const { showError } = useContext(ErrorContext);
 
   const filters: Filter[] = ['All', 'Active', 'Completed'];
-  const completed = todos.filter(todo => todo.completed);
-  const completedCount = completed.length;
-  const active = todos.filter(todo => !todo.completed);
-  const activeCount = active.length;
+  const activeCount = todos.filter(t => !t.completed).length;
+  const completedCount = todos.length - activeCount;
 
   const deleteAllCompleted = async () => {
-    const completedIds = todos
-      .filter(todo => todo.completed)
-      .map(todo => todo.id);
+    const completedTodos = todos.filter(todo => todo.completed);
 
-    setDeletingIds(completedIds);
-
-    try {
-      await Promise.all(completedIds.map(id => deleteTodo(id)));
-
-      setTodos(prev => prev.filter(todo => !todo.completed));
-    } catch {
-      showError('Unable to delete todos');
-    } finally {
-      setDeletingIds([]);
+    if (!completedTodos.length) {
+      return;
     }
+
+    const idsToDelete = completedTodos.map(todo => todo.id);
+
+    setLoadingIds(idsToDelete);
+
+    const results = await Promise.allSettled(
+      idsToDelete.map(id => deleteTodo(id)),
+    );
+
+    const deletedIds = results
+      .map((r, i) =>
+        r.status === 'fulfilled' && r.value === 1
+          ? idsToDelete[i]
+          : showError('Unable to delete a todo'),
+      )
+      .filter(Boolean);
+
+    setTodos(prev => prev.filter(t => !deletedIds.includes(t.id)));
+
+    setLoadingIds([]);
   };
 
   return (
