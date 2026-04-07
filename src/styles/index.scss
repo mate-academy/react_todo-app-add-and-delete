@@ -23,3 +23,27 @@ body {
 @import "./todoapp";
 @import "./todo";
 @import "./filter";
+
+.hidden {
+  display: none;
+}
+
+.todo__loader {
+  opacity: 0;
+  visibility: hidden;
+  height: 0;
+}
+
+.todo__loader.is-active {
+  opacity: 1;
+  visibility: visible;
+  height: auto;
+}
+
+.overlay {
+  display: none;
+}
+
+.overlay.is-active {
+  display: block;
+}
