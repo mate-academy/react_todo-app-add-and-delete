@@ -6,7 +6,7 @@ interface FooterProps {
   uncompletedTodosCount: number;
   filterStatus: FilterStatus;
   setFilterStatus: (status: FilterStatus) => void;
-  hendeDelateClearCompleted: () => void;
+  handleDeleteClearCompleted: () => void;
   completedTodosCount: number;
 }
 
@@ -14,7 +14,7 @@ export const Footer: React.FC<FooterProps> = ({
   uncompletedTodosCount,
   filterStatus,
   setFilterStatus,
-  hendeDelateClearCompleted,
+  handleDeleteClearCompleted,
   completedTodosCount,
 }) => {
   return (
@@ -45,7 +45,7 @@ export const Footer: React.FC<FooterProps> = ({
           hidden: completedTodosCount === 0,
         })}
         data-cy="ClearCompletedButton"
-        onClick={hendeDelateClearCompleted}
+        onClick={handleDeleteClearCompleted}
         disabled={completedTodosCount === 0}
       >
         Clear completed

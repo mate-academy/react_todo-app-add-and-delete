@@ -1,14 +1,12 @@
 import React from 'react';
 import classNames from 'classnames';
 
-interface ErrorNotificationProps {
-  isErrorVisible: boolean;
-  errorMessage: string;
+interface Props {
+  errorMessage: string | null;
   onClose: () => void;
 }
 
-export const ErrorNotification: React.FC<ErrorNotificationProps> = ({
-  isErrorVisible,
+export const ErrorNotification: React.FC<Props> = ({
   errorMessage,
   onClose,
 }) => {
@@ -20,7 +18,7 @@ export const ErrorNotification: React.FC<ErrorNotificationProps> = ({
         'is-danger',
         'is-light',
         'has-text-weight-normal',
-        { hidden: !isErrorVisible },
+        { hidden: !errorMessage },
       )}
     >
       <button

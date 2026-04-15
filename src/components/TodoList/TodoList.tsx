@@ -4,13 +4,13 @@
 // interface TodoListProps {
 //   todo: Todo;
 //   loadingTodo: boolean;
-//   handleDelate: (todoId: number) => void;
+//   handleDelete: (todoId: number) => void;
 // }
 
 // export const TodoList: React.FC<TodoListProps> = ({
 //   todo,
 //   loadingTodo,
-//   handleDelate,
+//   handleDelete,
 // }) => {
 //   // #id
 //   const checkboxId = `todo-status-${todo.id}`;
@@ -36,7 +36,7 @@
 //         className="todo__remove"
 //         data-cy="TodoDelete"
 //         onClick={() => {
-//           handleDelate(todo.id);
+//           handleDelete(todo.id);
 //         }}
 //       >
 //         ×

@@ -1,10 +1,12 @@
 import React, { useEffect, useMemo, useState, useRef } from 'react';
 import * as todoServese from './api/todos';
 import { Todo } from './types/Todo';
-import { ErrorMessages } from './types/ErrorMessages';
+
 import { TodoItems } from './components/TodoItems/TodoItems';
 import { Header } from './components/Header/Header';
 import { Footer } from './components/Footer/Footer';
+
+import { ErrorMessages } from './types/ErrorMessages';
 import { ErrorNotification } from './components/ErrorNotif/ErrorNotification';
 
 export enum FilterStatus {
@@ -14,47 +16,45 @@ export enum FilterStatus {
 }
 
 export const App: React.FC = () => {
+  // #region State
   const [todos, setTodos] = useState<Todo[]>([]);
+  const [error, setError] = useState<ErrorMessages | null>(null);
   const [loading, setLoading] = useState(true);
   const [addNewTodo, setAddNewTodo] = useState('');
   const [loadingTodoId, setLoadingTodoId] = useState<number | null>(null);
   const [deletingTodoIds, setDeletingTodoIds] = useState<number[]>([]);
-  const [errorMessage, setErrorMessage] = useState('');
   const [filterStatus, setFilterStatus] = useState<FilterStatus>(
     FilterStatus.All,
   );
   const newTodoInputRef = useRef<HTMLInputElement>(null);
-  const errorTimeoutRef = useRef<number | null>(null);
+  const uncompletedTodosCount = todos.filter(todo => !todo.completed).length;
   const completedTodos = useMemo(() => {
     return todos.filter(todo => todo.completed);
   }, [todos]);
-  const uncompletedTodosCount = todos.filter(todo => !todo.completed).length;
-  const isErrorVisible = errorMessage.length > 0;
+  const [restartTimerError, setRestartTimerError] = useState(false);
 
-  const handleError = React.useCallback((message: string) => {
-    if (errorTimeoutRef.current !== null) {
-      window.clearTimeout(errorTimeoutRef.current);
-      errorTimeoutRef.current = null;
+  // #endregion
+  useEffect(() => {
+    if (error === null) {
+      return;
     }
 
-    setErrorMessage(message);
-    if (message) {
-      const timeoutId = window.setTimeout(() => {
-        setErrorMessage('');
-        errorTimeoutRef.current = null;
-      }, 3000);
+    const timerId = setTimeout(() => {
+      setError(null);
+    }, 3000);
 
-      errorTimeoutRef.current = timeoutId;
-    }
-  }, []);
+    return () => clearTimeout(timerId);
+  }, [error, restartTimerError]);
 
   const handleSubmit = (event: React.FormEvent) => {
     event.preventDefault();
+    setError(null);
+    setRestartTimerError(!restartTimerError);
 
     const trimmedTitle = addNewTodo.trim();
 
     if (trimmedTitle === '') {
-      handleError(ErrorMessages.TitleEmpty);
+      setError(ErrorMessages.TitleEmpty);
 
       return;
     }
@@ -76,7 +76,7 @@ export const App: React.FC = () => {
         setAddNewTodo('');
       })
       .catch(() => {
-        handleError(ErrorMessages.AddFail);
+        setError(ErrorMessages.AddFail);
       })
       .finally(() => {
         setLoading(false);
@@ -84,7 +84,8 @@ export const App: React.FC = () => {
       });
   };
 
-  const handleDelate = (todoID: number) => {
+  const handleDelete = (todoID: number) => {
+    setError(null);
     setLoading(true);
     setLoadingTodoId(todoID);
 
@@ -94,7 +95,7 @@ export const App: React.FC = () => {
         setTodos(prev => prev.filter(p => p.id !== todoID));
       })
       .catch(() => {
-        setErrorMessage(ErrorMessages.DeleteFail);
+        setError(ErrorMessages.DeleteFail);
       })
       .finally(() => {
         setLoading(false);
@@ -102,7 +103,9 @@ export const App: React.FC = () => {
       });
   };
 
-  const hendeDelateClearCompleted = () => {
+  const handleDeleteClearCompleted = () => {
+    setError(null);
+
     if (completedTodos.length === 0) {
       return;
     }
@@ -119,7 +122,7 @@ export const App: React.FC = () => {
       todoServese.deleteTodo(todo.id).catch(() => {
         failedIds.push(todo.id);
 
-        handleError(ErrorMessages.DeleteFail);
+        setError(ErrorMessages.DeleteFail);
 
         return null;
       }),
@@ -140,21 +143,15 @@ export const App: React.FC = () => {
   };
 
   useEffect(() => {
+    setError(null);
     setLoading(true);
     todoServese
       .getTodos()
       .then(setTodos)
       .catch(() => {
-        handleError(ErrorMessages.LoadFail);
+        setError(ErrorMessages.LoadFail);
       })
       .finally(() => setLoading(false));
-
-    return () => {
-      if (errorTimeoutRef.current) {
-        window.clearTimeout(errorTimeoutRef.current);
-        errorTimeoutRef.current = null;
-      }
-    };
   }, []);
 
   useEffect(() => {
@@ -201,9 +198,10 @@ export const App: React.FC = () => {
               loadingTodo={
                 loadingTodoId === todo.id || deletingTodoIds.includes(todo.id)
               }
-              handleDelate={handleDelate}
+              handleDelete={handleDelete}
             />
           ))}
+
           {loading && loadingTodoId === todoServese.USER_ID && (
             <TodoItems
               key={-1}
@@ -214,7 +212,7 @@ export const App: React.FC = () => {
                 completed: false,
               }}
               loadingTodo={loading}
-              handleDelate={handleDelate}
+              handleDelete={handleDelete}
             />
           )}
         </section>
@@ -224,17 +222,13 @@ export const App: React.FC = () => {
             uncompletedTodosCount={uncompletedTodosCount}
             filterStatus={filterStatus}
             setFilterStatus={setFilterStatus}
-            hendeDelateClearCompleted={hendeDelateClearCompleted}
+            handleDeleteClearCompleted={handleDeleteClearCompleted}
             completedTodosCount={completedTodos.length}
           />
         )}
       </div>
 
-      <ErrorNotification
-        isErrorVisible={isErrorVisible}
-        errorMessage={errorMessage}
-        onClose={() => handleError('')}
-      />
+      <ErrorNotification errorMessage={error} onClose={() => setError(null)} />
     </div>
   );
 };

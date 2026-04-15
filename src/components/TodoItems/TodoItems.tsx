@@ -4,26 +4,23 @@ import classNames from 'classnames';
 interface TodoItemsProps {
   todo: Todo;
   loadingTodo: boolean;
-  handleDelate: (todoId: number) => void;
+  handleDelete: (todoId: number) => void;
 }
 
-export const TodoItems: React.FC<TodoItemsProps> = ({
-  todo,
-  loadingTodo,
-  handleDelate,
-}) => {
+export function TodoItems({ todo, loadingTodo, handleDelete }: TodoItemsProps) {
   const checkboxId = `todo-status-${todo.id}`;
 
   return (
     <div data-cy="Todo" className={todo.completed ? 'todo completed' : 'todo'}>
       <label className="todo__status-label" htmlFor={checkboxId}>
-        {/* <label> */}
+        {/**/}
         <input
           data-cy="TodoStatus"
           type="checkbox"
           className="todo__status"
           checked={todo.completed}
           id={checkboxId}
+          onChange={() => {}} // next task
         />
       </label>
       <span data-cy="TodoTitle" className="todo__title">
@@ -35,10 +32,10 @@ export const TodoItems: React.FC<TodoItemsProps> = ({
         className="todo__remove"
         data-cy="TodoDelete"
         onClick={() => {
-          handleDelate(todo.id);
+          handleDelete(todo.id);
         }}
       >
-        ×
+        x
       </button>
 
       <div
@@ -50,4 +47,4 @@ export const TodoItems: React.FC<TodoItemsProps> = ({
       </div>
     </div>
   );
-};
+}
