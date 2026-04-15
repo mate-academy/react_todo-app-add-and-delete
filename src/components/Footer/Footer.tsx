@@ -1,18 +1,24 @@
 import React from 'react';
 import cn from 'classnames';
 import { Filter } from '../../App';
+import { Todo } from '../../types/Todo';
 
 type Props = {
-  notCompletedTodosLength: number;
-  onFilterChange: (filter: Filter) => void;
+  notCompletedTodos: Todo[];
+  completedTodos: Todo[];
+  clearCompletedTodos: () => void;
   appliedFilter: Filter;
+  handleFilterChange: (filter: Filter) => void;
 };
 
 const FooterBase: React.FC<Props> = ({
-  notCompletedTodosLength,
-  onFilterChange,
+  notCompletedTodos,
+  completedTodos,
+  clearCompletedTodos,
   appliedFilter,
+  handleFilterChange,
 }) => {
+  const notCompletedTodosLength = notCompletedTodos.length;
   const todoCounterText = `${notCompletedTodosLength} ${notCompletedTodosLength === 1 ? 'item' : 'items'} left`;
 
   return (
@@ -25,10 +31,10 @@ const FooterBase: React.FC<Props> = ({
         <a
           href="#/"
           className={cn('filter__link', {
-            selected: appliedFilter === 'All',
+            selected: appliedFilter === 'all',
           })}
           data-cy="FilterLinkAll"
-          onClick={() => onFilterChange('All')}
+          onClick={() => handleFilterChange('all')}
         >
           All
         </a>
@@ -36,10 +42,10 @@ const FooterBase: React.FC<Props> = ({
         <a
           href="#/active"
           className={cn('filter__link', {
-            selected: appliedFilter === 'Active',
+            selected: appliedFilter === 'active',
           })}
           data-cy="FilterLinkActive"
-          onClick={() => onFilterChange('Active')}
+          onClick={() => handleFilterChange('active')}
         >
           Active
         </a>
@@ -47,10 +53,10 @@ const FooterBase: React.FC<Props> = ({
         <a
           href="#/completed"
           className={cn('filter__link', {
-            selected: appliedFilter === 'Completed',
+            selected: appliedFilter === 'completed',
           })}
           data-cy="FilterLinkCompleted"
-          onClick={() => onFilterChange('Completed')}
+          onClick={() => handleFilterChange('completed')}
         >
           Completed
         </a>
@@ -58,9 +64,11 @@ const FooterBase: React.FC<Props> = ({
 
       {/* this button should be disabled if there are no completed todos */}
       <button
+        onClick={clearCompletedTodos}
         type="button"
         className="todoapp__clear-completed"
         data-cy="ClearCompletedButton"
+        disabled={completedTodos.length === 0}
       >
         Clear completed
       </button>
