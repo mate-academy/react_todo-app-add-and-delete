@@ -43,6 +43,7 @@ const isFilter = (value: string): value is Filter => {
 export const App: React.FC = () => {
   const [todos, setTodos] = useState<Todo[]>([]);
   const [newTodoRequest, setNewTodoRequest] = useState<string>('');
+  const [tempTodo, setTempTodo] = useState<Todo | null>(null);
   const [filter, setFilter] = useState(Filter.ALL);
   const [error, setError] = useState(ErrorType.NON);
   const [loadedTodosIds, setLoadedTodosIds] = useState<Set<number>>(new Set());
@@ -79,15 +80,12 @@ export const App: React.FC = () => {
   };
 
   const pushTempTodo = (todoTitle: string) => {
-    setTodos(prev => [
-      ...prev,
-      {
-        id: 0,
-        userId: USER_ID,
-        title: todoTitle,
-        completed: false,
-      },
-    ]);
+    setTempTodo({
+      id: 0,
+      userId: USER_ID,
+      title: todoTitle,
+      completed: false,
+    });
 
     return todoTitle;
   };
@@ -164,6 +162,7 @@ export const App: React.FC = () => {
         throw e;
       })
       .then(applyTodos)
+      .then(() => setTempTodo(null))
       .then(clearInput);
   };
 
@@ -187,7 +186,9 @@ export const App: React.FC = () => {
       .forEach(todo => handelDelete(todo.id));
   };
 
-  const todosToPresent = todos.filter(strategy[filter]);
+  const todosToPresent = [...todos, ...(tempTodo ? [tempTodo] : [])].filter(
+    strategy[filter],
+  );
 
   const handleFilterChoise = (value: string) => {
     if (isFilter(value)) {
@@ -226,6 +227,7 @@ export const App: React.FC = () => {
               placeholder="What needs to be done?"
               value={newTodoRequest}
               onChange={input => handleNewTodoRequest(input.target.value)}
+              disabled={tempTodo !== null}
             />
           </form>
         </header>
