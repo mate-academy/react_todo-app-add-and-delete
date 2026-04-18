@@ -20,18 +20,28 @@ type Todo = {
 export const App: React.FC = () => {
   const [todos, setTodos] = useState<Todo[]>([]);
   const [tempTodo, setTempTodo] = useState<Todo | null>(null);
-  const [selectedIds, setSelectedIds] = useState<number[]>([]);
   const [error, setError] = useState('');
   const [filter, setFilter] = useState<'all' | 'active' | 'completed'>('all');
   const [newTitle, setNewTitle] = useState('');
   const [loading, setLoading] = useState(false);
   const [processingIds, setProcessingIds] = useState<number[]>([]);
+  const [shouldFocus, setShouldFocus] = useState(false);
 
   const inputRef = useRef<HTMLInputElement>(null);
 
+  useEffect(() => {
+    if (shouldFocus) {
+      inputRef.current?.focus();
+      setShouldFocus(false);
+    }
+  }, [shouldFocus]);
+
   const showError = (message: string) => {
     setError(message);
-    setTimeout(() => setError(''), 3000);
+
+    setTimeout(() => {
+      setError('');
+    }, 3000);
   };
 
   useEffect(() => {
@@ -40,10 +50,6 @@ export const App: React.FC = () => {
       .catch(() => showError('Unable to load todos'));
   }, []);
 
-  const focusInput = () => {
-    setTimeout(() => inputRef.current?.focus(), 0);
-  };
-
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
 
@@ -51,7 +57,7 @@ export const App: React.FC = () => {
 
     if (!trimmed) {
       showError('Title should not be empty');
-      focusInput();
+      setShouldFocus(true);
 
       return;
     }
@@ -71,12 +77,12 @@ export const App: React.FC = () => {
         setTodos(prev => [...prev, todo]);
         setNewTitle('');
         setTempTodo(null);
-        focusInput();
+        setShouldFocus(true);
       })
       .catch(() => {
         showError('Unable to add a todo');
         setTempTodo(null);
-        focusInput();
+        setShouldFocus(true);
       })
       .finally(() => setLoading(false));
   };
@@ -87,24 +93,23 @@ export const App: React.FC = () => {
     deleteTodoAPI(id)
       .then(() => {
         setTodos(prev => prev.filter(todo => todo.id !== id));
-        setSelectedIds(prev => prev.filter(sel => sel !== id));
-        focusInput();
+        setShouldFocus(true);
       })
-      .catch(() => showError('Unable to delete a todo'))
+      .catch(() => {
+        showError('Unable to delete a todo');
+        setShouldFocus(true);
+      })
       .finally(() => {
         setProcessingIds(prev => prev.filter(pid => pid !== id));
       });
   };
 
   const handleClearCompleted = () => {
-    const completedTodos = todos.filter(todo => todo.completed);
+    const completed = todos.filter(todo => todo.completed);
 
-    completedTodos.forEach(todo => handleDelete(todo.id));
-  };
-
-  const handleDeleteSelected = () => {
-    selectedIds.forEach(id => handleDelete(id));
-    setSelectedIds([]);
+    completed.forEach(todo => {
+      handleDelete(todo.id);
+    });
   };
 
   const filteredTodos = todos.filter(todo => {
@@ -122,7 +127,7 @@ export const App: React.FC = () => {
   const visibleTodos = tempTodo ? [...filteredTodos, tempTodo] : filteredTodos;
 
   const activeCount = todos.filter(t => !t.completed).length;
-  const hasCompleted = todos.some(t => t.completed);
+  const hasCompleted = todos.some(todo => todo.completed);
   const hasTodos = todos.length > 0 || tempTodo !== null;
 
   if (!USER_ID) {
@@ -168,18 +173,6 @@ export const App: React.FC = () => {
                   data-cy="Todo"
                   className={`todo ${todo.completed ? 'completed' : ''}`}
                 >
-                  <input
-                    type="checkbox"
-                    checked={selectedIds.includes(todo.id)}
-                    onChange={() => {
-                      setSelectedIds(prev =>
-                        prev.includes(todo.id)
-                          ? prev.filter(id => id !== todo.id)
-                          : [...prev, todo.id],
-                      );
-                    }}
-                  />
-
                   <label className="todo__status-label">
                     <input
                       data-cy="TodoStatus"
@@ -229,6 +222,7 @@ export const App: React.FC = () => {
               <a
                 href="#/"
                 className={`filter__link ${filter === 'all' ? 'selected' : ''}`}
+                data-cy="FilterLinkAll"
                 onClick={() => setFilter('all')}
               >
                 All
@@ -239,6 +233,7 @@ export const App: React.FC = () => {
                 className={`filter__link ${
                   filter === 'active' ? 'selected' : ''
                 }`}
+                data-cy="FilterLinkActive"
                 onClick={() => setFilter('active')}
               >
                 Active
@@ -249,6 +244,7 @@ export const App: React.FC = () => {
                 className={`filter__link ${
                   filter === 'completed' ? 'selected' : ''
                 }`}
+                data-cy="FilterLinkCompleted"
                 onClick={() => setFilter('completed')}
               >
                 Completed
@@ -258,18 +254,11 @@ export const App: React.FC = () => {
             <button
               type="button"
               className="todoapp__clear-completed"
-              disabled={!hasCompleted}
+              data-cy="ClearCompletedButton"
               onClick={handleClearCompleted}
+              disabled={!hasCompleted}
             >
               Clear completed
-            </button>
-
-            <button
-              type="button"
-              disabled={!selectedIds.length}
-              onClick={handleDeleteSelected}
-            >
-              Delete selected
             </button>
           </footer>
         )}
