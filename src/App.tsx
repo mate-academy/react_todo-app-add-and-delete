@@ -42,8 +42,14 @@ export const App: React.FC = () => {
   }, []);
 
   const visibleTodos = todos.filter(todo => {
-    if (filter === FilterStatus.Active) return !todo.completed;
-    if (filter === FilterStatus.Completed) return todo.completed;
+    if (filter === FilterStatus.Active) {
+      return !todo.completed;
+    }
+
+    if (filter === FilterStatus.Completed) {
+      return todo.completed;
+    }
+
     return true;
   });
 
@@ -75,6 +81,7 @@ export const App: React.FC = () => {
     if (!trimmedTitle) {
       setErrorMessage(ErrorMessages.Empty);
       setTimeout(() => setErrorMessage(ErrorMessages.None), 3000);
+
       return;
     }
 
@@ -98,23 +105,24 @@ export const App: React.FC = () => {
       });
   };
 
-  const clearCompleted = () => {
+  const clearCompleted = async () => {
     const completedTodos = todos.filter(todo => todo.completed);
-    const completedIds = completedTodos.map(todo => todo.id);
 
-    setTodos(prev => prev.filter(todo => !todo.completed));
+    const deletionPromises = completedTodos.map(todo => {
+      return todoService
+        .deleteTodo(todo.id)
+        .then(() => {
+          setTodos(currentTodos => currentTodos.filter(t => t.id !== todo.id));
+        })
+        .catch(() => {
+          setErrorMessage(ErrorMessages.Delete);
+          setTimeout(() => setErrorMessage(ErrorMessages.None), 3000);
+        });
+    });
 
-    setLoadingIds(prev => [...prev, ...completedIds]);
+    await Promise.all(deletionPromises);
 
-    Promise.all(completedTodos.map(todo => todoService.deleteTodo(todo.id)))
-      .catch(() => {
-        setErrorMessage(ErrorMessages.Delete);
-        setTimeout(() => setErrorMessage(ErrorMessages.None), 3000);
-      })
-      .finally(() => {
-        setLoadingIds(prev => prev.filter(id => !completedIds.includes(id)));
-        itemField.current?.focus();
-      });
+    itemField.current?.focus();
   };
 
   return (
