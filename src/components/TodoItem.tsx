@@ -6,9 +6,15 @@ interface Props {
   todo: Todo;
   onDelete: (id: number) => void;
   isLoading: boolean;
+  onToggle: (id: number) => void;
 }
 
-export const TodoItem: React.FC<Props> = ({ todo, onDelete, isLoading }) => {
+export const TodoItem: React.FC<Props> = ({
+  todo,
+  onDelete,
+  isLoading,
+  onToggle,
+}) => {
   return (
     <div data-cy="Todo" className={cn('todo', { completed: todo.completed })}>
       {/* eslint-disable-next-line jsx-a11y/label-has-associated-control */}
@@ -19,6 +25,7 @@ export const TodoItem: React.FC<Props> = ({ todo, onDelete, isLoading }) => {
           className="todo__status"
           checked={todo.completed}
           readOnly
+          onChange={() => onToggle(todo.id)}
         />
       </label>
 

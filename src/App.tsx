@@ -53,6 +53,17 @@ export const App: React.FC = () => {
     return true;
   });
 
+  const toggleTodoLocal = (id: number) => {
+    setTodos(currentTodos =>
+      currentTodos.map(todo => {
+        if (todo.id === id) {
+          return { ...todo, completed: !todo.completed };
+        }
+        return todo;
+      }),
+    );
+  };
+
   const activeTodosCount = todos.filter(todo => !todo.completed).length;
 
   const hasCompleted = todos.some(todo => todo.completed);
@@ -144,6 +155,7 @@ export const App: React.FC = () => {
               onDelete={deleteTodo}
               loadingIds={loadingIds}
               tempTodo={tempTodo}
+              onToggle={toggleTodoLocal}
             />
             <Footer
               filter={filter}
