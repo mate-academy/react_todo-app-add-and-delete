@@ -65,6 +65,11 @@ export const App: React.FC = () => {
     setIsHiddenError(false);
   };
 
+  const clearErrorMessage = () => {
+    setErrorMessage('');
+    setIsHiddenError(true);
+  };
+
   const clearCompletedTodos = () => {
     setIsClearingCompletedTodos(true);
     const promises = completedTodos.map(todo => deleteTodo(todo.id));
@@ -98,7 +103,7 @@ export const App: React.FC = () => {
   }, []);
 
   useEffect(() => {
-    setErrorMessage('');
+    clearErrorMessage();
     setIsLoading(true);
     let filterParam = new URL(window.location.href).hash.slice(2);
 
@@ -134,10 +139,10 @@ export const App: React.FC = () => {
 
       <div className="todoapp__content">
         <Header
+          clearErrorMessage={clearErrorMessage}
           setErrorMessage={addErrorMessage}
           setTempTodo={setTempTodo}
           addTodo={addTodo}
-          appliedFilter={appliedFilter}
           todos={todos}
         />
 

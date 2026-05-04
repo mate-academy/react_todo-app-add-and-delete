@@ -1,21 +1,22 @@
 import React, { useEffect, useRef, useState } from 'react';
-import { ERROR_MESSAGES, Filter } from '../../App';
+
+import { ERROR_MESSAGES } from '../../App';
 import * as client from '../../api/todos';
 import { Todo } from '../../types/Todo';
 
 type Props = {
   setErrorMessage: (message: string) => void;
+  clearErrorMessage: () => void;
   setTempTodo: (todo: Todo | null) => void;
   addTodo: (todo: Todo) => void;
-  appliedFilter: Filter;
   todos: Todo[];
 };
 
 const HeaderBase: React.FC<Props> = ({
   setErrorMessage,
+  clearErrorMessage,
   setTempTodo,
   addTodo,
-  appliedFilter,
   todos,
 }) => {
   const [todoTitle, setTodoTitle] = useState('');
@@ -26,7 +27,7 @@ const HeaderBase: React.FC<Props> = ({
 
   const handleChangeTodoTitle = (e: React.ChangeEvent<HTMLInputElement>) => {
     setTodoTitle(e.target.value);
-    setErrorMessage('');
+    clearErrorMessage();
   };
 
   const clearForm = () => {
@@ -55,10 +56,7 @@ const HeaderBase: React.FC<Props> = ({
       .addTodo(todoTitle.trim())
       .then(res => {
         setTempTodo(null);
-        if (appliedFilter !== 'completed') {
-          addTodo(res);
-        }
-
+        addTodo(res);
         clearForm();
       })
       .catch(() => {
