@@ -17,7 +17,13 @@ export const ERROR_MESSAGES = {
   emptyTitle: 'Title should not be empty',
 };
 
-export type Filter = 'all' | 'active' | 'completed';
+export enum FilterType {
+  ALL = 'all',
+  ACTIVE = 'active',
+  COMPLETED = 'completed',
+}
+
+export type Filter = `${FilterType}`;
 
 const isFilter = (value: string): value is Filter => {
   return ['all', 'active', 'completed'].includes(value);
@@ -27,10 +33,11 @@ export const App: React.FC = () => {
   const [todos, setTodos] = useState<Todo[]>([]);
   const [tempTodo, setTempTodo] = useState<Todo | null>(null);
 
-  const [appliedFilter, setAppliedFilter] = useState<Filter>('all');
+  const [appliedFilter, setAppliedFilter] = useState<Filter>(FilterType.ALL);
 
   const [isLoading, setIsLoading] = useState(false);
   const [errorMessage, setErrorMessage] = useState('');
+  const [isHiddenError, setIsHiddenError] = React.useState(true);
 
   const [isClearingCompletedTodos, setIsClearingCompletedTodos] =
     useState(false);
@@ -53,6 +60,11 @@ export const App: React.FC = () => {
     });
   };
 
+  const addErrorMessage = (message: string) => {
+    setErrorMessage(message);
+    setIsHiddenError(false);
+  };
+
   const clearCompletedTodos = () => {
     setIsClearingCompletedTodos(true);
     const promises = completedTodos.map(todo => deleteTodo(todo.id));
@@ -63,7 +75,7 @@ export const App: React.FC = () => {
         .map(todo => todo.id);
 
       if (failedIds.length > 0) {
-        setErrorMessage(ERROR_MESSAGES.failedDeletingTodo);
+        addErrorMessage(ERROR_MESSAGES.failedDeletingTodo);
       }
 
       setTodos(prev =>
@@ -80,7 +92,7 @@ export const App: React.FC = () => {
       })
       .catch(() => {
         setTempTodo(null);
-        setErrorMessage(ERROR_MESSAGES.failedLoadingTodos);
+        addErrorMessage(ERROR_MESSAGES.failedLoadingTodos);
       })
       .finally(() => setIsLoading(false));
   }, []);
@@ -91,27 +103,26 @@ export const App: React.FC = () => {
     let filterParam = new URL(window.location.href).hash.slice(2);
 
     if (filterParam === '') {
-      filterParam = 'all';
+      filterParam = FilterType.ALL;
     }
 
     if (filterParam && isFilter(filterParam)) {
       setAppliedFilter(filterParam as Filter);
     }
 
-    setErrorMessage('');
     processTodoData(getTodos());
   }, [processTodoData]);
 
   const visibleTodos = useMemo(() => {
     switch (appliedFilter) {
-      case 'active':
-        return notCompletedTodos;
-      case 'completed':
-        return completedTodos;
-      case 'all':
+      case FilterType.ACTIVE:
+        return todos.filter(todo => !todo.completed);
+      case FilterType.COMPLETED:
+        return todos.filter(todo => todo.completed);
+      default:
         return todos;
     }
-  }, [todos, appliedFilter, notCompletedTodos, completedTodos]);
+  }, [todos, appliedFilter]);
 
   if (!USER_ID) {
     return <UserWarning />;
@@ -123,7 +134,7 @@ export const App: React.FC = () => {
 
       <div className="todoapp__content">
         <Header
-          setErrorMessage={setErrorMessage}
+          setErrorMessage={addErrorMessage}
           setTempTodo={setTempTodo}
           addTodo={addTodo}
           appliedFilter={appliedFilter}
@@ -137,7 +148,7 @@ export const App: React.FC = () => {
           tempTodo={tempTodo}
           className="todoapp__main"
           deleteTodo={removeTodo}
-          setErrorMessage={setErrorMessage}
+          setErrorMessage={addErrorMessage}
           completedTodos={completedTodos}
           isClearingCompletedTodos={isClearingCompletedTodos}
         />
@@ -153,7 +164,11 @@ export const App: React.FC = () => {
         )}
       </div>
 
-      <ErrorNotification message={errorMessage} hidden={!errorMessage} />
+      <ErrorNotification
+        message={errorMessage}
+        hidden={isHiddenError}
+        hideMessage={() => setIsHiddenError(true)}
+      />
     </div>
   );
 };
