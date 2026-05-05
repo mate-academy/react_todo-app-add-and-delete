@@ -3,22 +3,27 @@
 import React, { useEffect, useLayoutEffect, useRef, useState } from 'react';
 import { UserWarning } from './UserWarning';
 import { createTodo, deleteTodo, getTodos, USER_ID } from './api/todos';
-import { Todo } from './types/Todo';
+import { ErrorMessages, Todo } from './types/Types';
+import { TodoList } from './components/TodoList';
+import { Footer } from './components/Footer';
+import { ErrorNotifications } from './components/ErrorNotifications';
 
 export const App: React.FC = () => {
   const [todos, setTodos] = useState<Todo[]>([]);
   const [filter, setFilter] = useState('all');
-  const [errorMessage, setErrorMessage] = useState('');
+  const [errorMessage, setErrorMessage] = useState<ErrorMessages>(
+    ErrorMessages.empty,
+  );
   const [title, setTitle] = useState('');
   const [isSubmiting, setIsSubmiting] = useState(false);
   const [tempTodo, setTempTodo] = useState<Todo | null>(null);
   const [deletingTodoIds, setDeletingTodoIds] = useState<number[]>([]);
 
-  const showError = (message: string) => {
+  const showError = (message: ErrorMessages) => {
     setErrorMessage(message);
 
     setTimeout(() => {
-      setErrorMessage('');
+      setErrorMessage(ErrorMessages.empty);
     }, 3000);
   };
 
@@ -26,12 +31,12 @@ export const App: React.FC = () => {
 
   const handleSubmit = (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
-    setErrorMessage('');
+    setErrorMessage(ErrorMessages.empty);
 
     const trimmedTitle = title.trim();
 
     if (!trimmedTitle) {
-      showError('Title should not be empty');
+      showError(ErrorMessages.notBeEmpty);
       inputRef.current?.focus();
 
       return;
@@ -55,7 +60,7 @@ export const App: React.FC = () => {
         setTitle('');
       })
       .catch(() => {
-        showError('Unable to add a todo');
+        showError(ErrorMessages.addError);
       })
       .finally(() => {
         setIsSubmiting(false);
@@ -65,14 +70,14 @@ export const App: React.FC = () => {
 
   const handleDelete = (todoId: number) => {
     setDeletingTodoIds(current => [...current, todoId]);
-    setErrorMessage('');
+    setErrorMessage(ErrorMessages.empty);
 
     deleteTodo(todoId)
       .then(() => {
         setTodos(current => current.filter(todo => todo.id !== todoId));
       })
       .catch(() => {
-        showError('Unable to delete a todo');
+        showError(ErrorMessages.deleteError);
       })
       .finally(() => {
         setDeletingTodoIds(current => current.filter(id => id !== todoId));
@@ -89,7 +94,7 @@ export const App: React.FC = () => {
 
     const completedIds = completedTodos.map(todo => todo.id);
 
-    setErrorMessage('');
+    setErrorMessage(ErrorMessages.empty);
     setDeletingTodoIds(current => [...current, ...completedIds]);
 
     Promise.allSettled(completedTodos.map(todo => deleteTodo(todo.id)))
@@ -107,7 +112,7 @@ export const App: React.FC = () => {
         }
 
         if (hasError) {
-          showError('Unable to delete a todo');
+          showError(ErrorMessages.deleteError);
         }
       })
       .finally(() => {
@@ -119,7 +124,7 @@ export const App: React.FC = () => {
       });
   };
 
-  const filteredPosts = todos.filter(post => {
+  const filteredTodos = todos.filter(post => {
     if (filter === 'active') {
       return !post.completed;
     }
@@ -141,10 +146,10 @@ export const App: React.FC = () => {
   }, []);
 
   useEffect(() => {
-    setErrorMessage('');
+    setErrorMessage(ErrorMessages.empty);
     getTodos()
       .then(data => setTodos(data))
-      .catch(() => showError('Unable to load todos'));
+      .catch(() => showError(ErrorMessages.loadError));
   }, []);
 
   useLayoutEffect(() => {
@@ -190,153 +195,28 @@ export const App: React.FC = () => {
           </form>
         </header>
 
-        <section className="todoapp__main" data-cy="TodoList">
-          {filteredPosts.map(post => (
-            <div
-              data-cy="Todo"
-              className={post.completed ? 'todo completed' : 'todo'}
-              key={post.id}
-            >
-              <div className="todo__status-label">
-                <input
-                  data-cy="TodoStatus"
-                  type="checkbox"
-                  className="todo__status"
-                  checked={post.completed}
-                  aria-label={`Mark "${post.title}" as completed`}
-                  readOnly
-                />
-              </div>
-
-              <span data-cy="TodoTitle" className="todo__title">
-                {post.title}
-              </span>
-              <button
-                type="button"
-                className="todo__remove"
-                data-cy="TodoDelete"
-                onClick={() => handleDelete(post.id)}
-              >
-                ×
-              </button>
-
-              <div
-                data-cy="TodoLoader"
-                className={
-                  deletingTodoIds.includes(post.id)
-                    ? 'modal overlay is-active'
-                    : 'modal overlay'
-                }
-              >
-                <div className="modal-background has-background-white-ter" />
-                <div className="loader" />
-              </div>
-            </div>
-          ))}
-
-          {tempTodo && (
-            <div
-              data-cy="Todo"
-              className={tempTodo.completed ? 'todo completed' : 'todo'}
-            >
-              <div className="todo__status-label">
-                <input
-                  data-cy="TodoStatus"
-                  type="checkbox"
-                  className="todo__status"
-                  readOnly
-                />
-              </div>
-
-              <span data-cy="TodoTitle" className="todo__title">
-                {tempTodo.title}
-              </span>
-              <button
-                type="button"
-                className="todo__remove"
-                data-cy="TodoDelete"
-              >
-                ×
-              </button>
-
-              <div data-cy="TodoLoader" className="modal overlay is-active">
-                <div className="modal-background has-background-white-ter" />
-                <div className="loader" />
-              </div>
-            </div>
-          )}
-        </section>
+        <TodoList
+          filteredTodos={filteredTodos}
+          handleDelete={handleDelete}
+          deletingTodoIds={deletingTodoIds}
+          tempTodo={tempTodo}
+        />
 
         {todos.length > 0 && (
-          <footer className="todoapp__footer" data-cy="Footer">
-            <span className="todo-count" data-cy="TodosCounter">
-              {`${todos.filter(item => !item.completed).length} items left`}
-            </span>
-
-            <nav className="filter" data-cy="Filter">
-              <a
-                href="#/"
-                className={
-                  filter === 'all' ? 'filter__link selected' : 'filter__link'
-                }
-                data-cy="FilterLinkAll"
-                onClick={() => setFilter('all')}
-              >
-                All
-              </a>
-
-              <a
-                href="#/active"
-                className={
-                  filter === 'active' ? 'filter__link selected' : 'filter__link'
-                }
-                data-cy="FilterLinkActive"
-                onClick={() => setFilter('active')}
-              >
-                Active
-              </a>
-
-              <a
-                href="#/completed"
-                className={
-                  filter === 'completed'
-                    ? 'filter__link selected'
-                    : 'filter__link'
-                }
-                data-cy="FilterLinkCompleted"
-                onClick={() => setFilter('completed')}
-              >
-                Completed
-              </a>
-            </nav>
-
-            <button
-              type="button"
-              className="todoapp__clear-completed"
-              data-cy="ClearCompletedButton"
-              disabled={!checkComplete}
-              onClick={handleClearCompleted}
-            >
-              Clear completed
-            </button>
-          </footer>
+          <Footer
+            todos={todos}
+            filter={filter}
+            setFilter={setFilter}
+            checkComplete={checkComplete}
+            handleClearCompleted={handleClearCompleted}
+          />
         )}
       </div>
 
-      <div
-        data-cy="ErrorNotification"
-        className={`notification is-danger is-light has-text-weight-normal ${
-          errorMessage ? '' : 'hidden'
-        }`}
-      >
-        <button
-          data-cy="HideErrorButton"
-          type="button"
-          className="delete"
-          onClick={() => setErrorMessage('')}
-        />
-        {errorMessage}
-      </div>
+      <ErrorNotifications
+        errorMessage={errorMessage}
+        setErrorMessage={setErrorMessage}
+      />
     </div>
   );
 };
