@@ -135,4 +135,11 @@
       visibility: hidden;
     }
   }
+
+  &__loader {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding-block: 10px;
+  }
 }
