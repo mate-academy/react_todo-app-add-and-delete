@@ -70,6 +70,11 @@ export const TodoItem: React.FC<Props> = ({
     }
   };
 
+  const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
+    e.preventDefault();
+    await handleTitleChange();
+  };
+
   return (
     <div data-cy="Todo" className={`todo ${todo.completed ? 'completed' : ''}`}>
       <label className="todo__status-label">
@@ -84,12 +89,7 @@ export const TodoItem: React.FC<Props> = ({
       </label>
 
       {isEditing ? (
-        <form
-          onSubmit={async e => {
-            e.preventDefault();
-            await handleTitleChange();
-          }}
-        >
+        <form onSubmit={handleSubmit}>
           <input
             data-cy="TodoTitleField"
             className="todo__edit"
