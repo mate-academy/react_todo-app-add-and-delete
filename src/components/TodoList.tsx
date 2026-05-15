@@ -5,9 +5,10 @@ type Props = {
   todos: Todo[];
   onDelete: (id: number) => void;
   loadingIds: number[];
+  onChecked: (obj: Todo) => void
 };
 
-export const TodoList: React.FC<Props> = ({ todos, onDelete, loadingIds }) => {
+export const TodoList: React.FC<Props> = ({ todos, onDelete, loadingIds, onChecked }) => {
   return (
     <section className="todoapp__main" data-cy="TodoList">
       {todos.map(todo => (
@@ -16,6 +17,7 @@ export const TodoList: React.FC<Props> = ({ todos, onDelete, loadingIds }) => {
           todo={todo}
           deleteItem={onDelete}
           isLoading={loadingIds.includes(todo.id)}
+          isComplete={onChecked}
         />
       ))}
     </section>

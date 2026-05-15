@@ -5,8 +5,10 @@ type Props = {
   todo: Todo;
   deleteItem: (id: number) => void;
   isLoading: boolean;
+  isComplete: (obj: Todo) => void;
 };
-export const TodoItem: React.FC<Props> = ({ todo, deleteItem, isLoading }) => {
+export const TodoItem: React.FC<Props> = ({ todo, deleteItem, isLoading, isComplete }) => {
+
   return (
     /* eslint-disable jsx-a11y/label-has-associated-control */
     <div
@@ -19,6 +21,7 @@ export const TodoItem: React.FC<Props> = ({ todo, deleteItem, isLoading }) => {
           type="checkbox"
           className="todo__status"
           checked={todo.completed}
+          onChange={() => isComplete(todo)}
         />
       </label>
 

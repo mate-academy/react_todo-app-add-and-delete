@@ -52,7 +52,7 @@ export const App: React.FC = () => {
     todoService
       .getTodos()
       .then(setTodos)
-      .catch(() => setErrorMessage(ERROR_MESSAGES.load))
+      .catch(() => setErrorMessage(ERROR_MESSAGES.load));
   }, []);
 
   /* errors */
@@ -92,6 +92,17 @@ export const App: React.FC = () => {
   const clearCompleted = () => {
     todos.filter(todo => todo.completed).forEach(todo => deleteTodo(todo.id));
   };
+
+  const onToggle = (todo: Todo) => {
+    const checked = { ...todo, completed: !todo.completed };
+    setTodos(prev => prev.map(t => {
+      if (t.id === todo.id) {
+        return checked;
+      }
+
+      return t;
+    }))
+  }
 
   if (!todoService.USER_ID) {
     return <UserWarning />;
@@ -157,10 +168,16 @@ export const App: React.FC = () => {
           todos={filteringByStatus}
           onDelete={deleteTodo}
           loadingIds={loadingIds}
+          onChecked={onToggle}
         />
 
         {tempTodo && (
-          <TodoItem todo={tempTodo} isLoading={true} deleteItem={() => {}} />
+          <TodoItem
+            todo={tempTodo}
+            isLoading={true}
+            deleteItem={() => { }}
+            isComplete={() => {}}
+          />
         )}
 
         {/* Hide the footer if there are no todos */}
