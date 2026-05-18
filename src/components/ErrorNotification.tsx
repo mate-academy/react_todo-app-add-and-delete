@@ -18,7 +18,7 @@ export const ErrorNotification = ({
       className={
         errorMessage
           ? 'notification is-danger is-light has-text-weight-normal'
-          : 'notification is-danger is-light has-text-weight-normal is-hidden'
+          : 'notification is-danger is-light has-text-weight-normal hidden'
       }
     >
       <button
@@ -27,17 +27,7 @@ export const ErrorNotification = ({
         className="delete"
         onClick={onClose}
       />
-      {/* show only one message at a time */}
-      {/* Unable to load todos */}
       {errorMessage}
-      {/* <br />
-      Title should not be empty
-      <br />
-      Unable to add a todo
-      <br />
-      Unable to delete a todo
-      <br />
-      Unable to update a todo */}
     </div>
   );
 };
