@@ -18,7 +18,7 @@ export const ErrorNotification = ({
       className={
         errorMessage
           ? 'notification is-danger is-light has-text-weight-normal'
-          : 'notification is-danger is-light has-text-weight-normal hidden'
+          : 'notification is-danger is-light has-text-weight-normal is-hidden'
       }
     >
       <button
