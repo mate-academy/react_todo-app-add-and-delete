@@ -8,16 +8,16 @@ import { Todo } from './types/Todo';
 import { FilterOptions } from './types/FilterOptions';
 import { ErrorMessages } from './types/ErrorMessage';
 import { Header } from './components/Header/Header';
-import { ErrorNotification } from './components/ErrorNotification/ErrorNotification';
-import { Footer } from './components/Footer/Footer';
 import { Main } from './components/Main/Main';
+import { Footer } from './components/Footer/Footer';
+import { ErrorNotification } from './components/ErrorNotification/ErrorNotification';
 
 export const App: React.FC = () => {
   const [todos, setTodos] = useState<Todo[]>([]);
   const [tempTodoId, setTempTodoId] = useState(0);
   const [newTodoTitle, setNewTodoTitle] = useState('');
   const [isSending, setIsSending] = useState(false);
-  const [updatingTodoId, setUpdatingTodoId] = useState(0);
+  const [updatingTodosId, setUpdatingTodosId] = useState<number[]>([]);
   const [selectedFilter, setSelectedFilter] = useState<FilterOptions>(
     FilterOptions.All,
   );
@@ -31,6 +31,8 @@ export const App: React.FC = () => {
       todos.filter(todo => !todo.completed && todo.id !== tempTodoId).length,
     [todos, tempTodoId],
   );
+
+  const completedTodos = todos.filter(todo => todo.completed);
 
   const filteredTodos = useMemo(
     () =>
@@ -69,7 +71,7 @@ export const App: React.FC = () => {
 
     setIsSending(true);
     setTempTodoId(tempTodo.id);
-    setUpdatingTodoId(tempTodo.id);
+    setUpdatingTodosId(prev => [...prev, tempTodo.id]);
     setTodos(prev => [...prev, tempTodo]);
 
     try {
@@ -90,21 +92,29 @@ export const App: React.FC = () => {
     } finally {
       setIsSending(false);
       setTempTodoId(0);
-      setUpdatingTodoId(0);
+      setUpdatingTodosId([]);
     }
   };
 
   const handleDeleteTodo = async (id: number) => {
-    setUpdatingTodoId(id);
+    setUpdatingTodosId(prev => [...prev, id]);
     try {
       await deleteTodo(id);
       newTodoInput.current?.focus();
-      setTodos(prev => prev.filter(todo => todo.id !== id));
+      setTodos(prev => prev.filter(delTodo => delTodo.id !== id));
     } catch (error) {
       setErrorMessage(ErrorMessages.DeleteTodo);
     } finally {
-      setUpdatingTodoId(0);
+      setUpdatingTodosId(prev => prev.filter(todoId => todoId !== id));
     }
+  };
+
+  // const handleDeleteCompletedTodos = () => {
+  //   completedTodos.forEach(compTodo => handleDeleteTodo(compTodo.id));
+  // };
+
+  const handleDeleteCompletedTodos = async () => {
+    await Promise.all(completedTodos.map(todo => handleDeleteTodo(todo.id)));
   };
 
   useEffect(() => {
@@ -162,14 +172,16 @@ export const App: React.FC = () => {
           onDeleteTodo={handleDeleteTodo}
           todosLength={todos.length}
           filteredTodos={filteredTodos}
-          updatingTodoId={updatingTodoId}
+          updatingTodosId={updatingTodosId}
         />
 
         {!!todos.length && (
           <Footer
+            completedTodos={completedTodos}
             incompleteTodosCount={incompleteTodosCount}
             onSelectFilter={setSelectedFilter}
             selectedFilter={selectedFilter}
+            onDeleteCompletedTodos={handleDeleteCompletedTodos}
           />
         )}
       </div>

@@ -1,17 +1,22 @@
 import cn from 'classnames';
 import { filterOptions } from '../../constants/filterOptions';
 import { FilterOptions } from '../../types/FilterOptions';
+import { Todo } from '../../types/Todo';
 
 type Props = {
   incompleteTodosCount: number;
   onSelectFilter: React.Dispatch<React.SetStateAction<FilterOptions>>;
   selectedFilter: FilterOptions;
+  completedTodos: Todo[];
+  onDeleteCompletedTodos: () => void;
 };
 
 export const Footer: React.FC<Props> = ({
   incompleteTodosCount,
   onSelectFilter,
   selectedFilter,
+  completedTodos,
+  onDeleteCompletedTodos,
 }) => {
   return (
     <footer className="todoapp__footer" data-cy="Footer">
@@ -37,7 +42,8 @@ export const Footer: React.FC<Props> = ({
       </nav>
 
       <button
-        disabled={!incompleteTodosCount}
+        onClick={onDeleteCompletedTodos}
+        disabled={!completedTodos.length}
         type="button"
         className="todoapp__clear-completed"
         data-cy="ClearCompletedButton"

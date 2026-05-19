@@ -5,14 +5,14 @@ import { Todo } from '../../types/Todo';
 type Props = {
   todosLength: number;
   filteredTodos: Todo[];
-  updatingTodoId: number;
+  updatingTodosId: number[];
   onDeleteTodo: (id: number) => Promise<void>;
 };
 
 export const Main: React.FC<Props> = ({
   todosLength,
   filteredTodos,
-  updatingTodoId,
+  updatingTodosId,
   onDeleteTodo,
 }) => {
   return (
@@ -51,7 +51,7 @@ export const Main: React.FC<Props> = ({
               className={cn(
                 'modal',
                 'overlay',
-                todo.id === updatingTodoId && 'is-active',
+                updatingTodosId.includes(todo.id) && 'is-active',
               )}
             >
               <div className="modal-background has-background-white-ter" />
