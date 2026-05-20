@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react';
 import { TodoViewModel } from '../types/Todo';
 import { deleteTodo, getTodos, postTodo, USER_ID } from '../api/todos';
+import { ERROR_MESSAGES } from '../constants/errors';
 
 export function useTodos(showError: (message: string) => void) {
   const [todos, setTodos] = useState<TodoViewModel[]>([]);
@@ -32,7 +33,7 @@ export function useTodos(showError: (message: string) => void) {
         setTodos(res);
       })
       .catch(() => {
-        showError('Unable to load todos');
+        showError(ERROR_MESSAGES.LOAD_TODOS);
       });
   }, [showError]);
 
@@ -54,7 +55,7 @@ export function useTodos(showError: (message: string) => void) {
 
       setTodos(prev => [...prev, res]);
     } catch (error) {
-      showError('Unable to add a todo');
+      showError(ERROR_MESSAGES.ADD_TODOS);
       setTodos(prev => {
         return prev.filter(item => item.id !== 0);
       });
@@ -71,7 +72,7 @@ export function useTodos(showError: (message: string) => void) {
         return prev.filter(todo => todo.id !== id);
       });
     } catch {
-      showError('Unable to delete a todo');
+      showError(ERROR_MESSAGES.DELETE_TODO);
     }
   }
 
@@ -89,9 +90,11 @@ export function useTodos(showError: (message: string) => void) {
 
           setTodos(prev => prev.filter(t => t.id !== todo.id));
         } catch {
-          showError('Unable to delete a todo');
+          showError(ERROR_MESSAGES.DELETE_TODO);
           setTodos(prev =>
-            prev.map(t => (t.id === todo.id ? { ...t, isLoading: false } : t)),
+            prev.map(item =>
+              todo.id === todo.id ? { ...item, isLoading: false } : item,
+            ),
           );
         }
       }),

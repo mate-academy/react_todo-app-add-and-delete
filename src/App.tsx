@@ -7,6 +7,8 @@ import { useError } from './hooks/useError';
 import { AlertError } from './components/AlertError/AlertError';
 import { TodoFooter } from './components/TodoFooter/TodoFooter';
 import { useTodos } from './hooks/useTodos';
+import { FilterStatus } from './types/filterStatus';
+import { ERROR_MESSAGES } from './constants/errors';
 
 export const App: React.FC = () => {
   const { error, showError, clearError } = useError();
@@ -21,7 +23,9 @@ export const App: React.FC = () => {
     activeTodosCount,
   } = useTodos(showError);
 
-  const [filterCompleted, setFilterCompleted] = useState<boolean | null>(null);
+  const [filterCompleted, setFilterCompleted] = useState<FilterStatus>(
+    FilterStatus.All,
+  );
   const [disabled, setDisabled] = useState(false);
   const [value, setValue] = useState('');
 
@@ -40,7 +44,7 @@ export const App: React.FC = () => {
     const valueTrim = value.trim();
 
     if (!valueTrim) {
-      showError('Title should not be empty');
+      showError(ERROR_MESSAGES.EMPTY_TITLE);
 
       return;
     }

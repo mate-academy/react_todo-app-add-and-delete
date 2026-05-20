@@ -1,16 +1,23 @@
+import { FilterStatus } from '../types/filterStatus';
 import { TodoViewModel } from '../types/Todo';
 
 export function filterTodos(
   todos: TodoViewModel[],
-  completed: boolean | null,
+  status: FilterStatus,
 ): TodoViewModel[] {
   if (!todos) {
     return [];
   }
 
-  if (completed !== null) {
-    return todos.filter(todo => todo.completed === completed);
-  }
+  switch (status) {
+    case FilterStatus.Active:
+      return todos.filter(todo => !todo.completed);
 
-  return todos;
+    case FilterStatus.Completed:
+      return todos.filter(todo => todo.completed);
+
+    case FilterStatus.All:
+    default:
+      return todos;
+  }
 }

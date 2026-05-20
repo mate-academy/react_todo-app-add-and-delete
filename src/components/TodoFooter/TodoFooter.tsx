@@ -1,8 +1,9 @@
 import cn from 'classnames';
+import { FilterStatus } from '../../types/filterStatus';
 
 type Props = {
-  filterCompleted: boolean | null;
-  onCompleted: (filter: boolean | null) => void;
+  filterCompleted: FilterStatus;
+  onCompleted: (filter: FilterStatus) => void;
   activeTodosCount: number;
   onDeleteAllTodos: () => Promise<void>;
   completedTodos: number;
@@ -25,10 +26,10 @@ export function TodoFooter({
         <a
           href="#/"
           className={cn('filter__link', {
-            selected: filterCompleted === null,
+            selected: filterCompleted === FilterStatus.All,
           })}
           data-cy="FilterLinkAll"
-          onClick={() => onCompleted(null)}
+          onClick={() => onCompleted(FilterStatus.All)}
         >
           All
         </a>
@@ -36,10 +37,10 @@ export function TodoFooter({
         <a
           href="#/active"
           className={cn('filter__link', {
-            selected: filterCompleted === false,
+            selected: filterCompleted === FilterStatus.Active,
           })}
           data-cy="FilterLinkActive"
-          onClick={() => onCompleted(false)}
+          onClick={() => onCompleted(FilterStatus.Active)}
         >
           Active
         </a>
@@ -47,10 +48,10 @@ export function TodoFooter({
         <a
           href="#/completed"
           className={cn('filter__link', {
-            selected: filterCompleted === true,
+            selected: filterCompleted === FilterStatus.Completed,
           })}
           data-cy="FilterLinkCompleted"
-          onClick={() => onCompleted(true)}
+          onClick={() => onCompleted(FilterStatus.Completed)}
         >
           Completed
         </a>
