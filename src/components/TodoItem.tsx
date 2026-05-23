@@ -9,6 +9,7 @@ type Props = {
 
 export const TodoItem: React.FC<Props> = ({ todo, isLoading, onDelete }) => {
   return (
+    /* eslint-disable jsx-a11y/label-has-associated-control */
     <div data-cy="Todo" className={`todo ${todo.completed ? 'completed' : ''}`}>
       <label className="todo__status-label">
         <input
