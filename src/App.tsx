@@ -12,7 +12,7 @@ import { Footer } from './components/Footer';
 export const App: React.FC = () => {
   const [todos, setTodos] = useState<Todo[]>([]);
   const [errorMessage, setErrorMessage] = useState('');
-  const [loading, setLoading] = useState(false);
+  const [, setLoading] = useState(false);
   const [filter, setFilter] = useState(FilterType.All);
   const [title, setTitle] = useState('');
   const [tempTodo, setTempTodo] = useState<Todo | null>(null);
@@ -69,6 +69,7 @@ export const App: React.FC = () => {
 
     if (!title.trim()) {
       setErrorMessage(ErrorMessage.Empty);
+
       return;
     }
 
@@ -111,6 +112,7 @@ export const App: React.FC = () => {
 
   const handleClearCompleted = () => {
     const completedTodos = todos.filter(todo => todo.completed);
+
     completedTodos.forEach(todo => handleDelete(todo.id));
   };
   //#endregion
