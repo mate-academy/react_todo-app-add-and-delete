@@ -3,7 +3,6 @@
 /* eslint-disable jsx-a11y/control-has-associated-label */
 
 import React, { useEffect, useMemo, useRef, useState } from 'react';
-
 import cn from 'classnames';
 
 import { UserWarning } from './UserWarning';
@@ -24,6 +23,12 @@ export const App: React.FC = () => {
   const [loadingTodoIds, setLoadingTodoIds] = useState<number[]>([]);
 
   const inputRef = useRef<HTMLInputElement>(null);
+
+  useEffect(() => {
+    if (!isAdding) {
+      inputRef.current?.focus();
+    }
+  }, [isAdding]);
 
   const loadTodos = () => {
     setErrorMessage('');
@@ -64,6 +69,7 @@ export const App: React.FC = () => {
 
     if (!trimmedTitle) {
       setErrorMessage('Title should not be empty');
+      inputRef.current?.focus();
 
       return;
     }
@@ -95,8 +101,6 @@ export const App: React.FC = () => {
       .finally(() => {
         setTempTodo(null);
         setIsAdding(false);
-
-        inputRef.current?.focus();
       });
   };
 
@@ -114,6 +118,7 @@ export const App: React.FC = () => {
       })
       .finally(() => {
         setLoadingTodoIds(currentIds => currentIds.filter(id => id !== todoId));
+        inputRef.current?.focus();
       });
   };
 
@@ -172,7 +177,7 @@ export const App: React.FC = () => {
           </form>
         </header>
 
-        {todos.length > 0 && (
+        {(todos.length > 0 || tempTodo) && (
           <>
             <section className="todoapp__main" data-cy="TodoList">
               {visibleTodos.map(todo => (
@@ -222,10 +227,17 @@ export const App: React.FC = () => {
               {tempTodo && (
                 <div data-cy="Todo" className="todo">
                   <label className="todo__status-label">
-                    <input type="checkbox" className="todo__status" />
+                    <input
+                      type="checkbox"
+                      className="todo__status"
+                      checked={false}
+                      readOnly
+                    />
                   </label>
 
-                  <span className="todo__title">{tempTodo.title}</span>
+                  <span data-cy="TodoTitle" className="todo__title">
+                    {tempTodo.title}
+                  </span>
 
                   <button type="button" className="todo__remove">
                     ×
