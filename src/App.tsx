@@ -3,7 +3,7 @@ import React, { useEffect, useState, useRef } from 'react';
 import { Todo } from './types/Todo';
 import { FilterType } from './types/FilterType';
 import { ErrorMessage } from './types/ErrorMessage';
-import { getTodos, addTodo, deleteTodo } from './api/todos';
+import { getTodos, addTodo, deleteTodo, updateTodo } from './api/todos';
 import { TodoHeader } from './components/TodoHeader';
 import { TodoList } from './components/TodoList';
 import { TodoFooter } from './components/TodoFooter';
@@ -90,6 +90,24 @@ export const App: React.FC = () => {
       });
   };
 
+  const handleToggle = (todo: Todo) => {
+    setProcessingIds(current => [...current, todo.id]);
+
+    updateTodo(todo.id, { completed: !todo.completed })
+      .then(updatedTodo => {
+        setTodos(current =>
+          current.map(t => (t.id === updatedTodo.id ? updatedTodo : t)),
+        );
+      })
+      .catch(() => {
+        setErrorMessage(ErrorMessage.Update);
+        setTimeout(() => setErrorMessage(''), 3000);
+      })
+      .finally(() => {
+        setProcessingIds(current => current.filter(id => id !== todo.id));
+      });
+  };
+
   const handleClearCompleted = () => {
     setErrorMessage('');
     const completedTodos = todos.filter(todo => todo.completed);
@@ -147,6 +165,7 @@ export const App: React.FC = () => {
               visibleTodos={visibleTodos}
               processingIds={processingIds}
               handleDelete={handleDelete}
+              handleToggle={handleToggle}
               tempTodo={tempTodo}
             />
 

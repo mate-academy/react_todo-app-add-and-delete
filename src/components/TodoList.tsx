@@ -6,6 +6,7 @@ interface Props {
   visibleTodos: Todo[];
   processingIds: number[];
   handleDelete: (id: number) => void;
+  handleToggle: (todo: Todo) => void;
   tempTodo?: Todo | null;
 }
 
@@ -13,6 +14,7 @@ export const TodoList: React.FC<Props> = ({
   visibleTodos,
   processingIds,
   handleDelete,
+  handleToggle,
   tempTodo,
 }) => {
   return (
@@ -29,7 +31,7 @@ export const TodoList: React.FC<Props> = ({
               type="checkbox"
               className="todo__status"
               checked={todo.completed}
-              readOnly
+              onChange={() => handleToggle(todo)}
             />
           </label>
 
