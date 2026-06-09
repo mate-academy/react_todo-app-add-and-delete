@@ -1,26 +1,82 @@
-/* eslint-disable max-len */
+/* eslint-disable jsx-a11y/label-has-associated-control */
 /* eslint-disable jsx-a11y/control-has-associated-label */
-import React from 'react';
-import { UserWarning } from './UserWarning';
-
-const USER_ID = 0;
+import React, { useEffect, useState } from 'react';
+import { getTodos } from './api/todos';
+import { ErrorNotification } from './components/ErrorNotification';
+import { Todo } from './types/Todo';
+import { TodoList } from './components/TodoList';
+import { Status } from './types/Status';
+import { Footer } from './components/Footer';
+import { NewTodo } from './components/NewTodo';
 
 export const App: React.FC = () => {
-  if (!USER_ID) {
-    return <UserWarning />;
+  const [todos, setTodos] = useState<Todo[]>([]);
+  const [status, setStatus] = useState<Status>(Status.all);
+  const [errorMessage, setErrorMessage] = useState('');
+  const [loadingTodoIds, setLoadingTodoIds] = useState<number[]>([]);
+
+  useEffect(() => {
+    getTodos()
+      .then(currTodos => {
+        setTodos(currTodos);
+      })
+      .catch(() => {
+        setErrorMessage('Unable to load todos');
+      });
+  }, []);
+
+  function prepareFilteredTodos(newStatus: Status) {
+    switch (newStatus) {
+      case Status.active:
+        return todos.filter(todo => !todo.completed);
+      case Status.completed:
+        return todos.filter(todo => todo.completed);
+      default:
+        return todos;
+    }
   }
 
-  return (
-    <section className="section container">
-      <p className="title is-4">
-        Copy all you need from the prev task:
-        <br />
-        <a href="https://github.com/mate-academy/react_todo-app-loading-todos#react-todo-app-load-todos">
-          React Todo App - Load Todos
-        </a>
-      </p>
+  const visibleTodos = prepareFilteredTodos(status);
 
-      <p className="subtitle">Styles are already copied</p>
-    </section>
+  return (
+    <div className="todoapp">
+      <h1 className="todoapp__title">todos</h1>
+
+      <div className="todoapp__content">
+        <NewTodo
+          todos={todos}
+          setTodos={setTodos}
+          setErrorMessage={setErrorMessage}
+          setLoadingTodoIds={setLoadingTodoIds}
+        />
+
+        <TodoList
+          todos={visibleTodos}
+          setTodos={setTodos}
+          setErrorMessage={setErrorMessage}
+          loadingTodoIds={loadingTodoIds}
+        />
+
+        {todos.length > 0 && (
+          <Footer
+            todos={todos}
+            setTodos={setTodos}
+            status={status}
+            onChangeStatus={setStatus}
+            loadingTodoIds={loadingTodoIds}
+            setLoadingTodoIds={setLoadingTodoIds}
+            setErrorMessage={setErrorMessage}
+          />
+        )}
+      </div>
+
+      {/* DON'T use conditional rendering to hide the notification */}
+      {/* Add the 'hidden' class to hide the message smoothly */}
+
+      <ErrorNotification
+        message={errorMessage}
+        setErrorMessage={setErrorMessage}
+      />
+    </div>
   );
 };
