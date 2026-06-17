@@ -8,8 +8,7 @@ import { Errors } from './types/Errors';
 import { Footer } from './components/Footer';
 import { ErrorNotification } from './components/ErrorNotification';
 import { TodoList } from './components/TodoList';
-import { addTodo } from './api/todos';
-import { deleteTodoApi } from './api/todos';
+import { addTodo, deleteTodoApi, getTodos } from './api/todos';
 
 export const App: React.FC = () => {
   const [todos, setTodos] = useState<Todo[]>([]);
@@ -92,11 +91,8 @@ export const App: React.FC = () => {
   };
 
   useEffect(() => {
-    fetch(`https://mate.academy/students-api/todos?userId=${USER_ID}`)
-      .then(response => response.json())
-      .then(data => {
-        setTodos(data);
-      })
+    getTodos()
+      .then(setTodos)
       .catch(() => {
         setErrorMessage(Errors.Load);
         setTimeout(() => setErrorMessage(''), 3000);
@@ -146,7 +142,7 @@ export const App: React.FC = () => {
           </form>
         </header>
 
-        {(todos.length > 0 || tempTodo !== null) && (
+        {(todos.length > 0 || !!tempTodo) && (
           <TodoList
             visibleTodos={visibleTodos}
             tempTodo={tempTodo}

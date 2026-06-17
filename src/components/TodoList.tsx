@@ -26,7 +26,7 @@ export const TodoList: React.FC<Prop> = ({
         />
       ))}
 
-      {tempTodo !== null && (
+      {!!tempTodo && (
         <TodoItem todo={tempTodo} isLoading={true} onDelete={onDelete} />
       )}
     </section>

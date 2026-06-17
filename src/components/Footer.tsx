@@ -21,7 +21,6 @@ export const Footer: React.FC<Prop> = ({
           {todos.filter((todo: Todo) => !todo.completed).length} items left
         </span>
 
-        {/* Active link should have the 'selected' class */}
         <nav className="filter" data-cy="Filter">
           {['All', 'Active', 'Completed'].map(filterName => {
             return (
@@ -38,7 +37,6 @@ export const Footer: React.FC<Prop> = ({
           })}
         </nav>
 
-        {/* this button should be disabled if there are no completed todos */}
         <button
           type="button"
           className="todoapp__clear-completed"
