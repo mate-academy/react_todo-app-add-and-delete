@@ -1131,7 +1131,7 @@ describe('', () => {
     });
   });
 
-  describe.skip('Toggle All Button', () => {
+  describe('Toggle All Button', () => {
     describe('if there are no todos', () => {
       it('should not be visible while loading todos', () => {
         page.mockLoad({ body: [] }).as('loadRequest');
