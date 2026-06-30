@@ -5,7 +5,6 @@ type Props = {
   usingTodos: Todo[];
   processings: number[];
   onDelete: (id: number) => void;
-  onToggle: (todo: Todo) => void;
   tempTodo: Todo | null;
 };
 
@@ -13,7 +12,6 @@ export const TodoMain: React.FC<Props> = ({
   usingTodos,
   processings,
   onDelete,
-  onToggle,
   tempTodo,
 }) => {
   return (
@@ -24,7 +22,6 @@ export const TodoMain: React.FC<Props> = ({
           todo={todo}
           isProcessed={processings.includes(todo.id)}
           onDelete={() => onDelete(todo.id)}
-          onToggle={() => onToggle(todo)}
         />
       ))}
 
@@ -33,7 +30,6 @@ export const TodoMain: React.FC<Props> = ({
           todo={tempTodo}
           isProcessed={true}
           onDelete={() => {}}
-          onToggle={() => {}}
           dataCy="Todo"
         />
       )}

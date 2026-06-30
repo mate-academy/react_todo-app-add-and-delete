@@ -9,27 +9,6 @@ type Props = {
   clearCompleted: () => Promise<void>;
 };
 
-const filters = [
-  {
-    label: 'All',
-    value: FilterOption.default,
-    href: '#/',
-    dataCy: 'FilterLinkAll',
-  },
-  {
-    label: 'Active',
-    value: FilterOption.Active,
-    href: '#/active',
-    dataCy: 'FilterLinkActive',
-  },
-  {
-    label: 'Completed',
-    value: FilterOption.Completed,
-    href: '#/completed',
-    dataCy: 'FilterLinkCompleted',
-  },
-];
-
 export const TodoFooter: React.FC<Props> = ({
   todos,
   filterOption,
@@ -46,19 +25,38 @@ export const TodoFooter: React.FC<Props> = ({
       </span>
 
       <nav className="filter" data-cy="Filter">
-        {filters.map(filter => (
-          <a
-            key={filter.value}
-            href={filter.href}
-            className={classNames('filter__link', {
-              selected: filterOption === filter.value,
-            })}
-            data-cy={filter.dataCy}
-            onClick={() => setFilterOption(filter.value)}
-          >
-            {filter.label}
-          </a>
-        ))}
+        <a
+          href="#/"
+          className={classNames('filter__link', {
+            selected: filterOption === FilterOption.default,
+          })}
+          data-cy="FilterLinkAll"
+          onClick={() => setFilterOption(FilterOption.default)}
+        >
+          All
+        </a>
+
+        <a
+          href="#/active"
+          className={classNames('filter__link', {
+            selected: filterOption === 'Active',
+          })}
+          data-cy="FilterLinkActive"
+          onClick={() => setFilterOption(FilterOption.Active)}
+        >
+          Active
+        </a>
+
+        <a
+          href="#/completed"
+          className={classNames('filter__link', {
+            selected: filterOption === 'Completed',
+          })}
+          data-cy="FilterLinkCompleted"
+          onClick={() => setFilterOption(FilterOption.Completed)}
+        >
+          Completed
+        </a>
       </nav>
 
       <button

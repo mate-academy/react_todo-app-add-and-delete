@@ -1,12 +1,11 @@
 import React, { FormEvent, useEffect, useRef, useState } from 'react';
 import { UserWarning } from './UserWarning';
-import { getTodos, deletePost, addPost, USER_ID, updatePost } from './api/todos';
+import { getTodos, deletePost, addPost, USER_ID } from './api/todos';
 import { Todo } from './types/Todo';
 import { TodoHeader } from './components/todo/TodoHeader';
 import { TodoMain } from './components/todo/TodoMain';
 import { TodoFooter } from './components/todo/TodoFooter';
 import { ErrorNotification } from './components/Error/ErrorNotification';
-
 
 export enum FilterOption {
   Active = 'Active',
@@ -98,24 +97,6 @@ export const App: React.FC = () => {
     }
   }
 
-  const toggleTodo = async (todo: Todo) => {
-  setProcessings(prev => [...prev, todo.id]);
-
-  try {
-    const updated = await updatePost(todo.id, {
-      completed: !todo.completed,
-    });
-
-    setTodos(prev =>
-      prev.map(t => (t.id === todo.id ? updated : t)),
-    );
-  } catch {
-    setErrorMessage(ErrorMessage.default);
-  } finally {
-    setProcessings(prev => prev.filter(id => id !== todo.id));
-  }
-};
-
   async function clearCompleted() {
     const ids = todos.filter(t => t.completed).map(t => t.id);
 
@@ -198,7 +179,6 @@ export const App: React.FC = () => {
           usingTodos={usingTodos}
           processings={processings}
           onDelete={deleteTodo}
-          onToggle={toggleTodo}
           tempTodo={tempTodo}
         ></TodoMain>
         {todos.length > 0 && (
