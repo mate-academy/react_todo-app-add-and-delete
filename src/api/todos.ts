@@ -14,3 +14,7 @@ export function addPost(post: Omit<Todo, 'id'>) {
 export function deletePost(postId: number) {
   return client.delete(`/todos/${postId}`);
 }
+
+export function updatePost(postId: number, data: Partial<Todo>) {
+  return client.patch<Todo>(`/todos/${postId}`, data);
+}

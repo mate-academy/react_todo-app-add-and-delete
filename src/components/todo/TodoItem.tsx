@@ -5,6 +5,7 @@ type Props = {
   todo: Todo;
   isProcessed: boolean;
   onDelete: () => void;
+  onToggle: () => void;
   dataCy?: string;
 };
 
@@ -13,6 +14,7 @@ export const TodoItem: React.FC<Props> = ({
   isProcessed,
   onDelete,
   dataCy,
+  onToggle,
 }) => {
   return (
     <div
@@ -25,7 +27,8 @@ export const TodoItem: React.FC<Props> = ({
           type="checkbox"
           className="todo__status"
           checked={todo.completed}
-          readOnly
+          onChange={onToggle}
+          disabled={isProcessed}
         />
       </label>
 
