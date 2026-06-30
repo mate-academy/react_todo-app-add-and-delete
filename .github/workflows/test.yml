@@ -2,11 +2,10 @@ name: Test
 
 on:
   pull_request:
-    branches: [ master ]
+    branches: [master]
 
 jobs:
   run_tests:
-
     runs-on: ubuntu-latest
 
     strategy:
@@ -14,14 +13,28 @@ jobs:
         node-version: [20.x]
 
     steps:
-      - uses: actions/checkout@v2
+      - uses: actions/checkout@v3
+
       - name: Use Node.js ${{ matrix.node-version }}
-        uses: actions/setup-node@v1
+        uses: actions/setup-node@v3
         with:
           node-version: ${{ matrix.node-version }}
-      - run: npm install
-      - run: npm test -- -l
-      - name: Upload tests report(cypress mochaawesome merged HTML report)
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Start app
+        run: npm run start &
+        env:
+          TERM: xterm
+
+      - name: Wait for server
+        run: npx wait-on http://localhost:3001 --timeout 60000
+
+      - name: Run Cypress tests
+        run: npm run test:e2e
+
+      - name: Upload tests report (cypress mochaawesome merged HTML report)
         if: ${{ always() }}
         uses: actions/upload-artifact@v4
         with:
