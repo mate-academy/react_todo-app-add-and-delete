@@ -2,9 +2,9 @@ import React, { FormEvent, useEffect, useRef, useState } from 'react';
 import { UserWarning } from './UserWarning';
 import { getTodos, deletePost, addPost, USER_ID } from './api/todos';
 import { Todo } from './types/Todo';
-import { TodoHeader } from './todo/TodoHeader';
-import { TodoMain } from './todo/TodoMain';
-import { TodoFooter } from './todo/TodoFooter';
+import { TodoHeader } from './components/todo/TodoHeader';
+import { TodoMain } from './components/todo/TodoMain';
+import { TodoFooter } from './components/todo/TodoFooter';
 import { ErrorNotification } from './components/Error/ErrorNotification';
 
 
