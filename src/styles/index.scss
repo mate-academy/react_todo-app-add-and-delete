@@ -18,8 +18,9 @@ body {
   min-height: 0;
   opacity: 0;
   pointer-events: none;
+  display: none !important;
 }
 
-@import "./todoapp";
-@import "./todo";
-@import "./filter";
+@import './todoapp';
+@import './todo';
+@import './filter';
