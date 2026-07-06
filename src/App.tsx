@@ -2,12 +2,7 @@
 /* eslint-disable jsx-a11y/control-has-associated-label */
 import React, { useEffect, useMemo, useRef, useState } from 'react';
 import { UserWarning } from './UserWarning';
-import {
-  USER_ID,
-  createTodo,
-  deleteTodo,
-  getTodos,
-} from './api/todos';
+import { USER_ID, createTodo, deleteTodo, getTodos } from './api/todos';
 import { Todo } from './types/Todo';
 
 type Filter = 'all' | 'active' | 'completed';
@@ -171,6 +166,7 @@ export const App: React.FC = () => {
   const renderTodo = (todo: Todo | TempTodo) => {
     const isTemp = todo.id === TEMP_TODO_ID;
     const isLoading = isTemp || loadingTodoIds.includes(todo.id);
+
     return (
       <div
         key={todo.id || 'temp-todo'}
