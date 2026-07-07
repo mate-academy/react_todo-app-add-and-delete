@@ -21,11 +21,11 @@ export const TodoList: React.FC<Props> = ({
         <TodoItem
           key={todo.id}
           todo={todo}
-          isDeleting={deletingIds.includes(todo.id)}
+          isLoading={deletingIds.includes(todo.id)}
           onDelete={onDelete}
         />
       ))}
-      {tempTodo && <TodoItem todo={tempTodo} isDeleting={true} />}
+      {tempTodo && <TodoItem todo={tempTodo} isLoading={true} />}
     </section>
   );
 };
