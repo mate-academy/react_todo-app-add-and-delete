@@ -1,6 +1,7 @@
 /* eslint-disable jsx-a11y/label-has-associated-control */
 /* eslint-disable jsx-a11y/control-has-associated-label */
 import React, { useEffect, useRef, useState } from 'react';
+import classNames from 'classnames';
 import { UserWarning } from './UserWarning';
 import { USER_ID, getTodos, addTodo, deleteTodo } from './api/todos';
 import { Todo } from './types/Todo';
@@ -18,15 +19,15 @@ export const App: React.FC = () => {
   const [loadingIds, setLoadingIds] = useState<number[]>([]);
 
   const inputRef = useRef<HTMLInputElement>(null);
-  const errorTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+  const errorTimerRef = useRef<number | null>(null);
 
   const showError = (message: ErrorMessage) => {
     setErrorMsg(message);
     if (errorTimerRef.current) {
-      clearTimeout(errorTimerRef.current);
+      window.clearTimeout(errorTimerRef.current);
     }
 
-    errorTimerRef.current = setTimeout(() => {
+    errorTimerRef.current = window.setTimeout(() => {
       setErrorMsg(ErrorMessage.NoError);
     }, 3000);
   };
@@ -121,16 +122,6 @@ export const App: React.FC = () => {
 
   const activeTodosCount = todos.filter(t => !t.completed).length;
   const hasCompleted = todos.some(t => t.completed);
-
-  const allLinkClass =
-    filter === 'all' ? 'filter__link selected' : 'filter__link';
-  const activeLinkClass =
-    filter === 'active' ? 'filter__link selected' : 'filter__link';
-  const completedLinkClass =
-    filter === 'completed' ? 'filter__link selected' : 'filter__link';
-  const notificationClass = errorMsg
-    ? 'notification is-danger is-light has-text-weight-normal'
-    : 'notification is-danger is-light has-text-weight-normal hidden';
   const modalBgClass = 'modal-background has-background-white-ter';
 
   return (
@@ -165,14 +156,16 @@ export const App: React.FC = () => {
           <>
             <section className="todoapp__main" data-cy="TodoList">
               {filteredTodos.map(todo => {
-                const todoClass = todo.completed ? 'todo completed' : 'todo';
                 const isLoading = loadingIds.includes(todo.id);
-                const loaderClass = isLoading
-                  ? 'modal overlay is-active'
-                  : 'modal overlay';
 
                 return (
-                  <div key={todo.id} data-cy="Todo" className={todoClass}>
+                  <div
+                    key={todo.id}
+                    data-cy="Todo"
+                    className={classNames('todo', {
+                      completed: todo.completed,
+                    })}
+                  >
                     <label className="todo__status-label">
                       <input
                         data-cy="TodoStatus"
@@ -196,7 +189,12 @@ export const App: React.FC = () => {
                       ×
                     </button>
 
-                    <div data-cy="TodoLoader" className={loaderClass}>
+                    <div
+                      data-cy="TodoLoader"
+                      className={classNames('modal', 'overlay', {
+                        'is-active': isLoading,
+                      })}
+                    >
                       <div className={modalBgClass} />
                       <div className="loader" />
                     </div>
@@ -244,7 +242,9 @@ export const App: React.FC = () => {
               <nav className="filter" data-cy="Filter">
                 <a
                   href="#/"
-                  className={allLinkClass}
+                  className={classNames('filter__link', {
+                    selected: filter === 'all',
+                  })}
                   data-cy="FilterLinkAll"
                   onClick={handleFilterAll}
                 >
@@ -253,7 +253,9 @@ export const App: React.FC = () => {
 
                 <a
                   href="#/active"
-                  className={activeLinkClass}
+                  className={classNames('filter__link', {
+                    selected: filter === 'active',
+                  })}
                   data-cy="FilterLinkActive"
                   onClick={handleFilterActive}
                 >
@@ -262,7 +264,9 @@ export const App: React.FC = () => {
 
                 <a
                   href="#/completed"
-                  className={completedLinkClass}
+                  className={classNames('filter__link', {
+                    selected: filter === 'completed',
+                  })}
                   data-cy="FilterLinkCompleted"
                   onClick={handleFilterCompleted}
                 >
@@ -284,7 +288,16 @@ export const App: React.FC = () => {
         )}
       </div>
 
-      <div data-cy="ErrorNotification" className={notificationClass}>
+      <div
+        data-cy="ErrorNotification"
+        className={classNames(
+          'notification',
+          'is-danger',
+          'is-light',
+          'has-text-weight-normal',
+          { hidden: !errorMsg },
+        )}
+      >
         <button
           data-cy="HideErrorButton"
           type="button"
