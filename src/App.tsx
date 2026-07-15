@@ -6,6 +6,7 @@ import { Header } from './Components/Header';
 import { TodoList } from './Components/TodoList';
 import { Footer } from './Components/Footer';
 import { ErrorNotification } from './Components/ErrorNotification';
+import { ErrorMessage } from './types/Errors';
 
 export const App: React.FC = () => {
   const [todos, setTodos] = useState<Todo[]>([]);
@@ -49,7 +50,7 @@ export const App: React.FC = () => {
         setTodos(data);
       })
       .catch(() => {
-        triggerError('Unable to load todos');
+        triggerError(ErrorMessage.Load);
       });
   }, []);
 
@@ -57,7 +58,7 @@ export const App: React.FC = () => {
     event.preventDefault();
 
     if (!title.trim()) {
-      triggerError('Title should not be empty');
+      triggerError(ErrorMessage.EmptyTitle);
 
       return;
     }
@@ -82,7 +83,7 @@ export const App: React.FC = () => {
         setTitle('');
       })
       .catch(() => {
-        triggerError('Unable to add a todo');
+        triggerError(ErrorMessage.Add);
       })
       .finally(() => {
         setTempTodo(null);
@@ -101,7 +102,7 @@ export const App: React.FC = () => {
         );
       })
       .catch(() => {
-        triggerError('Unable to delete a todo');
+        triggerError(ErrorMessage.Delete);
       })
       .finally(() => {
         setProcessingIds(current => current.filter(id => id !== todoId));
@@ -136,7 +137,7 @@ export const App: React.FC = () => {
 
     Promise.all(deletePromises)
       .catch(() => {
-        triggerError('Unable to delete a todo');
+        triggerError(ErrorMessage.Delete);
       })
       .finally(() => {
         newTodoField.current?.focus();
