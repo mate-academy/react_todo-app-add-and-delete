@@ -1,10 +1,10 @@
-
+/* stylelint-disable order/properties-order */
 .todoapp {
+  margin: 40px 20px;
   font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
   font-size: 24px;
   font-weight: 300;
   color: #4d4d4d;
-  margin: 40px 20px;
 
   &__content {
     margin-bottom: 20px;
@@ -14,9 +14,9 @@
   }
 
   &__title {
+    text-align: center;
     font-size: 100px;
     font-weight: 100;
-    text-align: center;
     color: rgba(175, 47, 47, 0.15);
     -webkit-text-rendering: optimizeLegibility;
     -moz-text-rendering: optimizeLegibility;
@@ -29,51 +29,48 @@
 
   &__toggle-all {
     position: absolute;
-
-    height: 100%;
-    width: 45px;
-
     display: flex;
-    justify-content: center;
     align-items: center;
-
+    justify-content: center;
+    width: 45px;
+    height: 100%;
+    border: 0;
+    cursor: pointer;
     font-size: 24px;
     color: #e6e6e6;
 
-    border: 0;
     background-color: transparent;
-    cursor: pointer;
-
-    &.active {
-      color: #737373;
-    }
 
     &::before {
       content: "❯";
       transform: translateY(2px) rotate(90deg);
       line-height: 0;
     }
+
+    &.active {
+      color: #737373;
+    }
   }
 
   &__new-todo {
     width: 100%;
     padding: 16px 16px 16px 60px;
-
-    font-size: 24px;
-    line-height: 1.4em;
-    font-family: inherit;
-    font-weight: inherit;
-    color: inherit;
-    -webkit-font-smoothing: antialiased;
-    -moz-osx-font-smoothing: grayscale;
-
     border: none;
+    cursor: pointer;
+    font-family: inherit;
+    font-size: 24px;
+    font-weight: inherit;
+    -webkit-font-smoothing: antialiased;
+    line-height: 1.4em;
+    -moz-osx-font-smoothing: grayscale;
+    color: inherit;
+
     background: rgba(0, 0, 0, 0.01);
     box-shadow: inset 0 -2px 1px rgba(0,0,0,0.03);
 
     &::placeholder {
-      font-style: italic;
       font-weight: 300;
+      font-style: italic;
       color: #e6e6e6;
     }
   }
@@ -84,19 +81,15 @@
 
   &__footer {
     display: flex;
-    justify-content: space-between;
     align-items: center;
-
+    justify-content: space-between;
     box-sizing: content-box;
     height: 20px;
     padding: 10px 15px;
-
-    font-size: 14px;
-
-    color: #777;
-    text-align: center;
     border-top: 1px solid #e6e6e6;
-
+    text-align: center;
+    font-size: 14px;
+    color: #777;
     box-shadow: 0 1px 1px rgba(0, 0, 0, 0.2),
       0 8px 0 -3px #f6f6f6,
       0 9px 1px -3px rgba(0, 0, 0, 0.2),
@@ -108,19 +101,19 @@
     margin: 0;
     padding: 0;
     border: 0;
-
+    cursor: pointer;
     font-family: inherit;
     font-weight: inherit;
     color: inherit;
     text-decoration: none;
 
-    cursor: pointer;
+    -webkit-font-smoothing: antialiased;
+    appearance: none;
+    -webkit-appearance: none;
+    -moz-osx-font-smoothing: grayscale;
+
     background: none;
 
-    -webkit-appearance: none;
-    appearance: none;
-    -webkit-font-smoothing: antialiased;
-    -moz-osx-font-smoothing: grayscale;
     transition: opacity 0.3s;
 
     &:hover {
