@@ -29,7 +29,7 @@ export const App: React.FC = () => {
   const [processingIds, setProcessingIds] = useState<number[]>([]);
   const inputRef = useRef<HTMLInputElement>(null);
 
-  // 2. Функція, яка буде фокусувати інпут
+  // Функція, яка буде фокусувати інпут
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
   const focusInput = () => {
     inputRef.current?.focus();
@@ -119,7 +119,7 @@ export const App: React.FC = () => {
   };
 
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
-  const deleteTodo = async (id: number) => {
+  const deleteTodo = async (id: number): Promise<void> => {
     // Додаємо ID справи в масив обробки
     setProcessingIds(prev => [...prev, id]);
 
@@ -132,8 +132,19 @@ export const App: React.FC = () => {
       setErrorMessage(ErrorMessage.DELETE);
       setTodos(previousTodos);
     } finally {
-      // Видаляємо ID з масиву обробки, незалежно від успіху
       setProcessingIds(prev => prev.filter(todoId => todoId !== id));
+
+      setTimeout(() => {
+        inputRef.current?.focus();
+      }, 0);
+    }
+  };
+
+  const clearCompleted = async () => {
+    const completedTodos = todos.filter(todo => todo.completed);
+
+    for (const todo of completedTodos) {
+      await deleteTodo(todo.id);
     }
   };
 
@@ -168,13 +179,14 @@ export const App: React.FC = () => {
             <TodoMain
               visibleTodos={todosForRender}
               processingIds={processingIds}
-              deleteTodo={deleteTodo} //
+              deleteTodo={deleteTodo}
             />
 
             <TodoFooter
               todos={todos}
               filterStatus={filterStatus}
               setFilterStatus={setFilterStatus}
+              clearCompleted={clearCompleted}
             />
           </>
         )}
