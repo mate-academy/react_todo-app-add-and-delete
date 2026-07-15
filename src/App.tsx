@@ -143,9 +143,16 @@ export const App: React.FC = () => {
   const clearCompleted = async () => {
     const completedTodos = todos.filter(todo => todo.completed);
 
-    for (const todo of completedTodos) {
-      await deleteTodo(todo.id);
-    }
+    // Створюємо масив промісів
+    const promises = completedTodos.map(todo => deleteTodo(todo.id));
+
+    // Чекаємо завершення всіх запитів
+    await Promise.allSettled(promises);
+
+    // Після того, як все завершилося (успішно чи ні),
+    // ми оновлюємо список, отримавши свіжі дані з сервера
+    // повторно завантажити актуальний список:
+    getTodos().then(setTodos);
   };
 
   // Перевірка наявності ідентифікатора користувача
