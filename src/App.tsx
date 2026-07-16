@@ -1,6 +1,7 @@
 import React, { useEffect, useRef } from 'react';
 import { Todo } from './types/Todo';
 import { Filter } from './types/Filter';
+import { ErrorMessage } from './types/ErrorMessage';
 import { UserWarning } from './UserWarning';
 import { USER_ID, getTodos, addTodo, deleteTodo } from './api/todos';
 import { TodoHeader } from './components/TodoHeader';
@@ -10,7 +11,7 @@ import { ErrorNotification } from './components/ErrorNotification';
 
 export const App: React.FC = () => {
   const [todos, setTodos] = React.useState<Todo[]>([]);
-  const [error, setError] = React.useState('');
+  const [error, setError] = React.useState<ErrorMessage | ''>('');
   const [filter, setFilter] = React.useState<Filter>(Filter.All);
   const [inputValue, setInputValue] = React.useState('');
   const [isSubmitting, setIsSubmitting] = React.useState(false);
@@ -20,7 +21,7 @@ export const App: React.FC = () => {
   const inputRef = useRef<HTMLInputElement>(null);
   const errorTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 
-  function showError(message: string) {
+  function showError(message: ErrorMessage) {
     setError(message);
 
     if (errorTimeoutRef.current) {
@@ -52,7 +53,7 @@ export const App: React.FC = () => {
         setTodos(todosFromServer);
       })
       .catch(() => {
-        showError('Unable to load todos');
+        showError(ErrorMessage.Load);
       });
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
@@ -82,7 +83,7 @@ export const App: React.FC = () => {
 
     setInputValue(trimmedTitle);
     if (!trimmedTitle) {
-      showError('Title should not be empty');
+      showError(ErrorMessage.EmptyTitle);
 
       return;
     }
@@ -101,7 +102,7 @@ export const App: React.FC = () => {
         setInputValue('');
       })
       .catch(() => {
-        showError('Unable to add a todo');
+        showError(ErrorMessage.Add);
       })
       .finally(() => {
         setTempTodo(null);
@@ -117,7 +118,7 @@ export const App: React.FC = () => {
         setTodos(prevTodos => prevTodos.filter(todo => todo.id !== id));
       })
       .catch(() => {
-        showError('Unable to delete a todo');
+        showError(ErrorMessage.Delete);
       })
       .finally(() => {
         setLoadingTodoIds(prev => prev.filter(todoId => todoId !== id));
@@ -142,7 +143,7 @@ export const App: React.FC = () => {
         );
 
         if (results.some(result => result.status === 'rejected')) {
-          showError('Unable to delete a todo');
+          showError(ErrorMessage.Delete);
         }
       })
       .finally(() => {
