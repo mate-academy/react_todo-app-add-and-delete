@@ -1,26 +1,191 @@
-/* eslint-disable max-len */
-/* eslint-disable jsx-a11y/control-has-associated-label */
-import React from 'react';
+import React, { useEffect, useRef } from 'react';
+import { Todo } from './types/Todo';
+import { Filter } from './types/Filter';
+import { ErrorMessage } from './types/ErrorMessage';
 import { UserWarning } from './UserWarning';
-
-const USER_ID = 0;
+import { USER_ID, getTodos, addTodo, deleteTodo } from './api/todos';
+import { TodoHeader } from './components/TodoHeader';
+import { TodoList } from './components/TodoList';
+import { TodoFooter } from './components/TodoFooter';
+import { ErrorNotification } from './components/ErrorNotification';
 
 export const App: React.FC = () => {
+  const [todos, setTodos] = React.useState<Todo[]>([]);
+  const [error, setError] = React.useState<ErrorMessage | ''>('');
+  const [filter, setFilter] = React.useState<Filter>(Filter.All);
+  const [inputValue, setInputValue] = React.useState('');
+  const [isSubmitting, setIsSubmitting] = React.useState(false);
+  const [tempTodo, setTempTodo] = React.useState<Todo | null>(null);
+  const [loadingTodoIds, setLoadingTodoIds] = React.useState<number[]>([]);
+
+  const inputRef = useRef<HTMLInputElement>(null);
+  const errorTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+
+  function showError(message: ErrorMessage) {
+    setError(message);
+
+    if (errorTimeoutRef.current) {
+      clearTimeout(errorTimeoutRef.current);
+    }
+
+    errorTimeoutRef.current = setTimeout(() => {
+      setError('');
+    }, 3000);
+  }
+
+  function hideError() {
+    if (errorTimeoutRef.current) {
+      clearTimeout(errorTimeoutRef.current);
+    }
+
+    setError('');
+  }
+
+  useEffect(() => {
+    if (!isSubmitting) {
+      inputRef.current?.focus();
+    }
+  }, [isSubmitting, loadingTodoIds]);
+
+  useEffect(() => {
+    getTodos()
+      .then(todosFromServer => {
+        setTodos(todosFromServer);
+      })
+      .catch(() => {
+        showError(ErrorMessage.Load);
+      });
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
+
+  const visibleTodos = todos.filter(todo => {
+    if (filter === Filter.Active) {
+      return !todo.completed;
+    }
+
+    if (filter === Filter.Completed) {
+      return todo.completed;
+    }
+
+    return true;
+  });
+
   if (!USER_ID) {
     return <UserWarning />;
   }
 
-  return (
-    <section className="section container">
-      <p className="title is-4">
-        Copy all you need from the prev task:
-        <br />
-        <a href="https://github.com/mate-academy/react_todo-app-loading-todos#react-todo-app-load-todos">
-          React Todo App - Load Todos
-        </a>
-      </p>
+  const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
+    e.preventDefault();
 
-      <p className="subtitle">Styles are already copied</p>
-    </section>
+    hideError();
+
+    const trimmedTitle = inputValue.trim();
+
+    setInputValue(trimmedTitle);
+    if (!trimmedTitle) {
+      showError(ErrorMessage.EmptyTitle);
+
+      return;
+    }
+
+    setIsSubmitting(true);
+    setTempTodo({
+      id: 0,
+      title: trimmedTitle,
+      completed: false,
+      userId: USER_ID,
+    });
+
+    addTodo({ title: trimmedTitle, completed: false, userId: USER_ID })
+      .then(todo => {
+        setTodos([...todos, todo]);
+        setInputValue('');
+      })
+      .catch(() => {
+        showError(ErrorMessage.Add);
+      })
+      .finally(() => {
+        setTempTodo(null);
+        setIsSubmitting(false);
+      });
+  };
+
+  function handleDelete(id: number) {
+    setLoadingTodoIds(prev => [...prev, id]);
+
+    deleteTodo(id)
+      .then(() => {
+        setTodos(prevTodos => prevTodos.filter(todo => todo.id !== id));
+      })
+      .catch(() => {
+        showError(ErrorMessage.Delete);
+      })
+      .finally(() => {
+        setLoadingTodoIds(prev => prev.filter(todoId => todoId !== id));
+      });
+  }
+
+  const completedTodos = todos.filter(todo => todo.completed);
+
+  function handleClearCompleted() {
+    const completedIds = completedTodos.map(todo => todo.id);
+
+    setLoadingTodoIds(prev => [...prev, ...completedIds]);
+
+    Promise.allSettled(completedTodos.map(todo => deleteTodo(todo.id)))
+      .then(results => {
+        const deletedIds = completedTodos
+          .filter((_todo, index) => results[index].status === 'fulfilled')
+          .map(todo => todo.id);
+
+        setTodos(prevTodos =>
+          prevTodos.filter(todo => !deletedIds.includes(todo.id)),
+        );
+
+        if (results.some(result => result.status === 'rejected')) {
+          showError(ErrorMessage.Delete);
+        }
+      })
+      .finally(() => {
+        setLoadingTodoIds(prev =>
+          prev.filter(id => !completedIds.includes(id)),
+        );
+      });
+  }
+
+  return (
+    <div className="todoapp">
+      <h1 className="todoapp__title">todos</h1>
+
+      <div className="todoapp__content">
+        <TodoHeader
+          inputRef={inputRef}
+          inputValue={inputValue}
+          setInputValue={setInputValue}
+          handleSubmit={handleSubmit}
+          isSubmitting={isSubmitting}
+        />
+
+        {todos.length > 0 && (
+          <>
+            <TodoList
+              todos={visibleTodos}
+              tempTodo={tempTodo}
+              loadingTodoIds={loadingTodoIds}
+              onDelete={handleDelete}
+            />
+
+            <TodoFooter
+              todos={todos}
+              filter={filter}
+              onFilterChange={setFilter}
+              onClearCompleted={handleClearCompleted}
+            />
+          </>
+        )}
+      </div>
+
+      <ErrorNotification error={error} onClose={hideError} />
+    </div>
   );
 };
