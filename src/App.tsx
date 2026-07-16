@@ -49,6 +49,8 @@ export const App: React.FC = () => {
     e.preventDefault();
     const trimmed = title.trim();
 
+    setErrorMsg(ErrorMessage.NoError);
+
     if (!trimmed) {
       showError(ErrorMessage.EmptyTitle);
 
@@ -56,7 +58,6 @@ export const App: React.FC = () => {
     }
 
     setIsSubmitting(true);
-    setErrorMsg(ErrorMessage.NoError);
 
     const temp: Todo = {
       id: 0,
@@ -80,6 +81,7 @@ export const App: React.FC = () => {
   };
 
   const handleDelete = (id: number) => {
+    setErrorMsg(ErrorMessage.NoError);
     setLoadingIds(prev => [...prev, id]);
 
     deleteTodo(id)
