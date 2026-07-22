@@ -1,11 +1,6 @@
 import React from 'react';
 import cn from 'classnames';
-
-export enum FilterStatus {
-  All = 'all',
-  Active = 'active',
-  Completed = 'completed',
-}
+import { FilterStatus } from '../types/FilterStatus';
 
 interface Props {
   activeTodosCount: number;
@@ -14,6 +9,27 @@ interface Props {
   setFilterBy: (filter: FilterStatus) => void;
   onClearCompleted: () => void;
 }
+
+const FILTER_LINKS = [
+  {
+    type: FilterStatus.All,
+    href: '#/',
+    label: 'All',
+    dataCy: 'FilterLinkAll',
+  },
+  {
+    type: FilterStatus.Active,
+    href: '#/active',
+    label: 'Active',
+    dataCy: 'FilterLinkActive',
+  },
+  {
+    type: FilterStatus.Completed,
+    href: '#/completed',
+    label: 'Completed',
+    dataCy: 'FilterLinkCompleted',
+  },
+];
 
 export const Footer: React.FC<Props> = ({
   activeTodosCount,
@@ -29,38 +45,19 @@ export const Footer: React.FC<Props> = ({
       </span>
 
       <nav className="filter" data-cy="Filter">
-        <a
-          href="#/"
-          className={cn('filter__link', {
-            selected: filterBy === FilterStatus.All,
-          })}
-          data-cy="FilterLinkAll"
-          onClick={() => setFilterBy(FilterStatus.All)}
-        >
-          All
-        </a>
-
-        <a
-          href="#/active"
-          className={cn('filter__link', {
-            selected: filterBy === FilterStatus.Active,
-          })}
-          data-cy="FilterLinkActive"
-          onClick={() => setFilterBy(FilterStatus.Active)}
-        >
-          Active
-        </a>
-
-        <a
-          href="#/completed"
-          className={cn('filter__link', {
-            selected: filterBy === FilterStatus.Completed,
-          })}
-          data-cy="FilterLinkCompleted"
-          onClick={() => setFilterBy(FilterStatus.Completed)}
-        >
-          Completed
-        </a>
+        {FILTER_LINKS.map(({ type, href, label, dataCy }) => (
+          <a
+            key={type}
+            href={href}
+            className={cn('filter__link', {
+              selected: filterBy === type,
+            })}
+            data-cy={dataCy}
+            onClick={() => setFilterBy(type)}
+          >
+            {label}
+          </a>
+        ))}
       </nav>
 
       <button

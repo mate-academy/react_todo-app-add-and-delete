@@ -6,8 +6,10 @@ import { createTodo, deleteTodo, getTodos, USER_ID } from './api/todos';
 import { Todo } from './types/Todo';
 import { Header } from './components/Header';
 import { TodoList } from './components/TodoList';
-import { Footer, FilterStatus } from './components/Footer';
+import { Footer } from './components/Footer';
 import { ErrorMessage } from './components/ErrorMessage';
+import { FilterStatus } from './types/FilterStatus';
+import { ErrorMessageEnum } from './types/ErrorMessage';
 
 export const App: React.FC = () => {
   const [todos, setTodos] = useState<Todo[]>([]);
@@ -35,7 +37,7 @@ export const App: React.FC = () => {
     getTodos()
       .then(setTodos)
       .catch(() => {
-        setErrorMessage('Unable to load todos');
+        setErrorMessage(ErrorMessageEnum.Load);
       });
   }, []);
 
@@ -57,7 +59,7 @@ export const App: React.FC = () => {
     const trimmedTitle = title.trim();
 
     if (!trimmedTitle) {
-      setErrorMessage('Title should not be empty');
+      setErrorMessage(ErrorMessageEnum.Title);
 
       return;
     }
@@ -75,7 +77,7 @@ export const App: React.FC = () => {
         setTitle('');
       })
       .catch(() => {
-        setErrorMessage('Unable to add a todo');
+        setErrorMessage(ErrorMessageEnum.Add);
       })
       .finally(() => {
         setIsAdding(false);
@@ -91,7 +93,7 @@ export const App: React.FC = () => {
         setTodos(prevTodos => prevTodos.filter(todo => todo.id !== todoId));
       })
       .catch(() => {
-        setErrorMessage('Unable to delete a todo');
+        setErrorMessage(ErrorMessageEnum.Delete);
       })
       .finally(() => {
         setActiveTodoIds(prevIds => prevIds.filter(id => id !== todoId));
@@ -110,7 +112,7 @@ export const App: React.FC = () => {
           setTodos(prevTodos => prevTodos.filter(t => t.id !== todo.id));
         })
         .catch(() => {
-          setErrorMessage('Unable to delete a todo');
+          setErrorMessage(ErrorMessageEnum.Delete);
         })
         .finally(() => {
           setActiveTodoIds(prevIds => prevIds.filter(id => id !== todo.id));
