@@ -1,26 +1,195 @@
-/* eslint-disable max-len */
+/* eslint-disable jsx-a11y/label-has-associated-control */
 /* eslint-disable jsx-a11y/control-has-associated-label */
-import React from 'react';
+import React, { useEffect, useState, useMemo, useRef } from 'react';
+import classNames from 'classnames';
 import { UserWarning } from './UserWarning';
-
-const USER_ID = 0;
+import {
+  USER_ID,
+  getTodos,
+  addTodo,
+  deleteTodo,
+} from './api/todos';
+import { Todo } from './types/Todo';
+import { FilterStatus } from './types/FilterStatus';
+import { Header } from './components/Header';
+import { TodoList } from './components/TodoList';
+import { Footer } from './components/Footer';
 
 export const App: React.FC = () => {
+  const [todos, setTodos] = useState<Todo[]>([]);
+  const [errorMessage, setErrorMessage] = useState<string>('');
+  const [filter, setFilter] = useState<FilterStatus>(FilterStatus.All);
+
+  const [tempTodo, setTempTodo] = useState<Todo | null>(null);
+  const [loadingIds, setLoadingIds] = useState<number[]>([]);
+  const [isSubmitting, setIsSubmitting] = useState(false);
+
+  const timeoutId = useRef<number | null>(null);
+  const inputRef = useRef<HTMLInputElement>(null);
+
+  const focusInput = () => {
+    inputRef.current?.focus();
+  };
+
+  const showError = (message: string) => {
+    setErrorMessage(message);
+
+    if (timeoutId.current) {
+      window.clearTimeout(timeoutId.current);
+    }
+
+    timeoutId.current = window.setTimeout(() => {
+      setErrorMessage('');
+    }, 3000);
+  };
+
+  const hideError = () => {
+    if (timeoutId.current) {
+      window.clearTimeout(timeoutId.current);
+    }
+    setErrorMessage('');
+  };
+
+  useEffect(() => {
+    hideError();
+
+    getTodos()
+      .then(setTodos)
+      .catch(() => showError('Unable to load todos'));
+  }, []);
+
+  const handleAddTodo = async (title: string) => {
+    hideError();
+    setIsSubmitting(true);
+
+    const newTempTodo: Todo = {
+      id: 0,
+      userId: USER_ID,
+      title,
+      completed: false,
+    };
+
+    setTempTodo(newTempTodo);
+
+    try {
+      const createdTodo = await addTodo({
+        userId: USER_ID,
+        title,
+        completed: false,
+      });
+
+      setTodos(prev => [...prev, createdTodo]);
+    } catch {
+      showError('Unable to add a todo');
+      throw new Error();
+    } finally {
+      setTempTodo(null);
+      setIsSubmitting(false);
+      focusInput();
+    }
+  };
+
+  const handleDeleteTodo = (id: number) => {
+    hideError();
+    setLoadingIds(prev => [...prev, id]);
+
+    return deleteTodo(id)
+      .then(() => {
+        setTodos(prev => prev.filter(todo => todo.id !== id));
+      })
+      .catch(() => {
+        showError('Unable to delete a todo');
+      })
+      .finally(() => {
+        setLoadingIds(prev => prev.filter(loadingId => loadingId !== id));
+        focusInput();
+      });
+  };
+
+  const handleClearCompleted = () => {
+    const completedTodos = todos.filter(t => t.completed);
+
+    completedTodos.forEach(todo => {
+      handleDeleteTodo(todo.id);
+    });
+  };
+
+  const visibleTodos = useMemo(() => {
+    return todos.filter(todo => {
+      switch (filter) {
+        case FilterStatus.Active:
+          return !todo.completed;
+        case FilterStatus.Completed:
+          return todo.completed;
+        default:
+          return true;
+      }
+    });
+  }, [todos, filter]);
+
+  const activeCount = useMemo(
+    () => todos.filter(todo => !todo.completed).length,
+    [todos],
+  );
+
+  const completedCount = todos.length - activeCount;
+  const isAllCompleted = todos.length > 0 && activeCount === 0;
+
   if (!USER_ID) {
     return <UserWarning />;
   }
 
   return (
-    <section className="section container">
-      <p className="title is-4">
-        Copy all you need from the prev task:
-        <br />
-        <a href="https://github.com/mate-academy/react_todo-app-loading-todos#react-todo-app-load-todos">
-          React Todo App - Load Todos
-        </a>
-      </p>
+    <div className="todoapp">
+      <h1 className="todoapp__title">todos</h1>
 
-      <p className="subtitle">Styles are already copied</p>
-    </section>
+      <div className="todoapp__content">
+        <Header
+          focusRef={inputRef}
+          isAllCompleted={isAllCompleted}
+          hasTodos={todos.length > 0}
+          onAddTodo={handleAddTodo}
+          isSubmitting={isSubmitting}
+          onError={showError}
+        />
+
+        {(todos.length > 0 || tempTodo) && (
+          <TodoList
+            todos={visibleTodos}
+            tempTodo={tempTodo}
+            loadingIds={loadingIds}
+            onDelete={handleDeleteTodo}
+          />
+        )}
+
+        {todos.length > 0 && (
+          <Footer
+            activeCount={activeCount}
+            completedCount={completedCount}
+            filter={filter}
+            onFilterChange={setFilter}
+            onClearCompleted={handleClearCompleted}
+          />
+        )}
+      </div>
+
+      <div
+        data-cy="ErrorNotification"
+        className={classNames(
+          'notification is-danger is-light has-text-weight-normal',
+          {
+            hidden: !errorMessage,
+          },
+        )}
+      >
+        <button
+          data-cy="HideErrorButton"
+          type="button"
+          className="delete"
+          onClick={hideError}
+        />
+        {errorMessage}
+      </div>
+    </div>
   );
 };
