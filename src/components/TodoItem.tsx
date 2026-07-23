@@ -9,11 +9,7 @@ type Props = {
   onDelete: (id: number) => void;
 };
 
-export const TodoItem: React.FC<Props> = ({
-  todo,
-  isProcessing,
-  onDelete,
-}) => {
+export const TodoItem: React.FC<Props> = ({ todo, isProcessing, onDelete }) => {
   return (
     <div
       data-cy="Todo"

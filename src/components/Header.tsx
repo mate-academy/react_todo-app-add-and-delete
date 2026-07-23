@@ -2,12 +2,14 @@
 /* eslint-disable jsx-a11y/control-has-associated-label */
 import React, { useState, useEffect } from 'react';
 import classNames from 'classnames';
+import { ErrorMessage } from '../types/ErrorMessage';
 
 type Props = {
   focusRef?: React.RefObject<HTMLInputElement>;
   isAllCompleted: boolean;
   hasTodos: boolean;
   onAddTodo: (title: string) => Promise<void>;
+  onToggleAll: () => void;
   isSubmitting: boolean;
   onError: (msg: string) => void;
 };
@@ -17,6 +19,7 @@ export const Header: React.FC<Props> = ({
   isAllCompleted,
   hasTodos,
   onAddTodo,
+  onToggleAll,
   isSubmitting,
   onError,
 }) => {
@@ -34,7 +37,7 @@ export const Header: React.FC<Props> = ({
     const trimmedTitle = title.trim();
 
     if (!trimmedTitle) {
-      onError('Title should not be empty');
+      onError(ErrorMessage.Title);
 
       return;
     }
@@ -55,6 +58,7 @@ export const Header: React.FC<Props> = ({
             active: isAllCompleted,
           })}
           data-cy="ToggleAllButton"
+          onClick={onToggleAll}
         />
       )}
 

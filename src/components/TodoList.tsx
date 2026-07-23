@@ -27,11 +27,7 @@ export const TodoList: React.FC<Props> = ({
       ))}
 
       {tempTodo && (
-        <TodoItem
-          todo={tempTodo}
-          isProcessing
-          onDelete={() => {}}
-        />
+        <TodoItem todo={tempTodo} isProcessing onDelete={() => {}} />
       )}
     </section>
   );
