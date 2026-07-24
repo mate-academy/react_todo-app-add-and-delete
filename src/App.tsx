@@ -1,6 +1,6 @@
 /* eslint-disable jsx-a11y/label-has-associated-control */
 /* eslint-disable jsx-a11y/control-has-associated-label */
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import { UserWarning } from './UserWarning';
 import {
   USER_ID,
@@ -25,6 +25,8 @@ export const App: React.FC = () => {
   const [isAdding, setIsAdding] = useState(false);
   const [tempTodo, setTempTodo] = useState<Todo | null>(null);
   const [loadingTodoIds, setLoadingTodoIds] = useState<number[]>([]);
+
+  const newTodoFieldRef = useRef<HTMLInputElement>(null);
 
   useEffect(() => {
     getTodos()
@@ -108,6 +110,7 @@ export const App: React.FC = () => {
     try {
       await deleteTodo(todoId);
       setTodos(prevTodos => prevTodos.filter(todo => todo.id !== todoId));
+      newTodoFieldRef.current?.focus();
     } catch {
       setErrorMessage(ErrorMessage.Delete);
     } finally {
@@ -117,32 +120,36 @@ export const App: React.FC = () => {
 
   const handleClearCompleted = async () => {
     setErrorMessage('');
+
     const completedTodos = todos.filter(todo => todo.completed);
     const completedIds = completedTodos.map(todo => todo.id);
 
     setLoadingTodoIds(prev => [...prev, ...completedIds]);
 
-    let hasError = false;
+    try {
+      const results = await Promise.allSettled(
+        completedTodos.map(todo => deleteTodo(todo.id)),
+      );
 
-    const deletePromises = completedTodos.map(async todo => {
-      try {
-        await deleteTodo(todo.id);
+      const deletedIds = completedTodos
+        .filter((_, index) => results[index].status === 'fulfilled')
+        .map(todo => todo.id);
 
-        setTodos(prevTodos => prevTodos.filter(item => item.id !== todo.id));
-      } catch {
-        hasError = true;
+      setTodos(prevTodos =>
+        prevTodos.filter(todo => !deletedIds.includes(todo.id)),
+      );
+
+      const hasError = results.some(result => result.status === 'rejected');
+
+      if (hasError) {
+        setErrorMessage(ErrorMessage.Delete);
       }
-    });
-
-    await Promise.allSettled(deletePromises);
-
-    if (hasError) {
+    } catch {
       setErrorMessage(ErrorMessage.Delete);
+    } finally {
+      setLoadingTodoIds(prev => prev.filter(id => !completedIds.includes(id)));
+      newTodoFieldRef.current?.focus();
     }
-
-    setLoadingTodoIds(prev => prev.filter(id => !completedIds.includes(id)));
-
-    document.querySelector<HTMLInputElement>('.todoapp__new-todo')?.focus();
   };
 
   const handleToggleTodo = async (todoToUpdate: Todo) => {
@@ -179,6 +186,7 @@ export const App: React.FC = () => {
           isDisabled={isAdding}
           onError={setErrorMessage}
           loadingTodoIds={loadingTodoIds}
+          inputRef={newTodoFieldRef}
         />
 
         {todos.length > 0 && (

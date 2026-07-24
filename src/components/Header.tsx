@@ -1,5 +1,6 @@
 import React, { useEffect, useRef, useState } from 'react';
 import { ErrorMessage } from '../types/ErrorMessage';
+import classNames from 'classnames';
 
 interface Props {
   todosCount: number;
@@ -8,6 +9,7 @@ interface Props {
   isDisabled: boolean;
   onError: (message: ErrorMessage) => void;
   loadingTodoIds: number[];
+  inputRef: React.RefObject<HTMLInputElement>;
 }
 
 export const Header: React.FC<Props> = ({
@@ -63,7 +65,9 @@ export const Header: React.FC<Props> = ({
           autoFocus
           data-cy="NewTodoField"
           type="text"
-          className="todoapp__new-todo"
+          className={classNames('todoapp__toggle-all', {
+            active: isAllCompleted,
+          })}
           placeholder="What needs to be done?"
           value={title}
           onChange={e => setTitle(e.target.value)}
