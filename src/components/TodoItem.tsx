@@ -1,14 +1,19 @@
 /* eslint-disable jsx-a11y/label-has-associated-control */
-import React from 'react';
 import { Todo } from '../types/Todo';
 
 interface Props {
   todo: Todo;
   onDelete: (id: number) => void;
+  onToggle: (todo: Todo) => void;
   isLoading: boolean;
 }
 
-export const TodoItem: React.FC<Props> = ({ todo, onDelete, isLoading }) => {
+export const TodoItem: React.FC<Props> = ({
+  todo,
+  onDelete,
+  onToggle,
+  isLoading,
+}) => {
   return (
     <div data-cy="Todo" className={`todo ${todo.completed ? 'completed' : ''}`}>
       <label className="todo__status-label">
@@ -17,7 +22,7 @@ export const TodoItem: React.FC<Props> = ({ todo, onDelete, isLoading }) => {
           type="checkbox"
           className="todo__status"
           checked={todo.completed}
-          readOnly
+          onChange={() => onToggle(todo)}
         />
       </label>
 

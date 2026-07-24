@@ -2,7 +2,13 @@
 /* eslint-disable jsx-a11y/control-has-associated-label */
 import React, { useEffect, useState } from 'react';
 import { UserWarning } from './UserWarning';
-import { USER_ID, getTodos, createTodo, deleteTodo } from './api/todos';
+import {
+  USER_ID,
+  getTodos,
+  createTodo,
+  deleteTodo,
+  updateTodo,
+} from './api/todos';
 import { Todo, FilterType } from './types/Todo';
 import { ErrorMessage } from './types/ErrorMessage';
 
@@ -139,6 +145,28 @@ export const App: React.FC = () => {
     document.querySelector<HTMLInputElement>('.todoapp__new-todo')?.focus();
   };
 
+  const handleToggleTodo = async (todoToUpdate: Todo) => {
+    setErrorMessage('');
+    setLoadingTodoIds(prev => [...prev, todoToUpdate.id]);
+
+    try {
+      const updatedTodo = await updateTodo({
+        ...todoToUpdate,
+        completed: !todoToUpdate.completed,
+      });
+
+      setTodos(prevTodos =>
+        prevTodos.map(todo =>
+          todo.id === updatedTodo.id ? updatedTodo : todo,
+        ),
+      );
+    } catch {
+      setErrorMessage(ErrorMessage.Update);
+    } finally {
+      setLoadingTodoIds(prev => prev.filter(id => id !== todoToUpdate.id));
+    }
+  };
+
   return (
     <div className="todoapp">
       <h1 className="todoapp__title">todos</h1>
@@ -158,6 +186,7 @@ export const App: React.FC = () => {
             todos={todosToRender}
             onDelete={handleDeleteTodo}
             loadingTodoIds={loadingTodoIds}
+            onToggle={handleToggleTodo}
           />
         )}
 

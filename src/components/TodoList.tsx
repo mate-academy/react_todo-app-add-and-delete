@@ -1,16 +1,17 @@
-import React from 'react';
 import { Todo } from '../types/Todo';
 import { TodoItem } from './TodoItem';
 
 interface Props {
   todos: Todo[];
   onDelete: (id: number) => void;
+  onToggle: (todo: Todo) => void;
   loadingTodoIds: number[];
 }
 
 export const TodoList: React.FC<Props> = ({
   todos,
   onDelete,
+  onToggle,
   loadingTodoIds,
 }) => {
   return (
@@ -20,6 +21,7 @@ export const TodoList: React.FC<Props> = ({
           key={todo.id}
           todo={todo}
           onDelete={onDelete}
+          onToggle={onToggle}
           isLoading={loadingTodoIds.includes(todo.id)}
         />
       ))}
