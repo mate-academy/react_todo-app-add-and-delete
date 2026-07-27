@@ -1,25 +1,26 @@
-import React, { useEffect, useRef, useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { ErrorMessage } from '../../types/Errors';
 
 interface Props {
   onSubmit: (title: string) => Promise<boolean>;
   onError: (value: ErrorMessage) => void;
   disabled?: boolean;
+  inputRef: React.RefObject<HTMLInputElement>;
 }
 
 export const AddForm: React.FC<Props> = ({
   onSubmit,
   onError,
   disabled = false,
+  inputRef,
 }) => {
   const [title, setTitle] = useState('');
-  const inputRef = useRef<HTMLInputElement>(null);
 
   useEffect(() => {
     if (!disabled && inputRef.current) {
       inputRef.current.focus();
     }
-  }, [disabled]);
+  }, [disabled, inputRef]);
 
   const submitHandler = async (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();

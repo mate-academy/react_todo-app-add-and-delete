@@ -6,7 +6,7 @@ interface Props {
   todos: Todo[];
   skeletonTodo?: Todo | null;
   onDelete: (todoId: TodoId) => Promise<boolean>;
-  loadingTodoId: TodoId | null;
+  loadingTodoIds: TodoId[];
   onChange: (newTodo: Todo) => Promise<boolean>;
   editingId: TodoId | null;
   setEditingId: (id: TodoId | null) => void;
@@ -18,12 +18,12 @@ export const TodoList: React.FC<Props> = React.memo(
     skeletonTodo,
     onDelete,
     onChange,
-    loadingTodoId,
+    loadingTodoIds,
     editingId,
     setEditingId,
   }) => {
     return (
-      <ul>
+      <ul className="todo-list">
         {todos.map(todo => {
           return (
             <TodoItem
@@ -31,7 +31,7 @@ export const TodoList: React.FC<Props> = React.memo(
               todo={todo}
               onDelete={onDelete}
               onChange={onChange}
-              isLoading={loadingTodoId === todo.id}
+              isLoading={loadingTodoIds.includes(todo.id)}
               isEditing={editingId === todo.id}
               setEditingId={setEditingId}
             />

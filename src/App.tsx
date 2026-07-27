@@ -1,6 +1,12 @@
 import classNames from 'classnames';
-import React, { useEffect, useMemo, useState } from 'react';
-import { UserWarning } from './UserWarning';
+import React, {
+  useCallback,
+  useEffect,
+  useMemo,
+  useRef,
+  useState,
+} from 'react';
+
 import {
   addTodo,
   changeTodo,
@@ -23,9 +29,17 @@ export const App: React.FC = () => {
   const [errorMessage, setErrorMessage] = useState<ErrorMessage>(
     ErrorMessage.None,
   );
-  const [loadingTodoId, setLoadingTodoId] = useState<TodoId | null>(null);
+  const [loadingTodoIds, setLoadingTodoIds] = useState<TodoId[]>([]);
   const [editingId, setEditingId] = useState<TodoId | null>(null);
   const [filter, setFilter] = useState<FilterStatus>('all');
+
+  const todoInputRef = useRef<HTMLInputElement>(null);
+
+  const focusNewTodoInput = () => {
+    if (editingId === null) {
+      todoInputRef.current?.focus();
+    }
+  };
 
   useEffect(() => {
     const loadTodos = async () => {
@@ -44,6 +58,7 @@ export const App: React.FC = () => {
         setErrorMessage(ErrorMessage.Load);
       } finally {
         setIsLoading(false);
+        focusNewTodoInput();
       }
     };
 
@@ -60,10 +75,6 @@ export const App: React.FC = () => {
         return todos;
     }
   }, [todos, filter]);
-
-  if (!USER_ID) {
-    return <UserWarning />;
-  }
 
   const onSubmitTodo = async (title: string): Promise<boolean> => {
     if (skeletonTodo) {
@@ -92,52 +103,65 @@ export const App: React.FC = () => {
       return false;
     } finally {
       setSkeletonTodo(null);
+      focusNewTodoInput();
     }
   };
 
-  const onDeleteTodo = async (todoId: TodoId): Promise<boolean> => {
-    if (loadingTodoId === todoId) {
-      return false;
-    }
+  const onDeleteTodo = useCallback(
+    async (todoId: TodoId): Promise<boolean> => {
+      if (loadingTodoIds.includes(todoId)) {
+        return false;
+      }
 
-    setLoadingTodoId(todoId);
-    setErrorMessage(ErrorMessage.None);
+      setLoadingTodoIds(current => [...current, todoId]);
+      setErrorMessage(ErrorMessage.None);
 
-    try {
-      await deleteTodo(todoId);
+      try {
+        await deleteTodo(todoId);
 
-      setTodos(current => current.filter(t => t.id !== todoId));
+        setTodos(current => current.filter(t => t.id !== todoId));
 
-      return true;
-    } catch (error) {
-      setErrorMessage(ErrorMessage.Delete);
+        return true;
+      } catch (error) {
+        setErrorMessage(ErrorMessage.Delete);
 
-      return false;
-    } finally {
-      setLoadingTodoId(null);
-    }
-  };
+        return false;
+      } finally {
+        setLoadingTodoIds(current => current.filter(id => id !== todoId));
+        focusNewTodoInput();
+      }
+    },
+    [loadingTodoIds],
+  );
 
-  const onChangeTodo = async (newTodo: Todo): Promise<boolean> => {
-    setLoadingTodoId(newTodo.id);
-    setErrorMessage(ErrorMessage.None);
+  const onChangeTodo = useCallback(
+    async (newTodo: Todo): Promise<boolean> => {
+      if (loadingTodoIds.includes(newTodo.id)) {
+        return false;
+      }
 
-    try {
-      await changeTodo(newTodo);
+      setLoadingTodoIds(current => [...current, newTodo.id]);
+      setErrorMessage(ErrorMessage.None);
 
-      setTodos(currentTodos =>
-        currentTodos.map(todo => (todo.id === newTodo.id ? newTodo : todo)),
-      );
+      try {
+        await changeTodo(newTodo);
 
-      return true;
-    } catch (err) {
-      setErrorMessage(ErrorMessage.Update);
+        setTodos(currentTodos =>
+          currentTodos.map(todo => (todo.id === newTodo.id ? newTodo : todo)),
+        );
 
-      return false;
-    } finally {
-      setLoadingTodoId(null);
-    }
-  };
+        return true;
+      } catch (err) {
+        setErrorMessage(ErrorMessage.Update);
+
+        return false;
+      } finally {
+        setLoadingTodoIds(current => current.filter(id => id !== newTodo.id));
+        focusNewTodoInput();
+      }
+    },
+    [loadingTodoIds],
+  );
 
   const handleClearCompleted = async () => {
     const completedTodos = todos.filter(todo => todo.completed);
@@ -146,48 +170,85 @@ export const App: React.FC = () => {
       return;
     }
 
-    const previousTodos = [...todos];
+    const targetIds = completedTodos.map(todo => todo.id);
 
-    setTodos(current => current.filter(todo => !todo.completed));
+    setLoadingTodoIds(current => [...current, ...targetIds]);
     setErrorMessage(ErrorMessage.None);
 
-    try {
-      await Promise.allSettled(completedTodos.map(todo => deleteTodo(todo.id)));
-    } catch (error) {
-      setTodos(previousTodos);
-      setErrorMessage(ErrorMessage.Clear);
+    const results = await Promise.allSettled(
+      completedTodos.map(todo => deleteTodo(todo.id)),
+    );
+
+    const successfulIds: TodoId[] = [];
+    let hasError = false;
+
+    results.forEach((result, index) => {
+      if (result.status === 'fulfilled') {
+        successfulIds.push(completedTodos[index].id);
+      } else {
+        hasError = true;
+      }
+    });
+
+    setTodos(current =>
+      current.filter(todo => !successfulIds.includes(todo.id)),
+    );
+
+    if (hasError) {
+      setErrorMessage(ErrorMessage.Delete);
     }
+
+    setLoadingTodoIds(current => current.filter(id => !targetIds.includes(id)));
+    focusNewTodoInput();
   };
 
-  const activeTodosCount = todos.filter(t => !t.completed).length;
+  const activeTodosCount = todos.filter(todo => !todo.completed).length;
   const isAllCompleted = todos.length > 0 && activeTodosCount === 0;
 
   const handleToggleAll = async () => {
     const targetStatus = !isAllCompleted;
-
     const todosToUpdate = todos.filter(todo => todo.completed !== targetStatus);
 
     if (todosToUpdate.length === 0) {
       return;
     }
 
-    const previousTodos = [...todos];
+    const targetIds = todosToUpdate.map(todo => todo.id);
 
-    setTodos(current =>
-      current.map(todo => ({ ...todo, completed: targetStatus })),
-    );
+    setLoadingTodoIds(current => [...current, ...targetIds]);
     setErrorMessage(ErrorMessage.None);
 
-    try {
-      await Promise.all(
-        todosToUpdate.map(todo =>
-          changeTodo({ ...todo, completed: targetStatus }),
-        ),
-      );
-    } catch (error) {
-      setTodos(previousTodos);
+    const results = await Promise.allSettled(
+      todosToUpdate.map(todo =>
+        changeTodo({ ...todo, completed: targetStatus }).then(() => todo.id),
+      ),
+    );
+
+    const successfulIds: TodoId[] = [];
+    let hasError = false;
+
+    for (const res of results) {
+      if (res.status === 'fulfilled') {
+        successfulIds.push(res.value);
+      } else {
+        hasError = true;
+      }
+    }
+
+    setTodos(current =>
+      current.map(todo =>
+        successfulIds.includes(todo.id)
+          ? { ...todo, completed: targetStatus }
+          : todo,
+      ),
+    );
+
+    if (hasError) {
       setErrorMessage(ErrorMessage.Toggle);
     }
+
+    setLoadingTodoIds(current => current.filter(id => !targetIds.includes(id)));
+    focusNewTodoInput();
   };
 
   return (
@@ -211,6 +272,7 @@ export const App: React.FC = () => {
             onSubmit={onSubmitTodo}
             onError={setErrorMessage}
             disabled={!!skeletonTodo}
+            inputRef={todoInputRef}
           />
         </header>
 
@@ -220,7 +282,7 @@ export const App: React.FC = () => {
             skeletonTodo={skeletonTodo}
             onDelete={onDeleteTodo}
             onChange={onChangeTodo}
-            loadingTodoId={loadingTodoId}
+            loadingTodoIds={loadingTodoIds}
             editingId={editingId}
             setEditingId={setEditingId}
           />
