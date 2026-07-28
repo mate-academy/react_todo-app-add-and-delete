@@ -1,26 +1,78 @@
-/* eslint-disable max-len */
-/* eslint-disable jsx-a11y/control-has-associated-label */
 import React from 'react';
+import { Header } from './components/Header/Header';
+import { TodoList } from './components/TodoList/TodoList';
+import { Footer } from './components/Footer/Footer';
+import { ErrorNotification } from './components/ErrorNot/ErrorNot';
 import { UserWarning } from './UserWarning';
-
-const USER_ID = 0;
+import { USER_ID } from './api/todos';
+import { useTodos } from './hooks/useTodos';
 
 export const App: React.FC = () => {
+  const {
+    todos,
+    visibleTodos,
+    errorMessage,
+    setErrorMessage,
+    filter,
+    setFilter,
+    title,
+    setTitle,
+    activeTodosCount,
+    isEveryCompleted,
+    isSubmitting,
+    tempTodo,
+    loadingTodoIds,
+    inputRef,
+    handleAddTodo,
+    onDelete,
+    clearCompleted,
+    toggleTodo,
+    completedTodosCount
+  } = useTodos();
+
   if (!USER_ID) {
     return <UserWarning />;
   }
 
   return (
-    <section className="section container">
-      <p className="title is-4">
-        Copy all you need from the prev task:
-        <br />
-        <a href="https://github.com/mate-academy/react_todo-app-loading-todos#react-todo-app-load-todos">
-          React Todo App - Load Todos
-        </a>
-      </p>
+    <div className="todoapp">
+      <h1 className="todoapp__title">todos</h1>
 
-      <p className="subtitle">Styles are already copied</p>
-    </section>
+      <div className="todoapp__content">
+        <Header
+          isEveryCompleted={isEveryCompleted}
+          title={title}
+          setTitle={setTitle}
+          isSubmitting={isSubmitting}
+          onSubmit={handleAddTodo}
+          inputRef={inputRef}
+        />
+
+        {(todos.length > 0 || tempTodo !== null) && (
+          <TodoList
+            visibleTodos={visibleTodos}
+            tempTodo={tempTodo}
+            loadingTodoIds={loadingTodoIds}
+            onDelete={onDelete}
+            toggleTodo={toggleTodo}
+          />
+        )}
+
+        {todos.length > 0 && (
+          <Footer
+            activeTodosCount={activeTodosCount}
+            filter={filter}
+            setFilter={setFilter}
+            clearCompleted={clearCompleted}
+            completedTodosCount={completedTodosCount}
+          />
+        )}
+      </div>
+
+      <ErrorNotification
+        errorMessage={errorMessage}
+        setErrorMessage={setErrorMessage}
+      />
+    </div>
   );
 };
