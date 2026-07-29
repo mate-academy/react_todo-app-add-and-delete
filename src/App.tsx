@@ -55,9 +55,9 @@ export const App: React.FC = () => {
   );
 
   const handleClearCompleted = useCallback(() => {
-    const completedTodos = todos
-      .filter(todo => todo.completed)
-      .filter(todo => !loadingTodoIds.includes(todo.id));
+    const completedTodos = todos.filter(
+      todo => todo.completed && !loadingTodoIds.includes(todo.id),
+    );
 
     if (completedTodos.length === 0) {
       return;

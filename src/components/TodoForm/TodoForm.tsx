@@ -1,11 +1,7 @@
 import React, { useState, useEffect } from 'react';
-
 import { ErrorsEnum } from '../../enums/ErrorMessage';
-
 import cn from 'classnames';
-
 import { Todo } from '../../types/Todo';
-
 import { USER_ID, createTodo } from '../../api/todos';
 
 const createNewTodo = (title: string): Omit<Todo, 'id'> => {
@@ -33,7 +29,6 @@ const TodoFormComponent = ({
 }: Props) => {
   const [title, setTitle] = useState('');
   const [isSubmiting, setIsSubmiting] = useState(false);
-  // const inputNewTodoRef = useRef<HTMLInputElement | null>(null);
 
   useEffect(() => {
     if (!isSubmiting) {
