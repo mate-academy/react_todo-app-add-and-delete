@@ -8,10 +8,11 @@ import { TodoList } from './components/TodoList';
 import { TodoFilter } from './components/TodoFilter';
 import { Status } from './types/Status';
 import { TodoItem } from './components/TodoItem';
+import { ErrorMessages } from './types/ErrorMessages';
 
 export const App: React.FC = () => {
   const [todos, setTodos] = useState<Todo[]>([]);
-  const [errorMessage, setErrorMessage] = useState<string | null>(null);
+  const [errorMessage, setErrorMessage] = useState<ErrorMessages | null>(null);
   const [status, setStatus] = useState<Status>(Status.All);
   const isErrorNotificationHidden = errorMessage === null;
   const hasTodos = todos.length > 0;
@@ -41,7 +42,7 @@ export const App: React.FC = () => {
         setTodos(todosList);
       })
       .catch(() => {
-        setErrorMessage('Unable to load todos');
+        setErrorMessage(ErrorMessages.Load);
       });
   }, []);
 
@@ -73,7 +74,7 @@ export const App: React.FC = () => {
         );
       })
       .catch(() => {
-        setErrorMessage('Unable to delete a todo');
+        setErrorMessage(ErrorMessages.Delete);
       })
       .finally(() => {
         setDelTodos(currentIds => currentIds.filter(id => id !== todoId));
@@ -93,7 +94,7 @@ export const App: React.FC = () => {
     const trimmedTitle = title.trim();
 
     if (!trimmedTitle) {
-      setErrorMessage('Title should not be empty');
+      setErrorMessage(ErrorMessages.Empty);
 
       return;
     }
@@ -111,7 +112,7 @@ export const App: React.FC = () => {
         setTitle('');
       })
       .catch(() => {
-        setErrorMessage('Unable to add a todo');
+        setErrorMessage(ErrorMessages.Add);
       })
       .finally(() => {
         setTempTodo(null);
