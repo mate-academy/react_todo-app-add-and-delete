@@ -2,11 +2,12 @@
 /* eslint-disable jsx-a11y/control-has-associated-label */
 import React, { useState, useEffect, useMemo } from 'react';
 import { UserWarning } from './UserWarning';
-import { USER_ID, getTodos } from './api/todos';
+import { USER_ID, getTodos, addTodo, deleteTodo } from './api/todos';
 import { Todo } from './types/Todo';
 import { TodoList } from './components/TodoList';
 import { TodoFilter } from './components/TodoFilter';
 import { Status } from './types/Status';
+import { TodoItem } from './components/TodoItem';
 
 export const App: React.FC = () => {
   const [todos, setTodos] = useState<Todo[]>([]);
@@ -14,6 +15,12 @@ export const App: React.FC = () => {
   const [status, setStatus] = useState<Status>(Status.All);
   const isErrorNotificationHidden = errorMessage === null;
   const hasTodos = todos.length > 0;
+  const titleField = React.useRef<HTMLInputElement>(null);
+  const [title, setTitle] = React.useState('');
+  const [tempTodo, setTempTodo] = React.useState<Todo | null>(null);
+  const [delTodos, setDelTodos] = React.useState<Array<number>>([]);
+  // const isLoading = delTodos.length > 0;
+
   const visibleTodos = useMemo(() => {
     return todos.filter(todo => {
       if (status === Status.Active) {
@@ -38,6 +45,10 @@ export const App: React.FC = () => {
       });
   }, []);
 
+  React.useEffect(() => {
+    titleField.current?.focus();
+  }, []);
+
   useEffect(() => {
     if (!errorMessage) {
       return;
@@ -51,6 +62,70 @@ export const App: React.FC = () => {
       window.clearTimeout(timer);
     };
   }, [errorMessage]);
+
+  const handleDelete = (todoId: number) => {
+    setDelTodos(currentIds => [...currentIds, todoId]);
+
+    return deleteTodo(todoId)
+      .then(() => {
+        setTodos(currentTodos =>
+          currentTodos.filter(todo => todo.id !== todoId),
+        );
+      })
+      .catch(() => {
+        setErrorMessage('Unable to delete a todo');
+      })
+      .finally(() => {
+        setDelTodos(currentIds => currentIds.filter(id => id !== todoId));
+        titleField.current?.focus();
+      });
+  };
+
+  useEffect(() => {
+    if (!tempTodo) {
+      titleField.current?.focus();
+    }
+  }, [tempTodo]);
+
+  const handleSubmit = (event: React.FormEvent) => {
+    event.preventDefault();
+
+    const trimmedTitle = title.trim();
+
+    if (!trimmedTitle) {
+      setErrorMessage('Title should not be empty');
+
+      return;
+    }
+
+    setTempTodo({
+      id: 0,
+      userId: USER_ID,
+      title: trimmedTitle,
+      completed: false,
+    });
+
+    addTodo(trimmedTitle)
+      .then(newTodo => {
+        setTodos(currentTodos => [...currentTodos, newTodo]);
+        setTitle('');
+      })
+      .catch(() => {
+        setErrorMessage('Unable to add a todo');
+      })
+      .finally(() => {
+        setTempTodo(null);
+        // titleField.current?.focus();
+      });
+  };
+
+  const handleClearCompleted = () => {
+    const completedIds = todos
+      .filter(todo => todo.completed)
+      .map(todo => todo.id);
+
+    Promise.allSettled(completedIds.map(id => handleDelete(id)));
+  };
 
   if (!USER_ID) {
     return <UserWarning />;
@@ -70,17 +145,30 @@ export const App: React.FC = () => {
           />
 
           {/* Add a todo on form submit */}
-          <form>
+          <form onSubmit={handleSubmit}>
             <input
               data-cy="NewTodoField"
+              ref={titleField}
+              value={title}
               type="text"
               className="todoapp__new-todo"
               placeholder="What needs to be done?"
+              onChange={event => setTitle(event.target.value)}
+              disabled={!!tempTodo}
             />
           </form>
         </header>
 
-        <TodoList todos={visibleTodos} />
+        {/* TodoList component */}
+        <TodoList
+          todos={visibleTodos}
+          onDelete={handleDelete}
+          deletingIds={delTodos}
+        />
+
+        {tempTodo && (
+          <TodoItem todo={tempTodo} isLoading onDelete={handleDelete} />
+        )}
 
         {/* Hide the footer if there are no todos */}
         {hasTodos && (
@@ -97,6 +185,8 @@ export const App: React.FC = () => {
               type="button"
               className="todoapp__clear-completed"
               data-cy="ClearCompletedButton"
+              disabled={!todos.some(todo => todo.completed)}
+              onClick={handleClearCompleted}
             >
               Clear completed
             </button>
