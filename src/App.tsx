@@ -50,7 +50,14 @@ export const App: React.FC = () => {
   useEffect(() => {
     newTodoInputRef.current?.focus();
   }, []);
+  useEffect(() => {
+    if (!inputDisabled) {
+      newTodoInputRef.current?.focus();
+    }
+  }, [inputDisabled]);
   const postData = async (event: React.FormEvent<HTMLFormElement>) => {
+    let createdTodo: Todo;
+
     event.preventDefault();
     try {
       if (!inputText || inputText.trim() === '') {
@@ -69,43 +76,48 @@ export const App: React.FC = () => {
 
       setTodoFantasm(sendObject);
       setInputDisabled(true);
-      await apiMetodos.postTodos(sendObject);
+      createdTodo = await apiMetodos.postTodo(sendObject);
+      setTodo((prev: Todo[]) => [...prev, createdTodo]);
+      setInputText('');
     } catch (e) {
       setErrorMessage('Unable to add a todo');
-      throw new Error('Erro no PostData' + e);
     } finally {
       setTodoFantasm(undefined);
-      getData();
-      setInputText('');
       setInputDisabled(false);
-      newTodoInputRef.current?.focus();
     }
   };
 
   const deleteData = async (todoId: number) => {
     try {
       setDeletingTodo(todoId);
-      await apiMetodos.deleteTodos(todoId);
+
+      await apiMetodos.deleteTodo(todoId);
+
+      setTodo(prev => prev.filter(r => r.id !== todoId));
+
+      setDeletingTodo(undefined);
+
+      newTodoInputRef.current?.focus();
     } catch (e) {
       setErrorMessage('Unable to delete a todo');
-      throw new Error('Erro no deleteData' + e);
-    } finally {
-      getData();
+      setDeletingTodo(undefined);
     }
   };
 
-  const deleteCompleted = () => {
+  const deleteCompleted = async () => {
     const completedTodos = todo.filter(r => r.completed);
 
     const deletePromises = completedTodos.map(r => deleteData(r.id));
 
     try {
-      Promise.all(deletePromises);
+      await Promise.all(deletePromises);
+      await getData();
     } catch (e) {
       setErrorMessage('Unable to delete a todo');
       completedTodos.forEach(r => {
         deleteData(r.id);
       });
+      await getData();
       throw new Error('erro no deleteCompleted' + e);
     }
   };
@@ -194,7 +206,6 @@ export const App: React.FC = () => {
                   data-cy="TodoStatus"
                   type="checkbox"
                   className="todo__status"
-                  ref={newTodoInputRef}
                 />
               </label>
 
@@ -366,16 +377,15 @@ export const App: React.FC = () => {
             </nav>
 
             {/* this button should be disabled if there are no completed todos */}
-            {todo.filter(r => r.completed === true).length > 0 && (
-              <button
-                type="button"
-                className="todoapp__clear-completed"
-                data-cy="ClearCompletedButton"
-                onClick={() => deleteCompleted()}
-              >
-                Clear completed
-              </button>
-            )}
+            <button
+              type="button"
+              className="todoapp__clear-completed"
+              data-cy="ClearCompletedButton"
+              disabled={todo.filter(r => r.completed).length === 0}
+              onClick={() => deleteCompleted()}
+            >
+              Clear completed
+            </button>
           </footer>
         )}
       </div>
