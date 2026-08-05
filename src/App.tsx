@@ -46,11 +46,12 @@ export const App: React.FC = () => {
   const [isAdding, setIsAdding] = useState(false);
   const [tempTodo, setTempTodo] = useState<Todo | null>(null);
   const [processingIds, setProcessingIds] = useState<number[]>([]);
+  const [inputDisabled, setInputDisabled] = useState(false);
 
   const inputRef = useRef<HTMLInputElement | null>(null);
   const errorTimeoutRef = useRef<number | undefined>(undefined);
 
-  const isInputDisabled = isAdding || tempTodo !== null;
+  const isInputDisabled = inputDisabled || isAdding || tempTodo !== null;
   const userId = getUserId();
 
   const completedTodosCount = todos.filter(todo => todo.completed).length;
@@ -107,6 +108,12 @@ export const App: React.FC = () => {
   }, [userId]);
 
   useEffect(() => {
+    if (inputRef.current) {
+      inputRef.current.disabled = isInputDisabled;
+    }
+  }, [isInputDisabled]);
+
+  useEffect(() => {
     if (!isAdding && !tempTodo) {
       inputRef.current?.focus();
     }
@@ -160,9 +167,7 @@ export const App: React.FC = () => {
     }
 
     setIsAdding(true);
-    if (inputRef.current) {
-      inputRef.current.disabled = true;
-    }
+    setInputDisabled(true);
 
     setTempTodo({
       id: 0,
@@ -197,9 +202,7 @@ export const App: React.FC = () => {
     } finally {
       setTempTodo(null);
       setIsAdding(false);
-      if (inputRef.current) {
-        inputRef.current.disabled = false;
-      }
+      setInputDisabled(false);
 
       inputRef.current?.focus();
     }
