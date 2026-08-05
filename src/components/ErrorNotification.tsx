@@ -1,20 +1,21 @@
 import React from 'react';
 import cn from 'classnames';
+import { ErrorMessages } from '../types/ErrorMessages';
 
 type ErrorNotificationProps = {
-  isError: boolean;
+  errorMessage: ErrorMessages | null;
   onClose: () => void;
 };
 
 export const ErrorNotification: React.FC<ErrorNotificationProps> = ({
-  isError,
+  errorMessage,
   onClose,
 }) => {
   return (
     <div
       data-cy="ErrorNotification"
       className={cn('notification is-danger is-light has-text-weight-normal', {
-        hidden: !isError,
+        hidden: !errorMessage,
       })}
     >
       <button
@@ -23,7 +24,7 @@ export const ErrorNotification: React.FC<ErrorNotificationProps> = ({
         className="delete"
         onClick={onClose}
       />
-      Unable to load todos
+      {errorMessage}
     </div>
   );
 };

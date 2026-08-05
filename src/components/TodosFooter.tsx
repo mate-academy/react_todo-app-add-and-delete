@@ -29,13 +29,15 @@ type FooterProps = {
   filterType: FilterTypes;
   onFilterChange: (filterType: FilterTypes) => void;
   hasCompletedTodos: boolean;
+  onClearCompleted: () => void;
 };
 
-export const Footer: React.FC<FooterProps> = ({
+export const TodosFooter: React.FC<FooterProps> = ({
   activeTodosCount,
   filterType,
   onFilterChange,
   hasCompletedTodos,
+  onClearCompleted,
 }) => {
   return (
     <footer className="todoapp__footer" data-cy="Footer">
@@ -61,12 +63,12 @@ export const Footer: React.FC<FooterProps> = ({
         ))}
       </nav>
 
-      {/* this button should be disabled if there are no completed todos */}
       <button
         type="button"
         className="todoapp__clear-completed"
         data-cy="ClearCompletedButton"
         disabled={!hasCompletedTodos}
+        onClick={onClearCompleted}
       >
         Clear completed
       </button>
