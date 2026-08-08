@@ -52,8 +52,9 @@ const page = {
   },
   mockDelete: (id, response) => {
     const options = { method: 'DELETE', url: `**/todos/${id}` };
+    const defaultResponse = { delayMs: 2000, body: '1' };
 
-    return cy.intercept(options, response || { body: '1' });
+    return cy.intercept(options, response || defaultResponse);
   },
   mockUpdate: (id, response) => {
     const todo = mixedTodos.find(todo => todo.id === id) || {};
@@ -658,8 +659,18 @@ describe('', () => {
       });
 
       it('should immediately hide an error message on new request', () => {
+        // to prevent Cypress from failing the test on uncaught exception
+        cy.once('uncaught:exception', () => false);
+
+        page.mockCreate({
+          delayMs: 2000,
+          statusCode: 503,
+          body: 'Service Unavailable',
+        }).as('createRequest2');
+
         page.newTodoField().type(`{enter}`);
         errorMessage.assertHidden();
+        cy.wait('@createRequest2');
       });
 
       it('should show an error message again on a next fail', () => {
@@ -746,7 +757,7 @@ describe('', () => {
       });
 
       it('should display a loader on the todo when the TodoDeleteButton is clicked', () => {
-        page.mockDelete(257334);
+        page.mockDelete(257334, { delayMs: 2000, body: '1' });
         page.pauseTimers();
         todos.deleteButton(0).click();
 
@@ -754,7 +765,7 @@ describe('', () => {
       });
 
       it('should not delete a todo before successful response', () => {
-        page.mockDelete(257334);
+        page.mockDelete(257334, { delayMs: 2000, body: '1' });
         page.pauseTimers();
         todos.deleteButton(0).click();
 
