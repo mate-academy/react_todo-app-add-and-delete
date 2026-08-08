@@ -3,21 +3,16 @@
 import React, { useEffect, useMemo, useRef, useState } from 'react';
 import classNames from 'classnames';
 import { UserWarning } from './UserWarning';
-
-type Todo = {
-  id: number;
-  userId: number;
-  title: string;
-  completed: boolean;
-};
-
-type FilterType = 'all' | 'active' | 'completed';
-
-type User = {
-  id: number;
-};
+import { ErrorMessage, Filter, Todo, User } from './types';
+import { TodoItem } from './TodoItem';
 
 const API_URL = 'https://mate.academy/students-api';
+
+const filterOptions = [
+  { value: Filter.All, label: 'All', dataCy: 'FilterLinkAll' },
+  { value: Filter.Active, label: 'Active', dataCy: 'FilterLinkActive' },
+  { value: Filter.Completed, label: 'Completed', dataCy: 'FilterLinkCompleted' },
+] as const;
 
 const getUserFromStorage = (): User | null => {
   const rawUser = window.localStorage.getItem('user');
@@ -35,62 +30,11 @@ const getUserFromStorage = (): User | null => {
   }
 };
 
-type TodoItemProps = {
-  todo: Todo;
-  isProcessed: boolean;
-  onDelete?: () => void;
-};
-
-const TodoItem: React.FC<TodoItemProps> = ({ todo, isProcessed, onDelete }) => {
-  const checkboxId = `todo-${todo.id}`;
-
-  return (
-    <div
-      className={classNames('todo', { completed: todo.completed })}
-      data-cy="Todo"
-    >
-      <label
-        className="todo__status-label"
-        htmlFor={checkboxId}
-        aria-label="Toggle todo completion"
-      >
-        <input
-          id={checkboxId}
-          className="todo__status"
-          type="checkbox"
-          data-cy="TodoStatus"
-          checked={todo.completed}
-          readOnly
-        />
-      </label>
-
-      <span className="todo__title" data-cy="TodoTitle">
-        {todo.title}
-      </span>
-
-      <button
-        type="button"
-        className="todo__remove"
-        aria-label="Delete todo"
-        data-cy="TodoDelete"
-        onClick={onDelete}
-      >
-        ×
-      </button>
-
-      <span
-        className={classNames('loader', { 'is-active': isProcessed })}
-        data-cy="TodoLoader"
-      />
-    </div>
-  );
-};
-
 export const App: React.FC = () => {
   const [user, setUser] = useState<User | null>(null);
   const [todos, setTodos] = useState<Todo[]>([]);
-  const [filter, setFilter] = useState<FilterType>('all');
-  const [error, setError] = useState<string | null>(null);
+  const [filter, setFilter] = useState<Filter>(Filter.All);
+  const [error, setError] = useState<ErrorMessage | null>(null);
   const [title, setTitle] = useState('');
   const [isCreating, setIsCreating] = useState(false);
   const [isInputDisabled, setIsInputDisabled] = useState(false);
@@ -118,7 +62,7 @@ export const App: React.FC = () => {
         const response = await fetch(`${API_URL}/todos?userId=${user.id}`);
 
         if (!response.ok) {
-          throw new Error('Unable to load todos');
+          throw new Error(ErrorMessage.UnableToLoadTodos);
         }
 
         const loadedTodos = (await response.json()) as Todo[];
@@ -131,7 +75,7 @@ export const App: React.FC = () => {
       } catch {
         if (isMounted) {
           setTodos([]);
-          setError('Unable to load todos');
+          setError(ErrorMessage.UnableToLoadTodos);
           setShouldFocusInput(true);
         }
       }
@@ -167,11 +111,11 @@ export const App: React.FC = () => {
 
   const visibleTodos = useMemo(() => {
     return todos.filter(todo => {
-      if (filter === 'active') {
+      if (filter === Filter.Active) {
         return !todo.completed;
       }
 
-      if (filter === 'completed') {
+      if (filter === Filter.Completed) {
         return todo.completed;
       }
 
@@ -190,7 +134,7 @@ export const App: React.FC = () => {
     const trimmedTitle = title.trim();
 
     if (!trimmedTitle) {
-      setError('Title should not be empty');
+      setError(ErrorMessage.TitleShouldNotBeEmpty);
       setShouldFocusInput(true);
 
       return;
@@ -229,7 +173,7 @@ export const App: React.FC = () => {
       });
 
       if (!response.ok) {
-        throw new Error('Unable to add todo');
+        throw new Error(ErrorMessage.UnableToAddTodo);
       }
 
       const createdTodo = (await response.json()) as Todo;
@@ -252,7 +196,7 @@ export const App: React.FC = () => {
         inputRef.current.disabled = false;
       }
 
-      setError('Unable to add a todo');
+      setError(ErrorMessage.UnableToAddTodo);
       setShouldFocusInput(true);
     }
   };
@@ -272,7 +216,7 @@ export const App: React.FC = () => {
       });
 
       if (!response.ok) {
-        throw new Error('Unable to delete todo');
+        throw new Error(ErrorMessage.UnableToDeleteTodo);
       }
 
       setTodos(currentTodos => currentTodos.filter(todo => todo.id !== todoId));
@@ -281,7 +225,7 @@ export const App: React.FC = () => {
       return true;
     } catch {
       if (shouldShowError) {
-        setError('Unable to delete a todo');
+        setError(ErrorMessage.UnableToDeleteTodo);
       }
 
       return false;
@@ -308,7 +252,7 @@ export const App: React.FC = () => {
         result => result.status === 'rejected' || result.value === false,
       )
     ) {
-      setError('Unable to delete a todo');
+      setError(ErrorMessage.UnableToDeleteTodo);
     }
 
     setShouldFocusInput(true);
@@ -359,36 +303,19 @@ export const App: React.FC = () => {
 
             {shouldShowFilter && (
               <div className="todoapp__filters" data-cy="Filter">
-                <button
-                  type="button"
-                  className={classNames('todoapp__filter', {
-                    selected: filter === 'all',
-                  })}
-                  data-cy="FilterLinkAll"
-                  onClick={() => setFilter('all')}
-                >
-                  All
-                </button>
-                <button
-                  type="button"
-                  className={classNames('todoapp__filter', {
-                    selected: filter === 'active',
-                  })}
-                  data-cy="FilterLinkActive"
-                  onClick={() => setFilter('active')}
-                >
-                  Active
-                </button>
-                <button
-                  type="button"
-                  className={classNames('todoapp__filter', {
-                    selected: filter === 'completed',
-                  })}
-                  data-cy="FilterLinkCompleted"
-                  onClick={() => setFilter('completed')}
-                >
-                  Completed
-                </button>
+                {filterOptions.map(option => (
+                  <button
+                    key={option.value}
+                    type="button"
+                    className={classNames('todoapp__filter', {
+                      selected: filter === option.value,
+                    })}
+                    data-cy={option.dataCy}
+                    onClick={() => setFilter(option.value)}
+                  >
+                    {option.label}
+                  </button>
+                ))}
               </div>
             )}
 
