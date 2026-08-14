@@ -25,9 +25,7 @@ export const App: React.FC = () => {
   const [isAdding, setIsAdding] = useState(false);
   const [tempTodo, setTempTodo] = useState<Todo | null>(null);
 
-  const [loadingIds, setLoadingIds] = useState<Set<number>>(
-    new Set(),
-  );
+  const [loadingIds, setLoadingIds] = useState<Set<number>>(new Set());
 
   const inputRef = useRef<HTMLInputElement>(null);
   const errorTimerRef = useRef<number | null>(null);
@@ -74,17 +72,14 @@ export const App: React.FC = () => {
     });
   };
 
-  const updateTodoInState = (
-    todoId: number,
-    updatedTodo: Partial<Todo>,
-  ) => {
+  const updateTodoInState = (todoId: number, changes: Partial<Todo>) => {
     setTodos(currentTodos =>
       currentTodos.map(todo =>
         todo.id === todoId
           ? {
-              ...todo,
-              ...updatedTodo,
-            }
+            ...todo,
+            ...changes,
+          }
           : todo,
       ),
     );
@@ -120,9 +115,11 @@ export const App: React.FC = () => {
     };
   }, []);
 
-  const handleSubmit = (
-    event: React.FormEvent<HTMLFormElement>,
-  ) => {
+  // =========================
+  // ADD TODO
+  // =========================
+
+  const handleSubmit = (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
 
     hideError();
@@ -147,10 +144,7 @@ export const App: React.FC = () => {
 
     createTodo(trimmedTitle)
       .then(createdTodo => {
-        setTodos(currentTodos => [
-          ...currentTodos,
-          createdTodo,
-        ]);
+        setTodos(currentTodos => [...currentTodos, createdTodo]);
 
         setTitle('');
       })
@@ -163,9 +157,13 @@ export const App: React.FC = () => {
       });
   };
 
+  // =========================
+  // DELETE ONE TODO
+  // =========================
 
   const handleDelete = (todoId: number) => {
     hideError();
+
     startLoading(todoId);
 
     deleteTodo(todoId)
@@ -183,9 +181,13 @@ export const App: React.FC = () => {
       });
   };
 
+  // =========================
+  // TOGGLE TODO
+  // =========================
 
   const handleToggle = (todo: Todo) => {
     hideError();
+
     startLoading(todo.id);
 
     updateTodo(todo.id, {
@@ -201,6 +203,52 @@ export const App: React.FC = () => {
         stopLoading(todo.id);
       });
   };
+
+  // =========================
+  // CLEAR COMPLETED
+  // =========================
+
+  const clearCompleted = () => {
+    hideError();
+
+    const completedTodos = todos.filter(todo => todo.completed);
+
+    completedTodos.forEach(todo => {
+      startLoading(todo.id);
+    });
+
+    const deleteRequests = completedTodos.map(todo => deleteTodo(todo.id));
+
+    Promise.allSettled(deleteRequests)
+      .then(results => {
+        const successfullyDeletedIds = completedTodos
+          .filter((_, index) => {
+            return results[index].status === 'fulfilled';
+          })
+          .map(todo => todo.id);
+
+        setTodos(currentTodos =>
+          currentTodos.filter(
+            todo => !successfullyDeletedIds.includes(todo.id),
+          ),
+        );
+
+        const hasError = results.some(result => result.status === 'rejected');
+
+        if (hasError) {
+          showError('Unable to delete a todo');
+        }
+      })
+      .finally(() => {
+        completedTodos.forEach(todo => {
+          stopLoading(todo.id);
+        });
+      });
+  };
+
+  // =========================
+  // FILTER
+  // =========================
 
   let visibleTodos = todos;
 
@@ -218,9 +266,9 @@ export const App: React.FC = () => {
       visibleTodos = todos;
   }
 
-  const activeTodosCount = todos.filter(
-    todo => !todo.completed,
-  ).length;
+  const activeTodosCount = todos.filter(todo => !todo.completed).length;
+
+  const hasCompletedTodos = todos.some(todo => todo.completed);
 
   if (!USER_ID) {
     return <UserWarning />;
@@ -253,10 +301,7 @@ export const App: React.FC = () => {
         </header>
 
         {(todos.length > 0 || tempTodo !== null) && (
-          <section
-            className="todoapp__main"
-            data-cy="TodoList"
-          >
+          <section className="todoapp__main" data-cy="TodoList">
             {visibleTodos.map(todo => {
               const isLoading = loadingIds.has(todo.id);
 
@@ -264,9 +309,7 @@ export const App: React.FC = () => {
                 <div
                   key={todo.id}
                   data-cy="Todo"
-                  className={`todo ${
-                    todo.completed ? 'completed' : ''
-                  }`}
+                  className={`todo ${todo.completed ? 'completed' : ''}`}
                 >
                   <label className="todo__status-label">
                     <input
@@ -279,10 +322,7 @@ export const App: React.FC = () => {
                     />
                   </label>
 
-                  <span
-                    data-cy="TodoTitle"
-                    className="todo__title"
-                  >
+                  <span data-cy="TodoTitle" className="todo__title">
                     {todo.title}
                   </span>
 
@@ -298,9 +338,7 @@ export const App: React.FC = () => {
 
                   <div
                     data-cy="TodoLoader"
-                    className={`modal overlay ${
-                      isLoading ? 'is-active' : ''
-                    }`}
+                    className={`modal overlay ${isLoading ? 'is-active' : ''}`}
                   >
                     <div className="modal-background has-background-white-ter" />
                     <div className="loader" />
@@ -309,7 +347,7 @@ export const App: React.FC = () => {
               );
             })}
 
-            {tempTodo !== null && filter !== 'Completed' && (
+            {tempTodo !== null && (
               <div data-cy="Todo" className="todo">
                 <label className="todo__status-label">
                   <input
@@ -321,17 +359,11 @@ export const App: React.FC = () => {
                   />
                 </label>
 
-                <span
-                  data-cy="TodoTitle"
-                  className="todo__title"
-                >
+                <span data-cy="TodoTitle" className="todo__title">
                   {tempTodo.title}
                 </span>
 
-                <div
-                  data-cy="TodoLoader"
-                  className="modal overlay is-active"
-                >
+                <div data-cy="TodoLoader" className="modal overlay is-active">
                   <div className="modal-background has-background-white-ter" />
                   <div className="loader" />
                 </div>
@@ -342,20 +374,14 @@ export const App: React.FC = () => {
 
         {todos.length > 0 && (
           <footer className="todoapp__footer" data-cy="Footer">
-            <span
-              className="todo-count"
-              data-cy="TodosCounter"
-            >
-              {activeTodosCount}{' '}
-              {activeTodosCount === 1 ? 'item' : 'items'} left
+            <span className="todo-count" data-cy="TodosCounter">
+              {activeTodosCount} items left
             </span>
 
             <nav className="filter" data-cy="Filter">
               <a
                 href="#/"
-                className={`filter__link ${
-                  filter === 'All' ? 'selected' : ''
-                }`}
+                className={`filter__link ${filter === 'All' ? 'selected' : ''}`}
                 data-cy="FilterLinkAll"
                 onClick={() => setFilter('All')}
               >
@@ -389,7 +415,8 @@ export const App: React.FC = () => {
               type="button"
               className="todoapp__clear-completed"
               data-cy="ClearCompletedButton"
-              disabled
+              disabled={!hasCompletedTodos}
+              onClick={clearCompleted}
             >
               Clear completed
             </button>
