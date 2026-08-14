@@ -145,6 +145,24 @@ export const App: React.FC = () => {
     });
   };
 
+  const handleUpdate = (item: Todo) => {
+    return todoApi
+      .updateTodo(item)
+      .then(() => {
+        setTodos((currentTodos: Todo[]) => {
+          const newTodos = [...currentTodos];
+          const index = newTodos.findIndex(todo => todo.id === item.id);
+
+          newTodos.splice(index, 1, item);
+
+          return newTodos;
+        });
+      })
+      .catch(() => {
+        setErrorMessage(ErrorMessage.Update);
+      });
+  };
+
   if (!todoApi.USER_ID) {
     return <UserWarning />;
   }
@@ -175,6 +193,7 @@ export const App: React.FC = () => {
             todos={visibleTodos}
             onDelete={handleDeletion}
             deletingIds={deletingIds}
+            onUpdate={handleUpdate}
           />
         )}
 

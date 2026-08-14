@@ -6,9 +6,15 @@ interface Props {
   todo: Todo;
   onDelete: (id: number) => Promise<void>;
   isLoading: boolean;
+  onUpdate: (todo: Todo) => Promise<void>;
 }
 
-export const TodoItem: React.FC<Props> = ({ todo, onDelete, isLoading }) => {
+export const TodoItem: React.FC<Props> = ({
+  todo,
+  onDelete,
+  isLoading,
+  onUpdate,
+}) => {
   return (
     <div
       data-cy="Todo"
@@ -23,6 +29,14 @@ export const TodoItem: React.FC<Props> = ({ todo, onDelete, isLoading }) => {
           className="todo__status"
           checked={todo.completed}
           aria-label={todo.title}
+          onChange={() => {
+            onUpdate({
+              id: todo.id,
+              userId: todo.userId,
+              completed: true,
+              title: todo.title,
+            });
+          }}
         />
       </label>
 
