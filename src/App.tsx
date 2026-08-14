@@ -7,12 +7,12 @@ import { TodoList } from './components/TodoList';
 import { Footer } from './components/Footer';
 import { ErrorNotification } from './components/ErrorNotification';
 import { Todo } from './types/Todo';
-
-type Status = 'all' | 'active' | 'completed';
+import { Status } from './types/Status';
+import { ErrorMessage } from './types/ErrorMessage';
 
 export const App: React.FC = () => {
   const [todos, setTodos] = useState<Todo[]>([]);
-  const [status, setStatus] = useState<Status>('all');
+  const [status, setStatus] = useState<Status>(Status.All);
   const [errorMessage, setErrorMessage] = useState('');
   const visibleTodos = todos.filter(todo => {
     switch (status) {
@@ -43,7 +43,7 @@ export const App: React.FC = () => {
     getTodos()
       .then(setTodos)
       .catch(() => {
-        setErrorMessage('Unable to load todos');
+        setErrorMessage(ErrorMessage.Load);
       });
   }, []);
 
@@ -53,7 +53,7 @@ export const App: React.FC = () => {
     setErrorMessage('');
 
     if (!title.trim()) {
-      setErrorMessage('Title should not be empty');
+      setErrorMessage(ErrorMessage.TitleEmpty);
 
       return;
     }
@@ -76,7 +76,7 @@ export const App: React.FC = () => {
         setTodos(prevTodo => [...prevTodo, newTodo]);
       })
       .catch(() => {
-        setErrorMessage('Unable to add a todo');
+        setErrorMessage(ErrorMessage.Add);
       })
       .finally(() => {
         setIsSubmitting(false);
@@ -96,7 +96,7 @@ export const App: React.FC = () => {
         setTodos(prevTodos => prevTodos.filter(todo => todo.id !== todoId));
       })
       .catch(() => {
-        setErrorMessage('Unable to delete a todo');
+        setErrorMessage(ErrorMessage.Delete);
       })
       .finally(() => {
         setLoadingTodoIds(prevIds => prevIds.filter(id => id !== todoId));
@@ -125,7 +125,7 @@ export const App: React.FC = () => {
           setTodos(prevTodos => prevTodos.filter(item => item.id !== todo.id));
         })
         .catch(() => {
-          setErrorMessage('Unable to delete a todo');
+          setErrorMessage(ErrorMessage.Delete);
         })
         .finally(() => {
           setLoadingTodoIds(prevIds => prevIds.filter(id => id !== todo.id));

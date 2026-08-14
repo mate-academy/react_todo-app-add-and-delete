@@ -1,13 +1,35 @@
 import React from 'react';
 import { Todo } from '../../types/Todo';
 import classNames from 'classnames';
+import { Status } from '../../types/Status';
 
 type Props = {
   todos: Todo[];
-  status: 'all' | 'active' | 'completed';
-  onStatusChange: (status: 'all' | 'active' | 'completed') => void;
+  status: Status;
+  onStatusChange: (status: Status) => void;
   onClearCompleted: () => void;
 };
+
+const filterOptions = [
+  {
+    status: Status.All,
+    label: 'All',
+    href: '#/',
+    dataCy: 'FilterLinkAll',
+  },
+  {
+    status: Status.Active,
+    label: 'Active',
+    href: '#/active',
+    dataCy: 'FilterLinkActive',
+  },
+  {
+    status: Status.Completed,
+    label: 'Completed',
+    href: '#/completed',
+    dataCy: 'FilterLinkCompleted',
+  },
+];
 
 export const Footer: React.FC<Props> = ({
   todos,
@@ -26,38 +48,19 @@ export const Footer: React.FC<Props> = ({
 
       {/* Active link should have the 'selected' class */}
       <nav className="filter" data-cy="Filter">
-        <a
-          href="#/"
-          className={classNames('filter__link', {
-            selected: status === 'all',
-          })}
-          onClick={() => onStatusChange('all')}
-          data-cy="FilterLinkAll"
-        >
-          All
-        </a>
-
-        <a
-          href="#/active"
-          className={classNames('filter__link', {
-            selected: status === 'active',
-          })}
-          data-cy="FilterLinkActive"
-          onClick={() => onStatusChange('active')}
-        >
-          Active
-        </a>
-
-        <a
-          href="#/completed"
-          className={classNames('filter__link', {
-            selected: status === 'completed',
-          })}
-          data-cy="FilterLinkCompleted"
-          onClick={() => onStatusChange('completed')}
-        >
-          Completed
-        </a>
+        {filterOptions.map(option => (
+          <a
+            key={option.status}
+            href={option.href}
+            className={classNames('filter__link', {
+              selected: status === option.status,
+            })}
+            onClick={() => onStatusChange(option.status)}
+            data-cy={option.dataCy}
+          >
+            {option.label}
+          </a>
+        ))}
       </nav>
 
       {/* this button should be disabled if there are no completed todos */}
