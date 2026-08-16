@@ -5,15 +5,7 @@ import { UserWarning } from './UserWarning';
 import { USER_ID, getTodos, addTodo, deleteTodo } from './api/todos';
 import { Todo } from './types/Todo';
 import { TodoItem } from './components/TodoItem';
-
-export enum ErrorMessage {
-  Load = 'Unable to load todos',
-  EmptyTitle = 'Title should not be empty',
-  Add = 'Unable to add a todo',
-  Delete = 'Unable to delete a todo',
-  Update = 'Unable to update a todo',
-  None = '',
-}
+import { ErrorMessage } from './types/ErrorMessage';
 
 export enum FilterStatus {
   All = 'all',
@@ -35,12 +27,10 @@ export const App: React.FC = () => {
   const [filter, setFilter] = useState<FilterStatus>(FilterStatus.All);
   const [tempQuery, setTempQuery] = useState('');
 
-  // Нові стейти для додавання та видалення
   const [tempTodo, setTempTodo] = useState<Todo | null>(null);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [processingIds, setProcessingIds] = useState<number[]>([]);
 
-  // Реф для фокусу інпута
   const newTodoField = useRef<HTMLInputElement>(null);
 
   useEffect(() => {
@@ -77,7 +67,6 @@ export const App: React.FC = () => {
   const hasCompletedTodos = todos.some(t => t.completed);
   const isAllCompleted = todos.length > 0 && activeTodosCount === 0;
 
-  // --- ЛОГІКА ДОДАВАННЯ ---
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
 
@@ -112,7 +101,6 @@ export const App: React.FC = () => {
         setTempTodo(null);
         setIsSubmitting(false);
 
-        // Додаємо setTimeout для фокусування
         setTimeout(() => {
           if (newTodoField.current) {
             newTodoField.current.focus();
@@ -121,7 +109,6 @@ export const App: React.FC = () => {
       });
   };
 
-  // --- ЛОГІКА ВИДАЛЕННЯ ---
   const handleDelete = (id: number) => {
     setProcessingIds(prev => [...prev, id]); // Вмикаємо лоадер
 
@@ -135,7 +122,6 @@ export const App: React.FC = () => {
       .finally(() => {
         setProcessingIds(prev => prev.filter(prevId => prevId !== id)); // Вимикаємо лоадер
 
-        // Повертаємо фокус в інпут після завершення видалення
         setTimeout(() => {
           if (newTodoField.current) {
             newTodoField.current.focus();
@@ -144,7 +130,6 @@ export const App: React.FC = () => {
       });
   };
 
-  // Очищення виконаних (одночасні запити)
   const handleClearCompleted = () => {
     const completedTodos = todos.filter(t => t.completed);
 
@@ -198,13 +183,8 @@ export const App: React.FC = () => {
               />
             ))}
 
-            {/* Тимчасова тудушка (з id: 0), яка відображається під час завантаження */}
             {tempTodo && (
-              <TodoItem
-                todo={tempTodo}
-                isLoading={true}
-                onDelete={() => {}} // Тимчасову тудушку не можна видалити
-              />
+              <TodoItem todo={tempTodo} isLoading={true} onDelete={() => {}} />
             )}
           </section>
         )}
@@ -234,7 +214,7 @@ export const App: React.FC = () => {
               className="todoapp__clear-completed"
               data-cy="ClearCompletedButton"
               disabled={!hasCompletedTodos}
-              onClick={handleClearCompleted} // Додали обробник
+              onClick={handleClearCompleted}
             >
               Clear completed
             </button>
