@@ -10,6 +10,7 @@ import { ErrorMessages } from './types/ErrorMessages';
 import { TodoList } from './components/TodoList';
 import { Footer } from './components/Footer';
 import { ErrorNotification } from './components/ErrorNotification';
+import { NewTodoField } from './components/NewTodoField';
 import { filterTodos } from './utils/filterTodos';
 
 const ERROR_DELAY = 3000;
@@ -95,6 +96,7 @@ export const App: React.FC = () => {
       .finally(() => {
         setTempTodo(null);
         setIsSubmitting(false);
+        newTodoField.current?.focus();
       });
   };
 
@@ -166,18 +168,13 @@ export const App: React.FC = () => {
             />
           )}
 
-          <form onSubmit={handleSubmit}>
-            <input
-              data-cy="NewTodoField"
-              type="text"
-              className="todoapp__new-todo"
-              placeholder="What needs to be done?"
-              value={title}
-              onChange={event => setTitle(event.target.value)}
-              ref={newTodoField}
-              disabled={isSubmitting}
-            />
-          </form>
+          <NewTodoField
+            ref={newTodoField}
+            title={title}
+            onTitleChange={setTitle}
+            onSubmit={handleSubmit}
+            disabled={isSubmitting}
+          />
         </header>
 
         {(todos.length > 0 || tempTodo) && (
